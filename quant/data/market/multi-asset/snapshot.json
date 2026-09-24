@@ -1,0 +1,8580 @@
+{
+ "schemaVersion": "vu-multi-asset-snapshot-1.0.0",
+ "contractVersion": "multi-asset-contract-1.0.0",
+ "generatedAt": "2026-09-24T13:54:26.006Z",
+ "asOfRun": "2026-09-24T13:43:04.210Z",
+ "note": "Product Contract des Multi-Asset-Segments. Freshness ist zum Bauzeitpunkt bewertet; Consumer bewerten sie mit VUMultiAssetContract.refresh() zur Anzeigezeit neu.",
+ "summary": {
+  "INDEX:CAPABILITY_GAP": 13,
+  "PRECIOUS_METAL:WITHHELD_LICENSE": 4,
+  "COMMODITY:AVAILABLE": 3,
+  "COMMODITY:CAPABILITY_GAP": 1,
+  "CRYPTO:WITHHELD_LICENSE": 4,
+  "FX:AVAILABLE": 1,
+  "YIELD:AVAILABLE": 7,
+  "RATE:AVAILABLE": 3
+ },
+ "instruments": [
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_4d4d20a3258d46",
+    "symbol": "SPX",
+    "name": "S&P 500",
+    "nameDe": "S&P 500",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "S&P Dow Jones Indices",
+    "exchangeOrVenue": "S&P Dow Jones Indices (berechnet waehrend der NYSE-Sitzung)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_US",
+    "sessionExchange": "XNYS",
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "SPY",
+     "IVV",
+     "VOO"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_35bbbedc545d44",
+    "symbol": "NDX",
+    "name": "Nasdaq-100",
+    "nameDe": "Nasdaq 100",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Nasdaq",
+    "exchangeOrVenue": "Nasdaq (berechnet waehrend der US-Sitzung)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_US",
+    "sessionExchange": "XNYS",
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "QQQ",
+     "QQQM"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_5ba1cadf7a14f6",
+    "symbol": "DJI",
+    "name": "Dow Jones Industrial Average",
+    "nameDe": "Dow Jones",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "S&P Dow Jones Indices",
+    "exchangeOrVenue": "S&P Dow Jones Indices (berechnet waehrend der NYSE-Sitzung)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_US",
+    "sessionExchange": "XNYS",
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "DIA"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_7f20679be54590",
+    "symbol": "DAX",
+    "name": "DAX (Performance Index)",
+    "nameDe": "DAX",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_TOTAL_RETURN",
+    "subTypeNote": "Der DAX ist ein Performanceindex: Dividenden werden rechnerisch reinvestiert. Ein Kursindex-DAX waere ein anderes Instrument.",
+    "yieldKind": null,
+    "family": "STOXX / Qontigo (Deutsche Boerse)",
+    "exchangeOrVenue": "Xetra",
+    "country": "DE",
+    "timezone": "Europe/Berlin",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "EUR",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_EU",
+    "sessionExchange": "XETR",
+    "publisherProfile": null,
+    "timezone": "Europe/Berlin",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "DAX (Global X DAX Germany ETF - gleiches Kuerzel, anderes Instrument)",
+     "EXS1"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_0ffca8b14a8e67",
+    "symbol": "SX5E",
+    "name": "EURO STOXX 50",
+    "nameDe": "Euro Stoxx 50",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "STOXX",
+    "exchangeOrVenue": "STOXX (berechnet waehrend der Xetra-/Eurex-Handelszeit)",
+    "country": "EU",
+    "timezone": "Europe/Berlin",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "EUR",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_EU",
+    "sessionExchange": "XETR",
+    "publisherProfile": null,
+    "timezone": "Europe/Berlin",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "FEZ"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_7f13d39e089e6b",
+    "symbol": "UKX",
+    "name": "FTSE 100",
+    "nameDe": "FTSE 100",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "FTSE Russell",
+    "exchangeOrVenue": "London Stock Exchange",
+    "country": "GB",
+    "timezone": "Europe/London",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "GBP",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_EU",
+    "sessionExchange": "XLON",
+    "publisherProfile": null,
+    "timezone": "Europe/London",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "EWU (MSCI UK - anderer Index)"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_18701531a86b41",
+    "symbol": "N225",
+    "name": "Nikkei 225",
+    "nameDe": "Nikkei 225",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Nikkei Inc.",
+    "exchangeOrVenue": "Tokyo Stock Exchange",
+    "country": "JP",
+    "timezone": "Asia/Tokyo",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "JPY",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "CLOSED",
+    "sessionProfile": "INDEX_ASIA",
+    "sessionExchange": "XTKS",
+    "publisherProfile": null,
+    "timezone": "Asia/Tokyo",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_41feb8a9e471c0",
+    "symbol": "RUT",
+    "name": "Russell 2000",
+    "nameDe": "Russell 2000",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "FTSE Russell",
+    "exchangeOrVenue": "FTSE Russell (US-Sitzung)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_US",
+    "sessionExchange": "XNYS",
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "IWM"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_62fb4dac2e2b78",
+    "symbol": "MID",
+    "name": "S&P MidCap 400",
+    "nameDe": "S&P MidCap 400",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "S&P Dow Jones Indices",
+    "exchangeOrVenue": "S&P Dow Jones Indices (US-Sitzung)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_US",
+    "sessionExchange": "XNYS",
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "MDY",
+     "IJH"
+    ]
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_ad8a9c09c56420",
+    "symbol": "PX1",
+    "name": "CAC 40",
+    "nameDe": "CAC 40",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Euronext",
+    "exchangeOrVenue": "Euronext Paris",
+    "country": "FR",
+    "timezone": "Europe/Paris",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "EUR",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_EU",
+    "sessionExchange": "XPAR",
+    "publisherProfile": null,
+    "timezone": "Europe/Paris",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_1030cbb1ec0636",
+    "symbol": "SMI",
+    "name": "Swiss Market Index",
+    "nameDe": "SMI",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "SIX",
+    "exchangeOrVenue": "SIX Swiss Exchange",
+    "country": "CH",
+    "timezone": "Europe/Zurich",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "CHF",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "INDEX_EU",
+    "sessionExchange": "XSWX",
+    "publisherProfile": null,
+    "timezone": "Europe/Zurich",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_afe15da269200d",
+    "symbol": "HSI",
+    "name": "Hang Seng Index",
+    "nameDe": "Hang Seng",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Hang Seng Indexes",
+    "exchangeOrVenue": "Hong Kong Exchanges",
+    "country": "HK",
+    "timezone": "Asia/Hong_Kong",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "HKD",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "CLOSED",
+    "sessionProfile": "INDEX_ASIA",
+    "sessionExchange": "XHKG",
+    "publisherProfile": null,
+    "timezone": "Asia/Hong_Kong",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_7326d3ec863e5a",
+    "symbol": "SHCOMP",
+    "name": "SSE Composite Index",
+    "nameDe": "Shanghai Composite",
+    "assetClass": "INDEX",
+    "assetType": "INDEX",
+    "subType": "INDEX_PRICE",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "China Securities Index",
+    "exchangeOrVenue": "Shanghai Stock Exchange",
+    "country": "CN",
+    "timezone": "Asia/Shanghai",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "INDEX_LEVEL",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "INDEX_POINTS",
+    "unitId": "POINTS",
+    "unitDisplay": "Pkt.",
+    "decimals": 2,
+    "nativeCurrency": "CNY",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "CLOSED",
+    "sessionProfile": "INDEX_ASIA",
+    "sessionExchange": "XSHG",
+    "publisherProfile": null,
+    "timezone": "Asia/Shanghai",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": {
+    "kind": "PROVIDER_CAPABILITY_GAP",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+    "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+     "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+    ],
+    "notDone": "Kein ETF wird still als Index ausgegeben."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_b2abb03aadceb0",
+    "symbol": "XAUUSD",
+    "name": "Gold (Spot, XAU/USD)",
+    "nameDe": "Gold",
+    "assetClass": "PRECIOUS_METAL",
+    "assetType": "PRECIOUS_METAL",
+    "subType": "SPOT_METAL",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Edelmetalle",
+    "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+    "country": null,
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "PRICE_PER_OUNCE",
+    "unitId": "USD_PER_TROY_OUNCE",
+    "unitDisplay": "/oz",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:43:04.372000+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "METALS_OTC_24_5",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": "tiingo-fx-metals",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "xauusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:04.267Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-fx-metals",
+     "provider": "tiingo",
+     "product": "FX API (Edelmetallpaare)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "MID_QUOTE",
+     "fetchedAt": "2026-09-24T13:43:04.267Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "GLD",
+     "IAU",
+     "GC (COMEX-Future - anderes Instrument)"
+    ]
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Edelmetallpaare kommen ueber den FX-Endpunkt. fx-license.json#licenseGate haelt fest: Redistribution roher FX-Reihen (Klasse E) wird NICHT ausgeuebt. Eine Gold-/Silberkarte zeigt genau so eine rohe Reihe. Ohne ausdrueckliche Freigabe bleibt sie im Arbeitsstand."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_e86da358da49ef",
+    "symbol": "XAGUSD",
+    "name": "Silber (Spot, XAG/USD)",
+    "nameDe": "Silber",
+    "assetClass": "PRECIOUS_METAL",
+    "assetType": "PRECIOUS_METAL",
+    "subType": "SPOT_METAL",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Edelmetalle",
+    "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+    "country": null,
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "PRICE_PER_OUNCE",
+    "unitId": "USD_PER_TROY_OUNCE",
+    "unitDisplay": "/oz",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:43:04.534000+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "METALS_OTC_24_5",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": "tiingo-fx-metals",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "xagusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:04.614Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-fx-metals",
+     "provider": "tiingo",
+     "product": "FX API (Edelmetallpaare)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "MID_QUOTE",
+     "fetchedAt": "2026-09-24T13:43:04.614Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "SLV",
+     "SI (COMEX-Future - anderes Instrument)"
+    ]
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Edelmetallpaare kommen ueber den FX-Endpunkt. fx-license.json#licenseGate haelt fest: Redistribution roher FX-Reihen (Klasse E) wird NICHT ausgeuebt. Eine Gold-/Silberkarte zeigt genau so eine rohe Reihe. Ohne ausdrueckliche Freigabe bleibt sie im Arbeitsstand."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_2ff2f92c5cbccb",
+    "symbol": "XPTUSD",
+    "name": "Platin (Spot, XPT/USD)",
+    "nameDe": "Platin",
+    "assetClass": "PRECIOUS_METAL",
+    "assetType": "PRECIOUS_METAL",
+    "subType": "SPOT_METAL",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Edelmetalle",
+    "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+    "country": null,
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "PRICE_PER_OUNCE",
+    "unitId": "USD_PER_TROY_OUNCE",
+    "unitDisplay": "/oz",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:43:04.354000+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "METALS_OTC_24_5",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": "tiingo-fx-metals",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "xptusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:04.863Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-fx-metals",
+     "provider": "tiingo",
+     "product": "FX API (Edelmetallpaare)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "MID_QUOTE",
+     "fetchedAt": "2026-09-24T13:43:04.863Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "PPLT"
+    ]
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Edelmetallpaare kommen ueber den FX-Endpunkt. fx-license.json#licenseGate haelt fest: Redistribution roher FX-Reihen (Klasse E) wird NICHT ausgeuebt. Eine Gold-/Silberkarte zeigt genau so eine rohe Reihe. Ohne ausdrueckliche Freigabe bleibt sie im Arbeitsstand."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_26f07ebccf5620",
+    "symbol": "XPDUSD",
+    "name": "Palladium (Spot, XPD/USD)",
+    "nameDe": "Palladium",
+    "assetClass": "PRECIOUS_METAL",
+    "assetType": "PRECIOUS_METAL",
+    "subType": "SPOT_METAL",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Edelmetalle",
+    "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+    "country": null,
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "PRICE_PER_OUNCE",
+    "unitId": "USD_PER_TROY_OUNCE",
+    "unitDisplay": "/oz",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:43:04.667000+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "METALS_OTC_24_5",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "America/New_York",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": "tiingo-fx-metals",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "xpdusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:05.045Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-fx-metals",
+     "provider": "tiingo",
+     "product": "FX API (Edelmetallpaare)",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "MID_QUOTE",
+     "fetchedAt": "2026-09-24T13:43:05.045Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "PALL"
+    ]
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Edelmetallpaare kommen ueber den FX-Endpunkt. fx-license.json#licenseGate haelt fest: Redistribution roher FX-Reihen (Klasse E) wird NICHT ausgeuebt. Eine Gold-/Silberkarte zeigt genau so eine rohe Reihe. Ohne ausdrueckliche Freigabe bleibt sie im Arbeitsstand."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_b4e9008d384bf7",
+    "symbol": "WTI",
+    "name": "WTI Rohoel (Spot Cushing)",
+    "nameDe": "Öl WTI (Spot)",
+    "assetClass": "COMMODITY",
+    "assetType": "COMMODITY",
+    "subType": "SPOT_REFERENCE",
+    "subTypeNote": "Spot (Cushing), Front-Month-Future oder Continuous-Future - wird aus der gemessenen Quelle bestimmt, nicht aus dem Namen.",
+    "yieldKind": null,
+    "family": "Energie",
+    "exchangeOrVenue": "Cushing, Oklahoma - Spot FOB (EIA)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": 96.41,
+    "range": null,
+    "unit": "PRICE_PER_BARREL",
+    "unitId": "USD_PER_BARREL",
+    "unitDisplay": "/bbl",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-22",
+    "observationDate": "2026-09-22",
+    "change": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.56,
+     "percent": -0.58
+    },
+    "changeReferenceDate": "2026-09-21"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_EIA",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "eia",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "eia": "RWTC"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "publicationPendingWithinLag",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:43:05.245Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "eia",
+     "provider": "U.S. Energy Information Administration",
+     "product": "Spot Prices (Petroleum, Natural Gas)",
+     "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+     "publicDisplay": true,
+     "attribution": "Quelle: U.S. Energy Information Administration",
+     "priceSemantics": "SPOT_FOB_DAILY",
+     "fetchedAt": "2026-09-24T13:43:05.245Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1986-01-02",
+    "availableTo": "2026-09-22",
+    "observations": 9507,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-18",
+      80.35
+     ],
+     [
+      "2026-06-22",
+      78.94
+     ],
+     [
+      "2026-06-23",
+      74.62
+     ],
+     [
+      "2026-06-24",
+      71.42
+     ],
+     [
+      "2026-06-25",
+      72.67
+     ],
+     [
+      "2026-06-26",
+      70.3
+     ],
+     [
+      "2026-06-29",
+      71.87
+     ],
+     [
+      "2026-06-30",
+      70.56
+     ],
+     [
+      "2026-07-01",
+      69.74
+     ],
+     [
+      "2026-07-02",
+      69.73
+     ],
+     [
+      "2026-07-06",
+      69.6
+     ],
+     [
+      "2026-07-07",
+      71.53
+     ],
+     [
+      "2026-07-08",
+      74.56
+     ],
+     [
+      "2026-07-09",
+      73.15
+     ],
+     [
+      "2026-07-10",
+      72.45
+     ],
+     [
+      "2026-07-13",
+      79.2
+     ],
+     [
+      "2026-07-14",
+      80.44
+     ],
+     [
+      "2026-07-15",
+      80.73
+     ],
+     [
+      "2026-07-16",
+      80.03
+     ],
+     [
+      "2026-07-17",
+      83.43
+     ],
+     [
+      "2026-07-20",
+      84.38
+     ],
+     [
+      "2026-07-21",
+      86.04
+     ],
+     [
+      "2026-07-22",
+      87.66
+     ],
+     [
+      "2026-07-23",
+      93.08
+     ],
+     [
+      "2026-07-24",
+      91.74
+     ],
+     [
+      "2026-07-27",
+      84.25
+     ],
+     [
+      "2026-07-28",
+      80.91
+     ],
+     [
+      "2026-07-29",
+      86.08
+     ],
+     [
+      "2026-07-30",
+      85.15
+     ],
+     [
+      "2026-07-31",
+      86.16
+     ],
+     [
+      "2026-08-03",
+      81.96
+     ],
+     [
+      "2026-08-04",
+      77.33
+     ],
+     [
+      "2026-08-05",
+      76.78
+     ],
+     [
+      "2026-08-06",
+      78.88
+     ],
+     [
+      "2026-08-07",
+      79.77
+     ],
+     [
+      "2026-08-10",
+      83.76
+     ],
+     [
+      "2026-08-11",
+      84.77
+     ],
+     [
+      "2026-08-12",
+      84.97
+     ],
+     [
+      "2026-08-13",
+      82.77
+     ],
+     [
+      "2026-08-14",
+      83.99
+     ],
+     [
+      "2026-08-17",
+      86.04
+     ],
+     [
+      "2026-08-18",
+      86.48
+     ],
+     [
+      "2026-08-19",
+      87.28
+     ],
+     [
+      "2026-08-20",
+      89.75
+     ],
+     [
+      "2026-08-21",
+      87.21
+     ],
+     [
+      "2026-08-24",
+      86.34
+     ],
+     [
+      "2026-08-25",
+      83.9
+     ],
+     [
+      "2026-08-26",
+      83.46
+     ],
+     [
+      "2026-08-27",
+      84.81
+     ],
+     [
+      "2026-08-28",
+      84.57
+     ],
+     [
+      "2026-08-31",
+      87.03
+     ],
+     [
+      "2026-09-01",
+      91.48
+     ],
+     [
+      "2026-09-02",
+      92.15
+     ],
+     [
+      "2026-09-03",
+      92.55
+     ],
+     [
+      "2026-09-04",
+      92.69
+     ],
+     [
+      "2026-09-08",
+      94.21
+     ],
+     [
+      "2026-09-09",
+      97.26
+     ],
+     [
+      "2026-09-10",
+      103.57
+     ],
+     [
+      "2026-09-11",
+      101.27
+     ],
+     [
+      "2026-09-14",
+      102.42
+     ],
+     [
+      "2026-09-15",
+      107.02
+     ],
+     [
+      "2026-09-16",
+      103.62
+     ],
+     [
+      "2026-09-17",
+      103.21
+     ],
+     [
+      "2026-09-18",
+      101.44
+     ],
+     [
+      "2026-09-21",
+      96.97
+     ],
+     [
+      "2026-09-22",
+      96.41
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/WTI.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -10.61,
+     "percent": -9.91,
+     "fromDate": "2026-09-15"
+    },
+    "1M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 9.2,
+     "percent": 10.55,
+     "fromDate": "2026-08-21"
+    },
+    "3M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 21.79,
+     "percent": 29.2,
+     "fromDate": "2026-06-23"
+    },
+    "1Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 33.42,
+     "percent": 53.06,
+     "fromDate": "2025-09-22"
+    },
+    "5Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 24.04,
+     "percent": 33.22,
+     "fromDate": "2021-09-22"
+    },
+    "10Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 50.31,
+     "percent": 109.13,
+     "fromDate": "2016-09-22"
+    },
+    "MAX": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 70.85,
+     "percent": 277.19,
+     "fromDate": "1986-01-02"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "USO",
+     "CL (NYMEX-Future)"
+    ]
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_579368f62b8609",
+    "symbol": "BRENT",
+    "name": "Brent Rohoel (Spot Europe)",
+    "nameDe": "Öl Brent (Spot)",
+    "assetClass": "COMMODITY",
+    "assetType": "COMMODITY",
+    "subType": "SPOT_REFERENCE",
+    "subTypeNote": "Europe Brent Spot FOB oder ICE-Future - wird aus der gemessenen Quelle bestimmt.",
+    "yieldKind": null,
+    "family": "Energie",
+    "exchangeOrVenue": "Europe Brent - Spot FOB (EIA)",
+    "country": null,
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": 114.89,
+    "range": null,
+    "unit": "PRICE_PER_BARREL",
+    "unitId": "USD_PER_BARREL",
+    "unitDisplay": "/bbl",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-22",
+    "observationDate": "2026-09-22",
+    "change": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -1.26,
+     "percent": -1.08
+    },
+    "changeReferenceDate": "2026-09-21"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_EIA",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "eia",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "eia": "RBRTE"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "publicationPendingWithinLag",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:43:05.271Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "eia",
+     "provider": "U.S. Energy Information Administration",
+     "product": "Spot Prices (Petroleum, Natural Gas)",
+     "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+     "publicDisplay": true,
+     "attribution": "Quelle: U.S. Energy Information Administration",
+     "priceSemantics": "SPOT_FOB_DAILY",
+     "fetchedAt": "2026-09-24T13:43:05.271Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1987-05-20",
+    "availableTo": "2026-09-22",
+    "observations": 9092,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-22",
+      76.49
+     ],
+     [
+      "2026-06-23",
+      75.69
+     ],
+     [
+      "2026-06-24",
+      72.09
+     ],
+     [
+      "2026-06-25",
+      73.74
+     ],
+     [
+      "2026-06-26",
+      70.16
+     ],
+     [
+      "2026-06-29",
+      71.59
+     ],
+     [
+      "2026-06-30",
+      70.46
+     ],
+     [
+      "2026-07-01",
+      69.24
+     ],
+     [
+      "2026-07-02",
+      68.53
+     ],
+     [
+      "2026-07-03",
+      68.68
+     ],
+     [
+      "2026-07-06",
+      69.56
+     ],
+     [
+      "2026-07-07",
+      71.78
+     ],
+     [
+      "2026-07-08",
+      76.5
+     ],
+     [
+      "2026-07-09",
+      74.46
+     ],
+     [
+      "2026-07-10",
+      74.34
+     ],
+     [
+      "2026-07-13",
+      81.62
+     ],
+     [
+      "2026-07-14",
+      83.69
+     ],
+     [
+      "2026-07-15",
+      83.08
+     ],
+     [
+      "2026-07-16",
+      81.23
+     ],
+     [
+      "2026-07-17",
+      85.01
+     ],
+     [
+      "2026-07-20",
+      86.99
+     ],
+     [
+      "2026-07-21",
+      93.85
+     ],
+     [
+      "2026-07-22",
+      94.12
+     ],
+     [
+      "2026-07-23",
+      105.32
+     ],
+     [
+      "2026-07-24",
+      100.31
+     ],
+     [
+      "2026-07-27",
+      91.82
+     ],
+     [
+      "2026-07-28",
+      85.51
+     ],
+     [
+      "2026-07-29",
+      91.95
+     ],
+     [
+      "2026-07-30",
+      91.91
+     ],
+     [
+      "2026-07-31",
+      96.95
+     ],
+     [
+      "2026-08-03",
+      88.9
+     ],
+     [
+      "2026-08-04",
+      86.47
+     ],
+     [
+      "2026-08-05",
+      86.65
+     ],
+     [
+      "2026-08-06",
+      89.65
+     ],
+     [
+      "2026-08-07",
+      87.62
+     ],
+     [
+      "2026-08-10",
+      92.74
+     ],
+     [
+      "2026-08-11",
+      93.26
+     ],
+     [
+      "2026-08-12",
+      92.52
+     ],
+     [
+      "2026-08-13",
+      92.03
+     ],
+     [
+      "2026-08-14",
+      92.02
+     ],
+     [
+      "2026-08-17",
+      92.43
+     ],
+     [
+      "2026-08-18",
+      95.29
+     ],
+     [
+      "2026-08-19",
+      92.37
+     ],
+     [
+      "2026-08-20",
+      94
+     ],
+     [
+      "2026-08-21",
+      96.92
+     ],
+     [
+      "2026-08-24",
+      92.71
+     ],
+     [
+      "2026-08-25",
+      88.24
+     ],
+     [
+      "2026-08-26",
+      87.77
+     ],
+     [
+      "2026-08-27",
+      90.18
+     ],
+     [
+      "2026-08-28",
+      89.75
+     ],
+     [
+      "2026-09-01",
+      96.02
+     ],
+     [
+      "2026-09-02",
+      97.59
+     ],
+     [
+      "2026-09-03",
+      100.52
+     ],
+     [
+      "2026-09-04",
+      102.24
+     ],
+     [
+      "2026-09-07",
+      104.47
+     ],
+     [
+      "2026-09-08",
+      106.12
+     ],
+     [
+      "2026-09-09",
+      109.51
+     ],
+     [
+      "2026-09-10",
+      120.98
+     ],
+     [
+      "2026-09-11",
+      118.06
+     ],
+     [
+      "2026-09-14",
+      121.25
+     ],
+     [
+      "2026-09-15",
+      130.8
+     ],
+     [
+      "2026-09-16",
+      127.84
+     ],
+     [
+      "2026-09-17",
+      121.18
+     ],
+     [
+      "2026-09-18",
+      119.66
+     ],
+     [
+      "2026-09-21",
+      116.15
+     ],
+     [
+      "2026-09-22",
+      114.89
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/BRENT.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -15.91,
+     "percent": -12.16,
+     "fromDate": "2026-09-15"
+    },
+    "1M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 17.97,
+     "percent": 18.54,
+     "fromDate": "2026-08-21"
+    },
+    "3M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 39.2,
+     "percent": 51.79,
+     "fromDate": "2026-06-23"
+    },
+    "1Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 48.02,
+     "percent": 71.81,
+     "fromDate": "2025-09-22"
+    },
+    "5Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 39.39,
+     "percent": 52.17,
+     "fromDate": "2021-09-22"
+    },
+    "10Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 67.68,
+     "percent": 143.36,
+     "fromDate": "2016-09-22"
+    },
+    "MAX": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 96.26,
+     "percent": 516.69,
+     "fromDate": "1987-05-20"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "BNO",
+     "BZ/CO (ICE-Future)"
+    ]
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_84785b46b6f3c1",
+    "symbol": "COPPER",
+    "name": "Kupfer",
+    "nameDe": "Kupfer",
+    "assetClass": "COMMODITY",
+    "assetType": "COMMODITY",
+    "subType": "UNRESOLVED",
+    "subTypeNote": "LME-Kassa, COMEX-Future oder IMF-Monatsreferenz - drei verschiedene Instrumente mit verschiedenen Einheiten (USD/t vs. USD/lb).",
+    "yieldKind": null,
+    "family": "Industriemetalle",
+    "exchangeOrVenue": null,
+    "country": null,
+    "timezone": "Europe/London",
+    "tenorYears": null,
+    "status": "CAPABILITY_GAP"
+   },
+   "quote": {
+    "state": "CAPABILITY_GAP",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "UNRESOLVED",
+    "unitId": "UNRESOLVED",
+    "unitDisplay": "",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": null,
+    "observationDate": null,
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "UNKNOWN",
+    "sessionProfile": "UNRESOLVED",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": null,
+    "sourceKind": null,
+    "sourceInstrument": {},
+    "freshness": {
+     "state": "UNAVAILABLE",
+     "reason": "noObservation",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "UNAVAILABLE",
+    "frequency": null,
+    "checkedAt": null,
+    "realtime": false,
+    "delayed": false,
+    "eod": false,
+    "provenance": {
+     "sourceId": null,
+     "provider": null,
+     "product": null,
+     "licenseState": null,
+     "publicDisplay": false,
+     "attribution": null,
+     "priceSemantics": null,
+     "fetchedAt": null
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": null,
+    "representation": null,
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": false,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "CPER",
+     "HG (COMEX-Future)"
+    ]
+   },
+   "gap": {
+    "kind": "SEMANTICS_UNVERIFIED",
+    "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+    "finding": "Tiingo fuehrt 'copperusd' auf dem FX-Endpunkt (gemessen, Historie ab 2023-09-15, 5-Minuten-Bars). Welcher Markt (LME-Kassa, COMEX-Future, CFD), welche Einheit (USD/lb oder USD/t) und welche Rollregel dahinterstehen, ist nicht dokumentiert und nicht messbar. Die einzige offizielle Alternative (IMF Primary Commodity Prices) ist monatlich und nur ueber den FRED-Spiegel maschinenlesbar.",
+    "ownerOptions": [
+     "Tiingo 'copperusd' mit Kennzeichnung 'Anbieter-Referenz, Kontrakt unbestaetigt' zulassen (plus Lizenzfreigabe FX-Endpunkt)",
+     "IMF-Monatsreferenz (USD/t) als Monatswert zulassen",
+     "Lizenzierte LME/COMEX-Daten (Kostenentscheidung)"
+    ],
+    "notDone": "Kein 'Kupferpreis' ohne Instrumentdefinition (§42)."
+   },
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_21bcc5bf8b2280",
+    "symbol": "NATGAS",
+    "name": "Erdgas (Henry Hub Spot)",
+    "nameDe": "Erdgas (Henry Hub)",
+    "assetClass": "COMMODITY",
+    "assetType": "COMMODITY",
+    "subType": "SPOT_REFERENCE",
+    "subTypeNote": "Henry-Hub-Spot oder NYMEX-Future - wird aus der gemessenen Quelle bestimmt.",
+    "yieldKind": null,
+    "family": "Energie",
+    "exchangeOrVenue": "Henry Hub, Louisiana - Spot (EIA)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": 2.9,
+    "range": null,
+    "unit": "PRICE_PER_MMBTU",
+    "unitId": "USD_PER_MMBTU",
+    "unitDisplay": "/MMBtu",
+    "decimals": 3,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-22",
+    "observationDate": "2026-09-22",
+    "change": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.03,
+     "percent": -1.02
+    },
+    "changeReferenceDate": "2026-09-21"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_EIA",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "eia",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "eia": "RNGWHHD"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "publicationPendingWithinLag",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:43:05.289Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "eia",
+     "provider": "U.S. Energy Information Administration",
+     "product": "Spot Prices (Petroleum, Natural Gas)",
+     "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+     "publicDisplay": true,
+     "attribution": "Quelle: U.S. Energy Information Administration",
+     "priceSemantics": "SPOT_DAILY",
+     "fetchedAt": "2026-09-24T13:43:05.289Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1997-01-07",
+    "availableTo": "2026-09-22",
+    "observations": 5692,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-18",
+      3.08
+     ],
+     [
+      "2026-06-22",
+      3.16
+     ],
+     [
+      "2026-06-23",
+      3.15
+     ],
+     [
+      "2026-06-24",
+      3.19
+     ],
+     [
+      "2026-06-25",
+      3.21
+     ],
+     [
+      "2026-06-26",
+      3.26
+     ],
+     [
+      "2026-06-29",
+      3.33
+     ],
+     [
+      "2026-06-30",
+      3.34
+     ],
+     [
+      "2026-07-01",
+      3.34
+     ],
+     [
+      "2026-07-02",
+      3.34
+     ],
+     [
+      "2026-07-06",
+      3.29
+     ],
+     [
+      "2026-07-07",
+      3.13
+     ],
+     [
+      "2026-07-08",
+      3.13
+     ],
+     [
+      "2026-07-09",
+      3.17
+     ],
+     [
+      "2026-07-10",
+      2.73
+     ],
+     [
+      "2026-07-13",
+      2.83
+     ],
+     [
+      "2026-07-14",
+      2.76
+     ],
+     [
+      "2026-07-15",
+      2.8
+     ],
+     [
+      "2026-07-16",
+      2.83
+     ],
+     [
+      "2026-07-17",
+      2.75
+     ],
+     [
+      "2026-07-20",
+      2.8
+     ],
+     [
+      "2026-07-21",
+      2.8
+     ],
+     [
+      "2026-07-22",
+      2.93
+     ],
+     [
+      "2026-07-23",
+      2.92
+     ],
+     [
+      "2026-07-24",
+      2.87
+     ],
+     [
+      "2026-07-27",
+      2.63
+     ],
+     [
+      "2026-07-28",
+      2.65
+     ],
+     [
+      "2026-07-29",
+      2.58
+     ],
+     [
+      "2026-07-30",
+      2.65
+     ],
+     [
+      "2026-07-31",
+      2.59
+     ],
+     [
+      "2026-08-03",
+      2.81
+     ],
+     [
+      "2026-08-04",
+      2.74
+     ],
+     [
+      "2026-08-05",
+      2.6
+     ],
+     [
+      "2026-08-06",
+      2.6
+     ],
+     [
+      "2026-08-07",
+      2.56
+     ],
+     [
+      "2026-08-10",
+      2.72
+     ],
+     [
+      "2026-08-11",
+      2.79
+     ],
+     [
+      "2026-08-12",
+      2.82
+     ],
+     [
+      "2026-08-13",
+      2.82
+     ],
+     [
+      "2026-08-14",
+      2.79
+     ],
+     [
+      "2026-08-17",
+      2.77
+     ],
+     [
+      "2026-08-18",
+      2.82
+     ],
+     [
+      "2026-08-19",
+      2.94
+     ],
+     [
+      "2026-08-20",
+      2.94
+     ],
+     [
+      "2026-08-21",
+      2.82
+     ],
+     [
+      "2026-08-24",
+      2.83
+     ],
+     [
+      "2026-08-25",
+      2.7
+     ],
+     [
+      "2026-08-26",
+      2.81
+     ],
+     [
+      "2026-08-27",
+      2.89
+     ],
+     [
+      "2026-08-28",
+      2.82
+     ],
+     [
+      "2026-08-31",
+      2.9
+     ],
+     [
+      "2026-09-01",
+      2.9
+     ],
+     [
+      "2026-09-02",
+      2.88
+     ],
+     [
+      "2026-09-03",
+      2.95
+     ],
+     [
+      "2026-09-04",
+      2.92
+     ],
+     [
+      "2026-09-08",
+      2.9
+     ],
+     [
+      "2026-09-09",
+      2.81
+     ],
+     [
+      "2026-09-10",
+      2.76
+     ],
+     [
+      "2026-09-11",
+      2.71
+     ],
+     [
+      "2026-09-14",
+      2.85
+     ],
+     [
+      "2026-09-15",
+      2.97
+     ],
+     [
+      "2026-09-16",
+      3
+     ],
+     [
+      "2026-09-17",
+      2.9
+     ],
+     [
+      "2026-09-18",
+      2.97
+     ],
+     [
+      "2026-09-21",
+      2.93
+     ],
+     [
+      "2026-09-22",
+      2.9
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/NATGAS.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.07,
+     "percent": -2.36,
+     "fromDate": "2026-09-15"
+    },
+    "1M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 0.08,
+     "percent": 2.84,
+     "fromDate": "2026-08-21"
+    },
+    "3M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.25,
+     "percent": -7.94,
+     "fromDate": "2026-06-23"
+    },
+    "1Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 0,
+     "percent": 0,
+     "fromDate": "2025-09-22"
+    },
+    "5Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -2.02,
+     "percent": -41.06,
+     "fromDate": "2021-09-22"
+    },
+    "10Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.28,
+     "percent": -8.81,
+     "fromDate": "2016-09-22"
+    },
+    "MAX": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.92,
+     "percent": -24.08,
+     "fromDate": "1997-01-07"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "UNG",
+     "NG (NYMEX-Future)"
+    ]
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_e970712c167d9d",
+    "symbol": "BTCUSD",
+    "name": "Bitcoin",
+    "nameDe": "Bitcoin",
+    "assetClass": "CRYPTO",
+    "assetType": "CRYPTO",
+    "subType": "CRYPTO_SPOT_AGGREGATED",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Krypto",
+    "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+    "country": null,
+    "timezone": "UTC",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "CRYPTO_QUOTE",
+    "unitId": "USD_PER_BTC",
+    "unitDisplay": "",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:40:00+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "CRYPTO_24_7",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "UTC",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "tiingo-crypto",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "btcusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:05.302Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-crypto",
+     "provider": "tiingo",
+     "product": "Crypto API",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "AGGREGATED_LAST",
+     "fetchedAt": "2026-09-24T13:43:05.302Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "IBIT",
+     "FBTC",
+     "GBTC"
+    ]
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Die Owner-Erklaerung vom 2026-09-13 (development-preview.json#decidedBy) nennt die Tiingo-Market-Data. Krypto ist bei Tiingo ein eigenes Produkt - dieselbe Lesart wie fx-license.json#licenseGate fuer FX. Ohne ausdrueckliche Freigabe wird keine rohe Krypto-Kursreihe in den ausgelieferten Pfad geschrieben."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_61dcc288edc348",
+    "symbol": "ETHUSD",
+    "name": "Ethereum",
+    "nameDe": "Ethereum",
+    "assetClass": "CRYPTO",
+    "assetType": "CRYPTO",
+    "subType": "CRYPTO_SPOT_AGGREGATED",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Krypto",
+    "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+    "country": null,
+    "timezone": "UTC",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "CRYPTO_QUOTE",
+    "unitId": "USD_PER_ETH",
+    "unitDisplay": "",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:40:00+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "CRYPTO_24_7",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "UTC",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "tiingo-crypto",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "ethusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:06.364Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-crypto",
+     "provider": "tiingo",
+     "product": "Crypto API",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "AGGREGATED_LAST",
+     "fetchedAt": "2026-09-24T13:43:06.364Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "ETHA"
+    ]
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Die Owner-Erklaerung vom 2026-09-13 (development-preview.json#decidedBy) nennt die Tiingo-Market-Data. Krypto ist bei Tiingo ein eigenes Produkt - dieselbe Lesart wie fx-license.json#licenseGate fuer FX. Ohne ausdrueckliche Freigabe wird keine rohe Krypto-Kursreihe in den ausgelieferten Pfad geschrieben."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_f9e6d4d7317349",
+    "symbol": "SOLUSD",
+    "name": "Solana",
+    "nameDe": "Solana",
+    "assetClass": "CRYPTO",
+    "assetType": "CRYPTO",
+    "subType": "CRYPTO_SPOT_AGGREGATED",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Krypto",
+    "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+    "country": null,
+    "timezone": "UTC",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "CRYPTO_QUOTE",
+    "unitId": "USD_PER_SOL",
+    "unitDisplay": "",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:40:00+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "CRYPTO_24_7",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "UTC",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "tiingo-crypto",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "solusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:07.703Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-crypto",
+     "provider": "tiingo",
+     "product": "Crypto API",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "AGGREGATED_LAST",
+     "fetchedAt": "2026-09-24T13:43:07.703Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Die Owner-Erklaerung vom 2026-09-13 (development-preview.json#decidedBy) nennt die Tiingo-Market-Data. Krypto ist bei Tiingo ein eigenes Produkt - dieselbe Lesart wie fx-license.json#licenseGate fuer FX. Ohne ausdrueckliche Freigabe wird keine rohe Krypto-Kursreihe in den ausgelieferten Pfad geschrieben."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_7f649dc74ae054",
+    "symbol": "XRPUSD",
+    "name": "XRP",
+    "nameDe": "XRP",
+    "assetClass": "CRYPTO",
+    "assetType": "CRYPTO",
+    "subType": "CRYPTO_SPOT_AGGREGATED",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Krypto",
+    "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+    "country": null,
+    "timezone": "UTC",
+    "tenorYears": null,
+    "status": "LICENSE_PENDING"
+   },
+   "quote": {
+    "state": "WITHHELD_LICENSE",
+    "valueSemantics": "PRICE",
+    "valueKind": "SCALAR",
+    "value": null,
+    "range": null,
+    "unit": "CRYPTO_QUOTE",
+    "unitId": "USD_PER_XRP",
+    "unitDisplay": "",
+    "decimals": 2,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-24T13:40:00+00:00",
+    "observationDate": "2026-09-24",
+    "change": null,
+    "changeReferenceDate": null
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "CRYPTO_24_7",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "UTC",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "tiingo-crypto",
+    "sourceKind": "LICENSED_PROVIDER",
+    "sourceInstrument": {
+     "tiingo": "xrpusd"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestSnapshot",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "INTRADAY",
+    "checkedAt": "2026-09-24T13:43:08.750Z",
+    "realtime": false,
+    "delayed": true,
+    "eod": false,
+    "provenance": {
+     "sourceId": "tiingo-crypto",
+     "provider": "tiingo",
+     "product": "Crypto API",
+     "licenseState": "OWNER_DECISION_REQUIRED",
+     "publicDisplay": false,
+     "attribution": "Daten: Tiingo",
+     "priceSemantics": "AGGREGATED_LAST",
+     "fetchedAt": "2026-09-24T13:43:08.750Z"
+    }
+   },
+   "history": {
+    "available": false,
+    "availableFrom": null,
+    "availableTo": null,
+    "observations": 0,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {},
+    "recent": [],
+    "path": null
+   },
+   "performance": {},
+   "capabilities": {
+    "eod": true,
+    "intraday": true,
+    "realtime": true,
+    "websocket": true,
+    "currencyConversion": "CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": {
+    "state": "OWNER_DECISION_REQUIRED",
+    "note": "Die Owner-Erklaerung vom 2026-09-13 (development-preview.json#decidedBy) nennt die Tiingo-Market-Data. Krypto ist bei Tiingo ein eigenes Produkt - dieselbe Lesart wie fx-license.json#licenseGate fuer FX. Ohne ausdrueckliche Freigabe wird keine rohe Krypto-Kursreihe in den ausgelieferten Pfad geschrieben."
+   }
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_d2510c28ddd23a",
+    "symbol": "EURUSD",
+    "name": "Euro / US-Dollar",
+    "nameDe": "EUR/USD (EZB)",
+    "assetClass": "FX",
+    "assetType": "FX",
+    "subType": "FX_REFERENCE_FIXING",
+    "subTypeNote": null,
+    "yieldKind": null,
+    "family": "Devisen",
+    "exchangeOrVenue": "EZB-Referenzkurs (ca. 14:15 MEZ, Handelstage des Eurosystems)",
+    "country": null,
+    "timezone": "UTC",
+    "tenorYears": null,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "FX_RATE",
+    "valueKind": "SCALAR",
+    "value": 1.149,
+    "range": null,
+    "unit": "FX_RATE",
+    "unitId": "EUR_IN_USD",
+    "unitDisplay": "",
+    "decimals": 4,
+    "nativeCurrency": "USD",
+    "currencyContext": null,
+    "asOf": "2026-09-21",
+    "observationDate": "2026-09-21",
+    "change": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 0.003,
+     "percent": 0.26
+    },
+    "changeReferenceDate": "2026-09-18"
+   },
+   "market": {
+    "state": "OPEN",
+    "sessionProfile": "FX_24_5",
+    "sessionExchange": null,
+    "publisherProfile": null,
+    "timezone": "UTC",
+    "calendarCoverage": false
+   },
+   "data": {
+    "source": "ecb-fx-reference",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "currencyCore": "quant/data/market/fx/ecb/EURUSD.json"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "withinFxLimit",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-21",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "ecb-fx-reference",
+     "provider": "Europaeische Zentralbank",
+     "product": "Euro-Referenzkurse (bestehender Currency Core, quant/data/market/fx/ecb/)",
+     "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Europaeische Zentralbank (Euro-Referenzkurs)",
+     "priceSemantics": "REFERENCE_FIXING",
+     "fetchedAt": "2026-09-21"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1999-01-04",
+    "availableTo": "2026-09-21",
+    "observations": 7097,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-22",
+      1.1456
+     ],
+     [
+      "2026-06-23",
+      1.1392
+     ],
+     [
+      "2026-06-24",
+      1.134
+     ],
+     [
+      "2026-06-25",
+      1.1342
+     ],
+     [
+      "2026-06-26",
+      1.1401
+     ],
+     [
+      "2026-06-29",
+      1.1406
+     ],
+     [
+      "2026-06-30",
+      1.1394
+     ],
+     [
+      "2026-07-01",
+      1.1383
+     ],
+     [
+      "2026-07-02",
+      1.1399
+     ],
+     [
+      "2026-07-03",
+      1.1448
+     ],
+     [
+      "2026-07-06",
+      1.1415
+     ],
+     [
+      "2026-07-07",
+      1.1433
+     ],
+     [
+      "2026-07-08",
+      1.1404
+     ],
+     [
+      "2026-07-09",
+      1.1435
+     ],
+     [
+      "2026-07-10",
+      1.143
+     ],
+     [
+      "2026-07-13",
+      1.1424
+     ],
+     [
+      "2026-07-14",
+      1.1405
+     ],
+     [
+      "2026-07-15",
+      1.1406
+     ],
+     [
+      "2026-07-16",
+      1.1467
+     ],
+     [
+      "2026-07-17",
+      1.1435
+     ],
+     [
+      "2026-07-20",
+      1.1426
+     ],
+     [
+      "2026-07-21",
+      1.1418
+     ],
+     [
+      "2026-07-22",
+      1.1408
+     ],
+     [
+      "2026-07-23",
+      1.1392
+     ],
+     [
+      "2026-07-24",
+      1.1377
+     ],
+     [
+      "2026-07-27",
+      1.1389
+     ],
+     [
+      "2026-07-28",
+      1.1367
+     ],
+     [
+      "2026-07-29",
+      1.138
+     ],
+     [
+      "2026-07-30",
+      1.1476
+     ],
+     [
+      "2026-07-31",
+      1.1485
+     ],
+     [
+      "2026-08-03",
+      1.1535
+     ],
+     [
+      "2026-08-04",
+      1.1515
+     ],
+     [
+      "2026-08-05",
+      1.1554
+     ],
+     [
+      "2026-08-06",
+      1.1542
+     ],
+     [
+      "2026-08-07",
+      1.1535
+     ],
+     [
+      "2026-08-10",
+      1.1555
+     ],
+     [
+      "2026-08-11",
+      1.154
+     ],
+     [
+      "2026-08-12",
+      1.1545
+     ],
+     [
+      "2026-08-13",
+      1.1534
+     ],
+     [
+      "2026-08-14",
+      1.1567
+     ],
+     [
+      "2026-08-17",
+      1.1593
+     ],
+     [
+      "2026-08-18",
+      1.1576
+     ],
+     [
+      "2026-08-19",
+      1.1605
+     ],
+     [
+      "2026-08-20",
+      1.1681
+     ],
+     [
+      "2026-08-21",
+      1.1699
+     ],
+     [
+      "2026-08-24",
+      1.1664
+     ],
+     [
+      "2026-08-25",
+      1.1662
+     ],
+     [
+      "2026-08-26",
+      1.1669
+     ],
+     [
+      "2026-08-27",
+      1.1645
+     ],
+     [
+      "2026-08-28",
+      1.1643
+     ],
+     [
+      "2026-08-31",
+      1.1596
+     ],
+     [
+      "2026-09-01",
+      1.159
+     ],
+     [
+      "2026-09-02",
+      1.1578
+     ],
+     [
+      "2026-09-03",
+      1.1615
+     ],
+     [
+      "2026-09-04",
+      1.1622
+     ],
+     [
+      "2026-09-07",
+      1.1622
+     ],
+     [
+      "2026-09-08",
+      1.1614
+     ],
+     [
+      "2026-09-09",
+      1.1652
+     ],
+     [
+      "2026-09-10",
+      1.1616
+     ],
+     [
+      "2026-09-11",
+      1.1592
+     ],
+     [
+      "2026-09-14",
+      1.1551
+     ],
+     [
+      "2026-09-15",
+      1.1539
+     ],
+     [
+      "2026-09-16",
+      1.1537
+     ],
+     [
+      "2026-09-17",
+      1.1481
+     ],
+     [
+      "2026-09-18",
+      1.146
+     ],
+     [
+      "2026-09-21",
+      1.149
+     ]
+    ],
+    "path": "/quant/data/market/fx/ecb/EURUSD.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.0061,
+     "percent": -0.53,
+     "fromDate": "2026-09-14"
+    },
+    "1M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.0209,
+     "percent": -1.79,
+     "fromDate": "2026-08-21"
+    },
+    "3M": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 0.0034,
+     "percent": 0.3,
+     "fromDate": "2026-06-22"
+    },
+    "1Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.0246,
+     "percent": -2.1,
+     "fromDate": "2025-09-19"
+    },
+    "5Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.0248,
+     "percent": -2.11,
+     "fromDate": "2021-09-21"
+    },
+    "10Y": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": 0.034,
+     "percent": 3.05,
+     "fromDate": "2016-09-21"
+    },
+    "MAX": {
+     "semantics": "PERCENT_OF_VALUE",
+     "absolute": -0.0299,
+     "percent": -2.54,
+     "fromDate": "1999-01-04"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "SELF"
+   },
+   "displaySemantics": {
+    "changeSemantics": "PERCENT_OF_VALUE",
+    "primaryChange": "percent",
+    "comparableAcrossClasses": false,
+    "note": null
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "FXE"
+    ]
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_5dc6256a9f133c",
+    "symbol": "US2Y",
+    "name": "US-Staatsanleihe 2 Jahre (Rendite)",
+    "nameDe": "US 2J",
+    "assetClass": "YIELD",
+    "assetType": "YIELD",
+    "subType": "GOVERNMENT_BOND_YIELD_CMT",
+    "subTypeNote": "Treasury Par Yield Curve Rate (Constant Maturity), einmal je Geschaeftstag vom US-Finanzministerium veroeffentlicht. Keine laufend gehandelte Rendite.",
+    "yieldKind": "REFERENCE_YIELD",
+    "family": "US Treasuries",
+    "exchangeOrVenue": "U.S. Department of the Treasury",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": 2,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "YIELD",
+    "valueKind": "SCALAR",
+    "value": 4.85,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "USD",
+    "asOf": "2026-09-23",
+    "observationDate": "2026-09-23",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.14,
+     "basisPoints": 14,
+     "relativePercent": 2.97,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-22"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_TREASURY",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "us-treasury",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "usTreasury": "daily_treasury_yield_curve:2 Yr"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestPublication",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:43:09.835Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "us-treasury",
+     "provider": "U.S. Department of the Treasury",
+     "product": "Daily Treasury Par Yield Curve Rates",
+     "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+     "publicDisplay": true,
+     "attribution": "Quelle: U.S. Department of the Treasury",
+     "priceSemantics": "PAR_YIELD_CMT",
+     "fetchedAt": "2026-09-24T13:43:09.835Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1990-01-02",
+    "availableTo": "2026-09-23",
+    "observations": 9188,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-22",
+      4.24
+     ],
+     [
+      "2026-06-23",
+      4.16
+     ],
+     [
+      "2026-06-24",
+      4.11
+     ],
+     [
+      "2026-06-25",
+      4.09
+     ],
+     [
+      "2026-06-26",
+      4.07
+     ],
+     [
+      "2026-06-29",
+      4.1
+     ],
+     [
+      "2026-06-30",
+      4.14
+     ],
+     [
+      "2026-07-01",
+      4.17
+     ],
+     [
+      "2026-07-02",
+      4.14
+     ],
+     [
+      "2026-07-06",
+      4.13
+     ],
+     [
+      "2026-07-07",
+      4.19
+     ],
+     [
+      "2026-07-08",
+      4.21
+     ],
+     [
+      "2026-07-09",
+      4.16
+     ],
+     [
+      "2026-07-10",
+      4.21
+     ],
+     [
+      "2026-07-13",
+      4.26
+     ],
+     [
+      "2026-07-14",
+      4.18
+     ],
+     [
+      "2026-07-15",
+      4.13
+     ],
+     [
+      "2026-07-16",
+      4.16
+     ],
+     [
+      "2026-07-17",
+      4.18
+     ],
+     [
+      "2026-07-20",
+      4.21
+     ],
+     [
+      "2026-07-21",
+      4.26
+     ],
+     [
+      "2026-07-22",
+      4.31
+     ],
+     [
+      "2026-07-23",
+      4.37
+     ],
+     [
+      "2026-07-24",
+      4.33
+     ],
+     [
+      "2026-07-27",
+      4.31
+     ],
+     [
+      "2026-07-28",
+      4.26
+     ],
+     [
+      "2026-07-29",
+      4.22
+     ],
+     [
+      "2026-07-30",
+      4.23
+     ],
+     [
+      "2026-07-31",
+      4.28
+     ],
+     [
+      "2026-08-03",
+      4.25
+     ],
+     [
+      "2026-08-04",
+      4.2
+     ],
+     [
+      "2026-08-05",
+      4.18
+     ],
+     [
+      "2026-08-06",
+      4.25
+     ],
+     [
+      "2026-08-07",
+      4.19
+     ],
+     [
+      "2026-08-10",
+      4.25
+     ],
+     [
+      "2026-08-11",
+      4.22
+     ],
+     [
+      "2026-08-12",
+      4.2
+     ],
+     [
+      "2026-08-13",
+      4.15
+     ],
+     [
+      "2026-08-14",
+      4.17
+     ],
+     [
+      "2026-08-17",
+      4.19
+     ],
+     [
+      "2026-08-18",
+      4.19
+     ],
+     [
+      "2026-08-19",
+      4.19
+     ],
+     [
+      "2026-08-20",
+      4.19
+     ],
+     [
+      "2026-08-21",
+      4.24
+     ],
+     [
+      "2026-08-24",
+      4.24
+     ],
+     [
+      "2026-08-25",
+      4.17
+     ],
+     [
+      "2026-08-26",
+      4.19
+     ],
+     [
+      "2026-08-27",
+      4.2
+     ],
+     [
+      "2026-08-28",
+      4.34
+     ],
+     [
+      "2026-08-31",
+      4.34
+     ],
+     [
+      "2026-09-01",
+      4.39
+     ],
+     [
+      "2026-09-02",
+      4.39
+     ],
+     [
+      "2026-09-03",
+      4.34
+     ],
+     [
+      "2026-09-04",
+      4.37
+     ],
+     [
+      "2026-09-08",
+      4.39
+     ],
+     [
+      "2026-09-09",
+      4.43
+     ],
+     [
+      "2026-09-10",
+      4.56
+     ],
+     [
+      "2026-09-11",
+      4.63
+     ],
+     [
+      "2026-09-14",
+      4.65
+     ],
+     [
+      "2026-09-15",
+      4.67
+     ],
+     [
+      "2026-09-16",
+      4.74
+     ],
+     [
+      "2026-09-17",
+      4.67
+     ],
+     [
+      "2026-09-18",
+      4.76
+     ],
+     [
+      "2026-09-21",
+      4.76
+     ],
+     [
+      "2026-09-22",
+      4.71
+     ],
+     [
+      "2026-09-23",
+      4.85
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/US2Y.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.11,
+     "basisPoints": 11,
+     "relativePercent": 2.32,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-16"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.61,
+     "basisPoints": 61,
+     "relativePercent": 14.39,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-24"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.74,
+     "basisPoints": 74,
+     "relativePercent": 18,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-24"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 1.32,
+     "basisPoints": 132,
+     "relativePercent": 37.39,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-23"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 4.58,
+     "basisPoints": 458,
+     "relativePercent": 1696.3,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-23"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 4.08,
+     "basisPoints": 408,
+     "relativePercent": 529.87,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -3.02,
+     "basisPoints": -302,
+     "relativePercent": -38.37,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "1990-01-02"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "SHY (Anleihe-ETF: Kurs, keine Rendite)"
+    ]
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_9bd7afa5a75b20",
+    "symbol": "US5Y",
+    "name": "US-Staatsanleihe 5 Jahre (Rendite)",
+    "nameDe": "US 5J",
+    "assetClass": "YIELD",
+    "assetType": "YIELD",
+    "subType": "GOVERNMENT_BOND_YIELD_CMT",
+    "subTypeNote": null,
+    "yieldKind": "REFERENCE_YIELD",
+    "family": "US Treasuries",
+    "exchangeOrVenue": "U.S. Department of the Treasury",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": 5,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "YIELD",
+    "valueKind": "SCALAR",
+    "value": 4.99,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "USD",
+    "asOf": "2026-09-23",
+    "observationDate": "2026-09-23",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.16,
+     "basisPoints": 16,
+     "relativePercent": 3.31,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-22"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_TREASURY",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "us-treasury",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "usTreasury": "daily_treasury_yield_curve:5 Yr"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestPublication",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:54:20.216Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "us-treasury",
+     "provider": "U.S. Department of the Treasury",
+     "product": "Daily Treasury Par Yield Curve Rates",
+     "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+     "publicDisplay": true,
+     "attribution": "Quelle: U.S. Department of the Treasury",
+     "priceSemantics": "PAR_YIELD_CMT",
+     "fetchedAt": "2026-09-24T13:54:20.216Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1990-01-02",
+    "availableTo": "2026-09-23",
+    "observations": 9188,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-22",
+      4.29
+     ],
+     [
+      "2026-06-23",
+      4.27
+     ],
+     [
+      "2026-06-24",
+      4.17
+     ],
+     [
+      "2026-06-25",
+      4.15
+     ],
+     [
+      "2026-06-26",
+      4.12
+     ],
+     [
+      "2026-06-29",
+      4.14
+     ],
+     [
+      "2026-06-30",
+      4.19
+     ],
+     [
+      "2026-07-01",
+      4.24
+     ],
+     [
+      "2026-07-02",
+      4.23
+     ],
+     [
+      "2026-07-06",
+      4.21
+     ],
+     [
+      "2026-07-07",
+      4.27
+     ],
+     [
+      "2026-07-08",
+      4.31
+     ],
+     [
+      "2026-07-09",
+      4.27
+     ],
+     [
+      "2026-07-10",
+      4.3
+     ],
+     [
+      "2026-07-13",
+      4.37
+     ],
+     [
+      "2026-07-14",
+      4.31
+     ],
+     [
+      "2026-07-15",
+      4.26
+     ],
+     [
+      "2026-07-16",
+      4.28
+     ],
+     [
+      "2026-07-17",
+      4.28
+     ],
+     [
+      "2026-07-20",
+      4.33
+     ],
+     [
+      "2026-07-21",
+      4.37
+     ],
+     [
+      "2026-07-22",
+      4.41
+     ],
+     [
+      "2026-07-23",
+      4.46
+     ],
+     [
+      "2026-07-24",
+      4.43
+     ],
+     [
+      "2026-07-27",
+      4.4
+     ],
+     [
+      "2026-07-28",
+      4.35
+     ],
+     [
+      "2026-07-29",
+      4.37
+     ],
+     [
+      "2026-07-30",
+      4.38
+     ],
+     [
+      "2026-07-31",
+      4.45
+     ],
+     [
+      "2026-08-03",
+      4.4
+     ],
+     [
+      "2026-08-04",
+      4.33
+     ],
+     [
+      "2026-08-05",
+      4.33
+     ],
+     [
+      "2026-08-06",
+      4.4
+     ],
+     [
+      "2026-08-07",
+      4.35
+     ],
+     [
+      "2026-08-10",
+      4.41
+     ],
+     [
+      "2026-08-11",
+      4.39
+     ],
+     [
+      "2026-08-12",
+      4.38
+     ],
+     [
+      "2026-08-13",
+      4.32
+     ],
+     [
+      "2026-08-14",
+      4.36
+     ],
+     [
+      "2026-08-17",
+      4.38
+     ],
+     [
+      "2026-08-18",
+      4.37
+     ],
+     [
+      "2026-08-19",
+      4.35
+     ],
+     [
+      "2026-08-20",
+      4.39
+     ],
+     [
+      "2026-08-21",
+      4.43
+     ],
+     [
+      "2026-08-24",
+      4.41
+     ],
+     [
+      "2026-08-25",
+      4.35
+     ],
+     [
+      "2026-08-26",
+      4.37
+     ],
+     [
+      "2026-08-27",
+      4.38
+     ],
+     [
+      "2026-08-28",
+      4.48
+     ],
+     [
+      "2026-08-31",
+      4.49
+     ],
+     [
+      "2026-09-01",
+      4.55
+     ],
+     [
+      "2026-09-02",
+      4.54
+     ],
+     [
+      "2026-09-03",
+      4.52
+     ],
+     [
+      "2026-09-04",
+      4.54
+     ],
+     [
+      "2026-09-08",
+      4.57
+     ],
+     [
+      "2026-09-09",
+      4.61
+     ],
+     [
+      "2026-09-10",
+      4.75
+     ],
+     [
+      "2026-09-11",
+      4.78
+     ],
+     [
+      "2026-09-14",
+      4.8
+     ],
+     [
+      "2026-09-15",
+      4.83
+     ],
+     [
+      "2026-09-16",
+      4.86
+     ],
+     [
+      "2026-09-17",
+      4.78
+     ],
+     [
+      "2026-09-18",
+      4.86
+     ],
+     [
+      "2026-09-21",
+      4.83
+     ],
+     [
+      "2026-09-22",
+      4.83
+     ],
+     [
+      "2026-09-23",
+      4.99
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/US5Y.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.13,
+     "basisPoints": 13,
+     "relativePercent": 2.67,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-16"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.58,
+     "basisPoints": 58,
+     "relativePercent": 13.15,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-24"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.82,
+     "basisPoints": 82,
+     "relativePercent": 19.66,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-24"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 1.31,
+     "basisPoints": 131,
+     "relativePercent": 35.6,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-23"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 4.05,
+     "basisPoints": 405,
+     "relativePercent": 430.85,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-23"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.83,
+     "basisPoints": 383,
+     "relativePercent": 330.17,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -2.88,
+     "basisPoints": -288,
+     "relativePercent": -36.59,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "1990-01-02"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_df9287dbf9dbce",
+    "symbol": "US10Y",
+    "name": "US-Staatsanleihe 10 Jahre (Rendite)",
+    "nameDe": "US 10J",
+    "assetClass": "YIELD",
+    "assetType": "YIELD",
+    "subType": "GOVERNMENT_BOND_YIELD_CMT",
+    "subTypeNote": null,
+    "yieldKind": "REFERENCE_YIELD",
+    "family": "US Treasuries",
+    "exchangeOrVenue": "U.S. Department of the Treasury",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": 10,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "YIELD",
+    "valueKind": "SCALAR",
+    "value": 5.11,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "USD",
+    "asOf": "2026-09-23",
+    "observationDate": "2026-09-23",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.15,
+     "basisPoints": 15,
+     "relativePercent": 3.02,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-22"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_TREASURY",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "us-treasury",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "usTreasury": "daily_treasury_yield_curve:10 Yr"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestPublication",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:54:20.234Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "us-treasury",
+     "provider": "U.S. Department of the Treasury",
+     "product": "Daily Treasury Par Yield Curve Rates",
+     "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+     "publicDisplay": true,
+     "attribution": "Quelle: U.S. Department of the Treasury",
+     "priceSemantics": "PAR_YIELD_CMT",
+     "fetchedAt": "2026-09-24T13:54:20.234Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1990-01-02",
+    "availableTo": "2026-09-23",
+    "observations": 9188,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-22",
+      4.51
+     ],
+     [
+      "2026-06-23",
+      4.5
+     ],
+     [
+      "2026-06-24",
+      4.41
+     ],
+     [
+      "2026-06-25",
+      4.4
+     ],
+     [
+      "2026-06-26",
+      4.38
+     ],
+     [
+      "2026-06-29",
+      4.38
+     ],
+     [
+      "2026-06-30",
+      4.44
+     ],
+     [
+      "2026-07-01",
+      4.48
+     ],
+     [
+      "2026-07-02",
+      4.49
+     ],
+     [
+      "2026-07-06",
+      4.48
+     ],
+     [
+      "2026-07-07",
+      4.55
+     ],
+     [
+      "2026-07-08",
+      4.56
+     ],
+     [
+      "2026-07-09",
+      4.54
+     ],
+     [
+      "2026-07-10",
+      4.56
+     ],
+     [
+      "2026-07-13",
+      4.62
+     ],
+     [
+      "2026-07-14",
+      4.58
+     ],
+     [
+      "2026-07-15",
+      4.55
+     ],
+     [
+      "2026-07-16",
+      4.57
+     ],
+     [
+      "2026-07-17",
+      4.55
+     ],
+     [
+      "2026-07-20",
+      4.6
+     ],
+     [
+      "2026-07-21",
+      4.63
+     ],
+     [
+      "2026-07-22",
+      4.67
+     ],
+     [
+      "2026-07-23",
+      4.71
+     ],
+     [
+      "2026-07-24",
+      4.69
+     ],
+     [
+      "2026-07-27",
+      4.65
+     ],
+     [
+      "2026-07-28",
+      4.61
+     ],
+     [
+      "2026-07-29",
+      4.67
+     ],
+     [
+      "2026-07-30",
+      4.68
+     ],
+     [
+      "2026-07-31",
+      4.75
+     ],
+     [
+      "2026-08-03",
+      4.7
+     ],
+     [
+      "2026-08-04",
+      4.63
+     ],
+     [
+      "2026-08-05",
+      4.63
+     ],
+     [
+      "2026-08-06",
+      4.69
+     ],
+     [
+      "2026-08-07",
+      4.65
+     ],
+     [
+      "2026-08-10",
+      4.72
+     ],
+     [
+      "2026-08-11",
+      4.7
+     ],
+     [
+      "2026-08-12",
+      4.68
+     ],
+     [
+      "2026-08-13",
+      4.63
+     ],
+     [
+      "2026-08-14",
+      4.68
+     ],
+     [
+      "2026-08-17",
+      4.72
+     ],
+     [
+      "2026-08-18",
+      4.71
+     ],
+     [
+      "2026-08-19",
+      4.65
+     ],
+     [
+      "2026-08-20",
+      4.69
+     ],
+     [
+      "2026-08-21",
+      4.74
+     ],
+     [
+      "2026-08-24",
+      4.7
+     ],
+     [
+      "2026-08-25",
+      4.64
+     ],
+     [
+      "2026-08-26",
+      4.66
+     ],
+     [
+      "2026-08-27",
+      4.67
+     ],
+     [
+      "2026-08-28",
+      4.73
+     ],
+     [
+      "2026-08-31",
+      4.75
+     ],
+     [
+      "2026-09-01",
+      4.79
+     ],
+     [
+      "2026-09-02",
+      4.79
+     ],
+     [
+      "2026-09-03",
+      4.77
+     ],
+     [
+      "2026-09-04",
+      4.78
+     ],
+     [
+      "2026-09-08",
+      4.8
+     ],
+     [
+      "2026-09-09",
+      4.83
+     ],
+     [
+      "2026-09-10",
+      4.95
+     ],
+     [
+      "2026-09-11",
+      4.96
+     ],
+     [
+      "2026-09-14",
+      4.97
+     ],
+     [
+      "2026-09-15",
+      5
+     ],
+     [
+      "2026-09-16",
+      5.01
+     ],
+     [
+      "2026-09-17",
+      4.94
+     ],
+     [
+      "2026-09-18",
+      5.01
+     ],
+     [
+      "2026-09-21",
+      4.96
+     ],
+     [
+      "2026-09-22",
+      4.96
+     ],
+     [
+      "2026-09-23",
+      5.11
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/US10Y.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.1,
+     "basisPoints": 10,
+     "relativePercent": 2,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-16"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.41,
+     "basisPoints": 41,
+     "relativePercent": 8.72,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-24"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.7,
+     "basisPoints": 70,
+     "relativePercent": 15.87,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-24"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.99,
+     "basisPoints": 99,
+     "relativePercent": 24.03,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-23"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.7,
+     "basisPoints": 370,
+     "relativePercent": 262.41,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-23"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.49,
+     "basisPoints": 349,
+     "relativePercent": 215.43,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -2.83,
+     "basisPoints": -283,
+     "relativePercent": -35.64,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "1990-01-02"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": [
+     "IEF (Anleihe-ETF: Kurs, keine Rendite)",
+     "TLT (20+J-ETF: weder 10J noch Rendite)"
+    ]
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_4534d6c90b4697",
+    "symbol": "US30Y",
+    "name": "US-Staatsanleihe 30 Jahre (Rendite)",
+    "nameDe": "US 30J",
+    "assetClass": "YIELD",
+    "assetType": "YIELD",
+    "subType": "GOVERNMENT_BOND_YIELD_CMT",
+    "subTypeNote": null,
+    "yieldKind": "REFERENCE_YIELD",
+    "family": "US Treasuries",
+    "exchangeOrVenue": "U.S. Department of the Treasury",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": 30,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "YIELD",
+    "valueKind": "SCALAR",
+    "value": 5.4,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "USD",
+    "asOf": "2026-09-23",
+    "observationDate": "2026-09-23",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.11,
+     "basisPoints": 11,
+     "relativePercent": 2.08,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-22"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_TREASURY",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "us-treasury",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "usTreasury": "daily_treasury_yield_curve:30 Yr"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestPublication",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:54:20.252Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "us-treasury",
+     "provider": "U.S. Department of the Treasury",
+     "product": "Daily Treasury Par Yield Curve Rates",
+     "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+     "publicDisplay": true,
+     "attribution": "Quelle: U.S. Department of the Treasury",
+     "priceSemantics": "PAR_YIELD_CMT",
+     "fetchedAt": "2026-09-24T13:54:20.252Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1990-01-02",
+    "availableTo": "2026-09-23",
+    "observations": 8194,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-22",
+      4.95
+     ],
+     [
+      "2026-06-23",
+      4.94
+     ],
+     [
+      "2026-06-24",
+      4.86
+     ],
+     [
+      "2026-06-25",
+      4.86
+     ],
+     [
+      "2026-06-26",
+      4.87
+     ],
+     [
+      "2026-06-29",
+      4.86
+     ],
+     [
+      "2026-06-30",
+      4.91
+     ],
+     [
+      "2026-07-01",
+      4.97
+     ],
+     [
+      "2026-07-02",
+      4.98
+     ],
+     [
+      "2026-07-06",
+      4.99
+     ],
+     [
+      "2026-07-07",
+      5.05
+     ],
+     [
+      "2026-07-08",
+      5.06
+     ],
+     [
+      "2026-07-09",
+      5.05
+     ],
+     [
+      "2026-07-10",
+      5.06
+     ],
+     [
+      "2026-07-13",
+      5.1
+     ],
+     [
+      "2026-07-14",
+      5.08
+     ],
+     [
+      "2026-07-15",
+      5.08
+     ],
+     [
+      "2026-07-16",
+      5.09
+     ],
+     [
+      "2026-07-17",
+      5.06
+     ],
+     [
+      "2026-07-20",
+      5.11
+     ],
+     [
+      "2026-07-21",
+      5.13
+     ],
+     [
+      "2026-07-22",
+      5.15
+     ],
+     [
+      "2026-07-23",
+      5.17
+     ],
+     [
+      "2026-07-24",
+      5.16
+     ],
+     [
+      "2026-07-27",
+      5.12
+     ],
+     [
+      "2026-07-28",
+      5.09
+     ],
+     [
+      "2026-07-29",
+      5.2
+     ],
+     [
+      "2026-07-30",
+      5.21
+     ],
+     [
+      "2026-07-31",
+      5.27
+     ],
+     [
+      "2026-08-03",
+      5.23
+     ],
+     [
+      "2026-08-04",
+      5.18
+     ],
+     [
+      "2026-08-05",
+      5.17
+     ],
+     [
+      "2026-08-06",
+      5.22
+     ],
+     [
+      "2026-08-07",
+      5.19
+     ],
+     [
+      "2026-08-10",
+      5.25
+     ],
+     [
+      "2026-08-11",
+      5.24
+     ],
+     [
+      "2026-08-12",
+      5.24
+     ],
+     [
+      "2026-08-13",
+      5.21
+     ],
+     [
+      "2026-08-14",
+      5.25
+     ],
+     [
+      "2026-08-17",
+      5.31
+     ],
+     [
+      "2026-08-18",
+      5.28
+     ],
+     [
+      "2026-08-19",
+      5.19
+     ],
+     [
+      "2026-08-20",
+      5.23
+     ],
+     [
+      "2026-08-21",
+      5.27
+     ],
+     [
+      "2026-08-24",
+      5.23
+     ],
+     [
+      "2026-08-25",
+      5.17
+     ],
+     [
+      "2026-08-26",
+      5.18
+     ],
+     [
+      "2026-08-27",
+      5.19
+     ],
+     [
+      "2026-08-28",
+      5.22
+     ],
+     [
+      "2026-08-31",
+      5.25
+     ],
+     [
+      "2026-09-01",
+      5.27
+     ],
+     [
+      "2026-09-02",
+      5.27
+     ],
+     [
+      "2026-09-03",
+      5.25
+     ],
+     [
+      "2026-09-04",
+      5.24
+     ],
+     [
+      "2026-09-08",
+      5.25
+     ],
+     [
+      "2026-09-09",
+      5.28
+     ],
+     [
+      "2026-09-10",
+      5.37
+     ],
+     [
+      "2026-09-11",
+      5.35
+     ],
+     [
+      "2026-09-14",
+      5.34
+     ],
+     [
+      "2026-09-15",
+      5.36
+     ],
+     [
+      "2026-09-16",
+      5.35
+     ],
+     [
+      "2026-09-17",
+      5.29
+     ],
+     [
+      "2026-09-18",
+      5.34
+     ],
+     [
+      "2026-09-21",
+      5.29
+     ],
+     [
+      "2026-09-22",
+      5.29
+     ],
+     [
+      "2026-09-23",
+      5.4
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/US30Y.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.05,
+     "basisPoints": 5,
+     "relativePercent": 0.93,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-16"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.17,
+     "basisPoints": 17,
+     "relativePercent": 3.25,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-24"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.54,
+     "basisPoints": 54,
+     "relativePercent": 11.11,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-24"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.67,
+     "basisPoints": 67,
+     "relativePercent": 14.16,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-23"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.48,
+     "basisPoints": 348,
+     "relativePercent": 181.25,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-23"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.06,
+     "basisPoints": 306,
+     "relativePercent": 130.77,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -2.6,
+     "basisPoints": -260,
+     "relativePercent": -32.5,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "1990-01-02"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_3a64e305485c3a",
+    "symbol": "DE2Y",
+    "name": "Bundesanleihe 2 Jahre (Rendite)",
+    "nameDe": "Bund 2J",
+    "assetClass": "YIELD",
+    "assetType": "YIELD",
+    "subType": "GOVERNMENT_BOND_YIELD_TERM_STRUCTURE",
+    "subTypeNote": "Von der Bundesbank aus boersennotierten Bundeswertpapieren geschaetzte Rendite fuer eine Restlaufzeit von genau 2 Jahren (Zinsstrukturkurve), taeglich. Keine Rendite einer einzelnen Anleihe.",
+    "yieldKind": "REFERENCE_YIELD",
+    "family": "Bundeswertpapiere",
+    "exchangeOrVenue": "Deutsche Bundesbank",
+    "country": "DE",
+    "timezone": "Europe/Berlin",
+    "tenorYears": 2,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "YIELD",
+    "valueKind": "SCALAR",
+    "value": 3.3,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "EUR",
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.07,
+     "basisPoints": 7,
+     "relativePercent": 2.17,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-23"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "DE_BUNDESBANK",
+    "timezone": "Europe/Berlin",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "bundesbank",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "bundesbank": "R02XX"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestPublication",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:54:20.264Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "bundesbank",
+     "provider": "Deutsche Bundesbank",
+     "product": "Zeitreihen-Datenbank (BBSIS - Zinsstruktur Bundeswertpapiere)",
+     "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Deutsche Bundesbank",
+     "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
+     "fetchedAt": "2026-09-24T13:54:20.264Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1997-08-07",
+    "availableTo": "2026-09-24",
+    "observations": 7395,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-25",
+      2.53
+     ],
+     [
+      "2026-06-26",
+      2.5
+     ],
+     [
+      "2026-06-29",
+      2.51
+     ],
+     [
+      "2026-06-30",
+      2.5
+     ],
+     [
+      "2026-07-01",
+      2.5
+     ],
+     [
+      "2026-07-02",
+      2.51
+     ],
+     [
+      "2026-07-03",
+      2.51
+     ],
+     [
+      "2026-07-06",
+      2.5
+     ],
+     [
+      "2026-07-07",
+      2.55
+     ],
+     [
+      "2026-07-08",
+      2.66
+     ],
+     [
+      "2026-07-09",
+      2.66
+     ],
+     [
+      "2026-07-10",
+      2.63
+     ],
+     [
+      "2026-07-13",
+      2.66
+     ],
+     [
+      "2026-07-14",
+      2.75
+     ],
+     [
+      "2026-07-15",
+      2.73
+     ],
+     [
+      "2026-07-16",
+      2.73
+     ],
+     [
+      "2026-07-17",
+      2.75
+     ],
+     [
+      "2026-07-20",
+      2.76
+     ],
+     [
+      "2026-07-21",
+      2.75
+     ],
+     [
+      "2026-07-22",
+      2.79
+     ],
+     [
+      "2026-07-23",
+      2.85
+     ],
+     [
+      "2026-07-24",
+      2.83
+     ],
+     [
+      "2026-07-27",
+      2.77
+     ],
+     [
+      "2026-07-28",
+      2.74
+     ],
+     [
+      "2026-07-29",
+      2.75
+     ],
+     [
+      "2026-07-30",
+      2.77
+     ],
+     [
+      "2026-07-31",
+      2.76
+     ],
+     [
+      "2026-08-03",
+      2.75
+     ],
+     [
+      "2026-08-04",
+      2.76
+     ],
+     [
+      "2026-08-05",
+      2.7
+     ],
+     [
+      "2026-08-06",
+      2.71
+     ],
+     [
+      "2026-08-07",
+      2.74
+     ],
+     [
+      "2026-08-10",
+      2.74
+     ],
+     [
+      "2026-08-11",
+      2.79
+     ],
+     [
+      "2026-08-12",
+      2.76
+     ],
+     [
+      "2026-08-13",
+      2.75
+     ],
+     [
+      "2026-08-14",
+      2.76
+     ],
+     [
+      "2026-08-17",
+      2.78
+     ],
+     [
+      "2026-08-18",
+      2.81
+     ],
+     [
+      "2026-08-19",
+      2.83
+     ],
+     [
+      "2026-08-20",
+      2.84
+     ],
+     [
+      "2026-08-21",
+      2.8
+     ],
+     [
+      "2026-08-24",
+      2.82
+     ],
+     [
+      "2026-08-25",
+      2.84
+     ],
+     [
+      "2026-08-26",
+      2.77
+     ],
+     [
+      "2026-08-27",
+      2.79
+     ],
+     [
+      "2026-08-28",
+      2.81
+     ],
+     [
+      "2026-08-31",
+      2.89
+     ],
+     [
+      "2026-09-01",
+      2.9
+     ],
+     [
+      "2026-09-02",
+      2.98
+     ],
+     [
+      "2026-09-03",
+      2.96
+     ],
+     [
+      "2026-09-04",
+      2.94
+     ],
+     [
+      "2026-09-07",
+      2.94
+     ],
+     [
+      "2026-09-08",
+      2.99
+     ],
+     [
+      "2026-09-09",
+      3.01
+     ],
+     [
+      "2026-09-10",
+      3.04
+     ],
+     [
+      "2026-09-11",
+      3.17
+     ],
+     [
+      "2026-09-14",
+      3.23
+     ],
+     [
+      "2026-09-15",
+      3.26
+     ],
+     [
+      "2026-09-16",
+      3.25
+     ],
+     [
+      "2026-09-17",
+      3.24
+     ],
+     [
+      "2026-09-18",
+      3.24
+     ],
+     [
+      "2026-09-21",
+      3.22
+     ],
+     [
+      "2026-09-22",
+      3.2
+     ],
+     [
+      "2026-09-23",
+      3.23
+     ],
+     [
+      "2026-09-24",
+      3.3
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/DE2Y.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.06,
+     "basisPoints": 6,
+     "relativePercent": 1.85,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-17"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.46,
+     "basisPoints": 46,
+     "relativePercent": 16.2,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-25"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.77,
+     "basisPoints": 77,
+     "relativePercent": 30.43,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-25"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 1.3,
+     "basisPoints": 130,
+     "relativePercent": 65,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-24"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 4.02,
+     "basisPoints": 402,
+     "relativePercent": 558.33,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-24"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.98,
+     "basisPoints": 398,
+     "relativePercent": 585.29,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -0.6,
+     "basisPoints": -60,
+     "relativePercent": -15.38,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "1997-08-07"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_e313b83e39bad1",
+    "symbol": "DE10Y",
+    "name": "Bundesanleihe 10 Jahre (Rendite)",
+    "nameDe": "Bund 10J",
+    "assetClass": "YIELD",
+    "assetType": "YIELD",
+    "subType": "GOVERNMENT_BOND_YIELD_TERM_STRUCTURE",
+    "subTypeNote": "Von der Bundesbank geschaetzte Rendite fuer eine Restlaufzeit von genau 10 Jahren (Zinsstrukturkurve), taeglich.",
+    "yieldKind": "REFERENCE_YIELD",
+    "family": "Bundeswertpapiere",
+    "exchangeOrVenue": "Deutsche Bundesbank",
+    "country": "DE",
+    "timezone": "Europe/Berlin",
+    "tenorYears": 10,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "YIELD",
+    "valueKind": "SCALAR",
+    "value": 3.62,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "EUR",
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.1,
+     "basisPoints": 10,
+     "relativePercent": 2.84,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-23"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "DE_BUNDESBANK",
+    "timezone": "Europe/Berlin",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "bundesbank",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "bundesbank": "R10XX"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestPublication",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:54:21.701Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "bundesbank",
+     "provider": "Deutsche Bundesbank",
+     "product": "Zeitreihen-Datenbank (BBSIS - Zinsstruktur Bundeswertpapiere)",
+     "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Deutsche Bundesbank",
+     "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
+     "fetchedAt": "2026-09-24T13:54:21.701Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1997-08-07",
+    "availableTo": "2026-09-24",
+    "observations": 7395,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-25",
+      2.95
+     ],
+     [
+      "2026-06-26",
+      2.94
+     ],
+     [
+      "2026-06-29",
+      2.94
+     ],
+     [
+      "2026-06-30",
+      2.93
+     ],
+     [
+      "2026-07-01",
+      2.97
+     ],
+     [
+      "2026-07-02",
+      3
+     ],
+     [
+      "2026-07-03",
+      3.02
+     ],
+     [
+      "2026-07-06",
+      3.02
+     ],
+     [
+      "2026-07-07",
+      3.07
+     ],
+     [
+      "2026-07-08",
+      3.16
+     ],
+     [
+      "2026-07-09",
+      3.17
+     ],
+     [
+      "2026-07-10",
+      3.13
+     ],
+     [
+      "2026-07-13",
+      3.14
+     ],
+     [
+      "2026-07-14",
+      3.18
+     ],
+     [
+      "2026-07-15",
+      3.18
+     ],
+     [
+      "2026-07-16",
+      3.2
+     ],
+     [
+      "2026-07-17",
+      3.19
+     ],
+     [
+      "2026-07-20",
+      3.2
+     ],
+     [
+      "2026-07-21",
+      3.21
+     ],
+     [
+      "2026-07-22",
+      3.23
+     ],
+     [
+      "2026-07-23",
+      3.25
+     ],
+     [
+      "2026-07-24",
+      3.24
+     ],
+     [
+      "2026-07-27",
+      3.19
+     ],
+     [
+      "2026-07-28",
+      3.17
+     ],
+     [
+      "2026-07-29",
+      3.18
+     ],
+     [
+      "2026-07-30",
+      3.24
+     ],
+     [
+      "2026-07-31",
+      3.21
+     ],
+     [
+      "2026-08-03",
+      3.21
+     ],
+     [
+      "2026-08-04",
+      3.22
+     ],
+     [
+      "2026-08-05",
+      3.16
+     ],
+     [
+      "2026-08-06",
+      3.17
+     ],
+     [
+      "2026-08-07",
+      3.2
+     ],
+     [
+      "2026-08-10",
+      3.19
+     ],
+     [
+      "2026-08-11",
+      3.26
+     ],
+     [
+      "2026-08-12",
+      3.21
+     ],
+     [
+      "2026-08-13",
+      3.21
+     ],
+     [
+      "2026-08-14",
+      3.22
+     ],
+     [
+      "2026-08-17",
+      3.26
+     ],
+     [
+      "2026-08-18",
+      3.32
+     ],
+     [
+      "2026-08-19",
+      3.33
+     ],
+     [
+      "2026-08-20",
+      3.32
+     ],
+     [
+      "2026-08-21",
+      3.31
+     ],
+     [
+      "2026-08-24",
+      3.3
+     ],
+     [
+      "2026-08-25",
+      3.31
+     ],
+     [
+      "2026-08-26",
+      3.26
+     ],
+     [
+      "2026-08-27",
+      3.22
+     ],
+     [
+      "2026-08-28",
+      3.24
+     ],
+     [
+      "2026-08-31",
+      3.37
+     ],
+     [
+      "2026-09-01",
+      3.32
+     ],
+     [
+      "2026-09-02",
+      3.45
+     ],
+     [
+      "2026-09-03",
+      3.42
+     ],
+     [
+      "2026-09-04",
+      3.4
+     ],
+     [
+      "2026-09-07",
+      3.41
+     ],
+     [
+      "2026-09-08",
+      3.45
+     ],
+     [
+      "2026-09-09",
+      3.45
+     ],
+     [
+      "2026-09-10",
+      3.51
+     ],
+     [
+      "2026-09-11",
+      3.56
+     ],
+     [
+      "2026-09-14",
+      3.59
+     ],
+     [
+      "2026-09-15",
+      3.61
+     ],
+     [
+      "2026-09-16",
+      3.61
+     ],
+     [
+      "2026-09-17",
+      3.58
+     ],
+     [
+      "2026-09-18",
+      3.55
+     ],
+     [
+      "2026-09-21",
+      3.52
+     ],
+     [
+      "2026-09-22",
+      3.5
+     ],
+     [
+      "2026-09-23",
+      3.52
+     ],
+     [
+      "2026-09-24",
+      3.62
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/DE10Y.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.04,
+     "basisPoints": 4,
+     "relativePercent": 1.12,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-17"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.31,
+     "basisPoints": 31,
+     "relativePercent": 9.37,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-25"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.67,
+     "basisPoints": 67,
+     "relativePercent": 22.71,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-25"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.81,
+     "basisPoints": 81,
+     "relativePercent": 28.83,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-24"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.88,
+     "basisPoints": 388,
+     "relativePercent": 1492.31,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-24"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.76,
+     "basisPoints": 376,
+     "relativePercent": 2685.71,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -2.33,
+     "basisPoints": -233,
+     "relativePercent": -39.16,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "1997-08-07"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_0087646833a069",
+    "symbol": "DE30Y",
+    "name": "Bundesanleihe 30 Jahre (Rendite)",
+    "nameDe": "Bund 30J",
+    "assetClass": "YIELD",
+    "assetType": "YIELD",
+    "subType": "GOVERNMENT_BOND_YIELD_TERM_STRUCTURE",
+    "subTypeNote": null,
+    "yieldKind": "REFERENCE_YIELD",
+    "family": "Bundeswertpapiere",
+    "exchangeOrVenue": "Deutsche Bundesbank",
+    "country": "DE",
+    "timezone": "Europe/Berlin",
+    "tenorYears": 30,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "YIELD",
+    "valueKind": "SCALAR",
+    "value": 3.94,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "EUR",
+    "asOf": "2026-09-24",
+    "observationDate": "2026-09-24",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.05,
+     "basisPoints": 5,
+     "relativePercent": 1.29,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-23"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "DE_BUNDESBANK",
+    "timezone": "Europe/Berlin",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "bundesbank",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "bundesbank": "R30XX"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "latestPublication",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:54:22.605Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "bundesbank",
+     "provider": "Deutsche Bundesbank",
+     "product": "Zeitreihen-Datenbank (BBSIS - Zinsstruktur Bundeswertpapiere)",
+     "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Deutsche Bundesbank",
+     "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
+     "fetchedAt": "2026-09-24T13:54:22.605Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "2000-08-01",
+    "availableTo": "2026-09-24",
+    "observations": 6643,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-25",
+      3.52
+     ],
+     [
+      "2026-06-26",
+      3.52
+     ],
+     [
+      "2026-06-29",
+      3.53
+     ],
+     [
+      "2026-06-30",
+      3.52
+     ],
+     [
+      "2026-07-01",
+      3.57
+     ],
+     [
+      "2026-07-02",
+      3.61
+     ],
+     [
+      "2026-07-03",
+      3.63
+     ],
+     [
+      "2026-07-06",
+      3.63
+     ],
+     [
+      "2026-07-07",
+      3.68
+     ],
+     [
+      "2026-07-08",
+      3.74
+     ],
+     [
+      "2026-07-09",
+      3.76
+     ],
+     [
+      "2026-07-10",
+      3.73
+     ],
+     [
+      "2026-07-13",
+      3.73
+     ],
+     [
+      "2026-07-14",
+      3.74
+     ],
+     [
+      "2026-07-15",
+      3.76
+     ],
+     [
+      "2026-07-16",
+      3.78
+     ],
+     [
+      "2026-07-17",
+      3.75
+     ],
+     [
+      "2026-07-20",
+      3.75
+     ],
+     [
+      "2026-07-21",
+      3.77
+     ],
+     [
+      "2026-07-22",
+      3.77
+     ],
+     [
+      "2026-07-23",
+      3.77
+     ],
+     [
+      "2026-07-24",
+      3.76
+     ],
+     [
+      "2026-07-27",
+      3.73
+     ],
+     [
+      "2026-07-28",
+      3.71
+     ],
+     [
+      "2026-07-29",
+      3.71
+     ],
+     [
+      "2026-07-30",
+      3.78
+     ],
+     [
+      "2026-07-31",
+      3.76
+     ],
+     [
+      "2026-08-03",
+      3.76
+     ],
+     [
+      "2026-08-04",
+      3.77
+     ],
+     [
+      "2026-08-05",
+      3.72
+     ],
+     [
+      "2026-08-06",
+      3.73
+     ],
+     [
+      "2026-08-07",
+      3.76
+     ],
+     [
+      "2026-08-10",
+      3.75
+     ],
+     [
+      "2026-08-11",
+      3.8
+     ],
+     [
+      "2026-08-12",
+      3.76
+     ],
+     [
+      "2026-08-13",
+      3.78
+     ],
+     [
+      "2026-08-14",
+      3.79
+     ],
+     [
+      "2026-08-17",
+      3.84
+     ],
+     [
+      "2026-08-18",
+      3.89
+     ],
+     [
+      "2026-08-19",
+      3.89
+     ],
+     [
+      "2026-08-20",
+      3.87
+     ],
+     [
+      "2026-08-21",
+      3.87
+     ],
+     [
+      "2026-08-24",
+      3.87
+     ],
+     [
+      "2026-08-25",
+      3.86
+     ],
+     [
+      "2026-08-26",
+      3.83
+     ],
+     [
+      "2026-08-27",
+      3.71
+     ],
+     [
+      "2026-08-28",
+      3.73
+     ],
+     [
+      "2026-08-31",
+      3.9
+     ],
+     [
+      "2026-09-01",
+      3.79
+     ],
+     [
+      "2026-09-02",
+      3.96
+     ],
+     [
+      "2026-09-03",
+      3.93
+     ],
+     [
+      "2026-09-04",
+      3.92
+     ],
+     [
+      "2026-09-07",
+      3.93
+     ],
+     [
+      "2026-09-08",
+      3.95
+     ],
+     [
+      "2026-09-09",
+      3.93
+     ],
+     [
+      "2026-09-10",
+      3.99
+     ],
+     [
+      "2026-09-11",
+      3.99
+     ],
+     [
+      "2026-09-14",
+      3.99
+     ],
+     [
+      "2026-09-15",
+      4
+     ],
+     [
+      "2026-09-16",
+      3.99
+     ],
+     [
+      "2026-09-17",
+      3.95
+     ],
+     [
+      "2026-09-18",
+      3.92
+     ],
+     [
+      "2026-09-21",
+      3.88
+     ],
+     [
+      "2026-09-22",
+      3.87
+     ],
+     [
+      "2026-09-23",
+      3.89
+     ],
+     [
+      "2026-09-24",
+      3.94
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/DE30Y.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -0.01,
+     "basisPoints": -1,
+     "relativePercent": -0.25,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-17"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.08,
+     "basisPoints": 8,
+     "relativePercent": 2.07,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-25"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.42,
+     "basisPoints": 42,
+     "relativePercent": 11.93,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-25"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.58,
+     "basisPoints": 58,
+     "relativePercent": 17.26,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-24"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.7,
+     "basisPoints": 370,
+     "relativePercent": 1541.67,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-24"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.38,
+     "basisPoints": 338,
+     "relativePercent": 603.57,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -1.55,
+     "basisPoints": -155,
+     "relativePercent": -28.23,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2000-08-01"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_9a106db11a0046",
+    "symbol": "FED_TARGET",
+    "name": "Fed Funds Zielband",
+    "nameDe": "Fed-Leitzins",
+    "assetClass": "RATE",
+    "assetType": "RATE",
+    "subType": "POLICY_RATE_TARGET_RANGE",
+    "subTypeNote": "Das vom FOMC beschlossene Zielband (Unter- und Obergrenze). Eine Stufenserie: zwischen zwei Beschluessen gilt derselbe Wert.",
+    "yieldKind": "POLICY_RATE",
+    "family": "Federal Reserve",
+    "exchangeOrVenue": "Federal Open Market Committee (veroeffentlicht von der Federal Reserve Bank of New York mit der EFFR)",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "POLICY_RATE",
+    "valueKind": "RANGE",
+    "value": 4,
+    "range": {
+     "lower": 3.75,
+     "upper": 4
+    },
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "USD",
+    "asOf": "2026-09-17",
+    "observationDate": "2026-09-23",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 6.67,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2025-12-11"
+   },
+   "market": {
+    "state": "NOT_APPLICABLE",
+    "sessionProfile": "POLICY_EVENT",
+    "sessionExchange": null,
+    "publisherProfile": "US_NYFED",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "nyfed",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "nyfed": "EFFR.targetRateFrom/targetRateTo"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "stepSeriesValidUntilNextDecision",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "EVENT",
+    "checkedAt": "2026-09-24T13:54:23.445Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "nyfed",
+     "provider": "Federal Reserve Bank of New York",
+     "product": "Reference Rates API (EFFR inkl. Zielband)",
+     "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Federal Reserve Bank of New York",
+     "priceSemantics": "POLICY_TARGET_RANGE",
+     "fetchedAt": "2026-09-24T13:54:23.445Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "2008-12-16",
+    "availableTo": "2026-09-17",
+    "observations": 33,
+    "frequency": "EVENT",
+    "representation": "STEPS",
+    "observedThrough": "2026-09-23",
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2008-12-16",
+      0.25
+     ],
+     [
+      "2015-12-17",
+      0.5
+     ],
+     [
+      "2016-12-15",
+      0.75
+     ],
+     [
+      "2017-03-16",
+      1
+     ],
+     [
+      "2017-06-15",
+      1.25
+     ],
+     [
+      "2017-12-14",
+      1.5
+     ],
+     [
+      "2018-03-22",
+      1.75
+     ],
+     [
+      "2018-06-14",
+      2
+     ],
+     [
+      "2018-09-27",
+      2.25
+     ],
+     [
+      "2018-12-20",
+      2.5
+     ],
+     [
+      "2019-08-01",
+      2.25
+     ],
+     [
+      "2019-09-19",
+      2
+     ],
+     [
+      "2019-10-31",
+      1.75
+     ],
+     [
+      "2020-03-04",
+      1.25
+     ],
+     [
+      "2020-03-16",
+      0.25
+     ],
+     [
+      "2022-03-17",
+      0.5
+     ],
+     [
+      "2022-05-05",
+      1
+     ],
+     [
+      "2022-06-16",
+      1.75
+     ],
+     [
+      "2022-07-28",
+      2.5
+     ],
+     [
+      "2022-09-22",
+      3.25
+     ],
+     [
+      "2022-11-03",
+      4
+     ],
+     [
+      "2022-12-15",
+      4.5
+     ],
+     [
+      "2023-02-02",
+      4.75
+     ],
+     [
+      "2023-03-23",
+      5
+     ],
+     [
+      "2023-05-04",
+      5.25
+     ],
+     [
+      "2023-07-27",
+      5.5
+     ],
+     [
+      "2024-09-19",
+      5
+     ],
+     [
+      "2024-11-08",
+      4.75
+     ],
+     [
+      "2024-12-19",
+      4.5
+     ],
+     [
+      "2025-09-18",
+      4.25
+     ],
+     [
+      "2025-10-30",
+      4
+     ],
+     [
+      "2025-12-11",
+      3.75
+     ],
+     [
+      "2026-09-17",
+      4
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/FED_TARGET.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 6.67,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-12-11"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 6.67,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-12-11"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 6.67,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-12-11"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -0.5,
+     "basisPoints": -50,
+     "relativePercent": -11.11,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2024-12-19"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.75,
+     "basisPoints": 375,
+     "relativePercent": 1500,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2020-03-16"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.5,
+     "basisPoints": 350,
+     "relativePercent": 700,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2015-12-17"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.75,
+     "basisPoints": 375,
+     "relativePercent": 1500,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2008-12-16"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_b2188c0048b9e4",
+    "symbol": "US_EFFR",
+    "name": "Effective Federal Funds Rate",
+    "nameDe": "EFFR",
+    "assetClass": "RATE",
+    "assetType": "RATE",
+    "subType": "OVERNIGHT_REFERENCE_RATE",
+    "subTypeNote": "Der tatsaechliche volumengewichtete Tagesgeldsatz, taeglich von der New York Fed veroeffentlicht. Kein Beschluss - ein Marktsatz innerhalb des Zielbands.",
+    "yieldKind": "REFERENCE_RATE",
+    "family": "Federal Reserve",
+    "exchangeOrVenue": "Federal Reserve Bank of New York",
+    "country": "US",
+    "timezone": "America/New_York",
+    "tenorYears": null,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "POLICY_RATE",
+    "valueKind": "SCALAR",
+    "value": 3.88,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "USD",
+    "asOf": "2026-09-23",
+    "observationDate": "2026-09-23",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0,
+     "basisPoints": 0,
+     "relativePercent": 0,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-09-22"
+   },
+   "market": {
+    "state": "PUBLICATION_SCHEDULE",
+    "sessionProfile": "REFERENCE_DAILY",
+    "sessionExchange": null,
+    "publisherProfile": "US_NYFED",
+    "timezone": "America/New_York",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "nyfed",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "nyfed": "EFFR.percentRate"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "publicationPendingWithinLag",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "DAILY",
+    "checkedAt": "2026-09-24T13:54:24.198Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "nyfed",
+     "provider": "Federal Reserve Bank of New York",
+     "product": "Reference Rates API (EFFR inkl. Zielband)",
+     "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Federal Reserve Bank of New York",
+     "priceSemantics": "VOLUME_WEIGHTED_MEDIAN",
+     "fetchedAt": "2026-09-24T13:54:24.198Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "2000-07-03",
+    "availableTo": "2026-09-23",
+    "observations": 6591,
+    "frequency": "DAILY",
+    "representation": "OBSERVATIONS",
+    "observedThrough": null,
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "2026-06-23",
+      3.63
+     ],
+     [
+      "2026-06-24",
+      3.63
+     ],
+     [
+      "2026-06-25",
+      3.63
+     ],
+     [
+      "2026-06-26",
+      3.63
+     ],
+     [
+      "2026-06-29",
+      3.63
+     ],
+     [
+      "2026-06-30",
+      3.63
+     ],
+     [
+      "2026-07-01",
+      3.63
+     ],
+     [
+      "2026-07-02",
+      3.63
+     ],
+     [
+      "2026-07-03",
+      3.63
+     ],
+     [
+      "2026-07-06",
+      3.63
+     ],
+     [
+      "2026-07-07",
+      3.63
+     ],
+     [
+      "2026-07-08",
+      3.62
+     ],
+     [
+      "2026-07-09",
+      3.62
+     ],
+     [
+      "2026-07-10",
+      3.62
+     ],
+     [
+      "2026-07-13",
+      3.62
+     ],
+     [
+      "2026-07-14",
+      3.63
+     ],
+     [
+      "2026-07-15",
+      3.63
+     ],
+     [
+      "2026-07-16",
+      3.63
+     ],
+     [
+      "2026-07-17",
+      3.63
+     ],
+     [
+      "2026-07-20",
+      3.63
+     ],
+     [
+      "2026-07-21",
+      3.63
+     ],
+     [
+      "2026-07-22",
+      3.63
+     ],
+     [
+      "2026-07-23",
+      3.63
+     ],
+     [
+      "2026-07-24",
+      3.63
+     ],
+     [
+      "2026-07-27",
+      3.63
+     ],
+     [
+      "2026-07-28",
+      3.63
+     ],
+     [
+      "2026-07-29",
+      3.63
+     ],
+     [
+      "2026-07-30",
+      3.63
+     ],
+     [
+      "2026-07-31",
+      3.63
+     ],
+     [
+      "2026-08-03",
+      3.63
+     ],
+     [
+      "2026-08-04",
+      3.63
+     ],
+     [
+      "2026-08-05",
+      3.63
+     ],
+     [
+      "2026-08-06",
+      3.63
+     ],
+     [
+      "2026-08-07",
+      3.63
+     ],
+     [
+      "2026-08-10",
+      3.63
+     ],
+     [
+      "2026-08-11",
+      3.63
+     ],
+     [
+      "2026-08-12",
+      3.63
+     ],
+     [
+      "2026-08-13",
+      3.63
+     ],
+     [
+      "2026-08-14",
+      3.63
+     ],
+     [
+      "2026-08-17",
+      3.63
+     ],
+     [
+      "2026-08-18",
+      3.63
+     ],
+     [
+      "2026-08-19",
+      3.63
+     ],
+     [
+      "2026-08-20",
+      3.63
+     ],
+     [
+      "2026-08-21",
+      3.63
+     ],
+     [
+      "2026-08-24",
+      3.63
+     ],
+     [
+      "2026-08-25",
+      3.63
+     ],
+     [
+      "2026-08-26",
+      3.63
+     ],
+     [
+      "2026-08-27",
+      3.63
+     ],
+     [
+      "2026-08-28",
+      3.63
+     ],
+     [
+      "2026-08-31",
+      3.63
+     ],
+     [
+      "2026-09-01",
+      3.63
+     ],
+     [
+      "2026-09-02",
+      3.63
+     ],
+     [
+      "2026-09-03",
+      3.63
+     ],
+     [
+      "2026-09-04",
+      3.63
+     ],
+     [
+      "2026-09-08",
+      3.63
+     ],
+     [
+      "2026-09-09",
+      3.63
+     ],
+     [
+      "2026-09-10",
+      3.63
+     ],
+     [
+      "2026-09-11",
+      3.63
+     ],
+     [
+      "2026-09-14",
+      3.63
+     ],
+     [
+      "2026-09-15",
+      3.63
+     ],
+     [
+      "2026-09-16",
+      3.63
+     ],
+     [
+      "2026-09-17",
+      3.88
+     ],
+     [
+      "2026-09-18",
+      3.88
+     ],
+     [
+      "2026-09-21",
+      3.88
+     ],
+     [
+      "2026-09-22",
+      3.88
+     ],
+     [
+      "2026-09-23",
+      3.88
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/US_EFFR.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 6.89,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-09-16"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 6.89,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-08-24"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 6.89,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-24"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -0.21,
+     "basisPoints": -21,
+     "relativePercent": -5.13,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-09-23"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.8,
+     "basisPoints": 380,
+     "relativePercent": 4750,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2021-09-23"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3.48,
+     "basisPoints": 348,
+     "relativePercent": 870,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-09-23"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": -3.15,
+     "basisPoints": -315,
+     "relativePercent": -44.81,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2000-07-03"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  },
+  {
+   "contractVersion": "multi-asset-contract-1.0.0",
+   "instrument": {
+    "instrumentId": "vu_3a08a907736c32",
+    "symbol": "ECB_DFR",
+    "name": "EZB-Einlagefazilitaet",
+    "nameDe": "EZB-Einlagezins",
+    "assetClass": "RATE",
+    "assetType": "RATE",
+    "subType": "POLICY_RATE_DEPOSIT_FACILITY",
+    "subTypeNote": "Der vom EZB-Rat beschlossene Zinssatz der Einlagefazilitaet. Stufenserie: zwischen zwei Beschluessen gilt derselbe Wert.",
+    "yieldKind": "POLICY_RATE",
+    "family": "Europaeische Zentralbank",
+    "exchangeOrVenue": "EZB-Rat (ECB Data Portal)",
+    "country": "EU",
+    "timezone": "Europe/Berlin",
+    "tenorYears": null,
+    "status": "ACTIVE"
+   },
+   "quote": {
+    "state": "AVAILABLE",
+    "valueSemantics": "POLICY_RATE",
+    "valueKind": "SCALAR",
+    "value": 2.5,
+    "range": null,
+    "unit": "PERCENT",
+    "unitId": "PERCENT",
+    "unitDisplay": "%",
+    "decimals": 2,
+    "nativeCurrency": null,
+    "currencyContext": "EUR",
+    "asOf": "2026-09-16",
+    "observationDate": "2026-09-24",
+    "change": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 11.11,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte."
+    },
+    "changeReferenceDate": "2026-06-17"
+   },
+   "market": {
+    "state": "NOT_APPLICABLE",
+    "sessionProfile": "POLICY_EVENT",
+    "sessionExchange": null,
+    "publisherProfile": "EU_ECB",
+    "timezone": "Europe/Berlin",
+    "calendarCoverage": true
+   },
+   "data": {
+    "source": "ecb-data-portal",
+    "sourceKind": "OFFICIAL_PRIMARY",
+    "sourceInstrument": {
+     "ecbDataPortal": "FM/D.U2.EUR.4F.KR.DFR.LEV"
+    },
+    "freshness": {
+     "state": "CURRENT",
+     "reason": "stepSeriesValidUntilNextDecision",
+     "checkedAt": "2026-09-24T13:43:04.210Z"
+    },
+    "sourceState": "CURRENT",
+    "frequency": "EVENT",
+    "checkedAt": "2026-09-24T13:54:24.204Z",
+    "realtime": false,
+    "delayed": false,
+    "eod": true,
+    "provenance": {
+     "sourceId": "ecb-data-portal",
+     "provider": "Europaeische Zentralbank",
+     "product": "ECB Data Portal (FM - Leitzinsen)",
+     "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+     "publicDisplay": true,
+     "attribution": "Quelle: Europaeische Zentralbank",
+     "priceSemantics": "POLICY_RATE",
+     "fetchedAt": "2026-09-24T13:54:24.204Z"
+    }
+   },
+   "history": {
+    "available": true,
+    "availableFrom": "1999-01-01",
+    "availableTo": "2026-09-16",
+    "observations": 64,
+    "frequency": "EVENT",
+    "representation": "STEPS",
+    "observedThrough": "2026-09-24",
+    "scheduledChange": null,
+    "intervals": {
+     "1D": false,
+     "1W": true,
+     "1M": true,
+     "3M": true,
+     "1Y": true,
+     "5Y": true,
+     "10Y": true,
+     "MAX": true
+    },
+    "recent": [
+     [
+      "1999-01-01",
+      2
+     ],
+     [
+      "1999-01-04",
+      2.75
+     ],
+     [
+      "1999-01-22",
+      2
+     ],
+     [
+      "1999-04-09",
+      1.5
+     ],
+     [
+      "1999-11-05",
+      2
+     ],
+     [
+      "2000-02-04",
+      2.25
+     ],
+     [
+      "2000-03-17",
+      2.5
+     ],
+     [
+      "2000-04-28",
+      2.75
+     ],
+     [
+      "2000-06-09",
+      3.25
+     ],
+     [
+      "2000-09-01",
+      3.5
+     ],
+     [
+      "2000-10-06",
+      3.75
+     ],
+     [
+      "2001-05-11",
+      3.5
+     ],
+     [
+      "2001-08-31",
+      3.25
+     ],
+     [
+      "2001-09-18",
+      2.75
+     ],
+     [
+      "2001-11-09",
+      2.25
+     ],
+     [
+      "2002-12-06",
+      1.75
+     ],
+     [
+      "2003-03-07",
+      1.5
+     ],
+     [
+      "2003-06-06",
+      1
+     ],
+     [
+      "2005-12-06",
+      1.25
+     ],
+     [
+      "2006-03-08",
+      1.5
+     ],
+     [
+      "2006-06-15",
+      1.75
+     ],
+     [
+      "2006-08-09",
+      2
+     ],
+     [
+      "2006-10-11",
+      2.25
+     ],
+     [
+      "2006-12-13",
+      2.5
+     ],
+     [
+      "2007-03-14",
+      2.75
+     ],
+     [
+      "2007-06-13",
+      3
+     ],
+     [
+      "2008-07-09",
+      3.25
+     ],
+     [
+      "2008-10-08",
+      2.75
+     ],
+     [
+      "2008-10-09",
+      3.25
+     ],
+     [
+      "2008-11-12",
+      2.75
+     ],
+     [
+      "2008-12-10",
+      2
+     ],
+     [
+      "2009-01-21",
+      1
+     ],
+     [
+      "2009-03-11",
+      0.5
+     ],
+     [
+      "2009-04-08",
+      0.25
+     ],
+     [
+      "2011-04-13",
+      0.5
+     ],
+     [
+      "2011-07-13",
+      0.75
+     ],
+     [
+      "2011-11-09",
+      0.5
+     ],
+     [
+      "2011-12-14",
+      0.25
+     ],
+     [
+      "2012-07-11",
+      0
+     ],
+     [
+      "2014-06-11",
+      -0.1
+     ],
+     [
+      "2014-09-10",
+      -0.2
+     ],
+     [
+      "2015-12-09",
+      -0.3
+     ],
+     [
+      "2016-03-16",
+      -0.4
+     ],
+     [
+      "2019-09-18",
+      -0.5
+     ],
+     [
+      "2022-07-27",
+      0
+     ],
+     [
+      "2022-09-14",
+      0.75
+     ],
+     [
+      "2022-11-02",
+      1.5
+     ],
+     [
+      "2022-12-21",
+      2
+     ],
+     [
+      "2023-02-08",
+      2.5
+     ],
+     [
+      "2023-03-22",
+      3
+     ],
+     [
+      "2023-05-10",
+      3.25
+     ],
+     [
+      "2023-06-21",
+      3.5
+     ],
+     [
+      "2023-08-02",
+      3.75
+     ],
+     [
+      "2023-09-20",
+      4
+     ],
+     [
+      "2024-06-12",
+      3.75
+     ],
+     [
+      "2024-09-18",
+      3.5
+     ],
+     [
+      "2024-10-23",
+      3.25
+     ],
+     [
+      "2024-12-18",
+      3
+     ],
+     [
+      "2025-02-05",
+      2.75
+     ],
+     [
+      "2025-03-12",
+      2.5
+     ],
+     [
+      "2025-04-23",
+      2.25
+     ],
+     [
+      "2025-06-11",
+      2
+     ],
+     [
+      "2026-06-17",
+      2.25
+     ],
+     [
+      "2026-09-16",
+      2.5
+     ]
+    ],
+    "path": "/quant/data/market/multi-asset/series/ECB_DFR.json"
+   },
+   "performance": {
+    "1W": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 11.11,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-17"
+    },
+    "1M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 11.11,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-17"
+    },
+    "3M": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.25,
+     "basisPoints": 25,
+     "relativePercent": 11.11,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2026-06-17"
+    },
+    "1Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.5,
+     "basisPoints": 50,
+     "relativePercent": 25,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2025-06-11"
+    },
+    "5Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 3,
+     "basisPoints": 300,
+     "relativePercent": 600,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2019-09-18"
+    },
+    "10Y": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 2.9,
+     "basisPoints": 290,
+     "relativePercent": 725,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "2016-03-16"
+    },
+    "MAX": {
+     "semantics": "BASIS_POINTS",
+     "absolutePercentagePoints": 0.5,
+     "basisPoints": 50,
+     "relativePercent": 25,
+     "relativePercentNote": "Relative Veraenderung des Zinsniveaus - nicht die Zinsbewegung. Die Bewegung sind die Basispunkte.",
+     "fromDate": "1999-01-01"
+    }
+   },
+   "capabilities": {
+    "eod": true,
+    "intraday": false,
+    "realtime": false,
+    "websocket": false,
+    "currencyConversion": "NOT_CONVERTIBLE"
+   },
+   "displaySemantics": {
+    "changeSemantics": "BASIS_POINTS",
+    "primaryChange": "basisPoints",
+    "comparableAcrossClasses": false,
+    "note": "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
+   },
+   "proxy": {
+    "isProxy": false,
+    "represents": null,
+    "knownProxiesNotUsed": []
+   },
+   "gap": null,
+   "license": null
+  }
+ ]
+}
