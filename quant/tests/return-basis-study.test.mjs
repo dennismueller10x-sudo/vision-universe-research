@@ -264,3 +264,28 @@ test("ein Abstand zwischen Bestand und Evidence wird benannt, nicht verschwiegen
     assert.notEqual(report.cutoffs[0].simulation.strategyBasis, "EVIDENCE_AT_OR_BEFORE_CUTOFF");
   }
 });
+
+test("entscheidungsreif heisst: kein unerklaerter Tag im Messfenster", () => {
+  /* Der Anteil unerklaerter Bereinigungen an der ganzen Historie sagt
+     nichts ueber die Belastbarkeit eines Querschnitts - ein unerklaerter
+     Tag von 2003 kann eine Messung von 2026 nicht verzerren. Gemessen
+     wird deshalb, ob einer davon IN dem Fenster liegt, ueber das
+     gerechnet wird. Das ist die schaerfere Bedingung. */
+  for (const cutoff of report.cutoffs) {
+    assert.ok(Number.isFinite(cutoff.unexplainedInsideWindow),
+      "Stichtag " + cutoff.cutoffDate + " weist die Zahl nicht aus");
+  }
+  assert.ok("UNEXPLAINED_ADJUSTMENTS_INSIDE_COMPARISON_WINDOW" in report.gateStatus);
+
+  const beruehrt = report.cutoffs.some((c) => c.unexplainedInsideWindow > 0);
+  const garNichtBereinigt = (report.totalReturnVerification.failureClasses || {}).NO_ADJUSTMENT_AT_ALL || 0;
+  if (beruehrt || garNichtBereinigt > 0) {
+    assert.equal(report.gateStatus.METHODOLOGY_DECISION_READY, "FAIL",
+      "Ein beruehrtes Messfenster oder eine gar nicht bereinigte Dividende darf nicht entscheidungsreif sein");
+  }
+  /* Und eine Teilmessung ist nie entscheidungsreif, egal wie sauber sie
+     in sich ist. */
+  if (report.scope !== "CANONICAL_HISTORY") {
+    assert.equal(report.gateStatus.METHODOLOGY_DECISION_READY, "FAIL");
+  }
+});

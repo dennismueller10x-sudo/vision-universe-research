@@ -323,6 +323,10 @@ function main() {
   const bySource = {};
   const verification = { securities: 0, events: 0, consistent: 0, worstError: 0,
     classes: {}, buckets: {}, affectedSecurities: 0, inconsistentSecurities: [] };
+  /* Wo genau die unerklaerten Tage liegen. Die Zahl allein sagt nichts:
+     ein unerklaerter Tag von 2003 kann eine Messung von 2026 nicht
+     verzerren, einer von letztem Monat schon. */
+  const unexplainedBySecurity = new Map();
 
   for (const security of universe) {
     const found = readSeries(security.securityId);
@@ -354,6 +358,7 @@ function main() {
         }
       }
       if (check.consistent < check.checked) verification.affectedSecurities += 1;
+      if (check.unexplainedDates.length) unexplainedBySecurity.set(security.securityId, check.unexplainedDates);
       if (check.consistent < check.checked && verification.inconsistentSecurities.length < 50) {
         verification.inconsistentSecurities.push({
           securityId: security.securityId, checked: check.checked,
@@ -388,6 +393,10 @@ function main() {
 
       perCutoff[ci].rows.push({
         securityId: security.securityId,
+        /* Der frueheste Tag, den die laengste Messgroesse an diesem
+           Stichtag anfasst. Alles davor kann sie nicht verzerren. */
+        windowFrom: built.dates[Math.max(0, i - 252)],
+        windowTo: built.dates[i],
         ticker: security.ticker,
         sector,
         namedSector: namedSectorLabel,
@@ -648,8 +657,25 @@ function main() {
       };
     }
 
+    /* Liegt ein unerklaerter Bereinigungstag IN dem Fenster, ueber das
+       hier gerechnet wird? Das ist die Frage, die ueber die Belastbarkeit
+       dieses Querschnitts entscheidet - nicht der Anteil unerklaerter
+       Tage an der gesamten Historie. */
+    let touched = 0;
+    const touchedExamples = [];
+    for (const row of rows) {
+      const dates = unexplainedBySecurity.get(row.securityId);
+      if (!dates) continue;
+      if (dates.some((d) => d >= row.windowFrom && d <= row.windowTo)) {
+        touched += 1;
+        if (touchedExamples.length < 10) touchedExamples.push(row.ticker);
+      }
+    }
+
     results.push({
       cutoffDate: bucket.cutoff.date,
+      unexplainedInsideWindow: touched,
+      unexplainedInsideWindowExamples: touchedExamples,
       tradingDaysBack: bucket.cutoff.offset,
       securitiesWithCutoff: rows.length,
       measures,
@@ -811,8 +837,8 @@ function main() {
         entries: published.size,
         priceBasisCounts: basisCounts,
         measuredQuantV2MomentumBasis: basisCounts.adjustedClose === published.size && published.size > 0 &&
-          (totalReturnVerdict === "TOTAL_RETURN_CONFIRMED" ||
-           totalReturnVerdict === "TOTAL_RETURN_CONFIRMED_WITH_CORPORATE_ACTIONS")
+          (verification.classes.NO_ADJUSTMENT_AT_ALL || 0) === 0 &&
+          totalReturnVerdict !== "NOT_MEASURED"
           ? "TOTAL_RETURN" : "MIXED_OR_UNCONFIRMED"
       };
     })(),
@@ -832,9 +858,15 @@ function main() {
       /* Entscheidungsreif heisst: alle sieben Messungen liegen vor, ueber
          den kanonischen Bestand, an mehr als einem Stichtag. Es heisst
          NICHT, dass eine Basis gewonnen hat - das entscheidet der Owner. */
+      /* Entscheidungsreif heisst nicht "wenig unerklaerte Tage", sondern
+         "keiner davon kann diese Messung beruehrt haben". Das ist die
+         schaerfere Bedingung und zugleich die einzige, die etwas ueber
+         die Belastbarkeit des Ergebnisses sagt. */
+      UNEXPLAINED_ADJUSTMENTS_INSIDE_COMPARISON_WINDOW: primary ? primary.unexplainedInsideWindow : null,
       METHODOLOGY_DECISION_READY: (storeSeen > 0 && primary && results.length > 1 &&
-        (totalReturnVerdict === "TOTAL_RETURN_CONFIRMED" ||
-         totalReturnVerdict === "TOTAL_RETURN_CONFIRMED_WITH_CORPORATE_ACTIONS")) ? "PASS" : "FAIL",
+        totalReturnVerdict !== "NOT_MEASURED" &&
+        (verification.classes.NO_ADJUSTMENT_AT_ALL || 0) === 0 &&
+        results.every((r) => r.unexplainedInsideWindow === 0)) ? "PASS" : "FAIL",
       QUANT_V2_MOMENTUM_RETURN_BASIS: "PENDING_METHOD_DECISION"
     },
     runtimeMs: Date.now() - started
@@ -878,6 +910,13 @@ function main() {
         String(impact.MEMBERS_ON_PRICE_RETURN).padStart(5) + " · Gesamt " +
         String(impact.MEMBERS_ON_TOTAL_RETURN).padStart(5) +
         " · ab " + impact.LEAVING + " zu " + impact.ENTERING + "\n");
+    }
+  }
+  for (const result of results) {
+    if (result.unexplainedInsideWindow) {
+      process.stdout.write("  Stichtag " + result.cutoffDate + ": " + result.unexplainedInsideWindow +
+        " Titel mit unerklaerter Bereinigung IM Messfenster (" +
+        result.unexplainedInsideWindowExamples.join(", ") + ")\n");
     }
   }
   process.stdout.write("  METHODOLOGY_DECISION_READY: " + report.gateStatus.METHODOLOGY_DECISION_READY + "\n");

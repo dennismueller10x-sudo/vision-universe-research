@@ -135,6 +135,11 @@
     const classes = {};
     const buckets = {};
     const samples = [];
+    /* Die Tage, an denen diese Pruefung NICHT erklaeren kann, was
+       bereinigt wurde. Sie werden mitgefuehrt, weil die eigentliche
+       Frage nicht ihr Anteil ist, sondern ob einer davon in dem
+       Zeitfenster liegt, ueber das die Studie rechnet. */
+    const unexplainedDates = [];
     for (let i = bars.length - 1; i > 0 && checked < maxEvents; i--) {
       const bar = bars[i], prev = bars[i - 1];
       if (!finite(bar.dividend) || bar.dividend <= 0) continue;
@@ -219,6 +224,9 @@
       klass = "ADJUSTED_BUT_NOT_BY_THE_CASH_AMOUNT";
     } else klass = "ADJUSTMENT_INCONSISTENT";
     classes[klass] = (classes[klass] || 0) + 1;
+    if (klass === "NO_ADJUSTMENT_AT_ALL" || klass === "ADJUSTMENT_INCONSISTENT") {
+      unexplainedDates.push(bar.date);
+    }
 
     /* Wie gross war die Ausschuettung gemessen am Kurs? Eine gewoehnliche
        Quartalsdividende liegt unter zwei Prozent; alles darueber ist der
@@ -238,7 +246,7 @@
         });
       }
     }
-    return { checked, consistent, worst, classes, buckets, samples };
+    return { checked, consistent, worst, classes, buckets, samples, unexplainedDates };
   }
 
   var api = {
