@@ -1,0 +1,2438 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAtUtc": "2026-09-24T13:00:12.496Z",
+  "purpose": "Multi-Asset Capability Audit (§9/§10/§13). Gemessen, nicht angenommen.",
+  "valuesIncluded": false,
+  "valuesNote": "Der Bericht enthaelt keine Kurse, Renditen oder Zinssaetze. Identitaet wird ueber magnitude.within belegt.",
+  "keyPresent": true,
+  "dryRun": false,
+  "statusVocabulary": [
+    "SUPPORTED",
+    "PARTIAL",
+    "UNSUPPORTED",
+    "UNKNOWN"
+  ],
+  "tiingo": {
+    "measured": true,
+    "probes": {
+      "indices": {
+        "vu_4d4d20a3258d46": {
+          "search": {
+            "query": "S&P 500 index",
+            "httpStatus": 200,
+            "durationMs": 343,
+            "contentType": "application/json",
+            "arrayLength": 20,
+            "results": 20,
+            "assetTypes": {
+              "ETF": 2,
+              "Mutual Fund": 18
+            },
+            "candidates": [
+              {
+                "ticker": "BZSPF",
+                "assetType": "ETF",
+                "name": "BMO S&P 500 Index ETF",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "SWPPX",
+                "assetType": "Mutual Fund",
+                "name": "SCHWAB S&P 500 INDEX FUND ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "VFVXF",
+                "assetType": "ETF",
+                "name": "Vanguard S&P 500 Index ETF",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "SPXKX",
+                "assetType": "Mutual Fund",
+                "name": "S&P 500 INDEX FUND K SHARES",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "MMFFX",
+                "assetType": "Mutual Fund",
+                "name": "MM S&P 500 INDEX FUND CLASS A",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "MMIZX",
+                "assetType": "Mutual Fund",
+                "name": "MM S&P 500 INDEX FUND CLASS I",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "PEOPX",
+                "assetType": "Mutual Fund",
+                "name": "BNY MELLON S&P 500 INDEX FUND ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "SXPAX",
+                "assetType": "Mutual Fund",
+                "name": "DWS S&P 500 INDEX FUND CLASS A",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "spx",
+              "httpStatus": 200,
+              "durationMs": 57,
+              "contentType": "application/json",
+              "objectKeys": [
+                "ticker",
+                "name",
+                "description",
+                "startDate",
+                "endDate",
+                "exchangeCode"
+              ],
+              "found": true,
+              "name": "Spenda Limited",
+              "exchangeCode": "ASX",
+              "startDate": null
+            },
+            {
+              "ticker": "^gspc",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "$spx",
+              "httpStatus": 404,
+              "durationMs": 30,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "inx",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": true,
+          "etfProxiesSeen": [
+            "BZSPF",
+            "VFVXF"
+          ]
+        },
+        "vu_35bbbedc545d44": {
+          "search": {
+            "query": "Nasdaq 100 index",
+            "httpStatus": 200,
+            "durationMs": 171,
+            "contentType": "application/json",
+            "arrayLength": 11,
+            "results": 11,
+            "assetTypes": {
+              "ETF": 10,
+              "Mutual Fund": 1
+            },
+            "candidates": [
+              {
+                "ticker": "QQCFF",
+                "assetType": "ETF",
+                "name": "Invesco NASDAQ 100 Index ETF",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "QQC",
+                "assetType": "ETF",
+                "name": "Invesco NASDAQ 100 Index ETF",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "XQQU-U",
+                "assetType": "ETF",
+                "name": "iShares Nasdaq 100 Index ETF",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "XQQU",
+                "assetType": "ETF",
+                "name": "iShares Nasdaq 100 Index ETF",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "QQQQ",
+                "assetType": "ETF",
+                "name": "Mackenzie NASDAQ 100 Index ETF",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "QQC-F",
+                "assetType": "ETF",
+                "name": "Invesco NASDAQ 100 Index ETF Hedged",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "QQCE",
+                "assetType": "ETF",
+                "name": "Invesco ESG NASDAQ 100 Index ETF (CAD)",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "IVNQX",
+                "assetType": "Mutual Fund",
+                "name": "Invesco NASDAQ 100 Index Fd USD Class R6",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "ndx",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "^ndx",
+              "httpStatus": 404,
+              "durationMs": 37,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "$ndx",
+              "httpStatus": 404,
+              "durationMs": 27,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "QQCFF",
+            "QQC",
+            "XQQU-U",
+            "XQQU",
+            "QQQQ",
+            "QQC-F",
+            "QQCE"
+          ]
+        },
+        "vu_5ba1cadf7a14f6": {
+          "search": {
+            "query": "Dow Jones Industrial Average",
+            "httpStatus": 200,
+            "durationMs": 168,
+            "contentType": "application/json",
+            "arrayLength": 9,
+            "results": 9,
+            "assetTypes": {
+              "ETF": 6,
+              "Mutual Fund": 3
+            },
+            "candidates": [
+              {
+                "ticker": "DIA",
+                "assetType": "ETF",
+                "name": "SPDR Dow Jones Industrial Average ETF",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYDAX",
+                "assetType": "Mutual Fund",
+                "name": "DOW JONES INDUSTRIAL AVERAGE FUND CLASS A",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYDKX",
+                "assetType": "Mutual Fund",
+                "name": "DOW JONES INDUSTRIAL AVERAGE FUND CLASS C",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYDHX",
+                "assetType": "Mutual Fund",
+                "name": "DOW JONES INDUSTRIAL AVERAGE FUND CLASS H",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "DJD",
+                "assetType": "ETF",
+                "name": "INVESCO DOW JONES INDUSTRIAL AVERAGE DIVIDEND ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "IDOWF",
+                "assetType": "ETF",
+                "name": "BlackRock iShares Dow Jones Industrial Average UCITS ETF USD (Acc)",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "ZDJ",
+                "assetType": "ETF",
+                "name": "BMO Dow Jones Industrial Average Hedged to CAD Index ETF (CAD Units)",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "ZWA",
+                "assetType": "ETF",
+                "name": "BMO Covered Call Dow Jones Industrial Average Hdgd to CAD (CAD Units)",
+                "countryCode": "CA"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "dji",
+              "httpStatus": 404,
+              "durationMs": 31,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "^dji",
+              "httpStatus": 404,
+              "durationMs": 33,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "$dji",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "djia",
+              "httpStatus": 200,
+              "durationMs": 30,
+              "contentType": "application/json",
+              "objectKeys": [
+                "ticker",
+                "name",
+                "description",
+                "startDate",
+                "endDate",
+                "exchangeCode"
+              ],
+              "found": true,
+              "name": "GLOBAL X DOW 30 COVERED CALL ETF ",
+              "exchangeCode": "NYSE",
+              "startDate": "2022-02-24"
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "DIA",
+            "DJD",
+            "IDOWF",
+            "ZDJ",
+            "ZWA"
+          ]
+        },
+        "vu_7f20679be54590": {
+          "search": {
+            "query": "DAX index",
+            "httpStatus": 200,
+            "durationMs": 175,
+            "contentType": "application/json",
+            "arrayLength": 1,
+            "results": 1,
+            "assetTypes": {
+              "ETF": 1
+            },
+            "candidates": [
+              {
+                "ticker": "159561",
+                "assetType": "ETF",
+                "name": "Harvest Germany DAX Index ETF(QDII)",
+                "countryCode": "CN"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "^gdaxi",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "gdaxi",
+              "httpStatus": 404,
+              "durationMs": 35,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "dax",
+              "httpStatus": 200,
+              "durationMs": 51,
+              "contentType": "application/json",
+              "objectKeys": [
+                "ticker",
+                "name",
+                "description",
+                "startDate",
+                "endDate",
+                "exchangeCode"
+              ],
+              "found": true,
+              "name": "GLOBAL X DAX GERMANY ETF ",
+              "exchangeCode": "NASDAQ",
+              "startDate": "2014-10-23"
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "159561"
+          ]
+        },
+        "vu_0ffca8b14a8e67": {
+          "search": {
+            "query": "Euro Stoxx 50",
+            "httpStatus": 200,
+            "durationMs": 191,
+            "contentType": "application/json",
+            "arrayLength": 4,
+            "results": 4,
+            "assetTypes": {
+              "ETF": 4
+            },
+            "candidates": [
+              {
+                "ticker": "FEZ",
+                "assetType": "ETF",
+                "name": "STATE STREET(R) SPDR(R) EURO STOXX 50(R) ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "IHIIF",
+                "assetType": "ETF",
+                "name": "BlackRock iShares Core EURO STOXX 50 UCITS ETF EUR",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "IDJEF",
+                "assetType": "ETF",
+                "name": "BlackRock iShares Core EURO STOXX 50 UCITS ETF (DE)",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "IVVPF",
+                "assetType": "ETF",
+                "name": "BlackRock iShares Core EURO STOXX 50 UCITS ETF EUR (Acc)",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "sx5e",
+              "httpStatus": 404,
+              "durationMs": 29,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "^stoxx50e",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "FEZ",
+            "IHIIF",
+            "IDJEF",
+            "IVVPF"
+          ]
+        },
+        "vu_7f13d39e089e6b": {
+          "search": {
+            "query": "FTSE 100",
+            "httpStatus": 200,
+            "durationMs": 180,
+            "contentType": "application/json",
+            "arrayLength": 4,
+            "results": 4,
+            "assetTypes": {
+              "ETF": 4
+            },
+            "candidates": [
+              {
+                "ticker": "VUKEF",
+                "assetType": "ETF",
+                "name": "Vanguard FTSE 100 UCITS ETFt",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "BCYIF",
+                "assetType": "ETF",
+                "name": "BlackRock iShares Core FTSE 100 UCITS ETF GBP",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "XMTCF",
+                "assetType": "ETF",
+                "name": "BlackRock iShares Core FTSE 100 UCITS ETF GBP (Acc)",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "IRESF",
+                "assetType": "ETF",
+                "name": "BlackRock iShares Core FTSE 100 UCITS ETF USD Hedged (Acc)",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "ukx",
+              "httpStatus": 404,
+              "durationMs": 33,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "^ftse",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "VUKEF",
+            "BCYIF",
+            "XMTCF",
+            "IRESF"
+          ]
+        },
+        "vu_18701531a86b41": {
+          "search": {
+            "query": "Nikkei 225",
+            "httpStatus": 200,
+            "durationMs": 173,
+            "contentType": "application/json",
+            "arrayLength": 2,
+            "results": 2,
+            "assetTypes": {
+              "ETF": 1,
+              "Stock": 1
+            },
+            "candidates": [
+              {
+                "ticker": "ISHNF",
+                "assetType": "ETF",
+                "name": "BGI iShares Core Nikkei 225 ETF",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "NTETF",
+                "assetType": "Stock",
+                "name": "NEXT FUNDS Nikkei 225 Exchange Traded Fund",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "n225",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "^n225",
+              "httpStatus": 404,
+              "durationMs": 37,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "ISHNF"
+          ]
+        },
+        "vu_41feb8a9e471c0": {
+          "search": {
+            "query": "Russell 2000",
+            "httpStatus": 200,
+            "durationMs": 169,
+            "contentType": "application/json",
+            "arrayLength": 20,
+            "results": 20,
+            "assetTypes": {
+              "ETF": 14,
+              "Mutual Fund": 6
+            },
+            "candidates": [
+              {
+                "ticker": "IWM",
+                "assetType": "ETF",
+                "name": "ISHARES RUSSELL 2000 ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYRRX",
+                "assetType": "Mutual Fund",
+                "name": "RUSSELL 2000 FUND CLASS A",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYROX",
+                "assetType": "Mutual Fund",
+                "name": "RUSSELL 2000 FUND CLASS C",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYRHX",
+                "assetType": "Mutual Fund",
+                "name": "RUSSELL 2000 FUND CLASS H",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RSSL",
+                "assetType": "ETF",
+                "name": "GLOBAL X RUSSELL 2000 ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RSSL",
+                "assetType": "ETF",
+                "name": "GLOBAL X RUSSELL 2000 ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RSSX",
+                "assetType": "ETF",
+                "name": "Global X Russell 2000 Index ETF",
+                "countryCode": "CA"
+              },
+              {
+                "ticker": "IWN",
+                "assetType": "ETF",
+                "name": "ISHARES RUSSELL 2000 VALUE ETF ",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "rut",
+              "httpStatus": 404,
+              "durationMs": 32,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "^rut",
+              "httpStatus": 404,
+              "durationMs": 33,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "IWM",
+            "RSSL",
+            "RSSL",
+            "RSSX",
+            "IWN"
+          ]
+        },
+        "vu_62fb4dac2e2b78": {
+          "search": {
+            "query": "S&P MidCap 400",
+            "httpStatus": 200,
+            "durationMs": 160,
+            "contentType": "application/json",
+            "arrayLength": 17,
+            "results": 17,
+            "assetTypes": {
+              "ETF": 9,
+              "Mutual Fund": 8
+            },
+            "candidates": [
+              {
+                "ticker": "MDY",
+                "assetType": "ETF",
+                "name": "S&P MidCap 400 ETF",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "GRPM",
+                "assetType": "ETF",
+                "name": "INVESCO S&P MIDCAP 400 GARP ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RWK",
+                "assetType": "ETF",
+                "name": "INVESCO S&P MIDCAP 400 REVENUE ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RFV",
+                "assetType": "ETF",
+                "name": "INVESCO S&P MIDCAP 400 PURE VALUE ETF ",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYMVX",
+                "assetType": "Mutual Fund",
+                "name": "S&P MIDCAP 400 PURE VALUE FUND CLASS A",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYMMX",
+                "assetType": "Mutual Fund",
+                "name": "S&P MIDCAP 400 PURE VALUE FUND CLASS C",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RYAVX",
+                "assetType": "Mutual Fund",
+                "name": "S&P MIDCAP 400 PURE VALUE FUND CLASS H",
+                "countryCode": "US"
+              },
+              {
+                "ticker": "RFG",
+                "assetType": "ETF",
+                "name": "INVESCO S&P MIDCAP 400 PURE GROWTH ETF ",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "mid",
+              "httpStatus": 200,
+              "durationMs": 42,
+              "contentType": "application/json",
+              "objectKeys": [
+                "ticker",
+                "name",
+                "description",
+                "startDate",
+                "endDate",
+                "exchangeCode"
+              ],
+              "found": true,
+              "name": "American Century Mid Cap Growth Impact ETF",
+              "exchangeCode": "NYSE ARCA",
+              "startDate": "2026-09-14"
+            },
+            {
+              "ticker": "^mid",
+              "httpStatus": 404,
+              "durationMs": 27,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": [
+            "MDY",
+            "GRPM",
+            "RWK",
+            "RFV",
+            "RFG"
+          ]
+        },
+        "vu_ad8a9c09c56420": {
+          "search": {
+            "query": "CAC 40",
+            "httpStatus": 200,
+            "durationMs": 160,
+            "contentType": "application/json",
+            "arrayLength": 1,
+            "results": 1,
+            "assetTypes": {
+              "ETF": 1
+            },
+            "candidates": [
+              {
+                "ticker": "LYXRF",
+                "assetType": "ETF",
+                "name": "Lyxor CAC 40 (DR) UCITS ETFt.",
+                "countryCode": "US"
+              }
+            ]
+          },
+          "metadata": [
+            {
+              "ticker": "^fchi",
+              "httpStatus": 404,
+              "durationMs": 25,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "px1",
+              "httpStatus": 200,
+              "durationMs": 43,
+              "contentType": "application/json",
+              "objectKeys": [
+                "ticker",
+                "name",
+                "description",
+                "startDate",
+                "endDate",
+                "exchangeCode"
+              ],
+              "found": true,
+              "name": "PLEXURE GROUP LTD",
+              "exchangeCode": "ASX",
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": true,
+          "etfProxiesSeen": [
+            "LYXRF"
+          ]
+        },
+        "vu_1030cbb1ec0636": {
+          "search": {
+            "query": "Swiss Market Index",
+            "httpStatus": 200,
+            "durationMs": 181,
+            "contentType": "application/json",
+            "arrayLength": 0,
+            "results": 0,
+            "assetTypes": {},
+            "candidates": []
+          },
+          "metadata": [
+            {
+              "ticker": "^ssmi",
+              "httpStatus": 404,
+              "durationMs": 36,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "smi",
+              "httpStatus": 200,
+              "durationMs": 56,
+              "contentType": "application/json",
+              "objectKeys": [
+                "ticker",
+                "name",
+                "description",
+                "startDate",
+                "endDate",
+                "exchangeCode"
+              ],
+              "found": true,
+              "name": "VanEck HIP Sustainable Muni ETF",
+              "exchangeCode": "BATS",
+              "startDate": "2021-09-10"
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": []
+        },
+        "vu_afe15da269200d": {
+          "search": {
+            "query": "Hang Seng index",
+            "httpStatus": 200,
+            "durationMs": 161,
+            "contentType": "application/json",
+            "arrayLength": 0,
+            "results": 0,
+            "assetTypes": {},
+            "candidates": []
+          },
+          "metadata": [
+            {
+              "ticker": "^hsi",
+              "httpStatus": 404,
+              "durationMs": 43,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "hsi",
+              "httpStatus": 200,
+              "durationMs": 42,
+              "contentType": "application/json",
+              "objectKeys": [
+                "ticker",
+                "name",
+                "description",
+                "startDate",
+                "endDate",
+                "exchangeCode"
+              ],
+              "found": true,
+              "name": "HOME SECURITY INTERNATIONAL INC",
+              "exchangeCode": "NYSE",
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": true,
+          "etfProxiesSeen": []
+        },
+        "vu_7326d3ec863e5a": {
+          "search": {
+            "query": "Shanghai Composite",
+            "httpStatus": 200,
+            "durationMs": 157,
+            "contentType": "application/json",
+            "arrayLength": 0,
+            "results": 0,
+            "assetTypes": {},
+            "candidates": []
+          },
+          "metadata": [
+            {
+              "ticker": "000001.ss",
+              "httpStatus": 404,
+              "durationMs": 32,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            },
+            {
+              "ticker": "shcomp",
+              "httpStatus": 404,
+              "durationMs": 32,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Not found.",
+              "found": false,
+              "name": null,
+              "exchangeCode": null,
+              "startDate": null
+            }
+          ],
+          "indexLevelFound": false,
+          "etfProxiesSeen": []
+        }
+      },
+      "fxFamily": {
+        "top": {
+          "requested": [
+            "xauusd",
+            "xagusd",
+            "xptusd",
+            "xpdusd",
+            "wtiusd",
+            "xtiusd",
+            "usoil",
+            "wticousd",
+            "bcousd",
+            "xbrusd",
+            "ukoil",
+            "brentusd",
+            "xcuusd",
+            "copperusd",
+            "hgusd",
+            "xngusd",
+            "natgasusd",
+            "ngusd"
+          ],
+          "httpStatus": 200,
+          "durationMs": 126,
+          "contentType": "application/json",
+          "arrayLength": 6,
+          "served": [
+            ""
+          ],
+          "quoteFields": [
+            "index",
+            "quoteTimestamp",
+            "bidPrice",
+            "bidSize",
+            "askPrice",
+            "askSize",
+            "midPrice"
+          ],
+          "quoteTimestampSemantics": "OFFSET_TIMESTAMP",
+          "ages": {
+            "undefined": 1
+          }
+        },
+        "perTicker": {
+          "": {
+            "magnitude": null,
+            "midPricePresent": false,
+            "daily": {
+              "httpStatus": 400,
+              "durationMs": 28,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Error: Tickers parameter was not supplied.",
+              "observations": 0,
+              "depthAttempts": [
+                {
+                  "startDate": "1990-01-01",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2016-09-26",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2021-09-25",
+                  "httpStatus": 400,
+                  "rows": null
+                },
+                {
+                  "startDate": "2025-09-24",
+                  "httpStatus": 400,
+                  "rows": null
+                }
+              ],
+              "timestampSemantics": null,
+              "fields": []
+            },
+            "intraday5min": {
+              "httpStatus": 400,
+              "durationMs": 23,
+              "contentType": "application/json",
+              "objectKeys": [
+                "detail"
+              ],
+              "errorDetail": "Error: Tickers parameter was not supplied.",
+              "observations": 0,
+              "timestampSemantics": null
+            }
+          }
+        }
+      },
+      "crypto": {
+        "metadata": {
+          "httpStatus": 200,
+          "durationMs": 23,
+          "contentType": "application/json",
+          "arrayLength": 4,
+          "served": [
+            "btcusd",
+            "ethusd",
+            "solusd",
+            "xrpusd"
+          ],
+          "fields": [
+            "ticker",
+            "name",
+            "baseCurrency",
+            "quoteCurrency"
+          ]
+        },
+        "top": {
+          "httpStatus": 200,
+          "durationMs": 221,
+          "contentType": "application/json",
+          "arrayLength": 4,
+          "served": [
+            "btcusd",
+            "ethusd",
+            "solusd",
+            "xrpusd"
+          ],
+          "fields": [
+            "ticker",
+            "baseCurrency",
+            "quoteCurrency",
+            "topOfBookData"
+          ],
+          "topOfBookFields": [
+            "quoteTimestamp",
+            "lastSaleTimestamp",
+            "bidSize",
+            "bidPrice",
+            "askSize",
+            "askPrice",
+            "lastSize",
+            "lastSizeNotional",
+            "lastPrice",
+            "bidExchange",
+            "askExchange",
+            "lastExchange"
+          ]
+        },
+        "perTicker": {
+          "btcusd": {
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 398,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 4008,
+              "firstDate": "2011-08-19T00:00:00+00:00",
+              "lastDate": "2022-09-10T00:00:00+00:00",
+              "weekendObservations": 1144,
+              "saturday": 574,
+              "sunday": 570,
+              "maxGapDays": 5,
+              "timestampSemantics": "OFFSET_TIMESTAMP",
+              "fields": [
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "volumeNotional",
+                "tradesDone"
+              ],
+              "quoteCurrency": "usd",
+              "baseCurrency": "btc",
+              "exchangeAggregation": null
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 278,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 1021,
+              "firstDate": "2026-09-21T00:00:00+00:00",
+              "lastDate": "2026-09-24T13:00:00+00:00",
+              "weekendObservations": 0,
+              "saturday": 0,
+              "sunday": 0,
+              "maxGapDays": 1,
+              "lastBarAgeSeconds": 17
+            },
+            "magnitude": {
+              "expectedRange": [
+                5000,
+                500000
+              ],
+              "within": true
+            }
+          },
+          "ethusd": {
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 305,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 2571,
+              "firstDate": "2015-08-08T00:00:00+00:00",
+              "lastDate": "2022-09-10T00:00:00+00:00",
+              "weekendObservations": 732,
+              "saturday": 366,
+              "sunday": 366,
+              "maxGapDays": 6,
+              "timestampSemantics": "OFFSET_TIMESTAMP",
+              "fields": [
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "volumeNotional",
+                "tradesDone"
+              ],
+              "quoteCurrency": "usd",
+              "baseCurrency": "eth",
+              "exchangeAggregation": null
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 262,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 1021,
+              "firstDate": "2026-09-21T00:00:00+00:00",
+              "lastDate": "2026-09-24T13:00:00+00:00",
+              "weekendObservations": 0,
+              "saturday": 0,
+              "sunday": 0,
+              "maxGapDays": 1,
+              "lastBarAgeSeconds": 18
+            },
+            "magnitude": {
+              "expectedRange": [
+                100,
+                50000
+              ],
+              "within": true
+            }
+          },
+          "solusd": {
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 98,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 710,
+              "firstDate": "2020-08-23T00:00:00+00:00",
+              "lastDate": "2022-09-10T00:00:00+00:00",
+              "weekendObservations": 201,
+              "saturday": 100,
+              "sunday": 101,
+              "maxGapDays": 15,
+              "timestampSemantics": "OFFSET_TIMESTAMP",
+              "fields": [
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "volumeNotional",
+                "tradesDone"
+              ],
+              "quoteCurrency": "usd",
+              "baseCurrency": "sol",
+              "exchangeAggregation": null
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 249,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 1021,
+              "firstDate": "2026-09-21T00:00:00+00:00",
+              "lastDate": "2026-09-24T13:00:00+00:00",
+              "weekendObservations": 0,
+              "saturday": 0,
+              "sunday": 0,
+              "maxGapDays": 1,
+              "lastBarAgeSeconds": 18
+            },
+            "magnitude": {
+              "expectedRange": [
+                1,
+                5000
+              ],
+              "within": true
+            }
+          },
+          "xrpusd": {
+            "daily": {
+              "httpStatus": 200,
+              "durationMs": 263,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 2566,
+              "firstDate": "2015-02-26T00:00:00+00:00",
+              "lastDate": "2022-09-10T00:00:00+00:00",
+              "weekendObservations": 732,
+              "saturday": 368,
+              "sunday": 364,
+              "maxGapDays": 25,
+              "timestampSemantics": "OFFSET_TIMESTAMP",
+              "fields": [
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+                "volumeNotional",
+                "tradesDone"
+              ],
+              "quoteCurrency": "usd",
+              "baseCurrency": "xrp",
+              "exchangeAggregation": null
+            },
+            "intraday5min": {
+              "httpStatus": 200,
+              "durationMs": 245,
+              "contentType": "application/json",
+              "arrayLength": 1,
+              "observations": 1021,
+              "firstDate": "2026-09-21T00:00:00+00:00",
+              "lastDate": "2026-09-24T13:00:00+00:00",
+              "weekendObservations": 0,
+              "saturday": 0,
+              "sunday": 0,
+              "maxGapDays": 1,
+              "lastBarAgeSeconds": 19
+            },
+            "magnitude": {
+              "expectedRange": [
+                0.05,
+                100
+              ],
+              "within": true
+            }
+          }
+        }
+      },
+      "yieldSearch": {
+        "treasury yield": {
+          "query": "treasury yield",
+          "httpStatus": 200,
+          "durationMs": 163,
+          "contentType": "application/json",
+          "arrayLength": 0,
+          "results": 0,
+          "assetTypes": {},
+          "candidates": []
+        },
+        "10 year treasury": {
+          "query": "10 year treasury",
+          "httpStatus": 200,
+          "durationMs": 158,
+          "contentType": "application/json",
+          "arrayLength": 12,
+          "results": 12,
+          "assetTypes": {
+            "ETF": 10,
+            "Stock": 1,
+            "Mutual Fund": 1
+          },
+          "candidates": [
+            {
+              "ticker": "TBX",
+              "assetType": "ETF",
+              "name": "PROSHARES SHORT 7-10 YEAR TREASURY ",
+              "countryCode": "US"
+            },
+            {
+              "ticker": "UST",
+              "assetType": "ETF",
+              "name": "PROSHARES ULTRA 7-10 YEAR TREASURY ",
+              "countryCode": "US"
+            },
+            {
+              "ticker": "GOVM",
+              "assetType": "Stock",
+              "name": "ISHARES 1-10 YEAR TREASURY BOND ETF ",
+              "countryCode": "US"
+            },
+            {
+              "ticker": "IEF",
+              "assetType": "ETF",
+              "name": "ISHARES 7-10 YEAR TREASURY BOND ETF ",
+              "countryCode": "US"
+            },
+            {
+              "ticker": "PST",
+              "assetType": "ETF",
+              "name": "PROSHARES ULTRASHORT 7-10 YEAR TREASURY ",
+              "countryCode": "US"
+            },
+            {
+              "ticker": "WTSTX",
+              "assetType": "Mutual Fund",
+              "name": "WISDOMTREE 7-10 YEAR TREASURY DIGITAL FUND ",
+              "countryCode": "US"
+            },
+            {
+              "ticker": "TYO",
+              "assetType": "ETF",
+              "name": "DIREXION DAILY 7-10 YEAR TREASURY BEAR 3X SHARES ",
+              "countryCode": "US"
+            },
+            {
+              "ticker": "TYD",
+              "assetType": "ETF",
+              "name": "DIREXION DAILY 7-10 YEAR TREASURY BULL 3X SHARES ",
+              "countryCode": "US"
+            }
+          ]
+        },
+        "bund yield": {
+          "query": "bund yield",
+          "httpStatus": 200,
+          "durationMs": 176,
+          "contentType": "application/json",
+          "arrayLength": 0,
+          "results": 0,
+          "assetTypes": {},
+          "candidates": []
+        },
+        "fed funds": {
+          "query": "fed funds",
+          "httpStatus": 200,
+          "durationMs": 160,
+          "contentType": "application/json",
+          "arrayLength": 0,
+          "results": 0,
+          "assetTypes": {},
+          "candidates": []
+        }
+      },
+      "errorSemantics": {
+        "missingDaily": {
+          "httpStatus": 404,
+          "durationMs": 33,
+          "contentType": "application/json",
+          "objectKeys": [
+            "detail"
+          ],
+          "errorDetail": "Not found."
+        },
+        "missingFx": {
+          "httpStatus": 200,
+          "durationMs": 32,
+          "contentType": "application/json",
+          "arrayLength": 0
+        },
+        "missingCrypto": {
+          "httpStatus": 200,
+          "durationMs": 48,
+          "contentType": "application/json",
+          "arrayLength": 0
+        }
+      },
+      "wsCrypto": {
+        "attempted": true,
+        "endpoint": "crypto",
+        "tickers": [
+          "btcusd",
+          "ethusd"
+        ],
+        "seconds": 20,
+        "opened": true,
+        "messages": 66,
+        "messageTypes": {
+          "I": 1,
+          "H": 1,
+          "A": 64
+        },
+        "dataMessages": 64,
+        "perTicker": {
+          "btcusd": 32,
+          "ethusd": 32
+        },
+        "subscribeAck": {
+          "code": 200,
+          "message": "Success"
+        },
+        "error": null
+      },
+      "wsFx": {
+        "attempted": true,
+        "endpoint": "fx",
+        "tickers": [
+          "xauusd",
+          "eurusd"
+        ],
+        "seconds": 20,
+        "opened": true,
+        "messages": 95,
+        "messageTypes": {
+          "I": 1,
+          "H": 1,
+          "A": 93
+        },
+        "dataMessages": 93,
+        "perTicker": {
+          "xauusd": 57,
+          "eurusd": 36
+        },
+        "subscribeAck": {
+          "code": 200,
+          "message": "Success"
+        },
+        "error": null
+      },
+      "rateLimitHeaders": {}
+    },
+    "matrix": {
+      "INDEX": {
+        "HISTORY": "PARTIAL",
+        "DAILY": "PARTIAL",
+        "INTRADAY": "PARTIAL",
+        "LATEST": "PARTIAL",
+        "REALTIME": "PARTIAL",
+        "WEBSOCKET": "PARTIAL"
+      },
+      "PRECIOUS_METAL": {
+        "HISTORY": "UNSUPPORTED",
+        "DAILY": "UNSUPPORTED",
+        "INTRADAY": "UNSUPPORTED",
+        "LATEST": "UNSUPPORTED",
+        "REALTIME": "UNSUPPORTED",
+        "WEBSOCKET": "PARTIAL"
+      },
+      "COMMODITY": {
+        "HISTORY": "UNSUPPORTED",
+        "DAILY": "UNSUPPORTED",
+        "INTRADAY": "UNSUPPORTED",
+        "LATEST": "UNSUPPORTED",
+        "REALTIME": "UNSUPPORTED",
+        "WEBSOCKET": "PARTIAL"
+      },
+      "CRYPTO": {
+        "HISTORY": "SUPPORTED",
+        "DAILY": "SUPPORTED",
+        "INTRADAY": "SUPPORTED",
+        "LATEST": "SUPPORTED",
+        "REALTIME": "SUPPORTED",
+        "WEBSOCKET": "SUPPORTED"
+      },
+      "YIELD": {
+        "HISTORY": "UNSUPPORTED",
+        "DAILY": "UNSUPPORTED",
+        "INTRADAY": "UNSUPPORTED",
+        "LATEST": "UNSUPPORTED",
+        "REALTIME": "UNSUPPORTED",
+        "WEBSOCKET": "UNSUPPORTED"
+      },
+      "RATE": {
+        "HISTORY": "UNSUPPORTED",
+        "DAILY": "UNSUPPORTED",
+        "INTRADAY": "UNSUPPORTED",
+        "LATEST": "UNSUPPORTED",
+        "REALTIME": "UNSUPPORTED",
+        "WEBSOCKET": "UNSUPPORTED"
+      },
+      "FX": {
+        "note": "Bereits gemessen: quant/data/market/capabilities/tiingo-fx-probe.json (nicht erneut abgefragt)."
+      }
+    }
+  },
+  "official": {
+    "probes": {
+      "treasury": {
+        "1990": {
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1990/all?type=daily_treasury_yield_curve&...",
+          "httpStatus": 200,
+          "durationMs": 20188,
+          "contentType": "text/csv",
+          "textBytes": 14069,
+          "header": [
+            "Date",
+            "3 Mo",
+            "6 Mo",
+            "1 Yr",
+            "2 Yr",
+            "3 Yr",
+            "5 Yr",
+            "7 Yr",
+            "10 Yr",
+            "30 Yr"
+          ],
+          "observations": 250,
+          "firstDate": "1990-01-02",
+          "lastDate": "1990-12-31",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 4,
+          "tenorsPresent": {
+            "2 Yr": true,
+            "5 Yr": true,
+            "10 Yr": true,
+            "30 Yr": true
+          },
+          "magnitude10y": {
+            "expectedRange": [
+              0,
+              20
+            ],
+            "within": true
+          }
+        },
+        "2026": {
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2026/all?type=daily_treasury_yield_curve&...",
+          "httpStatus": 200,
+          "durationMs": 19145,
+          "contentType": "text/csv",
+          "textBytes": 14933,
+          "header": [
+            "Date",
+            "1 Mo",
+            "1.5 Month",
+            "2 Mo",
+            "3 Mo",
+            "4 Mo",
+            "6 Mo",
+            "1 Yr",
+            "2 Yr",
+            "3 Yr",
+            "5 Yr",
+            "7 Yr",
+            "10 Yr",
+            "20 Yr",
+            "30 Yr"
+          ],
+          "observations": 183,
+          "firstDate": "2026-01-02",
+          "lastDate": "2026-09-23",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 4,
+          "tenorsPresent": {
+            "2 Yr": true,
+            "5 Yr": true,
+            "10 Yr": true,
+            "30 Yr": true
+          },
+          "magnitude10y": {
+            "expectedRange": [
+              0,
+              20
+            ],
+            "within": true
+          }
+        }
+      },
+      "nyFed": {
+        "latest": {
+          "httpStatus": 200,
+          "durationMs": 294,
+          "contentType": "application/json",
+          "objectKeys": [
+            "refRates"
+          ],
+          "fields": [
+            "effectiveDate",
+            "type",
+            "percentRate",
+            "percentPercentile1",
+            "percentPercentile25",
+            "percentPercentile75",
+            "percentPercentile99",
+            "targetRateFrom",
+            "targetRateTo",
+            "volumeInBillions",
+            "revisionIndicator"
+          ],
+          "observations": 5,
+          "firstDate": "2026-09-17",
+          "lastDate": "2026-09-23",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 3,
+          "targetRangePresent": true,
+          "magnitude": {
+            "expectedRange": [
+              0,
+              25
+            ],
+            "within": true
+          }
+        },
+        "history": {
+          "httpStatus": 200,
+          "durationMs": 501,
+          "contentType": "application/json",
+          "objectKeys": [
+            "refRates"
+          ],
+          "observations": 6591,
+          "firstDate": "2000-07-03",
+          "lastDate": "2026-09-23",
+          "weekendObservations": 1,
+          "saturday": 0,
+          "sunday": 1,
+          "maxGapDays": 4,
+          "targetRangeObservations": 6591
+        }
+      },
+      "ecb": {
+        "DFR_B": {
+          "key": "FM/B.U2.EUR.4F.KR.DFR.LEV",
+          "httpStatus": 200,
+          "durationMs": 642,
+          "contentType": "text/csv",
+          "textBytes": 20943,
+          "observations": 69,
+          "firstDate": "1999-01-01",
+          "lastDate": "2026-09-16",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 1281,
+          "valueChanges": 63,
+          "magnitude": {
+            "expectedRange": [
+              -2,
+              10
+            ],
+            "within": true
+          }
+        },
+        "DFR_D": {
+          "key": "FM/D.U2.EUR.4F.KR.DFR.LEV",
+          "httpStatus": 200,
+          "durationMs": 1354,
+          "contentType": "text/csv",
+          "textBytes": 3008345,
+          "observations": 10129,
+          "firstDate": "1999-01-01",
+          "lastDate": "2026-09-24",
+          "weekendObservations": 2894,
+          "saturday": 1447,
+          "sunday": 1447,
+          "maxGapDays": 1,
+          "valueChanges": 63,
+          "magnitude": {
+            "expectedRange": [
+              -2,
+              10
+            ],
+            "within": true
+          }
+        },
+        "MRO_B": {
+          "key": "FM/B.U2.EUR.4F.KR.MRR_FR.LEV",
+          "httpStatus": 200,
+          "durationMs": 146,
+          "contentType": "text/csv",
+          "textBytes": 18254,
+          "observations": 48,
+          "firstDate": "1999-01-01",
+          "lastDate": "2026-09-16",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 3050,
+          "valueChanges": 43,
+          "magnitude": {
+            "expectedRange": [
+              -2,
+              10
+            ],
+            "within": true
+          }
+        }
+      },
+      "bundesbank": {
+        "2Y": {
+          "key": "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A",
+          "tried": [
+            {
+              "variant": "format=csv",
+              "httpStatus": 200,
+              "hasRows": true
+            }
+          ],
+          "httpStatus": 200,
+          "durationMs": 1461,
+          "contentType": "text/csv",
+          "textBytes": 232257,
+          "observations": 10647,
+          "firstDate": "1997-08-01",
+          "lastDate": "2026-09-24",
+          "weekendObservations": 3042,
+          "saturday": 1521,
+          "sunday": 1521,
+          "maxGapDays": 1,
+          "numericObservations": 7395,
+          "headerLines": [
+            "\"\",BBSIS.D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A,BBSIS.D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A_FLAGS",
+            "\"\",Term structure of interest rates on listed Federal securities (method by Svensson) / residual maturity of 2.0 years / daily data,",
+            "Comment (in english),,",
+            "Decimals,2,",
+            "Time format code,P1D,",
+            "category,ZRZS,"
+          ],
+          "magnitude": {
+            "expectedRange": [
+              -2,
+              15
+            ],
+            "within": true
+          }
+        },
+        "10Y": {
+          "key": "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A",
+          "tried": [
+            {
+              "variant": "format=csv",
+              "httpStatus": 200,
+              "hasRows": true
+            }
+          ],
+          "httpStatus": 200,
+          "durationMs": 754,
+          "contentType": "text/csv",
+          "textBytes": 230975,
+          "observations": 10647,
+          "firstDate": "1997-08-01",
+          "lastDate": "2026-09-24",
+          "weekendObservations": 3042,
+          "saturday": 1521,
+          "sunday": 1521,
+          "maxGapDays": 1,
+          "numericObservations": 7395,
+          "headerLines": [
+            "\"\",BBSIS.D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A,BBSIS.D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A_FLAGS",
+            "\"\",Term structure of interest rates on listed Federal securities (method by Svensson) / residual maturity of 10.0 years / daily data,",
+            "Comment (in english),,",
+            "Decimals,2,",
+            "Time format code,P1D,",
+            "category,ZRZS,"
+          ],
+          "magnitude": {
+            "expectedRange": [
+              -2,
+              15
+            ],
+            "within": true
+          }
+        },
+        "30Y": {
+          "key": "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R30XX.R.A.A._Z._Z.A",
+          "tried": [
+            {
+              "variant": "format=csv",
+              "httpStatus": 200,
+              "hasRows": true
+            }
+          ],
+          "httpStatus": 200,
+          "durationMs": 782,
+          "contentType": "text/csv",
+          "textBytes": 206615,
+          "observations": 9551,
+          "firstDate": "2000-08-01",
+          "lastDate": "2026-09-24",
+          "weekendObservations": 2728,
+          "saturday": 1364,
+          "sunday": 1364,
+          "maxGapDays": 1,
+          "numericObservations": 6643,
+          "headerLines": [
+            "\"\",BBSIS.D.I.ZST.ZI.EUR.S1311.B.A604.R30XX.R.A.A._Z._Z.A,BBSIS.D.I.ZST.ZI.EUR.S1311.B.A604.R30XX.R.A.A._Z._Z.A_FLAGS",
+            "\"\",Term structure of interest rates on listed Federal securities (method by Svensson) / residual maturity of 30.0 years / daily data,",
+            "Decimals,2,",
+            "Time format code,P1D,",
+            "category,ZRZS,",
+            "unit,Prozent,"
+          ],
+          "magnitude": {
+            "expectedRange": [
+              -2,
+              15
+            ],
+            "within": true
+          }
+        }
+      },
+      "eia": {
+        "apiV2WithoutKey": {
+          "httpStatus": 403,
+          "durationMs": 400,
+          "contentType": "application/json",
+          "objectKeys": [
+            "error"
+          ]
+        },
+        "xlsWti": {
+          "httpStatus": 200,
+          "durationMs": 115,
+          "contentType": "application/vnd.ms-excel",
+          "textBytes": 468746
+        },
+        "xlsBrent": {
+          "httpStatus": 200,
+          "durationMs": 97,
+          "contentType": "application/vnd.ms-excel",
+          "textBytes": 449991
+        },
+        "xlsHenryHub": {
+          "httpStatus": 200,
+          "durationMs": 137,
+          "contentType": "application/vnd.ms-excel",
+          "textBytes": 294383
+        },
+        "htmlTables": {
+          "RWTC": {
+            "url": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=D",
+            "httpStatus": 200,
+            "durationMs": 162,
+            "contentType": "text/html",
+            "textBytes": 468649,
+            "numericCells": 0,
+            "weekRows": 0,
+            "firstWeekLabel": null,
+            "lastWeekLabel": null
+          },
+          "RBRTE": {
+            "url": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=D",
+            "httpStatus": 200,
+            "durationMs": 146,
+            "contentType": "text/html",
+            "textBytes": 451930,
+            "numericCells": 0,
+            "weekRows": 0,
+            "firstWeekLabel": null,
+            "lastWeekLabel": null
+          },
+          "RNGWHHD": {
+            "url": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+            "httpStatus": 200,
+            "durationMs": 65,
+            "contentType": "text/html",
+            "textBytes": 307685,
+            "numericCells": 0,
+            "weekRows": 0,
+            "firstWeekLabel": null,
+            "lastWeekLabel": null
+          }
+        }
+      },
+      "fred": {
+        "DGS10": {
+          "httpStatus": 200,
+          "durationMs": 108,
+          "contentType": "application/csv",
+          "textBytes": 268807,
+          "observations": 16166,
+          "firstDate": "1962-01-02",
+          "lastDate": "2026-09-22",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 5,
+          "missingMarkers": 720
+        },
+        "DCOILWTICO": {
+          "httpStatus": 200,
+          "durationMs": 87,
+          "contentType": "application/csv",
+          "textBytes": 175612,
+          "observations": 9507,
+          "firstDate": "1986-01-02",
+          "lastDate": "2026-09-22",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 14,
+          "missingMarkers": 1117
+        },
+        "DCOILBRENTEU": {
+          "httpStatus": 200,
+          "durationMs": 35,
+          "contentType": "application/csv",
+          "textBytes": 169823,
+          "observations": 9092,
+          "firstDate": "1987-05-20",
+          "lastDate": "2026-09-22",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 13,
+          "missingMarkers": 1173
+        },
+        "DHHNGSP": {
+          "httpStatus": 200,
+          "durationMs": 64,
+          "contentType": "application/csv",
+          "textBytes": 115913,
+          "observations": 5692,
+          "firstDate": "1997-01-07",
+          "lastDate": "2026-09-22",
+          "weekendObservations": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "maxGapDays": 41,
+          "missingMarkers": 2059
+        },
+        "DFEDTARU": {
+          "httpStatus": 200,
+          "durationMs": 45,
+          "contentType": "application/csv",
+          "textBytes": 103898,
+          "observations": 6492,
+          "firstDate": "2008-12-16",
+          "lastDate": "2026-09-24",
+          "weekendObservations": 1854,
+          "saturday": 927,
+          "sunday": 927,
+          "maxGapDays": 1,
+          "missingMarkers": 0
+        },
+        "DFEDTARL": {
+          "httpStatus": 200,
+          "durationMs": 32,
+          "contentType": "application/csv",
+          "textBytes": 103898,
+          "observations": 6492,
+          "firstDate": "2008-12-16",
+          "lastDate": "2026-09-24",
+          "weekendObservations": 1854,
+          "saturday": 927,
+          "sunday": 927,
+          "maxGapDays": 1,
+          "missingMarkers": 0
+        },
+        "PCOPPUSDM": {
+          "httpStatus": 200,
+          "durationMs": 21,
+          "contentType": "application/csv",
+          "textBytes": 12076,
+          "observations": 415,
+          "firstDate": "1992-01-01",
+          "lastDate": "2026-07-01",
+          "weekendObservations": 118,
+          "saturday": 59,
+          "sunday": 59,
+          "maxGapDays": 31,
+          "missingMarkers": 0
+        }
+      }
+    }
+  },
+  "instruments": {
+    "vu_4d4d20a3258d46": {
+      "instrumentId": "vu_4d4d20a3258d46",
+      "tiingo": {
+        "indexLevel": "PARTIAL",
+        "reason": "Kandidat gefunden - Identitaet muss vor Nutzung bestaetigt werden."
+      }
+    },
+    "vu_35bbbedc545d44": {
+      "instrumentId": "vu_35bbbedc545d44",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_5ba1cadf7a14f6": {
+      "instrumentId": "vu_5ba1cadf7a14f6",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_7f20679be54590": {
+      "instrumentId": "vu_7f20679be54590",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_0ffca8b14a8e67": {
+      "instrumentId": "vu_0ffca8b14a8e67",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_7f13d39e089e6b": {
+      "instrumentId": "vu_7f13d39e089e6b",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_18701531a86b41": {
+      "instrumentId": "vu_18701531a86b41",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_41feb8a9e471c0": {
+      "instrumentId": "vu_41feb8a9e471c0",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_62fb4dac2e2b78": {
+      "instrumentId": "vu_62fb4dac2e2b78",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_ad8a9c09c56420": {
+      "instrumentId": "vu_ad8a9c09c56420",
+      "tiingo": {
+        "indexLevel": "PARTIAL",
+        "reason": "Kandidat gefunden - Identitaet muss vor Nutzung bestaetigt werden."
+      }
+    },
+    "vu_1030cbb1ec0636": {
+      "instrumentId": "vu_1030cbb1ec0636",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_afe15da269200d": {
+      "instrumentId": "vu_afe15da269200d",
+      "tiingo": {
+        "indexLevel": "PARTIAL",
+        "reason": "Kandidat gefunden - Identitaet muss vor Nutzung bestaetigt werden."
+      }
+    },
+    "vu_7326d3ec863e5a": {
+      "instrumentId": "vu_7326d3ec863e5a",
+      "tiingo": {
+        "indexLevel": "UNSUPPORTED",
+        "reason": "Weder Suche noch Stammdaten fuehren eine Indexreihe; nur ETF-Proxys oder nichts."
+      }
+    },
+    "vu_b2abb03aadceb0": {
+      "instrumentId": "vu_b2abb03aadceb0",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "xauusd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_e86da358da49ef": {
+      "instrumentId": "vu_e86da358da49ef",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "xagusd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_2ff2f92c5cbccb": {
+      "instrumentId": "vu_2ff2f92c5cbccb",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "xptusd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_26f07ebccf5620": {
+      "instrumentId": "vu_26f07ebccf5620",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "xpdusd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_b4e9008d384bf7": {
+      "instrumentId": "vu_b4e9008d384bf7",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "wtiusd",
+          "xtiusd",
+          "usoil",
+          "wticousd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_579368f62b8609": {
+      "instrumentId": "vu_579368f62b8609",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "bcousd",
+          "xbrusd",
+          "ukoil",
+          "brentusd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_84785b46b6f3c1": {
+      "instrumentId": "vu_84785b46b6f3c1",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "xcuusd",
+          "copperusd",
+          "hgusd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_21bcc5bf8b2280": {
+      "instrumentId": "vu_21bcc5bf8b2280",
+      "tiingoFx": {
+        "ticker": null,
+        "status": "UNSUPPORTED",
+        "tried": [
+          "xngusd",
+          "natgasusd",
+          "ngusd"
+        ],
+        "reason": "Keines der Symbole wird vom FX-Endpunkt gefuehrt."
+      }
+    },
+    "vu_e970712c167d9d": {
+      "instrumentId": "vu_e970712c167d9d",
+      "tiingoCrypto": {
+        "ticker": "btcusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            5000,
+            500000
+          ],
+          "within": true
+        },
+        "dailyFirst": "2011-08-19T00:00:00+00:00",
+        "dailyObservations": 4008,
+        "weekendDaily": 1144,
+        "intradayObservations": 1021,
+        "intradayWeekend": 0,
+        "lastBarAgeSeconds": 17,
+        "quoteCurrency": "usd"
+      }
+    },
+    "vu_61dcc288edc348": {
+      "instrumentId": "vu_61dcc288edc348",
+      "tiingoCrypto": {
+        "ticker": "ethusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            100,
+            50000
+          ],
+          "within": true
+        },
+        "dailyFirst": "2015-08-08T00:00:00+00:00",
+        "dailyObservations": 2571,
+        "weekendDaily": 732,
+        "intradayObservations": 1021,
+        "intradayWeekend": 0,
+        "lastBarAgeSeconds": 18,
+        "quoteCurrency": "usd"
+      }
+    },
+    "vu_f9e6d4d7317349": {
+      "instrumentId": "vu_f9e6d4d7317349",
+      "tiingoCrypto": {
+        "ticker": "solusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            1,
+            5000
+          ],
+          "within": true
+        },
+        "dailyFirst": "2020-08-23T00:00:00+00:00",
+        "dailyObservations": 710,
+        "weekendDaily": 201,
+        "intradayObservations": 1021,
+        "intradayWeekend": 0,
+        "lastBarAgeSeconds": 18,
+        "quoteCurrency": "usd"
+      }
+    },
+    "vu_7f649dc74ae054": {
+      "instrumentId": "vu_7f649dc74ae054",
+      "tiingoCrypto": {
+        "ticker": "xrpusd",
+        "status": "SUPPORTED",
+        "identityCheck": {
+          "expectedRange": [
+            0.05,
+            100
+          ],
+          "within": true
+        },
+        "dailyFirst": "2015-02-26T00:00:00+00:00",
+        "dailyObservations": 2566,
+        "weekendDaily": 732,
+        "intradayObservations": 1021,
+        "intradayWeekend": 0,
+        "lastBarAgeSeconds": 19,
+        "quoteCurrency": "usd"
+      }
+    }
+  },
+  "requests": {
+    "tiingo": 68,
+    "official": 24
+  }
+}
