@@ -97,7 +97,7 @@ ueber einen Groessenordnungs-Test belegt.
 
 | Klasse | Tiingo | Entscheidung |
 |---|---|---|
-| Indizes | UNSUPPORTED — Suche liefert nur ETFs/Fonds; `spx` = Spenda Ltd. (ASX), `dax` = Global X DAX ETF, `px1` = Plexure, `hsi` = Home Security Intl., `djia` = Global X Dow 30 Covered Call ETF, `mid`, `smi` = ETFs | **CAPABILITY_GAP** — keine offizielle freie Quelle (Indexstaende sind lizenziert). Owner-Optionen im Vertrag. |
+| Indizes | Tiingo: UNSUPPORTED — Suche liefert nur ETFs/Fonds; `spx` = Spenda Ltd. (ASX), `dax` = Global X DAX ETF, `px1` = Plexure, `hsi` = Home Security Intl., `djia` = Global X Dow 30 Covered Call ETF, `mid`, `smi` = ETFs | **Index Coverage P0** (docs/VU_INDEX_COVERAGE_P0.md): N225 ueber FRED (Citation required) ACTIVE; SPX, DJI, SX5E, UKX, HSI, RUT ueber den vorhandenen FMP-Zugang LICENSE_PENDING; NDX, DAX, CAC, SMI, SHCOMP, MID, MSCI World CAPABILITY_GAP (Tarif/Lizenz). |
 | Edelmetalle | SUPPORTED ueber den FX-Endpunkt (xauusd, xagusd, xptusd, xpdusd): Tagesreihe ab 2021 (Start vor ~5 J. → HTTP 400), 5-Min-Bars, WebSocket | Tiingo, **LICENSE_PENDING** |
 | WTI / Brent | UNSUPPORTED (kein Symbol) | **EIA-Spot** (RWTC ab 1986, RBRTE ab 1987) |
 | Erdgas | `natgasusd` vorhanden, ab 2026-01-30, Kontrakt undokumentiert | **EIA Henry-Hub-Spot** (ab 1997) |
@@ -137,7 +137,7 @@ in einem PR ablehnt — die Spuren bleiben getrennt.
 
 ## 9. Grenzen
 
-- Keine Indexstaende (Capability Gap, Owner-Entscheidung).
+- Indexstaende: nur Nikkei 225 oeffentlich; fuenf weitere technisch angebunden, Anzeige nach Owner-Freigabe; NDX und DAX nur mit Bezahltarif.
 - Keine Futures, keine Roll-Methodik — die Rohstoffe sind EIA-Spotreferenzen.
 - Sitzungsprofil der Wochenfenster ohne Feiertagskalender.
 - Kein Realtime-Strom fuer Multi-Asset: gemessen (Krypto- und FX-WebSocket
