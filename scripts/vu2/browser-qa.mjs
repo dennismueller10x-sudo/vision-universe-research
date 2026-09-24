@@ -73,6 +73,21 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(await page.getByText(/Quant V1/).count())throw Error('Quant V1 must not appear in a Quant V2 match');
   // The rule that explains a profile also selects with it (section 20).
   if(await page.getByRole('link',{name:'Alle Titel mit diesem Profil zeigen'}).count()!==8)throw Error('profile screen links missing');
+  // Option C: Kursstaerke und Anlegerrendite stehen nebeneinander, und
+  // zwar mit ZWEI verschiedenen Zahlen. Eine Oberflaeche, die beide
+  // Begriffe zeigt und darunter denselben Wert schreibt, hat die
+  // Trennung nicht umgesetzt, sondern nur beschriftet.
+  await page.getByRole('heading',{name:'Warum unterscheiden sich Kursstärke und Anlegerrendite?',exact:true}).waitFor();
+  const returnRows=page.locator('.return-kind-grid .row:not(.eyebrow)');
+  if(await returnRows.count()<2)throw Error('Kursstärke/Anlegerrendite: zu wenige Zeiträume');
+  const kopf=await page.locator('.return-kind-grid .row.eyebrow span').allTextContents();
+  if(kopf.join('|')!=='Zeitraum|Kursstärke|Anlegerrendite')throw Error('return kind header drifted: '+kopf.join('|'));
+  const erste=await returnRows.first().locator('span').allTextContents();
+  if(erste[1]===erste[2])throw Error('Kursstärke und Anlegerrendite zeigen denselben Wert: '+erste.join('|'));
+  // Und kein Fachwort in der primaeren Oberflaeche.
+  const rohtext=await page.locator('.return-kind-section').innerText();
+  for(const wort of ['adjustedClose','split adjusted','total return','TOTAL_RETURN','SPLIT_ADJUSTED'])
+   if(rohtext.includes(wort))throw Error('technischer Begriff in der Oberfläche: '+wort);
   await page.getByRole('heading',{name:'Worauf diese Analyse beruht',exact:true}).waitFor();
   // A bank keeps its closed industry factors instead of inventing them.
   await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('JPM');await page.locator('main footer').waitFor();

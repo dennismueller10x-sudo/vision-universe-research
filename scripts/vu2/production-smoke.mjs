@@ -44,6 +44,33 @@ for(const width of [1440,390]){
   if(overflow)bad.push('OVERFLOW');
   if(h1!==1)bad.push('H1='+h1);
   if(hits.length)bad.push('FORBIDDEN:'+hits.join('|'));
+
+  /* OPTION C, IM GEBAUTEN RELEASE GEPRUEFT
+
+     Kursstaerke und Anlegerrendite muessen nebeneinander stehen UND
+     verschiedene Zahlen zeigen. Eine Oberflaeche, die beide Begriffe
+     traegt und darunter denselben Wert schreibt, hat die Trennung
+     beschriftet statt umgesetzt - und genau das faellt in einem
+     Screenshot niemandem auf. */
+  if(view.startsWith('/vu2/?view=quant')){
+   const grid=page.locator('.return-kind-grid');
+   if(!await grid.count()){bad.push('RETURN_KIND_FEHLT');}
+   else{
+    const kopf=await grid.locator('.row.eyebrow span').allTextContents();
+    if(kopf.join('|')!=='Zeitraum|Kursstärke|Anlegerrendite')bad.push('RETURN_KIND_KOPF:'+kopf.join('|'));
+    const zeilen=grid.locator('.row:not(.eyebrow)');
+    const anzahl=await zeilen.count();
+    if(anzahl<2)bad.push('RETURN_KIND_ZEILEN='+anzahl);
+    else{
+     let verschieden=0;
+     for(let z=0;z<anzahl;z++){
+      const w=await zeilen.nth(z).locator('span').allTextContents();
+      if(w[1]!==w[2])verschieden++;
+     }
+     if(!verschieden)bad.push('RETURN_KIND_IDENTISCH');
+    }
+   }
+  }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
   console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));
   if(bad.length)failures++;

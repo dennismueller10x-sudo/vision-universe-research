@@ -1268,7 +1268,9 @@ function returnKindSection(data){
  section.append(el('p',{class:'muted',
   text:Math.abs(abstand)<0.0005
    ? VUProductLanguage.negative('priceStrengthVsInvestorReturn')
-   : 'Über '+groesste.label.toLowerCase()+' lagen die Ausschüttungen bei '+pct1(Math.abs(abstand))+
+   /* Das Label kleinzuschreiben ergab "Über 12 monate ohne den letzten" -
+      es faengt mit einer Zahl an, und der Rest ist ein Substantiv. */
+   : 'Über ' + groesste.label + ' lagen die Ausschüttungen bei ' + pct1(Math.abs(abstand)) +
      ' — so viel mehr, als die reine Kursbewegung zeigt.'}));
  section.append(el('details',{},[el('summary',{text:VUProductLanguage.question('priceStrengthVsInvestorReturn')}),
   el('p',{text:VUProductLanguage.beginner('priceStrengthVsInvestorReturn')})]));
