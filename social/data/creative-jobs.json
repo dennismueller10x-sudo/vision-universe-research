@@ -464,9 +464,9 @@
       "processingKey": "brief_37b60028316a1f1c:vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_REQUESTED",
+      "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-23T17:54:07.118Z",
-      "updatedAt": "2026-09-23T17:54:07.118Z",
+      "updatedAt": "2026-09-24T09:31:29.550Z",
       "prNumber": null,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -475,8 +475,27 @@
           "state": "CREATIVE_JOB_REQUESTED",
           "at": "2026-09-23T17:54:07.118Z",
           "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-24T09:31:29.550Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 3)"
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-24T09:31:29.550Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 3)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-24T09:31:29.550Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 3 von 3)"
         }
-      ]
+      ],
+      "resultCommitSha": "5b7846eb146f6a7dcdda59e001d834280950fd5e",
+      "resultRef": "origin/authoring/request/vu-web-c23118efc7199b43-20260923",
+      "resultBlobSha": "247e1b2db4e0266ba9473d8e461dcf48f3d0cb9e",
+      "evidencePackageId": "vu-web-c23118efc7199b43-20260923"
     }
   ],
   "budget": {
@@ -486,5 +505,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-09-23T04:13:10.024Z"
+  "reconciledAt": "2026-09-24T09:31:29.550Z"
 }
