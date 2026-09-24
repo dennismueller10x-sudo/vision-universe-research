@@ -163,6 +163,24 @@ jobs:
             exit 1
           fi
 
+      # Faellt die Suite, wirft der Lauf seine frisch gebauten Artefakte weg -
+      # und damit genau das, woran sich der Fehlschlag untersuchen liesse.
+      # Die kleinen Berichtsdateien werden deshalb auch im Fehlerfall
+      # gesichert. Kursdaten sind nicht dabei; das sind Zusammenfassungen.
+      - name: Artefakte des Laufs sichern, auch wenn die Suite faellt
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: refresh-diagnose
+          path: |
+            quant/data/market/factors/factors-FULL_UNIVERSE-summary.json
+            quant/data/market/tiingo-status.json
+            quant/data/sec/quant-factor-inputs.json
+            quant/data/market/freshness/health.json
+            ${{ runner.temp }}/regression.log
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Groesse der Arbeitsablage
         id: disk
         if: always()

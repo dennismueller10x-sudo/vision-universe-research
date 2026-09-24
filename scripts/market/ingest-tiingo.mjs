@@ -515,7 +515,21 @@ for (const security of SECURITIES) {
     console.log(`${label} GESPERRT — ${strictReconciliation.reason}`);
     continue;
   }
-  const merged = store.mergeBars(id, validation.bars, {
+  /* GESPEICHERT WIRD NUR, WAS NEU IST
+
+     Der Ueberlappungstag dient der Pruefung, nicht dem Bestand. Wuerde er
+     mitgespeichert, ueberschriebe er bei jedem Lauf einen bereits
+     veroeffentlichten historischen Bar - naemlich dann, wenn der Anbieter
+     die Historie nach einer Ausschuettung nachbereinigt hat. Das waere
+     eine rueckwirkende Aenderung veroeffentlichter Kurse als Nebenwirkung
+     einer Validierungsreparatur, und genau das soll es nicht sein.
+
+     Der Bestand bleibt damit exakt so, wie er ohne diese Reparatur waere;
+     neu ist nur, dass die Pruefung ein in sich stimmiges Fenster sieht. */
+  const zuSpeichern = anschlussDatumRoh
+    ? validation.bars.filter((bar) => String(bar.date).slice(0, 10) > anschlussDatumRoh)
+    : validation.bars;
+  const merged = store.mergeBars(id, zuSpeichern, {
     ticker: security.ticker,
     name: security.name,
     exchange: security.exchange,

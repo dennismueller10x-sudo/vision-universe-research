@@ -69,3 +69,19 @@ test("der Abruf holt einen Tag Ueberlappung und prueft damit", () => {
      Ueberlappung sich einen duplicate_bar ein. */
   assert.match(ingest, /String\(bar\.date\)\.slice\(0, 10\) > anschlussDatumRoh/);
 });
+
+test("der Ueberlappungstag wird geprueft, aber nicht gespeichert", () => {
+  /* Die Reparatur darf den Bestand nicht anfassen. Wuerde der
+     Ueberlappungsbar mitgespeichert, ueberschriebe er bei jedem Lauf
+     einen bereits veroeffentlichten historischen Kurs - naemlich genau
+     dann, wenn der Anbieter nach einer Ausschuettung nachbereinigt hat.
+     Eine Validierungsreparatur, die veroeffentlichte Kurse rueckwirkend
+     aendert, ist keine. */
+  const ingest = readFileSync("scripts/market/ingest-tiingo.mjs", "utf8");
+  assert.match(ingest, /const zuSpeichern = anschlussDatumRoh/);
+  assert.match(ingest, /store\.mergeBars\(id, zuSpeichern,/);
+  /* Und der Pruefeingang bleibt der weitere von beiden. */
+  assert.match(ingest, /const validationInput = \[\.\.\.anschlussFuerPruefung, \.\.\.neueBars\]/);
+  assert.equal(/store\.mergeBars\(id, validation\.bars,/.test(ingest), false,
+    "der ungefilterte Satz wird noch gespeichert - der Ueberlappungstag landet im Bestand");
+});
