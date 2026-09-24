@@ -2,8 +2,8 @@
    Hero, Filter-Chips, kompakte Kachel-Reihen (mehrere Kacheln pro
    Bildschirm, seitlich wischbar), Themenwelt-Banner mit Fotos.
    Farbe ist Atmosphaere; Kursrichtung bleibt semantisch gruen/rot. */
-body.dv2 .v2-home{--v2-green:#087942;--v2-red:#b33129;--tile-base:#fff;--tile-ink:#0d0f12;--tile-muted:#5f6670;--gap:14px;max-width:1440px;margin:auto;color:var(--v2-ink);padding:0 0 40px}
-html:not([data-theme=light]) body.dv2 .v2-home{--v2-green:#5fe3a1;--v2-red:#ff8e98;--tile-base:#17191d;--tile-ink:#f4f4f1;--tile-muted:#a9adb5}
+body.dv2 .v2-home{--v2-green:#1e8433;--v2-red:#d93a30;--v2-chart-up:#5cc850;--v2-chart-down:#e4382f;--tile-base:#fff;--tile-ink:#0d0f12;--tile-muted:#5f6670;--gap:14px;max-width:1440px;margin:auto;color:var(--v2-ink);padding:0 0 40px}
+html:not([data-theme=light]) body.dv2 .v2-home{--v2-green:#5cc850;--v2-red:#ff5a4f;--tile-base:#17191d;--tile-ink:#f4f4f1;--tile-muted:#a9adb5}
 body.dv2 .v2-eyebrow{font-size:10px;letter-spacing:.14em;font-weight:700;text-transform:uppercase;color:var(--v2-muted);margin:0 0 10px;line-height:1.5;display:block}
 
 /* ---------- Hero ---------- */
@@ -27,16 +27,6 @@ body.dv2 .v2-intro-visual{position:relative;margin:0;min-width:0}
 body.dv2 .v2-intro-visual img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:22px;background:#050607;box-shadow:0 24px 60px rgba(8,10,14,.22)}
 body.dv2 .v2-intro-tag{margin:12px 4px 0;font-size:10px;line-height:1.7;letter-spacing:.22em;text-transform:uppercase;color:var(--v2-muted);text-align:right}
 
-/* ---------- Filter-Chips ---------- */
-body.dv2 .v2-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 0 6px;margin:0 0 6px;overscroll-behavior-x:contain}
-body.dv2 .v2-chips::-webkit-scrollbar{display:none}
-body.dv2 .v2-chip{--c:#8a8f98;flex:none;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 15px;border-radius:99px;border:1px solid var(--v2-line);background:var(--tile-base);color:var(--v2-ink);font-size:12.5px;font-weight:600}
-body.dv2 .v2-chip-dot{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 18%,transparent)}
-body.dv2 .v2-chip[aria-pressed=true]{background:#0d0f12;color:#fff;border-color:#0d0f12}
-html:not([data-theme=light]) body.dv2 .v2-chip[aria-pressed=true]{background:#f4f4f1;color:#0d0f12;border-color:#f4f4f1}
-body.dv2 .v2-chip[data-chip=alle] .v2-chip-dot{display:none}
-body.dv2 .v2-chip[data-chip=themen]{--c:#f08a24}body.dv2 .v2-chip[data-chip=tech]{--c:#6d4bff}body.dv2 .v2-chip[data-chip=health]{--c:#2d6bff}body.dv2 .v2-chip[data-chip=energy]{--c:#e2a400}body.dv2 .v2-chip[data-chip=finance]{--c:#3d5fa8}body.dv2 .v2-chip[data-chip=consumer]{--c:#d65c7a}body.dv2 .v2-chip[data-chip=industry]{--c:#16a3a0}body.dv2 .v2-chip[data-chip=wachstum]{--c:#1faa59}body.dv2 .v2-chip[data-chip=momentum]{--c:#ff6a3d}body.dv2 .v2-chip[data-chip=qualitaet]{--c:#b8923a}body.dv2 .v2-chip[data-chip=indizes]{--c:#4a5263}
-body.dv2 .v2-journey>[hidden],body.dv2 .v2-track-item[hidden]{display:none!important}
 
 /* ---------- Welten-Reihen ---------- */
 body.dv2 .v2-world,body.dv2 .v2-feature,body.dv2 .v2-business-story{margin-top:34px;min-width:0}
@@ -71,14 +61,19 @@ body.dv2 .v2-stock .up{color:var(--v2-green)}body.dv2 .v2-stock .down{color:var(
 body.dv2 .v2-tile .v2-stock-why{font-size:11.5px;line-height:1.38;color:var(--tile-ink);opacity:.86;margin:6px 0 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 body.dv2 .v2-tile .dx-lazy-media{width:auto;height:64px;flex:none;margin:auto -13px 0;padding-top:6px}
 body.dv2 .v2-stock .dx-art{display:block;width:100%;height:100%;color:#9aa2ad}
-body.dv2 .v2-stock .dx-art[data-direction=up]{color:var(--v2-green)}body.dv2 .v2-stock .dx-art[data-direction=down]{color:var(--v2-red)}
-body.dv2 .v2-stock .dx-art-line{fill:none;stroke:currentColor;stroke-width:2}body.dv2 .v2-stock .dx-art-base,body.dv2 .v2-stock .dx-art-high{stroke:currentColor;opacity:.16}body.dv2 .v2-stock .dx-art-tick{fill:var(--tile-muted);font-size:9px}body.dv2 .v2-stock .dx-art-node{fill:currentColor}
+body.dv2 .v2-stock .dx-art[data-direction=up]{color:var(--v2-chart-up)}body.dv2 .v2-stock .dx-art[data-direction=down]{color:var(--v2-chart-down)}
+/* Trade-Republic-Prinzip: nur die Linie. Keine Flaeche, kein Glow, kein Raster. */
+body.dv2 .v2-stock .dx-art-fill,body.dv2 .v2-stock .dx-art-glow{display:none}
+/* Auch die Intraday-Linie der Kacheln (dx-micro) nutzt die Chart-Farben. */
+body.dv2 .v2-stock .dx-lazy-media{--discover-up:var(--v2-chart-up);--discover-down:var(--v2-chart-down)}
+body.dv2 .v2-stock .dx-micro-grid{display:none}
+body.dv2 .v2-stock .dx-art-line{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}body.dv2 .v2-stock .dx-art-base,body.dv2 .v2-stock .dx-art-high{stroke:currentColor;opacity:.16}body.dv2 .v2-stock .dx-art-tick{fill:var(--tile-muted);font-size:9px}body.dv2 .v2-stock .dx-art-node{fill:currentColor}
 body.dv2 .v2-tile .v2-stock-caption{display:block;font-size:8.5px;line-height:1.35;color:var(--tile-muted);margin:3px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.dv2 .v2-tile .dx-live-label{display:none}
 body.dv2 .v2-tile-foot{display:flex;align-items:center;gap:8px;margin-top:6px;padding-top:7px;border-top:1px solid color-mix(in srgb,var(--tt) 14%,var(--v2-line));font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
-body.dv2 .v2-tile-price{color:var(--tile-ink);white-space:nowrap}
-body.dv2 .v2-tile-change{white-space:nowrap}
-body.dv2 .v2-tile .v2-stock-cta{margin-left:auto;font-size:13px;color:var(--tile-muted);font-weight:700}
+body.dv2 .v2-tile-price{flex:none;color:var(--tile-ink);white-space:nowrap}
+body.dv2 .v2-tile-asof{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:var(--tile-muted)}
+body.dv2 .v2-tile .v2-stock-cta{flex:none;margin-left:auto;white-space:nowrap;font-size:13px;color:var(--tile-muted);font-weight:700}
 body.dv2 .v2-tile-lg{padding:17px 17px 12px;border-radius:20px}
 body.dv2 .v2-tile-lg .v2-stock-name{font-size:18px}
 body.dv2 .v2-tile-lg .v2-stock-performance strong{font-size:clamp(26px,2.6vw,36px)}
@@ -102,7 +97,8 @@ body.dv2 .v2-theme-tile-foot{margin-top:auto;display:flex;align-items:center;jus
 body.dv2 .v2-theme-count{font-size:11px;font-weight:800;color:#fff;white-space:nowrap}
 body.dv2 .v2-theme-go{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#fff;color:#0d0f12;font-size:13px;font-weight:800}
 body.dv2 .v2-theme-tile:hover .v2-theme-go{background:var(--tone);color:#fff}
-body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 5 * var(--gap)) / 6)}
+body.dv2 .v2-themes{margin-top:8px}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 3 * var(--gap)) / 4)}
+body.dv2 .v2-themes .v2-theme-tile h3{font-size:17px}body.dv2 .v2-themes .v2-theme-tile p{font-size:12px}
 
 body.dv2 .v2-theme-banner{position:relative;isolation:isolate;overflow:hidden;border-radius:22px;background:#050607;color:#fff;min-height:280px;display:flex;align-items:center;margin-bottom:16px;box-shadow:0 20px 55px rgba(5,7,10,.2)}
 body.dv2 .v2-theme-banner-art{position:absolute;top:0;right:0;bottom:0;height:100%;aspect-ratio:16/9;max-width:72%;z-index:-2;background:radial-gradient(ellipse at 70% 60%,color-mix(in srgb,var(--tone) 55%,transparent) 0%,transparent 62%),#050607;overflow:hidden}
@@ -114,7 +110,7 @@ body.dv2 .v2-theme-banner h2,body.dv2 .v2-theme-banner h1{font-size:clamp(28px,3
 body.dv2 .v2-theme-banner-lead{font-size:14px;line-height:1.5;color:rgba(255,255,255,.8);margin:10px 0 0;max-width:460px}
 body.dv2 .v2-theme-banner .v2-world-evidence{color:rgba(255,255,255,.62)}
 /* Eine Themenwelt ist eine dunkle Buehne: Foto-Banner und ihre Aktien. */
-body.dv2 .v2-world-theme{--tile-base:#15171b;--tile-ink:#f4f4f1;--tile-muted:#a9adb5;--v2-line:#2a2d33;--v2-green:#5fe3a1;--v2-red:#ff8e98;background:#07080a;color:#f4f4f1;border-radius:24px;overflow:hidden;padding:0 0 6px;box-shadow:0 22px 60px rgba(5,7,10,.18)}
+body.dv2 .v2-world-theme{--tile-base:#15171b;--tile-ink:#f4f4f1;--tile-muted:#a9adb5;--v2-line:#2a2d33;--v2-green:#5cc850;--v2-red:#ff5a4f;background:#07080a;color:#f4f4f1;border-radius:24px;overflow:hidden;padding:0 0 6px;box-shadow:0 22px 60px rgba(5,7,10,.18)}
 body.dv2 .v2-world-theme .v2-theme-banner{border-radius:0;margin:0;box-shadow:none}
 body.dv2 .v2-world-theme .dx-rail-wrap{padding:0 16px}
 body.dv2 .v2-world-theme .v2-track{padding-top:2px}
@@ -145,7 +141,7 @@ html:not([data-theme=light]) body.dv2 .v2-stock-hero{border-color:#2b2f36}
 
 /* ---------- Tablet ---------- */
 @media(max-width:1100px){
-  body.dv2 .v2-track-item,body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 3 * var(--gap)) / 4.3)}
+  body.dv2 .v2-track-item{flex-basis:calc((100% - 3 * var(--gap)) / 4.3)}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.6)}
   body.dv2 .v2-hero-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.4)}
   body.dv2 .v2-intro-tag{display:none}
 }
@@ -168,15 +164,14 @@ html:not([data-theme=light]) body.dv2 .v2-stock-hero{border-color:#2b2f36}
   body.dv2 .v2-pill{min-height:42px;padding:10px 17px;font-size:12.5px}
   body.dv2 .v2-search-prompt{min-height:44px;font-size:12px;max-width:none}
   body.dv2 .v2-world-head{flex-wrap:wrap;align-items:baseline;row-gap:0}body.dv2 .v2-world-head>div{display:contents}body.dv2 .v2-world-head h2{flex:1 1 auto;min-width:0;order:1}body.dv2 .v2-world-head .v2-world-more{order:2}body.dv2 .v2-world-head .v2-world-subtitle,body.dv2 .v2-world-head .v2-world-evidence,body.dv2 .v2-world-head .v2-eyebrow{order:3;flex-basis:100%}
-  body.dv2 .v2-chips{margin:0 -20px 2px;padding:4px 20px 6px;scroll-padding-left:20px}
-  body.dv2 .v2-chip{min-height:38px;padding:7px 13px;font-size:12px}
   body.dv2 .v2-world,body.dv2 .v2-feature,body.dv2 .v2-business-story{margin-top:26px}
   body.dv2 .v2-world-head{margin-bottom:8px;gap:10px}
   body.dv2 .v2-world h2{font-size:20px}
   body.dv2 .v2-world-subtitle{font-size:11.5px;margin-top:3px}
   body.dv2 .v2-world-more{font-size:11.5px;padding:8px 0}
   body.dv2 .v2-track,body.dv2 .v2-hero-track{margin:0 -20px;padding:3px 20px 10px;scroll-padding-left:20px}
-  body.dv2 .v2-track-item,body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.55)}
+  body.dv2 .v2-track-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.55)}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - var(--gap)) / 1.55)}
+  body.dv2 .v2-themes{margin-top:4px}body.dv2 .v2-themes .v2-theme-tile h3{font-size:15px}body.dv2 .v2-themes .v2-theme-tile p{font-size:11.5px}
   body.dv2 .v2-hero-item{flex-basis:calc((100% - var(--gap)) / 1.6)}
   body.dv2 .v2-tile{padding:10px 10px 8px;border-radius:14px}
   body.dv2 .v2-tile .v2-stock-name{font-size:12.5px}
@@ -207,7 +202,7 @@ html:not([data-theme=light]) body.dv2 .v2-stock-hero{border-color:#2b2f36}
   body.dv2 .v2-business-story{display:block;padding:27px 22px;border-radius:20px}body.dv2 .v2-business-story h2{font-size:39px;margin-bottom:20px}body.dv2 .v2-story-tabs{margin-bottom:23px}body.dv2 .v2-story-statement{font-size:24px;line-height:1.15;margin-bottom:20px}body.dv2 .v2-story-bars{min-height:255px;gap:15px}body.dv2 .v2-story-column strong{font-size:19px}body.dv2 .v2-story-link{display:inline-block;margin-top:18px}body.dv2 .v2-finish{padding:42px 22px;margin-top:44px}
 }
 @media(max-width:360px){
-  body.dv2 .v2-track-item,body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - var(--gap)) / 2.2)}
+  body.dv2 .v2-track-item{flex-basis:calc((100% - var(--gap)) / 2.2)}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - var(--gap)) / 1.4)}
   body.dv2 .v2-stock-hero .v2-stock-name{font-size:27px}body.dv2 .v2-stock-hero .v2-stock-performance strong{font-size:49px}body.dv2 .v2-stock-hero .dx-lazy-media{height:125px}body.dv2 .v2-business-story{padding:25px 17px}
 }
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-tile,body.dv2 .v2-pill,body.dv2 .v2-theme-art img{transition:none}body.dv2 .v2-track,body.dv2 .v2-hero-track{scroll-behavior:auto}}
