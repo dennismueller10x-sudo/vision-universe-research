@@ -35,11 +35,11 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 25 | Rohstoffe & Bergbau | `25-rohstoffe-bergbau` | ✅ |
 | 26 | Industrie & Maschinenbau | `26-industrie-maschinenbau` | ✅ |
 | 27 | Logistik & Automation | `27-logistik-automation` | ✅ |
-| 28 | Infrastruktur | `28-infrastruktur` | offen |
-| 29 | Banken & Fintech | `29-banken-fintech` | offen |
-| 30 | Versicherungen | `30-versicherungen` | offen |
-| 31 | Immobilien & REITs | `31-immobilien-reits` | offen |
-| 32 | Konsum & Marken | `32-konsum-marken` | offen |
+| 28 | Infrastruktur | `28-infrastruktur` | ✅ |
+| 29 | Banken & Fintech | `29-banken-fintech` | ✅ |
+| 30 | Versicherungen | `30-versicherungen` | ✅ |
+| 31 | Immobilien & REITs | `31-immobilien-reits` | ✅ |
+| 32 | Konsum & Marken | `32-konsum-marken` | ✅ |
 | 33 | Luxus & Premium | `33-luxus-premium` | offen |
 | 34 | Lebensmittel & Getränke | `34-lebensmittel-getraenke` | offen |
 | 35 | E-Commerce | `35-e-commerce` | offen |
