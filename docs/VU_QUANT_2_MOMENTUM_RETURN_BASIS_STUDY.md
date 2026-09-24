@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-09-24T10:09:59.000Z |
+| Stand der Messung | 2026-09-24T10:40:51.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -64,7 +64,17 @@ An einem Ex-Tag ohne Split muss gelten: `(adj_vor/close_vor) / (adj_jetzt/close_
 | schlechtester Fehler | 760,6027 % |
 | Toleranz | 0,20 % |
 
-Nicht konsistent: `ref_MMM` (23/24), `ref_DD` (23/24), `ref_UIS` (1/3), `ref_AXR` (5/6), `ref_PHI` (23/24), `ref_SIEB` (22/24), `ref_SSL` (23/24), `ref_AIRT` (16/19), `ref_ATRO` (4/10), `ref_BSET` (23/24), `ref_DOMH` (2/4), `ref_CXT` (23/24), `ref_BBWI` (23/24), `ref_SPXC` (23/24), `ref_BDN` (22/24), `ref_MBI` (23/24), `ref_IEP` (21/24), `ref_EBF` (23/24), `ref_CLF` (23/24), `ref_DHR` (23/24), `ref_HE` (23/24), `ref_LEE` (23/24), `ref_TCI` (21/24), `ref_MSB` (21/24), `ref_NPK` (21/24), `ref_NRT` (20/24), `ref_PHG` (23/24), `ref_PPC` (1/4), `ref_EQC` (22/24), `ref_CMT` (17/18), `ref_BBVA` (22/24), `ref_VOD` (23/24), `ref_DDS` (23/24), `ref_CAR` (11/12), `ref_TG` (23/24), `ref_BRSL` (22/24), `ref_CLH` (3/12), `ref_DWSN` (5/7), `ref_MOD` (23/24), `ref_MTW` (23/24), `ref_SSP` (22/24), `ref_SUNE` (23/24), `ref_TSRI` (23/24), `ref_WEYS` (23/24), `ref_WOR` (23/24), `ref_WPP` (23/24), `ref_AXGN` (1/2), `ref_EVI` (17/20), `ref_RIO` (23/24), `ref_GFI` (22/24).
+**Nicht jeder Fehlschlag ist ein Befund.** Die Formel gilt für eine Bardividende und sonst nichts. Eine Abspaltung, eine Sachausschüttung, ein Bezugsrecht — jedes davon bereinigt der Anbieter, und keines steht vollständig in der Dividendenspalte. Deshalb wird jede Abweichung eingeordnet statt gezählt: die **implizite Ausschüttung** ist das, was die Bereinigung tatsächlich herausgenommen hat.
+
+| Einordnung | Ereignisse | |
+|---|---:|---|
+| `ADJUSTMENT_BELOW_CASH_DIVIDEND` | 465 | bereinigt **weniger** als die Bardividende — ein echter Widerspruch |
+| `ADJUSTMENT_EXCEEDS_CASH_DIVIDEND` | 326 | bereinigt **mehr** als die gemeldete Dividende — Signatur einer zusätzlichen Ausschüttung (Abspaltung, Sachdividende) |
+| `ADJUSTMENT_ON_NEIGHBOURING_DAY` | 2 | bereinigt am Nachbartag — ein Datumsversatz, keine fehlende Bereinigung |
+
+**Erklärt: 328 · unerklärt: 465** (0,740 % aller geprüften Ereignisse). Das Urteil steht auf den unerklärten: eine Reihe, die eine Dividende gar nicht oder nur zum Teil herausrechnet, ist an diesem Tag keine Gesamtrendite-Reihe, und keine Einordnung erklärt das weg.
+
+Titel mit Abweichungen (erste 10 von 50 aufgezeichneten): `ref_MMM` 23/24 · `ref_DD` 23/24 · `ref_UIS` 1/3 · `ref_AXR` 5/6 · `ref_PHI` 23/24 · `ref_SIEB` 22/24 · `ref_SSL` 23/24 · `ref_AIRT` 16/19 · `ref_ATRO` 4/10 · `ref_BSET` 23/24.
 
 ### Was die Produktion heute rechnet
 
@@ -102,7 +112,9 @@ Ein Faktorwert ist im Produkt kein Prozentwert, sondern ein Perzentil. Deshalb i
 | `6M` | 6.003 | 0,9929 | 50 | 248,5 | 333,9 | 5.603 | 2.762 | 333 | 80 | 17 / 17 |
 | `12M` | 6.003 | 0,9925 | 52 | 306 | 361 | 5.099 | 2.837 | 619 | 68 | 20 / 20 |
 | `12M-1M` | 6.003 | 0,9930 | 50 | 302 | 360 | 3.853 | 2.800 | 610 | 66 | 9 / 9 |
-| `RELATIVE_STRENGTH` | 0 | — | — | — | — | — | 0 | 0 | 0 | 0 / 0 |
+| `RELATIVE_STRENGTH` | — | — | — | — | — | — | — | — | — | — |
+
+> **`RELATIVE_STRENGTH` · `RANK_EQUIVALENT_TO_12M`** (`BENCHMARK_NOT_IN_CANONICAL_STORE`). Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.
 
 `ρ` ist die Spearman-Rangkorrelation zwischen beiden Basen, `Pz` Perzentilpunkte, `Dezil ab/zu` der Wechsel im obersten Zehntel. Aus einem Median allein folgt nichts: ein Median von null Rängen und ein P95 von mehreren hundert sind gleichzeitig wahr, und nur der zweite Wert entscheidet, ob ein Titel aus dem obersten Dezil fällt.
 
@@ -240,7 +252,7 @@ An den historischen Stichtagen gibt es **keine** Strategiewirkung: die nicht-mom
 |---|---|
 | `FULL_UNIVERSE_RETURN_AUDIT` | `PASS` |
 | `DUAL_RETURN_SERIES_CAPABLE_UNIVERSE` | `6874` |
-| `PRICE_VS_TOTAL_RANK_CORRELATION` | `3M` 0,9937 · `6M` 0,9929 · `12M` 0,9925 · `12M-1M` 0,9930 · `RELATIVE_STRENGTH` null |
+| `PRICE_VS_TOTAL_RANK_CORRELATION` | `3M` 0,9937 · `6M` 0,9929 · `12M` 0,9925 · `12M-1M` 0,9930 · `RELATIVE_STRENGTH` RANK_EQUIVALENT_TO_12M |
 | `DIVIDEND_BIAS` | `MEASURED` |
 | `SECTOR_BIAS` | `MEASURED` |
 | `STRATEGY_IMPACT` | `MEASURED` |

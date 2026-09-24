@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-09-24T10:09:59.000Z",
+ "generatedAt": "2026-09-24T10:40:51.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -285,306 +285,1370 @@
   "eventsConsistent": 62066,
   "worstError": 7.606027,
   "tolerance": 0.002,
+  "failureClasses": {
+   "ADJUSTMENT_BELOW_CASH_DIVIDEND": 465,
+   "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 326,
+   "ADJUSTMENT_ON_NEIGHBOURING_DAY": 2
+  },
+  "explainedByCorporateAction": 328,
+  "unexplained": 465,
+  "unexplainedShare": 0.007398,
   "inconsistentSecurities": [
    {
     "securityId": "ref_MMM",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.007854
+    "worstError": 0.007854,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2024-04-01",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 94.02,
+      "previousClose": 106.07,
+      "dividend": 17.3875,
+      "impliedDistribution": 16.55447,
+      "impliedOverDividend": 0.9521,
+      "error": 0.007854
+     }
+    ]
    },
    {
     "securityId": "ref_DD",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.003822
+    "worstError": 0.003822,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2025-11-03",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 34.69,
+      "previousClose": 81.65,
+      "dividend": 47.5,
+      "impliedDistribution": 47.187918,
+      "impliedOverDividend": 0.9934,
+      "error": 0.003822
+     }
+    ]
    },
    {
     "securityId": "ref_UIS",
     "checked": 3,
     "consistent": 1,
-    "worstError": 0.019906
+    "worstError": 0.019906,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2
+    },
+    "samples": [
+     {
+      "date": "1990-06-18",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 14.38,
+      "previousClose": 14.88,
+      "dividend": 2.5,
+      "impliedDistribution": 2.203791,
+      "impliedOverDividend": 0.8815,
+      "error": 0.019906
+     },
+     {
+      "date": "1990-03-15",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 16.63,
+      "previousClose": 16.63,
+      "dividend": 2.5,
+      "impliedDistribution": 2.173288,
+      "impliedOverDividend": 0.8693,
+      "error": 0.019646
+     }
+    ]
    },
    {
     "securityId": "ref_AXR",
     "checked": 6,
     "consistent": 5,
-    "worstError": 0.00202
+    "worstError": 0.00202,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2007-08-08",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 33.79,
+      "previousClose": 37.42,
+      "dividend": 1,
+      "impliedDistribution": 1.075596,
+      "impliedOverDividend": 1.0756,
+      "error": 0.00202
+     }
+    ]
    },
    {
     "securityId": "ref_PHI",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002552
+    "worstError": 0.002552,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2025-08-27",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 20.23,
+      "previousClose": 22.51,
+      "dividend": 0.841381,
+      "impliedDistribution": 0.898825,
+      "impliedOverDividend": 1.0683,
+      "error": 0.002552
+     }
+    ]
    },
    {
     "securityId": "ref_SIEB",
     "checked": 24,
     "consistent": 22,
-    "worstError": 0.020102
+    "worstError": 0.020102,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1,
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2008-06-19",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 3.25,
+      "previousClose": 3.67,
+      "dividend": 0.2,
+      "impliedDistribution": 0.212754,
+      "impliedOverDividend": 1.0638,
+      "error": 0.003475
+     },
+     {
+      "date": "1996-11-12",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 12,
+      "previousClose": 17.45,
+      "dividend": 6.4531,
+      "impliedDistribution": 6.102313,
+      "impliedOverDividend": 0.9456,
+      "error": 0.020102
+     }
+    ]
    },
    {
     "securityId": "ref_SSL",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002506
+    "worstError": 0.002506,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2023-09-14",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 12.84,
+      "previousClose": 12.58,
+      "dividend": 0.5321413,
+      "impliedDistribution": 0.500618,
+      "impliedOverDividend": 0.9408,
+      "error": 0.002506
+     }
+    ]
    },
    {
     "securityId": "ref_AIRT",
     "checked": 19,
     "consistent": 16,
-    "worstError": 0.00931
+    "worstError": 0.00931,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2,
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2001-05-24",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 4,
+      "previousClose": 3.3,
+      "dividend": 0.15,
+      "impliedDistribution": 0.119277,
+      "impliedOverDividend": 0.7952,
+      "error": 0.00931
+     },
+     {
+      "date": "1999-05-12",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 5.75,
+      "previousClose": 4.75,
+      "dividend": 0.08,
+      "impliedDistribution": 0.06518,
+      "impliedOverDividend": 0.8148,
+      "error": 0.00312
+     },
+     {
+      "date": "1993-04-26",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 0.4375,
+      "previousClose": 0.5,
+      "dividend": 0.01,
+      "impliedDistribution": 0.011173,
+      "impliedOverDividend": 1.1173,
+      "error": 0.002346
+     }
+    ]
    },
    {
     "securityId": "ref_ATRO",
     "checked": 10,
     "consistent": 4,
-    "worstError": 0.094725
+    "worstError": 0.094725,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 6
+    },
+    "samples": [
+     {
+      "date": "2014-09-03",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 53.24,
+      "previousClose": 64.25,
+      "dividend": 12.998,
+      "impliedDistribution": 12.607891,
+      "impliedOverDividend": 0.97,
+      "error": 0.006072
+     },
+     {
+      "date": "2012-10-25",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 23.6,
+      "previousClose": 26.19,
+      "dividend": 3.3255,
+      "impliedDistribution": 3.23466,
+      "impliedOverDividend": 0.9727,
+      "error": 0.003468
+     },
+     {
+      "date": "2008-10-02",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 18.86,
+      "previousClose": 22.21,
+      "dividend": 4,
+      "impliedDistribution": 3.886264,
+      "impliedOverDividend": 0.9716,
+      "error": 0.005121
+     }
+    ]
    },
    {
     "securityId": "ref_BSET",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002679
+    "worstError": 0.002679,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2022-03-22",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 18.22,
+      "previousClose": 20.44,
+      "dividend": 1.5,
+      "impliedDistribution": 1.554767,
+      "impliedOverDividend": 1.0365,
+      "error": 0.002679
+     }
+    ]
    },
    {
     "securityId": "ref_DOMH",
     "checked": 4,
     "consistent": 2,
-    "worstError": 0.00488
+    "worstError": 0.00488,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1,
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2026-05-15",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 3.32,
+      "previousClose": 3.85,
+      "dividend": 0.31,
+      "impliedDistribution": 0.328788,
+      "impliedOverDividend": 1.0606,
+      "error": 0.00488
+     },
+     {
+      "date": "2026-01-05",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 4.78,
+      "previousClose": 5.02,
+      "dividend": 0.445,
+      "impliedDistribution": 0.427541,
+      "impliedOverDividend": 0.9608,
+      "error": 0.003478
+     }
+    ]
    },
    {
     "securityId": "ref_CXT",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.006103
+    "worstError": 0.006103,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2023-04-04",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 40.82,
+      "previousClose": 114.42,
+      "dividend": 74.68,
+      "impliedDistribution": 73.981694,
+      "impliedOverDividend": 0.9906,
+      "error": 0.006103
+     }
+    ]
    },
    {
     "securityId": "ref_BBWI",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.003325
+    "worstError": 0.003325,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2021-08-03",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 66,
+      "previousClose": 79.92,
+      "dividend": 15.329847,
+      "impliedDistribution": 15.064105,
+      "impliedOverDividend": 0.9827,
+      "error": 0.003325
+     }
+    ]
    },
    {
     "securityId": "ref_SPXC",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.034118
+    "worstError": 0.034118,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2015-09-28",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 11.9,
+      "previousClose": 49.44,
+      "dividend": 35.2843216897,
+      "impliedDistribution": 36.971112,
+      "impliedOverDividend": 1.0478,
+      "error": 0.034118
+     }
+    ]
    },
    {
     "securityId": "ref_BDN",
     "checked": 24,
     "consistent": 22,
-    "worstError": 0.002868
+    "worstError": 0.002868,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+    },
+    "samples": [
+     {
+      "date": "2025-04-03",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 4.01,
+      "previousClose": 4.49,
+      "dividend": 0.15,
+      "impliedDistribution": 0.161899,
+      "impliedOverDividend": 1.0793,
+      "error": 0.00265
+     },
+     {
+      "date": "2023-10-03",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 3.9,
+      "previousClose": 4.39,
+      "dividend": 0.15,
+      "impliedDistribution": 0.162593,
+      "impliedOverDividend": 1.084,
+      "error": 0.002868
+     }
+    ]
    },
    {
     "securityId": "ref_MBI",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.018447
+    "worstError": 0.018447,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2023-12-26",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 6.67,
+      "previousClose": 14.19,
+      "dividend": 8,
+      "impliedDistribution": 7.738241,
+      "impliedOverDividend": 0.9673,
+      "error": 0.018447
+     }
+    ]
    },
    {
     "securityId": "ref_IEP",
     "checked": 24,
     "consistent": 21,
-    "worstError": 0.003666
+    "worstError": 0.003666,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 3
+    },
+    "samples": [
+     {
+      "date": "2025-11-17",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 7.93,
+      "previousClose": 8.75,
+      "dividend": 0.5,
+      "impliedDistribution": 0.51898,
+      "impliedOverDividend": 1.038,
+      "error": 0.002169
+     },
+     {
+      "date": "2025-05-19",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 8.88,
+      "previousClose": 9.75,
+      "dividend": 0.5,
+      "impliedDistribution": 0.519723,
+      "impliedOverDividend": 1.0394,
+      "error": 0.002023
+     },
+     {
+      "date": "2023-11-16",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 17.26,
+      "previousClose": 19.57,
+      "dividend": 1,
+      "impliedDistribution": 1.071742,
+      "impliedOverDividend": 1.0717,
+      "error": 0.003666
+     }
+    ]
    },
    {
     "securityId": "ref_EBF",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.004576
+    "worstError": 0.004576,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2024-10-11",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 20.43,
+      "previousClose": 24.11,
+      "dividend": 2.75,
+      "impliedDistribution": 2.860332,
+      "impliedOverDividend": 1.0401,
+      "error": 0.004576
+     }
+    ]
    },
    {
     "securityId": "ref_CLF",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002383
+    "worstError": 0.002383,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2012-11-20",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 30.48,
+      "previousClose": 35.29,
+      "dividend": 0.625,
+      "impliedDistribution": 0.70909,
+      "impliedOverDividend": 1.1345,
+      "error": 0.002383
+     }
+    ]
    },
    {
     "securityId": "ref_DHR",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002899
+    "worstError": 0.002899,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2023-10-02",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 213.74,
+      "previousClose": 248.1,
+      "dividend": 28.186385,
+      "impliedDistribution": 28.905661,
+      "impliedOverDividend": 1.0255,
+      "error": 0.002899
+     }
+    ]
    },
    {
     "securityId": "ref_HE",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.004347
+    "worstError": 0.004347,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2023-08-17",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 12.03,
+      "previousClose": 14.57,
+      "dividend": 0.36,
+      "impliedDistribution": 0.423341,
+      "impliedOverDividend": 1.1759,
+      "error": 0.004347
+     }
+    ]
    },
    {
     "securityId": "ref_LEE",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.00348
+    "worstError": 0.00348,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2008-08-28",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 3.71,
+      "previousClose": 3.64,
+      "dividend": 0.19,
+      "impliedDistribution": 0.177333,
+      "impliedOverDividend": 0.9333,
+      "error": 0.00348
+     }
+    ]
    },
    {
     "securityId": "ref_TCI",
     "checked": 24,
     "consistent": 21,
-    "worstError": 0.049376
+    "worstError": 0.049376,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 3
+    },
+    "samples": [
+     {
+      "date": "1991-05-23",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 3.85,
+      "previousClose": 4.09,
+      "dividend": 1.13,
+      "impliedDistribution": 0.928052,
+      "impliedOverDividend": 0.8213,
+      "error": 0.049376
+     },
+     {
+      "date": "1991-05-13",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 4.97,
+      "previousClose": 4.84,
+      "dividend": 1.13,
+      "impliedDistribution": 0.89659,
+      "impliedOverDividend": 0.7934,
+      "error": 0.048225
+     },
+     {
+      "date": "1990-04-25",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 1.57,
+      "previousClose": 1.54,
+      "dividend": 0.18,
+      "impliedDistribution": 0.1584,
+      "impliedOverDividend": 0.88,
+      "error": 0.014026
+     }
+    ]
    },
    {
     "securityId": "ref_MSB",
     "checked": 24,
     "consistent": 21,
-    "worstError": 0.015009
+    "worstError": 0.015009,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 3
+    },
+    "samples": [
+     {
+      "date": "2025-01-30",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 25.22,
+      "previousClose": 33.83,
+      "dividend": 5.95,
+      "impliedDistribution": 6.457764,
+      "impliedOverDividend": 1.0853,
+      "error": 0.015009
+     },
+     {
+      "date": "2022-07-28",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 25.91,
+      "previousClose": 29.2,
+      "dividend": 0.84,
+      "impliedDistribution": 0.916935,
+      "impliedOverDividend": 1.0916,
+      "error": 0.002635
+     },
+     {
+      "date": "2021-10-28",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 23.3,
+      "previousClose": 27.93,
+      "dividend": 1.42,
+      "impliedDistribution": 1.604393,
+      "impliedOverDividend": 1.1299,
+      "error": 0.006602
+     }
+    ]
    },
    {
     "securityId": "ref_NPK",
     "checked": 24,
     "consistent": 21,
-    "worstError": 0.003015
+    "worstError": 0.003015,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 3
+    },
+    "samples": [
+     {
+      "date": "2023-02-28",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 68.63,
+      "previousClose": 75.71,
+      "dividend": 4,
+      "impliedDistribution": 4.169627,
+      "impliedOverDividend": 1.0424,
+      "error": 0.00224
+     },
+     {
+      "date": "2021-02-26",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 102.33,
+      "previousClose": 113.22,
+      "dividend": 6.25,
+      "impliedDistribution": 6.517084,
+      "impliedOverDividend": 1.0427,
+      "error": 0.002359
+     },
+     {
+      "date": "2018-02-28",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 90.8,
+      "previousClose": 101.75,
+      "dividend": 6,
+      "impliedDistribution": 6.306818,
+      "impliedOverDividend": 1.0511,
+      "error": 0.003015
+     }
+    ]
    },
    {
     "securityId": "ref_NRT",
     "checked": 24,
     "consistent": 20,
-    "worstError": 0.004813
+    "worstError": 0.004813,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 4
+    },
+    "samples": [
+     {
+      "date": "2025-08-15",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 5.12,
+      "previousClose": 5.73,
+      "dividend": 0.26,
+      "impliedDistribution": 0.276914,
+      "impliedOverDividend": 1.0651,
+      "error": 0.002952
+     },
+     {
+      "date": "2023-05-18",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 13.68,
+      "previousClose": 15.73,
+      "dividend": 1.05,
+      "impliedDistribution": 1.121283,
+      "impliedOverDividend": 1.0679,
+      "error": 0.004532
+     },
+     {
+      "date": "2023-02-16",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 13.45,
+      "previousClose": 15.53,
+      "dividend": 1,
+      "impliedDistribution": 1.07474,
+      "impliedOverDividend": 1.0747,
+      "error": 0.004813
+     }
+    ]
    },
    {
     "securityId": "ref_PHG",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.003203
+    "worstError": 0.003203,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2009-03-30",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 14.58,
+      "previousClose": 16.39,
+      "dividend": 0.796824,
+      "impliedDistribution": 0.849327,
+      "impliedOverDividend": 1.0659,
+      "error": 0.003203
+     }
+    ]
    },
    {
     "securityId": "ref_PPC",
     "checked": 4,
     "consistent": 1,
-    "worstError": 0.014747
+    "worstError": 0.014747,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2,
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2025-04-03",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 51.06,
+      "previousClose": 55.3,
+      "dividend": 6.3,
+      "impliedDistribution": 6.073745,
+      "impliedOverDividend": 0.9641,
+      "error": 0.004091
+     },
+     {
+      "date": "2016-05-06",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 24.76,
+      "previousClose": 26.3,
+      "dividend": 2.75,
+      "impliedDistribution": 2.629044,
+      "impliedOverDividend": 0.956,
+      "error": 0.004599
+     },
+     {
+      "date": "2015-01-28",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 28.05,
+      "previousClose": 37.02,
+      "dividend": 5.77,
+      "impliedDistribution": 6.315949,
+      "impliedOverDividend": 1.0946,
+      "error": 0.014747
+     }
+    ]
    },
    {
     "securityId": "ref_EQC",
     "checked": 24,
     "consistent": 22,
-    "worstError": 0.005
+    "worstError": 0.005,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1,
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2024-12-09",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 1.5,
+      "previousClose": 20.39,
+      "dividend": 19,
+      "impliedDistribution": 18.898049,
+      "impliedOverDividend": 0.9946,
+      "error": 0.005
+     },
+     {
+      "date": "2023-02-22",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 21.28,
+      "previousClose": 25.89,
+      "dividend": 4.25,
+      "impliedDistribution": 4.309929,
+      "impliedOverDividend": 1.0141,
+      "error": 0.002315
+     }
+    ]
    },
    {
     "securityId": "ref_CMT",
     "checked": 18,
     "consistent": 17,
-    "worstError": 0.003636
+    "worstError": 0.003636,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "1993-12-27",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 1.06,
+      "previousClose": 1,
+      "dividend": 0.04,
+      "impliedDistribution": 0.036364,
+      "impliedOverDividend": 0.9091,
+      "error": 0.003636
+     }
+    ]
    },
    {
     "securityId": "ref_BBVA",
     "checked": 24,
     "consistent": 22,
-    "worstError": 0.003297
+    "worstError": 0.003297,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 2
+    },
+    "samples": [
+     {
+      "date": "2025-04-09",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 12.61,
+      "previousClose": 11.9,
+      "dividend": 0.443907,
+      "impliedDistribution": 0.404668,
+      "impliedOverDividend": 0.9116,
+      "error": 0.003297
+     },
+     {
+      "date": "2020-04-07",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 3.09,
+      "previousClose": 3.14,
+      "dividend": 0.172848,
+      "impliedDistribution": 0.16634,
+      "impliedOverDividend": 0.9623,
+      "error": 0.002073
+     }
+    ]
    },
    {
     "securityId": "ref_VOD",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002309
+    "worstError": 0.002309,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2020-06-11",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 15.61,
+      "previousClose": 17.45,
+      "dividend": 0.474575,
+      "impliedDistribution": 0.514862,
+      "impliedOverDividend": 1.0849,
+      "error": 0.002309
+     }
+    ]
    },
    {
     "securityId": "ref_DDS",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002631
+    "worstError": 0.002631,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2023-12-14",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 387.8,
+      "previousClose": 387.04,
+      "dividend": 20,
+      "impliedDistribution": 18.981854,
+      "impliedOverDividend": 0.9491,
+      "error": 0.002631
+     }
+    ]
    },
    {
     "securityId": "ref_CAR",
     "checked": 12,
     "consistent": 11,
-    "worstError": 0.024854
+    "worstError": 0.024854,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2006-08-01",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 2.44,
+      "previousClose": 15.01,
+      "dividend": 13.013,
+      "impliedDistribution": 12.639949,
+      "impliedOverDividend": 0.9713,
+      "error": 0.024854
+     }
+    ]
    },
    {
     "securityId": "ref_TG",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.01242
+    "worstError": 0.01242,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2020-12-21",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 15.25,
+      "previousClose": 20.45,
+      "dividend": 6.09,
+      "impliedDistribution": 5.836012,
+      "impliedOverDividend": 0.9583,
+      "error": 0.01242
+     }
+    ]
    },
    {
     "securityId": "ref_BRSL",
     "checked": 24,
     "consistent": 22,
-    "worstError": 0.004835
+    "worstError": 0.004835,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+    },
+    "samples": [
+     {
+      "date": "2025-07-14",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 14.74,
+      "previousClose": 18.14,
+      "dividend": 3,
+      "impliedDistribution": 3.067644,
+      "impliedOverDividend": 1.0225,
+      "error": 0.003729
+     },
+     {
+      "date": "2020-03-16",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 5.35,
+      "previousClose": 6.41,
+      "dividend": 0.2,
+      "impliedDistribution": 0.230991,
+      "impliedOverDividend": 1.155,
+      "error": 0.004835
+     }
+    ]
    },
    {
     "securityId": "ref_CLH",
     "checked": 12,
     "consistent": 3,
-    "worstError": 0.040789
+    "worstError": 0.040789,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 9
+    },
+    "samples": [
+     {
+      "date": "2005-07-27",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 24.25,
+      "previousClose": 23.85,
+      "dividend": 0.921875,
+      "impliedDistribution": 0.873464,
+      "impliedOverDividend": 0.9475,
+      "error": 0.00203
+     },
+     {
+      "date": "2005-01-27",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 19.18,
+      "previousClose": 19.23,
+      "dividend": 0.921875,
+      "impliedDistribution": 0.881891,
+      "impliedOverDividend": 0.9566,
+      "error": 0.002079
+     },
+     {
+      "date": "2004-07-28",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 9.31,
+      "previousClose": 8.77,
+      "dividend": 0.921875,
+      "impliedDistribution": 0.790162,
+      "impliedOverDividend": 0.8571,
+      "error": 0.015019
+     }
+    ]
    },
    {
     "securityId": "ref_DWSN",
     "checked": 7,
     "consistent": 5,
-    "worstError": 0.013881
+    "worstError": 0.013881,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1,
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2024-04-19",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 1.68,
+      "previousClose": 2.19,
+      "dividend": 0.32,
+      "impliedDistribution": 0.3504,
+      "impliedOverDividend": 1.095,
+      "error": 0.013881
+     },
+     {
+      "date": "1996-12-12",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 1.25,
+      "previousClose": 1.25,
+      "dividend": 0.142,
+      "impliedDistribution": 0.127514,
+      "impliedOverDividend": 0.898,
+      "error": 0.011589
+     }
+    ]
    },
    {
     "securityId": "ref_MOD",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.004976
+    "worstError": 0.004976,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2008-11-19",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 4.05,
+      "previousClose": 5.23,
+      "dividend": 0.1,
+      "impliedDistribution": 0.126024,
+      "impliedOverDividend": 1.2602,
+      "error": 0.004976
+     }
+    ]
    },
    {
     "securityId": "ref_MTW",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.02085
+    "worstError": 0.02085,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2016-03-04",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 4.04,
+      "previousClose": 16.94,
+      "dividend": 13.36,
+      "impliedDistribution": 13.006805,
+      "impliedOverDividend": 0.9736,
+      "error": 0.02085
+     }
+    ]
    },
    {
     "securityId": "ref_SSP",
     "checked": 24,
     "consistent": 22,
-    "worstError": 0.053136
+    "worstError": 0.053136,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+    },
+    "samples": [
+     {
+      "date": "2015-04-01",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 24.15,
+      "previousClose": 28.44,
+      "dividend": 1.0297,
+      "impliedDistribution": 1.163027,
+      "impliedOverDividend": 1.1295,
+      "error": 0.004688
+     },
+     {
+      "date": "2008-07-01",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 3.01,
+      "previousClose": 41.54,
+      "dividend": 36.1388714734,
+      "impliedDistribution": 38.346156,
+      "impliedOverDividend": 1.0611,
+      "error": 0.053136
+     }
+    ]
    },
    {
     "securityId": "ref_SUNE",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.008659
+    "worstError": 0.008659,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2021-10-18",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 5.12,
+      "previousClose": 8.44,
+      "dividend": 3.5,
+      "impliedDistribution": 3.426914,
+      "impliedOverDividend": 0.9791,
+      "error": 0.008659
+     }
+    ]
    },
    {
     "securityId": "ref_TSRI",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.026396
+    "worstError": 0.026396,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2017-06-14",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 6.37,
+      "previousClose": 9.15,
+      "dividend": 1,
+      "impliedDistribution": 1.24152,
+      "impliedOverDividend": 1.2415,
+      "error": 0.026396
+     }
+    ]
    },
    {
     "securityId": "ref_WEYS",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.007358
+    "worstError": 0.007358,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2025-11-17",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 28.97,
+      "previousClose": 34.76,
+      "dividend": 2.27,
+      "impliedDistribution": 2.525775,
+      "impliedOverDividend": 1.1127,
+      "error": 0.007358
+     }
+    ]
    },
    {
     "securityId": "ref_WOR",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.00714
+    "worstError": 0.00714,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2023-12-01",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 45.56,
+      "previousClose": 71.7,
+      "dividend": 27.5,
+      "impliedDistribution": 26.988092,
+      "impliedOverDividend": 0.9814,
+      "error": 0.00714
+     }
+    ]
    },
    {
     "securityId": "ref_WPP",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002793
+    "worstError": 0.002793,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2020-06-11",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 38.65,
+      "previousClose": 43.11,
+      "dividend": 2.401,
+      "impliedDistribution": 2.521427,
+      "impliedOverDividend": 1.0502,
+      "error": 0.002793
+     }
+    ]
    },
    {
     "securityId": "ref_AXGN",
     "checked": 2,
     "consistent": 1,
-    "worstError": 0.003803
+    "worstError": 0.003803,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2005-02-23",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 2.3,
+      "previousClose": 2.25,
+      "dividend": 0.06,
+      "impliedDistribution": 0.068557,
+      "impliedOverDividend": 1.1426,
+      "error": 0.003803
+     }
+    ]
    },
    {
     "securityId": "ref_EVI",
     "checked": 20,
     "consistent": 17,
-    "worstError": 0.068622
+    "worstError": 0.068622,
+    "classes": {
+     "ADJUSTMENT_BELOW_CASH_DIVIDEND": 3
+    },
+    "samples": [
+     {
+      "date": "2014-12-03",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 2.728,
+      "previousClose": 2.71,
+      "dividend": 0.2,
+      "impliedDistribution": 0.185109,
+      "impliedOverDividend": 0.9255,
+      "error": 0.005495
+     },
+     {
+      "date": "2012-12-13",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 1.54,
+      "previousClose": 2.12,
+      "dividend": 0.6,
+      "impliedDistribution": 0.594393,
+      "impliedOverDividend": 0.9907,
+      "error": 0.002645
+     },
+     {
+      "date": "2012-11-23",
+      "klass": "ADJUSTMENT_BELOW_CASH_DIVIDEND",
+      "close": 2.01,
+      "previousClose": 2.01,
+      "dividend": 0.6,
+      "impliedDistribution": 0.462069,
+      "impliedOverDividend": 0.7701,
+      "error": 0.068622
+     }
+    ]
    },
    {
     "securityId": "ref_RIO",
     "checked": 24,
     "consistent": 23,
-    "worstError": 0.002349
+    "worstError": 0.002349,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 1
+    },
+    "samples": [
+     {
+      "date": "2021-03-04",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 81.9,
+      "previousClose": 90.86,
+      "dividend": 3.09,
+      "impliedDistribution": 3.303417,
+      "impliedOverDividend": 1.0691,
+      "error": 0.002349
+     }
+    ]
    },
    {
     "securityId": "ref_GFI",
     "checked": 24,
     "consistent": 22,
-    "worstError": 0.002713
+    "worstError": 0.002713,
+    "classes": {
+     "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND": 2
+    },
+    "samples": [
+     {
+      "date": "2026-03-13",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 45.54,
+      "previousClose": 50.95,
+      "dividend": 1.441897,
+      "impliedDistribution": 1.56368,
+      "impliedOverDividend": 1.0845,
+      "error": 0.00239
+     },
+     {
+      "date": "2020-03-12",
+      "klass": "ADJUSTMENT_EXCEEDS_CASH_DIVIDEND",
+      "close": 4.77,
+      "previousClose": 6.02,
+      "dividend": 0.066753,
+      "impliedDistribution": 0.083083,
+      "impliedOverDividend": 1.2446,
+      "error": 0.002713
+     }
+    ]
    }
   ]
  },
@@ -2242,226 +3306,11 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "priceRanked": 0,
-     "totalRanked": 0,
-     "UNIVERSE_N": 0,
-     "SPEARMAN_RANK_CORRELATION": null,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
-     "P90_RANK_CHANGE": null,
-     "P95_RANK_CHANGE": null,
-     "MAX_RANK_CHANGE": null,
-     "TITLES_MOVING_1_PERCENTILE": 0,
-     "TITLES_MOVING_5_PERCENTILES": 0,
-     "TITLES_MOVING_10_PERCENTILES": 0,
-     "topDecile": {
-      "TOP_DECILE_PRICE": 0,
-      "TOP_DECILE_TOTAL": 0,
-      "LEAVING": 0,
-      "ENTERING": 0
-     },
-     "DIVIDEND_BIAS": {
-      "LOW_YIELD": {
-       "N": 751,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "MEDIUM_YIELD": {
-       "N": 692,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "NO_DIVIDEND": {
-       "N": 3339,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "HIGH_YIELD": {
-       "N": 1221,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "SECTOR_BIAS": {
-      "D · Manufacturing": {
-       "N": 1783,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "I · Services": {
-       "N": 821,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "H · Finance, Insurance, And Real Estate": {
-       "N": 1182,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 1202,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "G · Retail Trade": {
-       "N": 208,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
-       "N": 399,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "B · Mining": {
-       "N": 241,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "A · Agriculture, Forestry, And Fishing": {
-       "N": 18,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "F · Wholesale Trade": {
-       "N": 90,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "C · Construction": {
-       "N": 59,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "NAMED_SECTOR_BIAS": {
-      "Technology": {
-       "N": 679,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(other)": {
-       "N": 459,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Financials": {
-       "N": 903,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Health Care": {
-       "N": 826,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 1202,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Staples": {
-       "N": 109,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Discretionary": {
-       "N": 400,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Industrials": {
-       "N": 425,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Materials": {
-       "N": 294,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Energy": {
-       "N": 148,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Utilities": {
-       "N": 154,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "REITs": {
-       "N": 210,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Real Estate": {
-       "N": 69,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Communication": {
-       "N": 125,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "largestPercentileMoves": []
+     "state": "RANK_EQUIVALENT_TO_12M",
+     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
+     "rankStatisticsIdenticalTo": "12M",
+     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
+     "benchmark": "SPY"
     }
    },
    "simulation": {
@@ -4179,226 +5028,11 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "priceRanked": 0,
-     "totalRanked": 0,
-     "UNIVERSE_N": 0,
-     "SPEARMAN_RANK_CORRELATION": null,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
-     "P90_RANK_CHANGE": null,
-     "P95_RANK_CHANGE": null,
-     "MAX_RANK_CHANGE": null,
-     "TITLES_MOVING_1_PERCENTILE": 0,
-     "TITLES_MOVING_5_PERCENTILES": 0,
-     "TITLES_MOVING_10_PERCENTILES": 0,
-     "topDecile": {
-      "TOP_DECILE_PRICE": 0,
-      "TOP_DECILE_TOTAL": 0,
-      "LEAVING": 0,
-      "ENTERING": 0
-     },
-     "DIVIDEND_BIAS": {
-      "LOW_YIELD": {
-       "N": 705,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "MEDIUM_YIELD": {
-       "N": 616,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "NO_DIVIDEND": {
-       "N": 3023,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "HIGH_YIELD": {
-       "N": 1224,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "SECTOR_BIAS": {
-      "D · Manufacturing": {
-       "N": 1706,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "I · Services": {
-       "N": 752,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "H · Finance, Insurance, And Real Estate": {
-       "N": 1057,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 1102,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "G · Retail Trade": {
-       "N": 201,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
-       "N": 376,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "B · Mining": {
-       "N": 230,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "A · Agriculture, Forestry, And Fishing": {
-       "N": 17,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "F · Wholesale Trade": {
-       "N": 78,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "C · Construction": {
-       "N": 49,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "NAMED_SECTOR_BIAS": {
-      "Technology": {
-       "N": 642,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(other)": {
-       "N": 423,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Financials": {
-       "N": 790,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Health Care": {
-       "N": 779,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 1102,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Staples": {
-       "N": 103,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Discretionary": {
-       "N": 382,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Industrials": {
-       "N": 390,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Materials": {
-       "N": 282,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Energy": {
-       "N": 144,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Utilities": {
-       "N": 150,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "REITs": {
-       "N": 202,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Real Estate": {
-       "N": 65,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Communication": {
-       "N": 114,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "largestPercentileMoves": []
+     "state": "RANK_EQUIVALENT_TO_12M",
+     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
+     "rankStatisticsIdenticalTo": "12M",
+     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
+     "benchmark": "SPY"
     }
    },
    "simulation": {
@@ -6048,226 +6682,11 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "priceRanked": 0,
-     "totalRanked": 0,
-     "UNIVERSE_N": 0,
-     "SPEARMAN_RANK_CORRELATION": null,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
-     "P90_RANK_CHANGE": null,
-     "P95_RANK_CHANGE": null,
-     "MAX_RANK_CHANGE": null,
-     "TITLES_MOVING_1_PERCENTILE": 0,
-     "TITLES_MOVING_5_PERCENTILES": 0,
-     "TITLES_MOVING_10_PERCENTILES": 0,
-     "topDecile": {
-      "TOP_DECILE_PRICE": 0,
-      "TOP_DECILE_TOTAL": 0,
-      "LEAVING": 0,
-      "ENTERING": 0
-     },
-     "DIVIDEND_BIAS": {
-      "LOW_YIELD": {
-       "N": 662,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "MEDIUM_YIELD": {
-       "N": 580,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "NO_DIVIDEND": {
-       "N": 2848,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "HIGH_YIELD": {
-       "N": 1232,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "SECTOR_BIAS": {
-      "D · Manufacturing": {
-       "N": 1640,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "I · Services": {
-       "N": 710,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "H · Finance, Insurance, And Real Estate": {
-       "N": 1002,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 1046,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "G · Retail Trade": {
-       "N": 196,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
-       "N": 364,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "B · Mining": {
-       "N": 224,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "A · Agriculture, Forestry, And Fishing": {
-       "N": 17,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "F · Wholesale Trade": {
-       "N": 77,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "C · Construction": {
-       "N": 46,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "NAMED_SECTOR_BIAS": {
-      "Technology": {
-       "N": 611,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(other)": {
-       "N": 408,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Financials": {
-       "N": 751,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Health Care": {
-       "N": 745,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 1046,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Staples": {
-       "N": 99,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Discretionary": {
-       "N": 369,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Industrials": {
-       "N": 368,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Materials": {
-       "N": 275,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Energy": {
-       "N": 141,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Utilities": {
-       "N": 145,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "REITs": {
-       "N": 189,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Real Estate": {
-       "N": 62,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Communication": {
-       "N": 113,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "largestPercentileMoves": []
+     "state": "RANK_EQUIVALENT_TO_12M",
+     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
+     "rankStatisticsIdenticalTo": "12M",
+     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
+     "benchmark": "SPY"
     }
    },
    "simulation": {
@@ -7917,226 +8336,11 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "priceRanked": 0,
-     "totalRanked": 0,
-     "UNIVERSE_N": 0,
-     "SPEARMAN_RANK_CORRELATION": null,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
-     "P90_RANK_CHANGE": null,
-     "P95_RANK_CHANGE": null,
-     "MAX_RANK_CHANGE": null,
-     "TITLES_MOVING_1_PERCENTILE": 0,
-     "TITLES_MOVING_5_PERCENTILES": 0,
-     "TITLES_MOVING_10_PERCENTILES": 0,
-     "topDecile": {
-      "TOP_DECILE_PRICE": 0,
-      "TOP_DECILE_TOTAL": 0,
-      "LEAVING": 0,
-      "ENTERING": 0
-     },
-     "DIVIDEND_BIAS": {
-      "LOW_YIELD": {
-       "N": 622,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "MEDIUM_YIELD": {
-       "N": 592,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "NO_DIVIDEND": {
-       "N": 2756,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "HIGH_YIELD": {
-       "N": 1165,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "SECTOR_BIAS": {
-      "D · Manufacturing": {
-       "N": 1592,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "I · Services": {
-       "N": 692,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "H · Finance, Insurance, And Real Estate": {
-       "N": 972,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 985,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "G · Retail Trade": {
-       "N": 189,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
-       "N": 354,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "B · Mining": {
-       "N": 214,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "A · Agriculture, Forestry, And Fishing": {
-       "N": 17,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "F · Wholesale Trade": {
-       "N": 76,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "C · Construction": {
-       "N": 44,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "NAMED_SECTOR_BIAS": {
-      "Technology": {
-       "N": 593,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(other)": {
-       "N": 400,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Financials": {
-       "N": 731,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Health Care": {
-       "N": 724,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 985,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Staples": {
-       "N": 95,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Discretionary": {
-       "N": 355,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Industrials": {
-       "N": 355,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Materials": {
-       "N": 267,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Energy": {
-       "N": 135,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Utilities": {
-       "N": 142,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "REITs": {
-       "N": 183,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Real Estate": {
-       "N": 58,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Communication": {
-       "N": 112,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "largestPercentileMoves": []
+     "state": "RANK_EQUIVALENT_TO_12M",
+     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
+     "rankStatisticsIdenticalTo": "12M",
+     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
+     "benchmark": "SPY"
     }
    },
    "simulation": {
@@ -9786,226 +9990,11 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "priceRanked": 0,
-     "totalRanked": 0,
-     "UNIVERSE_N": 0,
-     "SPEARMAN_RANK_CORRELATION": null,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
-     "P90_RANK_CHANGE": null,
-     "P95_RANK_CHANGE": null,
-     "MAX_RANK_CHANGE": null,
-     "TITLES_MOVING_1_PERCENTILE": 0,
-     "TITLES_MOVING_5_PERCENTILES": 0,
-     "TITLES_MOVING_10_PERCENTILES": 0,
-     "topDecile": {
-      "TOP_DECILE_PRICE": 0,
-      "TOP_DECILE_TOTAL": 0,
-      "LEAVING": 0,
-      "ENTERING": 0
-     },
-     "DIVIDEND_BIAS": {
-      "LOW_YIELD": {
-       "N": 690,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "MEDIUM_YIELD": {
-       "N": 637,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "NO_DIVIDEND": {
-       "N": 2507,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "HIGH_YIELD": {
-       "N": 911,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "SECTOR_BIAS": {
-      "D · Manufacturing": {
-       "N": 1506,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "I · Services": {
-       "N": 643,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "H · Finance, Insurance, And Real Estate": {
-       "N": 917,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 827,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "G · Retail Trade": {
-       "N": 177,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
-       "N": 339,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "B · Mining": {
-       "N": 203,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "A · Agriculture, Forestry, And Fishing": {
-       "N": 16,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "F · Wholesale Trade": {
-       "N": 76,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "C · Construction": {
-       "N": 41,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "NAMED_SECTOR_BIAS": {
-      "Technology": {
-       "N": 547,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(other)": {
-       "N": 386,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Financials": {
-       "N": 691,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Health Care": {
-       "N": 673,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "(unclassified)": {
-       "N": 827,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Staples": {
-       "N": 91,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Consumer Discretionary": {
-       "N": 333,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Industrials": {
-       "N": 341,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Materials": {
-       "N": 254,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Energy": {
-       "N": 131,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Utilities": {
-       "N": 137,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "REITs": {
-       "N": 170,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Real Estate": {
-       "N": 56,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      },
-      "Communication": {
-       "N": 108,
-       "MOMENTUM_DELTA_MEDIAN": null,
-       "RANK_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
-       "FACTOR_PERCENTILE_DELTA_P95": null
-      }
-     },
-     "largestPercentileMoves": []
+     "state": "RANK_EQUIVALENT_TO_12M",
+     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
+     "rankStatisticsIdenticalTo": "12M",
+     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
+     "benchmark": "SPY"
     }
    },
    "simulation": {
@@ -10046,7 +10035,7 @@
    "6M": 0.992917,
    "12M": 0.992497,
    "12M-1M": 0.992984,
-   "RELATIVE_STRENGTH": null
+   "RELATIVE_STRENGTH": "RANK_EQUIVALENT_TO_12M"
   },
   "DIVIDEND_BIAS": "MEASURED",
   "SECTOR_BIAS": "MEASURED",
@@ -10055,5 +10044,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 42644
+ "runtimeMs": 27922
 }
