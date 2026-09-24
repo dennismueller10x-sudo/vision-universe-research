@@ -16,9 +16,13 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+function arg(name, fallback) {
+  const at = process.argv.indexOf(name);
+  return at === -1 ? fallback : process.argv[at + 1];
+}
 const AUDIT = join(ROOT, "quant/data/providers/return-basis-input-audit.json");
-const STUDY = join(ROOT, "quant/data/providers/return-basis-universe-study.json");
-const OUT = join(ROOT, "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md");
+const STUDY = arg("--study", join(ROOT, "quant/data/providers/return-basis-universe-study.json"));
+const OUT = arg("--out", join(ROOT, "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md"));
 
 const finite = (v) => typeof v === "number" && Number.isFinite(v);
 const num = (v, d = 2) => (finite(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");

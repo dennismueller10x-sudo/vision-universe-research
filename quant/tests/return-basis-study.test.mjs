@@ -2,17 +2,23 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const Compare = require("../engines/return-basis-comparison.js");
-const STUDY = "quant/data/providers/return-basis-universe-study.json";
+/* Der Testlauf schreibt NEBEN das veroeffentlichte Artefakt, nicht
+   darauf. Eine Regression, die den Baum anfasst, macht jeden Testlauf zu
+   einer Aenderung - und dann steht irgendwann eine Zeile im Commit, die
+   niemand geschrieben hat. */
+const STUDY = join(tmpdir(), "vu-return-basis-study-test.json");
 
 /* Die Studie laeuft einmal fuer alle Faelle. Im Repository sieht sie nur
    die Golden Preview - genau der Fall, in dem sie sich weigern muss,
    sich als Universumsstudie auszugeben. */
 function run() {
-  execFileSync("node", ["scripts/market/study-return-basis-universe.mjs"], { stdio: "pipe" });
+  execFileSync("node", ["scripts/market/study-return-basis-universe.mjs", "--out", STUDY], { stdio: "pipe" });
   return JSON.parse(readFileSync(STUDY, "utf8"));
 }
 const report = run();
@@ -145,7 +151,8 @@ test("das Studiendokument entsteht nicht aus einer Teilmessung", () => {
   assert.equal(report.scope, "REPOSITORY_ONLY", "Vorbedingung dieses Tests");
   let failed = false;
   try {
-    execFileSync("node", ["scripts/quant/render-return-basis-study.mjs"], { stdio: "pipe" });
+    execFileSync("node", ["scripts/quant/render-return-basis-study.mjs",
+      "--study", STUDY, "--out", join(tmpdir(), "vu-return-basis-study-test.md")], { stdio: "pipe" });
   } catch (error) {
     failed = true;
     assert.match(String(error.stderr), /NICHT geschrieben/);

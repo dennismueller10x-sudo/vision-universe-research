@@ -45,7 +45,11 @@ const PROVIDER = arg("--provider", "tiingo");
 const BENCHMARK = arg("--benchmark", "SPY");
 const BARS_DIR = join(WORK_DIR, PROVIDER, "daily");
 const GOLDEN = join(ROOT, "quant/data/market/golden-preview/daily");
-const OUT = join(ROOT, "quant/data/providers/return-basis-universe-study.json");
+/* Standardziel ist das veroeffentlichte Artefakt. --out gibt es, damit
+   ein Test die Studie laufen lassen kann, ohne den veroeffentlichten
+   Stand zu ueberschreiben: eine Regression, die den Baum anfasst, macht
+   jeden Testlauf zu einer Aenderung. */
+const OUT = arg("--out", join(ROOT, "quant/data/providers/return-basis-universe-study.json"));
 
 /* Die historischen Stichtage als Abstand in Handelstagen vom letzten
    Benchmarktag. Null ist heute, 252 ein Jahr zurueck. Jeder Stichtag
