@@ -40,11 +40,11 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 30 | Versicherungen | `30-versicherungen` | ✅ |
 | 31 | Immobilien & REITs | `31-immobilien-reits` | ✅ |
 | 32 | Konsum & Marken | `32-konsum-marken` | ✅ |
-| 33 | Luxus & Premium | `33-luxus-premium` | offen |
-| 34 | Lebensmittel & Getränke | `34-lebensmittel-getraenke` | offen |
-| 35 | E-Commerce | `35-e-commerce` | offen |
-| 36 | Reisen & Tourismus | `36-reisen-tourismus` | offen |
-| 37 | Freizeit & Entertainment | `37-freizeit-entertainment` | offen |
+| 33 | Luxus & Premium | `33-luxus-premium` | ✅ |
+| 34 | Lebensmittel & Getränke | `34-lebensmittel-getraenke` | ✅ |
+| 35 | E-Commerce | `35-e-commerce` | ✅ |
+| 36 | Reisen & Tourismus | `36-reisen-tourismus` | ✅ |
+| 37 | Freizeit & Entertainment | `37-freizeit-entertainment` | ✅ |
 | 38 | Medien & Werbung | `38-medien-werbung` | offen |
 | 39 | Streaming & Gaming | `39-streaming-gaming` | offen |
 | 40 | Telekommunikation & Netze | `40-telekommunikation-netze` | offen |
