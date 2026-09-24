@@ -59,7 +59,10 @@ async function get(url, { ua = VU_UA, accept = null, method = "GET", headers = {
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   const started = Date.now();
   try {
-    const res = await fetch(url, { method, headers: h, signal: ctrl.signal, redirect: "follow" });
+    const post = method === "POST_SI";
+    if (post) h["Content-Type"] = "application/json";
+    const res = await fetch(url, { method: post ? "POST" : method, headers: h, signal: ctrl.signal, redirect: "follow",
+      body: post ? JSON.stringify({ limit: 2, sortFields: ["-settlementDate"] }) : undefined });
     const meta = { ok: res.ok, status: res.status, ms: 0, type: (res.headers.get("content-type") || "").split(";")[0],
                    length: Number(res.headers.get("content-length")) || null, lastModified: res.headers.get("last-modified"),
                    finalUrl: res.url };
@@ -84,7 +87,9 @@ function mask(s) { return String(s).replace(/-?\d+\.\d+/g, "#").slice(0, 220); }
 function dates(text) {
   const iso = String(text).match(/\b(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\b/g) || [];
   const compact = (String(text).match(/\b(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])(?=T|\b)/g) || []).map((d) => `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6)}`);
-  const all = iso.concat(compact).sort();
+  const us = (String(text).match(/\b(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/(19|20)\d{2}\b/g) || [])
+    .map((d) => { const [m, dd, y] = d.split("/"); return `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`; });
+  const all = iso.concat(compact, us).sort();
   if (!all.length) return null;
   return { datesSeen: all.length, firstDate: all[0], lastDate: all[all.length - 1], futureDates: all.filter((d) => d > TODAY).length };
 }
@@ -304,6 +309,76 @@ const FINNHUB = [
   ["P", "/calendar/economic"], ["U", "/index/constituents?symbol=%5EGSPC"], ["R", "/stock/ownership?symbol=AAPL&limit=5"]
 ];
 
+/* Runde 2: korrigierte Adressen, zusaetzliche Kandidaten, Nutzungsbedingungen,
+   die in Runde 1 nicht lesbar waren. */
+const ROUND2 = [
+  { id: "cboe-spx-history", cats: ["A"], priority: 2, auth: "NO_AUTH", fmt: "csv", url: "https://cdn.cboe.com/api/global/us_indices/daily_prices/SPX_History.csv", note: "offizielle Cboe-Tagesdatei S&P 500 (Runde 2: Datumsabdeckung)" },
+  { id: "cboe-vix-history", cats: ["A", "AH"], priority: 2, auth: "NO_AUTH", fmt: "csv", url: "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv" },
+  { id: "cboe-rut-history", cats: ["A"], priority: 2, auth: "NO_AUTH", fmt: "csv", url: "https://cdn.cboe.com/api/global/us_indices/daily_prices/RUT_History.csv" },
+  { id: "cboe-historical-page", cats: ["A", "AH"], priority: 2, auth: "NO_AUTH", fmt: "html", ua: "browser", url: "https://www.cboe.com/tradable_products/vix/vix_historical_data/", linkRe: /https?:\/\/cdn\.cboe\.com\/api\/global\/us_indices\/daily_prices\/[A-Z0-9_]+\.csv/gi },
+  { id: "nasdaq-datalink-ndx-anon", cats: ["A"], priority: 2, auth: "NO_AUTH", fmt: "csv", url: "https://data.nasdaq.com/api/v3/datasets/NASDAQOMX/NDX.csv?rows=5", note: "Nasdaq Data Link, anonym" },
+  { id: "nasdaq-datalink-ndx-meta", cats: ["A"], priority: 2, auth: "NO_AUTH", fmt: "json", url: "https://data.nasdaq.com/api/v3/datasets/NASDAQOMX/NDX/metadata.json" },
+  { id: "treasury-fiscaldata-debt", cats: ["E", "AG"], priority: 1, auth: "NO_AUTH", fmt: "json", url: "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/debt_to_penny?sort=-record_date&page%5Bsize%5D=2" },
+  { id: "treasury-fiscaldata-avg-rates", cats: ["D"], priority: 1, auth: "NO_AUTH", fmt: "json", url: "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounts/od/avg_interest_rates?sort=-record_date&page%5Bsize%5D=2" },
+  { id: "oecd-cli", cats: ["E", "F"], priority: 3, auth: "NO_AUTH", fmt: "csv", url: "https://sdmx.oecd.org/public/rest/data/OECD.SDD.STES,DSD_STES@DF_CLI/USA.M.LI...AA...H?lastNObservations=3&format=csvfilewithlabels" },
+  { id: "oecd-dataflows", cats: ["E"], priority: 3, auth: "NO_AUTH", fmt: "xml", url: "https://sdmx.oecd.org/public/rest/dataflow/OECD.SDD.STES/DSD_STES@DF_CLI/latest" },
+  { id: "destatis-genesis-logincheck", cats: ["E"], priority: 1, auth: "FREE_ACCOUNT", fmt: "json", url: "https://www-genesis.destatis.de/genesisWS/rest/2020/helloworld/logincheck?username=GAST&password=GAST&language=de" },
+  { id: "eurostat-calendar-ics", cats: ["P"], priority: 1, auth: "NO_AUTH", fmt: "ics", url: "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0" },
+  { id: "eurostat-euro-indicators-page", cats: ["P"], priority: 1, auth: "NO_AUTH", fmt: "html", ua: "browser", url: "https://ec.europa.eu/eurostat/news/release-calendar", linkRe: /[^"'\s]*(ical|\.ics)[^"'\s]*/gi },
+  { id: "bls-schedule-page", cats: ["P"], priority: 1, auth: "NO_AUTH", fmt: "html", ua: "browser", url: "https://www.bls.gov/schedule/news_release/", linkRe: /[^"'\s]*\.ics/gi },
+  { id: "imf-pcps-copper-csv", cats: ["B"], priority: 3, auth: "NO_AUTH", fmt: "csv", url: "https://api.imf.org/external/sdmx/2.1/data/PCPS/M.W00.PCOPP.USD?startPeriod=2024-01&format=csv" },
+  { id: "worldbank-pinksheet-current", cats: ["B", "C"], priority: 3, auth: "NO_AUTH", fmt: "xlsx", url: "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx" },
+  { id: "sec-insider-datasets", cats: ["Q"], priority: 1, auth: "NO_AUTH", fmt: "zip", method: "HEAD", ...SEC, url: "https://www.sec.gov/files/structureddata/data/insider-transactions-data-sets/2026q1_form345.zip" },
+  { id: "sec-13f-dataset-latest", cats: ["R", "S"], priority: 1, auth: "NO_AUTH", fmt: "zip", method: "HEAD", ...SEC, url: "https://www.sec.gov/files/structureddata/data/form-13f-data-sets/01mar2026-31may2026_form13f.zip" },
+  { id: "sec-nport-dataset-latest", cats: ["T", "S"], priority: 1, auth: "NO_AUTH", fmt: "zip", method: "HEAD", ...SEC, url: "https://www.sec.gov/files/dera/data/form-n-port-data-sets/2026q2_nport.zip" },
+  { id: "sec-ftd-latest", cats: ["Z"], priority: 1, auth: "NO_AUTH", fmt: "zip", method: "HEAD", ...SEC, url: "https://www.sec.gov/files/data/fails-deliver-data/cnsfails202608b.zip" },
+  { id: "sec-form4-xml-sample", cats: ["Q"], priority: 1, auth: "NO_AUTH", fmt: "json", ...SEC, url: "https://efts.sec.gov/LATEST/search-index?forms=4&dateRange=custom&startdt=" + daysAgo(2) + "&enddt=" + TODAY },
+  { id: "finra-short-interest-files", cats: ["Z"], priority: 1, auth: "NO_AUTH", fmt: "html", ua: "browser", url: "https://www.finra.org/finra-data/browse-catalog/equity-short-interest/files", linkRe: /https?:\/\/[^"'\s]*shrt[^"'\s]*\.(csv|txt|zip)/gi },
+  { id: "finra-api-short-interest-recent", cats: ["Z"], priority: 1, auth: "NO_AUTH", fmt: "json", method: "POST_SI", url: "https://api.finra.org/data/group/otcMarket/name/consolidatedShortInterest", accept: "application/json" },
+  { id: "house-clerk-fd-index-txt", cats: ["AD", "AE"], priority: 1, auth: "NO_AUTH", fmt: "zip", url: `https://disclosures-clerk.house.gov/public_disc/financial-pdfs/${NOW.getUTCFullYear()}FD.zip`, note: "Index (TXT/XML) der Meldungen; PTR selbst als PDF" },
+  { id: "house-clerk-ptr-pdf-dir", cats: ["AD", "AE"], priority: 1, auth: "NO_AUTH", fmt: "html", url: `https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/${NOW.getUTCFullYear()}/` },
+  { id: "invesco-qqq-holdings", cats: ["T", "U"], priority: 2, auth: "NO_AUTH", fmt: "csv", ua: "browser", accept: "text/csv,application/octet-stream,*/*", url: "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ" },
+  { id: "nasdaq-ndx-constituents-official-page", cats: ["U"], priority: 2, auth: "NO_AUTH", fmt: "html", ua: "browser", url: "https://www.nasdaq.com/solutions/global-indexes/nasdaq-100/companies" },
+  { id: "spdji-index-page-spx", cats: ["A", "U"], priority: 2, auth: "NO_AUTH", fmt: "html", ua: "browser", url: "https://www.spglobal.com/spdji/en/indices/equity/sp-500/" },
+  { id: "cme-settlements", cats: ["AI"], priority: 2, auth: "NO_AUTH", fmt: "json", ua: "browser", url: "https://www.cmegroup.com/CmeWS/mvc/Settlements/Futures/Settlements/437/FUT?tradeDate=&strategy=DEFAULT" },
+  { id: "sec-company-facts-bulk", cats: ["G"], priority: 1, auth: "NO_AUTH", fmt: "zip", method: "HEAD", ...SEC, url: "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip" },
+  { id: "sec-submissions-bulk", cats: ["H"], priority: 1, auth: "NO_AUTH", fmt: "zip", method: "HEAD", ...SEC, url: "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip" }
+];
+const TERMS2 = [
+  ["sec", "https://www.sec.gov/about/privacy-information", /(considered public information|may be copied|further distributed)/i, "sec"],
+  ["sec-access", "https://www.sec.gov/about/webmaster-frequently-asked-questions", /(requests per second|Fair Access|declare your user agent)/i, "sec"],
+  ["ecb", "https://www.ecb.europa.eu/services/using-our-site/disclaimer/html/index.en.html", /(source is acknowledged|reproduction is permitted|free of charge)/i, "vu"],
+  ["ecb-data-portal", "https://data.ecb.europa.eu/help/terms-use", /(reuse|re-use|source|commercial|free)/i, "vu"],
+  ["eurostat", "https://ec.europa.eu/eurostat/web/main/help/copyright-notice", /(Creative Commons|CC BY|reuse|re-use|commercial)/i, "browser"],
+  ["worldbank-commodity-dataset", "https://datacatalog.worldbank.org/search/dataset/0037798", /(Creative Commons|CC[- ]BY|License)/i, "browser"],
+  ["worldbank-data-terms", "https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets", /(Creative Commons Attribution|CC BY 4\.0|commercial purposes)/i, "browser"],
+  ["treasury-fiscaldata-license", "https://fiscaldata.treasury.gov/about-us/#licensing", /(public domain|no restrictions|freely|licens)/i, "browser"],
+  ["cftc", "https://www.cftc.gov/Disclaimers/index.htm", /(public domain|copyright|reproduc)/i, "browser"],
+  ["cftc-2", "https://www.cftc.gov/Privacy/index.htm", /(public domain|copyright|reproduc)/i, "browser"],
+  ["finra-data-terms", "https://www.finra.org/finra-data/about-finra-data/terms-of-use", /(commercial|redistribut|personal|license|non-commercial)/i, "browser"],
+  ["finra-api-terms", "https://developer.finra.org/terms", /(commercial|redistribut|personal|license|non-commercial)/i, "browser"],
+  ["cboe-legal", "https://www.cboe.com/legal/", /(redistribut|commercial|personal|license|without the prior)/i, "browser"],
+  ["cboe-data-terms", "https://www.cboe.com/about/legal/terms_of_use/", /(redistribut|commercial|personal|license|without the prior)/i, "browser"],
+  ["lbma", "https://www.lbma.org.uk/prices-and-data/precious-metal-prices", /(licen[cs]e|commercial|redistribut|delay|IBA)/i, "browser"],
+  ["nasdaq-datalink", "https://data.nasdaq.com/terms", /(redistribut|commercial|personal|license)/i, "browser"],
+  ["nasdaqtrader", "https://www.nasdaqtrader.com/Trader.aspx?id=SymbolDirDefs", /(redistribut|commercial|personal|license|terms)/i, "browser"],
+  ["ishares", "https://www.ishares.com/us/terms-and-conditions", /(redistribut|commercial|personal|reproduc)/i, "browser"],
+  ["invesco", "https://www.invesco.com/corporate/en/legal.html", /(redistribut|commercial|personal|reproduc)/i, "browser"],
+  ["ark", "https://www.ark-funds.com/terms-and-conditions", /(redistribut|commercial|personal|reproduc)/i, "browser"],
+  ["oecd", "https://www.oecd.org/en/about/terms-conditions.html", /(Creative Commons|CC BY|commercial|reuse)/i, "vu"],
+  ["imf", "https://www.imf.org/en/About/copyright-and-terms", /(commercial|free of charge|permission|data)/i, "vu"],
+  ["destatis", "https://www.destatis.de/DE/Service/Impressum/_inhalt.html", /(Datenlizenz|dl-de|Namensnennung|kommerziell)/i, "browser"],
+  ["bundesbank-reproduction", "https://www.bundesbank.de/en/homepage/reproduction-regulations", /(reproduc|source|commercial|permitted)/i, "browser"],
+  ["boe-statistics", "https://www.bankofengland.co.uk/statistics/details/further-details-about-data-terms-and-conditions", /(free of charge|reproduc|re-use|reuse|source)/i, "browser"],
+  ["snb", "https://data.snb.ch/en/copyright", /(source|commercial|permitted|copyright|free)/i, "browser"],
+  ["boj", "https://www.boj.or.jp/en/about/services/notice.htm", /(reproduc|source|commercial|permission|copyright)/i, "browser"],
+  ["house-clerk", "https://disclosures-clerk.house.gov/FinancialDisclosure", /(commercial|unlawful|purpose|credit rating)/i, "browser"],
+  ["senate-efd", "https://efdsearch.senate.gov/search/home/", /(commercial|unlawful|purpose|credit rating|agree)/i, "browser"],
+  ["occ", "https://www.theocc.com/terms-of-use", /(redistribut|commercial|personal|reproduc)/i, "browser"],
+  ["coingecko", "https://www.coingecko.com/en/api_terms", /(attribution|commercial|redistribut)/i, "browser"],
+  ["french", "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html", /(copyright|permission|Kenneth R\. French)/i, "browser"]
+];
+
 const report = {
   schemaVersion: "1.0.0", generatedAtUtc: NOW.toISOString(),
   purpose: "Free Data Source Discovery: kostenlose, moeglichst offizielle Quellen je Capability gemessen; FMP- und Finnhub-Abdeckung des vorhandenen Zugangs als Vergleich. Keine Werte.",
@@ -359,8 +434,29 @@ async function run() {
   } else report.finnhubBenchmark = { result: "NOT_MEASURED_NO_KEY" };
 }
 
+async function runRound2() {
+  /* Der Bericht aus Runde 1 bleibt; Runde 2 ueberschreibt nur, was sie misst. */
+  const { readFileSync, existsSync } = await import("node:fs");
+  if (process.argv.includes("--round2") && existsSync(OUT)) Object.assign(report, JSON.parse(readFileSync(OUT, "utf8")));
+  report.round2AtUtc = NOW.toISOString();
+  for (const s of ROUND2) {
+    const r = await get(s.url, { ua: uaFor(s.ua), method: s.method || "GET", accept: s.accept || null });
+    const out = { cats: s.cats, priority: s.priority, auth: s.auth, format: s.fmt, url: stripKeys(s.url), note: s.note || null, round: 2, ...shape(r, s.fmt) };
+    if (s.linkRe && r.text) out.officialLinks = [...new Set(r.text.match(s.linkRe) || [])].slice(0, 8);
+    report.sources[s.id] = out;
+    if (s.ua === "sec") await sleep(250);
+  }
+  for (const [id, url, re, ua] of TERMS2) {
+    const r = await get(url, { ua: uaFor(ua) });
+    report.terms[id] = { url, httpStatus: r.status, finalUrl: stripKeys(r.finalUrl || "").slice(0, 200), excerpt: r.ok ? excerpt(r.text, re) : null, round: 2 };
+    if (ua === "sec") await sleep(250);
+  }
+}
+
 async function main() {
-  try { await run(); } catch (e) { report.error = String(e && e.message || e).slice(0, 200); }
+  /* Standard: beide Runden. --round2: nur Runde 2, in den vorhandenen Bericht. */
+  try { if (!process.argv.includes("--round2")) await run(); await runRound2(); }
+  catch (e) { report.error = String(e && e.message || e).slice(0, 200); }
   report.requests = requests;
   let json = JSON.stringify(report, null, 1);
   for (const k of [FMP_KEY, FINNHUB_KEY, SEC_UA]) if (k && k.length >= 6) json = json.split(k).join("[REDACTED]");

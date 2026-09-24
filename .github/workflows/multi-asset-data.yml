@@ -274,7 +274,7 @@ jobs:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
-        run: node scripts/market/probe-free-sources.mjs --publish
+        run: node scripts/market/probe-free-sources.mjs --publish --round2
       - name: Der Bericht enthaelt keinen Schluessel und keine Werte
         env:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
