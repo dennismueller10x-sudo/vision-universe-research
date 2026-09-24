@@ -14,11 +14,16 @@
    UNVERAENDERT weiterbenutzt (beide sind bereits generisch auf
    contentId, siehe deren eigene Dateien).
 
-   Der Hook selbst wird NICHT vom Agenten erbeten — web-research.js hat
-   ihn bereits deterministisch aus echtem Quelltext gewaehlt. Der Agent
-   liefert ausschliesslich die texfreie, logofreie Bildwelt (Stufe A);
-   der bereits gewaehlte Hook wird in Stufe B (render-asset.mjs,
-   unveraendert) aufgesetzt.
+   DEUTSCHER HOOK — OWNER-DIREKTIVE "WEB-FIRST + FULL-POST-GENERATION"
+   (24.09.), §5.1: alle sichtbaren Texte im Post sind Deutsch. Die
+   Quelle liefert den Hook oft englisch (z.B. Seeking Alpha Market
+   Currents) — genau das war der reale Befund bei cand_20260924_d052c375
+   ("10-year U.S. Treasury yield tops 5.1%..." unveraendert als Hook).
+   web-research.js waehlt den Hook weiterhin deterministisch aus echtem
+   Quelltext (Grounding, Anti-Halluzination) — aber als ENGLISCHES
+   Belegmaterial (`grounding_hook_en`). Die deutsche Uebersetzung/
+   Adaption liefert der Agent, grounded an denselben `evidence`-Belegen;
+   der Text wird in Stufe B (render-asset.mjs, unveraendert) aufgesetzt.
 
    Ausfuehren:
      node scripts/social/request-creative-web.mjs
@@ -107,22 +112,47 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const agentBrief = ChatGptWork.buildAgentBrief(vuBrief, {
     contentId, variants: 1,
-    hookType: "web_story_fixed",
-    hookStrategyId: "vu-web-story-fixed-hook-v1",
+    hookType: "web_story_grounded_de",
+    hookStrategyId: "vu-web-story-grounded-de-v1",
     hookInstruction:
-      "Der Hook-Text steht bereits fest und wird NICHT vom Agenten formuliert (siehe " +
-      "`fixed_hook`). Liefere ausschliesslich die Bildwelt gemaess `visual_instruction`.",
+      "`grounding_hook_en` ist der aus der echten Quelle deterministisch gewaehlte Hook " +
+      "(siehe `source_story`) — NICHT auf Deutsch, nur Belegmaterial. Liefere GENAU EINE " +
+      "Hook-Variante: eine starke, kurze, soziale DEUTSCHE Uebersetzung/Adaption dieses " +
+      "Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine " +
+      "neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — " +
+      "Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive " +
+      "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2).",
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
     palette: auswahl.motiv.palette,
-    visualComposition: "portrait 4:5, centered, generous negative space for a headline",
+    /* KOMPOSITIONS-BEWUSSTE FREIFLAECHE (§3.1/§4, Owner-Direktive 24.09.):
+       Stufe B (render-asset.mjs) setzt Logo, Atlas und Hook-Text danach
+       IMMER an dieselben drei Stellen — deterministisch, damit Marken-
+       Bitmap und Hook-Text pixelgenau bleiben (kein KI-Modell reproduziert
+       ein konkretes Logo zuverlaessig). Damit das fertige Bild wie EIN
+       Entwurf wirkt statt "Bild plus draufgeklebter Text", muss die
+       generierte Szene genau dort ruhig bleiben, wo die Ueberlagerung
+       spaeter hinkommt — nicht generisch "irgendwo Freiflaeche". */
+    visualComposition: "portrait 4:5. Reserve calm, uncluttered negative space in exactly " +
+      "three zones for a deterministic brand overlay added afterward: (1) TOP-LEFT " +
+      "corner — small quiet area, no busy detail, for a brand logo; (2) a horizontal " +
+      "band from the upper third to the middle-left — calm, low-contrast background " +
+      "(not behind bright highlights or complex texture) for a bold headline; (3) " +
+      "BOTTOM-RIGHT corner — a modest quiet area for a small brand mascot silhouette, " +
+      "not the visual focal point. The main subject/action occupies the center and " +
+      "right-of-center, calmer toward those three zones. It must still read as ONE " +
+      "cohesive, intentionally composed photograph — not a scene with empty holes cut " +
+      "out of it.",
     width: 1080, height: 1350,
     objective: "Aus einer aktuellen, oeffentlich recherchierten Story eine hochwertige, " +
-      "thematisch passende Bildwelt erzeugen — kein Diagramm, kein Dashboard, kein " +
-      "Bildschirmfoto, kein generischer Boersenticker.",
+      "thematisch passende Bildwelt erzeugen, die als Teil EINES fertigen Markenposts " +
+      "komponiert ist (nicht als spaeter zutextendes Rohbild) — kein Diagramm, kein " +
+      "Dashboard, kein Bildschirmfoto, kein generischer Boersenticker. Hook und Caption " +
+      "durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, " +
+      "24.09., §5.1).",
     audience: "Anleger, die aktuelle Marktentwicklungen verfolgen"
   });
-  agentBrief.fixed_hook = auswahl.hook;
+  agentBrief.grounding_hook_en = auswahl.hook;
   agentBrief.evidence = baueEvidenzAusStory(auswahl).map(function (e, i) {
     return { id: "ev" + (i + 1), statement: e.statement, value: e.value, unit: e.unit,
       entity: e.entity, metric: e.metric, source: e.source.source,

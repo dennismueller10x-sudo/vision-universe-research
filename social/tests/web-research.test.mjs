@@ -242,10 +242,17 @@ function treasuryItem(overrides) {
   }, overrides || {});
 }
 
-test("WR26 · enthaeltBegriff()/themaFuer() treffen 'ki' nicht mitten in 'marking'", () => {
+test("WR26 · enthaeltBegriff()/themaFuer() treffen 'ki' nicht mitten in 'marking' — " +
+  "und finden stattdessen die echte Themenwelt MACRO_RATES (§3.2, 24.09.)", () => {
+  /* Bis zur Erweiterung der Themenwelten (Owner-Direktive "WEB-FIRST +
+     FULL-POST-GENERATION", 24.09., §3.2) fiel diese Story mangels
+     Abdeckung auf thema=null zurueck und landete beim generischen
+     Rechenzentrums-Motiv — der Motiv-Bruch, den §3.2 ausdruecklich
+     verbietet. Jetzt greift MACRO_RATES ueber "treasury"/"rendite". */
   const storyWahl = WR.waehleStory([treasuryItem()], { now: JETZT });
-  assert.equal(storyWahl.gewaehlt.thema, null,
-    "'marking' darf keine KI-Themenwelt ausloesen");
+  assert.ok(storyWahl.gewaehlt.thema, "Treasury-Story braucht jetzt eine Themenwelt");
+  assert.equal(storyWahl.gewaehlt.thema.id, "MACRO_RATES",
+    "'marking' darf keine KI-Themenwelt ausloesen — die echte Themenwelt ist Zinsen/Makro");
 });
 
 test("WR27 · hashtagsAbleiten() liefert kein 'KuenstlicheIntelligenz' fuer die Treasury-Story", () => {

@@ -46,6 +46,7 @@
     : global.VUSocialContentIntelligence;
   var AudienceFrame = isNode ? require("./audience-frame.js")
     : global.VUSocialAudienceFrame;
+  var German = isNode ? require("./german-text.js") : global.VUSocialGermanText;
 
   function text(v) { return String(v === null || v === undefined ? "" : v); }
   function gefuellt(v) { return !!text(v).trim(); }
@@ -176,6 +177,18 @@
         " interne Begriffe im oeffentlichen Text: " + treffer.join(", ") + "." });
     }
 
+    /* HOOK_CAPTION_GERMAN — Owner-Direktive "WEB-FIRST +
+       FULL-POST-GENERATION" (24.09.), §5.1: alle sichtbaren Texte
+       durchgehend Deutsch. Realer Befund: cand_20260924_d052c375 trug
+       den englischen Quelltitel woertlich. */
+    var englischeWoerter = German.englischeKontamination(oeffentlicherText);
+    var hookCaptionGerman = englischeWoerter.length === 0;
+    if (!hookCaptionGerman) {
+      verstoesse.push({ id: "HOOK_CAPTION_GERMAN", satz: "Englische " +
+        "Funktionswoerter im oeffentlichen Text (" + englischeWoerter.join(", ") +
+        ") — Owner-Direktive verlangt durchgehend deutschen Text (§5.1)." });
+    }
+
     var assetReachable = options.assetExists === true;
     if (!assetReachable) {
       verstoesse.push({ id: "ASSET_PUBLICLY_REACHABLE", satz: "Die " +
@@ -206,10 +219,11 @@
         HASHTAGS_PRESENT: hashtagsPresent,
         INTERNAL_JARGON: internalJargon,
         ASSET_PUBLICLY_REACHABLE: assetReachable,
-        PUBLISH_PAYLOAD_VERIFIED: publishPayloadVerified
+        PUBLISH_PAYLOAD_VERIFIED: publishPayloadVerified,
+        HOOK_CAPTION_GERMAN: hookCaptionGerman
       },
       erklaerung: verstoesse.length === 0
-        ? "Alle zwoelf Bedingungen des Hard Final Creative Gate bestanden (§15)."
+        ? "Alle dreizehn Bedingungen des Hard Final Creative Gate bestanden (§15)."
         : verstoesse.length + " Bedingung(en) nicht bestanden: " +
           verstoesse.map(function (v) { return v.id; }).join(", ") + "."
     };

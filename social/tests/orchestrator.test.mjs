@@ -309,9 +309,15 @@ test("OR12 · Der Zeitplan veroeffentlicht nicht und entscheidet nicht", () => {
       "Der Scheduler traegt " + flagge + " im Workflow - eine Entscheidung, " +
       "die niemand getroffen hat.");
   }
-  /* Und er ruft die Stufen auf, die er soll. */
-  for (const noetig of ["run-orchestrator.mjs", "run-social-cycle.mjs",
-                        "make-publish-candidate.mjs"]) {
+  /* Und er ruft die Stufen auf, die er soll. Seit "WEB-FIRST +
+     FULL-POST-GENERATION" (24.09.) sind das die Web-First-Skripte -
+     run-social-cycle.mjs/make-publish-candidate.mjs werden im
+     Workflow nicht mehr direkt aufgerufen (der alte VORBEREITEN-
+     Schritt ist stillgelegt, if: false), auch wenn make-publish-
+     candidate.mjs als geteilte Abhaengigkeit weiterhin importiert
+     wird (manual-now-web-candidate.mjs). */
+  for (const noetig of ["run-orchestrator.mjs", "research-web-story.mjs",
+                        "manual-now-web-candidate.mjs"]) {
     assert.ok(yml.includes(noetig), "fehlt: " + noetig);
   }
 });
@@ -402,21 +408,23 @@ test("OR14 · storyBestesThema() waehlt nach Story, nicht nach Opportunity.score
 /* HOOK FIXTURE. Das Hard Final Creative Gate griff nicht, weil es nur */
 /* fuer visualType===GENERATIVE gilt.                                  */
 /* ------------------------------------------------------------------ */
-test("OR15 · MANUAL_NOW reicht storyBestesThema() bis zu VORBEREITEN durch", () => {
-  const skript = readFileSync(
-    join(dirname(fileURLToPath(import.meta.url)), "..", "..",
-      "scripts/social/run-orchestrator.mjs"), "utf8");
-  assert.match(skript, /manual_now_thema=.*manualNowThema/,
-    "run-orchestrator.mjs muss manualNowThema im --github-output ausgeben - " +
-    "sonst kennt VORBEREITEN (ein eigener Prozess) die Story-Auswahl nicht.");
-
+/* 24.09., Owner-Direktive "WEB-FIRST + FULL-POST-GENERATION": der alte  */
+/* VORBEREITEN-Schritt (run-social-cycle.mjs/Opportunity.score-Ladder)   */
+/* ist jetzt fuer JEDEN Modus stillgelegt (if: false, siehe OR16) - der  */
+/* Rueckfall, den diese Regression-Fixture urspruenglich abfing, kann    */
+/* strukturell nicht mehr auftreten: der einzige noch lebendige Pfad ist */
+/* WEB RESEARCH, modus-unabhaengig (OR17). Die Prüfung haelt das jetzt   */
+/* strukturell fest statt ueber die (tote) Umgebungsvariable. */
+test("OR15 · MANUAL_NOW kann nicht mehr auf die Ladder zurueckfallen " +
+  "(der alte VORBEREITEN-Schritt ist tot)", () => {
   const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
-  const vorbereitenBlock = yml.slice(yml.indexOf("VORBEREITEN — bis zum Publishing Gate"));
-  assert.match(vorbereitenBlock.slice(0, 3000),
-    /MANUAL_NOW['"]?\s*&&\s*steps\.plan\.outputs\.manual_now_thema/,
-    "VORBEREITEN muss VU_SOCIAL_THEMA_FREITEXT bei MANUAL_NOW aus " +
-    "steps.plan.outputs.manual_now_thema setzen - sonst waehlt run-social-cycle.mjs " +
-    "wieder ueber die Ladder (Opportunity.score) statt ueber die Story.");
+  const altBlock = yml.slice(
+    yml.indexOf("VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus (stillgelegt)"));
+  assert.match(altBlock.slice(0, 400), /if:\s*false/,
+    "Der alte VORBEREITEN-Schritt (Ladder/Opportunity.score) muss fuer jeden Modus " +
+    "stillgelegt sein - sonst kann MANUAL_NOW wieder auf die Ladder zurueckfallen.");
+  assert.ok(!altBlock.slice(0, 400).includes("run-social-cycle.mjs"),
+    "Der stillgelegte Schritt darf run-social-cycle.mjs nicht mehr aufrufen.");
 });
 
 /* ------------------------------------------------------------------ */
@@ -427,39 +435,58 @@ test("OR15 · MANUAL_NOW reicht storyBestesThema() bis zu VORBEREITEN durch", ()
 /* nicht als Fallback. Diese Tests sperren die Verdrahtung fest, nicht */
 /* nur die Existenz der neuen Skripte.                                 */
 /* ------------------------------------------------------------------ */
-test("OR16 · MANUAL_NOW/MANUAL_TOPIC ueberspringen Platte, Messen, alten " +
-  "Creative-Job- und VORBEREITEN-Schritt", () => {
+/* ------------------------------------------------------------------ */
+/* 24.09., Owner-Direktive "WEB-FIRST + FULL-POST-GENERATION": Discovery/ */
+/* Quant/Opportunity Slate/Ranking duerfen ab jetzt fuer KEINEN Modus  */
+/* mehr Inhaltsquelle sein - nicht nur fuer MANUAL_NOW/MANUAL_TOPIC.   */
+/* Die alten Schritte sind deshalb permanent stillgelegt (if: false), */
+/* nicht mehr modus-abhaengig uebersprungen, und WEB RESEARCH laeuft   */
+/* jetzt fuer JEDEN Modus (kein modus-Vergleich mehr in der Bedingung). */
+/* ------------------------------------------------------------------ */
+test("OR16 · Platte, alter Creative-Job- und VORBEREITEN-Schritt sind fuer " +
+  "jeden Modus stillgelegt", () => {
   const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
 
   function block(marker, endMarker) {
     const start = yml.indexOf(marker);
     assert.ok(start !== -1, "Schritt fehlt: " + marker);
     const rest = yml.slice(start);
-    const end = endMarker ? rest.indexOf(endMarker) : 2500;
-    return rest.slice(0, end === -1 ? 2500 : end);
+    const end = endMarker ? rest.indexOf(endMarker) : 800;
+    return rest.slice(0, end === -1 ? 800 : end);
   }
 
   for (const marker of [
-    "DIE PLATTE — Content Universe in voller Breite",
-    "MESSEN — Zahlen holen, lernen, anpassen",
-    "CREATIVE JOB — Brief, Register, Request-PR",
-    "VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus"
+    "DIE PLATTE — Content Universe in voller Breite (stillgelegt)",
+    "CREATIVE JOB — Brief, Register, Request-PR (stillgelegt)",
+    "VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus (stillgelegt)"
   ]) {
     const b = block(marker);
-    assert.match(b, /steps\.plan\.outputs\.modus\s*!=\s*'MANUAL_NOW'/,
-      marker + " muss bei MANUAL_NOW uebersprungen werden.");
-    assert.match(b, /steps\.plan\.outputs\.modus\s*!=\s*'MANUAL_TOPIC'/,
-      marker + " muss bei MANUAL_TOPIC uebersprungen werden.");
+    assert.match(b, /if:\s*false/,
+      marker + " muss fuer jeden Modus stillgelegt sein (if: false).");
   }
+
+  /* MESSEN ist keine Inhaltsquelle (eigene Performance-Insights,
+     keine externe/interne Themenfindung) und bleibt unveraendert bei
+     MANUAL_NOW/MANUAL_TOPIC uebersprungen. */
+  const messen = block("MESSEN — Zahlen holen, lernen, anpassen");
+  assert.match(messen, /steps\.plan\.outputs\.modus\s*!=\s*'MANUAL_NOW'/);
+  assert.match(messen, /steps\.plan\.outputs\.modus\s*!=\s*'MANUAL_TOPIC'/);
 });
 
-test("OR17 · WEB RESEARCH ist der einzige Themenpfad fuer MANUAL_NOW/MANUAL_TOPIC", () => {
+test("OR17 · WEB RESEARCH ist der einzige Themenpfad, fuer jeden Modus gleich", () => {
   const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
   const idx = yml.indexOf("WEB RESEARCH — aktuelle Story finden");
   assert.ok(idx !== -1, "Schritt WEB RESEARCH fehlt.");
   const block = yml.slice(idx, idx + 1500);
-  assert.match(block, /steps\.plan\.outputs\.modus == 'MANUAL_NOW'/);
-  assert.match(block, /steps\.plan\.outputs\.modus == 'MANUAL_TOPIC'/);
+  /* Kein modus-Vergleich mehr in der IF-BEDINGUNG (zwischen "if:" und
+     "env:") - der Schritt laeuft fuer JETZT_PRUEFEN, MANUAL_NOW,
+     MANUAL_TOPIC und den Zeitplan gleich. Der modus-Vergleich, der im
+     "env:"-Block danach steht, ist etwas anderes: er setzt
+     VU_SOCIAL_THEMA_FREITEXT nur bei MANUAL_TOPIC (kein Ausschluss,
+     sondern der bestehende Themafilter). */
+  const ifKlausel = block.slice(block.indexOf("if:"), block.indexOf("env:"));
+  assert.ok(!/steps\.plan\.outputs\.modus ==/.test(ifKlausel),
+    "WEB RESEARCH darf keinen Modus mehr ausschliessen: " + ifKlausel);
   assert.match(block, /research-web-story\.mjs/);
 
   for (const noetig of ["request-creative-web.mjs", "manual-now-web-candidate.mjs",

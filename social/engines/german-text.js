@@ -452,6 +452,44 @@
     return String(x).replace(".", ",");
   }
 
+  /* -------------------------------------------------------------------
+     ENGLISCH IM OEFFENTLICHEN TEXT — OWNER-DIREKTIVE "WEB-FIRST +
+     FULL-POST-GENERATION" (24.09.), §5.1
+
+     Web-First zieht Story und Belege oft aus englischsprachigen Quellen
+     (z. B. Seeking Alpha Market Currents). §5.1 verlangt: jeder
+     sichtbare Text im Post ist Deutsch, Ausnahmen nur fuer Eigennamen,
+     Ticker und Markennamen. Echter Befund: cand_20260924_d052c375 trug
+     den englischen Quelltitel woertlich als Hook ("10-year U.S.
+     Treasury yield tops 5.1%, marking its highest level since 2007").
+
+     Uebersetzen kann diese Datei nicht — das bleibt Aufgabe des Autors.
+     Geprueft wird nur der BACKSTOP: reine englische Funktionswoerter
+     ("the", "and", "with", "is", ...) kommen in echtem Deutsch nicht
+     als eigenstaendige Woerter vor. Kommen sie trotzdem vor, wurde die
+     Anweisung ignoriert und der Quelltext verbatim uebernommen. */
+  var ENGLISCHE_FUNKTIONSWOERTER = [
+    "the", "and", "with", "for", "from", "this", "that", "these", "those",
+    "its", "are", "was", "were", "will", "would", "could", "should",
+    "have", "has", "had", "not", "than", "then", "into", "onto", "about",
+    "since", "after", "before", "while", "during", "between", "amid",
+    "according"
+  ];
+
+  function englischeKontamination(text) {
+    var t = String(text || "");
+    var woerter = t.toLowerCase().match(/[a-z]+/g) || [];
+    var gesehen = Object.create(null);
+    var treffer = [];
+    woerter.forEach(function (w) {
+      if (ENGLISCHE_FUNKTIONSWOERTER.indexOf(w) !== -1 && !gesehen[w]) {
+        gesehen[w] = true;
+        treffer.push(w);
+      }
+    });
+    return treffer;
+  }
+
   var api = {
     STAEMME: STAEMME,
     zahl: zahl,
@@ -460,7 +498,9 @@
     clean: clean,
     TITEL_KLEIN: TITEL_KLEIN,
     titelfall: titelfall,
-    WOERTER: WOERTER
+    WOERTER: WOERTER,
+    ENGLISCHE_FUNKTIONSWOERTER: ENGLISCHE_FUNKTIONSWOERTER,
+    englischeKontamination: englischeKontamination
   };
 
   if (isNode) module.exports = api;
