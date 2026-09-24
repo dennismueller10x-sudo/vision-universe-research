@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "brief_49ed4ea774f950db",
+  "content_id": "vu-web-8854f83d5a3bdb8f-20260924",
+  "request_type": "FULL_CREATIVE",
+  "fixture_type": "production_authoring_request",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "agent_discretion": "single_german_grounded_adaptation"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-web-8854f83d5a3bdb8f-20260924:a0b0868ca0946b64c487c40e4ea78e34c3dc6e48:web_story_grounded_de:01",
+      "hook_type": "web_story_grounded_de",
+      "text": "„Für Perfektion bewertet“: Beim S&P 500 wird ein Rückschlag von fast 20 % diskutiert.",
+      "brief_revision": "a0b0868ca0946b64c487c40e4ea78e34c3dc6e48",
+      "evidence_refs": [
+        "ev1",
+        "ev2"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-web-8854f83d5a3bdb8f-20260924:a0b0868ca0946b64c487c40e4ea78e34c3dc6e48:web_story_grounded_de:01",
+    "recommendation_reason": "Die Variante überträgt die belegte Kernaussage kurz ins Deutsche und kennzeichnet den möglichen Rückschlag als diskutiertes Szenario statt als eigene Prognose.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "MarketWatch greift für das nächste Jahr ein Risikoszenario des Marktstrategen Eric Wallerstein auf. Seine Einschätzung lautet, dass Aktien Schwierigkeiten bekommen könnten. Die Zahl von fast 20 % beschreibt dieses Szenario für den S&P 500 – keine feststehende Entwicklung und keine Anlageempfehlung.",
+  "visual_brief": {
+    "purpose": "Eine aktuelle Marktstory als vollständig komponierte, hochwertige Markenbildwelt inszenieren, mit drei integrierten ruhigen Zonen für den späteren deterministischen Brand-Overlay.",
+    "visual_strategy": "GENERATIVE",
+    "motif": "Ein aktiver Trading Floor in einem gläsernen Finanzhochhaus bei Nacht, mit Brokern in Bewegung, abstrakten Lichtflächen und dem Finanzdistrikt im Hintergrund.",
+    "composition": "Hochformat 4:5. Kleine ruhige Zone oben links für das Logo, breite kontrastarme Zone vom oberen Drittel bis zur linken Mitte für die Headline und eine zurückhaltende Zone unten rechts für die Maskottchen-Silhouette. Hauptaktion zentriert und rechts der Mitte.",
+    "style": "Fotorealistische Premium-Editorial-Fotografie mit cineastischer Tiefe und subtiler hochwertiger 3D-Politur.",
+    "palette": [
+      "navy",
+      "charcoal",
+      "cool blue",
+      "restrained amber"
+    ],
+    "lighting": "Dramatisches blau-amberfarbenes Börsenlicht, tiefe Schatten und kontrollierte nächtliche Reflexionen.",
+    "materials": [
+      "dark glass",
+      "brushed metal",
+      "polished stone",
+      "subtle reflections"
+    ],
+    "narrative": "Konzentrierte Marktspannung und hohe Erwartungshaltung, ohne einen Crash, eine Prognose oder ein konkretes Marktergebnis zu behaupten.",
+    "overlay_zones": {
+      "top_left": "small quiet low-contrast logo area",
+      "upper_third_to_middle_left": "broad calm headline band",
+      "bottom_right": "modest quiet mascot area"
+    },
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Kein lesbarer Börsenticker",
+      "Kein Diagramm",
+      "Kein Bildschirmfoto",
+      "Kein Dashboard"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-web-8854f83d5a3bdb8f-20260924:a0b0868ca0946b64c487c40e4ea78e34c3dc6e48:visual:GENERATIVE:01",
+      "visual_strategy": "GENERATIVE",
+      "brief_revision": "a0b0868ca0946b64c487c40e4ea78e34c3dc6e48",
+      "asset_path": "authoring/requests/vu-web-8854f83d5a3bdb8f-20260924/assets/visual-01.png",
+      "asset_sha256": "0c5c15bc74be6b04aa68ef74475d92a6401ee3471085b94e46cc05bfeff8fff7",
+      "asset_byte_size": 2154432,
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "ev1",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/0",
+      "supports": "Marktbewertung, möglicher Rückschlag und Quellenaussage"
+    },
+    {
+      "ref_id": "ev2",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/1",
+      "supports": "Identität des S&P 500 in der Quellenaussage"
+    },
+    {
+      "ref_id": "grounding-hook",
+      "source": "authoring-brief.json",
+      "json_pointer": "/grounding_hook_en",
+      "supports": "Deterministische englische Ausgangsaussage für die deutsche Adaption"
+    },
+    {
+      "ref_id": "source-story",
+      "source": "authoring-brief.json",
+      "json_pointer": "/source_story",
+      "supports": "Quelle und Attribution"
+    },
+    {
+      "ref_id": "visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "Visual Strategy, Komposition und Restriktionen"
+    },
+    {
+      "ref_id": "publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_authoring",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "request_type_supported": true,
+      "hook_strategy_inherited": true,
+      "required_hook_variant_count_met": true,
+      "hook_language_german": true,
+      "grounding_claim_preserved": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "all_numeric_text_claims_evidence_bound": true,
+      "no_unattributed_forecast": true,
+      "no_recommendation": true,
+      "no_causality_claim": true,
+      "hook_and_caption_complementary": true,
+      "visual_strategy_inherited": true,
+      "overlay_zones_respected": true,
+      "visual_id_bound_to_full_brief_sha": true,
+      "real_raster_asset_present": true,
+      "png_structure_valid_through_iend": true,
+      "asset_hash_recorded": true,
+      "asset_byte_size_recorded": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "a0b0868ca0946b64c487c40e4ea78e34c3dc6e48",
+    "brief_revision": "a0b0868ca0946b64c487c40e4ea78e34c3dc6e48",
+    "processing_key": "brief_49ed4ea774f950db:vu-web-8854f83d5a3bdb8f-20260924:a0b0868ca0946b64c487c40e4ea78e34c3dc6e48:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
