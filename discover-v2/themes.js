@@ -13,7 +13,7 @@
   var V = global.VUDiscoverV2 = global.VUDiscoverV2 || {};
   // n, slug, Titel, Kurztext, Zeile fuer Karten, Leitsatz (Banner), Ton, Gruppe, rowId, Foto
   var list = [
-    [1, 'kuenstliche-intelligenz', 'Künstliche Intelligenz', 'AI-Modelle, Software, Computing', 'Intelligentere Software. Neue Wertschöpfung.', 'Intelligentere Märkte. Größere Möglichkeiten.', '#6d4bff', 'tech', 'thema-ki'],
+    [1, 'kuenstliche-intelligenz', 'Künstliche Intelligenz', 'AI-Modelle, Software, Computing', 'Intelligentere Software. Neue Wertschöpfung.', 'Intelligentere Märkte. Größere Möglichkeiten.', '#6d4bff', 'tech', 'thema-ki', true],
     [2, 'halbleiter-chips', 'Halbleiter & Chips', 'GPUs, CPUs, Foundries, Equipment', 'Die Rechenkraft hinter jedem Fortschritt.', 'Kleine Chips. Große Wirkung.', '#3867ff', 'tech', null, true],
     [3, 'rechenzentren-cloud', 'Rechenzentren & Cloud', 'Datacenter, Hyperscaler, Infrastruktur', 'Das Fundament der digitalen Welt.', 'Daten brauchen ein Zuhause.', '#2f7dd8', 'tech', null, true],
     [4, 'cybersecurity', 'Cybersecurity', 'Digitale Sicherheit und Netzwerke', 'Schutz für eine vernetzte Welt.', 'Vertrauen ist Infrastruktur.', '#1f9c8f', 'tech', null, true],

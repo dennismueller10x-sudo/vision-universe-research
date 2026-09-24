@@ -8,7 +8,7 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 
 | Nr | Themenwelt | Datei | Status |
 |----|------------|-------|--------|
-| 01 | Künstliche Intelligenz | `01-kuenstliche-intelligenz` | offen |
+| 01 | Künstliche Intelligenz | `01-kuenstliche-intelligenz` | ✅ |
 | 02 | Halbleiter & Chips | `02-halbleiter-chips` | ✅ |
 | 03 | Rechenzentren & Cloud | `03-rechenzentren-cloud` | ✅ |
 | 04 | Cybersecurity | `04-cybersecurity` | ✅ |
