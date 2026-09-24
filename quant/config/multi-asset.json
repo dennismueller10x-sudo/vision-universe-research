@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Quellenentscheidungen, Lizenzstand, Veroeffentlichungsprofile und Frische-Schwellen des Multi-Asset-Segments. Gelesen von quant/engines/multi-asset/instrument-catalog.js (resolve), quant/engines/realtime/asset-freshness.js und scripts/market/ingest-multi-asset.mjs. Eine Quellenentscheidung steht erst hier, wenn sie in quant/data/market/capabilities/multi-asset-probe.json gemessen ist. Was hier fehlt, bleibt CANDIDATE.",
+  "measuredBy": "quant/data/market/capabilities/multi-asset-probe.json",
+  "sourceRegistry": {
+    "tiingo-crypto": {
+      "provider": "tiingo", "product": "Crypto API", "kind": "LICENSED_PROVIDER", "priority": 1,
+      "publicDisplay": false,
+      "licenseState": "OWNER_DECISION_REQUIRED",
+      "licenseNote": "Die Owner-Erklaerung vom 2026-09-13 (development-preview.json#decidedBy) nennt die Tiingo-Market-Data. Krypto ist bei Tiingo ein eigenes Produkt - dieselbe Lesart wie fx-license.json#licenseGate fuer FX. Ohne ausdrueckliche Freigabe wird keine rohe Krypto-Kursreihe in den ausgelieferten Pfad geschrieben.",
+      "attribution": "Daten: Tiingo"
+    },
+    "tiingo-fx-metals": {
+      "provider": "tiingo", "product": "FX API (Edelmetallpaare)", "kind": "LICENSED_PROVIDER", "priority": 1,
+      "publicDisplay": false,
+      "licenseState": "OWNER_DECISION_REQUIRED",
+      "licenseNote": "Edelmetallpaare kommen ueber den FX-Endpunkt. fx-license.json#licenseGate haelt fest: Redistribution roher FX-Reihen (Klasse E) wird NICHT ausgeuebt. Eine Gold-/Silberkarte zeigt genau so eine rohe Reihe. Ohne ausdrueckliche Freigabe bleibt sie im Arbeitsstand.",
+      "attribution": "Daten: Tiingo"
+    },
+    "us-treasury": {
+      "provider": "U.S. Department of the Treasury", "product": "Daily Treasury Par Yield Curve Rates", "kind": "OFFICIAL_PRIMARY", "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+      "licenseNote": "Werk der US-Bundesregierung (17 U.S.C. 105). Quellenangabe erfolgt trotzdem.",
+      "attribution": "Quelle: U.S. Department of the Treasury"
+    },
+    "nyfed": {
+      "provider": "Federal Reserve Bank of New York", "product": "Reference Rates API (EFFR inkl. Zielband)", "kind": "OFFICIAL_PRIMARY", "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+      "licenseNote": "Die New York Fed veroeffentlicht die Referenzsaetze oeffentlich und verlangt die Quellenangabe. Eine Weiterverwendung als eigenes Datenprodukt ist nicht Gegenstand.",
+      "attribution": "Quelle: Federal Reserve Bank of New York"
+    },
+    "ecb-data-portal": {
+      "provider": "Europaeische Zentralbank", "product": "ECB Data Portal (FM - Leitzinsen)", "kind": "OFFICIAL_PRIMARY", "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+      "licenseNote": "Dieselbe Grundlage wie die bereits angebundenen EZB-Referenzkurse (fx-license.json): Wiedergabe unter Nennung der Quelle.",
+      "attribution": "Quelle: Europaeische Zentralbank"
+    },
+    "bundesbank": {
+      "provider": "Deutsche Bundesbank", "product": "Zeitreihen-Datenbank (BBSIS - Zinsstruktur Bundeswertpapiere)", "kind": "OFFICIAL_PRIMARY", "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+      "licenseNote": "Die Bundesbank gestattet die Verwendung ihrer Statistiken unter Quellenangabe.",
+      "attribution": "Quelle: Deutsche Bundesbank"
+    },
+    "eia": {
+      "provider": "U.S. Energy Information Administration", "product": "Spot Prices (Petroleum, Natural Gas)", "kind": "OFFICIAL_PRIMARY", "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+      "licenseNote": "Werk der US-Bundesregierung. EIA bittet um Quellenangabe. Die EIA-Spotpreise stammen urspruenglich von Thomson Reuters; EIA veroeffentlicht sie frei.",
+      "attribution": "Quelle: U.S. Energy Information Administration"
+    },
+    "fred": {
+      "provider": "Federal Reserve Bank of St. Louis (FRED)", "product": "FRED Graph CSV", "kind": "INSTITUTIONAL_MIRROR", "priority": 3,
+      "publicDisplay": false,
+      "licenseState": "COMPARISON_ONLY",
+      "licenseNote": "FRED spiegelt Reihen anderer Herausgeber. Nach §12 hat die Primaerquelle Vorrang; FRED dient nur dem Abgleich und wird nicht ausgeliefert.",
+      "attribution": "Quelle: FRED, Federal Reserve Bank of St. Louis"
+    }
+  },
+  "publisherProfiles": {
+    "US_TREASURY": { "timezone": "America/New_York", "businessDays": [1, 2, 3, 4, 5], "holidayExchange": "XNYS", "publishedAfterLocal": "18:00", "maxLagBusinessDays": 1, "note": "Die Par-Yield-Kurve erscheint am Nachmittag des Geschaeftstags. Feiertage des Anleihemarkts (SIFMA) sind nicht vollstaendig identisch mit dem NYSE-Kalender - deshalb eine Karenz von einem Geschaeftstag, statt einer genauen Liste." },
+    "US_NYFED": { "timezone": "America/New_York", "businessDays": [1, 2, 3, 4, 5], "holidayExchange": "XNYS", "publishedAfterLocal": "09:00", "maxLagBusinessDays": 2, "note": "Die EFFR fuer Tag t erscheint am Morgen von t+1." },
+    "DE_BUNDESBANK": { "timezone": "Europe/Berlin", "businessDays": [1, 2, 3, 4, 5], "holidayExchange": "XETR", "publishedAfterLocal": "12:00", "maxLagBusinessDays": 2, "note": "Die Zinsstruktur fuer Tag t erscheint in der Regel am folgenden Geschaeftstag." },
+    "US_EIA": { "timezone": "America/New_York", "businessDays": [1, 2, 3, 4, 5], "holidayExchange": "XNYS", "publishedAfterLocal": "12:00", "maxLagBusinessDays": 8, "note": "EIA aktualisiert die taeglichen Spotpreise im Wochenrhythmus (in der Regel mittwochs). Ein Wert, der eine Woche alt ist, ist deshalb nicht veraltet." },
+    "EU_ECB": { "timezone": "Europe/Berlin", "businessDays": [1, 2, 3, 4, 5], "holidayExchange": "XETR", "publishedAfterLocal": "15:00", "maxLagBusinessDays": 3, "note": "Leitzinsen: die Reihe wird taeglich fortgeschrieben, der Wert aendert sich nur an Beschlusstagen." }
+  },
+  "freshness": {
+    "note": "Schwellen je Sitzungsprofil. Continuous (Krypto): Alter des letzten Stands gegen die Lieferfrequenz. Weekly window (Metalle/Futures): wie Continuous, aber nur waehrend der Handelszeit. Publication: Rueckstand in Geschaeftstagen des Herausgebers. Event: der Wert gilt bis zum naechsten Beschluss; STALE wird nur, wenn die Quelle laenger nicht mehr abgefragt wurde (maxCheckAgeHours).",
+    "CRYPTO_24_7": { "liveSeconds": 180, "currentSeconds": 3600, "staleAfterSeconds": 21600 },
+    "METALS_OTC_24_5": { "liveSeconds": 180, "currentSeconds": 3600, "staleAfterSeconds": 21600, "closeGraceSeconds": 3600 },
+    "COMMODITY_FUTURES": { "liveSeconds": 180, "currentSeconds": 3600, "staleAfterSeconds": 21600, "closeGraceSeconds": 3600 },
+    "REFERENCE_DAILY": { "useExchangeCalendar": true },
+    "REFERENCE_MONTHLY": { "maxLagDays": 62 },
+    "POLICY_EVENT": { "maxCheckAgeHours": 96 }
+  },
+  "sources": {}
+}

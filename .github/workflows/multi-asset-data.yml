@@ -1,0 +1,173 @@
+name: Multi-Asset Data Core — Faehigkeiten und Daten
+
+# Der einzige Ort, an dem das Multi-Asset-Segment des Data Core echte
+# Quellen sieht. Wie currency-fx-verify.yml: keine Faehigkeit gilt aus
+# Dokumentation oder Vermutung als verfuegbar - gemessen wird im Runner,
+# mit dem bestehenden TIINGO_API_KEY und den offiziellen Quellen
+# (US Treasury, NY Fed, EZB, Bundesbank, EIA).
+#
+# DER SCHLUESSELPFAD
+#
+# TIINGO_API_KEY geht ausschliesslich als Umgebungsvariable an
+# Node-Skripte, steht im Authorization-Header und nie in einer URL, und
+# erscheint weder im Protokoll noch im Bericht noch im Repository. Die
+# Redaktion im Skript und die Gegenprobe unten halten das fest.
+#
+# EIGENE SPUR (§56)
+#
+# Dieser Workflow laeuft nur fuer Multi-Asset-Dateien. Er beruehrt weder
+# SEC noch Quant noch Discover, und keiner von deren Gates laeuft wegen
+# einer Multi-Asset-Aenderung an.
+#
+# MARKER IN DER BETREFFZEILE (Push auf claude/**)
+#
+#   [ma-probe]    Faehigkeiten messen            (~120 Tiingo-Anfragen)
+#   [ma-ingest]   Daten holen und Vertrag bauen  (~20 Tiingo-Anfragen)
+#
+# Ohne Marker laeuft nur der Vertrag (Tests, keine Anbieterabrufe).
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_probe:
+        description: 'Faehigkeiten messen (~120 Tiingo-Anfragen)'
+        type: boolean
+        default: false
+      run_ingest:
+        description: 'Daten holen und veroeffentlichen'
+        type: boolean
+        default: true
+  pull_request:
+    paths:
+      - 'quant/engines/multi-asset/**'
+      - 'quant/engines/realtime/session-profiles.js'
+      - 'quant/engines/realtime/asset-freshness.js'
+      - 'quant/engines/realtime/market-hours.js'
+      - 'quant/engines/realtime/trading-session.js'
+      - 'quant/api/multi-asset-contract.js'
+      - 'quant/config/multi-asset*.json'
+      - 'quant/config/market-calendar.json'
+      - 'quant/tests/multi-asset-*.test.mjs'
+      - 'scripts/market/probe-multi-asset.mjs'
+      - 'scripts/market/ingest-multi-asset.mjs'
+      - 'scripts/quality/verify-multi-asset.mjs'
+      - '.github/workflows/multi-asset-data.yml'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'quant/engines/multi-asset/**'
+      - 'quant/engines/realtime/session-profiles.js'
+      - 'quant/engines/realtime/asset-freshness.js'
+      - 'quant/api/multi-asset-contract.js'
+      - 'quant/config/multi-asset*.json'
+      - 'quant/tests/multi-asset-*.test.mjs'
+      - 'scripts/market/probe-multi-asset.mjs'
+      - 'scripts/market/ingest-multi-asset.mjs'
+      - 'scripts/quality/verify-multi-asset.mjs'
+      - '.github/workflows/multi-asset-data.yml'
+  # Auf dem Default-Branch: viermal am Tag. Krypto laeuft 24/7, die
+  # Referenzreihen erscheinen zu verschiedenen Tageszeiten in New York
+  # und Frankfurt - ein Takt, der beides abdeckt, ohne Kontingent zu
+  # verbrennen (~20 Anfragen je Lauf).
+  schedule:
+    - cron: '20 6,12,18,23 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: multi-asset-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Vertrags- und Semantiktests
+        run: node --test quant/tests/multi-asset-*.test.mjs
+      - name: Regression Guard Currency Core (keine lokale FX-Logik)
+        run: node scripts/quality/assert-no-local-fx.mjs
+
+  marker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      probe:  ${{ steps.read.outputs.probe }}
+      ingest: ${{ steps.read.outputs.ingest }}
+    steps:
+      - name: Marker aus der Betreffzeile lesen
+        id: read
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ github.event_name }}
+          IN_PROBE: ${{ inputs.run_probe }}
+          IN_INGEST: ${{ inputs.run_ingest }}
+        run: |
+          probe=false; ingest=false
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            [ "$IN_PROBE" = "true" ] && probe=true
+            [ "$IN_INGEST" = "true" ] && ingest=true
+          elif [ "$EVENT_NAME" = "schedule" ]; then
+            ingest=true
+          elif [ "$EVENT_NAME" = "push" ]; then
+            subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+            echo "Betreffzeile: $subject"
+            case "$subject" in *"[ma-probe]"*)  probe=true  ;; esac
+            case "$subject" in *"[ma-ingest]"*) ingest=true ;; esac
+          fi
+          echo "probe=$probe"   >> "$GITHUB_OUTPUT"
+          echo "ingest=$ingest" >> "$GITHUB_OUTPUT"
+          echo "probe=$probe ingest=$ingest"
+
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [contract, marker]
+    if: needs.marker.outputs.probe == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Faehigkeiten messen (Tiingo + offizielle Quellen)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/probe-multi-asset.mjs --publish
+      - name: Der Bericht enthaelt keinen Schluessel und keine Werte
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "quant/data/market/capabilities/multi-asset-probe.json";
+            const raw = fs.readFileSync(file, "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
+            if (/[?&]token=/i.test(raw)) { console.error("ABBRUCH: Token-URL im Bericht."); process.exit(1); }
+            const verboten = ["midprice","bidprice","askprice","lastclose","close","open","high","low","value","percentrate","obs_value","price","last"];
+            const treffer = [];
+            (function walk(v, p) {
+              if (!v || typeof v !== "object") return;
+              for (const k of Object.keys(v)) {
+                if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                walk(v[k], p + "." + k);
+              }
+            })(JSON.parse(raw), "report");
+            if (treffer.length) { console.error("ABBRUCH: Wertfelder im Bericht: " + treffer.join(", ")); process.exit(1); }
+            console.log("Bericht frei von Zugangsdaten und Werten (" + Math.round(raw.length / 1024) + " KB).");
+          '
+      - name: Bericht in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Multi-Asset-Faehigkeiten gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/multi-asset-probe.json
+      - name: Matrix ins Protokoll
+        run: node -e 'const r=require("./quant/data/market/capabilities/multi-asset-probe.json"); console.log(JSON.stringify({tiingo:r.tiingo.matrix, instruments:r.instruments, requests:r.requests}, null, 1))'
