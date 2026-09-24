@@ -561,6 +561,53 @@ async function finnhub() {
   }
 }
 
+/* ------------------------------------------------ Runde 6 */
+
+/* STOXX: die verzoegerte Kurs-API, die die offiziellen Indexseiten selbst
+   verwenden (Runde 5: stoxx.com/index/sx5e nennt quotes.stoxx.com). Es
+   werden nur Form, Feldnamen und Abdeckung festgehalten. */
+function scanNumbers(v, range, path, out) {
+  if (out.length > 6 || v === null || v === undefined) return out;
+  if (typeof v === "number" && v >= range[0] && v <= range[1]) out.push(path);
+  else if (Array.isArray(v)) { if (v.length) scanNumbers(v[v.length - 1], range, path + "[last]", out); }
+  else if (typeof v === "object") for (const k of Object.keys(v)) scanNumbers(v[k], range, path + "." + k, out);
+  return out;
+}
+function keyShape(v, depth) {
+  if (depth > 2 || v === null || typeof v !== "object") return typeof v;
+  if (Array.isArray(v)) return v.length ? [keyShape(v[0], depth + 1), `len=${v.length}`] : [];
+  return Object.fromEntries(Object.keys(v).slice(0, 14).map((k) => [k, keyShape(v[k], depth + 1)]));
+}
+async function stoxxQuotes() {
+  report.sources.stoxxQuotes = { priority: 2, kind: "OFFICIAL_INDEX_PROVIDER_DELAYED_API" };
+  for (const [id, isin] of Object.entries({ SX5E: "EU0009658145", DAX: "DE0008469008" })) {
+    const tried = [];
+    for (const u of [`https://quotes.stoxx.com/api/v2/quote/delayed/series?isin=${isin}`,
+                     `https://quotes.stoxx.com/api/v2/quote/delayed?isin=${isin}`,
+                     `https://quotes.stoxx.com/api/v2/quote/delayed/history?isin=${isin}`]) {
+      const r = await get(u, { ua: BROWSER_UA, accept: "application/json", referer: `https://stoxx.com/index/${id.toLowerCase()}/` });
+      const dates = (String(r.text).match(/\b(19|20)\d{2}-\d{2}-\d{2}/g) || []);
+      tried.push({ url: u, ...shape(r), keys: r.json ? keyShape(r.json, 0) : null, mentionsName: new RegExp(TARGETS[id].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(r.text),
+                   datesSeen: dates.length ? cover(dates) : null, numericFieldsInRange: r.json ? scanNumbers(r.json, TARGETS[id].range, "$", []) : [] });
+    }
+    hit(id, "stoxxQuotes", { isin, tried });
+  }
+  const legal = await get("https://stoxx.com/legal/legal-portal/", { ua: BROWSER_UA });
+  report.sources.stoxxQuotes.legalPortal = { ...shape(legal), excerpt: excerpt(legal.text, /(licen[cs]e|redistribut|display|permission|personal)/i, 480) };
+}
+
+async function fmpTerms() {
+  const out = [];
+  for (const u of ["https://site.financialmodelingprep.com/terms-of-service", "https://site.financialmodelingprep.com/developer/docs/terms-of-service",
+                   "https://site.financialmodelingprep.com/data-display-licensing"]) {
+    const r = await get(u, { ua: BROWSER_UA });
+    out.push({ url: u, ...shape(r),
+      display: r.ok ? excerpt(r.text, /(display|redistribut|publicly|third part)/i, 520) : null,
+      personal: r.ok ? excerpt(r.text, /(personal|non-?commercial|internal use)/i, 420) : null });
+  }
+  (report.sources.fmp = report.sources.fmp || {}).terms = out;
+}
+
 /* ------------------------------------------------ 3. Institutioneller Spiegel */
 async function fred() {
   report.sources.fred = { priority: 3, kind: "INSTITUTIONAL_MIRROR" };
@@ -589,7 +636,7 @@ async function stooq() {
 }
 
 async function main() {
-  for (const step of [twelveData, fmp, finnhub, nikkei, nikkeiTerms, stoxx, nasdaq, nasdaqMore, spdji, msci, euronext, misc, lsegPages, ecbDirect, cboe, snb, fred, fredLegal, termsPages, commercial, reach]) {
+  for (const step of [twelveData, fmp, fmpTerms, finnhub, stoxxQuotes, nikkei, nikkeiTerms, stoxx, nasdaq, nasdaqMore, spdji, msci, euronext, misc, lsegPages, ecbDirect, cboe, snb, fred, fredLegal, termsPages, commercial, reach]) {
     try { await step(); } catch (e) { report.sources["error_" + step.name] = String(e && e.message || e).slice(0, 200); }
   }
   report.requests = requests;
