@@ -81,42 +81,66 @@ test("Quant V1 is refused any basis at all", () => {
   assert.equal(resolved.reason, "MODULE_IS_LEGACY_IMMUTABLE");
 });
 
-test("Quant V2 momentum is undecided AND its current basis is unmeasured, and neither is guessed", () => {
-  /* Two different unknowns, and merging them was the mistake this test now
-     pins. The future decision is open - that is PENDING. What is published
-     TODAY was simply never measured: the factor artifact recorded the
-     column (adjustedClose) and not its content, and adjustedClose can be
-     split-adjusted or total-return adjusted. The only committed price
-     series report "adjusted"; the commercial plan reports
-     adjustedPrices: true; the production bar store lives in R2.
-     
-     So asking for a basis here refuses rather than returning one. A caller
-     that gets a basis back computes on it, and handing one out for a module
-     nobody has measured is exactly how an assumption becomes a published
-     number. */
+test("Quant V2 momentum is decided by nobody and measured by the audit, and the two stay apart", () => {
+  /* Two different unknowns, and merging them was the mistake this test
+     pins. The future decision is open - that is PENDING, and it is the
+     owner's. What is published TODAY was simply never measured, and now
+     it is: all 6,403 factor-evidence entries compute on adjustedClose,
+     and that column is total-return adjusted across 62,859 dividend
+     events in 3,319 titles, with not one event left unadjusted.
+
+     So the contract states the measured basis and still does not bind
+     the module. Stating what runs is not deciding what should run. */
   assert.equal(Semantics.isPending("quantV2Momentum"), true);
-  assert.equal(Semantics.isUnmeasured("quantV2Momentum"), true);
-  assert.throws(() => Semantics.requiredBasis("quantV2Momentum"), /has not been measured/);
+  assert.equal(Semantics.isUnmeasured("quantV2Momentum"), false);
   const entry = Semantics.moduleEntry("quantV2Momentum");
   assert.equal(entry.decision.state, "PENDING_EVIDENCE");
-  assert.equal(entry.decision.currentPublishedBasis, Semantics.UNMEASURED);
+  assert.equal(entry.decision.currentPublishedBasis, "TOTAL_RETURN");
   assert.equal(entry.decision.boundToContract, false);
   assert.ok(entry.decision.whyNotBound.length > 60);
-  assert.ok(entry.decision.report);
+  /* Die Messung muss auf ein Artefakt zeigen. Eine Basis, die nur im
+     Fliesstext behauptet wird, ist wieder eine Annahme. */
+  assert.ok(Array.isArray(entry.decision.currentPublishedBasisEvidence) &&
+    entry.decision.currentPublishedBasisEvidence.length > 0);
+  assert.ok(entry.decision.currentPublishedBasisMeasuredOn);
 });
 
-test("an unmeasured module cannot be bound, and the contract refuses one that is", () => {
-  /* Binding imposes a basis. Doing that before measuring which one is
-     published would change every momentum figure or none - and which, is
-     exactly the thing not yet known. */
+test("while the decision is open, the contract freezes what is published", () => {
+  /* Vorher warf requiredBasis hier, weil niemand die Basis gemessen
+     hatte. Jetzt ist sie gemessen, und die richtige Antwort ist nicht
+     Schweigen, sondern der Status quo: wer das Modul nennt, rechnet
+     genau das, was heute veroeffentlicht ist - und kann nicht mehr
+     still auf etwas anderes kippen, wenn sich eine Anbieterstufe
+     aendert. Entschieden ist damit nichts. */
+  assert.equal(Semantics.requiredBasis("quantV2Momentum"), "TOTAL_RETURN");
+  const entry = Semantics.moduleEntry("quantV2Momentum");
+  assert.equal(entry.basis, "PENDING_METHODOLOGY_DECISION");
+  /* Und der Faktorbau rechnet dasselbe: eine gesamtrenditebereinigte
+     Spalte wird genommen, eine nur splitbereinigte abgelehnt statt
+     ersatzweise benutzt. */
+  const served = Semantics.resolveColumn("quantV2Momentum", "adjusted", true);
+  assert.equal(served.ok, true);
+  assert.equal(served.column, "adjustedClose");
+  const refused = Semantics.resolveColumn("quantV2Momentum", "splitAdjusted", true);
+  assert.equal(refused.ok, false);
+  assert.equal(refused.reason, "RETURN_BASIS_MISMATCH");
+});
+
+test("an unmeasured module still cannot be bound, and the contract refuses one that is", () => {
+  /* Der Waechter bleibt, auch wenn dieses Modul ihn nicht mehr
+     ausloest: er gilt fuer jedes kuenftige Modul, dessen Basis noch
+     niemand gemessen hat. Geprueft wird er deshalb an einem Klon, der
+     in genau diesen Zustand zurueckversetzt wird. */
   const broken = structuredClone(contract);
   const entry = broken.modules.find((m) => m.id === "quantV2Momentum");
+  entry.decision.currentPublishedBasis = Semantics.UNMEASURED;
   entry.decision.boundToContract = true;
   assert.match(Semantics.validate(broken).errors.join("; "), /must not be bound/);
   delete entry.decision.whyNotBound;
   entry.decision.boundToContract = false;
   assert.match(Semantics.validate(broken).errors.join("; "), /without saying why/);
 });
+
 
 test("the empirical comparison exists, and is honest about what it cannot decide", () => {
   const study = JSON.parse(readFileSync(new URL("quant/data/providers/momentum-return-basis-study.json", ROOT), "utf8"));

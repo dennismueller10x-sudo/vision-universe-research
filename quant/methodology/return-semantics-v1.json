@@ -160,12 +160,17 @@
    "decision": {
     "state": "PENDING_EVIDENCE",
     "question": "Ist der Quant-V2-Momentumfaktor auf Kursbasis oder auf Gesamtrendite zu rechnen?",
-    "currentPublishedBasis": "UNKNOWN_UNTIL_MEASURED",
+    "currentPublishedBasis": "TOTAL_RETURN",
+    "currentPublishedBasisMeasuredOn": "2026-09-24",
+    "currentPublishedBasisEvidence": [
+     "quant/data/providers/return-basis-universe-study.json",
+     "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md"
+    ],
     "requiresEmpiricalComparison": true,
-    "report": "quant/data/providers/momentum-return-basis-study.json",
-    "note": "Bis zur Entscheidung bleibt die veroeffentlichte Basis unveraendert. Welche das HEUTE ist, war nicht gemessen: das Faktorartefakt hielt nur die Spalte (adjustedClose) fest, nicht ihren Inhalt - und adjustedClose kann splitbereinigt oder total-return-bereinigt sein. Die einzigen eingecheckten Kursreihen melden 'adjusted', die Commercial-Plan-Faehigkeiten melden adjustedPrices: true. Der Produktions-Barstore liegt in R2 und ist hier nicht einsehbar. Seit 2026-09-24 schreibt build-market-factors den Stand je Titel mit; danach ist die Frage beantwortbar und das Modul bindbar.",
+    "report": "quant/data/providers/return-basis-universe-study.json",
+    "note": "Gemessen statt angenommen. Alle 6.403 Factor-Evidence-Eintraege rechnen auf adjustedClose, und diese Spalte ist ueber 62.859 Dividendenereignisse in 3.319 Titeln als gesamtrenditebereinigt belegt: kein einziges Ereignis blieb unbereinigt. Die veroeffentlichte Quant-V2-Momentumbasis ist damit TOTAL_RETURN. Das ist die Antwort auf die Frage, was HEUTE gerechnet wird - nicht die Entscheidung, was kuenftig gerechnet werden soll. Die bleibt offen.",
     "boundToContract": false,
-    "whyNotBound": "Eine Bindung wuerde die Basis festlegen. Ob das nichts aendert oder jede veroeffentlichte Momentumzahl umstellt, haengt an einer Messung, die es noch nicht gibt - und ohne sie waere die Bindung genau die stille Umdefinition, die dieser Vertrag ausschliesst, nur in die andere Richtung."
+    "whyNotBound": "Die Messung liegt jetzt vor, die Entscheidung nicht. Eine Bindung an TOTAL_RETURN waere heute folgenlos - sie schriebe fest, was ohnehin laeuft - aber sie naehme dem Owner genau die Wahl, die er sich ausdruecklich vorbehalten hat. Eine Bindung an SPLIT_ADJUSTED_PRICE verschoebe 5.997 Raenge auf einmal. Gebunden wird nach der Entscheidung, nicht vorher."
    }
   }
  ],
