@@ -1104,7 +1104,6 @@ export async function handleManualRun(request, env, options = {}) {
         "Feld. Entweder steht ein Thema da, oder es ist JETZT POST ERSTELLEN."
     });
   }
-  const istAuftrag = modus !== "JETZT_PRUEFEN";
 
   const token = env.VU_GITHUB_DISPATCH_TOKEN || null;
   const repo = env.VU_GITHUB_REPO || null;
@@ -1187,14 +1186,22 @@ export async function handleManualRun(request, env, options = {}) {
         },
         /* Der Modus reist als Workflow-Eingabe mit. Kein zweiter
            Workflow und keine zweite Deployment-Architektur (§58):
-           derselbe Lauf, ein anderer Auftrag. */
-        /* Der Modus reist als Workflow-Eingabe mit. Kein zweiter
-           Workflow und keine zweite Deployment-Architektur (§58):
-           derselbe Lauf, ein anderer Auftrag. */
+           derselbe Lauf, ein anderer Auftrag.
+
+           `nur_entscheiden` reist bewusst NICHT mit: alle drei Knoepfe
+           sollen denselben vollen Lauf ausloesen, den auch der
+           Zeitplan ausloest (der `schedule`-Event hat keinen
+           `inputs`-Kontext und laeuft deshalb immer voll durch). Die
+           Workflow-Datei traegt fuer diese Eingabe `default: false` -
+           das ist jetzt fuer alle drei Knoepfe der einzige Wert.
+           "Jetzt pruefen" ueberspringt damit nur noch die UHR
+           (Tagesobergrenze/Mindestabstand bleiben fuer ihn unveraendert
+           in Kraft, das entscheidet weiterhin manual-mode.js ueber den
+           Modus), nicht mehr die Arbeit selbst (Owner-Entscheidungen
+           abholen, Warteschlange an das Approval Center schreiben). */
         body: JSON.stringify({ ref: zweig, inputs: {
           modus: modus,
-          thema: thema,
-          nur_entscheiden: istAuftrag ? "false" : "true"
+          thema: thema
         } })
       });
     status = antwort.status;
