@@ -372,6 +372,35 @@ if (streamBefund && streamBefund.priceSemantics &&
   }
 }
 
+/* Multi-Asset-Segment (quant/data/market/multi-asset/): eine Reihe im
+   Auslieferungspfad nur aus einer Quelle, die multi-asset.json#
+   sourceRegistry ausdruecklich mit publicDisplay: true fuehrt; ein
+   lizenzausstehendes Instrument im Snapshot ohne Wert und ohne Verlauf.
+   Tiingo-Krypto und Tiingo-FX-Edelmetalle bleiben so im Arbeitsstand, bis
+   der Owner sie freigibt. */
+const multiAssetConfig = json("quant/config/multi-asset.json");
+const maSeries = join(root, "quant", "data", "market", "multi-asset", "series");
+if (existsSync(maSeries)) {
+  const registry = (multiAssetConfig && multiAssetConfig.sourceRegistry) || {};
+  for (const name of readdirSync(maSeries).filter((n) => n.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "market", "multi-asset", "series", name));
+    const reg = payload && registry[payload.source];
+    if (!reg || reg.publicDisplay !== true) {
+      findings.push(`quant/data/market/multi-asset/series/${name}: source '${payload && payload.source}' is not cleared for public display`);
+    }
+    if (payload && payload.internalOnly !== undefined) findings.push(`quant/data/market/multi-asset/series/${name}: internal working series in public tree`);
+  }
+}
+const maSnapshot = json("quant/data/market/multi-asset/snapshot.json");
+if (maSnapshot && Array.isArray(maSnapshot.instruments)) {
+  for (const c of maSnapshot.instruments) {
+    if (c.quote && c.quote.state !== "AVAILABLE" &&
+        (c.quote.value !== null || (c.history && ((c.history.recent || []).length || c.history.path)))) {
+      findings.push(`quant/data/market/multi-asset/snapshot.json: ${c.instrument && c.instrument.symbol} delivers values while ${c.quote.state}`);
+    }
+  }
+}
+
 if (findings.length) {
   console.error("PUBLIC DATA HYGIENE FAILED");
   findings.forEach((finding) => console.error(`  - ${finding}`));

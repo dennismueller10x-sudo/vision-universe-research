@@ -120,7 +120,11 @@ async function main() {
           const ser = await load(c.history.path);
           const pts = ser.points || [];
           gate("HISTORICAL_DATA", pts.length > 0, `${s}: Reihe leer`);
-          gate("HISTORICAL_DATA", !ser.source || ser.source === c.data.source, `${s}: Reihe aus anderer Quelle`);
+          /* Eine wiederverwendete Reihe (EUR/USD aus dem Currency Core)
+             traegt dort ihre eigene Quellen-ID; die Registry nennt sie. */
+          const reg = CONFIG.sourceRegistry[c.data.source] || {};
+          const expectedSource = reg.seriesSourceId || c.data.source;
+          gate("HISTORICAL_DATA", !ser.source || ser.source === expectedSource, `${s}: Reihe aus ${ser.source}, erwartet ${expectedSource}`);
           const last = pts.length ? pts[pts.length - 1][0] : null;
           gate("HISTORICAL_DATA", last === c.history.availableTo, `${s}: Reihe endet ${last}, Vertrag sagt ${c.history.availableTo}`);
         } catch (e) { gate("HISTORICAL_DATA", false, `${s}: ${c.history.path} nicht ladbar (${e.message})`); }
