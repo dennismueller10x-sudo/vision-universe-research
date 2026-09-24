@@ -148,7 +148,7 @@ async function twelveData() {
   /* Aufrufvarianten fuer ein gelistetes Symbol: nur symbol, symbol+country,
      symbol+mic_code. Runde 1: symbol+exchange -> 404. */
   const variants = [];
-  for (const q of ["symbol=N225", "symbol=N225&country=Japan", "symbol=N225&mic_code=XJPX", "symbol=FTSE&country=United%20Kingdom", "symbol=SPX", "symbol=NDX", "symbol=DJI", "symbol=GDAXI", "symbol=DAX&country=Germany"]) {
+  for (const q of ["symbol=SPX", "symbol=NDX", "symbol=DJI", "symbol=GDAXI&mic_code=XETR", "symbol=N225&mic_code=XJPX", "symbol=FTSE&mic_code=XLON", "symbol=STOXX50E"]) {
     const r = await td(`/quote?${q}`);
     variants.push({ query: q, httpStatus: r.status, code: r.json && r.json.code || null,
                     message: r.json && r.json.message ? String(r.json.message).slice(0, 160) : null,
@@ -199,13 +199,16 @@ async function nikkei() {
 }
 
 async function stoxx() {
-  const files = {
-    SX5E: ["https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3msx5e.txt",
-           "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_sx5e.txt",
-           "https://www.stoxx.com/download/historical_values/h_sx5e.txt"],
-    DAX:  ["https://www.stoxx.com/document/Indices/Current/HistoricalData/h_dax.txt",
-           "https://www.stoxx.com/document/Indices/Current/HistoricalData/h_3mdax.txt"]
+  /* Runde 2: www.stoxx.com ist vom Runner aus nicht aufloesbar, stoxx.com
+     antwortet. Runde 3 prueft dieselben Pfade auf beiden Hosts. */
+  const paths = {
+    SX5E: ["/document/Indices/Current/HistoricalData/h_3msx5e.txt", "/document/Indices/Current/HistoricalData/hbrbcpe.txt",
+           "/document/Indices/Current/HistoricalData/h_sx5e.txt", "/download/historical_values/h_sx5e.txt"],
+    DAX:  ["/document/Indices/Current/HistoricalData/h_dax.txt", "/document/Indices/Current/HistoricalData/h_3mdax.txt",
+           "/document/Indices/Current/HistoricalData/h_gdaxi.txt"]
   };
+  const files = Object.fromEntries(Object.entries(paths).map(([k, v]) =>
+    [k, v.flatMap((p) => ["https://stoxx.com" + p, "https://www.stoxx.com" + p])]));
   report.sources.stoxxOfficial = { priority: 2, kind: "OFFICIAL_INDEX_PROVIDER" };
   for (const [id, urls] of Object.entries(files)) {
     const tried = [];
@@ -219,7 +222,7 @@ async function stoxx() {
       tried.push(f);
       if (rows.length && !best) best = f;
     }
-    const page = await get(`https://www.stoxx.com/index-details?symbol=${id}`, { ua: BROWSER_UA });
+    const page = await get(`https://stoxx.com/index/${id.toLowerCase()}/`, { ua: BROWSER_UA });
     hit(id, "stoxxOfficial", { tried, resolved: best ? best.url : null,
       indexPage: { ...shape(page), mentionsName: new RegExp(TARGETS[id].name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(page.text) },
       terms: excerpt(page.text, LICENSE_RE) });
@@ -409,6 +412,98 @@ async function reach() {
   report.sources.reachability = out;
 }
 
+/* ------------------------------------------------ Runde 3 */
+
+/* EZB FM: direkte Reihenschluessel (Runde 2: Wildcard 404). */
+async function ecbDirect() {
+  const keys = { SX5E: ["D.U2.EUR.DS.EI.DJES50I.HSTA", "M.U2.EUR.DS.EI.DJES50I.HSTA"],
+                 SPX: ["D.US.USD.DS.EI.S_PCOMP.HSTA", "M.US.USD.DS.EI.S_PCOMP.HSTA"],
+                 N225: ["M.JP.JPY.DS.EI.JAPDOWA.HSTA"], UKX: ["M.GB.GBP.DS.EI.FTSE100.HSTA"], DAX: ["M.DE.EUR.DS.EI.DAXINDX.HSTA"] };
+  for (const [id, ks] of Object.entries(keys)) {
+    const tried = [];
+    for (const k of ks) {
+      const r = await get(`https://data-api.ecb.europa.eu/service/data/FM/${k}?format=csvdata&lastNObservations=3`);
+      const lines = String(r.text).split(/\r?\n/).filter(Boolean);
+      const h = lines.length ? lines[0].split(",") : [];
+      const iT = h.indexOf("TIME_PERIOD");
+      tried.push({ key: k, ...shape(r), rows: Math.max(0, lines.length - 1), lastPeriod: iT >= 0 && lines.length > 1 ? lines[lines.length - 1].split(",")[iT] : null });
+    }
+    hit(id, "ecbDataPortalFM", { tried });
+  }
+}
+
+/* Lizenztexte der gemessenen Quellen. */
+async function termsPages() {
+  const pages = {
+    nasdaq: ["https://www.nasdaq.com/terms-of-use", "https://www.nasdaq.com/legal/terms-of-use", "https://www.nasdaq.com/about/terms-of-use"],
+    cboe: ["https://www.cboe.com/about/legal/", "https://www.cboe.com/legal/website-terms-and-conditions/", "https://www.cboe.com/us/options/market_statistics/"],
+    stoxx: ["https://stoxx.com/terms-of-use/", "https://stoxx.com/legal/", "https://stoxx.com/data-dissemination/"],
+    euronext: ["https://www.euronext.com/en/terms-use", "https://live.euronext.com/en/terms-use"],
+    msci: ["https://www.msci.com/terms-of-use"],
+    nikkei: ["https://indexes.nikkei.co.jp/en/nkave/about/copyright", "https://www.nikkei.co.jp/nikkeiinfo/en/terms/"]
+  };
+  const re = /(personal|non-?commercial|redistribut|reproduc|written (consent|permission)|licen[cs]e (is )?required|prior (written )?(consent|permission))/i;
+  report.sources.termsPages = {};
+  for (const [k, urls] of Object.entries(pages)) {
+    report.sources.termsPages[k] = [];
+    for (const u of urls) {
+      const r = await get(u, { ua: BROWSER_UA });
+      report.sources.termsPages[k].push({ url: u, ...shape(r), excerpt: r.ok ? excerpt(r.text, re, 480) : null });
+    }
+  }
+}
+
+/* LSEG: die Seiten-API der LSE-Website fuer den FTSE 100. */
+async function lsegPages() {
+  const tried = [];
+  for (const u of ["https://api.londonstockexchange.com/api/v1/pages?path=indices%2Fftse-100&parameters=indexname%3Dftse-100",
+                   "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/UKX?worlds=quotes",
+                   "https://www.londonstockexchange.com/indices/ftse-100"]) {
+    const r = await get(u, { ua: BROWSER_UA, accept: "application/json, text/plain, */*", referer: "https://www.londonstockexchange.com/" });
+    tried.push({ url: u, ...shape(r), mentionsName: /FTSE 100/i.test(r.text), jsonKeys: r.json && typeof r.json === "object" ? Object.keys(r.json).slice(0, 8) : null });
+  }
+  hit("UKX", "lsegPages", { tried });
+}
+
+/* Nasdaq-Website-API: weitere Kuerzel fuer den Dow. */
+async function nasdaqMore() {
+  for (const sym of ["DJIA", "DJI", ".DJI", "COMP"]) {
+    const r = await get(`https://api.nasdaq.com/api/quote/${encodeURIComponent(sym)}/info?assetclass=index`,
+                        { ua: BROWSER_UA, accept: "application/json, text/plain, */*", referer: "https://www.nasdaq.com/" });
+    const d = r.json && r.json.data || null;
+    hit(sym === "COMP" ? "COMP" : "DJI", `nasdaqOfficial_${sym}`, { ...shape(r), companyName: d ? String(d.companyName || "").slice(0, 80) : null,
+      status: r.json && r.json.status && r.json.status.bCodeMessage ? JSON.stringify(r.json.status.bCodeMessage).slice(0, 160) : null,
+      magnitude: d && d.primaryData && sym !== "COMP" ? magnitude(num(d.primaryData.lastSalePrice), TARGETS.DJI.range) : null });
+  }
+}
+
+/* Kommerzielle Anbieter: nur Preisseiten und dokumentierte Demo-Schluessel.
+   Nichts wird abonniert oder aktiviert. */
+async function commercial() {
+  const out = {};
+  const price = (t) => [...new Set((String(t).replace(/<[^>]+>/g, " ").match(/[$€]\s?\d{1,4}(?:[.,]\d{2})?(?:\s?\/\s?(?:mo|month|Monat))?/gi) || []))].slice(0, 16);
+  const pages = { twelveData: "https://twelvedata.com/pricing", eodhd: "https://eodhd.com/pricing", fmp: "https://site.financialmodelingprep.com/developer/docs/pricing",
+                  massivePolygon: "https://polygon.io/pricing?product=indices", finnhub: "https://finnhub.io/pricing", marketstack: "https://marketstack.com/pricing",
+                  alphaVantage: "https://www.alphavantage.co/premium/", barchart: "https://www.barchart.com/ondemand/pricing" };
+  for (const [k, u] of Object.entries(pages)) {
+    const r = await get(u, { ua: BROWSER_UA });
+    out[k] = { url: u, ...shape(r), pricesSeen: r.ok ? price(r.text) : [], mentionsIndices: /\bindices\b|\bindex data\b/i.test(r.text) };
+  }
+  /* Dokumentierte Demo-Schluessel: messen, ob Indizes darin enthalten sind. */
+  const demo = {};
+  for (const [id, t] of Object.entries({ SPX: "GSPC.INDX", DAX: "GDAXI.INDX", SX5E: "STOXX50E.INDX", UKX: "FTSE.INDX", N225: "N225.INDX" })) {
+    const r = await get(`https://eodhd.com/api/eod/${t}?api_token=demo&fmt=json&from=${daysAgo(10)}`);
+    demo[id] = { ticker: t, ...shape(r), rows: Array.isArray(r.json) ? r.json.length : 0,
+                 message: !Array.isArray(r.json) ? String(r.text).slice(0, 140) : null,
+                 magnitude: Array.isArray(r.json) && r.json.length ? magnitude(num(r.json[r.json.length - 1].close), TARGETS[id].range) : null };
+  }
+  out.eodhdDemo = demo;
+  const fmp = await get("https://financialmodelingprep.com/api/v3/quote/%5EGSPC?apikey=demo");
+  out.fmpDemo = { ...shape(fmp), message: fmp.json && !Array.isArray(fmp.json) ? JSON.stringify(fmp.json).slice(0, 160) : null,
+                  rows: Array.isArray(fmp.json) ? fmp.json.length : 0 };
+  report.sources.commercial = out;
+}
+
 /* ------------------------------------------------ 3. Institutioneller Spiegel */
 async function fred() {
   report.sources.fred = { priority: 3, kind: "INSTITUTIONAL_MIRROR" };
@@ -437,7 +532,7 @@ async function stooq() {
 }
 
 async function main() {
-  for (const step of [twelveData, nikkei, nikkeiTerms, stoxx, nasdaq, spdji, msci, euronext, misc, ecbStockIndices, cboe, snb, bundesbankIndices, fred, fredLegal, reach]) {
+  for (const step of [twelveData, nikkei, nikkeiTerms, stoxx, nasdaq, nasdaqMore, spdji, msci, euronext, misc, lsegPages, ecbDirect, cboe, snb, fred, fredLegal, termsPages, commercial, reach]) {
     try { await step(); } catch (e) { report.sources["error_" + step.name] = String(e && e.message || e).slice(0, 200); }
   }
   report.requests = requests;
