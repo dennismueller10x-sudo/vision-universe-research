@@ -112,6 +112,8 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await screenshot(page,key+'-home');
  await check(key+' hero horizontal exploration',async()=>{
   const track=page.locator('.v2-hero-track');assert(await track.locator('[data-symbol]').count()>=2,'Hero needs another canonical stock');
+  // Discovery 2.1: the hero image sits above the rail, so the rail may start below the first mobile viewport.
+  await track.scrollIntoViewIfNeeded();
   const evidence=()=>track.evaluate(n=>{const b=n.getBoundingClientRect();return {scrollLeft:n.scrollLeft,clientWidth:n.clientWidth,cards:Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visibleWidth:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visibleWidth-a.visibleWidth)};});
   const before=await evidence();
   if(width<500&&engine==='chromium'){
