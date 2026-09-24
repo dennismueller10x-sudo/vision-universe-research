@@ -11,6 +11,7 @@ const Eia = require("../../providers/eia/adapter.js");
 const Ecb = require("../../providers/ecb/adapter.js");
 const Fred = require("../../providers/fred/adapter.js");
 const Nikkei = require("../../providers/nikkei/adapter.js");
+const Fmp = require("../../providers/fmp/adapter.js");
 
 test("Treasury: Spalten nach Namen, US-Datum, leere Zellen bleiben Luecken", () => {
   const csv = 'Date,"1 Mo","2 Yr","5 Yr","10 Yr"\n09/23/2026,4.10,3.90,3.80,4.20\n09/22/2026,4.10,3.95,,4.25\n';
@@ -78,4 +79,23 @@ test("Nikkei: offizielle Tagesdatei nur mit erwartetem Kopf; Gegenprobe erkennt 
   assert.equal(bad.ok, false);
   assert.equal(bad.worstDate, "2026-09-24");
   assert.equal(Nikkei.crossCheck([["2020-01-06", 1]], ref).ok, false, "keine gemeinsamen Tage ist kein Beleg");
+});
+
+test("FMP: Identitaet ueber die Indexliste - gleiches Kuerzel, anderer Name faellt durch", () => {
+  const list = Fmp.parseIndexList([{ symbol: "^GSPC", name: "S&P 500" }, { symbol: "^FTSE", name: "FTSE 100 Tracker Fund" }]);
+  assert.equal(Fmp.identity("SPX", list).ok, true);
+  assert.equal(Fmp.identity("UKX", list).reason, "nameMismatch");
+  assert.equal(Fmp.identity("DJI", list).reason, "notListed");
+  assert.equal(Fmp.identity("NDX", list).reason, "notMapped", "NDX ist im vorhandenen Tarif nicht enthalten (HTTP 402)");
+  assert.equal(Fmp.identity("DAX", list).reason, "notMapped");
+});
+
+test("FMP: Tagesreihe aufsteigend, doppelte Tage einmal; Fehlerobjekt ohne Schluessel", () => {
+  const r = Fmp.parseEod([{ symbol: "^GSPC", date: "2026-09-24", price: 6700.5 }, { symbol: "^GSPC", date: "2026-09-23", price: 6690 },
+                          { symbol: "^GSPC", date: "2026-09-23", price: 6690 }]);
+  assert.deepEqual(r.points, [["2026-09-23", 6690], ["2026-09-24", 6700.5]]);
+  const e = Fmp.parseEod({ "Error Message": "Invalid API KEY https://x/?apikey=abcdef123456" });
+  assert.deepEqual(e.points, []);
+  assert.ok(!e.error.includes("abcdef123456"));
+  assert.ok(!Fmp.redact(Fmp.eodUrl("^GSPC", "2026-01-01", "abcdef123456")).includes("abcdef123456"));
 });

@@ -55,13 +55,31 @@ test("Monetaere Einheit: Anzeigewaehrung nur ueber den Currency Core, Einheit bl
 });
 
 test("Index ohne Quelle: CAPABILITY_GAP mit Grund, kein Wert, kein Proxy", () => {
-  const c = build("SPX", null);
+  const c = build("NDX", null);
   assert.equal(c.quote.state, "CAPABILITY_GAP");
   assert.equal(c.quote.value, null);
   assert.equal(c.proxy.isProxy, false);
-  assert.ok(c.proxy.knownProxiesNotUsed.includes("SPY"));
+  assert.ok(c.proxy.knownProxiesNotUsed.includes("QQQ"));
   assert.ok(c.gap && c.gap.ownerOptions.length >= 2);
   assert.equal(c.capabilities.currencyConversion, "NOT_CONVERTIBLE");
+});
+
+test("Index ueber FMP: technisch aufgeloest, aber ohne Freigabe kein Wert und keine Historie", () => {
+  const c = build("SPX", [["2026-09-22", 6600], ["2026-09-23", 6650]]);
+  assert.equal(c.quote.state, "WITHHELD_LICENSE");
+  assert.equal(c.quote.value, null);
+  assert.deepEqual(c.history.recent, []);
+  assert.equal(c.proxy.isProxy, false);
+  assert.ok(c.proxy.knownProxiesNotUsed.includes("SPY"), "der ETF bleibt benannt und ungenutzt");
+});
+
+test("Nikkei 225 ueber FRED: Punkte, keine Umrechnung, Quellenangabe nennt Nikkei und FRED", () => {
+  const c = build("N225", [["2026-09-22", 45000], ["2026-09-24", 45450]]);
+  assert.equal(c.quote.state, "AVAILABLE");
+  assert.equal(c.quote.value, 45450);
+  assert.equal(c.quote.unitId, "POINTS");
+  assert.equal(c.capabilities.currencyConversion, "NOT_CONVERTIBLE");
+  assert.match(JSON.stringify(c.data.provenance), /Nikkei Inc\., via FRED/);
 });
 
 test("Lizenz ausstehend (Gold via Tiingo): Wert und Historie werden nicht ausgeliefert", () => {

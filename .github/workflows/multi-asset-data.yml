@@ -265,21 +265,23 @@ jobs:
       - name: Daten holen, pruefen, Vertrag bauen
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: node scripts/market/ingest-multi-asset.mjs --publish
       - name: Quality Gates und Nachweis (inkl. Arbeitsstand der lizenzausstehenden Instrumente)
         run: node scripts/quality/verify-multi-asset.mjs --internal --publish
       - name: Keine Zugangsdaten und keine lizenzausstehenden Werte im Auslieferungspfad
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: |
           node -e '
             const fs = require("fs"), path = require("path");
             const dir = "quant/data/market/multi-asset";
-            const key = process.env.TIINGO_API_KEY;
+            const keys = [process.env.TIINGO_API_KEY, process.env.FMP_API_KEY].filter((k) => k && k.length >= 8);
             const walk = (d) => fs.readdirSync(d).flatMap((f) => { const p = path.join(d, f); return fs.statSync(p).isDirectory() ? walk(p) : [p]; });
             for (const f of walk(dir)) {
               const raw = fs.readFileSync(f, "utf8");
-              if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel in " + f); process.exit(1); }
+              if (keys.some((k) => raw.includes(k)) || /apikey=(?!\[REDACTED\])/i.test(raw)) { console.error("ABBRUCH: Schluessel in " + f); process.exit(1); }
               if (/"internalOnly"/.test(raw) && f.includes("/series/")) { console.error("ABBRUCH: interne Reihe " + f); process.exit(1); }
             }
             const snap = JSON.parse(fs.readFileSync(dir + "/snapshot.json", "utf8"));
