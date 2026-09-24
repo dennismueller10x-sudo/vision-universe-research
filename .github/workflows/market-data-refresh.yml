@@ -145,10 +145,23 @@ jobs:
       - name: Public-Data-Hygiene - nur der deklarierte Umfang, nur mit Grundlage
         run: node scripts/market/assert-public-data-hygiene.mjs
 
+      # Faellt hier etwas, kostet es den ganzen Datenlauf - und dann will
+      # man wissen WAS, ohne ein 300-kB-Log nach einer Zeile abzusuchen.
+      # Die Namen der Fehlschlaege stehen deshalb am Ende noch einmal
+      # kompakt da. Der Exitcode bleibt der der Suite.
       - name: Regressionssuite
         run: |
-          node --test "quant/tests/*.test.mjs"
-          node --test "discover/tests/*.test.mjs"
+          set -o pipefail
+          fehler=0
+          for muster in "quant/tests/*.test.mjs" "discover/tests/*.test.mjs"; do
+            node --test "$muster" 2>&1 | tee -a "$RUNNER_TEMP/regression.log" || fehler=1
+          done
+          if [ "$fehler" -ne 0 ]; then
+            echo "::group::Fehlgeschlagene Tests"
+            grep -E "^not ok [0-9]+ - " "$RUNNER_TEMP/regression.log" || echo "(kein TAP-Marker gefunden)"
+            echo "::endgroup::"
+            exit 1
+          fi
 
       - name: Groesse der Arbeitsablage
         id: disk
