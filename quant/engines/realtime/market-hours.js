@@ -101,6 +101,15 @@
 
   function pad2(n) { return n < 10 ? "0" + n : String(n); }
 
+  /* Eine Boerse kann ihre eigene Abdeckung tragen (Multi-Asset Core):
+     `coverage: null` heisst "fuer diese Boerse kein gepruefter
+     Feiertagskalender" und ueberstimmt die Abdeckung der Datei. Fehlt
+     das Feld, gilt wie bisher die Abdeckung des Kalenders. */
+  function coverageOf(calendar, ex) {
+    if (ex && Object.prototype.hasOwnProperty.call(ex, "coverage")) return { coverage: ex.coverage };
+    return calendar;
+  }
+
   function withinCoverage(calendar, isoDate) {
     var c = calendar && calendar.coverage;
     if (!c || !c.from || !c.to) return false;
@@ -139,7 +148,7 @@
       };
     }
 
-    var coverage = withinCoverage(calendar, lp.date);
+    var coverage = withinCoverage(coverageOf(calendar, ex), lp.date);
     var weekdays = ex.weekdays || [1, 2, 3, 4, 5];
     var holidays = ex.holidays || [];
     var earlyCloses = ex.earlyCloses || {};
@@ -212,6 +221,7 @@
     PHASES: PHASES,
     DEFAULT_EXCHANGE: DEFAULT_EXCHANGE,
     BUILTIN_CALENDAR: BUILTIN,
+    coverageOf: coverageOf,
     localParts: localParts,
     sessionAt: sessionAt,
     expectsUpdates: expectsUpdates

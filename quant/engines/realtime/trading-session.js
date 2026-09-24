@@ -55,7 +55,8 @@
       sessions: ex.sessions || MarketHours.BUILTIN_CALENDAR.exchanges.XNYS.sessions,
       weekdays: ex.weekdays || [1, 2, 3, 4, 5],
       holidays: ex.holidays || [], earlyCloses: ex.earlyCloses || {},
-      coverage: cal.coverage || { from: null, to: null }, calendarId: cal.calendarId || null
+      coverage: (Object.prototype.hasOwnProperty.call(ex, "coverage") ? ex.coverage : cal.coverage) || { from: null, to: null },
+      calendarId: cal.calendarId || null
     };
   }
 
