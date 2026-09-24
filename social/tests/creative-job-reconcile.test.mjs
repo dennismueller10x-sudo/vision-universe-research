@@ -37,6 +37,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Job = require(join(ROOT, "social/engines/creative-job.js"));
+const HI = require(join(ROOT, "social/engines/hard-invariants.js"));
 
 function job(over = {}) {
   return Object.assign({
@@ -539,4 +540,107 @@ test("CR29 · Der geschlossene Anlauf blockiert die Gleichzeitigkeitsgrenze nich
   reg.reconcile(NIE_AUSGELIEFERT.creativeJobId, "DISPATCH_NIE_ERFOLGT",
     { keinPullRequest: true });
   assert.equal(reg.all().filter((j) => Job.OFFEN.includes(j.state)).length, 0);
+});
+
+/* =========================================================================
+   DIE WORKFLOW-REIHENFOLGE, END ZU ENDE BELEGT (CR30–CR32)
+
+   Owner-Direktive "WORKFLOW-ORDERING-FIX" (24.09.): MAX_OPEN_CREATIVE_JOBS
+   wird als Teil der Testsuite gemessen (check-hard-invariants.mjs, siehe
+   HI3/HI4 fuer die Invariante isoliert). Bis zu diesem Fix lief der
+   Abgleich NACH dieser Messung - ein verwaister Job (Register-Eintrag
+   ohne je geoeffneten Request-PR, genau der reale Fall vu-msft-20260918,
+   zweiter Anlauf) blockierte deshalb die gesamte Pipeline, obwohl der
+   bestehende Reconciler ihn anhand realer Evidenz haette schliessen
+   koennen.
+
+   CR29 oben zeigt das an EINEM Job. Diese drei Tests verbinden echten
+   Reconciler UND echte Invariante zu der Kette, die der Workflow jetzt
+   tatsaechlich faehrt: Register -> reconcile() -> OFFEN zaehlen ->
+   HI.creativeJobs() entscheidet. Keine der drei Funktionen wird
+   nachgebildet - alle drei sind dieselben, die auch der Workflow
+   aufruft.
+   ========================================================================= */
+const KONFIG = JSON.parse(
+  require("node:fs").readFileSync(join(ROOT, "social/config/cadence.json"), "utf8"));
+
+function offeneJobsZaehlen(reg) {
+  return reg.all().filter((j) => Job.OFFEN.includes(j.state)).length;
+}
+
+test("CR30 · Szenario A — ein Orphan neben einem legitimen Job: " +
+  "der Abgleich schliesst nur den Orphan, die Pipeline darf weiterlaufen", () => {
+  const orphan = JSON.parse(JSON.stringify(NIE_AUSGELIEFERT));
+  const legitim = job({ creativeJobId: "job_legitim:sha2:attempt1",
+    contentId: "vu-legitim", processingKey: "brief_test:vu-legitim:sha2:1.0",
+    state: "CREATIVE_JOB_DISPATCHED", prNumber: 300 });
+
+  const reg = Job.createRegistry([orphan, legitim]);
+  assert.equal(offeneJobsZaehlen(reg), 2,
+    "Vor dem Abgleich sind beide offen - genau der Zustand, der die " +
+    "Pipeline bis zu diesem Fix blockiert haette.");
+  assert.equal(HI.creativeJobs(offeneJobsZaehlen(reg), KONFIG).erfuellt, false,
+    "Mit 2 offenen Jobs muss die Invariante VOR dem Abgleich ablehnen.");
+
+  /* Der Abgleich (dieselbe Evidenzart wie am 21.09.: kein Pull Request,
+     kein Delivery, kein beobachteter Start). Der legitime Job bleibt
+     unberuehrt - er traegt eine PR-Nummer und damit Evidenz DAGEGEN. */
+  reg.reconcile(orphan.creativeJobId, "DISPATCH_NIE_ERFOLGT", { keinPullRequest: true });
+
+  assert.equal(reg.get(orphan.creativeJobId).state, "CREATIVE_JOB_FAILED");
+  assert.equal(reg.get(legitim.creativeJobId).state, "CREATIVE_JOB_DISPATCHED",
+    "Der Abgleich darf den legitimen Job nicht anfassen.");
+  assert.equal(offeneJobsZaehlen(reg), 1,
+    "Nach dem Abgleich zaehlt nur noch der legitime Job.");
+  assert.equal(HI.creativeJobs(offeneJobsZaehlen(reg), KONFIG).erfuellt, true,
+    "Mit 1 offenem Job (nach dem Abgleich) laesst die Invariante die " +
+    "Pipeline weiterlaufen.");
+});
+
+test("CR31 · Szenario B — zwei tatsaechlich aktive, evidenzbelegte Jobs: " +
+  "MAX_OPEN_CREATIVE_JOBS blockiert weiterhin hart", () => {
+  /* Beide Jobs tragen bereits Evidenz FUER ihre Auslieferung (PR-Nummer,
+     Delivery-ID) - der Abgleich (siehe reconcile-creative-jobs.mjs,
+     Zeile ~207: nur CREATIVE_JOB_REQUESTED ohne prNumber/deliveryIds/
+     observedStarts kommt fuer DISPATCH_NIE_ERFOLGT ueberhaupt in Frage)
+     wuerde fuer keinen der beiden je eine Messung anstossen. Sie bleiben
+     unberuehrt offen - das ist der Punkt von Szenario B: der Fix
+     schliesst NUR nachweislich nie ausgelieferte Jobs, keine echten. */
+  const ersterAktiv = job({ creativeJobId: "job_a:sha1:attempt1",
+    contentId: "vu-a", processingKey: "brief_test:vu-a:sha1:1.0",
+    state: "CREATIVE_JOB_DISPATCHED", prNumber: 301 });
+  const zweiterAktiv = job({ creativeJobId: "job_b:sha2:attempt1",
+    contentId: "vu-b", processingKey: "brief_test:vu-b:sha2:1.0",
+    state: "CREATIVE_JOB_IN_FLIGHT", prNumber: 302, deliveryIds: ["d-live"] });
+
+  const reg = Job.createRegistry([ersterAktiv, zweiterAktiv]);
+
+  assert.equal(offeneJobsZaehlen(reg), 2,
+    "Beide Jobs sind real aktiv und bleiben offen.");
+  assert.equal(HI.creativeJobs(offeneJobsZaehlen(reg), KONFIG).erfuellt, false,
+    "MAX_OPEN_CREATIVE_JOBS blockiert weiterhin - der Fix lockert die " +
+    "Grenze nicht, er beseitigt nur einen falschen Blockierer.");
+});
+
+test("CR32 · Szenario C — ein Job ohne ausreichende Evidenz: " +
+  "nicht wegen seines Alters geschlossen, fail-closed", () => {
+  const uralt = JSON.parse(JSON.stringify(NIE_AUSGELIEFERT));
+  uralt.createdAt = "2020-01-01T00:00:00.000Z";
+  uralt.updatedAt = "2020-01-01T00:00:00.000Z";
+
+  const reg = Job.createRegistry([uralt]);
+  /* Ohne die Messung `keinPullRequest` - genau der Fall, in dem der
+     Abgleich im echten Lauf UNGEMESSEN meldet (kein GH_TOKEN, `gh`
+     nicht erreichbar, oder die Antwort schlicht unklar). */
+  const r = reg.reconcile(uralt.creativeJobId, "DISPATCH_NIE_ERFOLGT", {});
+
+  assert.equal(r.ok, false);
+  assert.equal(r.reason, "inadmissibleEvidence");
+  assert.equal(reg.get(uralt.creativeJobId).state, "CREATIVE_JOB_REQUESTED",
+    "Sechs Jahre Alter allein schliessen nichts.");
+  assert.equal(offeneJobsZaehlen(reg), 1);
+  assert.equal(HI.creativeJobs(offeneJobsZaehlen(reg), KONFIG).erfuellt, true,
+    "Mit nur diesem einen (ungeklaerten) Job bleibt die Invariante " +
+    "erfuellt - der Punkt ist, dass er NICHT wegen des Alters geschlossen " +
+    "wurde, nicht dass er den Slot fuer sich allein blockieren wuerde.");
 });
