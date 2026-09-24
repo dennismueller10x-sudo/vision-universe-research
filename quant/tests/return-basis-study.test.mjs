@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 
@@ -17,8 +18,24 @@ const STUDY = join(tmpdir(), "vu-return-basis-study-test.json");
 /* Die Studie laeuft einmal fuer alle Faelle. Im Repository sieht sie nur
    die Golden Preview - genau der Fall, in dem sie sich weigern muss,
    sich als Universumsstudie auszugeben. */
+/* DER TEST BESTIMMT SEINEN EINGANG, ER BEOBACHTET IHN NICHT
+
+   Erste Fassung liess das Skript seinen Standardpfad nehmen und
+   behauptete dann, das Ergebnis sei REPOSITORY_ONLY. Im Repository
+   stimmte das. Im Marktdaten-Workflow liegt unter .market-cache ein
+   vollstaendiger Barstore - dort fand dieselbe Zeile 6.874 Titel, und
+   drei Tests fielen um. Sie hatten eine Umgebung behauptet statt eines
+   Verhaltens, und die Rechnung kam nach siebzig Minuten Kursabruf.
+
+   Jetzt zeigt der Lauf auf ein garantiert leeres Verzeichnis. Damit ist
+   der Bestand eine Bedingung des Tests und keine Eigenschaft der
+   Maschine, auf der er zufaellig laeuft - und nebenbei dauert er
+   Sekunden statt einer Minute. */
+const LEER = mkdtempSync(join(tmpdir(), "vu-ohne-barstore-"));
+
 function run() {
-  execFileSync("node", ["scripts/market/study-return-basis-universe.mjs", "--out", STUDY], { stdio: "pipe" });
+  execFileSync("node", ["scripts/market/study-return-basis-universe.mjs",
+    "--work-dir", LEER, "--out", STUDY], { stdio: "pipe" });
   return JSON.parse(readFileSync(STUDY, "utf8"));
 }
 const report = run();
@@ -106,12 +123,15 @@ test("jeder Stichtag sieht nur Bars bis zu seinem eigenen Datum", () => {
   assert.deepEqual(dates, sorted, "Stichtage nicht absteigend: " + dates.join(", "));
   const audit = existsSync("quant/data/providers/return-basis-input-audit.json")
     ? JSON.parse(readFileSync("quant/data/providers/return-basis-input-audit.json", "utf8")) : null;
-  /* Nur wenn beide Artefakte denselben Bestand beschreiben. Ein
-     Eingangsaudit vom kanonischen Store gegen eine Studie aus dem
-     Repository zu halten vergliche zwei verschiedene Korpora - und das
-     Ergebnis waere ein Fehlalarm ueber genau die Sorgfalt, die hier
-     geprueft werden soll. */
-  if (audit && audit.series.length && audit.scope === report.scope) {
+  /* Nur wenn beide Artefakte DENSELBEN Bestand beschreiben. Derselbe
+     Etikettenwert genuegt dafuer nicht: im Marktdaten-Workflow trugen
+     Audit und Studie beide CANONICAL_HISTORY und meinten zwei
+     verschiedene Ablagen - die eine aus R2 bis zum 10., die andere aus
+     dem Arbeitsbestand bis zum 17. Der Vergleich meldete daraufhin eine
+     Zukunftsschau, die es nicht gab. Verglichen wird deshalb ueber das
+     Verzeichnis. */
+  if (audit && audit.series.length && audit.scope === report.scope &&
+      audit.barsDir === report.inputs.barsDir) {
     const last = audit.series.map((s) => s.to).sort().pop();
     for (const date of dates) assert.ok(date <= last, `Stichtag ${date} liegt hinter dem Ende der Daten ${last}`);
   }
@@ -211,15 +231,14 @@ test("das Studiendokument entsteht nicht aus einer Teilmessung", () => {
   let failed = false;
   try {
     execFileSync("node", ["scripts/quant/render-return-basis-study.mjs",
-      "--study", STUDY, "--out", join(tmpdir(), "vu-return-basis-study-test.md")], { stdio: "pipe" });
+      "--study", STUDY, "--out", join(LEER, "studie.md")], { stdio: "pipe" });
   } catch (error) {
     failed = true;
     assert.match(String(error.stderr), /NICHT geschrieben/);
   }
   assert.ok(failed, "Der Renderer haette die Teilmessung ablehnen muessen");
-  assert.ok(!existsSync("docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md") ||
-    readFileSync("docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md", "utf8").includes("CANONICAL_HISTORY"),
-    "Ein Studiendokument aus einer Teilmessung liegt im Baum");
+  assert.equal(existsSync(join(LEER, "studie.md")), false,
+    "Der Renderer hat aus einer Teilmessung doch ein Dokument geschrieben");
 });
 
 test("das Dokument nennt jede Messgroesse des Auftrags", () => {
