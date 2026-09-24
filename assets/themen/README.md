@@ -8,7 +8,7 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 
 | Nr | Themenwelt | Datei | Status |
 |----|------------|-------|--------|
-| 01 | Künstliche Intelligenz | `01-kuenstliche-intelligenz` | offen |
+| 01 | Künstliche Intelligenz | `01-kuenstliche-intelligenz` | ✅ |
 | 02 | Halbleiter & Chips | `02-halbleiter-chips` | ✅ |
 | 03 | Rechenzentren & Cloud | `03-rechenzentren-cloud` | ✅ |
 | 04 | Cybersecurity | `04-cybersecurity` | ✅ |
@@ -20,31 +20,31 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 10 | Autonomes Fahren | `10-autonomes-fahren` | ✅ |
 | 11 | Batterien & Energiespeicher | `11-batterien-energiespeicher` | ✅ |
 | 12 | Erneuerbare Energien | `12-erneuerbare-energien` | ✅ |
-| 13 | Wasserstoff | `13-wasserstoff` | offen |
-| 14 | Kernenergie & Uran | `14-kernenergie-uran` | offen |
-| 15 | Stromnetze & Elektrifizierung | `15-stromnetze-elektrifizierung` | offen |
-| 16 | Raumfahrt | `16-raumfahrt` | offen |
-| 17 | Satelliten & Konnektivität | `17-satelliten-konnektivitaet` | offen |
-| 18 | Defense & Aerospace | `18-defense-aerospace` | offen |
-| 19 | Biotechnologie | `19-biotechnologie` | offen |
-| 20 | Genomik & Gentherapie | `20-genomik-gentherapie` | offen |
-| 21 | Medizintechnik | `21-medizintechnik` | offen |
-| 22 | Pharma & Wirkstoffforschung | `22-pharma-wirkstoffforschung` | offen |
-| 23 | Longevity & Präzisionsmedizin | `23-longevity-praezisionsmedizin` | offen |
-| 24 | Landwirtschaft & AgTech | `24-landwirtschaft-agtech` | offen |
-| 25 | Rohstoffe & Bergbau | `25-rohstoffe-bergbau` | offen |
-| 26 | Industrie & Maschinenbau | `26-industrie-maschinenbau` | offen |
-| 27 | Logistik & Automation | `27-logistik-automation` | offen |
-| 28 | Infrastruktur | `28-infrastruktur` | offen |
-| 29 | Banken & Fintech | `29-banken-fintech` | offen |
-| 30 | Versicherungen | `30-versicherungen` | offen |
-| 31 | Immobilien & REITs | `31-immobilien-reits` | offen |
-| 32 | Konsum & Marken | `32-konsum-marken` | offen |
-| 33 | Luxus & Premium | `33-luxus-premium` | offen |
-| 34 | Lebensmittel & Getränke | `34-lebensmittel-getraenke` | offen |
-| 35 | E-Commerce | `35-e-commerce` | offen |
-| 36 | Reisen & Tourismus | `36-reisen-tourismus` | offen |
-| 37 | Freizeit & Entertainment | `37-freizeit-entertainment` | offen |
-| 38 | Medien & Werbung | `38-medien-werbung` | offen |
-| 39 | Streaming & Gaming | `39-streaming-gaming` | offen |
-| 40 | Telekommunikation & Netze | `40-telekommunikation-netze` | offen |
+| 13 | Wasserstoff | `13-wasserstoff` | ✅ |
+| 14 | Kernenergie & Uran | `14-kernenergie-uran` | ✅ |
+| 15 | Stromnetze & Elektrifizierung | `15-stromnetze-elektrifizierung` | ✅ |
+| 16 | Raumfahrt | `16-raumfahrt` | ✅ |
+| 17 | Satelliten & Konnektivität | `17-satelliten-konnektivitaet` | ✅ |
+| 18 | Defense & Aerospace | `18-defense-aerospace` | ✅ |
+| 19 | Biotechnologie | `19-biotechnologie` | ✅ |
+| 20 | Genomik & Gentherapie | `20-genomik-gentherapie` | ✅ |
+| 21 | Medizintechnik | `21-medizintechnik` | ✅ |
+| 22 | Pharma & Wirkstoffforschung | `22-pharma-wirkstoffforschung` | ✅ |
+| 23 | Longevity & Präzisionsmedizin | `23-longevity-praezisionsmedizin` | ✅ |
+| 24 | Landwirtschaft & AgTech | `24-landwirtschaft-agtech` | ✅ |
+| 25 | Rohstoffe & Bergbau | `25-rohstoffe-bergbau` | ✅ |
+| 26 | Industrie & Maschinenbau | `26-industrie-maschinenbau` | ✅ |
+| 27 | Logistik & Automation | `27-logistik-automation` | ✅ |
+| 28 | Infrastruktur | `28-infrastruktur` | ✅ |
+| 29 | Banken & Fintech | `29-banken-fintech` | ✅ |
+| 30 | Versicherungen | `30-versicherungen` | ✅ |
+| 31 | Immobilien & REITs | `31-immobilien-reits` | ✅ |
+| 32 | Konsum & Marken | `32-konsum-marken` | ✅ |
+| 33 | Luxus & Premium | `33-luxus-premium` | ✅ |
+| 34 | Lebensmittel & Getränke | `34-lebensmittel-getraenke` | ✅ |
+| 35 | E-Commerce | `35-e-commerce` | ✅ |
+| 36 | Reisen & Tourismus | `36-reisen-tourismus` | ✅ |
+| 37 | Freizeit & Entertainment | `37-freizeit-entertainment` | ✅ |
+| 38 | Medien & Werbung | `38-medien-werbung` | ✅ |
+| 39 | Streaming & Gaming | `39-streaming-gaming` | ✅ |
+| 40 | Telekommunikation & Netze | `40-telekommunikation-netze` | ✅ |

@@ -384,3 +384,16 @@ html:not([data-theme="light"]) body.dv2 .dv2-research-number{color:#e2c270}
 html[data-theme="light"] body.dv2 .dv2-stock .dx-journey-delta b{color:#08713c}
 html:not([data-theme="light"]) body.dv2 .dv2-stock .dx-journey-delta b{color:#67d89a}
 html:not([data-theme="light"]) body.dv2 .dv2-stock #dv2-stock-1-2>.dx-kicker{color:#e2c270}
+
+/* Discovery 2.1 - Charts im Trade-Republic-Prinzip: nur die Kurslinie in
+   kraeftigem Gruen/Rot, gepunktete Startlinie, keine Flaeche, kein Raster.
+   Richtung, Werte und Achsen kommen unveraendert aus den Renderern. */
+body.dv2{--v2-chart-up:#5cc850;--v2-chart-down:#e4382f}
+html:not([data-theme="light"]) body.dv2 .dv2-stock{--discover-up:#5cc850;--discover-down:#ff5a4f}
+body.dv2 .dv2-stock .dx-art-fill,body.dv2 .dv2-stock .dx-art-glow,body.dv2 .dv2-stock .dx-micro-grid,body.dv2 .dv2-stock .dx-range-grid{display:none}
+body.dv2 .dv2-stock .dx-range-chart[data-direction=up],body.dv2 .dv2-stock .dx-micro[data-direction=up],body.dv2 .dv2-stock .dx-range-chart-wrap[data-direction=up],body.dv2 .dv2-stock .dx-intraday[data-direction=up]{color:var(--v2-chart-up)}
+body.dv2 .dv2-stock .dx-range-chart[data-direction=down],body.dv2 .dv2-stock .dx-micro[data-direction=down],body.dv2 .dv2-stock .dx-range-chart-wrap[data-direction=down],body.dv2 .dv2-stock .dx-intraday[data-direction=down]{color:var(--v2-chart-down)}
+body.dv2 .dv2-stock .dx-micro .dx-art-line,body.dv2 .dv2-stock .dx-range-chart .dx-art-line{stroke:currentColor;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}
+body.dv2 .dv2-stock .dx-micro--down .dx-art-line{stroke:var(--v2-chart-down)}
+body.dv2 .dv2-stock .dx-art-base{stroke:color-mix(in srgb,var(--v2-muted) 70%,transparent);stroke-width:1.6;stroke-dasharray:1.5 5;stroke-linecap:round;opacity:1}
+body.dv2 .dv2-stock .dx-micro-axis,body.dv2 .dv2-stock .dx-range-axis,body.dv2 .dv2-stock .dx-range-date{fill:var(--v2-muted)}

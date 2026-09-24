@@ -138,13 +138,15 @@
     a.appendChild(media);
     var caption = node('span', 'v2-stock-caption'); a.appendChild(caption);
     bindArtworkCaption(media, caption, card, ctx, chartRange);
-    var price = D.Cards.valueOf(card.price), change = D.Cards.valueOf(card.changePercent);
+    // Kurs der Karte mit ihrem Datum: Der Chart darueber kann eine neuere
+    // Sitzung zeigen, eine Tagesveraenderung ohne Datum wuerde dem widersprechen.
+    var price = D.Cards.valueOf(card.price);
     var foot = node('div', 'v2-tile-foot');
     if (typeof price === 'number' && Number.isFinite(price)) {
       foot.appendChild(node('span', 'v2-tile-price', D.Cards.money(price, card.asOf)));
-      if (typeof change === 'number' && Number.isFinite(change)) { var ch = node('span', 'v2-tile-change ' + D.Cards.toneClass(change), D.Cards.pctPoints(change)); ch.setAttribute('aria-label', 'Tagesveränderung ' + D.Cards.pctPoints(change)); foot.appendChild(ch); }
+      if (card.asOf) { var asof = node('span', 'v2-tile-asof', D.Cards.dateShort(card.asOf).slice(0, 6)); asof.title = 'Schlusskurs vom ' + D.Cards.dateShort(card.asOf); foot.appendChild(asof); }
     }
-    foot.appendChild(node('span', 'v2-stock-cta', options.large ? 'Aktie entdecken ↗' : '↗'));
+    foot.appendChild(node('span', 'v2-stock-cta', '↗'));
     a.appendChild(foot);
     return a;
   }
@@ -189,13 +191,11 @@
     if (options.evidence) copy.appendChild(node('p', 'v2-world-evidence', options.evidence));
     if (options.href) copy.appendChild(link(options.cta || 'Themenwelt entdecken →', options.href, 'v2-pill v2-pill-light'));
     box.appendChild(copy);
-    box.appendChild(node('p', 'v2-theme-banner-tag', theme.tagline));
     return box;
   }
   function themesRail(ctx) {
     var section = node('section', 'v2-world v2-themes');
-    section.dataset.archetype = 'themes'; section.dataset.block = 'themenwelten';
-    section.dataset.groups = 'themen tech health energy finance consumer industry';
+    section.dataset.archetype = 'themes'; section.dataset.block = 'themenwelten'; section.dataset.surface = 'themenwelten'; section.dataset.surfaceType = 'themes';
     var header = node('div', 'v2-world-head'), intro = node('div', '');
     intro.appendChild(node('h2', '', 'Themenwelten'));
     intro.appendChild(node('p', 'v2-world-subtitle', 'Megatrends heute. Chancen für morgen. ' + T().all.length + ' Welten zum Entdecken.'));
@@ -205,28 +205,6 @@
     T().all.forEach(function (theme) { var item = node('div', 'v2-track-item v2-theme-item'); item.setAttribute('role', 'listitem'); item.dataset.group = theme.group; item.appendChild(themeTile(theme, ctx)); track.appendChild(item); });
     section.appendChild(D.Cards.withRailNav(track, { label: 'Themenwelten', universeId: ctx.universeId }));
     return section;
-  }
-  /* Filter-Chips: blenden Welten nach Bereich ein/aus. Reihenfolge und
-     Inhalt der Reihen bleiben unberuehrt. */
-  var chips = [['alle', 'Alle'], ['themen', 'Themenwelten'], ['tech', 'Technologie'], ['health', 'Gesundheit'], ['energy', 'Energie'], ['finance', 'Finanzen'], ['consumer', 'Konsum'], ['industry', 'Industrie'], ['wachstum', 'Wachstum'], ['momentum', 'Momentum'], ['qualitaet', 'Qualität'], ['indizes', 'Indizes']];
-  var worldGroups = { tech: 'tech', health: 'health', energy: 'energy', finance: 'finance', consumer: 'consumer', industry: 'industry', growth: 'wachstum', cashflow: 'qualitaet', quality: 'qualitaet', compounder: 'qualitaet', fundamentals: 'qualitaet', momentum: 'momentum', highs: 'momentum', breakout: 'momentum', strength: 'momentum', comeback: 'momentum', leadership: 'indizes' };
-  function groupsOf(surface) {
-    var g = [];
-    if (surface.type === 'theme') g.push('themen');
-    if (surface.index || /^top-(sp500|ndx|djia)$/.test(surface.id || '')) g.push('indizes');
-    if (surface.type === 'sectors') g.push('tech', 'health', 'energy', 'finance', 'consumer');
-    if (worldGroups[surface.world]) g.push(worldGroups[surface.world]);
-    return g.join(' ');
-  }
-  function chipBar(onPick) {
-    var bar = el('div', { class: 'v2-chips', role: 'toolbar', 'aria-label': 'Welten filtern' });
-    chips.forEach(function (c, i) {
-      var b = el('button', { type: 'button', class: 'v2-chip', 'data-chip': c[0], 'aria-pressed': String(i === 0) }, [node('i', 'v2-chip-dot', ''), node('span', '', c[1])]);
-      b.firstChild.setAttribute('aria-hidden', 'true');
-      b.addEventListener('click', function () { Array.from(bar.children).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); onPick(c[0]); });
-      bar.appendChild(b);
-    });
-    return bar;
   }
   function archetypeFor(surface, index) {
     if (surface.index) return 'index';
@@ -246,7 +224,6 @@
     section.dataset.archetype = archetype;
     section.dataset.surface = surface.id; section.dataset.surfaceType = surface.type;
     section.dataset.world = surface.world || 'default'; section.dataset.sequence = String(index + 1);
-    section.dataset.groups = groupsOf(surface);
     var theme = surface.type === 'theme' && T() ? T().byRow(surface.rowId) : null;
     if (theme) {
       section.appendChild(themeBanner(theme, { title: title(surface.title), subtitle: surface.subtitle || theme.line, href: T().href(theme),
@@ -309,32 +286,24 @@
     var search = el('button', { class: 'v2-search-prompt', type: 'button', 'aria-label': 'Unternehmen oder Symbol suchen' }, [node('span', '', '⌕'), node('span', '', 'Unternehmen oder Symbol suchen'), node('span', 'v2-search-arrow', '↗')]);
     search.addEventListener('click', ctx.openSearch); introCopy.appendChild(search);
     intro.appendChild(introCopy);
-    var orb = node('div', 'v2-intro-visual'); orb.setAttribute('aria-hidden', 'true');
-    orb.appendChild(node('span', 'v2-orb', '')); orb.appendChild(node('p', 'v2-intro-tag', 'Bessere Entscheidungen für eine hellere Zukunft.'));
-    intro.appendChild(orb);
+    // Hero-Bild 16:9 (1672×941): die Flaeche hat dasselbe Seitenverhaeltnis, es wird nichts beschnitten.
+    var visual = node('div', 'v2-intro-visual'); visual.setAttribute('aria-hidden', 'true');
+    visual.appendChild(el('img', { src: '/assets/themen/00-discovery-hero.webp', alt: '', width: '1672', height: '941', decoding: 'async', fetchpriority: 'high' }));
+    visual.appendChild(node('p', 'v2-intro-tag', 'Bessere Entscheidungen für eine hellere Zukunft.'));
+    intro.appendChild(visual);
     page.appendChild(intro);
-    var filter = 'alle';
-    function applyFilter() {
-      Array.from(body.children).forEach(function (n) {
-        if (!n.dataset || n.dataset.groups === undefined) return;
-        var show = filter === 'alle' || n.dataset.groups.split(' ').indexOf(filter) >= 0;
-        n.hidden = !show;
-      });
-      Array.from(body.querySelectorAll('.v2-theme-item')).forEach(function (item) {
-        item.hidden = !(filter === 'alle' || filter === 'themen' || item.dataset.group === filter);
-      });
-    }
-    page.appendChild(chipBar(function (key) { filter = key; applyFilter(); }));
+    // Themenwelten mit Fotos direkt unter dem Einstieg - vor den Aktien-Reihen.
     var body = node('div', 'v2-journey'); page.appendChild(body);
+    if (T()) body.appendChild(themesRail(ctx));
     var loading = node('p', 'v2-load-state', 'Aktien werden geladen …'); loading.setAttribute('role', 'status'); body.appendChild(loading);
     var home = (ctx.meta.home || []).find(function (h) { return h.universeId === ctx.universeId; });
     if (!home || !home.chunks || !home.chunks.length) { loading.textContent = 'Die Entdeckungsseite ist momentan nicht verfügbar. Die Suche bleibt erreichbar.'; return; }
-    var seen = new Set(), count = 0, drawn = 0, themesShown = false, observer;
+    var seen = new Set(), count = 0, observer;
     function active() { return page.isConnected; }
     function draw(surface) {
       var view;
       if (surface.type === 'hero') {
-        view = node('section', 'v2-spotlight v2-world'); view.dataset.archetype = 'cinematic'; view.dataset.groups = 'momentum';
+        view = node('section', 'v2-spotlight v2-world'); view.dataset.archetype = 'cinematic';
         var head = node('div', 'v2-world-head'), hi = node('div', '');
         hi.appendChild(node('h2', '', 'Im Blick'));
         hi.appendChild(node('p', 'v2-world-subtitle', 'Die Discover-Auswahl' + ((surface.cards || [])[0] && surface.cards[0].asOf ? ' · Stand ' + D.Cards.dateShort(surface.cards[0].asOf) : '') + ' · Wischen für die nächste Aktie'));
@@ -345,12 +314,10 @@
         view.appendChild(D.Cards.withRailNav(track, { label: 'Aktien im Blick', universeId: ctx.universeId }));
       } else if (['row', 'ranking', 'theme'].indexOf(surface.type) >= 0 && (surface.cards || []).length) view = rail(surface, ctx, count++);
       else if (surface.type === 'featured-card' && (surface.cards || []).length) {
-        view = node('section', 'v2-feature'); view.dataset.groups = groupsOf(surface); view.appendChild(node('p', 'v2-eyebrow', title(surface.kicker || surface.title))); view.appendChild(stock(surface.cards[0], ctx, { hero: true, rowId: surface.rowId }));
-      } else if (surface.type === 'story' && (surface.cards || []).length) { view = story(surface, ctx); if (view) view.dataset.groups = 'qualitaet'; }
-      else { view = D.Surfaces.render(surface, ctx); if (view && surface.type === 'sectors') view.dataset.groups = groupsOf(surface); }
-      if (view) { view.dataset.surface = surface.id; view.dataset.surfaceType = surface.type; if (!view.dataset.archetype) view.dataset.archetype = surface.type; view.classList.add('in'); body.appendChild(view); drawn++; }
-      if (!themesShown && drawn === 4 && T()) { themesShown = true; body.appendChild(themesRail(ctx)); }
-      applyFilter();
+        view = node('section', 'v2-feature'); view.appendChild(node('p', 'v2-eyebrow', title(surface.kicker || surface.title))); view.appendChild(stock(surface.cards[0], ctx, { hero: true, rowId: surface.rowId }));
+      } else if (surface.type === 'story' && (surface.cards || []).length) view = story(surface, ctx);
+      else view = D.Surfaces.render(surface, ctx);
+      if (view) { view.dataset.surface = surface.id; view.dataset.surfaceType = surface.type; if (!view.dataset.archetype) view.dataset.archetype = surface.type; view.classList.add('in'); body.appendChild(view); }
     }
     function finish() {
       var end = node('section', 'v2-finish'); end.appendChild(node('p', 'v2-eyebrow', 'Die nächste Perspektive wartet'));
