@@ -247,11 +247,19 @@ if (!primary) {
   /* 7 Sektorschieflage */
   w("## 7 · Sektorschieflage");
   w();
+  const taxonomy = study.inputs.sectorTaxonomy;
+  if (taxonomy) {
+    w("Klassifikation: **" + taxonomy.primary + "**, aus `" + taxonomy.source + "`. " + taxonomy.why);
+    w();
+  }
   const sectorMeasure = primary.measures["12M-1M"] || primary.measures["12M"];
-  if (sectorMeasure) {
-    const sectors = Object.entries(sectorMeasure.SECTOR_BIAS)
+  const sectorTable = (bias, label) => {
+    const sectors = Object.entries(bias)
       .filter(([, s]) => s.N >= 10)
       .sort((a, b) => (b[1].FACTOR_PERCENTILE_DELTA_MEDIAN || 0) - (a[1].FACTOR_PERCENTILE_DELTA_MEDIAN || 0));
+    if (!sectors.length) return;
+    w("**" + label + "**");
+    w();
     w("| Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |");
     w("|---|---:|---:|---:|---:|---:|");
     for (const [sector, s] of sectors) {
@@ -260,6 +268,18 @@ if (!primary) {
         num(s.FACTOR_PERCENTILE_DELTA_P95, 2) + " |");
     }
     w();
+  };
+  if (sectorMeasure) {
+    if (sectorMeasure.NAMED_SECTOR_BIAS) {
+      sectorTable(sectorMeasure.NAMED_SECTOR_BIAS, "Die acht benannten Sektoren des Auftrags");
+      if (taxonomy && taxonomy.namedSectors) {
+        w("> Einteilung `" + taxonomy.namedSectors.taxonomy + "`. " + taxonomy.namedSectors.note +
+          " Die SIC-Bereiche: " + taxonomy.namedSectors.ranges.map((r) => r.sector + " " +
+            r.ranges.map(([a, b]) => (a === b ? String(a) : a + "–" + b)).join("/")).join(" · ") + ".");
+        w();
+      }
+    }
+    sectorTable(sectorMeasure.SECTOR_BIAS, "Die Peertaxonomie des Produkts (SIC-Division)");
     w("Sektoren mit weniger als zehn Titeln sind ausgelassen: aus vier Titeln einen Sektorbefund zu machen wäre eine Zahl ohne Aussage.");
     w();
   }
@@ -272,11 +292,21 @@ if (!primary) {
   w();
   w("| | |");
   w("|---|---:|");
+  w("| Grundlage | `" + (sim.strategyBasis || "—") + "` |");
+  w("| veröffentlichtes Evidence vom | " + (sim.publishedEvidenceAsOf || "—") +
+    (finite(sim.publishedEvidenceLagDays) ? " (" + int(sim.publishedEvidenceLagDays) + " Tage nach dem Stichtag)" : "") + " |");
+  if (finite(sim.excludedForLateFundamentals)) {
+    w("| ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | " + int(sim.excludedForLateFundamentals) + " |");
+  }
   w("| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | " + num(sim.SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED, 4) + " |");
   w("| ρ Simulation (Kursrendite) zur veröffentlichten Note | " + num(sim.SIMULATION_FIDELITY_PRICE_VS_PUBLISHED, 4) + " |");
   w("| bewertete Titel: veröffentlicht / Kurs / gesamt | " + int(sim.publishedScored) + " / " +
     int(sim.simulatedScoredOnPrice) + " / " + int(sim.simulatedScoredOnTotal) + " |");
   w();
+  if (sim.limitation) {
+    w("> **Einschränkung, benannt statt weggelassen.** " + sim.limitation);
+    w();
+  }
   const shift = sim.momentumScoreShift;
   w("**Die Momentumnote selbst, Kurs gegen gesamt:** ρ " + num(shift.SPEARMAN_RANK_CORRELATION, 4) +
     " · Median " + int(shift.MEDIAN_ABSOLUTE_RANK_CHANGE) + " Ränge · P95 " + int(shift.P95_RANK_CHANGE) +
@@ -324,6 +354,17 @@ if (!primary) {
 }
 
 /* ----------------------------------------- 10 Gates */
+
+if (study.dataFreshnessFindings && study.dataFreshnessFindings.length) {
+  w("## 9b · Was die Messung begrenzt hat");
+  w();
+  for (const f of study.dataFreshnessFindings) {
+    w("**`" + f.finding + "`** — die kanonische Historie endet am " + f.canonicalStoreLastDate +
+      ", das veröffentlichte Factor Evidence trägt den Stichtag " + f.publishedEvidenceAsOf + ": " +
+      int(f.lagDays) + " Tage Abstand. " + f.note);
+    w();
+  }
+}
 
 w("## 10 · Maschinenlesbarer Stand");
 w();

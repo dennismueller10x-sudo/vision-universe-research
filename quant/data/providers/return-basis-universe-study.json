@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-09-24T09:51:09.000Z",
+ "generatedAt": "2026-09-24T10:03:24.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -22,7 +22,250 @@
    504,
    756,
    1008
-  ]
+  ],
+  "sectorTaxonomy": {
+   "primary": "SIC_DIVISION",
+   "source": "quant/data/product/factor-evidence-v1 (peer.industry) via quant/engines/sic-peer-taxonomy.js",
+   "why": "Das Feld 'sector' der Universumsdatei ist fuer rund hundert von knapp siebentausend Titeln gefuellt. Die SIC-Zuordnung ist die Klassifikation, ueber die auch die Peerperzentile des Produkts laufen.",
+   "namedSectors": {
+    "taxonomy": "AUDIT_LOCAL_SIC_RANGES",
+    "note": "Gilt nur fuer diese Studie und ist keine Produkttaxonomie. Die Bereiche stehen hier, damit jede Zuordnung nachrechenbar ist.",
+    "ranges": [
+     {
+      "sector": "Energy",
+      "ranges": [
+       [
+        1200,
+        1399
+       ],
+       [
+        2900,
+        2999
+       ],
+       [
+        4600,
+        4619
+       ]
+      ]
+     },
+     {
+      "sector": "Utilities",
+      "ranges": [
+       [
+        4900,
+        4991
+       ]
+      ]
+     },
+     {
+      "sector": "REITs",
+      "ranges": [
+       [
+        6798,
+        6798
+       ]
+      ]
+     },
+     {
+      "sector": "Financials",
+      "ranges": [
+       [
+        6000,
+        6499
+       ],
+       [
+        6700,
+        6797
+       ],
+       [
+        6799,
+        6799
+       ]
+      ]
+     },
+     {
+      "sector": "Real Estate",
+      "ranges": [
+       [
+        6500,
+        6599
+       ]
+      ]
+     },
+     {
+      "sector": "Health Care",
+      "ranges": [
+       [
+        2833,
+        2836
+       ],
+       [
+        3826,
+        3826
+       ],
+       [
+        3841,
+        3851
+       ],
+       [
+        8000,
+        8099
+       ]
+      ]
+     },
+     {
+      "sector": "Technology",
+      "ranges": [
+       [
+        3570,
+        3579
+       ],
+       [
+        3600,
+        3699
+       ],
+       [
+        7370,
+        7379
+       ]
+      ]
+     },
+     {
+      "sector": "Communication",
+      "ranges": [
+       [
+        2700,
+        2799
+       ],
+       [
+        4800,
+        4899
+       ],
+       [
+        7800,
+        7841
+       ]
+      ]
+     },
+     {
+      "sector": "Materials",
+      "ranges": [
+       [
+        1000,
+        1099
+       ],
+       [
+        1400,
+        1499
+       ],
+       [
+        2600,
+        2699
+       ],
+       [
+        2800,
+        2824
+       ],
+       [
+        2840,
+        2899
+       ],
+       [
+        3200,
+        3399
+       ]
+      ]
+     },
+     {
+      "sector": "Consumer Staples",
+      "ranges": [
+       [
+        2000,
+        2199
+       ],
+       [
+        2825,
+        2832
+       ],
+       [
+        5400,
+        5499
+       ],
+       [
+        5912,
+        5912
+       ]
+      ]
+     },
+     {
+      "sector": "Consumer Discretionary",
+      "ranges": [
+       [
+        2200,
+        2399
+       ],
+       [
+        3700,
+        3799
+       ],
+       [
+        5200,
+        5399
+       ],
+       [
+        5500,
+        5911
+       ],
+       [
+        5913,
+        5999
+       ],
+       [
+        7000,
+        7099
+       ],
+       [
+        7900,
+        7999
+       ]
+      ]
+     },
+     {
+      "sector": "Industrials",
+      "ranges": [
+       [
+        1500,
+        1799
+       ],
+       [
+        3400,
+        3569
+       ],
+       [
+        3580,
+        3599
+       ],
+       [
+        3710,
+        3728
+       ],
+       [
+        4000,
+        4599
+       ],
+       [
+        4620,
+        4799
+       ],
+       [
+        8700,
+        8748
+       ]
+      ]
+     }
+    ]
+   }
+  }
  },
  "counters": {
   "CANONICAL_PRODUCT_UNIVERSE": 6875,
@@ -62,6 +305,7 @@
    "note": "Die veroeffentlichte Komponentenbeschreibung nennt den splitbereinigten Kurs, gerechnet wird auf der gesamtrenditebereinigten Spalte. Kein Eingriff durch diese Studie - ein Methodikpunkt fuer die anstehende Entscheidung."
   }
  ],
+ "dataFreshnessFindings": [],
  "publishedBasis": {
   "artefact": "quant/data/product/factor-evidence-v1",
   "entries": 6403,
@@ -111,6 +355,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0012476730553758753,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.002582610226925963,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.004717035672574088,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.0012476730553758753,
@@ -136,7 +403,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0037,
        "PRICE_RETURN_VALUE": 0.141308,
@@ -148,7 +415,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0082,
        "PRICE_RETURN_VALUE": 0.36552,
@@ -160,7 +427,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0024,
        "PRICE_RETURN_VALUE": 0.089768,
@@ -172,7 +439,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0189,
        "PRICE_RETURN_VALUE": 0.062025,
@@ -184,7 +451,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": 0.143208,
@@ -231,6 +498,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.003014443764227215,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.005341968659852592,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.011721276158603189,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.003014443764227215,
@@ -256,7 +546,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0037,
        "PRICE_RETURN_VALUE": 0.36691,
@@ -268,7 +558,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0082,
        "PRICE_RETURN_VALUE": 0.313562,
@@ -280,7 +570,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0024,
        "PRICE_RETURN_VALUE": 0.316618,
@@ -292,7 +582,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0189,
        "PRICE_RETURN_VALUE": 0.228504,
@@ -304,7 +594,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": -0.00858,
@@ -351,6 +641,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005294345380920662,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.008162704448091973,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.021338964830549312,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.005294345380920662,
@@ -376,7 +689,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0037,
        "PRICE_RETURN_VALUE": 0.425004,
@@ -388,7 +701,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0082,
        "PRICE_RETURN_VALUE": -0.013453,
@@ -400,7 +713,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0024,
        "PRICE_RETURN_VALUE": 0.290172,
@@ -412,7 +725,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0189,
        "PRICE_RETURN_VALUE": 0.123903,
@@ -424,7 +737,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": 0.38945,
@@ -471,6 +784,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.004862026423625654,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.007829758667489584,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.02130926339671535,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.004862026423625654,
@@ -496,7 +832,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0037,
        "PRICE_RETURN_VALUE": 0.308643,
@@ -508,7 +844,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0082,
        "PRICE_RETURN_VALUE": -0.053693,
@@ -520,7 +856,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0024,
        "PRICE_RETURN_VALUE": 0.230424,
@@ -532,7 +868,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0189,
        "PRICE_RETURN_VALUE": 0.122338,
@@ -544,7 +880,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": 0.458352,
@@ -591,6 +927,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": null,
@@ -619,6 +978,11 @@
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": true,
+    "strategyBasis": "EVIDENCE_AT_OR_BEFORE_CUTOFF",
+    "publishedEvidenceAsOf": "2026-09-21",
+    "publishedEvidenceLagDays": 0,
+    "excludedForLateFundamentals": 0,
+    "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.7,
     "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.7,
     "publishedScored": 5,
@@ -717,6 +1081,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0013849109590029496,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.00174273245680312,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.0054076990920586265,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.0013849109590029496,
@@ -742,7 +1129,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0046,
        "PRICE_RETURN_VALUE": 0.210093,
@@ -754,7 +1141,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0075,
        "PRICE_RETURN_VALUE": 0.058741,
@@ -766,7 +1153,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": 0.211438,
@@ -778,7 +1165,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0225,
        "PRICE_RETURN_VALUE": 0.143342,
@@ -790,7 +1177,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0358,
        "PRICE_RETURN_VALUE": 0.006538,
@@ -837,6 +1224,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0026296036884201346,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.004563438460811309,
+       "RANK_DELTA_MEDIAN": 1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.014958705843605147,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.0026296036884201346,
@@ -862,7 +1272,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0075,
        "PRICE_RETURN_VALUE": 0.311046,
@@ -874,7 +1284,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0225,
        "PRICE_RETURN_VALUE": 0.309983,
@@ -886,7 +1296,7 @@
       },
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0046,
        "PRICE_RETURN_VALUE": 0.105185,
@@ -898,7 +1308,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": 0.49966,
@@ -910,7 +1320,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0358,
        "PRICE_RETURN_VALUE": -0.012824,
@@ -957,6 +1367,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005042493785117008,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.008845020558849281,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03418445686620153,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.005042493785117008,
@@ -982,7 +1415,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": 0.509163,
@@ -994,7 +1427,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0225,
        "PRICE_RETURN_VALUE": 0.506928,
@@ -1006,7 +1439,7 @@
       },
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0046,
        "PRICE_RETURN_VALUE": 0.099667,
@@ -1018,7 +1451,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0075,
        "PRICE_RETURN_VALUE": 0.178768,
@@ -1030,7 +1463,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0358,
        "PRICE_RETURN_VALUE": 0.010824,
@@ -1077,6 +1510,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.004887327085335347,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.006911267909306629,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03172127265209501,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.004887327085335347,
@@ -1102,7 +1558,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0046,
        "PRICE_RETURN_VALUE": 0.065828,
@@ -1114,7 +1570,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0075,
        "PRICE_RETURN_VALUE": 0.181829,
@@ -1126,7 +1582,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": 0.504025,
@@ -1138,7 +1594,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0225,
        "PRICE_RETURN_VALUE": 0.398345,
@@ -1150,7 +1606,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0358,
        "PRICE_RETURN_VALUE": -0.046935,
@@ -1197,6 +1653,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": null,
@@ -1225,6 +1704,11 @@
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
+    "strategyBasis": "NOT_APPLICABLE",
+    "publishedEvidenceAsOf": "2026-09-21",
+    "publishedEvidenceLagDays": 368,
+    "excludedForLateFundamentals": null,
+    "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
     "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
     "publishedScored": null,
@@ -1286,6 +1770,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0011699815857528773,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.0017361449592319111,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.006023529834733532,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.0011699815857528773,
@@ -1311,7 +1818,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0051,
        "PRICE_RETURN_VALUE": 0.018024,
@@ -1323,7 +1830,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0074,
        "PRICE_RETURN_VALUE": -0.025375,
@@ -1335,7 +1842,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": -0.114498,
@@ -1347,7 +1854,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.025,
        "PRICE_RETURN_VALUE": 0.07266,
@@ -1359,7 +1866,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0346,
        "PRICE_RETURN_VALUE": 0.032994,
@@ -1406,6 +1913,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.003153674716670274,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.0036846702567427947,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.012589957576075061,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.003153674716670274,
@@ -1431,7 +1961,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0051,
        "PRICE_RETURN_VALUE": 0.253157,
@@ -1443,7 +1973,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0074,
        "PRICE_RETURN_VALUE": 0.035829,
@@ -1455,7 +1985,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": 0.329516,
@@ -1467,7 +1997,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.025,
        "PRICE_RETURN_VALUE": 0.092275,
@@ -1479,7 +2009,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0346,
        "PRICE_RETURN_VALUE": 0.012941,
@@ -1526,6 +2056,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.00625679296591386,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.009468673777495384,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.03509686068223661,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.00625679296591386,
@@ -1551,7 +2104,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0051,
        "PRICE_RETURN_VALUE": 0.230909,
@@ -1563,7 +2116,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0074,
        "PRICE_RETURN_VALUE": 0.273516,
@@ -1575,7 +2128,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": 1.562032,
@@ -1587,7 +2140,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.025,
        "PRICE_RETURN_VALUE": 0.392697,
@@ -1599,7 +2152,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0346,
        "PRICE_RETURN_VALUE": -0.049021,
@@ -1646,6 +2199,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006499752751806254,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.009242351093060597,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.035719911850448094,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.006499752751806254,
@@ -1671,7 +2247,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0051,
        "PRICE_RETURN_VALUE": 0.278707,
@@ -1683,7 +2259,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0074,
        "PRICE_RETURN_VALUE": 0.243076,
@@ -1695,7 +2271,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0003,
        "PRICE_RETURN_VALUE": 1.695421,
@@ -1707,7 +2283,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.025,
        "PRICE_RETURN_VALUE": 0.41742,
@@ -1719,7 +2295,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0346,
        "PRICE_RETURN_VALUE": 0.001772,
@@ -1766,6 +2342,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": null,
@@ -1794,6 +2393,11 @@
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
+    "strategyBasis": "NOT_APPLICABLE",
+    "publishedEvidenceAsOf": "2026-09-21",
+    "publishedEvidenceLagDays": 735,
+    "excludedForLateFundamentals": null,
+    "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
     "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
     "publishedScored": null,
@@ -1855,6 +2459,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0012896585498910484,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 22.499999999999996
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.002130903395222372,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.007292898682082827,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.0012896585498910484,
@@ -1880,7 +2507,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0006,
        "PRICE_RETURN_VALUE": 0.060097,
@@ -1892,7 +2519,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0312,
        "PRICE_RETURN_VALUE": 0.054845,
@@ -1904,7 +2531,7 @@
       },
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0059,
        "PRICE_RETURN_VALUE": -0.044632,
@@ -1916,7 +2543,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0096,
        "PRICE_RETURN_VALUE": 0.004032,
@@ -1928,7 +2555,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0328,
        "PRICE_RETURN_VALUE": 0.127045,
@@ -1975,6 +2602,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.0031503448919842914,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.005477268379042721,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.017227019806578925,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.0031503448919842914,
@@ -2000,7 +2650,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0059,
        "PRICE_RETURN_VALUE": 0.148703,
@@ -2012,7 +2662,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0096,
        "PRICE_RETURN_VALUE": 0.275995,
@@ -2024,7 +2674,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0006,
        "PRICE_RETURN_VALUE": 0.881336,
@@ -2036,7 +2686,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0312,
        "PRICE_RETURN_VALUE": 0.163652,
@@ -2048,7 +2698,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0328,
        "PRICE_RETURN_VALUE": 0.166306,
@@ -2095,6 +2745,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006784411889440234,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.012984725101704564,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.04047371986852655,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.006784411889440234,
@@ -2120,7 +2793,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0059,
        "PRICE_RETURN_VALUE": 0.142356,
@@ -2132,7 +2805,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0096,
        "PRICE_RETURN_VALUE": 0.344101,
@@ -2144,7 +2817,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0006,
        "PRICE_RETURN_VALUE": 2.471251,
@@ -2156,7 +2829,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0312,
        "PRICE_RETURN_VALUE": 0.282327,
@@ -2168,7 +2841,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0328,
        "PRICE_RETURN_VALUE": 0.24326,
@@ -2215,6 +2888,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006850426139721089,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 25
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.009607923101052629,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.04090218537856982,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.006850426139721089,
@@ -2240,7 +2936,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0059,
        "PRICE_RETURN_VALUE": 0.153471,
@@ -2252,7 +2948,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0328,
        "PRICE_RETURN_VALUE": 0.134585,
@@ -2264,7 +2960,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0096,
        "PRICE_RETURN_VALUE": 0.277273,
@@ -2276,7 +2972,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0006,
        "PRICE_RETURN_VALUE": 2.34628,
@@ -2288,7 +2984,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0312,
        "PRICE_RETURN_VALUE": 0.295902,
@@ -2335,6 +3031,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": null,
@@ -2363,6 +3082,11 @@
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
+    "strategyBasis": "NOT_APPLICABLE",
+    "publishedEvidenceAsOf": "2026-09-21",
+    "publishedEvidenceLagDays": 1103,
+    "excludedForLateFundamentals": null,
+    "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
     "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
     "publishedScored": null,
@@ -2431,6 +3155,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.001622609332567304,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.002213721493828924,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.00891003883147734,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.001622609332567304,
@@ -2456,7 +3203,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0056,
        "PRICE_RETURN_VALUE": 0.166515,
@@ -2468,7 +3215,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0085,
        "PRICE_RETURN_VALUE": 0.040163,
@@ -2480,7 +3227,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0008,
        "PRICE_RETURN_VALUE": -0.160798,
@@ -2492,7 +3239,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": 0.003449,
@@ -2504,7 +3251,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "HIGH_YIELD",
        "trailingYield": 0.0445,
        "PRICE_RETURN_VALUE": -0.005425,
@@ -2558,6 +3305,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.002916426304242048,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.004169095853732374,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.01470467418012078,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.002916426304242048,
@@ -2583,7 +3353,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0056,
        "PRICE_RETURN_VALUE": 0.021378,
@@ -2595,7 +3365,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0085,
        "PRICE_RETURN_VALUE": -0.088446,
@@ -2607,7 +3377,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0008,
        "PRICE_RETURN_VALUE": -0.384388,
@@ -2619,7 +3389,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": -0.105862,
@@ -2631,7 +3401,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "HIGH_YIELD",
        "trailingYield": 0.0445,
        "PRICE_RETURN_VALUE": 0.164265,
@@ -2685,6 +3455,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.005755985886344517,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.007206667441814973,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.02090680095404973,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.005755985886344517,
@@ -2710,7 +3503,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0056,
        "PRICE_RETURN_VALUE": 0.028686,
@@ -2722,7 +3515,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0085,
        "PRICE_RETURN_VALUE": -0.15152,
@@ -2734,7 +3527,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0008,
        "PRICE_RETURN_VALUE": -0.407232,
@@ -2746,7 +3539,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": -0.271925,
@@ -2758,7 +3551,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "HIGH_YIELD",
        "trailingYield": 0.0445,
        "PRICE_RETURN_VALUE": 0.72169,
@@ -2812,6 +3605,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": 0.006439191179311354,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.006243212958284783,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": 0.021937860645421248,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 0
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": 0.006243212958284783,
@@ -2837,7 +3653,7 @@
      "largestPercentileMoves": [
       {
        "ticker": "AAPL",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0056,
        "PRICE_RETURN_VALUE": 0.150786,
@@ -2849,7 +3665,7 @@
       },
       {
        "ticker": "MSFT",
-       "sector": "Technology",
+       "sector": "I · Services",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0085,
        "PRICE_RETURN_VALUE": -0.017105,
@@ -2861,7 +3677,7 @@
       },
       {
        "ticker": "NVDA",
-       "sector": "Technology",
+       "sector": "D · Manufacturing",
        "segment": "LOW_YIELD",
        "trailingYield": 0.0008,
        "PRICE_RETURN_VALUE": -0.155426,
@@ -2873,7 +3689,7 @@
       },
       {
        "ticker": "JPM",
-       "sector": "Financials",
+       "sector": "H · Finance, Insurance, And Real Estate",
        "segment": "MEDIUM_YIELD",
        "trailingYield": 0.0284,
        "PRICE_RETURN_VALUE": -0.236019,
@@ -2885,7 +3701,7 @@
       },
       {
        "ticker": "XOM",
-       "sector": "Energy",
+       "sector": "D · Manufacturing",
        "segment": "HIGH_YIELD",
        "trailingYield": 0.0445,
        "PRICE_RETURN_VALUE": 0.69767,
@@ -2939,6 +3755,29 @@
       }
      },
      "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 3,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "I · Services": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1,
+       "MOMENTUM_DELTA_MEDIAN": null,
+       "RANK_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": null,
+       "FACTOR_PERCENTILE_DELTA_P95": null
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
       "Technology": {
        "N": 3,
        "MOMENTUM_DELTA_MEDIAN": null,
@@ -2967,6 +3806,11 @@
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
+    "strategyBasis": "NOT_APPLICABLE",
+    "publishedEvidenceAsOf": "2026-09-21",
+    "publishedEvidenceLagDays": 1469,
+    "excludedForLateFundamentals": null,
+    "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
     "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": null,
     "publishedScored": null,
@@ -3006,5 +3850,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 665
+ "runtimeMs": 689
 }

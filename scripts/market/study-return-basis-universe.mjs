@@ -34,6 +34,7 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Series = require(join(ROOT, "quant/engines/return-series.js"));
 const Compare = require(join(ROOT, "quant/engines/return-basis-comparison.js"));
+const Taxonomy = require(join(ROOT, "quant/engines/sic-peer-taxonomy.js"));
 
 function arg(name, fallback) {
   const at = process.argv.indexOf(name);
@@ -94,10 +95,59 @@ function publishedFactors() {
       for (const [name, factor] of Object.entries(entry.factors || {})) {
         scores[name] = factor && factor.state === "AVAILABLE" && finite(factor.score) ? factor.score : null;
       }
-      map.set(entry.securityId, { scores, priceBasis: entry.priceBasis || null });
+      map.set(entry.securityId, {
+        scores,
+        priceBasis: entry.priceBasis || null,
+        sic: entry.peer && Number.isFinite(entry.peer.industry) ? entry.peer.industry : null,
+        /* Wann die Fundamentaldaten hinter den nicht-momentumbasierten
+           Noten oeffentlich waren. Das ist die Groesse, an der sich
+           entscheidet, ob ein Titel an einem Stichtag ueberhaupt
+           bewertbar ist, ohne die Zukunft zu benutzen. */
+        fundamentalsAvailableAt: entry.fundamentalsAvailableAt || null
+      });
     }
   }
   return map;
+}
+
+/* ------------------------------------------------------------- Sektoren
+
+   Die Universumsdatei fuehrt ein Feld `sector`, gefuellt ist es fuer 100
+   von 6.874 Titeln. Ein Sektorbefund daraus waere eine Aussage ueber
+   eineinhalb Prozent des Universums mit der Ueberschrift des ganzen.
+
+   Gebraucht wird also die Klassifikation, die das Produkt ohnehin
+   benutzt: die SIC-Zuordnung aus dem veroeffentlichten Factor Evidence,
+   ueber die auch die Peergruppen der Faktorperzentile laufen. Die
+   Division kommt aus sic-peer-taxonomy.js - keine zweite Taxonomie,
+   dieselbe.
+
+   Daneben die acht Sektoren, die der Auditauftrag namentlich nennt. Die
+   SIC-Bereiche dafuer stehen unten und im Bericht, sie gelten NUR fuer
+   diese Studie und sind keine Produkttaxonomie: das Produkt klassifiziert
+   weiter nach Division. Wer die Tabelle liest, kann jede Zuordnung
+   nachrechnen. */
+const NAMED_SECTORS = [
+  { sector: "Energy", ranges: [[1200, 1399], [2900, 2999], [4600, 4619]] },
+  { sector: "Utilities", ranges: [[4900, 4991]] },
+  { sector: "REITs", ranges: [[6798, 6798]] },
+  { sector: "Financials", ranges: [[6000, 6499], [6700, 6797], [6799, 6799]] },
+  { sector: "Real Estate", ranges: [[6500, 6599]] },
+  { sector: "Health Care", ranges: [[2833, 2836], [3826, 3826], [3841, 3851], [8000, 8099]] },
+  { sector: "Technology", ranges: [[3570, 3579], [3600, 3699], [7370, 7379]] },
+  { sector: "Communication", ranges: [[2700, 2799], [4800, 4899], [7800, 7841]] },
+  { sector: "Materials", ranges: [[1000, 1099], [1400, 1499], [2600, 2699], [2800, 2824], [2840, 2899], [3200, 3399]] },
+  { sector: "Consumer Staples", ranges: [[2000, 2199], [2825, 2832], [5400, 5499], [5912, 5912]] },
+  { sector: "Consumer Discretionary", ranges: [[2200, 2399], [3700, 3799], [5200, 5399], [5500, 5911], [5913, 5999], [7000, 7099], [7900, 7999]] },
+  { sector: "Industrials", ranges: [[1500, 1799], [3400, 3569], [3580, 3599], [3710, 3728], [4000, 4599], [4620, 4799], [8700, 8748]] }
+];
+
+function namedSector(sic) {
+  if (!Number.isFinite(sic)) return "(unclassified)";
+  for (const entry of NAMED_SECTORS) {
+    for (const [min, max] of entry.ranges) if (sic >= min && sic <= max) return entry.sector;
+  }
+  return "(other)";
 }
 
 function strategyProfiles() {
@@ -322,7 +372,13 @@ function main() {
       }
     }
 
-    const sector = security.sector || "(unclassified)";
+    /* Die Klassifikation kommt aus dem veroeffentlichten Evidence, nicht
+       aus dem fast leeren sector-Feld der Universumsdatei. */
+    const evidence = published.get(security.securityId);
+    const sic = evidence && Number.isFinite(evidence.sic) ? evidence.sic : null;
+    const division = Taxonomy.divisionForSic(sic);
+    const sector = division ? division.id + " · " + division.name : "(unclassified)";
+    const namedSectorLabel = namedSector(sic);
 
     for (let ci = 0; ci < cutoffs.length; ci++) {
       const cutoff = cutoffs[ci];
@@ -343,6 +399,8 @@ function main() {
         securityId: security.securityId,
         ticker: security.ticker,
         sector,
+        namedSector: namedSectorLabel,
+        sic,
         segment: yieldSegment(yieldInfo.yield, yieldInfo.events),
         trailingYield: yieldInfo.yield,
         price: priceMomentum,
@@ -372,10 +430,11 @@ function main() {
       /* Segmentierte Schieflage: nach Dividendenrendite (Schritt 6) und
          nach Sektor (Schritt 7). Die Gruppen kommen aus den Zeilen, die
          Engine rechnet nur, was in ihnen passiert. */
-      const bySegment = {}, bySector = {};
+      const bySegment = {}, bySector = {}, byNamedSector = {};
       rows.forEach((row, idx) => {
         (bySegment[row.segment] = bySegment[row.segment] || []).push(idx);
         (bySector[row.sector] = bySector[row.sector] || []).push(idx);
+        (byNamedSector[row.namedSector] = byNamedSector[row.namedSector] || []).push(idx);
       });
 
       const largest = stats.UNIVERSE_N
@@ -417,6 +476,7 @@ function main() {
         },
         DIVIDEND_BIAS: Compare.segmentStatistics(bySegment, a, b),
         SECTOR_BIAS: Compare.segmentStatistics(bySector, a, b),
+        NAMED_SECTOR_BIAS: Compare.segmentStatistics(byNamedSector, a, b),
         largestPercentileMoves: largest
       };
     }
@@ -468,12 +528,43 @@ function main() {
     const simPriceRank = Compare.rankField(simPrice);
     const simTotalRank = Compare.rankField(simTotal);
 
-    /* Die veroeffentlichte Momentumnote gilt fuer EINEN Stichtag. An
-       einem historischen Stichtag gegen sie zu vergleichen hiesse, die
-       Zukunft danebenzulegen - deshalb gibt es Treue und
-       Strategiewirkung nur dort, wo das veroeffentlichte Evidence
-       wirklich gleichzeitig ist. */
-    const contemporaneous = published.asOf !== null && published.asOf === bucket.cutoff.date;
+    /* WELCHE STRATEGIEWIRKUNG AN DIESEM STICHTAG UEBERHAUPT MESSBAR IST
+
+       Die Simulation tauscht nur das Momentum aus; Qualitaet, Wachstum,
+       Wert, Profitabilitaet und Risiko kommen aus dem veroeffentlichten
+       Evidence. Das hat EINEN Stichtag, und er liegt hier nach dem
+       letzten Tag des kanonischen Barstores - der Bestand haengt der
+       taeglichen Aktualisierung nach.
+
+       Drei Faelle, und keiner davon wird stillschweigend genommen:
+
+       - Evidence am oder vor dem Stichtag: sauber.
+       - Evidence danach, aber jede benutzte Fundamentalzahl war am
+         Stichtag schon oeffentlich: messbar, mit benannter Einschraenkung
+         - die Peerperzentile wurden in einem spaeteren Querschnitt
+         gerechnet. Titel, deren Fundamentaldaten erst nach dem Stichtag
+         oeffentlich wurden, fallen raus statt mitgerechnet zu werden.
+       - Sonst: nicht messbar, und dann steht das da statt einer Zahl. */
+    const lagDays = published.asOf
+      ? Math.round((Date.parse(published.asOf + "T00:00:00Z") -
+                    Date.parse(bucket.cutoff.date + "T00:00:00Z")) / 86400000)
+      : null;
+    const evidenceAtOrBefore = published.asOf !== null && published.asOf <= bucket.cutoff.date;
+    /* Nur am juengsten Stichtag. An einem Stichtag von vor drei Jahren
+       waeren auch die Fundamentaldaten von heute die Zukunft, und kein
+       Verfuegbarkeitsdatum rettet das. */
+    const isPrimary = bucket === perCutoff.find((b) => b.rows.length);
+    const fundamentalsUsable = (securityId) => {
+      const entry = published.get(securityId);
+      if (!entry) return false;
+      if (evidenceAtOrBefore) return true;
+      return entry.fundamentalsAvailableAt !== null &&
+             entry.fundamentalsAvailableAt <= bucket.cutoff.date;
+    };
+    const strategyBasis = evidenceAtOrBefore
+      ? "EVIDENCE_AT_OR_BEFORE_CUTOFF"
+      : (isPrimary && published.asOf ? "FUNDAMENTALS_AT_OR_BEFORE_CUTOFF" : "NOT_APPLICABLE");
+    const contemporaneous = strategyBasis !== "NOT_APPLICABLE";
     const publishedScores = rows.map((r) => {
       const entry = published.get(r.securityId);
       return entry && finite(entry.scores.momentum) ? entry.scores.momentum : null;
@@ -493,12 +584,14 @@ function main() {
       note: "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag " +
             (published.asOf || "(unbekannt)") + " vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
     };
+    let excludedForFundamentals = 0;
     for (const profile of (contemporaneous ? profiles : [])) {
       function members(momentumPercentiles) {
         const list = [];
         rows.forEach((row, idx) => {
           const entry = published.get(row.securityId);
           if (!entry) return;
+          if (!fundamentalsUsable(row.securityId)) return;
           let ok = true;
           for (const condition of profile.conditions) {
             const factorName = String(condition.field).split(".").pop();
@@ -516,6 +609,10 @@ function main() {
           if (ok) list.push(idx);
         });
         return list;
+      }
+      if (!excludedForFundamentals) {
+        excludedForFundamentals = rows.filter((row) => published.has(row.securityId) &&
+          !fundamentalsUsable(row.securityId)).length;
       }
       const onPrice = members(simPriceRank.percentiles);
       const onTotal = members(simTotalRank.percentiles);
@@ -543,6 +640,14 @@ function main() {
       simulation: {
         note: "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
         contemporaneousWithPublishedEvidence: contemporaneous,
+        strategyBasis,
+        publishedEvidenceAsOf: published.asOf,
+        publishedEvidenceLagDays: lagDays,
+        excludedForLateFundamentals: contemporaneous ? excludedForFundamentals : null,
+        limitation: strategyBasis === "FUNDAMENTALS_AT_OR_BEFORE_CUTOFF"
+          ? "Die benutzten Fundamentalzahlen waren am Stichtag oeffentlich, ihre Peerperzentile wurden aber in einem " +
+            lagDays + " Tage spaeteren Querschnitt gerechnet. Titel mit spaeter verfuegbaren Fundamentaldaten sind ausgeschlossen."
+          : null,
         SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED: contemporaneous ? round(fidelity, 6) : null,
         SIMULATION_FIDELITY_PRICE_VS_PUBLISHED: contemporaneous ? round(fidelityPrice, 6) : null,
         publishedScored: contemporaneous ? publishedRank.n : null,
@@ -592,7 +697,17 @@ function main() {
         ? { id: BENCHMARK, bars: bench.bars, last: bench.dates[bench.dates.length - 1] }
         : { id: BENCHMARK, state: "SOURCE_MISSING" },
       calendarSource,
-      cutoffOffsets: CUTOFF_OFFSETS
+      cutoffOffsets: CUTOFF_OFFSETS,
+      sectorTaxonomy: {
+        primary: "SIC_DIVISION",
+        source: "quant/data/product/factor-evidence-v1 (peer.industry) via quant/engines/sic-peer-taxonomy.js",
+        why: "Das Feld 'sector' der Universumsdatei ist fuer rund hundert von knapp siebentausend Titeln gefuellt. Die SIC-Zuordnung ist die Klassifikation, ueber die auch die Peerperzentile des Produkts laufen.",
+        namedSectors: {
+          taxonomy: "AUDIT_LOCAL_SIC_RANGES",
+          note: "Gilt nur fuer diese Studie und ist keine Produkttaxonomie. Die Bereiche stehen hier, damit jede Zuordnung nachrechenbar ist.",
+          ranges: NAMED_SECTORS
+        }
+      }
     },
     counters,
     bySource,
@@ -613,6 +728,24 @@ function main() {
        von componentSpecs und priceBasis - aber er gehoert genau hierher,
        weil er dieselbe Frage betrifft. */
     specImplementationFindings: specFindings(),
+    /* Der kanonische Barstore und die taeglich aktualisierten
+       Marktfaktoren stehen nicht auf demselben Tag. Fuer diese Studie
+       ist das eine Einschraenkung mit Namen, kein Nebensatz: sie
+       entscheidet, ob die Strategiewirkung ueberhaupt ohne Future
+       Leakage messbar ist. */
+    dataFreshnessFindings: (() => {
+      const storeLast = results.length ? results[0].cutoffDate : null;
+      if (!storeLast || !published.asOf) return [];
+      if (published.asOf <= storeLast) return [];
+      return [{
+        finding: "CANONICAL_STORE_LAGS_PUBLISHED_EVIDENCE",
+        canonicalStoreLastDate: storeLast,
+        publishedEvidenceAsOf: published.asOf,
+        lagDays: Math.round((Date.parse(published.asOf + "T00:00:00Z") -
+                             Date.parse(storeLast + "T00:00:00Z")) / 86400000),
+        note: "Die wiederhergestellte kanonische Historie endet frueher als der Stichtag des veroeffentlichten Factor Evidence, das aus dem Arbeitsbestand des taeglichen Marktdatenlaufs gebaut wurde. Diese Studie repariert das nicht; sie benennt die Folge fuer ihre eigene Messung."
+      }];
+    })(),
     /* Was die Produktion heute rechnet - gemessen, nicht angenommen.
        Solange das offen war, stand im Vertrag UNKNOWN_UNTIL_MEASURED. */
     publishedBasis: (() => {

@@ -75,7 +75,12 @@ test("jeder Stichtag sieht nur Bars bis zu seinem eigenen Datum", () => {
   assert.deepEqual(dates, sorted, "Stichtage nicht absteigend: " + dates.join(", "));
   const audit = existsSync("quant/data/providers/return-basis-input-audit.json")
     ? JSON.parse(readFileSync("quant/data/providers/return-basis-input-audit.json", "utf8")) : null;
-  if (audit && audit.series.length) {
+  /* Nur wenn beide Artefakte denselben Bestand beschreiben. Ein
+     Eingangsaudit vom kanonischen Store gegen eine Studie aus dem
+     Repository zu halten vergliche zwei verschiedene Korpora - und das
+     Ergebnis waere ein Fehlalarm ueber genau die Sorgfalt, die hier
+     geprueft werden soll. */
+  if (audit && audit.series.length && audit.scope === report.scope) {
     const last = audit.series.map((s) => s.to).sort().pop();
     for (const date of dates) assert.ok(date <= last, `Stichtag ${date} liegt hinter dem Ende der Daten ${last}`);
   }
@@ -183,5 +188,38 @@ test("der Vollstaendigkeitspruefer nennt den Stand des Audits", () => {
   if (report.specImplementationFindings.length) {
     assert.match(output, /MOMENTUM_SPEC_MISMATCH/);
     assert.match(output, /keine stille Korrektur/);
+  }
+});
+
+test("die Strategiewirkung nennt ihre Grundlage und ihre Einschraenkung", () => {
+  /* Der kanonische Barstore und das veroeffentlichte Evidence stehen
+     nicht zwingend auf demselben Tag. Wenn das Evidence spaeter ist,
+     darf die Simulation nur laufen, solange jede benutzte Fundamental-
+     zahl am Stichtag schon oeffentlich war - und dann muss der Rest
+     benannt sein statt mitgerechnet. */
+  const sim = report.cutoffs[0].simulation;
+  assert.ok(["EVIDENCE_AT_OR_BEFORE_CUTOFF", "FUNDAMENTALS_AT_OR_BEFORE_CUTOFF", "NOT_APPLICABLE"]
+    .includes(sim.strategyBasis), "unbekannte Grundlage: " + sim.strategyBasis);
+  if (sim.strategyBasis === "FUNDAMENTALS_AT_OR_BEFORE_CUTOFF") {
+    assert.ok(sim.publishedEvidenceLagDays > 0);
+    assert.ok(sim.limitation, "Einschraenkung nicht benannt");
+    assert.ok(Number.isFinite(sim.excludedForLateFundamentals));
+  }
+  if (sim.strategyBasis === "NOT_APPLICABLE") {
+    assert.equal(report.cutoffs[0].STRATEGY_IMPACT.state, "NOT_APPLICABLE");
+  }
+});
+
+test("ein Abstand zwischen Bestand und Evidence wird benannt, nicht verschwiegen", () => {
+  const findings = report.dataFreshnessFindings || [];
+  for (const f of findings) {
+    assert.equal(f.finding, "CANONICAL_STORE_LAGS_PUBLISHED_EVIDENCE");
+    assert.ok(f.lagDays > 0);
+    assert.ok(f.canonicalStoreLastDate < f.publishedEvidenceAsOf);
+  }
+  /* Und wenn es einen gibt, darf die Strategiewirkung nicht so tun, als
+     gaebe es ihn nicht. */
+  if (findings.length) {
+    assert.notEqual(report.cutoffs[0].simulation.strategyBasis, "EVIDENCE_AT_OR_BEFORE_CUTOFF");
   }
 });
