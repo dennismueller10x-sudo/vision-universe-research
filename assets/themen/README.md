@@ -45,6 +45,6 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 35 | E-Commerce | `35-e-commerce` | ✅ |
 | 36 | Reisen & Tourismus | `36-reisen-tourismus` | ✅ |
 | 37 | Freizeit & Entertainment | `37-freizeit-entertainment` | ✅ |
-| 38 | Medien & Werbung | `38-medien-werbung` | offen |
-| 39 | Streaming & Gaming | `39-streaming-gaming` | offen |
-| 40 | Telekommunikation & Netze | `40-telekommunikation-netze` | offen |
+| 38 | Medien & Werbung | `38-medien-werbung` | ✅ |
+| 39 | Streaming & Gaming | `39-streaming-gaming` | ✅ |
+| 40 | Telekommunikation & Netze | `40-telekommunikation-netze` | ✅ |

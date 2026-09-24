@@ -50,9 +50,9 @@
     [35, 'e-commerce', 'E-Commerce', 'Onlinehandel und Marktplätze', 'Einkaufen ohne Ladenschluss.', 'Ein Klick zum Kunden.', '#e2622f', 'consumer', null, true],
     [36, 'reisen-tourismus', 'Reisen & Tourismus', 'Airlines, Hotels, Kreuzfahrten, Booking', 'Die Lust am Unterwegssein.', 'Die Welt erleben.', '#23a6c9', 'consumer', null, true],
     [37, 'freizeit-entertainment', 'Freizeit & Entertainment', 'Freizeitparks, Sport, Erlebnisse', 'Erlebnisse statt Dinge.', 'Freizeit wird Wert.', '#c44fb0', 'consumer', null, true],
-    [38, 'medien-werbung', 'Medien & Werbung', 'Content, Werbeplattformen, Medien', 'Aufmerksamkeit ist Währung.', 'Reichweite mit Wirkung.', '#8b54d6', 'tech'],
-    [39, 'streaming-gaming', 'Streaming & Gaming', 'Video-, Musik- und Spieleplattformen', 'Unterhaltung auf Abruf.', 'Play. Stream. Wiederholen.', '#a24dde', 'tech'],
-    [40, 'telekommunikation-netze', 'Telekommunikation & Netze', 'Mobilfunk, Glasfaser, Netzwerktechnik', 'Die Adern der Vernetzung.', 'Immer verbunden.', '#2f86c9', 'tech']
+    [38, 'medien-werbung', 'Medien & Werbung', 'Content, Werbeplattformen, Medien', 'Aufmerksamkeit ist Währung.', 'Reichweite mit Wirkung.', '#8b54d6', 'tech', null, true],
+    [39, 'streaming-gaming', 'Streaming & Gaming', 'Video-, Musik- und Spieleplattformen', 'Unterhaltung auf Abruf.', 'Play. Stream. Wiederholen.', '#a24dde', 'tech', null, true],
+    [40, 'telekommunikation-netze', 'Telekommunikation & Netze', 'Mobilfunk, Glasfaser, Netzwerktechnik', 'Die Adern der Vernetzung.', 'Immer verbunden.', '#2f86c9', 'tech', null, true]
   ];
   var themes = list.map(function (t) {
     var file = String(t[0]).padStart(2, '0') + '-' + t[1];
