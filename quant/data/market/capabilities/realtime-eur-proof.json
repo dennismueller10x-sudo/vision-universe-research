@@ -1,13 +1,13 @@
 {
   "schema": "vu-realtime-eur-proof-1.0.0",
-  "generatedAtUtc": "2026-09-24T21:22:58.925Z",
-  "finishedAtUtc": "2026-09-24T21:22:58.999Z",
-  "verdict": "MARKET_CLOSED_NOT_PROVEN",
-  "verdictMeaning": "Der Nachweis konnte nicht gefuehrt werden - geschlossener Markt, fehlender Zugang oder fehlender FX-Bestand. Kein Mock als Ersatz (O-8).",
+  "generatedAtUtc": "2026-09-25T19:03:35.499Z",
+  "finishedAtUtc": "2026-09-25T19:04:05.754Z",
+  "verdict": "PASS",
+  "verdictMeaning": "Realtime-EUR am offenen Markt nachgewiesen: Tick bewegt sich, EUR folgt, Schalter wirkt, ein FX-Stand fuer alle Ticks.",
   "session": {
-    "open": false,
-    "localTime": "17:22",
-    "weekday": "Thu",
+    "open": true,
+    "localTime": "15:03",
+    "weekday": "Fri",
     "source": "America/New_York"
   },
   "fxStore": {
@@ -24,9 +24,121 @@
     {
       "id": "RT-0",
       "title": "US-Sitzung offen",
-      "state": "NOT_PROVEN",
-      "detail": "Die regulaere Sitzung laeuft 09:30-16:00 Ortszeit New York; es ist 17:22 (Thu). Kein Mock als Ersatz (O-8).",
+      "state": "PASS",
+      "detail": "Ortszeit New York 15:03 (Fri).",
       "rows": null
+    },
+    {
+      "id": "RT-1",
+      "title": "Aktien-Tick aktualisiert sich",
+      "state": "PASS",
+      "detail": "3 von 3 Titeln haben sich in 30 s bewegt.",
+      "rows": null
+    },
+    {
+      "id": "RT-2",
+      "title": "EUR-Anzeigepreis aktualisiert sich",
+      "state": "PASS",
+      "detail": "3 EUR-Preise sind dem Tick gefolgt.",
+      "rows": null
+    },
+    {
+      "id": "RT-3",
+      "title": "USD-Anzeigepreis bleibt der native Wert",
+      "state": "PASS",
+      "detail": "Im USD-Modus steht der Kurs unveraendert.",
+      "rows": null
+    },
+    {
+      "id": "RT-4",
+      "title": "EUR|USD-Umschalter wirkt auf den Wert",
+      "state": "PASS",
+      "detail": "EUR- und USD-Anzeige unterscheiden sich; der Schalter tauscht nicht nur das Symbol.",
+      "rows": null
+    },
+    {
+      "id": "RT-5",
+      "title": "Kein FX-Abruf je Aktien-Tick",
+      "state": "PASS",
+      "detail": "6 Ticks, 1 FX-Abruf(e) (6 Ticks je Abruf).",
+      "rows": null
+    },
+    {
+      "id": "RT-6",
+      "title": "FX-Freshness ist maschinenlesbar",
+      "state": "PASS",
+      "detail": "Zustaende: CURRENT; Frequenz: INTRADAY.",
+      "rows": null
+    },
+    {
+      "id": "RT-7",
+      "title": "Anbieterausfall erzeugt keinen falschen Realtime-Anspruch",
+      "state": "PASS",
+      "detail": "Ohne Kurs: keine EUR-Anzeige, kein Realtime-Anspruch, Zustand UNAVAILABLE.",
+      "rows": [
+        {
+          "display": null,
+          "claim": false,
+          "freshness": "UNAVAILABLE",
+          "outage": "DEGRADED"
+        }
+      ]
+    },
+    {
+      "id": "RT-DATA",
+      "title": "Messwerte",
+      "state": "INFO",
+      "detail": null,
+      "rows": [
+        {
+          "ticker": "AAPL",
+          "usdErst": 340.32,
+          "usdZweit": 340.36,
+          "usdBewegt": true,
+          "eurErst": 298.5892,
+          "eurZweit": 298.6243,
+          "eurBewegt": true,
+          "usdAnzeige": 340.36,
+          "eurAnzeige": 298.6243,
+          "fxFrequenz": "INTRADAY",
+          "fxFrische": "CURRENT",
+          "fxAsOf": "2026-09-25T19:03:34.335000+00:00",
+          "realtimeAnspruch": true,
+          "ausfall": "OK"
+        },
+        {
+          "ticker": "NVDA",
+          "usdErst": 224.02,
+          "usdZweit": 224.05,
+          "usdBewegt": true,
+          "eurErst": 196.5502,
+          "eurZweit": 196.5765,
+          "eurBewegt": true,
+          "usdAnzeige": 224.05,
+          "eurAnzeige": 196.5765,
+          "fxFrequenz": "INTRADAY",
+          "fxFrische": "CURRENT",
+          "fxAsOf": "2026-09-25T19:03:34.335000+00:00",
+          "realtimeAnspruch": true,
+          "ausfall": "OK"
+        },
+        {
+          "ticker": "MSFT",
+          "usdErst": 516.78,
+          "usdZweit": 516.565,
+          "usdBewegt": true,
+          "eurErst": 453.4112,
+          "eurZweit": 453.2226,
+          "eurBewegt": true,
+          "usdAnzeige": 516.565,
+          "eurAnzeige": 453.2226,
+          "fxFrequenz": "INTRADAY",
+          "fxFrische": "CURRENT",
+          "fxAsOf": "2026-09-25T19:03:34.335000+00:00",
+          "realtimeAnspruch": true,
+          "ausfall": "OK"
+        }
+      ]
     }
   ]
 }
