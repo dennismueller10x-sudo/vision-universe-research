@@ -52,7 +52,12 @@ const args = new Set(process.argv.slice(2));
 const DRY_RUN = args.has("--dry-run");
 const PUBLISH = args.has("--publish");
 const NO_WS = args.has("--no-ws");
-const OUT = PUBLISH
+/* --trackers: nur die Index-Tracker (Owner-Entscheidung 2026-09-25,
+   Tiingo-first): eigener Bericht, die Faehigkeitsmessung bleibt unberuehrt. */
+const TRACKERS = args.has("--trackers");
+const OUT = TRACKERS
+  ? resolve(root, PUBLISH ? "quant/data/market/capabilities" : ".market-cache/multi-asset", "tiingo-tracker-probe.json")
+  : PUBLISH
   ? resolve(root, "quant", "data", "market", "capabilities", "multi-asset-probe.json")
   : resolve(root, ".market-cache", "multi-asset", "multi-asset-probe.json");
 
@@ -663,7 +668,102 @@ function tiingoMatrix() {
 }
 
 /* --------------------------------------------------------------------- */
+/* Index-Tracker (ETF) ueber den bestehenden Tiingo-Zugang                 */
+/* --------------------------------------------------------------------- */
+
+/* Kandidaten mit dem Index, den sie abbilden sollen. Die Identitaet wird
+   NICHT aus dem Kuerzel geschlossen: Name und Beschreibung bei Tiingo
+   muessen den Index nennen, sonst ist der Kandidat abgelehnt. Die
+   abgelehnten Beispiele (MSCI statt FTSE/Nikkei) sind Absicht: sie
+   belegen, dass ein naheliegender Ticker nicht der gesuchte Tracker ist. */
+const TRACKER_CANDIDATES = [
+  { ticker: "QQQ", tracks: "NASDAQ_100", re: /Nasdaq[- ]100/i, tier: "REQUIRED" },
+  { ticker: "SPY", tracks: "SP500", re: /S&P 500/i, tier: "REQUIRED" },
+  { ticker: "DIA", tracks: "DOW_JONES_INDUSTRIAL_AVERAGE", re: /Dow Jones Industrial Average/i, tier: "REQUIRED" },
+  { ticker: "IWM", tracks: "RUSSELL_2000", re: /Russell 2000/i, tier: "OPTIONAL" },
+  { ticker: "FEZ", tracks: "EURO_STOXX_50", re: /EURO STOXX 50/i, tier: "OPTIONAL" },
+  { ticker: "DAX", tracks: "DAX", re: /\bDAX\b/, tier: "OPTIONAL" },
+  { ticker: "EWU", tracks: "FTSE_100", re: /FTSE 100/i, tier: "OPTIONAL" },
+  { ticker: "FLGB", tracks: "FTSE_100", re: /FTSE 100/i, tier: "OPTIONAL" },
+  { ticker: "EWJ", tracks: "NIKKEI_225", re: /Nikkei/i, tier: "OPTIONAL" },
+  { ticker: "EEM", tracks: "MSCI_EMERGING_MARKETS", re: /MSCI Emerging Markets/i, tier: "OPTIONAL" },
+  { ticker: "URTH", tracks: "MSCI_WORLD", re: /MSCI World/i, tier: "OPTIONAL" },
+  { ticker: "VGK", tracks: "FTSE_DEVELOPED_EUROPE", re: /FTSE Developed Europe/i, tier: "OPTIONAL" }
+];
+
+/* Groessenordnung statt Wert: das Handelsvolumen ist Marktdatum. */
+function volumeBucket(v) {
+  if (!(v > 0)) return "NONE";
+  return v >= 1e7 ? ">=10M" : v >= 1e6 ? "1M-10M" : v >= 1e5 ? "100k-1M" : "<100k";
+}
+function excerptAround(text, re, len = 220) {
+  const s = String(text || "").replace(/\s+/g, " ");
+  const m = re.exec(s);
+  if (!m) return null;
+  const start = Math.max(0, m.index - 70);
+  return s.slice(start, start + len);
+}
+
+async function probeTiingoTrackers() {
+  const out = {};
+  for (const c of TRACKER_CANDIDATES) {
+    const t = c.ticker.toLowerCase();
+    const meta = await tiingo(`/tiingo/daily/${t}`);
+    const m = meta.json && !Array.isArray(meta.json) ? meta.json : {};
+    const nameHit = c.re.test(String(m.name || ""));
+    const descHit = c.re.test(String(m.description || ""));
+    const daily = await tiingo(`/tiingo/daily/${t}/prices?startDate=1990-01-01&format=json`);
+    const rows = Array.isArray(daily.json) ? daily.json : [];
+    const splits = rows.filter((r) => Number(r.splitFactor) && Number(r.splitFactor) !== 1).map((r) => String(r.date).slice(0, 10));
+    const dist2y = rows.filter((r) => Number(r.divCash) > 0 && String(r.date) >= isoDaysAgo(730)).length;
+    const last60 = rows.slice(-60);
+    const avgVol = last60.length ? last60.reduce((a, r) => a + (Number(r.volume) || 0), 0) / last60.length : 0;
+    const quote = await tiingo(`/iex/${t}`);
+    const q = Array.isArray(quote.json) ? quote.json[0] : null;
+    const intr = await tiingo(`/iex/${t}/prices?startDate=${isoDaysAgo(4)}&resampleFreq=5min&format=json`);
+    const bars = Array.isArray(intr.json) ? intr.json : [];
+    const identity = nameHit || descHit;
+    out[c.ticker] = {
+      tracksIndex: c.tracks, tier: c.tier,
+      metadata: { ...shape(meta), name: m.name ? String(m.name).slice(0, 90) : null, exchangeCode: m.exchangeCode || null,
+                  startDate: m.startDate || null, endDate: m.endDate || null,
+                  indexNamedIn: nameHit ? "NAME" : descHit ? "DESCRIPTION" : null,
+                  descriptionExcerpt: excerptAround(m.description, c.re) || (m.description ? String(m.description).slice(0, 160) : null) },
+      daily: { ...shape(daily), ...coverage(rows.map((r) => String(r.date).slice(0, 10))),
+               splitsDates: splits.slice(-5), splitsCount: splits.length, distributionsLast2y: dist2y,
+               fields: rows[0] ? Object.keys(rows[0]) : [], avgVolume60dBucket: volumeBucket(avgVol) },
+      iexQuote: { ...shape(quote), timestamp: q ? q.timestamp || null : null, lastSaleTimestamp: q ? q.lastSaleTimeStamp || null : null,
+                  hasLast: !!(q && q.last !== null && q.last !== undefined), hasPrevClose: !!(q && q.prevClose), hasTngoLast: !!(q && q.tngoLast) },
+      intraday5min: { ...shape(intr), bars: bars.length, firstBar: bars[0] ? bars[0].date : null, lastBar: bars.length ? bars[bars.length - 1].date : null },
+      verdict: !meta.ok ? "NOT_AVAILABLE" : !identity ? "REJECTED_IDENTITY" : !rows.length ? "REJECTED_NO_HISTORY" : "IDENTITY_PROVEN"
+    };
+  }
+  return out;
+}
+
+async function trackersMain() {
+  const tr = { schemaVersion: "1.0.0", generatedAtUtc: new Date().toISOString(),
+    purpose: "Owner-Entscheidung 2026-09-25 (Tiingo-first): Index-Tracker ueber den bestehenden Tiingo-Zugang. Keine Werte - nur Identitaet, Abdeckung, Faehigkeiten.",
+    valuesIncluded: false, measured: !!KEY, trackers: {}, websocket: null, requests };
+  if (KEY && !DRY_RUN) {
+    tr.trackers = await probeTiingoTrackers();
+    if (!NO_WS) tr.websocket = await probeTiingoWebsocket("iex", ["qqq", "spy", "dia"], 25);
+    tr.rateLimitHeaders = rateLimitHeaders;
+  }
+  mkdirSync(dirname(OUT), { recursive: true });
+  writeFileSync(OUT, JSON.stringify(redact(tr), null, 2) + "\n");
+  console.log(`Tracker-Sondierung: ${OUT.replace(root + "/", "")} (Tiingo-Anfragen ${requests.tiingo})`);
+  for (const [k, v] of Object.entries(tr.trackers)) {
+    console.log(`${k.padEnd(5)} ${v.verdict.padEnd(18)} ${String(v.metadata.name).padEnd(45)} ${v.metadata.exchangeCode} ` +
+                `${v.daily.firstDate}..${v.daily.lastDate} (${v.daily.observations}) splits=${v.daily.splitsCount} vol=${v.daily.avgVolume60dBucket} ` +
+                `iex=${v.iexQuote.httpStatus} 5min=${v.intraday5min.bars}`);
+  }
+  if (tr.websocket) console.log("WebSocket IEX:", JSON.stringify(tr.websocket));
+}
+
+/* --------------------------------------------------------------------- */
 async function main() {
+  if (TRACKERS) return trackersMain();
   if (DRY_RUN) {
     report.note = "Trockenlauf: keine Anfrage gestellt. Alle Befunde UNKNOWN.";
   } else {

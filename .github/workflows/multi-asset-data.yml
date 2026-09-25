@@ -37,6 +37,10 @@ on:
         description: 'Daten holen und veroeffentlichen'
         type: boolean
         default: true
+      run_tracker_probe:
+        description: 'Index-Tracker ueber Tiingo messen (QQQ, SPY, DIA u. a., ~50 Anfragen)'
+        type: boolean
+        default: false
       run_free_probe:
         description: 'Free Data Source Discovery messen (offizielle Quellen + FMP/Finnhub-Abdeckung, ~220 Anfragen)'
         type: boolean
@@ -119,6 +123,7 @@ jobs:
       ingest: ${{ steps.read.outputs.ingest }}
       index_probe: ${{ steps.read.outputs.index_probe }}
       free_probe: ${{ steps.read.outputs.free_probe }}
+      tracker_probe: ${{ steps.read.outputs.tracker_probe }}
     steps:
       - name: Marker aus der Betreffzeile lesen
         id: read
@@ -129,13 +134,15 @@ jobs:
           IN_INGEST: ${{ inputs.run_ingest }}
           IN_INDEX: ${{ inputs.run_index_probe }}
           IN_FREE: ${{ inputs.run_free_probe }}
+          IN_TRACKER: ${{ inputs.run_tracker_probe }}
         run: |
-          probe=false; ingest=false; index_probe=false; free_probe=false
+          probe=false; ingest=false; index_probe=false; free_probe=false; tracker_probe=false
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             [ "$IN_PROBE" = "true" ] && probe=true
             [ "$IN_INGEST" = "true" ] && ingest=true
             [ "$IN_INDEX" = "true" ] && index_probe=true
             [ "$IN_FREE" = "true" ] && free_probe=true
+            [ "$IN_TRACKER" = "true" ] && tracker_probe=true
           elif [ "$EVENT_NAME" = "schedule" ]; then
             ingest=true
           elif [ "$EVENT_NAME" = "push" ]; then
@@ -145,11 +152,13 @@ jobs:
             case "$subject" in *"[ma-ingest]"*) ingest=true ;; esac
             case "$subject" in *"[ma-index-probe]"*) index_probe=true ;; esac
             case "$subject" in *"[ma-free-probe]"*) free_probe=true ;; esac
+            case "$subject" in *"[ma-tracker-probe]"*) tracker_probe=true ;; esac
           fi
           echo "probe=$probe"   >> "$GITHUB_OUTPUT"
           echo "ingest=$ingest" >> "$GITHUB_OUTPUT"
           echo "index_probe=$index_probe" >> "$GITHUB_OUTPUT"
           echo "free_probe=$free_probe" >> "$GITHUB_OUTPUT"
+          echo "tracker_probe=$tracker_probe" >> "$GITHUB_OUTPUT"
           echo "probe=$probe ingest=$ingest index_probe=$index_probe free_probe=$free_probe"
 
   measure:
@@ -257,6 +266,48 @@ jobs:
   # Quellen je Capability plus die Abdeckung der vorhandenen FMP-/Finnhub-
   # Zugaenge als Vergleich. Nur Form, Abdeckung und Nutzungsbedingungen -
   # keine Werte, keine Schluessel.
+  # INDEX-TRACKER (Owner-Entscheidung 2026-09-25, Tiingo-first): Identitaet,
+  # Historie, Intraday, WebSocket der ETF-Tracker ueber den bestehenden
+  # Tiingo-Zugang. Keine Werte im Bericht.
+  measure-trackers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [contract, marker]
+    if: needs.marker.outputs.tracker_probe == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tracker messen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/probe-multi-asset.mjs --trackers --publish
+      - name: Der Bericht enthaelt keinen Schluessel und keine Werte
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const raw = fs.readFileSync("quant/data/market/capabilities/tiingo-tracker-probe.json", "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
+            if (/[?&]token=/i.test(raw)) { console.error("ABBRUCH: Token-URL im Bericht."); process.exit(1); }
+            const verboten = ["close","open","high","low","value","price","last","prevclose","tngolast","volume","adjclose","divcash","mid","bidprice","askprice"];
+            const treffer = [];
+            (function walk(v, p) { if (!v || typeof v !== "object") return;
+              for (const k of Object.keys(v)) { if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k); walk(v[k], p + "." + k); } })(JSON.parse(raw), "report");
+            if (treffer.length) { console.error("ABBRUCH: Wertfelder: " + treffer.join(", ")); process.exit(1); }
+            console.log("Bericht sauber.");
+          '
+      - name: Bericht in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Index-Tracker gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/tiingo-tracker-probe.json
+
   measure-free-sources:
     runs-on: ubuntu-latest
     timeout-minutes: 30
