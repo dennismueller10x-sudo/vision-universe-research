@@ -55,6 +55,13 @@ jobs:
           set -o pipefail
           node scripts/discover/browser-qa-live.mjs '${{ inputs.site }}' smoke-shots/live | tee smoke-qalive.txt
 
+      - name: Browser-QA Maerkte (Gruppen, Tracker-Kennzeichnung, Einheiten, 24/7, bp)
+        id: qamaerkte
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte | tee smoke-qamaerkte.txt
+
       - name: Screenshots und Protokolle
         if: always()
         uses: actions/upload-artifact@v4
@@ -75,13 +82,14 @@ jobs:
             echo "| Freshness (streng) | ${{ steps.freshness.outcome }} |"
             echo "| Browser-QA Discover | ${{ steps.qa.outcome }} |"
             echo "| Browser-QA Live | ${{ steps.qalive.outcome }} |"
-            for f in smoke-freshness.txt smoke-qa.txt smoke-qalive.txt; do
+            echo "| Browser-QA Maerkte | ${{ steps.qamaerkte.outcome }} |"
+            for f in smoke-freshness.txt smoke-qa.txt smoke-qalive.txt smoke-qamaerkte.txt; do
               echo ''; echo "#### $f"; echo '```'; tail -40 "$f" 2>/dev/null || echo "kein Ergebnis"; echo '```'
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Ergebnis
-        if: steps.freshness.outcome == 'failure' || steps.qa.outcome == 'failure' || steps.qalive.outcome == 'failure'
+        if: steps.freshness.outcome == 'failure' || steps.qa.outcome == 'failure' || steps.qalive.outcome == 'failure' || steps.qamaerkte.outcome == 'failure'
         run: |
           echo "::error::Live-Rauchtest nicht bestanden (siehe Zusammenfassung)."
           exit 1
