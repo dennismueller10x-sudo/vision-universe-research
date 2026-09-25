@@ -1,12 +1,12 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-25T00:16:10.556Z",
+  "checkedAt": "2026-09-25T01:27:47.449Z",
   "target": "repository",
   "market": {
     "state": "CLOSED",
     "localDate": "2026-09-24",
-    "localTime": "20:16:10",
+    "localTime": "21:27:47",
     "lastCompletedSession": "2026-09-24",
     "currentSession": "2026-09-24",
     "expectedIntradaySession": "2026-09-24"
@@ -76,7 +76,7 @@
   },
   "daily": {
     "universeAsOf": "2026-09-24",
-    "generatedAt": "2026-09-25T00:16:04.819Z",
+    "generatedAt": "2026-09-25T01:27:41.527Z",
     "state": "LAST_SESSION",
     "reason": "lastCompletedSession",
     "label": "Schluss Heute",
@@ -85,24 +85,21 @@
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 39,
-        "STALE": 1,
+        "LAST_SESSION": 40,
+        "STALE": 0,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 39,
-        "olderThanLastSession": 1
+        "lastCompletedSession": 40
       },
-      "staleSample": [
-        "ARCO"
-      ],
+      "staleSample": [],
       "seriesIndexCount": 6462
     }
   },
   "overall": "STALE",
   "findings": [
     "Intraday STALE: Datenstand 2026-09-22, erwartet 2026-09-24 (olderThanLastSession)",
-    "Universumslauf fehlt: Sitzung 2026-09-24 liegt nur fuer den Discover-Umfang vor (4.3 h nach Schluss)"
+    "Universumslauf fehlt: Sitzung 2026-09-24 liegt nur fuer den Discover-Umfang vor (5.5 h nach Schluss)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }

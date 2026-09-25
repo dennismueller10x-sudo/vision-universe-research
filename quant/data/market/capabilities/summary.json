@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-25T00:16:08.757Z",
+  "generatedAt": "2026-09-25T01:27:45.547Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6875
   },
   "sources": {
-    "ingestStatus": "2026-09-25T00:13:29.540Z",
-    "factors": "2026-09-25T00:13:49.196Z",
+    "ingestStatus": "2026-09-25T01:24:39.567Z",
+    "factors": "2026-09-25T01:24:59.140Z",
     "intradaySession": "2026-09-22",
-    "discover": "2026-09-25T00:16:04.819Z"
+    "discover": "2026-09-25T01:27:41.527Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -24,7 +24,7 @@
     "historicalAvailable": 5627,
     "historicalQualityAccepted": 6509,
     "intradayAvailable": 508,
-    "liveCapable": 346,
+    "liveCapable": 415,
     "factorEligible": 6328,
     "fundamentals": 5378,
     "fundamentals10y": 2261,
@@ -45,10 +45,10 @@
     "NO_FACTOR_ROW:SOURCE_MISSING": 368,
     "QUALITY_REJECTED:adjustment_status_contradicted": 363,
     "NO_FACTOR_ROW:FAIL": 168,
-    "NOT_IN_LIVE_SCOPE": 162,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 138,
     "INACTIVE": 120,
     "NOT_TRADING:STALE_SERIES": 95,
+    "NOT_IN_LIVE_SCOPE": 93,
     "NO_COMPACT_SERIES": 49,
     "NAME_MISSING": 20,
     "NO_IEX_BARS": 18,
@@ -160,7 +160,7 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -170,9 +170,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE"
-      ]
+      "gaps": []
     },
     {
       "name": "Meta",
@@ -250,7 +248,7 @@
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
         "HAS_INTRADAY": true,
-        "HAS_LIVE": false,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -260,9 +258,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NOT_IN_LIVE_SCOPE"
-      ]
+      "gaps": []
     },
     {
       "name": "Broadcom",
