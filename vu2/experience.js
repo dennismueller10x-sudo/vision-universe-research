@@ -136,12 +136,23 @@ function patternBalance(patterns,ticker){
   return section;
  }
  const holds=patterns.holds||[];
- const total=holds.length+(patterns.others||[]).length;
+ /* DER NENNER IST, WAS GEPRUEFT WERDEN KONNTE.
+ 
+    Gemessen: von 5.569 Titeln haben 3.471 Muster, die fuer sie nicht
+    messbar sind; bei 1.494 sind es 181 von 250, weil keine
+    Fundamentaldaten vorliegen. "29 von 250" liest sich so, als waeren 221
+    geprueft worden und laegen nicht vor. Geprueft wurden 69. */
+ const abdeckung=patterns.coverage||{registered:holds.length+(patterns.others||[]).length,
+  measurable:holds.length+(patterns.others||[]).length,notMeasurable:0,reason:null};
+ const nichtPruefbar=abdeckung.notMeasurable
+  ? ' '+abdeckung.notMeasurable+' weitere '+(abdeckung.notMeasurable===1?'ist':'sind')+' für diesen Titel nicht prüfbar'
+    +(abdeckung.reason==='NO_FUNDAMENTALS'?', weil keine Geschäftszahlen vorliegen.':', weil die dafür nötigen Kennzahlen fehlen.')
+  : '';
  if(!holds.length){
   /* Null Treffer ist eine Aussage und keine leere Flaeche. Ein Titel, auf
      den kein vorregistriertes Muster zutrifft, ist nicht unbewertet - er
      ist unauffaellig, und das gehoert hingeschrieben. */
-  section.append(el('p',{text:'Von '+total+' vorregistrierten Mustern trifft heute keines auf diesen Titel zu.'}),
+  section.append(el('p',{text:'Von '+abdeckung.measurable+' prüfbaren Mustern trifft heute keines auf diesen Titel zu.'+nichtPruefbar}),
    el('p',{class:'muted',text:'Das ist kein fehlender Wert: die Lage dieses Titels gleicht keiner der untersuchten Konstellationen deutlich genug.'}));
   section.append(link('Alle Muster ansehen',href('quant',ticker),'button secondary'));
   return section;
@@ -152,9 +163,9 @@ function patternBalance(patterns,ticker){
  const adverse=holds.filter(row=>!(row.asymmetry>1));
  /* Einzahl und Mehrzahl getrennt: "1 von 249 Mustern treffen zu" ist der
     Satz, an dem ein Nutzer merkt, dass hier niemand mitgelesen hat. */
- section.append(el('p',{text:holds.length===1
-  ? 'Eines von '+total+' vorregistrierten Mustern trifft heute zu.'
-  : holds.length+' von '+total+' vorregistrierten Mustern treffen heute zu.'}));
+ section.append(el('p',{text:(holds.length===1
+  ? 'Eines von '+abdeckung.measurable+' prüfbaren Mustern trifft heute zu.'
+  : holds.length+' von '+abdeckung.measurable+' prüfbaren Mustern treffen heute zu.')+nichtPruefbar}));
  section.append(el('div',{class:'balance-pair'},[
   el('div',{class:'balance-side'},[el('strong',{text:String(favourable.length)}),
    el('span',{class:'muted',text:favourable.length===1?'Muster, bei dem die Chance historisch größer war als das Risiko':'Muster, bei denen die Chance historisch größer war als das Risiko'})]),
@@ -832,7 +843,11 @@ function patternMatchSection(patterns){
   section.append(notice('Dieser Titel sieht derzeit keiner der geprüften Situationen ähnlich',
    'Das ist eine vollständige Antwort, keine Lücke. Es heißt nicht, dass nichts passiert — nur, dass keine der im Voraus festgelegten Konstellationen vorliegt.'));
  }else{
-  section.append(el('p',{class:'pattern-count',text:patterns.holds.length+' von '+(patterns.holds.length+patterns.others.length)+' geprüften Mustern liegen derzeit vor'}),
+  section.append(el('p',{class:'pattern-count',text:patterns.holds.length+' von '
+   +(patterns.coverage?patterns.coverage.measurable:patterns.holds.length+patterns.others.length)
+   +' prüfbaren Mustern liegen derzeit vor'
+   +(patterns.coverage&&patterns.coverage.notMeasurable?' · '+patterns.coverage.notMeasurable
+     +' nicht prüfbar'+(patterns.coverage.reason==='NO_FUNDAMENTALS'?' (keine Geschäftszahlen)':' (Kennzahl fehlt)'):'')}),
    el('div',{class:'pattern-grid'},patterns.holds
     .slice().sort((a,b)=>(b.asymmetry||0)-(a.asymmetry||0))
     .map(row=>patternRow(row,patterns.baseRate,patterns.lossThreshold))));

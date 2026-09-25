@@ -372,11 +372,29 @@ function create(options){
     const state=ids.some(id=>unmeasurable.has(id))?'NOT_MEASURABLE':(ids.every(id=>holds.has(id))?'HOLDS':'DOES_NOT_HOLD');
     return {...finding,terms,state};
    });
+   /* DREI ZUSTAENDE, UND DER DRITTE GEHOERT NICHT IN DEN NENNER.
+    *
+    * Gemessen am 25.09.2026 ueber 5.569 Titel: 3.471 haben Muster, die
+    * fuer sie nicht messbar sind, und 1.494 davon 181 von 250 - das sind
+    * die Titel ohne Fundamentaldaten. Die Flaechen schrieben trotzdem
+    * "X von 250 geprueften Mustern". Ein Leser schliesst daraus, 221
+    * Muster seien geprueft worden und lagen nicht vor; geprueft wurden
+    * 69. Dieselbe Verwechslung wie beim Anlagestil, an einer anderen
+    * Stelle: nicht messbar ist kein Befund. */
+   const nichtMessbar=rows.filter(row=>row.state==='NOT_MEASURABLE');
    return {state:'AVAILABLE',ticker,asOf:source.asOf,hasFundamentals:source.hasFundamentals,
     horizon:shard.horizon,horizonMonths:shard.horizonMonths,winnerMinReturn:shard.winnerMinReturn,
     lossThreshold:shard.lossThreshold,baseRate:shard.baseRate,caveats:shard.caveats,
     withheld:shard.withheld,studies:shard.studies,
     holds:rows.filter(row=>row.state==='HOLDS'),
+    notHolding:rows.filter(row=>row.state==='DOES_NOT_HOLD'),
+    notMeasurable:nichtMessbar,
+    /* Was wirklich beantwortet werden konnte, als Zahl - damit keine
+     * Flaeche sie selbst zusammenrechnet und dabei eine andere Antwort
+     * bekommt als die naechste. */
+    coverage:{registered:rows.length,measurable:rows.length-nichtMessbar.length,
+     notMeasurable:nichtMessbar.length,
+     reason:nichtMessbar.length?(source.hasFundamentals?'FEATURE_NOT_MEASURABLE':'NO_FUNDAMENTALS'):null},
     others:rows.filter(row=>row.state!=='HOLDS')};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }

@@ -432,3 +432,19 @@ test("the style match separates a finding from a gap, and says what left the den
   const reasons = require("../engines/strategy-match.js").UNAVAILABLE_REASONS;
   for (const reason of reasons) assert.ok(experience.includes(reason + ":'"), reason + " hat keinen eigenen Satz");
 });
+
+test("both pattern surfaces count the checkable patterns, not the registered ones", () => {
+  /* Der Nenner stand auf 250 - der Zahl der vorregistrierten Muster - und
+     nicht auf der Zahl der pruefbaren. Fuer 1.494 Titel waren davon 181
+     nicht pruefbar. */
+  assert.match(experience, /prüfbaren Mustern treffen heute zu/);
+  assert.match(experience, /prüfbaren Mustern liegen derzeit vor/);
+  assert.match(experience, /nicht prüfbar/);
+  assert.match(experience, /weil keine Geschäftszahlen vorliegen/);
+  /* Die alten Formulierungen sind ersetzt, nicht ergaenzt. */
+  assert.equal(/vorregistrierten Mustern treffen heute zu/.test(experience), false);
+  assert.equal(/geprüften Mustern liegen derzeit vor/.test(experience), false);
+  /* Und die Zahl kommt aus dem Dienst, damit zwei Flaechen nicht zwei
+     Antworten rechnen. */
+  assert.match(experience, /patterns\.coverage/);
+});

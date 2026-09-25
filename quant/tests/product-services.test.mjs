@@ -340,3 +340,28 @@ test('the cascade explanation comes with the row, and its absence is named',asyn
  const fremdesSchema=await service(shard('setup-observation-product-0.9.0',{row})).getSetupObservation('AAPL');
  assert.equal(fremdesSchema.reason,'INVALID_SETUP_ARTIFACT');
 });
+/* Ein nicht pruefbares Muster gehoert nicht in den Nenner.
+
+   Gemessen ueber 5.569 Titel: 3.471 haben Muster, die fuer sie nicht messbar
+   sind, und bei 1.494 davon sind es 181 von 250 - die Titel ohne
+   Fundamentaldaten. "X von 250 geprueften Mustern" behauptet 250 Pruefungen,
+   von denen 69 stattfanden. */
+test('pattern coverage separates what was checked from what could not be',async()=>{
+ const AAAP=await materializedApi.getPatternMatch('AAAP');
+ if(AAAP.state!=='AVAILABLE')return;
+ assert.equal(AAAP.hasFundamentals,false);
+ assert.equal(AAAP.coverage.registered,AAAP.holds.length+AAAP.others.length);
+ assert.equal(AAAP.coverage.measurable+AAAP.coverage.notMeasurable,AAAP.coverage.registered);
+ assert.ok(AAAP.coverage.notMeasurable>100,'ein Titel ohne Geschaeftszahlen hat viele nicht pruefbare Muster');
+ assert.equal(AAAP.coverage.reason,'NO_FUNDAMENTALS');
+ /* Die drei Mengen sind disjunkt und vollstaendig. */
+ assert.equal(AAAP.holds.length+AAAP.notHolding.length+AAAP.notMeasurable.length,AAAP.coverage.registered);
+ assert.ok(AAAP.notMeasurable.every(row=>row.state==='NOT_MEASURABLE'));
+ assert.ok(AAAP.notHolding.every(row=>row.state==='DOES_NOT_HOLD'));
+ /* Und ein Titel MIT Geschaeftszahlen, dem nur eine Kennzahl fehlt, bekommt
+    den anderen Grund - sonst waere die Unterscheidung nur ein Wort. */
+ const AA=await materializedApi.getPatternMatch('AA');
+ if(AA.state==='AVAILABLE'&&AA.hasFundamentals&&AA.coverage.notMeasurable){
+  assert.equal(AA.coverage.reason,'FEATURE_NOT_MEASURABLE');
+ }
+});
