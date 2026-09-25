@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-25T11:32:10.088Z",
+  "generatedAt": "2026-09-25T15:47:25.384Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -21,9 +21,9 @@
   },
   "run": {
     "source": "github-actions",
-    "runId": "36123778317",
-    "commit": "d9cb6a9c1bab0b29216cf27aab31021f3bfc6b10",
-    "runtimeMs": 19757,
+    "runId": "36144793708",
+    "commit": "a0f827ac090ae605275c2ce1041b32036b97f253",
+    "runtimeMs": 19021,
     "msPerSymbol": 3
   },
   "redistribution": {
@@ -628,8 +628,8 @@
       "id": "volumeBreakout",
       "label": "Volumen-Ausbruch (Tagesvolumen >= 2x 20-Tage-Mittel)",
       "kind": "boolean",
-      "matched": 362,
-      "notMatched": 5658,
+      "matched": 376,
+      "notMatched": 5644,
       "notEvaluable": 417,
       "evaluatedOf": 6437,
       "tickers": [
@@ -640,6 +640,7 @@
         "ACET",
         "ACLZ",
         "ACMM",
+        "ACRE",
         "ADGM",
         "AFYA",
         "AGIQ",
@@ -681,8 +682,7 @@
         "BETR",
         "BFS-P-D",
         "BFS-P-E",
-        "BGICF",
-        "BHAV"
+        "BGICF"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [

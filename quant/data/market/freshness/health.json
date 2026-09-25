@@ -1,15 +1,15 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-25T11:35:33.478Z",
+  "checkedAt": "2026-09-25T15:50:02.700Z",
   "target": "repository",
   "market": {
-    "state": "PRE_MARKET",
+    "state": "OPEN",
     "localDate": "2026-09-25",
-    "localTime": "07:35:33",
+    "localTime": "11:50:02",
     "lastCompletedSession": "2026-09-24",
     "currentSession": "2026-09-25",
-    "expectedIntradaySession": "2026-09-24"
+    "expectedIntradaySession": "2026-09-25"
   },
   "intraday": {
     "indexGeneratedAt": "2026-09-25T01:07:12.653Z",
@@ -31,35 +31,57 @@
       "finalSlotSnapshots": 4564,
       "universe": true
     },
-    "dataState": "LAST_SESSION",
-    "dataReason": "sessionCompleteNoLateTrades",
-    "dataLabel": "Letzter Handelstag · Donnerstag",
+    "dataState": "STALE",
+    "dataReason": "currentSessionMissing",
+    "dataLabel": "Stand Do., 24.09. · nicht aktuell",
     "entries": 520,
     "byState": {
       "LIVE": 0,
-      "LAST_SESSION": 518,
-      "STALE": 2,
+      "LAST_SESSION": 0,
+      "STALE": 520,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "lastCompletedSession": 512,
-      "lastSessionMissing": 2,
-      "sessionCompleteNoLateTrades": 6
+      "currentSessionMissing": 518,
+      "olderThanLastSession": 2
     },
     "staleSample": [
-      "JFIN",
-      "RFAI"
+      "AAPL",
+      "ABBV",
+      "ABCL",
+      "ABNB",
+      "ABT",
+      "ABX",
+      "ACHV",
+      "ACN",
+      "ACTG",
+      "ADBE",
+      "ADC",
+      "ADI",
+      "ADM",
+      "ADMA",
+      "ADP",
+      "ADPT",
+      "ADSE",
+      "ADSK",
+      "AEP",
+      "AFRM",
+      "AGEN",
+      "AGL",
+      "AII",
+      "AIR",
+      "ALAB"
     ],
     "universeSessions": [
       "2026-09-23",
       "2026-09-24"
     ],
     "universeCoversLastSession": true,
-    "state": "OK"
+    "state": "STALE"
   },
   "daily": {
     "universeAsOf": "2026-09-24",
-    "generatedAt": "2026-09-25T11:35:27.555Z",
+    "generatedAt": "2026-09-25T15:49:56.895Z",
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
@@ -83,7 +105,9 @@
       "seriesIndexCount": 6482
     }
   },
-  "overall": "OK",
-  "findings": [],
+  "overall": "STALE",
+  "findings": [
+    "Intraday STALE: Datenstand 2026-09-24, erwartet 2026-09-25 (currentSessionMissing)"
+  ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
