@@ -1,0 +1,195 @@
+{
+  "schemaVersion": "vu-market-pulse-config-1.0.0",
+  "methodVersion": "market-pulse-1.0.0",
+  "note": "Versionierte Schwellen des deskriptiven Market Pulse. Kein Quant Market Regime (FAIL_CLOSED), kein Macro Regime (NOT_CERTIFIED), kein Gesamtscore. Die Volatilitaets-Schwellen sind Perzentile der eigenen Historie und werden von scripts/market/build-market-pulse.mjs --calibrate reproduziert (quant/data/market/intelligence/market-pulse-calibration.json); ein Test prueft die Uebereinstimmung.",
+  "trackers": {
+    "symbols": [
+      "SPY",
+      "QQQ",
+      "DIA",
+      "IWM"
+    ],
+    "note": "Breite US-Markt-Tracker aus dem Multi-Asset-Core (ETF-Kurse, keine Indexstaende). FEZ/URTH/EEM bilden Nicht-US-Maerkte bzw. Weltmaerkte ab und stehen deshalb nicht im US-Trend."
+  },
+  "trend": {
+    "majority": 3,
+    "minTrackers": 3,
+    "basis": "DEFINITIONAL",
+    "note": "Drei von vier Trackern ueber (bzw. unter) 50- UND 200-Tage-Linie. Die Regel ist definitorisch (Mehrheit), nicht optimiert; ihre historische Haeufigkeit steht in der Kalibrierung."
+  },
+  "risk": {
+    "benchmark": "SPY",
+    "benchmarkLabel": "SPY (S&P-500-Markttracker)",
+    "series": {
+      "path": "quant/data/market/multi-asset/series/SPY.json",
+      "source": "tiingo-equity",
+      "priceSeriesType": "SPLIT_ADJUSTED_CLOSE",
+      "note": "ETF-Anteilspreis ueber den lizenzierten Tiingo-Pfad (split-bereinigt, ohne Ausschuettungen) - kein Indexstand, keine FMP-/FRED-/sonstige S&P-500-Indexreihe."
+    },
+    "vol20": {
+      "calibratedFrom": "1995-02-01",
+      "samples": 7964,
+      "median": 13.9,
+      "elevatedPercentile": 75,
+      "elevated": 19.7,
+      "highPercentile": 90,
+      "high": 26.9,
+      "basis": "CALIBRATED_PERCENTILE"
+    },
+    "drawdown": {
+      "elevated": -10,
+      "high": -20,
+      "basis": "MARKET_CONVENTION",
+      "note": "-10 % Korrektur, -20 % Baerenmarkt: verbreitete Konventionen, keine optimierten Werte."
+    }
+  },
+  "breadth": {
+    "universe": {
+      "label": "US-Aktienuniversum von Vision Universe (Stammaktien, ADR und REIT mit Faktorzeile)",
+      "instrumentTypes": [
+        "EQUITY_COMMON",
+        "ADR",
+        "REIT"
+      ]
+    },
+    "majorityPercent": 50,
+    "basis": "DEFINITIONAL",
+    "calibration": "NOT_CALIBRATED",
+    "calibrationNote": "Es gibt keine Breitenhistorie im Core; eine Rueckrechnung aus heutigen Titeln waere survivorship-verzerrt. Deshalb nur die definitorische Mehrheitsschwelle, keine feineren Stufen."
+  },
+  "crossAsset": {
+    "horizon": 21,
+    "horizonLabel": "einen Monat",
+    "horizonCalendarDays": 30,
+    "windowYears": 10,
+    "notable": 1.0,
+    "basis": "SELF_HISTORY_RATIO",
+    "assets": {
+      "EQUITY": {
+        "symbol": "SPY",
+        "kind": "PERCENT"
+      },
+      "US10Y": {
+        "symbol": "US10Y",
+        "kind": "BP"
+      },
+      "GOLD": {
+        "symbol": "XAUUSD",
+        "kind": "PERCENT"
+      },
+      "OIL": {
+        "symbol": "WTI",
+        "kind": "PERCENT"
+      },
+      "BTC": {
+        "symbol": "BTCUSD",
+        "kind": "PERCENT"
+      },
+      "EURUSD": {
+        "symbol": "EURUSD",
+        "kind": "PERCENT",
+        "path": "quant/data/market/fx/ecb/EURUSD.json"
+      }
+    }
+  },
+  "marketNow": {
+    "max": 5,
+    "min": 3,
+    "maxPerGroup": 2,
+    "notable": 1.0,
+    "strong": 2.0,
+    "maxAgeDays": 3,
+    "basis": "SELF_HISTORY_RATIO",
+    "note": "Verhaeltnis der juengsten Tagesveraenderung zur typischen Tagesveraenderung der letzten ~3 Monate (history.recent im Vertrag). Deutlich ab 1-fach, stark ab 2-fach. Policy-Raten (Stufen) nehmen nicht teil. Beobachtungen aelter als maxAgeDays Kalendertage (plus Toleranz von einem Tag) sind nicht 'jetzt'."
+  },
+  "movers": {
+    "count": 5,
+    "minAvgDollarVolume20d": 20000000,
+    "minPrice": 5,
+    "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
+    "note": "Veraenderung vom letzten Punkt der Vorsitzung zum letzten Punkt der juengsten Sitzung (5-Minuten-Kurse). Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Kein Volumen im Intraday-Pfad - deshalb keine Volumenspitzen."
+  },
+  "sectors": {
+    "state": "NOT_IMPLEMENTED",
+    "reason": "Kein belastbarer Sektor-Vertrag: GICS-nahe Sektoren nur fuer 99 kuratierte Titel, SEC-SIC-Hauptgruppen (5 355 Titel) sind keine Anlegersektoren, keine Marktkapitalisierungen. Die Regel 'wenn Datenqualitaet nicht reicht: nicht implementieren' greift."
+  },
+  "environment": {
+    "version": "market-environment-1.0.0",
+    "basis": "DEFINITIONAL_DECISION_TABLE",
+    "note": "Marktumfeld aus den Dimensionszustaenden, ohne Score und ohne Gewichte. Basisstufe aus TREND und MOMENTUM gemeinsam (Ueberschneidung: beide aus denselben Trackern - deshalb eine Stufe, keine zwei Stimmen). RISK deckelt nach oben, BREADTH bestaetigt (Stufe 4 nur mit aktueller breiter Beteiligung). Fehlende Marktbreite: Deckel UNKNOWN (zaehlt weder dafuer noch dagegen). CROSS_ASSET stimmt nicht mit ab. Stufe = min(Basis + Breitenbonus, Risikodeckel, Breitendeckel). Fehlt TREND, MOMENTUM oder RISK: keine Einordnung.",
+    "levels": [
+      {
+        "id": "DEFENSIVE",
+        "label": "Defensiv",
+        "investor": "Das Marktbild spricht derzeit für erhöhte Vorsicht bei neuen Positionen."
+      },
+      {
+        "id": "CAUTIOUS",
+        "label": "Vorsichtig",
+        "investor": "Gegenwind überwiegt – das Umfeld spricht eher für Zurückhaltung als für zusätzliche Risikobereitschaft."
+      },
+      {
+        "id": "SELECTIVE",
+        "label": "Selektiv",
+        "investor": "Chancen sind vorhanden, das Umfeld unterstützt derzeit aber eher selektive Einstiege als breite Risikobereitschaft."
+      },
+      {
+        "id": "CONSTRUCTIVE",
+        "label": "Konstruktiv",
+        "investor": "Das Umfeld ist konstruktiv, aber noch nicht auf breiter Basis bestätigt."
+      },
+      {
+        "id": "BROADLY_CONSTRUCTIVE",
+        "label": "Breit konstruktiv",
+        "investor": "Das Umfeld ist auf breiter Basis konstruktiv: Trend, Dynamik und Marktbreite ziehen mit, die Schwankungen sind normal."
+      }
+    ],
+    "base": {
+      "POSITIVE|RISING": 3,
+      "POSITIVE|MIXED": 2,
+      "POSITIVE|FALLING": 2,
+      "MIXED|RISING": 2,
+      "MIXED|MIXED": 1,
+      "MIXED|FALLING": 1,
+      "NEGATIVE|RISING": 1,
+      "NEGATIVE|MIXED": 1,
+      "NEGATIVE|FALLING": 0
+    },
+    "broadFrom": 3,
+    "riskCap": {
+      "NORMAL": 4,
+      "ELEVATED": 2,
+      "HIGH": 1
+    },
+    "breadthCap": {
+      "BROAD": 4,
+      "MIXED": 3,
+      "UNKNOWN": 3,
+      "NARROW": 2
+    },
+    "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
+  },
+  "whatMatters": {
+    "max": 4,
+    "near": {
+      "TREND": 3,
+      "MOMENTUM": 3,
+      "RISK": 15
+    },
+    "note": "Nah an der Schwelle: TREND - fehlender Abstand der benoetigten Tracker <= 3 %; MOMENTUM - Median 3M/6M <= 3 % von null; RISK - Abstand zur naechsten Schwelle <= 15 % relativ. Reihenfolge: nahe Dimensionen, fehlende Marktbreite, erste deutliche Cross-Asset-Beobachtung, uebrige einordnungsrelevante Dimensionen."
+  },
+  "history": {
+    "tradingDays": 300,
+    "path": "quant/data/market/intelligence/market-pulse-history.json",
+    "method": "POINT_IN_TIME",
+    "note": "Jeder historische Tag wird nur aus Daten bis zu diesem Tag berechnet: Linien, Renditen und Hochs aus der Reihe bis zum Tag, Volatilitaetsschwellen als Perzentile der Verteilung bis zum Tag (expandierend ab 1995-02-01). Marktbreite ist nicht rekonstruierbar (heutiges Universum waere survivorship-verzerrt) und stammt ausschliesslich aus materialisierten Laeufen ab dem ersten Eintrag im Breitenprotokoll.",
+    "breadthLogMax": 400
+  },
+  "evaluation": {
+    "workflow": ".github/workflows/multi-asset-data.yml",
+    "cron": "20 */3 * * *",
+    "everyHours": 3,
+    "minuteUtc": 20,
+    "note": "Geplanter GitHub-Lauf alle drei Stunden (:20 UTC). Geplante Laeufe koennen sich verzoegern oder ausfallen - die Seite nennt deshalb nur eine ungefaehre naechste Neubewertung."
+  }
+}

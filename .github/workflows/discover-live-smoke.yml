@@ -32,7 +32,7 @@ jobs:
         run: |
           npm init -y > /dev/null
           npm install --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
 
       - name: Freshness der veroeffentlichten Seite (streng)
         id: freshness
@@ -55,12 +55,17 @@ jobs:
           set -o pipefail
           node scripts/discover/browser-qa-live.mjs '${{ inputs.site }}' smoke-shots/live | tee smoke-qalive.txt
 
-      - name: Browser-QA Maerkte (Gruppen, Tracker-Kennzeichnung, Einheiten, 24/7, bp)
+      - name: Browser-QA Maerkte (Uebersicht, Markt jetzt, Pulse, Details; Chromium + WebKit)
         id: qamaerkte
         continue-on-error: true
         run: |
+          # Beide Engines laufen immer - ein roter Chromium-Lauf darf den
+          # WebKit-Befund nicht verdecken. Rot, wenn eine der beiden rot ist.
           set -o pipefail
-          node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte | tee smoke-qamaerkte.txt
+          chromium=0; webkit=0
+          node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte | tee smoke-qamaerkte.txt || chromium=$?
+          node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt || webkit=$?
+          test "$chromium" -eq 0 && test "$webkit" -eq 0
 
       - name: Screenshots und Protokolle
         if: always()

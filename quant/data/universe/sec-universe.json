@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-09-23T14:15:11.976Z",
+  "generated_at_utc": "2026-09-25T12:00:38.309Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5479,
     "companies": 5480,
     "validationSet": 5,
-    "withDeliveredStockPage": 5032,
+    "withDeliveredStockPage": 5030,
     "excluded": {
       "noCik": 1348,
       "notUs": 0,
@@ -42710,17 +42710,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "QVCG",
-      "name": "QVC Group, Inc.",
-      "cik": "0001254699",
-      "instrumentId": "vu_2e45502a815d1a",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "QXL",
       "name": "Quantum X Labs Inc.",
       "cik": "0000797542",
@@ -55357,21 +55346,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "WLCO",
-      "name": "Wilco 63 Corp",
-      "cik": "0002101470",
-      "instrumentId": "vu_75f50a66ab47b4",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "alsoTickers": [
-        "WLCOU",
-        "WLCOW"
-      ],
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "WLDN",
       "name": "Willdan Group, Inc.",
       "cik": "0001370450",
@@ -61046,6 +61020,17 @@
       "role": "universe"
     },
     {
+      "ticker": "QVCG",
+      "name": "QVC Group, Inc.",
+      "cik": "0001254699",
+      "instrumentId": "vu_2e45502a815d1a",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "QXO",
       "name": "QXO, Inc.",
       "cik": "0001236275",
@@ -62238,6 +62223,21 @@
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "WLCO",
+      "name": "Wilco 63 Corp",
+      "cik": "0002101470",
+      "instrumentId": "vu_75f50a66ab47b4",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "alsoTickers": [
+        "WLCOU",
+        "WLCOW"
+      ],
       "role": "universe"
     },
     {

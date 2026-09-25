@@ -68,6 +68,8 @@ on:
       - 'scripts/market/probe-multi-asset.mjs'
       - 'scripts/market/ingest-multi-asset.mjs'
       - 'scripts/quality/verify-multi-asset.mjs'
+      - 'scripts/market/build-market-pulse.mjs'
+      - 'quant/config/market-pulse.json'
       - '.github/workflows/multi-asset-data.yml'
   push:
     branches:
@@ -85,6 +87,8 @@ on:
       - 'scripts/market/ingest-multi-asset.mjs'
       - 'scripts/market/eia-xls-to-csv.py'
       - 'scripts/quality/verify-multi-asset.mjs'
+      - 'scripts/market/build-market-pulse.mjs'
+      - 'quant/config/market-pulse.json'
       - '.github/workflows/multi-asset-data.yml'
   # Auf dem Default-Branch: alle drei Stunden. Krypto laeuft 24/7, die
   # Referenzreihen erscheinen zu verschiedenen Tageszeiten in New York
@@ -407,6 +411,18 @@ jobs:
           bash scripts/ci/commit-and-push.sh \
             "Multi-Asset-Daten aktualisiert (automatischer Lauf)" \
             quant/data/market/multi-asset
+      # Market Pulse (Markets 2.0): deskriptiv, deterministisch, ohne Score.
+      # Liest nur, was im Repository liegt (Multi-Asset-Reihen, Faktorzeilen,
+      # Intraday-Snapshots) - kein Anbieterabruf. Nach dem Daten-Commit, damit
+      # ein Fehler hier die Multi-Asset-Daten nicht aufhaelt.
+      - name: Market Pulse aus kanonischen Daten
+        run: node scripts/market/build-market-pulse.mjs
+      - name: Market Pulse in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Market Pulse aktualisiert (automatischer Lauf)" \
+            quant/data/market/intelligence/market-pulse.json \
+            quant/data/market/intelligence/market-pulse-history.json
 
   # PRODUCTION PROOF (§57): prueft den tatsaechlich ausgelieferten Stand,
   # nicht das Repository. Laeuft nur auf ausdruecklichen Dispatch mit

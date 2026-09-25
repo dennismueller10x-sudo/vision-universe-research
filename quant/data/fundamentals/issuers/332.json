@@ -6,10 +6,10 @@
       "cik": "0000718332",
       "name": "RAVE RESTAURANT GROUP, INC.",
       "sic": "5140",
-      "rawFacts": 13577,
-      "mappedFacts": 4874,
-      "unmappedFacts": 8643,
-      "calendarYears": 16,
+      "rawFacts": 13958,
+      "mappedFacts": 4980,
+      "unmappedFacts": 8931,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0628",
@@ -17,32 +17,32 @@
         "RAVE"
       ],
       "status": "INGESTED",
-      "annualPeriods": 16,
-      "quarterlyPeriods": 65,
+      "annualPeriods": 17,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2010-09-26",
-      "lastPeriodEnd": "2026-03-29",
-      "historyYears": 14.0,
+      "lastPeriodEnd": "2026-06-28",
+      "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 41,
+          "annualPeriods": 13,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0
         },
         "eps_diluted": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 61,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0
         },
         "free_cash_flow": {
-          "annualPeriods": 12,
-          "quarterlyPeriods": 41,
+          "annualPeriods": 13,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0,
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -58,25 +58,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 61,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 59,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0
         },
         "revenue": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 61,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0
         },
         "short_term_debt": {
           "annualPeriods": 10,
@@ -86,18 +86,18 @@
           "historyYears": 10.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 57,
-          "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0
-        },
-        "total_assets": {
-          "annualPeriods": 15,
+          "annualPeriods": 16,
           "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2011-06-26",
-          "lastAvailablePeriod": "2025-06-29",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0
+        },
+        "total_assets": {
+          "annualPeriods": 16,
+          "quarterlyPeriods": 59,
+          "firstAvailablePeriod": "2011-06-26",
+          "lastAvailablePeriod": "2026-06-28",
+          "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -117,39 +117,40 @@
         }
       },
       "quality": {
-        "HIGH": 515,
+        "HIGH": 529,
         "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 536,
-        "resolvedValues": 536
+        "datableValues": 550,
+        "resolvedValues": 550
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 9269,
+        "total": 9565,
         "by_severity": {
-          "INFO": 8643,
+          "INFO": 8931,
           "ERROR": 1,
-          "WARNING": 625
+          "WARNING": 633
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 410,
+          "CONCEPT_DISAGREEMENT": 417,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 14,
-          "RESTATEMENT_CONFLICT": 201,
-          "UNKNOWN_CONCEPT": 8643
+          "RESTATEMENT_CONFLICT": 202,
+          "UNKNOWN_CONCEPT": 8931
         }
       },
       "latestFiling": {
-        "accession": "0001140361-26-019447",
-        "filing_date": "2026-05-07",
-        "form": "10-Q",
-        "periodic_filings": 135
+        "accession": "0001140361-26-037514",
+        "filing_date": "2026-09-24",
+        "form": "10-K",
+        "periodic_filings": 136,
+        "acceptance_datetime": "2026-09-24T13:00:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -158,7 +159,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "043c55460c7a8b8351a1a8f9e419f2b4a96141669a5f09cb85f8c9bc52bf122a",
+      "sourceDigest": "41a33e480ce9f795db1024dccd666cb2a5037337268efbc4690280c036c35307",
       "issuerId": "iss_cik_0000718332"
     },
     {
