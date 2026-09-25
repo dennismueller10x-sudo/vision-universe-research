@@ -144,7 +144,7 @@ test("Rohoel in EUR: Umrechnung nur ueber den Currency Core, Einheit bleibt je B
   const c = build("BRENT", [["2026-09-21", 110], ["2026-09-22", 114.89]]);
   const aufrufe = [];
   const layer = { preference: { get: () => "EUR" },
-    price: (v, cur, o) => { aufrufe.push([v, cur, o.displayCurrency]); return { available: true, display: { value: v / 1.149, currency: "EUR" } }; } };
+    price: (v, cur, o) => { aufrufe.push([v, cur, o.displayCurrency]); return { available: true, display: { value: 99.99, currency: "EUR" } }; } };
   const text = M.wertText(c, layer);
   assert.deepEqual(aufrufe, [[114.89, "USD", "EUR"]]);
   assert.match(text, /99,99/);
