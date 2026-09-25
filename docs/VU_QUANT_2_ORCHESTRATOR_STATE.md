@@ -497,6 +497,26 @@ Deshalb steht es jetzt am Artefakt: `toBasis: "CURRENT_PUBLISHED_TABLE"` und ein
 auf `recomputationDrift` zeigt. Kein Zahlenwert geaendert — nur die Angabe, was verglichen wurde,
 damit eine fehlgeschlagene Nachrechnung nicht wie ein Widerspruch aussieht.
 
+### Ein fehlender Halbsatz hielt DREI Schichten zurueck
+
+Beim Auswerten des M24-Laufs aufgefallen: `pattern-match` steht auf `asOf 2026-09-10`, obwohl der
+Tagesbestand jetzt auf dem 24. ist. Nachgesehen statt vermutet — `long-series.yml`
+veroeffentlicht die Wochenreihen **direkt aus der Historienablage** (es verlangt die
+S3-Zugaenge und ruft `publish-long-series.mjs`). Gemessen ueber 900 Wochenreihen: 896 stehen auf
+2026-09-10.
+
+Damit hat der fehlende `--push` nicht eine Schicht zurueckgehalten, sondern drei:
+
+```
+taeglich    Technical / Signals / Elliott / Setup   Ablage -> Materialisierung
+woechentlich Pattern Research / Pattern Match / Belastbarkeit   Ablage -> Wochenreihen
+```
+
+Die Ursache ist mit dem Abgleich behoben; die Wochenreihen holen es beim naechsten
+`long-series`-Lauf nach (Zeitplan samstags, dispatchbar — hier angestossen). Die Musterstudie und
+der Mustervergleich folgen dann mit der naechsten Materialisierung. Kein weiterer Eingriff: es ist
+dieselbe Reparatur, eine Schicht weiter.
+
 ### M24 — die Musterluecke erklaert sich selbst (gewaehlt aus der Messung)
 
 Nach dem Ablage-Abgleich ist `patterns` die schwaechste gemessene Station: **100 von 500** Titeln
