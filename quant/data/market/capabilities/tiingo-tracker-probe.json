@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAtUtc": "2026-09-25T14:18:44.752Z",
+  "generatedAtUtc": "2026-09-25T14:39:26.225Z",
   "purpose": "Owner-Entscheidung 2026-09-25 (Tiingo-first): Index-Tracker ueber den bestehenden Tiingo-Zugang. Keine Werte - nur Identitaet, Abdeckung, Faehigkeiten.",
   "valuesIncluded": false,
   "measured": true,
@@ -10,7 +10,7 @@
       "tier": "REQUIRED",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 29826,
+        "durationMs": 285,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -28,22 +28,45 @@
         "descriptionExcerpt": "- 100 Index Tracking Stock®\", is an exchange-traded fund based on the Nasdaq-100 Index®. The Fund will, under most circumstances, consist of all of stocks in the Index. The Index includes 100 of the largest domestic and "
       },
       "daily": {
-        "httpStatus": null,
-        "durationMs": 30001,
-        "networkError": "This operation was aborted",
-        "observations": 0,
-        "splitsDates": [],
-        "splitsCount": 0,
-        "distributionsLast2y": 0,
-        "fields": [],
-        "avgVolume60dBucket": "NONE"
+        "httpStatus": 200,
+        "durationMs": 639,
+        "contentType": "application/json",
+        "arrayLength": 6929,
+        "observations": 6929,
+        "firstDate": "1999-03-10",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [
+          "2000-03-20"
+        ],
+        "splitsCount": 1,
+        "distributionsLast2y": 8,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": ">=10M"
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 1020,
+        "durationMs": 68,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:19:45.324137540-04:00",
+        "timestamp": "2026-09-25T10:39:26.268698117-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -51,32 +74,40 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 151,
+        "durationMs": 108,
         "contentType": "application/json",
-        "arrayLength": 322,
-        "bars": 322,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:15:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
-      "verdict": "REJECTED_NO_HISTORY"
+      "verdict": "IDENTITY_PROVEN"
     },
     "SPY": {
       "tracksIndex": "SP500",
       "tier": "REQUIRED",
       "metadata": {
-        "httpStatus": null,
-        "durationMs": 30000,
-        "networkError": "This operation was aborted",
-        "name": null,
-        "exchangeCode": null,
-        "startDate": null,
-        "endDate": null,
-        "indexNamedIn": null,
-        "descriptionExcerpt": null
+        "httpStatus": 200,
+        "durationMs": 78,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "SPDR S&P 500 ETF Trust",
+        "exchangeCode": "NYSE",
+        "startDate": "1993-01-29",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "Historical ETF prices for SPDR S&P 500 ETF (SPY). SPDR S&P 500 ETF Trust (the Trust) is an exchange traded fund. The Trust corresponds to the price and yield performance of the S&P 500 Index. The S&P 500 Index is compose"
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 1800,
+        "durationMs": 229,
         "contentType": "application/json",
         "arrayLength": 8471,
         "observations": 8471,
@@ -107,56 +138,11 @@
         "avgVolume60dBucket": ">=10M"
       },
       "iexQuote": {
-        "httpStatus": null,
-        "durationMs": 30000,
-        "networkError": "This operation was aborted",
-        "timestamp": null,
-        "lastSaleTimestamp": null,
-        "hasLast": false,
-        "hasPrevClose": false,
-        "hasTngoLast": false
-      },
-      "intraday5min": {
-        "httpStatus": null,
-        "durationMs": 30001,
-        "networkError": "This operation was aborted",
-        "bars": 0,
-        "firstBar": null,
-        "lastBar": null
-      },
-      "verdict": "NOT_AVAILABLE"
-    },
-    "DIA": {
-      "tracksIndex": "DOW_JONES_INDUSTRIAL_AVERAGE",
-      "tier": "REQUIRED",
-      "metadata": {
-        "httpStatus": null,
-        "durationMs": 30001,
-        "networkError": "This operation was aborted",
-        "name": null,
-        "exchangeCode": null,
-        "startDate": null,
-        "endDate": null,
-        "indexNamedIn": null,
-        "descriptionExcerpt": null
-      },
-      "daily": {
-        "httpStatus": null,
-        "durationMs": 30001,
-        "networkError": "This operation was aborted",
-        "observations": 0,
-        "splitsDates": [],
-        "splitsCount": 0,
-        "distributionsLast2y": 0,
-        "fields": [],
-        "avgVolume60dBucket": "NONE"
-      },
-      "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 2302,
+        "durationMs": 67,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:19.187310650-04:00",
+        "timestamp": "2026-09-25T10:39:27.097624292-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -164,21 +150,97 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 625,
+        "durationMs": 111,
         "contentType": "application/json",
-        "arrayLength": 323,
-        "bars": 323,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
-      "verdict": "NOT_AVAILABLE"
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "DIA": {
+      "tracksIndex": "DOW_JONES_INDUSTRIAL_AVERAGE",
+      "tier": "REQUIRED",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 76,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "SPDR Dow Jones Industrial Average ETF",
+        "exchangeCode": "NYSE",
+        "startDate": "1998-01-20",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "Historical ETF prices for Dow Diamonds ETF (DIA). SPDR Dow Jones Industrial Average ETF Trust, formerly Diamonds Trust, Series 1 (the Trust) is a unit investment, which issues securities called trust units or units. It s"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 172,
+        "contentType": "application/json",
+        "arrayLength": 7215,
+        "observations": 7215,
+        "firstDate": "1998-01-20",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 24,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "1M-10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 66,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-25T10:39:27.861542895-04:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 89,
+        "contentType": "application/json",
+        "arrayLength": 326,
+        "bars": 326,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-25T14:35:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
     },
     "IWM": {
       "tracksIndex": "RUSSELL_2000",
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 138,
+        "durationMs": 62,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -197,7 +259,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 260,
+        "durationMs": 123,
         "contentType": "application/json",
         "arrayLength": 6621,
         "observations": 6621,
@@ -231,10 +293,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 49,
+        "durationMs": 71,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:20.701267003-04:00",
+        "timestamp": "2026-09-25T10:39:28.096799471-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -242,12 +304,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 78,
+        "durationMs": 114,
         "contentType": "application/json",
-        "arrayLength": 323,
-        "bars": 323,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "IDENTITY_PROVEN"
     },
@@ -256,7 +318,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 3883,
+        "durationMs": 62,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -275,7 +337,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 77,
+        "durationMs": 137,
         "contentType": "application/json",
         "arrayLength": 6020,
         "observations": 6020,
@@ -307,10 +369,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 537,
+        "durationMs": 65,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:24.709480921-04:00",
+        "timestamp": "2026-09-25T10:39:27.150580256-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -318,12 +380,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 56,
+        "durationMs": 128,
         "contentType": "application/json",
-        "arrayLength": 323,
-        "bars": 323,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "IDENTITY_PROVEN"
     },
@@ -332,7 +394,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 26,
+        "durationMs": 81,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -351,7 +413,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 65,
+        "durationMs": 78,
         "contentType": "application/json",
         "arrayLength": 2997,
         "observations": 2997,
@@ -383,7 +445,7 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 22,
+        "durationMs": 69,
         "contentType": "application/json",
         "arrayLength": 1,
         "timestamp": "2026-09-24T20:00:00+00:00",
@@ -394,7 +456,7 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 48,
+        "durationMs": 90,
         "contentType": "application/json",
         "arrayLength": 287,
         "bars": 287,
@@ -408,7 +470,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 27,
+        "durationMs": 76,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -427,7 +489,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 67,
+        "durationMs": 130,
         "contentType": "application/json",
         "arrayLength": 7670,
         "observations": 7670,
@@ -461,10 +523,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 27,
+        "durationMs": 69,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:23.312998621-04:00",
+        "timestamp": "2026-09-25T10:39:28.578045387-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -472,12 +534,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 247,
+        "durationMs": 117,
         "contentType": "application/json",
-        "arrayLength": 323,
-        "bars": 323,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "REJECTED_IDENTITY"
     },
@@ -486,7 +548,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 32,
+        "durationMs": 77,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -505,7 +567,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 54,
+        "durationMs": 102,
         "contentType": "application/json",
         "arrayLength": 2232,
         "observations": 2232,
@@ -537,10 +599,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 23,
+        "durationMs": 60,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:25.473747183-04:00",
+        "timestamp": "2026-09-25T10:38:15.979714557-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -548,12 +610,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 172,
+        "durationMs": 90,
         "contentType": "application/json",
-        "arrayLength": 319,
-        "bars": 319,
+        "arrayLength": 322,
+        "bars": 322,
         "firstBar": "2026-09-21T13:50:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "REJECTED_IDENTITY"
     },
@@ -562,7 +624,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 29,
+        "durationMs": 74,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -581,7 +643,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 82,
+        "durationMs": 104,
         "contentType": "application/json",
         "arrayLength": 7670,
         "observations": 7670,
@@ -615,10 +677,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 74,
+        "durationMs": 60,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:25.640105684-04:00",
+        "timestamp": "2026-09-25T10:39:30.122943166-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -626,12 +688,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 59,
+        "durationMs": 96,
         "contentType": "application/json",
-        "arrayLength": 323,
-        "bars": 323,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "REJECTED_IDENTITY"
     },
@@ -640,7 +702,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 36,
+        "durationMs": 75,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -659,7 +721,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 72,
+        "durationMs": 116,
         "contentType": "application/json",
         "arrayLength": 5900,
         "observations": 5900,
@@ -694,10 +756,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 26,
+        "durationMs": 58,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:26.161153044-04:00",
+        "timestamp": "2026-09-25T10:39:30.508312582-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -705,12 +767,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 65,
+        "durationMs": 90,
         "contentType": "application/json",
-        "arrayLength": 323,
-        "bars": 323,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "IDENTITY_PROVEN"
     },
@@ -719,7 +781,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 29,
+        "durationMs": 67,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -738,7 +800,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 61,
+        "durationMs": 84,
         "contentType": "application/json",
         "arrayLength": 3696,
         "observations": 3696,
@@ -770,10 +832,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 56,
+        "durationMs": 67,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:15:39.163979672-04:00",
+        "timestamp": "2026-09-25T10:39:11.041000071-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -781,12 +843,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 68,
+        "durationMs": 111,
         "contentType": "application/json",
-        "arrayLength": 322,
-        "bars": 322,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:15:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "IDENTITY_PROVEN"
     },
@@ -795,7 +857,7 @@
       "tier": "OPTIONAL",
       "metadata": {
         "httpStatus": 200,
-        "durationMs": 50,
+        "durationMs": 67,
         "contentType": "application/json",
         "objectKeys": [
           "ticker",
@@ -814,7 +876,7 @@
       },
       "daily": {
         "httpStatus": 200,
-        "durationMs": 82,
+        "durationMs": 123,
         "contentType": "application/json",
         "arrayLength": 5420,
         "observations": 5420,
@@ -846,10 +908,10 @@
       },
       "iexQuote": {
         "httpStatus": 200,
-        "durationMs": 24,
+        "durationMs": 68,
         "contentType": "application/json",
         "arrayLength": 1,
-        "timestamp": "2026-09-25T10:22:27.239031507-04:00",
+        "timestamp": "2026-09-25T10:39:30.247475313-04:00",
         "lastSaleTimestamp": null,
         "hasLast": false,
         "hasPrevClose": true,
@@ -857,12 +919,12 @@
       },
       "intraday5min": {
         "httpStatus": 200,
-        "durationMs": 65,
+        "durationMs": 111,
         "contentType": "application/json",
-        "arrayLength": 323,
-        "bars": 323,
+        "arrayLength": 326,
+        "bars": 326,
         "firstBar": "2026-09-21T13:30:00.000Z",
-        "lastBar": "2026-09-25T14:20:00.000Z"
+        "lastBar": "2026-09-25T14:35:00.000Z"
       },
       "verdict": "IDENTITY_PROVEN"
     }
@@ -877,17 +939,17 @@
     ],
     "seconds": 25,
     "opened": true,
-    "messages": 119,
+    "messages": 99,
     "messageTypes": {
       "I": 1,
       "H": 1,
-      "A": 117
+      "A": 97
     },
-    "dataMessages": 117,
+    "dataMessages": 97,
     "perTicker": {
-      "dia": 37,
-      "spy": 41,
-      "qqq": 39
+      "dia": 29,
+      "spy": 30,
+      "qqq": 38
     },
     "subscribeAck": {
       "code": 200,
