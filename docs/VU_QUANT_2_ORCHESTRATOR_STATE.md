@@ -11,9 +11,14 @@ Updated: 2026-09-25 UTC
 
 ## CURRENT_PHASE
 
-`ONE_RULE_THREE_READERS_STORE_LAG_NAMED_AND_WIRED`
+`STORE_CURRENT_BOTH_LAYERS_GAPS_NAMED_PER_TITLE`
 
-Stand 2026-09-25, zweite Hälfte: der Zuordnungswechsel ist veröffentlicht und gegen den
+Stand 2026-09-25, Abschluss der Kette: die dauerhafte Ablage ist beschrieben, **beide** Schichten
+stehen auf dem 2026-09-24 (täglich Technical/Signals/Elliott/Setup, wöchentlich
+Musterstudie/Mustervergleich/Belastbarkeit), die Reise ist gegen ihre Grundlinie neu gemessen
+(28 Zugewinne, kein Verlust, 381 von 500 Titeln mit allen elf Stationen), und der schwächste
+gemessene Bereich hat seinen Satz: jede der 1.284 Musterlücken nennt jetzt ihren Grund mit Zahl.
+Vorher, zweite Hälfte: der Zuordnungswechsel ist veröffentlicht und gegen den
 Alarmvertrag geprüft (6.357 Titel, keine Abweichung, ein `predicateHash`) — §20 ist damit nicht
 mehr Absicht, sondern nachgerechnet. Jeder Titel ohne Kursstruktur nennt seinen eigenen Grund mit
 Zahl statt viermal desselben Satzes. Und der Befund, der beim Nachsehen herausfiel: die
@@ -512,9 +517,21 @@ taeglich    Technical / Signals / Elliott / Setup   Ablage -> Materialisierung
 woechentlich Pattern Research / Pattern Match / Belastbarkeit   Ablage -> Wochenreihen
 ```
 
-Die Ursache ist mit dem Abgleich behoben; die Wochenreihen holen es beim naechsten
-`long-series`-Lauf nach (Zeitplan samstags, dispatchbar — hier angestossen). Die Musterstudie und
-der Mustervergleich folgen dann mit der naechsten Materialisierung. Kein weiterer Eingriff: es ist
+Die Ursache ist mit dem Abgleich behoben, und die Wochenreihen haben es nachgeholt (Lauf 372 von
+`long-series`, dispatchbar). Gemessen danach:
+
+```
+                         vorher     nachher
+Wochenreihen               6.308      6.333
+davon asOf 2026-09-24          0        848 von 900 gepruefte (46 bleiben auf 09-10)
+genug Historie (104 Wo.)   5.571      5.593
+pattern-match asOf    2026-09-10 2026-09-24
+pattern-match Eintraege    5.569      5.591   (+22)
+ohne Mustervergleich       1.306      1.284   NO_WEEKLY_SERIES 567 -> 542
+Reise-Station patterns   400/500    402/500
+```
+
+5.591 + 1.284 = 6.875: die Rechnung geht weiter genau auf. Kein weiterer Eingriff — es war
 dieselbe Reparatur, eine Schicht weiter.
 
 ### M24 — die Musterluecke erklaert sich selbst (gewaehlt aus der Messung)
@@ -1356,18 +1373,14 @@ checks are the ones the activation gate measures.
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
 
-−1. **Die Ablage muss einmal nachgezogen werden, und das ist der naechste Schritt.** Der Push ist
-   verdrahtet (`market-data-refresh.yml`, nach Gate B) und als Hebel dispatchbar
-   (`history-store-sync.yml`) — aber `workflow_dispatch` greift erst, wenn die Datei auf dem
-   Default-Branch liegt, und der Zeitplan des Refresh laeuft ebenfalls nur dort. Bis dahin
-   bleibt die Kursstruktur des Produkts auf dem 2026-09-10, und die Aktienseite sagt das.
-   Zwei Wege, beide ohne Owner-Entscheidung:
-   (a) `market-data-refresh.yml` auf diesem Branch dispatchen — es ist dort dispatchbar, weil es
-   auf `main` existiert, und laeuft mit der Branch-Fassung samt Push. Kostet einen zusaetzlichen
-   inkrementellen Abruf (eigenes Anfragebudget, Waechter faellt zu).
-   (b) Nach dem Merge laeuft der Zeitplan mit dem Push von selbst.
-   Danach eine Materialisierung, und die zehn Handelstage sind weg — mitsamt dem zweiten
-   Setup-Beobachtungsstichtag, an dem der Pfad-Tier haengt.
+−1. **Erledigt (2026-09-25).** Die Ablage ist beschrieben, beide Schichten sind auf dem
+   2026-09-24, die Reise ist gegen ihre Grundlinie neu gemessen und der schwaechste gemessene
+   Bereich (patterns) hat seinen Satz bekommen. Was dabei fuer die Zukunft gilt:
+   `market-data-refresh.yml` zieht die Ablage nach Gate B nach — aber sein **Zeitplan laeuft nur
+   auf dem Default-Branch**. Bis zum Merge muss der Refresh auf diesem Branch dispatcht werden,
+   sonst friert die Ablage wieder ein, und mit ihr beide Schichten. Nach dem Merge laeuft es von
+   selbst; `history-store-sync.yml` ist dann auch dispatchbar (ein Workflow wird erst
+   dispatchbar, wenn seine Datei auf dem Default-Branch liegt).
 
 0. **One owner gate is open** and it does not block the next build: the `total_debt` concept
    mapping, which waits on the measurement the SEC workflow now produces.
