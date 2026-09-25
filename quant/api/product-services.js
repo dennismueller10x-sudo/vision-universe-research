@@ -296,7 +296,12 @@ function create(options){
    const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/setup-observations-v1/'+key+'.json.gz');
    if(!SetupEngine.SHARD_SCHEMAS.includes(shard?.schemaVersion)||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_SETUP_ARTIFACT'};
    const source=shard.instruments?.[ticker];
-   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_SETUP_OBSERVATION'};
+   /* Die Setup-Beobachtung ist eine Projektion ueber die technischen Bundles.
+    * Fehlt der Titel dort, ist der GRUND derselbe - und er steht schon im
+    * Technical-Shard. Also wird er nachgeschlagen statt ein zweites Mal
+    * ermittelt: ein Leser soll nicht zwei Saetze fuer eine Ursache bekommen. */
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_SETUP_OBSERVATION',
+    unavailability:await technicalUnavailability(ticker)};
    const mapping={mappingVersion:shard.mappingVersion,cascade:{rules:shard.cascade}};
    const observation=SetupEngine.hydrate(source.observation,mapping);
    if(SetupEngine.publicationViolations(observation).length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
@@ -388,6 +393,25 @@ function create(options){
   * nicht dadurch zu einer Aussage ueber ihn, dass sie neben seinem Namen
   * stehen. Deshalb traegt jede Zeile die Verlustseite und die Asymmetrie
   * neben dem Lift, und der Kopf traegt die Vorbehalte der Studie. */
+ /* WARUM DIESER TITEL KEINEN MUSTERVERGLEICH HAT.
+  *
+  * Der Grund steht im selben Shard, gerechnet vom Produzenten: 737 Titel
+  * haben eine kuerzere Wochenreihe als die vorregistrierten 104 Wochen, 567
+  * gar keine, zwei keine messbaren Merkmale. Fehlt der Block (aelteres
+  * Artefakt), gibt dieser Leser null zurueck und die Oberflaeche sagt so viel
+  * wie vorher - kein Raten. */
+ function patternUnavailability(shard,ticker){
+  if(!shard||shard.unavailableSchemaVersion!=='pattern-unavailable-1.0.0')return null;
+  const entry=shard.unavailable&&shard.unavailable[ticker];
+  if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
+  const weeks=Number.isFinite(entry.weeks)?entry.weeks:null;
+  const required=Number.isFinite(entry.requiredWeeks)?entry.requiredWeeks:null;
+  /* Eine Forderung, die die vorhandene Zahl nicht uebersteigt, wuerde den Satz
+   * zum Widerspruch machen - dann lieber nur der Grund. */
+  return {reason:entry.reason,weeks,
+   requiredWeeks:required!==null&&weeks!==null&&required<=weeks?null:required,
+   schemaVersion:'pattern-unavailable-1.0.0'};
+ }
  async function getPatternMatch(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
@@ -395,7 +419,8 @@ function create(options){
    const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/pattern-match-v1/'+key+'.json.gz');
    if(shard?.schemaVersion!=='pattern-match-1.0.0'||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_PATTERN_MATCH_ARTIFACT'};
    const source=shard.instruments?.[ticker];
-   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_PATTERN_MATCH'};
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_PATTERN_MATCH',
+    unavailability:patternUnavailability(shard,ticker)};
    const holds=new Set(source.holds),unmeasurable=new Set(source.unmeasurable);
    const rows=shard.findings.map(finding=>{
     const terms=finding.terms.map((term,index)=>({...term,id:(finding.id.split('+')[index]||finding.id)}));

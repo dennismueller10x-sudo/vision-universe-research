@@ -222,6 +222,26 @@ function analysisLagLine(lag){
   +' und liegt damit '+tage+' hinter dem veröffentlichten Kursstand ('+lag.priceAsOf
   +'). Der Kursverlauf darüber ist aktuell; die Kursstruktur beschreibt den älteren Stand.'});
 }
+/* WARUM DIESER TITEL KEINEN MUSTERVERGLEICH HAT - IN EINEM SATZ MIT ZAHL.
+ *
+ * Gemessen am 25.09.2026: 1.306 der 6.875 Titel haben keinen Eintrag, und die
+ * Seite sagte dazu nur "derzeit nicht verfuegbar". Die Luecke ist vollstaendig
+ * erklaerbar und enthaelt keinen Defekt: 737 Titel haben eine kuerzere
+ * Wochenreihe als die vorregistrierten 104 Wochen, 567 gar keine, zwei keine
+ * messbaren Merkmale. Sechs stehen bei genau 103 Wochen - fuer die ist "eine
+ * Woche fehlt noch" die wahre Auskunft, und die bekommen sie jetzt. */
+const PATTERN_REASON={
+ INSUFFICIENT_WEEKLY_HISTORY:u=>u.weeks!==null&&u.requiredWeeks!==null
+  ?'Dieser Vergleich braucht '+u.requiredWeeks.toLocaleString('de-DE')+' Wochen Kurshistorie; für diesen Titel liegen '+u.weeks.toLocaleString('de-DE')+' vor.'
+  :'Die Kurshistorie dieses Titels ist für diesen Vergleich noch zu kurz.',
+ NO_WEEKLY_SERIES:()=>'Für diesen Titel ist keine Wochenreihe veröffentlicht, gegen die Muster geprüft werden könnten.',
+ NO_MEASURABLE_FEATURES:()=>'Aus der Kursreihe dieses Titels ließen sich die verlangten Merkmale nicht messen.',
+ INVALID_SERIES_CONTRACT:()=>'Die Wochenreihe dieses Titels hat die Herkunftsprüfung nicht bestanden.'};
+function patternReasonText(unavailability){
+ if(!unavailability||typeof unavailability.reason!=='string')return null;
+ const satz=PATTERN_REASON[unavailability.reason];
+ return satz?satz(unavailability):null;
+}
 function technicalReasonText(unavailability){
  if(!unavailability||typeof unavailability.reason!=='string')return null;
  const satz=TECHNICAL_REASON[unavailability.reason]
@@ -807,8 +827,13 @@ function setupJourney(setup,observation,index){
     pending?el('span',{class:'setup-pending',text:'noch nicht freigeschaltet'}):null]);
   }))]);
  if(!available){
+  /* Der Mechanismus allein erklaert nichts: "ist darin nicht enthalten" laesst
+     offen, warum. Der Grund steht im Technical-Shard und ist derselbe - also
+     dieselbe Zahl, nicht ein zweiter Satz fuer eine Ursache. */
+  const grund=technicalReasonText(observation&&observation.unavailability);
   section.append(notice('Für diesen Titel liegt keine Setup-Beobachtung vor',
-   'Die Setup-Beobachtung wird aus der bestehenden technischen Materialisierung gebildet. Dieser Titel ist darin nicht enthalten, deshalb wird hier kein Zustand behauptet.'));
+   'Die Setup-Beobachtung wird aus der bestehenden technischen Materialisierung gebildet. Dieser Titel ist darin nicht enthalten, deshalb wird hier kein Zustand behauptet.'
+   +(grund?' '+grund:'')));
   return section;
  }
  if(classification.state&&classification.state!=='UNAVAILABLE'){
@@ -910,7 +935,13 @@ function patternMatchSection(patterns){
   el('h2',{text:LQ('patternEngine')}),
   el('p',{class:'muted',text:LB('patternEngine')})]);
  if(!patterns||patterns.state!=='AVAILABLE'){
-  section.append(notice(L('UNAVAILABLE'),LU('patternEngine')));
+  /* Der Grund des Titels zuerst, der allgemeine Hinweis danach: was hier
+     fehlt, ist eine Datengrenze der Studie und kein Fehlschlag des Titels. */
+  /* Der genaue Grund ERSETZT den allgemeinen Hinweis, er tritt nicht daneben:
+     "keine Wochenreihe veroeffentlicht" und "die Kurshistorie reicht nicht
+     aus" sind zwei verschiedene Aussagen, und die zweite waere dort falsch. */
+  const grund=patternReasonText(patterns&&patterns.unavailability);
+  section.append(notice(L('UNAVAILABLE'),grund||LU('patternEngine')));
   return section;
  }
  section.append(el('p',{class:'muted',text:'Zeitraum '+patterns.horizonMonths+' Monate. „Verdoppelt" heißt: der Kurs stand am Ende mindestens '+
@@ -1201,7 +1232,13 @@ function evidenceTrustSection(patterns){
   el('h2',{text:LQ('backtestTrustScore')}),
   el('p',{class:'muted',text:LB('backtestTrustScore')})]);
  if(!patterns||patterns.state!=='AVAILABLE'){
-  section.append(notice(L('UNAVAILABLE'),LU('patternEngine')));
+  /* Dieselbe Auskunft an der Belastbarkeitsstation: ohne Vergleich gibt es
+     auch nichts, dessen Belastbarkeit man beschreiben koennte. */
+  /* Der genaue Grund ERSETZT den allgemeinen Hinweis, er tritt nicht daneben:
+     "keine Wochenreihe veroeffentlicht" und "die Kurshistorie reicht nicht
+     aus" sind zwei verschiedene Aussagen, und die zweite waere dort falsch. */
+  const grund=patternReasonText(patterns&&patterns.unavailability);
+  section.append(notice(L('UNAVAILABLE'),grund||LU('patternEngine')));
   return section;
  }
  const withheld=Object.entries({...(patterns.withheld?.price||{}),...(patterns.withheld?.fundamental||{})});

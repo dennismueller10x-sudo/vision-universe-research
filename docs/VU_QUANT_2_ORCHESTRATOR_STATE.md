@@ -59,6 +59,7 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M19 | Chart auf gebundener Basis | **DONE** (2026-09-25) — NVDA/AAPL-Splitsprung entfernt, Bildunterschrift folgt der Reihe |
 | M20 | Kalenderdeckung: Titel ohne Technical/Setup/Muster | **DONE, gemessen** (2026-09-25) — +166 Technical, +162 Signals, +160 Elliott; Rest liegt vor 2022-01-01 |
 | M23 | Kursstruktur zehn Handelstage hinter ihrem Kurs | **DONE, realisiert** (2026-09-25) — Ablage beschrieben, 5.470 Titel auf 2026-09-24; die 331 Zurueckgestellten haben keine Kursreihe, also auch keinen Abstand zu nennen |
+| M24 | Musterluecke erklaert sich selbst | **DONE** (2026-09-25) — 1.306 Titel, vollstaendig zerlegt; Setup borgt den technischen Grund |
 | M21 | Zuordnungswechsel: eine Regel, drei Leser | **DONE** (2026-09-25) — 37 Wechsel zwischen zwei Staenden, Alarmvertrag deckungsgleich ueber 6.357 Titel |
 | M22 | Grund je Titel statt vier gleicher Saetze | **DONE** (2026-09-25) — `technical-unavailable-1.0.0` im ohnehin geladenen Shard |
 
@@ -478,6 +479,41 @@ nicht die Quote — wer nur die Quote liest, sieht diesen Ertrag nicht.
 Nebenbefund, behoben: `journey-coverage-v1.json` stand nicht in der `git add`-Liste des
 Workflows. Die Messung lief in jedem Lauf, druckte ihre Zahlen ins Log und wurde verworfen; das
 ausgelieferte Artefakt war das vom letzten Handlauf. Jetzt wird es mitveroeffentlicht.
+
+### M24 — die Musterluecke erklaert sich selbst (gewaehlt aus der Messung)
+
+Nach dem Ablage-Abgleich ist `patterns` die schwaechste gemessene Station: **100 von 500** Titeln
+ohne Auskunft, mehr als setup (75), technical (74) oder strategy (82) — und die einzige grosse
+Luecke, deren Grund den Leser nie erreichte. `getPatternMatch` antwortete mit
+`NOT_COVERED_BY_PATTERN_MATCH` und `coverage: null`: ein Code, kein Satz.
+
+Vorher zerlegt, dann gebaut. Ueber 6.875 Titel:
+
+```
+5.569  mit Eintrag
+  737  Wochenreihe kuerzer als die vorregistrierten 104 Wochen
+        276 mit 26-51 · 267 mit 52-77 · 194 mit 78-103 · sechs bei genau 103
+  567  gar keine Wochenreihe veroeffentlicht
+    2  keine messbaren Merkmale
+-----
+6.875  vollstaendig, kein unerklaerter Rest
+```
+
+Die Luecke enthaelt keinen Defekt — 104 Wochen sind die Anforderung der Studie. Der Grund steht
+jetzt in dem Shard, den die Seite fuer genau diesen Titel schon laedt
+(`pattern-unavailable-1.0.0`, eigener Block, `instruments` unberuehrt), und die Seite sagt „Dieser
+Vergleich braucht 104 Wochen Kurshistorie; fuer diesen Titel liegen 103 vor." Der genaue Grund
+ERSETZT den allgemeinen Hinweis: „keine Wochenreihe veroeffentlicht" und „die Kurshistorie reicht
+nicht aus" sind zwei verschiedene Aussagen, und die zweite waere dort falsch. Beide
+Musterflaechen sagen es — die Vergleichsstation und die Belastbarkeitsstation lesen dasselbe
+Artefakt, und ein Grund an nur einer Stelle liesse zwei Abschnitte derselben Seite verschieden
+klingen.
+
+Dazu die Setup-Luecke, die keine eigene Ursache hat: die Beobachtung ist eine Projektion ueber die
+technischen Bundles, also **borgt sie den technischen Grund** statt einen zweiten Satz fuer
+dieselbe Ursache zu bilden — der Test vergleicht beide Felder und verlangt Gleichheit. Gepruefte
+Oberflaeche 1440 px und 390 px: MEVO (30 Wochen), AMTM (103), COOL (keine Reihe, 30 von 300
+Handelstagen), NVDA ohne jede Begruendung; kein roher Code, kein Overflow, kein Seitenfehler.
 
 ### The journey, counted
 

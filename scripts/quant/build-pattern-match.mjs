@@ -140,13 +140,48 @@ function main() {
   const shards = new Map();
   let matched = 0, withoutFundamentals = 0, cutoff = null;
 
+  /* WARUM EIN TITEL KEINEN MUSTERVERGLEICH HAT - AN DER STELLE, AN DER DIE
+     SEITE OHNEHIN NACHSIEHT.
+
+     Gemessen am 25.09.2026: von 6.875 Titeln haben 5.569 einen Eintrag. Die
+     Luecke von 1.306 ist vollstaendig erklaerbar und enthaelt keinen Defekt -
+     567 Titel haben gar keine Wochenreihe, 737 eine kuerzere als die
+     vorregistrierten 104 Wochen (276 mit 26 bis 51, 267 mit 52 bis 77, 194 mit
+     78 bis 103). Sechs stehen bei genau 103: fuer sie ist "eine Woche fehlt
+     noch" die wahre Auskunft.
+     
+     Der Leser bekam davon nichts: `getPatternMatch` antwortete mit
+     NOT_COVERED_BY_PATTERN_MATCH und `coverage: null` - ein Code, kein Satz.
+     Derselbe Fehler wie bei der Kursstruktur, eine Station weiter. Also
+     dieselbe Loesung: ein eigener Block mit eigener Version im Shard, den die
+     Seite fuer genau diesen Titel schon laedt. `instruments` bleibt
+     unberuehrt. */
+  const UNAVAILABLE_SCHEMA = "pattern-unavailable-1.0.0";
+  const requiredWeeks = priceMethodology.observationGrid.minimumHistoryWeeks;
+  const unavailable = new Map();          /* Shard -> { Ticker: Grund } */
+  const shardOf = (ticker) => (String(ticker) + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_");
+  function noteUnavailable(ticker, reason, weeks) {
+    if (!ticker) return;
+    const key = shardOf(ticker);
+    if (!unavailable.has(key)) unavailable.set(key, {});
+    unavailable.get(key)[ticker] = { reason,
+      weeks: Number.isFinite(weeks) ? weeks : null,
+      requiredWeeks: reason === "INSUFFICIENT_WEEKLY_HISTORY" ? requiredWeeks : null };
+  }
+
   for (const file of readdirSync(SERIES_DIR)) {
     if (!file.startsWith("ref_") || !file.endsWith(".json")) continue;
     const payload = JSON.parse(readFileSync(join(SERIES_DIR, file), "utf8"));
-    if (payload.status !== "CALCULATED" || payload.grain !== "weekly") continue;
-    if (payload.priceSeriesType !== "SPLIT_ADJUSTED") continue;
+    if (payload.status !== "CALCULATED" || payload.grain !== "weekly" ||
+        payload.priceSeriesType !== "SPLIT_ADJUSTED") {
+      noteUnavailable(payload.ticker, "INVALID_SERIES_CONTRACT", (payload.points || []).length);
+      continue;
+    }
     const points = payload.points || [];
-    if (points.length < priceMethodology.observationGrid.minimumHistoryWeeks) continue;
+    if (points.length < requiredWeeks) {
+      noteUnavailable(payload.ticker, "INSUFFICIENT_WEEKLY_HISTORY", points.length);
+      continue;
+    }
 
     const dates = points.map((point) => point[0]);
     const closes = points.map((point) => point[1]);
@@ -155,7 +190,7 @@ function main() {
     if (cutoff === null || asOf > cutoff) cutoff = asOf;
 
     const priceFeatures = Patterns.featuresAt(closes, index, { runningMax: Patterns.runningMaxOf(closes) });
-    if (!priceFeatures) continue;
+    if (!priceFeatures) { noteUnavailable(payload.ticker, "NO_MEASURABLE_FEATURES", points.length); continue; }
     const bundle = bundlesByTicker.get(payload.ticker);
     const fundamentalFeatures = bundle ? PIT.featuresAt(bundle, asOf) : null;
     if (!fundamentalFeatures) withoutFundamentals += 1;
@@ -182,6 +217,20 @@ function main() {
       unmeasurable,
       hasFundamentals: !!fundamentalFeatures
     };
+  }
+
+  /* Wer weder einen Eintrag noch einen Grund hat, hat gar keine Wochenreihe.
+     Das steht nicht im Reihenverzeichnis - dort fehlt die Datei -, also wird
+     es aus dem Produktuniversum gelesen, derselben Datei, die auch die
+     Technical-Materialisierung als Umfang nimmt. */
+  const universe = JSON.parse(readFileSync(join(ROOT, "quant/data/universe/market-capability.json"), "utf8"));
+  const mitEintrag = new Set();
+  for (const instruments of shards.values()) for (const ticker of Object.keys(instruments)) mitEintrag.add(ticker);
+  for (const member of universe.members || []) {
+    if (mitEintrag.has(member.s)) continue;
+    const key = shardOf(member.s);
+    if (unavailable.has(key) && unavailable.get(key)[member.s]) continue;
+    noteUnavailable(member.s, "NO_WEEKLY_SERIES", null);
   }
 
   if (existsSync(OUT_DIR)) rmSync(OUT_DIR, { recursive: true });
@@ -227,17 +276,32 @@ function main() {
     }))
   };
 
-  for (const [shard, instruments] of shards) {
+  for (const shard of new Set([...shards.keys(), ...unavailable.keys()])) {
     writeFileSync(join(OUT_DIR, shard + ".json.gz"),
-      gzipSync(Buffer.from(JSON.stringify({ ...head, shard, instruments })), { level: 9 }));
+      gzipSync(Buffer.from(JSON.stringify({ ...head, shard,
+        instruments: shards.get(shard) || {},
+        unavailableSchemaVersion: UNAVAILABLE_SCHEMA,
+        unavailable: unavailable.get(shard) || {} })), { level: 9 }));
   }
 
+  const unavailableCounts = {};
+  let unavailableTotal = 0;
+  for (const entries of unavailable.values()) {
+    for (const entry of Object.values(entries)) {
+      unavailableCounts[entry.reason] = (unavailableCounts[entry.reason] || 0) + 1;
+      unavailableTotal += 1;
+    }
+  }
   const summary = {
     ...head,
     instruments: matched,
     withoutFundamentals,
-    shards: [...shards.keys()].sort(),
-    candidates: candidates.length
+    shards: [...new Set([...shards.keys(), ...unavailable.keys()])].sort(),
+    candidates: candidates.length,
+    unavailableSchemaVersion: UNAVAILABLE_SCHEMA,
+    unavailable: { total: unavailableTotal, requiredWeeks, reasons: unavailableCounts,
+      note: "Je Titel im eigenen Shard nachlesbar. Die Luecke ist eine Datengrenze der Studie " +
+            "(" + requiredWeeks + " Wochen vorregistriert) und kein Fehlschlag des Titels." }
   };
   delete summary.findings;
   summary.findingCount = { price: priceFindings.kept.length, fundamental: fundamentalFindings.kept.length };
@@ -246,6 +310,7 @@ function main() {
   process.stdout.write(
     "pattern-match " + SCHEMA + " @ " + cutoff + "\n" +
     "  " + matched + " Titel, " + withoutFundamentals + " ohne sichtbare Bilanz\n" +
+    "  ohne Mustervergleich " + unavailableTotal + ": " + JSON.stringify(unavailableCounts) + "\n" +
     "  " + priceFindings.kept.length + " Kursmuster und " + fundamentalFindings.kept.length +
     " Fundamentalmuster mit Urteil ROBUST; zurueckgehalten " +
     JSON.stringify({ ...priceFindings.withheld }) + "\n"
