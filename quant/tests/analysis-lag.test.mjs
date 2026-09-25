@@ -64,6 +64,33 @@ test("the lag counts trading sessions, not calendar days", () => {
   assert.equal(Freshness.lagSessions("2026-09-25", "2026-09-24", calendar), 0);
 });
 
+/* Die Zeile selbst, ausgefuehrt und nicht nur gelesen. Ohne diesen Ausschnitt
+   pruefte der Test nur, dass ein Quelltext eine Zeichenfolge enthaelt. */
+function surfaceLine() {
+  const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
+  const von = source.indexOf("function analysisLagLine("), bis = source.indexOf("function technicalReasonText(", von);
+  assert.ok(von > 0 && bis > von, "die Abstandszeile steht nicht mehr in experience.js");
+  /* el() baut im Browser ein Element; hier genuegt ein Doppel, das Klasse und
+     Text festhaelt - geprueft wird der Satz, nicht das DOM. */
+  const el = (tag, attrs) => ({ tag, ...attrs });
+  return new Function("el", source.slice(von, bis) + "\nreturn analysisLagLine;")(el);
+}
+
+test("the line is withheld without a lag and speaks in the singular at one session", () => {
+  const analysisLagLine = surfaceLine();
+  assert.equal(analysisLagLine(null), null);
+  assert.equal(analysisLagLine({ lagSessions: 0, analysisAsOf: "2026-09-24", priceAsOf: "2026-09-24" }), null);
+  assert.equal(analysisLagLine({ lagSessions: null, analysisAsOf: "2026-09-10", priceAsOf: "2026-09-24" }), null);
+  const eine = analysisLagLine({ lagSessions: 1, analysisAsOf: "2026-09-23", priceAsOf: "2026-09-24" });
+  assert.equal(eine.class, "analysis-lag");
+  assert.match(eine.text, /einen Handelstag/);
+  assert.equal(/1 Handelstage/.test(eine.text), false, "eine Sitzung darf nicht im Plural stehen");
+  const zehn = analysisLagLine({ lagSessions: 10, analysisAsOf: "2026-09-10", priceAsOf: "2026-09-24" });
+  assert.match(zehn.text, /10 Handelstage/);
+  assert.match(zehn.text, /2026-09-10/);
+  assert.match(zehn.text, /2026-09-24/);
+});
+
 test("the surface sentence names both dates and holds back at zero", () => {
   const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
   const von = source.indexOf("function analysisLagLine(");

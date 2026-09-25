@@ -201,6 +201,44 @@ test("the service answers all three cases, and a change names its two dates", as
   assert.equal(await service.getAssignmentChange("nicht valide"), null);
 });
 
+/* Die Zeile ausgefuehrt und nicht nur gelesen: el() wird durch ein Doppel
+   ersetzt, das Klasse und Text festhaelt. Geprueft wird der Satz. */
+function surfaceLine() {
+  const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
+  const von = source.indexOf("function assignmentChangeLine("), bis = source.indexOf("function strategyMatchSection(", von);
+  assert.ok(von > 0 && bis > von, "die Wechselzeile steht nicht mehr in experience.js");
+  const el = (tag, attrs) => ({ tag, ...attrs });
+  return new Function("el", source.slice(von, bis) + "\nreturn assignmentChangeLine;")(el);
+}
+
+test("all three cases reach the reader in plain words", () => {
+  const line = surfaceLine();
+  const label = (id, l) => ({ profileId: id, label: l, predicateHash: "rule_0000000000000000" });
+  /* Nichts geaendert ist eine Antwort und steht ausdruecklich da. */
+  const ruhig = line({ state: "NO_CHANGE", from: "2026-09-23", to: "2026-09-24", entered: [], exited: [] });
+  assert.match(ruhig.text, /nichts geändert/);
+  assert.match(ruhig.text, /2026-09-23/);
+  assert.match(ruhig.text, /2026-09-24/);
+  /* Rein, raus, und beides zusammen - jeweils mit dem Profilnamen, den ein
+     Leser kennt, nie mit der internen Kennung. */
+  const rein = line({ state: "CHANGED", from: "2026-09-23", to: "2026-09-24",
+    entered: [label("momentum-leader", "Momentum Leader")], exited: [] });
+  assert.match(rein.text, /neu erfüllt: Momentum Leader/);
+  assert.equal(/momentum-leader/.test(rein.text), false, "die interne Kennung steht im Satz");
+  const raus = line({ state: "CHANGED", from: "2026-09-23", to: "2026-09-24",
+    entered: [], exited: [label("garp", "GARP")] });
+  assert.match(raus.text, /nicht mehr erfüllt: GARP/);
+  const beides = line({ state: "CHANGED", from: "2026-09-23", to: "2026-09-24",
+    entered: [label("garp", "GARP")], exited: [label("momentum-leader", "Momentum Leader")] });
+  assert.match(beides.text, /neu erfüllt: GARP/);
+  assert.match(beides.text, /nicht mehr erfüllt: Momentum Leader/);
+  /* Und in jedem Fall der Satz, der sagt, was es nicht ist. */
+  for (const zeile of [rein, raus, beides]) assert.match(zeile.text, /kein Ereignis von heute/);
+  /* Ohne Auskunft keine Zeile: vor dem zweiten veroeffentlichten Stand. */
+  assert.equal(line(null), null);
+  assert.equal(line({ state: "PENDING" }), null);
+});
+
 test("the surface sentence names the two published states and calls itself no event", () => {
   const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
   const von = source.indexOf("function assignmentChangeLine(");
