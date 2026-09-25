@@ -119,6 +119,7 @@ export function materialize(options = {}) {
   rmSync(target, { recursive: true, force: true }); mkdirSync(target, { recursive: true });
   const signalPayloads = Object.fromEntries(signalLookbacks.map(n => [n, []]));
   let currentShard = null, currentInstruments = {}, rawBytes = 0, compressedBytes = 0, shardCount = 0;
+  const writtenShards = new Set();
   const reasons = {}, rows = {}, stats = { productUniverse: members.length, historiesFound: 0, historiesValidated: 0,
     lookbackCovered: 0, adjustedProvenance: 0, splitFactors: 0, corporateActionsValidated: 0,
     calendarValidated: 0, technicalFullBundles: 0, signalsCapable: 0, elliottCapable: 0 };
@@ -132,21 +133,67 @@ export function materialize(options = {}) {
   function unavailableSignals(ticker, reason) {
     for (const lookback of signalLookbacks) signalPayloads[lookback].push({ ticker, state: "UNAVAILABLE", reason, events: [] });
   }
+  /* WARUM EIN TITEL KEIN BUNDLE HAT - AN DER STELLE, AN DER DIE SEITE
+     OHNEHIN NACHSIEHT.
+
+     Gemessen am 25.09.2026 ueber 6.875 Titel: 5.590 sind vollstaendig,
+     990 haben zu wenig Historie (COOL: 20 Bars, notiert seit 6 Wochen),
+     208 liegen mit ihrem Fenster ausserhalb der Kalenderdeckung, einer hat
+     keine Reihe. Der Grund steht je Titel in summary.json#rows - und die
+     Datei ist 813 KB gross, also fuer eine Aktienseite unbrauchbar.
+
+     Die Seite laedt fuer einen Titel ohnehin genau seinen Shard. Der Grund
+     gehoert deshalb hierher, aber NICHT in `instruments`: dort prueft der
+     Leser Bundle-Felder und wuerde an einem Grund-Eintrag scheitern. Also
+     ein eigener Block mit eigener Version - der bestehende Vertrag bleibt
+     Byte fuer Byte, was er war.
+
+     Was ein Nutzer davon hat: statt "Technische Analyse derzeit nicht
+     verfuegbar" steht dort, dass sein Titel seit zwanzig Handelstagen
+     notiert und die Analyse dreihundert braucht. Das ist dieselbe
+     Auskunft, nur wahr. */
+  const UNAVAILABLE_SCHEMA = "technical-unavailable-1.0.0";
+  let currentUnavailable = {};
+  function noteUnavailable(ticker, reason, bars) {
+    currentUnavailable[ticker] = { reason: reason,
+      bars: Number.isFinite(bars) ? bars : null,
+      requiredBars: reason === "INSUFFICIENT_HISTORY" ? minTechnicalBars : null };
+  }
   function flushShard() {
     if (!currentShard) return;
     const result = writeGzip(join(target, currentShard + ".json.gz"), { schemaVersion: Product.VERSION,
-      shard: currentShard, generatedAt: now, instruments: currentInstruments });
+      shard: currentShard, generatedAt: now, instruments: currentInstruments,
+      unavailableSchemaVersion: UNAVAILABLE_SCHEMA, unavailable: currentUnavailable });
     rawBytes += result.raw; compressedBytes += result.compressed; shardCount++;
-    currentInstruments = {};
+    writtenShards.add(currentShard);
+    currentInstruments = {}; currentUnavailable = {};
   }
 
   for (const member of members) {
+    /* Der Shard eines Titels steht VOR der Analyse fest - nur so kann ein
+       Titel OHNE Bundle seinen Grund im eigenen Shard hinterlassen. Die
+       Mitglieder sind nach Ticker sortiert, ihre Shard-Schluessel damit
+       zusammenhaengend; an 6.875 Titeln nachgerechnet: 646 Shards, kein
+       einziger Wiedereintritt. Trifft er doch ein, ueberschriebe er eine
+       fertige Datei - deshalb bricht er den Lauf ab statt still zu sein. */
+    let key;
+    try { key = Product.shardKey(member.s); }
+    catch {
+      rows[member.s] = { technical: "INVALID_PRODUCT_TICKER", signals: "INVALID_PRODUCT_TICKER", elliott: "NOT_RUN" };
+      unavailableSignals(member.s, "INVALID_PRODUCT_TICKER");
+      reasons.INVALID_PRODUCT_TICKER = (reasons.INVALID_PRODUCT_TICKER || 0) + 1; continue;
+    }
+    if (key !== currentShard) {
+      flushShard();
+      if (writtenShards.has(key)) throw new Error("SHARD_REOPENED:" + key);
+      currentShard = key;
+    }
     const file = pathFor(member.m);
-    if (!existsSync(file)) { rows[member.s] = { technical: "SOURCE_MISSING", signals: "SOURCE_MISSING", elliott: "NOT_RUN" }; unavailableSignals(member.s, "SOURCE_MISSING"); reasons.SOURCE_MISSING = (reasons.SOURCE_MISSING || 0) + 1; continue; }
+    if (!existsSync(file)) { rows[member.s] = { technical: "SOURCE_MISSING", signals: "SOURCE_MISSING", elliott: "NOT_RUN" }; unavailableSignals(member.s, "SOURCE_MISSING"); noteUnavailable(member.s, "SOURCE_MISSING", null); reasons.SOURCE_MISSING = (reasons.SOURCE_MISSING || 0) + 1; continue; }
     stats.historiesFound++;
     let input;
     try { input = validatedInput(load(file), member); }
-    catch (error) { const reason = String(error.message).split(":")[0]; rows[member.s] = { technical: reason, signals: reason, elliott: "NOT_RUN" }; unavailableSignals(member.s, reason); reasons[reason] = (reasons[reason] || 0) + 1; continue; }
+    catch (error) { const reason = String(error.message).split(":")[0]; rows[member.s] = { technical: reason, signals: reason, elliott: "NOT_RUN" }; unavailableSignals(member.s, reason); noteUnavailable(member.s, reason, null); reasons[reason] = (reasons[reason] || 0) + 1; continue; }
     stats.historiesValidated++; stats.adjustedProvenance++; stats.corporateActionsValidated++;
     stats.splitFactors += input.provenance.splitEvents;
     if (input.series.length >= 261) stats.lookbackCovered++;
@@ -161,7 +208,12 @@ export function materialize(options = {}) {
     else { const reason = "SIGNAL_" + (signal60?.reason || "UNAVAILABLE"); reasons[reason] = (reasons[reason] || 0) + 1; }
 
     if (member.t !== "TECHNICAL_READY" || input.series.length < minTechnicalBars) {
-      rows[member.s] = { technical: "INSUFFICIENT_HISTORY", signals: signal60?.state || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
+      /* Die Zahl entscheidet, nicht die Vormerkung: nur wer WIRKLICH zu
+         wenige Bars hat, bekommt "zu kurze Historie" zu lesen. Alles
+         andere waere ein Satz, der eine falsche Zahl nennt. */
+      const reason = input.series.length < minTechnicalBars ? "INSUFFICIENT_HISTORY" : "NOT_TECHNICAL_READY";
+      rows[member.s] = { technical: reason, signals: signal60?.state || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
+      noteUnavailable(member.s, reason, input.series.length);
       continue;
     }
     try {
@@ -176,9 +228,7 @@ export function materialize(options = {}) {
         benchmarkId: benchmark && member.s !== "SPY" ? "SPY" : null, provenance: input.provenance }), roundNumbers));
       const workspace = TechnicalWorkspace.build(artifact, { ticker: member.s, now: now.slice(0, 10) });
       if (workspace.state !== "AVAILABLE") throw new Error("TECHNICAL_CONTRACT_" + (workspace.reason || "UNAVAILABLE"));
-      const key = Product.shardKey(member.s);
-      if (currentShard && key !== currentShard) flushShard();
-      currentShard = key; currentInstruments[member.s] = artifact;
+      currentInstruments[member.s] = artifact;
       stats.technicalFullBundles++;
       const elliottCapable = !!bundle.elliott && bundle.elliott.status !== "UNAVAILABLE" && bundle.elliott.status !== "INSUFFICIENT_DATA";
       if (elliottCapable) stats.elliottCapable++;
@@ -187,6 +237,7 @@ export function materialize(options = {}) {
     } catch (error) {
       const reason = String(error.message).split(":")[0] || "TECHNICAL_FAILED";
       rows[member.s] = { technical: reason, signals: signal60?.state === "AVAILABLE" ? "AVAILABLE" : signal60?.reason || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
+      noteUnavailable(member.s, reason, input.series.length);
       reasons[reason] = (reasons[reason] || 0) + 1;
     }
   }

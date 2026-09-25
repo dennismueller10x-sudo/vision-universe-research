@@ -438,6 +438,29 @@ function create(options){
   return source;
  }
  async function technicalSource(ticker,securityId){try{return await materializedTechnical(ticker,securityId);}catch{return load('/quant/data/technical/instruments/'+ticker+'.json');}}
+ /* WARUM DIESER TITEL KEINE KURSSTRUKTUR HAT.
+  *
+  * Der Grund steht seit dem Lauf vom 25.09.2026 im selben Shard, den die
+  * Seite fuer diesen Titel ohnehin laedt - in einem eigenen Block mit
+  * eigener Version, damit der Bundle-Vertrag Byte fuer Byte bleibt, was er
+  * war. Fehlt der Block (aeltere Materialisierung), gibt dieser Leser
+  * null zurueck und die Oberflaeche sagt genau so viel wie vorher.
+  *
+  * Gemessen: 990 Titel haben zu wenig Historie (COOL: 20 Bars, notiert
+  * seit sechs Wochen), 208 liegen mit ihrem Fenster ausserhalb der
+  * Kalenderdeckung, einer hat keine Reihe. */
+ async function technicalUnavailability(ticker){
+  try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
+   if(!shard||shard.shard!==key||shard.unavailableSchemaVersion!=='technical-unavailable-1.0.0')return null;
+   const entry=shard.unavailable&&shard.unavailable[ticker];
+   if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
+   const bars=Number.isFinite(entry.bars)?entry.bars:null,required=Number.isFinite(entry.requiredBars)?entry.requiredBars:null;
+   /* Eine Forderung, die die vorhandene Zahl nicht uebersteigt, wuerde den
+    * Satz zum Widerspruch machen - dann lieber nur der Grund. */
+   return {reason:entry.reason,bars,requiredBars:required!==null&&bars!==null&&required<=bars?null:required,
+    schemaVersion:'technical-unavailable-1.0.0'};
+  }catch{return null;}
+ }
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
   const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s;}).filter(Boolean);
@@ -461,7 +484,8 @@ function create(options){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await hydrateCapabilities(await init()),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
-   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED');
+   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);
+   if(!member||member.t!=='TECHNICAL_READY')return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:member?await technicalUnavailability(ticker):null};
    const stock=await row(c,ticker)||broadRow(c,member);if(!stock)return unavailable('SOURCE_MISSING');
    function status(value,labels){return labels[value]?{state:'AVAILABLE',code:value,label:labels[value]}:{state:'SOURCE_MISSING',code:null,label:'Nicht verfügbar'};}
    try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker,member.m),b=source.bundle;
@@ -476,8 +500,9 @@ function create(options){
    }catch{
     const consumer=await consumerFor(ticker),metrics=consumer?.metrics||{};
     const momentum=Number.isFinite(metrics.return6M)?metrics.return6M:stock.momentum6m?.value,volatility=Number.isFinite(metrics.volatility252d)?metrics.volatility252d:stock.volatility?.value,distance=Number.isFinite(metrics.distanceTo52wHigh)?metrics.distanceTo52wHigh:stock.distanceTo52wHigh?.value;
-    if(!Number.isFinite(momentum)||!Number.isFinite(volatility))return unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED');
-    return {state:'AVAILABLE',ticker,asOf:consumer?.asOf||stock.asOf,methodology:'market-factors-1.0.0',evidenceLevel:'REDUCED_EVIDENCE',fullWorkspace:false,
+    const unavailability=await technicalUnavailability(ticker);
+    if(!Number.isFinite(momentum)||!Number.isFinite(volatility))return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability};
+    return {state:'AVAILABLE',ticker,asOf:consumer?.asOf||stock.asOf,methodology:'market-factors-1.0.0',evidenceLevel:'REDUCED_EVIDENCE',fullWorkspace:false,unavailability,
      trend:{state:Number.isFinite(distance)?'AVAILABLE':'SOURCE_MISSING',code:null,label:Number.isFinite(distance)?(distance>=-0.1?'Nahe am 52-Wochen-Hoch':'Unter dem 52-Wochen-Hoch'):'Nicht verfügbar'},
      momentum:{state:'AVAILABLE',code:momentum>=0?'POSITIVE':'NEGATIVE',label:momentum>=0?'6M positiv':'6M negativ'},
      volatility:{state:'AVAILABLE',code:'MEASURED',label:(volatility*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %'},

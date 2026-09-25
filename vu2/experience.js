@@ -178,6 +178,37 @@ function patternBalance(patterns,ticker){
  section.append(link('Chance und Risiko im Detail',href('quant',ticker),'button secondary'));
  return section;
 }
+/* WARUM DIESER TITEL KEINE KURSSTRUKTUR HAT - IN EINEM SATZ, DER STIMMT.
+ *
+ * Vorher stand dort viermal derselbe Satz: "Technische Analyse derzeit
+ * nicht verfuegbar". Gemessen am 25.09.2026 verbergen sich darunter vier
+ * verschiedene Sachverhalte - 990 Titel mit zu kurzer Historie (COOL:
+ * zwanzig Handelstage, notiert seit sechs Wochen), 208 mit einem Tag im
+ * Analysefenster ohne gesicherte Sitzungsaussage, einer ohne Reihe, plus
+ * die Faelle, in denen eine Pruefung angeschlagen hat.
+ *
+ * "Derzeit" ist bei einem sechs Wochen alten Titel zudem irreführend: da
+ * fehlt nichts, was gleich kommt - es fehlen 280 Handelstage. Ein
+ * unbekannter Code fuehrt bewusst zu null und damit zum alten Satz; ein
+ * roher Enum-Wert erscheint nie. */
+const TECHNICAL_REASON={
+ INSUFFICIENT_HISTORY:u=>u.bars!==null&&u.requiredBars!==null
+  ?'Diese Auswertung benötigt '+u.requiredBars.toLocaleString('de-DE')+' Handelstage; für diesen Titel liegen '+u.bars.toLocaleString('de-DE')+' vor.'
+  :'Für diesen Titel liegen noch zu wenige Handelstage vor.',
+ NOT_TECHNICAL_READY:()=>'Dieser Titel ist im geprüften Datenbestand für diese Auswertung noch nicht vorgemerkt.',
+ TECHNICAL_CALENDAR_INVALID:()=>'Im Auswertungsfenster liegt ein Tag, für den der geprüfte Börsenkalender keine gesicherte Sitzungsaussage hat. Ohne sie wird hier nichts veröffentlicht.',
+ SOURCE_MISSING:()=>'Für diesen Titel liegt keine geprüfte Kurshistorie vor.',
+ INVALID_HISTORY_PROVENANCE:()=>'Die Kurshistorie dieses Titels hat die Herkunftsprüfung nicht bestanden.',
+ INVALID_HISTORY_BAR:()=>'Ein Kurstag dieses Titels hat die Plausibilitätsprüfung nicht bestanden.',
+ INVALID_HISTORY_OBSERVED_AT:()=>'Der Beobachtungszeitpunkt der Kurshistorie ist nicht belegt.',
+ INVALID_CANONICAL_SERIES:()=>'Die aufbereitete Kursreihe hat die Schlussprüfung nicht bestanden.',
+ TECHNICAL_PARTIAL:()=>'Die Auswertung blieb unvollständig und wird deshalb nicht veröffentlicht.'};
+function technicalReasonText(unavailability){
+ if(!unavailability||typeof unavailability.reason!=='string')return null;
+ const satz=TECHNICAL_REASON[unavailability.reason]
+  ||(unavailability.reason.startsWith('TECHNICAL_CONTRACT_')?TECHNICAL_REASON.TECHNICAL_PARTIAL:null);
+ return satz?satz(unavailability):null;
+}
 async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);main.append(heading(s.name||'Aktienanalyse',s.ticker||''));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
  if(s.identityState==='AVAILABLE'){
   const [history,fundamentals]=await Promise.all([api.getHistoricalPriceHistory(ticker),api.getHistoricalFundamentals(ticker)]);
@@ -231,11 +262,12 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  }else business.append(notice('Unternehmenskennzahlen derzeit nicht auswertbar','Die professionellen Analysezugänge bleiben erreichbar. Fehlende Kennzahlen werden nicht ersetzt.'));
  main.append(business);
  const technical=await api.getTechnicalIntelligence(ticker);
+ const technicalGrund=technicalReasonText(technical.unavailability);
  const section=el('section',{class:'section'},[el('span',{class:'eyebrow',text:'Kursstruktur verstehen'}),el('h2',{text:LQ('technicalIntelligence')})]);
  if(technical.state==='AVAILABLE'){
-  const detail=technical.fullWorkspace?[el('p',{text:'Elliott Wave: '+technical.elliott.label+'. Die Szenarien sind keine Wahrscheinlichkeitsprognose.'}),actions([{label:'Vollständige Technical-Analyse',href:technical.workspace},{label:'Elliott: Szenarien & Invalidation',href:technical.elliottWorkspace}])]:[el('p',{class:'muted',text:'Vorhandene Kursfaktor-Evidenz. Ein vollständiges Technical- oder Elliott-Bundle ist für diesen Titel noch nicht publiziert.'}),actions([{label:'Vollständige Kursgeschichte',href:'/quant/stock/?ticker='+encodeURIComponent(ticker)}])];
+  const detail=technical.fullWorkspace?[el('p',{text:'Elliott Wave: '+technical.elliott.label+'. Die Szenarien sind keine Wahrscheinlichkeitsprognose.'}),actions([{label:'Vollständige Technical-Analyse',href:technical.workspace},{label:'Elliott: Szenarien & Invalidation',href:technical.elliottWorkspace}])]:[el('p',{class:'muted',text:'Vorhandene Kursfaktor-Evidenz. '+(technicalGrund||'Ein vollständiges Technical- oder Elliott-Bundle ist für diesen Titel noch nicht publiziert.')}),actions([{label:'Vollständige Kursgeschichte',href:'/quant/stock/?ticker='+encodeURIComponent(ticker)}])];
   section.append(el('div',{class:'technical-summary'},[['Trend',technical.trend],['Momentum',technical.momentum],['Volatilität',technical.volatility]].map(([label,state])=>el('div',{},[el('span',{class:'muted',text:label}),el('h3',{text:state.label})]))),el('p',{class:'muted',text:'Analyse bis '+technical.asOf+' · '+technical.methodology}),...detail);
- }else section.append(notice('Technische Analyse derzeit nicht verfügbar','Der vollständige Workspace bleibt über die Analysezugänge erreichbar.'));
+ }else section.append(notice('Technische Analyse derzeit nicht verfügbar',(technicalGrund?technicalGrund+' ':'')+'Der vollständige Workspace bleibt über die Analysezugänge erreichbar.'));
  main.append(section);
  await liveStockSection(ticker);
 }
@@ -937,10 +969,15 @@ function historicalEvidenceLine(index,best){
   ? ' Von den Titeln, die am '+hist.from+' zu '+best.label+' passten, passen am '+hist.to+' noch '
     +pct1(eintrag.persistence)+' ('+eintrag.stillMatching+' von '+eintrag.comparable+').'
   : '';
+ /* Der Hinweis bleibt - aber nicht als Widerspruch. Vorher stand direkt
+    hinter der gemessenen Quote "Keine historische Vergleichsbasis", was
+    das Gegenteil dessen behauptet, was die Zeile eben belegt hat. Gemeint
+    war und ist: es fehlt der Faktorpanel je vergangenem Stichtag, also
+    jede Aussage darueber, wie ein Stil FRUEHER abgeschnitten haette. */
  return el('p',{class:'muted',text:'Beständigkeit der Zuordnung, gemessen zwischen zwei veröffentlichten Ständen ('
   +hist.from+' → '+hist.to+').'+quote
-  +' Das ist eine Beobachtung an zwei Stichtagen und keine Rendite, keine Trefferquote und kein Backtest. '
-  +L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')});
+  +' Das ist eine Beobachtung an zwei Stichtagen und keine Rendite, keine Trefferquote und kein Backtest.'
+  +' Was weiterhin fehlt – '+L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')});
 }
 function strategyMatchSection(match,index,ticker){
  const section=el('section',{class:'section match-section'},[

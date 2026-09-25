@@ -166,7 +166,7 @@ jobs:
 
       - name: Contract and regression tests
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs quant/tests/technical-unavailability.test.mjs quant/tests/journey-coverage.test.mjs quant/tests/market-calendar.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
 
       # CRITICAL_PRODUCT_GAPS = 0 ist ein Ziel. In einem Dokument behauptet
