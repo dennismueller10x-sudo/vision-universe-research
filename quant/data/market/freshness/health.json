@@ -1,13 +1,13 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-24T17:42:09.185Z",
+  "checkedAt": "2026-09-25T00:16:10.556Z",
   "target": "repository",
   "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "localDate": "2026-09-24",
-    "localTime": "13:42:09",
-    "lastCompletedSession": "2026-09-23",
+    "localTime": "20:16:10",
+    "lastCompletedSession": "2026-09-24",
     "currentSession": "2026-09-24",
     "expectedIntradaySession": "2026-09-24"
   },
@@ -75,30 +75,34 @@
     "state": "STALE"
   },
   "daily": {
-    "universeAsOf": "2026-09-23",
-    "generatedAt": "2026-09-24T17:42:03.404Z",
+    "universeAsOf": "2026-09-24",
+    "generatedAt": "2026-09-25T00:16:04.819Z",
     "state": "LAST_SESSION",
     "reason": "lastCompletedSession",
-    "label": "Schluss Mittwoch",
-    "expectedSession": "2026-09-23",
+    "label": "Schluss Heute",
+    "expectedSession": "2026-09-24",
     "sample": {
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 40,
-        "STALE": 0,
+        "LAST_SESSION": 39,
+        "STALE": 1,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "lastCompletedSession": 39,
+        "olderThanLastSession": 1
       },
-      "staleSample": [],
-      "seriesIndexCount": 6458
+      "staleSample": [
+        "ARCO"
+      ],
+      "seriesIndexCount": 6462
     }
   },
   "overall": "STALE",
   "findings": [
-    "Intraday STALE: Datenstand 2026-09-22, erwartet 2026-09-24 (olderThanLastSession)"
+    "Intraday STALE: Datenstand 2026-09-22, erwartet 2026-09-24 (olderThanLastSession)",
+    "Universumslauf fehlt: Sitzung 2026-09-24 liegt nur fuer den Discover-Umfang vor (4.3 h nach Schluss)"
   ],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
