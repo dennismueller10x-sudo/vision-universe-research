@@ -98,10 +98,41 @@ The owner's question was whether SPY has to depend on the total-return check at 
   changes; the confirmation count restarts, so a first rejection under a new rule is not instantly
   a 40-hour block.
 
-Flags: `SPY_SPLIT_ADJUSTED_BENCHMARK` and `BENCHMARK_FRESHNESS` are decided by the next refresh run
-(the structural dependency is removed either way), `TOTAL_RETURN_VALIDATION_UNCHANGED = PASS`
-(asserted by a test that greps market-quality.js for the fallback vocabulary and finds none),
-`DISCOVERY_CHANGED = false`.
+**Measured on the run that followed (36090303116, commit `c0ea35d06c`, factors 04:35 UTC):**
+
+```
+SPY_SPLIT_ADJUSTED_BENCHMARK      = PASS   935 Bars bis 2026-09-24, returnBasis
+                                           SPLIT_ADJUSTED_PRICE via
+                                           RECONSTRUCTED_FROM_SPLIT_FACTOR
+BENCHMARK_FRESHNESS               = PASS   state CURRENT, lagBehindNewestSessions 0,
+                                           newestSecurityDate 2026-09-24
+RELATIVE_STRENGTH_AVAILABLE_BROADLY = PASS securitiesWithoutRelativeStrength 0 (vorher 6.267);
+                                           kein einziges BENCHMARK_STALE in 6.437 Zeilen,
+                                           5.606 mit 12M-Wert, die 831 ohne aus eigener
+                                           zu kurzer Historie
+TOTAL_RETURN_VALIDATION_UNCHANGED = PASS   SPY: claimed TOTAL_RETURN, inferred TOTAL_RETURN,
+                                           basis "dividend" - die Pruefung hat die
+                                           Bereinigung positiv bestaetigt, nicht umgangen
+DISCOVERY_CHANGED                 = false  verify-discover-data 63.930 Pruefungen, keine
+                                           Abweichung; 26 Reihen, keine leer; 5.987 Titel
+```
+
+Zwei Dinge daran sind wichtiger als die Flaggen:
+
+1. **SPY brauchte den Rueckfall nicht.** Es hat die Konsistenzpruefung diesmal regulaer
+   bestanden, weil das gemischte Bereinigungsfenster reparariert ist und die Regelaenderung
+   die 20-Stunden-Sperre aufgehoben hat - alle 6.876 Titel wurden gefragt, `skipped: 0`
+   (vorher 529 zurueckgestellt). Die strukturelle Unabhaengigkeit ist damit vorhanden und
+   heute unbenutzt: sie ist die Zusicherung fuer den naechsten Widerspruch, nicht die
+   Erklaerung fuer diesen.
+2. **20 Titel haben ihn genommen** - AG, BBD, CASH, CRS, DIT, FGBI, IBKR, IFLO, MUSA, NMM,
+   PEGA, PLPC, RMCO, SXI, TECH, TER, TILE, TMO, TPB, TRI. Sie stehen mit 935 Bars bis
+   2026-09-24 im Bestand, ihre relative Staerke ist CALCULATED, und ihre Anlegerrendite ist
+   UNAVAILABLE mit `TOTAL_RETURN_SERIES_UNAVAILABLE`. Genau 20 von 6.437 Zeilen verlieren die
+   Gesamtrendite, genau dieselben 20 - und keine verliert ihr Kursmomentum. Ohne die Trennung
+   waeren sie abgelehnt worden und gealtert (345 Ablehnungen statt 365).
+
+Gates gegen die neuen Daten: PRE 2.022/2.022, INTEGRITY 113/113.
 
 ### Setup Experience
 
