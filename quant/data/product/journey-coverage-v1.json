@@ -1,6 +1,6 @@
 {
  "schemaVersion": "journey-coverage-1.0.0",
- "generatedAt": "2026-09-25T12:56:09.000Z",
+ "generatedAt": "2026-09-25T13:33:09.000Z",
  "universe": 6875,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
@@ -80,15 +80,15 @@
   {
    "id": "patterns",
    "label": "Chance und Risiko in aehnlichen Lagen",
-   "answered": 400,
-   "findings": 79,
+   "answered": 402,
+   "findings": 80,
    "findingReasons": {
-    "NO_PATTERN_HOLDS": 79
+    "NO_PATTERN_HOLDS": 80
    },
-   "withheld": 100,
-   "share": 0.8,
+   "withheld": 98,
+   "share": 0.804,
    "reasons": {
-    "NOT_COVERED_BY_PATTERN_MATCH": 100
+    "NOT_COVERED_BY_PATTERN_MATCH": 98
    }
   },
   {
@@ -144,12 +144,12 @@
  "answeredStationsPerTitle": {
   "3": 2,
   "5": 6,
-  "6": 57,
-  "7": 26,
+  "6": 56,
+  "7": 27,
   "8": 1,
   "9": 1,
-  "10": 26,
-  "11": 381
+  "10": 25,
+  "11": 382
  },
  "note": "Gemessen ueber dieselben Dienste, die die Oberflaeche aufruft. 'withheld' heisst: die Station nennt einen Grund statt einer Zahl - kein Fehler, sondern der veroeffentlichte Zustand."
 }

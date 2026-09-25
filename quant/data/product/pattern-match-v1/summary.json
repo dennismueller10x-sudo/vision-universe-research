@@ -1,21 +1,21 @@
 {
  "schemaVersion": "pattern-match-1.0.0",
- "generatedAt": "2026-09-25T12:55:40.000Z",
- "asOf": "2026-09-10",
+ "generatedAt": "2026-09-25T13:32:22.000Z",
+ "asOf": "2026-09-24",
  "horizon": "H24",
  "horizonMonths": 24,
  "winnerThreshold": "W100",
  "winnerMinReturn": 1,
  "lossThreshold": -0.5,
- "baseRate": 0.108657,
+ "baseRate": 0.108695,
  "studies": {
   "price": {
    "methodologyVersion": "pattern-research-1.0.0",
-   "contentHash": "c5525ee50323c4f9"
+   "contentHash": "ea3c64e0bfead032"
   },
   "fundamental": {
    "methodologyVersion": "pattern-research-fundamentals-1.0.0",
-   "contentHash": "8f997043b386ddbe"
+   "contentHash": "c773c00311fbc9fe"
   }
  },
  "caveats": {
@@ -35,14 +35,14 @@
   },
   "fundamental": {
    "PARAMETER_SENSITIVE": 3,
-   "IN_SAMPLE_ONLY": 116,
-   "NOT_SIGNIFICANT": 36,
+   "IN_SAMPLE_ONLY": 112,
+   "NOT_SIGNIFICANT": 38,
    "INSUFFICIENT_SUPPORT": 1
   }
  },
  "withheldNote": "Nur Muster mit dem Urteil ROBUST werden neben einem Titel gezeigt. Was zurueckgehalten wurde, steht hier gezaehlt statt zu verschwinden.",
- "instruments": 5569,
- "withoutFundamentals": 1496,
+ "instruments": 5591,
+ "withoutFundamentals": 1502,
  "shards": [
   "AA",
   "AB",
@@ -694,17 +694,17 @@
  "candidates": 30,
  "unavailableSchemaVersion": "pattern-unavailable-1.0.0",
  "unavailable": {
-  "total": 1306,
+  "total": 1284,
   "requiredWeeks": 104,
   "reasons": {
-   "INSUFFICIENT_WEEKLY_HISTORY": 737,
-   "NO_WEEKLY_SERIES": 567,
+   "INSUFFICIENT_WEEKLY_HISTORY": 740,
+   "NO_WEEKLY_SERIES": 542,
    "NO_MEASURABLE_FEATURES": 2
   },
   "note": "Je Titel im eigenen Shard nachlesbar. Die Luecke ist eine Datengrenze der Studie (104 Wochen vorregistriert) und kein Fehlschlag des Titels."
  },
  "findingCount": {
   "price": 69,
-  "fundamental": 181
+  "fundamental": 183
  }
 }
