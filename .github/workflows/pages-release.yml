@@ -116,7 +116,12 @@ jobs:
           SITE_ROOT: ${{ runner.temp }}/site
         run: |
           npm install --prefix /tmp/vu2-smoke playwright@1.55.0
-          NODE_PATH=/tmp/vu2-smoke/node_modules node -e "require('playwright').chromium.executablePath()" >/dev/null 2>&1 || npx --yes playwright@1.55.0 install --with-deps chromium
+          # executablePath() liefert den ERWARTETEN Pfad und prueft nicht, ob
+          # die Datei existiert - als Bedingung war die Installation damit
+          # immer uebersprungen und der Start scheiterte am fehlenden
+          # headless_shell. Deshalb wie in allen anderen Workflows dieses
+          # Repositories: unbedingt installieren, mit der gepinnten CLI.
+          /tmp/vu2-smoke/node_modules/.bin/playwright install --with-deps chromium
           NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
 
       - name: Enforce delivery contract
