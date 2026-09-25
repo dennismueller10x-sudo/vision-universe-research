@@ -421,7 +421,8 @@ jobs:
         run: |
           bash scripts/ci/commit-and-push.sh \
             "Market Pulse aktualisiert (automatischer Lauf)" \
-            quant/data/market/intelligence/market-pulse.json
+            quant/data/market/intelligence/market-pulse.json \
+            quant/data/market/intelligence/market-pulse-history.json
 
   # PRODUCTION PROOF (§57): prueft den tatsaechlich ausgelieferten Stand,
   # nicht das Repository. Laeuft nur auf ausdruecklichen Dispatch mit
