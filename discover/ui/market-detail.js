@@ -385,6 +385,88 @@
     return { seit: b[0], bp: bp, text: vz(bp, zahl(Math.abs(bp), 0) + " bp") + " am " + datumText(b[0]) };
   }
 
+  /* ------------------------------------------------------- Einordnung */
+
+  var PULSE = "/quant/data/market/intelligence/market-pulse.json";
+  var TREND_WORT = { POSITIVE: "Aufwärtstrend", NEGATIVE: "Abwärtstrend", MIXED: "Kein klarer Trend" };
+  var VOL_WORT = { HIGHER: "höher als üblich", LOWER: "niedriger als üblich", USUAL: "im üblichen Rahmen" };
+  function pz(v, d) { return vz(v, zahl(Math.abs(v), d === undefined ? 1 : d) + " %"); }
+  function bpText(v) { return vz(v, zahl(Math.abs(v), Math.abs(v) % 1 ? 1 : 0) + " bp"); }
+
+  /**
+   * "Wie steht dieser Markt?" - aus den Kennzahlen des Core
+   * (market-pulse.json instruments), asset-aware: Kurse in Prozent,
+   * Renditen und Zinsen in Basispunkten ohne Wertung. Keine Betraege -
+   * die Waehrung bleibt Sache von Kopf und Chart (Currency Core).
+   */
+  function einordnung(c, sig, puls) {
+    if (!sig) return null;
+    var satz = sig.kind === "PRICE";
+    var zeilen = [];
+    function zeile(titel, wert, erklaerung, cls) {
+      zeilen.push(el("div", { class: "dx-md-eo-zeile" + (cls ? " " + cls : "") }, [
+        el("dt", {}, [el("span", { text: titel }), erklaerung ? el("small", { text: erklaerung }) : null].filter(Boolean)),
+        el("dd", { text: wert })
+      ]));
+    }
+    var wer = c.tracker ? "Der " + c.instrument.symbol + "-Tracker" : (c.instrument.nameDe || c.instrument.name);
+    if (satz && sig.trend && sig.trend !== "UNAVAILABLE") {
+      zeile("Trend", TREND_WORT[sig.trend] + " · " + (sig.dist50 >= 0 ? "über" : "unter") + " der 50-Tage-Linie (" + pz(sig.dist50) + "), " +
+        (sig.dist200 >= 0 ? "über" : "unter") + " der 200-Tage-Linie (" + pz(sig.dist200) + ")",
+        "Liegt der Kurs über seinen Durchschnitten der letzten 50 und 200 Handelstage?");
+    }
+    if (!satz && isNum(sig.vs200)) {
+      zeile(c.instrument.assetClass === "RATE" ? "Satz gegenüber dem Durchschnitt" : "Rendite gegenüber dem Durchschnitt",
+        bpText(sig.vs200) + " gegenüber dem Durchschnitt der letzten 200 Werte" + (isNum(sig.vs50) ? ", " + bpText(sig.vs50) + " gegenüber den letzten 50" : ""),
+        "Höher oder niedriger als im jüngeren Schnitt – für sich weder gut noch schlecht.");
+    }
+    if (satz && isNum(sig.drawdown52w)) {
+      zeile("Abstand zum 52-Wochen-Hoch", sig.drawdown52w > -0.05 ? "Auf dem Hoch" : pz(sig.drawdown52w),
+        "Wie weit liegt der Markt unter seinem höchsten Stand der letzten zwölf Monate?");
+    }
+    if (satz && isNum(sig.vol20)) {
+      zeile("Schwankung", zahl(sig.vol20, 1) + " % aufs Jahr gerechnet" + (sig.volContext ? " – " + VOL_WORT[sig.volContext.state] + " (5-Jahres-Median " + zahl(sig.volContext.median, 1) + " %)" : ""),
+        "Wie stark schwankt der Kurs tatsächlich? Gemessen über die letzten 20 Beobachtungen" + (c.instrument.assetClass === "CRYPTO" ? ", 24/7-Markt mit 365 Handelstagen" : "") + ".");
+    }
+    var ch = sig.changes || {};
+    var ver = [["1M", "1 Monat"], ["3M", "3 Monate"], ["1Y", "1 Jahr"]].filter(function (x) { return isNum(ch[x[0]]); }).map(function (x) {
+      return x[1] + " " + (satz ? pz(ch[x[0]], 1) : bpText(ch[x[0]]));
+    });
+    if (ver.length) zeile("Veränderung", ver.join(" · "), satz ? (c.tracker ? "Performance des ETF-Trackers (Kurs, ohne Ausschüttungen)." : null) : "In Basispunkten: 100 bp = 1 Prozentpunkt.");
+
+    /* 52-Wochen-Spanne: Lage zwischen Tief und Hoch. */
+    var spanne = null;
+    if (sig.high52w && sig.low52w && isNum(sig.rangePosition)) {
+      var links = satz ? "Tief " + datumText(sig.low52w.date) : "Tief " + zahl(sig.low52w.value, 2) + " % (" + datumText(sig.low52w.date) + ")";
+      var rechts = satz ? "Hoch " + datumText(sig.high52w.date) : "Hoch " + zahl(sig.high52w.value, 2) + " % (" + datumText(sig.high52w.date) + ")";
+      var ueberTief = satz && sig.low52w.value > 0 ? pz(100 * (sig.last / sig.low52w.value - 1)) + " über dem Tief" : null;
+      spanne = el("div", { class: "dx-md-eo-spanne" }, [
+        el("p", { class: "dx-md-eo-spanne-titel", text: "Lage in der 52-Wochen-Spanne" + (ueberTief ? " · " + ueberTief : "") }),
+        el("div", { class: "dx-md-eo-spur", role: "img", "aria-label": "Aktuell bei " + zahl(sig.rangePosition, 0) + " % der Spanne zwischen 52-Wochen-Tief und -Hoch" }, [
+          el("span", { class: "dx-md-eo-zeiger", style: "left:" + Math.max(0, Math.min(100, sig.rangePosition)) + "%" })
+        ]),
+        el("p", { class: "dx-md-eo-enden" }, [el("span", { text: links }), el("span", { text: rechts })])
+      ]);
+    }
+
+    /* Rolle im Marktumfeld - Verbindung Markt -> Gesamtbild. */
+    var rollen = (sig.roles || []).map(function (r) { return el("li", { text: r.text }); });
+    var env = puls && puls.environment;
+    var rolle = rollen.length || env ? el("div", { class: "dx-md-eo-rolle" }, [
+      el("h3", { text: "Rolle im Marktumfeld" }),
+      rollen.length ? el("ul", {}, rollen) : el("p", { text: "Dieser Markt fließt nicht direkt in die Einordnung des Marktumfelds ein – er wird als eigener Markt gezeigt." }),
+      env && env.level !== null ? el("a", { class: "dx-md-chip", href: "#/maerkte", text: "Marktumfeld: " + env.label + " – ansehen" }) : null
+    ].filter(Boolean)) : null;
+
+    return el("section", { class: "dx-md-einordnung", "aria-label": "Einordnung" }, [
+      el("h2", { text: "Wie steht " + (c.tracker ? "dieser Markt" : "dieser Wert") + "?" }),
+      el("p", { class: "dx-md-eo-unter", text: wer + " – Stand " + datumText(sig.asOf) + ", berechnet aus der kanonischen Tagesreihe. Beschreibung, keine Prognose." }),
+      spanne,
+      el("dl", { class: "dx-md-eo-liste" }, zeilen),
+      rolle
+    ].filter(Boolean));
+  }
+
   /* ---------------------------------------------------------------- Live */
 
   /**
@@ -446,9 +528,9 @@
   function render(root, symbol, ctx) {
     ctx = ctx || {};
     var sym = String(symbol || "").toUpperCase();
-    return Promise.all([S.loadJSON(SNAPSHOT), S.loadJSON(CONFIG).catch(function () { return null; })]).then(function (r) {
+    return Promise.all([S.loadJSON(SNAPSHOT), S.loadJSON(CONFIG).catch(function () { return null; }), S.loadJSON(PULSE).catch(function () { return null; })]).then(function (r) {
       if (ctx.isActive && !ctx.isActive()) return;
-      var snap = r[0], cfg = r[1] || {};
+      var snap = r[0], cfg = r[1] || {}, puls = r[2];
       var jetzt = new Date();
       var alle = snap.instruments.map(function (c) { return MA().refresh(c, { now: jetzt, calendar: ctx.calendar, config: cfg }); });
       var c = alle.filter(function (x) { return x.instrument.symbol === sym || x.instrument.instrumentId === symbol; })[0];
@@ -466,6 +548,7 @@
       var seite = el("article", { class: "dx-page dx-md", "data-instrument": c.instrument.symbol, "data-asset-class": c.instrument.assetClass,
                                   "data-proxy": c.proxy && c.proxy.isProxy ? "tracker" : "none" }, [
         zurueck, k.node, chart.node,
+        einordnung(c, puls && puls.instruments ? puls.instruments[c.instrument.symbol] : null, puls),
         warum ? el("section", { class: "dx-md-warum" }, [el("h2", { text: "Warum ist das wichtig?" }), el("p", { text: warum })]) : null,
         fakten(c, stufen),
         weitere(c, alle),
@@ -482,6 +565,6 @@
   global.VUDiscover.MarketDetail = {
     render: render, zeitraeume: zeitraeume, standardZeitraum: standardZeitraum, treppe: treppe,
     intradayFenster: intradayFenster, performanceText: performanceText, instrumentText: instrumentText,
-    letzteAenderung: letzteAenderung, warumWichtig: warumWichtig, achsenText: achsenText
+    letzteAenderung: letzteAenderung, warumWichtig: warumWichtig, achsenText: achsenText, einordnung: einordnung
   };
 })(typeof window !== "undefined" ? window : globalThis);
