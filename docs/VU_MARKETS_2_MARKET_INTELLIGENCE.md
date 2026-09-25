@@ -168,10 +168,12 @@ Die Movers kommen aus der Sitzung vom 24.09. gegenüber dem 23.09. mit 1 991 liq
 - Navigation: Karte zum Detail, Reload auf der Detailroute, Browser-Zurück.
 - Barrierefreiheit (axe): keine kritischen oder ernsten Verstöße auf `#/maerkte`, `#/maerkte/QQQ` und `#/maerkte/US10Y`.
 
-**Im selben Lauf, außerhalb von Markets 2.0:**
-- Browser-QA Discover: 185 von 186 bestanden. Offen ist ein Check auf der Startseite („320-light five-second entry heuristic: search missing“, `.v2-search-prompt` noch nicht gerendert). Die Startseite ist unverändert; lokal besteht derselbe Stand 186/186.
+**Im selben Workflow, außerhalb von Markets 2.0:**
+- Browser-QA Discover:
+  - Erster Lauf: 185 von 186 bestanden. Offen war der Startseiten-Check „320-light five-second entry heuristic: search missing“ (`.v2-search-prompt` noch nicht gerendert).
+  - Bestätigungslauf (Run 36116529320, Versuch 2): alle bestanden. Die Startseite ist unverändert; lokal besteht derselbe Stand 186/186.
 - Live-QA: 33 von 33.
-- Strenge Freshness: rot wegen der veralteten Aktien-Tagesreihen vom 18.09. Die Reparatur läuft in PR #182.
+- Strenge Freshness: rot wegen der veralteten Aktien-Tagesreihen vom 18.09. Die Reparatur läuft in PR #182. Das ist die einzige rote Prüfung des Workflows.
 
 **Realtime:** Der Nachweis lief vor der US-Eröffnung (Sitzung „Vorbörse“). Die Tracker zeigen korrekt „Letzter Handelsstand“; „Live“ erschien nirgends. Die Live-Übergänge nutzen `LiveHub.live`, denselben Pfad wie die Aktienseite. Ein Nachweis bei offener Börse folgt mit der Tracker-Messung bei geöffnetem US-Markt.
 
@@ -218,7 +220,7 @@ Die Movers kommen aus der Sitzung vom 24.09. gegenüber dem 23.09. mit 1 991 liq
 ## 10. Offene Punkte
 
 1. **Aktien-Tagesreihen (Stand 18.09.):** Sobald der Refresh aus PR #182 wieder läuft, wird BREADTH automatisch aktuell. Dafür ist keine Änderung hier nötig.
-2. **Browser-QA Discover:** ein Startseiten-Check bei 320 px, außerhalb dieses Auftrags. Die Wiederholung zur Bestätigung ist angestoßen.
+2. **Browser-QA Discover:** Der Startseiten-Check scheiterte im ersten Lauf einmalig an der Zeit bis zum ersten Bild und bestand im Bestätigungslauf. Er liegt außerhalb dieses Auftrags und sollte beobachtet werden.
 3. **Realtime-Nachweis bei offener US-Börse:** Tracker-Messung (WebSocket, Stufe 6) und Blick auf „Markt geöffnet · Live“ im Detail.
 4. **Sektoren:** Sie brauchen einen belastbaren Sektor-Vertrag (GICS-ähnlich, breite Abdeckung). Das ist eine Owner-Entscheidung zu einer Datenquelle.
 5. **Movers mit Volumenspitzen:** Der Intraday-Pfad trägt kein Volumen.
