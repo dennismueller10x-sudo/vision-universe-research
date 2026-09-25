@@ -49,6 +49,36 @@ const MEASURES = {
   volatilityHigh: (b) => (b.volatility?.regime ? b.volatility.regime === "HIGH" : null)
 };
 
+/**
+ * Was mit einer bereits veroeffentlichten Beobachtung dieses Stichtags
+ * passiert. Gibt die Abweichung zurueck oder wirft - und schreibt nie.
+ *
+ * Die Trennlinie: eine andere Methodikversion unter demselben Datum sind
+ * zwei Bedeutungen in einer Datei, das bricht ab. Eine andere Zahl bei
+ * gleicher Methodik ist eine gewachsene Grundgesamtheit - die
+ * veroeffentlichte Zahl bleibt, und die Abweichung wird benannt.
+ *
+ * Steht als eigene Funktion da, damit die Entscheidung pruefbar ist, ohne
+ * die Materialisierung laufen zu lassen.
+ */
+export function observationVerdict(previous, snapshot, universe) {
+  if (!previous || previous.methodologyVersion !== snapshot.methodologyVersion) {
+    throw new Error("the published market regime observation for " + snapshot.asOf + " carries methodology " +
+      (previous && previous.methodologyVersion) + ", this run is " + snapshot.methodologyVersion +
+      "; version the observation instead of mixing two meanings under one date");
+  }
+  if (previous.contentHash === snapshot.contentHash) return null;
+  return {
+    asOf: snapshot.asOf, rewritten: false,
+    publishedRegime: previous.regime || null,
+    publishedUniverse: Number.isFinite(previous.universe) ? previous.universe : null,
+    measuredNowOver: Number.isFinite(universe) ? universe : null,
+    note: "Die veroeffentlichte Beobachtung dieses Stichtags bleibt unveraendert. Heute wuerde " +
+          "derselbe Tag ueber eine andere Grundgesamtheit gemessen - ein Anteil laesst sich nicht " +
+          "erweitern, und ein veroeffentlichter Vergangenheitswert wird nicht umgeschrieben."
+  };
+}
+
 function main() {
   const counts = {};
   for (const id of Object.keys(MEASURES)) counts[id] = { hits: 0, observed: 0 };
@@ -79,6 +109,27 @@ function main() {
     methodology, universe, counts, historyDepth: historyDates.length
   }));
 
+  /* DIE VEROEFFENTLICHTE BEOBACHTUNG BLEIBT - UND DAS IST KEIN FEHLER.
+
+     Anlass, 25.09.2026 (Lauf 36118389993): die Kalenderdeckung wurde
+     erweitert, 166 Titel bekamen erstmals ein Technical-Bundle, und damit
+     wurde dieselbe Breite zum SELBEN Stichtag 2026-09-10 ueber eine groessere
+     Grundgesamtheit gemessen. Der Waechter verweigerte das Umschreiben - zu
+     Recht - und riss den ganzen Lauf mit.
+
+     Hier gilt ausdruecklich NICHT die Ausnahme, die bei der
+     Setup-Beobachtung richtig ist. Dort ist jede Zeile die Aussage EINES
+     Titels: kommen Titel hinzu, kommen Aussagen hinzu, und keine vorhandene
+     aendert sich. Hier ist die Aussage ein ANTEIL an einer
+     Grundgesamtheit - eine groessere Grundgesamtheit aendert die Zahl selbst.
+     Einen Prozentsatz kann man nicht erweitern.
+
+     Also bleibt die veroeffentlichte Beobachtung, wie sie veroeffentlicht
+     wurde, die heutige Messung steht im aktuellen Artefakt, und die
+     Abweichung wird benannt statt verschwiegen. Was weiterhin abbricht: eine
+     Datei zu diesem Stichtag, die eine ANDERE Methodikversion traegt - das
+     ist ein Versionierungsfehler und keine gewachsene Deckung. */
+  let publishedObservation = null;
   const generatedAt = new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z");
   const payload = {
     ...result,
@@ -96,8 +147,6 @@ function main() {
       minimumRequired: methodology.tiers.PATH_DEPENDENT.minimumOrderedObservations
     }
   };
-  writeFileSync(OUT, JSON.stringify(payload, null, 1) + "\n");
-
   /* The immutable observation. Its hash deliberately excludes generatedAt:
      a re-run must not look like a changed past. */
   if (cutoff) {
@@ -113,13 +162,19 @@ function main() {
     snapshot.contentHash = createHash("sha256").update(JSON.stringify(snapshot)).digest("hex").slice(0, 16);
     const path = join(HISTORY_DIR, cutoff + ".json");
     if (existsSync(path)) {
-      const previous = JSON.parse(readFileSync(path, "utf8"));
-      if (previous.contentHash !== snapshot.contentHash) {
-        throw new Error("a published market regime observation for " + cutoff + " would change; refusing to rewrite it");
-      }
+      publishedObservation = observationVerdict(JSON.parse(readFileSync(path, "utf8")), snapshot, universe);
     } else {
       writeFileSync(path, JSON.stringify(snapshot, null, 1) + "\n");
+      publishedObservation = { asOf: cutoff, rewritten: false, written: true, measuredNowOver: universe };
     }
+  }
+  payload.publishedObservation = publishedObservation;
+  writeFileSync(OUT, JSON.stringify(payload, null, 1) + "\n");
+  if (publishedObservation && publishedObservation.publishedUniverse !== undefined &&
+      publishedObservation.publishedUniverse !== null) {
+    process.stdout.write("  Beobachtung " + cutoff + " bleibt wie veroeffentlicht: damals " +
+      publishedObservation.publishedUniverse + " Titel (" + publishedObservation.publishedRegime +
+      "), heute waeren es " + publishedObservation.measuredNowOver + "\n");
   }
 
   process.stdout.write("Market Regime " + methodology.methodologyVersion + " @ " + cutoff + "\n");
@@ -136,4 +191,6 @@ function main() {
     " · Beobachtungen " + historyDates.length + "\n");
 }
 
-main();
+/* Als Programm ausfuehren, aber als Modul importierbar bleiben: der Test der
+   Beobachtungsregel soll nicht die ganze Materialisierung starten. */
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();

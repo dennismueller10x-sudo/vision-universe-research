@@ -289,7 +289,7 @@ Tag beschreiben. Zwei Dinge sind daraus geworden:
 Der Rueckstand verschwindet damit nicht rueckwirkend — er verschwindet mit dem naechsten
 Abruf, und bis dahin steht er auf der Seite.
 
-### M20 — realisiert: 166 Titel mehr, und ein Waechter, der zu Recht ansprang
+### M20 — realisiert: 166 Titel mehr, und zwei Waechter, die zu Recht ansprangen
 
 Lauf 36115714241 hat die Kalenderdeckung gegen die echten Reihen gerechnet:
 
@@ -306,17 +306,29 @@ Die geschaetzten 413 waren die Summe beider Pruefungen; realisiert sind 328 Wied
 (166 + 162), und die restlichen 85 Faelle liegen mit ihrem Fenster vor 2022-01-01 — das ist
 eine Datengrenze und keine Deckungsluecke mehr.
 
-Derselbe Lauf ist dann abgebrochen, und zwar richtig: die Setup-Beobachtung zum **selben**
-Stichtag 2026-09-10 hatte ploetzlich mehr Zeilen, und der Unveraenderlichkeitswaechter
-verweigerte — „a published past is not rewritten". In der Sache hatte er recht. Nur passierte
-das, was er schuetzt, nicht: keine veroeffentlichte Zeile aenderte sich, es kamen Zeilen hinzu.
+Zwei Waechter derselben Familie sind dabei angesprungen, und beide hatten in der Sache recht:
 
-Daraus die engste moegliche Ausnahme (`extensionVerdict`, mit eigenen Tests): gleiche Spalten,
-jede veroeffentlichte Zeile Wert fuer Wert unveraendert, mindestens ein Titel neu. Eine
-geaenderte Invalidierungsmarke bei gleichem Zustand ist ein geaenderter Satz und bleibt
-verboten; eine verschwundene Zeile ebenso. Die Erweiterung ist nicht still: sie traegt die
-Kette der Fassungen (`lineage`) und die Zahl der neuen Titel im Artefakt, und der Inhaltshash
-wird danach neu gebildet.
+```
+Lauf 36115714241  Setup-Beobachtung  dieselbe Stichtagsdatei haette mehr ZEILEN
+Lauf 36118389993  Markt-Regime       dieselbe Stichtagsdatei haette andere ZAHLEN
+```
+
+Der erste Versuch war, die harmlose Form zuzulassen: nur Zeilen hinzufuegen, keine aendern.
+Entschieden ist die Frage aber schon, und zwar in `build-factor-evidence.mjs`, wo sie einmal
+einen ganzen Lauf gekostet hat: **„a comparison point has to be a value that was PUBLISHED on
+that date, not one recomputed today."** Danach ist auch eine Erweiterung eine Neuberechnung der
+Vergangenheit — die 166 Titel wurden an diesem Stichtag nicht veroeffentlicht. Sie treten mit
+dem naechsten Stichtag in die Reihe ein, und das ist ihr richtiges Datum.
+
+Deshalb jetzt **dieselbe Antwort an allen drei Stellen**: die veroeffentlichte Datei bleibt
+unberuehrt, der Lauf laeuft weiter, und die Abweichung wird gemessen und ausgewiesen —
+`recomputationDrift` (Faktoren, bestand schon), `observationDrift` (Setup, neu),
+`publishedObservation` (Regime, neu). Was weiterhin abbricht: eine korrupte Datei, und eine
+andere Methodik- oder Mapping-Version unter demselben Datum.
+
+Beim Regime kommt eine eigene Begruendung hinzu, die beim Setup nicht gilt: dort ist jede Zeile
+die Aussage EINES Titels, hier ist die Aussage ein ANTEIL an einer Grundgesamtheit. **Einen
+Prozentsatz kann man nicht erweitern** — eine groessere Grundgesamtheit aendert die Zahl selbst.
 
 ### M22 — vier „derzeit nicht verfuegbar", die vier verschiedene Sachverhalte waren
 

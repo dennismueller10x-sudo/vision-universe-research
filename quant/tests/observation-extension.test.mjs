@@ -1,26 +1,33 @@
 /* =========================================================================
-   EINE ERWEITERUNG IST KEIN UMSCHREIBEN - UND SONST NICHTS.
+   EINE VEROEFFENTLICHTE BEOBACHTUNG WIRD NICHT ANGEFASST - AUCH NICHT
+   ERWEITERT.
 
-   Der Anlass, 25.09.2026: die Kalenderdeckung wurde von 2025-01-01 auf
-   2022-01-01 erweitert, weil zwei Pruefungen Titel vollstaendig verworfen
-   haben, deren 270-Bar-Fenster aus der Deckung herausreichte. 166 Titel
-   bekamen dadurch erstmals ein Technical-Bundle - und die Setup-Beobachtung
-   zum selben Stichtag 2026-09-10 hatte mehr Zeilen als die veroeffentlichte.
-   Der Unveraenderlichkeitswaechter hat den ganzen Lauf abgebrochen
-   (Lauf 36115714241): "a published past is not rewritten".
+   Der Anlass, 25.09.2026 (Lauf 36115714241): die Kalenderdeckung wurde von
+   2025-01-01 auf 2022-01-01 erweitert, weil zwei Pruefungen Titel
+   vollstaendig verworfen haben, deren 270-Bar-Fenster aus der Deckung
+   herausreichte. 166 Titel bekamen dadurch erstmals ein Technical-Bundle -
+   und die Setup-Beobachtung zum selben Stichtag 2026-09-10 hatte mehr
+   Zeilen. Der Unveraenderlichkeitswaechter riss den ganzen Lauf mit.
 
-   In der Sache hatte er recht. Nur passierte das, was er schuetzt, gar
-   nicht: keine veroeffentlichte Zeile aenderte sich, es kamen Zeilen HINZU.
+   Der erste Versuch hier war, die harmlose Form zuzulassen: nur Zeilen
+   hinzufuegen, keine aendern. Entschieden ist es aber schon, und zwar in
+   build-factor-evidence.mjs, wo dieselbe Frage einmal einen ganzen Lauf
+   gekostet hat: "a comparison point has to be a value that was PUBLISHED on
+   that date, not one recomputed today." Danach ist auch eine Erweiterung
+   eine Neuberechnung der Vergangenheit - die 166 Titel wurden an diesem
+   Stichtag nicht veroeffentlicht.
 
-   Diese Datei haelt die Ausnahme so eng, wie sie gemeint ist. Sie ist die
-   Stelle, an der ein spaeterer Griff nach "dann eben ueberschreiben"
-   auffaellt.
+   Also dieselbe Antwort an allen drei Stellen: die veroeffentlichte Datei
+   bleibt, der Lauf laeuft weiter, die Abweichung wird gemessen und
+   ausgewiesen. Diese Datei haelt fest, dass hier gemessen und nicht
+   entschieden wird.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { extensionVerdict } from "../../scripts/quant/build-setup-observations.mjs";
 
+const root = new URL("../../", import.meta.url).pathname;
 const SPALTEN = ["setupState", "invalidationPrice", "exitPrice"];
 const veroeffentlicht = {
   columns: SPALTEN,
@@ -28,63 +35,83 @@ const veroeffentlicht = {
 };
 const mit = (rows, columns) => ({ columns: columns || SPALTEN, rows });
 
-test("more titles at the same cutoff is an extension", () => {
+test("added titles are named as added, and only as added", () => {
   const verdict = extensionVerdict(veroeffentlicht,
     mit({ ...veroeffentlicht.rows, DDD: ["WATCH", 12, null], EEE: ["NONE", null, null] }));
-  assert.equal(verdict.allowed, true);
+  assert.equal(verdict.extendsOnly, true);
   assert.deepEqual(verdict.added, ["DDD", "EEE"]);
   assert.deepEqual(verdict.changed, []);
+  assert.equal(verdict.columnsDiffer, false);
+  /* Und trotzdem keine Erlaubnis: das Feld gibt es nicht mehr. */
+  assert.equal("allowed" in verdict, false, "die Messung darf nichts erlauben");
 });
 
-test("a changed published row is refused, and named", () => {
+test("a changed published row is counted, not permitted away", () => {
   const verdict = extensionVerdict(veroeffentlicht,
     mit({ ...veroeffentlicht.rows, BBB: ["CONFIRMED", 41.5, 60], DDD: ["WATCH", 12, null] }));
-  assert.equal(verdict.allowed, false);
+  assert.equal(verdict.extendsOnly, false);
   assert.deepEqual(verdict.changed, ["BBB"]);
-  /* Der Grund nennt die Sache, nicht nur ein Nein. */
-  assert.match(verdict.reason, /veroeffentlichte Zeile/);
+  assert.deepEqual(verdict.added, ["DDD"]);
 });
 
-test("a changed price on an unchanged state is still a changed row", () => {
+test("a changed price on an unchanged state is a changed row", () => {
   /* Der Zustand allein reicht nicht: die Invalidierungsmarke ist Teil der
      Aussage, und eine stillschweigend verschobene Marke waere genau die
      Sorte Umschreibung, die §40 ausschliesst. */
   const verdict = extensionVerdict(veroeffentlicht,
-    mit({ ...veroeffentlicht.rows, AAA: ["WATCH", 81, null], DDD: ["WATCH", 12, null] }));
-  assert.equal(verdict.allowed, false);
+    mit({ ...veroeffentlicht.rows, AAA: ["WATCH", 81, null] }));
+  assert.equal(verdict.extendsOnly, false);
   assert.deepEqual(verdict.changed, ["AAA"]);
 });
 
-test("a disappeared row is refused - it is a changed statement, not a smaller one", () => {
+test("a disappeared row counts as changed, not as nothing", () => {
   const { AAA, ...ohneAAA } = veroeffentlicht.rows;
   const verdict = extensionVerdict(veroeffentlicht, mit({ ...ohneAAA, DDD: ["WATCH", 12, null] }));
-  assert.equal(verdict.allowed, false);
+  assert.equal(verdict.extendsOnly, false);
   assert.deepEqual(verdict.changed, ["AAA"]);
 });
 
-test("identical content is not an extension either", () => {
-  /* Gleicher Inhalt kommt an dieser Stelle nie an (der Hash haette vorher
-     gestimmt); wenn doch, ist die Antwort NEIN und nicht 'schreib halt'. */
-  const verdict = extensionVerdict(veroeffentlicht, mit({ ...veroeffentlicht.rows }));
-  assert.equal(verdict.allowed, false);
-  assert.match(verdict.reason, /Kein Titel kommt hinzu/);
-});
-
-test("different columns are refused before any row is compared", () => {
+test("different columns are reported as such", () => {
   const verdict = extensionVerdict(veroeffentlicht,
     mit({ ...veroeffentlicht.rows, DDD: ["WATCH", 12, null] }, ["setupState", "invalidationPrice"]));
-  assert.equal(verdict.allowed, false);
-  assert.match(verdict.reason, /Spalten/);
+  assert.equal(verdict.columnsDiffer, true);
+  assert.equal(verdict.extendsOnly, false);
 });
 
-test("the producer records the lineage instead of extending silently", () => {
-  const source = new URL("../../scripts/quant/build-setup-observations.mjs", import.meta.url);
-  const text = readFileSync(source, "utf8");
-  /* Die Kette der Fassungen und die Zahl der neuen Titel stehen IM
-     Artefakt - sonst waere die Erweiterung von aussen nicht nachrechenbar. */
-  assert.match(text, /snapshot\.lineage = \[\.\.\.\(existing\.lineage \|\| \[\]\), existing\.contentHash\]/);
-  assert.match(text, /snapshot\.extendedTickers = verdict\.added\.length/);
-  /* Und der Hash wird NACH den neuen Feldern gebildet, nicht davor. */
-  const nachher = text.indexOf("snapshot.contentHash = snapshotHash(snapshot);", text.indexOf("snapshot.lineage ="));
-  assert.ok(nachher > 0, "der Inhaltshash wird nach der Erweiterung nicht neu gebildet");
+test("identical content is no extension", () => {
+  const verdict = extensionVerdict(veroeffentlicht, mit({ ...veroeffentlicht.rows }));
+  assert.equal(verdict.extendsOnly, false);
+  assert.deepEqual(verdict.added, []);
+  assert.deepEqual(verdict.changed, []);
+});
+
+test("the producer writes the published path only when nothing is there", () => {
+  const source = readFileSync(new URL("../../scripts/quant/build-setup-observations.mjs", import.meta.url), "utf8");
+  const stelle = source.indexOf("if (existsSync(snapshotPath))");
+  assert.ok(stelle > 0, "die Verzweigung auf eine vorhandene Datei ist weg");
+  const block = source.slice(stelle);
+  const bisElse = block.slice(0, block.indexOf("  } else {"));
+  /* Kein Schreibvorgang im Zweig "Datei ist da" - das ist die Garantie. */
+  assert.equal(/writeFileSync\(snapshotPath/.test(bisElse), false,
+    "der Zweig fuer eine vorhandene Beobachtung schreibt");
+  /* Aber auch kein Abbruch mehr bei blosser Abweichung: nur Korruption. */
+  const abbrueche = [...bisElse.matchAll(/throw new Error\(([^)]*)/g)].map((m) => m[1]);
+  assert.equal(abbrueche.length, 1, "erwartet genau einen Abbruch (Korruption), gefunden: " + abbrueche.length);
+  assert.match(abbrueche[0], /corrupt/);
+  /* Und die Abweichung landet in der Zusammenfassung, nicht nur im Log. */
+  assert.match(source, /summary\.observationDrift = observationDrift/);
+});
+
+test("once a build has written it, the shipped summary carries its shape", () => {
+  /* Vor der naechsten Materialisierung fehlt das Feld noch - der Produzent
+     ist die Garantie (Test darueber), nicht diese Datei. Ist es da, muss es
+     stimmen: derselbe Stichtag, und der Satz, der sagt, warum die
+     veroeffentlichte Beobachtung stehen bleibt. */
+  const summary = JSON.parse(readFileSync(root + "quant/data/product/setup-observations-v1/summary.json", "utf8"));
+  if (!("observationDrift" in summary)) return;
+  if (!summary.observationDrift) return;
+  assert.equal(summary.observationDrift.asOf, summary.asOf);
+  assert.match(summary.observationDrift.note, /nicht durch eine heutige Neuberechnung ersetzt/);
+  assert.ok(Number.isFinite(summary.observationDrift.rowsPublished));
+  assert.ok(Number.isFinite(summary.observationDrift.rowsToday));
 });

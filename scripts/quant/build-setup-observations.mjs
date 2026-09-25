@@ -90,36 +90,30 @@ function snapshotHash(snapshot) {
 }
 
 /**
- * Darf eine veroeffentlichte Beobachtung durch diese ersetzt werden?
+ * Wie unterscheidet sich die heutige Berechnung von der veroeffentlichten?
  *
- * Genau dann, wenn sie ERWEITERT wird: gleiche Spalten, jede bereits
- * veroeffentlichte Zeile Wert fuer Wert unveraendert, und mindestens ein
- * Titel neu. Alles andere ist ein Umschreiben und bleibt verboten - auch
- * ein Entfernen, denn eine verschwundene Zeile ist eine geaenderte Aussage.
+ * Sie ersetzt sie in keinem Fall - diese Funktion entscheidet nichts, sie
+ * MISST. `extendsOnly` heisst: jede veroeffentlichte Zeile stuende Wert fuer
+ * Wert genauso da, es kaemen nur Titel hinzu. Das ist die harmlose Form der
+ * Abweichung und trotzdem kein Grund, eine veroeffentlichte Datei
+ * anzufassen: die neuen Titel wurden an diesem Stichtag nicht
+ * veroeffentlicht und treten mit dem naechsten in die Reihe ein.
  *
- * Steht als eigene Funktion da, damit die Entscheidung pruefbar ist, ohne
- * die ganze Materialisierung laufen zu lassen.
+ * Steht als eigene Funktion da, damit die Messung pruefbar ist, ohne die
+ * ganze Materialisierung laufen zu lassen.
  */
 export function extensionVerdict(existing, snapshot) {
   const gleich = (a, b) => Array.isArray(a) && Array.isArray(b) &&
     a.length === b.length && a.every((value, i) => value === b[i]);
   const alt = (existing && existing.rows) || {}, neu = (snapshot && snapshot.rows) || {};
-  if (!gleich(existing && existing.columns, snapshot && snapshot.columns)) {
-    return { allowed: false, reason: "Die Spalten unterscheiden sich.", added: [], changed: [] };
-  }
+  const columnsDiffer = !gleich(existing && existing.columns, snapshot && snapshot.columns);
   const changed = [];
   for (const [ticker, zeile] of Object.entries(alt)) {
     if (!gleich(zeile, neu[ticker])) changed.push(ticker);
-    if (changed.length >= 5) break;
-  }
-  if (changed.length) {
-    return { allowed: false, reason: "Eine veroeffentlichte Zeile wuerde sich aendern.", added: [], changed };
   }
   const added = Object.keys(neu).filter((ticker) => !(ticker in alt)).sort();
-  if (!added.length) {
-    return { allowed: false, reason: "Kein Titel kommt hinzu.", added: [], changed: [] };
-  }
-  return { allowed: true, reason: "ERWEITERUNG", added, changed: [] };
+  return { columnsDiffer, added, changed,
+    extendsOnly: !columnsDiffer && changed.length === 0 && added.length > 0 };
 }
 
 function main() {
@@ -292,6 +286,9 @@ function main() {
       gzipSync(Buffer.from(JSON.stringify({ ...head, shard, instruments: entries })), { level: 9 }));
   }
 
+  /* Die Abweichung zur veroeffentlichten Beobachtung wird unten gemessen und
+     hier getragen; die Datei entsteht deshalb erst NACH dem Vergleich. */
+  let observationDrift = null;
   const summary = {
     ...head,
     universe: instruments.size,
@@ -318,7 +315,6 @@ function main() {
     inputs: { technical: { artifact: "technical-product-artifact-1.0.0", instruments: instruments.size } },
     shards: [...shards.keys()].sort()
   };
-  writeFileSync(join(OUT_DIR, "summary.json"), JSON.stringify(summary, null, 1) + "\n");
 
   /* The activation gate for the path-dependent tier, measured against the
      history that exists rather than asserted. It never opens the gate: that
@@ -375,46 +371,51 @@ function main() {
         "it is corrupt and this run will not overwrite it.");
     }
     if (existing.contentHash !== snapshot.contentHash) {
-      /* EINE ERWEITERUNG IST KEIN UMSCHREIBEN.
+      /* DIE VEROEFFENTLICHTE BEOBACHTUNG BLEIBT - UND DAS IST KEIN FEHLER.
 
-         Der Anlass, 25.09.2026: die Kalenderdeckung wurde von 2025-01-01 auf
-         2022-01-01 erweitert, weil zwei Pruefungen Titel VOLLSTAENDIG
-         verworfen haben, deren 270-Bar-Fenster aus der Deckung herausreichte.
-         Damit bekamen 166 Titel erstmals ein Technical-Bundle - und die
-         Beobachtung zum selben Stichtag 2026-09-10 hatte ploetzlich mehr
-         Zeilen. Der Waechter hat das korrekt als geaenderten Inhalt erkannt
-         und den ganzen Lauf abgebrochen.
+         Anlass, 25.09.2026 (Lauf 36115714241): die Kalenderdeckung wurde von
+         2025-01-01 auf 2022-01-01 erweitert, weil zwei Pruefungen Titel
+         VOLLSTAENDIG verworfen haben, deren 270-Bar-Fenster aus der Deckung
+         herausreichte. 166 Titel bekamen dadurch erstmals ein
+         Technical-Bundle - und die Beobachtung zum selben Stichtag
+         2026-09-10 hatte mehr Zeilen. Der Waechter hat das korrekt als
+         geaenderten Inhalt erkannt und den ganzen Lauf abgebrochen.
 
-         Recht hatte er in der Sache, die er schuetzt: eine veroeffentlichte
-         Zeile wird nicht umgeschrieben. Genau das passiert hier aber nicht.
-         Deshalb die engste moegliche Ausnahme - und keine Zeile weiter:
+         Die Regel, die das entscheidet, steht in build-factor-evidence.mjs
+         und ist dort schon einmal einen Lauf wert gewesen: "a comparison
+         point has to be a value that was PUBLISHED on that date, not one
+         recomputed today." Danach ist auch eine ERWEITERUNG eine
+         Neuberechnung der Vergangenheit - die 166 Titel wurden an diesem
+         Stichtag eben nicht veroeffentlicht. Sie treten mit dem naechsten
+         Stichtag in die Reihe ein, und das ist das richtige Datum fuer sie.
 
-           JEDE bereits veroeffentlichte Zeile steht unveraendert, Spalte fuer
-           Spalte. Neu ist ausschliesslich, dass Titel OHNE Zeile eine
-           bekommen.
-
-         Alles andere bleibt der Abbruch, der es vorher war. Und die
-         Erweiterung wird nicht still: sie traegt die Herkunft der Fassung,
-         die sie erweitert (`lineage`), und zaehlt, was dazukam. Wer die
-         Reihe liest, kann die Kette nachrechnen. */
+         Also: die veroeffentlichte Datei bleibt unberuehrt, der Lauf laeuft
+         weiter, und die Abweichung wird gemessen und in die
+         Zusammenfassung getragen - denn dass hinter einem
+         veroeffentlichten Stichtag heute andere Zeilen stehen wuerden, ist
+         es wert, gewusst zu werden. Was weiterhin abbricht: eine korrupte
+         Datei (oben) und eine andere Mapping-Version unter demselben Datum
+         (die traegt ihre eigene Reihe). */
       const verdict = extensionVerdict(existing, snapshot);
-      if (!verdict.allowed) {
-        throw new Error("a published observation for " + cutoff + " already exists with different content; " +
-          "a published past is not rewritten. Publish a new mapping version instead. " + verdict.reason +
-          (verdict.changed.length ? " Veraenderte Zeilen: " + verdict.changed.join(", ") + "." : ""));
-      }
-      snapshot.lineage = [...(existing.lineage || []), existing.contentHash];
-      snapshot.extendedTickers = verdict.added.length;
-      const dazu = verdict.added;
-      snapshot.contentHash = snapshotHash(snapshot);
-      writeFileSync(snapshotPath, gzipSync(Buffer.from(JSON.stringify(snapshot)), { level: 9 }));
-      process.stdout.write("  Beobachtung " + cutoff + " erweitert: " + dazu.length +
-        " Titel neu, keine veroeffentlichte Zeile geaendert (Fassung " +
-        snapshot.lineage.length + ")\n");
+      observationDrift = { asOf: cutoff,
+        publishedHash: existing.contentHash, recomputedHash: snapshot.contentHash,
+        rowsPublished: Object.keys(existing.rows || {}).length,
+        rowsToday: Object.keys(snapshot.rows || {}).length,
+        rowsAdded: verdict.added.length, rowsChanged: verdict.changed.length,
+        addedOnly: verdict.extendsOnly, columnsDiffer: verdict.columnsDiffer,
+        note: "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag " +
+          "veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch " +
+          "eine, die nur Zeilen hinzufuegen wuerde." };
+      process.stdout.write("  Beobachtung " + cutoff + " bleibt wie veroeffentlicht: " +
+        observationDrift.rowsPublished + " Zeilen damals, " + observationDrift.rowsToday +
+        " heute (" + verdict.added.length + " neu, " + verdict.changed.length + " geaendert)\n");
     }
   } else {
     writeFileSync(snapshotPath, gzipSync(Buffer.from(JSON.stringify(snapshot)), { level: 9 }));
   }
+
+  summary.observationDrift = observationDrift;
+  writeFileSync(join(OUT_DIR, "summary.json"), JSON.stringify(summary, null, 1) + "\n");
 
   const dates = readdirSync(historyDir).filter((file) => file.endsWith(".json.gz")).map((file) => file.replace(/\.json\.gz$/, "")).sort();
   writeFileSync(join(HISTORY_ROOT, "index.json"), JSON.stringify({
