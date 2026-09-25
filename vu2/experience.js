@@ -893,6 +893,43 @@ function matchCard(profile){
  if(profile.screenHref)body.push(link('Alle Titel mit diesem Profil zeigen',profile.screenHref,'button secondary'));
  return el('article',{class:'match-card'+(profile.state==='AVAILABLE'?'':' is-missing')},[head,...body]);
 }
+/* WAS DIE VEROEFFENTLICHTE SNAPSHOT-REIHE SCHON HERGIBT.
+
+   Hier stand ein fester Satz: es gebe keine historische Vergleichsbasis.
+   Das war richtig und blieb es auch, nachdem der Index anfing, seine Reihe
+   zu MESSEN - ein fester Satz sieht nicht nach. Jetzt liest die Zeile den
+   gemessenen Zustand:
+
+     PENDING_HISTORY  mit dem Abstand in Snapshots, nicht nur mit dem Nein.
+     AVAILABLE        die Bestaendigkeit der Zuordnung, ausdruecklich als
+                      Beobachtung an zwei Stichtagen - keine Rendite, keine
+                      Trefferquote, kein Backtest.
+
+   Was ein Stil abgeworfen hat, steht hier weiterhin nicht. Dafuer braucht
+   es Vorwaertsrenditen auf Gesamtrenditebasis und eine punktgenaue
+   Indexmitgliedschaft; beides fehlt, und das bleibt so benannt. */
+function historicalEvidenceLine(index,best){
+ const hist=index&&index.state==='AVAILABLE'?index.historicalEvidence:null;
+ if(!hist)return el('p',{class:'muted',text:L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')});
+ if(hist.state==='PENDING_HISTORY'){
+  return el('p',{class:'muted',text:L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')
+   +' Vorhanden '+hist.published+' von '+hist.required+' veröffentlichten Ständen dieser Methodikversion'
+   +(hist.publishedDates&&hist.publishedDates.length?' ('+hist.publishedDates.join(', ')+')':'')
+   +'. Stände verschiedener Methodikversionen werden nicht zusammengezählt.'});
+ }
+ if(hist.state!=='AVAILABLE'||hist.kind!=='ASSIGNMENT_PERSISTENCE'){
+  return el('p',{class:'muted',text:L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')});
+ }
+ const eintrag=best?(hist.profiles||[]).find(row=>row.profileId===best.profileId):null;
+ const quote=eintrag&&eintrag.persistence!==null
+  ? ' Von den Titeln, die am '+hist.from+' zu '+best.label+' passten, passen am '+hist.to+' noch '
+    +pct1(eintrag.persistence)+' ('+eintrag.stillMatching+' von '+eintrag.comparable+').'
+  : '';
+ return el('p',{class:'muted',text:'Beständigkeit der Zuordnung, gemessen zwischen zwei veröffentlichten Ständen ('
+  +hist.from+' → '+hist.to+').'+quote
+  +' Das ist eine Beobachtung an zwei Stichtagen und keine Rendite, keine Trefferquote und kein Backtest. '
+  +L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')});
+}
 function strategyMatchSection(match,index,ticker){
  const section=el('section',{class:'section match-section'},[
   el('span',{class:'eyebrow',text:'Anlagestil'}),
@@ -956,7 +993,7 @@ function strategyMatchSection(match,index,ticker){
       Grund nennt die fehlende Datengrundlage und nicht einen fehlenden
       Zertifizierungsschritt - sonst liest es sich, als muesste nur noch
       jemand etwas freigeben. */
-   el('p',{class:'muted',text:L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')})]));
+   historicalEvidenceLine(index,best)]));
  if(best&&best.state==='AVAILABLE')section.append(strategyPeers(index,best.profileId,ticker));
  return section;
 }

@@ -287,11 +287,30 @@ test('a strategy profile never claims a historical result, and says which data i
  const screening=await materializedApi.getFactorEvidenceScreening();
  if(screening.reason==='METHODOLOGY_VERSION_SUPERSEDED')return;
  const index=await materializedApi.getStrategyIndex();
- assert.equal(index.historicalEvidence.state,'UNAVAILABLE');
- /* Nicht BACKTEST_NOT_CERTIFIED: das liest sich, als muesste nur noch
+ /* Der Index MISST seine Reihe, statt sie konstant zu verneinen - also wird
+    hier der Vertrag geprueft und nicht ein Tageszustand: was auch kommt, es
+    ist nie eine Ergebnisaussage.
+
+    Nicht BACKTEST_NOT_CERTIFIED: das liest sich, als muesste nur noch
     jemand etwas freigeben. Fehlend ist ein historischer Faktorpanel -
     eine Datenluecke, kein Zertifizierungsschritt. */
- assert.equal(index.historicalEvidence.reason,'FACTOR_HISTORY_NOT_AVAILABLE');
+ const hist=index.historicalEvidence;
+ assert.ok(['UNAVAILABLE','PENDING_HISTORY','AVAILABLE'].includes(hist.state));
+ if(hist.state==='PENDING_HISTORY'){
+  assert.equal(hist.reason,'FACTOR_HISTORY_TOO_SHORT');
+  assert.equal(hist.missing,hist.required-hist.published);
+ }else if(hist.state==='AVAILABLE'){
+  assert.equal(hist.kind,'ASSIGNMENT_PERSISTENCE');
+  assert.deepEqual(hist.isNot,['RETURN','HIT_RATE','BACKTEST','PROBABILITY']);
+ }else{
+  assert.equal(hist.reason,'FACTOR_HISTORY_NOT_AVAILABLE');
+ }
+ /* Und in keinem Fall eine Rendite, egal wie das Feld heisst. */
+ for(const key of ['return','totalReturn','cagr','hitRate','probability'])assert.equal(key in hist,false);
+ /* Die deklarierte Evidenzversion ist die gelesene. Bis zum 25.09.2026 stand
+    im Profilvertrag 1.0.0, waehrend die Tabelle 2.0.0 war - und die Seite
+    schrieb die 1.0.0 hin. */
+ assert.equal(index.evidenceMethodologyVersion,screening.methodologyVersion);
  const match=await materializedApi.getStrategyMatch('NVDA');
  for(const profile of match.profiles){
   assert.equal(profile.historicalEvidence.state,'UNAVAILABLE');

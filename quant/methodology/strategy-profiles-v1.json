@@ -1,10 +1,12 @@
 {
-  "methodologyVersion": "strategy-profiles-1.0.0",
+  "methodologyVersion": "strategy-profiles-1.1.0",
   "label": "VU Strategy Match · Profile über Quant-V2-Faktorevidenz",
   "status": "ACTIVE",
   "evidenceNamespace": "quantV2.factorEvidence",
-  "evidenceMethodologyVersion": "vu-factor-evidence-1.0.0",
-  "allowedNamespaces": ["quantV2.factorEvidence"],
+  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
+  "allowedNamespaces": [
+    "quantV2.factorEvidence"
+  ],
   "purpose": "Beantwortet 'zu welchem Anlagestil passt dieser Titel gerade' als nachrechenbare Bedingungsprüfung. Kein Ranking, keine Rendite, keine historische Aussage.",
   "publication": {
     "rankingAllowed": false,
@@ -26,10 +28,26 @@
     "semantics": "Anteil der messbaren Profilbedingungen, die dieser Titel erfüllt. Kein Rang, keine Erfolgswahrscheinlichkeit, keine Renditeaussage."
   },
   "bands": [
-    { "min": 90, "id": "STRONG_FIT", "label": "Sehr gute Übereinstimmung" },
-    { "min": 70, "id": "FIT", "label": "Gute Übereinstimmung" },
-    { "min": 40, "id": "PARTIAL_FIT", "label": "Teilweise Übereinstimmung" },
-    { "min": 0, "id": "NO_FIT", "label": "Keine Übereinstimmung" }
+    {
+      "min": 90,
+      "id": "STRONG_FIT",
+      "label": "Sehr gute Übereinstimmung"
+    },
+    {
+      "min": 70,
+      "id": "FIT",
+      "label": "Gute Übereinstimmung"
+    },
+    {
+      "min": 40,
+      "id": "PARTIAL_FIT",
+      "label": "Teilweise Übereinstimmung"
+    },
+    {
+      "min": 0,
+      "id": "NO_FIT",
+      "label": "Keine Übereinstimmung"
+    }
   ],
   "profiles": [
     {
@@ -38,10 +56,38 @@
       "plain": "Unternehmen, die solide finanziert sind, verlässlich verdienen und ihren Wert über lange Zeiträume verzinsen können.",
       "mainRisk": "Qualität ist selten günstig. Steigende Zinsen oder eine Value-Rotation können die Bewertungsprämie zurücknehmen.",
       "conditions": [
-        { "id": "quality", "field": "quantV2.factorEvidence.quality", "operator": "gte", "value": 75, "weight": 0.35, "rationale": "Bilanz und Rechnungslegung müssen deutlich über dem Universum liegen." },
-        { "id": "profitability", "field": "quantV2.factorEvidence.profitability", "operator": "gte", "value": 70, "weight": 0.30, "rationale": "Verzinsen kann nur, wer aus dem eingesetzten Kapital etwas erwirtschaftet." },
-        { "id": "risk", "field": "quantV2.factorEvidence.risk", "operator": "gte", "value": 50, "weight": 0.20, "rationale": "Ein Titel mit überdurchschnittlichem Schwankungsrisiko passt nicht zu diesem Stil." },
-        { "id": "growth", "field": "quantV2.factorEvidence.growth", "operator": "gte", "value": 45, "weight": 0.15, "rationale": "Wachstum muss nicht hoch sein, aber es darf nicht fehlen." }
+        {
+          "id": "quality",
+          "field": "quantV2.factorEvidence.quality",
+          "operator": "gte",
+          "value": 75,
+          "weight": 0.35,
+          "rationale": "Bilanz und Rechnungslegung müssen deutlich über dem Universum liegen."
+        },
+        {
+          "id": "profitability",
+          "field": "quantV2.factorEvidence.profitability",
+          "operator": "gte",
+          "value": 70,
+          "weight": 0.3,
+          "rationale": "Verzinsen kann nur, wer aus dem eingesetzten Kapital etwas erwirtschaftet."
+        },
+        {
+          "id": "risk",
+          "field": "quantV2.factorEvidence.risk",
+          "operator": "gte",
+          "value": 50,
+          "weight": 0.2,
+          "rationale": "Ein Titel mit überdurchschnittlichem Schwankungsrisiko passt nicht zu diesem Stil."
+        },
+        {
+          "id": "growth",
+          "field": "quantV2.factorEvidence.growth",
+          "operator": "gte",
+          "value": 45,
+          "weight": 0.15,
+          "rationale": "Wachstum muss nicht hoch sein, aber es darf nicht fehlen."
+        }
       ]
     },
     {
@@ -50,9 +96,30 @@
       "plain": "Titel, deren Kurs sich über mehrere Zeiträume deutlich besser entwickelt hat als der breite Markt.",
       "mainRisk": "Kursstärke dreht schnell. Ein Momentum-Bruch trifft diesen Stil zuerst und am härtesten.",
       "conditions": [
-        { "id": "momentum", "field": "quantV2.factorEvidence.momentum", "operator": "gte", "value": 80, "weight": 0.55, "rationale": "Der Stil lebt von der Marktbestätigung selbst." },
-        { "id": "growth", "field": "quantV2.factorEvidence.growth", "operator": "gte", "value": 50, "weight": 0.25, "rationale": "Kursstärke ohne jedes Geschäftswachstum ist eine andere Situation." },
-        { "id": "risk", "field": "quantV2.factorEvidence.risk", "operator": "gte", "value": 40, "weight": 0.20, "rationale": "Ein Titel im schwächsten Risikobereich passt auch hier nicht." }
+        {
+          "id": "momentum",
+          "field": "quantV2.factorEvidence.momentum",
+          "operator": "gte",
+          "value": 80,
+          "weight": 0.55,
+          "rationale": "Der Stil lebt von der Marktbestätigung selbst."
+        },
+        {
+          "id": "growth",
+          "field": "quantV2.factorEvidence.growth",
+          "operator": "gte",
+          "value": 50,
+          "weight": 0.25,
+          "rationale": "Kursstärke ohne jedes Geschäftswachstum ist eine andere Situation."
+        },
+        {
+          "id": "risk",
+          "field": "quantV2.factorEvidence.risk",
+          "operator": "gte",
+          "value": 40,
+          "weight": 0.2,
+          "rationale": "Ein Titel im schwächsten Risikobereich passt auch hier nicht."
+        }
       ]
     },
     {
@@ -61,9 +128,30 @@
       "plain": "Solide Unternehmen, bei denen der Markt die Qualität gerade auch im Kurs bestätigt.",
       "mainRisk": "Beide Eigenschaften können gleichzeitig teuer eingekauft werden; die Bewertung bleibt hier ungeprüft.",
       "conditions": [
-        { "id": "quality", "field": "quantV2.factorEvidence.quality", "operator": "gte", "value": 70, "weight": 0.35, "rationale": "Die Qualitätsseite des Stils." },
-        { "id": "momentum", "field": "quantV2.factorEvidence.momentum", "operator": "gte", "value": 70, "weight": 0.35, "rationale": "Die Bestätigungsseite des Stils." },
-        { "id": "profitability", "field": "quantV2.factorEvidence.profitability", "operator": "gte", "value": 60, "weight": 0.30, "rationale": "Ertragskraft trennt bestätigte Qualität von bloßer Kursbewegung." }
+        {
+          "id": "quality",
+          "field": "quantV2.factorEvidence.quality",
+          "operator": "gte",
+          "value": 70,
+          "weight": 0.35,
+          "rationale": "Die Qualitätsseite des Stils."
+        },
+        {
+          "id": "momentum",
+          "field": "quantV2.factorEvidence.momentum",
+          "operator": "gte",
+          "value": 70,
+          "weight": 0.35,
+          "rationale": "Die Bestätigungsseite des Stils."
+        },
+        {
+          "id": "profitability",
+          "field": "quantV2.factorEvidence.profitability",
+          "operator": "gte",
+          "value": 60,
+          "weight": 0.3,
+          "rationale": "Ertragskraft trennt bestätigte Qualität von bloßer Kursbewegung."
+        }
       ]
     },
     {
@@ -72,9 +160,30 @@
       "plain": "Wachsende Unternehmen, für die man im Vergleich zum Universum nicht jeden Preis zahlt.",
       "mainRisk": "Ein günstiger Preis für Wachstum ist oft ein Hinweis darauf, dass der Markt dem Wachstum nicht traut.",
       "conditions": [
-        { "id": "growth", "field": "quantV2.factorEvidence.growth", "operator": "gte", "value": 65, "weight": 0.40, "rationale": "Ohne Wachstum kein GARP." },
-        { "id": "value", "field": "quantV2.factorEvidence.value", "operator": "gte", "value": 55, "weight": 0.35, "rationale": "Der Preis muss im Vergleich zum Universum vertretbar sein." },
-        { "id": "quality", "field": "quantV2.factorEvidence.quality", "operator": "gte", "value": 50, "weight": 0.25, "rationale": "Billiges Wachstum ohne Bilanzqualität ist eine Value-Falle." }
+        {
+          "id": "growth",
+          "field": "quantV2.factorEvidence.growth",
+          "operator": "gte",
+          "value": 65,
+          "weight": 0.4,
+          "rationale": "Ohne Wachstum kein GARP."
+        },
+        {
+          "id": "value",
+          "field": "quantV2.factorEvidence.value",
+          "operator": "gte",
+          "value": 55,
+          "weight": 0.35,
+          "rationale": "Der Preis muss im Vergleich zum Universum vertretbar sein."
+        },
+        {
+          "id": "quality",
+          "field": "quantV2.factorEvidence.quality",
+          "operator": "gte",
+          "value": 50,
+          "weight": 0.25,
+          "rationale": "Billiges Wachstum ohne Bilanzqualität ist eine Value-Falle."
+        }
       ]
     },
     {
@@ -83,9 +192,30 @@
       "plain": "Schnell wachsende Unternehmen, deren Entwicklung der Markt bereits mitträgt.",
       "mainRisk": "Hohe Erwartungen sind eingepreist. Eine Wachstumsenttäuschung wirkt hier überproportional.",
       "conditions": [
-        { "id": "growth", "field": "quantV2.factorEvidence.growth", "operator": "gte", "value": 80, "weight": 0.45, "rationale": "Das Wachstum ist der Kern des Profils." },
-        { "id": "momentum", "field": "quantV2.factorEvidence.momentum", "operator": "gte", "value": 70, "weight": 0.35, "rationale": "Der Markt muss die Entwicklung bereits mittragen." },
-        { "id": "profitability", "field": "quantV2.factorEvidence.profitability", "operator": "gte", "value": 40, "weight": 0.20, "rationale": "Wachstum ohne jede Ertragskraft ist eine andere, riskantere Situation." }
+        {
+          "id": "growth",
+          "field": "quantV2.factorEvidence.growth",
+          "operator": "gte",
+          "value": 80,
+          "weight": 0.45,
+          "rationale": "Das Wachstum ist der Kern des Profils."
+        },
+        {
+          "id": "momentum",
+          "field": "quantV2.factorEvidence.momentum",
+          "operator": "gte",
+          "value": 70,
+          "weight": 0.35,
+          "rationale": "Der Markt muss die Entwicklung bereits mittragen."
+        },
+        {
+          "id": "profitability",
+          "field": "quantV2.factorEvidence.profitability",
+          "operator": "gte",
+          "value": 40,
+          "weight": 0.2,
+          "rationale": "Wachstum ohne jede Ertragskraft ist eine andere, riskantere Situation."
+        }
       ]
     },
     {
@@ -94,10 +224,38 @@
       "plain": "Solide, ertragsstarke Unternehmen mit unterdurchschnittlichen Kursschwankungen.",
       "mainRisk": "In stark steigenden Märkten bleibt dieser Stil regelmäßig zurück.",
       "conditions": [
-        { "id": "risk", "field": "quantV2.factorEvidence.risk", "operator": "gte", "value": 75, "weight": 0.35, "rationale": "Geringe beobachtete Schwankung ist die definierende Eigenschaft." },
-        { "id": "quality", "field": "quantV2.factorEvidence.quality", "operator": "gte", "value": 70, "weight": 0.30, "rationale": "Defensive ohne Bilanzqualität ist nur ruhiger Kurs." },
-        { "id": "profitability", "field": "quantV2.factorEvidence.profitability", "operator": "gte", "value": 65, "weight": 0.25, "rationale": "Ertragskraft trägt den defensiven Charakter." },
-        { "id": "momentum", "field": "quantV2.factorEvidence.momentum", "operator": "gte", "value": 40, "weight": 0.10, "rationale": "Ein anhaltender Abwärtstrend widerspricht dem Stil." }
+        {
+          "id": "risk",
+          "field": "quantV2.factorEvidence.risk",
+          "operator": "gte",
+          "value": 75,
+          "weight": 0.35,
+          "rationale": "Geringe beobachtete Schwankung ist die definierende Eigenschaft."
+        },
+        {
+          "id": "quality",
+          "field": "quantV2.factorEvidence.quality",
+          "operator": "gte",
+          "value": 70,
+          "weight": 0.3,
+          "rationale": "Defensive ohne Bilanzqualität ist nur ruhiger Kurs."
+        },
+        {
+          "id": "profitability",
+          "field": "quantV2.factorEvidence.profitability",
+          "operator": "gte",
+          "value": 65,
+          "weight": 0.25,
+          "rationale": "Ertragskraft trägt den defensiven Charakter."
+        },
+        {
+          "id": "momentum",
+          "field": "quantV2.factorEvidence.momentum",
+          "operator": "gte",
+          "value": 40,
+          "weight": 0.1,
+          "rationale": "Ein anhaltender Abwärtstrend widerspricht dem Stil."
+        }
       ]
     },
     {
@@ -106,9 +264,30 @@
       "plain": "Günstig bewertete Titel, bei denen der Kurs bereits gedreht hat.",
       "mainRisk": "Günstig und steigend ist oft eine kurze Phase; ohne Qualität kehrt der Abschlag zurück.",
       "conditions": [
-        { "id": "value", "field": "quantV2.factorEvidence.value", "operator": "gte", "value": 70, "weight": 0.40, "rationale": "Der Bewertungsabschlag ist der Ausgangspunkt." },
-        { "id": "momentum", "field": "quantV2.factorEvidence.momentum", "operator": "gte", "value": 60, "weight": 0.35, "rationale": "Der Markt muss die Wende bereits zeigen." },
-        { "id": "quality", "field": "quantV2.factorEvidence.quality", "operator": "gte", "value": 45, "weight": 0.25, "rationale": "Trennt einen Abschlag von einer sich verschlechternden Bilanz." }
+        {
+          "id": "value",
+          "field": "quantV2.factorEvidence.value",
+          "operator": "gte",
+          "value": 70,
+          "weight": 0.4,
+          "rationale": "Der Bewertungsabschlag ist der Ausgangspunkt."
+        },
+        {
+          "id": "momentum",
+          "field": "quantV2.factorEvidence.momentum",
+          "operator": "gte",
+          "value": 60,
+          "weight": 0.35,
+          "rationale": "Der Markt muss die Wende bereits zeigen."
+        },
+        {
+          "id": "quality",
+          "field": "quantV2.factorEvidence.quality",
+          "operator": "gte",
+          "value": 45,
+          "weight": 0.25,
+          "rationale": "Trennt einen Abschlag von einer sich verschlechternden Bilanz."
+        }
       ]
     },
     {
@@ -117,10 +296,47 @@
       "plain": "Unternehmen, deren Gewinnschätzungen von Analysten gerade angehoben werden.",
       "mainRisk": "Erwartungen drehen schnell, und angehobene Schätzungen sind bereits teilweise eingepreist.",
       "conditions": [
-        { "id": "revisions", "field": "quantV2.factorEvidence.revisions", "operator": "gte", "value": 70, "weight": 0.50, "rationale": "Ohne den Erwartungstrend existiert dieses Profil nicht." },
-        { "id": "momentum", "field": "quantV2.factorEvidence.momentum", "operator": "gte", "value": 60, "weight": 0.30, "rationale": "Angehobene Erwartungen zeigen sich meist auch im Kurs." },
-        { "id": "growth", "field": "quantV2.factorEvidence.growth", "operator": "gte", "value": 55, "weight": 0.20, "rationale": "Der Erwartungstrend sollte auf realisiertem Wachstum aufsetzen." }
+        {
+          "id": "revisions",
+          "field": "quantV2.factorEvidence.revisions",
+          "operator": "gte",
+          "value": 70,
+          "weight": 0.5,
+          "rationale": "Ohne den Erwartungstrend existiert dieses Profil nicht."
+        },
+        {
+          "id": "momentum",
+          "field": "quantV2.factorEvidence.momentum",
+          "operator": "gte",
+          "value": 60,
+          "weight": 0.3,
+          "rationale": "Angehobene Erwartungen zeigen sich meist auch im Kurs."
+        },
+        {
+          "id": "growth",
+          "field": "quantV2.factorEvidence.growth",
+          "operator": "gte",
+          "value": 55,
+          "weight": 0.2,
+          "rationale": "Der Erwartungstrend sollte auf realisiertem Wachstum aufsetzen."
+        }
       ]
+    }
+  ],
+  "versionHistory": [
+    {
+      "version": "strategy-profiles-1.0.0",
+      "evidenceMethodologyVersion": "vu-factor-evidence-1.0.0",
+      "note": "Erstfassung. Die Faktorevidenz rechnete damals faktisch auf TOTAL_RETURN."
+    },
+    {
+      "version": "strategy-profiles-1.1.0",
+      "effectiveFrom": "2026-09-25",
+      "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
+      "changed": "Nur die gelesene Evidenzversion. Kein Profil, keine Bedingung und keine Schwelle wurde geaendert.",
+      "why": "Option C hat die Momentumkomponenten auf SPLIT_ADJUSTED_PRICE gestellt. Die Perzentile, gegen die diese Profile vergleichen, bedeuten damit etwas anderes als unter 1.0.0 - dieselbe Schwelle auf einer anderen Groesse. Ein Vertrag, der weiterhin 1.0.0 deklariert, waere genau die stille Weiterfuehrung einer alten Bedeutung, die die Owner-Entscheidung ausschliesst.",
+      "measuredImpact": "quant/data/product/methodology-change-v1.json#STRATEGY_IMPACT - Mitgliedschaft vor und nach der Umstellung je Profil, mit den betroffenen Titeln namentlich.",
+      "enforcedBy": "scripts/quant/build-strategy-index.mjs prueft die deklarierte Version gegen das gelesene Artefakt und bricht bei Abweichung ab."
     }
   ]
 }

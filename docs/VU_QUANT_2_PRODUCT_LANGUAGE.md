@@ -104,7 +104,7 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 
 | Feld | Inhalt |
 |---|---|
-| Interner Begriff | `Strategy Match / strategy-profiles-1.0.0` |
+| Interner Begriff | `Strategy Match / strategy-profiles-1.1.0` |
 | Schlüssel | `strategyMatch` |
 | **User Label** | **Welche Strategie passt?** |
 | Als Frage | Welche Strategie passt? |

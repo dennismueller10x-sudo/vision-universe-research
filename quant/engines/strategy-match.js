@@ -32,7 +32,13 @@
   var Query = isNode ? require("./query.js") : global.VUQuery;
   var Catalog = isNode ? require("./catalog.js") : global.VUCatalog;
 
-  var METHODOLOGY_VERSION = "strategy-profiles-1.0.0";
+  /* 1.1.0 (2026-09-25): dieselbe Profilmenge, dieselben Schwellen - gelesen
+     wird aber vu-factor-evidence-2.0.0 statt 1.0.0. Option C hat die
+     Momentumkomponenten auf splitbereinigten Kurs gestellt; dieselbe
+     Schwelle steht damit auf einer anderen Groesse, und das ist eine
+     Versionsaenderung und keine Fussnote. Die gemessene Wirkung steht in
+     quant/data/product/methodology-change-v1.json#STRATEGY_IMPACT. */
+  var METHODOLOGY_VERSION = "strategy-profiles-1.1.0";
   var INDEX_SCHEMA = "strategy-screen-index-1.0.0";
   var CONDITION_STATES = ["MET", "NOT_MET", "NOT_MEASURABLE"];
   var PROFILE_STATES = ["AVAILABLE", "UNAVAILABLE"];
@@ -322,8 +328,53 @@
     return profileResult.conditions.filter(function (c) { return c.state !== "MET"; });
   }
 
+  /* =====================================================================
+     BESTAENDIGKEIT EINER ZUORDNUNG - und ausdruecklich keine Rendite.
+
+     Zwei veroeffentlichte Faktor-Snapshots derselben Methodikversion geben
+     eine Frage her, fuer die es keine Vorwaertsrenditen und keine
+     punktgenaue Indexmitgliedschaft braucht: wie viele Titel, die ein
+     Profil beim vorigen Stand erfuellten, erfuellen es beim jetzigen noch.
+
+     Das ist eine Beobachtung an zwei Stichtagen. Sie wird hier gerechnet
+     und nicht in der Aufbauschicht, damit dieselbe Funktion sie ueberall
+     ergibt - und mit demselben Praedikat wie die Zuordnung selbst, nicht
+     mit einer zweiten Formulierung davon.
+
+     Titel, die im jetzigen Bestand fehlen, zaehlen NICHT als "nicht mehr
+     erfuellt": sie sind nicht gemessen worden. Diese Unterscheidung ist
+     der Grund, warum `comparable` neben `previousMembers` steht.
+   */
+  function assignmentPersistence(contract, previousRows, currentRows) {
+    var document = assertContract(contract);
+    var vorher = previousRows || [], jetzt = currentRows || [];
+    var imBestand = {};
+    for (var i = 0; i < jetzt.length; i++) imBestand[jetzt[i].ticker] = true;
+
+    return document.profiles.map(function (profile) {
+      var filters = screenQuery(profile).filters;
+      var damals = vorher.filter(function (row) { return Query.matches(row, filters); })
+        .map(function (row) { return row.ticker; });
+      var heute = {};
+      jetzt.filter(function (row) { return Query.matches(row, filters); })
+        .forEach(function (row) { heute[row.ticker] = true; });
+      var vergleichbar = damals.filter(function (ticker) { return imBestand[ticker]; });
+      var geblieben = vergleichbar.filter(function (ticker) { return heute[ticker]; });
+      return {
+        profileId: profile.profileId,
+        previousMembers: damals.length,
+        comparable: vergleichbar.length,
+        notInCurrentUniverse: damals.length - vergleichbar.length,
+        stillMatching: geblieben.length,
+        persistence: vergleichbar.length
+          ? Math.round((geblieben.length / vergleichbar.length) * 1e4) / 1e4 : null
+      };
+    });
+  }
+
   var api = {
     METHODOLOGY_VERSION: METHODOLOGY_VERSION,
+    assignmentPersistence: assignmentPersistence,
     CONDITION_STATES: CONDITION_STATES.slice(),
     PROFILE_STATES: PROFILE_STATES.slice(),
     UNAVAILABLE_REASONS: UNAVAILABLE_REASONS.slice(),
