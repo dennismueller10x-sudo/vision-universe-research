@@ -22,6 +22,17 @@
  "purpose": "Plausibilisierung und Kalibrierung, keine Optimierung auf Rendite. Keine Vorwaertsrenditen, keine Prognose.",
  "risk": {
   "vol20": {
+   "series": {
+    "symbol": "SPY",
+    "label": "SPY (S&P-500-Markttracker)",
+    "path": "quant/data/market/multi-asset/series/SPY.json",
+    "source": "tiingo-equity",
+    "attribution": "Daten: Tiingo",
+    "seriesTitle": "SPY (Tiingo, split-bereinigter Schlusskurs)",
+    "from": "1995-01-03",
+    "to": "2026-09-24",
+    "observations": 7985
+   },
    "calibratedFrom": "1995-02-01",
    "calibratedTo": "2026-09-24",
    "samples": 7964,

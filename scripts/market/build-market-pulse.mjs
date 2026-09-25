@@ -50,8 +50,22 @@ function write(rel, obj) {
 function percentile(sorted, p) { return sorted[Math.floor((p / 100) * (sorted.length - 1))]; }
 const r1 = (x) => Math.round(x * 10) / 10;
 
+/* Die Risiko-Referenz ist genau die in der Konfiguration benannte Reihe:
+   der S&P-500-Markttracker SPY ueber den lizenzierten Tiingo-Pfad. Eine
+   andere Quelle (FMP, FRED, Indexstand) waere eine neue Abhaengigkeit und
+   bricht den Lauf ab, statt still mitzurechnen. */
+function riskSeries() {
+  const s = CFG.risk.series;
+  const doc = read(s.path);
+  if (doc.symbol !== CFG.risk.benchmark || doc.source !== s.source || doc.valueSemantics !== "PRICE") {
+    throw new Error(`Risiko-Referenz ${s.path}: erwartet ${CFG.risk.benchmark}/${s.source}/PRICE, gefunden ${doc.symbol}/${doc.source}/${doc.valueSemantics}`);
+  }
+  return doc;
+}
+
 function calibrate() {
-  const spy = seriesOf(CFG.risk.benchmark);
+  const ref = riskSeries();
+  const spy = ref.points;
   const vols = [];
   for (let i = 21; i < spy.length; i++) {
     const s = MP.seriesSignals(spy.slice(i - 21, i + 1));
@@ -59,6 +73,8 @@ function calibrate() {
   }
   const sorted = vols.map((x) => x.v).sort((a, b) => a - b);
   const vol20 = {
+    series: { symbol: ref.symbol, label: CFG.risk.benchmarkLabel, path: CFG.risk.series.path, source: ref.source,
+              attribution: ref.attribution, seriesTitle: ref.seriesTitle, from: ref.from, to: ref.to, observations: ref.observations },
     calibratedFrom: vols[0].date, calibratedTo: vols[vols.length - 1].date, samples: vols.length,
     median: r1(percentile(sorted, 50)), p75: r1(percentile(sorted, 75)), p90: r1(percentile(sorted, 90)), p95: r1(percentile(sorted, 95))
   };
@@ -222,6 +238,7 @@ function intradayMoves(factorRows) {
 function build() {
   const names = trackerNames();
   const syms = CFG.trackers.symbols;
+  riskSeries();
   const sigs = Object.fromEntries(syms.map((s) => [s, MP.seriesSignals(seriesOf(s))]));
   const expectedAsOf = sigs[CFG.risk.benchmark].asOf;
 
@@ -242,7 +259,7 @@ function build() {
     TREND: MP.trend(sigs, names, CFG.trend),
     BREADTH: MP.breadth(br.input),
     MOMENTUM: MP.momentum(sigs, names),
-    RISK: MP.risk(sigs[CFG.risk.benchmark], CFG.risk, names[CFG.risk.benchmark] ? names[CFG.risk.benchmark] + "-Tracker " + CFG.risk.benchmark : CFG.risk.benchmark),
+    RISK: MP.risk(sigs[CFG.risk.benchmark], CFG.risk, CFG.risk.benchmarkLabel),
     CROSS_ASSET: MP.crossAsset(ca, CFG.crossAsset)
   };
   return {

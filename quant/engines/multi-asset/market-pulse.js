@@ -201,8 +201,10 @@
    */
   function risk(sig, cfg, name) {
     var v = cfg.vol20, dd = cfg.drawdown;
-    var meth = "Schwankung: annualisierte Standardabweichung der täglichen Log-Renditen des Trackers über 20 Handelstage, verglichen mit seiner " +
-      "Verteilung seit " + v.calibratedFrom + " (" + v.samples + " Beobachtungen). Erhöht ab dem " + v.elevatedPercentile + ". Perzentil (" + fmt(v.elevated, 1) +
+    var wer = cfg.benchmarkLabel || name || "des Trackers";
+    var reihe = cfg.series && cfg.series.source === "tiingo-equity" ? " – Tiingo, split-bereinigter Schlusskurs ohne Ausschüttungen; ETF-Kurs, kein Indexstand" : "";
+    var meth = "Schwankung: annualisierte Standardabweichung der täglichen Log-Renditen von " + wer + reihe + " – über 20 Handelstage, verglichen mit " +
+      "der Verteilung desselben Trackers seit " + v.calibratedFrom + " (" + v.samples + " Beobachtungen). Erhöht ab dem " + v.elevatedPercentile + ". Perzentil (" + fmt(v.elevated, 1) +
       " %), hoch ab dem " + v.highPercentile + ". Perzentil (" + fmt(v.high, 1) + " %). Rückgang vom 52-Wochen-Hoch: erhöht ab " + fmt(dd.elevated, 0) +
       " % (Korrektur), hoch ab " + fmt(dd.high, 0) + " % (Bärenmarkt-Konvention). Es gilt die höhere der beiden Stufen.";
     if (!sig || !isNum(sig.vol20) || !isNum(sig.drawdown52w)) return dim("RISK", "UNAVAILABLE", "Nicht bestimmbar", "Zu wenig Historie.", [], null, meth);
@@ -215,9 +217,10 @@
       : (sv >= sd2 ? "Die Kursschwankungen sind " + (lvl === 2 ? "sehr hoch" : "höher als üblich") + "."
                    : "Der Markt liegt " + fmt(Math.abs(sig.drawdown52w), 1) + " % unter seinem 52-Wochen-Hoch.");
     return dim("RISK", state, label, summary, [
-      { key: "vol20", label: "Schwankung " + (name || "") + " (20 Tage, annualisiert)", text: fmt(sig.vol20, 1) + " %", value: rnd(sig.vol20, 2),
-        context: "Median seit " + v.calibratedFrom + ": " + fmt(v.median, 1) + " %", asOf: sig.asOf },
-      { key: "drawdown52w", label: "Abstand zum 52-Wochen-Hoch", text: signed(sig.drawdown52w, 1, " %"), value: rnd(sig.drawdown52w, 2), asOf: sig.asOf }
+      { key: "vol20", label: "Schwankung von " + (cfg.benchmarkLabel || name || "dem Tracker") + ", 20 Tage annualisiert", text: fmt(sig.vol20, 1) + " %", value: rnd(sig.vol20, 2),
+        context: "Median von " + (cfg.benchmarkLabel || "dem Tracker") + " seit " + v.calibratedFrom + ": " + fmt(v.median, 1) + " %", asOf: sig.asOf },
+      
+        { key: "drawdown52w", label: "Abstand von " + (cfg.benchmarkLabel || "dem Tracker") + " zum 52-Wochen-Hoch", text: signed(sig.drawdown52w, 1, " %"), value: rnd(sig.drawdown52w, 2), asOf: sig.asOf }
     ], "Starke Schwankungen bedeuten größere Tagesbewegungen in beide Richtungen. Das ist kein Signal zum Kaufen oder Verkaufen.", meth,
     { levels: { volatility: ["NORMAL", "ELEVATED", "HIGH"][sv], drawdown: ["NORMAL", "ELEVATED", "HIGH"][sd2] } });
   }
