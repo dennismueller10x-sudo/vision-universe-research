@@ -10,7 +10,7 @@
 // Markets 3.0: Hero (Marktumfeld, erste fuenf Sekunden), fuenf Dimensionen, Vorher/Jetzt,
 // Warum, Worauf, Aendern, Verlauf (Zeitraumwechsel), Breite, Cross Asset, Geschichten,
 // zehn Bildschirme visuelle Abfolge, Einordnung auf den Detailseiten, axe hell/dunkel.
-// Usage: node scripts/discover/browser-qa-maerkte.mjs --url https://research.visionuniverse.de --out /tmp/maerkte-qa [--engine webkit]
+// Usage: node scripts/discover/browser-qa-maerkte.mjs --url https://research.visionuniverse.de --out /tmp/maerkte-qa [--engine webkit] [--realtime]
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 const require=createRequire(import.meta.url);
@@ -229,6 +229,48 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
  await page.goBack({waitUntil:'networkidle'});await page.waitForSelector('.dx-maerkte',{timeout:15000}).catch(()=>null);
  check('Navigation: Browser-Zurueck fuehrt zur Uebersicht',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
  await page.close();
+}
+/* Realtime der Tracker (Markets 3.0, 58.15) - nur mit --realtime gegen die
+   veroeffentlichte Seite: der VU-Live-Worker nimmt nur echte Vision-Universe-
+   Urspruenge an, ein lokaler Server bekaeme nie einen Strom. Bei offener
+   US-Sitzung wird je Tracker beobachtet, ob frische Ticks ankommen und ob
+   "Markt geöffnet · Live" genau dann steht; bei geschlossener Sitzung ist das
+   Ergebnis ehrlich MARKET_CLOSED_NOT_PROVEN, kein PASS. */
+if(process.argv.includes('--realtime')){
+ const bericht=[];
+ for(const sym of ['QQQ','SPY','DIA']){
+  const page=await browser.newPage({viewport:{width:390,height:844}});
+  await page.goto(base+'/discover/#/maerkte/'+sym,{waitUntil:'networkidle'});await page.waitForSelector('.dx-md h1');
+  const status=(await page.textContent('.dx-md-status'))||'';
+  const r={symbol:sym,sitzungOffen:/Handel läuft/.test(status),status:status.trim().slice(0,120),beobachtet:0,ticks:0,stream:null,liveGesehen:false,liveOhneTick:false,werte:[]};
+  if(r.sitzungOffen){
+   const t0=Date.now();
+   while(Date.now()-t0<45000){
+    const s=await page.evaluate(()=>{const H=window.VUDiscover&&window.VUDiscover.LiveHub;
+     const st=H&&H.liveState?H.liveState():{};const f=document.querySelector('.dx-md-frische');
+     return {state:st.state||null,ticks:H&&H.liveStats?(H.liveStats().ticks||0):0,live:!!(f&&/is-live/.test(f.className)),text:f?f.textContent.trim():'',
+             wert:(document.querySelector('.dx-md-wert')||{}).textContent||''};});
+    r.beobachtet++;r.stream=s.state;r.ticks=s.ticks;
+    if(s.live){r.liveGesehen=true;if(!(s.ticks>0))r.liveOhneTick=true;if(!/Markt geöffnet · Live/.test(s.text))r.liveOhneTick=true;}
+    if(s.wert&&r.werte[r.werte.length-1]!==s.wert)r.werte.push(s.wert);
+    if(r.liveGesehen&&r.werte.length>=2)break;
+    await page.waitForTimeout(1500);
+   }
+  }
+  bericht.push(r);evidence['realtime:'+sym]=r;
+  await page.close();
+ }
+ const offen=bericht.filter(r=>r.sitzungOffen);
+ let urteil;
+ if(!offen.length)urteil='MARKET_CLOSED_NOT_PROVEN';
+ else{
+  const mitLive=offen.filter(r=>r.liveGesehen&&r.ticks>0);
+  check('Tracker-Realtime: bei offener Sitzung zeigen mindestens 2 von 3 Trackern "Markt geöffnet · Live" mit frischen Ticks',mitLive.length>=2,bericht.map(r=>({s:r.symbol,stream:r.stream,ticks:r.ticks,live:r.liveGesehen})));
+  check('Tracker-Realtime: "Live" nie ohne frischen Tick',offen.every(r=>!r.liveOhneTick),bericht.map(r=>({s:r.symbol,liveOhneTick:r.liveOhneTick})));
+  urteil=mitLive.length>=2&&offen.every(r=>!r.liveOhneTick)?'PASS':'FAIL';
+ }
+ evidence.realtimeTracker=urteil;
+ console.log('REALTIME_TRACKER: '+urteil+' '+JSON.stringify(bericht.map(r=>({symbol:r.symbol,sitzungOffen:r.sitzungOffen,stream:r.stream,ticks:r.ticks,live:r.liveGesehen,werte:r.werte.slice(0,4)}))));
 }
 await browser.close();
 
