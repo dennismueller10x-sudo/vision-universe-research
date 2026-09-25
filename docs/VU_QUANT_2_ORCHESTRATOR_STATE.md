@@ -48,6 +48,7 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M17 | Strategy Match / Pattern Match: Nenner und Gründe | **DONE** (2026-09-25) — 810 bzw. 1.494 Titel bekamen eine falsche Auskunft, jetzt eine richtige |
 | M18 | Historische Evidenz (Beständigkeit) | **GEMESSEN, PENDING_HISTORY** (2026-09-25) — 1 von 2 Snapshots; öffnet sich mit der nächsten Materialisierung |
 | M19 | Chart auf gebundener Basis | **DONE** (2026-09-25) — NVDA/AAPL-Splitsprung entfernt, Bildunterschrift folgt der Reihe |
+| M20 | Kalenderdeckung: 413 Titel ohne Technical/Setup/Muster | **CODE DONE, Ertrag steht aus** (2026-09-25) — Deckung ab 2022-01-01, zweifach belegt; die naechste Materialisierung realisiert sie |
 
 ## OWNER_DECISION_2026-09-22 — METHODOLOGY NAMESPACES
 
@@ -182,6 +183,56 @@ reconstructed where the artifact is validated, with the same canonical reconstru
 uses. The last price stays the traded one; a test asserts that and that every return across a
 split-free day is unchanged to 1e-9. If a building block is missing the series stays raw and says
 so, and the caption is derived from the series' state instead of asserted.
+
+### M20 — die Kalenderdeckung war der Grund, nicht die Daten
+
+Die Reise-Messung zeigt ihre drei schwaechsten Stationen bei setup 83,2 %,
+technical 85,2 % und patterns 80,0 %. Alle drei haengen an derselben Materialisierung, und
+deren Zaehlwerk benennt die Ursache genau:
+
+```
+productUniverse       6.875
+historiesFound        6.874   (1 SOURCE_MISSING: GLMD, bekannt)
+historiesValidated    6.874   ALLE bestehen Provenienz, Bars und observedAt
+lookbackCovered       5.977   897 haben weniger als 261 Bars - echte Datengrenze
+signalsCapable        5.772   205 SIGNAL_INVALID_SIGNAL_SESSION
+technicalFullBundles  5.676   208 TECHNICAL_CALENDAR_INVALID
+elliottCapable        5.590
+```
+
+Zwei Pruefungen, eine Ursache: `market-signal-contract.js:29` und
+`materialize-product-intelligence.mjs#validateTechnicalCalendar` laufen die letzten 261 bis
+270 Bars durch und verwerfen den Titel VOLLSTAENDIG, wenn eine Bar auf einem Datum ohne
+Kalenderdeckung liegt. Beide haben recht: ausserhalb der Deckung meldet der Kalender
+2024-07-04 als Handelstag, weil dort nur der Wochentag entscheidet. Eine unsichere
+Sitzungsaussage ist keine.
+
+Also wurde die Deckung erweitert und die Pruefung NICHT gelockert. Sie begann 2025-01-01,
+waehrend 270 Bars eines duenn gehandelten Titels weiter zurueckreichen: **152 der 6.482
+veroeffentlichten Tagesreihen beginnen ihr Fenster vor 2025-01-01, die frueheste am
+2023-01-03.** Neu: ab 2022-01-01.
+
+Damit entscheidet diese Datei, welche Bars gueltig sind, und ein falscher Feiertag wuerde
+echte Bars verwerfen. Jeder Eintrag ist deshalb zweifach belegt, und der Test rechnet beides
+nach: aus der veroeffentlichten **Regel** (dritter Montag im Januar, letzter Montag im Mai,
+vierter Donnerstag im November, Karfreitag ueber Gauss, beobachtete Verschiebung) und an den
+**Daten** (an einem Feiertag traegt keine der fuenf tiefen Referenzreihen eine Bar, an jedem
+anderen Wochentag mindestens eine - 40 Feiertage und ueber 900 Handelstage geprueft, keine
+Abweichung). 2022 hat neun Eintraege und nicht zehn, weil Neujahr auf einen Samstag fiel.
+
+Die Gegenprobe an den Daten hat einen Eintrag gefunden, den keine Regel hergibt:
+**2025-01-09**, der nationale Trauertag fuer Praesident Carter, fehlte, obwohl die Boerse
+geschlossen war. Er ist jetzt als Sonderschliessung mit Begruendung eingetragen, und der Test
+verlangt diese Kennzeichnung fuer jeden nicht regelbasierten Eintrag.
+
+Verkuerzte Handelstage fuer 2022 bis 2024 fehlen absichtlich, mit der Asymmetrie
+danebengeschrieben: ein fehlender verkuerzter Schluss kann keine Bar ungueltig machen (er
+betrifft nur eine Phasenaussage innerhalb des Tages, und Intraday-Daten gibt es fuer den
+Zeitraum nicht), ein falsch eingetragener Feiertag wuerde echte Bars verwerfen.
+
+Geprueft, dass die Erweiterung nichts NEU verschaerft: `validateBars` zaehlt fehlende
+Handelstage nur gegen eine ausdruecklich uebergebene Liste, die der Import nicht uebergibt;
+`realtime-source` liest die Deckung nur fuer die heutige Sitzung. Kein neuer Ablehnungspfad.
 
 ### The journey, counted
 
