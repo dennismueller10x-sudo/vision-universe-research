@@ -2,81 +2,73 @@
  "engineVersion": "vu-market-regime-1.0.0",
  "methodologyVersion": "market-regime-v1.0.0",
  "state": "AVAILABLE",
- "regime": "MIXED",
+ "regime": "BROAD_WEAKNESS",
  "matchedRule": {
-  "ruleId": "regime.mixed",
-  "order": 3,
-  "plain": "Ein Teil des Marktes trägt, ein anderer nicht.",
-  "rationale": "Auffangzustand und eine vollwertige Antwort. Der häufigste Fall ist, dass ein Markt weder breit stark noch breit schwach ist, und das zu benennen ist ehrlicher, als eine der beiden Seiten zu erzwingen."
+  "ruleId": "regime.broad-weakness",
+  "order": 1,
+  "plain": "Weniger als zwei von fünf Titeln stehen über ihrer langfristigen Durchschnittslinie, und mehr als ein Drittel ist abwärts gerichtet.",
+  "rationale": "Beide Maße müssen zutreffen. Ein niedriger Anteil über der 200-Tage-Linie allein kann eine Seitwärtsphase sein; erst zusammen mit einem breiten Abwärtstrend beschreibt es eine schwache Lage."
  },
  "measures": [
   {
    "id": "above200",
    "label": "Anteil über der 200-Tage-Linie",
    "why": "Die breiteste und langsamste der sechs. Sie sagt, wie viele Titel überhaupt in einem langfristig aufwärts gerichteten Kursbild stehen.",
-   "share": 0.4404510218463707,
-   "hits": 2500,
-   "observed": 5676,
+   "share": 0.3937007874015748,
+   "hits": 2300,
+   "observed": 5842,
    "coverage": 1
   },
   {
    "id": "above50",
    "label": "Anteil über der 50-Tage-Linie",
    "why": "Dieselbe Frage auf kürzerer Sicht. Weicht sie stark von above200 ab, ist die Lage im Umbruch - was hier beschrieben, aber nicht bewertet wird.",
-   "share": 0.3476039464411557,
-   "hits": 1973,
-   "observed": 5676,
+   "share": 0.27250941458404654,
+   "hits": 1592,
+   "observed": 5842,
    "coverage": 1
   },
   {
    "id": "trendBullish",
    "label": "Anteil mit aufwärts gerichtetem Trend",
    "why": "Die Trendklassifikation der bestehenden technischen Engine, nicht neu gerechnet.",
-   "share": 0.25299506694855534,
-   "hits": 1436,
-   "observed": 5676,
+   "share": 0.21208490243067443,
+   "hits": 1239,
+   "observed": 5842,
    "coverage": 1
   },
   {
    "id": "trendBearish",
    "label": "Anteil mit abwärts gerichtetem Trend",
    "why": "Die Gegenseite, immer mitveröffentlicht.",
-   "share": 0.3629316420014094,
-   "hits": 2060,
-   "observed": 5676,
+   "share": 0.4079082505991099,
+   "hits": 2383,
+   "observed": 5842,
    "coverage": 1
   },
   {
    "id": "near52wHigh",
    "label": "Anteil höchstens 10 % unter dem 52-Wochen-Hoch",
    "why": "Misst, ob die Stärke von vielen Titeln getragen wird oder von wenigen.",
-   "share": 0.23167723749119098,
-   "hits": 1315,
-   "observed": 5676,
+   "share": 0.2125984251968504,
+   "hits": 1242,
+   "observed": 5842,
    "coverage": 1
   },
   {
    "id": "volatilityHigh",
    "label": "Anteil in hohem Volatilitätsregime",
    "why": "Steht neben den Trendmaßen, weil eine breite Aufwärtslage bei hoher Volatilität etwas anderes ist als bei ruhiger.",
-   "share": 0.1649048625792812,
-   "hits": 936,
-   "observed": 5676,
+   "share": 0.17134542964738103,
+   "hits": 1001,
+   "observed": 5842,
    "coverage": 1
   }
  ],
- "universe": 5676,
+ "universe": 5842,
  "evaluatedRules": [
   {
    "ruleId": "regime.broad-weakness",
-   "result": "NOT_MATCHED"
-  },
-  {
-   "ruleId": "regime.broad-strength",
-   "result": "NOT_MATCHED"
-  },
-  {
-   "ruleId": "regime.mixed",
    "result": "MATCHED"
   }
  ],
@@ -86,8 +78,8 @@
  },
  "notAForecast": "Dies ist eine Zustandsbeschreibung der Gegenwart. Es ist kein Timing-Signal, keine Empfehlung, keine Prognose und keine Aussage darüber, ob ein Einstieg jetzt günstig ist. Wer daraus eine Handlung ableitet, tut das ohne Grundlage in dieser Methodik.",
  "schemaVersion": "market-regime-1.0.0",
- "generatedAt": "2026-09-25T09:56:03.000Z",
- "asOf": "2026-09-10",
+ "generatedAt": "2026-09-25T12:21:53.000Z",
+ "asOf": "2026-09-24",
  "scope": {
   "universe": "Die Titel der veröffentlichten technischen Materialisierung. Das ist NICHT der Gesamtmarkt und kein Index: es ist das gemessene Produktuniversum, und die Zahlen beziehen sich ausschließlich darauf.",
   "source": "quant/data/product/technical-signals-v1",
@@ -141,5 +133,10 @@
   "observations": 1,
   "minimumRequired": 12
  },
- "publishedObservation": null
+ "publishedObservation": {
+  "asOf": "2026-09-24",
+  "rewritten": false,
+  "written": true,
+  "measuredNowOver": 5842
+ }
 }

@@ -14,8 +14,8 @@
    "label": "Ausreichende Beobachtungsdauer",
    "state": "NOT_EVALUABLE",
    "measured": {
-    "observations": 1,
-    "spanDays": 0,
+    "observations": 2,
+    "spanDays": 14,
     "minimumObservations": 12,
     "minimumSpanDays": 90
    }
@@ -25,17 +25,32 @@
    "label": "Keine rueckwirkende Zustandsaenderung",
    "state": "PASS",
    "measured": {
-    "snapshots": 1,
+    "snapshots": 2,
     "corrupt": 0
    }
   },
   {
    "id": "TRANSITION_MATRIX",
    "label": "Uebergangsmatrix",
-   "state": "NOT_EVALUABLE",
+   "state": "PASS",
    "measured": {
-    "orderedObservations": 1,
-    "needed": 2
+    "transitions": 952,
+    "distinct": 12,
+    "matrix": {
+     "WATCH>SETUP_FORMING": 134,
+     "NO_SETUP>WATCH": 71,
+     "SETUP_FORMING>WATCH": 246,
+     "WATCH>NO_SETUP": 231,
+     "WATCH>CONFIRMED": 15,
+     "NO_SETUP>SETUP_FORMING": 88,
+     "SETUP_FORMING>NO_SETUP": 135,
+     "CONFIRMED>WATCH": 6,
+     "CONFIRMED>NO_SETUP": 2,
+     "CONFIRMED>SETUP_FORMING": 6,
+     "NO_SETUP>CONFIRMED": 1,
+     "SETUP_FORMING>CONFIRMED": 17
+    },
+    "impossible": []
    }
   },
   {
@@ -43,8 +58,10 @@
    "label": "Zustandsdauer",
    "state": "NOT_EVALUABLE",
    "measured": {
-    "orderedObservations": 1,
-    "needed": 2
+    "ACTIVE": null,
+    "RISK_RISING": null,
+    "INVALIDATED": null,
+    "EXIT": null
    }
   },
   {
@@ -52,8 +69,9 @@
    "label": "Rueckschlagverhalten",
    "state": "NOT_EVALUABLE",
    "measured": {
-    "orderedObservations": 1,
-    "needed": 2
+    "reversals": 0,
+    "candidates": 0,
+    "share": null
    }
   },
   {
@@ -61,8 +79,8 @@
    "label": "Invalidationsverhalten",
    "state": "NOT_EVALUABLE",
    "measured": {
-    "orderedObservations": 1,
-    "needed": 2
+    "observed": 0,
+    "withoutStoredLevel": 0
    }
   },
   {
@@ -70,8 +88,8 @@
    "label": "Ausstiegsverhalten",
    "state": "NOT_EVALUABLE",
    "measured": {
-    "orderedObservations": 1,
-    "needed": 2
+    "observed": 0,
+    "withoutStoredZone": 0
    }
   }
  ],
@@ -79,7 +97,6 @@
  "active": false,
  "blockedBy": [
   "SUFFICIENT_OBSERVATION_DURATION",
-  "TRANSITION_MATRIX",
   "STATE_PERSISTENCE",
   "REVERSAL_BEHAVIOUR",
   "INVALIDATION_BEHAVIOUR",

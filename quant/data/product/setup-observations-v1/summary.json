@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-09-25T08:38:58.000Z",
- "asOf": "2026-09-10",
+ "generatedAt": "2026-09-25T12:16:02.000Z",
+ "asOf": "2026-09-24",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5676,
- "observed": 5676,
+ "universe": 5842,
+ "observed": 5842,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4017,
-  "WATCH": 843,
-  "SETUP_FORMING": 800,
-  "CONFIRMED": 16,
+  "NO_SETUP": 4317,
+  "WATCH": 857,
+  "SETUP_FORMING": 633,
+  "CONFIRMED": 35,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.watch.bullish-trend": 620,
-  "setup.none.fallback": 4017,
-  "setup.forming.complete-setup-awaiting-trigger": 800,
-  "setup.watch.confirmed-structure-near-high": 223,
-  "setup.confirmed.structure-trend-volume": 16
+  "setup.forming.complete-setup-awaiting-trigger": 633,
+  "setup.none.fallback": 4317,
+  "setup.watch.bullish-trend": 571,
+  "setup.watch.confirmed-structure-near-high": 286,
+  "setup.confirmed.structure-trend-volume": 35
  },
  "pathTier": {
   "states": [
@@ -360,14 +360,15 @@
  "observationHistory": {
   "mappingVersion": "setup-mapping-1.0.0",
   "dates": [
-   "2026-09-10"
+   "2026-09-10",
+   "2026-09-24"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5676
+   "instruments": 5842
   }
  },
  "shards": [
@@ -789,6 +790,7 @@
   "QL",
   "QM",
   "QN",
+  "QO",
   "QQ",
   "QR",
   "QS",
@@ -1003,5 +1005,6 @@
   "ZY",
   "ZZ",
   "Z_"
- ]
+ ],
+ "observationDrift": null
 }
