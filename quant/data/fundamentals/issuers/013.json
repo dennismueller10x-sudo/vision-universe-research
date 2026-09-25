@@ -632,9 +632,9 @@
       "cik": "0002079013",
       "name": "Hall Chadwick Acquisition Corp",
       "sic": "3341",
-      "rawFacts": 219,
-      "mappedFacts": 72,
-      "unmappedFacts": 119,
+      "rawFacts": 360,
+      "mappedFacts": 119,
+      "unmappedFacts": 192,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -646,8 +646,8 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2025-12-31",
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2025-06-30",
       "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
@@ -715,7 +715,7 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -745,37 +745,38 @@
         }
       },
       "quality": {
-        "MEDIUM": 3,
-        "HIGH": 9
+        "MEDIUM": 2,
+        "HIGH": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 12,
-        "resolvedValues": 12
+        "datableValues": 13,
+        "resolvedValues": 13
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 160,
+        "total": 264,
         "by_severity": {
-          "INFO": 119,
-          "WARNING": 41
+          "INFO": 192,
+          "WARNING": 72
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 11,
-          "RESTATEMENT_CONFLICT": 4,
-          "UNEXPECTED_DURATION": 26,
-          "UNKNOWN_CONCEPT": 119
+          "CONCEPT_DISAGREEMENT": 15,
+          "RESTATEMENT_CONFLICT": 10,
+          "UNEXPECTED_DURATION": 47,
+          "UNKNOWN_CONCEPT": 192
         }
       },
       "latestFiling": {
-        "accession": "0001829126-26-009082",
-        "filing_date": "2026-08-19",
-        "form": "10-Q",
-        "periodic_filings": 3
+        "accession": "0001829126-26-010338",
+        "filing_date": "2026-09-23",
+        "form": "10-Q/A",
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-09-23T12:13:59.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -784,7 +785,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "dee3eeeb0c153ec2e80cba2fab017046ffc06c8226ce3a0d71319eb72c37ff30",
+      "sourceDigest": "c605a57b5fd029ae823157638a4594f118583d9e6dfe2679dcc2c08005a8195d",
       "issuerId": "iss_cik_0002079013"
     }
   ]

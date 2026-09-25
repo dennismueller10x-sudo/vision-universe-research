@@ -524,9 +524,9 @@
       "cik": "0001757499",
       "name": "Shuttle Pharmaceuticals Holdings, Inc.",
       "sic": "2834",
-      "rawFacts": 3804,
-      "mappedFacts": 1168,
-      "unmappedFacts": 2679,
+      "rawFacts": 4033,
+      "mappedFacts": 1245,
+      "unmappedFacts": 2830,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -536,9 +536,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 22,
+      "quarterlyPeriods": 23,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -550,7 +550,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -577,14 +577,14 @@
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -605,14 +605,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -635,37 +635,38 @@
         }
       },
       "quality": {
-        "HIGH": 115,
+        "HIGH": 120,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 122,
-        "resolvedValues": 122
+        "datableValues": 127,
+        "resolvedValues": 127
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2843,
+        "total": 3006,
         "by_severity": {
-          "INFO": 2679,
-          "WARNING": 164
+          "INFO": 2830,
+          "WARNING": 176
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 71,
+          "CONCEPT_DISAGREEMENT": 75,
           "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 87,
-          "UNKNOWN_CONCEPT": 2679
+          "RESTATEMENT_CONFLICT": 95,
+          "UNKNOWN_CONCEPT": 2830
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-023859",
-        "filing_date": "2026-05-15",
+        "accession": "0001493152-26-044107",
+        "filing_date": "2026-09-24",
         "form": "10-Q",
-        "periodic_filings": 17
+        "periodic_filings": 18,
+        "acceptance_datetime": "2026-09-24T16:01:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -674,7 +675,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "aef382bfd8a254c29833ee4e86cf94773dbeab1085ab62862710f2b404ae0cba",
+      "sourceDigest": "ee4f9fd1cdb4efd94d60e3473af6522adae4f49a4d3bc577e1c67c8d61f7cf92",
       "issuerId": "iss_cik_0001757499"
     },
     {
