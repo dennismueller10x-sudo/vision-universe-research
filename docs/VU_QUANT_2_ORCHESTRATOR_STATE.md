@@ -58,7 +58,7 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M18 | Historische Evidenz (Beständigkeit) | **DONE** (2026-09-25) — zweiter Snapshot da, `ASSIGNMENT_PERSISTENCE` live (Momentum Leader 92,9 %, 157 von 169) |
 | M19 | Chart auf gebundener Basis | **DONE** (2026-09-25) — NVDA/AAPL-Splitsprung entfernt, Bildunterschrift folgt der Reihe |
 | M20 | Kalenderdeckung: Titel ohne Technical/Setup/Muster | **DONE, gemessen** (2026-09-25) — +166 Technical, +162 Signals, +160 Elliott; Rest liegt vor 2022-01-01 |
-| M23 | Kursstruktur zehn Handelstage hinter ihrem Kurs | **DONE** (2026-09-25) — fehlender `--push` verdrahtet, Abstand steht bis dahin auf der Seite |
+| M23 | Kursstruktur zehn Handelstage hinter ihrem Kurs | **DONE, realisiert** (2026-09-25) — Ablage beschrieben, 5.470 Titel auf 2026-09-24, 331 mit eigener Abstandszeile |
 | M21 | Zuordnungswechsel: eine Regel, drei Leser | **DONE** (2026-09-25) — 37 Wechsel zwischen zwei Staenden, Alarmvertrag deckungsgleich ueber 6.357 Titel |
 | M22 | Grund je Titel statt vier gleicher Saetze | **DONE** (2026-09-25) — `technical-unavailable-1.0.0` im ohnehin geladenen Shard |
 
@@ -409,6 +409,68 @@ Liste nach, statt ihn ein zweites Mal auszurechnen — eine zweite Auswertung de
 der Dienstschicht waere eine zweite Formulierung derselben Regel.
 
 Neue Reise-Station `assignmentChange`, damit die Zahl nicht behauptet wird.
+
+### M23 — realisiert: die zehn Handelstage sind weg, und 331 nennen ihren eigenen
+
+Lauf 553 des Marktdaten-Refresh hat die dauerhafte Ablage zum ersten Mal beschrieben. Alle vier
+neuen Schritte gruen: Zugang, Vorabrechnung (der Waechter gab DAILY_UPDATE frei), Push, Bericht.
+Die Materialisierung danach (Lauf 36132044957) liest daraus:
+
+```
+                       vorher     nachher
+technical asOf         2026-09-10 fuer 5.646   2026-09-24 fuer 5.470
+                                              2026-09-10 fuer  331  (Ablehnungs-Cooldown)
+technicalFullBundles        5.676      5.842
+signalsCapable              5.772      5.967
+elliottCapable              5.590      5.754
+lookbackCovered             5.977      6.007
+TECHNICAL_CALENDAR_INVALID    208         42
+SIGNAL_INVALID_SIGNAL_SESSION 205         40
+```
+
+Der Abruf selbst: 6.876 Titel angefragt, 6.531 ok, 0 fehlgeschlagen, 345 an der
+Qualitaetspruefung abgelehnt, **343 durch den Ablehnungs-Cooldown zurueckgestellt** — das sind
+die 331, die ihren Stand vom 2026-09-10 behalten. Sie bekommen jetzt ihre eigene Abstandszeile
+statt der Sammelaussage; genau dafuer ist sie gebaut. Kontingent: 6.533 von 50.000 am Tag.
+
+**Was mit dem frischen Stichtag von selbst gefallen ist:** die Setup-Beobachtung hat ihren
+ZWEITEN veroeffentlichten Stand (`2026-09-10`, `2026-09-24`), und damit steht die
+Uebergangsmatrix des Aktivierungs-Gates nicht mehr auf `NOT_EVALUABLE`, sondern auf **PASS**.
+Offen bleiben die Pruefungen, die zwoelf Beobachtungen und neunzig Tage brauchen — das ist Zeit,
+keine Arbeit. Das Markt-Regime hat einen neuen Stichtag geschrieben (BROAD_WEAKNESS am
+2026-09-24, `written: true`, kein Umschreiben), und die Faktorreihe weist ihre Neuberechnung aus:
+**3.144 von 6.437 Zeilen** wuerden heute anders lauten als im veroeffentlichten 09-24-Snapshot,
+weil Faktoren Perzentile sind und die Technical-Eingaben von 5.470 Titeln sich bewegt haben. Die
+veroeffentlichte Zeile bleibt; die Abweichung steht mit beiden Hashes im Artefakt.
+
+### The journey, re-measured against its baseline
+
+Gegen die Grundlinie vom 2026-09-25T04:18 (500 von 6.875, deterministisch dieselbe Stichprobe):
+
+```
+Station            vorher  nachher  Delta   davon ausdrueckliches Nein
+identity              500      500      0
+chart                 480      481     +1
+factorStrength        476      479     +3
+change                471      474     +3
+setup                 416      425     +9
+setupChange           416      425     +9
+patterns              400      400      0   79
+strategy              415      418     +3   217
+assignmentChange        –      500    neu   496
+technical             426      426      0
+business              500      500      0
+```
+
+28 Zugewinne, kein Verlust. 381 von 500 Titeln bekommen jetzt alle elf Stationen (vorher 370 von
+zehn). **`technical` bewegt sich nicht**, und das ist kein Widerspruch zu +166 Bundles: die
+Station zaehlt, ob eine Antwort kommt, und die Titel mit Kalenderfehler haben vorher ueber den
+reduzierten Pfad geantwortet. Gewonnen hat die GUETE (FULL_WORKSPACE statt REDUCED_EVIDENCE),
+nicht die Quote — wer nur die Quote liest, sieht diesen Ertrag nicht.
+
+Nebenbefund, behoben: `journey-coverage-v1.json` stand nicht in der `git add`-Liste des
+Workflows. Die Messung lief in jedem Lauf, druckte ihre Zahlen ins Log und wurde verworfen; das
+ausgelieferte Artefakt war das vom letzten Handlauf. Jetzt wird es mitveroeffentlicht.
 
 ### The journey, counted
 

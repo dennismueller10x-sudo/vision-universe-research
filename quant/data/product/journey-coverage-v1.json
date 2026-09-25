@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.0.0",
- "generatedAt": "2026-09-25T04:18:25.000Z",
+ "generatedAt": "2026-09-25T12:26:35.000Z",
  "universe": 6875,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-09-23",
+ "evidenceAsOf": "2026-09-24",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -20,61 +20,61 @@
   {
    "id": "chart",
    "label": "Kursverlauf",
-   "answered": 480,
+   "answered": 481,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 20,
-   "share": 0.96,
+   "withheld": 19,
+   "share": 0.962,
    "reasons": {
-    "SOURCE_MISSING": 20
+    "SOURCE_MISSING": 19
    }
   },
   {
    "id": "factorStrength",
    "label": "Wie stark ist die Aktie",
-   "answered": 476,
+   "answered": 479,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 24,
-   "share": 0.952,
+   "withheld": 21,
+   "share": 0.958,
    "reasons": {
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 24
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 21
    }
   },
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 471,
+   "answered": 474,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 29,
-   "share": 0.942,
+   "withheld": 26,
+   "share": 0.948,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 29
+    "NO_COMPARABLE_OBSERVATION": 26
    }
   },
   {
    "id": "setup",
    "label": "Baut sich eine Situation auf",
-   "answered": 416,
+   "answered": 425,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 84,
-   "share": 0.832,
+   "withheld": 75,
+   "share": 0.85,
    "reasons": {
-    "NOT_COVERED_BY_SETUP_OBSERVATION": 84
+    "NOT_COVERED_BY_SETUP_OBSERVATION": 75
    }
   },
   {
    "id": "setupChange",
    "label": "Was diesen Zustand aendern wuerde",
-   "answered": 416,
+   "answered": 425,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 84,
-   "share": 0.832,
+   "withheld": 75,
+   "share": 0.85,
    "reasons": {
-    "NOT_COVERED_BY_SETUP_OBSERVATION": 84
+    "NOT_COVERED_BY_SETUP_OBSERVATION": 75
    }
   },
   {
@@ -95,17 +95,29 @@
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 415,
+   "answered": 418,
    "findings": 217,
    "findingReasons": {
     "NO_PROFILE_FITS_WELL": 217
    },
-   "withheld": 85,
-   "share": 0.83,
+   "withheld": 82,
+   "share": 0.836,
    "reasons": {
     "NO_EVIDENCE": 61,
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 24
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 21
    }
+  },
+  {
+   "id": "assignmentChange",
+   "label": "Hat sich die Zuordnung geaendert",
+   "answered": 500,
+   "findings": 496,
+   "findingReasons": {
+    "NO_ASSIGNMENT_CHANGE": 496
+   },
+   "withheld": 0,
+   "share": 1,
+   "reasons": {}
   },
   {
    "id": "technical",
@@ -131,15 +143,14 @@
   }
  ],
  "answeredStationsPerTitle": {
-  "2": 2,
-  "3": 1,
-  "4": 6,
-  "5": 57,
-  "6": 26,
-  "7": 2,
-  "8": 10,
-  "9": 26,
-  "10": 370
+  "3": 2,
+  "5": 6,
+  "6": 57,
+  "7": 26,
+  "8": 1,
+  "9": 1,
+  "10": 26,
+  "11": 381
  },
  "note": "Gemessen ueber dieselben Dienste, die die Oberflaeche aufruft. 'withheld' heisst: die Station nennt einen Grund statt einer Zahl - kein Fehler, sondern der veroeffentlichte Zustand."
 }
