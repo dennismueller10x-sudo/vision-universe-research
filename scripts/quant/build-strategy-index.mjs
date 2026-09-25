@@ -109,7 +109,20 @@ function historicalEvidence(methodologyVersion, contract, currentRows) {
   }
 
   /* Gerechnet in der Engine, mit demselben Praedikat wie die Zuordnung. */
-  const profiles = StrategyMatch.assignmentPersistence(contract, hydrate(alt), currentRows);
+  const altRows = hydrate(alt);
+  const profiles = StrategyMatch.assignmentPersistence(contract, altRows, currentRows);
+  /* DIE ANDERE HAELFTE DERSELBEN RECHNUNG.
+
+     Die Quote beantwortet "wie bestaendig ist dieser Stil". Sie beantwortet
+     nicht, was ein Leser auf seiner Watchlist fragt: hat sich MEIN Titel
+     bewegt? Gemessen zwischen diesen beiden Staenden: 37 Wechsel, 36
+     betroffene Titel von 6.437, 394 komprimierte Bytes - also veroeffentlicht
+     und nicht auf eine spaetere Abfrage verschoben.
+
+     Derselbe predicateHash wie im Screening-Index und im Alert-Vertrag:
+     Screening-Regel, Alert-Regel und Zuordnung sind EINE Regel (§20). Die
+     Gegenprobe laeuft im Test ueber alert-rule-contract.js. */
+  const transitions = StrategyMatch.assignmentTransitions(contract, altRows, currentRows);
 
   return {
     state: "AVAILABLE",
@@ -118,6 +131,10 @@ function historicalEvidence(methodologyVersion, contract, currentRows) {
     from: vorher, to: jetzt,
     published: reihe.length,
     profiles: profiles,
+    transitions: transitions,
+    transitionNote: "Ein Wechsel liegt zwischen den veroeffentlichten Staenden " + vorher + " und " +
+      jetzt + ". Titel, die am " + vorher + " nicht im Bestand waren, wechseln nicht - sie wurden " +
+      "nicht gemessen. Kein Ereignis von heute und keine Ansage, was als naechstes passiert.",
     /* Was diese Zahl NICHT ist. Sie steht neben ihr, nicht in einer
        Fussnote - eine Quote ohne diesen Satz wird als Erfolgsquote
        gelesen. */
@@ -222,12 +239,19 @@ function main() {
         ? " · " + hist.kind + " " + hist.from + " → " + hist.to
         : " · " + hist.reason) + "\n");
   if (hist.state === "AVAILABLE") {
+    const wechsel = new Map((hist.transitions || []).map((t) => [t.profileId, t]));
+    let rein = 0, raus = 0;
     for (const entry of hist.profiles) {
+      const t = wechsel.get(entry.profileId) || { entered: [], exited: [] };
+      rein += t.entered.length; raus += t.exited.length;
       process.stdout.write("    " + entry.profileId.padEnd(26) +
         (entry.persistence === null ? "     –" :
           (entry.persistence * 100).toFixed(1).padStart(6) + " %") +
-        "  " + entry.stillMatching + " von " + entry.comparable + "\n");
+        "  " + entry.stillMatching + " von " + entry.comparable +
+        "   +" + t.entered.length + " / -" + t.exited.length + "\n");
     }
+    process.stdout.write("    Zuordnungswechsel: " + (rein + raus) + " (" + rein +
+      " neu erfuellt, " + raus + " nicht mehr)\n");
   }
   for (const entry of index.profiles) {
     process.stdout.write("  " + String(entry.count === null ? "–" : entry.count).padStart(5) + "  " +

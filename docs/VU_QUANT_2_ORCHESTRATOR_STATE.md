@@ -46,9 +46,12 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M15 | SPY-Benchmark ohne Total-Return-Abhängigkeit | **DONE** (2026-09-25) — `splitAdjustedReconstructible`, Prüfung unverändert, Ablehnungen verfallen mit ihrer Regel |
 | M16 | Setup Experience | **DONE** (2026-09-25) — Bedingungen in Wörterbuchsprache, „was diesen Zustand ändern würde", Aktualität benannt |
 | M17 | Strategy Match / Pattern Match: Nenner und Gründe | **DONE** (2026-09-25) — 810 bzw. 1.494 Titel bekamen eine falsche Auskunft, jetzt eine richtige |
-| M18 | Historische Evidenz (Beständigkeit) | **GEMESSEN, PENDING_HISTORY** (2026-09-25) — 1 von 2 Snapshots; öffnet sich mit der nächsten Materialisierung |
+| M18 | Historische Evidenz (Beständigkeit) | **DONE** (2026-09-25) — zweiter Snapshot da, `ASSIGNMENT_PERSISTENCE` live (Momentum Leader 92,9 %, 157 von 169) |
 | M19 | Chart auf gebundener Basis | **DONE** (2026-09-25) — NVDA/AAPL-Splitsprung entfernt, Bildunterschrift folgt der Reihe |
-| M20 | Kalenderdeckung: 413 Titel ohne Technical/Setup/Muster | **CODE DONE, Ertrag steht aus** (2026-09-25) — Deckung ab 2022-01-01, zweifach belegt; die naechste Materialisierung realisiert sie |
+| M20 | Kalenderdeckung: Titel ohne Technical/Setup/Muster | **DONE, gemessen** (2026-09-25) — +166 Technical, +162 Signals, +160 Elliott; Rest liegt vor 2022-01-01 |
+| M23 | Kursstruktur zehn Handelstage hinter ihrem Kurs | **DONE** (2026-09-25) — fehlender `--push` verdrahtet, Abstand steht bis dahin auf der Seite |
+| M21 | Zuordnungswechsel: eine Regel, drei Leser | **DONE** (2026-09-25) — 37 Wechsel zwischen zwei Staenden, Alarmvertrag deckungsgleich ueber 6.357 Titel |
+| M22 | Grund je Titel statt vier gleicher Saetze | **DONE** (2026-09-25) — `technical-unavailable-1.0.0` im ohnehin geladenen Shard |
 
 ## OWNER_DECISION_2026-09-22 — METHODOLOGY NAMESPACES
 
@@ -233,6 +236,158 @@ Zeitraum nicht), ein falsch eingetragener Feiertag wuerde echte Bars verwerfen.
 Geprueft, dass die Erweiterung nichts NEU verschaerft: `validateBars` zaehlt fehlende
 Handelstage nur gegen eine ausdruecklich uebergebene Liste, die der Import nicht uebergibt;
 `realtime-source` liest die Deckung nur fuer die heutige Sitzung. Kein neuer Ablehnungspfad.
+
+### M23 — die Kursstruktur war zehn Handelstage hinter ihrem eigenen Kurs
+
+Beim Nachsehen, warum die Setup-Beobachtung auf dem 2026-09-10 steht, waehrend der Kursstand
+2026-09-24 ist, kam der Grund heraus — und er ist keine Analysegrenze, sondern eine fehlende
+Zeile in einem Workflow.
+
+`sync-history-store.mjs` beschreibt seinen Vertrag selbst: **„--pull Ablage → .market-cache
+(vor Faktoren und Technical), --push .market-cache → Ablage (nach dem Gate-Lauf)"**. Der Pull
+ist in der Materialisierung verdrahtet. **Den Push gab es in keinem Workflow.** Der taegliche
+Abruf hielt seine frischen Bars nur im GitHub-Actions-Cache; die Materialisierung liest die
+dauerhafte Ablage und sah sie nie.
+
+Gemessen am 25.09.2026:
+
+```
+Produkt-Technical (aus der Ablage)        dataCutoff 2026-09-10
+veroeffentlichte Kursreihen (im Repo)     asOf       2026-09-24   6.483 Titel
+Rueckstand                               10 Handelstage bei 5.646 von 5.676 Titeln
+golden-preview (5 Referenzreihen)         2026-09-24
+quant/data/technical/instruments (18)     2026-09-24  ← frischer als das Produktartefakt
+```
+
+Die Aktienseite zeigte beides untereinander: einen aktuellen Kursverlauf und darunter einen
+Trend von vor zwei Wochen, jedes fuer sich richtig, und nichts sagte, dass sie nicht denselben
+Tag beschreiben. Zwei Dinge sind daraus geworden:
+
+1. **Der Abstand steht jetzt auf der Seite.** `getTechnicalIntelligence` vergleicht den
+   Analysestand mit dem veroeffentlichten Kursstand DIESES Titels (aus derselben Reihe, die
+   die Seite zeichnet — `stock.asOf` taugt nicht, es traegt den Stand der Geschaeftszahlen),
+   gerechnet mit `freshness.js#lagSessions`, also demselben Sitzungsbegriff wie die
+   Kursfrische. Der Satz: „Diese Auswertung steht auf dem Stand 2026-09-10 und liegt damit 10
+   Handelstage hinter dem veroeffentlichten Kursstand (2026-09-24)." Gepruefte Oberflaeche
+   1440 px und 390 px.
+2. **Der fehlende Halbsatz ist verdrahtet.** `market-data-refresh.yml` zieht die dauerhafte
+   Ablage nach Gate B nach (`--push --gate FULL_UNIVERSE --operation DAILY_UPDATE`), hinter
+   einer eigenen Vorabrechnung. Kosten rechnet der Waechter, nicht der Schritt: ~6.900
+   Class-A-Operationen je Lauf gegen eine Decke von 750.000 im Monat; reicht das Budget nicht,
+   bricht er mit „OWNER DECISION REQUIRED" ab. Fehlt ein Zugang, bleibt der Abgleich aus und
+   sagt es als `::warning`.
+
+Der Rueckstand verschwindet damit nicht rueckwirkend — er verschwindet mit dem naechsten
+Abruf, und bis dahin steht er auf der Seite.
+
+### M20 — realisiert: 166 Titel mehr, und ein Waechter, der zu Recht ansprang
+
+Lauf 36115714241 hat die Kalenderdeckung gegen die echten Reihen gerechnet:
+
+```
+                       vorher    nachher
+technicalFullBundles    5.676      5.842   (+166)
+calendarValidated       5.772      5.934   (+162)
+elliottCapable          5.590      5.750   (+160)
+TECHNICAL_CALENDAR_INVALID  208        42
+SIGNAL_INVALID_SIGNAL_SESSION 205       43
+```
+
+Die geschaetzten 413 waren die Summe beider Pruefungen; realisiert sind 328 Wiederherstellungen
+(166 + 162), und die restlichen 85 Faelle liegen mit ihrem Fenster vor 2022-01-01 — das ist
+eine Datengrenze und keine Deckungsluecke mehr.
+
+Derselbe Lauf ist dann abgebrochen, und zwar richtig: die Setup-Beobachtung zum **selben**
+Stichtag 2026-09-10 hatte ploetzlich mehr Zeilen, und der Unveraenderlichkeitswaechter
+verweigerte — „a published past is not rewritten". In der Sache hatte er recht. Nur passierte
+das, was er schuetzt, nicht: keine veroeffentlichte Zeile aenderte sich, es kamen Zeilen hinzu.
+
+Daraus die engste moegliche Ausnahme (`extensionVerdict`, mit eigenen Tests): gleiche Spalten,
+jede veroeffentlichte Zeile Wert fuer Wert unveraendert, mindestens ein Titel neu. Eine
+geaenderte Invalidierungsmarke bei gleichem Zustand ist ein geaenderter Satz und bleibt
+verboten; eine verschwundene Zeile ebenso. Die Erweiterung ist nicht still: sie traegt die
+Kette der Fassungen (`lineage`) und die Zahl der neuen Titel im Artefakt, und der Inhaltshash
+wird danach neu gebildet.
+
+### M22 — vier „derzeit nicht verfuegbar", die vier verschiedene Sachverhalte waren
+
+1.199 der 6.875 Titel haben keine Kursstruktur. Alle lasen denselben Satz. Gemessen verbergen
+sich darunter:
+
+```
+5.590  vollstaendig
+  990  INSUFFICIENT_HISTORY    COOL: 20 Bars, notiert seit sechs Wochen
+  208  TECHNICAL_CALENDAR_INVALID
+   86  nur Elliott fehlt
+    1  SOURCE_MISSING          GLMD
+```
+
+Der Grund war vorhanden — je Titel in `summary.json#rows`. Die Datei ist 813 KB gross und
+damit fuer eine Aktienseite unbrauchbar; er kam nie an. Er steht jetzt in dem Shard, den die
+Seite fuer genau diesen Titel ohnehin laedt, als **eigener Block mit eigener Version**
+(`technical-unavailable-1.0.0`): in `instruments` prueft ein Leser Bundle-Felder und wuerde an
+einem Grund-Eintrag scheitern. `validateShard` bleibt gruen, `instruments` Byte fuer Byte.
+
+Damit ein Titel OHNE Bundle ueberhaupt einen Ort hat, steht der Shard jetzt vor der Analyse
+fest statt auf dem Erfolgspfad. Belegt, nicht gehofft: an 6.875 Titeln nachgerechnet sind die
+Schluessel zusammenhaengend — 646 Shards, kein Wiedereintritt — und ein Wiedereintritt bricht
+den Lauf ab (`SHARD_REOPENED`), statt still eine fertige Datei zu ueberschreiben.
+
+Die Oberflaeche sagt jetzt „Diese Auswertung benoetigt 300 Handelstage; fuer diesen Titel
+liegen 20 vor". Bei einem sechs Wochen alten Titel fehlt nichts, was gleich kommt — „derzeit"
+war dort das falsche Wort. Ein unbekannter Code fuehrt bewusst zum alten Satz, ein roher
+Enum-Wert erscheint nie, und eine Forderung, die die vorhandene Zahl nicht uebersteigt, wird
+zurueckgehalten statt sich selbst zu widersprechen. Der Test liest die Codes aus der Quelle
+des Produzenten, damit ein neuer Code ohne Satz auffaellt.
+
+### M21 — eine Regel, drei Leser: der Zuordnungswechsel
+
+§20 verlangt, dass Screening-Regel, Signal-Regel, Alarm-Regel und Strategie-Regel **eine**
+Regel sind. Das stand als Absicht im Vertrag. Jetzt ist es an dem Punkt gepruefbar, an dem
+zwei Leser dasselbe sagen muessen.
+
+Der zweite veroeffentlichte Faktor-Snapshot (`2026-09-23`, `2026-09-24` unter
+`vu-factor-evidence-2.0.0`) hat M18 von `PENDING_HISTORY` auf `AVAILABLE` gedreht — die
+Bestaendigkeitsquote je Profil steht auf der Aktienseite (Momentum Leader 92,9 %, 157 von
+169). Die andere Haelfte derselben Rechnung fehlte: **hat sich MEIN Titel bewegt?**
+
+Gemessen zwischen diesen beiden Staenden:
+
+```
+Wechsel gesamt        37     11 neu erfuellt, 26 nicht mehr
+betroffene Titel      36     von 6.437
+quality-compounder    +0 / -1     momentum-leader   +6 / -12
+quality-momentum      +0 / -2     garp              +0 / -3
+future-leader         +2 / -2     defensive-quality +0 / -0
+value-momentum        +3 / -6     earnings-revision +0 / -0  (Eingabe nicht gedeckt)
+Nutzlast              394 komprimierte Bytes   Index 3,4 KB von 128 KiB
+```
+
+Die Gegenprobe, auf die es ankommt: derselbe Wechsel, einmal von der Profil-Engine und
+einmal von `quant/api/alert-rule-contract.js` ueber dasselbe Praedikat gerechnet — **6.357
+vergleichbare Titel, keine einzige Abweichung, identischer `predicateHash`
+(`rule_ed367bba35016006`)**. Ein Alarm auf diese Regel wuerde genau die 37 Wechsel melden,
+die der Index veroeffentlicht. Das ist kein Alarmsystem: `delivery` bleibt `NOT_CONFIGURED`,
+es gibt keine Zustellung, keine Planung und keine Abonnementspeicherung.
+
+Drei Ehrlichkeiten sind mitgeprueft:
+
+1. **Ein Titel, der im vorigen Stand fehlt, wechselt nicht.** Sonst waere jeder neu
+   aufgenommene Titel ein „neu erfuellt", das nie gemessen wurde. `notComparable` weist die
+   Zahl aus.
+2. **„Nichts geaendert" ist eine Antwort.** 6.401 Titel bekommen sie ausdruecklich, statt
+   dass die Zeile fehlt.
+3. **Ein Wechsel ist eine Beobachtung zwischen zwei veroeffentlichten Staenden** — die Zeile
+   nennt beide Daten und sagt, dass es kein Ereignis von heute, kein Signal und keine
+   Prognose ist.
+
+Gelesen wird auf der Aktienseite und auf der Watchlist: dort steht die Zeile nur bei einem
+Wechsel (gepruefte Saat ASML/CNXN/NVDA: zwei von drei Karten tragen sie, 1440 px und 390 px,
+kein Overflow, kein Seitenfehler). Der Dienst schlaegt den Wechsel in der veroeffentlichten
+Liste nach, statt ihn ein zweites Mal auszurechnen — eine zweite Auswertung des Praedikats in
+der Dienstschicht waere eine zweite Formulierung derselben Regel.
+
+Neue Reise-Station `assignmentChange`, damit die Zahl nicht behauptet wird.
 
 ### The journey, counted
 

@@ -25,6 +25,7 @@ const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engin
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
+const Freshness=typeof module!=='undefined'&&module.exports?require('../engines/realtime/freshness.js'):(g.VURealtime&&g.VURealtime.Freshness);
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
@@ -252,6 +253,36 @@ function create(options){
   if(!row)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
   return {...StrategyMatch.evaluate(profiles.contract,row),ticker,asOf:screening.asOf};
  }
+ /* DER ZUORDNUNGSWECHSEL EINES TITELS - NACHGESCHLAGEN, NICHT NACHGERECHNET.
+  *
+  * Die Wechsel stehen im veroeffentlichten Index, gerechnet von derselben
+  * Engine und mit demselben predicateHash wie die Zuordnung selbst. Hier
+  * wird deshalb nur gelesen: eine zweite Auswertung des Praedikats in der
+  * Dienstschicht waere eine zweite Formulierung derselben Regel.
+  *
+  * Drei Antworten, nicht zwei: CHANGED nennt die Profile, NO_CHANGE sagt
+  * ausdruecklich, dass sich nichts bewegt hat (auch das ist eine Antwort),
+  * und null heisst, dass es keine zwei veroeffentlichten Staende gibt. */
+ function assignmentChangeOf(index,ticker){
+  const hist=index&&index.state==='AVAILABLE'?index.historicalEvidence:null;
+  if(!hist||hist.state!=='AVAILABLE'||!Array.isArray(hist.transitions))return null;
+  const label=id=>{const p=(index.profiles||[]).find(x=>x.profileId===id);return p&&p.label?p.label:id;};
+  const entered=[],exited=[];
+  for(const t of hist.transitions){
+   const eintrag={profileId:t.profileId,label:label(t.profileId),predicateHash:t.predicateHash};
+   if(Array.isArray(t.entered)&&t.entered.includes(ticker))entered.push(eintrag);
+   if(Array.isArray(t.exited)&&t.exited.includes(ticker))exited.push(eintrag);
+  }
+  return {state:entered.length||exited.length?'CHANGED':'NO_CHANGE',
+   from:hist.from,to:hist.to,entered,exited,
+   isNot:['EVENT_TODAY','FORECAST','RETURN','SIGNAL'],
+   note:hist.transitionNote||null};
+ }
+ async function getAssignmentChange(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return null;
+  return assignmentChangeOf(await getStrategyIndex(),ticker);
+ }
  /* Die Setup-Beobachtung eines Titels. Was hier zurueckkommt, ist die
   * Regel, die den Zustand entschieden hat, samt ihrer Bedingungen - nicht
   * ein Etikett ohne Herleitung. Der Lebenszyklus bleibt getrennt von der
@@ -449,6 +480,36 @@ function create(options){
   * Gemessen: 990 Titel haben zu wenig Historie (COOL: 20 Bars, notiert
   * seit sechs Wochen), 208 liegen mit ihrem Fenster ausserhalb der
   * Kalenderdeckung, einer hat keine Reihe. */
+ /* WIE WEIT DIE AUSWERTUNG HINTER DEM KURS LIEGT.
+  *
+  * Gemessen am 25.09.2026: die Kursstruktur der Produktartefakte endet am
+  * 2026-09-10, der letzte veroeffentlichte Kursstand am 2026-09-24 - zehn
+  * Handelstage, bei 5.646 von 5.676 Titeln dieselben zehn. Ursache ist die
+  * Ablage, aus der die Materialisierung liest (siehe Orchestrator-State);
+  * bis die behoben ist, darf die Oberflaeche nicht zwei Staende
+  * nebeneinander zeigen, als waeren sie einer.
+  *
+  * Gerechnet mit `freshness.js#lagSessions`, also mit demselben
+  * Sitzungsbegriff wie die Kursfrische - nicht mit einer zweiten
+  * Formulierung davon. Ohne Kalender oder ohne eines der beiden Daten gibt
+  * es keine Zahl und damit keine Aussage. */
+ /* Der veroeffentlichte Kursstand DIESES Titels - gelesen aus derselben
+  * Reihe, die die Aktienseite zeichnet, damit die verglichene Zahl die ist,
+  * die der Leser daneben sieht. `stock.asOf` taugt dafuer nicht: es traegt
+  * den Stand der Geschaeftszahlen (AMD 2026-09-08, ASML null). */
+ async function publishedPriceAsOf(securityId){
+  if(!/^[A-Za-z0-9_-]+$/.test(String(securityId||'')))return null;
+  try{const series=await load('/quant/data/market/discover-series/'+securityId+'.json');
+   return series&&series.status==='CALCULATED'&&validDate(series.asOf)?series.asOf:null;}catch{return null;}
+ }
+ async function analysisLag(analysisAsOf,priceAsOf){
+  if(!Freshness||!validDate(analysisAsOf)||!validDate(priceAsOf)||analysisAsOf>=priceAsOf)return null;
+  let calendar=null;
+  try{calendar=await load('/quant/config/market-calendar.json');}catch{return null;}
+  const sessions=Freshness.lagSessions(analysisAsOf,priceAsOf,calendar);
+  return sessions>0?{analysisAsOf,priceAsOf,lagSessions:sessions,
+   contract:'freshness-contract-1.0.0'}:null;
+ }
  async function technicalUnavailability(ticker){
   try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
    if(!shard||shard.shard!==key||shard.unavailableSchemaVersion!=='technical-unavailable-1.0.0')return null;
@@ -491,6 +552,7 @@ function create(options){
    try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker,member.m),b=source.bundle;
     if(source.instrumentId!==ticker||source.isMock!==false||source.dataMode!=='real'||source.source!=='tiingo'||!b||b.instrumentId!==ticker||!validDate(b.dataCutoff)||b.dataCutoff>new Date().toISOString().slice(0,10)||!b.methodologyVersion) return unavailable('INVALID_TECHNICAL_PROVENANCE');
     return {state:'AVAILABLE',ticker,asOf:b.dataCutoff,methodology:b.methodologyVersion,evidenceLevel:'FULL_WORKSPACE',fullWorkspace:true,
+     lag:await analysisLag(b.dataCutoff,await publishedPriceAsOf(member.m)),
      trend:status(b.trend?.direction,{BULLISH:'Aufwärtstrend',BEARISH:'Abwärtstrend',NEUTRAL:'Keine klare Richtung',SIDEWAYS:'Seitwärts'}),
      momentum:status(b.momentum?.state,{POSITIVE:'Positiv',NEGATIVE:'Negativ',NEUTRAL:'Neutral'}),
      volatility:status(b.volatility?.regime,{NORMAL:'Normal',HIGH:'Erhöht',LOW:'Niedrig',EXTREME:'Sehr hoch'}),
@@ -743,7 +805,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

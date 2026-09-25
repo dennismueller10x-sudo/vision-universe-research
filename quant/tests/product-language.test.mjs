@@ -134,7 +134,7 @@ test("the stock experience answers its questions in the order a person asks them
   const order = ["Wie stark ist diese Aktie?", "sectionHead('Stärken & Schwächen','factorDna')",
     "sectionHead('Bewegung','changeEngine')", "setupJourney(setup,observation,setupIndex)",
     "prosAndCons(data,change,patterns)", "patternMatchSection(patterns)",
-    "strategyMatchSection(match,strategyIndex,ticker)", "evidenceTrustSection(patterns)"];
+    "strategyMatchSection(match,strategyIndex,ticker", "evidenceTrustSection(patterns)"];
   let cursor = -1;
   for (const marker of order) {
     const at = experience.indexOf(marker, cursor + 1);
@@ -406,7 +406,7 @@ test("a missing factor row hides the factors, not everything else", () => {
   const bisReturn = zweig.slice(0, zweig.indexOf("\n  return;"));
   for (const abschnitt of ["setupJourney(setup,observation,setupIndex)",
                            "patternMatchSection(patterns)",
-                           "strategyMatchSection(match,strategyIndex,ticker)"]) {
+                           "strategyMatchSection(match,strategyIndex,ticker"]) {
     assert.ok(bisReturn.includes(abschnitt), abschnitt + " fehlt im Zweig ohne Faktor-Evidenz");
   }
   /* Und der Hinweis selbst bleibt stehen - die fehlende Faktorzeile wird

@@ -203,6 +203,25 @@ const TECHNICAL_REASON={
  INVALID_HISTORY_OBSERVED_AT:()=>'Der Beobachtungszeitpunkt der Kurshistorie ist nicht belegt.',
  INVALID_CANONICAL_SERIES:()=>'Die aufbereitete Kursreihe hat die Schlussprüfung nicht bestanden.',
  TECHNICAL_PARTIAL:()=>'Die Auswertung blieb unvollständig und wird deshalb nicht veröffentlicht.'};
+/* ZWEI STAENDE NEBENEINANDER SIND ZWEI STAENDE.
+ *
+ * Gemessen am 25.09.2026: die Kursstruktur der Produktartefakte endet am
+ * 2026-09-10, der veroeffentlichte Kursstand am 2026-09-24 - bei 5.646 von
+ * 5.676 Titeln dieselben zehn Handelstage Abstand. Die Seite zeigte beides
+ * untereinander, jedes fuer sich richtig, und nichts sagte, dass sie nicht
+ * denselben Tag beschreiben. Wer den Trend liest, liest den Trend von vor
+ * zwei Wochen.
+ *
+ * Die Ursache liegt in der Ablage, aus der die Materialisierung liest (im
+ * Orchestrator-State benannt). Solange sie besteht, gehoert der Abstand auf
+ * die Seite - nicht, weil er gut ist, sondern weil er wahr ist. */
+function analysisLagLine(lag){
+ if(!lag||!Number.isFinite(lag.lagSessions)||lag.lagSessions<1)return null;
+ const tage=lag.lagSessions===1?'einen Handelstag':lag.lagSessions+' Handelstage';
+ return el('p',{class:'analysis-lag',text:'Diese Auswertung steht auf dem Stand '+lag.analysisAsOf
+  +' und liegt damit '+tage+' hinter dem veröffentlichten Kursstand ('+lag.priceAsOf
+  +'). Der Kursverlauf darüber ist aktuell; die Kursstruktur beschreibt den älteren Stand.'});
+}
 function technicalReasonText(unavailability){
  if(!unavailability||typeof unavailability.reason!=='string')return null;
  const satz=TECHNICAL_REASON[unavailability.reason]
@@ -266,7 +285,7 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  const section=el('section',{class:'section'},[el('span',{class:'eyebrow',text:'Kursstruktur verstehen'}),el('h2',{text:LQ('technicalIntelligence')})]);
  if(technical.state==='AVAILABLE'){
   const detail=technical.fullWorkspace?[el('p',{text:'Elliott Wave: '+technical.elliott.label+'. Die Szenarien sind keine Wahrscheinlichkeitsprognose.'}),actions([{label:'Vollständige Technical-Analyse',href:technical.workspace},{label:'Elliott: Szenarien & Invalidation',href:technical.elliottWorkspace}])]:[el('p',{class:'muted',text:'Vorhandene Kursfaktor-Evidenz. '+(technicalGrund||'Ein vollständiges Technical- oder Elliott-Bundle ist für diesen Titel noch nicht publiziert.')}),actions([{label:'Vollständige Kursgeschichte',href:'/quant/stock/?ticker='+encodeURIComponent(ticker)}])];
-  section.append(el('div',{class:'technical-summary'},[['Trend',technical.trend],['Momentum',technical.momentum],['Volatilität',technical.volatility]].map(([label,state])=>el('div',{},[el('span',{class:'muted',text:label}),el('h3',{text:state.label})]))),el('p',{class:'muted',text:'Analyse bis '+technical.asOf+' · '+technical.methodology}),...detail);
+  section.append(el('div',{class:'technical-summary'},[['Trend',technical.trend],['Momentum',technical.momentum],['Volatilität',technical.volatility]].map(([label,state])=>el('div',{},[el('span',{class:'muted',text:label}),el('h3',{text:state.label})]))),el('p',{class:'muted',text:'Analyse bis '+technical.asOf+' · '+technical.methodology}),analysisLagLine(technical.lag),...detail);
  }else section.append(notice('Technische Analyse derzeit nicht verfügbar',(technicalGrund?technicalGrund+' ':'')+'Der vollständige Workspace bleibt über die Analysezugänge erreichbar.'));
  main.append(section);
  await liveStockSection(ticker);
@@ -487,6 +506,18 @@ async function watchlistPage(){
    evidenceRows=new Map((screening?.rows||[]).map(row=>[row.ticker,row]));}
   return evidenceRows.get(ticker)||null;
  }
+ /* DIESELBE REGEL, AUF DER WATCHLIST GELESEN.
+
+    Eine Watchlist beantwortet bisher "wie steht mein Titel heute". Die
+    Frage danach ist "hat sich etwas geaendert" - und die Zuordnung zu
+    einem Anlagestil ist genau dieselbe Regel, die der Screener anwendet
+    und die ein Alarm beobachten wuerde (§20: eine Regel, drei Leser).
+
+    Gemessen zwischen den Staenden 2026-09-23 und 2026-09-24: 36 von 6.437
+    Titeln haben ihre Zuordnung gewechselt. Auf einer Watchlist von zehn
+    Titeln ist das selten - und deshalb steht die Zeile nur bei einem
+    Wechsel, damit sie etwas bedeutet, wenn sie da ist. */
+ async function changeFor(ticker){return api.getAssignmentChange(ticker).catch(()=>null);}
  async function draw(){const id=++request,data=await api.getWatchlistIntelligence(selected);if(id!==request)return;S.clear(target);
   if(data.state==='EMPTY'){target.append(notice('Wen möchtest du beobachten?','Füge deinen ersten Ticker hinzu. Die Watchlist startet ohne Beispielbestände.'));return;}
   if(!Array.isArray(data.members)){target.append(notice('Auswahl derzeit nicht auswertbar','Deine Eingaben bleiben erhalten.'));return;}
@@ -498,6 +529,7 @@ async function watchlistPage(){
     available?el('p',{class:'muted',text:'Schlusskurs '+n(s.price,2)+' · Kursstand '+s.asOf}):el('p',{class:'muted',text:'Für diesen Ticker fehlen in dieser Ansicht Daten oder die Anzeigefreigabe. Er bleibt auf deiner Liste.'}),
     available?evidence(s):null,
     factorStrip(await evidenceFor(s.ticker)),
+    (change=>change&&change.state==='CHANGED'?assignmentChangeLine(change):null)(await changeFor(s.ticker)),
     el('p',{class:'capability-line',text:(signal.state==='AVAILABLE'?'Signals verfügbar · '+recent+' Wechsel in 60 EOD-Beobachtungen':'Signals nicht verfügbar')+' · '+(technical.state==='AVAILABLE'?'Technical verfügbar':'Technical nicht verfügbar')+' · '+(elliott.state==='AVAILABLE'?'Elliott verfügbar':'Elliott nicht verfügbar')}),
     available?el('details',{},[el('summary',{text:'Warum diese Einordnung?'}),el('p',{text:'Abstand zum 200-Tage-Durchschnitt: '+n(s.above200)+'. Die Aussage beschreibt den vorhandenen Kursstand, keine Prognose und keinen neuen Zustandswechsel.'}),el('p',{class:'muted',text:'Geschäftsdaten bis '+s.fundamentalsAsOf+' · verfügbar seit '+s.availableAt})]):null,
     actions(available?[{label:'Aktie untersuchen',href:href('stock',s.ticker)},{label:'Quant-Analyse',href:href('quant',s.ticker)},...(signal.state==='AVAILABLE'?[{label:'Historische Änderungen',href:href('signals',s.ticker)+'&window=60'}]:[]),...(technical.state==='AVAILABLE'?[{label:'Technical',href:technical.workspace}]:[]),...(elliott.state==='AVAILABLE'?[{label:'Elliott',href:elliott.workspace}]:[]),{label:'Fundamental-Historie',href:href('fundamentals',s.ticker)}]:[{label:'Analysebereich öffnen',href:href('research')}])
@@ -979,7 +1011,31 @@ function historicalEvidenceLine(index,best){
   +' Das ist eine Beobachtung an zwei Stichtagen und keine Rendite, keine Trefferquote und kein Backtest.'
   +' Was weiterhin fehlt – '+L('FACTOR_HISTORY_NOT_AVAILABLE')+': '+LB('FACTOR_HISTORY_NOT_AVAILABLE')});
 }
-function strategyMatchSection(match,index,ticker){
+/* WAS SICH AN DER ZUORDNUNG GEAENDERT HAT - ZWISCHEN ZWEI STAENDEN.
+ *
+ * Gemessen am 25.09.2026 zwischen den veroeffentlichten Staenden
+ * 2026-09-23 und 2026-09-24: 37 Wechsel, 36 betroffene Titel von 6.437.
+ * Fuer die uebrigen 6.401 ist "nichts geaendert" die Antwort und keine
+ * Luecke - deshalb steht sie da, statt die Zeile wegzulassen.
+ *
+ * Die Zeile sagt ausdruecklich, WORAUF sie sich bezieht. Ein "seit
+ * gestern" ohne Datum liest sich wie ein Ereignis von heute; es sind zwei
+ * veroeffentlichte Staende, nicht mehr und nicht weniger. */
+function assignmentChangeLine(change){
+ if(!change||(change.state!=='CHANGED'&&change.state!=='NO_CHANGE'))return null;
+ if(change.state==='NO_CHANGE'){
+  return el('p',{class:'muted',text:'Zwischen den beiden veröffentlichten Ständen ('+change.from+' → '
+   +change.to+') hat sich an der Zuordnung dieses Titels nichts geändert.'});
+ }
+ const teile=[];
+ if(change.entered.length)teile.push('neu erfüllt: '+change.entered.map(e=>e.label).join(', '));
+ if(change.exited.length)teile.push('nicht mehr erfüllt: '+change.exited.map(e=>e.label).join(', '));
+ return el('p',{class:'assignment-change',text:'Gegenüber dem veröffentlichten Stand vom '+change.from
+  +' — am '+change.to+' '+teile.join(' · ')
+  +'. Eine Beobachtung zwischen zwei veröffentlichten Ständen — kein Ereignis von heute, '
+  +'kein Signal und keine Prognose.'});
+}
+function strategyMatchSection(match,index,ticker,change){
  const section=el('section',{class:'section match-section'},[
   el('span',{class:'eyebrow',text:'Anlagestil'}),
   el('h2',{text:LQ('strategyMatch')}),
@@ -1031,6 +1087,8 @@ function strategyMatchSection(match,index,ticker){
   section.append(notice('Zu keinem Anlagestil passt dieser Titel derzeit gut',
    VUProductLanguage.negative('strategyMatch')+' Das ist eine Antwort, keine Lücke.'));
  }
+ const wechsel=assignmentChangeLine(change);
+ if(wechsel)section.append(wechsel);
  section.append(
   el('p',{class:'muted',text:'Ein Anlagestil ist ein Satz fester Bedingungen. Gezählt wird, wie viele davon dieser Titel erfüllt — das ist kein Rang, keine Erfolgswahrscheinlichkeit und keine Renditeaussage.'}),
   el('div',{class:'match-grid'},ordered.map(matchCard)),
@@ -1185,7 +1243,7 @@ function evidenceTrustSection(patterns){
 }
 
 async function quantPage(ticker){
- const [data,match,profileContract,observation,patterns,setupIndex,strategyIndex]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null),api.getStrategyIndex().catch(()=>null)]);
+ const [data,match,profileContract,observation,patterns,setupIndex,strategyIndex,assignmentChange]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null),api.getStrategyIndex().catch(()=>null),api.getAssignmentChange(ticker).catch(()=>null)]);
  /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
     wird nicht daneben noch einmal formuliert. */
  if(match?.state==='AVAILABLE'&&profileContract?.state==='AVAILABLE'){
@@ -1217,7 +1275,7 @@ async function quantPage(ticker){
      wird nichts ersetzt und nichts ausgedacht. */
   main.append(setupJourney(setup,observation,setupIndex));
   main.append(patternMatchSection(patterns));
-  main.append(strategyMatchSection(match,strategyIndex,ticker));
+  main.append(strategyMatchSection(match,strategyIndex,ticker,assignmentChange));
   return;
  }
  const rated=data.factors.filter(f=>f.state==='AVAILABLE');
@@ -1268,7 +1326,7 @@ async function quantPage(ticker){
  main.append(setupJourney(setup,observation,setupIndex));
  main.append(prosAndCons(data,change,patterns));
  main.append(patternMatchSection(patterns));
- main.append(strategyMatchSection(match,strategyIndex,ticker));
+ main.append(strategyMatchSection(match,strategyIndex,ticker,assignmentChange));
  main.append(evidenceTrustSection(patterns));
  /* EVIDENZ & WORKSPACE */
  main.append(el('section',{class:'section'},[

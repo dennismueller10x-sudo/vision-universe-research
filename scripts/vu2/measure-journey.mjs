@@ -82,6 +82,15 @@ const STATIONS = [
     read: (d) => d.match.state !== "AVAILABLE" ? (d.match.reason || "UNAVAILABLE")
       : (d.match.profiles.some((p) => p.state === "AVAILABLE" && p.match >= 40)
           ? null : "FINDING:NO_PROFILE_FITS_WELL") },
+  /* Die Zuordnung ist dieselbe Regel wie im Screener und im Alarmvertrag -
+     und ihre Bewegung ist eine eigene Station, weil "nichts geaendert" eine
+     Antwort ist und kein Loch. Gemessen zwischen 2026-09-23 und 2026-09-24:
+     36 von 6.437 Titeln haben gewechselt; bei den uebrigen steht das Nein. */
+  { id: "assignmentChange", label: "Hat sich die Zuordnung geaendert",
+    read: (d) => !d.change ? "NO_SECOND_PUBLISHED_STATE"
+      : d.change.state === "CHANGED" ? null
+      : d.change.state === "NO_CHANGE" ? "FINDING:NO_ASSIGNMENT_CHANGE"
+      : (d.change.state || "UNAVAILABLE") },
   { id: "technical", label: "Kursstruktur",
     read: (d) => d.technical.state === "AVAILABLE" ? null : (d.technical.reason || "UNAVAILABLE") },
   { id: "business", label: "Unternehmenszahlen",
@@ -90,15 +99,16 @@ const STATIONS = [
 ];
 
 async function journeyFor(ticker, screeningRows) {
-  const [stock, setup, patterns, match, technical, factors] = await Promise.all([
+  const [stock, setup, patterns, match, technical, factors, change] = await Promise.all([
     api.getStockIntelligence(ticker).catch((e) => ({ state: "UNAVAILABLE", reason: "THROWN:" + e.message })),
     api.getSetupObservation(ticker).catch(() => ({ state: "UNAVAILABLE", reason: "THROWN" })),
     api.getPatternMatch(ticker).catch(() => ({ state: "UNAVAILABLE", reason: "THROWN" })),
     api.getStrategyMatch(ticker).catch(() => ({ state: "UNAVAILABLE", reason: "THROWN" })),
     api.getTechnicalIntelligence(ticker).catch(() => ({ state: "UNAVAILABLE", reason: "THROWN" })),
-    api.getFactorEvidence(ticker).catch(() => ({ state: "UNAVAILABLE", reason: "THROWN" }))
+    api.getFactorEvidence(ticker).catch(() => ({ state: "UNAVAILABLE", reason: "THROWN" })),
+    api.getAssignmentChange(ticker).catch(() => null)
   ]);
-  return { ticker, stock, setup, patterns, match, technical, factors,
+  return { ticker, stock, setup, patterns, match, technical, factors, change,
            evidence: screeningRows.has(ticker) };
 }
 
@@ -184,7 +194,7 @@ async function main() {
     const gruende = Object.entries(station.reasons).sort((a, b) => b[1] - a[1])
       .slice(0, 3).map(([reason, n]) => reason + " " + n).join(" · ");
     process.stdout.write("  " + (station.share * 100).toFixed(1).padStart(5) + " %  " +
-      station.id.padEnd(16) + station.answered + "/" + sample.length +
+      station.id.padEnd(18) + station.answered + "/" + sample.length +
       (station.findings ? " (davon " + station.findings + " ausdrueckliches Nein)" : "") +
       (gruende ? "   " + gruende : "") + "\n");
   }

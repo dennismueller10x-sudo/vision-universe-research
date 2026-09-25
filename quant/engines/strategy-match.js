@@ -345,6 +345,52 @@
      erfuellt": sie sind nicht gemessen worden. Diese Unterscheidung ist
      der Grund, warum `comparable` neben `previousMembers` steht.
    */
+  /* =====================================================================
+     DIESELBE ZUORDNUNG, JE TITEL GELESEN.
+
+     Die Bestaendigkeit unten ist die Quote je Profil. Die andere Haelfte
+     derselben Rechnung ist die Frage, die ein Leser auf seiner Watchlist
+     hat: hat sich MEIN Titel bewegt? Gemessen am 25.09.2026 zwischen den
+     Staenden 2026-09-23 und 2026-09-24: 37 Wechsel, 36 betroffene Titel von
+     6.437 - und die Angabe kostet 394 komprimierte Bytes.
+
+     Drei Dinge halten die Aussage ehrlich:
+
+       1. Ein Titel, der im vorigen Stand FEHLT, wechselt nicht. Er wurde
+          nicht gemessen, und "neu erfuellt" waere dort eine Erfindung.
+       2. Gerechnet wird mit demselben Praedikat wie die Zuordnung, nicht
+          mit einer zweiten Formulierung davon - dieselbe Funktion, die die
+          Quote ergibt, ergibt die Namen.
+       3. Ein Wechsel ist eine Beobachtung zwischen zwei VEROEFFENTLICHTEN
+          Staenden. Er ist kein Ereignis von heute und keine Ansage, was
+          als naechstes passiert.
+   */
+  function assignmentTransitions(contract, previousRows, currentRows) {
+    var document = assertContract(contract);
+    var vorher = previousRows || [], jetzt = currentRows || [];
+    var damalsIndex = {};
+    for (var i = 0; i < vorher.length; i++) damalsIndex[vorher[i].ticker] = vorher[i];
+
+    return document.profiles.map(function (profile) {
+      var filters = screenQuery(profile).filters;
+      var rein = [], raus = [], nichtVergleichbar = 0;
+      jetzt.forEach(function (row) {
+        var damals = damalsIndex[row.ticker];
+        if (!damals) { nichtVergleichbar += 1; return; }
+        var davor = Query.matches(damals, filters), danach = Query.matches(row, filters);
+        if (davor === danach) return;
+        (danach ? rein : raus).push(row.ticker);
+      });
+      rein.sort(); raus.sort();
+      return {
+        profileId: profile.profileId,
+        predicateHash: Rules.predicateHash(predicateOf(profile)),
+        entered: rein, exited: raus,
+        notComparable: nichtVergleichbar
+      };
+    });
+  }
+
   function assignmentPersistence(contract, previousRows, currentRows) {
     var document = assertContract(contract);
     var vorher = previousRows || [], jetzt = currentRows || [];
@@ -375,6 +421,7 @@
   var api = {
     METHODOLOGY_VERSION: METHODOLOGY_VERSION,
     assignmentPersistence: assignmentPersistence,
+    assignmentTransitions: assignmentTransitions,
     CONDITION_STATES: CONDITION_STATES.slice(),
     PROFILE_STATES: PROFILE_STATES.slice(),
     UNAVAILABLE_REASONS: UNAVAILABLE_REASONS.slice(),

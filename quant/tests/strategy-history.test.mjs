@@ -96,7 +96,10 @@ test("the builder reads the snapshot index and refuses to mix methodology versio
   const source = readFileSync(new URL("scripts/quant/build-strategy-index.mjs", ROOT), "utf8");
   assert.match(source, /factor-evidence-history/);
   assert.match(source, /FACTOR_HISTORY_VERSION_MISMATCH/);
-  assert.match(source, /StrategyMatch\.assignmentPersistence\(contract, hydrate\(alt\), currentRows\)/);
+  assert.match(source, /StrategyMatch\.assignmentPersistence\(contract, altRows, currentRows\)/);
+  /* Die andere Haelfte derselben Rechnung - die Namen zur Quote - kommt aus
+     derselben Engine und nicht aus einer zweiten Formulierung. */
+  assert.match(source, /StrategyMatch\.assignmentTransitions\(contract, altRows, currentRows\)/);
   /* Die Konstante ist weg, nicht danebengestellt. */
   assert.equal(/historicalEvidence: \{ state: "UNAVAILABLE", reason: "FACTOR_HISTORY_NOT_AVAILABLE" \}/.test(source), false);
 });

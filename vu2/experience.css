@@ -262,6 +262,14 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .balance-list li span+span{font-size:12px;margin-top:3px}
 .match-lead{font-size:18px;line-height:1.4;margin:18px 0 0}
 .match-lead .muted{font-size:14px}
+/* Ein Zuordnungswechsel ist selten (36 von 6.437 zwischen zwei Staenden)
+   und deshalb sichtbar, aber nicht als Warnung: es ist eine Beobachtung. */
+.assignment-change{font-size:14px;line-height:1.5;margin:12px 0 0;padding:10px 12px;
+ border-left:3px solid var(--line);background:var(--surface-2,transparent)}
+/* Der Abstand zwischen zwei Staenden ist ein Hinweis auf die Datenlage,
+   kein Alarm - dieselbe Zurueckhaltung wie bei der Kursfrische. */
+.analysis-lag{font-size:13px;line-height:1.55;margin:8px 0 0;color:#79520f;
+ border-left:2px solid #a77927;padding-left:12px}
 .trust-list{list-style:none;margin:20px 0 0;padding:0;border-top:1px solid var(--line)}
 .trust-list li{padding:14px 0;border-bottom:1px solid var(--line)}
 .trust-list li strong{display:block;font-size:14px}

@@ -89,6 +89,39 @@ function snapshotHash(snapshot) {
   return createHash("sha256").update(JSON.stringify(body)).digest("hex").slice(0, 32);
 }
 
+/**
+ * Darf eine veroeffentlichte Beobachtung durch diese ersetzt werden?
+ *
+ * Genau dann, wenn sie ERWEITERT wird: gleiche Spalten, jede bereits
+ * veroeffentlichte Zeile Wert fuer Wert unveraendert, und mindestens ein
+ * Titel neu. Alles andere ist ein Umschreiben und bleibt verboten - auch
+ * ein Entfernen, denn eine verschwundene Zeile ist eine geaenderte Aussage.
+ *
+ * Steht als eigene Funktion da, damit die Entscheidung pruefbar ist, ohne
+ * die ganze Materialisierung laufen zu lassen.
+ */
+export function extensionVerdict(existing, snapshot) {
+  const gleich = (a, b) => Array.isArray(a) && Array.isArray(b) &&
+    a.length === b.length && a.every((value, i) => value === b[i]);
+  const alt = (existing && existing.rows) || {}, neu = (snapshot && snapshot.rows) || {};
+  if (!gleich(existing && existing.columns, snapshot && snapshot.columns)) {
+    return { allowed: false, reason: "Die Spalten unterscheiden sich.", added: [], changed: [] };
+  }
+  const changed = [];
+  for (const [ticker, zeile] of Object.entries(alt)) {
+    if (!gleich(zeile, neu[ticker])) changed.push(ticker);
+    if (changed.length >= 5) break;
+  }
+  if (changed.length) {
+    return { allowed: false, reason: "Eine veroeffentlichte Zeile wuerde sich aendern.", added: [], changed };
+  }
+  const added = Object.keys(neu).filter((ticker) => !(ticker in alt)).sort();
+  if (!added.length) {
+    return { allowed: false, reason: "Kein Titel kommt hinzu.", added: [], changed: [] };
+  }
+  return { allowed: true, reason: "ERWEITERUNG", added, changed: [] };
+}
+
 function main() {
   const validation = SetupEngine.validateMapping(methodology);
   if (!validation.valid) throw new Error("the setup mapping is invalid: " + validation.errors.join("; "));
@@ -342,8 +375,42 @@ function main() {
         "it is corrupt and this run will not overwrite it.");
     }
     if (existing.contentHash !== snapshot.contentHash) {
-      throw new Error("a published observation for " + cutoff + " already exists with different content; " +
-        "a published past is not rewritten. Publish a new mapping version instead.");
+      /* EINE ERWEITERUNG IST KEIN UMSCHREIBEN.
+
+         Der Anlass, 25.09.2026: die Kalenderdeckung wurde von 2025-01-01 auf
+         2022-01-01 erweitert, weil zwei Pruefungen Titel VOLLSTAENDIG
+         verworfen haben, deren 270-Bar-Fenster aus der Deckung herausreichte.
+         Damit bekamen 166 Titel erstmals ein Technical-Bundle - und die
+         Beobachtung zum selben Stichtag 2026-09-10 hatte ploetzlich mehr
+         Zeilen. Der Waechter hat das korrekt als geaenderten Inhalt erkannt
+         und den ganzen Lauf abgebrochen.
+
+         Recht hatte er in der Sache, die er schuetzt: eine veroeffentlichte
+         Zeile wird nicht umgeschrieben. Genau das passiert hier aber nicht.
+         Deshalb die engste moegliche Ausnahme - und keine Zeile weiter:
+
+           JEDE bereits veroeffentlichte Zeile steht unveraendert, Spalte fuer
+           Spalte. Neu ist ausschliesslich, dass Titel OHNE Zeile eine
+           bekommen.
+
+         Alles andere bleibt der Abbruch, der es vorher war. Und die
+         Erweiterung wird nicht still: sie traegt die Herkunft der Fassung,
+         die sie erweitert (`lineage`), und zaehlt, was dazukam. Wer die
+         Reihe liest, kann die Kette nachrechnen. */
+      const verdict = extensionVerdict(existing, snapshot);
+      if (!verdict.allowed) {
+        throw new Error("a published observation for " + cutoff + " already exists with different content; " +
+          "a published past is not rewritten. Publish a new mapping version instead. " + verdict.reason +
+          (verdict.changed.length ? " Veraenderte Zeilen: " + verdict.changed.join(", ") + "." : ""));
+      }
+      snapshot.lineage = [...(existing.lineage || []), existing.contentHash];
+      snapshot.extendedTickers = verdict.added.length;
+      const dazu = verdict.added;
+      snapshot.contentHash = snapshotHash(snapshot);
+      writeFileSync(snapshotPath, gzipSync(Buffer.from(JSON.stringify(snapshot)), { level: 9 }));
+      process.stdout.write("  Beobachtung " + cutoff + " erweitert: " + dazu.length +
+        " Titel neu, keine veroeffentlichte Zeile geaendert (Fassung " +
+        snapshot.lineage.length + ")\n");
     }
   } else {
     writeFileSync(snapshotPath, gzipSync(Buffer.from(JSON.stringify(snapshot)), { level: 9 }));
@@ -369,4 +436,6 @@ function main() {
   );
 }
 
-main();
+/* Als Programm ausfuehren, aber als Modul importierbar bleiben: der Test der
+   Erweiterungsregel soll nicht die ganze Materialisierung starten. */
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main();
