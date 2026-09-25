@@ -1,7 +1,21 @@
 /* Canonical product SetupState observation contract.
  * This is a projection over the existing Rule Contract and evidence. It is
- * not a second evaluator. Until the versioned mapping and ordered real
- * snapshot history exist, observations deliberately remain unavailable. */
+ * not a second evaluator, and it never publishes a lifecycle of its own.
+ *
+ * ITS OWN MAPPING (setup-state-1.0.0) WAS NEVER ACTIVATED. The published
+ * setup states live under the newer setup-mapping-1.0.0, evaluated by
+ * setup-engine.js and materialized per title; a consumer that wants a
+ * state reads that, not this. The two are not in conflict - this contract
+ * describes the shape of a sealed observation, the engine decides what is
+ * observed.
+ *
+ * The reason given for unavailability used to be
+ * SETUP_STATE_HISTORY_NOT_MATERIALIZED. That stopped being true on
+ * 2026-09-23: the mapping is approved and 5,676 titles carry a published
+ * state with an ordered observation history behind them. A gate that keeps
+ * naming a blockade somebody has cleared is worse than no gate, because a
+ * reader acts on it - so the reason is now the one that is actually the
+ * case, and it was already in this contract's own vocabulary. */
 (function (global) {
   "use strict";
   var isNode = typeof module !== "undefined" && module.exports;
@@ -84,7 +98,7 @@
     return value;
   }
   function fromCurrentSnapshot(input) {
-    return unavailable(input, "SETUP_STATE_HISTORY_NOT_MATERIALIZED");
+    return unavailable(input, "SETUP_STATE_MAPPING_NOT_ACTIVE");
   }
 
   var api = { SCHEMA_VERSION: SCHEMA_VERSION, CONTRACT_VERSION: CONTRACT_VERSION, AVAILABLE_OBSERVATIONS_ALLOWED: AVAILABLE_OBSERVATIONS_ALLOWED, STATES: STATES.slice(), UNAVAILABLE_REASONS: UNAVAILABLE_REASONS.slice(), validate: validate, unavailable: unavailable, fromCurrentSnapshot: fromCurrentSnapshot };

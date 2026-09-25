@@ -105,6 +105,52 @@ class ConsumerBundleTest(unittest.TestCase):
         self.assertEqual(grid["perMetric"]["revenue"]["annual"], 1)
         self.assertEqual(grid["perMetric"]["dividends_paid"]["annual"], 0)
 
+    def test_tax_inputs_are_exported_so_a_return_on_capital_has_a_disclosed_rate(self):
+        """Vorsteuerergebnis und Steueraufwand verlassen die SEC-Schicht.
+
+        Ohne sie muesste jeder Verbraucher einen pauschalen Steuersatz
+        annehmen - und eine angenommene Zahl sieht in einer Kennzahl genauso
+        aus wie eine gemeldete."""
+        for metric in ("pretax_income", "income_tax_expense"):
+            with self.subTest(metric=metric):
+                self.assertIn(metric, self.bundle["annual"], metric + " fehlt im Jahresteil")
+                self.assertIn(metric, self.bundle["ttm"], metric + " fehlt im TTM-Teil")
+                self.assertEqual(self.bundle["units"][metric], "USD")
+
+    def test_without_depreciation_there_is_no_ebitda_and_no_stand_in(self):
+        """Der Fixture-Emittent meldet keine Abschreibungen.
+
+        EBITDA darf dann fehlen - aber es darf auf keinen Fall zum
+        operativen Ergebnis unter anderem Namen werden."""
+        self.assertNotIn("depreciation_and_amortization", self.bundle["annual"])
+        self.assertNotIn("ebitda", self.bundle["annual"])
+        self.assertNotIn("ebitda", self.bundle["ttm"])
+        self.assertIn("operating_income", self.bundle["ttm"],
+                      "die Gegenprobe braucht ein vorhandenes operatives Ergebnis")
+
+    def test_with_depreciation_ebitda_is_exported_and_marked_as_derived(self):
+        from quant.tests.fixtures import FLOW_CONCEPTS
+        mit_da = FLOW_CONCEPTS + (("DepreciationDepletionAndAmortization", "USD", 0.07),)
+        builder, _ = standard_company(
+            2000000078, self.fy_ends, lambda year: 1000.0 * (year - 2010), flow_concepts=mit_da)
+        bundle = consumer.build_consumer_bundle(
+            2000000078, builder.company_facts("WITH DA"), self.registry,
+            as_of="2026-09-14", tickers=["SYNTDA"])
+        self.assertIn("ebitda", bundle["annual"])
+        ttm = bundle["ttm"]
+        self.assertIn("ebitda", ttm)
+        self.assertTrue(ttm["ebitda"]["derived"])
+        self.assertEqual(ttm["ebitda"]["inputs"],
+                         ["operating_income", "depreciation_and_amortization"])
+        # Dasselbe TTM-Fenster fuer beide Eingaben, und die Summe stimmt.
+        self.assertEqual(ttm["ebitda"]["through"], ttm["operating_income"]["through"])
+        self.assertEqual(ttm["ebitda"]["through"], ttm["depreciation_and_amortization"]["through"])
+        self.assertAlmostEqual(
+            ttm["ebitda"]["v"],
+            ttm["operating_income"]["v"] + ttm["depreciation_and_amortization"]["v"], places=6)
+        self.assertGreater(ttm["ebitda"]["v"], ttm["operating_income"]["v"],
+                           "EBITDA ohne Aufschlag waere das operative Ergebnis")
+
     def test_bundle_is_compact(self):
         size = len(json.dumps(self.bundle, separators=(",", ":")))
         self.assertLess(size, 30000, f"bundle too large for 6,000 companies: {size} bytes")

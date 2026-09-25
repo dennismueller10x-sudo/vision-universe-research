@@ -14,11 +14,18 @@ const Rules=typeof module!=='undefined'&&module.exports?require('../engines/rule
 const Strategy=typeof module!=='undefined'&&module.exports?require('../engines/strategy.js'):g.VUStrategy;
 const QuantWorkspace=typeof module!=='undefined'&&module.exports?require('./quant-workspace-contract.js'):g.VUQuantWorkspaceContract;
 const SetupState=typeof module!=='undefined'&&module.exports?require('../engines/setup-state-contract.js'):g.VUSetupStateContract;
+const SetupEngine=typeof module!=='undefined'&&module.exports?require('../engines/setup-engine.js'):g.VUSetupEngine;
 const TechnicalWorkspace=typeof module!=='undefined'&&module.exports?require('./technical-workspace-contract.js'):g.VUTechnicalWorkspaceContract;
 const IntradaySnapshot=typeof module!=='undefined'&&module.exports?require('../engines/realtime/intraday-snapshot.js'):g.VURealtime?.IntradaySnapshot;
 const History=typeof module!=='undefined'&&module.exports?require('./fundamentals-contract.js'):g.VUFundamentalsContract;
 const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
+const FactorEvidence=typeof module!=='undefined'&&module.exports?require('../engines/factor-evidence.js'):g.VUFactorEvidence;
+const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
+const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
+const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
+const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
+const Freshness=typeof module!=='undefined'&&module.exports?require('../engines/realtime/freshness.js'):(g.VURealtime&&g.VURealtime.Freshness);
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
@@ -27,6 +34,10 @@ function create(options){
   if(loader)return loader(path);
   // Only this service constructs these same-origin materialized paths.
   if(!/^\/quant\/data\/sec\/quarterly\/[0-9]{2}\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/factor-evidence-v1\/(?:[A-Z0-9._-]{2}|screening)\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/setup-observations-v1\/(?:[A-Z0-9._-]{2}|screen-index)\.json\.gz$/.test(path)&&
+     !/^\/quant\/data\/product\/pattern-match-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
+     path!=='/quant/data/product/strategy-index-v1.json.gz'&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
@@ -180,7 +191,7 @@ function create(options){
    ['revisions','Revisions','Wie verändern sich Analystenerwartungen?',[metric('earningsRevisions','Earnings Revisions',null,'percent','LICENSED_ANALYST_PIT_NOT_AVAILABLE')]],
    ['risk','Risk','Welche Risiken zeigen die Kursdaten?',[metric('volatility','Volatilität',finite(stock.volatility?.value)?stock.volatility.value*100:null,'pct'),metric('maxDrawdown','Maximaler Drawdown',finite(stock.drawdown?.value)?Math.abs(stock.drawdown.value*100):null,'pct')]]
   ];
-  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:'quant-v2.0.0',methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
+  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:'quant-v2.1.0',methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
  }
  async function setupFor(stock){
   if(!SetupState||!stock)return null;
@@ -194,12 +205,348 @@ function create(options){
   ['Vergleichen','/vu2/?view=compare&ticker='+q],['Strategie definieren','/vu2/?view=strategies']
  ].map(([label,href])=>({label,href}));}
  function technicalShard(ticker){return (ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_');}
+ /* Factor DNA and What-Changed for one title. The artifact carries a
+  * withheld composite by construction; this reader refuses anything that
+  * claims otherwise rather than rendering a score the gate forbids. */
+ /* Quant-V2-Evidenz als Screening-Zeile. Die Spalten sind kanonische
+  * Katalogfelder des Namensraums quantV2.factorEvidence; Quant V1 bleibt
+  * davon unberuehrt und wird nie in dieselbe Zeile gemischt. */
+ let screeningPromise=null;
+ async function getFactorEvidenceScreening(){
+  if(!screeningPromise)screeningPromise=(async()=>{
+   try{
+    const payload=await compressedJSON('/quant/data/product/factor-evidence-v1/screening.json.gz');
+    const versionState=FactorEvidence.screeningVersionState(payload);
+    /* Ein Artefakt aus der vorigen Methodikversion ist nicht kaputt,
+       sondern veraltet - und das sagt es auch. Beides als INVALID zu
+       melden hiesse, bei jedem Versionswechsel einen Defekt
+       anzuzeigen. */
+    if(versionState==='SUPERSEDED')return {state:'UNAVAILABLE',reason:'METHODOLOGY_VERSION_SUPERSEDED',publishedMethodology:payload.methodologyVersion,expectedMethodology:FactorEvidence.METHODOLOGY_VERSION,rows:[]};
+    if(versionState!=='CURRENT')return {state:'UNAVAILABLE',reason:'INVALID_SCREENING_ARTIFACT',rows:[]};
+    const rows=Object.entries(payload.rows).map(([ticker,values])=>FactorEvidence.screeningRow(ticker,values,payload.fields)).filter(Boolean);
+    return {state:'AVAILABLE',namespace:payload.namespace,methodologyVersion:payload.methodologyVersion,
+     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,rows};
+   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING',rows:[]};}
+  })();
+  return screeningPromise;
+ }
+ /* Strategy Match liest ausschliesslich Quant-V2-Evidenz. Der Vertrag
+  * nennt den erlaubten Namensraum, und die Engine weist ein Profil ab,
+  * das darueber hinausgreift - deshalb steht hier keine zweite Pruefung. */
+ let profilesPromise=null;
+ async function getStrategyProfiles(){
+  if(!profilesPromise)profilesPromise=(async()=>{
+   try{
+    const contract=await load('/quant/methodology/strategy-profiles-v1.json');
+    const validation=StrategyMatch.validateContract(contract);
+    return validation.valid?{state:'AVAILABLE',contract}:{state:'UNAVAILABLE',reason:'INVALID_PROFILE_CONTRACT',errors:validation.errors};
+   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+  })();
+  return profilesPromise;
+ }
+ async function getStrategyMatch(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  const [profiles,screening]=await Promise.all([getStrategyProfiles(),getFactorEvidenceScreening()]);
+  if(profiles.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:profiles.reason||'PROFILES_UNAVAILABLE',profiles:[]};
+  if(screening.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:screening.reason||'EVIDENCE_UNAVAILABLE',profiles:[]};
+  const row=screening.rows.find(entry=>entry.ticker===ticker);
+  if(!row)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
+  return {...StrategyMatch.evaluate(profiles.contract,row),ticker,asOf:screening.asOf};
+ }
+ /* DER ZUORDNUNGSWECHSEL EINES TITELS - NACHGESCHLAGEN, NICHT NACHGERECHNET.
+  *
+  * Die Wechsel stehen im veroeffentlichten Index, gerechnet von derselben
+  * Engine und mit demselben predicateHash wie die Zuordnung selbst. Hier
+  * wird deshalb nur gelesen: eine zweite Auswertung des Praedikats in der
+  * Dienstschicht waere eine zweite Formulierung derselben Regel.
+  *
+  * Drei Antworten, nicht zwei: CHANGED nennt die Profile, NO_CHANGE sagt
+  * ausdruecklich, dass sich nichts bewegt hat (auch das ist eine Antwort),
+  * und null heisst, dass es keine zwei veroeffentlichten Staende gibt. */
+ function assignmentChangeOf(index,ticker){
+  const hist=index&&index.state==='AVAILABLE'?index.historicalEvidence:null;
+  if(!hist||hist.state!=='AVAILABLE'||!Array.isArray(hist.transitions))return null;
+  const label=id=>{const p=(index.profiles||[]).find(x=>x.profileId===id);return p&&p.label?p.label:id;};
+  const entered=[],exited=[];
+  for(const t of hist.transitions){
+   const eintrag={profileId:t.profileId,label:label(t.profileId),predicateHash:t.predicateHash};
+   if(Array.isArray(t.entered)&&t.entered.includes(ticker))entered.push(eintrag);
+   if(Array.isArray(t.exited)&&t.exited.includes(ticker))exited.push(eintrag);
+  }
+  return {state:entered.length||exited.length?'CHANGED':'NO_CHANGE',
+   from:hist.from,to:hist.to,entered,exited,
+   isNot:['EVENT_TODAY','FORECAST','RETURN','SIGNAL'],
+   note:hist.transitionNote||null};
+ }
+ async function getAssignmentChange(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return null;
+  return assignmentChangeOf(await getStrategyIndex(),ticker);
+ }
+ /* Die Setup-Beobachtung eines Titels. Was hier zurueckkommt, ist die
+  * Regel, die den Zustand entschieden hat, samt ihrer Bedingungen - nicht
+  * ein Etikett ohne Herleitung. Der Lebenszyklus bleibt getrennt von der
+  * Klassifikation: 'heute sieht es so aus' und 'der Titel steht an dieser
+  * Stelle seines Verlaufs' sind zwei verschiedene Aussagen, und die
+  * zweite verlangt eine geordnete Beobachtungshistorie. */
+ async function getSetupObservation(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!SetupEngine||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  try{
+   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/setup-observations-v1/'+key+'.json.gz');
+   if(!SetupEngine.SHARD_SCHEMAS.includes(shard?.schemaVersion)||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_SETUP_ARTIFACT'};
+   const source=shard.instruments?.[ticker];
+   /* Die Setup-Beobachtung ist eine Projektion ueber die technischen Bundles.
+    * Fehlt der Titel dort, ist der GRUND derselbe - und er steht schon im
+    * Technical-Shard. Also wird er nachgeschlagen statt ein zweites Mal
+    * ermittelt: ein Leser soll nicht zwei Saetze fuer eine Ursache bekommen. */
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_SETUP_OBSERVATION',
+    unavailability:await technicalUnavailability(ticker)};
+   const mapping={mappingVersion:shard.mappingVersion,cascade:{rules:shard.cascade}};
+   const observation=SetupEngine.hydrate(source.observation,mapping);
+   if(SetupEngine.publicationViolations(observation).length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
+   return {state:'AVAILABLE',ticker,engineVersion:shard.engineVersion,mappingVersion:shard.mappingVersion,
+    approval:shard.approval,publication:shard.publication,asOf:source.asOf,dataCutoff:source.dataCutoff,
+    close:source.close,levels:source.levels,previous:source.previous,
+    classification:observation.classification,lifecycle:observation.lifecycle,
+    matchedRule:observation.matchedRule,conditions:observation.conditions,
+    /* Was einen ANDEREN Zustand ausmachen wuerde - dieselbe Kaskade,
+     * dieselbe Zeile, dieselben zwei Auswertungsfunktionen. Ohne die Zeile
+     * (Schema 1.0.0) bleibt das Feld null und die Oberflaeche sagt, warum:
+     * eine unbeantwortbare Frage wird nicht mit einer leeren Liste
+     * beantwortet. */
+    cascade:source.row?SetupEngine.explainCascade(mapping,source.row,{close:source.close,previous:source.previous}):null,
+    cascadeReason:source.row?null:'SETUP_ROW_NOT_IN_ARTIFACT',
+    journey:shard.cascade.filter(rule=>rule.always!==true)};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* Wie breit der gemessene Markt heute getragen ist - und ausdruecklich
+  * nicht, wohin er geht. Die Punkt-in-der-Zeit-Stufe ist entscheidbar und
+  * wird veroeffentlicht; Uebergaenge, Hysterese und Beharrung sind
+  * Aussagen ueber einen Verlauf und bleiben hinter ihrem eigenen Gate.
+  *
+  * Das Artefakt ist unkomprimiertes JSON und klein: sechs Anteile, ein
+  * Zustand, die Regel dazu. */
+ async function getMarketRegime(){
+  if(!MarketRegime)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+  try{
+   const payload=await load('/quant/data/product/market-regime-v1.json');
+   if(payload?.schemaVersion!=='market-regime-1.0.0')return {state:'UNAVAILABLE',reason:'INVALID_MARKET_REGIME_ARTIFACT'};
+   if(MarketRegime.publicationViolations(payload).length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
+   return payload;
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* Dasselbe Profil, andersherum gelesen: nicht "passt diese Aktie zu
+  * diesem Stil", sondern "welche Aktien passen dazu". Gleiches Praedikat,
+  * gleicher predicateHash, keine zweite Formulierung.
+  *
+  * Zwei Nullen bleiben getrennt: ein Profil, auf das kein Titel passt,
+  * ist ein Befund ueber den Markt. Ein Profil, dessen Eingabe im
+  * Universum gar nicht erhoben ist, ist eine Datenluecke. Das zweite
+  * traegt count null und seinen Grund, nicht die Zahl 0. */
+ async function getStrategyIndex(){
+  if(!StrategyMatch)return {state:'UNAVAILABLE',reason:'SOURCE_OR_METHODOLOGY_UNAVAILABLE'};
+  try{
+   const index=await compressedJSON('/quant/data/product/strategy-index-v1.json.gz');
+   if(index?.schemaVersion!==StrategyMatch.INDEX_SCHEMA)return {state:'UNAVAILABLE',reason:'INVALID_STRATEGY_INDEX_ARTIFACT'};
+   return {state:'AVAILABLE',asOf:index.asOf,universe:index.universe,
+    methodologyVersion:index.methodologyVersion,evidenceNamespace:index.evidenceNamespace,
+    evidenceMethodologyVersion:index.evidenceMethodologyVersion,
+    historicalEvidence:index.historicalEvidence,
+    profiles:(index.profiles||[]).map(p=>({profileId:p.profileId,label:p.label,plain:p.plain,
+     predicateHash:p.predicateHash,conditions:p.conditions,availability:p.availability,
+     count:p.count,tickers:Array.isArray(p.tickers)?p.tickers.slice():null}))};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* Dieselbe Regel, andersherum gelesen: nicht 'wo steht dieser Titel',
+  * sondern 'welche Titel stehen dort'. Die Liste kommt aus der Zuordnung
+  * der Kaskade und nicht aus dem Regelpraedikat allein - das Praedikat
+  * einer Regel trifft mehr Titel, als die Regel zuordnet, weil eine
+  * hoeher priorisierte Regel sie vorher genommen hat. Wer das Praedikat
+  * direkt ausliefert, zeigt beobachtete Titel als 'beobachtet', obwohl
+  * sie laengst bestaetigt sind. Ein Zustand, dessen Stufe geschlossen
+  * ist, traegt hier keine Liste und keine Null, sondern seinen Grund. */
+ async function getSetupScreenIndex(){
+  if(!SetupEngine)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+  try{
+   const index=await compressedJSON('/quant/data/product/setup-observations-v1/screen-index.json.gz');
+   if(index?.schemaVersion!==SetupEngine.SCREEN_INDEX_SCHEMA)return {state:'UNAVAILABLE',reason:'INVALID_SETUP_ARTIFACT'};
+   if(index.approval?.state!=='APPROVED')return {state:'UNAVAILABLE',reason:'SETUP_MAPPING_NOT_APPROVED'};
+   const states=(index.states||[]).filter(entry=>SetupEngine.STATES.includes(entry.state)).map(entry=>({
+    state:entry.state,tier:entry.tier,count:entry.count,availability:entry.availability,
+    /* NO_SETUP ist der Auffangzustand: er traegt kein Praedikat und
+       deshalb keine Liste. Er bleibt als Zahl sichtbar, damit die
+       Besetzungen zusammen das Universum ergeben. */
+    rules:(entry.rules||[]).map(rule=>({ruleId:rule.ruleId,order:rule.order,screenable:rule.screenable,
+     predicateHash:rule.predicateHash,plain:rule.plain,matched:rule.matched,
+     tickers:Array.isArray(rule.tickers)?rule.tickers.slice():null}))
+   }));
+   return {state:'AVAILABLE',asOf:index.asOf,engineVersion:index.engineVersion,
+    mappingVersion:index.mappingVersion,methodologyVersion:index.methodologyVersion,
+    approval:index.approval,universe:index.universe,classified:index.classified,
+    unclassified:index.unclassified,states};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* VU Pattern Match. Welche der vorregistrierten Muster dieser Titel
+  * heute erfuellt - und was die Muster in der Grundgesamtheit gezeigt
+  * haben. Die Zahlen gehoeren dem Muster, nicht dem Titel: sie werden
+  * nicht dadurch zu einer Aussage ueber ihn, dass sie neben seinem Namen
+  * stehen. Deshalb traegt jede Zeile die Verlustseite und die Asymmetrie
+  * neben dem Lift, und der Kopf traegt die Vorbehalte der Studie. */
+ /* WARUM DIESER TITEL KEINEN MUSTERVERGLEICH HAT.
+  *
+  * Der Grund steht im selben Shard, gerechnet vom Produzenten: 737 Titel
+  * haben eine kuerzere Wochenreihe als die vorregistrierten 104 Wochen, 567
+  * gar keine, zwei keine messbaren Merkmale. Fehlt der Block (aelteres
+  * Artefakt), gibt dieser Leser null zurueck und die Oberflaeche sagt so viel
+  * wie vorher - kein Raten. */
+ function patternUnavailability(shard,ticker){
+  if(!shard||shard.unavailableSchemaVersion!=='pattern-unavailable-1.0.0')return null;
+  const entry=shard.unavailable&&shard.unavailable[ticker];
+  if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
+  const weeks=Number.isFinite(entry.weeks)?entry.weeks:null;
+  const required=Number.isFinite(entry.requiredWeeks)?entry.requiredWeeks:null;
+  /* Eine Forderung, die die vorhandene Zahl nicht uebersteigt, wuerde den Satz
+   * zum Widerspruch machen - dann lieber nur der Grund. */
+  return {reason:entry.reason,weeks,
+   requiredWeeks:required!==null&&weeks!==null&&required<=weeks?null:required,
+   schemaVersion:'pattern-unavailable-1.0.0'};
+ }
+ async function getPatternMatch(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  try{
+   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/pattern-match-v1/'+key+'.json.gz');
+   if(shard?.schemaVersion!=='pattern-match-1.0.0'||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_PATTERN_MATCH_ARTIFACT'};
+   const source=shard.instruments?.[ticker];
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_PATTERN_MATCH',
+    unavailability:patternUnavailability(shard,ticker)};
+   const holds=new Set(source.holds),unmeasurable=new Set(source.unmeasurable);
+   const rows=shard.findings.map(finding=>{
+    const terms=finding.terms.map((term,index)=>({...term,id:(finding.id.split('+')[index]||finding.id)}));
+    const ids=finding.id.split('+');
+    const state=ids.some(id=>unmeasurable.has(id))?'NOT_MEASURABLE':(ids.every(id=>holds.has(id))?'HOLDS':'DOES_NOT_HOLD');
+    return {...finding,terms,state};
+   });
+   /* DREI ZUSTAENDE, UND DER DRITTE GEHOERT NICHT IN DEN NENNER.
+    *
+    * Gemessen am 25.09.2026 ueber 5.569 Titel: 3.471 haben Muster, die
+    * fuer sie nicht messbar sind, und 1.494 davon 181 von 250 - das sind
+    * die Titel ohne Fundamentaldaten. Die Flaechen schrieben trotzdem
+    * "X von 250 geprueften Mustern". Ein Leser schliesst daraus, 221
+    * Muster seien geprueft worden und lagen nicht vor; geprueft wurden
+    * 69. Dieselbe Verwechslung wie beim Anlagestil, an einer anderen
+    * Stelle: nicht messbar ist kein Befund. */
+   const nichtMessbar=rows.filter(row=>row.state==='NOT_MEASURABLE');
+   return {state:'AVAILABLE',ticker,asOf:source.asOf,hasFundamentals:source.hasFundamentals,
+    horizon:shard.horizon,horizonMonths:shard.horizonMonths,winnerMinReturn:shard.winnerMinReturn,
+    lossThreshold:shard.lossThreshold,baseRate:shard.baseRate,caveats:shard.caveats,
+    withheld:shard.withheld,studies:shard.studies,
+    holds:rows.filter(row=>row.state==='HOLDS'),
+    notHolding:rows.filter(row=>row.state==='DOES_NOT_HOLD'),
+    notMeasurable:nichtMessbar,
+    /* Was wirklich beantwortet werden konnte, als Zahl - damit keine
+     * Flaeche sie selbst zusammenrechnet und dabei eine andere Antwort
+     * bekommt als die naechste. */
+    coverage:{registered:rows.length,measurable:rows.length-nichtMessbar.length,
+     notMeasurable:nichtMessbar.length,
+     reason:nichtMessbar.length?(source.hasFundamentals?'FEATURE_NOT_MEASURABLE':'NO_FUNDAMENTALS'):null},
+    others:rows.filter(row=>row.state!=='HOLDS')};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ async function getFactorEvidence(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  const i=await identity(ticker);
+  if(!i)return {state:'UNAVAILABLE',reason:'NOT_IN_PRODUCT_UNIVERSE'};
+  try{
+   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/factor-evidence-v1/'+key+'.json.gz');
+   if(!FactorEvidence.validShard(shard,key))return {state:'UNAVAILABLE',reason:'INVALID_FACTOR_EVIDENCE_ARTIFACT'};
+   const source=shard.securities?.[ticker];
+   if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE'};
+   const violations=FactorEvidence.publicationViolations(source);
+   if(violations.length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
+   const record=FactorEvidence.hydrate(source,shard);
+   return {state:'AVAILABLE',ticker,name:i.companyName||ticker,
+    methodologyVersion:shard.methodologyVersion,derivedFrom:shard.derivedFrom,
+    asOf:record.asOf,dataCutoff:record.dataCutoff,priceBasis:record.priceBasis,
+    /* Kursstaerke und Anlegerrendite nebeneinander - die beiden Fragen,
+       die Option C getrennt haelt. Fehlt die Anlegerrendite im Artefakt
+       (Bestand vor quant-v2.1.0), steht das da statt einer leeren
+       Zahl. */
+    returnBasis:record.returnBasis||null,
+    investorReturn:record.investorReturn
+     ?{state:record.investorReturn.state,reason:record.investorReturn.reason||null,
+       returns:record.investorReturn.returns||{},return12M1M:record.investorReturn.return12M1M??null}
+     :{state:'UNAVAILABLE',reason:'NOT_IN_THIS_METHODOLOGY_VERSION',returns:{},return12M1M:null},
+    fundamentalsAsOf:record.fundamentalsAsOf,fundamentalsAvailableAt:record.fundamentalsAvailableAt,
+    marketCap:record.marketCap,peer:record.peer,dataQuality:record.dataQuality,
+    publication:shard.publication,composite:record.composite,
+    factors:FactorEvidence.ordered(record),
+    summary:FactorEvidence.summarySentence(record),
+    change:ChangeEngine.hydrate(record.change),
+    changeHeadline:ChangeEngine.headline(ChangeEngine.hydrate(record.change))};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
  async function materializedTechnical(ticker,securityId){
   const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz'),source=shard?.instruments?.[ticker];
   if(shard?.schemaVersion!=='technical-product-artifact-1.0.0'||shard.shard!==key||!source||source.schemaVersion!==shard.schemaVersion||source.instrumentId!==ticker||source.securityId!==securityId)throw Error('INVALID_TECHNICAL_PRODUCT_ARTIFACT');
   return source;
  }
  async function technicalSource(ticker,securityId){try{return await materializedTechnical(ticker,securityId);}catch{return load('/quant/data/technical/instruments/'+ticker+'.json');}}
+ /* WARUM DIESER TITEL KEINE KURSSTRUKTUR HAT.
+  *
+  * Der Grund steht seit dem Lauf vom 25.09.2026 im selben Shard, den die
+  * Seite fuer diesen Titel ohnehin laedt - in einem eigenen Block mit
+  * eigener Version, damit der Bundle-Vertrag Byte fuer Byte bleibt, was er
+  * war. Fehlt der Block (aeltere Materialisierung), gibt dieser Leser
+  * null zurueck und die Oberflaeche sagt genau so viel wie vorher.
+  *
+  * Gemessen: 990 Titel haben zu wenig Historie (COOL: 20 Bars, notiert
+  * seit sechs Wochen), 208 liegen mit ihrem Fenster ausserhalb der
+  * Kalenderdeckung, einer hat keine Reihe. */
+ /* WIE WEIT DIE AUSWERTUNG HINTER DEM KURS LIEGT.
+  *
+  * Gemessen am 25.09.2026: die Kursstruktur der Produktartefakte endet am
+  * 2026-09-10, der letzte veroeffentlichte Kursstand am 2026-09-24 - zehn
+  * Handelstage, bei 5.646 von 5.676 Titeln dieselben zehn. Ursache ist die
+  * Ablage, aus der die Materialisierung liest (siehe Orchestrator-State);
+  * bis die behoben ist, darf die Oberflaeche nicht zwei Staende
+  * nebeneinander zeigen, als waeren sie einer.
+  *
+  * Gerechnet mit `freshness.js#lagSessions`, also mit demselben
+  * Sitzungsbegriff wie die Kursfrische - nicht mit einer zweiten
+  * Formulierung davon. Ohne Kalender oder ohne eines der beiden Daten gibt
+  * es keine Zahl und damit keine Aussage. */
+ /* Der veroeffentlichte Kursstand DIESES Titels - gelesen aus derselben
+  * Reihe, die die Aktienseite zeichnet, damit die verglichene Zahl die ist,
+  * die der Leser daneben sieht. `stock.asOf` taugt dafuer nicht: es traegt
+  * den Stand der Geschaeftszahlen (AMD 2026-09-08, ASML null). */
+ async function publishedPriceAsOf(securityId){
+  if(!/^[A-Za-z0-9_-]+$/.test(String(securityId||'')))return null;
+  try{const series=await load('/quant/data/market/discover-series/'+securityId+'.json');
+   return series&&series.status==='CALCULATED'&&validDate(series.asOf)?series.asOf:null;}catch{return null;}
+ }
+ async function analysisLag(analysisAsOf,priceAsOf){
+  if(!Freshness||!validDate(analysisAsOf)||!validDate(priceAsOf)||analysisAsOf>=priceAsOf)return null;
+  let calendar=null;
+  try{calendar=await load('/quant/config/market-calendar.json');}catch{return null;}
+  const sessions=Freshness.lagSessions(analysisAsOf,priceAsOf,calendar);
+  return sessions>0?{analysisAsOf,priceAsOf,lagSessions:sessions,
+   contract:'freshness-contract-1.0.0'}:null;
+ }
+ async function technicalUnavailability(ticker){
+  try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
+   if(!shard||shard.shard!==key||shard.unavailableSchemaVersion!=='technical-unavailable-1.0.0')return null;
+   const entry=shard.unavailable&&shard.unavailable[ticker];
+   if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
+   const bars=Number.isFinite(entry.bars)?entry.bars:null,required=Number.isFinite(entry.requiredBars)?entry.requiredBars:null;
+   /* Eine Forderung, die die vorhandene Zahl nicht uebersteigt, wuerde den
+    * Satz zum Widerspruch machen - dann lieber nur der Grund. */
+   return {reason:entry.reason,bars,requiredBars:required!==null&&bars!==null&&required<=bars?null:required,
+    schemaVersion:'technical-unavailable-1.0.0'};
+  }catch{return null;}
+ }
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
   const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s;}).filter(Boolean);
@@ -223,12 +570,14 @@ function create(options){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await hydrateCapabilities(await init()),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
-   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member||member.t!=='TECHNICAL_READY')return unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED');
+   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);
+   if(!member||member.t!=='TECHNICAL_READY')return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:member?await technicalUnavailability(ticker):null};
    const stock=await row(c,ticker)||broadRow(c,member);if(!stock)return unavailable('SOURCE_MISSING');
    function status(value,labels){return labels[value]?{state:'AVAILABLE',code:value,label:labels[value]}:{state:'SOURCE_MISSING',code:null,label:'Nicht verfügbar'};}
    try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker,member.m),b=source.bundle;
     if(source.instrumentId!==ticker||source.isMock!==false||source.dataMode!=='real'||source.source!=='tiingo'||!b||b.instrumentId!==ticker||!validDate(b.dataCutoff)||b.dataCutoff>new Date().toISOString().slice(0,10)||!b.methodologyVersion) return unavailable('INVALID_TECHNICAL_PROVENANCE');
     return {state:'AVAILABLE',ticker,asOf:b.dataCutoff,methodology:b.methodologyVersion,evidenceLevel:'FULL_WORKSPACE',fullWorkspace:true,
+     lag:await analysisLag(b.dataCutoff,await publishedPriceAsOf(member.m)),
      trend:status(b.trend?.direction,{BULLISH:'Aufwärtstrend',BEARISH:'Abwärtstrend',NEUTRAL:'Keine klare Richtung',SIDEWAYS:'Seitwärts'}),
      momentum:status(b.momentum?.state,{POSITIVE:'Positiv',NEGATIVE:'Negativ',NEUTRAL:'Neutral'}),
      volatility:status(b.volatility?.regime,{NORMAL:'Normal',HIGH:'Erhöht',LOW:'Niedrig',EXTREME:'Sehr hoch'}),
@@ -238,8 +587,9 @@ function create(options){
    }catch{
     const consumer=await consumerFor(ticker),metrics=consumer?.metrics||{};
     const momentum=Number.isFinite(metrics.return6M)?metrics.return6M:stock.momentum6m?.value,volatility=Number.isFinite(metrics.volatility252d)?metrics.volatility252d:stock.volatility?.value,distance=Number.isFinite(metrics.distanceTo52wHigh)?metrics.distanceTo52wHigh:stock.distanceTo52wHigh?.value;
-    if(!Number.isFinite(momentum)||!Number.isFinite(volatility))return unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED');
-    return {state:'AVAILABLE',ticker,asOf:consumer?.asOf||stock.asOf,methodology:'market-factors-1.0.0',evidenceLevel:'REDUCED_EVIDENCE',fullWorkspace:false,
+    const unavailability=await technicalUnavailability(ticker);
+    if(!Number.isFinite(momentum)||!Number.isFinite(volatility))return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability};
+    return {state:'AVAILABLE',ticker,asOf:consumer?.asOf||stock.asOf,methodology:'market-factors-1.0.0',evidenceLevel:'REDUCED_EVIDENCE',fullWorkspace:false,unavailability,
      trend:{state:Number.isFinite(distance)?'AVAILABLE':'SOURCE_MISSING',code:null,label:Number.isFinite(distance)?(distance>=-0.1?'Nahe am 52-Wochen-Hoch':'Unter dem 52-Wochen-Hoch'):'Nicht verfügbar'},
      momentum:{state:'AVAILABLE',code:momentum>=0?'POSITIVE':'NEGATIVE',label:momentum>=0?'6M positiv':'6M negativ'},
      volatility:{state:'AVAILABLE',code:'MEASURED',label:(volatility*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %'},
@@ -256,7 +606,35 @@ function create(options){
    try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
     if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
     const bars=p.bars.filter(b=>validDate(b.date)&&b.date<=new Date().toISOString().slice(0,10));
-    stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
+    /* DER CHART TRAEGT DIE BASIS, DIE SEIN VERTRAG BINDET.
+     *
+     * Gemessen am 25.09.2026: dieser Pfad liefert die Rohkurse des
+     * Anbieters, und der Chart zeichnete sie. Bei NVDA faellt der
+     * 10:1-Split vom 10.06.2024 in die Fenster 3J, 5J, 10J und Max -
+     * der Kurs steht am Vortag bei 1.208,88 und am Splittag bei 121,79,
+     * also minus 89,9 Prozent an einem Tag, die es nie gab. Bei AAPL
+     * dasselbe mit dem 4:1 vom 31.08.2020 in 10J und Max. Die Bildunter-
+     * schrift sagte es im Kleingedruckten ("Splits koennen historische
+     * Kursspruenge verursachen"); ein Anfaenger sieht den Absturz.
+     *
+     * Option C bindet das Modul `chart` auf SPLIT_ADJUSTED_PRICE. Die
+     * Reihe wird deshalb hier rekonstruiert - mit derselben kanonischen
+     * Rekonstruktion wie im Faktorlauf (RAW_CLOSE + SPLIT_FACTOR), nicht
+     * mit der dividendenbereinigten Spalte des Anbieters und nicht mit
+     * einer zweiten Rechnung.
+     *
+     * Fehlt ein Baustein, bleibt die Reihe roh UND sagt es: die Stufe
+     * geht als 'unadjusted' hinaus, und die Oberflaeche schreibt es
+     * hin. Was nicht passiert: eine als splitbereinigt ausgezeichnete
+     * Reihe, die es nicht ist. */
+    const bausteine=!!ReturnSeries&&bars.length>0&&bars.every(b=>Number.isFinite(b.close)&&b.close>0&&b.splitFactor!==null&&b.splitFactor!==undefined&&Number.isFinite(b.splitFactor)&&b.splitFactor>0);
+    const splitbereinigt=bausteine?ReturnSeries.splitAdjustedColumn(bars,'close'):null;
+    const chartBars=splitbereinigt?bars.map((b,i)=>({...b,close:splitbereinigt[i],rawClose:b.close})):bars;
+    const splitEvents=bars.filter(b=>Number.isFinite(b.splitFactor)&&b.splitFactor!==1).length;
+    stock.chart={state:chartBars.length?'AVAILABLE':'SOURCE_MISSING',bars:chartBars,
+     adjustmentStatus:splitbereinigt?'splitAdjusted':'unadjusted',
+     priceSource:splitbereinigt?'RECONSTRUCTED_FROM_SPLIT_FACTOR':'PROVIDER_RAW_CLOSE',
+     providedAdjustmentStatus:p.adjustmentStatus,splitEvents};
    }catch{const history=await getHistoricalPriceHistory(ticker);stock.chart=history.state==='AVAILABLE'?history:{state:'UNAVAILABLE',bars:[],reason:history.reason||'HISTORY_NOT_PUBLISHED'};}
    stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);return stock;
    }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}
@@ -288,7 +666,7 @@ function create(options){
  async function getRadarIntelligence({lookback=20,limit=12}={}){
   if(![5,20,60].includes(lookback)||!Number.isInteger(limit)||limit<1||limit>50)return {state:'UNAVAILABLE',reason:'INVALID_RADAR_SELECTION',modules:[]};
   const signals=await getSignals({lookback});if(signals.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:signals.reason||'SIGNAL_EVIDENCE_NOT_PUBLISHED',modules:[],coverage:signals.coverage||null};
-  return {state:'AVAILABLE',version:'1.0.0',scope:signals.scope,lookback,coverage:signals.coverage,materializedAt:signals.materializedAt||null,eventCount:signals.events.length,eventTickerCount:new Set(signals.events.map(e=>e.ticker)).size,modules:radarModules(signals.events,limit),quantScore:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},marketRegime:{state:'UNAVAILABLE',reason:'MARKET_REGIME_NOT_CERTIFIED'}};
+  return {state:'AVAILABLE',version:'1.0.0',scope:signals.scope,lookback,coverage:signals.coverage,materializedAt:signals.materializedAt||null,eventCount:signals.events.length,eventTickerCount:new Set(signals.events.map(e=>e.ticker)).size,modules:radarModules(signals.events,limit),quantScore:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},marketRegime:await getMarketRegime()};
  }
  async function getComparison(tickers){let selected;try{selected=CompareWorkspace.validate(tickers);}catch{return {state:'UNAVAILABLE',reason:'INVALID_COMPARISON',companies:[],families:[]};}return CompareWorkspace.build(selected,await Promise.all(selected.map(async ticker=>{const model=await getQuantWorkspace(ticker);return model.state==='AVAILABLE'?model:{...model,ticker};})));}
  async function getMarketDataHealth(ticker){if(ticker!==undefined)ticker=String(ticker||'').toUpperCase();const data=await getUniverse();return marketHealth(ticker===undefined?data.stocks:data.stocks.filter(s=>s.ticker===ticker));}
@@ -312,13 +690,17 @@ function create(options){
  async function getPortfolioIntelligence(positions){try{const universe=await getUniverse(),c=await init();return PortfolioWorkspace.build(positions,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,marketState:'UNAVAILABLE'})});}catch{return unavailable('INVALID_PORTFOLIO');}}
  async function getStrategyContext(){
   try{const [quant,backtest,quantV2,universe]=await Promise.all([load('/quant/methodology/quant-v1.json'),load('/quant/methodology/backtest-v1.json'),load('/quant/methodology/quant-v2.json'),getUniverse()]);
-   if(quantV2?.methodologyVersion!=='quant-v2.0.0'||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
+   if(quantV2?.methodologyVersion!=='quant-v2.1.0'||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
    Methodology.configure({quant,backtest,quantV2});return {state:'AVAILABLE',definition:Strategy.defaults(),factors:Strategy.RANKABLE_FACTORS,weightings:Strategy.WEIGHTINGS,
     currentSelection:{state:universe.state,scope:universe.scope,selectable:universe.productUniverseSize||universe.stocks.length,filterEngine:'CANONICAL_QUERY_ENGINE',ranking:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'}},
     quantV2:{methodologyVersion:quantV2.methodologyVersion,status:quantV2.status,publicationAllowed:false,factorOrder:quantV2.factorOrder.slice(),factorReadiness:Object.fromEntries(quantV2.factorOrder.map(id=>[id,quantV2.factors[id].readiness]))},
     rebalance:backtest.rebalance.allowed,timings:backtest.execution.allowedTimings,costs:backtest.costs,constraints:backtest.constraints,
     methodology:backtest.methodologyVersion,backtest:{state:'UNAVAILABLE',reason:'REAL_BACKTEST_GATE_NOT_VALIDATED',
-     checks:[['Historische Fundamentaldaten','Aktuelle Faktorwerte sind kein historischer Point-in-Time-Datensatz.'],['Historisches Universum','Delistings und zeitabhängige Mitgliedschaft sind für diese Vorschau nicht validiert.'],['Kapitalmaßnahmen','Kurse, Splits, Ausschüttungen und Ausführung müssen gemeinsam geprüft sein.'],['Vergleichsindex','Für diese Vorschau ist kein echter Benchmark freigegeben.'],['Ausführung & Reproduktion','Kostenannahmen sind definiert; ein geprüfter historischer Lauf liegt noch nicht vor.']]}};
+     /* Gemessen statt behauptet. Ein Nutzer, dem nur 'nicht validiert'
+      * gesagt wird, kann nicht einschätzen, ob das eine Formalie oder ein
+      * echtes Hindernis ist - und die beiden mittleren Punkte sind echte
+      * Hindernisse, die sich am 2026-09-23 genau beziffern ließen. */
+     checks:[['Historische Fundamentaldaten','Die veröffentlichten Faktorwerte beschreiben den heutigen Stand. Für einen Backtest müsste zu jedem vergangenen Stichtag bekannt sein, was damals schon veröffentlicht war — sonst fließt Wissen aus der Zukunft in eine Aussage über die Vergangenheit.'],['Historisches Universum','Von jedem Index liegt genau eine Mitgliedschafts-Momentaufnahme vor (15.09.2026). Ein Backtest darauf würde die heutigen Mitglieder auf die gesamte Vergangenheit anwenden und alle seither ausgeschiedenen Titel weglassen — das Ergebnis sähe dadurch systematisch besser aus, als es war.'],['Kapitalmaßnahmen','Die veröffentlichten Kursreihen sind splitbereinigt und tragen keine Ausschüttungen. Bei Dividendentiteln fehlt damit ein wesentlicher Teil des Ergebnisses. Eine dividendenbereinigte Grundlage ist beim Datenanbieter nachgewiesen vorhanden; sie umzustellen ändert jede veröffentlichte Momentum- und Rückgangszahl und ist deshalb eine eigene, versionierte Entscheidung.'],['Vergleichsindex','Veröffentlicht sind Kursreihen einzelner Aktien, keine Indexstände. Ohne eine Vergleichsreihe auf demselben Kalender und derselben Kursbasis lässt sich nicht sagen, ob ein Ergebnis besser war als der Markt oder nur so gut.'],['Ausführung & Reproduktion','Die Kostenannahmen sind definiert, aber ein geprüfter historischer Lauf liegt nicht vor. Erst er zeigt, ob dieselben Regeln zweimal dasselbe Ergebnis liefern.']]}};
   }catch{return unavailable('STRATEGY_METHODOLOGY_MISSING');}
  }
  async function getQuantWorkspace(ticker){
@@ -402,7 +784,35 @@ function create(options){
   {id:'above-long-trend',title:'Über dem langfristigen Trend',explanation:'Unternehmen, deren Kurs auf oder über dem 200-Tage-Durchschnitt liegt.',field:'priceTo200dma',threshold:0,rule:'Abstand zum 200-Tage-Durchschnitt ≥ 0 %'}
  ].map(recipe=>{const query=queryEngine.createQuery({filters:[{field:recipe.field,operator:'gte',value:recipe.threshold,scale:'raw'}],sort:[{field:recipe.field,direction:'desc'}],limit:50});const predicate=Rules.fromQuery(query);return {...recipe,version:'1.0.0',query,predicate,predicateHash:Rules.predicateHash(predicate)};});}
  async function getDiscover(){const collections=await Promise.all(getRecipes().map(async recipe=>({...recipe,result:await screen(recipe.query)})));return {collections,scope:'APPROVED_DISPLAY_SET'};}
- async function screen(query){try{const c=await init();const universe=await getUniverse();if(universe.state!=='AVAILABLE')return universe;
+ /* Eine Abfrage gehoert genau einer Methodik. Welche Zeilen sie sieht,
+  * entscheidet deshalb die Methodik und nicht der Aufrufer: Quant V2 liest
+  * die Faktorevidenz-Tabelle, alles andere das bestehende Produktuniversum.
+  * Gemischte Abfragen kommen hier nicht an - der Screener-Vertrag weist sie
+  * schon beim Bauen ab. */
+ async function screenFactorEvidence(query){
+  const [screening,universe]=await Promise.all([getFactorEvidenceScreening(),getUniverse()]);
+  if(screening.state!=='AVAILABLE')return unavailable(screening.reason||'EVIDENCE_UNAVAILABLE');
+  if(universe.state!=='AVAILABLE')return universe;
+  /* Der Handelsstatus gehoert dem Company Master, nicht dieser Tabelle.
+   * Die Evidenzzeile erbt ihn deshalb aus dem kanonischen Universum, und
+   * ein Titel ohne kanonische Bestaetigung erscheint gar nicht - die
+   * Query Engine wuerde ihn sonst still als inaktiv herausfiltern. */
+  const byTicker=new Map((universe.stocks||[]).map(stock=>[stock.ticker,stock]));
+  const rows=screening.rows.filter(row=>byTicker.has(row.ticker)).map(row=>({...row,status:'active'}));
+  const result=queryEngine.execute(query,rows);
+  return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,
+   scope:'CANONICAL_PRODUCT_UNIVERSE',methodologyVersion:screening.methodologyVersion,
+   namespace:screening.namespace,asOf:screening.asOf,publication:screening.publication,
+   eligible:rows.length,
+   stocks:result.rows.map(row=>({...(byTicker.get(row.ticker)||{ticker:row.ticker,name:row.ticker}),evidence:row}))};
+ }
+ async function screen(query){try{
+  const routed=typeof g.VUScreenerWorkspace!=='undefined'||typeof module!=='undefined'
+   ? (options.screenerWorkspace||(typeof module!=='undefined'&&module.exports?require('./screener-workspace.js'):g.VUScreenerWorkspace))
+   : null;
+  const chosen=routed&&typeof routed.methodologyOf==='function'?routed.methodologyOf(query):null;
+  if(chosen&&chosen.source==='FACTOR_EVIDENCE_SCREENING')return await screenFactorEvidence(query);
+  const c=await init();const universe=await getUniverse();if(universe.state!=='AVAILABLE')return universe;
   if(!queryEngine.validate(query).valid)return unavailable('INVALID_SCREEN_RULES');
   const usesPrice=query.filters.some(f=>f.field==='price')||query.sort.some(s=>s.field==='price');
   if(usesPrice&&universe.stocks.some(s=>!permission(c,s.ticker,'raw').allowed))return unavailable('PRICE_DISPLAY_NOT_PERMITTED');
@@ -420,7 +830,7 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

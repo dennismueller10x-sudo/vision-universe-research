@@ -1,0 +1,106 @@
+{
+ "gate": "PATH_DEPENDENT_STATES_ACTIVATION",
+ "mappingVersion": "setup-mapping-1.0.0",
+ "contractState": "PENDING_HISTORY",
+ "states": [
+  "ACTIVE",
+  "RISK_RISING",
+  "INVALIDATED",
+  "EXIT"
+ ],
+ "checks": [
+  {
+   "id": "SUFFICIENT_OBSERVATION_DURATION",
+   "label": "Ausreichende Beobachtungsdauer",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "observations": 2,
+    "spanDays": 14,
+    "minimumObservations": 12,
+    "minimumSpanDays": 90
+   }
+  },
+  {
+   "id": "NO_RETROACTIVE_STATE_CHANGE",
+   "label": "Keine rueckwirkende Zustandsaenderung",
+   "state": "PASS",
+   "measured": {
+    "snapshots": 2,
+    "corrupt": 0
+   }
+  },
+  {
+   "id": "TRANSITION_MATRIX",
+   "label": "Uebergangsmatrix",
+   "state": "PASS",
+   "measured": {
+    "transitions": 952,
+    "distinct": 12,
+    "matrix": {
+     "WATCH>SETUP_FORMING": 134,
+     "NO_SETUP>WATCH": 71,
+     "SETUP_FORMING>WATCH": 246,
+     "WATCH>NO_SETUP": 231,
+     "WATCH>CONFIRMED": 15,
+     "NO_SETUP>SETUP_FORMING": 88,
+     "SETUP_FORMING>NO_SETUP": 135,
+     "CONFIRMED>WATCH": 6,
+     "CONFIRMED>NO_SETUP": 2,
+     "CONFIRMED>SETUP_FORMING": 6,
+     "NO_SETUP>CONFIRMED": 1,
+     "SETUP_FORMING>CONFIRMED": 17
+    },
+    "impossible": []
+   }
+  },
+  {
+   "id": "STATE_PERSISTENCE",
+   "label": "Zustandsdauer",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "ACTIVE": null,
+    "RISK_RISING": null,
+    "INVALIDATED": null,
+    "EXIT": null
+   }
+  },
+  {
+   "id": "REVERSAL_BEHAVIOUR",
+   "label": "Rueckschlagverhalten",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "reversals": 0,
+    "candidates": 0,
+    "share": null
+   }
+  },
+  {
+   "id": "INVALIDATION_BEHAVIOUR",
+   "label": "Invalidationsverhalten",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "observed": 0,
+    "withoutStoredLevel": 0
+   }
+  },
+  {
+   "id": "EXIT_BEHAVIOUR",
+   "label": "Ausstiegsverhalten",
+   "state": "NOT_EVALUABLE",
+   "measured": {
+    "observed": 0,
+    "withoutStoredZone": 0
+   }
+  }
+ ],
+ "measuredReadiness": "PENDING_HISTORY",
+ "active": false,
+ "blockedBy": [
+  "SUFFICIENT_OBSERVATION_DURATION",
+  "STATE_PERSISTENCE",
+  "REVERSAL_BEHAVIOUR",
+  "INVALIDATION_BEHAVIOUR",
+  "EXIT_BEHAVIOUR"
+ ],
+ "note": "Das Gate bleibt geschlossen. Eine nicht auswertbare Pruefung zaehlt nicht als bestanden."
+}

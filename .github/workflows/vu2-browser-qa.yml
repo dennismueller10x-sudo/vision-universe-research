@@ -40,6 +40,14 @@ jobs:
         run: |
           cd "$RUNNER_TEMP/quant2-site"
           node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
+      # Die sechs Saetze, an denen am 25.09.2026 eine falsche Auskunft stand,
+      # je an einem Titel, an dem der Fall wirklich auftritt. Laeuft gegen
+      # dasselbe ausgelieferte Verzeichnis wie die Reise-QA darueber.
+      - name: Six named journey surfaces on the delivered artifact
+        env:
+          NODE_PATH: /tmp/vu2-qa/node_modules
+        run: node scripts/vu2/verify-journey-surfaces.mjs --site "$RUNNER_TEMP/quant2-site"
+
       - uses: actions/upload-artifact@v4
         with:
           name: quant2-release-candidate

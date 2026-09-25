@@ -1,0 +1,351 @@
+{
+ "schemaVersion": "methodology-change-1.0.0",
+ "generatedAt": "2026-09-25T13:26:26.000Z",
+ "versions": {
+  "measurement_logic": "1.0.0",
+  "comparison": "vu-return-basis-comparison-1.0.0"
+ },
+ "change": {
+  "from": {
+   "methodologyVersion": "vu-factor-evidence-1.0.0",
+   "derivedFrom": "quant-v2.0.0",
+   "asOf": "2026-09-21"
+  },
+  "to": {
+   "methodologyVersion": "vu-factor-evidence-2.0.0",
+   "derivedFrom": "quant-v2.1.0",
+   "asOf": "2026-09-24"
+  },
+  "what": "Momentum von TOTAL_RETURN auf SPLIT_ADJUSTED_PRICE; Gesamtrendite als eigene Anlegerevidenz.",
+  "decidedBy": "Owner, 2026-09-24, Option C"
+ },
+ "coverage": {
+  "ROWS_BEFORE": 6403,
+  "ROWS_AFTER": 6437,
+  "SHARED": 6401,
+  "ONLY_BEFORE": 2,
+  "ONLY_AFTER": 36,
+  "onlyBeforeTickers": [
+   "ANY",
+   "HCWC"
+  ],
+  "onlyAfterTickers": [
+   "AG",
+   "BBD",
+   "CASH",
+   "CNL",
+   "COOL",
+   "CRS",
+   "DACL",
+   "DIT",
+   "FGBI",
+   "GHXI",
+   "HYGD",
+   "HYGU",
+   "IBKR",
+   "IFLO",
+   "LQDD",
+   "LQDU",
+   "MUSA",
+   "NMM",
+   "PEGA",
+   "PLCI",
+   "PLPC",
+   "RMCO",
+   "RVII",
+   "SITX",
+   "SNSC",
+   "SXI",
+   "TECH",
+   "TER",
+   "TILE",
+   "TMO",
+   "TPB",
+   "TRI",
+   "VOGX",
+   "WRB-P-F",
+   "WRB-P-G",
+   "WRB-P-H"
+  ]
+ },
+ "RANK_DRIFT": {
+  "quality": {
+   "scoredBefore": 2734,
+   "scoredAfter": 2734,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 2734,
+   "SPEARMAN_RANK_CORRELATION": 0.999036,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 3,
+   "P95_RANK_CHANGE": 10,
+   "MAX_RANK_CHANGE": 961,
+   "TITLES_MOVING_5_PERCENTILES": 20,
+   "TITLES_MOVING_10_PERCENTILES": 14,
+   "TOP_DECILE_LEAVING": 4,
+   "TOP_DECILE_ENTERING": 4
+  },
+  "growth": {
+   "scoredBefore": 3188,
+   "scoredAfter": 3189,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 3188,
+   "SPEARMAN_RANK_CORRELATION": 0.999773,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 2,
+   "P95_RANK_CHANGE": 15,
+   "MAX_RANK_CHANGE": 589.5,
+   "TITLES_MOVING_5_PERCENTILES": 10,
+   "TITLES_MOVING_10_PERCENTILES": 1,
+   "TOP_DECILE_LEAVING": 2,
+   "TOP_DECILE_ENTERING": 2
+  },
+  "momentum": {
+   "scoredBefore": 5579,
+   "scoredAfter": 5583,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 5579,
+   "SPEARMAN_RANK_CORRELATION": 0.977226,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 134,
+   "P95_RANK_CHANGE": 678,
+   "MAX_RANK_CHANGE": 5118,
+   "TITLES_MOVING_5_PERCENTILES": 1507,
+   "TITLES_MOVING_10_PERCENTILES": 474,
+   "TOP_DECILE_LEAVING": 62,
+   "TOP_DECILE_ENTERING": 63
+  },
+  "value": {
+   "scoredBefore": 2003,
+   "scoredAfter": 2003,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 2003,
+   "SPEARMAN_RANK_CORRELATION": 0.999881,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1,
+   "P95_RANK_CHANGE": 6.9,
+   "MAX_RANK_CHANGE": 348,
+   "TITLES_MOVING_5_PERCENTILES": 1,
+   "TITLES_MOVING_10_PERCENTILES": 1,
+   "TOP_DECILE_LEAVING": 1,
+   "TOP_DECILE_ENTERING": 1
+  },
+  "profitability": {
+   "scoredBefore": 1188,
+   "scoredAfter": 1188,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 1188,
+   "SPEARMAN_RANK_CORRELATION": 0.999647,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1,
+   "P95_RANK_CHANGE": 4.5,
+   "MAX_RANK_CHANGE": 149,
+   "TITLES_MOVING_5_PERCENTILES": 9,
+   "TITLES_MOVING_10_PERCENTILES": 1,
+   "TOP_DECILE_LEAVING": 0,
+   "TOP_DECILE_ENTERING": 0
+  },
+  "revisions": {
+   "scoredBefore": 0,
+   "scoredAfter": 0,
+   "valuesIdentical": true,
+   "UNIVERSE_N": 0,
+   "SPEARMAN_RANK_CORRELATION": null,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": null,
+   "P95_RANK_CHANGE": null,
+   "MAX_RANK_CHANGE": null,
+   "TITLES_MOVING_5_PERCENTILES": 0,
+   "TITLES_MOVING_10_PERCENTILES": 0,
+   "TOP_DECILE_LEAVING": 0,
+   "TOP_DECILE_ENTERING": 0
+  },
+  "risk": {
+   "scoredBefore": 5579,
+   "scoredAfter": 5583,
+   "valuesIdentical": false,
+   "UNIVERSE_N": 5579,
+   "SPEARMAN_RANK_CORRELATION": 0.996828,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 27,
+   "P95_RANK_CHANGE": 177,
+   "MAX_RANK_CHANGE": 3460,
+   "TITLES_MOVING_5_PERCENTILES": 114,
+   "TITLES_MOVING_10_PERCENTILES": 34,
+   "TOP_DECILE_LEAVING": 37,
+   "TOP_DECILE_ENTERING": 37
+  }
+ },
+ "STRATEGY_IMPACT": {
+  "quality-compounder": {
+   "label": "Quality Compounder",
+   "MEMBERS_BEFORE": 5,
+   "MEMBERS_AFTER": 5,
+   "LEAVING": 0,
+   "ENTERING": 0,
+   "leavingTickers": [],
+   "enteringTickers": []
+  },
+  "momentum-leader": {
+   "label": "Momentum Leader",
+   "MEMBERS_BEFORE": 163,
+   "MEMBERS_AFTER": 164,
+   "LEAVING": 17,
+   "ENTERING": 18,
+   "leavingTickers": [
+    "ABNB",
+    "AIZ",
+    "ANAB",
+    "DJCO",
+    "FIVE",
+    "FRO",
+    "INNV",
+    "KARO",
+    "KSPI",
+    "MGTX",
+    "PR",
+    "SPHR",
+    "TD",
+    "TPC",
+    "VIRT",
+    "VISN",
+    "YARW"
+   ],
+   "enteringTickers": [
+    "AHR",
+    "ANET",
+    "CURB",
+    "ENIC",
+    "EZPW",
+    "FCFS",
+    "GCT",
+    "IBKR",
+    "KB",
+    "LPG",
+    "MITK",
+    "MOG-B",
+    "PGC",
+    "PLGO",
+    "PWR",
+    "ROST",
+    "SUN",
+    "UFPT"
+   ]
+  },
+  "quality-momentum": {
+   "label": "Quality Momentum",
+   "MEMBERS_BEFORE": 18,
+   "MEMBERS_AFTER": 18,
+   "LEAVING": 1,
+   "ENTERING": 1,
+   "leavingTickers": [
+    "MYE"
+   ],
+   "enteringTickers": [
+    "TECH"
+   ]
+  },
+  "garp": {
+   "label": "GARP · Wachstum zu vernünftigem Preis",
+   "MEMBERS_BEFORE": 99,
+   "MEMBERS_AFTER": 99,
+   "LEAVING": 1,
+   "ENTERING": 1,
+   "leavingTickers": [
+    "MYRG"
+   ],
+   "enteringTickers": [
+    "TILE"
+   ]
+  },
+  "future-leader": {
+   "label": "Future Leader",
+   "MEMBERS_BEFORE": 10,
+   "MEMBERS_AFTER": 13,
+   "LEAVING": 0,
+   "ENTERING": 3,
+   "leavingTickers": [],
+   "enteringTickers": [
+    "APH",
+    "IESC",
+    "TPC"
+   ]
+  },
+  "defensive-quality": {
+   "label": "Defensive Quality",
+   "MEMBERS_BEFORE": 12,
+   "MEMBERS_AFTER": 12,
+   "LEAVING": 0,
+   "ENTERING": 0,
+   "leavingTickers": [],
+   "enteringTickers": []
+  },
+  "value-momentum": {
+   "label": "Value Momentum",
+   "MEMBERS_BEFORE": 119,
+   "MEMBERS_AFTER": 122,
+   "LEAVING": 5,
+   "ENTERING": 8,
+   "leavingTickers": [
+    "ACAD",
+    "GMED",
+    "HNNA",
+    "PRG",
+    "ZBH"
+   ],
+   "enteringTickers": [
+    "EML",
+    "GCO",
+    "GDDY",
+    "GRBK",
+    "MHK",
+    "SIG",
+    "TILE",
+    "ULBI"
+   ]
+  },
+  "earnings-revision-leader": {
+   "label": "Earnings Revision Leader",
+   "MEMBERS_BEFORE": 0,
+   "MEMBERS_AFTER": 0,
+   "LEAVING": 0,
+   "ENTERING": 0,
+   "leavingTickers": [],
+   "enteringTickers": []
+  }
+ },
+ "confounding": {
+  "sameDay": false,
+  "sameUniverse": false,
+  "daysApart": 3,
+  "CONTROL_FACTOR_MEDIAN_RANK_CHANGE": 2,
+  "MOMENTUM_MEDIAN_RANK_CHANGE": 134,
+  "MOMENTUM_OVER_CONTROL": 67,
+  "note": "Die sechs nicht geaenderten Faktoren sind der Kontrollversuch. Ihre Bewegung ist Datenlage und Abdeckung, nicht Methodik. Nur der Abstand dazwischen gehoert der Umstellung.",
+  "cleanMeasurement": "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md - dort beide Basen am selben Stichtag ueber dasselbe Universum."
+ },
+ "unexpectedFactorMovement": [
+  {
+   "factor": "quality",
+   "titlesMoving5Percentiles": 20,
+   "medianRankChange": 3,
+   "spearman": 0.999036
+  },
+  {
+   "factor": "growth",
+   "titlesMoving5Percentiles": 10,
+   "medianRankChange": 2,
+   "spearman": 0.999773
+  },
+  {
+   "factor": "value",
+   "titlesMoving5Percentiles": 1,
+   "medianRankChange": 1,
+   "spearman": 0.999881
+  },
+  {
+   "factor": "profitability",
+   "titlesMoving5Percentiles": 9,
+   "medianRankChange": 1,
+   "spearman": 0.999647
+  },
+  {
+   "factor": "risk",
+   "titlesMoving5Percentiles": 114,
+   "medianRankChange": 27,
+   "spearman": 0.996828
+  }
+ ]
+}

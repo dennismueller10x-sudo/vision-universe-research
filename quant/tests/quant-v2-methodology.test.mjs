@@ -25,8 +25,8 @@ test("Quant V2 remains fail-closed until every factor and evidence gate is ready
 
 test("Quant V1 remains the active immutable legacy runtime", () => {
   assert.equal(Methodology.quant().methodologyVersion, "quant-v1.0.0");
-  assert.equal(Methodology.quantV2().methodologyVersion, "quant-v2.0.0");
-  assert.equal(Methodology.quantV2().modelProfileId, "quant-v2.0.0-full-7f");
+  assert.equal(Methodology.quantV2().methodologyVersion, "quant-v2.1.0");
+  assert.equal(Methodology.quantV2().modelProfileId, "quant-v2.1.0-full-7f");
   assert.equal(v1.methodologyVersion, "quant-v1.0.0");
   assert.equal(v1.factorWeights.quality, 0.30);
   assert.equal(v1.factors.profitability, undefined);

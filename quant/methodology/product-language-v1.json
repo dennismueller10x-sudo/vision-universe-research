@@ -1,0 +1,1451 @@
+{
+  "schemaVersion": "1.0.0",
+  "methodologyVersion": "product-language-1.1.0",
+  "status": "ACTIVE",
+  "purpose": "Ein einziges Wörterbuch für alles, was ein Nutzer in Quant 2.0 liest. Interne Begriffe bleiben in Code, Contracts und Methodik unverändert; sie erscheinen in der Oberfläche nicht als Hauptsprache, sondern erst in der Methodik-Ebene darunter.",
+  "singleSource": "Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Oberfläche liest die Engine, und docs/VU_QUANT_2_PRODUCT_LANGUAGE.md wird daraus erzeugt. Zwei Module können nicht unterschiedlich sprechen, weil es nur einen Ort gibt, an dem die Worte stehen.",
+  "layers": [
+    {
+      "id": "MEANING",
+      "label": "Bedeutung",
+      "rule": "Eine einfache Aussage. Kein Fachwort, keine Zahl ohne Bezug, kein Kürzel."
+    },
+    {
+      "id": "EXPLANATION",
+      "label": "Warum",
+      "rule": "Warum diese Aussage entsteht. Ein bis zwei Sätze, in derselben Sprache wie die Bedeutung."
+    },
+    {
+      "id": "EVIDENCE",
+      "label": "Belege",
+      "rule": "Die zugrunde liegenden Werte, mit Stichtag und Herkunft. Hier dürfen Zahlen stehen."
+    },
+    {
+      "id": "METHODOLOGY",
+      "label": "Methodik",
+      "rule": "Die vollständige fachliche Beschreibung samt interner Begriffe, Versionen und Grenzen. Immer eingeklappt, nie der Einstieg."
+    }
+  ],
+  "rules": [
+    "Nicht mit Fachsprache beginnen. Die erste Zeile einer Sektion ist eine Frage oder eine Aussage, die ein Anfänger versteht.",
+    "Ein interner Begriff darf sichtbar sein, aber nie allein und nie zuerst: er steht in der Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff.",
+    "Ein Enum-Wert wird nie roh gezeigt. Er wird übersetzt oder gar nicht gezeigt.",
+    "Eine Chance wird nie ohne ihre Kehrseite gezeigt.",
+    "Fehlt ein Wert, steht dort der Grund in Alltagssprache - nicht der Code und nicht eine leere Fläche.",
+    "'Nicht vorhanden' und 'nicht bewertbar' sind zwei verschiedene Aussagen und bekommen zwei verschiedene Texte."
+  ],
+  "categories": [
+    {
+      "id": "module",
+      "label": "Module und Ansichten",
+      "terms": [
+        {
+          "id": "quant",
+          "internal": "Quant 2.0 / quant-v2.0.0",
+          "userLabel": "Quant",
+          "question": "Was ist Quant?",
+          "beginner": "Quant schaut sich eine Aktie nach festen, immer gleichen Regeln an — Geschäft, Wachstum, Kursverlauf, Bewertung, Risiko — und sagt dir, was daran gerade stark und was schwach ist.",
+          "professionalLabel": "Quant 2.0 · Analyse- und Entscheidungsschicht vor dem Broker",
+          "tooltip": "Dieselben Regeln für jede Aktie, jeden Tag. Keine Meinung, keine Prognose.",
+          "negative": "Nach diesen Regeln sieht dieser Titel derzeit schwach aus.",
+          "unavailable": "Für diesen Titel liegen die Daten, die Quant verlangt, derzeit nicht vor. Es werden keine Ersatzwerte gebildet."
+        },
+        {
+          "id": "factorDna",
+          "internal": "Factor DNA / vu-factor-evidence-1.0.0",
+          "userLabel": "Was macht diese Aktie stark oder schwach?",
+          "question": "Was macht diese Aktie stark oder schwach?",
+          "beginner": "Sieben Eigenschaften, immer dieselben, immer in derselben Reihenfolge. Jede zeigt, wo dieser Titel im Vergleich zu anderen Unternehmen steht.",
+          "professionalLabel": "Factor Evidence (quantV2.factorEvidence)",
+          "tooltip": "Position im Vergleichsuniversum, nicht Schulnote. 100 heißt: stärker als fast alle anderen.",
+          "negative": "Mehr Eigenschaften sprechen dagegen als dafür.",
+          "unavailable": "Für diesen Titel liegt keine Faktorevidenz vor."
+        },
+        {
+          "id": "changeEngine",
+          "internal": "Change Engine / vu-change-1.0.0",
+          "userLabel": "Was verändert sich gerade?",
+          "question": "Was verändert sich gerade?",
+          "beginner": "Was sich an diesem Unternehmen zuletzt bewegt hat — nach oben, nach unten oder gar nicht.",
+          "professionalLabel": "Change Engine · elf gemessene Positionen",
+          "tooltip": "Gemessen wird an beobachtbaren Größen, nicht an den Faktorwerten selbst.",
+          "negative": "Mehr verschlechtert sich gerade als sich verbessert.",
+          "unavailable": "Veränderungen lassen sich für diesen Titel derzeit nicht messen."
+        },
+        {
+          "id": "setupState",
+          "internal": "SetupState / setup-mapping-1.0.0",
+          "userLabel": "Wie weit ist die Aktie im Setup?",
+          "question": "Wie weit ist die Aktie im Setup?",
+          "beginner": "Ob sich gerade eine Situation aufbaut — und wenn ja, an welcher Stelle sie steht.",
+          "professionalLabel": "SetupState · achtstufiger Lebenszyklus",
+          "tooltip": "Beschreibt, was heute beobachtbar ist. Keine Kaufempfehlung und kein Einstiegssignal.",
+          "negative": "Es baut sich gerade nichts auf.",
+          "unavailable": "Für diesen Titel wird kein Setup-Zustand behauptet."
+        },
+        {
+          "id": "patternEngine",
+          "internal": "Pattern Research / pattern-research-1.0.0",
+          "userLabel": "Wie sahen ähnliche Situationen früher aus?",
+          "question": "Wie sahen ähnliche Situationen früher aus?",
+          "beginner": "Wenn eine Aktie früher so aussah wie diese heute — was ist dann in den zwei Jahren danach passiert? Gezählt über hunderttausende Fälle, nicht über ein berühmtes Beispiel.",
+          "professionalLabel": "Pattern Research · bedingte Häufigkeiten",
+          "tooltip": "Häufigkeiten aus der Vergangenheit. Keine Wahrscheinlichkeit für diesen Titel.",
+          "negative": "Historisch war diese Konstellation eher riskant.",
+          "unavailable": "Für diesen Titel reicht die Kurshistorie für einen Vergleich nicht aus."
+        },
+        {
+          "id": "strategyMatch",
+          "internal": "Strategy Match / strategy-profiles-1.1.0",
+          "userLabel": "Welche Strategie passt?",
+          "question": "Welche Strategie passt?",
+          "beginner": "Zu welchem Anlagestil dieser Titel gerade passt — und welche Bedingungen dafür noch fehlen.",
+          "professionalLabel": "Strategy Match · gezählte Profilbedingungen",
+          "tooltip": "Anteil der messbaren Profilbedingungen, die dieser Titel erfüllt. Kein Rang, keine Renditeaussage.",
+          "negative": "Zu keinem der Anlagestile passt dieser Titel derzeit gut.",
+          "unavailable": "Für diesen Titel lässt sich derzeit kein Anlagestil prüfen."
+        },
+        {
+          "id": "backtest",
+          "internal": "Backtest Engine",
+          "userLabel": "Wie hätte sich diese Strategie historisch geschlagen?",
+          "question": "Wie hätte sich diese Strategie historisch geschlagen?",
+          "beginner": "Was aus der Strategie in der Vergangenheit geworden wäre — und wie weh es zwischendurch getan hätte.",
+          "professionalLabel": "Backtest · PIT-Universum, Kapitalmaßnahmen, Ausführungsmethodik",
+          "tooltip": "Ein Backtest verlangt ein zeitpunktgenaues Universum, Kapitalmaßnahmen und eine Ausführungsmethodik. Fehlt eines davon, gibt es keine Zahl.",
+          "negative": "Historisch hätte diese Strategie den Markt nicht geschlagen.",
+          "unavailable": "Es wird keine historische Strategierendite gezeigt, solange Universum, Kapitalmaßnahmen und Ausführung nicht zertifiziert sind."
+        },
+        {
+          "id": "backtestTrustScore",
+          "internal": "Backtest Trust Score",
+          "userLabel": "Wie belastbar ist die historische Evidenz?",
+          "question": "Wie belastbar ist die historische Evidenz?",
+          "beginner": "Wie viel man auf die historischen Zahlen geben kann: wie viele Fälle dahinterstehen, ob sie auch in ungesehenen Jahren hielten, und was an den Daten schiefliegt.",
+          "professionalLabel": "Backtest Trust Score",
+          "tooltip": "Belastbarkeit ist keine Rendite. Eine hohe Zahl macht eine Strategie nicht gut, sondern ihre Messung glaubwürdig.",
+          "negative": "Diese historische Evidenz ist dünn.",
+          "unavailable": "Ohne zertifizierten Backtest gibt es keine Belastbarkeitsnote."
+        },
+        {
+          "id": "marketRegime",
+          "internal": "Market Regime",
+          "userLabel": "Wie breit der Markt getragen ist",
+          "question": "Wie breit ist der Markt gerade getragen?",
+          "beginner": "Wie viele Titel im ausgewerteten Universum gerade gut dastehen — und wie viele nicht. Eine Beschreibung der Gegenwart, keine Aussage über die Zukunft.",
+          "professionalLabel": "Marktbreite · Punkt-in-der-Zeit",
+          "tooltip": "Bezieht sich auf das gemessene Produktuniversum, nicht auf den Gesamtmarkt oder einen Index. Kein Timing-Signal.",
+          "negative": "Der Markt wird gerade nur von einem Teil der Titel getragen.",
+          "unavailable": "Für eine Aussage zur Marktbreite sind derzeit zu wenige Titel auswertbar."
+        },
+        {
+          "id": "compositeScore",
+          "internal": "quantV2 composite",
+          "userLabel": "Gesamtnote",
+          "question": "Gibt es eine Gesamtnote?",
+          "beginner": "Eine einzelne Zahl für die ganze Aktie.",
+          "professionalLabel": "Composite Score (WITHHELD)",
+          "tooltip": "Eine Gesamtnote aus unvollständigen Faktoren wäre genauer, als die Daten hergeben.",
+          "negative": "Die Gesamtnote fiele niedrig aus.",
+          "unavailable": "Es wird bewusst keine Gesamtnote gebildet, solange nicht alle sieben Eigenschaften bewertbar sind."
+        },
+        {
+          "id": "radar",
+          "internal": "Radar / Signals",
+          "userLabel": "Was hat sich zuletzt bewegt?",
+          "question": "Was hat sich zuletzt bewegt?",
+          "beginner": "Titel, bei denen sich in den letzten Handelstagen nachweislich etwas geändert hat.",
+          "professionalLabel": "Radar · retrospektive EOD-Zustandswechsel",
+          "tooltip": "Rückblickende Tagesschluss-Wechsel. Kein Echtzeitsignal und keine Rangliste.",
+          "negative": "In diesem Ausschnitt hat sich nichts Belegbares bewegt.",
+          "unavailable": "Ohne geprüfte Signale werden keine Ersatzlisten erzeugt."
+        },
+        {
+          "id": "watchlist",
+          "internal": "Watchlist Workspace",
+          "userLabel": "Deine Unternehmen im Blick",
+          "question": "Was macht das, was du beobachtest?",
+          "beginner": "Deine ausgewählten Titel mit ihrem aktuellen Stand.",
+          "professionalLabel": "Watchlist Workspace",
+          "tooltip": "Nur in diesem Browser gespeichert. Keine automatische Überwachung und keine Benachrichtigung.",
+          "negative": "Bei deinen Titeln sieht es derzeit überwiegend schwach aus.",
+          "unavailable": "Deine Auswahl lässt sich derzeit nicht auswerten. Die Einträge bleiben erhalten."
+        },
+        {
+          "id": "screener",
+          "internal": "Screener Workspace / Rule Contract",
+          "userLabel": "Aktien nach Regeln finden",
+          "question": "Welche Titel erfüllen eine Regel?",
+          "beginner": "Du stellst Bedingungen, und du bekommst die Titel, die sie erfüllen.",
+          "professionalLabel": "Screener · kanonisches Regelprädikat",
+          "tooltip": "Dieselbe Regel, die eine Eigenschaft beschreibt, sucht auch danach.",
+          "negative": "Kein Titel erfüllt diese Regel.",
+          "unavailable": "Diese Regel lässt sich derzeit nicht auswerten."
+        },
+        {
+          "id": "setupScreen",
+          "internal": "SetupEngine.screenIndex / setup-screen-index-1.0.0",
+          "userLabel": "Aktien in dieser Lage",
+          "question": "Welche Aktien stehen gerade an derselben Stelle?",
+          "beginner": "Dieselbe Regel, die den Zustand einer Aktie beschreibt, sucht auch alle anderen Aktien, auf die sie zutrifft.",
+          "professionalLabel": "Zustandsindex · kanonisches Regelprädikat der Kaskade",
+          "tooltip": "Die Liste kommt aus der Zuordnung der Kaskade, nicht aus der Regel allein. Eine Aktie steht in genau einem Zustand.",
+          "negative": "Zurzeit steht kein Titel in dieser Lage.",
+          "unavailable": "Für diese Lage wird derzeit keine Liste veröffentlicht."
+        },
+        {
+          "id": "setupStateCount",
+          "internal": "screenIndex.states[].count",
+          "userLabel": "So viele Titel stehen hier",
+          "question": "Wie viele Aktien stehen gerade an dieser Stelle?",
+          "beginner": "Die Anzahl der Titel, denen die Auswertung heute genau diesen Zustand zuordnet.",
+          "professionalLabel": "Zustandsbesetzung zum Stichtag",
+          "tooltip": "Eine Zahl zum Stichtag, keine Aussage darüber, wie sich die Besetzung entwickelt hat.",
+          "negative": "Kein Titel steht heute an dieser Stelle.",
+          "unavailable": "Es wird keine Anzahl genannt, solange dieser Zustand nicht veröffentlicht wird."
+        },
+        {
+          "id": "technicalIntelligence",
+          "internal": "Technical Intelligence / technical-signals-v1",
+          "userLabel": "Was der Kursverlauf zeigt",
+          "question": "Was zeigt der Kursverlauf?",
+          "beginner": "Trend, Struktur und Handelsvolumen, abgelesen am bisherigen Kursverlauf.",
+          "professionalLabel": "Technische Struktur · nicht-repaintende Felder",
+          "tooltip": "Beschreibt, was im Kurs bereits passiert ist. Keine Aussage darüber, was als Nächstes passiert.",
+          "negative": "Der Kursverlauf zeigt derzeit kein klares Bild.",
+          "unavailable": "Für diesen Titel liegt keine ausgewertete Kursstruktur vor."
+        },
+        {
+          "id": "patternBalance",
+          "internal": "PatternMatch.holds · asymmetry",
+          "userLabel": "Chance gegen Risiko",
+          "question": "Wie standen Chance und Risiko in ähnlichen Lagen?",
+          "beginner": "Wie oft sich ein Kurs in vergleichbaren Situationen verdoppelt hat — und wie oft er sich halbiert hat. Immer beide Seiten.",
+          "professionalLabel": "Asymmetrie je vorregistriertem Muster",
+          "tooltip": "Gezählt wird je Muster einzeln. Die Muster überlappen sich, deshalb werden sie nicht zu einer Zahl verrechnet.",
+          "negative": "In den geprüften Mustern stand das Risiko höher als die Chance.",
+          "unavailable": "Für diesen Titel lässt sich keine historische Ähnlichkeit belegen."
+        },
+        {
+          "id": "strategyScreen",
+          "internal": "StrategyMatch.screenIndex / strategy-screen-index-1.0.0",
+          "userLabel": "Aktien, die zu diesem Stil passen",
+          "question": "Welche Aktien passen zu diesem Stil?",
+          "beginner": "Dieselbe Regel, die einen Anlagestil beschreibt, sucht auch alle Aktien, die ihn heute erfüllen.",
+          "professionalLabel": "Profilindex · kanonisches Regelprädikat",
+          "tooltip": "Eine Aktie darf zu mehreren Stilen passen. Die Liste ist eine Auswahl nach Regel, keine Empfehlung und keine Rangfolge.",
+          "negative": "Zurzeit erfüllt kein Titel alle Bedingungen dieses Stils.",
+          "unavailable": "Für diesen Stil lässt sich derzeit keine Auswahl bilden."
+        }
+      ]
+    },
+    {
+      "id": "factor",
+      "label": "Die sieben Eigenschaften",
+      "terms": [
+        {
+          "id": "quality",
+          "internal": "quality / qualityScore",
+          "userLabel": "Unternehmensqualität",
+          "question": "Steht das Unternehmen solide da?",
+          "beginner": "Wie solide das Unternehmen finanziert ist und wie verlässlich es verdient.",
+          "professionalLabel": "Quality (quantV2.factorEvidence.quality)",
+          "tooltip": "Bilanz, Verschuldung, Stabilität der Erträge — im Vergleich zu anderen Unternehmen.",
+          "negative": "Die Finanzlage ist schwächer als bei den meisten anderen.",
+          "unavailable": "Zur Unternehmensqualität liegen nicht genug geprüfte Geschäftszahlen vor."
+        },
+        {
+          "id": "growth",
+          "internal": "growth / growthScore",
+          "userLabel": "Wachstum",
+          "question": "Wächst das Geschäft?",
+          "beginner": "Ob Umsatz, Gewinn und Cashflow zulegen — und ob das Tempo zunimmt oder nachlässt.",
+          "professionalLabel": "Growth (quantV2.factorEvidence.growth)",
+          "tooltip": "Mehrjähriges Wachstum und seine Beschleunigung, nicht ein einzelnes gutes Quartal.",
+          "negative": "Das Geschäft wächst langsamer als bei den meisten anderen.",
+          "unavailable": "Zum Wachstum fehlt die nötige Mehrjahresreihe."
+        },
+        {
+          "id": "momentum",
+          "internal": "momentum / momentumScore (quant-v2.1.0, Kursbasis)",
+          "userLabel": "Kursstärke",
+          "question": "Läuft der Kurs besser als der Rest?",
+          "beginner": "Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt. Dividenden zählen hier nicht mit; die stehen bei der Anlegerrendite.",
+          "professionalLabel": "Momentum (quantV2.factorEvidence.momentum)",
+          "tooltip": "Kursentwicklung über mehrere Zeiträume und der Abstand zum Jahreshoch. Gemessen wird die Kursbewegung selbst, ohne Ausschüttungen.",
+          "negative": "Der Kurs läuft schwächer als bei den meisten anderen.",
+          "unavailable": "Zur Kursstärke reicht die Kurshistorie nicht aus."
+        },
+        {
+          "id": "value",
+          "internal": "value / valueScore",
+          "userLabel": "Bewertung",
+          "question": "Ist der Preis im Verhältnis zum Geschäft hoch oder niedrig?",
+          "beginner": "Was du für das bezahlst, was das Unternehmen tatsächlich verdient und umsetzt.",
+          "professionalLabel": "Value (quantV2.factorEvidence.value)",
+          "tooltip": "Gewinn, Cashflow und Umsatz im Verhältnis zum Börsenwert. Günstig heißt nicht gut.",
+          "negative": "Gemessen am Geschäft ist dieser Titel teurer als die meisten anderen.",
+          "unavailable": "Zur Bewertung fehlen Börsenwert oder Geschäftszahlen."
+        },
+        {
+          "id": "profitability",
+          "internal": "profitability / profitability",
+          "userLabel": "Profitabilität",
+          "question": "Wie gut verdient das Unternehmen an dem, was es tut?",
+          "beginner": "Wie viel vom Umsatz am Ende wirklich hängen bleibt und wie gut das eingesetzte Kapital arbeitet.",
+          "professionalLabel": "Profitability (quantV2.factorEvidence.profitability)",
+          "tooltip": "Margen und Kapitalrendite, im Vergleich zu anderen Unternehmen.",
+          "negative": "Es bleibt weniger hängen als bei den meisten anderen.",
+          "unavailable": "Zur Profitabilität fehlen Ergebnis- oder Bilanzpositionen."
+        },
+        {
+          "id": "revisions",
+          "internal": "revisions / revisions",
+          "userLabel": "Erwartungstrend",
+          "question": "Werden die Erwartungen angehoben oder gesenkt?",
+          "beginner": "Ob Analysten ihre Schätzungen für dieses Unternehmen zuletzt nach oben oder nach unten geschraubt haben.",
+          "professionalLabel": "Revisions (quantV2.factorEvidence.revisions)",
+          "tooltip": "Verlangt eine lizenzierte, zeitpunktgenaue Schätzhistorie. Ohne sie gibt es keinen Wert.",
+          "negative": "Die Erwartungen werden gesenkt.",
+          "unavailable": "Es liegt keine lizenzierte, zeitpunktgenaue Schätzquelle vor. Ein Ersatz wäre erfunden und wird nicht gebildet."
+        },
+        {
+          "id": "risk",
+          "internal": "risk / riskScore",
+          "userLabel": "Risiko",
+          "question": "Wie ruhig oder wie wild läuft dieser Titel?",
+          "beginner": "Wie stark der Kurs schwankt und wie tief er in schlechten Phasen gefallen ist.",
+          "professionalLabel": "Risk (quantV2.factorEvidence.risk)",
+          "tooltip": "Ein hoher Wert bedeutet weniger Schwankung als bei anderen, nicht mehr.",
+          "negative": "Dieser Titel schwankt stärker als die meisten anderen.",
+          "unavailable": "Zum Risiko reicht die Kurshistorie nicht aus."
+        }
+      ]
+    },
+    {
+      "id": "returnKind",
+      "label": "Kursstärke und Anlegerrendite",
+      "terms": [
+        {
+          "id": "priceStrength",
+          "internal": "quantV2Momentum / SPLIT_ADJUSTED_PRICE",
+          "userLabel": "Kursstärke",
+          "question": "Wie stark entwickelt sich die Aktie am Markt?",
+          "beginner": "Nur die Kursbewegung. Zahlt ein Unternehmen eine Dividende, fällt der Kurs am Auszahlungstag um diesen Betrag — das ist eine echte Kursbewegung und wird hier so gezeigt, wie sie war.",
+          "professionalLabel": "Kursmomentum auf splitbereinigter Basis",
+          "tooltip": "Misst die Bewegung des Kurses, nicht den Ertrag für den Anleger.",
+          "negative": "Der Kurs entwickelt sich schwächer als bei den meisten anderen.",
+          "unavailable": "Für die Kursstärke reicht die Kurshistorie nicht aus."
+        },
+        {
+          "id": "investorReturn",
+          "internal": "investorReturnEvidence / TOTAL_RETURN",
+          "userLabel": "Anlegerrendite",
+          "question": "Wie hoch war die Rendite inklusive Ausschüttungen?",
+          "beginner": "Was mit einer Aktie tatsächlich verdient wurde — Kursveränderung plus die Dividenden, die in der Zeit gezahlt wurden.",
+          "professionalLabel": "Gesamtrendite (Rendite inkl. Ausschüttungen)",
+          "tooltip": "Kursveränderung plus Ausschüttungen über denselben Zeitraum.",
+          "negative": "Auch mit Ausschüttungen blieb unter dem Strich ein Verlust.",
+          "unavailable": "Für die Anlegerrendite fehlt die Ausschüttungshistorie."
+        },
+        {
+          "id": "priceStrengthVsInvestorReturn",
+          "internal": "quantV2Momentum vs investorReturnEvidence",
+          "userLabel": "Warum zwei Zahlen?",
+          "question": "Warum unterscheiden sich Kursstärke und Anlegerrendite?",
+          "beginner": "Weil sie zwei verschiedene Fragen beantworten. Die Kursstärke sagt, wie kräftig sich der Kurs bewegt. Die Anlegerrendite sagt, was dabei für dich herauskam. Bei einer Aktie ohne Dividende sind beide gleich; bei einem hohen Zahler liegt die Anlegerrendite deutlich darüber.",
+          "professionalLabel": "Trennung von Kursmomentum und Gesamtrendite",
+          "tooltip": "Zwei Fragen, zwei Zahlen. Eine Dividende ist keine Kursbewegung.",
+          "negative": "Bei dieser Aktie sind beide Zahlen gleich — sie hat im Zeitraum nichts ausgeschüttet.",
+          "unavailable": "Der Vergleich braucht beide Zahlen."
+        }
+      ]
+    },
+    {
+      "id": "setup",
+      "label": "Setup-Zustände",
+      "terms": [
+        {
+          "id": "NO_SETUP",
+          "internal": "NO_SETUP",
+          "userLabel": "Kein Setup",
+          "beginner": "Es baut sich gerade nichts auf.",
+          "professionalLabel": "NO_SETUP",
+          "tooltip": "Eine vollwertige Antwort, keine Lücke.",
+          "negative": "Es baut sich gerade nichts auf.",
+          "unavailable": "Ob sich etwas aufbaut, lässt sich hier nicht sagen."
+        },
+        {
+          "id": "WATCH",
+          "internal": "WATCH",
+          "userLabel": "Beobachten",
+          "beginner": "Die Rahmenlage trägt, eine konkrete Situation gibt es noch nicht.",
+          "professionalLabel": "WATCH",
+          "tooltip": "Trend oder bestätigte Struktur laufen aufwärts, ein Setup ist daraus noch nicht geworden.",
+          "negative": "Die Rahmenlage trägt nicht mehr.",
+          "unavailable": "Die Rahmenlage lässt sich hier nicht beurteilen."
+        },
+        {
+          "id": "SETUP_FORMING",
+          "internal": "SETUP_FORMING",
+          "userLabel": "Setup entsteht",
+          "beginner": "Eine Situation ist vollständig da, der Auslöser steht noch aus.",
+          "professionalLabel": "SETUP_FORMING",
+          "tooltip": "Alle Teile liegen vor, der Kurs hat den Auslösepunkt noch nicht erreicht.",
+          "negative": "Die entstehende Situation hat sich wieder aufgelöst.",
+          "unavailable": "Ob eine Situation entsteht, lässt sich hier nicht sagen."
+        },
+        {
+          "id": "CONFIRMED",
+          "internal": "CONFIRMED",
+          "userLabel": "Setup bestätigt",
+          "beginner": "Struktur, Trend und Handelsvolumen zeigen am selben Tag in dieselbe Richtung.",
+          "professionalLabel": "CONFIRMED",
+          "tooltip": "Mehrere voneinander unabhängige Messungen stimmen überein. Selten — das ist Absicht.",
+          "negative": "Die Bestätigung ist weggefallen.",
+          "unavailable": "Eine Bestätigung lässt sich hier nicht prüfen."
+        },
+        {
+          "id": "ACTIVE",
+          "internal": "ACTIVE",
+          "userLabel": "Trend läuft",
+          "beginner": "Die bestätigte Situation läuft; der Kurs steht in der dokumentierten Zone.",
+          "professionalLabel": "ACTIVE",
+          "tooltip": "Setzt voraus, dass die Bestätigung früher tatsächlich beobachtet wurde.",
+          "negative": "Der Trend läuft nicht mehr.",
+          "unavailable": "Ob etwas läuft, ist eine Aussage über einen Verlauf und braucht frühere Beobachtungen."
+        },
+        {
+          "id": "RISK_RISING",
+          "internal": "RISK_RISING",
+          "userLabel": "Risiko steigt",
+          "beginner": "Eine laufende Situation verschlechtert sich messbar.",
+          "professionalLabel": "RISK_RISING",
+          "tooltip": "Schwankung nimmt zu oder das Momentum dreht, während die Lage noch nicht gebrochen ist.",
+          "negative": "Eine laufende Situation verschlechtert sich messbar.",
+          "unavailable": "Eine Verschlechterung ist eine Aussage über einen Verlauf und braucht frühere Beobachtungen."
+        },
+        {
+          "id": "INVALIDATED",
+          "internal": "INVALIDATED",
+          "userLabel": "Setup nicht mehr gültig",
+          "beginner": "Die Grenze, die damals festgehalten wurde, ist unterschritten.",
+          "professionalLabel": "INVALIDATED",
+          "tooltip": "Gemessen an der Grenze aus der früheren Beobachtung, nicht an einer heute neu gerechneten.",
+          "negative": "Die Grenze, die damals festgehalten wurde, ist unterschritten.",
+          "unavailable": "Ob etwas gebrochen ist, braucht die frühere Beobachtung."
+        },
+        {
+          "id": "EXIT",
+          "internal": "EXIT",
+          "userLabel": "Ausstiegsbedingung erreicht",
+          "beginner": "Die damals dokumentierte Zielzone ist erreicht.",
+          "professionalLabel": "EXIT",
+          "tooltip": "Die Feststellung, dass eine damals dokumentierte Bedingung eingetreten ist. Kein Erfolgsurteil.",
+          "negative": "Die Zielzone wurde erreicht und die Situation ist damit abgeschlossen.",
+          "unavailable": "Ohne festgehaltene Zielzone gibt es diesen Zustand nicht."
+        }
+      ]
+    },
+    {
+      "id": "setupCondition",
+      "label": "Bedingungen einer Setup-Regel",
+      "purpose": "Die Regel, die einen Setup-Zustand entscheidet, besteht aus Bedingungen über technische Katalogfelder. Ihre internen Namen und Enum-Werte sind fuer einen Leser unlesbar - sie sind hier uebersetzt. Uebersetzt wird der Begriff, nicht der Wert: eine Bedingung bleibt dieselbe Bedingung.",
+      "terms": [
+        {
+          "id": "technicalTrend",
+          "internal": "technicalTrend",
+          "userLabel": "Trendrichtung",
+          "beginner": "In welche Richtung sich der Kurs mittelfristig bewegt.",
+          "professionalLabel": "Technical Trend",
+          "tooltip": "Der Trendzustand des Technical-Snapshots. Beschreibt die bisherige Richtung, nicht die kommende.",
+          "negative": "Die Richtung trägt nicht in diese Richtung.",
+          "unavailable": "Die Trendrichtung lässt sich hier nicht bestimmen."
+        },
+        {
+          "id": "technicalConfirmedStructure",
+          "internal": "technicalConfirmedStructure",
+          "userLabel": "Bestätigte Kursstruktur",
+          "beginner": "Ob die Folge von Hochs und Tiefs eine Richtung bestätigt.",
+          "professionalLabel": "Technical Confirmed Structure",
+          "tooltip": "Marktstruktur aus bestätigten Hoch- und Tiefpunkten. Eine Bestätigung ist rückblickend, keine Vorhersage.",
+          "negative": "Die Struktur bestätigt diese Richtung nicht.",
+          "unavailable": "Die Kursstruktur ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalMomentumState",
+          "internal": "technicalMomentumState",
+          "userLabel": "Schwung",
+          "beginner": "Ob die Bewegung gerade Kraft gewinnt oder verliert.",
+          "professionalLabel": "Technical Momentum State",
+          "tooltip": "Momentumzustand des Technical-Snapshots. Gemessen am Kursverlauf, nicht an Erwartungen.",
+          "negative": "Der Schwung geht in die andere Richtung.",
+          "unavailable": "Der Schwung ist hier nicht messbar."
+        },
+        {
+          "id": "technicalVolatilityRegime",
+          "internal": "technicalVolatilityRegime",
+          "userLabel": "Schwankungsbreite",
+          "beginner": "Wie stark der Kurs zuletzt geschwankt hat.",
+          "professionalLabel": "Technical Volatility Regime",
+          "tooltip": "Volatilitätsregime des Technical-Snapshots. Vergangene Schwankung ist keine Verlustprognose.",
+          "negative": "Die Schwankungsbreite liegt nicht in diesem Bereich.",
+          "unavailable": "Die Schwankungsbreite ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolumeState",
+          "internal": "technicalVolumeState",
+          "userLabel": "Handelsvolumen",
+          "beginner": "Ob mehr oder weniger Stücke gehandelt werden als üblich.",
+          "professionalLabel": "Technical Volume State",
+          "tooltip": "Volumenzustand des Technical-Snapshots, gemessen gegen den eigenen Durchschnitt des Titels.",
+          "negative": "Das Volumen zeigt das nicht.",
+          "unavailable": "Das Handelsvolumen ist hier nicht auswertbar."
+        },
+        {
+          "id": "technicalSetupStatus",
+          "internal": "technicalSetupStatus",
+          "userLabel": "Vollständigkeit der Situation",
+          "beginner": "Ob die Methode alle Teile dieser Situation beschrieben findet.",
+          "professionalLabel": "Technical Setup Status",
+          "tooltip": "Vollständigkeit des vom Technical-Verfahren beschriebenen Setups. Vollständig heißt beschrieben, nicht bestätigt eingetreten.",
+          "negative": "Die Situation ist nicht vollständig beschrieben.",
+          "unavailable": "Die Vollständigkeit ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalEntryStatus",
+          "internal": "technicalEntryStatus",
+          "userLabel": "Lage zur beschriebenen Zone",
+          "beginner": "Wo der Kurs im Verhältnis zu der von der Methode beschriebenen Zone steht.",
+          "professionalLabel": "Technical Entry Status",
+          "tooltip": "Lage des Kurses zur Zone des primären Szenarios. Eine Zone ist eine Beschreibung des Verfahrens und keine Handlungsempfehlung.",
+          "negative": "Der Kurs steht nicht in dieser Lage zur Zone.",
+          "unavailable": "Die Lage zur Zone ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalPrimaryDirection",
+          "internal": "technicalPrimaryDirection",
+          "userLabel": "Richtung der Hauptlesart",
+          "beginner": "In welche Richtung das vorrangige Szenario der Methode zeigt.",
+          "professionalLabel": "Technical Primary Direction",
+          "tooltip": "Richtung des primären Szenarios. Szenarien beschreiben Bedingungen, keine Wahrscheinlichkeiten.",
+          "negative": "Die Hauptlesart zeigt nicht in diese Richtung.",
+          "unavailable": "Die Hauptlesart ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalDistanceTo52wHigh",
+          "internal": "technicalDistanceTo52wHigh",
+          "userLabel": "Abstand zum 52-Wochen-Hoch",
+          "beginner": "Wie weit der Kurs unter seinem höchsten Stand der letzten zwölf Monate liegt.",
+          "professionalLabel": "Technical Distance to 52W High",
+          "tooltip": "Abstand zum höchsten Schlusskurs der letzten 52 Wochen, als Dezimalrendite des Snapshots.",
+          "negative": "Der Abstand liegt außerhalb dieses Bereichs.",
+          "unavailable": "Der Abstand ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalTrend.BULLISH",
+          "internal": "BULLISH",
+          "userLabel": "aufwärts",
+          "beginner": "Trendrichtung: aufwärts.",
+          "professionalLabel": "BULLISH",
+          "tooltip": "Trendrichtung mit dem internen Wert BULLISH.",
+          "negative": "Nicht aufwärts.",
+          "unavailable": "Trendrichtung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalTrend.BEARISH",
+          "internal": "BEARISH",
+          "userLabel": "abwärts",
+          "beginner": "Trendrichtung: abwärts.",
+          "professionalLabel": "BEARISH",
+          "tooltip": "Trendrichtung mit dem internen Wert BEARISH.",
+          "negative": "Nicht abwärts.",
+          "unavailable": "Trendrichtung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalTrend.NEUTRAL",
+          "internal": "NEUTRAL",
+          "userLabel": "seitwärts",
+          "beginner": "Trendrichtung: seitwärts.",
+          "professionalLabel": "NEUTRAL",
+          "tooltip": "Trendrichtung mit dem internen Wert NEUTRAL.",
+          "negative": "Nicht seitwärts.",
+          "unavailable": "Trendrichtung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalTrend.UNDETERMINED",
+          "internal": "UNDETERMINED",
+          "userLabel": "nicht bestimmbar",
+          "beginner": "Trendrichtung: nicht bestimmbar.",
+          "professionalLabel": "UNDETERMINED",
+          "tooltip": "Trendrichtung mit dem internen Wert UNDETERMINED.",
+          "negative": "Nicht nicht bestimmbar.",
+          "unavailable": "Trendrichtung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalConfirmedStructure.BULLISH",
+          "internal": "BULLISH",
+          "userLabel": "aufwärts bestätigt",
+          "beginner": "Bestätigte Kursstruktur: aufwärts bestätigt.",
+          "professionalLabel": "BULLISH",
+          "tooltip": "Bestätigte Kursstruktur mit dem internen Wert BULLISH.",
+          "negative": "Nicht aufwärts bestätigt.",
+          "unavailable": "Bestätigte Kursstruktur ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalConfirmedStructure.BEARISH",
+          "internal": "BEARISH",
+          "userLabel": "abwärts bestätigt",
+          "beginner": "Bestätigte Kursstruktur: abwärts bestätigt.",
+          "professionalLabel": "BEARISH",
+          "tooltip": "Bestätigte Kursstruktur mit dem internen Wert BEARISH.",
+          "negative": "Nicht abwärts bestätigt.",
+          "unavailable": "Bestätigte Kursstruktur ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalConfirmedStructure.RANGE",
+          "internal": "RANGE",
+          "userLabel": "Seitwärtsband",
+          "beginner": "Bestätigte Kursstruktur: Seitwärtsband.",
+          "professionalLabel": "RANGE",
+          "tooltip": "Bestätigte Kursstruktur mit dem internen Wert RANGE.",
+          "negative": "Nicht Seitwärtsband.",
+          "unavailable": "Bestätigte Kursstruktur ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalConfirmedStructure.UNDETERMINED",
+          "internal": "UNDETERMINED",
+          "userLabel": "nicht bestimmbar",
+          "beginner": "Bestätigte Kursstruktur: nicht bestimmbar.",
+          "professionalLabel": "UNDETERMINED",
+          "tooltip": "Bestätigte Kursstruktur mit dem internen Wert UNDETERMINED.",
+          "negative": "Nicht nicht bestimmbar.",
+          "unavailable": "Bestätigte Kursstruktur ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalMomentumState.STRONG_POSITIVE",
+          "internal": "STRONG_POSITIVE",
+          "userLabel": "deutlich zunehmend",
+          "beginner": "Schwung: deutlich zunehmend.",
+          "professionalLabel": "STRONG_POSITIVE",
+          "tooltip": "Schwung mit dem internen Wert STRONG_POSITIVE.",
+          "negative": "Nicht deutlich zunehmend.",
+          "unavailable": "Schwung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalMomentumState.POSITIVE",
+          "internal": "POSITIVE",
+          "userLabel": "zunehmend",
+          "beginner": "Schwung: zunehmend.",
+          "professionalLabel": "POSITIVE",
+          "tooltip": "Schwung mit dem internen Wert POSITIVE.",
+          "negative": "Nicht zunehmend.",
+          "unavailable": "Schwung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalMomentumState.NEUTRAL",
+          "internal": "NEUTRAL",
+          "userLabel": "unverändert",
+          "beginner": "Schwung: unverändert.",
+          "professionalLabel": "NEUTRAL",
+          "tooltip": "Schwung mit dem internen Wert NEUTRAL.",
+          "negative": "Nicht unverändert.",
+          "unavailable": "Schwung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalMomentumState.NEGATIVE",
+          "internal": "NEGATIVE",
+          "userLabel": "nachlassend",
+          "beginner": "Schwung: nachlassend.",
+          "professionalLabel": "NEGATIVE",
+          "tooltip": "Schwung mit dem internen Wert NEGATIVE.",
+          "negative": "Nicht nachlassend.",
+          "unavailable": "Schwung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalMomentumState.STRONG_NEGATIVE",
+          "internal": "STRONG_NEGATIVE",
+          "userLabel": "deutlich nachlassend",
+          "beginner": "Schwung: deutlich nachlassend.",
+          "professionalLabel": "STRONG_NEGATIVE",
+          "tooltip": "Schwung mit dem internen Wert STRONG_NEGATIVE.",
+          "negative": "Nicht deutlich nachlassend.",
+          "unavailable": "Schwung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalMomentumState.UNDETERMINED",
+          "internal": "UNDETERMINED",
+          "userLabel": "nicht bestimmbar",
+          "beginner": "Schwung: nicht bestimmbar.",
+          "professionalLabel": "UNDETERMINED",
+          "tooltip": "Schwung mit dem internen Wert UNDETERMINED.",
+          "negative": "Nicht nicht bestimmbar.",
+          "unavailable": "Schwung ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolatilityRegime.LOW",
+          "internal": "LOW",
+          "userLabel": "niedrig",
+          "beginner": "Schwankungsbreite: niedrig.",
+          "professionalLabel": "LOW",
+          "tooltip": "Schwankungsbreite mit dem internen Wert LOW.",
+          "negative": "Nicht niedrig.",
+          "unavailable": "Schwankungsbreite ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolatilityRegime.NORMAL",
+          "internal": "NORMAL",
+          "userLabel": "normal",
+          "beginner": "Schwankungsbreite: normal.",
+          "professionalLabel": "NORMAL",
+          "tooltip": "Schwankungsbreite mit dem internen Wert NORMAL.",
+          "negative": "Nicht normal.",
+          "unavailable": "Schwankungsbreite ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolatilityRegime.HIGH",
+          "internal": "HIGH",
+          "userLabel": "hoch",
+          "beginner": "Schwankungsbreite: hoch.",
+          "professionalLabel": "HIGH",
+          "tooltip": "Schwankungsbreite mit dem internen Wert HIGH.",
+          "negative": "Nicht hoch.",
+          "unavailable": "Schwankungsbreite ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolatilityRegime.UNDETERMINED",
+          "internal": "UNDETERMINED",
+          "userLabel": "nicht bestimmbar",
+          "beginner": "Schwankungsbreite: nicht bestimmbar.",
+          "professionalLabel": "UNDETERMINED",
+          "tooltip": "Schwankungsbreite mit dem internen Wert UNDETERMINED.",
+          "negative": "Nicht nicht bestimmbar.",
+          "unavailable": "Schwankungsbreite ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolumeState.BREAKOUT_VOLUME_UP",
+          "internal": "BREAKOUT_VOLUME_UP",
+          "userLabel": "Ausbruch mit deutlich höherem Volumen",
+          "beginner": "Handelsvolumen: Ausbruch mit deutlich höherem Volumen.",
+          "professionalLabel": "BREAKOUT_VOLUME_UP",
+          "tooltip": "Handelsvolumen mit dem internen Wert BREAKOUT_VOLUME_UP.",
+          "negative": "Nicht Ausbruch mit deutlich höherem Volumen.",
+          "unavailable": "Handelsvolumen ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolumeState.BREAKOUT_VOLUME_DOWN",
+          "internal": "BREAKOUT_VOLUME_DOWN",
+          "userLabel": "Abwärtsausbruch mit deutlich höherem Volumen",
+          "beginner": "Handelsvolumen: Abwärtsausbruch mit deutlich höherem Volumen.",
+          "professionalLabel": "BREAKOUT_VOLUME_DOWN",
+          "tooltip": "Handelsvolumen mit dem internen Wert BREAKOUT_VOLUME_DOWN.",
+          "negative": "Nicht Abwärtsausbruch mit deutlich höherem Volumen.",
+          "unavailable": "Handelsvolumen ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolumeState.DRY_UP",
+          "internal": "DRY_UP",
+          "userLabel": "auffällig geringes Volumen",
+          "beginner": "Handelsvolumen: auffällig geringes Volumen.",
+          "professionalLabel": "DRY_UP",
+          "tooltip": "Handelsvolumen mit dem internen Wert DRY_UP.",
+          "negative": "Nicht auffällig geringes Volumen.",
+          "unavailable": "Handelsvolumen ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolumeState.EXPANSION",
+          "internal": "EXPANSION",
+          "userLabel": "steigendes Volumen",
+          "beginner": "Handelsvolumen: steigendes Volumen.",
+          "professionalLabel": "EXPANSION",
+          "tooltip": "Handelsvolumen mit dem internen Wert EXPANSION.",
+          "negative": "Nicht steigendes Volumen.",
+          "unavailable": "Handelsvolumen ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolumeState.NORMAL",
+          "internal": "NORMAL",
+          "userLabel": "unauffälliges Volumen",
+          "beginner": "Handelsvolumen: unauffälliges Volumen.",
+          "professionalLabel": "NORMAL",
+          "tooltip": "Handelsvolumen mit dem internen Wert NORMAL.",
+          "negative": "Nicht unauffälliges Volumen.",
+          "unavailable": "Handelsvolumen ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalVolumeState.UNAVAILABLE",
+          "internal": "UNAVAILABLE",
+          "userLabel": "nicht auswertbar",
+          "beginner": "Handelsvolumen: nicht auswertbar.",
+          "professionalLabel": "UNAVAILABLE",
+          "tooltip": "Handelsvolumen mit dem internen Wert UNAVAILABLE.",
+          "negative": "Nicht nicht auswertbar.",
+          "unavailable": "Handelsvolumen ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalSetupStatus.INCOMPLETE",
+          "internal": "INCOMPLETE",
+          "userLabel": "unvollständig",
+          "beginner": "Vollständigkeit der Situation: unvollständig.",
+          "professionalLabel": "INCOMPLETE",
+          "tooltip": "Vollständigkeit der Situation mit dem internen Wert INCOMPLETE.",
+          "negative": "Nicht unvollständig.",
+          "unavailable": "Vollständigkeit der Situation ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalSetupStatus.COMPLETE",
+          "internal": "COMPLETE",
+          "userLabel": "vollständig",
+          "beginner": "Vollständigkeit der Situation: vollständig.",
+          "professionalLabel": "COMPLETE",
+          "tooltip": "Vollständigkeit der Situation mit dem internen Wert COMPLETE.",
+          "negative": "Nicht vollständig.",
+          "unavailable": "Vollständigkeit der Situation ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalSetupStatus.COMPLETE_LOW_RR",
+          "internal": "COMPLETE_LOW_RR",
+          "userLabel": "vollständig, mit engem Abstand zwischen Risiko und Zielzone",
+          "beginner": "Vollständigkeit der Situation: vollständig, mit engem Abstand zwischen Risiko und Zielzone.",
+          "professionalLabel": "COMPLETE_LOW_RR",
+          "tooltip": "Vollständigkeit der Situation mit dem internen Wert COMPLETE_LOW_RR.",
+          "negative": "Nicht vollständig, mit engem Abstand zwischen Risiko und Zielzone.",
+          "unavailable": "Vollständigkeit der Situation ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalEntryStatus.ACTIVE",
+          "internal": "ACTIVE",
+          "userLabel": "in der Zone",
+          "beginner": "Lage zur beschriebenen Zone: in der Zone.",
+          "professionalLabel": "ACTIVE",
+          "tooltip": "Lage zur beschriebenen Zone mit dem internen Wert ACTIVE.",
+          "negative": "Nicht in der Zone.",
+          "unavailable": "Lage zur beschriebenen Zone ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalEntryStatus.AWAITING_PULLBACK",
+          "internal": "AWAITING_PULLBACK",
+          "userLabel": "wartet auf einen Rücksetzer",
+          "beginner": "Lage zur beschriebenen Zone: wartet auf einen Rücksetzer.",
+          "professionalLabel": "AWAITING_PULLBACK",
+          "tooltip": "Lage zur beschriebenen Zone mit dem internen Wert AWAITING_PULLBACK.",
+          "negative": "Nicht wartet auf einen Rücksetzer.",
+          "unavailable": "Lage zur beschriebenen Zone ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalEntryStatus.AWAITING_TRIGGER",
+          "internal": "AWAITING_TRIGGER",
+          "userLabel": "wartet auf den beschriebenen Auslöser",
+          "beginner": "Lage zur beschriebenen Zone: wartet auf den beschriebenen Auslöser.",
+          "professionalLabel": "AWAITING_TRIGGER",
+          "tooltip": "Lage zur beschriebenen Zone mit dem internen Wert AWAITING_TRIGGER.",
+          "negative": "Nicht wartet auf den beschriebenen Auslöser.",
+          "unavailable": "Lage zur beschriebenen Zone ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalEntryStatus.EXTENDED",
+          "internal": "EXTENDED",
+          "userLabel": "über die Zone hinausgelaufen",
+          "beginner": "Lage zur beschriebenen Zone: über die Zone hinausgelaufen.",
+          "professionalLabel": "EXTENDED",
+          "tooltip": "Lage zur beschriebenen Zone mit dem internen Wert EXTENDED.",
+          "negative": "Nicht über die Zone hinausgelaufen.",
+          "unavailable": "Lage zur beschriebenen Zone ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalEntryStatus.BELOW_ZONE",
+          "internal": "BELOW_ZONE",
+          "userLabel": "unter der Zone",
+          "beginner": "Lage zur beschriebenen Zone: unter der Zone.",
+          "professionalLabel": "BELOW_ZONE",
+          "tooltip": "Lage zur beschriebenen Zone mit dem internen Wert BELOW_ZONE.",
+          "negative": "Nicht unter der Zone.",
+          "unavailable": "Lage zur beschriebenen Zone ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalEntryStatus.NONE",
+          "internal": "NONE",
+          "userLabel": "keine Zone beschrieben",
+          "beginner": "Lage zur beschriebenen Zone: keine Zone beschrieben.",
+          "professionalLabel": "NONE",
+          "tooltip": "Lage zur beschriebenen Zone mit dem internen Wert NONE.",
+          "negative": "Nicht keine Zone beschrieben.",
+          "unavailable": "Lage zur beschriebenen Zone ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalPrimaryDirection.BULLISH",
+          "internal": "BULLISH",
+          "userLabel": "aufwärts",
+          "beginner": "Richtung der Hauptlesart: aufwärts.",
+          "professionalLabel": "BULLISH",
+          "tooltip": "Richtung der Hauptlesart mit dem internen Wert BULLISH.",
+          "negative": "Nicht aufwärts.",
+          "unavailable": "Richtung der Hauptlesart ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalPrimaryDirection.BEARISH",
+          "internal": "BEARISH",
+          "userLabel": "abwärts",
+          "beginner": "Richtung der Hauptlesart: abwärts.",
+          "professionalLabel": "BEARISH",
+          "tooltip": "Richtung der Hauptlesart mit dem internen Wert BEARISH.",
+          "negative": "Nicht abwärts.",
+          "unavailable": "Richtung der Hauptlesart ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalPrimaryDirection.NEUTRAL",
+          "internal": "NEUTRAL",
+          "userLabel": "seitwärts",
+          "beginner": "Richtung der Hauptlesart: seitwärts.",
+          "professionalLabel": "NEUTRAL",
+          "tooltip": "Richtung der Hauptlesart mit dem internen Wert NEUTRAL.",
+          "negative": "Nicht seitwärts.",
+          "unavailable": "Richtung der Hauptlesart ist hier nicht bestimmbar."
+        },
+        {
+          "id": "technicalPrimaryDirection.UNDETERMINED",
+          "internal": "UNDETERMINED",
+          "userLabel": "nicht bestimmbar",
+          "beginner": "Richtung der Hauptlesart: nicht bestimmbar.",
+          "professionalLabel": "UNDETERMINED",
+          "tooltip": "Richtung der Hauptlesart mit dem internen Wert UNDETERMINED.",
+          "negative": "Nicht nicht bestimmbar.",
+          "unavailable": "Richtung der Hauptlesart ist hier nicht bestimmbar."
+        }
+      ]
+    },
+    {
+      "id": "change",
+      "label": "Richtung einer Veränderung",
+      "terms": [
+        {
+          "id": "IMPROVING",
+          "internal": "IMPROVING",
+          "userLabel": "Verbessert sich",
+          "beginner": "Dieser Bereich hat sich zuletzt in die günstige Richtung bewegt.",
+          "professionalLabel": "IMPROVING",
+          "tooltip": "Gemessen an beobachtbaren Größen, nicht an den Faktorwerten selbst.",
+          "negative": "Dieser Bereich verbessert sich nicht mehr.",
+          "unavailable": "Für diesen Bereich lässt sich keine Richtung messen."
+        },
+        {
+          "id": "DETERIORATING",
+          "internal": "DETERIORATING",
+          "userLabel": "Verschlechtert sich",
+          "beginner": "Dieser Bereich hat sich zuletzt in die ungünstige Richtung bewegt.",
+          "professionalLabel": "DETERIORATING",
+          "tooltip": "Gemessen an beobachtbaren Größen, nicht an den Faktorwerten selbst.",
+          "negative": "Dieser Bereich hat sich zuletzt in die ungünstige Richtung bewegt.",
+          "unavailable": "Für diesen Bereich lässt sich keine Richtung messen."
+        },
+        {
+          "id": "STABLE",
+          "internal": "STABLE",
+          "userLabel": "Weitgehend unverändert",
+          "beginner": "Hier hat sich zuletzt nichts Nennenswertes bewegt.",
+          "professionalLabel": "STABLE",
+          "tooltip": "Die Bewegung liegt unterhalb der Schwelle, ab der sie als Veränderung gilt.",
+          "negative": "Hier bewegt sich nichts.",
+          "unavailable": "Für diesen Bereich lässt sich keine Richtung messen."
+        }
+      ]
+    },
+    {
+      "id": "pattern",
+      "label": "Ähnliche Situationen in der Vergangenheit",
+      "terms": [
+        {
+          "id": "asymmetry",
+          "internal": "asymmetry (lift / lossLift)",
+          "userLabel": "Chance vs. Risiko",
+          "question": "Stand die Chance im Verhältnis zum Verlustrisiko?",
+          "beginner": "Ob starke Anstiege häufiger waren als starke Verluste — oder ob beides gleichzeitig häufiger wurde.",
+          "professionalLabel": "Asymmetrie (Lift ÷ Verlust-Lift)",
+          "tooltip": "Über 1 heißt: die Chance war stärker erhöht als das Verlustrisiko. Unter 1 heißt das Gegenteil.",
+          "negative": "Historisch war dieses Muster eher riskant: starke Anstiege und starke Verluste traten gleichzeitig häufiger auf.",
+          "unavailable": "Chance und Risiko lassen sich für dieses Muster nicht gegeneinander stellen."
+        },
+        {
+          "id": "lift",
+          "internal": "lift",
+          "userLabel": "Häufiger als üblich",
+          "beginner": "Wie viel häufiger ein starker Anstieg vorkam, wenn es so aussah — verglichen mit allen Titeln.",
+          "professionalLabel": "Lift (bedingte Quote ÷ Basisquote)",
+          "tooltip": "1,5× heißt: anderthalbmal so häufig wie im Durchschnitt aller Fälle.",
+          "negative": "Ein starker Anstieg kam seltener vor als im Durchschnitt.",
+          "unavailable": "Zu wenige Fälle, um eine Häufigkeit anzugeben."
+        },
+        {
+          "id": "lossLift",
+          "internal": "lossLift",
+          "userLabel": "Verlustseite",
+          "beginner": "Wie viel häufiger ein starker Verlust vorkam, wenn es so aussah.",
+          "professionalLabel": "Verlust-Lift (bedingte Verlustquote ÷ Basisverlustquote)",
+          "tooltip": "Steht immer neben der Chance. Eine Quote ohne ihre Kehrseite wäre die halbe Wahrheit.",
+          "negative": "Ein starker Verlust kam deutlich häufiger vor als im Durchschnitt.",
+          "unavailable": "Zu wenige Fälle, um eine Verlustquote anzugeben."
+        },
+        {
+          "id": "baseRate",
+          "internal": "baseRate",
+          "userLabel": "Übliche Häufigkeit",
+          "beginner": "Wie oft das über alle Titel hinweg vorkam — der Vergleichsmaßstab.",
+          "professionalLabel": "Basisquote der Grundgesamtheit",
+          "tooltip": "Der Bezugspunkt für jede Aussage darüber, dass etwas häufiger war.",
+          "negative": "Auch im Durchschnitt kam das selten vor.",
+          "unavailable": "Ohne Grundgesamtheit gibt es keinen Vergleichsmaßstab."
+        },
+        {
+          "id": "outOfSample",
+          "internal": "outOfSample lift",
+          "userLabel": "Test an ungesehenen Jahren",
+          "beginner": "Ob das Muster auch in Jahren hielt, die bei seiner Prüfung nicht mitgezählt wurden.",
+          "professionalLabel": "Out-of-Sample-Lift im gesperrten Testblock",
+          "tooltip": "Der eigentliche Test. Ein Muster, das nur im Rückblick hält, wird nicht gezeigt.",
+          "negative": "In ungesehenen Jahren hielt dieses Muster nicht.",
+          "unavailable": "Es gibt zu wenig Historie für einen getrennten Test."
+        },
+        {
+          "id": "medianOutcome",
+          "internal": "medianForwardReturn",
+          "userLabel": "Typischer Fall",
+          "beginner": "Was in der Mitte aller Fälle herauskam — nicht der beste und nicht der schlechteste.",
+          "professionalLabel": "Median der Vorwärtsrendite",
+          "tooltip": "Die Mitte, nicht der Durchschnitt: einzelne Extremfälle verzerren sie nicht.",
+          "negative": "Im typischen Fall stand am Ende ein Minus.",
+          "unavailable": "Ohne genügend Fälle gibt es keinen typischen Fall."
+        },
+        {
+          "id": "medianDrawdown",
+          "internal": "medianMaxDrawdownWithinHorizon",
+          "userLabel": "Tiefster Rücksetzer unterwegs",
+          "beginner": "Wie weit es zwischendurch nach unten ging, bevor am Ende das Ergebnis stand.",
+          "professionalLabel": "Median des maximalen Rücksetzers im Horizont",
+          "tooltip": "Was man ausgehalten hätte. Das Endergebnis sagt nichts über den Weg dorthin.",
+          "negative": "Zwischendurch ging es sehr weit nach unten.",
+          "unavailable": "Ohne genügend Fälle lässt sich der Weg nicht beschreiben."
+        },
+        {
+          "id": "survivorship",
+          "internal": "survivorshipBias",
+          "userLabel": "Überlebende-Verzerrung",
+          "beginner": "Die Vergleichsgruppe enthält nur Unternehmen, die es heute noch gibt. Das lässt alle Quoten günstiger aussehen, als sie waren.",
+          "professionalLabel": "Survivorship Bias · wirkt nach oben auf absolute Quoten",
+          "tooltip": "Im Verhältnis von Chance zu Risiko hebt sich der Effekt weitgehend auf, in den absoluten Quoten nicht.",
+          "negative": "Die absoluten Quoten sind zu günstig dargestellt.",
+          "unavailable": "Das Ausmaß dieser Verzerrung lässt sich aus den vorhandenen Daten nicht beziffern."
+        },
+        {
+          "id": "ROBUST",
+          "internal": "ROBUST",
+          "userLabel": "Historisch belastbar",
+          "beginner": "Genug Fälle, in ungesehenen Jahren bestätigt, und nicht von einer einzelnen Schwelle abhängig.",
+          "professionalLabel": "ROBUST",
+          "tooltip": "Das einzige Urteil, das neben einem Titel gezeigt wird.",
+          "negative": "Auch ein belastbares Muster kann nach unten kippen.",
+          "unavailable": "Für dieses Muster liegen nicht genug vergleichbare Situationen vor, um es überhaupt zu beurteilen."
+        },
+        {
+          "id": "IN_SAMPLE_ONLY",
+          "internal": "IN_SAMPLE_ONLY",
+          "userLabel": "Hielt im Test nicht stand",
+          "beginner": "Im Rückblick auffällig, in ungesehenen Jahren nicht mehr.",
+          "professionalLabel": "IN_SAMPLE_ONLY",
+          "tooltip": "Wird nicht neben einem Titel gezeigt.",
+          "negative": "Im Rückblick auffällig, in ungesehenen Jahren nicht mehr.",
+          "unavailable": "Für dieses Muster liegen nicht genug vergleichbare Situationen vor, um es überhaupt zu beurteilen."
+        },
+        {
+          "id": "PARAMETER_SENSITIVE",
+          "internal": "PARAMETER_SENSITIVE",
+          "userLabel": "Hängt zu stark an der Schwelle",
+          "beginner": "Verschiebt man die Grenze ein wenig, verschwindet der Effekt.",
+          "professionalLabel": "PARAMETER_SENSITIVE",
+          "tooltip": "Ein Hinweis auf Anpassung an den Datensatz statt auf einen Zusammenhang.",
+          "negative": "Verschiebt man die Grenze ein wenig, verschwindet der Effekt.",
+          "unavailable": "Für dieses Muster liegen nicht genug vergleichbare Situationen vor, um es überhaupt zu beurteilen."
+        },
+        {
+          "id": "NOT_SIGNIFICANT",
+          "internal": "NOT_SIGNIFICANT",
+          "userLabel": "Nicht klar genug vom Zufall zu trennen",
+          "beginner": "Der Unterschied ist zu klein, um ihn vom Zufall zu unterscheiden.",
+          "professionalLabel": "NOT_SIGNIFICANT",
+          "tooltip": "Geprüft mit einer Korrektur dafür, dass viele Muster gleichzeitig getestet wurden.",
+          "negative": "Der Unterschied ist zu klein, um ihn vom Zufall zu unterscheiden.",
+          "unavailable": "Für dieses Muster liegen nicht genug vergleichbare Situationen vor, um es überhaupt zu beurteilen."
+        },
+        {
+          "id": "INSUFFICIENT_SUPPORT",
+          "internal": "INSUFFICIENT_SUPPORT",
+          "userLabel": "Zu wenige Fälle",
+          "beginner": "Es gab nicht genug vergleichbare Situationen, um etwas zu zählen.",
+          "professionalLabel": "INSUFFICIENT_SUPPORT",
+          "tooltip": "Unterhalb der Mindestzahl an Fällen und Treffern wird nichts berichtet.",
+          "negative": "Es gab nicht genug vergleichbare Situationen.",
+          "unavailable": "Für dieses Muster liegen nicht genug vergleichbare Situationen vor, um es überhaupt zu beurteilen."
+        }
+      ]
+    },
+    {
+      "id": "backtestMetric",
+      "label": "Backtest · Einsteigeransicht und Fachschicht",
+      "terms": [
+        {
+          "id": "totalReturn",
+          "internal": "CAGR",
+          "userLabel": "Rendite",
+          "beginner": "Was aus dem eingesetzten Geld geworden wäre.",
+          "professionalLabel": "CAGR (annualisierte Rendite)",
+          "tooltip": "Historisch, nach Kosten. Keine Aussage über die Zukunft.",
+          "negative": "Am Ende stand weniger als am Anfang.",
+          "unavailable": "Ohne zertifizierten Backtest wird keine Rendite gezeigt."
+        },
+        {
+          "id": "maxDrawdown",
+          "internal": "maxDrawdown",
+          "userLabel": "Größter Rückgang",
+          "beginner": "Wie weit es vom höchsten Stand nach unten ging, bevor es wieder hoch ging.",
+          "professionalLabel": "Maximum Drawdown",
+          "tooltip": "Die Zahl, die darüber entscheidet, ob man dabeigeblieben wäre.",
+          "negative": "Zwischendurch ging es sehr weit nach unten.",
+          "unavailable": "Ohne zertifizierten Backtest wird kein Rückgang gezeigt."
+        },
+        {
+          "id": "hitRate",
+          "internal": "hitRate",
+          "userLabel": "Trefferquote",
+          "beginner": "Wie oft es aufging.",
+          "professionalLabel": "Hit Rate",
+          "tooltip": "Eine hohe Trefferquote ist wertlos, wenn die wenigen Fehlschläge groß sind.",
+          "negative": "Es ging selten auf.",
+          "unavailable": "Ohne zertifizierten Backtest wird keine Trefferquote gezeigt."
+        },
+        {
+          "id": "situationCount",
+          "internal": "tradeCount",
+          "userLabel": "Anzahl Situationen",
+          "beginner": "Wie viele Fälle hinter der Zahl stehen.",
+          "professionalLabel": "Trade Count",
+          "tooltip": "Wenige Fälle heißt: die Zahlen daneben sind wenig belastbar.",
+          "negative": "Es stehen sehr wenige Fälle dahinter.",
+          "unavailable": "Ohne zertifizierten Backtest gibt es keine Fälle zu zählen."
+        },
+        {
+          "id": "benchmarkDelta",
+          "internal": "benchmarkDelta",
+          "userLabel": "Vergleich zum Markt",
+          "beginner": "Ob es besser gelaufen wäre als einfach den Markt zu kaufen.",
+          "professionalLabel": "Aktivrendite gegen Benchmark",
+          "tooltip": "Ohne diesen Vergleich sagt eine Rendite wenig.",
+          "negative": "Es wäre schlechter gelaufen als der Markt.",
+          "unavailable": "Ohne zertifizierten Backtest gibt es keinen Marktvergleich."
+        },
+        {
+          "id": "sharpe",
+          "internal": "sharpe",
+          "userLabel": "Rendite je Schwankung",
+          "beginner": "Wie viel Ertrag pro Einheit Schwankung herauskam.",
+          "professionalLabel": "Sharpe Ratio",
+          "tooltip": "Fachschicht. Bestraft Schwankung nach oben genauso wie nach unten.",
+          "negative": "Der Ertrag stand in einem schlechten Verhältnis zur Schwankung.",
+          "unavailable": "Ohne zertifizierten Backtest nicht berechenbar."
+        },
+        {
+          "id": "sortino",
+          "internal": "sortino",
+          "userLabel": "Rendite je Verlustschwankung",
+          "beginner": "Wie viel Ertrag pro Einheit Schwankung nach unten herauskam.",
+          "professionalLabel": "Sortino Ratio",
+          "tooltip": "Fachschicht. Zählt nur die Schwankung nach unten.",
+          "negative": "Der Ertrag stand in einem schlechten Verhältnis zur Abwärtsschwankung.",
+          "unavailable": "Ohne zertifizierten Backtest nicht berechenbar."
+        },
+        {
+          "id": "exposure",
+          "internal": "exposure",
+          "userLabel": "Zeit im Markt",
+          "beginner": "Wie viel der Zeit überhaupt investiert war.",
+          "professionalLabel": "Exposure",
+          "tooltip": "Fachschicht. Eine Rendite bei 20 % Marktzeit ist etwas anderes als bei 100 %.",
+          "negative": "Es war kaum Zeit im Markt.",
+          "unavailable": "Ohne zertifizierten Backtest nicht berechenbar."
+        },
+        {
+          "id": "turnover",
+          "internal": "turnover",
+          "userLabel": "Umschlag",
+          "beginner": "Wie oft umgeschichtet worden wäre.",
+          "professionalLabel": "Turnover",
+          "tooltip": "Fachschicht. Hoher Umschlag frisst die Rendite über Kosten auf.",
+          "negative": "Es wäre sehr häufig umgeschichtet worden.",
+          "unavailable": "Ohne zertifizierten Backtest nicht berechenbar."
+        },
+        {
+          "id": "slippage",
+          "internal": "slippage",
+          "userLabel": "Ausführungsabschlag",
+          "beginner": "Was zwischen dem gedachten und dem tatsächlichen Preis verloren geht.",
+          "professionalLabel": "Slippage",
+          "tooltip": "Fachschicht. Ohne Annahme dazu ist jede Backtest-Rendite zu hoch.",
+          "negative": "Der Abschlag ist groß genug, um das Ergebnis zu drehen.",
+          "unavailable": "Ohne zertifizierten Backtest nicht berechenbar."
+        }
+      ]
+    },
+    {
+      "id": "state",
+      "label": "Allgemeine Zustände",
+      "terms": [
+        {
+          "id": "UNAVAILABLE",
+          "internal": "UNAVAILABLE",
+          "userLabel": "Nicht bewertbar",
+          "beginner": "Die Daten, die dafür nötig sind, liegen nicht vor.",
+          "professionalLabel": "UNAVAILABLE",
+          "tooltip": "Nicht dasselbe wie ein schlechter Wert: hier gibt es überhaupt keinen.",
+          "negative": "Die Daten, die dafür nötig sind, liegen nicht vor.",
+          "unavailable": "Die Daten, die dafür nötig sind, liegen nicht vor."
+        },
+        {
+          "id": "WITHHELD",
+          "internal": "WITHHELD",
+          "userLabel": "Bewusst nicht gezeigt",
+          "beginner": "Der Wert ließe sich rechnen, wäre aber genauer, als die Daten hergeben.",
+          "professionalLabel": "WITHHELD",
+          "tooltip": "Zurückgehalten, nicht fehlend. Der Unterschied steht jeweils dabei.",
+          "negative": "Der Wert wird zurückgehalten.",
+          "unavailable": "Der Wert wird zurückgehalten."
+        },
+        {
+          "id": "NOT_CERTIFIED",
+          "internal": "NOT_CERTIFIED",
+          "userLabel": "Noch nicht freigegeben",
+          "beginner": "Die Methodik dafür ist geschrieben, aber noch nicht abgenommen.",
+          "professionalLabel": "NOT_CERTIFIED",
+          "tooltip": "Bis zur Abnahme wird nichts behauptet.",
+          "negative": "Noch nicht freigegeben.",
+          "unavailable": "Noch nicht freigegeben."
+        },
+        {
+          "id": "NOT_MEASURABLE",
+          "internal": "NOT_MEASURABLE",
+          "userLabel": "Für diesen Titel nicht messbar",
+          "beginner": "Diese Bedingung lässt sich hier nicht prüfen — sie gilt weder als erfüllt noch als verletzt.",
+          "professionalLabel": "NOT_MEASURABLE",
+          "tooltip": "Verlässt den Nenner, statt als Fehlschlag gezählt zu werden.",
+          "negative": "Diese Bedingung lässt sich hier nicht prüfen.",
+          "unavailable": "Diese Bedingung lässt sich hier nicht prüfen."
+        },
+        {
+          "id": "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
+          "internal": "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
+          "userLabel": "Verlauf noch nicht freigeschaltet",
+          "beginner": "Ob eine Situation läuft, sich verschlechtert, gebrochen ist oder ihr Ziel erreicht hat, wird noch nicht gezeigt. Dafür braucht es eine Reihe echter Beobachtungen über Zeit, und die wird gerade erst aufgebaut.",
+          "professionalLabel": "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
+          "tooltip": "Die Methodik ist freigegeben. Die vier Verlaufszustände haben ein eigenes Gate, das erst öffnet, wenn geordnete Historie vorliegt und sich darin wie beschrieben verhält.",
+          "negative": "Ob eine Situation gebrochen ist, lässt sich derzeit nicht sagen.",
+          "unavailable": "Ob eine Situation gebrochen ist, lässt sich derzeit nicht sagen. Dafür braucht es eine geordnete Reihe echter Beobachtungen über Zeit."
+        },
+        {
+          "id": "PENDING_HISTORY",
+          "internal": "PENDING_HISTORY",
+          "userLabel": "Wartet auf Historie",
+          "beginner": "Alles ist gebaut und geprüft; was fehlt, ist schlicht Zeit. Mit jeder weiteren Beobachtung wächst die Reihe, die dafür nötig ist.",
+          "professionalLabel": "PENDING_HISTORY",
+          "tooltip": "Ein Zustand, der sich von selbst auflöst — nicht durch eine Entscheidung, sondern durch Beobachtungen.",
+          "negative": "Es fehlt noch Historie.",
+          "unavailable": "Es fehlt noch Historie. Das ist kein Fehler, sondern der normale Verlauf beim Aufbau einer Beobachtungsreihe."
+        },
+        {
+          "id": "FACTOR_HISTORY_NOT_AVAILABLE",
+          "internal": "historicalEvidence.reason",
+          "userLabel": "Keine historische Vergleichsbasis",
+          "beginner": "Die Eigenschaften einer Aktie werden im Vergleich zum heutigen Markt gemessen. Für vergangene Stichtage gibt es diesen Vergleich nicht, deshalb lässt sich nicht sagen, wie ein Stil früher abgeschnitten hätte.",
+          "professionalLabel": "Kein historischer Faktorpanel",
+          "tooltip": "Es fehlt nicht die Auswertung, sondern die Datengrundlage: ohne Faktorwerte je vergangenem Stichtag ist keine historische Aussage möglich.",
+          "negative": "Für diesen Stil liegt keine historische Aussage vor.",
+          "unavailable": "Eine historische Einordnung dieses Stils ist mit den vorhandenen Daten nicht möglich."
+        },
+        {
+          "id": "PROFILE_INPUT_NOT_COVERED",
+          "internal": "screenIndex availability.reason",
+          "userLabel": "Eine Eigenschaft fehlt im gesamten Markt",
+          "beginner": "Dieser Stil verlangt eine Eigenschaft, die für keinen einzigen Titel erhoben ist. Deshalb wird hier keine Zahl genannt.",
+          "professionalLabel": "Profil-Eingabefeld ohne Abdeckung",
+          "tooltip": "Nicht zu verwechseln mit null Treffern: hier konnte gar nicht gemessen werden.",
+          "negative": "Dieser Stil lässt sich derzeit nicht auswerten.",
+          "unavailable": "Für diesen Stil fehlt eine Eigenschaft, die im gesamten Markt nicht erhoben ist."
+        },
+        {
+          "id": "MARKET_REGIME_TRANSITIONS_NOT_ACTIVATED",
+          "internal": "transitions.reason",
+          "userLabel": "Veränderung des Marktumfelds noch nicht belegbar",
+          "beginner": "Ob sich das Marktumfeld gerade dreht, lässt sich erst sagen, wenn es über längere Zeit beobachtet wurde. Diese Beobachtung läuft noch.",
+          "professionalLabel": "Übergangsstufe nicht aktiviert",
+          "tooltip": "Der heutige Zustand steht fest. Wie er sich zum vorherigen verhält, ist eine andere Frage und braucht geordnete Historie.",
+          "negative": "Über eine Veränderung des Marktumfelds wird nichts behauptet.",
+          "unavailable": "Zu Übergängen im Marktumfeld liegt noch keine belastbare Beobachtung vor."
+        },
+        {
+          "id": "MARKET_REGIME_INPUT_COVERAGE_TOO_LOW",
+          "internal": "marketRegime.reason",
+          "userLabel": "Zu wenige Titel messbar",
+          "beginner": "Für zu viele Titel fehlen die Eingaben, aus denen sich das Marktumfeld ablesen lässt. Deshalb wird kein Zustand genannt.",
+          "professionalLabel": "Eingabeabdeckung unter Mindestschwelle",
+          "tooltip": "Ein Anteil, der auf zu wenigen Titeln beruht, wäre eine Zahl ohne Aussagekraft.",
+          "negative": "Das Marktumfeld lässt sich derzeit nicht beschreiben.",
+          "unavailable": "Für eine Aussage zum Marktumfeld sind zu wenige Titel auswertbar."
+        },
+        {
+          "id": "BROAD_STRENGTH",
+          "internal": "MarketRegime.regime",
+          "userLabel": "Breit getragen",
+          "beginner": "Die meisten Titel stehen über ihrer langfristigen Durchschnittslinie, und viele sind aufwärts gerichtet.",
+          "professionalLabel": "Breite Stärke · Punkt-in-der-Zeit",
+          "tooltip": "Beschreibt heute. Kein Timing-Signal und keine Prognose.",
+          "negative": "Der Markt wird derzeit nicht breit getragen.",
+          "unavailable": "Zur Breite des Marktes liegt keine auswertbare Messung vor."
+        },
+        {
+          "id": "MIXED",
+          "internal": "MarketRegime.regime",
+          "userLabel": "Geteiltes Bild",
+          "beginner": "Ein Teil des Marktes trägt, ein anderer nicht. Das ist der häufigste Fall.",
+          "professionalLabel": "Gemischt · Punkt-in-der-Zeit",
+          "tooltip": "Eine vollwertige Antwort und keine Lücke: weder breite Stärke noch breite Schwäche.",
+          "negative": "Das Bild ist uneinheitlich.",
+          "unavailable": "Zur Breite des Marktes liegt keine auswertbare Messung vor."
+        },
+        {
+          "id": "BROAD_WEAKNESS",
+          "internal": "MarketRegime.regime",
+          "userLabel": "Breit schwach",
+          "beginner": "Die meisten Titel stehen unter ihrer langfristigen Durchschnittslinie, und viele sind abwärts gerichtet.",
+          "professionalLabel": "Breite Schwäche · Punkt-in-der-Zeit",
+          "tooltip": "Beschreibt heute. Keine Aussage darüber, ob es so bleibt.",
+          "negative": "Der Markt ist derzeit nicht breit schwach.",
+          "unavailable": "Zur Breite des Marktes liegt keine auswertbare Messung vor."
+        },
+        {
+          "id": "MARKET_REGIME_UNIVERSE_TOO_SMALL",
+          "internal": "marketRegime.reason",
+          "userLabel": "Zu wenige Titel im Ausschnitt",
+          "beginner": "Der ausgewertete Ausschnitt umfasst zu wenige Titel, als dass sich daraus etwas über die Breite des Marktes sagen ließe.",
+          "professionalLabel": "Universum unter Mindestgröße",
+          "tooltip": "Ein Anteil über eine Handvoll Titel beschreibt diese Titel, nicht den Markt.",
+          "negative": "Über die Breite dieses Ausschnitts wird nichts behauptet.",
+          "unavailable": "Der ausgewertete Ausschnitt ist zu klein für eine Aussage zum Marktumfeld."
+        },
+        {
+          "id": "SETUP_MAPPING_NOT_APPROVED",
+          "internal": "setup availability.reason",
+          "userLabel": "Methodik noch nicht freigegeben",
+          "beginner": "Die Setup-Methodik ist geschrieben und nachrechenbar, aber noch nicht freigegeben. Bis dahin wird kein Zustand behauptet.",
+          "professionalLabel": "Zuordnungsversion ohne Freigabe",
+          "tooltip": "Die Regeln stehen fest und sind prüfbar; es fehlt die ausdrückliche Freigabe.",
+          "negative": "Zu dieser Aktie wird kein Setup-Zustand behauptet.",
+          "unavailable": "Solange die Methodik nicht freigegeben ist, wird kein Setup-Zustand veröffentlicht."
+        },
+        {
+          "id": "SETUP_OBSERVATION_HISTORY_NOT_MATERIALIZED",
+          "internal": "setup pathTier.reason",
+          "userLabel": "Noch keine frühere Beobachtung",
+          "beginner": "Für diesen Titel ist noch keine frühere Beobachtung veröffentlicht. „Wurde bestätigt“ oder „wurde ungültig“ sind Aussagen über einen Verlauf und lassen sich aus einem einzigen Stichtag nicht gewinnen.",
+          "professionalLabel": "Keine materialisierte Beobachtungsreihe",
+          "tooltip": "Ein Verlauf braucht mindestens zwei veröffentlichte Stichtage.",
+          "negative": "Über den bisherigen Verlauf wird nichts behauptet.",
+          "unavailable": "Zum Verlauf dieses Titels liegt noch keine veröffentlichte Beobachtung vor."
+        },
+        {
+          "id": "INSUFFICIENT_OBSERVATION_HISTORY",
+          "internal": "setup pathTier.reason",
+          "userLabel": "Beobachtung läuft noch",
+          "beginner": "Es liegt noch nicht genug geordnete Beobachtungshistorie vor, um einen Verlauf zu belegen. Das klärt sich von selbst, während weiter beobachtet wird.",
+          "professionalLabel": "Beobachtungstiefe unter Mindestanforderung",
+          "tooltip": "Kein „Nein“, sondern ein „noch nicht“: es fehlt Zeit, keine Entscheidung.",
+          "negative": "Über den bisherigen Verlauf wird noch nichts behauptet.",
+          "unavailable": "Für eine Aussage über den Verlauf reicht die bisherige Beobachtungsdauer nicht."
+        },
+        {
+          "id": "SETUP_INPUTS_INCOMPLETE",
+          "internal": "setup classification.reason",
+          "userLabel": "Technische Evidenz unvollständig",
+          "beginner": "Für diesen Titel fehlt ein Teil der technischen Auswertung, die die Methodik verlangt. Deshalb steht hier kein Zustand — auch nicht „kein Setup“.",
+          "professionalLabel": "Pflichtfelder der Zuordnung nicht vollständig",
+          "tooltip": "„Kein Setup“ und „nicht bewertbar“ sind zwei verschiedene Aussagen und werden nicht vermischt.",
+          "negative": "Zu dieser Aktie lässt sich derzeit kein Setup-Zustand sagen.",
+          "unavailable": "Für diesen Titel liegt nicht die vollständige technische Evidenz vor, die die Methodik verlangt."
+        },
+        {
+          "id": "MARKET_REGIME_INPUT_INCONSISTENT",
+          "internal": "marketRegime.reason",
+          "userLabel": "Zählung nicht schlüssig",
+          "beginner": "Eine der Zählungen ergibt keinen sinnvollen Anteil. Statt eine Zahl zu zeigen, die niemand einordnen kann, wird hier nichts behauptet.",
+          "professionalLabel": "Eingabezählung außerhalb des gültigen Bereichs",
+          "tooltip": "Mehr Treffer als Beobachtungen wäre ein Fehler in der Zählung, kein Befund über den Markt.",
+          "negative": "Zur Marktbreite wird derzeit nichts behauptet.",
+          "unavailable": "Eine der zugrunde liegenden Zählungen ist nicht schlüssig; deshalb wird kein Marktumfeld genannt."
+        },
+        {
+          "id": "BENCHMARK_STALE",
+          "internal": "BENCHMARK_STALE (market-factors relativeStrength)",
+          "userLabel": "Vergleich noch nicht möglich",
+          "question": "Warum fehlt der Vergleich zum Markt?",
+          "beginner": "Der Marktvergleich braucht einen Indexstand vom selben Tag. Der liegt für diesen Stichtag noch nicht vor, deshalb zeigen wir hier lieber nichts als eine Zahl, die nur den Zeitunterschied misst.",
+          "professionalLabel": "Vergleichsreihe älter als der Stichtag des Titels",
+          "tooltip": "Ohne gleich aktuellen Index wäre der Vorsprung nur Marktbewegung.",
+          "negative": "Für diesen Zeitraum lässt sich kein Marktvergleich zeigen.",
+          "unavailable": "Der Marktvergleich ruht, bis der Index nachgezogen ist."
+        }
+      ]
+    }
+  ],
+  "forbiddenInPrimaryCopy": [
+    "Change Engine",
+    "SetupState",
+    "Setup State",
+    "Pattern Engine",
+    "Asymmetry Engine",
+    "Historical Similarity Model",
+    "Strategy Match",
+    "Factor DNA",
+    "Market Regime",
+    "Backtest Trust Score",
+    "Composite Score",
+    "Lift",
+    "Out-of-Sample",
+    "CAGR",
+    "Sharpe",
+    "Sortino",
+    "Exposure",
+    "Turnover",
+    "Slippage",
+    "NO_SETUP",
+    "SETUP_FORMING",
+    "CONFIRMED",
+    "RISK_RISING",
+    "INVALIDATED",
+    "IMPROVING",
+    "DETERIORATING",
+    "ROBUST",
+    "quantV2",
+    "predicateHash",
+    "Technical Intelligence",
+    "Intelligence",
+    "Pattern Match",
+    "Setup State V1",
+    "adjustedClose",
+    "split adjusted",
+    "splitbereinigt",
+    "total return",
+    "Total Return",
+    "total return basis",
+    "TOTAL_RETURN",
+    "SPLIT_ADJUSTED_PRICE",
+    "Return-Basis",
+    "priceReturn12m1m",
+    "investorReturn"
+  ],
+  "forbiddenNote": "Diese Begriffe dürfen nicht in einer Überschrift, einem Eyebrow, einem Chip oder einem Badge stehen. In einer eingeklappten Methodik-Ebene oder als Beisatz hinter dem Nutzerbegriff sind sie erlaubt und erwünscht - ein Profi soll den internen Namen finden können."
+}

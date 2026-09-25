@@ -1,40 +1,547 @@
 {
-  "schemaVersion": "1.0.0",
-  "methodologyVersion": "setup-state-v1.0.0",
-  "status": "SPECIFIED_NOT_ACTIVE",
-  "effectiveFrom": null,
-  "publication": {
-    "enabled": false,
-    "reason": "SETUP_STATE_MAPPING_NOT_ACTIVE"
+ "schemaVersion": "1.1.0",
+ "methodologyVersion": "setup-state-v1.0.0",
+ "status": "ACTIVE_POINT_IN_TIME_ONLY",
+ "effectiveFrom": null,
+ "publication": {
+  "enabled": true,
+  "scope": "POINT_IN_TIME_STATES_ONLY",
+  "reason": "Die Methodik ist als Version 1 freigegeben. Veroeffentlicht werden die vier Zustaende, die aus dem Datenstand eines Stichtags entscheidbar sind. Die vier pfadabhaengigen Zustaende bleiben trotz methodischer Freigabe operativ geschlossen; sie haben ihr eigenes Gate."
+ },
+ "states": [
+  "NO_SETUP",
+  "WATCH",
+  "SETUP_FORMING",
+  "CONFIRMED",
+  "ACTIVE",
+  "RISK_RISING",
+  "INVALIDATED",
+  "EXIT"
+ ],
+ "requirements": {
+  "orderedSnapshots": 2,
+  "sameIdentity": true,
+  "sameMethodologyChain": true,
+  "realDataOnly": true,
+  "ruleContractVersion": "1.0",
+  "backtestCertification": "NOT_CERTIFIED"
+ },
+ "semanticBoundaries": {
+  "technicalScenarioStatusIsSetupState": false,
+  "tradeSetupStatusIsSetupState": false,
+  "elliottMayConfirmSetup": false,
+  "elliottRole": "EVIDENCE_ONLY"
+ },
+ "activationGates": [
+  "VERSIONED_STATE_MAPPING_APPROVED",
+  "RULE_REFERENCES_VERIFIABLE",
+  "IDENTITY_AND_METHODOLOGY_CHAIN_VALIDATED",
+  "PATH_DEPENDENT_STATES_ACTIVATION"
+ ],
+ "stateMapping": {
+  "mappingVersion": "setup-mapping-1.0.0",
+  "approval": {
+   "state": "APPROVED",
+   "approvedBy": "info@visionuniverse.de",
+   "approvedAt": "2026-09-23",
+   "approvedVersion": "setup-mapping-1.0.0",
+   "gate": "VERSIONED_STATE_MAPPING_APPROVED",
+   "scope": "Freigegeben ist die Methodik als Version 1. Freigegeben ist damit die Veroeffentlichung der vier Punkt-in-der-Zeit-Zustaende. Die vier pfadabhaengigen Zustaende sind von dieser Freigabe ausdruecklich NICHT umfasst; sie haengen an pathDependentActivation.",
+   "note": "Die Zuordnung ist geschrieben, versioniert, maschinell geprueft und ueber die volle Breite materialisiert. Die Freigabe bezieht sich auf die Zustandssemantik, nicht auf eine Ergebniserwartung."
   },
-  "states": [
-    "NO_SETUP",
-    "WATCH",
-    "SETUP_FORMING",
-    "CONFIRMED",
+  "purpose": "Ordnet einem Titel genau einen der acht kanonischen Setup-Zustaende zu. Die Zuordnung ist eine Projektion ueber die bereits vorhandene Technical-Materialisierung und die Quant-V2-Faktorevidenz. Sie rechnet keine Indikatoren neu, sie erzeugt keine zweite Regel-Engine und sie behauptet keinen Ausgang.",
+  "notASetupRecommendation": "Ein Zustand beschreibt, was am Stichtag beobachtbar ist. Er ist keine Einstiegsempfehlung, keine Erfolgswahrscheinlichkeit und keine Renditeaussage.",
+  "inputSources": [
+   {
+    "id": "technical",
+    "artifact": "technical-product-artifact-1.0.0",
+    "owner": "bestehende Technical-Materialisierung",
+    "rebuilt": false,
+    "vocabulary": "Kanonische Katalogfelder. Die Zuordnung liest keine Bundle-Pfade, sondern genau die Felder, gegen die auch eine Screener-Regel geschrieben wird.",
+    "fields": [
+     "technicalTrend",
+     "technicalConfirmedStructure",
+     "technicalMomentumState",
+     "technicalVolatilityRegime",
+     "technicalVolumeState",
+     "technicalSetupStatus",
+     "technicalEntryStatus",
+     "technicalPrimaryDirection",
+     "technicalDistanceTo52wHigh"
+    ]
+   },
+   {
+    "id": "factorEvidence",
+    "artifact": "factor-evidence-product-1.0.0",
+    "owner": "vu-factor-evidence-1.0.0",
+    "rebuilt": false,
+    "fields": [
+     "quantV2.factorEvidence.momentum",
+     "quantV2.factorEvidence.risk",
+     "quantV2.factorEvidence.quality"
+    ]
+   },
+   {
+    "id": "observationHistory",
+    "artifact": "setup-observation-1.0.0",
+    "owner": "diese Methodik, ab der ersten veroeffentlichten Beobachtung",
+    "rebuilt": false,
+    "fields": [
+     "previous.setupState",
+     "previous.asOf",
+     "previous.invalidationPrice",
+     "previous.exitPrice"
+    ]
+   }
+  ],
+  "repaintingPolicy": {
+   "confirmedStructureOnly": true,
+   "note": "Die Struktur-Engine traegt die Politik CONFIRMS_WITH_DELAY. In diese Zuordnung geht ausschliesslich bundle.structure.state.confirmedRegime ein. Ein developingPivot ist Evidenz fuer die Darstellung und niemals Treiber eines Zustands: ein Zustand, der sich mit der naechsten Bestaetigung rueckwirkend aendert, waere genau die Rueckschau, die hier ausgeschlossen bleibt.",
+   "excludedInputs": [
+    "bundle.structure.state.developingPivot",
+    "bundle.scenarios",
+    "bundle.elliott"
+   ]
+  },
+  "direction": {
+   "evaluated": "LONG",
+   "note": "Diese Version bewertet ausschliesslich die Long-Seite. Ein Titel ohne konstruktive Long-Lage erhaelt NO_SETUP und nicht etwa einen gespiegelten Short-Zustand. Die Short-Seite ist nicht implementiert und wird nicht behauptet."
+  },
+  "tiers": {
+   "POINT_IN_TIME": {
+    "states": [
+     "NO_SETUP",
+     "WATCH",
+     "SETUP_FORMING",
+     "CONFIRMED"
+    ],
+    "requiresHistory": false,
+    "note": "Diese vier Zustaende sind vollstaendig aus dem Datenstand eines einzigen Stichtags entscheidbar."
+   },
+   "PATH_DEPENDENT": {
+    "states": [
+     "ACTIVE",
+     "RISK_RISING",
+     "INVALIDATED",
+     "EXIT"
+    ],
+    "requiresHistory": true,
+    "minimumOrderedObservations": 2,
+    "note": "Diese vier Zustaende setzen voraus, dass ein frueherer Zustand tatsaechlich beobachtet und veroeffentlicht wurde. 'Wurde ungueltig' ist eine Aussage ueber einen Verlauf, nicht ueber einen Stichtag. Ohne geordnete Beobachtungshistorie bleiben sie geschlossen; sie werden nicht aus heutigen Daten rekonstruiert."
+   }
+  },
+  "cascade": {
+   "semantics": "FIRST_MATCH_WINS",
+   "exhaustive": true,
+   "note": "Die Reihenfolge ist Teil der Methodik. Ein Titel erhaelt genau einen Zustand; mehrdeutige Doppelzustaende sind ausgeschlossen. Mehrere Regeln duerfen auf denselben Zustand zeigen.",
+   "rules": [
+    {
+     "ruleId": "setup.invalidated.below-previous-invalidation",
+     "order": 1,
+     "state": "INVALIDATED",
+     "tier": "PATH_DEPENDENT",
+     "screenable": false,
+     "plain": "Die zuletzt beobachtete Lage ist gebrochen.",
+     "historyConditions": [
+      {
+       "input": "previous.setupState",
+       "operator": "in",
+       "value": [
+        "SETUP_FORMING",
+        "CONFIRMED",
+        "ACTIVE",
+        "RISK_RISING"
+       ]
+      },
+      {
+       "input": "close",
+       "operator": "lt",
+       "value": "previous.invalidationPrice"
+      }
+     ],
+     "filters": [],
+     "notScreenableReason": "Die Bedingung vergleicht den heutigen Schlusskurs mit einer Grenze, die in einer frueheren Beobachtung dieses Titels festgehalten wurde. Das ist kein Querschnittsfeld des Universums und damit kein Katalogfeld.",
+     "rationale": "Die Invalidationsgrenze stammt aus der zuletzt veroeffentlichten Beobachtung, nicht aus dem heute berechneten Setup. Eine heute neu berechnete Grenze rueckwirkend anzuwenden waere Rueckschau."
+    },
+    {
+     "ruleId": "setup.exit.previous-target-reached",
+     "order": 2,
+     "state": "EXIT",
+     "tier": "PATH_DEPENDENT",
+     "screenable": false,
+     "plain": "Die zuletzt beobachtete aktive Lage hat ihre dokumentierte Zielzone erreicht.",
+     "historyConditions": [
+      {
+       "input": "previous.setupState",
+       "operator": "in",
+       "value": [
+        "ACTIVE",
+        "RISK_RISING"
+       ]
+      },
+      {
+       "input": "previous.exitPrice",
+       "operator": "isNotNull"
+      },
+      {
+       "input": "close",
+       "operator": "gte",
+       "value": "previous.exitPrice"
+      }
+     ],
+     "filters": [],
+     "notScreenableReason": "Wie bei INVALIDATED: die Schwelle ist titelbezogene Historie, kein Universumsfeld.",
+     "rationale": "EXIT ist kein Urteil ueber Erfolg, sondern die Feststellung, dass die damals dokumentierte Zone erreicht wurde."
+    },
+    {
+     "ruleId": "setup.risk-rising.volatility-regime-high",
+     "order": 3,
+     "state": "RISK_RISING",
+     "tier": "PATH_DEPENDENT",
+     "screenable": false,
+     "plain": "Eine bestehende konstruktive Lage läuft in ein hohes Volatilitätsregime.",
+     "historyConditions": [
+      {
+       "input": "previous.setupState",
+       "operator": "in",
+       "value": [
+        "CONFIRMED",
+        "ACTIVE",
+        "RISK_RISING"
+       ]
+      }
+     ],
+     "filters": [
+      {
+       "field": "technicalTrend",
+       "operator": "ne",
+       "value": "BEARISH"
+      },
+      {
+       "field": "technicalVolatilityRegime",
+       "operator": "eq",
+       "value": "HIGH"
+      }
+     ],
+     "notScreenableReason": "Die Filter sind Katalogfelder, die Vorbedingung ist Historie. Erst mit einem Beobachtungsfeld im Katalog waere die Regel als Ganzes screenbar.",
+     "rationale": "Steigendes Risiko ist eine Verlaufsaussage. Ohne frueher beobachteten konstruktiven Zustand gibt es nichts, das sich verschlechtern koennte."
+    },
+    {
+     "ruleId": "setup.risk-rising.momentum-turns-negative",
+     "order": 4,
+     "state": "RISK_RISING",
+     "tier": "PATH_DEPENDENT",
+     "screenable": false,
+     "plain": "Eine bestehende konstruktive Lage verliert ihr Momentum.",
+     "historyConditions": [
+      {
+       "input": "previous.setupState",
+       "operator": "in",
+       "value": [
+        "CONFIRMED",
+        "ACTIVE",
+        "RISK_RISING"
+       ]
+      }
+     ],
+     "filters": [
+      {
+       "field": "technicalTrend",
+       "operator": "ne",
+       "value": "BEARISH"
+      },
+      {
+       "field": "technicalMomentumState",
+       "operator": "in",
+       "value": [
+        "NEGATIVE",
+        "STRONG_NEGATIVE"
+       ]
+      }
+     ],
+     "notScreenableReason": "Wie Regel 3.",
+     "rationale": "Zwei getrennte Regeln statt einer ODER-Bedingung, damit im Ergebnis steht, welcher Weg zugetroffen hat."
+    },
+    {
+     "ruleId": "setup.active.entry-zone-running",
+     "order": 5,
+     "state": "ACTIVE",
+     "tier": "PATH_DEPENDENT",
+     "screenable": false,
+     "plain": "Die bestätigte Lage läuft; der Kurs steht in der dokumentierten Einstiegszone.",
+     "historyConditions": [
+      {
+       "input": "previous.setupState",
+       "operator": "in",
+       "value": [
+        "CONFIRMED",
+        "ACTIVE"
+       ]
+      }
+     ],
+     "filters": [
+      {
+       "field": "technicalPrimaryDirection",
+       "operator": "eq",
+       "value": "BULLISH"
+      },
+      {
+       "field": "technicalEntryStatus",
+       "operator": "eq",
+       "value": "ACTIVE"
+      }
+     ],
+     "notScreenableReason": "Wie Regel 3.",
+     "rationale": "ACTIVE setzt eine zuvor beobachtete Bestaetigung voraus. Ein Titel springt nicht ohne beobachtete Bestaetigung nach ACTIVE."
+    },
+    {
+     "ruleId": "setup.confirmed.structure-trend-volume",
+     "order": 6,
+     "state": "CONFIRMED",
+     "tier": "POINT_IN_TIME",
+     "screenable": true,
+     "plain": "Struktur, Trend und Volumen bestätigen am selben Stichtag dieselbe Lage.",
+     "historyConditions": [],
+     "filters": [
+      {
+       "field": "technicalConfirmedStructure",
+       "operator": "eq",
+       "value": "BULLISH"
+      },
+      {
+       "field": "technicalTrend",
+       "operator": "eq",
+       "value": "BULLISH"
+      },
+      {
+       "field": "technicalSetupStatus",
+       "operator": "eq",
+       "value": "COMPLETE"
+      },
+      {
+       "field": "technicalPrimaryDirection",
+       "operator": "eq",
+       "value": "BULLISH"
+      },
+      {
+       "field": "technicalVolumeState",
+       "operator": "in",
+       "value": [
+        "BREAKOUT_VOLUME_UP",
+        "EXPANSION"
+       ]
+      }
+     ],
+     "rationale": "Bestaetigung verlangt Uebereinstimmung mehrerer unabhaengiger Familien am selben Stichtag. Die Volumenbedingung verhindert, dass eine reine Kursbewegung ohne Beteiligung als Bestaetigung zaehlt. Die Strukturbedingung liest das rein pivot-bestaetigte Regime, nicht das durch Close-Brueche revidierbare."
+    },
+    {
+     "ruleId": "setup.forming.complete-setup-awaiting-trigger",
+     "order": 7,
+     "state": "SETUP_FORMING",
+     "tier": "POINT_IN_TIME",
+     "screenable": true,
+     "plain": "Ein vollständiges Long-Setup liegt vor, der Auslöser steht noch aus.",
+     "historyConditions": [],
+     "filters": [
+      {
+       "field": "technicalTrend",
+       "operator": "eq",
+       "value": "BULLISH"
+      },
+      {
+       "field": "technicalSetupStatus",
+       "operator": "in",
+       "value": [
+        "COMPLETE",
+        "COMPLETE_LOW_RR"
+       ]
+      },
+      {
+       "field": "technicalPrimaryDirection",
+       "operator": "eq",
+       "value": "BULLISH"
+      },
+      {
+       "field": "technicalEntryStatus",
+       "operator": "in",
+       "value": [
+        "AWAITING_TRIGGER",
+        "AWAITING_PULLBACK"
+       ]
+      }
+     ],
+     "rationale": "technicalSetupStatus ist ausdruecklich nicht der Setup-Zustand (semanticBoundaries.tradeSetupStatusIsSetupState = false). Er ist hier eine von vier Bedingungen und traegt den Zustand nicht allein."
+    },
+    {
+     "ruleId": "setup.watch.bullish-trend",
+     "order": 8,
+     "state": "WATCH",
+     "tier": "POINT_IN_TIME",
+     "screenable": true,
+     "plain": "Der Trend trägt, eine konkrete Situation gibt es noch nicht.",
+     "historyConditions": [],
+     "filters": [
+      {
+       "field": "technicalTrend",
+       "operator": "eq",
+       "value": "BULLISH"
+      }
+     ],
+     "rationale": "WATCH sagt genau so viel aus, wie belegbar ist."
+    },
+    {
+     "ruleId": "setup.watch.confirmed-structure-near-high",
+     "order": 9,
+     "state": "WATCH",
+     "tier": "POINT_IN_TIME",
+     "screenable": true,
+     "plain": "Die bestätigte Struktur trägt und der Kurs steht in Reichweite des Jahreshochs.",
+     "historyConditions": [],
+     "filters": [
+      {
+       "field": "technicalConfirmedStructure",
+       "operator": "eq",
+       "value": "BULLISH"
+      },
+      {
+       "field": "technicalDistanceTo52wHigh",
+       "operator": "gte",
+       "value": -0.15
+      }
+     ],
+     "rationale": "Zweiter Weg nach WATCH fuer Titel, deren Trendklassifikation noch NEUTRAL ist, deren Struktur aber bereits bestaetigt hoeher laeuft."
+    },
+    {
+     "ruleId": "setup.none.fallback",
+     "order": 10,
+     "state": "NO_SETUP",
+     "tier": "POINT_IN_TIME",
+     "screenable": false,
+     "plain": "Es ist gerade nichts zu sehen.",
+     "historyConditions": [],
+     "filters": [],
+     "always": true,
+     "notScreenableReason": "Der Auffangzustand ist die Negation aller vorhergehenden Regeln und kein eigenes Praedikat.",
+     "rationale": "NO_SETUP ist eine vollwertige Antwort und keine Luecke. Ein Titel ohne Technical-Bundle erhaelt ihn ausdruecklich nicht."
+    }
+   ]
+  },
+  "coverage": {
+   "requiredFields": [
+    "technicalTrend",
+    "technicalConfirmedStructure",
+    "technicalSetupStatus",
+    "technicalPrimaryDirection"
+   ],
+   "requiredContext": [
+    "close",
+    "dataCutoff"
+   ],
+   "missingInputPolicy": "UNAVAILABLE_TYPED",
+   "missingInputReason": "SETUP_INPUTS_INCOMPLETE",
+   "note": "Ein Titel ohne vollstaendige Technical-Evidenz erhaelt keinen Zustand und insbesondere nicht NO_SETUP. 'Kein Setup' und 'nicht bewertbar' sind zwei verschiedene Aussagen."
+  },
+  "meaningFields": {
+   "whyNow": "Aus den erfuellten Bedingungen der zutreffenden Kaskadenregel, woertlich und ohne Zusatzbehauptung.",
+   "entryCondition": "technical.tradeSetup.entry (Zone und Status), unveraendert uebernommen.",
+   "confirmation": "Die Volumen- und Strukturbedingung der Regel CONFIRMED.",
+   "invalidation": "technical.tradeSetup.analysisInvalidation, unveraendert uebernommen.",
+   "risk": "technical.volatility.regime und quantV2.factorEvidence.risk, jeweils benannt.",
+   "exitCondition": "Die erste Zielzone aus technical.tradeSetup.targets, ausdruecklich als dokumentierte Zone und nicht als Kursziel.",
+   "forbidden": [
+    "Kursprognose",
+    "Erfolgswahrscheinlichkeit",
+    "Renditeerwartung",
+    "Haltedauerempfehlung"
+   ]
+  },
+  "ruleEngine": {
+   "sharedWith": [
+    "Screener",
+    "Signale",
+    "Alerts",
+    "Strategy Match",
+    "Backtest"
+   ],
+   "contract": "quant/engines/rule-contract.js",
+   "secondEvaluator": false,
+   "note": "Jede Regel der Punkt-in-der-Zeit-Stufe ist genau ein kanonisches Regelpraedikat: eine UND-Verknuepfung von Katalogfeld-Filtern. Damit ist jede Setup-Regel zugleich eine Screener-Abfrage und traegt denselben predicateHash. Ein Zustand mit mehreren Wegen wird als mehrere Regeln auf denselben Zustand geschrieben und nicht als ODER-Ausdruck, weil das Praedikat bewusst keine ODER-Gruppen kennt."
+  },
+  "pathDependentActivation": {
+   "state": "PENDING_HISTORY",
+   "gate": "PATH_DEPENDENT_STATES_ACTIVATION",
+   "states": [
     "ACTIVE",
     "RISK_RISING",
     "INVALIDATED",
     "EXIT"
-  ],
-  "requirements": {
-    "orderedSnapshots": 2,
-    "sameIdentity": true,
-    "sameMethodologyChain": true,
-    "realDataOnly": true,
-    "ruleContractVersion": "1.0",
-    "backtestCertification": "NOT_CERTIFIED"
-  },
-  "semanticBoundaries": {
-    "technicalScenarioStatusIsSetupState": false,
-    "tradeSetupStatusIsSetupState": false,
-    "elliottMayConfirmSetup": false,
-    "elliottRole": "EVIDENCE_ONLY"
-  },
-  "activationGates": [
-    "VERSIONED_STATE_MAPPING_APPROVED",
-    "ORDERED_REAL_SNAPSHOT_HISTORY_MATERIALIZED",
-    "RULE_REFERENCES_VERIFIABLE",
-    "IDENTITY_AND_METHODOLOGY_CHAIN_VALIDATED"
-  ]
+   ],
+   "activatedBy": null,
+   "activatedAt": null,
+   "why": "Diese vier Zustaende sind Aussagen ueber einen Verlauf. Eine methodische Freigabe macht einen Verlauf nicht beobachtbar - dafuer braucht es echte, zeitlich geordnete Beobachtungshistorie und den Nachweis, dass sich die Zustaende darin so verhalten, wie die Methodik es beschreibt.",
+   "twoLocks": "Das Gate oeffnet nur, wenn ALLE Pruefungen unten gemessen bestanden sind UND dieser Zustand vom Owner auf ACTIVE gesetzt wird. Eine automatische Oeffnung waere Selbstfreigabe; eine Oeffnung ohne Messung waere blind. Beides ist ausgeschlossen.",
+   "checks": [
+    {
+     "id": "TRANSITION_MATRIX",
+     "label": "Uebergangsmatrix",
+     "asks": "Welche Zustandsuebergaenge kommen zwischen aufeinanderfolgenden Beobachtungen tatsaechlich vor, und wie oft?",
+     "passWhen": "Jeder pfadabhaengige Zustand wird mindestens einmal aus einem gueltigen Vorzustand erreicht, und es tritt kein Uebergang auf, den die Kaskade nicht erzeugen kann.",
+     "state": "NOT_EVALUABLE"
+    },
+    {
+     "id": "STATE_PERSISTENCE",
+     "label": "Zustandsdauer",
+     "asks": "Wie lange bleibt ein Zustand bestehen, bevor er wechselt?",
+     "passWhen": "Die mediane Lauflaenge jedes pfadabhaengigen Zustands betraegt mindestens zwei Beobachtungen. Ein Zustand, der im Mittel eine Beobachtung haelt, beschreibt Rauschen und keinen Verlauf.",
+     "state": "NOT_EVALUABLE"
+    },
+    {
+     "id": "REVERSAL_BEHAVIOUR",
+     "label": "Rueckschlagverhalten",
+     "asks": "Wie oft springt ein Titel unmittelbar in den vorherigen Zustand zurueck?",
+     "passWhen": "Weniger als ein Fuenftel aller Uebergaenge sind sofortige Rueckspruenge (A nach B nach A innerhalb von drei Beobachtungen).",
+     "state": "NOT_EVALUABLE"
+    },
+    {
+     "id": "INVALIDATION_BEHAVIOUR",
+     "label": "Invalidationsverhalten",
+     "asks": "Tritt INVALIDATED nur ein, wenn der Schlusskurs die in der frueheren Beobachtung festgehaltene Grenze tatsaechlich unterschreitet?",
+     "passWhen": "Jeder beobachtete INVALIDATED-Fall laesst sich gegen die gespeicherte Grenze der Vorbeobachtung nachrechnen; kein Fall ohne gespeicherte Grenze.",
+     "state": "NOT_EVALUABLE"
+    },
+    {
+     "id": "EXIT_BEHAVIOUR",
+     "label": "Ausstiegsverhalten",
+     "asks": "Tritt EXIT nur ein, wenn die damals dokumentierte Zielzone tatsaechlich erreicht wurde?",
+     "passWhen": "Jeder beobachtete EXIT-Fall laesst sich gegen die gespeicherte Zielzone der Vorbeobachtung nachrechnen; kein Fall ohne gespeicherte Zone.",
+     "state": "NOT_EVALUABLE"
+    },
+    {
+     "id": "NO_RETROACTIVE_STATE_CHANGE",
+     "label": "Keine rueckwirkende Zustandsaenderung",
+     "asks": "Hat sich ein einmal veroeffentlichter Zustand nachtraeglich geaendert?",
+     "passWhen": "Jede veroeffentlichte Beobachtung stimmt mit ihrem eigenen Inhalts-Hash ueberein, und keine wurde nach ihrer Veroeffentlichung inhaltlich veraendert.",
+     "state": "NOT_EVALUABLE"
+    },
+    {
+     "id": "SUFFICIENT_OBSERVATION_DURATION",
+     "label": "Ausreichende Beobachtungsdauer",
+     "asks": "Liegt genug geordnete Historie vor, damit die Pruefungen oben etwas aussagen?",
+     "passWhen": "Mindestens zwoelf geordnete Beobachtungen ueber mindestens neunzig Kalendertage.",
+     "minimumObservations": 12,
+     "minimumSpanDays": 90,
+     "state": "NOT_EVALUABLE"
+    }
+   ],
+   "report": "quant/data/product/setup-observations-v1/activation-gate.json",
+   "reportNote": "Der Bericht wird bei jeder Materialisierung neu gemessen. Er behauptet kein Bestehen: solange die Historie fehlt, steht bei jeder Pruefung NOT_EVALUABLE und nicht PASS."
+  }
+ },
+ "gateStatus": {
+  "SETUP_MAPPING_V1_APPROVED": "PASS",
+  "SNAPSHOT_STATES_ACTIVE": "PASS",
+  "PATH_DEPENDENT_STATES_ACTIVE": false,
+  "PATH_DEPENDENT_STATES_GATE": "PENDING_HISTORY",
+  "note": "Maschinenlesbar, damit kein Konsument den Zustand aus Prosa ableiten muss."
+ }
 }

@@ -65,15 +65,118 @@ jobs:
           --work-dir "$RUNNER_TEMP/canonical-history"
           --report "$RUNNER_TEMP/product-intelligence-sync.json"
 
+      # FULL-UNIVERSE RETURN-BASIS AUDIT, Schritt 1.
+      #
+      # Laeuft genau hier, weil der kanonische Barstore in diesem Moment
+      # wiederhergestellt und noch vorhanden ist. Er ist runner-privat und
+      # im Repository nicht einsehbar; ein lokaler Lauf sieht fuenf
+      # Golden-Preview-Reihen und sagt das selbst. Gelesen wird derselbe
+      # Store, den die Materialisierung ohnehin liest - keine neue
+      # Pipeline, kein neuer Anbieter.
+      - name: Return basis input audit over the canonical history
+        run: >-
+          node scripts/market/audit-return-basis.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
+      # FULL-UNIVERSE RETURN-BASIS AUDIT, Schritte 2 bis 9.
+      #
+      # Baut beide Return-Reihen ueber dasselbe Universum, vergleicht die
+      # Momentumraenge, misst Dividenden- und Sektorschieflage und
+      # simuliert die Strategiewirkung neben der Produktion. Entscheidet
+      # nichts: QUANT_V2_MOMENTUM_RETURN_BASIS bleibt
+      # PENDING_METHOD_DECISION.
+      - name: Return basis study over the canonical history
+        run: >-
+          node --max-old-space-size=6144 scripts/market/study-return-basis-universe.mjs
+          --work-dir "$RUNNER_TEMP/canonical-history"
+
+      # Schritt 10: das Dokument. Es wird gerendert, nicht geschrieben -
+      # und es entsteht gar nicht erst, wenn der kanonische Bestand
+      # gefehlt hat, damit nie ein Papier mit der Ueberschrift
+      # "ueber das Produktuniversum" auf fuenf Titeln steht.
+      - name: Render the return basis study document
+        run: node scripts/quant/render-return-basis-study.mjs
+
       - name: Materialize Technical, Signals and Elliott Product Data
         run: >-
           node scripts/technical/materialize-product-intelligence.mjs
           --work-dir "$RUNNER_TEMP/canonical-history"
 
+      # Factor Evidence reads the bundles that were just written, plus the
+      # existing SEC consumer fundamentals and the SIC peer taxonomy. It
+      # calls no provider and needs no history beyond what is already here.
+      - name: Materialize broad Factor Evidence and Change Product Data
+        run: node --max-old-space-size=4096 scripts/quant/build-factor-evidence.mjs
+
+      # Punkt 9 der Owner-Entscheidung: nach der Materialisierung messen,
+      # was die Umstellung wirklich geaendert hat. Liest zwei
+      # veroeffentlichte Beobachtungen und rechnet nichts neu. Vor der
+      # ersten 2.0.0-Beobachtung sagt es das und bricht nicht ab.
+      - name: Measure what the methodology change actually changed
+        run: node scripts/quant/measure-methodology-change.mjs
+
+      # The Setup observation is a projection over the bundles written above.
+      # It recomputes nothing and appends one immutable observation per
+      # cutoff; the path-dependent states open only once that history is
+      # ordered and the mapping is approved.
+      - name: Materialize broad Setup Observations
+        run: node scripts/quant/build-setup-observations.mjs
+
+      # Pattern Research liest ausschliesslich die kanonischen Wochenreihen
+      # aus quant/data/market/discover-series-long, die der Discovery-Workstream
+      # bereits veroeffentlicht. Es wird nichts daran geschrieben, kein Provider
+      # angefragt und keine Historie geholt - die Reihen liegen im Repository.
+      - name: Materialize Pattern Research study
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
+
+      # Die zweite Hypothesenfamilie: dieselbe Maschinerie, aber die Frage
+      # nach dem Unternehmen statt nach dem Chart. Liest die bestehenden
+      # SEC-Consumer-Bundles zeitpunktgenau nach Einreichungsdatum.
+      - name: Materialize Pattern Research fundamental overlay
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-research-fundamentals.mjs
+
+      # VU Pattern Match projiziert die beiden Studien auf je einen Titel:
+      # welche vorregistrierten Muster er heute erfuellt. Liest die soeben
+      # geschriebenen Studien und die kanonischen Wochenreihen.
+      - name: Materialize VU Pattern Match
+        run: node --max-old-space-size=6144 scripts/quant/build-pattern-match.mjs
+
+      # Dieselben Profile, andersherum gelesen. Der Materializer rechnet
+      # jedes Praedikat ueber die Query-Engine nach und schreibt keine
+      # Liste, die nicht seine Antwort ist.
+      - name: Materialize Strategy Screening Index
+        run: node scripts/quant/build-strategy-index.mjs
+
+      # Beschreibt die Breite des gemessenen Marktes an einem Stichtag und
+      # haengt die Beobachtung an die unveraenderliche Reihe an. Uebergaenge
+      # bleiben hinter ihrem eigenen Gate.
+      - name: Materialize Market Regime
+        run: node scripts/quant/build-market-regime.mjs
+
+      # DIE REISE, VON DER SEITE DES LESERS GEZAEHLT.
+      #
+      # "Die Stock-Intelligence-Reise ist gebaut" laesst sich nicht pruefen.
+      # Diese Messung zaehlt je Station, wie viele Titel eine Antwort
+      # bekommen, wie viele ein ausdrueckliches Nein (auch das ist eine
+      # Antwort) und wie viele einen Grund statt einer Zahl - gelesen ueber
+      # dieselben Dienste, die die Oberflaeche aufruft. Laeuft hier, weil
+      # genau jetzt alle Artefakte der Reise frisch geschrieben sind.
+      - name: Measure the Stock Intelligence journey
+        run: node scripts/vu2/measure-journey.mjs --sample 500
+
       - name: Contract and regression tests
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs quant/tests/technical-unavailability.test.mjs quant/tests/journey-coverage.test.mjs quant/tests/market-calendar.test.mjs quant/tests/assignment-change.test.mjs quant/tests/observation-extension.test.mjs quant/tests/analysis-lag.test.mjs quant/tests/regime-observation-immutability.test.mjs quant/tests/pattern-unavailability.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
+
+      # CRITICAL_PRODUCT_GAPS = 0 ist ein Ziel. In einem Dokument behauptet
+      # ist es nichts wert; hier wird es gegen die tatsaechlich
+      # veroeffentlichten Artefakte gemessen und bricht den Lauf ab,
+      # solange eine kritische Luecke steht. Jede BLOCKED-Zeile misst
+      # ihren eigenen Blocker nach, damit sie nicht zu einem vagen
+      # "noch nicht" verrottet.
+      - name: Product completeness
+        run: node scripts/quant/assert-product-completeness.mjs
 
       - name: Public data hygiene
         run: node scripts/market/assert-public-data-hygiene.mjs
@@ -82,10 +185,18 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/product/technical-signals-v1
+          # The snapshot history is append-only; the materializer refuses to
+          # rewrite a published date, so this only ever adds a new file.
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
-          git commit -m "Materialize Technical, Signals and Elliott Product Data"
+          node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
+          node -e 'const s=require("./quant/data/product/setup-observations-v1/summary.json"); console.log(s.stateCounts); console.log(s.pathTier); console.log(s.observationHistory)'
+          node -e 'const g=require("./quant/data/product/setup-observations-v1/activation-gate.json"); console.log({contractState:g.contractState,measured:g.measuredReadiness,active:g.active}); console.log(g.checks.map(c=>c.id+"="+c.state).join(" "))'
+          node -e 'const p=require("./quant/data/product/setup-observations-v1/screen-parity.json"); if(!p.parity)process.exit(1); console.log("Zustandsindex deckungsgleich mit der Kaskade:"); for(const r of p.rules)console.log("  "+r.ruleId+" Praedikat "+r.predicateMatched+" -> zugeordnet "+r.assigned+" (vorrangig belegt "+r.claimedByHigherPriority+")")'
+          node -e 'const s=require("./quant/data/product/pattern-research-v1/study.json"); console.log({series:s.population.seriesUsed,observations:s.population.observations,baseRate:s.primary.baseRate,hypotheses:s.primary.hypotheses}); console.log(s.findings.reduce((a,f)=>((a[f.verdict]=(a[f.verdict]||0)+1),a),{}))'
+          node -e 'const s=require("./quant/data/product/pattern-research-fundamentals-v1/study.json"); console.log({observations:s.population.observations,baseRate:s.primary.baseRate,hypotheses:s.primary.hypotheses}); console.log(s.findings.reduce((a,f)=>((a[f.verdict]=(a[f.verdict]||0)+1),a),{}))'
+          git commit -m "Materialize Technical, Signals, Elliott, Factor Evidence, Setup Observation and Pattern Research Product Data"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
       - name: Retain metadata evidence only
@@ -97,5 +208,17 @@ jobs:
             ${{ runner.temp }}/product-intelligence-preflight.json
             ${{ runner.temp }}/product-intelligence-sync.json
             quant/data/product/technical-signals-v1/summary.json
+            quant/data/product/factor-evidence-v1/summary.json
+            quant/data/product/factor-evidence-history/index.json
+            quant/data/product/setup-observations-v1/summary.json
+            quant/data/product/setup-observation-history/index.json
+            quant/data/product/setup-observations-v1/activation-gate.json
+            quant/data/product/setup-observations-v1/screen-parity.json
+            quant/data/product/pattern-research-v1/study.json
+            quant/data/product/pattern-research-fundamentals-v1/study.json
+            quant/data/product/pattern-match-v1/summary.json
+            quant/data/providers/return-basis-input-audit.json
+            quant/data/providers/return-basis-universe-study.json
+            quant/data/product/methodology-change-v1.json
           if-no-files-found: warn
           retention-days: 30

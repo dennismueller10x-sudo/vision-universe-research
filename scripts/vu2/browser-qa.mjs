@@ -33,7 +33,7 @@ async function auditAccessibility(page,view,width){
  await writeFile(out+'/accessibility.json',JSON.stringify({scope:'Automated WCAG 2.1 A/AA checks; not a manual accessibility certification',results:accessibility},null,2));
 }
 try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.addInitScript(time=>{const NativeDate=Date,fixed=NativeDate.parse(time);globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}};},staleClock.toISOString());const errors=[];page.on('pageerror',e=>errors.push(e.message));
- for(const view of ['home','stock','technical','elliott','quant','fundamentals','discover','research','markets','screener','compare','strategies','signals','radar','portfolio','watchlist','atlas']){
+ for(const view of ['home','stock','technical','elliott','quant','explain','fundamentals','discover','research','markets','screener','compare','strategies','signals','radar','portfolio','watchlist','atlas']){
  const started=performance.now();await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
  const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
  const budget=assessResourceBudget(view,resources);if(budget)resourceBudgets.push({...budget,width});
@@ -46,7 +46,83 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  }
  if(view==='stock'){await page.locator('.market-freshness').waitFor();if(await page.locator('[data-stock-family]').count()!==4||await page.locator('.stock-evidence-metric').count()!==8)throw Error('stock business evidence missing');await page.locator('[data-stock-family=quality]').getByText(pct(nvda.fundamentals.operatingMargin),{exact:true}).waitFor();await page.locator('[data-stock-family=growth]').getByText(pct(nvda.fundamentals.revenueGrowth),{exact:true}).waitFor();await page.locator('[data-stock-family=risk]').getByText(pct(nvda.fundamentals.volatility),{exact:true}).waitFor();await page.getByText('Warum ist das relevant?',{exact:true}).first().click();await page.getByRole('heading',{name:'Technical Intelligence',exact:true}).waitFor();await page.getByRole('heading',{name:trendLabel,exact:true}).waitFor();await page.getByRole('button',{name:'Max',exact:true}).click();if(await page.locator('.focus .q-chart').count()!==1)throw Error('MAX chart missing');await page.getByRole('button',{name:'1J',exact:true}).click();}
  if(view==='technical'||view==='elliott'){await page.locator('.technical-chart-host svg').waitFor();await page.getByRole('combobox',{name:'Chart-Zeitraum',exact:true}).selectOption('MAX');await page.getByRole('checkbox',{name:'Alternativen im Chart'}).check();const labels=page.getByRole('checkbox',{name:'Chart-Beschriftungen'});await labels.check();if(!await page.locator('.technical-chart-host .ann-label:not(.ann-now-label)').count())throw Error('chart labels missing');if(width===390)await labels.uncheck();await page.getByRole('heading',{name:'Szenarien & Invalidation',exact:true}).waitFor();await page.getByRole('heading',{name:'Alternative Zählung',exact:true}).waitFor();await page.getByText('Vollständige Zählung & Regeln',{exact:true}).first().click();if(await page.locator('.wave-count').first().locator('tbody tr').count()<40)throw Error('wave count truncated');await page.getByText('Vollständige Zählung & Regeln',{exact:true}).first().click();await page.getByRole('combobox',{name:'Chart-Zeitraum',exact:true}).selectOption('1Y');}
- if(view==='quant'){if(await page.locator('.factor-section').count()!==5||await page.locator('.factor-metric').count()!==18)throw Error('quant evidence missing');await page.getByText('Definition & Datenstand',{exact:true}).first().click();await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('JPM');await page.locator('main footer').waitFor();await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('NVDA');await page.locator('main footer').waitFor();await page.getByText('Definition & Datenstand',{exact:true}).first().click();await page.getByText('Anteil des operativen Gewinns am Umsatz der letzten vier vollständigen Berichtsperioden.',{exact:true}).waitFor();}
+ if(view==='quant'){
+  // Factor DNA is the canonical seven, always in the same order, and a
+  // composite score must stay absent while Quant V2 is not active.
+  if(await page.locator('.dna-row').count()!==7)throw Error('factor DNA incomplete');
+  const factorLabels=await page.locator('.dna-row .dna-label').allTextContents();
+  if(factorLabels.join('|')!=='Qualität|Wachstum|Kursstärke|Bewertung|Profitabilität|Erwartungstrend|Risiko')throw Error('factor order drifted: '+factorLabels.join('|'));
+  await page.getByText('Kein Gesamtscore veröffentlicht',{exact:true}).waitFor();
+  await page.getByText('Erwartungstrend',{exact:true}).first().waitFor();
+  // Meaning is closed until asked for; the evidence must open on demand.
+  const first=page.locator('.dna-row').first();
+  if(await first.locator('.dna-detail').isVisible())throw Error('factor evidence not progressively disclosed');
+  await first.locator('.dna-head').click();
+  await first.locator('.dna-detail').waitFor();
+  if(!await first.locator('.dna-component').count())throw Error('factor components missing');
+  await first.locator('.dna-head').click();
+  await page.getByRole('heading',{name:'Was verändert sich gerade?',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Entsteht gerade eine Situation?',exact:true}).waitFor();
+  await page.getByText('Es wird kein Setup-Zustand behauptet',{exact:true}).waitFor();
+  if(!await page.locator('.setup-conditions li').count())throw Error('observable conditions missing');
+  // Strategy Match reads Quant V2 evidence only, counts conditions and
+  // claims no historical result.
+  await page.getByRole('heading',{name:'Zu welchem Anlagestil passt dieser Titel?',exact:true}).waitFor();
+  if(await page.locator('.match-card').count()!==8)throw Error('strategy profiles incomplete');
+  await page.getByText(/Historische Evidenz: nicht verfügbar/).first().waitFor();
+  if(await page.getByText(/Quant V1/).count())throw Error('Quant V1 must not appear in a Quant V2 match');
+  // The rule that explains a profile also selects with it (section 20).
+  if(await page.getByRole('link',{name:'Alle Titel mit diesem Profil zeigen'}).count()!==8)throw Error('profile screen links missing');
+  // Option C: Kursstaerke und Anlegerrendite stehen nebeneinander, und
+  // zwar mit ZWEI verschiedenen Zahlen. Eine Oberflaeche, die beide
+  // Begriffe zeigt und darunter denselben Wert schreibt, hat die
+  // Trennung nicht umgesetzt, sondern nur beschriftet.
+  await page.getByRole('heading',{name:'Warum unterscheiden sich Kursstärke und Anlegerrendite?',exact:true}).waitFor();
+  const returnRows=page.locator('.return-kind-grid .row:not(.eyebrow)');
+  if(await returnRows.count()<2)throw Error('Kursstärke/Anlegerrendite: zu wenige Zeiträume');
+  const kopf=await page.locator('.return-kind-grid .row.eyebrow span').allTextContents();
+  if(kopf.join('|')!=='Zeitraum|Kursstärke|Anlegerrendite')throw Error('return kind header drifted: '+kopf.join('|'));
+  const erste=await returnRows.first().locator('span').allTextContents();
+  if(erste[1]===erste[2])throw Error('Kursstärke und Anlegerrendite zeigen denselben Wert: '+erste.join('|'));
+  // Und kein Fachwort in der primaeren Oberflaeche.
+  const rohtext=await page.locator('.return-kind-section').innerText();
+  for(const wort of ['adjustedClose','split adjusted','total return','TOTAL_RETURN','SPLIT_ADJUSTED'])
+   if(rohtext.includes(wort))throw Error('technischer Begriff in der Oberfläche: '+wort);
+  await page.getByRole('heading',{name:'Worauf diese Analyse beruht',exact:true}).waitFor();
+  // A bank keeps its closed industry factors instead of inventing them.
+  await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('JPM');await page.locator('main footer').waitFor();
+  if(await page.locator('.dna-row').count()!==7)throw Error('factor DNA incomplete for JPM');
+  await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('NVDA');await page.locator('main footer').waitFor();
+ }
+ if(view==='explain'){
+  await page.getByRole('heading',{name:'Was ist Quant?',exact:true}).waitFor();
+  await page.getByText('Quant bedeutet: Aktien werden nach festen Daten und klaren Regeln analysiert — statt nach Bauchgefühl.',{exact:true}).waitFor();
+  if(await page.locator('.explain-factor').count()!==7)throw Error('beginner factor explanation incomplete');
+  await page.getByText('Keine Kursprognose und kein Kursziel.',{exact:true}).waitFor();
+ }
+ if(view==='screener'){
+  // The two methodologies must be separately selectable, and switching
+  // must not carry rules across: a rule means something else over there.
+  const methodology=page.getByRole('combobox',{name:'Methodik',exact:true});
+  await methodology.waitFor();
+  if(await methodology.locator('option').count()!==2)throw Error('screener methodologies missing');
+  if(!await page.locator('a.row').count())throw Error('legacy screen returned nothing');
+  await methodology.selectOption('quantV2Evidence');
+  await page.getByRole('heading',{name:'Methodik gewechselt',exact:true}).waitFor();
+  const fieldNames=await page.locator('.rule select').first().locator('option').allTextContents();
+  if(fieldNames.some(name=>!name.startsWith('Quant V2')))throw Error('legacy field offered under the Quant V2 methodology');
+  await page.getByRole('button',{name:'Anwenden',exact:true}).click();
+  await page.getByText(/Quant V2 · Factor Evidence · kein Gesamtmarkt-Ranking/).waitFor();
+  if(!await page.locator('a.row').count())throw Error('Quant V2 screen returned nothing');
+  // A strategy profile loads its own rule into the editor, and it is the
+  // same rule: same filter count, and it selects.
+  const profileSelect=page.getByRole('combobox',{name:'Strategie-Profil',exact:true});
+  await profileSelect.selectOption('quality-momentum');
+  await page.waitForFunction(()=>document.querySelectorAll('.rule').length===3);
+  if(await page.locator('.screener-method select').first().inputValue()!=='quantV2Evidence')throw Error('profile did not carry its methodology');
+  await page.waitForFunction(()=>document.querySelectorAll('a.row').length>0);
+  await page.goto(origin+'/vu2/?view=screener');await page.locator('main footer').waitFor();
+ }
  if(view==='strategies'){await page.getByText(/6\.875 kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung/).waitFor();const query=await page.evaluate(()=>VUScreenerWorkspace.build([{field:'momentum6m',operator:'gte',value:10,scale:'raw'},{field:'revenueGrowth',operator:'gte',value:20,scale:'raw'}]));await page.goto(origin+'/vu2/?view=strategies&query='+encodeURIComponent(JSON.stringify(query)));await page.locator('main footer').waitFor();if(await page.locator('.strategy-rules p').count()!==2)throw Error('strategy rules lost');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 1 gespeichert',exact:true}).waitFor();await page.locator('#strategy-slippage').fill('10');await page.locator('#strategy-reason').fill('Konservativere Ausführung');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 2 gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('#strategy-slippage').inputValue()!=='10')throw Error('strategy version not restored');await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Aktuelle Kriterien-Auswahl',exact:true}).waitFor();if(await page.locator('a.row').count()!==1)throw Error('strategy filter mismatch');await page.route('**/quant/data/market/factors/factors-FULL_UNIVERSE.json',route=>route.abort());await page.reload();await page.locator('main footer').waitFor();await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Auswahl noch nicht auswertbar',exact:true}).waitFor();if(await page.locator('a.row').count())throw Error('unavailable strategy source rendered as selection');await page.unroute('**/quant/data/market/factors/factors-FULL_UNIVERSE.json');await page.reload();await page.locator('main footer').waitFor();}
  if(view==='portfolio'){await page.getByRole('heading',{name:'Noch keine Positionen',exact:true}).waitFor();await page.getByRole('textbox',{name:'Position Ticker'}).fill('NVDA');await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('10');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.getByRole('button',{name:'Bestände speichern',exact:true}).click();await page.getByRole('heading',{name:'Bestände gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('.holding').count()!==1)throw Error('holdings not restored');await page.getByRole('textbox',{name:'Position Ticker'}).fill('TSLA');await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('1');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.locator('.portfolio-total .quote').getByText('Nicht verfügbar',{exact:true}).waitFor();await page.getByRole('button',{name:'TSLA entfernen',exact:true}).click();await page.getByRole('button',{name:'Bearbeiten',exact:true}).click();await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('12');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.getByRole('button',{name:'Bestände speichern',exact:true}).click();await page.reload();await page.locator('main footer').waitFor();await page.locator('.portfolio-total .quote').getByText((12*nvda.fundamentals.price).toLocaleString('de-DE',{style:'currency',currency:'USD',maximumFractionDigits:2}),{exact:true}).waitFor();}
  if(view==='signals'){if(productIntelligence){if(defaultSignals?.lookback!==20||defaultSignals?.counts?.requested!==productIntelligence.counts.productUniverse)throw Error('default signals artifact does not match product universe');await page.getByText(defaultSignals.counts.available+' von '+defaultSignals.counts.requested+' Unternehmen contract-konform geprüft',{exact:false}).waitFor();if(await page.locator('.signal-event').count()>200)throw Error('broad signals rendered an unbounded event list');const company=page.getByRole('combobox',{name:'Signals Unternehmen'}),ticker=await company.locator('option').nth(1).getAttribute('value');if(!ticker)throw Error('broad signals contain no evidenced company');await company.selectOption(ticker);if(!await page.locator('.signal-event').count())throw Error('broad signal company filter failed');}else{await page.getByRole('heading',{name:'Keine belegten Wechsel in diesem Ausschnitt',exact:true}).waitFor();await page.getByRole('combobox',{name:'Signal-Zeitraum'}).selectOption('60');await page.locator('main footer').waitFor();if(await page.locator('.signal-event').count()!==4)throw Error('historical transitions missing');await page.getByRole('combobox',{name:'Signals Unternehmen'}).selectOption('MSFT');if(await page.locator('.signal-event').count()!==2)throw Error('signal company filter failed');}await page.getByText('Warum wurde der Wechsel erkannt?',{exact:true}).first().click();await page.getByRole('link',{name:'Regel im Screener untersuchen',exact:true}).first().click();await page.locator('main footer').waitFor();if(!['momentum6m','priceTo200dma'].includes(await page.getByRole('combobox',{name:'Kennzahl'}).inputValue()))throw Error('signal rule handoff lost');await page.goto(origin+'/vu2/?view=signals&window=60');await page.locator('main footer').waitFor();}
@@ -69,6 +145,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('heading',{name:'Wen möchtest du beobachten?',exact:true}).waitFor();
   for(const ticker of ['NVDA','TSLA']){await page.getByRole('textbox',{name:'Watchlist Ticker'}).fill(ticker);await page.getByRole('button',{name:'Titel hinzufügen',exact:true}).click();}
   await page.waitForFunction(()=>document.querySelectorAll('.watchlist-member').length===2);if(await page.getByRole('heading',{name:'Analyse noch nicht verfügbar',exact:true}).count())throw Error('canonical watchlist member remained five-scope gated');
+  // Quant V2 evidence travels with the list: all seven factors per member,
+  // a factor without a value stays visibly empty rather than disappearing.
+  await page.waitForFunction(()=>document.querySelectorAll('.factor-strip').length===2);
+  if(await page.locator('.factor-strip').first().locator('.strip-cell').count()!==7)throw Error('watchlist factor strip incomplete');
+  await page.getByText(/von 7 bewertet/).first().waitFor();
+  if(await page.getByRole('link',{name:'Quant-Analyse'}).count()!==2)throw Error('watchlist quant links missing');
   await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('.watchlist-member').count()!==2)throw Error('watchlist selection not preserved');
   await page.getByRole('button',{name:'TSLA aus Watchlist entfernen',exact:true}).click();await page.getByRole('button',{name:'Watchlist speichern',exact:true}).click();
   await page.getByRole('link',{name:'Historische Änderungen',exact:true}).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Signals Unternehmen'}).inputValue()!=='NVDA')throw Error('watchlist signal context lost');

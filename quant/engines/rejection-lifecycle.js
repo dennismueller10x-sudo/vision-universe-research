@@ -129,6 +129,31 @@
       return ergebnis("STALE_REJECT", true, alter, codes, "ohne lesbaren Zeitpunkt", 0);
     }
 
+    /* EINE ABLEHNUNG IST EIN BEFUND UNTER EINER REGEL - NICHT UEBER SIE
+       HINAUS.
+
+       Der Fall, der das erzwungen hat: SPY wurde am 24.09.2026 um 13:47
+       abgelehnt, weil ein gemischtes Bereinigungsfenster die Total-Return-
+       Semantik widerlegte. Beides ist seither geaendert - das Fenster ist
+       reparariert, und eine widerlegte Gesamtrendite sperrt nicht mehr die
+       splitbereinigte Reihe. Der Eintrag im Register wusste davon nichts
+       und haette den Titel weitere 20 Stunden altern lassen.
+
+       Die Ruhefrist schuetzt das Kontingent vor WIEDERHOLTEN Anfragen
+       unter derselben Regel. Aendert sich die Regel, ist die Anfrage keine
+       Wiederholung mehr, und der alte Befund sagt nichts ueber das neue
+       Urteil. Deshalb wird er faellig - nicht geloescht: die Historie
+       bleibt, nur die Sperre nicht. */
+    if (opts.rule && eintrag && eintrag.rule && eintrag.rule !== opts.rule) {
+      return ergebnis("STALE_REJECT", true, alter, codes,
+                      "unter einer anderen Entscheidungsregel abgelehnt (" + eintrag.rule +
+                      ", jetzt " + opts.rule + ")", 0);
+    }
+    if (opts.rule && eintrag && !eintrag.rule) {
+      return ergebnis("STALE_REJECT", true, alter, codes,
+                      "ohne Entscheidungsregel abgelehnt, jetzt gilt " + opts.rule, 0);
+    }
+
     if (istFenster(codes, eintrag)) {
       return ergebnis("TEMPORARY_REJECT", alter >= FRISTEN.windowArtifact, alter, codes,
                       "Fensterartefakt: beschreibt den Abruf, nicht den Titel", FRISTEN.windowArtifact);
@@ -205,9 +230,17 @@
   function fortschreiben(vorher, neu) {
     var alteCodes = codesVon(vorher).join(",");
     var neueCodes = codesVon(neu).join(",");
-    var bestaetigungen = (vorher && alteCodes === neueCodes && alteCodes)
+    /* Eine Bestaetigung ist dieselbe Ursache unter derselben Regel. Nach
+       einer Regelaenderung faengt die Zaehlung von vorn an - sonst waechst
+       die Ruhefrist auf Befunden weiter, die eine andere Regel erzeugt hat. */
+    var gleicheRegel = !vorher || (vorher.rule || null) === (neu.rule || null);
+    var bestaetigungen = (vorher && alteCodes === neueCodes && alteCodes && gleicheRegel)
       ? ((vorher.confirmations || 1) + 1) : 1;
     return { at: neu.at, codes: neueCodes, window: neu.window || null,
+             /* Unter welcher Entscheidungsregel abgelehnt wurde. Ohne diese
+                Angabe ueberlebt eine Sperre die Regel, die sie begruendet
+                hat. */
+             rule: neu.rule || null,
              confirmations: bestaetigungen,
              firstAt: (vorher && alteCodes === neueCodes && vorher.firstAt) || (vorher && alteCodes === neueCodes ? vorher.at : neu.at) };
   }

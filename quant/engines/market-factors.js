@@ -45,8 +45,19 @@
   var SMA_PERIODS = [20, 50, 100, 200];
   var YEAR_WINDOW = 252;
 
+  /* Wie viele Handelstage darf die Vergleichsreihe hinter dem Titel
+     liegen, bevor ein Vorsprung gegen sie nichts mehr aussagt? Einer -
+     der Titel kann an einem Tag handeln, an dem der Index es nicht tut,
+     aber mehr ist Veralterung und keine Kalenderfrage. Die Zahl steht
+     hier als benannte Konstante, damit eine Lockerung im Diff sichtbar
+     wird. */
+  var MAX_BENCHMARK_LAG_SESSIONS = 1;
+
   var STATUS = {
     CALCULATED: "CALCULATED",
+    /* Die Vergleichsreihe ist zu alt. Kein fehlender Wert, kein zu
+       kurzer Verlauf - eine Aussage ueber den Benchmark. */
+    BENCHMARK_STALE: "BENCHMARK_STALE",
     INSUFFICIENT_HISTORY: "INSUFFICIENT_HISTORY",
     SOURCE_MISSING: "SOURCE_MISSING",
     NOT_APPLICABLE: "NOT_APPLICABLE"
@@ -68,14 +79,172 @@
    * falsche Zahl. Liegt keine belastbare bereinigte Spalte vor, wird auf
    * der rohen gerechnet - und der Basiswert steht im Ergebnis.
    */
-  function priceBasis(bars, adjustmentStatus) {
+  var Semantics = (typeof module !== "undefined" && module.exports)
+    ? require("./return-semantics.js")
+    : (typeof global !== "undefined" ? global.VUReturnSemantics : null);
+  var Series = (typeof module !== "undefined" && module.exports)
+    ? require("./return-series.js")
+    : (typeof global !== "undefined" ? global.VUReturnSeries : null);
+
+  function priceBasis(bars, adjustmentStatus, moduleId) {
+    var hatSpalte = bars.some(function (b) {
+      return b && isNum(b.adjustedClose) && b.adjustedClose > 0;
+    });
+
+    /* SEIT DEM RETURN-SEMANTICS-VERTRAG entscheidet nicht mehr die beste
+       verfuegbare Spalte, sondern das Modul.
+
+       Vorher stand hier: nimm adjustedClose, sobald die Stufe belastbar
+       ist - und "belastbar" umfasste 'adjusted' (Gesamtrendite) genauso
+       wie 'splitAdjusted'. Solange der Anbieter splitAdjusted meldet,
+       faellt das nicht auf. Wird die Stufe auf 'adjusted' gehoben, kippen
+       Technical, Setup und Momentum still auf Gesamtrendite, ohne dass
+       eine Zeile Code sich aendert und ohne dass eine veroeffentlichte
+       Zahl es ansagt. Genau das schliesst der Vertrag aus.
+
+       Ohne moduleId bleibt das alte Verhalten erhalten, damit bestehende
+       Aufrufer nicht stillschweigend etwas anderes rechnen - wer die
+       Trennung will, nennt sein Modul. */
+    if (moduleId && Semantics) {
+      var resolved = Semantics.resolveColumn(moduleId, adjustmentStatus, hatSpalte);
+      if (!resolved.ok) {
+        var fehler = new Error("return basis refused for '" + moduleId + "': " + resolved.reason);
+        fehler.reason = resolved.reason;
+        fehler.wanted = resolved.basis;
+        fehler.served = resolved.served || null;
+        throw fehler;
+      }
+      return resolved.column;
+    }
+
     var stufe = String(adjustmentStatus || "").toUpperCase();
     var belastbar = stufe === "TOTAL_RETURN" || stufe === "SPLIT_ADJUSTED" ||
                     adjustmentStatus === "adjusted" || adjustmentStatus === "splitAdjusted";
-    var hatSpalte = belastbar && bars.some(function (b) {
-      return b && isNum(b.adjustedClose) && b.adjustedClose > 0;
+    return (belastbar && hatSpalte) ? "adjustedClose" : "close";
+  }
+
+  /**
+   * DIE REIHE, AUF DER GERECHNET WIRD - nicht mehr nur die Spalte.
+   *
+   * Bis zur Owner-Entscheidung vom 2026-09-24 genuegte es, eine Spalte
+   * auszuwaehlen: der Anbieter lieferte eine bereinigte, und welche
+   * Bereinigung das war, entschied der Vertrag. Seit Option C verlangt
+   * der Momentumfaktor SPLIT_ADJUSTED_PRICE, und genau diese Reihe
+   * liefert der Anbieter nicht: adjustedClose ist gesamtrenditebereinigt.
+   *
+   * Sie ist aber konstruierbar, weil jeder kanonische Bar den Rohkurs
+   * und den Splitfaktor traegt. Also wird sie konstruiert - mit
+   * derselben Rekonstruktion, die return-series.js benutzt, und nicht
+   * mit einer zweiten.
+   *
+   * Was NICHT passiert: ein Rueckfall auf die naechstbeste Spalte. Wer
+   * die splitbereinigte Reihe verlangt und weder sie noch ihre Bausteine
+   * bekommt, bekommt einen Fehler.
+   */
+  function priceSeries(bars, adjustmentStatus, moduleId) {
+    var verlangt = null;
+    if (moduleId && Semantics) {
+      try { verlangt = Semantics.requiredBasis(moduleId); }
+      catch (e) { verlangt = null; }
+    }
+
+    if (verlangt === "SPLIT_ADJUSTED_PRICE") {
+      var stufe = String(adjustmentStatus || "");
+      var schonSplitbereinigt = stufe === "splitAdjusted" || stufe.toUpperCase() === "SPLIT_ADJUSTED";
+      var hatSpalte = bars.some(function (b) { return b && isNum(b.adjustedClose) && b.adjustedClose > 0; });
+      /* Die eine Stufe, bei der die bereinigte Spalte NICHT genommen
+         werden darf, obwohl sie da ist: 'splitAdjustedReconstructible'
+         heisst, dass die Konsistenzpruefung genau diese Spalte widerlegt
+         hat (siehe price-semantics.fallbackDeclaration). Sie liegt vor -
+         sie traegt nur nicht, was sie behauptet. Rekonstruiert wird
+         deshalb immer, und ohne diese Zeile waere der Rueckfall auf die
+         widerlegte Spalte still. */
+      var spalteWiderlegt = stufe === "splitAdjustedReconstructible";
+      if (schonSplitbereinigt && hatSpalte && !spalteWiderlegt) {
+        /* Der Anbieter liefert bereits genau diese Reihe. */
+        return { column: "adjustedClose", source: "PROVIDER_SPLIT_ADJUSTED_COLUMN",
+                 basis: "SPLIT_ADJUSTED_PRICE",
+                 close: column(bars, "adjustedClose", "close"),
+                 high: column(bars, "adjustedHigh", "high"),
+                 low: column(bars, "adjustedLow", "low") };
+      }
+      var hatBausteine = bars.every(function (b) {
+        return b && isNum(b.close) && b.close > 0 && b.splitFactor !== null && b.splitFactor !== undefined;
+      });
+      if (!hatBausteine) {
+        var fehlt = new Error("return basis refused for '" + moduleId +
+          "': SPLIT_ADJUSTED_PRICE is neither served nor constructible");
+        fehlt.reason = "SPLIT_ADJUSTED_PRICE_NOT_CONSTRUCTIBLE";
+        fehlt.wanted = "SPLIT_ADJUSTED_PRICE";
+        fehlt.served = adjustmentStatus || null;
+        throw fehlt;
+      }
+      return { column: "close", source: "RECONSTRUCTED_FROM_SPLIT_FACTOR",
+               basis: "SPLIT_ADJUSTED_PRICE",
+               close: Series.splitAdjustedColumn(bars, "close").map(nanIfNull),
+               high: Series.splitAdjustedColumn(bars, "high").map(nanIfNull),
+               low: Series.splitAdjustedColumn(bars, "low").map(nanIfNull) };
+    }
+
+    /* Alles andere wie bisher: der Vertrag waehlt die Spalte, und ohne
+       Modul bleibt das alte Verhalten unveraendert. */
+    var spalte = priceBasis(bars, adjustmentStatus, moduleId);
+    return { column: spalte, source: "PROVIDER_COLUMN", basis: verlangt,
+             close: column(bars, spalte, spalte === "adjustedClose" ? "close" : null),
+             high: column(bars, spalte === "adjustedClose" ? "adjustedHigh" : "high", "high"),
+             low: column(bars, spalte === "adjustedClose" ? "adjustedLow" : "low", "low") };
+  }
+
+  function nanIfNull(v) { return isNum(v) ? v : NaN; }
+
+  /**
+   * DIE ANLEGERRENDITE - Option C, die andere Haelfte.
+   *
+   * Beantwortet: "Was haette ein Anleger inklusive Ausschuettungen
+   * tatsaechlich verdient?" Das ist eine andere Frage als "Wie stark
+   * bewegt sich der Kurs?", und seit der Owner-Entscheidung vom
+   * 2026-09-24 bekommt sie ihre eigene Zahl statt in den Momentumfaktor
+   * hineingerechnet zu werden.
+   *
+   * Bewusst KEIN Faktor und kein Faktoreingang: wuerde dieser Wert in
+   * die Momentumnote eingehen, waere die Trennung wieder aufgehoben -
+   * und niemand saehe es, weil der Faktor gleich hiesse.
+   */
+  function investorReturn(bars, adjustmentStatus, asOfIndex) {
+    var leer = { state: "UNAVAILABLE", reason: "TOTAL_RETURN_SERIES_UNAVAILABLE",
+                 basis: "TOTAL_RETURN", returns: {}, return12M1M: null };
+    if (!bars || !bars.length) return leer;
+    var serie;
+    try { serie = priceSeries(bars, adjustmentStatus, "investorReturnEvidence"); }
+    catch (e) { return leer; }
+    if (serie.column !== "adjustedClose") return leer;
+
+    var close = serie.close;
+    var n = close.length;
+    var i = asOfIndex === undefined ? n - 1 : asOfIndex;
+    if (i < 0 || i >= n) i = n - 1;
+
+    var out = { state: "AVAILABLE", reason: null, basis: "TOTAL_RETURN",
+                priceSource: serie.source, returns: {}, return12M1M: null,
+                fieldStatus: {} };
+    Object.keys(HORIZONS).forEach(function (h) {
+      var w = HORIZONS[h];
+      if (i - w < 0 || !isNum(close[i]) || !isNum(close[i - w]) || close[i - w] <= 0) {
+        out.returns[h] = null;
+        out.fieldStatus["returns." + h] = STATUS.INSUFFICIENT_HISTORY;
+        return;
+      }
+      out.returns[h] = round(close[i] / close[i - w] - 1, 6);
+      out.fieldStatus["returns." + h] = STATUS.CALCULATED;
     });
-    return hatSpalte ? "adjustedClose" : "close";
+    if (i - YEAR_WINDOW >= 0 && isNum(close[i - 21]) && isNum(close[i - YEAR_WINDOW]) &&
+        close[i - YEAR_WINDOW] > 0) {
+      out.return12M1M = round(close[i - 21] / close[i - YEAR_WINDOW] - 1, 6);
+      out.fieldStatus.return12M1M = STATUS.CALCULATED;
+    } else {
+      out.fieldStatus.return12M1M = STATUS.INSUFFICIENT_HISTORY;
+    }
+    return out;
   }
 
   function column(bars, field, fallbackField) {
@@ -113,10 +282,12 @@
       };
     }
 
-    var basis = priceBasis(bars, payload.adjustmentStatus);
-    var close = column(bars, basis, basis === "adjustedClose" ? "close" : null);
-    var high = column(bars, basis === "adjustedClose" ? "adjustedHigh" : "high", "high");
-    var low = column(bars, basis === "adjustedClose" ? "adjustedLow" : "low", "low");
+    /* opts.module bindet den Return-Semantics-Vertrag an diesen Lauf.
+       Ohne ihn bleibt das alte Verhalten - ein Aufrufer, der sich nicht
+       benennt, rechnet weiter genau das, was er bisher rechnete. */
+    var serie = priceSeries(bars, payload.adjustmentStatus, opts.module);
+    var basis = serie.column;
+    var close = serie.close, high = serie.high, low = serie.low;
     var volume = bars.map(function (b) { return isNum(b.volume) ? b.volume : NaN; });
     var n = close.length;
     var i = opts.asOfIndex === undefined ? n - 1 : opts.asOfIndex;
@@ -252,6 +423,26 @@
       fieldStatus[key] = isNum(sd) ? STATUS.CALCULATED : STATUS.INSUFFICIENT_HISTORY;
     });
 
+    /* Abwaerts-Schwankungsbreite: dieselbe Log-Rendite- und
+       Wurzel-252-Konvention wie oben, aber nur die Verlusttage zaehlen.
+       Halbabweichung um null, nicht Standardabweichung der negativen
+       Teilmenge: sonst haette ein Titel mit wenigen, tiefen Verlusttagen
+       dieselbe Zahl wie einer mit vielen flachen.
+
+       Warum hier und nicht erst im Faktor: Quant V2 verlangt diese
+       Groesse als Risikokomponente. Sie an der Stelle zu rechnen, an der
+       auch volatility252d entsteht, haelt beide auf derselben Reihe und
+       derselben Konvention. */
+    if (i + 1 < YEAR_WINDOW + 1) {
+      values.downsideVolatility252d = null;
+      fieldStatus.downsideVolatility252d = STATUS.INSUFFICIENT_HISTORY;
+    } else {
+      var downside = downsideVolatility(logRet, i, YEAR_WINDOW);
+      values.downsideVolatility252d = round(downside, 6);
+      fieldStatus.downsideVolatility252d = isNum(downside)
+        ? STATUS.CALCULATED : STATUS.INSUFFICIENT_HISTORY;
+    }
+
     /* Maximaler Rueckgang ueber ein Jahr. Der Risikofaktor, der ohne
        Fundamentaldaten auskommt (§17). */
     if (i + 1 >= YEAR_WINDOW) {
@@ -326,6 +517,31 @@
       for (var bd = 0; bd < benchDates.length && benchDates[bd] <= asOfDate; bd++) benchIndex = bd;
     }
 
+    /* UND WIE ALT IST DIESER BENCHMARKTAG?
+
+       Die Regel oben nimmt den letzten Benchmarktag bis zum Stichtag des
+       Titels. Sie schuetzt vor dem einen Fehler - alter Kurs gegen
+       frischen Index - und laesst den anderen offen: frischer Kurs gegen
+       alten Index. Genau der stand hier. SPY faellt seit Tagen durch die
+       Bereinigungspruefung und altert im Arbeitsbestand; die relative
+       Staerke verglich eine Kursentwicklung bis zum 23. gegen einen Index
+       vom 17. Sechs Tage Marktbewegung landeten so im Vorsprung jedes
+       einzelnen Titels, ohne dass eine Zeile es ansagte.
+
+       Gezaehlt wird in Handelstagen des TITELS: wie viele seiner eigenen
+       Sitzungen liegen nach dem benutzten Benchmarktag? Ein Kalendertag
+       waere hier das falsche Mass - ein Wochenende ist keine
+       Veralterung. */
+    var benchmarkLagSessions = null;
+    if (bench && benchDates && asOfDate && benchIndex >= 0) {
+      benchmarkLagSessions = 0;
+      for (var lb = i; lb > 0 && bars[lb - 1] && bars[lb].date > benchDates[benchIndex]; lb--) {
+        benchmarkLagSessions += 1;
+      }
+    }
+    var benchmarkStale = benchmarkLagSessions !== null &&
+                         benchmarkLagSessions > MAX_BENCHMARK_LAG_SESSIONS;
+
     Object.keys(HORIZONS).forEach(function (h) {
       var w = HORIZONS[h];
       if (!bench) {
@@ -340,6 +556,27 @@
         fieldStatus.relativeStrength[h] = STATUS.NOT_APPLICABLE;
         return;
       }
+      /* WERT BLEIBT, STATUS SAGT DIE WAHRHEIT
+
+         Erste Fassung setzte den Wert auf null. Das war fuer den
+         Quant-Teil richtig und hat Discovery zerlegt: sein
+         leadershipScore traegt zwei Relative-Staerke-Komponenten mit
+         zusammen 0,23 Gewicht, und seine Qualifikation verlangt eine
+         Score-Abdeckung von 0,80. Ohne relative Staerke sind hoechstens
+         1 - 0,23 = 0,77 erreichbar - die Qualifikation "staerkste
+         Aktien" wird damit rechnerisch unmoeglich. Gemessen im Lauf: 29
+         von 5.923 Titeln, und ein einzelner Titel fuehrte fuenf
+         redaktionelle Reihen an.
+
+         Discovery soll unveraendert bleiben, und die Return-Basis-Regel
+         gilt fuer die Quant-Kennzahl. Beides geht, wenn die Zeile beides
+         traegt: den gerechneten Wert UND seinen Zustand. Wer den Zustand
+         liest - Quant, der Screener, die Momentumnote - haelt sich
+         daran. Wer nur den Wert liest, rechnet weiter wie bisher.
+
+         Das ist keine stille Zahl: sie steht mit BENCHMARK_STALE und dem
+         gemessenen Abstand daneben. Still waere es, den Zustand NICHT zu
+         fuehren. */
       var bi = benchIndex;
       if (bi - w < 0 || i - w < 0 || !isNum(bench[bi]) || !isNum(bench[bi - w]) ||
           !isNum(close[i]) || !isNum(close[i - w]) || bench[bi - w] <= 0 || close[i - w] <= 0) {
@@ -349,8 +586,71 @@
       }
       values.relativeStrength[h] = round(
         Math.log(close[i] / close[i - w]) - Math.log(bench[bi] / bench[bi - w]), 6);
-      fieldStatus.relativeStrength[h] = STATUS.CALCULATED;
+      /* Der Wert steht - der Zustand sagt, ob man ihm folgen darf. */
+      fieldStatus.relativeStrength[h] = benchmarkStale
+        ? STATUS.BENCHMARK_STALE : STATUS.CALCULATED;
     });
+
+    /* Relative Staerke ueber das 12-1-Fenster.
+
+       Dieselbe Definition wie oben - Differenz der Log-Renditen ueber
+       denselben Horizont -, nur ohne den letzten Monat, passend zu
+       return12M1M. Quant V2 verlangt genau dieses Fenster; die volle
+       Zwoelfmonatsreihe daneben ist eine andere Groesse und darf nicht
+       an ihrer Stelle stehen. */
+    if (!bench) {
+      values.relativeStrength12M1M = null;
+      fieldStatus.relativeStrength12M1M = STATUS.SOURCE_MISSING;
+    } else if (benchIndex < 0) {
+      values.relativeStrength12M1M = null;
+      fieldStatus.relativeStrength12M1M = STATUS.NOT_APPLICABLE;
+    } else if (i - 252 < 0 || benchIndex - 252 < 0 ||
+               !isNum(close[i - 21]) || !isNum(close[i - 252]) || close[i - 252] <= 0 ||
+               !isNum(bench[benchIndex - 21]) || !isNum(bench[benchIndex - 252]) || bench[benchIndex - 252] <= 0) {
+      values.relativeStrength12M1M = null;
+      fieldStatus.relativeStrength12M1M = STATUS.INSUFFICIENT_HISTORY;
+    } else {
+      values.relativeStrength12M1M = round(
+        Math.log(close[i - 21] / close[i - 252]) -
+        Math.log(bench[benchIndex - 21] / bench[benchIndex - 252]), 6);
+      fieldStatus.relativeStrength12M1M = benchmarkStale
+        ? STATUS.BENCHMARK_STALE : STATUS.CALCULATED;
+    }
+
+    /* ------------------------------------------------------- Beta
+
+       Kovarianz der Tagesrenditen zur Benchmark, geteilt durch deren
+       Varianz, ueber ein Jahr.
+
+       Der heikle Teil ist nicht die Formel, sondern die Paarung: ein
+       Handelstag des Titels und ein Handelstag der Benchmark sind nur
+       dann dasselbe Intervall, wenn beide Enden auf denselben Daten
+       liegen. Positionsweises Zippen waere bequem und wuerde bei jedem
+       Titel mit einem Feiertag oder einer Handelsunterbrechung eine
+       Rendite gegen den falschen Tag rechnen. Deshalb wird ueber die
+       Daten gepaart, und ein Tag ohne Gegenstueck faellt heraus statt
+       verschoben zu werden.
+
+       Quant V2 verlangt mindestens 240 ausgerichtete Renditen; darunter
+       bleibt das Feld leer. */
+    if (!bench || !benchDates) {
+      values.beta252d = null;
+      fieldStatus.beta252d = bench ? STATUS.INSUFFICIENT_HISTORY : STATUS.SOURCE_MISSING;
+    } else {
+      /* Einmal je Benchmarkreihe, nicht einmal je Titel: ueber tausende
+         Titel ist das der Unterschied zwischen Sekunden und Minuten. Der
+         Index liegt neben der Reihe statt in ihr, damit diese Engine die
+         uebergebenen Daten nicht veraendert. */
+      var benchByDate = BENCH_INDEX.get(opts.benchmark);
+      if (!benchByDate) {
+        benchByDate = Object.create(null);
+        for (var bx = 0; bx < benchDates.length; bx++) benchByDate[benchDates[bx]] = bench[bx];
+        BENCH_INDEX.set(opts.benchmark, benchByDate);
+      }
+      var beta = betaAgainst(bars, close, i, YEAR_WINDOW, benchByDate);
+      values.beta252d = round(beta, 6);
+      fieldStatus.beta252d = isNum(beta) ? STATUS.CALCULATED : STATUS.INSUFFICIENT_HISTORY;
+    }
 
     return {
       version: VERSION,
@@ -361,10 +661,21 @@
       /* Auf welcher Spalte gerechnet wurde. Ohne diese Angabe laesst sich
          ein SMA200 nicht einordnen. */
       basis: basis,
+      /* Und in welcher Kurswelt. Die Spalte allein genuegt seit Option C
+         nicht mehr: 'close' kann der Rohkurs sein oder die daraus
+         rekonstruierte splitbereinigte Reihe, und das ist der
+         Unterschied zwischen einem Splitsprung im SMA200 und keinem. */
+      returnBasis: serie.basis || null,
+      priceSource: serie.source,
       adjustmentStatus: payload.adjustmentStatus || null,
       /* Gegen welchen Benchmark-Tag verglichen wurde. Ohne diese Angabe
          laesst sich eine relative Staerke nicht einordnen. */
       benchmarkAsOf: bench && benchDates && benchIndex >= 0 ? benchDates[benchIndex] : null,
+      /* Und wie weit der zurueckliegt. Ohne diese Zahl laesst sich
+         BENCHMARK_STALE nicht nachvollziehen, und mit ihr sieht man
+         auch den Grenzfall. */
+      benchmarkLagSessions: benchmarkLagSessions,
+      benchmarkStale: benchmarkStale,
       /* Der Kurs selbst gehoert NICHT in die ausgelieferte Faktorzeile
          (§34: keine Rohkursweitergabe). Er steht hier, weil derselbe
          Aufruf auch intern benutzt wird; das Schreibskript laesst ihn
@@ -373,6 +684,64 @@
       values: values,
       fieldStatus: fieldStatus
     };
+  }
+
+  /* Mindestzahl ausgerichteter Tagesrenditen aus quant-v2.0.0
+     (risk.minimumValidReturns und minimumAlignedBenchmarkReturnsForBeta).
+     Hier, damit Berechnung und Schwelle nicht auseinanderlaufen. */
+  var MINIMUM_VALID_RETURNS = 240;
+
+  /* Datumsindex je uebergebener Benchmarkreihe. WeakMap, damit eine nicht
+     mehr benutzte Reihe nicht am Index haengen bleibt. */
+  var BENCH_INDEX = new WeakMap();
+
+  /**
+   * Annualisierte Halbabweichung der negativen Tages-Logrenditen.
+   *
+   * `logRet` ist die bereits gebildete Logrenditenreihe, `i` der
+   * Stichtagsindex, `window` die Fensterlaenge in Sitzungen. Gibt null
+   * zurueck, solange weniger als MINIMUM_VALID_RETURNS gueltige
+   * Renditen im Fenster liegen.
+   */
+  function downsideVolatility(logRet, i, window) {
+    var valid = 0, sum = 0;
+    for (var k = i - window + 1; k <= i; k++) {
+      if (k < 0 || !isNum(logRet[k])) continue;
+      valid += 1;
+      if (logRet[k] < 0) sum += logRet[k] * logRet[k];
+    }
+    if (valid < MINIMUM_VALID_RETURNS || valid < 2) return null;
+    return Math.sqrt(sum / (valid - 1)) * Math.sqrt(252);
+  }
+
+  /**
+   * Beta gegen eine nach Datum ausgerichtete Benchmarkreihe.
+   *
+   * Gepaart wird ueber die Handelstage des Titels: eine Rendite zaehlt
+   * nur, wenn die Benchmark sowohl den Tag als auch den Vortag desselben
+   * Intervalls kennt.
+   */
+  function betaAgainst(bars, close, i, window, benchByDate) {
+    var xs = [], ys = [];
+    for (var k = i - window + 1; k <= i; k++) {
+      if (k < 1 || !bars[k] || !bars[k - 1]) continue;
+      var b1 = benchByDate[bars[k].date], b0 = benchByDate[bars[k - 1].date];
+      if (!isNum(b1) || !isNum(b0) || b0 <= 0) continue;
+      if (!isNum(close[k]) || !isNum(close[k - 1]) || close[k - 1] <= 0) continue;
+      ys.push(Math.log(close[k] / close[k - 1]));
+      xs.push(Math.log(b1 / b0));
+    }
+    if (xs.length < MINIMUM_VALID_RETURNS) return null;
+    var n = xs.length, meanX = 0, meanY = 0, j;
+    for (j = 0; j < n; j++) { meanX += xs[j]; meanY += ys[j]; }
+    meanX /= n; meanY /= n;
+    var covariance = 0, variance = 0;
+    for (j = 0; j < n; j++) {
+      covariance += (xs[j] - meanX) * (ys[j] - meanY);
+      variance += (xs[j] - meanX) * (xs[j] - meanX);
+    }
+    if (!(variance > 0)) return null;
+    return covariance / variance;
   }
 
   /* Felder, die eine Kursgroesse tragen und deshalb nicht in ein
@@ -413,8 +782,14 @@
     YEAR_WINDOW: YEAR_WINDOW,
     STATUS: STATUS,
     PRICE_LEVEL_FIELDS: PRICE_LEVEL_FIELDS,
+    MINIMUM_VALID_RETURNS: MINIMUM_VALID_RETURNS,
+    MAX_BENCHMARK_LAG_SESSIONS: MAX_BENCHMARK_LAG_SESSIONS,
     priceBasis: priceBasis,
+    priceSeries: priceSeries,
+    investorReturn: investorReturn,
     computeFactors: computeFactors,
+    downsideVolatility: downsideVolatility,
+    betaAgainst: betaAgainst,
     stripPriceLevels: stripPriceLevels
   };
 

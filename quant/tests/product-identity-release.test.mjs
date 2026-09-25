@@ -7,7 +7,12 @@ const root=new URL('../../',import.meta.url);
 function api(mutate=()=>{},reads=[]){return Service.create({loadJSON:async path=>{reads.push(path);const data=JSON.parse(await readFile(new URL(path.slice(1),root),'utf8'));mutate(path,data);return data;},displayPolicy:Policy,queryEngine:Query});}
 test('all approved product rows use existing stable Company Master IDs across stock and screener',async()=>{
  const service=api(),universe=await service.getUniverse(),screen=await service.screen(Query.createQuery({}));
- assert.equal(universe.stocks.length,6875);
+ /* Gegen das Artefakt, nicht gegen ein eingefrorenes Gestern: das
+    Produktuniversum waechst mit dem Company Master. Die untere Schranke
+    haelt einen stillen Einbruch fest. */
+ const capability=JSON.parse(await readFile(new URL('quant/data/universe/market-capability.json',root),'utf8'));
+ assert.equal(universe.stocks.length,capability.members.length);
+ assert.ok(universe.stocks.length>6000,'die Deckung des Produktuniversums ist eingebrochen');
  for(const row of universe.stocks.filter(r=>['AAPL','MSFT','NVDA','TSLA'].includes(r.ticker))){
   const shard=JSON.parse(await readFile(new URL('quant/data/universe/instruments/'+row.ticker.slice(0,2)+'.json',root),'utf8'));
   const canonical=shard.instruments.find(i=>i.symbol===row.ticker);

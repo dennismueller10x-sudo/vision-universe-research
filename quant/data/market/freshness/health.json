@@ -1,14 +1,14 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-25T01:07:30.637Z",
+  "checkedAt": "2026-09-25T11:35:33.478Z",
   "target": "repository",
   "market": {
-    "state": "CLOSED",
-    "localDate": "2026-09-24",
-    "localTime": "21:07:30",
+    "state": "PRE_MARKET",
+    "localDate": "2026-09-25",
+    "localTime": "07:35:33",
     "lastCompletedSession": "2026-09-24",
-    "currentSession": "2026-09-24",
+    "currentSession": "2026-09-25",
     "expectedIntradaySession": "2026-09-24"
   },
   "intraday": {
@@ -33,7 +33,7 @@
     },
     "dataState": "LAST_SESSION",
     "dataReason": "sessionCompleteNoLateTrades",
-    "dataLabel": "Heute · Schluss · letzter Kurs 16:55",
+    "dataLabel": "Letzter Handelstag · Donnerstag",
     "entries": 520,
     "byState": {
       "LIVE": 0,
@@ -58,60 +58,32 @@
     "state": "OK"
   },
   "daily": {
-    "universeAsOf": "2026-09-18",
-    "generatedAt": "2026-09-22T11:25:04.250Z",
-    "state": "STALE",
+    "universeAsOf": "2026-09-24",
+    "generatedAt": "2026-09-25T11:35:27.555Z",
+    "state": "LAST_SESSION",
     "basis": "series",
-    "summaryState": "STALE",
-    "reason": "olderThanLastSession",
-    "label": "Schluss Fr., 18.09. · nicht aktuell",
-    "seriesState": "STALE",
+    "summaryState": "LAST_SESSION",
+    "reason": "lastCompletedSession",
+    "label": "Schluss Donnerstag",
+    "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
     "expectedSession": "2026-09-24",
     "sample": {
       "sample": 40,
       "byState": {
         "LIVE": 0,
-        "LAST_SESSION": 0,
-        "STALE": 40,
+        "LAST_SESSION": 40,
+        "STALE": 0,
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "olderThanLastSession": 40
+        "lastCompletedSession": 40
       },
-      "staleSample": [
-        "AAPL",
-        "ABBV",
-        "ABCL",
-        "ABNB",
-        "ABT",
-        "ABX",
-        "ACHV",
-        "ACN",
-        "ACTG",
-        "ADBE",
-        "ADC",
-        "ADI",
-        "ADM",
-        "ADMA",
-        "ADP",
-        "ADPT",
-        "ADSE",
-        "ADSK",
-        "AEP",
-        "AFRM",
-        "AGEN",
-        "AGL",
-        "AII",
-        "AIR",
-        "ALAB"
-      ],
-      "seriesIndexCount": 6447
+      "staleSample": [],
+      "seriesIndexCount": 6482
     }
   },
-  "overall": "STALE",
-  "findings": [
-    "Tageskurse STALE: Reihen {\"olderThanLastSession\":40}, Summary asOf 2026-09-18, erwartet 2026-09-24 (olderThanLastSession)"
-  ],
+  "overall": "OK",
+  "findings": [],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }

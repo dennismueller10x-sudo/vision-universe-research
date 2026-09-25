@@ -1,0 +1,246 @@
+{
+ "schemaVersion": "momentum-return-basis-study-1.0.0",
+ "generatedAt": "2026-09-24T07:19:35.000Z",
+ "versions": {
+  "study_logic": "1.0.0"
+ },
+ "question": "Ist der Quant-V2-Momentumfaktor auf splitbereinigter Kursbasis oder auf Gesamtrendite zu rechnen?",
+ "method": "Je Reihe wird jede Momentum-Laufzeit auf beiden Grundlagen gerechnet. Die splitbereinigte Reihe wird aus splitFactor rekonstruiert, damit der Vergleich Gesamtrendite gegen SPLITBEREINIGTEN Kurs lautet - das ist die tatsaechliche Wahl - und nicht gegen eine unbereinigte Reihe.",
+ "horizons": [
+  "momentum1M",
+  "momentum3M",
+  "momentum6M",
+  "momentum12M",
+  "momentum12m1m"
+ ],
+ "seriesStudied": 5,
+ "universeSize": 6403,
+ "medianAbsoluteDifference": 0.004717035672574088,
+ "worstAbsoluteDifference": 0.04440396541277192,
+ "yieldTilt": {
+  "horizon": "momentum12m1m",
+  "everySeriesHigherOnTotalReturn": true,
+  "spearmanYieldVsDifference": 0.9,
+  "sampleSize": 5,
+  "lowestYield": {
+   "yield": 0.00176,
+   "difference": 0.0016152068576278378
+  },
+  "highestYield": {
+   "yield": 0.022,
+   "difference": 0.04440396541277192
+  },
+  "reading": "Jede Reihe steht auf Gesamtrendite hoeher, und der Abstand folgt der Ausschuettung. Der Momentumfaktor bekaeme damit eine systematische Dividendenneigung, die er auf Kursbasis nicht hat - eine Rangwirkung, keine blosse Verschiebung. Bei 5 Reihen ist das eine Richtung, keine Groesse."
+ },
+ "canDecideTheFactor": false,
+ "whyNot": "Momentum ist ein Perzentil unter Vergleichstiteln. Ueber die Hoehe entscheidet nicht der Unterschied je Titel, sondern ob sich die RANGFOLGE verschiebt - und eine gleichmaessige Verschiebung aendert keinen einzigen Rang. Dafuer braeuchte es beide Spalten ueber das Universum; sie liegen fuer 5 von 6403 Titeln vor.",
+ "whatWouldDecideIt": "Beide Kursspalten ueber das Produktuniversum, dann derselbe Vergleich als Rangkorrelation je Stichtag. Das ist ein Datenabruf, keine Methodikfrage.",
+ "note": "Nur eine Messung. Sie aendert keinen veroeffentlichten Wert und keine Faktorbasis.",
+ "series": [
+  {
+   "ticker": "AAPL",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "dividendsPaidPerShare": 20.74,
+   "approximateAnnualYield": 0.00523,
+   "horizons": [
+    {
+     "id": "momentum1M",
+     "price": 0.08891744298104731,
+     "total": 0.08891744298104731,
+     "difference": 0
+    },
+    {
+     "id": "momentum3M",
+     "price": 0.14130837345543923,
+     "total": 0.14230802719206048,
+     "difference": 0.0009996537366212532
+    },
+    {
+     "id": "momentum6M",
+     "price": 0.3669099560466149,
+     "total": 0.3693693021211557,
+     "difference": 0.0024593460745407913
+    },
+    {
+     "id": "momentum12M",
+     "price": 0.4250042038002355,
+     "total": 0.4302985491811562,
+     "difference": 0.005294345380920662
+    },
+    {
+     "id": "momentum12m1m",
+     "price": 0.3501908396946565,
+     "total": 0.3552072295528166,
+     "difference": 0.0050163898581601085
+    }
+   ]
+  },
+  {
+   "ticker": "JPM",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "dividendsPaidPerShare": 41.34,
+   "approximateAnnualYield": 0.01004,
+   "horizons": [
+    {
+     "id": "momentum1M",
+     "price": 0.0013938273360831754,
+     "total": 0.0013938273360831754,
+     "difference": 0
+    },
+    {
+     "id": "momentum3M",
+     "price": 0.06202485821165671,
+     "total": 0.0667418938842308,
+     "difference": 0.004717035672574088
+    },
+    {
+     "id": "momentum6M",
+     "price": 0.2285036292573981,
+     "total": 0.24022490541600128,
+     "difference": 0.011721276158603189
+    },
+    {
+     "id": "momentum12M",
+     "price": 0.12390256361140373,
+     "total": 0.14524152844195304,
+     "difference": 0.021338964830549312
+    },
+    {
+     "id": "momentum12m1m",
+     "price": 0.2094887497419664,
+     "total": 0.23245269584285655,
+     "difference": 0.022963946100890142
+    }
+   ]
+  },
+  {
+   "ticker": "MSFT",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "dividendsPaidPerShare": 26.89,
+   "approximateAnnualYield": 0.00459,
+   "horizons": [
+    {
+     "id": "momentum1M",
+     "price": 0.0425231216876234,
+     "total": 0.0425231216876234,
+     "difference": 0
+    },
+    {
+     "id": "momentum3M",
+     "price": 0.36551968203843854,
+     "total": 0.3681022922653645,
+     "difference": 0.002582610226925963
+    },
+    {
+     "id": "momentum6M",
+     "price": 0.3135622070338073,
+     "total": 0.3189041756936599,
+     "difference": 0.005341968659852592
+    },
+    {
+     "id": "momentum12M",
+     "price": -0.013452650211426831,
+     "total": -0.005289945763334858,
+     "difference": 0.008162704448091973
+    },
+    {
+     "id": "momentum12m1m",
+     "price": -0.0561429664358436,
+     "total": -0.046766999522646624,
+     "difference": 0.009375966913196976
+    }
+   ]
+  },
+  {
+   "ticker": "NVDA",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "dividendsPaidPerShare": 4.68,
+   "approximateAnnualYield": 0.00176,
+   "horizons": [
+    {
+     "id": "momentum1M",
+     "price": 0.0485589116901084,
+     "total": 0.04975940504023324,
+     "difference": 0.0012004933501248427
+    },
+    {
+     "id": "momentum3M",
+     "price": 0.08976755331895503,
+     "total": 0.0910152263743309,
+     "difference": 0.0012476730553758753
+    },
+    {
+     "id": "momentum6M",
+     "price": 0.3166184134337,
+     "total": 0.3196328571979272,
+     "difference": 0.003014443764227215
+    },
+    {
+     "id": "momentum12M",
+     "price": 0.2901724920562867,
+     "total": 0.2932664186818943,
+     "difference": 0.0030939266256075904
+    },
+    {
+     "id": "momentum12m1m",
+     "price": 0.23462764746071518,
+     "total": 0.23624285431834302,
+     "difference": 0.0016152068576278378
+    }
+   ]
+  },
+  {
+   "ticker": "XOM",
+   "bars": 2946,
+   "from": "2015-01-02",
+   "to": "2026-09-21",
+   "dividendEvents": 47,
+   "dividendsPaidPerShare": 40.71,
+   "approximateAnnualYield": 0.022,
+   "horizons": [
+    {
+     "id": "momentum1M",
+     "price": -0.0472464640385194,
+     "total": -0.0472464640385194,
+     "difference": 0
+    },
+    {
+     "id": "momentum3M",
+     "price": 0.14320791507185682,
+     "total": 0.15050076873504814,
+     "difference": 0.007292853663191323
+    },
+    {
+     "id": "momentum6M",
+     "price": -0.008580196655602057,
+     "total": 0.004251934586517514,
+     "difference": 0.012832131242119571
+    },
+    {
+     "id": "momentum12M",
+     "price": 0.38944966207320286,
+     "total": 0.4293383155081347,
+     "difference": 0.039888653434931864
+    },
+    {
+     "id": "momentum12m1m",
+     "price": 0.5467324520573451,
+     "total": 0.591136417470117,
+     "difference": 0.04440396541277192
+    }
+   ]
+  }
+ ]
+}

@@ -1,30 +1,104 @@
 {
   "schemaVersion": "1.0.0",
   "calendarId": "XNYS-v1",
-  "note": "Handelskalender fuer die Sitzungserkennung des Live-Charts. Er beantwortet genau eine Frage: laeuft gerade Handel? Er ist KEINE Quelle fuer Handelstage in Backtests - dafuer gilt der Kalender aus den tatsaechlich vorhandenen Bars (technical/timeframe.js). Zwei Kalender fuer dieselbe Frage waeren zwei Antworten; deshalb sind die Zustaendigkeiten hier getrennt benannt.",
+  "note": "Handelskalender fuer die Sitzungserkennung des Live-Charts. Er beantwortet genau eine Frage: laeuft gerade Handel? Er ist KEINE Quelle fuer Handelstage in Backtests - dafuer gilt der Kalender aus den tatsaechlich vorhandenen Bars (technical/timeframe.js). Zwei Kalender fuer dieselbe Frage waeren zwei Antworten; deshalb sind die Zustaendigkeiten hier getrennt benannt. Deckung ab 2022-01-01, weil die Technical- und Signal-Pruefungen die letzten 261 bis 270 Bars eines Titels durchlaufen und ein duenn gehandelter Titel damit bis 2023 zurueckreicht: 152 der 6.482 veroeffentlichten Tagesreihen beginnen ihr Fenster vor 2025-01-01, die frueheste am 2023-01-03. Ausserhalb der Deckung kann der Kalender einen Feiertag nicht von einem Handelstag unterscheiden, und beide Pruefungen verwerfen den Titel dann vollstaendig - 208 mal TECHNICAL_CALENDAR_INVALID und 205 mal SIGNAL_INVALID_SIGNAL_SESSION im Lauf vom 24.09.2026.",
   "coverage": {
-    "from": "2025-01-01",
+    "from": "2022-01-01",
     "to": "2027-12-31",
     "outsideCoverage": "Ausserhalb dieses Zeitraums wird nur nach Wochentag und Uhrzeit entschieden. Der Befund traegt dann calendarCoverage=false, und eine Sitzungsaussage darf nicht als gesichert gelten.",
-    "source": "Oeffentlich bekannte NYSE-Feiertage. Nicht vom Anbieter bestaetigt und nicht vertraglich zugesichert."
+    "source": "Oeffentlich bekannte NYSE-Feiertage. Nicht vom Anbieter bestaetigt und nicht vertraglich zugesichert.",
+    "establishedBy": "Jeder Eintrag ist zweifach belegt: aus der veroeffentlichten Regel (dritter Montag im Januar, letzter Montag im Mai, vierter Donnerstag im November, Karfreitag, beobachtete Verschiebung bei Wochenendfall) UND daran, dass an diesem Wochentag KEINE der fuenf tiefen Referenzreihen (AAPL, JPM, MSFT, NVDA, XOM, je 2.949 Bars ab 2015) eine Bar traegt. quant/tests/market-calendar.test.mjs rechnet beides nach; eine Abweichung ist ein Testfehlschlag, keine Nachlaessigkeit.",
+    "specialClosures": {
+      "2025-01-09": "Nationaler Trauertag fuer Praesident Carter. Folgt keiner Regel und war deshalb in der Liste nicht enthalten - gefunden an den Daten: keine der fuenf Referenzreihen hat an diesem Donnerstag eine Bar."
+    },
+    "earlyClosesNote": "Fuer 2022 bis 2024 sind KEINE verkuerzten Handelstage eingetragen. Ein fehlender verkuerzter Schluss kann keine Bar ungueltig machen - er beeinflusst nur eine Aussage ueber die Handelsphase innerhalb des Tages, und Intraday-Daten gibt es fuer diesen Zeitraum nicht. Ein FALSCH eingetragener Feiertag wuerde dagegen echte Bars verwerfen; deshalb steht hier nur, was zweifach belegt ist."
   },
   "exchanges": {
     "XNYS": {
       "name": "New York Stock Exchange",
       "timezone": "America/New_York",
       "sessions": {
-        "PRE": { "start": "04:00", "end": "09:30" },
-        "REGULAR": { "start": "09:30", "end": "16:00" },
-        "AFTER": { "start": "16:00", "end": "20:00" }
+        "PRE": {
+          "start": "04:00",
+          "end": "09:30"
+        },
+        "REGULAR": {
+          "start": "09:30",
+          "end": "16:00"
+        },
+        "AFTER": {
+          "start": "16:00",
+          "end": "20:00"
+        }
       },
-      "weekdays": [1, 2, 3, 4, 5],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [
-        "2025-01-01", "2025-01-20", "2025-02-17", "2025-04-18", "2025-05-26",
-        "2025-06-19", "2025-07-04", "2025-09-01", "2025-11-27", "2025-12-25",
-        "2026-01-01", "2026-01-19", "2026-02-16", "2026-04-03", "2026-05-25",
-        "2026-06-19", "2026-07-03", "2026-09-07", "2026-11-26", "2026-12-25",
-        "2027-01-01", "2027-01-18", "2027-02-15", "2027-03-26", "2027-05-31",
-        "2027-06-18", "2027-07-05", "2027-09-06", "2027-11-25", "2027-12-24"
+        "2022-01-17",
+        "2022-02-21",
+        "2022-04-15",
+        "2022-05-30",
+        "2022-06-20",
+        "2022-07-04",
+        "2022-09-05",
+        "2022-11-24",
+        "2022-12-26",
+        "2023-01-02",
+        "2023-01-16",
+        "2023-02-20",
+        "2023-04-07",
+        "2023-05-29",
+        "2023-06-19",
+        "2023-07-04",
+        "2023-09-04",
+        "2023-11-23",
+        "2023-12-25",
+        "2024-01-01",
+        "2024-01-15",
+        "2024-02-19",
+        "2024-03-29",
+        "2024-05-27",
+        "2024-06-19",
+        "2024-07-04",
+        "2024-09-02",
+        "2024-11-28",
+        "2024-12-25",
+        "2025-01-01",
+        "2025-01-09",
+        "2025-01-20",
+        "2025-02-17",
+        "2025-04-18",
+        "2025-05-26",
+        "2025-06-19",
+        "2025-07-04",
+        "2025-09-01",
+        "2025-11-27",
+        "2025-12-25",
+        "2026-01-01",
+        "2026-01-19",
+        "2026-02-16",
+        "2026-04-03",
+        "2026-05-25",
+        "2026-06-19",
+        "2026-07-03",
+        "2026-09-07",
+        "2026-11-26",
+        "2026-12-25",
+        "2027-01-01",
+        "2027-01-18",
+        "2027-02-15",
+        "2027-03-26",
+        "2027-05-31",
+        "2027-06-18",
+        "2027-07-05",
+        "2027-09-06",
+        "2027-11-25",
+        "2027-12-24"
       ],
       "earlyCloses": {
         "2025-07-03": "13:00",
@@ -38,58 +112,166 @@
     "XETR": {
       "name": "Xetra (Frankfurt) - Heimat von DAX und Euro Stoxx 50",
       "timezone": "Europe/Berlin",
-      "sessions": { "REGULAR": { "start": "09:00", "end": "17:30" } },
-      "weekdays": [1, 2, 3, 4, 5],
+      "sessions": {
+        "REGULAR": {
+          "start": "09:00",
+          "end": "17:30"
+        }
+      },
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [
-        "2025-01-01", "2025-04-18", "2025-04-21", "2025-05-01", "2025-12-24", "2025-12-25", "2025-12-26", "2025-12-31",
-        "2026-01-01", "2026-04-03", "2026-04-06", "2026-05-01", "2026-12-24", "2026-12-25", "2026-12-31",
-        "2027-01-01", "2027-03-26", "2027-03-29", "2027-12-24", "2027-12-31"
+        "2025-01-01",
+        "2025-04-18",
+        "2025-04-21",
+        "2025-05-01",
+        "2025-12-24",
+        "2025-12-25",
+        "2025-12-26",
+        "2025-12-31",
+        "2026-01-01",
+        "2026-04-03",
+        "2026-04-06",
+        "2026-05-01",
+        "2026-12-24",
+        "2026-12-25",
+        "2026-12-31",
+        "2027-01-01",
+        "2027-03-26",
+        "2027-03-29",
+        "2027-12-24",
+        "2027-12-31"
       ],
       "earlyCloses": {},
-      "coverage": { "from": "2025-01-01", "to": "2027-12-31" },
+      "coverage": {
+        "from": "2025-01-01",
+        "to": "2027-12-31"
+      },
       "source": "Oeffentlich bekannte Xetra-Handelstage (Multi-Asset Core). Nicht vom Anbieter bestaetigt."
     },
     "XLON": {
       "name": "London Stock Exchange - Heimat des FTSE 100",
       "timezone": "Europe/London",
-      "sessions": { "REGULAR": { "start": "08:00", "end": "16:30" } },
-      "weekdays": [1, 2, 3, 4, 5],
+      "sessions": {
+        "REGULAR": {
+          "start": "08:00",
+          "end": "16:30"
+        }
+      },
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [
-        "2025-01-01", "2025-04-18", "2025-04-21", "2025-05-05", "2025-05-26", "2025-08-25", "2025-12-25", "2025-12-26",
-        "2026-01-01", "2026-04-03", "2026-04-06", "2026-05-04", "2026-05-25", "2026-08-31", "2026-12-25", "2026-12-28",
-        "2027-01-01", "2027-03-26", "2027-03-29", "2027-05-03", "2027-05-31", "2027-08-30", "2027-12-27", "2027-12-28"
+        "2025-01-01",
+        "2025-04-18",
+        "2025-04-21",
+        "2025-05-05",
+        "2025-05-26",
+        "2025-08-25",
+        "2025-12-25",
+        "2025-12-26",
+        "2026-01-01",
+        "2026-04-03",
+        "2026-04-06",
+        "2026-05-04",
+        "2026-05-25",
+        "2026-08-31",
+        "2026-12-25",
+        "2026-12-28",
+        "2027-01-01",
+        "2027-03-26",
+        "2027-03-29",
+        "2027-05-03",
+        "2027-05-31",
+        "2027-08-30",
+        "2027-12-27",
+        "2027-12-28"
       ],
       "earlyCloses": {
-        "2025-12-24": "12:30", "2025-12-31": "12:30",
-        "2026-12-24": "12:30", "2026-12-31": "12:30",
-        "2027-12-24": "12:30", "2027-12-31": "12:30"
+        "2025-12-24": "12:30",
+        "2025-12-31": "12:30",
+        "2026-12-24": "12:30",
+        "2026-12-31": "12:30",
+        "2027-12-24": "12:30",
+        "2027-12-31": "12:30"
       },
-      "coverage": { "from": "2025-01-01", "to": "2027-12-31" },
+      "coverage": {
+        "from": "2025-01-01",
+        "to": "2027-12-31"
+      },
       "source": "Oeffentlich bekannte Bankfeiertage England/Wales (Multi-Asset Core). Nicht vom Anbieter bestaetigt."
     },
     "XPAR": {
       "name": "Euronext Paris - Heimat des CAC 40",
       "timezone": "Europe/Paris",
-      "sessions": { "REGULAR": { "start": "09:00", "end": "17:30" } },
-      "weekdays": [1, 2, 3, 4, 5],
+      "sessions": {
+        "REGULAR": {
+          "start": "09:00",
+          "end": "17:30"
+        }
+      },
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [
-        "2025-01-01", "2025-04-18", "2025-04-21", "2025-05-01", "2025-12-25", "2025-12-26",
-        "2026-01-01", "2026-04-03", "2026-04-06", "2026-05-01", "2026-12-25",
-        "2027-01-01", "2027-03-26", "2027-03-29"
+        "2025-01-01",
+        "2025-04-18",
+        "2025-04-21",
+        "2025-05-01",
+        "2025-12-25",
+        "2025-12-26",
+        "2026-01-01",
+        "2026-04-03",
+        "2026-04-06",
+        "2026-05-01",
+        "2026-12-25",
+        "2027-01-01",
+        "2027-03-26",
+        "2027-03-29"
       ],
       "earlyCloses": {
-        "2025-12-24": "14:05", "2025-12-31": "14:05",
-        "2026-12-24": "14:05", "2026-12-31": "14:05",
-        "2027-12-24": "14:05", "2027-12-31": "14:05"
+        "2025-12-24": "14:05",
+        "2025-12-31": "14:05",
+        "2026-12-24": "14:05",
+        "2026-12-31": "14:05",
+        "2027-12-24": "14:05",
+        "2027-12-31": "14:05"
       },
-      "coverage": { "from": "2025-01-01", "to": "2027-12-31" },
+      "coverage": {
+        "from": "2025-01-01",
+        "to": "2027-12-31"
+      },
       "source": "Oeffentlich bekannte Euronext-Handelstage (Multi-Asset Core). Nicht vom Anbieter bestaetigt."
     },
     "XSWX": {
       "name": "SIX Swiss Exchange - Heimat des SMI",
       "timezone": "Europe/Zurich",
-      "sessions": { "REGULAR": { "start": "09:00", "end": "17:30" } },
-      "weekdays": [1, 2, 3, 4, 5],
+      "sessions": {
+        "REGULAR": {
+          "start": "09:00",
+          "end": "17:30"
+        }
+      },
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [],
       "earlyCloses": {},
       "coverage": null,
@@ -98,8 +280,23 @@
     "XTKS": {
       "name": "Tokyo Stock Exchange - Heimat des Nikkei 225",
       "timezone": "Asia/Tokyo",
-      "sessions": { "REGULAR": { "start": "09:00", "end": "15:30" }, "LUNCH": { "start": "11:30", "end": "12:30" } },
-      "weekdays": [1, 2, 3, 4, 5],
+      "sessions": {
+        "REGULAR": {
+          "start": "09:00",
+          "end": "15:30"
+        },
+        "LUNCH": {
+          "start": "11:30",
+          "end": "12:30"
+        }
+      },
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [],
       "earlyCloses": {},
       "coverage": null,
@@ -108,8 +305,23 @@
     "XHKG": {
       "name": "Hong Kong Exchanges - Heimat des Hang Seng",
       "timezone": "Asia/Hong_Kong",
-      "sessions": { "REGULAR": { "start": "09:30", "end": "16:00" }, "LUNCH": { "start": "12:00", "end": "13:00" } },
-      "weekdays": [1, 2, 3, 4, 5],
+      "sessions": {
+        "REGULAR": {
+          "start": "09:30",
+          "end": "16:00"
+        },
+        "LUNCH": {
+          "start": "12:00",
+          "end": "13:00"
+        }
+      },
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [],
       "earlyCloses": {},
       "coverage": null,
@@ -118,8 +330,23 @@
     "XSHG": {
       "name": "Shanghai Stock Exchange - Heimat des SSE Composite",
       "timezone": "Asia/Shanghai",
-      "sessions": { "REGULAR": { "start": "09:30", "end": "15:00" }, "LUNCH": { "start": "11:30", "end": "13:00" } },
-      "weekdays": [1, 2, 3, 4, 5],
+      "sessions": {
+        "REGULAR": {
+          "start": "09:30",
+          "end": "15:00"
+        },
+        "LUNCH": {
+          "start": "11:30",
+          "end": "13:00"
+        }
+      },
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "holidays": [],
       "earlyCloses": {},
       "coverage": null,

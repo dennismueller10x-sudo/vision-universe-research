@@ -386,3 +386,116 @@ class BackfillOrderTests(unittest.TestCase):
         for script in set(re.findall(r"bash\s+(scripts/[\w./-]+\.sh)", self.text)):
             with self.subTest(script=script):
                 self.assertTrue((ROOT / script).exists(), f"{script} fehlt")
+
+
+def workflow_steps(name):
+    """Die Schritte einer Workflow-Datei als (name, block) - ohne PyYAML.
+
+    Diese Suite laeuft absichtlich ohne Abhaengigkeiten: `cli.py test` wird
+    auf dem Runner ohne pip install ausgefuehrt. Ein frueherer Anlauf dieser
+    Tests importierte yaml, war lokal gruen und riss den Datenlauf auf CI
+    mit ModuleNotFoundError ab - genau die Sorte Fehler, die diese Datei
+    verhindern soll.
+
+    Geprueft wird deshalb der Text, aber strukturiert: ein Schritt beginnt
+    bei `- name:` auf Schritt-Ebene und reicht bis zum naechsten. Findet der
+    Zerleger keine plausible Zahl an Schritten, schlaegt der Test fehl,
+    statt stillschweigend nichts zu pruefen.
+    """
+    text = workflow_text(name)
+    starts = [m.start() for m in re.finditer(r"^      - (?:name|uses):", text, re.M)]
+    steps = []
+    for index, begin in enumerate(starts):
+        stop = starts[index + 1] if index + 1 < len(starts) else len(text)
+        block = text[begin:stop]
+        label = re.match(r"^      - name:\s*(.+)$", block, re.M)
+        steps.append(((label.group(1).strip() if label else "(uses)"), block))
+    return steps
+
+
+def logical_lines(block):
+    """Zeilenfortsetzungen zusammengezogen. Der defekte Stand verteilte
+    `git add` und seinen Pfad ueber ein `\\` auf zwei physische Zeilen; eine
+    zeilenweise Pruefung haette genau den Fall uebersehen."""
+    return block.replace("\\\n", " ").splitlines()
+
+
+class BulkArchiveHandoffTests(unittest.TestCase):
+    """Ein Schritt, der das Sammelarchiv LIEST, braucht einen vor ihm, der es SCHREIBT.
+
+    Wieder ein echter Defekt, und ein teurer: der Consumer-Schritt streamte
+    companyfacts.zip und legte nichts ab, waehrend der Konzept-Zensus danach
+    genau diese Datei oeffnen wollte. Er lief auf FileNotFoundError auf,
+    `continue-on-error` meldete ihn trotzdem als success, und der folgende
+    `git add` auf die nie geschriebene Datei brach mit exit 128 ab - und nahm
+    zwanzig Minuten fertig gerechneter Fundamentaldaten mit, die deshalb nie
+    committet wurden. Das Owner-Gate wartete anschliessend auf eine Messung,
+    die es nie geben konnte.
+
+    Kein Test haette das gefangen, weil beide Schritte fuer sich korrekt sind.
+    Falsch ist nur ihre Reihenfolge, und die steht in der YAML-Datei.
+    """
+
+    ARCHIVE = "bulk/companyfacts.zip"
+    CONSUMER = "sec-consumer-fundamentals.yml"
+
+    def test_the_step_splitter_still_understands_the_file(self):
+        steps = workflow_steps(self.CONSUMER)
+        self.assertGreater(len(steps), 10, "der Zerleger findet die Schritte nicht mehr")
+        self.assertTrue(any("Zensus" in name for name, _ in steps))
+
+    def test_every_reader_of_the_bulk_archive_has_a_writer_before_it(self):
+        seen_a_reader = False
+        for path in sorted(WORKFLOWS.glob("*.yml")):
+            written = False
+            for name, block in workflow_steps(path.name):
+                if self.ARCHIVE not in block:
+                    continue
+                # download_to legt die Datei an; alles andere liest sie.
+                if "download_to" in block:
+                    written = True
+                    continue
+                seen_a_reader = True
+                self.assertTrue(
+                    written,
+                    f"{path.name} step '{name}' liest {self.ARCHIVE}, "
+                    f"aber kein Schritt davor schreibt es")
+        self.assertTrue(seen_a_reader, "kein Leser gefunden - die Pruefung greift ins Leere")
+
+    def test_the_census_does_not_hide_its_own_failure(self):
+        """`continue-on-error` auf einem Messschritt verbirgt genau den Fall,
+        fuer den man ihn liest: dass die Messung nicht stattgefunden hat."""
+        checked = False
+        for name, block in workflow_steps(self.CONSUMER):
+            if "concept-census" not in block:
+                continue
+            checked = True
+            self.assertNotIn("continue-on-error: true", block,
+                             f"'{name}' meldet ein Scheitern als Erfolg")
+        self.assertTrue(checked, "der Zensus-Schritt wurde nicht gefunden")
+
+    def test_the_commit_step_never_adds_a_path_that_may_not_exist(self):
+        """Ein optionales Artefakt gehoert hinter eine Existenzpruefung.
+        `git add` bricht sonst mit exit 128 ab und reisst den Lauf mit."""
+        checked = False
+        for name, block in workflow_steps(self.CONSUMER):
+            if "git add" not in block:
+                continue
+            for line in logical_lines(block):
+                if "concept-census.json" in line and "git add" in line:
+                    checked = True
+                    self.assertIn("-s quant/data/sec/concept-census.json", line,
+                                  f"'{name}' fuegt den Zensus ungeprueft zum Commit hinzu")
+        self.assertTrue(checked, "kein git-add des Zensus gefunden - die Pruefung greift ins Leere")
+
+
+class ConsumerArchiveArgumentTests(unittest.TestCase):
+    """Die Argumente, die ein Workflow uebergibt, muessen der Parser kennen."""
+
+    def test_the_consumer_command_accepts_the_archive_it_is_given(self):
+        from quant.cli import build_parser
+        parser = build_parser()
+        parsed = parser.parse_args(["consumer", "--archive", "/tmp/companyfacts.zip"])
+        self.assertEqual(parsed.archive, "/tmp/companyfacts.zip")
+        census = parser.parse_args(["concept-census", "--archive", "/tmp/companyfacts.zip"])
+        self.assertEqual(census.archive, "/tmp/companyfacts.zip")

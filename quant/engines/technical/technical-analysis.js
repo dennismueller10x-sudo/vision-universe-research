@@ -148,7 +148,7 @@
     return {
       instrumentId: b.instrumentId, analysisTime: b.analysisTime, dataCutoff: b.dataCutoff, dataVersion: b.dataVersion, parametersHash: b.parametersHash,
       close: b.lastBar.close, opportunityScore: b.opportunityScore.score, scoreBand: b.opportunityScore.band ? b.opportunityScore.band.label : null,
-      trend: b.trend.direction, trendScore: b.trend.trendScore, structure: b.structure.state.regime, momentum: b.momentum.state,
+      trend: b.trend.direction, trendScore: b.trend.trendScore, structure: b.structure.state.regime, confirmedStructure: b.structure.state.confirmedRegime, momentum: b.momentum.state,
       relativeStrength: b.relativeStrength.state, volatilityRegime: b.volatility.regime, volume: b.volume.state,
       primaryDirection: p ? p.direction : null, primaryTemplate: p ? p.template : null, primaryStatus: p ? p.status : null, confidence: p ? p.confidence : null,
       riskReward: b.tradeSetup.riskReward ? b.tradeSetup.riskReward.low : null, setupStatus: b.tradeSetup.status,

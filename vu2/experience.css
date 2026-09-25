@@ -44,3 +44,286 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .history-controls+.button{margin-bottom:20px}
 
 .market-freshness{font-size:13px;line-height:1.55;margin:12px 0 18px}.freshness-warning{color:#79520f;border-left:2px solid #a77927;padding-left:12px}
+
+/* =========================================================================
+   QUANT EXPERIENCE — Meaning, Explanation, Evidence, Workspace.
+   Grössere Flächen und stärkere Typografie, aber ruhiger und analytischer
+   als Discovery. Discovery selbst wird von hier aus nicht berührt.
+   ========================================================================= */
+.quant-hero{padding:8px 0 30px;border-bottom:1px solid var(--line)}
+.quant-hero h1{font-size:44px;letter-spacing:-1.8px;margin:10px 0 4px}
+.quant-ticker{font-size:15px;color:var(--muted);margin:0 0 18px;font-variant-numeric:tabular-nums}
+.quant-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;background:#edf4f1;color:var(--positive);font-size:13px;font-weight:600}
+.chip-muted{background:var(--surface);color:var(--muted)}
+.quant-summary{font-size:21px;line-height:1.5;max-width:780px;margin:0 0 12px;font-weight:450}
+.quant-change{font-size:15px;color:var(--muted);max-width:780px;margin:0}
+
+/* Factor DNA */
+.dna-section h2{max-width:560px}
+.dna-list{margin-top:24px;border-top:1px solid var(--line)}
+.dna-row{border-bottom:1px solid var(--line);padding:4px 0 18px}
+.dna-head{display:flex;width:100%;align-items:baseline;justify-content:space-between;gap:16px;min-height:52px;text-align:left}
+.dna-label{font-size:19px;font-weight:600}
+.dna-band{font-size:13px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.dna-track{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.dna-track span{display:block;height:100%;border-radius:4px;background:var(--muted)}
+.band-VERY_STRONG{color:#0f5f48}.dna-track .band-VERY_STRONG{background:#0f5f48}
+.band-STRONG{color:var(--positive)}.dna-track .band-STRONG{background:var(--positive)}
+.band-NEUTRAL{color:#5a6165}.dna-track .band-NEUTRAL{background:#8b9297}
+.band-WEAK{color:#8a5a1d}.dna-track .band-WEAK{background:#c08b3a}
+.band-VERY_WEAK{color:var(--negative)}.dna-track .band-VERY_WEAK{background:var(--negative)}
+.band-NONE{color:var(--muted)}.dna-track .band-NONE{background:var(--line)}
+.dna-detail{padding:18px 0 4px}
+.dna-plain{font-size:16px;max-width:680px}
+.dna-components{margin-top:16px;border-top:1px solid var(--line)}
+.dna-component{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px 24px;padding:14px 0;border-bottom:1px solid var(--line)}
+.dna-component>div:first-child span{display:block}
+.dna-component>div:first-child span:first-child{font-size:15px}
+.dna-component>div:first-child span+span{font-size:12px;margin-top:3px}
+.dna-component .number{text-align:right}
+.dna-component strong{display:block;font-size:19px;font-variant-numeric:tabular-nums}
+.dna-component .number span{display:block;font-size:12px;margin-top:4px}
+.dna-component.is-missing strong{font-size:15px;font-weight:500;color:var(--muted)}
+.dna-note{grid-column:1/-1;font-size:12px;margin:2px 0 0}
+
+/* Was verändert sich gerade? */
+.change-section h2{max-width:560px}
+.change-group{margin:28px 0 14px;font-size:15px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
+.change-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.change-card{border-top:2px solid var(--line);padding:18px 0 4px}
+.change-card.dir-IMPROVING{border-top-color:var(--positive)}
+.change-card.dir-DETERIORATING{border-top-color:var(--negative)}
+.change-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.change-head h3{margin:0;font-size:18px}
+.change-head .muted{font-size:12px}
+.change-arrow{font-size:20px;font-weight:700}
+.dir-IMPROVING .change-arrow{color:var(--positive)}
+.dir-DETERIORATING .change-arrow{color:var(--negative)}
+.change-values{font-variant-numeric:tabular-nums;font-size:15px;font-weight:550;overflow-wrap:anywhere}
+.change-card p{margin:10px 0 0}
+.change-card details{margin:10px 0 0;padding:0;border:0}
+.change-card summary{min-height:44px;padding:10px 0;font-size:14px}
+.change-missing summary{min-height:44px}
+
+/* Setup */
+.setup-journey{display:flex;list-style:none;margin:22px 0 8px;padding:0;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.setup-step{flex:1 0 auto;min-width:104px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);padding-right:12px}
+.setup-dot{display:block;height:4px;border-radius:2px;background:var(--line)}
+.setup-step.is-active{color:var(--ink);font-weight:700}
+.setup-step.is-active .setup-dot{background:var(--ink);height:6px}
+.setup-count{font-size:17px;font-weight:600;margin:24px 0 12px}
+.setup-conditions{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.setup-conditions li{display:flex;gap:14px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--line)}
+.setup-conditions li>div span{display:block}
+.setup-conditions li>div span+span{font-size:12px;margin-top:3px}
+.setup-mark{font-size:16px;width:18px;flex-shrink:0}
+.setup-conditions .is-met .setup-mark{color:var(--positive)}
+.setup-conditions .is-open .setup-mark{color:var(--muted)}
+.setup-conditions .is-missing{color:var(--muted)}
+/* Was diesen Zustand aendern wuerde: eingeklappt, damit die Hauptaussage
+   die Hauptaussage bleibt. Bei 390 px stehen Zustand und Zaehlung
+   untereinander - nebeneinander gedraengt liest sich beides als eines. */
+.setup-change{margin:22px 0 0;border-top:1px solid var(--line);padding-top:14px}
+.setup-change>summary{font-size:15px;font-weight:600;cursor:pointer}
+.setup-change-rule{margin:18px 0 0}
+.setup-change-rule h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:0 0 6px;font-size:15px}
+.setup-change-rule h3 .muted{font-size:13px;font-weight:400}
+.setup-change .setup-conditions li>div{min-width:0}
+.setup-internal>summary{font-size:12px;color:var(--muted);cursor:pointer;margin-top:4px}
+.setup-internal p{font-size:12px;margin:4px 0 0;overflow-wrap:anywhere}
+.setup-currency{margin-top:8px}
+.setup-step.is-observed .setup-dot{background:var(--ink);height:6px}
+.setup-step.is-observed{color:var(--ink)}
+.setup-classification{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:18px 0 0}
+.setup-classification .muted{font-size:13px;flex:1 1 220px;min-width:0}
+.setup-badge{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.01em}
+.setup-badge.state-CONFIRMED{border-color:var(--positive);color:var(--positive)}
+.setup-badge.state-SETUP_FORMING{border-color:#c08b3a;color:#c08b3a}
+.setup-badge.state-NO_SETUP{color:var(--muted)}
+
+/* Evidenz und Erklärfläche */
+.evidence-list{list-style:none;margin:0 0 16px;padding:0;border-top:1px solid var(--line)}
+.evidence-list li{padding:14px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.explain-hero h1{font-size:48px}
+.explain-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.explain-card{border-top:2px solid var(--ink);padding-top:18px}
+.explain-factors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:24px}
+.explain-factor{border-top:1px solid var(--line);padding-top:16px}
+.explain-question{font-weight:600;margin-bottom:8px}
+.explain-steps{margin:18px 0;padding-left:22px}
+.explain-steps li{padding:9px 0;line-height:1.6}
+
+@media(max-width:900px){.change-grid{grid-template-columns:1fr}}
+@media(max-width:650px){
+ .quant-hero h1{font-size:32px;letter-spacing:-1px}
+ .explain-hero h1{font-size:34px}
+ .quant-summary{font-size:18px}
+ .dna-label{font-size:17px}
+ .dna-head{gap:10px}
+ .dna-component{grid-template-columns:1fr;gap:6px}
+ .dna-component .number{text-align:left}
+ .dna-component strong{font-size:18px}
+ .change-head h3{font-size:17px}
+ .setup-step{min-width:92px}
+ .explain-grid,.explain-factors{grid-template-columns:1fr;gap:22px}
+}
+
+/* Strategy Match — gezählte Bedingungen, kein Rang. */
+.match-section h2{max-width:560px}
+.match-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:24px}
+.match-card{border-top:2px solid var(--ink);padding:18px 0 4px}
+.match-card.is-missing{border-top-color:var(--line)}
+.match-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.match-head h3{margin:0;font-size:19px}
+.match-score{font-size:14px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.band-STRONG_FIT{color:#0f5f48}
+.band-FIT{color:var(--positive)}
+.band-PARTIAL_FIT{color:#8a5a1d}
+.band-NO_FIT{color:var(--muted)}
+.match-count{font-size:16px;font-weight:600;margin:12px 0 8px}
+.match-conditions{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--line)}
+.match-condition{display:flex;gap:12px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.match-condition>div span{display:block}
+.match-condition>div span+span{font-size:12px;margin-top:3px}
+.match-condition.is-met .setup-mark{color:var(--positive)}
+.match-condition.is-open .setup-mark{color:#c08b3a}
+.match-condition.is-missing{color:var(--muted)}
+.match-why{font-style:italic}
+.match-risk,.match-evidence{font-size:13px;margin-top:12px}
+.match-evidence{border-top:1px solid var(--line);padding-top:12px}
+@media(max-width:900px){.match-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.match-head h3{font-size:17px}.match-card{padding-top:16px}}
+.screener-method{align-items:flex-start;flex-direction:column;gap:10px;max-width:100%}
+/* Die Auswahltexte sind lang ("Earnings Revision Leader"). Ohne min-width:0
+   waechst das Select ueber die Viewport-Breite hinaus und kippt bei 390px
+   die ganze Seite in den horizontalen Scroll. */
+.screener-method label{display:flex;align-items:center;gap:12px;flex-wrap:wrap;max-width:100%;min-width:0}
+.screener-method select{min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:#fff;min-width:0;max-width:100%;flex:1 1 180px}
+.screener-method-note{margin:0;font-size:13px;max-width:760px}
+@media(max-width:650px){
+ .screener-method label{width:100%}
+ .screener-method label>span{flex:0 0 100%}
+ .screener-method select{flex:1 1 100%;width:100%}
+}
+
+/* Kompakte Faktorlage in Listen. */
+.factor-strip{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.strip-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.strip-head .muted{font-size:12px;white-space:nowrap}
+.strip-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.strip-cell{display:flex;flex-direction:column;gap:5px;min-width:0}
+.strip-label{font-size:11px;color:var(--muted);overflow-wrap:anywhere;line-height:1.3}
+.strip-bar{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.strip-bar>span{display:block;height:100%;border-radius:3px;background:var(--muted)}
+.strip-bar .band-VERY_STRONG{background:#0f5f48}
+.strip-bar .band-STRONG{background:var(--positive)}
+.strip-bar .band-NEUTRAL{background:#8b9297}
+.strip-bar .band-WEAK{background:#c08b3a}
+.strip-bar .band-VERY_WEAK{background:var(--negative)}
+.strip-bar .band-NONE{background:var(--line)}
+.strip-value{font-size:12px;font-variant-numeric:tabular-nums}
+@media(max-width:650px){
+ .strip-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ .strip-label{font-size:10px}
+ .strip-value{font-size:11px}
+}
+.pattern-count{font-size:17px;font-weight:600;margin:22px 0 12px}
+.pattern-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.pattern-card{border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.pattern-card.is-tilted{border-color:var(--positive)}
+.pattern-card h3{font-size:16px;margin:0 0 14px;line-height:1.35}
+.pattern-sides{display:flex;gap:18px;flex-wrap:wrap}
+.pattern-side{flex:1 1 120px;min-width:0}
+.pattern-side span{display:block}
+.pattern-side strong{display:block;font-size:22px;line-height:1.2;margin:2px 0}
+.pattern-side-label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pattern-side.is-down strong{color:var(--negative,#b4483a)}
+.pattern-side .muted{font-size:12px}
+.pattern-tilt{font-size:13px;margin:14px 0 0;font-weight:600}
+.pattern-facts{list-style:none;margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.pattern-facts li{margin:4px 0}
+.pattern-caveat{margin-top:20px;font-size:12px}
+@media (max-width:650px){
+ .pattern-grid{grid-template-columns:1fr}
+ .pattern-sides{gap:12px}
+ .pattern-side{flex:1 1 100%}
+}
+.quant-orientation{margin:18px 0 0;font-size:13px;color:var(--muted);max-width:60ch}
+.balance-grid{display:grid;gap:18px;grid-template-columns:1fr 1fr;margin-top:20px}
+.balance-column{border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.balance-column h3{margin:0 0 12px;font-size:15px}
+.balance-column.is-pro{border-color:var(--positive)}
+.balance-column.is-con{border-color:var(--negative,#b4483a)}
+.balance-list{list-style:none;margin:0;padding:0}
+.balance-list li{padding:10px 0;border-top:1px solid var(--line)}
+.balance-list li:first-child{border-top:0}
+.balance-list li span{display:block}
+.balance-list li span+span{font-size:12px;margin-top:3px}
+.match-lead{font-size:18px;line-height:1.4;margin:18px 0 0}
+.match-lead .muted{font-size:14px}
+/* Ein Zuordnungswechsel ist selten (36 von 6.437 zwischen zwei Staenden)
+   und deshalb sichtbar, aber nicht als Warnung: es ist eine Beobachtung. */
+.assignment-change{font-size:14px;line-height:1.5;margin:12px 0 0;padding:10px 12px;
+ border-left:3px solid var(--line);background:var(--surface-2,transparent)}
+/* Der Abstand zwischen zwei Staenden ist ein Hinweis auf die Datenlage,
+   kein Alarm - dieselbe Zurueckhaltung wie bei der Kursfrische. */
+.analysis-lag{font-size:13px;line-height:1.55;margin:8px 0 0;color:#79520f;
+ border-left:2px solid #a77927;padding-left:12px}
+.trust-list{list-style:none;margin:20px 0 0;padding:0;border-top:1px solid var(--line)}
+.trust-list li{padding:14px 0;border-bottom:1px solid var(--line)}
+.trust-list li strong{display:block;font-size:14px}
+.trust-list li span{display:block;font-size:13px;margin-top:3px}
+.trust-withheld{margin-top:16px}
+@media (max-width:650px){
+ .balance-grid{grid-template-columns:1fr}
+ .match-lead{font-size:16px}
+}
+.trust-backtest{margin-top:16px}
+.trust-pending{font-style:italic}
+.setup-step.is-pending{opacity:.55}
+.setup-step.is-pending .setup-dot{background:transparent;border-top:2px dashed var(--line);height:0}
+.setup-pending{font-size:11px;font-style:italic}
+
+/* Lage im Markt. Die Titelliste ist bewusst eine Chip-Reihe und keine
+   Tabelle: sie traegt genau eine Information - welcher Titel steht hier
+   auch - und eine Tabelle wuerde auf 390px Spalten versprechen, die es
+   nicht gibt. */
+.setup-peers{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
+.setup-peers>summary{cursor:pointer;font-weight:650}
+.peer-tickers{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.peer-chip{display:inline-block;padding:4px 10px;border:1px solid var(--line);border-radius:999px;
+ font-size:13px;font-variant-numeric:tabular-nums;text-decoration:none;color:inherit}
+.peer-chip:hover,.peer-chip:focus-visible{border-color:var(--accent,currentColor)}
+.distribution-row{padding:14px 0;border-top:1px solid var(--line)}
+.distribution-row:first-of-type{border-top:0}
+.distribution-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.distribution-count{font-size:20px;font-variant-numeric:tabular-nums}
+/* Eine geschlossene Stufe wird gedaempft gezeigt und nicht ausgeblendet:
+   dass es diese Lagen gibt und warum sie noch nichts sagen, ist selbst
+   eine Information. */
+.distribution-row.is-pending{opacity:.62}
+.distribution-row.is-pending .distribution-count{color:var(--muted)}
+.setup-rule-result{margin-bottom:24px}
+
+/* Chance gegen Risiko auf der Einstiegsflaeche. Zwei Saeulen
+   nebeneinander, nie eine allein: eine Chancenzahl ohne ihre Kehrseite
+   ist die halbe Wahrheit, die aus Forschung eine Erzaehlung macht. */
+.balance-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.balance-side{padding:12px 14px;border:1px solid var(--line);border-radius:10px}
+.balance-side strong{display:block;font-size:26px;font-variant-numeric:tabular-nums;color:var(--positive)}
+.balance-side.is-down strong{color:var(--negative)}
+.balance-side .muted{display:block;font-size:13px;line-height:1.35;margin-top:2px}
+.strength-section .factor-strip{margin-top:4px}
+@media (max-width:420px){.balance-pair{grid-template-columns:1fr}}
+
+/* Marktumfeld. Sechs Anteile nebeneinander, jeder mit seinem Nenner -
+   ein Prozentsatz ohne die Zahl dahinter laedt zum Ueberlesen ein. */
+.regime-lead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:8px 0}
+.regime-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.regime-measure{padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.regime-measure strong{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.regime-measure span{display:block;font-size:13px;line-height:1.3}
+.setup-badge.state-BROAD_STRENGTH{border-color:var(--positive);color:var(--positive)}
+.setup-badge.state-BROAD_WEAKNESS{border-color:var(--negative);color:var(--negative)}
+.setup-badge.state-MIXED{color:var(--muted)}

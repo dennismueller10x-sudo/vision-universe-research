@@ -37,6 +37,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const engines = join(root, "quant", "engines");
 
 const MarketFactors = require(join(engines, "market-factors.js"));
+const Semantics = require(join(engines, "return-semantics.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
 const MarketStore = require(join(engines, "market-store.js"));
 const RankingHygiene = require(join(engines, "ranking-hygiene.js"));
@@ -109,20 +110,37 @@ console.log(`  Titel: ${universe.securities.length}`);
 let benchmark = null;
 const benchPayload = store.readBars("ref_" + BENCHMARK, "working");
 if (benchPayload && Array.isArray(benchPayload.bars) && benchPayload.bars.length) {
-  const basis = MarketFactors.priceBasis(benchPayload.bars, benchPayload.adjustmentStatus);
+  /* SEIT DER OWNER-ENTSCHEIDUNG VOM 2026-09-24 GEBUNDEN.
+
+     Die Vergleichsreihe der relativen Staerke traegt dieselbe Basis wie
+     der Titel, gegen den sie verglichen wird: splitbereinigter Kurs.
+     Eine Gesamtrenditereihe gegen einen Kursverlauf zu halten hiesse,
+     die Dividendenrendite des Index in die relative Staerke jedes Titels
+     hineinzurechnen.
+
+     Die Reihe wird konstruiert, nicht ausgewaehlt - der Anbieter
+     liefert Rohkurs und Splitfaktor, und daraus entsteht sie. */
+  const benchSeries = MarketFactors.priceSeries(
+    benchPayload.bars, benchPayload.adjustmentStatus, "relativeStrengthBenchmark");
   benchmark = {
     id: BENCHMARK,
+    returnBasis: benchSeries.basis,
+    priceSource: benchSeries.source,
     /* Die Datumsspalte gehoert dazu: ohne sie vergleicht ein Titel mit
        aelterem Stichtag gegen den heutigen Indexstand. */
+    adjustmentStatus: benchPayload.adjustmentStatus || null,
+    adjustmentClaim: benchPayload.adjustmentClaim || null,
     dates: benchPayload.bars.map((b) => b.date),
-    closes: benchPayload.bars.map((b) => {
-      const v = b[basis];
-      return typeof v === "number" && isFinite(v) && v > 0 ? v : b.close;
-    }),
+    closes: benchSeries.close.map((v) => (typeof v === "number" && isFinite(v) && v > 0 ? v : null)),
     last: benchPayload.bars[benchPayload.bars.length - 1].date,
     bars: benchPayload.bars.length
   };
-  console.log(`  Benchmark: ${BENCHMARK} (${benchmark.bars} Bars bis ${benchmark.last})`);
+  console.log(`  Benchmark: ${BENCHMARK} (${benchmark.bars} Bars bis ${benchmark.last}, ` +
+              `${benchmark.returnBasis} via ${benchmark.priceSource}, deklariert ${benchmark.adjustmentStatus})`);
+  if (benchmark.adjustmentClaim) {
+    console.log(`             bereinigte Spalte widerlegt (${benchmark.adjustmentClaim.refutedClaim} → ` +
+                `${benchmark.adjustmentClaim.ceiling}); Gesamtrendite dieser Reihe gesperrt.`);
+  }
 } else {
   console.log(`  Benchmark: ${BENCHMARK} nicht in der Arbeitsablage - relative Staerke bleibt leer.`);
 }
@@ -134,6 +152,9 @@ const t0 = Date.now();
 const rows = [];
 const skipped = [];
 const fieldCoverage = {};
+
+/* Gesammelt waehrend des Laufs, ausgewiesen am Ende. */
+const benchmarkFreshness = { staleSecurities: 0, maxLagSessions: 0, newestSecurityDate: null };
 
 function countField(name, status) {
   const c = (fieldCoverage[name] = fieldCoverage[name] ||
@@ -160,15 +181,49 @@ for (const sec of universe.securities) {
     continue;
   }
 
-  const factors = MarketFactors.computeFactors(
-    Object.assign({ ticker: sec.ticker }, payload),
-    { benchmark: benchmark });
+  /* Gebunden. Die ganze Faktorzeile rechnet auf splitbereinigtem Kurs:
+     gleitende Durchschnitte, 52-Wochen-Hoch, Renditen, Volatilitaet,
+     relative Staerke. Sie beschreibt Kursstruktur, und dafuer ist die
+     Gesamtrendite die falsche Reihe - eine Dividende ist keine
+     Kursbewegung.
+
+     Was ein Anleger inklusive Ausschuettungen verdient haette, ist eine
+     andere Frage und bekommt unten ihre eigene Zahl. */
+  let factors;
+  try {
+    factors = MarketFactors.computeFactors(
+      Object.assign({ ticker: sec.ticker }, payload),
+      { benchmark: benchmark, module: "quantV2Momentum" });
+  } catch (error) {
+    /* Seit der Bindung kann die Basis verweigert werden: wer keinen
+       Splitfaktor mitbringt, bekommt keine splitbereinigte Reihe und
+       auch keinen Ersatz. Das ist die gewollte Haerte - aber sie darf
+       einen Titel kosten und nicht den ganzen Lauf. Der Grund steht im
+       Bericht, damit aus dem Ausfall eine Zahl wird und keine Luecke. */
+    skipped.push({ ticker: sec.ticker,
+      reason: error.reason || "RETURN_BASIS_UNAVAILABLE",
+      message: error.message });
+    continue;
+  }
   if (factors.status !== "OK") {
     skipped.push({ ticker: sec.ticker, reason: "UNAVAILABLE", message: factors.statusReason });
     continue;
   }
 
+  if (factors.benchmarkStale) {
+    benchmarkFreshness.staleSecurities += 1;
+    if (Number.isFinite(factors.benchmarkLagSessions) &&
+        factors.benchmarkLagSessions > benchmarkFreshness.maxLagSessions) {
+      benchmarkFreshness.maxLagSessions = factors.benchmarkLagSessions;
+    }
+  }
+  if (factors.asOf && (!benchmarkFreshness.newestSecurityDate ||
+      factors.asOf > benchmarkFreshness.newestSecurityDate)) {
+    benchmarkFreshness.newestSecurityDate = factors.asOf;
+  }
+
   const publicFactors = MarketFactors.stripPriceLevels(factors);
+  const investor = MarketFactors.investorReturn(payload.bars, payload.adjustmentStatus);
 
   Object.keys(factors.fieldStatus).forEach((f) => {
     const st = factors.fieldStatus[f];
@@ -190,8 +245,27 @@ for (const sec of universe.securities) {
     bars: factors.bars,
     asOf: factors.asOf,
     basis: factors.basis,
+    /* Die Spalte allein sagt nicht, WAS in ihr steht: adjustedClose kann
+       splitbereinigt oder total-return-bereinigt sein, und das ist der
+       Unterschied, um den der Return-Semantics-Vertrag sich dreht. Ohne
+       diesen Stand im Artefakt laesst sich die heutige Basis des
+       Momentumfaktors nicht nachtraeglich feststellen - was genau die
+       Luecke war, die eine voreilige Bindung beinahe verdeckt haette. */
+    adjustmentStatus: payload.adjustmentStatus || null,
+    /* Was der Anbieter liefert - und daneben, worauf wirklich gerechnet
+       wurde. Seit Option C sind das zwei verschiedene Dinge: geliefert
+       wird eine gesamtrenditebereinigte Spalte, gerechnet wird auf der
+       daraus nicht ableitbaren, sondern aus Rohkurs und Splitfaktor
+       rekonstruierten splitbereinigten Reihe. */
+    providedBasis: Semantics.basisOfAdjustmentStatus(payload.adjustmentStatus),
+    returnBasis: factors.returnBasis,
+    priceSource: factors.priceSource,
     values: publicFactors.values,
-    fieldStatus: publicFactors.fieldStatus
+    fieldStatus: publicFactors.fieldStatus,
+    /* Die Anlegerrendite steht NEBEN den Faktorwerten, nicht in ihnen.
+       Sie beantwortet eine andere Frage und geht in keine Faktornote
+       ein - genau das ist Option C. */
+    investorReturn: investor
   });
 }
 
@@ -281,7 +355,35 @@ const provenance = {
   universeFile: universe.universeFile || null,
   provider: "tiingo",
   engine: MarketFactors.VERSION,
-  benchmark: benchmark ? { id: benchmark.id, bars: benchmark.bars, last: benchmark.last }
+  benchmark: benchmark ? {
+                           id: benchmark.id, bars: benchmark.bars, last: benchmark.last,
+                           returnBasis: benchmark.returnBasis, priceSource: benchmark.priceSource,
+                           /* Unter welcher Deklaration die Vergleichsreihe im
+                              Bestand liegt, und - falls ihre bereinigte
+                              Spalte widerlegt wurde - warum. Ohne diese
+                              Angabe liest sich eine rekonstruierte Reihe wie
+                              eine vom Anbieter bestaetigte. */
+                           adjustmentStatus: benchmark.adjustmentStatus,
+                           adjustmentClaim: benchmark.adjustmentClaim,
+                           /* DIE FRISCHE DER VERGLEICHSREIHE
+
+                              Ein Benchmark, der hinter den Titeln
+                              zurueckliegt, ist kein fehlender Benchmark -
+                              er ist ein falscher. Die relative Staerke
+                              verglich sonst Kursbewegung bis heute gegen
+                              einen Index von vorletzter Woche und wies
+                              die Differenz als Vorsprung aus.
+
+                              Deshalb steht hier, wie viele Titel ihre
+                              relative Staerke deswegen NICHT bekommen
+                              haben. Null ist die Aussage "der Vergleich
+                              trug"; alles andere nennt den Preis. */
+                           maxLagSessions: MarketFactors.MAX_BENCHMARK_LAG_SESSIONS,
+                           newestSecurityDate: benchmarkFreshness.newestSecurityDate,
+                           lagBehindNewestSessions: benchmarkFreshness.maxLagSessions,
+                           securitiesWithoutRelativeStrength: benchmarkFreshness.staleSecurities,
+                           state: benchmarkFreshness.staleSecurities > 0 ? "STALE" : "CURRENT"
+                         }
                        : { id: BENCHMARK, status: "SOURCE_MISSING",
                            note: "Keine Benchmarkreihe in der Arbeitsablage. Relative Staerke " +
                                  "bleibt fuer alle Titel leer." },
@@ -378,6 +480,21 @@ questions.forEach((q) => {
                 (q.top.length ? `  Spitze: ${q.top[0].ticker}` : ""));
   }
 });
+/* Die Frische der Vergleichsreihe gehoert in die Zusammenfassung des
+   Laufs, nicht nur ins Artefakt: ein Benchmark, der zurueckliegt, kostet
+   Titel ihre relative Staerke, und das soll man sehen, ohne eine Datei
+   zu oeffnen. */
+if (benchmark) {
+  if (benchmarkFreshness.staleSecurities > 0) {
+    console.log(`\n  Vergleichsreihe zu alt: ${benchmark.id} endet am ${benchmark.last}, ` +
+      `juengster Titel am ${benchmarkFreshness.newestSecurityDate} ` +
+      `(${benchmarkFreshness.maxLagSessions} Sitzungen). ` +
+      `${benchmarkFreshness.staleSecurities} Titel ohne relative Staerke.`);
+  } else {
+    console.log(`\n  Vergleichsreihe aktuell: ${benchmark.id} bis ${benchmark.last}.`);
+  }
+}
+
 console.log(`\n  ${summaryFile.replace(root + "/", "")}`);
 console.log(`  ${detailFile.replace(root + "/", "")}` +
             (detailInRepo ? "" : "   (Arbeitsablage - zu gross fuer die Auslieferung)"));

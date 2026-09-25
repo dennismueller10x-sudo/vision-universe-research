@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T12:17:29.066Z",
+  "generatedAt": "2026-09-25T11:31:49.330Z",
   "provider": "tiingo",
   "universeId": "TIINGO_PHASE4A_TESTSET",
   "boundary": "Diese Titel erhalten AUSSCHLIESSLICH echte Kursdaten von Tiingo. Sie bekommen keine Fundamentaldaten und damit keinen vollstaendigen VU Quant Score. Reale Unternehmen mit synthetischen Fundamentalzahlen zu verbinden bleibt ausgeschlossen - das ist seit Phase 1 die Grenze und aendert sich hier nicht.",
@@ -123,6 +123,16 @@
       "historicalConsensus": null,
       "pointInTime": null,
       "revisionHistory": null
+    },
+    "fx": {
+      "fxCurrent": null,
+      "fxDaily": null,
+      "fxHistoricalDaily": null,
+      "fxIntraday": null,
+      "fxRealtime": null,
+      "fxWebsocket": null,
+      "fxCrossPairs": null,
+      "fxBulkQuotes": null
     }
   },
   "evidence": {},
@@ -160,37 +170,38 @@
   "quota": {
     "minuteUsed": 99,
     "minuteLimit": 100,
-    "hourUsed": 5933,
+    "hourUsed": 5959,
     "hourLimit": 7500,
-    "dayUsed": 6422,
+    "dayUsed": 6533,
     "dayLimit": 50000,
     "minuteRemaining": 1,
-    "hourRemaining": 1567,
-    "dayRemaining": 43578,
-    "bytesUsed": 13258,
+    "hourRemaining": 1541,
+    "dayRemaining": 43467,
+    "bytesUsed": 1427515,
     "bytesLimit": null,
     "bytesRemaining": null
   },
   "summary": {
     "requested": 6876,
-    "ok": 6419,
-    "failed": 1,
-    "rejected": 456,
-    "skipped": 454,
-    "requests": 6422,
+    "ok": 6531,
+    "failed": 0,
+    "rejected": 345,
+    "skipped": 343,
+    "requests": 6533,
     "cacheHits": 0,
     "retries": 0,
-    "bytesReceived": 13258,
+    "bytesReceived": 1427515,
     "deferredByClass": {
-      "TEMPORARY_REJECT": 454
+      "TEMPORARY_REJECT": 343
     },
     "retriedAfterRejection": 0,
-    "recoveredAfterRejection": 0
+    "recoveredAfterRejection": 0,
+    "reconstructibleFallback": 0
   },
   "rejectionLedger": {
-    "offen": 456,
+    "offen": 345,
     "PERMANENT_REJECT": 0,
-    "TEMPORARY_REJECT": 456,
+    "TEMPORARY_REJECT": 345,
     "STALE_REJECT": 0
   },
   "securities": {
@@ -472,7 +483,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:41:52.828Z"
+      "rejectedAt": "2026-09-25T03:26:40.545Z"
     },
     "ref_ABTS": {
       "ticker": "ABTS",
@@ -722,13 +733,9 @@
     },
     "ref_ACP_P_A": {
       "ticker": "ACP-P-A",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:41:55.261Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_ACR": {
       "ticker": "ACR",
@@ -1092,7 +1099,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:42:53.133Z"
+      "rejectedAt": "2026-09-25T03:27:41.007Z"
     },
     "ref_AEHR": {
       "ticker": "AEHR",
@@ -1144,7 +1151,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:42:53.632Z"
+      "rejectedAt": "2026-09-25T03:27:41.938Z"
     },
     "ref_AEP": {
       "ticker": "AEP",
@@ -1280,13 +1287,9 @@
     },
     "ref_AG": {
       "ticker": "AG",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:42:54.944Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_AGBK": {
       "ticker": "AGBK",
@@ -1452,7 +1455,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:50.781Z"
+      "rejectedAt": "2026-09-25T03:28:35.397Z"
     },
     "ref_AGR": {
       "ticker": "AGR",
@@ -1504,7 +1507,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:51.302Z"
+      "rejectedAt": "2026-09-25T03:28:36.266Z"
     },
     "ref_AHL_P_D": {
       "ticker": "AHL-P-D",
@@ -1610,13 +1613,9 @@
     },
     "ref_AIG": {
       "ticker": "AIG",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:52.207Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_AIHS": {
       "ticker": "AIHS",
@@ -1644,7 +1643,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:52.464Z"
+      "rejectedAt": "2026-09-25T03:28:39.624Z"
     },
     "ref_AIIR": {
       "ticker": "AIIR",
@@ -1714,7 +1713,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:53.149Z"
+      "rejectedAt": "2026-09-25T03:28:40.817Z"
     },
     "ref_AIRG": {
       "ticker": "AIRG",
@@ -1790,7 +1789,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:53.847Z"
+      "rejectedAt": "2026-09-25T03:28:42.363Z"
     },
     "ref_AIZ": {
       "ticker": "AIZ",
@@ -1830,7 +1829,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:54.215Z"
+      "rejectedAt": "2026-09-25T03:28:43.074Z"
     },
     "ref_AKBA": {
       "ticker": "AKBA",
@@ -1876,7 +1875,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:54.701Z"
+      "rejectedAt": "2026-09-25T03:28:43.831Z"
     },
     "ref_AL": {
       "ticker": "AL",
@@ -2018,7 +2017,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:43:56.191Z"
+      "rejectedAt": "2026-09-25T03:28:47.032Z"
     },
     "ref_ALK": {
       "ticker": "ALK",
@@ -2088,7 +2087,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:50.884Z"
+      "rejectedAt": "2026-09-25T03:29:35.385Z"
     },
     "ref_ALLT": {
       "ticker": "ALLT",
@@ -2158,7 +2157,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:51.589Z"
+      "rejectedAt": "2026-09-25T03:29:36.945Z"
     },
     "ref_ALP": {
       "ticker": "ALP",
@@ -2168,7 +2167,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:51.654Z"
+      "rejectedAt": "2026-09-25T03:29:37.087Z"
     },
     "ref_ALPN": {
       "ticker": "ALPN",
@@ -2346,7 +2345,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:53.239Z"
+      "rejectedAt": "2026-09-25T03:29:40.841Z"
     },
     "ref_AMCI": {
       "ticker": "AMCI",
@@ -2416,7 +2415,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:53.820Z"
+      "rejectedAt": "2026-09-25T03:29:42.177Z"
     },
     "ref_AMJB": {
       "ticker": "AMJB",
@@ -2564,7 +2563,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:55.337Z"
+      "rejectedAt": "2026-09-25T03:29:45.246Z"
     },
     "ref_AMT": {
       "ticker": "AMT",
@@ -2604,7 +2603,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:55.789Z"
+      "rejectedAt": "2026-09-25T03:29:45.910Z"
     },
     "ref_AMX": {
       "ticker": "AMX",
@@ -2680,7 +2679,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:44:56.550Z"
+      "rejectedAt": "2026-09-25T03:29:47.857Z"
     },
     "ref_ANGI": {
       "ticker": "ANGI",
@@ -3026,7 +3025,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:45:53.901Z"
+      "rejectedAt": "2026-09-25T03:30:42.924Z"
     },
     "ref_APWC": {
       "ticker": "APWC",
@@ -3126,7 +3125,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:45:54.805Z"
+      "rejectedAt": "2026-09-25T03:30:44.699Z"
     },
     "ref_ARBKL": {
       "ticker": "ARBKL",
@@ -3202,7 +3201,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:45:55.622Z"
+      "rejectedAt": "2026-09-25T03:30:46.122Z"
     },
     "ref_AREC": {
       "ticker": "AREC",
@@ -3218,13 +3217,9 @@
     },
     "ref_ARES": {
       "ticker": "ARES",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:45:55.800Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_ARGX": {
       "ticker": "ARGX",
@@ -3330,7 +3325,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:46:50.843Z"
+      "rejectedAt": "2026-09-25T03:31:35.348Z"
     },
     "ref_ARQT": {
       "ticker": "ARQT",
@@ -3370,7 +3365,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:46:51.200Z"
+      "rejectedAt": "2026-09-25T03:31:36.292Z"
     },
     "ref_ARTNA": {
       "ticker": "ARTNA",
@@ -3530,13 +3525,9 @@
     },
     "ref_ASO": {
       "ticker": "ASO",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:46:52.947Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_ASPI": {
       "ticker": "ASPI",
@@ -3576,7 +3567,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:46:53.334Z"
+      "rejectedAt": "2026-09-25T03:31:40.650Z"
     },
     "ref_ASTC": {
       "ticker": "ASTC",
@@ -3880,7 +3871,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:46:56.241Z"
+      "rejectedAt": "2026-09-25T03:31:47.116Z"
     },
     "ref_ATPC": {
       "ticker": "ATPC",
@@ -3890,7 +3881,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:46:56.279Z"
+      "rejectedAt": "2026-09-25T03:31:47.289Z"
     },
     "ref_ATR": {
       "ticker": "ATR",
@@ -3936,7 +3927,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:47:50.626Z"
+      "rejectedAt": "2026-09-25T03:32:34.882Z"
     },
     "ref_ATXG": {
       "ticker": "ATXG",
@@ -4048,7 +4039,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:47:51.837Z"
+      "rejectedAt": "2026-09-25T03:32:37.503Z"
     },
     "ref_AV": {
       "ticker": "AV",
@@ -4208,7 +4199,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:47:53.517Z"
+      "rejectedAt": "2026-09-25T03:32:41.105Z"
     },
     "ref_AVX": {
       "ticker": "AVX",
@@ -4218,7 +4209,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:47:53.587Z"
+      "rejectedAt": "2026-09-25T03:32:41.273Z"
     },
     "ref_AVXL": {
       "ticker": "AVXL",
@@ -4300,7 +4291,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:47:54.380Z"
+      "rejectedAt": "2026-09-25T03:32:43.315Z"
     },
     "ref_AXON": {
       "ticker": "AXON",
@@ -4358,7 +4349,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:47:54.923Z"
+      "rejectedAt": "2026-09-25T03:32:44.315Z"
     },
     "ref_AXTX": {
       "ticker": "AXTX",
@@ -4422,7 +4413,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:47:55.510Z"
+      "rejectedAt": "2026-09-25T03:32:45.438Z"
     },
     "ref_AZZ": {
       "ticker": "AZZ",
@@ -4672,13 +4663,9 @@
     },
     "ref_BBCP": {
       "ticker": "BBCP",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:48:51.917Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_BBCQ": {
       "ticker": "BBCQ",
@@ -4688,13 +4675,9 @@
     },
     "ref_BBD": {
       "ticker": "BBD",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:48:52.078Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_BBDC": {
       "ticker": "BBDC",
@@ -4740,7 +4723,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:48:52.544Z"
+      "rejectedAt": "2026-09-25T03:33:39.082Z"
     },
     "ref_BBNX": {
       "ticker": "BBNX",
@@ -5110,7 +5093,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:48:56.234Z"
+      "rejectedAt": "2026-09-25T03:33:46.919Z"
     },
     "ref_BEP": {
       "ticker": "BEP",
@@ -5294,7 +5277,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:49:51.985Z"
+      "rejectedAt": "2026-09-25T03:34:37.895Z"
     },
     "ref_BGFV": {
       "ticker": "BGFV",
@@ -5328,7 +5311,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:49:52.375Z"
+      "rejectedAt": "2026-09-25T03:34:38.738Z"
     },
     "ref_BGM": {
       "ticker": "BGM",
@@ -5596,7 +5579,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:49:55.047Z"
+      "rejectedAt": "2026-09-25T03:34:44.534Z"
     },
     "ref_BIRK": {
       "ticker": "BIRK",
@@ -5618,7 +5601,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:49:55.215Z"
+      "rejectedAt": "2026-09-25T03:34:44.905Z"
     },
     "ref_BIXI": {
       "ticker": "BIXI",
@@ -5646,7 +5629,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:49:55.435Z"
+      "rejectedAt": "2026-09-25T03:34:45.313Z"
     },
     "ref_BJRI": {
       "ticker": "BJRI",
@@ -5842,7 +5825,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:50:51.244Z"
+      "rejectedAt": "2026-09-25T03:35:36.135Z"
     },
     "ref_BLNK": {
       "ticker": "BLNK",
@@ -5864,7 +5847,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:50:51.447Z"
+      "rejectedAt": "2026-09-25T03:35:36.736Z"
     },
     "ref_BLSH": {
       "ticker": "BLSH",
@@ -6066,7 +6049,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:50:53.529Z"
+      "rejectedAt": "2026-09-25T03:35:41.024Z"
     },
     "ref_BNED": {
       "ticker": "BNED",
@@ -6076,7 +6059,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:50:53.589Z"
+      "rejectedAt": "2026-09-25T03:35:41.191Z"
     },
     "ref_BNGO": {
       "ticker": "BNGO",
@@ -6086,7 +6069,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:50:53.644Z"
+      "rejectedAt": "2026-09-25T03:35:41.362Z"
     },
     "ref_BNH": {
       "ticker": "BNH",
@@ -6108,7 +6091,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:50:53.833Z"
+      "rejectedAt": "2026-09-25T03:35:42.067Z"
     },
     "ref_BNL": {
       "ticker": "BNL",
@@ -6300,13 +6283,9 @@
     },
     "ref_BPRE": {
       "ticker": "BPRE",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:50:55.687Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_BPRN": {
       "ticker": "BPRN",
@@ -6508,7 +6487,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:51:51.584Z"
+      "rejectedAt": "2026-09-25T03:36:37.209Z"
     },
     "ref_BRO": {
       "ticker": "BRO",
@@ -6674,13 +6653,9 @@
     },
     "ref_BSVN": {
       "ticker": "BSVN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:51:53.383Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_BSX": {
       "ticker": "BSX",
@@ -6726,7 +6701,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:51:53.787Z"
+      "rejectedAt": "2026-09-25T03:36:41.666Z"
     },
     "ref_BTCW": {
       "ticker": "BTCW",
@@ -6874,7 +6849,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:51:55.266Z"
+      "rejectedAt": "2026-09-25T03:36:45.086Z"
     },
     "ref_BUSE": {
       "ticker": "BUSE",
@@ -6932,13 +6907,9 @@
     },
     "ref_BW_P_A": {
       "ticker": "BW-P-A",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:51:55.826Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_BWA": {
       "ticker": "BWA",
@@ -7080,7 +7051,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:52:51.080Z"
+      "rejectedAt": "2026-09-25T03:37:35.724Z"
     },
     "ref_BYD": {
       "ticker": "BYD",
@@ -7408,13 +7379,9 @@
     },
     "ref_CASH": {
       "ticker": "CASH",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:52:54.586Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CASI": {
       "ticker": "CASI",
@@ -7694,13 +7661,9 @@
     },
     "ref_CCID": {
       "ticker": "CCID",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:53:51.230Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CCII": {
       "ticker": "CCII",
@@ -7914,7 +7877,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:53:53.578Z"
+      "rejectedAt": "2026-09-25T03:38:40.982Z"
     },
     "ref_CDTG": {
       "ticker": "CDTG",
@@ -7924,7 +7887,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:53:53.660Z"
+      "rejectedAt": "2026-09-25T03:38:41.237Z"
     },
     "ref_CDTTW": {
       "ticker": "CDTTW",
@@ -8078,7 +8041,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:53:55.166Z"
+      "rejectedAt": "2026-09-25T03:38:44.808Z"
     },
     "ref_CERS": {
       "ticker": "CERS",
@@ -8106,7 +8069,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:53:55.370Z"
+      "rejectedAt": "2026-09-25T03:38:45.304Z"
     },
     "ref_CETY": {
       "ticker": "CETY",
@@ -8116,7 +8079,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:53:55.440Z"
+      "rejectedAt": "2026-09-25T03:38:45.533Z"
     },
     "ref_CEVA": {
       "ticker": "CEVA",
@@ -8348,7 +8311,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:51.541Z"
+      "rejectedAt": "2026-09-25T03:39:36.804Z"
     },
     "ref_CHGG": {
       "ticker": "CHGG",
@@ -8412,7 +8375,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:52.185Z"
+      "rejectedAt": "2026-09-25T03:39:38.462Z"
     },
     "ref_CHNU": {
       "ticker": "CHNU",
@@ -8422,7 +8385,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:52.281Z"
+      "rejectedAt": "2026-09-25T03:39:38.566Z"
     },
     "ref_CHOW": {
       "ticker": "CHOW",
@@ -8444,7 +8407,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:52.496Z"
+      "rejectedAt": "2026-09-25T03:39:38.910Z"
     },
     "ref_CHRD": {
       "ticker": "CHRD",
@@ -8472,53 +8435,33 @@
     },
     "ref_CHSCL": {
       "ticker": "CHSCL",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:52.799Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CHSCM": {
       "ticker": "CHSCM",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:52.848Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CHSCN": {
       "ticker": "CHSCN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:52.935Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CHSCO": {
       "ticker": "CHSCO",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:52.998Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CHSCP": {
       "ticker": "CHSCP",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:53.060Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CHSN": {
       "ticker": "CHSN",
@@ -8528,7 +8471,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:53.143Z"
+      "rejectedAt": "2026-09-25T03:39:39.975Z"
     },
     "ref_CHT": {
       "ticker": "CHT",
@@ -8646,7 +8589,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:54.337Z"
+      "rejectedAt": "2026-09-25T03:39:42.787Z"
     },
     "ref_CIM": {
       "ticker": "CIM",
@@ -8734,7 +8677,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:54:55.162Z"
+      "rejectedAt": "2026-09-25T03:39:44.762Z"
     },
     "ref_CITE": {
       "ticker": "CITE",
@@ -9056,7 +8999,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:55:52.249Z"
+      "rejectedAt": "2026-09-25T03:40:38.483Z"
     },
     "ref_CMDB": {
       "ticker": "CMDB",
@@ -9252,7 +9195,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:55:54.313Z"
+      "rejectedAt": "2026-09-25T03:40:42.669Z"
     },
     "ref_CNEY": {
       "ticker": "CNEY",
@@ -9268,7 +9211,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:55:54.434Z"
+      "rejectedAt": "2026-09-25T03:40:42.926Z"
     },
     "ref_CNH": {
       "ticker": "CNH",
@@ -9308,13 +9251,9 @@
     },
     "ref_CNNE": {
       "ticker": "CNNE",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:55:54.826Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CNO": {
       "ticker": "CNO",
@@ -9372,7 +9311,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:55:55.404Z"
+      "rejectedAt": "2026-09-25T03:40:45.419Z"
     },
     "ref_CNSY": {
       "ticker": "CNSY",
@@ -9388,7 +9327,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:55:55.537Z"
+      "rejectedAt": "2026-09-25T03:40:45.670Z"
     },
     "ref_CNTX": {
       "ticker": "CNTX",
@@ -9410,7 +9349,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:55:55.654Z"
+      "rejectedAt": "2026-09-25T03:40:46.024Z"
     },
     "ref_CNX": {
       "ticker": "CNX",
@@ -9822,7 +9761,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:56:53.819Z"
+      "rejectedAt": "2026-09-25T03:41:41.657Z"
     },
     "ref_CPRI": {
       "ticker": "CPRI",
@@ -9928,13 +9867,9 @@
     },
     "ref_CRBG": {
       "ticker": "CRBG",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:56:54.868Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CRBP": {
       "ticker": "CRBP",
@@ -9944,7 +9879,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:56:54.926Z"
+      "rejectedAt": "2026-09-25T03:41:44.469Z"
     },
     "ref_CRBU": {
       "ticker": "CRBU",
@@ -10140,13 +10075,9 @@
     },
     "ref_CRS": {
       "ticker": "CRS",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:56:56.960Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CRSP": {
       "ticker": "CRSP",
@@ -10198,7 +10129,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:57:51.177Z"
+      "rejectedAt": "2026-09-25T03:42:35.904Z"
     },
     "ref_CRVS": {
       "ticker": "CRVS",
@@ -10232,13 +10163,9 @@
     },
     "ref_CRY": {
       "ticker": "CRY",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:57:51.487Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CSAI": {
       "ticker": "CSAI",
@@ -10248,9 +10175,9 @@
     },
     "ref_CSAN": {
       "ticker": "CSAN",
-      "ok": false,
-      "reason": "requestFailed",
-      "message": "HTTP 404"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_CSBR": {
       "ticker": "CSBR",
@@ -10428,7 +10355,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:57:53.723Z"
+      "rejectedAt": "2026-09-25T03:42:41.023Z"
     },
     "ref_CTGG": {
       "ticker": "CTGG",
@@ -10492,7 +10419,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:57:54.261Z"
+      "rejectedAt": "2026-09-25T03:42:42.507Z"
     },
     "ref_CTO": {
       "ticker": "CTO",
@@ -10580,7 +10507,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:57:55.088Z"
+      "rejectedAt": "2026-09-25T03:42:44.728Z"
     },
     "ref_CUBB": {
       "ticker": "CUBB",
@@ -10716,7 +10643,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:57:56.412Z"
+      "rejectedAt": "2026-09-25T03:42:47.307Z"
     },
     "ref_CVLG": {
       "ticker": "CVLG",
@@ -10738,7 +10665,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:57:56.602Z"
+      "rejectedAt": "2026-09-25T03:42:47.683Z"
     },
     "ref_CVNA": {
       "ticker": "CVNA",
@@ -10898,7 +10825,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:52.085Z"
+      "rejectedAt": "2026-09-25T03:43:37.863Z"
     },
     "ref_CYD": {
       "ticker": "CYD",
@@ -10920,7 +10847,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:52.297Z"
+      "rejectedAt": "2026-09-25T03:43:38.442Z"
     },
     "ref_CYPH": {
       "ticker": "CYPH",
@@ -10996,7 +10923,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:53.163Z"
+      "rejectedAt": "2026-09-25T03:43:39.743Z"
     },
     "ref_DAIO": {
       "ticker": "DAIO",
@@ -11084,7 +11011,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:53.993Z"
+      "rejectedAt": "2026-09-25T03:43:41.857Z"
     },
     "ref_DBI": {
       "ticker": "DBI",
@@ -11124,7 +11051,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:54.337Z"
+      "rejectedAt": "2026-09-25T03:43:42.575Z"
     },
     "ref_DBX": {
       "ticker": "DBX",
@@ -11218,7 +11145,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:55.174Z"
+      "rejectedAt": "2026-09-25T03:43:44.850Z"
     },
     "ref_DD": {
       "ticker": "DD",
@@ -11366,7 +11293,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:56.594Z"
+      "rejectedAt": "2026-09-25T03:43:47.648Z"
     },
     "ref_DFH": {
       "ticker": "DFH",
@@ -11388,7 +11315,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:58:56.806Z"
+      "rejectedAt": "2026-09-25T03:43:48.048Z"
     },
     "ref_DFSC": {
       "ticker": "DFSC",
@@ -11440,7 +11367,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:50.915Z"
+      "rejectedAt": "2026-09-25T03:44:35.513Z"
     },
     "ref_DGX": {
       "ticker": "DGX",
@@ -11510,13 +11437,9 @@
     },
     "ref_DIN": {
       "ticker": "DIN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:51.821Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_DINE": {
       "ticker": "DINE",
@@ -11550,13 +11473,9 @@
     },
     "ref_DIT": {
       "ticker": "DIT",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:52.326Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_DIVE": {
       "ticker": "DIVE",
@@ -11710,23 +11629,15 @@
     },
     "ref_DLY": {
       "ticker": "DLY",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:54.015Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_DMA": {
       "ticker": "DMA",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:54.073Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_DMAA": {
       "ticker": "DMAA",
@@ -11784,7 +11695,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:54.586Z"
+      "rejectedAt": "2026-09-25T03:44:43.135Z"
     },
     "ref_DNLI": {
       "ticker": "DNLI",
@@ -11860,17 +11771,13 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:55.265Z"
+      "rejectedAt": "2026-09-25T03:44:45.049Z"
     },
     "ref_DOLE": {
       "ticker": "DOLE",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:55.328Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_DOMH": {
       "ticker": "DOMH",
@@ -11946,7 +11853,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:56.051Z"
+      "rejectedAt": "2026-09-25T03:44:46.606Z"
     },
     "ref_DPZ": {
       "ticker": "DPZ",
@@ -12004,7 +11911,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:56.586Z"
+      "rejectedAt": "2026-09-25T03:44:47.584Z"
     },
     "ref_DRNL": {
       "ticker": "DRNL",
@@ -12032,7 +11939,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T08:59:56.817Z"
+      "rejectedAt": "2026-09-25T03:44:48.130Z"
     },
     "ref_DRVN": {
       "ticker": "DRVN",
@@ -12198,7 +12105,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:52.441Z"
+      "rejectedAt": "2026-09-25T03:45:38.799Z"
     },
     "ref_DUOL": {
       "ticker": "DUOL",
@@ -12238,7 +12145,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:52.922Z"
+      "rejectedAt": "2026-09-25T03:45:39.476Z"
     },
     "ref_DVN": {
       "ticker": "DVN",
@@ -12272,7 +12179,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:53.244Z"
+      "rejectedAt": "2026-09-25T03:45:40.201Z"
     },
     "ref_DX": {
       "ticker": "DX",
@@ -12330,7 +12237,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:53.720Z"
+      "rejectedAt": "2026-09-25T03:45:41.199Z"
     },
     "ref_DXYZ": {
       "ticker": "DXYZ",
@@ -12400,13 +12307,9 @@
     },
     "ref_EASY": {
       "ticker": "EASY",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:54.443Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_EAT": {
       "ticker": "EAT",
@@ -12572,7 +12475,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:56.016Z"
+      "rejectedAt": "2026-09-25T03:45:46.517Z"
     },
     "ref_EDHL": {
       "ticker": "EDHL",
@@ -12582,7 +12485,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:56.063Z"
+      "rejectedAt": "2026-09-25T03:45:46.620Z"
     },
     "ref_EDIT": {
       "ticker": "EDIT",
@@ -12658,7 +12561,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:00:56.772Z"
+      "rejectedAt": "2026-09-25T03:45:47.954Z"
     },
     "ref_EFC": {
       "ticker": "EFC",
@@ -12854,7 +12757,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:01:52.736Z"
+      "rejectedAt": "2026-09-25T03:46:39.487Z"
     },
     "ref_EL": {
       "ticker": "EL",
@@ -12876,7 +12779,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:01:53.022Z"
+      "rejectedAt": "2026-09-25T03:46:40.008Z"
     },
     "ref_ELAN": {
       "ticker": "ELAN",
@@ -12970,7 +12873,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:01:53.890Z"
+      "rejectedAt": "2026-09-25T03:46:41.508Z"
     },
     "ref_ELS": {
       "ticker": "ELS",
@@ -12998,7 +12901,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:01:54.220Z"
+      "rejectedAt": "2026-09-25T03:46:42.091Z"
     },
     "ref_ELUT": {
       "ticker": "ELUT",
@@ -13206,13 +13109,9 @@
     },
     "ref_ENS": {
       "ticker": "ENS",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:01:56.159Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_ENSC": {
       "ticker": "ENSC",
@@ -13222,7 +13121,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:01:56.231Z"
+      "rejectedAt": "2026-09-25T03:46:46.950Z"
     },
     "ref_ENSG": {
       "ticker": "ENSG",
@@ -13280,7 +13179,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:01:56.747Z"
+      "rejectedAt": "2026-09-25T03:46:47.955Z"
     },
     "ref_EOG": {
       "ticker": "EOG",
@@ -13596,13 +13495,9 @@
     },
     "ref_ESP": {
       "ticker": "ESP",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:02:54.048Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_ESQ": {
       "ticker": "ESQ",
@@ -13738,7 +13633,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:02:55.470Z"
+      "rejectedAt": "2026-09-25T03:47:45.124Z"
     },
     "ref_EVBG": {
       "ticker": "EVBG",
@@ -13748,13 +13643,9 @@
     },
     "ref_EVC": {
       "ticker": "EVC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:02:55.604Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_EVCM": {
       "ticker": "EVCM",
@@ -13788,7 +13679,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:02:55.944Z"
+      "rejectedAt": "2026-09-25T03:47:46.152Z"
     },
     "ref_EVGO": {
       "ticker": "EVGO",
@@ -14020,7 +13911,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:51.754Z"
+      "rejectedAt": "2026-09-25T03:48:37.051Z"
     },
     "ref_EZPW": {
       "ticker": "EZPW",
@@ -14072,7 +13963,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:52.389Z"
+      "rejectedAt": "2026-09-25T03:48:38.339Z"
     },
     "ref_FACT": {
       "ticker": "FACT",
@@ -14190,7 +14081,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:53.715Z"
+      "rejectedAt": "2026-09-25T03:48:41.326Z"
     },
     "ref_FBNC": {
       "ticker": "FBNC",
@@ -14284,7 +14175,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:54.669Z"
+      "rejectedAt": "2026-09-25T03:48:43.109Z"
     },
     "ref_FCN": {
       "ticker": "FCN",
@@ -14336,7 +14227,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:55.184Z"
+      "rejectedAt": "2026-09-25T03:48:44.159Z"
     },
     "ref_FCX": {
       "ticker": "FCX",
@@ -14406,7 +14297,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:55.866Z"
+      "rejectedAt": "2026-09-25T03:48:45.877Z"
     },
     "ref_FEBO": {
       "ticker": "FEBO",
@@ -14428,7 +14319,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:56.090Z"
+      "rejectedAt": "2026-09-25T03:48:46.408Z"
     },
     "ref_FEIM": {
       "ticker": "FEIM",
@@ -14510,7 +14401,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:56.848Z"
+      "rejectedAt": "2026-09-25T03:48:47.916Z"
     },
     "ref_FFBC": {
       "ticker": "FFBC",
@@ -14538,23 +14429,15 @@
     },
     "ref_FG": {
       "ticker": "FG",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:57.130Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FGBI": {
       "ticker": "FGBI",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:03:57.188Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FGBIP": {
       "ticker": "FGBIP",
@@ -14666,13 +14549,9 @@
     },
     "ref_FINS": {
       "ticker": "FINS",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:04:51.943Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FINV": {
       "ticker": "FINV",
@@ -15036,13 +14915,9 @@
     },
     "ref_FNF": {
       "ticker": "FNF",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:04:56.053Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FNGR": {
       "ticker": "FNGR",
@@ -15106,13 +14981,9 @@
     },
     "ref_FNWD": {
       "ticker": "FNWD",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:04:56.685Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FOA": {
       "ticker": "FOA",
@@ -15320,7 +15191,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:05:52.500Z"
+      "rejectedAt": "2026-09-25T03:50:38.628Z"
     },
     "ref_FRGT": {
       "ticker": "FRGT",
@@ -15330,7 +15201,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:05:52.579Z"
+      "rejectedAt": "2026-09-25T03:50:38.961Z"
     },
     "ref_FRHC": {
       "ticker": "FRHC",
@@ -15340,13 +15211,9 @@
     },
     "ref_FRIZ": {
       "ticker": "FRIZ",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:05:52.688Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FRLN": {
       "ticker": "FRLN",
@@ -15356,7 +15223,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:05:52.769Z"
+      "rejectedAt": "2026-09-25T03:50:39.297Z"
     },
     "ref_FRME": {
       "ticker": "FRME",
@@ -15390,13 +15257,9 @@
     },
     "ref_FRO": {
       "ticker": "FRO",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:05:53.225Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FROG": {
       "ticker": "FROG",
@@ -15496,13 +15359,9 @@
     },
     "ref_FSK": {
       "ticker": "FSK",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:05:54.404Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FSLR": {
       "ticker": "FSLR",
@@ -15536,13 +15395,9 @@
     },
     "ref_FSOL": {
       "ticker": "FSOL",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:05:54.744Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_FSP": {
       "ticker": "FSP",
@@ -15840,7 +15695,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:06:51.123Z"
+      "rejectedAt": "2026-09-25T03:51:36.037Z"
     },
     "ref_FWONA": {
       "ticker": "FWONA",
@@ -16036,13 +15891,9 @@
     },
     "ref_GBLI": {
       "ticker": "GBLI",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:06:53.576Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_GBND": {
       "ticker": "GBND",
@@ -16112,7 +15963,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:06:54.353Z"
+      "rejectedAt": "2026-09-25T03:51:42.474Z"
     },
     "ref_GD": {
       "ticker": "GD",
@@ -16128,7 +15979,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:06:54.472Z"
+      "rejectedAt": "2026-09-25T03:51:42.714Z"
     },
     "ref_GDDY": {
       "ticker": "GDDY",
@@ -16150,7 +16001,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:06:54.662Z"
+      "rejectedAt": "2026-09-25T03:51:43.051Z"
     },
     "ref_GDOT": {
       "ticker": "GDOT",
@@ -16202,7 +16053,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:06:55.128Z"
+      "rejectedAt": "2026-09-25T03:51:43.857Z"
     },
     "ref_GDXU": {
       "ticker": "GDXU",
@@ -16518,7 +16369,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:07:51.895Z"
+      "rejectedAt": "2026-09-25T03:52:37.254Z"
     },
     "ref_GHXI": {
       "ticker": "GHXI",
@@ -16618,7 +16469,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:07:53.113Z"
+      "rejectedAt": "2026-09-25T03:52:39.968Z"
     },
     "ref_GIW": {
       "ticker": "GIW",
@@ -16976,7 +16827,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:07:56.836Z"
+      "rejectedAt": "2026-09-25T03:52:47.775Z"
     },
     "ref_GNLX": {
       "ticker": "GNLX",
@@ -16998,7 +16849,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:07:56.998Z"
+      "rejectedAt": "2026-09-25T03:52:48.180Z"
     },
     "ref_GNRC": {
       "ticker": "GNRC",
@@ -17158,7 +17009,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:08:52.192Z"
+      "rejectedAt": "2026-09-25T03:53:37.983Z"
     },
     "ref_GPAC": {
       "ticker": "GPAC",
@@ -17324,7 +17175,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:08:54.186Z"
+      "rejectedAt": "2026-09-25T03:53:42.108Z"
     },
     "ref_GREEL": {
       "ticker": "GREEL",
@@ -17346,7 +17197,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:08:54.360Z"
+      "rejectedAt": "2026-09-25T03:53:42.506Z"
     },
     "ref_GRML": {
       "ticker": "GRML",
@@ -17356,7 +17207,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:08:54.423Z"
+      "rejectedAt": "2026-09-25T03:53:42.610Z"
     },
     "ref_GRMN": {
       "ticker": "GRMN",
@@ -17390,7 +17241,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:08:54.768Z"
+      "rejectedAt": "2026-09-25T03:53:43.217Z"
     },
     "ref_GROV": {
       "ticker": "GROV",
@@ -17556,7 +17407,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:08:56.312Z"
+      "rejectedAt": "2026-09-25T03:53:46.773Z"
     },
     "ref_GT": {
       "ticker": "GT",
@@ -17578,7 +17429,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:08:56.577Z"
+      "rejectedAt": "2026-09-25T03:53:47.087Z"
     },
     "ref_GTE": {
       "ticker": "GTE",
@@ -17702,7 +17553,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:50.600Z"
+      "rejectedAt": "2026-09-25T03:54:35.879Z"
     },
     "ref_GWH": {
       "ticker": "GWH",
@@ -17718,13 +17569,9 @@
     },
     "ref_GWRS": {
       "ticker": "GWRS",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:51.385Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_GWW": {
       "ticker": "GWW",
@@ -17956,13 +17803,9 @@
     },
     "ref_HCA": {
       "ticker": "HCA",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:54.276Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_HCAC": {
       "ticker": "HCAC",
@@ -17978,7 +17821,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:54.388Z"
+      "rejectedAt": "2026-09-25T03:54:42.481Z"
     },
     "ref_HCAT": {
       "ticker": "HCAT",
@@ -18012,13 +17855,9 @@
     },
     "ref_HCKT": {
       "ticker": "HCKT",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:54.727Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_HCM": {
       "ticker": "HCM",
@@ -18046,7 +17885,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:55.036Z"
+      "rejectedAt": "2026-09-25T03:54:43.912Z"
     },
     "ref_HCWB": {
       "ticker": "HCWB",
@@ -18158,13 +17997,9 @@
     },
     "ref_HERZ": {
       "ticker": "HERZ",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:56.091Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_HESM": {
       "ticker": "HESM",
@@ -18294,7 +18129,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:09:57.468Z"
+      "rejectedAt": "2026-09-25T03:54:48.978Z"
     },
     "ref_HIPO": {
       "ticker": "HIPO",
@@ -18442,13 +18277,9 @@
     },
     "ref_HMN": {
       "ticker": "HMN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:10:52.585Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_HMNF": {
       "ticker": "HMNF",
@@ -18548,7 +18379,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:10:53.994Z"
+      "rejectedAt": "2026-09-25T03:55:41.406Z"
     },
     "ref_HOMB": {
       "ticker": "HOMB",
@@ -18756,13 +18587,9 @@
     },
     "ref_HRZN": {
       "ticker": "HRZN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:10:55.978Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_HSAI": {
       "ticker": "HSAI",
@@ -18784,7 +18611,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:10:56.179Z"
+      "rejectedAt": "2026-09-25T03:55:46.315Z"
     },
     "ref_HSDT": {
       "ticker": "HSDT",
@@ -18794,7 +18621,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:10:56.251Z"
+      "rejectedAt": "2026-09-25T03:55:46.504Z"
     },
     "ref_HSHP": {
       "ticker": "HSHP",
@@ -18930,7 +18757,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:10:57.689Z"
+      "rejectedAt": "2026-09-25T03:55:49.262Z"
     },
     "ref_HTT": {
       "ticker": "HTT",
@@ -18958,7 +18785,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:50.701Z"
+      "rejectedAt": "2026-09-25T03:56:36.029Z"
     },
     "ref_HUBG": {
       "ticker": "HUBG",
@@ -18998,7 +18825,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:51.748Z"
+      "rejectedAt": "2026-09-25T03:56:36.951Z"
     },
     "ref_HULL": {
       "ticker": "HULL",
@@ -19032,7 +18859,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:52.098Z"
+      "rejectedAt": "2026-09-25T03:56:37.746Z"
     },
     "ref_HURC": {
       "ticker": "HURC",
@@ -19102,13 +18929,9 @@
     },
     "ref_HWH": {
       "ticker": "HWH",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:52.956Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_HWKN": {
       "ticker": "HWKN",
@@ -19148,7 +18971,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:53.355Z"
+      "rejectedAt": "2026-09-25T03:56:40.545Z"
     },
     "ref_HYFT": {
       "ticker": "HYFT",
@@ -19188,7 +19011,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:53.973Z"
+      "rejectedAt": "2026-09-25T03:56:41.226Z"
     },
     "ref_HYNE": {
       "ticker": "HYNE",
@@ -19288,7 +19111,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:54.899Z"
+      "rejectedAt": "2026-09-25T03:56:43.415Z"
     },
     "ref_IBHM": {
       "ticker": "IBHM",
@@ -19310,13 +19133,9 @@
     },
     "ref_IBKR": {
       "ticker": "IBKR",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:55.121Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_IBM": {
       "ticker": "IBM",
@@ -19398,13 +19217,9 @@
     },
     "ref_ICE": {
       "ticker": "ICE",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:56.019Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_ICFI": {
       "ticker": "ICFI",
@@ -19456,7 +19271,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:56.458Z"
+      "rejectedAt": "2026-09-25T03:56:46.861Z"
     },
     "ref_ICUI": {
       "ticker": "ICUI",
@@ -19574,7 +19389,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:57.721Z"
+      "rejectedAt": "2026-09-25T03:56:49.244Z"
     },
     "ref_IFED": {
       "ticker": "IFED",
@@ -19584,23 +19399,15 @@
     },
     "ref_IFF": {
       "ticker": "IFF",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:57.841Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_IFLO": {
       "ticker": "IFLO",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:11:57.895Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_IFRX": {
       "ticker": "IFRX",
@@ -19754,7 +19561,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:53.042Z"
+      "rejectedAt": "2026-09-25T03:57:39.828Z"
     },
     "ref_IMCR": {
       "ticker": "IMCR",
@@ -19854,7 +19661,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:54.334Z"
+      "rejectedAt": "2026-09-25T03:57:42.220Z"
     },
     "ref_IMTG": {
       "ticker": "IMTG",
@@ -19894,7 +19701,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:54.665Z"
+      "rejectedAt": "2026-09-25T03:57:42.912Z"
     },
     "ref_INAC": {
       "ticker": "INAC",
@@ -19922,7 +19729,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:54.865Z"
+      "rejectedAt": "2026-09-25T03:57:43.356Z"
     },
     "ref_INCR": {
       "ticker": "INCR",
@@ -19932,7 +19739,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:54.944Z"
+      "rejectedAt": "2026-09-25T03:57:43.525Z"
     },
     "ref_INCY": {
       "ticker": "INCY",
@@ -20038,7 +19845,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:56.071Z"
+      "rejectedAt": "2026-09-25T03:57:45.686Z"
     },
     "ref_INIO": {
       "ticker": "INIO",
@@ -20054,7 +19861,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:56.170Z"
+      "rejectedAt": "2026-09-25T03:57:45.876Z"
     },
     "ref_INLF": {
       "ticker": "INLF",
@@ -20064,7 +19871,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:56.217Z"
+      "rejectedAt": "2026-09-25T03:57:45.990Z"
     },
     "ref_INLX": {
       "ticker": "INLX",
@@ -20140,7 +19947,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:56.917Z"
+      "rejectedAt": "2026-09-25T03:57:47.624Z"
     },
     "ref_INSM": {
       "ticker": "INSM",
@@ -20222,7 +20029,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:12:57.772Z"
+      "rejectedAt": "2026-09-25T03:57:49.263Z"
     },
     "ref_INUV": {
       "ticker": "INUV",
@@ -20322,7 +20129,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:13:52.221Z"
+      "rejectedAt": "2026-09-25T03:58:38.083Z"
     },
     "ref_IOVA": {
       "ticker": "IOVA",
@@ -20410,7 +20217,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:13:53.252Z"
+      "rejectedAt": "2026-09-25T03:58:40.182Z"
     },
     "ref_IPVV": {
       "ticker": "IPVV",
@@ -20582,7 +20389,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:13:55.316Z"
+      "rejectedAt": "2026-09-25T03:58:44.052Z"
     },
     "ref_ISPO": {
       "ticker": "ISPO",
@@ -20712,7 +20519,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:13:56.643Z"
+      "rejectedAt": "2026-09-25T03:58:46.757Z"
     },
     "ref_IVR": {
       "ticker": "IVR",
@@ -20776,7 +20583,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:13:57.400Z"
+      "rejectedAt": "2026-09-25T03:58:48.053Z"
     },
     "ref_J": {
       "ticker": "J",
@@ -20836,7 +20643,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:13:57.816Z"
+      "rejectedAt": "2026-09-25T03:58:48.993Z"
     },
     "ref_JAKK": {
       "ticker": "JAKK",
@@ -20906,7 +20713,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:14:51.732Z"
+      "rejectedAt": "2026-09-25T03:59:37.171Z"
     },
     "ref_JBK": {
       "ticker": "JBK",
@@ -20976,7 +20783,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:14:52.437Z"
+      "rejectedAt": "2026-09-25T03:59:38.711Z"
     },
     "ref_JEF": {
       "ticker": "JEF",
@@ -21256,7 +21063,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:14:55.809Z"
+      "rejectedAt": "2026-09-25T03:59:44.932Z"
     },
     "ref_JTTT": {
       "ticker": "JTTT",
@@ -21302,7 +21109,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:14:56.249Z"
+      "rejectedAt": "2026-09-25T03:59:45.818Z"
     },
     "ref_JXG": {
       "ticker": "JXG",
@@ -21312,7 +21119,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:14:56.316Z"
+      "rejectedAt": "2026-09-25T03:59:45.992Z"
     },
     "ref_JXN": {
       "ticker": "JXN",
@@ -21346,7 +21153,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:14:56.625Z"
+      "rejectedAt": "2026-09-25T03:59:46.576Z"
     },
     "ref_JZXN": {
       "ticker": "JZXN",
@@ -21356,7 +21163,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:14:56.686Z"
+      "rejectedAt": "2026-09-25T03:59:46.724Z"
     },
     "ref_KACL": {
       "ticker": "KACL",
@@ -22068,7 +21875,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:15:57.928Z"
+      "rejectedAt": "2026-09-25T04:00:49.202Z"
     },
     "ref_KRSP": {
       "ticker": "KRSP",
@@ -22120,7 +21927,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:16:51.369Z"
+      "rejectedAt": "2026-09-25T04:01:36.645Z"
     },
     "ref_KSPI": {
       "ticker": "KSPI",
@@ -22220,7 +22027,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:16:52.608Z"
+      "rejectedAt": "2026-09-25T04:01:38.969Z"
     },
     "ref_KWR": {
       "ticker": "KWR",
@@ -22242,7 +22049,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:16:52.848Z"
+      "rejectedAt": "2026-09-25T04:01:39.580Z"
     },
     "ref_KYC": {
       "ticker": "KYC",
@@ -22654,7 +22461,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:16:57.793Z"
+      "rejectedAt": "2026-09-25T04:01:48.508Z"
     },
     "ref_LESL": {
       "ticker": "LESL",
@@ -22688,7 +22495,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:16:58.068Z"
+      "rejectedAt": "2026-09-25T04:01:49.097Z"
     },
     "ref_LFCR": {
       "ticker": "LFCR",
@@ -22770,7 +22577,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:17:52.037Z"
+      "rejectedAt": "2026-09-25T04:02:37.816Z"
     },
     "ref_LGIH": {
       "ticker": "LGIH",
@@ -22840,7 +22647,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:17:52.693Z"
+      "rejectedAt": "2026-09-25T04:02:39.120Z"
     },
     "ref_LHX": {
       "ticker": "LHX",
@@ -22862,7 +22669,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:17:52.860Z"
+      "rejectedAt": "2026-09-25T04:02:39.493Z"
     },
     "ref_LIDR": {
       "ticker": "LIDR",
@@ -22872,7 +22679,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:17:52.985Z"
+      "rejectedAt": "2026-09-25T04:02:39.770Z"
     },
     "ref_LIEN": {
       "ticker": "LIEN",
@@ -23368,7 +23175,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:18:51.675Z"
+      "rejectedAt": "2026-09-25T04:03:37.224Z"
     },
     "ref_LRMR": {
       "ticker": "LRMR",
@@ -23534,7 +23341,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:18:53.648Z"
+      "rejectedAt": "2026-09-25T04:03:41.172Z"
     },
     "ref_LUD": {
       "ticker": "LUD",
@@ -23586,7 +23393,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:18:54.394Z"
+      "rejectedAt": "2026-09-25T04:03:42.063Z"
     },
     "ref_LVO": {
       "ticker": "LVO",
@@ -23644,7 +23451,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:18:54.915Z"
+      "rejectedAt": "2026-09-25T04:03:43.207Z"
     },
     "ref_LXEO": {
       "ticker": "LXEO",
@@ -24392,13 +24199,9 @@
     },
     "ref_MEMY": {
       "ticker": "MEMY",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:19:56.886Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_MENS": {
       "ticker": "MENS",
@@ -24408,13 +24211,9 @@
     },
     "ref_MEOH": {
       "ticker": "MEOH",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:19:57.023Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_MER_P_K": {
       "ticker": "MER-P-K",
@@ -24760,7 +24559,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:20:53.797Z"
+      "rejectedAt": "2026-09-25T04:05:41.491Z"
     },
     "ref_MIAC": {
       "ticker": "MIAC",
@@ -24992,7 +24791,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:20:56.741Z"
+      "rejectedAt": "2026-09-25T04:05:46.378Z"
     },
     "ref_MLI": {
       "ticker": "MLI",
@@ -25134,7 +24933,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:20:58.223Z"
+      "rejectedAt": "2026-09-25T04:05:49.086Z"
     },
     "ref_MNDY": {
       "ticker": "MNDY",
@@ -25222,7 +25021,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:21:52.126Z"
+      "rejectedAt": "2026-09-25T04:06:37.933Z"
     },
     "ref_MNY": {
       "ticker": "MNY",
@@ -25256,7 +25055,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:21:52.623Z"
+      "rejectedAt": "2026-09-25T04:06:38.584Z"
     },
     "ref_MODV": {
       "ticker": "MODV",
@@ -25494,13 +25293,9 @@
     },
     "ref_MRTN": {
       "ticker": "MRTN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:21:55.309Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_MRTX": {
       "ticker": "MRTX",
@@ -25654,23 +25449,15 @@
     },
     "ref_MSI": {
       "ticker": "MSI",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:21:57.244Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_MSIF": {
       "ticker": "MSIF",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:21:57.303Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_MSIX": {
       "ticker": "MSIX",
@@ -25782,7 +25569,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:21:58.484Z"
+      "rejectedAt": "2026-09-25T04:06:49.833Z"
     },
     "ref_MTEX": {
       "ticker": "MTEX",
@@ -25912,13 +25699,9 @@
     },
     "ref_MUSA": {
       "ticker": "MUSA",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:53.399Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_MUSE": {
       "ticker": "MUSE",
@@ -26024,13 +25807,9 @@
     },
     "ref_MYE": {
       "ticker": "MYE",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:54.475Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_MYFW": {
       "ticker": "MYFW",
@@ -26064,7 +25843,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:54.876Z"
+      "rejectedAt": "2026-09-25T04:07:42.660Z"
     },
     "ref_MYO": {
       "ticker": "MYO",
@@ -26092,7 +25871,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:55.106Z"
+      "rejectedAt": "2026-09-25T04:07:43.093Z"
     },
     "ref_MYSZ": {
       "ticker": "MYSZ",
@@ -26126,7 +25905,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:55.416Z"
+      "rejectedAt": "2026-09-25T04:07:43.866Z"
     },
     "ref_NAAS": {
       "ticker": "NAAS",
@@ -26136,7 +25915,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:55.480Z"
+      "rejectedAt": "2026-09-25T04:07:43.977Z"
     },
     "ref_NABL": {
       "ticker": "NABL",
@@ -26350,7 +26129,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:57.843Z"
+      "rejectedAt": "2026-09-25T04:07:48.457Z"
     },
     "ref_NCNC": {
       "ticker": "NCNC",
@@ -26384,7 +26163,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:58.209Z"
+      "rejectedAt": "2026-09-25T04:07:49.008Z"
     },
     "ref_NCRA": {
       "ticker": "NCRA",
@@ -26406,7 +26185,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:22:58.386Z"
+      "rejectedAt": "2026-09-25T04:07:49.473Z"
     },
     "ref_NCV_P_A": {
       "ticker": "NCV-P-A",
@@ -26446,7 +26225,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:51.309Z"
+      "rejectedAt": "2026-09-25T04:08:36.648Z"
     },
     "ref_NDSN": {
       "ticker": "NDSN",
@@ -26576,7 +26355,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:53.691Z"
+      "rejectedAt": "2026-09-25T04:08:40.237Z"
     },
     "ref_NEWP": {
       "ticker": "NEWP",
@@ -26646,7 +26425,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:54.316Z"
+      "rejectedAt": "2026-09-25T04:08:41.737Z"
     },
     "ref_NEXT": {
       "ticker": "NEXT",
@@ -26662,7 +26441,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:54.433Z"
+      "rejectedAt": "2026-09-25T04:08:41.947Z"
     },
     "ref_NFG": {
       "ticker": "NFG",
@@ -26822,7 +26601,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:56.264Z"
+      "rejectedAt": "2026-09-25T04:08:45.227Z"
     },
     "ref_NINE": {
       "ticker": "NINE",
@@ -26856,7 +26635,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:56.592Z"
+      "rejectedAt": "2026-09-25T04:08:45.800Z"
     },
     "ref_NIXX": {
       "ticker": "NIXX",
@@ -26974,13 +26753,9 @@
     },
     "ref_NMFC": {
       "ticker": "NMFC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:57.773Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_NMFCZ": {
       "ticker": "NMFCZ",
@@ -27002,13 +26777,9 @@
     },
     "ref_NMM": {
       "ticker": "NMM",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:23:58.065Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_NMP": {
       "ticker": "NMP",
@@ -27138,13 +26909,9 @@
     },
     "ref_NOEQ": {
       "ticker": "NOEQ",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:24:52.626Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_NOG": {
       "ticker": "NOG",
@@ -27598,7 +27365,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:24:58.226Z"
+      "rejectedAt": "2026-09-25T04:09:48.591Z"
     },
     "ref_NUVB": {
       "ticker": "NUVB",
@@ -27614,7 +27381,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:24:58.358Z"
+      "rejectedAt": "2026-09-25T04:09:48.873Z"
     },
     "ref_NVAX": {
       "ticker": "NVAX",
@@ -27786,7 +27553,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:25:53.323Z"
+      "rejectedAt": "2026-09-25T04:10:39.613Z"
     },
     "ref_NX": {
       "ticker": "NX",
@@ -27856,13 +27623,9 @@
     },
     "ref_NXPI": {
       "ticker": "NXPI",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:25:54.128Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_NXPL": {
       "ticker": "NXPL",
@@ -27902,7 +27665,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:25:54.508Z"
+      "rejectedAt": "2026-09-25T04:10:42.235Z"
     },
     "ref_NXTT": {
       "ticker": "NXTT",
@@ -27912,7 +27675,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:25:54.602Z"
+      "rejectedAt": "2026-09-25T04:10:42.436Z"
     },
     "ref_NXXT": {
       "ticker": "NXXT",
@@ -27922,7 +27685,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:25:54.670Z"
+      "rejectedAt": "2026-09-25T04:10:42.601Z"
     },
     "ref_NYAX": {
       "ticker": "NYAX",
@@ -28112,7 +27875,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:25:56.809Z"
+      "rejectedAt": "2026-09-25T04:10:46.119Z"
     },
     "ref_OCGN": {
       "ticker": "OCGN",
@@ -28230,13 +27993,9 @@
     },
     "ref_OFS": {
       "ticker": "OFS",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:25:58.307Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_OFSSH": {
       "ticker": "OFSSH",
@@ -28372,17 +28131,13 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:52.580Z"
+      "rejectedAt": "2026-09-25T04:11:38.629Z"
     },
     "ref_OLED": {
       "ticker": "OLED",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:52.632Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_OLK": {
       "ticker": "OLK",
@@ -28416,7 +28171,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:53.293Z"
+      "rejectedAt": "2026-09-25T04:11:39.392Z"
     },
     "ref_OLP": {
       "ticker": "OLP",
@@ -28432,7 +28187,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:53.432Z"
+      "rejectedAt": "2026-09-25T04:11:39.816Z"
     },
     "ref_OMAB": {
       "ticker": "OMAB",
@@ -28442,13 +28197,9 @@
     },
     "ref_OMC": {
       "ticker": "OMC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:53.559Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_OMCL": {
       "ticker": "OMCL",
@@ -28542,7 +28293,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:54.580Z"
+      "rejectedAt": "2026-09-25T04:11:42.256Z"
     },
     "ref_ONCT": {
       "ticker": "ONCT",
@@ -28780,7 +28531,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:57.237Z"
+      "rejectedAt": "2026-09-25T04:11:47.019Z"
     },
     "ref_ORC": {
       "ticker": "ORC",
@@ -28802,7 +28553,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:57.469Z"
+      "rejectedAt": "2026-09-25T04:11:47.336Z"
     },
     "ref_ORGO": {
       "ticker": "ORGO",
@@ -28842,7 +28593,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:26:57.948Z"
+      "rejectedAt": "2026-09-25T04:11:47.972Z"
     },
     "ref_ORKA": {
       "ticker": "ORKA",
@@ -29068,33 +28819,21 @@
     },
     "ref_OXLCM": {
       "ticker": "OXLCM",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:53.642Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_OXLCN": {
       "ticker": "OXLCN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:53.778Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_OXLCO": {
       "ticker": "OXLCO",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:53.828Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_OXLCP": {
       "ticker": "OXLCP",
@@ -29116,13 +28855,9 @@
     },
     "ref_OXSQ": {
       "ticker": "OXSQ",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:54.261Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_OXSQG": {
       "ticker": "OXSQG",
@@ -29246,13 +28981,9 @@
     },
     "ref_PAGS": {
       "ticker": "PAGS",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:55.314Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_PAHC": {
       "ticker": "PAHC",
@@ -29322,7 +29053,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:56.249Z"
+      "rejectedAt": "2026-09-25T04:12:45.330Z"
     },
     "ref_PARK": {
       "ticker": "PARK",
@@ -29344,7 +29075,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:56.439Z"
+      "rejectedAt": "2026-09-25T04:12:45.871Z"
     },
     "ref_PATH": {
       "ticker": "PATH",
@@ -29372,7 +29103,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:56.642Z"
+      "rejectedAt": "2026-09-25T04:12:46.354Z"
     },
     "ref_PAX": {
       "ticker": "PAX",
@@ -29490,7 +29221,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:27:58.079Z"
+      "rejectedAt": "2026-09-25T04:12:48.352Z"
     },
     "ref_PBR": {
       "ticker": "PBR",
@@ -29668,7 +29399,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:53.154Z"
+      "rejectedAt": "2026-09-25T04:13:39.390Z"
     },
     "ref_PCSG": {
       "ticker": "PCSG",
@@ -29714,13 +29445,9 @@
     },
     "ref_PDCC": {
       "ticker": "PDCC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:53.797Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_PDD": {
       "ticker": "PDD",
@@ -29754,13 +29481,9 @@
     },
     "ref_PDPA": {
       "ticker": "PDPA",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:54.344Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_PDS": {
       "ticker": "PDS",
@@ -29788,7 +29511,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:54.563Z"
+      "rejectedAt": "2026-09-25T04:13:41.829Z"
     },
     "ref_PEB": {
       "ticker": "PEB",
@@ -29852,7 +29575,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:55.066Z"
+      "rejectedAt": "2026-09-25T04:13:43.317Z"
     },
     "ref_PEG": {
       "ticker": "PEG",
@@ -29862,13 +29585,9 @@
     },
     "ref_PEGA": {
       "ticker": "PEGA",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:55.184Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_PEN": {
       "ticker": "PEN",
@@ -30010,7 +29729,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:56.772Z"
+      "rejectedAt": "2026-09-25T04:13:46.443Z"
     },
     "ref_PFSI": {
       "ticker": "PFSI",
@@ -30182,7 +29901,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:58.810Z"
+      "rejectedAt": "2026-09-25T04:13:49.645Z"
     },
     "ref_PIK": {
       "ticker": "PIK",
@@ -30192,7 +29911,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:58.871Z"
+      "rejectedAt": "2026-09-25T04:13:49.757Z"
     },
     "ref_PINE": {
       "ticker": "PINE",
@@ -30220,7 +29939,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:28:59.150Z"
+      "rejectedAt": "2026-09-25T04:13:50.398Z"
     },
     "ref_PJT": {
       "ticker": "PJT",
@@ -30332,13 +30051,9 @@
     },
     "ref_PLD": {
       "ticker": "PLD",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:29:53.577Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_PLG": {
       "ticker": "PLG",
@@ -30378,13 +30093,9 @@
     },
     "ref_PLPC": {
       "ticker": "PLPC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:29:54.103Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_PLRX": {
       "ticker": "PLRX",
@@ -30400,7 +30111,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:29:54.389Z"
+      "rejectedAt": "2026-09-25T04:14:41.312Z"
     },
     "ref_PLSE": {
       "ticker": "PLSE",
@@ -30524,7 +30235,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:29:55.597Z"
+      "rejectedAt": "2026-09-25T04:14:44.062Z"
     },
     "ref_PMCB": {
       "ticker": "PMCB",
@@ -30786,7 +30497,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:29:58.612Z"
+      "rejectedAt": "2026-09-25T04:14:49.294Z"
     },
     "ref_PPG": {
       "ticker": "PPG",
@@ -30838,13 +30549,9 @@
     },
     "ref_PR": {
       "ticker": "PR",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:29:59.176Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_PRAA": {
       "ticker": "PRAA",
@@ -30896,7 +30603,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:30:52.446Z"
+      "rejectedAt": "2026-09-25T04:15:38.486Z"
     },
     "ref_PRG": {
       "ticker": "PRG",
@@ -31050,7 +30757,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:30:54.748Z"
+      "rejectedAt": "2026-09-25T04:15:42.031Z"
     },
     "ref_PRPO": {
       "ticker": "PRPO",
@@ -31258,7 +30965,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:30:56.823Z"
+      "rejectedAt": "2026-09-25T04:15:46.510Z"
     },
     "ref_PSIX": {
       "ticker": "PSIX",
@@ -31310,7 +31017,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:30:57.581Z"
+      "rejectedAt": "2026-09-25T04:15:47.678Z"
     },
     "ref_PSQL": {
       "ticker": "PSQL",
@@ -31380,7 +31087,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:30:58.296Z"
+      "rejectedAt": "2026-09-25T04:15:48.819Z"
     },
     "ref_PTLE": {
       "ticker": "PTLE",
@@ -31624,7 +31331,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:31:54.186Z"
+      "rejectedAt": "2026-09-25T04:16:41.157Z"
     },
     "ref_QCOM": {
       "ticker": "QCOM",
@@ -31634,13 +31341,9 @@
     },
     "ref_QCRH": {
       "ticker": "QCRH",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:31:54.422Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_QDEL": {
       "ticker": "QDEL",
@@ -31758,7 +31461,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:31:55.607Z"
+      "rejectedAt": "2026-09-25T04:16:44.225Z"
     },
     "ref_QOMO": {
       "ticker": "QOMO",
@@ -31858,13 +31561,9 @@
     },
     "ref_QSR": {
       "ticker": "QSR",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:31:56.654Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_QTEX": {
       "ticker": "QTEX",
@@ -31964,7 +31663,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:31:58.001Z"
+      "rejectedAt": "2026-09-25T04:16:48.272Z"
     },
     "ref_R": {
       "ticker": "R",
@@ -32076,7 +31775,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:31:59.183Z"
+      "rejectedAt": "2026-09-25T04:16:50.208Z"
     },
     "ref_RBA": {
       "ticker": "RBA",
@@ -32104,13 +31803,9 @@
     },
     "ref_RBCAA": {
       "ticker": "RBCAA",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:52.005Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_RBLX": {
       "ticker": "RBLX",
@@ -32126,7 +31821,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:52.167Z"
+      "rejectedAt": "2026-09-25T04:17:37.801Z"
     },
     "ref_RBRK": {
       "ticker": "RBRK",
@@ -32220,7 +31915,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:53.745Z"
+      "rejectedAt": "2026-09-25T04:17:40.362Z"
     },
     "ref_RCT": {
       "ticker": "RCT",
@@ -32266,7 +31961,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:54.277Z"
+      "rejectedAt": "2026-09-25T04:17:41.338Z"
     },
     "ref_RDHL": {
       "ticker": "RDHL",
@@ -32276,7 +31971,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:54.469Z"
+      "rejectedAt": "2026-09-25T04:17:41.676Z"
     },
     "ref_RDI": {
       "ticker": "RDI",
@@ -32370,7 +32065,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:55.351Z"
+      "rejectedAt": "2026-09-25T04:17:43.531Z"
     },
     "ref_REBN": {
       "ticker": "REBN",
@@ -32398,7 +32093,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:55.623Z"
+      "rejectedAt": "2026-09-25T04:17:44.032Z"
     },
     "ref_REEDD": {
       "ticker": "REEDD",
@@ -32648,7 +32343,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:58.506Z"
+      "rejectedAt": "2026-09-25T04:17:49.148Z"
     },
     "ref_RGCO": {
       "ticker": "RGCO",
@@ -32670,7 +32365,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:32:58.684Z"
+      "rejectedAt": "2026-09-25T04:17:49.520Z"
     },
     "ref_RGLD": {
       "ticker": "RGLD",
@@ -32770,7 +32465,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:33:52.459Z"
+      "rejectedAt": "2026-09-25T04:18:38.272Z"
     },
     "ref_RILY": {
       "ticker": "RILY",
@@ -33032,13 +32727,9 @@
     },
     "ref_RMCO": {
       "ticker": "RMCO",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:33:55.973Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_RMD": {
       "ticker": "RMD",
@@ -33108,7 +32799,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:33:56.642Z"
+      "rejectedAt": "2026-09-25T04:18:46.096Z"
     },
     "ref_RNG": {
       "ticker": "RNG",
@@ -33148,13 +32839,9 @@
     },
     "ref_RNST": {
       "ticker": "RNST",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:33:57.069Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_RNTX": {
       "ticker": "RNTX",
@@ -33278,7 +32965,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:33:58.574Z"
+      "rejectedAt": "2026-09-25T04:18:49.336Z"
     },
     "ref_RPID": {
       "ticker": "RPID",
@@ -33480,7 +33167,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:34:53.997Z"
+      "rejectedAt": "2026-09-25T04:19:40.891Z"
     },
     "ref_RVSB": {
       "ticker": "RVSB",
@@ -33496,7 +33183,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:34:54.134Z"
+      "rejectedAt": "2026-09-25T04:19:41.167Z"
     },
     "ref_RVTY": {
       "ticker": "RVTY",
@@ -33638,13 +33325,9 @@
     },
     "ref_RYN": {
       "ticker": "RYN",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:34:55.810Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_RYOJ": {
       "ticker": "RYOJ",
@@ -33978,7 +33661,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:52.250Z"
+      "rejectedAt": "2026-09-25T04:20:37.724Z"
     },
     "ref_SBGI": {
       "ticker": "SBGI",
@@ -34030,13 +33713,9 @@
     },
     "ref_SBSW": {
       "ticker": "SBSW",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:52.924Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SBT": {
       "ticker": "SBT",
@@ -34232,7 +33911,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:56.284Z"
+      "rejectedAt": "2026-09-25T04:20:43.820Z"
     },
     "ref_SCOP": {
       "ticker": "SCOP",
@@ -34302,7 +33981,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:56.883Z"
+      "rejectedAt": "2026-09-25T04:20:45.455Z"
     },
     "ref_SDGR": {
       "ticker": "SDGR",
@@ -34384,7 +34063,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:57.539Z"
+      "rejectedAt": "2026-09-25T04:20:46.884Z"
     },
     "ref_SEB": {
       "ticker": "SEB",
@@ -34430,7 +34109,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:57.905Z"
+      "rejectedAt": "2026-09-25T04:20:47.617Z"
     },
     "ref_SEI": {
       "ticker": "SEI",
@@ -34446,13 +34125,9 @@
     },
     "ref_SELF": {
       "ticker": "SELF",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:58.046Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SELX": {
       "ticker": "SELX",
@@ -34498,7 +34173,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:35:58.455Z"
+      "rejectedAt": "2026-09-25T04:20:48.945Z"
     },
     "ref_SERA": {
       "ticker": "SERA",
@@ -34628,7 +34303,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:52.503Z"
+      "rejectedAt": "2026-09-25T04:21:38.462Z"
     },
     "ref_SG": {
       "ticker": "SG",
@@ -34686,7 +34361,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:53.464Z"
+      "rejectedAt": "2026-09-25T04:21:39.758Z"
     },
     "ref_SGML": {
       "ticker": "SGML",
@@ -34846,7 +34521,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:56.144Z"
+      "rejectedAt": "2026-09-25T04:21:43.550Z"
     },
     "ref_SHW": {
       "ticker": "SHW",
@@ -34940,7 +34615,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:57.052Z"
+      "rejectedAt": "2026-09-25T04:21:45.603Z"
     },
     "ref_SIM": {
       "ticker": "SIM",
@@ -34968,7 +34643,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:57.245Z"
+      "rejectedAt": "2026-09-25T04:21:46.011Z"
     },
     "ref_SION": {
       "ticker": "SION",
@@ -34996,7 +34671,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:57.480Z"
+      "rejectedAt": "2026-09-25T04:21:46.482Z"
     },
     "ref_SITE": {
       "ticker": "SITE",
@@ -35090,7 +34765,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:58.268Z"
+      "rejectedAt": "2026-09-25T04:21:48.333Z"
     },
     "ref_SKYH": {
       "ticker": "SKYH",
@@ -35106,7 +34781,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:58.377Z"
+      "rejectedAt": "2026-09-25T04:21:48.549Z"
     },
     "ref_SKYW": {
       "ticker": "SKYW",
@@ -35170,7 +34845,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:59.028Z"
+      "rejectedAt": "2026-09-25T04:21:49.711Z"
     },
     "ref_SLF": {
       "ticker": "SLF",
@@ -35198,7 +34873,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:36:59.242Z"
+      "rejectedAt": "2026-09-25T04:21:50.140Z"
     },
     "ref_SLGN": {
       "ticker": "SLGN",
@@ -35472,7 +35147,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:37:56.110Z"
+      "rejectedAt": "2026-09-25T04:22:43.442Z"
     },
     "ref_SMXT": {
       "ticker": "SMXT",
@@ -35584,7 +35259,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:37:57.247Z"
+      "rejectedAt": "2026-09-25T04:22:46.066Z"
     },
     "ref_SNN": {
       "ticker": "SNN",
@@ -35672,7 +35347,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:37:58.039Z"
+      "rejectedAt": "2026-09-25T04:22:47.635Z"
     },
     "ref_SOBO": {
       "ticker": "SOBO",
@@ -35688,7 +35363,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:37:58.115Z"
+      "rejectedAt": "2026-09-25T04:22:47.850Z"
     },
     "ref_SOC": {
       "ticker": "SOC",
@@ -35872,13 +35547,9 @@
     },
     "ref_SPCI": {
       "ticker": "SPCI",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:38:52.528Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SPCL": {
       "ticker": "SPCL",
@@ -35888,13 +35559,9 @@
     },
     "ref_SPCT": {
       "ticker": "SPCT",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:38:52.590Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SPCX": {
       "ticker": "SPCX",
@@ -35928,13 +35595,9 @@
     },
     "ref_SPG_P_J": {
       "ticker": "SPG-P-J",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:38:53.236Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SPGI": {
       "ticker": "SPGI",
@@ -35956,7 +35619,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:38:53.574Z"
+      "rejectedAt": "2026-09-25T04:23:40.074Z"
     },
     "ref_SPHR": {
       "ticker": "SPHR",
@@ -35978,7 +35641,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:38:53.778Z"
+      "rejectedAt": "2026-09-25T04:23:40.631Z"
     },
     "ref_SPKL": {
       "ticker": "SPKL",
@@ -36048,7 +35711,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:38:54.721Z"
+      "rejectedAt": "2026-09-25T04:23:42.068Z"
     },
     "ref_SPRO": {
       "ticker": "SPRO",
@@ -36100,13 +35763,9 @@
     },
     "ref_SPY": {
       "ticker": "SPY",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:38:56.068Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SQFT": {
       "ticker": "SQFT",
@@ -36500,7 +36159,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:52.528Z"
+      "rejectedAt": "2026-09-25T04:24:38.169Z"
     },
     "ref_STKS": {
       "ticker": "STKS",
@@ -36606,7 +36265,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:53.996Z"
+      "rejectedAt": "2026-09-25T04:24:41.161Z"
     },
     "ref_STRR": {
       "ticker": "STRR",
@@ -36628,13 +36287,9 @@
     },
     "ref_STRW": {
       "ticker": "STRW",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:54.373Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_STT": {
       "ticker": "STT",
@@ -36752,13 +36407,9 @@
     },
     "ref_SUNB": {
       "ticker": "SUNB",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:56.460Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SUNC": {
       "ticker": "SUNC",
@@ -36774,7 +36425,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:56.585Z"
+      "rejectedAt": "2026-09-25T04:24:44.407Z"
     },
     "ref_SUNS": {
       "ticker": "SUNS",
@@ -36862,7 +36513,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:57.534Z"
+      "rejectedAt": "2026-09-25T04:24:46.452Z"
     },
     "ref_SVRA": {
       "ticker": "SVRA",
@@ -36878,7 +36529,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:57.658Z"
+      "rejectedAt": "2026-09-25T04:24:46.723Z"
     },
     "ref_SVRN": {
       "ticker": "SVRN",
@@ -36960,13 +36611,9 @@
     },
     "ref_SXI": {
       "ticker": "SXI",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:58.405Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_SXT": {
       "ticker": "SXT",
@@ -36982,7 +36629,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:58.522Z"
+      "rejectedAt": "2026-09-25T04:24:48.530Z"
     },
     "ref_SXTP": {
       "ticker": "SXTP",
@@ -36992,7 +36639,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:39:58.583Z"
+      "rejectedAt": "2026-09-25T04:24:48.694Z"
     },
     "ref_SY": {
       "ticker": "SY",
@@ -37152,7 +36799,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:40:52.721Z"
+      "rejectedAt": "2026-09-25T04:25:38.808Z"
     },
     "ref_TAOX": {
       "ticker": "TAOX",
@@ -37360,13 +37007,9 @@
     },
     "ref_TCPC": {
       "ticker": "TCPC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:40:56.220Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TCRT": {
       "ticker": "TCRT",
@@ -37376,7 +37019,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:40:56.288Z"
+      "rejectedAt": "2026-09-25T04:25:43.975Z"
     },
     "ref_TCRX": {
       "ticker": "TCRX",
@@ -37488,13 +37131,9 @@
     },
     "ref_TECH": {
       "ticker": "TECH",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:40:57.545Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TECK": {
       "ticker": "TECK",
@@ -37576,7 +37215,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:40:58.331Z"
+      "rejectedAt": "2026-09-25T04:25:48.043Z"
     },
     "ref_TEO": {
       "ticker": "TEO",
@@ -37586,13 +37225,9 @@
     },
     "ref_TER": {
       "ticker": "TER",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:40:58.470Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TETE": {
       "ticker": "TETE",
@@ -37704,7 +37339,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:40:59.545Z"
+      "rejectedAt": "2026-09-25T04:25:50.315Z"
     },
     "ref_TGLS": {
       "ticker": "TGLS",
@@ -37774,7 +37409,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:52.667Z"
+      "rejectedAt": "2026-09-25T04:26:38.437Z"
     },
     "ref_THM": {
       "ticker": "THM",
@@ -37850,13 +37485,9 @@
     },
     "ref_TILE": {
       "ticker": "TILE",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:53.789Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TIMB": {
       "ticker": "TIMB",
@@ -37914,7 +37545,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:54.543Z"
+      "rejectedAt": "2026-09-25T04:26:42.185Z"
     },
     "ref_TKNO": {
       "ticker": "TKNO",
@@ -37954,7 +37585,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:55.009Z"
+      "rejectedAt": "2026-09-25T04:26:42.810Z"
     },
     "ref_TLK": {
       "ticker": "TLK",
@@ -38066,13 +37697,9 @@
     },
     "ref_TMO": {
       "ticker": "TMO",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:57.066Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TMP": {
       "ticker": "TMP",
@@ -38154,13 +37781,9 @@
     },
     "ref_TNL": {
       "ticker": "TNL",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:57.873Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TNMG": {
       "ticker": "TNMG",
@@ -38176,7 +37799,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:57.970Z"
+      "rejectedAt": "2026-09-25T04:26:47.348Z"
     },
     "ref_TNXP": {
       "ticker": "TNXP",
@@ -38186,7 +37809,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:58.058Z"
+      "rejectedAt": "2026-09-25T04:26:47.491Z"
     },
     "ref_TNYA": {
       "ticker": "TNYA",
@@ -38232,7 +37855,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:58.466Z"
+      "rejectedAt": "2026-09-25T04:26:48.276Z"
     },
     "ref_TOPP": {
       "ticker": "TOPP",
@@ -38302,13 +37925,9 @@
     },
     "ref_TPB": {
       "ticker": "TPB",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:41:59.211Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TPC": {
       "ticker": "TPC",
@@ -38402,13 +38021,9 @@
     },
     "ref_TPVG": {
       "ticker": "TPVG",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:42:52.683Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TR": {
       "ticker": "TR",
@@ -38490,13 +38105,9 @@
     },
     "ref_TRI": {
       "ticker": "TRI",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:42:53.791Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TRIB": {
       "ticker": "TRIB",
@@ -38566,7 +38177,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:42:54.815Z"
+      "rejectedAt": "2026-09-25T04:27:42.479Z"
     },
     "ref_TRN": {
       "ticker": "TRN",
@@ -38594,7 +38205,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:42:55.081Z"
+      "rejectedAt": "2026-09-25T04:27:42.899Z"
     },
     "ref_TRNS": {
       "ticker": "TRNS",
@@ -38706,13 +38317,9 @@
     },
     "ref_TRTX_P_C": {
       "ticker": "TRTX-P-C",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:42:57.057Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TRU": {
       "ticker": "TRU",
@@ -38818,13 +38425,9 @@
     },
     "ref_TSM": {
       "ticker": "TSM",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:42:58.231Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_TSN": {
       "ticker": "TSN",
@@ -39014,7 +38617,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:43:52.675Z"
+      "rejectedAt": "2026-09-25T04:28:37.677Z"
     },
     "ref_TVTX": {
       "ticker": "TVTX",
@@ -39036,7 +38639,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:43:52.942Z"
+      "rejectedAt": "2026-09-25T04:28:38.413Z"
     },
     "ref_TWFG": {
       "ticker": "TWFG",
@@ -39052,7 +38655,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:43:53.033Z"
+      "rejectedAt": "2026-09-25T04:28:38.708Z"
     },
     "ref_TWI": {
       "ticker": "TWI",
@@ -39410,7 +39013,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:43:58.005Z"
+      "rejectedAt": "2026-09-25T04:28:47.136Z"
     },
     "ref_UL": {
       "ticker": "UL",
@@ -39570,7 +39173,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:43:59.604Z"
+      "rejectedAt": "2026-09-25T04:28:50.195Z"
     },
     "ref_UONEK": {
       "ticker": "UONEK",
@@ -39586,7 +39189,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:43:59.732Z"
+      "rejectedAt": "2026-09-25T04:28:50.411Z"
     },
     "ref_UPAL": {
       "ticker": "UPAL",
@@ -39614,7 +39217,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:43:59.957Z"
+      "rejectedAt": "2026-09-25T04:28:50.859Z"
     },
     "ref_UPLD": {
       "ticker": "UPLD",
@@ -39654,7 +39257,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:52.873Z"
+      "rejectedAt": "2026-09-25T04:29:38.326Z"
     },
     "ref_URBN": {
       "ticker": "URBN",
@@ -39748,7 +39351,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:53.848Z"
+      "rejectedAt": "2026-09-25T04:29:40.784Z"
     },
     "ref_USCB": {
       "ticker": "USCB",
@@ -39956,13 +39559,9 @@
     },
     "ref_VAC": {
       "ticker": "VAC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:57.340Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_VACI": {
       "ticker": "VACI",
@@ -40026,7 +39625,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:57.923Z"
+      "rejectedAt": "2026-09-25T04:29:46.849Z"
     },
     "ref_VBIV": {
       "ticker": "VBIV",
@@ -40078,7 +39677,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:58.376Z"
+      "rejectedAt": "2026-09-25T04:29:47.918Z"
     },
     "ref_VCRE": {
       "ticker": "VCRE",
@@ -40100,23 +39699,15 @@
     },
     "ref_VDG": {
       "ticker": "VDG",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:58.650Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_VDV": {
       "ticker": "VDV",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:58.715Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_VECA": {
       "ticker": "VECA",
@@ -40156,7 +39747,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:44:59.419Z"
+      "rejectedAt": "2026-09-25T04:29:49.193Z"
     },
     "ref_VEEV": {
       "ticker": "VEEV",
@@ -40352,13 +39943,9 @@
     },
     "ref_VIRC": {
       "ticker": "VIRC",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:45:53.663Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_VIRT": {
       "ticker": "VIRT",
@@ -40398,7 +39985,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:45:54.119Z"
+      "rejectedAt": "2026-09-25T04:30:41.240Z"
     },
     "ref_VIVKD": {
       "ticker": "VIVKD",
@@ -40414,7 +40001,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:45:54.315Z"
+      "rejectedAt": "2026-09-25T04:30:41.818Z"
     },
     "ref_VIVS": {
       "ticker": "VIVS",
@@ -40436,7 +40023,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:45:54.593Z"
+      "rejectedAt": "2026-09-25T04:30:42.255Z"
     },
     "ref_VLGEA": {
       "ticker": "VLGEA",
@@ -40494,7 +40081,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:45:55.308Z"
+      "rejectedAt": "2026-09-25T04:30:43.331Z"
     },
     "ref_VMC": {
       "ticker": "VMC",
@@ -40780,7 +40367,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:45:59.460Z"
+      "rejectedAt": "2026-09-25T04:30:49.212Z"
     },
     "ref_VSAC": {
       "ticker": "VSAC",
@@ -40862,7 +40449,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:46:00.325Z"
+      "rejectedAt": "2026-09-25T04:30:50.761Z"
     },
     "ref_VTEX": {
       "ticker": "VTEX",
@@ -40938,7 +40525,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:46:53.280Z"
+      "rejectedAt": "2026-09-25T04:31:39.375Z"
     },
     "ref_VUZI": {
       "ticker": "VUZI",
@@ -40954,7 +40541,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:46:53.401Z"
+      "rejectedAt": "2026-09-25T04:31:39.654Z"
     },
     "ref_VVV": {
       "ticker": "VVV",
@@ -41078,7 +40665,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:46:54.886Z"
+      "rejectedAt": "2026-09-25T04:31:42.687Z"
     },
     "ref_WAVE": {
       "ticker": "WAVE",
@@ -41142,7 +40729,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:46:56.256Z"
+      "rejectedAt": "2026-09-25T04:31:43.835Z"
     },
     "ref_WBX": {
       "ticker": "WBX",
@@ -41320,7 +40907,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:46:58.269Z"
+      "rejectedAt": "2026-09-25T04:31:47.565Z"
     },
     "ref_WEX": {
       "ticker": "WEX",
@@ -41462,7 +41049,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:46:59.998Z"
+      "rejectedAt": "2026-09-25T04:31:50.270Z"
     },
     "ref_WHLRD": {
       "ticker": "WHLRD",
@@ -41508,7 +41095,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:00.574Z"
+      "rejectedAt": "2026-09-25T04:31:51.194Z"
     },
     "ref_WINA": {
       "ticker": "WINA",
@@ -41560,7 +41147,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:53.268Z"
+      "rejectedAt": "2026-09-25T04:32:39.146Z"
     },
     "ref_WKME": {
       "ticker": "WKME",
@@ -41594,7 +41181,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:53.657Z"
+      "rejectedAt": "2026-09-25T04:32:40.098Z"
     },
     "ref_WLDU": {
       "ticker": "WLDU",
@@ -41700,7 +41287,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:54.833Z"
+      "rejectedAt": "2026-09-25T04:32:42.586Z"
     },
     "ref_WOK": {
       "ticker": "WOK",
@@ -41710,7 +41297,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:54.893Z"
+      "rejectedAt": "2026-09-25T04:32:42.688Z"
     },
     "ref_WOOF": {
       "ticker": "WOOF",
@@ -41780,33 +41367,21 @@
     },
     "ref_WRB_P_F": {
       "ticker": "WRB-P-F",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:56.361Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_WRB_P_G": {
       "ticker": "WRB-P-G",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:56.449Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_WRB_P_H": {
       "ticker": "WRB-P-H",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:56.508Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_WRBY": {
       "ticker": "WRBY",
@@ -42026,13 +41601,9 @@
     },
     "ref_WU": {
       "ticker": "WU",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:59.313Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_WULF": {
       "ticker": "WULF",
@@ -42096,7 +41667,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:47:59.963Z"
+      "rejectedAt": "2026-09-25T04:32:50.214Z"
     },
     "ref_WY": {
       "ticker": "WY",
@@ -42202,7 +41773,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:48:53.384Z"
+      "rejectedAt": "2026-09-25T04:33:39.508Z"
     },
     "ref_XE": {
       "ticker": "XE",
@@ -42248,13 +41819,9 @@
     },
     "ref_XEY": {
       "ticker": "XEY",
-      "ok": false,
-      "reason": "qualityCheckFailed",
-      "deferred": true,
-      "rejectionClass": "TEMPORARY_REJECT",
-      "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-      "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:48:53.910Z"
+      "ok": true,
+      "added": 0,
+      "reason": "keineNeuenTage"
     },
     "ref_XFLH": {
       "ticker": "XFLH",
@@ -42282,7 +41849,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:48:54.160Z"
+      "rejectedAt": "2026-09-25T04:33:41.166Z"
     },
     "ref_XHLD": {
       "ticker": "XHLD",
@@ -42586,7 +42153,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:48:58.494Z"
+      "rejectedAt": "2026-09-25T04:33:47.759Z"
     },
     "ref_XTKG": {
       "ticker": "XTKG",
@@ -42596,7 +42163,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:48:58.563Z"
+      "rejectedAt": "2026-09-25T04:33:47.903Z"
     },
     "ref_XTLB": {
       "ticker": "XTLB",
@@ -42660,7 +42227,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:48:59.359Z"
+      "rejectedAt": "2026-09-25T04:33:49.093Z"
     },
     "ref_XYF": {
       "ticker": "XYF",
@@ -42694,7 +42261,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:48:59.713Z"
+      "rejectedAt": "2026-09-25T04:33:49.641Z"
     },
     "ref_YALA": {
       "ticker": "YALA",
@@ -42752,7 +42319,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:00.323Z"
+      "rejectedAt": "2026-09-25T04:33:50.654Z"
     },
     "ref_YELP": {
       "ticker": "YELP",
@@ -42792,7 +42359,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:00.721Z"
+      "rejectedAt": "2026-09-25T04:33:51.486Z"
     },
     "ref_YHNA": {
       "ticker": "YHNA",
@@ -42838,7 +42405,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:53.391Z"
+      "rejectedAt": "2026-09-25T04:34:39.419Z"
     },
     "ref_YORW": {
       "ticker": "YORW",
@@ -42938,7 +42505,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:54.478Z"
+      "rejectedAt": "2026-09-25T04:34:41.821Z"
     },
     "ref_Z": {
       "ticker": "Z",
@@ -42972,7 +42539,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:54.893Z"
+      "rejectedAt": "2026-09-25T04:34:42.785Z"
     },
     "ref_ZCSH": {
       "ticker": "ZCSH",
@@ -42994,7 +42561,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:55.118Z"
+      "rejectedAt": "2026-09-25T04:34:43.096Z"
     },
     "ref_ZDGE": {
       "ticker": "ZDGE",
@@ -43112,7 +42679,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:57.154Z"
+      "rejectedAt": "2026-09-25T04:34:45.315Z"
     },
     "ref_ZK": {
       "ticker": "ZK",
@@ -43134,7 +42701,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:57.481Z"
+      "rejectedAt": "2026-09-25T04:34:45.725Z"
     },
     "ref_ZKP": {
       "ticker": "ZKP",
@@ -43168,7 +42735,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:57.761Z"
+      "rejectedAt": "2026-09-25T04:34:46.312Z"
     },
     "ref_ZNTL": {
       "ticker": "ZNTL",
@@ -43202,7 +42769,7 @@
       "rejectionClass": "TEMPORARY_REJECT",
       "rejectionReason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
       "message": "adjustment_status_contradicted",
-      "rejectedAt": "2026-09-21T09:49:58.052Z"
+      "rejectedAt": "2026-09-25T04:34:46.875Z"
     },
     "ref_ZSTK": {
       "ticker": "ZSTK",

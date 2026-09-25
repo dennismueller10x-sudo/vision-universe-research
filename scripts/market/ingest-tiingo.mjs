@@ -40,6 +40,19 @@ const engines = join(root, "quant", "engines");
 
 const SymbolMapping = require(join(engines, "symbol-mapping.js"));
 const MarketQuality = require(join(engines, "market-quality.js"));
+const Series = require(join(engines, "return-series.js"));
+
+/* DIE ENTSCHEIDUNGSREGEL DIESES LAUFS.
+
+   Sie steht in jedem Ablehnungseintrag. Aendert sie sich, verlieren die
+   Eintraege ihre Sperrwirkung: ein Befund unter einer alten Regel sagt
+   nichts darueber, wie die neue entscheidet. Hochgezaehlt wird, wenn sich
+   aendert, WARUM ein Titel abgelehnt wird - nicht bei jeder Codeaenderung.
+
+   r2 (2026-09-25): eine widerlegte Gesamtrendite-Spalte sperrt nur noch
+   die Gesamtrendite. Ist die Reihe aus RAW_CLOSE + SPLIT_FACTOR
+   rekonstruierbar, geht sie splitbereinigt in den Bestand. */
+const REJECTION_RULE = "ingest-rejection-r2-2026-09-25";
 const Semantics = require(join(engines, "price-semantics.js"));
 const EodGate = require(join(engines, "market-eod-gate.js"));
 const RejectionLifecycle = require(join(engines, "rejection-lifecycle.js"));
@@ -282,6 +295,7 @@ function initialFromFor(security) {
 }
 
 const perSecurity = {};
+let anschlussAusAbrufCount = 0;
 let ok = 0, failed = 0, rejected = 0, skipped = 0;
 /* Wer wurde wegen welcher Klasse zurueckgestellt, und wer bekam nach einer
    Ablehnung einen neuen Versuch - beides gehoert in den Statusbericht,
@@ -289,6 +303,11 @@ let ok = 0, failed = 0, rejected = 0, skipped = 0;
 const deferredByClass = {};
 const retriedAfterRejection = [];
 let recoveredAfterRejection = 0;
+/* Wie viele Reihen mit widerlegter bereinigter Spalte splitbereinigt
+   weitergefuehrt wurden statt abgelehnt zu werden. Die Zahl gehoert in den
+   Bericht: sie sagt, wie oft die Gesamtrendite einer Reihe heute gesperrt
+   ist - und das ist eine Einschraenkung, keine Reparatur. */
+let reconstructibleFallback = 0;
 
 for (const security of SECURITIES) {
   const id = security.securityId;
@@ -305,7 +324,8 @@ for (const security of SECURITIES) {
   const urteil = INITIAL
     ? { allowed: true, class: "RECOVERED", reason: "Erstimport fragt immer" }
     : RejectionLifecycle.darfAbfragen(zuletztAbgelehnt,
-        { now: Date.now(), staleAfterMs: REJECT_RETRY_DAYS * 86400000 });
+        { now: Date.now(), staleAfterMs: REJECT_RETRY_DAYS * 86400000,
+          rule: REJECTION_RULE });
   if (!urteil.allowed) {
     skipped++; rejected++;
     deferredByClass[urteil.class] = (deferredByClass[urteil.class] || 0) + 1;
@@ -321,9 +341,20 @@ for (const security of SECURITIES) {
   }
 
   const strictPlan = STRICT_INCREMENTAL ? strictPlans[id] : null;
-  const from = STRICT_INCREMENTAL ? strictPlan.from : INITIAL
+  const fromGeplant = STRICT_INCREMENTAL ? strictPlan.from : INITIAL
     ? initialFromFor(security)
     : store.nextFetchFrom(id, { initialFrom: initialFromFor(security) });
+  /* EIN TAG UEBERLAPPUNG, KEINE ZUSAETZLICHE ANFRAGE
+
+     nextFetchFrom beginnt bewusst einen Tag nach dem letzten
+     gespeicherten - dieselbe Bar zweimal zu holen waere eine Dublette.
+     Fuer die Konsistenzpruefung ist aber genau dieser Vortag noetig, und
+     zwar mit der Bereinigung von HEUTE (siehe unten beim
+     validationInput). Er kommt in derselben Antwort mit; die Anfrage
+     kostet nichts extra, und die Dublette faengt der Filter weiter
+     unten ab. */
+  const gespeichertBis = INITIAL ? null : store.lastStoredDate(id);
+  const from = gespeichertBis && gespeichertBis < fromGeplant ? gespeichertBis : fromGeplant;
 
   if (DRY_RUN) {
     const last = store.lastStoredDate(id);
@@ -404,7 +435,33 @@ for (const security of SECURITIES) {
     store.saveCheckpoint(checkpoint);
     continue;
   }
-  const validationInput = [...anschluss, ...neueBars];
+  /* DER ANSCHLUSSBAR MUSS AUS DERSELBEN BEREINIGUNG STAMMEN
+
+     Er kam bisher aus dem Speicher - also mit der Bereinigung des
+     VORIGEN Laufs. Die neuen Bars tragen die von heute. Liegt ein
+     Ex-Tag dazwischen, hat der Anbieter die Historie rueckwirkend
+     nachbereinigt: der frisch geholte Vortag steht dann bei einem
+     anderen adjustedClose als der gespeicherte.
+
+     Die Konsistenzpruefung sieht daraufhin ein Verhaeltnis, das sich am
+     Ex-Tag nicht bewegt, meldet dividend_not_in_adjusted und - weil der
+     Anbieter TOTAL_RETURN behauptet - adjustment_status_contradicted.
+     Der Titel wird abgelehnt, seine Reihe altert, und beim naechsten
+     Lauf passiert dasselbe.
+
+     Genau das hat SPY seit dem 17. September blockiert und mit ihm 531
+     Titel in der Ausschuettungssaison. Der Pruefer hatte recht; sein
+     Eingang war widerspruechlich.
+
+     Deshalb: liefert die Antwort den Vortag mit, wird ER benutzt. Nur
+     wenn nicht, bleibt der gespeicherte - dann ist das Fenster so gut
+     wie vorher und nicht schlechter. */
+  const anschlussAusAbruf = anschlussDatumRoh
+    ? bars.filter((bar) => String(bar.date).slice(0, 10) === anschlussDatumRoh)
+    : [];
+  const anschlussFuerPruefung = anschlussAusAbruf.length ? anschlussAusAbruf : anschluss;
+  if (anschlussAusAbruf.length) anschlussAusAbrufCount++;
+  const validationInput = [...anschlussFuerPruefung, ...neueBars];
   const validation = MarketQuality.validateBars(validationInput, {
     today: todayStr,
     adjustmentStatus: res.data.adjustmentStatus
@@ -417,7 +474,7 @@ for (const security of SECURITIES) {
                         message: codes.join(", "), findings: validation.findings.slice(0, 8) };
     checkpoint.rejected[id] = RejectionLifecycle.fortschreiben(checkpoint.rejected[id],
       { at: new Date().toISOString(), codes: codes.join(", "),
-        window: INITIAL ? "full" : "incremental" });
+        window: INITIAL ? "full" : "incremental", rule: REJECTION_RULE });
     /* stats ist null, wenn die Reihe schon vor der Bar-Pruefung scheitert
        (z. B. leere oder unlesbare Antwort) - dann zaehlen die Befunde. */
     console.log(`${label} ABGELEHNT — ${validation.stats ? validation.stats.errors : codes.length} Fehler (${codes[0]})`);
@@ -433,31 +490,84 @@ for (const security of SECURITIES) {
   const semantik = MarketQuality.validateAdjustmentConsistency(validation.bars, {
     claimedStatus: Semantics.normalize(res.data.adjustmentStatus)
   });
-  if (!semantik.ok) {
+  /* WAS DER BEFUND SPERRT - UND WAS NICHT   (Owner-Frage vom 2026-09-25)
+
+     Bis hierher sperrte der Widerspruch die ganze Reihe. Das kostete am
+     17.09.2026 die Vergleichsreihe SPY und mit ihr die relative Staerke
+     von 6.267 Titeln - fuer einen Fehler in der DIVIDENDENbereinigung,
+     obwohl die relative Staerke seit Option C den splitbereinigten Kurs
+     verlangt und von Dividenden nichts wissen will.
+
+     Der Pruefer bleibt unveraendert. Sein Urteil wird nur genauer
+     gelesen: gescheitert ist die Datenart Gesamtrendite, nicht der
+     Rohschluss und nicht der Splitfaktor. Sind diese vollstaendig, wird
+     die Reihe mit der niedrigeren, ehrlichen Deklaration gespeichert -
+     und jede Gesamtrenditekennzahl bleibt gesperrt, weil die Deklaration
+     sie sperrt.
+
+     Gemessen wird an der Reihe, die danach im Bestand STEHT (Bestand plus
+     neue Tage), nicht am zwei Bars breiten Prueffenster: die
+     Rekonstruktion laeuft spaeter ueber die ganze Reihe. Rohschluss und
+     Splitfaktor der gespeicherten Bars sind dafuer belastbar - der
+     Anbieter bereinigt die adjClose-Spalte rueckwirkend nach, den
+     Rohschluss nicht. */
+  const zielreihe = [...((gespeichert && Array.isArray(gespeichert.bars)) ? gespeichert.bars : []),
+                     ...neueBars];
+  const bausteine = Series.splitAdjustedInputs(zielreihe);
+  const rueckfall = semantik.ok ? null : Semantics.fallbackDeclaration(semantik, bausteine);
+
+  if (!semantik.ok && !rueckfall.allowed) {
     rejected++;
     const codes = semantik.findings.filter((f) => f.severity === "error").map((f) => f.code);
     perSecurity[id] = {
       ticker: security.ticker, ok: false, reason: "adjustmentContradicted",
       message: codes.join(", "),
       claimed: semantik.claimedStatus, inferred: semantik.inferredStatus,
+      /* Schritt 6 der Owner-Vorgabe: der fehlende Eingang wird benannt,
+         nicht umschrieben. Wer hier "HISTORY" oder "SPLIT_FACTOR" liest,
+         weiss, was fehlt, ohne die Reihe zu oeffnen. */
+      splitAdjustedFallback: { allowed: false, reason: rueckfall.reason,
+                               detail: rueckfall.detail, inputs: bausteine.missing,
+                               bars: bausteine.bars },
       findings: semantik.findings.slice(0, 8)
     };
     checkpoint.rejected[id] = RejectionLifecycle.fortschreiben(checkpoint.rejected[id],
       { at: new Date().toISOString(), codes: "adjustmentContradicted: " + codes.join(", "),
-        window: INITIAL ? "full" : "incremental" });
+        window: INITIAL ? "full" : "incremental", rule: REJECTION_RULE });
     console.log(`${label} ABGELEHNT — deklariert ${semantik.claimedStatus}, ` +
-                `verhaelt sich wie ${semantik.inferredStatus}`);
+                `verhaelt sich wie ${semantik.inferredStatus}; kein splitbereinigter ` +
+                `Rueckfall (${rueckfall.reason}${bausteine.missing.length ? ": " + bausteine.missing.join(", ") : ""})`);
     store.saveCheckpoint(checkpoint);
     continue;
   }
 
+  /* Die Stufe, unter der die Reihe in den Bestand geht. Im Regelfall die
+     des Anbieters; im Rueckfall die gemessene Obergrenze. Sie ist das
+     einzige, was Nachgelagerte lesen - deshalb steht sie hier und nicht
+     als Nebenbemerkung im Bericht. */
+  const deklaration = rueckfall && rueckfall.allowed
+    ? rueckfall.declare : res.data.adjustmentStatus;
+  if (rueckfall && rueckfall.allowed) {
+    reconstructibleFallback++;
+    console.log(`${label} bereinigte Spalte widerlegt (${semantik.claimedStatus} → ` +
+                `${rueckfall.ceiling}); gespeichert als ${deklaration} aus RAW_CLOSE + ` +
+                `SPLIT_FACTOR (${bausteine.bars} Bars, ${bausteine.splitEvents} Splits). ` +
+                `Gesamtrendite bleibt gesperrt.`);
+  }
+
   /* Der Titel liefert wieder gueltige Daten: die Ablehnung ist erledigt.
      Stehen zu lassen waere ein Gedaechtnis an einen Zustand, den es nicht
-     mehr gibt. */
+     mehr gibt.
+
+     Auch im Rueckfall: die Reihe geht in den Bestand, also ist sie nicht
+     abgelehnt. Eine stehengelassene Ablehnung wuerde den naechsten Lauf
+     bis zu 20 Stunden aussetzen - genau der Mechanismus, der SPY nach der
+     Reparatur weiter altern liess. */
   if (checkpoint.rejected[id]) {
     delete checkpoint.rejected[id];
     recoveredAfterRejection++;
-    console.log(`${label} Ablehnung aufgehoben (liefert wieder gueltige Daten)`);
+    console.log(`${label} Ablehnung aufgehoben (${rueckfall && rueckfall.allowed
+      ? "splitbereinigt rekonstruierbar" : "liefert wieder gueltige Daten"})`);
   }
 
   /* Der Anschluss aus dem Bestand gehoert nicht ins neue Material: er ist
@@ -477,13 +587,36 @@ for (const security of SECURITIES) {
     console.log(`${label} GESPERRT — ${strictReconciliation.reason}`);
     continue;
   }
-  const merged = store.mergeBars(id, validation.bars, {
+  /* GESPEICHERT WIRD NUR, WAS NEU IST
+
+     Der Ueberlappungstag dient der Pruefung, nicht dem Bestand. Wuerde er
+     mitgespeichert, ueberschriebe er bei jedem Lauf einen bereits
+     veroeffentlichten historischen Bar - naemlich dann, wenn der Anbieter
+     die Historie nach einer Ausschuettung nachbereinigt hat. Das waere
+     eine rueckwirkende Aenderung veroeffentlichter Kurse als Nebenwirkung
+     einer Validierungsreparatur, und genau das soll es nicht sein.
+
+     Der Bestand bleibt damit exakt so, wie er ohne diese Reparatur waere;
+     neu ist nur, dass die Pruefung ein in sich stimmiges Fenster sieht. */
+  const zuSpeichern = anschlussDatumRoh
+    ? validation.bars.filter((bar) => String(bar.date).slice(0, 10) > anschlussDatumRoh)
+    : validation.bars;
+  const merged = store.mergeBars(id, zuSpeichern, {
     ticker: security.ticker,
     name: security.name,
     exchange: security.exchange,
     mic: security.mic,
     currency: "USD",
-    adjustmentStatus: res.data.adjustmentStatus,
+    adjustmentStatus: deklaration,
+    /* Immer gesetzt, auch im Regelfall auf null: mergeBars uebernimmt
+       vorhandene Felder des Bestands. Ohne das ausdrueckliche Zuruecksetzen
+       trueg eine Reihe die Widerlegung von gestern weiter, obwohl der
+       Anbieter heute eine stimmige Spalte liefert. */
+    adjustmentClaim: rueckfall && rueckfall.allowed
+      ? { declared: deklaration, refutedClaim: rueckfall.refutedClaim,
+          ceiling: rueckfall.ceiling, reason: rueckfall.reason,
+          blocks: rueckfall.blocks, measuredAt: new Date().toISOString() }
+      : null,
     fetchedAt: new Date().toISOString()
   });
 
@@ -505,9 +638,17 @@ for (const security of SECURITIES) {
     adjustment: {
       claimed: semantik.claimedStatus,
       inferred: semantik.inferredStatus,
+      declared: deklaration,
       basis: semantik.observed.inferredFrom,
       splitEvents: semantik.observed.splitEvents.length,
-      dividendEvents: semantik.observed.dividendEvents.length
+      dividendEvents: semantik.observed.dividendEvents.length,
+      /* Nur gesetzt, wenn die bereinigte Spalte widerlegt wurde. Ein
+         leeres Feld hier heisst: die Reihe steht auf der Stufe, die der
+         Anbieter deklariert hat. */
+      splitAdjustedFallback: rueckfall && rueckfall.allowed
+        ? { reason: rueckfall.reason, ceiling: rueckfall.ceiling,
+            blocks: rueckfall.blocks, bars: bausteine.bars }
+        : null
     }
   };
   console.log(`${label} +${String(merged.added).padStart(4)} neu, ${String(merged.total).padStart(5)} gesamt  ` +
@@ -677,7 +818,7 @@ writeStatus({
                 gefragt wurden, wie viele nach einer Ablehnung einen neuen
                 Versuch bekamen und wie viele sich dabei erholt haben. */
              deferredByClass, retriedAfterRejection: retriedAfterRejection.length,
-             recoveredAfterRejection },
+             recoveredAfterRejection, reconstructibleFallback },
   /* `offen`, nicht `open`: "open" ist in einem ausgelieferten Artefakt
      der Eroeffnungskurs, und die Hygienepruefung liest es genau so - sie
      kann einer Zahl nicht ansehen, ob sie ein Kurs oder eine Anzahl ist.
@@ -686,7 +827,8 @@ writeStatus({
      als er ist, ist der Fehler - nicht die Pruefung. */
   rejectionLedger: { offen: Object.keys(checkpoint.rejected || {}).length,
                      ...RejectionLifecycle.pruefeRegister(checkpoint.rejected || {},
-                       { staleAfterMs: REJECT_RETRY_DAYS * 86400000 }).byClass },
+                       { staleAfterMs: REJECT_RETRY_DAYS * 86400000,
+                         rule: REJECTION_RULE }).byClass },
   securities: perSecurity,
   checkpoint: { runId: checkpoint.runId, done: checkpoint.done.length,
                 failed: checkpoint.failed.length, requests: checkpoint.requests },

@@ -103,6 +103,61 @@ jobs:
           node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
             --scope-from-preview --publish-preview --commercial --request-budget=7500 --concurrency=4
 
+      # Der Benchmark ist ein Einzelpunkt, an dem die relative Staerke des
+      # GANZEN Universums haengt. Faellt er durch die Qualitaetspruefung,
+      # altert seine Reihe, und seit dem Frische-Gate verlieren damit alle
+      # Titel ihre relative Staerke - sichtbar, aber nur wenn jemand
+      # hinsieht. Diese Zeile sorgt dafuer, dass man hinsehen muss.
+      - name: Zustand der Vergleichsreihe
+        run: |
+          node -e '
+            const fs = require("fs");
+            const status = JSON.parse(fs.readFileSync("quant/data/market/tiingo-status.json", "utf8"));
+            const spy = (status.securities || {}).ref_SPY || (status.securities || {}).SPY || null;
+            const store = ".market-cache/tiingo/daily/ref_SPY.json";
+            const bars = fs.existsSync(store) ? JSON.parse(fs.readFileSync(store, "utf8")).bars : null;
+            const letzter = bars && bars.length ? bars[bars.length - 1].date : null;
+            let juengster = null;
+            const dir = ".market-cache/tiingo/daily";
+            if (fs.existsSync(dir)) {
+              for (const f of fs.readdirSync(dir).slice(0, 400)) {
+                try {
+                  const b = JSON.parse(fs.readFileSync(dir + "/" + f, "utf8")).bars;
+                  const d = b && b.length ? b[b.length - 1].date : null;
+                  if (d && (!juengster || d > juengster)) juengster = d;
+                } catch {}
+              }
+            }
+            console.log("Vergleichsreihe SPY");
+            console.log("  Abrufergebnis: " + JSON.stringify(spy));
+            console.log("  gespeichert bis: " + letzter);
+            console.log("  juengster Titel (Stichprobe 400): " + juengster);
+            /* Owner-Vorgabe vom 25.09.2026, Schritte 1 bis 3: gemessen statt
+               angenommen. Was die splitbereinigte Rekonstruktion braucht,
+               steht hier als Zahl - und wenn etwas fehlt, mit Namen. */
+            const payload = bars ? JSON.parse(fs.readFileSync(store, "utf8")) : null;
+            if (payload) {
+              const Series = require("./quant/engines/return-series.js");
+              const m = Series.splitAdjustedInputs(payload.bars);
+              console.log("  Deklaration: " + payload.adjustmentStatus);
+              console.log("  Rekonstruktionseingaben: " + JSON.stringify({
+                constructible: m.constructible, missing: m.missing, bars: m.bars,
+                first: m.first, last: m.last, splitEvents: m.splitEvents }));
+              if (payload.adjustmentClaim) {
+                console.log("  bereinigte Spalte widerlegt: " + JSON.stringify(payload.adjustmentClaim));
+              }
+              if (!m.constructible) {
+                console.log("  FEHLENDER EINGANG: " + m.missing.join(", ") +
+                            " - hier wird nichts improvisiert.");
+              }
+            }
+            if (letzter && juengster && letzter < juengster) {
+              console.log("  ZURUECK: die relative Staerke faellt damit universumsweit aus.");
+            } else if (letzter) {
+              console.log("  aktuell.");
+            }
+          '
+
       - name: Faktorzeilen fuer das ganze Universum
         run: node scripts/market/build-market-factors.mjs --gate FULL_UNIVERSE --product-universe
 
@@ -159,6 +214,86 @@ jobs:
       # gruen; sie laufen nach dem Commit als Gate C erneut.
       - name: 'Gate B: Data-Integrity der neuen Daten (rot = keine Veroeffentlichung)'
         run: node scripts/market/run-eod-publish-gates.mjs --phase=integrity
+
+      - name: Ist ein Zugang zur dauerhaften Ablage hinterlegt?
+        id: history_store
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          # Fehlt ein Zugang, bleibt der Abgleich aus - und sagt es. Ein
+          # stiller Ausfall waere genau der Rueckstand, den dieser Schritt
+          # beseitigt.
+          ready=true
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::warning::$v fehlt - die dauerhafte Ablage wird nicht nachgezogen"; ready=false; fi
+          done
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
+      # DIE DAUERHAFTE ABLAGE NACHZIEHEN - der fehlende zweite Halbsatz.
+      #
+      # sync-history-store.mjs beschreibt seinen Vertrag selbst: "--pull
+      # Ablage -> .market-cache (vor Faktoren und Technical), --push
+      # .market-cache -> Ablage (nach dem Gate-Lauf)". Der Pull war in der
+      # Materialisierung verdrahtet, der Push nirgends. Folge, am 25.09.2026
+      # gemessen: die Produkt-Kursstruktur endet am 2026-09-10, der
+      # veroeffentlichte Kursstand am 2026-09-24 - bei 5.646 von 5.676
+      # Titeln dieselben ZEHN Handelstage Rueckstand. Der Abruf hielt seine
+      # frischen Bars nur im Actions-Cache; die Materialisierung liest die
+      # Ablage und sah sie nie.
+      #
+      # Steht bewusst NACH Gate B: was nicht veroeffentlicht werden darf,
+      # wird auch nicht dauerhaft abgelegt. Und vor dem Cache-Save, damit
+      # ein Abbruch hier nicht den frischen Stand verliert.
+      #
+      # Die Kosten rechnet die Vorpruefung, nicht dieser Schritt: ein
+      # DAILY_UPDATE schreibt ein Objekt je geaendertem Titel plus einen
+      # Index (~6.900 Class-A-Operationen, Decke 750.000 im Monat). Reicht
+      # das Budget nicht, bricht der Waechter mit "OWNER DECISION REQUIRED"
+      # ab - er rechnet sich seine Freigabe nicht selbst aus.
+      - name: Vorabrechnung fuer den Abgleich der dauerhaften Ablage
+        if: steps.history_store.outputs.ready == 'true'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation DAILY_UPDATE --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/history-store-push-preflight.json"
+
+      - name: Dauerhafte Ablage auf den frischen Stand bringen
+        if: steps.history_store.outputs.ready == 'true'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --push --gate FULL_UNIVERSE --concurrency 16
+          --operation DAILY_UPDATE
+          --preflight "$RUNNER_TEMP/history-store-push-preflight.json"
+          --report "$RUNNER_TEMP/history-store-push.json"
+
+      # Was angekommen ist, wird gezaehlt und nicht angenommen: der Index
+      # der Ablage traegt je Titel den Zeitpunkt des dauerhaften Schreibens.
+      # Diese Zeile ist die Gegenprobe, an der der naechste Rueckstand
+      # auffaellt, bevor ihn ein Leser auf der Aktienseite sieht.
+      - name: Stand der dauerhaften Ablage
+        if: always() && steps.history_store.outputs.ready == 'true'
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = process.env.RUNNER_TEMP + "/history-store-push.json";
+            if (!fs.existsSync(path)) { console.log("kein Abgleichsbericht - der Schritt lief nicht."); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(path, "utf8"));
+            console.log("Abgleich " + (r.direction || "?") + " · " + JSON.stringify(r.tally || {}));
+            console.log("Ablage: " + JSON.stringify(r.storage || {}));
+          '
 
       - name: Groesse der Arbeitsablage
         id: disk
