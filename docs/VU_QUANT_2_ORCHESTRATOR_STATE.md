@@ -4,7 +4,8 @@ Updated: 2026-09-25 UTC
 
 ## CURRENT_MAIN
 
-- GitHub `main` at this state write: `2769663e8` (PR #222, Produktions-Smoke installiert den Browser).
+- GitHub `main` at this state write: `3f521b4ac` (Materialisierung nach dem Ablage-Push; davor
+  `88efa82a` Refresh, `27737bad` Wochenreihen, `2769663e8` PR #222).
 - Last merged Quant release: **PR #182**, merge `a0f827ac090ae605275c2ce1041b32036b97f253`,
   2026-09-25 14:01 UTC — die Ablage-Reparatur ist damit auf dem Default-Branch. Davor: PR #173,
   `a0bb8742b684c4ebfe145b7b148d475b0c33b53d`, deployed 2026-09-22.
@@ -14,9 +15,19 @@ Updated: 2026-09-25 UTC
 
 ## CURRENT_PHASE
 
-`STORE_CURRENT_BOTH_LAYERS_GAPS_NAMED_PER_TITLE`
+`STORE_AUTOMATION_ON_MAIN_SIX_OF_SEVEN_OBSERVED`
 
-Stand 2026-09-25, Abschluss der Kette: die dauerhafte Ablage ist beschrieben, **beide** Schichten
+Stand 2026-09-25 abends: #182 und #222 sind auf main und in Produktion, und die Ablage-Automatik
+ist auf dem Default-Branch **gelaufen**, nicht nur verdrahtet — ein vollständiger Refresh mit
+grünem Ablage-Push (13:22), danach Wochenreihen und Materialisierung, alle drei Läufe grün, der
+Stand nach dem Lauf gemessen statt übernommen (5.470 Titel auf 2026-09-24, `pattern-match`
+`asOf 2026-09-24`, Reise 382 von 500). Sechs der sieben geforderten Punkte sind damit beobachtet;
+offen ist allein „kein erneutes Freeze nach dem nächsten **planmäßigen** Lauf" — das kann kein
+Dispatch beweisen, dafür läuft der Zeitplan um 22:30 UTC und ein Selbst-Check-in um 23:50 UTC.
+Bis dahin bleibt der nächste Product-Milestone zu. Details in `MERGED_2026-09-25`. Vorherige Phase
+(`STORE_CURRENT_BOTH_LAYERS_GAPS_NAMED_PER_TITLE`):
+
+Abschluss der Kette: die dauerhafte Ablage ist beschrieben, **beide** Schichten
 stehen auf dem 2026-09-24 (täglich Technical/Signals/Elliott/Setup, wöchentlich
 Musterstudie/Mustervergleich/Belastbarkeit), die Reise ist gegen ihre Grundlinie neu gemessen
 (28 Zugewinne, kein Verlust, 381 von 500 Titeln mit allen elf Stationen), und der schwächste
@@ -156,6 +167,106 @@ Die drei Push-Schritte hängen einzig an `steps.history_store.outputs.ready == '
 Ereignisart. Ein `schedule`-Lauf führt sie deshalb genauso aus wie ein `workflow_dispatch`; der
 Zeitplan (`cron: '30 22 * * 1-5'`) liegt mit dem Merge auf dem Default-Branch, wo GitHub ihn
 überhaupt erst auswertet.
+
+### Die Automatik, auf dem Default-Branch gemessen
+
+Ein vollständiger Durchlauf auf `main`, nicht auf einem Branch, nicht von Hand nachgeholfen.
+`market-data-refresh.yml` als Dispatch auf main (Lauf **36144793708**, `workflow_dispatch` — aber
+über genau die Schritte, die ein `schedule`-Lauf nimmt, weil keiner davon an der Ereignisart hängt):
+
+| Schritt | Ergebnis |
+|---|---|
+| Gate A (Code-Regression vor dem Abruf) | grün, 1:21 |
+| Tageskurse + Discover-Reihen | grün, 14:03:55 → 15:47:05 |
+| Gate B (Data-Integrity) | grün, 15:50:40 |
+| Zugang zur dauerhaften Ablage | `ready=true` |
+| Vorabrechnung (`preflight-zero-cost`, DAILY_UPDATE) | grün |
+| **Dauerhafte Ablage auf den frischen Stand bringen** | **grün, 15:50:57 → 16:04:19 (13:22)** |
+| Stand der dauerhaften Ablage (Gegenprobe) | grün |
+| Commit und Push | Versuch 1 abgewiesen (`b39d7aa5` von einer anderen Pipeline), Rebase, **Versuch 2 erfolgreich** → `88efa82a`, 12.501 Dateien |
+| Gate C (Beobachtung) | 1.997 bestanden, 0 fehlgeschlagen |
+
+Der abgewiesene Push ist hier der Beleg, nicht der Makel: er geschah **nach** dem Ablage-Push und
+kostete nichts. Genau diese Stelle hat den planmäßigen Lauf der Nacht noch zerrissen.
+
+Danach, in dieser Reihenfolge, beide Verbraucherschichten:
+
+- `long-series.yml` auf main (Lauf **36159622919**, grün): Wochenreihen in 6:40 aus der frischen
+  Ablage, 6.333 Reihen, `{"requested":6876,"written":0,"unchanged":6333,"missing":2,"tooShort":541,"failed":0}`.
+  **`written: 0` ist hier Aktualität, nicht Stillstand:** der jüngste abgeschlossene Handelstag in
+  der Ablage ist der 2026-09-24, die laufende Sitzung schließt erst um 20:00 UTC — es gibt keinen
+  neuen Wochenbalken anzuhängen. Der Abendlauf um 22:30 ist der, der den 25. anfügt.
+- `product-intelligence-materialization.yml` auf main (Lauf **36161139949**, grün): Ablage gezogen
+  16:32:02 → 16:34:39, Technical/Signals/Elliott 16:36:04 → 16:49:47, danach Factor Evidence,
+  Setup, Musterstudie, Mustervergleich, Strategieindex, Regime, Reisemessung; Commit `3f521b4a`.
+
+Auf dem so entstandenen main gemessen (nicht übernommen):
+
+| Messung | Wert |
+|---|---:|
+| `technicalFullBundles` | 5.842 |
+| `signalsCapable` | 5.967 |
+| `elliottCapable` | 5.754 |
+| `calendarValidated` | 5.967 |
+| letzter Balken **2026-09-24** | **5.470** Titel |
+| letzter Balken 2026-09-10 (Kohorte ohne veröffentlichte Kursreihe) | 331 |
+| `pattern-match` `asOf` | 2026-09-24 |
+| Musterlücke, je Titel benannt | 1.284 (740 `INSUFFICIENT_WEEKLY_HISTORY`, 542 `NO_WEEKLY_SERIES`, 2 `NO_MEASURABLE_FEATURES`) |
+| Reise: Titel mit allen elf Stationen | 382 von 500 (`evidenceAsOf 2026-09-24`) |
+
+Dieselben Zahlen wie vor dem Merge — und das ist die Aussage: die Automatik hat den Stand ohne
+Zutun reproduziert, nichts ist wieder eingefroren. Nebenbei erledigt: `journey-coverage-v1.json`
+wird jetzt von CI committet (`generatedAt 2026-09-25T16:56:58`); vorher entstand die Messung im
+Lauf und blieb dort.
+
+### Der Test, den es vorher nicht gab
+
+Das Verhalten von `sync-history-store.mjs` war durchgehend geprüft — `history-sync-boundary`
+deckt 14 Fälle ab, bis zu „push refuses a foreign existing durable identity". Nur **rief es
+niemand**, und kein Test hat je gefragt, ob ein Workflow den Aufruf ausführt. Deshalb neu:
+`quant/tests/history-store-automation.test.mjs` (6 Fälle) prüft den *Aufruf*:
+
+1. irgendein Workflow ruft `sync-history-store.mjs --push` (der Zustand, der zehn Handelstage
+   gekostet hat, wird rot),
+2. der Abruf hat einen Zeitplan,
+3. Vorabrechnung und Push hängen an `steps.history_store.outputs.ready`, **nicht** an
+   `github.event` — sonst überspringt ein planmäßiger Lauf sie,
+4. der Push steht nach Gate B und **vor** `Commit und Push`,
+5. der Push läuft nur mit der Vorabrechnung, die der Schritt davor schreibt,
+6. `history-store-sync.yml` ist dispatchbar und fragt keinen Anbieter (kein `TIINGO`).
+
+Gegenprobe, weil eine Prüfung, die nicht fehlschlagen kann, keine Prüfung ist: mit
+`&& github.event_name == 'workflow_dispatch'` am Push fällt Fall 3; ohne den Push-Schritt fallen
+die Fälle 1, 3, 4 und 5. Die Datei liegt im Muster `quant/tests/*.test.mjs` und damit in Gate A —
+der nächste Abruf prüft seinen eigenen Ablage-Vertrag, bevor er eine Anfrage stellt.
+
+### STORE_REFRESH_AUTOMATION
+
+| # | Punkt | Stand |
+|---|---|---|
+| 1 | scheduled market refresh läuft auf main | **belegt** — `cron: '30 22 * * 1-5'` liegt auf dem Default-Branch, die Job-Bedingung nimmt `schedule`, die Push-Schritte hängen an keiner Ereignisart (Test Fall 2 und 3) |
+| 2 | durable history push wird ausgeführt | **beobachtet** — Lauf 36144793708, Schritt grün, 13:22 |
+| 3 | daily canonical history bleibt aktuell | **gemessen** — 5.470 Titel auf 2026-09-24 nach dem Lauf |
+| 4 | weekly long-series bleibt aktuell | **gemessen** — Lauf 36159622919, 6.333 Reihen, kein neuer Wochenbalken fällig |
+| 5 | Technical / Signals / Elliott / Setup lesen den aktuellen Stand | **gemessen** — 5.842 / 5.967 / 5.754 aus dem gezogenen Store |
+| 6 | Pattern Match liest den aktuellen Wochenstand | **gemessen** — `asOf 2026-09-24`, Lücke 1.284 je Titel benannt |
+| 7 | kein erneutes Freeze nach dem nächsten **planmäßigen** Lauf | **offen bis 22:30 UTC** — nicht behauptbar, nur beobachtbar; Selbst-Check-in 23:50 UTC, zusätzlich misst der Freshness-Monitor um 23:15 gegen die veröffentlichte Seite |
+
+**Verdikt: `STORE_REFRESH_AUTOMATION = SIX_OF_SEVEN_OBSERVED`, nicht PASS.** Punkt 7 ist der
+einzige, den kein Dispatch beweisen kann — er braucht einen Lauf, den der Zeitplan startet. Bis
+dahin bleibt der nächste Product-Milestone zu.
+
+### Produktionsweg, ehrlich benannt
+
+`pages-release` Lauf **36149630151** auf main: Smoke grün, Liefervertrag grün,
+`upload-pages-artifact` grün, `deploy` grün. Produktion trägt damit #182 und #222.
+
+Was hier **nicht** belegt ist: ein Abruf der laufenden Seite aus dieser Sitzung. Die
+Netzrichtlinie dieser Umgebung antwortet auf `CONNECT research.visionuniverse.de:443` mit 403.
+Die Produktionsabnahme ist deshalb der Smoke des Runners gegen **dasselbe gebaute Release**
+(29 von 29 Ansichten, 1440 px und 390 px) plus der erfolgreiche Deploy — nicht ein Blick auf die
+Seite. Gegen die veröffentlichte Seite messen im Repository die Läufe, die auf Runnern laufen
+(`freshness-monitor`, `discover-live-smoke`, `realtime-production-smoke`).
 
 ## COMPLETED_2026-09-25 — SPY, SETUP EXPERIENCE, STRATEGY MATCH, PATTERN MATCH, HISTORY
 
@@ -1444,12 +1555,14 @@ checks are the ones the activation gate measures.
 
 −1. **Erledigt (2026-09-25).** Die Ablage ist beschrieben, beide Schichten sind auf dem
    2026-09-24, die Reise ist gegen ihre Grundlinie neu gemessen und der schwaechste gemessene
-   Bereich (patterns) hat seinen Satz bekommen. Was dabei fuer die Zukunft gilt:
-   `market-data-refresh.yml` zieht die Ablage nach Gate B nach — aber sein **Zeitplan laeuft nur
-   auf dem Default-Branch**. Bis zum Merge muss der Refresh auf diesem Branch dispatcht werden,
-   sonst friert die Ablage wieder ein, und mit ihr beide Schichten. Nach dem Merge laeuft es von
-   selbst; `history-store-sync.yml` ist dann auch dispatchbar (ein Workflow wird erst
-   dispatchbar, wenn seine Datei auf dem Default-Branch liegt).
+   Bereich (patterns) hat seinen Satz bekommen. **Der Merge ist erfolgt** (#182 → `a0f827ac`),
+   der frühere Vorbehalt hier — „bis zum Merge muss der Refresh auf diesem Branch dispatcht
+   werden" — ist damit gegenstandslos: der Zeitplan liegt auf dem Default-Branch, die
+   Push-Schritte hängen an keiner Ereignisart, und ein vollständiger Lauf auf main hat es gezeigt
+   (Abschnitt `MERGED_2026-09-25`). Offen ist nur noch die Beobachtung des ersten **planmäßigen**
+   Abendlaufs; bis dahin gilt `STORE_REFRESH_AUTOMATION = SIX_OF_SEVEN_OBSERVED` und der nächste
+   Product-Milestone bleibt zu. `history-store-sync.yml` ist als Hebel jetzt dispatchbar (ein
+   Workflow wird erst dispatchbar, wenn seine Datei auf dem Default-Branch liegt).
 
 0. **One owner gate is open** and it does not block the next build: the `total_debt` concept
    mapping, which waits on the measurement the SEC workflow now produces.
