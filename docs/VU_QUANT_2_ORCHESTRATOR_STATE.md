@@ -890,6 +890,32 @@ checks are the ones the activation gate measures.
 
 ## KNOWN_BLOCKERS
 
+### Reported 2026-09-25, deliberately not acted on
+
+- **`assessSeries` can never raise the contradiction it checks for.** It passes
+  `payload.adjustmentStatus` straight into `validateAdjustmentConsistency` as `claimedStatus`, but
+  the rank table there is keyed on the canonical levels. The store always carries the provider
+  token, so `RANG["adjusted"]` is `undefined`, the guard skips, and only the warning survives.
+  Reproduced exactly: the same refuted ex-dividend window returns
+  `warning:dividend_not_in_adjusted` under `"adjusted"` and additionally
+  `error:adjustment_status_contradicted` under `"TOTAL_RETURN"`. The consequence is that the
+  series-level assessment `build-market-factors` uses to skip FAIL titles is blind to this class.
+  Not fixed here, and the reason is the blast radius rather than caution: normalizing would turn an
+  unknown number of titles into FAIL and strip their factors, and the store is runner-private, so
+  the size of that wave cannot be measured from this environment. The safe order is to measure the
+  wave in a workflow run first and only then enable the normalization. After the fallback landed the
+  class is smaller anyway: a refuted dividend adjustment now stores as
+  `splitAdjustedReconstructible`, for which the check correctly finds no contradiction.
+- **The Discover self-check accepts an empty row.** Latent, not current: measured shape-aware,
+  26 rows, none empty, minimum 10 cards. Worth hardening, and worth hardening carefully - a naive
+  count reports `sector-leaders` as empty because its cards sit under `sectors[].cards`, and that
+  same mis-read once produced a false "empty home page" claim in this file.
+- **SPY remains a single point of failure for the universe's relative strength.** The structural
+  dependency on the total-return check is gone, and the freshness gate now withholds rather than
+  publishing a false lead. What is unchanged: one series decides whether 6,358 titles get a
+  relative-strength component at all. A second benchmark would be a methodology decision (which
+  index, and how a title is assigned to it), not a build task.
+
 - Market Regime: no certified versioned method with exact thresholds, minimum breadth, state
   transitions/hysteresis, missing-data behaviour, benchmark/calendar rules.
 - Revisions: no licensed, immutable historical PIT analyst-consensus source.
