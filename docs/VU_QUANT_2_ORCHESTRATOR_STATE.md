@@ -1,6 +1,6 @@
 # Vision Universe® Quant 2.0 — Orchestrator State
 
-Updated: 2026-09-23 UTC
+Updated: 2026-09-25 UTC
 
 ## CURRENT_MAIN
 
@@ -11,7 +11,13 @@ Updated: 2026-09-23 UTC
 
 ## CURRENT_PHASE
 
-`SETUP_TIER_LIVE_AND_SCREENABLE_ONE_OWNER_GATE_OPEN`
+`JOURNEY_MEASURED_BENCHMARK_INDEPENDENT_ONE_OWNER_GATE_OPEN`
+
+Stand 2026-09-25: die Vergleichsreihe hängt nicht mehr an der Total-Return-Prüfung, die
+Setup-Experience beantwortet „was würde diesen Zustand ändern", Strategy Match und Pattern Match
+nennen ihren Nenner und ihre Gründe, die historische Evidenz wird gemessen statt konstant verneint,
+und der Aktienchart trägt die Basis, die sein Vertrag bindet. Die Reise ist gezählt, nicht behauptet.
+Vorherige Phase:
 
 Factor Evidence, Change, Strategy Match and now the Setup Observation exist as versioned
 product engines over the broad canonical universe, and the Quant Experience frontend renders
@@ -37,6 +43,11 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M13 | Option C · Kursstärke/Anlegerrendite getrennt | **DONE** — quant-v2.1.0 / vu-factor-evidence-2.0.0 ausgeliefert, Smoke 30/30 |
 | M14 | Benchmark-Frische | **DONE** — `BENCHMARK_STALE` statt falscher Vorsprung; SPY-Erholung offen und benannt |
 | M9 | Setup screening (state index + parity) | **DONE** (this section) — one artifact, 6.8 KB, Aktienseite/Radar/Screener |
+| M15 | SPY-Benchmark ohne Total-Return-Abhängigkeit | **DONE** (2026-09-25) — `splitAdjustedReconstructible`, Prüfung unverändert, Ablehnungen verfallen mit ihrer Regel |
+| M16 | Setup Experience | **DONE** (2026-09-25) — Bedingungen in Wörterbuchsprache, „was diesen Zustand ändern würde", Aktualität benannt |
+| M17 | Strategy Match / Pattern Match: Nenner und Gründe | **DONE** (2026-09-25) — 810 bzw. 1.494 Titel bekamen eine falsche Auskunft, jetzt eine richtige |
+| M18 | Historische Evidenz (Beständigkeit) | **GEMESSEN, PENDING_HISTORY** (2026-09-25) — 1 von 2 Snapshots; öffnet sich mit der nächsten Materialisierung |
+| M19 | Chart auf gebundener Basis | **DONE** (2026-09-25) — NVDA/AAPL-Splitsprung entfernt, Bildunterschrift folgt der Reihe |
 
 ## OWNER_DECISION_2026-09-22 — METHODOLOGY NAMESPACES
 
@@ -57,6 +68,97 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
   Master in both cases; the evidence table never asserts it itself.
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
+
+## COMPLETED_2026-09-25 — SPY, SETUP EXPERIENCE, STRATEGY MATCH, PATTERN MATCH, HISTORY
+
+### The benchmark: a refuted total return no longer blocks a reconstructible price series
+
+The owner's question was whether SPY has to depend on the total-return check at all, given that
+`RELATIVE_STRENGTH_RETURN_BASIS = SPLIT_ADJUSTED_PRICE` is binding. Measured answer: it does not.
+
+- `validateAdjustmentConsistency` is **unchanged**. Its verdict is read more precisely: the total
+  return is what failed, so the total return stays blocked; the raw close and the split factor did
+  not fail, and from them the split-adjusted series is reconstructible without any dividend amount
+  and without the adjusted column. The provider re-adjusts `adjClose` retroactively after an
+  ex-day and never re-adjusts the raw close, which makes the reconstruction the more stable of the
+  two series.
+- Three conditions, all required, the third measured rather than assumed: the only error is the
+  status contradiction; at most the *dividend* adjustment is refuted (a refuted split puts the
+  split factor itself in question → no fallback); and raw close, split factor, ascending trading
+  dates and 252 bars are complete. `return-series.splitAdjustedInputs()` names the missing input
+  (`RAW_CLOSE`, `SPLIT_FACTOR`, `TRADING_DATES`, `HISTORY`, `NO_BARS`) instead of "something".
+- The declaration is its own word, `splitAdjustedReconstructible`, because neither existing one is
+  true: `splitAdjusted` would let `market-factors` read the refuted column, `unadjusted` would
+  cost the series its split-adjusted metrics everywhere. Price-semantics places it at level
+  SPLIT_ADJUSTED (what can be computed), return-semantics under RAW_PRICE (which column may be
+  read) — different questions, different answers, both stated in the methodology file.
+- **Second finding, same case:** the rejection that aged SPY was written under a rule that no
+  longer exists. A cooldown protects the quota from repeated requests under the SAME rule; after a
+  rule change the request is not a repeat. Rejections now carry `rule` and lose their hold when it
+  changes; the confirmation count restarts, so a first rejection under a new rule is not instantly
+  a 40-hour block.
+
+Flags: `SPY_SPLIT_ADJUSTED_BENCHMARK` and `BENCHMARK_FRESHNESS` are decided by the next refresh run
+(the structural dependency is removed either way), `TOTAL_RETURN_VALIDATION_UNCHANGED = PASS`
+(asserted by a test that greps market-quality.js for the fallback vocabulary and finds none),
+`DISCOVERY_CHANGED = false`.
+
+### Setup Experience
+
+- **The condition rows were unreadable.** They printed the English catalog label plus the raw enum
+  plus the operator as a word. 46 dictionary terms now cover every field the cascade compares and
+  every value those fields can carry; internals moved to a folded line (layer METHODOLOGY), and a
+  value without a term is left out rather than shown raw.
+- **"What would change this state"** is answered from the published row, which the shard now
+  carries (`setup-observation-product-1.1.0`, ten technical catalog fields; both schemas stay
+  readable so nothing goes UNAVAILABLE between deploy and materialization). The engine uses the
+  same two functions that assigned the state, and a test asserts the two cannot disagree.
+  Course-of-events rules without a previous observation report `unanswerable`, not `unmet`.
+- **The state is two weeks older than the chart beside it** (setup 2026-09-10 against prices
+  2026-09-24) because the canonical history this workstream only reads ends there. The distance is
+  now named on the surface instead of only the date.
+- 426 titles carry a setup state without a factor row, 47 of them a state other than "no setup".
+  The quant page ended for all of them after the notice while the stock page showed the same
+  situation. A missing factor row now hides the factors, not the situation, the patterns and the
+  style match.
+
+### Strategy Match, Pattern Match, historical evidence
+
+- 6,358 titles measured: 2,738 get a best style ≥ 40 %, 2,810 a stated non-fit, **810 have no
+  measurable profile at all** — and those 810 were told the profiles "could not be loaded or
+  checked". Each engine reason now says what it means and that it is a data gap, not a verdict.
+  The lead sentence names the measurable denominator and what left it (1,049 titles).
+- **The pattern denominator claimed checks that never ran.** 3,471 of 5,569 covered titles have
+  unmeasurable patterns, 1,494 of them 181 of 250. Both surfaces now count checkable patterns with
+  the not-checkable count and its reason, from one coverage figure in the service.
+- **`historicalEvidence` was a constant** in the strategy index. It measures now: 1 of 2 published
+  snapshots under `vu-factor-evidence-2.0.0`, dates named, versions never mixed (1.0.0 computed on
+  total return). What two snapshots do answer is assignment persistence — implemented in the
+  engine, falsified with a synthetic pair, and explicitly `isNot: [RETURN, HIT_RATE, BACKTEST,
+  PROBABILITY]`.
+- **The profile contract declared the wrong evidence version.** It said
+  `vu-factor-evidence-1.0.0` while the table was 2.0.0, and the page printed the 1.0.0 to the
+  reader; nothing compared the two. Now `strategy-profiles-1.1.0` with the version it reads, no
+  profile or threshold changed, the measured membership impact linked, and a build-time abort on
+  mismatch.
+
+### The stock chart showed a 90 % crash that never happened
+
+NVDA's 10:1 split of 2024-06-10 sits inside the 3Y, 5Y, 10Y and Max windows; the delivered series
+has 1,208.88 the day before and 121.79 on the split day, and the page drew exactly that. AAPL the
+same with its 4:1 of 2020-08-31. Option C binds the chart to SPLIT_ADJUSTED_PRICE, so the series is
+reconstructed where the artifact is validated, with the same canonical reconstruction the factor run
+uses. The last price stays the traded one; a test asserts that and that every return across a
+split-free day is unchanged to 1e-9. If a building block is missing the series stays raw and says
+so, and the caption is derived from the series' state instead of asserted.
+
+### The journey, counted
+
+Over a deterministic sample of 500 of 6,875 titles: identity 100 %, chart 96.0 %, factorStrength
+95.2 %, change 94.2 %, setup 83.2 %, setupChange 83.2 %, patterns 80.0 %, strategy 83.0 %,
+technical 85.2 %, business 100 %. 370 titles get all ten stations, 26 get nine. An explicit no
+counts as an answer and is reported separately (79 patterns, 217 styles); every gap carries a named
+reason. `scripts/vu2/measure-journey.mjs`, run in the materialization workflow.
 
 ## COMPLETED_THIS_SECTION
 
@@ -463,6 +565,36 @@ owner-authorized market-data and SEC consumer-export runs.
 | `DISCOVERY_CHANGED` | false |
 
 ## VERIFICATION
+
+### 2026-09-25
+
+- Quant suite 1,687/1,687 and Discover 233/233 locally, after each step rather than at the end.
+  New files: `refuted-adjustment-fallback` (19), `stock-chart-basis` (5), `strategy-history` (7),
+  `journey-coverage` (3), plus cases in `rejection-lifecycle`, `market-eod-cli`, `setup-engine`,
+  `product-services` and `product-language`.
+- The adjustment fallback was proven at the running import, not only at its parts: the CLI test
+  serves a refuted ex-dividend window over 300 stored bars and asserts the store ends up declared
+  `splitAdjustedReconstructible` with the refutation recorded — and the counter-test, with 40 bars,
+  asserts the rejection stands and names `HISTORY` as the missing input.
+- `TOTAL_RETURN_VALIDATION_UNCHANGED` is asserted by reading `market-quality.js` and finding neither
+  the fallback vocabulary nor the decision function in it. A later "helpful" loosening has to edit
+  that test, and then it shows in the diff.
+- The chart fix carries a numeric proof rather than a caption check: over the five preview series,
+  no reconstructed day moves more than 60 %, the last value equals the traded close, and every
+  return across a split-free day is identical to 1e-9.
+- Served markup at 1440 px and 390 px: the setup section for a WATCH, a SETUP_FORMING and a
+  CONFIRMED title (block present, three rules explained, no raw enum in the primary copy); the
+  style match for all three of its cases; the pattern denominator on both pages for a title without
+  fundamentals; the chart caption for NVDA and AAPL on Max. No page error, no horizontal overflow.
+- The local QA harness sent `Content-Encoding: gzip` for `.json.gz` again and every compressed read
+  failed again — the exact defect recorded further down this section from an earlier day. Reading
+  this file first would have saved the detour.
+- Discover rows measured shape-aware: 26 rows, 0 empty, minimum 10 cards. A naive count reports
+  `sector-leaders` as empty because its cards sit under `sectors[].cards` — the same class of
+  mis-read that produced a false "empty home page" claim earlier, so the earlier note that
+  "Discover's self-check accepts empty rows" stands as a latent hardening item and not as a defect.
+
+### Earlier
 
 - Full Quant suite: 1,513/1,513 passed locally (1,501 before, +12 product-language).
   SEC Python suite: 474/474 locally.
