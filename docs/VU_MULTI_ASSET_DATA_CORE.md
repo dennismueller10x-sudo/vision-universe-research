@@ -146,3 +146,57 @@ in einem PR ablehnt — die Spuren bleiben getrennt.
 - Die EZB-Referenzreihe des Currency Core wird nur auf Marker/Dispatch
   aufgefrischt, nicht nach Zeitplan; EUR/USD wird deshalb nach vier Tagen
   ohne Auffrischung ehrlich STALE. Das gehoert in die Currency-Spur.
+
+## Markt-Tracker (Owner-Entscheidung 2026-09-25, Tiingo-first)
+
+Aktienmärkte erscheinen in der Consumer-Übersicht über börsengehandelte **Index-Tracker** aus dem bestehenden Tiingo-Vertrag, nicht über Indexstände ungeklärter Free-Provider.
+
+| Tracker | Markt (`displayMarketName`) | `tracksIndex` | Identität (Tiingo) |
+|---|---|---|---|
+| QQQ | Nasdaq 100 | NASDAQ_100 | Beschreibung nennt den Nasdaq-100 Index |
+| SPY | S&P 500 | SP500 | Name und Beschreibung nennen den S&P 500 |
+| DIA | Dow Jones | DOW_JONES_INDUSTRIAL_AVERAGE | Name nennt den Dow Jones Industrial Average |
+| IWM | Russell 2000 | RUSSELL_2000 | Name nennt den Russell 2000 |
+| FEZ | Euro Stoxx 50 | EURO_STOXX_50 | Name nennt den EURO STOXX 50; in USD notiert, enthält den EUR/USD-Effekt |
+| URTH | MSCI World | MSCI_WORLD | Name nennt MSCI World; in USD, enthält Währungseffekte |
+| EEM | Schwellenländer | MSCI_EMERGING_MARKETS | Name nennt MSCI Emerging Markets; in USD |
+
+Abgelehnt (`tiingo-tracker-probe.json`):
+
+| Kandidat | Grund |
+|---|---|
+| EWU (MSCI United Kingdom), FLGB (FTSE UK Capped) | nicht der FTSE 100 |
+| EWJ (MSCI Japan) | nicht der Nikkei 225 – der echte Nikkei-225-Pfad (FRED) bleibt |
+| Global X DAX Germany ETF (Ticker DAX) | Identität belegt, aber unter 100.000 Anteile/Tag und lückenhafte Intraday-Bars |
+
+**Modell.** Jeder Tracker ist ein eigenes Instrument:
+- `assetClass` = ETF, `instrumentSubtype` = INDEX_TRACKER;
+- Einheit USD je Anteil (`USD_PER_SHARE`), nie Indexpunkte;
+- `proxy.isProxy` = true und `proxy.isIndexLevel` = false;
+- Sitzung `US_EQUITY_ETF` (US-Handelssitzung des ETF, nicht die Berechnungszeit des Index).
+
+**Vertrag 1.1.0.** Er ergänzt:
+- den Block `tracker`: `displayMarketName`, `trackerDisclosure`, `price`, `change`, `changePercent`, `asOf`, `freshness`, `history`, `realtimeCapability`;
+- in `market`: `displayMarket`, `underlyingType`, `trackedBy`, `tradingSession`.
+
+Umrechnung und Wertreihen:
+- Der Kurs geht über den Currency Core in die Anzeigewährung, Prozentbewegungen bleiben unverändert.
+- Die Tagesreihe ist der split-bereinigte Schlusskurs (Kursbewegung des ETF, ohne Ausschüttungen).
+- Der jüngste Stand ist Tiingos Referenzkurs (tngoLast) über IEX.
+- Der 5-Minuten-Tagesverlauf liegt unter `quant/data/market/multi-asset/intraday/`.
+
+**Echtzeit.** Sie läuft über den bestehenden VU-Live-Worker (Tiingo IEX, thresholdLevel 6, reguläre US-Sitzung) als Fähigkeit (`realtimeCapability`). LIVE sagt nur `data.freshness`.
+
+**Lizenz je Wert.** Jeder Wert trägt ein festes Vokabular, `license.state` ∈ LICENSE_CONFIRMED / OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT / PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED / UNAVAILABLE.
+
+| Quelle | Zustand |
+|---|---|
+| Tiingo-Aktien-/ETF-Daten | LICENSE_CONFIRMED (Owner-Erklärung 2026-09-13) |
+| Tiingo Krypto und Edelmetalle | OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT mit `preCommercialLicenseConfirmationRequired` = true und `commercialDisplayApproved` = false |
+
+**FMP.** FMP trägt keine Consumer-Werte mehr:
+- SPX, DJI, SX5E, UKX, HSI und RUT sind benannte Lücken mit Verweis auf den Tracker;
+- der Ingest erhält keinen FMP-Schlüssel;
+- Adapter, Berichte und Tests bleiben als Audit-Evidence.
+
+**Gates.** TRACKER_SEMANTICS, LICENSE_STATES und CONSUMER_DEPENDENCIES (kein FMP, kein Comparison-FRED, keine Pre-Approval-FRED-Reihe, kein Yahoo/Google/Massive).
