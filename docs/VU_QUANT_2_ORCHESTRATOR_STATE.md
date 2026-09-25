@@ -4,9 +4,12 @@ Updated: 2026-09-25 UTC
 
 ## CURRENT_MAIN
 
-- GitHub `main` at this state write: `7b08a6eec` (Intraday-Takt 16, Discovery-Takt, unrelated to Quant).
-- Last merged Quant release: PR #173, merge `a0bb8742b684c4ebfe145b7b148d475b0c33b53d`, deployed 2026-09-22.
-- This section's work branch: `claude/quant-2-orchestration-hmuo69`, branched from `7b08a6eec`.
+- GitHub `main` at this state write: `2769663e8` (PR #222, Produktions-Smoke installiert den Browser).
+- Last merged Quant release: **PR #182**, merge `a0f827ac090ae605275c2ce1041b32036b97f253`,
+  2026-09-25 14:01 UTC — die Ablage-Reparatur ist damit auf dem Default-Branch. Davor: PR #173,
+  `a0bb8742b684c4ebfe145b7b148d475b0c33b53d`, deployed 2026-09-22.
+- This section's work branch: `claude/quant-2-orchestration-hmuo69`, nach dem Merge von #182 neu
+  von `origin/main` aufgesetzt (ein gemergter PR traegt keine Folgearbeit).
 - Production URL: `https://research.visionuniverse.de`.
 
 ## CURRENT_PHASE
@@ -87,6 +90,72 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
   Master in both cases; the evidence table never asserts it itself.
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
+
+## MERGED_2026-09-25 — #182 AUF MAIN, DER PRODUKTIONSWEG, DIE ABLAGE-AUTOMATIK
+
+### Der Merge
+
+PR #182 war `mergeable_state: dirty`. `origin/main` (`2e7409888e`) in den Branch gemergt: 26
+Konflikte, **alle** in erzeugten Artefakten unter `quant/data/fundamentals/` und
+`quant/data/universe/`. Aufgelöst mit der Seite, die nachweislich neuer ist — mains Fassungen
+tragen `generatedAt 2026-09-25T12:02:22` gegen `2026-09-23T14:15:15` auf dem Branch, bei gleicher
+Mitgliederzahl (6.875). Es sind die Ausgaben der Tagespipelines, und die laufen auf main. Von Hand
+editiert wurde keine Zeile. 1.837 quant-Tests und 273 Discover-Tests grün auf dem
+zusammengeführten Baum. Merge: `a0f827ac090ae605275c2ce1041b32036b97f253`.
+
+### Der Befund, der den Merge fast wertlos gemacht hätte
+
+Ein Merge auf main ist **nicht** Produktion. Lauf 36144719141 (pages-release auf dem
+Merge-Commit) brach im Schritt *Production smoke over the built release* ab; *Enforce delivery
+contract*, `configure-pages`, `upload-pages-artifact` und der ganze `deploy`-Job wurden
+übersprungen. `research.visionuniverse.de` stand damit weiter auf dem Release von Lauf 36132298539
+(11:58 UTC) — die ganze Kette lag auf main und war für keinen Nutzer sichtbar.
+
+Ursache war eine eigene Zeile aus `2e6f25a435`:
+
+```
+node -e "require('playwright').chromium.executablePath()" >/dev/null 2>&1 || npx playwright install …
+```
+
+`chromium.executablePath()` liefert den **erwarteten** Pfad und prüft nicht, ob die Datei
+existiert. Die Bedingung war also nie falsch, die Installation wurde in **jedem** Lauf
+übersprungen, und `chromium.launch()` scheiterte an einem Binary, das nie geladen wurde
+(`chromium_headless_shell-1187`). Alle anderen sieben Workflows dieses Repositories installieren
+unbedingt; genau dieser Schritt war die Ausnahme — und es war der Schritt, der über die
+Auslieferung entscheidet.
+
+Behoben in PR #222 (`2769663e8`): die gepinnte CLI installiert Chromium unbedingt. Nachweis vor
+dem Merge: lokal gegen dasselbe gebaute Release 29 von 29 Ansichten sauber (1440 px und 390 px,
+`PRODUCTION SMOKE CLEAN`), in CI Lauf 36149278192 Smoke grün in 95 Sekunden, Liefervertrag grün,
+Pages-Artefakt gebaut.
+
+Die Lehre gehört ins Protokoll, nicht nur der Fix: **eine Prüfung, die nie fehlschlagen kann, ist
+keine Prüfung.** Ein `|| install` hinter einem Aufruf, der nur einen Pfad *berechnet*, sieht aus
+wie Vorsorge und ist eine Zusicherung ohne Messung.
+
+### Warum ein abgewiesener Repo-Push die Ablage nicht mehr einfriert
+
+Der letzte planmäßige Refresh vor dem Merge (Lauf 36078691085, 25.09. 01:30–02:44) war bis Gate B
+grün und starb im letzten Schritt: `Commit und Push`. Der Rebase auf ein zwischenzeitlich
+gewachsenes main hatte fünf Konflikte; drei löste `scripts/ci/push-with-retry.sh` nach
+Erzeugerhoheit auf, zwei nicht — `quant/data/product/capabilities-v1.json` und
+`capabilities-summary-v1.json` standen nicht auf der Liste, obwohl **derselbe Lauf** sie schreibt.
+Nach 68 Minuten Abruf und grünen Gates war der Commit verloren. Dieser Fix ist nicht von hier: er
+liegt seit `ff4c55a6c1` (25.09. 03:20) auf main, ist im Merge-Commit enthalten und durch
+`quant/tests/push-with-retry.test.mjs` festgehalten (PR3: jeder Pfad, den Refresh **und** ein
+Intraday-/Taktlauf committen, steht unter Erzeugerhoheit).
+
+Für die Ablage-Automatik zählt die Reihenfolge, und die ist nachlesbar in
+`market-data-refresh.yml`: Gate B (215) → Zugang (218) → **Vorabrechnung (256)** → **Push (268)** →
+Bericht (286) → Arbeitsablage (298/310) → `Commit und Push` (317). Die dauerhafte Ablage wird also
+geschrieben, **bevor** der Repo-Push überhaupt versucht wird. Ein abgewiesener Push kostet den
+Commit des Tages — er friert die Ablage nicht ein. Das war vor dieser Kette genau umgekehrt: es gab
+keinen Push in die Ablage, und nichts anderes konnte das ausgleichen.
+
+Die drei Push-Schritte hängen einzig an `steps.history_store.outputs.ready == 'true'` — an keiner
+Ereignisart. Ein `schedule`-Lauf führt sie deshalb genauso aus wie ein `workflow_dispatch`; der
+Zeitplan (`cron: '30 22 * * 1-5'`) liegt mit dem Merge auf dem Default-Branch, wo GitHub ihn
+überhaupt erst auswertet.
 
 ## COMPLETED_2026-09-25 — SPY, SETUP EXPERIENCE, STRATEGY MATCH, PATTERN MATCH, HISTORY
 
