@@ -1,0 +1,153 @@
+name: Dauerhafte Historienablage abgleichen (manuell)
+
+# WOZU DIESER WORKFLOW EXISTIERT
+#
+# sync-history-store.mjs beschreibt seinen Vertrag selbst: "--pull Ablage ->
+# .market-cache (vor Faktoren und Technical), --push .market-cache -> Ablage
+# (nach dem Gate-Lauf)". Der Pull war in der Materialisierung verdrahtet, der
+# Push nirgends. Am 25.09.2026 gemessene Folge: die Produkt-Kursstruktur endet
+# am 2026-09-10, der veroeffentlichte Kursstand am 2026-09-24 - zehn
+# Handelstage Rueckstand bei 5.646 von 5.676 Titeln.
+#
+# Im Marktdaten-Refresh ist der Push jetzt verdrahtet. Sein Zeitplan laeuft
+# aber nur auf dem Default-Branch, also wirkt er dort erst nach dem Merge -
+# und auf einem Entwicklungsbranch gar nicht.
+#
+# Dieser Workflow ist der Hebel dafuer: er holt die Arbeitsablage des letzten
+# Abrufs aus dem Actions-Cache und schreibt sie in die dauerhafte Ablage.
+#
+#   KEINE Provider-Anfrage. Kein Tiingo-Schluessel. Kein Abruf.
+#   Er schreibt nur, was ein frueherer Lauf schon geholt und gepruft hat.
+#
+# Die Kosten rechnet die Vorpruefung und nicht dieser Workflow: ein
+# DAILY_UPDATE schreibt ein Objekt je geaendertem Titel plus einen Index
+# (~6.900 Class-A-Operationen gegen eine Decke von 750.000 im Monat). Reicht
+# das Budget nicht, bricht der Waechter mit "OWNER DECISION REQUIRED" ab.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Nur rechnen, nichts schreiben'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: history-store-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Zugaenge zur dauerhaften Ablage sind hinterlegt
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          for v in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
+          done
+
+      # Dieselbe Ablage und derselbe Schluesselstamm wie im Refresh. Findet
+      # sich kein Stand, bricht der Lauf ab statt eine leere Ablage zu
+      # schreiben - ein Push ohne Bars waere ein Lauf, der nichts tut und
+      # gruen aussieht.
+      - name: Arbeitsablage des letzten Abrufs holen
+        uses: actions/cache/restore@v4
+        with:
+          path: .market-cache
+          key: discover-market-cache-sync-${{ github.run_id }}
+          restore-keys: |
+            discover-market-cache-
+
+      - name: Universumsquelle
+        run: node scripts/market/universe-source.mjs
+
+      - name: Was die Arbeitsablage traegt
+        id: stand
+        run: |
+          DIR=.market-cache/tiingo/daily
+          if [ ! -d "$DIR" ]; then echo "::error::keine Arbeitsablage im Cache - nichts abzugleichen"; exit 1; fi
+          COUNT=$(ls -1 "$DIR" | wc -l)
+          echo "Reihen in der Arbeitsablage: $COUNT"
+          node -e '
+            const fs = require("fs");
+            const dir = ".market-cache/tiingo/daily";
+            const files = fs.readdirSync(dir);
+            let neuester = null, aeltester = null, bars = 0;
+            for (const f of files) {
+              try {
+                const p = JSON.parse(fs.readFileSync(dir + "/" + f, "utf8"));
+                const last = p.bars && p.bars.length ? p.bars[p.bars.length - 1].date : null;
+                if (!last) continue;
+                bars += p.bars.length;
+                if (!neuester || last > neuester) neuester = last;
+                if (!aeltester || last < aeltester) aeltester = last;
+              } catch {}
+            }
+            console.log("  juengster Stand: " + neuester);
+            console.log("  aeltester Stand: " + aeltester);
+            console.log("  Bars gesamt:     " + bars);
+          '
+          if [ "$COUNT" -lt 100 ]; then echo "::error::nur $COUNT Reihen - das ist kein Tageslauf"; exit 1; fi
+
+      - name: Vorabrechnung
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation DAILY_UPDATE --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/history-store-sync-preflight.json"
+
+      - name: Abgleich in die dauerhafte Ablage
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --push --gate FULL_UNIVERSE --concurrency 16
+          --operation DAILY_UPDATE
+          ${{ inputs.dry_run && '--dry-run' || '' }}
+          --preflight "$RUNNER_TEMP/history-store-sync-preflight.json"
+          --report "$RUNNER_TEMP/history-store-sync.json"
+
+      # Was angekommen ist, wird gezaehlt und nicht angenommen.
+      - name: Bericht
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = process.env.RUNNER_TEMP + "/history-store-sync.json";
+            if (!fs.existsSync(path)) { console.log("kein Bericht - der Abgleich lief nicht."); process.exit(0); }
+            const r = JSON.parse(fs.readFileSync(path, "utf8"));
+            console.log("Richtung: " + (r.direction || "?"));
+            console.log("Zaehlwerk: " + JSON.stringify(r.tally || {}));
+            console.log("Ablage:    " + JSON.stringify(r.storage || {}));
+          '
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: history-store-sync-evidence
+          path: |
+            ${{ runner.temp }}/history-store-sync-preflight.json
+            ${{ runner.temp }}/history-store-sync.json
+          if-no-files-found: warn
+          retention-days: 30
