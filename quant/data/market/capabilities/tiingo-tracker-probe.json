@@ -1,0 +1,959 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAtUtc": "2026-09-25T02:49:39.056Z",
+  "purpose": "Owner-Entscheidung 2026-09-25 (Tiingo-first): Index-Tracker ueber den bestehenden Tiingo-Zugang. Keine Werte - nur Identitaet, Abdeckung, Faehigkeiten.",
+  "valuesIncluded": false,
+  "measured": true,
+  "trackers": {
+    "QQQ": {
+      "tracksIndex": "NASDAQ_100",
+      "tier": "REQUIRED",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 466,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "Invesco QQQ Trust Series 1",
+        "exchangeCode": "NASDAQ",
+        "startDate": "1999-03-10",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "DESCRIPTION",
+        "descriptionExcerpt": "- 100 Index Tracking Stock®\", is an exchange-traded fund based on the Nasdaq-100 Index®. The Fund will, under most circumstances, consist of all of stocks in the Index. The Index includes 100 of the largest domestic and "
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 835,
+        "contentType": "application/json",
+        "arrayLength": 6929,
+        "observations": 6929,
+        "firstDate": "1999-03-10",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [
+          "2000-03-20"
+        ],
+        "splitsCount": 1,
+        "distributionsLast2y": 8,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": ">=10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 80,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 111,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "SPY": {
+      "tracksIndex": "SP500",
+      "tier": "REQUIRED",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 86,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "SPDR S&P 500 ETF Trust",
+        "exchangeCode": "NYSE",
+        "startDate": "1993-01-29",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "Historical ETF prices for SPDR S&P 500 ETF (SPY). SPDR S&P 500 ETF Trust (the Trust) is an exchange traded fund. The Trust corresponds to the price and yield performance of the S&P 500 Index. The S&P 500 Index is compose"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 277,
+        "contentType": "application/json",
+        "arrayLength": 8471,
+        "observations": 8471,
+        "firstDate": "1993-01-29",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 8,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": ">=10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 95,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 129,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "DIA": {
+      "tracksIndex": "DOW_JONES_INDUSTRIAL_AVERAGE",
+      "tier": "REQUIRED",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 85,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "SPDR Dow Jones Industrial Average ETF",
+        "exchangeCode": "NYSE",
+        "startDate": "1998-01-20",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "Historical ETF prices for Dow Diamonds ETF (DIA). SPDR Dow Jones Industrial Average ETF Trust, formerly Diamonds Trust, Series 1 (the Trust) is a unit investment, which issues securities called trust units or units. It s"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 138,
+        "contentType": "application/json",
+        "arrayLength": 7215,
+        "observations": 7215,
+        "firstDate": "1998-01-20",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 24,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "1M-10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 91,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 115,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "IWM": {
+      "tracksIndex": "RUSSELL_2000",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 93,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "ISHARES RUSSELL 2000 ETF ",
+        "exchangeCode": "NYSE",
+        "startDate": "2000-05-26",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "The Fund seeks to track the investment results of the Russell 2000® Index (the “Underlying Index”), which measures the performance of the small-capitalization sector of the U.S. equity market, as defined by FTSE Russell "
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 161,
+        "contentType": "application/json",
+        "arrayLength": 6621,
+        "observations": 6621,
+        "firstDate": "2000-05-26",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [
+          "2005-06-09"
+        ],
+        "splitsCount": 1,
+        "distributionsLast2y": 9,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": ">=10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 89,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 120,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "FEZ": {
+      "tracksIndex": "EURO_STOXX_50",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 92,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "STATE STREET(R) SPDR(R) EURO STOXX 50(R) ETF ",
+        "exchangeCode": "NYSE",
+        "startDate": "2002-10-21",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "In seeking to track the performance of the EURO STOXX 50® Index (the “Index”), the Fund employs a sampling strategy, which means that the Fund is not required to purchase all of the securities represented in the Index. I"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 156,
+        "contentType": "application/json",
+        "arrayLength": 6020,
+        "observations": 6020,
+        "firstDate": "2002-10-21",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 5,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 8,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "100k-1M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 83,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 138,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "DAX": {
+      "tracksIndex": "DAX",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 84,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "GLOBAL X DAX GERMANY ETF ",
+        "exchangeCode": "NASDAQ",
+        "startDate": "2014-10-23",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "und invests at least 80% of its total assets in the securities of the DAX® Index (the \"Underlying Index\") and in American Depositary Receipts (\"ADRs\") and Global Depositary Receipts (\"GDRs\") based on the securities in th"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 122,
+        "contentType": "application/json",
+        "arrayLength": 2997,
+        "observations": 2997,
+        "firstDate": "2014-10-23",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 4,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 4,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "<100k"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 88,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 103,
+        "contentType": "application/json",
+        "arrayLength": 287,
+        "bars": 287,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T17:50:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "EWU": {
+      "tracksIndex": "FTSE_100",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 83,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "ISHARES MSCI UNITED KINGDOM ETF ",
+        "exchangeCode": "NYSE",
+        "startDate": "1996-04-01",
+        "endDate": "2026-09-24",
+        "indexNamedIn": null,
+        "descriptionExcerpt": "The Fund seeks to track the investment results of the MSCI United Kingdom Index (the “Underlying Index”), which is designed to measure the performance of the la"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 156,
+        "contentType": "application/json",
+        "arrayLength": 7670,
+        "observations": 7670,
+        "firstDate": "1996-04-01",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [
+          "2016-11-07"
+        ],
+        "splitsCount": 1,
+        "distributionsLast2y": 4,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "1M-10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 90,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 143,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "REJECTED_IDENTITY"
+    },
+    "FLGB": {
+      "tracksIndex": "FTSE_100",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 85,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "Franklin FTSE United Kingdom ETF",
+        "exchangeCode": "NYSE",
+        "startDate": "2017-11-06",
+        "endDate": "2026-09-24",
+        "indexNamedIn": null,
+        "descriptionExcerpt": "Undernormal market conditions, the Fund invests at least 80% of its assets in the component securities ofthe FTSE UK Capped Index and in depositary receipts rep"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 115,
+        "contentType": "application/json",
+        "arrayLength": 2232,
+        "observations": 2232,
+        "firstDate": "2017-11-06",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 4,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 4,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "100k-1M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 88,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 124,
+        "contentType": "application/json",
+        "arrayLength": 308,
+        "bars": 308,
+        "firstBar": "2026-09-21T13:50:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "REJECTED_IDENTITY"
+    },
+    "EWJ": {
+      "tracksIndex": "NIKKEI_225",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 96,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "ISHARES MSCI JAPAN ETF ",
+        "exchangeCode": "NYSE",
+        "startDate": "1996-04-01",
+        "endDate": "2026-09-24",
+        "indexNamedIn": null,
+        "descriptionExcerpt": "The Fund seeks to track the investment results of the MSCI Japan Index (the “Underlying Index”), which is designed to measure the performance of the large- and "
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 123,
+        "contentType": "application/json",
+        "arrayLength": 7670,
+        "observations": 7670,
+        "firstDate": "1996-04-01",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 7,
+        "splitsDates": [
+          "2016-11-07"
+        ],
+        "splitsCount": 1,
+        "distributionsLast2y": 4,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "1M-10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 78,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 132,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "REJECTED_IDENTITY"
+    },
+    "EEM": {
+      "tracksIndex": "MSCI_EMERGING_MARKETS",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 98,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "ISHARES MSCI EMERGING MARKETS ETF ",
+        "exchangeCode": "NYSE",
+        "startDate": "2003-04-14",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "The Fund seeks to track the investment results of the MSCI Emerging Markets Index (the “Underlying Index”), which is designed to measure equity market performance in the global emerging markets. As of August 31, 2024, th"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 126,
+        "contentType": "application/json",
+        "arrayLength": 5900,
+        "observations": 5900,
+        "firstDate": "2003-04-14",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 5,
+        "splitsDates": [
+          "2005-06-09",
+          "2008-07-24"
+        ],
+        "splitsCount": 2,
+        "distributionsLast2y": 4,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": ">=10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 86,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 101,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "URTH": {
+      "tracksIndex": "MSCI_WORLD",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 91,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "ISHARES MSCI WORLD ETF ",
+        "exchangeCode": "NYSE",
+        "startDate": "2012-01-12",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "NAME",
+        "descriptionExcerpt": "The Fund seeks to track the investment results of the MSCI World Index (the “Underlying Index”), which is designed to measure the performance of equity securities in the large- and mid-capitalization segments of develope"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 105,
+        "contentType": "application/json",
+        "arrayLength": 3696,
+        "observations": 3696,
+        "firstDate": "2012-01-12",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 5,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 4,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "100k-1M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 87,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 130,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    },
+    "VGK": {
+      "tracksIndex": "FTSE_DEVELOPED_EUROPE",
+      "tier": "OPTIONAL",
+      "metadata": {
+        "httpStatus": 200,
+        "durationMs": 85,
+        "contentType": "application/json",
+        "objectKeys": [
+          "ticker",
+          "name",
+          "description",
+          "startDate",
+          "endDate",
+          "exchangeCode"
+        ],
+        "name": "VANGUARD EUROPEAN STOCK INDEX FUND ETF SHARES",
+        "exchangeCode": "NYSE",
+        "startDate": "2005-03-10",
+        "endDate": "2026-09-24",
+        "indexNamedIn": "DESCRIPTION",
+        "descriptionExcerpt": "indexing investment approach designed to track the performance of the FTSE Developed Europe All Cap Index (the “Target Index”), a market-capitalization weighted index that is made up of common stocks of companies located"
+      },
+      "daily": {
+        "httpStatus": 200,
+        "durationMs": 114,
+        "contentType": "application/json",
+        "arrayLength": 5420,
+        "observations": 5420,
+        "firstDate": "2005-03-10",
+        "lastDate": "2026-09-24",
+        "weekendObservations": 0,
+        "saturday": 0,
+        "sunday": 0,
+        "maxGapDays": 5,
+        "splitsDates": [],
+        "splitsCount": 0,
+        "distributionsLast2y": 8,
+        "fields": [
+          "date",
+          "close",
+          "high",
+          "low",
+          "open",
+          "volume",
+          "adjClose",
+          "adjHigh",
+          "adjLow",
+          "adjOpen",
+          "adjVolume",
+          "divCash",
+          "splitFactor"
+        ],
+        "avgVolume60dBucket": "1M-10M"
+      },
+      "iexQuote": {
+        "httpStatus": 200,
+        "durationMs": 80,
+        "contentType": "application/json",
+        "arrayLength": 1,
+        "timestamp": "2026-09-24T20:00:00+00:00",
+        "lastSaleTimestamp": null,
+        "hasLast": false,
+        "hasPrevClose": true,
+        "hasTngoLast": true
+      },
+      "intraday5min": {
+        "httpStatus": 200,
+        "durationMs": 133,
+        "contentType": "application/json",
+        "arrayLength": 312,
+        "bars": 312,
+        "firstBar": "2026-09-21T13:30:00.000Z",
+        "lastBar": "2026-09-24T19:55:00.000Z"
+      },
+      "verdict": "IDENTITY_PROVEN"
+    }
+  },
+  "websocket": {
+    "attempted": true,
+    "endpoint": "iex",
+    "tickers": [
+      "qqq",
+      "spy",
+      "dia"
+    ],
+    "seconds": 25,
+    "opened": true,
+    "messages": 1,
+    "messageTypes": {
+      "E": 1
+    },
+    "dataMessages": 0,
+    "perTicker": {},
+    "subscribeAck": null,
+    "error": {
+      "code": 400,
+      "message": "thresholdLevel not valid for your subscription tier. Please read the new IEX Market data rules on: https://www.tiingo.co"
+    }
+  },
+  "requests": {
+    "tiingo": 48,
+    "official": 0
+  },
+  "rateLimitHeaders": {}
+}
