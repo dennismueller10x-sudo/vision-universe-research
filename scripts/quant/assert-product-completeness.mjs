@@ -121,9 +121,16 @@ if (snapshots > 1) {
   add("OPEN", "MEMBERSHIP_BLOCKER_CLEARED",
     snapshots + " membership snapshots now exist per index; the point-in-time universe entry is stale.");
 } else {
+  /* Der Abstand UND wie er sich schliesst. "Waechst nur nach vorne" sagt
+     nicht, wie schnell - und ohne das liest es sich wie ein Wartezustand,
+     der an einer Entscheidung haengt. Er haengt an keiner: der Workflow
+     index-membership.yml laeuft woechentlich (Samstag) und schreibt je
+     Index einen Stand aus den veroeffentlichten Fondsbestaenden. Es
+     braucht dafuer keinen Schluessel und keine Freigabe. */
   add("BLOCKED", "BACKTEST", "Backtest integration stays shut",
     "historical index membership (" + snapshots + " snapshot per index). No measurement creates it " +
-    "retroactively; the series only grows forward from here.");
+    "retroactively; the series only grows forward from here - index-membership.yml appends one " +
+    "snapshot per index per week on its own schedule, so this waits on time rather than on a person.");
 }
 
 /* Measured, and deliberately NOT folded into the backtest blocker: the

@@ -1,0 +1,145 @@
+{
+ "schemaVersion": "journey-coverage-1.0.0",
+ "generatedAt": "2026-09-25T04:18:25.000Z",
+ "universe": 6875,
+ "sample": 500,
+ "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
+ "evidenceAsOf": "2026-09-23",
+ "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
+ "stations": [
+  {
+   "id": "identity",
+   "label": "Titel und letzter Kurs",
+   "answered": 500,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 0,
+   "share": 1,
+   "reasons": {}
+  },
+  {
+   "id": "chart",
+   "label": "Kursverlauf",
+   "answered": 480,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 20,
+   "share": 0.96,
+   "reasons": {
+    "SOURCE_MISSING": 20
+   }
+  },
+  {
+   "id": "factorStrength",
+   "label": "Wie stark ist die Aktie",
+   "answered": 476,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 24,
+   "share": 0.952,
+   "reasons": {
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 24
+   }
+  },
+  {
+   "id": "change",
+   "label": "Was hat sich veraendert",
+   "answered": 471,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 29,
+   "share": 0.942,
+   "reasons": {
+    "NO_COMPARABLE_OBSERVATION": 29
+   }
+  },
+  {
+   "id": "setup",
+   "label": "Baut sich eine Situation auf",
+   "answered": 416,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 84,
+   "share": 0.832,
+   "reasons": {
+    "NOT_COVERED_BY_SETUP_OBSERVATION": 84
+   }
+  },
+  {
+   "id": "setupChange",
+   "label": "Was diesen Zustand aendern wuerde",
+   "answered": 416,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 84,
+   "share": 0.832,
+   "reasons": {
+    "NOT_COVERED_BY_SETUP_OBSERVATION": 84
+   }
+  },
+  {
+   "id": "patterns",
+   "label": "Chance und Risiko in aehnlichen Lagen",
+   "answered": 400,
+   "findings": 79,
+   "findingReasons": {
+    "NO_PATTERN_HOLDS": 79
+   },
+   "withheld": 100,
+   "share": 0.8,
+   "reasons": {
+    "NOT_COVERED_BY_PATTERN_MATCH": 99,
+    "SOURCE_MISSING": 1
+   }
+  },
+  {
+   "id": "strategy",
+   "label": "Welcher Anlagestil passt",
+   "answered": 415,
+   "findings": 217,
+   "findingReasons": {
+    "NO_PROFILE_FITS_WELL": 217
+   },
+   "withheld": 85,
+   "share": 0.83,
+   "reasons": {
+    "NO_EVIDENCE": 61,
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 24
+   }
+  },
+  {
+   "id": "technical",
+   "label": "Kursstruktur",
+   "answered": 426,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 74,
+   "share": 0.852,
+   "reasons": {
+    "TECHNICAL_EVIDENCE_NOT_PUBLISHED": 74
+   }
+  },
+  {
+   "id": "business",
+   "label": "Unternehmenszahlen",
+   "answered": 500,
+   "findings": 0,
+   "findingReasons": {},
+   "withheld": 0,
+   "share": 1,
+   "reasons": {}
+  }
+ ],
+ "answeredStationsPerTitle": {
+  "2": 2,
+  "3": 1,
+  "4": 6,
+  "5": 57,
+  "6": 26,
+  "7": 2,
+  "8": 10,
+  "9": 26,
+  "10": 370
+ },
+ "note": "Gemessen ueber dieselben Dienste, die die Oberflaeche aufruft. 'withheld' heisst: die Station nennt einen Grund statt einer Zahl - kein Fehler, sondern der veroeffentlichte Zustand."
+}

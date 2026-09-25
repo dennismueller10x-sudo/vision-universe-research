@@ -153,9 +153,20 @@ jobs:
       - name: Materialize Market Regime
         run: node scripts/quant/build-market-regime.mjs
 
+      # DIE REISE, VON DER SEITE DES LESERS GEZAEHLT.
+      #
+      # "Die Stock-Intelligence-Reise ist gebaut" laesst sich nicht pruefen.
+      # Diese Messung zaehlt je Station, wie viele Titel eine Antwort
+      # bekommen, wie viele ein ausdrueckliches Nein (auch das ist eine
+      # Antwort) und wie viele einen Grund statt einer Zahl - gelesen ueber
+      # dieselben Dienste, die die Oberflaeche aufruft. Laeuft hier, weil
+      # genau jetzt alle Artefakte der Reise frisch geschrieben sind.
+      - name: Measure the Stock Intelligence journey
+        run: node scripts/vu2/measure-journey.mjs --sample 500
+
       - name: Contract and regression tests
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
 
       # CRITICAL_PRODUCT_GAPS = 0 ist ein Ziel. In einem Dokument behauptet
