@@ -27,3 +27,11 @@
 .dv2 .dx-markt-karte[data-asset-class=YIELD] .dx-art-line,.dv2 .dx-markt-karte[data-asset-class=RATE] .dx-art-line{stroke:var(--v2-muted)!important}
 .dv2 .dx-markt-karte[data-asset-class=YIELD] .dx-art-fill,.dv2 .dx-markt-karte[data-asset-class=RATE] .dx-art-fill{display:none}
 .dv2 .dx-markt-veraenderung.is-neutral b{color:var(--v2-ink)}
+/* Sprungleiste zu den Assetklassen - mobil zuerst: eine Zeile, die in sich wischt, die Seite bleibt ohne Querlauf. */
+.dv2 .dx-maerkte-nav{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;margin:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.dv2 .dx-maerkte-nav::-webkit-scrollbar{display:none}
+.dv2 .dx-maerkte-sprung{flex:0 0 auto;font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;border:1px solid var(--v2-line);background:var(--v2-panel);color:var(--v2-ink);cursor:pointer}
+.dv2 .dx-maerkte-sprung:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+.dv2 .dx-maerkte-gruppe{scroll-margin-top:72px}
+.dv2 .dx-markt-zustand{white-space:nowrap}
+@media(min-width:761px){.dv2 .dx-maerkte-nav{flex-wrap:wrap;overflow-x:visible}}
