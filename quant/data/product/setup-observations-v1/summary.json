@@ -3,7 +3,7 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-09-25T13:26:40.000Z",
+ "generatedAt": "2026-09-25T16:50:19.000Z",
  "asOf": "2026-09-24",
  "approval": {
   "state": "APPROVED",
@@ -328,9 +328,9 @@
  "unavailable": 0,
  "stateCounts": {
   "NO_SETUP": 4317,
-  "WATCH": 857,
+  "WATCH": 856,
   "SETUP_FORMING": 633,
-  "CONFIRMED": 35,
+  "CONFIRMED": 36,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
@@ -339,9 +339,9 @@
  "ruleCounts": {
   "setup.forming.complete-setup-awaiting-trigger": 633,
   "setup.none.fallback": 4317,
-  "setup.watch.bullish-trend": 571,
+  "setup.watch.bullish-trend": 570,
   "setup.watch.confirmed-structure-near-high": 286,
-  "setup.confirmed.structure-trend-volume": 35
+  "setup.confirmed.structure-trend-volume": 36
  },
  "pathTier": {
   "states": [
@@ -1006,5 +1006,16 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": null
+ "observationDrift": {
+  "asOf": "2026-09-24",
+  "publishedHash": "7bf40a65ce5e4e417bec568bdf074740",
+  "recomputedHash": "59123c90c72b9c9fcfc52da37df216a7",
+  "rowsPublished": 5842,
+  "rowsToday": 5842,
+  "rowsAdded": 0,
+  "rowsChanged": 1,
+  "addedOnly": false,
+  "columnsDiffer": false,
+  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
+ }
 }
