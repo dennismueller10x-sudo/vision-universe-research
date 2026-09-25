@@ -24,6 +24,7 @@ const FactorEvidence=typeof module!=='undefined'&&module.exports?require('../eng
 const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
+const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
  const directory=Directory.create({loadJSON:load});
@@ -475,7 +476,35 @@ function create(options){
    try{const p=await load('/quant/data/market/golden-preview/daily/'+stock.masterMemberId+'.json');
     if(p.securityId!==stock.masterMemberId||p.provider!=='tiingo'||p.isMock===true||p.dataMode==='mock'||!p.publishBasis||!Array.isArray(p.bars))throw Error('identity');
     const bars=p.bars.filter(b=>validDate(b.date)&&b.date<=new Date().toISOString().slice(0,10));
-    stock.chart={state:bars.length?'AVAILABLE':'SOURCE_MISSING',bars,adjustmentStatus:p.adjustmentStatus};
+    /* DER CHART TRAEGT DIE BASIS, DIE SEIN VERTRAG BINDET.
+     *
+     * Gemessen am 25.09.2026: dieser Pfad liefert die Rohkurse des
+     * Anbieters, und der Chart zeichnete sie. Bei NVDA faellt der
+     * 10:1-Split vom 10.06.2024 in die Fenster 3J, 5J, 10J und Max -
+     * der Kurs steht am Vortag bei 1.208,88 und am Splittag bei 121,79,
+     * also minus 89,9 Prozent an einem Tag, die es nie gab. Bei AAPL
+     * dasselbe mit dem 4:1 vom 31.08.2020 in 10J und Max. Die Bildunter-
+     * schrift sagte es im Kleingedruckten ("Splits koennen historische
+     * Kursspruenge verursachen"); ein Anfaenger sieht den Absturz.
+     *
+     * Option C bindet das Modul `chart` auf SPLIT_ADJUSTED_PRICE. Die
+     * Reihe wird deshalb hier rekonstruiert - mit derselben kanonischen
+     * Rekonstruktion wie im Faktorlauf (RAW_CLOSE + SPLIT_FACTOR), nicht
+     * mit der dividendenbereinigten Spalte des Anbieters und nicht mit
+     * einer zweiten Rechnung.
+     *
+     * Fehlt ein Baustein, bleibt die Reihe roh UND sagt es: die Stufe
+     * geht als 'unadjusted' hinaus, und die Oberflaeche schreibt es
+     * hin. Was nicht passiert: eine als splitbereinigt ausgezeichnete
+     * Reihe, die es nicht ist. */
+    const bausteine=!!ReturnSeries&&bars.length>0&&bars.every(b=>Number.isFinite(b.close)&&b.close>0&&b.splitFactor!==null&&b.splitFactor!==undefined&&Number.isFinite(b.splitFactor)&&b.splitFactor>0);
+    const splitbereinigt=bausteine?ReturnSeries.splitAdjustedColumn(bars,'close'):null;
+    const chartBars=splitbereinigt?bars.map((b,i)=>({...b,close:splitbereinigt[i],rawClose:b.close})):bars;
+    const splitEvents=bars.filter(b=>Number.isFinite(b.splitFactor)&&b.splitFactor!==1).length;
+    stock.chart={state:chartBars.length?'AVAILABLE':'SOURCE_MISSING',bars:chartBars,
+     adjustmentStatus:splitbereinigt?'splitAdjusted':'unadjusted',
+     priceSource:splitbereinigt?'RECONSTRUCTED_FROM_SPLIT_FACTOR':'PROVIDER_RAW_CLOSE',
+     providedAdjustmentStatus:p.adjustmentStatus,splitEvents};
    }catch{const history=await getHistoricalPriceHistory(ticker);stock.chart=history.state==='AVAILABLE'?history:{state:'UNAVAILABLE',bars:[],reason:history.reason||'HISTORY_NOT_PUBLISHED'};}
    stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);return stock;
    }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}

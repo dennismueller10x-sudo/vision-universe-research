@@ -181,7 +181,18 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
  const chart=el('div'),ranges=el('div',{class:'ranges','aria-label':'Chart-Zeitraum'});
  function draw(id){S.clear(chart);if(!s.chart||s.chart.state!=='AVAILABLE'){chart.append(notice('Kurshistorie derzeit nicht verfügbar','Für diesen Titel ist noch keine validierte Materialisierung veröffentlicht.'));return;}const data=VUChartRanges.selectRange(id,{eod:s.chart.bars||[],adjustmentStatus:s.chart.adjustmentStatus});ranges.querySelectorAll('button').forEach(b=>{b.classList.toggle('selected',b.dataset.range===id);b.setAttribute('aria-pressed',b.dataset.range===id?'true':'false');});if(!data.ok){chart.append(notice('Dieser Zeitraum ist nicht verfügbar','Tagesverläufe benötigen freigegebene Intraday-Daten. Wähle einen längeren Zeitraum.'));return;}
  chart.append(QuantCharts.lineChart({title:s.ticker+' · historische Schlusskurse',width:Math.min(900,window.innerWidth-40),height:290,dates:data.bars.map(b=>b.date),series:[{values:data.bars.map(b=>b.close)}],yFormat:v=>vuFormat('formatPrice',v,'USD',{numberLocale:'de-DE',decimals:0})||v.toFixed(0)+' $'}));}
- VUChartRanges.RANGES.forEach(r=>ranges.append(el('button',{text:r.label,dataset:{range:r.id},onclick:()=>draw(r.id)})));left.append(chart,ranges,el('p',{class:'muted',text:'Unbereinigte Schlusskurse · USD. Splits können historische Kurssprünge verursachen.'}));draw('1Y');
+ VUChartRanges.RANGES.forEach(r=>ranges.append(el('button',{text:r.label,dataset:{range:r.id},onclick:()=>draw(r.id)})));
+ /* Die Bildunterschrift sagt, was gezeichnet ist - und sie leitet es aus
+    dem Zustand der Reihe ab, statt ihn zu behaupten. Vorher stand hier
+    fest "Unbereinigte Schlusskurse", und das war richtig und falsch
+    zugleich: richtig ueber die Daten, falsch gegenueber dem Vertrag, der
+    den Chart auf splitbereinigte Kurse bindet. Jetzt ist die Reihe
+    bereinigt, und wenn sie es einmal nicht sein kann, steht es da. */
+ const chartBasis=s.chart&&s.chart.adjustmentStatus==='splitAdjusted'
+  ?'Splitbereinigte Schlusskurse · USD. Splits sind herausgerechnet; der letzte Kurs ist der gehandelte.'
+   +(s.chart.splitEvents?(s.chart.splitEvents===1?' Im vollen Zeitraum liegt ein Split.':' Im vollen Zeitraum liegen '+s.chart.splitEvents+' Splits.'):'')
+  :'Unbereinigte Schlusskurse · USD. Für diese Reihe fehlen die Splitfaktoren, deshalb können Splits als Kurssprünge erscheinen.';
+ left.append(chart,ranges,el('p',{class:'muted',text:chartBasis}));draw('1Y');
  const side=el('aside',{},[el('h2',{text:'Was dahintersteht'}),el('p',{text:s.above200.value>0?'Der Kurs liegt über seinem 200-Tage-Durchschnitt. Das beschreibt die bisherige Entwicklung, keine Prognose.':'Die langfristige Kursstruktur verdient einen genaueren Blick.'}),evidence(s),el('details',{},[el('summary',{text:'Evidenz & Methodik'}),el('p',{class:'muted',text:'Abstand zum 200-Tage-Durchschnitt: '+n(s.above200)+'. Fundamentaldaten bis '+s.fundamentalsAsOf+', verfügbar seit '+s.availableAt+'. Quelle: SEC EDGAR; Kurskennzahlen: Tiingo EOD / bestehende Quant-Methodik.'}),link('Daten und Berechnung untersuchen','/quant/data-inspector/','button secondary')])]);
  const [setupObservation,setupIndex,evidenceRow,patterns]=await Promise.all([
   api.getSetupObservation(ticker).catch(()=>null),
