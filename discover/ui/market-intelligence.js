@@ -561,6 +561,40 @@
 
   /* ------------------------------------------------------ Cross Asset */
 
+  /* Konstellation: dieselben Punkte wie die Balkenliste (Monatsbewegung
+     im Vielfachen des Typischen), nur als Radar statt als Zeilen - fester
+     Winkel je Anlageklasse (kein Layout-Zufall), Abstand vom Zentrum =
+     Betrag der Bewegung. Rein dekorativ (aria-hidden); die Balkenliste
+     darunter bleibt die zugaengliche, verlinkte Quelle derselben Werte. */
+  var CA_WINKEL = { EQUITY: 0, US10Y: 60, GOLD: 120, OIL: 180, BTC: 240, EURUSD: 300 };
+  function konstellation(evidence) {
+    if (!global.document) return null;
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = global.document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 260 260");
+    svg.setAttribute("class", "dx-m3-ca-radar");
+    svg.setAttribute("aria-hidden", "true");
+    function n_(tag, a) { var e = global.document.createElementNS(ns, tag); Object.keys(a).forEach(function (k) { e.setAttribute(k, a[k]); }); svg.appendChild(e); return e; }
+    var cx = 130, cy = 130, rMax = 96;
+    [1, 2, 3].forEach(function (i) { n_("circle", { cx: cx, cy: cy, r: rMax * i / 3, class: "dx-m3-ca-ring" }); });
+    Object.keys(CA_WINKEL).forEach(function (k) {
+      var p = polar(cx, cy, rMax, CA_WINKEL[k]);
+      n_("line", { x1: cx, y1: cy, x2: p.x.toFixed(1), y2: p.y.toFixed(1), class: "dx-m3-ca-achse" });
+    });
+    evidence.forEach(function (e) {
+      var winkel = CA_WINKEL[e.key];
+      if (!isNum(winkel) || !isNum(e.ratio)) return;
+      var r = Math.max(0, Math.min(3, Math.abs(e.ratio))) / 3 * rMax;
+      var p = polar(cx, cy, r, winkel);
+      var labelP = polar(cx, cy, rMax + 18, winkel);
+      n_("circle", { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: e.notable ? 8 : 5.5, class: "dx-m3-ca-knoten" + (e.notable ? " is-deutlich" : "") });
+      var t = n_("text", { x: labelP.x.toFixed(1), y: labelP.y.toFixed(1), "text-anchor": "middle", class: "dx-m3-ca-knoten-label" });
+      t.textContent = CA_NAME[e.key] || e.key;
+    });
+    n_("circle", { cx: cx, cy: cy, r: 3, class: "dx-m3-ca-mitte" });
+    return svg;
+  }
+
   function crossAsset(p, namen) {
     var d = p.dimensions && p.dimensions.CROSS_ASSET;
     if (!d || !d.evidence || !d.evidence.length) return null;
@@ -583,7 +617,7 @@
       kopfzeile("Cross Asset · ein Monat", obs.length ? obs[0].text.replace(/\.$/, "") : "Ruhiges Gesamtbild über die Anlageklassen",
         "Wie ungewöhnlich war der letzte Monat je Anlageklasse – gemessen an ihrer eigenen typischen Monatsbewegung. Die Linien markieren „deutlich“ (1-fach typisch)."),
       obs.length > 1 ? el("ul", { class: "dx-m3-ca-obs" }, obs.slice(1).map(function (o) { return el("li", { text: o.text }); })) : null,
-      el("ul", { class: "dx-m3-ca-liste" }, zeilen),
+      el("div", { class: "dx-m3-ca-flaeche" }, [konstellation(d.evidence), el("ul", { class: "dx-m3-ca-liste" }, zeilen)].filter(Boolean)),
       el("p", { class: "dx-m3-fuss", text: "Beschrieben wird, was sich gleichzeitig bewegt – nicht, warum. Steigende Renditen, steigendes Gold oder Bitcoin gelten nicht automatisch als gut oder schlecht." })
     ].filter(Boolean));
   }
@@ -612,10 +646,31 @@
     ]);
   }
 
+  /* ------------------------------------------------------ Premium Motion
+     Sanftes Einblenden beim Scrollen - Fortschritt, kein Dekor um seiner
+     selbst willen. Ohne IntersectionObserver oder bei reduzierter Bewegung
+     ist sofort alles sichtbar (die Klasse "dx-m3-reveal" startet unsichtbar
+     nur, wenn prefers-reduced-motion:no-preference gilt UND diese Funktion
+     "is-sichtbar" nachtraegt - siehe markets.css). */
+  function beleben(root) {
+    if (!root || !root.querySelectorAll) return;
+    var ziele = root.querySelectorAll(".dx-m3-reveal");
+    if (!ziele.length) return;
+    var IO = global.IntersectionObserver;
+    var ruhig = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!IO || ruhig) { Array.prototype.forEach.call(ziele, function (z) { z.classList.add("is-sichtbar"); }); return; }
+    var obs = new IO(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("is-sichtbar"); obs.unobserve(e.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    Array.prototype.forEach.call(ziele, function (z) { obs.observe(z); });
+  }
+
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MarketIntelligence = {
     hero: hero, landkarte: landkarte, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
-    verlauf: verlauf, breite: breite, crossAsset: crossAsset, stories: stories,
+    verlauf: verlauf, breite: breite, crossAsset: crossAsset, stories: stories, beleben: beleben,
     naechsteBewertung: naechsteBewertung, zyklusText: zyklusText, ZEITRAEUME: ZEITRAEUME
   };
 })(typeof window !== "undefined" ? window : globalThis);

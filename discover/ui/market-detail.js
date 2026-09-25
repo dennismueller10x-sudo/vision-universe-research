@@ -43,6 +43,7 @@
 
   function M() { return global.VUDiscover.Markets; }
   function MA() { return global.VUMultiAssetContract; }
+  function MI() { return global.VUDiscover.MarketIntelligence; }
   function isNum(x) { return typeof x === "number" && isFinite(x); }
   function zahl(v, d) {
     try { return new Intl.NumberFormat("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }).format(v); }
@@ -545,7 +546,8 @@
       var chart = chartBereich(c, ctx);
       var stufen = istStufen(c) ? letzteAenderung(c.history.recent) : null;
       var warum = warumWichtig(c);
-      var seite = el("article", { class: "dx-page dx-md", "data-instrument": c.instrument.symbol, "data-asset-class": c.instrument.assetClass,
+      [k.node, chart.node].forEach(function (n) { if (n && n.classList) n.classList.add("dx-m3-reveal"); });
+      var seite = el("article", { class: "dx-page dx-md dx-m3", "data-instrument": c.instrument.symbol, "data-asset-class": c.instrument.assetClass,
                                   "data-proxy": c.proxy && c.proxy.isProxy ? "tracker" : "none" }, [
         zurueck, k.node, chart.node,
         einordnung(c, puls && puls.instruments ? puls.instruments[c.instrument.symbol] : null, puls),
@@ -554,9 +556,11 @@
         weitere(c, alle),
         el("p", { class: "dx-md-hinweis", text: "Informationen zur eigenen Recherche, keine Anlageberatung." })
       ].filter(Boolean));
+      Array.prototype.forEach.call(seite.children, function (n) { if (n && n.classList && n.tagName !== "A") n.classList.add("dx-m3-reveal"); });
       root.appendChild(seite);
       document.title = M().kopfText(c).titel + (c.tracker ? " (Tracker " + c.instrument.symbol + ")" : "") + " — Märkte — Discover";
       chart.zeichnen();
+      if (MI() && MI().beleben) MI().beleben(root);
       return liveAnbinden(c, k, chart, layer);
     });
   }

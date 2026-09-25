@@ -546,3 +546,62 @@ html:not([data-theme=light]) .dv2 .dx-m3-spur{box-shadow:inset 0 1px 3px rgba(0,
 .dv2 a.dx-markt-karte:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.1)}
 html:not([data-theme=light]) .dv2 a.dx-markt-karte:hover{box-shadow:0 10px 24px rgba(0,0,0,.4)}
 @media(prefers-reduced-motion:reduce){.dv2 a.dx-markt-karte:hover{transform:none}}
+
+/* ================================================================ Markets 3.2
+   Zweite Stufe der Premium Art Direction: Premium Motion (Reveal, reduced-
+   motion-fest), Cross-Asset-Konstellation, Verlauf und Detail-Chart als
+   dunkle "Kino"-Flaeche (mehr Chart, mehr Kontrast), redaktionelle
+   Typografie an den Kernaussagen. Weiterhin ausschliesslich Inszenierung
+   derselben Werte - keine neue Berechnung, kein neuer Zustand. */
+
+/* PREMIUM MOTION: dx-m3-reveal startet nur unsichtbar, wenn Bewegung erlaubt
+   ist; JS (beleben()) traegt "is-sichtbar" nach. Ohne JS oder bei reduzierter
+   Bewegung ist von Anfang an alles da. */
+@media(prefers-reduced-motion:no-preference){
+  .dv2 .dx-m3-reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .dv2 .dx-m3-reveal.is-sichtbar{opacity:1;transform:none}
+  .dv2 .dx-m3-hero.dx-m3-reveal{transform:translateY(0);transition:opacity .5s ease}
+}
+
+/* CROSS ASSET: Konstellation (Radar) neben der Balkenliste - derselbe Wert,
+   zwei Ansichten. Fester Winkel je Anlageklasse, kein Layout-Zufall. */
+.dv2 .dx-m3-ca-flaeche{display:grid;grid-template-columns:minmax(220px,280px) 1fr;gap:clamp(16px,3vw,36px);align-items:center}
+.dv2 .dx-m3-ca-radar{width:100%;height:auto;max-width:280px;justify-self:center;overflow:visible}
+.dv2 .dx-m3-ca-ring{fill:none;stroke:var(--v2-line);stroke-dasharray:2 5;stroke-width:1}
+.dv2 .dx-m3-ca-achse{stroke:var(--v2-line);stroke-width:1;opacity:.6}
+.dv2 .dx-m3-ca-mitte{fill:var(--v2-muted)}
+.dv2 .dx-m3-ca-knoten{fill:var(--v2-muted);stroke:var(--v2-bg);stroke-width:2.5}
+.dv2 .dx-m3-ca-knoten.is-deutlich{fill:var(--m3-context);filter:drop-shadow(0 0 7px var(--m3-context))}
+.dv2 .dx-m3-ca-knoten-label{fill:var(--v2-muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+@media(max-width:900px){.dv2 .dx-m3-ca-flaeche{grid-template-columns:1fr}.dv2 .dx-m3-ca-radar{max-width:220px}}
+
+/* VERLAUF als dunkle Kino-Flaeche: derselbe Trick wie im Hero (lokale
+   Tokens), unabhaengig vom globalen hell/dunkel - mehr Chart, mehr Kontrast,
+   Wechsel im Bildlauf-Rhythmus (hell -> dunkel -> hell). */
+.dv2 .dx-m3-verlauf{
+  --v2-bg:#0b0c0e;--v2-ink:#f5f5f2;--v2-muted:#a9aeb7;--v2-line:#2a2d33;
+  --m3-soft:rgba(255,255,255,.06);--m3-glass-line:rgba(255,255,255,.1);
+  --m3-support:#5fd08f;--m3-headwind:#ffa24a;--m3-neutral:#a3aab4;--m3-context:#8fb1e8;
+  background:var(--v2-bg);color:var(--v2-ink);border-radius:28px;
+  padding:clamp(22px,4vw,40px);margin:0 0 34px;border-top:0;box-shadow:0 24px 60px rgba(8,10,14,.16);isolation:isolate}
+html:not([data-theme=light]) .dv2 .dx-m3-verlauf{box-shadow:none;border:1px solid #2a2d33}
+.dv2 .dx-m3-verlauf .dx-m3-kopf{color:var(--v2-ink)}
+
+/* DETAIL-CHART als dieselbe Kino-Flaeche, dazu ein asset-bewusster
+   Akzentstrich oben - Chart bleibt gross und bekommt Buehnencharakter. */
+.dv2 .dx-md-chartbereich{
+  --v2-bg:#0b0c0e;--v2-ink:#f5f5f2;--v2-muted:#a9aeb7;--v2-line:#2a2d33;--v2-panel:#171a1e;
+  --discover-up:#3fd07f;--discover-down:#f0675c;
+  background:var(--v2-bg);color:var(--v2-ink);border-top:0;border-radius:28px;
+  padding:clamp(20px,4vw,36px);margin:22px 0;box-shadow:0 24px 60px rgba(8,10,14,.16)}
+html:not([data-theme=light]) .dv2 .dx-md-chartbereich{box-shadow:none;border:1px solid #2a2d33}
+.dv2 .dx-md-chartbereich::before{content:"";display:block;height:3px;width:56px;border-radius:3px;background:var(--md-accent,#6b7280);margin:0 0 16px}
+.dv2 .dx-md-kopf{position:relative;padding-top:20px}
+.dv2 .dx-md-kopf::before{content:"";position:absolute;top:0;left:0;width:48px;height:3px;border-radius:3px;background:var(--md-accent,#6b7280)}
+
+/* REDAKTIONELLE TYPOGRAFIE an den Kernaussagen - grosse Zahlen/Aussagen als
+   Schlagzeile, nicht als Fliesstext. */
+.dv2 .dx-m3-vj-top b{font-size:clamp(20px,2.8vw,30px);letter-spacing:-.015em}
+.dv2 .dx-m3-b-kopf b{font-size:15px;font-weight:800}
+.dv2 .dx-m3-story h3{font-size:clamp(19px,2.2vw,23px);letter-spacing:-.015em}
+.dv2 .dx-m3-basis-zustand{letter-spacing:-.025em}
