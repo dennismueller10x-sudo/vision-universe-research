@@ -49,6 +49,8 @@
      versionierten Schwellen. Discover rechnet daraus nichts neu. */
   var PULSE = "/quant/data/market/intelligence/market-pulse.json";
   var PULSE_CONFIG = "/quant/config/market-pulse.json";
+  /* Markets 3.0: Verlauf des Marktumfelds (point in time, Core-Artefakt). */
+  var PULSE_HISTORY = "/quant/data/market/intelligence/market-pulse-history.json";
 
   /* Die Gruppen der Seite, je Assetklasse und Region. Nur Instrumente,
      die der Core fuehrt und freigibt; die Klasse ist Schutz gegen einen
@@ -261,38 +263,32 @@
      Anker - der Hash gehoert dem Router (#/maerkte). */
   function sprungleiste(gruppen) {
     return el("nav", { class: "dx-maerkte-nav", "aria-label": "Assetklassen" }, gruppen.map(function (g) {
-      return el("button", { type: "button", class: "dx-maerkte-sprung", "data-ziel": "maerkte-" + g.id, text: g.titel,
-        onclick: function () {
-          var ziel = global.document && global.document.getElementById("maerkte-" + g.id);
-          if (ziel && ziel.scrollIntoView) ziel.scrollIntoView({ behavior: "smooth", block: "start" });
-        } });
+      /* Der Klick als Eigenschaft - ein onclick-Attribut aus einer Funktion waere nur Text. */
+      var b = el("button", { type: "button", class: "dx-maerkte-sprung", "data-ziel": "maerkte-" + g.id, text: g.titel });
+      b.onclick = function () {
+        var ziel = global.document && global.document.getElementById("maerkte-" + g.id);
+        if (ziel && ziel.scrollIntoView) ziel.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      return b;
     }));
   }
 
   /* ------------------------------------------------ Markets 2.0: Intelligence */
 
   /** MARKT JETZT: die auffaelligsten Tagesbewegungen, deterministisch (VUMarketPulse.marketNow). */
-  function marktJetzt(contracts, pcfg, jetzt) {
+  function marktJetztItems(contracts, pcfg, jetzt) {
     var MP = global.VUMarketPulse;
-    if (!MP || !pcfg || !pcfg.marketNow) return null;
+    if (!MP || !pcfg || !pcfg.marketNow) return [];
     /* Nur, was die Seite auch zeigt - jeder Eintrag fuehrt zu einer Karte und ihrem Detail. */
     var gezeigt = contracts.filter(function (c) { return AUSWAHL.indexOf(c.instrument.symbol) !== -1; });
-    var items = MP.marketNow(gezeigt, pcfg.marketNow, jetzt);
-    if (!items.length) return null;
-    return el("section", { class: "dx-maerkte-jetzt", id: "maerkte-jetzt", "aria-label": "Markt jetzt" }, [
-      el("h2", { text: "Markt jetzt" }),
-      el("p", { class: "dx-maerkte-unter", text: "Die auffälligsten Bewegungen – gemessen an der üblichen Tagesschwankung des jeweiligen Markts." }),
-      el("ol", { class: "dx-jetzt-liste" }, items.map(function (it) {
-        var kontext = [it.tracker ? "Tracker " + it.tracker : null,
-                       it.session === "LAST_SESSION" ? "letzter Handelstag" : (it.referenceDate ? "gegenüber " + standText(it.referenceDate) : null)].filter(Boolean).join(" · ");
-        return el("li", {}, [el("a", { class: "dx-jetzt-item is-" + it.direction, href: "#/maerkte/" + encodeURIComponent(it.symbol),
-                                       "data-symbol": it.symbol, "data-intensity": it.intensity, title: it.evidence }, [
-          el("span", { class: "dx-jetzt-titel", text: it.title }),
-          el("b", { class: "dx-jetzt-wert", text: it.value }),
-          el("span", { class: "dx-jetzt-kontext", text: kontext })
-        ])]);
-      }))
-    ]);
+    return MP.marketNow(gezeigt, pcfg.marketNow, jetzt);
+  }
+  /** Markets 3.0: dieselben Bewegungen als Geschichten (VUMarketPulse.marketNowStories). */
+  function marktJetzt(contracts, pcfg, jetzt) {
+    var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
+    var items = marktJetztItems(contracts, pcfg, jetzt);
+    if (!items.length || !MI) return null;
+    return MI.stories(items, standText);
   }
 
   var DIM_NAME = { TREND: "Trend", BREADTH: "Marktbreite", MOMENTUM: "Momentum", RISK: "Risiko", CROSS_ASSET: "Cross Asset" };
@@ -355,45 +351,73 @@
     ]);
   }
 
+  /** Anzeigenamen je Symbol fuer Verweise - beim Tracker Markt und Tracker. */
+  function namen(contracts) {
+    var n = {};
+    contracts.forEach(function (c) { var k = kopfText(c); n[c.instrument.symbol] = c.tracker ? k.titel + " · " + c.instrument.symbol : k.titel; });
+    return n;
+  }
+
   /**
+   * Markets 3.0: Einordnung zuerst, Belege danach.
+   * HERO -> FUENF DIMENSIONEN -> VORHER/JETZT -> WARUM -> WORAUF ES ANKOMMT ->
+   * WAS WUERDE ES AENDERN -> VERLAUF -> MARKTBREITE -> CROSS ASSET ->
+   * MARKT JETZT -> AKTIEN IN BEWEGUNG -> ALLE MAERKTE.
    * @param {HTMLElement} root
    * @param {object} ctx {calendar, isActive}
    */
   function render(root, ctx) {
     ctx = ctx || {};
     var MA = global.VUMultiAssetContract;
+    var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
     function optional(p) { return S.loadJSON(p).catch(function () { return null; }); }
-    return Promise.all([S.loadJSON(SNAPSHOT), optional(CONFIG), optional(PULSE), optional(PULSE_CONFIG)]).then(function (r) {
+    return Promise.all([S.loadJSON(SNAPSHOT), optional(CONFIG), optional(PULSE), optional(PULSE_CONFIG), optional(PULSE_HISTORY)]).then(function (r) {
       if (ctx.isActive && !ctx.isActive()) return;
-      var snap = r[0], cfg = r[1], puls = r[2], pcfg = r[3];
+      var snap = r[0], cfg = r[1], puls = r[2], pcfg = r[3], hist = r[4];
       var jetzt = new Date();
       var contracts = snap.instruments.map(function (c) {
         return MA.refresh(c, { now: jetzt, calendar: ctx.calendar, config: cfg || {} });
       });
       var layer = global.VUFx && global.VUFx.layer;
-      var seite = el("div", { class: "dx-page dx-maerkte" }, [
+      var nm = namen(contracts);
+      var seite = el("div", { class: "dx-page dx-maerkte dx-m3" }, [
         el("a", { class: "dx-back", href: "#/", text: "← Discover" }),
-        el("h1", { text: "Märkte" }),
-        el("p", { class: "dx-maerkte-lead", text: "Was an den Märkten gerade passiert – und jeder Markt mit Einheit, Stand und Quelle. " +
-          "Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand; Renditen bewegen sich in Basispunkten." })
+        el("h1", { class: "dx-m3-titel", text: "Märkte" })
       ]);
-      var jetztNode = marktJetzt(contracts, pcfg, jetzt);
-      if (jetztNode) seite.appendChild(jetztNode);
-      var pulsNode = pulsBereich(puls);
-      if (pulsNode) seite.appendChild(pulsNode);
+      function dazu(n) { if (n) seite.appendChild(n); return n; }
+      var verlaufNode = null;
+      if (puls && MI && puls.environment) {
+        dazu(MI.hero(puls, jetzt));
+        dazu(MI.landkarte(puls));
+        dazu(MI.vorherJetzt(puls));
+        dazu(MI.warum(puls));
+        dazu(MI.worauf(puls, nm));
+        dazu(MI.bildAendern(puls, nm));
+        verlaufNode = dazu(MI.verlauf(hist, puls));
+        dazu(MI.breite(puls, hist));
+        dazu(MI.crossAsset(puls, nm));
+      } else if (puls) {
+        dazu(pulsBereich(puls));
+      }
+      dazu(marktJetzt(contracts, pcfg, jetzt));
+      dazu(moversBereich(puls));
       var gruppen = gruppieren(contracts);
-      seite.appendChild(sprungleiste(gruppen));
+      seite.appendChild(el("section", { class: "dx-maerkte-alle", id: "maerkte-alle", "aria-label": "Alle Märkte" }, [
+        el("h2", { text: "Alle Märkte" }),
+        el("p", { class: "dx-maerkte-lead", text: "Jeder Markt mit Einheit, Stand und Quelle – antippen für Verlauf und Einordnung. " +
+          "Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand; Renditen bewegen sich in Basispunkten." }),
+        sprungleiste(gruppen)
+      ]));
       gruppen.forEach(function (g) {
         seite.appendChild(el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": g.titel }, [
           el("h2", { text: g.titel }),
           el("div", { class: "dx-maerkte-raster" }, g.karten.map(function (c) { return karte(c, layer); }))
         ]));
       });
-      var moversNode = moversBereich(puls);
-      if (moversNode) seite.appendChild(moversNode);
       seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(snap.generatedAt) || "unbekannt") +
-        ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet." }));
+        ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Informationen zur eigenen Recherche, keine Anlageberatung." }));
       root.appendChild(seite);
+      if (verlaufNode && verlaufNode._zeichnen) verlaufNode._zeichnen();
     });
   }
 
@@ -401,6 +425,6 @@
   global.VUDiscover.Markets = { render: render, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
                                 veraenderungText: veraenderungText, standText: standText, marktText: marktText,
                                 frischeText: frischeText, referenzText: referenzText,
-                                marktJetzt: marktJetzt, pulsBereich: pulsBereich, moversBereich: moversBereich,
+                                marktJetzt: marktJetzt, marktJetztItems: marktJetztItems, pulsBereich: pulsBereich, moversBereich: moversBereich, namen: namen,
                                 GRUPPEN: GRUPPEN, AUSWAHL: AUSWAHL };
 })(typeof window !== "undefined" ? window : globalThis);
