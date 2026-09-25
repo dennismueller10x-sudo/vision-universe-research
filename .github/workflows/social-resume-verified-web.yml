@@ -1,0 +1,132 @@
+# =========================================================================
+# SOCIAL RESUME — VERIFIED WEB CREATIVE ZU EINEM KANDIDATEN
+#
+# Owner-Direktive "OWNER DECISION — OPTION 2" (24./25.09.): "Anschliessend
+# exakt EINEN bestehenden Produktionslauf fortsetzen. KEINEN neuen
+# Creative Job erzeugen. Der bereits fertige ChatGPT-Work-Output aus
+# PR #197 muss ingestiert und daraus der reale Candidate erzeugt werden."
+#
+# -------------------------------------------------------------------------
+# WARUM DIESER WORKFLOW EXISTIERT
+# -------------------------------------------------------------------------
+#
+# social-orchestrator.yml's "WEB RESEARCH — aktuelle Story finden" holt bei
+# JEDEM produktiven Lauf (JETZT_PRUEFEN, MANUAL_NOW, MANUAL_TOPIC — der
+# Schritt haengt nicht am Modus) unbedingt eine FRISCHE RSS-Auswahl und
+# ueberschreibt damit social/data/web-story-selection.json. Stunden nach
+# der urspruenglichen Auswahl (oder an einem neuen Tag) waehlt eine
+# frische Recherche mit hoher Wahrscheinlichkeit eine ANDERE Story — und
+# "CREATIVE JOB (WEB)" wuerde dafuer einen NEUEN Creative Job dispatchen,
+# waehrend das bereits fertige Ergebnis nie zu einem Kandidaten wird
+# (der Kandidat-Schritt liest dieselbe, dann schon ueberschriebene Datei).
+#
+# Dieser Workflow umgeht genau das, indem er NUR die bereits bestehenden,
+# unveraenderten Schritte faehrt, die kein neues Research und keinen
+# neuen Dispatch enthalten:
+#
+#   1. Creative-Ergebnisse von offenen Request-PRs holen (bestehend,
+#      ingest-open-creative-jobs.mjs)
+#   2. Creative Jobs gegen die Evidenz abgleichen (bestehend,
+#      reconcile-creative-jobs.mjs)
+#   3. Tests und Isolation, bevor irgendetwas geschrieben wird (bestehend,
+#      verify-suites.mjs)
+#   4. Kandidat aus der VERHANDENEN, unveraenderten web-story-selection.json
+#      bauen (bestehend, manual-now-web-candidate.mjs — derselbe Schritt,
+#      den "VORBEREITEN (WEB)" im Orchestrator faehrt)
+#   5. Warteschlange an das Approval Center (bestehend,
+#      publish-approval-queue.mjs)
+#   6. Festschreiben (derselbe Commit-Schritt wie im Orchestrator)
+#
+# KEIN Schritt hier ruft research-web-story.mjs, request-creative-web.mjs,
+# dispatch-creative-job.mjs oder open-creative-request.mjs auf — dieser
+# Workflow kann strukturell KEINEN neuen Creative Job erzeugen, nicht nur
+# der Absicht nach.
+#
+# NICHT VERAENDERT gegenueber dem Orchestrator: Web-First Research,
+# Full-Post Generation, deutscher Hook, Creative Brief, ChatGPT Work,
+# Atlas/Logo-Regeln, Approval Center, Quant/Discovery, Content-Auswahl —
+# jeder aufgerufene Schritt ist ein bestehendes, unveraendertes Skript.
+#
+# Dieselbe Concurrency-Gruppe wie der Orchestrator: die beiden Workflows
+# schreiben in dieselben Produktionsdateien (social/data/, assets/social/)
+# und duerfen deshalb nie gleichzeitig laufen.
+# =========================================================================
+name: Social Resume — Verified Web Candidate
+
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: social-orchestrator
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  resume:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Creative-Ergebnisse von offenen Request-PRs holen
+        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+
+      - name: Creative Jobs gegen die Evidenz abgleichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/social/reconcile-creative-jobs.mjs --write
+
+      - name: Tests und Isolation, bevor irgendetwas geschieht
+        run: node scripts/social/verify-suites.mjs
+
+      - name: Kandidat aus der bestehenden Web-Story-Auswahl
+        run: |
+          set -uo pipefail
+          rc=0
+          node scripts/social/manual-now-web-candidate.mjs --data social/data --write || rc=$?
+          if [ "$rc" -eq 4 ]; then
+            echo "::notice::Kein Kandidat (begruendete Verweigerung, z.B. noch nicht " \
+              "VERIFIED oder das Hard Final Creative Gate)."
+            exit 0
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Unerwarteter Abbruch ($rc) in manual-now-web-candidate.mjs"
+            exit "$rc"
+          fi
+
+      - name: Die Warteschlange an das Approval Center
+        if: always()
+        continue-on-error: true
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
+            echo "Kein Admin-Schluessel: die Schlange bleibt, wo sie ist."
+            node scripts/social/publish-approval-queue.mjs --check-assets | tee /tmp/queue.txt
+            exit 0
+          fi
+          node scripts/social/publish-approval-queue.mjs --write --check-assets \
+            | tee /tmp/queue.txt || [ "$?" = "4" ]
+
+      - name: Festschreiben
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- social/data/ assets/social/)" ]; then
+            echo "Keine Aenderung."
+            exit 0
+          fi
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add social/data/ assets/social/
+          git commit -m "Resume: Verified-Web-Candidate aus bestehender Auswahl"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin "HEAD:${{ github.ref_name }}"
