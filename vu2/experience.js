@@ -102,13 +102,15 @@ function setupStateSection(observation,index,ticker){
  }
  section.append(el('p',{class:'setup-badge state-'+state,text:L(state)}),
   el('p',{class:'muted',text:LB(state)}),
-  el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}));
+  el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}),
+  setupCurrency(observation));
  /* Die vier Verlaufszustaende sind hier genauso geschlossen wie auf der
     Quant-Seite; das steht daneben, statt es durch Weglassen so aussehen
     zu lassen, als waeren sie geprueft und ausgeschlossen worden. */
  if(observation.lifecycle&&observation.lifecycle.availability.state!=='AVAILABLE'){
   section.append(notice(LU('setupState'),LB(observation.lifecycle.availability.reason)));
  }
+ section.append(setupChange(observation));
  section.append(setupPeers(index,state,ticker));
  section.append(el('details',{},[el('summary',{text:'Methodik'}),
   el('p',{class:'muted',text:'Interner Zustand '+state+' · Regel '+observation.matchedRule.ruleId+' · Zuordnung '+observation.mappingVersion+' · Evidenzstand '+observation.asOf+'. Dieselbe Regel ist als Screener-Abfrage formuliert; sie beschreibt einen Zustand und ist weder Einstiegsregel noch historisch getesteter Ausloeser.'}),
@@ -572,13 +574,114 @@ function changeCard(entry){
    keinen Eintrag: ein Titel mit unvollstaendiger technischer Evidenz
    haette die Seite zum Absturz gebracht, sobald es einen gibt. Heute gibt
    es keinen, was den Fehler unsichtbar hielt. */
+/* EINE BEDINGUNG IN LESBAREN WORTEN.
+
+   Vorher stand hier der interne Satz: "Technical Volume State · Wert
+   BREAKOUT_VOLUME_UP · verlangt in BREAKOUT_VOLUME_UP,EXPANSION". Jedes
+   Stueck davon ist richtig und keines davon ist lesbar - ein englischer
+   Feldname, ein roher Enum-Wert und ein Operator als Wort. Genau das
+   schliesst das Woerterbuch aus, und diese Zeile war die letzte Stelle in
+   der Setup-Sektion, an der es umgangen wurde.
+
+   Uebersetzt wird der BEGRIFF, nicht die Bedingung: dieselbe Regel, dieselbe
+   Schwelle, derselbe Vergleich. Was keinen Eintrag hat, wird nicht roh
+   gezeigt, sondern bleibt der eingeklappten Methodikzeile - dort duerfen
+   interne Namen stehen (Schicht METHODOLOGY), in der Hauptaussage nicht. */
+const SETUP_OPERATOR={eq:'verlangt',ne:'verlangt: nicht',in:'verlangt',gte:'verlangt mindestens',lte:'verlangt höchstens',gt:'verlangt mehr als',lt:'verlangt weniger als',isNotNull:'verlangt einen vorhandenen Wert'};
+function setupFieldTerm(condition){
+ const id=condition.field||condition.input;
+ return id&&VUProductLanguage.has(id)?L(id):(condition.label||id||'Bedingung');
+}
+function setupValueText(condition,value){
+ if(value===null||value===undefined)return 'nicht verfügbar';
+ const field=condition.field?VUCatalog.field(condition.field):null;
+ if(typeof value==='number'){
+  if(field&&field.unit==='ratio')return (value*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %';
+  return value.toLocaleString('de-DE',{maximumFractionDigits:2});
+ }
+ const id=condition.field?condition.field+'.'+value:null;
+ if(id&&VUProductLanguage.has(id))return L(id);
+ /* Kein Eintrag: der rohe Wert bleibt draussen. Die Bedingung wird
+    weiterhin gezeigt, nur ohne ein Wort, das niemand lesen kann. */
+ return null;
+}
+function setupDemandText(condition){
+ const parts=[].concat(condition.demand===undefined?[]:condition.demand)
+  .map(value=>setupValueText(condition,value)).filter(Boolean);
+ if(condition.operator==='isNotNull')return SETUP_OPERATOR.isNotNull;
+ if(!parts.length)return null;
+ return (SETUP_OPERATOR[condition.operator]||'verlangt')+' '+parts.join(' oder ');
+}
 function setupCondition(condition){
- const demand=Array.isArray(condition.demand)?condition.demand.join(' oder '):condition.demand;
- const value=condition.value===null||condition.value===undefined?'nicht verfügbar':String(condition.value);
+ const ist=setupValueText(condition,condition.value);
+ const verlangt=setupDemandText(condition);
+ const zeile=[verlangt,ist===null?null:'aktuell '+ist].filter(Boolean).join(' · ');
  return el('li',{class:'setup-condition '+(condition.met?'is-met':'is-open')},[
   el('span',{class:'setup-mark','aria-hidden':'true',text:condition.met?'✓':'○'}),
-  el('div',{},[el('span',{text:condition.label||condition.field||condition.input}),
-   el('span',{class:'muted',text:'Wert '+value+' · verlangt '+(condition.operator||'')+' '+demand})])]);
+  el('div',{},[el('span',{text:setupFieldTerm(condition)}),
+   zeile?el('span',{class:'muted',text:zeile}):null,
+   el('details',{class:'setup-internal'},[el('summary',{text:'Feld & Vergleich'}),
+    el('p',{class:'muted',text:(condition.field||condition.input)+' '+(condition.operator||'')+' '+JSON.stringify(condition.demand===undefined?null:condition.demand)+' · Wert '+JSON.stringify(condition.value===undefined?null:condition.value)})])])]);
+}
+/* WIE AKTUELL DIESE AUSSAGE IST - und wogegen sie NICHT aktuell ist.
+
+   Der Zustand steht auf der technischen Materialisierung, der Chart auf den
+   Tagesschlusskursen. Das sind zwei Staende, und sie sind nicht derselbe:
+   gemessen am 25.09.2026 liegt der Setup-Stand auf dem 10.09.2026, weil die
+   kanonische Historie, aus der die Bundles entstehen, in diesem Workstream
+   nur GELESEN wird. Ein Datum allein sagt das nicht - ein Leser nimmt eine
+   Zustandsangabe als heutige. Deshalb steht hier der Abstand und nicht nur
+   der Stichtag. */
+function setupCurrency(observation){
+ const stand=observation.asOf,lauf=observation.dataCutoff;
+ const tage=(()=>{const a=Date.parse(stand+'T00:00:00Z');if(!Number.isFinite(a))return null;
+  return Math.round((Date.now()-a)/86400000);})();
+ const satz='Dieser Zustand folgt der technischen Materialisierung, nicht dem täglichen Kursstand'
+  +(lauf&&lauf!==stand?' (Datenstand des Laufs '+lauf+')':'')+'.'
+  +(tage!==null&&tage>2?' Er ist '+tage+' Kalendertage alt und wird erst mit der nächsten Materialisierung neu bestimmt.':'');
+ return el('p',{class:'muted setup-currency',text:satz});
+}
+/* WAS DIESEN ZUSTAND AENDERN WUERDE.
+
+   Die Sektion konnte sagen, welcher Zustand gilt und woran das liegt. Die
+   naechste Frage - was muesste anders sein - stand unbeantwortet daneben,
+   obwohl die Kaskade sie beantwortet: sie benennt fuer jeden Zustand die
+   Bedingungen, und die Zeile, an der entschieden wurde, liegt seit
+   setup-observation-product-1.1.0 im Artefakt.
+
+   Gerechnet wird das in der Engine (explainCascade) mit denselben zwei
+   Funktionen, die auch den Zustand zugeordnet haben. Hier steht nur die
+   Darstellung: nach Naehe sortiert, offene Bedingungen zuerst benannt.
+
+   Ausdruecklich KEINE Aussage darueber, ob ein Zustand eintritt. Der
+   Vergleich gilt fuer den heutigen Stand und sagt das auch. */
+function setupChange(observation){
+ if(!observation||observation.state!=='AVAILABLE')return null;
+ const block=el('details',{class:'setup-change'},[el('summary',{text:'Was diesen Zustand ändern würde'})]);
+ if(!observation.cascade){
+  block.append(el('p',{class:'muted',text:'Für diesen Titel liegt die Zeile, an der die Regel entschieden hat, nicht im veröffentlichten Artefakt. Ohne sie lässt sich nicht sagen, welche Bedingungen eines anderen Zustands schon gelten - und eine leere Liste wäre die falsche Antwort auf eine offene Frage.'}));
+  return block;
+ }
+ const aktuell=observation.matchedRule?observation.matchedRule.ruleId:null;
+ /* Nur die entscheidbare Stufe. Die vier Verlaufszustaende haengen an einer
+    Vorbeobachtung und sind ohnehin geschlossen; sie stehen als solche in
+    der Reise und werden hier nicht als "nicht erfuellt" gezeigt - das
+    waere eine Aussage, die niemand geprueft hat. */
+ const offen=observation.cascade.filter(rule=>rule.tier==='POINT_IN_TIME'&&rule.ruleId!==aktuell&&!rule.unanswerable&&rule.total>0)
+  .sort((a,b)=>(b.met/b.total)-(a.met/a.total));
+ if(!offen.length){
+  block.append(el('p',{class:'muted',text:'Neben dem heutigen Zustand gibt es in der entscheidbaren Stufe keine weitere Regel mit prüfbaren Bedingungen.'}));
+  return block;
+ }
+ for(const rule of offen){
+  block.append(el('article',{class:'setup-change-rule'},[
+   el('h3',{},[el('span',{class:'setup-badge state-'+rule.state,text:L(rule.state)}),
+    el('span',{class:'muted',text:rule.met+' von '+rule.total+' Bedingungen gelten schon'})]),
+   el('p',{class:'muted',text:rule.plain}),
+   el('ul',{class:'setup-conditions'},rule.conditions.map(setupCondition))]));
+ }
+ block.append(el('p',{class:'muted',text:'Ein Vergleich mit dem heutigen Stand. Er sagt, was ein anderer Zustand verlangt - nicht, dass er eintritt, und nicht wann.'}));
+ return block;
 }
 function setupJourney(setup,observation,index){
  const available=observation&&observation.state==='AVAILABLE';
@@ -617,7 +720,8 @@ function setupJourney(setup,observation,index){
   section.append(el('p',{class:'setup-classification'},[
    el('span',{class:'setup-badge state-'+classification.state,text:L(classification.state)}),
    el('span',{class:'muted',text:LB(classification.state)})]),
-   el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}));
+   el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}),
+   setupCurrency(observation));
  }else{
   section.append(notice(L('UNAVAILABLE'),VUProductLanguage.has(classification.reason)?LB(classification.reason):LB('UNAVAILABLE')));
  }
@@ -635,6 +739,7 @@ function setupJourney(setup,observation,index){
    el('ul',{class:'setup-conditions'},conditions.map(setupCondition)),
    el('p',{class:'muted',text:'Regel '+observation.matchedRule.ruleId+' · Methodik '+observation.mappingVersion+'. Dieselbe Regel ist als Screener-Abfrage formuliert; sie beschreibt einen Zustand und ist weder Einstiegsregel noch historisch getesteter Auslöser.'}));
  }
+ section.append(setupChange(observation));
  section.append(setupPeers(index,classification&&classification.state,observation.ticker));
  return section;
 }
@@ -954,6 +1059,21 @@ async function quantPage(ticker){
   main.append(heading('Quant-Analyse',ticker));
   main.append(notice('Für diesen Titel liegt keine Faktor-Evidenz vor',data.reason==='NOT_COVERED_BY_FACTOR_EVIDENCE'?'Dieser Titel gehört zum Produktuniversum, erfüllt aber die Datenanforderungen der Faktor-Methodik derzeit nicht. Es werden keine Ersatzwerte gebildet.':data.reason==='NOT_IN_PRODUCT_UNIVERSE'?'Dieser Titel ist im kanonischen Produktuniversum nicht enthalten.':'Die Faktor-Evidenz konnte nicht geladen oder nicht geprüft werden.'),
    actions([{label:'Was ist Quant?',href:href('explain')},{label:'Aktie untersuchen',href:href('stock',ticker)},{label:'Bestehender Quant Workspace',href:'/quant/ranking/'}]));
+  /* WAS DA IST, WIRD GEZEIGT - AUCH OHNE FAKTOR-EVIDENZ.
+  
+     Gemessen am 25.09.2026: 426 Titel tragen einen veroeffentlichten
+     Setup-Zustand, aber keine Faktorzeile (47 davon einen anderen Zustand
+     als "kein Setup"). Bis hierher endete die Seite fuer sie nach dem
+     Hinweis - Situation, Muster und Anlagestil blieben verborgen, obwohl
+     sie veroeffentlicht sind und die Aktienseite sie zeigt. Die fehlende
+     Faktorzeile ist ein Grund, die Faktoren nicht zu zeigen, und kein
+     Grund, den Rest zu verschweigen.
+  
+     Jede dieser Sektionen sagt ihre eigene Nichtverfuegbarkeit selbst; es
+     wird nichts ersetzt und nichts ausgedacht. */
+  main.append(setupJourney(setup,observation,setupIndex));
+  main.append(patternMatchSection(patterns));
+  main.append(strategyMatchSection(match,strategyIndex,ticker));
   return;
  }
  const rated=data.factors.filter(f=>f.state==='AVAILABLE');

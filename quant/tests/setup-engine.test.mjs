@@ -424,3 +424,114 @@ test("a drifted cascade is caught, in both directions", () => {
   assert.equal(three.parity, true);
   assert.equal(three.rules.find((r) => r.ruleId === "setup.confirmed.structure-trend-volume").inputsIncomplete, 1);
 });
+
+/* =========================================================================
+   WAS DIESEN ZUSTAND AENDERN WUERDE
+
+   Die Sektion konnte sagen, welcher Zustand gilt. Die naechste Frage eines
+   Lesers - was muesste anders sein - beantwortet die Kaskade, weil sie fuer
+   jeden Zustand seine Bedingungen benennt. Der Punkt dieser Tests: dieselbe
+   Auswertung, kein zweiter Auswerter, und "nicht beantwortbar" bekommt nie
+   das Zeichen von "nicht erfuellt".
+   ========================================================================= */
+const explainMapping = { mappingVersion: mapping.mappingVersion, cascade: { rules: mapping.cascade.rules } };
+const explain = (row, context) => Setup.explainCascade(explainMapping, row, Object.assign({ close: 100, previous: null }, context || {}));
+
+test("the explanation agrees with the assignment - there is no second evaluator", () => {
+  /* Der harte Teil: was die Erklaerung als erfuellt zeigt, muss dieselbe
+     Regel sein, die der Zustand zugewiesen hat. Zwei Auswertungen, die
+     auseinanderlaufen, waeren auf der Oberflaeche nicht zu unterscheiden -
+     eine Bedingung stuende als erfuellt da, waehrend der Zustand sie nicht
+     erfuellt sah. */
+  for (const row of [confirmedRow,
+                     { ...confirmedRow, technicalVolumeState: "NORMAL" },
+                     { ...confirmedRow, technicalSetupStatus: "INCOMPLETE" },
+                     { ...confirmedRow, technicalTrend: "BEARISH", technicalConfirmedStructure: "BEARISH" }]) {
+    const observation = evaluate(row);
+    const erklaert = explain(row);
+    const zugewiesen = observation.matchedRule ? observation.matchedRule.ruleId : null;
+    const ersteTreffer = erklaert.filter((r) => r.matched === true)
+      .sort((a, b) => a.order - b.order)[0];
+    if (zugewiesen === "setup.none.fallback") {
+      assert.equal(ersteTreffer, undefined, "keine Regel darf greifen, wenn der Auffangzustand gilt");
+    } else {
+      assert.equal(ersteTreffer.ruleId, zugewiesen);
+    }
+    /* Und die Bedingungen der zugewiesenen Regel sind wortgleich dieselben. */
+    if (ersteTreffer) {
+      const ausErklaerung = erklaert.find((r) => r.ruleId === zugewiesen).conditions;
+      assert.deepEqual(ausErklaerung.map((c) => [c.field || c.input, c.value, c.met]),
+        observation.conditions.map((c) => [c.field || c.input, c.value, c.met]));
+    }
+  }
+});
+
+test("a rule one condition short names that one condition", () => {
+  const row = { ...confirmedRow, technicalVolumeState: "NORMAL" };
+  const confirmed = explain(row).find((r) => r.ruleId === "setup.confirmed.structure-trend-volume");
+  assert.equal(confirmed.matched, false);
+  assert.equal(confirmed.total - confirmed.met, 1);
+  assert.equal(confirmed.open.length, 1);
+  assert.equal(confirmed.open[0].field, "technicalVolumeState");
+  assert.equal(confirmed.open[0].value, "NORMAL");
+  assert.deepEqual(confirmed.open[0].demand, ["BREAKOUT_VOLUME_UP", "EXPANSION"]);
+});
+
+test("without a previous observation a course-of-events rule is unanswerable, not unmet", () => {
+  /* Der Unterschied, der das Ganze ehrlich haelt. 'Nicht erfuellt' waere
+     eine Aussage ueber den Titel; hier fehlt die Vorbeobachtung. */
+  for (const rule of explain(confirmedRow).filter((r) => r.tier === "PATH_DEPENDENT")) {
+    assert.equal(rule.unanswerable, "NO_PREVIOUS_OBSERVATION");
+    assert.equal(rule.matched, null);
+    assert.deepEqual(rule.conditions, []);
+    assert.equal(rule.met, 0);
+    assert.ok(rule.total > 0, "die Anzahl der Bedingungen bleibt nennbar");
+  }
+});
+
+test("a previous observation without its levels is named as such", () => {
+  /* Das veroeffentlichte `previous` traegt Zustand und Datum, nicht die
+     Niveaus. Eine Regel, die gegen ein Niveau vergleicht, ist damit nicht
+     beantwortbar - und sagt genau das. */
+  const mitZustand = explain(confirmedRow, { previous: { setupState: "CONFIRMED", asOf: "2026-09-04" } });
+  const invalidated = mitZustand.find((r) => r.ruleId === "setup.invalidated.below-previous-invalidation");
+  assert.equal(invalidated.unanswerable, "PREVIOUS_LEVEL_NOT_PUBLISHED");
+  assert.equal(invalidated.matched, null);
+  /* Eine Verlaufsregel OHNE Niveauvergleich ist mit derselben
+     Vorbeobachtung beantwortbar - sonst waere die Unterscheidung nur ein
+     pauschales Nein. */
+  const active = mitZustand.find((r) => r.ruleId === "setup.active.entry-zone-running");
+  assert.equal(active.unanswerable, null);
+  assert.equal(typeof active.matched, "boolean");
+});
+
+test("the fallback rule is not offered as something to reach", () => {
+  /* 'Alles, was keine andere Regel genommen hat' ist keine Bedingung, die
+     ein Titel erfuellen koennte. Sie taucht in der Erklaerung nicht auf. */
+  assert.equal(explain(confirmedRow).some((r) => r.ruleId === "setup.none.fallback"), false);
+});
+
+test("every field and every value the explanation can show has a user label", () => {
+  /* Die Oberflaeche zeigt diese Bedingungen. Ein englischer Feldname oder
+     ein roher Enum-Wert in der Hauptaussage ist genau das, was das
+     Woerterbuch abschafft - also wird hier geprueft, dass es fuer jeden
+     Wert, den die Kaskade verlangt oder ein Titel tragen kann, ein Wort
+     gibt. */
+  const Language = require("../engines/product-language.js");
+  for (const rule of mapping.cascade.rules) {
+    for (const filter of rule.filters || []) {
+      assert.ok(Language.has(filter.field), "field " + filter.field + " has no user label");
+      const field = Catalog.field(filter.field);
+      const werte = field.type === "enum" ? field.values : [];
+      for (const value of werte) {
+        assert.ok(Language.has(filter.field + "." + value),
+          "value " + filter.field + "." + value + " has no user label");
+      }
+      for (const demanded of [].concat(filter.value)) {
+        if (typeof demanded !== "string") continue;
+        assert.ok(Language.has(filter.field + "." + demanded),
+          "demanded value " + filter.field + "." + demanded + " has no user label");
+      }
+    }
+  }
+});

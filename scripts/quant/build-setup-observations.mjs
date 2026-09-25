@@ -210,6 +210,15 @@ function main() {
       close: entry.close,
       technicalRef: { snapshotId: entry.snapshotId, parametersHash: entry.parametersHash },
       levels: entry.levels,
+      /* DIE ZEILE, AN DER DER ZUSTAND ENTSCHIEDEN WURDE.
+      
+         Ohne sie kann die Oberflaeche nur die Regel erklaeren, die
+         gegriffen hat. Die naechste Frage eines Lesers - was muesste
+         anders sein, damit ein anderer Zustand gilt - braucht dieselbe
+         Zeile, gegen die die Kaskade entschieden hat, und keine zweite,
+         nachgerechnete. Es sind die zehn technischen Katalogfelder aus
+         ROW_SOURCES; keine neue Datenklasse, keine Kennzahl, kein Score. */
+      row: entry.row,
       previous: previous ? { setupState: previous.setupState, asOf: previous.asOf } : null,
       observation: SetupEngine.compact(observation)
     };

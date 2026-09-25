@@ -121,6 +121,18 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .setup-conditions .is-met .setup-mark{color:var(--positive)}
 .setup-conditions .is-open .setup-mark{color:var(--muted)}
 .setup-conditions .is-missing{color:var(--muted)}
+/* Was diesen Zustand aendern wuerde: eingeklappt, damit die Hauptaussage
+   die Hauptaussage bleibt. Bei 390 px stehen Zustand und Zaehlung
+   untereinander - nebeneinander gedraengt liest sich beides als eines. */
+.setup-change{margin:22px 0 0;border-top:1px solid var(--line);padding-top:14px}
+.setup-change>summary{font-size:15px;font-weight:600;cursor:pointer}
+.setup-change-rule{margin:18px 0 0}
+.setup-change-rule h3{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:0 0 6px;font-size:15px}
+.setup-change-rule h3 .muted{font-size:13px;font-weight:400}
+.setup-change .setup-conditions li>div{min-width:0}
+.setup-internal>summary{font-size:12px;color:var(--muted);cursor:pointer;margin-top:4px}
+.setup-internal p{font-size:12px;margin:4px 0 0;overflow-wrap:anywhere}
+.setup-currency{margin-top:8px}
 .setup-step.is-observed .setup-dot{background:var(--ink);height:6px}
 .setup-step.is-observed{color:var(--ink)}
 .setup-classification{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin:18px 0 0}

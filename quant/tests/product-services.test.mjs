@@ -299,3 +299,44 @@ test('a strategy profile never claims a historical result, and says which data i
  }
  assert.equal(match.ranking.state,'WITHHELD');
 });
+/* Was diesen Zustand aendern wuerde - am Dienst, nicht an der Engine.
+
+   Zwei Faelle, und der zweite ist der wichtigere: solange das
+   veroeffentlichte Artefakt die Zeile nicht traegt (Schema 1.0.0), ist die
+   Frage nicht beantwortbar, und der Dienst sagt das mit Grund statt mit
+   einer leeren Liste. Beide Schemata bleiben lesbar - ein harter Wechsel
+   haette die ganze Setup-Sektion bis zur naechsten Materialisierung auf
+   UNAVAILABLE gestellt. */
+test('the cascade explanation comes with the row, and its absence is named',async()=>{
+ const SetupEngine=require('../engines/setup-engine.js');
+ const methodology=JSON.parse(await readFile(new URL('quant/methodology/setup-state-v1.json',root),'utf8'));
+ const mapping=methodology.stateMapping;
+ const row={status:'active',technicalTrend:'BULLISH',technicalConfirmedStructure:'BULLISH',
+  technicalSetupStatus:'COMPLETE',technicalPrimaryDirection:'BULLISH',technicalEntryStatus:'AWAITING_TRIGGER',
+  technicalVolumeState:'NORMAL',technicalMomentumState:'POSITIVE',technicalVolatilityRegime:'NORMAL',
+  technicalDistanceTo52wHigh:-0.02};
+ const observation=SetupEngine.evaluate({row,close:100,previous:null,historyDepth:0,methodology});
+ const shard=(schemaVersion,extra)=>({schemaVersion,shard:'AA',engineVersion:SetupEngine.ENGINE_VERSION,
+  mappingVersion:mapping.mappingVersion,approval:mapping.approval,publication:{},cascade:mapping.cascade.rules,
+  instruments:{AAPL:{ticker:'AAPL',securityId:'ref_AAPL',asOf:'2026-09-10',dataCutoff:'2026-09-10',close:100,
+   levels:{invalidationPrice:80,exitPrice:130},previous:null,observation:SetupEngine.compact(observation),...extra}}});
+ const service=(payload)=>Service.create({loadJSON:async()=>({}),loadCompressedJSON:async()=>payload,
+  displayPolicy:Policy,queryEngine:Query});
+
+ const mitZeile=await service(shard(SetupEngine.SHARD_SCHEMA,{row})).getSetupObservation('AAPL');
+ assert.equal(mitZeile.state,'AVAILABLE');
+ assert.ok(Array.isArray(mitZeile.cascade));
+ assert.equal(mitZeile.cascadeReason,null);
+ const confirmed=mitZeile.cascade.find(r=>r.ruleId==='setup.confirmed.structure-trend-volume');
+ assert.equal(confirmed.matched,false);
+ assert.equal(confirmed.open.length,1);
+ assert.equal(confirmed.open[0].field,'technicalVolumeState');
+
+ const ohneZeile=await service(shard('setup-observation-product-1.0.0')).getSetupObservation('AAPL');
+ assert.equal(ohneZeile.state,'AVAILABLE','die aeltere Fassung bleibt lesbar');
+ assert.equal(ohneZeile.cascade,null);
+ assert.equal(ohneZeile.cascadeReason,'SETUP_ROW_NOT_IN_ARTIFACT');
+
+ const fremdesSchema=await service(shard('setup-observation-product-0.9.0',{row})).getSetupObservation('AAPL');
+ assert.equal(fremdesSchema.reason,'INVALID_SETUP_ARTIFACT');
+});

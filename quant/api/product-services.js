@@ -262,7 +262,7 @@ function create(options){
   if(!SetupEngine||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
   try{
    const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/setup-observations-v1/'+key+'.json.gz');
-   if(shard?.schemaVersion!==SetupEngine.SHARD_SCHEMA||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_SETUP_ARTIFACT'};
+   if(!SetupEngine.SHARD_SCHEMAS.includes(shard?.schemaVersion)||shard.shard!==key)return {state:'UNAVAILABLE',reason:'INVALID_SETUP_ARTIFACT'};
    const source=shard.instruments?.[ticker];
    if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_SETUP_OBSERVATION'};
    const mapping={mappingVersion:shard.mappingVersion,cascade:{rules:shard.cascade}};
@@ -273,6 +273,13 @@ function create(options){
     close:source.close,levels:source.levels,previous:source.previous,
     classification:observation.classification,lifecycle:observation.lifecycle,
     matchedRule:observation.matchedRule,conditions:observation.conditions,
+    /* Was einen ANDEREN Zustand ausmachen wuerde - dieselbe Kaskade,
+     * dieselbe Zeile, dieselben zwei Auswertungsfunktionen. Ohne die Zeile
+     * (Schema 1.0.0) bleibt das Feld null und die Oberflaeche sagt, warum:
+     * eine unbeantwortbare Frage wird nicht mit einer leeren Liste
+     * beantwortet. */
+    cascade:source.row?SetupEngine.explainCascade(mapping,source.row,{close:source.close,previous:source.previous}):null,
+    cascadeReason:source.row?null:'SETUP_ROW_NOT_IN_ARTIFACT',
     journey:shard.cascade.filter(rule=>rule.always!==true)};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }

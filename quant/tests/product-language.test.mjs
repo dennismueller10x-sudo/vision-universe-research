@@ -16,7 +16,7 @@ const experience = readFileSync(new URL("vu2/experience.js", ROOT), "utf8");
 
 test("every term is complete, and a user label never doubles as the professional one", () => {
   assert.deepEqual(Language.validate(), { valid: true, errors: [] });
-  assert.equal(Language.version(), "product-language-1.0.0");
+  assert.equal(Language.version(), "product-language-1.1.0");
   assert.deepEqual(Language.LAYERS, ["MEANING", "EXPLANATION", "EVIDENCE", "METHODOLOGY"]);
   /* Ids are unique across categories, because the accessor is flat and a
      duplicate would silently shadow one of the two. */
@@ -366,4 +366,50 @@ test("die technischen Woerter der Return-Basis sind in der Oberflaeche verboten"
   }
   /* Die Nutzerbegriffe selbst duerfen natuerlich vorkommen. */
   assert.equal(Language.violatesPrimaryCopy("Kursstärke und Anlegerrendite über 6 Monate"), null);
+});
+
+test("the setup conditions reach the surface as words, not as enums", () => {
+  /* Die Bedingungszeile war die letzte Stelle in der Setup-Sektion, an der
+     das Woerterbuch umgangen wurde: Katalog-Label (englisch) plus roher
+     Enum-Wert plus Operator als Wort. Hier steht, dass sie es nicht mehr
+     tut - und dass der rohe Wert nur noch in der eingeklappten
+     Methodikzeile auftaucht, wo interne Namen erlaubt sind. */
+  assert.match(experience, /function setupFieldTerm\(condition\)\{/);
+  assert.match(experience, /const id=condition\.field\?condition\.field\+'\.'\+value:null/);
+  assert.match(experience, /if\(id&&VUProductLanguage\.has\(id\)\)return L\(id\)/);
+  assert.match(experience, /class:'setup-internal'/);
+  /* Der alte Satz ist weg, nicht danebengestellt. */
+  assert.equal(/text:'Wert '\+value\+' · verlangt '/.test(experience), false);
+  /* Und die Prozentdarstellung fuer ein Verhaeltnisfeld steht in derselben
+     Funktion - eine -0.15 als "-0,15" waere fuer einen Leser kein
+     Abstand von 15 Prozent. */
+  assert.match(experience, /field\.unit==='ratio'/);
+});
+
+test("the setup section says how current it is, against which run", () => {
+  /* Der Zustand folgt der technischen Materialisierung, der Chart den
+     Tagesschlusskursen. Ein Datum allein sagt das nicht. */
+  assert.match(experience, /function setupCurrency\(observation\)\{/);
+  assert.match(experience, /Datenstand des Laufs/);
+  assert.match(experience, /nicht dem täglichen Kursstand/);
+  /* Beide Flaechen zeigen es - die Aktienseite und die Quant-Seite. */
+  assert.equal((experience.match(/setupCurrency\(observation\)\)/g) || []).length, 2);
+  assert.equal((experience.match(/setupChange\(observation\)\)/g) || []).length, 2);
+});
+
+test("a missing factor row hides the factors, not everything else", () => {
+  /* Gemessen: 426 Titel tragen einen veroeffentlichten Setup-Zustand ohne
+     Faktorzeile, 47 davon einen anderen als "kein Setup". Die Quant-Seite
+     endete fuer sie nach dem Hinweis, waehrend die Aktienseite dieselbe
+     Situation zeigte - zwei Antworten auf eine Frage, je nach Einstieg. */
+  const zweig = experience.slice(experience.indexOf("Für diesen Titel liegt keine Faktor-Evidenz vor"));
+  const bisReturn = zweig.slice(0, zweig.indexOf("\n  return;"));
+  for (const abschnitt of ["setupJourney(setup,observation,setupIndex)",
+                           "patternMatchSection(patterns)",
+                           "strategyMatchSection(match,strategyIndex,ticker)"]) {
+    assert.ok(bisReturn.includes(abschnitt), abschnitt + " fehlt im Zweig ohne Faktor-Evidenz");
+  }
+  /* Und der Hinweis selbst bleibt stehen - die fehlende Faktorzeile wird
+     nicht dadurch behoben, dass daneben etwas anderes steht. */
+  assert.ok(bisReturn.includes("keine Ersatzwerte gebildet"));
 });

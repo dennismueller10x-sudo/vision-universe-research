@@ -1,6 +1,6 @@
 # Vision Universe® Quant 2.0 — Product Language Dictionary
 
-`product-language-1.0.0` · Quelle: `quant/methodology/product-language-v1.json` · Zugriff:
+`product-language-1.1.0` · Quelle: `quant/methodology/product-language-v1.json` · Zugriff:
 `quant/engines/product-language.js`
 
 > **Diese Datei wird erzeugt.** `node scripts/quant/build-product-language-doc.mjs`.
@@ -531,6 +531,606 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Tooltip | Die Feststellung, dass eine damals dokumentierte Bedingung eingetreten ist. Kein Erfolgsurteil. |
 | Negativer Zustand | Die Zielzone wurde erreicht und die Situation ist damit abgeschlossen. |
 | Nicht verfügbar | Ohne festgehaltene Zielzone gibt es diesen Zustand nicht. |
+
+## Bedingungen einer Setup-Regel
+
+### Trendrichtung
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalTrend` |
+| Schlüssel | `technicalTrend` |
+| **User Label** | **Trendrichtung** |
+| Erklärung für Einsteiger | In welche Richtung sich der Kurs mittelfristig bewegt. |
+| Professional Label | Technical Trend |
+| Tooltip | Der Trendzustand des Technical-Snapshots. Beschreibt die bisherige Richtung, nicht die kommende. |
+| Negativer Zustand | Die Richtung trägt nicht in diese Richtung. |
+| Nicht verfügbar | Die Trendrichtung lässt sich hier nicht bestimmen. |
+
+### Bestätigte Kursstruktur
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalConfirmedStructure` |
+| Schlüssel | `technicalConfirmedStructure` |
+| **User Label** | **Bestätigte Kursstruktur** |
+| Erklärung für Einsteiger | Ob die Folge von Hochs und Tiefs eine Richtung bestätigt. |
+| Professional Label | Technical Confirmed Structure |
+| Tooltip | Marktstruktur aus bestätigten Hoch- und Tiefpunkten. Eine Bestätigung ist rückblickend, keine Vorhersage. |
+| Negativer Zustand | Die Struktur bestätigt diese Richtung nicht. |
+| Nicht verfügbar | Die Kursstruktur ist hier nicht bestimmbar. |
+
+### Schwung
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalMomentumState` |
+| Schlüssel | `technicalMomentumState` |
+| **User Label** | **Schwung** |
+| Erklärung für Einsteiger | Ob die Bewegung gerade Kraft gewinnt oder verliert. |
+| Professional Label | Technical Momentum State |
+| Tooltip | Momentumzustand des Technical-Snapshots. Gemessen am Kursverlauf, nicht an Erwartungen. |
+| Negativer Zustand | Der Schwung geht in die andere Richtung. |
+| Nicht verfügbar | Der Schwung ist hier nicht messbar. |
+
+### Schwankungsbreite
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalVolatilityRegime` |
+| Schlüssel | `technicalVolatilityRegime` |
+| **User Label** | **Schwankungsbreite** |
+| Erklärung für Einsteiger | Wie stark der Kurs zuletzt geschwankt hat. |
+| Professional Label | Technical Volatility Regime |
+| Tooltip | Volatilitätsregime des Technical-Snapshots. Vergangene Schwankung ist keine Verlustprognose. |
+| Negativer Zustand | Die Schwankungsbreite liegt nicht in diesem Bereich. |
+| Nicht verfügbar | Die Schwankungsbreite ist hier nicht bestimmbar. |
+
+### Handelsvolumen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalVolumeState` |
+| Schlüssel | `technicalVolumeState` |
+| **User Label** | **Handelsvolumen** |
+| Erklärung für Einsteiger | Ob mehr oder weniger Stücke gehandelt werden als üblich. |
+| Professional Label | Technical Volume State |
+| Tooltip | Volumenzustand des Technical-Snapshots, gemessen gegen den eigenen Durchschnitt des Titels. |
+| Negativer Zustand | Das Volumen zeigt das nicht. |
+| Nicht verfügbar | Das Handelsvolumen ist hier nicht auswertbar. |
+
+### Vollständigkeit der Situation
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalSetupStatus` |
+| Schlüssel | `technicalSetupStatus` |
+| **User Label** | **Vollständigkeit der Situation** |
+| Erklärung für Einsteiger | Ob die Methode alle Teile dieser Situation beschrieben findet. |
+| Professional Label | Technical Setup Status |
+| Tooltip | Vollständigkeit des vom Technical-Verfahren beschriebenen Setups. Vollständig heißt beschrieben, nicht bestätigt eingetreten. |
+| Negativer Zustand | Die Situation ist nicht vollständig beschrieben. |
+| Nicht verfügbar | Die Vollständigkeit ist hier nicht bestimmbar. |
+
+### Lage zur beschriebenen Zone
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalEntryStatus` |
+| Schlüssel | `technicalEntryStatus` |
+| **User Label** | **Lage zur beschriebenen Zone** |
+| Erklärung für Einsteiger | Wo der Kurs im Verhältnis zu der von der Methode beschriebenen Zone steht. |
+| Professional Label | Technical Entry Status |
+| Tooltip | Lage des Kurses zur Zone des primären Szenarios. Eine Zone ist eine Beschreibung des Verfahrens und keine Handlungsempfehlung. |
+| Negativer Zustand | Der Kurs steht nicht in dieser Lage zur Zone. |
+| Nicht verfügbar | Die Lage zur Zone ist hier nicht bestimmbar. |
+
+### Richtung der Hauptlesart
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalPrimaryDirection` |
+| Schlüssel | `technicalPrimaryDirection` |
+| **User Label** | **Richtung der Hauptlesart** |
+| Erklärung für Einsteiger | In welche Richtung das vorrangige Szenario der Methode zeigt. |
+| Professional Label | Technical Primary Direction |
+| Tooltip | Richtung des primären Szenarios. Szenarien beschreiben Bedingungen, keine Wahrscheinlichkeiten. |
+| Negativer Zustand | Die Hauptlesart zeigt nicht in diese Richtung. |
+| Nicht verfügbar | Die Hauptlesart ist hier nicht bestimmbar. |
+
+### Abstand zum 52-Wochen-Hoch
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `technicalDistanceTo52wHigh` |
+| Schlüssel | `technicalDistanceTo52wHigh` |
+| **User Label** | **Abstand zum 52-Wochen-Hoch** |
+| Erklärung für Einsteiger | Wie weit der Kurs unter seinem höchsten Stand der letzten zwölf Monate liegt. |
+| Professional Label | Technical Distance to 52W High |
+| Tooltip | Abstand zum höchsten Schlusskurs der letzten 52 Wochen, als Dezimalrendite des Snapshots. |
+| Negativer Zustand | Der Abstand liegt außerhalb dieses Bereichs. |
+| Nicht verfügbar | Der Abstand ist hier nicht bestimmbar. |
+
+### aufwärts
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BULLISH` |
+| Schlüssel | `technicalTrend.BULLISH` |
+| **User Label** | **aufwärts** |
+| Erklärung für Einsteiger | Trendrichtung: aufwärts. |
+| Professional Label | BULLISH |
+| Tooltip | Trendrichtung mit dem internen Wert BULLISH. |
+| Negativer Zustand | Nicht aufwärts. |
+| Nicht verfügbar | Trendrichtung ist hier nicht bestimmbar. |
+
+### abwärts
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BEARISH` |
+| Schlüssel | `technicalTrend.BEARISH` |
+| **User Label** | **abwärts** |
+| Erklärung für Einsteiger | Trendrichtung: abwärts. |
+| Professional Label | BEARISH |
+| Tooltip | Trendrichtung mit dem internen Wert BEARISH. |
+| Negativer Zustand | Nicht abwärts. |
+| Nicht verfügbar | Trendrichtung ist hier nicht bestimmbar. |
+
+### seitwärts
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `NEUTRAL` |
+| Schlüssel | `technicalTrend.NEUTRAL` |
+| **User Label** | **seitwärts** |
+| Erklärung für Einsteiger | Trendrichtung: seitwärts. |
+| Professional Label | NEUTRAL |
+| Tooltip | Trendrichtung mit dem internen Wert NEUTRAL. |
+| Negativer Zustand | Nicht seitwärts. |
+| Nicht verfügbar | Trendrichtung ist hier nicht bestimmbar. |
+
+### nicht bestimmbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `UNDETERMINED` |
+| Schlüssel | `technicalTrend.UNDETERMINED` |
+| **User Label** | **nicht bestimmbar** |
+| Erklärung für Einsteiger | Trendrichtung: nicht bestimmbar. |
+| Professional Label | UNDETERMINED |
+| Tooltip | Trendrichtung mit dem internen Wert UNDETERMINED. |
+| Negativer Zustand | Nicht nicht bestimmbar. |
+| Nicht verfügbar | Trendrichtung ist hier nicht bestimmbar. |
+
+### aufwärts bestätigt
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BULLISH` |
+| Schlüssel | `technicalConfirmedStructure.BULLISH` |
+| **User Label** | **aufwärts bestätigt** |
+| Erklärung für Einsteiger | Bestätigte Kursstruktur: aufwärts bestätigt. |
+| Professional Label | BULLISH |
+| Tooltip | Bestätigte Kursstruktur mit dem internen Wert BULLISH. |
+| Negativer Zustand | Nicht aufwärts bestätigt. |
+| Nicht verfügbar | Bestätigte Kursstruktur ist hier nicht bestimmbar. |
+
+### abwärts bestätigt
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BEARISH` |
+| Schlüssel | `technicalConfirmedStructure.BEARISH` |
+| **User Label** | **abwärts bestätigt** |
+| Erklärung für Einsteiger | Bestätigte Kursstruktur: abwärts bestätigt. |
+| Professional Label | BEARISH |
+| Tooltip | Bestätigte Kursstruktur mit dem internen Wert BEARISH. |
+| Negativer Zustand | Nicht abwärts bestätigt. |
+| Nicht verfügbar | Bestätigte Kursstruktur ist hier nicht bestimmbar. |
+
+### Seitwärtsband
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `RANGE` |
+| Schlüssel | `technicalConfirmedStructure.RANGE` |
+| **User Label** | **Seitwärtsband** |
+| Erklärung für Einsteiger | Bestätigte Kursstruktur: Seitwärtsband. |
+| Professional Label | RANGE |
+| Tooltip | Bestätigte Kursstruktur mit dem internen Wert RANGE. |
+| Negativer Zustand | Nicht Seitwärtsband. |
+| Nicht verfügbar | Bestätigte Kursstruktur ist hier nicht bestimmbar. |
+
+### nicht bestimmbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `UNDETERMINED` |
+| Schlüssel | `technicalConfirmedStructure.UNDETERMINED` |
+| **User Label** | **nicht bestimmbar** |
+| Erklärung für Einsteiger | Bestätigte Kursstruktur: nicht bestimmbar. |
+| Professional Label | UNDETERMINED |
+| Tooltip | Bestätigte Kursstruktur mit dem internen Wert UNDETERMINED. |
+| Negativer Zustand | Nicht nicht bestimmbar. |
+| Nicht verfügbar | Bestätigte Kursstruktur ist hier nicht bestimmbar. |
+
+### deutlich zunehmend
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `STRONG_POSITIVE` |
+| Schlüssel | `technicalMomentumState.STRONG_POSITIVE` |
+| **User Label** | **deutlich zunehmend** |
+| Erklärung für Einsteiger | Schwung: deutlich zunehmend. |
+| Professional Label | STRONG_POSITIVE |
+| Tooltip | Schwung mit dem internen Wert STRONG_POSITIVE. |
+| Negativer Zustand | Nicht deutlich zunehmend. |
+| Nicht verfügbar | Schwung ist hier nicht bestimmbar. |
+
+### zunehmend
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `POSITIVE` |
+| Schlüssel | `technicalMomentumState.POSITIVE` |
+| **User Label** | **zunehmend** |
+| Erklärung für Einsteiger | Schwung: zunehmend. |
+| Professional Label | POSITIVE |
+| Tooltip | Schwung mit dem internen Wert POSITIVE. |
+| Negativer Zustand | Nicht zunehmend. |
+| Nicht verfügbar | Schwung ist hier nicht bestimmbar. |
+
+### unverändert
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `NEUTRAL` |
+| Schlüssel | `technicalMomentumState.NEUTRAL` |
+| **User Label** | **unverändert** |
+| Erklärung für Einsteiger | Schwung: unverändert. |
+| Professional Label | NEUTRAL |
+| Tooltip | Schwung mit dem internen Wert NEUTRAL. |
+| Negativer Zustand | Nicht unverändert. |
+| Nicht verfügbar | Schwung ist hier nicht bestimmbar. |
+
+### nachlassend
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `NEGATIVE` |
+| Schlüssel | `technicalMomentumState.NEGATIVE` |
+| **User Label** | **nachlassend** |
+| Erklärung für Einsteiger | Schwung: nachlassend. |
+| Professional Label | NEGATIVE |
+| Tooltip | Schwung mit dem internen Wert NEGATIVE. |
+| Negativer Zustand | Nicht nachlassend. |
+| Nicht verfügbar | Schwung ist hier nicht bestimmbar. |
+
+### deutlich nachlassend
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `STRONG_NEGATIVE` |
+| Schlüssel | `technicalMomentumState.STRONG_NEGATIVE` |
+| **User Label** | **deutlich nachlassend** |
+| Erklärung für Einsteiger | Schwung: deutlich nachlassend. |
+| Professional Label | STRONG_NEGATIVE |
+| Tooltip | Schwung mit dem internen Wert STRONG_NEGATIVE. |
+| Negativer Zustand | Nicht deutlich nachlassend. |
+| Nicht verfügbar | Schwung ist hier nicht bestimmbar. |
+
+### nicht bestimmbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `UNDETERMINED` |
+| Schlüssel | `technicalMomentumState.UNDETERMINED` |
+| **User Label** | **nicht bestimmbar** |
+| Erklärung für Einsteiger | Schwung: nicht bestimmbar. |
+| Professional Label | UNDETERMINED |
+| Tooltip | Schwung mit dem internen Wert UNDETERMINED. |
+| Negativer Zustand | Nicht nicht bestimmbar. |
+| Nicht verfügbar | Schwung ist hier nicht bestimmbar. |
+
+### niedrig
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `LOW` |
+| Schlüssel | `technicalVolatilityRegime.LOW` |
+| **User Label** | **niedrig** |
+| Erklärung für Einsteiger | Schwankungsbreite: niedrig. |
+| Professional Label | LOW |
+| Tooltip | Schwankungsbreite mit dem internen Wert LOW. |
+| Negativer Zustand | Nicht niedrig. |
+| Nicht verfügbar | Schwankungsbreite ist hier nicht bestimmbar. |
+
+### normal
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `NORMAL` |
+| Schlüssel | `technicalVolatilityRegime.NORMAL` |
+| **User Label** | **normal** |
+| Erklärung für Einsteiger | Schwankungsbreite: normal. |
+| Professional Label | NORMAL |
+| Tooltip | Schwankungsbreite mit dem internen Wert NORMAL. |
+| Negativer Zustand | Nicht normal. |
+| Nicht verfügbar | Schwankungsbreite ist hier nicht bestimmbar. |
+
+### hoch
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `HIGH` |
+| Schlüssel | `technicalVolatilityRegime.HIGH` |
+| **User Label** | **hoch** |
+| Erklärung für Einsteiger | Schwankungsbreite: hoch. |
+| Professional Label | HIGH |
+| Tooltip | Schwankungsbreite mit dem internen Wert HIGH. |
+| Negativer Zustand | Nicht hoch. |
+| Nicht verfügbar | Schwankungsbreite ist hier nicht bestimmbar. |
+
+### nicht bestimmbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `UNDETERMINED` |
+| Schlüssel | `technicalVolatilityRegime.UNDETERMINED` |
+| **User Label** | **nicht bestimmbar** |
+| Erklärung für Einsteiger | Schwankungsbreite: nicht bestimmbar. |
+| Professional Label | UNDETERMINED |
+| Tooltip | Schwankungsbreite mit dem internen Wert UNDETERMINED. |
+| Negativer Zustand | Nicht nicht bestimmbar. |
+| Nicht verfügbar | Schwankungsbreite ist hier nicht bestimmbar. |
+
+### Ausbruch mit deutlich höherem Volumen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BREAKOUT_VOLUME_UP` |
+| Schlüssel | `technicalVolumeState.BREAKOUT_VOLUME_UP` |
+| **User Label** | **Ausbruch mit deutlich höherem Volumen** |
+| Erklärung für Einsteiger | Handelsvolumen: Ausbruch mit deutlich höherem Volumen. |
+| Professional Label | BREAKOUT_VOLUME_UP |
+| Tooltip | Handelsvolumen mit dem internen Wert BREAKOUT_VOLUME_UP. |
+| Negativer Zustand | Nicht Ausbruch mit deutlich höherem Volumen. |
+| Nicht verfügbar | Handelsvolumen ist hier nicht bestimmbar. |
+
+### Abwärtsausbruch mit deutlich höherem Volumen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BREAKOUT_VOLUME_DOWN` |
+| Schlüssel | `technicalVolumeState.BREAKOUT_VOLUME_DOWN` |
+| **User Label** | **Abwärtsausbruch mit deutlich höherem Volumen** |
+| Erklärung für Einsteiger | Handelsvolumen: Abwärtsausbruch mit deutlich höherem Volumen. |
+| Professional Label | BREAKOUT_VOLUME_DOWN |
+| Tooltip | Handelsvolumen mit dem internen Wert BREAKOUT_VOLUME_DOWN. |
+| Negativer Zustand | Nicht Abwärtsausbruch mit deutlich höherem Volumen. |
+| Nicht verfügbar | Handelsvolumen ist hier nicht bestimmbar. |
+
+### auffällig geringes Volumen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `DRY_UP` |
+| Schlüssel | `technicalVolumeState.DRY_UP` |
+| **User Label** | **auffällig geringes Volumen** |
+| Erklärung für Einsteiger | Handelsvolumen: auffällig geringes Volumen. |
+| Professional Label | DRY_UP |
+| Tooltip | Handelsvolumen mit dem internen Wert DRY_UP. |
+| Negativer Zustand | Nicht auffällig geringes Volumen. |
+| Nicht verfügbar | Handelsvolumen ist hier nicht bestimmbar. |
+
+### steigendes Volumen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `EXPANSION` |
+| Schlüssel | `technicalVolumeState.EXPANSION` |
+| **User Label** | **steigendes Volumen** |
+| Erklärung für Einsteiger | Handelsvolumen: steigendes Volumen. |
+| Professional Label | EXPANSION |
+| Tooltip | Handelsvolumen mit dem internen Wert EXPANSION. |
+| Negativer Zustand | Nicht steigendes Volumen. |
+| Nicht verfügbar | Handelsvolumen ist hier nicht bestimmbar. |
+
+### unauffälliges Volumen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `NORMAL` |
+| Schlüssel | `technicalVolumeState.NORMAL` |
+| **User Label** | **unauffälliges Volumen** |
+| Erklärung für Einsteiger | Handelsvolumen: unauffälliges Volumen. |
+| Professional Label | NORMAL |
+| Tooltip | Handelsvolumen mit dem internen Wert NORMAL. |
+| Negativer Zustand | Nicht unauffälliges Volumen. |
+| Nicht verfügbar | Handelsvolumen ist hier nicht bestimmbar. |
+
+### nicht auswertbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `UNAVAILABLE` |
+| Schlüssel | `technicalVolumeState.UNAVAILABLE` |
+| **User Label** | **nicht auswertbar** |
+| Erklärung für Einsteiger | Handelsvolumen: nicht auswertbar. |
+| Professional Label | UNAVAILABLE |
+| Tooltip | Handelsvolumen mit dem internen Wert UNAVAILABLE. |
+| Negativer Zustand | Nicht nicht auswertbar. |
+| Nicht verfügbar | Handelsvolumen ist hier nicht bestimmbar. |
+
+### unvollständig
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `INCOMPLETE` |
+| Schlüssel | `technicalSetupStatus.INCOMPLETE` |
+| **User Label** | **unvollständig** |
+| Erklärung für Einsteiger | Vollständigkeit der Situation: unvollständig. |
+| Professional Label | INCOMPLETE |
+| Tooltip | Vollständigkeit der Situation mit dem internen Wert INCOMPLETE. |
+| Negativer Zustand | Nicht unvollständig. |
+| Nicht verfügbar | Vollständigkeit der Situation ist hier nicht bestimmbar. |
+
+### vollständig
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `COMPLETE` |
+| Schlüssel | `technicalSetupStatus.COMPLETE` |
+| **User Label** | **vollständig** |
+| Erklärung für Einsteiger | Vollständigkeit der Situation: vollständig. |
+| Professional Label | COMPLETE |
+| Tooltip | Vollständigkeit der Situation mit dem internen Wert COMPLETE. |
+| Negativer Zustand | Nicht vollständig. |
+| Nicht verfügbar | Vollständigkeit der Situation ist hier nicht bestimmbar. |
+
+### vollständig, mit engem Abstand zwischen Risiko und Zielzone
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `COMPLETE_LOW_RR` |
+| Schlüssel | `technicalSetupStatus.COMPLETE_LOW_RR` |
+| **User Label** | **vollständig, mit engem Abstand zwischen Risiko und Zielzone** |
+| Erklärung für Einsteiger | Vollständigkeit der Situation: vollständig, mit engem Abstand zwischen Risiko und Zielzone. |
+| Professional Label | COMPLETE_LOW_RR |
+| Tooltip | Vollständigkeit der Situation mit dem internen Wert COMPLETE_LOW_RR. |
+| Negativer Zustand | Nicht vollständig, mit engem Abstand zwischen Risiko und Zielzone. |
+| Nicht verfügbar | Vollständigkeit der Situation ist hier nicht bestimmbar. |
+
+### in der Zone
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `ACTIVE` |
+| Schlüssel | `technicalEntryStatus.ACTIVE` |
+| **User Label** | **in der Zone** |
+| Erklärung für Einsteiger | Lage zur beschriebenen Zone: in der Zone. |
+| Professional Label | ACTIVE |
+| Tooltip | Lage zur beschriebenen Zone mit dem internen Wert ACTIVE. |
+| Negativer Zustand | Nicht in der Zone. |
+| Nicht verfügbar | Lage zur beschriebenen Zone ist hier nicht bestimmbar. |
+
+### wartet auf einen Rücksetzer
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `AWAITING_PULLBACK` |
+| Schlüssel | `technicalEntryStatus.AWAITING_PULLBACK` |
+| **User Label** | **wartet auf einen Rücksetzer** |
+| Erklärung für Einsteiger | Lage zur beschriebenen Zone: wartet auf einen Rücksetzer. |
+| Professional Label | AWAITING_PULLBACK |
+| Tooltip | Lage zur beschriebenen Zone mit dem internen Wert AWAITING_PULLBACK. |
+| Negativer Zustand | Nicht wartet auf einen Rücksetzer. |
+| Nicht verfügbar | Lage zur beschriebenen Zone ist hier nicht bestimmbar. |
+
+### wartet auf den beschriebenen Auslöser
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `AWAITING_TRIGGER` |
+| Schlüssel | `technicalEntryStatus.AWAITING_TRIGGER` |
+| **User Label** | **wartet auf den beschriebenen Auslöser** |
+| Erklärung für Einsteiger | Lage zur beschriebenen Zone: wartet auf den beschriebenen Auslöser. |
+| Professional Label | AWAITING_TRIGGER |
+| Tooltip | Lage zur beschriebenen Zone mit dem internen Wert AWAITING_TRIGGER. |
+| Negativer Zustand | Nicht wartet auf den beschriebenen Auslöser. |
+| Nicht verfügbar | Lage zur beschriebenen Zone ist hier nicht bestimmbar. |
+
+### über die Zone hinausgelaufen
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `EXTENDED` |
+| Schlüssel | `technicalEntryStatus.EXTENDED` |
+| **User Label** | **über die Zone hinausgelaufen** |
+| Erklärung für Einsteiger | Lage zur beschriebenen Zone: über die Zone hinausgelaufen. |
+| Professional Label | EXTENDED |
+| Tooltip | Lage zur beschriebenen Zone mit dem internen Wert EXTENDED. |
+| Negativer Zustand | Nicht über die Zone hinausgelaufen. |
+| Nicht verfügbar | Lage zur beschriebenen Zone ist hier nicht bestimmbar. |
+
+### unter der Zone
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BELOW_ZONE` |
+| Schlüssel | `technicalEntryStatus.BELOW_ZONE` |
+| **User Label** | **unter der Zone** |
+| Erklärung für Einsteiger | Lage zur beschriebenen Zone: unter der Zone. |
+| Professional Label | BELOW_ZONE |
+| Tooltip | Lage zur beschriebenen Zone mit dem internen Wert BELOW_ZONE. |
+| Negativer Zustand | Nicht unter der Zone. |
+| Nicht verfügbar | Lage zur beschriebenen Zone ist hier nicht bestimmbar. |
+
+### keine Zone beschrieben
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `NONE` |
+| Schlüssel | `technicalEntryStatus.NONE` |
+| **User Label** | **keine Zone beschrieben** |
+| Erklärung für Einsteiger | Lage zur beschriebenen Zone: keine Zone beschrieben. |
+| Professional Label | NONE |
+| Tooltip | Lage zur beschriebenen Zone mit dem internen Wert NONE. |
+| Negativer Zustand | Nicht keine Zone beschrieben. |
+| Nicht verfügbar | Lage zur beschriebenen Zone ist hier nicht bestimmbar. |
+
+### aufwärts
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BULLISH` |
+| Schlüssel | `technicalPrimaryDirection.BULLISH` |
+| **User Label** | **aufwärts** |
+| Erklärung für Einsteiger | Richtung der Hauptlesart: aufwärts. |
+| Professional Label | BULLISH |
+| Tooltip | Richtung der Hauptlesart mit dem internen Wert BULLISH. |
+| Negativer Zustand | Nicht aufwärts. |
+| Nicht verfügbar | Richtung der Hauptlesart ist hier nicht bestimmbar. |
+
+### abwärts
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `BEARISH` |
+| Schlüssel | `technicalPrimaryDirection.BEARISH` |
+| **User Label** | **abwärts** |
+| Erklärung für Einsteiger | Richtung der Hauptlesart: abwärts. |
+| Professional Label | BEARISH |
+| Tooltip | Richtung der Hauptlesart mit dem internen Wert BEARISH. |
+| Negativer Zustand | Nicht abwärts. |
+| Nicht verfügbar | Richtung der Hauptlesart ist hier nicht bestimmbar. |
+
+### seitwärts
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `NEUTRAL` |
+| Schlüssel | `technicalPrimaryDirection.NEUTRAL` |
+| **User Label** | **seitwärts** |
+| Erklärung für Einsteiger | Richtung der Hauptlesart: seitwärts. |
+| Professional Label | NEUTRAL |
+| Tooltip | Richtung der Hauptlesart mit dem internen Wert NEUTRAL. |
+| Negativer Zustand | Nicht seitwärts. |
+| Nicht verfügbar | Richtung der Hauptlesart ist hier nicht bestimmbar. |
+
+### nicht bestimmbar
+
+| Feld | Inhalt |
+|---|---|
+| Interner Begriff | `UNDETERMINED` |
+| Schlüssel | `technicalPrimaryDirection.UNDETERMINED` |
+| **User Label** | **nicht bestimmbar** |
+| Erklärung für Einsteiger | Richtung der Hauptlesart: nicht bestimmbar. |
+| Professional Label | UNDETERMINED |
+| Tooltip | Richtung der Hauptlesart mit dem internen Wert UNDETERMINED. |
+| Negativer Zustand | Nicht nicht bestimmbar. |
+| Nicht verfügbar | Richtung der Hauptlesart ist hier nicht bestimmbar. |
 
 ## Richtung einer Veränderung
 

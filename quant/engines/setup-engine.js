@@ -50,7 +50,15 @@
   var ENGINE_VERSION = "vu-setup-1.0.0";
   var OBSERVATION_SCHEMA = "setup-observation-1.0.0";
   var OBSERVATION_INDEX_SCHEMA = "setup-observation-index-1.0.0";
-  var SHARD_SCHEMA = "setup-observation-product-1.0.0";
+  var SHARD_SCHEMA = "setup-observation-product-1.1.0";
+  /* Beide Fassungen bleiben lesbar. 1.1.0 traegt die Zeile der
+     Katalogfelder je Titel; ohne sie laesst sich nur die Regel erklaeren,
+     die gegriffen hat, und nicht, was einen ANDEREN Zustand ausmachen
+     wuerde. Die aeltere Fassung ist nicht falsch - sie kann diese eine
+     Frage nur nicht beantworten, und die Oberflaeche sagt das dann. Ein
+     harter Schemawechsel haette die ganze Setup-Sektion bis zur naechsten
+     Materialisierung auf UNAVAILABLE gestellt. */
+  var SHARD_SCHEMAS = ["setup-observation-product-1.0.0", "setup-observation-product-1.1.0"];
   var SCREEN_INDEX_SCHEMA = "setup-screen-index-1.0.0";
 
   var STATES = ["NO_SETUP", "WATCH", "SETUP_FORMING", "CONFIRMED", "ACTIVE", "RISK_RISING", "INVALIDATED", "EXIT"];
@@ -835,11 +843,83 @@
     };
   }
 
+  /* =====================================================================
+     WAS DIESEN ZUSTAND AENDERN WUERDE
+
+     Die Setup-Sektion konnte bisher sagen, welcher Zustand gilt und welche
+     Bedingungen der Regel dafuer erfuellt sind. Die naechste Frage eines
+     Lesers stellt sie damit, beantwortet sie aber nicht: was muesste
+     anders sein, damit ein anderer Zustand gilt?
+
+     Beantwortbar ist das ohne neue Daten, weil die Kaskade jede Bedingung
+     jedes Zustands benennt und die Zeile der Katalogfelder dieselbe ist,
+     an der der Zustand entschieden wurde. Gerechnet wird deshalb mit
+     denselben zwei Funktionen (ruleMatches, conditionsOf) und nicht mit
+     einer zweiten, aehnlichen Auswertung - sonst koennte diese Ansicht
+     eine Bedingung als erfuellt zeigen, die die Zuordnung nicht erfuellt
+     sieht.
+
+     Was hier NICHT passiert: eine Aussage darueber, ob ein Zustand
+     eintreten WIRD, oder wie wahrscheinlich das ist. Die Funktion
+     vergleicht Bedingungen mit dem heutigen Stand. Nichts anderes.
+
+     @param {object} mapping {mappingVersion, cascade:{rules}}
+     @param {object} row     die Zeile der Katalogfelder dieses Titels
+     @param {object} context {close, previous}
+   */
+  function explainCascade(mapping, row, context) {
+    var rules = (mapping && mapping.cascade && mapping.cascade.rules) || [];
+    var ctx = { close: context && context.close, previous: (context && context.previous) || null };
+    return rules.filter(function (rule) { return rule.always !== true; }).map(function (rule) {
+      var conditions, matched, fehler = null;
+      /* Eine Verlaufsbedingung ohne Vorbeobachtung ist nicht unerfuellt -
+         sie ist nicht beantwortbar. Der Unterschied ist der ganze Punkt:
+         "diese Bedingung gilt nicht" und "wir wissen es nicht" duerfen
+         nicht dasselbe Zeichen bekommen. Die Vorbeobachtung wird ohne ihre
+         Niveaus veroeffentlicht, deshalb wird auch das geprueft und nicht
+         angenommen. */
+      var verlangtVerlauf = (rule.historyConditions || []);
+      if (verlangtVerlauf.length && !ctx.previous) fehler = "NO_PREVIOUS_OBSERVATION";
+      else if (verlangtVerlauf.some(function (c) {
+        var inputs = [c.input].concat(typeof c.value === "string" && c.value.indexOf("previous.") === 0 ? [c.value] : []);
+        return inputs.some(function (input) {
+          if (input.indexOf("previous.") !== 0) return false;
+          var key = input.slice("previous.".length);
+          return !ctx.previous || ctx.previous[key] === undefined;
+        });
+      })) fehler = "PREVIOUS_LEVEL_NOT_PUBLISHED";
+      if (fehler) {
+        return { ruleId: rule.ruleId, state: rule.state, order: rule.order, tier: rule.tier,
+                 plain: rule.plain, matched: null, unanswerable: fehler,
+                 conditions: [], met: 0, total: verlangtVerlauf.length + (rule.filters || []).length,
+                 open: [] };
+      }
+      try {
+        conditions = conditionsOf(rule, row || {}, ctx);
+        matched = ruleMatches(rule, row || {}, ctx);
+      } catch (e) {
+        /* Eine Bedingung, die diese Fassung nicht kennt, macht die Regel
+           nicht erfuellt - sie macht sie unbeantwortbar. Der Unterschied
+           gehoert nach draussen, nicht in ein stilles false. */
+        conditions = []; matched = null; fehler = String(e && e.message || e);
+      }
+      var offen = conditions.filter(function (c) { return !c.met; });
+      return {
+        ruleId: rule.ruleId, state: rule.state, order: rule.order, tier: rule.tier,
+        plain: rule.plain, matched: matched, unanswerable: fehler,
+        conditions: conditions, met: conditions.length - offen.length, total: conditions.length,
+        open: offen
+      };
+    });
+  }
+
   var api = {
     ENGINE_VERSION: ENGINE_VERSION,
+    explainCascade: explainCascade,
     OBSERVATION_SCHEMA: OBSERVATION_SCHEMA,
     OBSERVATION_INDEX_SCHEMA: OBSERVATION_INDEX_SCHEMA,
     SHARD_SCHEMA: SHARD_SCHEMA,
+    SHARD_SCHEMAS: SHARD_SCHEMAS.slice(),
     SCREEN_INDEX_SCHEMA: SCREEN_INDEX_SCHEMA,
     STATES: STATES.slice(),
     PIT_STATES: PIT_STATES.slice(),
