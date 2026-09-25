@@ -58,7 +58,7 @@ predicate. Backtest and Market Regime remain ahead, both for measured reasons re
 | M18 | Historische Evidenz (Beständigkeit) | **DONE** (2026-09-25) — zweiter Snapshot da, `ASSIGNMENT_PERSISTENCE` live (Momentum Leader 92,9 %, 157 von 169) |
 | M19 | Chart auf gebundener Basis | **DONE** (2026-09-25) — NVDA/AAPL-Splitsprung entfernt, Bildunterschrift folgt der Reihe |
 | M20 | Kalenderdeckung: Titel ohne Technical/Setup/Muster | **DONE, gemessen** (2026-09-25) — +166 Technical, +162 Signals, +160 Elliott; Rest liegt vor 2022-01-01 |
-| M23 | Kursstruktur zehn Handelstage hinter ihrem Kurs | **DONE, realisiert** (2026-09-25) — Ablage beschrieben, 5.470 Titel auf 2026-09-24, 331 mit eigener Abstandszeile |
+| M23 | Kursstruktur zehn Handelstage hinter ihrem Kurs | **DONE, realisiert** (2026-09-25) — Ablage beschrieben, 5.470 Titel auf 2026-09-24; die 331 Zurueckgestellten haben keine Kursreihe, also auch keinen Abstand zu nennen |
 | M21 | Zuordnungswechsel: eine Regel, drei Leser | **DONE** (2026-09-25) — 37 Wechsel zwischen zwei Staenden, Alarmvertrag deckungsgleich ueber 6.357 Titel |
 | M22 | Grund je Titel statt vier gleicher Saetze | **DONE** (2026-09-25) — `technical-unavailable-1.0.0` im ohnehin geladenen Shard |
 
@@ -430,8 +430,15 @@ SIGNAL_INVALID_SIGNAL_SESSION 205         40
 
 Der Abruf selbst: 6.876 Titel angefragt, 6.531 ok, 0 fehlgeschlagen, 345 an der
 Qualitaetspruefung abgelehnt, **343 durch den Ablehnungs-Cooldown zurueckgestellt** — das sind
-die 331, die ihren Stand vom 2026-09-10 behalten. Sie bekommen jetzt ihre eigene Abstandszeile
-statt der Sammelaussage; genau dafuer ist sie gebaut. Kontingent: 6.533 von 50.000 am Tag.
+die 331, die ihren Stand vom 2026-09-10 behalten. Kontingent: 6.533 von 50.000 am Tag.
+
+Zu diesen 331 eine Korrektur an mir selbst: sie bekommen KEINE Abstandszeile, und das ist
+richtig. Nachgemessen: **alle 331 haben gar keine veroeffentlichte Kursreihe** (`SOURCE_MISSING`
+bei `getHistoricalPriceHistory`). Ohne zweiten Stand gibt es keinen Abstand zu nennen, und der
+Dienst erfindet keinen — genau die Regel, nach der `analysisLag` ohne eines der beiden Daten
+schweigt. Ihre Lage ist eine andere Aussage: keine Kursreihe, und die macht die Chart-Station der
+Reise sichtbar (19 von 500 `SOURCE_MISSING`), nicht die Abstandszeile. Die Zeile greift dort, wo
+zwei Staende NEBENEINANDER stehen und verschieden sind.
 
 **Was mit dem frischen Stichtag von selbst gefallen ist:** die Setup-Beobachtung hat ihren
 ZWEITEN veroeffentlichten Stand (`2026-09-10`, `2026-09-24`), und damit steht die
