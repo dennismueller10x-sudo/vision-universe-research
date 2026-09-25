@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-09-24T17:53:01.000Z |
+| Stand der Messung | 2026-09-25T08:25:13.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -94,18 +94,22 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 6.403 |
-| Preisbasis | `adjustedClose` 6.403 |
-| gemessene Quant-V2-Momentumbasis | **TOTAL_RETURN** |
+| Einträge | 6.358 |
+| Preisbasis | `close` 6.358 |
+| gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
 
 | Komponente | Gewicht | beschrieben als | gerechnet auf |
 |---|---:|---|---|
+| `momentum:priceReturn12m1m` | 0,30 | split-adjusted price return T-252 to T-21 | `adjustedClose` |
+| `momentum:priceReturn6m` | 0,20 | split-adjusted price return | `adjustedClose` |
+| `momentum:priceReturn3m` | 0,10 | split-adjusted price return | `adjustedClose` |
+| `momentum:relativeStrength12m1m` | 0,20 | security 12-1 split-adjusted price return minus certified broad benchmark 12-1 split-adjusted price return | `adjustedClose` |
 | `momentum:distanceTo52wHigh` | 0,10 | (high252-current split-adjusted close)/high252 | `adjustedClose` |
 | `momentum:distanceToSma200` | 0,10 | (split-adjusted close-SMA200)/SMA200 | `adjustedClose` |
 
-Zusammen 0,20 Gewicht der Momentumnote. Solange `adjustedClose` splitbereinigt wäre, fiele das nicht auf; sie ist nachweislich gesamtrenditebereinigt, also ist es ein Unterschied. Diese Studie korrigiert ihn nicht still — er gehört in die Entscheidung.
+Zusammen 1,00 Gewicht der Momentumnote. Solange `adjustedClose` splitbereinigt wäre, fiele das nicht auf; sie ist nachweislich gesamtrenditebereinigt, also ist es ein Unterschied. Diese Studie korrigiert ihn nicht still — er gehört in die Entscheidung.
 
 ## 3 · Keine Entscheidung aus fünf Titeln
 
@@ -191,20 +195,20 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| REITs | 209 | 5,87 % | -141 | 2,35 | 14,68 |
-| Utilities | 154 | 3,02 % | -7 | 0,11 | 5,36 |
-| Energy | 148 | 2,37 % | -2 | 0,03 | 5,93 |
-| (unclassified) | 1.198 | 0,30 % | 0 | 0,00 | 7,99 |
-| Financials | 903 | 1,96 % | 5 | -0,08 | 5,80 |
+| REITs | 205 | 5,90 % | -143 | 2,38 | 14,69 |
+| Utilities | 153 | 3,02 % | -5 | 0,08 | 5,36 |
+| (unclassified) | 1.234 | 0,63 % | 0 | 0,00 | 7,98 |
+| Energy | 147 | 2,35 % | 0 | 0,00 | 5,93 |
+| Financials | 894 | 1,94 % | 5 | -0,08 | 5,81 |
 | Consumer Staples | 109 | 1,38 % | 12 | -0,20 | 3,39 |
-| Real Estate | 69 | 0,00 % | 12 | -0,20 | 9,93 |
-| Communication | 125 | 0,00 % | 13 | -0,22 | 5,23 |
-| Industrials | 425 | 0,19 % | 18 | -0,30 | 4,98 |
-| Health Care | 826 | 0,00 % | 19 | -0,32 | 3,88 |
-| Materials | 294 | 0,00 % | 20 | -0,33 | 3,95 |
-| (other) | 459 | 0,00 % | 21 | -0,35 | 4,40 |
-| Technology | 678 | 0,00 % | 23 | -0,38 | 4,82 |
-| Consumer Discretionary | 400 | 0,00 % | 31 | -0,52 | 4,87 |
+| Real Estate | 68 | 0,00 % | 12 | -0,20 | 10,01 |
+| Communication | 124 | 0,00 % | 14 | -0,23 | 5,24 |
+| Industrials | 424 | 0,18 % | 18 | -0,30 | 4,98 |
+| Health Care | 825 | 0,00 % | 19 | -0,32 | 3,88 |
+| Materials | 293 | 0,00 % | 20 | -0,33 | 3,95 |
+| (other) | 452 | 0,00 % | 23 | -0,38 | 4,25 |
+| Technology | 673 | 0,00 % | 23 | -0,38 | 4,83 |
+| Consumer Discretionary | 396 | 0,00 % | 32 | -0,53 | 4,88 |
 
 > Einteilung `AUDIT_LOCAL_SIC_RANGES`. Gilt nur fuer diese Studie und ist keine Produkttaxonomie. Die Bereiche stehen hier, damit jede Zuordnung nachrechenbar ist. Die SIC-Bereiche: Energy 1200–1399/2900–2999/4600–4619 · Utilities 4900–4991 · REITs 6798 · Financials 6000–6499/6700–6797/6799 · Real Estate 6500–6599 · Health Care 2833–2836/3826/3841–3851/8000–8099 · Technology 3570–3579/3600–3699/7370–7379 · Communication 2700–2799/4800–4899/7800–7841 · Materials 1000–1099/1400–1499/2600–2699/2800–2824/2840–2899/3200–3399 · Consumer Staples 2000–2199/2825–2832/5400–5499/5912 · Consumer Discretionary 2200–2399/3700–3799/5200–5399/5500–5911/5913–5999/7000–7099/7900–7999 · Industrials 1500–1799/3400–3569/3580–3599/3710–3728/4000–4599/4620–4799/8700–8748.
 
@@ -212,16 +216,16 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| H · Finance, Insurance, And Real Estate | 1.181 | 2,63 % | -6 | 0,10 | 6,90 |
-| (unclassified) | 1.198 | 0,30 % | 0 | 0,00 | 7,99 |
-| E · Transportation, Communications, Electric, Gas, And Sanitary Services | 399 | 2,16 % | 5 | -0,08 | 5,42 |
-| B · Mining | 241 | 0,00 % | 17 | -0,28 | 4,87 |
-| D · Manufacturing | 1.782 | 0,00 % | 18 | -0,30 | 4,10 |
-| F · Wholesale Trade | 90 | 0,23 % | 21 | -0,34 | 5,89 |
-| I · Services | 821 | 0,00 % | 25 | -0,42 | 4,99 |
-| G · Retail Trade | 208 | 0,00 % | 27 | -0,45 | 4,53 |
+| H · Finance, Insurance, And Real Estate | 1.167 | 2,59 % | -6 | 0,10 | 6,92 |
+| (unclassified) | 1.234 | 0,63 % | 0 | 0,00 | 7,98 |
+| E · Transportation, Communications, Electric, Gas, And Sanitary Services | 396 | 2,13 % | 5 | -0,08 | 5,46 |
+| B · Mining | 240 | 0,00 % | 17 | -0,28 | 4,89 |
+| D · Manufacturing | 1.777 | 0,00 % | 18 | -0,30 | 4,11 |
+| F · Wholesale Trade | 85 | 0,00 % | 23 | -0,38 | 4,17 |
+| I · Services | 817 | 0,00 % | 26 | -0,43 | 4,96 |
+| G · Retail Trade | 205 | 0,00 % | 27 | -0,45 | 4,45 |
 | C · Construction | 59 | 0,00 % | 33 | -0,55 | 5,09 |
-| A · Agriculture, Forestry, And Fishing | 18 | 0,00 % | 60 | -1,00 | 4,17 |
+| A · Agriculture, Forestry, And Fishing | 17 | 0,00 % | 53 | -0,88 | 4,17 |
 
 Sektoren mit weniger als zehn Titeln sind ausgelassen: aus vier Titeln einen Sektorbefund zu machen wäre eine Zahl ohne Aussage.
 
@@ -232,19 +236,19 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `FUNDAMENTALS_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-09-21 (11 Tage nach dem Stichtag) |
-| ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 1.018 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9246 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9203 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.554 / 5.997 / 5.997 |
+| veröffentlichtes Evidence vom | 2026-09-23 (13 Tage nach dem Stichtag) |
+| ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 1.012 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9115 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9232 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.502 / 5.997 / 5.997 |
 
-> **Einschränkung, benannt statt weggelassen.** Die benutzten Fundamentalzahlen waren am Stichtag oeffentlich, ihre Peerperzentile wurden aber in einem 11 Tage spaeteren Querschnitt gerechnet. Titel mit spaeter verfuegbaren Fundamentaldaten sind ausgeschlossen.
+> **Einschränkung, benannt statt weggelassen.** Die benutzten Fundamentalzahlen waren am Stichtag oeffentlich, ihre Peerperzentile wurden aber in einem 13 Tage spaeteren Querschnitt gerechnet. Titel mit spaeter verfuegbaren Fundamentaldaten sind ausgeschlossen.
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9913 · Median 68 Ränge · P95 478 · Maximum 3.751 · 703 Titel bewegen sich um mindestens 5 Perzentilpunkte, 178 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 320 | 315 | 10 | 5 | 4,7 % |
+| Momentum Leader (`momentum-leader`) | 322 | 317 | 10 | 5 | 4,7 % |
 | Quality Momentum (`quality-momentum`) | 21 | 20 | 2 | 1 | 14,3 % |
 | Future Leader (`future-leader`) | 15 | 14 | 1 | 0 | 6,7 % |
 | Value Momentum (`value-momentum`) | 120 | 118 | 3 | 1 | 3,3 % |
@@ -267,7 +271,7 @@ An den historischen Stichtagen gibt es **keine** Strategiewirkung: die nicht-mom
 
 ## 9b · Was die Messung begrenzt hat
 
-**`CANONICAL_STORE_LAGS_PUBLISHED_EVIDENCE`** — die kanonische Historie endet am 2026-09-10, das veröffentlichte Factor Evidence trägt den Stichtag 2026-09-21: 11 Tage Abstand. Die wiederhergestellte kanonische Historie endet frueher als der Stichtag des veroeffentlichten Factor Evidence, das aus dem Arbeitsbestand des taeglichen Marktdatenlaufs gebaut wurde. Diese Studie repariert das nicht; sie benennt die Folge fuer ihre eigene Messung.
+**`CANONICAL_STORE_LAGS_PUBLISHED_EVIDENCE`** — die kanonische Historie endet am 2026-09-10, das veröffentlichte Factor Evidence trägt den Stichtag 2026-09-23: 13 Tage Abstand. Die wiederhergestellte kanonische Historie endet frueher als der Stichtag des veroeffentlichten Factor Evidence, das aus dem Arbeitsbestand des taeglichen Marktdatenlaufs gebaut wurde. Diese Studie repariert das nicht; sie benennt die Folge fuer ihre eigene Messung.
 
 ## 10 · Maschinenlesbarer Stand
 

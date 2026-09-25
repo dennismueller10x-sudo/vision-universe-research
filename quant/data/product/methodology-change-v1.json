@@ -1,6 +1,6 @@
 {
  "schemaVersion": "methodology-change-1.0.0",
- "generatedAt": "2026-09-24T18:15:57.000Z",
+ "generatedAt": "2026-09-25T08:38:44.000Z",
  "versions": {
   "measurement_logic": "1.0.0",
   "comparison": "vu-return-basis-comparison-1.0.0"
@@ -14,149 +14,128 @@
   "to": {
    "methodologyVersion": "vu-factor-evidence-2.0.0",
    "derivedFrom": "quant-v2.1.0",
-   "asOf": "2026-09-23"
+   "asOf": "2026-09-24"
   },
   "what": "Momentum von TOTAL_RETURN auf SPLIT_ADJUSTED_PRICE; Gesamtrendite als eigene Anlegerevidenz.",
   "decidedBy": "Owner, 2026-09-24, Option C"
  },
  "coverage": {
   "ROWS_BEFORE": 6403,
-  "ROWS_AFTER": 6358,
-  "SHARED": 6349,
-  "ONLY_BEFORE": 54,
-  "ONLY_AFTER": 9,
+  "ROWS_AFTER": 6437,
+  "SHARED": 6401,
+  "ONLY_BEFORE": 2,
+  "ONLY_AFTER": 36,
   "onlyBeforeTickers": [
-   "AIG",
    "ANY",
-   "ARES",
-   "ASO",
-   "BPRE",
-   "CHSCL",
-   "CHSCM",
-   "CHSCN",
-   "CHSCO",
-   "CHSCP",
-   "CNNE",
-   "CRBG",
-   "DIN",
-   "DLY",
-   "DOLE",
-   "EVC",
-   "FG",
-   "FINS",
-   "FNF",
-   "FSK",
-   "FSOL",
-   "GWRS",
-   "HCA",
-   "HERZ",
-   "HMN",
-   "HRZN",
-   "ICE",
-   "MEOH",
-   "MRTN",
-   "MSI",
-   "MSIF",
-   "NMFC",
-   "NXPI",
-   "OLED",
-   "OXLCM",
-   "OXLCN",
-   "OXLCO",
-   "OXSQ",
-   "PAGS",
-   "PDCC",
-   "PDPA",
-   "PLD",
-   "PR",
-   "RNST",
-   "RYN",
-   "SELF",
-   "SPG-P-J",
-   "STRW",
-   "TCPC",
-   "TNL"
+   "HCWC"
   ],
   "onlyAfterTickers": [
+   "AG",
+   "BBD",
+   "CASH",
    "CNL",
+   "COOL",
+   "CRS",
+   "DACL",
+   "DIT",
+   "FGBI",
+   "GHXI",
    "HYGD",
    "HYGU",
+   "IBKR",
+   "IFLO",
    "LQDD",
    "LQDU",
+   "MUSA",
+   "NMM",
+   "PEGA",
    "PLCI",
+   "PLPC",
+   "RMCO",
+   "RVII",
    "SITX",
    "SNSC",
-   "VOGX"
+   "SXI",
+   "TECH",
+   "TER",
+   "TILE",
+   "TMO",
+   "TPB",
+   "TRI",
+   "VOGX",
+   "WRB-P-F",
+   "WRB-P-G",
+   "WRB-P-H"
   ]
  },
  "RANK_DRIFT": {
   "quality": {
-   "scoredBefore": 2714,
-   "scoredAfter": 2714,
+   "scoredBefore": 2734,
+   "scoredAfter": 2734,
    "valuesIdentical": false,
-   "UNIVERSE_N": 2714,
-   "SPEARMAN_RANK_CORRELATION": 0.999623,
-   "MEDIAN_ABSOLUTE_RANK_CHANGE": 2.5,
-   "P95_RANK_CHANGE": 19.2,
-   "MAX_RANK_CHANGE": 948.5,
-   "TITLES_MOVING_5_PERCENTILES": 4,
-   "TITLES_MOVING_10_PERCENTILES": 1,
-   "TOP_DECILE_LEAVING": 3,
-   "TOP_DECILE_ENTERING": 3
+   "UNIVERSE_N": 2734,
+   "SPEARMAN_RANK_CORRELATION": 0.999036,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 3,
+   "P95_RANK_CHANGE": 10,
+   "MAX_RANK_CHANGE": 961,
+   "TITLES_MOVING_5_PERCENTILES": 20,
+   "TITLES_MOVING_10_PERCENTILES": 14,
+   "TOP_DECILE_LEAVING": 4,
+   "TOP_DECILE_ENTERING": 4
   },
   "growth": {
-   "scoredBefore": 3158,
-   "scoredAfter": 3159,
+   "scoredBefore": 3188,
+   "scoredAfter": 3189,
    "valuesIdentical": false,
-   "UNIVERSE_N": 3158,
-   "SPEARMAN_RANK_CORRELATION": 0.999644,
-   "MEDIAN_ABSOLUTE_RANK_CHANGE": 3,
-   "P95_RANK_CHANGE": 25,
-   "MAX_RANK_CHANGE": 582.5,
-   "TITLES_MOVING_5_PERCENTILES": 16,
-   "TITLES_MOVING_10_PERCENTILES": 3,
-   "TOP_DECILE_LEAVING": 1,
-   "TOP_DECILE_ENTERING": 1
+   "UNIVERSE_N": 3188,
+   "SPEARMAN_RANK_CORRELATION": 0.999773,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 2,
+   "P95_RANK_CHANGE": 15,
+   "MAX_RANK_CHANGE": 589.5,
+   "TITLES_MOVING_5_PERCENTILES": 10,
+   "TITLES_MOVING_10_PERCENTILES": 1,
+   "TOP_DECILE_LEAVING": 2,
+   "TOP_DECILE_ENTERING": 2
   },
   "momentum": {
-   "scoredBefore": 5529,
-   "scoredAfter": 5533,
+   "scoredBefore": 5579,
+   "scoredAfter": 5583,
    "valuesIdentical": false,
-   "UNIVERSE_N": 5529,
-   "SPEARMAN_RANK_CORRELATION": 0.981206,
-   "MEDIAN_ABSOLUTE_RANK_CHANGE": 121,
-   "P95_RANK_CHANGE": 603.3,
-   "MAX_RANK_CHANGE": 5104.5,
-   "TITLES_MOVING_5_PERCENTILES": 1312,
-   "TITLES_MOVING_10_PERCENTILES": 357,
-   "TOP_DECILE_LEAVING": 50,
-   "TOP_DECILE_ENTERING": 50
+   "UNIVERSE_N": 5579,
+   "SPEARMAN_RANK_CORRELATION": 0.977226,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 134,
+   "P95_RANK_CHANGE": 678,
+   "MAX_RANK_CHANGE": 5118,
+   "TITLES_MOVING_5_PERCENTILES": 1507,
+   "TITLES_MOVING_10_PERCENTILES": 474,
+   "TOP_DECILE_LEAVING": 62,
+   "TOP_DECILE_ENTERING": 63
   },
   "value": {
-   "scoredBefore": 1991,
-   "scoredAfter": 1991,
+   "scoredBefore": 2003,
+   "scoredAfter": 2003,
    "valuesIdentical": false,
-   "UNIVERSE_N": 1991,
-   "SPEARMAN_RANK_CORRELATION": 0.999832,
-   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1.5,
-   "P95_RANK_CHANGE": 14,
-   "MAX_RANK_CHANGE": 347,
+   "UNIVERSE_N": 2003,
+   "SPEARMAN_RANK_CORRELATION": 0.999881,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1,
+   "P95_RANK_CHANGE": 6.9,
+   "MAX_RANK_CHANGE": 348,
    "TITLES_MOVING_5_PERCENTILES": 1,
    "TITLES_MOVING_10_PERCENTILES": 1,
    "TOP_DECILE_LEAVING": 1,
    "TOP_DECILE_ENTERING": 1
   },
   "profitability": {
-   "scoredBefore": 1179,
-   "scoredAfter": 1179,
+   "scoredBefore": 1188,
+   "scoredAfter": 1188,
    "valuesIdentical": false,
-   "UNIVERSE_N": 1179,
-   "SPEARMAN_RANK_CORRELATION": 0.999777,
-   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1.5,
-   "P95_RANK_CHANGE": 9,
-   "MAX_RANK_CHANGE": 97,
-   "TITLES_MOVING_5_PERCENTILES": 2,
-   "TITLES_MOVING_10_PERCENTILES": 0,
+   "UNIVERSE_N": 1188,
+   "SPEARMAN_RANK_CORRELATION": 0.999647,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 1,
+   "P95_RANK_CHANGE": 4.5,
+   "MAX_RANK_CHANGE": 149,
+   "TITLES_MOVING_5_PERCENTILES": 9,
+   "TITLES_MOVING_10_PERCENTILES": 1,
    "TOP_DECILE_LEAVING": 0,
    "TOP_DECILE_ENTERING": 0
   },
@@ -175,45 +154,43 @@
    "TOP_DECILE_ENTERING": 0
   },
   "risk": {
-   "scoredBefore": 5529,
-   "scoredAfter": 5533,
+   "scoredBefore": 5579,
+   "scoredAfter": 5583,
    "valuesIdentical": false,
-   "UNIVERSE_N": 5529,
-   "SPEARMAN_RANK_CORRELATION": 0.997141,
-   "MEDIAN_ABSOLUTE_RANK_CHANGE": 22.5,
-   "P95_RANK_CHANGE": 157.3,
-   "MAX_RANK_CHANGE": 3428,
-   "TITLES_MOVING_5_PERCENTILES": 98,
-   "TITLES_MOVING_10_PERCENTILES": 24,
-   "TOP_DECILE_LEAVING": 38,
-   "TOP_DECILE_ENTERING": 38
+   "UNIVERSE_N": 5579,
+   "SPEARMAN_RANK_CORRELATION": 0.996828,
+   "MEDIAN_ABSOLUTE_RANK_CHANGE": 27,
+   "P95_RANK_CHANGE": 177,
+   "MAX_RANK_CHANGE": 3460,
+   "TITLES_MOVING_5_PERCENTILES": 114,
+   "TITLES_MOVING_10_PERCENTILES": 34,
+   "TOP_DECILE_LEAVING": 37,
+   "TOP_DECILE_ENTERING": 37
   }
  },
  "STRATEGY_IMPACT": {
   "quality-compounder": {
    "label": "Quality Compounder",
    "MEMBERS_BEFORE": 5,
-   "MEMBERS_AFTER": 6,
+   "MEMBERS_AFTER": 5,
    "LEAVING": 0,
-   "ENTERING": 1,
+   "ENTERING": 0,
    "leavingTickers": [],
-   "enteringTickers": [
-    "MAMA"
-   ]
+   "enteringTickers": []
   },
   "momentum-leader": {
    "label": "Momentum Leader",
    "MEMBERS_BEFORE": 163,
-   "MEMBERS_AFTER": 169,
-   "LEAVING": 18,
-   "ENTERING": 24,
+   "MEMBERS_AFTER": 164,
+   "LEAVING": 17,
+   "ENTERING": 18,
    "leavingTickers": [
     "ABNB",
     "AIZ",
     "ANAB",
-    "CNXN",
-    "CTO",
     "DJCO",
+    "FIVE",
+    "FRO",
     "INNV",
     "KARO",
     "KSPI",
@@ -221,7 +198,6 @@
     "PR",
     "SPHR",
     "TD",
-    "THG",
     "TPC",
     "VIRT",
     "VISN",
@@ -230,53 +206,48 @@
    "enteringTickers": [
     "AHR",
     "ANET",
-    "ASML",
-    "BOW",
     "CURB",
     "ENIC",
     "EZPW",
     "FCFS",
     "GCT",
-    "MEDP",
+    "IBKR",
+    "KB",
+    "LPG",
     "MITK",
     "MOG-B",
-    "NEM",
-    "NMR",
-    "PAYS",
+    "PGC",
     "PLGO",
     "PWR",
-    "QCRH",
     "ROST",
-    "SEIC",
     "SUN",
-    "TNGX",
-    "UFPT",
-    "WSFS"
+    "UFPT"
    ]
   },
   "quality-momentum": {
    "label": "Quality Momentum",
    "MEMBERS_BEFORE": 18,
-   "MEMBERS_AFTER": 19,
-   "LEAVING": 0,
+   "MEMBERS_AFTER": 18,
+   "LEAVING": 1,
    "ENTERING": 1,
-   "leavingTickers": [],
+   "leavingTickers": [
+    "MYE"
+   ],
    "enteringTickers": [
-    "JOE"
+    "TECH"
    ]
   },
   "garp": {
    "label": "GARP · Wachstum zu vernünftigem Preis",
    "MEMBERS_BEFORE": 99,
-   "MEMBERS_AFTER": 100,
+   "MEMBERS_AFTER": 99,
    "LEAVING": 1,
-   "ENTERING": 2,
+   "ENTERING": 1,
    "leavingTickers": [
-    "PR"
+    "MYRG"
    ],
    "enteringTickers": [
-    "FSTR",
-    "OSIS"
+    "TILE"
    ]
   },
   "future-leader": {
@@ -288,8 +259,8 @@
    "leavingTickers": [],
    "enteringTickers": [
     "APH",
-    "JOE",
-    "PLTR"
+    "IESC",
+    "TPC"
    ]
   },
   "defensive-quality": {
@@ -304,25 +275,24 @@
   "value-momentum": {
    "label": "Value Momentum",
    "MEMBERS_BEFORE": 119,
-   "MEMBERS_AFTER": 123,
+   "MEMBERS_AFTER": 122,
    "LEAVING": 5,
-   "ENTERING": 9,
+   "ENTERING": 8,
    "leavingTickers": [
+    "ACAD",
+    "GMED",
     "HNNA",
-    "PR",
     "PRG",
-    "TCMD",
     "ZBH"
    ],
    "enteringTickers": [
-    "AVY",
     "EML",
     "GCO",
-    "MGM",
+    "GDDY",
+    "GRBK",
     "MHK",
-    "NVEC",
-    "SCHL",
     "SIG",
+    "TILE",
     "ULBI"
    ]
   },
@@ -339,43 +309,43 @@
  "confounding": {
   "sameDay": false,
   "sameUniverse": false,
-  "daysApart": 2,
-  "CONTROL_FACTOR_MEDIAN_RANK_CHANGE": 2.5,
-  "MOMENTUM_MEDIAN_RANK_CHANGE": 121,
-  "MOMENTUM_OVER_CONTROL": 48.4,
+  "daysApart": 3,
+  "CONTROL_FACTOR_MEDIAN_RANK_CHANGE": 2,
+  "MOMENTUM_MEDIAN_RANK_CHANGE": 134,
+  "MOMENTUM_OVER_CONTROL": 67,
   "note": "Die sechs nicht geaenderten Faktoren sind der Kontrollversuch. Ihre Bewegung ist Datenlage und Abdeckung, nicht Methodik. Nur der Abstand dazwischen gehoert der Umstellung.",
   "cleanMeasurement": "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md - dort beide Basen am selben Stichtag ueber dasselbe Universum."
  },
  "unexpectedFactorMovement": [
   {
    "factor": "quality",
-   "titlesMoving5Percentiles": 4,
-   "medianRankChange": 2.5,
-   "spearman": 0.999623
+   "titlesMoving5Percentiles": 20,
+   "medianRankChange": 3,
+   "spearman": 0.999036
   },
   {
    "factor": "growth",
-   "titlesMoving5Percentiles": 16,
-   "medianRankChange": 3,
-   "spearman": 0.999644
+   "titlesMoving5Percentiles": 10,
+   "medianRankChange": 2,
+   "spearman": 0.999773
   },
   {
    "factor": "value",
    "titlesMoving5Percentiles": 1,
-   "medianRankChange": 1.5,
-   "spearman": 0.999832
+   "medianRankChange": 1,
+   "spearman": 0.999881
   },
   {
    "factor": "profitability",
-   "titlesMoving5Percentiles": 2,
-   "medianRankChange": 1.5,
-   "spearman": 0.999777
+   "titlesMoving5Percentiles": 9,
+   "medianRankChange": 1,
+   "spearman": 0.999647
   },
   {
    "factor": "risk",
-   "titlesMoving5Percentiles": 98,
-   "medianRankChange": 22.5,
-   "spearman": 0.997141
+   "titlesMoving5Percentiles": 114,
+   "medianRankChange": 27,
+   "spearman": 0.996828
   }
  ]
 }
