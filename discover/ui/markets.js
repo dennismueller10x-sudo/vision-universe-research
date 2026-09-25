@@ -259,6 +259,9 @@
     }).filter(function (g) { return g.karten.length; });
   }
 
+  /* Bewegung nur, wenn der Nutzer sie nicht abgeschaltet hat. */
+  function sanft() { return global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"; }
+
   /* Mobil zuerst: eine Sprungleiste zu den Gruppen. Buttons statt
      Anker - der Hash gehoert dem Router (#/maerkte). */
   function sprungleiste(gruppen) {
@@ -267,7 +270,7 @@
       var b = el("button", { type: "button", class: "dx-maerkte-sprung", "data-ziel": "maerkte-" + g.id, text: g.titel });
       b.onclick = function () {
         var ziel = global.document && global.document.getElementById("maerkte-" + g.id);
-        if (ziel && ziel.scrollIntoView) ziel.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (ziel && ziel.scrollIntoView) ziel.scrollIntoView({ behavior: sanft(), block: "start" });
       };
       return b;
     }));

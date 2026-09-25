@@ -64,7 +64,8 @@
   function prozentLage(g, v) { return Math.max(0, Math.min(100, 100 * (v - g.min) / ((g.max - g.min) || 1))); }
   function springen(id) {
     var z = global.document && global.document.getElementById(id);
-    if (z && z.scrollIntoView) z.scrollIntoView({ behavior: "smooth", block: "start" });
+    var ruhig = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (z && z.scrollIntoView) z.scrollIntoView({ behavior: ruhig ? "auto" : "smooth", block: "start" });
   }
   function knopf(text, ziel, cls) {
     var b = el("button", { type: "button", class: cls || "dx-m3-link", "data-ziel": ziel, text: text });
