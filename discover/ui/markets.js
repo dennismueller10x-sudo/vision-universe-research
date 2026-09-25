@@ -45,6 +45,10 @@
   var el = S.el;
   var SNAPSHOT = "/quant/data/market/multi-asset/snapshot.json";
   var CONFIG = "/quant/config/multi-asset.json";
+  /* Markets 2.0: der deskriptive Market Pulse (Core-Artefakt) und seine
+     versionierten Schwellen. Discover rechnet daraus nichts neu. */
+  var PULSE = "/quant/data/market/intelligence/market-pulse.json";
+  var PULSE_CONFIG = "/quant/config/market-pulse.json";
 
   /* Die Gruppen der Seite, je Assetklasse und Region. Nur Instrumente,
      die der Core fuehrt und freigibt; die Klasse ist Schutz gegen einen
@@ -212,8 +216,11 @@
     var semantik = wert ? semantikKurz(c) : null;
     if (semantik) kinder.push(el("p", { class: "dx-markt-semantik", text: semantik }));
     kinder.push(el("div", { class: "dx-markt-fuss" }, fuss));
-    return el("article", {
-      class: "dx-markt-karte is-" + q.state.toLowerCase(),
+    /* Jede Karte mit Wert fuehrt zu ihrem Marktdetail - keine Sackgasse. */
+    var link = q.state === "AVAILABLE";
+    return el(link ? "a" : "article", {
+      class: "dx-markt-karte is-" + q.state.toLowerCase() + (link ? " is-link" : ""),
+      href: link ? "#/maerkte/" + encodeURIComponent(c.instrument.symbol) : null,
       "data-instrument": c.instrument.symbol, "data-asset-class": c.instrument.assetClass,
       "data-proxy": c.proxy && c.proxy.isProxy ? "tracker" : "none",
       "data-quote-state": q.state, "data-freshness": frische, "data-unit": q.unitId
@@ -262,6 +269,92 @@
     }));
   }
 
+  /* ------------------------------------------------ Markets 2.0: Intelligence */
+
+  /** MARKT JETZT: die auffaelligsten Tagesbewegungen, deterministisch (VUMarketPulse.marketNow). */
+  function marktJetzt(contracts, pcfg, jetzt) {
+    var MP = global.VUMarketPulse;
+    if (!MP || !pcfg || !pcfg.marketNow) return null;
+    /* Nur, was die Seite auch zeigt - jeder Eintrag fuehrt zu einer Karte und ihrem Detail. */
+    var gezeigt = contracts.filter(function (c) { return AUSWAHL.indexOf(c.instrument.symbol) !== -1; });
+    var items = MP.marketNow(gezeigt, pcfg.marketNow, jetzt);
+    if (!items.length) return null;
+    return el("section", { class: "dx-maerkte-jetzt", id: "maerkte-jetzt", "aria-label": "Markt jetzt" }, [
+      el("h2", { text: "Markt jetzt" }),
+      el("p", { class: "dx-maerkte-unter", text: "Die auffälligsten Bewegungen – gemessen an der üblichen Tagesschwankung des jeweiligen Markts." }),
+      el("ol", { class: "dx-jetzt-liste" }, items.map(function (it) {
+        var kontext = [it.tracker ? "Tracker " + it.tracker : null,
+                       it.session === "LAST_SESSION" ? "letzter Handelstag" : (it.referenceDate ? "gegenüber " + standText(it.referenceDate) : null)].filter(Boolean).join(" · ");
+        return el("li", {}, [el("a", { class: "dx-jetzt-item is-" + it.direction, href: "#/maerkte/" + encodeURIComponent(it.symbol),
+                                       "data-symbol": it.symbol, "data-intensity": it.intensity, title: it.evidence }, [
+          el("span", { class: "dx-jetzt-titel", text: it.title }),
+          el("b", { class: "dx-jetzt-wert", text: it.value }),
+          el("span", { class: "dx-jetzt-kontext", text: kontext })
+        ])]);
+      }))
+    ]);
+  }
+
+  var DIM_NAME = { TREND: "Trend", BREADTH: "Marktbreite", MOMENTUM: "Momentum", RISK: "Risiko", CROSS_ASSET: "Cross Asset" };
+  var DIM_ORDER = ["TREND", "BREADTH", "MOMENTUM", "RISK", "CROSS_ASSET"];
+
+  /** WAS BEWEGT DIE MAERKTE? Zustand, Evidenz, Erklaerung, Methodik - aus dem Core-Artefakt. */
+  function pulsBereich(p) {
+    if (!p || !p.dimensions) return null;
+    var dims = DIM_ORDER.map(function (k) { return p.dimensions[k]; }).filter(Boolean);
+    var kacheln = dims.map(function (d) {
+      return el("div", { class: "dx-puls-dim is-" + String(d.state).toLowerCase(), "data-dimension": d.id, "data-state": d.state }, [
+        el("span", { class: "dx-puls-name", text: DIM_NAME[d.id] || d.id }),
+        el("b", { class: "dx-puls-zustand", text: d.label }),
+        el("p", { text: d.summary })
+      ]);
+    });
+    var tiefe = dims.map(function (d) {
+      return el("section", { class: "dx-puls-tiefe", "data-dimension": d.id }, [
+        el("h3", { text: (DIM_NAME[d.id] || d.id) + ": " + d.label }),
+        d.evidence.length ? el("ul", {}, d.evidence.map(function (e) {
+          return el("li", { class: e.current === false ? "is-alt" : "" }, [
+            el("span", { text: e.label + ": " }), el("b", { text: e.text }),
+            e.current === false ? el("span", { class: "dx-puls-alt", text: " · Stand " + standText(e.asOf) + ", nicht aktuell" }) : null
+          ].filter(Boolean));
+        })) : null,
+        d.explanation ? el("p", { class: "dx-puls-erklaerung", text: d.explanation }) : null,
+        el("p", { class: "dx-puls-methodik", text: "Methodik: " + d.methodology })
+      ].filter(Boolean));
+    });
+    return el("section", { class: "dx-maerkte-puls", id: "maerkte-puls", "aria-label": "Was bewegt die Märkte?" }, [
+      el("h2", { text: "Was bewegt die Märkte?" }),
+      el("p", { class: "dx-puls-schlagzeile", text: p.headline && p.headline.text ? p.headline.text : "Gerade keine belastbare Einordnung." }),
+      el("div", { class: "dx-puls-raster" }, kacheln),
+      el("details", { class: "dx-puls-details" }, [el("summary", { text: "Unter der Oberfläche: Messwerte und Methodik" })].concat(tiefe).concat([
+        el("p", { class: "dx-puls-methodik", text: "Makro-Umfeld (Inflation, Wachstum, Arbeitsmarkt): noch nicht zertifiziert und deshalb nicht Teil dieser Einordnung. " +
+          "Sektoren: noch keine belastbare Sektorzuordnung im Datenkern." })
+      ])),
+      el("p", { class: "dx-maerkte-unter", text: "Stand " + (standText(p.generatedAt) || "unbekannt") +
+        ". Beschreibung des beobachteten Zustands aus festen Regeln – kein Gesamtscore, keine Prognose, keine Anlageberatung." })
+    ]);
+  }
+
+  /** AKTIEN IN BEWEGUNG: Gewinner und Verlierer der juengsten Sitzung, je mit Link zur Aktienseite. */
+  function moversBereich(p) {
+    var m = p && p.movers;
+    if (!m || !m.gainers || !m.gainers.length) return null;
+    function spalte(titel, xs) {
+      return el("div", { class: "dx-movers-spalte" }, [el("h3", { text: titel }), el("ol", {}, xs.map(function (x) {
+        return el("li", {}, [el("a", { href: "#/s/US_REAL/" + encodeURIComponent(x.symbol), "data-symbol": x.symbol }, [
+          el("span", { class: "dx-movers-name", text: x.name }), el("span", { class: "dx-movers-sym", text: x.symbol }),
+          el("b", { class: x.changePercent > 0 ? "is-up" : x.changePercent < 0 ? "is-down" : "", text: vorzeichen(x.changePercent, zahl(Math.abs(x.changePercent), 2) + " %") })
+        ])]);
+      }))]);
+    }
+    return el("section", { class: "dx-maerkte-movers", id: "maerkte-movers", "aria-label": "Aktien in Bewegung" }, [
+      el("h2", { text: "Aktien in Bewegung" }),
+      el("p", { class: "dx-maerkte-unter", text: "Sitzung vom " + standText(m.session) + " gegenüber " + standText(m.previousSession) +
+        (m.complete ? "" : " (Sitzung läuft)") + " · " + m.eligible + " liquide Titel aus dem Discover-Universum" }),
+      el("div", { class: "dx-movers-raster" }, [spalte("Stärkste Gewinner", m.gainers), spalte("Stärkste Verlierer", m.losers)])
+    ]);
+  }
+
   /**
    * @param {HTMLElement} root
    * @param {object} ctx {calendar, isActive}
@@ -269,9 +362,10 @@
   function render(root, ctx) {
     ctx = ctx || {};
     var MA = global.VUMultiAssetContract;
-    return Promise.all([S.loadJSON(SNAPSHOT), S.loadJSON(CONFIG).catch(function () { return null; })]).then(function (r) {
+    function optional(p) { return S.loadJSON(p).catch(function () { return null; }); }
+    return Promise.all([S.loadJSON(SNAPSHOT), optional(CONFIG), optional(PULSE), optional(PULSE_CONFIG)]).then(function (r) {
       if (ctx.isActive && !ctx.isActive()) return;
-      var snap = r[0], cfg = r[1];
+      var snap = r[0], cfg = r[1], puls = r[2], pcfg = r[3];
       var jetzt = new Date();
       var contracts = snap.instruments.map(function (c) {
         return MA.refresh(c, { now: jetzt, calendar: ctx.calendar, config: cfg || {} });
@@ -280,10 +374,13 @@
       var seite = el("div", { class: "dx-page dx-maerkte" }, [
         el("a", { class: "dx-back", href: "#/", text: "← Discover" }),
         el("h1", { text: "Märkte" }),
-        el("p", { class: "dx-maerkte-lead", text: "Aktienmärkte, Energie, Edelmetalle, Krypto, Renditen, Leitzinsen und Devisen - jeweils mit Einheit, Stand und Quelle. " +
-          "Aktienmärkte zeigen gekennzeichnete Markt-Tracker (börsengehandelte Fonds), nicht den offiziellen Indexstand. " +
-          "Renditen und Leitzinsen bewegen sich in Basispunkten, Kurse in Prozent; die Gruppen sind deshalb nicht untereinander vergleichbar." })
+        el("p", { class: "dx-maerkte-lead", text: "Was an den Märkten gerade passiert – und jeder Markt mit Einheit, Stand und Quelle. " +
+          "Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand; Renditen bewegen sich in Basispunkten." })
       ]);
+      var jetztNode = marktJetzt(contracts, pcfg, jetzt);
+      if (jetztNode) seite.appendChild(jetztNode);
+      var pulsNode = pulsBereich(puls);
+      if (pulsNode) seite.appendChild(pulsNode);
       var gruppen = gruppieren(contracts);
       seite.appendChild(sprungleiste(gruppen));
       gruppen.forEach(function (g) {
@@ -292,6 +389,8 @@
           el("div", { class: "dx-maerkte-raster" }, g.karten.map(function (c) { return karte(c, layer); }))
         ]));
       });
+      var moversNode = moversBereich(puls);
+      if (moversNode) seite.appendChild(moversNode);
       seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(snap.generatedAt) || "unbekannt") +
         ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet." }));
       root.appendChild(seite);
@@ -301,5 +400,7 @@
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.Markets = { render: render, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
                                 veraenderungText: veraenderungText, standText: standText, marktText: marktText,
+                                frischeText: frischeText, referenzText: referenzText,
+                                marktJetzt: marktJetzt, pulsBereich: pulsBereich, moversBereich: moversBereich,
                                 GRUPPEN: GRUPPEN, AUSWAHL: AUSWAHL };
 })(typeof window !== "undefined" ? window : globalThis);

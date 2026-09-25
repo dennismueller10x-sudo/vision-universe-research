@@ -3,7 +3,7 @@
   const S = global.QuantShell, D = global.VUDiscover;
   const V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
   const el = S.el, BASE = '/discover/data/';
-  let generation = 0, meta, calendar, search, theme, previousFocus, homeDispose;
+  let generation = 0, meta, calendar, search, theme, previousFocus, homeDispose, marketDispose;
   const ctx = { universeId: 'US_REAL', openSearch: () => search.open() };
   function syncThemeChrome(state) {
     const color=state&&state.resolved==='light'?'#ffffff':'#08080a';
@@ -92,6 +92,7 @@
     if(!meta)return;
     const id=++generation,active=()=>generation===id;
     if(homeDispose){homeDispose();homeDispose=null;}
+    if(marketDispose){marketDispose();marketDispose=null;}
     if(V.Detail&&V.Detail.dispose)V.Detail.dispose();
     const parts=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
     document.body.classList.toggle('dx-feed-aktiv',parts[0]==='einzeln');
@@ -186,6 +187,12 @@
           feedHost.querySelector('.dx-feed-bar').insertBefore(continuation,feedHost.querySelector('.dx-feed-zaehler'));
           feedHost.setAttribute('aria-label','Aktien weiter entdecken · '+order.length+' Titel in der verbleibenden Auswahl');
         }
+      } else if(parts[0]==='maerkte'&&parts[1]){
+        /* Markets 2.0: ein Detail-System fuer alle Marktinstrumente.
+           Das Aufraeumen kuendigt das Live-Abo des Trackers. */
+        document.title='Märkte — Discover — Vision Universe®';
+        const dispose=await D.MarketDetail.render(root,decodeURIComponent(parts[1]),{calendar,isActive:active});
+        if(typeof dispose==='function'){if(active())marketDispose=dispose;else dispose();}
       } else if(parts[0]==='maerkte'){
         document.title='Märkte — Discover — Vision Universe®';
         await D.Markets.render(root,{calendar,isActive:active});
