@@ -152,7 +152,15 @@
       var stufe = String(adjustmentStatus || "");
       var schonSplitbereinigt = stufe === "splitAdjusted" || stufe.toUpperCase() === "SPLIT_ADJUSTED";
       var hatSpalte = bars.some(function (b) { return b && isNum(b.adjustedClose) && b.adjustedClose > 0; });
-      if (schonSplitbereinigt && hatSpalte) {
+      /* Die eine Stufe, bei der die bereinigte Spalte NICHT genommen
+         werden darf, obwohl sie da ist: 'splitAdjustedReconstructible'
+         heisst, dass die Konsistenzpruefung genau diese Spalte widerlegt
+         hat (siehe price-semantics.fallbackDeclaration). Sie liegt vor -
+         sie traegt nur nicht, was sie behauptet. Rekonstruiert wird
+         deshalb immer, und ohne diese Zeile waere der Rueckfall auf die
+         widerlegte Spalte still. */
+      var spalteWiderlegt = stufe === "splitAdjustedReconstructible";
+      if (schonSplitbereinigt && hatSpalte && !spalteWiderlegt) {
         /* Der Anbieter liefert bereits genau diese Reihe. */
         return { column: "adjustedClose", source: "PROVIDER_SPLIT_ADJUSTED_COLUMN",
                  basis: "SPLIT_ADJUSTED_PRICE",

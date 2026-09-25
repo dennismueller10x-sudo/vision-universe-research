@@ -1,225 +1,262 @@
 {
- "schemaVersion": "return-semantics-1.0.0",
- "methodologyVersion": "return-semantics-1.1.0",
- "status": "APPROVED",
- "effectiveFrom": "2026-09-24",
- "approval": {
-  "state": "APPROVED",
-  "approvedBy": "info@visionuniverse.de",
-  "approvedAt": "2026-09-24",
-  "basis": "Owner-Entscheidung RETURN SEMANTICS, auf Grundlage von quant/data/providers/total-return-verification.json (TOTAL_RETURN_CONFIRMED, 234/234 Dividendenereignisse)",
-  "scope": "Freigegeben ist die Zuordnung einer Return-Basis je Modul. Ausdrücklich NICHT freigegeben ist eine pauschale Umstellung bestehender veröffentlichter Zahlen."
- },
- "purpose": "Zwei Fragen, zwei Grundlagen. Wie hat sich der KURS bewegt, und was hat ein ANLEGER verdient. Dieselbe Reihe kann nicht beides beantworten, und die Verwechslung fällt niemandem auf, weil beide Antworten wie ein Preis aussehen.",
- "noSilentRedefinition": "Keine bestehende veröffentlichte Kennzahl wird still umdefiniert. Ein Modul bekommt seine Basis zugewiesen; wer sie ändern will, ändert die Methodikversion des Moduls und nicht diese Datei.",
- "bases": [
-  {
-   "id": "SPLIT_ADJUSTED_PRICE",
-   "label": "Splitbereinigter Kurs",
-   "column": "adjustedClose",
-   "requiresAdjustmentStatus": [
-    "splitAdjusted",
-    "SPLIT_ADJUSTED"
-   ],
-   "includesDistributions": false,
-   "plain": "Der Kursverlauf, bereinigt um Aktiensplits. Ausschüttungen sind nicht enthalten.",
-   "why": "Ein Split ist eine Umbenennung derselben Beteiligung; ihn nicht zu bereinigen erzeugt einen Sprung, den es nie gab. Eine Dividende dagegen IST eine echte Kurslücke am Ex-Tag, und sie herauszurechnen würde eine Bewegung erfinden, die der Markt nicht gezeigt hat."
-  },
-  {
-   "id": "TOTAL_RETURN",
-   "label": "Gesamtrendite",
-   "column": "adjustedClose",
-   "requiresAdjustmentStatus": [
-    "adjusted",
-    "TOTAL_RETURN"
-   ],
-   "includesDistributions": true,
-   "plain": "Kursentwicklung einschließlich wiederangelegter Ausschüttungen.",
-   "why": "Was ein Anleger tatsächlich verdient hat. Bei einem Dividendentitel über zehn Jahre ist der Unterschied zum reinen Kurs kein Detail."
-  },
-  {
-   "id": "RAW_PRICE",
-   "label": "Unbereinigter Kurs",
-   "column": "close",
-   "requiresAdjustmentStatus": [],
-   "includesDistributions": false,
-   "plain": "Der gemeldete Schlusskurs ohne jede Bereinigung.",
-   "why": "Nur dort zulässig, wo genau der gehandelte Kurs gemeint ist. Für jede Reihe über einen Split hinweg ist er falsch."
-  }
- ],
- "modules": [
-  {
-   "id": "chart",
-   "label": "Kursdarstellung",
-   "basis": "SPLIT_ADJUSTED_PRICE",
-   "why": "Gezeigt wird, wie sich der Kurs bewegt hat. Eine dividendenbereinigte Linie zeigt einen Verlauf, den es am Markt so nie gab.",
-   "surfaces": [
-    "vu2 stock chart",
-    "technical chart"
-   ]
-  },
-  {
-   "id": "technical",
-   "label": "Technische Struktur",
-   "basis": "SPLIT_ADJUSTED_PRICE",
-   "why": "Trend, Struktur, Volumen und gleitende Durchschnitte beschreiben Kursbewegung. Eine Ausschüttung darf hier keine technische Bewegung erzeugen, die kein Marktteilnehmer gesehen hat.",
-   "surfaces": [
-    "technical-signals-v1",
-    "technical chart"
-   ]
-  },
-  {
-   "id": "setup",
-   "label": "Setup-Zustand",
-   "basis": "SPLIT_ADJUSTED_PRICE",
-   "why": "Die Setup-Kaskade liest ausschließlich Felder der technischen Materialisierung. Eine andere Basis unter demselben Zustand wäre eine stille Umdefinition.",
-   "surfaces": [
-    "setup-observations-v1"
-   ]
-  },
-  {
-   "id": "elliott",
-   "label": "Elliott-Wellen",
-   "basis": "SPLIT_ADJUSTED_PRICE",
-   "why": "Wellenzählung ist Strukturanalyse am Kursverlauf. Ein durch Dividenden verschobener Pivot wäre ein erfundener Pivot.",
-   "surfaces": [
-    "elliott"
-   ]
-  },
-  {
-   "id": "backtest",
-   "label": "Backtest",
-   "basis": "TOTAL_RETURN",
-   "why": "Ein Backtest behauptet, was eine Strategie erwirtschaftet hätte. Ohne Ausschüttungen ist das bei Dividendentiteln systematisch zu niedrig.",
-   "surfaces": [
-    "backtest"
-   ],
-   "activation": {
-    "state": "CLOSED",
-    "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
-    "note": "Die Basis ist festgelegt, das Modul bleibt geschlossen. Die Festlegung ist kein Freigabeschritt."
-   }
-  },
-  {
-   "id": "portfolioPerformance",
-   "label": "Portfolioentwicklung",
-   "basis": "TOTAL_RETURN",
-   "why": "Dieselbe Frage wie beim Backtest: was ein Anleger gehalten hätte.",
-   "surfaces": [
-    "portfolio"
-   ],
-   "activation": {
-    "state": "CLOSED",
-    "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
-   }
-  },
-  {
-   "id": "benchmark",
-   "label": "Vergleichsindex",
-   "basis": "TOTAL_RETURN",
-   "why": "Ein Vergleich ist nur dann einer, wenn beide Seiten dieselbe Basis haben. Eine Strategie auf Gesamtrendite gegen einen Index auf Kursbasis zu stellen, schlägt den Index durch Buchführung.",
-   "surfaces": [
-    "benchmark"
-   ],
-   "activation": {
-    "state": "CLOSED",
-    "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
-   }
-  },
-  {
-   "id": "relativeStrengthBenchmark",
-   "label": "Vergleichsreihe der relativen Stärke",
-   "basis": "SPLIT_ADJUSTED_PRICE",
-   "why": "Relative Stärke vergleicht Kursbewegung mit Kursbewegung. Sie gehört zur technischen Seite und nicht zur Performanceseite, auch wenn beide das Wort Vergleichsindex benutzen — und beim Verdrahten des Vertrags fiel auf, dass genau diese Unterscheidung noch fehlte.",
-   "surfaces": [
-    "market-factors relativeStrength"
-   ],
-   "notToBeConfusedWith": "benchmark",
-   "distinction": "benchmark misst, was ein Anleger verdient hätte, und rechnet deshalb auf Gesamtrendite. Diese Reihe misst, ob sich ein Kurs besser bewegt hat als ein anderer Kurs. Dieselbe Reihe für beides zu nehmen wäre genau die Vermischung, die dieser Vertrag trennt.",
-   "boundToContract": true,
-   "boundOn": "2026-09-24",
-   "boundBecause": "Dieselbe Owner-Entscheidung. Relative Staerke ist eine Momentumkomponente und vergleicht Kursbewegung mit Kursbewegung; Titel- und Vergleichsreihe muessen dieselbe Basis tragen, sonst misst die Differenz die Dividendenrendite des Index mit."
-  },
-  {
-   "id": "quantV1",
-   "label": "Quant V1",
-   "basis": "LEGACY_IMMUTABLE",
-   "why": "Unverändert. Eine rückwirkende Änderung an veröffentlichten V1-Zahlen findet nicht statt, gleich welche Basis heute besser begründbar wäre.",
-   "surfaces": [
-    "quant v1"
-   ],
-   "immutable": true
-  },
-  {
-   "id": "quantV2Momentum",
-   "label": "Quant V2 Kursstärke (Momentumfaktor)",
-   "basis": "SPLIT_ADJUSTED_PRICE",
-   "why": "Der Momentumfaktor misst Kursstärke, Trenddynamik und Marktbestätigung. Eine Dividende ist keine Kursbewegung, also darf sie den Momentumrang nicht heben. Owner-Entscheidung vom 2026-09-24 (Option C) auf Grundlage der Full-Universe-Studie.",
-   "surfaces": [
-    "factor-evidence-v1 factors.momentum",
-    "market-factors returns"
-   ],
-   "decision": {
+  "schemaVersion": "return-semantics-1.0.0",
+  "methodologyVersion": "return-semantics-1.2.0",
+  "status": "APPROVED",
+  "effectiveFrom": "2026-09-25",
+  "approval": {
     "state": "APPROVED",
-    "approvedOn": "2026-09-24",
-    "approvedBasis": "SPLIT_ADJUSTED_PRICE",
-    "question": "Ist der Quant-V2-Momentumfaktor auf Kursbasis oder auf Gesamtrendite zu rechnen?",
-    "answer": "Auf Kursbasis. Gesamtrendite wird daneben als eigene Anlegerevidenz gefuehrt, nicht im Faktor.",
-    "previousPublishedBasis": "TOTAL_RETURN",
-    "previousPublishedBasisMeasuredOn": "2026-09-24",
-    "previousPublishedUnder": "vu-factor-evidence-1.0.0 / quant-v2.0.0",
-    "whyTheChangeIsNotSilent": "Der bisherige Bestand rechnete faktisch auf Gesamtrendite - gemessen, nicht vermutet: alle 6.403 Eintraege auf adjustedClose, und diese Spalte ist ueber 62.859 Dividendenereignisse als gesamtrenditebereinigt belegt. Die neue Basis erscheint deshalb NICHT unter derselben Methodikversion und nicht unter denselben Komponentennamen. Die alten Beobachtungen bleiben unveraendert unter ihrer Version stehen.",
-    "evidence": [
-     "quant/data/providers/return-basis-universe-study.json",
-     "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md"
-    ],
-    "measuredImpact": {
-     "universe": 5997,
-     "spearmanRankCorrelation": 0.991319,
-     "medianAbsoluteRankChange": 68,
-     "p95RankChange": 478,
-     "titlesMoving5Percentiles": 703,
-     "titlesMoving10Percentiles": 178,
-     "note": "Momentumnote ueber alle sechs Komponenten, Stichtag 2026-09-10."
-    },
-    "boundToContract": true
-   }
+    "approvedBy": "info@visionuniverse.de",
+    "approvedAt": "2026-09-24",
+    "basis": "Owner-Entscheidung RETURN SEMANTICS, auf Grundlage von quant/data/providers/total-return-verification.json (TOTAL_RETURN_CONFIRMED, 234/234 Dividendenereignisse)",
+    "scope": "Freigegeben ist die Zuordnung einer Return-Basis je Modul. Ausdrücklich NICHT freigegeben ist eine pauschale Umstellung bestehender veröffentlichter Zahlen."
   },
-  {
-   "id": "investorReturnEvidence",
-   "label": "Anlegerrendite (Rendite inkl. Ausschüttungen)",
-   "basis": "TOTAL_RETURN",
-   "why": "Die Frage 'Was haette ein Anleger inklusive Dividenden tatsaechlich verdient?' ist eine andere als 'Wie stark bewegt sich der Kurs?'. Sie verschwindet nicht dadurch, dass der Momentumfaktor sie nicht mehr beantwortet - sie bekommt ihre eigene, benannte Zahl.",
-   "surfaces": [
-    "factor-evidence-v1 investorReturn"
-   ],
-   "notToBeConfusedWith": "quantV2Momentum",
-   "distinction": "quantV2Momentum misst Kursstaerke und laesst Ausschuettungen bewusst aussen vor. Dieses Modul misst genau die Ausschuettungen mit. Beide nebeneinander zu zeigen ist der Sinn der Trennung; eines fuer das andere zu halten war der Fehler, den sie behebt.",
-   "boundToContract": true,
-   "isFactorComponent": false,
-   "notAFactorBecause": "Wuerde die Anlegerrendite in den Momentumfaktor eingehen, waere die Trennung wieder aufgehoben. Sie steht daneben, nicht darin."
-  }
- ],
- "enforcement": {
-  "rule": "Ein Modul rechnet auf der ihm zugewiesenen Basis oder gar nicht. Es nimmt NICHT die beste verfügbare Spalte.",
-  "why": "Bis hierher wählte market-factors.priceBasis() adjustedClose, sobald eine belastbare bereinigte Spalte vorlag - gleich ob split- oder dividendenbereinigt. Würde die Anbieterstufe auf 'adjusted' gehoben, kippten Technical, Setup und Momentum still auf Gesamtrendite, ohne dass eine Zeile Code sich ändert. Genau das ist die stille Umdefinition, die hier ausgeschlossen wird.",
-  "onMismatch": "RETURN_BASIS_MISMATCH",
-  "enforcedBy": "quant/tests/return-semantics.test.mjs"
- },
- "gateStatus": {
-  "RETURN_SEMANTICS_CONTRACT_ACTIVE": "PASS",
-  "PRICE_MODULES_BASIS": "SPLIT_ADJUSTED_PRICE",
-  "PERFORMANCE_MODULES_BASIS": "TOTAL_RETURN",
-  "QUANT_V1": "LEGACY_IMMUTABLE",
-  "QUANT_V2_MOMENTUM_BASIS": "SPLIT_ADJUSTED_PRICE",
-  "note": "Maschinenlesbar, damit kein Konsument den Zustand aus Prosa ableiten muss.",
-  "QUANT_V2_MOMENTUM_DECISION": "APPROVED_2026-09-24_OPTION_C",
-  "TOTAL_RETURN_EVIDENCE": "SEPARATE",
-  "BACKTEST_RETURN_BASIS": "TOTAL_RETURN",
-  "PORTFOLIO_RETURN_BASIS": "TOTAL_RETURN",
-  "BENCHMARK_RETURN_BASIS": "TOTAL_RETURN",
-  "TECHNICAL_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE",
-  "SETUP_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE",
-  "ELLIOTT_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE"
- }
+  "purpose": "Zwei Fragen, zwei Grundlagen. Wie hat sich der KURS bewegt, und was hat ein ANLEGER verdient. Dieselbe Reihe kann nicht beides beantworten, und die Verwechslung fällt niemandem auf, weil beide Antworten wie ein Preis aussehen.",
+  "noSilentRedefinition": "Keine bestehende veröffentlichte Kennzahl wird still umdefiniert. Ein Modul bekommt seine Basis zugewiesen; wer sie ändern will, ändert die Methodikversion des Moduls und nicht diese Datei.",
+  "bases": [
+    {
+      "id": "SPLIT_ADJUSTED_PRICE",
+      "label": "Splitbereinigter Kurs",
+      "column": "adjustedClose",
+      "requiresAdjustmentStatus": [
+        "splitAdjusted",
+        "SPLIT_ADJUSTED"
+      ],
+      "includesDistributions": false,
+      "plain": "Der Kursverlauf, bereinigt um Aktiensplits. Ausschüttungen sind nicht enthalten.",
+      "why": "Ein Split ist eine Umbenennung derselben Beteiligung; ihn nicht zu bereinigen erzeugt einen Sprung, den es nie gab. Eine Dividende dagegen IST eine echte Kurslücke am Ex-Tag, und sie herauszurechnen würde eine Bewegung erfinden, die der Markt nicht gezeigt hat."
+    },
+    {
+      "id": "TOTAL_RETURN",
+      "label": "Gesamtrendite",
+      "column": "adjustedClose",
+      "requiresAdjustmentStatus": [
+        "adjusted",
+        "TOTAL_RETURN"
+      ],
+      "includesDistributions": true,
+      "plain": "Kursentwicklung einschließlich wiederangelegter Ausschüttungen.",
+      "why": "Was ein Anleger tatsächlich verdient hat. Bei einem Dividendentitel über zehn Jahre ist der Unterschied zum reinen Kurs kein Detail."
+    },
+    {
+      "id": "RAW_PRICE",
+      "label": "Unbereinigter Kurs",
+      "column": "close",
+      "requiresAdjustmentStatus": [
+        "raw",
+        "unadjusted",
+        "splitAdjustedReconstructible",
+        "RAW"
+      ],
+      "includesDistributions": false,
+      "plain": "Der gemeldete Schlusskurs ohne jede Bereinigung.",
+      "why": "Nur dort zulässig, wo genau der gehandelte Kurs gemeint ist. Für jede Reihe über einen Split hinweg ist er falsch.",
+      "note": "'splitAdjustedReconstructible' steht hier und nicht unter SPLIT_ADJUSTED_PRICE: die Spalte, fuer die diese Reihe einsteht, ist der Rohschluss. Die splitbereinigte Reihe ist aus ihm KONSTRUIERBAR, aber nicht GELIEFERT - und resolveColumn() beantwortet, welche Spalte gelesen werden darf, nicht was sich daraus bauen laesst. Wer die splitbereinigte Reihe braucht, ruft market-factors.priceSeries(), das sie konstruiert. Eine Gesamtrenditekennzahl bleibt damit gesperrt."
+    }
+  ],
+  "modules": [
+    {
+      "id": "chart",
+      "label": "Kursdarstellung",
+      "basis": "SPLIT_ADJUSTED_PRICE",
+      "why": "Gezeigt wird, wie sich der Kurs bewegt hat. Eine dividendenbereinigte Linie zeigt einen Verlauf, den es am Markt so nie gab.",
+      "surfaces": [
+        "vu2 stock chart",
+        "technical chart"
+      ]
+    },
+    {
+      "id": "technical",
+      "label": "Technische Struktur",
+      "basis": "SPLIT_ADJUSTED_PRICE",
+      "why": "Trend, Struktur, Volumen und gleitende Durchschnitte beschreiben Kursbewegung. Eine Ausschüttung darf hier keine technische Bewegung erzeugen, die kein Marktteilnehmer gesehen hat.",
+      "surfaces": [
+        "technical-signals-v1",
+        "technical chart"
+      ]
+    },
+    {
+      "id": "setup",
+      "label": "Setup-Zustand",
+      "basis": "SPLIT_ADJUSTED_PRICE",
+      "why": "Die Setup-Kaskade liest ausschließlich Felder der technischen Materialisierung. Eine andere Basis unter demselben Zustand wäre eine stille Umdefinition.",
+      "surfaces": [
+        "setup-observations-v1"
+      ]
+    },
+    {
+      "id": "elliott",
+      "label": "Elliott-Wellen",
+      "basis": "SPLIT_ADJUSTED_PRICE",
+      "why": "Wellenzählung ist Strukturanalyse am Kursverlauf. Ein durch Dividenden verschobener Pivot wäre ein erfundener Pivot.",
+      "surfaces": [
+        "elliott"
+      ]
+    },
+    {
+      "id": "backtest",
+      "label": "Backtest",
+      "basis": "TOTAL_RETURN",
+      "why": "Ein Backtest behauptet, was eine Strategie erwirtschaftet hätte. Ohne Ausschüttungen ist das bei Dividendentiteln systematisch zu niedrig.",
+      "surfaces": [
+        "backtest"
+      ],
+      "activation": {
+        "state": "CLOSED",
+        "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+        "note": "Die Basis ist festgelegt, das Modul bleibt geschlossen. Die Festlegung ist kein Freigabeschritt."
+      }
+    },
+    {
+      "id": "portfolioPerformance",
+      "label": "Portfolioentwicklung",
+      "basis": "TOTAL_RETURN",
+      "why": "Dieselbe Frage wie beim Backtest: was ein Anleger gehalten hätte.",
+      "surfaces": [
+        "portfolio"
+      ],
+      "activation": {
+        "state": "CLOSED",
+        "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+      }
+    },
+    {
+      "id": "benchmark",
+      "label": "Vergleichsindex",
+      "basis": "TOTAL_RETURN",
+      "why": "Ein Vergleich ist nur dann einer, wenn beide Seiten dieselbe Basis haben. Eine Strategie auf Gesamtrendite gegen einen Index auf Kursbasis zu stellen, schlägt den Index durch Buchführung.",
+      "surfaces": [
+        "benchmark"
+      ],
+      "activation": {
+        "state": "CLOSED",
+        "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+      }
+    },
+    {
+      "id": "relativeStrengthBenchmark",
+      "label": "Vergleichsreihe der relativen Stärke",
+      "basis": "SPLIT_ADJUSTED_PRICE",
+      "why": "Relative Stärke vergleicht Kursbewegung mit Kursbewegung. Sie gehört zur technischen Seite und nicht zur Performanceseite, auch wenn beide das Wort Vergleichsindex benutzen — und beim Verdrahten des Vertrags fiel auf, dass genau diese Unterscheidung noch fehlte.",
+      "surfaces": [
+        "market-factors relativeStrength"
+      ],
+      "notToBeConfusedWith": "benchmark",
+      "distinction": "benchmark misst, was ein Anleger verdient hätte, und rechnet deshalb auf Gesamtrendite. Diese Reihe misst, ob sich ein Kurs besser bewegt hat als ein anderer Kurs. Dieselbe Reihe für beides zu nehmen wäre genau die Vermischung, die dieser Vertrag trennt.",
+      "boundToContract": true,
+      "boundOn": "2026-09-24",
+      "boundBecause": "Dieselbe Owner-Entscheidung. Relative Staerke ist eine Momentumkomponente und vergleicht Kursbewegung mit Kursbewegung; Titel- und Vergleichsreihe muessen dieselbe Basis tragen, sonst misst die Differenz die Dividendenrendite des Index mit."
+    },
+    {
+      "id": "quantV1",
+      "label": "Quant V1",
+      "basis": "LEGACY_IMMUTABLE",
+      "why": "Unverändert. Eine rückwirkende Änderung an veröffentlichten V1-Zahlen findet nicht statt, gleich welche Basis heute besser begründbar wäre.",
+      "surfaces": [
+        "quant v1"
+      ],
+      "immutable": true
+    },
+    {
+      "id": "quantV2Momentum",
+      "label": "Quant V2 Kursstärke (Momentumfaktor)",
+      "basis": "SPLIT_ADJUSTED_PRICE",
+      "why": "Der Momentumfaktor misst Kursstärke, Trenddynamik und Marktbestätigung. Eine Dividende ist keine Kursbewegung, also darf sie den Momentumrang nicht heben. Owner-Entscheidung vom 2026-09-24 (Option C) auf Grundlage der Full-Universe-Studie.",
+      "surfaces": [
+        "factor-evidence-v1 factors.momentum",
+        "market-factors returns"
+      ],
+      "decision": {
+        "state": "APPROVED",
+        "approvedOn": "2026-09-24",
+        "approvedBasis": "SPLIT_ADJUSTED_PRICE",
+        "question": "Ist der Quant-V2-Momentumfaktor auf Kursbasis oder auf Gesamtrendite zu rechnen?",
+        "answer": "Auf Kursbasis. Gesamtrendite wird daneben als eigene Anlegerevidenz gefuehrt, nicht im Faktor.",
+        "previousPublishedBasis": "TOTAL_RETURN",
+        "previousPublishedBasisMeasuredOn": "2026-09-24",
+        "previousPublishedUnder": "vu-factor-evidence-1.0.0 / quant-v2.0.0",
+        "whyTheChangeIsNotSilent": "Der bisherige Bestand rechnete faktisch auf Gesamtrendite - gemessen, nicht vermutet: alle 6.403 Eintraege auf adjustedClose, und diese Spalte ist ueber 62.859 Dividendenereignisse als gesamtrenditebereinigt belegt. Die neue Basis erscheint deshalb NICHT unter derselben Methodikversion und nicht unter denselben Komponentennamen. Die alten Beobachtungen bleiben unveraendert unter ihrer Version stehen.",
+        "evidence": [
+          "quant/data/providers/return-basis-universe-study.json",
+          "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md"
+        ],
+        "measuredImpact": {
+          "universe": 5997,
+          "spearmanRankCorrelation": 0.991319,
+          "medianAbsoluteRankChange": 68,
+          "p95RankChange": 478,
+          "titlesMoving5Percentiles": 703,
+          "titlesMoving10Percentiles": 178,
+          "note": "Momentumnote ueber alle sechs Komponenten, Stichtag 2026-09-10."
+        },
+        "boundToContract": true
+      }
+    },
+    {
+      "id": "investorReturnEvidence",
+      "label": "Anlegerrendite (Rendite inkl. Ausschüttungen)",
+      "basis": "TOTAL_RETURN",
+      "why": "Die Frage 'Was haette ein Anleger inklusive Dividenden tatsaechlich verdient?' ist eine andere als 'Wie stark bewegt sich der Kurs?'. Sie verschwindet nicht dadurch, dass der Momentumfaktor sie nicht mehr beantwortet - sie bekommt ihre eigene, benannte Zahl.",
+      "surfaces": [
+        "factor-evidence-v1 investorReturn"
+      ],
+      "notToBeConfusedWith": "quantV2Momentum",
+      "distinction": "quantV2Momentum misst Kursstaerke und laesst Ausschuettungen bewusst aussen vor. Dieses Modul misst genau die Ausschuettungen mit. Beide nebeneinander zu zeigen ist der Sinn der Trennung; eines fuer das andere zu halten war der Fehler, den sie behebt.",
+      "boundToContract": true,
+      "isFactorComponent": false,
+      "notAFactorBecause": "Wuerde die Anlegerrendite in den Momentumfaktor eingehen, waere die Trennung wieder aufgehoben. Sie steht daneben, nicht darin."
+    }
+  ],
+  "enforcement": {
+    "rule": "Ein Modul rechnet auf der ihm zugewiesenen Basis oder gar nicht. Es nimmt NICHT die beste verfügbare Spalte.",
+    "why": "Bis hierher wählte market-factors.priceBasis() adjustedClose, sobald eine belastbare bereinigte Spalte vorlag - gleich ob split- oder dividendenbereinigt. Würde die Anbieterstufe auf 'adjusted' gehoben, kippten Technical, Setup und Momentum still auf Gesamtrendite, ohne dass eine Zeile Code sich ändert. Genau das ist die stille Umdefinition, die hier ausgeschlossen wird.",
+    "onMismatch": "RETURN_BASIS_MISMATCH",
+    "enforcedBy": "quant/tests/return-semantics.test.mjs"
+  },
+  "gateStatus": {
+    "RETURN_SEMANTICS_CONTRACT_ACTIVE": "PASS",
+    "PRICE_MODULES_BASIS": "SPLIT_ADJUSTED_PRICE",
+    "PERFORMANCE_MODULES_BASIS": "TOTAL_RETURN",
+    "QUANT_V1": "LEGACY_IMMUTABLE",
+    "QUANT_V2_MOMENTUM_BASIS": "SPLIT_ADJUSTED_PRICE",
+    "note": "Maschinenlesbar, damit kein Konsument den Zustand aus Prosa ableiten muss.",
+    "QUANT_V2_MOMENTUM_DECISION": "APPROVED_2026-09-24_OPTION_C",
+    "TOTAL_RETURN_EVIDENCE": "SEPARATE",
+    "BACKTEST_RETURN_BASIS": "TOTAL_RETURN",
+    "PORTFOLIO_RETURN_BASIS": "TOTAL_RETURN",
+    "BENCHMARK_RETURN_BASIS": "TOTAL_RETURN",
+    "TECHNICAL_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE",
+    "SETUP_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE",
+    "ELLIOTT_RETURN_BASIS": "SPLIT_ADJUSTED_PRICE",
+    "REFUTED_TOTAL_RETURN_BLOCKS_ONLY_TOTAL_RETURN": "PASS",
+    "TOTAL_RETURN_VALIDATION_UNCHANGED": "PASS"
+  },
+  "refutedAdjustmentFallback": {
+    "decidedAt": "2026-09-25",
+    "question": "Muss eine Vergleichsreihe an der Total-Return-Pruefung haengen, wenn das Produkt sie splitbereinigt verlangt?",
+    "answer": "Nein. Die Total-Return-Pruefung bleibt unveraendert und sperrt weiterhin die Datenart, die sie widerlegt - sie sperrt aber keine Reihe, die unabhaengig aus RAW_CLOSE + SPLIT_FACTOR rekonstruierbar ist.",
+    "declaration": "splitAdjustedReconstructible",
+    "blocks": [
+      "TOTAL_RETURN"
+    ],
+    "conditions": [
+      "Der einzige Fehler der Konsistenzpruefung ist adjustment_status_contradicted.",
+      "Widerlegt ist hoechstens die Dividendenbereinigung (refutedAbove = SPLIT_ADJUSTED). Ist die Splitbereinigung widerlegt, steht der Splitfaktor selbst in Frage und es gibt keinen Rueckfall.",
+      "Die Eingaben der Rekonstruktion sind vollstaendig gemessen: raw close, splitFactor, aufsteigende Handelstage, mindestens 252 Bars."
+    ],
+    "decidedBy": "quant/engines/price-semantics.js#fallbackDeclaration",
+    "measuredBy": "quant/engines/return-series.js#splitAdjustedInputs",
+    "notLoosened": "quant/engines/market-quality.js#validateAdjustmentConsistency ist unveraendert. Der Befund bleibt derselbe; nur seine Folge ist auf die gescheiterte Datenart begrenzt."
+  },
+  "versionHistory": [
+    {
+      "version": "return-semantics-1.1.0",
+      "effectiveFrom": "2026-09-24",
+      "change": "Option C: quantV2Momentum auf SPLIT_ADJUSTED_PRICE, investorReturnEvidence als getrennte Anlegerrendite."
+    },
+    {
+      "version": "return-semantics-1.2.0",
+      "effectiveFrom": "2026-09-25",
+      "change": "Neue Deklaration 'splitAdjustedReconstructible' unter RAW_PRICE registriert. Keine Modulbasis geaendert, keine Kennzahl umdefiniert: die Deklaration beschreibt einen Datenzustand, nicht eine neue Basis."
+    }
+  ]
 }

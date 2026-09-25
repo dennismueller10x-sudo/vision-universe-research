@@ -46,9 +46,25 @@ function writeGzip(path, payload) {
   return { raw: raw.length, compressed: compressed.length };
 }
 
+/* Welche Deklarationen dieser Pfad annimmt.
+
+   Er rechnet ausschliesslich auf der SPLIT_ADJUSTED-Reihe, die er unten
+   selbst aus close und den Kapitalmassnahmen rekonstruiert
+   (Canonical.fromPriceBars) - die adjClose-Spalte des Anbieters wird
+   dabei ERSETZT, nicht gelesen. Technical, Setup und Elliott stehen seit
+   Option C ohnehin auf SPLIT_ADJUSTED_PRICE.
+
+   Deshalb gilt hier dasselbe wie in market-factors: eine widerlegte
+   Gesamtrendite-Spalte sperrt die Gesamtrendite, nicht diese Reihe. Waere
+   'splitAdjustedReconstructible' hier nicht zugelassen, haette die
+   Trennung die relative Staerke im Faktorlauf gerettet und sie im
+   Technical-Lauf verloren - inklusive der SPY-Vergleichsreihe, die diese
+   Datei genauso braucht. */
+const ACCEPTED_ADJUSTMENT = new Set(["adjusted", "splitAdjustedReconstructible"]);
+
 function validatedInput(payload, member) {
   if (!payload || payload.ticker !== member.s || payload.securityId !== member.m || payload.provider !== "tiingo" ||
-      payload.adjustmentStatus !== "adjusted" || !Array.isArray(payload.bars)) throw new Error("INVALID_HISTORY_PROVENANCE");
+      !ACCEPTED_ADJUSTMENT.has(payload.adjustmentStatus) || !Array.isArray(payload.bars)) throw new Error("INVALID_HISTORY_PROVENANCE");
   let previous = null, splits = 0, dividends = 0;
   for (const bar of payload.bars) {
     if (!bar || bar.securityId !== member.m || !isDate(bar.date) || (previous && bar.date <= previous) ||

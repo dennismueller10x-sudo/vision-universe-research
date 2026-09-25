@@ -33,6 +33,13 @@ test("the owner's split is written down machine-readably", () => {
       TECHNICAL_RETURN_BASIS: "SPLIT_ADJUSTED_PRICE",
       SETUP_RETURN_BASIS: "SPLIT_ADJUSTED_PRICE",
       ELLIOTT_RETURN_BASIS: "SPLIT_ADJUSTED_PRICE",
+      /* 2026-09-25: eine widerlegte Gesamtrendite-Spalte sperrt die
+         Gesamtrendite und nicht eine Reihe, die splitbereinigt
+         rekonstruierbar ist. Die Pruefung selbst bleibt unveraendert -
+         beides steht als Flag, damit es nicht aus Prosa gelesen werden
+         muss. */
+      REFUTED_TOTAL_RETURN_BLOCKS_ONLY_TOTAL_RETURN: "PASS",
+      TOTAL_RETURN_VALIDATION_UNCHANGED: "PASS",
       note: undefined });
 });
 

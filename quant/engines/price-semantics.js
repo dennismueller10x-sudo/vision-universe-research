@@ -39,9 +39,29 @@
     total_return: "TOTAL_RETURN",
     splitAdjusted: "SPLIT_ADJUSTED",
     split_adjusted: "SPLIT_ADJUSTED",
+    /* DIE REIHE, DEREN BEREINIGTE SPALTE WIDERLEGT IST - siehe
+       fallbackDeclaration() weiter unten.
+
+       Sie steht auf SPLIT_ADJUSTED, weil das die Stufe ist, die sich aus
+       ihr rechnen laesst: Rohschluss und Splitfaktor sind geprueft, und
+       die splitbereinigte Reihe entsteht daraus. Sie steht NICHT auf
+       TOTAL_RETURN, weil genau diese Stufe an den Daten gescheitert ist -
+       der Rangvergleich sperrt damit jede Gesamtrenditekennzahl, ohne
+       dass ein Aufrufer ein neues Feld kennen muss.
+
+       Das ist keine Behauptung ueber die adjClose-Spalte des Anbieters.
+       Wer die Reihe rechnet, konstruiert sie (market-factors.priceSeries);
+       wer die Spalte lesen will, fragt return-semantics und bekommt
+       RAW_PRICE - den einzigen Rohstoff, fuer den wir hier einstehen. */
+    splitAdjustedReconstructible: "SPLIT_ADJUSTED",
     unadjusted: "RAW",
     raw: "RAW"
   };
+
+  /* Das Vokabular fuer genau diesen Zustand, an einer Stelle. Wer es
+     vergleicht, vergleicht nicht gegen ein Stringliteral in fuenf
+     Dateien. */
+  var RECONSTRUCTIBLE = "splitAdjustedReconstructible";
 
   var config = null;
 
@@ -195,8 +215,88 @@
     };
   }
 
+  /* =====================================================================
+     WAS EINE REIHE NOCH SEIN DARF, WENN IHR ANSPRUCH WIDERLEGT IST
+     (Owner-Frage vom 2026-09-25)
+
+     Der Fall, der das ausgeloest hat: SPY war als TOTAL_RETURN deklariert,
+     verhielt sich an einem Ex-Tag aber nicht so. Die Konsistenzpruefung
+     hat das erkannt und die Reihe angehalten - richtig, denn eine falsch
+     ausgezeichnete Reihe ist schlimmer als eine fehlende.
+
+     Die Folge war jedoch weiter als der Befund: mit SPY fehlte die
+     Vergleichsreihe, und damit die relative Staerke von 6.267 Titeln -
+     obwohl die relative Staerke seit Option C ueberhaupt keine
+     Gesamtrendite verlangt, sondern den splitbereinigten Kurs. Ein Fehler
+     in der Dividendenbereinigung hat eine Kennzahl gesperrt, die von der
+     Dividendenbereinigung nichts wissen will.
+
+     Diese Funktion trennt das. Sie lockert die Pruefung nicht - sie liest
+     deren Urteil genauer:
+
+       - Der Befund bleibt der Befund. Die Reihe darf sich NICHT mehr
+         TOTAL_RETURN nennen, und jede Gesamtrenditekennzahl bleibt
+         gesperrt. Das ist die Datenart, die gescheitert ist.
+       - Was NICHT gescheitert ist: Rohschluss und Splitfaktor. Aus ihnen
+         entsteht die splitbereinigte Reihe, ohne Dividendenbetrag und
+         ohne bereinigte Spalte.
+
+     Drei Bedingungen, und alle drei muessen erfuellt sein:
+
+       1. Der EINZIGE Fehler ist der Widerspruch der Bereinigungsstufe.
+          Ein zweiter Fehler betrifft die Bars selbst; dann ist auch der
+          Rohschluss nicht belastbar.
+       2. Widerlegt ist hoechstens die DIVIDENDENbereinigung
+          (refutedAbove === "SPLIT_ADJUSTED"). Ist die SPLITbereinigung
+          widerlegt (refutedAbove === "RAW"), steht der Splitfaktor selbst
+          in Frage - und damit die Rekonstruktion. Kein Rueckfall.
+       3. Die Eingaben der Rekonstruktion sind vollstaendig. Gemessen von
+          return-series.splitAdjustedInputs(), nicht angenommen.
+
+     @param {object} verdict  Ergebnis von validateAdjustmentConsistency()
+     @param {object} inputs   Ergebnis von Series.splitAdjustedInputs()
+   */
+  function fallbackDeclaration(verdict, inputs) {
+    var nein = function (reason, detail) {
+      return { allowed: false, declare: null, level: null, reason: reason,
+               detail: detail || null, blocks: null };
+    };
+    if (!verdict) return nein("NO_VERDICT");
+    if (verdict.ok) return nein("NOT_REFUTED");
+
+    var errors = (verdict.findings || []).filter(function (f) { return f.severity === "error"; });
+    var codes = errors.map(function (f) { return f.code; });
+    if (!(codes.length === 1 && codes[0] === "adjustment_status_contradicted")) {
+      return nein("OTHER_ERRORS_PRESENT", codes);
+    }
+
+    var ceiling = verdict.observed ? verdict.observed.refutedAbove : null;
+    if (ceiling !== "SPLIT_ADJUSTED") return nein("SPLIT_ADJUSTMENT_ITSELF_REFUTED", ceiling);
+
+    if (!inputs || inputs.constructible !== true) {
+      return nein("SPLIT_ADJUSTED_INPUTS_INCOMPLETE", inputs ? inputs.missing : null);
+    }
+
+    return {
+      allowed: true,
+      declare: RECONSTRUCTIBLE,
+      level: normalize(RECONSTRUCTIBLE),
+      reason: "TOTAL_RETURN_COLUMN_REFUTED_SPLIT_ADJUSTED_RECONSTRUCTIBLE",
+      /* Was ausdruecklich gesperrt bleibt. Steht hier als Wort und nicht
+         nur als Rangfolge, damit ein Bericht es nennen kann. */
+      blocks: ["TOTAL_RETURN"],
+      refutedClaim: verdict.claimedStatus || null,
+      ceiling: ceiling,
+      bars: inputs.bars,
+      first: inputs.first,
+      last: inputs.last
+    };
+  }
+
   var api = {
     LEVELS: LEVELS, RANK: RANK, FROM_PROVIDER: FROM_PROVIDER,
+    RECONSTRUCTIBLE: RECONSTRUCTIBLE,
+    fallbackDeclaration: fallbackDeclaration,
     configure: configure, isConfigured: isConfigured,
     normalize: normalize, rank: rank, minimumFor: minimumFor,
     check: check, label: label, returnLabel: returnLabel, caveat: caveat,

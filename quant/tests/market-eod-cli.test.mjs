@@ -7,6 +7,14 @@ import {spawnSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Store=require('../engines/market-store.js');
 const source=new URL('../../',import.meta.url);
+/* Die Entscheidungsregel des Importlaufs, aus seiner eigenen Quelle
+   gelesen. Ein Ablehnungseintrag, der eine ANDERE Regel nennt, verliert
+   seine Sperrwirkung (rejection-lifecycle RL-12) - eine Ruhefrist laesst
+   sich also nur mit der aktuellen Regel im Eintrag zeigen. Hier abgelesen
+   statt abgeschrieben, damit der Test bei der naechsten Regelaenderung
+   nicht still etwas anderes prueft. */
+const REJECTION_RULE=readFileSync(new URL('scripts/market/ingest-tiingo.mjs',source),'utf8')
+ .match(/const REJECTION_RULE = "([^"]+)"/)[1];
 function fixture(t,{scopeFromPreview=false,strict=true}={}){
  const root=mkdtempSync(join(tmpdir(),'vu-eod-cli-'));t.after(()=>rmSync(root,{recursive:true,force:true}));
  for(const path of ['providers','quant/engines','quant/config','scripts/market/ingest-tiingo.mjs','scripts/market/preview-scope.mjs','scripts/market/publish-discover-series.mjs','scripts/market/universe-source.mjs']){mkdirSync(join(root,path.includes('.mjs')?'scripts/market':path),{recursive:true});cpSync(new URL(path,source),join(root,path),{recursive:true});}
@@ -62,7 +70,7 @@ test('empty provider response keeps strict scoped history incomplete and retryab
 test('regular import keeps a fresh rejection on cooldown across the daily checkpoint reset',t=>{
  const f=fixture(t,{strict:false});f.store.mergeBars(f.id,[{date:'2026-09-08',open:100,high:102,low:99,close:101,volume:1000}]);
  /* Vier Stunden alt: innerhalb der Frist von zwanzig Stunden. */
- const c=f.store.loadCheckpoint('incremental');c.startedAt='2026-09-08T22:00:00Z';c.done=[f.id];c.rejected={[f.id]:{at:'2026-09-09T18:00:00Z',codes:'INVALID_OHLC'}};f.store.saveCheckpoint(c);
+ const c=f.store.loadCheckpoint('incremental');c.startedAt='2026-09-08T22:00:00Z';c.done=[f.id];c.rejected={[f.id]:{at:'2026-09-09T18:00:00Z',codes:'INVALID_OHLC',rule:REJECTION_RULE}};f.store.saveCheckpoint(c);
  const result=f.run([]);assert.equal(result.status,0,result.stdout+result.stderr);assert.match(result.stdout,/uebersprungen \(TEMPORARY_REJECT/);assert.equal(existsSync(join(f.root,'requests.txt')),false);
  assert.deepEqual(f.store.loadCheckpoint('incremental').rejected,c.rejected);
 });
@@ -91,4 +99,62 @@ test('a one-bar daily increment is accepted, not rejected as too_few_bars',t=>{
  assert.equal(f.store.lastStoredDate(f.id),'2026-09-09');
  assert.equal(f.store.readBars(f.id).bars.length,2,'die gespeicherte Bar bleibt, die neue kommt dazu');
  assert.deepEqual(f.store.loadCheckpoint('incremental').rejected,{},'kein Eintrag im Ablehnungsregister');
+});
+
+/* Eine widerlegte Gesamtrendite-Spalte haelt die splitbereinigte Reihe nicht
+   auf - hier am laufenden Import, nicht an seinen Bausteinen.
+
+   Der Fall ist der von SPY: der Anbieter deklariert TOTAL_RETURN, am Ex-Tag
+   bewegt sich das Verhaeltnis zwischen bereinigter und roher Spalte aber
+   nicht. Die Pruefung widerlegt die Stufe - und weil Rohschluss und
+   Splitfaktor vollstaendig sind, geht die Reihe splitbereinigt in den
+   Bestand statt zu altern. */
+function historie(bis,tage){
+ const out=[];const d=new Date(bis+'T00:00:00Z');
+ for(let i=tage-1;i>=0;i--){const t=new Date(d.getTime()-i*86400000).toISOString().slice(0,10);
+  out.push({date:t,open:100,high:102,low:99,close:101,adjustedClose:101,volume:1000,splitFactor:1,dividend:0});}
+ return out;
+}
+function exTag(date){return {...raw(date),divCash:1.5};}
+/* Ohne den Laufzeitbeleg steht adjustedPrices auf null, der Adapter
+   deklariert "unknown" und laesst adjustedClose leer - dann gibt es keine
+   bereinigte Spalte, die widerlegt werden koennte. Der Beleg kommt aus dem
+   Repository und wird nur an die Stelle kopiert, an der der Adapter ihn
+   sucht. */
+function mitBereinigungsbeleg(root){
+ const ziel=join(root,'quant/data/market');mkdirSync(ziel,{recursive:true});
+ cpSync(new URL('quant/data/market/tiingo-runtime-verification.json',source),
+        join(ziel,'tiingo-runtime-verification.json'));
+}
+
+test('a refuted total-return column keeps the split-adjusted series in the store',t=>{
+ const f=fixture(t,{strict:false});
+ mitBereinigungsbeleg(f.root);
+ f.store.mergeBars(f.id,historie('2026-09-08',300),{adjustmentStatus:'adjusted'});
+ const result=f.run([raw('2026-09-08'),exTag('2026-09-09')]);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/bereinigte Spalte widerlegt/);
+ assert.match(result.stdout,/Gesamtrendite bleibt gesperrt/);
+ const payload=f.store.readBars(f.id);
+ assert.equal(payload.adjustmentStatus,'splitAdjustedReconstructible');
+ assert.equal(payload.adjustmentClaim.refutedClaim,'TOTAL_RETURN');
+ assert.equal(payload.adjustmentClaim.ceiling,'SPLIT_ADJUSTED');
+ assert.deepEqual(payload.adjustmentClaim.blocks,['TOTAL_RETURN']);
+ assert.equal(f.store.lastStoredDate(f.id),'2026-09-09','der neue Handelstag ist da');
+ assert.deepEqual(f.store.loadCheckpoint('incremental').rejected,{},'keine Ablehnung');
+});
+
+test('without enough history the same series is rejected and the missing input is named',t=>{
+ /* Die Gegenprobe: derselbe Widerspruch, aber die Rekonstruktion hat nicht
+    genug Reihe. Dann bleibt es bei der Ablehnung - und der Bericht nennt
+    den fehlenden Eingang, statt ihn zu umschreiben. */
+ const f=fixture(t,{strict:false});
+ mitBereinigungsbeleg(f.root);
+ f.store.mergeBars(f.id,historie('2026-09-08',40),{adjustmentStatus:'adjusted'});
+ const result=f.run([raw('2026-09-08'),exTag('2026-09-09')]);
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ assert.match(result.stdout,/ABGELEHNT/);
+ assert.match(result.stdout,/SPLIT_ADJUSTED_INPUTS_INCOMPLETE: HISTORY/);
+ assert.equal(f.store.readBars(f.id).adjustmentStatus,'adjusted','die Deklaration bleibt unangetastet');
+ assert.equal(f.store.lastStoredDate(f.id),'2026-09-08','nichts Neues im Bestand');
 });

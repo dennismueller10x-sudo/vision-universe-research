@@ -122,3 +122,49 @@ test("RL-11 · dieselbe Ursache wiederholt verlaengert die Ruhe - bis zu einer W
   const dauerhaft = { at: "2026-09-01T00:00:00Z", codes: "invalid_close", confirmations: 9 };
   assert.equal(R.klassifiziere(dauerhaft, { now: T("2026-09-09T00:00:00Z") }).retryDue, true);
 });
+
+test("RL-12 · eine Ablehnung ueberlebt die Regel nicht, die sie begruendet hat", () => {
+  /* Der Fall vom 24./25.09.2026: SPY wurde um 13:47 abgelehnt, weil ein
+     gemischtes Bereinigungsfenster die Total-Return-Semantik widerlegte.
+     Beides wurde danach geaendert - das Fenster reparariert, und eine
+     widerlegte Gesamtrendite sperrt die splitbereinigte Reihe nicht mehr.
+     Der Eintrag haette den Titel trotzdem bis 09:47 altern lassen.
+
+     Die Ruhefrist schuetzt vor WIEDERHOLTEN Anfragen unter derselben
+     Regel. Unter einer neuen Regel ist die Anfrage keine Wiederholung. */
+  const eintrag = { at: "2026-09-24T13:47:37Z", codes: "adjustment_status_contradicted",
+                    confirmations: 1, rule: "ingest-rejection-r1" };
+  const jetzt = T("2026-09-25T03:00:00Z");
+
+  /* Unter derselben Regel: die Ruhe gilt. */
+  const gleich = R.klassifiziere(eintrag, { now: jetzt, rule: "ingest-rejection-r1" });
+  assert.equal(gleich.retryDue, false);
+  assert.equal(gleich.class, "TEMPORARY_REJECT");
+
+  /* Unter einer anderen: faellig, mit Grund. */
+  const neu = R.klassifiziere(eintrag, { now: jetzt, rule: "ingest-rejection-r2" });
+  assert.equal(neu.retryDue, true);
+  assert.equal(neu.class, "STALE_REJECT");
+  assert.match(neu.reason, /anderen Entscheidungsregel/);
+
+  /* Ein Eintrag aus der Zeit vor der Kennzeichnung ebenso - er kann nicht
+     belegen, unter welcher Regel er entstand. */
+  const ohne = { at: "2026-09-24T13:47:37Z", codes: "adjustment_status_contradicted" };
+  assert.equal(R.klassifiziere(ohne, { now: jetzt, rule: "ingest-rejection-r2" }).retryDue, true);
+
+  /* Und ohne Regelangabe des Aufrufers bleibt alles wie bisher. */
+  assert.equal(R.klassifiziere(eintrag, { now: jetzt }).retryDue, false);
+});
+
+test("RL-13 · nach einer Regelaenderung faengt die Bestaetigungszaehlung von vorn an", () => {
+  /* Sonst waechst die Ruhefrist auf Befunden weiter, die eine andere Regel
+     erzeugt hat - und ein Titel, den die neue Regel zum ersten Mal
+     ablehnt, waere sofort fuer 40 Stunden gesperrt. */
+  const vorher = { at: "2026-09-24T13:47:37Z", codes: "invalid_close",
+                   confirmations: 3, rule: "r1" };
+  const gleich = R.fortschreiben(vorher, { at: "2026-09-25T13:00:00Z", codes: "invalid_close", rule: "r1" });
+  assert.equal(gleich.confirmations, 4);
+  const anders = R.fortschreiben(vorher, { at: "2026-09-25T13:00:00Z", codes: "invalid_close", rule: "r2" });
+  assert.equal(anders.confirmations, 1);
+  assert.equal(anders.rule, "r2");
+});

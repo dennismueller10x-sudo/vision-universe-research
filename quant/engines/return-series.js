@@ -268,11 +268,81 @@
     return { checked, consistent, worst, classes, buckets, samples, unexplainedDates };
   }
 
+  /* ------------------------------------- Ist die Reihe rekonstruierbar?
+
+     Die Frage, die der Eigentuemer am 2026-09-25 gestellt hat: muss eine
+     Vergleichsreihe ueberhaupt an der Total-Return-Pruefung haengen, wenn
+     das Produkt sie splitbereinigt verlangt?
+
+     Sie haengt daran nur, solange die splitbereinigte Reihe aus der
+     bereinigten Spalte kommt. Kommt sie aus RAW_CLOSE + SPLIT_FACTOR, ist
+     sie von der Dividendenbereinigung unabhaengig - und zwar nicht
+     ungefaehr, sondern konstruktiv: in die Rekonstruktion geht kein
+     Dividendenbetrag und keine bereinigte Spalte ein.
+
+     Der Unterschied ist auch operativ wichtig: der Anbieter bereinigt die
+     adjClose-Spalte nach einem Ex-Tag RUECKWIRKEND nach, den Rohschluss
+     nicht. Deshalb ist die rekonstruierte Reihe die stabilere der beiden -
+     sie aendert sich nur, wenn ein Split dazukommt.
+
+     Diese Funktion beantwortet die Vorfrage und nur sie: liegen die vier
+     Eingaben vollstaendig vor? Sie entscheidet nichts und bereinigt
+     nichts. Wer `constructible: false` bekommt, bekommt in `missing` die
+     benannte fehlende Eingabe - nicht "irgendwas fehlt".
+
+     @param {object[]} bars
+     @param {object}   [options] {minBars}
+   */
+  var MIN_BARS_FOR_BENCHMARK = 252;
+
+  function splitAdjustedInputs(bars, options) {
+    options = options || {};
+    var minBars = options.minBars === undefined ? MIN_BARS_FOR_BENCHMARK : options.minBars;
+    var reihe = Array.isArray(bars) ? bars : [];
+
+    var fehlendeSchluesse = [], fehlendeFaktoren = [], fehlerhafteDaten = [];
+    for (var i = 0; i < reihe.length; i++) {
+      var bar = reihe[i] || {};
+      if (!(finite(bar.close) && bar.close > 0)) fehlendeSchluesse.push(bar.date || "#" + i);
+      if (bar.splitFactor === null || bar.splitFactor === undefined || !finite(bar.splitFactor) ||
+          bar.splitFactor <= 0) fehlendeFaktoren.push(bar.date || "#" + i);
+      var datum = bar.date === undefined || bar.date === null ? "" : String(bar.date);
+      if (!/^\d{4}-\d{2}-\d{2}/.test(datum)) fehlerhafteDaten.push(datum || "#" + i);
+      else if (i > 0 && !(datum > String(reihe[i - 1].date))) fehlerhafteDaten.push(datum);
+    }
+
+    var missing = [];
+    if (!reihe.length) missing.push("NO_BARS");
+    if (fehlendeSchluesse.length) missing.push("RAW_CLOSE");
+    if (fehlendeFaktoren.length) missing.push("SPLIT_FACTOR");
+    if (fehlerhafteDaten.length) missing.push("TRADING_DATES");
+    if (reihe.length && reihe.length < minBars) missing.push("HISTORY");
+
+    return {
+      engineVersion: ENGINE_VERSION,
+      constructible: missing.length === 0,
+      missing: missing,
+      bars: reihe.length,
+      minBars: minBars,
+      first: reihe.length ? reihe[0].date : null,
+      last: reihe.length ? reihe[reihe.length - 1].date : null,
+      /* Die Belege, damit ein Bericht die Stelle nennen kann und nicht nur
+         die Klasse. Gekappt: eine kaputte Reihe soll den Bericht nicht
+         fuellen. */
+      rawCloseMissingAt: fehlendeSchluesse.slice(0, 5),
+      splitFactorMissingAt: fehlendeFaktoren.slice(0, 5),
+      tradingDateProblemAt: fehlerhafteDaten.slice(0, 5),
+      splitEvents: reihe.filter(function (b) { return b && finite(b.splitFactor) && b.splitFactor !== 1; }).length
+    };
+  }
+
   var api = {
     ENGINE_VERSION: ENGINE_VERSION,
     splitAdjusted: splitAdjusted,
     splitFactors: splitFactors,
     splitAdjustedColumn: splitAdjustedColumn,
+    splitAdjustedInputs: splitAdjustedInputs,
+    MIN_BARS_FOR_BENCHMARK: MIN_BARS_FOR_BENCHMARK,
     verifyTotalReturn: verifyTotalReturn,
     ADJUSTMENT_BAND: ADJUSTMENT_BAND,
     totalReturn: totalReturn,

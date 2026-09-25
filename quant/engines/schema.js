@@ -31,7 +31,12 @@
      quant/methodology/price-adjustment-v1.json; das Schema kennt sie, damit
      eine Bar ihre Stufe mitfuehren kann, ohne dass jeder Adapter eine
      eigene Schreibweise erfindet. */
-  var ADJUSTMENT_STATUS = ["raw", "unadjusted", "splitAdjusted", "adjusted", "unknown"];
+  /* 'splitAdjustedReconstructible': Rohschluss und Splitfaktor sind
+     geprueft, die bereinigte Spalte ist widerlegt. Die splitbereinigte
+     Reihe wird daraus konstruiert, Gesamtrendite bleibt gesperrt. Siehe
+     price-semantics.fallbackDeclaration(). */
+  var ADJUSTMENT_STATUS = ["raw", "unadjusted", "splitAdjusted", "splitAdjustedReconstructible",
+                           "adjusted", "unknown"];
 
   var CORPORATE_ACTION_TYPES = ["split", "dividend", "special_dividend", "delisting", "merger", "symbol_change", "spinoff"];
   var RESTATEMENT_STATUS = ["original", "restated", "preliminary"];

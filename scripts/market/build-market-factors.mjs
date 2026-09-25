@@ -128,12 +128,19 @@ if (benchPayload && Array.isArray(benchPayload.bars) && benchPayload.bars.length
     priceSource: benchSeries.source,
     /* Die Datumsspalte gehoert dazu: ohne sie vergleicht ein Titel mit
        aelterem Stichtag gegen den heutigen Indexstand. */
+    adjustmentStatus: benchPayload.adjustmentStatus || null,
+    adjustmentClaim: benchPayload.adjustmentClaim || null,
     dates: benchPayload.bars.map((b) => b.date),
     closes: benchSeries.close.map((v) => (typeof v === "number" && isFinite(v) && v > 0 ? v : null)),
     last: benchPayload.bars[benchPayload.bars.length - 1].date,
     bars: benchPayload.bars.length
   };
-  console.log(`  Benchmark: ${BENCHMARK} (${benchmark.bars} Bars bis ${benchmark.last}, ${benchmark.returnBasis} via ${benchmark.priceSource})`);
+  console.log(`  Benchmark: ${BENCHMARK} (${benchmark.bars} Bars bis ${benchmark.last}, ` +
+              `${benchmark.returnBasis} via ${benchmark.priceSource}, deklariert ${benchmark.adjustmentStatus})`);
+  if (benchmark.adjustmentClaim) {
+    console.log(`             bereinigte Spalte widerlegt (${benchmark.adjustmentClaim.refutedClaim} → ` +
+                `${benchmark.adjustmentClaim.ceiling}); Gesamtrendite dieser Reihe gesperrt.`);
+  }
 } else {
   console.log(`  Benchmark: ${BENCHMARK} nicht in der Arbeitsablage - relative Staerke bleibt leer.`);
 }
@@ -351,6 +358,13 @@ const provenance = {
   benchmark: benchmark ? {
                            id: benchmark.id, bars: benchmark.bars, last: benchmark.last,
                            returnBasis: benchmark.returnBasis, priceSource: benchmark.priceSource,
+                           /* Unter welcher Deklaration die Vergleichsreihe im
+                              Bestand liegt, und - falls ihre bereinigte
+                              Spalte widerlegt wurde - warum. Ohne diese
+                              Angabe liest sich eine rekonstruierte Reihe wie
+                              eine vom Anbieter bestaetigte. */
+                           adjustmentStatus: benchmark.adjustmentStatus,
+                           adjustmentClaim: benchmark.adjustmentClaim,
                            /* DIE FRISCHE DER VERGLEICHSREIHE
 
                               Ein Benchmark, der hinter den Titeln
