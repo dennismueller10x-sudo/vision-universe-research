@@ -412,9 +412,15 @@ Keine Gamification.
 
 ### 29.4 Realtime (58.15)
 
-Der Proof lief um 11:26 UTC, also 07:26 New York (`PRE_MARKET`). **`REALTIME_TRACKER = MARKET_CLOSED_NOT_PROVEN`**, bewusst kein künstliches PASS. Geprüft und bestanden ist die Gegenrichtung: kein „Live“ ohne frischen Tick, auf allen Detailseiten in beiden Engines.
+**`REALTIME_TRACKER = PASS`**, nachgewiesen am 2026-09-25 um 10:52 New York bei offener US-Sitzung gegen die veröffentlichte Seite.
 
-Der Nachweis bei offener US-Börse ist für 14:15 UTC eingeplant (IEX-Stufe-6-Sonde für QQQ/SPY/DIA und Märkte-QA während der Sitzung). Er wird hier und in `VU_TIINGO_FIRST_MARKET_TRACKERS.md` nachgetragen.
+Grundlage ist der Live-Rauchtest [36150248376](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36150248376) mit Märkte-QA `--realtime` (#221).
+
+- **QQQ, SPY, DIA:** Strom `OPEN`, frische Ticks, Etikett „Markt geöffnet · Live“, Wert fortgeschrieben (QQQ 645,62 → 645,73 €, SPY 667,85 → 668,52 €, DIA 447,46 → 447,42 €).
+- **Gegenrichtung:** Nie „Live“ ohne frischen Tick, in Chromium und WebKit. Beim ersten Proof vor Sitzungsbeginn (11:26 UTC) stand ehrlich `MARKET_CLOSED_NOT_PROVEN`.
+- **Datenebene:** Die Tracker-Sonde maß um 14:39 UTC per IEX-WebSocket 97 Datenmeldungen in 25 s (QQQ 38, SPY 30, DIA 29), alle drei `IDENTITY_PROVEN`.
+- **Märkte-QA bei offener Börse:** Chromium 361/361, WebKit 359/359.
+- **Energie, Renditen, Leitzinsen:** bleiben ohne Live-Behauptung (Referenz- und Tageswerte). Krypto ist 24/7 und zeigt „Aktuell“, nicht „Live“.
 
 ## 30. Zielzustände
 
@@ -442,7 +448,7 @@ Der Nachweis bei offener US-Börse ist für 14:15 UTC eingeplant (IEX-Stufe-6-So
 | CURRENCY_CORE_REUSED | PASS | `assert-no-local-fx` 33/2 |
 | PAID_SERVICES = 0 / ZERO_COST_MODE | PASS | keine neue Quelle |
 | MOBILE / WEBKIT / A11Y | PASS | §29.2 |
-| REALTIME_TRACKER | MARKET_CLOSED_NOT_PROVEN | §29.4 – Nachweis 14:15 UTC eingeplant |
+| REALTIME_TRACKER | **PASS** (offene Sitzung, 2026-09-25 10:52 New York) | §29.4, Lauf 36150248376 |
 
 ## 31. Offene Punkte
 

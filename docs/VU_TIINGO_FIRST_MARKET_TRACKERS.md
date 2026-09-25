@@ -52,13 +52,17 @@ Keine Wochenendbeobachtungen, größte Lücke 7 Tage (Feiertage). Der Ingest ver
 
 ## 6. Intraday
 
-IEX 5-Minuten-Balken: je 312 Balken für vier Sitzungen (2026-09-21 13:30 UTC bis 2026-09-24 19:55 UTC). Öffentlich unter `/quant/data/market/multi-asset/intraday/<SYMBOL>.json` (nur Quellen mit `publicDisplay=true`, per Hygiene-Gate geprüft).
+IEX 5-Minuten-Balken: je 312 Balken für vier Sitzungen (2026-09-21 13:30 UTC bis 2026-09-24 19:55 UTC). Bei offener Börse am 2026-09-25 gemessen: je 326 Balken bis in die laufende Sitzung hinein. Öffentlich unter `/quant/data/market/multi-asset/intraday/<SYMBOL>.json` (nur Quellen mit `publicDisplay=true`, per Hygiene-Gate geprüft).
 
 ## 7. Realtime
 
 - IEX-Kurs (`tngoLast`) HTTP 200 für alle drei; der Ingest übernimmt ihn als jüngsten Stand nur, wenn sein New-York-Datum nach dem letzten Tagesschluss liegt.
 - IEX-WebSocket: Stufe 5 wird vom Tarif abgelehnt („thresholdLevel not valid for your subscription tier“); der bestehende VU-Live-Worker (`worker/src/vu-live.mjs`) nutzt Stufe 6. Der Vertrag meldet `realtimeCapability` aus der Registry (Worker-Pfad, reguläre US-Sitzung). Messung bei offenem Markt: siehe §17.
 - Außerhalb der Sitzung ist die Frische ehrlich `LAST_SESSION` („Letzter Handelsstand“), nie „Live“.
+- **Gemessen bei offener Börse (2026-09-25).**
+  - Tracker-Sonde um 14:39 UTC (10:39 New York, `tiingo-tracker-probe.json`): IEX-WebSocket geöffnet, Anmeldung mit Code 200 bestätigt, **97 Datenmeldungen in 25 s** (QQQ 38, SPY 30, DIA 29).
+  - Die Sonde um 14:18 UTC maß 117 Meldungen (QQQ 39, SPY 41, DIA 37). Mehrere ihrer REST-Anfragen brachen nach 30 s mit „This operation was aborted“ ab (Netzwerk-Timeout, keine Ablehnung). Deshalb lief die Messung ein zweites Mal; dieser zweite Lauf ist vollständig sauber.
+  - Den Nachweis auf der Seite siehe §17.
 
 ## 8. Währung
 
@@ -145,7 +149,20 @@ Negativprüfungen bestanden: kein Tracker mit „Pkt.“, keine Rendite mit Wäh
 
 **Im selben Lauf:** Browser-QA Discover 186/186, Live-QA 33/33. Der strenge Freshness-Check meldet STALE für die **Tageskurse des Aktien-Universums** (Stand 2026-09-18, erwartet 2026-09-24). Das betrifft die bestehende Tagesreihen-Pipeline der Einzelaktien, nicht den Multi-Asset-Core und nicht die Märkte-Seite; es ist kein Befund dieses Auftrags und wird hier nicht verändert (siehe §20).
 
-**Realtime bei offener Börse:** folgt nach der US-Eröffnung (Tracker-Sonde mit IEX-WebSocket Stufe 6 und erneuter Proof); bis dahin gilt: außerhalb der Sitzung korrekt LAST_SESSION, nie „Live“.
+**Realtime bei offener Börse (2026-09-25, 10:52 New York): `REALTIME_TRACKER = PASS`.**
+
+Grundlage ist der Live-Rauchtest [36150248376](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36150248376). Er läuft gegen die veröffentlichte Seite mit der Märkte-QA und `--realtime`, bei offener US-Sitzung je Tracker bis zu 45 s.
+
+| Tracker | Strom (VU-Live-Worker) | Ticks | Etikett | Wert (Anzeige EUR) |
+|---|---|---|---|---|
+| QQQ | OPEN | ≥ 1 | „Markt geöffnet · Live“ | 645,62 € → 645,73 € |
+| SPY | OPEN | ≥ 1 | „Markt geöffnet · Live“ | 667,85 € → 668,52 € |
+| DIA | OPEN | ≥ 1 | „Markt geöffnet · Live“ | 447,46 € → 447,42 € |
+
+- Nie „Live“ ohne frischen Tick: PASS.
+- Märkte-QA im selben Lauf: Chromium 361/361 (mit Realtime), WebKit 359/359.
+- Tracker-Sonde bei offener Börse: siehe §7.
+- Der Daten-Proof um 14:18 UTC (`production-proof.json`) hat erneut alle 18 Gates bestanden.
 
 ## 18. Kosten
 
