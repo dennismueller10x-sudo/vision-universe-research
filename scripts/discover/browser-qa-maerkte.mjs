@@ -145,7 +145,9 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
   await page.evaluate(()=>scrollTo(0,0));
  }
  await page.screenshot({path:`${out}/maerkte-${key}.png`});
- const y0=await page.evaluate(()=>scrollY);await page.click('.dx-maerkte-sprung[data-ziel="maerkte-krypto"]');await page.waitForTimeout(900);
+ const y0=await page.evaluate(()=>scrollY);await page.click('.dx-maerkte-sprung[data-ziel="maerkte-krypto"]');
+ /* Weicher Bildlauf ueber eine lange Seite: warten, bis er steht (max. 6 s). */
+ {let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}}
  const sprung=await page.evaluate(()=>{const r=document.getElementById('maerkte-krypto').getBoundingClientRect();return {y:scrollY,top:r.top};});
  p('Sprungleiste fuehrt zur Gruppe',sprung.y!==y0&&sprung.top>=-5&&sprung.top<250,sprung);
  await page.screenshot({path:`${out}/maerkte-${key}-krypto.png`});
@@ -203,15 +205,17 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
 {
  let axePath=null;try{axePath=require.resolve('axe-core/axe.min.js');}catch{}
  if(axePath){
-  const page=await browser.newPage({viewport:{width:390,height:844}});
   for(const [route,scheme] of [['#/maerkte','light'],['#/maerkte','dark'],['#/maerkte/QQQ','light'],['#/maerkte/US10Y','dark']]){
-   await page.emulateMedia({colorScheme:scheme});
+   /* Je Route eine frische Seite mit festem Farbschema: kein Themenwechsel
+      (und keine Farbuebergaenge) waehrend der Messung. */
+   const page=await browser.newPage({viewport:{width:390,height:844},colorScheme:scheme,reducedMotion:'reduce'});
    await page.goto(base+'/discover/'+route,{waitUntil:'networkidle'});await page.waitForSelector(route==='#/maerkte'?'.dx-markt-karte':'.dx-md h1');
+   await page.waitForTimeout(400);
    await page.addScriptTag({path:axePath});
    const v=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa']}}).then(r=>r.violations.filter(x=>['critical','serious'].includes(x.impact)).map(x=>({id:x.id,nodes:x.nodes.slice(0,3).map(n=>n.target)}))));
    check('Barrierefreiheit '+route+' ('+scheme+'): keine kritischen/ernsten Verstoesse',v.length===0,v);
+   await page.close();
   }
-  await page.close();
  } else check('Barrierefreiheit: axe-core verfuegbar',process.env.CI!=='true',"axe-core nicht installiert");
 }
 /* Navigation: Karte -> Detail, Reload auf der Detailroute, Zurueck. */
