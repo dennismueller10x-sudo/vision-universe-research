@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-25T01:24:59.140Z",
+  "generatedAt": "2026-09-25T04:35:21.310Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -7,21 +7,23 @@
   "engine": "market-factors-1.0.0",
   "benchmark": {
     "id": "SPY",
-    "bars": 930,
-    "last": "2026-09-17",
+    "bars": 935,
+    "last": "2026-09-24",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
+    "adjustmentStatus": "adjusted",
+    "adjustmentClaim": null,
     "maxLagSessions": 1,
     "newestSecurityDate": "2026-09-24",
-    "lagBehindNewestSessions": 5,
-    "securitiesWithoutRelativeStrength": 6267,
-    "state": "STALE"
+    "lagBehindNewestSessions": 0,
+    "securitiesWithoutRelativeStrength": 0,
+    "state": "CURRENT"
   },
   "run": {
     "source": "github-actions",
-    "runId": "36077075894",
-    "commit": "f8d931a99d7fac6af4b2a2c3dadde4c1bda3fcc4",
-    "runtimeMs": 18576,
+    "runId": "36090303116",
+    "commit": "7d582253cf2963eb9f26049292954be369201d0d",
+    "runtimeMs": 16774,
     "msPerSymbol": 3
   },
   "redistribution": {
@@ -30,272 +32,267 @@
   },
   "coverage": {
     "requested": 6875,
-    "computed": 6328,
-    "skipped": 547,
+    "computed": 6437,
+    "skipped": 438,
     "skippedByReason": {
-      "SOURCE_MISSING": 369,
-      "FAIL": 178
+      "SOURCE_MISSING": 349,
+      "FAIL": 89
     },
     "fieldCoverage": {
       "sma20": {
-        "CALCULATED": 6328,
+        "CALCULATED": 6437,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA20": {
-        "CALCULATED": 6328,
+        "CALCULATED": 6437,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA20": {
-        "CALCULATED": 6328,
+        "CALCULATED": 6437,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma50": {
-        "CALCULATED": 6277,
+        "CALCULATED": 6386,
         "INSUFFICIENT_HISTORY": 51,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA50": {
-        "CALCULATED": 6277,
+        "CALCULATED": 6386,
         "INSUFFICIENT_HISTORY": 51,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA50": {
-        "CALCULATED": 6277,
+        "CALCULATED": 6386,
         "INSUFFICIENT_HISTORY": 51,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma100": {
-        "CALCULATED": 5955,
+        "CALCULATED": 6064,
         "INSUFFICIENT_HISTORY": 373,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA100": {
-        "CALCULATED": 5955,
+        "CALCULATED": 6064,
         "INSUFFICIENT_HISTORY": 373,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA100": {
-        "CALCULATED": 5955,
+        "CALCULATED": 6064,
         "INSUFFICIENT_HISTORY": 373,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "sma200": {
-        "CALCULATED": 5618,
-        "INSUFFICIENT_HISTORY": 710,
+        "CALCULATED": 5719,
+        "INSUFFICIENT_HISTORY": 718,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "priceAboveSMA200": {
-        "CALCULATED": 5618,
-        "INSUFFICIENT_HISTORY": 710,
+        "CALCULATED": 5719,
+        "INSUFFICIENT_HISTORY": 718,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceToSMA200": {
-        "CALCULATED": 5618,
-        "INSUFFICIENT_HISTORY": 710,
+        "CALCULATED": 5719,
+        "INSUFFICIENT_HISTORY": 718,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "aboveAllSMA": {
-        "CALCULATED": 5618,
-        "INSUFFICIENT_HISTORY": 710,
+        "CALCULATED": 5719,
+        "INSUFFICIENT_HISTORY": 718,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "aboveSMA20And50And200": {
-        "CALCULATED": 5618,
-        "INSUFFICIENT_HISTORY": 710,
+        "CALCULATED": 5719,
+        "INSUFFICIENT_HISTORY": 718,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "high52w": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "low52w": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceTo52wHigh": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "distanceTo52wLow": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "newHigh52w": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "closeAtHigh52w": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "within5PctOf52wHigh": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.1M": {
-        "CALCULATED": 6328,
+        "CALCULATED": 6437,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.3M": {
-        "CALCULATED": 6247,
-        "INSUFFICIENT_HISTORY": 81,
+        "CALCULATED": 6357,
+        "INSUFFICIENT_HISTORY": 80,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.6M": {
-        "CALCULATED": 5853,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5958,
+        "INSUFFICIENT_HISTORY": 479,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "returns.12M": {
-        "CALCULATED": 5510,
-        "INSUFFICIENT_HISTORY": 818,
+        "CALCULATED": 5606,
+        "INSUFFICIENT_HISTORY": 831,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "return12M1M": {
-        "CALCULATED": 5510,
-        "INSUFFICIENT_HISTORY": 818,
+        "CALCULATED": 5606,
+        "INSUFFICIENT_HISTORY": 831,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "momentumAcceleration": {
-        "CALCULATED": 6247,
-        "INSUFFICIENT_HISTORY": 81,
+        "CALCULATED": 6357,
+        "INSUFFICIENT_HISTORY": 80,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility20d": {
-        "CALCULATED": 6328,
+        "CALCULATED": 6437,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility60d": {
-        "CALCULATED": 6252,
+        "CALCULATED": 6361,
         "INSUFFICIENT_HISTORY": 76,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volatility252d": {
-        "CALCULATED": 5510,
-        "INSUFFICIENT_HISTORY": 818,
+        "CALCULATED": 5606,
+        "INSUFFICIENT_HISTORY": 831,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "downsideVolatility252d": {
-        "CALCULATED": 5510,
-        "INSUFFICIENT_HISTORY": 818,
+        "CALCULATED": 5606,
+        "INSUFFICIENT_HISTORY": 831,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "maxDrawdown252d": {
-        "CALCULATED": 5512,
-        "INSUFFICIENT_HISTORY": 816,
+        "CALCULATED": 5608,
+        "INSUFFICIENT_HISTORY": 829,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "avgVolume20d": {
-        "CALCULATED": 6328,
+        "CALCULATED": 6437,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "avgVolume60d": {
-        "CALCULATED": 6256,
+        "CALCULATED": 6365,
         "INSUFFICIENT_HISTORY": 72,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volumeRatio20over60": {
-        "CALCULATED": 5931,
+        "CALCULATED": 6040,
         "INSUFFICIENT_HISTORY": 397,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "volumeSpikeRatio": {
-        "CALCULATED": 5911,
+        "CALCULATED": 6020,
         "INSUFFICIENT_HISTORY": 397,
         "SOURCE_MISSING": 20,
         "NOT_APPLICABLE": 0
       },
       "volumeBreakout": {
-        "CALCULATED": 5911,
+        "CALCULATED": 6020,
         "INSUFFICIENT_HISTORY": 417,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
       },
       "relativeStrength.1M": {
-        "CALCULATED": 61,
+        "CALCULATED": 6437,
         "INSUFFICIENT_HISTORY": 0,
         "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0,
-        "BENCHMARK_STALE": 6267
+        "NOT_APPLICABLE": 0
       },
       "relativeStrength.3M": {
-        "CALCULATED": 61,
-        "INSUFFICIENT_HISTORY": 81,
+        "CALCULATED": 6357,
+        "INSUFFICIENT_HISTORY": 80,
         "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0,
-        "BENCHMARK_STALE": 6186
+        "NOT_APPLICABLE": 0
       },
       "relativeStrength.6M": {
-        "CALCULATED": 59,
-        "INSUFFICIENT_HISTORY": 475,
+        "CALCULATED": 5958,
+        "INSUFFICIENT_HISTORY": 479,
         "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0,
-        "BENCHMARK_STALE": 5794
+        "NOT_APPLICABLE": 0
       },
       "relativeStrength.12M": {
-        "CALCULATED": 52,
-        "INSUFFICIENT_HISTORY": 818,
+        "CALCULATED": 5606,
+        "INSUFFICIENT_HISTORY": 831,
         "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0,
-        "BENCHMARK_STALE": 5458
+        "NOT_APPLICABLE": 0
       },
       "relativeStrength12M1M": {
-        "CALCULATED": 52,
-        "INSUFFICIENT_HISTORY": 818,
+        "CALCULATED": 5606,
+        "INSUFFICIENT_HISTORY": 831,
         "SOURCE_MISSING": 0,
-        "NOT_APPLICABLE": 0,
-        "BENCHMARK_STALE": 5458
+        "NOT_APPLICABLE": 0
       },
       "beta252d": {
-        "CALCULATED": 5527,
+        "CALCULATED": 5636,
         "INSUFFICIENT_HISTORY": 801,
         "SOURCE_MISSING": 0,
         "NOT_APPLICABLE": 0
@@ -307,11 +304,6 @@
       "ticker": "ABTC",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "ACP-P-A",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "ADAMK",
@@ -334,11 +326,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "AG",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
       "ticker": "AGPU",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -347,11 +334,6 @@
       "ticker": "AHI",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "AIG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "AIHS",
@@ -464,11 +446,6 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "ARES",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "ARQQ",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -477,11 +454,6 @@
       "ticker": "ARTL",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "ASO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "ASST",
@@ -540,16 +512,6 @@
     },
     {
       "ticker": "AZTR",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "BBCP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "BBD",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
@@ -629,11 +591,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "BPRE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "BRK-B",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -659,11 +616,6 @@
       "message": "insufficient_history"
     },
     {
-      "ticker": "BSVN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "BTCT",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -679,24 +631,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "BW-P-A",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "BYAH",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "CASH",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "CCID",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "CDT",
@@ -749,31 +686,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "CHSCL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CHSCM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CHSCN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CHSCO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "CHSCP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "CHSN",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -814,11 +726,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "CNNE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "CNSP",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -839,11 +746,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "CRBG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "CRBP",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -854,19 +756,9 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "CRS",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
       "ticker": "CRVO",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "CRY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "CTEV",
@@ -939,26 +831,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "DIN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DIT",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "DLY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "DMA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "DNA",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -967,11 +839,6 @@
       "ticker": "DOGZ",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "DOLE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "DPU",
@@ -1014,11 +881,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "EASY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "EDBL",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -1059,11 +921,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "ENS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "ENSC",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -1074,19 +931,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "ESP",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "EVAX",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "EVC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "EVGN",
@@ -1149,31 +996,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "FG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FGBI",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "FINS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FNF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FNWD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "FRGE",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -1184,29 +1006,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "FRIZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "FRLN",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "FRO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FSK",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "FSOL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "FTRK",
@@ -1217,11 +1019,6 @@
       "ticker": "FWDI",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "GBLI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "GCTK",
@@ -1319,24 +1116,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "GWRS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HCA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "HCAI",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "HCKT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "HCTI",
@@ -1349,22 +1131,12 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "HERZ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "HIND",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
       "ticker": "HLX",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HMN",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1390,11 +1162,6 @@
     },
     {
       "ticker": "HRYU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "HRZN",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1449,32 +1216,12 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "IBKR",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "ICE",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "ICU",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
       "ticker": "IFBD",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "IFF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "IFLO",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
@@ -1754,16 +1501,6 @@
       "message": "insufficient_history"
     },
     {
-      "ticker": "MEMY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MEOH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "MESA",
       "reason": "FAIL",
       "message": "stale_last_bar"
@@ -1809,37 +1546,12 @@
       "message": "insufficient_history"
     },
     {
-      "ticker": "MRTN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MSI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MSIF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "MTEN",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
       "ticker": "MTUL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "MUSA",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "MYE",
       "reason": "FAIL",
       "message": "stale_last_bar"
     },
@@ -1919,21 +1631,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "NMFC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "NMM",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "NOEQ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "NSAI",
       "reason": "FAIL",
       "message": "insufficient_history"
@@ -1969,11 +1666,6 @@
       "message": "insufficient_history"
     },
     {
-      "ticker": "NXPI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "NXTS",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -1999,19 +1691,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "OFS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "OLB",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "OLED",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "OLOX",
@@ -2022,11 +1704,6 @@
       "ticker": "OM",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "OMC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "ONCO",
@@ -2049,34 +1726,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "OXLCM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "OXLCN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "OXLCO",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "OXSQ",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "PAAI",
       "reason": "FAIL",
       "message": "insufficient_history"
-    },
-    {
-      "ticker": "PAGS",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "PARA",
@@ -2104,27 +1756,12 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "PDCC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PDPA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "PDYN",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
       "ticker": "PED",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "PEGA",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
@@ -2154,16 +1791,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "PLD",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "PLPC",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
       "ticker": "PLRZ",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -2177,11 +1804,6 @@
       "ticker": "PPCB",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "PR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "PRFX",
@@ -2219,19 +1841,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "QCRH",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "QNTM",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "QSR",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "QULL",
@@ -2247,11 +1859,6 @@
       "ticker": "RAYA",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "RBCAA",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "RBNE",
@@ -2309,19 +1916,9 @@
       "message": "stale_last_bar"
     },
     {
-      "ticker": "RMCO",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
       "ticker": "RNAZ",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "RNST",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "RPGL",
@@ -2339,11 +1936,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "RYN",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "SAMO",
       "reason": "FAIL",
       "message": "insufficient_history"
@@ -2357,11 +1949,6 @@
       "ticker": "SBFM",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "SBSW",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "SCDL",
@@ -2387,11 +1974,6 @@
       "ticker": "SEGG",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "SELF",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "SER",
@@ -2479,21 +2061,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "SPCI",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SPCT",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SPG-P-J",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "SPHL",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -2519,16 +2086,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "STRW",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "SUNB",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "SUNE",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -2540,11 +2097,6 @@
     },
     {
       "ticker": "SVRE",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "SXI",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
@@ -2574,27 +2126,12 @@
       "message": "insufficient_history"
     },
     {
-      "ticker": "TCPC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "TCRT",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "TECH",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
       "ticker": "TENX",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "TER",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
@@ -2614,11 +2151,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "TILE",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
       "ticker": "TKLF",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -2627,16 +2159,6 @@
       "ticker": "TLIH",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "TMO",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "TNL",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "TNON",
@@ -2654,29 +2176,14 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "TPB",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
       "ticker": "TPEI",
       "reason": "FAIL",
       "message": "insufficient_history"
     },
     {
-      "ticker": "TPVG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "TREO",
       "reason": "FAIL",
       "message": "insufficient_history"
-    },
-    {
-      "ticker": "TRI",
-      "reason": "SOURCE_MISSING",
-      "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
       "ticker": "TRML",
@@ -2687,16 +2194,6 @@
       "ticker": "TRNR",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "TRTX-P-C",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "TSM",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "TVRD",
@@ -2764,11 +2261,6 @@
       "message": "insufficient_history"
     },
     {
-      "ticker": "VAC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "VBIO",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -2779,24 +2271,9 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "VDG",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "VDV",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "VEEE",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "VIRC",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "VIVK",
@@ -2909,26 +2386,6 @@
       "message": "Keine Kursreihe in der Arbeitsablage."
     },
     {
-      "ticker": "WRB-P-F",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WRB-P-G",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WRB-P-H",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
-      "ticker": "WU",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
-    },
-    {
       "ticker": "WXM",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
@@ -2937,11 +2394,6 @@
       "ticker": "XCUR",
       "reason": "SOURCE_MISSING",
       "message": "Keine Kursreihe in der Arbeitsablage."
-    },
-    {
-      "ticker": "XEY",
-      "reason": "FAIL",
-      "message": "stale_last_bar"
     },
     {
       "ticker": "XHG",
@@ -3042,7 +2494,7 @@
   "detail": {
     "location": "repository",
     "file": "quant/data/market/factors/factors-FULL_UNIVERSE.json",
-    "symbols": 6328
+    "symbols": 6437
   },
   "canary": [
     {
@@ -3096,13 +2548,13 @@
         "volumeSpikeRatio": 0.565,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.086963,
-          "3M": 0.17077,
-          "6M": 0.142657,
-          "12M": 0.133353
+          "1M": 0.078967,
+          "3M": 0.155753,
+          "6M": 0.129675,
+          "12M": 0.132218
         },
-        "relativeStrength12M1M": 0.04639,
-        "beta252d": 0.668114
+        "relativeStrength12M1M": 0.053251,
+        "beta252d": 0.668171
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -3145,12 +2597,12 @@
         "volumeSpikeRatio": "CALCULATED",
         "volumeBreakout": "CALCULATED",
         "relativeStrength": {
-          "1M": "BENCHMARK_STALE",
-          "3M": "BENCHMARK_STALE",
-          "6M": "BENCHMARK_STALE",
-          "12M": "BENCHMARK_STALE"
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
         },
-        "relativeStrength12M1M": "BENCHMARK_STALE",
+        "relativeStrength12M1M": "CALCULATED",
         "beta252d": "CALCULATED"
       },
       "investorReturn": {
@@ -3225,13 +2677,13 @@
         "volumeSpikeRatio": 0.9433,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": -0.045826,
-          "3M": -0.018574,
-          "6M": -0.006026,
-          "12M": -0.065165
+          "1M": -0.053823,
+          "3M": -0.033591,
+          "6M": -0.019008,
+          "12M": -0.066301
         },
-        "relativeStrength12M1M": -0.019339,
-        "beta252d": 0.778312
+        "relativeStrength12M1M": -0.012478,
+        "beta252d": 0.775474
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -3274,12 +2726,12 @@
         "volumeSpikeRatio": "CALCULATED",
         "volumeBreakout": "CALCULATED",
         "relativeStrength": {
-          "1M": "BENCHMARK_STALE",
-          "3M": "BENCHMARK_STALE",
-          "6M": "BENCHMARK_STALE",
-          "12M": "BENCHMARK_STALE"
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
         },
-        "relativeStrength12M1M": "BENCHMARK_STALE",
+        "relativeStrength12M1M": "CALCULATED",
         "beta252d": "CALCULATED"
       },
       "investorReturn": {
@@ -3354,13 +2806,13 @@
         "volumeSpikeRatio": 0.7803,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.01891,
-          "3M": 0.315686,
-          "6M": 0.15182,
-          "12M": -0.166934
+          "1M": 0.010914,
+          "3M": 0.300669,
+          "6M": 0.138838,
+          "12M": -0.16807
         },
-        "relativeStrength12M1M": -0.185844,
-        "beta252d": 0.952865
+        "relativeStrength12M1M": -0.178984,
+        "beta252d": 0.949718
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -3403,12 +2855,12 @@
         "volumeSpikeRatio": "CALCULATED",
         "volumeBreakout": "CALCULATED",
         "relativeStrength": {
-          "1M": "BENCHMARK_STALE",
-          "3M": "BENCHMARK_STALE",
-          "6M": "BENCHMARK_STALE",
-          "12M": "BENCHMARK_STALE"
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
         },
-        "relativeStrength12M1M": "BENCHMARK_STALE",
+        "relativeStrength12M1M": "CALCULATED",
         "beta252d": "CALCULATED"
       },
       "investorReturn": {
@@ -3483,13 +2935,13 @@
         "volumeSpikeRatio": 0.6047,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.059045,
-          "3M": 0.108658,
-          "6M": 0.086306,
-          "12M": 0.085542
+          "1M": 0.051048,
+          "3M": 0.093641,
+          "6M": 0.073324,
+          "12M": 0.084406
         },
-        "relativeStrength12M1M": 0.026497,
-        "beta252d": 1.897594
+        "relativeStrength12M1M": 0.033358,
+        "beta252d": 1.890694
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -3532,12 +2984,12 @@
         "volumeSpikeRatio": "CALCULATED",
         "volumeBreakout": "CALCULATED",
         "relativeStrength": {
-          "1M": "BENCHMARK_STALE",
-          "3M": "BENCHMARK_STALE",
-          "6M": "BENCHMARK_STALE",
-          "12M": "BENCHMARK_STALE"
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
         },
-        "relativeStrength12M1M": "BENCHMARK_STALE",
+        "relativeStrength12M1M": "CALCULATED",
         "beta252d": "CALCULATED"
       },
       "investorReturn": {
@@ -3612,13 +3064,13 @@
         "volumeSpikeRatio": 0.841,
         "volumeBreakout": false,
         "relativeStrength": {
-          "1M": 0.015634,
-          "3M": 0.135686,
-          "6M": -0.149213,
-          "12M": 0.208207
+          "1M": 0.007638,
+          "3M": 0.120669,
+          "6M": -0.162195,
+          "12M": 0.207071
         },
-        "relativeStrength12M1M": 0.192573,
-        "beta252d": -0.518046
+        "relativeStrength12M1M": 0.199433,
+        "beta252d": -0.546363
       },
       "fieldStatus": {
         "sma20": "WITHHELD_REDISTRIBUTION",
@@ -3661,12 +3113,12 @@
         "volumeSpikeRatio": "CALCULATED",
         "volumeBreakout": "CALCULATED",
         "relativeStrength": {
-          "1M": "BENCHMARK_STALE",
-          "3M": "BENCHMARK_STALE",
-          "6M": "BENCHMARK_STALE",
-          "12M": "BENCHMARK_STALE"
+          "1M": "CALCULATED",
+          "3M": "CALCULATED",
+          "6M": "CALCULATED",
+          "12M": "CALCULATED"
         },
-        "relativeStrength12M1M": "BENCHMARK_STALE",
+        "relativeStrength12M1M": "CALCULATED",
         "beta252d": "CALCULATED"
       },
       "investorReturn": {

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-25T01:24:59.140Z",
+  "generatedAt": "2026-09-25T04:35:21.310Z",
   "gate": "FULL_UNIVERSE",
   "universeSource": "SECURITY_MASTER",
   "universeFile": "quant/data/market/security-master/eligibility.json",
@@ -7,21 +7,23 @@
   "engine": "market-factors-1.0.0",
   "benchmark": {
     "id": "SPY",
-    "bars": 930,
-    "last": "2026-09-17",
+    "bars": 935,
+    "last": "2026-09-24",
     "returnBasis": "SPLIT_ADJUSTED_PRICE",
     "priceSource": "RECONSTRUCTED_FROM_SPLIT_FACTOR",
+    "adjustmentStatus": "adjusted",
+    "adjustmentClaim": null,
     "maxLagSessions": 1,
     "newestSecurityDate": "2026-09-24",
-    "lagBehindNewestSessions": 5,
-    "securitiesWithoutRelativeStrength": 6267,
-    "state": "STALE"
+    "lagBehindNewestSessions": 0,
+    "securitiesWithoutRelativeStrength": 0,
+    "state": "CURRENT"
   },
   "run": {
     "source": "github-actions",
-    "runId": "36077075894",
-    "commit": "f8d931a99d7fac6af4b2a2c3dadde4c1bda3fcc4",
-    "runtimeMs": 18576,
+    "runId": "36090303116",
+    "commit": "7d582253cf2963eb9f26049292954be369201d0d",
+    "runtimeMs": 16774,
     "msPerSymbol": 3
   },
   "redistribution": {
@@ -29,18 +31,18 @@
     "note": "Absolute Kursniveaus (SMA-Werte, 52-Wochen-Hoch/Tief, letzter Kurs) sind Anbieterkurse und bleiben in der Arbeitsablage. Ausgeliefert werden Zustaende, Abstaende und Renditen."
   },
   "universeSize": 6875,
-  "evaluable": 6328,
-  "notEvaluable": 547,
+  "evaluable": 6437,
+  "notEvaluable": 438,
   "note": "Jede Frage traegt drei Zahlen: Treffer, Nichttreffer und nicht entscheidbar. Die dritte ist die wichtigste - ohne sie liest sich eine Luecke wie ein Befund.",
   "questions": [
     {
       "id": "aboveSMA20",
       "label": "Alle Aktien ueber SMA20",
       "kind": "boolean",
-      "matched": 1882,
-      "notMatched": 4446,
+      "matched": 1906,
+      "notMatched": 4531,
       "notEvaluable": 0,
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "AAAC",
@@ -101,10 +103,10 @@
       "id": "aboveSMA50",
       "label": "Alle Aktien ueber SMA50",
       "kind": "boolean",
-      "matched": 1999,
-      "notMatched": 4278,
+      "matched": 2024,
+      "notMatched": 4362,
       "notEvaluable": 51,
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "AAAC",
@@ -176,10 +178,10 @@
       "id": "aboveSMA100",
       "label": "Alle Aktien ueber SMA100",
       "kind": "boolean",
-      "matched": 2179,
-      "notMatched": 3776,
+      "matched": 2211,
+      "notMatched": 3853,
       "notEvaluable": 373,
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "AAAC",
@@ -251,10 +253,10 @@
       "id": "aboveSMA200",
       "label": "Alle Aktien ueber SMA200",
       "kind": "boolean",
-      "matched": 2343,
-      "notMatched": 3275,
-      "notEvaluable": 710,
-      "evaluatedOf": 6328,
+      "matched": 2374,
+      "notMatched": 3345,
+      "notEvaluable": 718,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "AACB",
@@ -285,7 +287,6 @@
         "ACT",
         "ACU",
         "ACVA",
-        "ADAM",
         "ADAML",
         "ADAMM",
         "ADAMN",
@@ -305,7 +306,8 @@
         "AER",
         "AERT",
         "AES",
-        "AFAR"
+        "AFAR",
+        "AFBI"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -326,10 +328,10 @@
       "id": "aboveSMA20And50And200",
       "label": "Ueber SMA20 und SMA50 und SMA200",
       "kind": "boolean",
-      "matched": 885,
-      "notMatched": 4733,
-      "notEvaluable": 710,
-      "evaluatedOf": 6328,
+      "matched": 900,
+      "notMatched": 4819,
+      "notEvaluable": 718,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "AAMI",
@@ -401,10 +403,10 @@
       "id": "aboveAllSMA",
       "label": "Ueber allen vier Durchschnitten",
       "kind": "boolean",
-      "matched": 819,
-      "notMatched": 4799,
-      "notEvaluable": 710,
-      "evaluatedOf": 6328,
+      "matched": 834,
+      "notMatched": 4885,
+      "notEvaluable": 718,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "AAMI",
@@ -476,10 +478,10 @@
       "id": "newHigh52w",
       "label": "Neue 52-Wochen-Hochs",
       "kind": "boolean",
-      "matched": 123,
-      "notMatched": 5389,
-      "notEvaluable": 816,
-      "evaluatedOf": 6328,
+      "matched": 124,
+      "notMatched": 5484,
+      "notEvaluable": 829,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "ADAML",
@@ -551,10 +553,10 @@
       "id": "within5PctOf52wHigh",
       "label": "Innerhalb 5 % vom 52-Wochen-Hoch",
       "kind": "boolean",
-      "matched": 626,
-      "notMatched": 4886,
-      "notEvaluable": 816,
-      "evaluatedOf": 6328,
+      "matched": 635,
+      "notMatched": 4973,
+      "notEvaluable": 829,
+      "evaluatedOf": 6437,
       "tickers": [
         "A",
         "AACB",
@@ -626,10 +628,10 @@
       "id": "volumeBreakout",
       "label": "Volumen-Ausbruch (Tagesvolumen >= 2x 20-Tage-Mittel)",
       "kind": "boolean",
-      "matched": 369,
-      "notMatched": 5542,
+      "matched": 362,
+      "notMatched": 5658,
       "notEvaluable": 417,
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "tickers": [
         "AAAD",
         "AAPG",
@@ -638,7 +640,6 @@
         "ACET",
         "ACLZ",
         "ACMM",
-        "ADAM",
         "ADGM",
         "AFYA",
         "AGIQ",
@@ -672,7 +673,6 @@
         "BAY",
         "BB",
         "BBSI",
-        "BCAL",
         "BCAX",
         "BCSM",
         "BDCX",
@@ -680,7 +680,9 @@
         "BEBE",
         "BETR",
         "BFS-P-D",
-        "BFS-P-E"
+        "BFS-P-E",
+        "BGICF",
+        "BHAV"
       ],
       "tickersTruncated": true,
       "notEvaluableSample": [
@@ -703,8 +705,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "returns.12M",
-      "evaluated": 5481,
-      "notEvaluable": 818,
+      "evaluated": 5577,
+      "notEvaluable": 831,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -822,18 +824,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": 112.809524,
+          "value": 110.71381,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -947,7 +949,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -1222,7 +1224,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "AUC",
@@ -1444,8 +1446,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "returns.6M",
-      "evaluated": 5823,
-      "notEvaluable": 475,
+      "evaluated": 5928,
+      "notEvaluable": 479,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -1563,18 +1565,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": -0.029487,
+          "value": -0.034572,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -1688,7 +1690,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -1975,7 +1977,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "SVRN",
@@ -2197,8 +2199,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "return12M1M",
-      "evaluated": 5481,
-      "notEvaluable": 818,
+      "evaluated": 5577,
+      "notEvaluable": 831,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -2316,18 +2318,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": 115.668333,
+          "value": 115.333333,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -2441,7 +2443,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -2716,7 +2718,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "ERAS",
@@ -2938,12 +2940,12 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "relativeStrength.12M",
-      "evaluated": 5481,
-      "notEvaluable": 818,
+      "evaluated": 5577,
+      "notEvaluable": 831,
       "quarantined": [
         {
           "ticker": "AEMD",
-          "value": -1.895041,
+          "value": -1.896177,
           "reasons": [
             {
               "metric": "volatility20d",
@@ -2955,7 +2957,7 @@
         },
         {
           "ticker": "AXTI",
-          "value": 2.616307,
+          "value": 2.615171,
           "reasons": [
             {
               "metric": "returns.12M",
@@ -2973,7 +2975,7 @@
         },
         {
           "ticker": "CATG",
-          "value": 3.224771,
+          "value": 3.223635,
           "reasons": [
             {
               "metric": "returns.6M",
@@ -2997,7 +2999,7 @@
         },
         {
           "ticker": "CPHI",
-          "value": -1.116636,
+          "value": -1.117772,
           "reasons": [
             {
               "metric": "volatility60d",
@@ -3009,7 +3011,7 @@
         },
         {
           "ticker": "CPTAF",
-          "value": -9.374637,
+          "value": -9.375773,
           "reasons": [
             {
               "metric": "volatility20d",
@@ -3033,7 +3035,7 @@
         },
         {
           "ticker": "CYPH",
-          "value": 2.481028,
+          "value": 2.479892,
           "reasons": [
             {
               "metric": "returns.12M",
@@ -3045,7 +3047,7 @@
         },
         {
           "ticker": "DLXY",
-          "value": -2.762724,
+          "value": -2.76386,
           "reasons": [
             {
               "metric": "volatility20d",
@@ -3057,25 +3059,25 @@
         },
         {
           "ticker": "FLXI",
-          "value": 4.590032,
+          "value": 4.570311,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
         },
         {
           "ticker": "GIBO",
-          "value": 2.373688,
+          "value": 2.372552,
           "reasons": [
             {
               "metric": "returns.3M",
@@ -3105,7 +3107,7 @@
         },
         {
           "ticker": "GOTU",
-          "value": -2.524307,
+          "value": -2.525443,
           "reasons": [
             {
               "metric": "volatility252d",
@@ -3117,7 +3119,7 @@
         },
         {
           "ticker": "LBGJ",
-          "value": -9.599344,
+          "value": -9.60048,
           "reasons": [
             {
               "metric": "volatility60d",
@@ -3129,7 +3131,7 @@
         },
         {
           "ticker": "MEDS",
-          "value": -2.795386,
+          "value": -2.796522,
           "reasons": [
             {
               "metric": "volatility20d",
@@ -3141,7 +3143,7 @@
         },
         {
           "ticker": "MGRT",
-          "value": 3.258184,
+          "value": 3.257048,
           "reasons": [
             {
               "metric": "returns.6M",
@@ -3165,7 +3167,7 @@
         },
         {
           "ticker": "MINE",
-          "value": 14.678975,
+          "value": 14.677839,
           "reasons": [
             {
               "metric": "returns.12M",
@@ -3182,7 +3184,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -3195,7 +3197,7 @@
         },
         {
           "ticker": "NINE",
-          "value": 2.348604,
+          "value": 2.347468,
           "reasons": [
             {
               "metric": "returns.6M",
@@ -3219,7 +3221,7 @@
         },
         {
           "ticker": "PLAG",
-          "value": -1.10056,
+          "value": -1.101696,
           "reasons": [
             {
               "metric": "volatility60d",
@@ -3231,7 +3233,7 @@
         },
         {
           "ticker": "PMI",
-          "value": -0.615524,
+          "value": -0.61666,
           "reasons": [
             {
               "metric": "returns.3M",
@@ -3255,7 +3257,7 @@
         },
         {
           "ticker": "QHUOY",
-          "value": -0.142492,
+          "value": -0.143628,
           "reasons": [
             {
               "metric": "returns.6M",
@@ -3267,7 +3269,7 @@
         },
         {
           "ticker": "SHAZ",
-          "value": 3.887975,
+          "value": 3.886839,
           "reasons": [
             {
               "metric": "returns.12M",
@@ -3285,7 +3287,7 @@
         },
         {
           "ticker": "SION",
-          "value": -1.775869,
+          "value": -1.777005,
           "reasons": [
             {
               "metric": "volatility60d",
@@ -3297,7 +3299,7 @@
         },
         {
           "ticker": "SLAIY",
-          "value": -4.257551,
+          "value": -4.258687,
           "reasons": [
             {
               "metric": "volatility20d",
@@ -3315,7 +3317,7 @@
         },
         {
           "ticker": "SNYR",
-          "value": -3.357829,
+          "value": -3.357879,
           "reasons": [
             {
               "metric": "volatility20d",
@@ -3327,7 +3329,7 @@
         },
         {
           "ticker": "SRXH",
-          "value": 1.485973,
+          "value": 1.484837,
           "reasons": [
             {
               "metric": "returns.3M",
@@ -3345,7 +3347,7 @@
         },
         {
           "ticker": "VIVKD",
-          "value": 1.237697,
+          "value": 1.236561,
           "reasons": [
             {
               "metric": "returns.6M",
@@ -3363,7 +3365,7 @@
         },
         {
           "ticker": "VSEE",
-          "value": 0.811896,
+          "value": 0.81076,
           "reasons": [
             {
               "metric": "returns.1M",
@@ -3399,7 +3401,7 @@
         },
         {
           "ticker": "XHLD",
-          "value": 0.828492,
+          "value": 0.827356,
           "reasons": [
             {
               "metric": "returns.3M",
@@ -3411,7 +3413,7 @@
         },
         {
           "ticker": "YXT",
-          "value": -1.57161,
+          "value": -1.572746,
           "reasons": [
             {
               "metric": "volatility60d",
@@ -3423,7 +3425,7 @@
         },
         {
           "ticker": "ZCSH",
-          "value": 3.187534,
+          "value": 3.186398,
           "reasons": [
             {
               "metric": "returns.12M",
@@ -3441,7 +3443,7 @@
         },
         {
           "ticker": "ZYBT",
-          "value": -1.818947,
+          "value": -1.820083,
           "reasons": [
             {
               "metric": "volatility60d",
@@ -3457,207 +3459,207 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "AUC",
-          "value": 2.103856
+          "value": 2.10272
         },
         {
           "ticker": "CMRX",
-          "value": 2.101083
+          "value": 2.099947
         },
         {
           "ticker": "ANL",
-          "value": 2.035197
+          "value": 2.034061
         },
         {
           "ticker": "NUAI",
-          "value": 1.961345
+          "value": 1.960209
         },
         {
           "ticker": "ERAS",
-          "value": 1.960054
+          "value": 1.958918
         },
         {
           "ticker": "MRNA",
-          "value": 1.877595
+          "value": 1.876459
         },
         {
           "ticker": "STBX",
-          "value": 1.822635
+          "value": 1.821499
         },
         {
           "ticker": "SLS",
-          "value": 1.808117
+          "value": 1.806981
         },
         {
           "ticker": "MTC",
-          "value": 1.802036
+          "value": 1.8009
         },
         {
           "ticker": "TXG",
-          "value": 1.762703
+          "value": 1.761567
         },
         {
           "ticker": "TWST",
-          "value": 1.751341
+          "value": 1.750205
         },
         {
           "ticker": "ANRO",
-          "value": 1.744565
+          "value": 1.743429
         },
         {
           "ticker": "MU",
-          "value": 1.726259
+          "value": 1.725123
         },
         {
           "ticker": "PRAX",
-          "value": 1.613045
+          "value": 1.611909
         },
         {
           "ticker": "SPRB",
-          "value": 1.607668
+          "value": 1.606532
         },
         {
           "ticker": "IMMX",
-          "value": 1.597255
+          "value": 1.596119
         },
         {
           "ticker": "LITE",
-          "value": 1.589853
+          "value": 1.588717
         },
         {
           "ticker": "BUUU",
-          "value": 1.583728
+          "value": 1.582592
         },
         {
           "ticker": "ORKA",
-          "value": 1.559202
+          "value": 1.558066
         },
         {
           "ticker": "MAMK",
-          "value": 1.553355
+          "value": 1.552219
         },
         {
           "ticker": "SYRE",
-          "value": 1.54861
+          "value": 1.547474
         },
         {
           "ticker": "CLYM",
-          "value": 1.520274
+          "value": 1.519138
         },
         {
           "ticker": "IOVA",
-          "value": 1.507504
+          "value": 1.506368
         },
         {
           "ticker": "MXL",
-          "value": 1.496621
+          "value": 1.495485
         },
         {
           "ticker": "VICR",
-          "value": 1.490479
+          "value": 1.489343
         },
         {
           "ticker": "QTTB",
-          "value": 1.483554
+          "value": 1.482418
         },
         {
           "ticker": "CHRN",
-          "value": 1.444558
+          "value": 1.443422
         },
         {
           "ticker": "MAGH",
-          "value": 1.430057
+          "value": 1.428921
         },
         {
           "ticker": "DMRA",
-          "value": 1.424813
+          "value": 1.423677
         },
         {
           "ticker": "OMER",
-          "value": 1.403764
+          "value": 1.402628
         },
         {
           "ticker": "OPTX",
-          "value": 1.400064
+          "value": 1.398928
         },
         {
           "ticker": "BFLY",
-          "value": 1.384329
+          "value": 1.383193
         },
         {
           "ticker": "RVMD",
-          "value": 1.364285
+          "value": 1.363149
         },
         {
           "ticker": "INTC",
-          "value": 1.323808
+          "value": 1.322672
         },
         {
           "ticker": "EDRY",
-          "value": 1.262846
+          "value": 1.26171
         },
         {
           "ticker": "WDC",
-          "value": 1.262692
+          "value": 1.261556
         },
         {
           "ticker": "MAAS",
-          "value": 1.261233
+          "value": 1.260097
         },
         {
           "ticker": "DELL",
-          "value": 1.239304
+          "value": 1.238168
         },
         {
           "ticker": "RLAY",
-          "value": 1.23786
+          "value": 1.236724
         },
         {
           "ticker": "ABSI",
-          "value": 1.236498
+          "value": 1.235362
         },
         {
           "ticker": "STX",
-          "value": 1.234542
+          "value": 1.233406
         },
         {
           "ticker": "CDNA",
-          "value": 1.227081
+          "value": 1.225945
         },
         {
           "ticker": "AMD",
-          "value": 1.219268
+          "value": 1.218132
         },
         {
           "ticker": "PRLD",
-          "value": 1.209739
+          "value": 1.208603
         },
         {
           "ticker": "DOCN",
-          "value": 1.198464
+          "value": 1.197328
         },
         {
           "ticker": "ANTX",
-          "value": 1.188056
+          "value": 1.18692
         },
         {
           "ticker": "GRCL",
-          "value": 1.174826
+          "value": 1.17369
         },
         {
           "ticker": "VNCE",
-          "value": 1.170775
+          "value": 1.169639
         },
         {
           "ticker": "AP",
-          "value": 1.169507
+          "value": 1.168371
         },
         {
           "ticker": "ASX",
-          "value": 1.168678
+          "value": 1.167542
         }
       ],
       "notEvaluableSample": [
@@ -3679,8 +3681,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "momentumAcceleration",
-      "evaluated": 6217,
-      "notEvaluable": 81,
+      "evaluated": 6327,
+      "notEvaluable": 80,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -3798,18 +3800,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": -0.016573,
+          "value": -0.026047,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -3923,7 +3925,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -4210,7 +4212,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "KEEX",
@@ -4432,7 +4434,7 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "volatility60d",
-      "evaluated": 6222,
+      "evaluated": 6331,
       "notEvaluable": 76,
       "quarantined": [
         {
@@ -4551,18 +4553,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": 0.048082,
+          "value": 0.052515,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -4676,7 +4678,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -4963,7 +4965,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "AMZE",
@@ -5022,12 +5024,12 @@
           "value": 3.198982
         },
         {
-          "ticker": "WYHG",
-          "value": 3.154962
+          "ticker": "AXTX",
+          "value": 3.164251
         },
         {
-          "ticker": "AXTX",
-          "value": 3.148635
+          "ticker": "WYHG",
+          "value": 3.154962
         },
         {
           "ticker": "YJ",
@@ -5185,7 +5187,7 @@
       "kind": "ranked",
       "direction": "asc",
       "metric": "volatility60d",
-      "evaluated": 6222,
+      "evaluated": 6331,
       "notEvaluable": 76,
       "quarantined": [
         {
@@ -5304,18 +5306,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": 0.048082,
+          "value": 0.052515,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -5429,7 +5431,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -5716,7 +5718,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "AACT",
@@ -5938,8 +5940,8 @@
       "kind": "ranked",
       "direction": "desc",
       "metric": "distanceTo52wHigh",
-      "evaluated": 5483,
-      "notEvaluable": 816,
+      "evaluated": 5579,
+      "notEvaluable": 829,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -6057,18 +6059,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": -0.048637,
+          "value": -0.066156,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -6182,7 +6184,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -6457,7 +6459,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "ADEX",
@@ -6679,8 +6681,8 @@
       "kind": "ranked",
       "direction": "asc",
       "metric": "maxDrawdown252d",
-      "evaluated": 5483,
-      "notEvaluable": 816,
+      "evaluated": 5579,
+      "notEvaluable": 829,
       "quarantined": [
         {
           "ticker": "AEMD",
@@ -6798,18 +6800,18 @@
         },
         {
           "ticker": "FLXI",
-          "value": -0.052916,
+          "value": -0.066156,
           "reasons": [
             {
               "metric": "returns.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 112.809524,
+              "value": 110.71381,
               "bound": 10
             },
             {
               "metric": "return12M1M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 115.668333,
+              "value": 115.333333,
               "bound": 10
             }
           ]
@@ -6923,7 +6925,7 @@
             {
               "metric": "relativeStrength.12M",
               "reason": "IMPLAUSIBLE_VALUE",
-              "value": 14.678975,
+              "value": 14.677839,
               "bound": 10
             },
             {
@@ -7198,7 +7200,7 @@
         "version": "ranking-hygiene-2.0.0",
         "policy": "Quarantine is applied to every full-universe row before sorting and top-K; raw factor rows remain unchanged."
       },
-      "evaluatedOf": 6328,
+      "evaluatedOf": 6437,
       "top": [
         {
           "ticker": "KIDZ",
