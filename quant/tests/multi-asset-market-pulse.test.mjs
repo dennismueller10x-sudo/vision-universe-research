@@ -105,7 +105,7 @@ test("Markt jetzt: nur aktuelle Werte, keine Stufenreihen, hoechstens zwei je Gr
     mk("FED_TARGET", "RATE", 25, "CURRENT", { steps: true, bp: true }),
     mk("US10Y", "YIELD", 60, "CURRENT", { bp: true, recent: Array.from({ length: 40 }, (_, i) => ["d" + i, 4 + (i % 2) * 0.1]) }),
     mk("QQQ", "ETF", 4, "LAST_SESSION", { tracker: { displayMarketName: "Nasdaq 100" } })
-  ], CFG.marketNow);
+  ], CFG.marketNow, "2026-09-25T08:00:00Z");
   const syms = out.map((x) => x.symbol);
   assert.ok(!syms.includes("XAUUSD"), "veraltete Werte nicht");
   assert.ok(!syms.includes("FED_TARGET"), "Stufenreihen nicht");
@@ -119,7 +119,11 @@ test("Markt jetzt: nur aktuelle Werte, keine Stufenreihen, hoechstens zwei je Gr
     mk("XAUUSD", "PRECIOUS_METAL", 5, "STALE"), mk("FED_TARGET", "RATE", 25, "CURRENT", { steps: true, bp: true }),
     mk("US10Y", "YIELD", 60, "CURRENT", { bp: true, recent: Array.from({ length: 40 }, (_, i) => ["d" + i, 4 + (i % 2) * 0.1]) }),
     mk("QQQ", "ETF", 4, "LAST_SESSION", { tracker: { displayMarketName: "Nasdaq 100" } })
-  ]], CFG.marketNow));
+  ]], CFG.marketNow, "2026-09-25T08:00:00Z"));
+  const alt = mk("EURUSD", "FX", 3, "CURRENT"); alt.quote.observationDate = "2026-09-21";
+  assert.equal(MP.marketNow([alt], CFG.marketNow, "2026-09-25T08:00:00Z").length, 0, "Beobachtung vom Wochenanfang ist nicht 'jetzt'");
+  const wochenende = mk("QQQ", "ETF", 3, "LAST_SESSION"); wochenende.quote.observationDate = "2026-09-25";
+  assert.equal(MP.marketNow([wochenende], CFG.marketNow, "2026-09-28T13:00:00Z").length, 1, "Freitag bleibt am Montag sichtbar");
 });
 
 test("Kalibrierung: Konfiguration reproduziert die Perzentile, alle Phasenpruefungen bestanden", () => {

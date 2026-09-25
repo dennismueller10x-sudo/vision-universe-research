@@ -63,8 +63,9 @@
     "maxPerGroup": 2,
     "notable": 1.0,
     "strong": 2.0,
+    "maxAgeDays": 3,
     "basis": "SELF_HISTORY_RATIO",
-    "note": "Verhaeltnis der juengsten Tagesveraenderung zur typischen Tagesveraenderung der letzten ~3 Monate (history.recent im Vertrag). Deutlich ab 1-fach, stark ab 2-fach. Policy-Raten (Stufen) nehmen nicht teil."
+    "note": "Verhaeltnis der juengsten Tagesveraenderung zur typischen Tagesveraenderung der letzten ~3 Monate (history.recent im Vertrag). Deutlich ab 1-fach, stark ab 2-fach. Policy-Raten (Stufen) nehmen nicht teil. Beobachtungen aelter als maxAgeDays Kalendertage (plus Toleranz von einem Tag) sind nicht 'jetzt'."
   },
   "movers": {
     "count": 5,

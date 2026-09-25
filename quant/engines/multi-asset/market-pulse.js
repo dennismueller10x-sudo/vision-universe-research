@@ -352,8 +352,13 @@
    * Anzeigezeit), hoechstens cfg.maxPerGroup je Gruppe, hoechstens cfg.max.
    * @param {Array} contracts bereits mit VUMultiAssetContract.refresh bewertet
    */
-  function marketNow(contracts, cfg) {
+  function marketNow(contracts, cfg, now) {
     cfg = cfg || {};
+    /* Eine Tagesbewegung, deren Beobachtung aelter als maxAgeDays ist, ist
+       keine Bewegung von "jetzt" - auch wenn der Wert laut Veroeffentlichungs-
+       plan noch aktuell ist (z. B. ein Referenzkurs vom Wochenanfang). */
+    var nowMs = now ? new Date(now).getTime() : Date.now();
+    var maxAge = isNum(cfg.maxAgeDays) ? cfg.maxAgeDays : 3;
     var max = cfg.max || 5, minItems = cfg.min || 3, notable = cfg.notable || 1, strong = cfg.strong || 2, perGroup = cfg.maxPerGroup || 2;
     var cands = [];
     (contracts || []).forEach(function (c) {
@@ -363,6 +368,8 @@
       if (!grp || c.history.representation === "STEPS") return;
       var fresh = c.data && c.data.freshness && c.data.freshness.state;
       if (!AKTUELL[fresh]) return;
+      var obs = String(q.observationDate || q.asOf || "").slice(0, 10);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(obs) || (nowMs - Date.parse(obs + "T00:00:00Z")) / 86400000 > maxAge + 1) return;
       var bp = q.change.semantics === "BASIS_POINTS";
       var cur = bp ? q.change.basisPoints : q.change.percent;
       if (!isNum(cur)) return;
