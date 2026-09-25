@@ -64,13 +64,63 @@ test("Index ohne Quelle: CAPABILITY_GAP mit Grund, kein Wert, kein Proxy", () =>
   assert.equal(c.capabilities.currencyConversion, "NOT_CONVERTIBLE");
 });
 
-test("Index ueber FMP: technisch aufgeloest, aber ohne Freigabe kein Wert und keine Historie", () => {
+test("S&P 500 als Index: seit Tiingo-first eine benannte Luecke - der Markt kommt ueber den Tracker SPY", () => {
   const c = build("SPX", [["2026-09-22", 6600], ["2026-09-23", 6650]]);
-  assert.equal(c.quote.state, "WITHHELD_LICENSE");
+  assert.equal(c.quote.state, "CAPABILITY_GAP");
   assert.equal(c.quote.value, null);
   assert.deepEqual(c.history.recent, []);
   assert.equal(c.proxy.isProxy, false);
-  assert.ok(c.proxy.knownProxiesNotUsed.includes("SPY"), "der ETF bleibt benannt und ungenutzt");
+  assert.match(c.gap.consumerRepresentation, /SPY/);
+  assert.equal(c.data.source, null, "keine FMP-Quelle mehr");
+});
+
+test("Tracker QQQ: ETF, Kurs je Anteil in USD, isProxy true mit Kennzeichnung - kein Indexstand", () => {
+  const c = build("QQQ", [["2026-09-23", 600], ["2026-09-24", 606]]);
+  assert.equal(c.instrument.assetClass, "ETF");
+  assert.equal(c.instrument.instrumentSubtype, "INDEX_TRACKER");
+  assert.notEqual(c.instrument.assetClass, "INDEX");
+  assert.equal(c.quote.unitId, "USD_PER_SHARE");
+  assert.notEqual(c.quote.unitDisplay, "Pkt.");
+  assert.equal(c.quote.valueSemantics, "PRICE");
+  assert.equal(c.proxy.isProxy, true);
+  assert.equal(c.proxy.isIndexLevel, false);
+  assert.equal(c.proxy.represents, "NASDAQ_100");
+  assert.equal(c.tracker.displayMarketName, "Nasdaq 100");
+  assert.equal(c.tracker.trackerDisclosure, "Markt-Tracker: Invesco QQQ");
+  assert.equal(c.tracker.changePercent, 1);
+  assert.equal(c.tracker.price, 606);
+  assert.equal(c.market.displayMarket, "NASDAQ_100");
+  assert.equal(c.market.underlyingType, "INDEX");
+  assert.equal(c.market.trackedBy, "QQQ");
+  assert.equal(c.market.tradingSession, "US_EQUITY_ETF");
+  assert.equal(c.license.state, "LICENSE_CONFIRMED");
+  assert.match(c.displaySemantics.note, /kein Indexstand/);
+});
+
+test("SPY und DIA: dieselbe Tracker-Semantik, richtige Indexzuordnung", () => {
+  const spy = build("SPY", [["2026-09-23", 660], ["2026-09-24", 661]]);
+  const dia = build("DIA", [["2026-09-23", 460], ["2026-09-24", 459]]);
+  assert.equal(spy.proxy.represents, "SP500");
+  assert.equal(dia.proxy.represents, "DOW_JONES_INDUSTRIAL_AVERAGE");
+  for (const c of [spy, dia]) { assert.equal(c.instrument.assetClass, "ETF"); assert.equal(c.quote.unitId, "USD_PER_SHARE"); }
+});
+
+test("Tracker in EUR: Kurs ueber den Currency Core, die Prozentbewegung bleibt unveraendert", () => {
+  const c = build("QQQ", [["2026-09-23", 600], ["2026-09-24", 606]]);
+  let calls = 0;
+  const layer = { price: (v, cur, o) => { calls++; return { available: true, display: { value: v * 0.9, currency: o.displayCurrency } }; } };
+  const p = Contract.present(c, { layer, displayCurrency: "EUR" });
+  assert.equal(calls, 1);
+  assert.equal(p.display.currency, "EUR");
+  assert.equal(p.native.unitId, "USD_PER_SHARE");
+  assert.equal(c.quote.change.percent, 1, "Prozent werden nicht umgerechnet");
+});
+
+test("Tracker-Sitzung: 08:00 New York ist fuer den ETF Vorboerse, fuer den Index geschlossen", () => {
+  const at = "2026-09-24T12:00:00Z";
+  const etf = Contract.refresh(build("QQQ", [["2026-09-22", 600], ["2026-09-23", 606]]), { now: at, calendar, config });
+  assert.equal(etf.market.state, "PRE_MARKET");
+  assert.equal(etf.market.sessionProfile, "US_EQUITY_ETF");
 });
 
 test("Nikkei 225 ueber FRED: Punkte, keine Umrechnung, Quellenangabe nennt Nikkei und FRED", () => {
@@ -82,13 +132,24 @@ test("Nikkei 225 ueber FRED: Punkte, keine Umrechnung, Quellenangabe nennt Nikke
   assert.match(JSON.stringify(c.data.provenance), /Nikkei Inc\., via FRED/);
 });
 
-test("Lizenz ausstehend (Gold via Tiingo): Wert und Historie werden nicht ausgeliefert", () => {
+test("Gold via Tiingo: angezeigt als Development-Risiko, ausdruecklich ohne kommerzielle Freigabe", () => {
   const c = build("XAUUSD", [["2026-09-22", 3700], ["2026-09-23", 3720]]);
+  assert.equal(c.quote.state, "AVAILABLE");
+  assert.equal(c.quote.value, 3720);
+  assert.equal(c.license.state, "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT");
+  assert.equal(c.license.preCommercialLicenseConfirmationRequired, true);
+  assert.equal(c.license.commercialDisplayApproved, false);
+});
+
+test("Lizenz ausstehend bleibt ohne Wert (Mechanik, unabhaengig von Tiingo)", () => {
+  const i = Object.assign({}, resolved.XAUUSD, { status: "LICENSE_PENDING" });
+  const c = Contract.build({ instrument: i, source: config.sourceRegistry["fmp-index"], series: { points: [["2026-09-22", 1], ["2026-09-23", 2]], frequency: "DAILY" },
+                             capabilities: { eod: true }, now: NOW, calendar, config });
   assert.equal(c.quote.state, "WITHHELD_LICENSE");
   assert.equal(c.quote.value, null);
-  assert.equal(c.history.available, false);
   assert.deepEqual(c.history.recent, []);
-  assert.equal(c.license.state, "OWNER_DECISION_REQUIRED");
+  assert.equal(c.license.state, "UNAVAILABLE");
+  assert.equal(c.license.withheld, true);
 });
 
 test("Leitzins als Stufenserie: Veraenderung zum vorigen Beschluss, Zeitraeume trotz weniger Punkte", () => {

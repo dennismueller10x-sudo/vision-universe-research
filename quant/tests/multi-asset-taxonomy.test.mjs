@@ -34,9 +34,54 @@ test("ein Index ist kein ETF: kein Katalog-Index nutzt ein ETF-Kuerzel als Symbo
     assert.equal(i.valueSemantics, "INDEX_LEVEL");
     for (const p of i.knownProxies) assert.notEqual(String(p).split(" ")[0], i.symbol === "DAX" ? "__" : i.symbol);
   }
-  assert.equal(Catalog.bySymbol("SPY"), null);
-  assert.equal(Catalog.bySymbol("QQQ"), null);
+  /* Seit der Owner-Entscheidung 2026-09-25 gibt es SPY/QQQ/DIA im Katalog -
+     aber als ETF (INDEX_TRACKER), nie als INDEX. */
+  for (const t of ["SPY", "QQQ", "DIA"]) {
+    const i = Catalog.bySymbol(t);
+    assert.equal(i.assetClass, "ETF", t);
+    assert.equal(i.subType, "INDEX_TRACKER", t);
+    assert.notEqual(i.unit, "INDEX_POINTS", t);
+  }
   assert.equal(Catalog.bySymbol("GLD"), null);
+});
+
+test("Tracker-Regeln greifen: ein ETF in Indexpunkten, ohne Kennzeichnung oder als INDEX ist ungueltig", () => {
+  const ok = Catalog.bySymbol("QQQ");
+  assert.deepEqual(Taxonomy.validateInstrument(ok), []);
+  assert.ok(Taxonomy.validateInstrument(Object.assign({}, ok, { unit: "INDEX_POINTS" })).includes("etfMustBeMonetaryNeverPoints"));
+  assert.ok(Taxonomy.validateInstrument(Object.assign({}, ok, { tracker: Object.assign({}, ok.tracker, { trackerDisclosure: "" }) })).includes("trackerDisclosureMissing"));
+  assert.ok(Taxonomy.validateInstrument(Object.assign({}, ok, { tracker: Object.assign({}, ok.tracker, { isProxy: false }) })).includes("trackerMustBeProxy"));
+  assert.ok(Taxonomy.validateInstrument(Object.assign({}, ok, { assetClass: "INDEX" })).includes("trackerMustBeEtf"));
+  assert.ok(Taxonomy.validateInstrument(Object.assign({}, ok, { sessionProfile: "INDEX_US" })).includes("trackerMustUseEtfSession"));
+});
+
+test("Tiingo-first: keine Consumer-Abhaengigkeit von FMP, Comparison-FRED, Pre-Approval-FRED, Yahoo, Google oder Massive", () => {
+  const config = require("../config/multi-asset.json");
+  const Fred = require("../../providers/fred/adapter.js");
+  for (const i of Catalog.resolved()) {
+    assert.notEqual(i.source, "fmp-index", i.symbol);
+    assert.notEqual(i.source, "fred", i.symbol);
+    assert.ok(!["NASDAQ100", "SP500", "DJIA", "NASDAQCOM"].includes((i.providerIdentifiers || {}).fred), i.symbol);
+  }
+  for (const s of Object.values(Fred.SERIES)) assert.equal(s.licenseClass, "CITATION_REQUIRED");
+  assert.equal(config.sourceRegistry["fmp-index"].publicDisplay, false);
+  assert.equal(config.sourceRegistry["fmp-index"].role, "AUDIT_EVIDENCE_ONLY");
+  for (const [id, r] of Object.entries(config.sourceRegistry)) assert.ok(!/yahoo|google|massive|polygon/i.test(`${r.provider} ${r.product}`), id);
+});
+
+test("Lizenzvokabular: Development-Risiko ist keine kommerzielle Freigabe", () => {
+  const config = require("../config/multi-asset.json");
+  const ALLOWED = ["LICENSE_CONFIRMED", "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT", "PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED", "UNAVAILABLE"];
+  for (const [id, r] of Object.entries(config.sourceRegistry)) {
+    assert.ok(ALLOWED.includes(r.displayLicense), id);
+    if (r.commercialDisplayApproved) assert.equal(r.displayLicense, "LICENSE_CONFIRMED", id);
+  }
+  for (const id of ["tiingo-crypto", "tiingo-fx-metals"]) {
+    const r = config.sourceRegistry[id];
+    assert.equal(r.displayLicense, "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT");
+    assert.equal(r.preCommercialLicenseConfirmationRequired, true);
+    assert.equal(r.commercialDisplayApproved, false);
+  }
 });
 
 test("Rendite und Zins: Prozent, keine Waehrung, Basispunkte, nicht umrechenbar", () => {

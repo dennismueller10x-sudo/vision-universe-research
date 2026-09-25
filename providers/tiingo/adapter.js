@@ -967,7 +967,27 @@ function createTiingoProvider(options) {
   return api;
 }
 
+/**
+ * Schlusskurse um Splits bereinigt (nur Splits, keine Ausschuettungen) -
+ * aus Tiingos splitFactor je Tag. Ergebnis in heutigen Anteilen:
+ * [[date, close]], aufsteigend. Keine Indexrechnung, nur die
+ * Stueckelung des Titels wird vergleichbar gemacht.
+ *
+ * @param {Array<{date, close, splitFactor}>} bars  aufsteigend
+ */
+function splitAdjustedCloses(bars) {
+  const out = new Array(bars.length);
+  let factor = 1;
+  for (let k = bars.length - 1; k >= 0; k--) {
+    out[k] = [bars[k].date, +(bars[k].close / factor).toFixed(4)];
+    const sf = bars[k].splitFactor;
+    if (typeof sf === "number" && sf > 0 && sf !== 1) factor *= sf;
+  }
+  return out;
+}
+
 module.exports = {
+  splitAdjustedCloses,
   PROVIDER_ID,
   DATA_SOURCE_ID,
   DEFAULT_BASE_URL,

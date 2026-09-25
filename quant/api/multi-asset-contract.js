@@ -33,7 +33,13 @@
   var Taxonomy = isNode ? require("../engines/multi-asset/asset-taxonomy.js") : (global.VUMultiAsset && global.VUMultiAsset.Taxonomy);
   var AssetFreshness = isNode ? require("../engines/realtime/asset-freshness.js") : (global.VURealtime && global.VURealtime.AssetFreshness);
 
-  var CONTRACT_VERSION = "multi-asset-contract-1.0.0";
+  var CONTRACT_VERSION = "multi-asset-contract-1.1.0";
+  /* 1.1.0 (Owner-Entscheidung 2026-09-25, Tiingo-first): Index-Tracker als
+     eigene Instrumente (assetClass ETF, instrumentSubtype INDEX_TRACKER,
+     isProxy true, Kennzeichnung fuer den Consumer) und die Lizenz jedes
+     Wertes in einem festen Vokabular. Nichts Bestehendes entfaellt. */
+  var LICENSE_STATES = ["LICENSE_CONFIRMED", "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT",
+                        "PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED", "UNAVAILABLE"];
   var QUOTE_STATES = ["AVAILABLE", "WITHHELD_LICENSE", "CAPABILITY_GAP", "SOURCE_MISSING"];
   var HORIZONS = { "1W": 7, "1M": 30, "3M": 91, "1Y": 365, "5Y": 1826, "10Y": 3652 };
   var DAY_MS = 86400000;
@@ -166,11 +172,15 @@
     var fresh = AssetFreshness.assess({ instrument: i, observation: observation, now: input.now,
                                         calendar: input.calendar, config: input.config });
 
+    var tr = i.subType === "INDEX_TRACKER" ? (i.tracker || {}) : null;
+    var displayLicense = src ? (LICENSE_STATES.indexOf(src.displayLicense) !== -1 ? src.displayLicense : "UNAVAILABLE") : "UNAVAILABLE";
+    var quoteChange = show && previous && latest ? change(latest.value, previous[1], semantics) : null;
+
     var contract = {
       contractVersion: CONTRACT_VERSION,
       instrument: {
         instrumentId: i.instrumentId, symbol: i.symbol, name: i.name, nameDe: i.nameDe || i.name,
-        assetClass: i.assetClass, assetType: i.assetClass, subType: i.subType, subTypeNote: i.subTypeNote || null,
+        assetClass: i.assetClass, assetType: i.assetClass, subType: i.subType, instrumentSubtype: i.subType, subTypeNote: i.subTypeNote || null,
         yieldKind: i.yieldKind || null, family: i.family || null, exchangeOrVenue: i.exchangeOrVenue || null,
         country: i.country || null, timezone: i.timezone || null, tenorYears: i.tenorYears || null,
         status: i.status
@@ -187,7 +197,7 @@
         currencyContext: i.currencyContext || null,
         asOf: latest ? latest.asOf : null,
         observationDate: latest ? latest.observationDate || null : null,
-        change: show && previous && latest ? change(latest.value, previous[1], semantics) : null,
+        change: quoteChange,
         changeReferenceDate: show && previous ? previous[0] : null
       },
       market: {
@@ -196,7 +206,13 @@
         sessionExchange: i.sessionExchange || null,
         publisherProfile: i.publisherProfile || null,
         timezone: fresh.session ? fresh.session.timezone : i.timezone || null,
-        calendarCoverage: fresh.session ? !!fresh.session.calendarCoverage : false
+        calendarCoverage: fresh.session ? !!fresh.session.calendarCoverage : false,
+        /* Ein Tracker handelt in der US-ETF-Sitzung - nicht in der
+           Berechnungszeit seines Index (§14 der Owner-Entscheidung). */
+        displayMarket: tr ? tr.tracksIndex || null : null,
+        underlyingType: tr ? tr.underlyingType || "INDEX" : null,
+        trackedBy: tr ? i.symbol : null,
+        tradingSession: tr ? "US_EQUITY_ETF" : null
       },
       data: {
         source: i.source || null,
@@ -230,7 +246,8 @@
         scheduledChange: input.series ? input.series.scheduledChange || null : null,
         intervals: show ? avail : {},
         recent: show ? points.slice(-66) : [],
-        path: show ? input.historyPath || null : null
+        path: show ? input.historyPath || null : null,
+        intradayPath: show && input.capabilities && input.capabilities.intradayPublished ? input.intradayPath || null : null
       },
       performance: show ? performance(points, semantics, avail) : {},
       capabilities: {
@@ -238,6 +255,9 @@
         intraday: !!(input.capabilities && input.capabilities.intraday),
         realtime: !!(input.capabilities && input.capabilities.realtime),
         websocket: !!(input.capabilities && input.capabilities.websocket),
+        /* Welcher bestehende Pfad Echtzeit tragen kann - eine Faehigkeit,
+           keine Behauptung. LIVE sagt nur data.freshness. */
+        realtimeCapability: (input.capabilities && input.capabilities.realtimePath) || null,
         currencyConversion: Taxonomy.conversionFor(i.assetClass, i.unit)
       },
       displaySemantics: {
@@ -246,14 +266,42 @@
         comparableAcrossClasses: false,
         note: semantics === "BASIS_POINTS"
           ? "Zinsniveau in Prozent; Bewegungen in Basispunkten. Nicht mit Kursrenditen vergleichbar."
-          : i.assetClass === "INDEX" ? "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet." : null
+          : i.assetClass === "INDEX" ? "Indexstand in Punkten - keine Geldsumme, wird nicht umgerechnet."
+          : tr ? "Kurs des Trackers je Anteil in " + (i.currency || "?") + " - kein Indexstand, keine Indexpunkte. Die Veraenderung ist die Bewegung des Trackers." : null
       },
-      proxy: { isProxy: false, represents: null, knownProxiesNotUsed: i.knownProxies || [] },
+      proxy: tr ? {
+        isProxy: true, relation: "INDEX_TRACKER_ETF", represents: tr.tracksIndex || null, representsName: tr.tracksIndexName || null,
+        representsInstrument: tr.tracksIndexInstrument || null, isIndexLevel: false,
+        disclosure: tr.trackerDisclosure || null, differences: tr.differences || [], currencyNote: tr.currencyNote || null,
+        knownProxiesNotUsed: []
+      } : { isProxy: false, represents: null, knownProxiesNotUsed: i.knownProxies || [] },
+      /* Consumer-Sicht eines Trackers: die Felder, die eine Marktuebersicht
+         braucht - aus demselben Vertrag, nicht daneben berechnet. */
+      tracker: tr ? {
+        symbol: i.symbol, name: i.name, tracksIndex: tr.tracksIndex || null, tracksIndexName: tr.tracksIndexName || null,
+        isProxy: true, provider: src ? src.provider : null, nativeCurrency: i.currency || null,
+        price: show && latest && isNum(latest.value) ? latest.value : null,
+        change: quoteChange ? quoteChange.absolute : null,
+        changePercent: quoteChange ? quoteChange.percent : null,
+        asOf: latest ? latest.asOf : null,
+        freshness: fresh.state,
+        history: show && points.length ? { from: points[0][0], to: points[points.length - 1][0], path: input.historyPath || null } : null,
+        realtimeCapability: (input.capabilities && input.capabilities.realtimePath) || null,
+        displayMarketName: tr.displayMarketName || null,
+        trackerDisclosure: tr.trackerDisclosure || null,
+        performanceSemantics: tr.performanceSemantics || null
+      } : null,
       gap: i.status === "CAPABILITY_GAP" ? i.gap || null : null,
-      license: withheld ? {
-        state: src ? src.licenseState : "OWNER_DECISION_REQUIRED",
-        note: src ? src.licenseNote : null
-      } : null
+      /* Lizenz jedes Wertes im festen Vokabular (LICENSE_STATES). Eine
+         Development-Risikoakzeptanz ist KEINE kommerzielle Freigabe. */
+      license: {
+        state: displayLicense,
+        commercialDisplayApproved: !!(src && src.commercialDisplayApproved === true && displayLicense === "LICENSE_CONFIRMED"),
+        preCommercialLicenseConfirmationRequired: !!(src && src.preCommercialLicenseConfirmationRequired),
+        withheld: withheld,
+        sourceLicenseState: src ? src.licenseState : null,
+        note: src ? src.licenseNote || null : null
+      }
     };
     return contract;
   }
@@ -314,7 +362,7 @@
     return out;
   }
 
-  var api = { CONTRACT_VERSION: CONTRACT_VERSION, QUOTE_STATES: QUOTE_STATES, HORIZONS: HORIZONS,
+  var api = { CONTRACT_VERSION: CONTRACT_VERSION, QUOTE_STATES: QUOTE_STATES, HORIZONS: HORIZONS, LICENSE_STATES: LICENSE_STATES,
               build: build, refresh: refresh, present: present, change: change, horizons: horizons, performance: performance };
   if (isNode) module.exports = api;
   else global.VUMultiAssetContract = api;
