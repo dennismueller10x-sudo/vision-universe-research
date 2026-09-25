@@ -387,7 +387,7 @@
         el("a", { class: "dx-back", href: "#/", text: "← Discover" }),
         el("h1", { class: "dx-m3-titel", text: "Märkte" })
       ]);
-      function dazu(n) { if (n) seite.appendChild(n); return n; }
+      function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
       var verlaufNode = null;
       if (puls && MI && puls.environment) {
         dazu(MI.hero(puls, jetzt));
@@ -405,14 +405,14 @@
       dazu(marktJetzt(contracts, pcfg, jetzt));
       dazu(moversBereich(puls));
       var gruppen = gruppieren(contracts);
-      seite.appendChild(el("section", { class: "dx-maerkte-alle", id: "maerkte-alle", "aria-label": "Alle Märkte" }, [
+      dazu(el("section", { class: "dx-maerkte-alle", id: "maerkte-alle", "aria-label": "Alle Märkte" }, [
         el("h2", { text: "Alle Märkte" }),
         el("p", { class: "dx-maerkte-lead", text: "Jeder Markt mit Einheit, Stand und Quelle – antippen für Verlauf und Einordnung. " +
           "Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand; Renditen bewegen sich in Basispunkten." }),
         sprungleiste(gruppen)
       ]));
       gruppen.forEach(function (g) {
-        seite.appendChild(el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": g.titel }, [
+        dazu(el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": g.titel }, [
           el("h2", { text: g.titel }),
           el("div", { class: "dx-maerkte-raster" }, g.karten.map(function (c) { return karte(c, layer); }))
         ]));
@@ -421,6 +421,7 @@
         ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Informationen zur eigenen Recherche, keine Anlageberatung." }));
       root.appendChild(seite);
       if (verlaufNode && verlaufNode._zeichnen) verlaufNode._zeichnen();
+      if (MI && MI.beleben) MI.beleben(root);
     });
   }
 

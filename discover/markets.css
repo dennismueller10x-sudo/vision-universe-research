@@ -421,3 +421,187 @@ html:not([data-theme=light]) .dv2 .dx-md-eo-rolle{background:rgba(255,255,255,.0
 .dv2 .dx-md-eo-rolle h3{margin:0 0 8px;font-size:15px}
 .dv2 .dx-md-eo-rolle ul{margin:0 0 12px;padding-left:18px;font-size:14px;line-height:1.55}
 .dv2 .dx-md-eo-rolle p{margin:0 0 12px;font-size:14px;line-height:1.55}
+
+/* ================================================================ Markets 3.1
+   Premium Art Direction — Inszenierung derselben Daten: Regime-Gauge,
+   Szenario-Karten, mehr Tiefe/Kontrast. Keine neue Zahl, kein neuer Zustand,
+   keine neue Klasse mit Bedeutung fuer Tests (nur zusaetzliche, rein
+   dekorative Elemente/Attribute). Lila = Intelligence/Szenario/Regime,
+   Blau = Kontext, Gruen/Rot/Gold = Bedeutung wie zuvor. */
+.dv2 .dx-m3{--m3-purple:#6d5ae6;--m3-glass:rgba(255,255,255,.55);--m3-glass-line:rgba(15,18,24,.08)}
+html:not([data-theme=light]) .dv2 .dx-m3{--m3-purple:#a99bff;--m3-glass:rgba(255,255,255,.04);--m3-glass-line:rgba(255,255,255,.08)}
+.dv2 .dx-m3-eyebrow{display:flex;align-items:center;gap:7px}
+.dv2 .dx-m3-eyebrow::before{content:"";flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:var(--m3-context)}
+.dv2 .dx-m3-karte>.dx-m3-eyebrow,.dv2 .dx-m3-verlauf>.dx-m3-eyebrow,.dv2 .dx-m3-aendern>.dx-m3-eyebrow,.dv2 .dx-m3-warum>.dx-m3-eyebrow,
+.dv2 .dx-m3-karte .dx-m3-eyebrow::before,.dv2 .dx-m3-verlauf .dx-m3-eyebrow::before,.dv2 .dx-m3-aendern .dx-m3-eyebrow::before,.dv2 .dx-m3-warum .dx-m3-eyebrow::before{background:var(--m3-purple)}
+.dv2 .dx-m3-hero .dx-m3-eyebrow::before{background:var(--m3-hero-accent,var(--m3-purple))}
+.dv2 .dx-m3-cta{transition:transform .15s ease,box-shadow .15s ease}
+.dv2 .dx-m3-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.dv2 .dx-m3-cta.is-leise:hover{box-shadow:none;background:rgba(255,255,255,.08)}
+
+/* Regime-Gauge: derselbe env.level/vorherLevel wie das Stufenspektrum darunter,
+   nur als Bogen statt als Balkenreihe. Rein dekorativ (aria-hidden). */
+.dv2 .dx-m3-gauge{position:relative;max-width:300px;margin:0 0 8px}
+.dv2 .dx-m3-gauge-svg{width:100%;height:auto;display:block;overflow:visible;animation:dx-m3-gauge-in .8s cubic-bezier(.2,.8,.2,1) both}
+.dv2 .dx-m3-gauge-band{stroke-width:15;stroke-linecap:round;opacity:.32}
+.dv2 .dx-m3-hero.is-l0 .dx-m3-gauge-band.is-l0,.dv2 .dx-m3-hero.is-l1 .dx-m3-gauge-band.is-l1,.dv2 .dx-m3-hero.is-l2 .dx-m3-gauge-band.is-l2,
+.dv2 .dx-m3-hero.is-l3 .dx-m3-gauge-band.is-l3,.dv2 .dx-m3-hero.is-l4 .dx-m3-gauge-band.is-l4{opacity:1;filter:drop-shadow(0 0 10px currentColor)}
+.dv2 .dx-m3-gauge-band.is-l0{stroke:var(--m3-l0);color:var(--m3-l0)}.dv2 .dx-m3-gauge-band.is-l1{stroke:var(--m3-l1);color:var(--m3-l1)}
+.dv2 .dx-m3-gauge-band.is-l2{stroke:var(--m3-l2);color:var(--m3-l2)}.dv2 .dx-m3-gauge-band.is-l3{stroke:var(--m3-l3);color:var(--m3-l3)}
+.dv2 .dx-m3-gauge-band.is-l4{stroke:var(--m3-l4);color:var(--m3-l4)}
+.dv2 .dx-m3-gauge-nadel{stroke:#fff;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 5px rgba(255,255,255,.6))}
+.dv2 .dx-m3-gauge-nabe{fill:#fff}
+.dv2 .dx-m3-gauge-vorher{fill:rgba(255,255,255,.16);stroke:#fff;stroke-width:1.5}
+.dv2 .dx-m3-gauge .dx-m3-spektrum{margin:-14px 0 0;max-width:100%}
+@keyframes dx-m3-gauge-in{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.dv2 .dx-m3-gauge-svg{animation:none}}
+@media(max-width:760px){.dv2 .dx-m3-gauge{max-width:230px;margin:0 auto 4px}.dv2 .dx-m3-gauge .dx-m3-spektrum{max-width:340px;margin:-10px auto 0}}
+
+/* Fuenf Dimensionen: mehr Tiefe auf derselben Skala */
+.dv2 .dx-m3-dim-kopf{transition:background .15s ease}
+.dv2 .dx-m3-spur{box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+html:not([data-theme=light]) .dv2 .dx-m3-spur{box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}
+.dv2 .dx-m3-zone{opacity:.34}
+.dv2 .dx-m3-zone.is-context{opacity:.16}
+.dv2 .dx-m3-zeiger{box-shadow:0 0 0 3px var(--v2-bg),0 2px 10px rgba(0,0,0,.28)}
+.dv2 .dx-m3-dim-zustand i{box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.dv2 .dx-m3-dim-zustand.is-support i{background:linear-gradient(150deg,var(--m3-support),color-mix(in srgb,var(--m3-support) 65%,#000 10%))}
+.dv2 .dx-m3-dim-zustand.is-headwind i{background:linear-gradient(150deg,var(--m3-headwind),color-mix(in srgb,var(--m3-headwind) 65%,#000 10%))}
+.dv2 .dx-m3-dim-zustand.is-context i{background:linear-gradient(150deg,var(--m3-context),color-mix(in srgb,var(--m3-context) 65%,#000 10%))}
+
+/* VORHER -> JETZT: mehr Kontrast am Ergebnis */
+.dv2 .dx-m3-vj{background:linear-gradient(155deg,var(--m3-soft),transparent 60%),var(--m3-soft);border:1px solid var(--m3-glass-line)}
+.dv2 .dx-m3-vj-top b{background:linear-gradient(90deg,currentColor,currentColor)}
+.dv2 .dx-m3-vj-pfeil{font-weight:700}
+
+/* SZENARIEN: "Was wuerde das Bild veraendern" als drei Karten - links das,
+   was das Bild positiver machen wuerde, mittig die aktuelle Einordnung
+   (Base Case, identisch zum Hero), rechts das, was es negativer machen
+   wuerde. Ausschliesslich echte Schwellen aus p.changes/p.environment,
+   keine erfundene Wahrscheinlichkeit. */
+.dv2 .dx-m3-aendern-raster{align-items:stretch}
+.dv2 .dx-m3-aendern-spalte{position:relative;padding-top:26px;background:var(--m3-soft)}
+.dv2 .dx-m3-aendern-spalte::before{content:"";position:absolute;top:0;left:20px;right:20px;height:3px;border-radius:0 0 3px 3px}
+.dv2 .dx-m3-aendern-spalte.is-besser::before{background:var(--m3-support)}
+.dv2 .dx-m3-aendern-spalte.is-schlechter::before{background:var(--m3-headwind)}
+.dv2 .dx-m3-basis-karte{position:relative;padding:26px 22px 22px;border-radius:var(--m3-radius);background:var(--m3-soft);border:1.5px dashed var(--m3-glass-line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;min-height:100%}
+.dv2 .dx-m3-basis-karte::before{content:"";position:absolute;top:0;left:20px;right:20px;height:3px;border-radius:0 0 3px 3px;background:var(--m3-purple)}
+.dv2 .dx-m3-basis-eyebrow{margin:0;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted)}
+.dv2 .dx-m3-basis-zustand{margin:0;font-size:clamp(19px,2.6vw,25px);font-weight:800;letter-spacing:-.02em}
+.dv2 .dx-m3-basis-karte.is-l0 .dx-m3-basis-zustand{color:var(--m3-l0)}.dv2 .dx-m3-basis-karte.is-l1 .dx-m3-basis-zustand{color:var(--m3-l1)}
+.dv2 .dx-m3-basis-karte.is-l2 .dx-m3-basis-zustand{color:color-mix(in srgb,var(--m3-l2) 80%,#000 20%)}
+.dv2 .dx-m3-basis-karte.is-l3 .dx-m3-basis-zustand{color:var(--m3-l3)}.dv2 .dx-m3-basis-karte.is-l4 .dx-m3-basis-zustand{color:var(--m3-l4)}
+.dv2 .dx-m3-basis-aussage{margin:2px 0 0;font-size:12.5px;line-height:1.5;color:var(--v2-muted)}
+@media(min-width:900px){.dv2 .dx-m3-aendern-raster{grid-template-columns:1fr minmax(200px,260px) 1fr}}
+@media(max-width:760px){.dv2 .dx-m3-aendern-raster{grid-template-columns:1fr}.dv2 .dx-m3-basis-karte{order:-1}}
+
+/* VERLAUF: als Glas-Flaeche, kraeftigere Balken */
+.dv2 .dx-m3-verlauf-flaeche{padding:clamp(14px,2.5vw,22px);border-radius:var(--m3-radius);background:var(--m3-soft);border:1px solid var(--m3-glass-line)}
+.dv2 .dx-m3-v-lauf{opacity:.92}
+.dv2 .dx-m3-v-jetzt{r:6.5px;filter:drop-shadow(0 0 6px currentColor)}
+
+/* MARKTBREITE: das Ergebnis als eigene, hervorgehobene Flaeche */
+.dv2 .dx-m3-b-status{padding:18px 20px;border-radius:var(--m3-radius);background:var(--m3-soft);border:1px solid var(--m3-glass-line);font-size:16px}
+.dv2 .dx-m3-b-spur{height:24px;border-radius:10px}
+.dv2 .dx-m3-b-fuell{border-radius:10px 0 0 10px;background:linear-gradient(90deg,var(--m3-context),var(--v2-ink))}
+.dv2 .dx-m3-b-zeile.is-alt .dx-m3-b-fuell{background:repeating-linear-gradient(135deg,var(--v2-muted) 0 6px,transparent 6px 10px)}
+
+/* CROSS ASSET: leichte Tiefe hinter den Punkten, ohne Kausalitaet zu behaupten */
+.dv2 .dx-m3-ca-zeile{padding:12px 10px;border-radius:14px;border-top-color:transparent}
+.dv2 .dx-m3-ca-zeile:hover{background:var(--m3-soft)}
+.dv2 .dx-m3-ca-spur::before{content:"";position:absolute;inset:-10px -4px;background:radial-gradient(circle at 50% 50%,var(--m3-soft),transparent 72%);z-index:-1}
+.dv2 .dx-m3-ca-spur{position:relative}
+.dv2 .dx-m3-ca-zeile.is-deutlich .dx-m3-ca-balken{filter:drop-shadow(0 0 6px var(--m3-context))}
+
+/* MARKT JETZT: Geschichten als Karten statt Randlinie */
+.dv2 .dx-m3-story{position:relative;padding:20px 20px 20px 26px;border-left:0;border-radius:var(--m3-radius);background:var(--m3-soft)}
+.dv2 .dx-m3-story::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:4px;border-radius:4px;background:var(--v2-ink)}
+.dv2 .dx-m3-story.is-up::before{background:var(--discover-up)}.dv2 .dx-m3-story.is-down::before{background:var(--discover-down)}.dv2 .dx-m3-story.is-neutral::before{background:var(--m3-context)}
+.dv2 .dx-m3-story-wert{border-bottom-color:var(--m3-glass-line)}
+@media(max-width:760px){.dv2 .dx-m3-story{padding:16px 16px 16px 22px}}
+
+/* Detailseiten: asset-bewusste Akzentfarbe (dekorativ, ersetzt keine
+   Gewinn-/Verlustfarbe und keine Renditefarbe). */
+.dv2 .dx-md[data-asset-class=ETF],.dv2 .dx-md[data-asset-class=INDEX]{--md-accent:#2f6fed}
+.dv2 .dx-md[data-asset-class=CRYPTO]{--md-accent:#7c5cff}
+.dv2 .dx-md[data-asset-class=PRECIOUS_METAL]{--md-accent:#b8860b}
+.dv2 .dx-md[data-asset-class=COMMODITY]{--md-accent:#d9591f}
+.dv2 .dx-md[data-asset-class=YIELD],.dv2 .dx-md[data-asset-class=RATE]{--md-accent:#6b7280}
+.dv2 .dx-md[data-asset-class=FX]{--md-accent:#2f9463}
+.dv2 .dx-md-eyebrow{position:relative;padding-left:14px}
+.dv2 .dx-md-eyebrow::before{content:"";position:absolute;left:0;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--md-accent,var(--v2-muted))}
+.dv2 .dx-md-tracker{border-left:3px solid var(--md-accent,var(--v2-line))}
+.dv2 .dx-md-eo-rolle{border-left:3px solid var(--md-accent,var(--v2-line))}
+.dv2 .dx-md-chip:hover{border-color:var(--md-accent,var(--v2-ink));color:var(--md-accent,var(--v2-ink))}
+
+/* Uebersichtskarten: dieselbe asset-bewusste Akzentfarbe oben auf der Karte */
+.dv2 .dx-markt-karte{border-top:3px solid transparent}
+.dv2 .dx-markt-karte[data-asset-class=ETF],.dv2 .dx-markt-karte[data-asset-class=INDEX]{border-top-color:#2f6fed}
+.dv2 .dx-markt-karte[data-asset-class=CRYPTO]{border-top-color:#7c5cff}
+.dv2 .dx-markt-karte[data-asset-class=PRECIOUS_METAL]{border-top-color:#b8860b}
+.dv2 .dx-markt-karte[data-asset-class=COMMODITY]{border-top-color:#d9591f}
+.dv2 .dx-markt-karte[data-asset-class=YIELD],.dv2 .dx-markt-karte[data-asset-class=RATE]{border-top-color:#6b7280}
+.dv2 .dx-markt-karte[data-asset-class=FX]{border-top-color:#2f9463}
+.dv2 a.dx-markt-karte:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.1)}
+html:not([data-theme=light]) .dv2 a.dx-markt-karte:hover{box-shadow:0 10px 24px rgba(0,0,0,.4)}
+@media(prefers-reduced-motion:reduce){.dv2 a.dx-markt-karte:hover{transform:none}}
+
+/* ================================================================ Markets 3.2
+   Zweite Stufe der Premium Art Direction: Premium Motion (Reveal, reduced-
+   motion-fest), Cross-Asset-Konstellation, Verlauf und Detail-Chart als
+   dunkle "Kino"-Flaeche (mehr Chart, mehr Kontrast), redaktionelle
+   Typografie an den Kernaussagen. Weiterhin ausschliesslich Inszenierung
+   derselben Werte - keine neue Berechnung, kein neuer Zustand. */
+
+/* PREMIUM MOTION: dx-m3-reveal startet nur unsichtbar, wenn Bewegung erlaubt
+   ist; JS (beleben()) traegt "is-sichtbar" nach. Ohne JS oder bei reduzierter
+   Bewegung ist von Anfang an alles da. */
+@media(prefers-reduced-motion:no-preference){
+  .dv2 .dx-m3-reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1)}
+  .dv2 .dx-m3-reveal.is-sichtbar{opacity:1;transform:none}
+  .dv2 .dx-m3-hero.dx-m3-reveal{transform:translateY(0);transition:opacity .5s ease}
+}
+
+/* CROSS ASSET: Konstellation (Radar) neben der Balkenliste - derselbe Wert,
+   zwei Ansichten. Fester Winkel je Anlageklasse, kein Layout-Zufall. */
+.dv2 .dx-m3-ca-flaeche{display:grid;grid-template-columns:minmax(220px,280px) 1fr;gap:clamp(16px,3vw,36px);align-items:center}
+.dv2 .dx-m3-ca-radar{width:100%;height:auto;max-width:280px;justify-self:center;overflow:visible}
+.dv2 .dx-m3-ca-ring{fill:none;stroke:var(--v2-line);stroke-dasharray:2 5;stroke-width:1}
+.dv2 .dx-m3-ca-achse{stroke:var(--v2-line);stroke-width:1;opacity:.6}
+.dv2 .dx-m3-ca-mitte{fill:var(--v2-muted)}
+.dv2 .dx-m3-ca-knoten{fill:var(--v2-muted);stroke:var(--v2-bg);stroke-width:2.5}
+.dv2 .dx-m3-ca-knoten.is-deutlich{fill:var(--m3-context);filter:drop-shadow(0 0 7px var(--m3-context))}
+.dv2 .dx-m3-ca-knoten-label{fill:var(--v2-muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+@media(max-width:900px){.dv2 .dx-m3-ca-flaeche{grid-template-columns:1fr}.dv2 .dx-m3-ca-radar{max-width:220px}}
+
+/* VERLAUF als dunkle Kino-Flaeche: derselbe Trick wie im Hero (lokale
+   Tokens), unabhaengig vom globalen hell/dunkel - mehr Chart, mehr Kontrast,
+   Wechsel im Bildlauf-Rhythmus (hell -> dunkel -> hell). */
+.dv2 .dx-m3-verlauf{
+  --v2-bg:#0b0c0e;--v2-ink:#f5f5f2;--v2-muted:#a9aeb7;--v2-line:#2a2d33;
+  --m3-soft:rgba(255,255,255,.06);--m3-glass-line:rgba(255,255,255,.1);
+  --m3-support:#5fd08f;--m3-headwind:#ffa24a;--m3-neutral:#a3aab4;--m3-context:#8fb1e8;
+  background:var(--v2-bg);color:var(--v2-ink);border-radius:28px;
+  padding:clamp(22px,4vw,40px);margin:0 0 34px;border-top:0;box-shadow:0 24px 60px rgba(8,10,14,.16);isolation:isolate}
+html:not([data-theme=light]) .dv2 .dx-m3-verlauf{box-shadow:none;border:1px solid #2a2d33}
+.dv2 .dx-m3-verlauf .dx-m3-kopf{color:var(--v2-ink)}
+
+/* DETAIL-CHART als dieselbe Kino-Flaeche, dazu ein asset-bewusster
+   Akzentstrich oben - Chart bleibt gross und bekommt Buehnencharakter. */
+.dv2 .dx-md-chartbereich{
+  --v2-bg:#0b0c0e;--v2-ink:#f5f5f2;--v2-muted:#a9aeb7;--v2-line:#2a2d33;--v2-panel:#171a1e;
+  --discover-up:#3fd07f;--discover-down:#f0675c;
+  background:var(--v2-bg);color:var(--v2-ink);border-top:0;border-radius:28px;
+  padding:clamp(20px,4vw,36px);margin:22px 0;box-shadow:0 24px 60px rgba(8,10,14,.16)}
+html:not([data-theme=light]) .dv2 .dx-md-chartbereich{box-shadow:none;border:1px solid #2a2d33}
+.dv2 .dx-md-chartbereich::before{content:"";display:block;height:3px;width:56px;border-radius:3px;background:var(--md-accent,#6b7280);margin:0 0 16px}
+.dv2 .dx-md-kopf{position:relative;padding-top:20px}
+.dv2 .dx-md-kopf::before{content:"";position:absolute;top:0;left:0;width:48px;height:3px;border-radius:3px;background:var(--md-accent,#6b7280)}
+
+/* REDAKTIONELLE TYPOGRAFIE an den Kernaussagen - grosse Zahlen/Aussagen als
+   Schlagzeile, nicht als Fliesstext. */
+.dv2 .dx-m3-vj-top b{font-size:clamp(20px,2.8vw,30px);letter-spacing:-.015em}
+.dv2 .dx-m3-b-kopf b{font-size:15px;font-weight:800}
+.dv2 .dx-m3-story h3{font-size:clamp(19px,2.2vw,23px);letter-spacing:-.015em}
+.dv2 .dx-m3-basis-zustand{letter-spacing:-.025em}
