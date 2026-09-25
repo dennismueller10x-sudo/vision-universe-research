@@ -238,7 +238,12 @@ async function main() {
   }
 
   /* §57 Production Proof: die Beispiele. */
+  /* Owner-Liste (Tracker-Entscheidung) plus die Maerkte-Seite (Owner-
+     Ergaenzung 2026-09-25): jedes Instrument, das Discover zeigt, und die
+     Indizes, die ein Tracker vertritt, als benannte Luecke. */
   const EXAMPLES = ["QQQ", "SPY", "DIA", "N225", "WTI", "BRENT", "XAUUSD", "XAGUSD", "BTCUSD", "ETHUSD", "US10Y", "DE10Y", "EURUSD",
+                    "FED_TARGET", "US_EFFR", "ECB_DFR", "NATGAS", "XPTUSD", "XPDUSD", "SOLUSD", "XRPUSD",
+                    "US2Y", "US5Y", "US30Y", "DE2Y", "DE30Y", "IWM", "FEZ", "URTH",
                     "NDX", "SPX", "DJI"];
   const internal = INTERNAL && existsSync(join(root, ".market-cache/multi-asset/internal-snapshot.json"))
     ? JSON.parse(readFileSync(join(root, ".market-cache/multi-asset/internal-snapshot.json"), "utf8")) : null;
