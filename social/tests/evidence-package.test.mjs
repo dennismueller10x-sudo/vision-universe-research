@@ -49,12 +49,26 @@ test("EP1 · Aus einer Zahl werden viele belegte Aussagen", () => {
 
 test("EP2 · Die Leitzahl traegt ihre Bedeutung mit", () => {
   /* Der wichtigste Einzelbefund. Ohne diesen Satz ist 76 eine Zahl, die
-     wie eine Chance aussieht. */
+     wie eine Chance aussieht.
+
+     "methodischer Rang" (die urspruengliche Formulierung von
+     score-not-probability) steht in INTERN_NICHT_IM_HOOK
+     (audience-frame.js) - AUDIENCE_SEPARATION entfernte den Satz aus
+     jedem oeffentlichen Text, genau wie "Setup-Rang" den Satz von
+     score-meaning entfernt. Ein Bare-Ticker-Thema blieb damit
+     strukturell ohne jede ueberlebende Einordnung, und
+     EVIDENCE_SUFFICIENCY verwarf es immer - unabhaengig vom Bundle.
+     "ordnet ein, prognostiziert nicht" traegt dieselbe Bedeutung, ohne
+     den verbotenen Begriff - die Stimme, die der reale MSFT-Hook
+     (PR #179) fuer denselben Sachverhalt bereits nutzt. */
   const bedeutung = PAKET.evidence.filter((e) =>
     e.id === "score-meaning" || e.id === "score-not-probability");
   assert.equal(bedeutung.length, 2);
-  assert.match(bedeutung.map((e) => e.statement).join(" "), /Keine Wahrscheinlichkeit/);
-  assert.match(bedeutung.map((e) => e.statement).join(" "), /methodischer Rang/);
+  const text = bedeutung.map((e) => e.statement).join(" ");
+  assert.match(text, /Keine Wahrscheinlichkeit/);
+  assert.match(text, /ordnet ein, er prognostiziert nicht/);
+  assert.doesNotMatch(text, /methodischer Rang/,
+    "methodischer Rang steht in INTERN_NICHT_IM_HOOK - dieser Satz muss ohne ihn auskommen");
 });
 
 test("EP3 · Der Score zerlegt sich in seine Beitraege", () => {
@@ -248,4 +262,25 @@ test("EP16 · Die Kennung haengt am Datenstand", () => {
   const zweites = EP.fromTechnicalBundle(
     Object.assign({}, BUNDLE, { dataVersion: "dv_anders" }), { entity: "XOM" });
   assert.notEqual(zweites.packageId, PAKET.packageId);
+});
+
+test("EP17 · Die Einordnung ueberlebt AUDIENCE_SEPARATION", () => {
+  /* Der reale Befund (MANUAL_TOPIC MSFT, Lauf #42/#43, 2026-09-23):
+     themaAusBundle() (run-social-cycle.mjs) filtert paket.evidence vor
+     dem Sufficiency-Test durch AudienceFrame.INTERN_NICHT_IM_HOOK -
+     dieselbe Wache, die einmal "Technical Opportunity Score" aus einem
+     oeffentlichen Hook entfernte. score-meaning traegt "Setup-Rang"
+     woertlich aus dem Bundle-Disclaimer und faellt dieser Wache
+     zuverlaessig zum Opfer; score-not-probability trug bis zu diesem
+     Test-Update "methodischer Rang" und fiel ihr ebenso zum Opfer -
+     BEIDE Traeger der Einordnung verschwanden, EVIDENCE_SUFFICIENCY
+     verwarf jedes Bare-Ticker-Thema, unabhaengig vom Bundle. Der Test
+     laeuft gegen das echte XOM-Bundle wie der Rest dieser Datei - kein
+     nachgebautes Paket, das nur sich selbst beweist. */
+  const AF = require("../engines/audience-frame.js");
+  const oeffentlich = PAKET.evidence.filter((e) =>
+    !AF.INTERN_NICHT_IM_HOOK.some((begriff) =>
+      String(e.statement || "").includes(begriff)));
+  const s = EP.assessSufficiency(Object.assign({}, PAKET, { evidence: oeffentlich }));
+  assert.equal(s.sufficient, true, s.explanation);
 });

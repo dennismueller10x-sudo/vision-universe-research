@@ -1,0 +1,1604 @@
+{
+  "schemaVersion": "1.0.0",
+  "catalogId": "vu-multi-asset-catalog-v1",
+  "note": "Das nicht-aktienartige Segment des kanonischen Instrument Masters. Kein zweiter Master: die instrumentId wird mit company-master.js#mintInstrumentId im selben ID-Raum (vu_<hash>) vergeben, mit provider 'vu-core', exchange = assetClass und symbol = kanonisches Kuerzel. Aktien bleiben im Company Master (quant/data/universe/); dieser Katalog fuehrt, was sich aus keiner Anbieter-Tickerliste ableiten laesst: Indizes, Rohstoffe, Edelmetalle, Krypto, Renditen, Leitzinsen und das FX-Referenzpaar. Jeder Eintrag ist zunaechst ein KANDIDAT - welche Quelle ihn traegt, entscheidet die gemessene Faehigkeit (quant/data/market/capabilities/multi-asset-probe.json), nicht dieser Katalog. expectedRange dient ausschliesslich der Identitaetspruefung im Probe-Lauf (Groessenordnung, kein Kurs) und wird nie angezeigt.",
+  "idNamespace": {
+    "provider": "vu-core",
+    "exchangeField": "assetClass",
+    "engine": "company-master.js#mintInstrumentId"
+  },
+  "instruments": [
+    {
+      "symbol": "SPX",
+      "name": "S&P 500",
+      "nameDe": "S&P 500",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "S&P Dow Jones Indices",
+      "exchangeOrVenue": "S&P Dow Jones Indices (berechnet waehrend der NYSE-Sitzung)",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "INDEX_US",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        2000,
+        15000
+      ],
+      "knownProxies": [
+        "SPY",
+        "IVV",
+        "VOO"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "S&P 500 index",
+          "dailyTickers": [
+            "spx",
+            "^gspc",
+            "$spx",
+            "inx"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "NDX",
+      "name": "Nasdaq-100",
+      "nameDe": "Nasdaq 100",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "Nasdaq",
+      "exchangeOrVenue": "Nasdaq (berechnet waehrend der US-Sitzung)",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "INDEX_US",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        5000,
+        50000
+      ],
+      "knownProxies": [
+        "QQQ",
+        "QQQM"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Nasdaq 100 index",
+          "dailyTickers": [
+            "ndx",
+            "^ndx",
+            "$ndx"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "DJI",
+      "name": "Dow Jones Industrial Average",
+      "nameDe": "Dow Jones",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "S&P Dow Jones Indices",
+      "exchangeOrVenue": "S&P Dow Jones Indices (berechnet waehrend der NYSE-Sitzung)",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "INDEX_US",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        15000,
+        100000
+      ],
+      "knownProxies": [
+        "DIA"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Dow Jones Industrial Average",
+          "dailyTickers": [
+            "dji",
+            "^dji",
+            "$dji",
+            "djia"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "DAX",
+      "name": "DAX (Performance Index)",
+      "nameDe": "DAX",
+      "assetClass": "INDEX",
+      "subType": "INDEX_TOTAL_RETURN",
+      "subTypeNote": "Der DAX ist ein Performanceindex: Dividenden werden rechnerisch reinvestiert. Ein Kursindex-DAX waere ein anderes Instrument.",
+      "family": "STOXX / Qontigo (Deutsche Boerse)",
+      "exchangeOrVenue": "Xetra",
+      "currency": "EUR",
+      "country": "DE",
+      "timezone": "Europe/Berlin",
+      "sessionProfile": "INDEX_EU",
+      "sessionExchange": "XETR",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        8000,
+        50000
+      ],
+      "knownProxies": [
+        "DAX (Global X DAX Germany ETF - gleiches Kuerzel, anderes Instrument)",
+        "EXS1"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "DAX index",
+          "dailyTickers": [
+            "^gdaxi",
+            "gdaxi",
+            "dax"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "SX5E",
+      "name": "EURO STOXX 50",
+      "nameDe": "Euro Stoxx 50",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "STOXX",
+      "exchangeOrVenue": "STOXX (berechnet waehrend der Xetra-/Eurex-Handelszeit)",
+      "currency": "EUR",
+      "country": "EU",
+      "timezone": "Europe/Berlin",
+      "sessionProfile": "INDEX_EU",
+      "sessionExchange": "XETR",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        2000,
+        12000
+      ],
+      "knownProxies": [
+        "FEZ"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Euro Stoxx 50",
+          "dailyTickers": [
+            "sx5e",
+            "^stoxx50e"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "UKX",
+      "name": "FTSE 100",
+      "nameDe": "FTSE 100",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "FTSE Russell",
+      "exchangeOrVenue": "London Stock Exchange",
+      "currency": "GBP",
+      "country": "GB",
+      "timezone": "Europe/London",
+      "sessionProfile": "INDEX_EU",
+      "sessionExchange": "XLON",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        4000,
+        20000
+      ],
+      "knownProxies": [
+        "EWU (MSCI UK - anderer Index)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "FTSE 100",
+          "dailyTickers": [
+            "ukx",
+            "^ftse"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "N225",
+      "name": "Nikkei 225",
+      "nameDe": "Nikkei 225",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "Nikkei Inc.",
+      "exchangeOrVenue": "Tokyo Stock Exchange",
+      "currency": "JPY",
+      "country": "JP",
+      "timezone": "Asia/Tokyo",
+      "sessionProfile": "INDEX_ASIA",
+      "sessionExchange": "XTKS",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        10000,
+        100000
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Nikkei 225",
+          "dailyTickers": [
+            "n225",
+            "^n225"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "RUT",
+      "name": "Russell 2000",
+      "nameDe": "Russell 2000",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "FTSE Russell",
+      "exchangeOrVenue": "FTSE Russell (US-Sitzung)",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "INDEX_US",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        800,
+        6000
+      ],
+      "knownProxies": [
+        "IWM"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Russell 2000",
+          "dailyTickers": [
+            "rut",
+            "^rut"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "MID",
+      "name": "S&P MidCap 400",
+      "nameDe": "S&P MidCap 400",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "S&P Dow Jones Indices",
+      "exchangeOrVenue": "S&P Dow Jones Indices (US-Sitzung)",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "INDEX_US",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        1000,
+        8000
+      ],
+      "knownProxies": [
+        "MDY",
+        "IJH"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "S&P MidCap 400",
+          "dailyTickers": [
+            "mid",
+            "^mid"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "PX1",
+      "name": "CAC 40",
+      "nameDe": "CAC 40",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "Euronext",
+      "exchangeOrVenue": "Euronext Paris",
+      "currency": "EUR",
+      "country": "FR",
+      "timezone": "Europe/Paris",
+      "sessionProfile": "INDEX_EU",
+      "sessionExchange": "XPAR",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        3000,
+        15000
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "CAC 40",
+          "dailyTickers": [
+            "^fchi",
+            "px1"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "SMI",
+      "name": "Swiss Market Index",
+      "nameDe": "SMI",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "SIX",
+      "exchangeOrVenue": "SIX Swiss Exchange",
+      "currency": "CHF",
+      "country": "CH",
+      "timezone": "Europe/Zurich",
+      "sessionProfile": "INDEX_EU",
+      "sessionExchange": "XSWX",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        6000,
+        25000
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Swiss Market Index",
+          "dailyTickers": [
+            "^ssmi",
+            "smi"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "HSI",
+      "name": "Hang Seng Index",
+      "nameDe": "Hang Seng",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "Hang Seng Indexes",
+      "exchangeOrVenue": "Hong Kong Exchanges",
+      "currency": "HKD",
+      "country": "HK",
+      "timezone": "Asia/Hong_Kong",
+      "sessionProfile": "INDEX_ASIA",
+      "sessionExchange": "XHKG",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        10000,
+        50000
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Hang Seng index",
+          "dailyTickers": [
+            "^hsi",
+            "hsi"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "SHCOMP",
+      "name": "SSE Composite Index",
+      "nameDe": "Shanghai Composite",
+      "assetClass": "INDEX",
+      "subType": "INDEX_PRICE",
+      "family": "China Securities Index",
+      "exchangeOrVenue": "Shanghai Stock Exchange",
+      "currency": "CNY",
+      "country": "CN",
+      "timezone": "Asia/Shanghai",
+      "sessionProfile": "INDEX_ASIA",
+      "sessionExchange": "XSHG",
+      "valueSemantics": "INDEX_LEVEL",
+      "unit": "INDEX_POINTS",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        1500,
+        8000
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "Shanghai Composite",
+          "dailyTickers": [
+            "000001.ss",
+            "shcomp"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "XAUUSD",
+      "name": "Gold (Spot, XAU/USD)",
+      "nameDe": "Gold",
+      "assetClass": "PRECIOUS_METAL",
+      "subType": "SPOT_METAL",
+      "family": "Edelmetalle",
+      "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "America/New_York",
+      "sessionProfile": "METALS_OTC_24_5",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_OUNCE",
+      "quantity": "TROY_OUNCE",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        1000,
+        10000
+      ],
+      "knownProxies": [
+        "GLD",
+        "IAU",
+        "GC (COMEX-Future - anderes Instrument)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "xauusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "XAGUSD",
+      "name": "Silber (Spot, XAG/USD)",
+      "nameDe": "Silber",
+      "assetClass": "PRECIOUS_METAL",
+      "subType": "SPOT_METAL",
+      "family": "Edelmetalle",
+      "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "America/New_York",
+      "sessionProfile": "METALS_OTC_24_5",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_OUNCE",
+      "quantity": "TROY_OUNCE",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        5,
+        250
+      ],
+      "knownProxies": [
+        "SLV",
+        "SI (COMEX-Future - anderes Instrument)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "xagusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "XPTUSD",
+      "name": "Platin (Spot, XPT/USD)",
+      "nameDe": "Platin",
+      "assetClass": "PRECIOUS_METAL",
+      "subType": "SPOT_METAL",
+      "family": "Edelmetalle",
+      "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "America/New_York",
+      "sessionProfile": "METALS_OTC_24_5",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_OUNCE",
+      "quantity": "TROY_OUNCE",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        300,
+        6000
+      ],
+      "knownProxies": [
+        "PPLT"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "xptusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "XPDUSD",
+      "name": "Palladium (Spot, XPD/USD)",
+      "nameDe": "Palladium",
+      "assetClass": "PRECIOUS_METAL",
+      "subType": "SPOT_METAL",
+      "family": "Edelmetalle",
+      "exchangeOrVenue": "OTC-Spotmarkt (Interbank)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "America/New_York",
+      "sessionProfile": "METALS_OTC_24_5",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_OUNCE",
+      "quantity": "TROY_OUNCE",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        300,
+        6000
+      ],
+      "knownProxies": [
+        "PALL"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "xpdusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "WTI",
+      "name": "WTI Rohoel",
+      "nameDe": "Öl (WTI)",
+      "assetClass": "COMMODITY",
+      "subType": "UNRESOLVED",
+      "subTypeNote": "Spot (Cushing), Front-Month-Future oder Continuous-Future - wird aus der gemessenen Quelle bestimmt, nicht aus dem Namen.",
+      "family": "Energie",
+      "exchangeOrVenue": null,
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "UNRESOLVED",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_BARREL",
+      "quantity": "BARREL",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        10,
+        250
+      ],
+      "knownProxies": [
+        "USO",
+        "CL (NYMEX-Future)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "wtiusd",
+            "xtiusd",
+            "usoil",
+            "wticousd"
+          ]
+        },
+        "official": [
+          {
+            "sourceId": "eia",
+            "series": "RWTC",
+            "subType": "SPOT_REFERENCE",
+            "venue": "Cushing, OK (EIA, Spot FOB)",
+            "sessionProfile": "REFERENCE_DAILY",
+            "publisherProfile": "US_EIA"
+          },
+          {
+            "sourceId": "fred",
+            "series": "DCOILWTICO",
+            "subType": "SPOT_REFERENCE",
+            "venue": "Cushing, OK (EIA via FRED)",
+            "sessionProfile": "REFERENCE_DAILY",
+            "publisherProfile": "US_EIA",
+            "role": "COMPARISON_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "BRENT",
+      "name": "Brent Rohoel",
+      "nameDe": "Öl (Brent)",
+      "assetClass": "COMMODITY",
+      "subType": "UNRESOLVED",
+      "subTypeNote": "Europe Brent Spot FOB oder ICE-Future - wird aus der gemessenen Quelle bestimmt.",
+      "family": "Energie",
+      "exchangeOrVenue": null,
+      "currency": "USD",
+      "country": null,
+      "timezone": "Europe/London",
+      "sessionProfile": "UNRESOLVED",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_BARREL",
+      "quantity": "BARREL",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        10,
+        250
+      ],
+      "knownProxies": [
+        "BNO",
+        "BZ/CO (ICE-Future)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "bcousd",
+            "xbrusd",
+            "ukoil",
+            "brentusd"
+          ]
+        },
+        "official": [
+          {
+            "sourceId": "eia",
+            "series": "RBRTE",
+            "subType": "SPOT_REFERENCE",
+            "venue": "Europe Brent Spot FOB (EIA)",
+            "sessionProfile": "REFERENCE_DAILY",
+            "publisherProfile": "US_EIA"
+          },
+          {
+            "sourceId": "fred",
+            "series": "DCOILBRENTEU",
+            "subType": "SPOT_REFERENCE",
+            "venue": "Europe Brent Spot FOB (EIA via FRED)",
+            "sessionProfile": "REFERENCE_DAILY",
+            "publisherProfile": "US_EIA",
+            "role": "COMPARISON_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "COPPER",
+      "name": "Kupfer",
+      "nameDe": "Kupfer",
+      "assetClass": "COMMODITY",
+      "subType": "UNRESOLVED",
+      "subTypeNote": "LME-Kassa, COMEX-Future oder IMF-Monatsreferenz - drei verschiedene Instrumente mit verschiedenen Einheiten (USD/t vs. USD/lb).",
+      "family": "Industriemetalle",
+      "exchangeOrVenue": null,
+      "currency": "USD",
+      "country": null,
+      "timezone": "Europe/London",
+      "sessionProfile": "UNRESOLVED",
+      "valueSemantics": "PRICE",
+      "unit": "UNRESOLVED",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        1,
+        20000
+      ],
+      "knownProxies": [
+        "CPER",
+        "HG (COMEX-Future)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "xcuusd",
+            "copperusd",
+            "hgusd"
+          ]
+        },
+        "official": [
+          {
+            "sourceId": "fred",
+            "series": "PCOPPUSDM",
+            "subType": "REFERENCE_PRICE",
+            "venue": "IMF Primary Commodity Prices (monatlich, via FRED)",
+            "sessionProfile": "REFERENCE_MONTHLY",
+            "unit": "PRICE_PER_METRIC_TON",
+            "role": "COMPARISON_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "NATGAS",
+      "name": "Erdgas (Henry Hub)",
+      "nameDe": "Erdgas",
+      "assetClass": "COMMODITY",
+      "subType": "UNRESOLVED",
+      "subTypeNote": "Henry-Hub-Spot oder NYMEX-Future - wird aus der gemessenen Quelle bestimmt.",
+      "family": "Energie",
+      "exchangeOrVenue": null,
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "UNRESOLVED",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_MMBTU",
+      "quantity": "MMBTU",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        0.5,
+        50
+      ],
+      "knownProxies": [
+        "UNG",
+        "NG (NYMEX-Future)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "fxTickers": [
+            "xngusd",
+            "natgasusd",
+            "ngusd"
+          ]
+        },
+        "official": [
+          {
+            "sourceId": "eia",
+            "series": "RNGWHHD",
+            "subType": "SPOT_REFERENCE",
+            "venue": "Henry Hub, LA (EIA, Spot)",
+            "sessionProfile": "REFERENCE_DAILY",
+            "publisherProfile": "US_EIA"
+          },
+          {
+            "sourceId": "fred",
+            "series": "DHHNGSP",
+            "subType": "SPOT_REFERENCE",
+            "venue": "Henry Hub, LA (EIA via FRED)",
+            "sessionProfile": "REFERENCE_DAILY",
+            "publisherProfile": "US_EIA",
+            "role": "COMPARISON_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "BTCUSD",
+      "name": "Bitcoin",
+      "nameDe": "Bitcoin",
+      "assetClass": "CRYPTO",
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "family": "Krypto",
+      "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "UTC",
+      "sessionProfile": "CRYPTO_24_7",
+      "valueSemantics": "PRICE",
+      "unit": "CRYPTO_QUOTE",
+      "quantity": "BTC",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        5000,
+        500000
+      ],
+      "knownProxies": [
+        "IBIT",
+        "FBTC",
+        "GBTC"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "cryptoTickers": [
+            "btcusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "ETHUSD",
+      "name": "Ethereum",
+      "nameDe": "Ethereum",
+      "assetClass": "CRYPTO",
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "family": "Krypto",
+      "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "UTC",
+      "sessionProfile": "CRYPTO_24_7",
+      "valueSemantics": "PRICE",
+      "unit": "CRYPTO_QUOTE",
+      "quantity": "ETH",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        100,
+        50000
+      ],
+      "knownProxies": [
+        "ETHA"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "cryptoTickers": [
+            "ethusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "SOLUSD",
+      "name": "Solana",
+      "nameDe": "Solana",
+      "assetClass": "CRYPTO",
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "family": "Krypto",
+      "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "UTC",
+      "sessionProfile": "CRYPTO_24_7",
+      "valueSemantics": "PRICE",
+      "unit": "CRYPTO_QUOTE",
+      "quantity": "SOL",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        1,
+        5000
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "tiingo": {
+          "cryptoTickers": [
+            "solusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "XRPUSD",
+      "name": "XRP",
+      "nameDe": "XRP",
+      "assetClass": "CRYPTO",
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "family": "Krypto",
+      "exchangeOrVenue": "Aggregiert ueber mehrere Handelsplaetze (Anbieter-Aggregation)",
+      "currency": "USD",
+      "country": null,
+      "timezone": "UTC",
+      "sessionProfile": "CRYPTO_24_7",
+      "valueSemantics": "PRICE",
+      "unit": "CRYPTO_QUOTE",
+      "quantity": "XRP",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        0.05,
+        100
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "tiingo": {
+          "cryptoTickers": [
+            "xrpusd"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "EURUSD",
+      "name": "Euro / US-Dollar",
+      "nameDe": "EUR/USD",
+      "assetClass": "FX",
+      "subType": "FX_SPOT",
+      "family": "Devisen",
+      "exchangeOrVenue": "Interbank (Tiingo FX) bzw. EZB-Referenzkurs",
+      "currency": "USD",
+      "country": null,
+      "timezone": "UTC",
+      "sessionProfile": "FX_24_5",
+      "valueSemantics": "FX_RATE",
+      "unit": "FX_RATE",
+      "quantity": "EUR",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        0.6,
+        2.0
+      ],
+      "knownProxies": [
+        "FXE"
+      ],
+      "coreOwner": "quant/engines/fx (Currency & FX Core) - hier nur referenziert, nicht neu gebaut",
+      "providerCandidates": {
+        "existingCore": {
+          "historicalDaily": "ecb:EURUSD",
+          "current": "tiingo:eurusd"
+        }
+      }
+    },
+    {
+      "symbol": "US2Y",
+      "name": "US-Staatsanleihe 2 Jahre (Rendite)",
+      "nameDe": "US 2J",
+      "assetClass": "YIELD",
+      "subType": "GOVERNMENT_BOND_YIELD_CMT",
+      "subTypeNote": "Treasury Par Yield Curve Rate (Constant Maturity), einmal je Geschaeftstag vom US-Finanzministerium veroeffentlicht. Keine laufend gehandelte Rendite.",
+      "family": "US Treasuries",
+      "exchangeOrVenue": "U.S. Department of the Treasury",
+      "currency": null,
+      "currencyContext": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_TREASURY",
+      "valueSemantics": "YIELD",
+      "unit": "PERCENT",
+      "tenorYears": 2,
+      "tier": "REQUIRED",
+      "expectedRange": [
+        -1,
+        20
+      ],
+      "knownProxies": [
+        "SHY (Anleihe-ETF: Kurs, keine Rendite)"
+      ],
+      "providerCandidates": {
+        "tiingo": {
+          "search": "treasury yield"
+        },
+        "official": [
+          {
+            "sourceId": "us-treasury",
+            "series": "2 Yr"
+          },
+          {
+            "sourceId": "fred",
+            "series": "DGS2",
+            "role": "COMPARISON_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "US5Y",
+      "name": "US-Staatsanleihe 5 Jahre (Rendite)",
+      "nameDe": "US 5J",
+      "assetClass": "YIELD",
+      "subType": "GOVERNMENT_BOND_YIELD_CMT",
+      "family": "US Treasuries",
+      "exchangeOrVenue": "U.S. Department of the Treasury",
+      "currency": null,
+      "currencyContext": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_TREASURY",
+      "valueSemantics": "YIELD",
+      "unit": "PERCENT",
+      "tenorYears": 5,
+      "tier": "REQUIRED",
+      "expectedRange": [
+        -1,
+        20
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "us-treasury",
+            "series": "5 Yr"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "US10Y",
+      "name": "US-Staatsanleihe 10 Jahre (Rendite)",
+      "nameDe": "US 10J",
+      "assetClass": "YIELD",
+      "subType": "GOVERNMENT_BOND_YIELD_CMT",
+      "family": "US Treasuries",
+      "exchangeOrVenue": "U.S. Department of the Treasury",
+      "currency": null,
+      "currencyContext": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_TREASURY",
+      "valueSemantics": "YIELD",
+      "unit": "PERCENT",
+      "tenorYears": 10,
+      "tier": "REQUIRED",
+      "expectedRange": [
+        -1,
+        20
+      ],
+      "knownProxies": [
+        "IEF (Anleihe-ETF: Kurs, keine Rendite)",
+        "TLT (20+J-ETF: weder 10J noch Rendite)"
+      ],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "us-treasury",
+            "series": "10 Yr"
+          },
+          {
+            "sourceId": "fred",
+            "series": "DGS10",
+            "role": "COMPARISON_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "US30Y",
+      "name": "US-Staatsanleihe 30 Jahre (Rendite)",
+      "nameDe": "US 30J",
+      "assetClass": "YIELD",
+      "subType": "GOVERNMENT_BOND_YIELD_CMT",
+      "family": "US Treasuries",
+      "exchangeOrVenue": "U.S. Department of the Treasury",
+      "currency": null,
+      "currencyContext": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_TREASURY",
+      "valueSemantics": "YIELD",
+      "unit": "PERCENT",
+      "tenorYears": 30,
+      "tier": "REQUIRED",
+      "expectedRange": [
+        -1,
+        20
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "us-treasury",
+            "series": "30 Yr"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "DE2Y",
+      "name": "Bundesanleihe 2 Jahre (Rendite)",
+      "nameDe": "Bund 2J",
+      "assetClass": "YIELD",
+      "subType": "GOVERNMENT_BOND_YIELD_TERM_STRUCTURE",
+      "subTypeNote": "Von der Bundesbank aus boersennotierten Bundeswertpapieren geschaetzte Rendite fuer eine Restlaufzeit von genau 2 Jahren (Zinsstrukturkurve), taeglich. Keine Rendite einer einzelnen Anleihe.",
+      "family": "Bundeswertpapiere",
+      "exchangeOrVenue": "Deutsche Bundesbank",
+      "currency": null,
+      "currencyContext": "EUR",
+      "country": "DE",
+      "timezone": "Europe/Berlin",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "DE_BUNDESBANK",
+      "valueSemantics": "YIELD",
+      "unit": "PERCENT",
+      "tenorYears": 2,
+      "tier": "REQUIRED",
+      "expectedRange": [
+        -2,
+        15
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "bundesbank",
+            "series": "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "DE10Y",
+      "name": "Bundesanleihe 10 Jahre (Rendite)",
+      "nameDe": "Bund 10J",
+      "assetClass": "YIELD",
+      "subType": "GOVERNMENT_BOND_YIELD_TERM_STRUCTURE",
+      "subTypeNote": "Von der Bundesbank geschaetzte Rendite fuer eine Restlaufzeit von genau 10 Jahren (Zinsstrukturkurve), taeglich.",
+      "family": "Bundeswertpapiere",
+      "exchangeOrVenue": "Deutsche Bundesbank",
+      "currency": null,
+      "currencyContext": "EUR",
+      "country": "DE",
+      "timezone": "Europe/Berlin",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "DE_BUNDESBANK",
+      "valueSemantics": "YIELD",
+      "unit": "PERCENT",
+      "tenorYears": 10,
+      "tier": "REQUIRED",
+      "expectedRange": [
+        -2,
+        15
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "bundesbank",
+            "series": "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "DE30Y",
+      "name": "Bundesanleihe 30 Jahre (Rendite)",
+      "nameDe": "Bund 30J",
+      "assetClass": "YIELD",
+      "subType": "GOVERNMENT_BOND_YIELD_TERM_STRUCTURE",
+      "family": "Bundeswertpapiere",
+      "exchangeOrVenue": "Deutsche Bundesbank",
+      "currency": null,
+      "currencyContext": "EUR",
+      "country": "DE",
+      "timezone": "Europe/Berlin",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "DE_BUNDESBANK",
+      "valueSemantics": "YIELD",
+      "unit": "PERCENT",
+      "tenorYears": 30,
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        -2,
+        15
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "bundesbank",
+            "series": "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R30XX.R.A.A._Z._Z.A"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "FED_TARGET",
+      "name": "Fed Funds Zielband",
+      "nameDe": "Fed-Leitzins",
+      "assetClass": "RATE",
+      "subType": "POLICY_RATE_TARGET_RANGE",
+      "subTypeNote": "Das vom FOMC beschlossene Zielband (Unter- und Obergrenze). Eine Stufenserie: zwischen zwei Beschluessen gilt derselbe Wert.",
+      "family": "Federal Reserve",
+      "exchangeOrVenue": "Federal Open Market Committee (veroeffentlicht von der Federal Reserve Bank of New York mit der EFFR)",
+      "currency": null,
+      "currencyContext": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "POLICY_EVENT",
+      "publisherProfile": "US_NYFED",
+      "valueSemantics": "POLICY_RATE",
+      "valueKind": "RANGE",
+      "unit": "PERCENT",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        0,
+        25
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "nyfed",
+            "series": "EFFR.targetRateFrom/targetRateTo"
+          },
+          {
+            "sourceId": "fred",
+            "series": "DFEDTARU/DFEDTARL",
+            "role": "COMPARISON_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "US_EFFR",
+      "name": "Effective Federal Funds Rate",
+      "nameDe": "EFFR",
+      "assetClass": "RATE",
+      "subType": "OVERNIGHT_REFERENCE_RATE",
+      "subTypeNote": "Der tatsaechliche volumengewichtete Tagesgeldsatz, taeglich von der New York Fed veroeffentlicht. Kein Beschluss - ein Marktsatz innerhalb des Zielbands.",
+      "family": "Federal Reserve",
+      "exchangeOrVenue": "Federal Reserve Bank of New York",
+      "currency": null,
+      "currencyContext": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_NYFED",
+      "valueSemantics": "POLICY_RATE",
+      "unit": "PERCENT",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        0,
+        25
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "nyfed",
+            "series": "EFFR.percentRate"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "ECB_DFR",
+      "name": "EZB-Einlagefazilitaet",
+      "nameDe": "EZB-Einlagezins",
+      "assetClass": "RATE",
+      "subType": "POLICY_RATE_DEPOSIT_FACILITY",
+      "subTypeNote": "Der vom EZB-Rat beschlossene Zinssatz der Einlagefazilitaet. Stufenserie: zwischen zwei Beschluessen gilt derselbe Wert.",
+      "family": "Europaeische Zentralbank",
+      "exchangeOrVenue": "EZB-Rat (ECB Data Portal)",
+      "currency": null,
+      "currencyContext": "EUR",
+      "country": "EU",
+      "timezone": "Europe/Berlin",
+      "sessionProfile": "POLICY_EVENT",
+      "publisherProfile": "EU_ECB",
+      "valueSemantics": "POLICY_RATE",
+      "unit": "PERCENT",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        -2,
+        10
+      ],
+      "knownProxies": [],
+      "providerCandidates": {
+        "official": [
+          {
+            "sourceId": "ecb-data-portal",
+            "series": "FM/B.U2.EUR.4F.KR.DFR.LEV"
+          }
+        ]
+      }
+    },
+    {
+      "symbol": "QQQ",
+      "name": "Invesco QQQ Trust",
+      "nameDe": "Invesco QQQ",
+      "assetClass": "ETF",
+      "subType": "INDEX_TRACKER",
+      "family": "Invesco",
+      "exchangeOrVenue": "NASDAQ",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "US_EQUITY_ETF",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_SHARE",
+      "quantity": "SHARE",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        100,
+        3000
+      ],
+      "knownProxies": [],
+      "tracker": {
+        "tracksIndex": "NASDAQ_100",
+        "tracksIndexName": "Nasdaq-100",
+        "tracksIndexInstrument": "NDX",
+        "isProxy": true,
+        "underlyingType": "INDEX",
+        "displayMarketName": "Nasdaq 100",
+        "trackerDisclosure": "Markt-Tracker: Invesco QQQ",
+        "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+        "differences": [
+          "Verwaltungsgebuehren",
+          "Tracking Difference",
+          "Ausschuettungen (nicht in der Kursreihe)",
+          "US-Handelszeiten statt Berechnungszeit des Index"
+        ]
+      },
+      "providerCandidates": {
+        "tiingo": {
+          "dailyTickers": [
+            "qqq"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF Trust",
+      "nameDe": "SPDR S&P 500 ETF",
+      "assetClass": "ETF",
+      "subType": "INDEX_TRACKER",
+      "family": "State Street (SPDR)",
+      "exchangeOrVenue": "NYSE Arca",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "US_EQUITY_ETF",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_SHARE",
+      "quantity": "SHARE",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        150,
+        3000
+      ],
+      "knownProxies": [],
+      "tracker": {
+        "tracksIndex": "SP500",
+        "tracksIndexName": "S&P 500",
+        "tracksIndexInstrument": "SPX",
+        "isProxy": true,
+        "underlyingType": "INDEX",
+        "displayMarketName": "S&P 500",
+        "trackerDisclosure": "Markt-Tracker: SPDR S&P 500 ETF (SPY)",
+        "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+        "differences": [
+          "Verwaltungsgebuehren",
+          "Tracking Difference",
+          "Ausschuettungen (nicht in der Kursreihe)",
+          "US-Handelszeiten statt Berechnungszeit des Index"
+        ]
+      },
+      "providerCandidates": {
+        "tiingo": {
+          "dailyTickers": [
+            "spy"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "DIA",
+      "name": "SPDR Dow Jones Industrial Average ETF Trust",
+      "nameDe": "SPDR Dow Jones Industrial Average ETF",
+      "assetClass": "ETF",
+      "subType": "INDEX_TRACKER",
+      "family": "State Street (SPDR)",
+      "exchangeOrVenue": "NYSE Arca",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "US_EQUITY_ETF",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_SHARE",
+      "quantity": "SHARE",
+      "tier": "REQUIRED",
+      "expectedRange": [
+        150,
+        2000
+      ],
+      "knownProxies": [],
+      "tracker": {
+        "tracksIndex": "DOW_JONES_INDUSTRIAL_AVERAGE",
+        "tracksIndexName": "Dow Jones Industrial Average",
+        "tracksIndexInstrument": "DJI",
+        "isProxy": true,
+        "underlyingType": "INDEX",
+        "displayMarketName": "Dow Jones",
+        "trackerDisclosure": "Markt-Tracker: SPDR Dow Jones Industrial Average ETF (DIA)",
+        "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+        "differences": [
+          "Verwaltungsgebuehren",
+          "Tracking Difference",
+          "Ausschuettungen (nicht in der Kursreihe)",
+          "US-Handelszeiten statt Berechnungszeit des Index"
+        ]
+      },
+      "providerCandidates": {
+        "tiingo": {
+          "dailyTickers": [
+            "dia"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "IWM",
+      "name": "iShares Russell 2000 ETF",
+      "nameDe": "iShares Russell 2000 ETF",
+      "assetClass": "ETF",
+      "subType": "INDEX_TRACKER",
+      "family": "BlackRock (iShares)",
+      "exchangeOrVenue": "NYSE Arca",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "US_EQUITY_ETF",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_SHARE",
+      "quantity": "SHARE",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        50,
+        1000
+      ],
+      "knownProxies": [],
+      "tracker": {
+        "tracksIndex": "RUSSELL_2000",
+        "tracksIndexName": "Russell 2000",
+        "tracksIndexInstrument": "RUT",
+        "isProxy": true,
+        "underlyingType": "INDEX",
+        "displayMarketName": "Russell 2000",
+        "trackerDisclosure": "Markt-Tracker: iShares Russell 2000 ETF (IWM)",
+        "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+        "differences": [
+          "Verwaltungsgebuehren",
+          "Tracking Difference",
+          "Ausschuettungen (nicht in der Kursreihe)",
+          "US-Handelszeiten statt Berechnungszeit des Index"
+        ]
+      },
+      "providerCandidates": {
+        "tiingo": {
+          "dailyTickers": [
+            "iwm"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "FEZ",
+      "name": "SPDR EURO STOXX 50 ETF",
+      "nameDe": "SPDR EURO STOXX 50 ETF",
+      "assetClass": "ETF",
+      "subType": "INDEX_TRACKER",
+      "family": "State Street (SPDR)",
+      "exchangeOrVenue": "NYSE Arca",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "US_EQUITY_ETF",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_SHARE",
+      "quantity": "SHARE",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        15,
+        300
+      ],
+      "knownProxies": [],
+      "tracker": {
+        "tracksIndex": "EURO_STOXX_50",
+        "tracksIndexName": "EURO STOXX 50",
+        "tracksIndexInstrument": "SX5E",
+        "isProxy": true,
+        "underlyingType": "INDEX",
+        "displayMarketName": "Euro Stoxx 50",
+        "trackerDisclosure": "Markt-Tracker: SPDR EURO STOXX 50 ETF (FEZ) - in USD notiert, enthaelt den EUR/USD-Effekt",
+        "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+        "differences": [
+          "Verwaltungsgebuehren",
+          "Tracking Difference",
+          "Ausschuettungen (nicht in der Kursreihe)",
+          "US-Handelszeiten statt Berechnungszeit des Index"
+        ],
+        "currencyNote": "US-notiert in USD auf europaeische Aktien: die Bewegung enthaelt die Wechselkursbewegung EUR/USD."
+      },
+      "providerCandidates": {
+        "tiingo": {
+          "dailyTickers": [
+            "fez"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "URTH",
+      "name": "iShares MSCI World ETF",
+      "nameDe": "iShares MSCI World ETF",
+      "assetClass": "ETF",
+      "subType": "INDEX_TRACKER",
+      "family": "BlackRock (iShares)",
+      "exchangeOrVenue": "NYSE Arca",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "US_EQUITY_ETF",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_SHARE",
+      "quantity": "SHARE",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        40,
+        600
+      ],
+      "knownProxies": [],
+      "tracker": {
+        "tracksIndex": "MSCI_WORLD",
+        "tracksIndexName": "MSCI World",
+        "tracksIndexInstrument": null,
+        "isProxy": true,
+        "underlyingType": "INDEX",
+        "displayMarketName": "MSCI World",
+        "trackerDisclosure": "Markt-Tracker: iShares MSCI World ETF (URTH)",
+        "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+        "differences": [
+          "Verwaltungsgebuehren",
+          "Tracking Difference",
+          "Ausschuettungen (nicht in der Kursreihe)",
+          "US-Handelszeiten statt Berechnungszeit des Index"
+        ],
+        "currencyNote": "US-notiert in USD; die Bewegung enthaelt die Wechselkursbewegungen der Nicht-USD-Maerkte."
+      },
+      "providerCandidates": {
+        "tiingo": {
+          "dailyTickers": [
+            "urth"
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "EEM",
+      "name": "iShares MSCI Emerging Markets ETF",
+      "nameDe": "iShares MSCI Emerging Markets ETF",
+      "assetClass": "ETF",
+      "subType": "INDEX_TRACKER",
+      "family": "BlackRock (iShares)",
+      "exchangeOrVenue": "NYSE Arca",
+      "currency": "USD",
+      "country": "US",
+      "timezone": "America/New_York",
+      "sessionProfile": "US_EQUITY_ETF",
+      "sessionExchange": "XNYS",
+      "valueSemantics": "PRICE",
+      "unit": "PRICE_PER_SHARE",
+      "quantity": "SHARE",
+      "tier": "OPTIONAL",
+      "expectedRange": [
+        10,
+        200
+      ],
+      "knownProxies": [],
+      "tracker": {
+        "tracksIndex": "MSCI_EMERGING_MARKETS",
+        "tracksIndexName": "MSCI Emerging Markets",
+        "tracksIndexInstrument": null,
+        "isProxy": true,
+        "underlyingType": "INDEX",
+        "displayMarketName": "Schwellenlaender",
+        "trackerDisclosure": "Markt-Tracker: iShares MSCI Emerging Markets ETF (EEM)",
+        "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+        "differences": [
+          "Verwaltungsgebuehren",
+          "Tracking Difference",
+          "Ausschuettungen (nicht in der Kursreihe)",
+          "US-Handelszeiten statt Berechnungszeit des Index"
+        ],
+        "currencyNote": "US-notiert in USD; die Bewegung enthaelt die Wechselkursbewegungen der Schwellenlaenderwaehrungen."
+      },
+      "providerCandidates": {
+        "tiingo": {
+          "dailyTickers": [
+            "eem"
+          ]
+        }
+      }
+    }
+  ]
+}

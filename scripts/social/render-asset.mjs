@@ -1545,6 +1545,8 @@ export function render(p, zielPfad, options = {}) {
   const arbeit = join(arbeitsVerzeichnis(), `vu-asset-${process.pid}-${Date.now()}.html`);
   writeFileSync(arbeit, p.komposition
     ? seiteKomposition(p, options.schrift || null)
+    : p.generiert
+    ? seiteGeschichte(p, options.schrift || null)
     : seite(p, options.schrift || null));
   mkdirSync(dirname(zielPfad), { recursive: true });
 
@@ -1891,4 +1893,179 @@ export function uebernimm(p, zielPfad, options = {}) {
       `Ein Formatwechsel darf das Bild nicht bearbeiten.`);
   }
   return Object.assign({ pfad: zielPfad, modus: "uebernahme", quelle: p.quelle }, befund);
+}
+
+/* =========================================================================
+   DIE STORY-WELT: STUFE A TRIFFT STUFE B (GOLDEN PATH, Owner-Direktive
+   "FINAL GOLDEN PATH SIMPLIFICATION")
+
+   -------------------------------------------------------------------------
+   WARUM UEBERNIMM() HIER NICHT REICHT
+   -------------------------------------------------------------------------
+
+   uebernimm() liest das Agenten-Bild unveraendert zurueck - Formatwechsel,
+   keine Bearbeitung. Genau das war der reale Befund: das MSFT-Ergebnis
+   trug keinen Text, kein Logo, keinen Atlas, weil unser eigener Brief an
+   den Agenten genau das verbietet ("Kein Text im Bild", "Kein Logo") und
+   niemand danach je etwas AUFGETRAGEN hat.
+
+   Diese Funktionen schliessen die Luecke, ohne die bestehende Trennung
+   aufzugeben: Stufe A bleibt das Agenten-Bild (Motiv, Licht, Tiefe -
+   weiterhin ohne Text und Logo, siehe chatgpt-work/adapter.js). Stufe B
+   setzt darueber, mit demselben Chromium-Renderer und denselben
+   Vertraegen wie der gezeichnete Kartenpfad:
+
+     1. das kanonische Logo (brand.js::checkLogoUsage, ungeaendert)
+     2. den kanonischen Atlas, in der Rolle ATLAS_GUIDE (10-24 % Flaeche -
+        die groesste Rolle, die dieser Renderer schon kennt; §17 schliesst
+        ATLAS_HERO aus, weil hier keine Szene GEZEICHNET wird, sondern eine
+        bestehende ueberlagert)
+     3. den gewaehlten ONE_SECOND_MESSAGE als Hook-Textebene.
+
+   render() bekommt denselben Plan wie jeder andere und wendet DIESELBEN
+   vier harten Tore an: Logo-Vertrag, Atlas-Vertrag, "ausserhalb der
+   Flaeche", SCROLL_STOP_QUALITY. Ein Story-Welt-Bild, das eines davon
+   nicht besteht, wird nicht geschrieben - kein Sonderpfad, keine
+   Ausnahme, kein zweites Tor.
+   ========================================================================= */
+
+/**
+ * Der Bildplan fuer eine Story-Welt: das gepruefte Agenten-Bild als
+ * Untergrund, Logo/Atlas/Hook darueber komponiert.
+ *
+ * @param pkg    Das Content Package - `pkg.hook` traegt den gewaehlten
+ *               ONE_SECOND_MESSAGE.
+ * @param asset  Dasselbe gepruefte Asset wie bei planUebernahme():
+ *               { asset_path, state, width, height, asset_sha256,
+ *                 mime_type }.
+ */
+export function planGeschichte(pkg, asset, options = {}) {
+  options = options || {};
+  if (!asset || !asset.asset_path) {
+    return { ok: false, reason: "noAsset", visualType: "GENERATIVE",
+      message: "Kein Agenten-Bild zum Ueberlagern." };
+  }
+  const VERIFIZIERT = ["READBACK_VERIFIED", "COMPLETED", "ASSET_VERIFIED"];
+  if (VERIFIZIERT.indexOf(asset.state) === -1) {
+    return { ok: false, reason: "assetNotVerified", visualType: "GENERATIVE",
+      message: "Das Asset steht auf " + asset.state + ". Nur ein frisch " +
+        "zurueckgelesenes Asset darf ueberlagert werden." };
+  }
+
+  const aussage = String((pkg && pkg.hook) || "").trim();
+  if (!aussage) {
+    return { ok: false, reason: "noStatement", visualType: "GENERATIVE",
+      message: "Kein Hook - es gibt keinen Satz fuer die Story-Welt." };
+  }
+
+  const wurzel = options.root || join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const quellPfad = join(wurzel, asset.asset_path);
+  if (!existsSync(quellPfad)) {
+    return { ok: false, reason: "assetMissing", visualType: "GENERATIVE",
+      message: "Das Agenten-Bild liegt nicht unter " + asset.asset_path + "." };
+  }
+  const roh = readFileSync(quellPfad);
+  if (asset.asset_sha256) {
+    const ist = createHash("sha256").update(roh).digest("hex");
+    if (ist !== asset.asset_sha256) {
+      return { ok: false, reason: "assetHashMismatch", visualType: "GENERATIVE",
+        message: "Das Agenten-Bild auf dem Datentraeger hat den Hash " + ist +
+          ", erwartet war " + asset.asset_sha256 + "." };
+    }
+  }
+
+  const breite = Number(options.breite) || 1080;
+  const hoehe = Number(options.hoehe) || 1350;
+  const g = textGroessen("DATA_CARD");
+  const kasten = atlasKasten("ATLAS_GUIDE", breite, hoehe, options.root);
+
+  const entwurf = {
+    ok: true,
+    generiert: true,
+    visualType: "GENERATIVE",
+    packageId: pkg.packageId || null,
+    breite, hoehe,
+    ebenen: { aussage, quelle: null },
+    hintergrundUri: "data:" + (asset.mime_type || "image/png") + ";base64," +
+      roh.toString("base64"),
+    quelleAsset: asset.asset_path,
+    sha256: asset.asset_sha256 || null,
+    textGroessen: g,
+    logoUri: logoDatenUri(options.root),
+    atlasUri: atlasDatenUri(options.root),
+    atlas: kasten ? {
+      rolle: "ATLAS_GUIDE",
+      referenceAsset: ATLAS_PFAD,
+      transforms: ["scale"],
+      breite: kasten.breite,
+      hoehe: kasten.hoehe
+    } : null,
+    /* Ein Foto-Untergrund hat keine gerechnete Redundanz, gegen die
+       visual-quality.js pruefen koennte - genau wie beim reinen
+       Uebernahmepfad. Anders als dort traegt dieses Bild aber eine
+       echte Hook-Textebene, und SCROLL_STOP_QUALITY prueft sie in
+       render(). */
+    quality: { applicable: false,
+      explanation: "Story-Welt-Komposition: die Textredundanz-Pruefung der " +
+        "Karte passt auf einen Fotountergrund nicht. Text-on-Visual wird " +
+        "trotzdem hart geprueft (SCROLL_STOP_QUALITY, render())." }
+  };
+  return entwurf;
+}
+
+/** Die Seite fuer eine Story-Welt: Agenten-Bild als Untergrund, Logo,
+ *  Hook und Atlas darueber. */
+export function seiteGeschichte(p, schriftDaten) {
+  const font = schriftDaten
+    ? `@font-face{font-family:Inter;src:url(data:font/woff2;base64,${schriftDaten.toString("base64")}) format("woff2");font-weight:100 900;font-display:block}`
+    : "";
+  const familie = schriftDaten
+    ? "Inter, system-ui, sans-serif"
+    : "system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
+  const g = p.textGroessen || textGroessen("DATA_CARD");
+  p = Object.assign({}, p, { logoUri: p.logoUri || logoDatenUri() });
+
+  const quelle = p.ebenen.quelle
+    ? `<div class="quelle" data-vu-rolle="QUELLE">Quelle: ${escape(p.ebenen.quelle)}</div>` : "";
+
+  return `<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
+${font}
+*{margin:0;padding:0;box-sizing:border-box}
+*{overflow-wrap:anywhere}
+html,body{width:${p.breite}px;height:${p.hoehe}px;overflow:hidden}
+body{font-family:${familie};color:${FARBEN.weiss};
+  /* Ein dunkler Verlauf ueber dem Agenten-Bild, nicht statt ihm: er
+     sichert den Kontrast von Logo, Hook und Quelle (§18, SCROLL_STOP),
+     ohne das Motiv selbst zu veraendern - dieselbe Trennung wie beim
+     Logo (place/scale, keine Neuzeichnung). */
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.70) 0%, rgba(0,0,0,.12) 28%,
+      rgba(0,0,0,.05) 52%, rgba(0,0,0,.48) 78%, rgba(0,0,0,.80) 100%),
+    url(${p.hintergrundUri}) center/cover no-repeat;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:96px 88px;-webkit-font-smoothing:antialiased}
+.marke{display:block;width:${g.logo.breite}px;height:${g.logo.hoehe}px;filter:invert(1)}
+.mitte{display:flex;flex-direction:column;gap:20px}
+.aussage{font-size:${g.aussage}px;line-height:1.15;font-weight:800;letter-spacing:-.02em;
+  max-width:20ch;text-shadow:0 6px 28px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.7)}
+.fuss{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.absender{display:flex;flex-direction:column;gap:18px}
+.strich{height:3px;width:120px;background:${FARBEN.rot}}
+.quelle{font-size:24px;color:rgba(255,255,255,.85);font-weight:500;
+  text-shadow:0 2px 10px rgba(0,0,0,.7)}
+.atlas{display:block;flex:0 0 auto;filter:drop-shadow(0 10px 30px rgba(0,0,0,.5))}
+</style></head><body>
+  <img class="marke" alt="VISION UNIVERSE" src="${p.logoUri || ""}">
+  <div class="mitte">
+    <div class="aussage" data-vu-rolle="HOOK">${escape(p.ebenen.aussage)}</div>
+  </div>
+  <div class="fuss">
+    <div class="absender">
+      <div class="strich"></div>
+      ${quelle}
+    </div>
+    ${atlasBild(p)}
+  </div>
+  ${MESS_SKRIPT}
+</body></html>`;
 }

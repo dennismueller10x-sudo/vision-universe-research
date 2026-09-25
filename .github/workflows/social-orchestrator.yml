@@ -99,11 +99,104 @@ jobs:
           node-version: '22'
 
       # =====================================================================
+      # DIE FEHLENDE ERSTE LINIE — DAS ERGEBNIS VOM REQUEST-BRANCH HOLEN
+      #
+      # PR #170 (vu-nvda-20260918) trug seit Stunden ein echtes,
+      # vollstaendig bestaetigtes Creative-Result — Hook-Varianten,
+      # Caption, ein geprueftes Bild. ingest-creative.mjs bestaetigt das
+      # sofort als COMPLETED, sobald man es gegen den Request-Branch
+      # ausfuehrt. Der Job blieb trotzdem auf CREATIVE_JOB_DISPATCHED
+      # stehen und blockierte MAX_OPEN_CREATIVE_JOBS = 1 fuer den
+      # gesamten Betrieb.
+      #
+      # Der naechste Kommentarblock nannte sich "ZWEITE Linie" und
+      # verwies auf eine "erste": ingest-creative.mjs sollte das
+      # Register laengst selbst nachziehen. Es gab diese erste Linie nie
+      # — das Skript wurde in KEINEM Workflow je aufgerufen. Der Agent
+      # committet auf den Request-Branch, nicht auf main, und ohne
+      # diesen Schritt holte niemand diesen Branch.
+      #
+      # ingest-open-creative-jobs.mjs baut keine neue Pruef- oder
+      # Uebernahmelogik: es haengt fuer jeden offenen Job mit
+      # Request-PR-Nummer den bestehenden, bereits getesteten Weg an —
+      # Branch holen, ingest-creative.mjs --write darauf ansetzen.
+      #
+      # VOR dem Abgleich unten, damit der ein frisch eingelesenes
+      # Ergebnis vorfindet und nicht nur seine eigene, schwaechere
+      # zweite Pruefung.
+      # =====================================================================
+      - name: Creative-Ergebnisse von offenen Request-PRs holen
+        # Kein GH_TOKEN noetig: `git fetch` nutzt die von actions/checkout
+        # hinterlegten Zugangsdaten. Dieser Schritt ruft `gh` nicht auf.
+        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+
+      # =====================================================================
+      # DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR MAX_OPEN_CREATIVE_JOBS
+      # (Owner-Direktive "WORKFLOW-ORDERING-FIX", 24.09.)
+      #
+      # Ein Creative Job stand 51 Stunden auf CREATIVE_JOB_IN_FLIGHT und
+      # blockierte MAX_OPEN_CREATIVE_JOBS = 1, obwohl sein Ergebnis seit
+      # zehn Minuten nach dem Start im Repository lag und das Ledger
+      # denselben Schluessel COMPLETED nannte. Der Abschluss wurde an
+      # einer Stelle notiert und an einer anderen gezaehlt.
+      #
+      # Der Schritt oben ist seitdem die ERSTE Linie und holt das
+      # Ergebnis wirklich vom Request-Branch. Das hier ist die ZWEITE:
+      # verpasst der Ingest den Rueckweg — weil ein Lauf abbrach, weil
+      # der Branch zwischenzeitlich geloescht wurde, oder weil ein
+      # Dispatch nie einen Request-PR bekam (DISPATCH_NIE_ERFOLGT) —,
+      # holt ihn dieser Abgleich aus der real feststellbaren Evidenz
+      # nach, bevor irgendetwas zaehlt.
+      #
+      # DIESER SCHRITT STAND FRUEHER NACH "Tests und Isolation" — und
+      # genau das war der Fehler: MAX_OPEN_CREATIVE_JOBS (Teil der
+      # harten Invarianten, gemessen von check-hard-invariants.mjs
+      # INNERHALB der Testsuite) zaehlte dann den ungeklaerten Zustand
+      # VOR dem Abgleich. Ein einzelner verwaister Job (Register-Eintrag
+      # ohne je geoeffneten Request-PR) konnte so die gesamte Pipeline
+      # dauerhaft blockieren, obwohl genau dieser Abgleich ihn anhand
+      # realer Evidenz haette schliessen koennen (creative-job.js:
+      # DISPATCH_NIE_ERFOLGT -> CREATIVE_JOB_FAILED). Jetzt: erst
+      # laden, erst abgleichen, erst der reconcilierte Zustand
+      # persistiert (--write schreibt das Register auf der Platte, vor
+      # dem Testlauf, der es liest) — DANACH erst die Testsuite, die
+      # MAX_OPEN_CREATIVE_JOBS auswertet, und danach alles Weitere.
+      #
+      # Er schliesst NIE einen Job wegen seines Alters allein. Nur
+      # harte Evidenz mit identischem processing_key zaehlt; die Liste
+      # steht in creative-job.js und weist alles andere benannt zurueck
+      # (UNGEMESSEN bleibt offen, nicht geschlossen — fail-closed).
+      # =====================================================================
+      - name: Creative Jobs gegen die Evidenz abgleichen
+        # GH_TOKEN, weil eine der Evidenzarten eine Tatsache ueber die
+        # AUSSENWELT braucht: gibt es einen Request-PR zu diesem Job?
+        # Ohne Token kann das Skript die Frage nicht stellen und meldet
+        # UNGEMESSEN - und ungeprueft schliesst nichts. Der Abgleich
+        # liest nur; er oeffnet keinen PR und veraendert nichts an
+        # GitHub.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/social/reconcile-creative-jobs.mjs --write
+
+      # =====================================================================
       # TESTS UND ISOLATION, BEVOR IRGENDETWAS GESCHIEHT
       #
       # Ein Betrieb, der auf rotem Code laeuft, schreibt Fehler in
-      # Produktionsdaten. Deshalb zuerst - und mit demselben Messer wie
-      # in der CI.
+      # Produktionsdaten. Deshalb so frueh wie moeglich - und mit
+      # demselben Messer wie in der CI.
+      #
+      # NACH dem Evidenz-Abgleich oben (Owner-Direktive
+      # "WORKFLOW-ORDERING-FIX", 24.09.): MAX_OPEN_CREATIVE_JOBS wird
+      # als Teil dieser Suite gemessen (check-hard-invariants.mjs) und
+      # braucht den bereits reconcilierten Registerstand, sonst zaehlt
+      # es einen verwaisten Job mit, den der Abgleich laengst haette
+      # schliessen koennen. Der Abgleich selbst schreibt keine
+      # Content-/Publishing-Zustaende — nur Register-Buchhaltung anhand
+      # bereits vorliegender, externer Evidenz — und faellt deshalb
+      # nicht unter "roter Code schreibt keine Produktionsdaten" (AD29):
+      # er entscheidet nichts, was von der Korrektheit DIESES Commits
+      # abhinge, sondern nur, ob ein frueherer Dispatch nachweislich nie
+      # ausgeliefert wurde.
       #
       # Hier standen zwei Schritte, die je einen STRING in $GITHUB_OUTPUT
       # schrieben ("gruen=social/tests (Zeitpunkt)"), den der Reifebericht
@@ -122,38 +215,6 @@ jobs:
       # =====================================================================
       - name: Tests und Isolation, bevor irgendetwas geschieht
         run: node scripts/social/verify-suites.mjs
-
-      # =====================================================================
-      # DEN REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR DEM ZAEHLEN
-      #
-      # Ein Creative Job stand 51 Stunden auf CREATIVE_JOB_IN_FLIGHT und
-      # blockierte MAX_OPEN_CREATIVE_JOBS = 1, obwohl sein Ergebnis seit
-      # zehn Minuten nach dem Start im Repository lag und das Ledger
-      # denselben Schluessel COMPLETED nannte. Der Abschluss wurde an
-      # einer Stelle notiert und an einer anderen gezaehlt.
-      #
-      # ingest-creative.mjs zieht das Register seitdem selbst nach. Das
-      # hier ist die ZWEITE Linie: verpasst der Ingest den Rueckweg -
-      # weil ein Lauf abbrach, weil jemand ihn uebersprang -, holt ihn
-      # der naechste Orchestratorlauf nach, bevor er zaehlt.
-      #
-      # Er schliesst NIE einen Job wegen seines Alters. Nur harte
-      # Evidenz mit identischem processing_key zaehlt; die Liste steht
-      # in creative-job.js und weist alles andere benannt zurueck.
-      #
-      # VOR "Was ist jetzt dran?", weil genau dort die offenen Jobs
-      # gezaehlt werden. Danach waere er ein Tor neben dem Weg.
-      # =====================================================================
-      - name: Creative Jobs gegen die Evidenz abgleichen
-        # GH_TOKEN, weil eine der Evidenzarten eine Tatsache ueber die
-        # AUSSENWELT braucht: gibt es einen Request-PR zu diesem Job?
-        # Ohne Token kann das Skript die Frage nicht stellen und meldet
-        # UNGEMESSEN - und ungeprueft schliesst nichts. Der Abgleich
-        # liest nur; er oeffnet keinen PR und veraendert nichts an
-        # GitHub.
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node scripts/social/reconcile-creative-jobs.mjs --write
 
       - name: Was ist jetzt dran?
         id: plan
@@ -225,31 +286,32 @@ jobs:
             | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
 
       # =====================================================================
-      # DIE PLATTE — DAS BREITE CONTENT UNIVERSE, FRISCH
-      #
-      # build-opportunity-slate.mjs lief bis hierher in KEINEM Workflow.
-      # Die Datei auf der Platte stammte vom Vortag, und der
-      # Owner-Bericht zeigte ihre 32 Themen aus fuenf Familien, waehrend
-      # der Zyklus aus vier Quant-Signalen drei STOCK_STORY-Pakete
-      # baute. Wer den Bericht las, schloss auf eine Breite, die im
-      # Lauf keine Rolle spielte.
-      #
-      # Der Schritt ist lesend und netzfrei: er ruft keine externe
-      # Quelle und schon gar keine der beiden vom Owner nicht
-      # aktivierten. Er schreibt genau eine Datei.
-      #
-      # VOR dem Messen, weil die Platte den Datenstand beschreibt, auf
-      # dem dieser Lauf entscheidet - nicht den von gestern.
-      # =====================================================================
-      - name: DIE PLATTE — Content Universe in voller Breite
-        if: inputs.nur_entscheiden != true
+      # WEB-FIRST FULL-POST GENERATION — STANDARDPFAD (Owner-Direktive
+      # "VISION UNIVERSE SOCIAL OS — WEB-FIRST + FULL-POST-GENERATION",
+      # 24.09.): Discovery/Quant/Opportunity Slate/Ranking duerfen ab
+      # jetzt fuer KEINEN Modus mehr Inhaltsquelle fuer einen Post sein -
+      # nicht nur fuer MANUAL_NOW/MANUAL_TOPIC (§2.1, §7.2/§7.3 der
+      # Direktive). Die Platte, der Quant-gestuetzte Zyklus und die
+      # alte CREATIVE JOB/VORBEREITEN-Kette sind deshalb fuer ALLE Modi
+      # (JETZT_PRUEFEN, MANUAL_NOW, MANUAL_TOPIC, Zeitplan) stillgelegt -
+      # nicht geloescht (die Skripte bleiben als geteilte Abhaengigkeiten
+      # bestehen, z.B. teilt request-creative-web.mjs sich Funktionen mit
+      # request-creative.mjs), nur nie mehr als Auswahlweg fuer einen
+      # neuen Kandidaten aufgerufen. Der einzige Weg zu einem Kandidaten
+      # ist jetzt "WEB RESEARCH" / "CREATIVE JOB (WEB)" / "VORBEREITEN
+      # (WEB)" weiter unten, fuer jeden Modus gleich.
+      - name: DIE PLATTE — Content Universe in voller Breite (stillgelegt)
+        if: false
         run: |
           set -euo pipefail
           node scripts/social/build-opportunity-slate.mjs \
             --data social/data --out social/data | tail -25
 
       - name: MESSEN — Zahlen holen, lernen, anpassen
-        if: steps.plan.outputs.measure == 'ja' && inputs.nur_entscheiden != true
+        if: >-
+          steps.plan.outputs.measure == 'ja' && inputs.nur_entscheiden != true &&
+          steps.plan.outputs.modus != 'MANUAL_NOW' &&
+          steps.plan.outputs.modus != 'MANUAL_TOPIC'
         env:
           VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
         run: |
@@ -267,28 +329,15 @@ jobs:
             --provider mock --data social/data --out social/data | tail -30
 
       # =====================================================================
-      # CREATIVE JOB — DER SCHRITT, DEN BISHER EIN MENSCH GETAN HAT
-      #
-      # Er laeuft NUR, wenn der Orchestrator ihn beschlossen hat. Ein
-      # Scheduler-Lauf erzeugt keinen Creative Job, nur weil er laeuft:
-      # `creative` ist ja genau dann, wenn ein Kandidat faellig ist, zum
-      # Inhalt kein Ergebnis und kein offener Job vorliegt, die Evidenz
-      # eine Geschichte traegt und das Budget den Dispatch zulaesst.
-      #
-      # Die drei Skripte sind die BESTEHENDEN. Hier wird kein zweiter
-      # Ausloesemechanismus gebaut - nur der letzte Schritt getan, den
-      # dispatch-creative-job.mjs seit jeher ankuendigt.
-      #
-      # EIN VERWEIGERTES TOR IST KEIN FEHLER. Jedes der drei Skripte
-      # endet bei einer Verweigerung mit 4. Das ist eine Antwort und
-      # kein Ausfall - der Lauf geht weiter, und der Grund steht im
-      # Protokoll.
+      # CREATIVE JOB (QUANT-PFAD) — STILLGELEGT (Owner-Direktive
+      # "WEB-FIRST + FULL-POST-GENERATION", 24.09.): dispatchte einen
+      # Creative Job aus einem technischen Quant-Bundle (steps.plan.
+      # outputs.creative). Discovery/Quant duerfen ab jetzt fuer keinen
+      # Modus mehr Inhaltsquelle sein - der Ersatz ist "CREATIVE JOB
+      # (WEB)" weiter unten, fuer alle Modi gleich.
       # =====================================================================
-      - name: CREATIVE JOB — Brief, Register, Request-PR
-        if: >-
-          steps.plan.outputs.creative == 'ja' &&
-          steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true
+      - name: CREATIVE JOB — Brief, Register, Request-PR (stillgelegt)
+        if: false
         env:
           GH_TOKEN: ${{ github.token }}
           SYMBOL: ${{ steps.plan.outputs.creative_symbol }}
@@ -341,45 +390,155 @@ jobs:
           node scripts/social/verify-creative-dispatch.mjs \
             --branch "authoring/request/$CONTENT_ID"
 
-      - name: VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus
+      # =====================================================================
+      # VORBEREITEN (QUANT-PFAD) — STILLGELEGT (Owner-Direktive
+      # "WEB-FIRST + FULL-POST-GENERATION", 24.09.): baute den Kandidaten
+      # aus der Content Ladder / Opportunity.score. Discovery/Quant
+      # duerfen ab jetzt fuer keinen Modus mehr Inhaltsquelle sein - der
+      # Ersatz ist "VORBEREITEN (WEB)" weiter unten, fuer alle Modi
+      # gleich.
+      # =====================================================================
+      - name: VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus (stillgelegt)
+        if: false
+        run: |
+          set -euo pipefail
+          echo "stillgelegt"
+
+      # =====================================================================
+      # WEB-FIRST FULL-POST GENERATION (Owner-Direktive "DIRECT CREATIVE
+      # GOLDEN PATH — FINAL GO/NO-GO", 23.09., erweitert durch "WEB-FIRST
+      # + FULL-POST-GENERATION", 24.09.)
+      #
+      # Der EINZIGE Themenpfad, fuer JEDEN Modus (JETZT_PRUEFEN,
+      # MANUAL_NOW, MANUAL_TOPIC, Zeitplan). Kein Discovery, kein Quant,
+      # kein Opportunity Slate, kein Screener - research-web-story.mjs
+      # kennt quant/ nicht und liest es nicht. Themen kommen
+      # ausschliesslich aus oeffentlichen, schluessellosen Nachrichten-
+      # Feeds (social/engines/web-research.js waehlt Story, Hook,
+      # Caption und Hashtags rein und ohne Netz; das Skript hier macht
+      # nur den Netzabruf).
+      #
+      # FAIL CLOSED: findet sich keine aktuelle, grounded Story, endet
+      # das Skript mit 4 (begruendete Verweigerung) und es entsteht
+      # nichts - kein Rueckfall auf die Ladder oder die Platte.
+      # =====================================================================
+      - name: WEB RESEARCH — aktuelle Story finden
+        id: webresearch
         if: >-
-          steps.plan.outputs.prepare == 'ja' &&
           steps.lease.outputs.produktiv_erlaubt == 'true' &&
           inputs.nur_entscheiden != true
-        # VU_SOCIAL_MODUS reist hier weiter, mit demselben Namen, unter
-        # dem run-orchestrator.mjs ihn gelesen und sein Urteil schon
-        # gefaellt hat (steps.plan.outputs.modus). make-publish-
-        # candidate.mjs trifft KEINE zweite Kadenzentscheidung - es
-        # fragt dieselbe AUFHEBBAR-Tabelle aus manual-mode.js, die der
-        # Orchestrator schon benutzt hat. Fehlt der Auftrag (Zeitplan),
-        # ist der Wert "ZEITPLAN" und kein bekannter Modus: das
-        # Verhalten bleibt exakt das von AUTO.
-        #
-        # THEMA_FREITEXT nur bei MANUAL_TOPIC: manual-mode.js nennt POST
-        # ZU THEMA ausdruecklich "der Owner nennt das Thema STATT DER
-        # GELEGENHEITSBEWERTUNG". Der rohe Text aus inputs.thema reist
-        # unveraendert mit (run-social-cycle.mjs::themaVomOwner() prueft
-        # zuerst eine Platten-Ueberschrift, dann ein Instrumentensymbol -
-        # dieselbe Ticker-Erkennung wie beim Creative-Job-Dispatch, siehe
-        # dort). Die Modus-Bedingung verhindert, dass ein automatischer
-        # Lauf dieselbe Ersetzung versehentlich uebernimmt. Wie beim
-        # "Was ist jetzt dran?"-Schritt: fremder Text nur ueber die
-        # Umgebung, nie in die Shell interpoliert.
         env:
-          VU_SOCIAL_MODUS: ${{ steps.plan.outputs.modus }}
           VU_SOCIAL_THEMA_FREITEXT: >-
             ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && inputs.thema || '' }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          # `cmd; rc=$?` ist UNTER DEM VON GITHUB ACTIONS ERZWUNGENEN
+          # `bash -e` UNSICHER: ein nichtnullwertiger Exit bricht die
+          # Shell ab, BEVOR `rc=$?` ueberhaupt laeuft - `set -uo pipefail`
+          # hebt das ererbte `-e` nicht auf. `cmd || rc=$?` ist die
+          # sichere Form (derselbe `tor()`-Kniff wie im Schritt daneben):
+          # die gesamte Liste endet auf die IMMER erfolgreiche Zuweisung,
+          # `-e` sieht keinen Grund zum Abbruch.
+          rc=0
+          node scripts/social/research-web-story.mjs --write \
+            ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"} || rc=$?
+          if [ "$rc" -eq 4 ]; then
+            echo "::notice::Keine aktuelle, grounded Web-Story gefunden. Das ist eine " \
+              "begruendete Verweigerung, kein Ausfall - es entsteht nichts."
+            echo "gefunden=nein" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Unerwarteter Abbruch ($rc) in research-web-story.mjs"
+            exit "$rc"
+          fi
+          echo "gefunden=ja" >> "$GITHUB_OUTPUT"
+          node -e "console.log('content_id=' + JSON.parse(require('fs').readFileSync('social/data/web-story-selection.json','utf8')).contentId)" \
+            >> "$GITHUB_OUTPUT"
+
+      # Dieselben DREI bestehenden Skripte wie im Quant-Pfad
+      # (dispatch-creative-job.mjs, open-creative-request.mjs,
+      # verify-creative-dispatch.mjs sind bereits generisch auf
+      # contentId - unveraendert wiederverwendet) - nur der Brief
+      # entsteht aus der Web-Story statt aus einem technischen Bundle
+      # (request-creative-web.mjs statt request-creative.mjs).
+      - name: CREATIVE JOB (WEB) — Brief, Register, Request-PR
+        if: >-
+          steps.webresearch.outputs.gefunden == 'ja' &&
+          steps.lease.outputs.produktiv_erlaubt == 'true' &&
+          inputs.nur_entscheiden != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTENT_ID: ${{ steps.webresearch.outputs.content_id }}
+        run: |
+          set -uo pipefail
+
+          tor() {
+            "$@"
+            rc=$?
+            if [ "$rc" -eq 4 ]; then
+              echo "::notice::Tor verweigert ($*). Das ist eine Antwort, kein Ausfall."
+              return 1
+            fi
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::Unerwarteter Abbruch ($rc) in: $*"
+              exit "$rc"
+            fi
+            return 0
+          }
+
+          tor node scripts/social/request-creative-web.mjs --write || exit 0
+
+          tor node scripts/social/dispatch-creative-job.mjs \
+                --content-id "$CONTENT_ID" --write || exit 0
+
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+
+          tor node scripts/social/open-creative-request.mjs \
+                --content-id "$CONTENT_ID" --write \
+                --reason "Direct Creative Editor: aktuelle Web-Story, kein Ergebnis und kein offener Job zu diesem Inhalt." \
+            || exit 0
+
+          node scripts/social/verify-creative-dispatch.mjs \
+            --branch "authoring/request/$CONTENT_ID"
+
+      # VERIFIED oder nicht - chatgpt-work arbeitet asynchron (siehe
+      # dessen Adapter). Liegt noch kein Ergebnis vor, endet dieses
+      # Skript mit 4: kein Kandidat, kein schlechter Rueckfall (§16 der
+      # frueheren, weiterhin gueltigen Golden-Path-Direktive). Der
+      # naechste Lauf (JETZT PRUEFEN oder Zeitplan) holt das Ergebnis,
+      # sobald es da ist, ueber denselben bestehenden Weg ("Creative-
+      # Ergebnisse von offenen Request-PRs holen", weiter oben).
+      - name: VORBEREITEN (WEB) — bis zum Publishing Gate, nicht darueber hinaus
+        if: >-
+          steps.webresearch.outputs.gefunden == 'ja' &&
+          steps.lease.outputs.produktiv_erlaubt == 'true' &&
+          inputs.nur_entscheiden != true
+        run: |
+          set -uo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
           export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
 
-          node scripts/social/run-social-cycle.mjs \
-            --provider mock --data social/data --out social/data --render \
-            ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"}
-          node scripts/social/make-publish-candidate.mjs --data social/data --write \
-            | tail -40
+          # Siehe Kommentar im WEB-RESEARCH-Schritt: `cmd || rc=$?`, nicht
+          # `cmd; rc=$?` - sonst bricht `set -e` (von GitHub Actions
+          # erzwungen) die Shell schon vor der Auswertung ab. Genau das
+          # geschah im realen Lauf 35896139660: NOCH_NICHT_VERIFIZIERT
+          # wurde korrekt gemeldet, aber der Schritt endete trotzdem als
+          # FAILURE statt als geplantes, begruendetes Exit 0.
+          rc=0
+          node scripts/social/manual-now-web-candidate.mjs --data social/data --write || rc=$?
+          if [ "$rc" -eq 4 ]; then
+            echo "::notice::Kein Kandidat aus der Web-Story (begruendete Verweigerung, " \
+              "z.B. noch nicht VERIFIED oder das Hard Final Creative Gate). Der naechste " \
+              "Lauf versucht es erneut."
+            exit 0
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Unerwarteter Abbruch ($rc) in manual-now-web-candidate.mjs"
+            exit "$rc"
+          fi
 
       # =====================================================================
       # DIE WARTESCHLANGE ZUM OWNER
@@ -477,7 +636,8 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${{ steps.plan.outputs.creative }}" = "ja" ] || \
-             [ "${{ steps.plan.outputs.prepare }}" = "ja" ]; then
+             [ "${{ steps.plan.outputs.prepare }}" = "ja" ] || \
+             [ "${{ steps.webresearch.outputs.gefunden }}" = "ja" ]; then
             node scripts/social/run-orchestrator.mjs \
               --lease-release "${{ github.run_id }}" --produktiv
           else

@@ -460,6 +460,21 @@
         job.observedStarts = options.observedStarts;
       }
       if (options.failureType !== undefined) job.failureType = options.failureType;
+      /* -----------------------------------------------------------------
+         DIE PROVENANCE, DIE EIN VERIFIED RESULT WIEDERAUFFINDBAR MACHT
+
+         Ein VERIFIED Job ist ein dauerhaftes Produktionsartefakt, kein
+         Vermerk ueber einen einzelnen Lauf. Ohne diese drei Felder lebt
+         das eigentliche Ergebnis nur im ephemeren Arbeitsbaum des Laufs,
+         der es zuerst ingestierte - ein spaeterer, frischer Checkout
+         findet den Zustand VERIFIED im Register, aber keinen Weg zurueck
+         zu den Bytes, die ihn bewiesen haben (der reale MSFT-Fall vom
+         23.09.). resultRef bleibt die zweite, robustere Spur, falls der
+         Commit selbst einmal nicht mehr direkt referenzierbar ist. */
+      if (options.resultCommitSha) job.resultCommitSha = options.resultCommitSha;
+      if (options.resultRef) job.resultRef = options.resultRef;
+      if (options.resultBlobSha) job.resultBlobSha = options.resultBlobSha;
+      if (options.evidencePackageId) job.evidencePackageId = options.evidencePackageId;
       job.history.push({ state: nachher, at: job.updatedAt,
         note: options.note || null });
       return job;
@@ -555,6 +570,15 @@
            beobachtbar gelaufen zu sein. */
         if (evidenzArt === "DISPATCH_NIE_ERFOLGT" && weg[k] === ziel) {
           schrittOptionen.failureType = "NEVER_DISPATCHED";
+        }
+        /* Die Ergebnis-Provenance gehoert an den Schritt, der VERIFIED
+           erreicht - nicht an einen Zwischenschritt, der noch keine
+           bestaetigten Bytes hat. */
+        if (weg[k] === "CREATIVE_JOB_VERIFIED") {
+          if (options.resultCommitSha) schrittOptionen.resultCommitSha = options.resultCommitSha;
+          if (options.resultRef) schrittOptionen.resultRef = options.resultRef;
+          if (options.resultBlobSha) schrittOptionen.resultBlobSha = options.resultBlobSha;
+          if (options.evidencePackageId) schrittOptionen.evidencePackageId = options.evidencePackageId;
         }
         transition(job.creativeJobId, weg[k], schrittOptionen);
         schritte.push(weg[k]);

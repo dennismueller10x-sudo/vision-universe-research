@@ -198,11 +198,17 @@ test("LU16 · Nur genug Gemessenes wird zu einem Gewicht", () => {
 });
 
 test("LU17 · Der Kreis schliesst sich: die Messung verschiebt die Auswahl (§39)", () => {
+  /* Seit storyKraft (Owner-Direktive "FINAL GOLDEN PATH
+     SIMPLIFICATION", 23.09., §5/§6) gewinnt KONTRAST gegen
+     ZAHL_MIT_BEZUG bereits OHNE jede Messung (zwei Belege auf einer
+     Achse sind per Bauform eine Story, ein einzelner Wert nicht) -
+     eine Lage mit zwei vergleichbaren Belegen zeigt den Kreis aus
+     §39 deshalb nicht mehr. Eine Lage mit EINEM Beleg tut es weiter:
+     dort stehen nur ZAHL_MIT_BEZUG und der Autorensatz (AUTOR) zur
+     Wahl, und ZAHL_MIT_BEZUG gewinnt ohne Messung knapp. */
   const quellen = [
     { source: "vu.technical", provider: "tiingo", entity: "NVDA",
-      metric: "KGV", value: 13.4, state: "VERIFIED", observedAt: NOW },
-    { source: "vu.technical", provider: "tiingo", entity: "AMD",
-      metric: "KGV", value: 21.6, state: "VERIFIED", observedAt: NOW }
+      metric: "KGV", value: 13.4, state: "VERIFIED", observedAt: NOW }
   ];
   const eingabe = (perf) => ({
     opportunity: { opportunityId: "o", topic: "Halbleiter",
@@ -217,9 +223,10 @@ test("LU17 · Der Kreis schliesst sich: die Messung verschiebt die Auswahl (§39
 
   const ohne = Content.run(eingabe(null), { now: NOW });
   assert.equal(ohne.ok, true, ohne.explanation);
+  assert.equal(ohne.package.hookArchetype, "ZAHL_MIT_BEZUG");
 
   const gewichte = L.alsGewichte(
-    L.leistung(gedaechtnis("KONTRAST", ohne.package.hookArchetype, 4)),
+    L.leistung(gedaechtnis("AUTOR", ohne.package.hookArchetype, 4)),
     "HOOK_ARCHETYPE", { faktor: 2500 });
   const mit = Content.run(eingabe(gewichte), { now: NOW });
   assert.equal(mit.ok, true, mit.explanation);
@@ -227,7 +234,7 @@ test("LU17 · Der Kreis schliesst sich: die Messung verschiebt die Auswahl (§39
   assert.notEqual(ohne.package.hookArchetype, mit.package.hookArchetype,
     "Die gemessene Leistung verschiebt nichts - dann ist das Gedaechtnis " +
     "ein Archiv");
-  assert.equal(mit.package.hookArchetype, "KONTRAST");
+  assert.equal(mit.package.hookArchetype, "AUTOR");
 });
 
 test("LU18 · Ohne Messung bleibt alles, wie es war", () => {

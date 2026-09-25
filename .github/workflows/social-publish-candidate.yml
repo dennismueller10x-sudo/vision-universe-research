@@ -107,25 +107,26 @@ jobs:
           node --test "workers/vision-universe-social/tests/*.test.mjs" 2>&1 | tail -8
 
       # ------------------------------------------------------ VORBEREITEN
-      - name: Zyklus, Bild und Kandidat
+      #
+      # STILLGELEGT — Owner-Direktive "VISION UNIVERSE SOCIAL OS —
+      # WEB-FIRST + FULL-POST-GENERATION" (24.09.), §2.1 (hard rule):
+      # Discovery/Quant/Opportunity Slate/Ranking-Platten duerfen nie
+      # wieder Content-Quelle sein, fuer JEDEN Modus — auch nicht ueber
+      # diesen separaten, manuell ausloesbaren Workflow. Dieser Schritt
+      # rief run-social-cycle.mjs (Quant-Zyklus) auf und war damit
+      # genau der Nebeneingang, den §2.1 verbietet. Der Ersatz ist der
+      # Web-First-Pfad in social-orchestrator.yml ("Jetzt pruefen" /
+      # Zeitplan). "freigeben"/"ablehnen" bleiben unveraendert — sie
+      # entscheiden nur ueber einen bereits bestehenden Kandidaten und
+      # sind keine Content-Quelle.
+      - name: Zyklus, Bild und Kandidat (stillgelegt)
         if: inputs.aktion == 'vorbereiten'
         run: |
-          set -e
-          # Chromium fuer das Rendern. Der Runner bringt keinen mit, der
-          # zuverlaessig JPEG ueber --screenshot schreibt.
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
-          export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
-          echo "Chromium: $CHROMIUM_PATH"
-
-          node scripts/social/run-social-cycle.mjs \
-            --provider mock --data social/data --out social/data --render
-
-          node scripts/social/make-publish-candidate.mjs --data social/data --write \
-            | tee tmp-kandidat.txt
+          echo "::error::'vorbereiten' ist stillgelegt (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §2.1). Dieser Weg erzeugte Kandidaten aus dem Quant-Zyklus (run-social-cycle.mjs) — genau die Content-Quelle, die fuer jeden Modus verboten ist. Neue Kandidaten entstehen jetzt ausschliesslich ueber social-orchestrator.yml (Button 'Jetzt pruefen' oder Zeitplan)."
+          exit 1
 
       - name: Kandidat und Bild sichern
-        if: inputs.aktion == 'vorbereiten'
+        if: false
         run: |
           set -e
           git config user.name "vision-universe-bot"

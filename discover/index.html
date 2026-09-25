@@ -6,17 +6,23 @@
 <meta name="theme-color" content="#08080a">
 <link rel="icon" href="data:,">
 <title>Discover — Vision Universe®</title>
-<meta name="description" content="Vision Universe® Discover: neue 52-Wochen-Hochs, Marktfuehrer, Momentum, Ausbrueche und relative Staerke als visuelle Entdeckungsreihen statt als Screener-Formular.">
+<meta name="description" content="Aktien entdecken und verstehen. Durch Kurscharts, Rankings, Themenwelten und Unternehmensentwicklung swipen – mit Vision Universe® Discover.">
 <link rel="stylesheet" href="/quant/ui/quant.css">
 <link rel="stylesheet" href="/discover/discover.css">
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <!-- Farbschema vor dem ersten Bild (V4.1 §12): die gemerkte Wahl oder das
      System - sonst blitzt die dunkle Flaeche unter einer hellen Wahl auf.
      Dieselbe Logik lebt in /discover/engines/theme.js. -->
-<script>(function(){try{var m=localStorage.getItem("vu-discover-theme-v1");var w=(m==="light"||m==="dark")?m:(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",(m==="light"||m==="dark")?m:"system");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="light"?"#f7f7f4":"#08080a");}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();</script></head>
-<body class="dx"><vu-navigation theme="dark" no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
+<script>(function(){try{var m=localStorage.getItem("vu-discover-theme-v1");var w=(m==="light"||m==="dark")?m:(window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",(m==="light"||m==="dark")?m:"system");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="light"?"#ffffff":"#08080a");}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();</script>
+<link rel="stylesheet" href="/discover/app.css">
+<link rel="stylesheet" href="/discover/home.css">
+<link rel="stylesheet" href="/discover/detail.css">
+<link rel="stylesheet" href="/discover/markets.css">
+</head>
+<body class="dx dv2"><vu-navigation theme="dark" no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
 
-<div id="d-root"></div>
+<a class="v2-skip" href="#v2-main">Zum Inhalt</a>
+<div id="v2-shell"></div>
 
 <!-- Bestehende Vision-Universe-Infrastruktur (unveraendert wiederverwendet) -->
 <script src="/quant/ui/shell.js"></script>
@@ -33,6 +39,8 @@
 <script src="/quant/engines/realtime/freshness.js"></script>
 <script src="/quant/engines/realtime/source-state.js"></script>
 <script src="/quant/engines/series-sampling.js"></script>
+
+<!-- Discover-eigene Engines -->
 <script src="/quant/engines/fx/fx-provider-registry.js"></script>
 <script src="/quant/engines/fx/fx-rates.js"></script>
 <script src="/quant/engines/fx/fx-freshness.js"></script>
@@ -44,8 +52,10 @@
 <script src="/quant/engines/fx/currency-contract.js"></script>
 <script src="/quant/engines/fx/currency-switch.js"></script>
 <script src="/quant/engines/fx/bootstrap.js"></script>
-
-<!-- Discover-eigene Engines -->
+<script src="/quant/engines/multi-asset/asset-taxonomy.js"></script>
+<script src="/quant/engines/realtime/session-profiles.js"></script>
+<script src="/quant/engines/realtime/asset-freshness.js"></script>
+<script src="/quant/api/multi-asset-contract.js"></script>
 <script src="/discover/engines/contract.js"></script>
 <script src="/discover/engines/high52w.js"></script>
 <script src="/discover/engines/scoring.js"></script>
@@ -69,13 +79,16 @@
 <script src="/discover/ui/microchart.js"></script>
 <script src="/discover/ui/artwork.js"></script>
 <script src="/discover/ui/cards.js"></script>
-<script src="/discover/ui/hero.js"></script>
 <script src="/discover/ui/feed.js"></script>
 <script src="/discover/ui/surfaces.js"></script>
 <script src="/discover/ui/search.js"></script>
 <script src="/discover/ui/detail-fundamentals.js"></script>
 <script src="/discover/ui/detail.js"></script>
 <script src="/discover/ui/daten.js"></script>
+<script src="/discover/ui/markets.js"></script>
+<script src="/discover/themes.js"></script>
+<script src="/discover/home.js"></script>
+<script src="/discover/detail.js"></script>
 <script src="/discover/app.js"></script>
 </body>
 </html>

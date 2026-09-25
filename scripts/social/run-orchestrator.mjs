@@ -35,6 +35,8 @@ const RunLease = require(join(ROOT, "social/engines/run-lease.js"));
 const FrequenzLernen = require(join(ROOT, "social/engines/frequency-learning.js"));
 const ManualMode = require(join(ROOT, "social/engines/manual-mode.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
+const Hook = require(join(ROOT, "social/engines/hook.js"));
+const AudienceFrame = require(join(ROOT, "social/engines/audience-frame.js"));
 import * as VisualDaten from "./visual-data.mjs";
 import { ausgabePfad } from "../quality/out-path.mjs";
 
@@ -191,6 +193,93 @@ export function bestesThema(root) {
     }
   }
   return null;
+}
+
+/* -------------------------------------------------------------------
+   JETZT POST ERSTELLEN WAEHLT DIE STAERKSTE STORY, NICHT DIE HOECHSTE
+   INTERNE GELEGENHEITSBEWERTUNG (Owner-Direktive "FINAL GOLDEN PATH
+   SIMPLIFICATION", 23.09., §2/§4/§17)
+
+   bestesThema() sortiert nach Opportunity.score - einer internen
+   Quant-/Discovery-Zahl. Genau das lehnte der Owner ab: MANUAL_NOW
+   soll nicht davon abhaengen, dass irgendeine interne Gelegenheits-
+   bewertung gerade hoch steht, sondern die belegbare Story waehlen,
+   die am ehesten einen Grund zum Anhalten gibt (§4/§5).
+
+   Gemessen wird das mit demselben Massstab, den §5/§6 fuer den
+   Hook-Wettbewerb verlangen: die storyKraft-gewichtete Punktzahl aus
+   hook.js (social/engines/hook.js), gegen dieselbe Evidenz wie
+   themaAusBundle() sie baut - nicht neu erfunden, nur VORGEZOGEN, um
+   das Instrument zu waehlen statt nur den Hook.
+
+   Das Instrumenten-UNIVERSUM (welche Titel ueberhaupt in Frage
+   kommen) bleibt dasselbe wie bei bestesThema(): die PLATTE, die
+   Discovery bereits gebaut hat. Das ist keine Ladder-Abhaengigkeit im
+   Sinn des Owner-Befunds - es ist die Liste der Instrumente, zu denen
+   ueberhaupt Evidenz vorliegt. Die AUSWAHL daraus haengt nicht mehr
+   an Opportunity.score. */
+export function storyBestesThema(root) {
+  const r = root || ROOT;
+  const bericht = readJson(join(r === ROOT ? DATEN : ausgabePfad(r, DATA), "cycle-report.json"), null);
+  const gelegenheiten = (bericht && bericht.opportunities) || [];
+
+  const kandidaten = gelegenheiten
+    .filter((o) => o && o.proposable !== false)
+    .map((o) => {
+      const symbol = VisualDaten.symbolAus(o.topic);
+      return symbol ? { o, symbol } : null;
+    })
+    .filter(Boolean);
+
+  var beste = null;
+  for (const { o, symbol } of kandidaten) {
+    const bundlePfad = join(r, "quant/data/technical/instruments", symbol + ".json");
+    if (!existsSync(bundlePfad)) continue;
+    var paket;
+    try {
+      const roh = JSON.parse(readFileSync(bundlePfad, "utf8"));
+      paket = EvidencePackage.fromTechnicalBundle(roh.bundle,
+        { entity: symbol, source: roh.bundle.source, now: z_jetzt(r) });
+    } catch { continue; }
+    if (!paket || !paket.ok) continue;
+
+    /* Dieselbe PUBLIC_CLAIM_ELIGIBILITY-Filterung wie ueberall sonst,
+       wo Evidenz Hook-Kandidaten bauen soll (§8, content.js::hook()) -
+       eine zweite, hier neu geratene Liste waere die zweite Wahrheit
+       ueber dieselbe Frage. */
+    const oeffentlich = (paket.evidence || []).filter((e) => {
+      const metrik = String((e && e.metric) || "").toLowerCase();
+      const satz = String((e && e.statement) || "").toLowerCase();
+      return !AudienceFrame.INTERN_NICHT_IM_HOOK.some((begriff) => {
+        const b = String(begriff).toLowerCase();
+        return metrik.indexOf(b) !== -1 || satz.indexOf(b) !== -1;
+      });
+    });
+
+    const wahl = Hook.waehle(Hook.ableiten({
+      opportunity: { topic: o.topic }, facts: oeffentlich, thesis: null
+    }));
+    if (!wahl.ok) continue;
+
+    const kandidat = { symbol, topicId: o.opportunityId || null,
+      score: o.score || null, topic: o.topic,
+      storyScore: wahl.gewaehlt.punkte, storyArchetyp: wahl.gewaehlt.archetyp,
+      storyHook: wahl.gewaehlt.text };
+    if (!beste || kandidat.storyScore > beste.storyScore) beste = kandidat;
+  }
+  return beste;
+}
+
+/* Der Bericht traegt den Zeitpunkt des Laufs nicht an dieser Stelle -
+   `now` reist als Parameter fuer die reale Chronik, hier reicht das
+   asOf des Bundles selbst (EvidencePackage.fromTechnicalBundle liest
+   es ohnehin aus `bundle.dataCutoff`, `now` beeinflusst nur, WELCHE
+   Handelstage als "aktuell" gelten - fuer die Story-Auswahl selbst
+   irrelevant, ein fester Ankerpunkt reicht). */
+function z_jetzt(root) {
+  const stand = readJson(join(root === ROOT ? DATEN : ausgabePfad(root, DATA),
+    "cycle-report.json"), null);
+  return (stand && stand.generatedAt) || new Date().toISOString();
 }
 
 /**
@@ -588,12 +677,29 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Externe Sensoren   : " + quellen.externalIntelligence +
     " (" + quellen.dormantCount + " ruhend, " + quellen.activeCount + " aktiv)");
 
+  /* -----------------------------------------------------------------
+     JETZT POST ERSTELLEN (MANUAL_NOW) WAEHLT UEBER DIE STORY, NICHT
+     UEBER DIE GELEGENHEITSBEWERTUNG (Owner-Direktive "FINAL GOLDEN
+     PATH SIMPLIFICATION", 23.09., §2)
+
+     Bei POST ZU THEMA (MANUAL_TOPIC) nennt der Owner den Gegenstand -
+     unveraendert. Bei AUTO (kein Auftrag) und JETZT PRUEFEN bleibt es
+     bei `undefined` = "wie immer" (bestesThema(), Opportunity.score):
+     kein Big-Bang-Refactor der planmaessigen Kadenz.
+
+     Nur JETZT POST ERSTELLEN ohne Thema soll nicht mehr an der
+     internen Gelegenheitsbewertung haengen - storyBestesThema()
+     waehlt stattdessen das Instrument mit der staerksten belegbaren
+     Story (Hook-Wettbewerb, §5/§6). Findet sich keines, bleibt
+     `thema: undefined`: derselbe Rueckfall wie zuvor, kein neuer
+     Fehlerpfad. */
+  const manualNowThema = (auftrag && auftrag.ok && auftrag.modus === "MANUAL_NOW")
+    ? storyBestesThema(ROOT) : null;
+
   const creative = creativeBedarf(z, {
     candidateDue: h.stage === "PREPARE_CANDIDATE",
-    /* Bei POST ZU THEMA nennt der Owner den Gegenstand. Sonst waehlt
-       die Gelegenheitsbewertung wie bisher - `undefined` heisst hier
-       ausdruecklich "wie immer" und nicht "kein Thema". */
-    thema: ownerThema ? (ownerThema.ok ? ownerThema.thema : null) : undefined });
+    thema: ownerThema ? (ownerThema.ok ? ownerThema.thema : null)
+      : (manualNowThema || undefined) });
 
   console.log("\n--- CONTENT CADENCE (§8/§17) ---");
   console.log("Tag              : " + k.lage.tag +
@@ -773,7 +879,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "uhr_aufgehoben=" + (kWirksam.aufgehobenerGrund || ""),
       "creative_symbol=" + (creative.symbol || ""),
       "creative_content_id=" + (creative.contentId || ""),
-      "creative_reason=" + (creative.code || "REQUIRED")
+      "creative_reason=" + (creative.code || "REQUIRED"),
+      /* JETZT POST ERSTELLEN ohne Thema (MANUAL_NOW) waehlt storyBestesThema()
+         weiter oben, aber nur fuer den Creative-Job-Dispatch (creativeBedarf()).
+         run-social-cycle.mjs (VORBEREITEN) ist ein eigener Prozess und kennt
+         dieses Urteil nicht - ohne diese Zeile faellt VORBEREITEN fuer
+         MANUAL_NOW auf die Ladder (Opportunity.score) zurueck, genau die
+         Abhaengigkeit, die die Owner-Direktive §2/§17 verbietet. Der Text
+         reist ueber denselben Kanal wie POST ZU THEMA (--thema-freitext,
+         themaVomOwner()) und wird dort ueber VisualDaten.symbolAus() auf
+         dasselbe Instrument abgebildet, das storyBestesThema() schon fand. */
+      "manual_now_thema=" + (manualNowThema ? manualNowThema.topic : "")
     ].join("\n") + "\n";
     appendFileSync(process.env.GITHUB_OUTPUT, zeilen);
   }

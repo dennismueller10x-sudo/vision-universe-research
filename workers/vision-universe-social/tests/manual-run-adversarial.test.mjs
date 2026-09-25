@@ -208,8 +208,14 @@ test("AY6 · Angriff: dem Lauf ueber den Rumpf Eingaben mitgeben", async () => {
   assert.deepEqual(Object.keys(rumpf).sort(), ["inputs", "ref"],
     "Der Dispatch traegt etwas anderes als Zweig und Eingaben: " +
     JSON.stringify(rumpf));
+  /* Seit dem "Jetzt pruefen"-Fix (Owner-Feststellung 24.09.: der Knopf
+     versprach denselben vollen Lauf wie der Zeitplan, loeste aber
+     `nur_entscheiden=true` aus und ueberspraeng damit die Arbeit statt
+     nur der Uhr) reist `nur_entscheiden` gar nicht mehr mit - alle drei
+     Knoepfe bekommen denselben vollen Lauf, ueber den in der
+     Workflow-Datei erklaerten Vorgabewert (`default: false`). */
   assert.deepEqual(Object.keys(rumpf.inputs).sort(),
-    ["modus", "nur_entscheiden", "thema"],
+    ["modus", "thema"],
     "Die Eingaben sind nicht der geschlossene Satz: " +
     JSON.stringify(rumpf.inputs));
   assert.ok(["JETZT_PRUEFEN", "MANUAL_NOW", "MANUAL_TOPIC"]
@@ -219,7 +225,6 @@ test("AY6 · Angriff: dem Lauf ueber den Rumpf Eingaben mitgeben", async () => {
      harmlosesten der drei Modi. */
   assert.equal(rumpf.inputs.modus, "JETZT_PRUEFEN",
     "Eine fehlende Angabe ist zur weiterreichenden Handlung geworden");
-  assert.equal(rumpf.inputs.nur_entscheiden, "true");
   assert.equal(rumpf.inputs.thema, "");
   assert.equal(rumpf.ref, "main", "Der Zweig kam vom Aufrufer statt aus der Konfiguration");
   assert.ok(!netz.rufe[0].url.includes("deploy.yml"),

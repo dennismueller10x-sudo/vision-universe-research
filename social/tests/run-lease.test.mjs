@@ -159,16 +159,31 @@ test("RL13 · Die Lease setzt keine Zaehler zurueck (§38)", () => {
 /* ------------------------------------------------- Der Workflow */
 
 test("RL14 · Die produktiven Schritte haengen an der Lease", () => {
-  /* Eine Lease, an der nichts haengt, ist keine. */
+  /* Eine Lease, an der nichts haengt, ist keine.
+
+     Owner-Direktive "WEB-FIRST + FULL-POST-GENERATION" (24.09.): die
+     Quant-getriebenen "CREATIVE JOB"-/"VORBEREITEN"-Schritte sind fuer
+     JEDEN Modus stillgelegt (if: false) - `w.indexOf("- name: " +
+     schritt)` faende sonst immer zuerst diese toten Schritte, deren
+     if-Block die Lease-Bedingung nicht mehr traegt. Produktiv arbeiten
+     jetzt nur noch die "(WEB)"-Schritte - an DEREN Lease-Bindung haengt
+     die Aussage dieses Tests. */
   const w = readFileSync(join(ROOT, ".github/workflows/social-orchestrator.yml"), "utf8");
   assert.match(w, /--lease-claim/);
   assert.match(w, /--lease-release/);
-  for (const schritt of ["CREATIVE JOB", "VORBEREITEN"]) {
+  for (const schritt of ["WEB RESEARCH", "CREATIVE JOB (WEB)", "VORBEREITEN (WEB)"]) {
     const ab = w.indexOf("- name: " + schritt);
     assert.ok(ab > 0, "Schritt nicht gefunden: " + schritt);
     const block = w.slice(ab, ab + 400);
     assert.match(block, /steps\.lease\.outputs\.produktiv_erlaubt == 'true'/,
       schritt + " laeuft ohne Lease");
+  }
+  for (const schritt of ["CREATIVE JOB — Brief, Register, Request-PR (stillgelegt)",
+    "VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus (stillgelegt)"]) {
+    const ab = w.indexOf("- name: " + schritt);
+    assert.ok(ab > 0, "Stillgelegter Schritt nicht gefunden: " + schritt);
+    assert.match(w.slice(ab, ab + 200), /if:\s*false/,
+      schritt + " muss fuer jeden Modus stillgelegt sein");
   }
   /* Und die Rueckgabe steht VOR dem Festschreiben - sonst ginge die
      beendete Lease nicht mit. */

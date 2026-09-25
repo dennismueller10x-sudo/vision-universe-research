@@ -24,7 +24,7 @@
      UI6  Der MAX-Chart in Euro beginnt spaeter als in Dollar (O-15)
           und sagt es dem Nutzer.
      UI7  Keine Konsolenfehler, keine 404 auf Produktpfaden.
-     UI8  Discover 1.0 und Discover 2.1 benutzen denselben Vertrag.
+     UI8  Die Legacy-Adresse /discover-v2/ fuehrt auf Discover und denselben Vertrag.
 
    Ausfuehren:
      node scripts/quality/verify-currency-ui.mjs [--url BASE] [--ticker AAPL]
@@ -223,27 +223,27 @@ await pruefe("UI6", "Der MAX-Chart in Euro beginnt spaeter - und sagt es", async
   return { detail: "EUR ab " + a.text + ", nativ ab " + b.text + ". Hinweis steht auf der Seite." };
 });
 
-await pruefe("UI8", "Discover 2.1 benutzt denselben Vertrag", async () => {
-  await page.goto(BASE + "/discover-v2/", { waitUntil: "networkidle", timeout: 45000 });
+await pruefe("UI8", "Die Legacy-Adresse /discover-v2/ fuehrt auf dasselbe Discover und denselben Vertrag", async () => {
+  /* Seit der Discover-Konsolidierung gibt es nur noch EIN Discover.
+     /discover-v2/ ist ein Alias ohne eigene Oberflaeche; er muss samt
+     Hash-Route auf /discover/ landen - und dort gilt derselbe Vertrag. */
+  await page.goto(BASE + "/discover-v2/#/s/" + UNIVERSE + "/" + TICKER, { waitUntil: "networkidle", timeout: 45000 });
   await page.waitForTimeout(3000);
   const s = await page.evaluate(() => ({
+    pfad: location.pathname,
+    hash: location.hash,
     kern: typeof VUFx !== "undefined" && !!VUFx.layer,
     waehrung: (typeof VUFx !== "undefined" && VUFx.layer) ? VUFx.layer.preference.get() : null,
     schalter: !!document.querySelector(".vu-fx-switch"),
     /* Derselbe Vertrag heisst: dieselbe gespeicherte Vorgabe. */
-    speicher: (typeof VUFx !== "undefined" && VUFx.Preference) ? VUFx.Preference.STORAGE_KEY : null,
-    dollar: (function () {
-      const t = [];
-      const walk = (n) => { if (n.nodeType === 3) { if (/\$/.test(n.textContent)) t.push(n.textContent.trim()); return; } for (const c of n.childNodes) walk(c); };
-      walk(document.body);
-      return t.slice(0, 3);
-    })()
+    speicher: (typeof VUFx !== "undefined" && VUFx.Preference) ? VUFx.Preference.STORAGE_KEY : null
   }));
-  if (!s.kern) throw new Error("Discover 2.1 laedt den Currency Core nicht");
-  if (!s.schalter) throw new Error("Discover 2.1 hat keinen Umschalter");
-  if (s.waehrung !== "EUR") throw new Error("Discover 2.1 zeigt " + s.waehrung);
-  if (s.dollar.length) throw new Error("Dollarbetraege in Discover 2.1: " + JSON.stringify(s.dollar));
-  return { detail: "Umschalter vorhanden, EUR aktiv, Speicher " + s.speicher + "." };
+  if (s.pfad !== "/discover/") throw new Error("Alias landet auf " + s.pfad + " statt /discover/");
+  if (!s.hash.includes("/s/")) throw new Error("Alias verliert die Route: " + s.hash);
+  if (!s.kern) throw new Error("Discover laedt den Currency Core nicht");
+  if (!s.schalter) throw new Error("Discover hat keinen Umschalter");
+  if (s.waehrung !== "EUR") throw new Error("Discover zeigt " + s.waehrung);
+  return { detail: "Alias -> " + s.pfad + s.hash + ", EUR aktiv, Speicher " + s.speicher + "." };
 });
 
 await pruefe("UI7", "Keine Konsolenfehler", async () => {

@@ -1147,16 +1147,15 @@
       "cik": "0001814215",
       "name": "Nuburu, Inc.",
       "sic": "3690",
-      "rawFacts": 7054,
-      "mappedFacts": 2075,
-      "unmappedFacts": 4587,
-      "calendarYears": 6,
+      "rawFacts": 7405,
+      "mappedFacts": 2180,
+      "unmappedFacts": 4817,
+      "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
         "BURU",
-        "BURUD",
         "BURUW"
       ],
       "status": "INGESTED",
@@ -1270,28 +1269,30 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 5185,
+        "total": 5443,
         "by_severity": {
-          "INFO": 4587,
-          "WARNING": 598
+          "INFO": 4817,
+          "WARNING": 626
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 332,
+          "CONCEPT_DISAGREEMENT": 263,
           "PERIOD_MISMATCH": 5,
-          "RESTATEMENT_CONFLICT": 191,
+          "RESTATEMENT_CONFLICT": 187,
           "UNEXPECTED_DURATION": 70,
-          "UNKNOWN_CONCEPT": 4587
+          "UNKNOWN_CONCEPT": 4817,
+          "UNPLACEABLE_PERIOD": 101
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-352609",
-        "filing_date": "2026-08-14",
-        "form": "10-Q",
-        "periodic_filings": 37
+        "accession": "0001193125-26-396895",
+        "filing_date": "2026-09-22",
+        "form": "10-Q/A",
+        "periodic_filings": 38,
+        "acceptance_datetime": "2026-09-21T22:08:38.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -1300,7 +1301,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "1dc4c5a7d721dcd233313a4ca4ca50a5366f1046e7af2a9a8e3b9f6f3049d76c",
+      "sourceDigest": "5ab5e58098f4da9def9844f826ea57b5143cd94c11bed7b32950a60c31c9cbcc",
       "issuerId": "iss_cik_0001814215"
     },
     {

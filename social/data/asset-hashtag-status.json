@@ -1,36 +1,36 @@
 {
-  "generatedAt": "2026-09-22T05:28:33.230Z",
-  "commit": "c2d51dcba1a42d8066a18e0e817a4cf3af950271",
+  "generatedAt": "2026-09-24T10:54:11.599Z",
+  "commit": "685ae154a90f655ce1e8bc47a3b091154f8cb033",
   "worker": "https://social.visionuniverse.de",
-  "ORDER_DONE": true,
+  "ORDER_DONE": false,
   "states": [
     {
       "id": "APPROVAL_CENTER_LIVE",
       "ref": null,
       "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "/approval antwortet mit 401 [cf-ray a3eee824ed1b8789-DFW, server cloudflare]."
+      "satz": "/approval antwortet mit 401 [cf-ray a4013fe71deb0d87-PDX, server cloudflare]."
     },
     {
       "id": "CURRENT_CANDIDATE",
       "ref": null,
-      "wert": "KEINER",
+      "wert": "cand_20260923_aacc4230",
       "zustand": "ERFUELLT",
-      "satz": "Kein Kandidat wartet auf Freigabe. Das ist ein Ergebnis, kein Mangel."
+      "satz": "Comeback?"
     },
     {
       "id": "ASSET_PUBLICLY_REACHABLE",
       "ref": null,
-      "wert": "NICHT_ANWENDBAR",
+      "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat, kein Bild zu pruefen."
+      "satz": "Unter https://research.visionuniverse.de/assets/social/pkg_6700c998705e209c.jpg liegt ein gueltiges Bild (74943 Bytes, image/jpeg, 1080x1350)."
     },
     {
       "id": "ASSET_PREVIEW_EQUALS_PUBLISH_ASSET",
       "ref": null,
-      "wert": "NICHT_ANWENDBAR",
+      "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat."
+      "satz": "Genau ein Bild auf der Karte, unter der Adresse, die veroeffentlicht wuerde. Kein Platzhalter."
     },
     {
       "id": "HASHTAG_ENGINE_READY",
@@ -42,9 +42,9 @@
     {
       "id": "HASHTAG_COUNT_CURRENT_CANDIDATE",
       "ref": null,
-      "wert": "NICHT_ANWENDBAR",
+      "wert": "3",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat."
+      "satz": "Turnaround Aktienvergleich Investieren"
     },
     {
       "id": "FINAL_PUBLIC_TEXT_READY",
@@ -56,9 +56,9 @@
     {
       "id": "ACTIVE_APPROVAL_QUEUE_COUNT",
       "ref": null,
-      "wert": "0",
+      "wert": "2",
       "zustand": "ERFUELLT",
-      "satz": "aus owner-decision.warteschlange (AWAITING_APPROVAL), nicht aus dem Ordner; 0 uebertragbar, 0 ungeloest."
+      "satz": "aus owner-decision.warteschlange (AWAITING_APPROVAL), nicht aus dem Ordner; 2 uebertragbar, 0 ungeloest."
     },
     {
       "id": "MANUAL_ORCHESTRATOR_RUN",
@@ -107,7 +107,7 @@
       "ref": "§26",
       "wert": "0",
       "zustand": "ERFUELLT",
-      "satz": "Kein gemessener Blocker."
+      "satz": "Kein gemessener Blocker. 2 Bedingung(en) sind von hier aus ungeprueft und damit NICHT erfuellt."
     }
   ],
   "conditions": [
@@ -120,27 +120,27 @@
     {
       "id": "ASSET_PREVIEW_PRODUCTION_SAFE",
       "ref": "§3",
-      "wert": "NICHT_ANWENDBAR",
+      "wert": "true",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat."
+      "satz": "Genau ein Bild auf der Karte, unter der Adresse, die veroeffentlicht wuerde. Kein Platzhalter."
     },
     {
       "id": "FREIGABE_GESPERRT_OHNE_ERREICHBARKEIT",
       "ref": "§6",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat; nichts freizugeben."
+      "satz": "Das Bild ist erreichbar; der Freigabeknopf ist da."
     },
     {
       "id": "HASHTAGS_VISIBLE_BEFORE_APPROVAL",
       "ref": "§15/§16",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat."
+      "satz": "Alle 3 Tags stehen als eigener Block auf der Karte."
     },
     {
       "id": "PREVIEW_EQUALS_PUBLISH_PAYLOAD",
       "ref": "§17",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat."
+      "satz": "Der Textabsatz der Karte ist zeichengleich mit dem, was gesendet wuerde (302 Zeichen)."
     },
     {
       "id": "HASHTAG_ENGINE_LIEFERT_BREITE",
@@ -153,7 +153,7 @@
       "id": "CURRENT_XOM_CANDIDATE_NOT_PUBLISHED",
       "ref": "§18",
       "zustand": "ERFUELLT",
-      "satz": "Kein wartender Kandidat, nichts veroeffentlicht."
+      "satz": "cand_20260923_aacc4230 steht auf AWAITING_APPROVAL; kein Kandidat im Bestand steht auf PUBLISHED."
     },
     {
       "id": "CONTENT_FALLBACK_LADDER_UNCHANGED",
@@ -170,28 +170,31 @@
     {
       "id": "SUITEN_GRUEN",
       "ref": "§21",
-      "zustand": "ERFUELLT",
-      "satz": "social: 1745/1759 (14 uebersprungen), worker: 368/368 (Stand c2d51dcba1)"
+      "zustand": "UNGEPRUEFT",
+      "satz": "Gemessen in einem nicht sauberen Baum."
     },
     {
       "id": "TEST_PRODUKTIONS_ISOLATION",
       "ref": "§23",
-      "zustand": "ERFUELLT",
-      "satz": "social: unveraendert, worker: unveraendert (Stand c2d51dcba1)"
+      "zustand": "UNGEPRUEFT",
+      "satz": "Gemessen in einem nicht sauberen Baum."
     },
     {
       "id": "IN_MAIN_INTEGRIERT",
       "ref": "§24",
       "zustand": "ERFUELLT",
-      "satz": "Dieser Stand IST main (c2d51dcba1)."
+      "satz": "Dieser Stand IST main (685ae154a9)."
     },
     {
       "id": "PRODUCTION_SMOKE_OHNE_VEROEFFENTLICHUNG",
       "ref": "§25",
       "zustand": "ERFUELLT",
-      "satz": "/approval -> 401 [cf-ray a3eee8276ffc03ca-DFW], /social/status -> 401 [cf-ray a3eee8279eed8789-DFW]; kein Kandidateninhalt ohne Sitzung, nichts veroeffentlicht."
+      "satz": "/approval -> 401 [cf-ray a4013fea2d9175f8-SEA], /social/status -> 401 [cf-ray a4013fea6a4b0d87-PDX]; kein Kandidateninhalt ohne Sitzung, nichts veroeffentlicht."
     }
   ],
   "blockers": [],
-  "unverified": []
+  "unverified": [
+    "SUITEN_GRUEN",
+    "TEST_PRODUKTIONS_ISOLATION"
+  ]
 }

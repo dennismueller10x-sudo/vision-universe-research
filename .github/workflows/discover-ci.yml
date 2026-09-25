@@ -58,13 +58,19 @@ jobs:
         # discover/ und scripts/discover/ liegt, darf dieser Bereich nicht
         # anfassen - mit Ausnahme des einen Navigationseintrags.
         if: github.event_name == 'pull_request'
+        # Ausgenommen sind allein die Currency-Nachweise, die Discover-
+        # Dateipfade namentlich fuehren (Testmatrix, Formatierungs-Grundlinie,
+        # Debt Register): verschiebt Discover eine Datei, muessen sie den
+        # neuen Pfad kennen, sonst waere der Nachweis gruen und unwahr.
+        # Der Currency Core selbst (quant/engines/fx) bleibt geschuetzt.
         run: |
           git fetch origin ${{ github.base_ref }} --depth=1
-          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
-            -- quant providers scripts/quant scripts/technical scripts/market dashboard macro academy | wc -l)
+          scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
+          nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
+          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise | wc -l)
           if [ "$changed" -gt 0 ]; then
             echo "Discover veraendert Dateien ausserhalb seines Moduls:"
-            git diff --name-only origin/${{ github.base_ref }}...HEAD -- quant providers scripts/quant scripts/technical scripts/market dashboard macro academy
+            git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise
             exit 1
           fi
           echo "Keine bestehende Engine veraendert."

@@ -32,6 +32,9 @@ on:
       # Der Eintrag steht trotzdem hier, damit der letzte Stand eines
       # Blocks sicher ausgeliefert wird.
       - "Intraday-Taktgeber (ein Lauf haelt den Takt)"
+      # Multi-Asset-Segment des Data Core: Renditen, Leitzinsen, Rohstoffe
+      # erscheinen auch am Wochenende und ausserhalb der US-Sitzung.
+      - "Multi-Asset Data Core — Faehigkeiten und Daten"
     types: [completed]
     branches: [main]
 

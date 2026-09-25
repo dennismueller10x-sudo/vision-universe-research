@@ -30,7 +30,8 @@ import { createHash } from "node:crypto";
 const require = createRequire(import.meta.url);
 
 import {
-  plan, render, planUebernahme, uebernimm, ersteBelegteZahl, pruefeJpeg, ladeSchrift, chromiumPfad,
+  plan, render, planUebernahme, uebernimm, planGeschichte, seiteGeschichte,
+  ersteBelegteZahl, pruefeJpeg, ladeSchrift, chromiumPfad,
   GEZEICHNET, NICHT_GEZEICHNET, SCHRIFT_PFAD, textOnVisualAussage, messeSeite, MESS_SKRIPT
 } from "../../scripts/social/render-asset.mjs";
 
@@ -502,4 +503,124 @@ test("RA26 · Ein fuer immer haengendes fonts.ready blockiert die Messung nicht"
   assert.equal(m.texte.length, 1);
   assert.equal(m.figuren.length, 1);
   assert.equal(m.figuren[0].figur, "ATLAS");
+});
+
+/* ------------------------------------------------------------------ */
+/* DIE STORY-WELT: STUFE A TRIFFT STUFE B (Owner-Direktive             */
+/* "FINAL GOLDEN PATH SIMPLIFICATION", 23.09.)                         */
+/*                                                                      */
+/* uebernimm() liest das Agenten-Bild unveraendert zurueck — der reale  */
+/* Befund war ein MSFT-Kandidat ohne Text, ohne Logo, ohne Atlas, weil  */
+/* der eigene Brief an den Agenten genau das verbietet. planGeschichte()*/
+/* / seiteGeschichte() setzen Logo, Atlas (ATLAS_GUIDE) und den         */
+/* gewaehlten Hook darueber und laufen durch dieselben vier harten Tore */
+/* wie der gezeichnete Kartenpfad (render()).                           */
+/* ------------------------------------------------------------------ */
+
+test("RA27 · Ohne Hook gibt es keine Story-Welt", () => {
+  const p = planGeschichte({}, { asset_path: "a/b.png", state: "READBACK_VERIFIED",
+    width: 1080, height: 1350 });
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "noStatement");
+});
+
+test("RA28 · Ein nicht zurueckgelesenes Asset wird nicht ueberlagert", () => {
+  const p = planGeschichte({ hook: "Ein Satz." },
+    { asset_path: "a/b.png", state: "COMMITTED", width: 1080, height: 1350 });
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "assetNotVerified");
+});
+
+test("RA29 · Fehlt das Agenten-Bild auf dem Datentraeger, wird es benannt", () => {
+  const p = planGeschichte({ hook: "Ein Satz." },
+    { asset_path: "nicht/vorhanden.png", state: "READBACK_VERIFIED",
+      width: 1080, height: 1350 }, { root: ROOT });
+  assert.equal(p.ok, false);
+  assert.equal(p.reason, "assetMissing");
+});
+
+function storyWeltAsset(root, breite, hoehe) {
+  const rel = "tmp/ra-storywelt-" + process.pid + "-" + Date.now() + ".png";
+  const abs = join(root, rel);
+  mkdirSync(dirname(abs), { recursive: true });
+  const bild = testPng(breite, hoehe);
+  writeFileSync(abs, bild);
+  const sha = createHash("sha256").update(bild).digest("hex");
+  return { rel, abs, sha };
+}
+
+test("RA30 · Ein veraendertes Agenten-Bild faellt auf, bevor ueberlagert wird", () => {
+  const a = storyWeltAsset(ROOT, 1080, 1350);
+  try {
+    const p = planGeschichte({ hook: "Ein Satz." }, { asset_path: a.rel,
+      state: "READBACK_VERIFIED", width: 1080, height: 1350,
+      asset_sha256: "0".repeat(64) }, { root: ROOT });
+    assert.equal(p.ok, false);
+    assert.equal(p.reason, "assetHashMismatch");
+  } finally { rmSync(a.abs, { force: true }); }
+});
+
+test("RA31 · Die Story-Welt traegt Logo, Atlas (ATLAS_GUIDE) und den Hook als Text-on-Visual",
+  { skip: chromiumDa ? false : "Kein Chromium in dieser Umgebung." }, () => {
+  const a = storyWeltAsset(ROOT, 1080, 1350);
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-storywelt-"));
+  try {
+    const pkg = { packageId: "pkg_storywelt_test",
+      hook: "Die Quartalszahlen ueberraschten - und niemand sah es kommen." };
+    const asset = { asset_path: a.rel, state: "READBACK_VERIFIED",
+      width: 1080, height: 1350, mime_type: "image/png", asset_sha256: a.sha };
+
+    const p = planGeschichte(pkg, asset, { root: ROOT });
+    assert.equal(p.ok, true);
+    assert.equal(p.visualType, "GENERATIVE");
+    assert.equal(p.generiert, true);
+    assert.ok(p.atlas, "die Story-Welt muss einen Atlas-Plan tragen");
+    assert.equal(p.atlas.rolle, "ATLAS_GUIDE");
+    assert.equal(p.atlas.referenceAsset, "assets/atlas.png");
+
+    const ziel = join(wurzel, "ziel.jpg");
+    const befund = render(p, ziel, { schrift: ladeSchrift(ROOT),
+      caption: "Eine ganz andere Caption, die den Hook nicht wiederholt." });
+
+    assert.equal(befund.istJpeg, true);
+    assert.equal(befund.breite, 1080);
+    assert.equal(befund.hoehe, 1350);
+    assert.equal(befund.scrollStop.ok, true,
+      befund.scrollStop && befund.scrollStop.erklaerung);
+    assert.equal(befund.logo.passed, true);
+    assert.equal(befund.atlas.passed, true);
+    assert.ok(befund.atlas.flaechenAnteil >= 0.10 && befund.atlas.flaechenAnteil <= 0.24,
+      "Atlas-Flaeche " + befund.atlas.flaechenAnteil + " ausserhalb ATLAS_GUIDE.");
+  } finally {
+    rmSync(a.abs, { force: true });
+    rmSync(wurzel, { recursive: true, force: true });
+  }
+});
+
+test("RA32 · Eine Caption, die nur die Hook wiederholt, faellt in der Story-Welt auf",
+  { skip: chromiumDa ? false : "Kein Chromium in dieser Umgebung." }, () => {
+  /* run-social-cycle.mjs uebergibt seit dieser Aenderung `caption` an
+     render() - vorher lief die Story-Welt (planUebernahme/uebernimm)
+     ganz ohne Textebene, also konnte HOOK_WIEDERHOLT_CAPTION nie
+     auffallen. Dieser Test haelt fest, dass die Caption jetzt wirklich
+     ankommt und geprueft wird. */
+  const a = storyWeltAsset(ROOT, 1080, 1350);
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-storywelt-"));
+  try {
+    const hook = "Die Quartalszahlen ueberraschten alle Analysten.";
+    const p = planGeschichte({ packageId: "pkg_storywelt_dup", hook },
+      { asset_path: a.rel, state: "READBACK_VERIFIED", width: 1080, height: 1350,
+        mime_type: "image/png", asset_sha256: a.sha }, { root: ROOT });
+    assert.equal(p.ok, true);
+
+    assert.throws(() => render(p, join(wurzel, "ziel.jpg"), {
+      schrift: ladeSchrift(ROOT),
+      /* Derselbe Satz, nur mit Punkt - der erste Satz der Caption ist
+         dann woertlich die Hook. */
+      caption: hook + " Mehr dazu in der Analyse."
+    }), /HOOK_WIEDERHOLT_CAPTION/);
+  } finally {
+    rmSync(a.abs, { force: true });
+    rmSync(wurzel, { recursive: true, force: true });
+  }
 });

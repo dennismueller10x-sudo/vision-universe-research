@@ -228,12 +228,28 @@ test("AD19 · Der Dispatch haengt an der Entscheidung, nicht am Lauf", () => {
      dastand und sogar strenger geworden war.
 
      Wieder ein Pruefer, der korrekten Text verbietet. Gesucht wird
-     jetzt im if-Block des Schritts, nicht nach einer Formatierung. */
-  const ab = WORKFLOW.indexOf("- name: CREATIVE JOB");
-  assert.ok(ab > 0, "Der Schritt fehlt");
+     jetzt im if-Block des Schritts, nicht nach einer Formatierung.
+
+     -----------------------------------------------------------------
+     WARUM DER ALTE SCHRITT NICHT MEHR GEPRUEFT WIRD
+
+     Owner-Direktive "WEB-FIRST + FULL-POST-GENERATION" (24.09.): der
+     Quant-getriebene "CREATIVE JOB"-Schritt ist jetzt fuer JEDEN Modus
+     stillgelegt (if: false, siehe social-orchestrator.test.mjs OR16) -
+     eine staerkere Garantie als "haengt an der Entscheidung", aber eine
+     ANDERE. Der Dispatch, der tatsaechlich noch laeuft, ist "CREATIVE
+     JOB (WEB)"; DIESER Schritt ist es, der weiterhin an einer echten
+     Entscheidung haengen muss. */
+  const altAb = WORKFLOW.indexOf("- name: CREATIVE JOB — Brief, Register, Request-PR (stillgelegt)");
+  assert.ok(altAb > 0, "Der stillgelegte Schritt fehlt");
+  assert.match(WORKFLOW.slice(altAb, altAb + 200), /if:\s*false/,
+    "Der alte Quant-Dispatch muss fuer jeden Modus stillgelegt sein");
+
+  const ab = WORKFLOW.indexOf("- name: CREATIVE JOB (WEB)");
+  assert.ok(ab > 0, "Der Schritt CREATIVE JOB (WEB) fehlt");
   const block = WORKFLOW.slice(ab, ab + 500);
-  assert.match(block, /steps\.plan\.outputs\.creative == 'ja'/,
-    "Der Dispatch haengt nicht mehr an der Entscheidung");
+  assert.match(block, /steps\.webresearch\.outputs\.gefunden == 'ja'/,
+    "Der Web-First-Dispatch haengt nicht mehr an der Entscheidung");
   /* Und der Orchestrator gibt diese Zeile nur aus, wenn er sie
      entschieden hat. */
   const runner = readFileSync("scripts/social/run-orchestrator.mjs", "utf8");

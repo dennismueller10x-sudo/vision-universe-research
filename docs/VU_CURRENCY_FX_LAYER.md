@@ -1429,7 +1429,7 @@ ein Nachweis selbst gegengelesen gehoert.
 | `PAID_SERVICES_ENABLED` | **0** | kein neuer kostenpflichtiger Dienst; die EZB ist oeffentlich |
 | `CRITICAL_BLOCKERS` | **0** | die Lizenzfrage ist dokumentiert und blockiert weder Merge noch Development-Deployment |
 | `CURRENCY_PRODUCTION_PROOF` | **PASS** — alle neun Titel am ausgelieferten Stand; 11 Kernmodule auf beiden Flaechen, `EURUSD.json` HTTP 200 | `currency-production-proof.yml`, Lauf 35725232130 |
-| `REALTIME_FX` | **PENDING_TIME_DEPENDENT_PRODUCTION_PROOF** | der geplante Lauf feuert seit dem Merge wirklich (Workflow auf `main`, Zeitplan 15:00/18:00 UTC werktags) |
+| `REALTIME_FX` | **PASS** — an der offenen US-Sitzung gefuehrt (New York 11:16, 2026-09-22), `RT-0`…`RT-7` | `realtime-eur-proof.json`, Lauf 35746136722 |
 | `LICENSE_DISPLAY_DERIVED_FX` | **OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT** | Owner-Entscheid 2026-09-22; kein Merge- und kein Deployment-Blocker |
 | `PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED` | **true** | dauerhaft dokumentiert; vor kommerzieller Vermarktung zu klaeren |
 
@@ -1579,12 +1579,60 @@ Der zweite Ausloeser bleibt als Handgriff bestehen: ein Push mit
 `[rt-proof]` in der **Betreffzeile** waehrend der offenen US-Sitzung
 (13:30–20:00 UTC).
 
-Bis der Lauf am offenen Markt vorliegt, bleibt
-`REALTIME_FX = MARKET_CLOSED_NOT_PROVEN` und wird nicht beschoenigt
-(§58). Gegenprobe, dass hier nichts stillschweigend gruen wird: der
-Lauf auf diesem Zweig meldete `success`, weil das `proof`-Job ohne
-Marker uebersprungen wurde — ein uebersprungener Nachweis ist kein
-gefuehrter, und der Status bleibt entsprechend stehen.
+### `REALTIME_FX = PASS` — gefuehrt am 2026-09-22, 15:16 UTC
+
+Der Zeitplan um 15:00 UTC hat **nicht** gefeuert; GitHub liefert
+`schedule` nach eigenem Ermessen und oft verspaetet. Statt darauf zu
+warten, wurde der Lauf per `workflow_dispatch` von `main` angestossen,
+solange die Sitzung offen war — **ohne** den `force`-Input: bei
+geschlossenem Markt soll er `NOT_PROVEN` melden und nicht so tun als ob.
+
+Lauf **35746136722**, `proof`-Job **wirklich gelaufen** (nicht
+uebersprungen — nachgesehen, nicht am gruenen Haken abgelesen).
+
+| Pruefung | Zustand | Beleg aus dem Protokoll |
+|---|---|---|
+| `RT-0` US-Sitzung offen | **PASS** | Ortszeit New York 11:16 (Tue) |
+| `RT-1` Aktien-Tick aktualisiert sich | **PASS** | 3 von 3 Titeln in 30 s bewegt |
+| `RT-2` EUR-Anzeigepreis folgt dem Tick | **PASS** | 3 EUR-Preise sind dem Tick gefolgt |
+| `RT-3` USD-Anzeige bleibt der native Wert | **PASS** | im USD-Modus steht der Kurs unveraendert |
+| `RT-4` Umschalter wirkt auf den Wert | **PASS** | EUR und USD unterscheiden sich — nicht nur das Symbol |
+| `RT-5` kein FX-Abruf je Aktien-Tick | **PASS** | 6 Ticks, **1** FX-Abruf (6 Ticks je Abruf) |
+| `RT-6` FX-Freshness maschinenlesbar | **PASS** | Zustand `CURRENT`, Frequenz `INTRADAY` |
+| `RT-7` Anbieterausfall ohne falschen Anspruch | **PASS** | ohne Kurs: keine EUR-Anzeige, kein Realtime-Anspruch, `UNAVAILABLE` |
+
+Die echten Ticks, FX-Stand `2026-09-22T15:16:56.914Z` (1 s alt,
+`INTRADAY`, `CURRENT`):
+
+| Titel | USD erst → zweit | EUR erst → zweit |
+|---|---|---|
+| AAPL | 343,69 → 343,67 | 300,3863 → 300,3688 |
+| NVDA | 228,675 → 228,65 | 199,8628 → 199,8409 |
+| MSFT | 494,90 → 495,045 | 432,5444 → 432,6711 |
+
+**Die Gegenprobe, die den zentralen State belegt.** Aus jedem Titel
+laesst sich der benutzte Kurs zurueckrechnen:
+
+```
+AAPL  343,670 / 300,3688 = 1,144160
+NVDA  228,650 / 199,8409 = 1,144160
+MSFT  495,045 / 432,6711 = 1,144160
+                  Spanne = 1·10⁻⁷
+```
+
+Drei Titel, ein Kurs auf sieben Stellen. Haette jede Seite ihre eigene
+Umrechnung, waere das nicht so — `RT-5` zaehlt die Abrufe, diese Zeile
+zeigt das Ergebnis. ONE DATA CORE, an drei echten Ticks gemessen.
+
+Der Bericht wurde nach `main` geschrieben (`54e1c88e`), nachdem ein
+eigener Schritt bestaetigt hat: *„Bericht frei von Zugangsdaten."* —
+kein Schluessel, keine Anfrage-URL mit Token, keine Rohkurse.
+
+**Eine Einschraenkung, die dazugehoert:** der Intraday-Abruf bediente
+2 von 4 Paaren; `CNY/EUR` und `CNY/USD` melden `pairNotServed`. Fuer
+AAPL/NVDA/MSFT ist das ohne Belang — sie brauchen `USD/EUR` —, aber es
+ist keine vollstaendige Intraday-Abdeckung und wird hier nicht als eine
+ausgegeben.
 
 ---
 
@@ -1618,10 +1666,17 @@ Bedingungen geklaert sind und deren Quelle genannt wird. Die
 verbleibenden 29 Titel (ARS, TWD, CLP, PEN, COP) brauchen ein
 Tiingo-Bein im Kreuz und warten mit.
 
-### Der eine ausstehende Nachweis
+### Der ausstehende Nachweis — nachgeholt
 
-`REALTIME_FX`. Wird bei offener US-Sitzung nachgeholt, nicht
-beschoenigt.
+`REALTIME_FX` ist seit dem 2026-09-22, 15:16 UTC gefuehrt: an der
+offenen US-Sitzung, mit echten Ticks, `RT-0`…`RT-7` alle PASS. Die
+Belege stehen in Abschnitt 17. Damit ist hier nichts mehr offen.
+
+Was dabei auffiel und benannt gehoert: der Intraday-Abruf bediente
+**2 von 4 Paaren** — `CNY/EUR` und `CNY/USD` melden `pairNotServed`.
+Fuer den Nachweis ohne Belang (AAPL/NVDA/MSFT brauchen `USD/EUR`), aber
+die Intraday-Abdeckung ist damit nicht vollstaendig, und das wird nicht
+als vollstaendig ausgegeben.
 
 ### Zurueckgestellt, benannt, nicht blockierend
 

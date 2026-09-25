@@ -1,0 +1,965 @@
+{
+  "schemaVersion": "1.0.0",
+  "note": "Quellenentscheidungen, Lizenzstand, Veroeffentlichungsprofile und Frische-Schwellen des Multi-Asset-Segments. Gelesen von quant/engines/multi-asset/instrument-catalog.js (resolve), quant/engines/realtime/asset-freshness.js und scripts/market/ingest-multi-asset.mjs. Eine Quellenentscheidung steht erst hier, wenn sie in quant/data/market/capabilities/multi-asset-probe.json gemessen ist. Was hier fehlt, bleibt CANDIDATE.",
+  "measuredBy": "quant/data/market/capabilities/multi-asset-probe.json",
+  "sourceRegistry": {
+    "tiingo-crypto": {
+      "provider": "tiingo",
+      "product": "Crypto API",
+      "kind": "LICENSED_PROVIDER",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT",
+      "licenseNote": "Owner-Entscheidung 2026-09-25: Anzeige in der Development-Phase mit akzeptiertem Owner-Risiko (OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT = true). Vor kommerzieller Nutzung ist eine Lizenzbestaetigung erforderlich (PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED = true). Keine kommerzielle Anzeigefreigabe (COMMERCIAL_DISPLAY_APPROVED = false).",
+      "attribution": "Daten: Tiingo",
+      "displayLicense": "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT",
+      "commercialDisplayApproved": false,
+      "preCommercialLicenseConfirmationRequired": true
+    },
+    "tiingo-equity": {
+      "provider": "Tiingo",
+      "product": "End-of-Day + IEX (bestehender Tiingo-Vertrag, dieselbe Market Data wie der Aktienbereich)",
+      "kind": "LICENSED_PROVIDER",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OWNER_DECLARED_LICENSED",
+      "licenseNote": "quant/config/provider-profiles.json#providers.tiingo.licensing: OWNER_DECLARED_LICENSED (2026-09-13) - 'Die erforderliche Tiingo-Freigabe fuer die oeffentliche Anzeige der Market-Data liegt vor.' Gilt fuer boersengehandelte US-Titel einschliesslich ETF; der Vertragstext liegt nicht im Repository.",
+      "attribution": "Daten: Tiingo",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false,
+      "realtimePath": "VU-Live-Worker (worker/src/vu-live.mjs, Tiingo IEX WebSocket, thresholdLevel 6) - bestehender Pfad, regulaere US-Sitzung"
+    },
+    "tiingo-fx-metals": {
+      "provider": "tiingo",
+      "product": "FX API (Edelmetallpaare)",
+      "kind": "LICENSED_PROVIDER",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT",
+      "licenseNote": "Owner-Entscheidung 2026-09-25: Anzeige in der Development-Phase mit akzeptiertem Owner-Risiko (OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT = true). Vor kommerzieller Nutzung ist eine Lizenzbestaetigung erforderlich (PRE_COMMERCIAL_LICENSE_CONFIRMATION_REQUIRED = true). Keine kommerzielle Anzeigefreigabe (COMMERCIAL_DISPLAY_APPROVED = false).",
+      "attribution": "Daten: Tiingo",
+      "displayLicense": "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT",
+      "commercialDisplayApproved": false,
+      "preCommercialLicenseConfirmationRequired": true
+    },
+    "us-treasury": {
+      "provider": "U.S. Department of the Treasury",
+      "product": "Daily Treasury Par Yield Curve Rates",
+      "kind": "OFFICIAL_PRIMARY",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+      "licenseNote": "Werk der US-Bundesregierung (17 U.S.C. 105). Quellenangabe erfolgt trotzdem.",
+      "attribution": "Quelle: U.S. Department of the Treasury",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false
+    },
+    "nyfed": {
+      "provider": "Federal Reserve Bank of New York",
+      "product": "Reference Rates API (EFFR inkl. Zielband)",
+      "kind": "OFFICIAL_PRIMARY",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+      "licenseNote": "Die New York Fed veroeffentlicht die Referenzsaetze oeffentlich und verlangt die Quellenangabe. Eine Weiterverwendung als eigenes Datenprodukt ist nicht Gegenstand.",
+      "attribution": "Quelle: Federal Reserve Bank of New York",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false
+    },
+    "ecb-data-portal": {
+      "provider": "Europaeische Zentralbank",
+      "product": "ECB Data Portal (FM - Leitzinsen)",
+      "kind": "OFFICIAL_PRIMARY",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+      "licenseNote": "Dieselbe Grundlage wie die bereits angebundenen EZB-Referenzkurse (fx-license.json): Wiedergabe unter Nennung der Quelle.",
+      "attribution": "Quelle: Europaeische Zentralbank",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false
+    },
+    "bundesbank": {
+      "provider": "Deutsche Bundesbank",
+      "product": "Zeitreihen-Datenbank (BBSIS - Zinsstruktur Bundeswertpapiere)",
+      "kind": "OFFICIAL_PRIMARY",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+      "licenseNote": "Die Bundesbank gestattet die Verwendung ihrer Statistiken unter Quellenangabe.",
+      "attribution": "Quelle: Deutsche Bundesbank",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false
+    },
+    "eia": {
+      "provider": "U.S. Energy Information Administration",
+      "product": "Spot Prices (Petroleum, Natural Gas)",
+      "kind": "OFFICIAL_PRIMARY",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "PUBLIC_DOMAIN_US_GOVERNMENT",
+      "licenseNote": "Werk der US-Bundesregierung. EIA gestattet die Nutzung und Weitergabe ihrer Datenprodukte und bittet um Quellenangabe mit Datum. Die Spotpreise werden von EIA aus Daten Dritter (Thomson Reuters/Refinitiv) zusammengestellt und frei veroeffentlicht; vor einer kommerziellen Vermarktung als eigenes Datenprodukt ist das zu bestaetigen (Pre-Commercial-Gate, nicht Development-Blocker).",
+      "attribution": "Quelle: U.S. Energy Information Administration",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false
+    },
+    "fred": {
+      "provider": "Federal Reserve Bank of St. Louis (FRED)",
+      "product": "FRED Graph CSV",
+      "kind": "INSTITUTIONAL_MIRROR",
+      "priority": 3,
+      "publicDisplay": false,
+      "licenseState": "COMPARISON_ONLY",
+      "licenseNote": "FRED spiegelt Reihen anderer Herausgeber. Nach §12 hat die Primaerquelle Vorrang; FRED dient nur dem Abgleich und wird nicht ausgeliefert.",
+      "attribution": "Quelle: FRED, Federal Reserve Bank of St. Louis",
+      "displayLicense": "UNAVAILABLE",
+      "commercialDisplayApproved": false,
+      "preCommercialLicenseConfirmationRequired": false
+    },
+    "fred-index": {
+      "provider": "Federal Reserve Bank of St. Louis (FRED)",
+      "product": "FRED Graph CSV - Indexreihen der Lizenzklasse 'Copyrighted: Citation required'",
+      "kind": "INSTITUTIONAL_MIRROR",
+      "priority": 3,
+      "publicDisplay": true,
+      "licenseState": "CITATION_REQUIRED",
+      "licenseNote": "Gemessen (index-source-probe.json, fred.stlouisfed.org/legal): Reihen der Klasse 'Citation required' duerfen beim Anzeigen oder Veroeffentlichen mit Quellenangabe und dem Hinweis auf FRED verwendet werden. Nur solche Reihen stehen in providers/fred/adapter.js#SERIES; der Ingest liest die Klasse bei jedem Lauf auf der Reihenseite neu und liefert bei Abweichung nichts aus. SP500, DJIA und NASDAQ100 tragen 'Pre-approval required' (nur nicht-kommerziell) und werden NICHT verwendet.",
+      "attribution": "Quelle: Nikkei Inc., via FRED, Federal Reserve Bank of St. Louis",
+      "crossCheck": "Nikkei Inc. offizielle Tagesdatei (nur Gegenprobe, nicht ausgeliefert - Lizenz UNKNOWN)",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false
+    },
+    "fmp-index": {
+      "provider": "Financial Modeling Prep",
+      "product": "Stable API - historical-price-eod/light (vorhandener Zugang FMP_API_KEY, kostenloser Tarif, 250 Anfragen/Tag)",
+      "kind": "LICENSED_PROVIDER",
+      "priority": 1,
+      "publicDisplay": false,
+      "licenseState": "OWNER_DECISION_REQUIRED",
+      "licenseNote": "Owner-Entscheidung 2026-09-25 (Tiingo-first): FMP traegt die produktive Consumer-Indexversorgung NICHT. Adapter, Messberichte und Tests bleiben als Audit-/Development-Evidence; keine Quelle verweist mehr auf fmp-index, der Ingest erhaelt keinen FMP-Schluessel.",
+      "attribution": "Daten: Financial Modeling Prep",
+      "displayLicense": "UNAVAILABLE",
+      "commercialDisplayApproved": false,
+      "preCommercialLicenseConfirmationRequired": false,
+      "role": "AUDIT_EVIDENCE_ONLY"
+    },
+    "ecb-fx-reference": {
+      "provider": "Europaeische Zentralbank",
+      "product": "Euro-Referenzkurse (bestehender Currency Core, quant/data/market/fx/ecb/)",
+      "kind": "OFFICIAL_PRIMARY",
+      "priority": 1,
+      "publicDisplay": true,
+      "licenseState": "OFFICIAL_ATTRIBUTION_REQUIRED",
+      "licenseNote": "Bereits vom Currency Core ausgeliefert (fx-license.json). Hier nur als Referenzinstrument EUR/USD wiederverwendet - keine neue FX-Reihe, kein neuer Abruf.",
+      "attribution": "Quelle: Europaeische Zentralbank (Euro-Referenzkurs)",
+      "seriesSourceId": "ecb",
+      "seriesSourceNote": "Die Reihe gehoert dem Currency Core und traegt dort source 'ecb'. Sie wird gelesen, nicht kopiert.",
+      "displayLicense": "LICENSE_CONFIRMED",
+      "commercialDisplayApproved": true,
+      "preCommercialLicenseConfirmationRequired": false
+    }
+  },
+  "publisherProfiles": {
+    "US_TREASURY": {
+      "timezone": "America/New_York",
+      "businessDays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "holidayExchange": "XNYS",
+      "publishedAfterLocal": "18:00",
+      "maxLagBusinessDays": 1,
+      "note": "Die Par-Yield-Kurve erscheint am Nachmittag des Geschaeftstags. Feiertage des Anleihemarkts (SIFMA) sind nicht vollstaendig identisch mit dem NYSE-Kalender - deshalb eine Karenz von einem Geschaeftstag, statt einer genauen Liste."
+    },
+    "US_NYFED": {
+      "timezone": "America/New_York",
+      "businessDays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "holidayExchange": "XNYS",
+      "publishedAfterLocal": "09:00",
+      "maxLagBusinessDays": 2,
+      "note": "Die EFFR fuer Tag t erscheint am Morgen von t+1."
+    },
+    "DE_BUNDESBANK": {
+      "timezone": "Europe/Berlin",
+      "businessDays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "holidayExchange": "XETR",
+      "publishedAfterLocal": "12:00",
+      "maxLagBusinessDays": 2,
+      "note": "Die Zinsstruktur fuer Tag t erscheint in der Regel am folgenden Geschaeftstag."
+    },
+    "US_EIA": {
+      "timezone": "America/New_York",
+      "businessDays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "holidayExchange": "XNYS",
+      "publishedAfterLocal": "12:00",
+      "maxLagBusinessDays": 8,
+      "note": "EIA aktualisiert die taeglichen Spotpreise im Wochenrhythmus (in der Regel mittwochs). Ein Wert, der eine Woche alt ist, ist deshalb nicht veraltet."
+    },
+    "EU_ECB": {
+      "timezone": "Europe/Berlin",
+      "businessDays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "holidayExchange": "XETR",
+      "publishedAfterLocal": "15:00",
+      "maxLagBusinessDays": 3,
+      "note": "Leitzinsen: die Reihe wird taeglich fortgeschrieben, der Wert aendert sich nur an Beschlusstagen."
+    }
+  },
+  "freshness": {
+    "note": "Schwellen je Sitzungsprofil. Continuous (Krypto): Alter des letzten Stands gegen die Lieferfrequenz. Weekly window (Metalle/Futures): wie Continuous, aber nur waehrend der Handelszeit. Publication: Rueckstand in Geschaeftstagen des Herausgebers. Event: der Wert gilt bis zum naechsten Beschluss; STALE wird nur, wenn die Quelle laenger nicht mehr abgefragt wurde (maxCheckAgeHours).",
+    "CRYPTO_24_7": {
+      "liveSeconds": 180,
+      "currentSeconds": 3600,
+      "staleAfterSeconds": 21600
+    },
+    "METALS_OTC_24_5": {
+      "liveSeconds": 180,
+      "currentSeconds": 3600,
+      "staleAfterSeconds": 21600,
+      "closeGraceSeconds": 3600
+    },
+    "COMMODITY_FUTURES": {
+      "liveSeconds": 180,
+      "currentSeconds": 3600,
+      "staleAfterSeconds": 21600,
+      "closeGraceSeconds": 3600
+    },
+    "REFERENCE_DAILY": {
+      "useExchangeCalendar": true
+    },
+    "REFERENCE_MONTHLY": {
+      "maxLagDays": 62
+    },
+    "POLICY_EVENT": {
+      "maxCheckAgeHours": 96
+    },
+    "US_EQUITY_ETF": {
+      "useExchangeCalendar": true,
+      "note": "US-ETF-Sitzung (XNYS-Kalender)"
+    }
+  },
+  "sources": {
+    "SPX": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "OWNER_DECISION_TIINGO_FIRST",
+        "decidedAt": "2026-09-25",
+        "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+        "consumerRepresentation": "Markt-Tracker SPY (assetClass ETF, isProxy true) - kein Indexstand",
+        "auditEvidence": {
+          "previousSource": "fmp-index",
+          "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+          "previousMeasured": {
+            "in": "quant/data/market/capabilities/index-source-probe.json",
+            "history": "2016-09-26..2026-09-24 (taeglich)",
+            "identity": "FMP-Indexliste fuehrt ^GSPC als 'S&P 500'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+          }
+        },
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+        ],
+        "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
+      }
+    },
+    "NDX": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "PROVIDER_CAPABILITY_GAP",
+        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+        ],
+        "notDone": "Kein ETF wird still als Index ausgegeben.",
+        "consumerRepresentation": "Markt-Tracker QQQ (assetClass ETF, isProxy true) - kein Indexstand",
+        "ownerDecision": "2026-09-25 Tiingo-first"
+      }
+    },
+    "DJI": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "OWNER_DECISION_TIINGO_FIRST",
+        "decidedAt": "2026-09-25",
+        "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+        "consumerRepresentation": "Markt-Tracker DIA (assetClass ETF, isProxy true) - kein Indexstand",
+        "auditEvidence": {
+          "previousSource": "fmp-index",
+          "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+          "previousMeasured": {
+            "in": "quant/data/market/capabilities/index-source-probe.json",
+            "history": "2016-09-26..2026-09-24 (taeglich)",
+            "identity": "FMP-Indexliste fuehrt ^DJI als 'Dow Jones Industrial Average'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+          }
+        },
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+        ],
+        "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
+      }
+    },
+    "DAX": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "PROVIDER_CAPABILITY_GAP",
+        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+        ],
+        "notDone": "Kein ETF wird still als Index ausgegeben.",
+        "consumerRepresentation": "keine - Global X DAX Germany ETF (Ticker DAX) identisch, aber unter 100.000 Anteile/Tag und lueckenhafte Intraday-Bars (tiingo-tracker-probe.json): als Consumer-Tracker abgelehnt",
+        "ownerDecision": "2026-09-25 Tiingo-first"
+      }
+    },
+    "SX5E": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "OWNER_DECISION_TIINGO_FIRST",
+        "decidedAt": "2026-09-25",
+        "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+        "consumerRepresentation": "Markt-Tracker FEZ (assetClass ETF, isProxy true) - kein Indexstand",
+        "auditEvidence": {
+          "previousSource": "fmp-index",
+          "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+          "previousMeasured": {
+            "in": "quant/data/market/capabilities/index-source-probe.json",
+            "history": "2016-09-26..2026-09-24 (taeglich)",
+            "identity": "FMP-Indexliste fuehrt ^STOXX50E als 'Euro STOXX 50'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+          }
+        },
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+        ],
+        "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
+      }
+    },
+    "UKX": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "OWNER_DECISION_TIINGO_FIRST",
+        "decidedAt": "2026-09-25",
+        "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+        "consumerRepresentation": "keine - kein sauberer Tiingo-Tracker gemessen (tiingo-tracker-probe.json)",
+        "auditEvidence": {
+          "previousSource": "fmp-index",
+          "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+          "previousMeasured": {
+            "in": "quant/data/market/capabilities/index-source-probe.json",
+            "history": "2016-09-26..2026-09-24 (taeglich)",
+            "identity": "FMP-Indexliste fuehrt ^FTSE als 'FTSE 100'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+          }
+        },
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+        ],
+        "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
+      }
+    },
+    "N225": {
+      "status": "ACTIVE",
+      "sourceId": "fred-index",
+      "role": "PRIMARY_EOD",
+      "providerIdentifiers": {
+        "fred": "NIKKEI225",
+        "nikkeiOfficial": "nikkei_stock_average_daily_en.csv"
+      },
+      "priceSemantics": "INDEX_CLOSE_DAILY",
+      "frequency": "DAILY",
+      "measured": {
+        "in": "quant/data/market/capabilities/index-source-probe.json",
+        "history": "1949-05-16..(taeglich)",
+        "licenseClass": "CITATION_REQUIRED",
+        "identity": "Name 'Nikkei Stock Average, Nikkei 225' und Groessenordnung geprueft; Gegenprobe gegen die offizielle Nikkei-Tagesdatei je Lauf"
+      },
+      "intraday": {
+        "state": "NOT_AVAILABLE_FREE",
+        "finding": "Kein frei nutzbarer Intraday-Pfad gemessen: Twelve Data Basic liefert N225 nicht (404), Nikkei-Seiten fuer Nutzungsbedingungen 403. Anzeige ist Tagesschluss."
+      }
+    },
+    "RUT": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "OWNER_DECISION_TIINGO_FIRST",
+        "decidedAt": "2026-09-25",
+        "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+        "consumerRepresentation": "Markt-Tracker IWM (assetClass ETF, isProxy true) - kein Indexstand",
+        "auditEvidence": {
+          "previousSource": "fmp-index",
+          "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+          "previousMeasured": {
+            "in": "quant/data/market/capabilities/index-source-probe.json",
+            "history": "2016-09-26..2026-09-24 (taeglich)",
+            "identity": "FMP-Indexliste fuehrt ^RUT als 'Russell 2000'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+          }
+        },
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+        ],
+        "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
+      }
+    },
+    "MID": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "PROVIDER_CAPABILITY_GAP",
+        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+        ],
+        "notDone": "Kein ETF wird still als Index ausgegeben."
+      }
+    },
+    "PX1": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "PROVIDER_CAPABILITY_GAP",
+        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+        ],
+        "notDone": "Kein ETF wird still als Index ausgegeben."
+      }
+    },
+    "SMI": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "PROVIDER_CAPABILITY_GAP",
+        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+        ],
+        "notDone": "Kein ETF wird still als Index ausgegeben."
+      }
+    },
+    "HSI": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "OWNER_DECISION_TIINGO_FIRST",
+        "decidedAt": "2026-09-25",
+        "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+        "consumerRepresentation": "keine - kein sauberer Tiingo-Tracker gemessen (tiingo-tracker-probe.json)",
+        "auditEvidence": {
+          "previousSource": "fmp-index",
+          "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+          "previousMeasured": {
+            "in": "quant/data/market/capabilities/index-source-probe.json",
+            "history": "2016-09-26..2026-09-24 (taeglich)",
+            "identity": "FMP-Indexliste fuehrt ^HSI als 'Hang Seng Index'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+          }
+        },
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+        ],
+        "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
+      }
+    },
+    "SHCOMP": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "PROVIDER_CAPABILITY_GAP",
+        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+        "finding": "Tiingo fuehrt keine Indexstaende: Suche liefert nur ETFs und Fonds, Stammdatenabrufe auf Index-Kuerzel sind 404 oder treffen ein anderes Instrument mit gleichem Kuerzel.",
+        "offizielleQuelle": "Keine. Indexstaende sind lizenzierte Daten der Indexanbieter (S&P DJI, Nasdaq, STOXX/Qontigo, FTSE Russell, Nikkei, SIX, Hang Seng, CSI).",
+        "ownerOptions": [
+          "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
+          "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
+        ],
+        "notDone": "Kein ETF wird still als Index ausgegeben."
+      }
+    },
+    "XAUUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-fx-metals",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "xauusd"
+      },
+      "subType": "SPOT_METAL",
+      "sessionProfile": "METALS_OTC_24_5",
+      "priceSemantics": "MID_QUOTE",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyHistoryFrom": "2021-09-26",
+        "dailyDepthLimit": "Anfragen mit Start vor ~5 Jahren: HTTP 400",
+        "intraday5min": true,
+        "websocket": true
+      }
+    },
+    "XAGUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-fx-metals",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "xagusd"
+      },
+      "subType": "SPOT_METAL",
+      "sessionProfile": "METALS_OTC_24_5",
+      "priceSemantics": "MID_QUOTE",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyHistoryFrom": "2021-09-26",
+        "dailyDepthLimit": "Anfragen mit Start vor ~5 Jahren: HTTP 400",
+        "intraday5min": true,
+        "websocket": true
+      }
+    },
+    "XPTUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-fx-metals",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "xptusd"
+      },
+      "subType": "SPOT_METAL",
+      "sessionProfile": "METALS_OTC_24_5",
+      "priceSemantics": "MID_QUOTE",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyHistoryFrom": "2021-12-27",
+        "dailyDepthLimit": "Anfragen mit Start vor ~5 Jahren: HTTP 400",
+        "intraday5min": true,
+        "websocket": true
+      }
+    },
+    "XPDUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-fx-metals",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "xpdusd"
+      },
+      "subType": "SPOT_METAL",
+      "sessionProfile": "METALS_OTC_24_5",
+      "priceSemantics": "MID_QUOTE",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyHistoryFrom": "2021-12-27",
+        "dailyDepthLimit": "Anfragen mit Start vor ~5 Jahren: HTTP 400",
+        "intraday5min": true,
+        "websocket": true
+      }
+    },
+    "WTI": {
+      "status": "ACTIVE",
+      "sourceId": "eia",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "eia": "RWTC"
+      },
+      "subType": "SPOT_REFERENCE",
+      "exchangeOrVenue": "Cushing, Oklahoma - Spot FOB (EIA)",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_EIA",
+      "priceSemantics": "SPOT_FOB_DAILY",
+      "frequency": "DAILY",
+      "name": "WTI Rohoel (Spot Cushing)",
+      "nameDe": "Öl WTI (Spot)",
+      "timezone": "America/New_York"
+    },
+    "BRENT": {
+      "status": "ACTIVE",
+      "sourceId": "eia",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "eia": "RBRTE"
+      },
+      "subType": "SPOT_REFERENCE",
+      "exchangeOrVenue": "Europe Brent - Spot FOB (EIA)",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_EIA",
+      "priceSemantics": "SPOT_FOB_DAILY",
+      "frequency": "DAILY",
+      "name": "Brent Rohoel (Spot Europe)",
+      "nameDe": "Öl Brent (Spot)",
+      "timezone": "America/New_York"
+    },
+    "NATGAS": {
+      "status": "ACTIVE",
+      "sourceId": "eia",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "eia": "RNGWHHD"
+      },
+      "subType": "SPOT_REFERENCE",
+      "exchangeOrVenue": "Henry Hub, Louisiana - Spot (EIA)",
+      "sessionProfile": "REFERENCE_DAILY",
+      "publisherProfile": "US_EIA",
+      "priceSemantics": "SPOT_DAILY",
+      "frequency": "DAILY",
+      "name": "Erdgas (Henry Hub Spot)",
+      "nameDe": "Erdgas (Henry Hub)",
+      "timezone": "America/New_York",
+      "alsoMeasured": {
+        "tiingo": "natgasusd auf dem FX-Endpunkt, Historie erst ab 2026-01-30, Kontraktsemantik undokumentiert - nicht verwendet"
+      }
+    },
+    "COPPER": {
+      "status": "CAPABILITY_GAP",
+      "sourceId": null,
+      "gap": {
+        "kind": "SEMANTICS_UNVERIFIED",
+        "measuredIn": "quant/data/market/capabilities/multi-asset-probe.json",
+        "finding": "Tiingo fuehrt 'copperusd' auf dem FX-Endpunkt (gemessen, Historie ab 2023-09-15, 5-Minuten-Bars). Welcher Markt (LME-Kassa, COMEX-Future, CFD), welche Einheit (USD/lb oder USD/t) und welche Rollregel dahinterstehen, ist nicht dokumentiert und nicht messbar. Die einzige offizielle Alternative (IMF Primary Commodity Prices) ist monatlich und nur ueber den FRED-Spiegel maschinenlesbar.",
+        "ownerOptions": [
+          "Tiingo 'copperusd' mit Kennzeichnung 'Anbieter-Referenz, Kontrakt unbestaetigt' zulassen (plus Lizenzfreigabe FX-Endpunkt)",
+          "IMF-Monatsreferenz (USD/t) als Monatswert zulassen",
+          "Lizenzierte LME/COMEX-Daten (Kostenentscheidung)"
+        ],
+        "notDone": "Kein 'Kupferpreis' ohne Instrumentdefinition (§42)."
+      }
+    },
+    "BTCUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-crypto",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "btcusd"
+      },
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "sessionProfile": "CRYPTO_24_7",
+      "priceSemantics": "AGGREGATED_LAST",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyRowLimitPerRequest": "Eine Anfrage ab 2009 endet 2022-09-10 - Abruf in Scheiben",
+        "weekendIntraday": true,
+        "websocket": true
+      }
+    },
+    "ETHUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-crypto",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "ethusd"
+      },
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "sessionProfile": "CRYPTO_24_7",
+      "priceSemantics": "AGGREGATED_LAST",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyRowLimitPerRequest": "Eine Anfrage ab 2009 endet 2022-09-10 - Abruf in Scheiben",
+        "weekendIntraday": true,
+        "websocket": true
+      }
+    },
+    "SOLUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-crypto",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "solusd"
+      },
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "sessionProfile": "CRYPTO_24_7",
+      "priceSemantics": "AGGREGATED_LAST",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyRowLimitPerRequest": "Eine Anfrage ab 2009 endet 2022-09-10 - Abruf in Scheiben",
+        "weekendIntraday": true,
+        "websocket": true
+      }
+    },
+    "XRPUSD": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-crypto",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "xrpusd"
+      },
+      "subType": "CRYPTO_SPOT_AGGREGATED",
+      "sessionProfile": "CRYPTO_24_7",
+      "priceSemantics": "AGGREGATED_LAST",
+      "frequency": "INTRADAY",
+      "measured": {
+        "dailyRowLimitPerRequest": "Eine Anfrage ab 2009 endet 2022-09-10 - Abruf in Scheiben",
+        "weekendIntraday": true,
+        "websocket": true
+      }
+    },
+    "EURUSD": {
+      "status": "ACTIVE",
+      "sourceId": "ecb-fx-reference",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "currencyCore": "quant/data/market/fx/ecb/EURUSD.json"
+      },
+      "subType": "FX_REFERENCE_FIXING",
+      "exchangeOrVenue": "EZB-Referenzkurs (ca. 14:15 MEZ, Handelstage des Eurosystems)",
+      "sessionProfile": "FX_24_5",
+      "priceSemantics": "REFERENCE_FIXING",
+      "frequency": "DAILY",
+      "nameDe": "EUR/USD (EZB)"
+    },
+    "US2Y": {
+      "status": "ACTIVE",
+      "sourceId": "us-treasury",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "usTreasury": "daily_treasury_yield_curve:2 Yr"
+      },
+      "priceSemantics": "PAR_YIELD_CMT",
+      "frequency": "DAILY"
+    },
+    "US5Y": {
+      "status": "ACTIVE",
+      "sourceId": "us-treasury",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "usTreasury": "daily_treasury_yield_curve:5 Yr"
+      },
+      "priceSemantics": "PAR_YIELD_CMT",
+      "frequency": "DAILY"
+    },
+    "US10Y": {
+      "status": "ACTIVE",
+      "sourceId": "us-treasury",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "usTreasury": "daily_treasury_yield_curve:10 Yr"
+      },
+      "priceSemantics": "PAR_YIELD_CMT",
+      "frequency": "DAILY"
+    },
+    "US30Y": {
+      "status": "ACTIVE",
+      "sourceId": "us-treasury",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "usTreasury": "daily_treasury_yield_curve:30 Yr"
+      },
+      "priceSemantics": "PAR_YIELD_CMT",
+      "frequency": "DAILY"
+    },
+    "DE2Y": {
+      "status": "ACTIVE",
+      "sourceId": "bundesbank",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "bundesbank": "R02XX"
+      },
+      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
+      "frequency": "DAILY"
+    },
+    "DE10Y": {
+      "status": "ACTIVE",
+      "sourceId": "bundesbank",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "bundesbank": "R10XX"
+      },
+      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
+      "frequency": "DAILY"
+    },
+    "DE30Y": {
+      "status": "ACTIVE",
+      "sourceId": "bundesbank",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "bundesbank": "R30XX"
+      },
+      "priceSemantics": "SVENSSON_TERM_STRUCTURE_YIELD",
+      "frequency": "DAILY"
+    },
+    "FED_TARGET": {
+      "status": "ACTIVE",
+      "sourceId": "nyfed",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "nyfed": "EFFR.targetRateFrom/targetRateTo"
+      },
+      "priceSemantics": "POLICY_TARGET_RANGE",
+      "frequency": "EVENT"
+    },
+    "US_EFFR": {
+      "status": "ACTIVE",
+      "sourceId": "nyfed",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "nyfed": "EFFR.percentRate"
+      },
+      "priceSemantics": "VOLUME_WEIGHTED_MEDIAN",
+      "frequency": "DAILY"
+    },
+    "ECB_DFR": {
+      "status": "ACTIVE",
+      "sourceId": "ecb-data-portal",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "ecbDataPortal": "FM/D.U2.EUR.4F.KR.DFR.LEV"
+      },
+      "priceSemantics": "POLICY_RATE",
+      "frequency": "EVENT"
+    },
+    "QQQ": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-equity",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "qqq"
+      },
+      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+      "frequency": "INTRADAY",
+      "measured": {
+        "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+        "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+        "intraday5min": true,
+        "iexQuote": true
+      }
+    },
+    "SPY": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-equity",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "spy"
+      },
+      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+      "frequency": "INTRADAY",
+      "measured": {
+        "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+        "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+        "intraday5min": true,
+        "iexQuote": true
+      }
+    },
+    "DIA": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-equity",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "dia"
+      },
+      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+      "frequency": "INTRADAY",
+      "measured": {
+        "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+        "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+        "intraday5min": true,
+        "iexQuote": true
+      }
+    },
+    "IWM": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-equity",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "iwm"
+      },
+      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+      "frequency": "INTRADAY",
+      "measured": {
+        "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+        "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+        "intraday5min": true,
+        "iexQuote": true
+      }
+    },
+    "FEZ": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-equity",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "fez"
+      },
+      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+      "frequency": "INTRADAY",
+      "measured": {
+        "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+        "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+        "intraday5min": true,
+        "iexQuote": true
+      }
+    },
+    "URTH": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-equity",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "urth"
+      },
+      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+      "frequency": "INTRADAY",
+      "measured": {
+        "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+        "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+        "intraday5min": true,
+        "iexQuote": true
+      }
+    },
+    "EEM": {
+      "status": "ACTIVE",
+      "sourceId": "tiingo-equity",
+      "role": "PRIMARY",
+      "providerIdentifiers": {
+        "tiingo": "eem"
+      },
+      "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+      "frequency": "INTRADAY",
+      "measured": {
+        "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+        "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+        "intraday5min": true,
+        "iexQuote": true
+      }
+    }
+  },
+  "sourcesDecidedAt": "2026-09-25",
+  "sourcesNote": "Entscheidungen aus zwei Messlaeufen (Actions 36002559332, 36003261084). Vorrang nach §12: Tiingo, wo es liefert (Krypto, Edelmetalle); sonst offizielle Primaerquelle (Treasury, Bundesbank, NY Fed, EZB, EIA). FRED nur Vergleich. LICENSE_PENDING = technisch angebunden, oeffentliche Anzeige erst nach Owner-Freigabe (sourceRegistry.<id>.publicDisplay). Index P0 (2026-09-24, index-source-probe.json): N225 ueber FRED (Lizenzklasse Citation required, gemessen) mit Gegenprobe gegen Nikkei Inc.; FRED ist hier nicht Vergleich, sondern die einzige Quelle mit gemessener Anzeige-Erlaubnis. FMP (vorhandener Zugang): SPX, DJI, SX5E, UKX, HSI, RUT technisch aufgeloest (Tagesschluss), LICENSE_PENDING bis zur Owner-Freigabe. Owner-Entscheidung 2026-09-25 (Tiingo-first): Aktienmaerkte ueber gekennzeichnete ETF-Tracker (QQQ, SPY, DIA, IWM, FEZ, URTH, EEM) aus dem bestehenden Tiingo-Vertrag; FMP nur noch Audit-Evidence; Krypto und Edelmetalle angezeigt als OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT (vor kommerzieller Nutzung Lizenzbestaetigung). N225 bleibt FRED (Citation required)."
+}

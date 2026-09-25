@@ -1,0 +1,32 @@
+{
+  "schema": "vu-realtime-eur-proof-1.0.0",
+  "generatedAtUtc": "2026-09-24T21:22:58.925Z",
+  "finishedAtUtc": "2026-09-24T21:22:58.999Z",
+  "verdict": "MARKET_CLOSED_NOT_PROVEN",
+  "verdictMeaning": "Der Nachweis konnte nicht gefuehrt werden - geschlossener Markt, fehlender Zugang oder fehlender FX-Bestand. Kein Mock als Ersatz (O-8).",
+  "session": {
+    "open": false,
+    "localTime": "17:22",
+    "weekday": "Thu",
+    "source": "America/New_York"
+  },
+  "fxStore": {
+    "dailyPairs": 0,
+    "intradayStates": 2
+  },
+  "gapSeconds": 30,
+  "tickers": [
+    "AAPL",
+    "NVDA",
+    "MSFT"
+  ],
+  "checks": [
+    {
+      "id": "RT-0",
+      "title": "US-Sitzung offen",
+      "state": "NOT_PROVEN",
+      "detail": "Die regulaere Sitzung laeuft 09:30-16:00 Ortszeit New York; es ist 17:22 (Thu). Kein Mock als Ersatz (O-8).",
+      "rows": null
+    }
+  ]
+}

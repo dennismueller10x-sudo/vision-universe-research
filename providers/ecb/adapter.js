@@ -171,7 +171,67 @@ const CAPABILITIES = {
 
 const EARLIEST_PUBLISHED = "1999-01-04";
 
+/* ---------------------------------------------------------------------
+   LEITZINSEN (Multi-Asset Core)
+
+   Dieselbe Institution, dieselbe Lizenzgrundlage, ein anderer Datensatz:
+   das ECB Data Portal fuehrt die Zinssaetze des Eurosystems als Reihe
+   FM (Financial Markets). Gemessen (multi-asset-probe.json): die taegliche
+   Reihe der Einlagefazilitaet (FM/D.U2.EUR.4F.KR.DFR.LEV) reicht bis
+   1999-01-01 zurueck und aendert ihren Wert 63-mal - eine Stufenserie.
+
+   Gespeichert werden nur die Stufen (Tag des Inkrafttretens, Satz) und
+   der Tag der letzten Beobachtung. Zwischen zwei Stufen gilt der Satz
+   weiter; das ist die Natur der Reihe, keine Fortschreibung.
+   --------------------------------------------------------------------- */
+const KEY_RATES = {
+  ECB_DFR: "FM/D.U2.EUR.4F.KR.DFR.LEV"
+};
+
+function keyRateUrl(key) {
+  return "https://data-api.ecb.europa.eu/service/data/" + key + "?format=csvdata";
+}
+
+/* csvdata traegt Titelspalten in Anfuehrungszeichen, die selbst Kommas
+   enthalten koennen. Ein naives split(",") verschiebt dann die Spalten. */
+function splitCsvLine(line) {
+  const out = [];
+  let cur = "", quoted = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (quoted) {
+      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') quoted = false;
+      else cur += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === ",") { out.push(cur); cur = ""; }
+    else cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/** csvdata -> {steps: [[effectiveDate, percent]], observedThrough} */
+function parseKeyRateCsv(text) {
+  const lines = String(text || "").split(/\r?\n/).filter((l) => l.trim());
+  if (!lines.length) return { steps: [], observedThrough: null };
+  const header = splitCsvLine(lines[0]);
+  const iT = header.indexOf("TIME_PERIOD"), iV = header.indexOf("OBS_VALUE");
+  if (iT === -1 || iV === -1) return { steps: [], observedThrough: null };
+  const rows = [];
+  for (const line of lines.slice(1)) {
+    const c = splitCsvLine(line);
+    const v = parseFloat(c[iV]);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(c[iT]) && isFinite(v)) rows.push([c[iT], v]);
+  }
+  rows.sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  const steps = [];
+  for (const r of rows) if (!steps.length || steps[steps.length - 1][1] !== r[1]) steps.push(r);
+  return { steps, observedThrough: rows.length ? rows[rows.length - 1][0] : null };
+}
+
 module.exports = {
   PROVIDER_ID, DATA_SOURCE_ID, FEEDS, CAPABILITIES, EARLIEST_PUBLISHED,
-  parseEurofxref, toPairSeries
+  parseEurofxref, toPairSeries,
+  KEY_RATES, keyRateUrl, parseKeyRateCsv, splitCsvLine
 };

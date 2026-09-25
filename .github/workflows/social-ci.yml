@@ -43,6 +43,35 @@ jobs:
           node-version: '22'
 
       # =====================================================================
+      # DEN CREATIVE-JOB-REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR
+      # MAX_OPEN_CREATIVE_JOBS (Owner-Direktive "WORKFLOW-ORDERING-FIX",
+      # 24.09.)
+      #
+      # Dieselbe Reihenfolge, aus demselben Grund, wie in
+      # social-orchestrator.yml: die fuenf harten Invarianten unten
+      # (check-hard-invariants.mjs, ueber die Suite gemessen) zaehlen
+      # MAX_OPEN_CREATIVE_JOBS aus dem gerade ausgecheckten
+      # social/data/creative-jobs.json. Ein Register-Eintrag ohne je
+      # geoeffneten Request-PR (DISPATCH_NIE_ERFOLGT) blockiert diese
+      # CI sonst genauso wie er den Orchestrator blockierte — nicht,
+      # weil der Code falsch waere, sondern weil niemand vor der
+      # Zaehlung nachgesehen hat.
+      #
+      # --write schreibt nur in den ephemeren Checkout dieses Laufs;
+      # diese CI committet nichts zurueck (kein Push-Schritt in dieser
+      # Datei). Die eigentliche, dauerhafte Bereinigung geschieht durch
+      # denselben Schritt im Orchestrator, dessen Ergebnis er
+      # festschreibt.
+      # =====================================================================
+      - name: Creative-Ergebnisse von offenen Request-PRs holen
+        run: node scripts/social/ingest-open-creative-jobs.mjs --write
+
+      - name: Creative Jobs gegen die Evidenz abgleichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/social/reconcile-creative-jobs.mjs --write
+
+      # =====================================================================
       # DIE SUITEN UND DIE ISOLATION — EINMAL, UND MIT STAND
       #
       # verify-suites.mjs laesst beide Suiten und die Isolationspruefung

@@ -202,6 +202,17 @@
     /* Boerse nicht offen: es gilt die letzte abgeschlossene Sitzung. */
     if (seriesDate === expected.sessionDate) {
       if (complete) { out.freshnessState = "LAST_SESSION"; out.reason = "lastCompletedSession"; return; }
+      /* Nach dem Schluss geholt, aber ohne Handel im letzten Slot: ein
+         illiquider Titel. Es kommt nichts mehr - dieselbe Lesart wie
+         source-state.js (FINAL_SESSION, sessionCompleteNoLateTrades).
+         Vorher galt er hier als closeMissing/STALE, im Browser als final:
+         zwei Vertraege, zwei Antworten. Ohne das Feld (aeltere Snapshots,
+         Verzeichnisse) bleibt es bei regularComplete. */
+      if (s.fetchedAfterClose === true) {
+        out.freshnessState = "LAST_SESSION"; out.reason = "sessionCompleteNoLateTrades";
+        out.lastRegularLocal = s.lastRegularLocal || null;
+        return;
+      }
       out.partial = true;
       out.withinGrace = (now - ms(expected.close)) <= graceMs;
       out.freshnessState = out.withinGrace ? "LAST_SESSION" : "STALE";
@@ -285,7 +296,9 @@
     } else if (heute) {
       tone = out.partial ? "pending" : "complete";
       label = out.partial ? "Heute · Stand " + (stand || "?") + " · Schluss folgt"
-                          : "Heute · Schluss " + schluss + verkuerzt;
+            : out.reason === "sessionCompleteNoLateTrades"
+              ? "Heute · Schluss · letzter Kurs " + ((s && s.lastRegularLocal) || stand || "?")
+              : "Heute · Schluss " + schluss + verkuerzt;
     } else {
       tone = out.withinGrace ? "pending" : "complete";
       label = "Letzter Handelstag · " + tagWort(sd, r.localDate, false) +

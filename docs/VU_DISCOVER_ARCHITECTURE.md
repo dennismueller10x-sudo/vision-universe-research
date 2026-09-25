@@ -1,5 +1,21 @@
 # VISION UNIVERSE® DISCOVER — Architektur
 
+> **Aktuelle Architekturdefinition (Stand 24.09.2026, nach der Discover-Konsolidierung):**
+>
+> | | |
+> |---|---|
+> | CANONICAL_PRODUCT | Vision Universe Discover („Discover“, ohne Versionsnummer) |
+> | CANONICAL_ROUTE | `/discover/` |
+> | LEGACY_ROUTE | `/discover-v2/` — nur Weiterleitung auf `/discover/`, Hash-Deep-Links bleiben erhalten |
+> | CANONICAL_FRONTEND | `discover/index.html`, `discover/app.js`, `home.js`, `detail.js`, `themes.js` (+ CSS); Browser-Namespace `VUDiscover` (Ansichten unter `VUDiscover.Views`) |
+> | SHARED_MODULES | `discover/ui/*`, `discover/engines/*`, `discover/discover.css` |
+> | DATA_SOURCE | gemeinsamer VU Data Core (Company Master, Market Data, SEC/Fundamentals, FX, Realtime/Freshness) über `discover/data/**` |
+>
+> Die Abschnitte unten beschreiben den Aufbau seit Modul `discover-1.0.0` und sind
+> historisch gewachsen; wo sie `discover/app.js` als Router nennen, gilt heute der
+> Router des kanonischen Frontends. Konsolidierung: `VU_DISCOVER_CONSOLIDATION.md`,
+> Namensbereinigung: `VU_DISCOVER_NAMESPACE_CLEANUP.md`.
+
 Stand: 2026-09-11 · Modul `discover-1.0.0` · Methodik `discover-v1.0.0` ·
 Contract `discover-contract-1.0.0`
 

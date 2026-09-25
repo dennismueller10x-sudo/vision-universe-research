@@ -52,6 +52,8 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
   var Authoring = isNode ? require("../../../engines/authoring.js") : global.VUSocialAuthoring;
+  var AudienceFrame = isNode ? require("../../../engines/audience-frame.js")
+    : global.VUSocialAudienceFrame;
 
   /* Ein Wert in der Form, in der er im Text steht. */
   function wert(e) {
@@ -302,6 +304,41 @@
      anderem Schwerpunkt. Keines fuegt eine Aussage hinzu.
      ------------------------------------------------------------------- */
   var CAPTION_PATTERNS = [
+    /* -----------------------------------------------------------------
+       SOCIAL-FIRST STATT SYSTEMAUSGABE (Owner-Direktive "FINAL GOLDEN
+       PATH SIMPLIFICATION", 23.09., §13)
+
+       Die drei Muster darunter beschreiben alle dieselbe Bauform:
+       "Unsere technische Auswertung bewertet X mit Y im Z." - eine
+       Systemausgabe in Prosa, keine Story. Genau das war der reale
+       MSFT-Befund, den der Owner ablehnte.
+
+       Dieses Muster folgt stattdessen Hook / kurze Story / warum das
+       fuer Anleger zaehlt / belegte Fakten / knappe Einordnung - ohne
+       die Hook zu wiederholen (sie steht bereits im Bild und im
+       ersten Feld des Kandidaten; HOOK_WIEDERHOLT_CAPTION prueft
+       genau das). Erfunden wird nichts: jeder Satz kommt aus
+       `auswahl()`, denselben fertig formulierten Belegen wie in jedem
+       anderen Muster hier. Es steht an erster Stelle, damit es beim
+       Bauen zuerst versucht wird - gewinnen muss es trotzdem ueber
+       Authoring.select() wie jede andere Variante. */
+    { id: "social-first",
+      note: "Hook/Story/Warum/Fakten/Einordnung statt Systemausgabe.",
+      needs: 2,
+      build: function (e, brief) {
+        var belege = auswahl(brief, e, 2);
+        var einordnung = belege[0] || null;
+        var zweiterBeleg = belege.slice(1);
+        return (einordnung ? einordnung + " " : "") +
+          "Genau darin steckt die eigentliche Frage bei " + wer(e, brief) + ": " +
+          wert(e) + " im " + e.metric + " ist die Oberfl" + AE + "che, nicht die " +
+          "ganze Geschichte. " +
+          (zweiterBeleg.length ? satzreihe(zweiterBeleg) + " " : "") +
+          "F" + UE + "r alle, die " + wer(e, brief) + " beobachten, z" + AE + "hlt " +
+          "diese Einordnung mehr als der einzelne Wert. " +
+          "Stand von heute " + STRICH + " keine Kauf- oder Verkaufsempfehlung.";
+      } },
+
     { id: "state-limit-reason",
       note: "Stand, Grenze, Begruendung fuers Zeigen.",
       build: function (e, brief) {
@@ -379,6 +416,44 @@
 
       write: function (brief, opts) {
         opts = opts || {};
+
+        /* -----------------------------------------------------------------
+           PUBLIC CLAIM ELIGIBILITY (Owner-Entscheidung, 23.09.)
+
+           Dieser Autor zitiert Belegsaetze WOERTLICH (belegsaetze(),
+           auswahl(), jedes HOOK_PATTERN/CAPTION_PATTERN ueber e.metric/
+           e.statement) - er ist im Sinn der Owner-Architektur die
+           EINZIGE Stelle, die TRUSTED_EVIDENCE in PUBLIC_COPY uebersetzt.
+           `brief.evidence` traegt seit der Trennung von Faktenpruefung
+           und AUDIENCE_SEPARATION die volle, ungefilterte Evidenz (sonst
+           kaeme die Faktenpruefung nicht an reale ChatGPT-Work-Zahlen
+           heran, die ein audience-gefilterter Beleg nicht mehr trug -
+           der reale MSFT-Fall). Ein Autor, der Belegtext direkt zitiert,
+           darf diese ungefilterte Liste nicht bekommen: genau das liess
+           interne Begriffe ("Technical Opportunity Score", "Setup-Rang",
+           "TREND_STRUCTURE", "MOMENTUM") woertlich in PUBLIC_HOOK/
+           PUBLIC_STORY durchsickern - der Vorfall, den AUDIENCE_
+           SEPARATION verhindern soll.
+
+           Gefiltert wird deshalb HIER, am Ort des Zitierens, nicht
+           stromaufwaerts: die Faktenpruefung (claim-binding,
+           content.js::FACT_CHECK) sieht weiterhin die volle Evidenz -
+           nur was dieser Autor tatsaechlich in einen Satz uebernimmt,
+           ist auf oeffentlich zulaessige Belege beschraenkt. */
+        /* Gross-/Kleinschreibung ignoriert: die Wache in content-
+           intelligence.js (interneTreffer) prueft selbst case-insensitiv
+           ("i"-Flag). Ein Beleg, dessen Satz "Momentum" (nicht
+           "MOMENTUM") schreibt, waere an dieser Stelle sonst nicht
+           herausgefiltert worden und wuerde trotzdem an der Wache
+           scheitern - genau der reale MSFT-Befund. */
+        var oeffentlicheEvidenz = (brief.evidence || []).filter(function (e) {
+          var satz = String((e && e.statement) || "").toLowerCase();
+          return !AudienceFrame.INTERN_NICHT_IM_HOOK.some(function (begriff) {
+            return satz.indexOf(String(begriff).toLowerCase()) !== -1;
+          });
+        });
+        brief = Object.assign({}, brief, { evidence: oeffentlicheEvidenz });
+
         var e = leitbeleg(brief);
         if (!e) {
           return { variants: [], reason: "Kein Beleg im Brief. Ohne Beleg kein Satz." };

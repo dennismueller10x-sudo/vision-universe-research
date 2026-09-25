@@ -387,13 +387,29 @@ const LAGE = {
 
 test("HK31 · Ein abgenutzter Archetyp verliert seinen Vorsprung", () => {
   /* Der Kreis, den §19 schliesst: feedVariation misst, alsAbschlag
-     rechnet, und hier faellt die Entscheidung anders aus. Ohne den
-     Abschlag gewinnt ZAHL_MIT_BEZUG mit 66 vor KONTRAST mit 63,33. */
-  const ohne = H.waehle(H.ableiten(LAGE));
-  assert.equal(ohne.gewaehlt.archetyp, "ZAHL_MIT_BEZUG");
+     rechnet, und hier faellt die Entscheidung anders aus.
 
-  const mit = H.waehle(Object.assign(H.ableiten(LAGE),
-    { abwechslung: { ZAHL_MIT_BEZUG: -H.ABSCHLAG_STAERKE } }));
+     Seit storyKraft (Owner-Direktive "FINAL GOLDEN PATH
+     SIMPLIFICATION", 23.09., §5/§6: "Story vor Metrik") liegt
+     ZAHL_MIT_BEZUG in dieser Lage nicht mehr knapp vorn (66 vor
+     KONTRAST 63,33), sondern weit hinten (56 gegen 69) - ein
+     Abschlag von 10 wuerde es nicht mehr auf Platz eins heben, und
+     genau das ist beabsichtigt: ein Abschlag darf einen schwachen
+     Hook nicht gewinnen lassen (siehe HK35).
+
+     Der Abschlag entscheidet jetzt zwischen zwei starken, fast
+     gleich auf liegenden Archetypen - EXTREM (69,38) knapp vor
+     KONTRAST (69). Genau diese Naehe ist der Fall, fuer den §19
+     gedacht ist. */
+  const eigeneLage = Object.assign({}, LAGE, {
+    subjekt: "Russell 2000",
+    extrem: { richtung: "niedrig", seit: "1999" }
+  });
+  const ohne = H.waehle(H.ableiten(eigeneLage));
+  assert.equal(ohne.gewaehlt.archetyp, "EXTREM");
+
+  const mit = H.waehle(Object.assign(H.ableiten(eigeneLage),
+    { abwechslung: { EXTREM: -H.ABSCHLAG_STAERKE } }));
   assert.equal(mit.gewaehlt.archetyp, "KONTRAST");
 });
 
@@ -487,4 +503,83 @@ test("HK36 · Bauform und Abschlag reisen durch content.js bis zur Wahl", () => 
   assert.equal(autorMit.teile.abwechslungMuster, -9,
     "Der Abschlag ist nicht bis zur Bewertung durchgekommen.");
   assert.equal(autorMit.punkte, Math.round((autorOhne.punkte - 9) * 100) / 100);
+});
+
+/* ------------------------------------------------------------------ */
+/* EIN EINZELINSTRUMENT VERGLEICHT SICH MIT SICH SELBST (Owner-        */
+/* Direktive "FINAL GOLDEN PATH SIMPLIFICATION", 23.09., §5)           */
+/*                                                                      */
+/* aufEinerAchse() braucht zwei ENTITAETEN mit derselben Kennzahl -    */
+/* fuer ein Einzelinstrument (ein Subjekt, viele Kennzahlen) gibt es   */
+/* das nie, und KONTRAST bleibt strukturell unerreichbar. ZEITFENSTER  */
+/* schliesst die Luecke: 1M-/3M-/12M-Rendite (evidence-package.js,     */
+/* Momentum-Horizonte) sind derselbe Gegenstand ueber die Zeit.        */
+/* ------------------------------------------------------------------ */
+
+test("HK37 · ZEITFENSTER leitet sich aus dem staerksten Rendite-Horizont ab", () => {
+  const kontext = H.ableiten({
+    opportunity: { topic: "MSFT" },
+    facts: [
+      { entity: "MSFT", metric: "1M-Rendite", value: 2, unit: "%" },
+      { entity: "MSFT", metric: "3M-Rendite", value: 30.2, unit: "%" },
+      { entity: "MSFT", metric: "12M-Rendite", value: -3.2, unit: "%" }
+    ]
+  });
+  assert.deepEqual(kontext.veraenderung,
+    { seit: "drei Monaten", richtung: "stieg um", betrag: 30.2, einheit: "%" },
+    "Der staerkste Betrag (|30,2| > |2| > |-3,2|) haette gewinnen muessen.");
+
+  const r = H.waehle(kontext);
+  assert.equal(r.ok, true, r.erklaerung);
+  assert.equal(r.gewaehlt.archetyp, "ZEITFENSTER");
+  assert.equal(r.gewaehlt.text, "Seit drei Monaten: MSFT stieg um 30,2 %.");
+});
+
+test("HK38 · Ein fallender Horizont heisst 'fiel um', nicht 'stieg um'", () => {
+  const kontext = H.ableiten({
+    opportunity: { topic: "XOM" },
+    facts: [{ entity: "XOM", metric: "12M-Rendite", value: -18.4, unit: "%" }]
+  });
+  assert.equal(kontext.veraenderung.richtung, "fiel um");
+  assert.equal(kontext.veraenderung.betrag, 18.4);
+});
+
+test("HK39 · Eine ausdrueckliche veraenderung wird nicht ueberschrieben", () => {
+  /* Rueckwaertskompatibilitaet: Aufrufer, die veraenderung schon selbst
+     bauen (falls es sie je gibt), sollen nicht durch eine abgeleitete
+     Fassung ersetzt werden. */
+  const eigene = { seit: "1999", richtung: "stieg um", betrag: 5, einheit: "%" };
+  const kontext = H.ableiten({
+    opportunity: { topic: "MSFT" },
+    veraenderung: eigene,
+    facts: [{ entity: "MSFT", metric: "3M-Rendite", value: 30.2, unit: "%" }]
+  });
+  assert.equal(kontext.veraenderung, eigene);
+});
+
+test("HK40 · Ohne Rendite-Fakten bleibt ZEITFENSTER unerreichbar - kein Erfinden", () => {
+  const kontext = H.ableiten({
+    opportunity: { topic: "MSFT" },
+    facts: [{ entity: "MSFT", metric: "Schlusskurs", value: 493.78, unit: "USD" }]
+  });
+  assert.equal(kontext.veraenderung, null);
+});
+
+test("HK41 · Story vor Metrik im realen Einzelinstrument-Fall: ZEITFENSTER schlaegt ZAHL_MIT_BEZUG", () => {
+  /* Der reale Owner-Befund, minimal nachgebaut: ein Einzelinstrument
+     mit Schlusskurs UND Zeitfenster-Renditen. Vor storyKraft +
+     ZEITFENSTER-Ableitung gewann hier zuverlaessig "<Kurs> USD
+     Schlusskurs - <Ticker>." - die vom Owner benannte NEGATIVE HOOK
+     FIXTURE. */
+  const kontext = H.ableiten({
+    opportunity: { topic: "MSFT" },
+    facts: [
+      { entity: "MSFT", metric: "Schlusskurs", value: 493.78, unit: "USD" },
+      { entity: "MSFT", metric: "3M-Rendite", value: 30.2, unit: "%" }
+    ]
+  });
+  const r = H.waehle(kontext);
+  assert.equal(r.ok, true, r.erklaerung);
+  assert.equal(r.gewaehlt.archetyp, "ZEITFENSTER");
+  assert.notEqual(r.gewaehlt.archetyp, "ZAHL_MIT_BEZUG");
 });

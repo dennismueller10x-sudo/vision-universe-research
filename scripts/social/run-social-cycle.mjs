@@ -135,6 +135,8 @@ const InvocationLedger = require(join(ROOT, "social/engines/invocation-ledger.js
    Engines. */
 import * as AssetRenderer from "./render-asset.mjs";
 import * as VisualDaten from "./visual-data.mjs";
+import { hydrateVerifiedJob } from "./ingest-creative.mjs";
+const CreativeJob = require(join(ROOT, "social/engines/creative-job.js"));
 
 
 /* ---------------------------------------------------------------- CLI */
@@ -622,7 +624,34 @@ function schreiberAus(variante) {
        Bauform sein Satz entsteht. */
     muster: variante.pattern || null,
     thesis: function (opportunity, researchData) {
-      var f = researchData.facts[0];
+      /* OWNER-ENTSCHEIDUNG "CLAIM BINDING VS AUDIENCE SEPARATION" (23.09.)
+
+         content-intelligence.js zaehlt `pkg.thesis` ausdruecklich zur
+         PUBLIC_STORY ("das Content Package: Caption UND These"). Diese
+         Funktion griff bisher blind auf `facts[0]` zu - fuer ein
+         Einzelinstrument der zuerst gebaute Beleg, der Score
+         (fromTechnicalBundle() draengt ihn zuerst), dessen `metric`-
+         Feld woertlich "Technical Opportunity Score" heisst. Damit
+         landete der interne Begriff in der PUBLIC_STORY, unabhaengig
+         vom gewaehlten Autor - AUCH nach einer redaktionellen
+         TEMPLATE-Korrektur, weil diese Funktion die Autorentexte fuer
+         `thesis()` ohnehin nie benutzt.
+
+         `facts` bleibt fuer FACT_CHECK/die Bildseite die volle,
+         ungefilterte TRUSTED_EVIDENCE (researchData wird unveraendert
+         weitergereicht). Nur die Auswahl DES ERSTEN FAKTUMS fuer
+         diesen oeffentlichen Satz ist auf PUBLIC_CLAIM_ELIGIBILITY
+         beschraenkt - dieselbe Liste wie im TEMPLATE-Autor und in
+         hook.js (AudienceFrame.INTERN_NICHT_IM_HOOK). */
+      var oeffentlich = (researchData.facts || []).filter(function (x) {
+        var metrik = String((x && x.metric) || "").toLowerCase();
+        var satz = String((x && x.statement) || "").toLowerCase();
+        return !AudienceFrame.INTERN_NICHT_IM_HOOK.some(function (begriff) {
+          var b = String(begriff).toLowerCase();
+          return metrik.indexOf(b) !== -1 || satz.indexOf(b) !== -1;
+        });
+      });
+      var f = oeffentlich[0];
       if (!f) return null;
       return (f.entity ? f.entity + ": " : "") + f.metric + " steht bei " +
              String(f.value) + (f.unit ? " " + f.unit : "") +
@@ -790,6 +819,40 @@ function themaAusBundle(symbol, nowIso) {
     return { ok: false,
       erklaerung: (paket && paket.message) || "Kein technisches Bundle fuer " + symbol + "." };
   }
+
+  /* -----------------------------------------------------------------
+     HYDRATE BEFORE REGENERATE / FAIL CLOSED (Owner-Entscheidung, 23.09.)
+
+     Dieselbe Pruefung wie in request-creative.mjs, hier noetig, weil
+     dieser Pfad auch OHNE einen vorangegangenen request-creative.mjs-
+     Lauf erreicht wird (Idempotenz, isolierte Testlaeufe, ein Zyklus,
+     der VORBEREITEN allein wiederholt) - "Hydrate first. Dann
+     entscheiden." darf nicht an einer einzigen Stelle allein haengen,
+     sonst faellt genau der Lauf, der sie auslaesst, auf den Template-
+     Autor zurueck (der reale MSFT-Fall, Lauf #44).
+
+     Ein Treffer bedeutet: fuer GENAU dieses Inhaltsobjekt (Entitaet +
+     Datenstand) existiert bereits ein VERIFIED Ergebnis. Gelingt die
+     Rueckgewinnung, liegen die Bytes danach im Arbeitsbaum, wo
+     creativeZustand() (weiter unten in diesem Modul) sie ohnehin
+     erwartet - kein zweiter Mechanismus, nur derselbe Fund frueher
+     verfuegbar gemacht. Gelingt sie NICHT, wird nicht stillschweigend
+     weitergemacht: Fail Closed statt Template-Rueckfall (§7/§8). */
+  const contentIdVorab = EvidencePackage.contentIdFor(symbol, paket.asOf);
+  const registerDatei = readJson("social/data/creative-jobs.json", { jobs: [] });
+  const jobRegistry = CreativeJob.createRegistry(registerDatei.jobs || []);
+  const verifizierteJobs = jobRegistry.byContent(contentIdVorab)
+    .filter((j) => j.state === "CREATIVE_JOB_VERIFIED");
+  if (verifizierteJobs.length) {
+    const jobEintrag = verifizierteJobs[verifizierteJobs.length - 1];
+    const hydriert = hydrateVerifiedJob(contentIdVorab, jobEintrag);
+    if (!hydriert.ok) {
+      return { ok: false,
+        erklaerung: "VERIFIED_RESULT_UNAVAILABLE: " + hydriert.explanation,
+        grund: "VERIFIED_RESULT_UNAVAILABLE" };
+    }
+  }
+
   const hinreichend = EvidencePackage.assessSufficiency(paket);
   if (!hinreichend.sufficient) {
     return { ok: false, erklaerung: hinreichend.explanation };
@@ -823,9 +886,11 @@ function themaAusBundle(symbol, nowIso) {
      prueft (social/engines/content-intelligence.js). Eine zweite,
      hier neu geratene Liste waere die zweite Wahrheit ueber dieselbe
      Frage, die dieses Projekt schon mehrfach auseinanderlaufen sah. */
-  const oeffentlicheEvidenz = paket.evidence.filter((e) =>
-    !AudienceFrame.INTERN_NICHT_IM_HOOK.some(
-      (begriff) => String(e.statement || "").includes(begriff)));
+  const oeffentlicheEvidenz = paket.evidence.filter((e) => {
+    const satz = String(e.statement || "").toLowerCase();
+    return !AudienceFrame.INTERN_NICHT_IM_HOOK.some(
+      (begriff) => satz.includes(String(begriff).toLowerCase()));
+  });
 
   return { ok: true, thema: {
     topicId: EvidencePackage.contentIdFor(symbol, paket.asOf),
@@ -1574,7 +1639,55 @@ async function main() {
        halten. Beide Wege enden im selben Paketformat und werden von
        demselben Sufficiency-Tor geprueft - die Schwelle ist fuer
        keinen der beiden eine andere. */
-    const evidenzPaket = c.thema
+    /* -----------------------------------------------------------------
+       TRUSTED_EVIDENCE VS. PUBLIC_CLAIM_ELIGIBILITY (Owner-Entscheidung,
+       23.09., "CLAIM BINDING VS AUDIENCE SEPARATION")
+
+       Zwei getrennte Befunde fuehren hierher:
+
+       1) kurzname(c.thema) liefert "stock_story_<hash>" — den Abdruck
+          ueber topicId (content-ladder.js::alsGelegenheit), gedacht
+          fuer Themen OHNE eigene Instrumentenkennung (eine Rangliste
+          hat keine "eine" Entitaet). Fuer ein STOCK_STORY-Thema mit
+          GENAU EINEM Instrument (themaAusBundle(): entityType
+          "SECURITY", entities: [symbol]) erzeugte dieser Abdruck eine
+          content_id, die mit der des dispatchten Creative Jobs nie
+          uebereinstimmt — ein VERIFIED Ergebnis blieb dadurch
+          strukturell unauffindbar (der reale MSFT-Fall, Lauf #44).
+
+       2) fromTopicEvidence() liest c.thema.evidence — bereits durch
+          AUDIENCE_SEPARATION gefiltert (themaAusBundle():
+          oeffentlicheEvidenz). Das ist richtig fuer PUBLIC_CLAIM_
+          ELIGIBILITY (welcher Satz darf woertlich zitiert werden),
+          aber falsch fuer TRUSTED_EVIDENCE (Fakten-/Claim-Validierung):
+          der reale ChatGPT-Work-Hook "61,1 von 100: Der MSFT-Score
+          ordnet ein" blieb ungedeckt, weil genau der Beleg mit "61.1"
+          wegen "Technical Opportunity Score" im Text entfernt war.
+
+       Fuer GENAU EIN Instrument gilt deshalb das technische Bundle
+       DIREKT, ungefiltert — dieselbe Funktion, die themaAusBundle()
+       selbst zur Verifizierung aufruft. Das ist jetzt sicher: die
+       EINZIGE Stelle, die Belegtext woertlich in PUBLIC_HOOK/
+       PUBLIC_STORY uebernimmt, ist der Template-Autor (belegsaetze(),
+       auswahl(), jedes HOOK_/CAPTION_PATTERN in
+       providers/authoring/template/adapter.js) — und der filtert seine
+       Evidenz jetzt selbst, am Ort des Zitierens (PUBLIC_CLAIM_
+       ELIGIBILITY dort, nicht hier). ChatGPT-Work schreibt eigene
+       Saetze und zitiert nie e.statement woertlich; seine Variante
+       durchlaeuft ohnehin die `audience`-/`brand`-Tore (Authoring.
+       evaluate) auf dem FERTIGEN Text. "EINE EVIDENZ, NICHT ZWEI"
+       (siehe unten bei rechercheBelege) bleibt gewahrt: Autorenschicht
+       UND content.js sehen dieselbe, jetzt volle Evidenz — sonst kehrt
+       die historische Regression zurueck ("eine spaetere Stufe hat
+       Zahlen eingefuehrt, die die Recherche nicht kennt"). Eine
+       Rangliste (kein einzelnes Instrument) bleibt bei
+       fromTopicEvidence(), unveraendert audience-gefiltert. */
+    const einzelinstrument = c.thema && c.thema.entityType === "SECURITY" &&
+      Array.isArray(c.thema.entities) && c.thema.entities.length === 1;
+
+    const evidenzPaket = einzelinstrument
+      ? ladeEvidenzPaket([{ entity: c.thema.entities[0] }], NOW)
+      : c.thema
       ? EvidencePackage.fromTopicEvidence(c.thema, {
           now: NOW,
           entity: kurzname(c.thema),
@@ -1697,7 +1810,7 @@ async function main() {
       continue;
     }
 
-    const gewaehlteVariante = geschrieben.selection.chosen.variant;
+    let gewaehlteVariante = geschrieben.selection.chosen.variant;
 
     /* -----------------------------------------------------------------
        EINE EVIDENZ, NICHT ZWEI
@@ -1794,7 +1907,7 @@ async function main() {
     });
     const rahmen = publikumsRahmen[opportunity.topic] || null;
 
-    const result = Content.run({
+    const inhaltEingabe = {
       opportunity, sources: rechercheBelege, strategyDecision,
       visualAvailability: Object.assign({}, lage.availability, {
         keyNumber: lage.availability.keyNumber ||
@@ -1840,10 +1953,77 @@ async function main() {
          ----------------------------------------------------------------- */
       hookAbwechslung: abwechslungAus(feedFenster()),
       audienceFrame: rahmen || null
-    }, { now: NOW, timeSensitivity: opportunity.timeSensitivity });
+    };
+    let result = Content.run(inhaltEingabe,
+      { now: NOW, timeSensitivity: opportunity.timeSensitivity });
+
+    /* -----------------------------------------------------------------
+       OWNER-ENTSCHEIDUNG "CLAIM BINDING VS AUDIENCE SEPARATION" (23.09.)
+
+       AUDIENCE_SEPARATION (§8) darf niemals weich gestellt werden - sie
+       ist die letzte Schranke gegen interne Begriffe im oeffentlichen
+       Text. Faellt ein Autor dort durch, ist sein TEXT das Problem,
+       nicht die Schranke.
+
+       Das bereits verifizierte Creative (Bild, Verarbeitungsnachweis)
+       bleibt dabei erhalten: nur Hook/Story/Public Copy werden neu
+       verfasst, mit TEMPLATE - dem Autor, der ausschliesslich aus
+       oeffentlich zulaessigen Belegen komponiert (siehe
+       social/providers/authoring/template/adapter.js, dieselbe
+       PUBLIC_CLAIM_ELIGIBILITY-Filterung wie audience-frame.js).
+       Kein neuer ChatGPT-Work-Auftrag, kein neues Bild - "Hydrate
+       Before Regenerate" gilt auch hier.
+
+       Besteht auch TEMPLATE nicht, wird NICHT erfunden (§6 der
+       Entscheidung): der Kandidat faellt durch, mit einer eigenen
+       Ablehnungsstufe statt der generischen AUDIENCE_SEPARATION, damit
+       sichtbar bleibt, dass ein Ersatzversuch stattfand. */
+    if (!result.ok && result.failedStage === "AUDIENCE_SEPARATION" &&
+        gewaehlteVariante.authorId !== "template") {
+      const urspruenglicherAutor = gewaehlteVariante.authorId;
+      const urspruenglicheErklaerung = result.explanation;
+
+      const templateVersuch = Authoring.run(autorenRegistry, brief, {
+        authors: ["template"],
+        contentId: creativeContentId,
+        mode: strategyDecision.mode,
+        patternKnowledge: musterWissen.knowledge,
+        patternUsage: musterWissen.usage,
+        gates: {
+          brand: (v) => Brand.check({ hook: v.hook, caption: v.caption, cta: v.cta,
+            hashtags: v.hashtags }),
+          audience: (v) => AudienceFit.check({ hook: v.hook, caption: v.caption,
+            names: FIRMENNAMEN })
+        }
+      });
+
+      if (templateVersuch.selection.chosen) {
+        const templateVariante = templateVersuch.selection.chosen.variant;
+        const zweiterVersuch = Content.run(
+          Object.assign({}, inhaltEingabe, { writer: schreiberAus(templateVariante) }),
+          { now: NOW, timeSensitivity: opportunity.timeSensitivity });
+
+        if (zweiterVersuch.ok) {
+          result = zweiterVersuch;
+          gewaehlteVariante = Object.assign({}, templateVariante, {
+            editorialCorrection: {
+              by: "vision-universe",
+              reason: "AUDIENCE_SEPARATION: der urspruengliche Text des Autors " +
+                urspruenglicherAutor + " nannte interne Begriffe im oeffentlichen " +
+                "Text (" + urspruenglicheErklaerung + "). Ersetzt durch eine " +
+                "aus denselben oeffentlich zulaessigen Belegen komponierte Fassung.",
+              originalAuthorId: urspruenglicherAutor
+            }
+          });
+        }
+      }
+    }
 
     if (!result.ok) {
-      rejections.push({ topic: opportunity.topic, stage: result.failedStage, reason: result.explanation });
+      rejections.push({ topic: opportunity.topic,
+        stage: result.failedStage === "AUDIENCE_SEPARATION"
+          ? "CREATIVE_REVISION_REQUIRED" : result.failedStage,
+        reason: result.explanation });
       continue;
     }
 
@@ -2820,8 +3000,28 @@ async function main() {
     d.visualDirectionFailureType = pkg.visualDirectionFailureType || null;
     d.audienceFrame = pkg.audienceFrame || null;
 
+    /* -----------------------------------------------------------------
+       GOLDEN PATH — STUFE A TRIFFT STUFE B (Owner-Direktive "FINAL
+       GOLDEN PATH SIMPLIFICATION", 23.09.)
+
+       Bis hierher wurde ein mitgebrachtes Agenten-Bild UNVERAENDERT
+       uebernommen (planUebernahme/uebernimm): Formatwechsel, keine
+       Bearbeitung. Der reale MSFT-Befund zeigte, wohin das fuehrt -
+       kein Text, kein Logo, kein Atlas, weil der eigene Brief an den
+       Agenten genau das verbietet (chatgpt-work/adapter.js) und
+       niemand danach etwas aufgetragen hat.
+
+       planGeschichte() haelt Stufe A unveraendert (das Agenten-Bild
+       bleibt Motiv, Licht, Tiefe) und komponiert Stufe B darueber -
+       mit demselben Chromium-Renderer und denselben Vertraegen wie
+       der gezeichnete Kartenpfad: Logo, Atlas (Rolle ATLAS_GUIDE),
+       der gewaehlte Hook als Text-on-Visual. render() prueft das
+       Ergebnis mit denselben vier harten Toren; ein Bild, das eines
+       davon nicht besteht, wird - wie jedes andere - nicht
+       geschrieben (siehe try/catch unten: kein Fallback auf ein
+       schwaecheres Bild, sondern ZEICHNEN GESCHEITERT). */
     const bildplan = mitgebracht
-      ? AssetRenderer.planUebernahme(pkg, eintrag.production.asset)
+      ? AssetRenderer.planGeschichte(pkg, eintrag.production.asset, { root: ROOT })
       : (kompo && kompo.ok
         ? AssetRenderer.planKomposition(pkg, kompo, {
             /* Bei einem Vergleich aus einer Gruppe ist der Gegenstand
@@ -2877,13 +3077,23 @@ async function main() {
       /* Woher das Bild stammt. Ein uebernommenes und ein gezeichnetes
          Bild sind verschiedene Dinge, und der Unterschied gehoert in
          die Provenance und nicht in eine Fussnote. */
-      origin: bildplan.modus === "uebernahme" ? "generative" : "rendered",
-      sourceAsset: bildplan.modus === "uebernahme" ? {
+      origin: (bildplan.modus === "uebernahme" || bildplan.generiert)
+        ? "generative" : "rendered",
+      sourceAsset: bildplan.generiert ? {
+        path: bildplan.quelleAsset, sha256: bildplan.sha256,
+        mimeType: (eintrag.production.asset && eintrag.production.asset.mime_type) || null,
+        variantId: (mitgebracht && mitgebracht.visual_variant_id) || null,
+        strategy: (mitgebracht && mitgebracht.visual_strategy) || null,
+        /* Stufe B liegt darueber - anders als bei planUebernahme() ist
+           das veroeffentlichte Bild NICHT byte-identisch mit dem
+           Agenten-Asset, sondern traegt Logo/Atlas/Hook zusaetzlich. */
+        komposition: "STORY_WELT_STUFE_B"
+      } : (bildplan.modus === "uebernahme" ? {
         path: bildplan.quelle, sha256: bildplan.sha256,
         mimeType: bildplan.mimeType,
         variantId: (mitgebracht && mitgebracht.visual_variant_id) || null,
         strategy: (mitgebracht && mitgebracht.visual_strategy) || null
-      } : null,
+      } : null),
       rendered: false
     };
 
@@ -2900,12 +3110,27 @@ async function main() {
         const befund = bildplan.modus === "uebernahme"
           ? AssetRenderer.uebernimm(bildplan, ziel, { root: ROOT })
           : AssetRenderer.render(bildplan, ziel,
-              { schrift: AssetRenderer.ladeSchrift(ROOT) });
+              { schrift: AssetRenderer.ladeSchrift(ROOT), caption: pkg.caption || null });
         d.asset.rendered = true;
         d.asset.bytes = befund.bytes;
+        /* -----------------------------------------------------------------
+           WAS DIE HARTEN TORE GEMESSEN HABEN, REIST MIT (§15 Hard Final
+           Creative Gate)
+
+           render() hat bereits geworfen, wenn Logo, Atlas, Flaeche oder
+           SCROLL_STOP_QUALITY nicht bestanden - bis hierher zu kommen
+           heisst, alle vier haben bestanden. Der Befund selbst reist
+           trotzdem mit: das Gate in make-publish-candidate.mjs soll
+           MESSEN, nicht "rendered=true" als Ersatz fuer eine eigene
+           Pruefung nehmen. */
+        if (befund.scrollStop) d.asset.scrollStop = befund.scrollStop;
+        if (befund.logo) d.asset.logoBefund = befund.logo;
+        if (befund.atlas) d.asset.atlasBefund = befund.atlas;
         log("  " + pkg.packageId + ": " +
           (bildplan.modus === "uebernahme"
             ? "uebernommen aus " + bildplan.quelle + ", "
+            : bildplan.generiert
+            ? "Story-Welt komponiert (Logo, Atlas, Hook auf " + bildplan.quelleAsset + "), "
             : "gezeichnet, ") + befund.breite + "x" + befund.hoehe);
       } catch (err) {
         /* Ein gescheitertes Zeichnen macht den Plan nicht falsch — es

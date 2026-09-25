@@ -380,17 +380,62 @@
         }) : null;
     }
 
+    /* -----------------------------------------------------------------
+       EIN EINZELINSTRUMENT VERGLEICHT SICH MIT SICH SELBST (Owner-
+       Direktive "FINAL GOLDEN PATH SIMPLIFICATION", 23.09., §5)
+
+       aufEinerAchse() braucht ZWEI ENTITAETEN mit derselben Kennzahl -
+       fuer ein Einzelinstrument (ein Subjekt, viele Kennzahlen) gibt es
+       das nie, und KONTRAST bleibt fuer jede STOCK_STORY strukturell
+       unerreichbar. ZAHL_MIT_BEZUG blieb dann der einzige belegbare
+       Archetyp - genau die Bauform der Owner-benannten "NEGATIVE HOOK
+       FIXTURE" ("493,78 USD Schlusskurs - MSFT.").
+
+       Ein Einzelinstrument traegt aber ein EIGENES Zeitfenster: die
+       Werte "1M-Rendite", "3M-Rendite", "12M-Rendite"
+       (evidence-package.js, Momentum-Horizonte) sind derselbe
+       Gegenstand ueber die Zeit - keine Behauptung, sondern eine
+       Ableitung aus genau der Zahl, die ohnehin im Belegpaket steht.
+       ZEITFENSTER erwartet `veraenderung`; ohne ausdrueckliche Angabe
+       (spec.veraenderung) wird sie hier aus dem staerksten Horizont
+       abgeleitet - nicht behauptet, gemessen. */
+    var veraenderung = spec.veraenderung || null;
+    var veraenderungBeleg = null;
+    if (!veraenderung) {
+      var zeitRendite = fakten.filter(function (f) {
+        return f && /^(1M|3M|12M)-Rendite$/.test(String(f.metric || "").trim());
+      });
+      if (zeitRendite.length) {
+        var staerkste = zeitRendite.reduce(function (a, f) {
+          return Math.abs(zahl(f.value)) > Math.abs(zahl(a.value)) ? f : a;
+        });
+        var betrag = zahl(staerkste.value);
+        var seitLabel = { "1M": "einem Monat", "3M": "drei Monaten",
+          "12M": "zwölf Monaten" }[
+            String(staerkste.metric).slice(0, String(staerkste.metric).indexOf("-"))];
+        if (seitLabel && betrag !== null) {
+          veraenderung = { seit: seitLabel,
+            richtung: betrag >= 0 ? "stieg um" : "fiel um",
+            betrag: Math.abs(betrag), einheit: staerkste.unit || "%" };
+          veraenderungBeleg = staerkste;
+        }
+      }
+    }
+    if (veraenderungBeleg) belege.veraenderung = veraenderungBeleg;
+
     return {
       subjekt: subjekt,
       kennzahl: kennzahl,
       vergleich: vergleich,
       belege: belege,
-      /* Diese vier stehen in den heutigen Belegen nicht. Sie bleiben
-         leer, und das ist eine Aussage ueber die Evidenz. */
+      /* Diese drei stehen in den heutigen Belegen nicht. Sie bleiben
+         leer, und das ist eine Aussage ueber die Evidenz. `veraenderung`
+         ist die Ausnahme - siehe oben: aus den Zeitfenster-Renditen
+         abgeleitet, wenn kein `spec.veraenderung` vorlag. */
       extrem: spec.extrem || null,
       ursache: spec.ursache || null,
       erwartung: spec.erwartung || null,
-      veraenderung: spec.veraenderung || null,
+      veraenderung: veraenderung,
       bedeutung: spec.bedeutung || null,
       body: spec.body || null,
       caption: spec.caption || null,
@@ -422,25 +467,42 @@
     /* Wie viele der ausgeloesten Versprechen der Text wirklich
        einloest. Ein Hook, der nichts verspricht, bekommt hier nichts -
        er hat auch nichts eingeloest. */
-    einloesung: 30,
+    einloesung: 25,
     /* Kuerze, gemessen an der Markengrenze. Nicht "kurz ist gut",
        sondern: je naeher an der Grenze, desto weniger. */
-    kuerze: 20,
+    kuerze: 15,
     /* Traegt der Satz den Gegenstand UND eine Zahl? Beides zusammen
        macht ihn ueberpruefbar statt bloss behauptend. */
-    konkret: 30,
+    konkret: 25,
     /* Steht er eigenstaendig neben der Caption? */
-    eigenstaendig: 20
+    eigenstaendig: 15,
+    /* -----------------------------------------------------------------
+       STORY VOR METRIK (Owner-Direktive "FINAL GOLDEN PATH
+       SIMPLIFICATION", 23.09., Abschnitte 5/6)
+
+       Die vier Gewichte oben pruefen, OB ein Satz haelt, was er
+       verspricht, kurz, konkret und eigenstaendig ist. Keines fragt,
+       OB ER UEBERHAUPT EINEN GRUND ZUM ANHALTEN GIBT - und genau das
+       liess "493,78 USD Schlusskurs - MSFT." gewinnen: kurz, konkret
+       (Subjekt + Zahl), eigenstaendig - und trotzdem eine
+       "NEGATIVE HOOK FIXTURE" laut Owner-Befund, weil ein Kurswert
+       ohne Kontrast, Widerspruch oder Zeitbezug niemanden anhaelt.
+
+       storyKraft bewertet DAS: traegt der Archetyp von sich aus eine
+       Spannung (Seltenheit, Kontrast, Widerspruch, Zeitfenster,
+       Mechanik), oder beschreibt er nur (Zahl mit Bezug, Einordnung)?
+       Siehe STORY_KRAFT unten. */
+    storyKraft: 20
   };
 
   /* -------------------------------------------------------------------
      WIE SCHWER EIN KOLLABIERTER FEED WIEGT (§19)
 
-     Die vier Gewichte oben ergeben zusammen 100. Ein Archetyp, der
-     das ganze Fenster ausmacht, verliert hier 10 - genug, um eine
-     knappe Entscheidung zu drehen (im realen Lauf lagen Sieger und
-     Zweiter 0,33 Punkte auseinander), zu wenig, um einen deutlich
-     besseren Satz zu ueberstimmen.
+     Die Gewichte oben ergeben zusammen 100. Ein Archetyp, der das
+     ganze Fenster ausmacht, verliert hier 10 - genug, um eine knappe
+     Entscheidung zu drehen (im realen Lauf lagen Sieger und Zweiter
+     0,33 Punkte auseinander), zu wenig, um einen deutlich besseren
+     Satz zu ueberstimmen.
 
      Das ist der Punkt: Abwechslung soll bei Gleichstand entscheiden,
      nicht Qualitaet ersetzen. §4 verbietet, eine Schwelle zu senken;
@@ -448,6 +510,51 @@
      genau das.
      ------------------------------------------------------------------- */
   var ABSCHLAG_STAERKE = 10;
+
+  /* -------------------------------------------------------------------
+     WELCHER ARCHETYP TRAEGT VON SICH AUS EINE SPANNUNG
+
+     Kein gemessener Wert - eine Einordnung des BAUPLANS jedes
+     Archetyps, dieselbe Art Entscheidung wie GEWICHTE selbst. EXTREM,
+     KONTRAST und WIDERSPRUCH bauen auf einer Luecke (Seltenheit,
+     Abstand, Erwartung-gegen-Messung); ZEITFENSTER und MECHANIK auf
+     einer Bewegung oder einem Grund; EINORDNUNG beschreibt Bedeutung
+     ohne Spannung; ZAHL_MIT_BEZUG beschreibt nur - "<Zahl> <Kennzahl>
+     - <Subjekt>." ist per Bauform die "NEGATIVE HOOK FIXTURE" aus dem
+     Owner-Befund.
+
+     Ein Kandidat ohne bekannten Archetyp (AUTOR - ein Autorensatz von
+     aussen) bekommt den Mittelwert: er hat weder das Verdienst eines
+     Archetyps noch dessen Bauform-Schwaeche, und die anderen vier
+     Gewichte pruefen ihn wie jeden anderen Kandidaten. */
+  var STORY_KRAFT = {
+    EXTREM: 1.0,
+    KONTRAST: 0.95,
+    WIDERSPRUCH: 0.9,
+    ZEITFENSTER: 0.75,
+    MECHANIK: 0.7,
+    EINORDNUNG: 0.5,
+    ZAHL_MIT_BEZUG: 0.2
+  };
+  /* -----------------------------------------------------------------
+     WARUM DER STANDARD NICHT "MITTELMAESSIG" IST, SONDERN DER FLUR
+
+     Ein AUTOR-Kandidat (der Satz des bestehenden Autors, siehe waehle())
+     traegt anders als jeder Archetyp KEINE eigenen Belege
+     (kontext.zusaetzlich haengt kein `belege` an - der Satz ist ein
+     roher String). Ein hoher Standardwert liesse ihn allein durch
+     storyKraft gegen einen archetypischen Kandidaten mit echten Belegen
+     gewinnen, selbst wenn sein Text keine Zahl deckt, die FACT_CHECK
+     spaeter braucht - genau das zeigte eine echte Regression beim
+     ersten Anlauf (§9 Test HK29: das gewonnene Paket trug vier
+     unbelegte Aussagen).
+
+     Der Standard steht deshalb auf demselben Boden wie ZAHL_MIT_BEZUG,
+     dem schwaechsten benannten Archetyp: kein Vorteil, kein Nachteil.
+     Ein AUTOR-Satz gewinnt weiterhin dort, wo er es verdient - auf den
+     anderen vier Gewichten (einloesung, kuerze, konkret, eigenstaendig),
+     die JEDER Kandidat gleich durchlaeuft. */
+  var STORY_KRAFT_STANDARD = STORY_KRAFT.ZAHL_MIT_BEZUG;
 
   function bewerte(kandidat, kontext) {
     var k = kontext || {};
@@ -519,6 +626,10 @@
 
     teile.eigenstaendig = (1 - Math.min(1, ueberschneidung /
       VQ.GRENZEN.redundanz)) * GEWICHTE.eigenstaendig;
+
+    teile.storyKraft = (STORY_KRAFT[kandidat.archetyp] !== undefined
+      ? STORY_KRAFT[kandidat.archetyp] : STORY_KRAFT_STANDARD) *
+      GEWICHTE.storyKraft;
 
     var punkte = Object.keys(teile).reduce(function (s, n) {
       return s + teile[n]; }, 0);
@@ -705,6 +816,8 @@
     AUSSCHLUSS: AUSSCHLUSS,
     GEWICHTE: GEWICHTE,
     ABSCHLAG_STAERKE: ABSCHLAG_STAERKE,
+    STORY_KRAFT: STORY_KRAFT,
+    STORY_KRAFT_STANDARD: STORY_KRAFT_STANDARD,
     ableiten: ableiten,
     kandidaten: kandidaten,
     bewerte: bewerte,

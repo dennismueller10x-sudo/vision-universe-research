@@ -1,0 +1,437 @@
+name: Multi-Asset Data Core — Faehigkeiten und Daten
+
+# Der einzige Ort, an dem das Multi-Asset-Segment des Data Core echte
+# Quellen sieht. Wie currency-fx-verify.yml: keine Faehigkeit gilt aus
+# Dokumentation oder Vermutung als verfuegbar - gemessen wird im Runner,
+# mit dem bestehenden TIINGO_API_KEY und den offiziellen Quellen
+# (US Treasury, NY Fed, EZB, Bundesbank, EIA).
+#
+# DER SCHLUESSELPFAD
+#
+# TIINGO_API_KEY geht ausschliesslich als Umgebungsvariable an
+# Node-Skripte, steht im Authorization-Header und nie in einer URL, und
+# erscheint weder im Protokoll noch im Bericht noch im Repository. Die
+# Redaktion im Skript und die Gegenprobe unten halten das fest.
+#
+# EIGENE SPUR (§56)
+#
+# Dieser Workflow laeuft nur fuer Multi-Asset-Dateien. Er beruehrt weder
+# SEC noch Quant noch Discover, und keiner von deren Gates laeuft wegen
+# einer Multi-Asset-Aenderung an.
+#
+# MARKER IN DER BETREFFZEILE (Push auf claude/**)
+#
+#   [ma-probe]    Faehigkeiten messen            (~120 Tiingo-Anfragen)
+#   [ma-ingest]   Daten holen und Vertrag bauen  (~20 Tiingo-Anfragen)
+#
+# Ohne Marker laeuft nur der Vertrag (Tests, keine Anbieterabrufe).
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_probe:
+        description: 'Faehigkeiten messen (~120 Tiingo-Anfragen)'
+        type: boolean
+        default: false
+      run_ingest:
+        description: 'Daten holen und veroeffentlichen'
+        type: boolean
+        default: true
+      run_tracker_probe:
+        description: 'Index-Tracker ueber Tiingo messen (QQQ, SPY, DIA u. a., ~50 Anfragen)'
+        type: boolean
+        default: false
+      run_free_probe:
+        description: 'Free Data Source Discovery messen (offizielle Quellen + FMP/Finnhub-Abdeckung, ~220 Anfragen)'
+        type: boolean
+        default: false
+      run_index_probe:
+        description: 'Index-Quellen sondieren (Twelve Data + offizielle Quellen, ~60 Anfragen)'
+        type: boolean
+        default: false
+      proof_site:
+        description: 'Production Proof gegen die ausgelieferte Seite (z. B. https://research.visionuniverse.de) - leer = kein Proof'
+        type: string
+        default: ''
+
+  pull_request:
+    paths:
+      - 'quant/engines/multi-asset/**'
+      - 'quant/engines/realtime/session-profiles.js'
+      - 'quant/engines/realtime/asset-freshness.js'
+      - 'quant/engines/realtime/market-hours.js'
+      - 'quant/engines/realtime/trading-session.js'
+      - 'quant/api/multi-asset-contract.js'
+      - 'quant/config/multi-asset*.json'
+      - 'quant/config/market-calendar.json'
+      - 'quant/tests/multi-asset-*.test.mjs'
+      - 'scripts/market/probe-multi-asset.mjs'
+      - 'scripts/market/ingest-multi-asset.mjs'
+      - 'scripts/quality/verify-multi-asset.mjs'
+      - '.github/workflows/multi-asset-data.yml'
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - 'quant/engines/multi-asset/**'
+      - 'quant/engines/realtime/session-profiles.js'
+      - 'quant/engines/realtime/asset-freshness.js'
+      - 'quant/api/multi-asset-contract.js'
+      - 'quant/config/multi-asset*.json'
+      - 'quant/tests/multi-asset-*.test.mjs'
+      - 'scripts/market/probe-multi-asset.mjs'
+      - 'scripts/market/probe-index-sources.mjs'
+      - 'scripts/market/probe-free-sources.mjs'
+      - 'scripts/market/ingest-multi-asset.mjs'
+      - 'scripts/market/eia-xls-to-csv.py'
+      - 'scripts/quality/verify-multi-asset.mjs'
+      - '.github/workflows/multi-asset-data.yml'
+  # Auf dem Default-Branch: alle drei Stunden. Krypto laeuft 24/7, die
+  # Referenzreihen erscheinen zu verschiedenen Tageszeiten in New York
+  # und Frankfurt - ein Takt, der beides abdeckt, ohne Kontingent zu
+  # verbrennen (~20 Tiingo-Anfragen, ~10 offizielle Abrufe je Lauf).
+  # Die Frische-Schwelle fuer Krypto (6 h) ist auf diesen Takt abgestimmt.
+  schedule:
+    - cron: '20 */3 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: multi-asset-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Vertrags- und Semantiktests
+        run: node --test quant/tests/multi-asset-*.test.mjs
+      - name: Regression Guard Currency Core (keine lokale FX-Logik)
+        run: node scripts/quality/assert-no-local-fx.mjs
+
+  marker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      probe:  ${{ steps.read.outputs.probe }}
+      ingest: ${{ steps.read.outputs.ingest }}
+      index_probe: ${{ steps.read.outputs.index_probe }}
+      free_probe: ${{ steps.read.outputs.free_probe }}
+      tracker_probe: ${{ steps.read.outputs.tracker_probe }}
+    steps:
+      - name: Marker aus der Betreffzeile lesen
+        id: read
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ github.event_name }}
+          IN_PROBE: ${{ inputs.run_probe }}
+          IN_INGEST: ${{ inputs.run_ingest }}
+          IN_INDEX: ${{ inputs.run_index_probe }}
+          IN_FREE: ${{ inputs.run_free_probe }}
+          IN_TRACKER: ${{ inputs.run_tracker_probe }}
+        run: |
+          probe=false; ingest=false; index_probe=false; free_probe=false; tracker_probe=false
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            [ "$IN_PROBE" = "true" ] && probe=true
+            [ "$IN_INGEST" = "true" ] && ingest=true
+            [ "$IN_INDEX" = "true" ] && index_probe=true
+            [ "$IN_FREE" = "true" ] && free_probe=true
+            [ "$IN_TRACKER" = "true" ] && tracker_probe=true
+          elif [ "$EVENT_NAME" = "schedule" ]; then
+            ingest=true
+          elif [ "$EVENT_NAME" = "push" ]; then
+            subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+            echo "Betreffzeile: $subject"
+            case "$subject" in *"[ma-probe]"*)  probe=true  ;; esac
+            case "$subject" in *"[ma-ingest]"*) ingest=true ;; esac
+            case "$subject" in *"[ma-index-probe]"*) index_probe=true ;; esac
+            case "$subject" in *"[ma-free-probe]"*) free_probe=true ;; esac
+            case "$subject" in *"[ma-tracker-probe]"*) tracker_probe=true ;; esac
+          fi
+          echo "probe=$probe"   >> "$GITHUB_OUTPUT"
+          echo "ingest=$ingest" >> "$GITHUB_OUTPUT"
+          echo "index_probe=$index_probe" >> "$GITHUB_OUTPUT"
+          echo "free_probe=$free_probe" >> "$GITHUB_OUTPUT"
+          echo "tracker_probe=$tracker_probe" >> "$GITHUB_OUTPUT"
+          echo "probe=$probe ingest=$ingest index_probe=$index_probe free_probe=$free_probe"
+
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [contract, marker]
+    if: needs.marker.outputs.probe == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: EIA-Primaertabellen lesbar machen (.xls -> CSV, Arbeitsstand)
+        run: |
+          pip install --quiet xlrd==2.0.1
+          python3 scripts/market/eia-xls-to-csv.py .market-cache/multi-asset/eia RWTC RBRTE RNGWHHD
+      - name: Faehigkeiten messen (Tiingo + offizielle Quellen)
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/probe-multi-asset.mjs --publish
+      - name: Der Bericht enthaelt keinen Schluessel und keine Werte
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "quant/data/market/capabilities/multi-asset-probe.json";
+            const raw = fs.readFileSync(file, "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
+            if (/[?&]token=/i.test(raw)) { console.error("ABBRUCH: Token-URL im Bericht."); process.exit(1); }
+            const verboten = ["midprice","bidprice","askprice","lastclose","close","open","high","low","value","percentrate","obs_value","price","last"];
+            const treffer = [];
+            (function walk(v, p) {
+              if (!v || typeof v !== "object") return;
+              for (const k of Object.keys(v)) {
+                if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k);
+                walk(v[k], p + "." + k);
+              }
+            })(JSON.parse(raw), "report");
+            if (treffer.length) { console.error("ABBRUCH: Wertfelder im Bericht: " + treffer.join(", ")); process.exit(1); }
+            console.log("Bericht frei von Zugangsdaten und Werten (" + Math.round(raw.length / 1024) + " KB).");
+          '
+      - name: Bericht in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Multi-Asset-Faehigkeiten gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/multi-asset-probe.json
+      - name: Matrix ins Protokoll
+        run: node -e 'const r=require("./quant/data/market/capabilities/multi-asset-probe.json"); console.log(JSON.stringify({tiingo:r.tiingo.matrix, instruments:r.instruments, requests:r.requests}, null, 1))'
+
+  # INDEX COVERAGE (P0): echte Indexstaende je Quelle messen - vorhandene
+  # Provider zuerst (Twelve Data), dann offizielle Quellen, FRED als
+  # Spiegel, Stooq nur gemessen. Keine Werte im Bericht.
+  measure-indices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [contract, marker]
+    if: needs.marker.outputs.index_probe == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Index-Quellen sondieren
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        run: node scripts/market/probe-index-sources.mjs --publish
+      - name: Der Bericht enthaelt keinen Schluessel und keine Indexstaende
+        env:
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const raw = fs.readFileSync("quant/data/market/capabilities/index-source-probe.json", "utf8");
+            for (const key of [process.env.TWELVE_DATA_API_KEY, process.env.FMP_API_KEY, process.env.FINNHUB_API_KEY]) {
+              if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
+            }
+            if (/(apikey|api_token|token)=(?!\[REDACTED\]|demo\b)/i.test(raw)) { console.error("ABBRUCH: Schluessel in einer URL."); process.exit(1); }
+            const verboten = ["close","open","high","low","value","price","level","level_eod","indexvalue","lastsaleprice"];
+            const treffer = [];
+            (function walk(v, p) { if (!v || typeof v !== "object") return;
+              for (const k of Object.keys(v)) { if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k); walk(v[k], p + "." + k); } })(JSON.parse(raw), "report");
+            if (treffer.length) { console.error("ABBRUCH: Wertfelder: " + treffer.join(", ")); process.exit(1); }
+            console.log("Bericht sauber (" + Math.round(raw.length / 1024) + " KB).");
+          '
+      - name: Bericht in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Index-Quellen gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/index-source-probe.json
+
+  # FREE DATA SOURCE DISCOVERY: ein Source Audit ueber offizielle, freie
+  # Quellen je Capability plus die Abdeckung der vorhandenen FMP-/Finnhub-
+  # Zugaenge als Vergleich. Nur Form, Abdeckung und Nutzungsbedingungen -
+  # keine Werte, keine Schluessel.
+  # INDEX-TRACKER (Owner-Entscheidung 2026-09-25, Tiingo-first): Identitaet,
+  # Historie, Intraday, WebSocket der ETF-Tracker ueber den bestehenden
+  # Tiingo-Zugang. Keine Werte im Bericht.
+  measure-trackers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [contract, marker]
+    if: needs.marker.outputs.tracker_probe == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tracker messen
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/probe-multi-asset.mjs --trackers --publish
+      - name: Der Bericht enthaelt keinen Schluessel und keine Werte
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const raw = fs.readFileSync("quant/data/market/capabilities/tiingo-tracker-probe.json", "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) { console.error("ABBRUCH: Schluessel im Bericht."); process.exit(1); }
+            if (/[?&]token=/i.test(raw)) { console.error("ABBRUCH: Token-URL im Bericht."); process.exit(1); }
+            const verboten = ["close","open","high","low","value","price","last","prevclose","tngolast","volume","adjclose","divcash","mid","bidprice","askprice"];
+            const treffer = [];
+            (function walk(v, p) { if (!v || typeof v !== "object") return;
+              for (const k of Object.keys(v)) { if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k); walk(v[k], p + "." + k); } })(JSON.parse(raw), "report");
+            if (treffer.length) { console.error("ABBRUCH: Wertfelder: " + treffer.join(", ")); process.exit(1); }
+            console.log("Bericht sauber.");
+          '
+      - name: Bericht in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Index-Tracker gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/tiingo-tracker-probe.json
+
+  measure-free-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [contract, marker]
+    if: needs.marker.outputs.free_probe == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Freie Quellen sondieren
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: node scripts/market/probe-free-sources.mjs --publish
+      - name: Der Bericht enthaelt keinen Schluessel und keine Werte
+        env:
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const raw = fs.readFileSync("quant/data/market/capabilities/free-source-probe.json", "utf8");
+            for (const key of [process.env.FMP_API_KEY, process.env.FINNHUB_API_KEY, process.env.SEC_USER_AGENT]) {
+              if (key && key.length >= 6 && raw.includes(key)) { console.error("ABBRUCH: Zugangsangabe im Bericht."); process.exit(1); }
+            }
+            if (/(apikey|api_key|token|api_token)=(?!\[REDACTED\])/i.test(raw)) { console.error("ABBRUCH: Schluessel in einer URL."); process.exit(1); }
+            const verboten = ["close","open","high","low","value","price","level","level_eod","indexvalue","lastsaleprice","obs_value"];
+            const treffer = [];
+            (function walk(v, p) { if (!v || typeof v !== "object") return;
+              for (const k of Object.keys(v)) { if (verboten.includes(k.toLowerCase())) treffer.push(p + "." + k); walk(v[k], p + "." + k); } })(JSON.parse(raw), "report");
+            if (treffer.length) { console.error("ABBRUCH: Wertfelder: " + treffer.join(", ")); process.exit(1); }
+            console.log("Bericht sauber (" + Math.round(raw.length / 1024) + " KB).");
+          '
+      - name: Bericht in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Freie Datenquellen gemessen (automatischer Lauf)" \
+            quant/data/market/capabilities/free-source-probe.json
+
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: [contract, marker]
+    if: needs.marker.outputs.ingest == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: EIA-Primaertabellen lesbar machen (.xls -> CSV, Arbeitsstand)
+        run: |
+          pip install --quiet xlrd==2.0.1
+          python3 scripts/market/eia-xls-to-csv.py .market-cache/multi-asset/eia RWTC RBRTE RNGWHHD
+      - name: Daten holen, pruefen, Vertrag bauen
+        # Kein FMP_API_KEY (Owner-Entscheidung 2026-09-25, Tiingo-first):
+        # FMP traegt die Consumer-Versorgung nicht mehr.
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/ingest-multi-asset.mjs --publish
+      - name: Quality Gates und Nachweis (inkl. Arbeitsstand der lizenzausstehenden Instrumente)
+        run: node scripts/quality/verify-multi-asset.mjs --internal --publish
+      - name: Keine Zugangsdaten und keine lizenzausstehenden Werte im Auslieferungspfad
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs"), path = require("path");
+            const dir = "quant/data/market/multi-asset";
+            const keys = [process.env.TIINGO_API_KEY, process.env.FMP_API_KEY].filter((k) => k && k.length >= 8);
+            const walk = (d) => fs.readdirSync(d).flatMap((f) => { const p = path.join(d, f); return fs.statSync(p).isDirectory() ? walk(p) : [p]; });
+            for (const f of walk(dir)) {
+              const raw = fs.readFileSync(f, "utf8");
+              if (keys.some((k) => raw.includes(k)) || /apikey=(?!\[REDACTED\])/i.test(raw)) { console.error("ABBRUCH: Schluessel in " + f); process.exit(1); }
+              if (/"internalOnly"/.test(raw) && f.includes("/series/")) { console.error("ABBRUCH: interne Reihe " + f); process.exit(1); }
+            }
+            const snap = JSON.parse(fs.readFileSync(dir + "/snapshot.json", "utf8"));
+            for (const c of snap.instruments) {
+              if (c.quote.state === "WITHHELD_LICENSE" && (c.quote.value !== null || (c.history.recent || []).length)) {
+                console.error("ABBRUCH: lizenzausstehender Wert ausgeliefert: " + c.instrument.symbol); process.exit(1);
+              }
+            }
+            console.log("Auslieferungspfad sauber (" + walk(dir).length + " Dateien).");
+          '
+      - name: Ergebnis in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Multi-Asset-Daten aktualisiert (automatischer Lauf)" \
+            quant/data/market/multi-asset
+
+  # PRODUCTION PROOF (§57): prueft den tatsaechlich ausgelieferten Stand,
+  # nicht das Repository. Laeuft nur auf ausdruecklichen Dispatch mit
+  # einer Adresse - ein Nachweis gegen eine geratene URL waere keiner.
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [contract]
+    if: github.event_name == 'workflow_dispatch' && inputs.proof_site != ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Quality Gates gegen die ausgelieferte Seite
+        env:
+          PROOF_SITE: ${{ inputs.proof_site }}
+        run: node scripts/quality/verify-multi-asset.mjs --site="$PROOF_SITE" --publish
+      - name: Nachweis in den Zweig
+        if: always()
+        run: |
+          if [ -f quant/data/market/multi-asset/production-proof.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "Multi-Asset Production Proof gegen die ausgelieferte Seite (automatischer Lauf)" \
+              quant/data/market/multi-asset/production-proof.json
+          fi

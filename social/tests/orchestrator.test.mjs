@@ -16,6 +16,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 const O = require("../engines/orchestrator.js");
@@ -307,9 +309,15 @@ test("OR12 · Der Zeitplan veroeffentlicht nicht und entscheidet nicht", () => {
       "Der Scheduler traegt " + flagge + " im Workflow - eine Entscheidung, " +
       "die niemand getroffen hat.");
   }
-  /* Und er ruft die Stufen auf, die er soll. */
-  for (const noetig of ["run-orchestrator.mjs", "run-social-cycle.mjs",
-                        "make-publish-candidate.mjs"]) {
+  /* Und er ruft die Stufen auf, die er soll. Seit "WEB-FIRST +
+     FULL-POST-GENERATION" (24.09.) sind das die Web-First-Skripte -
+     run-social-cycle.mjs/make-publish-candidate.mjs werden im
+     Workflow nicht mehr direkt aufgerufen (der alte VORBEREITEN-
+     Schritt ist stillgelegt, if: false), auch wenn make-publish-
+     candidate.mjs als geteilte Abhaengigkeit weiterhin importiert
+     wird (manual-now-web-candidate.mjs). */
+  for (const noetig of ["run-orchestrator.mjs", "research-web-story.mjs",
+                        "manual-now-web-candidate.mjs"]) {
     assert.ok(yml.includes(noetig), "fehlt: " + noetig);
   }
 });
@@ -320,4 +328,226 @@ test("OR13 · Der Zeitplan laeuft erst im Standardzweig — und sagt das", () =>
   const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
   assert.match(yml, /schedule/);
   assert.match(yml, /NUR im Standardzweig/);
+});
+
+/* ------------------------------------------------------------------ */
+/* JETZT POST ERSTELLEN WAEHLT DIE STORY, NICHT DIE INTERNE            */
+/* GELEGENHEITSBEWERTUNG (Owner-Direktive "FINAL GOLDEN PATH           */
+/* SIMPLIFICATION", 23.09., §2)                                        */
+/* ------------------------------------------------------------------ */
+
+test("OR14 · storyBestesThema() waehlt nach Story, nicht nach Opportunity.score", () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync } = require("node:fs");
+  const { tmpdir } = require("node:os");
+  const { execFileSync } = require("node:child_process");
+
+  const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const wurzel = mkdtempSync(join(tmpdir(), "vu-storybest-"));
+  try {
+    mkdirSync(join(wurzel, "quant/data/technical/instruments"), { recursive: true });
+    /* Echte Bundles, keine Fixtures von Hand - eine handgebaute
+       Evidenz haette genau die Frage entschieden, die dieser Test
+       stellen soll: ob echte Evidenz eine echte Story traegt. */
+    cpSync(join(REPO_ROOT, "quant/data/technical/instruments/MSFT.json"),
+      join(wurzel, "quant/data/technical/instruments/MSFT.json"));
+    cpSync(join(REPO_ROOT, "quant/data/technical/instruments/AAPL.json"),
+      join(wurzel, "quant/data/technical/instruments/AAPL.json"));
+    mkdirSync(join(wurzel, "social/data"), { recursive: true });
+    writeFileSync(join(wurzel, "social/data/cycle-report.json"), JSON.stringify({
+      generatedAt: "2026-09-23T12:00:00Z",
+      opportunities: [
+        { opportunityId: "opp_low", topic: "Niedrige interne Gelegenheit MSFT",
+          score: 10, proposable: true },
+        { opportunityId: "opp_high", topic: "Hohe interne Gelegenheit AAPL",
+          score: 90, proposable: true }
+      ]
+    }));
+
+    /* run-orchestrator.mjs ist ein ESM-Skript, hier ohne eigenen ESM-
+       Testlauf erreichbar - ein kleines Kindskript ruft dynamic
+       import() auf und gibt das Ergebnis als JSON zurueck. */
+    const modulPfad = join(REPO_ROOT, "scripts/social/run-orchestrator.mjs")
+      .replace(/\\/g, "/");
+    const skript = `
+      import(${JSON.stringify("file://" + modulPfad)}).then((O) => {
+        const alt = O.bestesThema(${JSON.stringify(wurzel)});
+        const neu = O.storyBestesThema(${JSON.stringify(wurzel)});
+        console.log(JSON.stringify({ alt, neu }));
+      });
+    `;
+    const kindPfad = join(wurzel, "probe.mjs");
+    writeFileSync(kindPfad, skript);
+    const ausgabe = execFileSync("node", [kindPfad], { encoding: "utf8" });
+    const { alt, neu } = JSON.parse(ausgabe.trim().split("\n").pop());
+
+    assert.equal(alt.symbol, "AAPL",
+      "bestesThema() (score-basiert) haette die hoehere Gelegenheitsbewertung waehlen muessen.");
+    assert.equal(neu.symbol, "MSFT",
+      "storyBestesThema() haette das Instrument mit der staerkeren Story waehlen " +
+      "muessen - unabhaengig davon, dass seine interne Gelegenheitsbewertung " +
+      "(10) weit unter der von AAPL (90) liegt.");
+    assert.ok(neu.storyScore > 0);
+    assert.ok(neu.storyHook, "storyBestesThema() muss den gewaehlten Hook mitfuehren.");
+  } finally {
+    rmSync(wurzel, { recursive: true, force: true });
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* REGRESSION: storyBestesThema() MUSS BIS ZUR KANDIDATENBILDUNG       */
+/* REISEN, NICHT NUR BIS ZUM CREATIVE-JOB-DISPATCH                     */
+/*                                                                      */
+/* Realer Befund (23.09., Lauf 35879671695): der erste produktive      */
+/* MANUAL_NOW-Lauf nach der Golden-Path-Integration waehlte storyBestes-*/
+/* Thema() korrekt fuer creativeBedarf() (Creative Job), aber          */
+/* VORBEREITEN (run-social-cycle.mjs, ein eigener Prozess) kannte      */
+/* dieses Urteil nicht und fiel auf die Ladder (Opportunity.score)     */
+/* zurueck - der Kandidat wurde aus "Comeback?" gebaut, dem Ranking-    */
+/* Thema, DATA_CARD statt GENERATIVE, mit dem Hook "420 von 5954       */
+/* geprueften Titeln" - der vom Owner ausdruecklich benannten NEGATIVE  */
+/* HOOK FIXTURE. Das Hard Final Creative Gate griff nicht, weil es nur */
+/* fuer visualType===GENERATIVE gilt.                                  */
+/* ------------------------------------------------------------------ */
+/* 24.09., Owner-Direktive "WEB-FIRST + FULL-POST-GENERATION": der alte  */
+/* VORBEREITEN-Schritt (run-social-cycle.mjs/Opportunity.score-Ladder)   */
+/* ist jetzt fuer JEDEN Modus stillgelegt (if: false, siehe OR16) - der  */
+/* Rueckfall, den diese Regression-Fixture urspruenglich abfing, kann    */
+/* strukturell nicht mehr auftreten: der einzige noch lebendige Pfad ist */
+/* WEB RESEARCH, modus-unabhaengig (OR17). Die Prüfung haelt das jetzt   */
+/* strukturell fest statt ueber die (tote) Umgebungsvariable. */
+test("OR15 · MANUAL_NOW kann nicht mehr auf die Ladder zurueckfallen " +
+  "(der alte VORBEREITEN-Schritt ist tot)", () => {
+  const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
+  const altBlock = yml.slice(
+    yml.indexOf("VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus (stillgelegt)"));
+  assert.match(altBlock.slice(0, 400), /if:\s*false/,
+    "Der alte VORBEREITEN-Schritt (Ladder/Opportunity.score) muss fuer jeden Modus " +
+    "stillgelegt sein - sonst kann MANUAL_NOW wieder auf die Ladder zurueckfallen.");
+  assert.ok(!altBlock.slice(0, 400).includes("run-social-cycle.mjs"),
+    "Der stillgelegte Schritt darf run-social-cycle.mjs nicht mehr aufrufen.");
+});
+
+/* ------------------------------------------------------------------ */
+/* DIRECT CREATIVE GOLDEN PATH — WEB-FIRST CONTENT RESEARCH            */
+/* (Owner-Direktive "DIRECT CREATIVE GOLDEN PATH — FINAL GO/NO-GO",    */
+/* 23.09.): JETZT POST ERSTELLEN und POST ZU THEMA duerfen NICHT mehr  */
+/* ueber Discovery/Quant/Opportunity Slate/Screener laufen - auch     */
+/* nicht als Fallback. Diese Tests sperren die Verdrahtung fest, nicht */
+/* nur die Existenz der neuen Skripte.                                 */
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* 24.09., Owner-Direktive "WEB-FIRST + FULL-POST-GENERATION": Discovery/ */
+/* Quant/Opportunity Slate/Ranking duerfen ab jetzt fuer KEINEN Modus  */
+/* mehr Inhaltsquelle sein - nicht nur fuer MANUAL_NOW/MANUAL_TOPIC.   */
+/* Die alten Schritte sind deshalb permanent stillgelegt (if: false), */
+/* nicht mehr modus-abhaengig uebersprungen, und WEB RESEARCH laeuft   */
+/* jetzt fuer JEDEN Modus (kein modus-Vergleich mehr in der Bedingung). */
+/* ------------------------------------------------------------------ */
+test("OR16 · Platte, alter Creative-Job- und VORBEREITEN-Schritt sind fuer " +
+  "jeden Modus stillgelegt", () => {
+  const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
+
+  function block(marker, endMarker) {
+    const start = yml.indexOf(marker);
+    assert.ok(start !== -1, "Schritt fehlt: " + marker);
+    const rest = yml.slice(start);
+    const end = endMarker ? rest.indexOf(endMarker) : 800;
+    return rest.slice(0, end === -1 ? 800 : end);
+  }
+
+  for (const marker of [
+    "DIE PLATTE — Content Universe in voller Breite (stillgelegt)",
+    "CREATIVE JOB — Brief, Register, Request-PR (stillgelegt)",
+    "VORBEREITEN — bis zum Publishing Gate, nicht darueber hinaus (stillgelegt)"
+  ]) {
+    const b = block(marker);
+    assert.match(b, /if:\s*false/,
+      marker + " muss fuer jeden Modus stillgelegt sein (if: false).");
+  }
+
+  /* MESSEN ist keine Inhaltsquelle (eigene Performance-Insights,
+     keine externe/interne Themenfindung) und bleibt unveraendert bei
+     MANUAL_NOW/MANUAL_TOPIC uebersprungen. */
+  const messen = block("MESSEN — Zahlen holen, lernen, anpassen");
+  assert.match(messen, /steps\.plan\.outputs\.modus\s*!=\s*'MANUAL_NOW'/);
+  assert.match(messen, /steps\.plan\.outputs\.modus\s*!=\s*'MANUAL_TOPIC'/);
+});
+
+test("OR17 · WEB RESEARCH ist der einzige Themenpfad, fuer jeden Modus gleich", () => {
+  const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
+  const idx = yml.indexOf("WEB RESEARCH — aktuelle Story finden");
+  assert.ok(idx !== -1, "Schritt WEB RESEARCH fehlt.");
+  const block = yml.slice(idx, idx + 1500);
+  /* Kein modus-Vergleich mehr in der IF-BEDINGUNG (zwischen "if:" und
+     "env:") - der Schritt laeuft fuer JETZT_PRUEFEN, MANUAL_NOW,
+     MANUAL_TOPIC und den Zeitplan gleich. Der modus-Vergleich, der im
+     "env:"-Block danach steht, ist etwas anderes: er setzt
+     VU_SOCIAL_THEMA_FREITEXT nur bei MANUAL_TOPIC (kein Ausschluss,
+     sondern der bestehende Themafilter). */
+  const ifKlausel = block.slice(block.indexOf("if:"), block.indexOf("env:"));
+  assert.ok(!/steps\.plan\.outputs\.modus ==/.test(ifKlausel),
+    "WEB RESEARCH darf keinen Modus mehr ausschliessen: " + ifKlausel);
+  assert.match(block, /research-web-story\.mjs/);
+
+  for (const noetig of ["request-creative-web.mjs", "manual-now-web-candidate.mjs",
+    "dispatch-creative-job.mjs", "open-creative-request.mjs", "verify-creative-dispatch.mjs"]) {
+    assert.ok(yml.includes(noetig), "fehlt im Workflow: " + noetig);
+  }
+
+  /* Keine der beiden neuen Handlungsketten darf Freigabe/Ablehnung
+     ausloesen - dieselbe Invariante wie OR12, nur fuer den neuen Pfad. */
+  for (const flagge of ["--approve", "--reject", "--hold", "--refine"]) {
+    assert.ok(!block.includes(flagge));
+  }
+});
+
+test("OR18 · Der Web-First-Pfad liest quant/ nirgends", () => {
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  for (const datei of ["scripts/social/research-web-story.mjs",
+    "scripts/social/request-creative-web.mjs", "social/engines/web-research.js",
+    "social/engines/rss-parse.js"]) {
+    const inhalt = readFileSync(join(ROOT, datei), "utf8");
+    assert.ok(!/require\([^)]*["']\.\.?\/.*quant\//.test(inhalt) &&
+      !/require\(join\(ROOT,\s*["']quant\//.test(inhalt),
+      datei + " darf quant/ nicht requiren.");
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* REGRESSION: `cmd; rc=$?` IST UNTER GITHUB ACTIONS' `bash -e`        */
+/* UNSICHER (realer Befund, Lauf 35896139660, 23.09.)                  */
+/*                                                                      */
+/* VORBEREITEN (WEB) meldete im echten Lauf korrekt NOCH_NICHT_        */
+/* VERIFIZIERT und beendete sich mit Exit 4 - aber der WORKFLOW-        */
+/* SCHRITT selbst endete trotzdem als FAILURE statt als geplantes       */
+/* Exit 0: GitHub Actions fuehrt `run:`-Bloecke mit `-e` aus, und ein   */
+/* alleinstehendes `node ...; rc=$?` bricht die Shell schon VOR der     */
+/* Auswertung von `rc` ab - `set -uo pipefail` hebt das ererbte `-e`    */
+/* nicht auf. Die sichere Form ist `node ... || rc=$?` (derselbe        */
+/* Kniff wie die bestehende `tor()`-Funktion im Schritt daneben).       */
+/* ------------------------------------------------------------------ */
+test("OR19 · WEB RESEARCH und VORBEREITEN (WEB) werten Exit 4 sicher unter " +
+  "GitHub Actions' bash -e aus", () => {
+  const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
+
+  for (const [marker, skript] of [
+    ["WEB RESEARCH — aktuelle Story finden", "research-web-story.mjs"],
+    ["VORBEREITEN (WEB) — bis zum Publishing Gate", "manual-now-web-candidate.mjs"]
+  ]) {
+    const start = yml.indexOf(marker);
+    assert.ok(start !== -1, "Schritt fehlt: " + marker);
+    const block = yml.slice(start, start + 2000);
+
+    assert.match(block, new RegExp("node scripts/social/" + skript.replace(".", "\\.") +
+      "[\\s\\S]{0,220}?\\|\\|\\s*rc=\\$\\?"),
+      marker + " muss `... || rc=$?` verwenden, nicht `...; rc=$?` - sonst bricht " +
+      "GitHub Actions' `bash -e` die Shell vor der Auswertung von Exit 4 ab.");
+
+    /* Der Fehlerfall aus dem realen Lauf: ein alleinstehendes `rc=$?`
+       DIREKT nach dem node-Aufruf (ohne `||` auf demselben Fortsetzungs-
+       block) darf nicht mehr vorkommen. */
+    assert.ok(!new RegExp("node scripts/social/" + skript.replace(".", "\\.") +
+      "[\\s\\S]{0,220}?[^|]\\n\\s*rc=\\$\\?").test(block),
+      marker + " enthaelt noch das unsichere `cmd; rc=$?`-Muster.");
+  }
 });
