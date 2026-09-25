@@ -32,7 +32,7 @@ jobs:
         run: |
           npm init -y > /dev/null
           npm install --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
 
       - name: Freshness der veroeffentlichten Seite (streng)
         id: freshness
@@ -55,12 +55,13 @@ jobs:
           set -o pipefail
           node scripts/discover/browser-qa-live.mjs '${{ inputs.site }}' smoke-shots/live | tee smoke-qalive.txt
 
-      - name: Browser-QA Maerkte (Gruppen, Tracker-Kennzeichnung, Einheiten, 24/7, bp)
+      - name: Browser-QA Maerkte (Uebersicht, Markt jetzt, Pulse, Details; Chromium + WebKit)
         id: qamaerkte
         continue-on-error: true
         run: |
           set -o pipefail
           node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte | tee smoke-qamaerkte.txt
+          node scripts/discover/browser-qa-maerkte.mjs --url '${{ inputs.site }}' --out smoke-shots/maerkte --engine webkit | tee -a smoke-qamaerkte.txt
 
       - name: Screenshots und Protokolle
         if: always()
