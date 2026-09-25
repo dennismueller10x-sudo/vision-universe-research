@@ -137,6 +137,33 @@ test("the change is symmetric with what the predicate says today", () => {
   }
 });
 
+/* --------------------- 1b. Was verglichen wird, steht am Artefakt */
+
+test("the index names which two things it compares, because they are not two snapshots", () => {
+  /* Die eine Seite ist der eingefrorene Snapshot des from-Tages. Die andere
+     ist die Tabelle, die der Index HEUTE veroeffentlicht - dieselbe, aus der
+     die Mitgliederlisten stammen. Gemessen am 25.09.2026 unterscheiden sich
+     3.144 von 6.437 Zeilen zwischen dem veroeffentlichten 09-24-Snapshot und
+     der heutigen Neuberechnung, weil Faktoren Perzentile sind. Wer die
+     Wechsel aus zwei Snapshot-Dateien nachrechnet, bekommt eine andere Zahl -
+     und soll wissen, warum. */
+  const index = JSON.parse(gunzipSync(readFileSync(
+    join(root, "quant/data/product/strategy-index-v1.json.gz"))).toString("utf8"));
+  const hist = index.historicalEvidence;
+  if (hist.state !== "AVAILABLE") return;
+  assert.equal(hist.toBasis, "CURRENT_PUBLISHED_TABLE");
+  assert.match(hist.transitionNote, /heute veroeffentlicht/);
+  assert.match(hist.transitionNote, /recomputationDrift/);
+  /* Und die Abweichung ist wirklich ausgewiesen, nicht nur erwaehnt. */
+  const factors = JSON.parse(readFileSync(
+    join(root, "quant/data/product/factor-evidence-v1/summary.json"), "utf8"));
+  const drift = factors.snapshotHistory && factors.snapshotHistory.recomputationDrift;
+  if (drift) {
+    assert.ok(Number.isFinite(drift.rowsDiffering) && Number.isFinite(drift.rowsTotal));
+    assert.ok(drift.publishedHash && drift.recomputedHash);
+  }
+});
+
 /* ------------------------------------------- 2. Der veroeffentlichte Index */
 
 test("the strategy index publishes the transitions next to the persistence", () => {

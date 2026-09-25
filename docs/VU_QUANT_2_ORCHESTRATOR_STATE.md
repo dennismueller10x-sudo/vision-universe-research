@@ -480,6 +480,23 @@ Nebenbefund, behoben: `journey-coverage-v1.json` stand nicht in der `git add`-Li
 Workflows. Die Messung lief in jedem Lauf, druckte ihre Zahlen ins Log und wurde verworfen; das
 ausgelieferte Artefakt war das vom letzten Handlauf. Jetzt wird es mitveroeffentlicht.
 
+### Was der Zuordnungswechsel vergleicht — nachgetragen, weil es nicht zwei Snapshots sind
+
+Beim Auswerten des frischen Laufs aufgefallen: der Wechsel ist mit `from 2026-09-23` und
+`to 2026-09-24` beschriftet, aber die zweite Seite ist **nicht** die eingefrorene
+Snapshot-Datei des 24., sondern die Tabelle, die der Index heute veroeffentlicht. Das ist
+Absicht — die Mitgliederlisten stammen aus derselben Tabelle, und zwei verschiedene
+„Jetzt"-Seiten liessen Liste und Wechsel sich widersprechen.
+
+Es ist aber nicht dasselbe: **3.144 von 6.437 Zeilen** unterscheiden sich zwischen dem
+veroeffentlichten 09-24-Snapshot und der heutigen Neuberechnung, weil Faktoren Perzentile sind
+und die Technical-Eingaben von 5.470 Titeln sich mit dem Ablage-Abgleich bewegt haben. Wer die
+67 Wechsel aus den zwei Snapshot-Dateien nachrechnet, bekommt eine andere Zahl.
+
+Deshalb steht es jetzt am Artefakt: `toBasis: "CURRENT_PUBLISHED_TABLE"` und ein Hinweis, der
+auf `recomputationDrift` zeigt. Kein Zahlenwert geaendert — nur die Angabe, was verglichen wurde,
+damit eine fehlgeschlagene Nachrechnung nicht wie ein Widerspruch aussieht.
+
 ### M24 — die Musterluecke erklaert sich selbst (gewaehlt aus der Messung)
 
 Nach dem Ablage-Abgleich ist `patterns` die schwaechste gemessene Station: **100 von 500** Titeln

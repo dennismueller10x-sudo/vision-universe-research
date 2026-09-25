@@ -132,9 +132,27 @@ function historicalEvidence(methodologyVersion, contract, currentRows) {
     published: reihe.length,
     profiles: profiles,
     transitions: transitions,
-    transitionNote: "Ein Wechsel liegt zwischen den veroeffentlichten Staenden " + vorher + " und " +
-      jetzt + ". Titel, die am " + vorher + " nicht im Bestand waren, wechseln nicht - sie wurden " +
-      "nicht gemessen. Kein Ereignis von heute und keine Ansage, was als naechstes passiert.",
+    /* WELCHE ZWEI DINGE HIER VERGLICHEN WERDEN - GENAU BENANNT.
+    
+       Die eine Seite ist der eingefrorene Snapshot vom `from`-Tag. Die andere
+       ist NICHT die Snapshot-Datei des `to`-Tags, sondern die Tabelle, die
+       dieser Index heute veroeffentlicht. Das ist Absicht: die Mitgliederlisten
+       darueber stammen aus derselben Tabelle, und zwei verschiedene
+       "Jetzt"-Seiten liessen die Liste und die Wechsel sich widersprechen.
+    
+       Es ist aber nicht dasselbe: am 25.09.2026 unterscheiden sich 3.144 von
+       6.437 Zeilen zwischen dem veroeffentlichten 09-24-Snapshot und der
+       heutigen Neuberechnung, weil Faktoren Perzentile sind. Wer die Wechsel
+       aus den zwei Snapshot-Dateien nachrechnet, bekommt deshalb eine andere
+       Zahl - und soll wissen, warum. Die Abweichung selbst steht als
+       `recomputationDrift` in der Faktor-Zusammenfassung. */
+    toBasis: "CURRENT_PUBLISHED_TABLE",
+    transitionNote: "Ein Wechsel liegt zwischen dem veroeffentlichten Stand " + vorher + " und der " +
+      "Tabelle, die dieser Index heute veroeffentlicht (Stand " + jetzt + "). Das ist dieselbe " +
+      "Tabelle, aus der die Mitgliederlisten stammen - nicht die eingefrorene Snapshot-Datei des " +
+      "Tages, die sich von ihr unterscheiden kann (siehe recomputationDrift). Titel, die am " +
+      vorher + " nicht im Bestand waren, wechseln nicht - sie wurden nicht gemessen. Kein " +
+      "Ereignis von heute und keine Ansage, was als naechstes passiert.",
     /* Was diese Zahl NICHT ist. Sie steht neben ihr, nicht in einer
        Fussnote - eine Quote ohne diesen Satz wird als Erfolgsquote
        gelesen. */
