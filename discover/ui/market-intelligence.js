@@ -62,6 +62,42 @@
     return t === null || t === undefined ? t : String(t).replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, function (_, j, m, d) { return d + "." + m + "." + j; });
   }
   function prozentLage(g, v) { return Math.max(0, Math.min(100, 100 * (v - g.min) / ((g.max - g.min) || 1))); }
+  /* ------------------------------------------------- Radialer Regime-Gauge
+     Rein dekorativ (aria-hidden) - dieselben Werte wie das Stufenspektrum
+     (env.level, vorherLevel), nur als Bogen statt als Balkenreihe. Keine
+     neue Praezision: fuenf Baender, eine Nadel, ein Geisterpunkt fuer die
+     vorherige Bewertung. */
+  function polar(cx, cy, r, deg) {
+    var rad = (deg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+  function bogenPfad(cx, cy, r, a0, a1) {
+    var p0 = polar(cx, cy, r, a0), p1 = polar(cx, cy, r, a1);
+    var gross = (a1 - a0) > 180 ? 1 : 0;
+    return "M " + p0.x.toFixed(2) + "," + p0.y.toFixed(2) + " A " + r + "," + r + " 0 " + gross + ",1 " + p1.x.toFixed(2) + "," + p1.y.toFixed(2);
+  }
+  function regimeGauge(env, vorherLevel) {
+    if (!global.document || !env.scale || !env.scale.length) return null;
+    var n = env.scale.length, ns = "http://www.w3.org/2000/svg";
+    var svg = global.document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 220 148");
+    svg.setAttribute("class", "dx-m3-gauge-svg");
+    svg.setAttribute("aria-hidden", "true");
+    function n_(tag, a) { var e = global.document.createElementNS(ns, tag); Object.keys(a).forEach(function (k) { e.setAttribute(k, a[k]); }); svg.appendChild(e); return e; }
+    var cx = 110, cy = 120, r = 92, span = 240, start = -120, breite = span / n;
+    for (var i = 0; i < n; i++) {
+      n_("path", { d: bogenPfad(cx, cy, r, start + i * breite + 2.5, start + (i + 1) * breite - 2.5), class: "dx-m3-gauge-band is-l" + i, fill: "none" });
+    }
+    if (isNum(vorherLevel) && vorherLevel !== env.level) {
+      var vp = polar(cx, cy, r, start + (vorherLevel + 0.5) * breite);
+      n_("circle", { cx: vp.x.toFixed(2), cy: vp.y.toFixed(2), r: 5, class: "dx-m3-gauge-vorher" });
+    }
+    var tip = polar(cx, cy, r - 30, start + (env.level + 0.5) * breite);
+    n_("line", { x1: cx, y1: cy, x2: tip.x.toFixed(2), y2: tip.y.toFixed(2), class: "dx-m3-gauge-nadel is-l" + env.level });
+    n_("circle", { cx: cx, cy: cy, r: 8, class: "dx-m3-gauge-nabe" });
+    return svg;
+  }
+
   function springen(id) {
     var z = global.document && global.document.getElementById(id);
     var ruhig = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -161,7 +197,7 @@
       el("div", { class: "dx-m3-hero-raster" }, [
         el("div", { class: "dx-m3-hero-haupt" }, [
           el("h2", { class: "dx-m3-zustand", text: env.label }),
-          spektrum(env, vorherLevel),
+          el("div", { class: "dx-m3-gauge" }, [regimeGauge(env, vorherLevel), spektrum(env, vorherLevel)].filter(Boolean)),
           el("p", { class: "dx-m3-aussage", text: env.statement }),
           el("div", { class: "dx-m3-anleger" }, [el("span", { text: "Für Anleger bedeutet das" }), el("p", { text: env.investor })]),
           veraenderung
@@ -336,6 +372,15 @@
 
   /* ------------------------------------- Was wuerde das Bild aendern? */
 
+  function basisKarte(env) {
+    if (!env || env.level === null || env.level === undefined) return null;
+    return el("div", { class: "dx-m3-basis-karte is-l" + env.level }, [
+      el("p", { class: "dx-m3-basis-eyebrow", text: "Aktuelle Einordnung" }),
+      el("p", { class: "dx-m3-basis-zustand", text: env.label }),
+      el("p", { class: "dx-m3-basis-aussage", text: env.statement })
+    ]);
+  }
+
   function bildAendern(p, namen) {
     var c = p.changes;
     if (!c || (!c.better.length && !c.worse.length)) return null;
@@ -354,7 +399,8 @@
     return el("section", { class: "dx-m3-aendern", id: "maerkte-aendern", "aria-label": "Was würde das Marktbild verändern?" }, [
       kopfzeile("Transparenz", "Was würde das Marktbild verändern?", "Mit derselben Regel gerechnet: welche einzelne Veränderung die Einordnung „" +
         (p.environment ? p.environment.label : "") + "“ verschieben würde. Echte Schwellen, aktuelle Messwerte – keine Prognose."),
-      el("div", { class: "dx-m3-aendern-raster" }, [spalte("Positiver würde das Bild, wenn …", c.better, "besser"), spalte("Negativer würde das Bild, wenn …", c.worse, "schlechter")])
+      el("div", { class: "dx-m3-aendern-raster" }, [spalte("Positiver würde das Bild, wenn …", c.better, "besser"), basisKarte(p.environment),
+                                                    spalte("Negativer würde das Bild, wenn …", c.worse, "schlechter")].filter(Boolean))
     ]);
   }
 
