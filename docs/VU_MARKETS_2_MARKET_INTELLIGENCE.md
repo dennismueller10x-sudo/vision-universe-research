@@ -122,3 +122,103 @@ Die Auswahl läuft zur Anzeigezeit im Browser über die Engine auf dem Vertrag (
 - **Berechnung:** der letzte 5-Minuten-Kurs der jüngsten Sitzung gegen den letzten Kurs der Vorsitzung, aus zwei echten Snapshots. Der `previousClose` der Snapshots wird nicht verwendet, weil er aus der Tagesreihe stammt.
 - **Universum:** das Discover-Aktienuniversum, mit einem Dollarumsatz über 20 Tage von mindestens 20 Mio. USD und einem Kurs von mindestens 5 USD.
 - **Ausgabe:** je 5 Gewinner und Verlierer. Jeder Titel verlinkt auf seine Aktienseite.
+
+## 6. Umsetzung
+
+| PR | Lane | Inhalt |
+|---|---|---|
+| #210 | Core | Engine `market-pulse.js`, Konfiguration, Builder, Kalibrierung, Tests, Workflow-Schritt; „Markt jetzt“ mit Altersgrenze; Tracker-Texte mit Umlauten |
+| #211 | Discover | `ui/market-detail.js` (ein Detail-System), Route `#/maerkte/<SYMBOL>`, klickbare Karten, Markt jetzt, Was bewegt die Märkte?, Aktien in Bewegung, Browser-QA (Chromium + WebKit) |
+
+Die Lane-Trennung ist eingehalten: `discover-ci` hat kein Mixed-PR-Gate verletzt, und keine Gates wurden abgeschwächt.
+
+## 7. Production Proof (2026-09-25, research.visionuniverse.de)
+
+**Daten** (`quant/data/market/multi-asset/production-proof.json`, 09:07 UTC):
+- 18 von 18 Gates bestanden.
+- 29 Instrumente PASS.
+- NDX, SPX und DJI sind erwartete Lücken (CAPABILITY_GAP).
+
+**Market Pulse im Produktivpfad** (`market-pulse.json`, gebaut im Workflow, 09:08 UTC):
+
+| Dimension | Zustand | Aussage |
+|---|---|---|
+| Schlagzeile | – | „Kein klarer Trend bei den großen US-Markt-Trackern“ |
+| TREND | MIXED | SPY und QQQ über beiden Linien, DIA und IWM unter der 50-Tage-Linie |
+| BREADTH | NOT_CURRENT | Faktorzeilen vom 18.09., letzter Handelstag 24.09. – keine Einordnung, Zahlen sichtbar |
+| MOMENTUM | RISING | positiv über 3 und 6 Monate, Tempo lässt nach |
+| RISK | NORMAL | Volatilität 10,8 %, 1,4 % unter dem 52-Wochen-Hoch |
+| CROSS_ASSET | OBSERVED | US-Renditen +54 bp (2,2-fach typisch), Gold −8,4 % (1,6-fach typisch) |
+
+Die Movers kommen aus der Sitzung vom 24.09. gegenüber dem 23.09. mit 1 991 liquiden Titeln, zum Beispiel TWST +16,07 % und ACAD −12,74 %.
+
+**Seite** (`scripts/discover/browser-qa-maerkte.mjs` im Workflow „Discover Live-Rauchtest“):
+- Märkte-QA besteht in Chromium **und** WebKit, jeweils 294 von 294.
+- Übersicht bei 390 und 1440 px:
+  - Gruppen, Tracker-Kennzeichnung, Einheiten, 24/7 und bp;
+  - „Markt jetzt“ mit Links zum Detail;
+  - Pulse mit fünf Dimensionen, ohne Score;
+  - Movers mit Links zu den Aktienseiten.
+- 13 Detailseiten bei 390 px hell: QQQ, SPY, DIA, Nikkei 225, WTI, Gold, BTC, ETH, US 10J, Bund 10J, Fed, EZB, EUR/USD.
+- Vier Detailseiten zusätzlich bei 320 px dunkel und 1440 px hell.
+- Geprüft wird je Seite:
+  - Kopf, Chart und Zeiträume, Zurück-Link, kein Querlauf, „Live“ nur beim Tracker;
+  - Tracker ohne Punkte und mit Offenlegung, Nikkei in Punkten;
+  - Krypto 24/7, Renditen in %/bp neutral ohne 1T, Leitzins als Beschluss, WTI ohne 1T und ohne Live, Gold je Feinunze, EUR/USD nicht umgerechnet.
+- Navigation: Karte zum Detail, Reload auf der Detailroute, Browser-Zurück.
+- Barrierefreiheit (axe): keine kritischen oder ernsten Verstöße auf `#/maerkte`, `#/maerkte/QQQ` und `#/maerkte/US10Y`.
+
+**Im selben Lauf, außerhalb von Markets 2.0:**
+- Browser-QA Discover: 185 von 186 bestanden. Offen ist ein Check auf der Startseite („320-light five-second entry heuristic: search missing“, `.v2-search-prompt` noch nicht gerendert). Die Startseite ist unverändert; lokal besteht derselbe Stand 186/186.
+- Live-QA: 33 von 33.
+- Strenge Freshness: rot wegen der veralteten Aktien-Tagesreihen vom 18.09. Die Reparatur läuft in PR #182.
+
+**Realtime:** Der Nachweis lief vor der US-Eröffnung (Sitzung „Vorbörse“). Die Tracker zeigen korrekt „Letzter Handelsstand“; „Live“ erschien nirgends. Die Live-Übergänge nutzen `LiveHub.live`, denselben Pfad wie die Aktienseite. Ein Nachweis bei offener Börse folgt mit der Tracker-Messung bei geöffnetem US-Markt.
+
+## 8. Zielzustände
+
+| Ziel | Zustand |
+|---|---|
+| MARKET_DETAIL_ROUTES | PASS (`#/maerkte/<SYMBOL>`, Deep Link, Reload, Zurück) |
+| ONE_DETAIL_SYSTEM | PASS (eine Datei, asset-aware) |
+| CHART_RANGE_TRUTH | PASS (Zeiträume nur aus `history.intervals` bzw. echtem Intraday) |
+| TRACKER_TRUTH | PASS (ETF, isProxy, keine Punkte, Offenlegung, Tracker-Performance) |
+| CRYPTO_24_7 / METALS / ENERGY / YIELDS / RATES / FX Detail | PASS |
+| CURRENCY_CORE_REUSED | PASS (keine lokale FX-Arithmetik, Guard an der Grundlinie) |
+| REALTIME_REUSED | PASS (LiveHub/VU-Live-Worker, kein zweiter WebSocket; kein falsches LIVE) |
+| MARKT_JETZT | PASS (deterministisch, aktuell, 3–5 Einträge) |
+| MARKET_PULSE (TREND, MOMENTUM, RISK, CROSS_ASSET) | AVAILABLE |
+| BREADTH | AVAILABLE, derzeit NOT_CURRENT (Daten vom 18.09.) |
+| MARKET_MOVERS | PASS (Kursbewegung; Volumen nicht verfügbar) |
+| SECTOR_PULSE | NOT_IMPLEMENTED (Datenqualität) |
+| QUANT_MARKET_REGIME | unberührt, FAIL_CLOSED |
+| MACRO_REGIME | NOT_CERTIFIED |
+| NO_BLACK_BOX_SCORE | PASS |
+| DISCOVER_PROVIDER_LOGIC | 0 |
+| QUANT_ISOLATION | PASS (kein Quant Score, keine Factor DNA, keine Backtests, kein Regime berührt) |
+| ZERO_COST_MODE | PASS |
+| NEW_PARALLEL_DATA_ARCHITECTURES / NEW_DATA_PIPELINES / NEW_PROVIDERS | 0 |
+| MOBILE / A11Y QA | PASS (320/390/1440, hell/dunkel, Chromium + WebKit, axe) |
+
+## 9. Methodik-Nachweis (Ergänzung, Punkt 20)
+
+| Frage | Antwort | Wo |
+|---|---|---|
+| Verwendete Dimensionen | TREND, BREADTH, MOMENTUM, RISK, CROSS_ASSET | §3.1 |
+| Rohsignale je Dimension | SMA50/200-Lage, Breiten-Anteile mit Nenner, 1/3/6-Monats-Mediane, 20-Tage-Volatilität und 52W-Abstand, Monatsbewegung relativ zur eigenen Historie | §3.1, `market-pulse.json` Evidenz |
+| Schwellen | Mehrheit 3/4 und 50 % (definitorisch), p75/p90 der Volatilität (kalibriert), −10/−20 % (Konvention), 1-fach typische Bewegung | `quant/config/market-pulse.json` |
+| Gewichtungen | keine – es gibt keinen Score | §3.2 |
+| Historische Kalibrierung | 1 273 Zeitpunkte 2001–2026; 12 von 12 Phasen plausibel | `market-pulse-calibration.json` |
+| Factor Overlap | TREND/MOMENTUM, TREND/RISK, BREADTH/TREND dokumentiert und behandelt | §3.4 |
+| Gegenproben | Grenzfälle und Determinismus, keine Kausalitätswörter, veraltete Daten führen zu NOT_CURRENT, keine Beobachtung älter als drei Tage in „Markt jetzt“ | `quant/tests/multi-asset-market-pulse.test.mjs` |
+| Consumer-Texte | feste Textregeln für Schlagzeile, Zustände und Beobachtungen | Engine |
+| Deterministisch / nur erklärend | Zustände und Texte deterministisch; `explanation` und „Warum ist das wichtig?“ nur erklärend | §3.5 |
+| Bewusst nicht zertifiziert | MACRO_REGIME, Quant Market Regime, Sector Pulse, Breadth-Kalibrierung | §3.6 |
+
+## 10. Offene Punkte
+
+1. **Aktien-Tagesreihen (Stand 18.09.):** Sobald der Refresh aus PR #182 wieder läuft, wird BREADTH automatisch aktuell. Dafür ist keine Änderung hier nötig.
+2. **Browser-QA Discover:** ein Startseiten-Check bei 320 px, außerhalb dieses Auftrags. Die Wiederholung zur Bestätigung ist angestoßen.
+3. **Realtime-Nachweis bei offener US-Börse:** Tracker-Messung (WebSocket, Stufe 6) und Blick auf „Markt geöffnet · Live“ im Detail.
+4. **Sektoren:** Sie brauchen einen belastbaren Sektor-Vertrag (GICS-ähnlich, breite Abdeckung). Das ist eine Owner-Entscheidung zu einer Datenquelle.
+5. **Movers mit Volumenspitzen:** Der Intraday-Pfad trägt kein Volumen.
