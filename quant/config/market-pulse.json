@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "vu-market-pulse-config-1.0.0",
+  "methodVersion": "market-pulse-1.0.0",
+  "note": "Versionierte Schwellen des deskriptiven Market Pulse. Kein Quant Market Regime (FAIL_CLOSED), kein Macro Regime (NOT_CERTIFIED), kein Gesamtscore. Die Volatilitaets-Schwellen sind Perzentile der eigenen Historie und werden von scripts/market/build-market-pulse.mjs --calibrate reproduziert (quant/data/market/intelligence/market-pulse-calibration.json); ein Test prueft die Uebereinstimmung.",
+  "trackers": {
+    "symbols": ["SPY", "QQQ", "DIA", "IWM"],
+    "note": "Breite US-Markt-Tracker aus dem Multi-Asset-Core (ETF-Kurse, keine Indexstaende). FEZ/URTH/EEM bilden Nicht-US-Maerkte bzw. Weltmaerkte ab und stehen deshalb nicht im US-Trend."
+  },
+  "trend": {
+    "majority": 3,
+    "minTrackers": 3,
+    "basis": "DEFINITIONAL",
+    "note": "Drei von vier Trackern ueber (bzw. unter) 50- UND 200-Tage-Linie. Die Regel ist definitorisch (Mehrheit), nicht optimiert; ihre historische Haeufigkeit steht in der Kalibrierung."
+  },
+  "risk": {
+    "benchmark": "SPY",
+    "vol20": {
+      "calibratedFrom": "1995-02-01",
+      "samples": 7964,
+      "median": 13.9,
+      "elevatedPercentile": 75,
+      "elevated": 19.7,
+      "highPercentile": 90,
+      "high": 26.9,
+      "basis": "CALIBRATED_PERCENTILE"
+    },
+    "drawdown": {
+      "elevated": -10,
+      "high": -20,
+      "basis": "MARKET_CONVENTION",
+      "note": "-10 % Korrektur, -20 % Baerenmarkt: verbreitete Konventionen, keine optimierten Werte."
+    }
+  },
+  "breadth": {
+    "universe": {
+      "label": "US-Aktienuniversum von Vision Universe (Stammaktien, ADR und REIT mit Faktorzeile)",
+      "instrumentTypes": ["EQUITY_COMMON", "ADR", "REIT"]
+    },
+    "majorityPercent": 50,
+    "basis": "DEFINITIONAL",
+    "calibration": "NOT_CALIBRATED",
+    "calibrationNote": "Es gibt keine Breitenhistorie im Core; eine Rueckrechnung aus heutigen Titeln waere survivorship-verzerrt. Deshalb nur die definitorische Mehrheitsschwelle, keine feineren Stufen."
+  },
+  "crossAsset": {
+    "horizon": 21,
+    "horizonLabel": "einen Monat",
+    "horizonCalendarDays": 30,
+    "windowYears": 10,
+    "notable": 1.0,
+    "basis": "SELF_HISTORY_RATIO",
+    "assets": {
+      "EQUITY": { "symbol": "SPY", "kind": "PERCENT" },
+      "US10Y": { "symbol": "US10Y", "kind": "BP" },
+      "GOLD": { "symbol": "XAUUSD", "kind": "PERCENT" },
+      "OIL": { "symbol": "WTI", "kind": "PERCENT" },
+      "BTC": { "symbol": "BTCUSD", "kind": "PERCENT" },
+      "EURUSD": { "symbol": "EURUSD", "kind": "PERCENT", "path": "quant/data/market/fx/ecb/EURUSD.json" }
+    }
+  },
+  "marketNow": {
+    "max": 5,
+    "min": 3,
+    "maxPerGroup": 2,
+    "notable": 1.0,
+    "strong": 2.0,
+    "basis": "SELF_HISTORY_RATIO",
+    "note": "Verhaeltnis der juengsten Tagesveraenderung zur typischen Tagesveraenderung der letzten ~3 Monate (history.recent im Vertrag). Deutlich ab 1-fach, stark ab 2-fach. Policy-Raten (Stufen) nehmen nicht teil."
+  },
+  "movers": {
+    "count": 5,
+    "minAvgDollarVolume20d": 20000000,
+    "minPrice": 5,
+    "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
+    "note": "Veraenderung vom letzten Punkt der Vorsitzung zum letzten Punkt der juengsten Sitzung (5-Minuten-Kurse). Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Kein Volumen im Intraday-Pfad - deshalb keine Volumenspitzen."
+  },
+  "sectors": {
+    "state": "NOT_IMPLEMENTED",
+    "reason": "Kein belastbarer Sektor-Vertrag: GICS-nahe Sektoren nur fuer 99 kuratierte Titel, SEC-SIC-Hauptgruppen (5 355 Titel) sind keine Anlegersektoren, keine Marktkapitalisierungen. Die Regel 'wenn Datenqualitaet nicht reicht: nicht implementieren' greift."
+  }
+}

@@ -1,0 +1,455 @@
+{
+ "schemaVersion": "vu-market-pulse-1.0.0",
+ "methodVersion": "market-pulse-1.0.0",
+ "configVersion": "vu-market-pulse-config-1.0.0",
+ "generatedAt": "2026-09-25T08:35:20.377Z",
+ "kind": "DESCRIPTIVE_MARKET_PULSE",
+ "notes": {
+  "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
+  "macroRegime": "NOT_CERTIFIED",
+  "score": "Kein Gesamtscore. Jede Aussage entsteht aus einer dokumentierten Regel.",
+  "forecast": "Beschreibung des beobachteten Zustands, keine Prognose, keine Anlageberatung."
+ },
+ "headline": {
+  "text": "Kein klarer Trend bei den großen US-Markt-Trackern",
+  "basis": [
+   "TREND"
+  ],
+  "state": "AVAILABLE"
+ },
+ "dimensions": {
+  "TREND": {
+   "id": "TREND",
+   "state": "MIXED",
+   "label": "Kein klarer Trend",
+   "summary": "Die großen US-Markt-Tracker liegen teils über, teils unter ihrem mittel- und langfristigen Trend.",
+   "evidence": [
+    {
+     "key": "SPY",
+     "label": "S&P 500 (Tracker SPY)",
+     "text": "über 50-Tage-Linie (+0,8 %), über 200-Tage-Linie (+6,8 %)",
+     "above50": true,
+     "above200": true,
+     "dist50": 0.79,
+     "dist200": 6.85,
+     "asOf": "2026-09-24"
+    },
+    {
+     "key": "QQQ",
+     "label": "Nasdaq 100 (Tracker QQQ)",
+     "text": "über 50-Tage-Linie (+4,1 %), über 200-Tage-Linie (+11,4 %)",
+     "above50": true,
+     "above200": true,
+     "dist50": 4.1,
+     "dist200": 11.45,
+     "asOf": "2026-09-24"
+    },
+    {
+     "key": "DIA",
+     "label": "Dow Jones (Tracker DIA)",
+     "text": "unter 50-Tage-Linie (−2,8 %), über 200-Tage-Linie (+2,2 %)",
+     "above50": false,
+     "above200": true,
+     "dist50": -2.85,
+     "dist200": 2.16,
+     "asOf": "2026-09-24"
+    },
+    {
+     "key": "IWM",
+     "label": "Russell 2000 (Tracker IWM)",
+     "text": "unter 50-Tage-Linie (−4,3 %), über 200-Tage-Linie (+2,2 %)",
+     "above50": false,
+     "above200": true,
+     "dist50": -4.29,
+     "dist200": 2.23,
+     "asOf": "2026-09-24"
+    }
+   ],
+   "explanation": "Liegen die Kurse über ihren gleitenden Durchschnitten, ist der Markt über Wochen und Monate gestiegen. Das beschreibt die Vergangenheit, keine Vorhersage.",
+   "methodology": "Je Markt-Tracker (SPY, QQQ, DIA, IWM): Schlusskurs über bzw. unter seinem 50- und 200-Tage-Durchschnitt. Positiv, wenn mindestens 3 der Tracker über beiden Linien liegen; negativ, wenn mindestens 3 unter beiden liegen; sonst gemischt. Die Tracker sind ETF-Kurse, keine Indexstände.",
+   "counts": {
+    "above": 2,
+    "below": 0,
+    "of": 4
+   }
+  },
+  "BREADTH": {
+   "id": "BREADTH",
+   "state": "NOT_CURRENT",
+   "label": "Nicht aktuell",
+   "summary": "Die Breitendaten stammen vom 2026-09-18 und sind älter als der letzte Handelstag (2026-09-24). Keine Einordnung.",
+   "evidence": [
+    {
+     "key": "above50",
+     "label": "Über 50-Tage-Linie",
+     "text": "36,8 % (2053 von 5584)",
+     "value": 36.77,
+     "matched": 2053,
+     "evaluated": 5584,
+     "asOf": "2026-09-18",
+     "current": false
+    },
+    {
+     "key": "above200",
+     "label": "Über 200-Tage-Linie",
+     "text": "47,3 % (2371 von 5014)",
+     "value": 47.29,
+     "matched": 2371,
+     "evaluated": 5014,
+     "asOf": "2026-09-18",
+     "current": false
+    },
+    {
+     "key": "newHighs",
+     "label": "Neue 52-Wochen-Hochs",
+     "text": "120 von 4934",
+     "value": 120,
+     "evaluated": 4934,
+     "asOf": "2026-09-18",
+     "current": false
+    },
+    {
+     "key": "newLows",
+     "label": "Neue 52-Wochen-Tiefs",
+     "text": "50 von 4934",
+     "value": 50,
+     "evaluated": 4934,
+     "asOf": "2026-09-18",
+     "current": false
+    },
+    {
+     "key": "advDecl",
+     "label": "Gestiegen / gefallen",
+     "text": "1676 / 2401 von 4202 (40 % gestiegen)",
+     "advancers": 1676,
+     "decliners": 2401,
+     "unchanged": 125,
+     "evaluated": 4202,
+     "session": "2026-09-24",
+     "previousSession": "2026-09-23",
+     "complete": true,
+     "asOf": "2026-09-24T20:55:00.000Z",
+     "current": true
+    }
+   ],
+   "explanation": "Eine Bewegung ist breiter getragen, wenn viele Aktien gleichzeitig mitziehen. Steigen die großen Indizes, während nur wenige Aktien zulegen, hängt der Anstieg an wenigen Titeln.",
+   "methodology": "Grundlage: US-Aktienuniversum von Vision Universe (Stammaktien, ADR und REIT mit Faktorzeile). Anteil der Titel mit Schlusskurs über dem 50- bzw. 200-Tage-Durchschnitt (Nenner: Titel mit ausreichender Historie). Breit, wenn jeweils mehr als die Hälfte darüber liegt; schmal, wenn jeweils weniger als die Hälfte; sonst gemischt. Die 50-%-Schwelle ist die Mehrheit, keine optimierte Zahl. Neue 52-Wochen-Hochs/-Tiefs und steigende/fallende Titel werden gezeigt, fließen aber nicht in den Zustand ein. Veraltete Daten ergeben keinen Zustand.",
+   "raw": {
+    "above50Pct": 36.77,
+    "above200Pct": 47.29,
+    "state": "NARROW"
+   },
+   "asOf": "2026-09-18",
+   "expectedAsOf": "2026-09-24"
+  },
+  "MOMENTUM": {
+   "id": "MOMENTUM",
+   "state": "RISING",
+   "label": "Aufwärtsdynamik",
+   "summary": "Aufwärtsdynamik über 3 und 6 Monate. Der letzte Monat war schwächer als der Schnitt – das Tempo lässt nach.",
+   "evidence": [
+    {
+     "key": "median1M",
+     "label": "Median 1 Monat",
+     "text": "−2,0 %",
+     "value": -2.02
+    },
+    {
+     "key": "median3M",
+     "label": "Median 3 Monate",
+     "text": "+1,1 %",
+     "value": 1.09
+    },
+    {
+     "key": "median6M",
+     "label": "Median 6 Monate",
+     "text": "+14,3 %",
+     "value": 14.33
+    },
+    {
+     "key": "SPY",
+     "label": "S&P 500 (Tracker SPY)",
+     "text": "1M +0,2 % · 3M +4,5 % · 6M +16,8 %"
+    },
+    {
+     "key": "QQQ",
+     "label": "Nasdaq 100 (Tracker QQQ)",
+     "text": "1M +4,3 % · 3M +3,5 % · 6M +26,1 %"
+    },
+    {
+     "key": "DIA",
+     "label": "Dow Jones (Tracker DIA)",
+     "text": "1M −4,2 % · 3M −1,3 % · 6M +10,5 %"
+    },
+    {
+     "key": "IWM",
+     "label": "Russell 2000 (Tracker IWM)",
+     "text": "1M −5,9 % · 3M −5,8 % · 6M +11,8 %"
+    }
+   ],
+   "explanation": "Momentum beschreibt, wie kräftig sich die Märkte zuletzt bewegt haben. Es ist eng mit dem Trend verwandt und zählt deshalb nicht doppelt.",
+   "methodology": "Median der Kursveränderung der Tracker über 3 und 6 Monate (63/126 Handelstage). Steigend, wenn beide Mediane positiv sind; fallend, wenn beide negativ sind; sonst uneinheitlich. Tempo: Vergleich des 1-Monats-Medians mit dem durchschnittlichen Monat der letzten 3 Monate.",
+   "pace": "SLOWING"
+  },
+  "RISK": {
+   "id": "RISK",
+   "state": "NORMAL",
+   "label": "Normal",
+   "summary": "Die Kursschwankungen liegen im üblichen Rahmen.",
+   "evidence": [
+    {
+     "key": "vol20",
+     "label": "Schwankung S&P 500-Tracker SPY (20 Tage, annualisiert)",
+     "text": "10,8 %",
+     "value": 10.84,
+     "context": "Median seit 1995-02-01: 13,9 %",
+     "asOf": "2026-09-24"
+    },
+    {
+     "key": "drawdown52w",
+     "label": "Abstand zum 52-Wochen-Hoch",
+     "text": "−1,4 %",
+     "value": -1.38,
+     "asOf": "2026-09-24"
+    }
+   ],
+   "explanation": "Starke Schwankungen bedeuten größere Tagesbewegungen in beide Richtungen. Das ist kein Signal zum Kaufen oder Verkaufen.",
+   "methodology": "Schwankung: annualisierte Standardabweichung der täglichen Log-Renditen des Trackers über 20 Handelstage, verglichen mit seiner Verteilung seit 1995-02-01 (7964 Beobachtungen). Erhöht ab dem 75. Perzentil (19,7 %), hoch ab dem 90. Perzentil (26,9 %). Rückgang vom 52-Wochen-Hoch: erhöht ab -10 % (Korrektur), hoch ab -20 % (Bärenmarkt-Konvention). Es gilt die höhere der beiden Stufen.",
+   "levels": {
+    "volatility": "NORMAL",
+    "drawdown": "NORMAL"
+   }
+  },
+  "CROSS_ASSET": {
+   "id": "CROSS_ASSET",
+   "state": "OBSERVED",
+   "label": "Auffällige Bewegungen",
+   "summary": "Die langfristigen US-Renditen sind deutlich gestiegen. Gold ist deutlich gefallen.",
+   "evidence": [
+    {
+     "key": "EQUITY",
+     "label": "Aktien (S&P-500-Tracker SPY)",
+     "text": "+0,2 % · 0,0-fach typisch",
+     "change": 0.166,
+     "ratio": 0.04,
+     "notable": false,
+     "asOf": "2026-09-24",
+     "kind": "PERCENT"
+    },
+    {
+     "key": "US10Y",
+     "label": "US-Rendite 10 Jahre",
+     "text": "+54 bp · 2,2-fach typisch (deutlich)",
+     "change": 54,
+     "ratio": 2.23,
+     "notable": true,
+     "asOf": "2026-09-24",
+     "kind": "BP"
+    },
+    {
+     "key": "GOLD",
+     "label": "Gold",
+     "text": "−8,4 % · 1,6-fach typisch (deutlich)",
+     "change": -8.376,
+     "ratio": -1.6,
+     "notable": true,
+     "asOf": "2026-09-24",
+     "kind": "PERCENT"
+    },
+    {
+     "key": "OIL",
+     "label": "Öl (WTI)",
+     "text": "+10,5 % · 0,7-fach typisch",
+     "change": 10.549,
+     "ratio": 0.66,
+     "notable": false,
+     "asOf": "2026-09-22",
+     "kind": "PERCENT"
+    },
+    {
+     "key": "BTC",
+     "label": "Bitcoin",
+     "text": "+7,5 % · 0,3-fach typisch",
+     "change": 7.456,
+     "ratio": 0.31,
+     "notable": false,
+     "asOf": "2026-09-24",
+     "kind": "PERCENT"
+    },
+    {
+     "key": "EURUSD",
+     "label": "EUR/USD",
+     "text": "−1,8 % · 0,9-fach typisch",
+     "change": -1.786,
+     "ratio": -0.92,
+     "notable": false,
+     "asOf": "2026-09-21",
+     "kind": "PERCENT"
+    }
+   ],
+   "explanation": "Anlageklassen hängen oft zusammen, aber nicht immer gleich. Hier steht, was sich gleichzeitig bewegt hat – nicht, warum.",
+   "methodology": "Veränderung über einen Monat (21 Beobachtungen) je Anlageklasse, verglichen mit der typischen Veränderung desselben Zeitraums in den letzten 10 Jahren (Standardabweichung). Deutlich ab 1,0-fach typisch. Beschrieben werden nur gleichzeitige deutliche Bewegungen – keine Ursache, keine Bewertung. Steigende Renditen, steigendes Gold oder Bitcoin gelten nicht automatisch als gut oder schlecht.",
+   "observations": [
+    {
+     "id": "YIELDS_UP",
+     "text": "Die langfristigen US-Renditen sind deutlich gestiegen."
+    },
+    {
+     "id": "GOLD_DOWN",
+     "text": "Gold ist deutlich gefallen."
+    }
+   ]
+  }
+ },
+ "dimensionStates": {
+  "TREND": "MIXED",
+  "BREADTH": "NOT_CURRENT",
+  "MOMENTUM": "RISING",
+  "RISK": "NORMAL",
+  "CROSS_ASSET": "OBSERVED"
+ },
+ "movers": {
+  "session": "2026-09-24",
+  "previousSession": "2026-09-23",
+  "complete": true,
+  "asOf": "2026-09-24T20:55:00.000Z",
+  "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
+  "filter": {
+   "minAvgDollarVolume20d": 20000000,
+   "minPrice": 5
+  },
+  "eligible": 1991,
+  "gainers": [
+   {
+    "symbol": "TWST",
+    "name": "Twist Bioscience",
+    "changePercent": 16.07
+   },
+   {
+    "symbol": "SECZ",
+    "name": "Securitize",
+    "changePercent": 15.22
+   },
+   {
+    "symbol": "QMCO",
+    "name": "Quantum",
+    "changePercent": 13.68
+   },
+   {
+    "symbol": "CDNA",
+    "name": "Caredx",
+    "changePercent": 13.02
+   },
+   {
+    "symbol": "WRBY",
+    "name": "Warby Parker Class A",
+    "changePercent": 12.15
+   }
+  ],
+  "losers": [
+   {
+    "symbol": "ACAD",
+    "name": "Acadia Pharmaceuticals",
+    "changePercent": -12.74
+   },
+   {
+    "symbol": "GEN",
+    "name": "Gen Digital",
+    "changePercent": -12.16
+   },
+   {
+    "symbol": "GIL",
+    "name": "Gildan Activewear",
+    "changePercent": -12.04
+   },
+   {
+    "symbol": "VKTX",
+    "name": "Viking Therapeutics",
+    "changePercent": -11.76
+   },
+   {
+    "symbol": "KGC",
+    "name": "Kinross Gold",
+    "changePercent": -11.59
+   }
+  ],
+  "method": "Veraenderung vom letzten Punkt der Vorsitzung zum letzten Punkt der juengsten Sitzung (5-Minuten-Kurse). Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Kein Volumen im Intraday-Pfad - deshalb keine Volumenspitzen."
+ },
+ "sectors": {
+  "state": "NOT_IMPLEMENTED",
+  "reason": "Kein belastbarer Sektor-Vertrag: GICS-nahe Sektoren nur fuer 99 kuratierte Titel, SEC-SIC-Hauptgruppen (5 355 Titel) sind keine Anlegersektoren, keine Marktkapitalisierungen. Die Regel 'wenn Datenqualitaet nicht reicht: nicht implementieren' greift."
+ },
+ "inputs": {
+  "trackers": {
+   "SPY": {
+    "asOf": "2026-09-24",
+    "observations": 7985,
+    "path": "/quant/data/market/multi-asset/series/SPY.json"
+   },
+   "QQQ": {
+    "asOf": "2026-09-24",
+    "observations": 6929,
+    "path": "/quant/data/market/multi-asset/series/QQQ.json"
+   },
+   "DIA": {
+    "asOf": "2026-09-24",
+    "observations": 7215,
+    "path": "/quant/data/market/multi-asset/series/DIA.json"
+   },
+   "IWM": {
+    "asOf": "2026-09-24",
+    "observations": 6621,
+    "path": "/quant/data/market/multi-asset/series/IWM.json"
+   }
+  },
+  "crossAsset": {
+   "EQUITY": {
+    "symbol": "SPY",
+    "asOf": "2026-09-24",
+    "horizon": 21,
+    "samples": 2512
+   },
+   "US10Y": {
+    "symbol": "US10Y",
+    "asOf": "2026-09-24",
+    "horizon": 21,
+    "samples": 2498
+   },
+   "GOLD": {
+    "symbol": "XAUUSD",
+    "asOf": "2026-09-24",
+    "horizon": 26,
+    "samples": 1504
+   },
+   "OIL": {
+    "symbol": "WTI",
+    "asOf": "2026-09-22",
+    "horizon": 21,
+    "samples": 2497
+   },
+   "BTC": {
+    "symbol": "BTCUSD",
+    "asOf": "2026-09-24",
+    "horizon": 30,
+    "samples": 3650
+   },
+   "EURUSD": {
+    "symbol": "EURUSD",
+    "asOf": "2026-09-21",
+    "horizon": 21,
+    "samples": 2556
+   }
+  },
+  "breadth": {
+   "asOf": "2026-09-18",
+   "expectedAsOf": "2026-09-24",
+   "universeSize": 5617,
+   "source": "quant/data/market/factors/factors-FULL_UNIVERSE.json"
+  },
+  "intraday": {
+   "session": "2026-09-24",
+   "previousSession": "2026-09-23",
+   "asOf": "2026-09-24T20:55:00.000Z"
+  }
+ }
+}
