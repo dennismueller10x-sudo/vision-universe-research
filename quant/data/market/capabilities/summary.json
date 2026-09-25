@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-09-25T04:37:46.927Z",
+  "generatedAt": "2026-09-25T11:35:31.648Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6875
   },
   "sources": {
-    "ingestStatus": "2026-09-25T04:35:03.733Z",
-    "factors": "2026-09-25T04:35:21.310Z",
-    "intradaySession": "2026-09-22",
-    "discover": "2026-09-25T04:37:43.088Z"
+    "ingestStatus": "2026-09-25T11:31:49.330Z",
+    "factors": "2026-09-25T11:32:10.088Z",
+    "intradaySession": "2026-09-24",
+    "discover": "2026-09-25T11:35:27.555Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -23,8 +23,8 @@
     "marketDataFetched": 6874,
     "historicalAvailable": 5647,
     "historicalQualityAccepted": 6529,
-    "intradayAvailable": 508,
-    "liveCapable": 420,
+    "intradayAvailable": 5189,
+    "liveCapable": 493,
     "factorEligible": 6437,
     "fundamentals": 5378,
     "fundamentals10y": 2261,
@@ -36,22 +36,21 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 6349,
+    "NOT_IN_LIVE_SCOPE": 4696,
+    "NO_IEX_BARS": 1685,
     "NO_FUNDAMENTALS:NO_CIK": 1359,
     "NO_STOCK_PAGE": 888,
     "INSUFFICIENT_HISTORY": 833,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 441,
     "NO_DISCOVER_CARD": 432,
     "NO_FACTOR_ROW:SOURCE_MISSING": 348,
-    "QUALITY_REJECTED:adjustmentContradicted": 343,
+    "QUALITY_REJECTED:adjustment_status_contradicted": 343,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 138,
     "INACTIVE": 120,
     "NOT_TRADING:STALE_SERIES": 95,
-    "NOT_IN_LIVE_SCOPE": 88,
     "NO_FACTOR_ROW:FAIL": 86,
     "NO_COMPACT_SERIES": 49,
     "NAME_MISSING": 20,
-    "NO_IEX_BARS": 18,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 16,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 7,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 6,
@@ -59,7 +58,8 @@
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "QUALITY_REJECTED:too_few_bars": 2,
     "NOT_INGESTED_YET": 1,
-    "NO_FACTOR_ROW:NO_MARKET_DATA": 1
+    "NO_FACTOR_ROW:NO_MARKET_DATA": 1,
+    "NO_INTRADAY_SNAPSHOT": 1
   },
   "spotCheck": [
     {
