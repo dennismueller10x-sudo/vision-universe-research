@@ -58,7 +58,7 @@
     }
   };
 
-  var EXCHANGE_PROFILES = { US_EQUITY: true, INDEX_US: true, INDEX_EU: true, INDEX_ASIA: true };
+  var EXCHANGE_PROFILES = { US_EQUITY: true, US_EQUITY_ETF: true, INDEX_US: true, INDEX_EU: true, INDEX_ASIA: true };
 
   function minutesOf(hhmm) {
     var p = String(hhmm || "").split(":");
@@ -82,7 +82,7 @@
     /* Ein Index wird waehrend der regulaeren Sitzung berechnet. Vor- und
        Nachboerse gibt es fuer ihn nicht - dort gilt er als geschlossen,
        nicht als "Vorboerse". */
-    if (profile !== "US_EQUITY" && (marketState === "PRE_MARKET" || marketState === "AFTER_HOURS")) {
+    if (profile !== "US_EQUITY" && profile !== "US_EQUITY_ETF" && (marketState === "PRE_MARKET" || marketState === "AFTER_HOURS")) {
       marketState = "CLOSED"; phase = "CLOSED";
     }
     /* Mittagspause asiatischer Boersen: eine echte Handelsunterbrechung,

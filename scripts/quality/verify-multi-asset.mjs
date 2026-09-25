@@ -32,6 +32,11 @@ const Catalog = require(join(root, "quant/engines/multi-asset/instrument-catalog
 const Contract = require(join(root, "quant/api/multi-asset-contract.js"));
 const CONFIG = require(join(root, "quant/config/multi-asset.json"));
 const CALENDAR = require(join(root, "quant/config/market-calendar.json"));
+const Fred = require(join(root, "providers/fred/adapter.js"));
+/* Owner-Entscheidung 2026-09-25 (Tiingo-first): diese Quellen duerfen
+   keinen ausgelieferten Consumer-Wert tragen. */
+const NO_CONSUMER_SOURCES = ["fmp-index", "fred"];
+const RESTRICTED_FRED_INDEX = ["NASDAQ100", "SP500", "DJIA", "NASDAQCOM"];
 
 const args = process.argv.slice(2);
 const SITE = (args.find((a) => a.startsWith("--site=")) || "").slice(7).replace(/\/$/, "");
@@ -81,8 +86,32 @@ async function main() {
     gate("ASSET_CLASS_MODEL", Taxonomy.isKnownClass(cls), `${s}: unbekannte Klasse ${cls}`);
     gate("ASSET_CLASS_MODEL", Contract.QUOTE_STATES.includes(q.state), `${s}: unbekannter Quote-Zustand ${q.state}`);
 
-    /* NO_SILENT_ETF_PROXIES: kein Proxy ohne Kennzeichnung, kein ETF-Kuerzel als Quelle eines Index. */
-    gate("NO_SILENT_ETF_PROXIES", c.proxy && c.proxy.isProxy === false, `${s}: Proxy ohne Freigabe`);
+    /* NO_SILENT_ETF_PROXIES: kein Proxy ohne Kennzeichnung, kein ETF-Kuerzel
+       als Quelle eines Index. Ein Tracker IST ein Proxy - aber als ETF,
+       ausdruecklich gekennzeichnet und nie als Indexstand. */
+    const isTracker = cls === "ETF" && c.instrument.subType === "INDEX_TRACKER";
+    if (isTracker) {
+      gate("NO_SILENT_ETF_PROXIES", c.proxy && c.proxy.isProxy === true && c.proxy.isIndexLevel === false &&
+           !!c.proxy.disclosure && !!c.proxy.represents, `${s}: Tracker ohne sichtbare Proxy-Kennzeichnung`);
+    } else {
+      gate("NO_SILENT_ETF_PROXIES", c.proxy && c.proxy.isProxy === false, `${s}: Proxy ohne Freigabe`);
+    }
+    gate("NO_SILENT_ETF_PROXIES", cls !== "INDEX" || !contracts.some((o) => o.instrument.assetClass === "ETF" && o.data.source && o.data.source === c.data.source && c.data.source),
+         `${s}: Index aus derselben Quelle wie ein Tracker`);
+    if (isTracker) {
+      /* TRACKER_SEMANTICS (NO_FALSE_INDEX_LEVELS): ein ETF bleibt ein ETF. */
+      gate("TRACKER_SEMANTICS", cls !== "INDEX", `${s}: Tracker als INDEX klassifiziert`);
+      gate("TRACKER_SEMANTICS", q.valueSemantics === "PRICE" && q.unit === "PRICE_PER_SHARE" && q.unitId !== "POINTS" && q.unitDisplay !== "Pkt.",
+           `${s}: Trackerkurs mit Indexpunkt-Einheit`);
+      gate("TRACKER_SEMANTICS", c.market.sessionProfile === "US_EQUITY_ETF" && c.market.tradingSession === "US_EQUITY_ETF",
+           `${s}: Tracker nicht in der US-ETF-Sitzung`);
+      gate("TRACKER_SEMANTICS", !!c.tracker && c.tracker.isProxy === true && !!c.tracker.displayMarketName && !!c.tracker.trackerDisclosure &&
+           !!c.tracker.tracksIndex && c.market.underlyingType === "INDEX" && c.market.trackedBy === s,
+           `${s}: Tracker ohne Marktname, Kennzeichnung oder Indexzuordnung`);
+      gate("TRACKER_SEMANTICS", /kein Indexstand/.test(c.displaySemantics.note || ""), `${s}: Anzeigehinweis fehlt`);
+      gate("TRACKER_SEMANTICS", !available || (c.tracker.price === q.value && (!q.change || c.tracker.changePercent === q.change.percent)),
+           `${s}: Tracker-Sicht weicht vom Vertrag ab`);
+    }
     const ids = JSON.stringify(c.data.sourceInstrument || {}).toUpperCase();
     for (const p of (c.proxy.knownProxiesNotUsed || [])) {
       const t = String(p).split(" ")[0].toUpperCase();
@@ -154,12 +183,48 @@ async function main() {
            `${s}: Currency Core ${touched ? "aufgerufen" : "nicht aufgerufen"} bei ${expected}`);
     }
 
+    /* LICENSE_STATES: festes Vokabular; Development-Risiko ist keine
+       kommerzielle Freigabe. */
+    const lic = c.license || {};
+    gate("LICENSE_STATES", Contract.LICENSE_STATES.includes(lic.state), `${s}: Lizenzzustand ${lic.state}`);
+    gate("LICENSE_STATES", lic.commercialDisplayApproved !== true || lic.state === "LICENSE_CONFIRMED", `${s}: kommerzielle Freigabe ohne LICENSE_CONFIRMED`);
+    gate("LICENSE_STATES", lic.state !== "OWNER_RISK_ACCEPTED_FOR_DEVELOPMENT" || (lic.preCommercialLicenseConfirmationRequired === true && lic.commercialDisplayApproved === false),
+         `${s}: Development-Risiko als kommerzielle Freigabe gefuehrt`);
+    gate("LICENSE_STATES", !available || lic.state !== "UNAVAILABLE", `${s}: Wert ohne Anzeigelizenz`);
+
+    /* CONSUMER_DEPENDENCIES: kein FMP, kein Comparison-FRED, keine
+       Pre-Approval-FRED-Indexreihe, kein Yahoo/Google/Massive. */
+    gate("CONSUMER_DEPENDENCIES", !NO_CONSUMER_SOURCES.includes(c.data.source), `${s}: Consumer-Wert aus ${c.data.source}`);
+    const fredId = c.data.sourceInstrument && c.data.sourceInstrument.fred;
+    gate("CONSUMER_DEPENDENCIES", !fredId || !RESTRICTED_FRED_INDEX.includes(fredId), `${s}: FRED-Reihe ${fredId} (Pre-Approval)`);
+    gate("CONSUMER_DEPENDENCIES", !/yahoo|google|massive|polygon/i.test(JSON.stringify(c.data.provenance || {})), `${s}: unzulaessiger Anbieter`);
+
     /* PUBLIC HYGIENE: keine Werte aus nicht freigegebenen Quellen */
     const reg = c.data.source ? CONFIG.sourceRegistry[c.data.source] : null;
     if (reg && reg.publicDisplay === false) {
       gate("PUBLIC_DATA_HYGIENE", q.value === null && !c.history.path && (!c.history.recent || !c.history.recent.length),
            `${s}: Wert/Reihe aus ${c.data.source} ausgeliefert`);
     }
+  }
+
+  /* Die FRED-Indexreihen des Adapters: nur "Citation required". */
+  for (const [sym, spec] of Object.entries(Fred.SERIES)) {
+    gate("CONSUMER_DEPENDENCIES", spec.licenseClass === "CITATION_REQUIRED" && !RESTRICTED_FRED_INDEX.includes(spec.series), `FRED ${sym}: ${spec.series} ${spec.licenseClass}`);
+  }
+  for (const [id, reg] of Object.entries(CONFIG.sourceRegistry)) {
+    gate("CONSUMER_DEPENDENCIES", !(reg.publicDisplay && /yahoo|google|massive|polygon/i.test(`${reg.provider} ${reg.product}`)), `Registry ${id}: unzulaessiger Anbieter`);
+    gate("CONSUMER_DEPENDENCIES", !(NO_CONSUMER_SOURCES.includes(id) && reg.publicDisplay), `Registry ${id}: zur Anzeige freigegeben`);
+  }
+
+  /* Tagesverlauf: nur freigegebene Quellen, nicht leer. */
+  for (const c of contracts) {
+    if (!c.history.intradayPath) continue;
+    try {
+      const it = await load(c.history.intradayPath);
+      gate("HISTORICAL_DATA", Array.isArray(it.points) && it.points.length > 0, `${c.instrument.symbol}: Tagesverlauf leer`);
+      const reg = CONFIG.sourceRegistry[it.source] || {};
+      gate("PUBLIC_DATA_HYGIENE", reg.publicDisplay === true, `${c.instrument.symbol}: Tagesverlauf aus nicht freigegebener Quelle`);
+    } catch (e) { gate("HISTORICAL_DATA", false, `${c.instrument.symbol}: ${c.history.intradayPath} nicht ladbar (${e.message})`); }
   }
 
   /* Oeffentliche Reihen nur fuer freigegebene Quellen (nur im Repository pruefbar). */
@@ -173,7 +238,8 @@ async function main() {
   }
 
   /* §57 Production Proof: die Beispiele. */
-  const EXAMPLES = ["SPX", "NDX", "DAX", "XAUUSD", "WTI", "BTCUSD", "ETHUSD", "US10Y", "DE10Y", "EURUSD"];
+  const EXAMPLES = ["QQQ", "SPY", "DIA", "N225", "WTI", "BRENT", "XAUUSD", "XAGUSD", "BTCUSD", "ETHUSD", "US10Y", "DE10Y", "EURUSD",
+                    "NDX", "SPX", "DJI"];
   const internal = INTERNAL && existsSync(join(root, ".market-cache/multi-asset/internal-snapshot.json"))
     ? JSON.parse(readFileSync(join(root, ".market-cache/multi-asset/internal-snapshot.json"), "utf8")) : null;
   const proof = EXAMPLES.map((sym) => {
@@ -188,8 +254,13 @@ async function main() {
       history: c.history.available ? `${c.history.availableFrom}..${c.history.availableTo} (${c.history.observations})` : null,
       change: q.change ? (q.change.basisPoints !== undefined ? `${q.change.basisPoints} bp` : `${q.change.percent} %`) : null,
       currencyConversion: c.capabilities.currencyConversion, realtimeClaim: now.data.realtime,
-      source: c.data.source
+      source: c.data.source, license: c.license ? c.license.state : null,
+      intraday: c.history.intradayPath || null, realtimeCapability: c.capabilities.realtimeCapability || null
     };
+    if (c.tracker) row.tracker = { displayMarketName: c.tracker.displayMarketName, disclosure: c.tracker.trackerDisclosure,
+                                   tracksIndex: c.tracker.tracksIndex, isProxy: c.proxy.isProxy, isIndexLevel: c.proxy.isIndexLevel,
+                                   assetClass: c.instrument.assetClass, changePercent: c.tracker.changePercent,
+                                   tradingSession: c.market.tradingSession };
     if (q.state === "AVAILABLE") row.verdict = "PASS";
     else if (q.state === "CAPABILITY_GAP") row.verdict = "CAPABILITY_GAP";
     else if (q.state === "WITHHELD_LICENSE") row.verdict = "LICENSE_PENDING";

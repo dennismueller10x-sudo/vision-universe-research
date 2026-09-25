@@ -372,9 +372,10 @@ jobs:
           pip install --quiet xlrd==2.0.1
           python3 scripts/market/eia-xls-to-csv.py .market-cache/multi-asset/eia RWTC RBRTE RNGWHHD
       - name: Daten holen, pruefen, Vertrag bauen
+        # Kein FMP_API_KEY (Owner-Entscheidung 2026-09-25, Tiingo-first):
+        # FMP traegt die Consumer-Versorgung nicht mehr.
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
         run: node scripts/market/ingest-multi-asset.mjs --publish
       - name: Quality Gates und Nachweis (inkl. Arbeitsstand der lizenzausstehenden Instrumente)
         run: node scripts/quality/verify-multi-asset.mjs --internal --publish

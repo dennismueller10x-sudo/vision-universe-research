@@ -47,7 +47,11 @@
     YIELD: ["GOVERNMENT_BOND_YIELD_CMT", "GOVERNMENT_BOND_YIELD_TERM_STRUCTURE", "MARKET_YIELD"],
     RATE: ["POLICY_RATE_TARGET_RANGE", "POLICY_RATE_DEPOSIT_FACILITY", "OVERNIGHT_REFERENCE_RATE"],
     EQUITY: ["COMMON_STOCK", "ADR"],
-    ETF: ["ETF_PROXY"],
+    /* INDEX_TRACKER: ein boersengehandelter Fonds, der einen Index abbildet
+       und als MARKT-TRACKER gezeigt wird (Owner-Entscheidung 2026-09-25,
+       Tiingo-first). Er ist kein Index: Preis je Anteil in Waehrung, nie
+       Indexpunkte, immer isProxy true mit sichtbarer Kennzeichnung. */
+    ETF: ["ETF_PROXY", "INDEX_TRACKER"],
     FUTURE: ["FRONT_MONTH_FUTURE", "CONTINUOUS_FUTURE"]
   };
 
@@ -75,6 +79,7 @@
     PRICE_PER_POUND:     { monetary: true,  per: "POUND",        display: "/lb",   decimals: 4 },
     PRICE_PER_METRIC_TON:{ monetary: true,  per: "METRIC_TON",   display: "/t",    decimals: 0 },
     PRICE_PER_UNIT:      { monetary: true,  per: "UNIT",         display: "",      decimals: 2 },
+    PRICE_PER_SHARE:     { monetary: true,  per: "SHARE",        display: "",      decimals: 2 },
     CRYPTO_QUOTE:        { monetary: true,  per: "COIN",         display: "",      decimals: 2 },
     CURRENCY:            { monetary: true,  per: null,           display: "",      decimals: 2 },
     FX_RATE:             { monetary: false, per: null,           display: "",      decimals: 4 },
@@ -136,6 +141,7 @@
      grundsaetzlich bedeuten. */
   var SESSION_PROFILES = {
     US_EQUITY:          { kind: "EXCHANGE", continuous: false, note: "NYSE/Nasdaq inkl. Vor-/Nachboerse" },
+    US_EQUITY_ETF:      { kind: "EXCHANGE", continuous: false, note: "US-Handelssitzung des ETF (NYSE Arca/Nasdaq) - nicht die Berechnungszeit des abgebildeten Index" },
     INDEX_US:           { kind: "EXCHANGE", continuous: false, note: "Indexberechnung waehrend der regulaeren US-Sitzung" },
     INDEX_EU:           { kind: "EXCHANGE", continuous: false, note: "Heimatboerse des Index (Xetra, LSE, Euronext, SIX)" },
     INDEX_ASIA:         { kind: "EXCHANGE", continuous: false, note: "Heimatboerse des Index (Tokio, Hongkong, Shanghai)" },
@@ -186,6 +192,21 @@
         i.valueSemantics !== "PRICE") f.push("priceSemanticsMismatch");
     if (i.assetClass === "CRYPTO" && i.sessionProfile !== "CRYPTO_24_7") f.push("cryptoMustBe24x7");
     if (i.assetClass !== "CRYPTO" && i.sessionProfile === "CRYPTO_24_7") f.push("only24x7ForCrypto");
+    /* Tracker (Owner-Entscheidung 2026-09-25): ein ETF bleibt ein ETF. */
+    if (i.assetClass === "ETF") {
+      if (i.valueSemantics !== "PRICE") f.push("etfMustBePrice");
+      if (i.unit === "INDEX_POINTS" || !UNITS[i.unit] || !UNITS[i.unit].monetary) f.push("etfMustBeMonetaryNeverPoints");
+      if (!i.currency) f.push("etfCurrencyMissing");
+    }
+    if (i.subType === "INDEX_TRACKER") {
+      var t = i.tracker || {};
+      if (i.assetClass !== "ETF") f.push("trackerMustBeEtf");
+      if (t.isProxy !== true) f.push("trackerMustBeProxy");
+      if (!t.tracksIndex) f.push("trackerTracksIndexMissing");
+      if (!t.displayMarketName) f.push("trackerDisplayMarketNameMissing");
+      if (!t.trackerDisclosure) f.push("trackerDisclosureMissing");
+      if (i.sessionProfile !== "US_EQUITY_ETF") f.push("trackerMustUseEtfSession");
+    }
     return f;
   }
 

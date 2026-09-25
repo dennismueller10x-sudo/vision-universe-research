@@ -435,7 +435,10 @@ async function probeTiingoErrorSemantics() {
 
 /* WebSocket: ein kurzer, gezaehlter Mitschnitt. Kein Inhalt im Bericht,
    nur Anzahl, Nachrichtentypen und der juengste Zeitabstand. */
-async function probeTiingoWebsocket(endpoint, tickers, seconds) {
+/* thresholdLevel: IEX verlangt fuer dieses Konto Stufe 6 (gemessen:
+   quant/data/market/commercial/live-candle-verification.json; der
+   produktive VU-Worker nutzt dieselbe Stufe, worker/src/tiingo-link.mjs). */
+async function probeTiingoWebsocket(endpoint, tickers, seconds, level) {
   if (typeof WebSocket === "undefined") return { attempted: false, reason: "noWebSocketRuntime" };
   return new Promise((resolveP) => {
     const result = { attempted: true, endpoint, tickers, seconds, opened: false,
@@ -448,7 +451,7 @@ async function probeTiingoWebsocket(endpoint, tickers, seconds) {
     ws.addEventListener("open", () => {
       result.opened = true;
       ws.send(JSON.stringify({ eventName: "subscribe", authorization: KEY,
-                               eventData: { thresholdLevel: endpoint === "crypto" ? 2 : 5, tickers } }));
+                               eventData: { thresholdLevel: level !== undefined ? level : endpoint === "crypto" ? 2 : 5, tickers } }));
     });
     ws.addEventListener("message", (ev) => {
       result.messages++;
@@ -747,7 +750,7 @@ async function trackersMain() {
     valuesIncluded: false, measured: !!KEY, trackers: {}, websocket: null, requests };
   if (KEY && !DRY_RUN) {
     tr.trackers = await probeTiingoTrackers();
-    if (!NO_WS) tr.websocket = await probeTiingoWebsocket("iex", ["qqq", "spy", "dia"], 25);
+    if (!NO_WS) tr.websocket = await probeTiingoWebsocket("iex", ["qqq", "spy", "dia"], 25, 6);
     tr.rateLimitHeaders = rateLimitHeaders;
   }
   mkdirSync(dirname(OUT), { recursive: true });

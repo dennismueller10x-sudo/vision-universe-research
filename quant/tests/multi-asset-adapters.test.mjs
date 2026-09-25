@@ -12,6 +12,7 @@ const Ecb = require("../../providers/ecb/adapter.js");
 const Fred = require("../../providers/fred/adapter.js");
 const Nikkei = require("../../providers/nikkei/adapter.js");
 const Fmp = require("../../providers/fmp/adapter.js");
+const Tiingo = require("../../providers/tiingo/adapter.js");
 
 test("Treasury: Spalten nach Namen, US-Datum, leere Zellen bleiben Luecken", () => {
   const csv = 'Date,"1 Mo","2 Yr","5 Yr","10 Yr"\n09/23/2026,4.10,3.90,3.80,4.20\n09/22/2026,4.10,3.95,,4.25\n';
@@ -101,4 +102,11 @@ test("FMP: Tagesreihe aufsteigend, doppelte Tage einmal; Fehlerobjekt ohne Schlu
   assert.deepEqual(e.points, []);
   assert.ok(!e.error.includes("abcdef123456"));
   assert.ok(!Fmp.redact(Fmp.eodUrl("^GSPC", "2026-01-01", "abcdef123456")).includes("abcdef123456"));
+});
+
+test("Tiingo-Tracker: Splits bereinigt, Ausschuettungen nicht - Reihe in heutigen Anteilen", () => {
+  const bars = [{ date: "2000-03-17", close: 200, splitFactor: 1 }, { date: "2000-03-20", close: 101, splitFactor: 2 },
+                { date: "2000-03-21", close: 102, splitFactor: 1 }];
+  assert.deepEqual(Tiingo.splitAdjustedCloses(bars), [["2000-03-17", 100], ["2000-03-20", 101], ["2000-03-21", 102]]);
+  assert.deepEqual(Tiingo.splitAdjustedCloses([{ date: "2026-09-24", close: 606, splitFactor: 1 }]), [["2026-09-24", 606]]);
 });

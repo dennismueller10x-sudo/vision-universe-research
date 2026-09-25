@@ -69,9 +69,17 @@ const UA = "VisionUniverse-DataCore/1.0 (+https://research.visionuniverse.de)";
 const PUBLIC_DIR = resolve(root, "quant/data/market/multi-asset");
 const CACHE_DIR = resolve(root, ".market-cache/multi-asset");
 const PUBLIC_PATH = "/quant/data/market/multi-asset/series/";
+/* Tagesverlauf (5-Minuten-Bars) freigegebener Quellen - neben den
+   Tagesreihen, nicht in deren Verzeichnis. */
+const PUBLIC_INTRADAY_PATH = "/quant/data/market/multi-asset/intraday/";
 const SCHEMA = "vu-multi-asset-series-1.0.0";
 
 function iso(d) { return d.toISOString().slice(0, 10); }
+/* Handelstag in New York (ein ETF-Kurs um 20:00 UTC gehoert zum New Yorker Tag). */
+function nyDate(ts) {
+  const p = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ts));
+  return p.slice(0, 10);
+}
 function daysAgo(n) { return iso(new Date(NOW.getTime() - n * 86400000)); }
 function redact(v) {
   let text = JSON.stringify(v);
@@ -241,6 +249,31 @@ async function fetchSeries(inst) {
       const daily = parsed.points.filter((p) => p[0] <= iso(NOW));
       return { points: daily, frequency: "DAILY", fetchedAt, identity: { fmpSymbol: idc.fmpSymbol, listedName: idc.listedName } };
     }
+    case "tiingo-equity": {
+      /* Index-Tracker (ETF) ueber den bestehenden Tiingo-Vertrag - derselbe
+         Adapter wie der Aktienbereich. Die Reihe ist der Schlusskurs,
+         um Splits bereinigt (Tiingo liefert splitFactor je Tag), ohne
+         Ausschuettungen: Kursbewegung des Trackers, keine Indexrechnung. */
+      if (!tiingo) throw new Error("kein TIINGO_API_KEY");
+      const ticker = id.tiingo;
+      const res = await tiingo.getDailyBars(ticker, { from: "1995-01-01" });
+      if (!res.available) throw new Error(`Tagesreihe: ${res.reason}`);
+      const daily = Tiingo.splitAdjustedCloses(res.data.bars).filter((p) => p[0] <= iso(NOW));
+      const intr = await tiingo.getIntradayBars(ticker, { from: daysAgo(4), interval: "5min", extendedHours: false });
+      const ibars = intr.available ? intr.data.bars : [];
+      const quote = await tiingo.getQuote(ticker);
+      const q = quote.available ? quote.data : null;
+      /* Der juengste Stand: Tiingos Referenzkurs (tngoLast) ueber IEX,
+         wenn er juenger ist als der letzte Tagesschluss. */
+      const qv = q ? (typeof q.referencePrice === "number" ? q.referencePrice : q.last) : null;
+      const qDate = q && q.timestamp ? nyDate(q.timestamp) : null;
+      const lastDaily = daily.length ? daily[daily.length - 1][0] : null;
+      const latest = typeof qv === "number" && qDate && lastDaily && qDate > lastDaily
+        ? { value: qv, asOf: q.timestamp, observationDate: qDate, frequency: "INTRADAY", checkedAt: fetchedAt }
+        : null;
+      return { points: daily, frequency: "DAILY", fetchedAt, seriesTitle: `${ticker.toUpperCase()} (Tiingo, split-bereinigter Schlusskurs)`,
+               intraday: ibars.map((b) => [b.timestamp, b.close]), latest };
+    }
     case "ecb-fx-reference": {
       /* Kein Abruf: der Currency Core liefert diese Reihe bereits aus. */
       const s = readJson(join(root, "quant/data/market/fx/ecb/EURUSD.json"));
@@ -348,15 +381,18 @@ async function main() {
       latest: usable ? series.latest || null : null,
       capabilities: {
         eod: usable, intraday: !!(usable && series.intraday && series.intraday.length),
-        intradayPublished: false,
-        realtime: inst.source === "tiingo-crypto" || inst.source === "tiingo-fx-metals",
-        websocket: inst.source === "tiingo-crypto" || inst.source === "tiingo-fx-metals"
+        intradayPublished: !!(usable && isPublic && PUBLISH && series.intraday && series.intraday.length),
+        realtime: ["tiingo-crypto", "tiingo-fx-metals", "tiingo-equity"].includes(inst.source),
+        websocket: ["tiingo-crypto", "tiingo-fx-metals", "tiingo-equity"].includes(inst.source),
+        /* Der bestehende Echtzeitpfad der Quelle (Registry), sonst keiner. */
+        realtimePath: src && src.realtimePath ? src.realtimePath : null
       },
       now: NOW, calendar: CALENDAR, config: CONFIG
     };
     const historyPath = usable && isPublic && !series.noCopy ? PUBLIC_PATH + seriesFile
       : usable && series.noCopy ? "/" + series.reusedFrom : null;
-    const pub = Contract.build(Object.assign({}, base, { historyPath }));
+    const intradayPath = base.capabilities.intradayPublished ? PUBLIC_INTRADAY_PATH + seriesFile : null;
+    const pub = Contract.build(Object.assign({}, base, { historyPath, intradayPath }));
     if (!usable && (inst.status === "ACTIVE" || inst.status === "LICENSE_PENDING")) {
       pub.quote.state = inst.status === "LICENSE_PENDING" ? "WITHHELD_LICENSE" : "SOURCE_MISSING";
       pub.quote.stateReason = findings.join("; ") || null;
@@ -399,6 +435,12 @@ async function main() {
         writeFile(join(CACHE_DIR, "intraday", seriesFile), JSON.stringify({ symbol: inst.symbol, points: series.intraday }) + "\n");
       }
       if (PUBLISH && isPublic) writeFile(join(PUBLIC_DIR, "series", seriesFile), seriesJson(head, pts));
+      if (PUBLISH && isPublic && series.intraday && series.intraday.length) {
+        writeFile(join(PUBLIC_DIR, "intraday", seriesFile), JSON.stringify({
+          schemaVersion: SCHEMA, instrumentId: inst.instrumentId, symbol: inst.symbol, source: inst.source,
+          attribution: src ? src.attribution : null, interval: "5min", unitId: inst.unitId, fetchedAt: series.fetchedAt,
+          points: series.intraday }) + "\n");
+      }
     }
   }
 
@@ -408,6 +450,10 @@ async function main() {
     const allowed = new Set(publicContracts.filter((c) => c.history.path && c.history.path.startsWith(PUBLIC_PATH))
       .map((c) => c.instrument.symbol + ".json"));
     for (const f of readdirSync(join(PUBLIC_DIR, "series"))) if (!allowed.has(f)) unlinkSync(join(PUBLIC_DIR, "series", f));
+  }
+  if (PUBLISH && existsSync(join(PUBLIC_DIR, "intraday")) && !ONLY.length) {
+    const allowedI = new Set(publicContracts.filter((c) => c.history.intradayPath).map((c) => c.instrument.symbol + ".json"));
+    for (const f of readdirSync(join(PUBLIC_DIR, "intraday"))) if (!allowedI.has(f)) unlinkSync(join(PUBLIC_DIR, "intraday", f));
   }
 
   const summary = {};

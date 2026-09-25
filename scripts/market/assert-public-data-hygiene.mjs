@@ -391,6 +391,18 @@ if (existsSync(maSeries)) {
     if (payload && payload.internalOnly !== undefined) findings.push(`quant/data/market/multi-asset/series/${name}: internal working series in public tree`);
   }
 }
+/* Tagesverlauf (intraday/<SYM>.json): dieselbe Regel wie fuer die Tagesreihen. */
+const maIntraday = join(root, "quant", "data", "market", "multi-asset", "intraday");
+if (existsSync(maIntraday)) {
+  const registry = (multiAssetConfig && multiAssetConfig.sourceRegistry) || {};
+  for (const name of readdirSync(maIntraday).filter((n) => n.endsWith(".json"))) {
+    const payload = json(join("quant", "data", "market", "multi-asset", "intraday", name));
+    const reg = payload && registry[payload.source];
+    if (!reg || reg.publicDisplay !== true) {
+      findings.push(`quant/data/market/multi-asset/intraday/${name}: source '${payload && payload.source}' is not cleared for public display`);
+    }
+  }
+}
 const maSnapshot = json("quant/data/market/multi-asset/snapshot.json");
 if (maSnapshot && Array.isArray(maSnapshot.instruments)) {
   for (const c of maSnapshot.instruments) {
