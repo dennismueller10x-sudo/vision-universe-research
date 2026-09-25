@@ -39,6 +39,13 @@ const APPLY = args.includes("--apply");
 const CACHE = arg("cache", join(root, ".market-cache"));
 const OUT = arg("json", join(root, "quant", "data", "market", "commercial", "rejection-ledger.json"));
 const STALE_MS = Number(arg("stale-days", "7")) * 86400000;
+/* Dieselbe Entscheidungsregel, die der Import fuehrt - aus seiner Quelle
+   gelesen und nicht hier zum zweiten Mal geschrieben. Ein Eintrag aus einer
+   anderen Regel ist faellig: er beschreibt ein Urteil, das es nicht mehr
+   gibt. Ohne diese Zeile meldete der Bericht eine Sperre, die der Import
+   gar nicht mehr anwendet. */
+const RULE = (readFileSync(join(root, "scripts", "market", "ingest-tiingo.mjs"), "utf8")
+  .match(/const REJECTION_RULE = "([^"]+)"/) || [null, null])[1];
 
 /* Die Checkpoints liegen je Lauf-Kennung in der Arbeitsablage des
    Anbieters - und zwar in einem eigenen Unterverzeichnis:
@@ -92,7 +99,7 @@ let gesamtVorher = 0, gesamtFaellig = 0, gesamtBleibt = 0;
 for (const datei of dateien) {
   const cp = JSON.parse(readFileSync(datei, "utf8"));
   const register = cp.rejected || {};
-  const p = Lifecycle.pruefeRegister(register, { staleAfterMs: STALE_MS });
+  const p = Lifecycle.pruefeRegister(register, { staleAfterMs: STALE_MS, rule: RULE });
 
   /* Die aelteste und die juengste Ablehnung sagen, ob hier ein Ereignis
      stattgefunden hat oder ein Dauerzustand vorliegt. */

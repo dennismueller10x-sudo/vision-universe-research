@@ -123,6 +123,25 @@ jobs:
             console.log("  Abrufergebnis: " + JSON.stringify(spy));
             console.log("  gespeichert bis: " + letzter);
             console.log("  juengster Titel (Stichprobe 400): " + juengster);
+            /* Owner-Vorgabe vom 25.09.2026, Schritte 1 bis 3: gemessen statt
+               angenommen. Was die splitbereinigte Rekonstruktion braucht,
+               steht hier als Zahl - und wenn etwas fehlt, mit Namen. */
+            const payload = bars ? JSON.parse(fs.readFileSync(store, "utf8")) : null;
+            if (payload) {
+              const Series = require("./quant/engines/return-series.js");
+              const m = Series.splitAdjustedInputs(payload.bars);
+              console.log("  Deklaration: " + payload.adjustmentStatus);
+              console.log("  Rekonstruktionseingaben: " + JSON.stringify({
+                constructible: m.constructible, missing: m.missing, bars: m.bars,
+                first: m.first, last: m.last, splitEvents: m.splitEvents }));
+              if (payload.adjustmentClaim) {
+                console.log("  bereinigte Spalte widerlegt: " + JSON.stringify(payload.adjustmentClaim));
+              }
+              if (!m.constructible) {
+                console.log("  FEHLENDER EINGANG: " + m.missing.join(", ") +
+                            " - hier wird nichts improvisiert.");
+              }
+            }
             if (letzter && juengster && letzter < juengster) {
               console.log("  ZURUECK: die relative Staerke faellt damit universumsweit aus.");
             } else if (letzter) {
