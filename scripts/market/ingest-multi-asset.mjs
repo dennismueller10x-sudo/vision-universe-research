@@ -415,6 +415,7 @@ async function main() {
       valueSemantics: inst.valueSemantics, priceSemantics: inst.priceSemantics || null, unit: inst.unit, unitId: inst.unitId,
       changeSemantics: inst.changeSemantics, conversion: inst.conversion, source: inst.source, status: inst.status,
       tier: inst.tier, knownProxiesNotUsed: inst.knownProxies || [], gap: inst.gap || null, measured: inst.measured || null,
+      quantity: inst.quantity || null, tracker: inst.tracker || null,
       segment: "MULTI_ASSET", findings: findings
     });
 
