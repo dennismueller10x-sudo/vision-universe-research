@@ -38,22 +38,46 @@ test("eine Sitzung Rueckstand ist noch kein Grund, nichts zu zeigen", () => {
   assert.equal(f.fieldStatus.relativeStrength12M1M, MarketFactors.STATUS.CALCULATED);
 });
 
-test("der reale SPY-Fall liefert keine Zahl mehr, sondern einen Grund", () => {
+test("der reale SPY-Fall traegt den Wert weiter, aber mit seinem Zustand", () => {
   /* SPY endete am 2026-09-17, die Titel liefen bis zum 23. - vier
      Sitzungen. Vorher wurden sechs Tage Marktbewegung als Vorsprung
-     jedes einzelnen Titels ausgewiesen. */
+     jedes einzelnen Titels ausgewiesen, ohne dass es dastand.
+
+     Der Wert bleibt in der Faktorzeile, weil Discovery mit ihm rechnet
+     und unveraendert bleiben soll; der Zustand sagt, dass ihm nicht zu
+     folgen ist. Erste Fassung setzte den Wert auf null - das war fuer
+     Quant richtig und hat Discovery zerlegt: sein leadershipScore traegt
+     0,23 Gewicht relative Staerke, seine Qualifikation verlangt 0,80
+     Abdeckung, und 1 - 0,23 = 0,77 macht sie rechnerisch unmoeglich. */
   const f = rechne(4);
   assert.equal(f.benchmarkLagSessions, 4);
   assert.equal(f.benchmarkStale, true);
-  assert.equal(f.values.relativeStrength12M1M, null);
+  assert.ok(Number.isFinite(f.values.relativeStrength12M1M),
+    "der Wert muss stehen bleiben, sonst verliert Discovery seine Score-Abdeckung");
   assert.equal(f.fieldStatus.relativeStrength12M1M, "BENCHMARK_STALE");
   for (const h of Object.keys(MarketFactors.HORIZONS)) {
-    assert.equal(f.values.relativeStrength[h], null, h);
     assert.equal(f.fieldStatus.relativeStrength[h], "BENCHMARK_STALE", h);
   }
 });
 
-test("die Verweigerung kostet nur die relative Staerke, nicht den Rest", () => {
+test("die Momentumnote folgt dem Zustand, nicht dem Wert", () => {
+  /* Der Kern der Trennung: derselbe Wert, zwei Leser. Wer den Zustand
+     liest, lehnt ihn ab; wer nur den Wert liest, rechnet weiter. Ohne
+     diese Pruefung waere die Bindung an den Zustand eine Behauptung im
+     Kommentar. */
+  const build = readFileSync("scripts/quant/build-factor-evidence.mjs", "utf8");
+  assert.match(build, /read: \(v, status\) => \(status\?\.relativeStrength12M1M === "BENCHMARK_STALE" \? null : v\.relativeStrength12M1M\)/);
+  assert.match(build, /spec\.read\(record\.price, record\.priceStatus\)/);
+
+  /* Und die Komponente selbst, gegen echte Werte gefahren. */
+  const f = rechne(4);
+  const lese = (v, status) => (status?.relativeStrength12M1M === "BENCHMARK_STALE" ? null : v.relativeStrength12M1M);
+  assert.equal(lese(f.values, f.fieldStatus), null);
+  const frisch = rechne(0);
+  assert.ok(Number.isFinite(lese(frisch.values, frisch.fieldStatus)));
+});
+
+test("der Zustand kostet nur die relative Staerke, nicht den Rest", () => {
   /* Ein veralteter Vergleichsindex sagt nichts ueber die Kursentwicklung
      des Titels selbst. Wuerde er die ganze Zeile entwerten, waere das
      Gate teurer als der Fehler, den es verhindert. */

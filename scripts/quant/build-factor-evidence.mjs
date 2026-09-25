@@ -61,7 +61,12 @@ const PRICE_COMPONENTS = {
     { id: "priceReturn12m1m", weight: 0.30, direction: "higher", label: "Kursentwicklung 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.return12M1M },
     { id: "priceReturn6m", weight: 0.20, direction: "higher", label: "Kursentwicklung 6 Monate", unit: "ratio", read: (v) => v.returns?.["6M"] },
     { id: "priceReturn3m", weight: 0.10, direction: "higher", label: "Kursentwicklung 3 Monate", unit: "ratio", read: (v) => v.returns?.["3M"] },
-    { id: "relativeStrength12m1m", weight: 0.20, direction: "higher", label: "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.relativeStrength12M1M,
+    /* Liest den ZUSTAND mit. Eine Vergleichsreihe, die hinter dem Titel
+       zurueckliegt, macht aus Marktbewegung einen Vorsprung; der Wert
+       steht in der Faktorzeile weiter (Discovery rechnet damit
+       unveraendert), aber in die Momentumnote geht er dann nicht ein. */
+    { id: "relativeStrength12m1m", weight: 0.20, direction: "higher", label: "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat", unit: "ratio",
+      read: (v, status) => (status?.relativeStrength12M1M === "BENCHMARK_STALE" ? null : v.relativeStrength12M1M),
       note: "Differenz der Log-Renditen über das 12-1-Fenster gegen den hinterlegten Vergleichsindex. Die volle Zwölfmonatsreihe daneben ist eine andere Größe und steht nicht an ihrer Stelle." },
     { id: "distanceTo52wHigh", weight: 0.10, direction: "lower", label: "Abstand zum 52-Wochen-Hoch", unit: "ratio", read: (v) => (finite(v.distanceTo52wHigh) ? -v.distanceTo52wHigh : null) },
     { id: "distanceToSma200", weight: 0.10, direction: "higher", label: "Abstand zur 200-Tage-Linie", unit: "ratio", read: (v) => v.distanceToSMA200 }
@@ -250,7 +255,9 @@ function main() {
 
     const raws = records.map((record) => {
       if (source === "price") {
-        const value = spec.read(record.price);
+        /* Der Zustand kommt mit: eine Komponente darf einen Wert
+           ablehnen, dessen fieldStatus ihn nicht traegt. */
+        const value = spec.read(record.price, record.priceStatus);
         return finite(value) ? value : null;
       }
       if (!record.fundamentals) return null;

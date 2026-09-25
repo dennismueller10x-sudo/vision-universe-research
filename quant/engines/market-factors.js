@@ -548,13 +548,27 @@
         fieldStatus.relativeStrength[h] = STATUS.NOT_APPLICABLE;
         return;
       }
-      if (benchmarkStale) {
-        /* Lieber keine Zahl als eine, die Marktbewegung fuer Vorsprung
-           haelt. */
-        values.relativeStrength[h] = null;
-        fieldStatus.relativeStrength[h] = STATUS.BENCHMARK_STALE;
-        return;
-      }
+      /* WERT BLEIBT, STATUS SAGT DIE WAHRHEIT
+
+         Erste Fassung setzte den Wert auf null. Das war fuer den
+         Quant-Teil richtig und hat Discovery zerlegt: sein
+         leadershipScore traegt zwei Relative-Staerke-Komponenten mit
+         zusammen 0,23 Gewicht, und seine Qualifikation verlangt eine
+         Score-Abdeckung von 0,80. Ohne relative Staerke sind hoechstens
+         1 - 0,23 = 0,77 erreichbar - die Qualifikation "staerkste
+         Aktien" wird damit rechnerisch unmoeglich. Gemessen im Lauf: 29
+         von 5.923 Titeln, und ein einzelner Titel fuehrte fuenf
+         redaktionelle Reihen an.
+
+         Discovery soll unveraendert bleiben, und die Return-Basis-Regel
+         gilt fuer die Quant-Kennzahl. Beides geht, wenn die Zeile beides
+         traegt: den gerechneten Wert UND seinen Zustand. Wer den Zustand
+         liest - Quant, der Screener, die Momentumnote - haelt sich
+         daran. Wer nur den Wert liest, rechnet weiter wie bisher.
+
+         Das ist keine stille Zahl: sie steht mit BENCHMARK_STALE und dem
+         gemessenen Abstand daneben. Still waere es, den Zustand NICHT zu
+         fuehren. */
       var bi = benchIndex;
       if (bi - w < 0 || i - w < 0 || !isNum(bench[bi]) || !isNum(bench[bi - w]) ||
           !isNum(close[i]) || !isNum(close[i - w]) || bench[bi - w] <= 0 || close[i - w] <= 0) {
@@ -564,7 +578,9 @@
       }
       values.relativeStrength[h] = round(
         Math.log(close[i] / close[i - w]) - Math.log(bench[bi] / bench[bi - w]), 6);
-      fieldStatus.relativeStrength[h] = STATUS.CALCULATED;
+      /* Der Wert steht - der Zustand sagt, ob man ihm folgen darf. */
+      fieldStatus.relativeStrength[h] = benchmarkStale
+        ? STATUS.BENCHMARK_STALE : STATUS.CALCULATED;
     });
 
     /* Relative Staerke ueber das 12-1-Fenster.
@@ -580,9 +596,6 @@
     } else if (benchIndex < 0) {
       values.relativeStrength12M1M = null;
       fieldStatus.relativeStrength12M1M = STATUS.NOT_APPLICABLE;
-    } else if (benchmarkStale) {
-      values.relativeStrength12M1M = null;
-      fieldStatus.relativeStrength12M1M = STATUS.BENCHMARK_STALE;
     } else if (i - 252 < 0 || benchIndex - 252 < 0 ||
                !isNum(close[i - 21]) || !isNum(close[i - 252]) || close[i - 252] <= 0 ||
                !isNum(bench[benchIndex - 21]) || !isNum(bench[benchIndex - 252]) || bench[benchIndex - 252] <= 0) {
@@ -592,7 +605,8 @@
       values.relativeStrength12M1M = round(
         Math.log(close[i - 21] / close[i - 252]) -
         Math.log(bench[benchIndex - 21] / bench[benchIndex - 252]), 6);
-      fieldStatus.relativeStrength12M1M = STATUS.CALCULATED;
+      fieldStatus.relativeStrength12M1M = benchmarkStale
+        ? STATUS.BENCHMARK_STALE : STATUS.CALCULATED;
     }
 
     /* ------------------------------------------------------- Beta
