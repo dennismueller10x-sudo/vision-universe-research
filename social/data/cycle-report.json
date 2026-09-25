@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-23T15:34:39.180Z",
+  "generatedAt": "2026-09-24T20:09:48.832Z",
   "provider": "mock",
   "creativeProvider": [],
   "health": {
-    "generatedAt": "2026-09-23T15:34:39.180Z",
+    "generatedAt": "2026-09-24T20:09:48.832Z",
     "overall": "WARNING",
     "counts": {
       "PASS": 10,
@@ -58,9 +58,9 @@
         "state": "WARNING",
         "dataSource": "social/data/signals.json",
         "lastSuccessAt": "2026-09-19T15:46:36.650Z",
-        "failureMode": "Letzter Erfolg vor 96 h (Frist 48 h).",
+        "failureMode": "Letzter Erfolg vor 124 h (Frist 48 h).",
         "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
-        "detail": "Letzter Erfolg vor 96 h (Frist 48 h)."
+        "detail": "Letzter Erfolg vor 124 h (Frist 48 h)."
       },
       {
         "component": "signals.market",
@@ -107,7 +107,7 @@
         "label": "Opportunity Engine",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-23T15:34:39.180Z",
+        "lastSuccessAt": "2026-09-24T20:09:48.832Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -117,7 +117,7 @@
         "label": "Content-Pipeline",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-23T15:34:39.180Z",
+        "lastSuccessAt": "2026-09-24T20:09:48.832Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -127,7 +127,7 @@
         "label": "Fakten- und Markenpruefung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-23T15:34:39.180Z",
+        "lastSuccessAt": "2026-09-24T20:09:48.832Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -137,7 +137,7 @@
         "label": "Terminierung",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-23T15:34:39.180Z",
+        "lastSuccessAt": "2026-09-24T20:09:48.832Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -147,7 +147,7 @@
         "label": "Warteschlange",
         "state": "PASS",
         "dataSource": null,
-        "lastSuccessAt": "2026-09-23T15:34:39.180Z",
+        "lastSuccessAt": "2026-09-24T20:09:48.832Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -177,7 +177,7 @@
         "label": "Kill Switch",
         "state": "PASS",
         "dataSource": "social/config/kill-switch.json",
-        "lastSuccessAt": "2026-09-23T15:34:39.180Z",
+        "lastSuccessAt": "2026-09-24T20:09:48.832Z",
         "failureMode": null,
         "nextAction": null,
         "detail": "Letzter Erfolg vor 0 h."
@@ -369,7 +369,7 @@
     "ok": true,
     "grund": null,
     "erklaerung": null,
-    "generatedAt": "2026-09-23T15:33:34.795Z",
+    "generatedAt": "2026-09-24T10:59:52.803Z",
     "themen": 32
   },
   "opportunities": [
@@ -1650,7 +1650,7 @@
     "evidenceRegime": "BOOTSTRAP",
     "evidenceRecord": {
       "evidenceRegime": "BOOTSTRAP",
-      "assessedAt": "2026-09-23T15:34:39.180Z",
+      "assessedAt": "2026-09-24T20:09:48.832Z",
       "sampleSize": 25,
       "cohorts": [
         {
@@ -1895,7 +1895,7 @@
   },
   "shadowDecisions": [
     {
-      "decidedAt": "2026-09-23T15:34:39.180Z",
+      "decidedAt": "2026-09-24T20:09:48.832Z",
       "packageId": "pkg_c9ee9572c386c15e",
       "topic": "Bekannte Namen in Bewegung",
       "archetype": "RANKING_LIST",
@@ -2123,42 +2123,11 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": true,
-        "bytes": 73433,
-        "scrollStop": {
-          "ok": true,
-          "zustand": "SCROLL_STOP_OK",
-          "erklaerung": "Die Hook fuehrt das Bild: 162409 Quadratpixel gegen 33653, 76 Pixel Schriftgroesse (5.6% der Bildhoehe), im sicheren Bereich.",
-          "hookFlaeche": 162409,
-          "andereFlaeche": 33653,
-          "schrift": 76
-        },
-        "logoBefund": {
-          "passed": true,
-          "problems": [],
-          "explanation": "Das kanonische Logo steht unverzerrt, lesbar, mit Schutzzone und gemessenem Kontrast."
-        },
-        "atlasBefund": {
-          "passed": true,
-          "problems": [],
-          "explanation": "Atlas wird aus dem Original-Asset abgeleitet.",
-          "gemessen": {
-            "figur": "ATLAS",
-            "rolle": "ATLAS_OBSERVER",
-            "flaeche": 94430,
-            "breite": 266,
-            "hoehe": 355,
-            "oben": 899,
-            "unten": 1254,
-            "links": 726,
-            "rechts": 992
-          },
-          "flaechenAnteil": 0.06476680384087792
-        }
+        "rendered": false
       }
     },
     {
-      "decidedAt": "2026-09-23T15:34:39.180Z",
+      "decidedAt": "2026-09-24T20:09:48.832Z",
       "packageId": "pkg_d67ec21cdf04c598",
       "topic": "Gerade in Bewegung",
       "archetype": "EDUCATIONAL",
@@ -2383,25 +2352,11 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": true,
-        "bytes": 55708,
-        "scrollStop": {
-          "ok": true,
-          "zustand": "SCROLL_STOP_OK",
-          "erklaerung": "Die Hook fuehrt das Bild: 205409 Quadratpixel gegen 32667, 76 Pixel Schriftgroesse (5.6% der Bildhoehe), im sicheren Bereich.",
-          "hookFlaeche": 205409,
-          "andereFlaeche": 32667,
-          "schrift": 76
-        },
-        "logoBefund": {
-          "passed": true,
-          "problems": [],
-          "explanation": "Das kanonische Logo steht unverzerrt, lesbar, mit Schutzzone und gemessenem Kontrast."
-        }
+        "rendered": false
       }
     },
     {
-      "decidedAt": "2026-09-23T15:34:39.180Z",
+      "decidedAt": "2026-09-24T20:09:48.832Z",
       "packageId": "pkg_6700c998705e209c",
       "topic": "Comeback?",
       "archetype": "RANKING_LIST",
@@ -2632,42 +2587,11 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": true,
-        "bytes": 74943,
-        "scrollStop": {
-          "ok": true,
-          "zustand": "SCROLL_STOP_OK",
-          "erklaerung": "Die Hook fuehrt das Bild: 181908 Quadratpixel gegen 33653, 76 Pixel Schriftgroesse (5.6% der Bildhoehe), im sicheren Bereich.",
-          "hookFlaeche": 181908,
-          "andereFlaeche": 33653,
-          "schrift": 76
-        },
-        "logoBefund": {
-          "passed": true,
-          "problems": [],
-          "explanation": "Das kanonische Logo steht unverzerrt, lesbar, mit Schutzzone und gemessenem Kontrast."
-        },
-        "atlasBefund": {
-          "passed": true,
-          "problems": [],
-          "explanation": "Atlas wird aus dem Original-Asset abgeleitet.",
-          "gemessen": {
-            "figur": "ATLAS",
-            "rolle": "ATLAS_OBSERVER",
-            "flaeche": 94430,
-            "breite": 266,
-            "hoehe": 355,
-            "oben": 899,
-            "unten": 1254,
-            "links": 726,
-            "rechts": 992
-          },
-          "flaechenAnteil": 0.06476680384087792
-        }
+        "rendered": false
       }
     },
     {
-      "decidedAt": "2026-09-23T15:34:39.180Z",
+      "decidedAt": "2026-09-24T20:09:48.832Z",
       "packageId": "pkg_651f351cea520710",
       "topic": "Stärkste Aktien im Dow Jones",
       "archetype": "RANKING_LIST",
@@ -2895,42 +2819,11 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": true,
-        "bytes": 76549,
-        "scrollStop": {
-          "ok": true,
-          "zustand": "SCROLL_STOP_OK",
-          "erklaerung": "Die Hook fuehrt das Bild: 185026 Quadratpixel gegen 33653, 76 Pixel Schriftgroesse (5.6% der Bildhoehe), im sicheren Bereich.",
-          "hookFlaeche": 185026,
-          "andereFlaeche": 33653,
-          "schrift": 76
-        },
-        "logoBefund": {
-          "passed": true,
-          "problems": [],
-          "explanation": "Das kanonische Logo steht unverzerrt, lesbar, mit Schutzzone und gemessenem Kontrast."
-        },
-        "atlasBefund": {
-          "passed": true,
-          "problems": [],
-          "explanation": "Atlas wird aus dem Original-Asset abgeleitet.",
-          "gemessen": {
-            "figur": "ATLAS",
-            "rolle": "ATLAS_OBSERVER",
-            "flaeche": 94430,
-            "breite": 266,
-            "hoehe": 355,
-            "oben": 899,
-            "unten": 1254,
-            "links": 726,
-            "rechts": 992
-          },
-          "flaechenAnteil": 0.06476680384087792
-        }
+        "rendered": false
       }
     },
     {
-      "decidedAt": "2026-09-23T15:34:39.180Z",
+      "decidedAt": "2026-09-24T20:09:48.832Z",
       "packageId": "pkg_4b7f5c825836f1ee",
       "topic": "Fundamentale Turnarounds",
       "archetype": "RANKING_LIST",
@@ -3157,8 +3050,7 @@
         },
         "origin": "rendered",
         "sourceAsset": null,
-        "rendered": false,
-        "renderError": "SCROLL_STOP_QUALITY nicht bestanden (HOOK_WIEDERHOLT_CAPTION): Der erste Satz der Caption besteht zu 63% aus den Woertern der Hook. Dann faengt der Text mit einer Wiederholung an - und der Beitrag hat einen Grund zum Anhalten weniger."
+        "rendered": false
       }
     }
   ]

@@ -50,9 +50,21 @@ VERSUCHE="${2:-5}"
 WARTE=3
 
 # Erzeugte Artefakte mit geteilter Schreibhoheit. Pfad-Praefixe.
+#
+# DRITTENS (Lauf 36078691085, 25.09.2026): Die kompakte Produkt-Projektion
+# der Faehigkeiten wird aus capabilities/matrix.json abgeleitet und von
+# denselben Laeufen geschrieben (Intraday-Universum, Taktgeber, Refresh).
+# Die Matrix loeste das Skript schon nach Erzeugerhoheit auf, die
+# Projektion nicht - nach 68 Minuten Abruf und gruenen Gates brach der
+# Push ab. Beide Dateien folgen jetzt der Matrix: eigener Stand, damit
+# Matrix und Projektion aus demselben Lauf stammen (Gate B prueft genau
+# das: "committed projection is reproducible from the existing capability
+# matrix"). Genannt sind die zwei Dateien, nicht das ganze Verzeichnis.
 ERZEUGT=(
   "quant/data/market/capabilities/"
   "quant/data/market/freshness/"
+  "quant/data/product/capabilities-v1.json"
+  "quant/data/product/capabilities-summary-v1.json"
 )
 
 eigener_stand() {
