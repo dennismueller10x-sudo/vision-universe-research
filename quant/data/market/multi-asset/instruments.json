@@ -1,13 +1,13 @@
 {
  "schemaVersion": "vu-multi-asset-master-1.0.0",
  "catalogId": "vu-multi-asset-catalog-v1",
- "generatedAt": "2026-09-24T19:16:17.674Z",
+ "generatedAt": "2026-09-25T03:20:58.671Z",
  "idNamespace": {
   "provider": "vu-core",
   "exchangeField": "assetClass",
   "engine": "company-master.js#mintInstrumentId"
  },
- "sourcesDecidedAt": "2026-09-24",
+ "sourcesDecidedAt": "2026-09-25",
  "instruments": [
   {
    "instrumentId": "vu_4d4d20a3258d46",
@@ -23,32 +23,46 @@
    "currencyContext": null,
    "country": "US",
    "timezone": "America/New_York",
-   "providerIdentifiers": {
-    "fmp": "^GSPC"
-   },
+   "providerIdentifiers": {},
    "sessionProfile": "INDEX_US",
    "sessionExchange": "XNYS",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": "INDEX_CLOSE_DAILY",
+   "priceSemantics": null,
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": "fmp-index",
-   "status": "LICENSE_PENDING",
+   "source": null,
+   "status": "CAPABILITY_GAP",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "SPY",
     "IVV",
     "VOO"
    ],
-   "gap": null,
-   "measured": {
-    "in": "quant/data/market/capabilities/index-source-probe.json",
-    "history": "2016-09-26..2026-09-24 (taeglich)",
-    "identity": "FMP-Indexliste fuehrt ^GSPC als 'S&P 500'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+   "gap": {
+    "kind": "OWNER_DECISION_TIINGO_FIRST",
+    "decidedAt": "2026-09-25",
+    "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+    "consumerRepresentation": "Markt-Tracker SPY (assetClass ETF, isProxy true) - kein Indexstand",
+    "auditEvidence": {
+     "previousSource": "fmp-index",
+     "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+     "previousMeasured": {
+      "in": "quant/data/market/capabilities/index-source-probe.json",
+      "history": "2016-09-26..2026-09-24 (taeglich)",
+      "identity": "FMP-Indexliste fuehrt ^GSPC als 'S&P 500'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+     }
+    },
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+    ],
+    "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
    },
+   "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -92,9 +106,13 @@
      "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
      "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
     ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+    "notDone": "Kein ETF wird still als Index ausgegeben.",
+    "consumerRepresentation": "Markt-Tracker QQQ (assetClass ETF, isProxy true) - kein Indexstand",
+    "ownerDecision": "2026-09-25 Tiingo-first"
    },
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -112,30 +130,44 @@
    "currencyContext": null,
    "country": "US",
    "timezone": "America/New_York",
-   "providerIdentifiers": {
-    "fmp": "^DJI"
-   },
+   "providerIdentifiers": {},
    "sessionProfile": "INDEX_US",
    "sessionExchange": "XNYS",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": "INDEX_CLOSE_DAILY",
+   "priceSemantics": null,
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": "fmp-index",
-   "status": "LICENSE_PENDING",
+   "source": null,
+   "status": "CAPABILITY_GAP",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "DIA"
    ],
-   "gap": null,
-   "measured": {
-    "in": "quant/data/market/capabilities/index-source-probe.json",
-    "history": "2016-09-26..2026-09-24 (taeglich)",
-    "identity": "FMP-Indexliste fuehrt ^DJI als 'Dow Jones Industrial Average'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+   "gap": {
+    "kind": "OWNER_DECISION_TIINGO_FIRST",
+    "decidedAt": "2026-09-25",
+    "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+    "consumerRepresentation": "Markt-Tracker DIA (assetClass ETF, isProxy true) - kein Indexstand",
+    "auditEvidence": {
+     "previousSource": "fmp-index",
+     "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+     "previousMeasured": {
+      "in": "quant/data/market/capabilities/index-source-probe.json",
+      "history": "2016-09-26..2026-09-24 (taeglich)",
+      "identity": "FMP-Indexliste fuehrt ^DJI als 'Dow Jones Industrial Average'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+     }
+    },
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+    ],
+    "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
    },
+   "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -179,9 +211,13 @@
      "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)",
      "Ausdruecklich gekennzeichneten ETF-Proxy verwenden (instrumentType ETF, represents <Index>, isProxy true - Owner-Entscheidung nach §41)"
     ],
-    "notDone": "Kein ETF wird still als Index ausgegeben."
+    "notDone": "Kein ETF wird still als Index ausgegeben.",
+    "consumerRepresentation": "keine - Global X DAX Germany ETF (Ticker DAX) identisch, aber unter 100.000 Anteile/Tag und lueckenhafte Intraday-Bars (tiingo-tracker-probe.json): als Consumer-Tracker abgelehnt",
+    "ownerDecision": "2026-09-25 Tiingo-first"
    },
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -199,30 +235,44 @@
    "currencyContext": null,
    "country": "EU",
    "timezone": "Europe/Berlin",
-   "providerIdentifiers": {
-    "fmp": "^STOXX50E"
-   },
+   "providerIdentifiers": {},
    "sessionProfile": "INDEX_EU",
    "sessionExchange": "XETR",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": "INDEX_CLOSE_DAILY",
+   "priceSemantics": null,
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": "fmp-index",
-   "status": "LICENSE_PENDING",
+   "source": null,
+   "status": "CAPABILITY_GAP",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "FEZ"
    ],
-   "gap": null,
-   "measured": {
-    "in": "quant/data/market/capabilities/index-source-probe.json",
-    "history": "2016-09-26..2026-09-24 (taeglich)",
-    "identity": "FMP-Indexliste fuehrt ^STOXX50E als 'Euro STOXX 50'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+   "gap": {
+    "kind": "OWNER_DECISION_TIINGO_FIRST",
+    "decidedAt": "2026-09-25",
+    "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+    "consumerRepresentation": "Markt-Tracker FEZ (assetClass ETF, isProxy true) - kein Indexstand",
+    "auditEvidence": {
+     "previousSource": "fmp-index",
+     "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+     "previousMeasured": {
+      "in": "quant/data/market/capabilities/index-source-probe.json",
+      "history": "2016-09-26..2026-09-24 (taeglich)",
+      "identity": "FMP-Indexliste fuehrt ^STOXX50E als 'Euro STOXX 50'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+     }
+    },
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+    ],
+    "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
    },
+   "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -240,30 +290,44 @@
    "currencyContext": null,
    "country": "GB",
    "timezone": "Europe/London",
-   "providerIdentifiers": {
-    "fmp": "^FTSE"
-   },
+   "providerIdentifiers": {},
    "sessionProfile": "INDEX_EU",
    "sessionExchange": "XLON",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": "INDEX_CLOSE_DAILY",
+   "priceSemantics": null,
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": "fmp-index",
-   "status": "LICENSE_PENDING",
+   "source": null,
+   "status": "CAPABILITY_GAP",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "EWU (MSCI UK - anderer Index)"
    ],
-   "gap": null,
-   "measured": {
-    "in": "quant/data/market/capabilities/index-source-probe.json",
-    "history": "2016-09-26..2026-09-24 (taeglich)",
-    "identity": "FMP-Indexliste fuehrt ^FTSE als 'FTSE 100'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+   "gap": {
+    "kind": "OWNER_DECISION_TIINGO_FIRST",
+    "decidedAt": "2026-09-25",
+    "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+    "consumerRepresentation": "keine - kein sauberer Tiingo-Tracker gemessen (tiingo-tracker-probe.json)",
+    "auditEvidence": {
+     "previousSource": "fmp-index",
+     "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+     "previousMeasured": {
+      "in": "quant/data/market/capabilities/index-source-probe.json",
+      "history": "2016-09-26..2026-09-24 (taeglich)",
+      "identity": "FMP-Indexliste fuehrt ^FTSE als 'FTSE 100'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+     }
+    },
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+    ],
+    "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
    },
+   "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -305,6 +369,8 @@
     "licenseClass": "CITATION_REQUIRED",
     "identity": "Name 'Nikkei Stock Average, Nikkei 225' und Groessenordnung geprueft; Gegenprobe gegen die offizielle Nikkei-Tagesdatei je Lauf"
    },
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -322,30 +388,44 @@
    "currencyContext": null,
    "country": "US",
    "timezone": "America/New_York",
-   "providerIdentifiers": {
-    "fmp": "^RUT"
-   },
+   "providerIdentifiers": {},
    "sessionProfile": "INDEX_US",
    "sessionExchange": "XNYS",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": "INDEX_CLOSE_DAILY",
+   "priceSemantics": null,
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": "fmp-index",
-   "status": "LICENSE_PENDING",
+   "source": null,
+   "status": "CAPABILITY_GAP",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [
     "IWM"
    ],
-   "gap": null,
-   "measured": {
-    "in": "quant/data/market/capabilities/index-source-probe.json",
-    "history": "2016-09-26..2026-09-24 (taeglich)",
-    "identity": "FMP-Indexliste fuehrt ^RUT als 'Russell 2000'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+   "gap": {
+    "kind": "OWNER_DECISION_TIINGO_FIRST",
+    "decidedAt": "2026-09-25",
+    "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+    "consumerRepresentation": "Markt-Tracker IWM (assetClass ETF, isProxy true) - kein Indexstand",
+    "auditEvidence": {
+     "previousSource": "fmp-index",
+     "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+     "previousMeasured": {
+      "in": "quant/data/market/capabilities/index-source-probe.json",
+      "history": "2016-09-26..2026-09-24 (taeglich)",
+      "identity": "FMP-Indexliste fuehrt ^RUT als 'Russell 2000'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+     }
+    },
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+    ],
+    "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
    },
+   "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -392,6 +472,8 @@
     "notDone": "Kein ETF wird still als Index ausgegeben."
    },
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -435,6 +517,8 @@
     "notDone": "Kein ETF wird still als Index ausgegeben."
    },
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -478,6 +562,8 @@
     "notDone": "Kein ETF wird still als Index ausgegeben."
    },
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -495,28 +581,42 @@
    "currencyContext": null,
    "country": "HK",
    "timezone": "Asia/Hong_Kong",
-   "providerIdentifiers": {
-    "fmp": "^HSI"
-   },
+   "providerIdentifiers": {},
    "sessionProfile": "INDEX_ASIA",
    "sessionExchange": "XHKG",
    "publisherProfile": null,
    "valueSemantics": "INDEX_LEVEL",
-   "priceSemantics": "INDEX_CLOSE_DAILY",
+   "priceSemantics": null,
    "unit": "INDEX_POINTS",
    "unitId": "POINTS",
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "NOT_CONVERTIBLE",
-   "source": "fmp-index",
-   "status": "LICENSE_PENDING",
+   "source": null,
+   "status": "CAPABILITY_GAP",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [],
-   "gap": null,
-   "measured": {
-    "in": "quant/data/market/capabilities/index-source-probe.json",
-    "history": "2016-09-26..2026-09-24 (taeglich)",
-    "identity": "FMP-Indexliste fuehrt ^HSI als 'Hang Seng Index'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+   "gap": {
+    "kind": "OWNER_DECISION_TIINGO_FIRST",
+    "decidedAt": "2026-09-25",
+    "finding": "Owner-Entscheidung: kein Indexstand aus ungeklaerten Free-Providern. FMP traegt die Consumer-Indexversorgung nicht.",
+    "consumerRepresentation": "keine - kein sauberer Tiingo-Tracker gemessen (tiingo-tracker-probe.json)",
+    "auditEvidence": {
+     "previousSource": "fmp-index",
+     "measuredIn": "quant/data/market/capabilities/index-source-probe.json",
+     "previousMeasured": {
+      "in": "quant/data/market/capabilities/index-source-probe.json",
+      "history": "2016-09-26..2026-09-24 (taeglich)",
+      "identity": "FMP-Indexliste fuehrt ^HSI als 'Hang Seng Index'; Groessenordnung im Katalogbereich. Der Ingest prueft den Namen bei jedem Lauf erneut."
+     }
+    },
+    "ownerOptions": [
+     "Lizenzierten Indexdaten-Anbieter anbinden (Kostenentscheidung)"
+    ],
+    "notDone": "Kein ETF wird als Index ausgegeben; der Tracker ist ein eigenes Instrument."
    },
+   "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -560,6 +660,8 @@
     "notDone": "Kein ETF wird still als Index ausgegeben."
    },
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -590,7 +692,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-fx-metals",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "GLD",
@@ -604,6 +706,8 @@
     "intraday5min": true,
     "websocket": true
    },
+   "quantity": "TROY_OUNCE",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -634,7 +738,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-fx-metals",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "SLV",
@@ -647,6 +751,8 @@
     "intraday5min": true,
     "websocket": true
    },
+   "quantity": "TROY_OUNCE",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -677,7 +783,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-fx-metals",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [
     "PPLT"
@@ -689,6 +795,8 @@
     "intraday5min": true,
     "websocket": true
    },
+   "quantity": "TROY_OUNCE",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -719,7 +827,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-fx-metals",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [
     "PALL"
@@ -731,6 +839,8 @@
     "intraday5min": true,
     "websocket": true
    },
+   "quantity": "TROY_OUNCE",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -769,6 +879,8 @@
    ],
    "gap": null,
    "measured": null,
+   "quantity": "BARREL",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -807,6 +919,8 @@
    ],
    "gap": null,
    "measured": null,
+   "quantity": "BARREL",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -853,6 +967,8 @@
     "notDone": "Kein 'Kupferpreis' ohne Instrumentdefinition (§42)."
    },
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -893,6 +1009,8 @@
    "measured": {
     "tiingo": "natgasusd auf dem FX-Endpunkt, Historie erst ab 2026-01-30, Kontraktsemantik undokumentiert - nicht verwendet"
    },
+   "quantity": "MMBTU",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -923,7 +1041,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-crypto",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "IBIT",
@@ -936,6 +1054,8 @@
     "weekendIntraday": true,
     "websocket": true
    },
+   "quantity": "BTC",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -966,7 +1086,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-crypto",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "REQUIRED",
    "knownProxiesNotUsed": [
     "ETHA"
@@ -977,6 +1097,8 @@
     "weekendIntraday": true,
     "websocket": true
    },
+   "quantity": "ETH",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1007,7 +1129,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-crypto",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [],
    "gap": null,
@@ -1016,6 +1138,8 @@
     "weekendIntraday": true,
     "websocket": true
    },
+   "quantity": "SOL",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1046,7 +1170,7 @@
    "changeSemantics": "PERCENT_OF_VALUE",
    "conversion": "CONVERTIBLE",
    "source": "tiingo-crypto",
-   "status": "LICENSE_PENDING",
+   "status": "ACTIVE",
    "tier": "OPTIONAL",
    "knownProxiesNotUsed": [],
    "gap": null,
@@ -1055,6 +1179,8 @@
     "weekendIntraday": true,
     "websocket": true
    },
+   "quantity": "XRP",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1092,6 +1218,8 @@
    ],
    "gap": null,
    "measured": null,
+   "quantity": "EUR",
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1129,6 +1257,8 @@
    ],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1164,6 +1294,8 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1202,6 +1334,8 @@
    ],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1237,6 +1371,8 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1272,6 +1408,8 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1307,6 +1445,8 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1342,6 +1482,8 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1377,6 +1519,8 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1412,6 +1556,8 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
    "segment": "MULTI_ASSET",
    "findings": []
   },
@@ -1447,6 +1593,410 @@
    "knownProxiesNotUsed": [],
    "gap": null,
    "measured": null,
+   "quantity": null,
+   "tracker": null,
+   "segment": "MULTI_ASSET",
+   "findings": []
+  },
+  {
+   "instrumentId": "vu_06d047fa433c31",
+   "symbol": "QQQ",
+   "name": "Invesco QQQ Trust",
+   "nameDe": "Invesco QQQ",
+   "assetClass": "ETF",
+   "assetType": "ETF",
+   "subType": "INDEX_TRACKER",
+   "subTypeNote": null,
+   "exchangeOrVenue": "NASDAQ",
+   "currency": "USD",
+   "currencyContext": null,
+   "country": "US",
+   "timezone": "America/New_York",
+   "providerIdentifiers": {
+    "tiingo": "qqq"
+   },
+   "sessionProfile": "US_EQUITY_ETF",
+   "sessionExchange": "XNYS",
+   "publisherProfile": null,
+   "valueSemantics": "PRICE",
+   "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+   "unit": "PRICE_PER_SHARE",
+   "unitId": "USD_PER_SHARE",
+   "changeSemantics": "PERCENT_OF_VALUE",
+   "conversion": "CONVERTIBLE",
+   "source": "tiingo-equity",
+   "status": "ACTIVE",
+   "tier": "REQUIRED",
+   "knownProxiesNotUsed": [],
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+    "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+    "intraday5min": true,
+    "iexQuote": true
+   },
+   "quantity": "SHARE",
+   "tracker": {
+    "tracksIndex": "NASDAQ_100",
+    "tracksIndexName": "Nasdaq-100",
+    "tracksIndexInstrument": "NDX",
+    "isProxy": true,
+    "underlyingType": "INDEX",
+    "displayMarketName": "Nasdaq 100",
+    "trackerDisclosure": "Markt-Tracker: Invesco QQQ",
+    "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+    "differences": [
+     "Verwaltungsgebuehren",
+     "Tracking Difference",
+     "Ausschuettungen (nicht in der Kursreihe)",
+     "US-Handelszeiten statt Berechnungszeit des Index"
+    ]
+   },
+   "segment": "MULTI_ASSET",
+   "findings": []
+  },
+  {
+   "instrumentId": "vu_1c32c969ced1ff",
+   "symbol": "SPY",
+   "name": "SPDR S&P 500 ETF Trust",
+   "nameDe": "SPDR S&P 500 ETF",
+   "assetClass": "ETF",
+   "assetType": "ETF",
+   "subType": "INDEX_TRACKER",
+   "subTypeNote": null,
+   "exchangeOrVenue": "NYSE Arca",
+   "currency": "USD",
+   "currencyContext": null,
+   "country": "US",
+   "timezone": "America/New_York",
+   "providerIdentifiers": {
+    "tiingo": "spy"
+   },
+   "sessionProfile": "US_EQUITY_ETF",
+   "sessionExchange": "XNYS",
+   "publisherProfile": null,
+   "valueSemantics": "PRICE",
+   "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+   "unit": "PRICE_PER_SHARE",
+   "unitId": "USD_PER_SHARE",
+   "changeSemantics": "PERCENT_OF_VALUE",
+   "conversion": "CONVERTIBLE",
+   "source": "tiingo-equity",
+   "status": "ACTIVE",
+   "tier": "REQUIRED",
+   "knownProxiesNotUsed": [],
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+    "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+    "intraday5min": true,
+    "iexQuote": true
+   },
+   "quantity": "SHARE",
+   "tracker": {
+    "tracksIndex": "SP500",
+    "tracksIndexName": "S&P 500",
+    "tracksIndexInstrument": "SPX",
+    "isProxy": true,
+    "underlyingType": "INDEX",
+    "displayMarketName": "S&P 500",
+    "trackerDisclosure": "Markt-Tracker: SPDR S&P 500 ETF (SPY)",
+    "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+    "differences": [
+     "Verwaltungsgebuehren",
+     "Tracking Difference",
+     "Ausschuettungen (nicht in der Kursreihe)",
+     "US-Handelszeiten statt Berechnungszeit des Index"
+    ]
+   },
+   "segment": "MULTI_ASSET",
+   "findings": []
+  },
+  {
+   "instrumentId": "vu_1f2b3599c3a2b8",
+   "symbol": "DIA",
+   "name": "SPDR Dow Jones Industrial Average ETF Trust",
+   "nameDe": "SPDR Dow Jones Industrial Average ETF",
+   "assetClass": "ETF",
+   "assetType": "ETF",
+   "subType": "INDEX_TRACKER",
+   "subTypeNote": null,
+   "exchangeOrVenue": "NYSE Arca",
+   "currency": "USD",
+   "currencyContext": null,
+   "country": "US",
+   "timezone": "America/New_York",
+   "providerIdentifiers": {
+    "tiingo": "dia"
+   },
+   "sessionProfile": "US_EQUITY_ETF",
+   "sessionExchange": "XNYS",
+   "publisherProfile": null,
+   "valueSemantics": "PRICE",
+   "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+   "unit": "PRICE_PER_SHARE",
+   "unitId": "USD_PER_SHARE",
+   "changeSemantics": "PERCENT_OF_VALUE",
+   "conversion": "CONVERTIBLE",
+   "source": "tiingo-equity",
+   "status": "ACTIVE",
+   "tier": "REQUIRED",
+   "knownProxiesNotUsed": [],
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+    "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+    "intraday5min": true,
+    "iexQuote": true
+   },
+   "quantity": "SHARE",
+   "tracker": {
+    "tracksIndex": "DOW_JONES_INDUSTRIAL_AVERAGE",
+    "tracksIndexName": "Dow Jones Industrial Average",
+    "tracksIndexInstrument": "DJI",
+    "isProxy": true,
+    "underlyingType": "INDEX",
+    "displayMarketName": "Dow Jones",
+    "trackerDisclosure": "Markt-Tracker: SPDR Dow Jones Industrial Average ETF (DIA)",
+    "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+    "differences": [
+     "Verwaltungsgebuehren",
+     "Tracking Difference",
+     "Ausschuettungen (nicht in der Kursreihe)",
+     "US-Handelszeiten statt Berechnungszeit des Index"
+    ]
+   },
+   "segment": "MULTI_ASSET",
+   "findings": []
+  },
+  {
+   "instrumentId": "vu_22b78788c725e7",
+   "symbol": "IWM",
+   "name": "iShares Russell 2000 ETF",
+   "nameDe": "iShares Russell 2000 ETF",
+   "assetClass": "ETF",
+   "assetType": "ETF",
+   "subType": "INDEX_TRACKER",
+   "subTypeNote": null,
+   "exchangeOrVenue": "NYSE Arca",
+   "currency": "USD",
+   "currencyContext": null,
+   "country": "US",
+   "timezone": "America/New_York",
+   "providerIdentifiers": {
+    "tiingo": "iwm"
+   },
+   "sessionProfile": "US_EQUITY_ETF",
+   "sessionExchange": "XNYS",
+   "publisherProfile": null,
+   "valueSemantics": "PRICE",
+   "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+   "unit": "PRICE_PER_SHARE",
+   "unitId": "USD_PER_SHARE",
+   "changeSemantics": "PERCENT_OF_VALUE",
+   "conversion": "CONVERTIBLE",
+   "source": "tiingo-equity",
+   "status": "ACTIVE",
+   "tier": "OPTIONAL",
+   "knownProxiesNotUsed": [],
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+    "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+    "intraday5min": true,
+    "iexQuote": true
+   },
+   "quantity": "SHARE",
+   "tracker": {
+    "tracksIndex": "RUSSELL_2000",
+    "tracksIndexName": "Russell 2000",
+    "tracksIndexInstrument": "RUT",
+    "isProxy": true,
+    "underlyingType": "INDEX",
+    "displayMarketName": "Russell 2000",
+    "trackerDisclosure": "Markt-Tracker: iShares Russell 2000 ETF (IWM)",
+    "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+    "differences": [
+     "Verwaltungsgebuehren",
+     "Tracking Difference",
+     "Ausschuettungen (nicht in der Kursreihe)",
+     "US-Handelszeiten statt Berechnungszeit des Index"
+    ]
+   },
+   "segment": "MULTI_ASSET",
+   "findings": []
+  },
+  {
+   "instrumentId": "vu_e9c9716259b38c",
+   "symbol": "FEZ",
+   "name": "SPDR EURO STOXX 50 ETF",
+   "nameDe": "SPDR EURO STOXX 50 ETF",
+   "assetClass": "ETF",
+   "assetType": "ETF",
+   "subType": "INDEX_TRACKER",
+   "subTypeNote": null,
+   "exchangeOrVenue": "NYSE Arca",
+   "currency": "USD",
+   "currencyContext": null,
+   "country": "US",
+   "timezone": "America/New_York",
+   "providerIdentifiers": {
+    "tiingo": "fez"
+   },
+   "sessionProfile": "US_EQUITY_ETF",
+   "sessionExchange": "XNYS",
+   "publisherProfile": null,
+   "valueSemantics": "PRICE",
+   "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+   "unit": "PRICE_PER_SHARE",
+   "unitId": "USD_PER_SHARE",
+   "changeSemantics": "PERCENT_OF_VALUE",
+   "conversion": "CONVERTIBLE",
+   "source": "tiingo-equity",
+   "status": "ACTIVE",
+   "tier": "OPTIONAL",
+   "knownProxiesNotUsed": [],
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+    "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+    "intraday5min": true,
+    "iexQuote": true
+   },
+   "quantity": "SHARE",
+   "tracker": {
+    "tracksIndex": "EURO_STOXX_50",
+    "tracksIndexName": "EURO STOXX 50",
+    "tracksIndexInstrument": "SX5E",
+    "isProxy": true,
+    "underlyingType": "INDEX",
+    "displayMarketName": "Euro Stoxx 50",
+    "trackerDisclosure": "Markt-Tracker: SPDR EURO STOXX 50 ETF (FEZ) - in USD notiert, enthaelt den EUR/USD-Effekt",
+    "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+    "differences": [
+     "Verwaltungsgebuehren",
+     "Tracking Difference",
+     "Ausschuettungen (nicht in der Kursreihe)",
+     "US-Handelszeiten statt Berechnungszeit des Index"
+    ],
+    "currencyNote": "US-notiert in USD auf europaeische Aktien: die Bewegung enthaelt die Wechselkursbewegung EUR/USD."
+   },
+   "segment": "MULTI_ASSET",
+   "findings": []
+  },
+  {
+   "instrumentId": "vu_852b50641da44f",
+   "symbol": "URTH",
+   "name": "iShares MSCI World ETF",
+   "nameDe": "iShares MSCI World ETF",
+   "assetClass": "ETF",
+   "assetType": "ETF",
+   "subType": "INDEX_TRACKER",
+   "subTypeNote": null,
+   "exchangeOrVenue": "NYSE Arca",
+   "currency": "USD",
+   "currencyContext": null,
+   "country": "US",
+   "timezone": "America/New_York",
+   "providerIdentifiers": {
+    "tiingo": "urth"
+   },
+   "sessionProfile": "US_EQUITY_ETF",
+   "sessionExchange": "XNYS",
+   "publisherProfile": null,
+   "valueSemantics": "PRICE",
+   "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+   "unit": "PRICE_PER_SHARE",
+   "unitId": "USD_PER_SHARE",
+   "changeSemantics": "PERCENT_OF_VALUE",
+   "conversion": "CONVERTIBLE",
+   "source": "tiingo-equity",
+   "status": "ACTIVE",
+   "tier": "OPTIONAL",
+   "knownProxiesNotUsed": [],
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+    "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+    "intraday5min": true,
+    "iexQuote": true
+   },
+   "quantity": "SHARE",
+   "tracker": {
+    "tracksIndex": "MSCI_WORLD",
+    "tracksIndexName": "MSCI World",
+    "tracksIndexInstrument": null,
+    "isProxy": true,
+    "underlyingType": "INDEX",
+    "displayMarketName": "MSCI World",
+    "trackerDisclosure": "Markt-Tracker: iShares MSCI World ETF (URTH)",
+    "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+    "differences": [
+     "Verwaltungsgebuehren",
+     "Tracking Difference",
+     "Ausschuettungen (nicht in der Kursreihe)",
+     "US-Handelszeiten statt Berechnungszeit des Index"
+    ],
+    "currencyNote": "US-notiert in USD; die Bewegung enthaelt die Wechselkursbewegungen der Nicht-USD-Maerkte."
+   },
+   "segment": "MULTI_ASSET",
+   "findings": []
+  },
+  {
+   "instrumentId": "vu_ddb5be2e6050e3",
+   "symbol": "EEM",
+   "name": "iShares MSCI Emerging Markets ETF",
+   "nameDe": "iShares MSCI Emerging Markets ETF",
+   "assetClass": "ETF",
+   "assetType": "ETF",
+   "subType": "INDEX_TRACKER",
+   "subTypeNote": null,
+   "exchangeOrVenue": "NYSE Arca",
+   "currency": "USD",
+   "currencyContext": null,
+   "country": "US",
+   "timezone": "America/New_York",
+   "providerIdentifiers": {
+    "tiingo": "eem"
+   },
+   "sessionProfile": "US_EQUITY_ETF",
+   "sessionExchange": "XNYS",
+   "publisherProfile": null,
+   "valueSemantics": "PRICE",
+   "priceSemantics": "ETF_CLOSE_SPLIT_ADJUSTED; juengster Stand: Tiingo-Referenzkurs (tngoLast) ueber IEX",
+   "unit": "PRICE_PER_SHARE",
+   "unitId": "USD_PER_SHARE",
+   "changeSemantics": "PERCENT_OF_VALUE",
+   "conversion": "CONVERTIBLE",
+   "source": "tiingo-equity",
+   "status": "ACTIVE",
+   "tier": "OPTIONAL",
+   "knownProxiesNotUsed": [],
+   "gap": null,
+   "measured": {
+    "in": "quant/data/market/capabilities/tiingo-tracker-probe.json",
+    "identity": "Name/Beschreibung bei Tiingo nennen den Index",
+    "intraday5min": true,
+    "iexQuote": true
+   },
+   "quantity": "SHARE",
+   "tracker": {
+    "tracksIndex": "MSCI_EMERGING_MARKETS",
+    "tracksIndexName": "MSCI Emerging Markets",
+    "tracksIndexInstrument": null,
+    "isProxy": true,
+    "underlyingType": "INDEX",
+    "displayMarketName": "Schwellenlaender",
+    "trackerDisclosure": "Markt-Tracker: iShares MSCI Emerging Markets ETF (EEM)",
+    "performanceSemantics": "ETF_PRICE_RETURN_SPLIT_ADJUSTED",
+    "differences": [
+     "Verwaltungsgebuehren",
+     "Tracking Difference",
+     "Ausschuettungen (nicht in der Kursreihe)",
+     "US-Handelszeiten statt Berechnungszeit des Index"
+    ],
+    "currencyNote": "US-notiert in USD; die Bewegung enthaelt die Wechselkursbewegungen der Schwellenlaenderwaehrungen."
+   },
    "segment": "MULTI_ASSET",
    "findings": []
   }
