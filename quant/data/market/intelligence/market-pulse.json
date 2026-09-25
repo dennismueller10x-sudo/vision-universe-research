@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.0.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-09-25T09:08:19.951Z",
+ "generatedAt": "2026-09-25T09:37:22.442Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -199,22 +199,22 @@
    "evidence": [
     {
      "key": "vol20",
-     "label": "Schwankung S&P 500-Tracker SPY (20 Tage, annualisiert)",
+     "label": "Schwankung von SPY (S&P-500-Markttracker), 20 Tage annualisiert",
      "text": "10,8 %",
      "value": 10.84,
-     "context": "Median seit 1995-02-01: 13,9 %",
+     "context": "Median von SPY (S&P-500-Markttracker) seit 1995-02-01: 13,9 %",
      "asOf": "2026-09-24"
     },
     {
      "key": "drawdown52w",
-     "label": "Abstand zum 52-Wochen-Hoch",
+     "label": "Abstand von SPY (S&P-500-Markttracker) zum 52-Wochen-Hoch",
      "text": "−1,4 %",
      "value": -1.38,
      "asOf": "2026-09-24"
     }
    ],
    "explanation": "Starke Schwankungen bedeuten größere Tagesbewegungen in beide Richtungen. Das ist kein Signal zum Kaufen oder Verkaufen.",
-   "methodology": "Schwankung: annualisierte Standardabweichung der täglichen Log-Renditen des Trackers über 20 Handelstage, verglichen mit seiner Verteilung seit 1995-02-01 (7964 Beobachtungen). Erhöht ab dem 75. Perzentil (19,7 %), hoch ab dem 90. Perzentil (26,9 %). Rückgang vom 52-Wochen-Hoch: erhöht ab -10 % (Korrektur), hoch ab -20 % (Bärenmarkt-Konvention). Es gilt die höhere der beiden Stufen.",
+   "methodology": "Schwankung: annualisierte Standardabweichung der täglichen Log-Renditen von SPY (S&P-500-Markttracker) – Tiingo, split-bereinigter Schlusskurs ohne Ausschüttungen; ETF-Kurs, kein Indexstand – über 20 Handelstage, verglichen mit der Verteilung desselben Trackers seit 1995-02-01 (7964 Beobachtungen). Erhöht ab dem 75. Perzentil (19,7 %), hoch ab dem 90. Perzentil (26,9 %). Rückgang vom 52-Wochen-Hoch: erhöht ab -10 % (Korrektur), hoch ab -20 % (Bärenmarkt-Konvention). Es gilt die höhere der beiden Stufen.",
    "levels": {
     "volatility": "NORMAL",
     "drawdown": "NORMAL"

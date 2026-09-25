@@ -3,7 +3,12 @@
   "methodVersion": "market-pulse-1.0.0",
   "note": "Versionierte Schwellen des deskriptiven Market Pulse. Kein Quant Market Regime (FAIL_CLOSED), kein Macro Regime (NOT_CERTIFIED), kein Gesamtscore. Die Volatilitaets-Schwellen sind Perzentile der eigenen Historie und werden von scripts/market/build-market-pulse.mjs --calibrate reproduziert (quant/data/market/intelligence/market-pulse-calibration.json); ein Test prueft die Uebereinstimmung.",
   "trackers": {
-    "symbols": ["SPY", "QQQ", "DIA", "IWM"],
+    "symbols": [
+      "SPY",
+      "QQQ",
+      "DIA",
+      "IWM"
+    ],
     "note": "Breite US-Markt-Tracker aus dem Multi-Asset-Core (ETF-Kurse, keine Indexstaende). FEZ/URTH/EEM bilden Nicht-US-Maerkte bzw. Weltmaerkte ab und stehen deshalb nicht im US-Trend."
   },
   "trend": {
@@ -14,6 +19,13 @@
   },
   "risk": {
     "benchmark": "SPY",
+    "benchmarkLabel": "SPY (S&P-500-Markttracker)",
+    "series": {
+      "path": "quant/data/market/multi-asset/series/SPY.json",
+      "source": "tiingo-equity",
+      "priceSeriesType": "SPLIT_ADJUSTED_CLOSE",
+      "note": "ETF-Anteilspreis ueber den lizenzierten Tiingo-Pfad (split-bereinigt, ohne Ausschuettungen) - kein Indexstand, keine FMP-/FRED-/sonstige S&P-500-Indexreihe."
+    },
     "vol20": {
       "calibratedFrom": "1995-02-01",
       "samples": 7964,
@@ -34,7 +46,11 @@
   "breadth": {
     "universe": {
       "label": "US-Aktienuniversum von Vision Universe (Stammaktien, ADR und REIT mit Faktorzeile)",
-      "instrumentTypes": ["EQUITY_COMMON", "ADR", "REIT"]
+      "instrumentTypes": [
+        "EQUITY_COMMON",
+        "ADR",
+        "REIT"
+      ]
     },
     "majorityPercent": 50,
     "basis": "DEFINITIONAL",
@@ -49,12 +65,31 @@
     "notable": 1.0,
     "basis": "SELF_HISTORY_RATIO",
     "assets": {
-      "EQUITY": { "symbol": "SPY", "kind": "PERCENT" },
-      "US10Y": { "symbol": "US10Y", "kind": "BP" },
-      "GOLD": { "symbol": "XAUUSD", "kind": "PERCENT" },
-      "OIL": { "symbol": "WTI", "kind": "PERCENT" },
-      "BTC": { "symbol": "BTCUSD", "kind": "PERCENT" },
-      "EURUSD": { "symbol": "EURUSD", "kind": "PERCENT", "path": "quant/data/market/fx/ecb/EURUSD.json" }
+      "EQUITY": {
+        "symbol": "SPY",
+        "kind": "PERCENT"
+      },
+      "US10Y": {
+        "symbol": "US10Y",
+        "kind": "BP"
+      },
+      "GOLD": {
+        "symbol": "XAUUSD",
+        "kind": "PERCENT"
+      },
+      "OIL": {
+        "symbol": "WTI",
+        "kind": "PERCENT"
+      },
+      "BTC": {
+        "symbol": "BTCUSD",
+        "kind": "PERCENT"
+      },
+      "EURUSD": {
+        "symbol": "EURUSD",
+        "kind": "PERCENT",
+        "path": "quant/data/market/fx/ecb/EURUSD.json"
+      }
     }
   },
   "marketNow": {
