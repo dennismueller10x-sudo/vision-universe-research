@@ -873,20 +873,52 @@ function strategyMatchSection(match,index,ticker){
   el('h2',{text:LQ('strategyMatch')}),
   el('p',{class:'muted',text:LB('strategyMatch')})]);
  if(!match||match.state!=='AVAILABLE'){
-  section.append(notice(LU('strategyMatch'),
-   match?.reason==='NOT_COVERED_BY_FACTOR_EVIDENCE'
-    ?'Für diesen Titel liegt keine Quant-V2-Faktorevidenz vor, gegen die Profile geprüft werden könnten.'
-    :'Die Profile oder die Faktorevidenz konnten nicht geladen oder nicht geprüft werden. Es werden keine Ersatzprofile gebildet.'));
+  /* DREI GRUENDE, DIE NICHT DASSELBE SIND.
+  
+     Gemessen am 25.09.2026: von 6.358 Titeln hat bei 810 KEIN Profil genug
+     messbare Bedingungen - 797 davon, weil zu den verlangten Eigenschaften
+     gar keine Faktorevidenz vorliegt, 13 (103 Profilfaelle), weil zu wenige
+     Bedingungen messbar sind. Sie alle bekamen den Satz "konnten nicht
+     geladen oder nicht geprueft werden". Geladen und geprueft wurde aber
+     sehr wohl; das Ergebnis ist, dass nichts messbar war. Ein
+     Ladefehler-Satz vor einem Datenbefund ist eine falsche Auskunft ueber
+     die eigene Lage - und sie laesst den Leser an der falschen Stelle
+     suchen. */
+  section.append(notice(LU('strategyMatch'),{
+   NOT_COVERED_BY_FACTOR_EVIDENCE:'Für diesen Titel liegt keine Quant-V2-Faktorevidenz vor, gegen die Profile geprüft werden könnten.',
+   NO_EVIDENCE:'Zu den Eigenschaften, die diese Profile verlangen, liegt für diesen Titel keine Faktorevidenz vor. Die Profile wurden geprüft; messbar war keine ihrer Bedingungen. Das ist eine Lücke in der Datengrundlage und keine Aussage darüber, dass der Titel zu keinem Stil passt.',
+   INSUFFICIENT_MEASURABLE_CONDITIONS:'Für jedes Profil sind zu wenige Bedingungen messbar, um eine Übereinstimmung zu bilden. Aus dem Rest wird keine gebildet - auch nicht als Näherung.',
+   INSUFFICIENT_MEASURABLE_WEIGHT:'Die messbaren Bedingungen tragen in jedem Profil zu wenig Gewicht, um eine Übereinstimmung zu bilden.'
+  }[match?.reason]||'Die Profile oder die Faktorevidenz konnten nicht geladen oder nicht geprüft werden. Es werden keine Ersatzprofile gebildet.'));
   return section;
  }
  const ordered=[...match.profiles].sort((a,b)=>(b.state==='AVAILABLE'?b.match:-1)-(a.state==='AVAILABLE'?a.match:-1));
- /* Zuerst die Antwort in einem Satz, dann erst die Tabelle. */
+ /* Zuerst die Antwort in einem Satz, dann erst die Tabelle.
+
+    DREI FAELLE, NICHT ZWEI. Gemessen am 25.09.2026 ueber 6.358 Titel:
+    2.738 haben einen Stil ab 40 %, 2.810 keinen darueber - und 810 haben
+    KEIN einziges messbares Profil. Die dritte Gruppe bekam den Satz der
+    zweiten: "Zu keinem Anlagestil passt dieser Titel derzeit gut ... Das
+    ist eine Antwort, keine Luecke." Bei ihnen ist es genau umgekehrt. Ein
+    nicht messbares Profil als Nichtpassung auszugeben ist die Art von
+    stiller Verwechslung, die §40 ausschliesst: sie behauptet ein Ergebnis,
+    wo nichts gerechnet wurde. */
  const best=ordered.find(profile=>profile.state==='AVAILABLE');
- section.append(best&&best.match>=40
-  ?el('p',{class:'match-lead'},[el('span',{text:'Diese Aktie passt aktuell am besten zu: '}),el('strong',{text:best.label}),
-    el('span',{class:'muted',text:' — '+best.conditions.filter(c=>c.state==='MET').length+' von '+
-     best.conditions.filter(c=>c.state!=='NOT_MEASURABLE').length+' Bedingungen erfüllt.'})])
-  :notice('Zu keinem Anlagestil passt dieser Titel derzeit gut',VUProductLanguage.negative('strategyMatch')+' Das ist eine Antwort, keine Lücke.'));
+ if(best&&best.match>=40){
+  const met=best.conditions.filter(c=>c.state==='MET').length;
+  const messbar=best.conditions.filter(c=>c.state!=='NOT_MEASURABLE').length;
+  const ohne=best.conditions.length-messbar;
+  /* "2 von 2 Bedingungen" liest sich vollstaendig. Waren drei weitere
+     nicht messbar, ist es das nicht - und die Karte darunter sagt es
+     ohnehin. Derselbe Satz, dieselbe Einschraenkung. */
+  section.append(el('p',{class:'match-lead'},[el('span',{text:'Diese Aktie passt aktuell am besten zu: '}),
+   el('strong',{text:best.label}),
+   el('span',{class:'muted',text:' — '+met+' von '+messbar+' messbaren Bedingungen erfüllt'
+    +(ohne?', '+ohne+' weitere '+(ohne===1?'ist':'sind')+' für diesen Titel nicht messbar':'')+'.'})]));
+ }else{
+  section.append(notice('Zu keinem Anlagestil passt dieser Titel derzeit gut',
+   VUProductLanguage.negative('strategyMatch')+' Das ist eine Antwort, keine Lücke.'));
+ }
  section.append(
   el('p',{class:'muted',text:'Ein Anlagestil ist ein Satz fester Bedingungen. Gezählt wird, wie viele davon dieser Titel erfüllt — das ist kein Rang, keine Erfolgswahrscheinlichkeit und keine Renditeaussage.'}),
   el('div',{class:'match-grid'},ordered.map(matchCard)),

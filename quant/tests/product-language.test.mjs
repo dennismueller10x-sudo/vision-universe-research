@@ -413,3 +413,22 @@ test("a missing factor row hides the factors, not everything else", () => {
      nicht dadurch behoben, dass daneben etwas anderes steht. */
   assert.ok(bisReturn.includes("keine Ersatzwerte gebildet"));
 });
+
+test("the style match separates a finding from a gap, and says what left the denominator", () => {
+  /* Gemessen ueber 6.358 Titel: 2.738 haben einen Stil ab 40 %, 2.810
+     keinen darueber, 810 kein einziges messbares Profil. Die dritte Gruppe
+     bekam den Ladefehler-Satz ("konnten nicht geladen oder nicht geprueft
+     werden"), obwohl geladen und geprueft wurde und das Ergebnis lautet:
+     nichts war messbar. Und 1.049 Titel bekamen einen Leadsatz, dessen
+     Nenner stillschweigend kleiner war als die Regel. */
+  assert.match(experience, /NO_EVIDENCE:'Zu den Eigenschaften, die diese Profile verlangen/);
+  assert.match(experience, /INSUFFICIENT_MEASURABLE_CONDITIONS:'Für jedes Profil sind zu wenige Bedingungen messbar/);
+  assert.match(experience, /INSUFFICIENT_MEASURABLE_WEIGHT:'Die messbaren Bedingungen tragen in jedem Profil zu wenig Gewicht/);
+  /* Der Leadsatz nennt beides: den Nenner und was ihn verlassen hat. */
+  assert.match(experience, /messbaren Bedingungen erfüllt'/);
+  assert.match(experience, /weitere '\+\(ohne===1\?'ist':'sind'\)\+' für diesen Titel nicht messbar/);
+  /* Und die drei Gruende stehen dort, wo der Zustand sie traegt - nicht als
+     vierter, unerreichbarer Zweig weiter unten. */
+  const reasons = require("../engines/strategy-match.js").UNAVAILABLE_REASONS;
+  for (const reason of reasons) assert.ok(experience.includes(reason + ":'"), reason + " hat keinen eigenen Satz");
+});
