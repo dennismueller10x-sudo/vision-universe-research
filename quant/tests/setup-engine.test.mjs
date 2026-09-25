@@ -535,3 +535,45 @@ test("every field and every value the explanation can show has a user label", ()
     }
   }
 });
+
+test("a value that means 'not determinable' is not counted as unmet", () => {
+  /* Fuenf der neun Filterfelder stehen nicht in coverage.requiredFields, und
+     die Pflichtpruefung prueft ohnehin nur ANWESENHEIT: "UNDETERMINED" ist
+     ein Wert. Gemessen am 25.09.2026: 146 von 5.676 Titeln tragen beim
+     Volumenzustand "nicht auswertbar", 56 in einem Pflichtfeld einen
+     unbestimmten Wert. Die Regel greift dann zurecht nicht - behauptet wird
+     damit aber nichts ueber den Titel, und die Oberflaeche darf dafuer nicht
+     dasselbe Zeichen zeigen wie fuer eine widerlegte Bedingung. */
+  const row = { ...confirmedRow, technicalVolumeState: "UNAVAILABLE" };
+  const confirmed = explain(row).find((r) => r.ruleId === "setup.confirmed.structure-trend-volume");
+  const volume = confirmed.conditions.find((c) => c.field === "technicalVolumeState");
+  assert.equal(volume.met, false, "die Regel greift nicht - das bleibt so");
+  assert.equal(volume.measurable, false, "aber sie ist nicht widerlegt, sondern unmessbar");
+  /* Und ein bestimmter Wert bleibt messbar, auch wenn er nicht passt. */
+  const trend = confirmed.conditions.find((c) => c.field === "technicalTrend");
+  assert.equal(trend.measurable, true);
+  const negativ = explain({ ...confirmedRow, technicalTrend: "BEARISH" })
+    .find((r) => r.ruleId === "setup.confirmed.structure-trend-volume")
+    .conditions.find((c) => c.field === "technicalTrend");
+  assert.equal(negativ.met, false);
+  assert.equal(negativ.measurable, true);
+  /* 'NONE' ist eine Feststellung und kein fehlender Wert - "keine Zone
+     beschrieben" ist gemessen. */
+  assert.equal(Setup.determinable("NONE"), true);
+  assert.deepEqual(Setup.UNDETERMINABLE, ["UNAVAILABLE", "UNDETERMINED"]);
+});
+
+test("the hydrated observation carries the same distinction", () => {
+  /* Die gegriffene Regel kommt aus hydrate(), die anderen aus
+     conditionsOf() - wenn nur eine der beiden das Feld fuehrt, zeigt die
+     Oberflaeche zwei verschiedene Zeichen fuer denselben Zustand. */
+  const observation = evaluate({ ...confirmedRow, technicalVolumeState: "UNAVAILABLE" });
+  const compacted = Setup.compact(observation);
+  const hydrated = Setup.hydrate(compacted, { mappingVersion: mapping.mappingVersion, cascade: { rules: mapping.cascade.rules } });
+  for (const condition of hydrated.conditions) {
+    assert.equal(typeof condition.measurable, "boolean");
+    if (condition.value === "UNAVAILABLE" || condition.value === "UNDETERMINED") {
+      assert.equal(condition.measurable, false, condition.field);
+    }
+  }
+});

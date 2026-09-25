@@ -448,3 +448,17 @@ test("both pattern surfaces count the checkable patterns, not the registered one
      Antworten rechnen. */
   assert.match(experience, /patterns\.coverage/);
 });
+
+test("the setup conditions show three marks, not two", () => {
+  /* "Nicht erfuellt" und "nicht messbar" sind zwei Aussagen. Der Strategy
+     Match unterscheidet sie seit langem mit '–'; die Setup-Bedingungen
+     zeigten fuer beides '○'. */
+  assert.match(experience, /const messbar=condition\.measurable!==false;/);
+  assert.match(experience, /text:!messbar\?'–':condition\.met\?'✓':'○'/);
+  assert.match(experience, /nicht messbar · zählt weder als erfüllt noch als verletzt/);
+  /* Und der Nenner der Zaehlzeile verliert sie, statt sie als verletzt zu
+     fuehren. */
+  assert.match(experience, /messbaren Bedingungen dieser Regel erfüllt/);
+  assert.match(experience, /ohne auswertbaren Wert/);
+  assert.equal(/' von '\+conditions\.length\+' Bedingungen dieser Regel erfüllt'/.test(experience), false);
+});

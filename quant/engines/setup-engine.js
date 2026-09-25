@@ -562,6 +562,28 @@
     return Query.matches(row, rule.filters);
   }
 
+  /* WANN EIN WERT KEINE AUSSAGE IST.
+
+     Fuenf der neun Felder, gegen die die Kaskade filtert, stehen NICHT in
+     coverage.requiredFields - ein Titel kann also eine veroeffentlichte
+     Beobachtung haben und trotzdem bei einem davon "nicht bestimmbar"
+     tragen. Gemessen am 25.09.2026: 146 von 5.676 Titeln beim
+     Volumenzustand, 61 davon zusaetzlich beim Momentum.
+
+     Die Regel greift dann zurecht nicht - aber "nicht erfuellt" und "nicht
+     messbar" sind zwei verschiedene Aussagen, und die Oberflaeche soll
+     dafuer nicht dasselbe Zeichen zeigen. Genau dieselbe Unterscheidung
+     fuehrt der Strategy Match schon.
+
+     NONE gehoert ausdruecklich NICHT dazu: "keine Zone beschrieben" ist
+     eine Feststellung und kein fehlender Wert. */
+  var UNDETERMINABLE = ["UNAVAILABLE", "UNDETERMINED"];
+
+  function determinable(value) {
+    if (value === null || value === undefined) return false;
+    return UNDETERMINABLE.indexOf(value) === -1;
+  }
+
   /* What the reader gets to check. One line per condition of the rule that
      actually decided the state - value, demand and outcome. */
   function conditionsOf(rule, row, context) {
@@ -577,7 +599,8 @@
       out.push({
         kind: "FIELD", field: filter.field, label: field ? field.label : filter.field,
         operator: filter.operator, demand: filter.value, value: row[filter.field] === undefined ? null : row[filter.field],
-        met: row[filter.field] === null || row[filter.field] === undefined ? false : Query.matches(row, [filter])
+        met: row[filter.field] === null || row[filter.field] === undefined ? false : Query.matches(row, [filter]),
+        measurable: determinable(row[filter.field])
       });
     });
     return out;
@@ -837,7 +860,10 @@
           field: source ? source.field : null, input: source ? source.input : null,
           label: field ? field.label : (source ? source.input : entry[0]),
           operator: source ? source.operator : null, demand: source ? source.value : null,
-          value: entry[1], met: entry[2] === 1
+          value: entry[1], met: entry[2] === 1,
+          /* Aus dem veroeffentlichten Wert selbst abgeleitet, mit derselben
+             Regel wie bei der Auswertung - nicht zweitens definiert. */
+          measurable: (source && source.input) ? true : determinable(entry[1])
         };
       })
     };
@@ -916,6 +942,8 @@
   var api = {
     ENGINE_VERSION: ENGINE_VERSION,
     explainCascade: explainCascade,
+    UNDETERMINABLE: UNDETERMINABLE.slice(),
+    determinable: determinable,
     OBSERVATION_SCHEMA: OBSERVATION_SCHEMA,
     OBSERVATION_INDEX_SCHEMA: OBSERVATION_INDEX_SCHEMA,
     SHARD_SCHEMA: SHARD_SCHEMA,

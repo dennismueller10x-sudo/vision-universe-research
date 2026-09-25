@@ -637,9 +637,17 @@ function setupDemandText(condition){
 function setupCondition(condition){
  const ist=setupValueText(condition,condition.value);
  const verlangt=setupDemandText(condition);
- const zeile=[verlangt,ist===null?null:'aktuell '+ist].filter(Boolean).join(' · ');
- return el('li',{class:'setup-condition '+(condition.met?'is-met':'is-open')},[
-  el('span',{class:'setup-mark','aria-hidden':'true',text:condition.met?'✓':'○'}),
+ /* "Nicht erfuellt" und "nicht messbar" bekommen nicht dasselbe Zeichen.
+    Gemessen: 146 von 5.676 Titeln tragen beim Volumenzustand "nicht
+    auswertbar", 61 zusaetzlich beim Momentum - fuenf der neun Filterfelder
+    stehen nicht in coverage.requiredFields. Die Regel greift dann zurecht
+    nicht; behauptet wird damit aber nichts ueber den Titel. Dieselbe
+    Unterscheidung fuehrt der Strategy Match mit demselben Zeichen. */
+ const messbar=condition.measurable!==false;
+ const zeile=[verlangt,ist===null?null:'aktuell '+ist,
+  messbar?null:'nicht messbar · zählt weder als erfüllt noch als verletzt'].filter(Boolean).join(' · ');
+ return el('li',{class:'setup-condition '+(!messbar?'is-missing':condition.met?'is-met':'is-open')},[
+  el('span',{class:'setup-mark','aria-hidden':'true',text:!messbar?'–':condition.met?'✓':'○'}),
   el('div',{},[el('span',{text:setupFieldTerm(condition)}),
    zeile?el('span',{class:'muted',text:zeile}):null,
    el('details',{class:'setup-internal'},[el('summary',{text:'Feld & Vergleich'}),
@@ -698,7 +706,8 @@ function setupChange(observation){
  for(const rule of offen){
   block.append(el('article',{class:'setup-change-rule'},[
    el('h3',{},[el('span',{class:'setup-badge state-'+rule.state,text:L(rule.state)}),
-    el('span',{class:'muted',text:rule.met+' von '+rule.total+' Bedingungen gelten schon'})]),
+    el('span',{class:'muted',text:rule.met+' von '
+     +rule.conditions.filter(c=>c.measurable!==false).length+' messbaren Bedingungen gelten schon'})]),
    el('p',{class:'muted',text:rule.plain}),
    el('ul',{class:'setup-conditions'},rule.conditions.map(setupCondition))]));
  }
@@ -756,8 +765,11 @@ function setupJourney(setup,observation,index){
   LB('PATH_DEPENDENT_STATES_NOT_ACTIVATED')));
  const conditions=observation.conditions||[];
  const met=conditions.filter(c=>c.met).length;
+ const messbareBedingungen=conditions.filter(c=>c.measurable!==false).length;
+ const ohneWert=conditions.length-messbareBedingungen;
  if(conditions.length){
-  section.append(el('p',{class:'setup-count',text:met+' von '+conditions.length+' Bedingungen dieser Regel erfüllt'}),
+  section.append(el('p',{class:'setup-count',text:met+' von '+messbareBedingungen+' messbaren Bedingungen dieser Regel erfüllt'
+   +(ohneWert?', '+ohneWert+' ohne auswertbaren Wert':'')}),
    el('ul',{class:'setup-conditions'},conditions.map(setupCondition)),
    el('p',{class:'muted',text:'Regel '+observation.matchedRule.ruleId+' · Methodik '+observation.mappingVersion+'. Dieselbe Regel ist als Screener-Abfrage formuliert; sie beschreibt einen Zustand und ist weder Einstiegsregel noch historisch getesteter Auslöser.'}));
  }
