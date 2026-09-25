@@ -112,5 +112,84 @@
   "sectors": {
     "state": "NOT_IMPLEMENTED",
     "reason": "Kein belastbarer Sektor-Vertrag: GICS-nahe Sektoren nur fuer 99 kuratierte Titel, SEC-SIC-Hauptgruppen (5 355 Titel) sind keine Anlegersektoren, keine Marktkapitalisierungen. Die Regel 'wenn Datenqualitaet nicht reicht: nicht implementieren' greift."
+  },
+  "environment": {
+    "version": "market-environment-1.0.0",
+    "basis": "DEFINITIONAL_DECISION_TABLE",
+    "note": "Marktumfeld aus den Dimensionszustaenden, ohne Score und ohne Gewichte. Basisstufe aus TREND und MOMENTUM gemeinsam (Ueberschneidung: beide aus denselben Trackern - deshalb eine Stufe, keine zwei Stimmen). RISK deckelt nach oben, BREADTH bestaetigt (Stufe 4 nur mit aktueller breiter Beteiligung). Fehlende Marktbreite: Deckel UNKNOWN (zaehlt weder dafuer noch dagegen). CROSS_ASSET stimmt nicht mit ab. Stufe = min(Basis + Breitenbonus, Risikodeckel, Breitendeckel). Fehlt TREND, MOMENTUM oder RISK: keine Einordnung.",
+    "levels": [
+      {
+        "id": "DEFENSIVE",
+        "label": "Defensiv",
+        "investor": "Das Marktbild spricht derzeit für erhöhte Vorsicht bei neuen Positionen."
+      },
+      {
+        "id": "CAUTIOUS",
+        "label": "Vorsichtig",
+        "investor": "Gegenwind überwiegt – das Umfeld spricht eher für Zurückhaltung als für zusätzliche Risikobereitschaft."
+      },
+      {
+        "id": "SELECTIVE",
+        "label": "Selektiv",
+        "investor": "Chancen sind vorhanden, das Umfeld unterstützt derzeit aber eher selektive Einstiege als breite Risikobereitschaft."
+      },
+      {
+        "id": "CONSTRUCTIVE",
+        "label": "Konstruktiv",
+        "investor": "Das Umfeld ist konstruktiv, aber noch nicht auf breiter Basis bestätigt."
+      },
+      {
+        "id": "BROADLY_CONSTRUCTIVE",
+        "label": "Breit konstruktiv",
+        "investor": "Das Umfeld ist auf breiter Basis konstruktiv: Trend, Dynamik und Marktbreite ziehen mit, die Schwankungen sind normal."
+      }
+    ],
+    "base": {
+      "POSITIVE|RISING": 3,
+      "POSITIVE|MIXED": 2,
+      "POSITIVE|FALLING": 2,
+      "MIXED|RISING": 2,
+      "MIXED|MIXED": 1,
+      "MIXED|FALLING": 1,
+      "NEGATIVE|RISING": 1,
+      "NEGATIVE|MIXED": 1,
+      "NEGATIVE|FALLING": 0
+    },
+    "broadFrom": 3,
+    "riskCap": {
+      "NORMAL": 4,
+      "ELEVATED": 2,
+      "HIGH": 1
+    },
+    "breadthCap": {
+      "BROAD": 4,
+      "MIXED": 3,
+      "UNKNOWN": 3,
+      "NARROW": 2
+    },
+    "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
+  },
+  "whatMatters": {
+    "max": 4,
+    "near": {
+      "TREND": 3,
+      "MOMENTUM": 3,
+      "RISK": 15
+    },
+    "note": "Nah an der Schwelle: TREND - fehlender Abstand der benoetigten Tracker <= 3 %; MOMENTUM - Median 3M/6M <= 3 % von null; RISK - Abstand zur naechsten Schwelle <= 15 % relativ. Reihenfolge: nahe Dimensionen, fehlende Marktbreite, erste deutliche Cross-Asset-Beobachtung, uebrige einordnungsrelevante Dimensionen."
+  },
+  "history": {
+    "tradingDays": 300,
+    "path": "quant/data/market/intelligence/market-pulse-history.json",
+    "method": "POINT_IN_TIME",
+    "note": "Jeder historische Tag wird nur aus Daten bis zu diesem Tag berechnet: Linien, Renditen und Hochs aus der Reihe bis zum Tag, Volatilitaetsschwellen als Perzentile der Verteilung bis zum Tag (expandierend ab 1995-02-01). Marktbreite ist nicht rekonstruierbar (heutiges Universum waere survivorship-verzerrt) und stammt ausschliesslich aus materialisierten Laeufen ab dem ersten Eintrag im Breitenprotokoll.",
+    "breadthLogMax": 400
+  },
+  "evaluation": {
+    "workflow": ".github/workflows/multi-asset-data.yml",
+    "cron": "20 */3 * * *",
+    "everyHours": 3,
+    "minuteUtc": 20,
+    "note": "Geplanter GitHub-Lauf alle drei Stunden (:20 UTC). Geplante Laeufe koennen sich verzoegern oder ausfallen - die Seite nennt deshalb nur eine ungefaehre naechste Neubewertung."
   }
 }

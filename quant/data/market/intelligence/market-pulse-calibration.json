@@ -67,6 +67,72 @@
    "ELEVATED": 15.3,
    "HIGH": 14.1,
    "NORMAL": 70.6
+  },
+  "environment": {
+   "CAUTIOUS": 22.6,
+   "DEFENSIVE": 13.6,
+   "SELECTIVE": 18.8,
+   "CONSTRUCTIVE": 45
+  },
+  "environmentNote": "Historisch ohne Marktbreite (nicht rekonstruierbar) - die Stufe BROADLY_CONSTRUCTIVE kommt deshalb nicht vor."
+ },
+ "environment": {
+  "version": "market-environment-1.0.0",
+  "table": {
+   "version": "market-environment-1.0.0",
+   "basis": "DEFINITIONAL_DECISION_TABLE",
+   "note": "Marktumfeld aus den Dimensionszustaenden, ohne Score und ohne Gewichte. Basisstufe aus TREND und MOMENTUM gemeinsam (Ueberschneidung: beide aus denselben Trackern - deshalb eine Stufe, keine zwei Stimmen). RISK deckelt nach oben, BREADTH bestaetigt (Stufe 4 nur mit aktueller breiter Beteiligung). Fehlende Marktbreite: Deckel UNKNOWN (zaehlt weder dafuer noch dagegen). CROSS_ASSET stimmt nicht mit ab. Stufe = min(Basis + Breitenbonus, Risikodeckel, Breitendeckel). Fehlt TREND, MOMENTUM oder RISK: keine Einordnung.",
+   "levels": [
+    {
+     "id": "DEFENSIVE",
+     "label": "Defensiv",
+     "investor": "Das Marktbild spricht derzeit für erhöhte Vorsicht bei neuen Positionen."
+    },
+    {
+     "id": "CAUTIOUS",
+     "label": "Vorsichtig",
+     "investor": "Gegenwind überwiegt – das Umfeld spricht eher für Zurückhaltung als für zusätzliche Risikobereitschaft."
+    },
+    {
+     "id": "SELECTIVE",
+     "label": "Selektiv",
+     "investor": "Chancen sind vorhanden, das Umfeld unterstützt derzeit aber eher selektive Einstiege als breite Risikobereitschaft."
+    },
+    {
+     "id": "CONSTRUCTIVE",
+     "label": "Konstruktiv",
+     "investor": "Das Umfeld ist konstruktiv, aber noch nicht auf breiter Basis bestätigt."
+    },
+    {
+     "id": "BROADLY_CONSTRUCTIVE",
+     "label": "Breit konstruktiv",
+     "investor": "Das Umfeld ist auf breiter Basis konstruktiv: Trend, Dynamik und Marktbreite ziehen mit, die Schwankungen sind normal."
+    }
+   ],
+   "base": {
+    "POSITIVE|RISING": 3,
+    "POSITIVE|MIXED": 2,
+    "POSITIVE|FALLING": 2,
+    "MIXED|RISING": 2,
+    "MIXED|MIXED": 1,
+    "MIXED|FALLING": 1,
+    "NEGATIVE|RISING": 1,
+    "NEGATIVE|MIXED": 1,
+    "NEGATIVE|FALLING": 0
+   },
+   "broadFrom": 3,
+   "riskCap": {
+    "NORMAL": 4,
+    "ELEVATED": 2,
+    "HIGH": 1
+   },
+   "breadthCap": {
+    "BROAD": 4,
+    "MIXED": 3,
+    "UNKNOWN": 3,
+    "NARROW": 2
+   },
+   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
   }
  },
  "phases": [
@@ -80,7 +146,9 @@
    "observed": {
     "trend": "NEGATIVE",
     "momentum": "FALLING",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
    },
    "pass": true,
    "checks": [
@@ -88,6 +156,12 @@
      "dimension": "trend",
      "expected": "NEGATIVE",
      "observed": "NEGATIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "hoechstens CAUTIOUS",
+     "observed": "DEFENSIVE",
      "pass": true
     }
    ]
@@ -97,13 +171,16 @@
    "phase": "Finanzkrise",
    "expect": {
     "trend": "NEGATIVE",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE"
    },
    "observedOn": "2008-10-15",
    "observed": {
     "trend": "NEGATIVE",
     "momentum": "FALLING",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
    },
    "pass": true,
    "checks": [
@@ -117,6 +194,12 @@
      "dimension": "risk",
      "expected": "HIGH",
      "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "DEFENSIVE",
+     "observed": "DEFENSIVE",
      "pass": true
     }
    ]
@@ -126,13 +209,16 @@
    "phase": "Tief der Finanzkrise",
    "expect": {
     "trend": "NEGATIVE",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE"
    },
    "observedOn": "2009-03-09",
    "observed": {
     "trend": "NEGATIVE",
     "momentum": "FALLING",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
    },
    "pass": true,
    "checks": [
@@ -146,6 +232,12 @@
      "dimension": "risk",
      "expected": "HIGH",
      "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "DEFENSIVE",
+     "observed": "DEFENSIVE",
      "pass": true
     }
    ]
@@ -160,7 +252,9 @@
    "observed": {
     "trend": "POSITIVE",
     "momentum": "RISING",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
    },
    "pass": true,
    "checks": [
@@ -168,6 +262,12 @@
      "dimension": "trend",
      "expected": "POSITIVE",
      "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "mindestens SELECTIVE",
+     "observed": "CONSTRUCTIVE",
      "pass": true
     }
    ]
@@ -177,13 +277,16 @@
    "phase": "Ruhiger Aufwaertstrend",
    "expect": {
     "trend": "POSITIVE",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE"
    },
    "observedOn": "2013-11-15",
    "observed": {
     "trend": "POSITIVE",
     "momentum": "RISING",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
    },
    "pass": true,
    "checks": [
@@ -197,6 +300,12 @@
      "dimension": "risk",
      "expected": "NORMAL",
      "observed": "NORMAL",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "CONSTRUCTIVE",
+     "observed": "CONSTRUCTIVE",
      "pass": true
     }
    ]
@@ -206,13 +315,16 @@
    "phase": "Niedrige Volatilitaet",
    "expect": {
     "trend": "POSITIVE",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE"
    },
    "observedOn": "2017-06-15",
    "observed": {
     "trend": "POSITIVE",
     "momentum": "RISING",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
    },
    "pass": true,
    "checks": [
@@ -226,6 +338,12 @@
      "dimension": "risk",
      "expected": "NORMAL",
      "observed": "NORMAL",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "CONSTRUCTIVE",
+     "observed": "CONSTRUCTIVE",
      "pass": true
     }
    ]
@@ -241,7 +359,9 @@
    "observed": {
     "trend": "NEGATIVE",
     "momentum": "FALLING",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
    },
    "pass": true,
    "checks": [
@@ -255,6 +375,12 @@
      "dimension": "risk",
      "expected": "HIGH",
      "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "hoechstens CAUTIOUS",
+     "observed": "DEFENSIVE",
      "pass": true
     }
    ]
@@ -264,13 +390,16 @@
    "phase": "Corona-Crash",
    "expect": {
     "trend": "NEGATIVE",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE"
    },
    "observedOn": "2020-03-20",
    "observed": {
     "trend": "NEGATIVE",
     "momentum": "FALLING",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
    },
    "pass": true,
    "checks": [
@@ -284,6 +413,12 @@
      "dimension": "risk",
      "expected": "HIGH",
      "observed": "HIGH",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "DEFENSIVE",
+     "observed": "DEFENSIVE",
      "pass": true
     }
    ]
@@ -298,7 +433,9 @@
    "observed": {
     "trend": "POSITIVE",
     "momentum": "RISING",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
    },
    "pass": true,
    "checks": [
@@ -306,6 +443,12 @@
      "dimension": "trend",
      "expected": "POSITIVE",
      "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "mindestens SELECTIVE",
+     "observed": "CONSTRUCTIVE",
      "pass": true
     }
    ]
@@ -315,13 +458,16 @@
    "phase": "Hoch 2021",
    "expect": {
     "trend": "POSITIVE",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE"
    },
    "observedOn": "2021-11-15",
    "observed": {
     "trend": "POSITIVE",
     "momentum": "RISING",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
    },
    "pass": true,
    "checks": [
@@ -335,6 +481,12 @@
      "dimension": "risk",
      "expected": "NORMAL",
      "observed": "NORMAL",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "CONSTRUCTIVE",
+     "observed": "CONSTRUCTIVE",
      "pass": true
     }
    ]
@@ -350,7 +502,9 @@
    "observed": {
     "trend": "NEGATIVE",
     "momentum": "FALLING",
-    "risk": "HIGH"
+    "risk": "HIGH",
+    "environment": "DEFENSIVE",
+    "environmentLevel": 0
    },
    "pass": true,
    "checks": [
@@ -365,6 +519,12 @@
      "expected": "HIGH",
      "observed": "HIGH",
      "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "hoechstens CAUTIOUS",
+     "observed": "DEFENSIVE",
+     "pass": true
     }
    ]
   },
@@ -378,7 +538,9 @@
    "observed": {
     "trend": "POSITIVE",
     "momentum": "RISING",
-    "risk": "NORMAL"
+    "risk": "NORMAL",
+    "environment": "CONSTRUCTIVE",
+    "environmentLevel": 3
    },
    "pass": true,
    "checks": [
@@ -386,6 +548,12 @@
      "dimension": "trend",
      "expected": "POSITIVE",
      "observed": "POSITIVE",
+     "pass": true
+    },
+    {
+     "dimension": "environment",
+     "expected": "mindestens SELECTIVE",
+     "observed": "CONSTRUCTIVE",
      "pass": true
     }
    ]
