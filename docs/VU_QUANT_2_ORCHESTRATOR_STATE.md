@@ -11,9 +11,18 @@ Updated: 2026-09-25 UTC
 
 ## CURRENT_PHASE
 
-`JOURNEY_MEASURED_BENCHMARK_INDEPENDENT_ONE_OWNER_GATE_OPEN`
+`ONE_RULE_THREE_READERS_STORE_LAG_NAMED_AND_WIRED`
 
-Stand 2026-09-25: die Vergleichsreihe hängt nicht mehr an der Total-Return-Prüfung, die
+Stand 2026-09-25, zweite Hälfte: der Zuordnungswechsel ist veröffentlicht und gegen den
+Alarmvertrag geprüft (6.357 Titel, keine Abweichung, ein `predicateHash`) — §20 ist damit nicht
+mehr Absicht, sondern nachgerechnet. Jeder Titel ohne Kursstruktur nennt seinen eigenen Grund mit
+Zahl statt viermal desselben Satzes. Und der Befund, der beim Nachsehen herausfiel: die
+Produkt-Kursstruktur lag **zehn Handelstage** hinter ihrem eigenen Kursstand, weil
+`sync-history-store.mjs --push` in keinem Workflow verdrahtet war. Der Abstand steht jetzt auf der
+Seite, der Push nach Gate B im Refresh, und ein dispatchbarer Hebel schreibt die Ablage ohne einen
+einzigen Provider-Abruf nach. Vorherige Phase:
+
+Die Vergleichsreihe hängt nicht mehr an der Total-Return-Prüfung, die
 Setup-Experience beantwortet „was würde diesen Zustand ändern", Strategy Match und Pattern Match
 nennen ihren Nenner und ihre Gründe, die historische Evidenz wird gemessen statt konstant verneint,
 und der Aktienchart trägt die Basis, die sein Vertrag bindet. Die Reise ist gezählt, nicht behauptet.
@@ -1192,6 +1201,19 @@ checks are the ones the activation gate measures.
   acceptance uses the exact Pages artifact, deploy job and CI probes.
 
 ## NEXT_DEPENDENCY_CORRECT_STEP
+
+−1. **Die Ablage muss einmal nachgezogen werden, und das ist der naechste Schritt.** Der Push ist
+   verdrahtet (`market-data-refresh.yml`, nach Gate B) und als Hebel dispatchbar
+   (`history-store-sync.yml`) — aber `workflow_dispatch` greift erst, wenn die Datei auf dem
+   Default-Branch liegt, und der Zeitplan des Refresh laeuft ebenfalls nur dort. Bis dahin
+   bleibt die Kursstruktur des Produkts auf dem 2026-09-10, und die Aktienseite sagt das.
+   Zwei Wege, beide ohne Owner-Entscheidung:
+   (a) `market-data-refresh.yml` auf diesem Branch dispatchen — es ist dort dispatchbar, weil es
+   auf `main` existiert, und laeuft mit der Branch-Fassung samt Push. Kostet einen zusaetzlichen
+   inkrementellen Abruf (eigenes Anfragebudget, Waechter faellt zu).
+   (b) Nach dem Merge laeuft der Zeitplan mit dem Push von selbst.
+   Danach eine Materialisierung, und die zehn Handelstage sind weg — mitsamt dem zweiten
+   Setup-Beobachtungsstichtag, an dem der Pfad-Tier haengt.
 
 0. **One owner gate is open** and it does not block the next build: the `total_debt` concept
    mapping, which waits on the measurement the SEC workflow now produces.
