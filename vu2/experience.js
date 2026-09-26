@@ -754,7 +754,7 @@ function factorRow(factor){
   open.append(el('p',{text:factor.bandPlain}),el('p',{class:'muted',text:factor.higherMeans}));
   const peer=factor.peer;
   open.append(el('p',{class:'muted',text:'Verglichen wird gegen '+(peer?.level==='sic4_industry'?'die Branche':peer?.level==='sic_division'?'den Sektor':'das gesamte Universum')+(peer?.confidencePenalty?' · ohne ausreichend große Vergleichsgruppe, daher mit Abschlag auf die Datensicherheit':'')+'. Datensicherheit: '+(factor.confidenceBand?.label||'nicht angegeben')+' ('+pct(factor.confidence)+'), das ist keine Erfolgswahrscheinlichkeit.'}));
- }else open.append(notice('Kein Wert für diesen Faktor',factor.reasonText));
+ }else open.append(notice(factor.reasonHeadline||'Kein Wert für diesen Faktor',factor.reasonText));
  /* Ebene 3: jede Einzelkennzahl mit Rohwert, Position und Zustand. */
  const rows=factor.components.map(c=>el('div',{class:'dna-component'+(c.state==='AVAILABLE'?'':' is-missing')},[
   el('div',{},[el('span',{text:c.label||c.id}),c.window?el('span',{class:'muted',text:c.window}):null]),

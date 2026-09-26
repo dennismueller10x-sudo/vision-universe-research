@@ -305,3 +305,37 @@ test("change inputs describe growth against the prior year, from the same series
   assert.ok(Math.abs(model.change.revenueGrowthAcceleration -
     (model.change.revenueGrowthCurrent - model.change.revenueGrowthPrior)) < 1e-12);
 });
+
+test("welche Rohwerte am Boersenwert haengen, sagt das Verhalten", () => {
+  /* Die Liste im Modul ist eine Behauptung. Hier wird sie gegen die Rechnung
+     selbst geprueft: einmal ohne und einmal mit Boersenwert, und die
+     Differenz der Schluessel IST die Abhaengigkeit. Eine Liste, die von
+     ihrem Code abdriftet, faellt damit auf - und genau diese Abdrift hatte
+     vier prominente Titel den falschen Grund lesen lassen. */
+  const vollstaendig = bankDoc();
+  vollstaendig.annual.revenue = [
+    row(2024, "2024-12-31", 3000, "2025-02-15"),
+    row(2025, "2025-12-31", 3400, "2026-02-15")
+  ];
+  vollstaendig.ttm.revenue = ttm("2026-06-30", 3600, "2026-07-30");
+  vollstaendig.ttm.free_cash_flow = ttm("2026-06-30", 230, "2026-07-30");
+  vollstaendig.ttm.ebitda = ttm("2026-06-30", 320, "2026-07-30");
+  vollstaendig.ttm.net_debt = { fp: "LATEST", end: "2026-06-30", v: 400, filed: "2026-07-30", unit: "USD", kind: "INSTANT" };
+
+  const ohne = Inputs.compute(vollstaendig, CUTOFF, null);
+  const mit = Inputs.compute(vollstaendig, CUTOFF, 4000);
+  const nurMitBoersenwert = Object.keys(mit.raws)
+    .filter((k) => Number.isFinite(mit.raws[k]) && !Number.isFinite(ohne.raws[k]))
+    .sort();
+
+  assert.ok(nurMitBoersenwert.length >= 6, "zu wenige kursabhaengige Groessen im Testdokument: " + nurMitBoersenwert.join(", "));
+  for (const id of nurMitBoersenwert) {
+    assert.ok(Inputs.MARKET_CAP_DEPENDENT_RAWS.includes(id),
+      id + " entsteht nur mit Boersenwert, steht aber nicht in MARKET_CAP_DEPENDENT_RAWS");
+  }
+  /* Und umgekehrt: keine der gelisteten Groessen entsteht ohne Boersenwert. */
+  for (const id of Inputs.MARKET_CAP_DEPENDENT_RAWS) {
+    assert.equal(Number.isFinite(ohne.raws[id]), false,
+      id + " steht in der Liste, entsteht aber auch ohne Boersenwert");
+  }
+});

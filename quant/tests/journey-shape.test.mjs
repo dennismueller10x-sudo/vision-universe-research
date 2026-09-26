@@ -295,3 +295,34 @@ test("die Aktienseite nennt die Handelstage aus dem Verzeichnis", () => {
   assert.equal(mitWert.factorStrength.substantive, true);
   assert.notEqual(mitWert.factorStrength.reason, "INSUFFICIENT_HISTORY");
 });
+
+test("zurueckgehalten liest sich anders als nicht vorhanden - und nie als Code", () => {
+  /* Der Grund aus M34 darf nicht in der Auffanggruppe landen: die schreibt
+     den internen Code in die Hauptsprache. */
+  assert.ok(Shape.knows("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"),
+    "die Reise kennt den Grund nicht und wuerde ihn als Code hinschreiben");
+  assert.equal(Shape.causeIdFor("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"), "SHARE_COUNT_NOT_PER_LISTING");
+
+  const stationen = {
+    identity: { substantive: true, reason: null, detail: {} },
+    factorStrength: { substantive: false, reason: "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+      detail: { issuerListings: ["AGNC", "AGNCL", "AGNCM", "AGNCN", "AGNCO", "AGNCP", "AGNCZ"] } }
+  };
+  const form = Shape.assess(stationen);
+  const gruppe = form.groups.find((g) => g.causeId === "SHARE_COUNT_NOT_PER_LISTING");
+  assert.ok(gruppe, "keine eigene Gruppe fuer den zurueckgehaltenen Boersenwert");
+  assert.match(gruppe.headline, /bewusst zurückgehalten/);
+  assert.match(gruppe.explanation, /7 börsennotierte Wertpapiere/);
+  assert.match(gruppe.explanation, /geschätzt/);
+  /* Kein interner Code in Ueberschrift, Erklaerung oder Ausblick. */
+  for (const text of [gruppe.headline, gruppe.explanation, gruppe.outlook || ""]) {
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(text), false, "interner Code im Nutzertext: " + text);
+  }
+  assert.equal(gruppe.unknownCode, null);
+
+  /* Und ohne die Liste bleibt der Satz wahr, nur unbestimmter. */
+  const ohne = Shape.assess({ identity: { substantive: true, reason: null, detail: {} },
+    factorStrength: { substantive: false, reason: "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", detail: {} } });
+  const g2 = ohne.groups.find((g) => g.causeId === "SHARE_COUNT_NOT_PER_LISTING");
+  assert.match(g2.explanation, /mehrere börsennotierte Wertpapiere/);
+});

@@ -625,6 +625,35 @@
   "automaticWeightChanges": false,
   "weightOptimizationAgainstProductEvidenceBacktest": false
  },
+ "valuationSemantics": {
+  "version": "quant-v2-valuation-level-1.0.0",
+  "level": "ISSUER",
+  "statement": "Every valuation component of this methodology divides an ISSUER-level figure (stockholders equity, net income, operating cash flow, dividends paid) by a market capitalization. The capitalization must therefore describe the same issuer, computed from the issuer's own share count and the price of the issuer's equity.",
+  "listingLevelRequires": "A capitalization for one listed line requires a share count for that line. The SEC reports share counts per class on the filing cover page under the class axis; the bulk companyfacts dataset this house reads carries only undimensioned facts, so a class-level count is absent by construction, not by oversight.",
+  "measuredEvidence": {
+   "asOf": "2026-09-26",
+   "issuersWithSeveralListings": 110,
+   "listingsAffected": 304,
+   "valueFactorsPreviouslyOnAnIssuerWideCount": 210,
+   "whatTheDatasetShows": "Alphabet and AT&T publish a current undimensioned TOTAL (12,230 and 6,852 million shares). Berkshire Hathaway's only observation is 1 million shares from 2011-03-31 and Accenture's is from 2010-02-28 - both pre-dimensional, both unusable. That is the signature of a dataset that drops dimensioned facts.",
+   "whyNoListingCanBeIdentified": "No local source distinguishes a common share from a preferred, a note or an ETN. Measured over the 7,803 instruments of the security master: assetType is 'Stock' for 7,801 including FNGU (a leveraged ETN) and AMJB (a note); instrumentType is COMMON_STOCK for every one of them; CUSIP, FIGI and ISIN are absent for all 7,803; the security master's name rules cannot fire because the only available name is the issuer's SEC name; and the SEC ticker directory returns the same company name for every line. A ticker-suffix rule without a separator is provably wrong on this very universe, because GOOGL would become a preferred series of GOOG."
+  },
+  "decision": "PER_CLASS_MARKET_CAP_AVAILABLE = FAIL; VALUATION_WITHHELD_WITH_REASON = PASS",
+  "multiClassCommon": "For genuine multi-class common lines such as GOOG and GOOGL the issuer capitalization must not be published once per line: that states one company twice and double counts it in any aggregate. Until a class-level count exists, both lines withhold.",
+  "nonEquityListings": "A preferred share, a baby bond, a note, an ETN, a warrant or a unit is not a claim on the issuer's common equity and must never inherit an equity valuation from the issuer's fundamentals, whatever the security master's type field claims.",
+  "whatWouldChangeThis": "A class-level share count. The cover-page tag is filed per class; recovering it needs the dimensioned facts, which is extraction work inside the existing SEC layer against the existing source - no provider purchase and no new pipeline.",
+  "knownDefectNotRepairableHere": {
+   "what": "The exported shares_outstanding series mixes concepts across periods without recording which concept produced which value.",
+   "evidence": "JPMorgan alternates quarter by quarter between roughly 2,700 million and exactly 4,105,933,895, and the larger figure repeats bit-identically across nine fiscal years while the company's own per-share arithmetic implies 2,850 million. A real outstanding count drifts every quarter; a constant repeated for nine years is the issued count, which includes treasury stock. JPMorgan's price series carries no split, so nothing else explains the two levels.",
+   "scaleAndItsLimit": "228 published capitalizations deviate by more than 5 percent from the issuer's own per-share arithmetic. That figure is an upper bound on the defect and not a count of it: a stock split raises the outstanding count while the historical diluted-average series stays pre-split, so a split looks exactly like a mixed concept from the outside. Booking Holdings was read as a 23-fold error here until its own numbers were checked - 751 million shares at a split-adjusted 163.95 USD is internally consistent, and its capitalization is right. Only JPMorgan is verified as mixing, by the repetition and the absence of a split.",
+   "rejectedRepairs": [
+    "An exact-repetition detector falsely flags NVIDIA's rounded 24,300 million and catches nothing where the wrong value appears once.",
+    "A ratio threshold against the issuer's own diluted scale cannot separate three different causes that all look alike: a mixed concept, genuine dilution, and a stock split. Measured, 433 titles have a latest observation above 1.25x whose earlier observations are in band.",
+    "Walking back to the most recent consistent observation substitutes counts up to two years stale - ADXN from 2025-12-31 to 2023-12-31, AGRO from 2025-12-31 to 2024-12-31 - and would undo a legitimate split."
+   ],
+   "correctFix": "Record the source concept per value in the export and never mix concepts inside one metric series. That needs the raw facts, which are not in the repository."
+  }
+ },
  "industryTemplates": {
   "note": "Separately versioned templates for the industries whose generic Quality, Value and Profitability formulas are NOT_APPLICABLE. Components are derived only from metrics the issuers already publish in the consumer fundamental export; nothing is substituted and nothing is renamed.",
   "normalization": "Template components are normalized across the 974 titles inside the industry gate, with the peer leg narrowing to the SIC group as usual. The insurance-carrier range alone holds 130 titles and could never meet the contract's 200-issuer universe minimum; the shared cohort meets it for every component (minimum 436 valid issuers measured 2026-09-26).",

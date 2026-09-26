@@ -576,3 +576,35 @@ function shardSpecFor(row, factorId, componentId) {
   return (template && specCache[template + ":" + factorId + ":" + componentId])
     || specCache[factorId + ":" + componentId] || null;
 }
+
+test("die Oberflaeche trennt 'fehlt' von 'bewusst zurueckgehalten'", () => {
+  const zu = (reason, extra) => FactorEvidence.ordered({ ticker: "X", bars: 900, ...extra,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: id === "revisions" ? "UNAVAILABLE" : "UNAVAILABLE", reason, score: null, components: [] }])) })
+    .find((f) => f.id === "value");
+
+  assert.equal(zu("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING").reasonHeadline, "Bewertung bewusst zurückgehalten");
+  assert.equal(zu("INPUT_NOT_MATERIALIZED").reasonHeadline, "Kein Wert für diesen Faktor");
+  assert.equal(zu("FUNDAMENTALS_UNAVAILABLE").reasonHeadline, "Noch keine Geschäftszahlen veröffentlicht");
+  /* Die kurze Historie gewinnt gegen die Tabelle: sie ist die genauere
+     Aussage und traegt eine Zahl. */
+  const jung = FactorEvidence.ordered({ ticker: "J", bars: 100,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }])) })
+    .find((f) => f.id === "risk");
+  assert.equal(jung.reasonHeadline, "Noch nicht genug Kursgeschichte");
+
+  /* Ein verfuegbarer Faktor traegt keine Ueberschrift fuer etwas Fehlendes. */
+  const offen = FactorEvidence.ordered({ ticker: "O", bars: 900,
+    factors: { ...Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null, components: [] }])),
+      value: { state: "AVAILABLE", reason: null, score: 50, components: [] } } })
+    .find((f) => f.id === "value");
+  assert.equal(offen.reasonHeadline, null);
+  assert.equal(offen.reasonText, null);
+
+  /* Und keine dieser Ueberschriften ist ein interner Code. */
+  for (const text of Object.values(FactorEvidence.REASON_HEADLINE || {})) {
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(text), false, "interner Code als Ueberschrift: " + text);
+  }
+});

@@ -400,6 +400,39 @@ async function main() {
     && gemeldeteFehlschlaege.has(String(z.cik).padStart(10, "0"))).length;
   merkmale.EXPORT_RUN_SILENTLY_SKIPPED = stillUebergangen.length;
 
+  /* ----------------------------------------------------------------------
+     KEIN STILLES SKIP.
+
+     Diese Emittenten haben eine CIK, stehen in companyfacts und tragen
+     trotzdem keinen Export - und der Lauf hat dazu nichts notiert. Jeder
+     bekommt hier einen maschinenlesbaren Grund aus dem, was lokal
+     nachweisbar ist. Was NICHT behauptet wird: warum der Lauf sie
+     uebergangen hat. Das steht in seinem Protokoll, nicht in diesen Daten,
+     und `EXPORT_RUN_NO_RECORD` ist genau diese Aussage.
+     ---------------------------------------------------------------------- */
+  const CIK_AB_2024 = 2000000;
+  const uebergangen = stillUebergangen.map((z) => {
+    const cikZahl = Number(z.cik);
+    const gruende = [];
+    if (Number.isFinite(cikZahl) && cikZahl >= CIK_AB_2024) gruende.push("CIK_REGISTERED_2024_OR_LATER");
+    if (SIC_OHNE_OPERATIVES_GESCHAEFT[z.sic]) gruende.push("SIC_WITHOUT_OPERATING_BUSINESS");
+    if (z.bars !== null && z.bars < BARS_FOR_RISK) gruende.push("PRICE_HISTORY_BELOW_" + BARS_FOR_RISK);
+    if (z.securityType && z.securityType !== "COMMON_STOCK") gruende.push("SECURITY_TYPE_" + z.securityType);
+    if (!z.masterSeesSec) gruende.push("MASTER_SEES_NO_SEC_MATERIAL");
+    gruende.push("EXPORT_RUN_NO_RECORD");
+    return {
+      ticker: z.ticker, cik: z.cik, name: z.name, sic: z.sic, bars: z.bars,
+      securityType: z.securityType,
+      cikVintage: Number.isFinite(cikZahl) && cikZahl >= CIK_AB_2024 ? "2024_OR_LATER" : "BEFORE_2024",
+      inCompanyFacts: !nichtInFactbook.has(String(z.cik).padStart(10, "0")),
+      exportRunFailureRecorded: false,
+      reasons: gruende,
+      primaryReason: gruende[0]
+    };
+  }).sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
+  const uebergangenZusammen = {};
+  for (const e of uebergangen) uebergangenZusammen[e.primaryReason] = (uebergangenZusammen[e.primaryReason] || 0) + 1;
+
   const kette = {};
   for (const z of zeilen) kette[z.kette] = (kette[z.kette] || 0) + 1;
 
@@ -514,6 +547,9 @@ async function main() {
        verloren geht. Eine Partition wie `classes`, aber nach Ort statt nach
        Ursache. */
     chain: kette,
+    /* Die Emittenten, die der Export-Lauf ohne Eintrag uebergangen hat -
+       jeder mit einem maschinenlesbaren Grund, keiner nur als Zahl. */
+    silentlySkippedIssuers: { count: uebergangen.length, byPrimaryReason: uebergangenZusammen, rows: uebergangen },
     progress: fortschritt,
     secCoverageContext: coverage ? {
       productUniverse: coverage.productUniverse, cikMapped: coverage.cikMapped, withoutCik: coverage.withoutCik,
@@ -541,6 +577,14 @@ async function main() {
   process.stdout.write("\nWO IN DER KETTE (Partition)\n");
   for (const [k, v] of Object.entries(kette).sort((a, b) => b[1] - a[1])) {
     process.stdout.write("  " + k.padEnd(34) + p(v) + "   " + (100 * v / zeilen.length).toFixed(1) + " %\n");
+  }
+  process.stdout.write("\nOHNE EINTRAG UEBERGANGEN (" + uebergangen.length + ", je mit Grund)\n");
+  for (const [k, v] of Object.entries(uebergangenZusammen).sort((a, b) => b[1] - a[1])) {
+    process.stdout.write("  " + k.padEnd(34) + p(v) + "\n");
+  }
+  for (const e of uebergangen) {
+    process.stdout.write("    " + e.ticker.padEnd(7) + e.cik + "  " + String(e.bars).padStart(4) + " Handelstage  " +
+      e.reasons.join(", ") + "\n");
   }
   process.stdout.write("\nGEGEN DEN VORIGEN LAUF\n");
   if (!fortschritt.previousRun) process.stdout.write("  kein voriger Lauf - kein Vergleichspunkt\n");

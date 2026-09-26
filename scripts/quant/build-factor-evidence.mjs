@@ -617,13 +617,14 @@ function main() {
         };
         if (spec.unavailable) return { ...base, state: "UNAVAILABLE", reason: spec.unavailable, raw: null, score: null };
         if (!entry) {
-          /* Welche Komponente am Boersenwert haengt, sagt ihre Formelzeile im
-             Vertrag - nicht eine zweite Liste hier, die von ihr abdriften
-             koennte. Haengt sie daran und ist der Bestand keiner Zeile des
-             Emittenten zuzuordnen, ist DAS der Grund und nicht "Eingabe nicht
-             materialisiert". */
-          const haengtAmBoersenwert = typeof contractComponent?.input === "string"
-            && contractComponent.input.includes("marketCap");
+          /* Welche Komponente am Boersenwert haengt, sagt die Engine, in der
+             die Abhaengigkeit entsteht - nicht die Formelzeile des Vertrags.
+             Die ist Prosa ("market capitalization", "enterprise value"), und
+             eine Suche nach `marketCap` darin fand nur die Vorlagen, die ich
+             selbst so geschrieben hatte: T, SO, GOOG und GOOGL sagten
+             deshalb weiter "Eingabe nicht materialisiert", obwohl ihr
+             Boersenwert zurueckgehalten wurde. */
+          const haengtAmBoersenwert = FundamentalInputs.MARKET_CAP_DEPENDENT_RAWS.includes(spec.id);
           const reason = fundamentalFactor && !record.fundamentals ? "FUNDAMENTALS_UNAVAILABLE"
             : (haengtAmBoersenwert && record.fundamentals?.marketCapReason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING")
               ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"

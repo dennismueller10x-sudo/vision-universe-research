@@ -1,6 +1,6 @@
 {
  "schemaVersion": "zero-factor-classification-1.1.0",
- "generatedAt": "2026-09-26T14:20:42.000Z",
+ "generatedAt": "2026-09-26T14:52:16.000Z",
  "question": "Welche Grenze genau haelt die Screening-Zeilen ohne einen einzigen Faktorwert auf, und wie viel davon waere ohne neue Datenquelle loesbar?",
  "sources": {
   "factors": "quant/data/product/factor-evidence-v1 (Zustaende und Gruende je Titel, je Faktor, je Komponente)",
@@ -116,14 +116,395 @@
   "CIK_OHNE_FACTBOOK": 5,
   "FAKTOR_MINDESTANFORDERUNG": 1
  },
+ "silentlySkippedIssuers": {
+  "count": 22,
+  "byPrimaryReason": {
+   "SIC_WITHOUT_OPERATING_BUSINESS": 1,
+   "CIK_REGISTERED_2024_OR_LATER": 16,
+   "PRICE_HISTORY_BELOW_252": 5
+  },
+  "rows": [
+   {
+    "ticker": "BTCK",
+    "cik": "0001471824",
+    "name": "Teucrium Commodity Trust",
+    "sic": 6221,
+    "bars": 79,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "BEFORE_2024",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "SIC_WITHOUT_OPERATING_BUSINESS",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "SIC_WITHOUT_OPERATING_BUSINESS"
+   },
+   {
+    "ticker": "BUDA",
+    "cik": "0002079720",
+    "name": "Buda Juice, Inc.",
+    "sic": 2080,
+    "bars": 180,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "CITR",
+    "cik": "0000894556",
+    "name": "CitroTech Inc.",
+    "sic": 2800,
+    "bars": 203,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "BEFORE_2024",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "PRICE_HISTORY_BELOW_252"
+   },
+   {
+    "ticker": "CNL",
+    "cik": "0001953575",
+    "name": "Collective Mining Ltd.",
+    "sic": 1040,
+    "bars": 33,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "BEFORE_2024",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "PRICE_HISTORY_BELOW_252"
+   },
+   {
+    "ticker": "FJET",
+    "cik": "0001947016",
+    "name": "Starfighters Space, Inc.",
+    "sic": 4512,
+    "bars": 193,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "BEFORE_2024",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "PRICE_HISTORY_BELOW_252"
+   },
+   {
+    "ticker": "GMTL",
+    "cik": "0002039972",
+    "name": "Guardian Metal Resources PLC",
+    "sic": 1000,
+    "bars": 127,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "HSLV",
+    "cik": "0002013223",
+    "name": "Highlander Silver Corp.",
+    "sic": 1040,
+    "bars": 138,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "IMC",
+    "cik": "0002098395",
+    "name": "IMC Rare Earths Ltd",
+    "sic": 1000,
+    "bars": 42,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "JAGU",
+    "cik": "0002039273",
+    "name": "Jaguar Uranium Corp.",
+    "sic": 1000,
+    "bars": 159,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "KNRX",
+    "cik": "0001982960",
+    "name": "Knorex Ltd.",
+    "sic": 7370,
+    "bars": 250,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "BEFORE_2024",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "PRICE_HISTORY_BELOW_252"
+   },
+   {
+    "ticker": "LEGO",
+    "cik": "0002087450",
+    "name": "Legato Merger Corp. IV",
+    "sic": 6770,
+    "bars": 135,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "SIC_WITHOUT_OPERATING_BUSINESS",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "NXB",
+    "cik": "0002067767",
+    "name": "NextBoat Inc.",
+    "sic": 3730,
+    "bars": 217,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "POAS",
+    "cik": "0002024258",
+    "name": "PHAOS TECHNOLOGY HOLDINGS (CAYMAN) Ltd",
+    "sic": 3823,
+    "bars": 217,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "QNC",
+    "cik": "0002106613",
+    "name": "Quantum eMotion Corp",
+    "sic": 7372,
+    "bars": 149,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "REA",
+    "cik": "0002095743",
+    "name": "Rare Earths Americas, Inc.",
+    "sic": 1000,
+    "bars": 100,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "RGNT",
+    "cik": "0001912966",
+    "name": "Regentis Biomaterials Ltd.",
+    "sic": 3842,
+    "bars": 203,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "BEFORE_2024",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "PRICE_HISTORY_BELOW_252"
+   },
+   {
+    "ticker": "SBMT",
+    "cik": "0002067674",
+    "name": "Silver Bow Mining Corp.",
+    "sic": 1040,
+    "bars": 103,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "SMJF",
+    "cik": "0002070954",
+    "name": "SMJ International Holdings Inc.",
+    "sic": 5030,
+    "bars": 203,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "SNSC",
+    "cik": "0002101240",
+    "name": "SunScout Holding Ltd",
+    "sic": 3674,
+    "bars": 32,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "TMS",
+    "cik": "0002048951",
+    "name": "Teamshares Inc",
+    "sic": 5900,
+    "bars": 67,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "TP",
+    "cik": "0002104296",
+    "name": "Ticketplus Ltd.",
+    "sic": 7990,
+    "bars": 35,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   },
+   {
+    "ticker": "UAC",
+    "cik": "0002098669",
+    "name": "United Acquisition Corp. I",
+    "sic": 6770,
+    "bars": 153,
+    "securityType": "COMMON_STOCK",
+    "cikVintage": "2024_OR_LATER",
+    "inCompanyFacts": true,
+    "exportRunFailureRecorded": false,
+    "reasons": [
+     "CIK_REGISTERED_2024_OR_LATER",
+     "SIC_WITHOUT_OPERATING_BUSINESS",
+     "PRICE_HISTORY_BELOW_252",
+     "EXPORT_RUN_NO_RECORD"
+    ],
+    "primaryReason": "CIK_REGISTERED_2024_OR_LATER"
+   }
+  ]
+ },
  "progress": {
   "previousRun": {
-   "generatedAt": "2026-09-26T13:48:06.000Z",
+   "generatedAt": "2026-09-26T14:45:58.000Z",
    "total": 786,
-   "factorCellsAvailable": 22712
+   "factorCellsAvailable": 22495
   },
   "ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER": 0,
-  "FACTOR_COVERAGE_GAIN": -217,
+  "FACTOR_COVERAGE_GAIN": 0,
   "EXTERNAL_PROVIDER_DECISION": "DEFERRED",
   "note": "Kein Titel wurde durch eine fremde Quelle geschlossen. Was sich bewegt hat, bewegte sich durch Methodik und Zuordnung im Haus."
  },
@@ -354,7 +735,8 @@
     "UNAVAILABLE": 786
    },
    "reasons": {
-    "INPUT_NOT_MATERIALIZED": 786
+    "INPUT_NOT_MATERIALIZED": 777,
+    "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
    },
    "components": {
     "fcfYield": {
@@ -362,7 +744,8 @@
      "input": "TTM free cash flow/market capitalization",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 314
+      "INPUT_NOT_MATERIALIZED": 305,
+      "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "earningsYield": {
@@ -370,7 +753,8 @@
      "input": "TTM net income/market capitalization",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 327
+      "INPUT_NOT_MATERIALIZED": 318,
+      "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "ebitdaYield": {
@@ -378,7 +762,8 @@
      "input": "TTM EBITDA/enterprise value",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 314
+      "INPUT_NOT_MATERIALIZED": 305,
+      "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "salesYield": {
@@ -386,7 +771,8 @@
      "input": "TTM revenue/enterprise value",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 314
+      "INPUT_NOT_MATERIALIZED": 305,
+      "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "bookToMarket": {
@@ -394,7 +780,8 @@
      "input": "stockholders equity/market capitalization",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 327
+      "INPUT_NOT_MATERIALIZED": 318,
+      "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "pretaxEarningsYield": {
@@ -63170,30 +63557,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -100316,30 +100703,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -105163,30 +105550,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -105387,30 +105774,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -115805,30 +116192,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -129398,30 +129785,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -130291,30 +130678,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -169583,30 +169970,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },
@@ -169806,30 +170193,30 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
+     "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
      "availableWeight": 0,
      "componentsTotal": 5,
      "componentsAvailable": 0,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       },
       {
        "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
+       "reason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
       }
      ]
     },

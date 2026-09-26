@@ -450,7 +450,27 @@
     };
   }
 
+  /* WELCHE ROHWERTE AM BOERSENWERT HAENGEN.
+   *
+   * Der Materialisierer muss das wissen, um einer fehlenden Bewertung den
+   * richtigen Grund zu geben. Erst stand die Frage an der Formelzeile des
+   * Vertrags - und die ist Prosa: dort heisst es "market capitalization" und
+   * "enterprise value", nicht `marketCap`. Die Pruefung fand deshalb genau
+   * die Komponenten, die ich selbst mit dem Wort geschrieben hatte, und
+   * verfehlte alle generischen: T, SO, GOOG und GOOGL sagten weiter
+   * "Eingabe nicht materialisiert", obwohl der Boersenwert zurueckgehalten
+   * wurde.
+   *
+   * Die Liste steht deshalb dort, wo die Abhaengigkeit wirklich entsteht -
+   * im Block, der nur mit einem Boersenwert rechnet -, und ein Test leitet
+   * sie aus dem VERHALTEN ab: einmal mit und einmal ohne Boersenwert
+   * rechnen und die Schluessel vergleichen. Eine Liste, die von ihrem Code
+   * abdriftet, faellt damit auf. */
+  var MARKET_CAP_DEPENDENT_RAWS = ["fcfYield", "earningsYield", "bookToMarket", "salesYield",
+    "ebitdaYield", "pretaxEarningsYield", "cashFlowYield", "dividendYield"];
+
   var api = {
+    MARKET_CAP_DEPENDENT_RAWS: MARKET_CAP_DEPENDENT_RAWS.slice(),
     VERSION: VERSION,
     CONSUMER_SCHEMA: CONSUMER_SCHEMA,
     COL: Object.assign({}, COL),

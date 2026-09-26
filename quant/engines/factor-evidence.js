@@ -175,6 +175,22 @@
      --------------------------------------------------------------------- */
   var REQUIRED_BARS = { momentum: 273, risk: 252 };
 
+  /* NICHT VORHANDEN UND BEWUSST ZURUECKGEHALTEN SIND ZWEI ZUSTAENDE.
+   *
+   * Beide standen unter derselben Ueberschrift "Kein Wert fuer diesen
+   * Faktor". Fuer einen Leser ist das ein Unterschied: im ersten Fall fehlt
+   * etwas, im zweiten hat das Haus sich entschieden, eine Zahl nicht zu
+   * nennen, die es nur schaetzen koennte. Die Ueberschrift steht hier und
+   * nicht in der Oberflaeche, damit nicht zwei Stellen den Code kennen. */
+  var REASON_HEADLINE = {
+    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Bewertung bewusst zurückgehalten",
+    BLOCKED_EXTERNAL: "Bewusst offen gelassen",
+    SECTOR_TEMPLATE_MISSING: "Für diese Branche nicht anwendbar",
+    FUNDAMENTALS_UNAVAILABLE: "Noch keine Geschäftszahlen veröffentlicht"
+  };
+  var HEADLINE_SHORT_HISTORY = "Noch nicht genug Kursgeschichte";
+  var HEADLINE_DEFAULT = "Kein Wert für diesen Faktor";
+
   function finite(value) { return typeof value === "number" && Number.isFinite(value); }
 
   /* Was der Nutzer statt des Codes liest, wenn die Kursgeschichte die ganze
@@ -454,6 +470,10 @@
         reason: factor.reason || null,
         reasonText: factor.state === "AVAILABLE" ? null
           : (limit ? shortHistorySentence(limit) : (REASON_TEXT[factor.reason] || REASON_TEXT.INPUT_NOT_MATERIALIZED)),
+        /* Die Ueberschrift zum Satz: sie trennt "fehlt" von "wird bewusst
+           nicht genannt", und die Oberflaeche muss dafuer keinen Code kennen. */
+        reasonHeadline: factor.state === "AVAILABLE" ? null
+          : (limit ? HEADLINE_SHORT_HISTORY : (REASON_HEADLINE[factor.reason] || HEADLINE_DEFAULT)),
         /* Die Zahlen auch strukturiert, damit die Oberflaeche sie in ihre
            eigene Ursachengruppe einsortieren kann, statt den Satz zu zerlegen. */
         history: limit,
@@ -508,6 +528,7 @@
     CONFIDENCE_WEIGHTS: Object.assign({}, CONFIDENCE_WEIGHTS),
     FACTOR_MEANING: JSON.parse(JSON.stringify(FACTOR_MEANING)),
     REASON_TEXT: Object.assign({}, REASON_TEXT),
+    REASON_HEADLINE: Object.assign({}, REASON_HEADLINE),
     REQUIRED_BARS: Object.assign({}, REQUIRED_BARS),
     historyLimit: historyLimit,
     band: band,

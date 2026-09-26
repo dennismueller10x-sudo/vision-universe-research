@@ -1,0 +1,183 @@
+{
+ "schemaVersion": "valuation-coverage-1.0.0",
+ "generatedAt": "2026-09-26T14:52:17.000Z",
+ "question": "Wie viel Bewertungsdeckung traegt das Produkt, wie viel wird zurueckgehalten, und aus welchem Grund?",
+ "source": "quant/data/product/factor-evidence-v1 (gelesen, nicht nachgerechnet)",
+ "VALUE_FACTOR_COVERAGE": {
+  "available": 2490,
+  "unavailable": 3951,
+  "universe": 6441
+ },
+ "MARKET_CAP_COVERAGE": {
+  "present": 3639,
+  "universe": 6441,
+  "withFundamentals": 4862
+ },
+ "MULTI_CLASS_OR_NON_EQUITY_WITHHELD": {
+  "listings": 465,
+  "issuersWithSeveralListings": 182,
+  "listingsInThoseIssuers": 497,
+  "groupSizes": {
+   "2": 125,
+   "3": 24,
+   "4": 17,
+   "5": 6,
+   "6": 5,
+   "7": 4,
+   "19": 1
+  },
+  "separable": false,
+  "whyNotSeparable": "Keine lokale Quelle unterscheidet Stammaktie, Vorzugsaktie, Anleihe und Indexschuldverschreibung: assetType ist fuer 7.801 von 7.803 Instrumenten 'Stock', instrumentType fuer alle COMMON_STOCK, CUSIP/FIGI/ISIN fehlen vollstaendig, und das SEC-Verzeichnis nennt fuer jede Zeile denselben Firmennamen."
+ },
+ "MARKET_CAP_WITHHELD_BY_REASON": {
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 465,
+  "NO_PIT_SHARE_COUNT": 801,
+  "NO_PUBLISHED_CLOSE": 131
+ },
+ "VALUE_FACTOR_REASONS": {
+  "INPUT_NOT_MATERIALIZED": 2346,
+  "INSUFFICIENT_COMPONENTS": 1139,
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 465,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 1
+ },
+ "ZERO_FACTOR_ROWS": 786,
+ "SECTOR_TEMPLATE_MISSING": 0,
+ "SEC_MAPPING_GAPS": {
+  "internalMappingGap": 161,
+  "rawFactsWithoutMapping": 161,
+  "exportRunSilentlySkipped": 22,
+  "exportRunReportedFailure": 25
+ },
+ "sample": {
+  "AAPL": {
+   "marketCap": 4977636972600,
+   "marketCapReason": null,
+   "issuerListings": null,
+   "value": "AVAILABLE",
+   "valueReason": null,
+   "fundamentalYears": 12,
+   "bars": 2950
+  },
+  "AGNC": {
+   "marketCap": null,
+   "marketCapReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "issuerListings": [
+    "AGNC",
+    "AGNCL",
+    "AGNCM",
+    "AGNCN",
+    "AGNCO",
+    "AGNCP",
+    "AGNCZ"
+   ],
+   "value": "UNAVAILABLE",
+   "valueReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "fundamentalYears": 12,
+   "bars": 936
+  },
+  "BKNG": {
+   "marketCap": 123188832974.99998,
+   "marketCapReason": null,
+   "issuerListings": null,
+   "value": "AVAILABLE",
+   "valueReason": null,
+   "fundamentalYears": 12,
+   "bars": 936
+  },
+  "GOOG": {
+   "marketCap": null,
+   "marketCapReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "issuerListings": [
+    "GOOG",
+    "GOOGL"
+   ],
+   "value": "UNAVAILABLE",
+   "valueReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "fundamentalYears": 12,
+   "bars": 936
+  },
+  "GOOGL": {
+   "marketCap": null,
+   "marketCapReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "issuerListings": [
+    "GOOG",
+    "GOOGL"
+   ],
+   "value": "UNAVAILABLE",
+   "valueReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "fundamentalYears": 12,
+   "bars": 936
+  },
+  "JPM": {
+   "marketCap": null,
+   "marketCapReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "issuerListings": [
+    "AMJB",
+    "JPM"
+   ],
+   "value": "UNAVAILABLE",
+   "valueReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "fundamentalYears": 12,
+   "bars": 2950
+  },
+  "MSFT": {
+   "marketCap": 3832843816089.4697,
+   "marketCapReason": null,
+   "issuerListings": null,
+   "value": "AVAILABLE",
+   "valueReason": null,
+   "fundamentalYears": 13,
+   "bars": 2950
+  },
+  "NVDA": {
+   "marketCap": 5424187000000,
+   "marketCapReason": null,
+   "issuerListings": null,
+   "value": "AVAILABLE",
+   "valueReason": null,
+   "fundamentalYears": 12,
+   "bars": 2950
+  },
+  "SO": {
+   "marketCap": null,
+   "marketCapReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "issuerListings": [
+    "SO",
+    "SOJC",
+    "SOJD",
+    "SOJE",
+    "SOJF",
+    "SOMN"
+   ],
+   "value": "UNAVAILABLE",
+   "valueReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "fundamentalYears": 12,
+   "bars": 936
+  },
+  "T": {
+   "marketCap": null,
+   "marketCapReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "issuerListings": [
+    "T",
+    "TBB"
+   ],
+   "value": "UNAVAILABLE",
+   "valueReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "fundamentalYears": 12,
+   "bars": 936
+  },
+  "WSBCO": {
+   "marketCap": null,
+   "marketCapReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "issuerListings": [
+    "WSBC",
+    "WSBCO"
+   ],
+   "value": "UNAVAILABLE",
+   "valueReason": "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+   "fundamentalYears": 12,
+   "bars": 245
+  }
+ },
+ "note": "Korrektheit vor Reichweite: eine hoehere Deckung ist hier kein Erfolg, wenn sie aus einer Zahl entsteht, die nicht berechenbar war. Die zurueckgehaltenen Zeilen tragen ihren Grund."
+}

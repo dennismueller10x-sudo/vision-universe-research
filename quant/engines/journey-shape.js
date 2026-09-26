@@ -157,6 +157,26 @@
       outlook: "Das ändert sich von selbst, sobald der Titel länger gehandelt wird."
     },
     {
+      /* ZURUECKGEHALTEN IST NICHT DASSELBE WIE NICHT VORHANDEN.
+       *
+       * Ohne eigene Gruppe landet dieser Grund in der Auffanggruppe, und
+       * die schreibt den Code hin: „Der veroeffentlichte Grund lautet
+       * SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING." Das ist genau das, was
+       * ein interner Code in der Hauptsprache nie sein soll. */
+      id: "SHARE_COUNT_NOT_PER_LISTING",
+      codes: ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"],
+      headline: "Die Bewertung wird hier bewusst zurückgehalten",
+      sentence: function (detail) {
+        var zeilen = detail && Array.isArray(detail.issuerListings) ? detail.issuerListings.length : null;
+        return "Dieses Unternehmen hat " + (zeilen ? zeilen + " " : "mehrere ") +
+          "börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das Unternehmen " +
+          "als Ganzes. Welcher Anteil davon auf genau dieses Papier entfällt, steht nicht in den " +
+          "Unterlagen. Ein Börsenwert wäre hier also geschätzt, und alle Bewertungskennzahlen " +
+          "hängen an ihm - deshalb bleibt er offen.";
+      },
+      outlook: "Die Zahlen des Unternehmens selbst sind davon nicht betroffen und stehen weiter unten."
+    },
+    {
       id: "NO_SERIES",
       codes: ["SOURCE_MISSING", "NO_SERIES"],
       headline: "Für diesen Titel liegt noch keine auswertbare Kursreihe vor",

@@ -2,6 +2,144 @@
 
 Updated: 2026-09-26 UTC
 
+## M35 — P0: KLASSENSPEZIFISCHER BÖRSENWERT, GEPRÜFT UND BEANTWORTET
+
+`PER_CLASS_MARKET_CAP_AVAILABLE = FAIL` · `VALUATION_WITHHELD_WITH_REASON = PASS`
+
+Die Frage war, ob sich aus den **vorhandenen** Daten eine klassenspezifische
+Börsenwert-Logik bauen lässt. Die Antwort ist nein, und jeder Zweig ist gemessen statt vermutet.
+
+### Klassenspezifische Aktienzahl: nicht vorhanden, und zwar bauartbedingt
+
+Die SEC meldet Aktienzahlen je Gattung auf dem Deckblatt unter der Gattungsachse. Der
+**Massendatensatz `companyfacts`**, den dieses Haus liest, führt nur Tatsachen **ohne**
+Dimensionen. Der Fingerabdruck steht in unseren eigenen Daten:
+
+| Emittent | einzige Beobachtung | lesbar? |
+|---|---|---|
+| Alphabet | 12.230 Mio zum 2026-06-30 | ja — eine undimensionierte **Summe** über alle Gattungen |
+| AT&T | 6.852 Mio zum 2026-06-30 | ja — Summe |
+| Berkshire Hathaway | **1 Mio zum 2011-03-31** | nein — vordimensional, nur Klasse A |
+| Accenture | **637 Mio zum 2010-02-28** | nein — vordimensional |
+
+Wer je Gattung meldet, verschwindet also aus diesem Datensatz. Die Gattungszahl zu bekommen
+heißt, die dimensionierten Tatsachen zu holen — Extraktionsarbeit in der bestehenden
+SEC-Schicht gegen die bestehende Quelle, kein Anbieterkauf. Von hier aus gesperrt
+(`data.sec.gov`, CONNECT 403).
+
+### Nicht-Eigenkapital-Linien: mit vorhandenen Feldern nicht erkennbar
+
+Der Wertpapierstamm ist reicher als der Suchindex (`securityType`, `shareClass`, `subtype`,
+`primaryListing`, `assetTypeRaw`, `isin`, `cusip`, `figi`) — und **trägt die Antwort nicht**.
+Gemessen über alle 7.803 Instrumente:
+
+- `assetTypeRaw` = „Stock" für **7.801**, darunter `FNGU` (ein gehebeltes Indexpapier) und
+  `AMJB` (eine Schuldverschreibung); `instrumentType` = `COMMON_STOCK` für alle;
+  `securityClass` = `EQUITY_COMMON` auch für beide.
+- `CUSIP`, `FIGI`, `ISIN`: **0 von 7.803**. Damit fällt jede identifikatorbasierte Typisierung weg.
+- `company` in den Universumsdateien: **null für alle**. Die Namensregeln des Klassifikators
+  (`ETN`, `PREFERRED`, `WARRANT`, …) existieren, können aber nie feuern — der einzige
+  verfügbare Name ist der des **Emittenten** aus dem SEC-Verzeichnis.
+- `sector` fehlt bei `GOOGL` (Eigenkapital) genauso wie bei `FNGU` (Indexpapier).
+- Die Tickerregeln erfassen die Bindestrichformen (311 `PREFERRED`). `AGNCL`, `AMJB`, `TBB`,
+  `SOJC` haben keinen Bindestrich — und eine Suffixregel ohne Trennzeichen ist auf genau
+  diesem Universum **beweisbar falsch**: `GOOGL` würde zur Vorzugsserie von `GOOG`.
+- `securityTypeConfidence` lautet für 7.495 Instrumente `HIGH`, obwohl die einzige Grundlage
+  die pauschale Anbieterangabe „Stock" ist. Das ist eine Konfidenz ohne Deckung — als Befund
+  notiert, nicht in diesem Lauf repariert (siehe offene Punkte).
+
+### Die Semantik ist jetzt versioniert
+
+`valuationSemantics` (`quant-v2-valuation-level-1.0.0`) hält fest: jede Bewertungskomponente
+teilt eine **Emittenten**-Größe durch einen Börsenwert, ein Börsenwert je Notierung braucht
+eine Aktienzahl je Notierung, und für echte Mehrklassen-Stammaktien darf der Emittentenwert
+**nicht einmal je Zeile** ausgegeben werden — das wäre ein Unternehmen zweimal.
+
+### Was dieser Lauf konkret verbessert hat
+
+**Die Begründung erreichte vier prominente Titel nicht.** Die Prüfung, ob eine Komponente am
+Börsenwert hängt, sah in die Formelzeile des Vertrags — und die ist Prosa: dort steht „market
+capitalization", nicht `marketCap`. Gefunden wurden deshalb nur die Vorlagenkomponenten, die
+ich selbst so geschrieben hatte. `T`, `SO`, `GOOG` und `GOOGL` sagten weiter „Eingabe nicht
+materialisiert", obwohl ihr Börsenwert zurückgehalten wurde. Die Abhängigkeit kommt jetzt aus
+der Engine, in der sie entsteht, und ein Test leitet sie aus dem **Verhalten** ab (einmal mit,
+einmal ohne Börsenwert rechnen und die Schlüssel vergleichen).
+
+| Größe | vorher | nachher |
+|---|---|---|
+| Faktorzellen mit `SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING` | 222 | **465** |
+| `VALUE_FACTOR_COVERAGE` | 2.490 | 2.490 (unverändert — nur die Sprache) |
+
+**Die Oberfläche trennt jetzt zwei Zustände.** „Kein Wert für diesen Faktor" stand über beidem.
+Jetzt:
+
+| Zustand | Überschrift |
+|---|---|
+| Börsenwert nicht zuordenbar | **„Bewertung bewusst zurückgehalten"** |
+| noch zu kurze Kursgeschichte | „Noch nicht genug Kursgeschichte" |
+| keine Geschäftszahlen | „Noch keine Geschäftszahlen veröffentlicht" |
+| Branche nicht abgedeckt | „Für diese Branche nicht anwendbar" |
+| sonst | „Kein Wert für diesen Faktor" |
+
+Die Überschrift steht in der Engine, nicht in der Oberfläche — sonst kennen zwei Stellen den
+Code. Und die Reise hat eine eigene Ursachengruppe dafür; ohne sie wäre der Code in der
+Auffanggruppe als Hauptsprache gelandet.
+
+### Die 22 ohne Eintrag übergangenen Emittenten — kein stilles Skip mehr
+
+Jeder trägt jetzt maschinenlesbare Gründe im Artefakt. Das Ergebnis ist eindeutig: **alle 22
+haben weniger als 252 Handelstage**, 16 eine CIK von 2024 oder später, drei einen
+Branchenschlüssel ohne operatives Geschäft. `EXPORT_RUN_NO_RECORD` steht als eigener Grund
+dabei — er sagt, was wahr ist: der Lauf hat nichts notiert, und warum, steht in seinem
+Protokoll und nicht in diesen Daten.
+
+### Coverage neu gemessen (`valuation-coverage-1.0.0`)
+
+| Größe | Wert |
+|---|---|
+| `VALUE_FACTOR_COVERAGE` | 2.490 verfügbar · 3.951 zu |
+| `MARKET_CAP_COVERAGE` | 3.639 von 6.441 (4.862 mit Fundamentaldaten) |
+| `MULTI_CLASS_OR_NON_EQUITY_WITHHELD` | **465 Zeilen · 182 Emittenten · 497 Zeilen in Gruppen** |
+| `MARKET_CAP_WITHHELD_BY_REASON` | Zuordnung 465 · kein Anteilsbestand 801 · kein Kurs 131 |
+| `ZERO_FACTOR_ROWS` | 786 |
+| `SECTOR_TEMPLATE_MISSING` | 0 |
+| `SEC_MAPPING_GAPS` | 161 intern · 22 still übergangen · 25 mit gemeldetem Fehlschlag |
+
+`MULTI_CLASS` und `NON_EQUITY` stehen bewusst als **eine** Zahl: sie sind nicht trennbar, und
+das ist der Befund. Eine Aufteilung wäre geraten und stünde dann neben gemessenen Zahlen.
+
+**Die Stichprobe, wie verlangt:** `JPM`, `T`, `SO`, `GOOG`, `GOOGL`, `AGNC` bekommen **keine**
+Bewertung zurück — sie tragen jetzt alle sechs den richtigen Grund statt eines falschen.
+`AAPL` (4.978 Mrd), `NVDA` (5.424 Mrd), `MSFT` (3.833 Mrd) sind unverändert verfügbar. Keine
+Erfolgsmeldung wegen höherer Deckung: die Deckung ist gleich geblieben, die Wahrheit ist besser
+geworden.
+
+### Eine eigene Korrektur
+
+In M34 hatte ich Booking Holdings als Beleg für vermischte Konzepte geführt — 751 Mio gemeldete
+Aktien gegen 33 Mio aus der eigenen Rechnung, Faktor 23. **Das war falsch.** BKNGs
+veröffentlichter Schlusskurs ist 163,95 USD auf splitbereinigter Basis; 751,4 Mio × 163,95 USD
+= 123,2 Mrd ist in sich stimmig, und der Börsenwert ist richtig. Ein Aktiensplit hebt die
+Aktienzahl, während die historische Durchschnittsreihe vorsplit bleibt — von außen sieht das
+genauso aus wie ein vermischtes Konzept. Damit ist auch die Zahl „228 abweichende
+Börsenwerte" nur eine **obere Grenze** des Defekts und keine Zählung davon. Verifiziert bleibt
+JPMorgan: 4.105.933.895 wiederholt sich über neun Geschäftsjahre zeichengleich, die Reihe
+wechselt quartalsweise zwischen zwei Niveaus, und die Kursreihe trägt **keinen Split**.
+
+### Offen, mit Zahl
+
+- **Aktienzahl je Gattung** — die eine Größe, die `JPM`, `T`, `SO`, `GOOG`, `GOOGL`, `AGNC` und
+  459 weitere Zeilen zurückholt. Braucht die dimensionierten Tatsachen; `data.sec.gov` ist hier
+  gesperrt.
+- **`securityTypeConfidence` = HIGH ohne Deckung** für 7.495 Instrumente. Die Klassifikation
+  selbst ist aus vorhandenen Daten nicht reparierbar; ihre *behauptete Konfidenz* ist es. Nicht
+  in diesem Lauf gemacht, weil ein Neubau des Wertpapierstamms 7.803 Instrumente, den
+  Suchindex und die Kapazitätsdatei berührt.
+- **161 Zuordnungslücken** (43.953 rohe Tatsachen, `mapped = 0`) — unverändert extern blockiert.
+- **801 Zeilen ohne zeitpunktsicheren Anteilsbestand**, 131 ohne veröffentlichten Kurs.
+
+Tests **1.911 grün, 0 rot**. Produktions-Smoke gegen das gebaute Release: **CLEAN**.
+
 ## M34 — EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN
 
 `FABRICATED_MARKET_CAPS_WITHDRAWN`
