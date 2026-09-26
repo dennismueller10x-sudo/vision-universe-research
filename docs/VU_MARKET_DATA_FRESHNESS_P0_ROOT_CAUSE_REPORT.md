@@ -269,7 +269,22 @@ Kanonische Quellen:
 
 ## 21. Deployed-Stand und Freshness **[M]**
 
-DEPLOYED_PLACEHOLDER
+Auslieferung: `pages-release.yml` per `workflow_dispatch` (Lauf `36214722393`, keine Provider-Anfrage) mit `b572ac83`: Production-Smoke und Delivery-Contract bestanden, Deploy 26.09. 03:28:32 UTC.
+
+Messung: Freshness-Monitor (Lauf `36215442014`, GitHub-Runner, `check-freshness.mjs --strict --site=https://research.visionuniverse.de`), 26.09. 03:39 UTC = 25.09. 23:39 New York, CLOSED:
+
+| Ebene | Live (ausgeliefert) | Repository | erwartet |
+|---|---|---|---|
+| Tageskurse Summary (`meta.json` asOf) | 2026-09-25 | 2026-09-25 | 2026-09-25 |
+| Tageskurse Reihen (Stichprobe 40, Urteil aus den Reihen) | 40/40 LAST_SESSION | 40/40 LAST_SESSION | — |
+| Summary widerspricht Reihen | nein | nein | — |
+| Intraday Datenstand | 2026-09-25, LAST_SESSION (`sessionCompleteNoLateTrades`) | gleich | 2026-09-25 |
+| Intraday Discover-Umfang | 492/493 LAST_SESSION, 1 STALE | gleich | — |
+| Ergebnis `--strict` | **OK** (Exit 0) | OK | — |
+
+**EXPECTED_LAST_COMPLETED_SESSION = CANONICAL_EOD_ASOF = DEPLOYED_EOD_ASOF = 2026-09-25.** Realtime: Markt geschlossen, kein Tick erwartet, keiner behauptet. Der eine STALE-Intraday-Eintrag ist ein Titel ohne Bars am 25.09. (Vortagesstand, korrekt als nicht aktuell markiert).
+
+Hinweis zur Messbasis: Die Analyse-Umgebung erreicht die Seite nicht (Egress-Sperre). Produktion wurde deshalb über den bestehenden Monitor auf GitHub-Runnern gemessen; ein eigener Browser-Abruf aus dieser Umgebung war nicht möglich **[U]**.
 
 ## 22. Verbleibende Risiken (26.09.)
 
@@ -289,8 +304,8 @@ DEPLOYED_PLACEHOLDER
 | POST_FETCH_DATA_INTEGRITY_GATE | PASS |
 | WASTED_PROVIDER_RUN_ON_UNRELATED_TEST | PREVENTED |
 | INTRADAY_CLOSE_TRUTH | PASS |
-| FRESHNESS_CHECK | FRESHNESS_PLACEHOLDER |
+| FRESHNESS_CHECK | PASS (live `--strict` OK; Urteil aus den Reihen; Intraday ohne Fehlalarm) |
 | CANONICAL_EOD_ASOF | 2026-09-25 = LAST_COMPLETED_SESSION |
-| PRODUCTION_EOD_ASOF | PRODUCTION_PLACEHOLDER |
+| PRODUCTION_EOD_ASOF | 2026-09-25 = LAST_COMPLETED_SESSION (live gemessen) |
 | NEW_DATA_ARCHITECTURE / NEW_BRIDGES / PAID_SERVICES_ENABLED | 0 / 0 / 0 |
 | CRITICAL_BLOCKERS | 0 |
