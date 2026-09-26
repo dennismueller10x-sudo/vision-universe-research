@@ -104,6 +104,68 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M29_2026-09-26 — INHALTSMESSUNG ÜBER ALLE ANSICHTEN, UND DER SCREENER WAR DER AUSREISSER
+
+M28 hat eine Lehre hinterlassen: der Smoke prüfte nur auf **Fehlerfreiheit**, deshalb konnte eine
+Liste aus Kürzeln ohne Preis unbemerkt bleiben. Also dasselbe Instrument über **alle dreizehn
+Ansichten** gelegt — nicht „gibt es Fehler", sondern „steht da etwas":
+
+| Ansicht | Sektionen | Zeilen | Absagen | „nicht verfügbar" | Zahlen |
+|---|---:|---:|---:|---:|---:|
+| `/vu2/` | 5 | 5 | 1 | 0 | 16 |
+| `stocks` | 0 | 100 | 1 | 15 | 185 |
+| **`screener`** | 1 | **50** | 0 | **50** | **0** |
+| `radar` | 6 | 0 | 1 | 0 | 100 |
+| `strategies` | 6 | 0 | 0 | 0 | 1 |
+| `signals` | 0 | 0 | 1 | 0 | 0 |
+| `compare` | 1 | 0 | 0 | 0 | 36 |
+| `quant&ticker=A` | 10 | 3 | 4 | 2 | 144 |
+| `fundamentals` / `technical` / `stock` | 1 / 5 / 7 | 0 | 0 | 0 / 0 / 4 | 13 / 24 / 11 |
+
+Ein Ausreißer: **der Screener — 50 Zeilen, 50 mal „nicht verfügbar", null Zahlen.**
+
+### Die Dienstschicht war die ganze Zeit richtig
+
+`api.screen()` liefert 50 Treffer aus 6.875 Titeln, sauber sortiert: VIVKD 145,5 % · CATG 51,7 % ·
+QHUOY 49,6 % · MSFT 41,6 %, jede Zeile mit Wert und Kurs. Die Seite zeigte:
+
+```
+VIVKD | VIVKD | – / 7 | Nicht verfügbar
+```
+
+fünfzig Mal, und darüber: `50 Treffer in 6875 verfügbaren Unternehmen · undefined · kein
+Gesamtmarkt-Ranking`.
+
+**Das `undefined` war die Spur.** In `screenPage` gibt es eine äußere Variable `current` — die
+gewählte Methodik — und der Abschluss `apply()` begann mit `const current=++request`, dem Zähler für
+verworfene Anfragen. Damit war in `apply()` `current.label` undefined und `current.id==='legacy'`
+**immer falsch**: die Seite zeichnete die Faktor-Tabelle der V2-Methodik über Zeilen einer
+V1-Abfrage, und dort gibt es kein `evidence`-Feld. Ein Name, ein verschluckter Zustand, eine
+unbenutzbare Hauptfunktion — und keine einzige Fehlermeldung.
+
+### Realisiert
+
+| Messung | Vorher | Nachher |
+|---|---:|---:|
+| Screener-Zeilen mit Zahl | **0** von 50 | **50** von 50 |
+| Kopfzeile bei V1 | `BEWERTETE FAKTOREN` (falsche Tabelle) | `SCHLUSSKURS \| KURSENTWICKLUNG · 6 MONATE` |
+| Trefferzeile | `· undefined ·` | `· Quant V1 & Marktdaten ·` |
+| V2-Methodik | dieselbe Tabelle, leer | `6 / 7 · 98,8 %`, Namen aus M28 |
+
+Beide Breiten geprüft. Die **übrigen fünf Stellen** mit demselben Muster (`const current=++request`
+in `openSearch`, `comparePage`, `atlasPage`, `portfolioPage`, `fundamentalsPage`) habe ich
+nachgesehen: dort gibt es kein äußeres `current`, also keine Verdeckung.
+
+Der Smoke prüft den Screener jetzt inhaltlich mit (50 von 50 Zeilen mit Zahl, kein `undefined` im
+Satz) — zum dritten Mal dasselbe Muster: **was der Smoke nicht anschaut, verfällt.**
+
+### Was die Messung sonst noch zeigt, als Befund notiert
+
+`signals` steht mit 0 Zeilen und einer Absage da, `strategies` mit einer einzigen Zahl, `radar` mit
+0 Zeilen bei 100 Zahlen. Das kann richtig sein (keine belegten Wechsel im Fenster ist eine Antwort)
+oder dieselbe Klasse Fehler wie hier. Noch nicht gemessen, also noch nicht behauptet — das ist der
+nächste Kandidat.
+
 ## M28_2026-09-26 — DIE LISTE ALLER UNTERNEHMEN: 5 KURSE, KEIN NAME
 
 M27 hielt fest, dass die Listenansichten für die betroffenen Titel weiter keinen Kurs zeigen. Die

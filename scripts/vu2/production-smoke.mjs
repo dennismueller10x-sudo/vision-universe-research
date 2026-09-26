@@ -91,6 +91,22 @@ for(const width of [1440,390]){
      zweimal ("A | A | Nicht verfuegbar"). Der Smoke hat das nie gesehen,
      weil er die Liste nur auf Fehlerfreiheit geprueft hat. Jetzt prueft er
      ihren Inhalt. */
+  /* DER SCREENER ZEIGT, WAS ER FINDET.
+
+     Gemessen am 26.09.2026: er lieferte 50 richtige Treffer und zeigte in
+     jeder Zeile "– / 7" und "Nicht verfuegbar", weil ein Name in der Seite
+     die gewaehlte Methodik verdeckte. Der Smoke hat die Ansicht nur auf
+     Fehlerfreiheit geprueft - eine unbenutzbare Hauptfunktion faellt so nie
+     auf. Jetzt zaehlt er die Zahlen in den Zeilen. */
+  if(view==='/vu2/?view=screener'){
+   const satz=(await page.locator('main p.muted').allInnerTexts()).find(t=>t.includes('Treffer'))||'';
+   const zeilen=await page.locator('.row:not(.eyebrow)').allInnerTexts();
+   const mitZahl=zeilen.filter(t=>/\d+,\d+/.test(t)).length;
+   if(!zeilen.length)bad.push('KEINE_TREFFER');
+   else if(mitZahl<zeilen.length)bad.push('LEERE_ZEILEN='+(zeilen.length-mitZahl)+'/'+zeilen.length);
+   if(/undefined/.test(satz))bad.push('UNDEFINED_IM_SATZ');
+   console.log('     Screener: '+mitZahl+' von '+zeilen.length+' Zeilen mit Zahl · '+satz.slice(0,70));
+  }
   if(view==='/vu2/?view=stocks'){
    const zeilen=await page.locator('.row:not(.eyebrow)').allInnerTexts();
    if(zeilen.length<20)bad.push('ZU_WENIGE_ZEILEN='+zeilen.length);
