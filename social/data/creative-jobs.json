@@ -442,9 +442,9 @@
       "processingKey": "brief_3c400c1a56587e7e:vu-msft-20260918:124cdeca6f67dd265cd2c3a7327a254770a12c40:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_REQUESTED",
+      "state": "CREATIVE_JOB_FAILED",
       "createdAt": "2026-09-23T09:18:23.686Z",
-      "updatedAt": "2026-09-23T09:18:23.686Z",
+      "updatedAt": "2026-09-26T15:26:07.226Z",
       "prNumber": null,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -453,8 +453,14 @@
           "state": "CREATIVE_JOB_REQUESTED",
           "at": "2026-09-23T09:18:23.686Z",
           "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-26T15:26:07.226Z",
+          "note": "gh pr list --head authoring/request/vu-msft-20260918 (via GitHub API, 2026-09-26) — nur PR #179 vorhanden, fuer einen anderen processingKey (390d74d5...); kein PR fuer diesen processingKey (124cdeca6f...). — reconciled aus DISPATCH_NIE_ERFOLGT"
         }
-      ]
+      ],
+      "failureType": "NEVER_DISPATCHED"
     },
     {
       "creativeJobId": "job_vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:attempt1",
@@ -696,5 +702,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-09-26T14:55:55.284Z"
+  "reconciledAt": "2026-09-26T15:26:07.226Z"
 }

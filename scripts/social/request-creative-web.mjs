@@ -126,19 +126,23 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
     /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD, COMIC-STIL",
-       26.09., zweite Iteration): die erste Fassung ("premium dark
+       26.09., dritte Iteration): die erste Fassung ("premium dark
        editorial") lieferte ein photorealistisches KI-Stockfoto — Fed-
        Gebaeude, Flaggen, Banknote, ein kleiner Roboter in der Ecke. Der
        Owner hat es gegen ein echtes virales Beispiel (plakative Comic-/
        Claymation-Anzeige, uebergrosser ausdrucksstarker Charakter,
        riesige Typo, kaum Hintergrundablenkung) gehalten und geurteilt:
-       "damit gehen wir unter". Atlas und Logo waren dabei korrekt
-       platziert — das Problem ist ausschliesslich der visuelle Stil,
-       nicht das Compositing. Diese Fassung zielt auf dieselbe plakative,
-       grafische Energie, OHNE Atlas/Logo selbst umzuzeichnen (§12/§18 in
-       social/engines/brand.js verbieten das ausdruecklich — erlaubt sind
-       nur crop/scale/reframe/compose, keine Stiltransformation der
-       Figur oder des Zeichens selbst). */
+       "damit gehen wir unter". Die zweite Fassung traf den Stil (schwarze
+       Flaeche, grosser Mint-Pfeil, dominante Typo) — aber "Atlas als
+       grosse, praesente Figur" wurde vom Modell als "Atlas fuellt den
+       Grossteil des Bildes" gelesen: der Owner hat das gemessen und mit
+       10-20% der Bildflaeche beziffert. Diese Fassung uebernimmt den
+       getroffenen Stil unveraendert und zieht ausschliesslich Atlas'
+       Groesse zurueck, auf ein kleines begleitendes Element vergleichbar
+       mit dem Logo. Weiterhin OHNE Atlas/Logo selbst umzuzeichnen (§12/
+       §18 in social/engines/brand.js verbieten das ausdruecklich —
+       erlaubt sind nur crop/scale/reframe/compose, keine Stiltrans-
+       formation der Figur oder des Zeichens selbst). */
     palette: ["near-black #050505 background as a bold FLAT color field (not a " +
       "photographic scene)", "one confident teal/mint accent close to #5FE0C0 used as a " +
       "LARGE flat shape or color block (a poster panel, not a thin highlight)", "white for " +
@@ -166,16 +170,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "post — not a raw scene for later text overlay. Bake the German headline text (see " +
       "hook_strategy) directly into the image as OVERSIZED, bold, perfectly legible " +
       "typography that dominates roughly a third of the frame (upper band), set against " +
-      "the flat color field, not over busy detail. Composite the exact brand mascot file " +
-      "(see brand_assets.atlas) as a LARGE, prominent presence — a real character taking " +
-      "up meaningful space in the composition, not a small decorative accessory tucked in " +
-      "a corner. Composite the exact brand logo file (see brand_assets.logo) small and " +
-      "quiet, top-left corner, as a signature, not a design element. Keep the supporting " +
-      "motif for the topic simple and iconic — one clear graphic idea (a shape, a symbol, " +
-      "a gesture), never a cluttered realistic scene with multiple competing props. The " +
-      "result must read as ONE cohesive, intentionally designed brand poster — logo and " +
-      "mascot reproduced exactly as given (only scaled/cropped/reframed per their brand " +
-      "contract), never redrawn or restyled into a different art style.",
+      "the flat color field, not over busy detail. The headline typography and the " +
+      "supporting graphic motif (a shape, a symbol, an arrow, a gesture — one clear idea, " +
+      "never a cluttered realistic scene) are the MAIN visual content and together occupy " +
+      "most of the frame. Composite the exact brand mascot file (see brand_assets.atlas) " +
+      "as a SMALL supporting presence only — roughly 10-20% of the frame's area, sized " +
+      "like a signature character cameo (comparable to how the logo sits), not a dominant " +
+      "foreground figure. It must never compete with the headline or the main motif for " +
+      "attention, and never occupy the visual center of the composition. Composite the " +
+      "exact brand logo file (see brand_assets.logo) small and quiet, top-left corner, as " +
+      "a signature, not a design element. The result must read as ONE cohesive, " +
+      "intentionally designed brand poster — logo and mascot reproduced exactly as given " +
+      "(only scaled/cropped/reframed per their brand contract), never redrawn or restyled " +
+      "into a different art style, and never enlarged into the main subject of the image.",
     restrictions: ["Keine Kurse im Bild", "Keine Renditezahlen", "Kein Wasserzeichen",
       "Keine Prognose-Aussage im Bildtext", "Logo und Atlas exakt aus den " +
       "angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"],
