@@ -165,6 +165,44 @@ test("CG11 · Ein Ergebnis, das Veroeffentlichung behauptet, wird zurueckgewiese
   assert.ok(v.findings.some((f) => f.id === "publishingClaimed"));
 });
 
+/* ---------------------------------------------------------------------
+   BRAND_ELEMENTS — GENERATIVES VOLLBILD (Owner-Direktive 26.09.)
+
+   Verlangt der Brief die Rueckmeldung (buildAgentBrief mit
+   requireBrandElementsAnnounced: true), muss die erste Bildvariante
+   ausdruecklich bestaetigen, dass Logo, Atlas und deutscher Hook-Text
+   im Bild stehen — sonst wird das Ergebnis zurueckgewiesen, genau wie
+   ein fehlendes Pflichtfeld beim Bildtransport (CG13). */
+test("CG31 · Ohne requireBrandElements verlangt CW nichts zur Bildzusammensetzung", () => {
+  const v = CW.verifyResult(ERGEBNIS, KONTEXT);
+  assert.equal(v.ok, true, v.explanation);
+});
+
+test("CG32 · Mit requireBrandElements: fehlende Ankuendigung wird zurueckgewiesen", () => {
+  const v = CW.verifyResult(ERGEBNIS, Object.assign({}, KONTEXT, { requireBrandElements: true }));
+  assert.equal(v.ok, false);
+  assert.ok(v.findings.some((f) => f.id === "missingBrandElementsAnnouncement"));
+});
+
+test("CG33 · Mit requireBrandElements: eine unvollstaendige Ankuendigung wird zurueckgewiesen", () => {
+  const unvollstaendig = JSON.parse(JSON.stringify(ERGEBNIS));
+  unvollstaendig.visual_variants[0].brand_elements =
+    { includes_logo: true, includes_atlas: false, includes_hook_text_de: true };
+  const v = CW.verifyResult(unvollstaendig,
+    Object.assign({}, KONTEXT, { requireBrandElements: true }));
+  assert.equal(v.ok, false);
+  assert.ok(v.findings.some((f) => f.id === "brandElementsIncomplete"));
+});
+
+test("CG34 · Mit requireBrandElements: eine vollstaendige Ankuendigung wahrt die Grenze", () => {
+  const vollstaendig = JSON.parse(JSON.stringify(ERGEBNIS));
+  vollstaendig.visual_variants[0].brand_elements =
+    { includes_logo: true, includes_atlas: true, includes_hook_text_de: true };
+  const v = CW.verifyResult(vollstaendig,
+    Object.assign({}, KONTEXT, { requireBrandElements: true }));
+  assert.equal(v.ok, true, v.explanation);
+});
+
 test("CG12 · Ein Ergebnis zu einem fremden Brief wird zurueckgewiesen", () => {
   const v = CW.verifyResult(ERGEBNIS, Object.assign({}, KONTEXT, { briefId: "ein-anderer" }));
   assert.ok(v.findings.some((f) => f.id === "briefIdMismatch"));
@@ -425,6 +463,23 @@ function briefFuerAnlauf() {
     evidence: [{ entity: "XOM", metric: "Score", value: 76, statement: "76 Punkte." }],
     constraints: {} };
 }
+
+test("CG27b · Restrictions/brand_assets sind ueberschreibbar, Standard bleibt unveraendert", () => {
+  const standard = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1" });
+  assert.deepEqual(standard.visual_strategy.restrictions,
+    ["Kein Text im Bild", "Kein Logo", "Keine Kurse im Bild",
+      "Keine Renditezahlen", "Kein Wasserzeichen"]);
+  assert.equal(standard.brand_assets, null);
+  assert.equal(standard.authoring_requirements.brand_elements_announcement_required, false);
+
+  const vollbild = CW.buildAgentBrief(briefFuerAnlauf(), { contentId: "vu-x-1",
+    restrictions: ["Keine Kurse im Bild"],
+    brandAssets: { logo: "assets/vision-universe-logo.png", atlas: "assets/atlas.png" },
+    requireBrandElementsAnnounced: true });
+  assert.deepEqual(vollbild.visual_strategy.restrictions, ["Keine Kurse im Bild"]);
+  assert.equal(vollbild.brand_assets.logo, "assets/vision-universe-logo.png");
+  assert.equal(vollbild.authoring_requirements.brand_elements_announcement_required, true);
+});
 
 test("CG28 · Ein zweiter Anlauf ist ein eigener Vorgang", () => {
   /* Schweigt der Anbieter, muss derselbe Inhalt noch einmal angefragt
