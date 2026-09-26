@@ -23,7 +23,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
     scheitern, wo der Smoke gebraucht wird. */
  ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/product-language-v1.json',import.meta.url),'utf8')).forbiddenInPrimaryCopy;
-const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks'];
+const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=stock&ticker=AHT-P-D','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks'];
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
@@ -78,6 +78,19 @@ for(const width of [1440,390]){
      alles da ist. Genau deshalb waere ein Stapel Absagen hier nie
      aufgefallen. ACAA (117 Handelstage, keine Kennzahl) und EDVA (kein
      Kurs) sind die gemessenen Faelle. */
+  /* DIE KOPFZAHL, DIE IM CHART DANEBEN STAND.
+
+     AHT-P-D ist der gemessene Fall: Vorzugsaktie, nicht im Panel, 270
+     veroeffentlichte Handelstage - und bis zum 26.09.2026 sagte die Kopfzahl
+     "nicht verfuegbar", waehrend der Chart darunter 5,17 zeichnete. Der Smoke
+     verlangt jetzt beides: eine Zahl im Kopf und das Datum dazu. */
+  if(view.includes('ticker=AHT-P-D')){
+   const quote=await page.locator('.quote').first().innerText().catch(()=>'');
+   const unter=await page.locator('.focus .muted').first().innerText().catch(()=>'');
+   if(!/\d/.test(quote))bad.push('KEIN_KURS:'+quote);
+   if(!/\d{2}\.\d{2}\.\d{2}|\d{4}-\d{2}-\d{2}/.test(unter))bad.push('KEIN_KURSDATUM:'+unter.slice(0,40));
+   console.log('     Kopfzahl: '+quote.replace(/\n/g,' ')+' · '+unter.split('·').slice(1).join('·').trim().slice(0,60));
+  }
   if(/ticker=(ACAA|EDVA)/.test(view)){
    const gap=page.locator('.journey-gap');
    if(!await gap.count())bad.push('VERDICHTUNG_FEHLT');
