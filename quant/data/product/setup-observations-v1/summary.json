@@ -3,7 +3,7 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-09-26T05:18:59.000Z",
+ "generatedAt": "2026-09-26T07:25:54.000Z",
  "asOf": "2026-09-25",
  "approval": {
   "state": "APPROVED",
@@ -323,13 +323,13 @@
    "predicateHash": null
   }
  ],
- "universe": 5842,
- "observed": 5842,
+ "universe": 5868,
+ "observed": 5868,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4342,
-  "WATCH": 844,
-  "SETUP_FORMING": 638,
+  "NO_SETUP": 4360,
+  "WATCH": 850,
+  "SETUP_FORMING": 640,
   "CONFIRMED": 18,
   "ACTIVE": 0,
   "RISK_RISING": 0,
@@ -337,10 +337,10 @@
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 638,
-  "setup.none.fallback": 4342,
-  "setup.watch.bullish-trend": 559,
-  "setup.watch.confirmed-structure-near-high": 285,
+  "setup.forming.complete-setup-awaiting-trigger": 640,
+  "setup.none.fallback": 4360,
+  "setup.watch.bullish-trend": 563,
+  "setup.watch.confirmed-structure-near-high": 287,
   "setup.confirmed.structure-trend-volume": 18
  },
  "pathTier": {
@@ -369,7 +369,7 @@
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5842
+   "instruments": 5868
   }
  },
  "shards": [
@@ -547,6 +547,7 @@
   "GN",
   "GO",
   "GP",
+  "GQ",
   "GR",
   "GS",
   "GT",
@@ -753,6 +754,7 @@
   "OV",
   "OW",
   "OX",
+  "OY",
   "OZ",
   "O_",
   "PA",
@@ -921,6 +923,7 @@
   "VT",
   "VU",
   "VV",
+  "VW",
   "VY",
   "VZ",
   "V_",
@@ -1007,5 +1010,16 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": null
+ "observationDrift": {
+  "asOf": "2026-09-25",
+  "publishedHash": "696a9b8d4380674ef0edb08d45a22220",
+  "recomputedHash": "df35dce49587516341379ce421841d5c",
+  "rowsPublished": 5842,
+  "rowsToday": 5868,
+  "rowsAdded": 26,
+  "rowsChanged": 0,
+  "addedOnly": true,
+  "columnsDiffer": false,
+  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
+ }
 }

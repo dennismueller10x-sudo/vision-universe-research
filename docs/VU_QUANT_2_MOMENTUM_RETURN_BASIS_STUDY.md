@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-09-26T05:05:03.000Z |
+| Stand der Messung | 2026-09-26T07:17:22.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -95,8 +95,8 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 6.437 |
-| Preisbasis | `close` 6.437 |
+| Einträge | 6.441 |
+| Preisbasis | `close` 6.441 |
 | gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
@@ -237,11 +237,11 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-09-24 (-1 Tage nach dem Stichtag) |
+| veröffentlichtes Evidence vom | 2026-09-25 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9343 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9466 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.417 / 5.835 / 5.835 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9395 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9517 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.418 / 5.835 / 5.835 |
 
 **Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9922 · Median 60 Ränge · P95 420,3 · Maximum 3.360 · 623 Titel bewegen sich um mindestens 5 Perzentilpunkte, 165 um mindestens 10.
 

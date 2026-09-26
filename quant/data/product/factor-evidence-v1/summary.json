@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.1.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-26T05:18:42.000Z",
+ "generatedAt": "2026-09-26T07:25:44.000Z",
  "asOf": "2026-09-25",
  "publication": {
   "compositeAllowed": false,
@@ -361,7 +361,14 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": false,
-  "recomputationDrift": null
+  "recomputationDrift": {
+   "asOf": "2026-09-25",
+   "publishedHash": "c105e9f66eb7a8e0",
+   "recomputedHash": "30419d92f65344dc",
+   "rowsDiffering": 1704,
+   "rowsTotal": 6441,
+   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+  }
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
@@ -395,7 +402,7 @@
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 5842
+   "tickers": 5868
   }
  },
  "counts": {
@@ -403,7 +410,7 @@
   "priceFactorSecurities": 6441,
   "published": 6441,
   "withFundamentals": 5036,
-  "withMarketCap": 3943
+  "withMarketCap": 3955
  },
  "factorStates": {
   "quality": {
@@ -422,8 +429,8 @@
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 2015,
-   "UNAVAILABLE": 3452,
+   "AVAILABLE": 2018,
+   "UNAVAILABLE": 3449,
    "NOT_APPLICABLE": 974
   },
   "profitability": {
@@ -445,8 +452,8 @@
  "reasonCounts": {
   "INSUFFICIENT_WEIGHTED_COVERAGE": 2024,
   "BLOCKED_EXTERNAL": 6441,
-  "INSUFFICIENT_COMPONENTS": 4015,
-  "INPUT_NOT_MATERIALIZED": 9279,
+  "INSUFFICIENT_COMPONENTS": 4023,
+  "INPUT_NOT_MATERIALIZED": 9268,
   "SECTOR_TEMPLATE_MISSING": 2922,
   "MANDATORY_COMPONENT_MISSING": 22
  },
@@ -467,9 +474,9 @@
   "momentum:relativeStrength12m1m": 5608,
   "momentum:distanceTo52wHigh": 5610,
   "momentum:distanceToSma200": 5720,
-  "value:fcfYield": 2035,
-  "value:earningsYield": 2535,
-  "value:bookToMarket": 3095,
+  "value:fcfYield": 2038,
+  "value:earningsYield": 2539,
+  "value:bookToMarket": 3106,
   "profitability:roicMedian3y": 538,
   "profitability:operatingMarginTtm": 2345,
   "profitability:fcfMarginTtm": 2220,
@@ -541,6 +548,6 @@
   "IDENTITY_UNRESOLVED": 1053,
   "FUNDAMENTALS_DOCUMENT_MISSING": 352
  },
- "runtimeMs": 18394,
- "contentHash": "b01c6fbdb578d10b"
+ "runtimeMs": 10386,
+ "contentHash": "429f741506157dc9"
 }
