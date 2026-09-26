@@ -85,6 +85,25 @@ test("der Push laeuft nur mit gerechnetem Budget", () => {
     "der Push liest eine Vorabrechnung, die dieser Schritt schreiben muss");
 });
 
+/* Derselbe Fehler eine Ebene hoeher, gefunden am 26.09.2026: die Ablage stand
+   planmaessig auf dem 2026-09-25 (Abendlauf 36206072592), die Produktschicht
+   auf dem 24. - weil die Materialisierung nur auf Zuruf lief. Eine aktuelle
+   Ablage, die kein Leser sieht, ist kein aktueller Stand. */
+test("die Produktschicht folgt dem Abruf von selbst, nicht auf Zuruf", () => {
+  const mat = workflow("product-intelligence-materialization.yml");
+  const refreshName = refresh.match(/^name:\s*(.+)$/m)[1].trim();
+  const automatisch = mat.includes(`- "${refreshName}"`) || /^\s+schedule:/m.test(mat);
+  assert.ok(automatisch,
+    "die Materialisierung hat weder Zeitplan noch workflow_run auf den Abruf - die Produktseiten bleiben stehen, waehrend die Ablage laeuft");
+  if (mat.includes(`- "${refreshName}"`)) {
+    assert.match(mat, /github\.event\.workflow_run\.conclusion == 'success'/,
+      "ein roter Abruf darf keine Materialisierung ausloesen");
+    assert.match(mat, /github\.event\.workflow_run\.head_branch == 'main'/);
+    assert.match(mat, /github\.event_name == 'workflow_run'/,
+      "der Auslöser steht in `on`, aber die Job-Bedingung laesst ihn nicht zu - der Lauf startet und tut nichts");
+  }
+});
+
 test("der Hebel ohne Abruf ist dispatchbar und fragt keinen Anbieter", () => {
   const lever = workflow("history-store-sync.yml");
   assert.match(lever, /^on:\s*\n\s+workflow_dispatch:/m);

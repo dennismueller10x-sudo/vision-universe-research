@@ -22,9 +22,11 @@ ist auf dem Default-Branch **gelaufen**, nicht nur verdrahtet — ein vollständ
 grünem Ablage-Push (13:22), danach Wochenreihen und Materialisierung, alle drei Läufe grün, der
 Stand nach dem Lauf gemessen statt übernommen (5.470 Titel auf 2026-09-24, `pattern-match`
 `asOf 2026-09-24`, Reise 382 von 500). Sechs der sieben geforderten Punkte sind damit beobachtet;
-offen ist allein „kein erneutes Freeze nach dem nächsten **planmäßigen** Lauf" — das kann kein
-Dispatch beweisen, dafür läuft der Zeitplan um 22:30 UTC und ein Selbst-Check-in um 23:50 UTC.
-Bis dahin bleibt der nächste Product-Milestone zu. Details in `MERGED_2026-09-25`. Vorherige Phase
+und seit dem 26.09. ist auch der siebte beobachtet: der **planmäßige** Abendlauf 36206072592 hat
+die Ablage ohne jedes Zutun auf den 2026-09-25 gebracht (Push-Schritte ausgeführt, nicht
+übersprungen). `STORE_REFRESH_AUTOMATION = PASS`. Dabei fiel derselbe Fehler eine Ebene höher auf
+und ist behoben: die Materialisierung der Produktschicht hatte keinen Zeitplan und hängt jetzt am
+erfolgreichen Abruf. Details in `MERGED_2026-09-25`. Vorherige Phase
 (`STORE_CURRENT_BOTH_LAYERS_GAPS_NAMED_PER_TITLE`):
 
 Abschluss der Kette: die dauerhafte Ablage ist beschrieben, **beide** Schichten
@@ -250,11 +252,49 @@ der nächste Abruf prüft seinen eigenen Ablage-Vertrag, bevor er eine Anfrage s
 | 4 | weekly long-series bleibt aktuell | **gemessen** — Lauf 36159622919, 6.333 Reihen, kein neuer Wochenbalken fällig |
 | 5 | Technical / Signals / Elliott / Setup lesen den aktuellen Stand | **gemessen** — 5.842 / 5.967 / 5.754 aus dem gezogenen Store |
 | 6 | Pattern Match liest den aktuellen Wochenstand | **gemessen** — `asOf 2026-09-24`, Lücke 1.284 je Titel benannt |
-| 7 | kein erneutes Freeze nach dem nächsten **planmäßigen** Lauf | **offen bis 22:30 UTC** — nicht behauptbar, nur beobachtbar; Selbst-Check-in 23:50 UTC, zusätzlich misst der Freshness-Monitor um 23:15 gegen die veröffentlichte Seite |
+| 7 | kein erneutes Freeze nach dem nächsten **planmäßigen** Lauf | **beobachtet (26.09.)** — Lauf **36206072592**, `event: schedule`, main, 00:46:36 → 02:16:32 grün; Schritt 25 (Vorabrechnung) und Schritt 26 (Ablage-Push, 15:22) **ausgeführt, nicht übersprungen**; danach gemessen: die veröffentlichten Tagesreihen enden auf **2026-09-25** (3.960 von 4.000 gelesenen Titeln) |
 
-**Verdikt: `STORE_REFRESH_AUTOMATION = SIX_OF_SEVEN_OBSERVED`, nicht PASS.** Punkt 7 ist der
-einzige, den kein Dispatch beweisen kann — er braucht einen Lauf, den der Zeitplan startet. Bis
-dahin bleibt der nächste Product-Milestone zu.
+**Verdikt: `STORE_REFRESH_AUTOMATION = PASS`** (26.09.2026, Beleg Lauf 36206072592).
+
+Zwei Dinge, die die Beobachtung nebenbei geklärt hat, und die kein Zeitplan-Kommentar hergibt:
+
+- **„22:30" ist nicht 22:30.** GitHub startet diesen Workflow rund zwei Stunden nach der
+  Cron-Zeit: 2026-09-23 um 00:50:46, 09-24 um 00:44:27, 09-25 um 00:41:26, 09-26 um 00:46:32 —
+  also `+2h11m` bis `+2h20m`. Der erste Check-in um 23:50 UTC fand deshalb **keinen** Lauf; das war
+  keine ausgefallene Automatik, sondern eine Warteschlange. Wer die Abendkette plant, rechnet mit
+  ~00:45 UTC, nicht mit 22:30.
+- **Gate A des planmäßigen Laufs hat den neuen Vertragstest schon mitgeprüft**
+  (`history-store-automation`, im Muster `quant/tests/*.test.mjs`): der Lauf hat seinen eigenen
+  Ablage-Vertrag bestätigt, bevor er eine Anfrage gestellt hat.
+
+Nebenbefund, nachgesehen und **nicht** offen: der `freshness-monitor` war auf main bei jedem
+planmäßigen Lauf bis zum Abend des 25.09. rot („Die veroeffentlichte Seite zeigt nicht den letzten
+Handelstag", z. B. Läufe 36173774823 und 36178586940). Das gehört nicht zu dieser Kette und ist
+auch nicht von hier behoben: seit **2026-09-26 03:38 UTC ist der Monitor grün** (Lauf 36215442014),
+nach der Freshness-P0-Arbeit einer anderen Sitzung (#224, „Live-Stand 2026-09-25 = letzte
+abgeschlossene Sitzung"). Festgehalten, weil ein Dauerrot aufhört, ein Signal zu sein — und weil
+diese Zeile sonst als offener Befund weitergetragen würde, den es nicht mehr gibt.
+
+### Derselbe Fehler eine Ebene höher — und dort behoben
+
+Beim Nachmessen von Punkt 7 fiel auf: die **Ablage** stand planmäßig auf dem 2026-09-25, die
+**Produktschicht** auf dem 2026-09-24. Ursache ist die exakte Wiederholung des Befunds, der diese
+Kette ausgelöst hat: `product-intelligence-materialization.yml` hatte **keinen Zeitplan**, und ihr
+einziger automatischer Auslöser war ein `push`-Filter auf `codex/**` plus eine Commit-Marke
+`[materialize-product-intelligence]` — beides erfüllt kein Lauf auf main. Die Produktschicht
+entstand also nur, wenn ein Mensch oder ein Agent sie dispatcht. Eine aktuelle Ablage, die kein
+Leser sieht, ist kein aktueller Stand.
+
+Behoben mit dem Mechanismus, den dieses Repository für solche Ketten schon benutzt
+(`pages-release`): die Materialisierung hängt jetzt per `workflow_run` am **erfolgreichen** Abruf
+auf main (`conclusion == 'success'`, `head_branch == 'main'`), Job-Bedingung inklusive — ein
+Auslöser in `on`, den die Job-Bedingung nicht zulässt, startet einen Lauf, der nichts tut, und das
+ist derselbe stille Ausfall in neuer Kleidung. Keine Schleife: der Abruf reagiert nicht auf Pushes
+nach main. Kein Anbieter-Abruf.
+
+Der Vertragstest deckt das jetzt mit ab (`die Produktschicht folgt dem Abruf von selbst, nicht auf
+Zuruf`, Fall 6 von 7). Gegenprobe: ohne `workflow_run` fällt der Fall; **und** mit `workflow_run`
+in `on`, aber ohne die Job-Bedingung, fällt er ebenfalls.
 
 ### Produktionsweg, ehrlich benannt
 
