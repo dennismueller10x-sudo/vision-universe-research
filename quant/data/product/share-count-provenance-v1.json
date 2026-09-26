@@ -1,0 +1,635 @@
+{
+ "schemaVersion": "share-count-provenance-1.0.0",
+ "generatedAt": "2026-09-26T15:21:20.000Z",
+ "question": "Welche Herkunftsangaben einer Aktienzahl sind lokal erhalten, und wo ist belegt, dass eine Kennzahlreihe Konzepte vermischt?",
+ "sources": {
+  "provenance": "quant/data/sec/primary_source_audit.json (fuehrt secConcept, accession, form, filingDate, periodEnd je Pruefung)",
+  "consumer": "quant/data/sec/consumer/CIK*.json (Spalten fy, fp, end, v, filed, accn, derived)"
+ },
+ "conceptClasses": {
+  "dei:EntityCommonStockSharesOutstanding": "OUTSTANDING",
+  "us-gaap:CommonStockSharesOutstanding": "OUTSTANDING",
+  "us-gaap:CommonStockSharesIssued": "ISSUED_INCLUDING_TREASURY",
+  "us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding": "WEIGHTED_AVERAGE",
+  "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic": "WEIGHTED_AVERAGE",
+  "us-gaap:StockholdersEquity": "EQUITY_PARENT_ONLY",
+  "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest": "EQUITY_INCLUDING_MINORITY"
+ },
+ "requestedProvenanceFields": {
+  "concept": {
+   "column": null,
+   "present": false,
+   "note": "Das SEC-Konzept, aus dem der Wert kam. Fehlt vollstaendig."
+  },
+  "form": {
+   "column": null,
+   "present": false,
+   "note": "Formulartyp (10-K, 10-Q). Fehlt in der Konsumschicht; die kanonische Schicht fuehrt ihn je Einreichung, existiert aber nur fuer fuenf Titel."
+  },
+  "filingDate": {
+   "column": "filed",
+   "present": true,
+   "note": "Vorhanden und punktgenau benutzt."
+  },
+  "accession": {
+   "column": "accn",
+   "present": true,
+   "note": "Vorhanden - die Aktennummer der Einreichung."
+  },
+  "fiscalPeriod": {
+   "column": "fp",
+   "present": true,
+   "note": "Vorhanden (FY, Q1..Q4, TTM)."
+  },
+  "dimensions": {
+   "column": null,
+   "present": false,
+   "note": "Fehlt. Die Gattungsachse der Deckblattangabe ist damit unsichtbar - der Grund, warum es keine Aktienzahl je Gattung gibt."
+  },
+  "frame": {
+   "column": null,
+   "present": false,
+   "note": "Fehlt."
+  },
+  "units": {
+   "column": null,
+   "present": true,
+   "note": "Vorhanden, aber je KENNZAHL im Kopf des Dokuments und nicht je Wert."
+  },
+  "sourceTag": {
+   "column": null,
+   "present": false,
+   "note": "Fehlt - deckungsgleich mit `concept`."
+  }
+ },
+ "DATA_CONTRACT_GAP": {
+  "state": "OPEN",
+  "missing": [
+   "concept",
+   "form",
+   "dimensions",
+   "frame",
+   "sourceTag"
+  ],
+  "statement": "Die Konsumschicht fuehrt Einreichungsdatum, Aktennummer und Periode je Wert, aber nicht das Konzept, aus dem der Wert kam. Ohne es ist nicht entscheidbar, ob eine Aktienzahl ausstehende oder ausgegebene Aktien zaehlt - und beides steht nachweislich in derselben Reihe. Das ist eine Luecke im Datenvertrag und keine fehlende Quelle: die SEC liefert das Konzept, die Normalisierung verwirft es.",
+  "correctFix": "Das Konzept je Wert im Export mitfuehren und eine Kennzahlreihe niemals aus zwei Konzeptklassen zusammensetzen. Beides liegt in der bestehenden SEC-Schicht gegen die bestehende Quelle - kein Anbieterkauf.",
+  "whyNotHeuristic": "Aus dem Wert zu erraten, welches Konzept vorlag, ist untersagt und nachweislich falsch: ein Aktiensplit hebt die ausstehende Zahl, waehrend die historische Durchschnittsreihe vorsplit bleibt, und sieht damit genauso aus wie eine Vermischung. Booking Holdings wurde so einmal falsch beschuldigt."
+ },
+ "evidenceReach": {
+  "issuersWithConsumerExport": 5069,
+  "issuersWithRawProvenance": 5,
+  "auditedMetrics": [
+   "revenue",
+   "net_income",
+   "operating_cash_flow",
+   "total_assets",
+   "stockholders_equity",
+   "shares_outstanding"
+  ],
+  "note": "Der Beleg reicht ueber 5 von 5069 Emittenten. Die Vermischung ist damit belegt, ihre universumsweite Reichweite nicht."
+ },
+ "MIXED_CONCEPT_SERIES": [
+  {
+   "ticker": "JPM",
+   "metric": "stockholders_equity",
+   "concepts": [
+    "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+    "us-gaap:StockholdersEquity"
+   ],
+   "classes": [
+    "EQUITY_INCLUDING_MINORITY",
+    "EQUITY_PARENT_ONLY"
+   ],
+   "byConcept": {
+    "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2007,
+       "fiscalPeriod": "FY",
+       "accession": "0000950123-10-016029",
+       "form": "10-K",
+       "filingDate": "2010-02-24",
+       "periodEnd": "2007-12-31",
+       "rawSecValue": 123221000000
+      },
+      {
+       "fiscalYear": 2007,
+       "fiscalPeriod": "Q4",
+       "accession": "0000950123-10-016029",
+       "form": "10-K",
+       "filingDate": "2010-02-24",
+       "periodEnd": "2007-12-31",
+       "rawSecValue": 123221000000
+      }
+     ]
+    },
+    "us-gaap:StockholdersEquity": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "FY",
+       "accession": "0000950123-09-032832",
+       "form": "10-Q",
+       "filingDate": "2009-08-10",
+       "periodEnd": "2008-12-31",
+       "rawSecValue": 166884000000
+      },
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "Q2",
+       "accession": "0000950123-09-032832",
+       "form": "10-Q",
+       "filingDate": "2009-08-10",
+       "periodEnd": "2008-06-30",
+       "rawSecValue": 133176000000
+      }
+     ]
+    }
+   }
+  },
+  {
+   "ticker": "JPM",
+   "metric": "shares_outstanding",
+   "concepts": [
+    "us-gaap:CommonStockSharesIssued",
+    "dei:EntityCommonStockSharesOutstanding"
+   ],
+   "classes": [
+    "ISSUED_INCLUDING_TREASURY",
+    "OUTSTANDING"
+   ],
+   "byConcept": {
+    "us-gaap:CommonStockSharesIssued": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2007,
+       "fiscalPeriod": "FY",
+       "accession": "0000950123-11-019773",
+       "form": "10-K",
+       "filingDate": "2011-02-28",
+       "periodEnd": "2007-12-31",
+       "rawSecValue": 3657700000
+      },
+      {
+       "fiscalYear": 2007,
+       "fiscalPeriod": "Q4",
+       "accession": "0000950123-11-019773",
+       "form": "10-K",
+       "filingDate": "2011-02-28",
+       "periodEnd": "2007-12-31",
+       "rawSecValue": 3657700000
+      }
+     ]
+    },
+    "dei:EntityCommonStockSharesOutstanding": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "FY",
+       "accession": "0000950123-10-016029",
+       "form": "10-K",
+       "filingDate": "2010-02-24",
+       "periodEnd": "2010-01-31",
+       "rawSecValue": 3973010673
+      },
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "Q2",
+       "accession": "0000950123-09-032832",
+       "form": "10-Q",
+       "filingDate": "2009-08-10",
+       "periodEnd": "2009-07-31",
+       "rawSecValue": 3932572941
+      }
+     ]
+    }
+   }
+  },
+  {
+   "ticker": "XOM",
+   "metric": "stockholders_equity",
+   "concepts": [
+    "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+    "us-gaap:StockholdersEquity"
+   ],
+   "classes": [
+    "EQUITY_INCLUDING_MINORITY",
+    "EQUITY_PARENT_ONLY"
+   ],
+   "byConcept": {
+    "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest": {
+     "count": 2,
+     "examples": [
+      {
+       "fiscalYear": 2007,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-10-042929",
+       "form": "10-K",
+       "filingDate": "2010-02-26",
+       "periodEnd": "2007-12-31",
+       "rawSecValue": 126044000000
+      },
+      {
+       "fiscalYear": 2007,
+       "fiscalPeriod": "Q4",
+       "accession": "0001193125-10-042929",
+       "form": "10-K",
+       "filingDate": "2010-02-26",
+       "periodEnd": "2007-12-31",
+       "rawSecValue": 126044000000
+      }
+     ]
+    },
+    "us-gaap:StockholdersEquity": {
+     "count": 6,
+     "examples": [
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-09-165196",
+       "form": "10-Q",
+       "filingDate": "2009-08-05",
+       "periodEnd": "2008-12-31",
+       "rawSecValue": 112965000000
+      },
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "Q4",
+       "accession": "0001193125-09-165196",
+       "form": "10-Q",
+       "filingDate": "2009-08-05",
+       "periodEnd": "2008-12-31",
+       "rawSecValue": 112965000000
+      }
+     ]
+    }
+   }
+  },
+  {
+   "ticker": "XOM",
+   "metric": "shares_outstanding",
+   "concepts": [
+    "us-gaap:CommonStockSharesIssued",
+    "dei:EntityCommonStockSharesOutstanding"
+   ],
+   "classes": [
+    "ISSUED_INCLUDING_TREASURY",
+    "OUTSTANDING"
+   ],
+   "byConcept": {
+    "us-gaap:CommonStockSharesIssued": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-09-165196",
+       "form": "10-Q",
+       "filingDate": "2009-08-05",
+       "periodEnd": "2008-12-31",
+       "rawSecValue": 8019000000
+      },
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "Q4",
+       "accession": "0001193125-09-165196",
+       "form": "10-Q",
+       "filingDate": "2009-08-05",
+       "periodEnd": "2008-12-31",
+       "rawSecValue": 8019000000
+      }
+     ]
+    },
+    "dei:EntityCommonStockSharesOutstanding": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-10-042929",
+       "form": "10-K",
+       "filingDate": "2010-02-26",
+       "periodEnd": "2010-01-31",
+       "rawSecValue": 4721273113
+      },
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "Q1",
+       "accession": "0001193125-09-165196",
+       "form": "10-Q",
+       "filingDate": "2009-08-05",
+       "periodEnd": "2009-06-30",
+       "rawSecValue": 4805790141
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "SAME_CLASS_DIFFERENT_CONCEPT": [
+  {
+   "ticker": "AAPL",
+   "metric": "shares_outstanding",
+   "concepts": [
+    "us-gaap:CommonStockSharesOutstanding",
+    "dei:EntityCommonStockSharesOutstanding"
+   ],
+   "classes": [
+    "OUTSTANDING"
+   ],
+   "byConcept": {
+    "us-gaap:CommonStockSharesOutstanding": {
+     "count": 2,
+     "examples": [
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-09-153165",
+       "form": "10-Q",
+       "filingDate": "2009-07-22",
+       "periodEnd": "2008-09-27",
+       "rawSecValue": 888325973
+      },
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "Q4",
+       "accession": "0001193125-09-153165",
+       "form": "10-Q",
+       "filingDate": "2009-07-22",
+       "periodEnd": "2008-09-27",
+       "rawSecValue": 888325973
+      }
+     ]
+    },
+    "dei:EntityCommonStockSharesOutstanding": {
+     "count": 6,
+     "examples": [
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-09-214859",
+       "form": "10-K",
+       "filingDate": "2009-10-27",
+       "periodEnd": "2009-10-16",
+       "rawSecValue": 900678473
+      },
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "Q3",
+       "accession": "0001193125-09-153165",
+       "form": "10-Q",
+       "filingDate": "2009-07-22",
+       "periodEnd": "2009-06-27",
+       "rawSecValue": 895816758
+      }
+     ]
+    }
+   }
+  },
+  {
+   "ticker": "MSFT",
+   "metric": "shares_outstanding",
+   "concepts": [
+    "us-gaap:CommonStockSharesOutstanding",
+    "dei:EntityCommonStockSharesOutstanding"
+   ],
+   "classes": [
+    "OUTSTANDING"
+   ],
+   "byConcept": {
+    "us-gaap:CommonStockSharesOutstanding": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-10-171791",
+       "form": "10-K",
+       "filingDate": "2010-07-30",
+       "periodEnd": "2008-06-30",
+       "rawSecValue": 9151000000
+      },
+      {
+       "fiscalYear": 2008,
+       "fiscalPeriod": "Q4",
+       "accession": "0001193125-10-171791",
+       "form": "10-K",
+       "filingDate": "2010-07-30",
+       "periodEnd": "2008-06-30",
+       "rawSecValue": 9151000000
+      }
+     ]
+    },
+    "dei:EntityCommonStockSharesOutstanding": {
+     "count": 4,
+     "examples": [
+      {
+       "fiscalYear": 2010,
+       "fiscalPeriod": "FY",
+       "accession": "0001193125-10-171791",
+       "form": "10-K",
+       "filingDate": "2010-07-30",
+       "periodEnd": "2010-07-20",
+       "rawSecValue": 8653567331
+      },
+      {
+       "fiscalYear": 2010,
+       "fiscalPeriod": "Q1",
+       "accession": "0001193125-09-212454",
+       "form": "10-Q",
+       "filingDate": "2009-10-23",
+       "periodEnd": "2009-10-19",
+       "rawSecValue": 8879121378
+      }
+     ]
+    }
+   }
+  },
+  {
+   "ticker": "NVDA",
+   "metric": "shares_outstanding",
+   "concepts": [
+    "us-gaap:CommonStockSharesOutstanding",
+    "dei:EntityCommonStockSharesOutstanding"
+   ],
+   "classes": [
+    "OUTSTANDING"
+   ],
+   "byConcept": {
+    "us-gaap:CommonStockSharesOutstanding": {
+     "count": 2,
+     "examples": [
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "FY",
+       "accession": "0001045810-10-000006",
+       "form": "10-K",
+       "filingDate": "2010-03-18",
+       "periodEnd": "2009-01-25",
+       "rawSecValue": 538460766
+      },
+      {
+       "fiscalYear": 2009,
+       "fiscalPeriod": "Q4",
+       "accession": "0001045810-10-000006",
+       "form": "10-K",
+       "filingDate": "2010-03-18",
+       "periodEnd": "2009-01-25",
+       "rawSecValue": 538460766
+      }
+     ]
+    },
+    "dei:EntityCommonStockSharesOutstanding": {
+     "count": 6,
+     "examples": [
+      {
+       "fiscalYear": 2010,
+       "fiscalPeriod": "FY",
+       "accession": "0001045810-10-000006",
+       "form": "10-K",
+       "filingDate": "2010-03-18",
+       "periodEnd": "2010-03-10",
+       "rawSecValue": 566500000
+      },
+      {
+       "fiscalYear": 2010,
+       "fiscalPeriod": "Q2",
+       "accession": "0001045810-09-000024",
+       "form": "10-Q",
+       "filingDate": "2009-08-20",
+       "periodEnd": "2009-08-17",
+       "rawSecValue": 547800000
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "SINGLE_CONCEPT_SERIES": [
+  {
+   "ticker": "AAPL",
+   "metric": "revenue",
+   "concept": "us-gaap:SalesRevenueNet"
+  },
+  {
+   "ticker": "AAPL",
+   "metric": "net_income",
+   "concept": "us-gaap:NetIncomeLoss"
+  },
+  {
+   "ticker": "AAPL",
+   "metric": "operating_cash_flow",
+   "concept": "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+  },
+  {
+   "ticker": "AAPL",
+   "metric": "total_assets",
+   "concept": "us-gaap:Assets"
+  },
+  {
+   "ticker": "AAPL",
+   "metric": "stockholders_equity",
+   "concept": "us-gaap:StockholdersEquity"
+  },
+  {
+   "ticker": "JPM",
+   "metric": "revenue",
+   "concept": "us-gaap:Revenues"
+  },
+  {
+   "ticker": "JPM",
+   "metric": "net_income",
+   "concept": "us-gaap:NetIncomeLoss"
+  },
+  {
+   "ticker": "JPM",
+   "metric": "operating_cash_flow",
+   "concept": "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+  },
+  {
+   "ticker": "JPM",
+   "metric": "total_assets",
+   "concept": "us-gaap:Assets"
+  },
+  {
+   "ticker": "MSFT",
+   "metric": "revenue",
+   "concept": "us-gaap:Revenues"
+  },
+  {
+   "ticker": "MSFT",
+   "metric": "net_income",
+   "concept": "us-gaap:NetIncomeLoss"
+  },
+  {
+   "ticker": "MSFT",
+   "metric": "operating_cash_flow",
+   "concept": "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+  },
+  {
+   "ticker": "MSFT",
+   "metric": "total_assets",
+   "concept": "us-gaap:Assets"
+  },
+  {
+   "ticker": "MSFT",
+   "metric": "stockholders_equity",
+   "concept": "us-gaap:StockholdersEquity"
+  },
+  {
+   "ticker": "NVDA",
+   "metric": "revenue",
+   "concept": "us-gaap:Revenues"
+  },
+  {
+   "ticker": "NVDA",
+   "metric": "net_income",
+   "concept": "us-gaap:NetIncomeLoss"
+  },
+  {
+   "ticker": "NVDA",
+   "metric": "operating_cash_flow",
+   "concept": "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+  },
+  {
+   "ticker": "NVDA",
+   "metric": "total_assets",
+   "concept": "us-gaap:Assets"
+  },
+  {
+   "ticker": "NVDA",
+   "metric": "stockholders_equity",
+   "concept": "us-gaap:StockholdersEquity"
+  },
+  {
+   "ticker": "XOM",
+   "metric": "revenue",
+   "concept": "us-gaap:Revenues"
+  },
+  {
+   "ticker": "XOM",
+   "metric": "net_income",
+   "concept": "us-gaap:NetIncomeLoss"
+  },
+  {
+   "ticker": "XOM",
+   "metric": "operating_cash_flow",
+   "concept": "us-gaap:NetCashProvidedByUsedInOperatingActivities"
+  },
+  {
+   "ticker": "XOM",
+   "metric": "total_assets",
+   "concept": "us-gaap:Assets"
+  }
+ ],
+ "blockedExternal": {
+  "host": "data.sec.gov",
+  "state": "BLOCKED_EXTERNAL_NETWORK",
+  "lastObserved": "CONNECT 403 (Netzwerkpolitik der Umgebung)",
+  "whatItWouldAllow": "Den Audit auf alle Emittenten ausdehnen und damit die Reichweite der Vermischung messen, statt sie an fuenf Titeln zu belegen."
+ }
+}

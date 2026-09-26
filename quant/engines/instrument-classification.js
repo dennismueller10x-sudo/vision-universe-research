@@ -198,35 +198,53 @@
     var byName = nameRule(row.name);
     var at = upper(assetType);
 
-    var type = null, confidence = null;
+    var type = null, confidence = null, typeBasis = null;
 
     /* 1. Der Anbieter selbst, wo er eindeutig ist. */
     if (at === "ETF") {
-      type = "ETF"; confidence = "HIGH";
+      type = "ETF"; confidence = "HIGH"; typeBasis = "PROVIDER_ASSET_TYPE";
       reasons.push("Anbieter meldet assetType=ETF.");
       /* ETN wird von Tiingo als ETF gefuehrt. Nur der Name trennt sie. */
       if (byName && byName.type === "ETN") {
-        type = "ETN";
+        type = "ETN"; typeBasis = "SECURITY_NAME";
         reasons.push("Name weist das Papier als Exchange Traded Note aus.");
       }
     } else if (at === "MUTUAL FUND" || at === "FUND") {
-      type = "FUND"; confidence = "HIGH";
+      type = "FUND"; confidence = "HIGH"; typeBasis = "PROVIDER_ASSET_TYPE";
       reasons.push("Anbieter meldet assetType=" + assetType + ".");
     } else if (at === "STOCK") {
       /* 2. Sondergattungen schlagen "Stock". Der Anbieter fuehrt
          Vorzuege und Optionsscheine unter demselben assetType wie
          Stammaktien - das Tickermuster ist hier die genauere Angabe. */
       if (pattern && pattern.type) {
-        type = pattern.type; confidence = "MEDIUM";
+        type = pattern.type; confidence = "MEDIUM"; typeBasis = "TICKER_PATTERN";
         reasons.push("Tickermuster " + pattern.marker + " weist auf " + pattern.type + " hin " +
                      "(Anbieter meldet unspezifisch assetType=Stock).");
         if (pattern.subtype) reasons.push("Untergattung: " + pattern.subtype + ".");
       } else if (byName && byName.type !== "ETF" && byName.type !== "FUND") {
-        type = byName.type; confidence = "HIGH";
+        type = byName.type; confidence = "HIGH"; typeBasis = "SECURITY_NAME";
         reasons.push("Name weist das Papier als " + byName.type + " aus.");
       } else {
-        type = "COMMON_STOCK"; confidence = "HIGH";
-        reasons.push("Anbieter meldet assetType=Stock, kein Sondergattungsmuster im Ticker.");
+        /* HIER STAND "HIGH", UND DAS WAR EINE KONFIDENZ OHNE BELEG.
+         *
+         * Die Begruendung sagt es selbst: "kein Sondergattungsmuster im
+         * Ticker" ist die ABWESENHEIT eines Befundes, kein Befund. Gemessen
+         * am 26.09.2026 trugen so 7.495 von 7.803 Instrumenten
+         * COMMON_STOCK/HIGH - darunter FNGU, ein gehebeltes Indexpapier, und
+         * AMJB, eine Schuldverschreibung, beide benannt nach ihrem
+         * Emittenten. Ein echter positiver Befund (Vorzugsaktie aus dem
+         * Tickermuster) stand mit MEDIUM darunter: die Skala war verkehrt.
+         *
+         * Der Typ bleibt COMMON_STOCK - er wird nicht erfunden und nicht
+         * geraten, und die Universumstore haengen an ihm. Was faellt, ist die
+         * behauptete Sicherheit. Was sie zurueckholt, ist ein Wertpapiername
+         * oder ein Identifikator (CUSIP, FIGI, ISIN); gemessen fehlen beide
+         * fuer alle 7.803 Instrumente. */
+        type = "COMMON_STOCK"; confidence = "LOW"; typeBasis = "RESIDUAL_NO_SPECIAL_PATTERN";
+        reasons.push("Anbieter meldet assetType=Stock, kein Sondergattungsmuster im Ticker. " +
+                     "Das ist ein Restbefund und kein Beleg: dass keine Sondergattung erkannt " +
+                     "wurde, belegt nicht, dass es Stammkapital ist. Ohne Wertpapiernamen oder " +
+                     "Identifikator bleibt die Gattung unbelegt.");
         if (pattern && pattern.basis === "shareClass") {
           reasons.push("Aktienklasse " + pattern.shareClass + " (Klassenbuchstabe, keine eigene Gattung).");
         }
@@ -235,15 +253,15 @@
       /* 3. Ohne Anbieterangabe: nur der Name kann noch etwas belegen.
          Sonst UNKNOWN - und ausdruecklich nicht COMMON_STOCK. */
       if (byName) {
-        type = byName.type; confidence = "MEDIUM";
+        type = byName.type; confidence = "MEDIUM"; typeBasis = "SECURITY_NAME_WITHOUT_ASSET_TYPE";
         reasons.push("Keine assetType-Angabe des Anbieters; der Name weist auf " + byName.type + " hin.");
       } else {
-        type = "UNKNOWN"; confidence = "LOW";
+        type = "UNKNOWN"; confidence = "LOW"; typeBasis = "NO_EVIDENCE";
         reasons.push("Weder assetType noch Name. Die Gattung ist nicht bestimmbar; " +
                      "als Aktie gilt der Titel damit ausdruecklich NICHT.");
       }
     } else {
-      type = "OTHER"; confidence = "MEDIUM";
+      type = "OTHER"; confidence = "MEDIUM"; typeBasis = "PROVIDER_ASSET_TYPE_UNMAPPED";
       reasons.push("Anbieter meldet assetType=" + assetType + " - keine der gefuehrten Gattungen.");
     }
 
@@ -263,7 +281,7 @@
 
     return finding(type, confidence, reasons, row, pattern, today, staleDays,
                    Object.assign({}, opts, { country: country, exchange: exchange,
-                                             adrEvidence: adrEvidence }));
+                                             adrEvidence: adrEvidence, typeBasis: typeBasis }));
   }
 
   function finding(type, confidence, reasons, row, pattern, today, staleDays, ctx) {
@@ -306,6 +324,11 @@
       ticker: upper(row.ticker) || null,
       instrumentType: type,
       confidence: confidence,
+      /* WORAUF die Gattung beruht, maschinenlesbar. Die Begruendungen
+         darunter sind Prosa fuer Menschen; dieses Feld ist der Beleg, an dem
+         eine Pruefung haengen kann - und an dem auffaellt, wenn eine
+         Klassifikation nur ein Restbefund ist. */
+      typeBasis: ctx.typeBasis || null,
       screenerEligible: screenerEligible,
       screenerReason: screenerReason,
       shareClass: pattern && pattern.shareClass ? pattern.shareClass : null,

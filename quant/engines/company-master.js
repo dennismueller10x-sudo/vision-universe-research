@@ -55,7 +55,7 @@
      auch nichts erfinden. */
   var TRACKED_FIELDS = [
     "symbol", "companyName", "companyNameStatus", "exchange", "mic", "country",
-    "currency", "securityType", "securityTypeConfidence", "shareClass", "subtype",
+    "currency", "securityType", "securityTypeConfidence", "securityTypeBasis", "shareClass", "subtype",
     "otc", "primaryListing", "primaryListingBasis", "active", "activeBasis",
     "delistedAt", "firstTradeDate", "lastTradeDate", "screenerEligible",
     "assetTypeRaw", "adrEvidence", "isin", "cusip", "figi", "cik", "cikSource", "lei",
@@ -194,6 +194,10 @@
       currency: c.currency,
       securityType: c.instrumentType,
       securityTypeConfidence: c.confidence,
+      /* WORAUF die Gattung beruht. Ohne dieses Feld war eine Konfidenz nicht
+         nachpruefbar - und 7.495 Instrumente trugen HIGH, obwohl ihr einziger
+         Beleg die pauschale Anbieterangabe "Stock" war. */
+      securityTypeBasis: c.typeBasis || null,
       shareClass: c.shareClass,
       subtype: c.subtype,
       otc: c.otc === true,

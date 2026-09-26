@@ -1,0 +1,88 @@
+{
+ "schemaVersion": "security-type-provenance-1.0.0",
+ "generatedAt": "2026-09-26T15:20:06.000Z",
+ "question": "Auf welchem Beleg beruht die Gattung eines Papiers, und wo behauptet die Konfidenz mehr als der Beleg traegt?",
+ "source": "quant/data/universe/instruments (company-master), klassifiziert von quant/engines/instrument-classification.js",
+ "instruments": 7809,
+ "evidenceKinds": {
+  "PROVIDER_ASSET_TYPE": "Der Anbieter benennt die Gattung selbst.",
+  "SECURITY_NAME": "Der Name des Papiers weist die Gattung aus.",
+  "TICKER_PATTERN": "Boersenkonvention im Kuerzel - ein Hinweis, keine Quellenaussage.",
+  "RESIDUAL_NO_SPECIAL_PATTERN": "Anbieter sagt 'Stock', kein Muster greift. Kein Beleg, sondern dessen Abwesenheit.",
+  "NO_EVIDENCE": "Weder Anbieterangabe noch Name.",
+  "SECURITY_NAME_WITHOUT_ASSET_TYPE": "Nur der Name, ohne Anbieterangabe.",
+  "PROVIDER_ASSET_TYPE_UNMAPPED": "Anbieterangabe, die keiner gefuehrten Gattung entspricht."
+ },
+ "byConfidence": {
+  "LOW": 7494,
+  "MEDIUM": 308,
+  "HIGH": 7
+ },
+ "byBasis": {
+  "RESIDUAL_NO_SPECIAL_PATTERN": 7494,
+  "TICKER_PATTERN": 308,
+  "SECURITY_NAME": 5,
+  "PROVIDER_ASSET_TYPE": 2
+ },
+ "crossTab": {
+  "LOW / RESIDUAL_NO_SPECIAL_PATTERN": 7494,
+  "MEDIUM / TICKER_PATTERN": 308,
+  "HIGH / SECURITY_NAME": 5,
+  "HIGH / PROVIDER_ASSET_TYPE": 2
+ },
+ "typeByBasis": {
+  "RESIDUAL_NO_SPECIAL_PATTERN": {
+   "COMMON_STOCK": 7494
+  },
+  "TICKER_PATTERN": {
+   "PREFERRED": 308
+  },
+  "SECURITY_NAME": {
+   "ADR": 2,
+   "PREFERRED": 3
+  },
+  "PROVIDER_ASSET_TYPE": {
+   "ETF": 2
+  }
+ },
+ "HIGH_CONFIDENCE_WITHOUT_EVIDENCE": 0,
+ "examplesWithoutEvidence": [],
+ "identifierCoverage": {
+  "withIsinCusipOrFigi": 0,
+  "note": "Ein Identifikator waere der belastbare Weg zur Gattung: die CUSIP kodiert den Emissionstyp an Position 7-8, FIGI fuehrt ihn als Feld. Beide fehlen vollstaendig, und deshalb ist die Gattung fuer fast das ganze Universum unbelegt."
+ },
+ "dependentFunctions": [
+  {
+   "field": "securityType",
+   "consumer": "scripts/universe/build-sec-universe.mjs",
+   "effect": "FILING_TYPES entscheidet, welche Gattung ueberhaupt in das SEC-Universum aufgenommen wird"
+  },
+  {
+   "field": "securityType",
+   "consumer": "scripts/universe/build-company-master.mjs",
+   "effect": "rules.securityTypes und ingest.securityTypes filtern die Aufnahme"
+  },
+  {
+   "field": "securityType",
+   "consumer": "quant/engines/instrument-directory.js",
+   "effect": "Kuerzel werden nur innerhalb derselben Gattung zusammengefuehrt"
+  },
+  {
+   "field": "securityType",
+   "consumer": "quant/engines/company-master.js",
+   "effect": "screenerEligible und die Zaehlung TOTAL_EQUITIES"
+  },
+  {
+   "field": "securityType",
+   "consumer": "quant/api/product-services.js",
+   "effect": "Anzeige der Wertpapierart auf der Aktienseite"
+  },
+  {
+   "field": "securityTypeConfidence",
+   "consumer": "keiner",
+   "effect": "Die Konfidenz wird geschrieben und von keinem Tor gelesen. Genau deshalb konnte sie jahrelang HIGH behaupten, ohne dass etwas davon abhing - und genau deshalb ist ihre Korrektur ohne Wirkung auf Deckung oder Eignung."
+  }
+ ],
+ "whatWasNotDone": "Keine Umklassifizierung. Kein Ticker-Sonderfall. Der Typ bleibt, was die Quelle sagt; nur die Konfidenz sagt jetzt die Wahrheit ueber ihren Beleg. Was die Gattung wirklich belegen wuerde, ist ein Wertpapiername oder ein Identifikator - beides fehlt.",
+ "note": "Gelesen, nicht geraten. Die Konfidenz wird von keinem Tor gelesen; diese Korrektur aendert deshalb keine Deckung und keine Eignung, sondern nur die Nachpruefbarkeit."
+}
