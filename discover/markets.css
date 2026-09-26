@@ -471,7 +471,6 @@ html:not([data-theme=light]) .dv2 .dx-m3-spur{box-shadow:inset 0 1px 3px rgba(0,
 
 /* VORHER -> JETZT: mehr Kontrast am Ergebnis */
 .dv2 .dx-m3-vj{background:linear-gradient(155deg,var(--m3-soft),transparent 60%),var(--m3-soft);border:1px solid var(--m3-glass-line)}
-.dv2 .dx-m3-vj-top b{background:linear-gradient(90deg,currentColor,currentColor)}
 .dv2 .dx-m3-vj-pfeil{font-weight:700}
 
 /* SZENARIEN: "Was wuerde das Bild veraendern" als drei Karten - links das,
@@ -850,3 +849,146 @@ html[data-theme=light] .dv2 .dx-mn-chip{background:#fff}
   .dv2 .dx-mn-reihen{gap:20px}
   .dv2 .dx-mn-reihe::before{content:attr(data-titel);flex:0 0 100%;margin:0 0 -2px 2px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted)}
 }
+
+/* ================================================================ Markets 3.7
+   Owner-Feedback: Menue ganz nach oben, Icons "Apple-artiger" statt duenner
+   KI-Linien, und der untere Seitenteil so bildhaft wie die Kacheln.
+   (1) Icons wie iOS-Systemsymbole: weisses, gefuelltes Symbol auf einer
+   farbigen, leicht verlaufenden, abgerundeten Kachel. Rollenfarben bleiben
+   die Bedeutung (unterstuetzt/Gegenwind/offen/Kontext).
+   (2) Untere Sektionen als Karten im Stil einer Gesundheits-/Wetter-App:
+   Symbol + Kategorie oben, grosse Aussage, Details darunter. */
+.dv2 .dx-m3{--ap-karte:#fff;--ap-schatten:0 1px 2px rgba(15,18,24,.05),0 10px 28px rgba(15,18,24,.07);--ap-linie:rgba(15,18,24,.08)}
+html:not([data-theme=light]) .dv2 .dx-m3{--ap-karte:#1c1c1e;--ap-schatten:none;--ap-linie:rgba(255,255,255,.08)}
+
+/* (1) ICONS */
+.dv2 .dx-m3-icon,.dv2 .dx-m3-hero .dx-m3-icon,.dv2 .dx-m3-kachel .dx-m3-icon{--c:#8e8e93;display:inline-grid;place-items:center;flex:0 0 auto;
+  width:30px;height:30px;border-radius:8px;color:#fff;backdrop-filter:none;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#fff) 0%,var(--c) 75%);
+  box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.16)}
+.dv2 .dx-m3-icon-svg,.dv2 .dx-m3-kachel .dx-m3-icon-svg{width:64%;height:64%;display:block}
+.dv2 .dx-glyph-loch{fill:var(--c)}
+.dv2 .dx-m3-icon.is-support,.dv2 .dx-m3-hero .dx-m3-icon.is-support{--c:#2fb35f;color:#fff}
+.dv2 .dx-m3-icon.is-headwind,.dv2 .dx-m3-hero .dx-m3-icon.is-headwind{--c:#f08c00;color:#fff}
+.dv2 .dx-m3-icon.is-context,.dv2 .dx-m3-hero .dx-m3-icon.is-context{--c:#2f7ff0;color:#fff}
+.dv2 .dx-m3-icon.is-neutral,.dv2 .dx-m3-icon.is-open{--c:#8e8e93}
+.dv2 .dx-m3-icon.is-story-up,.dv2 .dx-m3-icon.is-kurs-up{--c:#1f9d55}
+.dv2 .dx-m3-icon.is-story-down,.dv2 .dx-m3-icon.is-kurs-down{--c:#e0453a}
+.dv2 .dx-m3-icon.is-story-neutral{--c:#2f7ff0}
+.dv2 .dx-m3-kachel .dx-m3-icon{width:48px;height:48px;border-radius:12px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.14),0 6px 16px rgba(0,0,0,.35)}
+.dv2 .dx-mn-icon,html:not([data-theme=light]) .dv2 .dx-mn-icon{color:#fff;border-radius:10px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#fff) 0%,var(--c) 75%);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.16)}
+.dv2 .dx-mn-icon svg{width:24px;height:24px}
+
+/* MENUE ganz oben: kompakter Kopf, dieselben Chips */
+.dv2 .dx-mn{margin:2px 0 22px}
+.dv2 .dx-mn-titel{margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted)}
+
+/* (2) KARTEN fuer den unteren Seitenteil */
+.dv2 .dx-m3-vj-zeile,.dv2 .dx-m3-vj-top,.dv2 .dx-m3-vj .dx-m3-ereignisse,.dv2 .dx-m3-warum-spalte,.dv2 .dx-m3-punkt-item,
+.dv2 .dx-m3-aendern-spalte,.dv2 .dx-m3-basis-karte,.dv2 .dx-m3-dim,.dv2 .dx-m3-b-status,.dv2 .dx-m3-b-block,.dv2 .dx-m3-b-log,
+.dv2 .dx-m3-ca-flaeche,.dv2 .dx-m3-story,.dv2 .dx-movers-spalte{background:var(--ap-karte);border:0;border-radius:20px;box-shadow:var(--ap-schatten)}
+html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .dx-m3-vj-zeile{border:0}
+
+/* Was hat sich veraendert: eine Karte je Wert */
+.dv2 .dx-m3-vj{background:none;border:0;border-top:1px solid var(--v2-line);border-radius:0;padding:28px 0 0}
+.dv2 .dx-m3-vj-top{padding:18px 20px;margin:0 0 14px}
+.dv2 .dx-m3-vj-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px}
+.dv2 .dx-m3-vj-liste>li{display:flex}
+.dv2 .dx-m3-vj-zeile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:100%;padding:15px 16px 16px;border-top:0;min-height:0}
+.dv2 a.dx-m3-vj-zeile{transition:transform .15s ease}.dv2 a.dx-m3-vj-zeile:hover{transform:translateY(-2px)}
+.dv2 .dx-m3-vj-kopf{display:flex;align-items:center;gap:8px;width:100%}
+.dv2 .dx-m3-vj-name{font-size:13.5px;font-weight:700;color:var(--v2-muted)}
+.dv2 .dx-m3-vj-status{margin-left:auto;padding:3px 9px;border-radius:999px;font-size:11px;background:var(--m3-soft)}
+.dv2 .dx-m3-vj-wechsel{font-size:19px;font-weight:800;letter-spacing:-.015em;line-height:1.25}
+.dv2 .dx-m3-vj-von,.dv2 .dx-m3-vj-pfeil{font-size:14px;font-weight:600}
+.dv2 .dx-m3-vj-zeile.is-top{box-shadow:var(--ap-schatten),inset 0 0 0 2px color-mix(in srgb,var(--m3-purple) 45%,transparent)}
+.dv2 .dx-m3-vj .dx-m3-ereignisse{padding:16px 18px;margin-top:14px}
+
+/* Warum: eine Karte je Rolle, jede Dimension mit ihrem Symbol */
+.dv2 .dx-m3-warum-raster{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.dv2 .dx-m3-warum-spalte{padding:18px}
+.dv2 .dx-m3-warum-spalte h3,.dv2 .dx-m3-warum-spalte.is-support h3,.dv2 .dx-m3-warum-spalte.is-headwind h3,.dv2 .dx-m3-warum-spalte.is-context h3,.dv2 .dx-m3-warum-spalte.is-open h3{
+  display:inline-block;margin:0 0 14px;padding:4px 11px;border:0;border-radius:999px;font-size:11.5px;letter-spacing:.05em;
+  color:var(--kt,var(--v2-muted));background:color-mix(in srgb,var(--kt,var(--m3-neutral)) 15%,transparent)}
+.dv2 .dx-m3-warum-spalte.is-support{--kt:var(--m3-support)}.dv2 .dx-m3-warum-spalte.is-headwind{--kt:var(--m3-headwind)}
+.dv2 .dx-m3-warum-spalte.is-context{--kt:var(--m3-context)}.dv2 .dx-m3-warum-spalte.is-neutral,.dv2 .dx-m3-warum-spalte.is-open{--kt:var(--v2-muted)}
+.dv2 .dx-m3-warum-spalte li{grid-template-columns:30px 1fr;gap:12px;align-items:start;font-size:14px}
+
+/* Worauf es ankommt: Karten mit grosser Ziffer und Symbol */
+.dv2 .dx-m3-worauf-liste{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.dv2 .dx-m3-punkt-item{padding:18px;border-top:0;grid-template-columns:50px 1fr;gap:12px}
+.dv2 .dx-m3-nr{opacity:1;font-size:42px;color:var(--m3-purple)}
+.dv2 .dx-m3-punkt-kopf{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+.dv2 .dx-m3-punkt-kopf .dx-m3-zustandzeile{margin:0!important}
+
+/* Bullish / Base Case / Bearish: Karten mit Symbol-Kopf, Bedingungen als Innenkacheln */
+.dv2 .dx-m3-aendern-spalte{padding:22px 18px 18px}
+.dv2 .dx-m3-aendern-kopf{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.dv2 .dx-m3-aendern-kopf h3{margin:0}
+.dv2 .dx-m3-aendern-spalte li{padding:12px 14px;border-radius:14px;background:var(--m3-soft)}
+.dv2 .dx-m3-basis-karte{border:0}
+
+/* Fuenf Dimensionen: Karten statt Tabellenzeilen */
+.dv2 .dx-m3-dims{border-top:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px;align-items:start}
+.dv2 .dx-m3-dim{padding:0 16px;border-bottom:0}
+.dv2 .dx-m3-dim-kopf{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:16px 0}
+.dv2 .dx-m3-dim-kopf:hover{background:none}
+.dv2 .dx-m3-dim-name{grid-column:1}
+.dv2 .dx-m3-dim-zustand{grid-column:2;grid-row:1;justify-self:end}
+.dv2 .dx-m3-dim-zustand small{display:none}
+.dv2 .dx-m3-dim-kopf .dx-m3-spur{grid-column:1/-1;margin:24px 6px 4px}
+.dv2 .dx-m3-dim-wert{grid-column:1/-1}
+
+/* Marktbreite: Ergebnis gross, Messwerte als Karten nebeneinander */
+.dv2 .dx-m3-breite{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px;align-items:start}
+.dv2 .dx-m3-breite>.dx-m3-kopf,.dv2 .dx-m3-breite>.dx-m3-b-status,.dv2 .dx-m3-breite>.dx-m3-regel{grid-column:1/-1}
+.dv2 .dx-m3-breite>.dx-m3-kopf{margin-bottom:4px}
+.dv2 .dx-m3-b-status{margin:0}
+.dv2 .dx-m3-b-block,.dv2 .dx-m3-b-log{padding:18px;border-top:0}
+
+/* Cross Asset: Radar und Balken auf einer Karte */
+.dv2 .dx-m3-ca-flaeche{padding:18px}
+.dv2 .dx-m3-ca-zeile:hover{background:var(--m3-soft)}
+
+/* Markt jetzt: Karten mit Symbol statt Randlinie */
+.dv2 .dx-m3-story{padding:18px 20px}
+.dv2 .dx-m3-story::before{display:none}
+.dv2 .dx-m3-story>.dx-m3-icon{margin:0 0 10px}
+.dv2 .dx-m3-story-wert{border-bottom-color:var(--ap-linie)}
+
+/* Top & Flop: zwei Karten mit Symbol im Kopf */
+.dv2 .dx-movers-spalte{padding:16px 18px 10px}
+.dv2 .dx-movers-spalte h3{display:flex;align-items:center;gap:10px;font-size:16px}
+.dv2 .dx-movers-spalte a{border-bottom-color:var(--ap-linie)}
+.dv2 .dx-movers-spalte li:last-child a{border-bottom:0}
+
+@media(max-width:760px){
+  .dv2 .dx-m3-vj-liste{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .dv2 .dx-m3-vj-zeile{padding:13px 13px 14px;border-radius:18px}
+  .dv2 .dx-m3-vj-wechsel{font-size:16px}
+  .dv2 .dx-m3-vj-kopf{flex-wrap:wrap;row-gap:6px}
+  .dv2 .dx-m3-vj-status{margin-left:0}
+  .dv2 .dx-m3-punkt-item{grid-template-columns:40px 1fr;padding:16px}
+  .dv2 .dx-m3-nr{font-size:32px}
+}
+@media(prefers-reduced-motion:reduce){.dv2 a.dx-m3-vj-zeile:hover{transform:none}}
+/* Symbol-Kachel als Flex-Container: die Prozentgroesse des Symbols bezieht
+   sich so auf die feste Kachelgroesse (im Grid bliebe sie unaufgeloest). */
+.dv2 .dx-m3-icon,.dv2 .dx-m3-hero .dx-m3-icon,.dv2 .dx-m3-kachel .dx-m3-icon,.dv2 .dx-mn-icon{display:inline-flex;align-items:center;justify-content:center}
+.dv2 .dx-m3-vj-status:empty{display:none}
+/* Desktop: das Menue oben als eine einzige wischbare Leiste (Themen | Maerkte)
+   - so bleibt die Kernaussage des Hero im ersten Bildschirm. Telefon: zwei
+   Reihen wie gehabt. */
+@media(min-width:761px){
+  .dv2 .dx-mn-scroll{overflow-x:auto;scroll-snap-type:none;padding:4px 2px 14px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}
+  .dv2 .dx-mn-reihen{flex-direction:row;width:max-content;gap:12px}
+  .dv2 .dx-mn-reihe{flex-wrap:nowrap}
+  .dv2 .dx-mn-reihe::before{content:none}
+  .dv2 .dx-mn-reihe+.dx-mn-reihe{padding-left:12px;border-left:1px solid var(--v2-line)}
+  .dv2 .dx-mn-chip{min-height:56px;padding:10px 20px 10px 11px;font-size:16px;border-radius:18px}
+  .dv2 .dx-mn-icon{width:36px;height:36px}
+}
+.dv2 .dx-mn-scroll:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+/* Neutrales Rollen-Etikett in "Warum": dunkle Schrift fuer 4,5:1. */
+.dv2 .dx-m3-warum-spalte.is-neutral h3,.dv2 .dx-m3-warum-spalte.is-open h3{color:var(--v2-ink)}
