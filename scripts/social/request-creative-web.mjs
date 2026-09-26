@@ -193,6 +193,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         "Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene " +
         "komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation " +
         "ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren). " +
+        /* GESICHTSTREUE (Owner-Test 26.09., vu-web-4e4d3aaef2a999a2-20260926):
+           direkter Pixelvergleich mit dem Original-Asset zeigte ein leicht
+           abweichendes Gesicht (Laecheln, Mundwinkel) trotz "exakt,
+           unveraendert" — ein generatives Modell fuegt Referenzbilder nicht
+           pixelgenau ein, sondern interpretiert sie neu. Der Owner hat
+           entschieden: beim rein generativen Weg bleiben, aber die
+           Gesichtstreue in der Anweisung so stark wie moeglich betonen. */
+        "Atlas' Gesicht, Mimik und Proportionen muessen exakt dem Referenzbild " +
+        "entsprechen — dasselbe Laecheln, dieselben Gesichtszuege, derselbe " +
+        "Blick. Eine andere Pose, ein anderer Blickwinkel oder eine Handbewegung " +
+        "sind erlaubt; eine veraenderte, neu interpretierte oder auch nur leicht " +
+        "abweichende Mimik ist es nicht. " +
         /* DER FEHLENDE VERTRAG (gefunden 26.09., PR vu-web-787176986cf7f5d8-20260926):
            `brand_elements_announcement_required` stand als reine Kennzeichnung im
            Brief, ohne dass der Agent je erfuhr, WELCHE Form die Rueckmeldung haben
