@@ -104,6 +104,55 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M32_2026-09-26 — DIE ÜBRIGEN 17 PFADE GEMESSEN, UND DIE KLASSE GESCHLOSSEN
+
+M31 endete mit einem Befund statt einer Behauptung: die übrigen 17 verlinkten Pfade waren inhaltlich
+nicht gemessen. Nachgeholt, mit der Server-Semantik des Smoke:
+
+| Pfad | Zeichen | Befund |
+|---|---:|---|
+| `/hedgefonds/` | 20.532 | Inhalt, aber **keine Überschrift** |
+| `/discover/` | 14.187 | gesund, 58 Zahlen |
+| `/macro/` | 9.609 | gesund, 11 Überschriften, 44 Zahlen |
+| `/quant/screener/` · `/quant/ranking/` · `/quant/data-inspector/` | 7.322–7.772 | gesund |
+| `/etf/` | 6.023 | Inhalt, aber **keine Überschrift** |
+| `/academy/` · `/quant/watchlist/` · `/quant/strategies/builder/` | 2.169–3.663 | gesund |
+| `/analysten/` | 1.510 | Inhalt, aber **keine Überschrift** |
+| `/guide/` · `/morning/` · `/news/` · `/quant/ai/` · `/quant/backtests/` | 967–2.169 | gesund |
+| `/magazin/` | 381 (Rumpftext) | gesund — Kartenseite mit Ausgaben |
+
+**Alle 17 vorhanden.** Zwei Dinge, die in meiner Messung nach Befund aussahen und keiner waren: die
+`ERR_CERT_AUTHORITY_INVALID`-Fehler kommen durchweg von **`fonts.googleapis.com`** — die TLS-Sperre
+dieser Umgebung, nicht das Produkt. Und `/magazin/` ist nicht leer; die 381 Zeichen waren der
+Rumpftext einer Kartenseite.
+
+Offen und klein: **`/etf/`, `/analysten/` und `/hedgefonds/` tragen keine einzige Überschrift** — ein
+strukturelles Manko dreier Altseiten (Screenreader, Gliederung), nicht der Quant-2.0-Fläche. Als
+Befund notiert, nicht nebenbei umgebaut.
+
+### Und die Klasse ist jetzt geschlossen
+
+M31 fand den toten Knopf **durch eine Messung von Hand**. Ohne Test findet ihn beim nächsten Mal
+wieder niemand. `quant/tests/internal-links.test.mjs` liest die Ziele aus dem Quelltext (`href:`,
+`link(label, ziel)`, die Navigationsliste) und prüft nach der Regel von GitHub Pages, ob das Release
+sie ausliefert — plus, dass sie **in git verfolgt** sind, weil das Release `git ls-files` kopiert
+(genau daran war die neue Engine in M26 beim ersten Bauversuch gescheitert).
+
+Zwei eigene Fehler, bevor der Test hielt: der Standardpuffer von `git ls-files` reicht für dieses
+Repository nicht (`ENOBUFS`), und ich hatte `"quant/stock/" + "/index.html"` gerechnet — der doppelte
+Schrägstrich ließ drei **vorhandene** Seiten als fehlend erscheinen. Ein Test, der sich selbst einen
+Befund baut, ist schlimmer als keiner.
+
+Gegenproben: Knopf auf eine erfundene Seite → Fälle 1–3 rot · Methodik-Seite gelöscht → Fälle 1 und 3
+rot.
+
+### Damit ist die Oberflächen-Achse ausgemessen
+
+19 Ansichten (M30) + die Methodik-Seite (M31) + 17 verlinkte Pfade (M32), alle unter einem Wächter:
+Inhaltsboden und Abdeckung im Smoke, Linkziele im Test. Was an gemessenen Lücken bleibt, ist
+**Datengrenze** — 964 Titel mit zu kurzer Historie, 795 Screening-Zeilen ohne einen Faktorwert, 740
+ohne 104 Wochen, 1.100 ohne veröffentlichten Namen. Dafür braucht es Daten, nicht Code.
+
 ## M31_2026-09-26 — „METHODIK IM DETAIL" FÜHRTE INS LEERE
 
 Nächste unbemessene Achse: die App verlinkt **zwanzig Pfade außerhalb von `/vu2/`** (die
