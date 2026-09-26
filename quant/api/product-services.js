@@ -577,7 +577,21 @@ function create(options){
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await hydrateCapabilities(await init()),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);
-   if(!member||member.t!=='TECHNICAL_READY')return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:member?await technicalUnavailability(ticker):null};
+   /* DAS ARTEFAKT ENTSCHEIDET, NICHT DIE VORMERKUNG.
+    *
+    * Hier stand `member.t!=='TECHNICAL_READY'` als Riegel VOR dem Lesen des
+    * Bundles. Gemessen am 26.09.2026, nachdem die Materialisierung
+    * denselben Riegel abgelegt hat: 26 Titel haben ein veroeffentlichtes
+    * Bundle im Shard, und ihre Vormerkung steht auf INSUFFICIENT_HISTORY,
+    * weil der Deckungsbericht vom 11.09. ist. Der Dienst verschwieg damit
+    * 26 fertige Auswertungen - die Setup-Beobachtung zeigte sie (die liest
+    * das Artefakt), die Aktienseite nicht. Dieselbe Ursache eine Schicht
+    * weiter aussen.
+    *
+    * Die Vormerkung behaelt ihre Aufgabe: sie spricht, wenn es NICHTS
+    * Veroeffentlichtes gibt (unten im catch, mit dem Grund je Titel). Sie
+    * darf nur nicht ueberstimmen, was der Produzent geschrieben hat. */
+   if(!member)return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:null};
    const stock=await row(c,ticker)||broadRow(c,member);if(!stock)return unavailable('SOURCE_MISSING');
    function status(value,labels){return labels[value]?{state:'AVAILABLE',code:value,label:labels[value]}:{state:'SOURCE_MISSING',code:null,label:'Nicht verfügbar'};}
    try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker,member.m),b=source.bundle;
@@ -591,6 +605,12 @@ function create(options){
      elliottMethodology:b.elliottMethodologyVersion||null,isProbability:false,
      workspace:'/vu2/?view=technical&ticker='+encodeURIComponent(ticker),elliottWorkspace:'/vu2/?view=elliott&ticker='+encodeURIComponent(ticker)};
    }catch{
+    /* Kein veroeffentlichtes Bundle - HIER entscheidet die Vormerkung wie
+     * bisher, samt Grund je Titel. Ohne diese Zeile wuerde ein Titel, den
+     * der Produzent ausdruecklich NICHT auswertet, ueber die reduzierte
+     * Auskunft doch etwas zeigen; das waere die Ausweitung, die dieser Fix
+     * gerade nicht ist. */
+    if(member.t!=='TECHNICAL_READY')return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:await technicalUnavailability(ticker)};
     const consumer=await consumerFor(ticker),metrics=consumer?.metrics||{};
     const momentum=Number.isFinite(metrics.return6M)?metrics.return6M:stock.momentum6m?.value,volatility=Number.isFinite(metrics.volatility252d)?metrics.volatility252d:stock.volatility?.value,distance=Number.isFinite(metrics.distanceTo52wHigh)?metrics.distanceTo52wHigh:stock.distanceTo52wHigh?.value;
     const unavailability=await technicalUnavailability(ticker);

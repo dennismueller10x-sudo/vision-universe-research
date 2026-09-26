@@ -20,7 +20,7 @@
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
@@ -269,4 +269,73 @@ test("the calendar check reaches both verdicts on real series, not just one", ()
   const davor = { timestamps: ["2021-06-01"].concat(gut.timestamps.slice(1)) };
   assert.throws(() => validateTechnicalCalendar(davor),
     (error) => splitReason(error.message).code === "TECHNICAL_WINDOW_OUTSIDE_CALENDAR");
+});
+
+/* ------------------------------------------------------------------------
+   5. DERSELBE RIEGEL EINE SCHICHT WEITER AUSSEN.
+
+   Nachdem die Materialisierung die veraltete Vormerkung nicht mehr vetoen
+   liess, entstanden 26 Bundles - und die Aktienseite zeigte sie NICHT. Der
+   Dienst pruefte denselben Wert ein zweites Mal, vor dem Lesen des
+   Artefakts. Die Setup-Beobachtung zeigte die 26 (sie liest das Artefakt),
+   die Kursstruktur nicht; genau daran war die Doppelpruefung zu erkennen.
+
+   Die Regel lautet jetzt: was der Produzent veroeffentlicht hat, wird
+   ausgeliefert. Die Vormerkung spricht erst, wenn es nichts gibt - dann mit
+   dem Grund je Titel.
+   ------------------------------------------------------------------------ */
+test("a published bundle is served even when the capability flag is stale", async () => {
+  const dienst = readFileSync(join(root, "quant/api/product-services.js"), "utf8");
+  const stelle = dienst.indexOf("async function getTechnicalIntelligence(");
+  const bis = dienst.indexOf("async function getStockIntelligence(", stelle);
+  /* Ohne Kommentare gelesen: dieser Abschnitt ERKLAERT die alte Bedingung,
+     und ein Text ueber eine Regel ist nicht die Regel. Ein Test, der beides
+     verwechselt, misst die Prosa. */
+  const ohneKommentare = (text) => text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|\s)\/\/[^\n]*/g, "$1");
+  const koerper = ohneKommentare(dienst.slice(stelle, bis));
+  const vorLesen = koerper.slice(0, koerper.indexOf("const source=await technicalSource("));
+  assert.equal(/member\.t!=='TECHNICAL_READY'/.test(vorLesen), false,
+    "der Dienst riegelt wieder vor dem Lesen des Artefakts ab - veroeffentlichte Bundles bleiben unsichtbar");
+  /* Und danach steht sie noch: ohne Bundle entscheidet sie weiter. */
+  const nachLesen = koerper.slice(koerper.indexOf("}catch{"));
+  assert.match(nachLesen, /member\.t!=='TECHNICAL_READY'/,
+    "ohne Bundle muss die Vormerkung weiter entscheiden, sonst zeigt die reduzierte Auskunft mehr als erlaubt");
+
+  /* Und am veroeffentlichten Bestand gemessen, nicht nur an der Quelle. */
+  const kapazitaet = JSON.parse(readFileSync(join(root, "quant/data/universe/market-capability.json"), "utf8"));
+  const mitBundle = new Set();
+  const dir = join(root, "quant/data/product/technical-signals-v1");
+  for (const datei of readdirSync(dir).filter((n) => n.endsWith(".json.gz"))) {
+    const shard = JSON.parse(gunzipSync(readFileSync(join(dir, datei))));
+    for (const ticker of Object.keys(shard.instruments || {})) mitBundle.add(ticker);
+  }
+  const veraltet = kapazitaet.members.filter((m) => mitBundle.has(m.s) && m.t !== "TECHNICAL_READY");
+  const api = Service.create({
+    loadJSON: async (path) => JSON.parse(readFileSync(join(root, path.slice(1)), "utf8")),
+    loadCompressedJSON: async (path) => JSON.parse(gunzipSync(readFileSync(join(root, path.slice(1))))),
+    displayPolicy: Policy, queryEngine: Query
+  });
+  for (const member of veraltet.slice(0, 5)) {
+    const technical = await api.getTechnicalIntelligence(member.s);
+    assert.equal(technical.state, "AVAILABLE",
+      member.s + " hat ein Bundle, die Vormerkung sagt " + member.t + " - der Dienst verschweigt es");
+    assert.equal(technical.evidenceLevel, "FULL_WORKSPACE");
+  }
+  /* Ist die Kohorte leer, ruht dieser Fall auf der Quellpruefung oben - und
+     sagt es, statt gruen zu sein, als haette er etwas gemessen. */
+  if (!veraltet.length) assert.ok(true, "derzeit kein Titel mit Bundle und veralteter Vormerkung");
+});
+
+test("without a bundle the answer stays withheld, with the reason of exactly this title", async () => {
+  const api = Service.create({
+    loadJSON: async (path) => JSON.parse(readFileSync(join(root, path.slice(1)), "utf8")),
+    loadCompressedJSON: async (path) => JSON.parse(gunzipSync(readFileSync(join(root, path.slice(1))))),
+    displayPolicy: Policy, queryEngine: Query
+  });
+  /* COOL ist der gemessene Fall: zu kurze Historie, kein Bundle. */
+  const technical = await api.getTechnicalIntelligence("COOL");
+  assert.equal(technical.state, "UNAVAILABLE");
+  assert.equal(technical.reason, "TECHNICAL_EVIDENCE_NOT_PUBLISHED");
+  assert.ok(technical.unavailability && technical.unavailability.reason,
+    "ohne Bundle fehlt der Grund je Titel - dann steht wieder der Oberbegriff allein");
 });
