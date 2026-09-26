@@ -42,6 +42,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ContentBrief = require(join(ROOT, "social/engines/content-brief.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
 const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
+const Brand = require(join(ROOT, "social/engines/brand.js"));
 
 export function baueEvidenzAusStory(auswahl) {
   return (auswahl.fakten || []).map(function (f, i) {
@@ -124,32 +125,59 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2).",
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
-    palette: auswahl.motiv.palette,
-    /* KOMPOSITIONS-BEWUSSTE FREIFLAECHE (§3.1/§4, Owner-Direktive 24.09.):
-       Stufe B (render-asset.mjs) setzt Logo, Atlas und Hook-Text danach
-       IMMER an dieselben drei Stellen — deterministisch, damit Marken-
-       Bitmap und Hook-Text pixelgenau bleiben (kein KI-Modell reproduziert
-       ein konkretes Logo zuverlaessig). Damit das fertige Bild wie EIN
-       Entwurf wirkt statt "Bild plus draufgeklebter Text", muss die
-       generierte Szene genau dort ruhig bleiben, wo die Ueberlagerung
-       spaeter hinkommt — nicht generisch "irgendwo Freiflaeche". */
-    visualComposition: "portrait 4:5. Reserve calm, uncluttered negative space in exactly " +
-      "three zones for a deterministic brand overlay added afterward: (1) TOP-LEFT " +
-      "corner — small quiet area, no busy detail, for a brand logo; (2) a horizontal " +
-      "band from the upper third to the middle-left — calm, low-contrast background " +
-      "(not behind bright highlights or complex texture) for a bold headline; (3) " +
-      "BOTTOM-RIGHT corner — a modest quiet area for a small brand mascot silhouette, " +
-      "not the visual focal point. The main subject/action occupies the center and " +
-      "right-of-center, calmer toward those three zones. It must still read as ONE " +
-      "cohesive, intentionally composed photograph — not a scene with empty holes cut " +
-      "out of it.",
+    /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD", 26.09.):
+       dunkler, fast schwarzer Hintergrund, EIN ruhiger Petrol-/Mint-
+       Akzent (kein Regenbogen aus Akzenten), weisse/hellgraue Flaeche
+       fuer die Headline. Am realen Referenzbild des Owners orientiert
+       — dessen INHALT (Event, Datum, Motiv) ist keine Vorlage, nur Stil
+       und Farbklima. */
+    palette: ["near-black #050505 background", "one calm teal/mint " +
+      "accent color close to #5FE0C0 for a small highlight (a thin line, a badge, a " +
+      "glow) — used sparingly, not as a second dominant color", "white for the headline " +
+      "text", "soft grey for secondary text"],
+    style: "premium dark editorial technology visualization — a single confident teal/mint " +
+      "accent against a near-black background, clean bold sans-serif headline typography, " +
+      "generous breathing room, no clutter, no rainbow gradients",
+    /* -------------------------------------------------------------------
+       VOLLBILD STATT FREIFLAECHE (Owner-Direktive "GENERATIVES VOLLBILD",
+       26.09.): vorher liess dieser Schritt fuer Logo/Atlas/Hook-Text drei
+       leere Zonen frei, die Stufe B (render-asset.mjs) danach IMMER
+       deterministisch fuellte. Der Owner hat das Ergebnis gesehen und es
+       als "Bild plus draufgeklebter Text" abgelehnt — Stufe B entfaellt
+       jetzt fuer diesen Pfad vollstaendig (siehe manual-now-web-candidate.
+       mjs), der Agent komponiert das FERTIGE Bild selbst: Motiv, Hook-Text
+       und Markenzeichen in einem Zug, damit es als EIN Entwurf wirkt statt
+       als zwei uebereinandergelegte Schichten. ----------------------- */
+    visualComposition: "portrait 4:5. Compose ONE finished, publish-ready brand post — not " +
+      "a raw scene for later text overlay. Bake the German headline text (see " +
+      "hook_strategy) directly into the image as bold, large, perfectly legible " +
+      "typography in the upper-to-middle band, set against a calm, low-contrast part of " +
+      "the background (not over busy detail or bright highlights). Composite the exact " +
+      "brand logo file (see brand_assets.logo) small and quiet in the top-left corner, " +
+      "and the exact brand mascot file (see brand_assets.atlas) small in the bottom-right " +
+      "corner, not as the visual focal point. The main subject/motif occupies the center " +
+      "and right-of-center. The result must read as ONE cohesive, intentionally designed " +
+      "brand image — logo and mascot reproduced exactly as given, not redrawn or " +
+      "restyled.",
+    restrictions: ["Keine Kurse im Bild", "Keine Renditezahlen", "Kein Wasserzeichen",
+      "Keine Prognose-Aussage im Bildtext", "Logo und Atlas exakt aus den " +
+      "angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"],
+    brandAssets: {
+      logo: Brand.LOGO_ASSET_PATH || "assets/vision-universe-logo.png",
+      atlas: Brand.ATLAS_ASSET_PATH,
+      instruction: "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. " +
+        "Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene " +
+        "komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation " +
+        "ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren)."
+    },
+    requireBrandElementsAnnounced: true,
     width: 1080, height: 1350,
-    objective: "Aus einer aktuellen, oeffentlich recherchierten Story eine hochwertige, " +
-      "thematisch passende Bildwelt erzeugen, die als Teil EINES fertigen Markenposts " +
-      "komponiert ist (nicht als spaeter zutextendes Rohbild) — kein Diagramm, kein " +
-      "Dashboard, kein Bildschirmfoto, kein generischer Boersenticker. Hook und Caption " +
-      "durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, " +
-      "24.09., §5.1).",
+    objective: "Aus einer aktuellen, oeffentlich recherchierten Story EINEN fertigen, " +
+      "veroeffentlichungsreifen Markenpost erzeugen: Motiv, deutscher Hook-Text, Logo und " +
+      "Atlas in einem Zug komponiert — kein Diagramm, kein Dashboard, kein Bildschirmfoto, " +
+      "kein generischer Boersenticker, und kein Rohbild fuer eine spaetere Ueberlagerung. " +
+      "Hook und Caption durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + " +
+      "FULL-POST-GENERATION, 24.09., §5.1).",
     audience: "Anleger, die aktuelle Marktentwicklungen verfolgen"
   });
   agentBrief.grounding_hook_en = auswahl.hook;

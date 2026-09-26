@@ -18,6 +18,17 @@
    atlasBefund, siehe run-social-cycle.mjs) hier nur noch GELESEN, nicht
    neu gerechnet.
 
+   AUSNAHME (Owner-Direktive "GENERATIVES VOLLBILD", 26.09.): komponiert
+   der Creative Agent Logo, Atlas und Hook-Text selbst ins Bild (siehe
+   manual-now-web-candidate.mjs, Zweig `agentKomponiert`), laeuft
+   render() fuer dieses Bild gar nicht — es gibt kein zweites Mal
+   "Draufsetzen" mehr zu vermeiden. `atlasBefund`/`logoBefund` tragen
+   dort `quelle: "agent_announced"`: eine vom Adapter ERZWUNGENE
+   Ankuendigung des Agenten (chatgpt-work/adapter.js::verifyResult prueft
+   nur, DASS sie vorliegt und vollstaendig ist), keine unabhaengige
+   Messung. Die tatsaechliche Pruefinstanz ist in diesem Fall der Owner
+   im Approval Center, nicht dieses Tor.
+
    -------------------------------------------------------------------------
    WAS HIER NEU GEPRUEFT WIRD
    -------------------------------------------------------------------------

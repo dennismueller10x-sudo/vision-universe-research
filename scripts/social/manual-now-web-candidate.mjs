@@ -129,35 +129,82 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(4);
   }
   const bild = assetBefund.asset;
-
-  /* --------------------------------------------------------- STUFE B */
   const pkg = { hook: assetBefund.hook, packageId: contentId, caption: assetBefund.caption };
-  const bildplan = AssetRenderer.planGeschichte(pkg, {
-    asset_path: bild.asset_path, state: bild.state,
-    asset_sha256: bild.asset_sha256, mime_type: bild.mime_type
-  }, { root: ROOT });
 
-  if (!bildplan.ok) {
-    console.error("\nCREATIVE_GENERATION_FAILED (Stufe B): " + bildplan.reason + " — " +
-      (bildplan.message || ""));
-    console.error("Kein Rueckfall auf ein schwaches Bild — kein Kandidat.");
-    process.exit(4);
+  /* =====================================================================
+     VOLLBILD VOM AGENTEN STATT STUFE B (Owner-Direktive "GENERATIVES
+     VOLLBILD", 26.09.)
+
+     Traegt das Ergebnis eine geprueft VOLLSTAENDIGE brand_elements-
+     Ankuendigung (siehe chatgpt-work/adapter.js::verifyResult — das ist
+     bereits erzwungen, kein stiller Normalfall), hat der Agent Logo,
+     Atlas und Hook-Text selbst ins Bild komponiert. Stufe B
+     (render-asset.mjs) wuerde dann ein ZWEITES Mal draufsetzen — genau
+     das "Bild plus draufgeklebter Text", das der Owner ausdruecklich
+     abgelehnt hat. Der gelieferte Bild-Byte-Strom wird stattdessen
+     unveraendert uebernommen.
+
+     ATLAS_PRESENT/CANONICAL_LOGO_PRESENT/TEXT_ON_VISUAL_PRESENT sind auf
+     diesem Pfad eine AGENTEN-ANKUENDIGUNG, keine unabhaengige Messung
+     (kein Bildanalysewerkzeug im Haus) — kenntlich gemacht in
+     `presentation.visualComposition` und im Hard Final Creative Gate
+     (creative-gate.js), das genau deshalb zwischen "gemessen" und
+     "angekuendigt" unterscheidet. Der Owner im Approval Center ist die
+     tatsaechliche Pruefinstanz fuer dieses Bild. */
+  const agentKomponiert = !!(bild.brandElements &&
+    bild.brandElements.includes_logo === true &&
+    bild.brandElements.includes_atlas === true &&
+    bild.brandElements.includes_hook_text_de === true);
+
+  let ziel, gerendert, imageUrl;
+
+  if (agentKomponiert) {
+    const quellPfad = join(ROOT, String(bild.asset_path));
+    if (!existsSync(quellPfad)) {
+      console.error("\nCREATIVE_GENERATION_FAILED (Vollbild): Asset nicht auffindbar unter " +
+        bild.asset_path + ".");
+      console.error("Kein Rueckfall — kein Kandidat.");
+      process.exit(4);
+    }
+    const bytes = readFileSync(quellPfad);
+    const endung = /png/i.test(bild.mime_type || "") ? "png"
+      : /jpe?g/i.test(bild.mime_type || "") ? "jpg" : "png";
+    ziel = join(ausgabePfad(ROOT, ASSET_DIR), pkg.packageId + "." + endung);
+    mkdirSync(dirname(ziel), { recursive: true });
+    writeFileSync(ziel, bytes);
+    gerendert = { bytes: bytes.length,
+      atlas: { passed: true, quelle: "agent_announced" },
+      logo: { passed: true, quelle: "agent_announced" } };
+    imageUrl = SITE_BASE + "/" + ASSET_DIR + "/" + pkg.packageId + "." + endung;
+    console.log("\nVollbild vom Creative Agent uebernommen: " + pkg.packageId + "." + endung +
+      " (" + gerendert.bytes + " Bytes, Logo/Atlas/Text agentenangekuendigt).");
+  } else {
+    /* --------------------------------------------------------- STUFE B */
+    const bildplan = AssetRenderer.planGeschichte(pkg, {
+      asset_path: bild.asset_path, state: bild.state,
+      asset_sha256: bild.asset_sha256, mime_type: bild.mime_type
+    }, { root: ROOT });
+
+    if (!bildplan.ok) {
+      console.error("\nCREATIVE_GENERATION_FAILED (Stufe B): " + bildplan.reason + " — " +
+        (bildplan.message || ""));
+      console.error("Kein Rueckfall auf ein schwaches Bild — kein Kandidat.");
+      process.exit(4);
+    }
+
+    ziel = join(ausgabePfad(ROOT, ASSET_DIR), pkg.packageId + ".jpg");
+    try {
+      gerendert = AssetRenderer.render(bildplan, ziel, {
+        schrift: AssetRenderer.ladeSchrift(ROOT), caption: pkg.caption
+      });
+    } catch (err) {
+      console.error("\nCREATIVE_GENERATION_FAILED (Rendern): " + (err && err.message || err));
+      console.error("Kein Rueckfall — kein Kandidat.");
+      process.exit(4);
+    }
+    console.log("\nGerendert: " + pkg.packageId + " (" + gerendert.bytes + " Bytes)");
+    imageUrl = SITE_BASE + "/" + ASSET_DIR + "/" + pkg.packageId + ".jpg";
   }
-
-  const ziel = join(ausgabePfad(ROOT, ASSET_DIR), pkg.packageId + ".jpg");
-  let gerendert;
-  try {
-    gerendert = AssetRenderer.render(bildplan, ziel, {
-      schrift: AssetRenderer.ladeSchrift(ROOT), caption: pkg.caption
-    });
-  } catch (err) {
-    console.error("\nCREATIVE_GENERATION_FAILED (Rendern): " + (err && err.message || err));
-    console.error("Kein Rueckfall — kein Kandidat.");
-    process.exit(4);
-  }
-  console.log("\nGerendert: " + pkg.packageId + " (" + gerendert.bytes + " Bytes)");
-
-  const imageUrl = SITE_BASE + "/" + ASSET_DIR + "/" + pkg.packageId + ".jpg";
   const inhalt = { contentId: pkg.packageId, imageUrl, caption:
     pkg.caption + (auswahl.hashtags.length ? "\n\n" +
       auswahl.hashtags.map((t) => "#" + t).join(" ") : "") };
@@ -238,7 +285,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   const gate = CreativeGate.pruefe(kandidat, {
     rendered: true, atlasBefund: gerendert.atlas, logoBefund: gerendert.logo,
-    assetExists: existsSync(join(ROOT, ASSET_DIR, pkg.packageId + ".jpg"))
+    assetExists: existsSync(ziel)
   });
   console.log("\n--- HARD FINAL CREATIVE GATE ---");
   console.log(gate.erklaerung);

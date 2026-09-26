@@ -197,9 +197,36 @@
         palette: options.palette || ["deep black", "white", "chrome", "electric cyan"],
         style: options.visualStyle || "premium cinematic 3D technology visualization",
         composition: options.visualComposition || "portrait 4:5, generous negative space",
-        restrictions: ["Kein Text im Bild", "Kein Logo", "Keine Kurse im Bild",
-          "Keine Renditezahlen", "Kein Wasserzeichen"]
+        /* Der Vorlagen-Fall (Stufe B setzt Logo/Atlas/Text danach drauf) verlangt ein
+           leeres Bild — deshalb bleibt das der Standard. Der Web-First-Full-Post-Pfad
+           uebergibt eine eigene, positive Liste (siehe request-creative-web.mjs) und
+           verlangt stattdessen ueber `brand_assets` unten, dass der Agent Logo, Atlas
+           und Text selbst hineinkomponiert. */
+        restrictions: options.restrictions || ["Kein Text im Bild", "Kein Logo",
+          "Keine Kurse im Bild", "Keine Renditezahlen", "Kein Wasserzeichen"]
       },
+
+      /* -----------------------------------------------------------------
+         DIE MARKENASSETS ALS DATEIEN, NICHT ALS BESCHREIBUNG (Owner-
+         Direktive "GENERATIVES VOLLBILD", 26.09.)
+
+         Vorher bekam der Agent nur eine Bildidee und liess Logo/Atlas/
+         Text bewusst aus (Stufe B setzte sie danach deterministisch
+         drauf) — genau das nannte der Owner "aufgeklebt aussehend".
+         Jetzt bekommt er, wenn `options.brandAssets` gesetzt ist, die
+         EXAKTEN Dateipfade im selben Checkout und die Anweisung, sie
+         unveraendert zu verwenden statt sie nachzuzeichnen — ein Logo,
+         das ein Modell frei nachmalt, ist ein anderes Zeichen (§18).
+
+         `announcement_required` erzwingt eine explizite Rueckmeldung
+         (siehe verifyResult): eine STILLE Annahme ("wird schon drin
+         sein") waere wieder geglaubt statt geprueft. Gemessen werden
+         kann es an dieser Stelle nicht (kein Bildanalysewerkzeug im
+         Haus) — die Rueckmeldung ersetzt keine Pruefung, sie macht nur
+         ehrlich sichtbar, dass keine stattgefunden hat, und macht den
+         Owner im Approval Center zur tatsaechlichen Pruefinstanz.
+         ----------------------------------------------------------------- */
+      brand_assets: options.brandAssets || null,
 
       /* DIE BELEGE. Genau die, die `content-brief.js` freigegeben hat. */
       evidence: (brief.evidence || []).map(function (e) {
@@ -254,6 +281,11 @@
         actual_image_asset_required:
           options.requestType === Contract.TEXT_REVISION ? false
             : options.requireAsset !== false,
+        /* Siehe `brand_assets` oben: erzwingt eine explizite
+           Rueckmeldung `brand_elements` je Bildvariante (verifyResult
+           unten), statt stillschweigend anzunehmen, dass Logo, Atlas
+           und Hook-Text im Bild stehen. */
+        brand_elements_announcement_required: options.requireBrandElementsAnnounced === true,
         publishing_allowed: false
       },
 
@@ -355,6 +387,33 @@
       }
       gesehen[v.hook_variant_id] = true;
     });
+
+    /* -------------------------------------------------------------------
+       BRAND_ELEMENTS — DIE ANKUENDIGUNG IST PFLICHT, NICHT DIE PRUEFUNG
+       SELBST (siehe buildAgentBrief: brand_assets/announcement_required)
+
+       Verlangt der Brief die Rueckmeldung, muss die erste Bildvariante
+       explizit `brand_elements` mit drei Wahrheitswerten tragen. Fehlt
+       das Feld oder ist einer der drei false, wird das Ergebnis
+       zurueckgewiesen — genau wie bei einem fehlenden Pflichtfeld beim
+       Bildtransport (announced_fields_required) einige Zeilen weiter
+       unten in dieser Datei. */
+    if (context.requireBrandElements) {
+      var ersteBildvariante = (Array.isArray(r.visual_variants) ? r.visual_variants : [])[0];
+      var be = ersteBildvariante && ersteBildvariante.brand_elements;
+      if (!be) {
+        befunde.push({ id: "missingBrandElementsAnnouncement",
+          message: "Der Brief verlangt eine Rueckmeldung `brand_elements` " +
+            "(includes_logo/includes_atlas/includes_hook_text_de) je Bildvariante — " +
+            "keine liegt vor." });
+      } else if (be.includes_logo !== true || be.includes_atlas !== true ||
+          be.includes_hook_text_de !== true) {
+        befunde.push({ id: "brandElementsIncomplete",
+          message: "brand_elements meldet nicht alle drei Pflichtelemente als " +
+            "enthalten (includes_logo=" + be.includes_logo + ", includes_atlas=" +
+            be.includes_atlas + ", includes_hook_text_de=" + be.includes_hook_text_de + ")." });
+      }
+    }
 
     return {
       ok: befunde.length === 0,
@@ -552,7 +611,9 @@
         var geprueft = verifyResult(ergebnis, {
           briefId: agentBrief.brief_id || brief.briefId,
           contentId: contentId, briefBlobSha: sha,
-          hookType: agentBrief.hook_strategy && agentBrief.hook_strategy.hook_type
+          hookType: agentBrief.hook_strategy && agentBrief.hook_strategy.hook_type,
+          requireBrandElements: !!(agentBrief.authoring_requirements &&
+            agentBrief.authoring_requirements.brand_elements_announcement_required)
         });
         if (!geprueft.ok) {
           return { variants: [], reason: "Ergebnis zurueckgewiesen: " + geprueft.explanation,
@@ -805,7 +866,12 @@
             /* Woher es kommt - ein geerbtes Asset soll nicht aussehen
                wie ein frisch geliefertes. */
             inherited: !!geerbt,
-            inheritedFrom: geerbt ? geerbt.fromContentId : null
+            inheritedFrom: geerbt ? geerbt.fromContentId : null,
+            /* Die Ankuendigung des Agenten, unveraendert durchgereicht -
+               geprueft wurde oben nur, DASS sie vorliegt und vollstaendig
+               ist (verifyResult), nicht ob sie stimmt. Wer das liest, soll
+               das nicht mit einer Messung verwechseln koennen. */
+            brandElements: bild.brand_elements || null
           } : null,
           processing: ergebnis.processing || null,
           /* Beide Aussagen nebeneinander, nie die eine statt der
