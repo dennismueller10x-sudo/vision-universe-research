@@ -23,7 +23,19 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
     scheitern, wo der Smoke gebraucht wird. */
  ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/product-language-v1.json',import.meta.url),'utf8')).forbiddenInPrimaryCopy;
-const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=stock&ticker=AHT-P-D','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks'];
+const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=stock&ticker=AHT-P-D','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks',
+ /* SIEBEN ANSICHTEN, DIE DER SMOKE NIE ANGESEHEN HAT.
+
+    Gemessen am 26.09.2026: von 19 Ansichten im Router standen 12 in dieser
+    Liste. atlas, discover, elliott, markets, portfolio und research liefen
+    also ungeprueft mit - und genau in dieser Luecke lagen die beiden echten
+    Befunde des Tages (die Uebersicht ohne Kurse, der Screener ohne Zahlen),
+    weil ein Smoke, der nur auf Fehler schaut, eine leere Seite fuer gesund
+    haelt. Gemessene Inhalte beim Aufnehmen: atlas 182.354 Zeichen,
+    elliott 183.591, discover 4.699, home 2.880, markets 1.210, research 889,
+    portfolio 562. */
+ '/vu2/?view=atlas','/vu2/?view=discover','/vu2/?view=elliott&ticker=NVDA',
+ '/vu2/?view=markets','/vu2/?view=portfolio','/vu2/?view=research'];
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
@@ -40,6 +52,14 @@ for(const width of [1440,390]){
   const primary=await page.evaluate(()=>[...document.querySelectorAll('h1,h2,h3,.eyebrow,[class*=chip],[class*=badge]')].map(n=>n.textContent.trim()));
   const hits=primary.filter(t=>FORBIDDEN.some(f=>t.includes(f)));
   const bad=[];
+  /* EINE ANSICHT, DIE NUR EINE UEBERSCHRIFT ZEIGT, IST KEINE ANSICHT.
+
+     Der Boden ist bewusst niedrig: die duennste berechtigte Ansicht ist die
+     leere Depot-Ansicht mit 562 Zeichen, und eine Seite, die nur Titel und
+     Untertitel setzt, kommt auf rund 200. 400 Zeichen fangen also den Fall
+     "nichts gerendert", ohne einen Inhaltsstand einzufrieren - gemessen
+     werden soll ein Rueckschritt, nicht der Tagesstand. */
+  if(text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
   if(recovered)bad.push('RECOVER');
   if(overflow)bad.push('OVERFLOW');
   if(h1!==1)bad.push('H1='+h1);
