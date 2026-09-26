@@ -1690,9 +1690,22 @@ async function screenPage(){
   row.append(field,op,value,unit,el('button',{text:'Entfernen',class:'remove-rule','aria-label':'Kriterium entfernen',onclick:()=>{rows=rows.filter(r=>r!==item);row.remove();}}));ruleList.append(row);
  }
  initial.filters.forEach(addRule);
- const apply=async()=>{const current=++request;try{
+ /* EIN NAME, DER DIE METHODIK VERSCHLUCKT HAT.
+    Gemessen am 26.09.2026 am gebauten Release: der Screener liefert 50
+    Treffer aus 6.875 Titeln, richtig sortiert (VIVKD 145,5 % · CATG 51,7 % ·
+    QHUOY 49,6 % · MSFT 41,6 %) - und zeigte in JEDER Zeile "– / 7" und
+    "Nicht verfuegbar". Der Satz darueber lautete "50 Treffer in 6875
+    verfuegbaren Unternehmen · undefined · kein Gesamtmarkt-Ranking".
+    Das "undefined" war die Spur: `const current=++request` verdeckte in
+    diesem Abschluss die aeussere Methodik `current`. Damit war
+    `current.label` undefined und `current.id==='legacy'` immer falsch - die
+    Oberflaeche zeichnete also die Faktor-Tabelle der V2-Methodik ueber
+    Zeilen der V1-Abfrage, und dort gibt es kein `evidence`-Feld. Die Daten
+    waren die ganze Zeit da; nur las sie niemand.
+    Deshalb heisst der Zaehler jetzt, was er ist. */
+ const apply=async()=>{const anfrage=++request;try{
   const filters=rows.map(r=>{const def=fieldsOfCurrent().find(f=>f.id===r.field.value),raw=r.value.value;if(!String(raw).trim())throw Error('invalid');const value=def.type==='number'?Number(raw):raw;if(def.type==='number'&&!Number.isFinite(value))throw Error('invalid');return {field:r.field.value,operator:r.op.value,value,scale:'raw'};});
-  const query=editor.build(filters,[{field:sort.value,direction:direction.value}]);const result=await api.screen(query);if(current!==request)return;S.clear(out);
+  const query=editor.build(filters,[{field:sort.value,direction:direction.value}]);const result=await api.screen(query);if(anfrage!==request)return;S.clear(out);
   share.hidden=false;strategyLink.hidden=false;strategyLink.href=href('strategies')+'&query='+encodeURIComponent(editor.encode(query));method.textContent=JSON.stringify(query,null,2);share.href=href('screener')+'&query='+encodeURIComponent(editor.encode(query));
   if(result.state!=='AVAILABLE'){out.append(notice('Ergebnisse derzeit nicht verfügbar','Die Daten konnten nicht geladen werden. Deine Kriterien bleiben erhalten.'));return;}
   const selected=fieldsOfCurrent().find(f=>f.id===sort.value);
@@ -1704,7 +1717,7 @@ async function screenPage(){
        el('div',{},[el('strong',{text:stock.ticker}),el('span',{class:'muted',text:stock.name||''})]),
        el('div',{class:'number',text:String(stock.evidence?.['quantV2.factorEvidence.availableFactors']??'–')+' / 7'}),
        el('div',{class:'number',text:Number.isFinite(stock.evidence?.[selected.id])?pct(stock.evidence[selected.id]):'Nicht verfügbar'})]))]));
- }catch{if(current===request){share.hidden=true;strategyLink.hidden=true;method.textContent='';S.mount(out,notice('Kriterium prüfen','Gib für jedes Kriterium einen gültigen Wert ein. Die Regeln wurden nicht angewendet.'));}}};
+ }catch{if(anfrage===request){share.hidden=true;strategyLink.hidden=true;method.textContent='';S.mount(out,notice('Kriterium prüfen','Gib für jedes Kriterium einen gültigen Wert ein. Die Regeln wurden nicht angewendet.'));}}};
  methodSelect.onchange=()=>{const next=editor.methodology(methodSelect.value);if(!next||next.id===current.id)return;current=next;rows=[];S.clear(ruleList);fillSort();describeMethod();addRule();sort.value=current.defaultField;S.mount(out,notice('Methodik gewechselt','Die Regeln wurden zurückgesetzt. Eine Regel der anderen Methodik bedeutet hier etwas anderes und wird nicht übernommen.'));share.hidden=true;strategyLink.hidden=true;method.textContent='';profiles.value='';};
  /* Ein Strategie-Profil lädt seine eigene Regel in den Editor - dieselbe,
     die auf der Aktienseite die Übereinstimmung erklärt. */
