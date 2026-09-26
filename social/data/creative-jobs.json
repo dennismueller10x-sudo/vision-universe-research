@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:37:00.169Z",
+  "generatedAt": "2026-09-26T14:57:49.273Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -628,9 +628,9 @@
       "processingKey": "brief_0ab8eb53e21c5d3f:vu-web-7183a69a7a03984a-20260925:dbedd7c117e5df72f1312a18f9d4a210599c3b03:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-26T12:37:00.129Z",
-      "updatedAt": "2026-09-26T12:37:00.169Z",
+      "updatedAt": "2026-09-26T14:55:55.284Z",
       "prNumber": 240,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -644,6 +644,47 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-09-26T12:37:00.169Z",
           "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-26T14:55:55.284Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-26T14:55:55.284Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
+        }
+      ],
+      "resultCommitSha": "860547849d9721633ebd16268a00aa201ec14dcd",
+      "resultRef": "origin/authoring/request/vu-web-7183a69a7a03984a-20260925",
+      "resultBlobSha": "b25daf4302dc9165cb711d6c5114f754b18142d5",
+      "evidencePackageId": "vu-web-7183a69a7a03984a-20260925"
+    },
+    {
+      "creativeJobId": "job_vu-web-787176986cf7f5d8-20260926:83f84f9c8d394ba0bb773def1c9fb1352ef930b8:attempt1",
+      "contentId": "vu-web-787176986cf7f5d8-20260926",
+      "briefId": "brief_852a2221ba91d3e5",
+      "briefBlobSha": "83f84f9c8d394ba0bb773def1c9fb1352ef930b8",
+      "processingKey": "brief_852a2221ba91d3e5:vu-web-787176986cf7f5d8-20260926:83f84f9c8d394ba0bb773def1c9fb1352ef930b8:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_DISPATCHED",
+      "createdAt": "2026-09-26T14:57:49.232Z",
+      "updatedAt": "2026-09-26T14:57:49.273Z",
+      "prNumber": 245,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-26T14:57:49.232Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-26T14:57:49.273Z",
+          "note": "PR vom Orchestrator geoeffnet."
         }
       ]
     }
@@ -655,5 +696,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-09-26T11:34:39.650Z"
+  "reconciledAt": "2026-09-26T14:55:55.284Z"
 }
