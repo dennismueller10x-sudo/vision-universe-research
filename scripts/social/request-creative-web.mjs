@@ -28,6 +28,12 @@
    Ausfuehren:
      node scripts/social/request-creative-web.mjs
      node scripts/social/request-creative-web.mjs --write
+
+   Ein bereits VERIFIED Ergebnis fuer denselben content_id erzwungen
+   uebergehen (z.B. um eine Prompt-Aenderung real zu testen, waehrend
+   dieselbe Story weiter die Top-Story ist):
+     node scripts/social/request-creative-web.mjs --write \
+       --force-attempt 2 --attempt-reason "Owner-Test der Fixes X/Y/Z"
    ========================================================================= */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -55,6 +61,34 @@ export function baueEvidenzAusStory(auswahl) {
   });
 }
 
+/**
+ * Darf ein Anlauf erzwungen werden, und mit welcher Nummer?
+ *
+ * Reine Entscheidung, kein I/O — testbar ohne Register, Brief oder
+ * Netzwerk. Siehe die ausfuehrliche Begruendung am Aufrufer (CLI-Block
+ * unten): ein erzwungener Anlauf ist eine explizite Entscheidung, kein
+ * Automatismus, und braucht deshalb sowohl eine Nummer >= 2 als auch
+ * eine Begruendung.
+ */
+export function entscheideErzwungenenAnlauf(forceAttemptRaw, attemptReason) {
+  if (forceAttemptRaw === null || forceAttemptRaw === undefined) {
+    return { ok: true, attempt: null, reason: null };
+  }
+  const anlauf = Number(forceAttemptRaw);
+  if (!Number.isInteger(anlauf) || anlauf < 2) {
+    return { ok: false, reason: "invalidAttempt",
+      message: "--force-attempt muss eine ganze Zahl >= 2 sein " +
+        "(Anlauf 1 ist der Standardweg und braucht diese Fahne nicht)." };
+  }
+  if (!attemptReason) {
+    return { ok: false, reason: "missingReason",
+      message: "--force-attempt verlangt --attempt-reason: ein erzwungener " +
+        "Anlauf ist eine Entscheidung, keine Wiederholung, und die " +
+        "Begruendung gehoert in den Brief (attempt_reason)." };
+  }
+  return { ok: true, attempt: anlauf, reason: attemptReason };
+}
+
 export function baueVuBrief(auswahl, options) {
   options = options || {};
   return ContentBrief.build({
@@ -75,6 +109,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const WRITE = args.includes("--write");
   const NOW = arg("now", new Date().toISOString());
   const DATA_DIR = arg("data", "social/data");
+  const FORCE_ATTEMPT_RAW = arg("force-attempt", null);
+  const ATTEMPT_REASON = arg("attempt-reason", null);
+
+  /* ERZWUNGENER ANLAUF — EINE ENTSCHEIDUNG, KEIN AUTOMATISMUS.
+     HYDRATE BEFORE REGENERATE gilt zu Recht als Standard: dieselbe
+     Story soll nicht zweimal angefragt werden, nur weil ein Lauf sie
+     erneut auswaehlt. Aber genau das macht einen echten Test von
+     Prompt-Aenderungen unmoeglich, solange die Top-Story dieselbe
+     bleibt — ein bereits VERIFIED Job wird immer wiederverwendet, egal
+     wie sehr sich brandAssets.instruction seither geaendert hat.
+     buildAgentBrief() kennt den Anlauf bereits als Parameter: er
+     aendert die Bytes des Briefs und damit Blob-SHA und Processing
+     Key, sodass ein zweiter Anlauf sauber ein eigener Vorgang ist.
+     Hier wird dieser Weg nur ans CLI durchgereicht — kein neues
+     Verfahren, sondern ein fehlender Zugang zu einem bestehenden. */
+  const anlaufEntscheidung = entscheideErzwungenenAnlauf(FORCE_ATTEMPT_RAW, ATTEMPT_REASON);
+  if (!anlaufEntscheidung.ok) {
+    console.error(anlaufEntscheidung.message);
+    process.exit(2);
+  }
+  const erzwungenerAnlauf = anlaufEntscheidung.attempt;
 
   const auswahlPfad = join(ROOT, DATA_DIR, "web-story-selection.json");
   if (!existsSync(auswahlPfad)) {
@@ -95,7 +150,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      Story (derselbe Link, derselbe Tag -> dieselbe contentId), entsteht
      kein zweiter Brief. */
   const bestehendeVerified = verifizierteJobsFuer(contentId, ROOT);
-  if (bestehendeVerified.length) {
+  if (bestehendeVerified.length && erzwungenerAnlauf === null) {
     const jobEintrag = bestehendeVerified[bestehendeVerified.length - 1];
     console.log("\n--- VERIFIED CREATIVE IM REGISTER ---");
     console.log(jobEintrag.creativeJobId + " (" + jobEintrag.state + ")");
@@ -107,12 +162,20 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
     console.log("VERIFIED_RESULT_UNAVAILABLE: " + hydriert.explanation +
       " — es wird ein neuer Brief erzeugt.");
+  } else if (bestehendeVerified.length) {
+    const jobEintrag = bestehendeVerified[bestehendeVerified.length - 1];
+    console.log("\n--- VERIFIED CREATIVE IM REGISTER ---");
+    console.log(jobEintrag.creativeJobId + " (" + jobEintrag.state + ")");
+    console.log("ERZWUNGENER ANLAUF " + erzwungenerAnlauf + " (" +
+      ATTEMPT_REASON + "): die Wiederverwendung wird explizit uebersprungen.");
   }
 
   const vuBrief = baueVuBrief(auswahl, { now: NOW });
 
   const agentBrief = ChatGptWork.buildAgentBrief(vuBrief, {
     contentId, variants: 1,
+    attempt: erzwungenerAnlauf || undefined,
+    attemptReason: erzwungenerAnlauf ? ATTEMPT_REASON : undefined,
     hookType: "web_story_grounded_de",
     hookStrategyId: "vu-web-story-grounded-de-v1",
     hookInstruction:
