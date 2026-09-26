@@ -675,9 +675,9 @@
       "processingKey": "brief_852a2221ba91d3e5:vu-web-787176986cf7f5d8-20260926:83f84f9c8d394ba0bb773def1c9fb1352ef930b8:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_DISPATCHED",
+      "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-26T14:57:49.232Z",
-      "updatedAt": "2026-09-26T14:57:49.273Z",
+      "updatedAt": "2026-09-26T15:43:05.422Z",
       "prNumber": 245,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -691,8 +691,22 @@
           "state": "CREATIVE_JOB_DISPATCHED",
           "at": "2026-09-26T14:57:49.273Z",
           "note": "PR vom Orchestrator geoeffnet."
+        },
+        {
+          "state": "CREATIVE_JOB_RESULT_AVAILABLE",
+          "at": "2026-09-26T15:43:05.422Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
+        },
+        {
+          "state": "CREATIVE_JOB_VERIFIED",
+          "at": "2026-09-26T15:43:05.422Z",
+          "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
         }
-      ]
+      ],
+      "resultCommitSha": "9998a5c6ae16d0d27e29a3d6347c3625c9caff8d",
+      "resultRef": "origin/authoring/request/vu-web-787176986cf7f5d8-20260926",
+      "resultBlobSha": "5ea4e0d4c34b2294874092662fa62dccf05202d1",
+      "evidencePackageId": "vu-web-787176986cf7f5d8-20260926"
     }
   ],
   "budget": {
@@ -702,5 +716,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-09-26T15:26:07.226Z"
+  "reconciledAt": "2026-09-26T15:43:05.422Z"
 }
