@@ -180,10 +180,7 @@ html:not([data-theme=light]) .dv2 .dx-m3-hero{background:#141619;border:1px soli
 .dv2 .dx-m3-blick{padding:20px;border-radius:18px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);backdrop-filter:blur(8px)}
 .dv2 .dx-m3-blick-titel{margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a9aeb7}
 .dv2 .dx-m3-blick ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.dv2 .dx-m3-blick li{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:center}
-.dv2 .dx-m3-blick li i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;background:#3a3f47;color:#fff}
-.dv2 .dx-m3-blick li.is-support i{background:#5fd08f;color:#0b0c0e}.dv2 .dx-m3-blick li.is-headwind i{background:#ffa24a;color:#0b0c0e}
-.dv2 .dx-m3-blick li.is-open i{background:transparent;box-shadow:inset 0 0 0 1.5px #8d939d;color:#c9ccd2}.dv2 .dx-m3-blick li.is-context i{background:#8fb1e8;color:#0b0c0e}
+.dv2 .dx-m3-blick li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center}
 .dv2 .dx-m3-blick li b{display:block;font-size:14px;color:#fff}
 .dv2 .dx-m3-blick li small{display:block;font-size:12px;color:#a9aeb7}
 .dv2 .dx-m3-hero-aktionen{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
@@ -201,8 +198,10 @@ html:not([data-theme=light]) .dv2 .dx-m3-hero{background:#141619;border:1px soli
 .dv2 .dx-m3-dim-kopf{display:grid;grid-template-columns:minmax(170px,1.1fr) minmax(150px,.9fr) minmax(220px,1.6fr) minmax(150px,1fr);gap:18px;align-items:center;padding:18px 4px;cursor:pointer;list-style:none;min-height:44px}
 .dv2 .dx-m3-dim-kopf::-webkit-details-marker{display:none}
 .dv2 .dx-m3-dim-kopf:hover{background:var(--m3-soft)}
-.dv2 .dx-m3-dim-name b{display:block;font-size:17px;letter-spacing:-.01em}
-.dv2 .dx-m3-dim-name small{display:block;font-size:12.5px;color:var(--v2-muted);line-height:1.35;margin-top:2px}
+.dv2 .dx-m3-dim-name{display:flex;align-items:flex-start;gap:10px}
+.dv2 .dx-m3-dim-txt{min-width:0}
+.dv2 .dx-m3-dim-txt b{display:block;font-size:17px;letter-spacing:-.01em}
+.dv2 .dx-m3-dim-txt small{display:block;font-size:12.5px;color:var(--v2-muted);line-height:1.35;margin-top:2px}
 .dv2 .dx-m3-dim-zustand{display:grid;grid-template-columns:22px 1fr;column-gap:8px;align-items:center}
 .dv2 .dx-m3-dim-zustand i{grid-row:span 2;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;color:#fff;background:var(--m3-neutral)}
 .dv2 .dx-m3-dim-zustand b{font-size:15px}
@@ -648,3 +647,57 @@ html:not([data-theme=light]) .dv2 .dx-m3{--m3-brand-glow:#3dffc4}
 .dv2 .dx-m3-cta:hover{box-shadow:0 8px 26px color-mix(in srgb,var(--m3-brand-glow) 55%,transparent)}
 .dv2 .dx-m3-cta.is-leise{background:transparent;color:var(--m3-brand-glow);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--m3-brand-glow) 55%,transparent)}
 .dv2 .dx-m3-cta.is-leise:hover{background:color-mix(in srgb,var(--m3-brand-glow) 12%,transparent);box-shadow:inset 0 0 0 1.5px var(--m3-brand-glow)}
+
+/* ================================================================ Markets 3.4
+   Owner-Feedback: "Bullish/Bearish fehlt mir, ich verstehe die Seite nicht".
+   Drei Bausteine, alle auf denselben Daten wie zuvor: (1) App-Icon-System
+   fuer die fuenf Dimensionen statt Fliesstext-Kuerzel, (2) ein Bullish/Base
+   Case/Bearish-Streifen direkt im Hero (dieselbe Zaehlung wie tally()), (3)
+   dieselbe Sprache in der bestehenden "Was wuerde das Bild aendern"-Sektion.
+   Keine neue Zahl, keine Wahrscheinlichkeit - nur vertrautere Woerter frueher
+   auf der Seite. */
+
+/* Icon-Chips: Glas-Kachel mit einem kleinen geometrischen Piktogramm je
+   Dimension. Farbe folgt der bestehenden Rollen-Bedeutung (support/headwind/
+   context), sonst erbt sie die Textfarbe der Umgebung. */
+.dv2 .dx-m3-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:30px;height:30px;
+  border-radius:9px;background:var(--m3-glass);box-shadow:inset 0 0 0 1px var(--m3-glass-line);backdrop-filter:blur(6px)}
+.dv2 .dx-m3-icon-svg{width:16px;height:16px;display:block}
+.dv2 .dx-m3-icon.is-support{color:var(--m3-support)}
+.dv2 .dx-m3-icon.is-headwind{color:var(--m3-headwind)}
+.dv2 .dx-m3-icon.is-context{color:var(--m3-context)}
+.dv2 .dx-m3-hero .dx-m3-icon{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#c9ccd2}
+.dv2 .dx-m3-hero .dx-m3-icon.is-support{color:#5fd08f}.dv2 .dx-m3-hero .dx-m3-icon.is-headwind{color:#ffa24a}.dv2 .dx-m3-hero .dx-m3-icon.is-context{color:#8fb1e8}
+
+/* Szenario-Streifen im Hero: dieselbe Zaehlung wie der Tally weiter unten,
+   nur als drei antippbare Kacheln direkt unter der Kernaussage - springt zur
+   Detailsektion mit den genauen Schwellen. */
+.dv2 .dx-m3-sz-streifen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.dv2 .dx-m3-sz-pille{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:92px;flex:1 1 0;
+  padding:10px 16px;border-radius:16px;border:0;cursor:pointer;font:inherit;text-align:left;
+  background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#fff;
+  transition:transform .15s ease,box-shadow .15s ease}
+.dv2 .dx-m3-sz-pille:hover{transform:translateY(-1px)}
+.dv2 .dx-m3-sz-pille b{font-size:22px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.dv2 .dx-m3-sz-pille span{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#c9ccd2}
+.dv2 .dx-m3-sz-pille.is-bull{box-shadow:inset 0 0 0 1.5px var(--m3-support)}.dv2 .dx-m3-sz-pille.is-bull b{color:#5fd08f}
+.dv2 .dx-m3-sz-pille.is-bear{box-shadow:inset 0 0 0 1.5px var(--m3-headwind)}.dv2 .dx-m3-sz-pille.is-bear b{color:#ffa24a}
+.dv2 .dx-m3-sz-pille.is-base{box-shadow:inset 0 0 0 1.5px var(--m3-neutral)}
+.dv2 .dx-m3-sz-hinweis{flex:1 1 100%;margin:2px 0 0;font-size:11px;color:#8d939d}
+
+/* Dieselbe Bullish/Bearish-Sprache in "Was wuerde das Bild aendern": ein
+   kleiner Farb-Tag vor der Spaltenueberschrift statt eines Pfeilzeichens. */
+.dv2 .dx-m3-sz-tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.02em}
+.dv2 .dx-m3-sz-tag.is-besser{background:color-mix(in srgb,var(--m3-support) 22%,transparent);color:var(--m3-support)}
+.dv2 .dx-m3-sz-tag.is-schlechter{background:color-mix(in srgb,var(--m3-headwind) 22%,transparent);color:var(--m3-headwind)}
+.dv2 .dx-m3-sz-tag.is-base{background:color-mix(in srgb,var(--m3-purple) 20%,transparent);color:var(--m3-purple)}
+
+/* Swipe-Karussell auf schmalen Bildschirmen: dieselbe Liste, als
+   durchwischbare Kartenreihe statt gestapelt - eine native Scroll-Geste,
+   kein zusaetzliches Skript. */
+@media(max-width:760px){
+  .dv2 .dx-m3-blick ul{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -4px;padding:2px 4px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .dv2 .dx-m3-blick ul::-webkit-scrollbar{display:none}
+  .dv2 .dx-m3-blick li{flex:0 0 84%;scroll-snap-align:start;grid-template-columns:30px 1fr}
+  .dv2 .dx-m3-sz-pille{min-width:0}
+}
