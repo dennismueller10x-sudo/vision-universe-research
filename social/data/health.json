@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-25T12:10:47.054Z",
-  "overall": "WARNING",
+  "generatedAt": "2026-09-26T12:36:49.907Z",
+  "overall": "UNAVAILABLE",
   "counts": {
-    "PASS": 10,
+    "PASS": 6,
     "WARNING": 1,
     "FAIL": 0,
-    "UNAVAILABLE": 6
+    "UNAVAILABLE": 10
   },
   "rows": [
     {
@@ -54,9 +54,9 @@
       "state": "WARNING",
       "dataSource": "social/data/signals.json",
       "lastSuccessAt": "2026-09-19T15:46:36.650Z",
-      "failureMode": "Letzter Erfolg vor 140 h (Frist 48 h).",
+      "failureMode": "Letzter Erfolg vor 165 h (Frist 48 h).",
       "nextAction": "Pruefen, warum der Lauf ueberfaellig ist.",
-      "detail": "Letzter Erfolg vor 140 h (Frist 48 h)."
+      "detail": "Letzter Erfolg vor 165 h (Frist 48 h)."
     },
     {
       "component": "signals.market",
@@ -101,49 +101,49 @@
     {
       "component": "intelligence.opportunity",
       "label": "Opportunity Engine",
-      "state": "PASS",
+      "state": "UNAVAILABLE",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-25T12:10:47.054Z",
-      "failureMode": null,
-      "nextAction": null,
-      "detail": "Letzter Erfolg vor 0 h."
+      "lastSuccessAt": null,
+      "failureMode": "Keine nutzbare Platte (PLATTE_VERALTET), also keine Gelegenheiten.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
     },
     {
       "component": "content.pipeline",
       "label": "Content-Pipeline",
-      "state": "PASS",
+      "state": "UNAVAILABLE",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-25T12:10:47.054Z",
-      "failureMode": null,
-      "nextAction": null,
-      "detail": "Letzter Erfolg vor 0 h."
+      "lastSuccessAt": null,
+      "failureMode": "Keine Kandidaten.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
     },
     {
       "component": "content.validation",
       "label": "Fakten- und Markenpruefung",
-      "state": "PASS",
+      "state": "UNAVAILABLE",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-25T12:10:47.054Z",
-      "failureMode": null,
-      "nextAction": null,
-      "detail": "Letzter Erfolg vor 0 h."
+      "lastSuccessAt": null,
+      "failureMode": "Keine Pakete zu pruefen.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
     },
     {
       "component": "scheduler",
       "label": "Terminierung",
-      "state": "PASS",
+      "state": "UNAVAILABLE",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-25T12:10:47.054Z",
-      "failureMode": null,
-      "nextAction": null,
-      "detail": "Letzter Erfolg vor 0 h."
+      "lastSuccessAt": null,
+      "failureMode": "Nichts zu terminieren.",
+      "nextAction": "Einrichten oder Zugangsdaten hinterlegen.",
+      "detail": "Dieser Lauf hat nie erfolgreich stattgefunden."
     },
     {
       "component": "queue",
       "label": "Warteschlange",
       "state": "PASS",
       "dataSource": null,
-      "lastSuccessAt": "2026-09-25T12:10:47.054Z",
+      "lastSuccessAt": "2026-09-26T12:36:49.907Z",
       "failureMode": null,
       "nextAction": null,
       "detail": "Letzter Erfolg vor 0 h."
@@ -173,11 +173,11 @@
       "label": "Kill Switch",
       "state": "PASS",
       "dataSource": "social/config/kill-switch.json",
-      "lastSuccessAt": "2026-09-25T12:10:47.054Z",
+      "lastSuccessAt": "2026-09-26T12:36:49.907Z",
       "failureMode": null,
       "nextAction": null,
       "detail": "Letzter Erfolg vor 0 h."
     }
   ],
-  "explanation": "Gesamtzustand WARNING: 10 PASS, 1 WARNING, 0 FAIL, 6 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (6): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Learning Engine, Experimente."
+  "explanation": "Gesamtzustand UNAVAILABLE: 6 PASS, 1 WARNING, 0 FAIL, 10 UNAVAILABLE. Auffaellig: Interne VU-Signale. Noch nicht eingerichtet (10): Marktsignale, Nachrichtensignale, Externe Social-Signale, Trend Intelligence, Opportunity Engine, Content-Pipeline, Fakten- und Markenpruefung, Terminierung, Learning Engine, Experimente."
 }
