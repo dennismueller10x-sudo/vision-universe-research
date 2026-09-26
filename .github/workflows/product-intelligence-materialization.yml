@@ -2,8 +2,25 @@ name: Quant 2.0 Product Intelligence Materialization
 
 # Internal batch only: existing private R2 history -> existing engines ->
 # compressed static Product Data. No Tiingo request and no public R2 endpoint.
+#
+# WARUM workflow_run (26.09.2026): die dauerhafte Ablage ist seit #182 jeden
+# Abend aktuell - der Abendlauf 36206072592 hat sie planmaessig auf den
+# 2026-09-25 gebracht. Die Produktschicht dagegen entstand nur auf Zuruf:
+# ohne Zeitplan und mit einem push-Filter auf codex/**, den kein Lauf auf main
+# je erfuellt. Die Folge war derselbe Rueckstand eine Ebene hoeher - die
+# Kursstruktur der Produktseiten stand auf dem 2026-09-24, waehrend die Ablage
+# den 25. hielt. Deshalb haengt die Materialisierung jetzt am erfolgreichen
+# Abruf: ein Abrufende auf dem Default-Branch loest sie aus, und zwar nur bei
+# conclusion == 'success' (was Gate B nicht freigibt, wird auch nicht
+# verarbeitet). Kein Anbieter-Abruf, keine Schleife: der Abruf reagiert nicht
+# auf Pushes nach main.
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+    types:
+      - completed
   push:
     branches:
       - 'codex/**'
@@ -19,6 +36,9 @@ jobs:
   materialize:
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main') ||
       contains(github.event.head_commit.message, '[materialize-product-intelligence]')
     runs-on: ubuntu-latest
     timeout-minutes: 300
