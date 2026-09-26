@@ -535,16 +535,22 @@ function create(options){
   return sessions>0?{analysisAsOf,priceAsOf,lagSessions:sessions,
    contract:'freshness-contract-1.0.0'}:null;
  }
+ /* Zwei Fassungen, ein Leser: 1.1.0 bringt zwei Gruende mehr und ein
+  * optionales `detail`, an denselben Schluesseln. Eine Liste statt einer
+  * Gleichheit - und keine offene Praefixpruefung, sonst laese dieser Weg
+  * auch eine Fassung, die es noch nicht gibt. */
+ const TECHNICAL_UNAVAILABLE_SCHEMAS=['technical-unavailable-1.0.0','technical-unavailable-1.1.0'];
  async function technicalUnavailability(ticker){
   try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
-   if(!shard||shard.shard!==key||shard.unavailableSchemaVersion!=='technical-unavailable-1.0.0')return null;
+   if(!shard||shard.shard!==key||TECHNICAL_UNAVAILABLE_SCHEMAS.indexOf(shard.unavailableSchemaVersion)<0)return null;
    const entry=shard.unavailable&&shard.unavailable[ticker];
    if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
    const bars=Number.isFinite(entry.bars)?entry.bars:null,required=Number.isFinite(entry.requiredBars)?entry.requiredBars:null;
    /* Eine Forderung, die die vorhandene Zahl nicht uebersteigt, wuerde den
     * Satz zum Widerspruch machen - dann lieber nur der Grund. */
    return {reason:entry.reason,bars,requiredBars:required!==null&&bars!==null&&required<=bars?null:required,
-    schemaVersion:'technical-unavailable-1.0.0'};
+    detail:entry.detail&&typeof entry.detail==='object'?entry.detail:null,
+    schemaVersion:shard.unavailableSchemaVersion};
   }catch{return null;}
  }
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
