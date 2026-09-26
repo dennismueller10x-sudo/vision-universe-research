@@ -18,7 +18,36 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const NOW = "2026-09-18T12:00:00Z";
+/* -------------------------------------------------------------------
+   WARUM NOW NICHT MEHR EIN FESTES DATUM IST (26.09.)
+
+   platz() baut die Platte aus den ECHTEN, committeten Discover-Reihen
+   (observedAt = das reale Datum des jeweils letzten Marktdaten-Laufs,
+   rueckt taeglich weiter). dringlichkeitFuer(observedAt, now) in
+   fact-check.js bildet daraus BREAKING/TIMELY/EVERGREEN ueber das
+   ALTER (now - observedAt).
+
+   Ein fest eingefrorenes NOW war nur an dem einen Tag korrekt, an dem
+   es geschrieben wurde. Sobald die echten Discover-Daten daran
+   vorbeigelaufen sind, wird observedAt JUENGER als das eingefrorene
+   NOW - (now - observedAt) wird negativ, Math.max(0, ...) klemmt das
+   Alter auf 0, und JEDE Gelegenheit gilt fortan als "gerade erst
+   passiert": BREAKING. Kein Archetyp mit SECURITY_METRIC/RANKING-
+   Praemisse laesst BREAKING zu (strategy.js: nur BREAKING_MARKET_
+   INSIGHT und EXPLAIN_THE_MOVE, beide mit eigenen, hier nicht
+   erfuellten Zusatzbedingungen) - die Content Ladder liefert dann
+   Gelegenheiten, aus denen der Zyklus strukturell nie ein Paket bauen
+   kann, und dieser Nachweis haette nichts mehr, was er vergleichen
+   koennte.
+
+   Deshalb: dasselbe NOW, das jeder produktive Lauf auch nimmt, wenn
+   er keines uebergibt (der CLI-Standard in jedem dieser Skripte ist
+   `new Date().toISOString()`) - real, nicht eingefroren. Die einzelnen
+   Tests, die ein HISTORISCHES publishedAt fuer simulierte
+   Bestandsbeitraege brauchen (LC9/LC11/LC12/LC14), schreiben das
+   weiterhin fest hin; das ist Gedaechtnis ueber die Vergangenheit,
+   nicht die Uhr, gegen die die Platte ihr eigenes Alter misst. */
+const NOW = new Date().toISOString();
 
 function lauf(args) {
   return execFileSync(process.execPath, [join(ROOT, "scripts/social/prove-loop-closure.mjs"), ...args],
