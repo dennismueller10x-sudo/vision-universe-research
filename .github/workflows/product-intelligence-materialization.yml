@@ -181,6 +181,15 @@ jobs:
       # Antwort) und wie viele einen Grund statt einer Zahl - gelesen ueber
       # dieselben Dienste, die die Oberflaeche aufruft. Laeuft hier, weil
       # genau jetzt alle Artefakte der Reise frisch geschrieben sind.
+      # Namen und letzte Schlusskurse fuer die Listenansichten - aus genau
+      # den Quellen, die oben schon veroeffentlicht wurden (Company-Master
+      # und die vertragsgepruefte Tagesreihe). Kein Anbieterzugriff, keine
+      # Rechnung: gemessen zeigte die Uebersicht 5 von 6.875 Kursen und
+      # keinen einzigen Namen, weil beides nur je Titel in eigenen Dateien
+      # lag und eine Liste 646 Namensshards nicht laden kann.
+      - name: Materialize the universe list index
+        run: node scripts/quant/build-universe-list.mjs
+
       - name: Measure the Stock Intelligence journey
         run: node scripts/vu2/measure-journey.mjs --sample 500
 
@@ -207,7 +216,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'
