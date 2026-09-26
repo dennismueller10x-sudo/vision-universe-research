@@ -150,7 +150,7 @@ function create(options){
    marketState:member.ps===true?'AVAILABLE':'UNAVAILABLE',
    factorState:factorReady?'AVAILABLE':'UNAVAILABLE',factorReason:factorReady?null:'NO_FACTOR_ROW',
    capabilities:capability,asOf:f&&f.asOf||member.l||null,
-   price:finite(lf.price)?{value:lf.price,unit:'USD',state:'AVAILABLE'}:{value:null,unit:'USD',state:'UNAVAILABLE',reason:'PRICE_LEVEL_WITHHELD'},
+   price:finite(lf.price)?{value:lf.price,unit:'USD',state:'AVAILABLE'}:{value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_LEVEL'},
    momentum6m:derived(choose(lf.momentum6m,v.returns&&v.returns['6M']),'ratio'),
    momentum12m:derived(choose(lf.momentum12m,v.returns&&v.returns['12M']),'ratio'),
    priceTo200dma:derived(choose(lf.priceTo200dma,v.distanceToSMA200),'ratio'),priceTo50dma:derived(choose(lf.priceTo50dma,v.distanceToSMA50),'ratio'),
@@ -662,6 +662,35 @@ function create(options){
      priceSource:splitbereinigt?'RECONSTRUCTED_FROM_SPLIT_FACTOR':'PROVIDER_RAW_CLOSE',
      providedAdjustmentStatus:p.adjustmentStatus,splitEvents};
    }catch{const history=await getHistoricalPriceHistory(ticker);stock.chart=history.state==='AVAILABLE'?history:{state:'UNAVAILABLE',bars:[],reason:history.reason||'HISTORY_NOT_PUBLISHED'};}
+   /* DIE ANTWORT AUF "WAS KOSTET SIE?" STAND IM CHART DANEBEN.
+    *
+    * Gemessen am 26.09.2026 ueber die 500er-Stichprobe: 52 Titel bekamen
+    * keinen letzten Kurs, und bei 33 von ihnen zeichnete die Seite
+    * gleichzeitig eine vollstaendige Reihe - AHT-P-D etwa 270 Handelstage
+    * bis zum 25.09., letzter Punkt 5,17. Die Kopfzahl sagte "nicht
+    * verfuegbar" und der Chart darunter zeigte sie. Der Grund hiess
+    * PRICE_LEVEL_WITHHELD, also "zurueckgehalten" - dabei hielt niemand
+    * etwas zurueck: die Breitzeile fuehrt fuer Titel ausserhalb des Panels
+    * einfach kein Kursniveau.
+    *
+    * Kein zweiter Leseweg und keine zweite Herkunftspruefung: genommen wird
+    * der letzte Punkt DERSELBEN Reihe, die der Chart traegt - sie hat ihren
+    * Vertrag schon bestanden, und ein Leser kann die Zahl mit den Augen
+    * nachpruefen. Was nicht passiert: ein Kurs aus einer anderen Quelle,
+    * ein aelterer Stand ohne Datum, oder ein Wert trotz fehlender Freigabe -
+    * DISPLAY_NOT_PERMITTED bleibt unberuehrt. */
+   if(!Number.isFinite(stock.price&&stock.price.value)&&(!stock.price||stock.price.reason!=='DISPLAY_NOT_PERMITTED')){
+    const letzter=stock.chart&&stock.chart.state==='AVAILABLE'?(stock.chart.bars||[]).slice(-1)[0]:null;
+    if(letzter&&validDate(letzter.date)&&letzter.date<=new Date().toISOString().slice(0,10)&&Number.isFinite(letzter.close)&&letzter.close>0){
+     stock.price={value:letzter.close,unit:stock.chart.currency||'USD',state:'AVAILABLE',
+      basis:'PUBLISHED_CLOSE_FROM_SERIES',asOf:letzter.date,
+      adjustmentStatus:stock.chart.adjustmentStatus||null};
+    }else{
+     /* Auch ohne Reihe steht dort jetzt der gemessene Grund und nicht die
+        Behauptung, jemand halte etwas zurueck. */
+     stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_SERIES'};
+    }
+   }
    stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);return stock;
    }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}
  async function getSignals({lookback=20}={}){

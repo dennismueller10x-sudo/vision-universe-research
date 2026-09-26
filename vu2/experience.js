@@ -326,7 +326,11 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
   await liveStockSection(ticker);
  }
  return;}
- const left=el('section',{class:'focus'},[el('span',{class:'pill',text:s.above200.value>0&&s.above50.value>0?'Über wichtigen Trendbereichen':'Kursstruktur prüfen'}),el('div',{class:'quote',text:n(s.price,2)}),el('p',{class:'muted',text:'Letzter verfügbarer Schlusskurs · '+(s.asOf||'Datum nicht verfügbar')})]);
+ const left=el('section',{class:'focus'},[el('span',{class:'pill',text:s.above200.value>0&&s.above50.value>0?'Über wichtigen Trendbereichen':'Kursstruktur prüfen'}),el('div',{class:'quote',text:n(s.price,2)}),el('p',{class:'muted',text:'Letzter verfügbarer Schlusskurs · '+((s.price&&s.price.asOf)||s.asOf||'Datum nicht verfügbar')
+   /* Der Kurs bringt sein eigenes Datum mit, wenn er aus der gezeichneten
+      Reihe kommt - `s.asOf` traegt den Stand der Geschaeftszahlen und war
+      fuer diese Titel leer, waehrend der Chart daneben bis zum 25.09. lief. */
+   +((s.price&&s.price.basis==='PUBLISHED_CLOSE_FROM_SERIES')?' · Schlusskurs der Reihe, die unten gezeichnet ist':'')})]);
  left.append(freshness(s.health,s.ticker));
  const chart=el('div'),ranges=el('div',{class:'ranges','aria-label':'Chart-Zeitraum'});
  function draw(id){S.clear(chart);if(!s.chart||s.chart.state!=='AVAILABLE'){chart.append(notice('Kurshistorie derzeit nicht verfügbar','Für diesen Titel ist noch keine validierte Materialisierung veröffentlicht.'));return;}const data=VUChartRanges.selectRange(id,{eod:s.chart.bars||[],adjustmentStatus:s.chart.adjustmentStatus});ranges.querySelectorAll('button').forEach(b=>{b.classList.toggle('selected',b.dataset.range===id);b.setAttribute('aria-pressed',b.dataset.range===id?'true':'false');});if(!data.ok){chart.append(notice('Dieser Zeitraum ist nicht verfügbar','Tagesverläufe benötigen freigegebene Intraday-Daten. Wähle einen längeren Zeitraum.'));return;}
