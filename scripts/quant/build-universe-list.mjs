@@ -46,7 +46,7 @@
    ========================================================================= */
 import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { gzipSync } from "node:zlib";
+import { gzipSync, gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -106,9 +106,30 @@ async function main() {
   if (!members.length) throw new Error("EMPTY_CAPABILITY");
   const { namen, typen, shards } = await namenAusCompanyMaster();
 
+  /* WIE VIELE HANDELSTAGE DIE FAKTOREN WIRKLICH GESEHEN HABEN.
+   *
+   * Die Seite soll einem zu jungen Titel sagen "fuer diese Auswertung werden
+   * 252 Handelstage gebraucht, aktuell liegen 187 vor" - und diese Zahl gibt
+   * es nur an einer Stelle: im Faktor-Artefakt, das sie selbst gezaehlt hat.
+   * Die Bar-Zahl der Kapazitaetsdatei ist eine ANDERE Groesse: gemessen weicht
+   * sie in allen 6.441 Faellen ab (bei AA 936 gegen 0), weil sie den Bestand
+   * im Speicher zaehlt und nicht die Reihe, auf der gerechnet wurde. Sie hier
+   * zu nehmen waere eine falsche Zahl in einem richtigen Satz. */
+  const faktorBars = new Map();
+  const faktorDir = join(ROOT, "quant/data/product/factor-evidence-v1");
+  if (existsSync(faktorDir)) {
+    for (const datei of (await readdir(faktorDir))) {
+      if (!datei.endsWith(".json.gz") || datei === "screening.json.gz" || datei === "summary.json.gz") continue;
+      const shard = JSON.parse(gunzipSync(await readFile(join(faktorDir, datei))).toString("utf8"));
+      for (const [ticker, row] of Object.entries(shard.securities || {})) {
+        if (Number.isFinite(row.bars)) faktorBars.set(ticker, row.bars);
+      }
+    }
+  }
+
   const entries = [];
   const staende = {};
-  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0;
+  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0, mitBars = 0;
   for (const member of members) {
     const name = namen.get(member.s) || null;
     let preis = null;
@@ -124,11 +145,14 @@ async function main() {
        Ein Eintrag ohne Kurs bleibt drin, wenn er einen Namen hat - die
        Liste soll wenigstens sagen koennen, WER das ist. */
     if (!name && !preis) continue;
+    const bars = faktorBars.has(member.s) ? faktorBars.get(member.s) : null;
+    if (bars !== null) mitBars += 1;
     entries.push({
       s: member.s,
       ...(name ? { n: name } : {}),
       ...(typen.get(member.s) ? { t: typen.get(member.s) } : {}),
-      ...(preis ? { c: preis.close, d: preis.date, u: preis.currency } : {})
+      ...(preis ? { c: preis.close, d: preis.date, u: preis.currency } : {}),
+      ...(bars !== null ? { b: bars } : {})
     });
   }
 
@@ -138,13 +162,14 @@ async function main() {
     source: {
       universe: "quant/data/universe/market-capability.json",
       prices: "quant/data/market/discover-series (discover-series-1.1.0, split-adjusted daily)",
-      names: "quant/data/universe/search/sym (company-master-1.0.0, " + shards + " shards)"
+      names: "quant/data/universe/search/sym (company-master-1.0.0, " + shards + " shards)",
+      factorBars: "quant/data/product/factor-evidence-v1 (die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat)"
     },
     /* Die Deckung steht IM Artefakt, damit ein Leser sie nicht selbst
        ausrechnen muss und ein Test sie halten kann. */
     coverage: {
       universe: members.length, entries: entries.length,
-      withName: mitName, withPrice: mitKurs,
+      withName: mitName, withPrice: mitKurs, withFactorBars: mitBars,
       withoutSeries: ohneReihe, seriesRejected: reiheVerworfen,
       priceDates: Object.fromEntries(Object.entries(staende).sort((a, b) => b[1] - a[1]).slice(0, 8))
     },
@@ -160,6 +185,7 @@ async function main() {
   const kb = (n) => (n / 1024).toFixed(0) + " KB";
   process.stdout.write("Universums-Liste · " + entries.length + " Eintraege fuer " + members.length + " Titel\n");
   process.stdout.write("  mit Namen  " + String(mitName).padStart(5) + "\n");
+  process.stdout.write("  mit Handelstagen " + String(mitBars).padStart(5) + "\n");
   process.stdout.write("  mit Kurs   " + String(mitKurs).padStart(5) +
     "   (ohne Reihe " + ohneReihe + ", Reihe verworfen " + reiheVerworfen + ")\n");
   process.stdout.write("  Staende: " + Object.entries(report.coverage.priceDates)

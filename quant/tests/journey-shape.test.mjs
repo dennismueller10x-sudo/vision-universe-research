@@ -218,3 +218,80 @@ test("the page uses the contract and does not keep a second copy of the rule", (
   const html = readFileSync(join(ROOT, "vu2/index.html"), "utf8");
   assert.match(html, /engines\/journey-shape\.js/);
 });
+
+test("ein zu junger Titel liest an der Faktorstation seine Handelstage", () => {
+  /* Die Faktorzeile nennt ihre eigene Grenze; die Reise sagt daraus den Satz
+     mit der Zahl statt einer Ablehnung ohne Ursache. */
+  const faktoren = [
+    { id: "quality", state: "UNAVAILABLE", history: null },
+    { id: "momentum", state: "UNAVAILABLE", history: { bars: 187, requiredBars: 273, missingBars: 86 } },
+    { id: "risk", state: "UNAVAILABLE", history: { bars: 187, requiredBars: 252, missingBars: 65 } }
+  ];
+  const stationen = Shape.stationsFrom({ factors: { state: "AVAILABLE", factors: faktoren, change: { items: [] } } });
+  assert.equal(stationen.factorStrength.reason, "INSUFFICIENT_HISTORY");
+  /* Die naechste Schwelle, nicht die hoechste: 252 erreicht der Titel zuerst. */
+  assert.equal(stationen.factorStrength.detail.requiredBars, 252);
+  assert.equal(stationen.factorStrength.detail.bars, 187);
+
+  const form = Shape.assess(stationen);
+  const gruppe = form.groups.find((g) => g.causeId === "SHORT_HISTORY");
+  assert.ok(gruppe, "die Ursachengruppe zur kurzen Historie fehlt");
+  assert.match(gruppe.explanation, /187 Handelstage vor, gebraucht werden 252/);
+  assert.match(gruppe.outlook, /von selbst/);
+});
+
+test("ein Titel mit Faktorwerten behaelt seine gewohnte Begruendung", () => {
+  const faktoren = [
+    { id: "risk", state: "AVAILABLE", history: null },
+    { id: "quality", state: "UNAVAILABLE", history: null }
+  ];
+  const stationen = Shape.stationsFrom({ factors: { state: "AVAILABLE", factors: faktoren, change: { items: [] } } });
+  assert.equal(stationen.factorStrength.substantive, true);
+  assert.notEqual(stationen.factorStrength.reason, "INSUFFICIENT_HISTORY");
+
+  /* Und ohne Handelstag-Angabe bleibt es beim alten Grund - es wird keine
+     Historienaussage erfunden, wo keine Zahl vorliegt. */
+  const ohneZahl = Shape.stationsFrom({ factors: { state: "AVAILABLE",
+    factors: [{ id: "risk", state: "UNAVAILABLE", history: null }], change: { items: [] } } });
+  assert.equal(ohneZahl.factorStrength.reason, "INPUT_NOT_MATERIALIZED");
+});
+
+test("beide Module nennen dieselbe Schwelle", () => {
+  /* Zwei Zahlen fuer dieselbe Grenze waeren zwei Antworten: die Faktorzeile
+     sagte "252 gebraucht" und die Reise koennte 250 sagen. */
+  const FactorEvidence = createRequire(import.meta.url)("../engines/factor-evidence.js");
+  assert.equal(Shape.NEXT_PRICE_FACTOR_BARS, FactorEvidence.REQUIRED_BARS.risk);
+  assert.ok(FactorEvidence.REQUIRED_BARS.momentum > Shape.NEXT_PRICE_FACTOR_BARS,
+    "das Momentumfenster ist das laengere - genannt wird das naechste");
+});
+
+test("die Aktienseite nennt die Handelstage aus dem Verzeichnis", () => {
+  /* Die Screening-Zeile traegt keine Handelstage; die Zahl kommt vom
+     Universumsverzeichnis, das sie aus dem Faktorlauf uebernimmt. */
+  const stationen = Shape.stationsFrom({
+    stock: { ticker: "JUNG", price: { value: 4.2 }, chart: { state: "AVAILABLE", bars: [1, 2, 3] },
+             factorBars: 187, quant: { families: [] } },
+    evidenceRow: { ticker: "JUNG", "quantV2.factorEvidence.availableFactors": 0, "quantV2.factorEvidence.risk": null }
+  });
+  assert.equal(stationen.factorStrength.reason, "INSUFFICIENT_HISTORY");
+  assert.equal(stationen.factorStrength.detail.bars, 187);
+  assert.equal(stationen.factorStrength.detail.requiredBars, 252);
+
+  /* Ohne die Zahl bleibt es beim alten Grund - nichts wird erfunden. */
+  const ohne = Shape.stationsFrom({
+    stock: { ticker: "JUNG", price: { value: 4.2 }, chart: { state: "AVAILABLE", bars: [1, 2, 3] },
+             quant: { families: [] } },
+    evidenceRow: { ticker: "JUNG", "quantV2.factorEvidence.availableFactors": 0, "quantV2.factorEvidence.risk": null }
+  });
+  assert.equal(ohne.factorStrength.reason, "INPUT_NOT_MATERIALIZED");
+
+  /* Und ein Titel mit Faktorwerten wird nicht zur Historienfrage gemacht,
+     auch wenn seine Reihe kurz ist. */
+  const mitWert = Shape.stationsFrom({
+    stock: { ticker: "KURZ", price: { value: 9 }, chart: { state: "AVAILABLE", bars: [1, 2] },
+             factorBars: 120, quant: { families: [] } },
+    evidenceRow: { ticker: "KURZ", "quantV2.factorEvidence.availableFactors": 2, "quantV2.factorEvidence.risk": 55, "quantV2.factorEvidence.momentum": 61 }
+  });
+  assert.equal(mitWert.factorStrength.substantive, true);
+  assert.notEqual(mitWert.factorStrength.reason, "INSUFFICIENT_HISTORY");
+});

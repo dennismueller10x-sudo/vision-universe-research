@@ -1,7 +1,15 @@
 # Die Screening-Zeilen ohne einen einzigen Faktorwert — vollständig klassifiziert
 
-**Stand 2026-09-26 · Artefakt `quant/data/providers/zero-factor-classification.json` · Erzeuger
-`scripts/quant/classify-zero-factor-rows.mjs`**
+**Stand 2026-09-26 (zweite Messung, nach M33) · Artefakt
+`quant/data/providers/zero-factor-classification.json` (`zero-factor-classification-1.1.0`) ·
+Erzeuger `scripts/quant/classify-zero-factor-rows.mjs`**
+
+> **Nachtrag vom 26.09.2026, nach den internen Reparaturen.** Die erste Messung fand 795 Zeilen.
+> Nach den Branchenvorlagen (`quant-v2.2.0`), dem korrigierten Versicherungstor und der reparierten
+> Berichtsperiode sind es **786**; `SECTOR_TEMPLATE_MISSING` steht bei **0** statt bei 12. Die
+> Klassentabellen weiter unten tragen die erste Messung, weil sie den Auftrag beantworten; die
+> Kette und die neuen Größen stehen im Abschnitt **„Wo in der Kette die Zeile verloren geht"** am
+> Ende. Keine dieser Bewegungen stammt aus einer fremden Quelle.
 
 Auftrag: die rund 795 Zeilen mit `availableFactors: 0` je Titel bestimmen — ohne neue Datenquelle,
 ohne Provider, ohne Pipeline-Änderung. Ziel ist zu verstehen, **wie viel des Gaps mit vorhandenen
@@ -217,3 +225,85 @@ node scripts/quant/classify-zero-factor-rows.mjs
 ```
 
 Liest nur veröffentlichte Dateien, ruft keinen Anbieter, schreibt genau ein Artefakt.
+
+## Wo in der Kette die Zeile verloren geht
+
+Zweite Messung, nach den internen Reparaturen, für alle 786 Nullzeilen nachvollzogen: Company
+Master → Security/Issuer-Mapping → CIK → SEC Factbook → Consumer Export → Faktoreingang →
+Faktorevidenz. Eine Partition wie die Klassentabelle, aber nach **Ort** statt nach Ursache.
+
+| Stelle in der Kette | Titel | Anteil |
+|---|---|---|
+| `KEINE_SEC_VERBINDUNG` — kein CIK, und der Master sieht auch kein SEC-Material | 407 | 51,8 % |
+| `ROHFAKTEN_OHNE_ZUORDNUNG` — Factbook hat geliefert, die Registry ordnete nichts zu | 161 | 20,5 % |
+| `NOT_APPLICABLE` — Hülle oder Fonds, kein operatives Geschäft | 87 | 11,1 % |
+| `HISTORIE_ZU_KURZ` | 78 | 9,9 % |
+| `FACTBOOK_OHNE_CONSUMER_EXPORT` | 47 | 6,0 % |
+| `CIK_OHNE_FACTBOOK` — der SEC bekannt, führt kein Factbook | 5 | 0,6 % |
+| `FAKTOR_MINDESTANFORDERUNG` — alle Stufen lieferten | 1 | 0,1 % |
+| `CONSUMER_EXPORT_NICHT_GEJOINT` | **0** | — |
+| `IDENTIFIER_OHNE_CIK` — Master sieht SEC, kein Kürzel in den Verzeichnissen | **0** | — |
+
+Die drei Nullen sind das Ergebnis, nicht die Abwesenheit eines Ergebnisses. Gesucht waren „echte
+interne Mapping-/Join-Gaps": eine CIK, die im Verzeichnis steht und nicht am Datensatz; ein Export,
+der das Kürzel nicht führt; ein falsch gezogenes Mapping. **Keiner dieser Fälle existiert.** Der
+Export nennt zu jedem Emittenten die Kürzel, die er selbst führt, und bei keiner der 786 Zeilen
+fehlt das eigene darunter.
+
+### Die Lücke, die es wirklich gibt
+
+**183 Emittenten im ganzen Universum — 161 davon Nullzeilen — tragen zusammen 43.953 rohe
+SEC-Tatsachen und `mapped = 0`.** Die größten ungenutzten Bestände:
+
+| Rohtatsachen | zugeordnet | Emittent |
+|---|---|---|
+| 1.125 | 0 | Phoenix Education Partners Inc |
+| 930 | 0 | Elmet Group Co. |
+| 853 | 0 | Exyn Technologies Inc |
+| 717 | 0 | Bob's Discount Furniture Inc |
+| 682 | 0 | Forbright Inc – Class A |
+| 639 | 0 | York Space Systems Inc |
+| 632 | 0 | Cerebras Systems Inc – Class A |
+| 611 | 0 | BitGo Holdings Inc – Class A |
+| 544 | 0 | Fervo Energy Co. – Class A |
+| 531 | 0 | Generate Biomedicines Inc |
+| 417 | 0 | Space Exploration Technologies Corp – Class A |
+
+Die Verteilung über alle 5.069 Exporte ist zweigipfelig: **4.884** mit 20 und mehr zugeordneten
+Kennzahlen, **183** mit genau null, **zwei** dazwischen. Ein solcher Sprung spricht gegen „ein paar
+fehlende Tags" und für einen strukturellen Grund — etwa firmeneigene Konzepte oder Fakten ohne
+Periodenrahmen bei Erstmeldern.
+
+**Warum das hier endet.** Welche Konzepte diese Emittenten verwenden, steht in den rohen Fakten.
+Die liegen nicht im Repository: `quant/data/sec/canonical` und `inspector` führen die fünf goldenen
+Titel, und die 120 MB unter `consumer/` **sind** die SEC-Schicht dieses Hauses. Der Abruf von
+`data.sec.gov` — dieselbe Quelle, die die bestehende Pipeline benutzt — ist durch die
+Netzwerkpolitik dieser Umgebung gesperrt (CONNECT 403). Die Lücke ist damit exakt lokalisiert,
+gezählt und benannt, aber von hier aus nicht behebbar. Sie ist **kein** Provider-Gap: die Daten
+sind vorhanden und bezahlt.
+
+### Zwei weitere Befunde derselben Prüfung
+
+Von den 47 Titeln mit CIK und ohne Export hat der Export-Lauf für **25** einen eigenen Fehlschlag
+notiert (`NO_PERIODIC_FACTS` — ein Factbook ohne eine einzige Periodentatsache, also ein Befund an
+der Quelle). Für die anderen **22** gibt es weder einen Export noch einen Fehlschlagseintrag: der
+Lauf hat sie stillschweigend übergangen. Das Artefakt führt beides getrennt als
+`EXPORT_RUN_REPORTED_FAILURE` und `EXPORT_RUN_SILENTLY_SKIPPED`.
+
+### Die neuen Größen im Artefakt
+
+| Größe | Wert |
+|---|---|
+| `TOTAL_ZERO_FACTOR_ROWS` | 786 (erste Messung 795) |
+| `FACTOR_CELLS_AVAILABLE` | 22.712 |
+| `SECTOR_TEMPLATE_MISSING` | 0 |
+| `INTERNAL_MAPPING_GAP` | 161 |
+| `EXPORT_RUN_REPORTED_FAILURE` | 25 |
+| `EXPORT_RUN_SILENTLY_SKIPPED` | 22 |
+| `ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER` | 9 |
+| `FACTOR_COVERAGE_GAIN` | +2.325 Faktorzellen |
+| `EXTERNAL_PROVIDER_DECISION` | `DEFERRED` |
+
+Der Vergleich gegen den vorigen Lauf wird nicht geschätzt: das Artefakt wird gelesen, **bevor** es
+überschrieben wird, und trägt den vorigen Stand mit seinem Zeitstempel. Gibt es keinen vorigen
+Lauf, steht dort `null` und nicht `0`.

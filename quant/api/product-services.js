@@ -586,6 +586,13 @@ function create(options){
   if(!row||!entry||entry.s!==row.ticker)return row;
   if(entry.n&&(!row.name||row.name===row.ticker))row.name=entry.n;
   if(entry.t&&!row.securityType)row.securityType=entry.t;
+  /* Auf WIE VIELEN Handelstagen der Faktorlauf gerechnet hat. Nur damit kann
+   * eine Seite sagen "fuer diese Auswertung werden 252 Handelstage gebraucht,
+   * aktuell liegen 187 vor" - gemessen betrifft dieser Satz 784 der 786 Titel
+   * ohne einen einzigen Faktorwert. Die Bar-Zahl der Kapazitaetsdatei ist eine
+   * andere Groesse und weicht in allen 6.441 Faellen ab; sie waere hier eine
+   * falsche Zahl in einem richtigen Satz. */
+  if(Number.isFinite(entry.b)&&!Number.isFinite(row.factorBars))row.factorBars=entry.b;
   const heute=new Date().toISOString().slice(0,10);
   if(!Number.isFinite(row.price&&row.price.value)&&Number.isFinite(entry.c)&&entry.c>0
      &&validDate(entry.d)&&entry.d<=heute&&(!row.price||row.price.reason!=='DISPLAY_NOT_PERMITTED')){
@@ -739,7 +746,12 @@ function create(options){
      stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_SERIES'};
     }
    }
-   stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);return stock;
+   stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);
+   /* Dasselbe Verzeichnis, das die Liste liest. Es traegt Name, letzten Kurs
+      und die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat -
+      die Aktienseite darf daran nicht weniger wissen als die Liste. */
+   try{const index=await universeIndex();mitVerzeichnis(stock,index.byTicker[ticker]);}catch{/* das Verzeichnis ist eine Ergaenzung, keine Bedingung */}
+   return stock;
    }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}
  async function getSignals({lookback=20}={}){
   if(![5,20,60].includes(lookback))return {state:'UNAVAILABLE',events:[],results:[],reason:'INVALID_SIGNAL_WINDOW'};

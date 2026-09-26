@@ -107,6 +107,18 @@ async function konsumExport(cik) {
     for (const k of jahresMetriken) for (const reihe of annual[k]) if (Array.isArray(reihe) && Number.isFinite(reihe[0])) jahre.add(reihe[0]);
     return {
       fehlt: false, schema: doc.schema || null, asOf: doc.asOf || null,
+      /* WIEVIEL DIE SEC GELIEFERT HAT UND WIEVIEL DAVON ANKAM.
+       *
+       * `coverage.rawFacts` ist die Zahl der Tatsachen, die im Factbook des
+       * Emittenten standen, `coverage.mapped` die Zahl derer, die die
+       * Kennzahl-Registry einer Groesse zuordnen konnte. Die Differenz ist
+       * der Unterschied zwischen "die Quelle liefert nichts" und "das Haus
+       * ordnet nichts zu" - und genau diese Frage stellt Prioritaet B. */
+      rawFacts: (doc.coverage && doc.coverage.rawFacts) || 0,
+      mapped: (doc.coverage && doc.coverage.mapped) || 0,
+      /* Welche Kuerzel dieser Emittent selbst fuehrt. Steht das Kuerzel der
+         Zeile nicht darunter, ist der Export da und nur nicht gejoint. */
+      tickers: Array.isArray(doc.tickers) ? doc.tickers : [],
       metriken, metrikenZahl: metriken.length,
       punkte: metriken.reduce((summe, k) => summe + quarterly[k].length, 0),
       jahresMetriken, fiscalYears: jahre.size, fiscalYearList: [...jahre].sort(),
@@ -131,10 +143,23 @@ async function main() {
     ? await json(join(ROOT, "quant/data/sec/consumer_coverage.json")) : null;
   const { namen, arten, secFlag } = await namenUndArten();
 
+  /* Welche CIKs die SEC kennt, fuer die companyfacts aber kein Factbook
+     fuehrt - gemessen vom Export-Lauf selbst, nicht hier geraten. */
+  const nichtInFactbook = new Set(((coverage && coverage.notInCompanyFactsCiks) || [])
+    .map((c) => String(c).padStart(10, "0")));
+
+  /* Der vorige Lauf, gelesen BEVOR er ueberschrieben wird. Ohne ihn waere
+     "geschlossen ohne neuen Anbieter" eine Behauptung ohne Vergleichspunkt. */
+  const vorher = existsSync(OUT) ? await json(OUT).catch(() => null) : null;
+
   const zeilen = [];
   const komponentenInputs = {};
   const exportCache = new Map();
   let geprueft = 0;
+  /* Wieviele Faktorzellen im Universum ueberhaupt einen Wert tragen. Die
+     Nullzeilen allein sagen nichts ueber den Deckungsgewinn: ein Titel kann
+     von einem auf vier Faktoren wachsen, ohne die Nullzeilen zu beruehren. */
+  let faktorzellenVerfuegbar = 0;
 
   for (const datei of dateien) {
     const shard = await gz(join(dir, datei));
@@ -156,6 +181,7 @@ async function main() {
       geprueft += 1;
       const faktoren = row.factors || {};
       const verfuegbar = Object.values(faktoren).filter((f) => f.state === "AVAILABLE").length;
+      faktorzellenVerfuegbar += verfuegbar;
       if (verfuegbar > 0) continue;               /* nur die Nullzeilen */
 
       const cik = row.cik || null;
@@ -234,8 +260,74 @@ async function main() {
         klasseDetail = "Rohkennzahlen und Historie vorhanden; es scheitern einzelne Komponenten";
       }
 
+      /* ----------------------------------------------------------------
+         DIE KETTE (Prioritaet B)
+
+         Company Master -> Security/Issuer Mapping -> CIK -> SEC Factbook ->
+         Consumer Export -> Factor Input -> Factor Evidence. Die Klasse oben
+         sagt, WAS fehlt; die Kette sagt, AN WELCHER STELLE es verloren
+         geht - und nur eine Stelle im Haus ist ein Gap, das hier reparabel
+         waere.
+         ---------------------------------------------------------------- */
+      const masterSiehtSec = secFlag.get(ticker) === true;
+      let kette, ketteDetail;
+      if (!masterSiehtSec && !cik) {
+        kette = "KEINE_SEC_VERBINDUNG";
+        ketteDetail = "Der Company-Master sieht kein SEC-Material und es gibt keine CIK - " +
+          "diese Zeile ist kein Zuordnungsfall, sondern steht ausserhalb der SEC-Deckung";
+      } else if (!cik) {
+        kette = "IDENTIFIER_OHNE_CIK";
+        ketteDetail = "Der Company-Master sieht SEC-Material, das Kuerzel steht aber in keinem " +
+          "SEC-Verzeichnis - ein Identifikatorfall, kein Quellenfall";
+      } else if (exp && exp.fehlt) {
+        kette = nichtInFactbook.has(String(cik).padStart(10, "0"))
+          ? "CIK_OHNE_FACTBOOK" : "FACTBOOK_OHNE_CONSUMER_EXPORT";
+        ketteDetail = kette === "CIK_OHNE_FACTBOOK"
+          ? "CIK " + cik + " ist der SEC bekannt, fuehrt aber kein Factbook (nicht in companyfacts)"
+          : "CIK " + cik + " vorhanden, aber kein Consumer-Export unter diesem Emittenten";
+      } else if (exp && exp.tickers.length && !exp.tickers.includes(ticker)) {
+        /* Der Export existiert und nennt andere Kuerzel als dieses: entweder
+           eine zweite Aktiengattung desselben Emittenten oder ein falsch
+           gezogenes Mapping. Beides waere ein echter Join-Fall im Haus. */
+        kette = "CONSUMER_EXPORT_NICHT_GEJOINT";
+        ketteDetail = "Der Export von CIK " + cik + " fuehrt die Kuerzel " +
+          exp.tickers.slice(0, 6).join(", ") + " - dieses Kuerzel steht nicht darunter";
+      } else if (exp && exp.metrikenZahl === 0 && exp.jahresMetriken.length === 0 && exp.rawFacts > 0) {
+        /* DAS EIGENTLICHE ERGEBNIS VON PRIORITAET B.
+         *
+         * Das Factbook hat geliefert - hunderte Tatsachen - und die
+         * Kennzahl-Registry hat keine einzige davon zugeordnet. Gemessen am
+         * 26.09.2026 ueber alle 5.069 Exporte: 183 Emittenten mit 43.953
+         * rohen Tatsachen und `mapped = 0`, darunter Cerebras Systems, Bob's
+         * Discount Furniture, Fervo Energy und Generate Biomedicines. Die
+         * Verteilung ist zweigipfelig - 4.884 Exporte mit 20 und mehr
+         * zugeordneten Kennzahlen, 183 mit genau null, zwei dazwischen -,
+         * und das spricht gegen "ein paar fehlende Tags" und fuer einen
+         * strukturellen Grund. Welcher es ist, steht in den rohen Fakten,
+         * und die liegen nicht im Repository. */
+        kette = "ROHFAKTEN_OHNE_ZUORDNUNG";
+        ketteDetail = exp.rawFacts + " rohe SEC-Tatsachen im Factbook, davon " + exp.mapped +
+          " einer Kennzahl zugeordnet - die Quelle liefert, die Zuordnung nicht";
+      } else if (exp && exp.metrikenZahl === 0 && exp.jahresMetriken.length === 0) {
+        kette = "ECHTER_SEC_SOURCE_GAP";
+        ketteDetail = "Consumer-Export vorhanden, Factbook traegt keine Tatsachen";
+      } else if (sektorBlockiert) {
+        kette = "BRANCHENMETHODIK";
+        ketteDetail = "Fundamentaldaten sind da; fuer diesen Branchenschluessel greift keine Vorlage";
+      } else if (ohneGeschaeft) {
+        kette = "NOT_APPLICABLE";
+        ketteDetail = "Kein operatives Geschaeft, das diese Faktoren messen";
+      } else if (preisfaktorenDuenn) {
+        kette = "HISTORIE_ZU_KURZ";
+        ketteDetail = bars + " Handelstage; die Kursfaktoren brauchen " + BARS_FOR_RISK;
+      } else {
+        kette = "FAKTOR_MINDESTANFORDERUNG";
+        ketteDetail = "Alle Stufen der Kette haben geliefert; es scheitern die Mindestanforderungen einzelner Faktoren";
+      }
+
       zeilen.push({
         ticker, name: namen.get(ticker) || null, securityType: arten.get(ticker) || null,
+        kette, ketteDetail,
         cik, sic, peerLevel: row.peer ? row.peer.level : null,
         masterSeesSec: secFlag.get(ticker) === true,
         bars, marketCap: Number.isFinite(row.marketCap) ? row.marketCap : null,
@@ -276,6 +368,55 @@ async function main() {
      oder etwas, das schon hier liegt. */
   merkmale.EXTERNAL_PROVIDER_CANDIDATE = zeilen.filter((z) =>
     z.klasse === "SEC_NO_CIK" && !SIC_OHNE_OPERATIVES_GESCHAEFT[z.sic]).length;
+
+  /* Seit quant-v2.2.0 gibt es fuer Banken, Versicherungstraeger und REITs
+     eigene Vorlagen; diese Zahl muss null sein, solange kein Branchentor
+     ohne Vorlage dasteht. */
+  merkmale.SECTOR_TEMPLATE_MISSING = zeilen.filter((z) =>
+    Object.values(z.factors).some((f) => f.reason === "SECTOR_TEMPLATE_MISSING"
+      || (f.missing || []).some((m) => m.reason === "SECTOR_TEMPLATE_MISSING"))).length;
+
+  /* Ein Gap im Haus ist, was ohne fremde Quelle zu schliessen waere: eine
+     CIK, die im Verzeichnis steht und nicht am Datensatz; ein Export, der
+     das Kuerzel nicht fuehrt; ein Factbook, das geliefert hat, waehrend die
+     Zuordnung nichts daraus machte. */
+  const IM_HAUS = ["CONSUMER_EXPORT_NICHT_GEJOINT", "ROHFAKTEN_OHNE_ZUORDNUNG", "IDENTIFIER_OHNE_CIK"];
+  merkmale.INTERNAL_MAPPING_GAP = zeilen.filter((z) => IM_HAUS.includes(z.kette)).length;
+
+  /* EIN LAUF, DER WEDER LIEFERT NOCH SICH BESCHWERT.
+   *
+   * Der Export-Lauf fuehrt seine eigenen Fehlschlaege in
+   * consumer_coverage.failures - gemessen 80 Eintraege, ueberwiegend
+   * NO_PERIODIC_FACTS, also ein Factbook ohne eine einzige Periodentatsache.
+   * Das ist ein Befund an der Quelle und kein Gap im Haus. Eine Zeile ohne
+   * Export UND ohne Fehlschlagseintrag ist dagegen beides nicht: der Lauf hat
+   * diesen Emittenten stillschweigend uebergangen. */
+  const gemeldeteFehlschlaege = new Set(((coverage && coverage.failures) || [])
+    .map((f) => String((f && f.cik) || f).padStart(10, "0")));
+  const stillUebergangen = zeilen.filter((z) => z.cik && z.consumerExport && !z.consumerExport.present
+    && !gemeldeteFehlschlaege.has(String(z.cik).padStart(10, "0"))
+    && !nichtInFactbook.has(String(z.cik).padStart(10, "0")));
+  merkmale.EXPORT_RUN_REPORTED_FAILURE = zeilen.filter((z) => z.cik && z.consumerExport && !z.consumerExport.present
+    && gemeldeteFehlschlaege.has(String(z.cik).padStart(10, "0"))).length;
+  merkmale.EXPORT_RUN_SILENTLY_SKIPPED = stillUebergangen.length;
+
+  const kette = {};
+  for (const z of zeilen) kette[z.kette] = (kette[z.kette] || 0) + 1;
+
+  /* Der Vergleich gegen den vorigen Lauf. Keine Schaetzung: beide Zahlen
+     stammen aus je einem gemessenen Lauf, und wenn es keinen vorigen gibt,
+     steht hier null statt einer Null. */
+  const fortschritt = {
+    previousRun: vorher ? { generatedAt: vorher.generatedAt, total: vorher.TOTAL_ZERO_FACTOR_ROWS ?? null,
+      factorCellsAvailable: vorher.FACTOR_CELLS_AVAILABLE ?? null } : null,
+    ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER: vorher && Number.isFinite(vorher.TOTAL_ZERO_FACTOR_ROWS)
+      ? vorher.TOTAL_ZERO_FACTOR_ROWS - zeilen.length : null,
+    FACTOR_COVERAGE_GAIN: vorher && Number.isFinite(vorher.FACTOR_CELLS_AVAILABLE)
+      ? faktorzellenVerfuegbar - vorher.FACTOR_CELLS_AVAILABLE : null,
+    EXTERNAL_PROVIDER_DECISION: "DEFERRED",
+    note: "Kein Titel wurde durch eine fremde Quelle geschlossen. Was sich bewegt hat, " +
+      "bewegte sich durch Methodik und Zuordnung im Haus."
+  };
 
   /* ----------------------------------------------------------------------
      WAS EINE PERFEKTE FUNDAMENTALQUELLE HEUTE BRINGEN WUERDE - UND WAS NICHT.
@@ -349,7 +490,7 @@ async function main() {
   }
 
   const bericht = {
-    schemaVersion: "zero-factor-classification-1.0.0",
+    schemaVersion: "zero-factor-classification-1.1.0",
     generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z"),
     question: "Welche Grenze genau haelt die Screening-Zeilen ohne einen einzigen Faktorwert auf, " +
       "und wie viel davon waere ohne neue Datenquelle loesbar?",
@@ -365,8 +506,15 @@ async function main() {
     componentInputs: komponentenInputs,
     universeChecked: geprueft,
     TOTAL_ZERO_FACTOR_ROWS: zeilen.length,
+    FACTOR_CELLS_AVAILABLE: faktorzellenVerfuegbar,
     classes: klassen,
     features: merkmale,
+    /* An welcher Stelle der Kette Company Master -> Mapping -> CIK ->
+       Factbook -> Consumer Export -> Faktoreingang -> Faktorevidenz die Zeile
+       verloren geht. Eine Partition wie `classes`, aber nach Ort statt nach
+       Ursache. */
+    chain: kette,
+    progress: fortschritt,
     secCoverageContext: coverage ? {
       productUniverse: coverage.productUniverse, cikMapped: coverage.cikMapped, withoutCik: coverage.withoutCik,
       secAvailable: coverage.secAvailable, notInCompanyFacts: coverage.notInCompanyFacts,
@@ -390,6 +538,21 @@ async function main() {
   }
   process.stdout.write("\nMERKMALE (ueberlappend)\n");
   for (const [k, v] of Object.entries(merkmale)) process.stdout.write("  " + k.padEnd(28) + p(v) + "\n");
+  process.stdout.write("\nWO IN DER KETTE (Partition)\n");
+  for (const [k, v] of Object.entries(kette).sort((a, b) => b[1] - a[1])) {
+    process.stdout.write("  " + k.padEnd(34) + p(v) + "   " + (100 * v / zeilen.length).toFixed(1) + " %\n");
+  }
+  process.stdout.write("\nGEGEN DEN VORIGEN LAUF\n");
+  if (!fortschritt.previousRun) process.stdout.write("  kein voriger Lauf - kein Vergleichspunkt\n");
+  else {
+    process.stdout.write("  voriger Lauf " + fortschritt.previousRun.generatedAt +
+      ": " + fortschritt.previousRun.total + " Nullzeilen, " +
+      (fortschritt.previousRun.factorCellsAvailable ?? "keine Zaehlung") + " Faktorzellen\n");
+    process.stdout.write("  ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER " +
+      p(fortschritt.ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER ?? "-") + "\n");
+    process.stdout.write("  FACTOR_COVERAGE_GAIN                         " +
+      p(fortschritt.FACTOR_COVERAGE_GAIN ?? "-") + "\n");
+  }
   process.stdout.write("\nNOT_APPLICABLE, AUFGETEILT\n");
   process.stdout.write("  keine operative Gesellschaft     " + p(naAufteilung.noOperatingBusiness) +
     "   SIC " + JSON.stringify(naAufteilung.noOperatingBusinessBySic) + "\n");

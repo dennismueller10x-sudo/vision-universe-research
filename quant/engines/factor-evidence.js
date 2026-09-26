@@ -147,7 +147,40 @@
     PRICE_FACTORS_UNAVAILABLE: "Für diesen Titel liegt keine zertifizierte Kursfaktor-Zeile vor."
   };
 
+  /* ---------------------------------------------------------------------
+     WIE VIELE HANDELSTAGE DIE KURSFAKTOREN BRAUCHEN.
+
+     "Zu wenige Einzelkennzahlen erfuellen die Methodik" ist wahr und sagt
+     einem Leser nichts. Gemessen am 26.09.2026 tragen 784 der 786 Titel ohne
+     einen einzigen Faktorwert weniger als 252 Handelstage - fuer sie ist der
+     ganze Grund, dass sie noch nicht lange genug gehandelt werden, und das
+     aendert sich von selbst.
+
+     Die Zahlen stammen aus den Fenstern des Vertrags, nicht aus dem Gefuehl:
+     Schwankungsbreite, Verlusttage, groesster Rueckgang und Beta rechnen auf
+     252 Sitzungen. Das Momentumfenster "12 Monate ohne den letzten Monat"
+     braucht dieselben 252 plus die 21 Sitzungen, die es auslaesst - 273.
+     Beide Zahlen sind in `quant-v2.json` als Fenster der Komponenten
+     hinterlegt, und ein Test haelt sie dagegen.
+     --------------------------------------------------------------------- */
+  var REQUIRED_BARS = { momentum: 273, risk: 252 };
+
   function finite(value) { return typeof value === "number" && Number.isFinite(value); }
+
+  /* Was der Nutzer statt des Codes liest, wenn die Kursgeschichte die ganze
+     Ursache ist. Der Code bleibt daneben stehen - er gehoert in die
+     Methodikebene, nicht in den ersten Satz. */
+  function historyLimit(factorId, record) {
+    var required = REQUIRED_BARS[factorId];
+    if (!required || !record || !finite(record.bars) || record.bars >= required) return null;
+    return { bars: record.bars, requiredBars: required, missingBars: required - record.bars };
+  }
+
+  function shortHistorySentence(limit) {
+    return "Noch nicht ausreichend Historie: für diese Auswertung werden " + limit.requiredBars +
+      " Handelstage benötigt, aktuell liegen " + limit.bars + " vor. " +
+      "Sobald der Titel länger gehandelt wird, entsteht der Wert von selbst.";
+  }
 
   function band(score) {
     if (!finite(score)) return null;
@@ -397,7 +430,10 @@
     return FACTOR_ORDER.map(function (id) {
       var factor = record.factors[id] || { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null },
         meaning = FACTOR_MEANING[id],
-        display = factor.state === "AVAILABLE" ? band(factor.score) : null;
+        display = factor.state === "AVAILABLE" ? band(factor.score) : null,
+        /* Nur wenn der Faktor wirklich zu ist: ein verfuegbarer Wert braucht
+           keine Erklaerung, warum er fehlen koennte. */
+        limit = factor.state === "AVAILABLE" ? null : historyLimit(id, record);
       return {
         id: id,
         label: meaning.label,
@@ -406,7 +442,15 @@
         higherMeans: meaning.higherMeans,
         state: factor.state,
         reason: factor.reason || null,
-        reasonText: factor.state === "AVAILABLE" ? null : (REASON_TEXT[factor.reason] || REASON_TEXT.INPUT_NOT_MATERIALIZED),
+        reasonText: factor.state === "AVAILABLE" ? null
+          : (limit ? shortHistorySentence(limit) : (REASON_TEXT[factor.reason] || REASON_TEXT.INPUT_NOT_MATERIALIZED)),
+        /* Die Zahlen auch strukturiert, damit die Oberflaeche sie in ihre
+           eigene Ursachengruppe einsortieren kann, statt den Satz zu zerlegen. */
+        history: limit,
+        /* Wie tief die Geschaeftszahlen reichen. Keine Schwelle behauptet -
+           die Fenster dieser Methodik sind je Komponente verschieden -, aber
+           die Tiefe selbst ist eine Aussage, die ein Leser braucht. */
+        fundamentalYears: finite(record.fundamentalYears) ? record.fundamentalYears : null,
         score: factor.state === "AVAILABLE" ? factor.score : null,
         band: display ? display.id : null,
         bandLabel: display ? display.label : "Nicht verfügbar",
@@ -454,6 +498,8 @@
     CONFIDENCE_WEIGHTS: Object.assign({}, CONFIDENCE_WEIGHTS),
     FACTOR_MEANING: JSON.parse(JSON.stringify(FACTOR_MEANING)),
     REASON_TEXT: Object.assign({}, REASON_TEXT),
+    REQUIRED_BARS: Object.assign({}, REQUIRED_BARS),
+    historyLimit: historyLimit,
     band: band,
     confidenceBand: confidenceBand,
     winsorBounds: winsorBounds,

@@ -106,6 +106,14 @@
      darunter die 89. Eine Station mit höchstens einer gehaltvollen Aussage
      hat nicht wenig zu sagen, sondern nichts; das ist eine eigene Form. */
   var MAX_WITHHELD_IN_FULL = 2;
+
+  /* Die naechste Schwelle, an der ein Kursfaktor aufgeht: Schwankungsbreite,
+     Verlusttage, groesster Rueckgang und Beta rechnen auf 252 Sitzungen. Das
+     Momentumfenster braucht mehr (273), aber genannt wird, was der Titel
+     zuerst erreicht. Dieselbe Zahl fuehrt die Faktor-Engine als
+     REQUIRED_BARS.risk; ein Test haelt die beiden gegeneinander, damit nicht
+     zwei Module verschiedene Schwellen nennen. */
+  var NAECHSTE_KURSFAKTOR_GRENZE = 252;
   var MINIMAL_MAX_SUBSTANTIVE = 1;
 
   function zahl(value) {
@@ -408,9 +416,21 @@
     }
     if (hat("evidenceRow")) {
       var zahlen = faktorZahlen(src.evidenceRow);
-      out.factorStrength = { substantive: zahl(zahlen.available) !== null && zahlen.available > 0,
-        reason: src.evidenceRow ? "INPUT_NOT_MATERIALIZED" : "NOT_COVERED_BY_FACTOR_EVIDENCE",
-        detail: zahlen.total ? zahlen : {} };
+      var hatFaktor = zahl(zahlen.available) !== null && zahlen.available > 0;
+      /* Die Aktienseite hat keine Faktorzeile in der Hand, sondern die
+         Screening-Zeile - und die traegt keine Handelstage. Die Zahl kommt
+         deshalb aus dem Universumsverzeichnis, das sie aus dem Faktorlauf
+         selbst uebernimmt. Ohne Zahl bleibt es beim alten Grund: eine
+         Historienaussage ohne gemessene Laenge wird nicht erfunden. */
+      var stockBars = hat("stock") ? zahl((src.stock || {}).factorBars) : null;
+      var kursfaktorGrenze = NAECHSTE_KURSFAKTOR_GRENZE;
+      out.factorStrength = !hatFaktor && stockBars !== null && stockBars < kursfaktorGrenze
+        ? { substantive: false, reason: "INSUFFICIENT_HISTORY",
+            detail: { available: zahlen.available || 0, total: zahlen.total || 0,
+                      bars: stockBars, requiredBars: kursfaktorGrenze } }
+        : { substantive: hatFaktor,
+            reason: src.evidenceRow ? "INPUT_NOT_MATERIALIZED" : "NOT_COVERED_BY_FACTOR_EVIDENCE",
+            detail: zahlen.total ? zahlen : {} };
     }
     if (hat("factors")) {
       var fe = src.factors || {}, items = (fe.change && fe.change.items) || [];
@@ -424,9 +444,27 @@
       if (!hat("evidenceRow")) {
         var faktoren = fe.factors || [];
         var mitWert = faktoren.filter(function (f) { return f.state === "AVAILABLE"; });
-        out.factorStrength = { substantive: mitWert.length > 0,
-          reason: fe.state === "AVAILABLE" ? "INPUT_NOT_MATERIALIZED" : (fe.reason || "NOT_COVERED_BY_FACTOR_EVIDENCE"),
-          detail: faktoren.length ? { available: mitWert.length, total: faktoren.length } : {} };
+        /* WENN DIE KURSGESCHICHTE DIE GANZE URSACHE IST, SOLL SIE DASTEHEN.
+         *
+         * Gemessen am 26.09.2026: 784 der 786 Titel ohne einen einzigen
+         * Faktorwert tragen weniger als 252 Handelstage. Die Faktorzeile
+         * nennt dafuer jetzt ihre eigene Zahl, und diese Gruppe hat den Satz
+         * mit der Zahl schon - sie bekam nur nie den Anlass, ihn zu sagen.
+         * Genannt wird die NAECHSTE Schwelle, nicht die hoechste: die
+         * erreicht der Titel zuerst. */
+        var naechste = null;
+        for (var fi = 0; fi < faktoren.length; fi++) {
+          var grenze = faktoren[fi].history;
+          if (!grenze || !zahl(grenze.requiredBars)) continue;
+          if (!naechste || grenze.requiredBars < naechste.requiredBars) naechste = grenze;
+        }
+        out.factorStrength = mitWert.length === 0 && naechste
+          ? { substantive: false, reason: "INSUFFICIENT_HISTORY",
+              detail: { available: 0, total: faktoren.length,
+                        bars: naechste.bars, requiredBars: naechste.requiredBars } }
+          : { substantive: mitWert.length > 0,
+              reason: fe.state === "AVAILABLE" ? "INPUT_NOT_MATERIALIZED" : (fe.reason || "NOT_COVERED_BY_FACTOR_EVIDENCE"),
+              detail: faktoren.length ? { available: mitWert.length, total: faktoren.length } : {} };
       }
     }
     if (hat("setup")) {
@@ -468,6 +506,7 @@
     AREA: AREA,
     CAUSES: CAUSES.map(function (c) { return { id: c.id, codes: c.codes.slice(), headline: c.headline }; }),
     MAX_WITHHELD_IN_FULL: MAX_WITHHELD_IN_FULL,
+    NEXT_PRICE_FACTOR_BARS: NAECHSTE_KURSFAKTOR_GRENZE,
     MINIMAL_MAX_SUBSTANTIVE: MINIMAL_MAX_SUBSTANTIVE,
     knows: function (code) { return !!CAUSE_BY_CODE[code]; },
     causeIdFor: function (code) { return (CAUSE_BY_CODE[code] || { id: "OTHER" }).id; },

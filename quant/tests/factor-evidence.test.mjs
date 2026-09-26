@@ -395,3 +395,90 @@ test("the drift, when it happens, reaches the summary rather than the log", asyn
   /* The published date stays in the series exactly once. */
   assert.equal(summary.snapshotHistory.dates.filter((d) => d === drift.asOf).length, 1);
 });
+
+/* ---------------------------------------------------------------------------
+   "NOCH NICHT AUSREICHEND HISTORIE" STATT "ZU WENIGE EINZELKENNZAHLEN"
+
+   Gemessen am 26.09.2026: 784 der 786 Titel ohne einen einzigen Faktorwert
+   tragen weniger als 252 Handelstage. Fuer sie war der erste Satz auf der
+   Seite "Zu wenige Einzelkennzahlen erfuellen die Methodik" - wahr, und fuer
+   einen Leser nicht von einem Defekt zu unterscheiden. Die Methodik wird
+   dafuer nicht abgesenkt; es wird nur gesagt, was fehlt und dass es von
+   selbst kommt.
+   --------------------------------------------------------------------------- */
+test("die Mindestzahl an Handelstagen kommt aus den Fenstern des Vertrags", async () => {
+  const contract = JSON.parse(await readFile(
+    new URL("../methodology/quant-v2.json", import.meta.url), "utf8"));
+  /* Die Pflichtkomponente entscheidet, ab wann ein Kursfaktor ueberhaupt
+     rechnen kann - ohne sie ist er MANDATORY_COMPONENT_MISSING, egal wie
+     viele andere vorliegen. */
+  const pflicht = { momentum: "priceReturn12m1m", risk: "realizedVolatility252d" };
+  for (const [factorId, componentId] of Object.entries(pflicht)) {
+    const component = contract.factors[factorId].components.find((c) => c.id === componentId);
+    assert.ok(component, factorId + ": " + componentId + " steht nicht im Vertrag");
+    /* "252 sessions" oder "252/21 sessions": das ausgelassene Fenster zaehlt
+       mit, weil die Reihe es ueberspringen muss, um es auszulassen. */
+    const zahlen = component.window.match(/\d+/g).map(Number);
+    const gebraucht = zahlen.reduce((a, b) => a + b, 0);
+    assert.equal(FactorEvidence.REQUIRED_BARS[factorId], gebraucht,
+      factorId + ": Vertrag nennt " + component.window + ", die Engine " + FactorEvidence.REQUIRED_BARS[factorId]);
+  }
+});
+
+test("ein zu junger Titel liest seine eigene Zahl, nicht den Methodiksatz", () => {
+  const jung = {
+    ticker: "JUNG", bars: 187, fundamentalYears: 1,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }]))
+  };
+  const nachId = Object.fromEntries(FactorEvidence.ordered(jung).map((f) => [f.id, f]));
+
+  assert.match(nachId.risk.reasonText, /252 Handelstage benötigt, aktuell liegen 187 vor/);
+  assert.match(nachId.momentum.reasonText, /273 Handelstage benötigt, aktuell liegen 187 vor/);
+  assert.match(nachId.risk.reasonText, /von selbst/, "der Satz sagt nicht, dass es von selbst kommt");
+  assert.deepEqual(nachId.risk.history, { bars: 187, requiredBars: 252, missingBars: 65 });
+  assert.deepEqual(nachId.momentum.history, { bars: 187, requiredBars: 273, missingBars: 86 });
+  assert.equal(nachId.risk.fundamentalYears, 1);
+  /* Der interne Code bleibt daneben stehen - er gehoert in die
+     Methodikebene und verschwindet nicht. */
+  assert.equal(nachId.risk.reason, "INSUFFICIENT_COMPONENTS");
+
+  /* Ein Fundamentalfaktor bekommt KEINE Handelstag-Aussage: seine Fenster
+     zaehlen Geschaeftsjahre und Quartale, und eine Zahl an der falschen
+     Stelle waere eine erfundene Begruendung. */
+  assert.equal(nachId.quality.history, null);
+  assert.equal(nachId.quality.reasonText, FactorEvidence.REASON_TEXT.INSUFFICIENT_COMPONENTS);
+});
+
+test("ein Titel mit genug Historie bekommt die Handelstag-Begruendung nicht", () => {
+  const alt = {
+    ticker: "ALT", bars: 936, fundamentalYears: 12,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }]))
+  };
+  const nachId = Object.fromEntries(FactorEvidence.ordered(alt).map((f) => [f.id, f]));
+  assert.equal(nachId.risk.history, null, "936 Handelstage sind keine zu kurze Historie");
+  assert.equal(nachId.risk.reasonText, FactorEvidence.REASON_TEXT.INSUFFICIENT_COMPONENTS);
+
+  /* Und ein verfuegbarer Faktor erklaert gar nichts. */
+  const offen = { ticker: "OFFEN", bars: 100, factors: { ...alt.factors,
+    risk: { state: "AVAILABLE", reason: null, score: 55, components: [] } } };
+  const risiko = FactorEvidence.ordered(offen).find((f) => f.id === "risk");
+  assert.equal(risiko.reasonText, null);
+  assert.equal(risiko.history, null);
+});
+
+test("das Artefakt veroeffentlicht die Tiefe der Geschaeftsjahre", async () => {
+  const shard = JSON.parse(gunzipSync(await readFile(
+    new URL("../data/product/factor-evidence-v1/AA.json.gz", import.meta.url))).toString("utf8"));
+  const zeilen = Object.values(shard.securities);
+  assert.ok(zeilen.every((r) => "fundamentalYears" in r), "fundamentalYears fehlt an einer Zeile");
+  const mitTiefe = zeilen.filter((r) => Number.isFinite(r.fundamentalYears) && r.fundamentalYears > 0);
+  assert.ok(mitTiefe.length > 0, "kein einziger Titel nennt eine Jahrestiefe");
+  /* Wer Geschaeftszahlen hat, hat auch eine Tiefe - und umgekehrt keine
+     Tiefe ohne Berichtsperiode. */
+  for (const r of zeilen) {
+    if (r.fundamentalsAsOf) assert.ok(r.fundamentalYears >= 0, r.ticker);
+    else assert.ok(!r.fundamentalYears, r.ticker + " nennt Jahre ohne Berichtsperiode");
+  }
+});

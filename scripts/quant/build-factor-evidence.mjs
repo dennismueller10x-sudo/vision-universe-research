@@ -680,6 +680,11 @@ function main() {
       dataQuality: record.security.dataQuality,
       fundamentalsAsOf: record.fundamentals?.fundamentalsAsOf || null,
       fundamentalsAvailableAt: record.fundamentals?.availableAt || null,
+      /* Wie viele Geschaeftsjahre die Abschluesse dieses Titels abdecken.
+         Die Konfidenz rechnet damit schon; veroeffentlicht war sie nicht, und
+         eine Seite konnte deshalb nicht sagen "ein Geschaeftsjahr liegt vor,
+         die Dreijahresfenster brauchen drei". */
+      fundamentalYears: record.fundamentals?.annualYears ?? null,
       marketCap: record.fundamentals?.marketCap ?? null,
       peer: record.peer ? { level: record.peer.level, industry: record.peer.sic4, division: record.peer.division, confidence: record.peer.confidence } : null,
       /* Nach welcher Vorlage die Fundamentalfaktoren dieses Titels gemessen

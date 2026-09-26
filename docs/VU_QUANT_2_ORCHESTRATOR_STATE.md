@@ -1,6 +1,197 @@
 # Vision Universe® Quant 2.0 — Orchestrator State
 
-Updated: 2026-09-25 UTC
+Updated: 2026-09-26 UTC
+
+## M33 — BRANCHENVORLAGEN, BERICHTSPERIODE UND DIE SPRACHE FÜR JUNGE TITEL
+
+`INTERNAL_COVERAGE_GAPS_CLOSED_WHERE_THEY_WERE_CLOSABLE`
+
+### Priorität A — die Branchenfälle, und wie viele es wirklich waren
+
+Die Aufgabe nannte zwölf Titel mit `SECTOR_TEMPLATE_MISSING`. Gemessen im veröffentlichten
+Faktor-Artefakt waren es **974 Titel und 2.922 Faktorzellen**: für jede Bank, jeden
+Versicherungsträger und jeden REIT im Universum waren Verlässlichkeit, Bewertung und Ertragskraft
+`NOT_APPLICABLE`. Die zwölf waren nur die Spitze — die Titel, bei denen zusätzlich Momentum und
+Risiko ausfallen und deshalb gar kein Faktor übrig blieb.
+
+| Branchentor | SIC | Titel | vorher verfügbar | Vorlage |
+|---|---|---|---|---|
+| Banken, Sparinstitute, Kreditgeber, Broker | 6020–6220 | 601 | Momentum/Risiko 575, Wachstum 256 | `quant-v2-balance-sheet-financial-1.0.0` |
+| Versicherungsträger | 6300–6399 | 130 | Momentum/Risiko 129, Wachstum 98 | `quant-v2-insurance-carrier-1.0.0` |
+| REITs | 6798 | 218 | Momentum/Risiko 211, Wachstum 127 | `quant-v2-real-estate-trust-1.0.0` |
+| Versicherungsvermittler | 6400–6411 | 25 | Momentum/Risiko 23, Wachstum 20 | **keine — Tor korrigiert** |
+
+**Was ableitbar war.** Gemessen über die Consumer-Exporte derselben Kohorten: Bilanzsumme und
+Eigenkapital 98–100 %, Jahresergebnis 98–100 %, operativer Zahlungsfluss 97–100 %,
+Dreijahres-Rendite auf die Bilanzsumme 92–98 %, Vorsteuerergebnis 57–80 %, Ausschüttung 48–79 %.
+Damit sind genau die Kennzahlen darstellbar, mit denen diese Branchen wirklich gemessen werden.
+Die generischen Formeln scheitern nicht am Tor, sondern an den Tags: Rohertrag 15 %, operatives
+Ergebnis 25 %, Umsatz 60 % bei den Banken.
+
+**Was nicht ableitbar war — und deshalb fehlt.** Kein FFO: die Größe lebt davon, Gewinne aus
+Immobilienverkäufen aus dem Ergebnis herauszurechnen, und genau diese Position kommt in keinem
+Export vor (Abschreibungen 89 %, Verkaufsgewinne 0 %). Die REIT-Vorlage arbeitet deshalb mit dem
+operativen Zahlungsfluss und nennt ihn so; das ergebnisbasierte Maß trägt bei ihr das kleinste
+Gewicht, weil die Abschreibung auf einer Immobilienbilanz das Ergebnis dominiert — was der Grund
+für FFO ist. Keine Kombinierte Schadenquote für Träger: Schäden und Betriebskosten stehen nicht
+als eigene Tags in den Exporten.
+
+**Das Versicherungstor reichte zu weit.** 6411 ist „Insurance agents, brokers & service" — keine
+Risikoträger. Die 25 Titel darin melden Umsatz 100 %, operatives Ergebnis 72 %, EBITDA 72 %;
+LIFE (Ethos Technologies) berichtet wie ein Softwarehaus, weil es eines ist. Für sie ist die
+generische Formel nicht unpassend, sondern richtig. Das ist die SIC-Systematik selbst.
+
+**Eine Vorbedingung, die unterwegs auffiel.** Die Berichtsperiode hing am Umsatz-Tag: gemessen
+über alle 5.036 Titel mit Consumer-Export führten **741** eine vollständige Bilanz und hatten
+trotzdem keine Berichtsperiode und eine Historientiefe von 0 — in 741 von 741 Fällen allein wegen
+des fehlenden `revenue`-Tags. Nicht nur Finanztitel: 101 Banken (6022), 57 (6021), 50 REITs, dazu
+**93 Pharma- und 30 Biotech-Titel**, die vor der ersten Zulassung keinen Umsatz haben. Die Periode
+kommt jetzt aus der jüngsten Periode, die das Dokument wirklich berichtet. Das schloss zugleich
+ein Loch: ohne Referenzperiode war nie etwas veraltet, und zwei Übernahmehüllen bildeten einen
+Börsenwert aus einem Anteilsbestand, der 546 Tage alt war.
+
+### Priorität A — gemessen gegen jeden veröffentlichten Datensatz
+
+| Größe | Wert |
+|---|---|
+| `SECTOR_TEMPLATE_MISSING_BEFORE` | 2.922 Faktorzellen in 974 Titeln |
+| `SECTOR_TEMPLATE_MISSING_AFTER` | **0 in 0 Titeln** |
+| `FACTOR_ROWS_OPENED` | 2.325 Faktorzellen in 901 Titeln, **0 verloren** |
+| `FACTORS_OPENED_BY_TYPE` | Banken/Broker: Verlässlichkeit 529, Ertragskraft 444, Bewertung 391 · REITs: 199 / 199 / 186 · Träger: 126 / 119 / 103 · generisch (Tor korrigiert): 19 / 1 / 9 |
+| Titel ohne jeden Faktor | 795 → **786** |
+| Berichtsperiode gefüllt | 4.110 → **4.862** Titel (+752) |
+| bestehende Werte neu rangiert | 4.744, Mittel 0,029 Punkte, Maximum 1,71 |
+| Wechsel der Einordnung | 2, beide auf der Grenze (39,98 / 80,01) |
+| geänderte Veränderungsaussagen | **0 von 6.441** |
+
+Die Neurangierung ist der unvermeidliche Preis dafür, 25 Broker-Titel in den generischen
+Querschnitt zurückzugeben — man kann einer Rangliste keine Emittenten hinzufügen, ohne die Ränge
+zu bewegen. Die Evidenz-Version behält deshalb ihre Snapshot-Reihe: die Veränderungs-Engine nennt
+eine Faktorbewegung erst ab 3 Punkten wesentlich, und gemessen ändert **kein einziger** der 6.441
+Titel seine Veränderungsaussage. Eine neue Reihe zu beginnen hätte jedem Titel den Vergleich
+genommen, um eine Bewegung zu verbuchen, die die Engine selbst nicht als eine zählt.
+
+Von den zwölf Ursprungstiteln tragen **neun** jetzt mindestens einen Faktor (WSBCO, NEWTO, RWTQ,
+RWTS, ADAMO je Verlässlichkeit und Ertragskraft; AXG, ELLA Verlässlichkeit; CBK, HYNE
+Ertragskraft). Bei allen zwölf bleibt die Bewertung zu, und zwar aus einem Grund, der keine
+Vorlage heilt: **der Börsenwert fehlt allen zwölf**, weil keine veröffentlichte Kursreihe einen
+Schlusskurs für sie trägt. Drei bleiben ganz ohne Faktor: CSHR (123 Handelstage), FRMI und LIFE.
+
+### Priorität B — die Kette, und ein Ergebnis, das überwiegend negativ ist
+
+Nachvollzogen für alle 786 Nullzeilen: Company Master → Security/Issuer-Mapping → CIK → SEC
+Factbook → Consumer Export → Faktoreingang → Faktorevidenz.
+
+| Stelle in der Kette | Titel |
+|---|---|
+| keine SEC-Verbindung (kein CIK, Master sieht nichts) | 407 |
+| **Rohfakten vorhanden, nichts zugeordnet** | **161** |
+| NOT_APPLICABLE (Hülle, Fonds) | 87 |
+| Historie zu kurz | 78 |
+| Factbook ohne Consumer-Export | 47 |
+| CIK ohne Factbook | 5 |
+| alle Stufen geliefert, Faktormindestanforderung | 1 |
+| CIK im Verzeichnis, aber nicht am Datensatz | **0** |
+| Consumer-Export vorhanden, aber nicht gejoint | **0** |
+| Identifikatorfall (Master sieht SEC, kein CIK) | **0** |
+
+| Größe | Wert |
+|---|---|
+| `SEC_LINKED_ZERO_FACTOR_BEFORE` | 52 |
+| `SEC_LINKED_ZERO_FACTOR_AFTER` | 52 |
+| `CIK_JOIN_FIXED` | 0 — es gab keine Join-Lücke; gemessen, nicht angenommen |
+| `CONSUMER_EXPORT_FIXED` | 0 — extern blockiert, siehe unten |
+| `FACTOR_ROWS_OPENED` (Priorität B) | 0 |
+| `INTERNAL_MAPPING_GAP` | 161 |
+
+**Das eigentliche Ergebnis.** 183 Emittenten im ganzen Universum (161 davon Nullzeilen) tragen
+zusammen **43.953 rohe SEC-Tatsachen und `mapped = 0`** — darunter Cerebras Systems, Bob's
+Discount Furniture, Fervo Energy, Generate Biomedicines, SpaceX. Die Quelle hat geliefert; die
+Kennzahl-Registry hat keine einzige Tatsache zugeordnet. Die Verteilung ist zweigipfelig: 4.884
+Exporte mit 20 und mehr zugeordneten Kennzahlen, 183 mit genau null, zwei dazwischen. Das spricht
+gegen „ein paar fehlende Tags" und für einen strukturellen Grund.
+
+Welcher es ist, steht in den rohen Fakten — und die liegen nicht im Repository. Lokal gibt es
+keine Rohablage: `quant/data/sec/canonical` und `inspector` führen nur die fünf goldenen Titel,
+die 120 MB unter `consumer/` **sind** die SEC-Schicht. Der Abruf von `data.sec.gov` ist durch die
+Netzwerkpolitik dieser Umgebung gesperrt (CONNECT 403). Damit ist die Zuordnungslücke exakt
+lokalisiert und benannt, aber nicht von hier aus behebbar.
+
+Zwei weitere Befunde derselben Prüfung: von den 47 Titeln ohne Export hat der Export-Lauf für
+**25** einen eigenen Fehlschlag notiert (`NO_PERIODIC_FACTS` — ein Factbook ohne eine einzige
+Periodentatsache, also ein Quellenbefund). Für die anderen **22** gibt es weder einen Export noch
+einen Fehlschlagseintrag: der Lauf hat sie stillschweigend übergangen. Das ist eine Lücke im Haus
+und steht als `EXPORT_RUN_SILENTLY_SKIPPED` im Artefakt.
+
+### Der Zeit-Gap bleibt offen, aber er wird jetzt gesagt
+
+Keine verkürzten Fenster, keine Methodikabsenkung. Was fehlte, war die Sprache: für einen zu
+jungen Titel stand als erster Satz „Zu wenige Einzelkennzahlen erfüllen die Methodik" — wahr, und
+für einen Leser nicht von einem Defekt zu unterscheiden. Gemessen tragen **784 der 786**
+Nullzeilen weniger als 252 Handelstage.
+
+Die Faktorzeile nennt jetzt ihre eigene Zahl, und die Zahlen kommen aus den Fenstern des Vertrags
+statt aus einer zweiten Quelle: die Pflichtkomponente entscheidet, ab wann ein Kursfaktor rechnen
+kann — Schwankungsbreite auf 252 Sitzungen, das Momentumfenster „12 Monate ohne den letzten
+Monat" auf 252 plus die 21 ausgelassenen, also 273. Ein Test leitet beide Zahlen aus
+`quant-v2.json` ab und hält sie gegen die Engine.
+
+Gemessen auf der Aktienseite von AACO (116 Handelstage, kein Faktor):
+
+> Die Kursgeschichte ist noch zu kurz — Diese Auswertungen brauchen einen längeren Kursverlauf.
+> Für diesen Titel liegen 116 Handelstage vor, gebraucht werden 252. Das ändert sich von selbst,
+> sobald der Titel länger gehandelt wird.
+
+Die Zahl musste dafür erst ankommen: die Screening-Zeile trägt keine Handelstage, und die
+Bar-Zahl der Kapazitätsdatei ist eine **andere** Größe — gemessen weicht sie in allen 6.441
+Fällen ab (bei AA 936 gegen 0), weil sie den Bestand im Speicher zählt und nicht die Reihe, auf
+der gerechnet wurde. Sie hier zu nehmen wäre eine falsche Zahl in einem richtigen Satz gewesen.
+Die Zahl kommt deshalb aus dem Faktor-Artefakt über das Universumsverzeichnis, das die Liste schon
+liest.
+
+### Oberfläche und Coverage nachgemessen
+
+Reise auf demselben 500er-Sample: **409 volle Reisen, 89 reduzierte, 2 zu wenig für eine Reise**;
+Absagekästen 610 → 251, schlimmste Seite 4 Kästen. Produktions-Smoke gegen das gebaute Release:
+19 Ansichten × 2 Breiten plus die Methodikseite, **PRODUCTION SMOKE CLEAN**. Tests: **1.907
+grün, 0 rot** (vorher 1.890).
+
+| Coverage-Bucket | Wert |
+|---|---|
+| `TOTAL_ZERO_FACTOR_ROWS` | 786 (vorher 795) |
+| `RAW_FUNDAMENTALS_PRESENT` | 166 |
+| `PARTIAL_FUNDAMENTALS` | 2 |
+| `INSUFFICIENT_HISTORY` | 784 |
+| `NOT_APPLICABLE` | 177 |
+| `SEC_SOURCE_UNAVAILABLE` | 459 |
+| `SECTOR_TEMPLATE_MISSING` | **0** |
+| `INTERNAL_MAPPING_GAP` | 161 |
+| `TRUE_NO_FUNDAMENTALS` | 161 |
+| `EXTERNAL_PROVIDER_CANDIDATE` | 407 |
+| `ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER` | 9 |
+| `FACTOR_COVERAGE_GAIN` | +2.325 Faktorzellen (22.712 gesamt) |
+| `EXTERNAL_PROVIDER_DECISION` | `DEFERRED` |
+
+Kein Titel wurde durch eine fremde Quelle geöffnet. Was sich bewegt hat, bewegte sich durch
+Methodik und Zuordnung im Haus.
+
+### Was offen bleibt, mit Zahl
+
+- **161 Zuordnungslücken** (183 universumsweit, 43.953 Rohtatsachen): lokalisiert, nicht behebbar
+  ohne die Rohfakten — `data.sec.gov` ist durch die Netzwerkpolitik gesperrt.
+- **22 still übergangene Emittenten** im Export-Lauf.
+- **674 Titel mit Fundamentaldaten ohne Börsenwert** (303 ohne Anteilsbestand, 274 mit einem
+  Bestand jenseits der 400-Tage-Grenze — ACN von 2010 —, 97 ohne Kurs aus einem
+  Technical-Bündel). Das schließt die Bewertung für sie vollständig, auch für alle zwölf
+  Branchenfälle.
+- **Wachstum bleibt generisch**: 345 Banken ohne Umsatzreihe tragen deshalb keinen
+  Wachstumsfaktor. Bewusst nicht ersetzt — es hätte bestehende Werte neu gerechnet statt
+  geschlossene geöffnet.
+- **Zwei Titel** (IRAB, XSLL) führen nur Quartalsreihen und haben deshalb weiter keine
+  Berichtsperiode. Bewusst nicht repariert: es sind zwei Übernahmehüllen, bei denen kein Faktor
+  aufgehen würde, und der Anker dafür anzufassen wäre ein Eingriff in eine geteilte Engine für
+  zwei Datensätze.
+
 
 ## CURRENT_MAIN
 
