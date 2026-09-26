@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_0ab8eb53e21c5d3f",
+  "content_id": "vu-web-7183a69a7a03984a-20260925",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "10-year Treasury yield hit a 19-year high—and some investors see opportunity to buy bonds",
+  "objective": "Aus einer aktuellen, oeffentlich recherchierten Story EINEN fertigen, veroeffentlichungsreifen Markenpost erzeugen: Motiv, deutscher Hook-Text, Logo und Atlas in einem Zug komponiert — kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer Boersenticker, und kein Rohbild fuer eine spaetere Ueberlagerung. Hook und Caption durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1).",
+  "audience": "Anleger, die aktuelle Marktentwicklungen verfolgen",
+  "hook_strategy": {
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "instruction": "`grounding_hook_en` ist der aus der echten Quelle deterministisch gewaehlte Hook (siehe `source_story`) — NICHT auf Deutsch, nur Belegmaterial. Liefere GENAU EINE Hook-Variante: eine starke, kurze, soziale DEUTSCHE Uebersetzung/Adaption dieses Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2)."
+  },
+  "visual_strategy": {
+    "strategy_id": "GENERATIVE",
+    "instruction": "Finanzwelt der Zinsen und Anleihen: Trading Floor, Kursmonitore mit Zinskurven, Zentralbankgebaeude oder Boersenlicht bei Nacht — kein Rechenzentrum, kein Serverraum, kein Technologie-Motiv. Keine Schrift, kein Logo, kein Wasserzeichen, generoese Freiflaeche fuer eine spaeter aufgesetzte Kopfzeile. Fotorealistisch, hochwertig, kein Diagramm, kein Bildschirmfoto, kein Dashboard.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": [
+      "near-black #050505 background",
+      "one calm teal/mint accent color close to #5FE0C0 for a small highlight (a thin line, a badge, a glow) — used sparingly, not as a second dominant color",
+      "white for the headline text",
+      "soft grey for secondary text"
+    ],
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "portrait 4:5. Compose ONE finished, publish-ready brand post — not a raw scene for later text overlay. Bake the German headline text (see hook_strategy) directly into the image as bold, large, perfectly legible typography in the upper-to-middle band, set against a calm, low-contrast part of the background (not over busy detail or bright highlights). Composite the exact brand logo file (see brand_assets.logo) small and quiet in the top-left corner, and the exact brand mascot file (see brand_assets.atlas) small in the bottom-right corner, not as the visual focal point. The main subject/motif occupies the center and right-of-center. The result must read as ONE cohesive, intentionally designed brand image — logo and mascot reproduced exactly as given, not redrawn or restyled.",
+    "restrictions": [
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Keine Prognose-Aussage im Bildtext",
+      "Logo und Atlas exakt aus den angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "atlas": "assets/atlas.png",
+    "instruction": "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren)."
+  },
+  "evidence": [
+    {
+      "id": "ev1",
+      "statement": "10-year Treasury yield hit a 19-year high—and some investors see opportunity to buy bonds.",
+      "value": "10",
+      "unit": null,
+      "entity": "MACRO_RATES",
+      "metric": "Web-Beleg 1",
+      "source": "CNBC Top News",
+      "observed_at": "2026-09-25T16:40:09.000Z"
+    },
+    {
+      "id": "ev2",
+      "statement": "10-year Treasury yield hit a 19-year high—and some investors see opportunity to buy bonds.",
+      "value": "19",
+      "unit": null,
+      "entity": "MACRO_RATES",
+      "metric": "Web-Beleg 2",
+      "source": "CNBC Top News",
+      "observed_at": "2026-09-25T16:40:09.000Z"
+    },
+    {
+      "id": "ev3",
+      "statement": "The 10-year Treasury yield hit its highest level since 2007.",
+      "value": "2007",
+      "unit": null,
+      "entity": "MACRO_RATES",
+      "metric": "Web-Beleg 3",
+      "source": "CNBC Top News",
+      "observed_at": "2026-09-25T16:40:09.000Z"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    },
+    {
+      "id": "trend",
+      "text": "Keine Entwicklung ueber Zeit behaupten ('steigt seit', 'faellt weiter') — es liegt ein Stand vor, keine Reihe."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-web-7183a69a7a03984a-20260925/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "grounding_hook_en": "10-year Treasury yield hit a 19-year high—and some investors see opportunity to buy bonds",
+  "unavailable": [],
+  "evidence_package": {
+    "package_id": "vu-web-7183a69a7a03984a-20260925",
+    "as_of": "2026-09-25T16:40:09.000Z",
+    "methodology_version": "web-research-1.0",
+    "data_version": "web-research-1.0"
+  },
+  "source_story": {
+    "title": "10-year Treasury yield hit a 19-year high—and some investors see opportunity to buy bonds",
+    "link": "https://www.cnbc.com/2026/09/25/treasury-yield-buy-bonds.html",
+    "source": "CNBC Top News",
+    "publishedAt": "2026-09-25T16:40:09.000Z"
+  }
+}
