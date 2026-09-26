@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:37:00.169Z",
+  "generatedAt": "2026-09-26T14:57:49.273Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -442,9 +442,9 @@
       "processingKey": "brief_3c400c1a56587e7e:vu-msft-20260918:124cdeca6f67dd265cd2c3a7327a254770a12c40:1.0",
       "attempt": 1,
       "revision": null,
-      "state": "CREATIVE_JOB_REQUESTED",
+      "state": "CREATIVE_JOB_FAILED",
       "createdAt": "2026-09-23T09:18:23.686Z",
-      "updatedAt": "2026-09-23T09:18:23.686Z",
+      "updatedAt": "2026-09-26T15:26:07.226Z",
       "prNumber": null,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -453,8 +453,14 @@
           "state": "CREATIVE_JOB_REQUESTED",
           "at": "2026-09-23T09:18:23.686Z",
           "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-26T15:26:07.226Z",
+          "note": "gh pr list --head authoring/request/vu-msft-20260918 (via GitHub API, 2026-09-26) — nur PR #179 vorhanden, fuer einen anderen processingKey (390d74d5...); kein PR fuer diesen processingKey (124cdeca6f...). — reconciled aus DISPATCH_NIE_ERFOLGT"
         }
-      ]
+      ],
+      "failureType": "NEVER_DISPATCHED"
     },
     {
       "creativeJobId": "job_vu-web-c23118efc7199b43-20260923:727a27372a701ee4f18cad1cf1e500b0aa218a05:attempt1",
@@ -630,7 +636,7 @@
       "revision": null,
       "state": "CREATIVE_JOB_VERIFIED",
       "createdAt": "2026-09-26T12:37:00.129Z",
-      "updatedAt": "2026-09-26T15:15:52.932Z",
+      "updatedAt": "2026-09-26T14:55:55.284Z",
       "prNumber": 240,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -647,12 +653,12 @@
         },
         {
           "state": "CREATIVE_JOB_RESULT_AVAILABLE",
-          "at": "2026-09-26T15:15:52.932Z",
+          "at": "2026-09-26T14:55:55.284Z",
           "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 1 von 2)"
         },
         {
           "state": "CREATIVE_JOB_VERIFIED",
-          "at": "2026-09-26T15:15:52.932Z",
+          "at": "2026-09-26T14:55:55.284Z",
           "note": "ingest-creative — reconciled aus LEDGER_COMPLETED (Schritt 2 von 2)"
         }
       ],
@@ -660,6 +666,33 @@
       "resultRef": "origin/authoring/request/vu-web-7183a69a7a03984a-20260925",
       "resultBlobSha": "b25daf4302dc9165cb711d6c5114f754b18142d5",
       "evidencePackageId": "vu-web-7183a69a7a03984a-20260925"
+    },
+    {
+      "creativeJobId": "job_vu-web-787176986cf7f5d8-20260926:83f84f9c8d394ba0bb773def1c9fb1352ef930b8:attempt1",
+      "contentId": "vu-web-787176986cf7f5d8-20260926",
+      "briefId": "brief_852a2221ba91d3e5",
+      "briefBlobSha": "83f84f9c8d394ba0bb773def1c9fb1352ef930b8",
+      "processingKey": "brief_852a2221ba91d3e5:vu-web-787176986cf7f5d8-20260926:83f84f9c8d394ba0bb773def1c9fb1352ef930b8:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_DISPATCHED",
+      "createdAt": "2026-09-26T14:57:49.232Z",
+      "updatedAt": "2026-09-26T14:57:49.273Z",
+      "prNumber": 245,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-26T14:57:49.232Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-26T14:57:49.273Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        }
+      ]
     }
   ],
   "budget": {
@@ -669,5 +702,5 @@
     "maxRevisionsPerContentId": 3,
     "diagnosticJobsInProduction": 0
   },
-  "reconciledAt": "2026-09-26T15:15:52.932Z"
+  "reconciledAt": "2026-09-26T15:26:07.226Z"
 }

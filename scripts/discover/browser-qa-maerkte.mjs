@@ -141,10 +141,10 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  /* Kachel-Uebersicht: grosse Kacheln mit Bild, jede fuehrt zu ihren Belegen. */
  const kk=await page.evaluate(()=>[...document.querySelectorAll('.dx-m3-kachel')].map(k=>({id:k.dataset.kachel,bild:!!k.querySelector('.dx-m3-kachel-bild svg,.dx-m3-kachel-bild .dx-m3-spur,.dx-m3-kachel-bild .dx-m3-kk-nr,.dx-m3-kachel-bild .dx-m3-kk-wechsel'),titel:(k.querySelector('.dx-m3-kachel-link')||{}).textContent||''})));
  p('Kacheln: mindestens 6, jede mit Bild und Schlagzeile',kk.length>=6&&kk.every(k=>k.bild&&k.titel.length>=3),kk);
- /* "Direkt zu": Chips zwischen Hero und Kacheln, jeder mit Symbol und echtem Ziel. */
+ /* "Direkt zu": Chips ganz oben vor dem Hero, jeder mit Symbol und echtem Ziel. */
  const mn=await page.evaluate(()=>{const n=document.getElementById('maerkte-direkt');if(!n)return null;const hero=document.querySelector('.dx-m3-hero');
-  return {nachHero:!!hero&&hero.nextElementSibling===n,chips:[...n.querySelectorAll('.dx-mn-chip')].map(c=>({ziel:c.dataset.ziel,label:c.textContent.trim(),icon:!!c.querySelector('svg'),da:!!document.getElementById(c.dataset.ziel)}))};});
- p('Direkt zu: direkt nach dem Hero, Themen und alle Maerkte, jeder Chip mit Symbol und Ziel',mn&&mn.nachHero&&mn.chips.length>=GRUPPEN.length+6&&GRUPPEN.every(g=>mn.chips.some(c=>c.ziel==='maerkte-'+g))&&mn.chips.every(c=>c.icon&&c.da&&c.label.length>=3),mn);
+  return {vorHero:!!hero&&n.nextElementSibling===hero,chips:[...n.querySelectorAll('.dx-mn-chip')].map(c=>({ziel:c.dataset.ziel,label:c.textContent.trim(),icon:!!c.querySelector('svg'),da:!!document.getElementById(c.dataset.ziel)}))};});
+ p('Direkt zu: ganz oben vor dem Hero, Themen und alle Maerkte, jeder Chip mit Symbol und Ziel',mn&&mn.vorHero&&mn.chips.length>=GRUPPEN.length+6&&GRUPPEN.every(g=>mn.chips.some(c=>c.ziel==='maerkte-'+g))&&mn.chips.every(c=>c.icon&&c.da&&c.label.length>=3),mn);
  {await page.evaluate(()=>scrollTo(0,0));await page.click('.dx-mn-chip[data-ziel="maerkte-aendern"]');
   let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}
   const z=await page.evaluate(()=>document.getElementById('maerkte-aendern').getBoundingClientRect().top);
