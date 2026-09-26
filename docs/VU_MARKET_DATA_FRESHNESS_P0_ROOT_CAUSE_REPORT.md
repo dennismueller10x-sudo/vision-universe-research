@@ -173,14 +173,124 @@ Suiten **[M]**: `quant/tests` 1428/1428, `discover/tests` 233/233, Worker/Live 6
 
 ## 13. Production Proof
 
-**Ausstehend — Owner-Gate.** Produktion wird aus `main` ausgeliefert; die Fixes liegen auf `claude/vu-market-data-freshness-p0-0z2v3a`. Nach dem Merge veröffentlicht der planmäßige Refresh (22:30 UTC) bzw. ein `workflow_dispatch` die Tageskurse; die Intraday-Läufe schreiben das neue Aggregat. Beweis danach: Freshness-Monitor grün (`--strict` Exit 0) und dieselbe Stichprobe (§4) mit Reihen-`to` = letzte abgeschlossene Sitzung.
-
-Kein Blind-Refresh wurde ausgelöst. Budget: ein Lauf ≈ 6.400 Anfragen (Stunde 7.500, Tag 50.000); während der Sitzung teilt er sich das Stundenkontingent mit dem Intraday-Takt — daher nach Schluss laufen lassen.
+Siehe Teil II (§15–§22). Kein Blind-Refresh wurde ausgelöst, kein manueller Provider-Lauf.
 
 ## 14. Verbleibende Risiken
 
-- **[I]** Weitere Tests könnten am fortgeschriebenen Bestand zählen; die Läufe 22./23.09. zeigen aber genau einen Fehler, der jetzt behoben ist.
-- **[I]** Ein roter Test verwirft weiterhin einen ganzen Datenlauf. Bewusst so belassen (Gate), aber teuer; Owner-Entscheidung, ob datenunabhängige Code-Tests vor den Abruf gezogen werden.
-- **[M]** Die Kartenzahl trägt keine eigene Stand-Kennzeichnung; bei EOD-Rückstand ist das Alter auf der Karte nicht sichtbar (Discover eingefroren, nicht geändert).
-- **[U]** Die 7 betroffenen Titel des 23.09. bleiben bis zur nächsten Sitzung STALE (ihre Dateien werden erst mit einem neuen Nach-Schluss-Abruf korrigiert).
-- **[M]** Fremd, nicht angefasst: `social/tests/hard-invariants.test.mjs` HI15 laut Commit #191 auf `main` rot.
+Siehe §22 (aktualisiert am 26.09.).
+
+---
+
+# Teil II — Abschluss des Workstreams (24.–26.09.2026)
+
+## 15. Reliability Gap: EOD-Publish-Gates (#199)
+
+Die ungeteilte Regressionssuite nach dem Abruf ist ersetzt durch drei Klassen, definiert in `quant/config/eod-publish-gates.json` und ausgeführt von `scripts/market/run-eod-publish-gates.mjs`:
+
+| Klasse | Wann | blockiert | Umfang |
+|---|---|---|---|
+| A PRE_FETCH_CODE_REGRESSION | vor der ersten Provider-Anfrage | ja: kein Abruf | beide Suiten vollständig |
+| B POST_FETCH_DATA_INTEGRITY | nach Abruf und Bau, vor dem Commit | ja: kein Commit | Verify-/Secrets-/Lebenszyklus-/Hygiene-Skripte + 12 Testdateien mit Datenverträgen |
+| C NON_BLOCKING_OBSERVABILITY | nach dem Commit | nein: `::error` + Summary | alle übrigen Testdateien (in A auf demselben Code grün) |
+
+Warum C den Lauf nicht rot macht: `pages-release.yml` liefert nur bei `workflow_run.conclusion == 'success'` aus. Keine Testaussage wurde abgeschwächt. Die Vorfall-Tests (`market-signal-contract`, `product-services`) liegen in C, die Datenverträge (Hygiene, Secrets, `discover/data`, Klartext-Widerspruch u. a.) in B.
+
+Regression **[M]**: `eod-publish-gates.test.mjs`. Der Vorfall ist an einem Fixture-Root nachgespielt: vor dem Abruf grün, danach ein wertgebundener Test rot → Veröffentlichung und `::error`. Gegenproben: ein verletzter Datenvertrag blockiert in B, ein Code-Fehler verhindert in A den Abruf. Am Repository nachgestellt (alter Signaltest, synthetisch fortgeschriebenes `golden-preview`): B grün, C meldet `market-signal-contract.test.mjs:5/:12`, Exit 0.
+
+## 16. Zweiter, verdeckter Publish-Defekt (#205)
+
+Der erste Nachtlauf mit Gates (Lauf `36078691085`, 25.09.) zeigte **[M]**: A grün (79 s), 68 min Abruf, B grün — dann wurde der Push abgewiesen. Der Rebase kollidierte mit dem Intraday-Universumslauf in `quant/data/product/capabilities-v1.json` und `-summary-v1.json`. Beide Dateien werden aus der Capability-Matrix abgeleitet und von Refresh, Intraday und Taktgeber gemeinsam geschrieben. Die Matrix löste `push-with-retry.sh` nach Erzeugerhoheit auf, die Projektion nicht → Abbruch, Kurse verworfen. Am 22./23.09. war dieser Konflikt hinter dem roten Test verborgen.
+
+Fix: Beide Dateien stehen namentlich unter Erzeugerhoheit, damit Matrix und Projektion aus demselben Lauf stammen; genau das prüft Gate B. `push-with-retry.test.mjs` prüft das an einem echten Git-Wettlauf gegen ein lokales Remote. Gegenprobe: ein Kursdaten-Konflikt bricht ab. PR3: Jeder von Refresh und Intraday/Taktgeber gemeinsam geschriebene Pfad steht unter Erzeugerhoheit. Mit dem alten Skript sind PR1 und PR3 rot.
+
+Recovery ohne neue Architektur **[M]**: Ein Resume über den Tages-Checkpoint hätte fast keine Anfragen gekostet. Der Lebenszyklus-Wächter zählt aber nur den eigenen Lauf und hätte korrekt FAIL gemeldet; er wurde nicht aufgeweicht. Veröffentlicht hat deshalb der reguläre Lauf der folgenden Nacht.
+
+## 17. Erster vollständiger EOD-Lauf mit Gates **[M]**
+
+Lauf `36206072592` (Zeitplan, `main`, 26.09. 00:46–02:16 UTC):
+
+| Schritt | Ergebnis |
+|---|---|
+| Gate A | grün, 81 s, vor jeder Anfrage |
+| Abruf | 6.533 Anfragen, 6.530 ok, 0 fehlgeschlagen, 346 abgelehnt (TEMPORARY_REJECT), 343 zurückgestellt |
+| Lebenszyklus-Wächter | PASS, 6.533 / 6.876 geprüft, 0 Sitzungen Rückstand |
+| Gate B | grün |
+| Commit und Push | grün, Versuch 2: Rebase gegen `11afd562` (Intraday-Universum 25.09.), fünf Konflikte nach Erzeugerhoheit aufgelöst, **darunter beide Produkt-Projektionsdateien (#205 griff)** → `b572ac83` |
+| Gate C | 163 Dateien, 2.003 / 2.003 grün, keine `::error` |
+
+`WASTED_PROVIDER_RUN_ON_UNRELATED_TEST = PREVENTED`: Die Suite läuft vor dem Abruf, nach dem Abruf blockieren nur noch Datenverträge.
+
+## 18. EOD-Wahrheit (kanonisch, Stand `b572ac83`) **[M]**
+
+EXPECTED_LAST_COMPLETED_SESSION = **2026-09-25** (Fr, reguläre Sitzung; Messung Sa 26.09., Markt geschlossen).
+
+Nenner: Product Universe = 6.876 Titel im Umfang der kompakten Reihen.
+
+| Kennzahl | Anzahl |
+|---|---|
+| TOTAL | 6.876 |
+| CURRENT_EOD (25.09.) | 6.433 |
+| ONE_SESSION_BEHIND (24.09.) | 5 |
+| MULTI_SESSION_BEHIND | 48 |
+| MISSING (keine Reihe) | 390 |
+| REJECTED (Register offen, TEMPORARY_REJECT) | 346 |
+| DEFERRED (in diesem Lauf nicht gefragt) | 343 |
+
+`discover/data/meta.json`: Universum asOf 2026-09-25, 5.991 Titel, alle mit Kursreihe. Summary und Reihen stimmen überein.
+
+## 19. Intraday-Schlusswahrheit **[M]**
+
+| Sitzung | Snapshots | nach Schluss geholt | davon ohne 15:55-Kurs (illiquide) | „Schluss fehlt noch“ |
+|---|---|---|---|---|
+| 23.09. (vor Fix) | 5.196 | 5.189 | 562 | 7 |
+| 24.09. | 5.190 | 5.190 | 626 | 0 |
+| 25.09. | 5.153 | 5.153 | 584 | 0 |
+
+Direkter Beleg (24.09.): Bei UFG, RDIB und CCM wurde der Mittags-Snapshot nach Schluss neu geschrieben, obwohl `points`, `extended` und `regularComplete` identisch waren. Geändert hat sich nur `fetchedAfterClose` (false → true); genau diesen Fall hat der alte Ingest verworfen. Quellzustand FINAL_SESSION/`sessionCompleteNoLateTrades` und Freshness LAST_SESSION sagen übereinstimmend „Heute · Schluss · letzter Kurs 13:05“ (UFG); kein erfundener 16:00-Kurs. `dataSession.fetchedAfterClose = true` (5.153/5.153). Titel ohne reguläre Bars an einem Tag (z. B. JFIN, RFAI am 24.09., laut Provider `noRegularBars`) behalten korrekt den Vortagesstand.
+
+## 20. Consumer-Konsistenz **[M]** (Stand `b572ac83`)
+
+| Titel | Kartenpreis | 1T | 1W / 1M / 1J | Ranking | Aktienseite |
+|---|---|---|---|---|---|
+| AAPL, NVDA, MSFT, NBIS, SAP, ASML, NVO, TM, BABA, GSK, AMZN, GOOGL, META, JPM, XOM | 25.09. | Intraday 25.09. FINAL_SESSION | Reihen-Ende 25.09. (1W ab 21.09.) | Faktorzeile asOf 25.09. | `asOf` und `priceSeries.asOf` 25.09. |
+| RDIB, CCM, AAAC (illiquide) | 25.09. | Intraday 25.09. FINAL_SESSION | 25.09. | 25.09. | 25.09. |
+| UFG, CHEC (am 25.09. keine Intraday-Bars) | 25.09. | kein Tagesverlauf 25.09. | 25.09. | 25.09. | 25.09. |
+
+Kanonische Quellen:
+
+| Fläche | Quelle |
+|---|---|
+| Kartenpreis und Aktienseite | `discover/data/stocks/US_REAL/<T>.json` (`price`, `asOf`), gebaut aus `discover-series` |
+| 1W / 1M / 1J | `quant/data/market/discover-series/ref_<T>.json` |
+| Ranking | `quant/data/market/factors/factors-FULL_UNIVERSE.json` → `discover/data/rows` |
+| 1T | `quant/data/market/intraday/<Sitzung>/ref_<T>.json` über `source-state.js` |
+
+`asOf`-Felder in `rows`/`home`/`feed` mit anderem Datum als 25.09. gibt es nur in zwei Klassen, beide ohne Kurs: SEC-Jahresabschluss-Hooks und -Storys (`sec_edgar:companyfacts`, 23.09.) und der Stichtag der Indexmitgliedschaft (15.09.). **PASS**
+
+## 21. Deployed-Stand und Freshness **[M]**
+
+DEPLOYED_PLACEHOLDER
+
+## 22. Verbleibende Risiken (26.09.)
+
+- **[M/U] Auslieferungs-Trigger:** Für Refresh-Läufe auf `main` erzeugte GitHub keinen `workflow_run`-Pages-Lauf (beobachtet: Dispatch 25.09. 16:06 UTC, Zeitplan 26.09. 02:16 UTC); für Intraday- und Multi-Asset-Läufe schon. Ursache **UNKNOWN**. Wirkung begrenzt: Jeder Pages-Lauf liefert den Kopf von `main` aus, der Multi-Asset-Lauf (alle 3 h) löst Pages aus, werktags zusätzlich die 5-Minuten-Brücke. Am 26.09. per `workflow_dispatch` des bestehenden Release-Workflows ausgeliefert (keine Provider-Anfrage). Keine neue Bridge gebaut.
+- **[M] Fremde Provider-Nutzung:** Am 25.09. hat ein anderer Workstream (Quant 2.0) den Refresh mehrfach manuell gestartet, einmal auf `main` während der US-Sitzung (14:02–16:06 UTC). Das liegt nicht an diesem Workstream, wird aber hier dokumentiert, weil es dasselbe Stundenkontingent berührt.
+- **[I]** Ein echter Datenvertragsbruch (Gate B) verwirft weiterhin den Lauf. Das ist gewollt.
+- **[M]** Die Kartenzahl trägt keine eigene Stand-Kennzeichnung (Discover eingefroren, nicht geändert).
+- **[M]** Fremd, nicht angefasst: `social/tests/hard-invariants.test.mjs` HI15.
+
+## 23. Target State
+
+| Ziel | Stand |
+|---|---|
+| EOD_PIPELINE | PASS (Lauf `36206072592`) |
+| EOD_PUBLICATION | PASS (`b572ac83`) |
+| PRE_FETCH_REGRESSION_GATE | PASS |
+| POST_FETCH_DATA_INTEGRITY_GATE | PASS |
+| WASTED_PROVIDER_RUN_ON_UNRELATED_TEST | PREVENTED |
+| INTRADAY_CLOSE_TRUTH | PASS |
+| FRESHNESS_CHECK | FRESHNESS_PLACEHOLDER |
+| CANONICAL_EOD_ASOF | 2026-09-25 = LAST_COMPLETED_SESSION |
+| PRODUCTION_EOD_ASOF | PRODUCTION_PLACEHOLDER |
+| NEW_DATA_ARCHITECTURE / NEW_BRIDGES / PAID_SERVICES_ENABLED | 0 / 0 / 0 |
+| CRITICAL_BLOCKERS | 0 |
