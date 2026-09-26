@@ -296,6 +296,24 @@ Der Vertragstest deckt das jetzt mit ab (`die Produktschicht folgt dem Abruf von
 Zuruf`, Fall 6 von 7). Gegenprobe: ohne `workflow_run` fällt der Fall; **und** mit `workflow_run`
 in `on`, aber ohne die Job-Bedingung, fällt er ebenfalls.
 
+Der Rückstand selbst ist eingeholt, nicht nur verdrahtet — Materialisierung **36219419775** auf
+main, danach gemessen (Commit `b978266b6d`):
+
+| Messung | Vorher (24.09.) | Jetzt |
+|---|---:|---:|
+| Bundles mit letztem Balken auf dem jüngsten Handelstag | 5.470 (2026-09-24) | **5.466 (2026-09-25)** |
+| `calendarValidated` / `signalsCapable` | 5.967 | **5.976** |
+| `elliottCapable` | 5.754 | **5.755** |
+| `lookbackCovered` | 6.007 | **6.016** |
+| Setup-Beobachtungsstichtage | 2 | **3** (`2026-09-10`, `2026-09-24`, `2026-09-25`) |
+| Reise `evidenceAsOf` | 2026-09-24 | **2026-09-25** (382 von 500 mit allen elf Stationen) |
+
+Die 331 ohne veröffentlichte Kursreihe stehen unverändert auf dem 2026-09-10 — dieselbe Kohorte,
+dieselbe Begründung, kein neuer Befund. `pattern-match` bleibt korrekt auf `asOf 2026-09-24`: die
+Wochenreihen schreibt `long-series.yml` nach ihrem eigenen Zeitplan (`cron: '40 7 1-7 * 6'`,
+Samstag), und die Woche bis zum 25.09. ist erst mit diesem Lauf dran. Das ist die Kadenz der
+Wochenschicht, kein Rückstand der Tagesschicht.
+
 ### Produktionsweg, ehrlich benannt
 
 `pages-release` Lauf **36149630151** auf main: Smoke grün, Liefervertrag grün,
