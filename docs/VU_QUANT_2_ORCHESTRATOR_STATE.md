@@ -104,6 +104,74 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M27_2026-09-26 — „WAS KOSTET DIESE AKTIE?" — DIE KOPFZAHL STAND IM CHART DARUNTER
+
+Der nächste Milestone kam aus der M26-Messung: `identity` war nur für **448 von 500** Titeln
+gehaltvoll. 52 Titel bekamen keinen letzten Kurs — die erste Frage, die jeder Mensch stellt.
+
+### Gemessen
+
+| | |
+|---|---:|
+| Titel ohne letzten Kurs | **52** von 500 (≈ 715 im Universum) |
+| … davon mit vertragskonformer, **veröffentlichter** Kursreihe | **33** (31 mit Stand 25.09.) |
+| … davon ohne jede Reihe | 19 |
+| Grund, den alle 52 nannten | `PRICE_LEVEL_WITHHELD` |
+
+Beispiele: AHT-P-D (270 Handelstage bis 25.09., letzter Punkt **5,17**), ALL-P-B (25,71),
+BAC-P-N (18,46), C-P-N (26,55) — überwiegend Vorzugsaktien, also Titel außerhalb des Panels.
+
+**Die Seite sagte „nicht verfügbar" und zeichnete dieselbe Zahl zwei Zentimeter darunter.**
+
+Und der Grund war ein Misnomer: `PRICE_LEVEL_WITHHELD` heißt „zurückgehalten". Zurückgehalten hat
+niemand etwas — die Breitzeile (`broadRow`, für Titel außerhalb des Panels) führt einfach kein
+Kursniveau, weil die Legacy-Fundamentalzeile keines hat. Ein Grund, der eine **Entscheidung**
+behauptet, wo eine **Lücke** ist, schickt jeden in die falsche Richtung: den Leser, der auf eine
+Freigabe wartet, und den Entwickler, der nach einer Policy sucht, die es nicht gibt.
+
+### Gebaut — ohne zweiten Leseweg
+
+Genommen wird der **letzte Punkt derselben Reihe, die der Chart trägt**. Die hat ihren Vertrag
+(`discover-series-1.1.0`, `dataMode: real`, `source: tiingo`, `priceSeriesType: SPLIT_ADJUSTED`,
+`publishBasis`, Datum ≤ heute) beim Zeichnen schon bestanden — es gibt keine zweite
+Herkunftsprüfung und keine zweite Quelle, und ein Leser kann die Zahl **mit den Augen** nachprüfen.
+
+Drei Dinge, die dabei nicht passieren:
+
+- **Kein falsches Datum.** Der Kurs bringt sein eigenes `asOf` mit, weil `stock.asOf` den Stand der
+  *Geschäftszahlen* trägt und für diese Titel leer war. BCAR steht auf 4,72 vom **27.08.** — das
+  Datum steht dabei, statt den Kurs von heute vorzugeben.
+- **Keine Sperre wird zum Wert.** `DISPLAY_NOT_PERMITTED` bleibt unberührt; der Weg füllt nur, was
+  aus Datenmangel leer war. Ein Test hält genau das (Fall 4), und die Gegenprobe ohne die
+  Freigabeprüfung fällt.
+- **Keine Behauptung ohne Reihe.** Die 19 Titel ohne Reihe sagen jetzt `NO_PUBLISHED_PRICE_SERIES`.
+
+### Realisiert
+
+| Messung | Vorher | Nachher |
+|---|---:|---:|
+| Titel mit letztem Kurs | 448 / 500 | **481 / 500** (≈ +450 im Universum) |
+| davon aus der gezeichneten Reihe | — | **33** |
+| Absagen in der Stichprobe | 643 | **610** |
+| Absagen nach Verdichtung | 281 | **248** |
+| Formen (voll / reduziert / zu dünn) | 409 / 89 / 2 | **unverändert** |
+
+**Bemerkenswert und ehrlich gesagt: 30 der 33 lagen auf datenREICHEN Seiten.** AHT-P-D hat 3.008
+Handelstage, einen veröffentlichten Setup-Zustand und eine volle Kursstruktur — es fehlte nur die
+Kopfzahl. Deshalb verschiebt dieser Milestone **keine** Seite von reduziert nach voll: er nimmt 33
+Absagekästen von Seiten, die ansonsten vollständig waren. Wer „+33 datenarme Titel gerettet" daraus
+machen wollte, würde die Messung falsch lesen.
+
+Der Produktions-Smoke prüft AHT-P-D jetzt mit: eine Zahl im Kopf **und** ein Datum dazu
+(`5,17 $ · 2026-09-25 · Schlusskurs der Reihe, die unten gezeichnet ist`).
+
+### Was an dieser Stelle offen bleibt
+
+Die **Listenansichten** (Übersicht, Screener, Radar) zeigen für diese ~715 Titel weiter keinen Kurs:
+sie bauen auf `broadRow` ohne Einzelreihe-Lesung, und 1.450 Dateilesungen pro Liste wären kein
+Zustand. Das bräuchte einen **Kursindex** über das Universum — also ein neues Artefakt in der
+Materialisierung. Als gemessener Befund festgehalten, nicht nebenbei gebaut.
+
 ## M26_2026-09-26 — DIE VERSTÄNDLICHE REISE FÜR DATENARME TITEL
 
 Auftrag: ein Titel mit nur drei bis sieben verfügbaren Stationen darf nicht wie eine kaputte Seite
