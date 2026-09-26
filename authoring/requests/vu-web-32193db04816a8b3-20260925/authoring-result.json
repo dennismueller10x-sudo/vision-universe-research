@@ -1,0 +1,180 @@
+{
+  "schema_version": "1.0",
+  "brief_id": "brief_09404b2d88bcc319",
+  "content_id": "vu-web-32193db04816a8b3-20260925",
+  "request_type": "FULL_CREATIVE",
+  "fixture_type": "production_authoring_request",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "hook_strategy": {
+    "source": "authoring_brief",
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "agent_discretion": "single_german_grounded_adaptation"
+  },
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-web-32193db04816a8b3-20260925:6c49287d8412d597bdd855e402bf83fffaae55ec:web_story_grounded_de:01",
+      "hook_type": "web_story_grounded_de",
+      "text": "Von 6-Dollar-Eiern bis zu 50.000-Dollar-Autos: 5 Jahre Inflation.",
+      "brief_revision": "6c49287d8412d597bdd855e402bf83fffaae55ec",
+      "evidence_refs": [
+        "ev1",
+        "ev2",
+        "ev3"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-web-32193db04816a8b3-20260925:6c49287d8412d597bdd855e402bf83fffaae55ec:web_story_grounded_de:01",
+    "recommendation_reason": "Die Variante überträgt die belegte Spannweite knapp und vollständig ins Deutsche, ohne Ursache, Prognose oder Handlungsempfehlung zu ergänzen.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "MarketWatch zeichnet nach, wie Teuerung alltägliche Preise und größere Anschaffungen geprägt hat. Die Beispiele zeigen eine zurückliegende Momentaufnahme – keine Prognose und keine Anlageempfehlung.",
+  "visual_brief": {
+    "purpose": "Die vorgegebene Zins- und Anleihenwelt als vollständig komponierte Premium-Bildszene umsetzen, mit drei integrierten ruhigen Zonen für den späteren deterministischen Brand-Overlay.",
+    "visual_strategy": "GENERATIVE",
+    "motif": "Nächtlicher institutioneller Anleihenhandel in direkter visueller Verbindung mit monumentaler Zentralbankarchitektur, unbeschrifteten Bond-Unterlagen und distanziert gezeigten Marktakteuren.",
+    "composition": "Hochformat 4:5. Kleine ruhige Zone oben links, breite kontrastarme Zone vom oberen Drittel bis zur linken Mitte und eine zurückhaltende dunkle Zone unten rechts. Die Hauptaktion liegt zentriert und rechts der Mitte.",
+    "style": "Fotorealistische Premium-Editorial-Fotografie mit cineastischer Tiefe und subtiler hochwertiger 3D-Politur.",
+    "palette": [
+      "navy",
+      "charcoal",
+      "restrained amber",
+      "subtle steel"
+    ],
+    "lighting": "Kontrolliertes amberfarbenes Architekturlicht, kühle Marktlicht-Akzente und tiefe nächtliche Schatten.",
+    "materials": [
+      "carved stone",
+      "dark glass",
+      "brushed metal",
+      "polished floor",
+      "matte unmarked paper"
+    ],
+    "narrative": "Institutionelle Spannung im Zins- und Anleihenumfeld, ohne konkrete Kurs-, Rendite-, Trend- oder Prognoseaussage im Bild.",
+    "overlay_zones": {
+      "top_left": "small quiet low-contrast logo area",
+      "upper_third_to_middle_left": "broad calm headline band",
+      "bottom_right": "modest quiet mascot area"
+    },
+    "on_image_text": [],
+    "restrictions": [
+      "Kein Text im Bild",
+      "Kein Logo",
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Kein Rechenzentrum",
+      "Kein Serverraum",
+      "Kein Technologie-Motiv",
+      "Kein lesbarer Börsenticker",
+      "Kein Diagramm",
+      "Kein Bildschirmfoto",
+      "Kein Dashboard"
+    ]
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-web-32193db04816a8b3-20260925:6c49287d8412d597bdd855e402bf83fffaae55ec:visual:GENERATIVE:01",
+      "visual_strategy": "GENERATIVE",
+      "brief_revision": "6c49287d8412d597bdd855e402bf83fffaae55ec",
+      "asset_path": "authoring/requests/vu-web-32193db04816a8b3-20260925/assets/visual-01.png",
+      "asset_sha256": "0a656382cdff399c734fc91a95aed16dbda40ac23a3012c319d406440ac6ebb6",
+      "asset_byte_size": 1826296,
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402
+    }
+  ],
+  "evidence_refs": [
+    {
+      "ref_id": "ev1",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/0",
+      "supports": "Belegtes Preisbeispiel für Eier"
+    },
+    {
+      "ref_id": "ev2",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/1",
+      "supports": "Belegtes Preisbeispiel für Autos"
+    },
+    {
+      "ref_id": "ev3",
+      "source": "authoring-brief.json",
+      "json_pointer": "/evidence/2",
+      "supports": "Belegter Betrachtungszeitraum"
+    },
+    {
+      "ref_id": "grounding-hook",
+      "source": "authoring-brief.json",
+      "json_pointer": "/grounding_hook_en",
+      "supports": "Deterministische englische Ausgangsaussage für die deutsche Adaption"
+    },
+    {
+      "ref_id": "source-story",
+      "source": "authoring-brief.json",
+      "json_pointer": "/source_story",
+      "supports": "Quelle und Attribution"
+    },
+    {
+      "ref_id": "visual-strategy",
+      "source": "authoring-brief.json",
+      "json_pointer": "/visual_strategy",
+      "supports": "Visual Strategy, Komposition und Restriktionen"
+    },
+    {
+      "ref_id": "publishing-gate",
+      "source": "authoring-brief.json",
+      "json_pointer": "/publishing_allowed",
+      "supports": "publishing_allowed"
+    }
+  ],
+  "quality": {
+    "status": "pass_for_authoring",
+    "checks": {
+      "brief_id_matches": true,
+      "content_id_matches_directory": true,
+      "request_type_supported": true,
+      "hook_strategy_inherited": true,
+      "required_hook_variant_count_met": true,
+      "hook_language_german": true,
+      "grounding_claim_preserved": true,
+      "hook_ids_bound_to_full_brief_sha": true,
+      "all_numeric_text_claims_evidence_bound": true,
+      "no_forecast": true,
+      "no_recommendation": true,
+      "no_causality_claim": true,
+      "hook_and_caption_complementary": true,
+      "visual_strategy_inherited": true,
+      "visual_topic_matches_required_rates_and_bonds_strategy": true,
+      "prohibited_technology_motif_absent": true,
+      "overlay_zones_respected": true,
+      "visual_id_bound_to_full_brief_sha": true,
+      "real_raster_asset_present": true,
+      "png_structure_valid_through_iend": true,
+      "asset_hash_recorded": true,
+      "asset_byte_size_recorded": true,
+      "selected_hook_absent": true,
+      "recommendation_non_canonical": true,
+      "publishing_gate_closed": true
+    }
+  },
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "6c49287d8412d597bdd855e402bf83fffaae55ec",
+    "brief_revision": "6c49287d8412d597bdd855e402bf83fffaae55ec",
+    "processing_key": "brief_09404b2d88bcc319:vu-web-32193db04816a8b3-20260925:6c49287d8412d597bdd855e402bf83fffaae55ec:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
