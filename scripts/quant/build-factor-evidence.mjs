@@ -122,11 +122,182 @@ const FUNDAMENTAL_COMPONENTS = {
 
 /* quant-v2.0.0: the generic Quality, Profitability and Value formulas are
    NOT_APPLICABLE for banks, insurers and REITs until separately versioned
-   industry templates exist. SIC majors, not a guess. */
+   industry templates exist. SIC majors, not a guess.
+
+   DER VERSICHERER-BEREICH REICHTE ZU WEIT.
+
+   6300-6399 sind die Risikotraeger: Leben (6311), Unfall und Kranken
+   (6321), Kranken-Kassenplaene (6324), Sach und Haftpflicht (6331),
+   Kaution (6351), Titel (6361). 6411 ist etwas anderes - "Insurance
+   agents, brokers & service", also Vermittlung und Dienstleistung ohne
+   eigenes Risikobuch. Gemessen ueber die 25 Titel in 6411: Umsatz 100 %,
+   operatives Ergebnis 72 %, EBITDA 72 %, Rohertrag 44 % - LIFE (Ethos
+   Technologies) berichtet wie ein Softwarehaus, weil es eines ist. Fuer
+   diese Titel ist die generische Formel nicht unpassend, sondern genau
+   richtig; sie standen nur im falschen Tor. Das ist die SIC-Struktur
+   selbst, kein erfundenes Mapping. */
 const isBank = (sic4) => sic4 >= 6020 && sic4 <= 6220;
-const isInsurer = (sic4) => sic4 >= 6300 && sic4 <= 6411;
+const isInsurer = (sic4) => sic4 >= 6300 && sic4 <= 6399;
 const isReit = (sic4) => sic4 === 6798;
 const needsIndustryTemplate = (sic4) => finite(sic4) && (isBank(sic4) || isInsurer(sic4) || isReit(sic4));
+
+/* =========================================================================
+   BRANCHENVORLAGEN
+
+   Gemessen am 26.09.2026 ueber das veroeffentlichte Faktor-Artefakt: 974
+   Titel stehen im Branchentor, und fuer jeden davon waren Verlaesslichkeit,
+   Bewertung und Ertragskraft NOT_APPLICABLE - 2.922 Faktorzellen, die kein
+   Wort sagten ausser "Branchenvorlage fehlt". Sichtbar wurde davon zuerst
+   nur die Spitze: zwoelf Titel, bei denen auch Momentum und Risiko
+   ausfallen und deshalb gar kein Faktor uebrig blieb.
+
+   WAS AUS DEN VORHANDENEN ABSCHLUESSEN ABLEITBAR IST
+
+   Gemessen ueber die Consumer-Exporte derselben 974 Titel: Bilanzsumme und
+   Eigenkapital 98-100 %, Jahresergebnis 98-100 %, operativer Zahlungsfluss
+   97-100 %, Jahresrendite-Median 92-98 %, Vorsteuerergebnis 57-80 %,
+   Ausschuettung 48-79 %. Damit sind die Kennzahlen darstellbar, mit denen
+   diese Branchen wirklich gemessen werden: Eigenkapitalquote, Rendite auf
+   Bilanzsumme und Eigenkapital, Schwankung dieser Rendite, Jahre mit
+   Gewinn, Eigenkapital und Gewinn je Boersenwert.
+
+   WAS NICHT ABLEITBAR IST - UND DESHALB FEHLT
+
+   Kein FFO. Die Groesse lebt davon, Gewinne aus Immobilienverkaeufen aus
+   dem Ergebnis herauszurechnen, und genau diese Position kommt in den
+   Exporten nicht vor; gemessen fuehren die REITs Abschreibungen (89 %),
+   aber keine Verkaufsgewinne. Ein FFO ohne sie waere ein FFO nur dem Namen
+   nach. Die REIT-Vorlage arbeitet deshalb mit dem operativen Zahlungsfluss
+   und nennt ihn so, und das ergebnisbasierte Mass traegt bei ihr das
+   kleinste Gewicht - weil die Abschreibung auf einer Immobilienbilanz das
+   Ergebnis dominiert, was ja der Grund fuer FFO ist.
+
+   Keine Kombinierte Schadenquote fuer Versicherer: Schaeden und
+   Betriebskosten stehen nicht als eigene Tags in den Exporten.
+
+   WARUM DIE VORLAGEN IN IHRER EIGENEN GRUNDGESAMTHEIT RANGIEREN
+
+   Eine Eigenkapitalquote von 14,6 % (WSBCO) ist gegen Industriewerte das
+   unterste Dezil und fuer eine Bank normal. Die Vorlagenkomponenten werden
+   deshalb ueber die 974 Titel des Branchentors normiert, die Peer-Stufe
+   darin weiter ueber die SIC-Gruppe (6022 allein hat 101 Titel, also mehr
+   als das Vertragsminimum von 20). Der Vertrag verlangt fuer die
+   Universumsstufe 200 gueltige Emittenten: der Traeger-Bereich allein hat
+   130 und koennte sie nie erfuellen, das gemeinsame Branchentor erfuellt
+   sie fuer jede einzelne Komponente (mindestens 436).
+
+   Damit bleibt zugleich jeder bisher veroeffentlichte Wert unveraendert:
+   die generischen Komponenten behalten ihre Grundgesamtheit ohne die
+   Branchentitel, genau wie bisher. Die Erweiterung oeffnet nur, was vorher
+   NOT_APPLICABLE war.
+
+   Wachstum bleibt in dieser Fassung generisch. Es ist vom Branchentor
+   ausdruecklich ausgenommen und fuer 256 der 601 Banken schon verfuegbar;
+   es zu ersetzen wuerde bestehende Werte neu berechnen statt geschlossene
+   zu oeffnen. Was dadurch offen bleibt, ist gezaehlt: 345 Banken ohne
+   Wachstumsfaktor, weil ihre Umsatzreihe fehlt.
+   ========================================================================= */
+
+/* Eine Grundgesamtheit fuer alle Vorlagen zusammen, damit die
+   Universumsstufe das Vertragsminimum erreicht. */
+const TEMPLATE_COHORT = "INDUSTRY";
+
+const TEMPLATE_LABELS = {
+  equityToAssets: { label: "Eigenkapitalquote", direction: "higher", unit: "ratio" },
+  roaStability5y: { label: "Schwankung der Rendite auf die Bilanzsumme", direction: "lower", unit: "ratio",
+    note: "Mittlere absolute Abweichung der jaehrlichen Rendite auf die Bilanzsumme von ihrem eigenen Median, ueber bis zu fuenf Geschaeftsjahre und erst ab vier." },
+  positiveEarningsYears: { label: "Jahre mit Gewinn", direction: "higher", unit: "count", noWinsor: true },
+  dividendCoverageByOcf: { label: "Ausschüttung gedeckt vom operativen Zahlungsfluss", direction: "higher", unit: "ratio",
+    note: "Operativer Zahlungsfluss der letzten zwoelf Monate je gezahlter Jahresausschuettung. Die Ausschuettung kommt aus der Jahresreihe, weil die Exporte fuer sie kein TTM-Fenster fuehren." },
+  roaTtm: { label: "Rendite auf die Bilanzsumme", direction: "higher", unit: "ratio" },
+  roeTtm: { label: "Rendite auf das Eigenkapital", direction: "higher", unit: "ratio" },
+  roaMedian3y: { label: "Rendite auf die Bilanzsumme, Median 3 Jahre", direction: "higher", unit: "ratio" },
+  pretaxRoaTtm: { label: "Rendite auf die Bilanzsumme vor Steuern", direction: "higher", unit: "ratio",
+    note: "Vorsteuerergebnis je durchschnittlicher Bilanzsumme. Ohne Steuerwirkung vergleichbar, wenn zwei Haeuser unterschiedlich besteuert werden." },
+  netMarginTtm: { label: "Ergebnis je Umsatz", direction: "higher", unit: "ratio" },
+  cashReturnOnAssets: { label: "Operativer Zahlungsfluss je Bilanzsumme", direction: "higher", unit: "ratio" },
+  ocfMarginTtm: { label: "Operativer Zahlungsfluss je Umsatz", direction: "higher", unit: "ratio" },
+  bookToMarket: { label: "Eigenkapital je Börsenwert", direction: "higher", unit: "ratio" },
+  earningsYield: { label: "Gewinn je Börsenwert", direction: "higher", unit: "ratio" },
+  pretaxEarningsYield: { label: "Vorsteuerergebnis je Börsenwert", direction: "higher", unit: "ratio" },
+  dividendYield: { label: "Ausschüttung je Börsenwert", direction: "higher", unit: "ratio" },
+  cashFlowYield: { label: "Operativer Zahlungsfluss je Börsenwert", direction: "higher", unit: "ratio" }
+};
+
+const TEMPLATE_GATES = {
+  BALANCE_SHEET_FINANCIAL: isBank,
+  INSURANCE_CARRIER: isInsurer,
+  REAL_ESTATE_TRUST: isReit
+};
+
+/* Welche Komponente eine Vorlage zwingend braucht. Ohne sie sagt der
+   Faktor nichts, auch wenn das Gewicht reicht. */
+const TEMPLATE_MANDATORY = {
+  BALANCE_SHEET_FINANCIAL: {
+    quality: (has) => has("equityToAssets") && (has("roaStability5y") || has("positiveEarningsYears")),
+    profitability: (has) => has("roaTtm") || has("roaMedian3y"),
+    value: (has) => has("bookToMarket") || has("earningsYield")
+  },
+  INSURANCE_CARRIER: {
+    quality: (has) => has("equityToAssets") && (has("roaStability5y") || has("positiveEarningsYears")),
+    profitability: (has) => has("roaTtm") || has("roaMedian3y"),
+    value: (has) => has("bookToMarket") || has("earningsYield")
+  },
+  REAL_ESTATE_TRUST: {
+    quality: (has) => has("equityToAssets") &&
+      (has("dividendCoverageByOcf") || has("roaStability5y") || has("positiveEarningsYears")),
+    profitability: (has) => has("cashReturnOnAssets") || has("roaMedian3y"),
+    value: (has) => has("cashFlowYield") || has("bookToMarket")
+  }
+};
+
+/* Die Vorlagen entstehen aus dem Vertrag, nicht neben ihm: Gewicht,
+   Fenster und Formel stehen dort, die Produktsprache hier. Fehlt eine
+   Komponente im Vertrag oder weicht ein Gewicht ab, bricht der Lauf ab -
+   zwei Quellen fuer dasselbe Gewicht sind ein Flattern, das niemandem
+   auffaellt. */
+function buildTemplates(contract) {
+  const templates = {};
+  const declared = contract.industryTemplates || {};
+  for (const [id, gate] of Object.entries(TEMPLATE_GATES)) {
+    const section = declared[id];
+    if (!section) throw new Error("industry template missing from quant-v2 contract: " + id);
+    const factors = {};
+    for (const [factorId, factorSpec] of Object.entries(section.factors)) {
+      let weightSum = 0;
+      factors[factorId] = {
+        minimumDataRequirements: factorSpec.minimumDataRequirements,
+        components: factorSpec.components.map((component) => {
+          const wording = TEMPLATE_LABELS[component.id];
+          if (!wording) throw new Error("no product wording for template component " + id + ":" + component.id);
+          weightSum += component.weight;
+          return {
+            id: component.id, weight: component.weight,
+            direction: wording.direction, unit: wording.unit,
+            label: wording.label, note: component.note || wording.note || null,
+            noWinsor: wording.noWinsor === true,
+            window: component.window || null, input: component.input || null
+          };
+        })
+      };
+      if (Math.abs(weightSum - 1) > 1e-9) {
+        throw new Error("template weights must sum to 1: " + id + ":" + factorId + " = " + weightSum);
+      }
+    }
+    templates[id] = {
+      id, version: section.version, label: section.label, appliesTo: section.appliesTo,
+      matches: gate, factors,
+      mandatory: TEMPLATE_MANDATORY[id]
+    };
+  }
+  return templates;
+}
+
+const templateFor = (templates, sic4) => {
+  if (!finite(sic4)) return null;
+  for (const template of Object.values(templates)) if (template.matches(sic4)) return template;
+  return null;
+};
 
 /* --------------------------------------------------------------------------- */
 function main() {
@@ -142,6 +313,7 @@ function main() {
     throw new Error("quant-v2 publication opened; this materializer must be revisited before it runs again");
   }
 
+  const templates = buildTemplates(contract);
   const columns = Object.fromEntries(taxonomy.rowColumns.map((name, index) => [name, index]));
   const peerByTicker = new Map();
   for (const row of taxonomy.rows) {
@@ -246,11 +418,32 @@ function main() {
   for (const [factorId, list] of Object.entries(PRICE_COMPONENTS)) list.forEach((spec) => allComponents.push({ factorId, spec, source: "price" }));
   for (const [factorId, list] of Object.entries(FUNDAMENTAL_COMPONENTS)) list.forEach((spec) => allComponents.push({ factorId, spec, source: "fundamentals" }));
 
+  /* Die Vorlagenkomponenten werden einmal je Kennzahl normiert, nicht
+     einmal je Vorlage: der Rang einer Eigenkapitalquote im Branchentor ist
+     derselbe, ob die Bank sie mit 0,30 und der REIT sie mit 0,30 gewichtet.
+     Das Gewicht steht in der Vorlage, der Rang hier - deshalb traegt der
+     Vereinigungs-Eintrag bewusst kein Gewicht. */
+  const templateComponentKeys = new Set();
+  for (const template of Object.values(templates)) {
+    for (const [factorId, factorSpec] of Object.entries(template.factors)) {
+      for (const component of factorSpec.components) {
+        const key = factorId + ":" + component.id;
+        if (templateComponentKeys.has(key)) continue;
+        templateComponentKeys.add(key);
+        allComponents.push({
+          factorId,
+          spec: { ...component, weight: null },
+          source: "template"
+        });
+      }
+    }
+  }
+
   const scores = new Map(); /* componentId -> array aligned with records */
   const peerSizes = new Map();
 
   for (const { factorId, spec, source } of allComponents) {
-    const key = factorId + ":" + spec.id;
+    const key = (source === "template" ? TEMPLATE_COHORT + ":" : "") + factorId + ":" + spec.id;
     if (spec.unavailable) { scores.set(key, records.map(() => null)); continue; }
 
     const raws = records.map((record) => {
@@ -261,7 +454,12 @@ function main() {
         return finite(value) ? value : null;
       }
       if (!record.fundamentals) return null;
-      if (needsIndustryTemplate(record.peer?.sic4) && factorId !== "growth") return null;
+      /* Zwei getrennte Grundgesamtheiten, damit kein veroeffentlichter Wert
+         sich verschiebt: die generische Kennzahl rangiert weiter ohne die
+         Branchentitel, die Vorlagenkennzahl nur unter ihnen. */
+      const inTemplate = Boolean(templateFor(templates, record.peer?.sic4));
+      if (source === "template") { if (!inTemplate) return null; }
+      else if (inTemplate && factorId !== "growth") return null;
       const value = record.fundamentals.raws[spec.id];
       return finite(value) ? value : null;
     });
@@ -336,6 +534,7 @@ function main() {
 
   records.forEach((record, index) => {
     const factors = {};
+    const recordTemplate = templateFor(templates, record.peer?.sic4);
 
     for (const factorId of FactorEvidence.FACTOR_ORDER) {
       if (factorId === "revisions") {
@@ -349,23 +548,30 @@ function main() {
         continue;
       }
 
-      const specs = PRICE_COMPONENTS[factorId] || FUNDAMENTAL_COMPONENTS[factorId];
       const fundamentalFactor = Boolean(FUNDAMENTAL_COMPONENTS[factorId]);
-      const templateBlocked = fundamentalFactor && factorId !== "growth" && needsIndustryTemplate(record.peer?.sic4);
+      /* Die Branchenvorlage ersetzt die generische Formel fuer genau die
+         drei Faktoren, die sie fuehrt. Wachstum bleibt generisch, weil es
+         vom Branchentor ohnehin ausgenommen ist. */
+      const templateFactor = recordTemplate && recordTemplate.factors[factorId] ? recordTemplate.factors[factorId] : null;
+      const specs = templateFactor ? templateFactor.components : (PRICE_COMPONENTS[factorId] || FUNDAMENTAL_COMPONENTS[factorId]);
+      const scoreKey = (spec) => (templateFactor ? TEMPLATE_COHORT + ":" : "") + factorId + ":" + spec.id;
 
       const components = specs.map((spec) => {
-        const entry = spec.unavailable ? null : scores.get(factorId + ":" + spec.id)[index];
+        const entry = spec.unavailable ? null : scores.get(scoreKey(spec))[index];
+        const contractComponent = templateFactor
+          ? spec
+          : contract.factors[factorId].components.find((component) => component.id === spec.id);
         const base = {
           id: spec.id, label: spec.label, weight: spec.weight, direction: spec.direction, unit: spec.unit,
           basis: spec.basis || null, note: spec.note || null,
-          window: contract.factors[factorId].components.find((component) => component.id === spec.id)?.window || null,
-          input: contract.factors[factorId].components.find((component) => component.id === spec.id)?.input || null
+          window: contractComponent?.window || null,
+          input: contractComponent?.input || null
         };
         if (spec.unavailable) return { ...base, state: "UNAVAILABLE", reason: spec.unavailable, raw: null, score: null };
         if (!entry) {
-          return { ...base, state: "UNAVAILABLE", reason: templateBlocked ? "SECTOR_TEMPLATE_MISSING" : fundamentalFactor && !record.fundamentals ? "FUNDAMENTALS_UNAVAILABLE" : "INPUT_NOT_MATERIALIZED", raw: null, score: null };
+          return { ...base, state: "UNAVAILABLE", reason: fundamentalFactor && !record.fundamentals ? "FUNDAMENTALS_UNAVAILABLE" : "INPUT_NOT_MATERIALIZED", raw: null, score: null };
         }
-        const countKey = factorId + ":" + spec.id;
+        const countKey = scoreKey(spec);
         componentCoverage[countKey] = (componentCoverage[countKey] || 0) + 1;
         return {
           ...base, state: "AVAILABLE", reason: null,
@@ -375,16 +581,17 @@ function main() {
         };
       });
 
-      let assembled;
-      if (templateBlocked) assembled = { state: "NOT_APPLICABLE", reason: "SECTOR_TEMPLATE_MISSING", score: null, availableWeight: 0 };
-      else {
-        assembled = FactorEvidence.assembleFactor(contract.factors[factorId], components);
-        /* Mandatory components are a contract statement, checked after the
-           arithmetic so that a satisfied weight can never overrule them. */
-        if (assembled.state === "AVAILABLE") {
-          const mandatoryMissing = mandatoryUnmet(factorId, components);
-          if (mandatoryMissing) assembled = { state: "UNAVAILABLE", reason: "MANDATORY_COMPONENT_MISSING", score: null, availableWeight: assembled.availableWeight };
-        }
+      let assembled = FactorEvidence.assembleFactor(
+        templateFactor ? { minimumDataRequirements: templateFactor.minimumDataRequirements } : contract.factors[factorId],
+        components);
+      /* Mandatory components are a contract statement, checked after the
+         arithmetic so that a satisfied weight can never overrule them. */
+      if (assembled.state === "AVAILABLE") {
+        const has = (id) => components.some((component) => component.id === id && component.state === "AVAILABLE");
+        const mandatoryMissing = templateFactor
+          ? !recordTemplate.mandatory[factorId](has)
+          : mandatoryUnmet(factorId, components);
+        if (mandatoryMissing) assembled = { state: "UNAVAILABLE", reason: "MANDATORY_COMPONENT_MISSING", score: null, availableWeight: assembled.availableWeight };
       }
 
       const available = components.filter((component) => component.state === "AVAILABLE");
@@ -402,7 +609,12 @@ function main() {
       /* Only measurements travel per security; the wording, weight, window
          and contract input of a component live once in the artifact head. */
       components.forEach((component) => {
-        const key = factorId + ":" + component.id;
+        /* Eine Vorlagenkomponente traegt ihr eigenes Gewicht und ihre eigene
+           Formel. Sie steht deshalb unter ihrem Vorlagennamen im Kopf des
+           Artefakts, und die generische Kennzahl desselben Namens bleibt
+           daneben unveraendert stehen - fuer jeden Leser, der kein
+           Branchentitel ist. */
+        const key = (templateFactor ? recordTemplate.id + ":" : "") + factorId + ":" + component.id;
         if (!componentSpecs[key]) {
           componentSpecs[key] = {
             label: component.label, weight: component.weight, direction: component.direction,
@@ -470,6 +682,13 @@ function main() {
       fundamentalsAvailableAt: record.fundamentals?.availableAt || null,
       marketCap: record.fundamentals?.marketCap ?? null,
       peer: record.peer ? { level: record.peer.level, industry: record.peer.sic4, division: record.peer.division, confidence: record.peer.confidence } : null,
+      /* Nach welcher Vorlage die Fundamentalfaktoren dieses Titels gemessen
+         wurden. Ohne Eintrag gilt die generische Formel - so liest ein
+         Verbraucher den Unterschied, statt ihn aus dem Branchenschluessel
+         nachbauen zu muessen. */
+      template: recordTemplate
+        ? { id: recordTemplate.id, version: recordTemplate.version, label: recordTemplate.label, appliesTo: recordTemplate.appliesTo }
+        : null,
       factors,
       composite: { state: "WITHHELD", reason: "QUANT_V2_NOT_ACTIVE" },
       change: ChangeEngine.compact(change)

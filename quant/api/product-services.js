@@ -191,7 +191,7 @@ function create(options){
    ['revisions','Revisions','Wie verändern sich Analystenerwartungen?',[metric('earningsRevisions','Earnings Revisions',null,'percent','LICENSED_ANALYST_PIT_NOT_AVAILABLE')]],
    ['risk','Risk','Welche Risiken zeigen die Kursdaten?',[metric('volatility','Volatilität',finite(stock.volatility?.value)?stock.volatility.value*100:null,'pct'),metric('maxDrawdown','Maximaler Drawdown',finite(stock.drawdown?.value)?Math.abs(stock.drawdown.value*100):null,'pct')]]
   ];
-  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:'quant-v2.1.0',methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
+  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:FactorEvidence.DERIVED_FROM,methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
  }
  async function setupFor(stock){
   if(!SetupState||!stock)return null;
@@ -793,7 +793,17 @@ function create(options){
  async function getPortfolioIntelligence(positions){try{const universe=await getUniverse(),c=await init();return PortfolioWorkspace.build(positions,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,marketState:'UNAVAILABLE'})});}catch{return unavailable('INVALID_PORTFOLIO');}}
  async function getStrategyContext(){
   try{const [quant,backtest,quantV2,universe]=await Promise.all([load('/quant/methodology/quant-v1.json'),load('/quant/methodology/backtest-v1.json'),load('/quant/methodology/quant-v2.json'),getUniverse()]);
-   if(quantV2?.methodologyVersion!=='quant-v2.1.0'||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
+   /* EINE FASSUNG, EINE QUELLE.
+    *
+    * Hier stand die Zeichenkette 'quant-v2.1.0' ein zweites Mal. Beim
+    * Sprung auf quant-v2.2.0 hat genau das die Strategieoberflaeche
+    * geschlossen - fail-closed, also richtig gesperrt, aber aus dem
+    * falschen Grund: nicht weil der Vertrag unbekannt war, sondern weil
+    * eine Kopie der Versionsnummer nicht mitgezogen wurde. Das Tor bleibt
+    * zu, wenn der Vertrag von dem abweicht, wogegen dieser Code geschrieben
+    * ist - es fragt jetzt die Faktor-Engine, die diese Bindung ohnehin
+    * fuehrt. */
+   if(quantV2?.methodologyVersion!==FactorEvidence.DERIVED_FROM||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
    Methodology.configure({quant,backtest,quantV2});return {state:'AVAILABLE',definition:Strategy.defaults(),factors:Strategy.RANKABLE_FACTORS,weightings:Strategy.WEIGHTINGS,
     currentSelection:{state:universe.state,scope:universe.scope,selectable:universe.productUniverseSize||universe.stocks.length,filterEngine:'CANONICAL_QUERY_ENGINE',ranking:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'}},
     quantV2:{methodologyVersion:quantV2.methodologyVersion,status:quantV2.status,publicationAllowed:false,factorOrder:quantV2.factorOrder.slice(),factorReadiness:Object.fromEntries(quantV2.factorOrder.map(id=>[id,quantV2.factors[id].readiness]))},

@@ -160,6 +160,143 @@ test("a compound growth rate across a sign change is absent, not a number", () =
   assert.ok(Number.isFinite(model.raws.revenueCagr3y), "the counter-check needs a series that does not cross zero");
 });
 
+/* ---------------------------------------------------------------------------
+   DIE BERICHTSPERIODE HING AM UMSATZ
+
+   Gemessen ueber alle 5.036 Titel mit Consumer-Export: 741 fuehren eine
+   vollstaendige Bilanz und hatten trotzdem keine Berichtsperiode, in 741 von
+   741 Faellen allein deshalb, weil kein `revenue`-Tag gemeldet wird - 101
+   Banken (6022), 57 (6021), 50 REITs, dazu 93 Pharma- und 30 Biotech-Titel
+   vor der ersten Zulassung.
+   --------------------------------------------------------------------------- */
+
+/* Ein Abschluss ohne Umsatzzeile: so berichtet eine Bank. */
+function bankDoc(overrides = {}) {
+  const years = [
+    [2022, "2022-12-31", "2023-02-15"],
+    [2023, "2023-12-31", "2024-02-15"],
+    [2024, "2024-12-31", "2025-02-15"],
+    [2025, "2025-12-31", "2026-02-15"]
+  ];
+  const series = (values) => years.map(([fy, end, filed], index) => row(fy, end, values[index], filed));
+  return {
+    schema: "vu-consumer-fundamentals-1.0.0",
+    cik: "0000000002",
+    annual: {
+      net_income: series([100, 120, 150, 200]),
+      operating_cash_flow: series([130, 150, 180, 240]),
+      total_assets: series([9000, 9500, 10000, 11000]),
+      stockholders_equity: series([1000, 1100, 1200, 1400]),
+      pretax_income: series([125, 150, 188, 250]),
+      income_tax_expense: series([25, 30, 38, 50]),
+      dividends_paid: series([40, 45, 50, 60]),
+      eps_diluted: series([1.0, 1.2, 1.5, 2.0]),
+      free_cash_flow: series([120, 140, 170, 230]),
+      cash_and_equivalents: series([500, 500, 500, 500])
+    },
+    quarterly: {},
+    ttm: {
+      net_income: ttm("2026-06-30", 210, "2026-07-30"),
+      operating_cash_flow: ttm("2026-06-30", 250, "2026-07-30"),
+      pretax_income: ttm("2026-06-30", 262, "2026-07-30"),
+      income_tax_expense: ttm("2026-06-30", 52, "2026-07-30"),
+      shares_outstanding: { fp: "Q2", end: "2026-06-30", v: 100, filed: "2026-07-30", unit: "shares", kind: "INSTANT" }
+    },
+    ...overrides
+  };
+}
+
+test("ein Abschluss ohne Umsatzzeile hat trotzdem eine Berichtsperiode", () => {
+  const model = Inputs.compute(bankDoc(), CUTOFF, null);
+  assert.equal(model.referenceEnd, "2026-06-30", "die juengste berichtete Periode, hier das Ergebnisfenster");
+  assert.equal(model.fundamentalsAsOf, "2026-06-30", "vorher stand hier null, weil nur der Umsatz zaehlte");
+  assert.equal(model.annualYears, 4, "vier Geschaeftsjahre - vorher 0, weil die Umsatzreihe leer ist");
+  assert.ok(model.shares, "und der Anteilsbestand vom selben Stichtag bleibt nutzbar");
+});
+
+test("der juengste Stichtag zaehlt, nicht der des Umsatzes", () => {
+  /* Der gemessene Fall BCE: eine Umsatzreihe, die 2017 endet, neben Reihen,
+     die 2025 laufen. Nahm die Referenz den Umsatz, sah ein Anteilsbestand
+     von 2023 dagegen "neu" aus und ergab einen Boersenwert aus zwei
+     Jahrzehnten. */
+  const gemischt = bankDoc();
+  gemischt.annual.revenue = [row(2013, "2013-03-31", 500, "2013-06-01")];
+  delete gemischt.ttm.net_income;
+  delete gemischt.ttm.operating_cash_flow;
+  delete gemischt.ttm.pretax_income;
+  gemischt.ttm.shares_outstanding = { fp: "FY", end: "2015-12-31", v: 100, filed: "2016-02-15", unit: "shares", kind: "INSTANT" };
+  const model = Inputs.compute(gemischt, CUTOFF, null);
+  assert.equal(model.referenceEnd, "2025-12-31", "nicht 2013-03-31");
+  assert.equal(model.shares, null, "ein Anteilsbestand von 2015 ist kein heutiger Boersenwert");
+});
+
+test("die Branchenkennzahlen entstehen aus denselben Abschluessen", () => {
+  const model = Inputs.compute(bankDoc(), CUTOFF, 4000);
+  const durchschnittlicheBilanz = (11000 + 10000) / 2;
+  assert.ok(Math.abs(model.raws.roaTtm - 210 / durchschnittlicheBilanz) < 1e-12);
+  assert.ok(Math.abs(model.raws.roeTtm - 210 / 1400) < 1e-12, "Eigenkapital ist der Bestand des letzten Abschlusses");
+  assert.ok(Math.abs(model.raws.pretaxRoaTtm - 262 / durchschnittlicheBilanz) < 1e-12);
+  assert.ok(Math.abs(model.raws.cashReturnOnAssets - 250 / durchschnittlicheBilanz) < 1e-12);
+  assert.ok(Math.abs(model.raws.equityToAssets - 1400 / 11000) < 1e-12);
+  /* Median der drei letzten Jahresrenditen, auf dem Stichtag gepaart. */
+  const jahre = [150 / 10000, 200 / 11000, 120 / 9500].sort((a, b) => a - b);
+  assert.ok(Math.abs(model.raws.roaMedian3y - jahre[1]) < 1e-12);
+  assert.ok(Number.isFinite(model.raws.roaStability5y), "vier gepaarte Jahre reichen fuer die Streuung");
+  assert.equal(model.raws.positiveEarningsYears, 4);
+  assert.ok(Math.abs(model.raws.dividendCoverageByOcf - 250 / 60) < 1e-12);
+  assert.ok(Math.abs(model.raws.bookToMarket - 1400 / 4000) < 1e-12);
+  assert.ok(Math.abs(model.raws.earningsYield - 210 / 4000) < 1e-12);
+  assert.ok(Math.abs(model.raws.pretaxEarningsYield - 262 / 4000) < 1e-12);
+  assert.ok(Math.abs(model.raws.cashFlowYield - 250 / 4000) < 1e-12);
+  assert.ok(Math.abs(model.raws.dividendYield - 60 / 4000) < 1e-12);
+
+  /* Und die generischen Groessen bleiben genau dort leer, wo die Bank sie
+     nicht meldet - nichts tritt an ihre Stelle. */
+  assert.equal(model.raws.grossProfitabilityTtm, undefined);
+  assert.equal(model.raws.operatingMarginTtm, undefined);
+  assert.equal(model.raws.operatingMarginStability, undefined);
+  assert.equal(model.raws.salesYield, undefined);
+  assert.equal(model.raws.netMarginTtm, undefined, "ohne Umsatz keine Marge");
+  assert.equal(model.raws.ocfMarginTtm, undefined);
+  assert.equal(model.raws.revenueCagr3y, null);
+});
+
+test("eine Ausschuettung wird nicht aus einem Vorzeichen gemacht", () => {
+  const negativ = bankDoc();
+  negativ.annual.dividends_paid = negativ.annual.dividends_paid.map((entry) =>
+    row(entry[0], entry[2], -Math.abs(entry[3]), entry[4]));
+  const model = Inputs.compute(negativ, CUTOFF, 4000);
+  assert.equal(model.raws.dividendCoverageByOcf, undefined, "ein negativer Betrag wird nicht in einen Betrag umgedeutet");
+  assert.equal(model.raws.dividendYield, undefined);
+
+  /* Und eine Ausschuettung, deren Geschaeftsjahr Jahre vor der berichteten
+     Periode endet, ist keine laufende Ausschuettung. */
+  const alt = bankDoc();
+  alt.annual.dividends_paid = [row(2021, "2021-12-31", 40, "2022-02-15")];
+  const veraltet = Inputs.compute(alt, CUTOFF, 4000);
+  assert.equal(veraltet.raws.dividendYield, undefined);
+  assert.equal(veraltet.raws.dividendCoverageByOcf, undefined);
+});
+
+test("die Traegermarge braucht denselben Stichtag wie ihr Umsatz", () => {
+  const traeger = bankDoc();
+  traeger.annual.revenue = [
+    row(2024, "2024-12-31", 3000, "2025-02-15"),
+    row(2025, "2025-12-31", 3400, "2026-02-15")
+  ];
+  traeger.ttm.revenue = ttm("2026-06-30", 3600, "2026-07-30");
+  const model = Inputs.compute(traeger, CUTOFF, 4000);
+  assert.ok(Math.abs(model.raws.netMarginTtm - 210 / 3600) < 1e-12);
+  assert.ok(Math.abs(model.raws.ocfMarginTtm - 250 / 3600) < 1e-12);
+
+  /* Zwei Fenster mit verschiedenen Stichtagen sind keine Marge. */
+  const versetzt = bankDoc();
+  versetzt.ttm.revenue = ttm("2026-03-31", 3600, "2026-07-30");
+  const schief = Inputs.compute(versetzt, CUTOFF, 4000);
+  assert.equal(schief.raws.netMarginTtm, undefined);
+  assert.equal(schief.raws.ocfMarginTtm, undefined);
+});
+
 test("change inputs describe growth against the prior year, from the same series", () => {
   const model = Inputs.compute(doc(), CUTOFF, null);
   assert.ok(Math.abs(model.change.revenueGrowthCurrent - (1500 / 1200 - 1)) < 1e-12);

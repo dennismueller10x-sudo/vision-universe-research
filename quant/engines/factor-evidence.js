@@ -31,7 +31,7 @@
      Version - die 1.0.0-Beobachtungen bleiben unveraendert unter ihrer
      eigenen Reihe stehen. */
   var METHODOLOGY_VERSION = "vu-factor-evidence-2.0.0";
-  var DERIVED_FROM = "quant-v2.1.0";
+  var DERIVED_FROM = "quant-v2.2.0";
   var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
   var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
   var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";
@@ -375,7 +375,14 @@
       factors[factorId] = Object.assign({}, factor, {
         weight: weights[factorId] !== undefined ? weights[factorId] : null,
         components: (factor.components || []).map(function (component) {
-          var spec = specs[factorId + ":" + component.id] || {};
+          /* Traegt der Titel eine Branchenvorlage, gilt deren Eintrag: sie
+             gewichtet dieselbe Kennzahl anders als die generische Formel
+             und nennt eine andere Formelzeile. Ohne Vorlageneintrag bleibt
+             es beim generischen - und ein Artefakt ohne Vorlagen verhaelt
+             sich Zeichen fuer Zeichen wie vorher. */
+          var templateId = record.template && record.template.id,
+            spec = (templateId && specs[templateId + ":" + factorId + ":" + component.id]) ||
+              specs[factorId + ":" + component.id] || {};
           return Object.assign({}, spec, component);
         })
       });

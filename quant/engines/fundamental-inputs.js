@@ -120,6 +120,17 @@
     return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
   }
 
+  /* Wie viele Geschaeftsjahre das Dokument ueberhaupt abdeckt, gezaehlt
+     ueber die Stichtage mehrerer Reihen: eine Reihe kann ein Jahr
+     auslassen, das eine andere fuehrt. */
+  function fiscalYearCount(seriesList) {
+    var ends = new Set();
+    seriesList.forEach(function (series) {
+      (series || []).forEach(function (entry) { if (entry && entry.end) ends.add(entry.end); });
+    });
+    return ends.size;
+  }
+
   /* Series keyed by period end, so two figures are only ever divided when
      they come from the same closing date. */
   function byEnd(series) {
@@ -178,6 +189,9 @@
       cashA = annualSeries(doc, "cash_and_equivalents", cutoff),
       taxA = annualSeries(doc, "income_tax_expense", cutoff),
       pretaxA = annualSeries(doc, "pretax_income", cutoff),
+      netIncomeA = annualSeries(doc, "net_income", cutoff),
+      ocfA = annualSeries(doc, "operating_cash_flow", cutoff),
+      dividendsA = annualSeries(doc, "dividends_paid", cutoff),
       grossQ = quarterSeries(doc, "gross_profit", cutoff),
       revenueQ = quarterSeries(doc, "revenue", cutoff),
       fcfQ = quarterSeries(doc, "free_cash_flow", cutoff),
@@ -191,8 +205,49 @@
       taxT = ttmValue(doc, "income_tax_expense", cutoff),
       pretaxT = ttmValue(doc, "pretax_income", cutoff);
 
-    /* Everything below is read against the period the TTM block reports. */
-    var referenceEnd = (revenueT && revenueT.end) || (assetsA.length && assetsA[assetsA.length - 1].end) || null;
+    /* Everything below is read against the period the TTM block reports.
+     *
+     * DIE BERICHTSPERIODE HING AM UMSATZ.
+     *
+     * Gemessen am 26.09.2026 ueber alle 5.036 Titel mit Consumer-Export:
+     * 741 fuehren eine vollstaendige Bilanz (Bilanzsumme und Eigenkapital)
+     * und trotzdem war `fundamentalsAsOf` leer - in 741 von 741 Faellen
+     * allein deshalb, weil der Emittent kein `revenue`-Tag meldet. Das sind
+     * nicht nur Banken (101 mal 6022, 57 mal 6021, 50 REITs), sondern auch
+     * 93 Pharma- und 30 Biotech-Titel: ein Unternehmen vor der ersten
+     * Zulassung hat zwoelf Abschluesse und keinen Umsatz, und die Seite
+     * sagte ihm "keine Fundamentaldaten".
+     *
+     * Die Periode kommt deshalb aus dem, was das Dokument wirklich traegt:
+     * die juengste berichtete Periode, nicht die des Umsatzes. Gemessen
+     * ueber alle 5.069 Exporte ist das fuer das TTM-Fenster in keinem
+     * einzigen Dokument ein Unterschied - der Umsatz datiert dort immer
+     * dieselbe Periode wie jedes andere Ergebnisfenster. Im Rueckfall auf
+     * die Geschaeftsjahre sind es 80 Dokumente, und dort bis zu 4.748 Tage:
+     * eine Umsatzreihe, die 2013 endet, neben einer Reihe, die 2026 endet.
+     *
+     * Dass die *juengste* Periode zaehlt, ist die vorsichtige Wahl: je
+     * spaeter die Referenz, desto mehr veraltete Bestaende fallen heraus.
+     * Die umgekehrte Wahl liess bei BCE einen Anteilsbestand von 2023 neben
+     * Abschlusszahlen von 2017 passieren, weil er gegen sie "neu" aussah -
+     * und daraus entstand ein Boersenwert aus zwei Jahrzehnten.
+     *
+     * Ergebnisfenster vor Bilanzstichtag, weil Regel 2 einen Bestand gegen
+     * die *berichtete Periode* prueft: waere der Bestand selbst die
+     * Referenz, verglich er sich mit sich selbst und kein veralteter
+     * Bestand fiele je auf. */
+    var referenceEnd = null;
+    var neueste = function (kandidat) {
+      if (typeof kandidat === "string" && (!referenceEnd || kandidat > referenceEnd)) referenceEnd = kandidat;
+    };
+    [revenueT, netIncomeT, ocfT, pretaxT, operatingIncomeT, grossT, ebitdaT, fcfT].forEach(function (entry) {
+      if (entry) neueste(entry.end);
+    });
+    if (!referenceEnd) {
+      [revenueA, netIncomeA, ocfA, pretaxA, epsA, fcfA, assetsA, equityA].forEach(function (series) {
+        if (series.length) neueste(series[series.length - 1].end);
+      });
+    }
     var netDebtT = periodAligned(ttmValue(doc, "net_debt", cutoff), referenceEnd);
     var debtT = periodAligned(ttmValue(doc, "total_debt", cutoff), referenceEnd);
     var cashT = periodAligned(ttmValue(doc, "cash_and_equivalents", cutoff), referenceEnd);
@@ -280,6 +335,67 @@
     }
     if (netIncomeT && finite(averageAssets) && averageAssets > 0) raws.roaTtm = netIncomeT.value / averageAssets;
 
+    /* ------------------------------------- Inputs der Branchenvorlagen
+     *
+     * Eine Bank, ein Versicherer und ein REIT werden nicht mit Rohertrag je
+     * Bilanzsumme und Nettoverschuldung gemessen - deshalb sind die
+     * generischen Formeln fuer sie NOT_APPLICABLE. Was sie stattdessen
+     * brauchen, steht in denselben Abschluessen, die sie schon
+     * veroeffentlichen; gemessen ueber die 974 Titel im Branchentor:
+     * Bilanzsumme und Eigenkapital 99-100 %, Jahresergebnis 98-100 %,
+     * operativer Zahlungsfluss 98-100 %, Vorsteuerergebnis 78-100 %.
+     *
+     * Die Werte hier sind Rohwerte, keine Vorlage. Welche Vorlage welchen
+     * davon benutzt und mit welchem Gewicht, entscheidet der Vertrag.
+     * Niemand bekommt eine Kennzahl unter falschem Namen: es gibt kein FFO,
+     * weil die Gewinne aus Immobilienverkaeufen in den Exporten nicht
+     * vorkommen und ein FFO ohne sie kein FFO ist. */
+    if (netIncomeT && finite(latestEquity) && latestEquity > 0) raws.roeTtm = netIncomeT.value / latestEquity;
+    if (pretaxT && finite(averageAssets) && averageAssets > 0) raws.pretaxRoaTtm = pretaxT.value / averageAssets;
+    if (ocfT && finite(averageAssets) && averageAssets > 0) raws.cashReturnOnAssets = ocfT.value / averageAssets;
+    if (netIncomeT && revenueT && revenueT.value > 0 && netIncomeT.end === revenueT.end) {
+      raws.netMarginTtm = netIncomeT.value / revenueT.value;
+    }
+    if (ocfT && revenueT && revenueT.value > 0 && ocfT.end === revenueT.end) {
+      raws.ocfMarginTtm = ocfT.value / revenueT.value;
+    }
+
+    /* Jahresrendite auf die Bilanzsumme, auf dem Stichtag gepaart. Sie
+       traegt zwei Vorlagenkomponenten: den Median als Niveau und die
+       Streuung als Verlaesslichkeit. */
+    var assetsByEnd = byEnd(assetsA);
+    var annualRoa = netIncomeA.map(function (entry) {
+      var assets = assetsByEnd.get(entry.end);
+      return finite(assets) && assets > 0 ? { end: entry.end, value: entry.value / assets } : null;
+    }).filter(Boolean);
+    if (annualRoa.length >= 3) raws.roaMedian3y = median(annualRoa.slice(-3).map(function (e) { return e.value; }));
+    var roaWindow = annualRoa.slice(-5);
+    if (roaWindow.length >= 4) {
+      var roaMedian = median(roaWindow.map(function (e) { return e.value; }));
+      raws.roaStability5y = median(roaWindow.map(function (e) { return Math.abs(e.value - roaMedian); }));
+    }
+    /* Jahre mit Gewinn statt Jahre mit positivem freien Zahlungsfluss: fuer
+       einen Kreditgeber ist das Verlustjahr das Ereignis, das zaehlt. */
+    if (netIncomeA.length >= 4) {
+      raws.positiveEarningsYears = netIncomeA.slice(-5).filter(function (e) { return e.value > 0; }).length;
+    }
+
+    /* Die Dividende kommt aus der Jahresreihe: `dividends_paid` hat in den
+       Exporten kein TTM-Fenster und wird als positiver Betrag gemeldet -
+       gemessen an WSBCO 2023-2025 (82,3 / 87,4 / 125,2 Mio USD). Ein
+       Abschluss, dessen Stichtag mehr als 400 Tage vor der berichteten
+       Periode liegt, ist keine laufende Ausschuettung mehr und faellt unter
+       derselben Regel heraus wie ein veralteter Bestand. */
+    var dividendEntry = dividendsA.length ? periodAligned(dividendsA[dividendsA.length - 1], referenceEnd) : null;
+    var dividend = dividendEntry && dividendEntry.value > 0 ? dividendEntry.value : null;
+    if (finite(dividend) && ocfT && ocfT.value > 0) raws.dividendCoverageByOcf = ocfT.value / dividend;
+
+    if (finite(marketCap) && marketCap > 0) {
+      if (pretaxT) raws.pretaxEarningsYield = pretaxT.value / marketCap;
+      if (ocfT) raws.cashFlowYield = ocfT.value / marketCap;
+      if (finite(dividend)) raws.dividendYield = dividend / marketCap;
+    }
+
     var ttmTaxRate = taxT && pretaxT ? effectiveTaxRate(taxT.value, pretaxT.value) : null;
     if (operatingIncomeT && finite(ttmTaxRate) && debtT && cashT && finite(latestEquity)) {
       var ttmRoic = roic(operatingIncomeT.value, ttmTaxRate, debtT.value, latestEquity, cashT.value);
@@ -319,9 +435,18 @@
       change: change,
       shares: periodAligned(ttmValue(doc, "shares_outstanding", cutoff), referenceEnd),
       availableAt: filedDates.length ? filedDates.slice().sort().pop() : null,
-      fundamentalsAsOf: (revenueT && revenueT.end) || (revenueA.length && revenueA[revenueA.length - 1].end) || null,
+      /* Ein Datum, nicht zwei. Fuer die 4.110 Titel mit Umsatz-TTM ist das
+         gemessen derselbe Tag wie bisher; die 80 Dokumente, deren
+         Umsatzreihe frueher endet als ihre uebrigen Reihen, nennen jetzt
+         den juengsten berichteten Stichtag statt des aeltesten - eine Seite
+         darf nicht "Stand 2017" sagen, waehrend sie gegen 2025 rechnet. */
+      fundamentalsAsOf: referenceEnd,
       referenceEnd: referenceEnd,
-      annualYears: revenueA.length
+      /* Ebenso die Historientiefe: sie speist `historyDepth` in der
+         Konfidenz. Ohne Umsatzreihe zaehlt sie die Geschaeftsjahre, fuer
+         die das Dokument ueberhaupt eine Kernzahl fuehrt - vorher war das
+         fuer eine Bank mit zwoelf Abschluessen die Zahl 0. */
+      annualYears: revenueA.length || fiscalYearCount([netIncomeA, ocfA, assetsA, equityA, pretaxA, epsA])
     };
   }
 

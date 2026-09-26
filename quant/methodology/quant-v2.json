@@ -1,6 +1,6 @@
 {
- "methodologyVersion": "quant-v2.1.0",
- "modelProfileId": "quant-v2.1.0-full-7f",
+ "methodologyVersion": "quant-v2.2.0",
+ "modelProfileId": "quant-v2.2.0-full-7f",
  "modelVersion": "2.0.0",
  "label": "VU Quant Score 2.0 · Full 7F",
  "status": "SPECIFIED_NOT_ACTIVE",
@@ -82,7 +82,7 @@
     "minimumComponents": 3,
     "minimumOriginalWeight": 0.6
    },
-   "sectorTreatment": "Generic formula is NOT_APPLICABLE for banks, insurers and REITs until separately versioned templates exist.",
+   "sectorTreatment": "Generic formula stays NOT_APPLICABLE for banks, insurance carriers and REITs; those three cohorts are measured by the separately versioned templates under industryTemplates. Insurance agents, brokers and services (SIC 6400-6411) are not carriers and use the generic formula.",
    "missingDataPolicy": "Invalid or unavailable inputs are null, never zero; legitimate negative values remain valid; available weights may renormalize only within the factor and must be disclosed.",
    "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation; counts are not winsorized.",
    "pitRequirements": "Use only filing observations with availableAt<=scoreCutoff; prefer acceptedAt, otherwise validated filedAt; later restatements remain invisible until their own availability.",
@@ -270,7 +270,7 @@
     "minimumComponents": 3,
     "minimumOriginalWeight": 0.6
    },
-   "sectorTreatment": "Industry then sector then universe normalization; industry-specific applicability remains explicit.",
+   "sectorTreatment": "Industry then sector then universe normalization; industry-specific applicability remains explicit. Banks, insurance carriers and REITs are measured by the separately versioned templates under industryTemplates instead of this generic formula.",
    "missingDataPolicy": "Negative earnings and FCF yields are valid adverse values; EV metrics require positive finite EV; negative equity makes bookToMarket unavailable.",
    "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation.",
    "pitRequirements": "Price, shares, cash and debt must be the latest values known at scoreCutoff; no today-known values in historical scores.",
@@ -334,7 +334,7 @@
     "minimumComponents": 3,
     "minimumOriginalWeight": 0.6
    },
-   "sectorTreatment": "Industry then sector then universe normalization; industry-specific applicability remains explicit.",
+   "sectorTreatment": "Industry then sector then universe normalization; industry-specific applicability remains explicit. Banks, insurance carriers and REITs are measured by the separately versioned templates under industryTemplates instead of this generic formula.",
    "missingDataPolicy": "Negative margins and returns are valid adverse values; invalid denominators are null; within-factor renormalization is disclosed.",
    "outlierHandling": "Continuous inputs are winsorized at peer and universe 2nd/98th percentiles after validation.",
    "pitRequirements": "Use only PIT-safe TTM and annual observations known at scoreCutoff.",
@@ -625,16 +625,167 @@
   "automaticWeightChanges": false,
   "weightOptimizationAgainstProductEvidenceBacktest": false
  },
+ "industryTemplates": {
+  "note": "Separately versioned templates for the industries whose generic Quality, Value and Profitability formulas are NOT_APPLICABLE. Components are derived only from metrics the issuers already publish in the consumer fundamental export; nothing is substituted and nothing is renamed.",
+  "normalization": "Template components are normalized across the 974 titles inside the industry gate, with the peer leg narrowing to the SIC group as usual. The insurance-carrier range alone holds 130 titles and could never meet the contract's 200-issuer universe minimum; the shared cohort meets it for every component (minimum 436 valid issuers measured 2026-09-26).",
+  "genericComponentsUnaffected": "Generic components keep their population without the gated titles, so no previously published value changes. The extension only opens what was NOT_APPLICABLE.",
+  "growth": "Growth stays generic in this version. It is explicitly exempt from the industry gate and already AVAILABLE for 256 of 601 banks; replacing it would recompute existing values instead of opening closed ones. Measured consequence: 345 banks keep no growth factor because they publish no revenue series.",
+  "BALANCE_SHEET_FINANCIAL": {
+   "version": "quant-v2-balance-sheet-financial-1.0.0",
+   "label": "Banks, savings institutions, lenders and brokers",
+   "appliesTo": "SIC 6020-6220",
+   "whyGenericFormulaFails": "Gross profit, net debt and operating margin are not how a deposit-taking or lending balance sheet is measured; measured tag coverage in this cohort is gross_profit 15 %, operating_income 25 %, revenue 60 %, against total_assets 99 % and stockholders_equity 99 %.",
+   "factors": {
+    "quality": {
+     "components": [
+      { "id": "equityToAssets", "weight": 0.3, "input": "stockholdersEquity/totalAssets", "window": "latest filing" },
+      { "id": "roaStability5y", "weight": 0.25, "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)", "window": "last 5 fiscal years; minimum 4" },
+      { "id": "positiveEarningsYears", "weight": 0.25, "input": "count(annualNetIncome>0)", "window": "last 5 fiscal years; minimum 4" },
+      { "id": "dividendCoverageByOcf", "weight": 0.2, "input": "operatingCashFlowTTM/annualDividendsPaid", "window": "TTM over latest fiscal year" }
+     ],
+     "mandatory": [ "equityToAssets", "one of roaStability5y or positiveEarningsYears" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    },
+    "profitability": {
+     "components": [
+      { "id": "roaTtm", "weight": 0.3, "input": "netIncomeTTM/averageTotalAssets", "window": "TTM" },
+      { "id": "roeTtm", "weight": 0.25, "input": "netIncomeTTM/stockholdersEquity", "window": "TTM against latest filing" },
+      { "id": "roaMedian3y", "weight": 0.25, "input": "median(annualNetIncome/annualTotalAssets)", "window": "last 3 fiscal years" },
+      { "id": "pretaxRoaTtm", "weight": 0.2, "input": "pretaxIncomeTTM/averageTotalAssets", "window": "TTM" }
+     ],
+     "mandatory": [ "one of roaTtm or roaMedian3y" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    },
+    "value": {
+     "components": [
+      { "id": "bookToMarket", "weight": 0.35, "input": "stockholdersEquity/marketCap", "window": "latest filing" },
+      { "id": "earningsYield", "weight": 0.3, "input": "netIncomeTTM/marketCap", "window": "TTM" },
+      { "id": "pretaxEarningsYield", "weight": 0.2, "input": "pretaxIncomeTTM/marketCap", "window": "TTM" },
+      { "id": "dividendYield", "weight": 0.15, "input": "annualDividendsPaid/marketCap", "window": "latest fiscal year" }
+     ],
+     "mandatory": [ "one of bookToMarket or earningsYield" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    }
+   }
+  },
+  "INSURANCE_CARRIER": {
+   "version": "quant-v2-insurance-carrier-1.0.0",
+   "label": "Insurance carriers",
+   "appliesTo": "SIC 6300-6399",
+   "notComputable": "No combined ratio: incurred losses and underwriting expenses are not carried as separate tags in the consumer export, and a combined ratio without them would be one in name only.",
+   "differsFromBalanceSheetFinancial": "Carriers report revenue (premiums earned plus investment income) at 100 % measured coverage, so the margin on revenue is available to them and carries a quarter of the profitability weight.",
+   "factors": {
+    "quality": {
+     "components": [
+      { "id": "equityToAssets", "weight": 0.3, "input": "stockholdersEquity/totalAssets", "window": "latest filing" },
+      { "id": "roaStability5y", "weight": 0.25, "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)", "window": "last 5 fiscal years; minimum 4" },
+      { "id": "positiveEarningsYears", "weight": 0.25, "input": "count(annualNetIncome>0)", "window": "last 5 fiscal years; minimum 4" },
+      { "id": "dividendCoverageByOcf", "weight": 0.2, "input": "operatingCashFlowTTM/annualDividendsPaid", "window": "TTM over latest fiscal year" }
+     ],
+     "mandatory": [ "equityToAssets", "one of roaStability5y or positiveEarningsYears" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    },
+    "profitability": {
+     "components": [
+      { "id": "roaTtm", "weight": 0.25, "input": "netIncomeTTM/averageTotalAssets", "window": "TTM" },
+      { "id": "roeTtm", "weight": 0.25, "input": "netIncomeTTM/stockholdersEquity", "window": "TTM against latest filing" },
+      { "id": "netMarginTtm", "weight": 0.25, "input": "netIncomeTTM/revenueTTM", "window": "TTM, same period end" },
+      { "id": "roaMedian3y", "weight": 0.25, "input": "median(annualNetIncome/annualTotalAssets)", "window": "last 3 fiscal years" }
+     ],
+     "mandatory": [ "one of roaTtm or roaMedian3y" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    },
+    "value": {
+     "components": [
+      { "id": "bookToMarket", "weight": 0.35, "input": "stockholdersEquity/marketCap", "window": "latest filing" },
+      { "id": "earningsYield", "weight": 0.3, "input": "netIncomeTTM/marketCap", "window": "TTM" },
+      { "id": "pretaxEarningsYield", "weight": 0.2, "input": "pretaxIncomeTTM/marketCap", "window": "TTM" },
+      { "id": "dividendYield", "weight": 0.15, "input": "annualDividendsPaid/marketCap", "window": "latest fiscal year" }
+     ],
+     "mandatory": [ "one of bookToMarket or earningsYield" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    }
+   }
+  },
+  "REAL_ESTATE_TRUST": {
+   "version": "quant-v2-real-estate-trust-1.0.0",
+   "label": "Real estate investment trusts",
+   "appliesTo": "SIC 6798",
+   "notComputable": "No FFO and no AFFO. Both require removing gains on property sales from earnings, and that position does not appear in the consumer export; measured, 89 % of these titles publish depreciation and none publish sale gains. The template therefore measures the operating cash flow and calls it that.",
+   "whyEarningsCarryTheSmallestWeight": "Depreciation dominates a property balance sheet, which is the very reason FFO exists. The earnings-based measure is kept for comparability but weighted lowest, and the cash measures lead.",
+   "factors": {
+    "quality": {
+     "components": [
+      { "id": "equityToAssets", "weight": 0.3, "input": "stockholdersEquity/totalAssets", "window": "latest filing" },
+      { "id": "dividendCoverageByOcf", "weight": 0.3, "input": "operatingCashFlowTTM/annualDividendsPaid", "window": "TTM over latest fiscal year" },
+      { "id": "roaStability5y", "weight": 0.2, "input": "medianAbsoluteDeviation(annualNetIncome/annualTotalAssets)", "window": "last 5 fiscal years; minimum 4" },
+      { "id": "positiveEarningsYears", "weight": 0.2, "input": "count(annualNetIncome>0)", "window": "last 5 fiscal years; minimum 4" }
+     ],
+     "mandatory": [ "equityToAssets", "one of dividendCoverageByOcf, roaStability5y or positiveEarningsYears" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    },
+    "profitability": {
+     "components": [
+      { "id": "cashReturnOnAssets", "weight": 0.35, "input": "operatingCashFlowTTM/averageTotalAssets", "window": "TTM" },
+      { "id": "roaMedian3y", "weight": 0.25, "input": "median(annualNetIncome/annualTotalAssets)", "window": "last 3 fiscal years" },
+      { "id": "ocfMarginTtm", "weight": 0.25, "input": "operatingCashFlowTTM/revenueTTM", "window": "TTM, same period end" },
+      { "id": "roaTtm", "weight": 0.15, "input": "netIncomeTTM/averageTotalAssets", "window": "TTM" }
+     ],
+     "mandatory": [ "one of cashReturnOnAssets or roaMedian3y" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    },
+    "value": {
+     "components": [
+      { "id": "cashFlowYield", "weight": 0.35, "input": "operatingCashFlowTTM/marketCap", "window": "TTM" },
+      { "id": "bookToMarket", "weight": 0.25, "input": "stockholdersEquity/marketCap", "window": "latest filing" },
+      { "id": "dividendYield", "weight": 0.25, "input": "annualDividendsPaid/marketCap", "window": "latest fiscal year" },
+      { "id": "earningsYield", "weight": 0.15, "input": "netIncomeTTM/marketCap", "window": "TTM" }
+     ],
+     "mandatory": [ "one of cashFlowYield or bookToMarket" ],
+     "minimumDataRequirements": { "minimumComponents": 3, "minimumOriginalWeight": 0.6 }
+    }
+   }
+  }
+ },
  "knownGates": [
   "licensed historical PIT analyst-consensus snapshots",
   "certified broad-market total-return benchmark",
   "historical PIT universe membership and classifications",
   "complete corporate-action semantics",
   "PIT shares and enterprise-value inputs",
-  "industry templates for banks, insurers and REITs",
+  "industry templates beyond banks, insurance carriers and REITs: a combined ratio for carriers needs incurred losses and underwriting expenses, an FFO for REITs needs gains on property sales, and neither position is carried in the export",
+  "an industry growth template: growth stays generic, so 345 banks without a revenue series keep no growth factor",
   "broad component coverage and cross-sectional validation"
  ],
  "versionHistory": [
+  {
+   "version": "quant-v2.2.0",
+   "date": "2026-09-26",
+   "change": "Separately versioned industry templates for banks, savings institutions, lenders and brokers (SIC 6020-6220), insurance carriers (SIC 6300-6399) and REITs (SIC 6798) measure Quality, Value and Profitability where the generic formula is NOT_APPLICABLE. The insurance gate is narrowed from 6300-6411 to 6300-6399, so insurance agents, brokers and services use the generic formula. Growth stays generic.",
+   "why": "974 titles sat inside the industry gate and 2,922 factor cells said nothing but 'no industry template'. The cohorts publish the inputs their own industries are measured by - total assets and equity at 98-100 %, net income at 98-100 %, operating cash flow at 97-100 % - so the gap was a missing methodology, not missing data. No new source, no new provider, no renamed metric.",
+   "derivedFromPublishedTagsOnly": true,
+   "measuredImpact": {
+    "titlesInsideTheGate": 974,
+    "sectorTemplateMissingCellsBefore": 2922,
+    "sectorTemplateMissingCellsAfter": 0,
+    "factorCellsOpened": 2325,
+    "titlesWithANewFactor": 901,
+    "factorCellsLost": 0,
+    "titlesWithNoFactorAtAll": "795 -> 786",
+    "reportingPeriodFilled": "4110 -> 4862 titles, +752 from the repair of the revenue-anchored period",
+    "existingValuesReRanked": 4744,
+    "reRankMeanPoints": 0.029,
+    "reRankMaxPoints": 1.71,
+    "displayBandChanges": 2,
+    "changeStatementsAltered": 0
+   },
+   "whyTheEvidenceVersionDoesNotMove": "vu-factor-evidence-2.0.0 keeps its snapshot series. The re-ranking is a side effect of returning 25 broker titles to the generic cross-section, and it was measured against every published record: mean 0.029 points, maximum 1.71, and not a single one of the 6,441 titles changes its change statement, because the change engine calls a factor move material at 3 points. Starting a new series would have emptied every title's comparison history to record a movement the engine itself does not consider one.",
+   "evidence": [
+    "docs/VU_QUANT_2_ORCHESTRATOR_STATE.md",
+    "quant/tests/quant-v2-methodology.test.mjs",
+    "quant/tests/fundamental-inputs.test.mjs"
+   ]
+  },
   {
    "version": "quant-v2.1.0",
    "date": "2026-09-24",
