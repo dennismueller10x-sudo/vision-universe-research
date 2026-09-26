@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_d17c14795c50e86d",
+  "content_id": "vu-web-4e4d3aaef2a999a2-20260926",
+  "attempt": 2,
+  "supersedes_attempt": 1,
+  "attempt_reason": "Owner-Test der drei Fixes vom 26.09. (Atlas-Groesse 10-20%, brand_elements-Schema, Hook-Auswahl FRAGE-Extraktion) gegen dieselbe Story, die den urspruenglichen Befund zeigte (PR #250).",
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "My husband and I are in our 50s and have no kids. We have $2 million in IRAs and 401(k)s. Do we really need a will?",
+  "objective": "Aus einer aktuellen, oeffentlich recherchierten Story EINEN fertigen, veroeffentlichungsreifen Markenpost erzeugen: Motiv, deutscher Hook-Text, Logo und Atlas in einem Zug komponiert — kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer Boersenticker, und kein Rohbild fuer eine spaetere Ueberlagerung. Hook und Caption durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1).",
+  "audience": "Anleger, die aktuelle Marktentwicklungen verfolgen",
+  "hook_strategy": {
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "instruction": "`grounding_hook_en` ist der aus der echten Quelle deterministisch gewaehlte Hook (siehe `source_story`) — NICHT auf Deutsch, nur Belegmaterial. Liefere GENAU EINE Hook-Variante: eine starke, kurze, soziale DEUTSCHE Uebersetzung/Adaption dieses Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2)."
+  },
+  "visual_strategy": {
+    "strategy_id": "GENERATIVE",
+    "instruction": "Hochwertige, thematisch zur Meldung passende Editorial-Szene aus der Finanz-/Wirtschaftswelt. Keine Schrift, kein Logo, kein Wasserzeichen, generoese Freiflaeche fuer eine spaeter aufgesetzte Kopfzeile. Fotorealistisch, kein Diagramm, kein Bildschirmfoto, kein Dashboard, kein generischer Boersenticker.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": [
+      "near-black #050505 background as a bold FLAT color field (not a photographic scene)",
+      "one confident teal/mint accent close to #5FE0C0 used as a LARGE flat shape or color block (a poster panel, not a thin highlight)",
+      "white for the headline text, set at poster scale",
+      "soft grey for secondary text only"
+    ],
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "portrait 4:5, edge-to-edge — no letterboxing, no black bars, the flat color field fills the entire frame. Compose ONE finished, publish-ready brand post — not a raw scene for later text overlay. Bake the German headline text (see hook_strategy) directly into the image as OVERSIZED, bold, perfectly legible typography that dominates roughly a third of the frame (upper band), set against the flat color field, not over busy detail. The headline typography and the supporting graphic motif (a shape, a symbol, an arrow, a gesture — one clear idea, never a cluttered realistic scene) are the MAIN visual content and together occupy most of the frame. Composite the exact brand mascot file (see brand_assets.atlas) as a SMALL supporting presence only — roughly 10-20% of the frame's area, sized like a signature character cameo (comparable to how the logo sits), not a dominant foreground figure. It must never compete with the headline or the main motif for attention, and never occupy the visual center of the composition. Composite the exact brand logo file (see brand_assets.logo) small and quiet, top-left corner, as a signature, not a design element. The result must read as ONE cohesive, intentionally designed brand poster — logo and mascot reproduced exactly as given (only scaled/cropped/reframed per their brand contract), never redrawn or restyled into a different art style, and never enlarged into the main subject of the image.",
+    "restrictions": [
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Keine Prognose-Aussage im Bildtext",
+      "Logo und Atlas exakt aus den angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "atlas": "assets/atlas.png",
+    "instruction": "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren). Atlas' Gesicht, Mimik und Proportionen muessen exakt dem Referenzbild entsprechen — dasselbe Laecheln, dieselben Gesichtszuege, derselbe Blick. Eine andere Pose, ein anderer Blickwinkel oder eine Handbewegung sind erlaubt; eine veraenderte, neu interpretierte oder auch nur leicht abweichende Mimik ist es nicht. Wichtig fuer die Rueckmeldung: gib pro Bildvariante zusaetzlich ein Feld `brand_elements` mit GENAU diesen drei Boolean-Feldern zurueck: `includes_logo`, `includes_atlas`, `includes_hook_text_de` — jedes nur `true`, wenn das jeweilige Element tatsaechlich im fertigen Bild zu sehen ist. Kein Freitext, keine anderen Feldnamen, keine Dateipfade an dieser Stelle — nur diese drei Booleans."
+  },
+  "evidence": [
+    {
+      "id": "ev1",
+      "statement": "My husband and I are in our 50s and have no kids.",
+      "value": "50",
+      "unit": null,
+      "entity": "My husband and I are in our 50s and have no kids. We have $2 million in IRAs and 401(k)s. Do we really need a will?",
+      "metric": "Web-Beleg 1",
+      "source": "MarketWatch Top Stories",
+      "observed_at": "2026-09-26T15:00:00.000Z"
+    },
+    {
+      "id": "ev2",
+      "statement": "We have $2 million in IRAs and 401(k)s.",
+      "value": "2",
+      "unit": null,
+      "entity": "My husband and I are in our 50s and have no kids. We have $2 million in IRAs and 401(k)s. Do we really need a will?",
+      "metric": "Web-Beleg 2",
+      "source": "MarketWatch Top Stories",
+      "observed_at": "2026-09-26T15:00:00.000Z"
+    },
+    {
+      "id": "ev3",
+      "statement": "We have $2 million in IRAs and 401(k)s.",
+      "value": "401",
+      "unit": null,
+      "entity": "My husband and I are in our 50s and have no kids. We have $2 million in IRAs and 401(k)s. Do we really need a will?",
+      "metric": "Web-Beleg 3",
+      "source": "MarketWatch Top Stories",
+      "observed_at": "2026-09-26T15:00:00.000Z"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    },
+    {
+      "id": "trend",
+      "text": "Keine Entwicklung ueber Zeit behaupten ('steigt seit', 'faellt weiter') — es liegt ein Stand vor, keine Reihe."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-web-4e4d3aaef2a999a2-20260926/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "grounding_hook_en": "We have $2 million in IRAs and 401(k)s.",
+  "unavailable": [],
+  "evidence_package": {
+    "package_id": "vu-web-4e4d3aaef2a999a2-20260926",
+    "as_of": "2026-09-26T15:00:00.000Z",
+    "methodology_version": "web-research-1.0",
+    "data_version": "web-research-1.0"
+  },
+  "source_story": {
+    "title": "My husband and I are in our 50s and have no kids. We have $2 million in IRAs and 401(k)s. Do we really need a will?",
+    "link": "https://www.marketwatch.com/story/my-husband-and-i-are-in-our-50s-and-have-no-kids-we-have-2-million-do-we-need-a-will-62fb422f?mod=mw_rss_topstories",
+    "source": "MarketWatch Top Stories",
+    "publishedAt": "2026-09-26T15:00:00.000Z"
+  }
+}
