@@ -44,43 +44,61 @@
                     { id: "6M", label: "6M", tage: 183 }, { id: "1Y", label: "1J", tage: 366 }];
 
   /* ---------------------------------------------------------- Icon-System
-     Kleine, geometrische Piktogramme je Dimension - dieselbe Bedeutung wie
-     Name und Rolle im Text daneben, nur schneller erfassbar (App-Icon statt
-     Fliesstext). Rein dekorativ (aria-hidden), keine neue Aussage. */
+     Gefuellte Symbole im Stil von iOS-Systemsymbolen: weiss auf einer
+     farbigen, abgerundeten Kachel (die Farbe setzt das CSS). Ein Satz fuer
+     die ganze Seite - Menue, Kacheln, Listen. Rein dekorativ (aria-hidden):
+     Name und Rolle stehen immer daneben als Text. */
+  var V = { fill: "currentColor", stroke: "none" };
+  function mit(a) { var o = {}; Object.keys(V).forEach(function (k) { o[k] = V[k]; }); Object.keys(a).forEach(function (k) { o[k] = a[k]; }); return o; }
+  var GLYPHEN = {
+    trend: [["path", { d: "M4 4.5v15h15.5", "stroke-width": "2" }], ["path", { d: "M7.5 15l3.8-4.2 3 2.6L19 7.5" }], ["circle", mit({ cx: 19, cy: 7.5, r: 2 })]],
+    balken: [["rect", mit({ x: 3.5, y: 12, width: 4.6, height: 8.5, rx: 1.4 })], ["rect", mit({ x: 9.7, y: 4.5, width: 4.6, height: 16, rx: 1.4 })],
+             ["rect", mit({ x: 15.9, y: 8.5, width: 4.6, height: 12, rx: 1.4 })]],
+    tacho: [["path", { d: "M4 17.5a8 8 0 1 1 16 0" }], ["path", { d: "M12 17.5l4.3-5.3" }], ["circle", mit({ cx: 12, cy: 17.5, r: 2.2 })]],
+    puls: [["path", { d: "M2.5 12.5h4.2l2.2-5.5 3.8 11 2.7-8.2 1.6 2.7h4.5" }]],
+    knoten: [["path", { d: "M6 17.5L12 6.5l6 11z", "stroke-width": "1.8" }], ["circle", mit({ cx: 6, cy: 17.5, r: 3 })],
+             ["circle", mit({ cx: 18, cy: 17.5, r: 3 })], ["circle", mit({ cx: 12, cy: 6.5, r: 3 })]],
+    kompass: [["circle", { cx: 12, cy: 12, r: 8.6, "stroke-width": "2" }], ["path", mit({ d: "M15.6 8.4l-2.2 5-5 2.2 2.2-5z" })]],
+    pfeile: [["path", { d: "M8 19.5V5.5M4.3 9.2L8 5.5l3.7 3.7" }], ["path", { d: "M16 4.5v14M12.3 14.8l3.7 3.7 3.7-3.7" }]],
+    kurve: [["path", { d: "M4 4.5v15h15.5", "stroke-width": "2" }], ["path", { d: "M7.5 15.5c1.8-3.8 3.6-4.6 5-2.4 1.5 2.2 3.3.9 6-5.1" }]],
+    regler: [["path", { d: "M4 7h16M4 12h16M4 17h16", "stroke-width": "1.8", opacity: "0.6" }], ["circle", mit({ cx: 9, cy: 7, r: 2.6 })],
+             ["circle", mit({ cx: 15.5, cy: 12, r: 2.6 })], ["circle", mit({ cx: 7.5, cy: 17, r: 2.6 })]],
+    funken: [["path", mit({ d: "M10.5 3l1.9 5.3 5.3 1.9-5.3 1.9-1.9 5.3-1.9-5.3-5.3-1.9 5.3-1.9z" })],
+             ["path", mit({ d: "M18 14.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" })]],
+    lupe: [["circle", { cx: 10.3, cy: 10.3, r: 5.8, "stroke-width": "2.5" }], ["path", { d: "M14.6 14.6L19.8 19.8", "stroke-width": "3" }]],
+    auge: [["path", mit({ d: "M12 5.5c4.7 0 8.1 3.7 9.6 6.5-1.5 2.8-4.9 6.5-9.6 6.5S3.9 14.8 2.4 12C3.9 9.2 7.3 5.5 12 5.5z" })],
+           ["circle", { cx: 12, cy: 12, r: 3.3, fill: "currentColor", stroke: "none", class: "dx-glyph-loch" }]],
+    blitz: [["path", mit({ d: "M13.4 2.5L5 13.8h6.2l-1.1 7.7 8.9-11.6h-6.3z" })]],
+    hoch: [["path", { d: "M3.5 17.5l5.8-5.8 3.6 3.6 7-7.3", "stroke-width": "2.6" }], ["path", { d: "M14.3 8h5.9v5.9", "stroke-width": "2.6" }]],
+    runter: [["path", { d: "M3.5 6.5l5.8 5.8 3.6-3.6 7 7.3", "stroke-width": "2.6" }], ["path", { d: "M14.3 16h5.9v-5.9", "stroke-width": "2.6" }]],
+    kerzen: [["path", { d: "M6.5 3.5v17M12 6v14M17.5 3v13", "stroke-width": "1.7" }], ["rect", mit({ x: 4.3, y: 7.5, width: 4.4, height: 8, rx: 1.2 })],
+             ["rect", mit({ x: 9.8, y: 10, width: 4.4, height: 6.5, rx: 1.2 })], ["rect", mit({ x: 15.3, y: 5, width: 4.4, height: 7.5, rx: 1.2 })]],
+    flamme: [["path", mit({ d: "M12.2 2.5c.6 3.3 3 4.9 4.5 7.4 1.6 2.6 1.4 6-.9 8.2a6.4 6.4 0 0 1-10.4-4.9c.1-2.6 1.6-4.1 2.7-5.2.1 1.9.9 3.1 2 3.7-.5-3.6.4-6.7 2.1-9.2z" })]],
+    barren: [["path", mit({ d: "M2.8 20.5l1.8-5.6h6.2l1.8 5.6z" })], ["path", mit({ d: "M11.4 20.5l1.8-5.6h6.2l1.8 5.6z" })],
+             ["path", mit({ d: "M7.1 13.6l1.8-5.6h6.2l1.8 5.6z" })]],
+    bitcoin: [["text", mit({ x: 12, y: 17.6, "text-anchor": "middle", "font-size": "16", "font-weight": "800", "font-family": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif" }), "₿"]],
+    prozent: [["circle", mit({ cx: 7.5, cy: 7.5, r: 2.8 })], ["circle", mit({ cx: 16.5, cy: 16.5, r: 2.8 })], ["path", { d: "M18 6L6 18", "stroke-width": "2.6" }]],
+    saeulen: [["path", mit({ d: "M2.8 9.3L12 3.8l9.2 5.5z" })], ["rect", mit({ x: 4.6, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
+              ["rect", mit({ x: 9.2, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 13.8, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
+              ["rect", mit({ x: 17.4, y: 10.6, width: 2.1, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 2.8, y: 18.4, width: 18.4, height: 2.4, rx: 0.8 })]],
+    waehrung: [["text", mit({ x: 12, y: 16.4, "text-anchor": "middle", "font-size": "12", "font-weight": "800", "letter-spacing": "-0.5", "font-family": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif" }), "€$"]]
+  };
+  /* Dimensionen und Vergleichszeilen auf ihr Symbol. */
+  var GLYPH_VON = { TREND: "trend", BREADTH: "balken", MOMENTUM: "tacho", RISK: "puls", CROSS_ASSET: "knoten", ENVIRONMENT: "kompass", US10Y: "prozent" };
+
   function symbolSvg(key) {
-    if (!global.document) return null;
+    var teile = GLYPHEN[GLYPH_VON[key] || key];
+    if (!global.document || !teile) return null;
     var ns = "http://www.w3.org/2000/svg";
     var svg = global.document.createElementNS(ns, "svg");
-    svg.setAttribute("viewBox", "0 0 20 20");
-    svg.setAttribute("class", "dx-m3-icon-svg");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("fill", "none");
-    svg.setAttribute("stroke", "currentColor");
-    svg.setAttribute("stroke-width", "1.6");
-    svg.setAttribute("stroke-linecap", "round");
-    svg.setAttribute("stroke-linejoin", "round");
-    function n(tag, a) { var e = global.document.createElementNS(ns, tag); Object.keys(a).forEach(function (k) { e.setAttribute(k, a[k]); }); svg.appendChild(e); return e; }
-    if (key === "TREND") {
-      n("polyline", { points: "2,17 8,11 12,14 18,4" });
-      n("circle", { cx: 18, cy: 4, r: 1.5, fill: "currentColor", stroke: "none" });
-    } else if (key === "BREADTH") {
-      n("rect", { x: 2, y: 10, width: 3.6, height: 8, rx: 1, fill: "currentColor", stroke: "none" });
-      n("rect", { x: 8.2, y: 5, width: 3.6, height: 13, rx: 1, fill: "currentColor", stroke: "none" });
-      n("rect", { x: 14.4, y: 12, width: 3.6, height: 6, rx: 1, fill: "currentColor", stroke: "none" });
-    } else if (key === "MOMENTUM") {
-      n("line", { x1: 10, y1: 5, x2: 18, y2: 5 });
-      n("line", { x1: 6, y1: 10, x2: 18, y2: 10 });
-      n("line", { x1: 2, y1: 15, x2: 18, y2: 15 });
-    } else if (key === "RISK") {
-      n("polyline", { points: "2,10 6,4 10,16 14,4 18,10" });
-    } else if (key === "CROSS_ASSET") {
-      n("line", { x1: 5, y1: 15, x2: 15, y2: 15 });
-      n("line", { x1: 5, y1: 15, x2: 10, y2: 4 });
-      n("line", { x1: 15, y1: 15, x2: 10, y2: 4 });
-      n("circle", { cx: 5, cy: 15, r: 1.7, fill: "currentColor", stroke: "none" });
-      n("circle", { cx: 15, cy: 15, r: 1.7, fill: "currentColor", stroke: "none" });
-      n("circle", { cx: 10, cy: 4, r: 1.7, fill: "currentColor", stroke: "none" });
-    }
+    [["viewBox", "0 0 24 24"], ["class", "dx-m3-icon-svg"], ["aria-hidden", "true"], ["fill", "none"], ["stroke", "currentColor"],
+     ["stroke-width", "2.3"], ["stroke-linecap", "round"], ["stroke-linejoin", "round"]].forEach(function (a) { svg.setAttribute(a[0], a[1]); });
+    teile.forEach(function (t) {
+      var e = global.document.createElementNS(ns, t[0]);
+      Object.keys(t[1]).forEach(function (k) { e.setAttribute(k, t[1][k]); });
+      if (t[2]) e.textContent = t[2];
+      svg.appendChild(e);
+    });
     return svg;
   }
   function iconChip(key, rolle) {
@@ -492,11 +510,12 @@
       var zahlen = r.key === "US10Y" ? r.deltaText
         : (r.fromValue || r.toValue ? (r.fromValue === r.toValue ? r.toValue : (r.fromValue || "–") + " → " + (r.toValue || "–")) : null);
       var gleich = r.from === r.to || r.from === "–";
+      var ton = r.change === "BETTER" ? "support" : r.change === "WORSE" ? "headwind" : r.key === "US10Y" || r.change === "CONTEXT" ? "context" : "neutral";
       var kern = [
-        el("span", { class: "dx-m3-vj-name", text: r.label }),
+        el("span", { class: "dx-m3-vj-kopf" }, [iconChip(r.key, ton), el("span", { class: "dx-m3-vj-name", text: r.label }),
+          el("span", { class: "dx-m3-vj-status is-" + String(r.change).toLowerCase(), text: AENDERUNG[r.change] || "" })]),
         el("span", { class: "dx-m3-vj-wechsel" }, gleich ? [el("b", { text: r.to })]
           : [el("span", { class: "dx-m3-vj-von", text: r.from }), el("span", { class: "dx-m3-vj-pfeil", "aria-hidden": "true", text: " → " }), el("b", { text: r.to })]),
-        el("span", { class: "dx-m3-vj-status is-" + String(r.change).toLowerCase(), text: AENDERUNG[r.change] || "" }),
         zahlen ? el("span", { class: "dx-m3-vj-zahl", text: zahlen }) : null
       ].filter(Boolean);
       var sr = r.label + ": " + r.from + " zu " + r.to + (AENDERUNG[r.change] ? ", " + AENDERUNG[r.change] : "");
@@ -532,7 +551,7 @@
     function spalte(r, xs) {
       if (!xs.length) return null;
       return el("div", { class: "dx-m3-warum-spalte is-" + r }, [el("h3", { text: ROLLE[r] }), el("ul", {}, xs.map(function (x) {
-        return el("li", {}, [el("i", { "aria-hidden": "true", text: ROLLE_ZEICHEN[r] }), el("span", {}, [el("b", { text: (DIM[x.dimension] || {}).name || x.dimension }), document_text(" " + de(x.text))])]);
+        return el("li", {}, [iconChip(x.dimension, r), el("span", {}, [el("b", { text: (DIM[x.dimension] || {}).name || x.dimension }), document_text(" " + de(x.text))])]);
       }))]);
     }
     return el("section", { class: "dx-m3-warum", id: "maerkte-warum", "aria-label": "Warum diese Einordnung?" }, [
@@ -549,6 +568,8 @@
   function worauf(p, namen) {
     var xs = p.whatMatters;
     if (!xs || !xs.length) return null;
+    var rolle = {}, why = p.environment && p.environment.why;
+    if (why) Object.keys(why).forEach(function (r) { why[r].forEach(function (x) { rolle[x.dimension] = r; }); });
     return el("section", { class: "dx-m3-worauf", id: "maerkte-worauf", "aria-label": "Worauf es jetzt ankommt" }, [
       kopfzeile("Beobachten", "Worauf es jetzt ankommt", "Nicht die größten Bewegungen – die Faktoren, die das Marktbild tragen oder kippen könnten. Die genauen Schwellen stehen darunter."),
       el("ol", { class: "dx-m3-worauf-liste" }, xs.map(function (x, i) {
@@ -558,8 +579,9 @@
         return el("li", { class: "dx-m3-punkt-item", "data-dimension": x.dimension }, [
           el("span", { class: "dx-m3-nr", "aria-hidden": "true", "data-nr": String(i + 1).padStart(2, "0") }),
           el("div", {}, [
+            el("div", { class: "dx-m3-punkt-kopf" }, [iconChip(x.dimension, rolle[x.dimension] || (x.dimension === "CROSS_ASSET" ? "context" : "neutral")),
+              el("p", { class: "dx-m3-zustandzeile", text: "Jetzt: " + x.stateLabel })]),
             el("h3", { text: x.title }),
-            el("p", { class: "dx-m3-zustandzeile", text: "Jetzt: " + x.stateLabel }),
             el("p", { text: de(x.why) }),
             links.length ? el("div", { class: "dx-m3-chips" }, links) : null
           ].filter(Boolean))
@@ -611,7 +633,8 @@
     if (!c || (!c.better.length && !c.worse.length)) return null;
     function spalte(art, xs, r) {
       return el("div", { class: "dx-m3-aendern-spalte is-" + r }, [
-        el("h3", {}, [el("span", { class: "dx-m3-sz-tag is-" + r, text: art }), document_text(" – was müsste eintreten?")]),
+        el("div", { class: "dx-m3-aendern-kopf" }, [iconChip(r === "besser" ? "hoch" : "runter", r === "besser" ? "support" : "headwind"),
+          el("h3", {}, [el("span", { class: "dx-m3-sz-tag is-" + r, text: art }), document_text(" – was müsste eintreten?")])]),
         xs.length ? el("ul", {}, xs.map(function (x) {
           return el("li", {}, [
             el("p", { class: "dx-m3-aendern-ziel", text: (DIM[x.dimension] || {}).name + " → " + x.toLabel + " · Einordnung „" + x.levelLabel + "“" }),
@@ -864,6 +887,7 @@
       kopfzeile("Markt jetzt", "Was heute auffällt", "Bewegungen, die gemessen an der üblichen Tagesschwankung des jeweiligen Markts herausstechen – zu Geschichten gebündelt, ohne Ursachen zu behaupten."),
       el("ol", { class: "dx-m3-story-liste" }, st.map(function (s) {
         return el("li", { class: "dx-m3-story is-" + s.direction, "data-story": s.id }, [
+          iconChip(s.direction === "up" ? "hoch" : s.direction === "down" ? "runter" : "blitz", "story-" + s.direction),
           el("h3", { text: s.title }),
           el("p", { class: "dx-m3-story-lead", text: s.lead }),
           el("div", { class: "dx-m3-story-werte" }, s.items.map(function (it) {
@@ -901,7 +925,7 @@
 
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MarketIntelligence = {
-    hero: hero, kacheln: kacheln, landkarte: landkarte, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
+    hero: hero, kacheln: kacheln, landkarte: landkarte, glyph: symbolSvg, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
     verlauf: verlauf, breite: breite, crossAsset: crossAsset, stories: stories, beleben: beleben,
     naechsteBewertung: naechsteBewertung, zyklusText: zyklusText, ZEITRAEUME: ZEITRAEUME
   };
