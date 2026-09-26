@@ -633,9 +633,18 @@ html:not([data-theme=light]) .dv2 .dx-m3{--m3-brand-glow:#3dffc4}
 /* Signature-Glow: ein zweiter, zustandsunabhaengiger Akzent auf den dunklen
    "Kino"-Flaechen (Hero, Verlauf, Detail-Chart) - Stil-Anleihe bei einer
    Referenz mit Schwarz+Gruen-Glow, ohne deren Inhalte. Traegt keine
-   Bedeutung (nicht bullish/bearish) und ueberlagert nie Text. */
+   Bedeutung (nicht bullish/bearish) und ueberlagert nie Text. Kraeftiger
+   als die erste Fassung (Owner-Feedback: mehr sichtbare Wirkung). */
 .dv2 .dx-m3-hero,.dv2 .dx-m3-verlauf,.dv2 .dx-md-chartbereich{position:relative;isolation:isolate}
 .dv2 .dx-m3-hero::after,.dv2 .dx-m3-verlauf::after,.dv2 .dx-md-chartbereich::after{
-  content:"";position:absolute;inset:-30% -10% auto auto;width:60%;height:80%;z-index:-1;pointer-events:none;
-  background:radial-gradient(closest-side,color-mix(in srgb,var(--m3-brand-glow) 20%,transparent),transparent 72%)}
-.dv2 .dx-m3-zustand{text-shadow:0 0 28px color-mix(in srgb,var(--m3-brand-glow) 22%,transparent)}
+  content:"";position:absolute;inset:-45% -20% auto auto;width:90%;height:130%;z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--m3-brand-glow) 50%,transparent),transparent 70%)}
+.dv2 .dx-m3-zustand{text-shadow:0 0 38px color-mix(in srgb,var(--m3-brand-glow) 45%,transparent),0 0 90px color-mix(in srgb,var(--m3-brand-glow) 25%,transparent)}
+
+/* Primaerer CTA als kraeftiger gruener Akzent (wie ein "Sei dabei"-Knopf) -
+   reine Navigations-Chrome, keine Marktbedeutung, deshalb unbedenklich in
+   der Signalfarbe. */
+.dv2 .dx-m3-cta{background:var(--m3-brand-glow);color:#04140f;box-shadow:0 0 0 0 transparent}
+.dv2 .dx-m3-cta:hover{box-shadow:0 8px 26px color-mix(in srgb,var(--m3-brand-glow) 55%,transparent)}
+.dv2 .dx-m3-cta.is-leise{background:transparent;color:var(--m3-brand-glow);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--m3-brand-glow) 55%,transparent)}
+.dv2 .dx-m3-cta.is-leise:hover{background:color-mix(in srgb,var(--m3-brand-glow) 12%,transparent);box-shadow:inset 0 0 0 1.5px var(--m3-brand-glow)}
