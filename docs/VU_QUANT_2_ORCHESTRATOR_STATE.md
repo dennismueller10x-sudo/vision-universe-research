@@ -186,6 +186,35 @@ Faktorwert und 21 ohne Zeile; Setup/Technical 68 mit zu kurzer Historie; dazu di
 gehandelten und die 2 mit einer Feiertagsbar, beide methodisch richtig ausgeschlossen und jetzt
 richtig benannt.
 
+### Die Gegenprobe über die ÜBRIGEN Stationen: kein verdeckter Riegel mehr
+
+Zweimal an einem Tag lautete der Befund „die Daten sind da, etwas anderes hält sie zurück". Danach
+ist die Frage berechtigt, ob dieselbe Signatur noch woanders steckt. Über dieselbe 500er-Stichprobe
+gemessen, je Station gegen ihre eigene Eingangslage:
+
+| Prüfung | Befund |
+|---|---:|
+| `chart` sagt `SOURCE_MISSING`, obwohl die kompakte Kursreihe im Repository liegt | **0** |
+| `factorStrength` nicht gedeckt, obwohl eine Screening-Zeile existiert | **0** |
+| `change` nennt `NO_COMPARABLE_OBSERVATION`, obwohl zwei veröffentlichte Stände vorliegen | **0** von 5 Kandidaten |
+
+Die fünf Kandidaten (GYGY, MFP, OCAC, REF, VCRE) stehen in **allen drei** Snapshots
+(2026-09-23/24/25) — und tragen dort je **sieben `null`**. Es gibt zwei Stände und nichts zu
+vergleichen; die Station sagt genau das. Damit ist der Satz belegbar:
+
+> **Nach den beiden Fixes hält keine Station mehr etwas zurück, dessen Eingangsdaten vorliegen.**
+> Jede verbleibende Lücke der Reise ist eine Datengrenze, keine Code-Lücke.
+
+### Der nächste Milestone folgt daraus, nicht aus einer Rangliste
+
+Wenn Deckung nicht mehr an Code hängt, ist der schwächste *echte* Product-Gap nicht die Deckung,
+sondern die **Verständlichkeit für die datenarme Kohorte**. Gemessen an der Stichprobe: 382 von 500
+Titeln bekommen alle elf Stationen, aber **56 bekommen genau sechs**, 26 sieben, sechs fünf, zwei
+drei. Für diese rund 18 Prozent besteht die Seite überwiegend aus Absagen — jede einzelne richtig
+und benannt, in der Summe aber kein Durchlauf, sondern ein Stapel. Das ist in Code schließbar
+(Darstellung und Sprachschicht, keine neuen Daten) und deckt sich mit dem Ziel: *möglichst viele
+Titel vollständig **und verständlich***.
+
 ## MERGED_2026-09-25 — #182 AUF MAIN, DER PRODUKTIONSWEG, DIE ABLAGE-AUTOMATIK
 
 ### Der Merge
