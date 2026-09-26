@@ -1,83 +1,60 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-25T15:50:02.700Z",
+  "checkedAt": "2026-09-26T01:16:57.538Z",
   "target": "repository",
   "market": {
-    "state": "OPEN",
+    "state": "CLOSED",
     "localDate": "2026-09-25",
-    "localTime": "11:50:02",
-    "lastCompletedSession": "2026-09-24",
+    "localTime": "21:16:57",
+    "lastCompletedSession": "2026-09-25",
     "currentSession": "2026-09-25",
     "expectedIntradaySession": "2026-09-25"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-25T01:07:12.653Z",
+    "indexGeneratedAt": "2026-09-26T01:16:42.225Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-09-24",
+      "sessionDate": "2026-09-25",
       "kind": "current",
       "isRunning": false,
       "isComplete": true
     },
     "dataSession": {
-      "sessionDate": "2026-09-24",
-      "asOf": "2026-09-24T20:55:00.000Z",
+      "sessionDate": "2026-09-25",
+      "asOf": "2026-09-25T20:55:00.000Z",
       "asOfLocal": "16:55",
       "regularComplete": false,
-      "snapshots": 5190,
+      "snapshots": 5153,
       "fetchedAfterClose": true,
-      "afterCloseSnapshots": 5190,
-      "finalSlotSnapshots": 4564,
+      "afterCloseSnapshots": 5153,
+      "finalSlotSnapshots": 4569,
       "universe": true
     },
-    "dataState": "STALE",
-    "dataReason": "currentSessionMissing",
-    "dataLabel": "Stand Do., 24.09. · nicht aktuell",
-    "entries": 520,
+    "dataState": "LAST_SESSION",
+    "dataReason": "sessionCompleteNoLateTrades",
+    "dataLabel": "Heute · Schluss · letzter Kurs 16:55",
+    "entries": 493,
     "byState": {
       "LIVE": 0,
-      "LAST_SESSION": 0,
-      "STALE": 520,
+      "LAST_SESSION": 492,
+      "STALE": 1,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "currentSessionMissing": 518,
-      "olderThanLastSession": 2
+      "lastCompletedSession": 487,
+      "sessionCompleteNoLateTrades": 5,
+      "lastSessionMissing": 1
     },
     "staleSample": [
-      "AAPL",
-      "ABBV",
-      "ABCL",
-      "ABNB",
-      "ABT",
-      "ABX",
-      "ACHV",
-      "ACN",
-      "ACTG",
-      "ADBE",
-      "ADC",
-      "ADI",
-      "ADM",
-      "ADMA",
-      "ADP",
-      "ADPT",
-      "ADSE",
-      "ADSK",
-      "AEP",
-      "AFRM",
-      "AGEN",
-      "AGL",
-      "AII",
-      "AIR",
-      "ALAB"
+      "UFG"
     ],
     "universeSessions": [
-      "2026-09-23",
-      "2026-09-24"
+      "2026-09-24",
+      "2026-09-25"
     ],
     "universeCoversLastSession": true,
-    "state": "STALE"
+    "state": "OK"
   },
   "daily": {
     "universeAsOf": "2026-09-24",
@@ -85,11 +62,11 @@
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
-    "reason": "lastCompletedSession",
-    "label": "Schluss Donnerstag",
+    "reason": "closePendingWithinGrace",
+    "label": "Schluss Do., 24.09. · Freitag folgt",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
-    "expectedSession": "2026-09-24",
+    "expectedSession": "2026-09-25",
     "sample": {
       "sample": 40,
       "byState": {
@@ -99,15 +76,13 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "closePendingWithinGrace": 40
       },
       "staleSample": [],
       "seriesIndexCount": 6482
     }
   },
-  "overall": "STALE",
-  "findings": [
-    "Intraday STALE: Datenstand 2026-09-24, erwartet 2026-09-25 (currentSessionMissing)"
-  ],
+  "overall": "OK",
+  "findings": [],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
