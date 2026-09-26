@@ -324,7 +324,6 @@
     }).filter(Boolean);
     if (themen.length + maerkte.length < 4) return null;
     return el("nav", { class: "dx-mn", id: "maerkte-direkt", "aria-label": "Direkt zu den Bereichen der Seite" }, [
-      el("h2", { class: "dx-mn-titel", text: "Direkt zu" }),
       el("div", { class: "dx-mn-scroll" }, [el("div", { class: "dx-mn-reihen" }, [
         themen.length ? el("div", { class: "dx-mn-reihe", "data-reihe": "themen", "data-titel": "Einordnung" }, themen) : null,
         maerkte.length ? el("div", { class: "dx-mn-reihe", "data-reihe": "maerkte", "data-titel": "Märkte" }, maerkte) : null

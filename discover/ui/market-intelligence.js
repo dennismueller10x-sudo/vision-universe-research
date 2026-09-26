@@ -535,9 +535,12 @@
   function ereignisse(ev, titel) {
     if (!ev || !ev.length) return null;
     return el("div", { class: "dx-m3-ereignisse" }, [el("h3", { text: titel }), el("ol", {}, ev.map(function (e) {
-      return el("li", { class: "is-" + String(e.change).toLowerCase() }, [
-        el("time", { text: tagKurz(e.date) }), el("b", { text: DIM_NAME_EV[e.dimension] || e.dimension }),
-        el("span", { text: e.from + " → " + e.to })
+      var ch = String(e.change).toLowerCase();
+      return el("li", { class: "is-" + ch }, [
+        iconChip(e.dimension, ch === "better" ? "support" : ch === "worse" ? "headwind" : "neutral"),
+        el("div", { class: "dx-m3-ev-text" }, [el("b", { text: DIM_NAME_EV[e.dimension] || e.dimension }),
+          el("span", {}, [document_text(e.from + " → "), el("strong", { text: e.to })])]),
+        el("time", { text: tagKurz(e.date) })
       ]);
     }))]);
   }
@@ -637,8 +640,10 @@
           el("h3", {}, [el("span", { class: "dx-m3-sz-tag is-" + r, text: art }), document_text(" – was müsste eintreten?")])]),
         xs.length ? el("ul", {}, xs.map(function (x) {
           return el("li", {}, [
-            el("p", { class: "dx-m3-aendern-ziel", text: (DIM[x.dimension] || {}).name + " → " + x.toLabel + " · Einordnung „" + x.levelLabel + "“" }),
-            el("p", { text: de(x.text.charAt(0).toUpperCase() + x.text.slice(1)) + "." }),
+            el("div", { class: "dx-m3-bed-kopf" }, [iconChip(x.dimension, r === "besser" ? "support" : "headwind"),
+              el("div", {}, [el("p", { class: "dx-m3-aendern-ziel" }, [el("b", { text: (DIM[x.dimension] || {}).name }), document_text(" → " + x.toLabel)]),
+                el("span", { class: "dx-m3-bed-stufe is-" + r, text: "Einordnung dann: " + x.levelLabel })])]),
+            el("p", { class: "dx-m3-bed-text", text: de(x.text.charAt(0).toUpperCase() + x.text.slice(1)) + "." }),
             x.symbols && x.symbols.length ? el("div", { class: "dx-m3-chips" }, x.symbols.map(function (s) {
               return el("a", { class: "dx-m3-chip", href: "#/maerkte/" + encodeURIComponent(s), text: namen[s] || s });
             })) : null

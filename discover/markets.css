@@ -992,3 +992,57 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
 .dv2 .dx-mn-scroll:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
 /* Neutrales Rollen-Etikett in "Warum": dunkle Schrift fuer 4,5:1. */
 .dv2 .dx-m3-warum-spalte.is-neutral h3,.dv2 .dx-m3-warum-spalte.is-open h3{color:var(--v2-ink)}
+
+/* ================================================================ Markets 3.8
+   Owner-Feedback: "Märkte / Direkt zu" las sich wie "Märkte geschlossen" -
+   beide Beschriftungen weg (die Seitenueberschrift bleibt fuer Screenreader).
+   "Zurueck zu Discover" kompakt ganz oben. Bedingungs-Boxen, Zustandswechsel,
+   Knoepfe und Beschriftungen tanzten aus der Reihe: einheitlich in die neue
+   Sprache (Symbol + fette Zeile + Kapsel), keine grauen Versalien mehr. */
+.dv2 .dx-maerkte>.dx-m3-titel{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.dv2 .dx-maerkte>.dx-back{margin:0 0 6px;padding:10px 0;min-height:44px;font-size:14px;font-weight:700;color:var(--v2-ink)}
+
+/* Beschriftungen: Satzschreibung, halbfett, Akzentfarbe statt Versalien */
+.dv2 .dx-m3-eyebrow{font-size:13.5px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--m3-purple)}
+.dv2 .dx-m3-verlauf .dx-m3-eyebrow{color:#b3a8ff}
+.dv2 .dx-m3-hero .dx-m3-eyebrow{font-size:13px}
+.dv2 .dx-m3-blick-titel,.dv2 .dx-m3-anleger span{font-size:13px;letter-spacing:0;text-transform:none;font-weight:700}
+.dv2 .dx-m3-basis-eyebrow{font-size:12.5px;letter-spacing:0;text-transform:none;font-weight:600}
+.dv2 .dx-m3-tiefe h4{font-size:13px;letter-spacing:0;text-transform:none;font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-b-block-titel{font-size:13.5px;letter-spacing:0;font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-vj-top span{font-size:13px;letter-spacing:0;text-transform:none;font-weight:700;color:var(--m3-purple)}
+.dv2 .dx-m3-b-status b{text-transform:none;letter-spacing:0;font-size:13px}
+.dv2 .dx-m3-warum-spalte h3,.dv2 .dx-m3-warum-spalte.is-support h3,.dv2 .dx-m3-warum-spalte.is-headwind h3,.dv2 .dx-m3-warum-spalte.is-context h3,.dv2 .dx-m3-warum-spalte.is-open h3{text-transform:none;letter-spacing:0;font-size:12.5px}
+
+/* Knoepfe: gefuellte Kapseln mit Pfeil statt schwarzer Umrandung */
+.dv2 .dx-m3-chip{gap:4px;min-height:40px;padding:8px 14px;border:0;border-radius:999px;background:var(--m3-soft);color:var(--v2-ink);font-size:13.5px;font-weight:650;letter-spacing:-.005em;transition:background .15s ease}
+.dv2 .dx-m3-chip::after{content:"›";font-size:1.2em;line-height:1;opacity:.5}
+.dv2 .dx-m3-chip:hover{background:color-mix(in srgb,var(--v2-ink) 11%,transparent)}
+.dv2 .dx-m3-chip.is-leise{background:transparent;box-shadow:inset 0 0 0 1px var(--ap-linie)}
+.dv2 .dx-m3-aendern-spalte li .dx-m3-chip{background:var(--ap-karte)}
+
+/* Bedingungen (Bullish/Bearish): Symbol, fette Zeile, Stufen-Kapsel, leiser Text */
+.dv2 .dx-m3-aendern-spalte li{padding:14px;border-radius:16px}
+.dv2 .dx-m3-bed-kopf{display:flex;align-items:flex-start;gap:10px;margin:0 0 8px}
+.dv2 .dx-m3-aendern-spalte .dx-m3-aendern-ziel{margin:1px 0 0;font-size:15px!important;font-weight:600;letter-spacing:-.01em;text-transform:none;color:var(--v2-ink)}
+.dv2 .dx-m3-aendern-ziel b{font-weight:800}
+.dv2 .dx-m3-bed-stufe{display:inline-block;margin-top:5px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;color:var(--kt);background:color-mix(in srgb,var(--kt) 15%,transparent)}
+.dv2 .dx-m3-bed-stufe.is-besser{--kt:var(--m3-support)}.dv2 .dx-m3-bed-stufe.is-schlechter{--kt:var(--m3-headwind)}
+.dv2 .dx-m3-aendern-spalte .dx-m3-bed-text{margin:0 0 10px;font-size:14px;line-height:1.5;color:var(--v2-muted)}
+
+/* Zustandswechsel: App-Liste - Symbol je Dimension, Name, vorher -> jetzt, Datum */
+.dv2 .dx-m3-verlauf{--ap-linie:rgba(255,255,255,.09)}
+.dv2 .dx-m3-ereignisse h3{margin:0 0 4px;font-size:16px;font-weight:800;letter-spacing:-.01em}
+.dv2 .dx-m3-ereignisse ol{gap:0}
+.dv2 .dx-m3-ereignisse li{grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--ap-linie);font-size:14px}
+.dv2 .dx-m3-ereignisse li:last-child{border-bottom:0}
+.dv2 .dx-m3-ereignisse li .dx-m3-ev-text b{display:block;font-size:14.5px;font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-ereignisse li .dx-m3-ev-text span{display:block;margin-top:1px;font-size:13px;color:var(--v2-muted)}
+.dv2 .dx-m3-ev-text strong{font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-ereignisse time{padding:3px 9px;border-radius:999px;background:var(--m3-soft);font-size:12px;font-weight:650;color:var(--v2-muted)}
+/* Feste Plaetze in der Zeile - eine alte Mobil-Regel schob jedes span
+   (auch das Symbol) in Spalte 2. */
+.dv2 .dx-m3-ereignisse li>.dx-m3-icon{grid-column:1;grid-row:1}
+.dv2 .dx-m3-ereignisse li>.dx-m3-ev-text{grid-column:2;grid-row:1;min-width:0}
+.dv2 .dx-m3-ereignisse li>time{grid-column:3;grid-row:1}
+.dv2 .dx-m3-bed-stufe{color:color-mix(in srgb,var(--kt) 68%,var(--v2-ink));background:color-mix(in srgb,var(--kt) 12%,transparent)}
