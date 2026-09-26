@@ -23,7 +23,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
     scheitern, wo der Smoke gebraucht wird. */
  ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/product-language-v1.json',import.meta.url),'utf8')).forbiddenInPrimaryCopy;
-const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=stock&ticker=AHT-P-D','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks',
+const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=stock&ticker=AHT-P-D','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=quant&ticker=WSBCO','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks',
  /* SIEBEN ANSICHTEN, DIE DER SMOKE NIE ANGESEHEN HAT.
 
     Gemessen am 26.09.2026: von 19 Ansichten im Router standen 12 in dieser
@@ -164,6 +164,26 @@ for(const width of [1440,390]){
     /* Und ein Leser muss lesen koennen, was noch fehlt - nicht den Code. */
     if(/INSUFFICIENT_|NOT_COVERED_|SOURCE_MISSING/.test(gapText.split('Welche Gründe')[0]))bad.push('CODE_IN_HAUPTTEXT');
     console.log('     Verdichtung: '+gruppen+' Gruppen · '+notizen+' Einzelabsagen');
+   }
+  }
+  /* EINE EIGENE BRANCHENVORLAGE MUSS AUF DER SEITE STEHEN.
+   *
+   * Gemessen betrifft das 974 Titel: sie rechnen nach einer anderen Methodik
+   * als ein Industrieunternehmen, und bis M39 stand davon kein Wort auf der
+   * Seite. WSBCO zeigte die Eigenkapitalquote mit Gewicht 0,30 und AAPL
+   * dieselbe Kennzahl mit 0,15. */
+  if(view.includes('ticker=WSBCO')){
+   const hinweis=page.locator('.template-note');
+   if(!await hinweis.count())bad.push('BRANCHENVORLAGE_UNGENANNT');
+   else{
+    const text=await hinweis.innerText();
+    if(!/Branchenvorlage/.test(text))bad.push('VORLAGE_OHNE_NUTZERSATZ');
+    if(!/Fassung/.test(text))bad.push('VORLAGE_OHNE_FASSUNG');
+    /* Der interne Code darf nicht vor dem Nutzersatz stehen. Die Fassung
+       traegt ihn zu Recht - sie steht in der letzten Zeile. */
+    const vorFassung=text.split('Fassung')[0];
+    if(/[A-Z]{3,}_[A-Z_]{3,}/.test(vorFassung))bad.push('CODE_VOR_DEM_SATZ');
+    console.log('     Branchenvorlage: '+text.split('\n')[0].slice(0,60));
    }
   }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));

@@ -480,6 +480,18 @@ function create(options){
        returns:record.investorReturn.returns||{},return12M1M:record.investorReturn.return12M1M??null}
      :{state:'UNAVAILABLE',reason:'NOT_IN_THIS_METHODOLOGY_VERSION',returns:{},return12M1M:null},
     fundamentalsAsOf:record.fundamentalsAsOf,fundamentalsAvailableAt:record.fundamentalsAvailableAt,
+    /* NACH WELCHER METHODIK GERECHNET WURDE.
+     *
+     * Ohne dieses Feld wechselte die Methodik lautlos: WSBCO zeigt die
+     * Eigenkapitalquote mit Gewicht 0,30, AAPL dieselbe Kennzahl mit 0,15 -
+     * dieselbe Beschriftung, eine andere Vorlage, und kein Wort dazu.
+     * Gemessen betrifft das 974 Titel. Und wo der Boersenwert bewusst
+     * zurueckgehalten wird, soll die Seite den Grund nennen koennen statt
+     * nur eine Leerstelle zu zeigen. */
+    template:record.template||null,
+    marketCapReason:record.marketCapReason||null,
+    marketCapPriceSource:record.marketCapPriceSource||null,
+    issuerListings:record.issuerListings||null,
     marketCap:record.marketCap,peer:record.peer,dataQuality:record.dataQuality,
     publication:shard.publication,composite:record.composite,
     factors:FactorEvidence.ordered(record),

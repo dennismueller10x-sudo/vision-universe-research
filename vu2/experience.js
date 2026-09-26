@@ -741,6 +741,45 @@ const ratioText=(value,unit)=>{
  if(unit==='shares')return value.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})+' Stück';
  return (value*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %';
 };
+/* WENN EINE ANDERE METHODIK GILT, MUSS DAS DASTEHEN.
+ *
+ * Gemessen am 26.09.2026: 974 Titel werden nach einer eigenen Branchenvorlage
+ * gerechnet - Banken, Versicherungstraeger, REITs. Auf der Seite sah man das
+ * nicht. WSBCO zeigte die Eigenkapitalquote mit Gewicht 0,30, AAPL dieselbe
+ * Kennzahl mit 0,15: dieselbe Beschriftung, eine andere Vorlage, kein Wort
+ * dazu. Ein Leser, der beide Seiten vergleicht, haelt das fuer einen Fehler -
+ * und ein Leser, der nur eine sieht, haelt eine Bankkennzahl fuer die
+ * allgemeine.
+ *
+ * Die Ebenen bleiben in der Reihenfolge des Woerterbuchs: erst was gilt, dann
+ * warum, und der interne Name der Fassung zuletzt und nie allein. */
+const VORLAGE_ERKLAERUNG={
+ BALANCE_SHEET_FINANCIAL:'Eine Bankbilanz besteht aus Einlagen und Krediten. Rohertrag, '
+  +'Nettoverschuldung und operative Marge - die Kennzahlen eines Industrieunternehmens - sagen '
+  +'darüber nichts. Gemessen wird deshalb, was hier zählt: Eigenkapitalquote, Rendite auf '
+  +'Bilanzsumme und Eigenkapital, Verlässlichkeit dieser Rendite über die Jahre.',
+ INSURANCE_CARRIER:'Ein Versicherer verdient an Prämien und Kapitalanlagen, nicht an einer '
+  +'Handelsmarge. Gemessen werden Eigenkapitalquote, Rendite auf Bilanzsumme und Eigenkapital '
+  +'sowie das Ergebnis je Umsatz.',
+ REAL_ESTATE_TRUST:'Bei einer Immobiliengesellschaft drückt die Abschreibung das Ergebnis, '
+  +'ohne dass Geld abfließt. Gemessen wird deshalb der operative Zahlungsfluss - und ob die '
+  +'Ausschüttung davon gedeckt ist.'
+};
+function branchenvorlageHinweis(data){
+ const vorlage=data&&data.template;
+ if(!vorlage||!vorlage.id)return null;
+ const erklaerung=VORLAGE_ERKLAERUNG[vorlage.id];
+ return el('div',{class:'template-note','data-template':vorlage.id},[
+  el('p',{text:'Für diesen Titel gilt eine eigene Branchenvorlage.'}),
+  erklaerung?el('p',{class:'muted',text:erklaerung}):null,
+  /* Die Methodikebene: hier darf der interne Name stehen, weil ein
+     Nutzerbegriff vor ihm steht. */
+  el('p',{class:'muted',text:'Verlässlichkeit, Bewertung und Ertragskraft folgen dieser Vorlage; '
+   +'Wachstum, Kursstärke und Schwankungsbreite werden für alle Titel gleich gemessen. '
+   +'Grundlage: '+(vorlage.label||vorlage.id)+(vorlage.appliesTo?' ('+vorlage.appliesTo+')':'')
+   +' · Fassung '+vorlage.version+'.'})]);
+}
+
 function factorRow(factor){
  const open=el('div',{class:'dna-detail',hidden:'hidden'});
  const head=el('button',{class:'dna-head',type:'button','aria-expanded':'false'},[
@@ -1501,6 +1540,7 @@ async function quantPage(ticker){
  if(zeig('factorStrength'))main.append(el('section',{class:'section dna-section'},[
   ...sectionHead('Stärken & Schwächen','factorDna'),
   el('p',{class:'muted',text:'Tippe auf eine Eigenschaft, um zu sehen, woran sie gemessen wurde.'}),
+  branchenvorlageHinweis(data),
   el('div',{class:'dna-list'},data.factors.map(factorRow)),
   el('p',{class:'muted',text:'Ein Gesamtscore wird bewusst nicht gebildet: '+(data.composite?.reason==='QUANT_V2_NOT_ACTIVE'?'die Methodik verlangt alle sieben Faktoren, und der Erwartungstrend fehlt ohne lizenzierte Datenquelle.':'die Methodik ist noch nicht freigegeben.')})]));
  /* KURSSTAERKE UND ANLEGERRENDITE

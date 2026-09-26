@@ -107,3 +107,42 @@ test("nothing inside the screener page shadows the selected methodology", () => 
   assert.match(koerper, /const anfrage=\+\+request/);
   assert.match(koerper, /if\(anfrage!==request\)return/);
 });
+
+test("eine eigene Branchenvorlage wird auf der Seite genannt, nicht verschwiegen", () => {
+  /* Gemessen: 974 Titel rechnen nach einer eigenen Vorlage. WSBCO zeigte die
+     Eigenkapitalquote mit Gewicht 0,30 und AAPL dieselbe Kennzahl mit 0,15 -
+     dieselbe Beschriftung, eine andere Methodik, kein Wort dazu. */
+  const src = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
+  assert.match(src, /branchenvorlageHinweis\(data\)/, "der Hinweis wird nicht in die Faktorsektion gesetzt");
+
+  /* Der Dienst muss die Vorlage ueberhaupt durchreichen - ohne sie kann die
+     Seite sie nicht nennen. */
+  const service = readFileSync(join(ROOT, "quant/api/product-services.js"), "utf8");
+  assert.match(service, /template:record\.template\|\|null/,
+    "getFactorEvidence reicht die Vorlage nicht durch");
+
+  /* Und jede der drei Vorlagen hat eine Erklaerung in Alltagssprache - eine
+     Vorlage ohne Satz waere ein Name ohne Bedeutung. */
+  const Contract = createRequire(import.meta.url)("../engines/quant-methodology-contract.js");
+  /* Erst den Block der Erklaerungen abgrenzen, dann darin je Vorlage pruefen.
+     Ein unbegrenztes Fenster prueft sonst seinen eigenen Rand: die Namen der
+     uebrigen Vorlagen und der Name des Blocks sind selbst interne Codes -
+     dieser Test hat sich daran zweimal selbst ausgeloest. */
+  const blockStart = src.indexOf("const VORLAGE_ERKLAERUNG={");
+  assert.ok(blockStart > 0, "der Block der Erklaerungen fehlt");
+  const block = src.slice(blockStart, src.indexOf("\n};", blockStart));
+  for (const id of Contract.TEMPLATES) {
+    const stelle = block.indexOf(id + ":");
+    assert.ok(stelle > 0, "keine Erklaerung fuer " + id);
+    let satz = block.slice(stelle + id.length + 1);
+    for (const anderer of Contract.TEMPLATES) satz = satz.split(anderer + ":")[0];
+    assert.ok(satz.length > 80, id + ": die Erklaerung ist zu kurz fuer einen Satz");
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(satz), false,
+      "interner Code in der Erklaerung von " + id + ": " + satz.slice(0, 120));
+  }
+  /* Die Fassung steht in der Methodikebene und nicht in der ersten Zeile. */
+  const hinweis = src.slice(src.indexOf("function branchenvorlageHinweis"), src.indexOf("function factorRow"));
+  const ersteZeile = hinweis.indexOf("Für diesen Titel gilt");
+  const fassung = hinweis.indexOf("Fassung '+vorlage.version");
+  assert.ok(ersteZeile > 0 && fassung > ersteZeile, "die Fassung steht vor dem Nutzersatz");
+});

@@ -2,6 +2,52 @@
 
 Updated: 2026-09-26 UTC
 
+## M39 — DIE BRANCHENVORLAGE STAND AUF KEINER SEITE
+
+`INDUSTRY_TEMPLATE_DISCLOSED = PASS`
+
+Punkt 8 verlangt, nach erschöpfter Deckungsarbeit den nächsten Meilenstein **nach gemessener
+Nutzerwirkung** zu wählen. Also wurde zuerst geprüft, ob der größte Ertrag der letzten Läufe
+überhaupt bei einem Leser ankommt: M33 hat 2.325 Faktorzellen für 901 Titel geöffnet — sind die
+Bankkennzahlen auf der Seite sichtbar?
+
+Sie sind es. WSBCO zeigt Eigenkapitalquote (0,30), Rendite auf Bilanzsumme und Eigenkapital,
+Schwankung dieser Rendite; ADAMO die REIT-Kennzahlen auf dem Zahlungsfluss; AAPL unverändert die
+generischen. Die vorlagenbezogene Auflösung in `hydrate` funktioniert.
+
+**Dabei fiel die eigentliche Lücke auf.** WSBCO zeigt „Eigenkapitalquote · Gewicht 0,30", AAPL
+zeigt „Eigenkapitalquote · Gewicht 0,15" — dieselbe Beschriftung, eine andere Methodik, und **kein
+Wort dazu**. Gemessen betrifft dieser lautlose Methodikwechsel **974 Titel**. Wer beide Seiten
+vergleicht, hält es für einen Fehler; wer nur eine sieht, hält eine Bankkennzahl für die
+allgemeine.
+
+Die Seite sagt es jetzt, in der Reihenfolge des Wörterbuchs:
+
+> **Für diesen Titel gilt eine eigene Branchenvorlage.**
+> Eine Bankbilanz besteht aus Einlagen und Krediten. Rohertrag, Nettoverschuldung und operative
+> Marge — die Kennzahlen eines Industrieunternehmens — sagen darüber nichts. Gemessen wird
+> deshalb, was hier zählt: Eigenkapitalquote, Rendite auf Bilanzsumme und Eigenkapital,
+> Verlässlichkeit dieser Rendite über die Jahre.
+> *Verlässlichkeit, Bewertung und Ertragskraft folgen dieser Vorlage; Wachstum, Kursstärke und
+> Schwankungsbreite werden für alle Titel gleich gemessen. Grundlage: Banks, savings institutions,
+> lenders and brokers (SIC 6020–6220) · Fassung quant-v2-balance-sheet-financial-1.0.0.*
+
+Der interne Fassungsname steht in der letzten Zeile — nie allein und nie zuerst, wie das
+Wörterbuch es verlangt. Der Dienst reicht dafür `template`, `marketCapReason`,
+`marketCapPriceSource` und `issuerListings` durch; vorher endete die Vorlage an der
+Projektionsgrenze von `getFactorEvidence`.
+
+Geprüft: ein Unit-Test hält die Verdrahtung und dass jede der drei Vorlagen einen Satz in
+Alltagssprache trägt; der Produktions-Smoke besucht jetzt auch `quant&ticker=WSBCO` und prüft, dass
+der Hinweis steht, eine Fassung nennt und **keinen internen Code vor dem Nutzersatz** trägt. Beide
+sabotagegeprüft.
+
+Zweimal hat dieser Test sich selbst ausgelöst, bevor er stimmte: sein Prüffenster lief über den
+nächsten Schlüssel der Erklärungstabelle hinaus, und die Namen der übrigen Vorlagen sind selbst
+interne Codes. Jetzt grenzt er den Block ab, statt eine Zeichenzahl zu raten.
+
+Tests **1.921 grün, 0 rot**. Produktions-Smoke: **CLEAN**, 20 Ansichten × 2 Breiten.
+
 ## M38 — WAS NOCH VON HIER AUS GEHT: DIE VOLLSTÄNDIGE HEBELMESSUNG
 
 `AUTOMATICALLY_REPAIRABLE_REMAINING = 0`
