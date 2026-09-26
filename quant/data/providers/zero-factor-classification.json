@@ -1,6 +1,6 @@
 {
  "schemaVersion": "zero-factor-classification-1.1.0",
- "generatedAt": "2026-09-26T13:48:06.000Z",
+ "generatedAt": "2026-09-26T14:20:42.000Z",
  "question": "Welche Grenze genau haelt die Screening-Zeilen ohne einen einzigen Faktorwert auf, und wie viel davon waere ohne neue Datenquelle loesbar?",
  "sources": {
   "factors": "quant/data/product/factor-evidence-v1 (Zustaende und Gruende je Titel, je Faktor, je Komponente)",
@@ -82,7 +82,7 @@
  },
  "universeChecked": 6441,
  "TOTAL_ZERO_FACTOR_ROWS": 786,
- "FACTOR_CELLS_AVAILABLE": 22712,
+ "FACTOR_CELLS_AVAILABLE": 22495,
  "classes": {
   "SEC_NO_CIK": 407,
   "NOT_APPLICABLE": 177,
@@ -118,12 +118,12 @@
  },
  "progress": {
   "previousRun": {
-   "generatedAt": "2026-09-26T13:47:21.000Z",
+   "generatedAt": "2026-09-26T13:48:06.000Z",
    "total": 786,
    "factorCellsAvailable": 22712
   },
   "ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER": 0,
-  "FACTOR_COVERAGE_GAIN": 0,
+  "FACTOR_COVERAGE_GAIN": -217,
   "EXTERNAL_PROVIDER_DECISION": "DEFERRED",
   "note": "Kein Titel wurde durch eine fremde Quelle geschlossen. Was sich bewegt hat, bewegte sich durch Methodik und Zuordnung im Haus."
  },

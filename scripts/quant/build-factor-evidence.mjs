@@ -328,6 +328,18 @@ function main() {
     });
   }
 
+  /* Welche notierten Zeilen derselbe Emittent im Produktuniversum fuehrt.
+     Gezaehlt wird genau die Grundgesamtheit, die ueberhaupt einen
+     Boersenwert bekommen kann - die Titel dieses Laufs -, damit die Regel
+     nicht an einer delisteten Zeile haengt, die nirgends erscheint. */
+  const listingsByCik = new Map();
+  for (const security of priceFactors.securities) {
+    const cik = peerByTicker.get(security.ticker)?.cik;
+    if (!cik) continue;
+    if (!listingsByCik.has(cik)) listingsByCik.set(cik, []);
+    listingsByCik.get(cik).push(security.ticker);
+  }
+
   /* 1. Last close per ticker, from the published technical bundles. */
   const closeByTicker = new Map();
   for (const file of readdirSync(TECHNICAL_DIR)) {
@@ -401,11 +413,47 @@ function main() {
            second computes the price-dependent block from it rather than
            guessing a capitalization beforehand. */
         const shares = FundamentalInputs.compute(doc, cutoff, null)?.shares || null;
-        const marketCap = shares && quote ? shares.value * quote.close : null;
+        /* EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN.
+         *
+         * Gemessen am 26.09.2026 im veroeffentlichten Artefakt: 110 CIKs
+         * tragen 304 Kuerzel, 210 davon mit einem Bewertungsfaktor - und
+         * jeder dieser Boersenwerte entstand als Anteilsbestand DES
+         * EMITTENTEN mal dem Kurs DIESER ZEILE. Das ergibt Zahlen, die es
+         * nicht gibt: AMJB, eine Schuldverschreibung von JPMorgan, erbte
+         * JPMs 1.408 Mrd; TBB, eine Anleihe von AT&T, 173,9 Mrd; SOJC bis
+         * SOJF je die 93,4 Mrd von Southern; vierzehn gehebelte
+         * Indexschuldverschreibungen je die 122 Mrd von BMO. Und GOOG wie
+         * GOOGL trugen beide den Gesamtbestand von Alphabet, also einen
+         * Emittenten zweimal.
+         *
+         * Welche der Zeilen der Bestand beschreibt, sagt weder der Export
+         * (er listet alle Kuerzel des CIK gleichrangig) noch das
+         * SEC-Verzeichnis (es nennt fuer jede Zeile denselben Firmennamen).
+         * Ohne diese Zuordnung ist ein Boersenwert nicht berechenbar,
+         * sondern nur behauptbar - und eine Zeile mit einer erfundenen
+         * Bewertung steht im Screener neben echten.
+         *
+         * Deshalb: kein Boersenwert, wo der Bestand keiner Zeile zuzuordnen
+         * ist. Keine Kuerzel-Sonderlogik, keine Heuristik auf Suffixe - die
+         * naechste Zeile ist immer die, die sie widerlegt. Was sie
+         * zurueckbringen wuerde, ist ein Bestand JE GATTUNG: die
+         * Deckblattangabe `dei:EntityCommonStockSharesOutstanding` wird je
+         * Gattung eingereicht, und der Export fasst sie zu einer Zahl
+         * zusammen. Das ist Arbeit in der SEC-Schicht, kein Anbieterkauf. */
+        const zeilen = listingsByCik.get(peer.cik) || [];
+        const zuordenbar = zeilen.length <= 1;
+        const marketCap = shares && quote && zuordenbar ? shares.value * quote.close : null;
         fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
         if (fundamentals) {
           fundamentals.marketCap = finite(marketCap) ? marketCap : null;
           fundamentals.priceAsOf = quote?.asOf || null;
+          fundamentals.marketCapReason = finite(marketCap) ? null
+            : (!zuordenbar ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
+              : !shares ? "NO_PIT_SHARE_COUNT" : "NO_PUBLISHED_CLOSE");
+          if (!zuordenbar) {
+            fundamentals.issuerListings = zeilen.slice().sort();
+            countGap("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING");
+          }
         } else countGap("FUNDAMENTALS_DOCUMENT_INVALID");
       } else countGap("FUNDAMENTALS_DOCUMENT_MISSING");
     } else countGap("IDENTITY_UNRESOLVED");
@@ -569,7 +617,18 @@ function main() {
         };
         if (spec.unavailable) return { ...base, state: "UNAVAILABLE", reason: spec.unavailable, raw: null, score: null };
         if (!entry) {
-          return { ...base, state: "UNAVAILABLE", reason: fundamentalFactor && !record.fundamentals ? "FUNDAMENTALS_UNAVAILABLE" : "INPUT_NOT_MATERIALIZED", raw: null, score: null };
+          /* Welche Komponente am Boersenwert haengt, sagt ihre Formelzeile im
+             Vertrag - nicht eine zweite Liste hier, die von ihr abdriften
+             koennte. Haengt sie daran und ist der Bestand keiner Zeile des
+             Emittenten zuzuordnen, ist DAS der Grund und nicht "Eingabe nicht
+             materialisiert". */
+          const haengtAmBoersenwert = typeof contractComponent?.input === "string"
+            && contractComponent.input.includes("marketCap");
+          const reason = fundamentalFactor && !record.fundamentals ? "FUNDAMENTALS_UNAVAILABLE"
+            : (haengtAmBoersenwert && record.fundamentals?.marketCapReason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING")
+              ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
+              : "INPUT_NOT_MATERIALIZED";
+          return { ...base, state: "UNAVAILABLE", reason, raw: null, score: null };
         }
         const countKey = scoreKey(spec);
         componentCoverage[countKey] = (componentCoverage[countKey] || 0) + 1;
@@ -592,6 +651,16 @@ function main() {
           ? !recordTemplate.mandatory[factorId](has)
           : mandatoryUnmet(factorId, components);
         if (mandatoryMissing) assembled = { state: "UNAVAILABLE", reason: "MANDATORY_COMPONENT_MISSING", score: null, availableWeight: assembled.availableWeight };
+      }
+      /* Traegt der ganze Faktor keinen Wert und liegt es an jeder einzelnen
+         Komponente an derselben Ursache, dann nennt der Faktor sie auch -
+         sonst stuende ueber einer Seite "Eingabe nicht materialisiert",
+         waehrend darunter fuenfmal der eigentliche Grund steht. */
+      if (assembled.state !== "AVAILABLE") {
+        const fehlende = components.filter((component) => component.state !== "AVAILABLE");
+        if (fehlende.length && fehlende.every((component) => component.reason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING")) {
+          assembled = { ...assembled, reason: "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" };
+        }
       }
 
       const available = components.filter((component) => component.state === "AVAILABLE");
@@ -686,6 +755,11 @@ function main() {
          die Dreijahresfenster brauchen drei". */
       fundamentalYears: record.fundamentals?.annualYears ?? null,
       marketCap: record.fundamentals?.marketCap ?? null,
+      /* Warum kein Boersenwert - und bei mehreren Zeilen eines Emittenten
+         welche es sind. Ohne diesen Grund liest eine fehlende Bewertung wie
+         ein Defekt, und mit ihm wie das, was sie ist. */
+      marketCapReason: record.fundamentals?.marketCapReason ?? null,
+      issuerListings: record.fundamentals?.issuerListings ?? null,
       peer: record.peer ? { level: record.peer.level, industry: record.peer.sic4, division: record.peer.division, confidence: record.peer.confidence } : null,
       /* Nach welcher Vorlage die Fundamentalfaktoren dieses Titels gemessen
          wurden. Ohne Eintrag gilt die generische Formel - so liest ein

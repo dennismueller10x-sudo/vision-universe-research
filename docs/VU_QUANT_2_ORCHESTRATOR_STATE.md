@@ -2,6 +2,75 @@
 
 Updated: 2026-09-26 UTC
 
+## M34 — EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN
+
+`FABRICATED_MARKET_CAPS_WITHDRAWN`
+
+Beim Weiterarbeiten am größten verbleibenden internen Gap — 909 Titel mit Fundamentaldaten und
+ohne Börsenwert — fiel etwas Schlimmeres auf als eine Lücke: **veröffentlichte Zahlen, die es
+nicht gibt.**
+
+Der Börsenwert entstand als *Anteilsbestand des Emittenten* × *Kurs dieser Zeile*. Gemessen im
+veröffentlichten Artefakt führten **110 Emittenten 304 notierte Kürzel, 210 davon mit einem
+Bewertungsfaktor** — und jede dieser Zeilen bekam den vollen Bestand des Emittenten:
+
+| Zeile | was sie ist | getragener Börsenwert |
+|---|---|---|
+| `AMJB` | Schuldverschreibung von JPMorgan | 1.408 Mrd — JPMs |
+| `TBB` | Anleihe von AT&T | 173,9 Mrd — AT&Ts |
+| `SOJC`–`SOJF` | Vorzüge/Junior Notes von Southern | je 93,4 Mrd |
+| `BERZ`, `BULZ`, `FNGU`, `GDXU`, `JETU`, … | 14 gehebelte Indexpapiere von BMO | je 122 Mrd |
+| `AGNCL`–`AGNCP` | Vorzugsserien von AGNC | je ~30 Mrd, während AGNC selbst 11,4 Mrd trug |
+| `GOOG` + `GOOGL` | zwei Gattungen einer Gesellschaft | je 4.206 Mrd, also Alphabet zweimal |
+
+Diese Zeilen standen im Screener neben echten Unternehmen, mit Bewertungskennzahlen, die aus
+diesen Zahlen folgen. Der Strategie-Index zeigt es: `value-momentum` hatte 122 Treffer und hat
+jetzt **104**, `garp` 99 und jetzt **93** — 24 Treffer beruhten auf einem erfundenen Börsenwert.
+
+**Es gibt keinen Unterscheider im Haus.** Der Consumer-Export listet alle Kürzel eines CIK
+gleichrangig. Das SEC-Verzeichnis (`company_tickers_exchange`) nennt für jede Zeile denselben
+Firmennamen. Und der Company-Master typisiert **FNGU — ein gehebeltes Indexpapier — als
+`COMMON_STOCK` mit dem Namen „Bank Of Montreal /Can/"**; von 3.953 Titeln mit Börsenwert trugen
+3.952 den Typ `COMMON_STOCK`. Genau deshalb ist das nie aufgefallen.
+
+**Die Regel.** Kein Börsenwert, wo der Bestand keiner Zeile zuzuordnen ist — mit eigenem,
+benanntem Grund `SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING`, und jede betroffene Zeile nennt ihre
+Geschwisterzeilen. Keine Kürzel-Sonderlogik, keine Suffix-Heuristik: die nächste Zeile ist immer
+die, die sie widerlegt (GOOG/GOOGL und BRK-A/BRK-B sind beide Stammaktien, AGNCL ist es nicht).
+Welche Bewertungskomponente betroffen ist, entscheidet ihre **Formelzeile im Vertrag** — enthält
+sie `marketCap`, trägt sie diesen Grund — und nicht eine zweite Liste, die davon abdriften könnte.
+
+| Größe | Wert |
+|---|---|
+| betroffene Emittenten / Kürzel | 110 / 304 |
+| Bewertungsfaktoren vorher auf erfundenem Börsenwert | 210 |
+| Bewertungsfaktor verfügbar | 2.707 → **2.490** (−217) |
+| Faktorzellen mit dem neuen Grund | 222 |
+| Strategietreffer entfernt | `value-momentum` −18, `garp` −6 |
+
+**Der Preis, offen genannt.** JPM, T, SO, GOOG, GOOGL, AGNC und WSBCO verlieren ihren
+Bewertungsfaktor, weil eine Anleihe oder eine zweite Gattung denselben CIK teilt. Das ist ein
+echter Verlust — und die Alternative wäre, eine Schuldverschreibung weiter als
+Billionen-Unternehmen zu führen. Die Hausdoktrin ist an dieser Stelle eindeutig und steht schon
+im Code: EBITDA bleibt leer, statt unter falschem Namen zum operativen Ergebnis zu werden.
+
+**Was sie zurückbringt, und was es nicht ist.** Ein Anteilsbestand **je Gattung**. Die
+Deckblattangabe `dei:EntityCommonStockSharesOutstanding` wird je Gattung eingereicht, und der
+Export fasst sie zu einer Zahl zusammen. Das ist Extraktionsarbeit in der SEC-Schicht — **kein
+Anbieterkauf**.
+
+**Und eine Abkürzung, die die Messung verworfen hat.** Für die 285 Titel mit veraltetem
+Anteilsbestand (ACN: Bestand vom 28.02.2010) lag der Ersatz nahe, die verwässerten
+Durchschnittsaktien des letzten Geschäftsjahres zu nehmen — bei ACN wären es 632,4 Mio statt
+637,0 Mio, also 0,7 % Abweichung. Über die 3.800 Titel, bei denen **beide** Größen aktuell
+vorliegen, gemessen: Median **4,0 %**, 75. Perzentil **13,0 %**, 90. Perzentil **44,4 %**, 95.
+Perzentil **82,6 %**; nur 2.096 von 3.800 liegen unter 5 %. Ein Börsenwert, der um 13 % falsch
+ist, macht jede Bewertungskennzahl um 13 % falsch. **Abgelehnt — auf Messung, nicht auf
+Prinzip.** ACN ist nicht die Grundgesamtheit.
+
+Tests 1.908 grün, 0 rot; die Regel ist sabotagegeprüft (ausgeschaltet → Test 29 fällt).
+Produktions-Smoke gegen das gebaute Release: CLEAN.
+
 ## M33 — BRANCHENVORLAGEN, BERICHTSPERIODE UND DIE SPRACHE FÜR JUNGE TITEL
 
 `INTERNAL_COVERAGE_GAPS_CLOSED_WHERE_THEY_WERE_CLOSABLE`

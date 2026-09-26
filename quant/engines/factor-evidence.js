@@ -59,7 +59,8 @@
     "BLOCKED_EXTERNAL",                 /* licensed source absent; Revisions */
     "IDENTITY_UNRESOLVED",              /* no canonical issuer join */
     "FUNDAMENTALS_UNAVAILABLE",         /* no PIT-safe filing observation */
-    "PRICE_FACTORS_UNAVAILABLE"         /* no certified price factor row */
+    "PRICE_FACTORS_UNAVAILABLE",        /* no certified price factor row */
+    "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" /* one issuer share count, several listed lines */
   ];
 
   var COMPONENT_STATES = ["AVAILABLE", "UNAVAILABLE"];
@@ -144,7 +145,16 @@
     BLOCKED_EXTERNAL: "Es liegt keine lizenzierte, zeitpunktgenaue Datenquelle vor. Ein Ersatz wäre erfunden und wird nicht gebildet.",
     IDENTITY_UNRESOLVED: "Für diesen Titel besteht keine eindeutige kanonische Emittenten-Zuordnung.",
     FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegt keine zeitpunktsichere Geschäftszahlen-Beobachtung vor.",
-    PRICE_FACTORS_UNAVAILABLE: "Für diesen Titel liegt keine zertifizierte Kursfaktor-Zeile vor."
+    PRICE_FACTORS_UNAVAILABLE: "Für diesen Titel liegt keine zertifizierte Kursfaktor-Zeile vor.",
+    /* Gemessen am 26.09.2026: 110 Emittenten fuehren 304 notierte Zeilen, und
+       der Anteilsbestand, den die SEC meldet, gilt fuer den Emittenten - nicht
+       fuer eine einzelne Zeile. Wer ihn trotzdem mit dem Kurs einer Zeile
+       multipliziert, erhaelt Zahlen, die es nicht gibt: eine
+       Schuldverschreibung von JPMorgan trug so 1.408 Mrd. */
+    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Dieses Unternehmen hat mehrere notierte Wertpapiere, und die " +
+      "veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes. Ein Börsenwert für genau diese " +
+      "Notierung ließe sich daraus nur schätzen - und darauf beruhen alle Bewertungskennzahlen. " +
+      "Sie bleiben deshalb offen, statt eine Zahl zu nennen, die es nicht gibt."
   };
 
   /* ---------------------------------------------------------------------

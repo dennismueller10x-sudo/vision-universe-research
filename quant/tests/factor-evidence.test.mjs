@@ -482,3 +482,97 @@ test("das Artefakt veroeffentlicht die Tiefe der Geschaeftsjahre", async () => {
     else assert.ok(!r.fundamentalYears, r.ticker + " nennt Jahre ohne Berichtsperiode");
   }
 });
+
+/* ---------------------------------------------------------------------------
+   EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN
+
+   Gemessen am 26.09.2026 im veröffentlichten Artefakt: 110 Emittenten führten
+   304 Kürzel, 210 davon mit einem Bewertungsfaktor - und jeder dieser
+   Börsenwerte war der Anteilsbestand DES EMITTENTEN mal dem Kurs DIESER
+   ZEILE. AMJB, eine Schuldverschreibung von JPMorgan, trug so 1.408 Mrd; TBB,
+   eine Anleihe von AT&T, 173,9 Mrd; SOJC bis SOJF je die 93,4 Mrd von
+   Southern; vierzehn gehebelte Indexpapiere je die 122 Mrd von BMO. GOOG und
+   GOOGL trugen beide den Gesamtbestand von Alphabet.
+   --------------------------------------------------------------------------- */
+test("keine Bewertung, wo der Anteilsbestand keiner Notierung zuzuordnen ist", async () => {
+  const dir = new URL("../data/product/factor-evidence-v1/", import.meta.url);
+  const proCik = new Map();
+  let mitGrund = 0, mitBoersenwert = 0;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".json.gz") || name === "screening.json.gz" || name === "summary.json.gz") continue;
+    const shard = JSON.parse(gunzipSync(await readFile(new URL(name, dir))).toString("utf8"));
+    for (const row of Object.values(shard.securities)) {
+      if (row.marketCapReason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") mitGrund += 1;
+      if (Number.isFinite(row.marketCap)) mitBoersenwert += 1;
+      if (!row.cik) continue;
+      const key = String(row.cik);
+      if (!proCik.has(key)) proCik.set(key, []);
+      proCik.get(key).push(row);
+    }
+  }
+
+  assert.ok(mitGrund > 0, "kein einziger Titel traegt den Grund - die Regel greift nicht");
+  assert.ok(mitBoersenwert > 3000, "die Boersenwerte sind flaechendeckend verschwunden: " + mitBoersenwert);
+
+  /* Die Regel selbst: kein Emittent mit mehreren notierten Zeilen traegt noch
+     einen Boersenwert, und jede dieser Zeilen nennt den Grund samt ihren
+     Geschwistern. */
+  let gruppen = 0;
+  for (const [cik, zeilen] of proCik) {
+    if (zeilen.length < 2) continue;
+    gruppen += 1;
+    for (const row of zeilen) {
+      assert.equal(row.marketCap, null,
+        row.ticker + " (CIK " + cik + ", " + zeilen.length + " Zeilen) traegt weiter einen Boersenwert");
+      /* Den Grund nennt nur, wer ueberhaupt Fundamentaldaten hat: eine Zeile
+         ohne Konsum-Export (ECCC etwa, dessen Factbook keine Periodentatsache
+         fuehrt) hat ihren Boersenwert aus einem frueheren Grund nicht - und
+         zwei Gruende fuer eine fehlende Zahl waeren einer zu viel. */
+      if (!row.fundamentalsAsOf) continue;
+      assert.equal(row.marketCapReason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", row.ticker);
+      assert.ok(Array.isArray(row.issuerListings) && row.issuerListings.length === zeilen.length,
+        row.ticker + " nennt seine Geschwisterzeilen nicht");
+      assert.ok(row.issuerListings.includes(row.ticker), row.ticker + " fehlt in seiner eigenen Liste");
+      /* Und jede Bewertungskomponente, die am Boersenwert haengt, nennt diese
+         Ursache - nicht "Eingabe nicht materialisiert". */
+      for (const component of row.factors.value.components || []) {
+        if (component.state === "AVAILABLE") continue;
+        const spec = shardSpecFor(row, "value", component.id);
+        if (spec && typeof spec.input === "string" && spec.input.includes("marketCap")) {
+          assert.equal(component.reason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+            row.ticker + ":" + component.id);
+        }
+      }
+    }
+  }
+  assert.ok(gruppen > 50, "nur " + gruppen + " Mehrfachnotierungen gefunden - die Messung stimmt nicht");
+
+  /* Ein Emittent mit genau einer Zeile behaelt seinen Boersenwert: die Regel
+     entfernt gezielt das Unzuordenbare und nicht die Bewertung an sich. */
+  const einzeln = [...proCik.values()].filter((z) => z.length === 1).map((z) => z[0]);
+  assert.ok(einzeln.filter((r) => Number.isFinite(r.marketCap)).length > 3000,
+    "die Einzelnotierungen haben ihren Boersenwert verloren");
+  for (const row of einzeln) {
+    assert.notEqual(row.marketCapReason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+      row.ticker + " ist die einzige Zeile seines Emittenten und traegt trotzdem den Zuordnungsgrund");
+  }
+});
+
+/* Die Formelzeile der Komponente steht im Kopf des Shards, nicht an der
+   Zeile - dieselbe Aufteilung, die das Artefakt ueberall benutzt. */
+let specCache = null;
+function shardSpecFor(row, factorId, componentId) {
+  if (!specCache) {
+    specCache = {};
+    const dir = new URL("../data/product/factor-evidence-v1/", import.meta.url);
+    for (const name of readdirSync(dir)) {
+      if (!name.endsWith(".json.gz") || name === "screening.json.gz" || name === "summary.json.gz") continue;
+      const shard = JSON.parse(gunzipSync(readFileSync(new URL(name, dir))).toString("utf8"));
+      Object.assign(specCache, shard.componentSpecs || {});
+      break;
+    }
+  }
+  const template = row.template && row.template.id;
+  return (template && specCache[template + ":" + factorId + ":" + componentId])
+    || specCache[factorId + ":" + componentId] || null;
+}
