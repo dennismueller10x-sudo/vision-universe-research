@@ -605,3 +605,37 @@ html:not([data-theme=light]) .dv2 .dx-md-chartbereich{box-shadow:none;border:1px
 .dv2 .dx-m3-b-kopf b{font-size:15px;font-weight:800}
 .dv2 .dx-m3-story h3{font-size:clamp(19px,2.2vw,23px);letter-spacing:-.015em}
 .dv2 .dx-m3-basis-zustand{letter-spacing:-.025em}
+
+/* ================================================================ Markets 3.3
+   Owner-Feedback: 12-Monats-Kurve im Verlauf, ehrlicher Dimensions-Tally
+   statt erfundener Wahrscheinlichkeit, dunkles Signature-Glow (schwarz +
+   gruen) angelehnt an eine bereitgestellte Stil-Referenz - nur der Stil,
+   keine Inhalte oder Farben mit Bedeutung uebernommen. */
+.dv2 .dx-m3{--m3-brand-glow:#12d99f}
+html:not([data-theme=light]) .dv2 .dx-m3{--m3-brand-glow:#3dffc4}
+
+/* Verlauf: die Stufen-Kurve ueber den Baendern - neutral (nicht farbcodiert
+   nach Zustand, das bleibt Sache der Baender), mit sanftem Glow. */
+.dv2 .dx-m3-v-kurve{stroke:#f5f5f2;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.9;
+  filter:drop-shadow(0 0 5px var(--m3-brand-glow))}
+
+/* Ehrlicher Tally: Anteil der bewerteten Dimensionen, die dafuer/dagegen
+   sprechen - ausdruecklich keine Kurs- oder Renditewahrscheinlichkeit
+   (siehe Hinweistext). Kein neuer Wert: dieselben env.counts wie im Hero. */
+.dv2 .dx-m3-tally{margin-top:16px;padding-top:14px;border-top:1px dashed var(--m3-glass-line)}
+.dv2 .dx-m3-tally-spur{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--m3-soft)}
+.dv2 .dx-m3-tally-support{background:var(--m3-support)}
+.dv2 .dx-m3-tally-neutral{background:var(--m3-neutral)}
+.dv2 .dx-m3-tally-headwind{background:var(--m3-headwind)}
+.dv2 .dx-m3-tally-text{margin:8px 0 0;font-size:12.5px;font-weight:700;line-height:1.4}
+.dv2 .dx-m3-tally-hinweis{margin:2px 0 0;font-size:10.5px;color:var(--v2-muted);line-height:1.4}
+
+/* Signature-Glow: ein zweiter, zustandsunabhaengiger Akzent auf den dunklen
+   "Kino"-Flaechen (Hero, Verlauf, Detail-Chart) - Stil-Anleihe bei einer
+   Referenz mit Schwarz+Gruen-Glow, ohne deren Inhalte. Traegt keine
+   Bedeutung (nicht bullish/bearish) und ueberlagert nie Text. */
+.dv2 .dx-m3-hero,.dv2 .dx-m3-verlauf,.dv2 .dx-md-chartbereich{position:relative;isolation:isolate}
+.dv2 .dx-m3-hero::after,.dv2 .dx-m3-verlauf::after,.dv2 .dx-md-chartbereich::after{
+  content:"";position:absolute;inset:-30% -10% auto auto;width:60%;height:80%;z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--m3-brand-glow) 20%,transparent),transparent 72%)}
+.dv2 .dx-m3-zustand{text-shadow:0 0 28px color-mix(in srgb,var(--m3-brand-glow) 22%,transparent)}

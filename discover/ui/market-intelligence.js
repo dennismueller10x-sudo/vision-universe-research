@@ -372,13 +372,40 @@
 
   /* ------------------------------------- Was wuerde das Bild aendern? */
 
+  /**
+   * Kein erfundener Wahrscheinlichkeitswert: ein realer, nachvollziehbarer
+   * Tally der bereits bewerteten Dimensionen (env.counts) - "wie viele
+   * sprechen dafuer/dagegen", nicht "wie wahrscheinlich ist ein Anstieg".
+   * "open" (nicht beurteilbar) und "context" (stimmt nicht ab) zaehlen
+   * bewusst nicht mit, wie im Marktumfeld selbst auch.
+   */
+  function tally(env) {
+    var c = (env && env.counts) || {};
+    var support = c.support || 0, neutral = c.neutral || 0, headwind = c.headwind || 0;
+    var summe = support + neutral + headwind;
+    if (!summe) return null;
+    var pct = function (n) { return Math.round(100 * n / summe); };
+    return el("div", { class: "dx-m3-tally", role: "img",
+      "aria-label": support + " von " + summe + " bewerteten Dimensionen unterstuetzen das Bild, " + neutral + " neutral, " + headwind + " Gegenwind" }, [
+      el("div", { class: "dx-m3-tally-spur" }, [
+        el("span", { class: "dx-m3-tally-support", style: "width:" + pct(support) + "%" }),
+        el("span", { class: "dx-m3-tally-neutral", style: "width:" + pct(neutral) + "%" }),
+        el("span", { class: "dx-m3-tally-headwind", style: "width:" + pct(headwind) + "%" })
+      ]),
+      el("p", { class: "dx-m3-tally-text", text: support + " von " + summe + " bewerteten Dimensionen unterstützen das Bild" +
+        (headwind ? ", " + headwind + " " + (headwind === 1 ? "ist" : "sind") + " Gegenwind" : "") + "." }),
+      el("p", { class: "dx-m3-tally-hinweis", text: "Zählung der Dimensionen, keine Kurs- oder Renditewahrscheinlichkeit." })
+    ]);
+  }
+
   function basisKarte(env) {
     if (!env || env.level === null || env.level === undefined) return null;
     return el("div", { class: "dx-m3-basis-karte is-l" + env.level }, [
       el("p", { class: "dx-m3-basis-eyebrow", text: "Aktuelle Einordnung" }),
       el("p", { class: "dx-m3-basis-zustand", text: env.label }),
-      el("p", { class: "dx-m3-basis-aussage", text: env.statement })
-    ]);
+      el("p", { class: "dx-m3-basis-aussage", text: env.statement }),
+      tally(env)
+    ].filter(Boolean));
   }
 
   function bildAendern(p, namen) {
@@ -428,6 +455,12 @@
         start = i;
       }
     }
+    /* Die Kurve: dieselben taeglichen Stufenwerte als verbundene Linie
+       ueber den Baendern - liest sich wie ein Kursverlauf, bleibt aber
+       exakt die diskrete Stufe des Tages, keine erfundene Zwischenwertung. */
+    var kurve = [];
+    tage.forEach(function (t, i) { if (isNum(t.env)) kurve.push(x(i).toFixed(1) + "," + (y(t.env) + hoehe / 2).toFixed(1)); });
+    if (kurve.length > 1) n("polyline", { points: kurve.join(" "), class: "dx-m3-v-kurve", fill: "none" });
     var letzter = tage[tage.length - 1];
     if (isNum(letzter.env)) n("circle", { cx: x(tage.length - 1) - 4, cy: y(letzter.env) + hoehe / 2, r: 5, class: "dx-m3-v-jetzt" });
     var t0 = n("text", { x: 2, y: H - 8, class: "dx-m3-v-datum" }); t0.textContent = tagKurz(tage[0].date);
@@ -439,7 +472,7 @@
     if (!h || !h.days || h.days.length < 2) return null;
     var skala = (p.environment && p.environment.scale) || (h.method && h.method.levels) || [];
     if (!skala.length) return null;
-    var aktiv = "3M";
+    var aktiv = "1Y";
     var box = el("div", { class: "dx-m3-verlauf-box" });
     var legende = el("ol", { class: "dx-m3-v-legende", "aria-hidden": "true" }, skala.slice().reverse().map(function (s, i) {
       return el("li", { class: "is-l" + (skala.length - 1 - i), text: s.label });
