@@ -82,6 +82,12 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  const fx=karten.EURUSD||{};p('EUR/USD als Kurs, nicht umgerechnet',/USD$/.test(fx.wert||'')&&!/€/.test(fx.wert||''),fx.wert);
  p('Keine Seitenfehler',pageErrors.length===0,pageErrors);
  if(key==='mobile')p('Kein Querlauf auf dem Telefon',!seite.querlauf,seite.querlauf);
+ /* Der Hero schneidet Ueberstand ab (overflow:hidden) - ein zu breiter Inhalt
+    faellt deshalb nicht als Seiten-Querlauf auf, sondern als verschobener
+    Gauge und abgeschnittener Text. Direkt messen. */
+ const heroBreite=await page.evaluate(()=>{const r=document.querySelector('.dx-m3-hero-raster');
+  return r?{inhalt:r.scrollWidth,platz:r.clientWidth}:null;});
+ p('Hero passt in die Breite (nichts abgeschnitten)',heroBreite&&heroBreite.inhalt<=heroBreite.platz+1,heroBreite);
  /* Markets 3.0: Einordnung zuerst - Hero, fuenf Dimensionen, Vorher/Jetzt, Warum, Worauf, Aendern, Verlauf, Breite, Cross Asset, Geschichten. */
  const intel=await page.evaluate(()=>{
   const t=s=>{const x=document.querySelector(s);return x?x.textContent.trim():'';};
@@ -127,11 +133,14 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  p('Kein Gesamtscore, keine Kauf-/Verkaufsaufforderung, Hinweis sichtbar',!/\d+\s*\/\s*100|Score \d|jetzt kaufen|verkaufen Sie|Kaufsignal/i.test(intel.m3Text)&&/keine Anlageberatung/.test(intel.m3Text),null);
  p('Movers verlinken auf Aktienseiten',intel.movers.length===0||intel.movers.every(h=>/^#\/s\/US_REAL\//.test(h)),intel.movers.slice(0,3));
  p('Jede Karte mit Wert ist ein Link zum Marktdetail',intel.kartenLinks.length>=28&&intel.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),intel.kartenLinks.length);
- /* Verlauf: Zeitraumwechsel veraendert Diagramm und Text. */
+ /* Verlauf: Zeitraumwechsel veraendert Diagramm und Text (Standard ist 1J). */
  const vor=intel.verlaufSr;
- await page.click('.dx-m3-tf button[data-range="1Y"]');await page.waitForTimeout(300);
+ await page.click('.dx-m3-tf button[data-range="3M"]');await page.waitForTimeout(300);
  const nach=await page.evaluate(()=>({sr:document.querySelector('.dx-m3-v-sr').textContent,pressed:document.querySelector('.dx-m3-tf button[aria-pressed="true"]').dataset.range}));
- p('Verlauf: Zeitraumwechsel 3M -> 1J',nach.pressed==='1Y'&&nach.sr!==vor,nach);
+ p('Verlauf: Zeitraumwechsel 1J -> 3M',nach.pressed==='3M'&&nach.sr!==vor,nach);
+ /* Kachel-Uebersicht: grosse Kacheln mit Bild, jede fuehrt zu ihren Belegen. */
+ const kk=await page.evaluate(()=>[...document.querySelectorAll('.dx-m3-kachel')].map(k=>({id:k.dataset.kachel,bild:!!k.querySelector('.dx-m3-kachel-bild svg,.dx-m3-kachel-bild .dx-m3-spur,.dx-m3-kachel-bild .dx-m3-kk-nr,.dx-m3-kachel-bild .dx-m3-kk-wechsel'),titel:(k.querySelector('.dx-m3-kachel-link')||{}).textContent||''})));
+ p('Kacheln: mindestens 6, jede mit Bild und Schlagzeile',kk.length>=6&&kk.every(k=>k.bild&&k.titel.length>=3),kk);
  /* Visuelle Abfolge: zehn Bildschirme - wechselnde Flaechen statt Kartenwand. */
  if(key==='mobile'){
   const folge=[];
