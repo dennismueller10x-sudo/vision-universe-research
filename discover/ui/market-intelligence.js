@@ -43,6 +43,50 @@
   var ZEITRAEUME = [{ id: "1W", label: "1W", tage: 7 }, { id: "1M", label: "1M", tage: 31 }, { id: "3M", label: "3M", tage: 92 },
                     { id: "6M", label: "6M", tage: 183 }, { id: "1Y", label: "1J", tage: 366 }];
 
+  /* ---------------------------------------------------------- Icon-System
+     Kleine, geometrische Piktogramme je Dimension - dieselbe Bedeutung wie
+     Name und Rolle im Text daneben, nur schneller erfassbar (App-Icon statt
+     Fliesstext). Rein dekorativ (aria-hidden), keine neue Aussage. */
+  function symbolSvg(key) {
+    if (!global.document) return null;
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = global.document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 20 20");
+    svg.setAttribute("class", "dx-m3-icon-svg");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.6");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    function n(tag, a) { var e = global.document.createElementNS(ns, tag); Object.keys(a).forEach(function (k) { e.setAttribute(k, a[k]); }); svg.appendChild(e); return e; }
+    if (key === "TREND") {
+      n("polyline", { points: "2,17 8,11 12,14 18,4" });
+      n("circle", { cx: 18, cy: 4, r: 1.5, fill: "currentColor", stroke: "none" });
+    } else if (key === "BREADTH") {
+      n("rect", { x: 2, y: 10, width: 3.6, height: 8, rx: 1, fill: "currentColor", stroke: "none" });
+      n("rect", { x: 8.2, y: 5, width: 3.6, height: 13, rx: 1, fill: "currentColor", stroke: "none" });
+      n("rect", { x: 14.4, y: 12, width: 3.6, height: 6, rx: 1, fill: "currentColor", stroke: "none" });
+    } else if (key === "MOMENTUM") {
+      n("line", { x1: 10, y1: 5, x2: 18, y2: 5 });
+      n("line", { x1: 6, y1: 10, x2: 18, y2: 10 });
+      n("line", { x1: 2, y1: 15, x2: 18, y2: 15 });
+    } else if (key === "RISK") {
+      n("polyline", { points: "2,10 6,4 10,16 14,4 18,10" });
+    } else if (key === "CROSS_ASSET") {
+      n("line", { x1: 5, y1: 15, x2: 15, y2: 15 });
+      n("line", { x1: 5, y1: 15, x2: 10, y2: 4 });
+      n("line", { x1: 15, y1: 15, x2: 10, y2: 4 });
+      n("circle", { cx: 5, cy: 15, r: 1.7, fill: "currentColor", stroke: "none" });
+      n("circle", { cx: 15, cy: 15, r: 1.7, fill: "currentColor", stroke: "none" });
+      n("circle", { cx: 10, cy: 4, r: 1.7, fill: "currentColor", stroke: "none" });
+    }
+    return svg;
+  }
+  function iconChip(key, rolle) {
+    return el("span", { class: "dx-m3-icon is-" + (rolle || "neutral"), "aria-hidden": "true" }, [symbolSvg(key)].filter(Boolean));
+  }
+
   function isNum(x) { return typeof x === "number" && isFinite(x); }
   function zahl(v, d) {
     try { return new Intl.NumberFormat("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }).format(v); }
@@ -96,6 +140,32 @@
     n_("line", { x1: cx, y1: cy, x2: tip.x.toFixed(2), y2: tip.y.toFixed(2), class: "dx-m3-gauge-nadel is-l" + env.level });
     n_("circle", { cx: cx, cy: cy, r: 8, class: "dx-m3-gauge-nabe" });
     return svg;
+  }
+
+  /**
+   * Bullish / Base Case / Bearish - direkt im Hero sichtbar, damit die
+   * Einordnung auf den ersten Blick verstanden wird (Owner-Feedback: die
+   * gleiche Zaehlung wie unten bei "Was wuerde das Bild aendern?" fehlte
+   * oberhalb der Falz). Dieselben env.counts wie tally() - kein neuer Wert,
+   * keine erfundene Wahrscheinlichkeit, nur frueher und vertrauter benannt.
+   */
+  function szenarioStreifen(env) {
+    var c = (env && env.counts) || {};
+    var support = c.support || 0, neutral = c.neutral || 0, headwind = c.headwind || 0;
+    var summe = support + neutral + headwind;
+    if (!summe) return null;
+    function pille(art, titel, n) {
+      var b = el("button", { type: "button", class: "dx-m3-sz-pille is-" + art,
+        "aria-label": titel + ": " + n + " von " + summe + " bewerteten Dimensionen" }, [
+        el("b", { text: String(n) }), el("span", { text: titel })
+      ]);
+      b.onclick = function () { springen("maerkte-aendern"); };
+      return b;
+    }
+    return el("div", { class: "dx-m3-sz-streifen", role: "group", "aria-label": "Szenario-Übersicht: Bullish, Base Case, Bearish" }, [
+      pille("bull", "Bullish", support), pille("base", "Base Case", neutral), pille("bear", "Bearish", headwind),
+      el("p", { class: "dx-m3-sz-hinweis", text: "Zählung der bewerteten Dimensionen – zum Tippen für die genauen Schwellen." })
+    ]);
   }
 
   function springen(id) {
@@ -182,8 +252,8 @@
     });
     var blick = el("div", { class: "dx-m3-blick" }, [
       el("p", { class: "dx-m3-blick-titel", text: "Die Gründe auf einen Blick" }),
-      el("ul", {}, gruende.map(function (g) {
-        return el("li", { class: "is-" + g.r }, [el("i", { "aria-hidden": "true", text: ROLLE_ZEICHEN[g.r] }),
+      el("ul", { tabindex: "0" }, gruende.map(function (g) {
+        return el("li", { class: "is-" + g.r }, [iconChip(g.x.dimension, g.r),
           el("span", {}, [el("b", { text: DIM[g.x.dimension].name }), el("small", { text: g.x.label + " · " + ROLLE[g.r] })])]);
       })),
       el("p", { class: "dx-m3-zaehlung", text: zaehlung })
@@ -200,12 +270,13 @@
           el("div", { class: "dx-m3-gauge" }, [regimeGauge(env, vorherLevel), spektrum(env, vorherLevel)].filter(Boolean)),
           el("p", { class: "dx-m3-aussage", text: env.statement }),
           el("div", { class: "dx-m3-anleger" }, [el("span", { text: "Für Anleger bedeutet das" }), el("p", { text: env.investor })]),
+          szenarioStreifen(env),
           veraenderung
         ].filter(Boolean)),
         blick
       ]),
       el("div", { class: "dx-m3-hero-aktionen" }, [knopf("Warum diese Einordnung?", "maerkte-warum", "dx-m3-cta"),
-                                                    knopf("Was würde sie ändern?", "maerkte-aendern", "dx-m3-cta is-leise")]),
+                                                    knopf("Bullish & Bearish ansehen", "maerkte-aendern", "dx-m3-cta is-leise")]),
       el("p", { class: "dx-m3-zyklus" + (z.verspaetet ? " is-verspaetet" : "") }, [el("span", { text: z.text }), el("span", { class: "dx-m3-zyklus-hinweis", text: z.hinweis })]),
       el("p", { class: "dx-m3-rechtlich", text: env.disclaimer })
     ].filter(Boolean));
@@ -268,7 +339,8 @@
         wert += " · vorher " + (ga.unit === "COUNT" ? ga.previous : zahl(ga.previous, 1) + " %");
       }
       var kopf = el("summary", { class: "dx-m3-dim-kopf" }, [
-        el("span", { class: "dx-m3-dim-name" }, [el("b", { text: DIM[k].name }), el("small", { text: DIM[k].frage })]),
+        el("span", { class: "dx-m3-dim-name" }, [iconChip(k, r),
+          el("span", { class: "dx-m3-dim-txt" }, [el("b", { text: DIM[k].name }), el("small", { text: DIM[k].frage })])]),
         el("span", { class: "dx-m3-dim-zustand is-" + r }, [el("i", { "aria-hidden": "true", text: ROLLE_ZEICHEN[r] }), el("b", { text: d.label }), el("small", { text: ROLLE[r] })]),
         ga ? skala(k, ga, d) : el("span", { class: "dx-m3-spur is-leer", "aria-hidden": "true" }),
         el("span", { class: "dx-m3-dim-wert", text: wert })
@@ -401,7 +473,7 @@
   function basisKarte(env) {
     if (!env || env.level === null || env.level === undefined) return null;
     return el("div", { class: "dx-m3-basis-karte is-l" + env.level }, [
-      el("p", { class: "dx-m3-basis-eyebrow", text: "Aktuelle Einordnung" }),
+      el("p", { class: "dx-m3-basis-eyebrow" }, [el("span", { class: "dx-m3-sz-tag is-base", text: "Base Case" }), document_text(" · aktuelle Einordnung")]),
       el("p", { class: "dx-m3-basis-zustand", text: env.label }),
       el("p", { class: "dx-m3-basis-aussage", text: env.statement }),
       tally(env)
@@ -411,8 +483,9 @@
   function bildAendern(p, namen) {
     var c = p.changes;
     if (!c || (!c.better.length && !c.worse.length)) return null;
-    function spalte(titel, xs, r) {
-      return el("div", { class: "dx-m3-aendern-spalte is-" + r }, [el("h3", {}, [el("i", { "aria-hidden": "true", text: r === "besser" ? "↑" : "↓" }), document_text(" " + titel)]),
+    function spalte(art, xs, r) {
+      return el("div", { class: "dx-m3-aendern-spalte is-" + r }, [
+        el("h3", {}, [el("span", { class: "dx-m3-sz-tag is-" + r, text: art }), document_text(" – was müsste eintreten?")]),
         xs.length ? el("ul", {}, xs.map(function (x) {
           return el("li", {}, [
             el("p", { class: "dx-m3-aendern-ziel", text: (DIM[x.dimension] || {}).name + " → " + x.toLabel + " · Einordnung „" + x.levelLabel + "“" }),
@@ -423,11 +496,11 @@
           ].filter(Boolean));
         })) : el("p", { class: "dx-m3-leer", text: "Keine einzelne Veränderung würde die Einordnung in diese Richtung verschieben." })]);
     }
-    return el("section", { class: "dx-m3-aendern", id: "maerkte-aendern", "aria-label": "Was würde das Marktbild verändern?" }, [
-      kopfzeile("Transparenz", "Was würde das Marktbild verändern?", "Mit derselben Regel gerechnet: welche einzelne Veränderung die Einordnung „" +
-        (p.environment ? p.environment.label : "") + "“ verschieben würde. Echte Schwellen, aktuelle Messwerte – keine Prognose."),
-      el("div", { class: "dx-m3-aendern-raster" }, [spalte("Positiver würde das Bild, wenn …", c.better, "besser"), basisKarte(p.environment),
-                                                    spalte("Negativer würde das Bild, wenn …", c.worse, "schlechter")].filter(Boolean))
+    return el("section", { class: "dx-m3-aendern", id: "maerkte-aendern", "aria-label": "Bullish, Base Case, Bearish – was würde das Marktbild verändern?" }, [
+      kopfzeile("Transparenz", "Bullish, Base Case, Bearish", "Mit derselben Regel gerechnet: welche einzelne Veränderung die Einordnung „" +
+        (p.environment ? p.environment.label : "") + "“ verschieben würde. Echte Schwellen, aktuelle Messwerte – keine Prognose, keine erfundene Wahrscheinlichkeit."),
+      el("div", { class: "dx-m3-aendern-raster" }, [spalte("Bullish", c.better, "besser"), basisKarte(p.environment),
+                                                    spalte("Bearish", c.worse, "schlechter")].filter(Boolean))
     ]);
   }
 
