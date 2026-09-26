@@ -1,0 +1,361 @@
+{
+ "schemaVersion": "coverage-levers-1.0.0",
+ "generatedAt": "2026-09-26T15:33:07.000Z",
+ "question": "Welche gemessene Luecke laesst sich noch aus bereits veroeffentlichten Artefakten schliessen?",
+ "cases": {
+  "A": "Daten vorhanden, der Verbraucher liest sie nicht.",
+  "B": "Daten vorhanden, die Zuordnung fehlt.",
+  "C": "Daten vorhanden, die Methodik haelt zu Recht zurueck.",
+  "D": "Echte Datenabwesenheit.",
+  "E": "Extern oder durch die Netzwerkpolitik blockiert."
+ },
+ "universe": 6441,
+ "marketCapPresent": 3770,
+ "marketCapGapsByReason": {
+  "NO_FUNDAMENTALS_AT_ALL": 1405,
+  "NO_PIT_SHARE_COUNT": 801,
+  "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 465
+ },
+ "unusedConsumerMetrics": [
+  {
+   "metric": "diluted_weighted_average_shares",
+   "issuers": {
+    "annual": 4448,
+    "quarterly": 0,
+    "ttm": 0
+   }
+  },
+  {
+   "metric": "capital_expenditures",
+   "issuers": {
+    "annual": 4295,
+    "quarterly": 3294,
+    "ttm": 2809
+   }
+  },
+  {
+   "metric": "depreciation_and_amortization",
+   "issuers": {
+    "annual": 4070,
+    "quarterly": 3444,
+    "ttm": 3245
+   }
+  },
+  {
+   "metric": "stock_based_compensation",
+   "issuers": {
+    "annual": 3985,
+    "quarterly": 0,
+    "ttm": 0
+   }
+  },
+  {
+   "metric": "long_term_debt",
+   "issuers": {
+    "annual": 3265,
+    "quarterly": 0,
+    "ttm": 0
+   }
+  },
+  {
+   "metric": "research_and_development",
+   "issuers": {
+    "annual": 2142,
+    "quarterly": 0,
+    "ttm": 0
+   }
+  }
+ ],
+ "gaps": [
+  {
+   "area": "MARKET_CAP",
+   "case": "C",
+   "titles": 465,
+   "finding": "Ein Emittent, mehrere notierte Zeilen: der Anteilsbestand gilt dem Emittenten, nicht der Zeile. Fail-closed nach quant-v2-valuation-level-1.0.0.",
+   "internallyClosable": false,
+   "evidence": "Der Beleg fuer eine Zeile waere eine Aktienzahl je Gattung; der Massendatensatz fuehrt keine dimensionierten Tatsachen."
+  },
+  {
+   "area": "MARKET_CAP",
+   "case": "D",
+   "titles": 566,
+   "finding": "Die SEC-Quelle fuehrt fuer diesen Emittenten ueberhaupt keinen Anteilsbestand.",
+   "internallyClosable": false,
+   "evidence": "Kein Wert in annual, quarterly oder ttm."
+  },
+  {
+   "area": "MARKET_CAP",
+   "case": "D",
+   "titles": 235,
+   "finding": "Ein Anteilsbestand existiert, liegt aber jenseits der 400-Tage-Regel und ist damit kein heutiger Bestand.",
+   "internallyClosable": false,
+   "evidence": "Die Periodenregel verwirft ihn; ein neuerer Wert steht nicht in der Quelle. Accenture: einzige Beobachtung vom 2010-02-28."
+  },
+  {
+   "area": "MARKET_CAP",
+   "case": "A",
+   "titles": 0,
+   "finding": "Kurs fehlte, obwohl eine veroeffentlichte Tagesreihe existiert - in M36 geschlossen.",
+   "internallyClosable": true,
+   "evidence": "NO_PUBLISHED_CLOSE ist von 131 auf 0 gefallen."
+  },
+  {
+   "area": "MARKET_CAP",
+   "case": "E",
+   "titles": 1405,
+   "finding": "Keine Fundamentaldaten: ohne CIK, ohne Export oder mit rohen Tatsachen ohne Zuordnung.",
+   "internallyClosable": false,
+   "evidence": "Die Zuordnungsluecke braucht die Rohtatsachen; data.sec.gov ist gesperrt."
+  },
+  {
+   "area": "VALUE",
+   "case": "C",
+   "titles": 465,
+   "finding": "Faktor haengt am Boersenwert, der bewusst zurueckgehalten wird.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/C: ein Emittent mit mehreren notierten Zeilen hat keine Aktienzahl je Zeile, und jede Bewertungskomponente teilt durch einen Boersenwert."
+  },
+  {
+   "area": "VALUE",
+   "case": "C",
+   "titles": 1236,
+   "finding": "Die Mindestanforderung des Vertrags ist nicht erreicht (drei Komponenten, 60 Prozent Gewicht).",
+   "internallyClosable": false,
+   "evidence": "Eine Absenkung waere eine Methodikaenderung mit eigener Fassung, kein Repair."
+  },
+  {
+   "area": "VALUE",
+   "case": "D",
+   "titles": 2221,
+   "finding": "Die Eingabe steht in keinem Artefakt - ueberwiegend, weil der Emittent sie nicht meldet.",
+   "internallyClosable": false,
+   "evidence": "Gegenprobe: alle sechs ungenutzten Kennzahlen der Exporte wuerden neue Komponenten verlangen, keine bestehende freischalten."
+  },
+  {
+   "area": "VALUE",
+   "case": "D",
+   "titles": 0,
+   "finding": "Kein zeitpunktsicherer Abschluss.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/E: ohne CIK, ohne Consumer-Export oder mit rohen Tatsachen, die die Registry nicht zuordnet - letzteres braucht die gesperrten Rohdaten."
+  },
+  {
+   "area": "VALUE",
+   "case": "C",
+   "titles": 0,
+   "finding": "Eine im Vertrag zwingende Komponente fehlt.",
+   "internallyClosable": false,
+   "evidence": "Zwingend heisst im Vertrag: kein Ersatz und keine Neugewichtung. Der Faktor bleibt zu, auch wenn das uebrige Gewicht die Mindestschwelle erreichen wuerde."
+  },
+  {
+   "area": "QUALITY",
+   "case": "C",
+   "titles": 0,
+   "finding": "Faktor haengt am Boersenwert, der bewusst zurueckgehalten wird.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/C: ein Emittent mit mehreren notierten Zeilen hat keine Aktienzahl je Zeile, und jede Bewertungskomponente teilt durch einen Boersenwert."
+  },
+  {
+   "area": "QUALITY",
+   "case": "C",
+   "titles": 1207,
+   "finding": "Die Mindestanforderung des Vertrags ist nicht erreicht (drei Komponenten, 60 Prozent Gewicht).",
+   "internallyClosable": false,
+   "evidence": "Eine Absenkung waere eine Methodikaenderung mit eigener Fassung, kein Repair."
+  },
+  {
+   "area": "QUALITY",
+   "case": "D",
+   "titles": 1589,
+   "finding": "Die Eingabe steht in keinem Artefakt - ueberwiegend, weil der Emittent sie nicht meldet.",
+   "internallyClosable": false,
+   "evidence": "Gegenprobe: alle sechs ungenutzten Kennzahlen der Exporte wuerden neue Komponenten verlangen, keine bestehende freischalten."
+  },
+  {
+   "area": "QUALITY",
+   "case": "D",
+   "titles": 0,
+   "finding": "Kein zeitpunktsicherer Abschluss.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/E: ohne CIK, ohne Consumer-Export oder mit rohen Tatsachen, die die Registry nicht zuordnet - letzteres braucht die gesperrten Rohdaten."
+  },
+  {
+   "area": "QUALITY",
+   "case": "C",
+   "titles": 24,
+   "finding": "Eine im Vertrag zwingende Komponente fehlt.",
+   "internallyClosable": false,
+   "evidence": "Zwingend heisst im Vertrag: kein Ersatz und keine Neugewichtung. Der Faktor bleibt zu, auch wenn das uebrige Gewicht die Mindestschwelle erreichen wuerde."
+  },
+  {
+   "area": "GROWTH",
+   "case": "C",
+   "titles": 0,
+   "finding": "Faktor haengt am Boersenwert, der bewusst zurueckgehalten wird.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/C: ein Emittent mit mehreren notierten Zeilen hat keine Aktienzahl je Zeile, und jede Bewertungskomponente teilt durch einen Boersenwert."
+  },
+  {
+   "area": "GROWTH",
+   "case": "C",
+   "titles": 1063,
+   "finding": "Die Mindestanforderung des Vertrags ist nicht erreicht (drei Komponenten, 60 Prozent Gewicht).",
+   "internallyClosable": false,
+   "evidence": "Eine Absenkung waere eine Methodikaenderung mit eigener Fassung, kein Repair."
+  },
+  {
+   "area": "GROWTH",
+   "case": "D",
+   "titles": 2170,
+   "finding": "Die Eingabe steht in keinem Artefakt - ueberwiegend, weil der Emittent sie nicht meldet.",
+   "internallyClosable": false,
+   "evidence": "Gegenprobe: alle sechs ungenutzten Kennzahlen der Exporte wuerden neue Komponenten verlangen, keine bestehende freischalten."
+  },
+  {
+   "area": "GROWTH",
+   "case": "D",
+   "titles": 0,
+   "finding": "Kein zeitpunktsicherer Abschluss.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/E: ohne CIK, ohne Consumer-Export oder mit rohen Tatsachen, die die Registry nicht zuordnet - letzteres braucht die gesperrten Rohdaten."
+  },
+  {
+   "area": "GROWTH",
+   "case": "C",
+   "titles": 0,
+   "finding": "Eine im Vertrag zwingende Komponente fehlt.",
+   "internallyClosable": false,
+   "evidence": "Zwingend heisst im Vertrag: kein Ersatz und keine Neugewichtung. Der Faktor bleibt zu, auch wenn das uebrige Gewicht die Mindestschwelle erreichen wuerde."
+  },
+  {
+   "area": "PROFITABILITY",
+   "case": "C",
+   "titles": 0,
+   "finding": "Faktor haengt am Boersenwert, der bewusst zurueckgehalten wird.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/C: ein Emittent mit mehreren notierten Zeilen hat keine Aktienzahl je Zeile, und jede Bewertungskomponente teilt durch einen Boersenwert."
+  },
+  {
+   "area": "PROFITABILITY",
+   "case": "C",
+   "titles": 2073,
+   "finding": "Die Mindestanforderung des Vertrags ist nicht erreicht (drei Komponenten, 60 Prozent Gewicht).",
+   "internallyClosable": false,
+   "evidence": "Eine Absenkung waere eine Methodikaenderung mit eigener Fassung, kein Repair."
+  },
+  {
+   "area": "PROFITABILITY",
+   "case": "D",
+   "titles": 2407,
+   "finding": "Die Eingabe steht in keinem Artefakt - ueberwiegend, weil der Emittent sie nicht meldet.",
+   "internallyClosable": false,
+   "evidence": "Gegenprobe: alle sechs ungenutzten Kennzahlen der Exporte wuerden neue Komponenten verlangen, keine bestehende freischalten."
+  },
+  {
+   "area": "PROFITABILITY",
+   "case": "D",
+   "titles": 0,
+   "finding": "Kein zeitpunktsicherer Abschluss.",
+   "internallyClosable": false,
+   "evidence": "Dieselbe Ursache wie MARKET_CAP/E: ohne CIK, ohne Consumer-Export oder mit rohen Tatsachen, die die Registry nicht zuordnet - letzteres braucht die gesperrten Rohdaten."
+  },
+  {
+   "area": "PROFITABILITY",
+   "case": "C",
+   "titles": 1,
+   "finding": "Eine im Vertrag zwingende Komponente fehlt.",
+   "internallyClosable": false,
+   "evidence": "Zwingend heisst im Vertrag: kein Ersatz und keine Neugewichtung. Der Faktor bleibt zu, auch wenn das uebrige Gewicht die Mindestschwelle erreichen wuerde."
+  },
+  {
+   "area": "FUNDAMENTAL_INPUTS",
+   "case": "A",
+   "titles": 6,
+   "finding": "Kennzahlen, die die Exporte fuehren und die Eingabeschicht nicht liest.",
+   "internallyClosable": false,
+   "evidence": "Sie wuerden NEUE Komponenten verlangen - das ist eine Methodikaenderung mit eigener Fassung und kein automatischer Repair. Geprueft, ob eine BESTEHENDE Komponente daran haengt: EBITDA wird schon oben abgeleitet (2.661 von 2.661), und long_term_debt ist nicht total_debt."
+  },
+  {
+   "area": "TECHNICAL",
+   "case": "D",
+   "titles": 964,
+   "finding": "Zu kurze Kursreihe fuer die Technical-Fenster.",
+   "internallyClosable": false,
+   "evidence": "Der Titel waechst von selbst hinein: die Fenster brauchen 252 bis 270 Sitzungen, und jede weitere Sitzung kommt taeglich hinzu. Eine Verkuerzung waere eine Methodikabsenkung."
+  },
+  {
+   "area": "SETUP",
+   "case": "D",
+   "titles": 858,
+   "finding": "Zu kurze Kursreihe fuer die Signalfenster.",
+   "internallyClosable": false,
+   "evidence": "Wie bei TECHNICAL: die Signalpruefungen laufen ueber die letzten 261 bis 270 Sitzungen, und die Reihe waechst taeglich. Nichts daran ist reparierbar, nur abwartbar."
+  },
+  {
+   "area": "TECHNICAL",
+   "case": "E",
+   "titles": 82,
+   "finding": "Das Fenster reicht vor die Kalenderdeckung zurueck.",
+   "internallyClosable": false,
+   "evidence": "Der Handelskalender ist eine eingecheckte Konfiguration, aber frueher Jahre aufzunehmen braucht zweifach belegte Feiertage - die stehen in keiner lokalen Quelle. Von 208 plus 205 im September auf 40 plus 40 gefallen."
+  },
+  {
+   "area": "STRATEGY_MATCH",
+   "case": "E",
+   "titles": 1,
+   "finding": "Profile ohne auswertbare Eingabe.",
+   "internallyClosable": false,
+   "evidence": "Gemessen: earnings-revision-leader (quantV2.factorEvidence.revisions) - Revisions bleibt ohne lizenzierte zeitpunktgenaue Analystendaten geschlossen."
+  },
+  {
+   "area": "PATTERN_MATCH",
+   "case": "D",
+   "titles": 1502,
+   "finding": "Musterabgleich ohne Fundamentalueberlagerung.",
+   "internallyClosable": false,
+   "evidence": "Die Musterstudie braucht denselben Abschluss, der auch den Faktoren fehlt."
+  },
+  {
+   "area": "STOCK_IDENTITY_NAMES",
+   "case": "D",
+   "titles": 1100,
+   "finding": "Universumsmitglieder ohne Namen.",
+   "internallyClosable": false,
+   "evidence": "0 davon haetten einen Namen im SEC-Kuerzelverzeichnis. Gemessen ist das null: die namenlosen Titel stehen in keiner lokalen Namensquelle."
+  },
+  {
+   "area": "SECURITY_CLASSIFICATION",
+   "case": "D",
+   "titles": 7494,
+   "finding": "Gattung ohne positiven Beleg - der Anbieter sagt nur 'Stock'.",
+   "internallyClosable": false,
+   "evidence": "Belastbar waere ein Wertpapiername oder ein Identifikator; ISIN, CUSIP und FIGI fehlen fuer alle 7809 Instrumente. Die Konfidenz sagt das seit M37 (HIGH_CONFIDENCE_WITHOUT_EVIDENCE = 0)."
+  },
+  {
+   "area": "SEC_MAPPING",
+   "case": "B",
+   "titles": 161,
+   "finding": "Rohe SEC-Tatsachen vorhanden, die Kennzahl-Registry ordnet keine davon zu.",
+   "internallyClosable": false,
+   "evidence": "Reparierbar waere es im Haus - welche Konzepte fehlen, steht aber in den Rohtatsachen. data.sec.gov antwortet mit CONNECT 403, deshalb BLOCKED_EXTERNAL_NETWORK."
+  },
+  {
+   "area": "DEBT_CONCEPTS",
+   "case": "C",
+   "titles": 2929,
+   "finding": "Die Gesamtverschuldung erreicht heute 2929 Emittenten; eine weitere Reichweite waere eine ANDERE Kennzahl.",
+   "internallyClosable": false,
+   "evidence": "Das Entscheidungsmaterial liegt vollstaendig vor (concept-census.json, 5148 Emittenten): A_heute_nur_gemeldet=864, B_heute_mit_ableitung=2929, C_langfrist_allein=3456, D_mit_finanzierungsleasing=1281, E_heute_oder_finanzierungsleasing=3401. Owner-Entscheidung, keine Messung - sie aendert, was eine veroeffentlichte Kennzahl bedeutet."
+  }
+ ],
+ "gapsByCase": {
+  "C": 14,
+  "D": 15,
+  "A": 2,
+  "E": 3,
+  "B": 1
+ },
+ "AUTOMATICALLY_REPAIRABLE_REMAINING": [],
+ "conclusion": "Kein Fall A oder B ist mehr automatisch schliessbar. Was offen bleibt, braucht eine Owner-Entscheidung (C), Zeit oder eine Quelle (D), oder einen Zugang (E).",
+ "note": "Korrektheit vor Reichweite. Eine Luecke ist kein Auftrag, solange ihre Lage nicht A oder B ist."
+}

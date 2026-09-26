@@ -1,6 +1,6 @@
 {
  "schemaVersion": "valuation-coverage-1.0.0",
- "generatedAt": "2026-09-26T15:02:01.000Z",
+ "generatedAt": "2026-09-26T15:29:12.000Z",
  "question": "Wie viel Bewertungsdeckung traegt das Produkt, wie viel wird zurueckgehalten, und aus welchem Grund?",
  "source": "quant/data/product/factor-evidence-v1 (gelesen, nicht nachgerechnet)",
  "VALUE_FACTOR_COVERAGE": {
@@ -47,6 +47,16 @@
   "rawFactsWithoutMapping": 161,
   "exportRunSilentlySkipped": 22,
   "exportRunReportedFailure": 25
+ },
+ "WITHHELD_VALUATION": 465,
+ "FULL_JOURNEY": 409,
+ "REDUCED_JOURNEY": 89,
+ "UNUSABLE": 2,
+ "SECURITY_TYPE_UNCERTAIN": {
+  "withoutPositiveEvidence": 7494,
+  "tickerConventionOnly": 308,
+  "withPositiveEvidence": 7,
+  "highConfidenceWithoutEvidence": 0
  },
  "sample": {
   "AAPL": {

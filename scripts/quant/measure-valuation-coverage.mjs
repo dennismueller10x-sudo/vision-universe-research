@@ -113,6 +113,14 @@ async function main() {
   const klassPfad = join(ROOT, "quant/data/providers/zero-factor-classification.json");
   const klass = existsSync(klassPfad) ? JSON.parse(await readFile(klassPfad, "utf8")) : null;
 
+  /* Reiseform und Gattungssicherheit stehen in eigenen Artefakten. Sie werden
+     hier zitiert und nicht nachgerechnet, damit eine Zahl nur an einer Stelle
+     entsteht. */
+  const reisePfad = join(ROOT, "quant/data/product/journey-coverage-v1.json");
+  const reise = existsSync(reisePfad) ? JSON.parse(await readFile(reisePfad, "utf8")) : null;
+  const gattungPfad = join(ROOT, "quant/data/product/security-type-provenance-v1.json");
+  const gattung = existsSync(gattungPfad) ? JSON.parse(await readFile(gattungPfad, "utf8")) : null;
+
   const bericht = {
     schemaVersion: "valuation-coverage-1.0.0",
     generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z"),
@@ -147,6 +155,19 @@ async function main() {
       exportRunSilentlySkipped: klass.features?.EXPORT_RUN_SILENTLY_SKIPPED ?? null,
       exportRunReportedFailure: klass.features?.EXPORT_RUN_REPORTED_FAILURE ?? null
     } : null,
+    WITHHELD_VALUATION: z.zurueckgehaltenWegenZuordnung,
+    FULL_JOURNEY: reise && reise.shapes ? reise.shapes.full ?? null : null,
+    REDUCED_JOURNEY: reise && reise.shapes ? reise.shapes.reduced ?? null : null,
+    UNUSABLE: reise && reise.shapes ? reise.shapes.minimal ?? null : null,
+    /* Wie viele Gattungen ohne positiven Beleg gefuehrt werden. Seit M37 sagt
+       die Konfidenz das selbst; hier steht die Zahl, damit sie neben der
+       Deckung liegt und nicht daneben verschwindet. */
+    SECURITY_TYPE_UNCERTAIN: gattung ? {
+      withoutPositiveEvidence: (gattung.byBasis || {}).RESIDUAL_NO_SPECIAL_PATTERN || 0,
+      tickerConventionOnly: (gattung.byBasis || {}).TICKER_PATTERN || 0,
+      withPositiveEvidence: ((gattung.byBasis || {}).SECURITY_NAME || 0) + ((gattung.byBasis || {}).PROVIDER_ASSET_TYPE || 0),
+      highConfidenceWithoutEvidence: gattung.HIGH_CONFIDENCE_WITHOUT_EVIDENCE ?? null
+    } : null,
     sample: stichprobe,
     note: "Korrektheit vor Reichweite: eine hoehere Deckung ist hier kein Erfolg, wenn sie aus " +
       "einer Zahl entsteht, die nicht berechenbar war. Die zurueckgehaltenen Zeilen tragen ihren Grund."
@@ -173,6 +194,19 @@ async function main() {
   process.stdout.write("\nGRUENDE DES BEWERTUNGSFAKTORS\n");
   for (const [k, v] of Object.entries(gruende).sort((a, b) => b[1] - a[1])) {
     process.stdout.write("  " + k.padEnd(42) + p(v) + "\n");
+  }
+  if (reise && reise.shapes) {
+    process.stdout.write("\nREISEFORM (" + (reise.sample || reise.sampleSize || "?") + " Titel)\n");
+    process.stdout.write("  FULL_JOURNEY               " + p(reise.shapes.full ?? "-") + "\n");
+    process.stdout.write("  REDUCED_JOURNEY            " + p(reise.shapes.reduced ?? "-") + "\n");
+    process.stdout.write("  UNUSABLE                   " + p(reise.shapes.minimal ?? "-") + "\n");
+  }
+  if (gattung) {
+    process.stdout.write("\nSECURITY_TYPE_UNCERTAIN\n");
+    process.stdout.write("  ohne positiven Beleg       " + p((gattung.byBasis || {}).RESIDUAL_NO_SPECIAL_PATTERN || 0) + "\n");
+    process.stdout.write("  nur Boersenkonvention      " + p((gattung.byBasis || {}).TICKER_PATTERN || 0) + "\n");
+    process.stdout.write("  mit positivem Beleg        " + p(((gattung.byBasis || {}).SECURITY_NAME || 0) + ((gattung.byBasis || {}).PROVIDER_ASSET_TYPE || 0)) + "\n");
+    process.stdout.write("  HIGH ohne Beleg            " + p(gattung.HIGH_CONFIDENCE_WITHOUT_EVIDENCE ?? "-") + "\n");
   }
   process.stdout.write("\nSTICHPROBE\n");
   for (const t of STICHPROBE) {

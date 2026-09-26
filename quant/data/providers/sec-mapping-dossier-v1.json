@@ -1,0 +1,2216 @@
+{
+ "schemaVersion": "sec-mapping-dossier-1.0.0",
+ "generatedAt": "2026-09-26T15:30:06.000Z",
+ "question": "Was kann ohne Zugang zu data.sec.gov fuer die Zuordnungsluecke vorbereitet werden?",
+ "state": "BLOCKED_EXTERNAL_NETWORK",
+ "issuersAffected": 182,
+ "rawFactsUnused": 43953,
+ "consumerDocuments": 5069,
+ "mappedDistribution": {
+  "0": 183,
+  "20+": 4884,
+  "10-19": 2
+ },
+ "bimodality": "Die Verteilung hat zwei Gipfel und fast nichts dazwischen. Das spricht gegen einzelne fehlende Tags und fuer einen strukturellen Grund - etwa firmeneigene Konzepte oder Tatsachen ohne Periodenrahmen bei Erstmeldern.",
+ "registryCoverageToday": {
+  "revenue": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax (Prio 10)",
+    "us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax (Prio 20)",
+    "us-gaap:Revenues (Prio 30)",
+    "us-gaap:SalesRevenueNet (Prio 40)",
+    "us-gaap:SalesRevenueGoodsNet (Prio 50)",
+    "us-gaap:SalesRevenueServicesNet (Prio 60)",
+    "ifrs-full:Revenue (Prio 200)"
+   ]
+  },
+  "cost_of_revenue": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:CostOfGoodsAndServicesSold (Prio 10)",
+    "us-gaap:CostOfRevenue (Prio 20)",
+    "us-gaap:CostOfGoodsSold (Prio 30)",
+    "us-gaap:CostOfServices (Prio 40)"
+   ]
+  },
+  "gross_profit": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:GrossProfit (Prio 10)"
+   ]
+  },
+  "operating_income": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:OperatingIncomeLoss (Prio 10)",
+    "ifrs-full:ProfitLossFromOperatingActivities (Prio 200)"
+   ]
+  },
+  "pretax_income": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest (Prio 10)",
+    "us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments (Prio 20)",
+    "ifrs-full:ProfitLossBeforeTax (Prio 200)"
+   ]
+  },
+  "income_tax_expense": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:IncomeTaxExpenseBenefit (Prio 10)",
+    "ifrs-full:IncomeTaxExpenseContinuingOperations (Prio 200)",
+    "ifrs-full:CurrentTaxExpenseIncome (Prio 210)"
+   ]
+  },
+  "net_income": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:NetIncomeLoss (Prio 10)",
+    "us-gaap:ProfitLoss (Prio 20)",
+    "us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic (Prio 30)",
+    "ifrs-full:ProfitLossAttributableToOwnersOfParent (Prio 200)",
+    "ifrs-full:ProfitLoss (Prio 210)"
+   ]
+  },
+  "eps_basic": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:EarningsPerShareBasic (Prio 10)",
+    "us-gaap:IncomeLossFromContinuingOperationsPerBasicShare (Prio 20)",
+    "ifrs-full:BasicEarningsLossPerShare (Prio 200)"
+   ]
+  },
+  "eps_diluted": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:EarningsPerShareDiluted (Prio 10)",
+    "us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare (Prio 20)",
+    "ifrs-full:DilutedEarningsLossPerShare (Prio 200)"
+   ]
+  },
+  "operating_cash_flow": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:NetCashProvidedByUsedInOperatingActivities (Prio 10)",
+    "us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations (Prio 20)",
+    "ifrs-full:CashFlowsFromUsedInOperatingActivities (Prio 200)"
+   ]
+  },
+  "capital_expenditures": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment (Prio 10)",
+    "us-gaap:PaymentsToAcquireProductiveAssets (Prio 20)",
+    "us-gaap:PaymentsForCapitalImprovements (Prio 30)",
+    "us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment (Prio 40)",
+    "ifrs-full:PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities (Prio 200)"
+   ]
+  },
+  "cash_and_equivalents": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:CashAndCashEquivalentsAtCarryingValue (Prio 10)",
+    "us-gaap:CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents (Prio 20)",
+    "ifrs-full:CashAndCashEquivalents (Prio 200)",
+    "us-gaap:Cash (Prio 195)"
+   ]
+  },
+  "short_term_investments": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:ShortTermInvestments (Prio 10)",
+    "us-gaap:MarketableSecuritiesCurrent (Prio 20)",
+    "us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent (Prio 30)"
+   ]
+  },
+  "total_assets": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:Assets (Prio 10)",
+    "ifrs-full:Assets (Prio 200)",
+    "ifrs-full:EquityAndLiabilities (Prio 210)",
+    "us-gaap:LiabilitiesAndStockholdersEquity (Prio 190)"
+   ]
+  },
+  "total_liabilities": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:Liabilities (Prio 10)",
+    "ifrs-full:Liabilities (Prio 200)"
+   ]
+  },
+  "stockholders_equity": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:StockholdersEquity (Prio 10)",
+    "us-gaap:StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest (Prio 20)",
+    "ifrs-full:EquityAttributableToOwnersOfParent (Prio 200)",
+    "ifrs-full:Equity (Prio 210)"
+   ]
+  },
+  "long_term_debt": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:LongTermDebtNoncurrent (Prio 10)",
+    "us-gaap:LongTermDebt (Prio 20)",
+    "ifrs-full:LongtermBorrowings (Prio 200)"
+   ]
+  },
+  "short_term_debt": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:LongTermDebtCurrent (Prio 10)",
+    "us-gaap:ShortTermBorrowings (Prio 20)",
+    "us-gaap:DebtCurrent (Prio 30)",
+    "us-gaap:OtherShortTermBorrowings (Prio 40)"
+   ]
+  },
+  "total_debt": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:DebtLongtermAndShorttermCombinedAmount (Prio 10)",
+    "ifrs-full:Borrowings (Prio 200)"
+   ]
+  },
+  "shares_outstanding": {
+   "kind": "instant",
+   "statement": "cover",
+   "concepts": [
+    "dei:EntityCommonStockSharesOutstanding (Prio 10)",
+    "us-gaap:CommonStockSharesOutstanding (Prio 20)",
+    "us-gaap:CommonStockSharesIssued (Prio 30)"
+   ]
+  },
+  "diluted_weighted_average_shares": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding (Prio 10)",
+    "ifrs-full:AdjustedWeightedAverageShares (Prio 200)"
+   ]
+  },
+  "basic_weighted_average_shares": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic (Prio 10)",
+    "us-gaap:WeightedAverageNumberOfShareOutstandingBasicAndDiluted (Prio 20)",
+    "ifrs-full:WeightedAverageShares (Prio 200)"
+   ]
+  },
+  "research_and_development": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:ResearchAndDevelopmentExpense (Prio 10)"
+   ]
+  },
+  "sga_expense": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:SellingGeneralAndAdministrativeExpense (Prio 10)",
+    "us-gaap:GeneralAndAdministrativeExpense (Prio 20)"
+   ]
+  },
+  "interest_expense": {
+   "kind": "duration",
+   "statement": "income_statement",
+   "concepts": [
+    "us-gaap:InterestExpense (Prio 10)",
+    "us-gaap:InterestExpenseDebt (Prio 20)",
+    "us-gaap:InterestExpenseNonoperating (Prio 30)",
+    "ifrs-full:FinanceCosts (Prio 200)"
+   ]
+  },
+  "dividends_paid": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:PaymentsOfDividendsCommonStock (Prio 10)",
+    "us-gaap:PaymentsOfDividends (Prio 20)"
+   ]
+  },
+  "stock_based_compensation": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:ShareBasedCompensation (Prio 10)",
+    "us-gaap:AllocatedShareBasedCompensationExpense (Prio 20)"
+   ]
+  },
+  "depreciation_and_amortization": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:DepreciationDepletionAndAmortization (Prio 10)",
+    "us-gaap:DepreciationAmortizationAndAccretionNet (Prio 20)",
+    "us-gaap:DepreciationAndAmortization (Prio 30)",
+    "us-gaap:Depreciation (Prio 40)"
+   ]
+  },
+  "current_assets": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:AssetsCurrent (Prio 10)",
+    "ifrs-full:CurrentAssets (Prio 200)"
+   ]
+  },
+  "current_liabilities": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:LiabilitiesCurrent (Prio 10)",
+    "ifrs-full:CurrentLiabilities (Prio 200)"
+   ]
+  },
+  "inventory": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:InventoryNet (Prio 10)",
+    "us-gaap:InventoryGross (Prio 20)"
+   ]
+  },
+  "receivables": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:AccountsReceivableNetCurrent (Prio 10)",
+    "us-gaap:ReceivablesNetCurrent (Prio 20)",
+    "us-gaap:AccountsNotesAndLoansReceivableNetCurrent (Prio 30)",
+    "ifrs-full:CurrentTradeReceivables (Prio 200)"
+   ]
+  },
+  "retained_earnings": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:RetainedEarningsAccumulatedDeficit (Prio 10)",
+    "ifrs-full:RetainedEarnings (Prio 200)"
+   ]
+  },
+  "goodwill": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:Goodwill (Prio 10)"
+   ]
+  },
+  "intangible_assets": {
+   "kind": "instant",
+   "statement": "balance_sheet",
+   "concepts": [
+    "us-gaap:IntangibleAssetsNetExcludingGoodwill (Prio 10)",
+    "us-gaap:FiniteLivedIntangibleAssetsNet (Prio 20)"
+   ]
+  },
+  "investing_cash_flow": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:NetCashProvidedByUsedInInvestingActivities (Prio 10)",
+    "us-gaap:NetCashProvidedByUsedInInvestingActivitiesContinuingOperations (Prio 20)",
+    "ifrs-full:CashFlowsFromUsedInInvestingActivities (Prio 200)"
+   ]
+  },
+  "financing_cash_flow": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:NetCashProvidedByUsedInFinancingActivities (Prio 10)",
+    "us-gaap:NetCashProvidedByUsedInFinancingActivitiesContinuingOperations (Prio 20)",
+    "ifrs-full:CashFlowsFromUsedInFinancingActivities (Prio 200)"
+   ]
+  },
+  "share_repurchases": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:PaymentsForRepurchaseOfCommonStock (Prio 10)",
+    "us-gaap:PaymentsForRepurchaseOfEquity (Prio 20)"
+   ]
+  },
+  "debt_issued": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:ProceedsFromIssuanceOfLongTermDebt (Prio 10)",
+    "us-gaap:ProceedsFromIssuanceOfDebt (Prio 20)",
+    "us-gaap:ProceedsFromNotesPayable (Prio 30)"
+   ]
+  },
+  "debt_repaid": {
+   "kind": "duration",
+   "statement": "cash_flow",
+   "concepts": [
+    "us-gaap:RepaymentsOfLongTermDebt (Prio 10)",
+    "us-gaap:RepaymentsOfDebt (Prio 20)",
+    "us-gaap:RepaymentsOfNotesPayable (Prio 30)",
+    "ifrs-full:RepaymentsOfBorrowingsClassifiedAsFinancingActivities (Prio 200)"
+   ]
+  }
+ },
+ "issuers": [
+  {
+   "cik": "0001600222",
+   "name": "Phoenix Education Partners Inc",
+   "tickers": [
+    "PXED"
+   ],
+   "rawFacts": 1125,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002101698",
+   "name": "Elmet Group Co. (The)",
+   "tickers": [
+    "ELMT"
+   ],
+   "rawFacts": 930,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001960355",
+   "name": "Exyn Technologies Inc",
+   "tickers": [
+    "EXYN"
+   ],
+   "rawFacts": 853,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002085187",
+   "name": "Bob`s Discount Furniture Inc",
+   "tickers": [
+    "BOBS"
+   ],
+   "rawFacts": 717,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001898718",
+   "name": "GMR Solutions Inc - Class A",
+   "tickers": [
+    "GMRS"
+   ],
+   "rawFacts": 713,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001925062",
+   "name": "Forbright Inc - Class A",
+   "tickers": [
+    "FRBT"
+   ],
+   "rawFacts": 682,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002078008",
+   "name": "Versigent PLC",
+   "tickers": [
+    "VGNT"
+   ],
+   "rawFacts": 645,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002086587",
+   "name": "York Space Systems Inc",
+   "tickers": [
+    "YSS"
+   ],
+   "rawFacts": 639,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001882782",
+   "name": "Odyssey Therapeutics Inc",
+   "tickers": [
+    "ODTX"
+   ],
+   "rawFacts": 636,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002021728",
+   "name": "Cerebras Systems Inc - Class A",
+   "tickers": [
+    "CBRS"
+   ],
+   "rawFacts": 632,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001740604",
+   "name": "BitGo Holdings Inc - Class A",
+   "tickers": [
+    "BTGO"
+   ],
+   "rawFacts": 611,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001851491",
+   "name": "AMASS BRANDS",
+   "tickers": [
+    "AMSS"
+   ],
+   "rawFacts": 607,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002104204",
+   "name": "Alamar Biosciences Inc",
+   "tickers": [
+    "ALMR"
+   ],
+   "rawFacts": 602,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001540171",
+   "name": "Avalyn Pharma Inc",
+   "tickers": [
+    "AVLN"
+   ],
+   "rawFacts": 583,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002093536",
+   "name": "Arxis Inc - Class A",
+   "tickers": [
+    "ARXS"
+   ],
+   "rawFacts": 575,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002096362",
+   "name": "AIAI Holdings Corp - Class A",
+   "tickers": [
+    "AIAI"
+   ],
+   "rawFacts": 571,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002083632",
+   "name": "Octave Intelligence Plc. - Class B",
+   "tickers": [
+    "OCTV"
+   ],
+   "rawFacts": 554,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001853868",
+   "name": "Fervo Energy Co. - Class A",
+   "tickers": [
+    "FRVO"
+   ],
+   "rawFacts": 544,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002100782",
+   "name": "Generate Biomedicines Inc",
+   "tickers": [
+    "GENB"
+   ],
+   "rawFacts": 531,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002066836",
+   "name": "Conexeu Sciences Inc",
+   "tickers": [
+    "CNXU"
+   ],
+   "rawFacts": 524,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002069604",
+   "name": "Park Dental Partners Inc",
+   "tickers": [
+    "PARK"
+   ],
+   "rawFacts": 523,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002042347",
+   "name": "Seaport Therapeutics Inc",
+   "tickers": [
+    "SPTX"
+   ],
+   "rawFacts": 511,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001531193",
+   "name": "First Carolina Financial Services Inc",
+   "tickers": [
+    "FCBM"
+   ],
+   "rawFacts": 507,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002096997",
+   "name": "Kailera Therapeutics Inc",
+   "tickers": [
+    "KLRA"
+   ],
+   "rawFacts": 507,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002088896",
+   "name": "X-Energy Inc - Class A",
+   "tickers": [
+    "XE"
+   ],
+   "rawFacts": 506,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001633369",
+   "name": "Freecast Inc - Class A",
+   "tickers": [
+    "CAST"
+   ],
+   "rawFacts": 497,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002098430",
+   "name": "Madison Air Solutions Corp - Class A",
+   "tickers": [
+    "MAIR"
+   ],
+   "rawFacts": 496,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001696556",
+   "name": "Once Upon a Farm",
+   "tickers": [
+    "OFRM"
+   ],
+   "rawFacts": 484,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002035832",
+   "name": "Aktis Oncology Inc",
+   "tickers": [
+    "AKTS"
+   ],
+   "rawFacts": 482,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002100805",
+   "name": "Janus Living Inc - Class A-1",
+   "tickers": [
+    "JAN"
+   ],
+   "rawFacts": 482,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002071288",
+   "name": "Lumexa Imaging Holdings Inc",
+   "tickers": [
+    "LMRI"
+   ],
+   "rawFacts": 481,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002109150",
+   "name": "Innio N.V.",
+   "tickers": [
+    "INIO"
+   ],
+   "rawFacts": 478,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002084026",
+   "name": "QumulusAI Inc",
+   "tickers": [
+    "QMLS"
+   ],
+   "rawFacts": 475,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0000007323",
+   "name": "Entergy Arkansas LLC",
+   "tickers": [
+    "EAI"
+   ],
+   "rawFacts": 467,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002094433",
+   "name": "Suncrete Inc",
+   "tickers": [
+    "RMIX"
+   ],
+   "rawFacts": 459,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001861123",
+   "name": "Eikon Therapeutics Inc",
+   "tickers": [
+    "EIKN"
+   ],
+   "rawFacts": 457,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002026053",
+   "name": "PERSHING SQUARE INC.",
+   "tickers": [
+    "PS"
+   ],
+   "rawFacts": 457,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001859836",
+   "name": "Yesway Inc - Class A",
+   "tickers": [
+    "YSWY"
+   ],
+   "rawFacts": 455,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002092574",
+   "name": "Swarmer Inc",
+   "tickers": [
+    "SWMR"
+   ],
+   "rawFacts": 454,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002065636",
+   "name": "SOLV Energy Inc - Class A",
+   "tickers": [
+    "MWH"
+   ],
+   "rawFacts": 453,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002105398",
+   "name": "Csquare Inc",
+   "tickers": [
+    "CSQR"
+   ],
+   "rawFacts": 441,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001181412",
+   "name": "Space Exploration Technologies Corp - Class A",
+   "tickers": [
+    "SPCX"
+   ],
+   "rawFacts": 417,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002021880",
+   "name": "HMH Holding Inc - Class A",
+   "tickers": [
+    "HMH"
+   ],
+   "rawFacts": 411,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002123613",
+   "name": "Kardigan Inc",
+   "tickers": [
+    "KARD"
+   ],
+   "rawFacts": 410,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002114044",
+   "name": "Hemab Therapeutics Holdings Inc",
+   "tickers": [
+    "COAG"
+   ],
+   "rawFacts": 392,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002119322",
+   "name": "Digimarc Corporation",
+   "tickers": [
+    "DMRC"
+   ],
+   "rawFacts": 377,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002096300",
+   "name": "AEVEX Corp - Class A",
+   "tickers": [
+    "AVEX"
+   ],
+   "rawFacts": 364,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001850351",
+   "name": "Liftoff Mobile Inc",
+   "tickers": [
+    "LFTO"
+   ],
+   "rawFacts": 356,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001934114",
+   "name": "Suja Life Inc - Class A",
+   "tickers": [
+    "SUJA"
+   ],
+   "rawFacts": 348,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001787117",
+   "name": "Reformation Inc",
+   "tickers": [
+    "REF"
+   ],
+   "rawFacts": 347,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002090646",
+   "name": "Boost Run Inc",
+   "tickers": [
+    "BRUN"
+   ],
+   "rawFacts": 340,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002079272",
+   "name": "Lakewood-Amedex Biotherapeutics Inc",
+   "tickers": [
+    "LABT"
+   ],
+   "rawFacts": 333,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001657677",
+   "name": "Parabilis Medicines Inc",
+   "tickers": [
+    "PBLS"
+   ],
+   "rawFacts": 331,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002091349",
+   "name": "First Tracks Biotherapeutics Inc",
+   "tickers": [
+    "TRAX"
+   ],
+   "rawFacts": 329,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002110105",
+   "name": "Quantinuum Inc - Class A",
+   "tickers": [
+    "QNT"
+   ],
+   "rawFacts": 317,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002007691",
+   "name": "Ionic Digital Inc - Class A",
+   "tickers": [
+    "IOND"
+   ],
+   "rawFacts": 316,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002058707",
+   "name": "Attovia Therapeutics Inc",
+   "tickers": [
+    "ATTO"
+   ],
+   "rawFacts": 315,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002104882",
+   "name": "EagleRock Land LLC - Class A",
+   "tickers": [
+    "EROK"
+   ],
+   "rawFacts": 312,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001853921",
+   "name": "Scribe Therapeutics Inc",
+   "tickers": [
+    "SCTX"
+   ],
+   "rawFacts": 304,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001892704",
+   "name": "First Breach Inc",
+   "tickers": [
+    "FBDT"
+   ],
+   "rawFacts": 301,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002063380",
+   "name": "Fidelity Solana Fund",
+   "tickers": [
+    "FSOL"
+   ],
+   "rawFacts": 300,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002089271",
+   "name": "Honeywell Aerospace Inc",
+   "tickers": [
+    "HONA"
+   ],
+   "rawFacts": 285,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001925283",
+   "name": "Lincoln International Inc - Class A",
+   "tickers": [
+    "LCLN"
+   ],
+   "rawFacts": 284,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002091712",
+   "name": "RF Acquisition Corp III",
+   "tickers": [
+    "RFAM"
+   ],
+   "rawFacts": 281,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001745648",
+   "name": "Apnimed Inc",
+   "tickers": [
+    "APMD"
+   ],
+   "rawFacts": 276,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002088281",
+   "name": "Midera Food Processing Inc",
+   "tickers": [
+    "MFP"
+   ],
+   "rawFacts": 276,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001921603",
+   "name": "WhiteHawk Minerals Corp - Class A",
+   "tickers": [
+    "WHK"
+   ],
+   "rawFacts": 275,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002115436",
+   "name": "Exxon Mobil Corp",
+   "tickers": [
+    "XOM"
+   ],
+   "rawFacts": 269,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002086716",
+   "name": "Standard Nuclear Inc - Class A",
+   "tickers": [
+    "STDN"
+   ],
+   "rawFacts": 268,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002091017",
+   "name": "Sunshine Silver Mining & Refining Company",
+   "tickers": [
+    "SSMR"
+   ],
+   "rawFacts": 258,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002056611",
+   "name": "Latigo Biotherapeutics Inc",
+   "tickers": [
+    "LTGO"
+   ],
+   "rawFacts": 254,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002118195",
+   "name": "Applied Aerospace & Defense Inc",
+   "tickers": [
+    "AADX"
+   ],
+   "rawFacts": 250,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002088103",
+   "name": "XFLH Capital Corporation",
+   "tickers": [
+    "XFLH"
+   ],
+   "rawFacts": 248,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002111846",
+   "name": "Game Your Game Inc",
+   "tickers": [
+    "GYGY"
+   ],
+   "rawFacts": 240,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002105139",
+   "name": "ADI Global Distribution Inc",
+   "tickers": [
+    "ADIG"
+   ],
+   "rawFacts": 230,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002131524",
+   "name": "Braveheart Bio Inc",
+   "tickers": [
+    "BRVE"
+   ],
+   "rawFacts": 223,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002093507",
+   "name": "Greenland Energy Company",
+   "tickers": [
+    "GLND"
+   ],
+   "rawFacts": 219,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0000072633",
+   "name": "North European Oil Royalty Trust",
+   "tickers": [
+    "NRT"
+   ],
+   "rawFacts": 193,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002080087",
+   "name": "Maywood Acquisition Corp. 2",
+   "tickers": [
+    "MYX"
+   ],
+   "rawFacts": 193,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001839970",
+   "name": "BlossomHill Therapeutics Inc.",
+   "tickers": [
+    "BLSM"
+   ],
+   "rawFacts": 191,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002084227",
+   "name": "Advasa Holdings Inc",
+   "tickers": [
+    "ADBT"
+   ],
+   "rawFacts": 191,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002088626",
+   "name": "Peace Acquisition Corp",
+   "tickers": [
+    "PECE"
+   ],
+   "rawFacts": 181,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002083910",
+   "name": "Archimedes Tech SPAC Partners III Co.",
+   "tickers": [
+    "ARCI"
+   ],
+   "rawFacts": 175,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002044817",
+   "name": "CH4 Natural Solutions Corporation Class A",
+   "tickers": [
+    "MTNE"
+   ],
+   "rawFacts": 163,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002085177",
+   "name": "QuasarEdge Acquisition Corporation",
+   "tickers": [
+    "QRED"
+   ],
+   "rawFacts": 162,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002087361",
+   "name": "M Evo Global Acquisition Corp II",
+   "tickers": [
+    "MEVO"
+   ],
+   "rawFacts": 157,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002102041",
+   "name": "Inflection Point Acquisition Corp VI",
+   "tickers": [
+    "IPFX"
+   ],
+   "rawFacts": 157,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002091484",
+   "name": "GalaxyEdge Acquisition Corp",
+   "tickers": [
+    "GLED"
+   ],
+   "rawFacts": 156,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002082847",
+   "name": "Blue Water Acquisition Corp IV Class A",
+   "tickers": [
+    "BWIV"
+   ],
+   "rawFacts": 154,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001903784",
+   "name": "Vogenx Inc",
+   "tickers": [
+    "VOGX"
+   ],
+   "rawFacts": 152,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002099767",
+   "name": "NewHold Investment Corp IV",
+   "tickers": [
+    "NHIV"
+   ],
+   "rawFacts": 152,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002083946",
+   "name": "Willow Lane Acquisition Corp II - Class A",
+   "tickers": [
+    "WLII"
+   ],
+   "rawFacts": 149,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002085485",
+   "name": "APEX Tech Acquisition Inc.",
+   "tickers": [
+    "TRAD"
+   ],
+   "rawFacts": 148,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002081536",
+   "name": "White Pearl Acquisition Corp Class A",
+   "tickers": [
+    "WPAC"
+   ],
+   "rawFacts": 147,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002101562",
+   "name": "Paloma Acquisition Corp I - Class A",
+   "tickers": [
+    "PALO"
+   ],
+   "rawFacts": 145,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002081690",
+   "name": "Vernal Capital Acquisition Corp",
+   "tickers": [
+    "VECA"
+   ],
+   "rawFacts": 143,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002083217",
+   "name": "QDRO Acquisition Corp - Class A",
+   "tickers": [
+    "QADR"
+   ],
+   "rawFacts": 143,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002104260",
+   "name": "West Enclave Merger Corp",
+   "tickers": [
+    "WENC"
+   ],
+   "rawFacts": 143,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002095297",
+   "name": "KPET Ultra Paceline Corporation Class A",
+   "tickers": [
+    "KPET"
+   ],
+   "rawFacts": 137,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002091024",
+   "name": "Colombier Acquisition Corp II - Class A",
+   "tickers": [
+    "CLBR"
+   ],
+   "rawFacts": 136,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002092446",
+   "name": "Avalanche Treasury Corp - Class A",
+   "tickers": [
+    "AVAT"
+   ],
+   "rawFacts": 135,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002096900",
+   "name": "Averin Capital Acquisition Corp - Class A",
+   "tickers": [
+    "ACAA"
+   ],
+   "rawFacts": 132,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002107724",
+   "name": "Metals Acquisition Corp. II",
+   "tickers": [
+    "MTAL"
+   ],
+   "rawFacts": 132,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002097288",
+   "name": "BHAV Acquisition Corp",
+   "tickers": [
+    "BHAV"
+   ],
+   "rawFacts": 129,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002098780",
+   "name": "TRG Latin America Acquisitions Corp - Class A",
+   "tickers": [
+    "TRGS"
+   ],
+   "rawFacts": 129,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002098242",
+   "name": "Spring Valley Acquisition Corp IV - Class A",
+   "tickers": [
+    "SVIV"
+   ],
+   "rawFacts": 128,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002093524",
+   "name": "Aperture AC - Class A",
+   "tickers": [
+    "APUR"
+   ],
+   "rawFacts": 126,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002111038",
+   "name": "Disciplined Growth Acquisition Corp - Class A",
+   "tickers": [
+    "DGAC"
+   ],
+   "rawFacts": 126,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002079933",
+   "name": "TGE Value Creative Solutions Corp - Class A",
+   "tickers": [
+    "BEBE"
+   ],
+   "rawFacts": 124,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002105838",
+   "name": "SUMA Acquisition Corp - Class A",
+   "tickers": [
+    "SUMA"
+   ],
+   "rawFacts": 121,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002097376",
+   "name": "MOZAYYX Acquisition Corp - Class A",
+   "tickers": [
+    "MZYX"
+   ],
+   "rawFacts": 120,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002102155",
+   "name": "Quantum Leap Acquisition Corp Class A",
+   "tickers": [
+    "QLEP"
+   ],
+   "rawFacts": 116,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002101135",
+   "name": "Illumination Acquisition Corp I",
+   "tickers": [
+    "ILLU"
+   ],
+   "rawFacts": 114,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002109876",
+   "name": "Mountain Crest Acquisition 6 Corp",
+   "tickers": [
+    "MCAH"
+   ],
+   "rawFacts": 114,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002114227",
+   "name": "Churchill Capital Corp XII - Class A",
+   "tickers": [
+    "CXII"
+   ],
+   "rawFacts": 113,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001850733",
+   "name": "Fortress Value Acquisition Corp V - Class A",
+   "tickers": [
+    "FVAV"
+   ],
+   "rawFacts": 112,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002073515",
+   "name": "ARC Group Acquisition I Corp - Class A",
+   "tickers": [
+    "ARCL"
+   ],
+   "rawFacts": 112,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002099095",
+   "name": "Patriot Acquisition Corp - Class A",
+   "tickers": [
+    "PTAC"
+   ],
+   "rawFacts": 109,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002112446",
+   "name": "Jatt II Acquisition Corp",
+   "tickers": [
+    "JATT"
+   ],
+   "rawFacts": 108,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002094919",
+   "name": "Tribeca Strategic Acquisition Corp",
+   "tickers": [
+    "BIDWR"
+   ],
+   "rawFacts": 107,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002102123",
+   "name": "Apogee Acquisition Corp - Class A",
+   "tickers": [
+    "AACP"
+   ],
+   "rawFacts": 106,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002108164",
+   "name": "Pono Capital Four Inc",
+   "tickers": [
+    "PONO"
+   ],
+   "rawFacts": 106,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002111762",
+   "name": "GSR V Acquisition Corp - Class A",
+   "tickers": [
+    "GSRV"
+   ],
+   "rawFacts": 106,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002081515",
+   "name": "Berto Acquisition Corp II",
+   "tickers": [
+    "GUAC"
+   ],
+   "rawFacts": 104,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002090441",
+   "name": "Iron Dome Acquisition I Corp - Class A",
+   "tickers": [
+    "IDAC"
+   ],
+   "rawFacts": 99,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002065661",
+   "name": "Plutonian Acquisition Corp II Class A",
+   "tickers": [
+    "PLUN"
+   ],
+   "rawFacts": 97,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002085932",
+   "name": "Energy Transition Special Opportunities - Class A",
+   "tickers": [
+    "ETSS"
+   ],
+   "rawFacts": 96,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002111542",
+   "name": "ACP Holdings Acquisition Corp - Class A",
+   "tickers": [
+    "ACGC"
+   ],
+   "rawFacts": 93,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002118032",
+   "name": "Research Alliance Corp III - Class A",
+   "tickers": [
+    "RACC"
+   ],
+   "rawFacts": 93,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002100161",
+   "name": "Blackstone Digital Infrastructure Trust Inc",
+   "tickers": [
+    "BXDC"
+   ],
+   "rawFacts": 89,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002112457",
+   "name": "Amanat Acquisition Corp - Class A",
+   "tickers": [
+    "AMAN"
+   ],
+   "rawFacts": 87,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002116105",
+   "name": "Futurewave Acquisition Corp",
+   "tickers": [
+    "FWAC"
+   ],
+   "rawFacts": 82,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002116230",
+   "name": "Southern Cross Acquisition I Corp",
+   "tickers": [
+    "NCO",
+    "NCOOR"
+   ],
+   "rawFacts": 81,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002104177",
+   "name": "Long Table Growth Corp - Class A",
+   "tickers": [
+    "LTGR"
+   ],
+   "rawFacts": 79,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002125551",
+   "name": "Alpex Acquisition Corp - Class A",
+   "tickers": [
+    "ALPX"
+   ],
+   "rawFacts": 79,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002099232",
+   "name": "Future Money Acquisition Corp",
+   "tickers": [
+    "FMAC"
+   ],
+   "rawFacts": 78,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002100704",
+   "name": "East West Ave Acquisition Corp",
+   "tickers": [
+    "EWAV"
+   ],
+   "rawFacts": 78,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002121703",
+   "name": "FortuneX Acquisition Corp - Class A",
+   "tickers": [
+    "FXAC"
+   ],
+   "rawFacts": 78,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002096755",
+   "name": "Texas Ventures Acquisition IV Corp - Class A",
+   "tickers": [
+    "TVIV"
+   ],
+   "rawFacts": 76,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002123969",
+   "name": "RRE Ventures Acquisition Corp",
+   "tickers": [
+    "RREV"
+   ],
+   "rawFacts": 76,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002115404",
+   "name": "Collective Acquisition Corp. II",
+   "tickers": [
+    "CAII"
+   ],
+   "rawFacts": 74,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002090787",
+   "name": "Oceanhawk Acquisition Corp",
+   "tickers": [
+    "OHAC"
+   ],
+   "rawFacts": 73,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002101470",
+   "name": "Wilco 63 Corp - Class A",
+   "tickers": [
+    "WLCO"
+   ],
+   "rawFacts": 73,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002123475",
+   "name": "Snow Rothschild Acquisition Corp - Class A",
+   "tickers": [
+    "ISNR"
+   ],
+   "rawFacts": 71,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002087965",
+   "name": "Cantor Equity Partners VII Inc - Class A",
+   "tickers": [
+    "CAES"
+   ],
+   "rawFacts": 70,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002131350",
+   "name": "B&R Technology Merger Corp - Class A",
+   "tickers": [
+    "BRTM"
+   ],
+   "rawFacts": 70,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002102771",
+   "name": "Keystone Acquisition Corp",
+   "tickers": [
+    "KEYY"
+   ],
+   "rawFacts": 68,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002125567",
+   "name": "Samos Energy Acquisition Corp - Class A",
+   "tickers": [
+    "SAMO"
+   ],
+   "rawFacts": 68,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002126043",
+   "name": "Cartesian Growth Corp IV - Class A",
+   "tickers": [
+    "CGCF"
+   ],
+   "rawFacts": 68,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002128739",
+   "name": "JAB Acquisition Corp I - Class A",
+   "tickers": [
+    "ATLQ",
+    "JAB"
+   ],
+   "rawFacts": 68,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002130386",
+   "name": "Yorkville International Capital Corp - Class A",
+   "tickers": [
+    "YICC"
+   ],
+   "rawFacts": 66,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002086438",
+   "name": "Gores Holdings XI Inc - Class A",
+   "tickers": [
+    "GHXI"
+   ],
+   "rawFacts": 65,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002123471",
+   "name": "Columbus Circle Capital Corp III - Class A",
+   "tickers": [
+    "CCCT"
+   ],
+   "rawFacts": 63,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002103612",
+   "name": "Morgan Stanley Bitcoin Trust",
+   "tickers": [
+    "MSBT"
+   ],
+   "rawFacts": 58,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002108962",
+   "name": "General Catalyst Global Resilience Merger Corp",
+   "tickers": [
+    "GCGR"
+   ],
+   "rawFacts": 58,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002083452",
+   "name": "Shreya Acquisition Group Class A",
+   "tickers": [
+    "SAGU"
+   ],
+   "rawFacts": 57,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002129056",
+   "name": "Jones Ventures INTL Acquisition1 Corp - Class A",
+   "tickers": [
+    "JONE"
+   ],
+   "rawFacts": 57,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002080216",
+   "name": "BOA Acquisition Corp II - Class A",
+   "tickers": [
+    "THEO"
+   ],
+   "rawFacts": 56,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002105274",
+   "name": "InterPrivate Investment Partners V Inc - Class A",
+   "tickers": [
+    "IPVV"
+   ],
+   "rawFacts": 56,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002131853",
+   "name": "FutureCorp Space Acquisition 1 - Class A",
+   "tickers": [
+    "FTRA"
+   ],
+   "rawFacts": 56,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002122505",
+   "name": "Irenic Acquisition Corp",
+   "tickers": [
+    "IACQ"
+   ],
+   "rawFacts": 52,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002129659",
+   "name": "Freedom Metals Acquisition Corp - Class A",
+   "tickers": [
+    "FDMM"
+   ],
+   "rawFacts": 47,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002137777",
+   "name": "Research Alliance Corp IV - Class A",
+   "tickers": [
+    "RACD"
+   ],
+   "rawFacts": 42,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002110119",
+   "name": "AMR Resources Acquisition Corp - Class A",
+   "tickers": [
+    "AMAC"
+   ],
+   "rawFacts": 38,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002106436",
+   "name": "Mercator Acquisition Corp - Class A",
+   "tickers": [
+    "MRCO"
+   ],
+   "rawFacts": 35,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002130606",
+   "name": "Obsidian Therapeutics Inc",
+   "tickers": [
+    "OBX"
+   ],
+   "rawFacts": 34,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002136530",
+   "name": "Meridian3 Industrials Acquisition Corp - Class A",
+   "tickers": [
+    "MIAC"
+   ],
+   "rawFacts": 34,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002094496",
+   "name": "Securitize Corp",
+   "tickers": [
+    "SECZ"
+   ],
+   "rawFacts": 31,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002137965",
+   "name": "TCGX Acquisition Corp - Class A",
+   "tickers": [
+    "TCGX"
+   ],
+   "rawFacts": 30,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002128045",
+   "name": "Bleichroeder Acquisition Corp III - Class A",
+   "tickers": [
+    "BCCQ"
+   ],
+   "rawFacts": 29,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002127043",
+   "name": "Jersey Mike`s Subs Inc - Class A",
+   "tickers": [
+    "JMKE"
+   ],
+   "rawFacts": 10,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0000016868",
+   "name": "Canadian National Railway Company",
+   "tickers": [
+    "CNI"
+   ],
+   "rawFacts": 6,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001468642",
+   "name": "Aura Minerals Inc",
+   "tickers": [
+    "AUGO"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0001841644",
+   "name": "PicS N.V. - Class A",
+   "tickers": [
+    "PICS"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002000756",
+   "name": "K Wave Media Ltd",
+   "tickers": [
+    "KWM",
+    "NXAT"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002020932",
+   "name": "AgomAb Therapeutics NV",
+   "tickers": [
+    "AGMB"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002025774",
+   "name": "Alps Group Inc",
+   "tickers": [
+    "ALPS"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002054507",
+   "name": "Hotel101 Global Holdings Corp",
+   "tickers": [
+    "HBNB"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002058897",
+   "name": "Bancolombia S.A.",
+   "tickers": [
+    "CIB"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002080073",
+   "name": "Versamet Royalties Corporation",
+   "tickers": [
+    "VMET"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002080845",
+   "name": "PayPay Corp",
+   "tickers": [
+    "PAYP"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  },
+  {
+   "cik": "0002087398",
+   "name": "Metals Royalty Co Inc (The)",
+   "tickers": [
+    "TMCR"
+   ],
+   "rawFacts": 1,
+   "mapped": 0,
+   "asOf": "2026-09-23"
+  }
+ ],
+ "whatIsMissing": {
+  "artifact": "companyfacts je betroffener CIK",
+  "host": "data.sec.gov",
+  "endpoint": "/api/xbrl/companyfacts/CIK##########.json",
+  "observed": "CONNECT 403 durch die Netzwerkpolitik der Umgebung (zuletzt 2026-09-26)",
+  "whyItIsNeeded": "Nur die rohen Tatsachen nennen die Konzepte, die diese Emittenten wirklich verwenden. Die Exporte fuehren die Zahl der Tatsachen, nicht ihre Namen.",
+  "alternativeConsidered": "Der lokale kanonische Bestand fuehrt nur fuenf Titel, der Inspektor ebenso; die 120 MB unter consumer/ SIND die SEC-Schicht dieses Hauses. Es gibt keinen zweiten lokalen Ort, an dem die Konzepte stehen."
+ },
+ "procedureWhenAccessExists": [
+  "Fuer jede CIK dieser Liste companyfacts abrufen und die vorkommenden Konzepte je Taxonomie zaehlen.",
+  "Die Haeufigkeit gegen registryCoverageToday stellen: welche Konzepte tragen Deckung und fehlen in der Registry?",
+  "Nur Konzepte aufnehmen, die dieselbe Groesse messen wie die Zielkennzahl. Keine Aufnahme, die eine veroeffentlichte Kennzahl umdeutet - das waere eine Methodikaenderung mit eigener Fassung.",
+  "SPAC-, Trust- und Schuldtitel getrennt halten: ein Emittent ohne operatives Geschaeft braucht keine Zuordnung, sondern eine Kennzeichnung.",
+  "Das Ergebnis als Konzeptzensus veroeffentlichen - wie es fuer die Verschuldung schon geschehen ist (quant/data/sec/concept-census.json) - und erst danach entscheiden."
+ ],
+ "doNotDo": "Keine Zuordnungsregel ohne Rohbeleg. Keine Coverage, die aus einer plausiblen Vermutung entsteht. Keine Verwechslung von Huelle, Treuhand, Schuldtitel und operativem Geschaeft."
+}

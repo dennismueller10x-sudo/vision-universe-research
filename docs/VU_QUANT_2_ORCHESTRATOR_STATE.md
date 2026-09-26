@@ -2,6 +2,118 @@
 
 Updated: 2026-09-26 UTC
 
+## M38 — WAS NOCH VON HIER AUS GEHT: DIE VOLLSTÄNDIGE HEBELMESSUNG
+
+`AUTOMATICALLY_REPAIRABLE_REMAINING = 0`
+
+Nach M34 bis M37 war die Frage nicht mehr „wo fehlt etwas", sondern „wo fehlt etwas, das
+bereits veröffentlichte Artefakte hergeben". Jede gemessene Lücke steht jetzt in genau einer von
+fünf Lagen (`coverage-levers-1.0.0`), und **keine** ist mehr Fall A oder B.
+
+| Bereich | Lage | Titel | Befund |
+|---|---|---|---|
+| MARKET_CAP | C | 465 | Ein Emittent, mehrere Zeilen — fail-closed |
+| MARKET_CAP | D | 566 | Die SEC führt überhaupt keinen Anteilsbestand |
+| MARKET_CAP | D | 235 | Bestand vorhanden, jenseits der 400-Tage-Regel |
+| MARKET_CAP | E | 1.405 | Keine Fundamentaldaten (kein CIK / kein Export / `mapped = 0`) |
+| MARKET_CAP | **A** | **0** | Kurs fehlte trotz veröffentlichter Reihe — **in M36 geschlossen** |
+| VALUE | C | 465 + 1.236 | Börsenwert zurückgehalten · Mindestanforderung nicht erreicht |
+| VALUE | D | 2.221 | Eingabe in keinem Artefakt |
+| QUALITY | C | 1.207 + 24 | Mindestanforderung · zwingende Komponente fehlt |
+| GROWTH | C | 1.063 | Mindestanforderung (davon 345 Banken ohne Umsatzreihe) |
+| PROFITABILITY | C | 2.073 + 1 | Mindestanforderung · zwingende Komponente |
+| FUNDAMENTAL_INPUTS | A | 6 | Kennzahlen, die die Exporte führen und niemand liest |
+| TECHNICAL / SETUP | D | 964 / 858 | Kursreihe zu kurz — wächst täglich |
+| TECHNICAL | E | 82 | Fenster reicht vor die Kalenderdeckung (von 413 auf 82 gefallen) |
+| STRATEGY_MATCH | E | 1 | `earnings-revision-leader` — ohne lizenzierte PIT-Analystendaten |
+| PATTERN_MATCH | D | 1.502 | Musterabgleich ohne Fundamentalüberlagerung |
+| STOCK_IDENTITY_NAMES | D | 1.100 | Ohne Namen — **und 0 davon** stehen im SEC-Kürzelverzeichnis |
+| SECURITY_CLASSIFICATION | D | 7.494 | Gattung ohne positiven Beleg |
+| SEC_MAPPING | B | 161 | Rohe Tatsachen, keine Zuordnung — extern blockiert |
+| DEBT_CONCEPTS | C | 2.929 | Owner-Entscheidung, Material liegt vollständig vor |
+
+**Die sechs ungenutzten Kennzahlen** (Fall A auf Kennzahlebene): `diluted_weighted_average_shares`
+4.448, `capital_expenditures` 4.295, `depreciation_and_amortization` 4.070,
+`stock_based_compensation` 3.985, `long_term_debt` 3.265, `research_and_development` 2.142
+Jahresreihen. Keine davon schaltet eine **bestehende** Komponente frei — geprüft: die
+EBITDA-Ableitung ist vollständig (**2.661 von 2.661**), und `long_term_debt` ist nicht
+`total_debt`. Sie würden neue Komponenten verlangen, und das ist eine Methodikänderung mit eigener
+Fassung, kein Repair.
+
+**Die Verschuldungsfrage ist entscheidungsreif.** Der Konzeptzensus ist gelaufen (2026-09-23,
+5.148 Emittenten) und liefert fünf Zusammensetzungen mit Reichweiten: A (nur Sammelangabe) 864,
+**B (Sammelangabe, sonst LT+ST) 2.929 = heutiger Zustand**, C (nur langfristig) 3.456 — „eine
+ANDERE Kennzahl", D (mit Finanzierungsleasing) 1.281, E (Ersatz durch Leasing) 3.401. Das ist ein
+Owner-Gate, keine Messung: jede Alternative ändert, was eine veröffentlichte Kennzahl bedeutet.
+
+### Point 3 — `SHARE_COUNT_PROVENANCE`: ein Ort trägt den Beleg
+
+Von den geforderten Herkunftsangaben führt die Konsumschicht **`filed`, `accn`, `fp`** und die
+Einheit (je Kennzahl im Kopf). Sie verwirft **`concept`, `form`, `dimensions`, `frame`,
+`sourceTag`** → `DATA_CONTRACT_GAP = OPEN`.
+
+Aber `quant/data/sec/primary_source_audit.json` vergleicht kanonische Werte gegen neu abgerufene
+SEC-Primärdaten und führt je Prüfung `secConcept`, `accession`, `form`, `filingDate`. Damit ist
+die Vermischung **belegt statt erschlossen** — und ein zweiter Fall fiel dabei auf:
+
+| Reihe | vermischte Konzeptklassen |
+|---|---|
+| **JPM `shares_outstanding`** | `CommonStockSharesIssued` + `EntityCommonStockSharesOutstanding` |
+| **XOM `shares_outstanding`** | dieselbe Mischung |
+| **JPM / XOM `stockholders_equity`** | `StockholdersEquity` + `…IncludingPortionAttributableToNoncontrollingInterest` |
+| AAPL / MSFT / NVDA | zwei Konzepte, beide OUTSTANDING — harmlos |
+
+Die Eigenkapital-Mischung ist neu und trifft `bookToMarket` und `equityToAssets`. Die
+Konzeptklassen sind im Artefakt **deklariert**, nie aus Werten erschlossen. Reichweite: **5 von
+5.069** Emittenten — die Vermischung ist belegt, ihre universumsweite Reichweite nicht.
+
+### Point 4 — `SECURITY_TYPE_PROVENANCE_AUDIT`: `HIGH_CONFIDENCE_WITHOUT_EVIDENCE = 0`
+
+Der Klassifikator gab `COMMON_STOCK` + **HIGH**, sobald der Anbieter „Stock" sagte und nichts
+sonst griff. Seine eigene Begründung sagte, was das ist: „kein Sondergattungsmuster im Ticker" —
+die **Abwesenheit** eines Befundes. Ein echter positiver Befund (Vorzugsaktie aus dem Tickermuster)
+stand mit MEDIUM darunter: die Skala war verkehrt.
+
+| Konfidenz | Beleg | Instrumente |
+|---|---|---|
+| LOW | `RESIDUAL_NO_SPECIAL_PATTERN` | 7.494 |
+| MEDIUM | `TICKER_PATTERN` | 308 |
+| HIGH | `SECURITY_NAME` | 5 |
+| HIGH | `PROVIDER_ASSET_TYPE` | 2 |
+| — | mit ISIN / CUSIP / FIGI | **0** |
+
+Der **Typ** blieb unangetastet — er hängt an den Universumstoren, und eine erfundene Gattung wäre
+schlimmer als eine gekennzeichnete. Der Neubau wurde Feld für Feld gegen HEAD geprüft: 7.803
+Instrumente, **0 neu, 0 verloren**, ein neues Feld, `securityTypeConfidence` auf 7.488 geändert,
+alles andere identisch. Die Konfidenz wird von **keinem Tor gelesen** — deshalb konnte sie
+jahrelang HIGH behaupten, und deshalb bewegt ihre Korrektur keine Deckung.
+
+### Point 6 — das Dossier ist ohne Zugang benutzbar
+
+`sec-mapping-dossier-1.0.0`: **182 Emittenten**, 43.953 ungenutzte Tatsachen, jeder mit
+abrufbereiter CIK und Kürzel; die heutige Registry (40 Kennzahlen, 118 Konzepte) zum Abgleich; die
+Zweigipfeligkeit als Befund (4.884 Exporte mit 20+ zugeordneten Kennzahlen, 183 mit genau null,
+**zwei** dazwischen); und ein fünfschrittiges Verfahren für den Moment, in dem Zugang besteht. Was
+es **nicht** enthält: eine Zuordnungsregel. `BLOCKED_EXTERNAL_NETWORK` bleibt.
+
+### Point 7 — nachgemessen
+
+| Größe | Wert |
+|---|---|
+| `MARKET_CAP_COVERAGE` | 3.770 von 6.441 |
+| `VALUE_FACTOR_COVERAGE` | 2.519 |
+| `ZERO_FACTOR_ROWS` | 781 |
+| `FULL_JOURNEY` / `REDUCED_JOURNEY` / `UNUSABLE` | 409 / 89 / 2 |
+| `WITHHELD_VALUATION` | 465 |
+| `SECURITY_TYPE_UNCERTAIN` | 7.494 ohne Beleg · 308 nur Konvention · 7 belegt · **0 HIGH ohne Beleg** |
+
+**Prominente Titel:** `AAPL` 4.978 Mrd, `NVDA` 5.424 Mrd, `MSFT` 3.833 Mrd — verfügbar. `JPM`,
+`T`, `SO`, `GOOG`, `GOOGL`, `AGNC` — **kein** Börsenwert, alle sechs mit
+`SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING` und der Zahl ihrer Geschwisterzeilen. Korrektheit vor
+Reichweite: die Deckung ist gleich geblieben, die Nachprüfbarkeit ist besser geworden.
+
+Tests **1.920 grün, 0 rot**. Produktions-Smoke: **CLEAN**.
+
 ## M36 — DER KURS, DEN DIE SEITE SCHON ZEICHNET
 
 `PUBLISHED_CLOSE_USED_FOR_MARKET_CAP = PASS`
