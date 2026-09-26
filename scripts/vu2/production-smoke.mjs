@@ -138,7 +138,12 @@ for(const width of [1440,390]){
     const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)).length;
     const mitName=zeilen.filter(t=>{const teile=t.split('\n');return teile[0]&&teile[1]&&teile[0]!==teile[1];}).length;
     if(mitKurs/zeilen.length<0.8)bad.push('KURSE='+mitKurs+'/'+zeilen.length);
-    if(mitName/zeilen.length<0.5)bad.push('NAMEN='+mitName+'/'+zeilen.length);
+    /* Die Schwelle war 0,5, als die Haelfte der Zeilen ihren Ticker zweimal
+       schrieb. Seit M41 tragen 6.857 von 6.875 Titeln einen Namen (gemessen
+       100 von 100 Zeilen der Ansicht); eine Schwelle von 0,5 faengt einen
+       Rueckfall dann nicht mehr. 0,95 faengt ihn und friert keinen
+       Tagesstand ein - die 18 Titel ohne Anbieternamen duerfen fehlen. */
+    if(mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
     console.log('     Uebersicht: '+mitKurs+' von '+zeilen.length+' Zeilen mit Kurs · '+mitName+' mit Namen');
    }
   }

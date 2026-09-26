@@ -90,7 +90,22 @@ function buildNameMap() {
     if (!ticker || !name) return;
     const t = String(ticker).toUpperCase();
     if (map.has(t)) return;
-    map.set(t, { name: String(name).trim(), source: quelle });
+    /* EIN KUERZEL IST KEIN NAME - AUS KEINER QUELLE.
+     *
+     * Gemessen am 26.09.2026: dashboard/config/universe.json fuehrt AMD als
+     * "AMD" und ASML als "ASML". Weil diese Quelle hoch steht, trug der
+     * Stamm das Kuerzel als Firmennamen - mit dem Status RESOLVED, also mit
+     * der Behauptung, der Name sei aufgeloest. Die Uebersicht schrieb ihn
+     * dann zweimal ("AMD | AMD"), obwohl "Advanced Micro Devices Inc" eine
+     * Quelle weiter unten steht und die Aktienseite ihn laengst zeigt.
+     *
+     * Dieselbe Regel fuehrt die aufgeloeste Namensschicht als
+     * TICKER_AS_NAME-Ablehnung. Sie gehoert hierher und nicht in einen
+     * Sonderfall: eine Quelle, die das Kuerzel zurueckgibt, weiss den Namen
+     * nicht, und dann soll die naechste Quelle antworten. */
+    const sauber = String(name).trim();
+    if (!sauber || sauber.toUpperCase() === t) return;
+    map.set(t, { name: sauber, source: quelle });
   };
 
   for (const file of ["market-universe.json", "tiingo-universe.json"]) {
@@ -137,6 +152,58 @@ function buildNameMap() {
       }
     }
   }
+  /* ------------------------------------------------------------------
+     DIE AUFGELOESTE NAMENSSCHICHT - SIE LAG DA UND NIEMAND HAT SIE GELESEN.
+
+     Gemessen am 26.09.2026: `company-names-1.0.0` loest 6.855 der 6.875
+     Produkttitel auf; genau 20 tragen ueberhaupt keinen Anbieternamen
+     (PROVIDER_HAS_NO_NAME). Dieser Bauer las fuenf andere Quellen und diese
+     nicht - deshalb stehen 1.344 Instrumente mit companyName null im Stamm
+     und 1.102 Zeilen der Uebersicht schreiben ihren Ticker zweimal
+     ("AAAC | AAAC | 20,12 $"), obwohl "Columbia AAA CLO ETF"
+     veroeffentlicht ist. Die Aktienseite zeigt den Namen bereits, weil der
+     Konsum-Export dieselbe Schicht ueberlagert; nur der Stamm und die Liste
+     wussten nichts davon.
+
+     Das korrigiert ausdruecklich eine Aussage aus M38: dort steht, die
+     1.100 namenlosen Titel haetten "in keiner lokalen Quelle" einen Namen.
+     Geprueft wurde damals das SEC-Kuerzelverzeichnis - nicht diese Schicht.
+     Richtig ist: 20 haben keinen, die uebrigen haben einen.
+
+     ZULETZT und damit als AUFFUELLUNG: `merke` behaelt den ersten Treffer,
+     also aendert diese Quelle keinen einzigen bereits bekannten Namen. Was
+     sie tut, ist genau messbar - companyName wird nur dort gesetzt, wo er
+     null war. Eine hoehere Prioritaet waere eine andere Entscheidung ueber
+     Schreibweisen und gehoert nicht in einen Fix, der eine Luecke schliesst.
+
+     Das war beim ersten Versuch nicht so: der Block stand VOR der
+     SEC-Quelle, und die ist die letzte und breiteste. Gemessen hat er damit
+     5.066 bereits bekannte Namen ueberschrieben - "Alcoa Corp" wurde
+     "Alcoa", weil displayName die Rechtsform weglaesst. Das ist eine
+     Darstellungsentscheidung ueber JEDEN Namen im Produkt und kein
+     Lueckenschluss; sie gehoert nicht in diesen Fix. Der Diff gegen den
+     Basislauf hat es gezeigt, bevor irgendetwas veroeffentlicht wurde. */
+  const aufgeloest = join(root, "quant", "data", "market", "security-master", "company-names.json");
+  if (existsSync(aufgeloest)) {
+    const schicht = readJSON(aufgeloest);
+    for (const zeile of schicht.rows || []) {
+      /* Beide aufgeloesten Staende: die Schicht unterscheidet RESOLVED (im
+         Produktuniversum) von RESOLVED_OUTSIDE_PRODUCT (aufgeloest, aber
+         ausserhalb). Der Stamm ist der VOLLE Wertpapierstamm und nicht das
+         Produktuniversum - ein aufgeloester Name gehoert auch dann hinein,
+         wenn das Produkt den Titel nicht fuehrt. Gemessen: 37 Instrumente. */
+      if (zeile.status !== "RESOLVED" && zeile.status !== "RESOLVED_OUTSIDE_PRODUCT") continue;
+      const name = zeile.displayName || zeile.companyName;
+      /* Ein Ticker als Name waere schlimmer als kein Name: die Zeile schreibt
+         ihn dann zweimal und behauptet dabei, das sei die Firma. Die Schicht
+         filtert das selbst; hier steht die Pruefung ein zweites Mal, weil
+         dieser Bauer der Stamm ist und sich nicht darauf verlassen soll. */
+      if (!name || String(name).trim().toUpperCase() === String(zeile.ticker || "").toUpperCase()) continue;
+      merke(zeile.ticker, name, "quant/data/market/security-master/company-names.json (" +
+        (schicht.version || "?") + ", " + (zeile.nameSource || "?") + ")");
+    }
+  }
+
   return map;
 }
 

@@ -141,13 +141,44 @@
 
   /* Namensmuster. Nur anwendbar, wenn ein Name vorliegt - und das ist bei
      der Tickerliste des Anbieters nicht der Fall. */
+  /* DIE REIHENFOLGE IST DIE REGEL - UND SIE STAND FALSCH.
+   *
+   * Gemessen am 26.09.2026, als der Stamm zum ersten Mal Namen fuer diese
+   * Zeilen hatte: von elf Gattungen, die ein Name belegte, waren sechs
+   * falsch, und beide Fehler kamen aus der Reihenfolge dieser Liste.
+   *
+   *   "Cohen & Steers Short Duration Preferred AND Income Active ETF"
+   *     -> PREFERRED, weil die Vorzugsregel vor der Fondsregel steht.
+   *     Das Papier IST ein Fonds; Vorzugsaktien sind, was er HAELT. Eine
+   *     Gattung nach dem Inhalt zu benennen ist derselbe Fehler wie einen
+   *     Aktienfonds eine Aktie zu nennen.
+   *
+   *   "Fifth Third Bancorp Depositary Shares ... Perpetual Preferred Stock"
+   *     -> ADR, weil "Depositary Share" in der ADR-Regel steht. Das ist eine
+   *     Hinterlegung auf EIGENE Vorzugsaktien einer US-Bank und kein
+   *     American Depositary Receipt. Ein ADR ist durch "ADR", "ADS" oder
+   *     "American Depositary" belegt - nicht durch das Wort "Depositary"
+   *     allein.
+   *
+   * Beide Korrekturen VERENGEN, sie erfinden nichts: sie nehmen der Regel
+   * eine Behauptung, die der Name nicht traegt. Die Huelle (ETF/ETN/Fonds)
+   * entscheidet vor dem Inhalt, und die Hinterlegung wird nur dort ADR, wo
+   * sie sich auch so nennt. */
   var NAME_RULES = [
+    /* Erst die Huelle: was ein Fonds oder eine Schuldverschreibung IST,
+       bleibt es, egal was darin liegt. */
     { type: "ETN",       re: /\b(ETN|EXCHANGE[- ]TRADED NOTE)S?\b/i },
-    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY (SHARE|RECEIPT))/i },
+    { type: "ETF",       re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i },
+    /* Dann die ausdrueckliche Hinterlegung auf eine auslaendische Aktie. */
+    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPT)/i },
+    /* Dann der Inhalt. Eine Hinterlegung auf Vorzugsaktien landet hier - und
+       das ist richtig: sie ist ein Vorzugspapier, kein ADR. */
     { type: "PREFERRED", re: /\b(PREFERRED|PFD|PREF\.)/i },
     { type: "WARRANT",   re: /\bWARRANTS?\b/i },
     { type: "FUND",      re: /\b(FUND|TRUST FUND|CLOSED[- ]END)\b/i },
-    { type: "ETF",       re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i }
+    /* Eine Hinterlegung, deren Name weder ADR noch eine Gattung nennt, bleibt
+       zuletzt eine Hinterlegung - besser als Stammaktie. */
+    { type: "ADR",       re: /\bDEPOSITARY SHARES?\b/i }
   ];
 
   function nameRule(name) {

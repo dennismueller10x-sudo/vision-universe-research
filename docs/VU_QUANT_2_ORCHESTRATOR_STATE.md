@@ -2,6 +2,130 @@
 
 Updated: 2026-09-26 UTC
 
+## M41 — DIE NAMEN LAGEN DA UND NIEMAND HAT SIE GELESEN
+
+`COMPANY_NAME_COVERAGE = 6.857 von 6.875` · `TICKER_AS_NAME = 0` ·
+`NAME_TYPE_EVIDENCE_AUDIT = PASS`
+
+Punkt 9 verlangt, nach M40 mit dem nächsten **gemessenen** Product-Gap weiterzumachen. Die
+Kohärenzmessung hat ihn benannt: die Übersicht schrieb bei **1.102 von 6.875 Zeilen** ihren Ticker
+zweimal.
+
+    AAAC | AAAC | 20,12 $        statt      AAAC | Columbia AAA CLO ETF | 20,12 $
+
+Der Name war die ganze Zeit veröffentlicht. `quant/data/market/security-master/company-names.json`
+(`company-names-1.0.0`, 15.09.2026) löst **6.855 der 6.875** Produkttitel auf — mit `displayName` in
+gepflegter Schreibweise, `nameSource`, `nameAsOf`, den Kandidaten je Quelle und einer
+Konfliktspalte. Genau **20** tragen überhaupt keinen Anbieternamen. Der Company Master las fünf
+andere Quellen und **diese nicht**; die Aktienseite zeigte den Namen längst, weil der Konsum-Export
+dieselbe Schicht überlagert. Nur der Stamm und die Liste wussten nichts davon.
+
+**Das korrigiert eine Aussage aus M38.** Dort steht, die 1.100 namenlosen Titel hätten „in keiner
+lokalen Quelle" einen Namen. Geprüft wurde damals das SEC-Kürzelverzeichnis — nicht diese Schicht.
+Richtig ist: 18 im Produktuniversum haben keinen (`PROVIDER_HAS_NO_NAME`, erneuter Versuch ab
+2026-10-14), die übrigen haben einen.
+
+### Zwei Fehler auf dem Weg, beide vom Diff gefangen
+
+**Der erste Block stand an der falschen Stelle.** Er landete vor der SEC-Quelle — und die ist die
+letzte und breiteste. Gemessen hat er damit **5.066 bereits bekannte Namen überschrieben**: „Alcoa
+Corp" wurde „Alcoa", weil `displayName` die Rechtsform weglässt. Das ist eine
+Darstellungsentscheidung über jeden Namen im Produkt und kein Lückenschluss. Der Block steht jetzt
+zuletzt; `merke` behält den ersten Treffer, also ist er reine Auffüllung.
+
+**Und der Vergleich selbst war zuerst falsch gebaut.** Der Bauer führt eine persistente
+Arbeitsablage (`.market-cache/universe`), und zwei Läufe hintereinander sind deshalb nicht
+unabhängig: mein „Basislauf" hat die Namen des vorigen Kandidatenlaufs aus dem Speicher
+übernommen und dabei behauptet, sie stammten aus dem Bestand. Erst zwei Läufe mit **eigener**
+Ablage (`--work-dir`) ergaben den echten Vergleich.
+
+Der geprüfte Diff, Feld für Feld über 7.809 Instrumente:
+
+| Feld | Instrumente | Beispiel |
+|---|---|---|
+| `companyName` **neu** | **1.082** | AAAC: null → „Columbia AAA CLO ETF" |
+| `companyName` geändert | **0** | — |
+| `companyNameStatus` | 1.082 | SOURCE_MISSING → RESOLVED:…company-names.json |
+| `adrEvidence` | 1.082 | „unavailable" → „nameChecked" (der Klassifikator hat jetzt einen Namen) |
+| `securityType` | 10 | siehe unten |
+| Instrumente verloren / dazu | **0 / 0** | Produktuniversum 6.881 unverändert |
+
+### Ein Kürzel ist kein Name — aus keiner Quelle
+
+`dashboard/config/universe.json` führt **AMD als „AMD"** und **ASML als „ASML"**. Weil diese Quelle
+hoch steht, trug der Stamm das Kürzel als Firmennamen — mit dem Status `RESOLVED`, also mit der
+Behauptung, der Name sei aufgelöst. `merke` weist jetzt jeden Namen ab, der sein Kürzel ist, und die
+nächste Quelle antwortet: 4 Titel geheilt, **0 Instrumente mit Ticker-als-Name**. Dieselbe Regel
+führt die Namensschicht als `TICKER_AS_NAME`-Ablehnung; sie gehört in den Stamm und nicht in einen
+Sonderfall.
+
+Dazu nimmt der Stamm jetzt auch `RESOLVED_OUTSIDE_PRODUCT` (37 Instrumente): er ist der **volle**
+Wertpapierstamm, und ein aufgelöster Name gehört hinein, auch wenn das Produkt den Titel nicht
+führt. Ohne Namen bleiben 223 von 7.809, davon 18 im Produktuniversum.
+
+### Die Hülle entscheidet vor dem Inhalt
+
+Mit Namen im Stamm belegte ein Name erstmals eine Gattung — und **6 von 11 Belegen waren falsch**.
+Beide Fehler kamen aus der **Reihenfolge** der Namensregeln:
+
+- *„Cohen & Steers Short Duration Preferred AND Income Active ETF"* → PREFERRED, weil die
+  Vorzugsregel vor der Fondsregel stand. Das Papier **ist** ein Fonds; Vorzugsaktien sind, was es
+  **hält**.
+- *„Fifth Third Bancorp Depositary Shares … Perpetual Preferred Stock"* → ADR, weil „Depositary
+  Share" in der ADR-Regel stand. Das ist eine Hinterlegung auf **eigene** Vorzugsaktien einer
+  US-Bank, kein American Depositary Receipt.
+
+Beide Korrekturen **verengen**: die Hülle (ETF/ETN) entscheidet zuerst, ein ADR ist nur durch
+„ADR", „ADS" oder „American Depositary" belegt, und eine Hinterlegung ohne weitere Angabe bleibt
+zuletzt eine Hinterlegung. Danach sind alle **10** Gattungswechsel richtig, jeder mit dem Namen, der
+ihn belegt: 4 × ADR (der Name sagt ADR), 6 × PREFERRED (vier Vorzugs-Hinterlegungen, „Cum Red Pfd
+Ser A", „Zacks Preferred Income"). `screenerEligible` bleibt bei 5.938.
+
+### Was der Name über die Gattung sagt — und was nicht (`name-type-evidence-1.0.0`)
+
+| Muster | Beleg | Titel | als Stammaktie geführt |
+|---|---|---|---|
+| **ETF** | eindeutig | 133 | **133** |
+| PREFERRED | eindeutig | 28 | 1 |
+| DEPOSITARY_SHARE | eindeutig | 11 | 0 |
+| SENIOR_NOTES | eindeutig | 6 | 4 |
+| ADR_ADS | eindeutig | 6 | 0 |
+| TRUST | **mehrdeutig** | 188 | 135 |
+| FUND | **mehrdeutig** | 57 | 43 |
+| INDEX / PORTFOLIO / UNIT | **mehrdeutig** | 16 | 13 |
+
+Die Mehrdeutigen bleiben unangetastet, jeder mit seinem Gegenbeispiel: „American Assets Trust" ist
+ein REIT, also eine Aktie; „Altisource Portfolio Solutions" ist ein Betrieb. Eine Regel darauf
+würde REITs umklassifizieren — das wäre geraten.
+
+**Die offene Entscheidung: 133 Titel, deren Name ETF sagt, gelten als Stammaktie.** Der
+Klassifikator lehnt das ausdrücklich ab, wenn der Anbieter `assetType = "Stock"` meldet — und M37
+hat gemessen, dass dieses Feld für **7.801 von 7.803** Instrumenten „Stock" lautet und damit nahezu
+nichts unterscheidet. Heutige Folge: 27 dieser Fonds tragen mindestens eine bewertete Eigenschaft,
+5 einen berechneten Börsenwert, **keiner** eine bewertete Bewertung. Eine Umklassifizierung nimmt
+Titel aus dem Screener-Umfang und verändert damit den Umfang des Produktuniversums — das ist eine
+**Owner-Entscheidung** und kein Fix. Der Bericht legt die Zahlen hin und entscheidet nicht.
+
+Das korrigiert M37 im gleichen Zug: „keine lokale Angabe trennt Nicht-Eigenkapital von
+Stammaktien" war richtig über `assetType`, CUSIP, FIGI, ISIN und das SEC-Verzeichnis — und wurde
+gemessen, **bevor** der Stamm Namen für diese Zeilen hatte.
+
+### Oberfläche und Nachweis
+
+Wo kein Name vorliegt, steht das da: die Zeile schreibt „Firmenname nicht veröffentlicht" statt des
+Kürzels ein zweites Mal, und die Aktienseite überschreibt sich mit „Aktienanalyse" statt mit dem
+Kürzel, unter dem dasselbe Kürzel steht.
+
+Sechs neue Testfälle, sabotagegeprüft (Regelreihenfolge zurückgedreht → Fall 4 fällt). Zwei davon
+haben sich zuerst selbst ausgelöst: die Engine heißt das Feld `ticker` und gibt `instrumentType`
+zurück, und meine eigene Begründungsschwelle war länger als meine kürzeste Begründung — beides
+behoben, indem die Prüfung richtig und die Begründung substanziell wurde, nicht indem die Schwelle
+fiel.
+
+Tests **1.945 grün** (quant) · **273 grün** (discover). Produktions-Smoke: **CLEAN**, 27 Ansichten ×
+2 Breiten, Übersicht **100 von 100 Zeilen mit Namen** (die Namensschwelle des Smoke steigt deshalb
+von 0,5 auf 0,95 — bei der alten fiel ein Rückfall nicht mehr auf).
+
 ## M40 — STOCK INTELLIGENCE COHERENCE
 
 `CONTRADICTORY_STATEMENTS = 0` · `DUPLICATE_PRIMARY_STATEMENTS = 0` ·

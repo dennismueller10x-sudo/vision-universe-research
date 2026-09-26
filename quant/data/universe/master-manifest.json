@@ -1,7 +1,7 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-09-26T15:18:16.146Z",
+  "generatedAt": "2026-09-26T17:50:31.951Z",
   "asOf": "2026-09-26",
   "provider": "tiingo",
   "source": {
@@ -2694,11 +2694,11 @@
     "source": "local",
     "runId": null,
     "commit": null,
-    "normalizeMs": 106,
-    "syncMs": 218,
-    "shardsWritten": 646,
-    "shardsUnchanged": 0,
-    "publishedBytes": 9990892
+    "normalizeMs": 94,
+    "syncMs": 163,
+    "shardsWritten": 31,
+    "shardsUnchanged": 615,
+    "publishedBytes": 10114348
   },
   "identifiers": {
     "cikMap": {
@@ -2713,8 +2713,8 @@
     "withIssuerId": 6461,
     "distinctIssuers": 5481,
     "withCik": 6461,
-    "withName": 6467,
-    "withoutName": 1342,
+    "withName": 7586,
+    "withoutName": 223,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
   },
   "quality": {
@@ -2760,7 +2760,7 @@
           ]
         }
       ],
-      "missingName": 1342,
+      "missingName": 223,
       "missingExchange": 0,
       "missingCurrency": 0,
       "missingCountry": 0,
@@ -2769,18 +2769,19 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 1200,
+      "classificationDisagreement": 1173,
       "classificationDisagreementByClass": {
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
-        "WARRANT->COMMON_STOCK": 470,
+        "WARRANT->COMMON_STOCK": 453,
         "TRUST->COMMON_STOCK": 120,
-        "PREFERRED->COMMON_STOCK": 130,
-        "ADR->COMMON_STOCK": 9,
+        "PREFERRED->COMMON_STOCK": 125,
         "WARRANT->ADR": 1,
-        "ETN->COMMON_STOCK": 4,
+        "ETN->COMMON_STOCK": 3,
         "TEST_SECURITY->COMMON_STOCK": 44,
         "ETF->COMMON_STOCK": 2,
+        "ADR->PREFERRED": 1,
+        "ADR->COMMON_STOCK": 4,
         "CEF->COMMON_STOCK": 1
       },
       "withoutProductDecision": 0
