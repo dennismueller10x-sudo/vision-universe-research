@@ -104,6 +104,56 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M31_2026-09-26 — „METHODIK IM DETAIL" FÜHRTE INS LEERE
+
+Nächste unbemessene Achse: die App verlinkt **zwanzig Pfade außerhalb von `/vu2/`** (die
+professionellen Workspaces, Discover, ETF, Macro, Hedgefonds …) — und **keiner davon stand je im
+Smoke**. Gemessen am gebauten Release: 18 vorhanden, zwei sahen leer aus.
+
+Einer war ein Messfehler meiner eigenen Suche: **`/shares`** ist keine Seite, sondern eine
+Einheit (`unit.endsWith('/shares')`, „je Aktie"). Der andere war echt:
+
+```js
+main.append(actions([… {label:'Methodik im Detail',href:'/quant/methodology/'}]))
+```
+
+Dort liegen 18 Vertragsdateien und **keine index.html**. Auf GitHub Pages ist ein Verzeichnis ohne
+Indexdatei ein 404 — der Knopf auf der Erklärseite führte ins Nichts, während die Reise „wie
+belastbar ist das alles" als ihre **letzte Station** führt. (Die Vercel-Bereitstellung liefert nur
+die API-Funktionen und eine Platzhalterseite; das Live-Frontend kommt aus dem Pages-Release, also
+war der 404 echt.)
+
+### Gebaut: die Seite entsteht aus dem Verzeichnis
+
+Je Vertrag: Nutzerbegriff, Fassung, Status, Zweck und der Weg zur vollständigen Datei. Gemessen
+nennen **13 der 18** ihren Zweck in Worten; bei den anderen fünf sagt die Seite genau das, statt
+einen zu erfinden. Erzeugt statt handgeschrieben, damit ein neuer Vertrag nicht stillschweigend
+fehlt — ein Test hält, dass jede Datei des Verzeichnisses vorkommt.
+
+### Zwei Hausregeln haben die erste Fassung zu Recht zurückgewiesen
+
+1. **Der Smoke.** Zwei Verträge heißen „VU Technical Intelligence V1" und „VU Backtest Trust Score
+   V1", und ich hatte deren `label` als Überschrift genommen. Das Wörterbuch erlaubt einen internen
+   Namen in der Methodik-Ebene, aber *„nie allein und nie zuerst"* — und eine Überschrift ist
+   zuerst. Jetzt kommt sie aus dem Wörterbuch („Was der Kursverlauf zeigt", „Wie belastbar ist die
+   historische Evidenz?"), der interne Name steht als Beisatz darunter.
+2. **§94.** Jede Seite unter `quant/` bindet die gemeinsame Shell ein, die synthetische Daten
+   kennzeichnet. Diese Seite zeigt keine Kurse — aber die Regel ist zu Recht kategorisch: wer hier
+   später eine Zahl hinzufügt, soll sie nicht unbeschriftet ausliefern können.
+
+Der Smoke prüft den Pfad jetzt mit, als **erste Ansicht außerhalb von `/vu2/`** (40 Prüfungen).
+
+Gegenproben: erfundener Zweck → Fall 2 rot · interner Name in der Überschrift → Fall 3 rot · ein
+Vertrag fehlt auf der Seite → Fall 1 rot.
+
+### Offen, als Befund notiert
+
+Die **übrigen 17 verlinkten Pfade** (`/discover/`, `/etf/`, `/macro/`, `/hedgefonds/`,
+`/analysten/`, `/quant/ranking/`, `/quant/screener/` …) existieren als Dateien, sind aber
+**inhaltlich nicht gemessen**. Einige sind auffällig klein (`/guide/` 626 Bytes, `/news/` 689) —
+das kann eine Weiterleitung sein oder eine leere Hülle. Das ist die nächste Messung, nicht die
+nächste Behauptung.
+
 ## M30_2026-09-26 — WAS DER SMOKE NICHT ANSCHAUT, VERFÄLLT
 
 Dreimal an einem Tag dasselbe Muster, jedes Mal eine unbrauchbare Fläche **ohne eine einzige
