@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_852a2221ba91d3e5",
+  "content_id": "vu-web-787176986cf7f5d8-20260926",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "Earnings Scoreboard: 5 of 6 key S&P 500 reporting firms top EPS estimates and expand Y/Y profits",
+  "objective": "Aus einer aktuellen, oeffentlich recherchierten Story EINEN fertigen, veroeffentlichungsreifen Markenpost erzeugen: Motiv, deutscher Hook-Text, Logo und Atlas in einem Zug komponiert — kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer Boersenticker, und kein Rohbild fuer eine spaetere Ueberlagerung. Hook und Caption durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1).",
+  "audience": "Anleger, die aktuelle Marktentwicklungen verfolgen",
+  "hook_strategy": {
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "instruction": "`grounding_hook_en` ist der aus der echten Quelle deterministisch gewaehlte Hook (siehe `source_story`) — NICHT auf Deutsch, nur Belegmaterial. Liefere GENAU EINE Hook-Variante: eine starke, kurze, soziale DEUTSCHE Uebersetzung/Adaption dieses Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2)."
+  },
+  "visual_strategy": {
+    "strategy_id": "GENERATIVE",
+    "instruction": "Trading Floor, Kurstafeln, Broker in Bewegung, dynamisches Boersenlicht, Finanzdistrikt bei Nacht. Keine Schrift, kein Logo, kein Wasserzeichen, generoese Freiflaeche fuer eine spaeter aufgesetzte Kopfzeile. Fotorealistisch, hochwertig, kein Diagramm, kein Bildschirmfoto, kein Dashboard.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": [
+      "near-black #050505 background as a bold FLAT color field (not a photographic scene)",
+      "one confident teal/mint accent close to #5FE0C0 used as a LARGE flat shape or color block (a poster panel, not a thin highlight)",
+      "white for the headline text, set at poster scale",
+      "soft grey for secondary text only"
+    ],
+    "style": "premium cinematic 3D technology visualization",
+    "composition": "portrait 4:5, edge-to-edge — no letterboxing, no black bars, the flat color field fills the entire frame. Compose ONE finished, publish-ready brand post — not a raw scene for later text overlay. Bake the German headline text (see hook_strategy) directly into the image as OVERSIZED, bold, perfectly legible typography that dominates roughly a third of the frame (upper band), set against the flat color field, not over busy detail. Composite the exact brand mascot file (see brand_assets.atlas) as a LARGE, prominent presence — a real character taking up meaningful space in the composition, not a small decorative accessory tucked in a corner. Composite the exact brand logo file (see brand_assets.logo) small and quiet, top-left corner, as a signature, not a design element. Keep the supporting motif for the topic simple and iconic — one clear graphic idea (a shape, a symbol, a gesture), never a cluttered realistic scene with multiple competing props. The result must read as ONE cohesive, intentionally designed brand poster — logo and mascot reproduced exactly as given (only scaled/cropped/reframed per their brand contract), never redrawn or restyled into a different art style.",
+    "restrictions": [
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Keine Prognose-Aussage im Bildtext",
+      "Logo und Atlas exakt aus den angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "atlas": "assets/atlas.png",
+    "instruction": "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren)."
+  },
+  "evidence": [
+    {
+      "id": "ev1",
+      "statement": "Earnings Scoreboard: 5 of 6 key S&P 500 reporting firms top EPS estimates and expand Y/Y profits.",
+      "value": "5",
+      "unit": null,
+      "entity": "MARKETS",
+      "metric": "Web-Beleg 1",
+      "source": "Seeking Alpha Market Currents",
+      "observed_at": "2026-09-26T13:35:01.000Z"
+    },
+    {
+      "id": "ev2",
+      "statement": "Earnings Scoreboard: 5 of 6 key S&P 500 reporting firms top EPS estimates and expand Y/Y profits.",
+      "value": "6",
+      "unit": null,
+      "entity": "MARKETS",
+      "metric": "Web-Beleg 2",
+      "source": "Seeking Alpha Market Currents",
+      "observed_at": "2026-09-26T13:35:01.000Z"
+    },
+    {
+      "id": "ev3",
+      "statement": "Earnings Scoreboard: 5 of 6 key S&P 500 reporting firms top EPS estimates and expand Y/Y profits.",
+      "value": "500",
+      "unit": null,
+      "entity": "MARKETS",
+      "metric": "Web-Beleg 3",
+      "source": "Seeking Alpha Market Currents",
+      "observed_at": "2026-09-26T13:35:01.000Z"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    },
+    {
+      "id": "trend",
+      "text": "Keine Entwicklung ueber Zeit behaupten ('steigt seit', 'faellt weiter') — es liegt ein Stand vor, keine Reihe."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-web-787176986cf7f5d8-20260926/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "grounding_hook_en": "Earnings Scoreboard: 5 of 6 key S&P 500 reporting firms top EPS estimates and expand Y/Y profits",
+  "unavailable": [],
+  "evidence_package": {
+    "package_id": "vu-web-787176986cf7f5d8-20260926",
+    "as_of": "2026-09-26T13:35:01.000Z",
+    "methodology_version": "web-research-1.0",
+    "data_version": "web-research-1.0"
+  },
+  "source_story": {
+    "title": "Earnings Scoreboard: 5 of 6 key S&P 500 reporting firms top EPS estimates and expand Y/Y profits",
+    "link": "https://seekingalpha.com/news/4646990-earnings-scoreboard-5-of-6-key-sp-500-reporting-firms-top-eps-estimates-and-expand-yy-profits?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+    "source": "Seeking Alpha Market Currents",
+    "publishedAt": "2026-09-26T13:35:01.000Z"
+  }
+}
