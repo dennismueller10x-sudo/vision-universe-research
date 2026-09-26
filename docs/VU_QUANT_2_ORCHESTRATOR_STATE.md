@@ -104,6 +104,113 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M26_2026-09-26 — DIE VERSTÄNDLICHE REISE FÜR DATENARME TITEL
+
+Auftrag: ein Titel mit nur drei bis sieben verfügbaren Stationen darf nicht wie eine kaputte Seite
+wirken. Verfügbares zuerst, Nicht-Verfügbares gruppiert, Ursache verständlich, keine elf
+Einzelboxen, keine Fachsprache, keine erfundenen Aussagen, keine neuen Pipelines.
+
+### Erst gemessen — und die Messung selbst war der Befund
+
+Die bisherige Reisemessung zählte, ob eine Station **antwortet**. Diese hier zählt, ob sie
+**etwas zeigt** (mindestens ein konkreter Wert):
+
+| Gehaltvolle Stationen | Titel | Form |
+|---:|---:|---|
+| 11 | 352 | **volle Reise: 409** |
+| 10 | 56 | |
+| 9 | 1 | |
+| 7 | 9 | **reduzierte Reise: 89** |
+| 6 | 2 | |
+| 5 | 34 | |
+| 4 | 37 | |
+| 3 | 7 | |
+| 1 | 2 | **zu wenig für eine Reise: 2** (EDVA, GLMD) |
+
+Der Unterschied ist nicht akademisch: **ACAA gilt an vier Stationen als beantwortet und zeigte dort
+0 von 7 Faktoren und 0 von 16 Kennzahlen.** Für einen Leser ist das keine Antwort, sondern eine
+Überschrift über einer leeren Fläche.
+
+Und die Form der datenarmen Seite war das eigentliche Problem: 91 Titel der Stichprobe hatten im
+Median **fünf Absagen** — bei nur **drei Ursachen** (2 Ursachen bei 13 Titeln, 3 bei 68, 4 bei 9,
+5 bei einem). Die häufigsten gemeinsamen Ausfälle tragen sogar denselben Grund, Titel für Titel:
+
+```
+setup + setupChange          73 mal zusammen aus · 73 mal identischer Grund
+setup + technical            73 mal zusammen aus · 73 mal identischer Grund
+setupChange + technical      73 mal zusammen aus · 73 mal identischer Grund
+factorStrength + strategy    21 mal zusammen aus · 21 mal identischer Grund
+```
+
+### Gebaut: ein Vertrag, zwei Halbseiten der Reise
+
+`quant/engines/journey-shape.js` entscheidet zwei Dinge und sonst nichts: welche **Form** eine Seite
+hat und wie die Absagen zu **Ursachengruppen** zusammenfallen. Oberfläche und Messung rufen
+dieselbe Funktion — eine zweite Kopie der Regel wäre eine Zahl, die nichts über die Seite aussagt,
+und ein Test hält genau das (Fall 10).
+
+Die Schwelle ist in **Absagen** formuliert, nicht in Stationen: bis zu zwei sind Beiwerk in einer
+vollen Reise, ab der dritten ist die Seite ein Stapel. Auf allen elf Stationen ist das genau die
+gemessene Grenze (409/89/2); und weil die Aktienseite acht der elf Stationen trägt, wäre eine
+Schwelle „mindestens neun gehaltvoll" für jede Teilansicht falsch. Eine Station, die der Aufrufer
+nicht übergibt, ist **keine Absage** — sonst gibt eine Teilseite ihre eigene Unvollständigkeit als
+Datenmangel des Titels aus.
+
+Verdichtet wird auf **beiden** Hälften: die Quant-Ansicht zeigte für ACAA sieben leere
+Eigenschaftszeilen, eine Tabelle ohne Zahlen und vier Absagen — weil ein Zustand `AVAILABLE` noch
+kein Wert ist. Der Orientierungssatz dort versprach acht Abschnitte; er sagt jetzt, was wirklich
+folgt.
+
+### Drei Dinge, die erst die echten Daten gezeigt haben
+
+1. **`SOURCE_MISSING` heißt nicht überall dasselbe.** An den Zahlenstationen bedeutet es „keine
+   Kennzahlen", an den Kursstationen „keine Kursreihe". Die erste Fassung erklärte ACAA und ANV
+   damit die falsche Ursache — plausibel klingend und falsch, also schlimmer als elf Boxen.
+2. **Zwei Nenner dürfen nicht zu einem werden.** „Von 7 Kennzahlen ist keine veröffentlicht"
+   mischte die sieben Faktoren mit den sechzehn Kennzahlen. Beide Zahlen sind gemessen, der Satz
+   war trotzdem erfunden. Jeder Bereich trägt jetzt seine eigene Zahl, der Gruppensatz keine.
+3. **`NO_WEEKLY_SERIES` braucht eine eigene Gruppe.** „Für diesen Titel liegt keine Kursreihe vor"
+   widersprach dem Tagesverlauf, der drei Zentimeter darüber zu sehen ist. Jetzt: „Diese Auswertung
+   vergleicht Wochenverläufe … der Tagesverlauf oben bleibt davon unberührt."
+
+Dazu, im Nebenblock der Aktienseite gefunden: drei Zeilen „Nicht verfügbar" untereinander und der
+Satz „Die langfristige Kursstruktur verdient einen genaueren Blick" — eine Beurteilung ohne Zahl.
+Beides ist weg; ohne Durchschnittswerte steht da jetzt, dass sie fehlen und wo der Grund steht.
+
+### Realisiert, gemessen am gebauten Release
+
+| Messung | Vorher | Nachher |
+|---|---:|---:|
+| volle Reisen | — | **409** von 500 |
+| reduzierte Reisen | — | **89** |
+| zu wenig für eine Reise | — | **2** |
+| Absagekästen insgesamt | 643 | **281** |
+| … auf den 91 datenarmen Seiten | 585 | **223** |
+| schlimmste Seite | 8 | **4** |
+| ACAA (Aktienseite) | 6 Absagen + leeres Kennzahlengitter | **3 Gruppen + 1 Charthinweis** |
+| ACAA (Quant-Ansicht) | 4 Absagen + 7 leere Zeilen | **3 Gruppen, 0 Einzelabsagen** |
+| EDVA (kein Kurs) | leere Seite mit Hinweisen | **4 Gruppen, 0 Einzelabsagen** |
+
+**Stoßen Nutzer noch auf leere oder fragmentierte Seiten?** In der reduzierten Form wird kein
+Abschnitt ohne Wert mehr gesetzt — gerendert wird genau, was gehaltvoll ist. Der einzige
+Einzelhinweis, der auf ACAA bleibt, kommt aus dem Chart selbst (117 Handelstage, der 1-Jahr-Bereich
+ist nicht gefüllt). Gehalten wird das nicht durch eine Konstante im Bericht — eine Null, die nichts
+messt, stand dort einen Commit lang —, sondern durch den Produktions-Smoke am gebauten Release:
+**ACAA und EDVA stehen jetzt in seinen Ansichten**, mit Prüfung auf Gruppen, benannte Bereiche,
+höchstens einen Einzelhinweis und Alltagssprache im Haupttext. Vorher kannte er nur NVDA, AAPL und
+JPM — Titel, bei denen alles da ist, weshalb ein Stapel Absagen dort nie auffallen konnte.
+
+### Nebenbefund auf main, nicht von dieser Änderung verursacht
+
+Der **Backtest-Blocker war aus der Blockerliste verschwunden**. Grund: der wöchentliche Workflow
+`index-membership.yml` hat den **zweiten** Zugehörigkeitsstand je Index geschrieben, und die Stelle
+im Prüfskript hatte sich selbst die Aufgabe gestellt, beim zweiten Stand nachgezogen zu werden.
+Die Folge war, dass der Backtest sich näher an offen las — genau das, was die Zeile verhindern
+sollte. Zwei Stände sind keine Historie: ein Point-in-Time-Lauf braucht die Zugehörigkeit an
+**jedem** Rebalancing-Datum seines Fensters. Der Blocker steht wieder, nennt den gemessenen Stand
+und was ihn schließt; dass die Reihe wächst, steht daneben. Der Test prüft jetzt den Vertrag statt
+der Zahl 1 — dieselbe Reparatur wie beim Versionspin aus M25.
+
 ## M25_2026-09-26 — DIE DREI SCHWÄCHSTEN STATIONEN, ZUERST GEMESSEN
 
 Auftrag: Strategy, Setup/SetupChange, Technical — je Station **messen**, warum Titel fehlen
@@ -185,6 +292,35 @@ Alles Datengrenze, nichts davon in Code schließbar: Strategy 61 Zeilen ohne ein
 Faktorwert und 21 ohne Zeile; Setup/Technical 68 mit zu kurzer Historie; dazu die 40 dünn
 gehandelten und die 2 mit einer Feiertagsbar, beide methodisch richtig ausgeschlossen und jetzt
 richtig benannt.
+
+### Die Gegenprobe über die ÜBRIGEN Stationen: kein verdeckter Riegel mehr
+
+Zweimal an einem Tag lautete der Befund „die Daten sind da, etwas anderes hält sie zurück". Danach
+ist die Frage berechtigt, ob dieselbe Signatur noch woanders steckt. Über dieselbe 500er-Stichprobe
+gemessen, je Station gegen ihre eigene Eingangslage:
+
+| Prüfung | Befund |
+|---|---:|
+| `chart` sagt `SOURCE_MISSING`, obwohl die kompakte Kursreihe im Repository liegt | **0** |
+| `factorStrength` nicht gedeckt, obwohl eine Screening-Zeile existiert | **0** |
+| `change` nennt `NO_COMPARABLE_OBSERVATION`, obwohl zwei veröffentlichte Stände vorliegen | **0** von 5 Kandidaten |
+
+Die fünf Kandidaten (GYGY, MFP, OCAC, REF, VCRE) stehen in **allen drei** Snapshots
+(2026-09-23/24/25) — und tragen dort je **sieben `null`**. Es gibt zwei Stände und nichts zu
+vergleichen; die Station sagt genau das. Damit ist der Satz belegbar:
+
+> **Nach den beiden Fixes hält keine Station mehr etwas zurück, dessen Eingangsdaten vorliegen.**
+> Jede verbleibende Lücke der Reise ist eine Datengrenze, keine Code-Lücke.
+
+### Der nächste Milestone folgt daraus, nicht aus einer Rangliste
+
+Wenn Deckung nicht mehr an Code hängt, ist der schwächste *echte* Product-Gap nicht die Deckung,
+sondern die **Verständlichkeit für die datenarme Kohorte**. Gemessen an der Stichprobe: 382 von 500
+Titeln bekommen alle elf Stationen, aber **56 bekommen genau sechs**, 26 sieben, sechs fünf, zwei
+drei. Für diese rund 18 Prozent besteht die Seite überwiegend aus Absagen — jede einzelne richtig
+und benannt, in der Summe aber kein Durchlauf, sondern ein Stapel. Das ist in Code schließbar
+(Darstellung und Sprachschicht, keine neuen Daten) und deckt sich mit dem Ziel: *möglichst viele
+Titel vollständig **und verständlich***.
 
 ## MERGED_2026-09-25 — #182 AUF MAIN, DER PRODUKTIONSWEG, DIE ABLAGE-AUTOMATIK
 

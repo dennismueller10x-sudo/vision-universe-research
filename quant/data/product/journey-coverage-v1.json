@@ -1,6 +1,6 @@
 {
- "schemaVersion": "journey-coverage-1.0.0",
- "generatedAt": "2026-09-26T07:29:53.000Z",
+ "schemaVersion": "journey-coverage-1.1.0",
+ "generatedAt": "2026-09-26T09:08:08.000Z",
  "universe": 6875,
  "sample": 500,
  "sampling": "jeder 13. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
@@ -125,16 +125,15 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 426,
+   "answered": 427,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 74,
-   "share": 0.852,
+   "withheld": 73,
+   "share": 0.854,
    "reasons": {
     "INSUFFICIENT_HISTORY": 68,
     "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 4,
-    "SOURCE_MISSING": 1,
-    "TECHNICAL_EVIDENCE_NOT_PUBLISHED": 1
+    "SOURCE_MISSING": 1
    }
   },
   {
@@ -154,9 +153,39 @@
   "6": 56,
   "7": 26,
   "8": 1,
-  "9": 2,
-  "10": 25,
+  "9": 1,
+  "10": 26,
   "11": 382
+ },
+ "shapes": {
+  "full": 409,
+  "reduced": 89,
+  "minimal": 2,
+  "noticeBoxesBefore": 643,
+  "noticeBoxesAfter": 281,
+  "worstPageNoticeBoxes": 4,
+  "dataPoorPages": 91,
+  "dataPoorNoticeBoxesBefore": 585,
+  "dataPoorNoticeBoxesAfter": 223,
+  "substantiveStationsPerTitle": {
+   "1": 2,
+   "3": 7,
+   "4": 37,
+   "5": 34,
+   "6": 2,
+   "7": 9,
+   "9": 1,
+   "10": 56,
+   "11": 352
+  },
+  "causes": {
+   "SHORT_HISTORY": 97,
+   "NO_WEEKLY_SERIES": 44,
+   "NO_FIGURES": 82,
+   "RARELY_TRADED": 5,
+   "NO_SERIES": 52
+  },
+  "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."
  },
  "note": "Gemessen ueber dieselben Dienste, die die Oberflaeche aufruft. 'withheld' heisst: die Station nennt einen Grund statt einer Zahl - kein Fehler, sondern der veroeffentlichte Zustand."
 }

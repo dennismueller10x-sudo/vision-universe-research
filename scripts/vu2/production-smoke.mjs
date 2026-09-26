@@ -23,7 +23,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
     scheitern, wo der Smoke gebraucht wird. */
  ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/product-language-v1.json',import.meta.url),'utf8')).forbiddenInPrimaryCopy;
-const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks'];
+const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks'];
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
@@ -52,7 +52,7 @@ for(const width of [1440,390]){
      traegt und darunter denselben Wert schreibt, hat die Trennung
      beschriftet statt umgesetzt - und genau das faellt in einem
      Screenshot niemandem auf. */
-  if(view.startsWith('/vu2/?view=quant')){
+  if(view.startsWith('/vu2/?view=quant')&&!/ticker=(ACAA|EDVA)/.test(view)){
    const grid=page.locator('.return-kind-grid');
    if(!await grid.count()){bad.push('RETURN_KIND_FEHLT');}
    else{
@@ -69,6 +69,30 @@ for(const width of [1440,390]){
      }
      if(!verschieden)bad.push('RETURN_KIND_IDENTISCH');
     }
+   }
+  }
+  /* DIE VERDICHTETE REISE, IM GEBAUTEN RELEASE GEPRUEFT.
+
+     Ein datenarmer Titel darf nicht wie eine kaputte Seite aussehen. Der
+     Smoke kannte bisher nur NVDA, AAPL und JPM - also nur Titel, bei denen
+     alles da ist. Genau deshalb waere ein Stapel Absagen hier nie
+     aufgefallen. ACAA (117 Handelstage, keine Kennzahl) und EDVA (kein
+     Kurs) sind die gemessenen Faelle. */
+  if(/ticker=(ACAA|EDVA)/.test(view)){
+   const gap=page.locator('.journey-gap');
+   if(!await gap.count())bad.push('VERDICHTUNG_FEHLT');
+   else{
+    const gruppen=await gap.locator('.gap-group').count();
+    const notizen=await page.locator('main .notice').count();
+    const gapText=await gap.innerText();
+    if(!gruppen)bad.push('KEINE_GRUPPE');
+    /* Eine verdichtete Seite stapelt keine Einzelabsagen mehr. Erlaubt ist,
+       was aus dem Chart selbst kommt (ein nicht verfuegbarer Zeitraum). */
+    if(notizen>1)bad.push('EINZELABSAGEN='+notizen);
+    if(!/Betrifft/.test(gapText))bad.push('BEREICHE_FEHLEN');
+    /* Und ein Leser muss lesen koennen, was noch fehlt - nicht den Code. */
+    if(/INSUFFICIENT_|NOT_COVERED_|SOURCE_MISSING/.test(gapText.split('Welche Gründe')[0]))bad.push('CODE_IN_HAUPTTEXT');
+    console.log('     Verdichtung: '+gruppen+' Gruppen · '+notizen+' Einzelabsagen');
    }
   }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));

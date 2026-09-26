@@ -327,3 +327,14 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .setup-badge.state-BROAD_STRENGTH{border-color:var(--positive);color:var(--positive)}
 .setup-badge.state-BROAD_WEAKNESS{border-color:var(--negative);color:var(--negative)}
 .setup-badge.state-MIXED{color:var(--muted)}
+
+/* Die verdichtete Auskunft fuer datenarme Titel. Sie soll nicht wie eine
+   Fehlermeldung aussehen und nicht wie ein Hinweiskasten neben anderen -
+   sie ist der letzte Abschnitt der Reise und traegt dieselbe Ruhe wie die
+   uebrigen. */
+.journey-gap .gap-group{border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:12px 0;background:var(--surface-2,rgba(255,255,255,.02))}
+.journey-gap .gap-group h3{margin:0 0 6px;font-size:1.02rem}
+.journey-gap .gap-group p{margin:0 0 6px}
+.journey-gap .gap-areas{font-size:.9rem;color:var(--muted);margin:8px 0 0}
+.journey-gap details{margin-top:10px}
+@media (max-width:640px){.journey-gap .gap-group{padding:14px}}

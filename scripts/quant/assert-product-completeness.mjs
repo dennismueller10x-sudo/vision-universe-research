@@ -117,22 +117,31 @@ const snapshots = membershipSnapshots();
 const publishedTR = publishedTotalReturnSeries();
 const trVerdict = totalReturnVerdict();
 
-if (snapshots > 1) {
-  add("OPEN", "MEMBERSHIP_BLOCKER_CLEARED",
-    snapshots + " membership snapshots now exist per index; the point-in-time universe entry is stale.");
-} else {
-  /* Der Abstand UND wie er sich schliesst. "Waechst nur nach vorne" sagt
-     nicht, wie schnell - und ohne das liest es sich wie ein Wartezustand,
-     der an einer Entscheidung haengt. Er haengt an keiner: der Workflow
-     index-membership.yml laeuft woechentlich (Samstag) und schreibt je
-     Index einen Stand aus den veroeffentlichten Fondsbestaenden. Es
-     braucht dafuer keinen Schluessel und keine Freigabe. */
-  add("BLOCKED", "BACKTEST", "Backtest integration stays shut",
-    "historical index membership (" + snapshots + " snapshot per index). No measurement creates it " +
-    "retroactively; the series only grows forward from here - index-membership.yml appends one " +
-    "snapshot per index per week on its own schedule, so this waits on time rather than on a person.");
-}
+/* ZWEI STAENDE SIND KEINE HISTORIE - UND EIN STAND MEHR MACHT DEN BACKTEST
+   NICHT OFFEN.
 
+   Diese Stelle hat sich selbst eine Aufgabe gestellt: solange es einen Stand
+   je Index gab, nannte sie den Blocker; beim zweiten sollte jemand den
+   Eintrag nachziehen. Am 26.09.2026 ist der zweite da - der Workflow
+   index-membership.yml schreibt ihn woechentlich - und die Folge war, dass
+   der Blocker aus der Liste VERSCHWAND. Damit las sich der Backtest als
+   naeher an offen, und genau das sollte die Zeile verhindern.
+
+   Ein Point-in-Time-Backtest braucht die Zugehoerigkeit an JEDEM
+   Rebalancing-Datum seines Fensters, nicht an zwei Tagen. Der Blocker bleibt
+   deshalb stehen und nennt den gemessenen Stand; dass die Reihe waechst,
+   steht daneben, statt den Blocker aufzuheben. */
+add("BLOCKED", "BACKTEST", "Backtest integration stays shut",
+  "historical index membership (" + snapshots + " snapshot" + (snapshots === 1 ? "" : "s") +
+  " per index). A point-in-time run needs membership at every rebalancing date in its window, " +
+  "not at a handful of dates. No measurement creates it retroactively; the series only grows " +
+  "forward from here - index-membership.yml appends one snapshot per index per week on its own " +
+  "schedule, so this waits on time rather than on a person.");
+if (snapshots > 1) {
+  add("OPEN", "MEMBERSHIP_SERIES_GROWING",
+    snapshots + " membership snapshots per index now exist; the series has begun to grow, and the " +
+    "backtest blocker stays until it covers a full backtest window.");
+}
 /* Measured, and deliberately NOT folded into the backtest blocker: the
    provider's adjusted series is confirmed total-return, so this is a
    published-basis decision rather than a missing input. */
