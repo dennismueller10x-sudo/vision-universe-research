@@ -192,7 +192,21 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       instruction: "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. " +
         "Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene " +
         "komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation " +
-        "ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren)."
+        "ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren). " +
+        /* DER FEHLENDE VERTRAG (gefunden 26.09., PR vu-web-787176986cf7f5d8-20260926):
+           `brand_elements_announcement_required` stand als reine Kennzeichnung im
+           Brief, ohne dass der Agent je erfuhr, WELCHE Form die Rueckmeldung haben
+           muss. Er antwortete plausibel mit einer eigenen, beschreibenden Form
+           (`{logo, atlas, integration}`) statt der drei Booleans, die verifyResult()
+           unten tatsaechlich prueft — jedes Ergebnis fiel seither auf
+           brandElementsIncomplete, obwohl Logo und Atlas nachweislich im Bild
+           waren. Die Form steht jetzt woertlich im Brief, nicht nur im Pruefcode. */
+        "Wichtig fuer die Rueckmeldung: gib pro Bildvariante zusaetzlich ein Feld " +
+        "`brand_elements` mit GENAU diesen drei Boolean-Feldern zurueck: " +
+        "`includes_logo`, `includes_atlas`, `includes_hook_text_de` — jedes nur " +
+        "`true`, wenn das jeweilige Element tatsaechlich im fertigen Bild zu sehen " +
+        "ist. Kein Freitext, keine anderen Feldnamen, keine Dateipfade an dieser " +
+        "Stelle — nur diese drei Booleans."
     },
     requireBrandElementsAnnounced: true,
     width: 1080, height: 1350,
