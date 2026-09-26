@@ -40,7 +40,12 @@ test("an explicit no counts as an answer and is still reported separately", () =
 test("the published measurement is complete and internally consistent", () => {
   if (!existsSync(path)) return;   /* Vor dem ersten Lauf gibt es sie nicht. */
   const report = JSON.parse(readFileSync(path, "utf8"));
-  assert.equal(report.schemaVersion, "journey-coverage-1.0.0");
+  /* DER LESER AKZEPTIERT, WAS DER PRODUZENT SCHREIBT.
+     Eine Gleichheit auf die Geburtsfassung verbietet jede Erweiterung des
+     Berichts und faellt dann, weil er BESSER geworden ist. Gehalten wird die
+     Liste der Fassungen, die dieser Leser versteht. */
+  assert.ok(["journey-coverage-1.0.0", "journey-coverage-1.1.0"].includes(report.schemaVersion),
+    "die Fassung " + report.schemaVersion + " kennt dieser Leser nicht");
   assert.ok(report.sample > 0 && report.sample <= report.universe);
   assert.ok(report.stations.length >= 8);
   for (const station of report.stations) {
@@ -60,4 +65,24 @@ test("the published measurement is complete and internally consistent", () => {
   const je = Object.entries(report.answeredStationsPerTitle)
     .reduce((sum, [, n]) => sum + n, 0);
   assert.equal(je, report.sample);
+});
+
+test("the report says how many journeys are full, reduced or too thin - and it adds up", () => {
+  if (!existsSync(path)) return;
+  const report = JSON.parse(readFileSync(path, "utf8"));
+  if (report.schemaVersion === "journey-coverage-1.0.0") return;   /* aeltere Messung */
+  const f = report.shapes;
+  assert.ok(f, "der Bericht sagt nichts ueber die Form der Seiten");
+  assert.equal(f.full + f.reduced + f.minimal, report.sample,
+    "die Formen summieren sich nicht auf die Stichprobe");
+  /* Die Verdichtung muss messbar etwas sparen, sonst ist sie keine. */
+  assert.ok(f.dataPoorNoticeBoxesAfter < f.dataPoorNoticeBoxesBefore,
+    "auf den datenarmen Seiten spart die Verdichtung keinen einzigen Kasten");
+  /* Und kein Leser soll mehr auf einen Stapel stossen: die schlimmste Seite
+     bleibt unter der Zahl, ab der eine Seite ein Stapel ist (gemessen: bis
+     zu acht Einzelabsagen vor der Verdichtung). */
+  assert.ok(f.worstPageNoticeBoxes <= 5,
+    "eine Seite zeigt " + f.worstPageNoticeBoxes + " Absagekaesten - das ist wieder ein Stapel");
+  const summe = Object.values(f.substantiveStationsPerTitle).reduce((a, b) => a + b, 0);
+  assert.equal(summe, report.sample);
 });

@@ -31,6 +31,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Service = require(join(ROOT, "quant/api/product-services.js"));
 const Policy = require(join(ROOT, "quant/engines/display-policy.js"));
 const Query = require(join(ROOT, "quant/engines/query.js"));
+const Shape = require(join(ROOT, "quant/engines/journey-shape.js"));
 
 const argv = process.argv.slice(2);
 const arg = (name, fallback) => {
@@ -143,7 +144,9 @@ async function main() {
   const sample = tickers.filter((_, i) => i % step === 0).slice(0, SAMPLE);
 
   const screening = await api.getFactorEvidenceScreening();
-  const screeningRows = new Set((screening.rows || []).map((row) => row.ticker));
+  /* Die ganze Zeile, nicht nur der Ticker: die Form fragt, wie viele
+     Faktoren einen Wert tragen, und nicht ob die Zeile existiert. */
+  const screeningRows = new Map((screening.rows || []).map((row) => [row.ticker, row]));
 
   const counts = {};
   for (const station of STATIONS) counts[station.id] = { answered: 0, findings: 0, withheld: 0, reasons: {}, findingReasons: {} };
@@ -170,6 +173,23 @@ async function main() {
           row.withheld[station.id] = reason;
         }
       }
+      /* UND DIE FORM, DIE DIE SEITE DARAUS MACHT - mit demselben Vertrag,
+         den die Oberflaeche aufruft. Eine zweite Regel hier waere eine
+         Zahl, die nichts ueber die Seite aussagt.
+
+         "Beantwortet" und "gehaltvoll" sind dabei zwei Dinge: ACAA gilt an
+         vier Stationen als beantwortet und zeigt dort 0 von 7 Faktoren und
+         0 von 16 Kennzahlen. Die Form richtet sich nach dem Gehalt. */
+      const form = Shape.assess(Shape.stationsFrom({
+        stock: data.stock, evidenceRow: screeningRows.get(data.ticker) || null,
+        factors: data.factors, setup: data.setup, patterns: data.patterns,
+        match: data.match, assignmentChange: data.change, technical: data.technical
+      }));
+      row.shape = form.shape;
+      row.substantive = form.substantiveCount;
+      row.noticesBefore = form.noticesBefore;
+      row.noticesAfter = form.noticesAfter;
+      row.causes = form.groups.map((g) => g.causeId);
       journeys.push(row);
     }
     process.stderr.write("\r  " + Math.min(i + 20, sample.length) + " von " + sample.length);
@@ -184,7 +204,7 @@ async function main() {
   for (const row of journeys) verteilung[row.answered.length] = (verteilung[row.answered.length] || 0) + 1;
 
   const report = {
-    schemaVersion: "journey-coverage-1.0.0",
+    schemaVersion: "journey-coverage-1.1.0",
     generatedAt: new Date().toISOString().replace(/\.\d{3}Z$/, ".000Z"),
     universe: tickers.length,
     sample: sample.length,
@@ -202,6 +222,50 @@ async function main() {
       reasons: counts[station.id].reasons
     })),
     answeredStationsPerTitle: verteilung,
+    /* WIE VIELE SEITEN WELCHE FORM BEKOMMEN - und was die Verdichtung an
+       Absagekaesten einspart. Die Zahlen beantworten genau die Fragen, an
+       denen sich die datenarme Erfahrung messen laesst. */
+    shapes: (() => {
+      const zaehler = { FULL: 0, REDUCED: 0, MINIMAL: 0 };
+      let boxenVorher = 0, boxenNachher = 0, schlimmste = 0;
+      /* Getrennt gezaehlt, damit die Ersparnis nicht mit Seiten geschoent
+         wird, an denen sich nichts aendert: eine volle Reise behaelt ihre
+         hoechstens zwei Hinweise. */
+      let armVorher = 0, armNachher = 0, armSeiten = 0;
+      const ursachen = {};
+      for (const row of journeys) {
+        zaehler[row.shape] = (zaehler[row.shape] || 0) + 1;
+        const nachher = row.shape === "FULL" ? row.noticesBefore : row.noticesAfter;
+        boxenVorher += row.noticesBefore;
+        boxenNachher += nachher;
+        schlimmste = Math.max(schlimmste, nachher);
+        if (row.shape !== "FULL") { armSeiten += 1; armVorher += row.noticesBefore; armNachher += nachher; }
+        for (const cause of row.causes) ursachen[cause] = (ursachen[cause] || 0) + 1;
+      }
+      return {
+        full: zaehler.FULL, reduced: zaehler.REDUCED, minimal: zaehler.MINIMAL,
+        noticeBoxesBefore: boxenVorher, noticeBoxesAfter: boxenNachher,
+        worstPageNoticeBoxes: schlimmste,
+        dataPoorPages: armSeiten,
+        dataPoorNoticeBoxesBefore: armVorher, dataPoorNoticeBoxesAfter: armNachher,
+        /* HIER STAND EINE NULL, DIE NICHTS GEMESSEN HAT.
+           "Leere Abschnitte: 0" war richtig und trotzdem wertlos - eine
+           Konstante im Bericht belegt nichts. Dass auf einer verdichteten
+           Seite kein Abschnitt ohne Wert steht, haelt der Produktions-Smoke
+           am gebauten Release: er zaehlt die Einzelabsagen im `main` der
+           datenarmen Titel und verlangt die Gruppenauskunft mit ihren
+           Bereichen. Diese Datei zaehlt, was sie zaehlen kann. */
+        substantiveStationsPerTitle: (() => {
+          const v = {};
+          for (const row of journeys) v[row.substantive] = (v[row.substantive] || 0) + 1;
+          return v;
+        })(),
+        causes: ursachen,
+        note: "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, " +
+              "vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine " +
+              "gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."
+      };
+    })(),
     note: "Gemessen ueber dieselben Dienste, die die Oberflaeche aufruft. 'withheld' heisst: die Station " +
           "nennt einen Grund statt einer Zahl - kein Fehler, sondern der veroeffentlichte Zustand."
   };
@@ -218,6 +282,15 @@ async function main() {
       (station.findings ? " (davon " + station.findings + " ausdrueckliches Nein)" : "") +
       (gruende ? "   " + gruende : "") + "\n");
   }
+  const f = report.shapes;
+  process.stdout.write("\n  Form der Seiten:\n");
+  process.stdout.write("    volle Reise        " + String(f.full).padStart(4) + "\n");
+  process.stdout.write("    reduzierte Reise   " + String(f.reduced).padStart(4) + "\n");
+  process.stdout.write("    zu wenig fuer eine Reise " + String(f.minimal).padStart(4) + "\n");
+  process.stdout.write("    Absagekaesten gesamt: " + f.noticeBoxesBefore + " -> " + f.noticeBoxesAfter +
+    " · schlimmste Seite " + f.worstPageNoticeBoxes + "\n");
+  process.stdout.write("    davon auf den " + f.dataPoorPages + " datenarmen Seiten: " +
+    f.dataPoorNoticeBoxesBefore + " -> " + f.dataPoorNoticeBoxesAfter + "\n");
   const paare = Object.entries(verteilung).map(([k, v]) => [Number(k), v]).sort((a, b) => a[0] - b[0]);
   process.stdout.write("  Stationen je Titel: " + paare.map(([k, v]) => k + "→" + v).join(", ") + "\n");
   process.stdout.write("  " + OUT.replace(ROOT + "/", "") + "\n");

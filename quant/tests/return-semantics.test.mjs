@@ -187,7 +187,14 @@ test("historical universe membership is not substituted by the current one", () 
     { cwd: new URL(".", ROOT).pathname, encoding: "utf8" });
   assert.match(output, /BLOCKED/);
   assert.match(output, /BACKTEST · Backtest integration stays shut/);
-  assert.match(output, /historical index membership \(1 snapshot per index\)/);
+  /* DIE ZAHL IST GEMESSEN, ALSO WIRD SIE NICHT FESTGENAGELT.
+     Hier stand "(1 snapshot per index)". Am 26.09.2026 schrieb der
+     woechentliche Workflow den zweiten Stand, der Blocker verschwand aus der
+     Liste - und dieser Fall fiel, weil die WELT sich geaendert hat und nicht
+     der Vertrag. Gehalten wird jetzt, was gelten muss: der Blocker steht,
+     nennt den gemessenen Stand, und sagt, was ihn schliesst. */
+  assert.match(output, /historical index membership \(\d+ snapshots? per index\)/);
+  assert.match(output, /membership at every rebalancing date/);
   assert.match(output, /No measurement creates it retroactively/);
   /* Und die entschiedene Return-Basis hat den Backtest nicht
      stillschweigend naeher an OPEN gerueckt: die Gesamtrendite wird
