@@ -391,6 +391,7 @@
       var verlaufNode = null;
       if (puls && MI && puls.environment) {
         dazu(MI.hero(puls, jetzt));
+        if (MI.kacheln) dazu(MI.kacheln(puls, hist));
         dazu(MI.landkarte(puls));
         dazu(MI.vorherJetzt(puls));
         dazu(MI.warum(puls));
@@ -414,7 +415,7 @@
       gruppen.forEach(function (g) {
         dazu(el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": g.titel }, [
           el("h2", { text: g.titel }),
-          el("div", { class: "dx-maerkte-raster" }, g.karten.map(function (c) { return karte(c, layer); }))
+          el("div", { class: "dx-maerkte-raster", tabindex: "0", role: "group", "aria-label": g.titel + " – wischen für mehr" }, g.karten.map(function (c) { return karte(c, layer); }))
         ]));
       });
       seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(snap.generatedAt) || "unbekannt") +
