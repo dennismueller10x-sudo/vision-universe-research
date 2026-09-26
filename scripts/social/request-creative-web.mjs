@@ -125,19 +125,32 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2).",
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
-    /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD", 26.09.):
-       dunkler, fast schwarzer Hintergrund, EIN ruhiger Petrol-/Mint-
-       Akzent (kein Regenbogen aus Akzenten), weisse/hellgraue Flaeche
-       fuer die Headline. Am realen Referenzbild des Owners orientiert
-       — dessen INHALT (Event, Datum, Motiv) ist keine Vorlage, nur Stil
-       und Farbklima. */
-    palette: ["near-black #050505 background", "one calm teal/mint " +
-      "accent color close to #5FE0C0 for a small highlight (a thin line, a badge, a " +
-      "glow) — used sparingly, not as a second dominant color", "white for the headline " +
-      "text", "soft grey for secondary text"],
-    style: "premium dark editorial technology visualization — a single confident teal/mint " +
-      "accent against a near-black background, clean bold sans-serif headline typography, " +
-      "generous breathing room, no clutter, no rainbow gradients",
+    /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD, COMIC-STIL",
+       26.09., zweite Iteration): die erste Fassung ("premium dark
+       editorial") lieferte ein photorealistisches KI-Stockfoto — Fed-
+       Gebaeude, Flaggen, Banknote, ein kleiner Roboter in der Ecke. Der
+       Owner hat es gegen ein echtes virales Beispiel (plakative Comic-/
+       Claymation-Anzeige, uebergrosser ausdrucksstarker Charakter,
+       riesige Typo, kaum Hintergrundablenkung) gehalten und geurteilt:
+       "damit gehen wir unter". Atlas und Logo waren dabei korrekt
+       platziert — das Problem ist ausschliesslich der visuelle Stil,
+       nicht das Compositing. Diese Fassung zielt auf dieselbe plakative,
+       grafische Energie, OHNE Atlas/Logo selbst umzuzeichnen (§12/§18 in
+       social/engines/brand.js verbieten das ausdruecklich — erlaubt sind
+       nur crop/scale/reframe/compose, keine Stiltransformation der
+       Figur oder des Zeichens selbst). */
+    palette: ["near-black #050505 background as a bold FLAT color field (not a " +
+      "photographic scene)", "one confident teal/mint accent close to #5FE0C0 used as a " +
+      "LARGE flat shape or color block (a poster panel, not a thin highlight)", "white for " +
+      "the headline text, set at poster scale", "soft grey for secondary text only"],
+    style: "bold flat graphic poster style — think premium app marketing ad or comic-panel " +
+      "ad, NOT a photorealistic scene and NOT a moody cinematic render. High-contrast flat " +
+      "color blocking, one single strong graphic idea instead of a busy realistic scene " +
+      "with many literal props (no detailed buildings, no crowds of flags, no photoreal " +
+      "objects laid out on a desk). Oversized, chunky, confident sans-serif headline " +
+      "typography as a PRIMARY graphic element filling a large share of the frame — not a " +
+      "small caption competing with a detailed background. Energetic, punchy, made to stop " +
+      "a scroll, not to look like a stock photo or a finance-news thumbnail.",
     /* -------------------------------------------------------------------
        VOLLBILD STATT FREIFLAECHE (Owner-Direktive "GENERATIVES VOLLBILD",
        26.09.): vorher liess dieser Schritt fuer Logo/Atlas/Hook-Text drei
@@ -148,17 +161,21 @@ if (import.meta.url === `file://${process.argv[1]}`) {
        mjs), der Agent komponiert das FERTIGE Bild selbst: Motiv, Hook-Text
        und Markenzeichen in einem Zug, damit es als EIN Entwurf wirkt statt
        als zwei uebereinandergelegte Schichten. ----------------------- */
-    visualComposition: "portrait 4:5. Compose ONE finished, publish-ready brand post — not " +
-      "a raw scene for later text overlay. Bake the German headline text (see " +
-      "hook_strategy) directly into the image as bold, large, perfectly legible " +
-      "typography in the upper-to-middle band, set against a calm, low-contrast part of " +
-      "the background (not over busy detail or bright highlights). Composite the exact " +
-      "brand logo file (see brand_assets.logo) small and quiet in the top-left corner, " +
-      "and the exact brand mascot file (see brand_assets.atlas) small in the bottom-right " +
-      "corner, not as the visual focal point. The main subject/motif occupies the center " +
-      "and right-of-center. The result must read as ONE cohesive, intentionally designed " +
-      "brand image — logo and mascot reproduced exactly as given, not redrawn or " +
-      "restyled.",
+    visualComposition: "portrait 4:5, edge-to-edge — no letterboxing, no black bars, the " +
+      "flat color field fills the entire frame. Compose ONE finished, publish-ready brand " +
+      "post — not a raw scene for later text overlay. Bake the German headline text (see " +
+      "hook_strategy) directly into the image as OVERSIZED, bold, perfectly legible " +
+      "typography that dominates roughly a third of the frame (upper band), set against " +
+      "the flat color field, not over busy detail. Composite the exact brand mascot file " +
+      "(see brand_assets.atlas) as a LARGE, prominent presence — a real character taking " +
+      "up meaningful space in the composition, not a small decorative accessory tucked in " +
+      "a corner. Composite the exact brand logo file (see brand_assets.logo) small and " +
+      "quiet, top-left corner, as a signature, not a design element. Keep the supporting " +
+      "motif for the topic simple and iconic — one clear graphic idea (a shape, a symbol, " +
+      "a gesture), never a cluttered realistic scene with multiple competing props. The " +
+      "result must read as ONE cohesive, intentionally designed brand poster — logo and " +
+      "mascot reproduced exactly as given (only scaled/cropped/reframed per their brand " +
+      "contract), never redrawn or restyled into a different art style.",
     restrictions: ["Keine Kurse im Bild", "Keine Renditezahlen", "Kein Wasserzeichen",
       "Keine Prognose-Aussage im Bildtext", "Logo und Atlas exakt aus den " +
       "angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"],
