@@ -553,9 +553,57 @@ function create(options){
     schemaVersion:shard.unavailableSchemaVersion};
   }catch{return null;}
  }
+ /* DIE UEBERSICHT SOLL SAGEN, WER DAS IST UND WAS ES KOSTET.
+  *
+  * Gemessen am 26.09.2026 an der gebauten Liste: von 6.875 Zeilen trugen
+  * FUENF einen Kurs (die Paneltitel) und KEINE einen Namen - das Feld traegt
+  * den Ticker, weshalb die Zeile ihn zweimal schrieb ("A | A"). Beides ist
+  * veroeffentlicht, lag aber nur je Titel in eigenen Dateien: 646
+  * Namensshards und 6.487 Kursreihen. Eine Liste kann das nicht laden.
+  *
+  * Deshalb liest sie EIN verdichtetes Verzeichnis (99 KB gzip), das der
+  * Materialisierungslauf aus genau diesen Quellen schreibt. Kein zweiter
+  * Kurs und keine zweite Namensquelle: fuer die fuenf Paneltitel stimmt der
+  * letzte Punkt der Reihe auf den Cent mit dem Panelkurs ueberein, und die
+  * Aktienseite zeichnet dieselbe Reihe.
+  *
+  * Fehlt das Verzeichnis, bleibt die Liste genau so, wie sie vorher war. */
+ let universeList=null;
+ async function universeIndex(){
+  if(universeList!==null)return universeList;
+  try{const d=await compressedJSON('/quant/data/product/universe-list-v1.json.gz');
+   if(!d||d.schemaVersion!=='universe-list-1.0.0'||!Array.isArray(d.entries))throw Error('contract');
+   const byTicker={};
+   for(const e of d.entries)if(e&&typeof e.s==='string')byTicker[e.s]=e;
+   universeList={generatedAt:d.generatedAt,coverage:d.coverage||null,byTicker};
+  }catch{universeList={generatedAt:null,coverage:null,byTicker:{}};}
+  return universeList;
+ }
+ /* Ergaenzt eine Zeile um Namen und Kurs - und ueberschreibt NICHTS, was
+    schon einen Wert hat. Ein Kurs, dessen Datum in der Zukunft liegt oder
+    dessen Eintrag zu einem anderen Titel gehoert, wird nicht uebernommen. */
+ function mitVerzeichnis(row,entry){
+  if(!row||!entry||entry.s!==row.ticker)return row;
+  if(entry.n&&(!row.name||row.name===row.ticker))row.name=entry.n;
+  if(entry.t&&!row.securityType)row.securityType=entry.t;
+  const heute=new Date().toISOString().slice(0,10);
+  if(!Number.isFinite(row.price&&row.price.value)&&Number.isFinite(entry.c)&&entry.c>0
+     &&validDate(entry.d)&&entry.d<=heute&&(!row.price||row.price.reason!=='DISPLAY_NOT_PERMITTED')){
+   row.price={value:entry.c,unit:entry.u||'USD',state:'AVAILABLE',
+    basis:'PUBLISHED_CLOSE_FROM_SERIES',asOf:entry.d};
+  }else if(!Number.isFinite(row.price&&row.price.value)&&!Number.isFinite(entry.c)
+     &&(!row.price||row.price.reason==='NO_PUBLISHED_PRICE_LEVEL')){
+   /* Das Verzeichnis HAT nach einer Reihe gesehen und keine gefunden. Dann
+      sagt die Liste dasselbe wie die Aktienseite und nicht etwas Eigenes -
+      zwei Namen fuer denselben Befund sind zwei Befunde fuer einen Leser. */
+   row.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_SERIES'};
+  }
+  return row;
+ }
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
-  const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s;}).filter(Boolean);
+  const index=await universeIndex();
+  const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s&&mitVerzeichnis(s,index.byTicker[s.ticker]);}).filter(Boolean);
   return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'CANONICAL_PRODUCT_UNIVERSE',
    universeSize:stocks.length,factorReady:stocks.filter(s=>s.factorState==='AVAILABLE').length,
    productCapabilityState:c.productSummary?.schemaVersion==='1.0.0'?'AVAILABLE':'UNAVAILABLE',

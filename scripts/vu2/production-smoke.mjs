@@ -84,6 +84,24 @@ for(const width of [1440,390]){
      veroeffentlichte Handelstage - und bis zum 26.09.2026 sagte die Kopfzahl
      "nicht verfuegbar", waehrend der Chart darunter 5,17 zeichnete. Der Smoke
      verlangt jetzt beides: eine Zahl im Kopf und das Datum dazu. */
+  /* DIE UEBERSICHT NENNT NAMEN UND KURSE.
+
+     Gemessen am 26.09.2026 am gebauten Release: von 6.875 Zeilen trugen
+     FUENF einen Kurs und KEINE einen Namen - die Zeile schrieb den Ticker
+     zweimal ("A | A | Nicht verfuegbar"). Der Smoke hat das nie gesehen,
+     weil er die Liste nur auf Fehlerfreiheit geprueft hat. Jetzt prueft er
+     ihren Inhalt. */
+  if(view==='/vu2/?view=stocks'){
+   const zeilen=await page.locator('.row:not(.eyebrow)').allInnerTexts();
+   if(zeilen.length<20)bad.push('ZU_WENIGE_ZEILEN='+zeilen.length);
+   else{
+    const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)).length;
+    const mitName=zeilen.filter(t=>{const teile=t.split('\n');return teile[0]&&teile[1]&&teile[0]!==teile[1];}).length;
+    if(mitKurs/zeilen.length<0.8)bad.push('KURSE='+mitKurs+'/'+zeilen.length);
+    if(mitName/zeilen.length<0.5)bad.push('NAMEN='+mitName+'/'+zeilen.length);
+    console.log('     Uebersicht: '+mitKurs+' von '+zeilen.length+' Zeilen mit Kurs · '+mitName+' mit Namen');
+   }
+  }
   if(view.includes('ticker=AHT-P-D')){
    const quote=await page.locator('.quote').first().innerText().catch(()=>'');
    const unter=await page.locator('.focus .muted').first().innerText().catch(()=>'');

@@ -104,6 +104,81 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M28_2026-09-26 — DIE LISTE ALLER UNTERNEHMEN: 5 KURSE, KEIN NAME
+
+M27 hielt fest, dass die Listenansichten für die betroffenen Titel weiter keinen Kurs zeigen. Die
+Messung an der **gebauten** Liste war deutlich schlimmer als diese Notiz:
+
+```
+A     | A    | Nicht verfügbar | 0,5
+AA    | AA   | Nicht verfügbar | -0,3
+AAAC  | AAAC | Nicht verfügbar | 0,0
+```
+
+| | |
+|---|---:|
+| Zeilen mit Kurs | **5** von 6.875 (0,07 %) |
+| Zeilen mit Namen | **0** von 6.875 |
+| Zeilen mit 6-Monats-Wert | 5.964 |
+
+Der Name ist das Feld, das `broadRow` mit dem **Ticker** füllt — deshalb stand er zweimal in der
+Zeile. Auf der Einstiegsseite stehen Name und Kurs für fünf handverlesene Titel; für die anderen
+6.870 war die Übersicht eine **Liste von Kürzeln ohne Preis**. Das ist nach der Aktienseite die
+zweitwichtigste Fläche des Produkts.
+
+### Beides war veröffentlicht — nur nicht in lesbarer Form
+
+| Was | Wo | Deckung |
+|---|---|---:|
+| Letzter Schlusskurs | `discover-series` (dieselbe Reihe, die die Aktienseite zeichnet) | **6.482** (6.429 zum 25.09.) |
+| Name | Company-Master-Suchindex, **646 Shards** nach Symbolpräfix | **5.775** |
+
+Eine Liste kann keine 646 Namensshards und keine 6.487 Kursdateien laden. Deshalb schreibt der
+Materialisierungslauf jetzt **ein** verdichtetes Verzeichnis
+(`quant/data/product/universe-list-v1.json.gz`, **99 KB gzip**) aus genau diesen Quellen: kein
+Anbieterzugriff, keine Rechnung, keine neue Quelle, kein neuer Workflow — ein zusätzliches Artefakt
+eines Schrittes, der ohnehin läuft.
+
+**Die Quelle bestätigt sich selbst:** für die fünf Paneltitel trifft der letzte Punkt der Reihe den
+Panelkurs auf den Cent (AAPL 341,07 / MSFT 516,17 / NVDA 225,07 / JPM 343,06 / XOM 160,59). Genau
+deshalb kann die Liste denselben Kurs zeigen wie die Detailseite, statt einen zweiten zu erfinden.
+
+### Realisiert
+
+| Messung | Vorher | Nachher |
+|---|---:|---:|
+| Zeilen mit Kurs | 5 | **6.482** von 6.875 |
+| Zeilen mit Namen | 0 | **5.773** |
+| Im Release sichtbar | `A \| A \| Nicht verfügbar` | **`A \| Agilent Technologies, Inc. \| 172,79 $`** |
+
+Das Verzeichnis überschreibt **nichts**, was schon einen Wert hat, verwirft einen Kurs mit Datum in
+der Zukunft, benutzt keinen Eintrag, der zu einem anderen Titel gehört, und lässt
+`DISPLAY_NOT_PERMITTED` unberührt. Fehlt es, ist die Liste genau so wie vorher — kein Absturz, keine
+erfundene Lücke. Für Titel ohne geprüfte Reihe sagt die Liste jetzt dasselbe wie die Aktienseite
+(`NO_PUBLISHED_PRICE_SERIES`) statt eines eigenen Codes; zwei Namen für einen Befund sind für einen
+Leser zwei Befunde.
+
+1.100 Titel haben in keiner Quelle einen Namen (`n: null` im Master) — dort steht weiter das Kürzel,
+und das ist die Datengrenze, nicht die Darstellung.
+
+### Zwei eigene Tests waren zu schwach — beide prüfen jetzt Verhalten statt Zeichen
+
+1. „Ein vorhandener Kurs wird nicht überschrieben" las den Quelltext auf das Vorhandensein der
+   Bedingung — und blieb **grün**, als ich die Bedingung aus der Zuweisung entfernte, weil derselbe
+   Ausdruck zwei Zeilen tiefer noch einmal vorkommt. Jetzt liegt ein Verzeichnis im Test, das AAPL
+   einen falschen Kurs anbietet; gewinnen muss der veröffentlichte.
+2. Die Freigabeprüfung aus M27 las die 600 Zeichen vor der **ersten** Fundstelle von
+   `PUBLISHED_CLOSE_FROM_SERIES`. Als M28 eine zweite Fundstelle schuf, sah sie an der falschen
+   Stelle nach und fiel, obwohl beide Wege die Prüfung haben. Jetzt verweigert eine eigene
+   Anzeigepolitik einen Titel, und der darf weder auf der Seite noch in der Liste einen Kurs tragen —
+   mit Gegenprobe im selben Fall, dass ein offener Titel seinen Kurs behält.
+
+### Und der Smoke hat es nie gesehen
+
+Er prüfte die Liste nur auf Fehlerfreiheit, nicht auf Inhalt — deshalb konnte eine Übersicht aus
+Kürzeln ohne Preis unbemerkt bleiben. Jetzt verlangt er **99 von 100 Zeilen mit Kurs und 77 mit
+Namen**. Dasselbe Muster wie bei ACAA/EDVA in M26: was der Smoke nicht anschaut, verfällt.
+
 ## M27_2026-09-26 — „WAS KOSTET DIESE AKTIE?" — DIE KOPFZAHL STAND IM CHART DARUNTER
 
 Der nächste Milestone kam aus der M26-Messung: `identity` war nur für **448 von 500** Titeln

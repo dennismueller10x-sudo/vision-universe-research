@@ -85,16 +85,43 @@ test("without a published series the reason is the measured one, not a claimed w
 });
 
 test("a missing display permission stays a missing permission", async () => {
-  /* Der Weg fuellt den Kurs NUR, wenn er nicht schon aus Freigabegruenden
-     entfernt wurde. Sonst waere aus einer Sperre ein Wert geworden - der
-     teuerste Fehler, den diese Aenderung machen koennte. */
-  const services = readFileSync(join(ROOT, "quant/api/product-services.js"), "utf8");
-  const ohneKommentare = services.replace(/\/\*[\s\S]*?\*\//g, "");
-  const stelle = ohneKommentare.indexOf("PUBLISHED_CLOSE_FROM_SERIES");
-  assert.ok(stelle > 0);
-  const vorher = ohneKommentare.slice(Math.max(0, stelle - 600), stelle);
-  assert.match(vorher, /stock\.price\.reason!=='DISPLAY_NOT_PERMITTED'/,
-    "der Kursweg prueft die Freigabe nicht mehr");
+  /* VERHALTEN, NICHT TEXT.
+     Dieser Fall las zuerst die 600 Zeichen vor der ersten Fundstelle von
+     PUBLISHED_CLOSE_FROM_SERIES und suchte dort die Freigabepruefung. Als
+     eine ZWEITE Fundstelle entstand (dieselbe Regel fuer die Uebersicht),
+     sah er an der falschen Stelle nach und fiel - obwohl beide Wege die
+     Pruefung haben. Ein Test, der Zeichen zaehlt, prueft keine Regel.
+
+     Hier verweigert eine eigene Anzeigepolitik die Rohanzeige fuer genau
+     einen Titel. Der darf danach keinen Kurs tragen - auch nicht den aus der
+     gezeichneten Reihe, und auch nicht in der Liste. */
+  const gesperrt = "AHT-P-D";
+  /* Ein vollstaendiger Stellvertreter, nicht nur `check`: die Dienstschicht
+     benutzt die Politik an mehreren Stellen, und ein Stummel ohne die
+     uebrigen Methoden laesst sie in den Identitaetspfad fallen - dann hat die
+     Antwort gar kein `price`, und der Fall prueft nichts. */
+  const strenge = Object.assign(Object.create(Object.getPrototypeOf(Policy)), Policy, {
+    check: (args) => args && args.ticker === gesperrt && args.form === "raw"
+      ? { allowed: false, reason: "TEST_GESPERRT" }
+      : Policy.check(args)
+  });
+  const api = Service.create({
+    loadJSON: async (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8")),
+    loadCompressedJSON: async (p) => JSON.parse(gunzipSync(readFileSync(join(ROOT, p))).toString("utf8")),
+    displayPolicy: strenge, queryEngine: Query
+  });
+  const stock = await api.getStockIntelligence(gesperrt);
+  assert.equal(stock.price.value, null, "ein gesperrter Titel hat einen Kurs bekommen");
+  assert.equal(stock.price.reason, "DISPLAY_NOT_PERMITTED");
+  const universe = await api.getUniverse();
+  const zeile = universe.stocks.find((s) => s.ticker === gesperrt);
+  assert.equal(zeile.price.value, null, "die Uebersicht zeigt den Kurs eines gesperrten Titels");
+  assert.equal(zeile.price.reason, "DISPLAY_NOT_PERMITTED");
+  /* Gegenprobe im selben Fall: ein NICHT gesperrter Titel bekommt seinen
+     Kurs weiterhin - sonst wuerde dieser Test auch bestehen, wenn der ganze
+     Weg tot waere. */
+  const offen = await api.getStockIntelligence("ALL-P-B");
+  assert.ok(Number.isFinite(offen.price.value), "der offene Titel hat keinen Kurs - der Weg ist tot");
 });
 
 test("the measured cohort gained a price, and the rest says why not", async () => {
