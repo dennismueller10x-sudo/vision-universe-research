@@ -60,7 +60,14 @@ const arg = (name, fallback) => {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 };
 const OUT = arg("out", join(ROOT, "quant/data/product/universe-list-v1.json.gz"));
-const SCHEMA_VERSION = "universe-list-1.0.0";
+/* 1.1.0: zwei Felder mehr, an denselben Schluesseln - `v` traegt den Grund,
+   aus dem der Boersenwert dieses Titels zurueckgehalten wird, `il` die Zahl
+   der notierten Zeilen seines Emittenten. Ohne sie konnte die Aktienseite
+   nicht wissen, was die Faktorschicht entschieden hat, und nannte drei Zeilen
+   tiefer ein Kurs-Gewinn-Verhaeltnis, das genau auf der zurueckgehaltenen
+   Zuordnung beruht (gemessen: 266 von 465 Titeln). Ein Leser dieser Datei,
+   der 1.0.0 erwartet, verliert dadurch nichts: beide Felder sind optional. */
+const SCHEMA_VERSION = "universe-list-1.1.0";
 const HEUTE = new Date().toISOString().slice(0, 10);
 
 const json = async (p) => JSON.parse(await readFile(p, "utf8"));
@@ -110,6 +117,14 @@ async function main() {
    * im Speicher zaehlt und nicht die Reihe, auf der gerechnet wurde. Sie hier
    * zu nehmen waere eine falsche Zahl in einem richtigen Satz. */
   const faktorBars = new Map();
+  /* UND DIE ENTSCHEIDUNG UEBER DIE BEWERTUNG.
+   *
+   * Dieselbe Datei, dieselbe Schleife: der Faktorlauf hat schon entschieden,
+   * ob sich der Boersenwert dieser Notierung ueberhaupt zuordnen laesst. Ohne
+   * diese Angabe im Verzeichnis muesste die Aktienseite den Faktor-Shard
+   * zusaetzlich laden, nur um zu erfahren, dass sie eine Zahl NICHT zeigen
+   * darf - und bis M40 hat sie es deshalb gar nicht erfahren. */
+  const bewertungGrund = new Map(), notierungen = new Map();
   const faktorDir = join(ROOT, "quant/data/product/factor-evidence-v1");
   if (existsSync(faktorDir)) {
     for (const datei of (await readdir(faktorDir))) {
@@ -117,13 +132,15 @@ async function main() {
       const shard = JSON.parse(gunzipSync(await readFile(join(faktorDir, datei))).toString("utf8"));
       for (const [ticker, row] of Object.entries(shard.securities || {})) {
         if (Number.isFinite(row.bars)) faktorBars.set(ticker, row.bars);
+        if (typeof row.marketCapReason === "string" && row.marketCapReason) bewertungGrund.set(ticker, row.marketCapReason);
+        if (Array.isArray(row.issuerListings) && row.issuerListings.length > 1) notierungen.set(ticker, row.issuerListings.length);
       }
     }
   }
 
   const entries = [];
   const staende = {};
-  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0, mitBars = 0;
+  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0, mitBars = 0, mitBewertungsgrund = 0;
   for (const member of members) {
     const name = namen.get(member.s) || null;
     let preis = null;
@@ -146,8 +163,11 @@ async function main() {
       ...(name ? { n: name } : {}),
       ...(typen.get(member.s) ? { t: typen.get(member.s) } : {}),
       ...(preis ? { c: preis.close, d: preis.date, u: preis.currency } : {}),
-      ...(bars !== null ? { b: bars } : {})
+      ...(bars !== null ? { b: bars } : {}),
+      ...(bewertungGrund.has(member.s) ? { v: bewertungGrund.get(member.s) } : {}),
+      ...(notierungen.has(member.s) ? { il: notierungen.get(member.s) } : {})
     });
+    if (bewertungGrund.has(member.s)) mitBewertungsgrund += 1;
   }
 
   const report = {
@@ -157,13 +177,15 @@ async function main() {
       universe: "quant/data/universe/market-capability.json",
       prices: "quant/data/market/discover-series (discover-series-1.1.0, split-adjusted daily)",
       names: "quant/data/universe/search/sym (company-master-1.0.0, " + shards + " shards)",
-      factorBars: "quant/data/product/factor-evidence-v1 (die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat)"
+      factorBars: "quant/data/product/factor-evidence-v1 (die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat)",
+      valuationReason: "quant/data/product/factor-evidence-v1 (marketCapReason und die Zahl der notierten Zeilen des Emittenten)"
     },
     /* Die Deckung steht IM Artefakt, damit ein Leser sie nicht selbst
        ausrechnen muss und ein Test sie halten kann. */
     coverage: {
       universe: members.length, entries: entries.length,
       withName: mitName, withPrice: mitKurs, withFactorBars: mitBars,
+      withValuationReason: mitBewertungsgrund,
       withoutSeries: ohneReihe, seriesRejected: reiheVerworfen,
       priceDates: Object.fromEntries(Object.entries(staende).sort((a, b) => b[1] - a[1]).slice(0, 8))
     },

@@ -2,6 +2,239 @@
 
 Updated: 2026-09-26 UTC
 
+## M40 — STOCK INTELLIGENCE COHERENCE
+
+`CONTRADICTORY_STATEMENTS = 0` · `DUPLICATE_PRIMARY_STATEMENTS = 0` ·
+`STATEMENTS_WITHOUT_EVIDENCE = 0` · `TECHNICAL_INFORMATION_WITHOUT_STATEMENT = 0`
+
+Bis M39 wurde jedes Modul einzeln gemessen. Jede dieser Zahlen war richtig, und keine
+beantwortete die Frage, ob eine Seite **zusammen** etwas sagt. M40 stellt genau die — auf zwölf
+Archetypen und einer 500er-Stichprobe — und hat dabei drei echte Widersprüche gefunden, von denen
+zwei im Bestand standen und einer beim ersten Lauf der neuen Engine entstand.
+
+### Befund 1: 743 Titel nannten eine schwache Eigenschaft ihre „klarste Stärke"
+
+`FactorEvidence.summarySentence` nahm die höchste der bewerteten Eigenschaften und nannte sie die
+Stärke — unabhängig davon, wo sie liegt. Gemessen über **6.441 Titel** ergab das bei **743** den
+Satz:
+
+> Unternehmensqualität ist mit **schwach** die klarste Stärke. Risiko ist mit **schwach** die
+> klarste Schwäche.
+
+Aus richtigen Zahlen gebaut und trotzdem falsch: die schwächste Eigenschaft eines schwachen Titels
+ist keine Stärke, und bei AACG lagen Stärke und Schwäche im **gleichen Band** — dann existiert die
+Unterscheidung nicht bloß schief, sondern gar nicht.
+
+Die Grenze ist jetzt das **Band** und nicht die Reihenfolge: über dem Mittelfeld eine Stärke,
+darunter eine Schwäche, im Mittelfeld keines von beidem — und dass nichts heraussticht, ist selbst
+eine Aussage („Keine der 6 bewerteten Eigenschaften liegt über oder unter dem Mittelfeld"). Beide
+Module lesen dieselbe Liste; ein Test prüft den **ganzen Bestand**, weil eine Stichprobe von zwanzig
+diesen Satz mit Glück nicht getroffen hätte.
+
+### Befund 2: 266 zurückgehaltene Bewertungen standen trotzdem auf der Seite
+
+Von den **465** Titeln, deren Börsenwert M34 ausdrücklich zurückhält, zeigten **266** drei Zeilen
+tiefer doch eine Bewertungszahl:
+
+| Titel | Faktorschicht | Kennzahlenschicht |
+|---|---|---|
+| GOOGL | Bewertung bewusst zurückgehalten | Kurs-Gewinn-Verhältnis 17,27 · Kurs-Umsatz 9,32 |
+| T | zurückgehalten | 8,4 · 1,52 |
+| SO (6 Notierungen) | zurückgehalten | 21,2 · 3,18 |
+| JPM | zurückgehalten | Ertragsrendite 4,62 % aus 1.408 Mrd. Börsenwert |
+
+Drei Wege führten zu einer Bewertung, und nur einer hielt sich an die Semantik: die Faktorschicht.
+Der Konsum-Export und das SEC-Panel rechnen beide weiter — **nachgerechnet, nicht vermutet**:
+`f_ps` ist „Kurs × Aktien / Umsatz", `f_fcfYield` ist „Free Cashflow / (Kurs × Aktien)", und `f_pe`
+ist „Kurs / (Gewinn / Aktien)", also ebenfalls Kurs × Aktien / Gewinn. **Alle drei tragen die
+Aktienzahl des Emittenten** — genau die Zuordnung, die nicht in den Unterlagen steht.
+
+Also fällt die Bewertung jetzt geschlossen, in derselben Form, die diese Schicht für eine fehlende
+Freigabe schon kennt: Wert null, Zustand UNAVAILABLE, Grund dabei. Das kostet Deckung — 266 Titel,
+bis zu drei Kennzahlen je Titel — und ist der ausdrücklich gewählte Preis: **Korrektheit vor
+Reichweite.**
+
+Statt der Zahl steht der Grund, und zwar als Satz: *„Diese Kennzahl braucht den Börsenwert genau
+dieser Notierung. Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte
+Aktienzahl gilt für das Unternehmen als Ganzes …"* Der Wert selbst liest „Bewusst nicht genannt"
+und nicht „Nicht verfügbar" — das Wörterbuch verlangt für die beiden Lagen zwei verschiedene Texte.
+
+**NICHT betroffen** ist `NO_PIT_SHARE_COUNT` (801 Titel). Dort fehlt der Faktorschicht ein
+zeitpunktsicherer Anteilsbestand; das ist eine andere Aussage als „die vorhandene Zahl gilt nicht
+für diese Zeile", und eine Zahl auf anderer Grundlage ist keine Fehlzuordnung.
+
+Die Entscheidung erreicht die Seite über das Verzeichnis, das sie ohnehin lädt: `universe-list-1.1.0`
+führt `v` (den Grund) und `il` (die Zahl der notierten Zeilen) — 1.266 Einträge, davon 465 mit
+zurückgehaltener Zuordnung. Der Dienst liest beide Fassungen; ein älteres Artefakt verliert nichts.
+
+### Befund 3: eine Geschichte stand in zwei Spalten (beim ersten Lauf der neuen Engine)
+
+Die erste Kohärenzmessung fand bei **95 von 120** Titeln dieselbe Eigenschaft auf beiden Seiten:
+„Eine schwache Kursentwicklung" dagegen und „Kurstempo verbessert sich" dafür. Beides ist wahr und
+gemessen — das eine ist die Lage, das andere ihre Richtung. Als zwei Spalteneinträge liest es sich
+trotzdem wie ein Widerspruch.
+
+Die Veränderung tritt jetzt **neben** die Eigenschaft, die sie betrifft, und nicht in die
+Gegenspalte. Keine Aussage geht verloren; sie steht an der Stelle, an der sie etwas erklärt. AAPL
+bekam dadurch statt zehn Dafür-Zeilen vier — sieben der zehn hatten dieselbe Sache gesagt.
+
+Dabei war auch meine eigene Prüfung zu grob: zwei **verschiedene** Messungen derselben Familie, die
+auseinanderlaufen („Bruttomarge verbessert sich" / „Free-Cashflow-Marge verschlechtert sich"), sind
+kein Widerspruch, sondern der Befund. Die Identität einer Aussage ist deshalb ihre **Messung** und
+nicht ihre Familie.
+
+### Die Auskunft: eine versionierte Engine, kein generativer Text
+
+`intelligence-brief-1.0.0` bildet aus der bereits veröffentlichten Evidenz **eine** Auskunft:
+
+> **Die Aktie zeigt eine hohe Ertragskraft und kräftiges Wachstum, dagegen eine hohe Bewertung.
+> Ein Setup ist im Aufbau, aber noch nicht bestätigt.**
+
+Regelbasiert, deterministisch, ohne Prognose und ohne Empfehlung. Sie rechnet nichts: sie bekommt
+die Antworten der Dienste und ordnet sie. **Jede** einzelne Aussage trägt ihren Beleg
+(`evidence: [{source, field, value, unit}]`), und `statementsWithoutEvidence` prüft das gegen die
+echten Artefakte statt gegen eine Konvention.
+
+Keine neuen Schwellen: die Bänder kommen aus `quant-v2.json` (ratingBands), die Asymmetriegrenzen
+aus dem Musterartefakt, die Stilschwelle von 40 % aus der Reisemessung. Ein zweiter Satz Schwellen
+wäre eine zweite Methodik.
+
+**Dafür / Dagegen / Noch nicht bewertbar** — drei Gruppen, nicht zwei Sortierungen derselben Liste.
+Die dritte trägt, was ausdrücklich *nicht* bewertet wurde; ohne sie liest sich eine kurze
+Dafür-Liste wie ein Urteil. Und sie ist keine Wiederholung der Faktorwerte: „Eine hohe Bewertung"
+steht in der ersten Zeile, die Zahl in der zweiten.
+
+**Das Setup als Handlungslogik** — vier Fragen, vier Antworten, aus derselben Kaskade:
+
+> **Bestätigt** — Ein bestätigtes Setup liegt vor.
+> *Warum?* Struktur, Trend und Volumen bestätigen am selben Stichtag dieselbe Lage.
+> *Was müsste als Nächstes passieren?* In der entscheidbaren Stufe gibt es über diesem Zustand
+> keine weitere Regel; die Verlaufszustände darüber verlangen eine geordnete Beobachtungshistorie
+> und sind noch nicht freigeschaltet.
+> *Was würde es beenden?* Dieser Zustand trägt 5 erfüllte Bedingungen. Fällt eine davon weg, gilt
+> er nicht mehr.
+
+Dass in der entscheidbaren Stufe ein früherer Vorrang den **stärkeren** Zustand bedeutet, ist eine
+Eigenschaft dieser Zuordnung und keine allgemeine Wahrheit. Ein Test hält sie gegen die
+veröffentlichte Methodik — ändert sie sich, fällt der Test und nicht der Leser.
+
+**Der Anlagestil als Satz**: „Am ehesten passt die Aktie derzeit zum Stil Momentum Leader." Passt
+keiner über der Schwelle: „Kein Anlagestil passt derzeit klar. Am nächsten kommt Quality
+Compounder." Dazu erfüllt / offen / **nicht messbar** — das Letzte getrennt, weil es der Grund für
+eine schlechtere Passung ist und weder als erfüllt noch als verletzt zählt.
+
+**Chance gegen Risiko als Primärsprache**: „Ähnliche Situationen hatten historisch mehr Aufwärts-
+als Abwärtsasymmetrie." Darunter die Aufwärts- und die Abwärtsseite gegen die Grundgesamtheit, die
+Stichprobe (118.376 vergleichbare Beobachtungen) und die Belastbarkeit (3 von 3 Mustern hielten
+außerhalb ihres Fundzeitraums). Chance nie ohne Kehrseite — als Struktur, nicht als Konvention.
+
+### Die obere Hälfte einer Aktienseite (390 px)
+
+Gemessen am gebauten Release: die erste Bildschirmhöhe zeigte Name, Etikett, Kurs,
+Aktualitätszeile — und dann einen Chart. Die fünf Einstiegsfragen wurden in Abschnitt vier, sechs
+und sieben beantwortet, die Abwägung überhaupt erst auf der Quant-Ansicht.
+
+Die Auskunft steht jetzt **zwischen Kurs und Chart**, bei 390 px **443 px** vom Seitenanfang. Der
+Smoke prüft die Reihenfolge im DOM (`compareDocumentPosition`) und nicht nur, *dass* es die
+Auskunft gibt — ein Abschnitt hinter dem Chart wäre derselbe Befund nochmal.
+
+Ein Leseweg für die ganze Seite: `getIntelligenceBrief` ruft die sechs Dienste einmal, die Seite
+nimmt `brief.sources` für alles Weitere. Auch die Quant-Ansicht liest dieselbe Engine — vorher
+bildete sie ihren eigenen Zusammenfassungssatz, und zwei Zusammenfassungen desselben Titels sind
+zwei Wahrheiten, sobald eine sich ändert. Der Setup-Abschnitt unten nennt Etikett und Regelsatz
+nicht mehr doppelt; er heißt jetzt „Woran dieser Zustand hängt".
+
+### Zwei Nebenbefunde, die dabei auffielen
+
+- Die Auswahl der Kennzahlenkästen kannte nur `earningsYield`/`priceToFcf` (den Panelweg). Für jeden
+  Titel außerhalb des Panels stand die Frage „Welcher Preis steht dem Geschäft gegenüber?" über
+  einem **leeren Kasten** — der breite Weg liefert `priceEarnings`/`priceSales`. Beide sind jetzt
+  ausgewählt, und ein Kasten entsteht nur mit wenigstens einer Zeile.
+- Ein Titel ohne eine einzige bewertete Eigenschaft sagt jetzt den Grund im Kopfsatz: *„Für eine
+  Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 116 vor."* Gemessen
+  betrifft das 784 der 786 Titel ohne Faktorwert — es ändert sich von selbst, und das ist eine
+  andere Auskunft als „nicht bewertbar".
+
+### Die zwölf Archetypen
+
+Nicht handverlesen: jede Klasse hat ein Prädikat über die veröffentlichten Artefakte, und gewählt
+wird der erste Treffer der alphabetisch geordneten Liste. Eine handverlesene Liste würde messen,
+was ich sehen will.
+
+| Archetyp | Titel | Fragen | Setup | Stil | Muster |
+|---|---|---|---|---|---|
+| starke Aktie | NVDA | 11/11 | im Aufbau | passt | Asymmetrie |
+| schwache Aktie | AAME | 11/11 | kein Setup | passt | Asymmetrie |
+| Momentum-Titel | AEHR | 10/11 | kein Setup | passt | Asymmetrie |
+| Value-Titel | ABR | 10/11 | kein Setup | passt | Asymmetrie |
+| Bank | WSBCO | 5/11 | keine Beobachtung | nächstliegend | keine Wochenreihe |
+| REIT | AAT | 10/11 | kein Setup | passt | kein Muster trifft zu |
+| Wachstumsunternehmen | AMPX | 11/11 | kein Setup | passt | Asymmetrie |
+| datenarme junge Aktie | AAAC | 4/11 | keine Beobachtung | — | — |
+| Multi-Class / zurückgehalten | GOOGL | 11/11 | kein Setup | passt | Asymmetrie |
+| Titel mit Setup | ACA | 10/11 | **bestätigt** | passt | Asymmetrie |
+| Titel ohne Stil | ACAA | 3/11 | keine Beobachtung | — | — |
+| Titel ohne Setup | ABAT | 11/11 | kein Setup | passt | Asymmetrie |
+
+Die drei schwachen Zeilen sind **ehrliche Datengrenzen**, keine Produktfehler: AAAC (198
+Handelstage) und ACAA (117) tragen keine Eigenschaft, kein Setup und keinen Mustervergleich, und
+sie sagen es mit der Zahl — *„Für eine Einordnung dieses Titels werden 252 Handelstage benötigt;
+aktuell liegen 198 vor."* WSBCO hat zwei bewertete Eigenschaften und keine veröffentlichte
+Wochenreihe. Kein Titel der Probe zeigt
+einen Widerspruch, eine doppelte Hauptaussage oder eine Aussage ohne Beleg.
+
+### Die Messung (500er-Stichprobe, jeder 13. Titel, deterministisch)
+
+| Kennzahl | Titel von 500 |
+|---|---|
+| `STOCKS_WITH_COMPLETE_INTELLIGENCE_SUMMARY` | **408** (+ 28 teilweise) |
+| `STOCKS_WITH_PRO_CONTRA_UNKNOWN` (alle drei Gruppen) | **357** (475 mit mindestens zwei) |
+| `SETUPS_PUBLISHED` · davon entscheidbarer Zustand | 426 · **123** |
+| `SETUPS_WITH_NEXT_CONDITION` | **122 von 123** |
+| `SETUPS_WITH_INVALIDATION` | **123 von 123** |
+| `STRATEGY_MATCH_WITH_EXPLANATION` | **418** |
+| `PATTERN_MATCH_WITH_ASYMMETRY` | **322** (+ 80 mit dem ausdrücklichen „kein Muster trifft zu") |
+| `METHODOLOGY_SWITCH_VISIBLE` | **70** |
+| `CONTRADICTORY_STATEMENTS` | **0** |
+| `DUPLICATE_PRIMARY_STATEMENTS` | **0** |
+| `TECHNICAL_INFORMATION_WITHOUT_STATEMENT` | **0** |
+| `STATEMENTS_WITHOUT_EVIDENCE` | **0** |
+| `FULL_INTELLIGENCE_JOURNEY` / `REDUCED` / `UNUSABLE` | **407 / 42 / 51** |
+
+Die eine Ausnahme ist ehrlich: der eine entscheidbare Zustand ohne nächste Bedingung ist ein
+**bestätigtes** Setup — über ihm gibt es in der entscheidbaren Stufe keine Regel mehr, und die
+Verlaufszustände darüber sind geschlossen. Das steht als Satz da und nicht als leere Liste.
+
+**Zwei Lineale, kein Fortschritt.** Dieselbe Stichprobe ergibt nach der Formmessung
+(`journey-shape-1.0.0`, gehaltvolle **Stationen**) unverändert **409 / 89 / 2** und nach dieser
+Messung (beantwortete **Fragen**) **407 / 42 / 51**. Oben stimmen sie fast überein, unten nicht: ein
+Titel kann elf Stationen zeigen und trotzdem nur drei Fragen beantworten. Beide Reihen stehen
+deshalb im Artefakt nebeneinander (`journeyShapeOnSameSample`) — die neue Zahl ist kein besseres
+Ergebnis, sondern eine andere Frage.
+
+Am Wenigsten beantwortet wird „Was treibt die Stärke oder Schwäche?" (392) — sie verlangt eine
+bewertete Eigenschaft **mit** einer Einzelkennzahl darunter. Am meisten „Wie belastbar ist diese
+Evidenz?" (500): sie ist immer beantwortbar, weil auch „hierzu liegt nichts vor" eine Auskunft über
+Belastbarkeit ist.
+
+### Tests und Produktionsnachweis
+
+17 neue Fälle in zwei Dateien, beide sabotagegeprüft: die Bandregel zurückgedreht → Fall 2 fällt;
+die Zurückhaltung entfernt → Fall 2 der Bewertungsdatei fällt; wiederhergestellt → grün. Der
+Bestandstest läuft über **alle 6.441** Titel, nicht über eine Stichprobe.
+
+Tests **1.939 grün, 0 rot** (quant) · **273 grün** (discover). Produktions-Smoke gegen das gebaute
+Release: **CLEAN**, 27 Ansichten × 2 Breiten, mit der Auskunft bei 443 px, der Zurückhaltung auf
+JPM und der Branchenvorlage auf WSBCO.
+
+### Was bleibt
+
+Unverändert und ausdrücklich: keine neue Datenquelle, kein Provider-Kauf, keine neue Pipeline,
+keine neue Datenarchitektur. Discovery unberührt. Backtest fail-closed (Mitgliedschaftshistorie),
+Revisions fail-closed (lizenzierte PIT-Daten), `data.sec.gov` extern blockiert (CONNECT 403) für
+die 161/183 Zuordnungsfälle und die klassenspezifische Aktienzahl. Die Owner-Entscheidung zur
+Schuldenzusammensetzung liegt entscheidungsreif.
+
 ## M39 — DIE BRANCHENVORLAGE STAND AUF KEINER SEITE
 
 `INDUSTRY_TEMPLATE_DISCLOSED = PASS`

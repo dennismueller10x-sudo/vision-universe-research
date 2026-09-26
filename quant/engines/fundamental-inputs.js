@@ -469,8 +469,38 @@
   var MARKET_CAP_DEPENDENT_RAWS = ["fcfYield", "earningsYield", "bookToMarket", "salesYield",
     "ebitdaYield", "pretaxEarningsYield", "cashFlowYield", "dividendYield"];
 
+  /* DIESELBE ABHAENGIGKEIT, EINE SCHICHT WEITER AUSSEN.
+   *
+   * Gemessen am 26.09.2026 auf der Aktienseite: bei 266 der 465 Titel, deren
+   * Boersenwert M34 ausdruecklich zurueckhaelt, stand drei Zeilen tiefer ein
+   * Kurs-Gewinn- und ein Kurs-Umsatz-Verhaeltnis. Sie kommen aus zwei
+   * anderen Wegen - dem Konsum-Export und dem SEC-Panel -, und beide
+   * multiplizieren die Aktienzahl des EMITTENTEN mit dem Kurs DIESER Zeile.
+   * Genau das ist die Zuordnung, die nicht in den Unterlagen steht. Die
+   * Faktorschicht sagte also "wird bewusst zurueckgehalten", und die
+   * Kennzahlenschicht nannte die Zahl trotzdem.
+   *
+   * Nachgerechnet, nicht vermutet: `f_ps` ist "Kurs x Aktien / Umsatz",
+   * `f_fcfYield` ist "Free Cashflow / (Kurs x Aktien)", und `f_pe` ist
+   * "Kurs / (Gewinn / Aktien)" - also ebenfalls Kurs x Aktien / Gewinn.
+   * Alle drei tragen die Aktienzahl. Das Panel fuehrt `marketCap` direkt und
+   * leitet Ertrags- und Unternehmenswertrenditen daraus ab.
+   *
+   * Die Liste steht hier, weil dieses Modul die Frage "was haengt am
+   * Boersenwert" ohnehin besitzt. Zwei Listen an zwei Stellen waeren zwei
+   * Antworten. */
+  var MARKET_CAP_DEPENDENT_PRODUCT_METRICS = [
+    /* Konsum-Export (discover/data/stocks/US_REAL) */
+    "pe", "ps", "fcfYield",
+    /* Panel-Arbeitsflaeche (quant-workspace-contract) */
+    "earningsYield", "evToSales", "evToEbitda", "priceToFcf",
+    /* Breite Arbeitsflaeche (broadQuantWorkspace) */
+    "priceEarnings", "priceSales"
+  ];
+
   var api = {
     MARKET_CAP_DEPENDENT_RAWS: MARKET_CAP_DEPENDENT_RAWS.slice(),
+    MARKET_CAP_DEPENDENT_PRODUCT_METRICS: MARKET_CAP_DEPENDENT_PRODUCT_METRICS.slice(),
     VERSION: VERSION,
     CONSUMER_SCHEMA: CONSUMER_SCHEMA,
     COL: Object.assign({}, COL),

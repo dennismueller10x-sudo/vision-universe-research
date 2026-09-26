@@ -495,17 +495,45 @@
   }
 
   /* One sentence a beginner can act on, built only from what is available.
-     It states position and gaps; it never advises. */
+     It states position and gaps; it never advises.
+
+     EINE STÄRKE MUSS EINE STÄRKE SEIN.
+
+     Hier stand: die höchste der bewerteten Eigenschaften ist „die klarste
+     Stärke", die niedrigste „die klarste Schwäche" - unabhängig davon, wo
+     beide liegen. Gemessen am 26.09.2026 über 6.441 Titel ergab das bei
+     743 den Satz „Unternehmensqualität ist mit schwach die klarste Stärke."
+     Er ist aus richtigen Zahlen gebaut und trotzdem falsch: die schwächste
+     Eigenschaft eines schwachen Titels ist keine Stärke, und „stark" und
+     „schwach" in einem Satz macht aus einer Einordnung ein Rätsel. Bei
+     AACG kam dazu, dass Stärke und Schwäche im GLEICHEN Band lagen - dann
+     ist die Unterscheidung nicht nur schief, sie existiert nicht.
+
+     Die Grenze ist deshalb das Band und nicht die Reihenfolge: über dem
+     Mittelfeld ist eine Stärke, darunter eine Schwäche, im Mittelfeld
+     keines von beidem - und dass nichts heraussticht, ist selbst eine
+     Aussage. Die Bänder sind die der Methodik (ratingBands); hier steht
+     nur, welche davon einen Satz verdienen. */
+  var STRENGTH_BANDS = ["VERY_STRONG", "STRONG"];
+  var WEAKNESS_BANDS = ["WEAK", "VERY_WEAK"];
+
   function summarySentence(record) {
-    var factors = ordered(record).filter(function (factor) { return factor.state === "AVAILABLE"; });
+    var alle = ordered(record),
+      factors = alle.filter(function (factor) { return factor.state === "AVAILABLE" && finite(factor.score); });
     if (!factors.length) return "Für diesen Titel liegt derzeit keine auswertbare Faktor-Evidenz vor.";
-    var sorted = factors.slice().sort(function (a, b) { return b.score - a.score; }),
-      strongest = sorted[0],
-      weakest = sorted[sorted.length - 1],
+    var stark = factors.filter(function (f) { return STRENGTH_BANDS.indexOf(f.band) >= 0; })
+        .sort(function (a, b) { return b.score - a.score; }),
+      schwach = factors.filter(function (f) { return WEAKNESS_BANDS.indexOf(f.band) >= 0; })
+        .sort(function (a, b) { return a.score - b.score; }),
       parts = [];
-    parts.push(strongest.label + " ist mit " + strongest.bandLabel.toLowerCase() + " die klarste Stärke.");
-    if (sorted.length > 1 && weakest.id !== strongest.id) parts.push(weakest.label + " ist mit " + weakest.bandLabel.toLowerCase() + " die klarste Schwäche.");
-    var missing = ordered(record).filter(function (factor) { return factor.state !== "AVAILABLE"; });
+    if (stark.length) parts.push(stark[0].label + " ist mit " + stark[0].bandLabel.toLowerCase() + " die klarste Stärke.");
+    if (schwach.length) parts.push(schwach[0].label + " ist mit " + schwach[0].bandLabel.toLowerCase() + " die klarste Schwäche.");
+    if (!parts.length) {
+      parts.push(factors.length === 1
+        ? "Die eine bewertete Eigenschaft liegt im mittleren Bereich des Universums."
+        : "Keine der " + factors.length + " bewerteten Eigenschaften liegt über oder unter dem Mittelfeld des Universums.");
+    }
+    var missing = alle.filter(function (factor) { return factor.state !== "AVAILABLE"; });
     if (missing.length) parts.push(missing.length + " von 7 Faktoren bleiben ohne Wert, weil ihre Daten die Methodik nicht erfüllen.");
     return parts.join(" ");
   }
@@ -530,6 +558,8 @@
     REASON_TEXT: Object.assign({}, REASON_TEXT),
     REASON_HEADLINE: Object.assign({}, REASON_HEADLINE),
     REQUIRED_BARS: Object.assign({}, REQUIRED_BARS),
+    STRENGTH_BANDS: STRENGTH_BANDS.slice(),
+    WEAKNESS_BANDS: WEAKNESS_BANDS.slice(),
     historyLimit: historyLimit,
     band: band,
     confidenceBand: confidenceBand,

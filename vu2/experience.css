@@ -346,3 +346,40 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .journey-gap .gap-areas{font-size:.9rem;color:var(--muted);margin:8px 0 0}
 .journey-gap details{margin-top:10px}
 @media (max-width:640px){.journey-gap .gap-group{padding:14px}}
+
+/* =========================================================================
+   DIE AUSKUNFT OBEN — MOBILE FIRST.
+
+   Gemessen bei 390 px: die erste Bildschirmhoehe einer Aktienseite zeigte
+   Name, Etikett, Kurs, Aktualitaetszeile und dann einen Chart. Dieser
+   Abschnitt steht jetzt zwischen Kurs und Chart, also genau dort, wo die
+   Antwort gesucht wird. Einspaltig bis 900 px, damit keine Spalte auf
+   Buchstabenbreite schrumpft; die drei Gruppen bleiben in ihrer
+   Reihenfolge - dafuer, dagegen, noch nicht bewertbar.
+   ========================================================================= */
+.brief-section{margin:26px 0 8px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.brief-headline{font-size:1.18rem;line-height:1.45;font-weight:550;margin:8px 0 4px}
+.brief-balance{display:grid;gap:14px;grid-template-columns:1fr;margin-top:18px}
+.brief-column{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.brief-column h3{margin:0 0 10px;font-size:15px}
+.brief-column.is-pro{border-color:var(--positive)}
+.brief-column.is-con{border-color:var(--negative)}
+.brief-column.is-unknown{border-style:dashed}
+.brief-list{list-style:none;margin:0;padding:0}
+.brief-list li{padding:9px 0;border-top:1px solid var(--line)}
+.brief-list li:first-child{border-top:0}
+.brief-list li span{display:block}
+.brief-text{font-weight:550}
+.brief-list li .muted{font-size:12px;margin-top:3px;line-height:1.45}
+.brief-more{margin:8px 0 0;border:0;padding:0}
+.brief-more summary{min-height:44px;font-size:13px;color:var(--muted)}
+.brief-setup,.brief-strategy,.brief-pattern{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.brief-setup h3,.brief-strategy h3,.brief-pattern h3{font-size:15px;margin:0 0 10px}
+.brief-setup p,.brief-strategy p,.brief-pattern p{margin:0 0 8px}
+.brief-setup-state{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.brief-setup strong,.brief-strategy strong{font-weight:650}
+.brief-not{font-size:12px;margin:16px 0 0}
+.setup-logic{margin:10px 0 0}
+.pattern-lead{font-size:1.05rem;font-weight:550;margin:6px 0 10px}
+@media (min-width:901px){.brief-balance{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:650px){.brief-section{padding:16px;border-radius:12px}.brief-headline{font-size:1.08rem}}

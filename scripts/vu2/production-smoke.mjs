@@ -186,6 +186,62 @@ for(const width of [1440,390]){
     console.log('     Branchenvorlage: '+text.split('\n')[0].slice(0,60));
    }
   }
+  /* DIE OBERE HAELFTE EINER AKTIENSEITE - AM GEBAUTEN RELEASE GEPRUEFT.
+   *
+   * Gemessen bei 390 px: die erste Bildschirmhoehe zeigte Name, Etikett,
+   * Kurs, Aktualitaetszeile und dann einen Chart. Die fuenf Fragen, mit denen
+   * ein Einsteiger kommt, wurden in Abschnitt vier, sechs und sieben
+   * beantwortet - und die Abwaegung ueberhaupt erst auf der Quant-Ansicht.
+   *
+   * Geprueft wird deshalb die Reihenfolge im DOM und nicht nur, DASS es die
+   * Auskunft gibt: ein Abschnitt hinter dem Chart waere derselbe Befund
+   * nochmal. */
+  if(/\?view=stock&ticker=(NVDA|AAPL)/.test(view)){
+   const auskunft=page.locator('.brief-section');
+   if(!await auskunft.count())bad.push('AUSKUNFT_FEHLT');
+   else{
+    const kopf=await auskunft.locator('.brief-headline').innerText().catch(()=>'');
+    if(kopf.length<40)bad.push('KOPFSATZ_ZU_KURZ='+kopf.length);
+    /* Kein interner Code im Kopfsatz und keine Handlungs- oder
+       Prognosesprache - §81 gilt auch fuer eine Zusammenfassung. */
+    if(/[A-Z]{3,}_[A-Z_]{3,}/.test(kopf))bad.push('CODE_IM_KOPFSATZ');
+    if(/\b(kaufen|verkaufen|Kursziel|wird steigen|wird fallen)\b/i.test(kopf))bad.push('HANDLUNGSSPRACHE');
+    /* Die drei Gruppen, in ihrer Reihenfolge. */
+    const gruppen=await auskunft.locator('.brief-column h3').allInnerTexts();
+    if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen|Noch nicht bewertbar')bad.push('GRUPPEN:'+gruppen.join('|'));
+    /* Und die Setup-Frage mit ihren Folgefragen. */
+    const setupText=await auskunft.locator('.brief-setup').innerText().catch(()=>'');
+    if(!/Gibt es ein Setup\?/.test(setupText))bad.push('SETUPFRAGE_FEHLT');
+    if(!/Was würde es beenden\?|liegt keine Beobachtung vor/.test(setupText))bad.push('ENDE_UNBEANTWORTET');
+    /* Vor dem Chart, nicht dahinter. */
+    const reihenfolge=await page.evaluate(()=>{
+     const a=document.querySelector('.brief-section'),c=document.querySelector('.q-chart');
+     if(!a||!c)return 'FEHLT';
+     return (a.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING)?'VOR_CHART':'NACH_CHART';
+    });
+    if(reihenfolge!=='VOR_CHART')bad.push('AUSKUNFT_'+reihenfolge);
+    /* Und sie steht wirklich im ersten Bildschirm: bei 390 px darf der
+       Kopfsatz nicht unterhalb von zwei Bildschirmhoehen liegen. */
+    const oben=await auskunft.evaluate(n=>n.getBoundingClientRect().top+scrollY);
+    if(width===390&&oben>1800)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));
+    console.log('     Auskunft: '+kopf.slice(0,74)+' · '+Math.round(oben)+'px');
+   }
+  }
+  /* EINE ZURUECKGEHALTENE BEWERTUNG BLEIBT ZURUECKGEHALTEN.
+   *
+   * Gemessen: 266 der 465 Titel mit zurueckgehaltenem Boersenwert zeigten
+   * drei Zeilen tiefer ein Kurs-Gewinn- und ein Kurs-Umsatz-Verhaeltnis, aus
+   * zwei anderen Wegen. JPM ist der gemessene Fall - und die Quant-Ansicht
+   * ist die Flaeche, auf der die Bewertungsfamilie vollstaendig steht. */
+  if(view.includes('ticker=JPM')){
+   const text=await page.locator('main').innerText();
+   const bewertung=text.includes('Bewertung bewusst zurückgehalten')||text.includes('Bewertung wird hier bewusst zurückgehalten');
+   if(!bewertung)bad.push('ZURUECKHALTUNG_UNGENANNT');
+   /* Und kein Kurs-Gewinn-Verhaeltnis mit einer Zahl daneben. */
+   const kgv=(await page.locator('main').innerText()).match(/Kurs-Gewinn-Verhältnis[^\n]*\n?([^\n]*)/);
+   if(kgv&&/\d+,\d+\s*×/.test(kgv[1]||''))bad.push('KGV_TROTZ_ZURUECKHALTUNG:'+kgv[1].slice(0,30));
+   console.log('     Zurueckhaltung genannt: '+bewertung);
+  }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
   console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));
   if(bad.length)failures++;

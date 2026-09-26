@@ -131,9 +131,12 @@ test("the four layers are actually used: a section leads with meaning and folds 
 });
 
 test("the stock experience answers its questions in the order a person asks them", () => {
+  /* M40: die Abschnitte bekommen ihre Aussagen aus der gemeinsamen
+     Auskunfts-Engine statt sie selbst zu bilden. Die REIHENFOLGE ist, was
+     dieser Fall haelt - sie ist die Reihenfolge, in der ein Mensch fragt. */
   const order = ["Wie stark ist diese Aktie?", "sectionHead('Stärken & Schwächen','factorDna')",
-    "sectionHead('Bewegung','changeEngine')", "setupJourney(setup,observation,setupIndex)",
-    "prosAndCons(data,change,patterns)", "patternMatchSection(patterns)",
+    "sectionHead('Bewegung','changeEngine')", "setupJourney(setup,observation,setupIndex,brief&&brief.setup)",
+    "prosAndCons(brief)", "patternMatchSection(patterns,brief&&brief.pattern)",
     "strategyMatchSection(match,strategyIndex,ticker", "evidenceTrustSection(patterns)"];
   let cursor = -1;
   for (const marker of order) {
@@ -150,10 +153,15 @@ test("both sides are always shown: no upside without its downside", () => {
   assert.match(card, /conditionalLossRate/);
   assert.match(card, /L\('asymmetry'\)/);
   assert.match(card, /medianDrawdown/);
-  /* And the balance section renders both columns unconditionally. */
+  /* And the balance section renders all THREE groups unconditionally.
+     M40 added the third: eine kurze Dafuer-Liste liest sich wie ein Urteil,
+     wenn nicht dabeisteht, was ausdruecklich NICHT bewertet wurde. Alle drei
+     stehen in einem Aufruf, damit keine ohne die anderen ausgeliefert
+     werden kann. */
   const balance = experience.slice(experience.indexOf("function prosAndCons("), experience.indexOf("/* WIE BELASTBAR"));
-  assert.match(balance, /column\('Dafür',pros/);
-  assert.match(balance, /column\('Dagegen',cons/);
+  assert.match(balance, /briefListe\('Spricht dafür',brief\.pro/);
+  assert.match(balance, /briefListe\('Spricht dagegen',brief\.contra/);
+  assert.match(balance, /briefListe\('Noch nicht bewertbar',brief\.unknown/);
 });
 
 test("unavailable copy is a sentence, never a code", () => {
@@ -242,7 +250,15 @@ test("the entry page answers the two headline questions itself", () => {
   const stock = experience.slice(from, experience.indexOf("\nfunction ", from));
   assert.ok(stock.length > 500);
   assert.match(stock, /LQ\('factorDna'\)/, "the entry page does not ask the strength question");
-  assert.match(stock, /patternBalance\(patterns,ticker\)/, "the entry page carries no opportunity-against-risk answer");
+  assert.match(stock, /patternBalance\(patterns,ticker,brief&&brief\.pattern\)/, "the entry page carries no opportunity-against-risk answer");
+  /* M40: und die fuenf Einstiegsfragen stehen in der oberen Haelfte, zwischen
+     Kurs und Chart. Gemessen bei 390 px stand dort vorher der Chart, und die
+     Antworten lagen in Abschnitt vier, sechs und sieben. */
+  assert.match(stock, /left\.append\(briefSection\(brief,ticker,false\)\)/,
+    "die Auskunft steht nicht in der oberen Haelfte");
+  const vorChart = stock.indexOf("briefSection(brief,ticker,false)");
+  const chartAn = stock.indexOf("left.append(chart,ranges");
+  assert.ok(vorChart > 0 && chartAn > vorChart, "die Auskunft steht hinter dem Chart");
   assert.match(stock, /factorStrip\(evidenceRow\)/, "the entry page does not reuse the shared factor strip");
   /* Reused, not reimplemented: a second set of factor names is exactly the
      double language the dictionary exists to remove. */
@@ -404,8 +420,8 @@ test("a missing factor row hides the factors, not everything else", () => {
      Situation zeigte - zwei Antworten auf eine Frage, je nach Einstieg. */
   const zweig = experience.slice(experience.indexOf("Für diesen Titel liegt keine Faktor-Evidenz vor"));
   const bisReturn = zweig.slice(0, zweig.indexOf("\n  return;"));
-  for (const abschnitt of ["setupJourney(setup,observation,setupIndex)",
-                           "patternMatchSection(patterns)",
+  for (const abschnitt of ["setupJourney(setup,observation,setupIndex,brief&&brief.setup)",
+                           "patternMatchSection(patterns,brief&&brief.pattern)",
                            "strategyMatchSection(match,strategyIndex,ticker"]) {
     assert.ok(bisReturn.includes(abschnitt), abschnitt + " fehlt im Zweig ohne Faktor-Evidenz");
   }

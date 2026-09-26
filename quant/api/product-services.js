@@ -21,6 +21,8 @@ const History=typeof module!=='undefined'&&module.exports?require('./fundamental
 const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 const FactorEvidence=typeof module!=='undefined'&&module.exports?require('../engines/factor-evidence.js'):g.VUFactorEvidence;
+const FundamentalInputs=typeof module!=='undefined'&&module.exports?require('../engines/fundamental-inputs.js'):g.VUFundamentalInputs;
+const IntelligenceBrief=typeof module!=='undefined'&&module.exports?require('../engines/intelligence-brief.js'):g.VUIntelligenceBrief;
 const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
@@ -580,11 +582,17 @@ function create(options){
   * Aktienseite zeichnet dieselbe Reihe.
   *
   * Fehlt das Verzeichnis, bleibt die Liste genau so, wie sie vorher war. */
+ /* Zwei Fassungen, ein Leser: 1.1.0 bringt den Bewertungsgrund und die Zahl
+  * der notierten Zeilen mit, an denselben Schluesseln. Eine Liste statt einer
+  * Gleichheit, damit ein aelteres Artefakt weiter gelesen wird - und keine
+  * offene Praefixpruefung, sonst laese dieser Weg auch eine Fassung, die es
+  * noch nicht gibt. */
+ const UNIVERSE_LIST_SCHEMAS=['universe-list-1.0.0','universe-list-1.1.0'];
  let universeList=null;
  async function universeIndex(){
   if(universeList!==null)return universeList;
   try{const d=await compressedJSON('/quant/data/product/universe-list-v1.json.gz');
-   if(!d||d.schemaVersion!=='universe-list-1.0.0'||!Array.isArray(d.entries))throw Error('contract');
+   if(!d||UNIVERSE_LIST_SCHEMAS.indexOf(d.schemaVersion)<0||!Array.isArray(d.entries))throw Error('contract');
    const byTicker={};
    for(const e of d.entries)if(e&&typeof e.s==='string')byTicker[e.s]=e;
    universeList={generatedAt:d.generatedAt,coverage:d.coverage||null,byTicker};
@@ -605,6 +613,11 @@ function create(options){
    * andere Groesse und weicht in allen 6.441 Faellen ab; sie waere hier eine
    * falsche Zahl in einem richtigen Satz. */
   if(Number.isFinite(entry.b)&&!Number.isFinite(row.factorBars))row.factorBars=entry.b;
+  /* Was die Faktorschicht ueber die Bewertung DIESER Notierung entschieden
+     hat. Die Zeile traegt es mit, damit keine zweite Schicht eine Zahl nennt,
+     die die erste ausdruecklich zurueckhaelt. */
+  if(entry.v&&!row.marketCapReason)row.marketCapReason=entry.v;
+  if(Number.isFinite(entry.il)&&!Number.isFinite(row.issuerListings))row.issuerListings=entry.il;
   const heute=new Date().toISOString().slice(0,10);
   if(!Number.isFinite(row.price&&row.price.value)&&Number.isFinite(entry.c)&&entry.c>0
      &&validDate(entry.d)&&entry.d<=heute&&(!row.price||row.price.reason!=='DISPLAY_NOT_PERMITTED')){
@@ -618,6 +631,52 @@ function create(options){
    row.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_SERIES'};
   }
   return row;
+ }
+ /* DREI WEGE ZU EINER BEWERTUNG, UND NUR EINER HIELT SICH AN DIE SEMANTIK.
+  *
+  * Gemessen am 26.09.2026: von den 465 Titeln, deren Boersenwert M34
+  * ausdruecklich zurueckhaelt, zeigten 266 drei Zeilen tiefer doch ein
+  * Kurs-Gewinn- oder Kurs-Umsatz-Verhaeltnis - GOOGL 17,27 und 9,32, T 8,4
+  * und 1,52, JPM eine Ertragsrendite von 4,62 Prozent aus einem Boersenwert
+  * von 1.408 Mrd. Die Faktorschicht sagte "wird bewusst zurueckgehalten,
+  * weil die Aktienzahl dem Unternehmen und nicht dieser Notierung gilt", und
+  * die Kennzahlenschicht nannte genau die Zahl, die daraus entsteht. Fuer
+  * einen Leser widersprechen sich die beiden Saetze, und einer davon ist die
+  * Semantik, die als verbindlich gilt.
+  *
+  * Also faellt die Bewertung hier geschlossen - in derselben Form, die diese
+  * Schicht fuer eine fehlende Freigabe schon kennt: Wert null, Zustand
+  * UNAVAILABLE, Grund dabei. Das kostet Deckung (266 Titel, bis zu drei
+  * Kennzahlen je Titel) und ist der ausdruecklich gewaehlte Preis:
+  * Korrektheit vor Reichweite.
+  *
+  * NICHT betroffen ist NO_PIT_SHARE_COUNT (801 Titel). Dort fehlt der
+  * Faktorschicht ein zeitpunktsicherer Anteilsbestand; das ist eine andere
+  * Aussage als "die vorhandene Zahl gilt nicht fuer diese Zeile", und eine
+  * Zahl auf anderer Grundlage ist keine Fehlzuordnung. */
+ const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING'];
+ function withholdValuation(stock){
+  if(!stock||VALUATION_WITHHELD_REASONS.indexOf(stock.marketCapReason)<0)return stock;
+  const grund=stock.marketCapReason;
+  const gesperrt=FundamentalInputs.MARKET_CAP_DEPENDENT_PRODUCT_METRICS;
+  for(const key of gesperrt){
+   if(stock[key]&&typeof stock[key]==='object'&&'value' in stock[key])
+    stock[key]={value:null,unit:stock[key].unit||null,state:'UNAVAILABLE',reason:grund};
+  }
+  if(stock.consumerMetrics&&typeof stock.consumerMetrics==='object'){
+   /* Die Rohwerte des Konsum-Exports bleiben als Objekt erhalten, aber ohne
+      die Zahlen, die an der Zuordnung haengen - sonst liest eine Flaeche sie
+      am Modell vorbei wieder auf. */
+   for(const key of ['f_pe','f_ps','f_fcfYield'])if(key in stock.consumerMetrics)stock.consumerMetrics[key]=null;
+  }
+  if(stock.quant&&Array.isArray(stock.quant.families)){
+   for(const family of stock.quant.families)for(const item of (family.metrics||[])){
+    if(gesperrt.indexOf(item.metricId)>=0&&item.value!==null){item.value=null;item.state='UNAVAILABLE';item.reason=grund;}
+   }
+  }
+  stock.valuationWithheld={reason:grund,issuerListings:Number.isFinite(stock.issuerListings)?stock.issuerListings:null,
+   metrics:gesperrt.slice()};
+  return stock;
  }
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
@@ -763,6 +822,9 @@ function create(options){
       und die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat -
       die Aktienseite darf daran nicht weniger wissen als die Liste. */
    try{const index=await universeIndex();mitVerzeichnis(stock,index.byTicker[ticker]);}catch{/* das Verzeichnis ist eine Ergaenzung, keine Bedingung */}
+   /* NACH dem Verzeichnis, weil erst es den Grund mitbringt - und nach der
+      Arbeitsflaeche, weil auch ihre Kennzahlen daran haengen. */
+   withholdValuation(stock);
    return stock;
    }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}
  async function getSignals({lookback=20}={}){
@@ -842,8 +904,14 @@ function create(options){
  }
  async function getQuantWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await hydrateCapabilities(await init());const stock=await row(c,ticker);if(stock)return QuantWorkspace.build(stock,{...c.panel.securities[ticker],securityId:stock.securityId},c.panel.versions);
-   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return unavailable('INVALID_IDENTITY');let broad=broadRow(c,member);if(!broad)return unavailable('SOURCE_MISSING');const consumer=await consumerFor(ticker);if(consumer)broad=applyConsumer(broad,consumer);broad._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};const model=broadQuantWorkspace(broad);if(!permission(c,ticker).allowed)for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))for(const item of family.metrics){item.value=null;item.state='UNAVAILABLE';item.reason='DISPLAY_NOT_PERMITTED';}return model;
+  /* Der Bewertungsgrund gilt fuer BEIDE Wege dieser Funktion - den Panelweg
+     und den breiten. Er wird deshalb einmal davor geholt und am Ende auf das
+     Ergebnis angewandt, statt zweimal formuliert zu werden. */
+  let grund=null;
+  try{const index=await universeIndex();const eintrag=index.byTicker[ticker];grund=eintrag&&eintrag.v?eintrag.v:null;}catch{}
+  const mitGrund=(model)=>{if(model&&model.state==='AVAILABLE'&&grund)withholdValuation({marketCapReason:grund,quant:model});return model;};
+  try{const c=await hydrateCapabilities(await init());const stock=await row(c,ticker);if(stock)return mitGrund(QuantWorkspace.build(stock,{...c.panel.securities[ticker],securityId:stock.securityId},c.panel.versions));
+   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return unavailable('INVALID_IDENTITY');let broad=broadRow(c,member);if(!broad)return unavailable('SOURCE_MISSING');const consumer=await consumerFor(ticker);if(consumer)broad=applyConsumer(broad,consumer);broad._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};const model=broadQuantWorkspace(broad);if(!permission(c,ticker).allowed)for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))for(const item of family.metrics){item.value=null;item.state='UNAVAILABLE';item.reason='DISPLAY_NOT_PERMITTED';}return mitGrund(model);
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getTechnicalWorkspace(ticker){
@@ -967,7 +1035,32 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
+ /* DIE EINE AUSKUNFT, AUS DEN VORHANDENEN MODULEN.
+  *
+  * Bis M40 beantwortete die Reise elf Fragen an elf Stellen - und keine
+  * davon zusammen. Hier werden die Antworten, die die Dienste ohnehin
+  * liefern, EINMAL geholt und der Auskunfts-Engine uebergeben. Kein zweiter
+  * Leseweg, keine zweite Schwelle, keine neue Quelle: was diese Funktion
+  * zurueckgibt, steht Wort fuer Wort auf den Werten, die die Module schon
+  * veroeffentlichen.
+  *
+  * Die Flaechen rufen sie, statt sich die Saetze selbst zu bilden - sonst
+  * haetten Aktienseite und Quant-Ansicht zwei Zusammenfassungen desselben
+  * Titels, und ein Leser zwei Wahrheiten. */
+ async function getIntelligenceBrief(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!IntelligenceBrief||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  const [stock,factors,setup,patterns,match,technical]=await Promise.all([
+   getStockIntelligence(ticker).catch(()=>null),
+   getFactorEvidence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getSetupObservation(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getPatternMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getStrategyMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getTechnicalIntelligence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'}))]);
+  return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
+   sources:{stock,factors,setup,patterns,match,technical}};
+ }
+ return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
