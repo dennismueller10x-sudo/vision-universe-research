@@ -17,6 +17,12 @@ const limit = parseInt(arg("--limit", "0"), 10) || 0;
 const now = arg("--now", new Date().toISOString());
 const minTechnicalBars = 300;
 const signalLookbacks = [5, 20, 60];
+/* Zustaende der Vormerkung, die dieser Lauf selbst und mit frischeren Daten
+   nachmisst - sie duerfen deshalb kein Veto sprechen. Begruendung an der
+   Verwendungsstelle (`vormerkungVeto`). Wird die Liste erweitert, muss der
+   nachmessende Code danebenstehen: ein Zustand ohne eigene Pruefung waere
+   ein stiller Fallback. */
+const RECHECKED_HERE = new Set(["INSUFFICIENT_HISTORY", "SOURCE_MISSING"]);
 
 const Canonical = require(join(root, "quant/engines/technical/canonical-bars.js"));
 const Analysis = require(join(root, "quant/engines/technical/technical-analysis.js"));
@@ -98,11 +104,67 @@ function validatedInput(payload, member) {
       corporateActionReconciliation: reconciled } };
 }
 
-function validateTechnicalCalendar(series) {
+/* ZWEI WAHRHEITEN UNTER EINEM CODE - GETRENNT, WEIL SIE ES SIND.
+ *
+ * Bis hierher endete jeder Fehlschlag dieser Pruefung als
+ * TECHNICAL_CALENDAR_INVALID. Der Satz klingt nach einem Defekt UNSERES
+ * Kalenders und schickt jeden, der nachsieht, an die falsche Stelle.
+ * Gemessen am 26.09.2026 ueber die 42 betroffenen Titel sind es zwei
+ * verschiedene Lagen:
+ *
+ *   2 Titel tragen eine Bar an einem Tag, an dem die Boerse zu war
+ *     (2026-02-16 Presidents' Day, 2026-04-03 Karfreitag, 2026-05-25
+ *     Memorial Day). Das ist ein Datenfehler des Anbieters, an einem
+ *     nennbaren Datum.
+ *
+ *   39 Titel werden so duenn gehandelt, dass ihre letzten 270 BARS 1,1 bis
+ *     4,0 JAHRE zurueckreichen (AAAP: 67 Bars im Jahr). Das Fenster
+ *     verlaesst damit die Kalenderdeckung (ab 2022-01-01), und ausserhalb
+ *     entscheidet der Kalender nur nach Wochentag - eine Sitzungsaussage
+ *     ist dort nicht gesichert. Der Ausschluss ist richtig: 270 Sitzungen
+ *     ueber vier Jahre beschreiben keine "aktuelle Kursstruktur". Falsch
+ *     war nur der Grund.
+ *
+ * Kein Kursfeld aendert sich dadurch; es sind zwei Gruende statt einem. */
+/* DIE ENTSCHEIDUNG, OB EIN TITEL EIN BUNDLE BEKOMMT - AN EINER STELLE.
+ *
+ * Exportiert, damit sie geprueft werden kann, ohne ein Universum zu
+ * faelschen: die Regel ist eine Funktion von zwei Werten, und genau das
+ * soll ein Test sehen. Der Aufrufer unten benutzt dieselbe Funktion; ein
+ * Test haelt auch das fest, sonst waere sie Zierde. */
+export function bundleGate(capabilityState, bars) {
+  const vetoed = capabilityState !== "TECHNICAL_READY" && !RECHECKED_HERE.has(capabilityState);
+  if (vetoed) return { ok: false, reason: "NOT_TECHNICAL_READY", detail: { capabilityState: capabilityState || null } };
+  if (!Number.isFinite(bars) || bars < minTechnicalBars) return { ok: false, reason: "INSUFFICIENT_HISTORY", detail: null };
+  return { ok: true, reason: null, detail: null };
+}
+
+/* Der Grund steckt im Fehlertext, das Detail dahinter. Getrennt wird genau
+   einmal, hier - nicht an jeder Fangstelle neu. */
+export function splitReason(message, capabilityState) {
+  const text = String(message || "");
+  const code = text.split(":")[0] || "TECHNICAL_FAILED";
+  const rest = text.slice(code.length + 1);
+  if (code === "TECHNICAL_SESSION_NOT_A_TRADING_DAY" && rest) {
+    return { code, detail: { nonTradingDay: rest, exchange: "XNYS", contract: "quant/config/market-calendar.json" } };
+  }
+  if (code === "TECHNICAL_WINDOW_OUTSIDE_CALENDAR" && rest) {
+    const [uncovered, first, last] = rest.split("|");
+    return { code, detail: { uncoveredDate: uncovered || null, windowFirst: first || null, windowLast: last || null,
+      windowSessions: Product.DISPLAY_BARS, calendarFrom: (calendar.coverage && calendar.coverage.from) || null } };
+  }
+  if (code === "NOT_TECHNICAL_READY" && capabilityState) return { code, detail: { capabilityState } };
+  return { code, detail: null };
+}
+
+export function validateTechnicalCalendar(series) {
   const dates = series.timestamps.slice(-Product.DISPLAY_BARS);
   for (const date of dates) {
     const session = MarketHours.sessionAt(date + "T12:00:00Z", { calendar, exchange: "XNYS" });
-    if (!session.calendarCoverage || !session.isTradingDay) throw new Error("TECHNICAL_CALENDAR_INVALID");
+    if (!session.calendarCoverage) {
+      throw new Error("TECHNICAL_WINDOW_OUTSIDE_CALENDAR:" + date + "|" + dates[0] + "|" + dates.at(-1));
+    }
+    if (!session.isTradingDay) throw new Error("TECHNICAL_SESSION_NOT_A_TRADING_DAY:" + date);
   }
   return { status: "PASS", contract: "quant/config/market-calendar.json", exchange: "XNYS",
     first: dates[0], last: dates.at(-1), sessions: dates.length };
@@ -152,12 +214,20 @@ export function materialize(options = {}) {
      verfuegbar" steht dort, dass sein Titel seit zwanzig Handelstagen
      notiert und die Analyse dreihundert braucht. Das ist dieselbe
      Auskunft, nur wahr. */
-  const UNAVAILABLE_SCHEMA = "technical-unavailable-1.0.0";
+  /* 1.1.0 (2026-09-26): dieselben Schluessel, zwei neue Gruende und ein
+     optionales `detail`. Die Gruende sind die Aufspaltung von
+     TECHNICAL_CALENDAR_INVALID (siehe validateTechnicalCalendar); `detail`
+     traegt, was den Satz erst brauchbar macht - das Datum der Bar an einem
+     geschlossenen Tag, oder die Spanne des Fensters, das die
+     Kalenderdeckung verlaesst. Ein Leser von 1.0.0 findet `reason`, `bars`
+     und `requiredBars` unveraendert an ihrer Stelle. */
+  const UNAVAILABLE_SCHEMA = "technical-unavailable-1.1.0";
   let currentUnavailable = {};
-  function noteUnavailable(ticker, reason, bars) {
+  function noteUnavailable(ticker, reason, bars, detail) {
     currentUnavailable[ticker] = { reason: reason,
       bars: Number.isFinite(bars) ? bars : null,
-      requiredBars: reason === "INSUFFICIENT_HISTORY" ? minTechnicalBars : null };
+      requiredBars: reason === "INSUFFICIENT_HISTORY" ? minTechnicalBars : null,
+      detail: detail && Object.keys(detail).length ? detail : null };
   }
   function flushShard() {
     if (!currentShard) return;
@@ -207,13 +277,34 @@ export function materialize(options = {}) {
     if (signal60?.state === "AVAILABLE") { stats.signalsCapable++; stats.calendarValidated++; }
     else { const reason = "SIGNAL_" + (signal60?.reason || "UNAVAILABLE"); reasons[reason] = (reasons[reason] || 0) + 1; }
 
-    if (member.t !== "TECHNICAL_READY" || input.series.length < minTechnicalBars) {
-      /* Die Zahl entscheidet, nicht die Vormerkung: nur wer WIRKLICH zu
-         wenige Bars hat, bekommt "zu kurze Historie" zu lesen. Alles
-         andere waere ein Satz, der eine falsche Zahl nennt. */
-      const reason = input.series.length < minTechnicalBars ? "INSUFFICIENT_HISTORY" : "NOT_TECHNICAL_READY";
-      rows[member.s] = { technical: reason, signals: signal60?.state || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
-      noteUnavailable(member.s, reason, input.series.length);
+    /* DIE ZAHL ENTSCHEIDET, NICHT DIE VORMERKUNG - JETZT AUCH IM CODE.
+     *
+     * Der Satz stand hier schon, die Bedingung tat aber etwas anderes: sie
+     * liess die Vormerkung `member.t` ein Veto sprechen, auch wenn die
+     * Reihe die Schwelle inzwischen erfuellt. Diese Vormerkung stammt aus
+     * technical-coverage-ELIGIBLE_US_EQUITY.json, und dieser Bericht
+     * entsteht in einem EIGENEN Lauf (run-technical-scale.mjs).
+     *
+     * Gemessen am 26.09.2026: der Bericht ist vom 11.09. (Lauf
+     * 34611793308). 26 Titel standen dort mit 290 bis 298 Bars unter
+     * INSUFFICIENT_HISTORY - heute haben dieselben Titel 301 bis 309, also
+     * mehr als die 300, die DIESER Lauf selbst verlangt. Sie bekamen
+     * trotzdem kein Bundle, und mit ihnen keine Setup-Zeile: die
+     * Setup-Beobachtung liest genau dieses Universum. Jeder Titel, der die
+     * Schwelle nach dem Berichtsdatum ueberschreitet, blieb bis zum
+     * naechsten Bericht draussen.
+     *
+     * Deshalb: Zustaende, die dieser Lauf mit frischeren Daten selbst
+     * nachmisst, duerfen nicht vetoen. INSUFFICIENT_HISTORY wird hier an
+     * `input.series.length` gemessen, SOURCE_MISSING an der Existenz der
+     * Datei - beides eine Zeile weiter oben und mit dem heutigen Stand.
+     * Alles andere (TECHNICAL_PARTIAL, TECHNICAL_FAILED) weiss der Bericht
+     * aus seinem eigenen Lauf, und das bleibt ein Veto. */
+    const gate = bundleGate(member.t, input.series.length);
+    if (!gate.ok) {
+      rows[member.s] = { technical: gate.reason, signals: signal60?.state || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
+      noteUnavailable(member.s, gate.reason, input.series.length, gate.detail);
+      reasons[gate.reason] = (reasons[gate.reason] || 0) + 1;
       continue;
     }
     try {
@@ -235,9 +326,9 @@ export function materialize(options = {}) {
       rows[member.s] = { technical: "AVAILABLE", signals: signal60?.state === "AVAILABLE" ? "AVAILABLE" : signal60?.reason || "UNAVAILABLE",
         elliott: elliottCapable ? "AVAILABLE" : "UNAVAILABLE", bars: input.series.length, asOf: bundle.dataCutoff, shard: key };
     } catch (error) {
-      const reason = String(error.message).split(":")[0] || "TECHNICAL_FAILED";
+      const { code: reason, detail } = splitReason(error.message, member.t);
       rows[member.s] = { technical: reason, signals: signal60?.state === "AVAILABLE" ? "AVAILABLE" : signal60?.reason || "UNAVAILABLE", elliott: "NOT_RUN", bars: input.series.length };
-      noteUnavailable(member.s, reason, input.series.length);
+      noteUnavailable(member.s, reason, input.series.length, detail);
       reasons[reason] = (reasons[reason] || 0) + 1;
     }
   }

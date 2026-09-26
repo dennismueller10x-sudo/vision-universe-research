@@ -20,12 +20,12 @@
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { createRequire } from "node:module";
-import { materialize } from "../../scripts/technical/materialize-product-intelligence.mjs";
+import { materialize, bundleGate, splitReason, validateTechnicalCalendar } from "../../scripts/technical/materialize-product-intelligence.mjs";
 
 const require = createRequire(import.meta.url);
 const Product = require("../engines/technical/product-materialization.js");
@@ -33,7 +33,11 @@ const Service = require("../api/product-services.js");
 const Policy = require("../engines/display-policy.js");
 const Query = require("../engines/query.js");
 const root = new URL("../../", import.meta.url).pathname;
-const UNAVAILABLE_SCHEMA = "technical-unavailable-1.0.0";
+/* Der Produzent schreibt 1.1.0: zwei Gruende mehr und ein optionales
+   `detail`. Die alte Fassung bleibt lesbar - dafuer steht der eigene Fall
+   weiter unten. */
+const UNAVAILABLE_SCHEMA = "technical-unavailable-1.1.0";
+const UNAVAILABLE_SCHEMA_1_0 = "technical-unavailable-1.0.0";
 
 /* ------------------------------------------------- 1. Der Produzent */
 
@@ -54,7 +58,7 @@ test("a title without a bundle carries its reason, with the number behind it", (
 
   const shard = JSON.parse(gunzipSync(readFileSync(join(out, "NV.json.gz"))));
   assert.equal(shard.unavailableSchemaVersion, UNAVAILABLE_SCHEMA);
-  assert.deepEqual(shard.unavailable.NVDA, { reason: "INSUFFICIENT_HISTORY", bars: 60, requiredBars: 300 });
+  assert.deepEqual(shard.unavailable.NVDA, { reason: "INSUFFICIENT_HISTORY", bars: 60, requiredBars: 300, detail: null });
   /* Der bestehende Vertrag bleibt, was er war - der Grund steht NICHT in
      `instruments`, wo ein Leser Bundle-Felder prueft. */
   assert.equal(shard.schemaVersion, Product.VERSION);
@@ -73,7 +77,7 @@ test("the reason is never silently dropped: the shard of an unavailable title ex
   for (const [ticker, shardName] of [["NVDA", "NV"], ["MSFT", "MS"]]) {
     const shard = JSON.parse(gunzipSync(readFileSync(join(out, shardName + ".json.gz"))));
     assert.equal(shard.shard, shardName);
-    assert.deepEqual(shard.unavailable[ticker], { reason: "SOURCE_MISSING", bars: null, requiredBars: null });
+    assert.deepEqual(shard.unavailable[ticker], { reason: "SOURCE_MISSING", bars: null, requiredBars: null, detail: null });
   }
 });
 
@@ -100,7 +104,7 @@ test("the service hands the surface the reason of exactly this title", async () 
   /* Der bisherige Grund bleibt unveraendert - die Reisemessung liest ihn. */
   assert.equal(technical.reason, "TECHNICAL_EVIDENCE_NOT_PUBLISHED");
   assert.deepEqual(technical.unavailability,
-    { reason: "INSUFFICIENT_HISTORY", bars: 20, requiredBars: 300, schemaVersion: UNAVAILABLE_SCHEMA });
+    { reason: "INSUFFICIENT_HISTORY", bars: 20, requiredBars: 300, detail: null, schemaVersion: UNAVAILABLE_SCHEMA });
 });
 
 test("an older artifact without the block answers as before, not with a guess", async () => {
@@ -163,4 +167,175 @@ test("the history sentence names both numbers, and holds back the one it lacks",
   assert.match(mitZahlen, /20/);
   const ohneZahlen = technicalReasonText({ reason: "INSUFFICIENT_HISTORY", bars: null, requiredBars: null });
   assert.equal(/\d/.test(ohneZahlen), false, "ohne Zahlen darf keine Zahl im Satz stehen: " + ohneZahlen);
+});
+
+/* ------------------------------------------------------------------------
+   3. DIE ZAHL ENTSCHEIDET, NICHT DIE VORMERKUNG.
+
+   Der Anlass, gemessen am 26.09.2026: 26 Titel hatten 301 bis 309 Bars und
+   bekamen trotzdem kein Bundle. Ihre Vormerkung `t` stammt aus
+   technical-coverage-ELIGIBLE_US_EQUITY.json, und der Bericht war vom
+   11.09. - dort standen dieselben Titel mit 290 bis 298 Bars unter
+   INSUFFICIENT_HISTORY. Die Materialisierung misst die Reihe SELBST und
+   gegen dieselbe Schwelle (300); sie liess die aeltere Vormerkung dennoch
+   ein Veto sprechen. Folge: jeder Titel, der die Schwelle nach dem
+   Berichtsdatum ueberschreitet, bleibt bis zum naechsten Bericht drausen -
+   und mit ihm seine Setup-Zeile, denn das Setup-Universum IST das
+   technische.
+
+   Was ein Veto behalten muss: Zustaende, die dieser Lauf nicht nachmessen
+   kann (TECHNICAL_PARTIAL, TECHNICAL_FAILED). Die Unterscheidung ist der
+   ganze Punkt - ein Veto weniger waere Nachlaessigkeit, eines zu viel der
+   Rueckstand von oben.
+   ------------------------------------------------------------------------ */
+test("a stale INSUFFICIENT_HISTORY flag cannot veto a series that now meets the threshold", () => {
+  /* Genau die gemessene Lage: Bericht sagt zu kurz, die Reihe ist lang genug. */
+  assert.deepEqual(bundleGate("INSUFFICIENT_HISTORY", 301), { ok: true, reason: null, detail: null });
+  assert.deepEqual(bundleGate("SOURCE_MISSING", 6000), { ok: true, reason: null, detail: null });
+  /* Und der Gegenfall: dieselbe Vormerkung, aber die Reihe ist wirklich zu
+     kurz - dann steht der Grund, der die Zahl nennt. */
+  assert.deepEqual(bundleGate("INSUFFICIENT_HISTORY", 299), { ok: false, reason: "INSUFFICIENT_HISTORY", detail: null });
+});
+
+test("a state this run cannot re-measure keeps its veto, and says which one it was", () => {
+  for (const state of ["TECHNICAL_PARTIAL", "TECHNICAL_FAILED", "SOMETHING_NEW"]) {
+    const gate = bundleGate(state, 6000);
+    assert.equal(gate.ok, false, state + " durfte nicht durchgelassen werden");
+    assert.equal(gate.reason, "NOT_TECHNICAL_READY");
+    assert.deepEqual(gate.detail, { capabilityState: state });
+  }
+  assert.equal(bundleGate("TECHNICAL_READY", 6000).ok, true);
+});
+
+test("the producer decides with exactly this function, not with a second copy of the rule", () => {
+  const producer = readFileSync(join(root, "scripts/technical/materialize-product-intelligence.mjs"), "utf8");
+  assert.match(producer, /const gate = bundleGate\(member\.t, input\.series\.length\)/,
+    "die Materialisierung benutzt bundleGate nicht - die Regel steht dann zweimal im Haus");
+  assert.equal(/member\.t !== "TECHNICAL_READY" \|\|/.test(producer), false,
+    "die alte Bedingung steht noch im Aufrufpfad");
+});
+
+/* ------------------------------------------------------------------------
+   4. EIN KALENDERGRUND, DER SAGT, WAS LOS IST.
+
+   42 Titel standen unter TECHNICAL_CALENDAR_INVALID - ein Satz, der nach
+   einem Defekt unseres Kalenders klingt. Gemessen sind es zwei Lagen:
+   39 Titel werden so duenn gehandelt, dass ihre letzten 270 Kurstage 1,1
+   bis 4,0 Jahre zurueckreichen (AAAP: 67 Bars im Jahr) und damit aus der
+   Kalenderdeckung ab 2022-01-01 herauslaufen; 2 Titel tragen eine Bar an
+   einem Tag, an dem die Boerse geschlossen war.
+   ------------------------------------------------------------------------ */
+test("the calendar reason names which of the two situations it is, with the date behind it", () => {
+  const holiday = splitReason("TECHNICAL_SESSION_NOT_A_TRADING_DAY:2026-02-16");
+  assert.equal(holiday.code, "TECHNICAL_SESSION_NOT_A_TRADING_DAY");
+  assert.equal(holiday.detail.nonTradingDay, "2026-02-16");
+  assert.equal(holiday.detail.exchange, "XNYS");
+
+  const window = splitReason("TECHNICAL_WINDOW_OUTSIDE_CALENDAR:2021-05-03|2021-05-03|2026-09-25");
+  assert.equal(window.code, "TECHNICAL_WINDOW_OUTSIDE_CALENDAR");
+  assert.equal(window.detail.uncoveredDate, "2021-05-03");
+  assert.equal(window.detail.windowFirst, "2021-05-03");
+  assert.equal(window.detail.windowLast, "2026-09-25");
+  assert.equal(window.detail.windowSessions, Product.DISPLAY_BARS);
+  /* Die Deckungsgrenze kommt aus dem Kalender und nicht aus diesem Test. */
+  const calendar = JSON.parse(readFileSync(join(root, "quant/config/market-calendar.json"), "utf8"));
+  assert.equal(window.detail.calendarFrom, calendar.coverage.from);
+
+  /* Ein Code ohne Detail bleibt ein Code ohne Detail - nichts wird geraten. */
+  assert.deepEqual(splitReason("TECHNICAL_PARTIAL:trend,momentum"), { code: "TECHNICAL_PARTIAL", detail: null });
+});
+
+test("the calendar check reaches both verdicts on real series, not just one", () => {
+  const calendar = JSON.parse(readFileSync(join(root, "quant/config/market-calendar.json"), "utf8"));
+  /* Eine Reihe im gedeckten Zeitraum, alles Handelstage: PASS. */
+  const gut = { timestamps: [] };
+  for (let d = new Date("2026-01-05T00:00:00Z"); gut.timestamps.length < Product.DISPLAY_BARS; d.setUTCDate(d.getUTCDate() + 1)) {
+    const iso = d.toISOString().slice(0, 10), tag = d.getUTCDay();
+    if (tag === 0 || tag === 6) continue;
+    if ((calendar.exchanges.XNYS.holidays || []).includes(iso)) continue;
+    gut.timestamps.push(iso);
+  }
+  assert.equal(validateTechnicalCalendar(gut).status, "PASS");
+
+  /* Dieselbe Reihe mit einem Feiertag darin: der Tag wird benannt. */
+  const feiertag = calendar.exchanges.XNYS.holidays.find((d) => d > "2026-01-05" && d < gut.timestamps.at(-1));
+  assert.ok(feiertag, "kein Feiertag im Fenster - dann prueft dieser Fall nichts");
+  const mitFeiertag = { timestamps: gut.timestamps.slice(0, -1).concat([feiertag]).sort() };
+  assert.throws(() => validateTechnicalCalendar(mitFeiertag),
+    (error) => splitReason(error.message).code === "TECHNICAL_SESSION_NOT_A_TRADING_DAY"
+      && splitReason(error.message).detail.nonTradingDay === feiertag);
+
+  /* Und ein Fenster, das vor die Deckung reicht - der Fall der duennen Titel. */
+  const davor = { timestamps: ["2021-06-01"].concat(gut.timestamps.slice(1)) };
+  assert.throws(() => validateTechnicalCalendar(davor),
+    (error) => splitReason(error.message).code === "TECHNICAL_WINDOW_OUTSIDE_CALENDAR");
+});
+
+/* ------------------------------------------------------------------------
+   5. DERSELBE RIEGEL EINE SCHICHT WEITER AUSSEN.
+
+   Nachdem die Materialisierung die veraltete Vormerkung nicht mehr vetoen
+   liess, entstanden 26 Bundles - und die Aktienseite zeigte sie NICHT. Der
+   Dienst pruefte denselben Wert ein zweites Mal, vor dem Lesen des
+   Artefakts. Die Setup-Beobachtung zeigte die 26 (sie liest das Artefakt),
+   die Kursstruktur nicht; genau daran war die Doppelpruefung zu erkennen.
+
+   Die Regel lautet jetzt: was der Produzent veroeffentlicht hat, wird
+   ausgeliefert. Die Vormerkung spricht erst, wenn es nichts gibt - dann mit
+   dem Grund je Titel.
+   ------------------------------------------------------------------------ */
+test("a published bundle is served even when the capability flag is stale", async () => {
+  const dienst = readFileSync(join(root, "quant/api/product-services.js"), "utf8");
+  const stelle = dienst.indexOf("async function getTechnicalIntelligence(");
+  const bis = dienst.indexOf("async function getStockIntelligence(", stelle);
+  /* Ohne Kommentare gelesen: dieser Abschnitt ERKLAERT die alte Bedingung,
+     und ein Text ueber eine Regel ist nicht die Regel. Ein Test, der beides
+     verwechselt, misst die Prosa. */
+  const ohneKommentare = (text) => text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|\s)\/\/[^\n]*/g, "$1");
+  const koerper = ohneKommentare(dienst.slice(stelle, bis));
+  const vorLesen = koerper.slice(0, koerper.indexOf("const source=await technicalSource("));
+  assert.equal(/member\.t!=='TECHNICAL_READY'/.test(vorLesen), false,
+    "der Dienst riegelt wieder vor dem Lesen des Artefakts ab - veroeffentlichte Bundles bleiben unsichtbar");
+  /* Und danach steht sie noch: ohne Bundle entscheidet sie weiter. */
+  const nachLesen = koerper.slice(koerper.indexOf("}catch{"));
+  assert.match(nachLesen, /member\.t!=='TECHNICAL_READY'/,
+    "ohne Bundle muss die Vormerkung weiter entscheiden, sonst zeigt die reduzierte Auskunft mehr als erlaubt");
+
+  /* Und am veroeffentlichten Bestand gemessen, nicht nur an der Quelle. */
+  const kapazitaet = JSON.parse(readFileSync(join(root, "quant/data/universe/market-capability.json"), "utf8"));
+  const mitBundle = new Set();
+  const dir = join(root, "quant/data/product/technical-signals-v1");
+  for (const datei of readdirSync(dir).filter((n) => n.endsWith(".json.gz"))) {
+    const shard = JSON.parse(gunzipSync(readFileSync(join(dir, datei))));
+    for (const ticker of Object.keys(shard.instruments || {})) mitBundle.add(ticker);
+  }
+  const veraltet = kapazitaet.members.filter((m) => mitBundle.has(m.s) && m.t !== "TECHNICAL_READY");
+  const api = Service.create({
+    loadJSON: async (path) => JSON.parse(readFileSync(join(root, path.slice(1)), "utf8")),
+    loadCompressedJSON: async (path) => JSON.parse(gunzipSync(readFileSync(join(root, path.slice(1))))),
+    displayPolicy: Policy, queryEngine: Query
+  });
+  for (const member of veraltet.slice(0, 5)) {
+    const technical = await api.getTechnicalIntelligence(member.s);
+    assert.equal(technical.state, "AVAILABLE",
+      member.s + " hat ein Bundle, die Vormerkung sagt " + member.t + " - der Dienst verschweigt es");
+    assert.equal(technical.evidenceLevel, "FULL_WORKSPACE");
+  }
+  /* Ist die Kohorte leer, ruht dieser Fall auf der Quellpruefung oben - und
+     sagt es, statt gruen zu sein, als haette er etwas gemessen. */
+  if (!veraltet.length) assert.ok(true, "derzeit kein Titel mit Bundle und veralteter Vormerkung");
+});
+
+test("without a bundle the answer stays withheld, with the reason of exactly this title", async () => {
+  const api = Service.create({
+    loadJSON: async (path) => JSON.parse(readFileSync(join(root, path.slice(1)), "utf8")),
+    loadCompressedJSON: async (path) => JSON.parse(gunzipSync(readFileSync(join(root, path.slice(1))))),
+    displayPolicy: Policy, queryEngine: Query
+  });
+  /* COOL ist der gemessene Fall: zu kurze Historie, kein Bundle. */
+  const technical = await api.getTechnicalIntelligence("COOL");
+  assert.equal(technical.state, "UNAVAILABLE");
+  assert.equal(technical.reason, "TECHNICAL_EVIDENCE_NOT_PUBLISHED");
+  assert.ok(technical.unavailability && technical.unavailability.reason,
+    "ohne Bundle fehlt der Grund je Titel - dann steht wieder der Oberbegriff allein");
 });

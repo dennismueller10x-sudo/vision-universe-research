@@ -197,6 +197,23 @@ const TECHNICAL_REASON={
   :'Für diesen Titel liegen noch zu wenige Handelstage vor.',
  NOT_TECHNICAL_READY:()=>'Dieser Titel ist im geprüften Datenbestand für diese Auswertung noch nicht vorgemerkt.',
  TECHNICAL_CALENDAR_INVALID:()=>'Im Auswertungsfenster liegt ein Tag, für den der geprüfte Börsenkalender keine gesicherte Sitzungsaussage hat. Ohne sie wird hier nichts veröffentlicht.',
+ /* Die Aufspaltung von TECHNICAL_CALENDAR_INVALID. Gemessen am 26.09.2026
+    an 42 Titeln: 39 werden so duenn gehandelt, dass ihre letzten 270
+    Kurstage 1,1 bis 4,0 Jahre zurueckreichen - "aktuelle Kursstruktur"
+    waere dort ein falsches Wort; 2 tragen eine Kursbar an einem Tag, an dem
+    die Boerse geschlossen war. Der alte Satz nannte beide einen
+    Kalenderfehler und schickte den Leser an die falsche Stelle. */
+ TECHNICAL_WINDOW_OUTSIDE_CALENDAR:u=>{
+  const d=u.detail||{};
+  const spanne=d.windowFirst&&d.windowLast?' Die letzten '+(d.windowSessions||270)+' Kurstage dieses Titels reichen von '+d.windowFirst+' bis '+d.windowLast+'.':'';
+  return 'Dieser Titel wird so selten gehandelt, dass das Auswertungsfenster weit in die Vergangenheit reicht.'+spanne
+   +' Eine Aussage über die aktuelle Kursstruktur wäre damit keine Aussage über die aktuelle Lage.';
+ },
+ TECHNICAL_SESSION_NOT_A_TRADING_DAY:u=>{
+  const tag=u.detail&&u.detail.nonTradingDay?u.detail.nonTradingDay:null;
+  return 'Die Kurshistorie dieses Titels enthält einen Kurstag an einem Tag, an dem die Börse geschlossen war'
+   +(tag?' ('+tag+')':'')+'. Bis das geklärt ist, wird aus dieser Reihe keine Kursstruktur veröffentlicht.';
+ },
  SOURCE_MISSING:()=>'Für diesen Titel liegt keine geprüfte Kurshistorie vor.',
  INVALID_HISTORY_PROVENANCE:()=>'Die Kurshistorie dieses Titels hat die Herkunftsprüfung nicht bestanden.',
  INVALID_HISTORY_BAR:()=>'Ein Kurstag dieses Titels hat die Plausibilitätsprüfung nicht bestanden.',
@@ -1115,8 +1132,35 @@ function strategyMatchSection(match,index,ticker,change){
    el('span',{class:'muted',text:' — '+met+' von '+messbar+' messbaren Bedingungen erfüllt'
     +(ohne?', '+ohne+' weitere '+(ohne===1?'ist':'sind')+' für diesen Titel nicht messbar':'')+'.'})]));
  }else{
+  /* EIN NEIN, DAS WEITERFUEHRT.
+   *
+   * Gemessen am 26.09.2026 an der Reise-Stichprobe: 217 von 500 Titeln
+   * bekommen hier "zu keinem Anlagestil passt dieser Titel gut" - das sind
+   * 43 Prozent und damit der haeufigste Satz dieses Abschnitts. Er war
+   * richtig und endete im Nichts: welcher Stil am naechsten kommt und was
+   * ihm fehlt, stand nur in den Karten darunter, jede fuer sich.
+   *
+   * Beides ist bereits gerechnet - `match` je Profil und der Zustand je
+   * Bedingung. Hier wird nichts Neues geschaetzt, nichts gerundet und
+   * keine Schwelle verschoben: dasselbe Ergebnis, einen Satz weiter
+   * gedacht. Die Reihenfolge ist die des Vertrags (`ordered`), die
+   * Bedingungen tragen ihre eigenen Namen. */
+  const naechste=best&&best.state==='AVAILABLE'?best:null;
+  const offen=naechste?naechste.conditions.filter(c=>c.state==='NOT_MET'):[];
+  const nichtMessbar=naechste?naechste.conditions.filter(c=>c.state==='NOT_MEASURABLE').length:0;
+  const erfuellt=naechste?naechste.conditions.filter(c=>c.state==='MET').length:0;
+  const messbar=naechste?naechste.conditions.length-nichtMessbar:0;
   section.append(notice('Zu keinem Anlagestil passt dieser Titel derzeit gut',
    VUProductLanguage.negative('strategyMatch')+' Das ist eine Antwort, keine Lücke.'));
+  if(naechste){
+   const namen=offen.map(c=>c.label).filter(Boolean);
+   section.append(el('p',{class:'match-nearest'},[
+    el('span',{text:'Am nächsten kommt '}),el('strong',{text:naechste.label}),
+    el('span',{text:' mit '+pct(naechste.match)+' — '+erfuellt+' von '+messbar+' messbaren Bedingungen erfüllt'
+     +(namen.length?'. Offen '+(namen.length===1?'ist':'sind')+': '+namen.join(', '):'')
+     +(nichtMessbar?'. Für diesen Titel nicht messbar: '+nichtMessbar+(nichtMessbar===1?' Bedingung':' Bedingungen'):'')+'.'}),
+    el('span',{class:'muted',text:' Das ist die Nähe zu einem Bedingungssatz und keine Prognose.'})]));
+  }
  }
  const wechsel=assignmentChangeLine(change);
  if(wechsel)section.append(wechsel);

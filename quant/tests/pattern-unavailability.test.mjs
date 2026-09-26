@@ -135,8 +135,29 @@ test("the setup gap borrows the technical reason instead of inventing a second o
   const setup = await api.getSetupObservation("COOL");
   if (setup.state === "AVAILABLE") return;
   assert.equal(setup.reason, "NOT_COVERED_BY_SETUP_OBSERVATION");
-  if (!setup.unavailability) return;   /* aelteres Technical-Artefakt */
-  assert.equal(setup.unavailability.schemaVersion, "technical-unavailable-1.0.0");
+
+  /* WARUM HIER KEINE FESTE FASSUNG MEHR STEHT.
+   *
+   * Vorher pinnte diese Zeile "technical-unavailable-1.0.0". Der Produzent
+   * schreibt seit dem 26.09.2026 1.1.0 (zwei Gruende mehr, ein optionales
+   * `detail`), und der Test wurde rot, weil das Artefakt BESSER wurde -
+   * gemessen im Lauf 36224444673, wo alle Materialisierungsschritte gruen
+   * waren und nur diese Zusicherung fiel. Eine Zusicherung, die eine
+   * Versionserhoehung verbietet, prueft ihr Geburtsdatum.
+   *
+   * Der Vertrag ist ein anderer: was der Produzent schreibt, muss der Leser
+   * AKZEPTIEREN. Deshalb wird der Shard direkt gelesen - gibt es dort einen
+   * Grundblock, darf der Dienst ihn nicht verschweigen. Genau das wuerde
+   * eine unbekannte Fassung tun, und zwar still. */
+  const shard = JSON.parse(gunzipSync(readFileSync(
+    join(root, "quant/data/product/technical-signals-v1/CO.json.gz"))));
+  const blockVorhanden = !!(shard.unavailable && shard.unavailable.COOL && shard.unavailable.COOL.reason);
+  if (!blockVorhanden) return;   /* aelteres Technical-Artefakt ohne Grundblock */
+  assert.ok(setup.unavailability,
+    "der Shard traegt einen Grund, der Dienst gibt ihn nicht weiter - die Fassung "
+    + shard.unavailableSchemaVersion + " kennt er nicht");
+  assert.equal(setup.unavailability.schemaVersion, shard.unavailableSchemaVersion);
+  assert.match(setup.unavailability.schemaVersion, /^technical-unavailable-1\.\d+\.0$/);
   const technical = await api.getTechnicalIntelligence("COOL");
   assert.deepEqual(setup.unavailability, technical.unavailability,
     "Setup und Kursstruktur nennen verschiedene Gruende fuer dieselbe Ursache");

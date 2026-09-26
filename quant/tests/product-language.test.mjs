@@ -433,6 +433,27 @@ test("the style match separates a finding from a gap, and says what left the den
   for (const reason of reasons) assert.ok(experience.includes(reason + ":'"), reason + " hat keinen eigenen Satz");
 });
 
+test("a no-fit verdict names the nearest style and what is open on it", () => {
+  /* Gemessen am 26.09.2026 an der Reise-Stichprobe: 217 von 500 Titeln
+     bekommen "zu keinem Anlagestil passt dieser Titel gut" - der haeufigste
+     Satz dieses Abschnitts, und er endete im Nichts. Welcher Stil am
+     naechsten kommt und welche Bedingung offen ist, war bereits gerechnet
+     (`match` je Profil, `state` je Bedingung) und stand nur verstreut in
+     den Karten. Der Satz nennt es jetzt - und nur das: keine Prognose,
+     keine verschobene Schwelle. */
+  assert.match(experience, /Am nächsten kommt /);
+  assert.match(experience, /messbaren Bedingungen erfüllt/);
+  assert.match(experience, /Offen '\+\(namen\.length===1\?'ist':'sind'\)/);
+  /* Der Zusatz bleibt die Naehe zu einem Bedingungssatz - ausdruecklich. */
+  assert.match(experience, /Nähe zu einem Bedingungssatz und keine Prognose/);
+  /* Die offenen Bedingungen sind die NICHT ERFUELLTEN, nicht die nicht
+     messbaren - die zaehlen getrennt, wie im Vertrag. */
+  assert.match(experience, /conditions\.filter\(c=>c\.state==='NOT_MET'\)/);
+  assert.match(experience, /conditions\.filter\(c=>c\.state==='NOT_MEASURABLE'\)\.length/);
+  /* Und der Befundsatz selbst bleibt stehen: die Naehe ersetzt ihn nicht. */
+  assert.match(experience, /Zu keinem Anlagestil passt dieser Titel derzeit gut/);
+});
+
 test("both pattern surfaces count the checkable patterns, not the registered ones", () => {
   /* Der Nenner stand auf 250 - der Zahl der vorregistrierten Muster - und
      nicht auf der Zahl der pruefbaren. Fuer 1.494 Titel waren davon 181

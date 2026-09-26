@@ -57,6 +57,26 @@ const api = Service.create({
    Die Unterscheidung ist der ganze Punkt dieser Messung: eine Quote, die
    einen Befund als Luecke zaehlt, macht das Produkt schlechter aussehen
    als es ist - und eine, die eine Luecke als Befund zaehlt, besser. */
+/* DEN GRUND MESSEN, DEN DIE SEITE NENNT - NICHT DEN OBERBEGRIFF.
+ *
+ * Bis hierher zaehlte diese Messung TECHNICAL_EVIDENCE_NOT_PUBLISHED und
+ * NOT_COVERED_BY_SETUP_OBSERVATION, also die Sammelcodes der Dienstschicht.
+ * Die Seite zeigt seit M22 den Grund JE TITEL (der Dienst liefert ihn als
+ * `unavailability`), und sie tut es auch beim Setup, weil dessen Universum
+ * genau das technische ist: Setup-Beobachtung und Kursstruktur fallen
+ * gemeinsam aus, mit derselben Ursache. Eine Messung, die den Oberbegriff
+ * zaehlt, macht aus zwei verschiedenen Lagen eine Zahl - und genau die
+ * Unterscheidung soll diese Datei liefern. */
+function technicalReason(station) {
+  if (station && station.unavailability && station.unavailability.reason) return station.unavailability.reason;
+  return station && station.reason ? station.reason : "UNAVAILABLE";
+}
+function setupReason(d) {
+  const geliehen = d.setup && d.setup.unavailability && d.setup.unavailability.reason;
+  if (geliehen) return geliehen;
+  return (d.setup && d.setup.reason) || "UNAVAILABLE";
+}
+
 const STATIONS = [
   { id: "identity", label: "Titel und letzter Kurs",
     read: (d) => d.stock.state === "AVAILABLE" ? null : (d.stock.reason || "UNAVAILABLE") },
@@ -70,9 +90,9 @@ const STATIONS = [
       (d.factors.change.items || []).some((item) => item.state === "AVAILABLE")
         ? null : "NO_COMPARABLE_OBSERVATION" },
   { id: "setup", label: "Baut sich eine Situation auf",
-    read: (d) => d.setup.state === "AVAILABLE" ? null : (d.setup.reason || "UNAVAILABLE") },
+    read: (d) => d.setup.state === "AVAILABLE" ? null : setupReason(d) },
   { id: "setupChange", label: "Was diesen Zustand aendern wuerde",
-    read: (d) => d.setup.state !== "AVAILABLE" ? (d.setup.reason || "UNAVAILABLE")
+    read: (d) => d.setup.state !== "AVAILABLE" ? setupReason(d)
       : (d.setup.cascade ? null : (d.setup.cascadeReason || "SETUP_ROW_NOT_IN_ARTIFACT")) },
   { id: "patterns", label: "Chance und Risiko in aehnlichen Lagen",
     read: (d) => d.patterns.state === "AVAILABLE"
@@ -92,7 +112,7 @@ const STATIONS = [
       : d.change.state === "NO_CHANGE" ? "FINDING:NO_ASSIGNMENT_CHANGE"
       : (d.change.state || "UNAVAILABLE") },
   { id: "technical", label: "Kursstruktur",
-    read: (d) => d.technical.state === "AVAILABLE" ? null : (d.technical.reason || "UNAVAILABLE") },
+    read: (d) => d.technical.state === "AVAILABLE" ? null : technicalReason(d.technical) },
   { id: "business", label: "Unternehmenszahlen",
     read: (d) => d.stock.quant && d.stock.quant.state === "AVAILABLE"
       ? null : ((d.stock.quant && d.stock.quant.reason) || "UNAVAILABLE") }

@@ -535,16 +535,22 @@ function create(options){
   return sessions>0?{analysisAsOf,priceAsOf,lagSessions:sessions,
    contract:'freshness-contract-1.0.0'}:null;
  }
+ /* Zwei Fassungen, ein Leser: 1.1.0 bringt zwei Gruende mehr und ein
+  * optionales `detail`, an denselben Schluesseln. Eine Liste statt einer
+  * Gleichheit - und keine offene Praefixpruefung, sonst laese dieser Weg
+  * auch eine Fassung, die es noch nicht gibt. */
+ const TECHNICAL_UNAVAILABLE_SCHEMAS=['technical-unavailable-1.0.0','technical-unavailable-1.1.0'];
  async function technicalUnavailability(ticker){
   try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/technical-signals-v1/'+key+'.json.gz');
-   if(!shard||shard.shard!==key||shard.unavailableSchemaVersion!=='technical-unavailable-1.0.0')return null;
+   if(!shard||shard.shard!==key||TECHNICAL_UNAVAILABLE_SCHEMAS.indexOf(shard.unavailableSchemaVersion)<0)return null;
    const entry=shard.unavailable&&shard.unavailable[ticker];
    if(!entry||typeof entry.reason!=='string'||!entry.reason)return null;
    const bars=Number.isFinite(entry.bars)?entry.bars:null,required=Number.isFinite(entry.requiredBars)?entry.requiredBars:null;
    /* Eine Forderung, die die vorhandene Zahl nicht uebersteigt, wuerde den
     * Satz zum Widerspruch machen - dann lieber nur der Grund. */
    return {reason:entry.reason,bars,requiredBars:required!==null&&bars!==null&&required<=bars?null:required,
-    schemaVersion:'technical-unavailable-1.0.0'};
+    detail:entry.detail&&typeof entry.detail==='object'?entry.detail:null,
+    schemaVersion:shard.unavailableSchemaVersion};
   }catch{return null;}
  }
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
@@ -571,7 +577,21 @@ function create(options){
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
   try{const c=await hydrateCapabilities(await init()),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
    const member=(c.capabilities.members||[]).find(m=>m.s===ticker);
-   if(!member||member.t!=='TECHNICAL_READY')return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:member?await technicalUnavailability(ticker):null};
+   /* DAS ARTEFAKT ENTSCHEIDET, NICHT DIE VORMERKUNG.
+    *
+    * Hier stand `member.t!=='TECHNICAL_READY'` als Riegel VOR dem Lesen des
+    * Bundles. Gemessen am 26.09.2026, nachdem die Materialisierung
+    * denselben Riegel abgelegt hat: 26 Titel haben ein veroeffentlichtes
+    * Bundle im Shard, und ihre Vormerkung steht auf INSUFFICIENT_HISTORY,
+    * weil der Deckungsbericht vom 11.09. ist. Der Dienst verschwieg damit
+    * 26 fertige Auswertungen - die Setup-Beobachtung zeigte sie (die liest
+    * das Artefakt), die Aktienseite nicht. Dieselbe Ursache eine Schicht
+    * weiter aussen.
+    *
+    * Die Vormerkung behaelt ihre Aufgabe: sie spricht, wenn es NICHTS
+    * Veroeffentlichtes gibt (unten im catch, mit dem Grund je Titel). Sie
+    * darf nur nicht ueberstimmen, was der Produzent geschrieben hat. */
+   if(!member)return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:null};
    const stock=await row(c,ticker)||broadRow(c,member);if(!stock)return unavailable('SOURCE_MISSING');
    function status(value,labels){return labels[value]?{state:'AVAILABLE',code:value,label:labels[value]}:{state:'SOURCE_MISSING',code:null,label:'Nicht verfügbar'};}
    try{if(!permission(c,ticker,'raw').allowed)throw Error('DISPLAY_NOT_PERMITTED');const source=await technicalSource(ticker,member.m),b=source.bundle;
@@ -585,6 +605,12 @@ function create(options){
      elliottMethodology:b.elliottMethodologyVersion||null,isProbability:false,
      workspace:'/vu2/?view=technical&ticker='+encodeURIComponent(ticker),elliottWorkspace:'/vu2/?view=elliott&ticker='+encodeURIComponent(ticker)};
    }catch{
+    /* Kein veroeffentlichtes Bundle - HIER entscheidet die Vormerkung wie
+     * bisher, samt Grund je Titel. Ohne diese Zeile wuerde ein Titel, den
+     * der Produzent ausdruecklich NICHT auswertet, ueber die reduzierte
+     * Auskunft doch etwas zeigen; das waere die Ausweitung, die dieser Fix
+     * gerade nicht ist. */
+    if(member.t!=='TECHNICAL_READY')return {...unavailable('TECHNICAL_EVIDENCE_NOT_PUBLISHED'),unavailability:await technicalUnavailability(ticker)};
     const consumer=await consumerFor(ticker),metrics=consumer?.metrics||{};
     const momentum=Number.isFinite(metrics.return6M)?metrics.return6M:stock.momentum6m?.value,volatility=Number.isFinite(metrics.volatility252d)?metrics.volatility252d:stock.volatility?.value,distance=Number.isFinite(metrics.distanceTo52wHigh)?metrics.distanceTo52wHigh:stock.distanceTo52wHigh?.value;
     const unavailability=await technicalUnavailability(ticker);
