@@ -35,7 +35,11 @@ const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAP
     elliott 183.591, discover 4.699, home 2.880, markets 1.210, research 889,
     portfolio 562. */
  '/vu2/?view=atlas','/vu2/?view=discover','/vu2/?view=elliott&ticker=NVDA',
- '/vu2/?view=markets','/vu2/?view=portfolio','/vu2/?view=research'];
+ '/vu2/?view=markets','/vu2/?view=portfolio','/vu2/?view=research',
+ /* Die Seite hinter dem Knopf "Methodik im Detail" - die letzte Station der
+    Reise. Sie war ein 404, und der Smoke hat nie eine Ansicht ausserhalb von
+    /vu2/ angesehen, obwohl die App zwanzig Pfade dorthin verlinkt. */
+ '/quant/methodology/'];
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});

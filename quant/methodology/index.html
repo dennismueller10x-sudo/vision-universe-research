@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Methodik im Detail · Vision Universe®</title>
+<style>
+ :root{color-scheme:dark light;--bg:#0b0f14;--fg:#e8eef5;--muted:#9fb0c3;--line:#1e2a36;--card:#101720}
+ @media (prefers-color-scheme:light){:root{--bg:#f7f9fc;--fg:#121a24;--muted:#53667a;--line:#dce4ee;--card:#fff}}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+ main{max-width:920px;margin:0 auto;padding:32px 16px 72px}
+ .eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+ h1{font-size:1.9rem;margin:.2em 0 .4em;line-height:1.25}
+ .lead{color:var(--muted);margin:0 0 28px}
+ .contract{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:var(--card)}
+ .contract h2{font-size:1.1rem;margin:0 0 6px}
+ .contract p{margin:0 0 8px}
+ .meta{color:var(--muted);font-size:.9rem}
+ a{color:inherit}
+ .back{display:inline-block;margin-top:28px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;text-decoration:none}
+ @media (max-width:640px){main{padding:24px 16px 56px}h1{font-size:1.55rem}}
+</style>
+</head>
+<body>
+<!-- §94: Jede Seite unter /quant/ bindet die gemeinsame Shell ein. Sie
+     rendert das Banner, das synthetische Daten als solche kennzeichnet.
+     Diese Seite zeigt keine Kurse - aber die Regel ist zu Recht
+     kategorisch: wer hier spaeter eine Zahl hinzufuegt, soll sie nicht
+     unbeschriftet ausliefern koennen. -->
+<script src="/quant/ui/shell.js"></script>
+<main>
+ <span class="eyebrow">Vision Universe® · Preview</span>
+ <h1>Methodik im Detail</h1>
+ <p class="lead">Jede Aussage im Produkt hängt an einem Vertrag: er legt fest, was gemessen wird, ab
+  wann es gilt und wann nichts gesagt wird. Hier stehen alle 18 Verträge, die diese
+  Vorschau veröffentlicht — mit ihrer Fassung und dem Weg zur vollständigen Datei. 13 von
+  18 nennen ihren Zweck in Worten; bei den übrigen steht er in den Feldern.</p>
+
+   <article class="contract">
+    <h2>Wie belastbar ist die historische Evidenz?</h2>
+    <p class="meta">Fassung backtest-evidence-v1.0.0 · interner Name: VU Backtest Evidence Provider Requirements V1</p>
+    <p>Legt fest, was ein Datenanbieter liefern muss, damit ein Backtest auf seinen Daten als Nachweis gelten darf - und nicht nur als Vorfuehrung der Rechenlogik. Die Frage lautet nicht 'wie viele Endpunkte hat der Anbieter', sondern: 'Kann rekonstruiert werden, was Vision Universe an einem historischen Tag tatsaechlich haette wissen koennen?'</p>
+    <p class="meta"><a href="./backtest-evidence-v1.json">backtest-evidence-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Wie belastbar ist die historische Evidenz?</h2>
+    <p class="meta">Fassung backtest-v1.0.0 · interner Name: VU Backtest Engine V1</p>
+    <p>Dieser Vertrag nennt keinen Zweck in Worten. Was er festlegt, steht in seinen Feldern.</p>
+    <p class="meta"><a href="./backtest-v1.json">backtest-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Currency fx</h2>
+    <p class="meta">Fassung currency-fx-v1.0.0 · interner Name: VU Currency &amp; FX Semantics V1</p>
+    <p>Legt fest, wie ein monetaerer Wert aus seiner Originalwaehrung in eine Anzeigewaehrung gelangt - und welcher Wechselkurs dabei gilt. Zweck ist nicht Bequemlichkeit, sondern Nachrechenbarkeit: eine EUR-Zahl, deren Kurs, Stichtag und Methode nicht mitgeliefert werden, ist eine Behauptung.</p>
+    <p class="meta"><a href="./currency-fx-v1.json">currency-fx-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Was der Kursverlauf zeigt</h2>
+    <p class="meta">Fassung elliott-v1.0.0-beta · Status BETA · interner Name: VU Elliott Core V1 Beta</p>
+    <p>Regelbasierte strukturale Hypothesenmaschine ueber einer kausalen Pivot-Hierarchie. Kein bewiesenes Prognosemodell. Confidence ist Method Fit, keine Wahrscheinlichkeit.</p>
+    <p class="meta"><a href="./elliott-v1.json">elliott-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Fundamentals debt</h2>
+    <p class="meta">Fassung fundamentals-debt-v1.0.0 · Status APPROVED</p>
+    <p>Die kanonische Definition von total_debt, als Vertrag statt als Notiz. Option B war bereits das Verhalten des Codes; was fehlte, war eine geschriebene, versionierte, maschinell geprüfte Entscheidung. Ohne die driftet eine Registry-Änderung oder eine neue Ableitungsregel irgendwann still in eine andere Bedeutung, und niemandem fällt es auf, weil die Kennzahl weiter denselben Namen trägt.</p>
+    <p class="meta"><a href="./fundamentals-debt-v1.json">fundamentals-debt-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Wie breit der Markt getragen ist</h2>
+    <p class="meta">Fassung market-regime-v1.0.0 · Status APPROVED</p>
+    <p>Beschreibt, wie breit der gemessene Markt an einem Stichtag getragen ist. Nicht, wohin er geht. Die Kennzahl beantwortet die Frage 'wie viele Titel stehen gerade gut da' und keine einzige Frage über die Zukunft.</p>
+    <p class="meta"><a href="./market-regime-v1.json">market-regime-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Chance gegen Risiko</h2>
+    <p class="meta">Fassung pattern-research-fundamentals-1.0.0 · Status ACTIVE_RESEARCH_ONLY</p>
+    <p>Dieser Vertrag nennt keinen Zweck in Worten. Was er festlegt, steht in seinen Feldern.</p>
+    <p class="meta"><a href="./pattern-research-fundamentals-v1.json">pattern-research-fundamentals-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Chance gegen Risiko</h2>
+    <p class="meta">Fassung pattern-research-1.0.0 · Status ACTIVE_RESEARCH_ONLY</p>
+    <p>Dieser Vertrag nennt keinen Zweck in Worten. Was er festlegt, steht in seinen Feldern.</p>
+    <p class="meta"><a href="./pattern-research-v1.json">pattern-research-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Price adjustment</h2>
+    <p class="meta">Fassung price-adjustment-v1.0.0 · interner Name: VU Price Adjustment Semantics V1</p>
+    <p>Legt fest, was eine Kursreihe bedeutet und welche Kennzahl aus welcher Reihe berechnet werden darf. Zweck ist nicht Genauigkeit, sondern Vergleichbarkeit: zwei Systemteile, die 'Rendite' sagen und Verschiedenes meinen, erzeugen Zahlen, die niemand nebeneinanderlegen kann.</p>
+    <p class="meta"><a href="./price-adjustment-v1.json">price-adjustment-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Product language</h2>
+    <p class="meta">Fassung product-language-1.1.0 · Status ACTIVE</p>
+    <p>Ein einziges Wörterbuch für alles, was ein Nutzer in Quant 2.0 liest. Interne Begriffe bleiben in Code, Contracts und Methodik unverändert; sie erscheinen in der Oberfläche nicht als Hauptsprache, sondern erst in der Methodik-Ebene darunter.</p>
+    <p class="meta"><a href="./product-language-v1.json">product-language-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Quant</h2>
+    <p class="meta">Fassung quant-v1.0.0 · interner Name: VU Quant Score V1</p>
+    <p>Statische Multi-Faktor-Gewichte mit teilweiser Branchenneutralisierung. Perzentilbasiert, erklaerbar, ohne Factor Timing.</p>
+    <p class="meta"><a href="./quant-v1.json">quant-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Quant</h2>
+    <p class="meta">Fassung quant-v2.1.0 · Status SPECIFIED_NOT_ACTIVE · interner Name: VU Quant Score 2.0 · Full 7F</p>
+    <p>Dieser Vertrag nennt keinen Zweck in Worten. Was er festlegt, steht in seinen Feldern.</p>
+    <p class="meta"><a href="./quant-v2.json">quant-v2.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Return semantics</h2>
+    <p class="meta">Fassung return-semantics-1.2.0 · Status APPROVED</p>
+    <p>Zwei Fragen, zwei Grundlagen. Wie hat sich der KURS bewegt, und was hat ein ANLEGER verdient. Dieselbe Reihe kann nicht beides beantworten, und die Verwechslung fällt niemandem auf, weil beide Antworten wie ein Preis aussehen.</p>
+    <p class="meta"><a href="./return-semantics-v1.json">return-semantics-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Wie weit ist die Aktie im Setup?</h2>
+    <p class="meta">Fassung setup-state-v1.0.0 · Status ACTIVE_POINT_IN_TIME_ONLY</p>
+    <p>Dieser Vertrag nennt keinen Zweck in Worten. Was er festlegt, steht in seinen Feldern.</p>
+    <p class="meta"><a href="./setup-state-v1.json">setup-state-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Welche Strategie passt?</h2>
+    <p class="meta">Fassung strategies-v1.0.0</p>
+    <p>Die fuenf V1-Bibliotheksstrategien. Jede ist eine vollstaendige, validierbare StrategyDefinition und wird von genau derselben Engine verarbeitet wie eine im Builder oder per AI erzeugte Strategie (§62).</p>
+    <p class="meta"><a href="./strategies-v1.json">strategies-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Welche Strategie passt?</h2>
+    <p class="meta">Fassung strategy-profiles-1.1.0 · Status ACTIVE · interner Name: VU Strategy Match · Profile über Quant-V2-Faktorevidenz</p>
+    <p>Beantwortet 'zu welchem Anlagestil passt dieser Titel gerade' als nachrechenbare Bedingungsprüfung. Kein Ranking, keine Rendite, keine historische Aussage.</p>
+    <p class="meta"><a href="./strategy-profiles-v1.json">strategy-profiles-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Was der Kursverlauf zeigt</h2>
+    <p class="meta">Fassung technical-v1.0.0 · interner Name: VU Technical Intelligence V1</p>
+    <p>Alle Parameter, Schwellen und Gewichte der Technical-Intelligence-Engines. Keine Magic Numbers im Code. Alle Zahlen sind Designparameter (Methodology Contract), keine wissenschaftlichen Konstanten und keine Wahrscheinlichkeiten.</p>
+    <p class="meta"><a href="./technical-v1.json">technical-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Wie belastbar ist die historische Evidenz?</h2>
+    <p class="meta">Fassung trust-score-v1.0.0 · interner Name: VU Backtest Trust Score V1</p>
+    <p>Der Trust Score bewertet die methodische Qualitaet eines Backtests, nicht seine Rendite. Ein optisch starkes Ergebnis mit methodischen Maengeln darf keinen hohen Trust Score erhalten.</p>
+    <p class="meta"><a href="./trust-score-v1.json">trust-score-v1.json ansehen</a></p>
+   </article>
+ <p class="meta">Erzeugt aus dem Verzeichnis <code>quant/methodology/</code> am 2026-09-26. Diese Seite
+  beschreibt nichts, was nicht in den Verträgen steht, und ist keine Anlageempfehlung.</p>
+ <a class="back" href="/vu2/?view=explain">Zurück zur Erklärseite</a>
+</main>
+</body>
+</html>
