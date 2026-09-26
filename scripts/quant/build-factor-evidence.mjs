@@ -28,6 +28,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const ChangeEngine = require(join(ROOT, "quant/engines/change-engine.js"));
 const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.js"));
+const PublishedClose = require(join(ROOT, "quant/engines/published-close.js"));
 const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
 
 const OUT_DIR = join(ROOT, "quant/data/product/factor-evidence-v1");
@@ -361,6 +362,39 @@ function main() {
 
   /* 2. Per-security raw values. Fundamentals are read once per issuer. */
   const cutoff = priceFactors.securities.reduce((latest, row) => (row.asOf > latest ? row.asOf : latest), priceFactors.securities[0].asOf);
+
+  /* 1b. DER KURS, DEN DIE AKTIENSEITE SCHON ZEICHNET.
+   *
+   * Der Boersenwert las seinen Kurs nur aus den Technical-Buendeln. Gemessen
+   * am 26.09.2026: 131 Titel haben einen zeitpunktsicheren Anteilsbestand,
+   * einen veroeffentlichten Schlusskurs vom 2026-09-25 - denselben, den die
+   * Aktienseite zeichnet und die Universumsliste fuehrt - und trugen trotzdem
+   * keinen Boersenwert, weil kein Buendel fuer sie existiert. Dieselbe
+   * Vertragspruefung wie in der Liste, aus einer geteilten Engine, damit hier
+   * nicht die zweite Fassung derselben Regel steht.
+   *
+   * Nur der LETZTE Punkt taugt dafuer: die Splitbereinigung normiert auf den
+   * juengsten Stand, dort sind bereinigter und roher Schluss derselbe Wert. */
+  const DISCOVER_DIR = join(ROOT, "quant/data/market/discover-series");
+  let kursAusReihe = 0;
+  if (existsSync(DISCOVER_DIR)) {
+    for (const security of priceFactors.securities) {
+      if (closeByTicker.has(security.ticker) || !security.securityId) continue;
+      const pfad = join(DISCOVER_DIR, security.securityId + ".json");
+      if (!existsSync(pfad)) continue;
+      let punkt = null;
+      try { punkt = PublishedClose.lastPoint(readJSON(pfad), cutoff); } catch { punkt = null; }
+      if (!punkt) continue;
+      closeByTicker.set(security.ticker, {
+        close: punkt.close, asOf: punkt.date, basis: punkt.basis,
+        source: "PUBLISHED_CLOSE_FROM_SERIES",
+        /* Die Halbabweichung kommt aus den Buendeln; diese Reihe liefert sie
+           nicht, und ein Ersatz waere eine zweite Rechnung. */
+        downsideVolatility252d: null
+      });
+      kursAusReihe += 1;
+    }
+  }
 
   /* Published snapshots of this methodology, oldest first. Only values that
      were published on those dates become a comparison point; nothing is
@@ -760,6 +794,11 @@ function main() {
          welche es sind. Ohne diesen Grund liest eine fehlende Bewertung wie
          ein Defekt, und mit ihm wie das, was sie ist. */
       marketCapReason: record.fundamentals?.marketCapReason ?? null,
+      /* Woher der Kurs kam, der den Boersenwert gebildet hat. Ein Leser soll
+         nicht raten muessen, ob dahinter ein Technical-Buendel oder die
+         veroeffentlichte Tagesreihe steht. */
+      marketCapPriceSource: finite(record.fundamentals?.marketCap)
+        ? (record.quote?.source || "TECHNICAL_BUNDLE_CLOSE") : null,
       issuerListings: record.fundamentals?.issuerListings ?? null,
       peer: record.peer ? { level: record.peer.level, industry: record.peer.sic4, division: record.peer.division, confidence: record.peer.confidence } : null,
       /* Nach welcher Vorlage die Fundamentalfaktoren dieses Titels gemessen
@@ -954,7 +993,13 @@ function main() {
       priceFactorSecurities: priceFactors.securities.length,
       published: written,
       withFundamentals: records.filter((record) => record.fundamentals).length,
-      withMarketCap: records.filter((record) => finite(record.fundamentals?.marketCap)).length
+      withMarketCap: records.filter((record) => finite(record.fundamentals?.marketCap)).length,
+      /* Wie viele Kurse aus der veroeffentlichten Tagesreihe kamen, weil kein
+         Technical-Buendel existierte. Steht im Artefakt, damit der Zugewinn
+         nachlesbar ist und nicht nur im Protokoll dieses Laufs. */
+      quotesFromPublishedSeries: kursAusReihe,
+      withMarketCapFromPublishedSeries: records.filter((record) =>
+        finite(record.fundamentals?.marketCap) && record.quote?.source === "PUBLISHED_CLOSE_FROM_SERIES").length
     },
     factorStates,
     reasonCounts,

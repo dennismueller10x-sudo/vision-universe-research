@@ -186,8 +186,31 @@ test("the builder reads only published sources and calls no provider", () => {
   assert.match(source, /market-capability\.json/);
   assert.match(source, /discover-series/);
   assert.match(source, /search\/sym/);
-  /* Und er prueft die Reihe mit demselben Vertrag wie die Oberflaeche. */
-  assert.match(source, /discover-series-1\.1\.0/);
-  assert.match(source, /SPLIT_ADJUSTED/);
-  assert.match(source, /publishBasis/);
+
+  /* DIE VERTRAGSPRUEFUNG WIRD GEPRUEFT, WO SIE STEHT.
+   *
+   * Hier stand, dass der Quelltext des Bauers die Zeichenketten
+   * `discover-series-1.1.0`, `SPLIT_ADJUSTED` und `publishBasis` enthaelt.
+   * Seit dem 26.09.2026 liest der Faktorlauf denselben Kurs, und die Pruefung
+   * ist in eine geteilte Engine gewandert - zwei Kopien derselben
+   * Vertragspruefung waeren zwei Vertraege. Die Zeichenkettensuche wurde
+   * damit rot, ohne dass irgendetwas schlechter geworden war: sie hat den Ort
+   * geprueft und nicht die Regel.
+   *
+   * Jetzt wird die Regel geprueft, und zwar am Verhalten: der Bauer benutzt
+   * die geteilte Engine, und die lehnt eine Reihe ab, die den Vertrag nicht
+   * erfuellt. Welche Bedingung einzeln greift, haelt
+   * quant/tests/published-close.test.mjs. */
+  assert.match(source, /published-close\.js/,
+    "der Bauer prueft die Reihe nicht mit der geteilten Vertragsengine");
+  const Close = createRequire(import.meta.url)(join(ROOT, "quant/engines/published-close.js"));
+  assert.equal(Close.SCHEMA, "discover-series-1.1.0");
+  assert.equal(Close.BASIS, "SPLIT_ADJUSTED");
+  const gut = { schemaVersion: "discover-series-1.1.0", dataMode: "real", source: "tiingo",
+    provider: "tiingo", status: "CALCULATED", priceSeriesType: "SPLIT_ADJUSTED", grain: "daily",
+    publishBasis: "EOD", currency: "USD", asOf: "2026-09-25", points: [["2026-09-25", 12.5]] };
+  assert.equal(Close.lastPoint(gut, "2026-09-26").close, 12.5);
+  assert.equal(Close.lastPoint({ ...gut, priceSeriesType: "TOTAL_RETURN" }, "2026-09-26"), null);
+  assert.equal(Close.lastPoint({ ...gut, publishBasis: null }, "2026-09-26"), null);
+  assert.equal(Close.lastPoint({ ...gut, schemaVersion: "discover-series-1.0.0" }, "2026-09-26"), null);
 });

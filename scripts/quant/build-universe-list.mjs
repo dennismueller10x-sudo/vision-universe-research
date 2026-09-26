@@ -50,7 +50,10 @@ import { gzipSync, gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { createRequire } from "node:module";
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const PublishedClose = createRequire(import.meta.url)(join(ROOT, "quant/engines/published-close.js"));
 const argv = process.argv.slice(2);
 const arg = (name, fallback) => {
   const i = argv.indexOf("--" + name);
@@ -66,20 +69,11 @@ const json = async (p) => JSON.parse(await readFile(p, "utf8"));
    Eine Reihe, die dort nicht gezeichnet werden darf, liefert hier auch
    keinen Kurs - sonst zeigte die Liste eine Zahl, die die Detailseite
    verweigert. */
-function letzterPunkt(series) {
-  if (!series || series.schemaVersion !== "discover-series-1.1.0") return null;
-  if (series.dataMode !== "real" || series.source !== "tiingo" || series.provider !== "tiingo") return null;
-  if (series.status !== "CALCULATED" || series.priceSeriesType !== "SPLIT_ADJUSTED") return null;
-  if (series.grain !== "daily" || !series.publishBasis || !series.currency) return null;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(series.asOf || "") || series.asOf > HEUTE) return null;
-  if (!Array.isArray(series.points) || !series.points.length) return null;
-  const last = series.points[series.points.length - 1];
-  const datum = Array.isArray(last) ? last[0] : last && last.date;
-  const kurs = Array.isArray(last) ? last[1] : last && last.close;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(datum || "") || datum > HEUTE) return null;
-  if (!Number.isFinite(kurs) || kurs <= 0) return null;
-  return { close: kurs, date: datum, currency: series.currency };
-}
+/* Die Pruefung stand hier und wird jetzt geteilt: seit dem 26.09.2026 liest
+   der Faktorlauf denselben Kurs, um einen Boersenwert zu bilden, wo kein
+   Technical-Buendel existiert. Zwei Kopien derselben Vertragspruefung waeren
+   zwei Vertraege, sobald einer von ihnen ergaenzt wird. */
+const letzterPunkt = (series) => PublishedClose.lastPoint(series, HEUTE);
 
 async function namenAusCompanyMaster() {
   /* Der Suchindex ist die kanonische Namensquelle des Hauses - 646 Shards

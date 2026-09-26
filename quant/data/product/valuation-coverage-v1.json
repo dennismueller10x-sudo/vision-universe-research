@@ -1,15 +1,15 @@
 {
  "schemaVersion": "valuation-coverage-1.0.0",
- "generatedAt": "2026-09-26T14:52:17.000Z",
+ "generatedAt": "2026-09-26T15:02:01.000Z",
  "question": "Wie viel Bewertungsdeckung traegt das Produkt, wie viel wird zurueckgehalten, und aus welchem Grund?",
  "source": "quant/data/product/factor-evidence-v1 (gelesen, nicht nachgerechnet)",
  "VALUE_FACTOR_COVERAGE": {
-  "available": 2490,
-  "unavailable": 3951,
+  "available": 2519,
+  "unavailable": 3922,
   "universe": 6441
  },
  "MARKET_CAP_COVERAGE": {
-  "present": 3639,
+  "present": 3770,
   "universe": 6441,
   "withFundamentals": 4862
  },
@@ -32,15 +32,15 @@
  "MARKET_CAP_WITHHELD_BY_REASON": {
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 465,
   "NO_PIT_SHARE_COUNT": 801,
-  "NO_PUBLISHED_CLOSE": 131
+  "NO_PUBLISHED_CLOSE": 0
  },
  "VALUE_FACTOR_REASONS": {
-  "INPUT_NOT_MATERIALIZED": 2346,
-  "INSUFFICIENT_COMPONENTS": 1139,
+  "INPUT_NOT_MATERIALIZED": 2221,
+  "INSUFFICIENT_COMPONENTS": 1235,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 465,
   "INSUFFICIENT_WEIGHTED_COVERAGE": 1
  },
- "ZERO_FACTOR_ROWS": 786,
+ "ZERO_FACTOR_ROWS": 781,
  "SECTOR_TEMPLATE_MISSING": 0,
  "SEC_MAPPING_GAPS": {
   "internalMappingGap": 161,

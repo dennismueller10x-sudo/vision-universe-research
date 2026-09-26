@@ -2,6 +2,52 @@
 
 Updated: 2026-09-26 UTC
 
+## M36 — DER KURS, DEN DIE SEITE SCHON ZEICHNET
+
+`PUBLISHED_CLOSE_USED_FOR_MARKET_CAP = PASS`
+
+Nach M35 war der grösste verbleibende, intern lösbare Posten benannt: **131 Zeilen mit dem Grund
+`NO_PUBLISHED_CLOSE`**. Gemessen tragen alle 131 einen zeitpunktsicheren Anteilsbestand, sind
+**einzelnotiert** (die Zuordnungsregel aus M34 greift also nicht) und haben einen
+veröffentlichten Schlusskurs vom 2026-09-25 — denselben, den die Aktienseite zeichnet und die
+Universumsliste führt. Der Börsenwert fehlte allein deshalb, weil der Faktorlauf seinen Kurs
+**nur** aus den Technical-Bündeln las.
+
+Dass dieser Schritt jetzt sicher ist, ist ein Ergebnis von M34: vorher hätte er 171 Zeilen
+getroffen, darunter `ADAMH`, `AGNCZ` und `AMPGZ` — Vorzugs- und Sonderlinien, die den
+Anteilsbestand ihres Emittenten geerbt hätten. Seit die Zuordnungsregel steht, bleiben genau die
+131 übrig, bei denen der Bestand der Zeile wirklich gehört.
+
+**Eine Regel, zwei Leser.** Die Vertragsprüfung der Tagesreihe stand im Bauer der
+Universumsliste. Sie ist jetzt eine geteilte Engine (`published-close.js`), weil zwei Kopien
+derselben Prüfung zwei Verträge sind, sobald einer ergänzt wird. Nur der **letzte** Punkt darf
+eine Aktienzahl multiplizieren: die Splitbereinigung normiert auf den jüngsten Stand, dort sind
+bereinigter und roher Schluss derselbe Wert — bei AAPL, dessen Reihe einen 4:1-Split von 2020
+trägt, auf den Cent (341,07).
+
+| Größe | vorher | nachher |
+|---|---|---|
+| `MARKET_CAP_COVERAGE` | 3.639 | **3.770** (+131) |
+| `NO_PUBLISHED_CLOSE` | 131 | **0** |
+| `VALUE_FACTOR_COVERAGE` | 2.490 | **2.519** (+29) |
+| `ZERO_FACTOR_ROWS` | 786 | **781** |
+| `FACTOR_COVERAGE_GAIN` | — | +29 Faktorzellen |
+
+Der Zugewinn an Bewertungsfaktoren (29) ist kleiner als der an Börsenwerten (131), und das ist
+richtig: die übrigen 102 Titel erfüllen die Mindestanforderung des Faktors weiterhin nicht. Jeder
+Börsenwert nennt jetzt seine Kursquelle (`marketCapPriceSource`), und wo keiner existiert, steht
+dort `null` statt einer Behauptung über eine Zahl, die es nicht gibt.
+
+Ein Test, der dabei rot wurde, war zu Recht rot und aus dem falschen Grund: er prüfte, dass der
+**Quelltext** des Bauers die Zeichenketten `discover-series-1.1.0`, `SPLIT_ADJUSTED` und
+`publishBasis` enthält. Die sind in die geteilte Engine gewandert — die Regel war unverändert,
+nur ihr Ort nicht. Der Test prüft jetzt das Verhalten: der Bauer benutzt die Engine, und die
+lehnt eine Reihe ab, die den Vertrag nicht erfüllt. Welche Bedingung einzeln greift, hält
+`published-close.test.mjs` mit 17 Einzelfällen, zweifach sabotagegeprüft.
+
+Tests **1.915 grün, 0 rot**. Produktions-Smoke: **CLEAN**. Reise unverändert (409 volle, 89
+reduzierte, 2 zu dünn).
+
 ## M35 — P0: KLASSENSPEZIFISCHER BÖRSENWERT, GEPRÜFT UND BEANTWORTET
 
 `PER_CLASS_MARKET_CAP_AVAILABLE = FAIL` · `VALUATION_WITHHELD_WITH_REASON = PASS`

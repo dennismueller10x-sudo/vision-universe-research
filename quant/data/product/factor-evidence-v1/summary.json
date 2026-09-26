@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-09-26T14:52:03.000Z",
+ "generatedAt": "2026-09-26T15:00:40.000Z",
  "asOf": "2026-09-25",
  "publication": {
   "compositeAllowed": false,
@@ -724,8 +724,8 @@
   "recomputationDrift": {
    "asOf": "2026-09-25",
    "publishedHash": "c105e9f66eb7a8e0",
-   "recomputedHash": "7d0febf317a6bca9",
-   "rowsDiffering": 3513,
+   "recomputedHash": "fb697d7a36711517",
+   "rowsDiffering": 3519,
    "rowsTotal": 6441,
    "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
   }
@@ -762,7 +762,7 @@
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 5868
+   "tickers": 6806
   }
  },
  "counts": {
@@ -770,7 +770,9 @@
   "priceFactorSecurities": 6441,
   "published": 6441,
   "withFundamentals": 5036,
-  "withMarketCap": 3639
+  "withMarketCap": 3770,
+  "quotesFromPublishedSeries": 938,
+  "withMarketCapFromPublishedSeries": 131
  },
  "factorStates": {
   "quality": {
@@ -789,8 +791,8 @@
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 2490,
-   "UNAVAILABLE": 3951,
+   "AVAILABLE": 2519,
+   "UNAVAILABLE": 3922,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
@@ -812,8 +814,8 @@
  "reasonCounts": {
   "INSUFFICIENT_WEIGHTED_COVERAGE": 2035,
   "BLOCKED_EXTERNAL": 6441,
-  "INSUFFICIENT_COMPONENTS": 4232,
-  "INPUT_NOT_MATERIALIZED": 9394,
+  "INSUFFICIENT_COMPONENTS": 4328,
+  "INPUT_NOT_MATERIALIZED": 9269,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 465,
   "MANDATORY_COMPONENT_MISSING": 25
  },
@@ -834,9 +836,9 @@
   "momentum:relativeStrength12m1m": 5608,
   "momentum:distanceTo52wHigh": 5610,
   "momentum:distanceToSma200": 5720,
-  "value:fcfYield": 1987,
-  "value:earningsYield": 2439,
-  "value:bookToMarket": 3002,
+  "value:fcfYield": 2007,
+  "value:earningsYield": 2488,
+  "value:bookToMarket": 3109,
   "profitability:roicMedian3y": 541,
   "profitability:operatingMarginTtm": 2357,
   "profitability:fcfMarginTtm": 2236,
@@ -850,16 +852,16 @@
   "INDUSTRY:quality:roaStability5y": 856,
   "INDUSTRY:quality:positiveEarningsYears": 864,
   "INDUSTRY:quality:dividendCoverageByOcf": 507,
-  "INDUSTRY:value:bookToMarket": 596,
-  "INDUSTRY:value:earningsYield": 532,
-  "INDUSTRY:value:pretaxEarningsYield": 371,
-  "INDUSTRY:value:dividendYield": 410,
+  "INDUSTRY:value:bookToMarket": 614,
+  "INDUSTRY:value:earningsYield": 545,
+  "INDUSTRY:value:pretaxEarningsYield": 377,
+  "INDUSTRY:value:dividendYield": 415,
   "INDUSTRY:profitability:roaTtm": 768,
   "INDUSTRY:profitability:roeTtm": 559,
   "INDUSTRY:profitability:netMarginTtm": 117,
   "INDUSTRY:profitability:roaMedian3y": 871,
   "profitability:grossProfitabilityTtm": 1364,
-  "INDUSTRY:value:cashFlowYield": 138,
+  "INDUSTRY:value:cashFlowYield": 141,
   "INDUSTRY:profitability:cashReturnOnAssets": 201,
   "INDUSTRY:profitability:ocfMarginTtm": 136,
   "INDUSTRY:profitability:pretaxRoaTtm": 414,
@@ -893,11 +895,11 @@
     "INDUSTRY:profitability:pretaxRoaTtm (414)",
     "INDUSTRY:profitability:roeTtm (559)",
     "INDUSTRY:quality:dividendCoverageByOcf (507)",
-    "INDUSTRY:value:bookToMarket (596)",
-    "INDUSTRY:value:cashFlowYield (138)",
-    "INDUSTRY:value:dividendYield (410)",
-    "INDUSTRY:value:earningsYield (532)",
-    "INDUSTRY:value:pretaxEarningsYield (371)",
+    "INDUSTRY:value:bookToMarket (614)",
+    "INDUSTRY:value:cashFlowYield (141)",
+    "INDUSTRY:value:dividendYield (415)",
+    "INDUSTRY:value:earningsYield (545)",
+    "INDUSTRY:value:pretaxEarningsYield (377)",
     "profitability:roicMedian3y (541)",
     "profitability:roicTtm (58)",
     "quality:netDebtToAssets (469)",
@@ -936,6 +938,6 @@
   "FUNDAMENTALS_DOCUMENT_MISSING": 352,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 465
  },
- "runtimeMs": 25962,
- "contentHash": "a434f895d1033e0c"
+ "runtimeMs": 23923,
+ "contentHash": "ffbce27fb181396f"
 }

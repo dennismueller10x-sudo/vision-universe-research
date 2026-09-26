@@ -1,6 +1,6 @@
 {
  "schemaVersion": "zero-factor-classification-1.1.0",
- "generatedAt": "2026-09-26T14:52:16.000Z",
+ "generatedAt": "2026-09-26T15:01:56.000Z",
  "question": "Welche Grenze genau haelt die Screening-Zeilen ohne einen einzigen Faktorwert auf, und wie viel davon waere ohne neue Datenquelle loesbar?",
  "sources": {
   "factors": "quant/data/product/factor-evidence-v1 (Zustaende und Gruende je Titel, je Faktor, je Komponente)",
@@ -81,20 +81,19 @@
   "BALANCE_SHEET_FINANCIAL:profitability:pretaxRoaTtm": "pretaxIncomeTTM/averageTotalAssets"
  },
  "universeChecked": 6441,
- "TOTAL_ZERO_FACTOR_ROWS": 786,
- "FACTOR_CELLS_AVAILABLE": 22495,
+ "TOTAL_ZERO_FACTOR_ROWS": 781,
+ "FACTOR_CELLS_AVAILABLE": 22524,
  "classes": {
   "SEC_NO_CIK": 407,
   "NOT_APPLICABLE": 177,
   "TRUE_NO_FUNDAMENTALS": 78,
   "SEC_CIK_BUT_NO_EXPORT": 45,
-  "INSUFFICIENT_HISTORY": 78,
-  "RAW_FUNDAMENTALS_PRESENT": 1
+  "INSUFFICIENT_HISTORY": 74
  },
  "features": {
-  "RAW_FUNDAMENTALS_PRESENT": 166,
+  "RAW_FUNDAMENTALS_PRESENT": 161,
   "PARTIAL_FUNDAMENTALS": 2,
-  "INSUFFICIENT_HISTORY": 784,
+  "INSUFFICIENT_HISTORY": 780,
   "NOT_APPLICABLE": 177,
   "SEC_SOURCE_UNAVAILABLE": 459,
   "SEC_NO_CIK": 407,
@@ -112,9 +111,8 @@
   "NOT_APPLICABLE": 87,
   "ROHFAKTEN_OHNE_ZUORDNUNG": 161,
   "FACTBOOK_OHNE_CONSUMER_EXPORT": 47,
-  "HISTORIE_ZU_KURZ": 78,
-  "CIK_OHNE_FACTBOOK": 5,
-  "FAKTOR_MINDESTANFORDERUNG": 1
+  "HISTORIE_ZU_KURZ": 74,
+  "CIK_OHNE_FACTBOOK": 5
  },
  "silentlySkippedIssuers": {
   "count": 22,
@@ -499,12 +497,12 @@
  },
  "progress": {
   "previousRun": {
-   "generatedAt": "2026-09-26T14:45:58.000Z",
+   "generatedAt": "2026-09-26T14:52:16.000Z",
    "total": 786,
    "factorCellsAvailable": 22495
   },
-  "ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER": 0,
-  "FACTOR_COVERAGE_GAIN": 0,
+  "ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER": 5,
+  "FACTOR_COVERAGE_GAIN": 29,
   "EXTERNAL_PROVIDER_DECISION": "DEFERRED",
   "note": "Kein Titel wurde durch eine fremde Quelle geschlossen. Was sich bewegt hat, bewegte sich durch Methodik und Zuordnung im Haus."
  },
@@ -530,23 +528,23 @@
  },
  "whatABetterSourceWouldChange": {
   "note": "Gezaehlt werden Titel, nicht Faktoren. `priceFactorsBlockedByHistory` waere auch mit vollstaendigen Fundamentaldaten weiter ohne Kursentwicklung und Schwankungsbreite.",
-  "priceFactorsBlockedByHistory": 784,
-  "priceFactorsPossibleToday": 2,
-  "threeFiscalYearsAvailable": 65,
-  "oneOrTwoFiscalYears": 100,
+  "priceFactorsBlockedByHistory": 780,
+  "priceFactorsPossibleToday": 1,
+  "threeFiscalYearsAvailable": 61,
+  "oneOrTwoFiscalYears": 99,
   "noFiscalYearAtAll": 621,
-  "bothPossibleToday": 1,
-  "fourQuartersInOneMetric": 114,
+  "bothPossibleToday": 0,
+  "fourQuartersInOneMetric": 109,
   "fewerThanFourQuarters": 52
  },
  "perFactor": {
   "quality": {
    "factorState": {
-    "UNAVAILABLE": 786
+    "UNAVAILABLE": 781
    },
    "reasons": {
     "INPUT_NOT_MATERIALIZED": 626,
-    "INSUFFICIENT_COMPONENTS": 156,
+    "INSUFFICIENT_COMPONENTS": 151,
     "INSUFFICIENT_WEIGHTED_COVERAGE": 4
    },
    "components": {
@@ -559,11 +557,11 @@
      }
     },
     "netDebtToAssets": {
-     "titles": 770,
+     "titles": 766,
      "input": "(totalDebt-cash-shortTermInvestments)/totalAssets",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 312
+      "INPUT_NOT_MATERIALIZED": 308
      }
     },
     "equityToAssets": {
@@ -575,150 +573,150 @@
      }
     },
     "positiveFcfYears": {
-     "titles": 766,
+     "titles": 762,
      "input": "count(annualFreeCashFlow>0)",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 308
+      "INPUT_NOT_MATERIALIZED": 304
      }
     },
     "operatingMarginStability": {
-     "titles": 766,
+     "titles": 762,
      "input": "medianAbsoluteDeviation(annualOperatingMargin)",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 308
+      "INPUT_NOT_MATERIALIZED": 304
      }
     },
     "roaStability5y": {
-     "titles": 14,
+     "titles": 13,
      "input": null,
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 1,
-      "INPUT_NOT_MATERIALIZED": 13
+      "INPUT_NOT_MATERIALIZED": 12
      }
     },
     "positiveEarningsYears": {
-     "titles": 14,
+     "titles": 13,
      "input": null,
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 1,
-      "INPUT_NOT_MATERIALIZED": 13
+      "INPUT_NOT_MATERIALIZED": 12
      }
     },
     "dividendCoverageByOcf": {
-     "titles": 14,
+     "titles": 13,
      "input": null,
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 1,
-      "INPUT_NOT_MATERIALIZED": 13
+      "INPUT_NOT_MATERIALIZED": 12
      }
     }
    }
   },
   "growth": {
    "factorState": {
-    "UNAVAILABLE": 786
+    "UNAVAILABLE": 781
    },
    "reasons": {
-    "INPUT_NOT_MATERIALIZED": 753,
-    "INSUFFICIENT_COMPONENTS": 28,
+    "INPUT_NOT_MATERIALIZED": 749,
+    "INSUFFICIENT_COMPONENTS": 27,
     "INSUFFICIENT_WEIGHTED_COVERAGE": 5
    },
    "components": {
     "revenueCagr3y": {
-     "titles": 781,
+     "titles": 776,
      "input": "revenue CAGR",
+     "reasons": {
+      "FUNDAMENTALS_UNAVAILABLE": 459,
+      "INPUT_NOT_MATERIALIZED": 317
+     }
+    },
+    "epsCagr3y": {
+     "titles": 777,
+     "input": "diluted EPS CAGR; both endpoints positive",
+     "reasons": {
+      "FUNDAMENTALS_UNAVAILABLE": 459,
+      "INPUT_NOT_MATERIALIZED": 318
+     }
+    },
+    "fcfCagr3y": {
+     "titles": 781,
+     "input": "free cash flow CAGR; both endpoints positive",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
       "INPUT_NOT_MATERIALIZED": 322
      }
     },
-    "epsCagr3y": {
-     "titles": 782,
-     "input": "diluted EPS CAGR; both endpoints positive",
-     "reasons": {
-      "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 323
-     }
-    },
-    "fcfCagr3y": {
-     "titles": 786,
-     "input": "free cash flow CAGR; both endpoints positive",
-     "reasons": {
-      "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 327
-     }
-    },
     "revenueGrowthTtmYoy": {
-     "titles": 782,
+     "titles": 778,
      "input": "current TTM revenue/prior-year TTM revenue-1",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 323
+      "INPUT_NOT_MATERIALIZED": 319
      }
     },
     "operatingMarginExpansion3y": {
-     "titles": 780,
+     "titles": 775,
      "input": "operating-margin percentage-point change",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 321
+      "INPUT_NOT_MATERIALIZED": 316
      }
     },
     "revenueGrowthAcceleration": {
-     "titles": 759,
+     "titles": 755,
      "input": "current revenue YoY growth-previous revenue YoY growth",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 300
+      "INPUT_NOT_MATERIALIZED": 296
      }
     }
    }
   },
   "momentum": {
    "factorState": {
-    "UNAVAILABLE": 786
+    "UNAVAILABLE": 781
    },
    "reasons": {
-    "INSUFFICIENT_COMPONENTS": 614,
-    "INSUFFICIENT_WEIGHTED_COVERAGE": 98,
+    "INSUFFICIENT_COMPONENTS": 613,
+    "INSUFFICIENT_WEIGHTED_COVERAGE": 94,
     "INPUT_NOT_MATERIALIZED": 74
    },
    "components": {
     "priceReturn12m1m": {
-     "titles": 786,
+     "titles": 781,
      "input": "split-adjusted price return T-252 to T-21",
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 786
+      "INPUT_NOT_MATERIALIZED": 781
      }
     },
     "relativeStrength12m1m": {
-     "titles": 786,
+     "titles": 781,
      "input": "security 12-1 split-adjusted price return minus certified broad benchmark 12-1 split-adjusted price return",
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 786
+      "INPUT_NOT_MATERIALIZED": 781
      }
     },
     "distanceTo52wHigh": {
-     "titles": 784,
+     "titles": 780,
      "input": "(high252-current split-adjusted close)/high252",
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 784
+      "INPUT_NOT_MATERIALIZED": 780
      }
     },
     "distanceToSma200": {
-     "titles": 688,
+     "titles": 687,
      "input": "(split-adjusted close-SMA200)/SMA200",
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 688
+      "INPUT_NOT_MATERIALIZED": 687
      }
     },
     "priceReturn6m": {
-     "titles": 456,
+     "titles": 455,
      "input": "split-adjusted price return",
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 456
+      "INPUT_NOT_MATERIALIZED": 455
      }
     },
     "priceReturn3m": {
@@ -732,55 +730,56 @@
   },
   "value": {
    "factorState": {
-    "UNAVAILABLE": 786
+    "UNAVAILABLE": 781
    },
    "reasons": {
-    "INPUT_NOT_MATERIALIZED": 777,
+    "INPUT_NOT_MATERIALIZED": 703,
+    "INSUFFICIENT_COMPONENTS": 69,
     "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
    },
    "components": {
     "fcfYield": {
-     "titles": 772,
+     "titles": 768,
      "input": "TTM free cash flow/market capitalization",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 305,
+      "INPUT_NOT_MATERIALIZED": 301,
       "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "earningsYield": {
-     "titles": 786,
+     "titles": 760,
      "input": "TTM net income/market capitalization",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 318,
+      "INPUT_NOT_MATERIALIZED": 292,
       "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "ebitdaYield": {
-     "titles": 772,
+     "titles": 768,
      "input": "TTM EBITDA/enterprise value",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 305,
+      "INPUT_NOT_MATERIALIZED": 301,
       "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "salesYield": {
-     "titles": 772,
+     "titles": 768,
      "input": "TTM revenue/enterprise value",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 305,
+      "INPUT_NOT_MATERIALIZED": 301,
       "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
     "bookToMarket": {
-     "titles": 786,
+     "titles": 712,
      "input": "stockholders equity/market capitalization",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 459,
-      "INPUT_NOT_MATERIALIZED": 318,
+      "INPUT_NOT_MATERIALIZED": 244,
       "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 9
      }
     },
@@ -793,70 +792,70 @@
      }
     },
     "dividendYield": {
-     "titles": 14,
+     "titles": 12,
      "input": null,
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 1,
-      "INPUT_NOT_MATERIALIZED": 13
+      "INPUT_NOT_MATERIALIZED": 11
      }
     },
     "cashFlowYield": {
-     "titles": 2,
+     "titles": 1,
      "input": null,
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 2
+      "INPUT_NOT_MATERIALIZED": 1
      }
     }
    }
   },
   "profitability": {
    "factorState": {
-    "UNAVAILABLE": 786
+    "UNAVAILABLE": 781
    },
    "reasons": {
     "INPUT_NOT_MATERIALIZED": 744,
-    "INSUFFICIENT_COMPONENTS": 36,
-    "INSUFFICIENT_WEIGHTED_COVERAGE": 6
+    "INSUFFICIENT_COMPONENTS": 33,
+    "INSUFFICIENT_WEIGHTED_COVERAGE": 4
    },
    "components": {
     "roicTtm": {
-     "titles": 772,
+     "titles": 768,
      "input": "canonical return on invested capital; tax assumption disclosed",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 314
+      "INPUT_NOT_MATERIALIZED": 310
      }
     },
     "roicMedian3y": {
-     "titles": 772,
+     "titles": 768,
      "input": "median annual ROIC",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 314
+      "INPUT_NOT_MATERIALIZED": 310
      }
     },
     "grossProfitabilityTtm": {
-     "titles": 769,
+     "titles": 765,
      "input": "TTM gross profit/average total assets",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 311
+      "INPUT_NOT_MATERIALIZED": 307
      }
     },
     "operatingMarginTtm": {
-     "titles": 766,
+     "titles": 764,
      "input": "TTM operating income/TTM revenue",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 308
+      "INPUT_NOT_MATERIALIZED": 306
      }
     },
     "fcfMarginTtm": {
-     "titles": 769,
+     "titles": 767,
      "input": "TTM free cash flow/TTM revenue",
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 458,
-      "INPUT_NOT_MATERIALIZED": 311
+      "INPUT_NOT_MATERIALIZED": 309
      }
     },
     "roaTtm": {
@@ -876,11 +875,11 @@
      }
     },
     "roaMedian3y": {
-     "titles": 14,
+     "titles": 13,
      "input": null,
      "reasons": {
       "FUNDAMENTALS_UNAVAILABLE": 1,
-      "INPUT_NOT_MATERIALIZED": 13
+      "INPUT_NOT_MATERIALIZED": 12
      }
     },
     "pretaxRoaTtm": {
@@ -891,14 +890,14 @@
       "INPUT_NOT_MATERIALIZED": 11
      }
     },
-    "ocfMarginTtm": {
-     "titles": 2,
+    "cashReturnOnAssets": {
+     "titles": 1,
      "input": null,
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 2
+      "INPUT_NOT_MATERIALIZED": 1
      }
     },
-    "cashReturnOnAssets": {
+    "ocfMarginTtm": {
      "titles": 1,
      "input": null,
      "reasons": {
@@ -909,48 +908,48 @@
   },
   "revisions": {
    "factorState": {
-    "UNAVAILABLE": 786
+    "UNAVAILABLE": 781
    },
    "reasons": {
-    "BLOCKED_EXTERNAL": 786
+    "BLOCKED_EXTERNAL": 781
    },
    "components": {}
   },
   "risk": {
    "factorState": {
-    "UNAVAILABLE": 786
+    "UNAVAILABLE": 781
    },
    "reasons": {
-    "INPUT_NOT_MATERIALIZED": 758,
-    "INSUFFICIENT_COMPONENTS": 28
+    "INPUT_NOT_MATERIALIZED": 755,
+    "INSUFFICIENT_COMPONENTS": 26
    },
    "components": {
     "realizedVolatility252d": {
-     "titles": 786,
+     "titles": 781,
      "input": "annualized daily total-return volatility",
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 786
+      "INPUT_NOT_MATERIALIZED": 781
      }
     },
     "downsideVolatility252d": {
-     "titles": 780,
+     "titles": 775,
      "input": "annualized volatility of negative daily returns",
+     "reasons": {
+      "INPUT_NOT_MATERIALIZED": 775
+     }
+    },
+    "maxDrawdown252d": {
+     "titles": 780,
+     "input": "peak-to-trough total-return drawdown",
      "reasons": {
       "INPUT_NOT_MATERIALIZED": 780
      }
     },
-    "maxDrawdown252d": {
-     "titles": 784,
-     "input": "peak-to-trough total-return drawdown",
-     "reasons": {
-      "INPUT_NOT_MATERIALIZED": 784
-     }
-    },
     "beta252d": {
-     "titles": 764,
+     "titles": 761,
      "input": "covariance with certified benchmark/benchmark variance",
      "reasons": {
-      "INPUT_NOT_MATERIALIZED": 764
+      "INPUT_NOT_MATERIALIZED": 761
      }
     }
    }
@@ -7387,7 +7386,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 152,
-   "marketCap": null,
+   "marketCap": 5491230.29,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -7524,10 +7523,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -7543,10 +7542,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -8496,7 +8491,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 213,
-   "marketCap": null,
+   "marketCap": 86718975,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -8612,17 +8607,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -8631,10 +8622,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -21124,7 +21111,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 234,
-   "marketCap": null,
+   "marketCap": 214958287.89999998,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -21247,25 +21234,17 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.5,
      "componentsTotal": 4,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
       {
        "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
        "id": "pretaxEarningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "dividendYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -21578,7 +21557,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 226,
-   "marketCap": null,
+   "marketCap": 2224994188.9500003,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -21701,10 +21680,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -21720,10 +21699,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -28668,7 +28643,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 247,
-   "marketCap": null,
+   "marketCap": 3861810,
    "fundamentalsAsOf": "2025-07-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -28786,10 +28761,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -28805,10 +28780,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -29315,7 +29286,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 190,
-   "marketCap": null,
+   "marketCap": 1813162500,
    "fundamentalsAsOf": "2025-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -29435,10 +29406,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -29454,10 +29425,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -29761,7 +29728,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 208,
-   "marketCap": null,
+   "marketCap": 643600,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -32133,7 +32100,7 @@
    "peerLevel": "universe",
    "masterSeesSec": true,
    "bars": 212,
-   "marketCap": null,
+   "marketCap": 7678534563.9800005,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -32266,10 +32233,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -32285,10 +32252,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -33445,7 +33408,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 246,
-   "marketCap": null,
+   "marketCap": 21950000,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -33571,10 +33534,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -33590,10 +33553,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -41748,7 +41707,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 123,
-   "marketCap": null,
+   "marketCap": 728744555.77,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -41865,15 +41824,11 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.35,
      "componentsTotal": 4,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
       {
        "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
@@ -42804,7 +42759,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 113,
-   "marketCap": null,
+   "marketCap": 3134250,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": true,
    "consumerExport": {
@@ -42926,10 +42881,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -42945,10 +42900,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -43885,7 +43836,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 126,
-   "marketCap": null,
+   "marketCap": 3871355.62,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -44020,10 +43971,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -44039,10 +43990,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -46902,7 +46849,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 204,
-   "marketCap": null,
+   "marketCap": 647192000,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -47017,17 +46964,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -47036,10 +46979,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -50349,7 +50288,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 76,
-   "marketCap": null,
+   "marketCap": 60667978.769999996,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -50503,10 +50442,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -50522,10 +50461,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -50609,7 +50544,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 223,
-   "marketCap": null,
+   "marketCap": 47199145.48,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -50738,17 +50673,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -50757,10 +50688,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -52336,7 +52263,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 170,
-   "marketCap": null,
+   "marketCap": 1370650000,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -52477,10 +52404,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -52496,10 +52423,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -53392,234 +53315,6 @@
       {
        "id": "roaTtm",
        "reason": "FUNDAMENTALS_UNAVAILABLE"
-      }
-     ]
-    },
-    "revisions": {
-     "state": "UNAVAILABLE",
-     "reason": "BLOCKED_EXTERNAL",
-     "availableWeight": 0,
-     "componentsTotal": 0,
-     "componentsAvailable": 0,
-     "missing": []
-    },
-    "risk": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 4,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "realizedVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "downsideVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "maxDrawdown252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "beta252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    }
-   }
-  },
-  {
-   "ticker": "EVMN",
-   "name": "Evommune, Inc.",
-   "securityType": "COMMON_STOCK",
-   "kette": "HISTORIE_ZU_KURZ",
-   "ketteDetail": "222 Handelstage; die Kursfaktoren brauchen 252",
-   "cik": "0002044725",
-   "sic": 2834,
-   "peerLevel": "sic4_industry",
-   "masterSeesSec": true,
-   "bars": 222,
-   "marketCap": null,
-   "fundamentalsAsOf": "2026-06-30",
-   "capabilityFundamentalsReady": false,
-   "consumerExport": {
-    "present": true,
-    "metrics": [
-     "revenue",
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "cash_and_equivalents",
-     "shares_outstanding",
-     "depreciation_and_amortization",
-     "income_tax_expense",
-     "free_cash_flow",
-     "ebitda"
-    ],
-    "metricCount": 12,
-    "points": 87,
-    "annualMetrics": [
-     "cash_and_equivalents",
-     "stockholders_equity",
-     "revenue",
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "total_assets",
-     "shares_outstanding",
-     "diluted_weighted_average_shares",
-     "research_and_development",
-     "stock_based_compensation",
-     "depreciation_and_amortization",
-     "pretax_income",
-     "income_tax_expense",
-     "free_cash_flow",
-     "ebitda"
-    ],
-    "fiscalYears": 3,
-    "fiscalYearList": [
-     2023,
-     2024,
-     2025
-    ],
-    "maxQuarters": 8
-   },
-   "priceFactorsThin": true,
-   "barsShortOf": {
-    "risk": 30,
-    "momentum12m1m": 51
-   },
-   "klasse": "INSUFFICIENT_HISTORY",
-   "klasseDetail": "222 Handelstage - Schwankungsbreite und Beta brauchen 252",
-   "factors": {
-    "quality": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.4,
-     "componentsTotal": 5,
-     "componentsAvailable": 2,
-     "missing": [
-      {
-       "id": "netDebtToAssets",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "positiveFcfYears",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginStability",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "growth": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 6,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "revenueCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "epsCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "fcfCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthTtmYoy",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginExpansion3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthAcceleration",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "momentum": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_WEIGHTED_COVERAGE",
-     "availableWeight": 0.4,
-     "componentsTotal": 6,
-     "componentsAvailable": 3,
-     "missing": [
-      {
-       "id": "priceReturn12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "relativeStrength12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "distanceTo52wHigh",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "value": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 5,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "profitability": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_WEIGHTED_COVERAGE",
-     "availableWeight": 0.4,
-     "componentsTotal": 6,
-     "componentsAvailable": 3,
-     "missing": [
-      {
-       "id": "roicTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "roicMedian3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "grossProfitabilityTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
     },
@@ -56023,7 +55718,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 85,
-   "marketCap": null,
+   "marketCap": 16922462292.94,
    "fundamentalsAsOf": "2026-05-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -56157,10 +55852,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -56176,10 +55871,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -56470,7 +56161,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 136,
-   "marketCap": null,
+   "marketCap": 289978800,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -56588,10 +56279,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -56607,10 +56298,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -56852,248 +56539,6 @@
       {
        "id": "roaTtm",
        "reason": "FUNDAMENTALS_UNAVAILABLE"
-      }
-     ]
-    },
-    "revisions": {
-     "state": "UNAVAILABLE",
-     "reason": "BLOCKED_EXTERNAL",
-     "availableWeight": 0,
-     "componentsTotal": 0,
-     "componentsAvailable": 0,
-     "missing": []
-    },
-    "risk": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 4,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "realizedVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "downsideVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "maxDrawdown252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "beta252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    }
-   }
-  },
-  {
-   "ticker": "FISN",
-   "name": "Deep Fission, Inc.",
-   "securityType": "COMMON_STOCK",
-   "kette": "HISTORIE_ZU_KURZ",
-   "ketteDetail": "69 Handelstage; die Kursfaktoren brauchen 252",
-   "cik": "0001918102",
-   "sic": 4911,
-   "peerLevel": "sic4_industry",
-   "masterSeesSec": true,
-   "bars": 69,
-   "marketCap": null,
-   "fundamentalsAsOf": "2026-06-30",
-   "capabilityFundamentalsReady": false,
-   "consumerExport": {
-    "present": true,
-    "metrics": [
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "cash_and_equivalents",
-     "shares_outstanding",
-     "depreciation_and_amortization",
-     "income_tax_expense",
-     "free_cash_flow",
-     "ebitda"
-    ],
-    "metricCount": 11,
-    "points": 80,
-    "annualMetrics": [
-     "stockholders_equity",
-     "shares_outstanding",
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "cash_and_equivalents",
-     "total_assets",
-     "diluted_weighted_average_shares",
-     "capital_expenditures",
-     "research_and_development",
-     "stock_based_compensation",
-     "depreciation_and_amortization",
-     "free_cash_flow",
-     "ebitda"
-    ],
-    "fiscalYears": 5,
-    "fiscalYearList": [
-     2021,
-     2022,
-     2023,
-     2024,
-     2025
-    ],
-    "maxQuarters": 8
-   },
-   "priceFactorsThin": true,
-   "barsShortOf": {
-    "risk": 183,
-    "momentum12m1m": 204
-   },
-   "klasse": "INSUFFICIENT_HISTORY",
-   "klasseDetail": "69 Handelstage - Schwankungsbreite und Beta brauchen 252",
-   "factors": {
-    "quality": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.4,
-     "componentsTotal": 5,
-     "componentsAvailable": 2,
-     "missing": [
-      {
-       "id": "netDebtToAssets",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "positiveFcfYears",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginStability",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "growth": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 6,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "revenueCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "epsCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "fcfCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthTtmYoy",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginExpansion3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthAcceleration",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "momentum": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.1,
-     "componentsTotal": 6,
-     "componentsAvailable": 1,
-     "missing": [
-      {
-       "id": "priceReturn12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "priceReturn6m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "relativeStrength12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "distanceTo52wHigh",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "distanceToSma200",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "value": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 5,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "profitability": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.1,
-     "componentsTotal": 6,
-     "componentsAvailable": 1,
-     "missing": [
-      {
-       "id": "roicTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "roicMedian3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "grossProfitabilityTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "fcfMarginTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
     },
@@ -60336,213 +59781,6 @@
    }
   },
   {
-   "ticker": "FRMI",
-   "name": "Fermi Inc.",
-   "securityType": "COMMON_STOCK",
-   "kette": "HISTORIE_ZU_KURZ",
-   "ketteDetail": "248 Handelstage; die Kursfaktoren brauchen 252",
-   "cik": "0002071778",
-   "sic": 6798,
-   "peerLevel": "sic4_industry",
-   "masterSeesSec": true,
-   "bars": 248,
-   "marketCap": null,
-   "fundamentalsAsOf": "2026-06-30",
-   "capabilityFundamentalsReady": false,
-   "consumerExport": {
-    "present": true,
-    "metrics": [
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "cash_and_equivalents",
-     "shares_outstanding",
-     "free_cash_flow",
-     "total_debt"
-    ],
-    "metricCount": 9,
-    "points": 50,
-    "annualMetrics": [
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "cash_and_equivalents",
-     "long_term_debt",
-     "total_assets",
-     "stockholders_equity",
-     "shares_outstanding",
-     "diluted_weighted_average_shares",
-     "free_cash_flow",
-     "net_debt",
-     "total_debt"
-    ],
-    "fiscalYears": 1,
-    "fiscalYearList": [
-     2025
-    ],
-    "maxQuarters": 6
-   },
-   "priceFactorsThin": true,
-   "barsShortOf": {
-    "risk": 4,
-    "momentum12m1m": 25
-   },
-   "klasse": "INSUFFICIENT_HISTORY",
-   "klasseDetail": "248 Handelstage - Schwankungsbreite und Beta brauchen 252",
-   "factors": {
-    "quality": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.3,
-     "componentsTotal": 4,
-     "componentsAvailable": 1,
-     "missing": [
-      {
-       "id": "dividendCoverageByOcf",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "roaStability5y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "positiveEarningsYears",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "growth": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 6,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "revenueCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "epsCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "fcfCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthTtmYoy",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginExpansion3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthAcceleration",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "momentum": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_WEIGHTED_COVERAGE",
-     "availableWeight": 0.4,
-     "componentsTotal": 6,
-     "componentsAvailable": 3,
-     "missing": [
-      {
-       "id": "priceReturn12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "relativeStrength12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "distanceTo52wHigh",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "value": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 4,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "cashFlowYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "dividendYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "profitability": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.5,
-     "componentsTotal": 4,
-     "componentsAvailable": 2,
-     "missing": [
-      {
-       "id": "roaMedian3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "ocfMarginTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "revisions": {
-     "state": "UNAVAILABLE",
-     "reason": "BLOCKED_EXTERNAL",
-     "availableWeight": 0,
-     "componentsTotal": 0,
-     "componentsAvailable": 0,
-     "missing": []
-    },
-    "risk": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.15,
-     "componentsTotal": 4,
-     "componentsAvailable": 1,
-     "missing": [
-      {
-       "id": "realizedVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "downsideVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "maxDrawdown252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    }
-   }
-  },
-  {
    "ticker": "FRNM",
    "name": "Freenome, Inc.",
    "securityType": "COMMON_STOCK",
@@ -60553,7 +59791,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 49,
-   "marketCap": null,
+   "marketCap": 142490887.5,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -60680,17 +59918,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -60699,10 +59933,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -62284,7 +61514,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 232,
-   "marketCap": null,
+   "marketCap": 16811475.16,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -62425,17 +61655,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -62444,10 +61670,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -63191,7 +62413,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 61,
-   "marketCap": null,
+   "marketCap": 16873457.310000002,
    "fundamentalsAsOf": "2026-03-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -63322,10 +62544,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -63341,10 +62563,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -64302,7 +63520,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 55,
-   "marketCap": null,
+   "marketCap": 411720015.63,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -64430,10 +63648,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -64449,10 +63667,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -66472,7 +65686,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 214,
-   "marketCap": null,
+   "marketCap": 0,
    "fundamentalsAsOf": "2026-07-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -66904,7 +66118,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 138,
-   "marketCap": null,
+   "marketCap": 7777620.89,
    "fundamentalsAsOf": "2025-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -67022,10 +66236,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -67041,10 +66255,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -68852,7 +68062,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 210,
-   "marketCap": null,
+   "marketCap": 36545718,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -69514,7 +68724,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 210,
-   "marketCap": null,
+   "marketCap": 86537847,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -69628,17 +68838,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -69647,10 +68853,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -71906,7 +71108,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 86,
-   "marketCap": null,
+   "marketCap": 97953413.54,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -72036,17 +71238,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -72055,10 +71253,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -74055,7 +73249,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 131,
-   "marketCap": null,
+   "marketCap": 15.59,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -74171,10 +73365,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -74190,10 +73384,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -75131,7 +74321,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 121,
-   "marketCap": null,
+   "marketCap": 437500000,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -75256,10 +74446,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -75275,10 +74465,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -79598,7 +78784,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 154,
-   "marketCap": null,
+   "marketCap": 3269930824.52,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -79731,17 +78917,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -79750,10 +78932,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -81353,7 +80531,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 160,
-   "marketCap": null,
+   "marketCap": 294959200,
    "fundamentalsAsOf": "2025-11-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -81478,10 +80656,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -81497,10 +80675,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -85206,7 +84380,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 168,
-   "marketCap": null,
+   "marketCap": 8962300,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -85325,10 +84499,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -85344,10 +84518,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -85621,221 +84791,6 @@
       },
       {
        "id": "beta252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    }
-   }
-  },
-  {
-   "ticker": "KDK",
-   "name": "Kodiak AI, Inc.",
-   "securityType": "COMMON_STOCK",
-   "kette": "FAKTOR_MINDESTANFORDERUNG",
-   "ketteDetail": "Alle Stufen der Kette haben geliefert; es scheitern die Mindestanforderungen einzelner Faktoren",
-   "cik": "0001853138",
-   "sic": 7373,
-   "peerLevel": "sic4_industry",
-   "masterSeesSec": true,
-   "bars": 252,
-   "marketCap": null,
-   "fundamentalsAsOf": "2026-06-30",
-   "capabilityFundamentalsReady": false,
-   "consumerExport": {
-    "present": true,
-    "metrics": [
-     "revenue",
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "cash_and_equivalents",
-     "shares_outstanding",
-     "depreciation_and_amortization",
-     "pretax_income",
-     "income_tax_expense",
-     "free_cash_flow",
-     "ebitda",
-     "total_debt"
-    ],
-    "metricCount": 14,
-    "points": 104,
-    "annualMetrics": [
-     "cash_and_equivalents",
-     "stockholders_equity",
-     "operating_income",
-     "net_income",
-     "operating_cash_flow",
-     "long_term_debt",
-     "total_assets",
-     "revenue",
-     "eps_diluted",
-     "capital_expenditures",
-     "diluted_weighted_average_shares",
-     "research_and_development",
-     "stock_based_compensation",
-     "depreciation_and_amortization",
-     "pretax_income",
-     "income_tax_expense",
-     "free_cash_flow",
-     "ebitda",
-     "shares_outstanding",
-     "net_debt",
-     "total_debt"
-    ],
-    "fiscalYears": 5,
-    "fiscalYearList": [
-     2021,
-     2022,
-     2023,
-     2024,
-     2025
-    ],
-    "maxQuarters": 8
-   },
-   "priceFactorsThin": false,
-   "barsShortOf": {
-    "risk": 0,
-    "momentum12m1m": 21
-   },
-   "klasse": "RAW_FUNDAMENTALS_PRESENT",
-   "klasseDetail": "Rohkennzahlen und Historie vorhanden; es scheitern einzelne Komponenten",
-   "factors": {
-    "quality": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.4,
-     "componentsTotal": 5,
-     "componentsAvailable": 2,
-     "missing": [
-      {
-       "id": "netDebtToAssets",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "positiveFcfYears",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginStability",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "growth": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.25,
-     "componentsTotal": 6,
-     "componentsAvailable": 2,
-     "missing": [
-      {
-       "id": "revenueCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "epsCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "fcfCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginExpansion3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "momentum": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_WEIGHTED_COVERAGE",
-     "availableWeight": 0.5,
-     "componentsTotal": 6,
-     "componentsAvailable": 4,
-     "missing": [
-      {
-       "id": "priceReturn12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "relativeStrength12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "value": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 5,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "profitability": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_WEIGHTED_COVERAGE",
-     "availableWeight": 0.4,
-     "componentsTotal": 6,
-     "componentsAvailable": 3,
-     "missing": [
-      {
-       "id": "roicTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "roicMedian3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "grossProfitabilityTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "revisions": {
-     "state": "UNAVAILABLE",
-     "reason": "BLOCKED_EXTERNAL",
-     "availableWeight": 0,
-     "componentsTotal": 0,
-     "componentsAvailable": 0,
-     "missing": []
-    },
-    "risk": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.4,
-     "componentsTotal": 4,
-     "componentsAvailable": 2,
-     "missing": [
-      {
-       "id": "realizedVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "downsideVolatility252d",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -87768,7 +86723,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 128,
-   "marketCap": null,
+   "marketCap": 432112500,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -87887,10 +86842,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -87906,10 +86861,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -89061,7 +88012,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 208,
-   "marketCap": null,
+   "marketCap": 160118863.26999998,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -89181,17 +88132,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -89200,10 +88147,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -89494,7 +88437,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 220,
-   "marketCap": null,
+   "marketCap": 611400,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -89609,10 +88552,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -89628,10 +88571,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -91194,7 +90133,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 242,
-   "marketCap": null,
+   "marketCap": 55983724.660000004,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -91323,10 +90262,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -91342,10 +90281,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -91645,7 +90580,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 166,
-   "marketCap": null,
+   "marketCap": 0,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -92529,7 +91464,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 222,
-   "marketCap": null,
+   "marketCap": 160856663.25,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -92649,17 +91584,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -92668,10 +91599,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -95738,7 +94665,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 162,
-   "marketCap": null,
+   "marketCap": 4870310453.5199995,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -95875,10 +94802,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -95894,10 +94821,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -96403,7 +95326,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 207,
-   "marketCap": null,
+   "marketCap": 32224104.18,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -96532,10 +95455,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -96551,10 +95474,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -99693,7 +98612,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 201,
-   "marketCap": null,
+   "marketCap": 11620689846.22,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -99817,10 +98736,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -99836,10 +98755,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -100805,7 +99720,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 141,
-   "marketCap": null,
+   "marketCap": 5621371621.38,
    "fundamentalsAsOf": "2026-07-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -100946,17 +99861,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -100965,10 +99876,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -101255,7 +100162,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 196,
-   "marketCap": null,
+   "marketCap": 90046620,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -101375,10 +100282,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -101394,10 +100301,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -101682,237 +100585,6 @@
    }
   },
   {
-   "ticker": "MPLT",
-   "name": "MapLight Therapeutics, Inc.",
-   "securityType": "COMMON_STOCK",
-   "kette": "HISTORIE_ZU_KURZ",
-   "ketteDetail": "230 Handelstage; die Kursfaktoren brauchen 252",
-   "cik": "0001770069",
-   "sic": 2834,
-   "peerLevel": "sic4_industry",
-   "masterSeesSec": true,
-   "bars": 230,
-   "marketCap": null,
-   "fundamentalsAsOf": "2026-06-30",
-   "capabilityFundamentalsReady": false,
-   "consumerExport": {
-    "present": true,
-    "metrics": [
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "cash_and_equivalents",
-     "shares_outstanding",
-     "depreciation_and_amortization",
-     "free_cash_flow",
-     "ebitda"
-    ],
-    "metricCount": 10,
-    "points": 67,
-    "annualMetrics": [
-     "stockholders_equity",
-     "operating_income",
-     "net_income",
-     "eps_diluted",
-     "operating_cash_flow",
-     "capital_expenditures",
-     "cash_and_equivalents",
-     "total_assets",
-     "shares_outstanding",
-     "diluted_weighted_average_shares",
-     "research_and_development",
-     "stock_based_compensation",
-     "depreciation_and_amortization",
-     "free_cash_flow",
-     "ebitda"
-    ],
-    "fiscalYears": 3,
-    "fiscalYearList": [
-     2023,
-     2024,
-     2025
-    ],
-    "maxQuarters": 8
-   },
-   "priceFactorsThin": true,
-   "barsShortOf": {
-    "risk": 22,
-    "momentum12m1m": 43
-   },
-   "klasse": "INSUFFICIENT_HISTORY",
-   "klasseDetail": "230 Handelstage - Schwankungsbreite und Beta brauchen 252",
-   "factors": {
-    "quality": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.4,
-     "componentsTotal": 5,
-     "componentsAvailable": 2,
-     "missing": [
-      {
-       "id": "netDebtToAssets",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "positiveFcfYears",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginStability",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "growth": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 6,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "revenueCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "epsCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "fcfCagr3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthTtmYoy",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginExpansion3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "revenueGrowthAcceleration",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "momentum": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_WEIGHTED_COVERAGE",
-     "availableWeight": 0.4,
-     "componentsTotal": 6,
-     "componentsAvailable": 3,
-     "missing": [
-      {
-       "id": "priceReturn12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "relativeStrength12m1m",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "distanceTo52wHigh",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "value": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 5,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "ebitdaYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "profitability": {
-     "state": "UNAVAILABLE",
-     "reason": "INSUFFICIENT_COMPONENTS",
-     "availableWeight": 0.1,
-     "componentsTotal": 6,
-     "componentsAvailable": 1,
-     "missing": [
-      {
-       "id": "roicTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "roicMedian3y",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "grossProfitabilityTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "operatingMarginTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "fcfMarginTtm",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    },
-    "revisions": {
-     "state": "UNAVAILABLE",
-     "reason": "BLOCKED_EXTERNAL",
-     "availableWeight": 0,
-     "componentsTotal": 0,
-     "componentsAvailable": 0,
-     "missing": []
-    },
-    "risk": {
-     "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
-     "componentsTotal": 4,
-     "componentsAvailable": 0,
-     "missing": [
-      {
-       "id": "realizedVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "downsideVolatility252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "maxDrawdown252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "beta252d",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      }
-     ]
-    }
-   }
-  },
-  {
    "ticker": "MPWX",
    "name": null,
    "securityType": "COMMON_STOCK",
@@ -102134,7 +100806,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 135,
-   "marketCap": null,
+   "marketCap": 201124890.16,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": true,
    "consumerExport": {
@@ -102267,17 +100939,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -102286,10 +100954,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -102800,7 +101464,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 160,
-   "marketCap": null,
+   "marketCap": 134492456.1,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -102927,10 +101591,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -102946,10 +101610,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -103688,7 +102348,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 93,
-   "marketCap": null,
+   "marketCap": 94318415.52,
    "fundamentalsAsOf": "2026-02-28",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -103825,10 +102485,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -103844,10 +102504,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -105208,7 +103864,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 130,
-   "marketCap": null,
+   "marketCap": 14461250,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -105330,17 +103986,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -105349,10 +104001,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -106294,7 +104942,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 180,
-   "marketCap": null,
+   "marketCap": 154519558.57999998,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -106416,10 +105064,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -106435,10 +105083,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -107384,7 +106028,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 59,
-   "marketCap": null,
+   "marketCap": 57641823.44,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -107529,17 +106173,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -107548,10 +106188,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -108041,7 +106677,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 226,
-   "marketCap": null,
+   "marketCap": 23536634.66,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -108169,17 +106805,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -108188,10 +106820,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -109751,7 +108379,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 162,
-   "marketCap": null,
+   "marketCap": 6894370.98,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -109901,10 +108529,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -109920,10 +108548,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -113699,7 +112323,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 55,
-   "marketCap": null,
+   "marketCap": 472584816.90000004,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -113836,17 +112460,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -113855,10 +112475,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -117351,7 +115967,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 172,
-   "marketCap": null,
+   "marketCap": 15671854.040000001,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -117474,10 +116090,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -117493,10 +116109,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -118007,7 +116619,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 164,
-   "marketCap": null,
+   "marketCap": 104178125.36999999,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -118136,10 +116748,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -118155,10 +116767,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -118242,7 +116850,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 56,
-   "marketCap": null,
+   "marketCap": 17256750,
    "fundamentalsAsOf": "2026-03-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -118372,10 +116980,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -118391,10 +116999,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -119121,7 +117725,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 167,
-   "marketCap": null,
+   "marketCap": 334194854.98,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -119269,10 +117873,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -119288,10 +117892,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -121103,7 +119703,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 204,
-   "marketCap": null,
+   "marketCap": 2542213121.45,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -121228,19 +119828,11 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.65,
      "componentsTotal": 4,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
-      {
-       "id": "bookToMarket",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
       {
        "id": "pretaxEarningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
@@ -124953,7 +123545,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 196,
-   "marketCap": null,
+   "marketCap": 8255250,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -125072,10 +123664,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -125091,10 +123683,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -125178,7 +123766,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 249,
-   "marketCap": null,
+   "marketCap": 117944761,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -125294,17 +123882,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -125313,10 +123897,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -134004,7 +132584,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 160,
-   "marketCap": null,
+   "marketCap": 905436791.53,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -134145,10 +132725,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -134164,10 +132744,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -136165,7 +134741,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 204,
-   "marketCap": null,
+   "marketCap": 13689000,
    "fundamentalsAsOf": "2026-03-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -136279,10 +134855,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -136298,10 +134874,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -138293,7 +136865,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 146,
-   "marketCap": null,
+   "marketCap": 184192591.88,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -138412,10 +136984,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -138431,10 +137003,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -138729,7 +137297,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 247,
-   "marketCap": null,
+   "marketCap": 79031264.85,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -138847,17 +137415,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -138866,10 +137430,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -141927,7 +140487,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 145,
-   "marketCap": null,
+   "marketCap": 30756953168.82,
    "fundamentalsAsOf": "2026-04-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -142069,10 +140629,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -142088,10 +140648,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -142175,7 +140731,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 222,
-   "marketCap": null,
+   "marketCap": 3931792551.3599997,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -144328,7 +142884,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 237,
-   "marketCap": null,
+   "marketCap": 18211080939.44,
    "fundamentalsAsOf": "2017-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -144444,10 +143000,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -144463,10 +143019,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -146691,7 +145243,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 198,
-   "marketCap": null,
+   "marketCap": 170358400,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -146808,17 +145360,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -146827,10 +145375,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -150103,7 +148647,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 213,
-   "marketCap": null,
+   "marketCap": 5112700,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -150215,10 +148759,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -150234,10 +148778,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -150321,7 +148861,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 243,
-   "marketCap": null,
+   "marketCap": 372052619.6,
    "fundamentalsAsOf": "2026-06-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -150444,17 +148984,13 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.4,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 2,
      "missing": [
       {
        "id": "fcfYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "earningsYield",
        "reason": "INPUT_NOT_MATERIALIZED"
       },
       {
@@ -150463,10 +148999,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -152865,7 +151397,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 92,
-   "marketCap": null,
+   "marketCap": 31820000,
    "fundamentalsAsOf": "2025-09-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -152989,10 +151521,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -153008,10 +151540,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -165769,7 +164297,7 @@
    "peerLevel": "sic_division",
    "masterSeesSec": true,
    "bars": 182,
-   "marketCap": null,
+   "marketCap": 4.98,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -165886,10 +164414,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -165905,10 +164433,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -166414,7 +164938,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 210,
-   "marketCap": null,
+   "marketCap": 376834500,
    "fundamentalsAsOf": "2026-03-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -166528,10 +165052,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -166547,10 +165071,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -168326,7 +166846,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 228,
-   "marketCap": null,
+   "marketCap": 122041972.49999999,
    "fundamentalsAsOf": "2025-12-31",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -168441,10 +166961,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -168460,10 +166980,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
@@ -170299,7 +168815,7 @@
    "peerLevel": "sic4_industry",
    "masterSeesSec": true,
    "bars": 115,
-   "marketCap": null,
+   "marketCap": 15522344.260000002,
    "fundamentalsAsOf": "2025-09-30",
    "capabilityFundamentalsReady": false,
    "consumerExport": {
@@ -170430,10 +168946,10 @@
     },
     "value": {
      "state": "UNAVAILABLE",
-     "reason": "INPUT_NOT_MATERIALIZED",
-     "availableWeight": 0,
+     "reason": "INSUFFICIENT_COMPONENTS",
+     "availableWeight": 0.15,
      "componentsTotal": 5,
-     "componentsAvailable": 0,
+     "componentsAvailable": 1,
      "missing": [
       {
        "id": "fcfYield",
@@ -170449,10 +168965,6 @@
       },
       {
        "id": "salesYield",
-       "reason": "INPUT_NOT_MATERIALIZED"
-      },
-      {
-       "id": "bookToMarket",
        "reason": "INPUT_NOT_MATERIALIZED"
       }
      ]
