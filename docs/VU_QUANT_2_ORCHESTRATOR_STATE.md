@@ -104,6 +104,66 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M30_2026-09-26 — WAS DER SMOKE NICHT ANSCHAUT, VERFÄLLT
+
+Dreimal an einem Tag dasselbe Muster, jedes Mal eine unbrauchbare Fläche **ohne eine einzige
+Fehlermeldung**:
+
+| | Was der Smoke prüfte | Was niemand sah |
+|---|---|---|
+| M26 | nur NVDA, AAPL, JPM | ein Stapel Absagen auf datenarmen Seiten |
+| M28 | nur Fehlerfreiheit der Übersicht | 5 von 6.875 Kursen, kein einziger Name |
+| M29 | nur Fehlerfreiheit des Screeners | 50 richtige Treffer, in jeder Zeile ein Strich |
+
+Deshalb die Frage, die sich daraus ergibt: **welche Ansichten sieht der Smoke überhaupt an?**
+Gemessen: von **19 Ansichten im Router standen 12** in seiner Liste. Ungeprüft liefen `atlas`,
+`discover`, `elliott`, `markets`, `portfolio` und `research` — und in genau dieser Lücke lagen die
+beiden Befunde des Tages.
+
+### Zuerst gemessen, dann aufgenommen
+
+Alle sieben einzeln nachgemessen, bevor sie in die Liste kamen — **alle gesund**:
+
+| Ansicht | Zeichen im `main` | Befund |
+|---|---:|---|
+| `atlas` | 182.354 | gesund; der vermeintliche 404 war das Favicon |
+| `elliott&ticker=NVDA` | 183.591 | gesund |
+| `discover` | 4.699 | gesund, 202 Zahlen |
+| `home` | 2.880 | gesund |
+| `markets` | 1.210 | dokumentierte Regime-Absage (fail-closed), dazu der Trendradar |
+| `research` | 889 | Hub-Seite mit Links |
+| `portfolio` | 562 | leerer Anfangszustand — die dünnste berechtigte Ansicht |
+
+### Und drei eigene Verdachtsfälle waren Messfehler
+
+Die Sweep-Messung aus M29 zählte nur `.row`-Elemente. Damit sahen drei Ansichten leer aus, die es
+nicht sind:
+
+- **`signals`**: 200 Ereignisse als `.signal-event` (von **8.637** im 20-Tage-Fenster).
+- **`radar`**: 48 `.radar-item` in sechs Abschnitten.
+- **`strategies`**: acht Stil-Karten mit Trefferzahlen und Tickern (Quality Compounder 5, Momentum
+  Leader 168, GARP 100 …), und die achte Karte sagt von sich aus: „Dieser Stil verlangt eine
+  Eigenschaft, die für keinen einzigen Titel erhoben ist."
+- Dazu: der Strategie-Index hat **nicht** „0 Einträge", sondern acht Profile — ich hatte nach dem
+  falschen Schlüssel (`rows`) gelesen, das Feld heißt `profiles`.
+
+Vier Verdachtsfälle, vier Messfehler meinerseits. Festgehalten, weil eine Messung, die das Markup
+einer Ansicht voraussetzt, das Markup misst und nicht den Inhalt.
+
+### Gebaut: der Boden, der die Klasse fängt
+
+- Alle 19 Ansichten stehen in der Smoke-Liste (**38 Prüfungen**: 19 × zwei Breiten).
+- **Inhaltsboden**: unter 400 Zeichen im `main` fällt eine Ansicht durch. Bewusst niedrig — eine
+  Seite aus Titel und Untertitel allein kommt auf **54** Zeichen, die dünnste berechtigte Ansicht
+  auf **562**. Gemessen werden soll ein Rückschritt, nicht der Tagesstand.
+- Ein Test hält beides plus die inhaltlichen Prüfungen aus M26–M29 (`VERDICHTUNG_FEHLT`,
+  `KURSE=`, `NAMEN=`, `LEERE_ZEILEN=`, `UNDEFINED_IM_SATZ`, `KEIN_KURSDATUM`) und die gemessenen
+  Fälle ACAA, EDVA, AHT-P-D. Eine neue Ansicht, die nicht im Smoke steht, lässt ihn fallen.
+
+Gegenproben: Ansicht aus der Liste entfernt → Fall 1 rot · Inhaltsboden entfernt → Fall 2 rot ·
+M28-Namensprüfung entfernt → Fall 3 rot · eine Ansicht, die nur ihre Überschrift setzt →
+`ZU_WENIG_INHALT=54` im Smoke.
+
 ## M29_2026-09-26 — INHALTSMESSUNG ÜBER ALLE ANSICHTEN, UND DER SCREENER WAR DER AUSREISSER
 
 M28 hat eine Lehre hinterlassen: der Smoke prüfte nur auf **Fehlerfreiheit**, deshalb konnte eine
