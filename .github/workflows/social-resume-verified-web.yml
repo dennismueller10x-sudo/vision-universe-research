@@ -30,17 +30,40 @@
 #      reconcile-creative-jobs.mjs)
 #   3. Tests und Isolation, bevor irgendetwas geschrieben wird (bestehend,
 #      verify-suites.mjs)
-#   4. Kandidat aus der VERHANDENEN, unveraenderten web-story-selection.json
+#   4. Die Entscheidungen des Owners abholen (bestehend,
+#      ingest-owner-decisions.mjs — derselbe Rueckweg-Schritt wie im
+#      Orchestrator)
+#   5. Kandidat aus der VERHANDENEN, unveraenderten web-story-selection.json
 #      bauen (bestehend, manual-now-web-candidate.mjs — derselbe Schritt,
 #      den "VORBEREITEN (WEB)" im Orchestrator faehrt)
-#   5. Warteschlange an das Approval Center (bestehend,
+#   6. Warteschlange an das Approval Center (bestehend,
 #      publish-approval-queue.mjs)
-#   6. Festschreiben (derselbe Commit-Schritt wie im Orchestrator)
+#   7. Festschreiben (derselbe Commit-Schritt wie im Orchestrator)
 #
 # KEIN Schritt hier ruft research-web-story.mjs, request-creative-web.mjs,
 # dispatch-creative-job.mjs oder open-creative-request.mjs auf — dieser
 # Workflow kann strukturell KEINEN neuen Creative Job erzeugen, nicht nur
 # der Absicht nach.
+#
+# -------------------------------------------------------------------------
+# NACHTRAG (26.09.): DER FEHLENDE RUECKWEG
+# -------------------------------------------------------------------------
+#
+# Dieser Workflow liess Schritt 4 zunaechst aus — er sollte ja nur
+# ingestieren und einen Kandidaten bauen, keine Entscheidungen
+# verarbeiten. Der reale Betrieb zeigte den Fehler in dieser Annahme:
+# der Owner hatte im Approval Center bereits ueber einen Kandidaten
+# entschieden (der Worker zeigte 0 offene Beitraege), aber ohne diesen
+# Schritt kam die Entscheidung nie im Repository an — dort stand der
+# Kandidat weiterhin auf AWAITING_APPROVAL und blockierte damit den
+# naechsten Kandidaten ueber genau die Kadenzgrenze, die eine
+# Entscheidung eigentlich aufheben sollte.
+#
+# Der Orchestrator-Kommentar bei diesem Schritt nennt den Grund fuer
+# seine Position bereits: "Ein Lauf, der zuerst einen neuen Kandidaten
+# baut und danach erfaehrt, dass der alte abgelehnt wurde, hat die
+# Ablehnung nicht gelesen, als sie zaehlte." Genau das galt auch hier -
+# nur dass der Schritt hier ganz fehlte statt nur falsch zu stehen.
 #
 # NICHT VERAENDERT gegenueber dem Orchestrator: Web-First Research,
 # Full-Post Generation, deutscher Hook, Creative Brief, ChatGPT Work,
@@ -86,6 +109,19 @@ jobs:
 
       - name: Tests und Isolation, bevor irgendetwas geschieht
         run: node scripts/social/verify-suites.mjs
+
+      - name: Die Entscheidungen des Owners abholen
+        continue-on-error: true
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
+            echo "Kein Admin-Schluessel: es wird nichts abgeholt."
+            exit 0
+          fi
+          node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
+            | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
 
       - name: Kandidat aus der bestehenden Web-Story-Auswahl
         run: |
