@@ -808,3 +808,45 @@ html:not([data-theme=light]) .dv2 .dx-m3-kachel{box-shadow:none;border:1px solid
 .dv2 .dx-m3-marke{opacity:1;background:color-mix(in srgb,var(--v2-ink) 55%,transparent)}
 .dv2 .dx-m3-marke.is-mitte{opacity:1;background:color-mix(in srgb,var(--v2-ink) 70%,transparent)}
 .dv2 .dx-m3-marke.is-leise{opacity:1;background:color-mix(in srgb,var(--v2-ink) 25%,transparent)}
+
+/* ================================================================ Markets 3.6
+   "Direkt zu": grosse Chips zwischen Hero und Kacheln, angelehnt an die
+   Beliebt-Reihen einer Broker-App - weisse, runde Kacheln, links ein
+   eigenes Symbol in eigener Farbe, rechts ein fetter Name. Telefon: zwei
+   Reihen, die gemeinsam wischen (oben Themen, unten Maerkte). Desktop:
+   alle Chips sichtbar. Farben sind Wiedererkennung, keine Marktbedeutung. */
+.dv2 .dx-mn{margin:0 0 32px}
+.dv2 .dx-mn-titel{margin:0 0 14px;font-size:clamp(22px,2.6vw,28px);font-weight:800;letter-spacing:-.02em}
+.dv2 .dx-mn-scroll{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:4px 2px 16px;scroll-snap-type:x proximity}
+.dv2 .dx-mn-scroll::-webkit-scrollbar{display:none}
+.dv2 .dx-mn-reihen{display:flex;flex-direction:column;gap:12px;width:max-content}
+.dv2 .dx-mn-reihe{display:flex;gap:12px}
+.dv2 .dx-mn-chip{display:inline-flex;align-items:center;gap:14px;min-height:66px;padding:12px 24px 12px 13px;border-radius:22px;
+  border:1px solid color-mix(in srgb,var(--v2-line) 70%,transparent);background:var(--v2-panel);color:var(--v2-ink);
+  font:inherit;font-size:17px;font-weight:800;letter-spacing:-.012em;white-space:nowrap;cursor:pointer;scroll-snap-align:start;
+  box-shadow:0 1px 2px rgba(15,18,24,.04),0 10px 26px rgba(15,18,24,.07);transition:transform .16s ease,box-shadow .16s ease}
+.dv2 .dx-mn-chip:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(15,18,24,.05),0 16px 34px rgba(15,18,24,.12)}
+.dv2 .dx-mn-chip:active{transform:scale(.97)}
+html:not([data-theme=light]) .dv2 .dx-mn-chip{background:#16181c;border-color:#2a2d33;box-shadow:none}
+html:not([data-theme=light]) .dv2 .dx-mn-chip:hover{border-color:#3a3f47}
+.dv2 .dx-mn-icon{--c:#5b6472;display:grid;place-items:center;flex:0 0 auto;width:40px;height:40px;border-radius:13px;
+  color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent)}
+html:not([data-theme=light]) .dv2 .dx-mn-icon{color:color-mix(in srgb,var(--c) 58%,#fff);background:color-mix(in srgb,var(--c) 26%,transparent)}
+.dv2 .dx-mn-icon svg{display:block;width:22px;height:22px}
+@media(min-width:761px){
+  .dv2 .dx-mn-scroll{overflow:visible;padding-bottom:0}
+  .dv2 .dx-mn-reihen{width:auto;gap:12px}
+  .dv2 .dx-mn-reihe{flex-wrap:wrap}
+}
+@media(max-width:760px){
+  .dv2 .dx-mn-chip{min-height:58px;padding:10px 20px 10px 11px;gap:12px;border-radius:19px;font-size:15.5px}
+  .dv2 .dx-mn-icon{width:36px;height:36px;border-radius:11px}
+  .dv2 .dx-mn-icon svg{width:20px;height:20px}
+}
+@media(prefers-reduced-motion:reduce){.dv2 .dx-mn-chip{transition:none}.dv2 .dx-mn-chip:hover,.dv2 .dx-mn-chip:active{transform:none}}
+/* Hell: reinweisse Chips auf der Seite, getragen vom weichen Schatten. */
+html[data-theme=light] .dv2 .dx-mn-chip{background:#fff}
+@media(min-width:761px){
+  .dv2 .dx-mn-reihen{gap:20px}
+  .dv2 .dx-mn-reihe::before{content:attr(data-titel);flex:0 0 100%;margin:0 0 -2px 2px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted)}
+}

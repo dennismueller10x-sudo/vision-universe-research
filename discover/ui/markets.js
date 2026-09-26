@@ -276,6 +276,96 @@
     }));
   }
 
+  /* ----------------------------------------------------- Direkt zu
+     Zwei Reihen grosser Chips zwischen Hero und Kacheln - oben die Themen
+     der Einordnung, unten die Maerkte. Jeder Chip hat ein eigenes Symbol in
+     eigener Farbe (wie Logos in einer Broker-App) und springt zu seinem
+     Bereich. Die Farben sind Wiedererkennung, keine Marktbedeutung - Gruen
+     und Orange bleiben "unterstuetzt" und "Gegenwind" vorbehalten. */
+  var CC = "currentColor";
+  var SYMBOLE = {
+    szenario: [["path", { d: "M6 16V4M2.8 7.2L6 4l3.2 3.2" }], ["path", { d: "M14 4v12M10.8 12.8L14 16l3.2-3.2" }]],
+    verlauf: [["path", { d: "M2.5 17.5h15" }], ["path", { d: "M3 13.5l4-5 3 3 7-7" }]],
+    dimensionen: [["path", { d: "M3 14.5a7 7 0 0 1 14 0" }], ["path", { d: "M10 14.5l3.6-4.6" }], ["circle", { cx: 10, cy: 14.5, r: 1.5, fill: CC, stroke: "none" }]],
+    vorher: [["path", { d: "M3.5 7h12M12.5 4l3 3-3 3" }], ["path", { d: "M16.5 13h-12M7.5 10l-3 3 3 3" }]],
+    warum: [["circle", { cx: 8.5, cy: 8.5, r: 5.2 }], ["path", { d: "M12.4 12.4L17 17" }]],
+    worauf: [["circle", { cx: 10, cy: 10, r: 7.2 }], ["circle", { cx: 10, cy: 10, r: 3.4 }], ["circle", { cx: 10, cy: 10, r: 1, fill: CC, stroke: "none" }]],
+    breite: [["rect", { x: 2.5, y: 10, width: 3.6, height: 7.5, rx: 1, fill: CC, stroke: "none" }], ["rect", { x: 8.2, y: 4.5, width: 3.6, height: 13, rx: 1, fill: CC, stroke: "none" }],
+             ["rect", { x: 13.9, y: 8, width: 3.6, height: 9.5, rx: 1, fill: CC, stroke: "none" }]],
+    crossasset: [["path", { d: "M5 15h10M5 15l5-10M15 15l-5-10" }], ["circle", { cx: 5, cy: 15, r: 2, fill: CC, stroke: "none" }],
+                 ["circle", { cx: 15, cy: 15, r: 2, fill: CC, stroke: "none" }], ["circle", { cx: 10, cy: 5, r: 2, fill: CC, stroke: "none" }]],
+    jetzt: [["path", { d: "M11 2L4 11.5h5L8 18l7-9.5h-5z", fill: CC, stroke: "none" }]],
+    movers: [["path", { d: "M3 15l5-5 3 3 6-6" }], ["path", { d: "M12.5 7H17v4.5" }]],
+    aktien: [["path", { d: "M5 3v14M10 5v12M15 2.5v12" }], ["rect", { x: 3.3, y: 6, width: 3.4, height: 6, rx: 0.7, fill: CC, stroke: "none" }],
+             ["rect", { x: 8.3, y: 9, width: 3.4, height: 5, rx: 0.7, fill: CC, stroke: "none" }], ["rect", { x: 13.3, y: 4, width: 3.4, height: 6.5, rx: 0.7, fill: CC, stroke: "none" }]],
+    energie: [["path", { d: "M10 2.5c3.2 4.2 5.2 7 5.2 9.6a5.2 5.2 0 0 1-10.4 0c0-2.6 2-5.4 5.2-9.6z", fill: CC, stroke: "none" }]],
+    edelmetalle: [["path", { d: "M2.5 16.5l2.4-6h10.2l2.4 6z", fill: CC, stroke: "none" }], ["path", { d: "M6.2 9.5l1.6-5h4.4l1.6 5", fill: CC, stroke: "none", opacity: "0.55" }]],
+    krypto: [["circle", { cx: 10, cy: 10, r: 7.6 }], ["text", { x: 10, y: 14, "text-anchor": "middle", "font-size": "10.5", "font-weight": "800", fill: CC, stroke: "none" }, "₿"]],
+    prozent: [["circle", { cx: 6, cy: 6, r: 2.3 }], ["circle", { cx: 14, cy: 14, r: 2.3 }], ["path", { d: "M15.8 4.2L4.2 15.8" }]],
+    leitzinsen: [["path", { d: "M2.5 7.5L10 3.5l7.5 4M4.6 8.5v6.5M8.2 8.5v6.5M11.8 8.5v6.5M15.4 8.5v6.5M2.5 16.5h15" }]],
+    devisen: [["text", { x: 10, y: 14.2, "text-anchor": "middle", "font-size": "10.5", "font-weight": "800", fill: CC, stroke: "none" }, "€$"]]
+  };
+  var THEMEN = [
+    { ziel: "maerkte-aendern", label: "Bullish & Bearish", symbol: "szenario", farbe: "#6d5ae6" },
+    { ziel: "maerkte-verlauf", label: "12 Monate", symbol: "verlauf", farbe: "#2f6fed" },
+    { ziel: "maerkte-dimensionen", label: "5 Dimensionen", symbol: "dimensionen", farbe: "#8a4fd8" },
+    { ziel: "maerkte-vorher-jetzt", label: "Was ist neu?", symbol: "vorher", farbe: "#44679b" },
+    { ziel: "maerkte-warum", label: "Warum?", symbol: "warum", farbe: "#2f6fed" },
+    { ziel: "maerkte-worauf", label: "Worauf achten", symbol: "worauf", farbe: "#6d5ae6" },
+    { ziel: "maerkte-breite", label: "Marktbreite", symbol: "breite", farbe: "#0f7fa8" },
+    { ziel: "maerkte-crossasset", label: "Cross Asset", symbol: "crossasset", farbe: "#44679b" },
+    { ziel: "maerkte-jetzt", label: "Markt jetzt", symbol: "jetzt", farbe: "#c2417a" },
+    { ziel: "maerkte-movers", label: "Top & Flop", symbol: "movers", farbe: "#c2417a" }
+  ];
+  var GRUPPE_SYMBOL = { aktien: ["aktien", "#2f6fed"], energie: ["energie", "#d9591f"], edelmetalle: ["edelmetalle", "#b8860b"],
+                        krypto: ["krypto", "#7c5cff"], "us-renditen": ["prozent", "#1f3a93"], "eu-renditen": ["prozent", "#0a55c7"],
+                        leitzinsen: ["leitzinsen", "#5b6472"], devisen: ["devisen", "#2f9463"] };
+
+  function symbol(key) {
+    var teile = SYMBOLE[key];
+    if (!global.document || !teile) return null;
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = global.document.createElementNS(ns, "svg");
+    [["viewBox", "0 0 20 20"], ["aria-hidden", "true"], ["fill", "none"], ["stroke", CC], ["stroke-width", "1.7"],
+     ["stroke-linecap", "round"], ["stroke-linejoin", "round"]].forEach(function (a) { svg.setAttribute(a[0], a[1]); });
+    teile.forEach(function (t) {
+      var e = global.document.createElementNS(ns, t[0]);
+      Object.keys(t[1]).forEach(function (k) { e.setAttribute(k, t[1][k]); });
+      if (t[2]) e.textContent = t[2];
+      svg.appendChild(e);
+    });
+    return svg;
+  }
+
+  function direktZu(seite, gruppen) {
+    if (!global.document || !seite.querySelector) return null;
+    function chip(ziel, label, sym, farbe) {
+      if (!seite.querySelector("#" + ziel)) return null;
+      var b = el("button", { type: "button", class: "dx-mn-chip", "data-ziel": ziel }, [
+        el("span", { class: "dx-mn-icon", style: "--c:" + farbe, "aria-hidden": "true" }, [symbol(sym)].filter(Boolean)),
+        el("span", { class: "dx-mn-label", text: label })
+      ]);
+      b.onclick = function () {
+        var z = global.document.getElementById(ziel);
+        if (z && z.scrollIntoView) z.scrollIntoView({ behavior: sanft(), block: "start" });
+      };
+      return b;
+    }
+    var themen = THEMEN.map(function (t) { return chip(t.ziel, t.label, t.symbol, t.farbe); }).filter(Boolean);
+    var maerkte = gruppen.map(function (g) {
+      var s = GRUPPE_SYMBOL[g.id] || ["aktien", "#5b6472"];
+      return chip("maerkte-" + g.id, g.titel, s[0], s[1]);
+    }).filter(Boolean);
+    if (themen.length + maerkte.length < 4) return null;
+    return el("nav", { class: "dx-mn", id: "maerkte-direkt", "aria-label": "Direkt zu den Bereichen der Seite" }, [
+      el("h2", { class: "dx-mn-titel", text: "Direkt zu" }),
+      el("div", { class: "dx-mn-scroll" }, [el("div", { class: "dx-mn-reihen" }, [
+        themen.length ? el("div", { class: "dx-mn-reihe", "data-reihe": "themen", "data-titel": "Einordnung" }, themen) : null,
+        maerkte.length ? el("div", { class: "dx-mn-reihe", "data-reihe": "maerkte", "data-titel": "Märkte" }, maerkte) : null
+      ].filter(Boolean))])
+    ]);
+  }
+
   /* ------------------------------------------------ Markets 2.0: Intelligence */
 
   /** MARKT JETZT: die auffaelligsten Tagesbewegungen, deterministisch (VUMarketPulse.marketNow). */
@@ -388,9 +478,9 @@
         el("h1", { class: "dx-m3-titel", text: "Märkte" })
       ]);
       function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
-      var verlaufNode = null;
+      var verlaufNode = null, heroNode = null;
       if (puls && MI && puls.environment) {
-        dazu(MI.hero(puls, jetzt));
+        heroNode = dazu(MI.hero(puls, jetzt));
         if (MI.kacheln) dazu(MI.kacheln(puls, hist));
         dazu(MI.landkarte(puls));
         dazu(MI.vorherJetzt(puls));
@@ -418,6 +508,9 @@
           el("div", { class: "dx-maerkte-raster", tabindex: "0", role: "group", "aria-label": g.titel + " – wischen für mehr" }, g.karten.map(function (c) { return karte(c, layer); }))
         ]));
       });
+      /* Erst jetzt, da alle Bereiche stehen: nur Chips mit echtem Ziel. */
+      var direkt = heroNode ? direktZu(seite, gruppen) : null;
+      if (direkt) seite.insertBefore(direkt, heroNode.nextSibling);
       seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(snap.generatedAt) || "unbekannt") +
         ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Informationen zur eigenen Recherche, keine Anlageberatung." }));
       root.appendChild(seite);
