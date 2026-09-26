@@ -104,6 +104,88 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 
 Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
+## M25_2026-09-26 — DIE DREI SCHWÄCHSTEN STATIONEN, ZUERST GEMESSEN
+
+Auftrag: Strategy, Setup/SetupChange, Technical — je Station **messen**, warum Titel fehlen
+(Daten? Capability? Consumer-Verknüpfung? Darstellung? falscher Gate? echter methodischer
+Ausschluss?), und nur dort bauen, wo Code den Gap schließt.
+
+### Die Messung, vor dem ersten Handgriff
+
+| Station | Beantwortet (500er-Stichprobe) | Woran es liegt |
+|---|---:|---|
+| **Strategy** | 418 | 434 Titel ohne Screening-Zeile · 795 mit Zeile, aber `availableFactors: 0` · 22 mit genau **einer** messbaren Bedingung bei mindestens zwei verlangten → **Datengrenze** und ein dokumentiertes Gate. Die Oberfläche unterscheidet die drei Fälle bereits mit eigenen Sätzen. |
+| **Setup / SetupChange** | 425 | **Kein eigener Gap.** Das Setup-Universum *ist* das technische (`inputs.technical.instruments`, `unavailable: 0`). Setup fällt genau dann aus, wenn die Kursstruktur ausfällt. |
+| **Technical** | 426 | 1.033 ohne Bundle: **964** zu kurze Historie (Balken min 1, Median 121, max 299 gegen 300 verlangt) → Datengrenze · **42** `TECHNICAL_CALENDAR_INVALID` · **26** `NOT_TECHNICAL_READY` · 1 ohne Reihe. |
+
+Die 42 und die 26 sahen nach Datengrenze aus und waren keine — beide Zahlen haben nachgemessen
+eine andere Ursache:
+
+**Die 26 waren ein veralteter Vormerk-Wert.** Ihre Balkenzahl stand im Deckungsbericht
+`technical-coverage-ELIGIBLE_US_EQUITY.json` vom **11.09.** (Lauf 34611793308) bei 290–298; heute
+haben dieselben Titel **301–309**, also mehr als die 300, die die Materialisierung **selbst**
+verlangt. Sie bekamen trotzdem kein Bundle, weil `member.t` ein Veto sprach — und mit ihnen keine
+Setup-Zeile. Jeder Titel, der die Schwelle nach dem Berichtsdatum überschreitet, blieb bis zum
+nächsten Bericht draußen. Der Kommentar über der Bedingung sagte seit Langem „Die Zahl entscheidet,
+nicht die Vormerkung"; die Bedingung tat es nicht.
+
+**Die 42 waren zwei Lagen unter einem Namen.** 40 Titel werden so dünn gehandelt, dass ihre letzten
+270 Kurstage **1,1 bis 4,0 Jahre** zurückreichen (AAAP: 67 Balken im Jahr) und aus der
+Kalenderdeckung (ab 2022-01-01) herauslaufen; 2 Titel tragen eine Kursbar an einem Tag mit
+geschlossener Börse (2026-02-16, 2026-04-03, 2026-05-25). Der Ausschluss ist in beiden Fällen
+**richtig** — 270 Sitzungen über vier Jahre beschreiben keine „aktuelle Kursstruktur" —, der Grund
+war es nicht: er klang nach einem Defekt unseres Kalenders.
+
+### Gebaut wurde dreierlei, plus ein Nachzug
+
+1. **`bundleGate(capabilityState, bars)`** — nur Zustände, die dieser Lauf **nicht** selbst
+   nachmisst, dürfen vetoen. `INSUFFICIENT_HISTORY` misst er an der Reihe, `SOURCE_MISSING` an der
+   Datei; `TECHNICAL_PARTIAL` und `TECHNICAL_FAILED` bleiben ein Veto und nennen sich im `detail`.
+2. **Zwei Gründe statt einem**: `TECHNICAL_WINDOW_OUTSIDE_CALENDAR` (mit Fensterspanne,
+   Sitzungszahl und Deckungsgrenze) und `TECHNICAL_SESSION_NOT_A_TRADING_DAY` (mit dem Datum),
+   Block `technical-unavailable-1.1.0`; der Leser akzeptiert 1.0.0 und 1.1.0.
+3. **Ein Nein mit Richtung**: der No-Fit-Satz nennt den nächsten Stil, seinen Prozentwert,
+   erfüllte von messbaren Bedingungen und die offenen **mit Namen**. Alles war gerechnet; keine
+   neue Schwelle, keine Prognose. Betroffen: 217 von 500 Titeln — der häufigste Satz des
+   Abschnitts.
+4. **Der Nachzug, den erst die Re-Messung zeigte**: nach Fix 1 lagen die 26 Bundles im Artefakt,
+   und die Aktienseite zeigte sie *trotzdem* nicht — `getTechnicalIntelligence` prüfte `member.t`
+   ein zweites Mal, **vor** dem Lesen. Sichtbar wurde es daran, dass die Setup-Station stieg (sie
+   liest das Artefakt) und die Technical-Station nicht. Jetzt entscheidet das Artefakt; die
+   Vormerkung spricht erst, wenn nichts veröffentlicht ist, und dann mit dem Grund je Titel. Die
+   reduzierte Auskunft bleibt genau den Titeln, die sie heute schon bekommen.
+
+### Realisiert, nicht vorhergesagt (Lauf 36226116267, Commit `91c39e1487`)
+
+| Messung | Vorher | Nachher |
+|---|---:|---:|
+| `technicalFullBundles` | 5.842 | **5.868** (+26) |
+| `elliottCapable` | 5.755 | **5.777** (+22) |
+| Setup-Universum / beobachtet | 5.842 | **5.868** (+26) |
+| `NOT_TECHNICAL_READY` | 26 | **0** |
+| Kalendergrund, aufgeteilt | 42 unter einem Code | **40** Fenster · **2** Feiertagsbar |
+| Bundles, die der Dienst verschwieg | 26 | **0** (ALM, ANPA, HERZ … liefern `FULL_WORKSPACE` auf 2026-09-25) |
+
+Reise, dieselbe 500er-Stichprobe wie die Grundlinie: **technical 426 → 427**, **setup 425 → 426**,
+**setupChange 425 → 426**, alle elf Stationen weiter 382. Der Zugewinn ist im Universum 26 Titel an
+drei Stationen; in einer 1-von-13-Stichprobe ist das ein Titel, und mehr behauptet diese Zeile
+nicht. Aus der Messung verschwunden ist der Sammelcode `TECHNICAL_EVIDENCE_NOT_PUBLISHED`: die
+Station nennt jetzt `INSUFFICIENT_HISTORY 68 · TECHNICAL_WINDOW_OUTSIDE_CALENDAR 4 ·
+SOURCE_MISSING 1`.
+
+Ein gemessener Unterschied bleibt und ist keiner zu viel: Technical beantwortet **427**, Setup
+**426**. Der eine Titel ist AEC — er hat kein Bundle (Fenster-Fall), ist aber als
+`TECHNICAL_READY` vorgemerkt und bekommt deshalb die **reduzierte** Auskunft
+(`evidenceLevel: REDUCED_EVIDENCE`, `fullWorkspace: false`, mit Grund je Titel). Setup hat für ihn
+keine Zeile und sagt das. Zwei Evidenzstufen, zwei Antworten — kein stiller Fallback.
+
+### Was an diesen drei Stationen jetzt übrig ist
+
+Alles Datengrenze, nichts davon in Code schließbar: Strategy 61 Zeilen ohne einen einzigen
+Faktorwert und 21 ohne Zeile; Setup/Technical 68 mit zu kurzer Historie; dazu die 40 dünn
+gehandelten und die 2 mit einer Feiertagsbar, beide methodisch richtig ausgeschlossen und jetzt
+richtig benannt.
+
 ## MERGED_2026-09-25 — #182 AUF MAIN, DER PRODUKTIONSWEG, DIE ABLAGE-AUTOMATIK
 
 ### Der Merge
