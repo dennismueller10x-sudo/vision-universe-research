@@ -141,12 +141,20 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  /* Kachel-Uebersicht: grosse Kacheln mit Bild, jede fuehrt zu ihren Belegen. */
  const kk=await page.evaluate(()=>[...document.querySelectorAll('.dx-m3-kachel')].map(k=>({id:k.dataset.kachel,bild:!!k.querySelector('.dx-m3-kachel-bild svg,.dx-m3-kachel-bild .dx-m3-spur,.dx-m3-kachel-bild .dx-m3-kk-nr,.dx-m3-kachel-bild .dx-m3-kk-wechsel'),titel:(k.querySelector('.dx-m3-kachel-link')||{}).textContent||''})));
  p('Kacheln: mindestens 6, jede mit Bild und Schlagzeile',kk.length>=6&&kk.every(k=>k.bild&&k.titel.length>=3),kk);
+ /* "Direkt zu": Chips zwischen Hero und Kacheln, jeder mit Symbol und echtem Ziel. */
+ const mn=await page.evaluate(()=>{const n=document.getElementById('maerkte-direkt');if(!n)return null;const hero=document.querySelector('.dx-m3-hero');
+  return {nachHero:!!hero&&hero.nextElementSibling===n,chips:[...n.querySelectorAll('.dx-mn-chip')].map(c=>({ziel:c.dataset.ziel,label:c.textContent.trim(),icon:!!c.querySelector('svg'),da:!!document.getElementById(c.dataset.ziel)}))};});
+ p('Direkt zu: direkt nach dem Hero, Themen und alle Maerkte, jeder Chip mit Symbol und Ziel',mn&&mn.nachHero&&mn.chips.length>=GRUPPEN.length+6&&GRUPPEN.every(g=>mn.chips.some(c=>c.ziel==='maerkte-'+g))&&mn.chips.every(c=>c.icon&&c.da&&c.label.length>=3),mn);
+ {await page.evaluate(()=>scrollTo(0,0));await page.click('.dx-mn-chip[data-ziel="maerkte-aendern"]');
+  let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}
+  const z=await page.evaluate(()=>document.getElementById('maerkte-aendern').getBoundingClientRect().top);
+  p('Direkt zu: Chip fuehrt zum Bereich',z>=-5&&z<250,z);await page.evaluate(()=>scrollTo(0,0));}
  /* Visuelle Abfolge: zehn Bildschirme - wechselnde Flaechen statt Kartenwand. */
  if(key==='mobile'){
   const folge=[];
   for(let i=0;i<10;i++){
    await page.evaluate(y=>scrollTo(0,y),i*(844-120));await page.waitForTimeout(150);
-   folge.push(await page.evaluate(()=>{const s=new Set();for(const n of document.querySelectorAll('.dx-m3>section,.dx-m3>.dx-maerkte-gruppe,.dx-m3>section.dx-maerkte-movers')){const r=n.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)s.add((n.className.match(/dx-m3-[a-z]+|dx-maerkte-[a-z]+/)||[''])[0]);}return [...s];}));
+   folge.push(await page.evaluate(()=>{const s=new Set();for(const n of document.querySelectorAll('.dx-m3>section,.dx-m3>nav.dx-mn,.dx-m3>.dx-maerkte-gruppe,.dx-m3>section.dx-maerkte-movers')){const r=n.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)s.add((n.className.match(/dx-m3-[a-z]+|dx-maerkte-[a-z]+|dx-mn\b/)||[''])[0]);}return [...s];}));
    await page.screenshot({path:`${out}/maerkte-folge-${String(i).padStart(2,'0')}.png`});
   }
   const arten=new Set(folge.flat());
