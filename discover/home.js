@@ -355,7 +355,7 @@
       var href=surface.href||('#/c/'+ctx.universeId+'/'+surface.rowId);
       var a=link('',href,'v2-collection-link');
       var visual=node('span','v2-collection-art');visual.setAttribute('aria-hidden','true');
-      var art=perspectiveArt[surface.id]||['✳','Neue Perspektive'];
+      var art=perspectiveArt[surface.id]||['✳',title(surface.title)];
       visual.append(node('span','v2-collection-glyph',art[0]),node('span','v2-collection-art-label',art[1]));
       var copy=node('span','v2-collection-copy');copy.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'));
       a.append(visual,copy,node('span','v2-collection-arrow','→'));
