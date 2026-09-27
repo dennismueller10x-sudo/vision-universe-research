@@ -33,7 +33,7 @@ for(const f of visible){
 
 // 3. Die Consumer-Navigation kennt genau einen Discover-Eintrag.
 const nav=readFileSync('assets/site-navigation.js','utf8');
-const entries=[...nav.matchAll(/\['(Discover[^']*)',\s*'([^']+)'\]/g)].map(m=>m[1]+' '+m[2]);
+const entries=[...nav.matchAll(/\['(Discover[^']*)',\s*'([^']+)'(?:,\s*'[^']*')?\]/g)].map(m=>m[1]+' '+m[2]);
 assert.deepEqual(entries,['Discover /discover/'],'Navigation: '+JSON.stringify(entries));
 
 // 4. Der Frontend-Vertrag (Freshness, Source State, Eligibility, Zero Cost).

@@ -14,6 +14,39 @@
     root.append(el('section', {class:'v2-message'}, [el('h1',{text:title}),el('p',{text:copy})]));
     if (retry) { const b=el('button',{class:'v2-button',type:'button',text:'Erneut versuchen'});b.onclick=route;root.firstChild.append(b); }
   }
+  const WATCH_KEY='vu-discover-watchlist-v1';
+  function watchlist(){try{const data=JSON.parse(localStorage.getItem(WATCH_KEY)||'[]');return Array.isArray(data)?data.filter(s=>/^[A-Z0-9.\-]{1,24}$/.test(s)).slice(0,100):[];}catch(_){return [];}}
+  function saveWatchlist(symbol){
+    const list=watchlist(),index=list.indexOf(symbol);
+    if(index<0)list.unshift(symbol);else list.splice(index,1);
+    try{localStorage.setItem(WATCH_KEY,JSON.stringify(list));}catch(_){}
+    return index<0;
+  }
+  function watchButton(root,symbol){
+    const button=el('button',{type:'button',class:'v2-watch-button'});
+    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
+    button.onclick=()=>{saveWatchlist(symbol);paint();};paint();root.prepend(button);
+  }
+  function settings(root){
+    document.title='Einstellungen — Discover — Vision Universe®';
+    root.append(el('p',{class:'v2-eyebrow',text:'Deine Ansicht'}),el('h1',{text:'Einstellungen'}),el('p',{class:'v2-lead',text:'Währung und Darstellung gelten für deine Ansicht auf diesem Gerät.'}));
+    const box=el('section',{class:'v2-settings'});
+    const currency=el('div',{class:'v2-settings-row'},[el('div',{},[el('h2',{text:'Währung'}),el('p',{text:'Anzeige in Euro oder US-Dollar, sofern Kurse verfügbar sind.'})])]);
+    const layer=global.VUFx&&global.VUFx.layer;
+    if(layer&&global.VUFx.Switch)currency.append(global.VUFx.Switch.create({layer}));
+    const appearance=el('div',{class:'v2-settings-row'},[el('div',{},[el('h2',{text:'Darstellung'}),el('p',{text:'System folgt der Einstellung deines Geräts.'})])]);
+    const choices=el('div',{class:'v2-settings-choices',role:'group','aria-label':'Darstellung'});
+    const paint=()=>{choices.replaceChildren();[['system','System'],['light','Hell'],['dark','Dunkel']].forEach(([mode,label])=>{const b=el('button',{type:'button',text:label,'aria-pressed':String(theme.mode()===mode)});b.onclick=()=>{theme.set(mode);paint();};choices.append(b);});};paint();appearance.append(choices);
+    box.append(currency,appearance);root.append(box);
+  }
+  const THEME_GROUPS=[['tech','Technologie & Vernetzung'],['health','Gesundheit'],['energy','Energie & Rohstoffe'],['industry','Industrie & Infrastruktur'],['finance','Finanzen & Immobilien'],['consumer','Konsum & Mobilität']];
+  function themeRail(cards,detailCtx,title,rowId){
+    if(!cards.length)return null;
+    const section=el('section',{class:'v2-theme-stocks v2-world'},[el('div',{class:'v2-world-head'},[el('h2',{text:title})])]);
+    const track=el('div',{class:'v2-track',role:'list','aria-label':title});
+    cards.forEach((card,i)=>{const item=el('div',{class:'v2-track-item',role:'listitem'});item.append(V.Home.tile(card,detailCtx,{rowId,position:i}));track.append(item);});
+    section.append(D.Cards.withRailNav(track,{label:title,universeId:detailCtx.universeId}));return section;
+  }
   function footer() {
     return el('footer',{class:'v2-footer'},[
       el('b',{text:'VISION UNIVERSE®'}),
@@ -37,18 +70,12 @@
   }
   function shell() {
     const host=document.getElementById('v2-shell'); S.clear(host);
-    const themeButton=el('button',{type:'button',class:'v2-theme',text:'Darstellung'});
-    const label=()=>{themeButton.textContent=theme.label(theme.mode());themeButton.setAttribute('aria-label','Darstellung: '+theme.label(theme.mode()));};
-    label();themeButton.onclick=()=>{theme.cycle();label();};
-    /* Der Umschalter des zentralen Currency Contracts. Discover baut ihn
-       nicht nach - ein zweiter haette einen zweiten Zustand, und ein
-       Nutzer, der anderswo auf USD stellt, saehe hier wieder Euro. */
-    const waehrung=(global.VUFx&&global.VUFx.Switch&&global.VUFx.layer)
-      ? global.VUFx.Switch.create({layer:global.VUFx.layer}) : null;
     const bar=el('div',{class:'v2-bar'},[
       el('a',{href:'#/',class:'v2-wordmark',text:'Discover'}),
-      waehrung,themeButton
-    ].filter(Boolean));
+      el('a',{href:'#/maerkte',class:'v2-markets-link',text:'Märkte',...(location.hash.startsWith('#/maerkte')?{'aria-current':'page'}:{})}),
+      el('span',{class:'v2-bar-caption',text:'Entdecken. Verstehen. Investieren.'}),
+      el('a',{href:'#/watchlist',class:'v2-watch-link',text:'♡ Watchlist'})
+    ]);
     const main=el('main',{id:'v2-main',class:'v2-main',tabindex:'-1'});
     const dock=navigation();
     host.append(bar,main,footer(),dock); return main;
@@ -87,6 +114,7 @@
     root.classList.add('dx-detail');
     V.Detail.renderInstrument(root,{instrument:result.instrument,alternateListings:result.alternateListings,
       capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
+    watchButton(root,symbol);
   }
   async function route() {
     if(!meta)return;
@@ -108,15 +136,37 @@
         if(index.symbols.includes(symbol)){
           const detail=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+symbol+'.json');if(!active())return;
           root.classList.add('dx-detail');V.Detail.render(root,detail,ctx);
+          watchButton(root,symbol);
           document.title=(detail.companyName||symbol)+' — Discover';
           if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world});
         }else await instrument(root,symbol,active);
+      } else if(parts[0]==='settings'){
+        settings(root);
+      } else if(parts[0]==='suche'){
+        root.append(el('h1',{text:'Aktien suchen'}),el('p',{class:'v2-lead',text:'Finde Unternehmen über den Namen oder das Börsenkürzel.'}));
+        const open=el('button',{class:'v2-button',type:'button',text:'Suche öffnen'});open.onclick=()=>search.open();root.append(open);
+        setTimeout(()=>{if(active())search.open();},0);
+      } else if(parts[0]==='watchlist'){
+        document.title='Watchlist — Discover — Vision Universe®';
+        root.append(el('p',{class:'v2-eyebrow',text:'Deine Auswahl'}),el('h1',{text:'Watchlist'}));
+        const symbols=watchlist();
+        if(!symbols.length){root.append(el('p',{class:'v2-lead',text:'Noch keine Aktien gespeichert. Öffne eine Aktie und tippe auf „Zur Watchlist“.'}),el('a',{class:'v2-pill v2-pill-dark',href:'#/',text:'Aktien entdecken →'}));}
+        else{
+          const list=el('div',{class:'v2-watch-list'});root.append(list);
+          symbols.forEach(symbol=>{const row=el('div',{class:'v2-watch-row'},[el('a',{href:'#/s/'+ctx.universeId+'/'+encodeURIComponent(symbol),text:symbol}),el('button',{type:'button',text:'Entfernen','aria-label':symbol+' aus Watchlist entfernen'})]);row.querySelector('button').onclick=()=>{saveWatchlist(symbol);row.remove();if(!list.children.length)route();};list.append(row);});
+        }
       } else if(parts[0]==='welten'){
         root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten & Aktienwelten'}),el('p',{class:'v2-lead',text:'Megatrends, Branchen und Rankings. Wähle eine Welt und entdecke die Aktien dahinter.'}));
         root.append(el('div',{class:'v2-section-head'},[el('h2',{text:'Themenwelten'}),el('span',{text:V.Themes.all.length+' Welten'})]));
-        const themeGrid=el('div',{class:'v2-theme-grid'});
-        V.Themes.all.forEach(theme=>themeGrid.append(V.Home.themeTile(theme,ctx)));
-        root.append(themeGrid);
+        const jumps=el('nav',{class:'v2-theme-jumps','aria-label':'Themenbereiche'});root.append(jumps);
+        THEME_GROUPS.forEach(([group,label])=>{
+          const themes=V.Themes.all.filter(t=>t.group===group);if(!themes.length)return;
+          const jump=el('button',{type:'button',text:label});jump.onclick=()=>document.getElementById('v2-group-'+group)?.scrollIntoView({block:'start',behavior:'smooth'});jumps.append(jump);
+          const section=el('section',{class:'v2-theme-group',id:'v2-group-'+group});
+          section.append(el('div',{class:'v2-section-head'},[el('h2',{text:label}),el('span',{text:themes.length+' Themen'})]));
+          const grid=el('div',{class:'v2-theme-grid'});themes.forEach(t=>grid.append(V.Home.themeTile(t,ctx)));
+          section.append(grid);root.append(section);
+        });
         root.append(el('div',{class:'v2-section-head'},[el('h2',{text:'Aktienwelten'}),el('span',{text:'Rankings & Perspektiven'})]));
         const rows=(meta.rows||[]).find(entry=>entry.universeId===ctx.universeId);
         const worlds=el('div',{class:'v2-world-directory'});
@@ -135,10 +185,17 @@
         const count=row&&(row.cards||[]).length;
         root.append(V.Home.themeBanner(theme,{page:true,eyebrow:'Themenwelt '+String(theme.n).padStart(2,'0'),subtitle:theme.short+' — '+theme.line,
           evidence:count?count+' Aktien · Redaktionelle Themenzuordnung':'In Vorbereitung'}));
+        const overview=el('section',{class:'v2-theme-overview'},[el('h2',{text:'Überblick'}),el('p',{text:theme.line})]);
+        if(count)overview.append(el('p',{class:'v2-theme-facts',text:count+' Aktien aus dem Discover-Universum'+(row.asOf?' · Stand '+D.Cards.dateShort(row.asOf):'')+' · Redaktionelle Zuordnung'}));
+        root.append(overview);
         if(row&&count){
           if(row.rule){root.append(el('details',{class:'v2-rule'},[el('summary',{text:'Wie entsteht diese Auswahl?'}),el('p',{text:row.rule})]));}
           if(D.memory)D.memory.recordCollection(row.rowId||theme.rowId);
-          root.append(D.Cards.grid(row.cards,{rowId:row.rowId,universeId:ctx.universeId,world:row.world}));
+          const detailCtx=Object.assign({},ctx,{artworkDisposers:[]});
+          const featured=themeRail(row.cards.slice(0,4),detailCtx,'Im Blick',row.rowId);
+          const more=themeRail(row.cards.slice(4),detailCtx,'Weitere Aktien dieser Themenwelt',row.rowId);
+          if(featured)root.append(featured);if(more)root.append(more);
+          homeDispose=()=>detailCtx.artworkDisposers.forEach(dispose=>dispose());
         } else {
           const soon=el('section',{class:'v2-theme-soon'},[el('h2',{text:'Die Aktienauswahl entsteht gerade.'}),
             el('p',{text:'Diese Themenwelt wird redaktionell zusammengestellt. Bis dahin findest du einzelne Unternehmen über die Suche.'})]);
@@ -218,7 +275,8 @@
       document.querySelector('.v2-skip').onclick=event=>{event.preventDefault();const main=document.getElementById('v2-main');if(main){main.focus();main.scrollIntoView();}};
       let storage;try{storage=global.localStorage;}catch(_){}
       theme=D.Theme.create({storage,document,matchMedia:q=>global.matchMedia(q)});D.theme=theme;D.memory=D.Memory.create();
-      theme.onChange(syncThemeChrome);syncThemeChrome({resolved:theme.resolved()});
+      theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
+      document.querySelector('vu-navigation')?.renderSettings();
       setupSearch();global.addEventListener('hashchange',route);
       /* Zwei Gruende, neu zu zeichnen: die Kurse sind da, oder der
          Nutzer hat umgeschaltet. Discover rechnet nichts um; es
