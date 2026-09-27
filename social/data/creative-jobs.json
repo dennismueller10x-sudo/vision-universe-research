@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T05:14:09.558Z",
+  "generatedAt": "2026-09-27T05:30:01.678Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -784,9 +784,9 @@
       "processingKey": "brief_4bf3a500cb71afec:vu-web-32193db04816a8b3-20260926:befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b:1.0",
       "attempt": 2,
       "revision": null,
-      "state": "CREATIVE_JOB_REQUESTED",
+      "state": "CREATIVE_JOB_FAILED",
       "createdAt": "2026-09-27T05:14:09.558Z",
-      "updatedAt": "2026-09-27T05:14:09.558Z",
+      "updatedAt": "2026-09-27T05:30:01.678Z",
       "prNumber": null,
       "deliveryIds": [],
       "observedStarts": 0,
@@ -800,8 +800,14 @@
           "state": "CREATIVE_JOB_REQUESTED",
           "at": "2026-09-27T05:26:52.895Z",
           "note": "Anlauf-Korrektur: Register verlor den echten Anlauf 1 (PR #254) durch einen fehlgeschlagenen Festschreiben-Commit (Lauf #69). Dieser Job ist inhaltlich der zweite Anlauf zu dieser Story, nur ohne verlorene Historie - Anlauf-Nummer manuell auf 2 korrigiert, damit der Branch-Suffix (PR #253) die Kollision mit dem noch offenen Branch von PR #254 vermeidet."
+        },
+        {
+          "state": "CREATIVE_JOB_FAILED",
+          "at": "2026-09-27T05:30:01.678Z",
+          "note": "Der Brief zu diesem Job wurde nie committet (nur im fluechtigen Runner von Lauf #70 geschrieben) - kein Branch, kein PR, niemand hat je etwas gesehen. Ein echter, korrekt gehashter Anlauf folgt separat. — reconciled aus DISPATCH_NIE_ERFOLGT"
         }
-      ]
+      ],
+      "failureType": "NEVER_DISPATCHED"
     }
   ],
   "budget": {
