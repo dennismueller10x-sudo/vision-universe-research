@@ -153,6 +153,28 @@ html[data-theme=light] body.dv2 .v2-bar{background:#fff}
 }
 @media(max-width:360px){.dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{left:8px;right:8px}.dv2 .v2-dock .v2-nav-item{font-size:9px}.dv2 .v2-world-directory{grid-template-columns:1fr}.dv2 .v2-world-door{min-height:205px}}
 
+/* Discover navigation stays separate from the product menu. */
+.dv2 .v2-bar-caption{margin-left:auto;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--v2-muted)}
+.dv2 .v2-icon-settings:before{content:'⚙';position:absolute;inset:-3px 0 0;text-align:center;font-size:22px;line-height:22px}
+.dv2 .v2-settings{max-width:720px;margin:28px 0 80px;border-top:1px solid var(--v2-line)}
+.dv2 .v2-settings-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 0;border-bottom:1px solid var(--v2-line)}
+.dv2 .v2-settings-row h2{margin:0 0 5px;font-size:18px}.dv2 .v2-settings-row p{margin:0;font-size:13px;color:var(--v2-muted)}
+.dv2 .v2-settings-choices{display:flex;gap:3px;padding:3px;border:1px solid var(--v2-line);border-radius:12px;flex:none}
+.dv2 .v2-settings-choices button{border:0;border-radius:9px;background:transparent;color:var(--v2-ink);padding:9px 12px;min-height:40px}
+.dv2 .v2-settings-choices button[aria-pressed=true]{background:var(--v2-ink);color:var(--v2-bg)}
+.dv2 .v2-watch-button{display:block;margin:12px 0 0 auto;border:1px solid var(--v2-line);border-radius:99px;background:var(--v2-panel);color:var(--v2-ink);padding:12px 18px;min-height:44px;font-weight:700}
+.dv2 .v2-watch-button[aria-pressed=true]{background:var(--v2-ink);color:var(--v2-bg)}
+.dv2 .v2-watch-list{max-width:720px;margin:24px 0 80px}.dv2 .v2-watch-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 4px;border-bottom:1px solid var(--v2-line)}
+.dv2 .v2-watch-row a{font-size:18px;font-weight:750;text-decoration:none}.dv2 .v2-watch-row button{border:0;background:transparent;color:var(--v2-muted);min-height:44px}
+@media(max-width:760px){
+  .dv2 .v2-bar-caption{display:none}
+  .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{grid-template-columns:repeat(5,minmax(0,1fr));left:8px;right:8px;bottom:max(6px,env(safe-area-inset-bottom));padding:5px;gap:0}
+  .dv2 .v2-dock .v2-nav-item{min-height:58px;font-size:9px;gap:3px;padding:7px 1px;overflow:hidden}
+  .dv2 .v2-main{padding-bottom:130px}.dv2 .v2-footer{padding-bottom:155px}
+  .dv2 .v2-settings-row{align-items:flex-start;flex-direction:column;gap:12px}
+  body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 145px - env(safe-area-inset-bottom))}
+}
+
 /* Discovery 2.1 – Themenwelten-Uebersicht, Themenseiten und kompakte
    Sammlungen: mehrere Kacheln pro Bildschirm statt einer grossen. */
 .dv2 .v2-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:40px 0 14px}

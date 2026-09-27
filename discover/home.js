@@ -277,8 +277,8 @@
     var intro = node('header', 'v2-intro');
     var introCopy = node('div', 'v2-intro-copy');
     introCopy.appendChild(node('p', 'v2-intro-kicker', 'Entdecken. Verstehen. Investieren.'));
-    introCopy.appendChild(el('h1', {}, [el('span', { class: 'v2-intro-brand' }, [document.createTextNode('VISION UNIVERSE'), el('sup', { text: '®' })]), document.createTextNode(' '), node('span', 'v2-intro-product', 'Discovery')]));
-    introCopy.appendChild(el('p', { class: 'v2-intro-lead' }, [document.createTextNode('Neue Perspektiven. Starke Unternehmen. '), el('br'), document.createTextNode('Aktien entdecken und die Märkte von morgen klarer sehen.')]));
+    introCopy.appendChild(node('h1', '', 'Sieh den Markt mit anderen Augen.'));
+    introCopy.appendChild(node('p', 'v2-intro-lead', 'Entdecke Unternehmen, Trends und Themenwelten – und verstehe, was die Märkte von morgen bewegt.'));
     var actions = node('div', 'v2-intro-actions');
     actions.appendChild(link('Jetzt entdecken →', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-dark v2-intro-cta'));
     actions.appendChild(link('Themenwelten', '#/welten', 'v2-pill v2-pill-ghost'));
