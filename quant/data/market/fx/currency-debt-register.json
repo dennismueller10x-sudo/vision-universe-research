@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-debt-register-1.0.0",
-  "generatedAtUtc": "2026-09-27T05:49:12.615Z",
+  "generatedAtUtc": "2026-09-27T16:43:40.674Z",
   "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
   "classes": {
     "A": {
@@ -32,15 +32,15 @@
       "rule": "von Hand ansehen"
     }
   },
-  "total": 33,
+  "total": 32,
   "byClass": {
     "F": 22,
     "C": 5,
     "UNCLASSIFIED": 1,
-    "B": 4,
+    "B": 3,
     "E": 1
   },
-  "filesAffected": 16,
+  "filesAffected": 15,
   "migrationOrder": [],
   "migratedFiles": [
     "dashboard/app.js",
@@ -119,17 +119,6 @@
       "confidence": "NONE",
       "declaredReason": null,
       "text": "out.omitted.marginExpansion3y = { reason: \"REVENUE_TOO_SMALL\", detail: \"Umsatzbasis in FY\" + (latest - 3) + \" oder FY\" + latest + \" unter \" + PLAUSIBILITY.minRe"
-    },
-    {
-      "file": "discover/home.js",
-      "line": 312,
-      "rule": "trailingDollar",
-      "class": "B",
-      "label": "PERCENTAGE_OR_RATIO",
-      "action": "Niemals FX-Konvertierung. Formatierung ueber money-format.formatPercent/formatMultiple.",
-      "confidence": "HIGH",
-      "declaredReason": null,
-      "text": "function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleSt"
     },
     {
       "file": "discover/ui/cards.js",
