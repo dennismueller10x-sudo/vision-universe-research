@@ -82,9 +82,7 @@
     }
   }
   var tones = ['green', 'blue', 'violet', 'amber', 'teal', 'rose'];
-  /* Kompakte Aktien-Kachel: mehrere pro Bildschirm, seitlich wischbar.
-     Werte, Klartext, Kursverlauf und Frische stammen unveraendert aus den
-     kanonischen Renderern; die Kachel ordnet sie nur dichter an. */
+  /* Kompakte, seitlich wischbare Kachel mit kanonischen Werten und Kursreihen. */
   function tile(card, ctx, options) {
     options = options || {};
     var plain = D.Cards.klartext(card, options.rowId) || card.plain || {};
@@ -107,8 +105,8 @@
     a.appendChild(copy);
     var chartRange = options.range || '1J';
     var media = D.Cards.lazyArtwork(card, { width: options.large ? 420 : 300, height: options.large ? 120 : 90, range: chartRange, live: options.live !== false, ticker: false, scale: 'hero' });
-    a.appendChild(media);
-    var caption = node('span', 'v2-stock-caption'); a.appendChild(caption);
+    var stage = node('div', 'v2-tile-stage'); stage.appendChild(media);
+    var caption = node('span', 'v2-stock-caption'); stage.appendChild(caption); a.appendChild(stage);
     bindArtworkCaption(media, caption, card, ctx, chartRange);
     // Kurs der Karte mit ihrem Datum: Der Chart darueber kann eine neuere
     // Sitzung zeigen, eine Tagesveraenderung ohne Datum wuerde dem widersprechen.
@@ -120,7 +118,7 @@
     }
     foot.appendChild(node('span', 'v2-stock-cta', '↗'));
     a.appendChild(foot);
-    return a;
+    return D.Featured.compact(card, ctx, a, stage);
   }
   /* ---------- Themenwelten ---------- */
   var T = function () { return V.Themes; };
@@ -214,6 +212,7 @@
   }
   function marketPulse() {
     var section=node('section','v2-pulse-teaser');section.dataset.surface='market-pulse';
+    section.dataset.archetype='market';
     var copy=node('div','');copy.append(node('p','v2-eyebrow','Discover · Märkte'),node('h2','','Market Pulse'),node('p','v2-pulse-statement','Wie sieht der Markt gerade insgesamt aus?'));
     copy.appendChild(link('Market Pulse öffnen →','#/maerkte','v2-pill v2-pill-light'));section.appendChild(copy);
     S.loadJSON('/quant/data/market/intelligence/market-pulse.json').then(function(p){
@@ -231,6 +230,7 @@
   ];
   function topStocks(surfaces,ctx) {
     var section=node('section','v2-top-stocks v2-world');section.dataset.surface='top-aktien';
+    section.dataset.archetype='ranking';
     var head=node('div','v2-world-head');head.append(node('h2','','Top-Aktien'),node('p','v2-world-subtitle','Fünf Perspektiven auf Aktien im Discover-Universum.'));
     section.appendChild(head);
     var tabs=el('div',{class:'v2-top-tabs',role:'tablist','aria-label':'Aktienauswahl'}),panels=node('div','v2-top-panels');
@@ -349,6 +349,7 @@
     function addCollection(surface){
       if(!collections){
         collections=node('section','v2-collection-directory v2-world');collections.dataset.surface='weitere-perspektiven';
+        collections.dataset.archetype='directory';
         collections.append(node('p','v2-eyebrow','Weiter entdecken'),node('h2','','Weitere Perspektiven'),node('p','v2-world-subtitle','Entdecke weitere Aktienwelten und öffne die Auswahl, die dich interessiert.'));
         collections.appendChild(node('div','v2-collection-links'));body.appendChild(collections);
       }

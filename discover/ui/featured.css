@@ -10,6 +10,8 @@ body.dv2 .v2-focus-stage{min-height:225px;margin:8px 0 15px}
 body.dv2 .v2-focus-stage .dx-lazy-media{height:205px}
 body.dv2 .v2-focus .dx-art-line{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
 body.dv2 .v2-focus-stage .v2-stock-caption{display:block;margin-top:3px;font-size:10px;color:var(--tile-muted)}
+body.dv2 .v2-stock-market-cap{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:6px 0 10px;color:var(--tile-muted);font-size:12px}
+body.dv2 .v2-stock-market-cap strong{color:var(--tile-ink);font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 body.dv2 .v2-focus-tabs{display:flex;gap:4px;max-width:520px;padding:4px;border:1px solid var(--v2-line);border-radius:99px;background:color-mix(in srgb,var(--tile-base) 86%,#cdd2d7)}
 body.dv2 .v2-focus-tabs button{flex:1;min-height:38px;border:0;border-radius:99px;background:transparent;color:var(--tile-ink);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
 body.dv2 .v2-focus-tabs button[aria-selected=true]{background:#c8f531;color:#101318;box-shadow:0 2px 8px rgba(20,30,12,.1)}
@@ -23,6 +25,26 @@ body.dv2 .v2-focus-bar small{font-size:10px;color:var(--tile-muted)}
 body.dv2 .v2-focus-empty{padding:70px 10px;text-align:center;color:var(--tile-muted)}
 body.dv2 .v2-focus-story{margin:16px 0;color:var(--tile-muted);font-size:14px;line-height:1.45;max-width:68ch}
 body.dv2 .v2-focus-cta{display:inline-flex;align-items:center;min-height:40px;padding:0 18px;border-radius:99px;background:color-mix(in srgb,#c8f531 28%,var(--tile-base))}
+body.dv2 .v2-tile-shell{--tt:#1faa59;container-type:inline-size;display:flex;flex-direction:column;height:100%;min-width:0;overflow:hidden;border:1px solid color-mix(in srgb,var(--tt) 16%,var(--v2-line));border-radius:16px;background:linear-gradient(172deg,color-mix(in srgb,var(--tt) 2%,var(--tile-base)),color-mix(in srgb,var(--tt) 9%,var(--tile-base)));box-shadow:0 6px 20px rgba(16,20,28,.05)}
+body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=blue]){--tt:#3867ff}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=violet]){--tt:#8a4dff}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=amber]){--tt:#f0a020}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=teal]){--tt:#16a3a0}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=rose]){--tt:#e0567a}
+body.dv2 .v2-tile-shell .v2-tile{height:auto;flex:1;border:0;border-radius:0;box-shadow:none;background:transparent;padding-bottom:5px}
+body.dv2 .v2-tile-shell .v2-tile:hover{transform:none;box-shadow:none}
+body.dv2 .v2-tile-shell:has(.v2-tile:hover){box-shadow:0 14px 34px rgba(16,20,28,.1)}
+body.dv2 .v2-tile-stage{display:flex;flex-direction:column;justify-content:flex-end;min-height:86px;margin-top:auto}
+body.dv2 .v2-tile-stage .dx-lazy-media{margin:0 -13px;flex:none}
+body.dv2 .v2-tile-shell .v2-focus-tabs{margin:0 8px;max-width:none;gap:1px;padding:2px}
+body.dv2 .v2-tile-shell .v2-focus-tabs button{min-height:30px;min-width:0;padding:0 2px;font-size:9px}
+body.dv2 .v2-tile-shell .v2-stock-market-cap{margin:4px 11px 9px;font-size:9.5px}
+body.dv2 .v2-tile-shell .v2-stock-market-cap strong{font-size:10.5px}
+body.dv2 .v2-tile-stage .v2-focus-bars{height:65px;gap:2px;padding-top:3px}
+body.dv2 .v2-tile-stage .v2-focus-bar{gap:2px}body.dv2 .v2-tile-stage .v2-focus-bar small{font-size:8px}
+body.dv2 .v2-tile-stage .v2-focus-empty{font-size:10px;padding:22px 2px;margin:0}
+body.dv2 .v2-tile-stage .v2-stock-caption{display:block;font-size:8.5px;color:var(--tile-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@container(max-width:185px){
+  body.dv2 .v2-tile-shell .v2-focus-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.dv2 .v2-tile-shell .v2-focus-tabs button{min-height:27px}
+  body.dv2 .v2-tile-shell .v2-stock-market-cap{display:grid;gap:2px}
+}
 @keyframes v2-bar-grow{from{transform:scaleY(.05)}to{transform:scaleY(1)}}
 @media(max-width:700px){
   body.dv2 .v2-focus{padding:20px 16px;border-radius:20px}
@@ -31,5 +53,7 @@ body.dv2 .v2-focus-cta{display:inline-flex;align-items:center;min-height:40px;pa
   body.dv2 .v2-focus-stage{min-height:190px}body.dv2 .v2-focus-stage .dx-lazy-media{height:168px}
   body.dv2 .v2-focus-bars{height:165px;gap:3px}body.dv2 .v2-focus-bar small{font-size:9px}
   body.dv2 .v2-focus-tabs button{font-size:11px}
+  body.dv2 .v2-tile-shell .v2-focus-tabs button{font-size:9px;min-height:32px}
+  body.dv2 .v2-tile-stage .dx-lazy-media{margin-inline:-10px}
 }
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-focus-bar-fill{animation:none}}
