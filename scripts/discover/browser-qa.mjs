@@ -109,7 +109,31 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' incremental view resource budget',async()=>{const resources=performance.at(-1).resources.filter(r=>/^\/discover\/(app|home|detail|themes)\.(js|css)$/.test(new URL(r.url).pathname));assert(resources.reduce((n,r)=>n+r.bytes,0)<=180000,'New view scripts/styles exceed 180 KB decoded');assert(resources.length<=12,'New view adds more than 12 requests');});
  await check(key+' stable first render performance',async()=>{const metrics=await page.evaluate(()=>({...window.__dv2Vitals,domNodes:document.querySelectorAll('*').length}));performance.at(-1).vitals=metrics;assert(metrics.cls<=.15,'Cumulative layout shift exceeds 0.15: '+metrics.cls);assert(metrics.domNodes<=3000,'Initial home DOM is too large: '+metrics.domNodes);assert(metrics.longTaskMs<=1800,'First render accumulated excessive long tasks: '+metrics.longTaskMs);});
  await check(key+' home accessibility',()=>a11y(page,key+'-home'));
- await check(key+' navigation shows one Discover',async()=>{const nav=page.locator('vu-navigation');assert.equal(await nav.locator('a[href="/discover/"]').count(),1);assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);assert.equal(await nav.locator('a',{hasText:/Discover\s*(1\.0|2\.0|2\.1)/}).count(),0);});
+ await check(key+' shared menu separates Discover from platform products',async()=>{
+  const nav=page.locator('vu-navigation');
+  const destinations=await nav.locator('.group:first-child .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
+  assert.deepEqual(destinations.map(x=>x.label),['Start','Welten','Entdecken','Suchen','Märkte','Watchlist']);
+  assert(destinations.every(x=>x.href.startsWith('/discover/#/')),'Discover shortcuts must stay inside Discover');
+  assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
+  if(width<500){
+   const header=await nav.evaluate(n=>{const root=n.shadowRoot,row=root.querySelector('.row').getBoundingClientRect(),brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,row:row.toJSON(),brand:brand.toJSON(),button:button.toJSON(),section:getComputedStyle(root.querySelector('.section')).display};});
+   assert(header.brand.left>=0&&header.button.right<=header.viewport&&header.button.left>=header.brand.right,'Mobile header overflows: '+JSON.stringify(header));
+   assert.equal(header.section,'none');
+   await nav.locator('.toggle').click();
+   const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,background:getComputedStyle(root.querySelector('.panel')).backgroundColor};});
+   assert(panel.left>=0&&panel.right<=header.viewport+1&&panel.columns===1,'Mobile menu overflows or uses columns: '+JSON.stringify(panel));
+   await nav.locator('.close').click();
+  }
+ });
+ if(engine==='chromium'&&width===390&&colorScheme==='light')await check('platform home mobile menu stays in viewport',async()=>{
+  const home=await ctx.newPage();
+  try{
+   await home.goto(base+'/',{waitUntil:'domcontentloaded'});
+   const bounds=await home.locator('vu-navigation').evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),button:button.toJSON(),tagline:getComputedStyle(root.querySelector('.section')).display};});
+   assert(bounds.brand.left>=0&&bounds.button.right<=bounds.viewport&&bounds.button.left>=bounds.brand.right,'Platform header overflows: '+JSON.stringify(bounds));
+   assert.equal(bounds.tagline,'none');
+  }finally{await home.close();}
+ });
  await screenshot(page,key+'-home');
  await check(key+' hero horizontal exploration',async()=>{
   const track=page.locator('.v2-hero-track');assert(await track.locator('[data-symbol]').count()>=2,'Hero needs another canonical stock');
