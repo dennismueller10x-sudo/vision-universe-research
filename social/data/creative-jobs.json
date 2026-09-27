@@ -777,12 +777,12 @@
       ]
     },
     {
-      "creativeJobId": "job_vu-web-32193db04816a8b3-20260926:befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b:attempt1",
+      "creativeJobId": "job_vu-web-32193db04816a8b3-20260926:befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b:attempt2",
       "contentId": "vu-web-32193db04816a8b3-20260926",
       "briefId": "brief_4bf3a500cb71afec",
       "briefBlobSha": "befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b",
       "processingKey": "brief_4bf3a500cb71afec:vu-web-32193db04816a8b3-20260926:befa3fcd02dff9b4cb1015d75ece9a0e14a1af9b:1.0",
-      "attempt": 1,
+      "attempt": 2,
       "revision": null,
       "state": "CREATIVE_JOB_REQUESTED",
       "createdAt": "2026-09-27T05:14:09.558Z",
@@ -795,6 +795,11 @@
           "state": "CREATIVE_JOB_REQUESTED",
           "at": "2026-09-27T05:14:09.558Z",
           "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-09-27T05:26:52.895Z",
+          "note": "Anlauf-Korrektur: Register verlor den echten Anlauf 1 (PR #254) durch einen fehlgeschlagenen Festschreiben-Commit (Lauf #69). Dieser Job ist inhaltlich der zweite Anlauf zu dieser Story, nur ohne verlorene Historie - Anlauf-Nummer manuell auf 2 korrigiert, damit der Branch-Suffix (PR #253) die Kollision mit dem noch offenen Branch von PR #254 vermeidet."
         }
       ]
     }
