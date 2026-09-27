@@ -65,6 +65,11 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/market/publish-long-series.mjs
 
+      - name: Abhaengige Discover-Daten neu bauen
+        run: |
+          node scripts/discover/build-discover-data.mjs
+          node scripts/discover/verify-discover-data.mjs
+
       - name: Public-Data-Hygiene
         run: node scripts/market/assert-public-data-hygiene.mjs
 
@@ -84,11 +89,18 @@ jobs:
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A quant/data/market/discover-series-long
+          git add -A quant/data/market/discover-series-long discover/data
           if git diff --cached --quiet; then
             echo "Keine Aenderung."
           else
             git commit -m "Lange Kursreihen: $(node -e 'const i=require("./quant/data/market/discover-series-long/index.json");console.log(i.count+" Wochenreihen, "+JSON.stringify(i.summary))')"
             git pull --rebase
+            # Nach einem Rebase koennen andere Daten-Workflows die Inputs
+            # geaendert haben. Den gemeinsamen Commit auf diesem Stand
+            # erneut pruefen, bevor irgendetwas veroeffentlicht wird.
+            node scripts/discover/build-discover-data.mjs
+            node scripts/discover/verify-discover-data.mjs
+            git add -A discover/data
+            if ! git diff --cached --quiet; then git commit --amend --no-edit; fi
             git push
           fi
