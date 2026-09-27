@@ -301,6 +301,17 @@
   }
   function story(surface, ctx) {
     var card = surface.cards[0], rows = (surface.compare && surface.compare.rows || []).filter(function (r) { return r.then && r.now && Number.isFinite(r.then.value) && Number.isFinite(r.now.value); });
+    // Diese Unternehmensgeschichte ist kein passender Discover-Einstieg.
+    // Der visuelle Break nutzt nur bestehende Navigationsziele; keine Kursdaten werden erfunden.
+    if (card && card.symbol === 'LHX') {
+      var interlude = node('section', 'v2-motion-interlude');
+      interlude.dataset.archetype = 'visual-interlude';
+      interlude.append(node('p', 'v2-eyebrow', 'Weiter entdecken'), node('h2', '', 'Neue Perspektiven auf den Markt.'));
+      var art = node('div', 'v2-motion-art'); art.setAttribute('aria-hidden', 'true');
+      for (var i = 0; i < 6; i++) art.appendChild(node('span', 'v2-motion-orbit v2-motion-orbit-' + (i + 1)));
+      interlude.append(art, link('Aktien entdecken ↗', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-light'));
+      return interlude;
+    }
     // Signed comparisons stay with the canonical renderer and its zero baseline.
     if (rows.some(function (r) { return r.then.value < 0 || r.now.value < 0; })) return D.Surfaces.render(surface, ctx);
     if (!rows.length) return D.Surfaces.render(surface, ctx);
@@ -357,6 +368,11 @@
     if (!home || !home.chunks || !home.chunks.length) { loading.textContent = 'Die Entdeckungsseite ist momentan nicht verfügbar. Die Suche bleibt erreichbar.'; return; }
     var seen = new Set(), count = 0, observer, rankings=[],topRendered=false,pulseRendered=false,collections=null;
     function active() { return page.isConnected; }
+    var perspectiveArt = {
+      'profitables-wachstum':['↗','Wachstum schafft Chancen'], 'comeback':['↺','Neuer Anlauf'],
+      'relative-strength':['△','Einen Schritt voraus'], 'qualitaet-wachstum':['✦','Stabilität für morgen'],
+      'bekannte-namen':['◎','Bekannte Namen'], 'fundamentale-turnarounds':['↺','Neustart']
+    };
     function addCollection(surface){
       if(!collections){
         collections=node('section','v2-collection-directory v2-world');collections.dataset.surface='weitere-perspektiven';
@@ -364,7 +380,12 @@
         collections.appendChild(node('div','v2-collection-links'));body.appendChild(collections);
       }
       var href=surface.href||('#/c/'+ctx.universeId+'/'+surface.rowId);
-      var a=link('',href,'v2-collection-link');a.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'),node('span','v2-collection-arrow','↗'));
+      var a=link('',href,'v2-collection-link');
+      var visual=node('span','v2-collection-art');visual.setAttribute('aria-hidden','true');
+      var art=perspectiveArt[surface.id]||['✳','Neue Perspektive'];
+      visual.append(node('span','v2-collection-glyph',art[0]),node('span','v2-collection-art-label',art[1]));
+      var copy=node('span','v2-collection-copy');copy.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'));
+      a.append(visual,copy,node('span','v2-collection-arrow','→'));
       collections.querySelector('.v2-collection-links').appendChild(a);
     }
     function draw(surface) {
