@@ -31,10 +31,16 @@ for(const f of visible){
   assert.doesNotMatch(src,/['"]\/discover-v2\//,f+' verweist auf /discover-v2/');
 }
 
-// 3. Die Consumer-Navigation kennt genau einen Discover-Eintrag.
+// 3. Die Consumer-Navigation verweist auf genau eine Discover-Implementierung.
+//    Die Kurzwege innerhalb dieser Gruppe sind Routen desselben Produkts.
 const nav=readFileSync('assets/site-navigation.js','utf8');
-const entries=[...nav.matchAll(/\['(Discover[^']*)',\s*'([^']+)'(?:,\s*'[^']*')?\]/g)].map(m=>m[1]+' '+m[2]);
-assert.deepEqual(entries,['Discover /discover/'],'Navigation: '+JSON.stringify(entries));
+const discoverGroup=nav.match(/\['Discover',\s*\[(.*?)\]\],\s*\n\s*\['Markets & Data'/s)?.[1];
+assert(discoverGroup,'Discover-Gruppe fehlt');
+const entries=[...discoverGroup.matchAll(/\['([^']+)',\s*'(\/discover\/[^']*)'/g)].map(m=>m[1]+' '+m[2]);
+assert.deepEqual(entries,[
+  'Start /discover/#/','Welten /discover/#/welten','Entdecken /discover/#/einzeln/US_REAL',
+  'Suchen /discover/#/suche','Märkte /discover/#/maerkte','Watchlist /discover/#/watchlist'
+],'Navigation: '+JSON.stringify(entries));
 
 // 4. Der Frontend-Vertrag (Freshness, Source State, Eligibility, Zero Cost).
 const contract=JSON.parse(execFileSync(process.execPath,['scripts/discover/contract-qa.mjs'],{maxBuffer:4*1024*1024}).toString());

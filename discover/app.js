@@ -71,10 +71,8 @@
   function shell() {
     const host=document.getElementById('v2-shell'); S.clear(host);
     const bar=el('div',{class:'v2-bar'},[
-      el('a',{href:'#/',class:'v2-wordmark',text:'Discover'}),
       el('a',{href:'#/maerkte',class:'v2-markets-link',text:'Märkte',...(location.hash.startsWith('#/maerkte')?{'aria-current':'page'}:{})}),
-      el('span',{class:'v2-bar-caption',text:'Entdecken. Verstehen. Investieren.'}),
-      el('a',{href:'#/watchlist',class:'v2-watch-link',text:'♡ Watchlist'})
+      el('span',{class:'v2-bar-caption',text:'Entdecken. Verstehen. Investieren.'})
     ]);
     const main=el('main',{id:'v2-main',class:'v2-main',tabindex:'-1'});
     const dock=navigation();
