@@ -212,6 +212,7 @@
   }
   function marketPulse() {
     var section=node('section','v2-pulse-teaser');section.dataset.surface='market-pulse';
+    section.dataset.archetype='market';
     var copy=node('div','');copy.append(node('p','v2-eyebrow','Discover · Märkte'),node('h2','','Market Pulse'),node('p','v2-pulse-statement','Wie sieht der Markt gerade insgesamt aus?'));
     copy.appendChild(link('Market Pulse öffnen →','#/maerkte','v2-pill v2-pill-light'));section.appendChild(copy);
     S.loadJSON('/quant/data/market/intelligence/market-pulse.json').then(function(p){
@@ -348,6 +349,7 @@
     function addCollection(surface){
       if(!collections){
         collections=node('section','v2-collection-directory v2-world');collections.dataset.surface='weitere-perspektiven';
+        collections.dataset.archetype='directory';
         collections.append(node('p','v2-eyebrow','Weiter entdecken'),node('h2','','Weitere Perspektiven'),node('p','v2-world-subtitle','Entdecke weitere Aktienwelten und öffne die Auswahl, die dich interessiert.'));
         collections.appendChild(node('div','v2-collection-links'));body.appendChild(collections);
       }
