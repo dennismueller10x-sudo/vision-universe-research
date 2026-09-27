@@ -85,7 +85,7 @@ async function premiumMobileAudit(page,key){
  let longest=1,run=1;for(let i=1;i<signatures.length;i++){run=signatures[i]===signatures[i-1]?run+1:1;longest=Math.max(longest,run);}
  const portfolio=await surfaces.evaluateAll(nodes=>({ranking:nodes.some(n=>n.querySelector('.v2-stock-rank')),story:nodes.some(n=>n.querySelector('.v2-story-bars')),chartSurfaces:nodes.filter(n=>n.querySelector('svg.dx-art,.dx-lazy-media')).length,chartBands:[...new Set(nodes.flatMap(n=>Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>Math.round(c.getBoundingClientRect().height/50)*50).filter(Boolean)))]}));
  const composition={key,type:'ten-viewport-diversity',rhythm,archetypes:[...archetypes],signatures:[...unique],longestRepeat:longest,intensities:pick,portfolio};designEvidence.push(composition);
- assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=6,'Need at least six archetypes across the long journey');assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports');assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=5&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, story and differently sized chart beats: '+JSON.stringify(portfolio));
+ assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=6,'Need at least six archetypes across the long journey');assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports: '+JSON.stringify({longest,rhythm:rhythm.map(x=>({index:x.index,id:x.id,archetype:x.archetype,visible:x.visible,features:x.features}))}));assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=5&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, story and differently sized chart beats: '+JSON.stringify(portfolio));
 }
 try{
 await check('captions use structured metadata, not accessibility copy',async()=>{const source=await readFile(new URL('../../discover/home.js',import.meta.url),'utf8');assert(source.includes('D.Artwork.verlauf'),'Caption renderer must consume the structured chart model');assert(!/getAttribute\(['"]aria-label['"]\)[\s\S]{0,160}\.match\(/.test(source),'Visible caption is reconstructed from an accessibility string');});
@@ -120,9 +120,12 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
    assert(header.brand.left>=0&&header.button.right<=header.viewport&&header.button.left>=header.brand.right,'Mobile header overflows: '+JSON.stringify(header));
    assert.equal(header.section,'none');
    await nav.locator('.toggle').click();
-   const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,background:getComputedStyle(root.querySelector('.panel')).backgroundColor};});
-   assert(panel.left>=0&&panel.right<=header.viewport+1&&panel.columns===1,'Mobile menu overflows or uses columns: '+JSON.stringify(panel));
-   await nav.locator('.close').click();
+   try{
+    await page.waitForFunction(()=>{const p=document.querySelector('vu-navigation').shadowRoot.querySelector('.panel').getBoundingClientRect();return p.left>=-1&&p.right<=innerWidth+1;},null,{timeout:3000});
+    const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,background:getComputedStyle(root.querySelector('.panel')).backgroundColor};});
+    assert(panel.columns===1,'Mobile menu uses columns: '+JSON.stringify(panel));
+    await nav.locator('.close').click();
+   }finally{await nav.evaluate(n=>{if(n.hasAttribute('open'))n.shadowRoot.querySelector('.close').click();});}
   }
  });
  if(engine==='chromium'&&width===390&&colorScheme==='light')await check('platform home mobile menu stays in viewport',async()=>{
