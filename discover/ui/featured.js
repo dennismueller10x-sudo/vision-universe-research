@@ -22,7 +22,7 @@
       buttons.forEach(function(b,j){b.setAttribute('aria-selected',String(j===i));b.tabIndex=j===i?0:-1;});
       var mode=modes[i],points=annual(mode[0]).filter(function(p){return Number.isFinite(p.v)&&Number.isFinite(p.fy);}).slice(-8);
       stage.replaceChildren();stage.setAttribute('aria-label',mode[1]);
-      if(i===0){var media=D.Cards.lazyArtwork(card,{width:720,height:220,range:'1J',live:true,ticker:false,scale:'hero'});stage.appendChild(media);stage.appendChild(node('span','v2-stock-caption','Kursverlauf · letzter verfügbarer Handelsstand'));return;}
+      if(i===0){var media=D.Cards.lazyArtwork(card,{width:720,height:220,range:'1J',live:false,ticker:false,scale:'hero'});stage.appendChild(media);stage.appendChild(node('span','v2-stock-caption','Kursverlauf · 1 Jahr · Tagesschlusskurse'+(card.priceSeries&&card.priceSeries.asOf?' · Stand '+D.Cards.dateShort(card.priceSeries.asOf):'')));return;}
       if(points.length<2){stage.appendChild(node('p','v2-focus-empty','Für diese Kennzahl liegen noch keine vergleichbaren Geschäftsjahre vor.'));return;}
       var values=points.map(function(p){return p.v;}),min=Math.min(0,Math.min.apply(null,values)),max=Math.max(0,Math.max.apply(null,values)),span=max-min||1;
       var chart=el('div',{class:'v2-focus-bars',role:'img','aria-label':mode[1]+' nach Geschäftsjahr: '+points.map(function(p){return p.fy+' '+(p.v/1e9).toLocaleString('de-DE',{maximumFractionDigits:1})+' Milliarden US-Dollar';}).join(', ')});
