@@ -300,31 +300,15 @@
     return section;
   }
   function story(surface, ctx) {
-    var card = surface.cards[0], rows = (surface.compare && surface.compare.rows || []).filter(function (r) { return r.then && r.now && Number.isFinite(r.then.value) && Number.isFinite(r.now.value); });
-    // Signed comparisons stay with the canonical renderer and its zero baseline.
-    if (rows.some(function (r) { return r.then.value < 0 || r.now.value < 0; })) return D.Surfaces.render(surface, ctx);
-    if (!rows.length) return D.Surfaces.render(surface, ctx);
-    var section = node('section', 'v2-business-story'); section.dataset.archetype = 'business-story';
-    section.appendChild(node('p', 'v2-eyebrow', 'Hinter dem Kurs · Die Unternehmensentwicklung'));
-    section.appendChild(node('h2', '', card.companyName || card.symbol));
-    var tabs = el('div', { class: 'v2-story-tabs', role: 'tablist', 'aria-label': 'Unternehmenskennzahl' });
-    var panel = el('div', { class: 'v2-story-panel', role: 'tabpanel', id: 'v2-story-' + surface.id });
-    function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleString('de-DE', { notation: 'compact', maximumFractionDigits: 1 }) + (row.unit === 'USD' ? ' $' : row.unit === 'USD/shares' ? ' $ je Aktie' : ''); }
-    function select(index) {
-      var row = rows[index]; panel.replaceChildren();
-      Array.from(tabs.children).forEach(function (button, i) { button.setAttribute('aria-selected', String(i === index)); button.tabIndex = i === index ? 0 : -1; });
-      panel.setAttribute('aria-labelledby', 'v2-story-tab-' + surface.id + '-' + index);
-      var statements = surface.story && surface.story.statements || [], statement = statements.find(function (s) { var e = s.evidence; return e && e.metric === row.id && e.periodStart && e.periodEnd && e.periodStart.fy === row.then.fy && e.periodEnd.fy === row.now.fy && e.valueStart === row.then.value && e.valueEnd === row.now.value; });
-      if (statement) panel.appendChild(node('p', 'v2-story-statement', statement.text));
-      var bars = node('div', 'v2-story-bars'), scale = Math.max(Math.abs(row.then.value), Math.abs(row.now.value), 1);
-      ['then', 'now'].forEach(function (key) { var datum = row[key], column = node('div', 'v2-story-column'); column.appendChild(node('strong', '', fmt(row, datum.value))); var bar = node('div', 'v2-story-bar'); bar.style.height = Math.max(3, Math.abs(datum.value) / scale * 190) + 'px'; bar.setAttribute('aria-hidden', 'true'); if (datum.value < 0) bar.classList.add('is-negative'); column.appendChild(bar); column.appendChild(node('span', '', String(datum.fy))); bars.appendChild(column); });
-      panel.appendChild(bars);
-      panel.appendChild(node('p', 'v2-story-evidence', 'Vergleich zweier Geschäftsjahre · ' + row.label + ' · ' + (row.unit || '') + ' · SEC · Stand ' + D.Cards.dateShort(row.evidence && row.evidence.asOf || surface.story && surface.story.asOf)));
-    }
-    rows.forEach(function (row, index) { var button = el('button', { class: 'v2-story-tab', type: 'button', role: 'tab', id: 'v2-story-tab-' + surface.id + '-' + index, 'aria-controls': panel.id, text: row.label }); button.addEventListener('click', function () { select(index); }); button.addEventListener('keydown', function (event) { var next = event.key === 'ArrowRight' ? (index + 1) % rows.length : event.key === 'ArrowLeft' ? (index + rows.length - 1) % rows.length : event.key === 'Home' ? 0 : event.key === 'End' ? rows.length - 1 : null; if (next !== null) { event.preventDefault(); select(next); tabs.children[next].focus(); } }); tabs.appendChild(button); });
-    section.appendChild(tabs); section.appendChild(panel); select(0);
-    section.appendChild(link('Das Unternehmen entdecken ↗', '#/s/' + ctx.universeId + '/' + encodeURIComponent(card.symbol), 'v2-story-link'));
-    return section;
+    var card = surface.cards && surface.cards[0];
+    if (!card || card.symbol !== 'LHX') return D.Surfaces.render(surface, ctx);
+    var interlude = node('section', 'v2-motion-interlude');
+    interlude.dataset.archetype = 'visual-interlude';
+    interlude.append(node('p', 'v2-eyebrow', 'Weiter entdecken'), node('h2', '', 'Neue Perspektiven auf den Markt.'));
+    var art = node('div', 'v2-motion-art'); art.setAttribute('aria-hidden', 'true');
+    for (var i = 0; i < 6; i++) art.appendChild(node('span', 'v2-motion-orbit v2-motion-orbit-' + (i + 1)));
+    interlude.append(art, link('Aktien entdecken ↗', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-light'));
+    return interlude;
   }
   async function render(root, ctx) {
     ctx = Object.assign({}, ctx, { artworkDisposers: [] });
@@ -357,6 +341,11 @@
     if (!home || !home.chunks || !home.chunks.length) { loading.textContent = 'Die Entdeckungsseite ist momentan nicht verfügbar. Die Suche bleibt erreichbar.'; return; }
     var seen = new Set(), count = 0, observer, rankings=[],topRendered=false,pulseRendered=false,collections=null;
     function active() { return page.isConnected; }
+    var perspectiveArt = {
+      'profitables-wachstum':['↗','Wachstum schafft Chancen'], 'comeback':['↺','Neuer Anlauf'],
+      'relative-strength':['△','Einen Schritt voraus'], 'qualitaet-wachstum':['✦','Stabilität für morgen'],
+      'bekannte-namen':['◎','Bekannte Namen'], 'fundamentale-turnarounds':['↺','Neustart']
+    };
     function addCollection(surface){
       if(!collections){
         collections=node('section','v2-collection-directory v2-world');collections.dataset.surface='weitere-perspektiven';
@@ -364,7 +353,12 @@
         collections.appendChild(node('div','v2-collection-links'));body.appendChild(collections);
       }
       var href=surface.href||('#/c/'+ctx.universeId+'/'+surface.rowId);
-      var a=link('',href,'v2-collection-link');a.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'),node('span','v2-collection-arrow','↗'));
+      var a=link('',href,'v2-collection-link');
+      var visual=node('span','v2-collection-art');visual.setAttribute('aria-hidden','true');
+      var art=perspectiveArt[surface.id]||['✳',title(surface.title)];
+      visual.append(node('span','v2-collection-glyph',art[0]),node('span','v2-collection-art-label',art[1]));
+      var copy=node('span','v2-collection-copy');copy.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'));
+      a.append(visual,copy,node('span','v2-collection-arrow','→'));
       collections.querySelector('.v2-collection-links').appendChild(a);
     }
     function draw(surface) {

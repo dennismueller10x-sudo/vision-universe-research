@@ -8,6 +8,25 @@
     ['Learn', [['Academy','/academy/','✧'],['Guide','/guide/','◈']]],
     ['Tools & Personal', [['Budget','/budget/','▦']]]
   ];
+  const iconPaths = {
+    '⌂':'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+    '◎':'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/>',
+    '◇':'<rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8 12 3 3 5-6"/>',
+    '⌕':'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/>',
+    '≋':'<path d="M2 9c3-3 5 3 8 0s5-3 8 0 3 2 4 1M2 15c3-3 5 3 8 0s5-3 8 0 3 2 4 1"/>',
+    '♡':'<path d="M20.8 8.5c0 4-4.4 7.6-8.8 11-4.4-3.4-8.8-7-8.8-11a5 5 0 0 1 8.8-3.1 5 5 0 0 1 8.8 3.1z"/>',
+    '▧':'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16v-4m5 4V8m5 8v-6"/>',
+    '◫':'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M3 10h18"/>',
+    '⌁':'<path d="m2 15 5-6 4 4 5-9 6 5M2 20h20"/>',
+    '♙':'<circle cx="12" cy="6" r="2"/><path d="M8 18h8l-1-7H9zM6 21h12"/>',
+    '▤':'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+    '☼':'<circle cx="12" cy="12" r="4"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2"/>',
+    '▣':'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10v6H7zM7 17h10"/>',
+    '▥':'<path d="M5 3h10l4 4v14H5zM15 3v5h4M8 12h8M8 16h8"/>',
+    '✧':'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>',
+    '◈':'<path d="m12 2 10 10-10 10L2 12zM12 7l5 5-5 5-5-5z"/>',
+    '▦':'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12m6-12v12"/>'
+  };
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
      Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
@@ -43,7 +62,7 @@
         .panel h2{font-size:11px;text-transform:uppercase;letter-spacing:.14em;margin:0 0 9px;padding-bottom:9px;border-bottom:1px solid #ffffff30;color:#e8ebe8}
         .groups{display:grid;gap:22px}.group.is-current h2{color:#c8f531;border-color:#c8f53170}.group.is-current .links a[aria-current=page]{background:#c8f531;color:#101318}
         .links{display:grid;grid-template-columns:1fr;gap:2px}.links a{color:#f5f6f2;text-decoration:none;display:flex;align-items:center;gap:12px;padding:8px 10px;min-height:42px;font-size:13px;border-radius:9px}.links a:hover{background:#ffffff17}
-        .icon{width:20px;flex:none;text-align:center;font-size:18px}.settings{margin-top:24px;padding-top:20px;border-top:1px solid #ffffff30}.setting{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0;font-size:12px}
+        .icon{width:34px;height:34px;flex:none;display:grid;place-items:center;color:#f5f6f2}.icon svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.links a[aria-current=page] .icon{color:#101318}.settings{margin-top:24px;padding-top:20px;border-top:1px solid #ffffff30}.setting{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0;font-size:12px}
         .choices{display:flex;border:1px solid #ffffff38;border-radius:10px;padding:3px;gap:2px}.choices button,.choices a{display:block;border:0;border-radius:7px;background:transparent;color:#f5f6f2;padding:7px 9px;min-width:40px;font-size:11px;text-align:center;text-decoration:none}.choices [aria-pressed=true]{background:#f5f6f2;color:#101318}
         .panel a:focus-visible,.panel button:focus-visible{outline-color:#c8f531}
         @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:10px;min-width:0}.brand{min-width:0}.brand img{width:min(188px,52vw);max-width:100%}.section{display:none}.quick{display:none}.toggle{margin-left:auto;white-space:nowrap;padding:10px 12px;min-height:44px}.backdrop{inset:70px 0 0}.panel{top:70px;width:min(400px,100vw);padding:22px 24px calc(36px + env(safe-area-inset-bottom))}.links{grid-template-columns:1fr}.links a{min-height:44px;font-size:14px}.groups{gap:25px}}
@@ -81,7 +100,7 @@
         const links=document.createElement('div');links.className='links';
         entries.forEach(([label,href,glyph])=>{
           const a=document.createElement('a');a.href=href;
-          const icon=document.createElement('span');icon.className='icon';icon.setAttribute('aria-hidden','true');icon.textContent=glyph;
+          const icon=document.createElement('span');icon.className='icon';icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24">'+(iconPaths[glyph]||iconPaths['◇'])+'</svg>';
           a.append(icon,document.createTextNode(label));
           const url=new URL(href,location.href);
           const active=url.pathname===location.pathname && (url.hash ? (url.hash==='#/' ? !location.hash||location.hash==='#/' : location.hash.startsWith(url.hash)) : true);
