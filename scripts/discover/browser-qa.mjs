@@ -268,6 +268,9 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert((await small.locator('a.v2-tile').getAttribute('href')).endsWith('/'+symbol),'Compact profile link was lost');
   const ranking=page.locator('.v2-top-panel .v2-tile-shell').first();
   assert.equal(await ranking.getByRole('tab').count(),4,'Rankings also need all four chart views');
+  const narrow=page.locator('.v2-hero-track .v2-tile-shell').first();
+  const fit=await narrow.locator('.v2-focus-tabs button').evaluateAll(nodes=>nodes.map(n=>({text:n.textContent,button:n.getBoundingClientRect(),label:n.scrollWidth})).every((x,i,a)=>x.label<=x.button.width+1&&a.every((y,j)=>i===j||x.button.right<=y.button.left||y.button.right<=x.button.left||x.button.bottom<=y.button.top||y.button.bottom<=x.button.top)));
+  assert(fit,'Four chart tabs overlap or clip in a narrow mobile stock preview');
   const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
   interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
   const archetypes=[...new Set(surfaces.map(s=>s.archetype).filter(Boolean))];assert(archetypes.length>=5,'Discovery needs at least five distinct surface archetypes for visual review');

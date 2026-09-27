@@ -82,9 +82,7 @@
     }
   }
   var tones = ['green', 'blue', 'violet', 'amber', 'teal', 'rose'];
-  /* Kompakte Aktien-Kachel: mehrere pro Bildschirm, seitlich wischbar.
-     Werte, Klartext, Kursverlauf und Frische stammen unveraendert aus den
-     kanonischen Renderern; die Kachel ordnet sie nur dichter an. */
+  /* Kompakte, seitlich wischbare Kachel mit kanonischen Werten und Kursreihen. */
   function tile(card, ctx, options) {
     options = options || {};
     var plain = D.Cards.klartext(card, options.rowId) || card.plain || {};
@@ -231,6 +229,7 @@
   ];
   function topStocks(surfaces,ctx) {
     var section=node('section','v2-top-stocks v2-world');section.dataset.surface='top-aktien';
+    section.dataset.archetype='ranking';
     var head=node('div','v2-world-head');head.append(node('h2','','Top-Aktien'),node('p','v2-world-subtitle','Fünf Perspektiven auf Aktien im Discover-Universum.'));
     section.appendChild(head);
     var tabs=el('div',{class:'v2-top-tabs',role:'tablist','aria-label':'Aktienauswahl'}),panels=node('div','v2-top-panels');

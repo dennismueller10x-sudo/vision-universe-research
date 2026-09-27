@@ -25,7 +25,7 @@ body.dv2 .v2-focus-bar small{font-size:10px;color:var(--tile-muted)}
 body.dv2 .v2-focus-empty{padding:70px 10px;text-align:center;color:var(--tile-muted)}
 body.dv2 .v2-focus-story{margin:16px 0;color:var(--tile-muted);font-size:14px;line-height:1.45;max-width:68ch}
 body.dv2 .v2-focus-cta{display:inline-flex;align-items:center;min-height:40px;padding:0 18px;border-radius:99px;background:color-mix(in srgb,#c8f531 28%,var(--tile-base))}
-body.dv2 .v2-tile-shell{--tt:#1faa59;display:flex;flex-direction:column;height:100%;min-width:0;overflow:hidden;border:1px solid color-mix(in srgb,var(--tt) 16%,var(--v2-line));border-radius:16px;background:linear-gradient(172deg,color-mix(in srgb,var(--tt) 2%,var(--tile-base)),color-mix(in srgb,var(--tt) 9%,var(--tile-base)));box-shadow:0 6px 20px rgba(16,20,28,.05)}
+body.dv2 .v2-tile-shell{--tt:#1faa59;container-type:inline-size;display:flex;flex-direction:column;height:100%;min-width:0;overflow:hidden;border:1px solid color-mix(in srgb,var(--tt) 16%,var(--v2-line));border-radius:16px;background:linear-gradient(172deg,color-mix(in srgb,var(--tt) 2%,var(--tile-base)),color-mix(in srgb,var(--tt) 9%,var(--tile-base)));box-shadow:0 6px 20px rgba(16,20,28,.05)}
 body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=blue]){--tt:#3867ff}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=violet]){--tt:#8a4dff}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=amber]){--tt:#f0a020}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=teal]){--tt:#16a3a0}body.dv2 .v2-tile-shell:has(.v2-tile[data-tone=rose]){--tt:#e0567a}
 body.dv2 .v2-tile-shell .v2-tile{height:auto;flex:1;border:0;border-radius:0;box-shadow:none;background:transparent;padding-bottom:5px}
 body.dv2 .v2-tile-shell .v2-tile:hover{transform:none;box-shadow:none}
@@ -40,6 +40,11 @@ body.dv2 .v2-tile-stage .v2-focus-bars{height:65px;gap:2px;padding-top:3px}
 body.dv2 .v2-tile-stage .v2-focus-bar{gap:2px}body.dv2 .v2-tile-stage .v2-focus-bar small{font-size:8px}
 body.dv2 .v2-tile-stage .v2-focus-empty{font-size:10px;padding:22px 2px;margin:0}
 body.dv2 .v2-tile-stage .v2-stock-caption{display:block;font-size:8.5px;color:var(--tile-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@container(max-width:185px){
+  body.dv2 .v2-tile-shell .v2-focus-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.dv2 .v2-tile-shell .v2-focus-tabs button{min-height:27px}
+  body.dv2 .v2-tile-shell .v2-stock-market-cap{display:grid;gap:2px}
+}
 @keyframes v2-bar-grow{from{transform:scaleY(.05)}to{transform:scaleY(1)}}
 @media(max-width:700px){
   body.dv2 .v2-focus{padding:20px 16px;border-radius:20px}
