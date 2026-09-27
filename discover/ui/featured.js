@@ -28,9 +28,7 @@
     }
     var format=global.VUFx&&global.VUFx.Format;
     if(format&&format.formatCompact)return format.formatCompact(value,currency,{numberLocale:'de-DE',decimals:1});
-    var unit=Math.abs(value)>=1e12?' Bio. ':Math.abs(value)>=1e9?' Mrd. ':' Mio. ';
-    var divisor=Math.abs(value)>=1e12?1e12:Math.abs(value)>=1e9?1e9:1e6;
-    return (value/divisor).toLocaleString('de-DE',{maximumFractionDigits:1})+unit+(currency==='EUR'?'€':'$');
+    return new Intl.NumberFormat('de-DE',{style:'currency',currency:currency,notation:'compact',maximumFractionDigits:1}).format(value);
   }
   function controller(card,ctx,box,stage,chart,compact){
     var uid='v2-stock-view-'+(++serial),detail=null,loaded=false,loading=null,selected=0;
