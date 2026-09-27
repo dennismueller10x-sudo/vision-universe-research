@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T05:30:40.059Z",
+  "generatedAt": "2026-09-27T08:10:22.410Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -817,10 +817,10 @@
       "processingKey": "brief_4bf3a500cb71afec:vu-web-32193db04816a8b3-20260926:e6aa68c144d40ce9ec057e314150c39bee4e2e98:1.0",
       "attempt": 2,
       "revision": null,
-      "state": "CREATIVE_JOB_REQUESTED",
+      "state": "CREATIVE_JOB_DISPATCHED",
       "createdAt": "2026-09-27T05:30:40.059Z",
-      "updatedAt": "2026-09-27T05:30:40.059Z",
-      "prNumber": null,
+      "updatedAt": "2026-09-27T08:10:22.410Z",
+      "prNumber": 258,
       "deliveryIds": [],
       "observedStarts": 0,
       "history": [
@@ -828,6 +828,11 @@
           "state": "CREATIVE_JOB_REQUESTED",
           "at": "2026-09-27T05:30:40.059Z",
           "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-09-27T08:10:22.410Z",
+          "note": "PR vom Orchestrator geoeffnet."
         }
       ]
     }
