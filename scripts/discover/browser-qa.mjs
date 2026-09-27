@@ -253,6 +253,21 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   }
   await featured.getByRole('tab',{name:'Chart'}).click();
   assert.equal(await featured.locator('.dx-lazy-media').count(),1,'Original price chart must remain available');
+  await featured.locator('.v2-stock-market-cap strong').waitFor({state:'visible'});
+  assert(!/^–$/.test(await featured.locator('.v2-stock-market-cap strong').innerText()),'Featured market capitalization did not load');
+  const small=page.locator('.v2-spotlight .v2-hero-item .v2-tile-shell').first();
+  assert.equal(await small.getByRole('tab').allTextContents().then(x=>x.join('|')),'Chart|Umsatz|Gewinn|Cashflow');
+  const symbol=await small.getAttribute('data-symbol');
+  await small.getByRole('tab',{name:'Umsatz'}).click();
+  await small.locator('.v2-focus-bars, .v2-focus-empty').first().waitFor();
+  assert.equal(await small.locator('.v2-tile-stage').getAttribute('aria-label'),'Umsatz');
+  await small.locator('.v2-stock-market-cap strong').waitFor({state:'visible'});
+  assert(!/^–$/.test(await small.locator('.v2-stock-market-cap strong').innerText()),'Compact market capitalization did not load');
+  await small.getByRole('tab',{name:'Chart'}).click();
+  assert.equal(await small.locator('.dx-lazy-media').count(),1,'Compact price chart must remain available');
+  assert((await small.locator('a.v2-tile').getAttribute('href')).endsWith('/'+symbol),'Compact profile link was lost');
+  const ranking=page.locator('.v2-top-panel .v2-tile-shell').first();
+  assert.equal(await ranking.getByRole('tab').count(),4,'Rankings also need all four chart views');
   const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
   interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
   const archetypes=[...new Set(surfaces.map(s=>s.archetype).filter(Boolean))];assert(archetypes.length>=5,'Discovery needs at least five distinct surface archetypes for visual review');

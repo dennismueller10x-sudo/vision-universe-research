@@ -107,8 +107,8 @@
     a.appendChild(copy);
     var chartRange = options.range || '1J';
     var media = D.Cards.lazyArtwork(card, { width: options.large ? 420 : 300, height: options.large ? 120 : 90, range: chartRange, live: options.live !== false, ticker: false, scale: 'hero' });
-    a.appendChild(media);
-    var caption = node('span', 'v2-stock-caption'); a.appendChild(caption);
+    var stage = node('div', 'v2-tile-stage'); stage.appendChild(media);
+    var caption = node('span', 'v2-stock-caption'); stage.appendChild(caption); a.appendChild(stage);
     bindArtworkCaption(media, caption, card, ctx, chartRange);
     // Kurs der Karte mit ihrem Datum: Der Chart darueber kann eine neuere
     // Sitzung zeigen, eine Tagesveraenderung ohne Datum wuerde dem widersprechen.
@@ -120,7 +120,7 @@
     }
     foot.appendChild(node('span', 'v2-stock-cta', '↗'));
     a.appendChild(foot);
-    return a;
+    return D.Featured.compact(card, ctx, a, stage);
   }
   /* ---------- Themenwelten ---------- */
   var T = function () { return V.Themes; };
