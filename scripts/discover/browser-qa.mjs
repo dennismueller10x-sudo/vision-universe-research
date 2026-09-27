@@ -59,7 +59,7 @@ async function premiumMobileAudit(page,key){
  });
  designEvidence.push({key,type:'premium-material',...material});
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
- assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=8,'Dock needs a visible safe-area gap');assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance<45,'Active state must be a deep monochrome capsule');
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=8,'Dock needs a visible safe-area gap');assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
 
  const surfaces=page.locator('.v2-journey > [data-surface]');
  const intensity=await surfaces.evaluateAll(nodes=>nodes.map((node,index)=>{let owner=node,s=getComputedStyle(owner),raw=s.backgroundColor,m=(raw.match(/[\d.]+/g)||[]).map(Number);while(owner.parentElement&&(raw==='transparent'||(m.length>3&&m[3]===0))){owner=owner.parentElement;s=getComputedStyle(owner);raw=s.backgroundColor;m=(raw.match(/[\d.]+/g)||[]).map(Number);}m=m.slice(0,3);const max=Math.max(...m),min=Math.min(...m),lum=m.length===3?(m[0]+m[1]+m[2])/3:null;return {index,id:node.dataset.surface,archetype:node.dataset.archetype||'',background:raw,lum,saturation:m.length===3?max-min:0};}));
@@ -76,7 +76,7 @@ async function premiumMobileAudit(page,key){
   },i));
   await screenshot(page,key+'-rhythm-'+String(i+1).padStart(2,'0'));
  }
- const semanticCharts=await page.locator('.v2-journey svg.dx-art[data-direction]').evaluateAll(nodes=>nodes.map(n=>({direction:n.dataset.direction,color:getComputedStyle(n).color})).filter(x=>x.direction==='up'||x.direction==='down'));
+ const semanticCharts=await page.locator('.v2-journey svg.dx-art[data-direction],.v2-journey svg.dx-micro[data-direction]').evaluateAll(nodes=>nodes.map(n=>({direction:n.dataset.direction,color:getComputedStyle(n).color})).filter(x=>x.direction==='up'||x.direction==='down'));
  for(const chart of semanticCharts){const c=(chart.color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);if(chart.direction==='up')assert(c[1]>c[0]&&c[1]>c[2],'Positive discovery chart is not green: '+chart.color);else assert(c[0]>c[1]&&c[0]>c[2],'Negative discovery chart is not red: '+chart.color);}
  const semanticTokens=await page.evaluate(()=>{const root=document.querySelector('.v2-home'),probe=value=>{const n=document.createElement('i');n.style.color=value;root.append(n);const color=getComputedStyle(n).color;n.remove();return color;};return {positive:probe('var(--v2-green)'),negative:probe('var(--v2-red)'),neutral:probe('var(--v2-muted)')};});
  const positive=(semanticTokens.positive.match(/[\d.]+/g)||[]).slice(0,3).map(Number),negative=(semanticTokens.negative.match(/[\d.]+/g)||[]).slice(0,3).map(Number);assert(semanticCharts.length>0,'Canonical journey exposes no directional chart');assert(positive[1]>positive[0]&&positive[1]>positive[2],'Positive system token is not green');assert(negative[0]>negative[1]&&negative[0]>negative[2],'Negative system token is not red');designEvidence.push({key,type:'semantic-chart-colours',charts:semanticCharts,tokens:semanticTokens});
@@ -117,14 +117,17 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await track.scrollIntoViewIfNeeded();
   const evidence=()=>track.evaluate(n=>{const b=n.getBoundingClientRect();return {scrollLeft:n.scrollLeft,clientWidth:n.clientWidth,cards:Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visibleWidth:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visibleWidth-a.visibleWidth)};});
   const before=await evidence();
-  if(width<500&&engine==='chromium'){
+  const needsScroll=await track.evaluate(n=>n.scrollWidth>n.clientWidth+1);
+  if(!needsScroll){assert(before.cards.slice(0,4).every(c=>c.visibleWidth>0),'Desktop rail must show further Discover stocks');}
+  else if(width<500&&engine==='chromium'){
    const box=await track.boundingBox();const y=Math.min(box.y+box.height*.55,page.viewportSize().height-140);const start=box.x+box.width*.85,end=box.x+box.width*.15;
    const touch=await ctx.newCDPSession(page);await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:start,y}]});
    for(let step=1;step<=10;step++)await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:start+(end-start)*step/10,y}]});
    await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await touch.detach();
   }else await track.evaluate(n=>{const cards=n.querySelectorAll('.v2-hero-item');n.scrollTo({left:cards[1].offsetLeft-cards[0].offsetLeft,behavior:'instant'});});
-  await page.waitForFunction(symbol=>{const n=document.querySelector('.v2-hero-track'),b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visible:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visible-a.visible)[0]?.symbol!==symbol;},before.cards[0].symbol);
-  const after=await evidence();assert(after.scrollLeft>before.scrollLeft,'Hero did not scroll horizontally');assert.notEqual(after.cards[0].symbol,before.cards[0].symbol,'Hero visible company did not change');interactionEvidence.push({key,type:'hero-swipe',input:width<500&&engine==='chromium'?'native-touch':'native-scroll',before,after});await screenshot(page,key+'-hero-next');
+  if(needsScroll){await page.waitForFunction(symbol=>{const n=document.querySelector('.v2-hero-track'),b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visible:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visible-a.visible)[0]?.symbol!==symbol;},before.cards[0].symbol);
+   const after=await evidence();assert(after.scrollLeft>before.scrollLeft,'Hero did not scroll horizontally');assert.notEqual(after.cards[0].symbol,before.cards[0].symbol,'Hero visible company did not change');interactionEvidence.push({key,type:'hero-swipe',input:width<500&&engine==='chromium'?'native-touch':'native-scroll',before,after});}
+  await screenshot(page,key+'-hero-next');
  });
  await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
  await check(key+' responsive navigation remains reachable',async()=>{
@@ -160,8 +163,8 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   const copy=await page.locator('.dv2-stock-business .dx-chapter-lead').innerText();assert(/Cloud-Plattform/.test(copy)&&/Sicherheit/.test(copy),'CrowdStrike business description still empty: '+copy);
   const chart=page.locator('.dx-chapter--chart svg.dx-micro--intraday');if(await chart.count()){
    await page.waitForFunction(()=>document.querySelector('.dx-chapter--chart svg.dx-micro--intraday')?.dataset.v2PreviousCloseScale==='true');
-   const scale=await chart.evaluate(svg=>{const base=svg.querySelector('.dx-art-base'),view=svg.viewBox.baseVal;return {mode:svg.dataset.v2PreviousCloseScale,baseY:Number(base?.getAttribute('y1')),bottom:view.height-svg.__basis.padBottom,height:view.height};});
-   assert.equal(scale.mode,'true');assert(Math.abs(scale.baseY-scale.bottom)<1,'Positive session no longer starts at the actual 0% line: '+JSON.stringify(scale));
+   const scale=await chart.evaluate(svg=>{const base=svg.querySelector('.dx-art-base'),view=svg.viewBox.baseVal,basis=svg.__basis;return {mode:svg.dataset.v2PreviousCloseScale,baseY:Number(base?.getAttribute('y1')),top:basis.padTop,bottom:view.height-basis.padBottom,low:Math.min(...svg.__punkte.map(p=>p.close)),previousClose:basis.previousClose};});
+   assert.equal(scale.mode,'true');assert(scale.low<scale.previousClose?scale.baseY>scale.top&&scale.baseY<scale.bottom:Math.abs(scale.baseY-scale.bottom)<1,'Previous close baseline must reflect the session range: '+JSON.stringify(scale));
   }
   await page.locator('.dv2-stock-business').scrollIntoViewIfNeeded();await screenshot(page,key+'-crowdstrike-business');
  });
@@ -206,7 +209,10 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await page.locator('.v2-finish').count(),1,'Journey must end once');
   assert.equal(await page.locator('.v2-load-more').count(),0,'Unloaded chunk remains');
   const surfaces=await page.locator('.v2-journey > :not(.v2-finish):not([data-block])').evaluateAll(nodes=>nodes.map(n=>({id:n.getAttribute('data-surface'),archetype:n.getAttribute('data-archetype'),className:n.className,title:n.querySelector('h2')?.textContent||''})));
-  assert(surfaces.length>=30,'Discovery journey is prematurely short');assert.equal(surfaces.length,expected,'Not every canonical surface was rendered');
+  assert(surfaces.length>=8,'Discovery journey is prematurely short');
+  assert.equal(await page.locator('.v2-top-tabs [role=tab]').count(),5,'Canonical top lists must remain reachable as tabs');
+  assert(await page.locator('.v2-collection-directory a').count()>=10,'Bundled stock worlds must remain reachable');
+  for(const selector of ['.v2-market-today','.v2-themes','.v2-spotlight','.v2-pulse-teaser'])assert.equal(await page.locator(selector).count(),1,selector+' missing');
   const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
   interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
   const archetypes=[...new Set(surfaces.map(s=>s.archetype).filter(Boolean))];assert(archetypes.length>=5,'Discovery needs at least five distinct surface archetypes for visual review');
