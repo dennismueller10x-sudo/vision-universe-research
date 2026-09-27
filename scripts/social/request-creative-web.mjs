@@ -185,7 +185,24 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine " +
       "neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — " +
       "Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive " +
-      "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2).",
+      "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2). " +
+      /* DIE UNVERDICHTETE UEBERSETZUNG (gefunden 27.09., real geliefert bei
+         vu-web-32193db04816a8b3-20260926): `grounding_hook_en` ist manchmal
+         der volle, deskriptive Original-Titel (z.B. "From $6 eggs to $50,000
+         cars, these charts show how inflation has defined the past 5 years"),
+         wenn die Hook-Auswahl keinen kuerzeren Kandidaten findet. Der Agent
+         hat das bisher nahezu woertlich uebersetzt statt zu verdichten - eine
+         "Uebersetzung/Adaption" wurde als reine Uebersetzung gelesen. Das
+         Ergebnis ist im Bild ein dichter, beschreibender Satz statt eines
+         Hooks, der einen Scroll stoppt. */
+      "WICHTIG: ist `grounding_hook_en` lang oder beschreibend (mehr als etwa 8-10 Woerter, " +
+      "oder ein vollstaendiger, mehrteiliger Satz), UEBERSETZE NICHT WOERTLICH. Verdichte " +
+      "stattdessen auf den EINEN staerksten Kern dieser Aussage — die schaerfste Zahl, den " +
+      "schaerfsten Kontrast oder die schaerfste Spannung darin — und formuliere daraus einen " +
+      "kurzen, eigenstaendigen deutschen Satz (idealerweise unter 8 Woertern), der fuer sich " +
+      "allein auf einen Blick verstaendlich ist. Kein Nebensatz, keine Aufzaehlung von zwei " +
+      "Vergleichspunkten in einem Satz (z.B. nicht 'Von X bis Y: so Z') — waehle EINEN Punkt, " +
+      "nicht die ganze Aufzaehlung des Originaltitels.",
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
     /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD, COMIC-STIL",
@@ -210,7 +227,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "photographic scene)", "one confident teal/mint accent close to #5FE0C0 used as a " +
       "LARGE flat shape or color block (a poster panel, not a thin highlight)", "white for " +
       "the headline text, set at poster scale", "soft grey for secondary text only"],
-    style: "bold flat graphic poster style — think premium app marketing ad or comic-panel " +
+    /* DER BEFUND, DER DIESEN STIL NIE VERLIESS (gefunden 27.09., real
+       geliefert bei vu-web-32193db04816a8b3-20260926 und dem erzwungenen
+       Anlauf 2 von vu-web-4e4d3aaef2a999a2-20260926): buildAgentBrief()
+       (chatgpt-work/adapter.js) liest das Feld unter dem Schluessel
+       `visualStyle`, nicht `style` — dieser Aufruf schickte seit der
+       ersten "GENERATIVES VOLLBILD, COMIC-STIL"-Fassung (26.09.) den
+       Stiltext unter dem falschen Schluessel. `options.style` existiert
+       im Adapter nicht; jeder bisherige Lauf fiel deshalb still auf den
+       Adapter-Default zurueck: "premium cinematic 3D technology
+       visualization" — GENAU der photorealistische, kinoreife Stil, den
+       der Owner von Anfang an ablehnte. Kein einziges der bisherigen
+       Comic-Stil-Worte hat den Agenten je erreicht. */
+    visualStyle: "bold flat graphic poster style — think premium app marketing ad or comic-panel " +
       "ad, NOT a photorealistic scene and NOT a moody cinematic render. High-contrast flat " +
       "color blocking, one single strong graphic idea instead of a busy realistic scene " +
       "with many literal props (no detailed buildings, no crowds of flags, no photoreal " +
@@ -237,10 +266,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "supporting graphic motif (a shape, a symbol, an arrow, a gesture — one clear idea, " +
       "never a cluttered realistic scene) are the MAIN visual content and together occupy " +
       "most of the frame. Composite the exact brand mascot file (see brand_assets.atlas) " +
-      "as a SMALL supporting presence only — roughly 10-20% of the frame's area, sized " +
-      "like a signature character cameo (comparable to how the logo sits), not a dominant " +
-      "foreground figure. It must never compete with the headline or the main motif for " +
-      "attention, and never occupy the visual center of the composition. Composite the " +
+      "as a SMALL supporting presence only. Concretely: Atlas's rendered width must be NO " +
+      "MORE than one-fifth (20%) of the full frame width, and he must be cropped to roughly " +
+      "head-and-shoulders or a small half-figure — never full body, never leaning on or " +
+      "framing the main motif, never positioned so he reads as one of the two or three main " +
+      "subjects of the poster. If in doubt, render him smaller, not larger: two real " +
+      "deliveries already rendered him too large despite this instruction, so treat 20% " +
+      "width as a hard ceiling, not a target to fill. He is a small signature cameo, sized " +
+      "like the logo, not a dominant foreground figure. It must never compete with the " +
+      "headline or the main motif for attention, and never occupy the visual center of the " +
+      "composition. Composite the " +
       "exact brand logo file (see brand_assets.logo) small and quiet, top-left corner, as " +
       "a signature, not a design element. The result must read as ONE cohesive, " +
       "intentionally designed brand poster — logo and mascot reproduced exactly as given " +
