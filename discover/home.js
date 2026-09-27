@@ -255,7 +255,7 @@
     var head=node('div','v2-world-head'),intro=node('div','');intro.append(node('h2','','Im Blick'),node('p','v2-world-subtitle','Ein Unternehmen zuerst. Danach weitere Aktien zum Entdecken.'));
     head.append(intro,link('Vollbild entdecken →','#/einzeln/'+ctx.universeId,'v2-world-more v2-feed-entry'));section.appendChild(head);
     if(!cards.length)return section;
-    var featured=node('div','v2-spotlight-featured');featured.appendChild(tile(cards[0],ctx,{large:true,position:0}));section.appendChild(featured);
+    var featured=node('div','v2-spotlight-featured');featured.appendChild(D.Featured.card(cards[0],ctx));section.appendChild(featured);
     if(cards.length>1){var track=el('div',{class:'v2-hero-track v2-track',role:'list','aria-label':'Weitere Aktien im Blick'});
       cards.slice(1).forEach(function(card,i){var item=node('div','v2-hero-item v2-track-item');item.setAttribute('role','listitem');item.appendChild(tile(card,ctx,{position:i+1}));track.appendChild(item);});
       section.appendChild(D.Cards.withRailNav(track,{label:'Weitere Aktien im Blick',universeId:ctx.universeId}));}
