@@ -37,7 +37,7 @@ test('Discover has its own routes and the mobile dock stays at four destinations
   for (const route of ['#/welten','#/maerkte','#/einzeln/','#/']) assert.ok(app.includes(route));
   assert.match(app, /\['suche','Suchen',null,'search'\]/);
   assert.match(css, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
-  assert.match(css, /\.v2-nav-markets\{display:none\}/);
+  assert.match(css, /\.v2-markets-link\{display:none\}/);
   assert.doesNotMatch(app.match(/function navigation\(\)[\s\S]*?return nav;/)[0], /Quant|Academy|Hedgefonds|Research/);
 });
 

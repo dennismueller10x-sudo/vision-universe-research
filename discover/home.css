@@ -1,18 +1,11 @@
-/* Vision Universe® Discovery 2.1 — Startseite.
-   Hero, Filter-Chips, kompakte Kachel-Reihen (mehrere Kacheln pro
-   Bildschirm, seitlich wischbar), Themenwelt-Banner mit Fotos.
-   Farbe ist Atmosphaere; Kursrichtung bleibt semantisch gruen/rot. */
 body.dv2 .v2-home{--v2-green:#1e8433;--v2-red:#d93a30;--v2-chart-up:#5cc850;--v2-chart-down:#e4382f;--tile-base:#fff;--tile-ink:#0d0f12;--tile-muted:#5f6670;--gap:14px;max-width:1440px;margin:auto;color:var(--v2-ink);padding:0 0 40px}
 html:not([data-theme=light]) body.dv2 .v2-home{--v2-green:#5cc850;--v2-red:#ff5a4f;--tile-base:#17191d;--tile-ink:#f4f4f1;--tile-muted:#a9adb5}
 body.dv2 .v2-eyebrow{font-size:10px;letter-spacing:.14em;font-weight:700;text-transform:uppercase;color:var(--v2-muted);margin:0 0 10px;line-height:1.5;display:block}
-
-/* ---------- Hero ---------- */
 body.dv2 .v2-intro{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;gap:24px;margin:0 0 22px;padding:26px 0 8px;isolation:isolate}
 body.dv2 .v2-intro:before{content:'';position:absolute;z-index:-1;inset:-40px -10vw 0 30%;background:radial-gradient(ellipse at 60% 45%,#d9f1f7 0%,rgba(217,241,247,.45) 35%,transparent 70%);pointer-events:none}
 html:not([data-theme=light]) body.dv2 .v2-intro:before{background:radial-gradient(ellipse at 60% 45%,rgba(64,150,190,.28) 0%,rgba(40,90,130,.12) 40%,transparent 70%)}
 body.dv2 .v2-intro-kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--v2-muted);margin:0 0 12px}
 body.dv2 .v2-intro h1{margin:0;font-weight:850;letter-spacing:-.045em;line-height:.98;font-size:clamp(34px,4.6vw,64px)}
-body.dv2 .v2-intro-brand{white-space:nowrap}body.dv2 .v2-intro-brand sup{font-size:.36em;vertical-align:top;position:relative;top:.25em;margin-left:.04em;letter-spacing:0}body.dv2 .v2-intro-product{white-space:nowrap}
 body.dv2 .v2-intro-lead{font-size:clamp(14px,1.35vw,18px);line-height:1.45;color:var(--v2-muted);margin:14px 0 20px;max-width:560px}
 body.dv2 .v2-intro-actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
 body.dv2 .v2-pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:11px 20px;border-radius:99px;font-size:13px;font-weight:700;text-decoration:none;border:1px solid transparent;cursor:pointer;font-family:inherit;transition:transform .16s ease,box-shadow .16s ease}
@@ -26,9 +19,6 @@ body.dv2 .v2-search-prompt>span:first-child{font-size:22px;line-height:1;color:v
 body.dv2 .v2-intro-visual{position:relative;margin:0;min-width:0}
 body.dv2 .v2-intro-visual img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:22px;background:#050607;box-shadow:0 24px 60px rgba(8,10,14,.22)}
 body.dv2 .v2-intro-tag{margin:12px 4px 0;font-size:10px;line-height:1.7;letter-spacing:.22em;text-transform:uppercase;color:var(--v2-muted);text-align:right}
-
-
-/* ---------- Welten-Reihen ---------- */
 body.dv2 .v2-world,body.dv2 .v2-feature,body.dv2 .v2-business-story{margin-top:34px;min-width:0}
 body.dv2 .v2-world-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:12px}
 body.dv2 .v2-world-head>div{min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:14px}
@@ -41,8 +31,6 @@ body.dv2 .v2-hero-track,body.dv2 .v2-track{display:flex;gap:var(--gap);overflow-
 body.dv2 .v2-hero-track::-webkit-scrollbar,body.dv2 .v2-track::-webkit-scrollbar{display:none}
 body.dv2 .v2-track-item{flex:0 0 calc((100% - 5 * var(--gap)) / 6);min-width:0;scroll-snap-align:start}
 body.dv2 .v2-hero-item{flex-basis:calc((100% - 3 * var(--gap)) / 3.35)}
-
-/* ---------- Kompakte Aktien-Kachel ---------- */
 body.dv2 .v2-tile{--tt:#1faa59;display:flex;flex-direction:column;position:relative;height:100%;min-height:0;overflow:hidden;text-decoration:none!important;color:var(--tile-ink);
   background:linear-gradient(172deg,color-mix(in srgb,var(--tt) 2%,var(--tile-base)) 0%,color-mix(in srgb,var(--tt) 9%,var(--tile-base)) 100%);
   border:1px solid color-mix(in srgb,var(--tt) 16%,var(--v2-line));border-radius:16px;padding:13px 13px 10px;box-shadow:0 6px 20px rgba(16,20,28,.05);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
@@ -62,9 +50,7 @@ body.dv2 .v2-tile .v2-stock-why{font-size:11.5px;line-height:1.38;color:var(--ti
 body.dv2 .v2-tile .dx-lazy-media{width:auto;height:64px;flex:none;margin:auto -13px 0;padding-top:6px}
 body.dv2 .v2-stock .dx-art{display:block;width:100%;height:100%;color:#9aa2ad}
 body.dv2 .v2-stock .dx-art[data-direction=up]{color:var(--v2-chart-up)}body.dv2 .v2-stock .dx-art[data-direction=down]{color:var(--v2-chart-down)}
-/* Trade-Republic-Prinzip: nur die Linie. Keine Flaeche, kein Glow, kein Raster. */
 body.dv2 .v2-stock .dx-art-fill,body.dv2 .v2-stock .dx-art-glow{display:none}
-/* Auch die Intraday-Linie der Kacheln (dx-micro) nutzt die Chart-Farben. */
 body.dv2 .v2-stock .dx-lazy-media{--discover-up:var(--v2-chart-up);--discover-down:var(--v2-chart-down)}
 body.dv2 .v2-stock .dx-micro-grid{display:none}
 body.dv2 .v2-stock .dx-art-line{fill:none;stroke:currentColor;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}body.dv2 .v2-stock .dx-art-base,body.dv2 .v2-stock .dx-art-high{stroke:currentColor;opacity:.16}body.dv2 .v2-stock .dx-art-tick{fill:var(--tile-muted);font-size:9px}body.dv2 .v2-stock .dx-art-node{fill:currentColor}
@@ -80,13 +66,10 @@ body.dv2 .v2-tile-lg .v2-stock-performance strong{font-size:clamp(26px,2.6vw,36p
 body.dv2 .v2-tile-lg .v2-stock-why{font-size:12.5px}
 body.dv2 .v2-tile-lg .dx-lazy-media{height:96px;margin-inline:-17px}
 body.dv2 .v2-tile-lg .v2-stock-cta{font-size:12px;color:var(--tile-ink)}
-
-/* ---------- Themenwelten ---------- */
 body.dv2 .v2-theme-art{position:absolute;inset:0;z-index:0;overflow:hidden;background:radial-gradient(ellipse at 78% 70%,color-mix(in srgb,var(--tone) 55%,transparent) 0%,transparent 60%),linear-gradient(160deg,#15171c,#050506)}
 body.dv2 .v2-theme-art img,body.dv2 .v2-theme-banner-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 50%;transition:transform .5s ease}
 body.dv2 .v2-theme-art.is-empty:after,body.dv2 .v2-theme-banner-art.is-empty:after{content:'';position:absolute;right:-18%;bottom:-30%;width:75%;aspect-ratio:1;border-radius:50%;border:1px solid color-mix(in srgb,var(--tone) 50%,transparent);box-shadow:0 0 0 24px color-mix(in srgb,var(--tone) 7%,transparent),0 0 0 48px color-mix(in srgb,var(--tone) 4%,transparent),0 0 80px color-mix(in srgb,var(--tone) 35%,transparent)}
 body.dv2 .v2-theme-tile{position:relative;isolation:isolate;display:flex;flex-direction:column;height:100%;border-radius:16px;overflow:hidden;text-decoration:none;color:#fff;background:#07080a;box-shadow:0 8px 24px rgba(8,10,14,.14)}
-/* Fotos sind 16:9 - die Bildflaeche ebenso, damit nichts beschnitten wird. */
 body.dv2 .v2-theme-tile .v2-theme-art{position:relative;inset:auto;flex:none;width:100%;aspect-ratio:16/9}
 body.dv2 .v2-theme-tile .v2-theme-art img{object-position:center}
 body.dv2 .v2-theme-tile:hover .v2-theme-art img{transform:scale(1.04)}
@@ -99,7 +82,6 @@ body.dv2 .v2-theme-go{flex:none;display:grid;place-items:center;width:26px;heigh
 body.dv2 .v2-theme-tile:hover .v2-theme-go{background:var(--tone);color:#fff}
 body.dv2 .v2-themes{margin-top:8px}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 3 * var(--gap)) / 4)}
 body.dv2 .v2-themes .v2-theme-tile h3{font-size:17px}body.dv2 .v2-themes .v2-theme-tile p{font-size:12px}
-
 body.dv2 .v2-theme-banner{position:relative;isolation:isolate;overflow:hidden;border-radius:22px;background:#050607;color:#fff;min-height:280px;display:flex;align-items:center;margin-bottom:16px;box-shadow:0 20px 55px rgba(5,7,10,.2)}
 body.dv2 .v2-theme-banner-art{position:absolute;top:0;right:0;bottom:0;height:100%;aspect-ratio:16/9;max-width:72%;z-index:-2;background:radial-gradient(ellipse at 70% 60%,color-mix(in srgb,var(--tone) 55%,transparent) 0%,transparent 62%),#050607;overflow:hidden}
 body.dv2 .v2-theme-banner-art img{object-position:center}
@@ -109,24 +91,7 @@ body.dv2 .v2-theme-banner .v2-eyebrow{color:color-mix(in srgb,var(--tone) 60%,#f
 body.dv2 .v2-theme-banner h2,body.dv2 .v2-theme-banner h1{font-size:clamp(28px,3.4vw,46px);letter-spacing:-.045em;line-height:1.02;font-weight:850;margin:0;color:#fff;max-width:none}
 body.dv2 .v2-theme-banner-lead{font-size:14px;line-height:1.5;color:rgba(255,255,255,.8);margin:10px 0 0;max-width:460px}
 body.dv2 .v2-theme-banner .v2-world-evidence{color:rgba(255,255,255,.62)}
-/* Eine Themenwelt ist eine dunkle Buehne: Foto-Banner und ihre Aktien. */
-body.dv2 .v2-world-theme{--tile-base:#15171b;--tile-ink:#f4f4f1;--tile-muted:#a9adb5;--v2-line:#2a2d33;--v2-green:#5cc850;--v2-red:#ff5a4f;background:#07080a;color:#f4f4f1;border-radius:24px;overflow:hidden;padding:0 0 6px;box-shadow:0 22px 60px rgba(5,7,10,.18)}
-body.dv2 .v2-world-theme .v2-theme-banner{border-radius:0;margin:0;box-shadow:none}
-body.dv2 .v2-world-theme .dx-rail-wrap{padding:0 16px}
-body.dv2 .v2-world-theme .v2-track{padding-top:2px}
-
-/* ---------- Bewaehrte Oberflaechen (Feature, Story, Abschluss) ---------- */
-body.dv2 .v2-stock-hero{--v2-green:#087441;--v2-red:#ba2440;display:grid;grid-template-columns:minmax(0,43fr) minmax(0,57fr);column-gap:30px;align-items:center;background:#fff;color:#111318;border:1px solid #dfe2e6;border-radius:24px;padding:38px 40px 24px;min-height:375px;box-shadow:0 18px 55px rgba(15,18,24,.08)}
-body.dv2 .v2-stock-hero .v2-stock-copy{grid-column:1;grid-row:1}body.dv2 .v2-stock-hero .v2-stock-symbol{color:#50575f}
-body.dv2 .v2-stock-hero .v2-stock-name{font-size:clamp(32px,3.7vw,56px);max-width:550px;margin-bottom:20px}
-body.dv2 .v2-stock-hero .v2-stock-performance strong{font-size:clamp(56px,6.5vw,92px);letter-spacing:-.07em}
-body.dv2 .v2-stock-hero .v2-stock-performance span{color:#50575f}body.dv2 .v2-stock-hero .v2-stock-why{color:#383f48;font-size:15px;line-height:1.45}
-body.dv2 .v2-stock-hero .v2-stock-cta{display:inline-flex;color:#fff;background:#20242c;border-radius:99px;padding:12px 19px;margin-top:20px;font-size:12px}
-body.dv2 .v2-stock-hero .dx-lazy-media{grid-column:2;grid-row:1;height:280px;width:100%;margin:0}
-body.dv2 .v2-stock-hero .dx-art{color:#5c6672}body.dv2 .v2-stock-hero .dx-art-tick{fill:#50575f}
-body.dv2 .v2-stock-hero .v2-stock-caption{grid-column:2;grid-row:2;color:#50575f;font-size:10px}
-body.dv2 .v2-stock-hero .v2-stock-hook{grid-column:1;grid-row:2;color:#434a52;border:0;margin:8px 0 0;font-size:12px}
-body.dv2 .v2-feature{margin-top:68px}body.dv2 .v2-feature .v2-stock-hero{background:#071916;color:#f8fbfa;border-color:#173b33;box-shadow:0 24px 70px rgba(4,26,21,.18)}body.dv2 .v2-feature .v2-stock-hero .v2-stock-symbol,body.dv2 .v2-feature .v2-stock-hero .v2-stock-performance span,body.dv2 .v2-feature .v2-stock-hero .v2-stock-caption{color:#aebeb9}body.dv2 .v2-feature .v2-stock-hero .v2-stock-why,body.dv2 .v2-feature .v2-stock-hero .v2-stock-hook{color:#dbe7e3}body.dv2 .v2-feature .v2-stock-hero .v2-stock-cta{background:#fff;color:#071916}
+body.dv2 .v2-feature{margin-top:68px}
 body.dv2 .v2-business-story{background:#c69a2e;color:#17140d;border-radius:26px;margin-top:68px;padding:40px;display:grid;grid-template-columns:1fr 1.1fr;column-gap:50px;box-shadow:0 20px 65px rgba(79,57,6,.14)}
 body.dv2 .v2-business-story>.v2-eyebrow{color:#514126;grid-column:1}body.dv2 .v2-business-story h2{grid-column:1;font-size:clamp(35px,4.5vw,65px);letter-spacing:-.055em;line-height:1.02;margin:5px 0 25px;align-self:start}
 body.dv2 .v2-story-tabs{grid-column:1;display:flex;align-self:start;gap:7px;overflow:auto;scrollbar-width:none;padding:4px 0;min-width:0}body.dv2 .v2-story-tab{flex:none;background:transparent;color:#3f3320;border:1px solid #907239;border-radius:99px;padding:11px 15px;font:inherit;font-size:12px;cursor:pointer;min-height:44px}body.dv2 .v2-story-tab[aria-selected=true]{background:#292319;color:#fff6e2;border-color:#292319}
@@ -137,15 +102,11 @@ body.dv2 .v2-journey>.dx-rail-section,body.dv2 .v2-journey>.dx-immersive{margin-
 body.dv2 .v2-finish{padding:65px 30px;text-align:center;margin-top:68px;background:#0a0b0e;color:#fff;border-radius:26px;box-shadow:0 22px 70px rgba(5,6,8,.2)}body.dv2 .v2-finish .v2-eyebrow{color:#aaaeb7}body.dv2 .v2-finish h2{font-size:clamp(30px,4vw,52px);letter-spacing:-.055em;line-height:1.05;max-width:650px;margin:10px auto 26px}body.dv2 .v2-finish-link{display:inline-block;background:#fff;color:#0a0b0e;padding:16px 24px;border-radius:99px;text-decoration:none;font-weight:700;font-size:13px}
 body.dv2 .v2-journey>.dx-rail-section,body.dv2 .v2-journey>.dx-immersive{margin-top:40px}
 body.dv2 .v2-home a:focus-visible,body.dv2 .v2-home button:focus-visible{outline:3px solid #faab3f;outline-offset:3px}
-html:not([data-theme=light]) body.dv2 .v2-stock-hero{border-color:#2b2f36}
-
-/* ---------- Tablet ---------- */
 @media(max-width:1100px){
   body.dv2 .v2-track-item{flex-basis:calc((100% - 3 * var(--gap)) / 4.3)}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.6)}
   body.dv2 .v2-hero-item{flex-basis:calc((100% - 2 * var(--gap)) / 2.4)}
   body.dv2 .v2-intro-tag{display:none}
 }
-/* ---------- Mobil ---------- */
 @media(max-width:760px){
   body.dv2 .v2-home{--gap:10px;padding-bottom:25px}
   body.dv2 .v2-intro{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:8px 0 0;margin-bottom:14px}
@@ -153,7 +114,6 @@ html:not([data-theme=light]) body.dv2 .v2-stock-hero{border-color:#2b2f36}
   body.dv2 .v2-intro-copy{display:contents}
   body.dv2 .v2-intro-kicker{order:1;font-size:9.5px;margin:0 0 8px;letter-spacing:.16em}
   body.dv2 .v2-intro h1{order:2;font-size:clamp(27px,8vw,34px)}
-  body.dv2 .v2-intro-brand,body.dv2 .v2-intro-product{display:block}
   body.dv2 .v2-intro-visual{order:3;margin:12px 0 0}
   body.dv2 .v2-intro-visual img{border-radius:16px;box-shadow:0 14px 34px rgba(8,10,14,.2)}
   body.dv2 .v2-intro-tag{display:none}
@@ -191,23 +151,19 @@ html:not([data-theme=light]) body.dv2 .v2-stock-hero{border-color:#2b2f36}
   body.dv2 .v2-theme-tile p{font-size:10.5px}
   body.dv2 .v2-theme-count{font-size:10px}body.dv2 .v2-theme-go{width:22px;height:22px;font-size:12px}body.dv2 .v2-theme-tile-copy{padding:8px 9px 9px}
   body.dv2 .v2-theme-banner{min-height:0;display:block;border-radius:20px}
-  body.dv2 .v2-world-theme{border-radius:20px}body.dv2 .v2-world-theme .dx-rail-wrap{padding:0}body.dv2 .v2-world-theme .v2-track{margin:0;padding:2px 12px 10px;scroll-padding-left:12px}
   body.dv2 .v2-theme-banner-art{position:relative;top:auto;right:auto;bottom:auto;height:auto;width:100%;max-width:none;aspect-ratio:16/9;z-index:0}
   body.dv2 .v2-theme-banner-art:after{background:linear-gradient(180deg,rgba(5,6,7,0) 70%,#050607 100%)}
   body.dv2 .v2-theme-banner-copy{padding:4px 18px 20px}
   body.dv2 .v2-theme-banner h2,body.dv2 .v2-theme-banner h1{font-size:28px}
   body.dv2 .v2-theme-banner-lead{font-size:12.5px}
     body.dv2 .v2-home .dx-rail-nav{display:none!important}
-  body.dv2 .v2-stock-hero{display:flex;padding:22px 20px 15px;min-height:0;border-radius:20px}body.dv2 .v2-stock-hero .v2-stock-symbol{font-size:9px;margin-bottom:9px}body.dv2 .v2-stock-hero .v2-stock-name{font-size:32px;margin-bottom:13px}body.dv2 .v2-stock-hero .v2-stock-performance strong{font-size:58px}body.dv2 .v2-stock-hero .v2-stock-performance span{font-size:10px}body.dv2 .v2-stock-hero .v2-stock-why{font-size:12px;margin-top:11px}body.dv2 .v2-stock-hero .v2-stock-cta{padding:10px 16px;margin-top:13px;font-size:11px}body.dv2 .v2-stock-hero .dx-lazy-media{height:150px;margin:9px -12px 0;width:auto}body.dv2 .v2-stock-hero .v2-stock-caption{font-size:9px;margin:0}body.dv2 .v2-stock-hero .v2-stock-hook{font-size:10px;line-height:1.4;margin:8px 0 0;padding:0}
   body.dv2 .v2-business-story{display:block;padding:27px 22px;border-radius:20px}body.dv2 .v2-business-story h2{font-size:39px;margin-bottom:20px}body.dv2 .v2-story-tabs{margin-bottom:23px}body.dv2 .v2-story-statement{font-size:24px;line-height:1.15;margin-bottom:20px}body.dv2 .v2-story-bars{min-height:255px;gap:15px}body.dv2 .v2-story-column strong{font-size:19px}body.dv2 .v2-story-link{display:inline-block;margin-top:18px}body.dv2 .v2-finish{padding:42px 22px;margin-top:44px}
 }
 @media(max-width:360px){
   body.dv2 .v2-track-item{flex-basis:calc((100% - var(--gap)) / 2.2)}body.dv2 .v2-themes .v2-track-item{flex-basis:calc((100% - var(--gap)) / 1.4)}
-  body.dv2 .v2-stock-hero .v2-stock-name{font-size:27px}body.dv2 .v2-stock-hero .v2-stock-performance strong{font-size:49px}body.dv2 .v2-stock-hero .dx-lazy-media{height:125px}body.dv2 .v2-business-story{padding:25px 17px}
+body.dv2 .v2-business-story{padding:25px 17px}
 }
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-tile,body.dv2 .v2-pill,body.dv2 .v2-theme-art img{transition:none}body.dv2 .v2-track,body.dv2 .v2-hero-track{scroll-behavior:auto}}
-
-/* The existing eye artwork anchors a compact, editorial Discover entrance. */
 body.dv2 .v2-intro h1{max-width:13ch}
 body.dv2 .v2-intro-kicker{letter-spacing:.17em}
 @media(max-width:760px){
@@ -225,8 +181,6 @@ body.dv2 .v2-intro-kicker{letter-spacing:.17em}
   body.dv2 .v2-intro-actions .v2-pill-ghost{border-color:#ffffff88;color:#fff}
   body.dv2 .v2-intro-actions a[href='#/maerkte']{display:none}
 }
-
-/* Editorial rhythm: live context, themes, one focus, then one market break. */
 body.dv2 .v2-market-today{margin-top:12px}
 body.dv2 .v2-market-today-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 body.dv2 .v2-market-kpi{display:flex;flex-direction:column;min-width:0;min-height:120px;padding:16px;border:1px solid var(--v2-line);border-radius:var(--v2-radius-sm,12px);color:var(--v2-ink);text-decoration:none;background:var(--v2-bg)}

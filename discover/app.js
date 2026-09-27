@@ -59,7 +59,7 @@
     const routeKey=location.hash.replace(/^#\/?/,'').split('/')[0]||'home';
     const current=(routeKey==='c'||routeKey==='thema')?'welten':routeKey;
     const nav=el('nav',{class:'v2-dock','aria-label':'Aktien entdecken'});
-    [['home','Start','#/','home'],['welten','Welten','#/welten','worlds'],['maerkte','Märkte','#/maerkte','markets'],['einzeln','Entdecken','#/einzeln/'+ctx.universeId,'explore'],['suche','Suchen',null,'search']].forEach(([key,label,href,icon])=>{
+    [['home','Start','#/','home'],['welten','Welten','#/welten','worlds'],['einzeln','Entdecken','#/einzeln/'+ctx.universeId,'explore'],['suche','Suchen',null,'search']].forEach(([key,label,href,icon])=>{
       const item=el(href?'a':'button',{class:'v2-nav-item v2-nav-'+icon+(!href?' v2-dock-search':''),...(href?{href}:{type:'button','aria-haspopup':'dialog','aria-expanded':'false'}),...(current===key?{'aria-current':'page'}:{})},[
         el('span',{class:'v2-nav-icon v2-icon-'+icon,'aria-hidden':'true'}),el('span',{text:label})
       ]);
@@ -72,6 +72,7 @@
     const host=document.getElementById('v2-shell'); S.clear(host);
     const bar=el('div',{class:'v2-bar'},[
       el('a',{href:'#/',class:'v2-wordmark',text:'Discover'}),
+      el('a',{href:'#/maerkte',class:'v2-markets-link',text:'Märkte',...(location.hash.startsWith('#/maerkte')?{'aria-current':'page'}:{})}),
       el('span',{class:'v2-bar-caption',text:'Entdecken. Verstehen. Investieren.'}),
       el('a',{href:'#/watchlist',class:'v2-watch-link',text:'♡ Watchlist'})
     ]);
