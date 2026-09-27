@@ -1,22 +1,15 @@
 // Central navigation for every page. Add new menu entries only here.
 (() => {
-  const items = [
-    ['News', '/news/'], ['Quant', '/quant/'], ['Dashboard', '/dashboard/'],
-    ['ETF', '/etf/'], ['Hedgefonds', '/hedgefonds/'], ['Analysten', '/analysten/'],
-    ['Macro', '/macro/'], ['Magazin', '/magazin/'], ['Reports', '/reports/xpeng/'],
-    ['Academy', '/academy/'], ['Guide', '/guide/'], ['Morning', '/morning/'], ['Budget', '/budget/']
+  const groups = [
+    ['Discover', [['Discover','/discover/','◎']]],
+    ['Markets & Data', [['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫']]],
+    ['Analyse', [['Quant','/quant/','⌁'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
+    ['Research', [['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥']]],
+    ['Learn', [['Academy','/academy/','✧'],['Guide','/guide/','◈']]],
+    ['Tools & Personal', [['Budget','/budget/','▦']]]
   ];
-  const discoverItems = [
-    ['Start', '/discover/#/'], ['Welten', '/discover/#/welten'],
-    ['Entdecken', '/discover/#/einzeln/US_REAL'], ['Suchen', '/discover/#/suche'],
-    ['Watchlist', '/discover/#/watchlist']
-  ];
-  /* Farbschema des Headers. `light` ist und bleibt der Standard fuer jede
-     Vision-Universe-Seite; `dark` setzt ausschliesslich, wer das Attribut
-     theme="dark" an <vu-navigation> schreibt - derzeit nur /discover/, wo
-     der helle Balken ueber der dunklen Flaeche ein Bruch waere.
-     Geaendert werden NUR Farbwerte: Menue, Links, Logik und Markup bleiben
-     fuer alle Seiten identisch. */
+  /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
+     Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
     light: {
       bg: 'rgba(255,255,255,.96)', border: 'rgba(0,0,0,.07)', ink: '#111',
@@ -48,7 +41,8 @@
         :host([open]) .backdrop,:host([open]) .panel{visibility:visible;opacity:1;transform:none}
         .panel-head{display:flex;align-items:center;justify-content:space-between}.panel-head img{width:180px}.close{border:0;background:transparent;color:${t.ink};font-size:30px;width:44px;height:44px}
         h2{font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin:20px 0 8px;padding-bottom:10px;border-bottom:1px solid ${t.divider}}
-        .links{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px}.links.discover{grid-template-columns:1fr}.links a{color:${t.ink};text-decoration:none;display:flex;align-items:center;gap:12px;padding:9px 6px;min-height:42px;font-size:14px;border-radius:8px}.links a:hover,.links a[aria-current=page]{background:${t.divider}}
+        .groups{display:grid;gap:18px}.group h2{margin-top:0}.group.is-current h2{color:${t.panelBg};background:#c8f531;border:0;border-radius:6px;display:table;padding:6px 9px}.group.is-current .links a[aria-current=page]{box-shadow:inset 3px 0 #c6f02a}
+        .links{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px}.links a{color:${t.ink};text-decoration:none;display:flex;align-items:center;gap:12px;padding:8px 6px;min-height:38px;font-size:13px;border-radius:8px}.links a:hover,.links a[aria-current=page]{background:${t.divider}}
         .icon{width:20px;flex:none;text-align:center;font-size:18px}.settings{margin-top:18px;padding-top:8px;border-top:1px solid ${t.divider}}.setting{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0;font-size:12px}
         .choices{display:flex;border:1px solid ${t.divider};border-radius:10px;padding:3px;gap:2px}.choices button,.choices a{display:block;border:0;border-radius:7px;background:transparent;color:${t.ink};padding:7px 9px;min-width:40px;font-size:11px;text-align:center;text-decoration:none}.choices [aria-pressed=true]{background:${t.ink};color:${t.panelBg}}
         @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:9px}img{width:154px;max-width:47vw}.section{padding-left:9px;font-size:11px}.quick{display:none}.toggle{margin-left:auto}.backdrop{inset:70px 0 0}.panel{top:70px;padding:16px 20px calc(30px + env(safe-area-inset-bottom))}}
@@ -77,30 +71,22 @@
          sie sind - sie stehen in Daten, nicht auf dem Bildschirm. */
       const root = this.attachShadow({mode: 'open'});
       const inDiscover = location.pathname.startsWith('/discover/');
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/news/">News</a><a href="/quant/">Quant</a></nav><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰ Menü</button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><h2>Discover</h2><div class="links discover"></div><h2>Vision Universe</h2><div class="links products"></div><div class="settings"><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
-      const icons = ['⌂','◎','☑','⌕','♡','▤','⌁','▧','◫','♙','◇','≋','▤','▣','✧','◈','☼','▥'];
-      let iconIndex = 0;
-      const addLinks = (selector, entries) => {
-        const host = root.querySelector(selector);
-        for (const [label, href] of entries) {
-          const a = document.createElement('a'); a.href = href;
-          const icon = document.createElement('span');icon.className='icon';icon.setAttribute('aria-hidden','true');icon.textContent=icons[iconIndex++]||'◇';
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/news/">News</a><a href="/quant/">Quant</a></nav><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰ Menü</button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
+      const host=root.querySelector('.groups');
+      groups.forEach(([heading,entries])=>{
+        const section=document.createElement('section');section.className='group';
+        const title=document.createElement('h2');title.textContent=heading;section.append(title);
+        const links=document.createElement('div');links.className='links';
+        entries.forEach(([label,href,glyph])=>{
+          const a=document.createElement('a');a.href=href;
+          const icon=document.createElement('span');icon.className='icon';icon.setAttribute('aria-hidden','true');icon.textContent=glyph;
           a.append(icon,document.createTextNode(label));
-          if (href.includes('#/') ? (inDiscover && location.hash === href.slice(href.indexOf('#'))) : location.pathname.startsWith(href)) a.setAttribute('aria-current','page');
-          host.append(a);
-        }
-      };
-      addLinks('.discover',discoverItems);addLinks('.products',items);
-      const syncCurrent=()=>{
-        root.querySelectorAll('.discover a').forEach(a=>{
-          const hash=a.hash,active=inDiscover&&(location.hash||'#/')===hash;
-          if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+          if(location.pathname.startsWith(href)){a.setAttribute('aria-current','page');section.classList.add('is-current');}
+          links.append(a);
         });
-        root.querySelectorAll('.quick a').forEach(a=>{
-          if(location.pathname.startsWith(a.getAttribute('href')))a.setAttribute('aria-current','page');
-        });
-      };
-      syncCurrent();window.addEventListener('hashchange',syncCurrent);
+        section.append(links);host.append(section);
+      });
+      root.querySelectorAll('.quick a').forEach(a=>{if(location.pathname.startsWith(a.getAttribute('href')))a.setAttribute('aria-current','page');});
       const panel=root.querySelector('.panel'),button=root.querySelector('.toggle');panel.inert=true;
       const close=()=>{this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');button.setAttribute('aria-expanded','false');button.setAttribute('aria-label','Menü öffnen');};
       button.onclick=()=>{if(this.hasAttribute('open')){close();return;}this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Menü schließen');root.querySelector('.close').focus();};
@@ -122,6 +108,7 @@
     }
     renderSettings(){
       const root=this.shadowRoot;if(!root)return;
+      const focused=root.activeElement,focusGroup=focused&&focused.parentElement&&focused.parentElement.className,focusLabel=focused&&focused.textContent;
       const currency=root.querySelector('.currency'),appearance=root.querySelector('.appearance');currency.replaceChildren();appearance.replaceChildren();
       const layer=window.VUFx&&window.VUFx.layer,preference=layer&&layer.preference;
       for(const code of ['EUR','USD']){
@@ -134,6 +121,7 @@
         if(!theme){const a=document.createElement('a');a.href='/discover/#/settings';a.textContent=label;appearance.append(a);continue;}
         const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(theme.mode()===mode));b.onclick=()=>{theme.set(mode);this.renderSettings();};appearance.append(b);
       }
+      if(focusGroup&&focusLabel){const group=focusGroup.includes('currency')?currency:focusGroup.includes('appearance')?appearance:null;const target=group&&[...group.querySelectorAll('button,a')].find(n=>n.textContent===focusLabel);if(target)target.focus();}
     }
   }
   customElements.define('vu-navigation', VisionNavigation);

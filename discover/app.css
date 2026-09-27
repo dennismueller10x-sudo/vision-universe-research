@@ -154,8 +154,23 @@ html[data-theme=light] body.dv2 .v2-bar{background:#fff}
 @media(max-width:360px){.dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{left:8px;right:8px}.dv2 .v2-dock .v2-nav-item{font-size:9px}.dv2 .v2-world-directory{grid-template-columns:1fr}.dv2 .v2-world-door{min-height:205px}}
 
 /* Discover navigation stays separate from the product menu. */
+body.dv2{--v2-signal:#c8f531;--v2-radius-sm:12px;--v2-radius-md:20px;--v2-space-1:4px;--v2-space-2:8px;--v2-space-3:16px;--v2-space-4:24px;--v2-space-5:32px}
+.dv2 .v2-theme-jumps{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 30px}
+.dv2 .v2-theme-jumps button{border:1px solid var(--v2-line);border-radius:99px;background:transparent;color:var(--v2-ink);padding:10px 14px;min-height:44px;font-size:12px;font-weight:700}
+.dv2 .v2-theme-jumps button:hover,.dv2 .v2-theme-jumps button:focus-visible{border-color:var(--v2-signal);background:var(--v2-signal);color:#10130b}
+.dv2 .v2-theme-group{margin:36px 0 48px;scroll-margin-top:calc(var(--vu-navigation-height) + 28px)}
+.dv2 .v2-theme-group .v2-section-head{border-bottom:1px solid var(--v2-line);padding-bottom:12px;margin-bottom:16px}
+.dv2 .v2-theme-overview{max-width:850px;margin:24px 0 32px;padding:0 0 24px;border-bottom:1px solid var(--v2-line)}
+.dv2 .v2-theme-overview h2{font-size:18px;margin:0 0 8px}.dv2 .v2-theme-overview p{font-size:14px;line-height:1.5;margin:0}
+.dv2 .v2-theme-overview .v2-theme-facts{font-size:12px;color:var(--v2-muted);margin-top:14px}
+.dv2 .v2-theme-stocks .v2-track{--gap:14px;display:flex;gap:var(--gap);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.dv2 .v2-theme-stocks .v2-track-item{flex:0 0 calc((100% - 3 * var(--gap))/4);min-width:0;scroll-snap-align:start}
+.dv2 .v2-theme-stocks .v2-track-item .v2-tile{min-height:220px}
 .dv2 .v2-bar-caption{margin-left:auto;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--v2-muted)}
+.dv2 .v2-watch-link{margin-left:auto;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;color:var(--v2-ink)}
+.dv2 .v2-bar-caption+.v2-watch-link{margin-left:16px}
 .dv2 .v2-icon-settings:before{content:'⚙';position:absolute;inset:-3px 0 0;text-align:center;font-size:22px;line-height:22px}
+.dv2 .v2-icon-markets:before{content:'⌁';position:absolute;inset:-3px 0 0;text-align:center;font-size:24px;line-height:22px}
 .dv2 .v2-settings{max-width:720px;margin:28px 0 80px;border-top:1px solid var(--v2-line)}
 .dv2 .v2-settings-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 0;border-bottom:1px solid var(--v2-line)}
 .dv2 .v2-settings-row h2{margin:0 0 5px;font-size:18px}.dv2 .v2-settings-row p{margin:0;font-size:13px;color:var(--v2-muted)}
@@ -168,10 +183,17 @@ html[data-theme=light] body.dv2 .v2-bar{background:#fff}
 .dv2 .v2-watch-row a{font-size:18px;font-weight:750;text-decoration:none}.dv2 .v2-watch-row button{border:0;background:transparent;color:var(--v2-muted);min-height:44px}
 @media(max-width:760px){
   .dv2 .v2-bar-caption{display:none}
-  .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{grid-template-columns:repeat(5,minmax(0,1fr));left:8px;right:8px;bottom:max(6px,env(safe-area-inset-bottom));padding:5px;gap:0}
+  .dv2 .v2-watch-link{margin-left:auto;font-size:11px}
+  .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{grid-template-columns:repeat(4,minmax(0,1fr));left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));padding:6px;gap:2px}
+  .dv2 .v2-dock .v2-nav-markets{display:none}
   .dv2 .v2-dock .v2-nav-item{min-height:58px;font-size:9px;gap:3px;padding:7px 1px;overflow:hidden}
+  .dv2 .v2-dock .v2-nav-item[aria-current=page],.dv2 .v2-dock .v2-nav-explore[aria-current=page],html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item[aria-current=page],html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-explore[aria-current=page]{background:var(--v2-signal);color:#10130b;box-shadow:none}
+  html:not([data-theme=light]) .dv2 .v2-dock,html:not([data-theme=light]) .dv2.v2-feed-active .v2-dock{background:rgba(12,16,19,.94);border-color:#ffffff32;color:#fff;box-shadow:0 16px 40px #0008}
+  html:not([data-theme=light]) .dv2 .v2-dock .v2-nav-item:not([aria-current=page]){color:#d8dcdf}
   .dv2 .v2-main{padding-bottom:130px}.dv2 .v2-footer{padding-bottom:155px}
   .dv2 .v2-settings-row{align-items:flex-start;flex-direction:column;gap:12px}
+  .dv2 .v2-theme-group{margin:26px 0 36px}
+  .dv2 .v2-theme-stocks .v2-track-item{flex-basis:calc((100% - 14px)/1.7)}
   body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 145px - env(safe-area-inset-bottom))}
 }
 

@@ -481,6 +481,29 @@ test("CG27b · Restrictions/brand_assets sind ueberschreibbar, Standard bleibt u
   assert.equal(vollbild.authoring_requirements.brand_elements_announcement_required, true);
 });
 
+test("CG27c · visual_strategy.style kommt aus `visualStyle`, nicht aus `style`", () => {
+  /* DER ECHTE BEFUND (27.09.): request-creative-web.mjs uebergab den
+     sorgfaeltig formulierten "bold flat comic poster"-Stiltext seit der
+     ersten Fassung (26.09.) unter dem Schluessel `style`. buildAgentBrief
+     liest aber `options.visualStyle` — `options.style` existiert hier
+     nicht und wird stillschweigend ignoriert. Jeder bisherige Lauf fiel
+     deshalb auf den Adapter-Default zurueck: "premium cinematic 3D
+     technology visualization", GENAU der photorealistische Stil, den der
+     Owner ablehnte. Real geliefert bei vu-web-32193db04816a8b3-20260926
+     und dem erzwungenen Anlauf 2 von vu-web-4e4d3aaef2a999a2-20260926. */
+  const falscherSchluessel = CW.buildAgentBrief(briefFuerAnlauf(),
+    { contentId: "vu-x-1", style: "bold flat comic poster style" });
+  assert.equal(falscherSchluessel.visual_strategy.style,
+    "premium cinematic 3D technology visualization",
+    "`style` ist kein von buildAgentBrief gelesenes Feld - dieser Test " +
+    "haette den echten Bug gefangen, bevor er real ausgeliefert wurde.");
+
+  const richtigerSchluessel = CW.buildAgentBrief(briefFuerAnlauf(),
+    { contentId: "vu-x-1", visualStyle: "bold flat comic poster style" });
+  assert.equal(richtigerSchluessel.visual_strategy.style,
+    "bold flat comic poster style");
+});
+
 test("CG28 · Ein zweiter Anlauf ist ein eigener Vorgang", () => {
   /* Schweigt der Anbieter, muss derselbe Inhalt noch einmal angefragt
      werden koennen. Ohne eigenen Anlauf-Zaehler ergibt derselbe Brief

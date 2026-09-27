@@ -37,6 +37,27 @@ import { entscheideErzwungenenAnlauf } from "../../scripts/social/request-creati
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SKRIPT = join(ROOT, "scripts/social/request-creative-web.mjs");
 
+test("FA0 · Der Stiltext geht an `visualStyle`, nicht an das stillschweigend " +
+  "ignorierte `style` (regression guard)", () => {
+  /* DER ECHTE BEFUND (27.09.): buildAgentBrief() (chatgpt-work/adapter.js)
+     liest `options.visualStyle` — nicht `options.style`. Diese Datei
+     uebergab den Stiltext seit der ersten "GENERATIVES VOLLBILD, COMIC-
+     STIL"-Fassung (26.09.) unter dem falschen Schluessel; jeder Lauf fiel
+     seither still auf den Adapter-Default ("premium cinematic 3D
+     technology visualization") zurueck. CG27c (chatgpt-work-author.
+     test.mjs) deckt den Adapter-Vertrag ab; dieser Test deckt den
+     Aufrufer ab, damit der falsche Schluessel hier nie wieder unbemerkt
+     zurueckkehrt. */
+  const quelle = readFileSync(SKRIPT, "utf8");
+  assert.match(quelle, /\n\s*visualStyle:\s/,
+    "request-creative-web.mjs muss den Stiltext unter `visualStyle` an " +
+    "buildAgentBrief() uebergeben.");
+  assert.doesNotMatch(quelle, /\n\s*style:\s*"bold flat/,
+    "Ein bare `style:`-Schluessel mit dem Stiltext wird von " +
+    "buildAgentBrief() ignoriert (es liest `visualStyle`) - genau das " +
+    "war der reale Bug.");
+});
+
 test("FA1 · Ohne --force-attempt bleibt alles beim Standardweg (attempt: null)", () => {
   const e = entscheideErzwungenenAnlauf(null, null);
   assert.equal(e.ok, true);
