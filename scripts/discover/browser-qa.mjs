@@ -243,6 +243,16 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await page.locator('.v2-top-tabs [role=tab]').count(),5,'Canonical top lists must remain reachable as tabs');
   assert(await page.locator('.v2-collection-directory a').count()>=10,'Bundled stock worlds must remain reachable');
   for(const selector of ['.v2-market-today','.v2-themes','.v2-spotlight','.v2-pulse-teaser'])assert.equal(await page.locator(selector).count(),1,selector+' missing');
+  const featured=page.locator('.v2-spotlight-featured .v2-focus');
+  assert.equal(await featured.locator('[role=tab]').allTextContents().then(x=>x.join('|')),'Chart|Umsatz|Gewinn|Cashflow');
+  for(const label of ['Umsatz','Gewinn','Cashflow']){
+   await featured.getByRole('tab',{name:label}).click();
+   await featured.locator('.v2-focus-bars').waitFor();
+   assert(await featured.locator('.v2-focus-bar').count()>=2,label+' has no annual series');
+   assert.equal(await featured.locator('.v2-focus-stage').getAttribute('aria-label'),label);
+  }
+  await featured.getByRole('tab',{name:'Chart'}).click();
+  assert.equal(await featured.locator('.dx-lazy-media').count(),1,'Original price chart must remain available');
   const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
   interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
   const archetypes=[...new Set(surfaces.map(s=>s.archetype).filter(Boolean))];assert(archetypes.length>=5,'Discovery needs at least five distinct surface archetypes for visual review');
