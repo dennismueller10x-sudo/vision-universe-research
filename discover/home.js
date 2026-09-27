@@ -301,17 +301,6 @@
   }
   function story(surface, ctx) {
     var card = surface.cards[0], rows = (surface.compare && surface.compare.rows || []).filter(function (r) { return r.then && r.now && Number.isFinite(r.then.value) && Number.isFinite(r.now.value); });
-    // Diese Unternehmensgeschichte ist kein passender Discover-Einstieg.
-    // Der visuelle Break nutzt nur bestehende Navigationsziele; keine Kursdaten werden erfunden.
-    if (card && card.symbol === 'LHX') {
-      var interlude = node('section', 'v2-motion-interlude');
-      interlude.dataset.archetype = 'visual-interlude';
-      interlude.append(node('p', 'v2-eyebrow', 'Weiter entdecken'), node('h2', '', 'Neue Perspektiven auf den Markt.'));
-      var art = node('div', 'v2-motion-art'); art.setAttribute('aria-hidden', 'true');
-      for (var i = 0; i < 6; i++) art.appendChild(node('span', 'v2-motion-orbit v2-motion-orbit-' + (i + 1)));
-      interlude.append(art, link('Aktien entdecken ↗', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-light'));
-      return interlude;
-    }
     // Signed comparisons stay with the canonical renderer and its zero baseline.
     if (rows.some(function (r) { return r.then.value < 0 || r.now.value < 0; })) return D.Surfaces.render(surface, ctx);
     if (!rows.length) return D.Surfaces.render(surface, ctx);
@@ -321,6 +310,16 @@
     var tabs = el('div', { class: 'v2-story-tabs', role: 'tablist', 'aria-label': 'Unternehmenskennzahl' });
     var panel = el('div', { class: 'v2-story-panel', role: 'tabpanel', id: 'v2-story-' + surface.id });
     function fmt(row, value) { if (row.kind === 'margin') return (value * 100).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %'; return value.toLocaleString('de-DE', { notation: 'compact', maximumFractionDigits: 1 }) + (row.unit === 'USD' ? ' $' : row.unit === 'USD/shares' ? ' $ je Aktie' : ''); }
+    // Der bestehende LHX-Fall erhaelt hier eine rein visuelle Unterbrechung.
+    if (card && card.symbol === 'LHX') {
+      var interlude = node('section', 'v2-motion-interlude');
+      interlude.dataset.archetype = 'visual-interlude';
+      interlude.append(node('p', 'v2-eyebrow', 'Weiter entdecken'), node('h2', '', 'Neue Perspektiven auf den Markt.'));
+      var art = node('div', 'v2-motion-art'); art.setAttribute('aria-hidden', 'true');
+      for (var i = 0; i < 6; i++) art.appendChild(node('span', 'v2-motion-orbit v2-motion-orbit-' + (i + 1)));
+      interlude.append(art, link('Aktien entdecken ↗', '#/einzeln/' + ctx.universeId, 'v2-pill v2-pill-light'));
+      return interlude;
+    }
     function select(index) {
       var row = rows[index]; panel.replaceChildren();
       Array.from(tabs.children).forEach(function (button, i) { button.setAttribute('aria-selected', String(i === index)); button.tabIndex = i === index ? 0 : -1; });
