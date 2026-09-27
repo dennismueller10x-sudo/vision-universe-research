@@ -70,9 +70,9 @@ async function premiumMobileAudit(page,key){
  for(let i=0;i<12;i++){
   const y=Math.round(maxY*i/11);await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(r)));
   rhythm.push(await page.evaluate(index=>{
-   const candidates=Array.from(document.querySelectorAll('.v2-journey > [data-surface]')).map(n=>{const r=n.getBoundingClientRect(),visible=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));return {n,r,visible};}).filter(x=>x.visible>0).sort((a,b)=>b.visible-a.visible);
+   const candidates=Array.from(document.querySelectorAll('.v2-journey > [data-surface]')).map((n,sectionIndex)=>{const r=n.getBoundingClientRect(),visible=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));return {n,r,visible,sectionIndex};}).filter(x=>x.visible>0).sort((a,b)=>b.visible-a.visible);
    const hit=candidates[0],n=hit&&hit.n;if(!n)return {index,empty:true};const charts=Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>c.getBoundingClientRect().height).filter(Boolean);
-   return {index,y:scrollY,id:n.dataset.surface,archetype:n.dataset.archetype||'',surfaceType:n.dataset.surfaceType||'',world:n.dataset.world||'',visible:hit.visible,features:{chart:charts.length>0,chartBand:charts.length?Math.round(Math.max(...charts)/50)*50:0,ranking:!!n.querySelector('.v2-stock-rank'),story:!!n.querySelector('.v2-story-bars'),cards:n.querySelectorAll('.v2-stock').length,layout:getComputedStyle(n.querySelector('.v2-track')||n).display}};
+   return {index,y:scrollY,id:n.dataset.surface,sectionIndex:hit.sectionIndex,archetype:n.dataset.archetype||'',surfaceType:n.dataset.surfaceType||'',world:n.dataset.world||'',visible:hit.visible,features:{chart:charts.length>0,chartBand:charts.length?Math.round(Math.max(...charts)/50)*50:0,ranking:!!n.querySelector('.v2-stock-rank'),story:!!n.querySelector('.v2-story-bars'),cards:n.querySelectorAll('.v2-stock').length,layout:getComputedStyle(n.querySelector('.v2-track')||n).display}};
   },i));
   await screenshot(page,key+'-rhythm-'+String(i+1).padStart(2,'0'));
  }
@@ -80,12 +80,15 @@ async function premiumMobileAudit(page,key){
  for(const chart of semanticCharts){const c=(chart.color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);if(chart.direction==='up')assert(c[1]>c[0]&&c[1]>c[2],'Positive discovery chart is not green: '+chart.color);else assert(c[0]>c[1]&&c[0]>c[2],'Negative discovery chart is not red: '+chart.color);}
  const semanticTokens=await page.evaluate(()=>{const root=document.querySelector('.v2-home'),probe=value=>{const n=document.createElement('i');n.style.color=value;root.append(n);const color=getComputedStyle(n).color;n.remove();return color;};return {positive:probe('var(--v2-green)'),negative:probe('var(--v2-red)'),neutral:probe('var(--v2-muted)')};});
  const positive=(semanticTokens.positive.match(/[\d.]+/g)||[]).slice(0,3).map(Number),negative=(semanticTokens.negative.match(/[\d.]+/g)||[]).slice(0,3).map(Number);assert(semanticCharts.length>0,'Canonical journey exposes no directional chart');assert(positive[1]>positive[0]&&positive[1]>positive[2],'Positive system token is not green');assert(negative[0]>negative[1]&&negative[0]>negative[2],'Negative system token is not red');designEvidence.push({key,type:'semantic-chart-colours',charts:semanticCharts,tokens:semanticTokens});
- const signatures=rhythm.filter(x=>!x.empty).map(x=>[x.archetype,x.features.chartBand,x.features.ranking?'rank':'',x.features.story?'story':'',x.features.layout].join('|'));
+ // A long single section can cover several fixed viewport samples. Count it
+ // once for module repetition; adjacent separate sections still count.
+ const sampled=rhythm.filter(x=>!x.empty);
+ const signatures=sampled.filter((x,i)=>i===0||x.sectionIndex!==sampled[i-1].sectionIndex).map(x=>[x.archetype,x.features.chartBand,x.features.ranking?'rank':'',x.features.story?'story':'',x.features.layout].join('|'));
  const archetypes=new Set(rhythm.map(x=>x.archetype).filter(Boolean)),unique=new Set(signatures);
  let longest=1,run=1;for(let i=1;i<signatures.length;i++){run=signatures[i]===signatures[i-1]?run+1:1;longest=Math.max(longest,run);}
  const portfolio=await surfaces.evaluateAll(nodes=>({ranking:nodes.some(n=>n.querySelector('.v2-stock-rank')),story:nodes.some(n=>n.querySelector('.v2-story-bars')),chartSurfaces:nodes.filter(n=>n.querySelector('svg.dx-art,.dx-lazy-media')).length,chartBands:[...new Set(nodes.flatMap(n=>Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>Math.round(c.getBoundingClientRect().height/50)*50).filter(Boolean)))]}));
  const composition={key,type:'ten-viewport-diversity',rhythm,archetypes:[...archetypes],signatures:[...unique],longestRepeat:longest,intensities:pick,portfolio};designEvidence.push(composition);
- assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=6,'Need at least six archetypes across the long journey');assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports');assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=5&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, story and differently sized chart beats: '+JSON.stringify(portfolio));
+ assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=6,'Need at least six archetypes across the long journey');assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports: '+JSON.stringify({longest,rhythm:rhythm.map(x=>({index:x.index,id:x.id,archetype:x.archetype,visible:x.visible,features:x.features}))}));assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=5&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, story and differently sized chart beats: '+JSON.stringify(portfolio));
 }
 try{
 await check('captions use structured metadata, not accessibility copy',async()=>{const source=await readFile(new URL('../../discover/home.js',import.meta.url),'utf8');assert(source.includes('D.Artwork.verlauf'),'Caption renderer must consume the structured chart model');assert(!/getAttribute\(['"]aria-label['"]\)[\s\S]{0,160}\.match\(/.test(source),'Visible caption is reconstructed from an accessibility string');});
@@ -109,7 +112,34 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' incremental view resource budget',async()=>{const resources=performance.at(-1).resources.filter(r=>/^\/discover\/(app|home|detail|themes)\.(js|css)$/.test(new URL(r.url).pathname));assert(resources.reduce((n,r)=>n+r.bytes,0)<=180000,'New view scripts/styles exceed 180 KB decoded');assert(resources.length<=12,'New view adds more than 12 requests');});
  await check(key+' stable first render performance',async()=>{const metrics=await page.evaluate(()=>({...window.__dv2Vitals,domNodes:document.querySelectorAll('*').length}));performance.at(-1).vitals=metrics;assert(metrics.cls<=.15,'Cumulative layout shift exceeds 0.15: '+metrics.cls);assert(metrics.domNodes<=3000,'Initial home DOM is too large: '+metrics.domNodes);assert(metrics.longTaskMs<=1800,'First render accumulated excessive long tasks: '+metrics.longTaskMs);});
  await check(key+' home accessibility',()=>a11y(page,key+'-home'));
- await check(key+' navigation shows one Discover',async()=>{const nav=page.locator('vu-navigation');assert.equal(await nav.locator('a[href="/discover/"]').count(),1);assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);assert.equal(await nav.locator('a',{hasText:/Discover\s*(1\.0|2\.0|2\.1)/}).count(),0);});
+ await check(key+' shared menu separates Discover from platform products',async()=>{
+  const nav=page.locator('vu-navigation');
+  const destinations=await nav.locator('.group:first-child .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
+  assert.deepEqual(destinations.map(x=>x.label),['Start','Welten','Entdecken','Suchen','Märkte','Watchlist']);
+  assert(destinations.every(x=>x.href.startsWith('/discover/#/')),'Discover shortcuts must stay inside Discover');
+  assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
+  if(width<500){
+   const header=await nav.evaluate(n=>{const root=n.shadowRoot,row=root.querySelector('.row').getBoundingClientRect(),brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,row:row.toJSON(),brand:brand.toJSON(),button:button.toJSON(),section:getComputedStyle(root.querySelector('.section')).display};});
+   assert(header.brand.left>=0&&header.button.right<=header.viewport&&header.button.left>=header.brand.right,'Mobile header overflows: '+JSON.stringify(header));
+   assert.equal(header.section,'none');
+   await nav.locator('.toggle').click();
+   try{
+    await page.waitForFunction(()=>{const p=document.querySelector('vu-navigation').shadowRoot.querySelector('.panel').getBoundingClientRect();return p.left>=-1&&p.right<=innerWidth+1;},null,{timeout:3000});
+    const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,background:getComputedStyle(root.querySelector('.panel')).backgroundColor};});
+    assert(panel.columns===1,'Mobile menu uses columns: '+JSON.stringify(panel));
+    await nav.locator('.close').click();
+   }finally{await nav.evaluate(n=>{if(n.hasAttribute('open'))n.shadowRoot.querySelector('.close').click();});}
+  }
+ });
+ if(engine==='chromium'&&width===390&&colorScheme==='light')await check('platform home mobile menu stays in viewport',async()=>{
+  const home=await ctx.newPage();
+  try{
+   await home.goto(base+'/',{waitUntil:'domcontentloaded'});
+   const bounds=await home.locator('vu-navigation').evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),button:button.toJSON(),tagline:getComputedStyle(root.querySelector('.section')).display};});
+   assert(bounds.brand.left>=0&&bounds.button.right<=bounds.viewport&&bounds.button.left>=bounds.brand.right,'Platform header overflows: '+JSON.stringify(bounds));
+   assert.equal(bounds.tagline,'none');
+  }finally{await home.close();}
+ });
  await screenshot(page,key+'-home');
  await check(key+' hero horizontal exploration',async()=>{
   const track=page.locator('.v2-hero-track');assert(await track.locator('[data-symbol]').count()>=2,'Hero needs another canonical stock');

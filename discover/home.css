@@ -166,19 +166,28 @@ body.dv2 .v2-business-story{padding:25px 17px}
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-tile,body.dv2 .v2-pill,body.dv2 .v2-theme-art img{transition:none}body.dv2 .v2-track,body.dv2 .v2-hero-track{scroll-behavior:auto}}
 body.dv2 .v2-intro h1{max-width:13ch}
 body.dv2 .v2-intro-kicker{letter-spacing:.17em}
+body.dv2 .v2-intro{padding:28px 32px;background:#f7f9f1;color:#101318;border-radius:22px}
+body.dv2 .v2-intro:before,html:not([data-theme=light]) body.dv2 .v2-intro:before{inset:0;background:radial-gradient(ellipse at 82% 28%,#c8f53132 0%,transparent 57%);border-radius:inherit}
+body.dv2 .v2-intro-lead,body.dv2 .v2-intro-tag{color:#49514b}
+body.dv2 .v2-intro-visual img{max-height:240px;box-shadow:none}
+body.dv2 .v2-intro .v2-search-prompt{background:#fff;color:#101318;border-color:#bdc5b5}
+body.dv2 .v2-intro .v2-pill-ghost{background:#fff;color:#101318;border-color:#bbc5b1}
+body.dv2 .v2-intro-kicker{color:#567a0a}
+body.dv2 .v2-intro-kicker:before{content:'';display:inline-block;width:21px;height:3px;margin:0 10px 3px 0;background:#c8f531;border-radius:2px}
+body.dv2 .v2-intro-actions .v2-intro-cta{background:#c8f531;color:#101318;box-shadow:none}
 @media(max-width:760px){
-  body.dv2 .v2-intro{margin:0 -20px 18px;padding:0 20px 24px;background:#090b0e;color:#fff;overflow:hidden}
+  body.dv2 .v2-intro{margin:0 -20px 18px;padding:16px 20px 22px;background:#f7f9f1;color:#101318;border-radius:0;overflow:hidden}
   body.dv2 .v2-intro:before{display:none}
-  body.dv2 .v2-intro-kicker{order:1;margin:18px 0 0;color:#c9cbd0;font-size:9px}
-  body.dv2 .v2-intro-visual{order:2;margin:0 -20px 4px}
-  body.dv2 .v2-intro-visual img{border-radius:0;box-shadow:none}
-  body.dv2 .v2-intro h1{order:3;margin:-5px 0 0;color:#fff;font-size:clamp(28px,8vw,38px);line-height:1.02;max-width:12ch;letter-spacing:-.045em}
-  body.dv2 .v2-intro-lead{order:4;color:#c3c7cb;font-size:13px;line-height:1.45;max-width:38ch;margin:9px 0 14px}
-  body.dv2 .v2-search-prompt{order:5;margin:0 0 12px;border:1px solid #ffffff77;background:#ffffff15;color:#fff}
+  body.dv2 .v2-intro-kicker{order:1;margin:0 0 10px;color:#476610;font-size:10px}
+  body.dv2 .v2-intro h1{order:2;margin:0;color:#101318;font-size:clamp(29px,8vw,39px);line-height:1.02;max-width:13ch;letter-spacing:-.045em}
+  body.dv2 .v2-intro-lead{order:3;color:#49514b;font-size:13px;line-height:1.45;max-width:38ch;margin:10px 0 14px}
+  body.dv2 .v2-intro-visual{order:4;margin:0 0 14px;max-width:100%}
+  body.dv2 .v2-intro-visual img{width:100%;height:clamp(110px,29vw,160px);aspect-ratio:auto;object-fit:cover;object-position:center 45%;border-radius:14px;box-shadow:none}
+  body.dv2 .v2-search-prompt{order:5;margin:0 0 12px;border-color:#bdc5b5;background:#fff;color:#101318}
   body.dv2 .v2-intro-actions{order:6;margin:0}
   body.dv2 .v2-intro-actions .v2-pill{flex:1;justify-content:center;white-space:nowrap}
-  body.dv2 .v2-intro-actions .v2-pill-dark{background:#fff;color:#08090b}
-  body.dv2 .v2-intro-actions .v2-pill-ghost{border-color:#ffffff88;color:#fff}
+  body.dv2 .v2-intro-actions .v2-pill-dark{background:#c8f531;color:#101318}
+  body.dv2 .v2-intro-actions .v2-pill-ghost{border-color:#bbc5b1;color:#101318}
   body.dv2 .v2-intro-actions a[href='#/maerkte']{display:none}
 }
 body.dv2 .v2-market-today{margin-top:12px}
