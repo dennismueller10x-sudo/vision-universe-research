@@ -68,7 +68,10 @@
         var year=el('small',{text:compact?String(p.fy).slice(-2):String(p.fy),title:'Geschäftsjahr '+p.fy});
         area.appendChild(bar);item.append(area,year);bars.appendChild(item);
       });
-      stage.append(bars,node('span','v2-stock-caption',modes[i][1]+' · Geschäftsjahre '+points[0].fy+'–'+points[points.length-1].fy+' · Milliarden US-Dollar · SEC'));
+      var full=modes[i][1]+' · Geschäftsjahre '+points[0].fy+'–'+points[points.length-1].fy+' · Milliarden US-Dollar · SEC';
+      var short=modes[i][1]+' · GJ '+String(points[0].fy).slice(-2)+'–'+String(points[points.length-1].fy).slice(-2)+' · Mrd. US-$';
+      var caption=node('span','v2-stock-caption',box.classList.contains('dx-feed-metrics')?short:full);
+      caption.title=full;stage.append(bars,caption);
     }
     buttons.forEach(function(b,i){
       b.addEventListener('click',function(){show(i);});
