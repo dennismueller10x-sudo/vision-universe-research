@@ -150,12 +150,26 @@ Die Regel „drei von vier Trackern“ bleibt damit unverändert.
 Die Einschätzung ist keine Rechtsberatung; vor einer öffentlichen Anzeige
 sollte sie juristisch bestätigt werden.
 
-## Kosten
+## Kosten und Aktualisierung
 
-Keine. Kein Schlüssel, kein bezahlter Anbieter, kein Zeitplan. Der Workflow
-läuft nur manuell (`workflow_dispatch`) oder bei einem Push auf `claude/**`
-mit dem Marker `[mv-data]` in der Commit-Nachricht; sonst wird der Job
-übersprungen. Ein Lauf dauert wenige Minuten.
+Keine Kosten: kein Schlüssel, kein bezahlter Anbieter; GitHub Actions sind
+für öffentliche Repositories kostenlos. Ein Lauf dauert wenige Minuten.
+
+Der Workflow „Markt-Validierung — Quelldaten“ läuft
+
+- **einmal im Monat automatisch** (am 16., 06:37 UTC) – French veröffentlicht
+  monatlich, die Sahm-Regel ist ein Monatswert;
+- **manuell** (`workflow_dispatch`);
+- bei einem Push auf `claude/**` mit dem Marker `[mv-data]` in der
+  Commit-Nachricht; sonst wird der Job übersprungen.
+
+Gespeichert wird nur, wenn sich Zahlen geändert haben; reine Zeitstempel
+erzeugen keinen Commit.
+
+**Wichtig:** Die Live-Einordnung auf der Seite hängt davon nicht ab. Sie wird
+alle drei Stunden aus den aktuellen Kursen berechnet (`multi-asset-data.yml`,
+`build-market-pulse.mjs`). Dieser Workflow erneuert nur die historische
+Prüfung – wie ein Prüfbericht, nicht wie die Anzeige selbst.
 
 ## Wiederholen
 
