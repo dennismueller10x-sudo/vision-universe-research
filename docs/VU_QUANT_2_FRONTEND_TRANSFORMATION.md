@@ -363,3 +363,111 @@ Umgebung ebenfalls nicht erreichbar (403 der Netz-Richtlinie). Die Abnahme
 dieses Release stützt sich deshalb auf das **lokal gebaute** Release
 desselben Commits, nicht auf einen Abruf der ausgelieferten Seite. Das ist
 in den Belegen so benannt und keine stillschweigende Gleichsetzung.
+
+## 9. Der zweite Durchgang: für jemanden, der 25 € im Monat spart
+
+Der erste Umbau machte die Oberfläche ehrlicher. Er machte sie nicht
+einfach. Gemessen am 28.09.2026 bei 390 px, mit
+`scripts/vu2/measure-beginner-load.mjs`:
+
+| Ansicht | Wörter | Karten | Klickziele | lange Sätze | Zahlen/100 W |
+|---|---|---|---|---|---|
+| Start | 551 | 8 | 17 | 4 | 7,3 |
+| Screener | 524 | 4 | 39 | 6 | **26,1** |
+| Strategien | 895 | 11 | **83** | 14 | 5,9 |
+| Aktien | 689 | 5 | 50 | 1 | 24,5 |
+| Aktie NVDA | **1.046** | 14 | 37 | 10 | 10,8 |
+| Methodik | **1.228** | **28** | 11 | 8 | 1,5 |
+| **Summe** | **4.933** | — | **237** | **43** | — |
+
+Zum Vergleich: der Startbildschirm von Trade Republic kommt mit rund 50
+Wörtern aus. Zwei Wörter standen sichtbar in der Oberfläche, die dort
+nichts zu suchen haben: **„Materialisierung"** und **„Aggregat"** —
+Maschinenraum-Sprech, nach außen geraten.
+
+### 9.1 Eine Messung, die zuerst falsch war
+
+Die erste Fassung dieser Messung zählte auf der Strategien-Seite 192
+Klickziele. **109 davon lagen in zugeklappten `<details>`**: Chromium
+meldet für deren Inhalt weiterhin eine Bounding-Box, und die Prüfung auf
+Breite und Höhe ging durch. Gemessen wurde Last, die niemand sieht — die
+Zahl, mit der ich den Umbau begründet hatte, war zu hoch.
+
+`checkVisibility()` berücksichtigt `content-visibility`; zusätzlich fällt
+alles heraus, was in einem geschlossenen `<details>` liegt. Beide Stände
+oben und unten sind mit dem **korrigierten** Werkzeug gemessen.
+
+### 9.2 Zwei Owner-Entscheidungen
+
+**Keine Gesamtnote, sondern eine Stufe im Klartext.** Der Entwurf zeigt
+„Quant Score 91/100". Die Ablehnung bleibt, aber der Einwand dahinter war
+berechtigt: fünf Faktorbalken sind für einen Sparer keine Antwort.
+`plain-verdict-1.0.0` zählt deshalb nur, wie viele der **bereits
+gemessenen** Faktoren über und wie viele unter dem Mittelfeld liegen, und
+sagt das als Satz:
+
+> **Überwiegend stark** · Stark in 3 von 6 geprüften Punkten
+> + Verdient gut an jedem Euro Umsatz
+> − Finanziell angreifbar
+> + Wächst kräftig
+
+Gerechnet wird nichts dazu. Der Nenner zählt nur **bewertete** Faktoren;
+ein Nenner, der fehlende mitzählte, wäre eine stille Abwertung jedes
+Titels mit Datenlücken — und das sind die kleinen.
+
+**Einsteiger zuerst, Tiefe hinter „Mehr".** Nichts wurde gelöscht. Jede
+Station liegt unverändert einen Griff entfernt, unter einer Frage statt
+unter einem Fachbegriff: „Wie die Lage technisch aussieht" statt „Setup".
+
+### 9.3 Ein Widerspruch, den die Messung gefunden hat
+
+Die erste Fassung des Urteils zeigte bei AAME **„Überwiegend schwach"**
+über der Zeile **„Stark in 1 von 6 geprüften Punkten"**. Beide Zahlen
+richtig, zusammen ein Rätsel — genau der Fehler, vor dem die Kommentare
+in `factor-evidence.js` warnen. Die Zählzeile nennt jetzt die Seite, die
+das Urteil trägt. Über 6.296 Titel gemessen: **0 Widersprüche**.
+
+### 9.4 Das Ergebnis
+
+| Ansicht | Wörter | Karten | Klickziele | Zahlen/100 W |
+|---|---|---|---|---|
+| Start | 551 → **110** | 8 → **3** | 17 → 17 | 7,3 → **2,7** |
+| Screener | 524 → **474** | 4 | 39 | 26,1 → **18,4** |
+| Strategien | 895 → **421** | 11 | 83 → **16** | 5,9 → 5,0 |
+| Aktien | 689 → **81** | 5 → **3** | 50 → **9** | 24,5 → **3,7** |
+| Aktie NVDA | 1.046 → **575** | 14 → **7** | 37 → **31** | 10,8 → 11,5 |
+| Methodik | 1.228 → **197** | 28 → **3** | 11 | 1,5 |
+| **Summe** | **4.933 → 1.858** | — | **237 → 123** | — |
+
+**−62 % Wörter, −48 % Klickziele.** „Materialisierung" und „Aggregat"
+stehen nicht mehr in der Oberfläche.
+
+### 9.5 Ein Befund, den ich nicht selbst repariere
+
+Die Bänder der Methodik sind als Perzentile beschrieben („sehr stark" =
+oberste 10 %). Gemessen über 22.448 Faktorwerte liegen sie anders:
+
+| Band | erwartet | gemessen |
+|---|---|---|
+| Sehr stark | 10 % | **3,2 %** |
+| Stark | 15 % | 12,1 % |
+| Durchschnittlich | 30 % | **46,1 %** |
+| Schwach | 20 % | 25,4 % |
+| Sehr schwach | 25 % | 13,2 % |
+
+Bei `quality` stehen **2 % stark gegen 32 % schwach**. Die Werte sind
+offenbar keine Perzentilränge in diesem Universum, sondern gegen eine
+andere Referenz normiert. Folge für das Produkt: über 6.296 Titel lesen
+sich **21 % positiv und 50 % negativ**.
+
+Ich habe meine Schwellen **nicht** getiltet, um eine freundlichere
+Verteilung herzustellen. Das wäre Schönfärberei. Ob die Bänder neu
+kalibriert werden, ist eine Methodikfrage und eine Owner-Entscheidung.
+
+### 9.6 Was der Smoke gefunden hat
+
+Ich hatte die Aktienliste vollständig zugeklappt. Der Smoke meldete
+`ZU_WENIGE_ZEILEN=0` — zu Recht, und nicht nur formal: wer ohne einen
+Namen im Kopf herkommt, stand vor einem Suchfeld und sonst nichts. Ein
+leerer Bildschirm ist keine Vereinfachung. Jetzt stehen sechs Zeilen
+offen, die übrigen 34 liegen zu.

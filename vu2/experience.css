@@ -630,3 +630,85 @@ a.q-tile:hover h3{color:var(--q-green)}
 .q-ident-price span{font-size:14px}
 @media(max-width:650px){.q-ident h1{font-size:28px;letter-spacing:-.8px}
  .q-ident-price strong{font-size:26px}}
+
+/* ===================================================================
+   EINSTEIGER-OBERFLAECHE
+
+   Gemessen am 28.09.2026 bei 390 px: 4.933 Woerter und 436 Klickziele
+   ueber sechs Ansichten. Die Gestaltung hier hat genau eine Aufgabe -
+   die Antwort gross machen und alles andere leise. Grosse Typo, viel
+   Luft, ein Akzent; jedes Ziel mindestens 44 px hoch, weil auf einem
+   Telefon der Daumen und nicht die Maus klickt.
+   =================================================================== */
+
+/* --- Der erste Bildschirm --- */
+.q-hero{padding:14px 0 30px}
+.q-hero h1{font-size:40px;line-height:1.08;letter-spacing:-1.6px;font-weight:680;margin:0 0 14px;max-width:15ch}
+.q-hero-lead{font-size:18px;line-height:1.5;color:var(--muted);margin:0 0 24px;max-width:34ch}
+.q-hero-cta{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 28px;
+ background:var(--q-green);color:#fff;border-radius:999px;font-size:17px;font-weight:620;letter-spacing:-.2px}
+.q-hero-cta:hover{background:var(--q-green-deep);color:#fff}
+
+/* --- Die drei Wege --- */
+.q-wege{display:grid;gap:10px;margin:0 0 var(--q-section)}
+.q-weg{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;column-gap:14px;align-items:center;
+ min-height:72px;padding:14px 18px 14px 14px;border:1px solid var(--q-card-line);border-radius:var(--q-radius);background:#fff}
+.q-weg:hover{border-color:var(--q-green-line);background:var(--q-green-wash)}
+.q-weg .q-ico{grid-row:1/3;width:44px;height:44px;display:grid;place-items:center;
+ background:var(--q-green-wash-2);border-radius:12px;color:var(--q-green)}
+.q-weg-t{font-size:17px;font-weight:640;letter-spacing:-.3px;color:var(--ink)}
+.q-weg-l{font-size:14px;color:var(--muted);line-height:1.4}
+
+/* --- Drei Zahlen statt drei Absaetze --- */
+.q-zahlen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.q-zahl{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:2px;min-height:86px;
+ padding:14px;border:1px solid var(--q-card-line);border-radius:var(--q-radius-sm);background:#fff}
+.q-zahl:hover{border-color:var(--q-green-line);background:var(--q-green-wash)}
+.q-zahl-n{font-size:27px;font-weight:660;letter-spacing:-1px;color:var(--q-green);font-variant-numeric:tabular-nums;line-height:1}
+.q-zahl-t{font-size:13px;color:var(--muted);line-height:1.3}
+
+/* --- Das Klartext-Urteil --- */
+.q-verdict{border:1px solid var(--q-card-line);border-radius:var(--q-radius);padding:22px;margin:0 0 20px;background:#fff}
+.q-verdict-gut{background:var(--q-green-wash);border-color:var(--q-green-line)}
+.q-verdict-stufe{font-size:28px;line-height:1.15;letter-spacing:-1px;font-weight:660;margin:0 0 6px;color:var(--ink)}
+.q-verdict-zaehl{font-size:15px;color:var(--muted);margin:0 0 18px}
+.q-verdict-gruende{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+.q-verdict-gruende li{display:grid;grid-template-columns:24px 1fr;align-items:start;gap:10px;font-size:16px;line-height:1.4}
+.q-verdict-gruende .g-mark{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;
+ font-size:15px;font-weight:700;line-height:1}
+.q-verdict-gruende .g-plus .g-mark{background:#dcefe5;color:var(--q-green-deep)}
+.q-verdict-gruende .g-minus .g-mark{background:#f6e2e3;color:var(--negative)}
+.q-verdict-gruende .g-neutral .g-mark{background:var(--surface);color:var(--muted)}
+.q-verdict-luecke,.q-verdict-hinweis{font-size:13px;color:var(--muted);margin:18px 0 0;line-height:1.45}
+
+/* --- Der Aufklapper: Tiefe bleibt, kostet aber keinen Platz --- */
+.q-mehr{border:0;border-top:1px solid var(--q-card-line);padding:0;margin:14px 0 0}
+.q-mehr>summary{display:flex;align-items:center;gap:8px;min-height:52px;font-size:15px;font-weight:600;
+ color:var(--q-green);list-style:none;cursor:pointer}
+.q-mehr>summary::-webkit-details-marker{display:none}
+.q-mehr>summary::after{content:'▾';font-size:12px;color:var(--muted);transition:transform .15s}
+.q-mehr[open]>summary::after{transform:rotate(180deg)}
+.q-mehr>*:not(summary){font-size:15px;line-height:1.55}
+.q-mehr>p{margin:0 0 12px}
+.q-mehr>p:last-child{margin-bottom:14px}
+
+@media(max-width:650px){
+ .q-hero{padding:6px 0 24px}
+ .q-hero h1{font-size:33px;letter-spacing:-1.1px}
+ .q-hero-lead{font-size:17px}
+ .q-hero-cta{width:100%;min-height:56px}
+ .q-zahlen{grid-template-columns:1fr;gap:8px}
+ .q-zahl{flex-direction:row;align-items:center;gap:14px;min-height:64px}
+ .q-zahl-n{font-size:24px;min-width:64px}
+ .q-zahl-t{font-size:14px}
+ .q-verdict{padding:20px 18px}
+ .q-verdict-stufe{font-size:25px}
+}
+
+/* --- Die Vertrauensantwort: drei Zeilen, kein Fachwort --- */
+.q-trust{list-style:none;margin:0 0 var(--q-section);padding:0;display:grid;gap:10px}
+.q-trust li{display:grid;grid-template-columns:22px 1fr;gap:12px;align-items:start;
+ padding:14px 16px;border:1px solid var(--q-card-line);border-radius:var(--q-radius-sm);background:#fff}
+.q-trust li::before{content:'✓';color:var(--q-green);font-weight:700;font-size:15px;line-height:1.45}
+.q-trust strong{display:block;font-size:16px;font-weight:620;letter-spacing:-.2px;margin-bottom:2px}
+.q-trust span{font-size:14px;color:var(--muted);line-height:1.45}
