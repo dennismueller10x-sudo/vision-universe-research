@@ -1,17 +1,6 @@
-/* Vision Universe® – 40 Themenwelten (Darstellung).
- * Ein redaktioneller Katalog fuer die Oberflaeche: Titel, Kurztext, Foto,
- * Farbton. Er bewertet nichts und aendert keine Reihe. Wo eine Themenwelt
- * eine kanonische Sammlung hat (rowId), fuehrt sie dorthin; alle anderen
- * sind als "in Vorbereitung" gekennzeichnet - eine Aktienzahl wird nie
- * erfunden.
- *
- * Fotos: assets/themen/NN-slug.webp (schwarzer Hintergrund, 16:9).
- * Ein neues Foto wird sichtbar, sobald es dort liegt und "photo: true"
- * gesetzt ist. Ohne Foto zeigt die Kachel einen dunklen Farbverlauf. */
 (function (global) {
   'use strict';
   var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
-  // n, slug, Titel, Kurztext, Zeile fuer Karten, Leitsatz (Banner), Ton, Gruppe, rowId, Foto
   var list = [
     [1, 'kuenstliche-intelligenz', 'Künstliche Intelligenz', 'AI-Modelle, Software, Computing', 'Intelligentere Software. Neue Wertschöpfung.', 'Intelligentere Märkte. Größere Möglichkeiten.', '#6d4bff', 'tech', 'thema-ki', true],
     [2, 'halbleiter-chips', 'Halbleiter & Chips', 'GPUs, CPUs, Foundries, Equipment', 'Die Rechenkraft hinter jedem Fortschritt.', 'Kleine Chips. Große Wirkung.', '#3867ff', 'tech', null, true],
@@ -66,7 +55,6 @@
     bySlug: function (slug) { return bySlug[slug] || null; },
     byRow: function (rowId) { return byRow[rowId] || null; },
     href: function (t) { return '#/thema/' + t.slug; },
-    /* Kanonische Aktienzahl einer Themenwelt aus meta.rows - oder null. */
     count: function (t, meta, universeId) {
       if (!t.rowId || !meta) return null;
       var u = (meta.rows || []).find(function (r) { return r.universeId === universeId; });

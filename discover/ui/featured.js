@@ -65,7 +65,8 @@
         var item=node('div','v2-focus-bar'),area=node('div','v2-focus-bar-area');
         var height=Math.max(3,Math.abs(p.v)/span*100),bar=node('span','v2-focus-bar-fill'+(p.v<0?' is-negative':''));
         bar.style.height=height+'%';bar.style.bottom=((0-min)/span*100-(p.v<0?height:0))+'%';
-        area.appendChild(bar);item.append(area,node('small','',String(p.fy)));bars.appendChild(item);
+        var year=el('small',{text:compact?String(p.fy).slice(-2):String(p.fy),title:'Geschäftsjahr '+p.fy});
+        area.appendChild(bar);item.append(area,year);bars.appendChild(item);
       });
       stage.append(bars,node('span','v2-stock-caption',modes[i][1]+' · Geschäftsjahre '+points[0].fy+'–'+points[points.length-1].fy+' · Milliarden US-Dollar · SEC'));
     }
@@ -104,5 +105,10 @@
     controller(card,ctx,box,stage,chart,true);
     return box;
   }
-  D.Featured={card:spotlightCard,compact:compactCard};
+  function feedCard(card,ctx,box,stage){
+    var content=Array.from(stage.childNodes);
+    function chart(){stage.append.apply(stage,content);}
+    controller(card,ctx,box,stage,chart,true);
+  }
+  D.Featured={card:spotlightCard,compact:compactCard,feed:feedCard};
 })(window);

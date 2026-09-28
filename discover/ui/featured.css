@@ -40,6 +40,14 @@ body.dv2 .v2-tile-stage .v2-focus-bars{height:65px;gap:2px;padding-top:3px}
 body.dv2 .v2-tile-stage .v2-focus-bar{gap:2px}body.dv2 .v2-tile-stage .v2-focus-bar small{font-size:8px}
 body.dv2 .v2-tile-stage .v2-focus-empty{font-size:10px;padding:22px 2px;margin:0}
 body.dv2 .v2-tile-stage .v2-stock-caption{display:block;font-size:8.5px;color:var(--tile-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.dv2 .dx-feed-metrics{--tile-base:var(--discover-bg);--tile-ink:var(--discover-text);--tile-muted:var(--discover-muted);min-width:0;width:100%;max-width:760px;margin:0 0 14px}
+body.dv2 .dx-feed-metrics .dx-feed-bild{min-width:0;width:100%;margin:0 0 10px}
+body.dv2 .dx-feed-metrics .v2-focus-bars{height:100%;max-height:245px;gap:4px;padding-top:5px}
+body.dv2 .dx-feed-metrics .v2-focus-bar small{font-size:10px}
+body.dv2 .dx-feed-metrics .v2-focus-tabs{max-width:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:10px}
+body.dv2 .dx-feed-metrics .v2-focus-tabs button{min-width:0;padding:0 3px;font-size:11px}
+body.dv2 .dx-feed-metrics .v2-stock-market-cap{margin:0;min-width:0}
+body.dv2 .dx-feed-metrics .v2-stock-market-cap strong{font-size:13px}
 @container(max-width:185px){
   body.dv2 .v2-tile-shell .v2-focus-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
   body.dv2 .v2-tile-shell .v2-focus-tabs button{min-height:27px}
@@ -55,5 +63,11 @@ body.dv2 .v2-tile-stage .v2-stock-caption{display:block;font-size:8.5px;color:va
   body.dv2 .v2-focus-tabs button{font-size:11px}
   body.dv2 .v2-tile-shell .v2-focus-tabs button{font-size:9px;min-height:32px}
   body.dv2 .v2-tile-stage .dx-lazy-media{margin-inline:-10px}
+  body.dv2 .dx-feed-metrics .dx-feed-bild{height:clamp(130px,22dvh,200px)}
+  body.dv2 .dx-feed-metrics .v2-focus-tabs button{font-size:10px;min-height:36px}
+}
+@media(min-width:1000px){
+  body.dv2 .dx-feed-inner>.dx-feed-metrics{grid-column:2;grid-row:1 / span 9;align-self:center}
+  body.dv2 .dx-feed-metrics .dx-feed-bild{height:min(38dvh,320px)}
 }
 @media(prefers-reduced-motion:reduce){body.dv2 .v2-focus-bar-fill{animation:none}}

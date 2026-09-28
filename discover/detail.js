@@ -1,7 +1,7 @@
-/* The Discover stock page: a view of the canonical Discover detail contract.
- * All series, source states, valuation and fundamental charts are rendered
- * by the shared Discover modules (discover/ui, discover/engines). This adapter
- * only composes their DOM. */
+
+
+
+
 (function (global) {
   "use strict";
   var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
@@ -37,10 +37,10 @@
       observers.forEach(function (observer) { observer.disconnect(); });
       unsubscribers.forEach(function (unsubscribe) { unsubscribe(); });
     };
-    /* The shared renderer subscribes synchronously but exposes no dispose.
-     * Capture its existing subscription's disposer, never create another
-     * subscription or leave the shared method replaced after render. Both
-     * our route and the renderer may dispose; the returned guard is once-only. */
+
+
+
+
     if (original) hub[method] = function () {
       var unsubscribe = original.apply(hub, arguments), finished = false;
       var once = function () {
@@ -93,8 +93,8 @@
     var back = page.querySelector(".dx-back");
     if (back) back.textContent = "← Aktien entdecken";
 
-    /* Move the existing nodes, preserving their source values, live bindings
-     * and listeners. The chart's own price is the sole price when loaded. */
+
+
     if (hero && chart) {
       var context = node("section", "dv2-stock-context");
       context.setAttribute("aria-label", "Was bei dieser Aktie auffällt");
@@ -104,7 +104,7 @@
         if (item) context.appendChild(item);
       });
       if (context.textContent.trim()) chart.insertAdjacentElement("afterend", context);
-      /* Decorative poster duplicates the interactive chart directly below. */
+
       var art = hero.querySelector(".dx-dhero-art");
       if (art) art.remove();
     }
@@ -168,8 +168,8 @@
       var risksKicker = risks.querySelector(".dx-kicker");
       if (risksKicker) risksKicker.textContent = "04 / Chancen und Risiken";
     }
-    /* Existing contracts provide the neighbors and collection destinations.
-     * Give them a visible new exploration stage without inventing a rank. */
+
+
     var next = page.querySelector(".dx-chapter--next");
     Array.from(page.children).forEach(function (section) {
       if (section.querySelector && section.querySelector(".dx-rail")) section.classList.add("dv2-stock-neighbors");
@@ -192,8 +192,8 @@
       next.appendChild(onward);
     }
 
-    /* Shared fundamental renderers supply genuine tab controls. Complete
-     * their keyboard interaction without changing a track or calculation. */
+
+
     page.querySelectorAll('[role="tablist"]').forEach(function (list, listIndex) {
       var tabs = Array.from(list.querySelectorAll('[role="tab"]'));
       var panel = list.nextElementSibling;
@@ -229,26 +229,26 @@
   function number(value, digits) {
     return value.toLocaleString("de-DE", { minimumFractionDigits: digits, maximumFractionDigits: digits });
   }
-  /* O-12: die Waehrungsdarstellung kommt aus dem zentralen Contract.
 
-     Diese Datei ist nach dem Merge des Currency Layers entstanden und
-     brachte eine vierte eigene Skalenleiter mit - genau die Art von
-     Wiederholung, die ONE DATA CORE abbauen soll. Der Regression Guard
-     hat sie beim Zusammenfuehren gemeldet.
 
-     Die Ausgabe bleibt Zeichen fuer Zeichen dieselbe: ueber 1 Mio. die
-     gekuerzte Stufe mit einer Nachkommastelle, darunter der volle
-     Betrag mit zweien. Die Leiter selbst ist zentral, die Anzahl der
-     Nachkommastellen bleibt die Entscheidung dieser Flaeche. */
+
+
+
+
+
+
+
+
+
   function vuFormat(fn, value, currency, opts) {
     var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
     return (F && typeof F[fn] === "function") ? F[fn](value, currency || "USD", opts) : null;
   }
-  /* Umgerechnet wird im Vertrag, formatiert hier.
 
-     `when` ist der Stichtag der Bewertung. Ohne ihn bleibt der Betrag in
-     Originalwaehrung - ein richtiger Dollarbetrag ist besser als ein
-     Euro-Betrag zum falschen Kurs (§39). */
+
+
+
+
   function compactMoney(value, when) {
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
     var cur = "USD";
@@ -263,8 +263,8 @@
       ? vuFormat("formatCompact", value, cur, { numberLocale: "de-DE", decimals: 1 })
       : vuFormat("formatPrice", value, cur, { numberLocale: "de-DE", decimals: 2 });
     if (zentral) return zentral;
-    /* Rueckfall ohne geladenen Core. Eine zentrale Formatierung, die
-       eine Seite leer laesst, waere schlechter als die verteilte. */
+
+
     var abs = Math.abs(value), scale = 1, suffix = " $";
     if (abs >= 1e12) { scale = 1e12; suffix = " Bio. $"; }
     else if (abs >= 1e9) { scale = 1e9; suffix = " Mrd. $"; }
@@ -412,10 +412,10 @@
     if (!chart) return null;
     function update() {
       chart.querySelectorAll("svg.dx-range-chart,svg.dx-micro--intraday").forEach(function (svg) {
-        /* These are the canonical renderer's exact, unrounded scrub values.
-         * Intraday __basis.close already uses previousClose when supplied,
-         * so a session returning to yesterday's close is neutral even when
-         * it differs from today's first point. Missing never means zero. */
+
+
+
+
         var points = svg.__punkte, basis = svg.__basis;
         if (!Array.isArray(points) || !points.length || !basis) return;
         var first = basis.close, last = points[points.length - 1].close;
@@ -444,9 +444,9 @@
     var low = Math.min.apply(null, values.concat([base]));
     var high = Math.max.apply(null, values.concat([base]));
     if (low === high) return;
-    /* No artificial range below a wholly positive session (or above a
-       wholly negative one): 0 % is the real previous close and becomes
-       the visual origin. A crossing session still shows both sides. */
+
+
+
     var span = high - low;
     if (low < base && high > base) {
       low -= span * .025; high += span * .025;

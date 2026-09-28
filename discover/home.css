@@ -240,8 +240,13 @@ body.dv2 .v2-collection-link{display:grid;grid-template-columns:170px minmax(0,1
 body.dv2 .v2-collection-art{grid-column:1;grid-row:1;position:relative;display:flex;flex-direction:column;justify-content:flex-end;align-self:stretch;min-height:132px;padding:14px;overflow:hidden;border-radius:12px;color:#fff;background:radial-gradient(circle at 75% 24%,#b8ed2a88,transparent 48%),linear-gradient(140deg,#142b19,#070f0d)}
 body.dv2 .v2-collection-link:nth-child(3n + 2) .v2-collection-art{background:radial-gradient(circle at 80% 22%,#ffb43b77,transparent 48%),linear-gradient(140deg,#402313,#100b0b)}
 body.dv2 .v2-collection-link:nth-child(3n + 3) .v2-collection-art{background:radial-gradient(circle at 80% 22%,#7eaeed88,transparent 48%),linear-gradient(140deg,#17304b,#0a1017)}
+body.dv2 .v2-collection-art.has-image::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(4,10,10,.76));pointer-events:none}
+body.dv2 .v2-collection-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+body.dv2 .v2-collection-link:hover .v2-collection-image{transform:scale(1.045)}
 body.dv2 .v2-collection-glyph{position:absolute;right:8px;top:-35px;font-size:148px;line-height:1;opacity:.48;transform:rotate(-12deg)}
-body.dv2 .v2-collection-art-label{position:relative;z-index:1;max-width:15ch;text-transform:uppercase;font-weight:800;font-size:10px;line-height:1.4;letter-spacing:.14em}
+body.dv2 .v2-collection-art-label{position:relative;z-index:1;max-width:15ch;text-transform:uppercase;font-weight:800;font-size:10px;line-height:1.4;letter-spacing:.14em;text-shadow:0 1px 8px #000}
+body.dv2 .v2-collection-hero{height:clamp(160px,25vw,290px);margin:8px 0 22px;border-radius:20px;overflow:hidden;background:#101713}
+body.dv2 .v2-collection-hero img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 42%}
 body.dv2 .v2-collection-copy{display:grid;gap:5px;min-width:0}
 body.dv2 .v2-collection-link .v2-collection-copy strong{font-size:clamp(17px,1.7vw,25px);line-height:1.1}
 body.dv2 .v2-collection-link .v2-collection-copy>span{grid-column:auto;font-size:12px;line-height:1.45}
