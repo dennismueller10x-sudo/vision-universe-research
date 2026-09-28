@@ -181,7 +181,7 @@ for (const theme of ['light', 'dark']) {
 
       // 6 Why Match + Quick Research
       if (cards.length) {
-        await page.click('.sc-rc .sc-why >> nth=0');
+        await page.click('.sc-rc button[aria-label^="Warum"] >> nth=0');
         await page.waitForSelector('.sc-sheet.is-open .sc-why-item');
         await settle(page, 900);
         const items = await page.$$eval('.sc-sheet.is-open .sc-why-item', (x) => x.length);

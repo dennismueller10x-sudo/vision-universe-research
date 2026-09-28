@@ -105,12 +105,12 @@ CI: `.github/workflows/screener-ci.yml`.
 
 ## Abgleich mit den Designvorlagen (8 Screens)
 
-Umgesetzt: Einstieg mit Universumszahl · Filter-Stack mit „Aktive Filter · Alle löschen“ und Live-Zahl ·
+Umgesetzt: Einstieg mit Illustration, Universumszahl und (i)-Erklärung (Quellen, Plausibilitätsprüfung), Einstellungen (Modus, Darstellung, Daten & Methodik) · Filter-Stack mit „Aktive Filter · Alle löschen“ und Live-Zahl ·
 Filter-Vorschläge (einzelne Kriterien mit der Trefferzahl, die sie ergeben – keine fertigen Screens) ·
 Filter-Impact als Zeitleiste mit kumulierter Veränderung · zweistufige Filterbibliothek mit Suche und
 Trefferzahl · Filter-Detail mit Leitfrage, Definition, Bedingung, großer Wertanzeige, Slider mit runder
 Skala, Histogramm mit Schwellen-Marke und datenbasiertem Hinweis · Einfach/Pro, Gruppen UND/ODER,
-Gewichtung · Karten/Kompakt/Tabelle, Sheet „Sortieren & Ansicht“, wählbarer Kennzahlen-Fokus ·
+Gewichtung · kompakte Ergebniskarten (Preis, Sparkline, vier Kennzahlen in einer Zeile; „Match“ an Stelle des Quant Scores) · Karten/Kompakt/Tabelle, Sheet „Sortieren & Ansicht“, wählbarer Kennzahlen-Fokus ·
 Warum Treffer? · Quick Research (Umsatz, Bruttomarge, Free Cashflow, EPS als Jahresbalken) · Vergleich.
 
 Bewusste Abweichungen:

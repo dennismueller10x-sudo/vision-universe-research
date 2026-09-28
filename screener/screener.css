@@ -8,6 +8,7 @@
    ========================================================================= */
 @font-face{font-family:Inter;src:url(/assets/fonts/inter-latin.woff2) format('woff2');font-weight:100 900;font-display:swap}
 :root{
+  --sc-globe-1:#eef4ff;--sc-globe-2:#b9cdf5;--sc-globe-grid:rgba(255,255,255,.75);--sc-globe-line:rgba(47,91,211,.28);
   --sc-bg:#ffffff;--sc-bg-2:#f7f7f5;--sc-surface:#ffffff;--sc-surface-2:#f4f4f1;--sc-surface-3:#ececE8;
   --sc-line:rgba(0,0,0,.08);--sc-line-strong:rgba(0,0,0,.16);
   --sc-text:#0b0b0d;--sc-muted:#5f5f69;--sc-dim:#8b8b95;
@@ -23,6 +24,7 @@
   color-scheme:light;
 }
 html[data-theme=dark]{
+  --sc-globe-1:#2a3553;--sc-globe-2:#101624;--sc-globe-grid:rgba(122,162,255,.22);--sc-globe-line:rgba(122,162,255,.35);
   --sc-bg:#08080a;--sc-bg-2:#0d0d10;--sc-surface:#131317;--sc-surface-2:#1a1a20;--sc-surface-3:#23232b;
   --sc-line:rgba(255,255,255,.08);--sc-line-strong:rgba(255,255,255,.17);
   --sc-text:#f4f4f1;--sc-muted:#a2a2ad;--sc-dim:#72727d;
@@ -458,3 +460,37 @@ html[data-theme=dark] .sc-seg button[aria-pressed=true]{background:var(--sc-surf
 .sc-cr .sc-cr-watch{width:40px;height:40px;margin-right:-8px;color:var(--sc-muted)}
 .sc-cr .sc-spark{width:72px;height:30px}
 @media (max-width:420px){.sc-cr{gap:10px;padding:12px 10px 12px 12px}.sc-cr .sc-spark,.sc-cr .sc-cr-spark{width:52px!important;height:26px!important}}
+
+/* Kompakte Ergebniskarte (Konzeptserie) */
+.sc-rc{padding:14px 14px 12px;gap:10px}
+.sc-rc-head{display:grid;grid-template-columns:44px minmax(0,1fr) auto auto;gap:10px;align-items:start}
+.sc-rc-head .sc-rc-id b{font-size:15.5px;-webkit-line-clamp:2}
+.sc-rc-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 8px;margin-top:4px}
+.sc-rc-price>span:first-child{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.sc-rc-price .sc-chg{margin:0}
+.sc-rc-spark,.sc-rc-head>svg.sc-spark{width:92px!important;height:40px!important;align-self:center;display:block}
+.sc-rc-act{display:flex;flex-direction:column;margin:-8px -8px 0 -4px}
+.sc-rc-act .sc-icon-btn{width:40px;height:40px;color:var(--sc-muted)}
+.sc-rc-act .sc-icon-btn[aria-pressed=true]{color:var(--sc-accent)}
+.sc-rc-act .sc-check{margin:8px}
+.sc-metrics.is-row{display:grid;gap:8px;padding-top:10px;border-top:1px solid var(--sc-line)}
+.sc-metrics.is-row .sc-metric span{font-size:10.5px;white-space:normal;line-height:1.25;min-height:2.5em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sc-metrics.is-row .sc-metric b{font-size:14px}
+.sc-matchpill{display:inline-block!important;background:var(--sc-up-soft);color:var(--sc-up);border-radius:8px;padding:1px 8px}
+@media (max-width:370px){.sc-rc-spark,.sc-rc-head>svg.sc-spark{width:64px!important}}
+
+/* Einstieg (Konzeptserie) */
+.sc-hero h2{font-size:clamp(28px,7.4vw,48px);margin:6px 0 10px}
+.sc-globe{display:flex;justify-content:center;margin:8px 0 0}
+.sc-globe svg{width:min(260px,70%);height:auto}
+.sc-universe{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0 20px;margin:0;text-align:center}
+.sc-universe strong{font-size:48px;line-height:1.05;letter-spacing:-.04em;font-weight:700}
+.sc-universe span{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--sc-muted)}
+.sc-universe small{font-size:12px;color:var(--sc-dim)}
+.sc-info{width:44px;height:44px;margin:-12px -10px -12px -8px;border:0;background:none;display:inline-grid;place-items:center;font:600 11px/1 Inter,sans-serif;color:var(--sc-muted);position:relative}
+.sc-info::before{content:"";position:absolute;width:17px;height:17px;border:1.4px solid currentColor;border-radius:50%}
+.sc-quote{text-align:center;font-style:italic;color:var(--sc-muted);font-size:14px;margin:22px auto 0;max-width:30ch}
+.sc-rc-id .sc-rc-price span{display:inline;margin:0;white-space:nowrap;overflow:visible;color:var(--sc-text)}
+.sc-rc-id .sc-rc-price span.sc-up{color:var(--sc-up)}.sc-rc-id .sc-rc-price span.sc-down{color:var(--sc-down)}.sc-rc-id .sc-rc-price span.sc-muted{color:var(--sc-muted)}
+.sc-rc-id .sc-rc-price span:first-child{font-size:17px}
+.sc-rc-head>svg.sc-spark,.sc-rc-spark{max-width:none!important;flex:none}

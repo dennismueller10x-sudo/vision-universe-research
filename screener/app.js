@@ -67,7 +67,7 @@
     growth: '<path d="m3 17 6-6 4 4 8-8M15 7h6v6"/>', quality: '<path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8-4.3-4.1 5.9-.9z"/>',
     balance: '<path d="M12 4v16M5 20h14M4 9l3-5 3 5a3 3 0 0 1-6 0zM14 9l3-5 3 5a3 3 0 0 1-6 0zM7 4h10"/>', valuation: '<path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
     momentum: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>', technical: '<path d="M3 3v18h18M7 15l4-4 3 3 6-6"/>', analysts: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 11l2 2 4-4"/>',
-    vu: '<circle cx="12" cy="12" r="9"/><path d="M8 9l4 7 4-7"/>', open: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'
+    vu: '<circle cx="12" cy="12" r="9"/><path d="M8 9l4 7 4-7"/>', gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', open: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'
   };
   function icon(name, cls) { var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('class', 'sc-i' + (cls ? ' ' + cls : '')); s.setAttribute('aria-hidden', 'true'); s.innerHTML = IC[name] || ''; return s; }
   function iconBtn(name, label, onclick, extra) { return h('button', Object.assign({ type: 'button', class: 'sc-icon-btn', 'aria-label': label, title: label, onclick: onclick }, extra || {}), icon(name)); }
@@ -302,17 +302,20 @@
   // ------------------------------------------------------------ START
   function viewStart(main) {
     var i = info(), q = state.query;
-    main.append(bar('Screener', { right: [mqDesk.matches ? null : modeSeg()] }));
+    main.append(bar('Screener', { right: [mqDesk.matches ? null : modeSeg(), iconBtn('gear', 'Einstellungen', openSettings)] }));
     if (state.invalidLink) main.append(invalidNotice());
     var left = h('div', {}), right = h('div', {});
     left.append(h('section', { class: 'sc-hero' }, [
-      h('p', { class: 'sc-eyebrow', text: 'Vision Universe · Screener' }),
       h('h2', { text: 'Baue dein Aktienuniversum.' }),
-      h('p', { class: 'sc-lead', text: 'Finde genau die Unternehmen, die zu deinen Kriterien passen.' }),
-      h('div', { class: 'sc-card sc-universe' }, [h('div', {}, [h('strong', { class: 'sc-num', text: nf(i.count) }), h('span', { text: 'Aktien im aktuellen Universum' })]), h('span', { class: 'sc-pill', text: 'US-Börsen · ' + dateDe(i.asOf) })]),
+      h('p', { class: 'sc-lead', text: 'Finde genau die Unternehmen, die zu deinen Kriterien passen. Mit deinen eigenen Filtern – schnell, präzise, unabhängig.' }),
+      globe(),
+      h('div', { class: 'sc-universe' }, [h('strong', { class: 'sc-num', text: nf(i.count) }),
+        h('span', {}, ['Aktien im Universum', h('button', { class: 'sc-info', type: 'button', 'aria-label': 'Was gehört zum Universum?', onclick: openUniverseInfo }, 'i')]),
+        h('small', { text: 'US-Börsen · Datenstand ' + dateDe(i.asOf) })]),
       h('button', { class: 'sc-btn sc-btn-primary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']),
       h('div', { style: { height: '10px' } }),
-      h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“'])]));
+      h('button', { class: 'sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), 'Kriterium suchen – z. B. „ROIC“ oder „200“']),
+      h('p', { class: 'sc-quote', text: '„Bessere Entscheidungen beginnen mit den richtigen Filtern.“' })]));
     left.append(h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, [h('h2', { text: 'Modus' }), mqDesk.matches ? modeSeg() : null]),
       h('div', { class: 'sc-quickgrid', style: { gridTemplateColumns: 'repeat(2,minmax(0,1fr))' } }, [
         modeCard('simple', 'Einfach', 'Schnell starten mit den wichtigsten Kriterien – Größe, Wachstum, Bewertung, Qualität, Momentum, Technik.'),
@@ -325,6 +328,38 @@
     right.append(recentSection(5), savedSection(3));
     if (mqDesk.matches) main.append(h('div', { class: 'sc-start' }, [left, h('div', { style: { paddingTop: '48px' } }, right)]));
     else main.append(left, right);
+  }
+  function globe() {
+    var w = h('div', { class: 'sc-globe', 'aria-hidden': 'true' });
+    w.innerHTML = '<svg viewBox="0 0 240 200"><defs><radialGradient id="scg" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="var(--sc-globe-1)"/><stop offset="1" stop-color="var(--sc-globe-2)"/></radialGradient></defs>'
+      + '<ellipse cx="120" cy="104" rx="112" ry="30" fill="none" stroke="var(--sc-globe-line)" stroke-width="1" transform="rotate(-14 120 104)"/>'
+      + '<circle cx="120" cy="100" r="70" fill="url(#scg)"/>'
+      + '<g fill="none" stroke="var(--sc-globe-grid)" stroke-width="1"><ellipse cx="120" cy="100" rx="70" ry="24"/><ellipse cx="120" cy="100" rx="70" ry="50"/><ellipse cx="120" cy="100" rx="24" ry="70"/><ellipse cx="120" cy="100" rx="50" ry="70"/><line x1="50" y1="100" x2="190" y2="100"/><line x1="120" y1="30" x2="120" y2="170"/></g>'
+      + '<path d="M16 122 A112 30 -14 0 0 224 86" fill="none" stroke="var(--sc-globe-line)" stroke-width="1.2" transform="rotate(0)"/>'
+      + '<circle cx="20" cy="126" r="4" fill="var(--sc-accent)"/><circle cx="218" cy="74" r="5" fill="var(--sc-accent)"/><circle cx="176" cy="150" r="3" fill="var(--sc-accent)" opacity=".6"/><circle cx="64" cy="58" r="2.5" fill="var(--sc-accent)" opacity=".6"/></svg>';
+    return w;
+  }
+  function openUniverseInfo() {
+    var i = info(), m = ds().meta, s = openSheet({ title: 'Das Universum' });
+    var withheld = (m.sanitized && (m.sanitized.FOREIGN_FILER || 0) + (m.sanitized.NON_USD_REPORTING || 0) + (m.sanitized.IMPLAUSIBLE_SHARE_BASIS || 0)) || 0;
+    s.body.append(h('p', { class: 'sc-field-desc', text: nf(i.count) + ' US-Stammaktien an ihrer Primärbörse. ETFs, separate Aktiengattungen und Titel in Prüfung sind nicht enthalten.' }),
+      kv([['Kurse', 'Tagesschluss ' + dateDe(i.asOf)], ['Fundamentaldaten', 'SEC EDGAR bis ' + dateDe(i.fundamentalsAsOf)], ['Branchen', 'SEC-SIC-Code (kein GICS)'], ['Quant-Faktoren', 'Faktorevidenz V2, Einzelfaktoren']]),
+      h('p', { class: 'sc-label', text: 'Plausibilitätsprüfung' }),
+      h('p', { class: 'sc-note', text: 'Bei ' + nf(withheld) + ' Aktien werden Marktkapitalisierung und Bewertungskennzahlen nicht gezeigt, weil die gemeldete Aktienzahl oder Währung nicht zum gehandelten Papier passt (z. B. ADRs ausländischer Unternehmen). Margen und Wachstum bleiben filterbar.' }),
+      h('p', { class: 'sc-note', text: 'Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Der Filter-Impact zeigt, wie viele Aktien dadurch herausfallen.' }));
+  }
+  function openSettings() {
+    var s = openSheet({ title: 'Einstellungen' }), q = state.query;
+    function row(title, sub, control) { return h('div', { class: 'sc-toggle' }, [h('span', {}, [title, sub ? h('small', { text: sub }) : null]), control]); }
+    var theme = VD.theme;
+    var themeSeg = theme ? h('div', { class: 'sc-seg', role: 'group', 'aria-label': 'Darstellung' }) : h('a', { class: 'sc-link', href: '/discover/#/settings' }, 'Öffnen');
+    var paintTheme = function () { if (!theme) return; themeSeg.replaceChildren.apply(themeSeg, [['light', 'Hell'], ['dark', 'Dunkel']].map(function (m) { return h('button', { type: 'button', 'aria-pressed': String(theme.mode() === m[0]), onclick: function () { theme.set(m[0]); paintTheme(); } }, m[1]); })); };
+    paintTheme();
+    s.body.append(row('Modus', 'Einfach: wichtigste Kriterien · Pro: Gruppen, Ranking, alle Kriterien', modeSeg()),
+      row('Darstellung', 'Vision-Universe-Einstellung – gilt auch für Discover', themeSeg),
+      h('button', { class: 'sc-row', type: 'button', style: { marginTop: '14px' }, onclick: function () { closeTop().then(openUniverseInfo); } }, [icon('vu'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Daten & Methodik' }), h('span', { text: 'Universum, Quellen, Plausibilitätsprüfung' })]), icon('next')]),
+      h('button', { class: 'sc-row', type: 'button', style: { marginTop: '8px' }, onclick: function () { store.clearHistory(); toast('Verlauf gelöscht'); } }, [icon('trash'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Verlauf löschen' }), h('span', { text: 'Zuletzt verwendete Screens auf diesem Gerät' })])]));
+    void q;
   }
   function modeCard(mode, title, text) {
     var on = state.query.mode === mode;
@@ -566,7 +601,7 @@
         onclick: function () { state.select = !state.select; if (!state.select) state.selected = []; render({ keepScroll: true }); } }, [icon('compare'), state.select ? 'Fertig' : 'Vergleichen'])]));
     if (!r.total) { main.append(emptyResults(r)); return; }
     if (!fs.length) main.append(h('p', { class: 'sc-note', style: { margin: '0 0 12px' }, text: 'Ohne Filter siehst du das gesamte Universum. Füge Kriterien hinzu, um es einzugrenzen.' }));
-    var metrics = E.cardMetrics(q, q.view === 'table' ? 7 : 4);
+    var metrics = E.cardMetrics(q, q.view === 'table' ? 7 : q.view === 'cards' && q.ranking.enabled ? 3 : 4);
     var list = r.order.slice(0, state.shown);
     var holder;
     if (q.view === 'table') holder = tableView(list, metrics);
@@ -627,17 +662,21 @@
   function resultCard(i, metrics) {
     var d = ds(), sym = d.symbol(i), q = state.query;
     var price = d.value('price', i), chg = d.value('perf1d', i);
-    var card = h('article', { class: 'sc-card sc-rc', tabindex: '0', 'aria-label': d.name(i) + ', ' + sym, onclick: function () { if (state.select) toggleSelect(sym); else openQuick(sym); },
-      onkeydown: function (e) { if (e.key === 'Enter' && e.target === this) { if (state.select) toggleSelect(sym); else openQuick(sym); } } }, [
-      h('div', { class: 'sc-rc-top' }, [logo(sym), h('div', { class: 'sc-rc-id' }, [h('b', { text: d.name(i) }), h('span', { text: secLine(i) })]), state.select ? selectToggle(sym) : watchBtn(sym)]),
-      h('div', { class: 'sc-rc-mid' }, [h('div', {}, [h('span', { class: 'sc-price sc-num', text: F.format('price', price) }), h('span', { class: 'sc-chg sc-num ' + signCls(chg), text: F.format('perf1d', chg) })]),
-        h('span', { class: 'sc-spark-slot', 'data-sym': sym, style: { width: '132px', maxWidth: '45%', height: '44px', display: 'block' } })]),
-      h('div', { class: 'sc-metrics is-tiles' }, metrics.map(function (m) { return metricEl(m, i); }))]);
-    var foot = h('div', { class: 'sc-rc-foot' });
-    if (q.ranking.enabled) { var m = E.match(d, q, i); foot.append(h('span', { class: 'sc-match sc-num', title: m.families + ' von ' + m.of + ' Bereichen bewertbar' }, m.score === null ? 'Match –' : 'Match ' + Math.round(m.score) + ' %' + (m.families < m.of ? ' · ' + m.families + '/' + m.of : ''))); }
-    if (Q.count(q)) foot.append(h('button', { class: 'sc-btn sc-btn-quiet sc-btn-sm sc-why', type: 'button', onclick: function (e) { e.stopPropagation(); openWhy(sym); } }, [icon('bulb'), 'Warum Treffer?']));
-    if (foot.childNodes.length) card.append(foot);
-    return card;
+    var open = function () { if (state.select) toggleSelect(sym); else openQuick(sym); };
+    var actions = h('div', { class: 'sc-rc-act' }, state.select ? [selectToggle(sym)] : [watchBtn(sym),
+      Q.count(q) ? h('button', { class: 'sc-icon-btn', type: 'button', 'aria-label': 'Warum ist ' + sym + ' ein Treffer?', title: 'Warum Treffer?', onclick: function (e) { e.stopPropagation(); openWhy(sym); } }, icon('bulb')) : null]);
+    var cols = [];
+    if (q.ranking.enabled) {
+      var m = E.match(d, q, i);
+      cols.push(h('div', { class: 'sc-metric', title: m.families + ' von ' + m.of + ' Bereichen bewertbar' }, [h('span', { text: 'Match' }), h('b', { class: 'sc-matchpill sc-num', text: m.score === null ? '–' : Math.round(m.score) + (m.families < m.of ? '*' : '') })]));
+    }
+    metrics.slice(0, 4 - cols.length).forEach(function (id) { cols.push(metricEl(id, i)); });
+    return h('article', { class: 'sc-card sc-rc', tabindex: '0', 'aria-label': d.name(i) + ', ' + sym, onclick: open, onkeydown: function (e) { if (e.key === 'Enter' && e.target === this) open(); } }, [
+      h('div', { class: 'sc-rc-head' }, [logo(sym),
+        h('div', { class: 'sc-rc-id' }, [h('b', { text: d.name(i) }), h('span', { text: secLine(i) }),
+          h('div', { class: 'sc-rc-price' }, [h('span', { class: 'sc-num', text: F.format('price', price) }), h('span', { class: 'sc-chg sc-num ' + signCls(chg), text: F.format('perf1d', chg) })])]),
+        h('span', { class: 'sc-spark-slot sc-rc-spark', 'data-sym': sym }), actions]),
+      h('div', { class: 'sc-metrics is-row', style: { gridTemplateColumns: 'repeat(' + cols.length + ',minmax(0,1fr))' } }, cols)]);
   }
   function compactRow(i, metrics) {
     var d = ds(), sym = d.symbol(i), chg = d.value('perf1d', i), m0 = metrics[0];
