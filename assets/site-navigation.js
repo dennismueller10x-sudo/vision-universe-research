@@ -1,7 +1,7 @@
 // Central navigation for every page. Add new menu entries only here.
 (() => {
   const groups = [
-    ['Discover', [['Start','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]],
+    ['Discover', [['Start','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]],
     ['Markets & Data', [['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫']]],
     ['Analyse', [['Quant','/quant/','⌁'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
     ['Research', [['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥']]],
@@ -11,6 +11,7 @@
   const iconPaths = {
     '⌂':'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
     '◎':'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/>',
+    '◬':'<path d="M4 19V5m0 14h16M7 15l4-5 3 2 5-7m0 0v5m0-5h-5"/>',
     '◇':'<rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8 12 3 3 5-6"/>',
     '⌕':'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/>',
     '≋':'<path d="M2 9c3-3 5 3 8 0s5-3 8 0 3 2 4 1M2 15c3-3 5 3 8 0s5-3 8 0 3 2 4 1"/>',
@@ -110,10 +111,20 @@
         });
         section.append(links);host.append(section);
       });
+      const syncActive=()=>{
+        host.querySelectorAll('.links a').forEach(a=>{
+          const url=new URL(a.href),collection=location.hash.startsWith('#/c/');
+          const rowId=collection?location.hash.split('/')[3]:null;
+          const theme=globalThis.VUDiscover?.Views?.Themes?.byRow(rowId);
+          const parent=theme?'#/welten':'#/strategien';
+          const active=url.pathname===location.pathname&&(collection?url.hash===parent:url.hash?(url.hash==='#/'?!location.hash||location.hash==='#/':location.hash.startsWith(url.hash)):true);
+          if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+        });
+      };
       root.querySelectorAll('.quick a').forEach(a=>{if(location.pathname.startsWith(a.getAttribute('href')))a.setAttribute('aria-current','page');});
       const panel=root.querySelector('.panel'),button=root.querySelector('.toggle');panel.inert=true;
       const close=()=>{this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');button.setAttribute('aria-expanded','false');button.setAttribute('aria-label','Menü öffnen');};
-      button.onclick=()=>{if(this.hasAttribute('open')){close();return;}this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Menü schließen');root.querySelector('.close').focus();};
+      button.onclick=()=>{if(this.hasAttribute('open')){close();return;}syncActive();this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Menü schließen');root.querySelector('.close').focus();};
       root.querySelector('.close').onclick=()=>{close();button.focus();};root.querySelector('.backdrop').onclick=close;
       panel.addEventListener('click',event=>{if(event.target.closest('a'))close();});
       root.addEventListener('keydown',event=>{
