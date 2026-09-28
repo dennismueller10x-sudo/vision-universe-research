@@ -131,6 +131,12 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  p('Cross Asset: Anlageklassen verlinkt, keine Kausalitaet',intel.ca.length>=3&&intel.ca.every(h=>/^#\/maerkte\//.test(h))&&/nicht, warum/.test(intel.m3Text),intel.ca);
  p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',intel.stories.length>=1&&intel.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),intel.stories);
  p('Kein Gesamtscore, keine Kauf-/Verkaufsaufforderung, Hinweis sichtbar',!/\d+\s*\/\s*100|Score \d|jetzt kaufen|verkaufen Sie|Kaufsignal/i.test(intel.m3Text)&&/keine Anlageberatung/.test(intel.m3Text),null);
+ const kf=await page.evaluate(()=>{const k=document.getElementById('maerkte-kurz');const h=document.querySelector('.dx-m3-hero');if(!k)return null;
+   return {nachHero:!!h&&h.nextElementSibling===k,fragen:[...k.querySelectorAll('dt')].map(x=>x.textContent),text:k.textContent};});
+ p('Das Wichtigste in 30 Sekunden: direkt nach dem Hero, vier Fragen, Stufe mit Geschichte verbunden',!!kf&&kf.nachHero&&
+   JSON.stringify(kf.fragen)===JSON.stringify(['Heute','Warum?','Was heißt das?','Worauf achten?'])&&/von 100 Fällen innerhalb von 3 Monaten/.test(kf.text),kf&&{nachHero:kf.nachHero,fragen:kf.fragen});
+ p('Einsteiger zuerst: "Für Fortgeschrittene" vor den Messwerten',await page.evaluate(()=>{const t=[...document.querySelectorAll('.dx-m3-trenner h2')].map(h=>h.textContent);
+   const d=document.getElementById('maerkte-dimensionen'),tr=document.querySelector('.dx-m3-trenner');return t[0]==='Für Fortgeschrittene'&&!!d&&!!(tr.compareDocumentPosition(d)&4);}),null);
  const pr=await page.evaluate(()=>{const s=document.querySelector('#maerkte-pruefung');if(!s)return null;return {text:s.textContent,balken:s.querySelectorAll('.dx-m3-pr-balken li').length,
    heute:s.querySelectorAll('.dx-m3-pr-balken li.is-heute').length,quelle:(s.querySelector('.dx-m3-pr-details a')||{}).href||''};});
  p('Wie verlaesslich: Rueckschlag-Risiko je Stufe, heutige Stufe markiert',!!pr&&pr.balken>=4&&pr.heute===1&&/von 100 Fällen/.test(pr.text),pr&&{balken:pr.balken,heute:pr.heute});
