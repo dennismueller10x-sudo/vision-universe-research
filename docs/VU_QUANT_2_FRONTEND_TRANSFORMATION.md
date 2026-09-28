@@ -222,6 +222,13 @@ geblieben.
    ist das keine Auswahl, sondern eine Wand. Der Befund ist **nicht** durch diesen
    Umbau entstanden und liegt ausserhalb der fünf Bereiche; er gehört in den
    POST_LAUNCH_BACKLOG und braucht dieselbe Suche, die die Aktienseite jetzt hat.
+1b. **Erledigt statt liegengelassen:** der Backlog-Punkt „der Watchlist-Schritt
+   der Browser-QA ist unzuverlässig" ist repariert. Die Schleife fügte beide
+   Kürzel ein, ohne nach dem ersten auf das gerenderte Mitglied zu warten; das
+   Feld wird beim Rendern neu aufgebaut, und das zweite `fill` traf dann
+   gelegentlich das alte Feld. Gemessen waren es lokal 2 Fehlschläge auf 5
+   Läufe bei 2 von 2 grün in CI. Kein Produktfehler — ein fehlendes Warten im
+   Prüfskript, das hier den Beleg blockiert hat.
 2. **Das Gewicht der Auslieferung** (Code-Splitting für das 1,09-MB-Skript,
    `market-capability.json` mit 1.242.180 Bytes) — unverändert offen aus dem Launch.
 3. **Portfolio** bleibt erreichbar und unverändert. Keine Depotanalyse, keine
