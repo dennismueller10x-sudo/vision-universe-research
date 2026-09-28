@@ -1,6 +1,1214 @@
 # Vision Universe® Quant 2.0 — Orchestrator State
 
-Updated: 2026-09-25 UTC
+Updated: 2026-09-28 UTC
+
+## LAUNCH_2026-09-28 — PUBLIC_BETA_LAUNCH_READY = PASS
+
+`launch-readiness-1.0.0` · Commit `55e3217841` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·
+0 offen · 0 rot
+
+Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`** (zehn Punkte, wie
+beauftragt). Alle drei Belege stammen vom **gleichen** Commit: Browser-Smoke gegen das gebaute
+Release (34 Ansichten × 2 Breiten, 0 Fehlschläge), Suite (1.968 / 1.968 / 0), Abnahmestichprobe
+(22 Titel, PASS).
+
+**Was dieser Satz nicht sagt:** `PASS` gilt für das Release aus diesem Commit, nicht für das, was
+in diesem Moment ausgeliefert wird. Der Default-Branch trägt diese 17 Commits noch nicht;
+`pages-release.yml` löst auf Push zum Default-Branch und auf Pull Requests aus. Der Schritt nach
+draußen ist ein Merge und damit eine Owner-Entscheidung.
+
+### Vier eigene Prüfungen waren grün, ohne etwas zu prüfen
+
+Das ist der wichtigste Befund dieses Zyklus, weil er die Messung selbst betrifft:
+
+| gelesen | existiert | Folge |
+|---|---|---|
+| `brief.headline` als String | ist ein **Objekt** mit `sentence` | der Kopfsatz war nie auf interne Codes oder Handlungssprache geprüft |
+| `brief.sources.shape` | gibt es nicht | ERROR_STATES fand **0** reduzierte Reisen in 500 Titeln — es sind 88 |
+| `brief.sources.change` | gibt es nicht | alle sechs Titel des Erlebnis-Gates galten als unbeantwortet |
+| `brief.methodologySwitch` als Flagge | ist immer da, `active` entscheidet | gezählt wurden 500 von 500 statt 71 |
+
+Dazu in der Abnahmestichprobe: `p.statement` statt `p.text` — die Doppel- und
+Widerspruchsprüfungen verglichen leere Strings. Und `DATA_FRESHNESS` bestand auf zwei geratenen
+Workflownamen, weil das Gate nur verlangte, dass *irgendein* Zeitplan existiert.
+
+Ein Gate, das PASS meldet und dabei nichts gesehen hat, ist gefährlicher als ein rotes. Ein Test
+hält deshalb jetzt die **Form** der Auskunft fest, und ein zweiter prüft, dass die Gates, die etwas
+zählen, nicht null zählen.
+
+### Was ein Widerspruch ist — und was nicht
+
+Die erste Fassung der Widerspruchsprüfung schlug auf `factorId` an und meldete vier der neun
+namentlich genannten Titel. MSFT trägt „Trendstruktur verbessert sich" (dafür) und „Kurstempo
+verschlechtert sich" (dagegen) — **zwei verschiedene Messungen derselben Familie**, beide wahr,
+jede mit ihrer Rechenregel darunter. Genau diese Unterscheidung war der Kern von M40. Ein
+Widerspruch ist dieselbe **Einordnung** auf beiden Seiten oder wortwörtlich derselbe Satz.
+
+## M43 — DIE ZWÖLF LAUNCH-GATES, GEMESSEN (UND DIE ÜBERSICHT BEHAUPTETE 459 BEWERTUNGEN)
+
+`launch-readiness-1.0.0` · `scripts/vu2/measure-launch-readiness.mjs` ·
+`acceptance-sample-1.0.0` · Suite 1.966 grün
+
+Es gibt jetzt eine Messung, die `PUBLIC_BETA_LAUNCH_READY` entscheidet, statt eines Gefühls.
+Zwölf P0-Gates, je PASS / FAIL / **NOT_MEASURED**, jedes FAIL mit seinen Fällen. Vier Gates
+(Mobil, Desktop, Navigation, Fehlerbilder) sind nur im Browser gegen das **gebaute** Release
+entscheidbar, eines nur mit einem echten Suite-Lauf; ohne diese Belege bleibt das Gate offen —
+**und NOT_MEASURED ist kein PASS.** Dazu zwei P1-Prüfungen (Release-Erlebnis, Public-Beta-Hygiene).
+
+Ein Bericht gilt, wenn sein Commit ein Vorfahre von HEAD ist **und** sich seither an Engines,
+Dienst, Oberfläche, Methodik oder Artefakten nichts geändert hat. Die drei reinen
+Messergebnisdateien sind davon ausgenommen — sonst macht der Launch-Bericht, sobald er
+eingecheckt ist, den Beleg ungültig, den er selbst enthält.
+
+### Der erste Lauf: fünf rote Gates, drei davon meine eigene Messung
+
+Das ist der Grund, warum eine Messung erst dann etwas wert ist, wenn man ihre Befunde einzeln
+nachprüft:
+
+| Gate | gemeldet | war |
+|---|---:|---|
+| VALUATION_SAFETY | 465 | `b` im Verzeichnis sind **Faktor-Handelstage**, kein Börsenwert |
+| SECURITY_TYPE_SAFETY | 1.417 | „belegt keine Aktie" aus dem Verzeichnis neu hergeleitet — dort steht die Gattung **ohne ihren Beleggrad** |
+| PRODUCT_LANGUAGE | 8 | Firmennamen („Advanced Health Intelligence", „Equus Total Return, Inc.") |
+| NAVIGATION | 4 | die Zulassungsmenge des Routers nur zur Hälfte gelesen |
+
+Ein Firmenname ist keine Formulierung, die wir wählen. Das Sprachverzeichnis regelt **unsere**
+Worte; ein Titel unter falschem Namen wäre der schwerere Fehler. Die Prüfung gilt jetzt nicht für
+das Namensfeld — interner Code und Handlungssprache werden dort weiter geprüft, denn beides könnte
+nur aus unserem Code stammen.
+
+### Zwei echte Befunde, beide Widersprüche zwischen zwei Flächen
+
+**1. Die Übersicht behauptete 459 Faktorbewertungen, die es nicht gibt.** Sie führte 6.755 Titel
+als faktorbewertet, während **6.296** Faktorzeilen existieren. Die Bedingung war
+`!!f || Number(member.b) > 0` — es genügte, dass die Kapazitätsdatei Handelstage kennt. 459 Zeilen
+versprachen eine Auswertung, die die Aktienseite drei Klicks später verneint; in einer Probe waren
+14 von 52 Fällen Papiere, die gar keine Aktie sind. **Eine Zahl von Handelstagen ist eine
+Voraussetzung, kein Ergebnis.** Der Faktorindex deckt sich gemessen genau mit den Zeilen in den
+Schichtdateien (6.296 zu 6.296, in beide Richtungen 0).
+
+**2. 145 belegte Nicht-Aktien standen in der Liste als faktorbewertete Aktien** — während dieselbe
+Anwendung auf der Aktienseite „keine Aktie" sagte. Ursache: die Regel `nichtAktie` stand als zwei
+eigene Listen **im Produktdienst**, und die Übersicht läuft dort nicht durch. Sie steht jetzt in
+`instrument-classification` (`provenNonEquity`, `EQUITY_TYPES`, `PROVEN_TYPE_BASES`) und wird von
+beiden Flächen und vom Bauer **gelesen**. Das Verzeichnis trägt die Angabe mit
+(`universe-list-1.3.0`, Feld `ne`, 145 Einträge), damit die Liste nicht 96 Instrumentendateien
+laden muss. Kurs, Kursverlauf und Kursstatistiken bleiben — es entfällt die Aktienaussage.
+
+### Drei weitere Befunde am Rand, alle gemessen
+
+- **Die Quant-Ansicht nannte das Kürzel als Firmennamen** — bei 976 von 977 Titeln einer Probe,
+  einer trug den Panelnamen in Versalien. Der breite Weg läuft nicht durch `mitVerzeichnis`, der
+  Panelweg liest die Panelzeile; keiner der beiden ist die Identitätsquelle.
+- **18 Titel trugen ihr Kürzel als Namen** (`BNRG` hieß „BNRG"). Die Namensschicht sagt genau,
+  warum: `PROVIDER_HAS_NO_NAME`, erneuter Versuch ab 2026-10-14. Der Dienst gibt jetzt `null` plus
+  Grund; die Oberflächen sagen „Firmenname nicht veröffentlicht". **Ein fehlender Name ist
+  launchfähig, ein falscher nicht.**
+- **Fünf Kurse ohne Stichtag** — genau die fünf Titel mit einer Panelzeile, darunter AAPL, MSFT,
+  NVDA und JPM. Die Zeile selbst hatte ein Datum, unsichtbar war es also nicht; eine Fläche, die
+  `price.asOf` liest, hätte bei den vier prominentesten Titeln nichts gefunden. Datiert wird nur,
+  wenn der Kurs derselbe ist.
+
+### Die Abnahmestichprobe (P1): 22 Titel, PASS
+
+Neun namentlich genannte Titel plus dreizehn Rollen, jede über ein **Prädikat** besetzt und nicht
+von Hand: Bank (ABCB), REIT (ABR), Small Cap (AACG), junger Titel (AACO), datenarm (ABTC), ETF
+(AAAC), Vorzugspapier (ABR-P-D), zurückgehaltene Bewertung (ACGL), Identitätskonflikt (AACI), mit
+Setup (A), ohne Setup (AACP), mit Strategie (AA), ohne Strategie (AADX). Je Titel neun Prüfungen:
+Name, Gattung oder ehrlich unklar, Kurs mit Stichtag, verständliche Zusammenfassung, keine doppelte
+und keine widersprüchliche Hauptaussage, keine Aussage ohne Beleg, richtige reduzierte Reise,
+Methodik mit Fassung, keine Station ohne Grund.
+
+**Der Smoke hatte von diesen 22 Titeln drei angesehen** — NVDA, AAPL, JPM, also nur Titel, bei
+denen alles da ist. Genau die Lagen, in denen eine Seite *kaputt aussieht statt reduziert*, standen
+nicht in seiner Liste. Sechs sind jetzt drin.
+
+### Kohärenz nach der Umklassifizierung neu gemessen
+
+`CONTRADICTORY_STATEMENTS = 0` · `DUPLICATE_PRIMARY_STATEMENTS = 0` ·
+`TECHNICAL_INFORMATION_WITHOUT_STATEMENT = 0` · `STATEMENTS_WITHOUT_EVIDENCE = 0` ·
+FULL 405 · REDUCED 41 · UNUSABLE 54 von 500. „Unusable" heißt: höchstens 3 der 11 Fragen
+beantwortbar — auf derselben Stichprobe sind 91 Reisen REDUCED und 2 MINIMAL. Das sind datenarme
+Titel und belegte Nicht-Aktien, bei denen die Seite sagt, warum. Das bleibt bewusst so.
+
+## NORTH_STAR_2026-09-28 — PUBLIC BETA LAUNCH READINESS
+
+Das übergeordnete Ziel ist ab dem 28.09.2026 nicht mehr Vollständigkeit, sondern
+`PUBLIC_BETA_LAUNCH_READY = PASS`. Reihenfolge: **Korrektheit > Coverage · Vertrauen >
+Vollständigkeit · Launch Readiness > weitere Feature-Tiefe.** Der Launch-Scope-Freeze gilt: keine
+neuen Quant-Engines, Strategie- oder Musterfamilien, keine neue Backtest-Methodik, keine neuen
+Provider, keine Revisions-Daten, keine neue Marktdatenarchitektur, keine neuen
+Discovery-Funktionen. Bestehende fail-closed-Grenzen bleiben akzeptiert.
+
+Ein fehlender Wert ist launchfähig, wenn **drei** Bedingungen erfüllt sind: der Grund ist richtig,
+die Oberfläche erklärt ihn verständlich, und es entsteht keine falsche Aussage.
+
+## M42 — DIE ZWEI OWNER-ENTSCHEIDUNGEN ZUR IDENTITÄT, UMGESETZT UND GEMESSEN
+
+`ETF_RECLASSIFIED = 136` · `STOCK_SCREENER_REMAINING = 0` · `CANONICAL_NAME_CONTRACT_VERSIONED =
+PASS` · `LIST_NAME == STOCK_PAGE_NAME bei 6.875 von 6.875` · Suite 1.959 grün
+
+### Entscheidung 1 — der veröffentlichte Wertpapiername schlägt das Anbieterfeld
+
+`assetType = "Stock"` ist kein Beleg für eine Aktie, wenn der Name ausdrücklich eine andere
+Gattung nennt. Freigegeben als positiver Beleg: ausdrückliches „ETF", ausdrückliches
+„Exchange-Traded Fund". Ausdrücklich **nicht** benutzt: bloß „Trust", bloß „Fund",
+Kürzel-Heuristiken, der Emittentenname anstelle des Wertpapiernamens, Vermutungen aus Branche
+oder Kursverhalten.
+
+Alle gemessenen Fälle sind geprüft — nicht 133, sondern **136**, weil dieselbe Regel nach dem
+Namensanschluss aus M41 drei weitere Titel sieht:
+
+| Kennzahl | Wert |
+|---|---:|
+| `ETF_NAME_EVIDENCE_CANDIDATES` | 136 |
+| `ETF_RECLASSIFIED` | 136 |
+| `STILL_EQUITY_AFTER_EVIDENCE` | 0 |
+| `AMBIGUOUS_NOT_CHANGED` | 179 |
+| `STOCK_SCREENER_REMOVED` | 165 |
+| `STOCK_SCREENER_REMAINING` | **0** |
+| `VALUE_FACTORS_REMOVED` | 145 |
+| `STRATEGY_MATCHES_REMOVED` | 145 |
+
+Die 165 aus dem Aktienscreener entfernten Papiere sind 138 ETFs, 17 Optionsscheine, 9
+Vorzugspapiere und 1 ETN; 163 davon belegt der Wertpapiername, 2 das Anbieterfeld. Der
+Restbestand ist fünfmal null: keine Faktorzeile, kein Value-Faktor, kein Börsenwert, keine
+Screening-Zeile, kein Strategie-Treffer über einem belegten Nicht-Aktien-Papier. Die 179
+mehrdeutigen bleiben unangetastet, mit Gegenbeispiel je Muster — „American Assets Trust" ist ein
+REIT und damit eine Aktie.
+
+Die Papiere verschwinden **nicht** aus dem Produkt: Kurs, Kursverlauf und Suche bleiben. Es
+entfällt die Aktienaussage. Die Reise sagt das im Klartext („Dieses Papier ist keine Aktie") über
+die neue Ursachengruppe `NOT_AN_EQUITY_LISTING`.
+
+**Ein Fehler auf dem Weg, gemessen und behoben:** `screenerEligible` folgte weiter dem
+Eignungsartefakt und änderte sich durch die Neueinordnung nicht. Die Ausnahme in
+`company-master.js` greift jetzt nur bei **belegter** Gattung (`HIGH` aus `SECURITY_NAME` oder
+`PROVIDER_ASSET_TYPE`) — fail-closed, nicht pauschal. Und sechs von elf namensabgeleiteten
+Gattungen waren zuerst falsch: ein Vorzugs-ETF wurde PREFERRED, Vorzugs-Depositary-Shares wurden
+ADR. Die Regelreihenfolge steht jetzt Hülle vor Inhalt.
+
+### Entscheidung 2 — ein Namensvertrag statt einer Quellenpriorität
+
+Kein „Liste gewinnt", kein „Stock Page gewinnt". `company-naming-1.0.0` führt drei Ebenen —
+`ISSUER_LEGAL_NAME`, `SECURITY_DISPLAY_NAME`, `PRODUCT_DISPLAY_NAME` — und ordnet jeder Quelle
+genau eine zu (SEC = Emittent, Tiingo = Wertpapier, VU = Produkt). Emittentenname und
+Wertpapiername werden nicht still vermischt.
+
+Die Abweichungen sind **vollständig** partitioniert, und die Partition addiert sich auf:
+
+| | Art | Fälle | Beispiel |
+|---|---|---:|---|
+| A | Rechtsform, Zeichensetzung, Großschreibung | 338 | AAUC „Allied Gold Corp" / „Allied Gold Corporation" |
+| B | Kurzform | 342 | ABM „ABM INDUSTRIES INC /DE/" / „ABM Industries Inc" |
+| C | Aktienklasse | 911 | AACO „… Corp. I" / „… Corp I - Class A" |
+| D | Serie / Zahlwort | **99** | AACI „Armada Acquisition Corp. III" / „… Corp I" |
+| E | Umbenennung / Übernahme | **0** | — (siehe unten) |
+| F | echter Identitätskonflikt | **1** | PALX „Palomino Laboratories Inc." / „PALEX INC" |
+| G | unklar | **279** | AAMI „Acadian Asset Management Inc." / „BrightSphere Investment Group Inc" |
+
+5.603 Instrumente sind über beide Ebenen vergleichbar, 3.624 nennen denselben Namen, 1.970 weichen
+ab, 9 tragen auf einer Ebene keinen Namen, 2.206 haben nicht beide Ebenen. Kosmetisch (A+B) sind
+**680**, substanziell (C–G) **1.290**. `IDENTITY_CONFLICT = 379` (D, F, G); C ist kein Konflikt,
+sondern die zulässige Ergänzung der Wertpapierebene.
+
+**Die Zahlen des Auftrags weichen ab, und das ist die Korrektur einer Messung, nicht des
+Auftrags.** Die genannten 5.423 Abweichungen / 3.908 kosmetisch / 1.515 substanziell stammen aus
+einer Messung vom 26.09., die (a) gleiche Namen als Abweichung mitzählte und (b) Punkte in
+Rechtsformen als Zeichensetzung behandelte. Beides ist behoben: `normalise` entfernt Punkte
+vollständig (107 Fälle „L.P." gegen „Lp"), und Gleichheit ist keine Abweichung (3.930 Fälle,
+Beispiel „Alcoa Corp" / „Alcoa Corp").
+
+**E bleibt 0 mit Begründung, nicht aus Nachlässigkeit.** Eine Umbenennung und eine
+Kürzel-Wiederverwendung sehen lokal identisch aus: AAMI (Umbenennung BrightSphere → Acadian) und
+AEC (anderes Unternehmen unter demselben Kürzel) liefern dasselbe Bild. Ohne eine
+Kürzel-Historie mit Gültigkeitsdaten ist das nicht trennbar, und eine Vermutung wäre eine
+erfundene Identität. Beide landen deshalb in G und bleiben offen.
+
+**Der Regressionsfall AACI wird erkannt:** „Armada Acquisition Corp I" gegen „III" ist Art D mit
+`identityConflict = true`, beide Namen stehen mit Herkunft (Quelle, CIK `0002092897`, issuerId,
+securityId, Kürzel, Stichtag, firstSeen, Join-Beleg) im Bericht, und die Auflösung wählt **nicht**
+still: `resolve()` gibt bei Konflikt keine Entscheidung zurück. Die Aktienseite zeigt den Konflikt
+als Klartexthinweis mit beiden Namen; 310 Einträge tragen ihn in `universe-list-1.2.0`.
+
+### Liste == Aktienseite: 6.875 von 6.875
+
+Der Name ist jetzt einquellig. Der Konsum-Export setzt ihn nicht mehr; das Verzeichnis ist die
+Identitätsquelle und gilt **auch** gegen einen bereits gesetzten Namen — das ist die eine Stelle,
+an der die Regel „das Verzeichnis ergänzt nur" bewusst nicht gilt, und der Grund steht im Code.
+Gemessen am Dienst, Titel für Titel: **6.875 gleich, 0 verschieden, 0 ohne Namen.**
+
+Die 4.719 Abweichungen aus dem Auftrag bleiben als **Quellenzahl** im Bericht stehen
+(`SOURCE_MASTER_DIFFERS_FROM_CONSUMER_EXPORT`) — sie beschreiben den Abstand der beiden
+Rohschichten und waren der Anlass. Sie sind keine Produktaussage mehr.
+
+### Ein Test, der sich selbst geprüft hätte
+
+Der erste Bau des Tests „Liste und Aktienseite nennen denselben Namen" verglich `Zeile.name` gegen
+`Seite.name` über alle Titel. Beide beziehen den Namen inzwischen aus derselben Verzeichniszeile.
+Eine eingebaute Sabotage („Sabotage AG" statt „Apple Inc.") erschien gemessen auf **beiden**
+Flächen gleichzeitig — der Vergleich wäre grün geblieben. Der Test prüft jetzt beide Flächen gegen
+das veröffentlichte Verzeichnis, die hier einzige unabhängige Quelle, und die Sabotage löst ihn auf
+beiden Seiten aus.
+
+## M41 — DIE NAMEN LAGEN DA UND NIEMAND HAT SIE GELESEN
+
+`COMPANY_NAME_COVERAGE = 6.857 von 6.875` · `TICKER_AS_NAME = 0` ·
+`NAME_TYPE_EVIDENCE_AUDIT = PASS`
+
+Punkt 9 verlangt, nach M40 mit dem nächsten **gemessenen** Product-Gap weiterzumachen. Die
+Kohärenzmessung hat ihn benannt: die Übersicht schrieb bei **1.102 von 6.875 Zeilen** ihren Ticker
+zweimal.
+
+    AAAC | AAAC | 20,12 $        statt      AAAC | Columbia AAA CLO ETF | 20,12 $
+
+Der Name war die ganze Zeit veröffentlicht. `quant/data/market/security-master/company-names.json`
+(`company-names-1.0.0`, 15.09.2026) löst **6.855 der 6.875** Produkttitel auf — mit `displayName` in
+gepflegter Schreibweise, `nameSource`, `nameAsOf`, den Kandidaten je Quelle und einer
+Konfliktspalte. Genau **20** tragen überhaupt keinen Anbieternamen. Der Company Master las fünf
+andere Quellen und **diese nicht**; die Aktienseite zeigte den Namen längst, weil der Konsum-Export
+dieselbe Schicht überlagert. Nur der Stamm und die Liste wussten nichts davon.
+
+**Das korrigiert eine Aussage aus M38.** Dort steht, die 1.100 namenlosen Titel hätten „in keiner
+lokalen Quelle" einen Namen. Geprüft wurde damals das SEC-Kürzelverzeichnis — nicht diese Schicht.
+Richtig ist: 18 im Produktuniversum haben keinen (`PROVIDER_HAS_NO_NAME`, erneuter Versuch ab
+2026-10-14), die übrigen haben einen.
+
+### Zwei Fehler auf dem Weg, beide vom Diff gefangen
+
+**Der erste Block stand an der falschen Stelle.** Er landete vor der SEC-Quelle — und die ist die
+letzte und breiteste. Gemessen hat er damit **5.066 bereits bekannte Namen überschrieben**: „Alcoa
+Corp" wurde „Alcoa", weil `displayName` die Rechtsform weglässt. Das ist eine
+Darstellungsentscheidung über jeden Namen im Produkt und kein Lückenschluss. Der Block steht jetzt
+zuletzt; `merke` behält den ersten Treffer, also ist er reine Auffüllung.
+
+**Und der Vergleich selbst war zuerst falsch gebaut.** Der Bauer führt eine persistente
+Arbeitsablage (`.market-cache/universe`), und zwei Läufe hintereinander sind deshalb nicht
+unabhängig: mein „Basislauf" hat die Namen des vorigen Kandidatenlaufs aus dem Speicher
+übernommen und dabei behauptet, sie stammten aus dem Bestand. Erst zwei Läufe mit **eigener**
+Ablage (`--work-dir`) ergaben den echten Vergleich.
+
+Der geprüfte Diff, Feld für Feld über 7.809 Instrumente:
+
+| Feld | Instrumente | Beispiel |
+|---|---|---|
+| `companyName` **neu** | **1.082** | AAAC: null → „Columbia AAA CLO ETF" |
+| `companyName` geändert | **0** | — |
+| `companyNameStatus` | 1.082 | SOURCE_MISSING → RESOLVED:…company-names.json |
+| `adrEvidence` | 1.082 | „unavailable" → „nameChecked" (der Klassifikator hat jetzt einen Namen) |
+| `securityType` | 10 | siehe unten |
+| Instrumente verloren / dazu | **0 / 0** | Produktuniversum 6.881 unverändert |
+
+### Ein Kürzel ist kein Name — aus keiner Quelle
+
+`dashboard/config/universe.json` führt **AMD als „AMD"** und **ASML als „ASML"**. Weil diese Quelle
+hoch steht, trug der Stamm das Kürzel als Firmennamen — mit dem Status `RESOLVED`, also mit der
+Behauptung, der Name sei aufgelöst. `merke` weist jetzt jeden Namen ab, der sein Kürzel ist, und die
+nächste Quelle antwortet: 4 Titel geheilt, **0 Instrumente mit Ticker-als-Name**. Dieselbe Regel
+führt die Namensschicht als `TICKER_AS_NAME`-Ablehnung; sie gehört in den Stamm und nicht in einen
+Sonderfall.
+
+Dazu nimmt der Stamm jetzt auch `RESOLVED_OUTSIDE_PRODUCT` (37 Instrumente): er ist der **volle**
+Wertpapierstamm, und ein aufgelöster Name gehört hinein, auch wenn das Produkt den Titel nicht
+führt. Ohne Namen bleiben 223 von 7.809, davon 18 im Produktuniversum.
+
+### Die Hülle entscheidet vor dem Inhalt
+
+Mit Namen im Stamm belegte ein Name erstmals eine Gattung — und **6 von 11 Belegen waren falsch**.
+Beide Fehler kamen aus der **Reihenfolge** der Namensregeln:
+
+- *„Cohen & Steers Short Duration Preferred AND Income Active ETF"* → PREFERRED, weil die
+  Vorzugsregel vor der Fondsregel stand. Das Papier **ist** ein Fonds; Vorzugsaktien sind, was es
+  **hält**.
+- *„Fifth Third Bancorp Depositary Shares … Perpetual Preferred Stock"* → ADR, weil „Depositary
+  Share" in der ADR-Regel stand. Das ist eine Hinterlegung auf **eigene** Vorzugsaktien einer
+  US-Bank, kein American Depositary Receipt.
+
+Beide Korrekturen **verengen**: die Hülle (ETF/ETN) entscheidet zuerst, ein ADR ist nur durch
+„ADR", „ADS" oder „American Depositary" belegt, und eine Hinterlegung ohne weitere Angabe bleibt
+zuletzt eine Hinterlegung. Danach sind alle **10** Gattungswechsel richtig, jeder mit dem Namen, der
+ihn belegt: 4 × ADR (der Name sagt ADR), 6 × PREFERRED (vier Vorzugs-Hinterlegungen, „Cum Red Pfd
+Ser A", „Zacks Preferred Income"). `screenerEligible` bleibt bei 5.938.
+
+### Was der Name über die Gattung sagt — und was nicht (`name-type-evidence-1.0.0`)
+
+| Muster | Beleg | Titel | als Stammaktie geführt |
+|---|---|---|---|
+| **ETF** | eindeutig | 133 | **133** |
+| PREFERRED | eindeutig | 28 | 1 |
+| DEPOSITARY_SHARE | eindeutig | 11 | 0 |
+| SENIOR_NOTES | eindeutig | 6 | 4 |
+| ADR_ADS | eindeutig | 6 | 0 |
+| TRUST | **mehrdeutig** | 188 | 135 |
+| FUND | **mehrdeutig** | 57 | 43 |
+| INDEX / PORTFOLIO / UNIT | **mehrdeutig** | 16 | 13 |
+
+Die Mehrdeutigen bleiben unangetastet, jeder mit seinem Gegenbeispiel: „American Assets Trust" ist
+ein REIT, also eine Aktie; „Altisource Portfolio Solutions" ist ein Betrieb. Eine Regel darauf
+würde REITs umklassifizieren — das wäre geraten.
+
+**Die offene Entscheidung: 133 Titel, deren Name ETF sagt, gelten als Stammaktie.** Der
+Klassifikator lehnt das ausdrücklich ab, wenn der Anbieter `assetType = "Stock"` meldet — und M37
+hat gemessen, dass dieses Feld für **7.801 von 7.803** Instrumenten „Stock" lautet und damit nahezu
+nichts unterscheidet. Heutige Folge: 27 dieser Fonds tragen mindestens eine bewertete Eigenschaft,
+5 einen berechneten Börsenwert, **keiner** eine bewertete Bewertung. Eine Umklassifizierung nimmt
+Titel aus dem Screener-Umfang und verändert damit den Umfang des Produktuniversums — das ist eine
+**Owner-Entscheidung** und kein Fix. Der Bericht legt die Zahlen hin und entscheidet nicht.
+
+Das korrigiert M37 im gleichen Zug: „keine lokale Angabe trennt Nicht-Eigenkapital von
+Stammaktien" war richtig über `assetType`, CUSIP, FIGI, ISIN und das SEC-Verzeichnis — und wurde
+gemessen, **bevor** der Stamm Namen für diese Zeilen hatte.
+
+### Oberfläche und Nachweis
+
+Wo kein Name vorliegt, steht das da: die Zeile schreibt „Firmenname nicht veröffentlicht" statt des
+Kürzels ein zweites Mal, und die Aktienseite überschreibt sich mit „Aktienanalyse" statt mit dem
+Kürzel, unter dem dasselbe Kürzel steht.
+
+Sechs neue Testfälle, sabotagegeprüft (Regelreihenfolge zurückgedreht → Fall 4 fällt). Zwei davon
+haben sich zuerst selbst ausgelöst: die Engine heißt das Feld `ticker` und gibt `instrumentType`
+zurück, und meine eigene Begründungsschwelle war länger als meine kürzeste Begründung — beides
+behoben, indem die Prüfung richtig und die Begründung substanziell wurde, nicht indem die Schwelle
+fiel.
+
+Tests **1.945 grün** (quant) · **273 grün** (discover). Produktions-Smoke: **CLEAN**, 27 Ansichten ×
+2 Breiten, Übersicht **100 von 100 Zeilen mit Namen** (die Namensschwelle des Smoke steigt deshalb
+von 0,5 auf 0,95 — bei der alten fiel ein Rückfall nicht mehr auf).
+
+## M40 — STOCK INTELLIGENCE COHERENCE
+
+`CONTRADICTORY_STATEMENTS = 0` · `DUPLICATE_PRIMARY_STATEMENTS = 0` ·
+`STATEMENTS_WITHOUT_EVIDENCE = 0` · `TECHNICAL_INFORMATION_WITHOUT_STATEMENT = 0`
+
+Bis M39 wurde jedes Modul einzeln gemessen. Jede dieser Zahlen war richtig, und keine
+beantwortete die Frage, ob eine Seite **zusammen** etwas sagt. M40 stellt genau die — auf zwölf
+Archetypen und einer 500er-Stichprobe — und hat dabei drei echte Widersprüche gefunden, von denen
+zwei im Bestand standen und einer beim ersten Lauf der neuen Engine entstand.
+
+### Befund 1: 743 Titel nannten eine schwache Eigenschaft ihre „klarste Stärke"
+
+`FactorEvidence.summarySentence` nahm die höchste der bewerteten Eigenschaften und nannte sie die
+Stärke — unabhängig davon, wo sie liegt. Gemessen über **6.441 Titel** ergab das bei **743** den
+Satz:
+
+> Unternehmensqualität ist mit **schwach** die klarste Stärke. Risiko ist mit **schwach** die
+> klarste Schwäche.
+
+Aus richtigen Zahlen gebaut und trotzdem falsch: die schwächste Eigenschaft eines schwachen Titels
+ist keine Stärke, und bei AACG lagen Stärke und Schwäche im **gleichen Band** — dann existiert die
+Unterscheidung nicht bloß schief, sondern gar nicht.
+
+Die Grenze ist jetzt das **Band** und nicht die Reihenfolge: über dem Mittelfeld eine Stärke,
+darunter eine Schwäche, im Mittelfeld keines von beidem — und dass nichts heraussticht, ist selbst
+eine Aussage („Keine der 6 bewerteten Eigenschaften liegt über oder unter dem Mittelfeld"). Beide
+Module lesen dieselbe Liste; ein Test prüft den **ganzen Bestand**, weil eine Stichprobe von zwanzig
+diesen Satz mit Glück nicht getroffen hätte.
+
+### Befund 2: 266 zurückgehaltene Bewertungen standen trotzdem auf der Seite
+
+Von den **465** Titeln, deren Börsenwert M34 ausdrücklich zurückhält, zeigten **266** drei Zeilen
+tiefer doch eine Bewertungszahl:
+
+| Titel | Faktorschicht | Kennzahlenschicht |
+|---|---|---|
+| GOOGL | Bewertung bewusst zurückgehalten | Kurs-Gewinn-Verhältnis 17,27 · Kurs-Umsatz 9,32 |
+| T | zurückgehalten | 8,4 · 1,52 |
+| SO (6 Notierungen) | zurückgehalten | 21,2 · 3,18 |
+| JPM | zurückgehalten | Ertragsrendite 4,62 % aus 1.408 Mrd. Börsenwert |
+
+Drei Wege führten zu einer Bewertung, und nur einer hielt sich an die Semantik: die Faktorschicht.
+Der Konsum-Export und das SEC-Panel rechnen beide weiter — **nachgerechnet, nicht vermutet**:
+`f_ps` ist „Kurs × Aktien / Umsatz", `f_fcfYield` ist „Free Cashflow / (Kurs × Aktien)", und `f_pe`
+ist „Kurs / (Gewinn / Aktien)", also ebenfalls Kurs × Aktien / Gewinn. **Alle drei tragen die
+Aktienzahl des Emittenten** — genau die Zuordnung, die nicht in den Unterlagen steht.
+
+Also fällt die Bewertung jetzt geschlossen, in derselben Form, die diese Schicht für eine fehlende
+Freigabe schon kennt: Wert null, Zustand UNAVAILABLE, Grund dabei. Das kostet Deckung — 266 Titel,
+bis zu drei Kennzahlen je Titel — und ist der ausdrücklich gewählte Preis: **Korrektheit vor
+Reichweite.**
+
+Statt der Zahl steht der Grund, und zwar als Satz: *„Diese Kennzahl braucht den Börsenwert genau
+dieser Notierung. Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte
+Aktienzahl gilt für das Unternehmen als Ganzes …"* Der Wert selbst liest „Bewusst nicht genannt"
+und nicht „Nicht verfügbar" — das Wörterbuch verlangt für die beiden Lagen zwei verschiedene Texte.
+
+**NICHT betroffen** ist `NO_PIT_SHARE_COUNT` (801 Titel). Dort fehlt der Faktorschicht ein
+zeitpunktsicherer Anteilsbestand; das ist eine andere Aussage als „die vorhandene Zahl gilt nicht
+für diese Zeile", und eine Zahl auf anderer Grundlage ist keine Fehlzuordnung.
+
+Die Entscheidung erreicht die Seite über das Verzeichnis, das sie ohnehin lädt: `universe-list-1.1.0`
+führt `v` (den Grund) und `il` (die Zahl der notierten Zeilen) — 1.266 Einträge, davon 465 mit
+zurückgehaltener Zuordnung. Der Dienst liest beide Fassungen; ein älteres Artefakt verliert nichts.
+
+### Befund 3: eine Geschichte stand in zwei Spalten (beim ersten Lauf der neuen Engine)
+
+Die erste Kohärenzmessung fand bei **95 von 120** Titeln dieselbe Eigenschaft auf beiden Seiten:
+„Eine schwache Kursentwicklung" dagegen und „Kurstempo verbessert sich" dafür. Beides ist wahr und
+gemessen — das eine ist die Lage, das andere ihre Richtung. Als zwei Spalteneinträge liest es sich
+trotzdem wie ein Widerspruch.
+
+Die Veränderung tritt jetzt **neben** die Eigenschaft, die sie betrifft, und nicht in die
+Gegenspalte. Keine Aussage geht verloren; sie steht an der Stelle, an der sie etwas erklärt. AAPL
+bekam dadurch statt zehn Dafür-Zeilen vier — sieben der zehn hatten dieselbe Sache gesagt.
+
+Dabei war auch meine eigene Prüfung zu grob: zwei **verschiedene** Messungen derselben Familie, die
+auseinanderlaufen („Bruttomarge verbessert sich" / „Free-Cashflow-Marge verschlechtert sich"), sind
+kein Widerspruch, sondern der Befund. Die Identität einer Aussage ist deshalb ihre **Messung** und
+nicht ihre Familie.
+
+### Die Auskunft: eine versionierte Engine, kein generativer Text
+
+`intelligence-brief-1.0.0` bildet aus der bereits veröffentlichten Evidenz **eine** Auskunft:
+
+> **Die Aktie zeigt eine hohe Ertragskraft und kräftiges Wachstum, dagegen eine hohe Bewertung.
+> Ein Setup ist im Aufbau, aber noch nicht bestätigt.**
+
+Regelbasiert, deterministisch, ohne Prognose und ohne Empfehlung. Sie rechnet nichts: sie bekommt
+die Antworten der Dienste und ordnet sie. **Jede** einzelne Aussage trägt ihren Beleg
+(`evidence: [{source, field, value, unit}]`), und `statementsWithoutEvidence` prüft das gegen die
+echten Artefakte statt gegen eine Konvention.
+
+Keine neuen Schwellen: die Bänder kommen aus `quant-v2.json` (ratingBands), die Asymmetriegrenzen
+aus dem Musterartefakt, die Stilschwelle von 40 % aus der Reisemessung. Ein zweiter Satz Schwellen
+wäre eine zweite Methodik.
+
+**Dafür / Dagegen / Noch nicht bewertbar** — drei Gruppen, nicht zwei Sortierungen derselben Liste.
+Die dritte trägt, was ausdrücklich *nicht* bewertet wurde; ohne sie liest sich eine kurze
+Dafür-Liste wie ein Urteil. Und sie ist keine Wiederholung der Faktorwerte: „Eine hohe Bewertung"
+steht in der ersten Zeile, die Zahl in der zweiten.
+
+**Das Setup als Handlungslogik** — vier Fragen, vier Antworten, aus derselben Kaskade:
+
+> **Bestätigt** — Ein bestätigtes Setup liegt vor.
+> *Warum?* Struktur, Trend und Volumen bestätigen am selben Stichtag dieselbe Lage.
+> *Was müsste als Nächstes passieren?* In der entscheidbaren Stufe gibt es über diesem Zustand
+> keine weitere Regel; die Verlaufszustände darüber verlangen eine geordnete Beobachtungshistorie
+> und sind noch nicht freigeschaltet.
+> *Was würde es beenden?* Dieser Zustand trägt 5 erfüllte Bedingungen. Fällt eine davon weg, gilt
+> er nicht mehr.
+
+Dass in der entscheidbaren Stufe ein früherer Vorrang den **stärkeren** Zustand bedeutet, ist eine
+Eigenschaft dieser Zuordnung und keine allgemeine Wahrheit. Ein Test hält sie gegen die
+veröffentlichte Methodik — ändert sie sich, fällt der Test und nicht der Leser.
+
+**Der Anlagestil als Satz**: „Am ehesten passt die Aktie derzeit zum Stil Momentum Leader." Passt
+keiner über der Schwelle: „Kein Anlagestil passt derzeit klar. Am nächsten kommt Quality
+Compounder." Dazu erfüllt / offen / **nicht messbar** — das Letzte getrennt, weil es der Grund für
+eine schlechtere Passung ist und weder als erfüllt noch als verletzt zählt.
+
+**Chance gegen Risiko als Primärsprache**: „Ähnliche Situationen hatten historisch mehr Aufwärts-
+als Abwärtsasymmetrie." Darunter die Aufwärts- und die Abwärtsseite gegen die Grundgesamtheit, die
+Stichprobe (118.376 vergleichbare Beobachtungen) und die Belastbarkeit (3 von 3 Mustern hielten
+außerhalb ihres Fundzeitraums). Chance nie ohne Kehrseite — als Struktur, nicht als Konvention.
+
+### Die obere Hälfte einer Aktienseite (390 px)
+
+Gemessen am gebauten Release: die erste Bildschirmhöhe zeigte Name, Etikett, Kurs,
+Aktualitätszeile — und dann einen Chart. Die fünf Einstiegsfragen wurden in Abschnitt vier, sechs
+und sieben beantwortet, die Abwägung überhaupt erst auf der Quant-Ansicht.
+
+Die Auskunft steht jetzt **zwischen Kurs und Chart**, bei 390 px **443 px** vom Seitenanfang. Der
+Smoke prüft die Reihenfolge im DOM (`compareDocumentPosition`) und nicht nur, *dass* es die
+Auskunft gibt — ein Abschnitt hinter dem Chart wäre derselbe Befund nochmal.
+
+Ein Leseweg für die ganze Seite: `getIntelligenceBrief` ruft die sechs Dienste einmal, die Seite
+nimmt `brief.sources` für alles Weitere. Auch die Quant-Ansicht liest dieselbe Engine — vorher
+bildete sie ihren eigenen Zusammenfassungssatz, und zwei Zusammenfassungen desselben Titels sind
+zwei Wahrheiten, sobald eine sich ändert. Der Setup-Abschnitt unten nennt Etikett und Regelsatz
+nicht mehr doppelt; er heißt jetzt „Woran dieser Zustand hängt".
+
+### Zwei Nebenbefunde, die dabei auffielen
+
+- Die Auswahl der Kennzahlenkästen kannte nur `earningsYield`/`priceToFcf` (den Panelweg). Für jeden
+  Titel außerhalb des Panels stand die Frage „Welcher Preis steht dem Geschäft gegenüber?" über
+  einem **leeren Kasten** — der breite Weg liefert `priceEarnings`/`priceSales`. Beide sind jetzt
+  ausgewählt, und ein Kasten entsteht nur mit wenigstens einer Zeile.
+- Ein Titel ohne eine einzige bewertete Eigenschaft sagt jetzt den Grund im Kopfsatz: *„Für eine
+  Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 116 vor."* Gemessen
+  betrifft das 784 der 786 Titel ohne Faktorwert — es ändert sich von selbst, und das ist eine
+  andere Auskunft als „nicht bewertbar".
+
+### Die zwölf Archetypen
+
+Nicht handverlesen: jede Klasse hat ein Prädikat über die veröffentlichten Artefakte, und gewählt
+wird der erste Treffer der alphabetisch geordneten Liste. Eine handverlesene Liste würde messen,
+was ich sehen will.
+
+| Archetyp | Titel | Fragen | Setup | Stil | Muster |
+|---|---|---|---|---|---|
+| starke Aktie | NVDA | 11/11 | im Aufbau | passt | Asymmetrie |
+| schwache Aktie | AAME | 11/11 | kein Setup | passt | Asymmetrie |
+| Momentum-Titel | AEHR | 10/11 | kein Setup | passt | Asymmetrie |
+| Value-Titel | ABR | 10/11 | kein Setup | passt | Asymmetrie |
+| Bank | WSBCO | 5/11 | keine Beobachtung | nächstliegend | keine Wochenreihe |
+| REIT | AAT | 10/11 | kein Setup | passt | kein Muster trifft zu |
+| Wachstumsunternehmen | AMPX | 11/11 | kein Setup | passt | Asymmetrie |
+| datenarme junge Aktie | AAAC | 4/11 | keine Beobachtung | — | — |
+| Multi-Class / zurückgehalten | GOOGL | 11/11 | kein Setup | passt | Asymmetrie |
+| Titel mit Setup | ACA | 10/11 | **bestätigt** | passt | Asymmetrie |
+| Titel ohne Stil | ACAA | 3/11 | keine Beobachtung | — | — |
+| Titel ohne Setup | ABAT | 11/11 | kein Setup | passt | Asymmetrie |
+
+Die drei schwachen Zeilen sind **ehrliche Datengrenzen**, keine Produktfehler: AAAC (198
+Handelstage) und ACAA (117) tragen keine Eigenschaft, kein Setup und keinen Mustervergleich, und
+sie sagen es mit der Zahl — *„Für eine Einordnung dieses Titels werden 252 Handelstage benötigt;
+aktuell liegen 198 vor."* WSBCO hat zwei bewertete Eigenschaften und keine veröffentlichte
+Wochenreihe. Kein Titel der Probe zeigt
+einen Widerspruch, eine doppelte Hauptaussage oder eine Aussage ohne Beleg.
+
+### Die Messung (500er-Stichprobe, jeder 13. Titel, deterministisch)
+
+| Kennzahl | Titel von 500 |
+|---|---|
+| `STOCKS_WITH_COMPLETE_INTELLIGENCE_SUMMARY` | **408** (+ 28 teilweise) |
+| `STOCKS_WITH_PRO_CONTRA_UNKNOWN` (alle drei Gruppen) | **357** (475 mit mindestens zwei) |
+| `SETUPS_PUBLISHED` · davon entscheidbarer Zustand | 426 · **123** |
+| `SETUPS_WITH_NEXT_CONDITION` | **122 von 123** |
+| `SETUPS_WITH_INVALIDATION` | **123 von 123** |
+| `STRATEGY_MATCH_WITH_EXPLANATION` | **418** |
+| `PATTERN_MATCH_WITH_ASYMMETRY` | **322** (+ 80 mit dem ausdrücklichen „kein Muster trifft zu") |
+| `METHODOLOGY_SWITCH_VISIBLE` | **70** |
+| `CONTRADICTORY_STATEMENTS` | **0** |
+| `DUPLICATE_PRIMARY_STATEMENTS` | **0** |
+| `TECHNICAL_INFORMATION_WITHOUT_STATEMENT` | **0** |
+| `STATEMENTS_WITHOUT_EVIDENCE` | **0** |
+| `FULL_INTELLIGENCE_JOURNEY` / `REDUCED` / `UNUSABLE` | **407 / 42 / 51** |
+
+Die eine Ausnahme ist ehrlich: der eine entscheidbare Zustand ohne nächste Bedingung ist ein
+**bestätigtes** Setup — über ihm gibt es in der entscheidbaren Stufe keine Regel mehr, und die
+Verlaufszustände darüber sind geschlossen. Das steht als Satz da und nicht als leere Liste.
+
+**Zwei Lineale, kein Fortschritt.** Dieselbe Stichprobe ergibt nach der Formmessung
+(`journey-shape-1.0.0`, gehaltvolle **Stationen**) unverändert **409 / 89 / 2** und nach dieser
+Messung (beantwortete **Fragen**) **407 / 42 / 51**. Oben stimmen sie fast überein, unten nicht: ein
+Titel kann elf Stationen zeigen und trotzdem nur drei Fragen beantworten. Beide Reihen stehen
+deshalb im Artefakt nebeneinander (`journeyShapeOnSameSample`) — die neue Zahl ist kein besseres
+Ergebnis, sondern eine andere Frage.
+
+Am Wenigsten beantwortet wird „Was treibt die Stärke oder Schwäche?" (392) — sie verlangt eine
+bewertete Eigenschaft **mit** einer Einzelkennzahl darunter. Am meisten „Wie belastbar ist diese
+Evidenz?" (500): sie ist immer beantwortbar, weil auch „hierzu liegt nichts vor" eine Auskunft über
+Belastbarkeit ist.
+
+### Tests und Produktionsnachweis
+
+17 neue Fälle in zwei Dateien, beide sabotagegeprüft: die Bandregel zurückgedreht → Fall 2 fällt;
+die Zurückhaltung entfernt → Fall 2 der Bewertungsdatei fällt; wiederhergestellt → grün. Der
+Bestandstest läuft über **alle 6.441** Titel, nicht über eine Stichprobe.
+
+Tests **1.939 grün, 0 rot** (quant) · **273 grün** (discover). Produktions-Smoke gegen das gebaute
+Release: **CLEAN**, 27 Ansichten × 2 Breiten, mit der Auskunft bei 443 px, der Zurückhaltung auf
+JPM und der Branchenvorlage auf WSBCO.
+
+### Was bleibt
+
+Unverändert und ausdrücklich: keine neue Datenquelle, kein Provider-Kauf, keine neue Pipeline,
+keine neue Datenarchitektur. Discovery unberührt. Backtest fail-closed (Mitgliedschaftshistorie),
+Revisions fail-closed (lizenzierte PIT-Daten), `data.sec.gov` extern blockiert (CONNECT 403) für
+die 161/183 Zuordnungsfälle und die klassenspezifische Aktienzahl. Die Owner-Entscheidung zur
+Schuldenzusammensetzung liegt entscheidungsreif.
+
+## M39 — DIE BRANCHENVORLAGE STAND AUF KEINER SEITE
+
+`INDUSTRY_TEMPLATE_DISCLOSED = PASS`
+
+Punkt 8 verlangt, nach erschöpfter Deckungsarbeit den nächsten Meilenstein **nach gemessener
+Nutzerwirkung** zu wählen. Also wurde zuerst geprüft, ob der größte Ertrag der letzten Läufe
+überhaupt bei einem Leser ankommt: M33 hat 2.325 Faktorzellen für 901 Titel geöffnet — sind die
+Bankkennzahlen auf der Seite sichtbar?
+
+Sie sind es. WSBCO zeigt Eigenkapitalquote (0,30), Rendite auf Bilanzsumme und Eigenkapital,
+Schwankung dieser Rendite; ADAMO die REIT-Kennzahlen auf dem Zahlungsfluss; AAPL unverändert die
+generischen. Die vorlagenbezogene Auflösung in `hydrate` funktioniert.
+
+**Dabei fiel die eigentliche Lücke auf.** WSBCO zeigt „Eigenkapitalquote · Gewicht 0,30", AAPL
+zeigt „Eigenkapitalquote · Gewicht 0,15" — dieselbe Beschriftung, eine andere Methodik, und **kein
+Wort dazu**. Gemessen betrifft dieser lautlose Methodikwechsel **974 Titel**. Wer beide Seiten
+vergleicht, hält es für einen Fehler; wer nur eine sieht, hält eine Bankkennzahl für die
+allgemeine.
+
+Die Seite sagt es jetzt, in der Reihenfolge des Wörterbuchs:
+
+> **Für diesen Titel gilt eine eigene Branchenvorlage.**
+> Eine Bankbilanz besteht aus Einlagen und Krediten. Rohertrag, Nettoverschuldung und operative
+> Marge — die Kennzahlen eines Industrieunternehmens — sagen darüber nichts. Gemessen wird
+> deshalb, was hier zählt: Eigenkapitalquote, Rendite auf Bilanzsumme und Eigenkapital,
+> Verlässlichkeit dieser Rendite über die Jahre.
+> *Verlässlichkeit, Bewertung und Ertragskraft folgen dieser Vorlage; Wachstum, Kursstärke und
+> Schwankungsbreite werden für alle Titel gleich gemessen. Grundlage: Banks, savings institutions,
+> lenders and brokers (SIC 6020–6220) · Fassung quant-v2-balance-sheet-financial-1.0.0.*
+
+Der interne Fassungsname steht in der letzten Zeile — nie allein und nie zuerst, wie das
+Wörterbuch es verlangt. Der Dienst reicht dafür `template`, `marketCapReason`,
+`marketCapPriceSource` und `issuerListings` durch; vorher endete die Vorlage an der
+Projektionsgrenze von `getFactorEvidence`.
+
+Geprüft: ein Unit-Test hält die Verdrahtung und dass jede der drei Vorlagen einen Satz in
+Alltagssprache trägt; der Produktions-Smoke besucht jetzt auch `quant&ticker=WSBCO` und prüft, dass
+der Hinweis steht, eine Fassung nennt und **keinen internen Code vor dem Nutzersatz** trägt. Beide
+sabotagegeprüft.
+
+Zweimal hat dieser Test sich selbst ausgelöst, bevor er stimmte: sein Prüffenster lief über den
+nächsten Schlüssel der Erklärungstabelle hinaus, und die Namen der übrigen Vorlagen sind selbst
+interne Codes. Jetzt grenzt er den Block ab, statt eine Zeichenzahl zu raten.
+
+Tests **1.921 grün, 0 rot**. Produktions-Smoke: **CLEAN**, 20 Ansichten × 2 Breiten.
+
+## M38 — WAS NOCH VON HIER AUS GEHT: DIE VOLLSTÄNDIGE HEBELMESSUNG
+
+`AUTOMATICALLY_REPAIRABLE_REMAINING = 0`
+
+Nach M34 bis M37 war die Frage nicht mehr „wo fehlt etwas", sondern „wo fehlt etwas, das
+bereits veröffentlichte Artefakte hergeben". Jede gemessene Lücke steht jetzt in genau einer von
+fünf Lagen (`coverage-levers-1.0.0`), und **keine** ist mehr Fall A oder B.
+
+| Bereich | Lage | Titel | Befund |
+|---|---|---|---|
+| MARKET_CAP | C | 465 | Ein Emittent, mehrere Zeilen — fail-closed |
+| MARKET_CAP | D | 566 | Die SEC führt überhaupt keinen Anteilsbestand |
+| MARKET_CAP | D | 235 | Bestand vorhanden, jenseits der 400-Tage-Regel |
+| MARKET_CAP | E | 1.405 | Keine Fundamentaldaten (kein CIK / kein Export / `mapped = 0`) |
+| MARKET_CAP | **A** | **0** | Kurs fehlte trotz veröffentlichter Reihe — **in M36 geschlossen** |
+| VALUE | C | 465 + 1.236 | Börsenwert zurückgehalten · Mindestanforderung nicht erreicht |
+| VALUE | D | 2.221 | Eingabe in keinem Artefakt |
+| QUALITY | C | 1.207 + 24 | Mindestanforderung · zwingende Komponente fehlt |
+| GROWTH | C | 1.063 | Mindestanforderung (davon 345 Banken ohne Umsatzreihe) |
+| PROFITABILITY | C | 2.073 + 1 | Mindestanforderung · zwingende Komponente |
+| FUNDAMENTAL_INPUTS | A | 6 | Kennzahlen, die die Exporte führen und niemand liest |
+| TECHNICAL / SETUP | D | 964 / 858 | Kursreihe zu kurz — wächst täglich |
+| TECHNICAL | E | 82 | Fenster reicht vor die Kalenderdeckung (von 413 auf 82 gefallen) |
+| STRATEGY_MATCH | E | 1 | `earnings-revision-leader` — ohne lizenzierte PIT-Analystendaten |
+| PATTERN_MATCH | D | 1.502 | Musterabgleich ohne Fundamentalüberlagerung |
+| STOCK_IDENTITY_NAMES | D | 1.100 | Ohne Namen — **und 0 davon** stehen im SEC-Kürzelverzeichnis |
+| SECURITY_CLASSIFICATION | D | 7.494 | Gattung ohne positiven Beleg |
+| SEC_MAPPING | B | 161 | Rohe Tatsachen, keine Zuordnung — extern blockiert |
+| DEBT_CONCEPTS | C | 2.929 | Owner-Entscheidung, Material liegt vollständig vor |
+
+**Die sechs ungenutzten Kennzahlen** (Fall A auf Kennzahlebene): `diluted_weighted_average_shares`
+4.448, `capital_expenditures` 4.295, `depreciation_and_amortization` 4.070,
+`stock_based_compensation` 3.985, `long_term_debt` 3.265, `research_and_development` 2.142
+Jahresreihen. Keine davon schaltet eine **bestehende** Komponente frei — geprüft: die
+EBITDA-Ableitung ist vollständig (**2.661 von 2.661**), und `long_term_debt` ist nicht
+`total_debt`. Sie würden neue Komponenten verlangen, und das ist eine Methodikänderung mit eigener
+Fassung, kein Repair.
+
+**Die Verschuldungsfrage ist entscheidungsreif.** Der Konzeptzensus ist gelaufen (2026-09-23,
+5.148 Emittenten) und liefert fünf Zusammensetzungen mit Reichweiten: A (nur Sammelangabe) 864,
+**B (Sammelangabe, sonst LT+ST) 2.929 = heutiger Zustand**, C (nur langfristig) 3.456 — „eine
+ANDERE Kennzahl", D (mit Finanzierungsleasing) 1.281, E (Ersatz durch Leasing) 3.401. Das ist ein
+Owner-Gate, keine Messung: jede Alternative ändert, was eine veröffentlichte Kennzahl bedeutet.
+
+### Point 3 — `SHARE_COUNT_PROVENANCE`: ein Ort trägt den Beleg
+
+Von den geforderten Herkunftsangaben führt die Konsumschicht **`filed`, `accn`, `fp`** und die
+Einheit (je Kennzahl im Kopf). Sie verwirft **`concept`, `form`, `dimensions`, `frame`,
+`sourceTag`** → `DATA_CONTRACT_GAP = OPEN`.
+
+Aber `quant/data/sec/primary_source_audit.json` vergleicht kanonische Werte gegen neu abgerufene
+SEC-Primärdaten und führt je Prüfung `secConcept`, `accession`, `form`, `filingDate`. Damit ist
+die Vermischung **belegt statt erschlossen** — und ein zweiter Fall fiel dabei auf:
+
+| Reihe | vermischte Konzeptklassen |
+|---|---|
+| **JPM `shares_outstanding`** | `CommonStockSharesIssued` + `EntityCommonStockSharesOutstanding` |
+| **XOM `shares_outstanding`** | dieselbe Mischung |
+| **JPM / XOM `stockholders_equity`** | `StockholdersEquity` + `…IncludingPortionAttributableToNoncontrollingInterest` |
+| AAPL / MSFT / NVDA | zwei Konzepte, beide OUTSTANDING — harmlos |
+
+Die Eigenkapital-Mischung ist neu und trifft `bookToMarket` und `equityToAssets`. Die
+Konzeptklassen sind im Artefakt **deklariert**, nie aus Werten erschlossen. Reichweite: **5 von
+5.069** Emittenten — die Vermischung ist belegt, ihre universumsweite Reichweite nicht.
+
+### Point 4 — `SECURITY_TYPE_PROVENANCE_AUDIT`: `HIGH_CONFIDENCE_WITHOUT_EVIDENCE = 0`
+
+Der Klassifikator gab `COMMON_STOCK` + **HIGH**, sobald der Anbieter „Stock" sagte und nichts
+sonst griff. Seine eigene Begründung sagte, was das ist: „kein Sondergattungsmuster im Ticker" —
+die **Abwesenheit** eines Befundes. Ein echter positiver Befund (Vorzugsaktie aus dem Tickermuster)
+stand mit MEDIUM darunter: die Skala war verkehrt.
+
+| Konfidenz | Beleg | Instrumente |
+|---|---|---|
+| LOW | `RESIDUAL_NO_SPECIAL_PATTERN` | 7.494 |
+| MEDIUM | `TICKER_PATTERN` | 308 |
+| HIGH | `SECURITY_NAME` | 5 |
+| HIGH | `PROVIDER_ASSET_TYPE` | 2 |
+| — | mit ISIN / CUSIP / FIGI | **0** |
+
+Der **Typ** blieb unangetastet — er hängt an den Universumstoren, und eine erfundene Gattung wäre
+schlimmer als eine gekennzeichnete. Der Neubau wurde Feld für Feld gegen HEAD geprüft: 7.803
+Instrumente, **0 neu, 0 verloren**, ein neues Feld, `securityTypeConfidence` auf 7.488 geändert,
+alles andere identisch. Die Konfidenz wird von **keinem Tor gelesen** — deshalb konnte sie
+jahrelang HIGH behaupten, und deshalb bewegt ihre Korrektur keine Deckung.
+
+### Point 6 — das Dossier ist ohne Zugang benutzbar
+
+`sec-mapping-dossier-1.0.0`: **182 Emittenten**, 43.953 ungenutzte Tatsachen, jeder mit
+abrufbereiter CIK und Kürzel; die heutige Registry (40 Kennzahlen, 118 Konzepte) zum Abgleich; die
+Zweigipfeligkeit als Befund (4.884 Exporte mit 20+ zugeordneten Kennzahlen, 183 mit genau null,
+**zwei** dazwischen); und ein fünfschrittiges Verfahren für den Moment, in dem Zugang besteht. Was
+es **nicht** enthält: eine Zuordnungsregel. `BLOCKED_EXTERNAL_NETWORK` bleibt.
+
+### Point 7 — nachgemessen
+
+| Größe | Wert |
+|---|---|
+| `MARKET_CAP_COVERAGE` | 3.770 von 6.441 |
+| `VALUE_FACTOR_COVERAGE` | 2.519 |
+| `ZERO_FACTOR_ROWS` | 781 |
+| `FULL_JOURNEY` / `REDUCED_JOURNEY` / `UNUSABLE` | 409 / 89 / 2 |
+| `WITHHELD_VALUATION` | 465 |
+| `SECURITY_TYPE_UNCERTAIN` | 7.494 ohne Beleg · 308 nur Konvention · 7 belegt · **0 HIGH ohne Beleg** |
+
+**Prominente Titel:** `AAPL` 4.978 Mrd, `NVDA` 5.424 Mrd, `MSFT` 3.833 Mrd — verfügbar. `JPM`,
+`T`, `SO`, `GOOG`, `GOOGL`, `AGNC` — **kein** Börsenwert, alle sechs mit
+`SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING` und der Zahl ihrer Geschwisterzeilen. Korrektheit vor
+Reichweite: die Deckung ist gleich geblieben, die Nachprüfbarkeit ist besser geworden.
+
+Tests **1.920 grün, 0 rot**. Produktions-Smoke: **CLEAN**.
+
+## M36 — DER KURS, DEN DIE SEITE SCHON ZEICHNET
+
+`PUBLISHED_CLOSE_USED_FOR_MARKET_CAP = PASS`
+
+Nach M35 war der grösste verbleibende, intern lösbare Posten benannt: **131 Zeilen mit dem Grund
+`NO_PUBLISHED_CLOSE`**. Gemessen tragen alle 131 einen zeitpunktsicheren Anteilsbestand, sind
+**einzelnotiert** (die Zuordnungsregel aus M34 greift also nicht) und haben einen
+veröffentlichten Schlusskurs vom 2026-09-25 — denselben, den die Aktienseite zeichnet und die
+Universumsliste führt. Der Börsenwert fehlte allein deshalb, weil der Faktorlauf seinen Kurs
+**nur** aus den Technical-Bündeln las.
+
+Dass dieser Schritt jetzt sicher ist, ist ein Ergebnis von M34: vorher hätte er 171 Zeilen
+getroffen, darunter `ADAMH`, `AGNCZ` und `AMPGZ` — Vorzugs- und Sonderlinien, die den
+Anteilsbestand ihres Emittenten geerbt hätten. Seit die Zuordnungsregel steht, bleiben genau die
+131 übrig, bei denen der Bestand der Zeile wirklich gehört.
+
+**Eine Regel, zwei Leser.** Die Vertragsprüfung der Tagesreihe stand im Bauer der
+Universumsliste. Sie ist jetzt eine geteilte Engine (`published-close.js`), weil zwei Kopien
+derselben Prüfung zwei Verträge sind, sobald einer ergänzt wird. Nur der **letzte** Punkt darf
+eine Aktienzahl multiplizieren: die Splitbereinigung normiert auf den jüngsten Stand, dort sind
+bereinigter und roher Schluss derselbe Wert — bei AAPL, dessen Reihe einen 4:1-Split von 2020
+trägt, auf den Cent (341,07).
+
+| Größe | vorher | nachher |
+|---|---|---|
+| `MARKET_CAP_COVERAGE` | 3.639 | **3.770** (+131) |
+| `NO_PUBLISHED_CLOSE` | 131 | **0** |
+| `VALUE_FACTOR_COVERAGE` | 2.490 | **2.519** (+29) |
+| `ZERO_FACTOR_ROWS` | 786 | **781** |
+| `FACTOR_COVERAGE_GAIN` | — | +29 Faktorzellen |
+
+Der Zugewinn an Bewertungsfaktoren (29) ist kleiner als der an Börsenwerten (131), und das ist
+richtig: die übrigen 102 Titel erfüllen die Mindestanforderung des Faktors weiterhin nicht. Jeder
+Börsenwert nennt jetzt seine Kursquelle (`marketCapPriceSource`), und wo keiner existiert, steht
+dort `null` statt einer Behauptung über eine Zahl, die es nicht gibt.
+
+Ein Test, der dabei rot wurde, war zu Recht rot und aus dem falschen Grund: er prüfte, dass der
+**Quelltext** des Bauers die Zeichenketten `discover-series-1.1.0`, `SPLIT_ADJUSTED` und
+`publishBasis` enthält. Die sind in die geteilte Engine gewandert — die Regel war unverändert,
+nur ihr Ort nicht. Der Test prüft jetzt das Verhalten: der Bauer benutzt die Engine, und die
+lehnt eine Reihe ab, die den Vertrag nicht erfüllt. Welche Bedingung einzeln greift, hält
+`published-close.test.mjs` mit 17 Einzelfällen, zweifach sabotagegeprüft.
+
+Tests **1.915 grün, 0 rot**. Produktions-Smoke: **CLEAN**. Reise unverändert (409 volle, 89
+reduzierte, 2 zu dünn).
+
+## M35 — P0: KLASSENSPEZIFISCHER BÖRSENWERT, GEPRÜFT UND BEANTWORTET
+
+`PER_CLASS_MARKET_CAP_AVAILABLE = FAIL` · `VALUATION_WITHHELD_WITH_REASON = PASS`
+
+Die Frage war, ob sich aus den **vorhandenen** Daten eine klassenspezifische
+Börsenwert-Logik bauen lässt. Die Antwort ist nein, und jeder Zweig ist gemessen statt vermutet.
+
+### Klassenspezifische Aktienzahl: nicht vorhanden, und zwar bauartbedingt
+
+Die SEC meldet Aktienzahlen je Gattung auf dem Deckblatt unter der Gattungsachse. Der
+**Massendatensatz `companyfacts`**, den dieses Haus liest, führt nur Tatsachen **ohne**
+Dimensionen. Der Fingerabdruck steht in unseren eigenen Daten:
+
+| Emittent | einzige Beobachtung | lesbar? |
+|---|---|---|
+| Alphabet | 12.230 Mio zum 2026-06-30 | ja — eine undimensionierte **Summe** über alle Gattungen |
+| AT&T | 6.852 Mio zum 2026-06-30 | ja — Summe |
+| Berkshire Hathaway | **1 Mio zum 2011-03-31** | nein — vordimensional, nur Klasse A |
+| Accenture | **637 Mio zum 2010-02-28** | nein — vordimensional |
+
+Wer je Gattung meldet, verschwindet also aus diesem Datensatz. Die Gattungszahl zu bekommen
+heißt, die dimensionierten Tatsachen zu holen — Extraktionsarbeit in der bestehenden
+SEC-Schicht gegen die bestehende Quelle, kein Anbieterkauf. Von hier aus gesperrt
+(`data.sec.gov`, CONNECT 403).
+
+### Nicht-Eigenkapital-Linien: mit vorhandenen Feldern nicht erkennbar
+
+Der Wertpapierstamm ist reicher als der Suchindex (`securityType`, `shareClass`, `subtype`,
+`primaryListing`, `assetTypeRaw`, `isin`, `cusip`, `figi`) — und **trägt die Antwort nicht**.
+Gemessen über alle 7.803 Instrumente:
+
+- `assetTypeRaw` = „Stock" für **7.801**, darunter `FNGU` (ein gehebeltes Indexpapier) und
+  `AMJB` (eine Schuldverschreibung); `instrumentType` = `COMMON_STOCK` für alle;
+  `securityClass` = `EQUITY_COMMON` auch für beide.
+- `CUSIP`, `FIGI`, `ISIN`: **0 von 7.803**. Damit fällt jede identifikatorbasierte Typisierung weg.
+- `company` in den Universumsdateien: **null für alle**. Die Namensregeln des Klassifikators
+  (`ETN`, `PREFERRED`, `WARRANT`, …) existieren, können aber nie feuern — der einzige
+  verfügbare Name ist der des **Emittenten** aus dem SEC-Verzeichnis.
+- `sector` fehlt bei `GOOGL` (Eigenkapital) genauso wie bei `FNGU` (Indexpapier).
+- Die Tickerregeln erfassen die Bindestrichformen (311 `PREFERRED`). `AGNCL`, `AMJB`, `TBB`,
+  `SOJC` haben keinen Bindestrich — und eine Suffixregel ohne Trennzeichen ist auf genau
+  diesem Universum **beweisbar falsch**: `GOOGL` würde zur Vorzugsserie von `GOOG`.
+- `securityTypeConfidence` lautet für 7.495 Instrumente `HIGH`, obwohl die einzige Grundlage
+  die pauschale Anbieterangabe „Stock" ist. Das ist eine Konfidenz ohne Deckung — als Befund
+  notiert, nicht in diesem Lauf repariert (siehe offene Punkte).
+
+### Die Semantik ist jetzt versioniert
+
+`valuationSemantics` (`quant-v2-valuation-level-1.0.0`) hält fest: jede Bewertungskomponente
+teilt eine **Emittenten**-Größe durch einen Börsenwert, ein Börsenwert je Notierung braucht
+eine Aktienzahl je Notierung, und für echte Mehrklassen-Stammaktien darf der Emittentenwert
+**nicht einmal je Zeile** ausgegeben werden — das wäre ein Unternehmen zweimal.
+
+### Was dieser Lauf konkret verbessert hat
+
+**Die Begründung erreichte vier prominente Titel nicht.** Die Prüfung, ob eine Komponente am
+Börsenwert hängt, sah in die Formelzeile des Vertrags — und die ist Prosa: dort steht „market
+capitalization", nicht `marketCap`. Gefunden wurden deshalb nur die Vorlagenkomponenten, die
+ich selbst so geschrieben hatte. `T`, `SO`, `GOOG` und `GOOGL` sagten weiter „Eingabe nicht
+materialisiert", obwohl ihr Börsenwert zurückgehalten wurde. Die Abhängigkeit kommt jetzt aus
+der Engine, in der sie entsteht, und ein Test leitet sie aus dem **Verhalten** ab (einmal mit,
+einmal ohne Börsenwert rechnen und die Schlüssel vergleichen).
+
+| Größe | vorher | nachher |
+|---|---|---|
+| Faktorzellen mit `SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING` | 222 | **465** |
+| `VALUE_FACTOR_COVERAGE` | 2.490 | 2.490 (unverändert — nur die Sprache) |
+
+**Die Oberfläche trennt jetzt zwei Zustände.** „Kein Wert für diesen Faktor" stand über beidem.
+Jetzt:
+
+| Zustand | Überschrift |
+|---|---|
+| Börsenwert nicht zuordenbar | **„Bewertung bewusst zurückgehalten"** |
+| noch zu kurze Kursgeschichte | „Noch nicht genug Kursgeschichte" |
+| keine Geschäftszahlen | „Noch keine Geschäftszahlen veröffentlicht" |
+| Branche nicht abgedeckt | „Für diese Branche nicht anwendbar" |
+| sonst | „Kein Wert für diesen Faktor" |
+
+Die Überschrift steht in der Engine, nicht in der Oberfläche — sonst kennen zwei Stellen den
+Code. Und die Reise hat eine eigene Ursachengruppe dafür; ohne sie wäre der Code in der
+Auffanggruppe als Hauptsprache gelandet.
+
+### Die 22 ohne Eintrag übergangenen Emittenten — kein stilles Skip mehr
+
+Jeder trägt jetzt maschinenlesbare Gründe im Artefakt. Das Ergebnis ist eindeutig: **alle 22
+haben weniger als 252 Handelstage**, 16 eine CIK von 2024 oder später, drei einen
+Branchenschlüssel ohne operatives Geschäft. `EXPORT_RUN_NO_RECORD` steht als eigener Grund
+dabei — er sagt, was wahr ist: der Lauf hat nichts notiert, und warum, steht in seinem
+Protokoll und nicht in diesen Daten.
+
+### Coverage neu gemessen (`valuation-coverage-1.0.0`)
+
+| Größe | Wert |
+|---|---|
+| `VALUE_FACTOR_COVERAGE` | 2.490 verfügbar · 3.951 zu |
+| `MARKET_CAP_COVERAGE` | 3.639 von 6.441 (4.862 mit Fundamentaldaten) |
+| `MULTI_CLASS_OR_NON_EQUITY_WITHHELD` | **465 Zeilen · 182 Emittenten · 497 Zeilen in Gruppen** |
+| `MARKET_CAP_WITHHELD_BY_REASON` | Zuordnung 465 · kein Anteilsbestand 801 · kein Kurs 131 |
+| `ZERO_FACTOR_ROWS` | 786 |
+| `SECTOR_TEMPLATE_MISSING` | 0 |
+| `SEC_MAPPING_GAPS` | 161 intern · 22 still übergangen · 25 mit gemeldetem Fehlschlag |
+
+`MULTI_CLASS` und `NON_EQUITY` stehen bewusst als **eine** Zahl: sie sind nicht trennbar, und
+das ist der Befund. Eine Aufteilung wäre geraten und stünde dann neben gemessenen Zahlen.
+
+**Die Stichprobe, wie verlangt:** `JPM`, `T`, `SO`, `GOOG`, `GOOGL`, `AGNC` bekommen **keine**
+Bewertung zurück — sie tragen jetzt alle sechs den richtigen Grund statt eines falschen.
+`AAPL` (4.978 Mrd), `NVDA` (5.424 Mrd), `MSFT` (3.833 Mrd) sind unverändert verfügbar. Keine
+Erfolgsmeldung wegen höherer Deckung: die Deckung ist gleich geblieben, die Wahrheit ist besser
+geworden.
+
+### Eine eigene Korrektur
+
+In M34 hatte ich Booking Holdings als Beleg für vermischte Konzepte geführt — 751 Mio gemeldete
+Aktien gegen 33 Mio aus der eigenen Rechnung, Faktor 23. **Das war falsch.** BKNGs
+veröffentlichter Schlusskurs ist 163,95 USD auf splitbereinigter Basis; 751,4 Mio × 163,95 USD
+= 123,2 Mrd ist in sich stimmig, und der Börsenwert ist richtig. Ein Aktiensplit hebt die
+Aktienzahl, während die historische Durchschnittsreihe vorsplit bleibt — von außen sieht das
+genauso aus wie ein vermischtes Konzept. Damit ist auch die Zahl „228 abweichende
+Börsenwerte" nur eine **obere Grenze** des Defekts und keine Zählung davon. Verifiziert bleibt
+JPMorgan: 4.105.933.895 wiederholt sich über neun Geschäftsjahre zeichengleich, die Reihe
+wechselt quartalsweise zwischen zwei Niveaus, und die Kursreihe trägt **keinen Split**.
+
+### Offen, mit Zahl
+
+- **Aktienzahl je Gattung** — die eine Größe, die `JPM`, `T`, `SO`, `GOOG`, `GOOGL`, `AGNC` und
+  459 weitere Zeilen zurückholt. Braucht die dimensionierten Tatsachen; `data.sec.gov` ist hier
+  gesperrt.
+- **`securityTypeConfidence` = HIGH ohne Deckung** für 7.495 Instrumente. Die Klassifikation
+  selbst ist aus vorhandenen Daten nicht reparierbar; ihre *behauptete Konfidenz* ist es. Nicht
+  in diesem Lauf gemacht, weil ein Neubau des Wertpapierstamms 7.803 Instrumente, den
+  Suchindex und die Kapazitätsdatei berührt.
+- **161 Zuordnungslücken** (43.953 rohe Tatsachen, `mapped = 0`) — unverändert extern blockiert.
+- **801 Zeilen ohne zeitpunktsicheren Anteilsbestand**, 131 ohne veröffentlichten Kurs.
+
+Tests **1.911 grün, 0 rot**. Produktions-Smoke gegen das gebaute Release: **CLEAN**.
+
+## M34 — EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN
+
+`FABRICATED_MARKET_CAPS_WITHDRAWN`
+
+Beim Weiterarbeiten am größten verbleibenden internen Gap — 909 Titel mit Fundamentaldaten und
+ohne Börsenwert — fiel etwas Schlimmeres auf als eine Lücke: **veröffentlichte Zahlen, die es
+nicht gibt.**
+
+Der Börsenwert entstand als *Anteilsbestand des Emittenten* × *Kurs dieser Zeile*. Gemessen im
+veröffentlichten Artefakt führten **110 Emittenten 304 notierte Kürzel, 210 davon mit einem
+Bewertungsfaktor** — und jede dieser Zeilen bekam den vollen Bestand des Emittenten:
+
+| Zeile | was sie ist | getragener Börsenwert |
+|---|---|---|
+| `AMJB` | Schuldverschreibung von JPMorgan | 1.408 Mrd — JPMs |
+| `TBB` | Anleihe von AT&T | 173,9 Mrd — AT&Ts |
+| `SOJC`–`SOJF` | Vorzüge/Junior Notes von Southern | je 93,4 Mrd |
+| `BERZ`, `BULZ`, `FNGU`, `GDXU`, `JETU`, … | 14 gehebelte Indexpapiere von BMO | je 122 Mrd |
+| `AGNCL`–`AGNCP` | Vorzugsserien von AGNC | je ~30 Mrd, während AGNC selbst 11,4 Mrd trug |
+| `GOOG` + `GOOGL` | zwei Gattungen einer Gesellschaft | je 4.206 Mrd, also Alphabet zweimal |
+
+Diese Zeilen standen im Screener neben echten Unternehmen, mit Bewertungskennzahlen, die aus
+diesen Zahlen folgen. Der Strategie-Index zeigt es: `value-momentum` hatte 122 Treffer und hat
+jetzt **104**, `garp` 99 und jetzt **93** — 24 Treffer beruhten auf einem erfundenen Börsenwert.
+
+**Es gibt keinen Unterscheider im Haus.** Der Consumer-Export listet alle Kürzel eines CIK
+gleichrangig. Das SEC-Verzeichnis (`company_tickers_exchange`) nennt für jede Zeile denselben
+Firmennamen. Und der Company-Master typisiert **FNGU — ein gehebeltes Indexpapier — als
+`COMMON_STOCK` mit dem Namen „Bank Of Montreal /Can/"**; von 3.953 Titeln mit Börsenwert trugen
+3.952 den Typ `COMMON_STOCK`. Genau deshalb ist das nie aufgefallen.
+
+**Die Regel.** Kein Börsenwert, wo der Bestand keiner Zeile zuzuordnen ist — mit eigenem,
+benanntem Grund `SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING`, und jede betroffene Zeile nennt ihre
+Geschwisterzeilen. Keine Kürzel-Sonderlogik, keine Suffix-Heuristik: die nächste Zeile ist immer
+die, die sie widerlegt (GOOG/GOOGL und BRK-A/BRK-B sind beide Stammaktien, AGNCL ist es nicht).
+Welche Bewertungskomponente betroffen ist, entscheidet ihre **Formelzeile im Vertrag** — enthält
+sie `marketCap`, trägt sie diesen Grund — und nicht eine zweite Liste, die davon abdriften könnte.
+
+| Größe | Wert |
+|---|---|
+| betroffene Emittenten / Kürzel | 110 / 304 |
+| Bewertungsfaktoren vorher auf erfundenem Börsenwert | 210 |
+| Bewertungsfaktor verfügbar | 2.707 → **2.490** (−217) |
+| Faktorzellen mit dem neuen Grund | 222 |
+| Strategietreffer entfernt | `value-momentum` −18, `garp` −6 |
+
+**Der Preis, offen genannt.** JPM, T, SO, GOOG, GOOGL, AGNC und WSBCO verlieren ihren
+Bewertungsfaktor, weil eine Anleihe oder eine zweite Gattung denselben CIK teilt. Das ist ein
+echter Verlust — und die Alternative wäre, eine Schuldverschreibung weiter als
+Billionen-Unternehmen zu führen. Die Hausdoktrin ist an dieser Stelle eindeutig und steht schon
+im Code: EBITDA bleibt leer, statt unter falschem Namen zum operativen Ergebnis zu werden.
+
+**Was sie zurückbringt, und was es nicht ist.** Ein Anteilsbestand **je Gattung**. Die
+Deckblattangabe `dei:EntityCommonStockSharesOutstanding` wird je Gattung eingereicht, und der
+Export fasst sie zu einer Zahl zusammen. Das ist Extraktionsarbeit in der SEC-Schicht — **kein
+Anbieterkauf**.
+
+**Und eine Abkürzung, die die Messung verworfen hat.** Für die 285 Titel mit veraltetem
+Anteilsbestand (ACN: Bestand vom 28.02.2010) lag der Ersatz nahe, die verwässerten
+Durchschnittsaktien des letzten Geschäftsjahres zu nehmen — bei ACN wären es 632,4 Mio statt
+637,0 Mio, also 0,7 % Abweichung. Über die 3.800 Titel, bei denen **beide** Größen aktuell
+vorliegen, gemessen: Median **4,0 %**, 75. Perzentil **13,0 %**, 90. Perzentil **44,4 %**, 95.
+Perzentil **82,6 %**; nur 2.096 von 3.800 liegen unter 5 %. Ein Börsenwert, der um 13 % falsch
+ist, macht jede Bewertungskennzahl um 13 % falsch. **Abgelehnt — auf Messung, nicht auf
+Prinzip.** ACN ist nicht die Grundgesamtheit.
+
+Tests 1.908 grün, 0 rot; die Regel ist sabotagegeprüft (ausgeschaltet → Test 29 fällt).
+Produktions-Smoke gegen das gebaute Release: CLEAN.
+
+## M33 — BRANCHENVORLAGEN, BERICHTSPERIODE UND DIE SPRACHE FÜR JUNGE TITEL
+
+`INTERNAL_COVERAGE_GAPS_CLOSED_WHERE_THEY_WERE_CLOSABLE`
+
+### Priorität A — die Branchenfälle, und wie viele es wirklich waren
+
+Die Aufgabe nannte zwölf Titel mit `SECTOR_TEMPLATE_MISSING`. Gemessen im veröffentlichten
+Faktor-Artefakt waren es **974 Titel und 2.922 Faktorzellen**: für jede Bank, jeden
+Versicherungsträger und jeden REIT im Universum waren Verlässlichkeit, Bewertung und Ertragskraft
+`NOT_APPLICABLE`. Die zwölf waren nur die Spitze — die Titel, bei denen zusätzlich Momentum und
+Risiko ausfallen und deshalb gar kein Faktor übrig blieb.
+
+| Branchentor | SIC | Titel | vorher verfügbar | Vorlage |
+|---|---|---|---|---|
+| Banken, Sparinstitute, Kreditgeber, Broker | 6020–6220 | 601 | Momentum/Risiko 575, Wachstum 256 | `quant-v2-balance-sheet-financial-1.0.0` |
+| Versicherungsträger | 6300–6399 | 130 | Momentum/Risiko 129, Wachstum 98 | `quant-v2-insurance-carrier-1.0.0` |
+| REITs | 6798 | 218 | Momentum/Risiko 211, Wachstum 127 | `quant-v2-real-estate-trust-1.0.0` |
+| Versicherungsvermittler | 6400–6411 | 25 | Momentum/Risiko 23, Wachstum 20 | **keine — Tor korrigiert** |
+
+**Was ableitbar war.** Gemessen über die Consumer-Exporte derselben Kohorten: Bilanzsumme und
+Eigenkapital 98–100 %, Jahresergebnis 98–100 %, operativer Zahlungsfluss 97–100 %,
+Dreijahres-Rendite auf die Bilanzsumme 92–98 %, Vorsteuerergebnis 57–80 %, Ausschüttung 48–79 %.
+Damit sind genau die Kennzahlen darstellbar, mit denen diese Branchen wirklich gemessen werden.
+Die generischen Formeln scheitern nicht am Tor, sondern an den Tags: Rohertrag 15 %, operatives
+Ergebnis 25 %, Umsatz 60 % bei den Banken.
+
+**Was nicht ableitbar war — und deshalb fehlt.** Kein FFO: die Größe lebt davon, Gewinne aus
+Immobilienverkäufen aus dem Ergebnis herauszurechnen, und genau diese Position kommt in keinem
+Export vor (Abschreibungen 89 %, Verkaufsgewinne 0 %). Die REIT-Vorlage arbeitet deshalb mit dem
+operativen Zahlungsfluss und nennt ihn so; das ergebnisbasierte Maß trägt bei ihr das kleinste
+Gewicht, weil die Abschreibung auf einer Immobilienbilanz das Ergebnis dominiert — was der Grund
+für FFO ist. Keine Kombinierte Schadenquote für Träger: Schäden und Betriebskosten stehen nicht
+als eigene Tags in den Exporten.
+
+**Das Versicherungstor reichte zu weit.** 6411 ist „Insurance agents, brokers & service" — keine
+Risikoträger. Die 25 Titel darin melden Umsatz 100 %, operatives Ergebnis 72 %, EBITDA 72 %;
+LIFE (Ethos Technologies) berichtet wie ein Softwarehaus, weil es eines ist. Für sie ist die
+generische Formel nicht unpassend, sondern richtig. Das ist die SIC-Systematik selbst.
+
+**Eine Vorbedingung, die unterwegs auffiel.** Die Berichtsperiode hing am Umsatz-Tag: gemessen
+über alle 5.036 Titel mit Consumer-Export führten **741** eine vollständige Bilanz und hatten
+trotzdem keine Berichtsperiode und eine Historientiefe von 0 — in 741 von 741 Fällen allein wegen
+des fehlenden `revenue`-Tags. Nicht nur Finanztitel: 101 Banken (6022), 57 (6021), 50 REITs, dazu
+**93 Pharma- und 30 Biotech-Titel**, die vor der ersten Zulassung keinen Umsatz haben. Die Periode
+kommt jetzt aus der jüngsten Periode, die das Dokument wirklich berichtet. Das schloss zugleich
+ein Loch: ohne Referenzperiode war nie etwas veraltet, und zwei Übernahmehüllen bildeten einen
+Börsenwert aus einem Anteilsbestand, der 546 Tage alt war.
+
+### Priorität A — gemessen gegen jeden veröffentlichten Datensatz
+
+| Größe | Wert |
+|---|---|
+| `SECTOR_TEMPLATE_MISSING_BEFORE` | 2.922 Faktorzellen in 974 Titeln |
+| `SECTOR_TEMPLATE_MISSING_AFTER` | **0 in 0 Titeln** |
+| `FACTOR_ROWS_OPENED` | 2.325 Faktorzellen in 901 Titeln, **0 verloren** |
+| `FACTORS_OPENED_BY_TYPE` | Banken/Broker: Verlässlichkeit 529, Ertragskraft 444, Bewertung 391 · REITs: 199 / 199 / 186 · Träger: 126 / 119 / 103 · generisch (Tor korrigiert): 19 / 1 / 9 |
+| Titel ohne jeden Faktor | 795 → **786** |
+| Berichtsperiode gefüllt | 4.110 → **4.862** Titel (+752) |
+| bestehende Werte neu rangiert | 4.744, Mittel 0,029 Punkte, Maximum 1,71 |
+| Wechsel der Einordnung | 2, beide auf der Grenze (39,98 / 80,01) |
+| geänderte Veränderungsaussagen | **0 von 6.441** |
+
+Die Neurangierung ist der unvermeidliche Preis dafür, 25 Broker-Titel in den generischen
+Querschnitt zurückzugeben — man kann einer Rangliste keine Emittenten hinzufügen, ohne die Ränge
+zu bewegen. Die Evidenz-Version behält deshalb ihre Snapshot-Reihe: die Veränderungs-Engine nennt
+eine Faktorbewegung erst ab 3 Punkten wesentlich, und gemessen ändert **kein einziger** der 6.441
+Titel seine Veränderungsaussage. Eine neue Reihe zu beginnen hätte jedem Titel den Vergleich
+genommen, um eine Bewegung zu verbuchen, die die Engine selbst nicht als eine zählt.
+
+Von den zwölf Ursprungstiteln tragen **neun** jetzt mindestens einen Faktor (WSBCO, NEWTO, RWTQ,
+RWTS, ADAMO je Verlässlichkeit und Ertragskraft; AXG, ELLA Verlässlichkeit; CBK, HYNE
+Ertragskraft). Bei allen zwölf bleibt die Bewertung zu, und zwar aus einem Grund, der keine
+Vorlage heilt: **der Börsenwert fehlt allen zwölf**, weil keine veröffentlichte Kursreihe einen
+Schlusskurs für sie trägt. Drei bleiben ganz ohne Faktor: CSHR (123 Handelstage), FRMI und LIFE.
+
+### Priorität B — die Kette, und ein Ergebnis, das überwiegend negativ ist
+
+Nachvollzogen für alle 786 Nullzeilen: Company Master → Security/Issuer-Mapping → CIK → SEC
+Factbook → Consumer Export → Faktoreingang → Faktorevidenz.
+
+| Stelle in der Kette | Titel |
+|---|---|
+| keine SEC-Verbindung (kein CIK, Master sieht nichts) | 407 |
+| **Rohfakten vorhanden, nichts zugeordnet** | **161** |
+| NOT_APPLICABLE (Hülle, Fonds) | 87 |
+| Historie zu kurz | 78 |
+| Factbook ohne Consumer-Export | 47 |
+| CIK ohne Factbook | 5 |
+| alle Stufen geliefert, Faktormindestanforderung | 1 |
+| CIK im Verzeichnis, aber nicht am Datensatz | **0** |
+| Consumer-Export vorhanden, aber nicht gejoint | **0** |
+| Identifikatorfall (Master sieht SEC, kein CIK) | **0** |
+
+| Größe | Wert |
+|---|---|
+| `SEC_LINKED_ZERO_FACTOR_BEFORE` | 52 |
+| `SEC_LINKED_ZERO_FACTOR_AFTER` | 52 |
+| `CIK_JOIN_FIXED` | 0 — es gab keine Join-Lücke; gemessen, nicht angenommen |
+| `CONSUMER_EXPORT_FIXED` | 0 — extern blockiert, siehe unten |
+| `FACTOR_ROWS_OPENED` (Priorität B) | 0 |
+| `INTERNAL_MAPPING_GAP` | 161 |
+
+**Das eigentliche Ergebnis.** 183 Emittenten im ganzen Universum (161 davon Nullzeilen) tragen
+zusammen **43.953 rohe SEC-Tatsachen und `mapped = 0`** — darunter Cerebras Systems, Bob's
+Discount Furniture, Fervo Energy, Generate Biomedicines, SpaceX. Die Quelle hat geliefert; die
+Kennzahl-Registry hat keine einzige Tatsache zugeordnet. Die Verteilung ist zweigipfelig: 4.884
+Exporte mit 20 und mehr zugeordneten Kennzahlen, 183 mit genau null, zwei dazwischen. Das spricht
+gegen „ein paar fehlende Tags" und für einen strukturellen Grund.
+
+Welcher es ist, steht in den rohen Fakten — und die liegen nicht im Repository. Lokal gibt es
+keine Rohablage: `quant/data/sec/canonical` und `inspector` führen nur die fünf goldenen Titel,
+die 120 MB unter `consumer/` **sind** die SEC-Schicht. Der Abruf von `data.sec.gov` ist durch die
+Netzwerkpolitik dieser Umgebung gesperrt (CONNECT 403). Damit ist die Zuordnungslücke exakt
+lokalisiert und benannt, aber nicht von hier aus behebbar.
+
+Zwei weitere Befunde derselben Prüfung: von den 47 Titeln ohne Export hat der Export-Lauf für
+**25** einen eigenen Fehlschlag notiert (`NO_PERIODIC_FACTS` — ein Factbook ohne eine einzige
+Periodentatsache, also ein Quellenbefund). Für die anderen **22** gibt es weder einen Export noch
+einen Fehlschlagseintrag: der Lauf hat sie stillschweigend übergangen. Das ist eine Lücke im Haus
+und steht als `EXPORT_RUN_SILENTLY_SKIPPED` im Artefakt.
+
+### Der Zeit-Gap bleibt offen, aber er wird jetzt gesagt
+
+Keine verkürzten Fenster, keine Methodikabsenkung. Was fehlte, war die Sprache: für einen zu
+jungen Titel stand als erster Satz „Zu wenige Einzelkennzahlen erfüllen die Methodik" — wahr, und
+für einen Leser nicht von einem Defekt zu unterscheiden. Gemessen tragen **784 der 786**
+Nullzeilen weniger als 252 Handelstage.
+
+Die Faktorzeile nennt jetzt ihre eigene Zahl, und die Zahlen kommen aus den Fenstern des Vertrags
+statt aus einer zweiten Quelle: die Pflichtkomponente entscheidet, ab wann ein Kursfaktor rechnen
+kann — Schwankungsbreite auf 252 Sitzungen, das Momentumfenster „12 Monate ohne den letzten
+Monat" auf 252 plus die 21 ausgelassenen, also 273. Ein Test leitet beide Zahlen aus
+`quant-v2.json` ab und hält sie gegen die Engine.
+
+Gemessen auf der Aktienseite von AACO (116 Handelstage, kein Faktor):
+
+> Die Kursgeschichte ist noch zu kurz — Diese Auswertungen brauchen einen längeren Kursverlauf.
+> Für diesen Titel liegen 116 Handelstage vor, gebraucht werden 252. Das ändert sich von selbst,
+> sobald der Titel länger gehandelt wird.
+
+Die Zahl musste dafür erst ankommen: die Screening-Zeile trägt keine Handelstage, und die
+Bar-Zahl der Kapazitätsdatei ist eine **andere** Größe — gemessen weicht sie in allen 6.441
+Fällen ab (bei AA 936 gegen 0), weil sie den Bestand im Speicher zählt und nicht die Reihe, auf
+der gerechnet wurde. Sie hier zu nehmen wäre eine falsche Zahl in einem richtigen Satz gewesen.
+Die Zahl kommt deshalb aus dem Faktor-Artefakt über das Universumsverzeichnis, das die Liste schon
+liest.
+
+### Oberfläche und Coverage nachgemessen
+
+Reise auf demselben 500er-Sample: **409 volle Reisen, 89 reduzierte, 2 zu wenig für eine Reise**;
+Absagekästen 610 → 251, schlimmste Seite 4 Kästen. Produktions-Smoke gegen das gebaute Release:
+19 Ansichten × 2 Breiten plus die Methodikseite, **PRODUCTION SMOKE CLEAN**. Tests: **1.907
+grün, 0 rot** (vorher 1.890).
+
+| Coverage-Bucket | Wert |
+|---|---|
+| `TOTAL_ZERO_FACTOR_ROWS` | 786 (vorher 795) |
+| `RAW_FUNDAMENTALS_PRESENT` | 166 |
+| `PARTIAL_FUNDAMENTALS` | 2 |
+| `INSUFFICIENT_HISTORY` | 784 |
+| `NOT_APPLICABLE` | 177 |
+| `SEC_SOURCE_UNAVAILABLE` | 459 |
+| `SECTOR_TEMPLATE_MISSING` | **0** |
+| `INTERNAL_MAPPING_GAP` | 161 |
+| `TRUE_NO_FUNDAMENTALS` | 161 |
+| `EXTERNAL_PROVIDER_CANDIDATE` | 407 |
+| `ZERO_FACTOR_ROWS_CLOSED_WITHOUT_NEW_PROVIDER` | 9 |
+| `FACTOR_COVERAGE_GAIN` | +2.325 Faktorzellen (22.712 gesamt) |
+| `EXTERNAL_PROVIDER_DECISION` | `DEFERRED` |
+
+Kein Titel wurde durch eine fremde Quelle geöffnet. Was sich bewegt hat, bewegte sich durch
+Methodik und Zuordnung im Haus.
+
+### Was offen bleibt, mit Zahl
+
+- **161 Zuordnungslücken** (183 universumsweit, 43.953 Rohtatsachen): lokalisiert, nicht behebbar
+  ohne die Rohfakten — `data.sec.gov` ist durch die Netzwerkpolitik gesperrt.
+- **22 still übergangene Emittenten** im Export-Lauf.
+- **674 Titel mit Fundamentaldaten ohne Börsenwert** (303 ohne Anteilsbestand, 274 mit einem
+  Bestand jenseits der 400-Tage-Grenze — ACN von 2010 —, 97 ohne Kurs aus einem
+  Technical-Bündel). Das schließt die Bewertung für sie vollständig, auch für alle zwölf
+  Branchenfälle.
+- **Wachstum bleibt generisch**: 345 Banken ohne Umsatzreihe tragen deshalb keinen
+  Wachstumsfaktor. Bewusst nicht ersetzt — es hätte bestehende Werte neu gerechnet statt
+  geschlossene geöffnet.
+- **Zwei Titel** (IRAB, XSLL) führen nur Quartalsreihen und haben deshalb weiter keine
+  Berichtsperiode. Bewusst nicht repariert: es sind zwei Übernahmehüllen, bei denen kein Faktor
+  aufgehen würde, und der Anker dafür anzufassen wäre ein Eingriff in eine geteilte Engine für
+  zwei Datensätze.
+
 
 ## CURRENT_MAIN
 

@@ -1,8 +1,8 @@
 {
   "version": "company-master-1.0.0",
   "masterId": "VU_COMPANY_MASTER",
-  "generatedAt": "2026-09-27T12:11:36.173Z",
-  "asOf": "2026-09-27",
+  "generatedAt": "2026-09-28T08:08:21.347Z",
+  "asOf": "2026-09-28",
   "provider": "tiingo",
   "source": {
     "kind": "COMMITTED_GATE_UNIVERSES",
@@ -2691,14 +2691,14 @@
     "instruments": 7809
   },
   "run": {
-    "source": "github-actions",
-    "runId": "36317423722",
-    "commit": "574e9b00901402409302cc031f9fc669f07a6fd5",
-    "normalizeMs": 88,
-    "syncMs": 108,
+    "source": "local",
+    "runId": null,
+    "commit": null,
+    "normalizeMs": 119,
+    "syncMs": 147,
     "shardsWritten": 0,
     "shardsUnchanged": 646,
-    "publishedBytes": 9612026
+    "publishedBytes": 10119541
   },
   "identifiers": {
     "cikMap": {
@@ -2713,8 +2713,8 @@
     "withIssuerId": 6461,
     "distinctIssuers": 5481,
     "withCik": 6461,
-    "withName": 6467,
-    "withoutName": 1342,
+    "withName": 7586,
+    "withoutName": 223,
     "note": "isin/cusip/figi/lei bleiben null: keine der vorhandenen Quellen fuehrt sie, und eine neue kostenpflichtige Quelle ist ausgeschlossen (§32). Die Felder stehen im Schema, damit ein spaeterer Anbieter sie fuellen kann, ohne das Modell zu aendern."
   },
   "quality": {
@@ -2760,7 +2760,7 @@
           ]
         }
       ],
-      "missingName": 1342,
+      "missingName": 223,
       "missingExchange": 0,
       "missingCurrency": 0,
       "missingCountry": 0,
@@ -2769,18 +2769,22 @@
       "inactive": 15,
       "noFirstTradeDate": 0,
       "symbolWithWhitespace": [],
-      "classificationDisagreement": 1200,
+      "classificationDisagreement": 1306,
       "classificationDisagreementByClass": {
+        "EQUITY_COMMON->ETF": 133,
         "RIGHT->COMMON_STOCK": 129,
         "UNIT->COMMON_STOCK": 290,
-        "WARRANT->COMMON_STOCK": 470,
-        "TRUST->COMMON_STOCK": 120,
-        "PREFERRED->COMMON_STOCK": 130,
-        "ADR->COMMON_STOCK": 9,
+        "WARRANT->COMMON_STOCK": 453,
+        "TRUST->COMMON_STOCK": 118,
+        "PREFERRED->COMMON_STOCK": 124,
         "WARRANT->ADR": 1,
-        "ETN->COMMON_STOCK": 4,
+        "ETN->COMMON_STOCK": 3,
         "TEST_SECURITY->COMMON_STOCK": 44,
         "ETF->COMMON_STOCK": 2,
+        "PREFERRED->ETF": 1,
+        "ADR->PREFERRED": 1,
+        "ADR->COMMON_STOCK": 4,
+        "TRUST->ETF": 2,
         "CEF->COMMON_STOCK": 1
       },
       "withoutProductDecision": 0

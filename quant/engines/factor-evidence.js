@@ -31,7 +31,7 @@
      Version - die 1.0.0-Beobachtungen bleiben unveraendert unter ihrer
      eigenen Reihe stehen. */
   var METHODOLOGY_VERSION = "vu-factor-evidence-2.0.0";
-  var DERIVED_FROM = "quant-v2.1.0";
+  var DERIVED_FROM = "quant-v2.2.0";
   var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
   var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
   var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";
@@ -59,7 +59,8 @@
     "BLOCKED_EXTERNAL",                 /* licensed source absent; Revisions */
     "IDENTITY_UNRESOLVED",              /* no canonical issuer join */
     "FUNDAMENTALS_UNAVAILABLE",         /* no PIT-safe filing observation */
-    "PRICE_FACTORS_UNAVAILABLE"         /* no certified price factor row */
+    "PRICE_FACTORS_UNAVAILABLE",        /* no certified price factor row */
+    "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" /* one issuer share count, several listed lines */
   ];
 
   var COMPONENT_STATES = ["AVAILABLE", "UNAVAILABLE"];
@@ -144,10 +145,68 @@
     BLOCKED_EXTERNAL: "Es liegt keine lizenzierte, zeitpunktgenaue Datenquelle vor. Ein Ersatz wäre erfunden und wird nicht gebildet.",
     IDENTITY_UNRESOLVED: "Für diesen Titel besteht keine eindeutige kanonische Emittenten-Zuordnung.",
     FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegt keine zeitpunktsichere Geschäftszahlen-Beobachtung vor.",
-    PRICE_FACTORS_UNAVAILABLE: "Für diesen Titel liegt keine zertifizierte Kursfaktor-Zeile vor."
+    PRICE_FACTORS_UNAVAILABLE: "Für diesen Titel liegt keine zertifizierte Kursfaktor-Zeile vor.",
+    /* Gemessen am 26.09.2026: 110 Emittenten fuehren 304 notierte Zeilen, und
+       der Anteilsbestand, den die SEC meldet, gilt fuer den Emittenten - nicht
+       fuer eine einzelne Zeile. Wer ihn trotzdem mit dem Kurs einer Zeile
+       multipliziert, erhaelt Zahlen, die es nicht gibt: eine
+       Schuldverschreibung von JPMorgan trug so 1.408 Mrd. */
+    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Dieses Unternehmen hat mehrere notierte Wertpapiere, und die " +
+      "veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes. Ein Börsenwert für genau diese " +
+      "Notierung ließe sich daraus nur schätzen - und darauf beruhen alle Bewertungskennzahlen. " +
+      "Sie bleiben deshalb offen, statt eine Zahl zu nennen, die es nicht gibt."
   };
 
+  /* ---------------------------------------------------------------------
+     WIE VIELE HANDELSTAGE DIE KURSFAKTOREN BRAUCHEN.
+
+     "Zu wenige Einzelkennzahlen erfuellen die Methodik" ist wahr und sagt
+     einem Leser nichts. Gemessen am 26.09.2026 tragen 784 der 786 Titel ohne
+     einen einzigen Faktorwert weniger als 252 Handelstage - fuer sie ist der
+     ganze Grund, dass sie noch nicht lange genug gehandelt werden, und das
+     aendert sich von selbst.
+
+     Die Zahlen stammen aus den Fenstern des Vertrags, nicht aus dem Gefuehl:
+     Schwankungsbreite, Verlusttage, groesster Rueckgang und Beta rechnen auf
+     252 Sitzungen. Das Momentumfenster "12 Monate ohne den letzten Monat"
+     braucht dieselben 252 plus die 21 Sitzungen, die es auslaesst - 273.
+     Beide Zahlen sind in `quant-v2.json` als Fenster der Komponenten
+     hinterlegt, und ein Test haelt sie dagegen.
+     --------------------------------------------------------------------- */
+  var REQUIRED_BARS = { momentum: 273, risk: 252 };
+
+  /* NICHT VORHANDEN UND BEWUSST ZURUECKGEHALTEN SIND ZWEI ZUSTAENDE.
+   *
+   * Beide standen unter derselben Ueberschrift "Kein Wert fuer diesen
+   * Faktor". Fuer einen Leser ist das ein Unterschied: im ersten Fall fehlt
+   * etwas, im zweiten hat das Haus sich entschieden, eine Zahl nicht zu
+   * nennen, die es nur schaetzen koennte. Die Ueberschrift steht hier und
+   * nicht in der Oberflaeche, damit nicht zwei Stellen den Code kennen. */
+  var REASON_HEADLINE = {
+    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Bewertung bewusst zurückgehalten",
+    BLOCKED_EXTERNAL: "Bewusst offen gelassen",
+    SECTOR_TEMPLATE_MISSING: "Für diese Branche nicht anwendbar",
+    FUNDAMENTALS_UNAVAILABLE: "Noch keine Geschäftszahlen veröffentlicht"
+  };
+  var HEADLINE_SHORT_HISTORY = "Noch nicht genug Kursgeschichte";
+  var HEADLINE_DEFAULT = "Kein Wert für diesen Faktor";
+
   function finite(value) { return typeof value === "number" && Number.isFinite(value); }
+
+  /* Was der Nutzer statt des Codes liest, wenn die Kursgeschichte die ganze
+     Ursache ist. Der Code bleibt daneben stehen - er gehoert in die
+     Methodikebene, nicht in den ersten Satz. */
+  function historyLimit(factorId, record) {
+    var required = REQUIRED_BARS[factorId];
+    if (!required || !record || !finite(record.bars) || record.bars >= required) return null;
+    return { bars: record.bars, requiredBars: required, missingBars: required - record.bars };
+  }
+
+  function shortHistorySentence(limit) {
+    return "Noch nicht ausreichend Historie: für diese Auswertung werden " + limit.requiredBars +
+      " Handelstage benötigt, aktuell liegen " + limit.bars + " vor. " +
+      "Sobald der Titel länger gehandelt wird, entsteht der Wert von selbst.";
+  }
 
   function band(score) {
     if (!finite(score)) return null;
@@ -375,7 +434,14 @@
       factors[factorId] = Object.assign({}, factor, {
         weight: weights[factorId] !== undefined ? weights[factorId] : null,
         components: (factor.components || []).map(function (component) {
-          var spec = specs[factorId + ":" + component.id] || {};
+          /* Traegt der Titel eine Branchenvorlage, gilt deren Eintrag: sie
+             gewichtet dieselbe Kennzahl anders als die generische Formel
+             und nennt eine andere Formelzeile. Ohne Vorlageneintrag bleibt
+             es beim generischen - und ein Artefakt ohne Vorlagen verhaelt
+             sich Zeichen fuer Zeichen wie vorher. */
+          var templateId = record.template && record.template.id,
+            spec = (templateId && specs[templateId + ":" + factorId + ":" + component.id]) ||
+              specs[factorId + ":" + component.id] || {};
           return Object.assign({}, spec, component);
         })
       });
@@ -390,7 +456,10 @@
     return FACTOR_ORDER.map(function (id) {
       var factor = record.factors[id] || { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null },
         meaning = FACTOR_MEANING[id],
-        display = factor.state === "AVAILABLE" ? band(factor.score) : null;
+        display = factor.state === "AVAILABLE" ? band(factor.score) : null,
+        /* Nur wenn der Faktor wirklich zu ist: ein verfuegbarer Wert braucht
+           keine Erklaerung, warum er fehlen koennte. */
+        limit = factor.state === "AVAILABLE" ? null : historyLimit(id, record);
       return {
         id: id,
         label: meaning.label,
@@ -399,7 +468,19 @@
         higherMeans: meaning.higherMeans,
         state: factor.state,
         reason: factor.reason || null,
-        reasonText: factor.state === "AVAILABLE" ? null : (REASON_TEXT[factor.reason] || REASON_TEXT.INPUT_NOT_MATERIALIZED),
+        reasonText: factor.state === "AVAILABLE" ? null
+          : (limit ? shortHistorySentence(limit) : (REASON_TEXT[factor.reason] || REASON_TEXT.INPUT_NOT_MATERIALIZED)),
+        /* Die Ueberschrift zum Satz: sie trennt "fehlt" von "wird bewusst
+           nicht genannt", und die Oberflaeche muss dafuer keinen Code kennen. */
+        reasonHeadline: factor.state === "AVAILABLE" ? null
+          : (limit ? HEADLINE_SHORT_HISTORY : (REASON_HEADLINE[factor.reason] || HEADLINE_DEFAULT)),
+        /* Die Zahlen auch strukturiert, damit die Oberflaeche sie in ihre
+           eigene Ursachengruppe einsortieren kann, statt den Satz zu zerlegen. */
+        history: limit,
+        /* Wie tief die Geschaeftszahlen reichen. Keine Schwelle behauptet -
+           die Fenster dieser Methodik sind je Komponente verschieden -, aber
+           die Tiefe selbst ist eine Aussage, die ein Leser braucht. */
+        fundamentalYears: finite(record.fundamentalYears) ? record.fundamentalYears : null,
         score: factor.state === "AVAILABLE" ? factor.score : null,
         band: display ? display.id : null,
         bandLabel: display ? display.label : "Nicht verfügbar",
@@ -414,17 +495,45 @@
   }
 
   /* One sentence a beginner can act on, built only from what is available.
-     It states position and gaps; it never advises. */
+     It states position and gaps; it never advises.
+
+     EINE STÄRKE MUSS EINE STÄRKE SEIN.
+
+     Hier stand: die höchste der bewerteten Eigenschaften ist „die klarste
+     Stärke", die niedrigste „die klarste Schwäche" - unabhängig davon, wo
+     beide liegen. Gemessen am 26.09.2026 über 6.441 Titel ergab das bei
+     743 den Satz „Unternehmensqualität ist mit schwach die klarste Stärke."
+     Er ist aus richtigen Zahlen gebaut und trotzdem falsch: die schwächste
+     Eigenschaft eines schwachen Titels ist keine Stärke, und „stark" und
+     „schwach" in einem Satz macht aus einer Einordnung ein Rätsel. Bei
+     AACG kam dazu, dass Stärke und Schwäche im GLEICHEN Band lagen - dann
+     ist die Unterscheidung nicht nur schief, sie existiert nicht.
+
+     Die Grenze ist deshalb das Band und nicht die Reihenfolge: über dem
+     Mittelfeld ist eine Stärke, darunter eine Schwäche, im Mittelfeld
+     keines von beidem - und dass nichts heraussticht, ist selbst eine
+     Aussage. Die Bänder sind die der Methodik (ratingBands); hier steht
+     nur, welche davon einen Satz verdienen. */
+  var STRENGTH_BANDS = ["VERY_STRONG", "STRONG"];
+  var WEAKNESS_BANDS = ["WEAK", "VERY_WEAK"];
+
   function summarySentence(record) {
-    var factors = ordered(record).filter(function (factor) { return factor.state === "AVAILABLE"; });
+    var alle = ordered(record),
+      factors = alle.filter(function (factor) { return factor.state === "AVAILABLE" && finite(factor.score); });
     if (!factors.length) return "Für diesen Titel liegt derzeit keine auswertbare Faktor-Evidenz vor.";
-    var sorted = factors.slice().sort(function (a, b) { return b.score - a.score; }),
-      strongest = sorted[0],
-      weakest = sorted[sorted.length - 1],
+    var stark = factors.filter(function (f) { return STRENGTH_BANDS.indexOf(f.band) >= 0; })
+        .sort(function (a, b) { return b.score - a.score; }),
+      schwach = factors.filter(function (f) { return WEAKNESS_BANDS.indexOf(f.band) >= 0; })
+        .sort(function (a, b) { return a.score - b.score; }),
       parts = [];
-    parts.push(strongest.label + " ist mit " + strongest.bandLabel.toLowerCase() + " die klarste Stärke.");
-    if (sorted.length > 1 && weakest.id !== strongest.id) parts.push(weakest.label + " ist mit " + weakest.bandLabel.toLowerCase() + " die klarste Schwäche.");
-    var missing = ordered(record).filter(function (factor) { return factor.state !== "AVAILABLE"; });
+    if (stark.length) parts.push(stark[0].label + " ist mit " + stark[0].bandLabel.toLowerCase() + " die klarste Stärke.");
+    if (schwach.length) parts.push(schwach[0].label + " ist mit " + schwach[0].bandLabel.toLowerCase() + " die klarste Schwäche.");
+    if (!parts.length) {
+      parts.push(factors.length === 1
+        ? "Die eine bewertete Eigenschaft liegt im mittleren Bereich des Universums."
+        : "Keine der " + factors.length + " bewerteten Eigenschaften liegt über oder unter dem Mittelfeld des Universums.");
+    }
+    var missing = alle.filter(function (factor) { return factor.state !== "AVAILABLE"; });
     if (missing.length) parts.push(missing.length + " von 7 Faktoren bleiben ohne Wert, weil ihre Daten die Methodik nicht erfüllen.");
     return parts.join(" ");
   }
@@ -447,6 +556,11 @@
     CONFIDENCE_WEIGHTS: Object.assign({}, CONFIDENCE_WEIGHTS),
     FACTOR_MEANING: JSON.parse(JSON.stringify(FACTOR_MEANING)),
     REASON_TEXT: Object.assign({}, REASON_TEXT),
+    REASON_HEADLINE: Object.assign({}, REASON_HEADLINE),
+    REQUIRED_BARS: Object.assign({}, REQUIRED_BARS),
+    STRENGTH_BANDS: STRENGTH_BANDS.slice(),
+    WEAKNESS_BANDS: WEAKNESS_BANDS.slice(),
+    historyLimit: historyLimit,
     band: band,
     confidenceBand: confidenceBand,
     winsorBounds: winsorBounds,

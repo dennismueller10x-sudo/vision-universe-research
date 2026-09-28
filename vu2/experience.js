@@ -44,7 +44,16 @@ dialog.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const controls=[..
 let universe;
 function heading(title,description){return el('div',{class:'intro'},[el('div',{},[el('span',{class:'eyebrow',text:'Vision Universe® · Preview'}),el('h1',{text:title}),description?el('p',{class:'muted',text:description}):null])]);}
 function notice(title,text){return el('div',{class:'notice'},[el('h3',{text:title}),el('p',{class:'muted',text})]);}
-function stockRows(stocks,metricKey='momentum6m',metricLabel='6 Monate',showAsOf=false){return el('div',{},[el('div',{class:'row eyebrow'},[el('span',{text:'Unternehmen'}),el('span',{class:'number',text:'Schlusskurs'}),el('span',{class:'number',text:metricLabel})]),...stocks.map(s=>el('a',{class:'row',href:href('stock',s.ticker)},[el('div',{},[el('strong',{text:s.ticker}),el('span',{class:'muted',text:s.name}),showAsOf?el('span',{class:'muted row-asof'},[el('span',{text:'Kursstand '}),el('time',{datetime:s.asOf,text:s.asOf||'nicht verfügbar'})]):null]),el('div',{class:'number',text:n(s.price,2)}),el('div',{class:'number '+(Number.isFinite(s[metricKey]?.value)&&s[metricKey].unit==='percent'?(s[metricKey].value>=0?'positive':'negative'):''),text:n(s[metricKey])})]))]);}
+/* EIN KUERZEL ZWEIMAL IST KEINE ZEILE.
+ *
+ * Gemessen am 26.09.2026: 1.102 von 6.875 Zeilen schrieben ihren Ticker in
+ * beide Spalten ("AAAC | AAAC"), weil der Stamm keinen Namen kannte. Der Name
+ * lag veroeffentlicht vor (company-names-1.0.0), und seit M41 tragen 6.857
+ * Zeilen ihn. Fuer die restlichen 18 gibt der Anbieter nachweislich keinen
+ * Namen her (PROVIDER_HAS_NO_NAME, erneuter Versuch ab 2026-10-14) - dann
+ * steht das da und nicht das Kuerzel ein zweites Mal. */
+const zeilenName=(s)=>(s.name&&s.name!==s.ticker)?s.name:'Firmenname nicht veröffentlicht';
+function stockRows(stocks,metricKey='momentum6m',metricLabel='6 Monate',showAsOf=false){return el('div',{},[el('div',{class:'row eyebrow'},[el('span',{text:'Unternehmen'}),el('span',{class:'number',text:'Schlusskurs'}),el('span',{class:'number',text:metricLabel})]),...stocks.map(s=>el('a',{class:'row',href:href('stock',s.ticker)},[el('div',{},[el('strong',{text:s.ticker}),el('span',{class:'muted',text:zeilenName(s)}),showAsOf?el('span',{class:'muted row-asof'},[el('span',{text:'Kursstand '}),el('time',{datetime:s.asOf,text:s.asOf||'nicht verfügbar'})]):null]),el('div',{class:'number',text:n(s.price,2)}),el('div',{class:'number '+(Number.isFinite(s[metricKey]?.value)&&s[metricKey].unit==='percent'?(s[metricKey].value>=0?'positive':'negative'):''),text:n(s[metricKey])})]))]);}
 function freshness(data,ticker){const root=el('div',{'aria-live':'polite'});function draw(data){const stale=data?.members?.filter(m=>m.state==='STALE').length||0,unknown=data?.members?.filter(m=>!['AVAILABLE','STALE'].includes(m.state)).length||0;let text;if(!data||data.state==='UNAVAILABLE')text='Aktualität des Tagesstands derzeit nicht bestätigt.';else if(data.state==='PIPELINE_ERROR')text='Der Tagesstand benötigt eine Datenprüfung.';else if(stale)text=stale+' '+(stale===1?'Kursstand liegt':'Kursstände liegen')+' vor der letzten abgeschlossenen Börsensitzung ('+data.expectedThrough+'). Neuere Tagesdaten fehlen in dieser Ansicht.'+(unknown?' Weitere '+unknown+' Kursstände sind nicht prüfbar.':'');else text='Tagesdaten reichen bis zur letzten abgeschlossenen Börsensitzung ('+data.expectedThrough+'). Keine Echtzeit- oder Endgültigkeitsbestätigung.';if(root.firstElementChild?.textContent===text)return;S.mount(root,el('p',{class:'market-freshness '+(stale?'freshness-warning':'muted'),text}));}draw(data);let loading=false;const timer=setInterval(async()=>{if(document.hidden||loading)return;loading=true;try{draw(await api.getMarketDataHealth(ticker));}catch{draw(null);}finally{loading=false;}},60000);addEventListener('pagehide',()=>clearInterval(timer),{once:true});return root;}
 /* Gemessen an ACAA: dieser Block zeigte drei Zeilen "Nicht verfuegbar"
    untereinander - dieselbe leere Flaeche, die die Verdichtung abschafft,
@@ -98,18 +107,44 @@ async function liveStockSection(ticker){
    meistbesuchten Flaeche gesagt, es gebe die Aussage nicht, waehrend sie
    einen Klick weiter stand. Kein zweiter Auswerter: die Beobachtung wird
    gelesen, nicht neu gerechnet. */
-function setupStateSection(observation,index,ticker){
+/* `schonBeantwortet` heisst: die Auskunft oben hat Zustand, Grund, naechste
+   Stufe und Ende dieses Zustands bereits gesagt. Dann steht hier nur noch,
+   woran er haengt - sonst stuenden Etikett und Regelsatz zweimal auf einer
+   Seite, und zwei gleichlautende Hauptaussagen sind fuer einen Leser ein
+   Fehler der Seite, auch wenn beide stimmen. */
+/* „NICHT VORHANDEN" UND „BEWUSST ZURUECKGEHALTEN" SIND ZWEI AUSSAGEN.
+ *
+ * Gemessen am 26.09.2026: 266 Titel, deren Boersenwert die Faktorschicht
+ * ausdruecklich zurueckhaelt, zeigten hier trotzdem ein Kurs-Gewinn- und ein
+ * Kurs-Umsatz-Verhaeltnis. Seit M40 fallen diese Kennzahlen geschlossen - und
+ * dann muss an ihrer Stelle der GRUND stehen und nicht der Satz „fuer diese
+ * Kennzahl fehlen auswertbare Daten". Es fehlt nichts: es wird eine Zahl
+ * nicht genannt, die sich nur schaetzen liesse. Das Woerterbuch verlangt
+ * dafuer ausdruecklich zwei verschiedene Texte. */
+const KENNZAHL_GRUND={
+ SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING:'Diese Kennzahl braucht den Börsenwert genau dieser Notierung. '
+  +'Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das '
+  +'Unternehmen als Ganzes - welcher Anteil auf dieses Papier entfällt, steht nicht in den Unterlagen. '
+  +'Die Kennzahl wird deshalb nicht genannt, statt sie zu schätzen.',
+ DISPLAY_NOT_PERMITTED:'Für diesen Titel ist die Anzeige marktbezogener Werte in dieser Ansicht nicht freigegeben.'};
+function kennzahlGrund(m){
+ return (m&&KENNZAHL_GRUND[m.reason])||'Für diese Kennzahl fehlen auswertbare oder freigegebene Daten.';
+}
+function setupStateSection(observation,index,ticker,schonBeantwortet){
  const section=el('section',{class:'section','aria-label':'Situation'});
- section.append(el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}));
+ section.append(el('span',{class:'eyebrow',text:'Situation'}),
+  el('h2',{text:schonBeantwortet?'Woran dieser Zustand hängt':LQ('setupState')}));
  const state=observation&&observation.state==='AVAILABLE'?observation.classification.state:null;
  if(!state||state==='UNAVAILABLE'){
+  /* Die Absage steht oben schon, wenn die Auskunft sie gesagt hat. */
+  if(schonBeantwortet)return null;
   section.append(notice(LU('setupState'),LB('setupState')));
   return section;
  }
- section.append(el('p',{class:'setup-badge state-'+state,text:L(state)}),
+ if(!schonBeantwortet)section.append(el('p',{class:'setup-badge state-'+state,text:L(state)}),
   el('p',{class:'muted',text:LB(state)}),
-  el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}),
-  setupCurrency(observation));
+  el('p',{class:'muted',text:'Beobachtet am '+observation.asOf+'. '+observation.matchedRule.plain}));
+ section.append(setupCurrency(observation));
  /* Die vier Verlaufszustaende sind hier genauso geschlossen wie auf der
     Quant-Seite; das steht daneben, statt es durch Weglassen so aussehen
     zu lassen, als waeren sie geprueft und ausgeschlossen worden. */
@@ -134,9 +169,11 @@ function setupStateSection(observation,index,ticker){
    Sieben-Faktoren-Leiste ist dieselbe Komponente wie in der Watchlist, und
    die Musterbilanz liest das veroeffentlichte Pattern-Match-Artefakt. Die
    Tiefe bleibt drueben; hier steht die Antwort. */
-function patternBalance(patterns,ticker){
+function patternBalance(patterns,ticker,lead){
  const section=el('section',{class:'section pattern-balance'},[
-  el('span',{class:'eyebrow',text:'Einordnung'}),el('h2',{text:LQ('patternBalance')})]);
+  el('span',{class:'eyebrow',text:'Einordnung'}),el('h2',{text:LQ('patternBalance')}),
+  /* Erst die Aussage, dann die Zaehlung - dieselbe Engine wie die Auskunft oben. */
+  lead&&lead.sentence?el('p',{class:'pattern-lead',text:lead.sentence}):null]);
  if(!patterns||patterns.state!=='AVAILABLE'){
   section.append(notice(LU('patternBalance'),LB('patternBalance')));
   return section;
@@ -317,7 +354,27 @@ function journeyGapSection(shape,ticker,minimal){
   el('p',{class:'muted',text:'Diese Bezeichnungen stehen so in den veröffentlichten Daten. Sie sind der Grund, nicht ein Ersatz für einen Wert.'})]));
  return section;
 }
-async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);main.append(heading(s.name||'Aktienanalyse',s.ticker||''));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
+/* EIN LESEWEG FUER DIE GANZE SEITE.
+ *
+ * Die Auskunft oben und die Abschnitte darunter stehen auf denselben Werten.
+ * Sie werden deshalb EINMAL geholt - die Dienstschicht ruft dafür dieselben
+ * sechs Dienste, die diese Seite ohnehin gebraucht hat. Zwei Lesewege wären
+ * zwei Stände desselben Titels auf einer Seite. */
+async function stockPage(ticker){const brief=await api.getIntelligenceBrief(ticker).catch(()=>null);
+ const s=(brief&&brief.sources&&brief.sources.stock)||await api.getStockIntelligence(ticker);
+ /* Kein Name heisst nicht: Ticker als Ueberschrift und Ticker als
+    Untertitel. Dann steht die Ueberschrift fuer das, was sie ist. */
+ main.append(heading((s.name&&s.name!==s.ticker)?s.name:'Aktienanalyse',s.ticker||''));
+ /* WENN ZWEI QUELLEN VERSCHIEDENE GESELLSCHAFTEN NENNEN, STEHT DAS OBEN.
+  *
+  * Gemessen am 28.09.2026 nach company-naming-1.0.0: bei 310 Kuerzeln nennen
+  * die Emittentenebene (SEC ueber die CIK) und die Wertpapierebene (Metadaten
+  * des Kursanbieters) verschiedene Gesellschaften - AACI "Armada Acquisition
+  * Corp. III" gegen "Armada Acquisition Corp I", AEC "Anfield Energy" gegen
+  * "Associated Estates Realty". Eine der beiden Angaben ist falsch, und lokal
+  * ist nicht entscheidbar, welche. Ein Name, der ohne diesen Hinweis dasteht,
+  * behauptet eine Zuordnung, die nicht belegt ist. */
+ if(s.identityConflict)main.append(identitaetsHinweis(s));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
  if(s.identityState==='AVAILABLE'){
   const [history,fundamentals]=await Promise.all([api.getHistoricalPriceHistory(ticker),api.getHistoricalFundamentals(ticker)]);
   if(history.state==='AVAILABLE')main.append(el('section',{class:'section'},[el('h2',{text:'Kursentwicklung'}),QuantCharts.lineChart({title:ticker+' · tägliche Schlusskurse',width:Math.min(900,innerWidth-40),height:290,dates:history.bars.map(b=>b.date),series:[{values:history.bars.map(b=>b.close)}],yFormat:v=>v.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})}),el('p',{class:'muted',text:'Splitbereinigte Schlusskurse · '+history.currency+' · Stand '+history.asOf+'. Verfügbarer Tageszeitraum: '+history.availableFrom+' bis '+history.availableTo+'.'})]));
@@ -346,16 +403,22 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
   ?'Splitbereinigte Schlusskurse · USD. Splits sind herausgerechnet; der letzte Kurs ist der gehandelte.'
    +(s.chart.splitEvents?(s.chart.splitEvents===1?' Im vollen Zeitraum liegt ein Split.':' Im vollen Zeitraum liegen '+s.chart.splitEvents+' Splits.'):'')
   :'Unbereinigte Schlusskurse · USD. Für diese Reihe fehlen die Splitfaktoren, deshalb können Splits als Kurssprünge erscheinen.';
+ /* ZWISCHEN KURS UND CHART - dort sucht ein Einsteiger die Antwort, und
+    dort hat bisher der Chart gestanden. Bei 390 px ist das die erste
+    Bildschirmhöhe nach dem Kurs. */
+ const hatAuskunft=!!(brief&&brief.headline&&brief.headline.sentence);
+ if(hatAuskunft)left.append(briefSection(brief,ticker,false));
  left.append(chart,ranges,el('p',{class:'muted',text:chartBasis}));draw('1Y');
  /* Alles, was die Seite braucht, VOR der Entscheidung ueber ihre Form -
     die Kursstruktur eingeschlossen. Sie wurde vorher erst unten geholt;
     die Form der Seite haengt aber an ihr. */
- const [setupObservation,setupIndex,evidenceRow,patterns,technical]=await Promise.all([
-  api.getSetupObservation(ticker).catch(()=>null),
+ const quellen=(brief&&brief.sources)||{};
+ const [setupIndex,evidenceRow]=await Promise.all([
   api.getSetupScreenIndex().catch(()=>null),
-  api.getFactorEvidenceScreening().then(r=>(r?.rows||[]).find(x=>x.ticker===ticker)||null).catch(()=>null),
-  api.getPatternMatch(ticker).catch(()=>null),
-  api.getTechnicalIntelligence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'}))]);
+  api.getFactorEvidenceScreening().then(r=>(r?.rows||[]).find(x=>x.ticker===ticker)||null).catch(()=>null)]);
+ const setupObservation=quellen.setup||await api.getSetupObservation(ticker).catch(()=>null);
+ const patterns=quellen.patterns||await api.getPatternMatch(ticker).catch(()=>null);
+ const technical=quellen.technical||await api.getTechnicalIntelligence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'}));
  const shape=VUJourneyShape.assess(VUJourneyShape.stationsFrom(
   {stock:s,evidenceRow,setup:setupObservation,patterns,technical}));
  /* HOECHSTENS EINE GEHALTVOLLE STATION: dann ist eine Reise die falsche
@@ -397,18 +460,30 @@ async function stockPage(ticker){const s=await api.getStockIntelligence(ticker);
   strength.append(strip);strength.append(link('Woran das gemessen wurde',href('quant',ticker),'button secondary'));
   main.append(strength);
  }else if(!reduziert){strength.append(notice(LU('factorDna'),LB('factorDna')));main.append(strength);}
- if(!reduziert||shape.substantive.includes('setup'))main.append(setupStateSection(setupObservation,setupIndex,ticker));
- if(!reduziert||shape.substantive.includes('patterns'))main.append(patternBalance(patterns,ticker));
+ if(!reduziert||shape.substantive.includes('setup'))main.append(setupStateSection(setupObservation,setupIndex,ticker,hatAuskunft));
+ if(!reduziert||shape.substantive.includes('patterns'))main.append(patternBalance(patterns,ticker,brief&&brief.pattern));
  main.append(actions(s.workspaces));
  const business=el('section',{class:'section stock-business'},[el('span',{class:'eyebrow',text:'Geschäft, Bewertung und Risiko'}),el('h2',{text:'Was zeigen die Unternehmenszahlen?'}),el('p',{class:'muted',text:'Ergebnisse verstehen, den Preis einordnen und Schwankungen prüfen. Jede Kennzahl führt zu ihrer Definition und zur vollständigen Analyse.'})]);
  if(s.quant?.state==='AVAILABLE'){
-  const selected={quality:['operatingMargin','fcfMargin'],growth:['revenueGrowth','epsGrowth'],value:['earningsYield','priceToFcf'],risk:['volatility','maxDrawdown']};
+  /* ZWEI ARBEITSFLAECHEN, ZWEI SAETZE KENNZAHL-NAMEN.
+   *
+   * Gemessen am 26.09.2026: der Panelweg liefert die Bewertungsfamilie als
+   * `earningsYield`/`priceToFcf`, der breite Weg als
+   * `priceEarnings`/`priceSales`/`fcfYield`. Diese Auswahl kannte nur die
+   * ersten beiden - fuer jeden Titel ausserhalb des Panels stand deshalb die
+   * Ueberschrift „Welcher Preis steht dem Geschaeft gegenueber?" ueber einem
+   * leeren Kasten. Eine Frage ohne eine einzige Zeile darunter ist keine
+   * Antwort; sie sieht wie ein Fehler aus. */
+  const selected={quality:['operatingMargin','fcfMargin','netMargin'],growth:['revenueGrowth','epsGrowth'],
+   value:['earningsYield','priceToFcf','priceEarnings','priceSales'],risk:['volatility','maxDrawdown']};
   /* Gemessen: bei ACAA sind 0 von 16 Kennzahlen veroeffentlicht, und dieses
      Gitter zeigte trotzdem acht Zeilen mit "Nicht verfuegbar". In der
      reduzierten Form stehen nur Kennzahlen, die einen Wert haben; die
      fehlenden erklaert die Gruppe unten, mit ihrer Zahl. */
   const zeige=(f,m)=>selected[f.id].includes(m.metricId)&&(!reduziert||m.state==='AVAILABLE');
-  business.append(el('div',{class:'stock-evidence-grid'},s.quant.families.filter(f=>selected[f.id]&&(!reduziert||(f.metrics||[]).some(m=>zeige(f,m)))).map(f=>el('article',{'data-stock-family':f.id},[el('h3',{text:f.question}),...f.metrics.filter(m=>zeige(f,m)).map(m=>el('div',{class:'stock-evidence-metric'},[el('div',{},[el('span',{text:m.label}),el('strong',{text:formatFactor(m)})]),el('details',{},[el('summary',{text:'Warum ist das relevant?'}),el('p',{text:m.description}),el('p',{class:'muted',text:m.state==='AVAILABLE'?'Datenstand '+m.asOf+' · bekannt seit '+m.availableAt:'Für diese Kennzahl fehlen auswertbare oder freigegebene Daten.'})])])),link(f.id==='growth'||f.id==='quality'?'Entwicklung über die Jahre':'Vollständige Kennzahlen & Methodik',f.id==='growth'||f.id==='quality'?href('fundamentals',ticker):href('quant',ticker)+'#factor-'+f.id,'stock-evidence-link')]))));
+  /* Ein Kasten entsteht nur, wenn wenigstens eine Zeile darin steht - in
+     jeder Form, nicht nur in der verdichteten. */
+  business.append(el('div',{class:'stock-evidence-grid'},s.quant.families.filter(f=>selected[f.id]&&(f.metrics||[]).some(m=>zeige(f,m))).map(f=>el('article',{'data-stock-family':f.id},[el('h3',{text:f.question}),...f.metrics.filter(m=>zeige(f,m)).map(m=>el('div',{class:'stock-evidence-metric'},[el('div',{},[el('span',{text:m.label}),el('strong',{text:m.reason==='SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING'?'Bewusst nicht genannt':formatFactor(m)})]),el('details',{},[el('summary',{text:'Warum ist das relevant?'}),el('p',{text:m.description}),el('p',{class:'muted',text:m.state==='AVAILABLE'?'Datenstand '+m.asOf+' · bekannt seit '+m.availableAt:kennzahlGrund(m)})])])),link(f.id==='growth'||f.id==='quality'?'Entwicklung über die Jahre':'Vollständige Kennzahlen & Methodik',f.id==='growth'||f.id==='quality'?href('fundamentals',ticker):href('quant',ticker)+'#factor-'+f.id,'stock-evidence-link')]))));
   business.append(el('p',{class:'muted',text:'Geschäftszahlen bis '+s.quant.fundamentalsAsOf+' · bekannt seit '+s.quant.availableAt+'. Marktbezogene Kennzahlen bis '+s.quant.asOf+'. Bewertungen sind kein Urteil über einen fairen Preis; vergangene Schwankungen sind keine Verlustprognose.'}));
  }else if(!reduziert)business.append(notice('Unternehmenskennzahlen derzeit nicht auswertbar','Die professionellen Analysezugänge bleiben erreichbar. Fehlende Kennzahlen werden nicht ersetzt.'));
  if(!reduziert||shape.substantive.includes('business'))main.append(business);
@@ -741,6 +816,167 @@ const ratioText=(value,unit)=>{
  if(unit==='shares')return value.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})+' Stück';
  return (value*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %';
 };
+/* WENN EINE ANDERE METHODIK GILT, MUSS DAS DASTEHEN.
+ *
+ * Gemessen am 26.09.2026: 974 Titel werden nach einer eigenen Branchenvorlage
+ * gerechnet - Banken, Versicherungstraeger, REITs. Auf der Seite sah man das
+ * nicht. WSBCO zeigte die Eigenkapitalquote mit Gewicht 0,30, AAPL dieselbe
+ * Kennzahl mit 0,15: dieselbe Beschriftung, eine andere Vorlage, kein Wort
+ * dazu. Ein Leser, der beide Seiten vergleicht, haelt das fuer einen Fehler -
+ * und ein Leser, der nur eine sieht, haelt eine Bankkennzahl fuer die
+ * allgemeine.
+ *
+ * Die Ebenen bleiben in der Reihenfolge des Woerterbuchs: erst was gilt, dann
+ * warum, und der interne Name der Fassung zuletzt und nie allein. */
+const VORLAGE_ERKLAERUNG={
+ BALANCE_SHEET_FINANCIAL:'Eine Bankbilanz besteht aus Einlagen und Krediten. Rohertrag, '
+  +'Nettoverschuldung und operative Marge - die Kennzahlen eines Industrieunternehmens - sagen '
+  +'darüber nichts. Gemessen wird deshalb, was hier zählt: Eigenkapitalquote, Rendite auf '
+  +'Bilanzsumme und Eigenkapital, Verlässlichkeit dieser Rendite über die Jahre.',
+ INSURANCE_CARRIER:'Ein Versicherer verdient an Prämien und Kapitalanlagen, nicht an einer '
+  +'Handelsmarge. Gemessen werden Eigenkapitalquote, Rendite auf Bilanzsumme und Eigenkapital '
+  +'sowie das Ergebnis je Umsatz.',
+ REAL_ESTATE_TRUST:'Bei einer Immobiliengesellschaft drückt die Abschreibung das Ergebnis, '
+  +'ohne dass Geld abfließt. Gemessen wird deshalb der operative Zahlungsfluss - und ob die '
+  +'Ausschüttung davon gedeckt ist.'
+};
+function branchenvorlageHinweis(data){
+ const vorlage=data&&data.template;
+ if(!vorlage||!vorlage.id)return null;
+ const erklaerung=VORLAGE_ERKLAERUNG[vorlage.id];
+ return el('div',{class:'template-note','data-template':vorlage.id},[
+  el('p',{text:'Für diesen Titel gilt eine eigene Branchenvorlage.'}),
+  erklaerung?el('p',{class:'muted',text:erklaerung}):null,
+  /* Die Methodikebene: hier darf der interne Name stehen, weil ein
+     Nutzerbegriff vor ihm steht. */
+  el('p',{class:'muted',text:'Verlässlichkeit, Bewertung und Ertragskraft folgen dieser Vorlage; '
+   +'Wachstum, Kursstärke und Schwankungsbreite werden für alle Titel gleich gemessen. '
+   +'Grundlage: '+(vorlage.label||vorlage.id)+(vorlage.appliesTo?' ('+vorlage.appliesTo+')':'')
+   +' · Fassung '+vorlage.version+'.'})]);
+}
+
+/* =========================================================================
+   DIE OBERE HÄLFTE EINER AKTIENSEITE.
+
+   Gemessen am 26.09.2026 am gebauten Release bei 390 px: die erste
+   Bildschirmhöhe zeigte einen Namen, ein Etikett, einen Kurs, eine
+   Aktualitätszeile - und dann einen Chart. Die fünf Fragen, mit denen ein
+   Einsteiger auf diese Seite kommt (wie steht sie da, warum, was ändert
+   sich, gibt es ein Setup, was spricht dafür und dagegen), wurden alle
+   beantwortet: in Abschnitt vier, sechs, sieben und auf einer zweiten
+   Ansicht. Ein Anfänger scrollt nicht bis dorthin, und wenn er es tut, muss
+   er sich den Satz selbst bilden.
+
+   Dieser Abschnitt steht deshalb zwischen Kurs und Chart. Er rechnet nichts:
+   jede Zeile kommt aus `VUIntelligenceBrief`, und die Engine kommt mit ihren
+   Belegen. Die Reihenfolge ist die des Wörterbuchs - Aussage, Erklärung,
+   Evidenz, Methodik -, und die Methodik ist eingeklappt.
+   ========================================================================= */
+/* Der Hinweis auf eine unsichere Zuordnung. Er nennt beide Namen, sagt was
+   gezeigt wird und warum - und trifft die Entscheidung nicht. Der interne
+   Gruppenschluessel steht in der Methodikebene und nie zuerst. */
+const IDENTITAET_GRUND={
+ D:'Die beiden Quellen nennen verschiedene Zahlwörter im Firmennamen. Bei Nachfolgegesellschaften '
+  +'und Serien sind das zwei verschiedene Unternehmen.',
+ F:'Die beiden Quellen nennen Firmennamen ohne ein gemeinsames Wort, und die Verknüpfung stützt sich '
+  +'nur auf das Kürzel.',
+ G:'Die beiden Quellen nennen verschiedene Firmennamen. Ob es eine Umbenennung ist oder ein '
+  +'wiederverwendetes Kürzel, lässt sich aus den vorliegenden Angaben nicht entscheiden.'};
+function identitaetsHinweis(s){
+ const k=s.identityConflict||{};
+ return el('div',{class:'identity-note','data-conflict':k.kind||''},[
+  el('p',{text:'Zu diesem Kürzel liegen zwei verschiedene Firmennamen vor.'}),
+  k.alternativeName?el('p',{class:'muted',text:'Angezeigt wird „'+(s.name||s.ticker)+'". '
+   +'Eine andere Quelle nennt „'+k.alternativeName+'".'}):null,
+  el('p',{class:'muted',text:(IDENTITAET_GRUND[k.kind]||'Die Quellen sind über die Zuordnung uneins.')
+   +' Die Geschäftszahlen unten stammen aus den Unterlagen der Gesellschaft, der dieses Kürzel '
+   +'im Wertpapierverzeichnis zugeordnet ist. Wir entscheiden diese Frage nicht, solange sie nicht belegt ist.'}),
+  el('p',{class:'muted',text:'Prüfung der Namensquellen: Fassung '+(k.contract||'unbekannt')+'.'})]);
+}
+
+function briefListe(titel, eintraege, cls, leerText){
+ return el('div',{class:'brief-column '+cls},[
+  el('h3',{text:titel}),
+  eintraege.length
+   ?el('ul',{class:'brief-list'},eintraege.slice(0,4).map(entry=>el('li',{},[
+     el('span',{class:'brief-text',text:entry.text}),
+     entry.why?el('span',{class:'muted',text:entry.why}):null])))
+   :el('p',{class:'muted',text:leerText}),
+  eintraege.length>4?el('details',{class:'brief-more'},[
+   el('summary',{text:'Weitere '+(eintraege.length-4)}),
+   el('ul',{class:'brief-list'},eintraege.slice(4).map(entry=>el('li',{},[
+    el('span',{class:'brief-text',text:entry.text}),
+    entry.why?el('span',{class:'muted',text:entry.why}):null])))]):null]);
+}
+/* Der Setup-Zustand als Handlungslogik: Zustand, warum, was als Nächstes,
+   was ihn beendet. Vier Fragen, vier Antworten - und wo eine nicht
+   beantwortbar ist, steht der Grund und keine leere Liste. */
+function briefSetup(setup){
+ if(!setup||setup.state==='UNAVAILABLE'||!setup.state){
+  const grund=technicalReasonText(setup&&setup.unavailability);
+  return el('div',{class:'brief-setup is-missing'},[
+   el('h3',{text:'Gibt es ein Setup?'}),
+   el('p',{class:'muted',text:'Für diesen Titel liegt keine Beobachtung vor. '
+    +(grund||'Sie entsteht aus der bestehenden technischen Materialisierung; dieser Titel ist darin nicht enthalten.')})]);
+ }
+ const zeile=(frage,antwort)=>antwort?el('p',{},[el('strong',{text:frage+' '}),el('span',{text:antwort})]):null;
+ return el('div',{class:'brief-setup'},[
+  el('h3',{text:'Gibt es ein Setup?'}),
+  el('p',{class:'brief-setup-state'},[
+   el('span',{class:'setup-badge state-'+setup.state,text:setup.label}),
+   el('span',{text:setup.sentence})]),
+  zeile('Warum?',setup.why&&setup.why.sentence),
+  zeile('Was müsste als Nächstes passieren?',setup.next&&setup.next.sentence),
+  zeile('Was würde es beenden?',setup.invalidation&&setup.invalidation.sentence),
+  el('p',{class:'muted',text:'Ein Vergleich mit dem heutigen Stand - kein Kursziel, keine Einstiegsregel und keine Aussage darüber, ob ein Zustand eintritt.'})]);
+}
+/* `mitMuster` steuert, ob die Musterlage HIER steht. Auf der Aktienseite
+   folgt direkt darunter der eigene Musterabschnitt mit den Zahlen je Muster;
+   zwei Bloecke ueber dieselbe Sache in derselben Bildschirmhoehe machen die
+   obere Haelfte lang, ohne eine Frage mehr zu beantworten. Die fuenf Fragen,
+   die diese Haelfte beantworten muss, sind die des Einstiegs - und die
+   Musterfrage ist nicht darunter. */
+function briefSection(brief,ticker,mitMuster){
+ const section=el('section',{class:'section brief-section'},[
+  el('span',{class:'eyebrow',text:'Wie steht die Aktie da?'}),
+  el('p',{class:'brief-headline',text:brief.headline.sentence})]);
+ /* Die Branchenvorlage gilt hier genauso wie in der Faktorsektion: wechselt
+    die Methodik, muss es dort stehen, wo die Aussage steht. Dieselbe Tabelle,
+    kein zweiter Satz. */
+ const vorlage=brief.methodologySwitch&&brief.methodologySwitch.active
+  ?branchenvorlageHinweis({template:{id:brief.methodologySwitch.id,label:brief.methodologySwitch.label,
+    appliesTo:brief.methodologySwitch.appliesTo,version:brief.methodologySwitch.version}}):null;
+ if(vorlage)section.append(vorlage);
+ section.append(el('div',{class:'brief-balance'},[
+  briefListe('Spricht dafür',brief.pro,'is-pro','Derzeit steht hier nichts Belegbares.'),
+  briefListe('Spricht dagegen',brief.contra,'is-con','Derzeit steht hier nichts Belegbares.'),
+  briefListe('Noch nicht bewertbar',brief.unknown,'is-unknown','Alles Gemessene ist eingeordnet.')]));
+ section.append(briefSetup(brief.setup));
+ if(brief.strategy&&brief.strategy.sentence){
+  section.append(el('div',{class:'brief-strategy'},[
+   el('h3',{text:'Welcher Anlagestil passt?'}),
+   el('p',{text:brief.strategy.sentence}),
+   brief.strategy.plain?el('p',{class:'muted',text:brief.strategy.plain}):null,
+   el('p',{class:'muted',text:[
+    brief.strategy.fulfils.length?brief.strategy.fulfils.length+' Bedingung'+(brief.strategy.fulfils.length===1?'':'en')+' erfüllt':null,
+    brief.strategy.missing.length?brief.strategy.missing.length+' offen: '+brief.strategy.missing.map(c=>c.label).join(', '):null,
+    brief.strategy.blocking.length?brief.strategy.blocking.length+' nicht messbar: '+brief.strategy.blocking.map(c=>c.label).join(', '):null
+   ].filter(Boolean).join(' · ')}),
+   link('Alle Anlagestile zu diesem Titel',href('quant',ticker),'button secondary')]));
+ }
+ if(mitMuster&&brief.pattern&&brief.pattern.sentence){
+  section.append(el('div',{class:'brief-pattern'},[
+   el('h3',{text:'Wie sahen ähnliche Situationen aus?'}),
+   el('p',{text:brief.pattern.sentence}),
+   brief.pattern.upside&&brief.pattern.upside.sentence?el('p',{class:'muted',text:brief.pattern.upside.sentence}):null,
+   brief.pattern.downside&&brief.pattern.downside.sentence?el('p',{class:'muted',text:brief.pattern.downside.sentence}):null,
+   brief.pattern.sampleSentence?el('p',{class:'muted',text:brief.pattern.sampleSentence+' '+(brief.pattern.robustSentence||'')}):null,
+   brief.pattern.caveat?el('p',{class:'muted',text:brief.pattern.caveat}):null]));
+ }
+ section.append(el('p',{class:'muted brief-not',text:'Diese Auskunft ordnet vorhandene Messungen. Sie ist keine Prognose, keine Empfehlung, kein Kursziel und kein Gesamtscore.'}));
+ return section;
+}
+
 function factorRow(factor){
  const open=el('div',{class:'dna-detail',hidden:'hidden'});
  const head=el('button',{class:'dna-head',type:'button','aria-expanded':'false'},[
@@ -754,7 +990,7 @@ function factorRow(factor){
   open.append(el('p',{text:factor.bandPlain}),el('p',{class:'muted',text:factor.higherMeans}));
   const peer=factor.peer;
   open.append(el('p',{class:'muted',text:'Verglichen wird gegen '+(peer?.level==='sic4_industry'?'die Branche':peer?.level==='sic_division'?'den Sektor':'das gesamte Universum')+(peer?.confidencePenalty?' · ohne ausreichend große Vergleichsgruppe, daher mit Abschlag auf die Datensicherheit':'')+'. Datensicherheit: '+(factor.confidenceBand?.label||'nicht angegeben')+' ('+pct(factor.confidence)+'), das ist keine Erfolgswahrscheinlichkeit.'}));
- }else open.append(notice('Kein Wert für diesen Faktor',factor.reasonText));
+ }else open.append(notice(factor.reasonHeadline||'Kein Wert für diesen Faktor',factor.reasonText));
  /* Ebene 3: jede Einzelkennzahl mit Rohwert, Position und Zustand. */
  const rows=factor.components.map(c=>el('div',{class:'dna-component'+(c.state==='AVAILABLE'?'':' is-missing')},[
   el('div',{},[el('span',{text:c.label||c.id}),c.window?el('span',{class:'muted',text:c.window}):null]),
@@ -913,7 +1149,7 @@ function setupChange(observation){
  block.append(el('p',{class:'muted',text:'Ein Vergleich mit dem heutigen Stand. Er sagt, was ein anderer Zustand verlangt - nicht, dass er eintritt, und nicht wann.'}));
  return block;
 }
-function setupJourney(setup,observation,index){
+function setupJourney(setup,observation,index,logik){
  const available=observation&&observation.state==='AVAILABLE';
  const lifecycle=available?observation.lifecycle:null;
  const classification=available?observation.classification:null;
@@ -934,7 +1170,7 @@ function setupJourney(setup,observation,index){
  const PATH=['ACTIVE','RISK_RISING','INVALIDATED','EXIT'];
  const section=el('section',{class:'section setup-section'},[
   el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}),
-  el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},steps.map(state=>{
+  el('ol',{class:'setup-journey',tabindex:'0','aria-label':'Setup-Zustände, waagerecht scrollbar'},steps.map(state=>{
    const pending=PATH.includes(state)&&!pathOpen;
    return el('li',{class:'setup-step'+(active===state?' is-active':'')+(classification&&classification.state===state?' is-observed':'')+(pending?' is-pending':''),
     title:pending?LT('PATH_DEPENDENT_STATES_NOT_ACTIVATED'):LB(state)},[
@@ -976,6 +1212,16 @@ function setupJourney(setup,observation,index){
    +(ohneWert?', '+ohneWert+' ohne auswertbaren Wert':'')}),
    el('ul',{class:'setup-conditions'},conditions.map(setupCondition)),
    el('p',{class:'muted',text:'Regel '+observation.matchedRule.ruleId+' · Methodik '+observation.mappingVersion+'. Dieselbe Regel ist als Screener-Abfrage formuliert; sie beschreibt einen Zustand und ist weder Einstiegsregel noch historisch getesteter Auslöser.'}));
+ }
+ /* DIE ZWEI FRAGEN, DIE KEIN ABSCHNITT GESTELLT HAT.
+    Die Kaskade unten nennt alle anderen Regeln mit ihren Bedingungen. Was
+    daraus folgt - welche Stufe die naechste ist und was den heutigen Zustand
+    beendet -, stand nirgends als Satz. Beides rechnet dieselbe Engine, die
+    die Auskunft oben bildet; hier steht nur die Darstellung. */
+ if(logik&&logik.state===(classification&&classification.state)){
+  const zeile=(frage,antwort)=>antwort?el('p',{class:'setup-logic'},[el('strong',{text:frage+' '}),el('span',{text:antwort})]):null;
+  section.append(zeile('Was müsste als Nächstes passieren?',logik.next&&logik.next.sentence),
+   zeile('Was würde diesen Zustand beenden?',logik.invalidation&&logik.invalidation.sentence));
  }
  section.append(setupChange(observation));
  section.append(setupPeers(index,classification&&classification.state,observation.ticker));
@@ -1044,10 +1290,17 @@ function patternRow(row,baseRate,lossThreshold){
    L('outOfSample')+': '+(Number.isFinite(row.outOfSampleLift)?row.outOfSampleLift.toFixed(2).replace('.',',')+'×':'–')
   ].map(text=>el('li',{text})))]);
 }
-function patternMatchSection(patterns){
+function patternMatchSection(patterns,lead){
  const section=el('section',{class:'section pattern-section'},[
   el('span',{class:'eyebrow',text:'Vergangenheit'}),
   el('h2',{text:LQ('patternEngine')}),
+  /* ERST DIE AUSSAGE, DANN DIE TABELLE.
+     Die Sektion begann mit der Erklaerung der Methodik und einer Zaehlung
+     ("3 von 69 pruefbaren Mustern liegen vor"). Die Frage, mit der ein Leser
+     herkommt, ist eine andere: war die Chance historisch groesser als das
+     Risiko. Sie ist gerechnet - als Median der Asymmetrie der erfuellten
+     Muster - und stand nur nicht als Satz da. */
+  lead&&lead.sentence?el('p',{class:'pattern-lead',text:lead.sentence}):null,
   el('p',{class:'muted',text:LB('patternEngine')})]);
  if(!patterns||patterns.state!=='AVAILABLE'){
   /* Der Grund des Titels zuerst, der allgemeine Hinweis danach: was hier
@@ -1333,34 +1586,26 @@ function strategyDistribution(index){
    die Faktorevidenz, die Veraenderungsmessung und der Musterabgleich
    ohnehin schon berechnet haben. Was hier entsteht, ist die Sortierung -
    und die Regel, dass keine Seite ohne die andere gezeigt wird. */
-function prosAndCons(data,change,patterns){
- const pros=[],cons=[];
- for(const factor of data.factors){
-  if(factor.state!=='AVAILABLE'||!Number.isFinite(factor.score))continue;
-  if(factor.score>=65)pros.push({text:L(factor.id)+' liegt über dem Vergleich: Position '+pct(factor.score)+'.',why:VUProductLanguage.beginner(factor.id)});
-  else if(factor.score<=35)cons.push({text:VUProductLanguage.negative(factor.id),why:L(factor.id)+' steht bei Position '+pct(factor.score)+'.'});
- }
- for(const item of (change?.items||[])){
-  if(item.state!=='AVAILABLE')continue;
-  if(item.direction==='IMPROVING')pros.push({text:item.label+' verbessert sich.',why:item.plain});
-  else if(item.direction==='DETERIORATING')cons.push({text:item.label+' verschlechtert sich.',why:item.plain});
- }
- if(patterns?.state==='AVAILABLE'&&patterns.holds.length){
-  const tilted=patterns.holds.filter(row=>row.asymmetry>=1.1).length;
-  const risky=patterns.holds.filter(row=>row.asymmetry<=0.9).length;
-  if(tilted)pros.push({text:'Bei '+tilted+' von '+patterns.holds.length+' ähnlichen Situationen war die Chance historisch stärker erhöht als das Verlustrisiko.',why:LT('asymmetry')});
-  if(risky)cons.push({text:'Bei '+risky+' von '+patterns.holds.length+' ähnlichen Situationen war das Verlustrisiko historisch stärker erhöht als die Chance.',why:LT('asymmetry')});
- }
- const column=(title,items,cls)=>el('div',{class:'balance-column '+cls},[
-  el('h3',{text:title}),
-  items.length?el('ul',{class:'balance-list'},items.slice(0,6).map(entry=>el('li',{},[
-   el('span',{text:entry.text}),el('span',{class:'muted',text:entry.why})]))) 
-   :el('p',{class:'muted',text:'Hier steht derzeit nichts Belegbares.'})]);
+/* WAS SPRICHT DAFUER, WAS DAGEGEN - UND WAS IST NOCH NICHT BEWERTBAR.
+ *
+ * Diese Sektion hatte zwei Spalten und baute ihre Saetze selbst: „Bewertung
+ * liegt ueber dem Vergleich: Position 82,0 %" - also die Wiederholung des
+ * Faktorwerts, den der Leser eine Sektion hoeher schon gesehen hat. Und sie
+ * hatte keine dritte Spalte: eine kurze Dafuer-Liste liest sich wie ein
+ * Urteil, wenn nicht dabeisteht, was ausdruecklich NICHT bewertet wurde.
+ *
+ * Jetzt kommen die Aussagen aus derselben Engine wie die Auskunft oben - in
+ * Alltagssprache, je Aussage mit ihrem Beleg, und in drei Gruppen. */
+function prosAndCons(brief){
+ if(!brief)return null;
  return el('section',{class:'section balance-section'},[
   el('span',{class:'eyebrow',text:'Abwägung'}),
   el('h2',{text:'Was spricht dafür, was dagegen?'}),
-  el('p',{class:'muted',text:'Beide Seiten aus denselben Messungen. Keine Empfehlung und keine Gewichtung — nur, was belegt dafür und was belegt dagegen spricht.'}),
-  el('div',{class:'balance-grid'},[column('Dafür',pros,'is-pro'),column('Dagegen',cons,'is-con')])]);
+  el('p',{class:'muted',text:'Alle drei Gruppen aus denselben Messungen. Keine Empfehlung und keine Gewichtung — was belegt dafür spricht, was belegt dagegen, und was noch nicht bewertbar ist.'}),
+  el('div',{class:'brief-balance'},[
+   briefListe('Spricht dafür',brief.pro,'is-pro','Hier steht derzeit nichts Belegbares.'),
+   briefListe('Spricht dagegen',brief.contra,'is-con','Hier steht derzeit nichts Belegbares.'),
+   briefListe('Noch nicht bewertbar',brief.unknown,'is-unknown','Alles Gemessene ist eingeordnet.')])]);
 }
 
 /* WIE BELASTBAR IST DIE HISTORISCHE EVIDENZ.
@@ -1422,7 +1667,19 @@ function evidenceTrustSection(patterns){
 }
 
 async function quantPage(ticker){
- const [data,match,profileContract,observation,patterns,setupIndex,strategyIndex,assignmentChange]=await Promise.all([api.getFactorEvidence(ticker),api.getStrategyMatch(ticker).catch(()=>null),api.getStrategyProfiles().catch(()=>null),api.getSetupObservation(ticker).catch(()=>null),api.getPatternMatch(ticker).catch(()=>null),api.getSetupScreenIndex().catch(()=>null),api.getStrategyIndex().catch(()=>null),api.getAssignmentChange(ticker).catch(()=>null)]);
+ /* DIESELBE AUSKUNFT WIE AUF DER AKTIENSEITE.
+  *
+  * Vorher holte diese Ansicht ihre Evidenz selbst und bildete ihren eigenen
+  * Zusammenfassungssatz. Zwei Zusammenfassungen desselben Titels auf zwei
+  * Ansichten sind zwei Wahrheiten, sobald eine von beiden sich aendert -
+  * deshalb liest hier dieselbe Engine dieselben Quellen. */
+ const [brief,profileContract,setupIndex,strategyIndex,assignmentChange]=await Promise.all([
+  api.getIntelligenceBrief(ticker).catch(()=>null),
+  api.getStrategyProfiles().catch(()=>null),api.getSetupScreenIndex().catch(()=>null),
+  api.getStrategyIndex().catch(()=>null),api.getAssignmentChange(ticker).catch(()=>null)]);
+ const quellen=(brief&&brief.sources)||{};
+ const data=quellen.factors||await api.getFactorEvidence(ticker);
+ const match=quellen.match||null,observation=quellen.setup||null,patterns=quellen.patterns||null;
  /* Die Screener-Abfrage entsteht aus derselben Regel wie die Bewertung; sie
     wird nicht daneben noch einmal formuliert. */
  if(match?.state==='AVAILABLE'&&profileContract?.state==='AVAILABLE'){
@@ -1435,9 +1692,9 @@ async function quantPage(ticker){
  /* Der SetupState-Vertrag sagt selbst, ob ein verfuegbarer Zustand
     ueberhaupt zulaessig ist. Solange er das verneint, waere eine Abfrage
     nur teuer; sie wird geholt, sobald die Methodik aktiv ist. */
- const setup=VUSetupStateContract.AVAILABLE_OBSERVATIONS_ALLOWED?(await api.getStockIntelligence(ticker).catch(()=>null))?.setupState||null:null;
+ const setup=VUSetupStateContract.AVAILABLE_OBSERVATIONS_ALLOWED?(quellen.stock||await api.getStockIntelligence(ticker).catch(()=>null))?.setupState||null:null;
  if(data.state!=='AVAILABLE'){
-  main.append(heading('Quant-Analyse',ticker));
+  main.append(heading(data.name||'Quant-Analyse',ticker));
   /* DIE ZWEITE HAELFTE DER REISE VERDICHTET GENAUSO.
 
      Gemessen im gebauten Release: diese Ansicht zeigte fuer ACAA vier
@@ -1455,8 +1712,8 @@ async function quantPage(ticker){
    {factors:data,setup:observation,patterns,match,assignmentChange}));
   const knapp=form.shape!=='FULL';
   if(!knapp)main.append(notice('Für diesen Titel liegt keine Faktor-Evidenz vor',data.reason==='NOT_COVERED_BY_FACTOR_EVIDENCE'?'Dieser Titel gehört zum Produktuniversum, erfüllt aber die Datenanforderungen der Faktor-Methodik derzeit nicht. Es werden keine Ersatzwerte gebildet.':data.reason==='NOT_IN_PRODUCT_UNIVERSE'?'Dieser Titel ist im kanonischen Produktuniversum nicht enthalten.':'Die Faktor-Evidenz konnte nicht geladen oder nicht geprüft werden.'));
-  if(!knapp||form.substantive.includes('setup'))main.append(setupJourney(setup,observation,setupIndex));
-  if(!knapp||form.substantive.includes('patterns'))main.append(patternMatchSection(patterns));
+  if(!knapp||form.substantive.includes('setup'))main.append(setupJourney(setup,observation,setupIndex,brief&&brief.setup));
+  if(!knapp||form.substantive.includes('patterns'))main.append(patternMatchSection(patterns,brief&&brief.pattern));
   if(!knapp||form.substantive.includes('strategy'))main.append(strategyMatchSection(match,strategyIndex,ticker,assignmentChange));
   if(knapp)main.append(journeyGapSection(form,ticker,form.shape==='MINIMAL'));
   main.append(actions([{label:'Aktie untersuchen',href:href('stock',ticker)},{label:'Was ist Quant?',href:href('explain')},{label:'Bestehender Quant Workspace',href:'/quant/ranking/'}]));
@@ -1479,9 +1736,11 @@ async function quantPage(ticker){
  /* HERO: Name, Zustand, ein Satz - keine zwanzig Kennzahlen. */
  main.append(el('section',{class:'quant-hero'},[
   el('span',{class:'eyebrow',text:'Wie stark ist diese Aktie?'}),
-  el('h1',{text:data.name}),
+  el('h1',{text:data.name||'Quant-Analyse'}),
   el('p',{class:'quant-ticker',text:data.ticker+(data.peer?.industry?' · Branchenschlüssel '+data.peer.industry:'')}),
-  el('p',{class:'quant-summary',text:data.summary}),
+  /* Ein Satz, nicht zwei nebeneinander: die Auskunft nennt Stärken,
+     Schwächen und den Setup-Zustand, die Bewegungszeile den Wechsel. */
+  el('p',{class:'quant-summary',text:(brief&&brief.headline&&brief.headline.sentence)||data.summary}),
   el('p',{class:'quant-change',text:data.changeHeadline}),
   el('div',{class:'quant-chips'},[
    el('span',{class:'chip',title:LT('factorDna'),text:rated.length+' von 7 Eigenschaften bewertet'}),
@@ -1501,6 +1760,7 @@ async function quantPage(ticker){
  if(zeig('factorStrength'))main.append(el('section',{class:'section dna-section'},[
   ...sectionHead('Stärken & Schwächen','factorDna'),
   el('p',{class:'muted',text:'Tippe auf eine Eigenschaft, um zu sehen, woran sie gemessen wurde.'}),
+  branchenvorlageHinweis(data),
   el('div',{class:'dna-list'},data.factors.map(factorRow)),
   el('p',{class:'muted',text:'Ein Gesamtscore wird bewusst nicht gebildet: '+(data.composite?.reason==='QUANT_V2_NOT_ACTIVE'?'die Methodik verlangt alle sieben Faktoren, und der Erwartungstrend fehlt ohne lizenzierte Datenquelle.':'die Methodik ist noch nicht freigegeben.')})]));
  /* KURSSTAERKE UND ANLEGERRENDITE
@@ -1525,9 +1785,9 @@ async function quantPage(ticker){
     wie stark - warum - was aendert sich - baut sich etwas auf - was
     spricht dafuer und dagegen - wie sah das frueher aus - welcher Stil
     passt - wie belastbar ist das alles. */
- if(zeig('setup'))main.append(setupJourney(setup,observation,setupIndex));
- if(zeig('factorStrength'))main.append(prosAndCons(data,change,patterns));
- if(zeig('patterns'))main.append(patternMatchSection(patterns));
+ if(zeig('setup'))main.append(setupJourney(setup,observation,setupIndex,brief&&brief.setup));
+ if(zeig('factorStrength'))main.append(prosAndCons(brief));
+ if(zeig('patterns'))main.append(patternMatchSection(patterns,brief&&brief.pattern));
  if(zeig('strategy'))main.append(strategyMatchSection(match,strategyIndex,ticker,assignmentChange));
  if(zeig('patterns'))main.append(evidenceTrustSection(patterns));
  /* Und einmal, am Ende der Reise: was noch nicht geht und warum. */

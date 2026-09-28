@@ -10,7 +10,14 @@ import {resolve,extname,sep} from 'node:path';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {chromium}=require('playwright');
-const root=resolve(process.argv[2]);
+const argv=process.argv.slice(2);
+const root=resolve(argv.find(a=>!a.startsWith('--')));
+/* Die Launch-Gates 7 bis 10 sind nur im Browser messbar. Damit die
+   Launch-Messung sie nicht erfinden muss, schreibt der Smoke sein
+   Ergebnis auf Wunsch als Bericht - mit dem Commit, gegen den er lief.
+   Ein Bericht ohne passenden Commit ist fuer die Gates kein Beleg. */
+const REPORT=(()=>{const i=argv.indexOf('--report');return i>=0&&argv[i+1]?resolve(argv[i+1]):null;})();
+const befunde=[];
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png'};
 const server=createServer(async(req,res)=>{try{let p=decodeURIComponent(new URL(req.url,'http://l').pathname);if(p.endsWith('/'))p+='index.html';const file=resolve(root,'.'+p);if(!file.startsWith(root+sep))throw Error('path');
  if(file.endsWith('.gz')){res.setHeader('Content-Type','application/octet-stream');res.end(await readFile(file));return;}
@@ -23,7 +30,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
     scheitern, wo der Smoke gebraucht wird. */
  ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/product-language-v1.json',import.meta.url),'utf8')).forbiddenInPrimaryCopy;
-const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=stock&ticker=AHT-P-D','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks',
+const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAPL','/vu2/?view=stock&ticker=ACAA','/vu2/?view=stock&ticker=EDVA','/vu2/?view=stock&ticker=AHT-P-D','/vu2/?view=quant&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/?view=quant&ticker=ACAA','/vu2/?view=quant&ticker=WSBCO','/vu2/?view=radar','/vu2/?view=strategies','/vu2/?view=explain','/vu2/?view=screener','/vu2/?view=watchlist','/vu2/?view=technical&ticker=NVDA','/vu2/?view=fundamentals&ticker=NVDA','/vu2/?view=compare','/vu2/?view=signals','/vu2/?view=stocks',
  /* SIEBEN ANSICHTEN, DIE DER SMOKE NIE ANGESEHEN HAT.
 
     Gemessen am 26.09.2026: von 19 Ansichten im Router standen 12 in dieser
@@ -39,7 +46,20 @@ const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAP
  /* Die Seite hinter dem Knopf "Methodik im Detail" - die letzte Station der
     Reise. Sie war ein 404, und der Smoke hat nie eine Ansicht ausserhalb von
     /vu2/ angesehen, obwohl die App zwanzig Pfade dorthin verlinkt. */
- '/quant/methodology/'];
+ '/quant/methodology/',
+ /* DIE ABNAHMESTICHPROBE, IM BROWSER.
+
+    Gemessen am 28.09.2026: von 22 Titeln der Produkt-Abnahmestichprobe hatte
+    der Smoke DREI angesehen (NVDA, AAPL, JPM) - also nur Titel, bei denen
+    alles da ist. Die Lagen, in denen eine Seite kaputt AUSSIEHT statt
+    reduziert, standen nicht darunter: ein belegter ETF, ein Vorzugspapier,
+    ein Identitaetskonflikt, eine zurueckgehaltene Bewertung, ein datenarmer
+    Titel, eine Bank mit eigener Branchenvorlage. Diese sechs stehen jetzt in
+    der Liste; sie kosten je zwei Aufrufe. */
+ '/vu2/?view=stock&ticker=AAAC','/vu2/?view=stock&ticker=ABR-P-D',
+ '/vu2/?view=stock&ticker=AACI','/vu2/?view=stock&ticker=ACGL',
+ '/vu2/?view=stock&ticker=ABTC','/vu2/?view=quant&ticker=ABCB',
+ '/vu2/?view=quant&ticker=AAAC'];
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
@@ -76,7 +96,16 @@ for(const width of [1440,390]){
      traegt und darunter denselben Wert schreibt, hat die Trennung
      beschriftet statt umgesetzt - und genau das faellt in einem
      Screenshot niemandem auf. */
-  if(view.startsWith('/vu2/?view=quant')&&!/ticker=(ACAA|EDVA)/.test(view)){
+  /* Die Ausnahme war bis zum 28.09.2026 eine Kuerzelliste (ACAA|EDVA) - und
+     die ging kaputt, sobald ein dritter Titel ohne Faktorevidenz in die Liste
+     kam (AAAC, ein belegter ETF: RETURN_KIND_FEHLT, zu Recht). Geprueft wird
+     jetzt die BEDINGUNG statt der Namen: Kursstaerke und Anlegerrendite
+     gehoeren auf jede Quant-Ansicht, die die FAKTORSTAERKE zeigt - und genau
+     daran haengt der Abschnitt auch in der Oberflaeche (`zeig('factorStrength')`
+     setzt beide: `.dna-section` und das Gitter). `.quant-hero` war als
+     Bedingung zu weit: ACAA zeigt den Kopf und hat trotzdem keine
+     Faktorstaerke (117 Handelstage). */
+  if(view.startsWith('/vu2/?view=quant')&&await page.locator('.dna-section').count()){
    const grid=page.locator('.return-kind-grid');
    if(!await grid.count()){bad.push('RETURN_KIND_FEHLT');}
    else{
@@ -138,7 +167,12 @@ for(const width of [1440,390]){
     const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)).length;
     const mitName=zeilen.filter(t=>{const teile=t.split('\n');return teile[0]&&teile[1]&&teile[0]!==teile[1];}).length;
     if(mitKurs/zeilen.length<0.8)bad.push('KURSE='+mitKurs+'/'+zeilen.length);
-    if(mitName/zeilen.length<0.5)bad.push('NAMEN='+mitName+'/'+zeilen.length);
+    /* Die Schwelle war 0,5, als die Haelfte der Zeilen ihren Ticker zweimal
+       schrieb. Seit M41 tragen 6.857 von 6.875 Titeln einen Namen (gemessen
+       100 von 100 Zeilen der Ansicht); eine Schwelle von 0,5 faengt einen
+       Rueckfall dann nicht mehr. 0,95 faengt ihn und friert keinen
+       Tagesstand ein - die 18 Titel ohne Anbieternamen duerfen fehlen. */
+    if(mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
     console.log('     Uebersicht: '+mitKurs+' von '+zeilen.length+' Zeilen mit Kurs · '+mitName+' mit Namen');
    }
   }
@@ -166,13 +200,114 @@ for(const width of [1440,390]){
     console.log('     Verdichtung: '+gruppen+' Gruppen · '+notizen+' Einzelabsagen');
    }
   }
+  /* EINE EIGENE BRANCHENVORLAGE MUSS AUF DER SEITE STEHEN.
+   *
+   * Gemessen betrifft das 974 Titel: sie rechnen nach einer anderen Methodik
+   * als ein Industrieunternehmen, und bis M39 stand davon kein Wort auf der
+   * Seite. WSBCO zeigte die Eigenkapitalquote mit Gewicht 0,30 und AAPL
+   * dieselbe Kennzahl mit 0,15. */
+  if(view.includes('ticker=WSBCO')){
+   const hinweis=page.locator('.template-note');
+   if(!await hinweis.count())bad.push('BRANCHENVORLAGE_UNGENANNT');
+   else{
+    const text=await hinweis.innerText();
+    if(!/Branchenvorlage/.test(text))bad.push('VORLAGE_OHNE_NUTZERSATZ');
+    if(!/Fassung/.test(text))bad.push('VORLAGE_OHNE_FASSUNG');
+    /* Der interne Code darf nicht vor dem Nutzersatz stehen. Die Fassung
+       traegt ihn zu Recht - sie steht in der letzten Zeile. */
+    const vorFassung=text.split('Fassung')[0];
+    if(/[A-Z]{3,}_[A-Z_]{3,}/.test(vorFassung))bad.push('CODE_VOR_DEM_SATZ');
+    console.log('     Branchenvorlage: '+text.split('\n')[0].slice(0,60));
+   }
+  }
+  /* DIE OBERE HAELFTE EINER AKTIENSEITE - AM GEBAUTEN RELEASE GEPRUEFT.
+   *
+   * Gemessen bei 390 px: die erste Bildschirmhoehe zeigte Name, Etikett,
+   * Kurs, Aktualitaetszeile und dann einen Chart. Die fuenf Fragen, mit denen
+   * ein Einsteiger kommt, wurden in Abschnitt vier, sechs und sieben
+   * beantwortet - und die Abwaegung ueberhaupt erst auf der Quant-Ansicht.
+   *
+   * Geprueft wird deshalb die Reihenfolge im DOM und nicht nur, DASS es die
+   * Auskunft gibt: ein Abschnitt hinter dem Chart waere derselbe Befund
+   * nochmal. */
+  if(/\?view=stock&ticker=(NVDA|AAPL)/.test(view)){
+   const auskunft=page.locator('.brief-section');
+   if(!await auskunft.count())bad.push('AUSKUNFT_FEHLT');
+   else{
+    const kopf=await auskunft.locator('.brief-headline').innerText().catch(()=>'');
+    if(kopf.length<40)bad.push('KOPFSATZ_ZU_KURZ='+kopf.length);
+    /* Kein interner Code im Kopfsatz und keine Handlungs- oder
+       Prognosesprache - §81 gilt auch fuer eine Zusammenfassung. */
+    if(/[A-Z]{3,}_[A-Z_]{3,}/.test(kopf))bad.push('CODE_IM_KOPFSATZ');
+    if(/\b(kaufen|verkaufen|Kursziel|wird steigen|wird fallen)\b/i.test(kopf))bad.push('HANDLUNGSSPRACHE');
+    /* Die drei Gruppen, in ihrer Reihenfolge. */
+    const gruppen=await auskunft.locator('.brief-column h3').allInnerTexts();
+    if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen|Noch nicht bewertbar')bad.push('GRUPPEN:'+gruppen.join('|'));
+    /* Und die Setup-Frage mit ihren Folgefragen. */
+    const setupText=await auskunft.locator('.brief-setup').innerText().catch(()=>'');
+    if(!/Gibt es ein Setup\?/.test(setupText))bad.push('SETUPFRAGE_FEHLT');
+    if(!/Was würde es beenden\?|liegt keine Beobachtung vor/.test(setupText))bad.push('ENDE_UNBEANTWORTET');
+    /* Vor dem Chart, nicht dahinter. */
+    const reihenfolge=await page.evaluate(()=>{
+     const a=document.querySelector('.brief-section'),c=document.querySelector('.q-chart');
+     if(!a||!c)return 'FEHLT';
+     return (a.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING)?'VOR_CHART':'NACH_CHART';
+    });
+    if(reihenfolge!=='VOR_CHART')bad.push('AUSKUNFT_'+reihenfolge);
+    /* Und sie steht wirklich im ersten Bildschirm: bei 390 px darf der
+       Kopfsatz nicht unterhalb von zwei Bildschirmhoehen liegen. */
+    const oben=await auskunft.evaluate(n=>n.getBoundingClientRect().top+scrollY);
+    if(width===390&&oben>1800)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));
+    console.log('     Auskunft: '+kopf.slice(0,74)+' · '+Math.round(oben)+'px');
+   }
+  }
+  /* EINE ZURUECKGEHALTENE BEWERTUNG BLEIBT ZURUECKGEHALTEN.
+   *
+   * Gemessen: 266 der 465 Titel mit zurueckgehaltenem Boersenwert zeigten
+   * drei Zeilen tiefer ein Kurs-Gewinn- und ein Kurs-Umsatz-Verhaeltnis, aus
+   * zwei anderen Wegen. JPM ist der gemessene Fall - und die Quant-Ansicht
+   * ist die Flaeche, auf der die Bewertungsfamilie vollstaendig steht. */
+  if(view.includes('ticker=JPM')){
+   const text=await page.locator('main').innerText();
+   const bewertung=text.includes('Bewertung bewusst zurückgehalten')||text.includes('Bewertung wird hier bewusst zurückgehalten');
+   if(!bewertung)bad.push('ZURUECKHALTUNG_UNGENANNT');
+   /* Und kein Kurs-Gewinn-Verhaeltnis mit einer Zahl daneben. */
+   const kgv=(await page.locator('main').innerText()).match(/Kurs-Gewinn-Verhältnis[^\n]*\n?([^\n]*)/);
+   if(kgv&&/\d+,\d+\s*×/.test(kgv[1]||''))bad.push('KGV_TROTZ_ZURUECKHALTUNG:'+kgv[1].slice(0,30));
+   console.log('     Zurueckhaltung genannt: '+bewertung);
+  }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
   console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));
+  befunde.push({view,width,ok:!bad.length,findings:bad.slice(),chars:text.length,h1,overflow,recovered});
   if(bad.length)failures++;
   errors.length=0;
  }
  await page.close();
 }
 await browser.close();server.close();
+if(REPORT){
+ const {writeFile,mkdir}=await import('node:fs/promises');
+ const {dirname}=await import('node:path');
+ const {execFileSync}=await import('node:child_process');
+ let commit=null;try{commit=execFileSync('git',['rev-parse','HEAD'],{cwd:new URL('../..',import.meta.url).pathname}).toString().trim();}catch{/* ohne Git kein Commit */}
+ await mkdir(dirname(REPORT),{recursive:true});
+ await writeFile(REPORT,JSON.stringify({
+  schemaVersion:'production-smoke-1.0.0',
+  generatedAt:new Date().toISOString().replace(/\.\d{3}Z$/,'.000Z'),
+  commit,release:root,
+  widths:[1440,390],views:VIEWS.length,
+  checks:befunde.length,failures,
+  clean:failures===0,
+  byWidth:Object.fromEntries([1440,390].map(w=>[String(w),{
+   checks:befunde.filter(b=>b.width===w).length,
+   failures:befunde.filter(b=>b.width===w&&!b.ok).length,
+   overflow:befunde.filter(b=>b.width===w&&b.overflow).length,
+   withoutSingleH1:befunde.filter(b=>b.width===w&&b.h1!==1).length,
+   recovered:befunde.filter(b=>b.width===w&&b.recovered).length
+  }])),
+  results:befunde
+ },null,1)+'\n');
+ console.log('Bericht: '+REPORT);
+}
 console.log(failures?'PRODUCTION SMOKE FAILURES '+failures:'PRODUCTION SMOKE CLEAN');
 process.exit(failures?1:0);

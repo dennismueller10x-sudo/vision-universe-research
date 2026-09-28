@@ -50,8 +50,19 @@ const checks=[
  ["stock","APGE",".setup-change summary","Was diesen Zustand ändern würde"],
  ["stock","AAAP",".pattern-balance","prüfbaren Mustern"],
  ["quant","AACB",".setup-count","messbaren Bedingungen"],
- ["quant","AAAC",".match-section","lässt sich derzeit kein Anlagestil prüfen"],
- ["quant","A",".match-section","veröffentlichten Ständen dieser Methodikversion"]
+ /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR.
+    Vorher stand hier die allgemeine Stil-Absage ("lässt sich derzeit kein
+    Anlagestil prüfen"). Der Titel ist ein belegter ETF, und die Reise sagt
+    deshalb etwas Genaueres: Kurs und Kursverlauf bleiben, die Aktienanalyse
+    entfällt - und nennt die betroffenen Bereiche. Ein .match-section gibt es
+    dort zu Recht nicht mehr. Diese Zeile prueft jetzt, dass die
+    Umklassifizierung auf der Seite ankommt. */
+ ["quant","AAAC",".journey-gap","die Aktienanalyse nicht"],
+ /* Und der Satz ueber die zwei veroeffentlichten Staende hat seine
+    Methodikversion verloren; die Aussage selbst steht unveraendert da:
+    "Zwischen den beiden veröffentlichten Ständen (2026-09-24 → 2026-09-25)
+    hat sich an der Zuordnung dieses Titels nichts geändert." */
+ ["quant","A",".match-section","Zwischen den beiden veröffentlichten Ständen"]
 ];
 for(const width of [1440,390]){
  for(const [view,ticker,sel,expect] of checks){

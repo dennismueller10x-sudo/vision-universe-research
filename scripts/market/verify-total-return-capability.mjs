@@ -118,8 +118,30 @@ function main() {
     series
   };
 
-  writeFileSync(OUT, JSON.stringify(report, null, 1) + "\n");
-  process.stdout.write("Total-Return-Verifikation · " + series.length + " Reihen · " +
+  /* NUR SCHREIBEN, WENN SICH ETWAS GEAENDERT HAT.
+   *
+   * Der Vertragstest fuehrt dieses Skript bei jedem Lauf aus, um zu zeigen,
+   * dass der Befund reproduzierbar ist - eine gute Eigenschaft. Die Folge war
+   * aber, dass nach JEDEM Testlauf eine Datei im Arbeitsbaum stand, in der
+   * sich ausser `generatedAt` nichts unterschied. Ich habe sie an diesem Tag
+   * ein Dutzend Mal zurueckgesetzt und dabei einmal beinahe eine ECHTE
+   * Aenderung mitverworfen (2.949 -> 2.950 Balken, ein Handelstag mehr).
+   *
+   * Ein Zeitstempel ohne Inhaltsaenderung ist kein Befund. Verglichen wird
+   * deshalb alles AUSSER ihm; ist es gleich, bleibt die Datei unberuehrt und
+   * der Lauf sagt es. Was der Test prueft - Verdikt, Ereigniszahl,
+   * groesster Fehler - steht unveraendert in der Datei. */
+  const ohneZeitstempel = (doc) => JSON.stringify({ ...doc, generatedAt: null });
+  let unveraendert = false;
+  if (existsSync(OUT)) {
+    try {
+      const bisher = JSON.parse(readFileSync(OUT, "utf8"));
+      unveraendert = ohneZeitstempel(bisher) === ohneZeitstempel(report);
+    } catch { unveraendert = false; }
+  }
+  if (!unveraendert) writeFileSync(OUT, JSON.stringify(report, null, 1) + "\n");
+  process.stdout.write((unveraendert ? "unveraendert (nur der Zeitstempel waere neu) · " : "") +
+    "Total-Return-Verifikation · " + series.length + " Reihen · " +
     matched + "/" + checked + " Dividendenereignisse stimmen · groesster Fehler " +
     (worst * 100).toFixed(3) + " %\n  Befund: " + verdict + "\n");
   for (const row of series) {

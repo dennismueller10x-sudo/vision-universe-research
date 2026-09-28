@@ -46,7 +46,12 @@ const apiMit = (loadCompressedJSON) => Service.create({
 test("the index names its own coverage and invents no price", () => {
   if (!existsSync(PFAD)) return;   /* Vor dem ersten Lauf gibt es sie nicht. */
   const index = JSON.parse(gunzipSync(readFileSync(PFAD)).toString("utf8"));
-  assert.equal(index.schemaVersion, "universe-list-1.0.0");
+  /* 1.1.0 (M40): zwei optionale Felder mehr - `v` der Grund, aus dem der
+     Boersenwert dieses Titels zurueckgehalten wird, `il` die Zahl der
+     notierten Zeilen seines Emittenten. Die Liste liest beide Fassungen; der
+     Dienst haelt sie als Liste, nicht als Gleichheit. */
+  assert.ok(["universe-list-1.0.0", "universe-list-1.1.0", "universe-list-1.2.0", "universe-list-1.3.0"].includes(index.schemaVersion),
+    "unbekannte Fassung " + index.schemaVersion);
   assert.ok(index.coverage.universe > 6000);
   assert.ok(index.coverage.withPrice > 5000, "nur " + index.coverage.withPrice + " Kurse im Verzeichnis");
   assert.ok(index.coverage.withName > 4000, "nur " + index.coverage.withName + " Namen im Verzeichnis");
@@ -68,6 +73,33 @@ test("the index names its own coverage and invents no price", () => {
   }
   assert.equal(mitKurs, index.coverage.withPrice);
   assert.equal(mitName, index.coverage.withName);
+});
+
+test("der Bewertungsgrund im Verzeichnis ist genau der der Faktorschicht", () => {
+  /* Gemessen am 26.09.2026: 266 Titel, deren Boersenwert die Faktorschicht
+     zurueckhaelt, zeigten auf der Aktienseite trotzdem ein Kurs-Gewinn- und
+     ein Kurs-Umsatz-Verhaeltnis. Die Seite wusste die Entscheidung nicht.
+     Jetzt traegt das Verzeichnis sie mit - und darf sie nicht neu erfinden:
+     jeder Grund muss ein Grund sein, den die Faktor-Engine kennt, und jede
+     Zahl notierter Zeilen muss groesser als eins sein, sonst waere die
+     Zurueckhaltung unbegruendet. */
+  if (!existsSync(PFAD)) return;
+  const index = JSON.parse(gunzipSync(readFileSync(PFAD)).toString("utf8"));
+  if (index.schemaVersion === "universe-list-1.0.0") return;
+  const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
+  let mitGrund = 0;
+  for (const e of index.entries) {
+    if (e.v === undefined) continue;
+    mitGrund += 1;
+    assert.ok(FactorEvidence.FACTOR_REASONS.includes(e.v) || e.v === "NO_PIT_SHARE_COUNT" || e.v === "NO_PUBLISHED_CLOSE",
+      e.s + ": unbekannter Bewertungsgrund '" + e.v + "'");
+    if (e.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") {
+      assert.ok(Number.isFinite(e.il) && e.il > 1,
+        e.s + ": zurueckgehalten wegen mehrerer Notierungen, aber " + e.il + " Notierungen gemeldet");
+    }
+  }
+  assert.equal(mitGrund, index.coverage.withValuationReason);
+  assert.ok(mitGrund > 0, "kein einziger Bewertungsgrund im Verzeichnis");
 });
 
 test("the overview's price is the one the stock page shows", async () => {
@@ -131,8 +163,13 @@ test("the index overwrites nothing that already has a value", async () => {
   const koerper = services.slice(stelle, stelle + 1400);
   /* Ein vorhandener Kurs bleibt stehen ... */
   assert.match(koerper, /!Number\.isFinite\(row\.price&&row\.price\.value\)/);
-  /* ... ein vorhandener Name bleibt stehen ... */
-  assert.match(koerper, /!row\.name\|\|row\.name===row\.ticker/);
+  /* ... der NAME dagegen kommt aus dem Verzeichnis, auch gegen einen schon
+     gesetzten. Das ist seit dem Namensvertrag (company-naming-1.0.0)
+     Absicht: der Wertpapierstamm ist die Identitaetsquelle, und die
+     Panelzeile traegt denselben Namen in Versalien ("JPMORGAN CHASE & CO").
+     Gemessen nannten Liste und Aktienseite verschiedene Namen, solange ein
+     bereits gesetzter Name hier gewann. */
+  assert.match(koerper, /if\(entry\.n\)row\.name=entry\.n;/);
   /* ... eine fehlende Freigabe bleibt eine fehlende Freigabe ... */
   assert.match(koerper, /DISPLAY_NOT_PERMITTED/);
   /* ... und ein Eintrag fuer einen anderen Titel wird nicht verwendet. */
@@ -171,8 +208,12 @@ test("without the index the overview is exactly what it was before", async () =>
   assert.ok(universe.stocks.length > 6000, "ohne Verzeichnis bricht die Liste zusammen");
   const agilent = universe.stocks.find((s) => s.ticker === "A");
   /* Ohne Verzeichnis: kein Name und kein Kurs - und der Grund ist der der
-     Breitzeile, nicht einer, der eine gepruefte Reihe behauptet. */
-  assert.equal(agilent.name, "A");
+     Breitzeile, nicht einer, der eine gepruefte Reihe behauptet.
+     Der Name ist seit dem 28.09.2026 `null` mit Grund und nicht mehr das
+     Kuerzel: die Breitzeile setzt ihren Namen auf das Kuerzel, und ein
+     Kuerzel als Firmenname ist eine falsche Aussage, kein Platzhalter. */
+  assert.equal(agilent.name, null);
+  assert.equal(agilent.nameReason, "PROVIDER_HAS_NO_NAME");
   assert.equal(agilent.price.value, null);
   assert.equal(agilent.price.reason, "NO_PUBLISHED_PRICE_LEVEL");
 });
@@ -186,8 +227,31 @@ test("the builder reads only published sources and calls no provider", () => {
   assert.match(source, /market-capability\.json/);
   assert.match(source, /discover-series/);
   assert.match(source, /search\/sym/);
-  /* Und er prueft die Reihe mit demselben Vertrag wie die Oberflaeche. */
-  assert.match(source, /discover-series-1\.1\.0/);
-  assert.match(source, /SPLIT_ADJUSTED/);
-  assert.match(source, /publishBasis/);
+
+  /* DIE VERTRAGSPRUEFUNG WIRD GEPRUEFT, WO SIE STEHT.
+   *
+   * Hier stand, dass der Quelltext des Bauers die Zeichenketten
+   * `discover-series-1.1.0`, `SPLIT_ADJUSTED` und `publishBasis` enthaelt.
+   * Seit dem 26.09.2026 liest der Faktorlauf denselben Kurs, und die Pruefung
+   * ist in eine geteilte Engine gewandert - zwei Kopien derselben
+   * Vertragspruefung waeren zwei Vertraege. Die Zeichenkettensuche wurde
+   * damit rot, ohne dass irgendetwas schlechter geworden war: sie hat den Ort
+   * geprueft und nicht die Regel.
+   *
+   * Jetzt wird die Regel geprueft, und zwar am Verhalten: der Bauer benutzt
+   * die geteilte Engine, und die lehnt eine Reihe ab, die den Vertrag nicht
+   * erfuellt. Welche Bedingung einzeln greift, haelt
+   * quant/tests/published-close.test.mjs. */
+  assert.match(source, /published-close\.js/,
+    "der Bauer prueft die Reihe nicht mit der geteilten Vertragsengine");
+  const Close = createRequire(import.meta.url)(join(ROOT, "quant/engines/published-close.js"));
+  assert.equal(Close.SCHEMA, "discover-series-1.1.0");
+  assert.equal(Close.BASIS, "SPLIT_ADJUSTED");
+  const gut = { schemaVersion: "discover-series-1.1.0", dataMode: "real", source: "tiingo",
+    provider: "tiingo", status: "CALCULATED", priceSeriesType: "SPLIT_ADJUSTED", grain: "daily",
+    publishBasis: "EOD", currency: "USD", asOf: "2026-09-25", points: [["2026-09-25", 12.5]] };
+  assert.equal(Close.lastPoint(gut, "2026-09-26").close, 12.5);
+  assert.equal(Close.lastPoint({ ...gut, priceSeriesType: "TOTAL_RETURN" }, "2026-09-26"), null);
+  assert.equal(Close.lastPoint({ ...gut, publishBasis: null }, "2026-09-26"), null);
+  assert.equal(Close.lastPoint({ ...gut, schemaVersion: "discover-series-1.0.0" }, "2026-09-26"), null);
 });

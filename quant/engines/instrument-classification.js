@@ -141,14 +141,53 @@
 
   /* Namensmuster. Nur anwendbar, wenn ein Name vorliegt - und das ist bei
      der Tickerliste des Anbieters nicht der Fall. */
+  /* DIE REIHENFOLGE IST DIE REGEL - UND SIE STAND FALSCH.
+   *
+   * Gemessen am 26.09.2026, als der Stamm zum ersten Mal Namen fuer diese
+   * Zeilen hatte: von elf Gattungen, die ein Name belegte, waren sechs
+   * falsch, und beide Fehler kamen aus der Reihenfolge dieser Liste.
+   *
+   *   "Cohen & Steers Short Duration Preferred AND Income Active ETF"
+   *     -> PREFERRED, weil die Vorzugsregel vor der Fondsregel steht.
+   *     Das Papier IST ein Fonds; Vorzugsaktien sind, was er HAELT. Eine
+   *     Gattung nach dem Inhalt zu benennen ist derselbe Fehler wie einen
+   *     Aktienfonds eine Aktie zu nennen.
+   *
+   *   "Fifth Third Bancorp Depositary Shares ... Perpetual Preferred Stock"
+   *     -> ADR, weil "Depositary Share" in der ADR-Regel steht. Das ist eine
+   *     Hinterlegung auf EIGENE Vorzugsaktien einer US-Bank und kein
+   *     American Depositary Receipt. Ein ADR ist durch "ADR", "ADS" oder
+   *     "American Depositary" belegt - nicht durch das Wort "Depositary"
+   *     allein.
+   *
+   * Beide Korrekturen VERENGEN, sie erfinden nichts: sie nehmen der Regel
+   * eine Behauptung, die der Name nicht traegt. Die Huelle (ETF/ETN/Fonds)
+   * entscheidet vor dem Inhalt, und die Hinterlegung wird nur dort ADR, wo
+   * sie sich auch so nennt. */
   var NAME_RULES = [
+    /* Erst die Huelle: was ein Fonds oder eine Schuldverschreibung IST,
+       bleibt es, egal was darin liegt. */
     { type: "ETN",       re: /\b(ETN|EXCHANGE[- ]TRADED NOTE)S?\b/i },
-    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY (SHARE|RECEIPT))/i },
+    { type: "ETF",       re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i },
+    /* Dann die ausdrueckliche Hinterlegung auf eine auslaendische Aktie. */
+    { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPT)/i },
+    /* Dann der Inhalt. Eine Hinterlegung auf Vorzugsaktien landet hier - und
+       das ist richtig: sie ist ein Vorzugspapier, kein ADR. */
     { type: "PREFERRED", re: /\b(PREFERRED|PFD|PREF\.)/i },
     { type: "WARRANT",   re: /\bWARRANTS?\b/i },
     { type: "FUND",      re: /\b(FUND|TRUST FUND|CLOSED[- ]END)\b/i },
-    { type: "ETF",       re: /\b(ETF|INDEX FUND|SHARES? ETF)\b/i }
+    /* Eine Hinterlegung, deren Name weder ADR noch eine Gattung nennt, bleibt
+       zuletzt eine Hinterlegung - besser als Stammaktie. */
+    { type: "ADR",       re: /\bDEPOSITARY SHARES?\b/i }
   ];
+
+  /* Der AUSDRUECKLICHE Fondsmantel - und nur er. Diese Zeichenkette ist die
+     Freigabe vom 28.09.2026 in Code: ein Papier, das sich ETF oder
+     Exchange-Traded Fund nennt, ist keines der Aktienart, auch wenn der
+     Anbieter "Stock" meldet. Absichtlich NICHT enthalten: "Trust", "Fund"
+     allein, "Index" - jedes davon trifft auch Aktien (American Assets Trust
+     ist ein REIT). Ein Test haelt diese Grenze gegen den ganzen Bestand. */
+  var EXPLICIT_FUND_WRAPPER = /\bETF\b|\bEXCHANGE[- ]TRADED FUNDS?\b/i;
 
   function nameRule(name) {
     var n = norm(name);
@@ -198,35 +237,78 @@
     var byName = nameRule(row.name);
     var at = upper(assetType);
 
-    var type = null, confidence = null;
+    var type = null, confidence = null, typeBasis = null;
 
     /* 1. Der Anbieter selbst, wo er eindeutig ist. */
     if (at === "ETF") {
-      type = "ETF"; confidence = "HIGH";
+      type = "ETF"; confidence = "HIGH"; typeBasis = "PROVIDER_ASSET_TYPE";
       reasons.push("Anbieter meldet assetType=ETF.");
       /* ETN wird von Tiingo als ETF gefuehrt. Nur der Name trennt sie. */
       if (byName && byName.type === "ETN") {
-        type = "ETN";
+        type = "ETN"; typeBasis = "SECURITY_NAME";
         reasons.push("Name weist das Papier als Exchange Traded Note aus.");
       }
     } else if (at === "MUTUAL FUND" || at === "FUND") {
-      type = "FUND"; confidence = "HIGH";
+      type = "FUND"; confidence = "HIGH"; typeBasis = "PROVIDER_ASSET_TYPE";
       reasons.push("Anbieter meldet assetType=" + assetType + ".");
     } else if (at === "STOCK") {
       /* 2. Sondergattungen schlagen "Stock". Der Anbieter fuehrt
          Vorzuege und Optionsscheine unter demselben assetType wie
          Stammaktien - das Tickermuster ist hier die genauere Angabe. */
       if (pattern && pattern.type) {
-        type = pattern.type; confidence = "MEDIUM";
+        type = pattern.type; confidence = "MEDIUM"; typeBasis = "TICKER_PATTERN";
         reasons.push("Tickermuster " + pattern.marker + " weist auf " + pattern.type + " hin " +
                      "(Anbieter meldet unspezifisch assetType=Stock).");
         if (pattern.subtype) reasons.push("Untergattung: " + pattern.subtype + ".");
+      } else if (EXPLICIT_FUND_WRAPPER.test(norm(row.name))) {
+        /* EIN GENERISCHES "STOCK" IST KEIN BELEG GEGEN EINEN AUSDRUECKLICHEN
+           NAMEN (Owner-Entscheidung vom 28.09.2026).
+         *
+         * Gemessen am 26.09.2026: 136 Instrumente heissen ausdruecklich
+         * "... ETF" - Columbia AAA CLO ETF, VanEck Bitcoin ETF, Ishares
+         * 1-10 Year Treasury Bond ETF - und trugen COMMON_STOCK, weil der
+         * Anbieter fuer 7.801 von 7.803 Zeilen assetType="Stock" meldet. Ein
+         * Feld, das nahezu nichts unterscheidet, kann einen Namen nicht
+         * ueberstimmen, der die Gattung nennt.
+         *
+         * Die Grenze ist eng gezogen und folgt der Freigabe: nur
+         * ausdrueckliches "ETF" oder "Exchange-Traded Fund". NICHT "Trust",
+         * NICHT "Fund" allein, kein Tickersuffix, keine Branche. Die
+         * mehrdeutigen Muster bleiben unangetastet - "American Assets Trust"
+         * ist ein REIT, also eine Aktie. */
+        type = "ETF"; confidence = "HIGH"; typeBasis = "SECURITY_NAME";
+        reasons.push("Name nennt das Papier ausdruecklich als ETF; assetType=Stock ist " +
+                     "die unspezifische Anbieterangabe und kein Gegenbeleg.");
+        /* Eine Schuldverschreibung im ETF-Mantel bleibt eine
+           Schuldverschreibung - dieselbe Trennung wie beim Anbieter-ETF. */
+        if (byName && byName.type === "ETN") {
+          type = "ETN";
+          reasons.push("Name weist das Papier als Exchange Traded Note aus.");
+        }
       } else if (byName && byName.type !== "ETF" && byName.type !== "FUND") {
-        type = byName.type; confidence = "HIGH";
+        type = byName.type; confidence = "HIGH"; typeBasis = "SECURITY_NAME";
         reasons.push("Name weist das Papier als " + byName.type + " aus.");
       } else {
-        type = "COMMON_STOCK"; confidence = "HIGH";
-        reasons.push("Anbieter meldet assetType=Stock, kein Sondergattungsmuster im Ticker.");
+        /* HIER STAND "HIGH", UND DAS WAR EINE KONFIDENZ OHNE BELEG.
+         *
+         * Die Begruendung sagt es selbst: "kein Sondergattungsmuster im
+         * Ticker" ist die ABWESENHEIT eines Befundes, kein Befund. Gemessen
+         * am 26.09.2026 trugen so 7.495 von 7.803 Instrumenten
+         * COMMON_STOCK/HIGH - darunter FNGU, ein gehebeltes Indexpapier, und
+         * AMJB, eine Schuldverschreibung, beide benannt nach ihrem
+         * Emittenten. Ein echter positiver Befund (Vorzugsaktie aus dem
+         * Tickermuster) stand mit MEDIUM darunter: die Skala war verkehrt.
+         *
+         * Der Typ bleibt COMMON_STOCK - er wird nicht erfunden und nicht
+         * geraten, und die Universumstore haengen an ihm. Was faellt, ist die
+         * behauptete Sicherheit. Was sie zurueckholt, ist ein Wertpapiername
+         * oder ein Identifikator (CUSIP, FIGI, ISIN); gemessen fehlen beide
+         * fuer alle 7.803 Instrumente. */
+        type = "COMMON_STOCK"; confidence = "LOW"; typeBasis = "RESIDUAL_NO_SPECIAL_PATTERN";
+        reasons.push("Anbieter meldet assetType=Stock, kein Sondergattungsmuster im Ticker. " +
+                     "Das ist ein Restbefund und kein Beleg: dass keine Sondergattung erkannt " +
+                     "wurde, belegt nicht, dass es Stammkapital ist. Ohne Wertpapiernamen oder " +
+                     "Identifikator bleibt die Gattung unbelegt.");
         if (pattern && pattern.basis === "shareClass") {
           reasons.push("Aktienklasse " + pattern.shareClass + " (Klassenbuchstabe, keine eigene Gattung).");
         }
@@ -235,15 +317,15 @@
       /* 3. Ohne Anbieterangabe: nur der Name kann noch etwas belegen.
          Sonst UNKNOWN - und ausdruecklich nicht COMMON_STOCK. */
       if (byName) {
-        type = byName.type; confidence = "MEDIUM";
+        type = byName.type; confidence = "MEDIUM"; typeBasis = "SECURITY_NAME_WITHOUT_ASSET_TYPE";
         reasons.push("Keine assetType-Angabe des Anbieters; der Name weist auf " + byName.type + " hin.");
       } else {
-        type = "UNKNOWN"; confidence = "LOW";
+        type = "UNKNOWN"; confidence = "LOW"; typeBasis = "NO_EVIDENCE";
         reasons.push("Weder assetType noch Name. Die Gattung ist nicht bestimmbar; " +
                      "als Aktie gilt der Titel damit ausdruecklich NICHT.");
       }
     } else {
-      type = "OTHER"; confidence = "MEDIUM";
+      type = "OTHER"; confidence = "MEDIUM"; typeBasis = "PROVIDER_ASSET_TYPE_UNMAPPED";
       reasons.push("Anbieter meldet assetType=" + assetType + " - keine der gefuehrten Gattungen.");
     }
 
@@ -263,7 +345,7 @@
 
     return finding(type, confidence, reasons, row, pattern, today, staleDays,
                    Object.assign({}, opts, { country: country, exchange: exchange,
-                                             adrEvidence: adrEvidence }));
+                                             adrEvidence: adrEvidence, typeBasis: typeBasis }));
   }
 
   function finding(type, confidence, reasons, row, pattern, today, staleDays, ctx) {
@@ -306,6 +388,11 @@
       ticker: upper(row.ticker) || null,
       instrumentType: type,
       confidence: confidence,
+      /* WORAUF die Gattung beruht, maschinenlesbar. Die Begruendungen
+         darunter sind Prosa fuer Menschen; dieses Feld ist der Beleg, an dem
+         eine Pruefung haengen kann - und an dem auffaellt, wenn eine
+         Klassifikation nur ein Restbefund ist. */
+      typeBasis: ctx.typeBasis || null,
       screenerEligible: screenerEligible,
       screenerReason: screenerReason,
       shareClass: pattern && pattern.shareClass ? pattern.shareClass : null,
@@ -353,12 +440,41 @@
     };
   }
 
+  /* Eine Aktiengattung ist, was eine Unternehmensbeteiligung notiert; alles
+     andere ist es nur dann BELEGT nicht, wenn die Einordnung hoch sicher ist
+     und auf dem veroeffentlichten Wertpapiernamen oder dem Anbieterfeld
+     beruht (Owner-Entscheidung 1 vom 28.09.2026). Eine Vermutung aendert
+     nichts. */
+  var EQUITY_TYPES = ["COMMON_STOCK", "ADR"];
+  var PROVEN_TYPE_BASES = ["SECURITY_NAME", "PROVIDER_ASSET_TYPE"];
+  function provenNonEquity(instrument) {
+    if (!instrument) return null;
+    var type = instrument.securityType;
+    if (!type || EQUITY_TYPES.indexOf(type) >= 0) return null;
+    if (instrument.securityTypeConfidence !== "HIGH") return null;
+    if (PROVEN_TYPE_BASES.indexOf(instrument.securityTypeBasis) < 0) return null;
+    return { securityType: type, securityTypeBasis: instrument.securityTypeBasis };
+  }
+
   var api = {
     VERSION: VERSION,
     TYPES: TYPES,
     US_EXCHANGES: US_EXCHANGES,
     OTC_EXCHANGES: OTC_EXCHANGES,
     tickerPattern: tickerPattern,
+    /* Damit die Messung und der Test dieselbe Grenze lesen wie der
+       Klassifikator - zwei Kopien dieses Musters waeren zwei Freigaben. */
+    EXPLICIT_FUND_WRAPPER: EXPLICIT_FUND_WRAPPER,
+    /* WANN EINE GATTUNG ALS "KEINE AKTIE" BELEGT IST.
+
+       Diese Regel stand bis zum 28.09.2026 nur im Produktdienst
+       (`nichtAktie`) - und genau deshalb wusste die Uebersicht nichts davon
+       und fuehrte 145 Fonds und Optionsscheine als faktorbewertete Aktien.
+       Eine Regel, die zwei Flaechen binden soll, gehoert in die Engine und
+       nicht in eine der beiden Flaechen. */
+    EQUITY_TYPES: EQUITY_TYPES.slice(),
+    PROVEN_TYPE_BASES: PROVEN_TYPE_BASES.slice(),
+    provenNonEquity: provenNonEquity,
     classify: classify,
     classifyAll: classifyAll
   };

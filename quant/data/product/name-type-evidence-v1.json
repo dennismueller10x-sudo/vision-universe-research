@@ -1,0 +1,270 @@
+{
+ "schemaVersion": "name-type-evidence-1.0.0",
+ "generatedAt": "2026-09-26T17:51:10.000Z",
+ "instruments": 7809,
+ "withName": 7586,
+ "withoutName": 223,
+ "classificationEngine": "instrument-classification-1.0.0",
+ "typeCounts": {
+  "COMMON_STOCK": 7466,
+  "WARRANT": 17,
+  "PREFERRED": 317,
+  "ADR": 6,
+  "ETF": 2,
+  "ETN": 1
+ },
+ "basisCounts": {
+  "RESIDUAL_NO_SPECIAL_PATTERN": 7466,
+  "SECURITY_NAME": 33,
+  "TICKER_PATTERN": 308,
+  "PROVIDER_ASSET_TYPE": 2
+ },
+ "groups": [
+  {
+   "id": "ETF",
+   "evidence": "UNAMBIGUOUS",
+   "nameSaysType": "ETF",
+   "why": "Ein börsengehandelter Fonds nennt sich so. Kein Betrieb trägt ETF im Namen.",
+   "titles": 133,
+   "carriedAsCommonStock": 133,
+   "alreadyClassified": 0,
+   "inProductUniverse": 133,
+   "screenerEligible": 129,
+   "examples": [
+    {
+     "ticker": "AAAC",
+     "name": "Columbia AAA CLO ETF"
+    },
+    {
+     "ticker": "AAAD",
+     "name": "Pgim AAA CLO Aggregate Duration ETF"
+    },
+    {
+     "ticker": "AAAP",
+     "name": "Pacer Barings CLO Market Flex ETF"
+    },
+    {
+     "ticker": "ABI",
+     "name": "Victoryshares Pioneer Asset-based Income ETF"
+    },
+    {
+     "ticker": "ACYN",
+     "name": "FT Vest Laddered Autocallable Barrier & Income ETF"
+    }
+   ]
+  },
+  {
+   "id": "ETN",
+   "evidence": "UNAMBIGUOUS",
+   "nameSaysType": "ETN",
+   "why": "Eine börsengehandelte Schuldverschreibung nennt sich so. Sie ist eine Forderung gegen den Emittenten und kein Anteil an einem Unternehmen - Eigenkapitalkennzahlen gelten für sie nicht.",
+   "titles": 1,
+   "carriedAsCommonStock": 0,
+   "alreadyClassified": 1,
+   "inProductUniverse": 0,
+   "screenerEligible": 0,
+   "examples": []
+  },
+  {
+   "id": "SENIOR_NOTES",
+   "evidence": "UNAMBIGUOUS",
+   "nameSaysType": "BOND",
+   "why": "Eine Anleihe mit Laufzeitangabe im Namen ist kein Eigenkapital.",
+   "titles": 6,
+   "carriedAsCommonStock": 4,
+   "alreadyClassified": 2,
+   "inProductUniverse": 4,
+   "screenerEligible": 4,
+   "examples": [
+    {
+     "ticker": "DCOMG",
+     "name": "Dime Community Bancshares Inc 9.000 FixedtoFloating Rate Subordinated Notes due 2034"
+    },
+    {
+     "ticker": "SSSSL",
+     "name": "SuRo Capital Corp 6.00 Notes due 2026"
+    },
+    {
+     "ticker": "TRINI",
+     "name": "Trinity Capital Inc 7.875 Notes Due 2029"
+    },
+    {
+     "ticker": "TRINZ",
+     "name": "Trinity Capital Inc 7.875 Notes due 2029"
+    }
+   ]
+  },
+  {
+   "id": "ADR_ADS",
+   "evidence": "UNAMBIGUOUS",
+   "nameSaysType": "ADR",
+   "why": "Eine Hinterlegung auf eine ausländische Aktie nennt sich ADR oder ADS.",
+   "titles": 6,
+   "carriedAsCommonStock": 0,
+   "alreadyClassified": 6,
+   "inProductUniverse": 0,
+   "screenerEligible": 0,
+   "examples": []
+  },
+  {
+   "id": "DEPOSITARY_SHARE",
+   "evidence": "UNAMBIGUOUS",
+   "nameSaysType": "PREFERRED_OR_ADR",
+   "why": "Eine Hinterlegung. Ob auf Vorzugsaktien oder auf eine ausländische Stammaktie, entscheidet der Rest des Namens - deshalb kein einzelner Zieltyp.",
+   "titles": 11,
+   "carriedAsCommonStock": 0,
+   "alreadyClassified": 11,
+   "inProductUniverse": 0,
+   "screenerEligible": 0,
+   "examples": []
+  },
+  {
+   "id": "PREFERRED",
+   "evidence": "UNAMBIGUOUS",
+   "nameSaysType": "PREFERRED",
+   "why": "Der Name nennt die Vorzugsaktie selbst. Sie hat einen festen Anspruch und keinen Anteil am Gewinnwachstum; eine Bewertung über Gewinn oder Umsatz beschreibt sie nicht. Achtung: steht zusätzlich ETF oder Fonds im Namen, gewinnt die Hülle - das prüft die Regelreihenfolge.",
+   "titles": 28,
+   "carriedAsCommonStock": 1,
+   "alreadyClassified": 27,
+   "inProductUniverse": 1,
+   "screenerEligible": 0,
+   "examples": [
+    {
+     "ticker": "CSSD",
+     "name": "Cohen & Steers Short Duration Preferred AND Income Active ETF"
+    }
+   ]
+  },
+  {
+   "id": "WARRANT",
+   "evidence": "UNAMBIGUOUS",
+   "nameSaysType": "WARRANT",
+   "why": "Der Name nennt den Optionsschein selbst. Er ist ein Recht auf einen Bezug und kein Unternehmensanteil; Kursreihe und Geschäftszahlen gehören nicht zusammen.",
+   "titles": 17,
+   "carriedAsCommonStock": 0,
+   "alreadyClassified": 17,
+   "inProductUniverse": 0,
+   "screenerEligible": 0,
+   "examples": []
+  },
+  {
+   "id": "TRUST",
+   "evidence": "AMBIGUOUS",
+   "nameSaysType": null,
+   "why": "Kein Beleg: American Assets Trust ist ein REIT, also eine Aktie.",
+   "titles": 188,
+   "carriedAsCommonStock": 135,
+   "examples": [
+    {
+     "ticker": "AAT",
+     "name": "American Assets Trust, Inc."
+    },
+    {
+     "ticker": "ABR",
+     "name": "Arbor Realty Trust Inc"
+    },
+    {
+     "ticker": "ADAM",
+     "name": "Adamas Trust, Inc."
+    }
+   ]
+  },
+  {
+   "id": "FUND",
+   "evidence": "AMBIGUOUS",
+   "nameSaysType": null,
+   "why": "Kein Beleg: Ein Name mit Fund kann ein geschlossener Fonds oder eine Beteiligungsgesellschaft sein.",
+   "titles": 57,
+   "carriedAsCommonStock": 43,
+   "examples": [
+    {
+     "ticker": "AIO",
+     "name": "Virtus Artificial Intelligence & Technology Opportunities Fund"
+    },
+    {
+     "ticker": "ASGI",
+     "name": "abrdn Global Infrastructure Income Fund"
+    },
+    {
+     "ticker": "BPRE",
+     "name": "Bluerock Private Real Estate Fund"
+    }
+   ]
+  },
+  {
+   "id": "INDEX",
+   "evidence": "AMBIGUOUS",
+   "nameSaysType": null,
+   "why": "Kein Beleg: Bitwise 10 Crypto Index Fund ist ein Fonds, ein Indexanbieter wäre ein Betrieb.",
+   "titles": 6,
+   "carriedAsCommonStock": 6,
+   "examples": [
+    {
+     "ticker": "BITW",
+     "name": "Bitwise 10 Crypto Index ETF"
+    },
+    {
+     "ticker": "KMCA",
+     "name": "PLUS Korea Manufacturing Core Alliance Index"
+    },
+    {
+     "ticker": "KPHO",
+     "name": "Kraneshares Dragon Capital Growth OF Vietnam Index ETF"
+    }
+   ]
+  },
+  {
+   "id": "PORTFOLIO",
+   "evidence": "AMBIGUOUS",
+   "nameSaysType": null,
+   "why": "Kein Beleg: Altisource Portfolio Solutions ist eine Betriebsgesellschaft.",
+   "titles": 6,
+   "carriedAsCommonStock": 6,
+   "examples": [
+    {
+     "ticker": "ASPS",
+     "name": "Altisource Portfolio Solutions S.a."
+    },
+    {
+     "ticker": "ASPSW",
+     "name": "Altisource Portfolio Solutions S.a."
+    },
+    {
+     "ticker": "ASPSZ",
+     "name": "Altisource Portfolio Solutions S.a."
+    }
+   ]
+  },
+  {
+   "id": "UNIT",
+   "evidence": "AMBIGUOUS",
+   "nameSaysType": null,
+   "why": "Kein Beleg: Units können eine SPAC-Einheit oder eine Personengesellschaft sein.",
+   "titles": 10,
+   "carriedAsCommonStock": 7,
+   "examples": [
+    {
+     "ticker": "AIMAU",
+     "name": "Aimfinity Investment Corp I Units (1 Ord Class A 1 Class 1 War & 1/2 Class 2 War)"
+    },
+    {
+     "ticker": "AIMBU",
+     "name": "Aimfinity Investment Corp I Units (1 Ord Cl A & 1/2 Wt Cl 2)"
+    },
+    {
+     "ticker": "BRRWU",
+     "name": "Columbus Circle Capital Corp I Units"
+    }
+   ]
+  }
+ ],
+ "withheldRule": {
+  "rule": "instrument-classification: bei assetType='Stock' wird ein Name, der ETF oder FUND sagt, nicht als Gattung übernommen (byName.type !== 'ETF' && byName.type !== 'FUND').",
+  "measuredReason": "Der Anbieter gilt als Autorität über assetType. Gemessen (M37) trägt dieses Feld für 7.801 von 7.803 Instrumenten den Wert 'Stock' und trennt damit nahezu nichts.",
+  "titlesAffected": 133,
+  "consequenceToday": "Diese Titel erhalten eine Aktien-Einordnung. Gemessen am 26.09.2026 tragen 27 von ihnen mindestens eine bewertete Eigenschaft und 5 einen berechneten Börsenwert; eine bewertete BEWERTUNG hat keiner.",
+  "decisionBelongsToOwner": "Eine Umklassifizierung nimmt Titel aus dem Screener-Umfang (ETF ist nicht screenerEligible) und verändert damit den Umfang des Produktuniversums. Das ist eine Produktentscheidung und kein Fix."
+ },
+ "correctsEarlierStatement": "M37 hält fest, keine lokale Angabe trenne Nicht-Eigenkapital von Stammaktien. Das war richtig über assetType, CUSIP, FIGI, ISIN und das SEC-Verzeichnis - und es wurde gemessen, bevor der Stamm Namen für diese Zeilen hatte. Der Name ist ein Beleg, und für die eindeutigen Muster oben ist er der einzige vorhandene.",
+ "doNotDo": "Keine Umklassifizierung anhand mehrdeutiger Wörter (Trust, Fund, Index, Portfolio) und keine anhand von Ticker-Suffixen. Ein Gegenbeispiel je Muster steht oben."
+}

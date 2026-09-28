@@ -108,6 +108,11 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 
 /* Setup */
 .setup-journey{display:flex;list-style:none;margin:22px 0 8px;padding:0;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* Bei 390 px scrollt diese Liste waagerecht. Ein scrollbarer Bereich muss mit
+   der Tastatur erreichbar sein (axe: scrollable-region-focusable) - dieselbe
+   Loesung wie bei .table-wrap, wo die Tabelle ein tabindex und eine
+   Beschriftung traegt. */
+.setup-journey:focus-visible{outline:3px solid #276dae;outline-offset:4px}
 .setup-step{flex:1 0 auto;min-width:104px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted);padding-right:12px}
 .setup-dot{display:block;height:4px;border-radius:2px;background:var(--line)}
 .setup-step.is-active{color:var(--ink);font-weight:700}
@@ -139,7 +144,11 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .setup-classification .muted{font-size:13px;flex:1 1 220px;min-width:0}
 .setup-badge{display:inline-block;padding:5px 11px;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.01em}
 .setup-badge.state-CONFIRMED{border-color:var(--positive);color:var(--positive)}
-.setup-badge.state-SETUP_FORMING{border-color:#c08b3a;color:#c08b3a}
+/* Der Bernstein #c08b3a kommt auf Weiss nur auf 3,00:1 und auf der Flaeche
+   auf 2,77:1 - die Regel verlangt 4,5:1. Die Schrift nimmt deshalb denselben
+   dunkleren Bernstein, den das Haus fuer .band-WEAK schon fuehrt (#8a5a1d,
+   5,90:1 bzw. 5,43:1). Der Rahmen darf hell bleiben: er ist keine Schrift. */
+.setup-badge.state-SETUP_FORMING{border-color:#c08b3a;color:#8a5a1d}
 .setup-badge.state-NO_SETUP{color:var(--muted)}
 
 /* Evidenz und Erklärfläche */
@@ -187,7 +196,7 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .match-condition>div span{display:block}
 .match-condition>div span+span{font-size:12px;margin-top:3px}
 .match-condition.is-met .setup-mark{color:var(--positive)}
-.match-condition.is-open .setup-mark{color:#c08b3a}
+.match-condition.is-open .setup-mark{color:#8a5a1d}
 .match-condition.is-missing{color:var(--muted)}
 .match-why{font-style:italic}
 .match-risk,.match-evidence{font-size:13px;margin-top:12px}
@@ -281,8 +290,13 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 }
 .trust-backtest{margin-top:16px}
 .trust-pending{font-style:italic}
-.setup-step.is-pending{opacity:.55}
-.setup-step.is-pending .setup-dot{background:transparent;border-top:2px dashed var(--line);height:0}
+/* NICHT MEHR PER DECKKRAFT.
+   `opacity:.55` hat die Schrift gegen Weiss aufgehellt: gemessen #a9acae und
+   damit 2,28:1. Eine noch nicht erreichte Stufe soll leiser AUSSEHEN, aber
+   lesbar BLEIBEN - die Deckkraft liegt deshalb auf der Markierung, und die
+   Schrift nimmt das gedeckte Grau des Hauses (#62686c, 5,65:1). */
+.setup-step.is-pending{color:var(--muted)}
+.setup-step.is-pending .setup-dot{background:transparent;border-top:2px dashed var(--line);height:0;opacity:.55}
 .setup-pending{font-size:11px;font-style:italic}
 
 /* Lage im Markt. Die Titelliste ist bewusst eine Chip-Reihe und keine
@@ -302,8 +316,11 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 /* Eine geschlossene Stufe wird gedaempft gezeigt und nicht ausgeblendet:
    dass es diese Lagen gibt und warum sie noch nichts sagen, ist selbst
    eine Information. */
-.distribution-row.is-pending{opacity:.62}
+/* Dieselbe Ursache, dieselbe Korrektur: `opacity:.62` ergab gemessen
+   #9ea1a4 (2,59:1) fuer die Saetze und #6fa696 (2,58:1) fuer den Chip. */
+.distribution-row.is-pending{color:var(--muted)}
 .distribution-row.is-pending .distribution-count{color:var(--muted)}
+.distribution-row.is-pending .distribution-dot{opacity:.62}
 .setup-rule-result{margin-bottom:24px}
 
 /* Chance gegen Risiko auf der Einstiegsflaeche. Zwei Saeulen
@@ -332,9 +349,60 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
    Fehlermeldung aussehen und nicht wie ein Hinweiskasten neben anderen -
    sie ist der letzte Abschnitt der Reise und traegt dieselbe Ruhe wie die
    uebrigen. */
+/* Die Branchenvorlage steht ueber den Kennzahlen, weil sie erklaert, warum
+   dort andere stehen als auf einer Industrieseite. Kein Warnkasten - es ist
+   kein Mangel, sondern die passende Methodik. */
+.template-note{border-left:3px solid var(--accent,#5b8def);background:var(--surface-2,rgba(255,255,255,.02));
+ border-radius:0 10px 10px 0;padding:12px 16px;margin:0 0 14px}
+.template-note p{margin:0 0 6px}
+.template-note p:last-child{margin:0}
+
 .journey-gap .gap-group{border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:12px 0;background:var(--surface-2,rgba(255,255,255,.02))}
 .journey-gap .gap-group h3{margin:0 0 6px;font-size:1.02rem}
 .journey-gap .gap-group p{margin:0 0 6px}
 .journey-gap .gap-areas{font-size:.9rem;color:var(--muted);margin:8px 0 0}
 .journey-gap details{margin-top:10px}
 @media (max-width:640px){.journey-gap .gap-group{padding:14px}}
+
+/* =========================================================================
+   DIE AUSKUNFT OBEN — MOBILE FIRST.
+
+   Gemessen bei 390 px: die erste Bildschirmhoehe einer Aktienseite zeigte
+   Name, Etikett, Kurs, Aktualitaetszeile und dann einen Chart. Dieser
+   Abschnitt steht jetzt zwischen Kurs und Chart, also genau dort, wo die
+   Antwort gesucht wird. Einspaltig bis 900 px, damit keine Spalte auf
+   Buchstabenbreite schrumpft; die drei Gruppen bleiben in ihrer
+   Reihenfolge - dafuer, dagegen, noch nicht bewertbar.
+   ========================================================================= */
+.brief-section{margin:26px 0 8px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.brief-headline{font-size:1.18rem;line-height:1.45;font-weight:550;margin:8px 0 4px}
+.brief-balance{display:grid;gap:14px;grid-template-columns:1fr;margin-top:18px}
+.brief-column{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.brief-column h3{margin:0 0 10px;font-size:15px}
+.brief-column.is-pro{border-color:var(--positive)}
+.brief-column.is-con{border-color:var(--negative)}
+.brief-column.is-unknown{border-style:dashed}
+.brief-list{list-style:none;margin:0;padding:0}
+.brief-list li{padding:9px 0;border-top:1px solid var(--line)}
+.brief-list li:first-child{border-top:0}
+.brief-list li span{display:block}
+.brief-text{font-weight:550}
+.brief-list li .muted{font-size:12px;margin-top:3px;line-height:1.45}
+.brief-more{margin:8px 0 0;border:0;padding:0}
+.brief-more summary{min-height:44px;font-size:13px;color:var(--muted)}
+.brief-setup,.brief-strategy,.brief-pattern{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.brief-setup h3,.brief-strategy h3,.brief-pattern h3{font-size:15px;margin:0 0 10px}
+.brief-setup p,.brief-strategy p,.brief-pattern p{margin:0 0 8px}
+.brief-setup-state{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.brief-setup strong,.brief-strategy strong{font-weight:650}
+.brief-not{font-size:12px;margin:16px 0 0}
+.setup-logic{margin:10px 0 0}
+.pattern-lead{font-size:1.05rem;font-weight:550;margin:6px 0 10px}
+@media (min-width:901px){.brief-balance{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:650px){.brief-section{padding:16px;border-radius:12px}.brief-headline{font-size:1.08rem}}
+
+/* Eine unsichere Zuordnung ist keine Warnung und kein Fehler - sie ist eine
+   Angabe ueber die Datenlage. Deshalb ruhig gesetzt, oben, mit Abstand. */
+.identity-note{margin:0 0 22px;padding:16px 18px;border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:10px;background:var(--surface)}
+.identity-note p{margin:0 0 8px}
+.identity-note p:last-child{margin-bottom:0;font-size:12px}

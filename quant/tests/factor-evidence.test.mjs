@@ -395,3 +395,216 @@ test("the drift, when it happens, reaches the summary rather than the log", asyn
   /* The published date stays in the series exactly once. */
   assert.equal(summary.snapshotHistory.dates.filter((d) => d === drift.asOf).length, 1);
 });
+
+/* ---------------------------------------------------------------------------
+   "NOCH NICHT AUSREICHEND HISTORIE" STATT "ZU WENIGE EINZELKENNZAHLEN"
+
+   Gemessen am 26.09.2026: 784 der 786 Titel ohne einen einzigen Faktorwert
+   tragen weniger als 252 Handelstage. Fuer sie war der erste Satz auf der
+   Seite "Zu wenige Einzelkennzahlen erfuellen die Methodik" - wahr, und fuer
+   einen Leser nicht von einem Defekt zu unterscheiden. Die Methodik wird
+   dafuer nicht abgesenkt; es wird nur gesagt, was fehlt und dass es von
+   selbst kommt.
+   --------------------------------------------------------------------------- */
+test("die Mindestzahl an Handelstagen kommt aus den Fenstern des Vertrags", async () => {
+  const contract = JSON.parse(await readFile(
+    new URL("../methodology/quant-v2.json", import.meta.url), "utf8"));
+  /* Die Pflichtkomponente entscheidet, ab wann ein Kursfaktor ueberhaupt
+     rechnen kann - ohne sie ist er MANDATORY_COMPONENT_MISSING, egal wie
+     viele andere vorliegen. */
+  const pflicht = { momentum: "priceReturn12m1m", risk: "realizedVolatility252d" };
+  for (const [factorId, componentId] of Object.entries(pflicht)) {
+    const component = contract.factors[factorId].components.find((c) => c.id === componentId);
+    assert.ok(component, factorId + ": " + componentId + " steht nicht im Vertrag");
+    /* "252 sessions" oder "252/21 sessions": das ausgelassene Fenster zaehlt
+       mit, weil die Reihe es ueberspringen muss, um es auszulassen. */
+    const zahlen = component.window.match(/\d+/g).map(Number);
+    const gebraucht = zahlen.reduce((a, b) => a + b, 0);
+    assert.equal(FactorEvidence.REQUIRED_BARS[factorId], gebraucht,
+      factorId + ": Vertrag nennt " + component.window + ", die Engine " + FactorEvidence.REQUIRED_BARS[factorId]);
+  }
+});
+
+test("ein zu junger Titel liest seine eigene Zahl, nicht den Methodiksatz", () => {
+  const jung = {
+    ticker: "JUNG", bars: 187, fundamentalYears: 1,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }]))
+  };
+  const nachId = Object.fromEntries(FactorEvidence.ordered(jung).map((f) => [f.id, f]));
+
+  assert.match(nachId.risk.reasonText, /252 Handelstage benötigt, aktuell liegen 187 vor/);
+  assert.match(nachId.momentum.reasonText, /273 Handelstage benötigt, aktuell liegen 187 vor/);
+  assert.match(nachId.risk.reasonText, /von selbst/, "der Satz sagt nicht, dass es von selbst kommt");
+  assert.deepEqual(nachId.risk.history, { bars: 187, requiredBars: 252, missingBars: 65 });
+  assert.deepEqual(nachId.momentum.history, { bars: 187, requiredBars: 273, missingBars: 86 });
+  assert.equal(nachId.risk.fundamentalYears, 1);
+  /* Der interne Code bleibt daneben stehen - er gehoert in die
+     Methodikebene und verschwindet nicht. */
+  assert.equal(nachId.risk.reason, "INSUFFICIENT_COMPONENTS");
+
+  /* Ein Fundamentalfaktor bekommt KEINE Handelstag-Aussage: seine Fenster
+     zaehlen Geschaeftsjahre und Quartale, und eine Zahl an der falschen
+     Stelle waere eine erfundene Begruendung. */
+  assert.equal(nachId.quality.history, null);
+  assert.equal(nachId.quality.reasonText, FactorEvidence.REASON_TEXT.INSUFFICIENT_COMPONENTS);
+});
+
+test("ein Titel mit genug Historie bekommt die Handelstag-Begruendung nicht", () => {
+  const alt = {
+    ticker: "ALT", bars: 936, fundamentalYears: 12,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }]))
+  };
+  const nachId = Object.fromEntries(FactorEvidence.ordered(alt).map((f) => [f.id, f]));
+  assert.equal(nachId.risk.history, null, "936 Handelstage sind keine zu kurze Historie");
+  assert.equal(nachId.risk.reasonText, FactorEvidence.REASON_TEXT.INSUFFICIENT_COMPONENTS);
+
+  /* Und ein verfuegbarer Faktor erklaert gar nichts. */
+  const offen = { ticker: "OFFEN", bars: 100, factors: { ...alt.factors,
+    risk: { state: "AVAILABLE", reason: null, score: 55, components: [] } } };
+  const risiko = FactorEvidence.ordered(offen).find((f) => f.id === "risk");
+  assert.equal(risiko.reasonText, null);
+  assert.equal(risiko.history, null);
+});
+
+test("das Artefakt veroeffentlicht die Tiefe der Geschaeftsjahre", async () => {
+  const shard = JSON.parse(gunzipSync(await readFile(
+    new URL("../data/product/factor-evidence-v1/AA.json.gz", import.meta.url))).toString("utf8"));
+  const zeilen = Object.values(shard.securities);
+  assert.ok(zeilen.every((r) => "fundamentalYears" in r), "fundamentalYears fehlt an einer Zeile");
+  const mitTiefe = zeilen.filter((r) => Number.isFinite(r.fundamentalYears) && r.fundamentalYears > 0);
+  assert.ok(mitTiefe.length > 0, "kein einziger Titel nennt eine Jahrestiefe");
+  /* Wer Geschaeftszahlen hat, hat auch eine Tiefe - und umgekehrt keine
+     Tiefe ohne Berichtsperiode. */
+  for (const r of zeilen) {
+    if (r.fundamentalsAsOf) assert.ok(r.fundamentalYears >= 0, r.ticker);
+    else assert.ok(!r.fundamentalYears, r.ticker + " nennt Jahre ohne Berichtsperiode");
+  }
+});
+
+/* ---------------------------------------------------------------------------
+   EIN ANTEILSBESTAND JE EMITTENT, ABER MEHRERE NOTIERTE ZEILEN
+
+   Gemessen am 26.09.2026 im veröffentlichten Artefakt: 110 Emittenten führten
+   304 Kürzel, 210 davon mit einem Bewertungsfaktor - und jeder dieser
+   Börsenwerte war der Anteilsbestand DES EMITTENTEN mal dem Kurs DIESER
+   ZEILE. AMJB, eine Schuldverschreibung von JPMorgan, trug so 1.408 Mrd; TBB,
+   eine Anleihe von AT&T, 173,9 Mrd; SOJC bis SOJF je die 93,4 Mrd von
+   Southern; vierzehn gehebelte Indexpapiere je die 122 Mrd von BMO. GOOG und
+   GOOGL trugen beide den Gesamtbestand von Alphabet.
+   --------------------------------------------------------------------------- */
+test("keine Bewertung, wo der Anteilsbestand keiner Notierung zuzuordnen ist", async () => {
+  const dir = new URL("../data/product/factor-evidence-v1/", import.meta.url);
+  const proCik = new Map();
+  let mitGrund = 0, mitBoersenwert = 0;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".json.gz") || name === "screening.json.gz" || name === "summary.json.gz") continue;
+    const shard = JSON.parse(gunzipSync(await readFile(new URL(name, dir))).toString("utf8"));
+    for (const row of Object.values(shard.securities)) {
+      if (row.marketCapReason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") mitGrund += 1;
+      if (Number.isFinite(row.marketCap)) mitBoersenwert += 1;
+      if (!row.cik) continue;
+      const key = String(row.cik);
+      if (!proCik.has(key)) proCik.set(key, []);
+      proCik.get(key).push(row);
+    }
+  }
+
+  assert.ok(mitGrund > 0, "kein einziger Titel traegt den Grund - die Regel greift nicht");
+  assert.ok(mitBoersenwert > 3000, "die Boersenwerte sind flaechendeckend verschwunden: " + mitBoersenwert);
+
+  /* Die Regel selbst: kein Emittent mit mehreren notierten Zeilen traegt noch
+     einen Boersenwert, und jede dieser Zeilen nennt den Grund samt ihren
+     Geschwistern. */
+  let gruppen = 0;
+  for (const [cik, zeilen] of proCik) {
+    if (zeilen.length < 2) continue;
+    gruppen += 1;
+    for (const row of zeilen) {
+      assert.equal(row.marketCap, null,
+        row.ticker + " (CIK " + cik + ", " + zeilen.length + " Zeilen) traegt weiter einen Boersenwert");
+      /* Den Grund nennt nur, wer ueberhaupt Fundamentaldaten hat: eine Zeile
+         ohne Konsum-Export (ECCC etwa, dessen Factbook keine Periodentatsache
+         fuehrt) hat ihren Boersenwert aus einem frueheren Grund nicht - und
+         zwei Gruende fuer eine fehlende Zahl waeren einer zu viel. */
+      if (!row.fundamentalsAsOf) continue;
+      assert.equal(row.marketCapReason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", row.ticker);
+      assert.ok(Array.isArray(row.issuerListings) && row.issuerListings.length === zeilen.length,
+        row.ticker + " nennt seine Geschwisterzeilen nicht");
+      assert.ok(row.issuerListings.includes(row.ticker), row.ticker + " fehlt in seiner eigenen Liste");
+      /* Und jede Bewertungskomponente, die am Boersenwert haengt, nennt diese
+         Ursache - nicht "Eingabe nicht materialisiert". */
+      for (const component of row.factors.value.components || []) {
+        if (component.state === "AVAILABLE") continue;
+        const spec = shardSpecFor(row, "value", component.id);
+        if (spec && typeof spec.input === "string" && spec.input.includes("marketCap")) {
+          assert.equal(component.reason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+            row.ticker + ":" + component.id);
+        }
+      }
+    }
+  }
+  assert.ok(gruppen > 50, "nur " + gruppen + " Mehrfachnotierungen gefunden - die Messung stimmt nicht");
+
+  /* Ein Emittent mit genau einer Zeile behaelt seinen Boersenwert: die Regel
+     entfernt gezielt das Unzuordenbare und nicht die Bewertung an sich. */
+  const einzeln = [...proCik.values()].filter((z) => z.length === 1).map((z) => z[0]);
+  assert.ok(einzeln.filter((r) => Number.isFinite(r.marketCap)).length > 3000,
+    "die Einzelnotierungen haben ihren Boersenwert verloren");
+  for (const row of einzeln) {
+    assert.notEqual(row.marketCapReason, "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING",
+      row.ticker + " ist die einzige Zeile seines Emittenten und traegt trotzdem den Zuordnungsgrund");
+  }
+});
+
+/* Die Formelzeile der Komponente steht im Kopf des Shards, nicht an der
+   Zeile - dieselbe Aufteilung, die das Artefakt ueberall benutzt. */
+let specCache = null;
+function shardSpecFor(row, factorId, componentId) {
+  if (!specCache) {
+    specCache = {};
+    const dir = new URL("../data/product/factor-evidence-v1/", import.meta.url);
+    for (const name of readdirSync(dir)) {
+      if (!name.endsWith(".json.gz") || name === "screening.json.gz" || name === "summary.json.gz") continue;
+      const shard = JSON.parse(gunzipSync(readFileSync(new URL(name, dir))).toString("utf8"));
+      Object.assign(specCache, shard.componentSpecs || {});
+      break;
+    }
+  }
+  const template = row.template && row.template.id;
+  return (template && specCache[template + ":" + factorId + ":" + componentId])
+    || specCache[factorId + ":" + componentId] || null;
+}
+
+test("die Oberflaeche trennt 'fehlt' von 'bewusst zurueckgehalten'", () => {
+  const zu = (reason, extra) => FactorEvidence.ordered({ ticker: "X", bars: 900, ...extra,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: id === "revisions" ? "UNAVAILABLE" : "UNAVAILABLE", reason, score: null, components: [] }])) })
+    .find((f) => f.id === "value");
+
+  assert.equal(zu("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING").reasonHeadline, "Bewertung bewusst zurückgehalten");
+  assert.equal(zu("INPUT_NOT_MATERIALIZED").reasonHeadline, "Kein Wert für diesen Faktor");
+  assert.equal(zu("FUNDAMENTALS_UNAVAILABLE").reasonHeadline, "Noch keine Geschäftszahlen veröffentlicht");
+  /* Die kurze Historie gewinnt gegen die Tabelle: sie ist die genauere
+     Aussage und traegt eine Zahl. */
+  const jung = FactorEvidence.ordered({ ticker: "J", bars: 100,
+    factors: Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INSUFFICIENT_COMPONENTS", score: null, components: [] }])) })
+    .find((f) => f.id === "risk");
+  assert.equal(jung.reasonHeadline, "Noch nicht genug Kursgeschichte");
+
+  /* Ein verfuegbarer Faktor traegt keine Ueberschrift fuer etwas Fehlendes. */
+  const offen = FactorEvidence.ordered({ ticker: "O", bars: 900,
+    factors: { ...Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+      { state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", score: null, components: [] }])),
+      value: { state: "AVAILABLE", reason: null, score: 50, components: [] } } })
+    .find((f) => f.id === "value");
+  assert.equal(offen.reasonHeadline, null);
+  assert.equal(offen.reasonText, null);
+
+  /* Und keine dieser Ueberschriften ist ein interner Code. */
+  for (const text of Object.values(FactorEvidence.REASON_HEADLINE || {})) {
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(text), false, "interner Code als Ueberschrift: " + text);
+  }
+});

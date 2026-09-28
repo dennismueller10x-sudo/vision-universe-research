@@ -22,7 +22,18 @@
  .back{display:inline-block;margin-top:28px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;text-decoration:none}
  @media (max-width:640px){main{padding:24px 16px 56px}h1{font-size:1.55rem}}
 </style>
-<link rel="stylesheet" href="/assets/site-navigation.css"></head>
+<!-- DIE GEMEINSAME NAVIGATION GEHOERT IN DIE VORLAGE, NICHT IN EINEN
+     NACHTRAG.
+
+     Gemessen nach dem Merge von M31: eine Automatik ("Integrate shared
+     navigation on new pages") hat genau diese zwei Zeilen in die erzeugte
+     Seite eingefuegt. Das war richtig - und beim naechsten
+     Materialisierungslauf haette dieser Bauer sie wieder entfernt, weil er
+     die Datei vollstaendig neu schreibt. Zwei Erzeuger fuer eine Datei sind
+     ein Flattern, das niemandem auffaellt ausser dem Leser, der die
+     Navigation mal hat und mal nicht. Deshalb steht sie jetzt hier. -->
+<link rel="stylesheet" href="/assets/site-navigation.css">
+</head>
 <body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
 <!-- §94: Jede Seite unter /quant/ bindet die gemeinsame Shell ein. Sie
      rendert das Banner, das synthetische Daten als solche kennzeichnet.

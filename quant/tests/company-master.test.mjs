@@ -605,3 +605,60 @@ test("getSimilarStocks waehlt aus dem Master und nennt seine Grundlage", { skip:
   assert.ok(res.basisNote.length > 20, "eine Grundlage ohne Erlaeuterung ist keine");
   assert.ok(res.entries.every((e) => e.instrumentId !== inst.instrumentId));
 });
+
+/* ---------------------------------------------------------------------------
+   EINE KONFIDENZ MUSS EINEN BELEG HABEN
+
+   Gemessen am 26.09.2026 trugen 7.495 von 7.809 Instrumenten die Gattung
+   COMMON_STOCK mit der Konfidenz HIGH - darunter FNGU, ein gehebeltes
+   Indexpapier, und AMJB, eine Schuldverschreibung, beide benannt nach ihrem
+   Emittenten. Die Begruendung sagte es selbst: "kein Sondergattungsmuster im
+   Ticker" ist die ABWESENHEIT eines Befundes. Ein echter positiver Befund
+   (Vorzugsaktie aus dem Tickermuster) stand mit MEDIUM darunter.
+   --------------------------------------------------------------------------- */
+test("HIGH steht nur, wo ein Beleg die Gattung aussagt", () => {
+  const Classification = createRequire(import.meta.url)("../engines/instrument-classification.js");
+  const ECHTER_BELEG = ["PROVIDER_ASSET_TYPE", "SECURITY_NAME"];
+  const heute = "2026-09-26";
+
+  /* Der Restbefund: Anbieter sagt "Stock", nichts sonst greift. */
+  const rest = Classification.classify({ ticker: "AAPL", assetType: "Stock", exchange: "NASDAQ" }, { today: heute });
+  assert.equal(rest.instrumentType, "COMMON_STOCK", "der Typ darf sich NICHT aendern");
+  assert.equal(rest.confidence, "LOW");
+  assert.equal(rest.typeBasis, "RESIDUAL_NO_SPECIAL_PATTERN");
+  /* Und die Begruendung sagt, dass es ein Restbefund ist. */
+  assert.ok(rest.reasons.some((r) => /Restbefund|kein Beleg/i.test(r)), JSON.stringify(rest.reasons));
+
+  /* Positive Belege behalten oder bekommen HIGH. */
+  const ausName = Classification.classify({ ticker: "XYZ", assetType: "Stock", exchange: "NYSE",
+    name: "Acme Corp Preferred Series B" }, { today: heute });
+  assert.equal(ausName.instrumentType, "PREFERRED");
+  assert.equal(ausName.confidence, "HIGH");
+  assert.equal(ausName.typeBasis, "SECURITY_NAME");
+
+  const ausAnbieter = Classification.classify({ ticker: "SPY", assetType: "ETF", exchange: "NYSE ARCA" }, { today: heute });
+  assert.equal(ausAnbieter.confidence, "HIGH");
+  assert.equal(ausAnbieter.typeBasis, "PROVIDER_ASSET_TYPE");
+
+  /* Eine Boersenkonvention ist ein Hinweis, keine Quellenaussage. */
+  const ausTicker = Classification.classify({ ticker: "WFC-P-Y", assetType: "Stock", exchange: "NYSE" }, { today: heute });
+  assert.equal(ausTicker.instrumentType, "PREFERRED");
+  assert.equal(ausTicker.confidence, "MEDIUM");
+  assert.equal(ausTicker.typeBasis, "TICKER_PATTERN");
+
+  /* Und universumsweit: kein HIGH ohne Beleg. */
+  const dir = new URL("../data/universe/instruments/", import.meta.url);
+  let instrumente = 0, ohneBeleg = 0, ohneBasis = 0;
+  for (const datei of readdirSync(dir)) {
+    if (!datei.endsWith(".json")) continue;
+    const shard = JSON.parse(readFileSync(new URL(datei, dir), "utf8"));
+    for (const i of shard.instruments || []) {
+      instrumente += 1;
+      if (!i.securityTypeBasis) ohneBasis += 1;
+      if (i.securityTypeConfidence === "HIGH" && !ECHTER_BELEG.includes(i.securityTypeBasis)) ohneBeleg += 1;
+    }
+  }
+  assert.ok(instrumente > 7000, "der Stamm ist unerwartet klein: " + instrumente);
+  assert.equal(ohneBasis, 0, ohneBasis + " Instrumente nennen ihren Beleg nicht");
+  assert.equal(ohneBeleg, 0, "HIGH_CONFIDENCE_WITHOUT_EVIDENCE = " + ohneBeleg);
+});
