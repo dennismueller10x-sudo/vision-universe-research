@@ -11,8 +11,9 @@ name: Markt-Validierung — Quelldaten
 #
 # Keine: kein Schluessel, kein bezahlter Anbieter, kein Zeitplan. Laeuft
 # nur manuell (workflow_dispatch) oder bei einem Push auf claude/**, dessen
-# Betreffzeile den Marker [mv-data] traegt. Ohne Marker wird der Job
-# uebersprungen und belegt keinen Runner. Ein Lauf braucht wenige Minuten.
+# Commit-Nachricht (Betreff ODER Text) den Marker in eckigen Klammern
+# "mv-data" enthaelt. Ohne Marker wird der Job uebersprungen und belegt
+# keinen Runner. Ein Lauf braucht wenige Minuten.
 #
 # QUELLEN (oeffentlich, ohne Anmeldung)
 #

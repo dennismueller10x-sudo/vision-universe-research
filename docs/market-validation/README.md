@@ -154,7 +154,7 @@ sollte sie juristisch bestätigt werden.
 
 Keine. Kein Schlüssel, kein bezahlter Anbieter, kein Zeitplan. Der Workflow
 läuft nur manuell (`workflow_dispatch`) oder bei einem Push auf `claude/**`
-mit dem Marker `[mv-data]` in der Betreffzeile; sonst wird der Job
+mit dem Marker `[mv-data]` in der Commit-Nachricht; sonst wird der Job
 übersprungen. Ein Lauf dauert wenige Minuten.
 
 ## Wiederholen
