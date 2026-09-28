@@ -99,6 +99,25 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  page.on('pageerror',e=>errors.push({key,message:e.message}));
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+ await check(key+' fresh visit starts light regardless of device scheme',async()=>{
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+  assert.equal(await page.locator('html').getAttribute('data-theme-mode'),'light');
+  assert.equal(await page.locator('vu-navigation').getAttribute('theme'),'light');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#ffffff');
+ });
+ if(width===390)await check(key+' dark setting is explicit and persists',async()=>{
+  await page.goto(base+'/discover/#/settings',{waitUntil:'domcontentloaded'});
+  const choices=page.locator('.v2-settings-choices button');await choices.first().waitFor();
+  assert.deepEqual(await choices.allTextContents(),['Hell','Dunkel']);
+  await choices.getByText('Dunkel').click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+  await page.reload({waitUntil:'domcontentloaded'});
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+  await page.locator('.v2-settings-choices button').getByText('Hell').click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+  await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});
+  await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+ });
  await check(key+' canonical page is indexable',async()=>{const robots=page.locator('meta[name=robots]');assert(!(await robots.count())||!(await robots.getAttribute('content')).includes('noindex'),'canonical /discover/ must not be noindex');});
  await check(key+' main visible',async()=>assert(await page.locator('main').isVisible()));
  await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['hero action',page.locator('.v2-intro-cta').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
