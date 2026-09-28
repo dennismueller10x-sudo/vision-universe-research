@@ -168,7 +168,19 @@ function create(options){
   if(!consumer||consumer.dataMode!=='real'||consumer.isMock===true)return stock;
   const metrics=consumer.metrics||{},latest=consumer.fundamentals?.latest||{},derived=latest.derived||{};
   const measured=(value,unit)=>Number.isFinite(value)?{value,unit,state:'AVAILABLE'}:null,scaled=(value,unit)=>Number.isFinite(value)?measured(value*100,unit):null;
-  stock.name=consumer.companyName||stock.name;stock.industry=consumer.industry||consumer.sector||stock.industry;
+  /* DER NAME KOMMT NICHT VON HIER.
+   *
+   * Gemessen am 26.09.2026: bei 4.719 von 5.984 Titeln nannte die Uebersicht
+   * einen anderen Namen als die Aktienseite - "Apple Inc." gegen "Apple",
+   * "JPMorgan Chase & Co." gegen "JPMorgan Chase & Company", und bei AACI
+   * "Armada Acquisition Corp. III" gegen "Armada Acquisition Corp I", wo eine
+   * der beiden Angaben ueber die IDENTITAET falsch ist. Ursache war diese
+   * Zeile: der Konsum-Export hat den Namen des Wertpapierstamms ueberschrieben.
+   *
+   * Der Namensvertrag (company-naming-1.0.0) legt EINE Ebene als Produktname
+   * fest, und die fuehrt der Stamm. Die Branche bleibt, die kennt der Stamm
+   * nicht. */
+  stock.industry=consumer.industry||consumer.sector||stock.industry;
   stock.price=measured(consumer.price?.value,'USD')||stock.price;
   stock.consumerMetrics=metrics;if(stock.capabilities?.fundamentals===false)return stock;
   stock.revenueGrowth=scaled(metrics.f_revenueGrowthTTM,'percent')||stock.revenueGrowth;
@@ -252,7 +264,16 @@ function create(options){
   if(profiles.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:profiles.reason||'PROFILES_UNAVAILABLE',profiles:[]};
   if(screening.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:screening.reason||'EVIDENCE_UNAVAILABLE',profiles:[]};
   const row=screening.rows.find(entry=>entry.ticker===ticker);
-  if(!row)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
+  if(!row){
+   /* Auch hier der richtige Grund: ein Fonds passt nicht zu keinem
+      AKTIEN-Anlagestil, weil er keine Aktie ist - nicht, weil Daten fehlen.
+      Die Kennung kommt aus dem Wertpapierstamm und nicht aus einer zweiten
+      Regel; ohne ihn bleibt es beim alten Grund. */
+   const i=await identity(ticker).catch(()=>null);
+   const fremd=nichtAktie(i);
+   return fremd?{state:'UNAVAILABLE',...fremd,profiles:[]}
+    :{state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
+  }
   return {...StrategyMatch.evaluate(profiles.contract,row),ticker,asOf:screening.asOf};
  }
  /* DER ZUORDNUNGSWECHSEL EINES TITELS - NACHGESCHLAGEN, NICHT NACHGERECHNET.
@@ -456,11 +477,33 @@ function create(options){
     others:rows.filter(row=>row.state!=='HOLDS')};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
+ /* WARUM EIN PAPIER KEINE AKTIENANALYSE HAT: WEIL ES KEINE AKTIE IST.
+  *
+  * Owner-Entscheidung vom 28.09.2026. Der Materialisierer laesst diese Zeilen
+  * ausdruecklich weg (145 Titel: 136 ETFs, 9 Vorzugspapiere, alle mit dem
+  * Namen als Beleg). Ohne diese Abfrage sagte die Seite dann "gehoert zum
+  * Produktuniversum, erfuellt aber die Datenanforderungen der Faktor-Methodik
+  * derzeit nicht" - ein Datenmangel, wo eine Gattungsentscheidung steht. Das
+  * Woerterbuch verlangt fuer zwei Lagen zwei Texte, und "derzeit" waere hier
+  * zudem falsch: an einem Rentenfonds aendert sich das nie.
+  *
+  * Der Stamm ist die Grundlage, nicht eine zweite Regel - dieselbe Bedingung
+  * wie im Materialisierer und im Wertpapierstamm. */
+ const AKTIENGATTUNGEN=['COMMON_STOCK','ADR'];
+ const BELEGTE_TYPBASIS=['SECURITY_NAME','PROVIDER_ASSET_TYPE'];
+ function nichtAktie(i){
+  if(!i||AKTIENGATTUNGEN.indexOf(i.securityType)>=0)return null;
+  if(i.securityTypeConfidence!=='HIGH'||BELEGTE_TYPBASIS.indexOf(i.securityTypeBasis)<0)return null;
+  return {reason:'NOT_AN_EQUITY_LISTING',securityType:i.securityType,
+   securityTypeBasis:i.securityTypeBasis,name:i.companyName||null};
+ }
  async function getFactorEvidence(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
   const i=await identity(ticker);
   if(!i)return {state:'UNAVAILABLE',reason:'NOT_IN_PRODUCT_UNIVERSE'};
+  const fremd=nichtAktie(i);
+  if(fremd)return {state:'UNAVAILABLE',...fremd};
   try{
    const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/factor-evidence-v1/'+key+'.json.gz');
    if(!FactorEvidence.validShard(shard,key))return {state:'UNAVAILABLE',reason:'INVALID_FACTOR_EVIDENCE_ARTIFACT'};
@@ -587,7 +630,7 @@ function create(options){
   * Gleichheit, damit ein aelteres Artefakt weiter gelesen wird - und keine
   * offene Praefixpruefung, sonst laese dieser Weg auch eine Fassung, die es
   * noch nicht gibt. */
- const UNIVERSE_LIST_SCHEMAS=['universe-list-1.0.0','universe-list-1.1.0'];
+ const UNIVERSE_LIST_SCHEMAS=['universe-list-1.0.0','universe-list-1.1.0','universe-list-1.2.0'];
  let universeList=null;
  async function universeIndex(){
   if(universeList!==null)return universeList;
@@ -604,7 +647,10 @@ function create(options){
     dessen Eintrag zu einem anderen Titel gehoert, wird nicht uebernommen. */
  function mitVerzeichnis(row,entry){
   if(!row||!entry||entry.s!==row.ticker)return row;
-  if(entry.n&&(!row.name||row.name===row.ticker))row.name=entry.n;
+  /* Der Name des Stamms gilt AUCH gegen einen bereits gesetzten - er ist die
+     Identitaetsquelle, und die Panelzeile traegt denselben Namen in Versalien
+     ("JPMORGAN CHASE & CO"). Alles andere in dieser Funktion ergaenzt nur. */
+  if(entry.n)row.name=entry.n;
   if(entry.t&&!row.securityType)row.securityType=entry.t;
   /* Auf WIE VIELEN Handelstagen der Faktorlauf gerechnet hat. Nur damit kann
    * eine Seite sagen "fuer diese Auswertung werden 252 Handelstage gebraucht,
@@ -618,6 +664,12 @@ function create(options){
      die die erste ausdruecklich zurueckhaelt. */
   if(entry.v&&!row.marketCapReason)row.marketCapReason=entry.v;
   if(Number.isFinite(entry.il)&&!Number.isFinite(row.issuerListings))row.issuerListings=entry.il;
+  /* WO ZWEI QUELLEN VERSCHIEDENE GESELLSCHAFTEN NENNEN.
+     Gemessen: 310 Kuerzel im Verzeichnis. Die Angabe wird mitgefuehrt und
+     nicht entschieden - eine Oberflaeche soll sagen koennen, dass die
+     Zuordnung unsicher ist, statt eine von zwei Gesellschaften zu behaupten. */
+  if(entry.ic&&!row.identityConflict)row.identityConflict={kind:entry.ic,alternativeName:entry.ia||null,
+   contract:'company-naming-1.0.0'};
   const heute=new Date().toISOString().slice(0,10);
   if(!Number.isFinite(row.price&&row.price.value)&&Number.isFinite(entry.c)&&entry.c>0
      &&validDate(entry.d)&&entry.d<=heute&&(!row.price||row.price.reason!=='DISPLAY_NOT_PERMITTED')){

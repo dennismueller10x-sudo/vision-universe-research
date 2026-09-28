@@ -383,3 +383,9 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .pattern-lead{font-size:1.05rem;font-weight:550;margin:6px 0 10px}
 @media (min-width:901px){.brief-balance{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:650px){.brief-section{padding:16px;border-radius:12px}.brief-headline{font-size:1.08rem}}
+
+/* Eine unsichere Zuordnung ist keine Warnung und kein Fehler - sie ist eine
+   Angabe ueber die Datenlage. Deshalb ruhig gesetzt, oben, mit Abstand. */
+.identity-note{margin:0 0 22px;padding:16px 18px;border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:10px;background:var(--surface)}
+.identity-note p{margin:0 0 8px}
+.identity-note p:last-child{margin-bottom:0;font-size:12px}

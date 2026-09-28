@@ -364,7 +364,17 @@ async function stockPage(ticker){const brief=await api.getIntelligenceBrief(tick
  const s=(brief&&brief.sources&&brief.sources.stock)||await api.getStockIntelligence(ticker);
  /* Kein Name heisst nicht: Ticker als Ueberschrift und Ticker als
     Untertitel. Dann steht die Ueberschrift fuer das, was sie ist. */
- main.append(heading((s.name&&s.name!==s.ticker)?s.name:'Aktienanalyse',s.ticker||''));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
+ main.append(heading((s.name&&s.name!==s.ticker)?s.name:'Aktienanalyse',s.ticker||''));
+ /* WENN ZWEI QUELLEN VERSCHIEDENE GESELLSCHAFTEN NENNEN, STEHT DAS OBEN.
+  *
+  * Gemessen am 28.09.2026 nach company-naming-1.0.0: bei 310 Kuerzeln nennen
+  * die Emittentenebene (SEC ueber die CIK) und die Wertpapierebene (Metadaten
+  * des Kursanbieters) verschiedene Gesellschaften - AACI "Armada Acquisition
+  * Corp. III" gegen "Armada Acquisition Corp I", AEC "Anfield Energy" gegen
+  * "Associated Estates Realty". Eine der beiden Angaben ist falsch, und lokal
+  * ist nicht entscheidbar, welche. Ein Name, der ohne diesen Hinweis dasteht,
+  * behauptet eine Zuordnung, die nicht belegt ist. */
+ if(s.identityConflict)main.append(identitaetsHinweis(s));if(s.state!=='AVAILABLE'){main.append(notice(s.identityState==='AVAILABLE'?'Unternehmen im Produktuniversum':'Daten derzeit nicht verfügbar',s.identityState==='AVAILABLE'&&s.reason==='SOURCE_MISSING'?'Das Unternehmen ist im Wertpapierverzeichnis vorhanden. Die Daten können derzeit nicht geladen werden. Bitte versuche es später erneut.':s.identityState==='AVAILABLE'?'Dieser Titel ist im gemeinsamen Wertpapierverzeichnis vorhanden. Verfügbare Kurs- und Geschäftsjahresdaten werden darunter geladen. Für weitere Analysen kann die Datenabdeckung abweichen.':'Für diesen Titel liegen in dieser Ansicht keine freigegebenen Daten vor.'));
  if(s.identityState==='AVAILABLE'){
   const [history,fundamentals]=await Promise.all([api.getHistoricalPriceHistory(ticker),api.getHistoricalFundamentals(ticker)]);
   if(history.state==='AVAILABLE')main.append(el('section',{class:'section'},[el('h2',{text:'Kursentwicklung'}),QuantCharts.lineChart({title:ticker+' · tägliche Schlusskurse',width:Math.min(900,innerWidth-40),height:290,dates:history.bars.map(b=>b.date),series:[{values:history.bars.map(b=>b.close)}],yFormat:v=>v.toLocaleString('de-DE',{notation:'compact',maximumFractionDigits:1})}),el('p',{class:'muted',text:'Splitbereinigte Schlusskurse · '+history.currency+' · Stand '+history.asOf+'. Verfügbarer Tageszeitraum: '+history.availableFrom+' bis '+history.availableTo+'.'})]));
@@ -862,6 +872,28 @@ function branchenvorlageHinweis(data){
    Belegen. Die Reihenfolge ist die des Wörterbuchs - Aussage, Erklärung,
    Evidenz, Methodik -, und die Methodik ist eingeklappt.
    ========================================================================= */
+/* Der Hinweis auf eine unsichere Zuordnung. Er nennt beide Namen, sagt was
+   gezeigt wird und warum - und trifft die Entscheidung nicht. Der interne
+   Gruppenschluessel steht in der Methodikebene und nie zuerst. */
+const IDENTITAET_GRUND={
+ D:'Die beiden Quellen nennen verschiedene Zahlwörter im Firmennamen. Bei Nachfolgegesellschaften '
+  +'und Serien sind das zwei verschiedene Unternehmen.',
+ F:'Die beiden Quellen nennen Firmennamen ohne ein gemeinsames Wort, und die Verknüpfung stützt sich '
+  +'nur auf das Kürzel.',
+ G:'Die beiden Quellen nennen verschiedene Firmennamen. Ob es eine Umbenennung ist oder ein '
+  +'wiederverwendetes Kürzel, lässt sich aus den vorliegenden Angaben nicht entscheiden.'};
+function identitaetsHinweis(s){
+ const k=s.identityConflict||{};
+ return el('div',{class:'identity-note','data-conflict':k.kind||''},[
+  el('p',{text:'Zu diesem Kürzel liegen zwei verschiedene Firmennamen vor.'}),
+  k.alternativeName?el('p',{class:'muted',text:'Angezeigt wird „'+(s.name||s.ticker)+'". '
+   +'Eine andere Quelle nennt „'+k.alternativeName+'".'}):null,
+  el('p',{class:'muted',text:(IDENTITAET_GRUND[k.kind]||'Die Quellen sind über die Zuordnung uneins.')
+   +' Die Geschäftszahlen unten stammen aus den Unterlagen der Gesellschaft, der dieses Kürzel '
+   +'im Wertpapierverzeichnis zugeordnet ist. Wir entscheiden diese Frage nicht, solange sie nicht belegt ist.'}),
+  el('p',{class:'muted',text:'Prüfung der Namensquellen: Fassung '+(k.contract||'unbekannt')+'.'})]);
+}
+
 function briefListe(titel, eintraege, cls, leerText){
  return el('div',{class:'brief-column '+cls},[
   el('h3',{text:titel}),

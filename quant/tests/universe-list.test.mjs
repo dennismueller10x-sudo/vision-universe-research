@@ -50,7 +50,7 @@ test("the index names its own coverage and invents no price", () => {
      Boersenwert dieses Titels zurueckgehalten wird, `il` die Zahl der
      notierten Zeilen seines Emittenten. Die Liste liest beide Fassungen; der
      Dienst haelt sie als Liste, nicht als Gleichheit. */
-  assert.ok(["universe-list-1.0.0", "universe-list-1.1.0"].includes(index.schemaVersion),
+  assert.ok(["universe-list-1.0.0", "universe-list-1.1.0", "universe-list-1.2.0"].includes(index.schemaVersion),
     "unbekannte Fassung " + index.schemaVersion);
   assert.ok(index.coverage.universe > 6000);
   assert.ok(index.coverage.withPrice > 5000, "nur " + index.coverage.withPrice + " Kurse im Verzeichnis");
@@ -163,8 +163,13 @@ test("the index overwrites nothing that already has a value", async () => {
   const koerper = services.slice(stelle, stelle + 1400);
   /* Ein vorhandener Kurs bleibt stehen ... */
   assert.match(koerper, /!Number\.isFinite\(row\.price&&row\.price\.value\)/);
-  /* ... ein vorhandener Name bleibt stehen ... */
-  assert.match(koerper, /!row\.name\|\|row\.name===row\.ticker/);
+  /* ... der NAME dagegen kommt aus dem Verzeichnis, auch gegen einen schon
+     gesetzten. Das ist seit dem Namensvertrag (company-naming-1.0.0)
+     Absicht: der Wertpapierstamm ist die Identitaetsquelle, und die
+     Panelzeile traegt denselben Namen in Versalien ("JPMORGAN CHASE & CO").
+     Gemessen nannten Liste und Aktienseite verschiedene Namen, solange ein
+     bereits gesetzter Name hier gewann. */
+  assert.match(koerper, /if\(entry\.n\)row\.name=entry\.n;/);
   /* ... eine fehlende Freigabe bleibt eine fehlende Freigabe ... */
   assert.match(koerper, /DISPLAY_NOT_PERMITTED/);
   /* ... und ein Eintrag fuer einen anderen Titel wird nicht verwendet. */

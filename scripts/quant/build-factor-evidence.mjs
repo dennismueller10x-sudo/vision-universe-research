@@ -315,6 +315,56 @@ function main() {
   }
 
   const templates = buildTemplates(contract);
+
+  /* ----------------------------------------------------------------------
+     EINE AKTIENMETHODIK GILT FUER AKTIEN.
+
+     Owner-Entscheidung vom 28.09.2026: ein Papier, dessen veroeffentlichter
+     Name ausdruecklich eine andere Gattung nennt, ist keine Aktie - auch wenn
+     der Anbieter das unspezifische assetType="Stock" meldet. Gemessen sind
+     das 136 Instrumente, die "... ETF" heissen.
+
+     Gemessen am 28.09.2026, was sie hier bisher bekamen: 136 Faktorzeilen,
+     34 davon mit bewerteten Eigenschaften (immer Kursstaerke und
+     Schwankungsbreite), 9 mit einem berechneten Boersenwert, 0 mit einer
+     Bewertung. Kursstaerke ist fuer einen Fonds eine wahre Zahl - aber diese
+     Methodik rechnet sieben Eigenschaften eines UNTERNEHMENS und nennt das
+     Ergebnis "wie stark die Aktie dasteht". Zwei von sieben davon auf einen
+     Rentenfonds anzuwenden ist der falsche Rahmen, nicht eine kleine Luecke,
+     und ein "Boersenwert" eines Fonds ist sein Nettovermoegen unter einem
+     falschen Namen.
+
+     Deshalb faellt die Zeile hier ganz - fail-closed, mit belegtem Grund.
+     Der Titel bleibt im Instrumenten- und Suchuniversum; was er verliert,
+     ist die Aktienanalyse. Der Grund steht im Bericht und die Oberflaeche
+     sagt ihn in Alltagssprache.
+
+     Die Grundlage ist der Wertpapierstamm und nicht eine zweite Regel: nur
+     Instrumente mit HOHER Konfidenz aus einem positiven Beleg
+     (SECURITY_NAME / PROVIDER_ASSET_TYPE) und einer Gattung, die keine Aktie
+     ist. Ein COMMON_STOCK aus dem Restfall bleibt unberuehrt.
+     ---------------------------------------------------------------------- */
+  const AKTIENGATTUNGEN = new Set(["COMMON_STOCK", "ADR"]);
+  const BELEGTE_BASIS = new Set(["SECURITY_NAME", "PROVIDER_ASSET_TYPE"]);
+  const keineAktie = new Map();
+  {
+    const dir = join(ROOT, "quant/data/universe/instruments");
+    if (existsSync(dir)) {
+      for (const datei of readdirSync(dir)) {
+        if (!datei.endsWith(".json")) continue;
+        for (const instrument of (readJSON(join(dir, datei)).instruments || [])) {
+          if (AKTIENGATTUNGEN.has(instrument.securityType)) continue;
+          if (instrument.securityTypeConfidence !== "HIGH") continue;
+          if (!BELEGTE_BASIS.has(instrument.securityTypeBasis)) continue;
+          keineAktie.set(instrument.symbol, {
+            type: instrument.securityType, basis: instrument.securityTypeBasis,
+            name: instrument.companyName || null
+          });
+        }
+      }
+    }
+  }
+
   const columns = Object.fromEntries(taxonomy.rowColumns.map((name, index) => [name, index]));
   const peerByTicker = new Map();
   for (const row of taxonomy.rows) {
@@ -423,8 +473,18 @@ function main() {
   const gapCounts = new Map();
   const countGap = (key) => gapCounts.set(key, (gapCounts.get(key) || 0) + 1);
 
+  const uebersprungen = [];
   for (const security of priceFactors.securities) {
     const ticker = security.ticker;
+    /* Kein Aktienfaktor fuer ein Papier, das belegt keine Aktie ist. Die
+       Zeile entsteht nicht - und der Grund wird gezaehlt, damit die
+       Oberflaeche ihn nennen kann statt "keine Daten". */
+    const fremdeGattung = keineAktie.get(ticker);
+    if (fremdeGattung) {
+      uebersprungen.push({ ticker, ...fremdeGattung });
+      countGap("NOT_AN_EQUITY_LISTING:" + fremdeGattung.type);
+      continue;
+    }
     const peer = peerByTicker.get(ticker) || null;
     const quote = closeByTicker.get(ticker) || null;
     /* The certified price factors plus the one value derived here from the
@@ -988,9 +1048,24 @@ function main() {
       peerTaxonomy: { version: taxonomy.version, rows: taxonomy.rows.length, snapshotMode: taxonomy.snapshotMode },
       quotes: { source: "technical-product-artifact-1.0.0", tickers: closeByTicker.size }
     },
+    /* WER HIER BEWUSST NICHT STEHT.
+       Ein Papier, das belegt keine Aktie ist, bekommt keine Aktienfaktoren -
+       und das ist eine Aussage und keine Luecke. Sie steht im Artefakt mit
+       Gattung, Beleggrundlage und Namen, damit jede Flaeche den Grund nennen
+       kann und niemand die fehlende Zeile fuer einen Datenfehler haelt. */
+    notAnEquityListing: {
+      reason: "NOT_AN_EQUITY_LISTING",
+      decision: "Owner-Entscheidung 2026-09-28: ausdruecklicher ETF-/Gattungsname im " +
+        "veroeffentlichten Wertpapiernamen schlaegt das unspezifische assetType='Stock'.",
+      count: uebersprungen.length,
+      byType: uebersprungen.reduce((z, e) => { z[e.type] = (z[e.type] || 0) + 1; return z; }, {}),
+      byBasis: uebersprungen.reduce((z, e) => { z[e.basis] = (z[e.basis] || 0) + 1; return z; }, {}),
+      tickers: uebersprungen.map((e) => e.ticker).sort()
+    },
     counts: {
       productUniverse: priceFactors.coverage.requested,
       priceFactorSecurities: priceFactors.securities.length,
+      notAnEquityListing: uebersprungen.length,
       published: written,
       withFundamentals: records.filter((record) => record.fundamentals).length,
       withMarketCap: records.filter((record) => finite(record.fundamentals?.marketCap)).length,

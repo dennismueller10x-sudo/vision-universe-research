@@ -1,0 +1,1071 @@
+{
+ "schemaVersion": "security-type-safety-1.0.0",
+ "generatedAt": "2026-09-28T06:13:36.000Z",
+ "ownerDecision": {
+  "date": "2026-09-28",
+  "released": [
+   "explizites \"ETF\"",
+   "explizites \"Exchange-Traded Fund\""
+  ],
+  "notReleased": [
+   "\"Trust\" allein",
+   "\"Fund\" allein",
+   "Tickersuffix-Heuristiken",
+   "Emittentenname statt Wertpapiername",
+   "Vermutung aus Branche oder Kursverhalten"
+  ],
+  "pattern": "/\\bETF\\b|\\bEXCHANGE[- ]TRADED FUNDS?\\b/i"
+ },
+ "ETF_NAME_EVIDENCE_CANDIDATES": 136,
+ "ETF_RECLASSIFIED": 136,
+ "STILL_EQUITY_AFTER_EVIDENCE": 0,
+ "AMBIGUOUS_NOT_CHANGED": 179,
+ "STOCK_SCREENER_REMOVED": 165,
+ "STOCK_SCREENER_REMAINING": 0,
+ "VALUE_FACTORS_REMOVED": 145,
+ "STRATEGY_MATCHES_REMOVED": 145,
+ "residual": {
+  "factorRows": 0,
+  "valueFactors": 0,
+  "marketCaps": 0,
+  "screeningRows": 0,
+  "strategyMatches": 0,
+  "note": "Alle fünf müssen 0 sein. Jede Zahl darüber ist eine Aktienaussage über ein Papier, das keine Aktie ist."
+ },
+ "provenNonEquity": {
+  "total": 165,
+  "byType": {
+   "ETF": 138,
+   "WARRANT": 17,
+   "ETN": 1,
+   "PREFERRED": 9
+  },
+  "byBasis": {
+   "SECURITY_NAME": 163,
+   "PROVIDER_ASSET_TYPE": 2
+  },
+  "stillInInstrumentUniverse": 145,
+  "examples": [
+   {
+    "ticker": "AAAC",
+    "type": "ETF",
+    "name": "Columbia AAA CLO ETF"
+   },
+   {
+    "ticker": "AAAD",
+    "type": "ETF",
+    "name": "Pgim AAA CLO Aggregate Duration ETF"
+   },
+   {
+    "ticker": "AAAP",
+    "type": "ETF",
+    "name": "Pacer Barings CLO Market Flex ETF"
+   },
+   {
+    "ticker": "AACTWS",
+    "type": "WARRANT",
+    "name": "Ares Acquisition Corporation II Redeemable Warrants each whole warrant exercisable for one Class A ordinary share at an exercise price of 11.50"
+   },
+   {
+    "ticker": "ABI",
+    "type": "ETF",
+    "name": "Victoryshares Pioneer Asset-based Income ETF"
+   },
+   {
+    "ticker": "ABLLW",
+    "type": "WARRANT",
+    "name": "Abacus Life Inc Warrant"
+   },
+   {
+    "ticker": "ACYN",
+    "type": "ETF",
+    "name": "FT Vest Laddered Autocallable Barrier & Income ETF"
+   },
+   {
+    "ticker": "ACYS",
+    "type": "ETF",
+    "name": "FT Vest Laddered Autocallable Barrier & Resilient Income ETF"
+   }
+  ]
+ },
+ "ambiguousLeftAlone": [
+  {
+   "id": "TRUST",
+   "counterExample": "American Assets Trust ist ein REIT, also eine Aktie.",
+   "titles": 184,
+   "stillCommonStock": 131
+  },
+  {
+   "id": "FUND",
+   "counterExample": "Ein Name mit Fund kann ein geschlossener Fonds oder eine Beteiligungsgesellschaft sein.",
+   "titles": 55,
+   "stillCommonStock": 41
+  },
+  {
+   "id": "INDEX",
+   "counterExample": "Ein Indexanbieter wäre ein Betrieb.",
+   "titles": 2,
+   "stillCommonStock": 2
+  },
+  {
+   "id": "PORTFOLIO",
+   "counterExample": "Altisource Portfolio Solutions ist eine Betriebsgesellschaft.",
+   "titles": 5,
+   "stillCommonStock": 5
+  }
+ ],
+ "allCandidates": [
+  {
+   "ticker": "AAAC",
+   "name": "Columbia AAA CLO ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "AAAD",
+   "name": "Pgim AAA CLO Aggregate Duration ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "AAAP",
+   "name": "Pacer Barings CLO Market Flex ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ABI",
+   "name": "Victoryshares Pioneer Asset-based Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ACYN",
+   "name": "FT Vest Laddered Autocallable Barrier & Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ACYS",
+   "name": "FT Vest Laddered Autocallable Barrier & Resilient Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "AGIQ",
+   "name": "Sofi Agentic AI ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "AHD",
+   "name": "GraniteShares Autocallable HOOD ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "AMKL",
+   "name": "Defiance Daily Target 2X Long Amkr ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "APHU",
+   "name": "T-rex 2X Long APH Daily Target ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "AQLG",
+   "name": "HCM Large Cap Growth ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ASEC",
+   "name": "American Century Securitized Credit ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ASTN",
+   "name": "Defiance Daily Target 2X Short Asts ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BCEM",
+   "name": "Baron Emerging Markets Select ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BCGD",
+   "name": "Baron Global Durable Advantage ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BCOR",
+   "name": "Grayscale Bitcoin Adopters ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BCSM",
+   "name": "Baron Smid CAP ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BFLX",
+   "name": "iShares Flexible Equity Active ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BITW",
+   "name": "Bitwise 10 Crypto Index ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BRCE",
+   "name": "MFS Blended Research Core Equity ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BREW",
+   "name": "Corgi Coffee & Energy Drinks ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BRIE",
+   "name": "MFS Blended Research International Equity ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BTOT",
+   "name": "Ishares Total USD Fixed Income Market ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BUFE",
+   "name": "FT Vest Laddered Emerging Markets Buffer ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "BWOW",
+   "name": "Bitwise Dogecoin ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CAM",
+   "name": "AB California Intermediate Municipal ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CCRP",
+   "name": "Columbia Corporate Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CEGX",
+   "name": "Tradr 2X Long CEG Daily ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CJUN",
+   "name": "Corgi U.S. Equities 15 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CLUB",
+   "name": "Billionaires Club ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CMAY",
+   "name": "Corgi U.S. Equities 15 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "COOL",
+   "name": "VegaShares AI Thermal Cooling & Power Management ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CRUX",
+   "name": "Columbia Core Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CRXP",
+   "name": "Columbia Core Plus Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CSIO",
+   "name": "Cohen & Steers Infrastructure Opportunities Active ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CSNR",
+   "name": "Cohen & Steers Natural Resources Active ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CSRE",
+   "name": "Cohen & Steers Real Estate Active ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CSSD",
+   "name": "Cohen & Steers Short Duration Preferred AND Income Active ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CTJN",
+   "name": "Corgi U.S. Equities 30 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "CTMA",
+   "name": "Corgi U.S. Equities 30 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "DDFY",
+   "name": "Innovator Equity Dual Directional 15 Buffer ETF May",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "DDFZ",
+   "name": "Innovator Equity Dual Directional 15 Buffer ETF June",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "DDTY",
+   "name": "Innovator Equity Dual Directional 10 Buffer ETF May",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "DDTZ",
+   "name": "Innovator Equity Dual Directional 10 Buffer ETF June",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "DLMY",
+   "name": "FT Vest U.s. Equity Dual Directional Buffer ETF - MAY",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "DLUX",
+   "name": "Doubleline Ultrashort Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "DUSG",
+   "name": "U.S. Small Cap Growth Portfolio ETF Class Shares",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ECHX",
+   "name": "Leverage Shares 2X Long ECHO Daily ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "EMJN",
+   "name": "Corgi Emerging Markets Equities 15 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "EMMY",
+   "name": "Corgi Emerging Markets Equities 15 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ETCO",
+   "name": "Grayscale Ethereum Covered Call ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "FBDC",
+   "name": "FT Confluence BDC & Specialty Finance Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "FOXY",
+   "name": "Simplify Exchange Traded Funds Currency Strategy",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "FSML",
+   "name": "Franklin Small CAP Enhanced ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "GIEQ",
+   "name": "Goldman Sachs Data Enhanced International Equity ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "GLNK",
+   "name": "Grayscale Chainlink Trust ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "GOLI",
+   "name": "Defiance Gold Enhanced Options Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "GOVM",
+   "name": "Ishares 1-10 Year Treasury Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "GQGU",
+   "name": "GQG US Equity ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "GSUI",
+   "name": "Grayscale Sui Staking ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "GXRP",
+   "name": "Grayscale XRP Trust ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "HJUN",
+   "name": "Corgi U.S. Equities 100 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "HMAY",
+   "name": "Corgi U.S. Equities 100 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "HODL",
+   "name": "VanEck Bitcoin ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "HOLA",
+   "name": "Jpmorgan International Hedged Equity Laddered Overlay ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "IBHM",
+   "name": "Ishares Ibonds 2033 Term High Yield AND Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "IBMW",
+   "name": "Ishares Ibonds DEC 2034 Term Muni Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "IBMX",
+   "name": "Ishares Ibonds DEC 2035 Term Muni Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "IDJN",
+   "name": "Corgi International Developed Equities 15 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "IDMY",
+   "name": "Corgi International Developed Equities 15 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "IFLO",
+   "name": "Victoryshares International Free Cash Flow ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "IG",
+   "name": "Principal Investment Grade Corporate Active ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "INVN",
+   "name": "Alger Russell Innovation ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "JIDE",
+   "name": "Jpmorgan International Dynamic ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "JMMF",
+   "name": "Jpmorgan 100% U.s. Treasury Securities Money Market ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "JMTG",
+   "name": "Jpmorgan Mortgage-backed Securities ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "JUNC",
+   "name": "Corgi U.S. Equities 10 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "KEEX",
+   "name": "Defiance Daily Target 2X Long Keel ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "KPHO",
+   "name": "Kraneshares Dragon Capital Growth OF Vietnam Index ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "MAYC",
+   "name": "Corgi U.S. Equities 10 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "MMID",
+   "name": "MFS Active MID CAP ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "MMK",
+   "name": "State Street Prime Money Market ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "MYCO",
+   "name": "Spdr Ssga MY2035 Corporate Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "MYHA",
+   "name": "State STREET(R) MY2027 High Yield Corporate Bond ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "NGIF",
+   "name": "Nuveen Global Infrastructure Fund ETF Class",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "NUDG",
+   "name": "Nuveen Dividend Growth Fund ETF Class",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "NUIF",
+   "name": "Nuveen US Infrastructure ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "NYNY",
+   "name": "Corgi NYC Based ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "PBSC",
+   "name": "Pacer Barings Secured Credit Flex ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "PCL",
+   "name": "Pgim Corporate Bond 10+ Year ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "PCS",
+   "name": "Pgim Corporate Bond 0-5 Year ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "PJUS",
+   "name": "Pgim Jennison U.s. Core Equity ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "POEL",
+   "name": "Defiance Daily Target 2X Long Poet ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "PONX",
+   "name": "Tradr 2X Long Pony Daily ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "PRAB",
+   "name": "State STREET(R) IG Public & Private ABS ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "PRSD",
+   "name": "State STREET(R) Short Duration IG Public & Private Credit ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "QJN",
+   "name": "Corgi Growth & Technology 10 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "QMY",
+   "name": "Corgi Growth & Technology 10 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "QQJN",
+   "name": "Corgi Growth & Technology 15 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "QQMY",
+   "name": "Corgi Growth & Technology 15 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "QSOL",
+   "name": "Invesco Galaxy Solana ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "RAAA",
+   "name": "Reckoner Leveraged AAA CLO ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "REGS",
+   "name": "Columbia Large CAP Growth ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "REMC",
+   "name": "Columbia Research Enhanced MID CAP ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "RESM",
+   "name": "Columbia Research Enhanced Small CAP ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "RONB",
+   "name": "Baron First Principles ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SBAR",
+   "name": "Simplify Exchange Traded Funds Barrier Income",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SCJN",
+   "name": "Corgi U.S. SmallCap 15 Structured Buffer ETF June Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SCMY",
+   "name": "Corgi U.S. SmallCap 15 Structured Buffer ETF May Series",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SITX",
+   "name": "Investment Managers Series Trust II - Tradr 2X Long SITM Daily ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SLWS",
+   "name": "Wisdom Short Duration Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SMU",
+   "name": "Tradr 2X Long SMR Daily ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SPCL",
+   "name": "Defiance Daily 2X Space ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "SQLT",
+   "name": "Ishares Msci USA Small-cap Quality Factor ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "TLG",
+   "name": "Touchstone Large Company Growth ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "TMED",
+   "name": "T. Rowe Price Health Care ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "TOXR",
+   "name": "21Shares XRP ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "TSOL",
+   "name": "21Shares Solana Staking ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "UCOP",
+   "name": "Proshares Ultra Copper K-1 Free ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "UPAL",
+   "name": "Proshares Ultra Palladium K-1 Free ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "UPLT",
+   "name": "Proshares Ultra Platinum K-1 Free ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "USLN",
+   "name": "Ishares Broad USD Floating Rate Loan ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "VDG",
+   "name": "Vanguard Developed Markets Ex-us Growth Index ETF ETF Shares",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "VDV",
+   "name": "Vanguard Developed Markets Ex-us Value Index ETF ETF Shares",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "VGVT",
+   "name": "Vanguard Government Securities Active ETF ETF Shares",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "VOLT",
+   "name": "Tema Electrification ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "VOXP",
+   "name": "VOX Populi ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "VTG",
+   "name": "Vanguard Total Treasury ETF ETF Shares",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "VTP",
+   "name": "Vanguard Total Inflation-protected Securities ETF ETF Shares",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "WCMG",
+   "name": "First Trust WCM Global Equity ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "WR",
+   "name": "Corgi U.S. War Machine ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "WRTH",
+   "name": "Worth Charting Options Income ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "XEY",
+   "name": "GraniteShares YieldBOOST Ether ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "XOEF",
+   "name": "Ishares S&P 500 EX S&P 100 ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "XV",
+   "name": "Simplify Exchange Traded Funds Target 15 Distribution",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  },
+  {
+   "ticker": "ZCSH",
+   "name": "Zcash ETF",
+   "type": "ETF",
+   "basis": "SECURITY_NAME",
+   "screenerEligible": false
+  }
+ ]
+}

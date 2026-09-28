@@ -1,6 +1,126 @@
 # Vision Universe® Quant 2.0 — Orchestrator State
 
-Updated: 2026-09-26 UTC
+Updated: 2026-09-28 UTC
+
+## NORTH_STAR_2026-09-28 — PUBLIC BETA LAUNCH READINESS
+
+Das übergeordnete Ziel ist ab dem 28.09.2026 nicht mehr Vollständigkeit, sondern
+`PUBLIC_BETA_LAUNCH_READY = PASS`. Reihenfolge: **Korrektheit > Coverage · Vertrauen >
+Vollständigkeit · Launch Readiness > weitere Feature-Tiefe.** Der Launch-Scope-Freeze gilt: keine
+neuen Quant-Engines, Strategie- oder Musterfamilien, keine neue Backtest-Methodik, keine neuen
+Provider, keine Revisions-Daten, keine neue Marktdatenarchitektur, keine neuen
+Discovery-Funktionen. Bestehende fail-closed-Grenzen bleiben akzeptiert.
+
+Ein fehlender Wert ist launchfähig, wenn **drei** Bedingungen erfüllt sind: der Grund ist richtig,
+die Oberfläche erklärt ihn verständlich, und es entsteht keine falsche Aussage.
+
+## M42 — DIE ZWEI OWNER-ENTSCHEIDUNGEN ZUR IDENTITÄT, UMGESETZT UND GEMESSEN
+
+`ETF_RECLASSIFIED = 136` · `STOCK_SCREENER_REMAINING = 0` · `CANONICAL_NAME_CONTRACT_VERSIONED =
+PASS` · `LIST_NAME == STOCK_PAGE_NAME bei 6.875 von 6.875` · Suite 1.959 grün
+
+### Entscheidung 1 — der veröffentlichte Wertpapiername schlägt das Anbieterfeld
+
+`assetType = "Stock"` ist kein Beleg für eine Aktie, wenn der Name ausdrücklich eine andere
+Gattung nennt. Freigegeben als positiver Beleg: ausdrückliches „ETF", ausdrückliches
+„Exchange-Traded Fund". Ausdrücklich **nicht** benutzt: bloß „Trust", bloß „Fund",
+Kürzel-Heuristiken, der Emittentenname anstelle des Wertpapiernamens, Vermutungen aus Branche
+oder Kursverhalten.
+
+Alle gemessenen Fälle sind geprüft — nicht 133, sondern **136**, weil dieselbe Regel nach dem
+Namensanschluss aus M41 drei weitere Titel sieht:
+
+| Kennzahl | Wert |
+|---|---:|
+| `ETF_NAME_EVIDENCE_CANDIDATES` | 136 |
+| `ETF_RECLASSIFIED` | 136 |
+| `STILL_EQUITY_AFTER_EVIDENCE` | 0 |
+| `AMBIGUOUS_NOT_CHANGED` | 179 |
+| `STOCK_SCREENER_REMOVED` | 165 |
+| `STOCK_SCREENER_REMAINING` | **0** |
+| `VALUE_FACTORS_REMOVED` | 145 |
+| `STRATEGY_MATCHES_REMOVED` | 145 |
+
+Die 165 aus dem Aktienscreener entfernten Papiere sind 138 ETFs, 17 Optionsscheine, 9
+Vorzugspapiere und 1 ETN; 163 davon belegt der Wertpapiername, 2 das Anbieterfeld. Der
+Restbestand ist fünfmal null: keine Faktorzeile, kein Value-Faktor, kein Börsenwert, keine
+Screening-Zeile, kein Strategie-Treffer über einem belegten Nicht-Aktien-Papier. Die 179
+mehrdeutigen bleiben unangetastet, mit Gegenbeispiel je Muster — „American Assets Trust" ist ein
+REIT und damit eine Aktie.
+
+Die Papiere verschwinden **nicht** aus dem Produkt: Kurs, Kursverlauf und Suche bleiben. Es
+entfällt die Aktienaussage. Die Reise sagt das im Klartext („Dieses Papier ist keine Aktie") über
+die neue Ursachengruppe `NOT_AN_EQUITY_LISTING`.
+
+**Ein Fehler auf dem Weg, gemessen und behoben:** `screenerEligible` folgte weiter dem
+Eignungsartefakt und änderte sich durch die Neueinordnung nicht. Die Ausnahme in
+`company-master.js` greift jetzt nur bei **belegter** Gattung (`HIGH` aus `SECURITY_NAME` oder
+`PROVIDER_ASSET_TYPE`) — fail-closed, nicht pauschal. Und sechs von elf namensabgeleiteten
+Gattungen waren zuerst falsch: ein Vorzugs-ETF wurde PREFERRED, Vorzugs-Depositary-Shares wurden
+ADR. Die Regelreihenfolge steht jetzt Hülle vor Inhalt.
+
+### Entscheidung 2 — ein Namensvertrag statt einer Quellenpriorität
+
+Kein „Liste gewinnt", kein „Stock Page gewinnt". `company-naming-1.0.0` führt drei Ebenen —
+`ISSUER_LEGAL_NAME`, `SECURITY_DISPLAY_NAME`, `PRODUCT_DISPLAY_NAME` — und ordnet jeder Quelle
+genau eine zu (SEC = Emittent, Tiingo = Wertpapier, VU = Produkt). Emittentenname und
+Wertpapiername werden nicht still vermischt.
+
+Die Abweichungen sind **vollständig** partitioniert, und die Partition addiert sich auf:
+
+| | Art | Fälle | Beispiel |
+|---|---|---:|---|
+| A | Rechtsform, Zeichensetzung, Großschreibung | 338 | AAUC „Allied Gold Corp" / „Allied Gold Corporation" |
+| B | Kurzform | 342 | ABM „ABM INDUSTRIES INC /DE/" / „ABM Industries Inc" |
+| C | Aktienklasse | 911 | AACO „… Corp. I" / „… Corp I - Class A" |
+| D | Serie / Zahlwort | **99** | AACI „Armada Acquisition Corp. III" / „… Corp I" |
+| E | Umbenennung / Übernahme | **0** | — (siehe unten) |
+| F | echter Identitätskonflikt | **1** | PALX „Palomino Laboratories Inc." / „PALEX INC" |
+| G | unklar | **279** | AAMI „Acadian Asset Management Inc." / „BrightSphere Investment Group Inc" |
+
+5.603 Instrumente sind über beide Ebenen vergleichbar, 3.624 nennen denselben Namen, 1.970 weichen
+ab, 9 tragen auf einer Ebene keinen Namen, 2.206 haben nicht beide Ebenen. Kosmetisch (A+B) sind
+**680**, substanziell (C–G) **1.290**. `IDENTITY_CONFLICT = 379` (D, F, G); C ist kein Konflikt,
+sondern die zulässige Ergänzung der Wertpapierebene.
+
+**Die Zahlen des Auftrags weichen ab, und das ist die Korrektur einer Messung, nicht des
+Auftrags.** Die genannten 5.423 Abweichungen / 3.908 kosmetisch / 1.515 substanziell stammen aus
+einer Messung vom 26.09., die (a) gleiche Namen als Abweichung mitzählte und (b) Punkte in
+Rechtsformen als Zeichensetzung behandelte. Beides ist behoben: `normalise` entfernt Punkte
+vollständig (107 Fälle „L.P." gegen „Lp"), und Gleichheit ist keine Abweichung (3.930 Fälle,
+Beispiel „Alcoa Corp" / „Alcoa Corp").
+
+**E bleibt 0 mit Begründung, nicht aus Nachlässigkeit.** Eine Umbenennung und eine
+Kürzel-Wiederverwendung sehen lokal identisch aus: AAMI (Umbenennung BrightSphere → Acadian) und
+AEC (anderes Unternehmen unter demselben Kürzel) liefern dasselbe Bild. Ohne eine
+Kürzel-Historie mit Gültigkeitsdaten ist das nicht trennbar, und eine Vermutung wäre eine
+erfundene Identität. Beide landen deshalb in G und bleiben offen.
+
+**Der Regressionsfall AACI wird erkannt:** „Armada Acquisition Corp I" gegen „III" ist Art D mit
+`identityConflict = true`, beide Namen stehen mit Herkunft (Quelle, CIK `0002092897`, issuerId,
+securityId, Kürzel, Stichtag, firstSeen, Join-Beleg) im Bericht, und die Auflösung wählt **nicht**
+still: `resolve()` gibt bei Konflikt keine Entscheidung zurück. Die Aktienseite zeigt den Konflikt
+als Klartexthinweis mit beiden Namen; 310 Einträge tragen ihn in `universe-list-1.2.0`.
+
+### Liste == Aktienseite: 6.875 von 6.875
+
+Der Name ist jetzt einquellig. Der Konsum-Export setzt ihn nicht mehr; das Verzeichnis ist die
+Identitätsquelle und gilt **auch** gegen einen bereits gesetzten Namen — das ist die eine Stelle,
+an der die Regel „das Verzeichnis ergänzt nur" bewusst nicht gilt, und der Grund steht im Code.
+Gemessen am Dienst, Titel für Titel: **6.875 gleich, 0 verschieden, 0 ohne Namen.**
+
+Die 4.719 Abweichungen aus dem Auftrag bleiben als **Quellenzahl** im Bericht stehen
+(`SOURCE_MASTER_DIFFERS_FROM_CONSUMER_EXPORT`) — sie beschreiben den Abstand der beiden
+Rohschichten und waren der Anlass. Sie sind keine Produktaussage mehr.
+
+### Ein Test, der sich selbst geprüft hätte
+
+Der erste Bau des Tests „Liste und Aktienseite nennen denselben Namen" verglich `Zeile.name` gegen
+`Seite.name` über alle Titel. Beide beziehen den Namen inzwischen aus derselben Verzeichniszeile.
+Eine eingebaute Sabotage („Sabotage AG" statt „Apple Inc.") erschien gemessen auf **beiden**
+Flächen gleichzeitig — der Vergleich wäre grün geblieben. Der Test prüft jetzt beide Flächen gegen
+das veröffentlichte Verzeichnis, die hier einzige unabhängige Quelle, und die Sabotage löst ihn auf
+beiden Seiten aus.
 
 ## M41 — DIE NAMEN LAGEN DA UND NIEMAND HAT SIE GELESEN
 

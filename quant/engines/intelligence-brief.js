@@ -660,9 +660,22 @@
     var factors = evidence && Array.isArray(evidence.factors) ? evidence.factors : [];
     var setup = setupLogic(src.setup);
     var drei = groups(src, factors);
-    var kopf = headline(factors, setup.state, evidence && evidence.state !== "AVAILABLE"
-      ? "Für diesen Titel liegt noch keine auswertbare Einordnung der sieben Eigenschaften vor."
-      : null);
+    /* WARUM es keine Einordnung gibt, gehoert in den ersten Satz.
+     *
+     * Bei einem Papier, das belegt keine Aktie ist, waere "noch keine
+     * auswertbare Einordnung" gleich doppelt falsch: es fehlt nichts, und
+     * "noch" verspricht etwas, das nie kommt. Owner-Entscheidung vom
+     * 28.09.2026; gemessen betrifft es 145 Titel. */
+    var GATTUNG_KLARTEXT = { ETF: "ein börsengehandelter Fonds", ETN: "eine börsengehandelte Schuldverschreibung",
+      PREFERRED: "ein Vorzugspapier", FUND: "ein Fonds", WARRANT: "ein Optionsschein" };
+    var absage = null;
+    if (evidence && evidence.state !== "AVAILABLE") {
+      absage = evidence.reason === "NOT_AN_EQUITY_LISTING"
+        ? "Dieser Titel ist " + (GATTUNG_KLARTEXT[evidence.securityType] || "keine Aktie") +
+          ". Die Einordnung dieser Analyse beschreibt Unternehmen und gilt für ihn nicht."
+        : "Für diesen Titel liegt noch keine auswertbare Einordnung der sieben Eigenschaften vor.";
+    }
+    var kopf = headline(factors, setup.state, absage);
 
     /* Zwei Aussagen mit demselben Wortlaut sind für einen Leser ein Fehler
        der Seite, auch wenn beide stimmen. Sie werden hier zusammengeführt

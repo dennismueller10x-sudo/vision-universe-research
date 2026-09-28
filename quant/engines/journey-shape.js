@@ -177,6 +177,29 @@
       outlook: "Die Zahlen des Unternehmens selbst sind davon nicht betroffen und stehen weiter unten."
     },
     {
+      /* EIN FONDS IST KEINE AKTIE - UND DAS IST KEIN DATENMANGEL.
+       *
+       * Owner-Entscheidung vom 28.09.2026: 145 Titel tragen einen Namen, der
+       * ausdruecklich eine andere Gattung nennt (136 ETFs, 9 Vorzugspapiere).
+       * Die Aktienmethodik gilt fuer sie nicht, und ohne diese Gruppe sagte
+       * die Seite "erfuellt die Datenanforderungen derzeit nicht" - ein
+       * Mangel, wo eine Entscheidung steht, und "derzeit" waere zudem falsch:
+       * an einem Rentenfonds aendert sich das nie. */
+      id: "NOT_AN_EQUITY_LISTING",
+      codes: ["NOT_AN_EQUITY_LISTING"],
+      headline: "Dieses Papier ist keine Aktie",
+      sentence: function (detail) {
+        var was = { ETF: "ein börsengehandelter Fonds", ETN: "eine börsengehandelte Schuldverschreibung",
+          PREFERRED: "ein Vorzugspapier", FUND: "ein Fonds", WARRANT: "ein Optionsschein" }[detail.securityType] ||
+          "kein Anteil an einem Unternehmen";
+        return "Nach dem veröffentlichten Wertpapiernamen ist dieser Titel " + was + ". " +
+          "Die Kennzahlen dieser Analyse beschreiben Unternehmen - Bilanz, Gewinn, Wachstum, Bewertung. " +
+          "Auf ein solches Papier angewendet ergäben sie Zahlen, die nichts über es aussagen. " +
+          "Sie bleiben deshalb aus.";
+      },
+      outlook: "Kurs und Kursverlauf stehen weiter zur Verfügung; die Aktienanalyse nicht."
+    },
+    {
       id: "NO_SERIES",
       codes: ["SOURCE_MISSING", "NO_SERIES"],
       headline: "Für diesen Titel liegt noch keine auswertbare Kursreihe vor",
@@ -484,7 +507,11 @@
                         bars: naechste.bars, requiredBars: naechste.requiredBars } }
           : { substantive: mitWert.length > 0,
               reason: fe.state === "AVAILABLE" ? "INPUT_NOT_MATERIALIZED" : (fe.reason || "NOT_COVERED_BY_FACTOR_EVIDENCE"),
-              detail: faktoren.length ? { available: mitWert.length, total: faktoren.length } : {} };
+              /* Die Gattung wandert in den Detailblock, damit die Gruppe
+                 "dieses Papier ist keine Aktie" sagen kann, WAS es ist. */
+              detail: fe.securityType
+                ? { securityType: fe.securityType, securityTypeBasis: fe.securityTypeBasis || null }
+                : (faktoren.length ? { available: mitWert.length, total: faktoren.length } : {}) };
       }
     }
     if (hat("setup")) {

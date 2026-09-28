@@ -181,6 +181,14 @@
     { type: "ADR",       re: /\bDEPOSITARY SHARES?\b/i }
   ];
 
+  /* Der AUSDRUECKLICHE Fondsmantel - und nur er. Diese Zeichenkette ist die
+     Freigabe vom 28.09.2026 in Code: ein Papier, das sich ETF oder
+     Exchange-Traded Fund nennt, ist keines der Aktienart, auch wenn der
+     Anbieter "Stock" meldet. Absichtlich NICHT enthalten: "Trust", "Fund"
+     allein, "Index" - jedes davon trifft auch Aktien (American Assets Trust
+     ist ein REIT). Ein Test haelt diese Grenze gegen den ganzen Bestand. */
+  var EXPLICIT_FUND_WRAPPER = /\bETF\b|\bEXCHANGE[- ]TRADED FUNDS?\b/i;
+
   function nameRule(name) {
     var n = norm(name);
     if (!n) return null;
@@ -252,6 +260,31 @@
         reasons.push("Tickermuster " + pattern.marker + " weist auf " + pattern.type + " hin " +
                      "(Anbieter meldet unspezifisch assetType=Stock).");
         if (pattern.subtype) reasons.push("Untergattung: " + pattern.subtype + ".");
+      } else if (EXPLICIT_FUND_WRAPPER.test(norm(row.name))) {
+        /* EIN GENERISCHES "STOCK" IST KEIN BELEG GEGEN EINEN AUSDRUECKLICHEN
+           NAMEN (Owner-Entscheidung vom 28.09.2026).
+         *
+         * Gemessen am 26.09.2026: 136 Instrumente heissen ausdruecklich
+         * "... ETF" - Columbia AAA CLO ETF, VanEck Bitcoin ETF, Ishares
+         * 1-10 Year Treasury Bond ETF - und trugen COMMON_STOCK, weil der
+         * Anbieter fuer 7.801 von 7.803 Zeilen assetType="Stock" meldet. Ein
+         * Feld, das nahezu nichts unterscheidet, kann einen Namen nicht
+         * ueberstimmen, der die Gattung nennt.
+         *
+         * Die Grenze ist eng gezogen und folgt der Freigabe: nur
+         * ausdrueckliches "ETF" oder "Exchange-Traded Fund". NICHT "Trust",
+         * NICHT "Fund" allein, kein Tickersuffix, keine Branche. Die
+         * mehrdeutigen Muster bleiben unangetastet - "American Assets Trust"
+         * ist ein REIT, also eine Aktie. */
+        type = "ETF"; confidence = "HIGH"; typeBasis = "SECURITY_NAME";
+        reasons.push("Name nennt das Papier ausdruecklich als ETF; assetType=Stock ist " +
+                     "die unspezifische Anbieterangabe und kein Gegenbeleg.");
+        /* Eine Schuldverschreibung im ETF-Mantel bleibt eine
+           Schuldverschreibung - dieselbe Trennung wie beim Anbieter-ETF. */
+        if (byName && byName.type === "ETN") {
+          type = "ETN";
+          reasons.push("Name weist das Papier als Exchange Traded Note aus.");
+        }
       } else if (byName && byName.type !== "ETF" && byName.type !== "FUND") {
         type = byName.type; confidence = "HIGH"; typeBasis = "SECURITY_NAME";
         reasons.push("Name weist das Papier als " + byName.type + " aus.");
@@ -413,6 +446,9 @@
     US_EXCHANGES: US_EXCHANGES,
     OTC_EXCHANGES: OTC_EXCHANGES,
     tickerPattern: tickerPattern,
+    /* Damit die Messung und der Test dieselbe Grenze lesen wie der
+       Klassifikator - zwei Kopien dieses Musters waeren zwei Freigaben. */
+    EXPLICIT_FUND_WRAPPER: EXPLICIT_FUND_WRAPPER,
     classify: classify,
     classifyAll: classifyAll
   };

@@ -54,6 +54,7 @@ import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PublishedClose = createRequire(import.meta.url)(join(ROOT, "quant/engines/published-close.js"));
+const Naming = createRequire(import.meta.url)(join(ROOT, "quant/engines/company-naming-contract.js"));
 const argv = process.argv.slice(2);
 const arg = (name, fallback) => {
   const i = argv.indexOf("--" + name);
@@ -67,7 +68,7 @@ const OUT = arg("out", join(ROOT, "quant/data/product/universe-list-v1.json.gz")
    tiefer ein Kurs-Gewinn-Verhaeltnis, das genau auf der zurueckgehaltenen
    Zuordnung beruht (gemessen: 266 von 465 Titeln). Ein Leser dieser Datei,
    der 1.0.0 erwartet, verliert dadurch nichts: beide Felder sind optional. */
-const SCHEMA_VERSION = "universe-list-1.1.0";
+const SCHEMA_VERSION = "universe-list-1.2.0";
 const HEUTE = new Date().toISOString().slice(0, 10);
 
 const json = async (p) => JSON.parse(await readFile(p, "utf8"));
@@ -81,6 +82,25 @@ const json = async (p) => JSON.parse(await readFile(p, "utf8"));
    Technical-Buendel existiert. Zwei Kopien derselben Vertragspruefung waeren
    zwei Vertraege, sobald einer von ihnen ergaenzt wird. */
 const letzterPunkt = (series) => PublishedClose.lastPoint(series, HEUTE);
+
+/* Der Name, der NICHT gezeigt wird. Gleichheit wird ohne Zeichensetzung und
+   Grossschreibung geprueft, sonst gilt "Corp." gegen "Corp" als zweiter Name. */
+function andererName(gezeigt, eintrag) {
+  /* Gleichheit nach DEM Begriff, den der Namensvertrag benutzt - nicht nach
+     einem eigenen. Der erste Versuch hat alle Nicht-Buchstaben entfernt, also
+     auch Leerzeichen, und damit Namen gleichgesetzt, die der Vertrag
+     unterscheidet; 23 Eintraege bekamen so sich selbst als "anderen Namen". */
+  const gleich = (a, b) => Naming.normalise(a) === Naming.normalise(b);
+  if (gleich(gezeigt, eintrag.issuerName)) return eintrag.securityName;
+  if (gleich(gezeigt, eintrag.securityName)) return eintrag.issuerName;
+  /* Keiner von beiden: dann nennt der kuerzere Satz die Emittentenebene, sie
+     traegt die Zahlen. Und wenn auch die dem gezeigten Namen entspricht, gibt
+     es keinen anderen zu nennen - dann bleibt es bei der Markierung. Gemessen
+     traf das 23 Eintraege, und ein "anderer Name", der derselbe ist, ist die
+     Art von Hinweis, die einen Leser ratlos macht. */
+  const wahl = eintrag.issuerName || eintrag.securityName;
+  return gleich(wahl, gezeigt) ? null : wahl;
+}
 
 async function namenAusCompanyMaster() {
   /* Der Suchindex ist die kanonische Namensquelle des Hauses - 646 Shards
@@ -125,6 +145,35 @@ async function main() {
    * zusaetzlich laden, nur um zu erfahren, dass sie eine Zahl NICHT zeigen
    * darf - und bis M40 hat sie es deshalb gar nicht erfahren. */
   const bewertungGrund = new Map(), notierungen = new Map();
+
+  /* WO ZWEI QUELLEN VERSCHIEDENE GESELLSCHAFTEN NENNEN.
+   *
+   * Gemessen am 28.09.2026 nach company-naming-1.0.0: bei 379 Kuerzeln nennen
+   * die Emittentenebene (SEC ueber die CIK) und die Wertpapierebene (Metadaten
+   * des Kursanbieters) verschiedene Gesellschaften - AACI "Armada Acquisition
+   * Corp. III" gegen "Armada Acquisition Corp I", AEC "ANFIELD ENERGY INC."
+   * gegen "Associated Estates Realty Corp". Eine der beiden Angaben ist
+   * falsch, und lokal ist nicht entscheidbar, welche.
+   *
+   * Das wird MITGEFUEHRT und nicht entschieden: `ic` markiert den Konflikt,
+   * `ia` nennt den anderen Namen. Die Oberflaeche kann damit sagen, dass die
+   * Zuordnung unsicher ist, statt eine von zwei Gesellschaften zu behaupten. */
+  const konflikt = new Map();
+  {
+    const pfad = join(ROOT, "quant/data/product/naming-contract-v1.json");
+    if (existsSync(pfad)) {
+      const bericht = await json(pfad);
+      for (const eintrag of bericht.identityConflicts || []) {
+        /* Beide Namen mitnehmen. WELCHER der andere ist, entscheidet sich erst
+           am Eintrag: gezeigt wird der Name des Stamms, und der kann von der
+           Wahl des Vertrags abweichen. Der erste Versuch hat den Namen des
+           Vertrags verglichen und deshalb bei AACI zweimal denselben Namen
+           geschrieben - ein "anderer Name", der keiner war. */
+        konflikt.set(eintrag.ticker, { kind: eintrag.kind,
+          issuerName: eintrag.issuerName || null, securityName: eintrag.securityName || null });
+      }
+    }
+  }
   const faktorDir = join(ROOT, "quant/data/product/factor-evidence-v1");
   if (existsSync(faktorDir)) {
     for (const datei of (await readdir(faktorDir))) {
@@ -140,7 +189,7 @@ async function main() {
 
   const entries = [];
   const staende = {};
-  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0, mitBars = 0, mitBewertungsgrund = 0;
+  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0, mitBars = 0, mitBewertungsgrund = 0, mitKonflikt = 0;
   for (const member of members) {
     const name = namen.get(member.s) || null;
     let preis = null;
@@ -165,8 +214,11 @@ async function main() {
       ...(preis ? { c: preis.close, d: preis.date, u: preis.currency } : {}),
       ...(bars !== null ? { b: bars } : {}),
       ...(bewertungGrund.has(member.s) ? { v: bewertungGrund.get(member.s) } : {}),
-      ...(notierungen.has(member.s) ? { il: notierungen.get(member.s) } : {})
+      ...(notierungen.has(member.s) ? { il: notierungen.get(member.s) } : {}),
+      ...(konflikt.has(member.s) ? { ic: konflikt.get(member.s).kind,
+        ...(andererName(name, konflikt.get(member.s)) ? { ia: andererName(name, konflikt.get(member.s)) } : {}) } : {})
     });
+    if (konflikt.has(member.s)) mitKonflikt += 1;
     if (bewertungGrund.has(member.s)) mitBewertungsgrund += 1;
   }
 
@@ -178,7 +230,8 @@ async function main() {
       prices: "quant/data/market/discover-series (discover-series-1.1.0, split-adjusted daily)",
       names: "quant/data/universe/search/sym (company-master-1.0.0, " + shards + " shards)",
       factorBars: "quant/data/product/factor-evidence-v1 (die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat)",
-      valuationReason: "quant/data/product/factor-evidence-v1 (marketCapReason und die Zahl der notierten Zeilen des Emittenten)"
+      valuationReason: "quant/data/product/factor-evidence-v1 (marketCapReason und die Zahl der notierten Zeilen des Emittenten)",
+      identityConflict: "quant/data/product/naming-contract-v1.json (company-naming-1.0.0)"
     },
     /* Die Deckung steht IM Artefakt, damit ein Leser sie nicht selbst
        ausrechnen muss und ein Test sie halten kann. */
@@ -186,6 +239,7 @@ async function main() {
       universe: members.length, entries: entries.length,
       withName: mitName, withPrice: mitKurs, withFactorBars: mitBars,
       withValuationReason: mitBewertungsgrund,
+      withIdentityConflict: mitKonflikt,
       withoutSeries: ohneReihe, seriesRejected: reiheVerworfen,
       priceDates: Object.fromEntries(Object.entries(staende).sort((a, b) => b[1] - a[1]).slice(0, 8))
     },
