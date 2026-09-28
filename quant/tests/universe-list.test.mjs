@@ -50,7 +50,7 @@ test("the index names its own coverage and invents no price", () => {
      Boersenwert dieses Titels zurueckgehalten wird, `il` die Zahl der
      notierten Zeilen seines Emittenten. Die Liste liest beide Fassungen; der
      Dienst haelt sie als Liste, nicht als Gleichheit. */
-  assert.ok(["universe-list-1.0.0", "universe-list-1.1.0", "universe-list-1.2.0"].includes(index.schemaVersion),
+  assert.ok(["universe-list-1.0.0", "universe-list-1.1.0", "universe-list-1.2.0", "universe-list-1.3.0"].includes(index.schemaVersion),
     "unbekannte Fassung " + index.schemaVersion);
   assert.ok(index.coverage.universe > 6000);
   assert.ok(index.coverage.withPrice > 5000, "nur " + index.coverage.withPrice + " Kurse im Verzeichnis");
@@ -208,8 +208,12 @@ test("without the index the overview is exactly what it was before", async () =>
   assert.ok(universe.stocks.length > 6000, "ohne Verzeichnis bricht die Liste zusammen");
   const agilent = universe.stocks.find((s) => s.ticker === "A");
   /* Ohne Verzeichnis: kein Name und kein Kurs - und der Grund ist der der
-     Breitzeile, nicht einer, der eine gepruefte Reihe behauptet. */
-  assert.equal(agilent.name, "A");
+     Breitzeile, nicht einer, der eine gepruefte Reihe behauptet.
+     Der Name ist seit dem 28.09.2026 `null` mit Grund und nicht mehr das
+     Kuerzel: die Breitzeile setzt ihren Namen auf das Kuerzel, und ein
+     Kuerzel als Firmenname ist eine falsche Aussage, kein Platzhalter. */
+  assert.equal(agilent.name, null);
+  assert.equal(agilent.nameReason, "PROVIDER_HAS_NO_NAME");
   assert.equal(agilent.price.value, null);
   assert.equal(agilent.price.reason, "NO_PUBLISHED_PRICE_LEVEL");
 });

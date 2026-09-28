@@ -837,6 +837,10 @@
     toInstrument: toInstrument,
     syncUniverse: syncUniverse,
     changedFields: changedFields,
+    /* Welche Gattungen in einen Aktienscreener gehoeren, ist eine Regel und
+       kein Detail: die Launch-Messung muss sie LESEN und nicht abschreiben,
+       sonst messen zwei Listen gegeneinander. */
+    SCREENER_TYPES: SCREENER_TYPES,
     capabilityMatrix: capabilityMatrix,
     capabilityFlags: capabilityFlags,
     searchEntry: searchEntry,

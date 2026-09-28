@@ -185,11 +185,14 @@ test("Liste und Aktienseite nennen denselben Namen", async () => {
   /* JEDER Titel, nicht eine Stichprobe. In M40 hat eine 20er-Stichprobe
      einen Fehler uebersehen, der 743 Titel betraf. */
   const abweichungen = [];
-  let ohneNamen = 0;
+  const ohneNamen = [];
   for (const zeile of universe.stocks) {
     const seite = await api.getStockIntelligence(zeile.ticker);
     if (!seite || seite.state !== "AVAILABLE") continue;
-    if (!zeile.name || !seite.name) { ohneNamen += 1; continue; }
+    if (!zeile.name || !seite.name) {
+      ohneNamen.push({ ticker: zeile.ticker, listReason: zeile.nameReason || null, pageReason: seite.nameReason || null });
+      continue;
+    }
     const quelle = erwartet.get(zeile.ticker);
     if (!quelle) continue;
     if (zeile.name !== quelle) {
@@ -201,7 +204,22 @@ test("Liste und Aktienseite nennen denselben Namen", async () => {
   }
   assert.deepEqual(abweichungen.slice(0, 20), [],
     "Liste oder Aktienseite weicht vom Verzeichnis ab (" + abweichungen.length + " Faelle)");
-  assert.equal(ohneNamen, 0, ohneNamen + " Titel tragen auf einer der beiden Flaechen keinen Namen");
+  /* EIN FEHLENDER NAME IST ERLAUBT - EIN KUERZEL ALS NAME NICHT.
+     Seit dem 28.09.2026 liefert der Dienst fuer einen Titel ohne
+     Anbieternamen `name = null` und einen Grund, statt sein Kuerzel als
+     Firmennamen auszugeben ("BNRG hiess BNRG"). Was hier geprueft wird: die
+     Luecke ist begruendet, sie ist nicht groesser als die Namensschicht
+     zugibt, und niemand sieht sein Kuerzel zweimal. */
+  for (const l of ohneNamen) {
+    assert.equal(l.listReason, "PROVIDER_HAS_NO_NAME", l.ticker + " hat keinen Namen und keinen Grund");
+    assert.equal(l.pageReason, "PROVIDER_HAS_NO_NAME", l.ticker + " hat auf der Seite keinen Grund");
+  }
+  const schicht = JSON.parse(readFileSync(join(ROOT, "quant/data/market/security-master/company-names.json"), "utf8"));
+  const unaufgeloest = (schicht.rows || []).filter((r) => r.inProductUniverse && r.status === "UNRESOLVED").length;
+  assert.ok(ohneNamen.length <= unaufgeloest,
+    ohneNamen.length + " Titel ohne Namen, aber die Namensschicht kennt nur " + unaufgeloest + " unaufgeloeste");
+  assert.equal(universe.stocks.filter((s) => s.name === s.ticker).length, 0,
+    "ein Titel traegt sein Kuerzel als Firmennamen");
   assert.ok(universe.stocks.length > 6000, "das Universum ist zu klein fuer diese Pruefung");
   /* Und die Klasse bleibt unterscheidbar - der Emittentenname wuerde sie
      wegwerfen. */

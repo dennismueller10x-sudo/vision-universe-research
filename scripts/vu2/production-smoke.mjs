@@ -10,7 +10,14 @@ import {resolve,extname,sep} from 'node:path';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {chromium}=require('playwright');
-const root=resolve(process.argv[2]);
+const argv=process.argv.slice(2);
+const root=resolve(argv.find(a=>!a.startsWith('--')));
+/* Die Launch-Gates 7 bis 10 sind nur im Browser messbar. Damit die
+   Launch-Messung sie nicht erfinden muss, schreibt der Smoke sein
+   Ergebnis auf Wunsch als Bericht - mit dem Commit, gegen den er lief.
+   Ein Bericht ohne passenden Commit ist fuer die Gates kein Beleg. */
+const REPORT=(()=>{const i=argv.indexOf('--report');return i>=0&&argv[i+1]?resolve(argv[i+1]):null;})();
+const befunde=[];
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png'};
 const server=createServer(async(req,res)=>{try{let p=decodeURIComponent(new URL(req.url,'http://l').pathname);if(p.endsWith('/'))p+='index.html';const file=resolve(root,'.'+p);if(!file.startsWith(root+sep))throw Error('path');
  if(file.endsWith('.gz')){res.setHeader('Content-Type','application/octet-stream');res.end(await readFile(file));return;}
@@ -249,11 +256,36 @@ for(const width of [1440,390]){
   }
   if(errors.length)bad.push('ERRORS:'+errors.slice(0,2).join(' / '));
   console.log((bad.length?'FAIL ':'ok   ')+view+'@'+width+(bad.length?'  '+bad.join('  '):''));
+  befunde.push({view,width,ok:!bad.length,findings:bad.slice(),chars:text.length,h1,overflow,recovered});
   if(bad.length)failures++;
   errors.length=0;
  }
  await page.close();
 }
 await browser.close();server.close();
+if(REPORT){
+ const {writeFile,mkdir}=await import('node:fs/promises');
+ const {dirname}=await import('node:path');
+ const {execFileSync}=await import('node:child_process');
+ let commit=null;try{commit=execFileSync('git',['rev-parse','HEAD'],{cwd:new URL('../..',import.meta.url).pathname}).toString().trim();}catch{/* ohne Git kein Commit */}
+ await mkdir(dirname(REPORT),{recursive:true});
+ await writeFile(REPORT,JSON.stringify({
+  schemaVersion:'production-smoke-1.0.0',
+  generatedAt:new Date().toISOString().replace(/\.\d{3}Z$/,'.000Z'),
+  commit,release:root,
+  widths:[1440,390],views:VIEWS.length,
+  checks:befunde.length,failures,
+  clean:failures===0,
+  byWidth:Object.fromEntries([1440,390].map(w=>[String(w),{
+   checks:befunde.filter(b=>b.width===w).length,
+   failures:befunde.filter(b=>b.width===w&&!b.ok).length,
+   overflow:befunde.filter(b=>b.width===w&&b.overflow).length,
+   withoutSingleH1:befunde.filter(b=>b.width===w&&b.h1!==1).length,
+   recovered:befunde.filter(b=>b.width===w&&b.recovered).length
+  }])),
+  results:befunde
+ },null,1)+'\n');
+ console.log('Bericht: '+REPORT);
+}
 console.log(failures?'PRODUCTION SMOKE FAILURES '+failures:'PRODUCTION SMOKE CLEAN');
 process.exit(failures?1:0);

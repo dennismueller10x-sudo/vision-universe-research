@@ -55,6 +55,7 @@ import { createRequire } from "node:module";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const PublishedClose = createRequire(import.meta.url)(join(ROOT, "quant/engines/published-close.js"));
 const Naming = createRequire(import.meta.url)(join(ROOT, "quant/engines/company-naming-contract.js"));
+const Classification = createRequire(import.meta.url)(join(ROOT, "quant/engines/instrument-classification.js"));
 const argv = process.argv.slice(2);
 const arg = (name, fallback) => {
   const i = argv.indexOf("--" + name);
@@ -68,7 +69,7 @@ const OUT = arg("out", join(ROOT, "quant/data/product/universe-list-v1.json.gz")
    tiefer ein Kurs-Gewinn-Verhaeltnis, das genau auf der zurueckgehaltenen
    Zuordnung beruht (gemessen: 266 von 465 Titeln). Ein Leser dieser Datei,
    der 1.0.0 erwartet, verliert dadurch nichts: beide Felder sind optional. */
-const SCHEMA_VERSION = "universe-list-1.2.0";
+const SCHEMA_VERSION = "universe-list-1.3.0";
 const HEUTE = new Date().toISOString().slice(0, 10);
 
 const json = async (p) => JSON.parse(await readFile(p, "utf8"));
@@ -121,11 +122,34 @@ async function namenAusCompanyMaster() {
   return { namen, typen, shards: dateien.length };
 }
 
+/* WELCHE TITEL BELEGT KEINE AKTIE SIND.
+
+   Die Uebersicht kann die 96 Instrumentendateien nicht bei jedem Seitenaufruf
+   lesen - und ohne diese Angabe hat sie gemessen 145 Fonds, Optionsscheine
+   und Vorzugspapiere als faktorbewertete Aktien gefuehrt, waehrend die
+   Aktienseite dazu "keine Aktie" sagte. Das Verzeichnis traegt die Angabe
+   deshalb mit. Die Bedingung selbst wird aus der Klassifikations-Engine
+   GELESEN (`provenNonEquity`) und hier nicht zum zweiten Mal formuliert. */
+async function belegtKeineAktie() {
+  const dir = join(ROOT, "quant/data/universe/instruments");
+  const treffer = new Map();
+  if (!existsSync(dir)) return treffer;
+  for (const datei of (await readdir(dir)).filter((n) => n.endsWith(".json"))) {
+    for (const instrument of (await json(join(dir, datei))).instruments || []) {
+      const belegt = Classification.provenNonEquity(instrument);
+      if (belegt && instrument.symbol) treffer.set(instrument.symbol, belegt.securityType);
+    }
+  }
+  return treffer;
+}
+
 async function main() {
   const capability = await json(join(ROOT, "quant/data/universe/market-capability.json"));
   const members = capability.members || [];
   if (!members.length) throw new Error("EMPTY_CAPABILITY");
   const { namen, typen, shards } = await namenAusCompanyMaster();
+  const keineAktie = await belegtKeineAktie();
+  let mitKeineAktie = 0;
 
   /* WIE VIELE HANDELSTAGE DIE FAKTOREN WIRKLICH GESEHEN HABEN.
    *
@@ -215,10 +239,12 @@ async function main() {
       ...(bars !== null ? { b: bars } : {}),
       ...(bewertungGrund.has(member.s) ? { v: bewertungGrund.get(member.s) } : {}),
       ...(notierungen.has(member.s) ? { il: notierungen.get(member.s) } : {}),
+      ...(keineAktie.has(member.s) ? { ne: 1 } : {}),
       ...(konflikt.has(member.s) ? { ic: konflikt.get(member.s).kind,
         ...(andererName(name, konflikt.get(member.s)) ? { ia: andererName(name, konflikt.get(member.s)) } : {}) } : {})
     });
     if (konflikt.has(member.s)) mitKonflikt += 1;
+    if (keineAktie.has(member.s)) mitKeineAktie += 1;
     if (bewertungGrund.has(member.s)) mitBewertungsgrund += 1;
   }
 
@@ -231,7 +257,8 @@ async function main() {
       names: "quant/data/universe/search/sym (company-master-1.0.0, " + shards + " shards)",
       factorBars: "quant/data/product/factor-evidence-v1 (die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat)",
       valuationReason: "quant/data/product/factor-evidence-v1 (marketCapReason und die Zahl der notierten Zeilen des Emittenten)",
-      identityConflict: "quant/data/product/naming-contract-v1.json (company-naming-1.0.0)"
+      identityConflict: "quant/data/product/naming-contract-v1.json (company-naming-1.0.0)",
+      provenNonEquity: "quant/data/universe/instruments (belegte Gattung nach instrument-classification provenNonEquity)"
     },
     /* Die Deckung steht IM Artefakt, damit ein Leser sie nicht selbst
        ausrechnen muss und ein Test sie halten kann. */
@@ -240,6 +267,7 @@ async function main() {
       withName: mitName, withPrice: mitKurs, withFactorBars: mitBars,
       withValuationReason: mitBewertungsgrund,
       withIdentityConflict: mitKonflikt,
+      provenNonEquity: mitKeineAktie,
       withoutSeries: ohneReihe, seriesRejected: reiheVerworfen,
       priceDates: Object.fromEntries(Object.entries(staende).sort((a, b) => b[1] - a[1]).slice(0, 8))
     },

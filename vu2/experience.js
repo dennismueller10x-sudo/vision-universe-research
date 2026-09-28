@@ -1694,7 +1694,7 @@ async function quantPage(ticker){
     nur teuer; sie wird geholt, sobald die Methodik aktiv ist. */
  const setup=VUSetupStateContract.AVAILABLE_OBSERVATIONS_ALLOWED?(quellen.stock||await api.getStockIntelligence(ticker).catch(()=>null))?.setupState||null:null;
  if(data.state!=='AVAILABLE'){
-  main.append(heading('Quant-Analyse',ticker));
+  main.append(heading(data.name||'Quant-Analyse',ticker));
   /* DIE ZWEITE HAELFTE DER REISE VERDICHTET GENAUSO.
 
      Gemessen im gebauten Release: diese Ansicht zeigte fuer ACAA vier
@@ -1736,7 +1736,7 @@ async function quantPage(ticker){
  /* HERO: Name, Zustand, ein Satz - keine zwanzig Kennzahlen. */
  main.append(el('section',{class:'quant-hero'},[
   el('span',{class:'eyebrow',text:'Wie stark ist diese Aktie?'}),
-  el('h1',{text:data.name}),
+  el('h1',{text:data.name||'Quant-Analyse'}),
   el('p',{class:'quant-ticker',text:data.ticker+(data.peer?.industry?' · Branchenschlüssel '+data.peer.industry:'')}),
   /* Ein Satz, nicht zwei nebeneinander: die Auskunft nennt Stärken,
      Schwächen und den Setup-Zustand, die Bewegungszeile den Wechsel. */

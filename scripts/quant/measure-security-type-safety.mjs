@@ -137,7 +137,16 @@ async function main() {
       byBasis: belegtKeineAktie.reduce((z, i) => { z[i.securityTypeBasis] = (z[i.securityTypeBasis] || 0) + 1; return z; }, {}),
       stillInInstrumentUniverse: belegtKeineAktie.filter((i) =>
         i.productEligibility && i.productEligibility !== "EXCLUDED").length,
-      examples: belegtKeineAktie.slice(0, 8).map((i) => ({ ticker: i.symbol, type: i.securityType, name: i.companyName }))
+      examples: belegtKeineAktie.slice(0, 8).map((i) => ({ ticker: i.symbol, type: i.securityType, name: i.companyName })),
+      /* Die vollstaendige Liste, nicht nur Beispiele: die Launch-Messung muss
+         genau DIESE Menge pruefen koennen. Sie aus dem Verzeichnis neu
+         herzuleiten waere eine zweite Definition von "belegt", und zwei
+         Definitionen derselben Regel gehen auseinander. */
+      tickers: belegtKeineAktie.map((i) => i.symbol).sort(),
+      byTicker: belegtKeineAktie.reduce((z, i) => {
+        z[i.symbol] = { type: i.securityType, basis: i.securityTypeBasis, name: i.companyName || null };
+        return z;
+      }, {})
     },
     ambiguousLeftAlone: mehrdeutig,
     allCandidates: kandidaten.map((i) => ({ ticker: i.symbol, name: i.companyName, type: i.securityType,

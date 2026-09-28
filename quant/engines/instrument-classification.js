@@ -440,6 +440,22 @@
     };
   }
 
+  /* Eine Aktiengattung ist, was eine Unternehmensbeteiligung notiert; alles
+     andere ist es nur dann BELEGT nicht, wenn die Einordnung hoch sicher ist
+     und auf dem veroeffentlichten Wertpapiernamen oder dem Anbieterfeld
+     beruht (Owner-Entscheidung 1 vom 28.09.2026). Eine Vermutung aendert
+     nichts. */
+  var EQUITY_TYPES = ["COMMON_STOCK", "ADR"];
+  var PROVEN_TYPE_BASES = ["SECURITY_NAME", "PROVIDER_ASSET_TYPE"];
+  function provenNonEquity(instrument) {
+    if (!instrument) return null;
+    var type = instrument.securityType;
+    if (!type || EQUITY_TYPES.indexOf(type) >= 0) return null;
+    if (instrument.securityTypeConfidence !== "HIGH") return null;
+    if (PROVEN_TYPE_BASES.indexOf(instrument.securityTypeBasis) < 0) return null;
+    return { securityType: type, securityTypeBasis: instrument.securityTypeBasis };
+  }
+
   var api = {
     VERSION: VERSION,
     TYPES: TYPES,
@@ -449,6 +465,16 @@
     /* Damit die Messung und der Test dieselbe Grenze lesen wie der
        Klassifikator - zwei Kopien dieses Musters waeren zwei Freigaben. */
     EXPLICIT_FUND_WRAPPER: EXPLICIT_FUND_WRAPPER,
+    /* WANN EINE GATTUNG ALS "KEINE AKTIE" BELEGT IST.
+
+       Diese Regel stand bis zum 28.09.2026 nur im Produktdienst
+       (`nichtAktie`) - und genau deshalb wusste die Uebersicht nichts davon
+       und fuehrte 145 Fonds und Optionsscheine als faktorbewertete Aktien.
+       Eine Regel, die zwei Flaechen binden soll, gehoert in die Engine und
+       nicht in eine der beiden Flaechen. */
+    EQUITY_TYPES: EQUITY_TYPES.slice(),
+    PROVEN_TYPE_BASES: PROVEN_TYPE_BASES.slice(),
+    provenNonEquity: provenNonEquity,
     classify: classify,
     classifyAll: classifyAll
   };
