@@ -46,7 +46,20 @@ const VIEWS=['/vu2/','/vu2/?view=stock&ticker=NVDA','/vu2/?view=stock&ticker=AAP
  /* Die Seite hinter dem Knopf "Methodik im Detail" - die letzte Station der
     Reise. Sie war ein 404, und der Smoke hat nie eine Ansicht ausserhalb von
     /vu2/ angesehen, obwohl die App zwanzig Pfade dorthin verlinkt. */
- '/quant/methodology/'];
+ '/quant/methodology/',
+ /* DIE ABNAHMESTICHPROBE, IM BROWSER.
+
+    Gemessen am 28.09.2026: von 22 Titeln der Produkt-Abnahmestichprobe hatte
+    der Smoke DREI angesehen (NVDA, AAPL, JPM) - also nur Titel, bei denen
+    alles da ist. Die Lagen, in denen eine Seite kaputt AUSSIEHT statt
+    reduziert, standen nicht darunter: ein belegter ETF, ein Vorzugspapier,
+    ein Identitaetskonflikt, eine zurueckgehaltene Bewertung, ein datenarmer
+    Titel, eine Bank mit eigener Branchenvorlage. Diese sechs stehen jetzt in
+    der Liste; sie kosten je zwei Aufrufe. */
+ '/vu2/?view=stock&ticker=AAAC','/vu2/?view=stock&ticker=ABR-P-D',
+ '/vu2/?view=stock&ticker=AACI','/vu2/?view=stock&ticker=ACGL',
+ '/vu2/?view=stock&ticker=ABTC','/vu2/?view=quant&ticker=ABCB',
+ '/vu2/?view=quant&ticker=AAAC'];
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
@@ -83,7 +96,16 @@ for(const width of [1440,390]){
      traegt und darunter denselben Wert schreibt, hat die Trennung
      beschriftet statt umgesetzt - und genau das faellt in einem
      Screenshot niemandem auf. */
-  if(view.startsWith('/vu2/?view=quant')&&!/ticker=(ACAA|EDVA)/.test(view)){
+  /* Die Ausnahme war bis zum 28.09.2026 eine Kuerzelliste (ACAA|EDVA) - und
+     die ging kaputt, sobald ein dritter Titel ohne Faktorevidenz in die Liste
+     kam (AAAC, ein belegter ETF: RETURN_KIND_FEHLT, zu Recht). Geprueft wird
+     jetzt die BEDINGUNG statt der Namen: Kursstaerke und Anlegerrendite
+     gehoeren auf jede Quant-Ansicht, die die FAKTORSTAERKE zeigt - und genau
+     daran haengt der Abschnitt auch in der Oberflaeche (`zeig('factorStrength')`
+     setzt beide: `.dna-section` und das Gitter). `.quant-hero` war als
+     Bedingung zu weit: ACAA zeigt den Kopf und hat trotzdem keine
+     Faktorstaerke (117 Handelstage). */
+  if(view.startsWith('/vu2/?view=quant')&&await page.locator('.dna-section').count()){
    const grid=page.locator('.return-kind-grid');
    if(!await grid.count()){bad.push('RETURN_KIND_FEHLT');}
    else{

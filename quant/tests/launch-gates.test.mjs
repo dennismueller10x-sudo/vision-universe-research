@@ -159,8 +159,14 @@ test("der Launch-Bericht nennt jedes Gate und sein Urteil", () => {
   if (!existsSync(pfad)) return; /* der Bericht ist ein Messergebnis, keine Bedingung des Baus */
   const bericht = JSON.parse(readFileSync(pfad, "utf8"));
   assert.equal(bericht.schemaVersion, "launch-readiness-1.0.0");
-  assert.equal(bericht.gates.length, 12, "es sind nicht zwoelf Gates");
+  /* Zwoelf P0-Gates sperren den Launch; die P1-Pruefungen stehen im selben
+     Bericht, weil sie am selben Stand gemessen werden. */
+  assert.equal(bericht.p0Gates, 12, "es sind nicht zwoelf P0-Gates");
+  assert.equal(bericht.gates.length, bericht.p0Gates + bericht.p1Checks);
   const ids = bericht.gates.map((g) => g.id);
+  for (const id of ["RELEASE_EXPERIENCE", "PUBLIC_BETA_HYGIENE"]) {
+    assert.ok(ids.includes(id), "P1-Pruefung " + id + " fehlt");
+  }
   for (const id of ["IDENTITY_CORRECTNESS", "SECURITY_TYPE_SAFETY", "DATA_FRESHNESS", "PRICE_CONSISTENCY",
     "VALUATION_SAFETY", "PRODUCT_LANGUAGE", "MOBILE_390", "DESKTOP_1440", "NAVIGATION",
     "ERROR_STATES", "METHODOLOGY_TRANSPARENCY", "REGRESSION_GUARDS"]) {

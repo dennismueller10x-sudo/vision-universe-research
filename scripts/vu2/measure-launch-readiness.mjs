@@ -74,7 +74,22 @@ const HEAD = (() => { try { return execFileSync("git", ["rev-parse", "HEAD"], { 
    ein Vorfahre von HEAD, und hat sich seither eine der Dateien geaendert, auf
    die der Bericht sich bezieht? Ein unsauberer Arbeitsbaum an diesen Pfaden
    zaehlt ebenso als Aenderung. */
-const RELEVANT = ["quant/engines", "quant/api", "vu2", "scripts/quant", "scripts/vu2", "quant/data/product", "quant/data/universe"];
+/* Relevant ist, was das AUSGELIEFERTE Produkt aendert: die Engines, der
+   Dienst, die Oberflaeche, die Methodikdateien und die Artefakte, die sie
+   lesen. Die Bau- und Messskripte stehen bewusst NICHT hier: ein geaendertes
+   Skript aendert das Produkt erst, wenn es gelaufen ist - und dann hat sich
+   sein Artefakt geaendert, das hier steht. Nimmt man sie mit auf, macht jedes
+   neue Messskript einen tadellosen Browser-Smoke ungueltig. */
+const RELEVANT = ["quant/engines", "quant/api", "vu2", "quant/methodology", "quant/data/product", "quant/data/universe", "quant/data/market"];
+/* Drei Dateien unter `quant/data/product` sind MESSERGEBNISSE und werden vom
+   Produkt nie gelesen. Sie muessen ausgenommen werden, sonst macht der
+   Launch-Bericht, sobald er eingecheckt ist, den Suite- und den Smoke-Beleg
+   ungueltig, den er selbst enthaelt - eine Katze, die ihren Schwanz jagt. */
+const BERICHTSDATEIEN = new Set([
+  "quant/data/product/launch-readiness-v1.json",
+  "quant/data/product/acceptance-sample-v1.json",
+  "quant/data/product/intelligence-coherence-v1.json"
+]);
 function berichtGilt(bericht) {
   if (!bericht || !bericht.commit) return { ok: false, reason: "OHNE_COMMIT" };
   if (!HEAD) return { ok: false, reason: "OHNE_GIT" };
@@ -86,7 +101,7 @@ function berichtGilt(bericht) {
     .toString().trim().split("\n").filter(Boolean);
   const offen = execFileSync("git", ["status", "--porcelain", "--", ...RELEVANT], { cwd: ROOT })
     .toString().trim().split("\n").filter(Boolean).map((z) => z.slice(3));
-  const alle = [...new Set([...geaendert, ...offen])];
+  const alle = [...new Set([...geaendert, ...offen])].filter((pfad) => !BERICHTSDATEIEN.has(pfad));
   return alle.length
     ? { ok: false, reason: "SEITHER_GEAENDERT", changed: alle.slice(0, 10), changedCount: alle.length }
     : { ok: true, reason: "VORFAHRE_OHNE_AENDERUNG", changed: [] };
@@ -224,16 +239,35 @@ async function main() {
   /* ---------------------------------------------------------------- 3 */
   const heute = new Date();
   const alter = (d) => (d ? Math.round((heute - new Date(d)) / 86400000) : null);
+  /* DIE VIER STUFEN, MIT IHREN ECHTEN NAMEN.
+
+     Der erste Bau dieses Gates hat zwei Namen geraten
+     (`vu2-product-materialize.yml`, `pages-deploy.yml`) - beide gibt es
+     nicht, und das Gate stand trotzdem auf PASS, weil es nur verlangte, dass
+     IRGENDEIN Zeitplan existiert. Eine Stufe, deren Datei fehlt, muss das
+     Gate schliessen; sonst prueft es die Kette nicht, sondern ihre
+     Anwesenheit. */
+  const STUFEN = [
+    ["REFRESH", "market-data-refresh.yml"],
+    ["STORE", "history-store-sync.yml"],
+    ["MATERIALIZATION", "product-intelligence-materialization.yml"],
+    ["DEPLOY", "pages-release.yml"]
+  ];
   const zeitplan = [];
-  for (const datei of ["market-data-refresh.yml", "history-store-sync.yml", "vu2-product-materialize.yml", "pages-deploy.yml"]) {
+  for (const [stufe, datei] of STUFEN) {
     const pfad = join(ROOT, ".github/workflows", datei);
-    if (!existsSync(pfad)) { zeitplan.push({ workflow: datei, exists: false }); continue; }
+    if (!existsSync(pfad)) { zeitplan.push({ stage: stufe, workflow: datei, exists: false, automatic: false }); continue; }
     const text = await readFile(pfad, "utf8");
+    const scheduled = /^\s*schedule:/m.test(text);
+    const onPush = /^\s*push:/m.test(text);
+    const nachAnderem = /^\s*workflow_run:/m.test(text);
     zeitplan.push({
-      workflow: datei, exists: true,
-      scheduled: /^\s*schedule:/m.test(text),
-      onPush: /^\s*push:/m.test(text),
-      dispatch: /workflow_dispatch/.test(text)
+      stage: stufe, workflow: datei, exists: true,
+      scheduled, onPush, chainedOnOtherRun: nachAnderem,
+      dispatch: /workflow_dispatch/.test(text),
+      /* "Ohne Hand" heisst: ein Zeitplan, ein Push oder ein vorangehender
+         Lauf loest sie aus. Nur `workflow_dispatch` ist eine Hand. */
+      automatic: scheduled || onPush || nachAnderem
     });
   }
   const kette = {
@@ -247,13 +281,26 @@ async function main() {
      ist als der Kurs, den sie veröffentlicht, wäre ein stiller Rückstand. */
   const ketteVorwaerts = kette.priceAgeDays === null || kette.listAgeDays === null ||
     kette.listAgeDays <= kette.priceAgeDays;
-  const vorhandene = zeitplan.filter((z) => z.exists);
+  const fehlend = zeitplan.filter((z) => !z.exists);
+  /* Der Anfang der Kette braucht einen Zeitplan - sonst laeuft sie nie an.
+     Die Stufe STORE ist ein Hebel und darf von Hand bleiben: der Refresh
+     schiebt seine Ergebnisse selbst in die Ablage (siehe MERGED_2026-09-25). */
+  const beginnt = zeitplan.some((z) => z.stage === "REFRESH" && z.scheduled);
+  const vonHand = zeitplan.filter((z) => z.exists && !z.automatic && z.stage !== "STORE");
+  const befunde = [];
+  for (const z of fehlend) befunde.push({ kind: "STUFE_FEHLT", detail: z.stage + " (" + z.workflow + ")" });
+  for (const z of vonHand) befunde.push({ kind: "NUR_VON_HAND", detail: z.stage + " (" + z.workflow + ")" });
+  if (!beginnt) befunde.push({ kind: "OHNE_ZEITPLAN", detail: "die Kette hat keinen Anfang ohne Hand" });
+  if (!ketteVorwaerts) befunde.push({ kind: "KETTE_RUECKWAERTS", detail: JSON.stringify(kette) });
+  if (kette.priceAgeDays === null || kette.priceAgeDays > 10) {
+    befunde.push({ kind: "KURS_ZU_ALT", detail: String(kette.priceAgeDays) + " Tage" });
+  }
   gates.push(gate("DATA_FRESHNESS", "Zeitplan, Ablage, Materialisierung und Auslieferung greifen ohne Hand",
-    vorhandene.length > 0 && vorhandene.some((z) => z.scheduled) && ketteVorwaerts &&
-    kette.priceAgeDays !== null && kette.priceAgeDays <= 10,
-    { workflows: zeitplan, chain: kette, chainForward: ketteVorwaerts,
-      note: "Ein Kursstand älter als zehn Tage ist für eine Public Beta kein aktueller Kurs." },
-    ketteVorwaerts ? [] : [{ kind: "KETTE_RUECKWAERTS", detail: JSON.stringify(kette) }]));
+    befunde.length === 0,
+    { stages: zeitplan, chain: kette, chainForward: ketteVorwaerts, startsOnSchedule: beginnt,
+      note: "Ein Kursstand älter als zehn Tage ist für eine Public Beta kein aktueller Kurs. " +
+            "STORE darf ein Hebel bleiben: der Refresh schiebt seine Ergebnisse selbst in die Ablage." },
+    befunde));
 
   /* ---------------------------------------------------------------- 4 */
   const kurse = [];
@@ -472,6 +519,76 @@ async function main() {
                 "geaendert haben, ist fuer dieses Gate kein Beleg." },
     suiteFrisch && suite.failures ? suite.failures : []));
 
+  /* ------------------------------------------------------- P1: ERLEBNIS */
+  /* Der Auftrag verlangt, dass ein neuer Nutzer auf der ersten Bildschirmhoehe
+     sechs Dinge versteht. Fuenf davon sind Text und hier pruefbar; die sechste
+     Frage - steht es WIRKLICH oben - ist eine Layoutfrage und steht im Smoke
+     (`AUSKUNFT_ZU_TIEF`, `AUSKUNFT_NACH_CHART`). */
+  const erlebnis = [];
+  const erlebnisProbe = ["AAPL", "NVDA", "JPM", "AA", "WSBCO", "ACAA"];
+  let mitAllem = 0;
+  for (const ticker of erlebnisProbe) {
+    const brief = await api.getIntelligenceBrief(ticker).catch(() => null);
+    if (!brief) { erlebnis.push({ ticker, kind: "KEINE_AUSKUNFT" }); continue; }
+    const fehlt = [];
+    if (!brief.headline) fehlt.push("wieStark");
+    if (!(brief.pro || []).length && !(brief.contra || []).length) fehlt.push("wasSprichtDafuerDagegen");
+    if (!brief.setup) fehlt.push("gibtEsSetup");
+    /* "Was aendert sich?" steht nicht in einer eigenen Quelle: die
+       Auskunft traegt Veraenderungen als Punkt mit `kind === "change"` in
+       dieselben zwei Spalten (so war M40 gebaut). Der erste Bau dieses
+       Gates suchte `sources.change` - ein Feld, das es nie gab - und meldete
+       deshalb alle sechs Titel als unbeantwortet. */
+    const punkte = [...(brief.pro || []), ...(brief.contra || []), ...(brief.unknown || [])];
+    if (!punkte.some((p) => p.kind === "change")) fehlt.push("wasAendertSich");
+    if (fehlt.length) erlebnis.push({ ticker, kind: "UNBEANTWORTET", detail: fehlt.join(",") });
+    else mitAllem += 1;
+  }
+  const smokeAuskunft = smokeFrisch
+    ? (smoke.results || []).filter((r) => (r.findings || []).some((f) => /AUSKUNFT|KOPFSATZ|GRUPPEN|SETUPFRAGE/.test(f)))
+    : null;
+  gates.push(gate("RELEASE_EXPERIENCE", "P1 · Die erste Bildschirmhoehe beantwortet die Einsteigerfragen",
+    smokeAuskunft === null ? null : erlebnis.length === 0 && smokeAuskunft.length === 0,
+    { sample: erlebnisProbe, answeringAll: mitAllem,
+      progressiveDisclosure: "Bedeutung → Erklaerung → Evidenz → Methodik",
+      smokeFindings: smokeAuskunft ? smokeAuskunft.length : null,
+      note: "Die Lage im Bildschirm prueft der Smoke gegen das gebaute Release; ohne ihn bleibt das offen." },
+    erlebnis.concat(smokeAuskunft ? smokeAuskunft.map((r) => ({ kind: "SMOKE", detail: r.view + ": " + r.findings.join(" ") })) : [])));
+
+  /* ------------------------------------------------------- P1: HYGIENE */
+  const hygiene = [];
+  const seitenQuelle = frontend + "\n" + await readFile(join(ROOT, "vu2/index.html"), "utf8");
+  const verlangt = [
+    ["BETA_MARKIERUNG", /Entwicklungsvorschau|Preview|Beta/],
+    ["DISCLAIMER", /Keine Anlageempfehlung/],
+    ["QUELLENHINWEIS", /SEC EDGAR/],
+    ["ANBIETERHINWEIS", /Tiingo/],
+    ["METHODIKSEITE", /\/quant\/methodology\//],
+    ["AKTUALITAET", /Kursstand/]
+  ];
+  for (const [id, muster] of verlangt) if (!muster.test(seitenQuelle)) hygiene.push({ kind: "FEHLT", detail: id });
+  /* Kein Geheimnis und keine interne Fehlersuche im ausgelieferten Skript.
+     Geprueft wird das RELEASE, nicht der Quelltext - im Release liegt, was
+     der Browser bekommt. */
+  const gebaut = join(basis, "vu2/experience.js");
+  if (existsSync(gebaut)) {
+    const text = await readFile(gebaut, "utf8");
+    for (const [id, muster] of [
+      ["SCHLUESSEL", /(api[_-]?key|secret|token)\s*[:=]\s*['"][A-Za-z0-9_\-]{16,}/i],
+      ["BEARER", /Bearer\s+[A-Za-z0-9._\-]{20,}/],
+      ["FEHLERSUCHE", /console\.(debug|trace)\(/],
+      ["PLATZHALTER", /\bTODO\b|\bFIXME\b|\bXXX\b/]
+    ]) if (muster.test(text)) hygiene.push({ kind: id, detail: (text.match(muster) || [])[0].slice(0, 60) });
+  } else hygiene.push({ kind: "RELEASE_NICHT_GEPRUEFT", detail: "kein gebautes Skript unter " + gebaut });
+  /* Ueberwachung und ein reproduzierbarer Weg nach draussen. */
+  const wacht = ["freshness-monitor.yml", "vu2-browser-qa.yml"].filter((d) => existsSync(join(ROOT, ".github/workflows", d)));
+  if (!wacht.length) hygiene.push({ kind: "FEHLT", detail: "UEBERWACHUNG" });
+  gates.push(gate("PUBLIC_BETA_HYGIENE", "P1 · Kennzeichnung, Quellen, Aktualitaet, keine Geheimnisse",
+    hygiene.length === 0,
+    { required: verlangt.map(([id]) => id), monitoring: wacht,
+      releaseChecked: existsSync(gebaut) ? gebaut.replace(ROOT + "/", "") : null,
+      violations: hygiene.length }, hygiene));
+
   /* ------------------------------------------------------------ Urteil */
   const fail = gates.filter((g) => g.status === "FAIL");
   const offen = gates.filter((g) => g.status === "NOT_MEASURED");
@@ -484,6 +601,8 @@ async function main() {
     universe: titel.length,
     briefSample: briefProbe.length,
     PUBLIC_BETA_LAUNCH_READY: fail.length === 0 && offen.length === 0 ? "PASS" : "FAIL",
+    p0Gates: 12,
+    p1Checks: gates.length - 12,
     gatesTotal: gates.length,
     gatesPassed: gates.filter((g) => g.status === "PASS").length,
     gatesFailed: fail.length,

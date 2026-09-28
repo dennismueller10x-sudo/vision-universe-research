@@ -1,0 +1,954 @@
+{
+ "schemaVersion": "acceptance-sample-1.0.0",
+ "generatedAt": "2026-09-28T07:30:35.000Z",
+ "commit": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+ "named": [
+  "AAPL",
+  "MSFT",
+  "NVDA",
+  "JPM",
+  "GOOG",
+  "GOOGL",
+  "T",
+  "SO",
+  "AGNC"
+ ],
+ "roles": [
+  "BANK",
+  "REIT",
+  "SMALL_CAP",
+  "JUNG_ODER_IPO",
+  "DATENARM",
+  "ETF",
+  "VORZUG_ODER_SONDERKLASSE",
+  "BEWERTUNG_ZURUECKGEHALTEN",
+  "IDENTITAETSKONFLIKT",
+  "MIT_SETUP",
+  "OHNE_SETUP",
+  "MIT_STRATEGIE",
+  "OHNE_STRATEGIE"
+ ],
+ "titles": 22,
+ "ACCEPTANCE_SAMPLE_CLEAN": "PASS",
+ "withFindings": 0,
+ "browserChecked": 9,
+ "smokeReport": {
+  "commit": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+  "clean": true
+ },
+ "note": "Die neun genannten Titel stehen fest; die Rollen werden je Lauf über Prädikate besetzt und sind deshalb zwischen zwei Läufen gleich, solange sich die Daten nicht ändern. 'Im Browser geprüft' heißt: dieser Titel stand im Produktions-Smoke.",
+ "rows": [
+  {
+   "ticker": "AAPL",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "Apple Inc.",
+   "securityType": "COMMON_STOCK",
+   "price": 341.07,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine hohe Ertragskraft und ruhige Kursschwankungen. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
+    "state": "COMPLETE",
+    "strengths": [
+     "profitability",
+     "risk"
+    ],
+    "weaknesses": [],
+    "setupState": "SETUP_FORMING",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "profitability",
+      "value": 94.73,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 88.84,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "SETUP_FORMING",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "MSFT",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "Microsoft Corporation",
+   "securityType": "COMMON_STOCK",
+   "price": 516.17,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt ruhige Kursschwankungen. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
+    "state": "COMPLETE",
+    "strengths": [
+     "risk"
+    ],
+    "weaknesses": [],
+    "setupState": "WATCH",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 79.88,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "WATCH",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "NVDA",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "NVIDIA Corporation",
+   "securityType": "COMMON_STOCK",
+   "price": 225.07,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine hohe Ertragskraft und kräftiges Wachstum, dagegen eine angreifbare Bilanz. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
+    "state": "COMPLETE",
+    "strengths": [
+     "profitability",
+     "growth"
+    ],
+    "weaknesses": [
+     "quality"
+    ],
+    "setupState": "SETUP_FORMING",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "profitability",
+      "value": 98.31,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "growth",
+      "value": 86.86,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "quality",
+      "value": 42.91,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "SETUP_FORMING",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "JPM",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "JPMorgan Chase & Co.",
+   "securityType": "COMMON_STOCK",
+   "price": 343.06,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine hohe Ertragskraft. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
+    "state": "COMPLETE",
+    "strengths": [
+     "profitability"
+    ],
+    "weaknesses": [],
+    "setupState": "SETUP_FORMING",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "profitability",
+      "value": 81.04,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "SETUP_FORMING",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "GOOG",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "Alphabet Inc.",
+   "securityType": "COMMON_STOCK",
+   "price": 341.08,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt ruhige Kursschwankungen und eine starke Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [
+     "risk",
+     "momentum"
+    ],
+    "weaknesses": [],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 80.66,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 78.06,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "GOOGL",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "Alphabet Inc. Class A",
+   "securityType": "COMMON_STOCK",
+   "price": 343.92,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt ruhige Kursschwankungen und eine starke Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [
+     "risk",
+     "momentum"
+    ],
+    "weaknesses": [],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 79.17,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 79.08,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "T",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "AT&T Inc.",
+   "securityType": "COMMON_STOCK",
+   "price": 25.38,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt ruhige Kursschwankungen. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
+    "state": "COMPLETE",
+    "strengths": [
+     "risk"
+    ],
+    "weaknesses": [],
+    "setupState": "WATCH",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 77.38,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "WATCH",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "SO",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "Southern Company",
+   "securityType": "COMMON_STOCK",
+   "price": 82.88,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine schwache Kursentwicklung und schwaches Wachstum. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [],
+    "weaknesses": [
+     "momentum",
+     "growth"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 38.37,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "growth",
+      "value": 43.69,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AGNC",
+   "roles": [
+    "GENANNT"
+   ],
+   "name": "AGNC Investment Corp.",
+   "securityType": "COMMON_STOCK",
+   "price": 9.62,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine angreifbare Bilanz und eine schwache Ertragskraft. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [],
+    "weaknesses": [
+     "quality",
+     "profitability"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "quality",
+      "value": 26.61,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "profitability",
+      "value": 39.17,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "ABCB",
+   "roles": [
+    "BANK"
+   ],
+   "name": "Ameris Bancorp",
+   "securityType": "COMMON_STOCK",
+   "price": 82.29,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine hohe Bewertung und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [],
+    "weaknesses": [
+     "value",
+     "momentum"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "value",
+      "value": 33.68,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 40.66,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "ABR",
+   "roles": [
+    "REIT"
+   ],
+   "name": "Arbor Realty Trust Inc",
+   "securityType": "COMMON_STOCK",
+   "price": 4.03,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine günstige Bewertung, dagegen eine schwache Kursentwicklung und starke Kursschwankungen. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [
+     "value"
+    ],
+    "weaknesses": [
+     "momentum",
+     "risk"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "value",
+      "value": 93.56,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 5.57,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 18.15,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AACG",
+   "roles": [
+    "SMALL_CAP"
+   ],
+   "name": "ATA Creativity Global",
+   "securityType": "COMMON_STOCK",
+   "price": 0.86,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt starke Kursschwankungen und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [],
+    "weaknesses": [
+     "risk",
+     "momentum"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 32.3,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 33.21,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AACO",
+   "roles": [
+    "JUNG_ODER_IPO"
+   ],
+   "name": "Abony Acquisition Corp. I",
+   "securityType": "COMMON_STOCK",
+   "price": 10,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 116 vor.",
+    "state": "UNAVAILABLE",
+    "strengths": [],
+    "weaknesses": [],
+    "setupState": "UNAVAILABLE",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "bars",
+      "value": 116,
+      "unit": "sessions"
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "ABTC",
+   "roles": [
+    "DATENARM"
+   ],
+   "name": "American Bitcoin Corp.",
+   "securityType": "COMMON_STOCK",
+   "price": null,
+   "priceAsOf": null,
+   "factorState": "UNAVAILABLE",
+   "factorReason": "NO_FACTOR_ROW",
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Für diesen Titel liegt noch keine auswertbare Einordnung der sieben Eigenschaften vor.",
+    "state": "UNAVAILABLE",
+    "strengths": [],
+    "weaknesses": [],
+    "setupState": "UNAVAILABLE",
+    "evidence": []
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AAAC",
+   "roles": [
+    "ETF"
+   ],
+   "name": "Columbia AAA CLO ETF",
+   "securityType": "ETF",
+   "price": 20.12,
+   "priceAsOf": "2026-09-25",
+   "factorState": "UNAVAILABLE",
+   "factorReason": "NOT_AN_EQUITY_LISTING",
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Dieser Titel ist ein börsengehandelter Fonds. Die Einordnung dieser Analyse beschreibt Unternehmen und gilt für ihn nicht.",
+    "state": "UNAVAILABLE",
+    "strengths": [],
+    "weaknesses": [],
+    "setupState": "UNAVAILABLE",
+    "evidence": []
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "ABR-P-D",
+   "roles": [
+    "VORZUG_ODER_SONDERKLASSE"
+   ],
+   "name": "Arbor Realty Trust",
+   "securityType": "PREFERRED",
+   "price": 14.98,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt ruhige Kursschwankungen, dagegen eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [
+     "risk"
+    ],
+    "weaknesses": [
+     "momentum"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 83,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 32.15,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "ACGL",
+   "roles": [
+    "BEWERTUNG_ZURUECKGEHALTEN"
+   ],
+   "name": "Arch Capital Group Ltd.",
+   "securityType": "COMMON_STOCK",
+   "price": 94.66,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt ruhige Kursschwankungen und eine hohe Ertragskraft. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
+    "state": "COMPLETE",
+    "strengths": [
+     "risk",
+     "profitability"
+    ],
+    "weaknesses": [],
+    "setupState": "WATCH",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 80.32,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "profitability",
+      "value": 75.44,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "WATCH",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AACI",
+   "roles": [
+    "IDENTITAETSKONFLIKT"
+   ],
+   "name": "Armada Acquisition Corp. III",
+   "securityType": "COMMON_STOCK",
+   "price": 10.05,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt starke Kursschwankungen und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [],
+    "weaknesses": [
+     "risk",
+     "momentum"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 29.06,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "momentum",
+      "value": 34.92,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": true,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "A",
+   "roles": [
+    "MIT_SETUP"
+   ],
+   "name": "Agilent Technologies, Inc.",
+   "securityType": "COMMON_STOCK",
+   "price": 172.79,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt ruhige Kursschwankungen. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
+    "state": "COMPLETE",
+    "strengths": [
+     "risk"
+    ],
+    "weaknesses": [],
+    "setupState": "SETUP_FORMING",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 81.57,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "SETUP_FORMING",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AACP",
+   "roles": [
+    "OHNE_SETUP"
+   ],
+   "name": "Apogee Acquisition Corp",
+   "securityType": "COMMON_STOCK",
+   "price": 10.1,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 84 vor.",
+    "state": "UNAVAILABLE",
+    "strengths": [],
+    "weaknesses": [],
+    "setupState": "UNAVAILABLE",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "bars",
+      "value": 84,
+      "unit": "sessions"
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AA",
+   "roles": [
+    "MIT_STRATEGIE"
+   ],
+   "name": "Alcoa Corp",
+   "securityType": "COMMON_STOCK",
+   "price": 42.85,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Die Aktie zeigt eine angreifbare Bilanz und starke Kursschwankungen. Ein Setup liegt derzeit nicht vor.",
+    "state": "COMPLETE",
+    "strengths": [],
+    "weaknesses": [
+     "quality",
+     "risk"
+    ],
+    "setupState": "NO_SETUP",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "quality",
+      "value": 34.94,
+      "unit": "percentile"
+     },
+     {
+      "source": "factorEvidence",
+      "field": "risk",
+      "value": 43.89,
+      "unit": "percentile"
+     },
+     {
+      "source": "setupObservation",
+      "field": "classification.state",
+      "value": "NO_SETUP",
+      "unit": null
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  },
+  {
+   "ticker": "AADX",
+   "roles": [
+    "OHNE_STRATEGIE"
+   ],
+   "name": "Applied Aerospace & Defense, Inc.",
+   "securityType": "COMMON_STOCK",
+   "price": 12.64,
+   "priceAsOf": "2026-09-25",
+   "factorState": "AVAILABLE",
+   "factorReason": null,
+   "journeyShape": null,
+   "headline": {
+    "sentence": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 80 vor.",
+    "state": "UNAVAILABLE",
+    "strengths": [],
+    "weaknesses": [],
+    "setupState": "UNAVAILABLE",
+    "evidence": [
+     {
+      "source": "factorEvidence",
+      "field": "bars",
+      "value": 80,
+      "unit": "sessions"
+     }
+    ]
+   },
+   "browserChecked": false,
+   "findings": [],
+   "ok": true
+  }
+ ]
+}

@@ -2,6 +2,93 @@
 
 Updated: 2026-09-28 UTC
 
+## M43 — DIE ZWÖLF LAUNCH-GATES, GEMESSEN (UND DIE ÜBERSICHT BEHAUPTETE 459 BEWERTUNGEN)
+
+`launch-readiness-1.0.0` · `scripts/vu2/measure-launch-readiness.mjs` ·
+`acceptance-sample-1.0.0` · Suite 1.966 grün
+
+Es gibt jetzt eine Messung, die `PUBLIC_BETA_LAUNCH_READY` entscheidet, statt eines Gefühls.
+Zwölf P0-Gates, je PASS / FAIL / **NOT_MEASURED**, jedes FAIL mit seinen Fällen. Vier Gates
+(Mobil, Desktop, Navigation, Fehlerbilder) sind nur im Browser gegen das **gebaute** Release
+entscheidbar, eines nur mit einem echten Suite-Lauf; ohne diese Belege bleibt das Gate offen —
+**und NOT_MEASURED ist kein PASS.** Dazu zwei P1-Prüfungen (Release-Erlebnis, Public-Beta-Hygiene).
+
+Ein Bericht gilt, wenn sein Commit ein Vorfahre von HEAD ist **und** sich seither an Engines,
+Dienst, Oberfläche, Methodik oder Artefakten nichts geändert hat. Die drei reinen
+Messergebnisdateien sind davon ausgenommen — sonst macht der Launch-Bericht, sobald er
+eingecheckt ist, den Beleg ungültig, den er selbst enthält.
+
+### Der erste Lauf: fünf rote Gates, drei davon meine eigene Messung
+
+Das ist der Grund, warum eine Messung erst dann etwas wert ist, wenn man ihre Befunde einzeln
+nachprüft:
+
+| Gate | gemeldet | war |
+|---|---:|---|
+| VALUATION_SAFETY | 465 | `b` im Verzeichnis sind **Faktor-Handelstage**, kein Börsenwert |
+| SECURITY_TYPE_SAFETY | 1.417 | „belegt keine Aktie" aus dem Verzeichnis neu hergeleitet — dort steht die Gattung **ohne ihren Beleggrad** |
+| PRODUCT_LANGUAGE | 8 | Firmennamen („Advanced Health Intelligence", „Equus Total Return, Inc.") |
+| NAVIGATION | 4 | die Zulassungsmenge des Routers nur zur Hälfte gelesen |
+
+Ein Firmenname ist keine Formulierung, die wir wählen. Das Sprachverzeichnis regelt **unsere**
+Worte; ein Titel unter falschem Namen wäre der schwerere Fehler. Die Prüfung gilt jetzt nicht für
+das Namensfeld — interner Code und Handlungssprache werden dort weiter geprüft, denn beides könnte
+nur aus unserem Code stammen.
+
+### Zwei echte Befunde, beide Widersprüche zwischen zwei Flächen
+
+**1. Die Übersicht behauptete 459 Faktorbewertungen, die es nicht gibt.** Sie führte 6.755 Titel
+als faktorbewertet, während **6.296** Faktorzeilen existieren. Die Bedingung war
+`!!f || Number(member.b) > 0` — es genügte, dass die Kapazitätsdatei Handelstage kennt. 459 Zeilen
+versprachen eine Auswertung, die die Aktienseite drei Klicks später verneint; in einer Probe waren
+14 von 52 Fällen Papiere, die gar keine Aktie sind. **Eine Zahl von Handelstagen ist eine
+Voraussetzung, kein Ergebnis.** Der Faktorindex deckt sich gemessen genau mit den Zeilen in den
+Schichtdateien (6.296 zu 6.296, in beide Richtungen 0).
+
+**2. 145 belegte Nicht-Aktien standen in der Liste als faktorbewertete Aktien** — während dieselbe
+Anwendung auf der Aktienseite „keine Aktie" sagte. Ursache: die Regel `nichtAktie` stand als zwei
+eigene Listen **im Produktdienst**, und die Übersicht läuft dort nicht durch. Sie steht jetzt in
+`instrument-classification` (`provenNonEquity`, `EQUITY_TYPES`, `PROVEN_TYPE_BASES`) und wird von
+beiden Flächen und vom Bauer **gelesen**. Das Verzeichnis trägt die Angabe mit
+(`universe-list-1.3.0`, Feld `ne`, 145 Einträge), damit die Liste nicht 96 Instrumentendateien
+laden muss. Kurs, Kursverlauf und Kursstatistiken bleiben — es entfällt die Aktienaussage.
+
+### Drei weitere Befunde am Rand, alle gemessen
+
+- **Die Quant-Ansicht nannte das Kürzel als Firmennamen** — bei 976 von 977 Titeln einer Probe,
+  einer trug den Panelnamen in Versalien. Der breite Weg läuft nicht durch `mitVerzeichnis`, der
+  Panelweg liest die Panelzeile; keiner der beiden ist die Identitätsquelle.
+- **18 Titel trugen ihr Kürzel als Namen** (`BNRG` hieß „BNRG"). Die Namensschicht sagt genau,
+  warum: `PROVIDER_HAS_NO_NAME`, erneuter Versuch ab 2026-10-14. Der Dienst gibt jetzt `null` plus
+  Grund; die Oberflächen sagen „Firmenname nicht veröffentlicht". **Ein fehlender Name ist
+  launchfähig, ein falscher nicht.**
+- **Fünf Kurse ohne Stichtag** — genau die fünf Titel mit einer Panelzeile, darunter AAPL, MSFT,
+  NVDA und JPM. Die Zeile selbst hatte ein Datum, unsichtbar war es also nicht; eine Fläche, die
+  `price.asOf` liest, hätte bei den vier prominentesten Titeln nichts gefunden. Datiert wird nur,
+  wenn der Kurs derselbe ist.
+
+### Die Abnahmestichprobe (P1): 22 Titel, PASS
+
+Neun namentlich genannte Titel plus dreizehn Rollen, jede über ein **Prädikat** besetzt und nicht
+von Hand: Bank (ABCB), REIT (ABR), Small Cap (AACG), junger Titel (AACO), datenarm (ABTC), ETF
+(AAAC), Vorzugspapier (ABR-P-D), zurückgehaltene Bewertung (ACGL), Identitätskonflikt (AACI), mit
+Setup (A), ohne Setup (AACP), mit Strategie (AA), ohne Strategie (AADX). Je Titel neun Prüfungen:
+Name, Gattung oder ehrlich unklar, Kurs mit Stichtag, verständliche Zusammenfassung, keine doppelte
+und keine widersprüchliche Hauptaussage, keine Aussage ohne Beleg, richtige reduzierte Reise,
+Methodik mit Fassung, keine Station ohne Grund.
+
+**Der Smoke hatte von diesen 22 Titeln drei angesehen** — NVDA, AAPL, JPM, also nur Titel, bei
+denen alles da ist. Genau die Lagen, in denen eine Seite *kaputt aussieht statt reduziert*, standen
+nicht in seiner Liste. Sechs sind jetzt drin.
+
+### Kohärenz nach der Umklassifizierung neu gemessen
+
+`CONTRADICTORY_STATEMENTS = 0` · `DUPLICATE_PRIMARY_STATEMENTS = 0` ·
+`TECHNICAL_INFORMATION_WITHOUT_STATEMENT = 0` · `STATEMENTS_WITHOUT_EVIDENCE = 0` ·
+FULL 405 · REDUCED 41 · UNUSABLE 54 von 500. „Unusable" heißt: höchstens 3 der 11 Fragen
+beantwortbar — auf derselben Stichprobe sind 91 Reisen REDUCED und 2 MINIMAL. Das sind datenarme
+Titel und belegte Nicht-Aktien, bei denen die Seite sagt, warum. Das bleibt bewusst so.
+
 ## NORTH_STAR_2026-09-28 — PUBLIC BETA LAUNCH READINESS
 
 Das übergeordnete Ziel ist ab dem 28.09.2026 nicht mehr Vollständigkeit, sondern

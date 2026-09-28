@@ -686,6 +686,18 @@ function create(options){
      Identitaetsquelle, und die Panelzeile traegt denselben Namen in Versalien
      ("JPMORGAN CHASE & CO"). Alles andere in dieser Funktion ergaenzt nur. */
   if(entry.n)row.name=entry.n;
+  /* EIN KURS OHNE STICHTAG IST EINE UNDATIERTE ZAHL.
+     Gemessen am 28.09.2026: fuenf Titel - genau die mit einer Panelzeile,
+     darunter AAPL, MSFT, NVDA und JPM - trugen `price` ohne `asOf`, waehrend
+     6.477 ihn tragen. Die Zeile selbst hatte ein Datum, die Kopfzahl also
+     auch; unsichtbar war es nicht, aber ungleich - und eine Flaeche, die
+     `price.asOf` liest, haette bei den vier prominentesten Titeln nichts
+     gefunden. Datiert wird nur, wenn der Kurs derselbe ist: ein fremdes Datum
+     an einer fremden Zahl waere der schwerere Fehler. */
+  if(row.price&&row.price.state==='AVAILABLE'&&!row.price.asOf&&entry.d&&
+     Number.isFinite(entry.c)&&Number.isFinite(row.price.value)&&Math.abs(entry.c-row.price.value)<=0.005){
+   row.price={...row.price,asOf:entry.d};
+  }
   if(entry.t&&!row.securityType)row.securityType=entry.t;
   /* Auf WIE VIELEN Handelstagen der Faktorlauf gerechnet hat. Nur damit kann
    * eine Seite sagen "fuer diese Auswertung werden 252 Handelstage gebraucht,
