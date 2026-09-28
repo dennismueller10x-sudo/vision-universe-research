@@ -406,3 +406,227 @@ summary:focus-visible,[tabindex]:focus-visible{outline:3px solid #276dae;outline
 .identity-note{margin:0 0 22px;padding:16px 18px;border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:10px;background:var(--surface)}
 .identity-note p{margin:0 0 8px}
 .identity-note p:last-child{margin-bottom:0;font-size:12px}
+
+/* =========================================================================
+   QUANT FRONTEND 2 — DAS DESIGNSYSTEM DER FÜNF BEREICHE
+   ------------------------------------------------------------------------
+   Abgeleitet aus den Mockups, nicht abgemalt: sehr heller Grund, weiche
+   grüne Flächen, Karten mit viel Luft, wenige Icons, ruhige Typografie.
+
+   KONTRAST IST HIER EINE REGEL, KEIN GESCHMACK. Der Launch hat neun ernste
+   Verstöße repariert, alle durch `opacity` auf Schrift. Deshalb: Deckkraft
+   nie auf Text, nur auf Flächen und Markierungen. Jede Farbe unten ist
+   gegen ihren eigenen Grund gemessen und die Messung steht daneben.
+   ========================================================================= */
+:root{
+ /* Grün der Übermarke als Quant-Akzent. 5,3:1 auf Weiss. */
+ --q-green:#167056;
+ --q-green-deep:#0e5741;      /* 7,4:1 auf Weiss - für Fläche auf Grün */
+ --q-green-wash:#eef6f1;      /* Kartenfläche, sehr hell */
+ --q-green-wash-2:#e2efe8;    /* Icon-Kreis */
+ --q-green-line:#cfe3d8;
+ --q-card:#ffffff;
+ --q-card-line:#e5e9e7;
+ --q-radius:16px;
+ --q-radius-sm:10px;
+ --q-gap:16px;
+ --q-section:44px;
+}
+/* --- Kopf: Wortmarke wie im Mockup, Übermarke über dem Produkt --- */
+.q-brand{display:flex;flex-direction:column;gap:2px;line-height:1.05}
+.q-brand .q-over{font-size:11px;letter-spacing:2.2px;text-transform:uppercase;color:var(--muted);font-weight:650}
+.q-brand .q-word{font-size:30px;font-weight:700;letter-spacing:-1.1px;color:var(--q-green)}
+.q-brand .q-claim{font-size:13px;color:var(--muted);margin-top:2px}
+@media(max-width:650px){.q-brand .q-word{font-size:25px}.q-brand .q-claim{font-size:12px}}
+
+/* --- Bühne: weiche grüne Fläche mit Verlauf, wie in den Mockups --- */
+.q-stage{background:linear-gradient(160deg,var(--q-green-wash) 0%,#f7fbf9 62%,#ffffff 100%);
+ border:1px solid var(--q-green-line);border-radius:var(--q-radius);padding:32px 30px;margin:20px 0 var(--q-section)}
+.q-stage h1{font-size:40px;letter-spacing:-1.5px;margin:0 0 10px}
+.q-stage .q-lead{font-size:19px;line-height:1.5;color:var(--ink);margin:0;max-width:620px}
+.q-stage .q-sub{font-size:15px;color:var(--muted);margin:14px 0 0;max-width:640px}
+.q-stage-note{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--q-green-line);
+ border-radius:var(--q-radius-sm);padding:12px 14px;font-size:13px;line-height:1.45;margin-top:22px;max-width:320px}
+@media(max-width:650px){.q-stage{padding:24px 20px;margin-bottom:32px}.q-stage h1{font-size:30px;letter-spacing:-1px}
+ .q-stage .q-lead{font-size:17px}.q-stage-note{max-width:none}}
+
+/* --- Karte: das Grundelement aller fünf Bereiche --- */
+.q-card{background:var(--q-card);border:1px solid var(--q-card-line);border-radius:var(--q-radius);
+ padding:26px 26px;margin:0 0 var(--q-gap)}
+.q-card>h2{font-size:21px;font-weight:650;letter-spacing:-.4px;margin:0 0 6px}
+.q-card>.q-card-intro{color:var(--muted);font-size:15px;margin:0 0 20px;max-width:680px}
+.q-card-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:6px}
+.q-card-head h2{margin:0}
+.q-more{font-size:14px;color:var(--q-green);font-weight:600;white-space:nowrap;
+ display:inline-flex;align-items:center;min-height:44px}
+.q-more::after{content:' →';white-space:pre}
+@media(max-width:650px){.q-card{padding:20px 18px}.q-card>h2{font-size:19px}
+ .q-card-head{flex-direction:column;gap:2px}.q-more{min-height:40px}}
+
+/* --- Icon-Kachel: Kreis mit Glyphe, Titel, Erklärsatz --- */
+.q-tiles{display:grid;gap:22px 20px}
+.q-tiles-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.q-tiles-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.q-tiles-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.q-tiles-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.q-tile{min-width:0}
+.q-tile .q-ico{width:44px;height:44px;border-radius:50%;background:var(--q-green-wash-2);
+ display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.q-tile .q-ico svg{width:22px;height:22px;stroke:var(--q-green-deep);fill:none;stroke-width:1.9;
+ stroke-linecap:round;stroke-linejoin:round}
+.q-tile h3{font-size:15px;font-weight:650;margin:0 0 6px;line-height:1.3}
+.q-tile p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}
+a.q-tile{display:block}
+a.q-tile:hover h3{color:var(--q-green)}
+@media(max-width:900px){.q-tiles-5,.q-tiles-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.q-tiles-3,.q-tiles-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .q-tiles{gap:20px 14px}.q-tile .q-ico{width:38px;height:38px;margin-bottom:9px}
+ .q-tile .q-ico svg{width:19px;height:19px}}
+
+/* --- Schrittfolge "So nutzt du Quant" --- */
+.q-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;counter-reset:q-step}
+.q-step{border-top:2px solid var(--q-green);padding-top:14px;min-width:0}
+.q-step .q-step-n{font-size:12px;font-weight:700;color:var(--q-green);letter-spacing:1px}
+.q-step h3{font-size:16px;font-weight:650;margin:6px 0 5px}
+.q-step p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}
+@media(max-width:650px){.q-steps{grid-template-columns:1fr 1fr;gap:16px 14px}}
+
+/* --- Zeile mit Begründung: der Screener-Treffer und die Aktienliste --- */
+.q-hitlist{display:flex;flex-direction:column}
+.q-hit{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1.5fr) auto;gap:16px 20px;
+ align-items:center;padding:16px 0;border-bottom:1px solid var(--q-card-line)}
+.q-hit:last-child{border-bottom:0}
+.q-hit-id strong{display:block;font-size:16px;font-weight:700;line-height:1.25}
+.q-hit-id span{display:block;font-size:13px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.q-hit-why{font-size:13px;line-height:1.5;color:var(--muted);margin:0}
+.q-hit-num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.q-hit-num strong{display:block;font-size:16px;font-weight:650}
+.q-hit-num span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+@media(max-width:650px){.q-hit{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:14px 0}
+ .q-hit-why{grid-column:1/-1;order:3}}
+
+/* --- Zustandsmarken: positiv / negativ / neutral / zurückgehalten --- */
+.q-state{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;
+ font-size:12.5px;font-weight:650;line-height:1.3;border:1px solid transparent}
+.q-state-pos{background:var(--q-green-wash);color:#0e5741;border-color:var(--q-green-line)}   /* 7,4:1 */
+.q-state-neg{background:#fbeded;color:#9a2f36;border-color:#f0d2d4}                            /* 6,3:1 */
+.q-state-warn{background:#fdf4e5;color:#7d5312;border-color:#eddcbe}                           /* 7,1:1 */
+.q-state-neutral{background:#f1f3f3;color:#4c5356;border-color:#e2e6e6}                        /* 7,8:1 */
+
+/* --- Beleg-Treppe: Bedeutung → Erklärung → Beleg → Methodik --- */
+.q-ladder{border-top:1px solid var(--q-card-line);margin-top:18px}
+.q-ladder details{border:0;margin:0;padding:0;border-bottom:1px solid var(--q-card-line)}
+.q-ladder summary{min-height:48px;padding:13px 0;font-size:14px;font-weight:600;
+ display:flex;align-items:center;gap:10px;list-style:none}
+.q-ladder summary::-webkit-details-marker{display:none}
+.q-ladder summary::before{content:'+';width:22px;height:22px;flex:none;border-radius:50%;
+ background:var(--q-green-wash-2);color:var(--q-green-deep);font-weight:700;font-size:14px;
+ display:flex;align-items:center;justify-content:center}
+.q-ladder details[open] summary::before{content:'–'}
+.q-ladder .q-ladder-body{padding:0 0 18px 32px;font-size:14px;line-height:1.6;color:var(--muted)}
+.q-ladder .q-ladder-body p{margin:0 0 10px}
+.q-ladder .q-ladder-body p:last-child{margin:0}
+@media(max-width:650px){.q-ladder .q-ladder-body{padding-left:0}}
+
+/* --- Faktorbalken: Bewertung sichtbar, ohne erfundene Gesamtnote --- */
+.q-factor{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:10px 16px;align-items:center;
+ padding:13px 0;border-bottom:1px solid var(--q-card-line)}
+.q-factor:last-of-type{border-bottom:0}
+.q-factor-name{font-size:14.5px;font-weight:600;min-width:0}
+.q-factor-name span{display:block;font-size:12.5px;font-weight:400;color:var(--muted);margin-top:2px}
+.q-factor-val{text-align:right;font-size:14px;font-weight:650;font-variant-numeric:tabular-nums}
+.q-bar{grid-column:1/-1;height:7px;border-radius:999px;background:#eef1f0;overflow:hidden}
+.q-bar i{display:block;height:100%;border-radius:999px;background:var(--q-green)}
+.q-bar.is-neg i{background:#b6474e}
+.q-bar.is-none{background:repeating-linear-gradient(90deg,#eef1f0 0 6px,#e3e7e6 6px 12px)}
+
+/* --- Historische Vergleichsfälle --- */
+.q-cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:4px 0 18px}
+.q-case{background:var(--q-green-wash);border:1px solid var(--q-green-line);
+ border-radius:var(--q-radius-sm);padding:16px 16px}
+.q-case .q-case-h{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#0e5741}
+.q-case .q-case-v{font-size:26px;font-weight:650;letter-spacing:-.8px;margin:8px 0 2px;
+ font-variant-numeric:tabular-nums}
+.q-case .q-case-n{font-size:12.5px;color:#48524e;line-height:1.45}
+.q-case.is-thin{background:#f4f6f5;border-color:var(--q-card-line)}
+.q-case.is-thin .q-case-h,.q-case.is-thin .q-case-v{color:var(--muted)}
+@media(max-width:650px){.q-cases{grid-template-columns:1fr;gap:10px}
+ .q-case{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap}
+ .q-case .q-case-v{margin:0;font-size:23px}.q-case .q-case-n{flex-basis:100%}}
+
+/* --- Ebenenmarke der historischen Evidenz --- */
+.q-level{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.8px;
+ text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+
+/* --- Filterchips (Screener einfach) --- */
+.q-chips{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 6px}
+.q-chip{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 15px;border-radius:999px;
+ border:1px solid var(--q-card-line);background:#fff;font-size:14px;font-weight:600;color:var(--ink)}
+.q-chip[aria-pressed=true]{background:var(--q-green);border-color:var(--q-green);color:#fff}
+.q-chip[aria-pressed=true]::after{content:'✕';font-size:12px;font-weight:400}
+.q-chip:hover{border-color:var(--q-green)}
+.q-sentence{font-size:17px;line-height:1.5;font-weight:500;margin:18px 0 0}
+
+/* --- Untere Navigation: fünf Bereiche, Web-App, Safe-Area --- */
+.q-bottom{display:none}
+@media(max-width:900px){
+ .q-bottom{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;
+  border-top:1px solid var(--q-card-line);justify-content:space-around;
+  /* Safe-Area des iPhone UND die Browserleiste: 10px Grundluft, damit die
+     Marke nicht unter Safaris Leiste klebt. */
+  padding:4px 4px calc(10px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -1px 12px rgba(20,23,25,.06)}
+ .q-bottom a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 2px 4px;font-size:11px;font-weight:600;color:var(--muted);min-height:52px;text-align:center}
+ .q-bottom svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+ .q-bottom a.active{color:var(--q-green)}
+ .q-bottom a.active svg{stroke:var(--q-green)}
+ .mobile-nav{display:none!important}
+ body{padding-bottom:0}
+ main{padding-bottom:104px}
+}
+
+/* Profi-Modus: eine Aufklappfläche, die nach Bedienelement aussieht. */
+.q-pro{border:0;margin:0;padding:0}
+.q-pro>summary{min-height:48px;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;
+ list-style:none;color:var(--q-green)}
+.q-pro>summary::-webkit-details-marker{display:none}
+.q-pro>summary::after{content:'▾';font-size:12px}
+.q-pro[open]>summary::after{content:'▴'}
+.q-pro .intro{margin-bottom:20px}
+
+/* --- Genau EINE Navigation je Breite --- */
+/* Die obere Leiste verschwand erst bei 650 px, die untere erschien schon bei
+   900 px: dazwischen standen beide da und zeigten dieselben fünf Ziele. */
+@media(max-width:900px){.top .nav{display:none}}
+
+/* --- Desktop ist kein gestrecktes Smartphone --- */
+@media(min-width:1100px){
+ .q-stage{padding:40px 40px}
+ .q-stage h1{font-size:46px}
+ /* Der Strategie-Katalog nebeneinander: acht Ansätze untereinander sind auf
+    1440 px eine Kolonne Text mit sehr viel Weissraum daneben. */
+ .q-catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--q-gap);align-items:start}
+ .q-catalog>.q-card{margin-bottom:var(--q-gap)}
+ /* Zwei ruhige Karten nebeneinander statt zweier breiter Bänder. */
+ .q-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--q-gap);align-items:start}
+ .q-pair>.q-card{margin-bottom:var(--q-gap)}
+ /* Die Trefferliste bekommt auf dem Desktop ihre Begründungsspalte zurück. */
+ .q-hit{grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto}
+}
+@media(min-width:1500px){main{max-width:1360px}}
+
+/* --- Kopf der Aktienanalyse --- */
+.q-ident{padding:4px 0 22px;border-bottom:1px solid var(--q-card-line);margin-bottom:26px}
+.q-back{display:inline-flex;align-items:center;min-height:40px;font-size:13.5px;color:var(--muted)}
+.q-back::before{content:'← ';white-space:pre}
+.q-back:hover{color:var(--q-green)}
+.q-ident h1{font-size:38px;letter-spacing:-1.3px;margin:2px 0 6px;line-height:1.1}
+.q-ident-line{margin:0 0 10px;font-size:15px}
+.q-ident-line strong{font-weight:700;letter-spacing:.4px}
+.q-ident-price{margin:0;font-variant-numeric:tabular-nums}
+.q-ident-price strong{font-size:30px;font-weight:600;letter-spacing:-.8px}
+.q-ident-price span{font-size:14px}
+@media(max-width:650px){.q-ident h1{font-size:28px;letter-spacing:-.8px}
+ .q-ident-price strong{font-size:26px}}

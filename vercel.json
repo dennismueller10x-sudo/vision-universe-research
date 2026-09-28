@@ -3,6 +3,7 @@
   "framework": null,
   "buildCommand": "node scripts/vu2/build-vercel-public.mjs",
   "outputDirectory": ".vercel-public",
+  "ignoreCommand": "node scripts/vu2/vercel-should-build.mjs",
   "cleanUrls": true,
   "trailingSlash": true,
   "github": { "silent": true },

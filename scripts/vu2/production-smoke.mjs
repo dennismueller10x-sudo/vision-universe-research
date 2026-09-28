@@ -89,6 +89,38 @@ for(const width of [1440,390]){
   if(h1!==1)bad.push('H1='+h1);
   if(hits.length)bad.push('FORBIDDEN:'+hits.join('|'));
 
+  /* DIE FUENF BEREICHE SIND VON JEDER ANSICHT ERREICHBAR, UND NUR SIE.
+     Eine Navigation, die auf einer Unterseite ein fremdes Produkt anbietet
+     oder die Methodik verliert, ist genau der Rueckschritt, den dieser Lauf
+     fangen soll. */
+  /* NUR FUER DIE QUANT-ANSICHTEN. Die Liste dieses Laufs enthaelt auch
+     Seiten ausserhalb von /vu2/ (etwa /quant/methodology/), und die tragen
+     diese Leiste nicht - eine Pruefung ueber alles meldete dort eine leere
+     Navigation und damit einen Fehler, den es nicht gibt. */
+  if(view.startsWith('/vu2/')){
+   const bereiche=await page.locator('.q-bottom a').allInnerTexts();
+   const sollBereiche=['Home','Screener','Strategien','Aktien','Methodik'];
+   if(bereiche.map(t=>t.trim()).join('|')!==sollBereiche.join('|'))
+    bad.push('NAV:'+bereiche.map(t=>t.trim()).join('|'));
+   for(const fremd of ['Discover','Research','Markets','Portfolio'])
+    if(bereiche.some(t=>t.trim()===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
+  }
+
+  /* HISTORISCHE VERGLEICHSFAELLE: EINE ZAHL NUR MIT IHRER STICHPROBE.
+     Die Regel des Vertrags (historical-cases-1.0.0) lautet: ein Median
+     erscheint erst ab zehn abgeschlossenen Faellen. Steht ein Median da und
+     die Stichprobe ist kleiner - oder fehlt sie -, waere genau die
+     Anekdote entstanden, die der Abschnitt vermeiden soll. */
+  if(/Ähnliche Situationen bei/.test(text)){
+   const abschnitt=await page.locator('.q-card').filter({hasText:'Ähnliche Situationen bei'}).innerText().catch(()=>'');
+   const medianZeilen=[...abschnitt.matchAll(/Median aus (\d+) Fällen/g)].map(m=>Number(m[1]));
+   for(const n of medianZeilen)if(n<10)bad.push('FALLZAHL_UNTER_SCHWELLE='+n);
+   if(/[+−]\d+,\d+ %/.test(abschnitt)&&!medianZeilen.length)
+    bad.push('RENDITE_OHNE_STICHPROBE');
+   for(const wort of ['wird wahrscheinlich','dürfte steigen','dürfte fallen','Kursziel','Prognose:'])
+    if(abschnitt.includes(wort))bad.push('PROGNOSESPRACHE:'+wort);
+  }
+
   /* OPTION C, IM GEBAUTEN RELEASE GEPRUEFT
 
      Kursstaerke und Anlegerrendite muessen nebeneinander stehen UND
@@ -152,16 +184,28 @@ for(const width of [1440,390]){
      Fehlerfreiheit geprueft - eine unbenutzbare Hauptfunktion faellt so nie
      auf. Jetzt zaehlt er die Zahlen in den Zeilen. */
   if(view==='/vu2/?view=screener'){
+   /* Die Trefferzeile heisst seit dem Frontend-Umbau `.q-hit` und nicht
+      mehr `.row`. Der alte Ausdruck traf die Regelzeilen des Profi-Modus -
+      die tragen keine Zahl, also meldete der Smoke 50 leere Zeilen und die
+      echten 25 Treffer sah er gar nicht. Die Pruefabsicht bleibt: eine
+      Trefferliste ohne Zahlen ist eine kaputte Hauptfunktion. */
    const satz=(await page.locator('main p.muted').allInnerTexts()).find(t=>t.includes('Treffer'))||'';
-   const zeilen=await page.locator('.row:not(.eyebrow)').allInnerTexts();
-   const mitZahl=zeilen.filter(t=>/\d+,\d+/.test(t)).length;
+   const zeilen=await page.locator('.q-hit').allInnerTexts();
+   /* Die Zahl in einer Trefferzeile war frueher ein Kurs oder eine Rendite
+      und hatte deshalb immer eine Nachkommastelle. Der einfache Einstieg
+      zeigt den erfuellten Faktorwert, und der ist ganzzahlig ("Qualitaet 90
+      von 100"). Der alte Ausdruck /\d+,\d+/ fand ihn nicht und meldete 25
+      leere Zeilen, in denen die Zahl dastand. Die Absicht bleibt: eine
+      Trefferzeile ohne Wert - oder mit einer Absage statt eines Werts - ist
+      eine kaputte Hauptfunktion. */
+   const mitZahl=zeilen.filter(t=>/\d/.test(t)&&!/Nicht verfügbar|nicht bewertbar/.test(t)).length;
    if(!zeilen.length)bad.push('KEINE_TREFFER');
    else if(mitZahl<zeilen.length)bad.push('LEERE_ZEILEN='+(zeilen.length-mitZahl)+'/'+zeilen.length);
    if(/undefined/.test(satz))bad.push('UNDEFINED_IM_SATZ');
    console.log('     Screener: '+mitZahl+' von '+zeilen.length+' Zeilen mit Zahl · '+satz.slice(0,70));
   }
   if(view==='/vu2/?view=stocks'){
-   const zeilen=await page.locator('.row:not(.eyebrow)').allInnerTexts();
+   const zeilen=await page.locator('.q-hit').allInnerTexts();
    if(zeilen.length<20)bad.push('ZU_WENIGE_ZEILEN='+zeilen.length);
    else{
     const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)).length;

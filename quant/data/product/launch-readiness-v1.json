@@ -1,7 +1,7 @@
 {
  "schemaVersion": "launch-readiness-1.0.0",
- "generatedAt": "2026-09-28T10:03:10.000Z",
- "commit": "db1e93f2998cfdbce2e7ec3d3e6626cebe489eb1",
+ "generatedAt": "2026-09-28T14:47:02.000Z",
+ "commit": "c5356c54b497da8486648422f06ddbcf4d275f81",
  "northStar": "PUBLIC_BETA_LAUNCH_READY",
  "ordering": "Korrektheit > Coverage · Vertrauen > Vollständigkeit · Launch Readiness > Feature-Tiefe",
  "universe": 6875,
@@ -110,7 +110,7 @@
      "priceAsOf": "2026-09-25",
      "listGeneratedAt": "2026-09-28T08:12:26.000Z",
      "universeAsOf": "2026-09-25",
-     "priceAgeDays": 3,
+     "priceAgeDays": 4,
      "listAgeDays": 0
     },
     "chainForward": true,
@@ -186,8 +186,8 @@
     "withoutSingleH1": 0,
     "recovered": 0,
     "views": 34,
-    "release": "/tmp/claude-0/release",
-    "commit": "db1e93f2998cfdbce2e7ec3d3e6626cebe489eb1",
+    "release": "/tmp/claude-0/rel-final",
+    "commit": "c5356c54b497da8486648422f06ddbcf4d275f81",
     "validity": {
      "ok": true,
      "reason": "AUF_HEAD",
@@ -209,8 +209,8 @@
     "withoutSingleH1": 0,
     "recovered": 0,
     "views": 34,
-    "release": "/tmp/claude-0/release",
-    "commit": "db1e93f2998cfdbce2e7ec3d3e6626cebe489eb1",
+    "release": "/tmp/claude-0/rel-final",
+    "commit": "c5356c54b497da8486648422f06ddbcf4d275f81",
     "validity": {
      "ok": true,
      "reason": "AUF_HEAD",
@@ -225,7 +225,7 @@
    "title": "Kein primärer Verweis führt ins Leere",
    "status": "PASS",
    "facts": {
-    "viewTargets": 19,
+    "viewTargets": 18,
     "knownViews": 19,
     "absolutePathsChecked": 19,
     "checkedAgainst": "RELEASE",
@@ -267,11 +267,11 @@
    "title": "Die Suite läuft grün und deckt die Launch-Regeln ab",
    "status": "PASS",
    "facts": {
-    "tests": 1968,
-    "pass": 1968,
+    "tests": 1984,
+    "pass": 1984,
     "fail": 0,
     "files": null,
-    "commit": "db1e93f2998cfdbce2e7ec3d3e6626cebe489eb1",
+    "commit": "c5356c54b497da8486648422f06ddbcf4d275f81",
     "validity": {
      "ok": true,
      "reason": "AUF_HEAD",
@@ -319,7 +319,7 @@
      "freshness-monitor.yml",
      "vu2-browser-qa.yml"
     ],
-    "releaseChecked": "/tmp/claude-0/release/vu2/experience.js",
+    "releaseChecked": "/tmp/claude-0/rel-final/vu2/experience.js",
     "violations": 0
    },
    "caseCount": 0,

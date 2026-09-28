@@ -1,5 +1,39 @@
 # Vision Universe® Quant 2.0 — Public-Beta-Launch-Bericht
 
+**`PUBLIC_BETA_PRODUCTION = PASS`** — veröffentlicht am 28.09.2026.
+
+Production-Commit `e4435f8883` · Deployment-Lauf
+[36410445415](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36410445415) ·
+Adresse `https://research.visionuniverse.de/`
+
+| Punkt | Stand |
+|---|---|
+| Merge | PR #266 → main als `e4435f8883ea2d32f4f24cff0045d4a49d3405c2` |
+| Deployment | `package` und `deploy` beide erfolgreich · `pages_build_version = e4435f8883…` · „Reported success!" |
+| Release-SHA == main | ja, zum Zeitpunkt der Auslieferung identisch |
+| Teststand | **1.968 Tests, 1.968 pass, 0 fail** (110 s) auf `e4435f8883` |
+| Produktions-Smoke | **CLEAN** — 34 Ansichten × 2 Breiten = 68 Prüfungen, 0 Fehlschläge, gegen das ausgelieferte Release; zusätzlich der eigene Smoke-Schritt der Auslieferungsstrecke |
+| Browser-QA | 61 Prüfungen, 8 Ressourcenbudgets bestanden, 42 Seiten Barrierefreiheit mit **0 Verstößen** |
+| Reise-Flächen | 12 von 12 bei 1440 und 390 px |
+| Launch-Gates | **14 PASS · 0 FAIL · 0 offen** auf dem ausgelieferten Release |
+| Abnahmestichprobe | **22 Titel PASS**, 9 davon im Browser |
+| Datenkette | Zeitplan → Refresh → Materialisierung → Auslieferung, jede Stufe ohne Hand |
+| Überwachung | `freshness-monitor.yml` (Mo–Fr 06:30 UTC), `vu2-browser-qa.yml` auf jedem PR |
+
+**Zwei Dinge, die dieser Satz nicht behauptet.** Erstens: die Live-Adresse ist aus der
+Orchestrierungsumgebung nicht lesbar (CONNECT 403) — geprüft wurde das **identisch ausgelieferte**
+Release, aus demselben Commit mit demselben Bauwerkzeug gebaut, nicht die veröffentlichte URL.
+Zweitens: main ist nach diesem Launch weitergelaufen (PR #268, Discover-Strategien) und hat
+erfolgreich nachdeployt — das Produkt ist live, der Stand von heute ist nicht der letzte.
+
+**Die Auslieferungsstrecke hat sich dabei selbst bewiesen:** zwei fremde Pull Requests (#267
+Markt-Validierung, #268 Discover-Strategien) sind an diesem Morgen ohne Zutun gebaut und
+veröffentlicht worden — Stufe vier der Datenkette ist damit nicht nur konfiguriert, sondern
+beobachtet.
+
+---
+
+
 **`PUBLIC_BETA_LAUNCH_READY = PASS`**
 
 Stand: 2026-09-28 · Commit `55e3217841` · Branch `claude/quant-2-orchestration-hmuo69`

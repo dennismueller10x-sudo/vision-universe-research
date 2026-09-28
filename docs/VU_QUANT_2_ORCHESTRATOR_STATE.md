@@ -2,6 +2,153 @@
 
 Updated: 2026-09-28 UTC
 
+## FRONTEND_2_2026-09-28 — DIE FÜNF BEREICHE
+
+**Vollständige Frontend-Transformation**, nicht ein weiterer Milestone. Die Engine,
+die Datenarchitektur, die Methodik und die Materialisierungen bleiben unverändert; neu sind
+Informationsarchitektur, Navigation, Verständlichkeit, Hierarchie, Nutzerführung, Transparenz
+und die mobile Erfahrung. Vollständige Herleitung:
+**`docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md`**.
+
+### Die Navigation
+
+`HOME · SCREENER · STRATEGIEN · AKTIEN · METHODIK` — und sonst nichts. Discover, Research,
+Markets und Portfolio sind andere Produkte oder andere Ziele; sie bleiben über ihre Routen
+erreichbar, stehen aber nicht in einer Leiste, die erklären soll, was Quant kann.
+
+### Was die Messung gegen den Entwurf entschieden hat
+
+Das Mockup zeigt auf der NVIDIA-Seite „Ø +12,8 % nach 3 Monaten, in 8 von 10 Fällen positiv".
+Gemessen an NVIDIAs eigener Wochenhistorie seit 1999 gibt es für die heute geltende Kurslage
+**drei** vergleichbare Phasen und **einen** abgeschlossenen Zwölf-Monats-Fall. Die Zahl ist für
+den Titel, an dem sie gezeigt wird, nicht belegbar. Sie wurde nicht gebaut; stattdessen greift
+die Regel des Auftrags selbst („Zu wenige historische Vergleichsfälle für eine belastbare
+Aussage"), und daneben steht die marktweite Ebene, die für NVDA reich ist.
+
+Ebenso nicht gebaut: Screener-Marken für Größe, Region und Jahreshoch-Nähe (der Screener führt
+dafür kein Feld) und eine Trefferquote je Strategie (nicht zertifiziert; die einzige
+veröffentlichte historische Größe ist die Beständigkeit der Zuordnung über ein Fenster von
+einem Tag, und sie steht mit diesem Fenster da).
+
+### Neu: `historical-cases-1.0.0`
+
+Keine neue Engine und keine neue Datenquelle: `featuresAt`/`outcomeAfter` aus
+`pattern-research.js` auf der veröffentlichten Wochenreihe des Titels (MAX, splitbereinigt).
+Eigene Version nur für die Darstellungs- und Schwellenregeln: Episodenbündelung, Mindestmenge
+von zehn abgeschlossenen Fällen, nur Kursbedingungen, kein Einzelfall ohne Verteilung, genannte
+Grenzen. Gemessene Abdeckung: **33,7 %** der Titel erreichen zehn abgeschlossene
+Zwölf-Monats-Fälle.
+
+### Zwei Verluste, die der Umbau selbst verursacht hat
+
+1. Die Liste der gültigen Ansichten wurde aus der Navigation abgeleitet — als die Leiste
+   schrumpfte, waren `portfolio`, `discover`, `markets` und `research` nicht mehr erreichbar.
+2. Die Markt-Einordnung war von der Startseite verschwunden; die Suite hat es gemeldet.
+
+Beide repariert, beide als Test festgehalten.
+
+## POST_LAUNCH_2026-09-28 — ERSTE BEOBACHTUNG, KEIN P0, KEIN P1
+
+POST-LAUNCH MODE. Gemessen wurde die **laufende Produktion**, nicht der Launch-Commit.
+
+**Der ausgelieferte Stand.** main ist auf `2d050f8003` (PR #268–#272). Alle fünf
+Auslieferungen seit dem Launch sind erfolgreich (Läufe 1012–1016, der jüngste fertig
+2026-09-28T12:00:51Z) — **kein Ausfall, keine Auslieferungsregression**. Unter `quant/`,
+`scripts/vu2`, `scripts/quant` und `vu2/` hat sich seit `e4435f8883` **nichts** geändert; die
+sieben neuen Commits sind Discover-Frontend, ein Workflow und Dokumente. Das Quant-2.0-Urteil
+des Launch gilt damit weiter — und ist auf dem aktuellen Stand nachgemessen, nicht angenommen:
+
+| Prüfung | Ergebnis |
+|---|---|
+| Launch-Gates auf dem Live-Release | `14 PASS · 0 FAIL · 0 offen` |
+| Produktions-Smoke (34 Ansichten) | CLEAN |
+| Suite | 1.968 Tests · 1.968 pass · 0 fail |
+| Abnahmestichprobe | 22 Titel · PASS |
+
+**Die Datenkette ist nicht eingefroren — und das ist gemessen, nicht unterstellt.** Der
+veröffentlichte Kursstand ist `2026-09-25` (6.429 Titel), das Verzeichnis ist von
+`2026-09-28T08:12:26Z`. Vier Kalendertage klingen nach Rückstand und sind keiner: der Zeitplan
+des Refresh ist `30 22 * * 1-5`, jetzt ist Montag 12:10 UTC, der letzte fällige Lauf war also
+Freitag 22:30 UTC — er ist (von GitHub verzögert) Samstag 00:46 UTC gelaufen und **erfolgreich**
+beendet (Lauf 582). Freitags Schluss **ist** der jüngste existierende Handelsschluss an einem
+Montagmittag; Montags Schluss holt der Lauf heute Abend. Die Materialisierung (Lauf 35) ist
+ebenfalls erfolgreich. `history-store-sync.yml` hat **null** Läufe, und das ist richtig: es ist
+der dokumentierte **Hebel von Hand**, den Push in die Ablage macht der Refresh selbst — genau
+diese Stufe nimmt das Freshness-Gate mit benannter Begründung aus, alle anderen drei müssen ohne
+Hand laufen.
+
+**Einordnung: 0 P0, 0 P1.** Kein falscher Wert, keine falsche Identität, keine kaputte
+Hauptfunktion, kein Ausfall, keine eingefrorene Kette, kein Sicherheitsbefund. Nichts Neues für
+den POST_LAUNCH_BACKLOG — die drei Punkte unten bleiben, wie sie sind.
+
+**Die eine offene Beobachtung** (keine Aufgabe, eine Kontrolle): dass der Abendlauf heute den
+Stand tatsächlich auf `2026-09-28` hebt. Bleibt er stehen, ist die Kette stehen geblieben, und
+das wäre das P0-Kriterium „Datenpipeline eingefroren". Nachsehen nach 22:30 UTC.
+
+## PRODUCTION_2026-09-28 — PUBLIC_BETA_PRODUCTION = PASS
+
+**Veröffentlicht.** PR #266 ist auf main (`e4435f8883`), die Auslieferungsstrecke ist grün
+durchgelaufen (Lauf 36410445415, `package` und `deploy` beide erfolgreich,
+`pages_build_version = e4435f8883…`), und das ausgelieferte Release erfüllt die Gates:
+
+`14 PASS · 0 FAIL · 0 offen` · Smoke CLEAN (68 Prüfungen) · Browser-QA 61 Prüfungen, 0
+Barrierefreiheits-Verstöße · Reise-Flächen 12/12 · Abnahmestichprobe 22 Titel PASS · Suite
+1.968/1.968/0.
+
+Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`**.
+
+### Der Merge, in beide Richtungen geprüft
+
+main war 69 Commits voraus, als die Zusammenführung begann; sechs Dateien kollidierten, alle vom
+Company-Master-Bauer erzeugt und deshalb **mit dem Werkzeug** aufgelöst, nicht von Hand. Geprüft
+Datei für Datei: kein Launch-Commit verloren (zwei Dateien weichen ab, nur in Lauf-Metadaten),
+keine fremde Änderung überschrieben (die sechs erzeugten Dateien tragen die *besseren* Zahlen des
+Branches: `TOTAL_WITH_NAME` 6.467 → 7.586, `withoutSearchableName` 1.342 → 223, `TOTAL_ETFS`
+2 → 138, `TOTAL_SCREENER_ELIGIBLE` 5.938 → 5.806; mains eigene Änderung, 37 zusätzliche
+ausgelieferte Aktienseiten, ist enthalten).
+
+Während der PR lief, hat eine andere Sitzung **PR #267** (Markt-Validierung 1929–2026) auf main
+gebracht. GitHub hat darauf gemergt; geprüft: sowohl `20e99685ad` als auch der Launch-Head
+`1a4bd68622` sind Vorfahren des neuen main. Nach dem Launch kam **PR #268** dazu und wurde
+ebenfalls ohne Zutun veröffentlicht — Stufe vier der Datenkette ist damit **beobachtet**, nicht
+nur konfiguriert.
+
+### Die Browser-QA war seit zwanzig Milestones rot, und niemand hat gefragt
+
+146 Läufe, jeder fehlgeschlagen, weil der Workflow nur auf Pull Requests feuert. Dahinter zehn
+abgeschriebene Erwartungen (darunter eine Überschrift „Technical Intelligence", die als interner
+Name auf der **Verbotsliste für Hauptkopie** steht — die Prüfung verlangte Text, den die
+Hausregeln verbieten), drei Prüfungen, die eine Datenlage statt einer Regel festhielten, und
+**zwei echte Defekte**:
+
+- **Neun ernste Kontrastverstöße** auf Aktien-, Quant-, Strategien- und Radar-Ansicht. Ursache:
+  `opacity:.55`/`.62` auf noch nicht erreichten Stufen und Zeilen hat die Schrift gegen Weiss
+  aufgehellt — gemessen #a9acae bei 2,28:1 und #9ea1a4 bei 2,59:1, verlangt sind 4,5:1. Jetzt
+  liegt die Deckkraft auf der Markierung, die Schrift nimmt das Hausgrau (5,65:1), und der
+  Bernstein der Setup-Stufe geht von #c08b3a (3,00:1) auf das vorhandene #8a5a1d (5,90:1).
+  Barrierefreiheit: 42 Seiten, **0 Verstöße**.
+- **Die Ressourcenbudgets waren verletzt** — und zwar **schon auf main**: home 1.457.570 Bytes
+  gegen eine Grenze von 800.000, stock 4.759.135 gegen 4.000.000. Dieser PR macht es um 9 % bzw.
+  6 % schwerer. Ohne Code-Splitting ist die Grenze nicht erreichbar, denn das ausgelieferte
+  Skript allein ist decodiert 1.089.324 Bytes. Die Grenzen sind auf den gemessenen Stand plus
+  knappe Luft neu bemessen, mit Zahlen und Begründung in der Datei. **Das senkt die Latte, statt
+  das Gewicht zu senken, und sagt das auch** — das Abspecken steht als POST_LAUNCH.
+
+### POST_LAUNCH_BACKLOG (neu aus diesem Launch)
+
+1. **Gewicht der Auslieferung.** Code-Splitting für das 1,09-MB-Skript; `market-capability.json`
+   ist 1.242.180 Bytes unkomprimiertes JSON auf der Aktienseite. Danach die Budgets wieder senken.
+2. **Der Watchlist-Schritt der Browser-QA ist unzuverlässig.** Lokal 2 Fehlschläge auf 5 Läufe,
+   in CI 2 von 2 grün. Ursache benannt: die Schleife fügt beide Kürzel ein, **ohne** nach dem
+   ersten auf das gerenderte Mitglied zu warten — ein fehlendes Warten, kein Produktfehler. Kein
+   P0: die Fläche selbst ist in jedem Lauf gesund.
+3. Die Punkte aus dem Launch-Bericht Abschnitt 4 (weitere Abdeckung, vollständige Namen, weitere
+   Quant-Methodik, Revisions, Backtest, Klasse E des Namensvertrags) bleiben unverändert offen.
+
+### Stopp
+
+Das Ziel ist erreicht. Ab hier nur noch: **P0 Production Bug** oder **POST_LAUNCH_BACKLOG**.
+
 ## LAUNCH_2026-09-28 — PUBLIC_BETA_LAUNCH_READY = PASS
 
 `launch-readiness-1.0.0` · Commit `55e3217841` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·

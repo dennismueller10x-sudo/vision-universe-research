@@ -25,6 +25,7 @@ const FundamentalInputs=typeof module!=='undefined'&&module.exports?require('../
 const IntelligenceBrief=typeof module!=='undefined'&&module.exports?require('../engines/intelligence-brief.js'):g.VUIntelligenceBrief;
 const Classification=typeof module!=='undefined'&&module.exports?require('../engines/instrument-classification.js'):g.VUInstrumentClassification;
 const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
+const HistoricalCases=typeof module!=='undefined'&&module.exports?require('../engines/historical-cases.js'):g.VUHistoricalCases;
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
@@ -262,6 +263,36 @@ function create(options){
   * nennt den erlaubten Namensraum, und die Engine weist ein Profil ab,
   * das darueber hinausgreift - deshalb steht hier keine zweite Pruefung. */
  let profilesPromise=null;
+ /* HISTORISCHE VERGLEICHSFAELLE JE TITEL.
+  * Die Frage ist "wann galt diese Kurslage hier schon einmal und was kam
+  * danach" - und sie wird aus zwei bereits veroeffentlichten Quellen
+  * beantwortet, ohne neues Artefakt und ohne neue Datenquelle: dem
+  * Pattern-Buendel (welche Begriffe gelten heute, und wie lauten sie) und
+  * der eigenen Wochenreihe des Titels (MAX, SPLIT_ADJUSTED), die
+  * getHistoricalPriceHistory schon vollstaendig gegen ihren Vertrag
+  * prueft. Gerechnet wird mit der Studien-Engine, nicht mit einer zweiten.
+  */
+ async function getHistoricalCases(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  if(!HistoricalCases)return unavailable('SOURCE_MISSING');
+  try{
+   const key=technicalShard(ticker);
+   const shard=await compressedJSON('/quant/data/product/pattern-match-v1/'+key+'.json.gz');
+   if(shard?.schemaVersion!=='pattern-match-1.0.0'||shard.shard!==key)return unavailable('INVALID_PATTERN_MATCH_ARTIFACT');
+   const source=shard.instruments?.[ticker];
+   if(!source)return unavailable('NOT_COVERED_BY_PATTERN_MATCH');
+   const history=await getHistoricalPriceHistory(ticker,{range:'MAX',grain:'weekly'});
+   if(history.state!=='AVAILABLE')return unavailable(history.reason||'HISTORY_UNAVAILABLE');
+   const result=HistoricalCases.assess({bars:history.bars,vocabulary:HistoricalCases.vocabulary(shard),holds:source.holds||[]});
+   return {...result,ticker,asOf:shard.asOf||null,seriesAsOf:history.asOf||null,
+    priceSeriesType:history.adjustmentStatus||null,
+    /* Die marktweite Ebene wird hier nicht gerechnet - nur benannt, damit
+     * die Flaeche beide Ebenen nebeneinander stellen kann. */
+    marketWide:{available:Array.isArray(shard.findings)&&shard.findings.length>0,
+     caveats:shard.caveats||null,baseRate:shard.baseRate??null,horizonMonths:shard.horizonMonths??null}};
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
  async function getStrategyProfiles(){
   if(!profilesPromise)profilesPromise=(async()=>{
    try{
@@ -1176,7 +1207,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

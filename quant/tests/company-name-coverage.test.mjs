@@ -135,8 +135,19 @@ test("die Übersicht schreibt kein Kürzel zweimal", () => {
     "die Zeile hat keinen eigenen Satz für einen fehlenden Namen");
   assert.match(seite, /text:zeilenName\(s\)/, "die Liste benutzt den Satz nicht");
   /* Und die Aktienseite macht aus einem fehlenden Namen keine Überschrift
-     aus dem Kürzel, unter der dasselbe Kürzel ein zweites Mal steht. */
-  assert.match(seite, /heading\(\(s\.name&&s\.name!==s\.ticker\)\?s\.name:'Aktienanalyse'/);
+     aus dem Kürzel, unter der dasselbe Kürzel ein zweites Mal steht.
+     Die Regel ist dieselbe wie vorher; sie wohnt seit dem Frontend-Umbau in
+     `stockIdentity` statt in einem `heading(...)`-Aufruf. Geprüft wird
+     deshalb die Regel und nicht mehr die alte Zeile. */
+  const kopf = seite.slice(seite.indexOf("function stockIdentity(s){"),
+                           seite.indexOf("async function stockPage"));
+  assert.ok(kopf.length > 200, "der Kopf der Aktienseite ist nicht auffindbar");
+  assert.match(kopf, /const benannt=s\.name&&s\.name!==s\.ticker/,
+    "der Kopf unterscheidet nicht zwischen belegtem Namen und blossem Kürzel");
+  assert.match(kopf, /el\('h1',\{text:benannt\?s\.name:'Aktienanalyse'\}\)/,
+    "ohne belegten Namen darf das Kürzel nicht zur Überschrift werden");
+  assert.match(kopf, /Für dieses Kürzel ist kein belegter Unternehmensname veröffentlicht/,
+    "ein fehlender Name muss als Satz dastehen, nicht als Wiederholung des Kürzels");
 });
 
 test("der Gattungsbericht belegt jedes Muster und klassifiziert nach keinem mehrdeutigen", () => {
