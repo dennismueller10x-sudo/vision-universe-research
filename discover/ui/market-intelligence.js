@@ -955,6 +955,42 @@
     ]);
   }
 
+  /* ------------------------------------------- Marktstimmung (Uebersicht)
+     Eine Karte auf der Kursuebersicht (#/maerkte): Stufe, ein Satz, das
+     Rueckschlag-Risiko aus der Pruefung - und der Weg zur ganzen Erklaerung
+     (#/maerkte/einordnung). Wie ein "Stimmungs"-Widget in einer Broker-App:
+     klein, eindeutig, ein Tipp fuer mehr. */
+  function stimmung(p, ev) {
+    var env = p && p.environment;
+    if (!env || !isNum(env.level)) return null;
+    var lv = ev && ev.levels && ev.levels.length >= 3 ? ev.levels : null;
+    var hier = lv ? lv[Math.min(env.level, lv.length - 1)] : null;
+    var schnitt = ev && isNum(ev.overallDrawdownShare) ? ev.overallDrawdownShare : null;
+    var diff = hier && schnitt !== null ? hier.drawdownShare - schnitt : null;
+    var risiko = diff === null ? null : diff > 3 ? "erhöht" : diff < -3 ? "gering" : "normal";
+    var skala = env.scale || [];
+    var link = el("a", { class: "dx-m3-st-link", href: "#/maerkte/einordnung" }, [el("span", { text: "Einordnung verstehen" }), el("i", { "aria-hidden": "true", text: "›" })]);
+    return el("section", { class: "dx-m3-stimmung is-l" + env.level, id: "maerkte-stimmung", "aria-label": "Marktstimmung" }, [
+      el("div", { class: "dx-m3-st-kopf" }, [iconChip("kompass", "context"), el("div", {}, [el("h2", { text: "Marktstimmung" }),
+        el("p", { text: "US-Aktienmarkt · Einordnung von Vision Universe" })])]),
+      el("div", { class: "dx-m3-st-raster" }, [
+        el("div", { class: "dx-m3-st-gauge" }, [regimeGauge(env, null)].filter(Boolean)),
+        el("div", { class: "dx-m3-st-text" }, [
+          el("p", { class: "dx-m3-st-stufe" }, [el("b", { text: env.label }), el("span", { text: "Stufe " + (env.level + 1) + " von " + (skala.length || 5) })]),
+          el("p", { class: "dx-m3-st-satz", text: env.statement }),
+          hier ? el("p", { class: "dx-m3-st-risiko is-" + risiko }, [el("b", { text: "Rückschlag-Risiko: " + risiko }),
+            document_text(" – früher in " + vonHundert(hier.drawdownShare) + " Fällen ein Minus von 10 % oder mehr in " + dativ(ev.horizon.label) +
+              " (Schnitt " + Math.round(schnitt) + ").")]) : null,
+          skala.length ? el("ol", { class: "dx-m3-st-leiste", "aria-hidden": "true" }, skala.map(function (x, i) {
+            return el("li", { class: "is-l" + i + (i === env.level ? " is-aktiv" : ""), title: x.label });
+          })) : null
+        ].filter(Boolean))
+      ]),
+      link,
+      el("p", { class: "dx-m3-fuss", text: "Beschreibung nach festen Regeln – keine Prognose, keine Anlageberatung." })
+    ]);
+  }
+
   /* ------------------------------------------ Wie verlaesslich? (Pruefung)
      Die historische Pruefung derselben Regeln (scripts/market/validate-
      market-pulse.mjs, Auszug quant/data/market/validation/market-pulse-
@@ -1173,7 +1209,7 @@
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MarketIntelligence = {
     hero: hero, kacheln: kacheln, landkarte: landkarte, glyph: symbolSvg, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
-    verlauf: verlauf, breite: breite, crossAsset: crossAsset, pruefung: pruefung, kurzfassung: kurzfassung, grundSaetze: grundSaetze, stories: stories, beleben: beleben,
+    verlauf: verlauf, breite: breite, crossAsset: crossAsset, pruefung: pruefung, kurzfassung: kurzfassung, grundSaetze: grundSaetze, stimmung: stimmung, stories: stories, beleben: beleben,
     naechsteBewertung: naechsteBewertung, zyklusText: zyklusText, ZEITRAEUME: ZEITRAEUME
   };
 })(typeof window !== "undefined" ? window : globalThis);

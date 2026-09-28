@@ -1178,3 +1178,68 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
   .dv2 .dx-m3-kf-heute{font-size:17px!important}
   .dv2 .dx-m3-trenner h2{font-size:22px}
 }
+
+/* ================================================================ Markets 4.1
+   Owner-Feedback: "Wuerde das ein Robinhood- oder Trade-Republic-Nutzer
+   verstehen?" Uebersicht wie in einer Broker-App (Kopf, Kategorien,
+   Aktienmaerkte, Marktstimmung, Top & Flop, was heute auffaellt, weitere
+   Maerkte); die Erklaerung liegt auf #/maerkte/einordnung. */
+.dv2 .dx-mk-kopf{margin:2px 0 12px}
+.dv2 .dx-mk-titel{margin:0;font-size:34px;font-weight:850;letter-spacing:-.03em;line-height:1.1;color:var(--v2-ink)}
+.dv2 .dx-mk-titel.is-klein{font-size:28px;margin:2px 0 14px}
+.dv2 .dx-mk-unter{margin:6px 0 0;font-size:14.5px;color:var(--v2-muted)}
+/* Kategorien als Kapseln wie in der Broker-App */
+.dv2 .dx-mk .dx-maerkte-nav{margin:0 0 18px;padding:2px 0 6px}
+.dv2 .dx-mk .dx-maerkte-sprung{min-height:40px;padding:8px 15px;border:0;border-radius:999px;background:var(--m3-soft);font-size:14px;font-weight:700}
+.dv2 .dx-mk .dx-maerkte-sprung:hover{background:color-mix(in srgb,var(--v2-ink) 11%,transparent)}
+.dv2 .dx-mk .dx-maerkte-gruppe h2,.dv2 .dx-mk .dx-maerkte-movers h2{font-size:22px;font-weight:800;letter-spacing:-.02em}
+
+/* Marktstimmung: eine Karte, ein Tipp fuer mehr */
+.dv2 .dx-m3-stimmung{--kt:var(--m3-neutral);position:relative;display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:24px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .dx-m3-stimmung.is-l0{--kt:var(--m3-l0)}.dv2 .dx-m3-stimmung.is-l1{--kt:var(--m3-l1)}.dv2 .dx-m3-stimmung.is-l2{--kt:var(--m3-l2)}
+.dv2 .dx-m3-stimmung.is-l3{--kt:var(--m3-l3)}.dv2 .dx-m3-stimmung.is-l4{--kt:var(--m3-l4)}
+.dv2 .dx-m3-st-kopf{display:flex;align-items:center;gap:10px}
+.dv2 .dx-m3-st-kopf h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.dv2 .dx-m3-st-kopf p{margin:1px 0 0;font-size:13px;color:var(--v2-muted)}
+.dv2 .dx-m3-st-raster{display:grid;grid-template-columns:190px minmax(0,1fr);gap:20px;align-items:center}
+.dv2 .dx-m3-st-gauge .dx-m3-gauge-band{opacity:.28}
+.dv2 .dx-m3-stimmung.is-l0 .dx-m3-gauge-band.is-l0,.dv2 .dx-m3-stimmung.is-l1 .dx-m3-gauge-band.is-l1,.dv2 .dx-m3-stimmung.is-l2 .dx-m3-gauge-band.is-l2,
+.dv2 .dx-m3-stimmung.is-l3 .dx-m3-gauge-band.is-l3,.dv2 .dx-m3-stimmung.is-l4 .dx-m3-gauge-band.is-l4{opacity:1}
+.dv2 .dx-m3-st-gauge .dx-m3-gauge-nadel{stroke:var(--v2-ink);filter:none}
+.dv2 .dx-m3-st-gauge .dx-m3-gauge-nabe{fill:var(--v2-ink)}
+.dv2 .dx-m3-st-text{display:flex;flex-direction:column;gap:8px;min-width:0}
+.dv2 .dx-m3-st-text p{margin:0}
+.dv2 .dx-m3-st-stufe{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px}
+.dv2 .dx-m3-st-stufe b{font-size:34px;font-weight:850;letter-spacing:-.03em;line-height:1.05;color:var(--v2-ink)}
+.dv2 .dx-m3-st-stufe span{padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--v2-ink);background:color-mix(in srgb,var(--kt) 20%,transparent)}
+.dv2 .dx-m3-st-satz{font-size:16px;line-height:1.45;color:var(--v2-ink)}
+.dv2 .dx-m3-st-risiko{font-size:14px;line-height:1.5;color:var(--v2-muted)}
+.dv2 .dx-m3-st-risiko b{color:var(--v2-ink)}
+.dv2 .dx-m3-st-leiste{display:flex;gap:4px;margin:2px 0 0;padding:0;list-style:none}
+.dv2 .dx-m3-st-leiste li{flex:1;height:6px;border-radius:999px;background:var(--m3-soft)}
+.dv2 .dx-m3-st-leiste li.is-aktiv.is-l0{background:var(--m3-l0)}.dv2 .dx-m3-st-leiste li.is-aktiv.is-l1{background:var(--m3-l1)}
+.dv2 .dx-m3-st-leiste li.is-aktiv.is-l2{background:var(--m3-l2)}.dv2 .dx-m3-st-leiste li.is-aktiv.is-l3{background:var(--m3-l3)}
+.dv2 .dx-m3-st-leiste li.is-aktiv.is-l4{background:var(--m3-l4)}
+.dv2 .dx-m3-st-link{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:12px 16px;border-radius:14px;
+  background:var(--v2-ink);color:var(--ap-karte);font-size:16px;font-weight:750;text-decoration:none}
+.dv2 .dx-m3-st-link i{font-style:normal;font-size:22px;line-height:1}
+.dv2 .dx-m3-st-link::after{content:"";position:absolute;inset:0;border-radius:24px}
+.dv2 .dx-m3-st-link:focus-visible{outline:2px solid var(--v2-ink);outline-offset:3px}
+.dv2 .dx-m3-stimmung .dx-m3-fuss{margin:0;font-size:12.5px;color:var(--v2-muted)}
+
+@media(max-width:760px){
+  .dv2 .dx-mk-titel{font-size:30px}
+  .dv2 .dx-m3-stimmung{padding:18px 16px}
+  .dv2 .dx-m3-st-raster{grid-template-columns:minmax(0,1fr);gap:8px}
+  .dv2 .dx-m3-st-gauge{max-width:200px;margin:0 auto}
+  .dv2 .dx-m3-st-stufe b{font-size:30px}
+}
+/* Desktop: jede Kategorie als wischbare Reihe (wie Index-Reihen in
+   Broker-Apps) - so steht die Marktstimmung frueh im Bild. */
+@media(min-width:761px){
+  .dv2 .dx-mk .dx-maerkte-raster{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 14px;scrollbar-width:thin}
+  .dv2 .dx-mk .dx-maerkte-raster>.dx-markt-karte{flex:0 0 280px;scroll-snap-align:start}
+  .dv2 .dx-mk .dx-maerkte-raster:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+}
+.dv2 .dx-m3-st-gauge{padding-bottom:18px}
+@media(min-width:761px){.dv2 .dx-m3-st-link{align-self:flex-start;min-width:300px}}
