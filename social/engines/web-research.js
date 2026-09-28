@@ -365,7 +365,23 @@
       fuege("FRAGE", "Was bedeutet " + (titel.length > 60 ? "das" : titel.replace(/\.$/, "")) +
         " fuer Anleger?");
     } else {
-      fuege("FRAGE", titel);
+      /* Der Titel traegt die Frage oft nur als LETZTEN von mehreren
+         Saetzen - eine typische Leserfrage-Ueberschrift ("Wir sind in
+         den 50ern, keine Kinder, 2 Mio. in IRAs/401(k)s. Brauchen wir
+         wirklich ein Testament?"). Den GANZEN Titel als FRAGE-Kandidat
+         zu nehmen macht FRAGE strukturell identisch mit AUTOR - und
+         beide verlieren dann gegen ZAHL, weil scrollStop lange Saetze
+         hart abstraft (Fund vom 26.09., Owner-Test: "We have $2
+         million..." (40 Zeichen) schlug "...Do we really need a
+         will?" (26 Zeichen, aber nur als Teil des 115 Zeichen langen
+         Gesamttitels bewertet) - der Hook zeigte eine Zahl ohne die
+         Frage, die ihr erst Sinn gibt. Die tatsaechliche Frage - der
+         Satz, der auf "?" endet - ist der eigentliche Hook und steht
+         fuer sich allein. */
+      var frageSatz = saetze(titel).filter(function (s) {
+        return /\?\s*$/.test(s);
+      }).pop();
+      fuege("FRAGE", frageSatz || titel);
     }
 
     /* WARUM: Einordnungsfrage auf den Titel. */

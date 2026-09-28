@@ -683,15 +683,15 @@ body.dx .num{font-variant-numeric:tabular-nums}
 .dx-sector-head h3{margin:0;font-size:15px;font-weight:700;letter-spacing:-.01em}
 .dx-sector-head span{font-size:11px;color:var(--discover-dim)}
 .dx-sector-row{
-  display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:11px;
+  display:grid;grid-template-columns:18px minmax(0,1fr) auto;align-items:center;gap:11px;
   padding:9px 0;border-top:1px solid var(--discover-line);font-size:13px;
 }
 .dx-sector-row:first-of-type{border-top:0}
 .dx-sector-row i{font-style:normal;font-size:10px;color:var(--discover-dim);font-variant-numeric:tabular-nums}
 .dx-sector-row > div{display:flex;align-items:baseline;gap:9px;min-width:0}
-.dx-sector-row b{font-weight:700;letter-spacing:-.01em;flex:0 0 auto}
+.dx-sector-row b{font-weight:700;letter-spacing:-.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dx-sector-row em{font-style:normal;font-size:11px;color:var(--discover-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.dx-sector-row .val{font-size:12px;font-variant-numeric:tabular-nums;color:var(--discover-muted)}
+.dx-sector-row .val{min-width:0;white-space:nowrap;font-size:12px;font-variant-numeric:tabular-nums;color:var(--discover-muted)}
 .dx-sector-foot{margin-top:auto;padding:10px 0 4px;font-size:11.5px;font-weight:600;color:var(--discover-muted)}
 
 /* ================================================== Zustaende und Hinweise */

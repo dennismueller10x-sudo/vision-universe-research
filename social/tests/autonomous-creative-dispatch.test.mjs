@@ -178,6 +178,24 @@ test("AD16 · Branch und Titel haben je EINE Definition", async () => {
   assert.equal(V.contentIdAus(R.branchFor("vu-xom-1")), "vu-xom-1");
 });
 
+test("AD16b · Anlauf 2+ haengt ein Suffix an den Branch, Anlauf 1 nicht", async () => {
+  /* Realer Befund (26.09., vu-web-4e4d3aaef2a999a2-20260926): Anlauf 1
+     haelt seinen Branch/PR offen, solange niemand ihn schliesst - ein
+     zweiter Anlauf zum SELBEN content_id kann sonst nie einen eigenen
+     Branch bekommen. contentIdAus() erwartete das Suffix schon vorher
+     (siehe AD16/DG1); es fehlte nur der Weg, es beim Oeffnen selbst
+     anzuhaengen. */
+  const R = await import("../../scripts/social/open-creative-request.mjs");
+  assert.equal(R.branchFor("vu-xom-1", 1), "authoring/request/vu-xom-1");
+  assert.equal(R.branchFor("vu-xom-1"), "authoring/request/vu-xom-1");
+  assert.equal(R.branchFor("vu-xom-1", 2), "authoring/request/vu-xom-1-attempt2");
+  assert.equal(R.branchFor("vu-xom-1", 3), "authoring/request/vu-xom-1-attempt3");
+
+  const V = await import("../../scripts/social/verify-creative-dispatch.mjs");
+  assert.equal(V.contentIdAus(R.branchFor("vu-xom-1", 3)), "vu-xom-1",
+    "Der Rundweg (Branch bauen, Kennung wieder herauslesen) muss aufgehen.");
+});
+
 test("AD17 · Ohne Brief, ohne Job, im falschen Zustand: kein PR", async () => {
   const R = await import("../../scripts/social/open-creative-request.mjs");
   const job = { creativeJobId: "cj", contentId: "c", state: "CREATIVE_JOB_REQUESTED" };
@@ -197,6 +215,25 @@ test("AD17 · Ohne Brief, ohne Job, im falschen Zustand: kein PR", async () => {
   const ok = R.pruefe({ contentId: "c", briefExists: true, jobs: [job] });
   assert.equal(ok.ok, true);
   assert.equal(ok.branch, "authoring/request/c");
+});
+
+test("AD17b · pruefe() liest den Anlauf aus dem Job und haengt ihn an den " +
+  "erwarteten Branch an", async () => {
+  const R = await import("../../scripts/social/open-creative-request.mjs");
+  const job2 = { creativeJobId: "cj2", contentId: "c", attempt: 2,
+    state: "CREATIVE_JOB_REQUESTED" };
+
+  const ok = R.pruefe({ contentId: "c", briefExists: true, jobs: [job2] });
+  assert.equal(ok.ok, true);
+  assert.equal(ok.branch, "authoring/request/c-attempt2");
+
+  /* Und die Verweigerung nennt denselben (Anlauf-2-)Branch, nicht den
+     unsuffixierten - sonst zeigt die Fehlermeldung auf einen Branch,
+     der mit dieser Anfrage gar nichts zu tun hat. */
+  const blockiert = R.pruefe({ contentId: "c", briefExists: true,
+    jobs: [job2], branchExists: true });
+  assert.equal(blockiert.reason, "branchExists");
+  assert.match(blockiert.message, /c-attempt2/);
 });
 
 test("AD18 · Der PR-Text nennt Job, Schluessel und Grund", async () => {

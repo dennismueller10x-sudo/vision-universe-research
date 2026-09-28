@@ -43,6 +43,68 @@
   var ZEITRAEUME = [{ id: "1W", label: "1W", tage: 7 }, { id: "1M", label: "1M", tage: 31 }, { id: "3M", label: "3M", tage: 92 },
                     { id: "6M", label: "6M", tage: 183 }, { id: "1Y", label: "1J", tage: 366 }];
 
+  /* ---------------------------------------------------------- Icon-System
+     Gefuellte Symbole im Stil von iOS-Systemsymbolen: weiss auf einer
+     farbigen, abgerundeten Kachel (die Farbe setzt das CSS). Ein Satz fuer
+     die ganze Seite - Menue, Kacheln, Listen. Rein dekorativ (aria-hidden):
+     Name und Rolle stehen immer daneben als Text. */
+  var V = { fill: "currentColor", stroke: "none" };
+  function mit(a) { var o = {}; Object.keys(V).forEach(function (k) { o[k] = V[k]; }); Object.keys(a).forEach(function (k) { o[k] = a[k]; }); return o; }
+  var GLYPHEN = {
+    trend: [["path", { d: "M4 4.5v15h15.5", "stroke-width": "2" }], ["path", { d: "M7.5 15l3.8-4.2 3 2.6L19 7.5" }], ["circle", mit({ cx: 19, cy: 7.5, r: 2 })]],
+    balken: [["rect", mit({ x: 3.5, y: 12, width: 4.6, height: 8.5, rx: 1.4 })], ["rect", mit({ x: 9.7, y: 4.5, width: 4.6, height: 16, rx: 1.4 })],
+             ["rect", mit({ x: 15.9, y: 8.5, width: 4.6, height: 12, rx: 1.4 })]],
+    tacho: [["path", { d: "M4 17.5a8 8 0 1 1 16 0" }], ["path", { d: "M12 17.5l4.3-5.3" }], ["circle", mit({ cx: 12, cy: 17.5, r: 2.2 })]],
+    puls: [["path", { d: "M2.5 12.5h4.2l2.2-5.5 3.8 11 2.7-8.2 1.6 2.7h4.5" }]],
+    knoten: [["path", { d: "M6 17.5L12 6.5l6 11z", "stroke-width": "1.8" }], ["circle", mit({ cx: 6, cy: 17.5, r: 3 })],
+             ["circle", mit({ cx: 18, cy: 17.5, r: 3 })], ["circle", mit({ cx: 12, cy: 6.5, r: 3 })]],
+    kompass: [["circle", { cx: 12, cy: 12, r: 8.6, "stroke-width": "2" }], ["path", mit({ d: "M15.6 8.4l-2.2 5-5 2.2 2.2-5z" })]],
+    pfeile: [["path", { d: "M8 19.5V5.5M4.3 9.2L8 5.5l3.7 3.7" }], ["path", { d: "M16 4.5v14M12.3 14.8l3.7 3.7 3.7-3.7" }]],
+    kurve: [["path", { d: "M4 4.5v15h15.5", "stroke-width": "2" }], ["path", { d: "M7.5 15.5c1.8-3.8 3.6-4.6 5-2.4 1.5 2.2 3.3.9 6-5.1" }]],
+    regler: [["path", { d: "M4 7h16M4 12h16M4 17h16", "stroke-width": "1.8", opacity: "0.6" }], ["circle", mit({ cx: 9, cy: 7, r: 2.6 })],
+             ["circle", mit({ cx: 15.5, cy: 12, r: 2.6 })], ["circle", mit({ cx: 7.5, cy: 17, r: 2.6 })]],
+    funken: [["path", mit({ d: "M10.5 3l1.9 5.3 5.3 1.9-5.3 1.9-1.9 5.3-1.9-5.3-5.3-1.9 5.3-1.9z" })],
+             ["path", mit({ d: "M18 14.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" })]],
+    lupe: [["circle", { cx: 10.3, cy: 10.3, r: 5.8, "stroke-width": "2.5" }], ["path", { d: "M14.6 14.6L19.8 19.8", "stroke-width": "3" }]],
+    auge: [["path", mit({ d: "M12 5.5c4.7 0 8.1 3.7 9.6 6.5-1.5 2.8-4.9 6.5-9.6 6.5S3.9 14.8 2.4 12C3.9 9.2 7.3 5.5 12 5.5z" })],
+           ["circle", { cx: 12, cy: 12, r: 3.3, fill: "currentColor", stroke: "none", class: "dx-glyph-loch" }]],
+    blitz: [["path", mit({ d: "M13.4 2.5L5 13.8h6.2l-1.1 7.7 8.9-11.6h-6.3z" })]],
+    hoch: [["path", { d: "M3.5 17.5l5.8-5.8 3.6 3.6 7-7.3", "stroke-width": "2.6" }], ["path", { d: "M14.3 8h5.9v5.9", "stroke-width": "2.6" }]],
+    runter: [["path", { d: "M3.5 6.5l5.8 5.8 3.6-3.6 7 7.3", "stroke-width": "2.6" }], ["path", { d: "M14.3 16h5.9v-5.9", "stroke-width": "2.6" }]],
+    kerzen: [["path", { d: "M6.5 3.5v17M12 6v14M17.5 3v13", "stroke-width": "1.7" }], ["rect", mit({ x: 4.3, y: 7.5, width: 4.4, height: 8, rx: 1.2 })],
+             ["rect", mit({ x: 9.8, y: 10, width: 4.4, height: 6.5, rx: 1.2 })], ["rect", mit({ x: 15.3, y: 5, width: 4.4, height: 7.5, rx: 1.2 })]],
+    flamme: [["path", mit({ d: "M12.2 2.5c.6 3.3 3 4.9 4.5 7.4 1.6 2.6 1.4 6-.9 8.2a6.4 6.4 0 0 1-10.4-4.9c.1-2.6 1.6-4.1 2.7-5.2.1 1.9.9 3.1 2 3.7-.5-3.6.4-6.7 2.1-9.2z" })]],
+    barren: [["path", mit({ d: "M2.8 20.5l1.8-5.6h6.2l1.8 5.6z" })], ["path", mit({ d: "M11.4 20.5l1.8-5.6h6.2l1.8 5.6z" })],
+             ["path", mit({ d: "M7.1 13.6l1.8-5.6h6.2l1.8 5.6z" })]],
+    bitcoin: [["text", mit({ x: 12, y: 17.6, "text-anchor": "middle", "font-size": "16", "font-weight": "800", "font-family": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif" }), "₿"]],
+    prozent: [["circle", mit({ cx: 7.5, cy: 7.5, r: 2.8 })], ["circle", mit({ cx: 16.5, cy: 16.5, r: 2.8 })], ["path", { d: "M18 6L6 18", "stroke-width": "2.6" }]],
+    saeulen: [["path", mit({ d: "M2.8 9.3L12 3.8l9.2 5.5z" })], ["rect", mit({ x: 4.6, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
+              ["rect", mit({ x: 9.2, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 13.8, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
+              ["rect", mit({ x: 17.4, y: 10.6, width: 2.1, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 2.8, y: 18.4, width: 18.4, height: 2.4, rx: 0.8 })]],
+    waehrung: [["text", mit({ x: 12, y: 16.4, "text-anchor": "middle", "font-size": "12", "font-weight": "800", "letter-spacing": "-0.5", "font-family": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif" }), "€$"]]
+  };
+  /* Dimensionen und Vergleichszeilen auf ihr Symbol. */
+  var GLYPH_VON = { TREND: "trend", BREADTH: "balken", MOMENTUM: "tacho", RISK: "puls", CROSS_ASSET: "knoten", ENVIRONMENT: "kompass", US10Y: "prozent" };
+
+  function symbolSvg(key) {
+    var teile = GLYPHEN[GLYPH_VON[key] || key];
+    if (!global.document || !teile) return null;
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = global.document.createElementNS(ns, "svg");
+    [["viewBox", "0 0 24 24"], ["class", "dx-m3-icon-svg"], ["aria-hidden", "true"], ["fill", "none"], ["stroke", "currentColor"],
+     ["stroke-width", "2.3"], ["stroke-linecap", "round"], ["stroke-linejoin", "round"]].forEach(function (a) { svg.setAttribute(a[0], a[1]); });
+    teile.forEach(function (t) {
+      var e = global.document.createElementNS(ns, t[0]);
+      Object.keys(t[1]).forEach(function (k) { e.setAttribute(k, t[1][k]); });
+      if (t[2]) e.textContent = t[2];
+      svg.appendChild(e);
+    });
+    return svg;
+  }
+  function iconChip(key, rolle) {
+    return el("span", { class: "dx-m3-icon is-" + (rolle || "neutral"), "aria-hidden": "true" }, [symbolSvg(key)].filter(Boolean));
+  }
+
   function isNum(x) { return typeof x === "number" && isFinite(x); }
   function zahl(v, d) {
     try { return new Intl.NumberFormat("de-DE", { minimumFractionDigits: d, maximumFractionDigits: d }).format(v); }
@@ -96,6 +158,32 @@
     n_("line", { x1: cx, y1: cy, x2: tip.x.toFixed(2), y2: tip.y.toFixed(2), class: "dx-m3-gauge-nadel is-l" + env.level });
     n_("circle", { cx: cx, cy: cy, r: 8, class: "dx-m3-gauge-nabe" });
     return svg;
+  }
+
+  /**
+   * Bullish / Base Case / Bearish - direkt im Hero sichtbar, damit die
+   * Einordnung auf den ersten Blick verstanden wird (Owner-Feedback: die
+   * gleiche Zaehlung wie unten bei "Was wuerde das Bild aendern?" fehlte
+   * oberhalb der Falz). Dieselben env.counts wie tally() - kein neuer Wert,
+   * keine erfundene Wahrscheinlichkeit, nur frueher und vertrauter benannt.
+   */
+  function szenarioStreifen(env) {
+    var c = (env && env.counts) || {};
+    var support = c.support || 0, neutral = c.neutral || 0, headwind = c.headwind || 0;
+    var summe = support + neutral + headwind;
+    if (!summe) return null;
+    function pille(art, titel, n) {
+      var b = el("button", { type: "button", class: "dx-m3-sz-pille is-" + art,
+        "aria-label": titel + ": " + n + " von " + summe + " bewerteten Dimensionen" }, [
+        el("b", { text: String(n) }), el("span", { text: titel })
+      ]);
+      b.onclick = function () { springen("maerkte-aendern"); };
+      return b;
+    }
+    return el("div", { class: "dx-m3-sz-streifen", role: "group", "aria-label": "Szenario-Übersicht: Bullish, Base Case, Bearish" }, [
+      pille("bull", "Bullish", support), pille("base", "Base Case", neutral), pille("bear", "Bearish", headwind),
+      el("p", { class: "dx-m3-sz-hinweis", text: "Zählung der bewerteten Dimensionen – zum Tippen für die genauen Schwellen." })
+    ]);
   }
 
   function springen(id) {
@@ -182,8 +270,8 @@
     });
     var blick = el("div", { class: "dx-m3-blick" }, [
       el("p", { class: "dx-m3-blick-titel", text: "Die Gründe auf einen Blick" }),
-      el("ul", {}, gruende.map(function (g) {
-        return el("li", { class: "is-" + g.r }, [el("i", { "aria-hidden": "true", text: ROLLE_ZEICHEN[g.r] }),
+      el("ul", { tabindex: "0" }, gruende.map(function (g) {
+        return el("li", { class: "is-" + g.r }, [iconChip(g.x.dimension, g.r),
           el("span", {}, [el("b", { text: DIM[g.x.dimension].name }), el("small", { text: g.x.label + " · " + ROLLE[g.r] })])]);
       })),
       el("p", { class: "dx-m3-zaehlung", text: zaehlung })
@@ -200,15 +288,142 @@
           el("div", { class: "dx-m3-gauge" }, [regimeGauge(env, vorherLevel), spektrum(env, vorherLevel)].filter(Boolean)),
           el("p", { class: "dx-m3-aussage", text: env.statement }),
           el("div", { class: "dx-m3-anleger" }, [el("span", { text: "Für Anleger bedeutet das" }), el("p", { text: env.investor })]),
+          szenarioStreifen(env),
           veraenderung
         ].filter(Boolean)),
         blick
       ]),
       el("div", { class: "dx-m3-hero-aktionen" }, [knopf("Warum diese Einordnung?", "maerkte-warum", "dx-m3-cta"),
-                                                    knopf("Was würde sie ändern?", "maerkte-aendern", "dx-m3-cta is-leise")]),
+                                                    knopf("Bullish & Bearish ansehen", "maerkte-aendern", "dx-m3-cta is-leise")]),
       el("p", { class: "dx-m3-zyklus" + (z.verspaetet ? " is-verspaetet" : "") }, [el("span", { text: z.text }), el("span", { class: "dx-m3-zyklus-hinweis", text: z.hinweis })]),
       el("p", { class: "dx-m3-rechtlich", text: env.disclaimer })
     ].filter(Boolean));
+  }
+
+  /* ------------------------------------------ Kacheln: auf einen Blick
+     Grosse, antippbare Kacheln wie in einer News- oder Streaming-App: je
+     Thema ein Bild (Diagramm oder Piktogramm aus denselben Werten wie die
+     Sektionen darunter), eine farbige Dachzeile, eine grosse Schlagzeile.
+     Jede Kachel springt zu ihren Belegen. Keine neue Zahl, kein neuer
+     Zustand - nur ein schnellerer Einstieg. */
+  var ROLLE_KURZ = { support: "Unterstützt", neutral: "Nicht bestätigt", headwind: "Gegenwind", open: "Offen", context: "Kontext" };
+
+  function kachel(o) {
+    var link = el("button", { type: "button", class: "dx-m3-kachel-link", text: o.titel });
+    link.onclick = function () {
+      var z = global.document && global.document.getElementById(o.ziel);
+      if (z && z.tagName === "DETAILS") z.open = true;
+      springen(o.ziel);
+    };
+    return el("article", { class: "dx-m3-kachel" + (o.breit ? " is-breit" : "") + " is-" + o.ton, "data-kachel": o.id }, [
+      el("div", { class: "dx-m3-kachel-bild", "aria-hidden": "true" }, o.bild.filter(Boolean)),
+      el("p", { class: "dx-m3-kachel-kicker", text: o.kicker }),
+      el("h3", { class: "dx-m3-kachel-titel" }, [link]),
+      o.text ? el("p", { class: "dx-m3-kachel-text", text: o.text }) : null
+    ].filter(Boolean));
+  }
+
+  /* Die Stufe je Tag als Treppenlinie ueber fuenf getoenten Baendern - wo
+     die Linie liegt, sagt die Farbe des Bandes. Dieselben Tageswerte wie
+     der Verlauf weiter unten. */
+  function verlaufMini(tage, skala) {
+    if (!global.document || tage.length < 2) return null;
+    var ns = "http://www.w3.org/2000/svg", W = 600, H = 150, oben = 6, stufen = skala.length;
+    var svg = global.document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.setAttribute("class", "dx-m3-kk-kurve");
+    function n(tag, a) { var e = global.document.createElementNS(ns, tag); Object.keys(a).forEach(function (k) { e.setAttribute(k, a[k]); }); svg.appendChild(e); return e; }
+    var band = (H - 2 * oben) / stufen;
+    var y = function (l) { return oben + (stufen - 1 - l) * band + band / 2; };
+    var x = function (i) { return 4 + (W - 22) * i / (tage.length - 1); };
+    for (var l = 0; l < stufen; l++) n("rect", { x: 0, y: oben + (stufen - 1 - l) * band, width: W, height: band - 2, rx: 4, class: "dx-m3-kk-band is-l" + l });
+    var d = "", erstesX = null, letzter = null;
+    tage.forEach(function (t, i) {
+      if (!isNum(t.env)) return;
+      var px = x(i).toFixed(1), py = y(t.env).toFixed(1);
+      if (!d) { d = "M" + px + " " + py; erstesX = px; } else d += " H" + px + " V" + py;
+      letzter = { x: px, y: py, env: t.env };
+    });
+    if (!letzter) return null;
+    n("path", { d: d + " V" + H + " H" + erstesX + " Z", class: "dx-m3-kk-flaeche" });
+    n("path", { d: d, class: "dx-m3-kk-linie", fill: "none" });
+    n("circle", { cx: letzter.x, cy: letzter.y, r: 8, class: "dx-m3-kk-punkt is-l" + letzter.env });
+    return svg;
+  }
+
+  function kacheln(p, h) {
+    var env = p.environment;
+    if (!env || env.level === null || env.level === undefined) return null;
+    var dims = p.dimensions || {}, g = p.gauges || {}, skalaStufen = env.scale || [];
+    var rolle = {};
+    if (env.why) Object.keys(env.why).forEach(function (r) { env.why[r].forEach(function (x) { rolle[x.dimension] = r; }); });
+    var liste = [];
+
+    /* 1 - Verlauf ueber 12 Monate */
+    if (h && h.days && h.days.length > 1 && skalaStufen.length) {
+      var bis = h.days[h.days.length - 1].date;
+      var abD = new Date(bis + "T00:00:00Z"); abD.setUTCDate(abD.getUTCDate() - 366);
+      var ab = abD.toISOString().slice(0, 10);
+      var tage = h.days.filter(function (t) { return t.date >= ab; });
+      var erster = tage.filter(function (t) { return isNum(t.env); })[0], letzter = tage[tage.length - 1];
+      if (erster && isNum(letzter.env)) {
+        var von = skalaStufen[erster.env].label, nach = skalaStufen[letzter.env].label;
+        var wechsel = (h.events || []).filter(function (e) { return e.dimension === "ENVIRONMENT" && e.date >= ab; }).length;
+        liste.push(kachel({ id: "verlauf", breit: true, ton: "l" + letzter.env, ziel: "maerkte-verlauf", kicker: "Verlauf · 12 Monate",
+          titel: von === nach ? "Heute wie vor einem Jahr: „" + nach + "“" : "Von „" + von + "“ zu „" + nach + "“",
+          text: "Seit " + de(erster.date) + ": " + wechsel + " Wechsel der Einordnung.",
+          bild: [verlaufMini(tage, skalaStufen)] }));
+      }
+    }
+
+    /* 2-5 - die vier bewerteten Dimensionen */
+    ["TREND", "BREADTH", "MOMENTUM", "RISK"].forEach(function (k) {
+      var d = dims[k];
+      if (!d) return;
+      var r = rolle[k] || "open", ga = g[k];
+      liste.push(kachel({ id: k.toLowerCase(), ton: r, ziel: "puls-" + k.toLowerCase(), kicker: DIM[k].name, titel: d.label,
+        text: de(ga ? ga.valueText : d.summary),
+        bild: [el("div", { class: "dx-m3-kk-kopf" }, [iconChip(k, r), el("span", { class: "dx-m3-kk-rolle", text: ROLLE_KURZ[r] })]),
+               ga ? skala(k, ga, d) : null] }));
+    });
+
+    /* 6 - Cross Asset: die Konstellation */
+    var ca = dims.CROSS_ASSET;
+    if (ca && ca.evidence && ca.evidence.length) {
+      var obs = ca.observations || [];
+      var deutlich = ca.evidence.filter(function (e) { return e.notable; }).length;
+      liste.push(kachel({ id: "cross-asset", breit: true, ton: "context", ziel: "maerkte-crossasset", kicker: "Cross Asset · ein Monat",
+        titel: obs.length ? obs[0].text.replace(/\.$/, "") : "Ruhiges Gesamtbild über die Anlageklassen",
+        text: deutlich + " von " + ca.evidence.length + " Anlageklassen deutlich bewegt" + (obs.length > 1 ? " · " + obs.slice(1).map(function (o) { return o.text; }).join(" ") : "."),
+        bild: [konstellation(ca.evidence)] }));
+    }
+
+    /* 7 - Seit der letzten Bewertung */
+    var cmp = p.comparison && p.comparison.state === "AVAILABLE" ? p.comparison : null;
+    if (cmp) {
+      var envZ = cmp.rows.filter(function (r) { return r.key === "ENVIRONMENT"; })[0];
+      var ch = String(cmp.biggest.change).toLowerCase();
+      liste.push(kachel({ id: "veraenderung", breit: true, ton: ch === "better" ? "support" : ch === "worse" ? "headwind" : "neutral",
+        ziel: "maerkte-vorher-jetzt", kicker: "Seit der Bewertung vom " + tagKurz(cmp.previousDate), titel: cmp.biggest.text,
+        text: "Gleiche Methode: Handelstag " + tagKurz(cmp.previousDate) + " gegenüber " + tagKurz(cmp.currentDate),
+        bild: !envZ ? [] : [el("div", { class: "dx-m3-kk-wechsel" }, envZ.from === envZ.to
+          ? [el("b", { text: envZ.to }), el("span", { class: "dx-m3-kk-rolle", text: "Marktumfeld unverändert" })]
+          : [el("span", { text: envZ.from }), el("i", { text: ch === "better" ? "↗" : ch === "worse" ? "↘" : "→" }), el("b", { text: envZ.to })])] }));
+    }
+
+    /* 8 - Worauf es jetzt ankommt */
+    var w = p.whatMatters && p.whatMatters[0];
+    if (w) {
+      liste.push(kachel({ id: "worauf", breit: true, ton: rolle[w.dimension] || "neutral", ziel: "maerkte-worauf", kicker: "Worauf es jetzt ankommt",
+        titel: w.title, text: "Jetzt: " + w.stateLabel + (p.whatMatters.length > 1 ? " · " + p.whatMatters.length + " Punkte im Blick" : ""),
+        bild: [el("div", { class: "dx-m3-kk-kopf" }, [el("span", { class: "dx-m3-kk-nr", text: "01" }), DIM[w.dimension] ? iconChip(w.dimension, rolle[w.dimension]) : null].filter(Boolean))] }));
+    }
+
+    if (!liste.length) return null;
+    return el("section", { class: "dx-m3-kacheln", id: "maerkte-ueberblick", "aria-label": "Der Markt auf einen Blick" }, [
+      kopfzeile("Auf einen Blick", "Der Markt in " + liste.length + " Kacheln", "Jede Kachel zeigt ein Thema mit seinem echten Messwert – antippen führt zu Belegen und Methodik."),
+      el("div", { class: "dx-m3-kachel-raster" }, liste)
+    ]);
   }
 
   /* ------------------------------------------- Die fuenf Dimensionen */
@@ -268,7 +483,8 @@
         wert += " · vorher " + (ga.unit === "COUNT" ? ga.previous : zahl(ga.previous, 1) + " %");
       }
       var kopf = el("summary", { class: "dx-m3-dim-kopf" }, [
-        el("span", { class: "dx-m3-dim-name" }, [el("b", { text: DIM[k].name }), el("small", { text: DIM[k].frage })]),
+        el("span", { class: "dx-m3-dim-name" }, [iconChip(k, r),
+          el("span", { class: "dx-m3-dim-txt" }, [el("b", { text: DIM[k].name }), el("small", { text: DIM[k].frage })])]),
         el("span", { class: "dx-m3-dim-zustand is-" + r }, [el("i", { "aria-hidden": "true", text: ROLLE_ZEICHEN[r] }), el("b", { text: d.label }), el("small", { text: ROLLE[r] })]),
         ga ? skala(k, ga, d) : el("span", { class: "dx-m3-spur is-leer", "aria-hidden": "true" }),
         el("span", { class: "dx-m3-dim-wert", text: wert })
@@ -294,11 +510,12 @@
       var zahlen = r.key === "US10Y" ? r.deltaText
         : (r.fromValue || r.toValue ? (r.fromValue === r.toValue ? r.toValue : (r.fromValue || "–") + " → " + (r.toValue || "–")) : null);
       var gleich = r.from === r.to || r.from === "–";
+      var ton = r.change === "BETTER" ? "support" : r.change === "WORSE" ? "headwind" : r.key === "US10Y" || r.change === "CONTEXT" ? "context" : "neutral";
       var kern = [
-        el("span", { class: "dx-m3-vj-name", text: r.label }),
+        el("span", { class: "dx-m3-vj-kopf" }, [iconChip(r.key, ton), el("span", { class: "dx-m3-vj-name", text: r.label }),
+          el("span", { class: "dx-m3-vj-status is-" + String(r.change).toLowerCase(), text: AENDERUNG[r.change] || "" })]),
         el("span", { class: "dx-m3-vj-wechsel" }, gleich ? [el("b", { text: r.to })]
           : [el("span", { class: "dx-m3-vj-von", text: r.from }), el("span", { class: "dx-m3-vj-pfeil", "aria-hidden": "true", text: " → " }), el("b", { text: r.to })]),
-        el("span", { class: "dx-m3-vj-status is-" + String(r.change).toLowerCase(), text: AENDERUNG[r.change] || "" }),
         zahlen ? el("span", { class: "dx-m3-vj-zahl", text: zahlen }) : null
       ].filter(Boolean);
       var sr = r.label + ": " + r.from + " zu " + r.to + (AENDERUNG[r.change] ? ", " + AENDERUNG[r.change] : "");
@@ -318,9 +535,12 @@
   function ereignisse(ev, titel) {
     if (!ev || !ev.length) return null;
     return el("div", { class: "dx-m3-ereignisse" }, [el("h3", { text: titel }), el("ol", {}, ev.map(function (e) {
-      return el("li", { class: "is-" + String(e.change).toLowerCase() }, [
-        el("time", { text: tagKurz(e.date) }), el("b", { text: DIM_NAME_EV[e.dimension] || e.dimension }),
-        el("span", { text: e.from + " → " + e.to })
+      var ch = String(e.change).toLowerCase();
+      return el("li", { class: "is-" + ch }, [
+        iconChip(e.dimension, ch === "better" ? "support" : ch === "worse" ? "headwind" : "neutral"),
+        el("div", { class: "dx-m3-ev-text" }, [el("b", { text: DIM_NAME_EV[e.dimension] || e.dimension }),
+          el("span", {}, [document_text(e.from + " → "), el("strong", { text: e.to })])]),
+        el("time", { text: tagKurz(e.date) })
       ]);
     }))]);
   }
@@ -334,7 +554,7 @@
     function spalte(r, xs) {
       if (!xs.length) return null;
       return el("div", { class: "dx-m3-warum-spalte is-" + r }, [el("h3", { text: ROLLE[r] }), el("ul", {}, xs.map(function (x) {
-        return el("li", {}, [el("i", { "aria-hidden": "true", text: ROLLE_ZEICHEN[r] }), el("span", {}, [el("b", { text: (DIM[x.dimension] || {}).name || x.dimension }), document_text(" " + de(x.text))])]);
+        return el("li", {}, [iconChip(x.dimension, r), el("span", {}, [el("b", { text: (DIM[x.dimension] || {}).name || x.dimension }), document_text(" " + de(x.text))])]);
       }))]);
     }
     return el("section", { class: "dx-m3-warum", id: "maerkte-warum", "aria-label": "Warum diese Einordnung?" }, [
@@ -351,6 +571,8 @@
   function worauf(p, namen) {
     var xs = p.whatMatters;
     if (!xs || !xs.length) return null;
+    var rolle = {}, why = p.environment && p.environment.why;
+    if (why) Object.keys(why).forEach(function (r) { why[r].forEach(function (x) { rolle[x.dimension] = r; }); });
     return el("section", { class: "dx-m3-worauf", id: "maerkte-worauf", "aria-label": "Worauf es jetzt ankommt" }, [
       kopfzeile("Beobachten", "Worauf es jetzt ankommt", "Nicht die größten Bewegungen – die Faktoren, die das Marktbild tragen oder kippen könnten. Die genauen Schwellen stehen darunter."),
       el("ol", { class: "dx-m3-worauf-liste" }, xs.map(function (x, i) {
@@ -360,8 +582,9 @@
         return el("li", { class: "dx-m3-punkt-item", "data-dimension": x.dimension }, [
           el("span", { class: "dx-m3-nr", "aria-hidden": "true", "data-nr": String(i + 1).padStart(2, "0") }),
           el("div", {}, [
+            el("div", { class: "dx-m3-punkt-kopf" }, [iconChip(x.dimension, rolle[x.dimension] || (x.dimension === "CROSS_ASSET" ? "context" : "neutral")),
+              el("p", { class: "dx-m3-zustandzeile", text: "Jetzt: " + x.stateLabel })]),
             el("h3", { text: x.title }),
-            el("p", { class: "dx-m3-zustandzeile", text: "Jetzt: " + x.stateLabel }),
             el("p", { text: de(x.why) }),
             links.length ? el("div", { class: "dx-m3-chips" }, links) : null
           ].filter(Boolean))
@@ -401,7 +624,7 @@
   function basisKarte(env) {
     if (!env || env.level === null || env.level === undefined) return null;
     return el("div", { class: "dx-m3-basis-karte is-l" + env.level }, [
-      el("p", { class: "dx-m3-basis-eyebrow", text: "Aktuelle Einordnung" }),
+      el("p", { class: "dx-m3-basis-eyebrow" }, [el("span", { class: "dx-m3-sz-tag is-base", text: "Base Case" }), document_text(" · aktuelle Einordnung")]),
       el("p", { class: "dx-m3-basis-zustand", text: env.label }),
       el("p", { class: "dx-m3-basis-aussage", text: env.statement }),
       tally(env)
@@ -411,23 +634,27 @@
   function bildAendern(p, namen) {
     var c = p.changes;
     if (!c || (!c.better.length && !c.worse.length)) return null;
-    function spalte(titel, xs, r) {
-      return el("div", { class: "dx-m3-aendern-spalte is-" + r }, [el("h3", {}, [el("i", { "aria-hidden": "true", text: r === "besser" ? "↑" : "↓" }), document_text(" " + titel)]),
+    function spalte(art, xs, r) {
+      return el("div", { class: "dx-m3-aendern-spalte is-" + r }, [
+        el("div", { class: "dx-m3-aendern-kopf" }, [iconChip(r === "besser" ? "hoch" : "runter", r === "besser" ? "support" : "headwind"),
+          el("h3", {}, [el("span", { class: "dx-m3-sz-tag is-" + r, text: art }), document_text(" – was müsste eintreten?")])]),
         xs.length ? el("ul", {}, xs.map(function (x) {
           return el("li", {}, [
-            el("p", { class: "dx-m3-aendern-ziel", text: (DIM[x.dimension] || {}).name + " → " + x.toLabel + " · Einordnung „" + x.levelLabel + "“" }),
-            el("p", { text: de(x.text.charAt(0).toUpperCase() + x.text.slice(1)) + "." }),
+            el("div", { class: "dx-m3-bed-kopf" }, [iconChip(x.dimension, r === "besser" ? "support" : "headwind"),
+              el("div", {}, [el("p", { class: "dx-m3-aendern-ziel" }, [el("b", { text: (DIM[x.dimension] || {}).name }), document_text(" → " + x.toLabel)]),
+                el("span", { class: "dx-m3-bed-stufe is-" + r, text: "Einordnung dann: " + x.levelLabel })])]),
+            el("p", { class: "dx-m3-bed-text", text: de(x.text.charAt(0).toUpperCase() + x.text.slice(1)) + "." }),
             x.symbols && x.symbols.length ? el("div", { class: "dx-m3-chips" }, x.symbols.map(function (s) {
               return el("a", { class: "dx-m3-chip", href: "#/maerkte/" + encodeURIComponent(s), text: namen[s] || s });
             })) : null
           ].filter(Boolean));
         })) : el("p", { class: "dx-m3-leer", text: "Keine einzelne Veränderung würde die Einordnung in diese Richtung verschieben." })]);
     }
-    return el("section", { class: "dx-m3-aendern", id: "maerkte-aendern", "aria-label": "Was würde das Marktbild verändern?" }, [
-      kopfzeile("Transparenz", "Was würde das Marktbild verändern?", "Mit derselben Regel gerechnet: welche einzelne Veränderung die Einordnung „" +
-        (p.environment ? p.environment.label : "") + "“ verschieben würde. Echte Schwellen, aktuelle Messwerte – keine Prognose."),
-      el("div", { class: "dx-m3-aendern-raster" }, [spalte("Positiver würde das Bild, wenn …", c.better, "besser"), basisKarte(p.environment),
-                                                    spalte("Negativer würde das Bild, wenn …", c.worse, "schlechter")].filter(Boolean))
+    return el("section", { class: "dx-m3-aendern", id: "maerkte-aendern", "aria-label": "Bullish, Base Case, Bearish – was würde das Marktbild verändern?" }, [
+      kopfzeile("Transparenz", "Bullish, Base Case, Bearish", "Mit derselben Regel gerechnet: welche einzelne Veränderung die Einordnung „" +
+        (p.environment ? p.environment.label : "") + "“ verschieben würde. Echte Schwellen, aktuelle Messwerte – keine Prognose, keine erfundene Wahrscheinlichkeit."),
+      el("div", { class: "dx-m3-aendern-raster" }, [spalte("Bullish", c.better, "besser"), basisKarte(p.environment),
+                                                    spalte("Bearish", c.worse, "schlechter")].filter(Boolean))
     ]);
   }
 
@@ -665,6 +892,7 @@
       kopfzeile("Markt jetzt", "Was heute auffällt", "Bewegungen, die gemessen an der üblichen Tagesschwankung des jeweiligen Markts herausstechen – zu Geschichten gebündelt, ohne Ursachen zu behaupten."),
       el("ol", { class: "dx-m3-story-liste" }, st.map(function (s) {
         return el("li", { class: "dx-m3-story is-" + s.direction, "data-story": s.id }, [
+          iconChip(s.direction === "up" ? "hoch" : s.direction === "down" ? "runter" : "blitz", "story-" + s.direction),
           el("h3", { text: s.title }),
           el("p", { class: "dx-m3-story-lead", text: s.lead }),
           el("div", { class: "dx-m3-story-werte" }, s.items.map(function (it) {
@@ -702,7 +930,7 @@
 
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MarketIntelligence = {
-    hero: hero, landkarte: landkarte, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
+    hero: hero, kacheln: kacheln, landkarte: landkarte, glyph: symbolSvg, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
     verlauf: verlauf, breite: breite, crossAsset: crossAsset, stories: stories, beleben: beleben,
     naechsteBewertung: naechsteBewertung, zyklusText: zyklusText, ZEITRAEUME: ZEITRAEUME
   };

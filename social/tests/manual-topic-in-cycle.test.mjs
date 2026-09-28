@@ -28,8 +28,10 @@ import { execFileSync } from "node:child_process";
 import { readFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { themaDesOwners } from "../../scripts/social/run-orchestrator.mjs";
 
+const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const NOW = "2026-09-22T13:00:00Z";
 
@@ -218,57 +220,68 @@ test("MT12 · POST ZU THEMA MSFT findet und hydriert das echte VERIFIED Creative
      OHNE diese Kennzeichnung waere der stille Rueckfall, den dieser
      Test seit dem 21.09.-Vorfall verhindern soll — mit ihr ist er die
      vom Owner angeordnete Reparatur. */
+  /* -----------------------------------------------------------------
+     WARUM DIESER TEST IN ZWEI TEILE ZERFAELLT (26.09.)
+
+     themaAusBundle() bildet content_id aus contentIdFor(symbol,
+     paket.asOf) — und paket.asOf ist das echte, aktuelle "asOf" des
+     committeten MSFT-Bundles (quant/data/technical/instruments/
+     MSFT.json), nicht ein Testfixture. Reale Marktdaten-Laeufe ruecken
+     dieses Datum taeglich weiter; am 18.09. war es "2026-09-18" (der
+     Tag, an dem PR #179 dispatcht wurde), heute ist es ein spaeteres
+     Datum. Ein Test, der ueber den LIVEN Zyklus erwartet, dass der
+     Creative Provider ausgerechnet die content_id "vu-msft-20260918"
+     als VERIFIED meldet, kann deshalb strukturell nur an genau einem
+     Kalendertag je bestehen — an jedem folgenden Tag waere das Datum
+     im Bundle ein anderes, und der Test wuerde rot, ohne dass sich am
+     Code etwas geaendert haette. Das ist keine Regression, sondern ein
+     Test, der an einem Tag festfror.
+
+     Teil A faehrt weiterhin den echten, liven Zyklus und haelt die
+     Reparatur fest, die an KEINEM Datum haengt: das Owner-Thema ersetzt
+     die Leiter, und die daraus abgeleitete content_id ist symbolbasiert
+     (vu-msft-<datum>), kein Hash aus kurzname() — genau der reale Fehler
+     aus Lauf #44.
+
+     Teil B prueft die zweite Reparatur (VERIFIED-Ergebnisse werden unter
+     der content_id gefunden, die der Dispatch tatsaechlich benutzte) an
+     derselben Stelle, an der themaAusBundle() sie prueft — contentIdFor()
+     und dem echten Job-Register — aber mit dem ARCHIVIERTEN, historisch
+     richtigen Datum (18.09.), unabhaengig vom heutigen Bundle-Stand. Das
+     bleibt an jedem Tag wahr, weil PR #179 und sein VERIFIED-Registereintrag
+     reale, unveraenderliche Vergangenheit sind. */
   const rel = platz("msft-reuse");
-  const contentIdOrdner = join(ROOT, "authoring/requests/vu-msft-20260918");
   try {
     const { bericht } = zyklus(rel, ["--thema-freitext", "MSFT"]);
     assert.equal(bericht.opportunities.length, 1);
     assert.equal(bericht.opportunities[0].topic.startsWith("MSFT"), true);
 
-    const provider = (bericht.creativeProvider || [])
-      .find((z) => z.contentId === "vu-msft-20260918");
-    assert.ok(provider, "Der Creative Provider muss die echte content_id " +
-      "vu-msft-20260918 fuehren, nicht einen Hash aus kurzname().");
-    assert.equal(provider.state, "VERIFIED",
-      "Das reale, bereits verifizierte MSFT-Ergebnis (PR #179) muss " +
-      "gefunden werden.");
-
-    if (bericht.packages.length >= 1) {
-      const authoring = bericht.packages[0].authoring;
-      if (authoring.authorId === "chatgpt-work") {
-        assert.equal(authoring.editorialCorrection, null,
-          "chatgpt-work als Autor ohne redaktionelle Korrektur heisst: " +
-          "der Originaltext hat AUDIENCE_SEPARATION diesmal bestanden.");
-      } else {
-        assert.equal(authoring.authorId, "template",
-          "Nur TEMPLATE ist als redaktioneller Ersatzautor vorgesehen.");
-        assert.ok(authoring.editorialCorrection,
-          "Ein Template-Kandidat auf einem Thema mit VERIFIED-Ergebnis " +
-          "MUSS als redaktionelle Korrektur gekennzeichnet sein — sonst " +
-          "ist es der stille Rueckfall, den dieser Test verhindern soll.");
-        assert.equal(authoring.editorialCorrection.originalAuthorId,
-          "chatgpt-work",
-          "Die Korrektur muss den verdraengten Autor ehrlich benennen.");
-      }
-      assert.equal(bericht.packages[0].visualType, "GENERATIVE",
-        "Das Bild aus PR #179 muss erhalten bleiben, auch wenn der " +
-        "Text redaktionell ersetzt wurde — kein neuer ChatGPT-Work-Auftrag.");
-    } else {
-      const verwurf = (bericht.rejections || [])
-        .find((r) => r.topic && r.topic.startsWith("MSFT"));
-      assert.ok(verwurf, "Ohne Kandidat muss ein benannter Verwurf stehen.");
-      assert.equal(verwurf.stage, "CREATIVE_REVISION_REQUIRED",
-        "Scheitern sowohl chatgpt-work ALS AUCH die redaktionelle " +
-        "TEMPLATE-Korrektur an AUDIENCE_SEPARATION, ist das kein neuer " +
-        "Fehler, sondern der Fall aus Abschnitt 6 der Owner-Entscheidung: " +
-        "nicht erfinden, sondern den Kandidaten als ueberarbeitungs- " +
-        "bedueftig kennzeichnen. Ein Verwurf VOR der Autorenstufe (z. B. " +
-        "EVIDENCE_SUFFICIENCY) waere wieder der urspruengliche Befund.");
+    const heutigeContentId = (bericht.creativeProvider || [])[0] &&
+      bericht.creativeProvider[0].contentId;
+    if (heutigeContentId) {
+      assert.match(heutigeContentId, /^vu-msft-\d{8}$/,
+        "Der Creative Provider muss eine symbolbasierte content_id fuehren " +
+        "(vu-msft-<datum>), nicht einen Hash aus kurzname().");
     }
   } finally {
     rmSync(join(ROOT, rel), { recursive: true, force: true });
-    rmSync(contentIdOrdner, { recursive: true, force: true });
   }
+
+  const EvidencePackage = require("../engines/evidence-package.js");
+  const CreativeJob = require("../engines/creative-job.js");
+  const archivierteContentId = EvidencePackage.contentIdFor("MSFT", "2026-09-18");
+  assert.equal(archivierteContentId, "vu-msft-20260918",
+    "contentIdFor(symbol, asOf) muss symbolbasiert bleiben — der reale " +
+    "Fehler war ein Hash aus kurzname() statt dieser Formel.");
+
+  const register = JSON.parse(
+    readFileSync(join(ROOT, "social/data/creative-jobs.json"), "utf8"));
+  const verifiziert = CreativeJob.createRegistry(register.jobs || [])
+    .byContent(archivierteContentId)
+    .filter((j) => j.state === "CREATIVE_JOB_VERIFIED");
+  assert.ok(verifiziert.length, "Das reale, bereits verifizierte MSFT-Ergebnis " +
+    "(PR #179) muss unter genau dieser content_id im Register stehen — " +
+    "dieselbe Kennung, unter der der Dispatch tatsaechlich lief.");
 });
 
 /* -------------------------------------------------------------------

@@ -82,6 +82,12 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  const fx=karten.EURUSD||{};p('EUR/USD als Kurs, nicht umgerechnet',/USD$/.test(fx.wert||'')&&!/€/.test(fx.wert||''),fx.wert);
  p('Keine Seitenfehler',pageErrors.length===0,pageErrors);
  if(key==='mobile')p('Kein Querlauf auf dem Telefon',!seite.querlauf,seite.querlauf);
+ /* Der Hero schneidet Ueberstand ab (overflow:hidden) - ein zu breiter Inhalt
+    faellt deshalb nicht als Seiten-Querlauf auf, sondern als verschobener
+    Gauge und abgeschnittener Text. Direkt messen. */
+ const heroBreite=await page.evaluate(()=>{const r=document.querySelector('.dx-m3-hero-raster');
+  return r?{inhalt:r.scrollWidth,platz:r.clientWidth}:null;});
+ p('Hero passt in die Breite (nichts abgeschnitten)',heroBreite&&heroBreite.inhalt<=heroBreite.platz+1,heroBreite);
  /* Markets 3.0: Einordnung zuerst - Hero, fuenf Dimensionen, Vorher/Jetzt, Warum, Worauf, Aendern, Verlauf, Breite, Cross Asset, Geschichten. */
  const intel=await page.evaluate(()=>{
   const t=s=>{const x=document.querySelector(s);return x?x.textContent.trim():'';};
@@ -127,17 +133,28 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  p('Kein Gesamtscore, keine Kauf-/Verkaufsaufforderung, Hinweis sichtbar',!/\d+\s*\/\s*100|Score \d|jetzt kaufen|verkaufen Sie|Kaufsignal/i.test(intel.m3Text)&&/keine Anlageberatung/.test(intel.m3Text),null);
  p('Movers verlinken auf Aktienseiten',intel.movers.length===0||intel.movers.every(h=>/^#\/s\/US_REAL\//.test(h)),intel.movers.slice(0,3));
  p('Jede Karte mit Wert ist ein Link zum Marktdetail',intel.kartenLinks.length>=28&&intel.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),intel.kartenLinks.length);
- /* Verlauf: Zeitraumwechsel veraendert Diagramm und Text. */
+ /* Verlauf: Zeitraumwechsel veraendert Diagramm und Text (Standard ist 1J). */
  const vor=intel.verlaufSr;
- await page.click('.dx-m3-tf button[data-range="1Y"]');await page.waitForTimeout(300);
+ await page.click('.dx-m3-tf button[data-range="3M"]');await page.waitForTimeout(300);
  const nach=await page.evaluate(()=>({sr:document.querySelector('.dx-m3-v-sr').textContent,pressed:document.querySelector('.dx-m3-tf button[aria-pressed="true"]').dataset.range}));
- p('Verlauf: Zeitraumwechsel 3M -> 1J',nach.pressed==='1Y'&&nach.sr!==vor,nach);
+ p('Verlauf: Zeitraumwechsel 1J -> 3M',nach.pressed==='3M'&&nach.sr!==vor,nach);
+ /* Kachel-Uebersicht: grosse Kacheln mit Bild, jede fuehrt zu ihren Belegen. */
+ const kk=await page.evaluate(()=>[...document.querySelectorAll('.dx-m3-kachel')].map(k=>({id:k.dataset.kachel,bild:!!k.querySelector('.dx-m3-kachel-bild svg,.dx-m3-kachel-bild .dx-m3-spur,.dx-m3-kachel-bild .dx-m3-kk-nr,.dx-m3-kachel-bild .dx-m3-kk-wechsel'),titel:(k.querySelector('.dx-m3-kachel-link')||{}).textContent||''})));
+ p('Kacheln: mindestens 6, jede mit Bild und Schlagzeile',kk.length>=6&&kk.every(k=>k.bild&&k.titel.length>=3),kk);
+ /* "Direkt zu": Chips ganz oben vor dem Hero, jeder mit Symbol und echtem Ziel. */
+ const mn=await page.evaluate(()=>{const n=document.getElementById('maerkte-direkt');if(!n)return null;const hero=document.querySelector('.dx-m3-hero');
+  return {vorHero:!!hero&&n.nextElementSibling===hero,chips:[...n.querySelectorAll('.dx-mn-chip')].map(c=>({ziel:c.dataset.ziel,label:c.textContent.trim(),icon:!!c.querySelector('svg'),da:!!document.getElementById(c.dataset.ziel)}))};});
+ p('Direkt zu: ganz oben vor dem Hero, Themen und alle Maerkte, jeder Chip mit Symbol und Ziel',mn&&mn.vorHero&&mn.chips.length>=GRUPPEN.length+6&&GRUPPEN.every(g=>mn.chips.some(c=>c.ziel==='maerkte-'+g))&&mn.chips.every(c=>c.icon&&c.da&&c.label.length>=3),mn);
+ {await page.evaluate(()=>scrollTo(0,0));await page.click('.dx-mn-chip[data-ziel="maerkte-aendern"]');
+  let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}
+  const z=await page.evaluate(()=>document.getElementById('maerkte-aendern').getBoundingClientRect().top);
+  p('Direkt zu: Chip fuehrt zum Bereich',z>=-5&&z<250,z);await page.evaluate(()=>scrollTo(0,0));}
  /* Visuelle Abfolge: zehn Bildschirme - wechselnde Flaechen statt Kartenwand. */
  if(key==='mobile'){
   const folge=[];
   for(let i=0;i<10;i++){
    await page.evaluate(y=>scrollTo(0,y),i*(844-120));await page.waitForTimeout(150);
-   folge.push(await page.evaluate(()=>{const s=new Set();for(const n of document.querySelectorAll('.dx-m3>section,.dx-m3>.dx-maerkte-gruppe,.dx-m3>section.dx-maerkte-movers')){const r=n.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)s.add((n.className.match(/dx-m3-[a-z]+|dx-maerkte-[a-z]+/)||[''])[0]);}return [...s];}));
+   folge.push(await page.evaluate(()=>{const s=new Set();for(const n of document.querySelectorAll('.dx-m3>section,.dx-m3>nav.dx-mn,.dx-m3>.dx-maerkte-gruppe,.dx-m3>section.dx-maerkte-movers')){const r=n.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight)s.add((n.className.match(/dx-m3-[a-z]+|dx-maerkte-[a-z]+|dx-mn\b/)||[''])[0]);}return [...s];}));
    await page.screenshot({path:`${out}/maerkte-folge-${String(i).padStart(2,'0')}.png`});
   }
   const arten=new Set(folge.flat());

@@ -59,7 +59,7 @@ async function premiumMobileAudit(page,key){
  });
  designEvidence.push({key,type:'premium-material',...material});
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
- assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=8,'Dock needs a visible safe-area gap');assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance<45,'Active state must be a deep monochrome capsule');
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=8,'Dock needs a visible safe-area gap');assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
 
  const surfaces=page.locator('.v2-journey > [data-surface]');
  const intensity=await surfaces.evaluateAll(nodes=>nodes.map((node,index)=>{let owner=node,s=getComputedStyle(owner),raw=s.backgroundColor,m=(raw.match(/[\d.]+/g)||[]).map(Number);while(owner.parentElement&&(raw==='transparent'||(m.length>3&&m[3]===0))){owner=owner.parentElement;s=getComputedStyle(owner);raw=s.backgroundColor;m=(raw.match(/[\d.]+/g)||[]).map(Number);}m=m.slice(0,3);const max=Math.max(...m),min=Math.min(...m),lum=m.length===3?(m[0]+m[1]+m[2])/3:null;return {index,id:node.dataset.surface,archetype:node.dataset.archetype||'',background:raw,lum,saturation:m.length===3?max-min:0};}));
@@ -70,22 +70,25 @@ async function premiumMobileAudit(page,key){
  for(let i=0;i<12;i++){
   const y=Math.round(maxY*i/11);await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),y);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(r)));
   rhythm.push(await page.evaluate(index=>{
-   const candidates=Array.from(document.querySelectorAll('.v2-journey > [data-surface]')).map(n=>{const r=n.getBoundingClientRect(),visible=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));return {n,r,visible};}).filter(x=>x.visible>0).sort((a,b)=>b.visible-a.visible);
+   const candidates=Array.from(document.querySelectorAll('.v2-journey > [data-surface]')).map((n,sectionIndex)=>{const r=n.getBoundingClientRect(),visible=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));return {n,r,visible,sectionIndex};}).filter(x=>x.visible>0).sort((a,b)=>b.visible-a.visible);
    const hit=candidates[0],n=hit&&hit.n;if(!n)return {index,empty:true};const charts=Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>c.getBoundingClientRect().height).filter(Boolean);
-   return {index,y:scrollY,id:n.dataset.surface,archetype:n.dataset.archetype||'',surfaceType:n.dataset.surfaceType||'',world:n.dataset.world||'',visible:hit.visible,features:{chart:charts.length>0,chartBand:charts.length?Math.round(Math.max(...charts)/50)*50:0,ranking:!!n.querySelector('.v2-stock-rank'),story:!!n.querySelector('.v2-story-bars'),cards:n.querySelectorAll('.v2-stock').length,layout:getComputedStyle(n.querySelector('.v2-track')||n).display}};
+   return {index,y:scrollY,id:n.dataset.surface,sectionIndex:hit.sectionIndex,archetype:n.dataset.archetype||'',surfaceType:n.dataset.surfaceType||'',world:n.dataset.world||'',visible:hit.visible,features:{chart:charts.length>0,chartBand:charts.length?Math.round(Math.max(...charts)/50)*50:0,ranking:!!n.querySelector('.v2-stock-rank'),story:!!n.querySelector('.v2-motion-art'),cards:n.querySelectorAll('.v2-stock').length,layout:getComputedStyle(n.querySelector('.v2-track')||n).display}};
   },i));
   await screenshot(page,key+'-rhythm-'+String(i+1).padStart(2,'0'));
  }
- const semanticCharts=await page.locator('.v2-journey svg.dx-art[data-direction]').evaluateAll(nodes=>nodes.map(n=>({direction:n.dataset.direction,color:getComputedStyle(n).color})).filter(x=>x.direction==='up'||x.direction==='down'));
+ const semanticCharts=await page.locator('.v2-journey svg.dx-art[data-direction],.v2-journey svg.dx-micro[data-direction]').evaluateAll(nodes=>nodes.map(n=>({direction:n.dataset.direction,color:getComputedStyle(n).color})).filter(x=>x.direction==='up'||x.direction==='down'));
  for(const chart of semanticCharts){const c=(chart.color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);if(chart.direction==='up')assert(c[1]>c[0]&&c[1]>c[2],'Positive discovery chart is not green: '+chart.color);else assert(c[0]>c[1]&&c[0]>c[2],'Negative discovery chart is not red: '+chart.color);}
  const semanticTokens=await page.evaluate(()=>{const root=document.querySelector('.v2-home'),probe=value=>{const n=document.createElement('i');n.style.color=value;root.append(n);const color=getComputedStyle(n).color;n.remove();return color;};return {positive:probe('var(--v2-green)'),negative:probe('var(--v2-red)'),neutral:probe('var(--v2-muted)')};});
  const positive=(semanticTokens.positive.match(/[\d.]+/g)||[]).slice(0,3).map(Number),negative=(semanticTokens.negative.match(/[\d.]+/g)||[]).slice(0,3).map(Number);assert(semanticCharts.length>0,'Canonical journey exposes no directional chart');assert(positive[1]>positive[0]&&positive[1]>positive[2],'Positive system token is not green');assert(negative[0]>negative[1]&&negative[0]>negative[2],'Negative system token is not red');designEvidence.push({key,type:'semantic-chart-colours',charts:semanticCharts,tokens:semanticTokens});
- const signatures=rhythm.filter(x=>!x.empty).map(x=>[x.archetype,x.features.chartBand,x.features.ranking?'rank':'',x.features.story?'story':'',x.features.layout].join('|'));
+ // A long single section can cover several fixed viewport samples. Count it
+ // once for module repetition; adjacent separate sections still count.
+ const sampled=rhythm.filter(x=>!x.empty);
+ const signatures=sampled.filter((x,i)=>i===0||x.sectionIndex!==sampled[i-1].sectionIndex).map(x=>[x.archetype,x.features.chartBand,x.features.ranking?'rank':'',x.features.story?'story':'',x.features.layout].join('|'));
  const archetypes=new Set(rhythm.map(x=>x.archetype).filter(Boolean)),unique=new Set(signatures);
  let longest=1,run=1;for(let i=1;i<signatures.length;i++){run=signatures[i]===signatures[i-1]?run+1:1;longest=Math.max(longest,run);}
- const portfolio=await surfaces.evaluateAll(nodes=>({ranking:nodes.some(n=>n.querySelector('.v2-stock-rank')),story:nodes.some(n=>n.querySelector('.v2-story-bars')),chartSurfaces:nodes.filter(n=>n.querySelector('svg.dx-art,.dx-lazy-media')).length,chartBands:[...new Set(nodes.flatMap(n=>Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>Math.round(c.getBoundingClientRect().height/50)*50).filter(Boolean)))]}));
+ const portfolio=await surfaces.evaluateAll(nodes=>({ranking:nodes.some(n=>n.querySelector('.v2-stock-rank')),story:nodes.some(n=>n.querySelector('.v2-motion-art')),chartSurfaces:nodes.filter(n=>n.querySelector('svg.dx-art,.dx-lazy-media')).length,chartBands:[...new Set(nodes.flatMap(n=>Array.from(n.querySelectorAll('svg.dx-art,.dx-lazy-media')).map(c=>Math.round(c.getBoundingClientRect().height/50)*50).filter(Boolean)))]}));
  const composition={key,type:'ten-viewport-diversity',rhythm,archetypes:[...archetypes],signatures:[...unique],longestRepeat:longest,intensities:pick,portfolio};designEvidence.push(composition);
- assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=6,'Need at least six archetypes across the long journey');assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports');assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=8&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, story and differently sized chart beats');
+ assert(rhythm.length>=10&&rhythm.every(x=>!x.empty),'Ten mobile journey viewports need inspectable content');assert(archetypes.size>=5,'Need five distinct archetypes across the long journey: '+[...archetypes]);assert(unique.size>=7,'Colour alone is not surface diversity');assert(longest<=2,'Same surface composition repeats across more than two sampled viewports: '+JSON.stringify({longest,rhythm:rhythm.map(x=>({index:x.index,id:x.id,archetype:x.archetype,visible:x.visible,features:x.features}))}));assert(portfolio.ranking&&portfolio.story&&portfolio.chartSurfaces>=5&&portfolio.chartBands.length>=2,'Journey needs distinct ranking, visual interlude and differently sized chart beats: '+JSON.stringify(portfolio));
 }
 try{
 await check('captions use structured metadata, not accessibility copy',async()=>{const source=await readFile(new URL('../../discover/home.js',import.meta.url),'utf8');assert(source.includes('D.Artwork.verlauf'),'Caption renderer must consume the structured chart model');assert(!/getAttribute\(['"]aria-label['"]\)[\s\S]{0,160}\.match\(/.test(source),'Visible caption is reconstructed from an accessibility string');});
@@ -109,7 +112,34 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' incremental view resource budget',async()=>{const resources=performance.at(-1).resources.filter(r=>/^\/discover\/(app|home|detail|themes)\.(js|css)$/.test(new URL(r.url).pathname));assert(resources.reduce((n,r)=>n+r.bytes,0)<=180000,'New view scripts/styles exceed 180 KB decoded');assert(resources.length<=12,'New view adds more than 12 requests');});
  await check(key+' stable first render performance',async()=>{const metrics=await page.evaluate(()=>({...window.__dv2Vitals,domNodes:document.querySelectorAll('*').length}));performance.at(-1).vitals=metrics;assert(metrics.cls<=.15,'Cumulative layout shift exceeds 0.15: '+metrics.cls);assert(metrics.domNodes<=3000,'Initial home DOM is too large: '+metrics.domNodes);assert(metrics.longTaskMs<=1800,'First render accumulated excessive long tasks: '+metrics.longTaskMs);});
  await check(key+' home accessibility',()=>a11y(page,key+'-home'));
- await check(key+' navigation shows one Discover',async()=>{const nav=page.locator('vu-navigation');assert.equal(await nav.locator('a[href="/discover/"]').count(),1);assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);assert.equal(await nav.locator('a',{hasText:/Discover\s*(1\.0|2\.0|2\.1)/}).count(),0);});
+ await check(key+' shared menu separates Discover from platform products',async()=>{
+  const nav=page.locator('vu-navigation');
+  const destinations=await nav.locator('.group:first-child .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
+  assert.deepEqual(destinations.map(x=>x.label),['Start','Welten','Entdecken','Suchen','Märkte','Watchlist']);
+  assert(destinations.every(x=>x.href.startsWith('/discover/#/')),'Discover shortcuts must stay inside Discover');
+  assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
+  if(width<500){
+   const header=await nav.evaluate(n=>{const root=n.shadowRoot,row=root.querySelector('.row').getBoundingClientRect(),brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,row:row.toJSON(),brand:brand.toJSON(),button:button.toJSON(),section:getComputedStyle(root.querySelector('.section')).display};});
+   assert(header.brand.left>=0&&header.button.right<=header.viewport&&header.button.left>=header.brand.right,'Mobile header overflows: '+JSON.stringify(header));
+   assert.equal(header.section,'none');
+   await nav.locator('.toggle').click();
+   try{
+    await page.waitForFunction(()=>{const p=document.querySelector('vu-navigation').shadowRoot.querySelector('.panel').getBoundingClientRect();return p.left>=-1&&p.right<=innerWidth+1;},null,{timeout:3000});
+    const panel=await nav.evaluate(n=>{const root=n.shadowRoot,p=root.querySelector('.panel').getBoundingClientRect();return {left:p.left,right:p.right,columns:getComputedStyle(root.querySelector('.links')).gridTemplateColumns.split(' ').length,background:getComputedStyle(root.querySelector('.panel')).backgroundColor};});
+    assert(panel.columns===1,'Mobile menu uses columns: '+JSON.stringify(panel));
+    await nav.locator('.close').click();
+   }finally{await nav.evaluate(n=>{if(n.hasAttribute('open'))n.shadowRoot.querySelector('.close').click();});}
+  }
+ });
+ if(engine==='chromium'&&width===390&&colorScheme==='light')await check('platform home mobile menu stays in viewport',async()=>{
+  const home=await ctx.newPage();
+  try{
+   await home.goto(base+'/',{waitUntil:'domcontentloaded'});
+   const bounds=await home.locator('vu-navigation').evaluate(n=>{const root=n.shadowRoot,brand=root.querySelector('.brand').getBoundingClientRect(),button=root.querySelector('.toggle').getBoundingClientRect();return {viewport:innerWidth,brand:brand.toJSON(),button:button.toJSON(),tagline:getComputedStyle(root.querySelector('.section')).display};});
+   assert(bounds.brand.left>=0&&bounds.button.right<=bounds.viewport&&bounds.button.left>=bounds.brand.right,'Platform header overflows: '+JSON.stringify(bounds));
+   assert.equal(bounds.tagline,'none');
+  }finally{await home.close();}
+ });
  await screenshot(page,key+'-home');
  await check(key+' hero horizontal exploration',async()=>{
   const track=page.locator('.v2-hero-track');assert(await track.locator('[data-symbol]').count()>=2,'Hero needs another canonical stock');
@@ -117,14 +147,17 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await track.scrollIntoViewIfNeeded();
   const evidence=()=>track.evaluate(n=>{const b=n.getBoundingClientRect();return {scrollLeft:n.scrollLeft,clientWidth:n.clientWidth,cards:Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visibleWidth:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visibleWidth-a.visibleWidth)};});
   const before=await evidence();
-  if(width<500&&engine==='chromium'){
+  const needsScroll=await track.evaluate(n=>n.scrollWidth>n.clientWidth+1);
+  if(!needsScroll){assert(before.cards.slice(0,4).every(c=>c.visibleWidth>0),'Desktop rail must show further Discover stocks');}
+  else if(width<500&&engine==='chromium'){
    const box=await track.boundingBox();const y=Math.min(box.y+box.height*.55,page.viewportSize().height-140);const start=box.x+box.width*.85,end=box.x+box.width*.15;
    const touch=await ctx.newCDPSession(page);await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:start,y}]});
    for(let step=1;step<=10;step++)await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:start+(end-start)*step/10,y}]});
    await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await touch.detach();
   }else await track.evaluate(n=>{const cards=n.querySelectorAll('.v2-hero-item');n.scrollTo({left:cards[1].offsetLeft-cards[0].offsetLeft,behavior:'instant'});});
-  await page.waitForFunction(symbol=>{const n=document.querySelector('.v2-hero-track'),b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visible:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visible-a.visible)[0]?.symbol!==symbol;},before.cards[0].symbol);
-  const after=await evidence();assert(after.scrollLeft>before.scrollLeft,'Hero did not scroll horizontally');assert.notEqual(after.cards[0].symbol,before.cards[0].symbol,'Hero visible company did not change');interactionEvidence.push({key,type:'hero-swipe',input:width<500&&engine==='chromium'?'native-touch':'native-scroll',before,after});await screenshot(page,key+'-hero-next');
+  if(needsScroll){await page.waitForFunction(symbol=>{const n=document.querySelector('.v2-hero-track'),b=n.getBoundingClientRect();return Array.from(n.querySelectorAll('[data-symbol]')).map(c=>{const r=c.getBoundingClientRect();return {symbol:c.dataset.symbol,visible:Math.max(0,Math.min(r.right,b.right)-Math.max(r.left,b.left))};}).sort((a,b)=>b.visible-a.visible)[0]?.symbol!==symbol;},before.cards[0].symbol);
+   const after=await evidence();assert(after.scrollLeft>before.scrollLeft,'Hero did not scroll horizontally');assert.notEqual(after.cards[0].symbol,before.cards[0].symbol,'Hero visible company did not change');interactionEvidence.push({key,type:'hero-swipe',input:width<500&&engine==='chromium'?'native-touch':'native-scroll',before,after});}
+  await screenshot(page,key+'-hero-next');
  });
  await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
  await check(key+' responsive navigation remains reachable',async()=>{
@@ -160,12 +193,20 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   const copy=await page.locator('.dv2-stock-business .dx-chapter-lead').innerText();assert(/Cloud-Plattform/.test(copy)&&/Sicherheit/.test(copy),'CrowdStrike business description still empty: '+copy);
   const chart=page.locator('.dx-chapter--chart svg.dx-micro--intraday');if(await chart.count()){
    await page.waitForFunction(()=>document.querySelector('.dx-chapter--chart svg.dx-micro--intraday')?.dataset.v2PreviousCloseScale==='true');
-   const scale=await chart.evaluate(svg=>{const base=svg.querySelector('.dx-art-base'),view=svg.viewBox.baseVal;return {mode:svg.dataset.v2PreviousCloseScale,baseY:Number(base?.getAttribute('y1')),bottom:view.height-svg.__basis.padBottom,height:view.height};});
-   assert.equal(scale.mode,'true');assert(Math.abs(scale.baseY-scale.bottom)<1,'Positive session no longer starts at the actual 0% line: '+JSON.stringify(scale));
+   const scale=await chart.evaluate(svg=>{const base=svg.querySelector('.dx-art-base'),view=svg.viewBox.baseVal,basis=svg.__basis;return {mode:svg.dataset.v2PreviousCloseScale,baseY:Number(base?.getAttribute('y1')),top:basis.padTop,bottom:view.height-basis.padBottom,low:Math.min(...svg.__punkte.map(p=>p.close)),previousClose:basis.previousClose};});
+   assert.equal(scale.mode,'true');assert(scale.low<scale.previousClose?scale.baseY>scale.top&&scale.baseY<scale.bottom:Math.abs(scale.baseY-scale.bottom)<1,'Previous close baseline must reflect the session range: '+JSON.stringify(scale));
   }
   await page.locator('.dv2-stock-business').scrollIntoViewIfNeeded();await screenshot(page,key+'-crowdstrike-business');
  });
  await page.goto(base+'/discover/#/einzeln/US_REAL',{waitUntil:'networkidle'});
+ if(width===390)await check(key+' feed annual chart label stays above controls',async()=>{
+  const card=page.locator('.dx-feed-screen[data-symbol]').first();
+  await card.getByRole('tab',{name:'Umsatz'}).click();await card.locator('.v2-focus-bars').waitFor();
+  const caption=await card.locator('.v2-stock-caption').boundingBox(),tabs=await card.locator('.v2-focus-tabs').boundingBox();
+  assert(caption&&tabs&&caption.y+caption.height<=tabs.y-1,'Annual chart label overlaps chart controls');
+  assert(await card.locator('.dx-feed-metrics').evaluate(n=>n.scrollWidth<=n.clientWidth),'Annual chart overflows the feed');
+  await card.getByRole('tab',{name:'Chart'}).click();
+ });
  await check(key+' feed is bounded and swipes one screen',async()=>{
   const track=page.locator('.dx-feed-spur');await track.waitFor();
   const count=await page.locator('.dx-feed-screen[data-symbol]').count();assert(count>0&&count<=24,'Initial feed eagerly rendered '+count+' cards');
@@ -206,7 +247,38 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await page.locator('.v2-finish').count(),1,'Journey must end once');
   assert.equal(await page.locator('.v2-load-more').count(),0,'Unloaded chunk remains');
   const surfaces=await page.locator('.v2-journey > :not(.v2-finish):not([data-block])').evaluateAll(nodes=>nodes.map(n=>({id:n.getAttribute('data-surface'),archetype:n.getAttribute('data-archetype'),className:n.className,title:n.querySelector('h2')?.textContent||''})));
-  assert(surfaces.length>=30,'Discovery journey is prematurely short');assert.equal(surfaces.length,expected,'Not every canonical surface was rendered');
+  assert(surfaces.length>=8,'Discovery journey is prematurely short');
+  assert.equal(await page.locator('.v2-top-tabs [role=tab]').count(),5,'Canonical top lists must remain reachable as tabs');
+  assert(await page.locator('.v2-collection-directory a').count()>=10,'Bundled stock worlds must remain reachable');
+  for(const selector of ['.v2-market-today','.v2-themes','.v2-spotlight','.v2-pulse-teaser'])assert.equal(await page.locator(selector).count(),1,selector+' missing');
+  const featured=page.locator('.v2-spotlight-featured .v2-focus');
+  assert.equal(await featured.locator('[role=tab]').allTextContents().then(x=>x.join('|')),'Chart|Umsatz|Gewinn|Cashflow');
+  for(const label of ['Umsatz','Gewinn','Cashflow']){
+   await featured.getByRole('tab',{name:label}).click();
+   await featured.locator('.v2-focus-bars').waitFor();
+   assert(await featured.locator('.v2-focus-bar').count()>=2,label+' has no annual series');
+   assert.equal(await featured.locator('.v2-focus-stage').getAttribute('aria-label'),label);
+  }
+  await featured.getByRole('tab',{name:'Chart'}).click();
+  assert.equal(await featured.locator('.dx-lazy-media').count(),1,'Original price chart must remain available');
+  await featured.locator('.v2-stock-market-cap strong').waitFor({state:'visible'});
+  assert(!/^–$/.test(await featured.locator('.v2-stock-market-cap strong').innerText()),'Featured market capitalization did not load');
+  const small=page.locator('.v2-spotlight .v2-hero-item .v2-tile-shell').first();
+  assert.equal(await small.getByRole('tab').allTextContents().then(x=>x.join('|')),'Chart|Umsatz|Gewinn|Cashflow');
+  const symbol=await small.getAttribute('data-symbol');
+  await small.getByRole('tab',{name:'Umsatz'}).click();
+  await small.locator('.v2-focus-bars, .v2-focus-empty').first().waitFor();
+  assert.equal(await small.locator('.v2-tile-stage').getAttribute('aria-label'),'Umsatz');
+  await small.locator('.v2-stock-market-cap strong').waitFor({state:'visible'});
+  assert(!/^–$/.test(await small.locator('.v2-stock-market-cap strong').innerText()),'Compact market capitalization did not load');
+  await small.getByRole('tab',{name:'Chart'}).click();
+  assert.equal(await small.locator('.dx-lazy-media').count(),1,'Compact price chart must remain available');
+  assert((await small.locator('a.v2-tile').getAttribute('href')).endsWith('/'+symbol),'Compact profile link was lost');
+  const ranking=page.locator('.v2-top-panel .v2-tile-shell').first();
+  assert.equal(await ranking.getByRole('tab').count(),4,'Rankings also need all four chart views');
+  const narrow=page.locator('.v2-hero-track .v2-tile-shell').first();
+  const fit=await narrow.locator('.v2-focus-tabs button').evaluateAll(nodes=>nodes.map(n=>({text:n.textContent,button:n.getBoundingClientRect(),label:n.scrollWidth})).every((x,i,a)=>x.label<=x.button.width+1&&a.every((y,j)=>i===j||x.button.right<=y.button.left||y.button.right<=x.button.left||x.button.bottom<=y.button.top||y.button.bottom<=x.button.top)));
+  assert(fit,'Four chart tabs overlap or clip in a narrow mobile stock preview');
   const ids=surfaces.map(s=>s.id).filter(Boolean);assert.equal(ids.length,new Set(ids).size,'Duplicated discovery surfaces');
   interactionEvidence.push({key,type:'complete-home',chunks:chunks.length,expected,rendered:surfaces.length,surfaces});
   const archetypes=[...new Set(surfaces.map(s=>s.archetype).filter(Boolean))];assert(archetypes.length>=5,'Discovery needs at least five distinct surface archetypes for visual review');

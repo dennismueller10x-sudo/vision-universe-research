@@ -276,6 +276,61 @@
     }));
   }
 
+  /* ----------------------------------------------------- Direkt zu
+     Zwei Reihen grosser Chips zwischen Hero und Kacheln - oben die Themen
+     der Einordnung, unten die Maerkte. Jeder Chip hat ein eigenes Symbol in
+     eigener Farbe (wie Logos in einer Broker-App) und springt zu seinem
+     Bereich. Die Farben sind Wiedererkennung, keine Marktbedeutung - Gruen
+     und Orange bleiben "unterstuetzt" und "Gegenwind" vorbehalten. */
+  var THEMEN = [
+    { ziel: "maerkte-aendern", label: "Bullish & Bearish", symbol: "pfeile", farbe: "#5e5ce6" },
+    { ziel: "maerkte-verlauf", label: "12 Monate", symbol: "kurve", farbe: "#0a84ff" },
+    { ziel: "maerkte-dimensionen", label: "5 Dimensionen", symbol: "regler", farbe: "#af52de" },
+    { ziel: "maerkte-vorher-jetzt", label: "Was ist neu?", symbol: "funken", farbe: "#ff2d55" },
+    { ziel: "maerkte-warum", label: "Warum?", symbol: "lupe", farbe: "#6e7b91" },
+    { ziel: "maerkte-worauf", label: "Worauf achten", symbol: "auge", farbe: "#5856d6" },
+    { ziel: "maerkte-breite", label: "Marktbreite", symbol: "balken", farbe: "#30b0c7" },
+    { ziel: "maerkte-crossasset", label: "Cross Asset", symbol: "knoten", farbe: "#007aff" },
+    { ziel: "maerkte-jetzt", label: "Markt jetzt", symbol: "blitz", farbe: "#e6b000" },
+    { ziel: "maerkte-movers", label: "Top & Flop", symbol: "hoch", farbe: "#ff375f" }
+  ];
+  var GRUPPE_SYMBOL = { aktien: ["kerzen", "#2f6fed"], energie: ["flamme", "#e8590c"], edelmetalle: ["barren", "#d49a0a"],
+                        krypto: ["bitcoin", "#7c5cff"], "us-renditen": ["prozent", "#1f4fb8"], "eu-renditen": ["prozent", "#0a84ff"],
+                        leitzinsen: ["saeulen", "#636a78"], devisen: ["waehrung", "#2f9463"] };
+
+  function symbol(key) {
+    var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
+    return MI && MI.glyph ? MI.glyph(key) : null;
+  }
+
+  function direktZu(seite, gruppen) {
+    if (!global.document || !seite.querySelector) return null;
+    function chip(ziel, label, sym, farbe) {
+      if (!seite.querySelector("#" + ziel)) return null;
+      var b = el("button", { type: "button", class: "dx-mn-chip", "data-ziel": ziel }, [
+        el("span", { class: "dx-mn-icon", style: "--c:" + farbe, "aria-hidden": "true" }, [symbol(sym)].filter(Boolean)),
+        el("span", { class: "dx-mn-label", text: label })
+      ]);
+      b.onclick = function () {
+        var z = global.document.getElementById(ziel);
+        if (z && z.scrollIntoView) z.scrollIntoView({ behavior: sanft(), block: "start" });
+      };
+      return b;
+    }
+    var themen = THEMEN.map(function (t) { return chip(t.ziel, t.label, t.symbol, t.farbe); }).filter(Boolean);
+    var maerkte = gruppen.map(function (g) {
+      var s = GRUPPE_SYMBOL[g.id] || ["kerzen", "#636a78"];
+      return chip("maerkte-" + g.id, g.titel, s[0], s[1]);
+    }).filter(Boolean);
+    if (themen.length + maerkte.length < 4) return null;
+    return el("nav", { class: "dx-mn", id: "maerkte-direkt", "aria-label": "Direkt zu den Bereichen der Seite" }, [
+      el("div", { class: "dx-mn-scroll" }, [el("div", { class: "dx-mn-reihen" }, [
+        themen.length ? el("div", { class: "dx-mn-reihe", "data-reihe": "themen", "data-titel": "Einordnung" }, themen) : null,
+        maerkte.length ? el("div", { class: "dx-mn-reihe", "data-reihe": "maerkte", "data-titel": "Märkte" }, maerkte) : null
+      ].filter(Boolean))])
+    ]);
+  }
+
   /* ------------------------------------------------ Markets 2.0: Intelligence */
 
   /** MARKT JETZT: die auffaelligsten Tagesbewegungen, deterministisch (VUMarketPulse.marketNow). */
@@ -338,8 +393,10 @@
   function moversBereich(p) {
     var m = p && p.movers;
     if (!m || !m.gainers || !m.gainers.length) return null;
-    function spalte(titel, xs) {
-      return el("div", { class: "dx-movers-spalte" }, [el("h3", { text: titel }), el("ol", {}, xs.map(function (x) {
+    function spalte(titel, xs, glyph, art) {
+      var ic = symbol(glyph);
+      return el("div", { class: "dx-movers-spalte is-" + art }, [el("h3", {}, [ic ? el("span", { class: "dx-m3-icon is-" + art, "aria-hidden": "true" }, [ic]) : null,
+        el("span", { text: titel })].filter(Boolean)), el("ol", {}, xs.map(function (x) {
         return el("li", {}, [el("a", { href: "#/s/US_REAL/" + encodeURIComponent(x.symbol), "data-symbol": x.symbol }, [
           el("span", { class: "dx-movers-name", text: x.name }), el("span", { class: "dx-movers-sym", text: x.symbol }),
           el("b", { class: x.changePercent > 0 ? "is-up" : x.changePercent < 0 ? "is-down" : "", text: vorzeichen(x.changePercent, zahl(Math.abs(x.changePercent), 2) + " %") })
@@ -350,7 +407,7 @@
       el("h2", { text: "Aktien in Bewegung" }),
       el("p", { class: "dx-maerkte-unter", text: "Sitzung vom " + standText(m.session) + " gegenüber " + standText(m.previousSession) +
         (m.complete ? "" : " (Sitzung läuft)") + " · " + m.eligible + " liquide Titel aus dem Discover-Universum" }),
-      el("div", { class: "dx-movers-raster" }, [spalte("Stärkste Gewinner", m.gainers), spalte("Stärkste Verlierer", m.losers)])
+      el("div", { class: "dx-movers-raster" }, [spalte("Stärkste Gewinner", m.gainers, "hoch", "kurs-up"), spalte("Stärkste Verlierer", m.losers, "runter", "kurs-down")])
     ]);
   }
 
@@ -388,9 +445,10 @@
         el("h1", { class: "dx-m3-titel", text: "Märkte" })
       ]);
       function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
-      var verlaufNode = null;
+      var verlaufNode = null, heroNode = null;
       if (puls && MI && puls.environment) {
-        dazu(MI.hero(puls, jetzt));
+        heroNode = dazu(MI.hero(puls, jetzt));
+        if (MI.kacheln) dazu(MI.kacheln(puls, hist));
         dazu(MI.landkarte(puls));
         dazu(MI.vorherJetzt(puls));
         dazu(MI.warum(puls));
@@ -414,9 +472,12 @@
       gruppen.forEach(function (g) {
         dazu(el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": g.titel }, [
           el("h2", { text: g.titel }),
-          el("div", { class: "dx-maerkte-raster" }, g.karten.map(function (c) { return karte(c, layer); }))
+          el("div", { class: "dx-maerkte-raster", tabindex: "0", role: "group", "aria-label": g.titel + " – wischen für mehr" }, g.karten.map(function (c) { return karte(c, layer); }))
         ]));
       });
+      /* Erst jetzt, da alle Bereiche stehen: nur Chips mit echtem Ziel. */
+      var direkt = heroNode ? direktZu(seite, gruppen) : null;
+      if (direkt) seite.insertBefore(direkt, heroNode);
       seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(snap.generatedAt) || "unbekannt") +
         ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Informationen zur eigenen Recherche, keine Anlageberatung." }));
       root.appendChild(seite);

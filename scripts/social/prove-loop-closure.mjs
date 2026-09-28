@@ -104,40 +104,29 @@ function zyklus(datenDir, marke, nachDaten) {
  * Jeder Eintrag traegt `performanceProvenance.source = "SIMULATED"`.
  * Das ist keine Formalie: es ist der Unterschied zwischen einem Beweis
  * und einer Faelschung.
- */
-function simuliertesGedaechtnis() {
+ *
+ * `stark`/`schwach` sind keine festen Namen mehr (siehe unten, an der
+ * Aufrufstelle): welches Archetyp-Paar an einem gegebenen Tag ZULAESSIG
+ * ist, haengt von echten, taeglich weiterlaufenden Marktdaten ab
+ * (Technical Intelligence wird einmal taeglich erneuert; das TIMELY-
+ * Fenster ist 36h). Ein hier festgeschriebener Name war nur so lange
+ * richtig, wie die reale Platte ihn an dem Tag noch zuliess.
+ *
+ * HIER STANDEN FRUEHER FESTE NAMEN: erst EXPLAIN_THE_MOVE, dann
+ * OPPORTUNITY_RISK/DATA_STORY. Beide Male lief die reale Platte am
+ * gewaehlten Format vorbei (die Content Ladder traegt keinen ANLASS;
+ * spaeter kippten die einzigen SECURITY_METRIC-Themen von TIMELY auf
+ * EVERGREEN, sobald die letzte Technical-Intelligence-Aktualisierung
+ * mehr als 36h zurueck lag) — der Nachweis verglich zwei identische
+ * oder gar keine Laeufe und meldete das faelschlich als Befund oder
+ * brach ab. Die Aufrufstelle prueft deshalb JETZT, welche Formate im
+ * jeweiligen Lauf tatsaechlich zulaessig sind, und uebergibt hierher
+ * zwei davon — nicht mehr feste Literale. */
+function simuliertesGedaechtnis(stark, schwach) {
   const eintraege = [];
-  /* Beide Archetypen sind fuer diese Gelegenheiten ZULAESSIG — das ist
-     der Punkt. Evidenz ueber ein Format, das ohnehin nicht in Frage
-     kommt, koennte die Entscheidung gar nicht erreichen, und der
-     Nachweis waere wertlos.
-
-     DATA_STORY ist die Wahl, die ohne Wissen faellt (erstes
-     zulaessiges, am seltensten genutzt). OPPORTUNITY_RISK laeuft in
-     dieser Simulation deutlich besser. Greift der Lernpfad, muss die
-     Entscheidung kippen — und genau das ist die Behauptung, die hier
-     ueberprueft wird.
-
-     HIER STAND FRUEHER EXPLAIN_THE_MOVE ALS DAS SCHWAECHERE FORMAT.
-     Das war richtig, solange der Zyklus aus Kurssignalen einzelne
-     Titel baute. Seit er seine Themen ueber die Content Ladder aus
-     der Platte nimmt, tragen sie keinen ANLASS im Sinne der
-     Strategie - eine Auswahlregel ist ein Kriterium, kein Ereignis -
-     und EXPLAIN_THE_MOVE ist damit gar nicht mehr zulaessig.
-
-     Der Nachweis lief weiter durch und verglich zwei Laeufe, die
-     BEIDE DATA_STORY waehlten: die Evidenz konnte die Entscheidung
-     nicht erreichen, weil das bessere Format nie zur Wahl stand.
-     Damit das nicht noch einmal unbemerkt passiert, prueft dieses
-     Skript jetzt nach, ob beide simulierten Formate im Lauf
-     ueberhaupt zulaessig waren (`zulaessigeFormate`), und bricht
-     sonst ab.
-
-     Ob der Effekt die Signifikanzschwelle passiert, entscheidet die
-     Learning Engine und nicht dieses Skript. */
   const muster = [
-    ["OPPORTUNITY_RISK", [78, 82, 75, 85, 80, 79, 83, 77]],
-    ["DATA_STORY", [41, 38, 45, 36, 43, 40, 39, 44]]
+    [stark, [78, 82, 75, 85, 80, 79, 83, 77]],
+    [schwach, [41, 38, 45, 36, 43, 40, 39, 44]]
   ];
   let i = 0;
   for (const [archetype, werte] of muster) {
@@ -257,6 +246,7 @@ const A = entscheidungsbild(berichtA);
    Deshalb wird die Annahme hier zur Messung: beide simulierten
    Formate muessen in den zulaessigen Kandidaten von Lauf A vorkommen.
    ------------------------------------------------------------------- */
+let formatStark = null, formatSchwach = null;
 if (EVIDENCE === "simulated") {
   const zulaessigeFormate = new Set();
   for (const p of berichtA.packages || []) {
@@ -271,19 +261,22 @@ if (EVIDENCE === "simulated") {
       if (k && k.archetype) zulaessigeFormate.add(k.archetype);
     }
   }
-  const simuliert = simuliertesGedaechtnis()
-    .map((e) => e.archetype)
-    .filter((a, i, alle) => alle.indexOf(a) === i);
-  const fehlend = simuliert.filter((a) => !zulaessigeFormate.has(a));
-  if (!zulaessigeFormate.size || fehlend.length) {
-    console.error("\nDie Simulation traegt Formate, die dieser Lauf gar nicht " +
-      "waehlen kann: " + (fehlend.join(", ") || "(kein Paket entstanden)") + ".");
-    console.error("Zulaessig waren: " + ([...zulaessigeFormate].join(", ") || "keine") + ".");
-    console.error("Ein Vergleich waere wertlos - die Evidenz koennte die " +
-      "Entscheidung nicht erreichen. Der Nachweis bricht hier ab, statt " +
-      "ein Ergebnis zu melden, das nichts bedeutet.");
+  /* Zwei zulaessige Formate werden GEBRAUCHT, nicht angenommen: eines
+     bekommt die staerkeren simulierten Werte, eines die schwaecheren.
+     Welche zwei das an einem gegebenen Tag sind, entscheidet die reale
+     Platte (siehe Kommentar an simuliertesGedaechtnis) - alphabetisch
+     sortiert und deterministisch gewaehlt, nicht festgeschrieben. */
+  const geordnet = [...zulaessigeFormate].sort();
+  if (geordnet.length < 2) {
+    console.error("\nDie reale Platte dieses Laufs laesst weniger als zwei " +
+      "Formate zu: " + (geordnet.join(", ") || "keines") + ".");
+    console.error("Ein Vergleich braucht zwei unterscheidbare Formate - ohne sie " +
+      "koennte die Evidenz die Entscheidung nicht sichtbar veraendern.");
+    console.error("Der Nachweis bricht hier ab, statt ein Ergebnis zu melden, " +
+      "das nichts bedeutet.");
     process.exit(2);
   }
+  [formatSchwach, formatStark] = geordnet;
 }
 
 /* Dazwischen: die Evidenz trifft ein. */
@@ -295,7 +288,8 @@ platteNach(dirB);
 let evidenzHerkunft;
 if (EVIDENCE === "simulated") {
   writeFileSync(join(dirB, "content-memory.json"),
-    JSON.stringify({ generatedAt: NOW, entries: simuliertesGedaechtnis() }, null, 2) + "\n");
+    JSON.stringify({ generatedAt: NOW, entries: simuliertesGedaechtnis(formatStark, formatSchwach) },
+      null, 2) + "\n");
   evidenzHerkunft = "SIMULIERT — 16 Eintraege, ausdruecklich als SIMULATED markiert";
 } else {
   const perf = join(ROOT, "social/data/performance.json");

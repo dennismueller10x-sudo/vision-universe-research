@@ -177,13 +177,11 @@ html:not([data-theme=light]) .dv2 .dx-m3-hero{background:#141619;border:1px soli
 .dv2 .dx-m3-seit.is-better b{color:#7fe0a8}.dv2 .dx-m3-seit.is-worse b{color:#ffb77a}
 .dv2 .dx-m3-zaehlung{margin:12px 0 0;font-size:12px;color:#8d939d}
 .dv2 .dx-m3-hero-raster{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:clamp(24px,4vw,56px);align-items:end;margin-bottom:22px}
+.dv2 .dx-m3-hero-haupt,.dv2 .dx-m3-blick{min-width:0}
 .dv2 .dx-m3-blick{padding:20px;border-radius:18px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);backdrop-filter:blur(8px)}
 .dv2 .dx-m3-blick-titel{margin:0 0 12px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a9aeb7}
 .dv2 .dx-m3-blick ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.dv2 .dx-m3-blick li{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:center}
-.dv2 .dx-m3-blick li i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;background:#3a3f47;color:#fff}
-.dv2 .dx-m3-blick li.is-support i{background:#5fd08f;color:#0b0c0e}.dv2 .dx-m3-blick li.is-headwind i{background:#ffa24a;color:#0b0c0e}
-.dv2 .dx-m3-blick li.is-open i{background:transparent;box-shadow:inset 0 0 0 1.5px #8d939d;color:#c9ccd2}.dv2 .dx-m3-blick li.is-context i{background:#8fb1e8;color:#0b0c0e}
+.dv2 .dx-m3-blick li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center}
 .dv2 .dx-m3-blick li b{display:block;font-size:14px;color:#fff}
 .dv2 .dx-m3-blick li small{display:block;font-size:12px;color:#a9aeb7}
 .dv2 .dx-m3-hero-aktionen{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
@@ -201,8 +199,10 @@ html:not([data-theme=light]) .dv2 .dx-m3-hero{background:#141619;border:1px soli
 .dv2 .dx-m3-dim-kopf{display:grid;grid-template-columns:minmax(170px,1.1fr) minmax(150px,.9fr) minmax(220px,1.6fr) minmax(150px,1fr);gap:18px;align-items:center;padding:18px 4px;cursor:pointer;list-style:none;min-height:44px}
 .dv2 .dx-m3-dim-kopf::-webkit-details-marker{display:none}
 .dv2 .dx-m3-dim-kopf:hover{background:var(--m3-soft)}
-.dv2 .dx-m3-dim-name b{display:block;font-size:17px;letter-spacing:-.01em}
-.dv2 .dx-m3-dim-name small{display:block;font-size:12.5px;color:var(--v2-muted);line-height:1.35;margin-top:2px}
+.dv2 .dx-m3-dim-name{display:flex;align-items:flex-start;gap:10px}
+.dv2 .dx-m3-dim-txt{min-width:0}
+.dv2 .dx-m3-dim-txt b{display:block;font-size:17px;letter-spacing:-.01em}
+.dv2 .dx-m3-dim-txt small{display:block;font-size:12.5px;color:var(--v2-muted);line-height:1.35;margin-top:2px}
 .dv2 .dx-m3-dim-zustand{display:grid;grid-template-columns:22px 1fr;column-gap:8px;align-items:center}
 .dv2 .dx-m3-dim-zustand i{grid-row:span 2;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;color:#fff;background:var(--m3-neutral)}
 .dv2 .dx-m3-dim-zustand b{font-size:15px}
@@ -376,7 +376,7 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim-zustand i{color:#0b0c0e}
 
 @media(max-width:760px){
   .dv2 .dx-m3-hero{border-radius:22px;margin:0 -4px 24px}
-  .dv2 .dx-m3-hero-raster{grid-template-columns:1fr;gap:18px}
+  .dv2 .dx-m3-hero-raster{grid-template-columns:minmax(0,1fr);gap:18px}
   .dv2 .dx-m3-spektrum{gap:4px}
   .dv2 .dx-m3-stufe b{font-size:9.5px}
   .dv2 .dx-m3-stufe:not(.is-aktiv):not(.is-vorher) b{visibility:hidden}
@@ -471,7 +471,6 @@ html:not([data-theme=light]) .dv2 .dx-m3-spur{box-shadow:inset 0 1px 3px rgba(0,
 
 /* VORHER -> JETZT: mehr Kontrast am Ergebnis */
 .dv2 .dx-m3-vj{background:linear-gradient(155deg,var(--m3-soft),transparent 60%),var(--m3-soft);border:1px solid var(--m3-glass-line)}
-.dv2 .dx-m3-vj-top b{background:linear-gradient(90deg,currentColor,currentColor)}
 .dv2 .dx-m3-vj-pfeil{font-weight:700}
 
 /* SZENARIEN: "Was wuerde das Bild veraendern" als drei Karten - links das,
@@ -633,9 +632,417 @@ html:not([data-theme=light]) .dv2 .dx-m3{--m3-brand-glow:#3dffc4}
 /* Signature-Glow: ein zweiter, zustandsunabhaengiger Akzent auf den dunklen
    "Kino"-Flaechen (Hero, Verlauf, Detail-Chart) - Stil-Anleihe bei einer
    Referenz mit Schwarz+Gruen-Glow, ohne deren Inhalte. Traegt keine
-   Bedeutung (nicht bullish/bearish) und ueberlagert nie Text. */
+   Bedeutung (nicht bullish/bearish) und ueberlagert nie Text. Kraeftiger
+   als die erste Fassung (Owner-Feedback: mehr sichtbare Wirkung). */
 .dv2 .dx-m3-hero,.dv2 .dx-m3-verlauf,.dv2 .dx-md-chartbereich{position:relative;isolation:isolate}
 .dv2 .dx-m3-hero::after,.dv2 .dx-m3-verlauf::after,.dv2 .dx-md-chartbereich::after{
-  content:"";position:absolute;inset:-30% -10% auto auto;width:60%;height:80%;z-index:-1;pointer-events:none;
-  background:radial-gradient(closest-side,color-mix(in srgb,var(--m3-brand-glow) 20%,transparent),transparent 72%)}
-.dv2 .dx-m3-zustand{text-shadow:0 0 28px color-mix(in srgb,var(--m3-brand-glow) 22%,transparent)}
+  content:"";position:absolute;inset:-45% -20% auto auto;width:90%;height:130%;z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--m3-brand-glow) 50%,transparent),transparent 70%)}
+.dv2 .dx-m3-zustand{text-shadow:0 0 38px color-mix(in srgb,var(--m3-brand-glow) 45%,transparent),0 0 90px color-mix(in srgb,var(--m3-brand-glow) 25%,transparent)}
+
+/* Primaerer CTA als kraeftiger gruener Akzent (wie ein "Sei dabei"-Knopf) -
+   reine Navigations-Chrome, keine Marktbedeutung, deshalb unbedenklich in
+   der Signalfarbe. */
+.dv2 .dx-m3-cta{background:var(--m3-brand-glow);color:#04140f;box-shadow:0 0 0 0 transparent}
+.dv2 .dx-m3-cta:hover{box-shadow:0 8px 26px color-mix(in srgb,var(--m3-brand-glow) 55%,transparent)}
+.dv2 .dx-m3-cta.is-leise{background:transparent;color:var(--m3-brand-glow);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--m3-brand-glow) 55%,transparent)}
+.dv2 .dx-m3-cta.is-leise:hover{background:color-mix(in srgb,var(--m3-brand-glow) 12%,transparent);box-shadow:inset 0 0 0 1.5px var(--m3-brand-glow)}
+
+/* ================================================================ Markets 3.4
+   Owner-Feedback: "Bullish/Bearish fehlt mir, ich verstehe die Seite nicht".
+   Drei Bausteine, alle auf denselben Daten wie zuvor: (1) App-Icon-System
+   fuer die fuenf Dimensionen statt Fliesstext-Kuerzel, (2) ein Bullish/Base
+   Case/Bearish-Streifen direkt im Hero (dieselbe Zaehlung wie tally()), (3)
+   dieselbe Sprache in der bestehenden "Was wuerde das Bild aendern"-Sektion.
+   Keine neue Zahl, keine Wahrscheinlichkeit - nur vertrautere Woerter frueher
+   auf der Seite. */
+
+/* Icon-Chips: Glas-Kachel mit einem kleinen geometrischen Piktogramm je
+   Dimension. Farbe folgt der bestehenden Rollen-Bedeutung (support/headwind/
+   context), sonst erbt sie die Textfarbe der Umgebung. */
+.dv2 .dx-m3-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:30px;height:30px;
+  border-radius:9px;background:var(--m3-glass);box-shadow:inset 0 0 0 1px var(--m3-glass-line);backdrop-filter:blur(6px)}
+.dv2 .dx-m3-icon-svg{width:16px;height:16px;display:block}
+.dv2 .dx-m3-icon.is-support{color:var(--m3-support)}
+.dv2 .dx-m3-icon.is-headwind{color:var(--m3-headwind)}
+.dv2 .dx-m3-icon.is-context{color:var(--m3-context)}
+.dv2 .dx-m3-hero .dx-m3-icon{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#c9ccd2}
+.dv2 .dx-m3-hero .dx-m3-icon.is-support{color:#5fd08f}.dv2 .dx-m3-hero .dx-m3-icon.is-headwind{color:#ffa24a}.dv2 .dx-m3-hero .dx-m3-icon.is-context{color:#8fb1e8}
+
+/* Szenario-Streifen im Hero: dieselbe Zaehlung wie der Tally weiter unten,
+   nur als drei antippbare Kacheln direkt unter der Kernaussage - springt zur
+   Detailsektion mit den genauen Schwellen. */
+.dv2 .dx-m3-sz-streifen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.dv2 .dx-m3-sz-pille{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:92px;flex:1 1 0;
+  padding:10px 16px;border-radius:16px;border:0;cursor:pointer;font:inherit;text-align:left;
+  background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:#fff;
+  transition:transform .15s ease,box-shadow .15s ease}
+.dv2 .dx-m3-sz-pille:hover{transform:translateY(-1px)}
+.dv2 .dx-m3-sz-pille b{font-size:22px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.dv2 .dx-m3-sz-pille span{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#c9ccd2}
+.dv2 .dx-m3-sz-pille.is-bull{box-shadow:inset 0 0 0 1.5px var(--m3-support)}.dv2 .dx-m3-sz-pille.is-bull b{color:#5fd08f}
+.dv2 .dx-m3-sz-pille.is-bear{box-shadow:inset 0 0 0 1.5px var(--m3-headwind)}.dv2 .dx-m3-sz-pille.is-bear b{color:#ffa24a}
+.dv2 .dx-m3-sz-pille.is-base{box-shadow:inset 0 0 0 1.5px var(--m3-neutral)}
+.dv2 .dx-m3-sz-hinweis{flex:1 1 100%;margin:2px 0 0;font-size:11px;color:#8d939d}
+
+/* Dieselbe Bullish/Bearish-Sprache in "Was wuerde das Bild aendern": ein
+   kleiner Farb-Tag vor der Spaltenueberschrift statt eines Pfeilzeichens. */
+.dv2 .dx-m3-sz-tag{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.02em}
+.dv2 .dx-m3-sz-tag.is-besser{background:color-mix(in srgb,var(--m3-support) 22%,transparent);color:var(--m3-support)}
+.dv2 .dx-m3-sz-tag.is-schlechter{background:color-mix(in srgb,var(--m3-headwind) 22%,transparent);color:var(--m3-headwind)}
+.dv2 .dx-m3-sz-tag.is-base{background:color-mix(in srgb,var(--m3-purple) 20%,transparent);color:var(--m3-purple)}
+
+/* Swipe-Karussell auf schmalen Bildschirmen: dieselbe Liste, als
+   durchwischbare Kartenreihe statt gestapelt - eine native Scroll-Geste,
+   kein zusaetzliches Skript. */
+@media(max-width:760px){
+  .dv2 .dx-m3-blick ul{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -4px;padding:2px 4px 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .dv2 .dx-m3-blick ul::-webkit-scrollbar{display:none}
+  .dv2 .dx-m3-blick li{flex:0 0 84%;scroll-snap-align:start;grid-template-columns:30px 1fr}
+  .dv2 .dx-m3-sz-pille{min-width:0}
+}
+
+/* ================================================================ Markets 3.5
+   Owner-Feedback: "wie Netflix oder die BILD-App - grosse Kacheln, in denen
+   man sofort mit Diagrammen und Icons sieht, worum es geht". Eine
+   Kachel-Uebersicht direkt nach dem Hero (dunkle "Poster"-Kacheln mit Bild,
+   farbiger Dachzeile, grosser Schlagzeile) und die Maerkte als wischbare
+   Reihen auf dem Telefon. Alle Werte wie zuvor aus dem Core-Artefakt. */
+
+/* KACHELN: immer dunkle Buehne (lokale Tokens wie beim Verlauf), damit
+   Skalen, Radar und Kurve in der Kachel gleich aussehen - hell wie dunkel. */
+.dv2 .dx-m3-kacheln{margin:0 0 34px}
+.dv2 .dx-m3-kachel-raster{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.dv2 .dx-m3-kachel{
+  --v2-bg:#111317;--v2-ink:#f5f5f2;--v2-muted:#a9aeb7;--v2-line:#2c3037;
+  --m3-soft:rgba(255,255,255,.07);--m3-glass:rgba(255,255,255,.08);--m3-glass-line:rgba(255,255,255,.14);
+  --m3-support:#5fd08f;--m3-headwind:#ffa24a;--m3-neutral:#a3aab4;--m3-context:#8fb1e8;
+  --m3-l0:#ff6f61;--m3-l1:#ffa24a;--m3-l2:#e6c34a;--m3-l3:#5fd08f;--m3-l4:#3dbb77;
+  --kk-ton:var(--m3-neutral);
+  position:relative;display:flex;flex-direction:column;min-width:0;border-radius:22px;overflow:hidden;
+  background:var(--v2-bg);color:var(--v2-ink);box-shadow:0 14px 34px rgba(8,10,14,.16);
+  transition:transform .18s ease,box-shadow .18s ease}
+html:not([data-theme=light]) .dv2 .dx-m3-kachel{box-shadow:none;border:1px solid #262a30}
+.dv2 .dx-m3-kachel.is-breit{grid-column:span 2}
+.dv2 .dx-m3-kachel.is-support{--kk-ton:var(--m3-support)}.dv2 .dx-m3-kachel.is-headwind{--kk-ton:var(--m3-headwind)}
+.dv2 .dx-m3-kachel.is-context{--kk-ton:var(--m3-context)}
+.dv2 .dx-m3-kachel.is-l0{--kk-ton:var(--m3-l0)}.dv2 .dx-m3-kachel.is-l1{--kk-ton:var(--m3-l1)}.dv2 .dx-m3-kachel.is-l2{--kk-ton:var(--m3-l2)}
+.dv2 .dx-m3-kachel.is-l3{--kk-ton:var(--m3-l3)}.dv2 .dx-m3-kachel.is-l4{--kk-ton:var(--m3-l4)}
+.dv2 .dx-m3-kachel:hover{transform:translateY(-3px);box-shadow:0 22px 46px rgba(8,10,14,.26)}
+@media(prefers-reduced-motion:reduce){.dv2 .dx-m3-kachel,.dv2 .dx-m3-kachel:hover{transform:none;transition:none}}
+
+/* Das "Bild" der Kachel: Diagramm oder Piktogramm auf einem Farbschein der
+   Bedeutung (Rolle bzw. Stufe) - wie das Foto ueber einer Schlagzeile. */
+.dv2 .dx-m3-kachel-bild{position:relative;min-height:132px;padding:16px 16px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;
+  background:radial-gradient(110% 95% at 88% 0%,color-mix(in srgb,var(--kk-ton) 34%,transparent),transparent 62%),linear-gradient(180deg,rgba(255,255,255,.045),transparent 80%);
+  border-bottom:1px solid rgba(255,255,255,.06)}
+.dv2 .dx-m3-kachel-kicker{margin:14px 16px 4px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--kk-ton)}
+.dv2 .dx-m3-kachel-titel{margin:0 16px;font-size:clamp(19px,1.9vw,25px);font-weight:800;line-height:1.12;letter-spacing:-.022em;text-wrap:balance;overflow-wrap:anywhere;hyphens:auto}
+.dv2 .dx-m3-kachel-link{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;text-align:left;cursor:pointer;letter-spacing:inherit;line-height:inherit}
+.dv2 .dx-m3-kachel-link::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:1}
+.dv2 .dx-m3 .dx-m3-kachel-link:focus-visible{outline:none}
+.dv2 .dx-m3-kachel-link:focus-visible::after{box-shadow:inset 0 0 0 3px var(--kk-ton)}
+.dv2 .dx-m3-kachel-text{margin:8px 16px 18px;font-size:13px;line-height:1.45;color:var(--v2-muted)}
+
+.dv2 .dx-m3-kk-kopf{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.dv2 .dx-m3-kachel .dx-m3-icon{width:48px;height:48px;border-radius:15px;color:var(--kk-ton);
+  background:color-mix(in srgb,var(--kk-ton) 16%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--kk-ton) 42%,transparent)}
+.dv2 .dx-m3-kachel .dx-m3-icon-svg{width:26px;height:26px}
+.dv2 .dx-m3-kk-rolle{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.02em;color:var(--kk-ton);
+  background:color-mix(in srgb,var(--kk-ton) 17%,transparent)}
+.dv2 .dx-m3-kachel .dx-m3-spur{margin:4px 2px 2px}
+.dv2 .dx-m3-kachel .dx-m3-marke em{display:none}
+
+/* Verlauf-Kachel: Treppenlinie ueber getoenten Stufenbaendern */
+.dv2 .dx-m3-kk-kurve{display:block;width:100%;height:auto}
+.dv2 .dx-m3-kk-band{opacity:.16}
+.dv2 .dx-m3-kk-band.is-l0{fill:var(--m3-l0)}.dv2 .dx-m3-kk-band.is-l1{fill:var(--m3-l1)}.dv2 .dx-m3-kk-band.is-l2{fill:var(--m3-l2)}
+.dv2 .dx-m3-kk-band.is-l3{fill:var(--m3-l3)}.dv2 .dx-m3-kk-band.is-l4{fill:var(--m3-l4)}
+.dv2 .dx-m3-kk-flaeche{fill:rgba(255,255,255,.06)}
+.dv2 .dx-m3-kk-linie{stroke:#f5f5f2;stroke-width:3;stroke-linejoin:round;stroke-linecap:round;filter:drop-shadow(0 0 6px var(--m3-brand-glow))}
+.dv2 .dx-m3-kk-punkt{stroke:#111317;stroke-width:3}
+.dv2 .dx-m3-kk-punkt.is-l0{fill:var(--m3-l0)}.dv2 .dx-m3-kk-punkt.is-l1{fill:var(--m3-l1)}.dv2 .dx-m3-kk-punkt.is-l2{fill:var(--m3-l2)}
+.dv2 .dx-m3-kk-punkt.is-l3{fill:var(--m3-l3)}.dv2 .dx-m3-kk-punkt.is-l4{fill:var(--m3-l4)}
+
+/* Cross-Asset-Kachel: das Radar als Bild */
+.dv2 .dx-m3-kachel .dx-m3-ca-radar{max-width:210px;margin:0 auto}
+.dv2 .dx-m3-kachel .dx-m3-ca-knoten-label{font-size:12px}
+
+/* Veraenderungs-Kachel: vorher -> jetzt als grosse Typografie */
+.dv2 .dx-m3-kk-wechsel{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-top:auto;font-size:clamp(20px,2.2vw,28px);font-weight:800;letter-spacing:-.02em}
+.dv2 .dx-m3-kk-wechsel span{color:var(--v2-muted)}
+.dv2 .dx-m3-kk-wechsel i{font-style:normal;font-size:1.4em;line-height:1;color:var(--kk-ton)}
+
+/* Worauf-Kachel: grosse Ziffer wie eine Rangliste */
+.dv2 .dx-m3-kk-nr{font-size:64px;font-weight:900;line-height:.85;letter-spacing:-.06em;color:var(--kk-ton)}
+
+@media(max-width:760px){
+  .dv2 .dx-m3-kachel-raster{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .dv2 .dx-m3-kachel{border-radius:18px}
+  .dv2 .dx-m3-kachel-bild{min-height:112px;padding:12px 12px 12px;gap:12px}
+  .dv2 .dx-m3-kachel-kicker{margin:12px 12px 4px;font-size:10.5px}
+  .dv2 .dx-m3-kachel-titel{margin:0 12px;font-size:17px}
+  .dv2 .dx-m3-kachel.is-breit .dx-m3-kachel-titel{font-size:21px}
+  .dv2 .dx-m3-kachel-text{margin:6px 12px 14px;font-size:12px}
+  .dv2 .dx-m3-kachel .dx-m3-icon{width:42px;height:42px;border-radius:13px}
+  .dv2 .dx-m3-kk-nr{font-size:52px}
+}
+
+/* ALLE MAERKTE als wischbare Reihen auf dem Telefon (wie Streaming-Reihen):
+   eine Gruppe = eine Reihe, die naechste Karte lugt hervor. Auf dem Desktop
+   bleibt das Raster. Die Seite selbst laeuft nie quer. */
+@media(max-width:760px){
+  .dv2 .dx-maerkte-raster{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .dv2 .dx-maerkte-raster::-webkit-scrollbar{display:none}
+  .dv2 .dx-maerkte-raster>.dx-markt-karte{flex:0 0 80%;scroll-snap-align:start;min-height:190px}
+  .dv2 .dx-maerkte-raster:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+}
+.dv2 .dx-m3-kachel .dx-m3-ca-radar{max-width:170px}
+.dv2 .dx-m3-kk-wechsel .dx-m3-kk-rolle{font-size:12px;letter-spacing:.01em}
+@media(max-width:760px){.dv2 .dx-m3-kachel .dx-m3-ca-radar{max-width:160px}}
+@media(max-width:360px){.dv2 .dx-m3-kachel:not(.is-breit) .dx-m3-kachel-titel{font-size:15px;letter-spacing:-.015em}}
+
+/* Schwellen-Marken: nur die Linie ist zurueckgenommen, nicht ihre
+   Beschriftung - sonst faellt der Text unter 4,5:1 (WCAG AA). */
+.dv2 .dx-m3-marke{opacity:1;background:color-mix(in srgb,var(--v2-ink) 55%,transparent)}
+.dv2 .dx-m3-marke.is-mitte{opacity:1;background:color-mix(in srgb,var(--v2-ink) 70%,transparent)}
+.dv2 .dx-m3-marke.is-leise{opacity:1;background:color-mix(in srgb,var(--v2-ink) 25%,transparent)}
+
+/* ================================================================ Markets 3.6
+   "Direkt zu": grosse Chips zwischen Hero und Kacheln, angelehnt an die
+   Beliebt-Reihen einer Broker-App - weisse, runde Kacheln, links ein
+   eigenes Symbol in eigener Farbe, rechts ein fetter Name. Telefon: zwei
+   Reihen, die gemeinsam wischen (oben Themen, unten Maerkte). Desktop:
+   alle Chips sichtbar. Farben sind Wiedererkennung, keine Marktbedeutung. */
+.dv2 .dx-mn{margin:0 0 32px}
+.dv2 .dx-mn-titel{margin:0 0 14px;font-size:clamp(22px,2.6vw,28px);font-weight:800;letter-spacing:-.02em}
+.dv2 .dx-mn-scroll{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:4px 2px 16px;scroll-snap-type:x proximity}
+.dv2 .dx-mn-scroll::-webkit-scrollbar{display:none}
+.dv2 .dx-mn-reihen{display:flex;flex-direction:column;gap:12px;width:max-content}
+.dv2 .dx-mn-reihe{display:flex;gap:12px}
+.dv2 .dx-mn-chip{display:inline-flex;align-items:center;gap:14px;min-height:66px;padding:12px 24px 12px 13px;border-radius:22px;
+  border:1px solid color-mix(in srgb,var(--v2-line) 70%,transparent);background:var(--v2-panel);color:var(--v2-ink);
+  font:inherit;font-size:17px;font-weight:800;letter-spacing:-.012em;white-space:nowrap;cursor:pointer;scroll-snap-align:start;
+  box-shadow:0 1px 2px rgba(15,18,24,.04),0 10px 26px rgba(15,18,24,.07);transition:transform .16s ease,box-shadow .16s ease}
+.dv2 .dx-mn-chip:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(15,18,24,.05),0 16px 34px rgba(15,18,24,.12)}
+.dv2 .dx-mn-chip:active{transform:scale(.97)}
+html:not([data-theme=light]) .dv2 .dx-mn-chip{background:#16181c;border-color:#2a2d33;box-shadow:none}
+html:not([data-theme=light]) .dv2 .dx-mn-chip:hover{border-color:#3a3f47}
+.dv2 .dx-mn-icon{--c:#5b6472;display:grid;place-items:center;flex:0 0 auto;width:40px;height:40px;border-radius:13px;
+  color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent)}
+html:not([data-theme=light]) .dv2 .dx-mn-icon{color:color-mix(in srgb,var(--c) 58%,#fff);background:color-mix(in srgb,var(--c) 26%,transparent)}
+.dv2 .dx-mn-icon svg{display:block;width:22px;height:22px}
+@media(min-width:761px){
+  .dv2 .dx-mn-scroll{overflow:visible;padding-bottom:0}
+  .dv2 .dx-mn-reihen{width:auto;gap:12px}
+  .dv2 .dx-mn-reihe{flex-wrap:wrap}
+}
+@media(max-width:760px){
+  .dv2 .dx-mn-chip{min-height:58px;padding:10px 20px 10px 11px;gap:12px;border-radius:19px;font-size:15.5px}
+  .dv2 .dx-mn-icon{width:36px;height:36px;border-radius:11px}
+  .dv2 .dx-mn-icon svg{width:20px;height:20px}
+}
+@media(prefers-reduced-motion:reduce){.dv2 .dx-mn-chip{transition:none}.dv2 .dx-mn-chip:hover,.dv2 .dx-mn-chip:active{transform:none}}
+/* Hell: reinweisse Chips auf der Seite, getragen vom weichen Schatten. */
+html[data-theme=light] .dv2 .dx-mn-chip{background:#fff}
+@media(min-width:761px){
+  .dv2 .dx-mn-reihen{gap:20px}
+  .dv2 .dx-mn-reihe::before{content:attr(data-titel);flex:0 0 100%;margin:0 0 -2px 2px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted)}
+}
+
+/* ================================================================ Markets 3.7
+   Owner-Feedback: Menue ganz nach oben, Icons "Apple-artiger" statt duenner
+   KI-Linien, und der untere Seitenteil so bildhaft wie die Kacheln.
+   (1) Icons wie iOS-Systemsymbole: weisses, gefuelltes Symbol auf einer
+   farbigen, leicht verlaufenden, abgerundeten Kachel. Rollenfarben bleiben
+   die Bedeutung (unterstuetzt/Gegenwind/offen/Kontext).
+   (2) Untere Sektionen als Karten im Stil einer Gesundheits-/Wetter-App:
+   Symbol + Kategorie oben, grosse Aussage, Details darunter. */
+.dv2 .dx-m3{--ap-karte:#fff;--ap-schatten:0 1px 2px rgba(15,18,24,.05),0 10px 28px rgba(15,18,24,.07);--ap-linie:rgba(15,18,24,.08)}
+html:not([data-theme=light]) .dv2 .dx-m3{--ap-karte:#1c1c1e;--ap-schatten:none;--ap-linie:rgba(255,255,255,.08)}
+
+/* (1) ICONS */
+.dv2 .dx-m3-icon,.dv2 .dx-m3-hero .dx-m3-icon,.dv2 .dx-m3-kachel .dx-m3-icon{--c:#8e8e93;display:inline-grid;place-items:center;flex:0 0 auto;
+  width:30px;height:30px;border-radius:8px;color:#fff;backdrop-filter:none;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#fff) 0%,var(--c) 75%);
+  box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.16)}
+.dv2 .dx-m3-icon-svg,.dv2 .dx-m3-kachel .dx-m3-icon-svg{width:64%;height:64%;display:block}
+.dv2 .dx-glyph-loch{fill:var(--c)}
+.dv2 .dx-m3-icon.is-support,.dv2 .dx-m3-hero .dx-m3-icon.is-support{--c:#2fb35f;color:#fff}
+.dv2 .dx-m3-icon.is-headwind,.dv2 .dx-m3-hero .dx-m3-icon.is-headwind{--c:#f08c00;color:#fff}
+.dv2 .dx-m3-icon.is-context,.dv2 .dx-m3-hero .dx-m3-icon.is-context{--c:#2f7ff0;color:#fff}
+.dv2 .dx-m3-icon.is-neutral,.dv2 .dx-m3-icon.is-open{--c:#8e8e93}
+.dv2 .dx-m3-icon.is-story-up,.dv2 .dx-m3-icon.is-kurs-up{--c:#1f9d55}
+.dv2 .dx-m3-icon.is-story-down,.dv2 .dx-m3-icon.is-kurs-down{--c:#e0453a}
+.dv2 .dx-m3-icon.is-story-neutral{--c:#2f7ff0}
+.dv2 .dx-m3-kachel .dx-m3-icon{width:48px;height:48px;border-radius:12px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.14),0 6px 16px rgba(0,0,0,.35)}
+.dv2 .dx-mn-icon,html:not([data-theme=light]) .dv2 .dx-mn-icon{color:#fff;border-radius:10px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#fff) 0%,var(--c) 75%);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.16)}
+.dv2 .dx-mn-icon svg{width:24px;height:24px}
+
+/* MENUE ganz oben: kompakter Kopf, dieselben Chips */
+.dv2 .dx-mn{margin:2px 0 22px}
+.dv2 .dx-mn-titel{margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted)}
+
+/* (2) KARTEN fuer den unteren Seitenteil */
+.dv2 .dx-m3-vj-zeile,.dv2 .dx-m3-vj-top,.dv2 .dx-m3-vj .dx-m3-ereignisse,.dv2 .dx-m3-warum-spalte,.dv2 .dx-m3-punkt-item,
+.dv2 .dx-m3-aendern-spalte,.dv2 .dx-m3-basis-karte,.dv2 .dx-m3-dim,.dv2 .dx-m3-b-status,.dv2 .dx-m3-b-block,.dv2 .dx-m3-b-log,
+.dv2 .dx-m3-ca-flaeche,.dv2 .dx-m3-story,.dv2 .dx-movers-spalte{background:var(--ap-karte);border:0;border-radius:20px;box-shadow:var(--ap-schatten)}
+html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .dx-m3-vj-zeile{border:0}
+
+/* Was hat sich veraendert: eine Karte je Wert */
+.dv2 .dx-m3-vj{background:none;border:0;border-top:1px solid var(--v2-line);border-radius:0;padding:28px 0 0}
+.dv2 .dx-m3-vj-top{padding:18px 20px;margin:0 0 14px}
+.dv2 .dx-m3-vj-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px}
+.dv2 .dx-m3-vj-liste>li{display:flex}
+.dv2 .dx-m3-vj-zeile{display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:100%;padding:15px 16px 16px;border-top:0;min-height:0}
+.dv2 a.dx-m3-vj-zeile{transition:transform .15s ease}.dv2 a.dx-m3-vj-zeile:hover{transform:translateY(-2px)}
+.dv2 .dx-m3-vj-kopf{display:flex;align-items:center;gap:8px;width:100%}
+.dv2 .dx-m3-vj-name{font-size:13.5px;font-weight:700;color:var(--v2-muted)}
+.dv2 .dx-m3-vj-status{margin-left:auto;padding:3px 9px;border-radius:999px;font-size:11px;background:var(--m3-soft)}
+.dv2 .dx-m3-vj-wechsel{font-size:19px;font-weight:800;letter-spacing:-.015em;line-height:1.25}
+.dv2 .dx-m3-vj-von,.dv2 .dx-m3-vj-pfeil{font-size:14px;font-weight:600}
+.dv2 .dx-m3-vj-zeile.is-top{box-shadow:var(--ap-schatten),inset 0 0 0 2px color-mix(in srgb,var(--m3-purple) 45%,transparent)}
+.dv2 .dx-m3-vj .dx-m3-ereignisse{padding:16px 18px;margin-top:14px}
+
+/* Warum: eine Karte je Rolle, jede Dimension mit ihrem Symbol */
+.dv2 .dx-m3-warum-raster{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px}
+.dv2 .dx-m3-warum-spalte{padding:18px}
+.dv2 .dx-m3-warum-spalte h3,.dv2 .dx-m3-warum-spalte.is-support h3,.dv2 .dx-m3-warum-spalte.is-headwind h3,.dv2 .dx-m3-warum-spalte.is-context h3,.dv2 .dx-m3-warum-spalte.is-open h3{
+  display:inline-block;margin:0 0 14px;padding:4px 11px;border:0;border-radius:999px;font-size:11.5px;letter-spacing:.05em;
+  color:var(--kt,var(--v2-muted));background:color-mix(in srgb,var(--kt,var(--m3-neutral)) 15%,transparent)}
+.dv2 .dx-m3-warum-spalte.is-support{--kt:var(--m3-support)}.dv2 .dx-m3-warum-spalte.is-headwind{--kt:var(--m3-headwind)}
+.dv2 .dx-m3-warum-spalte.is-context{--kt:var(--m3-context)}.dv2 .dx-m3-warum-spalte.is-neutral,.dv2 .dx-m3-warum-spalte.is-open{--kt:var(--v2-muted)}
+.dv2 .dx-m3-warum-spalte li{grid-template-columns:30px 1fr;gap:12px;align-items:start;font-size:14px}
+
+/* Worauf es ankommt: Karten mit grosser Ziffer und Symbol */
+.dv2 .dx-m3-worauf-liste{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.dv2 .dx-m3-punkt-item{padding:18px;border-top:0;grid-template-columns:50px 1fr;gap:12px}
+.dv2 .dx-m3-nr{opacity:1;font-size:42px;color:var(--m3-purple)}
+.dv2 .dx-m3-punkt-kopf{display:flex;align-items:center;gap:8px;margin:0 0 8px}
+.dv2 .dx-m3-punkt-kopf .dx-m3-zustandzeile{margin:0!important}
+
+/* Bullish / Base Case / Bearish: Karten mit Symbol-Kopf, Bedingungen als Innenkacheln */
+.dv2 .dx-m3-aendern-spalte{padding:22px 18px 18px}
+.dv2 .dx-m3-aendern-kopf{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.dv2 .dx-m3-aendern-kopf h3{margin:0}
+.dv2 .dx-m3-aendern-spalte li{padding:12px 14px;border-radius:14px;background:var(--m3-soft)}
+.dv2 .dx-m3-basis-karte{border:0}
+
+/* Fuenf Dimensionen: Karten statt Tabellenzeilen */
+.dv2 .dx-m3-dims{border-top:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px;align-items:start}
+.dv2 .dx-m3-dim{padding:0 16px;border-bottom:0}
+.dv2 .dx-m3-dim-kopf{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:16px 0}
+.dv2 .dx-m3-dim-kopf:hover{background:none}
+.dv2 .dx-m3-dim-name{grid-column:1}
+.dv2 .dx-m3-dim-zustand{grid-column:2;grid-row:1;justify-self:end}
+.dv2 .dx-m3-dim-zustand small{display:none}
+.dv2 .dx-m3-dim-kopf .dx-m3-spur{grid-column:1/-1;margin:24px 6px 4px}
+.dv2 .dx-m3-dim-wert{grid-column:1/-1}
+
+/* Marktbreite: Ergebnis gross, Messwerte als Karten nebeneinander */
+.dv2 .dx-m3-breite{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px;align-items:start}
+.dv2 .dx-m3-breite>.dx-m3-kopf,.dv2 .dx-m3-breite>.dx-m3-b-status,.dv2 .dx-m3-breite>.dx-m3-regel{grid-column:1/-1}
+.dv2 .dx-m3-breite>.dx-m3-kopf{margin-bottom:4px}
+.dv2 .dx-m3-b-status{margin:0}
+.dv2 .dx-m3-b-block,.dv2 .dx-m3-b-log{padding:18px;border-top:0}
+
+/* Cross Asset: Radar und Balken auf einer Karte */
+.dv2 .dx-m3-ca-flaeche{padding:18px}
+.dv2 .dx-m3-ca-zeile:hover{background:var(--m3-soft)}
+
+/* Markt jetzt: Karten mit Symbol statt Randlinie */
+.dv2 .dx-m3-story{padding:18px 20px}
+.dv2 .dx-m3-story::before{display:none}
+.dv2 .dx-m3-story>.dx-m3-icon{margin:0 0 10px}
+.dv2 .dx-m3-story-wert{border-bottom-color:var(--ap-linie)}
+
+/* Top & Flop: zwei Karten mit Symbol im Kopf */
+.dv2 .dx-movers-spalte{padding:16px 18px 10px}
+.dv2 .dx-movers-spalte h3{display:flex;align-items:center;gap:10px;font-size:16px}
+.dv2 .dx-movers-spalte a{border-bottom-color:var(--ap-linie)}
+.dv2 .dx-movers-spalte li:last-child a{border-bottom:0}
+
+@media(max-width:760px){
+  .dv2 .dx-m3-vj-liste{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .dv2 .dx-m3-vj-zeile{padding:13px 13px 14px;border-radius:18px}
+  .dv2 .dx-m3-vj-wechsel{font-size:16px}
+  .dv2 .dx-m3-vj-kopf{flex-wrap:wrap;row-gap:6px}
+  .dv2 .dx-m3-vj-status{margin-left:0}
+  .dv2 .dx-m3-punkt-item{grid-template-columns:40px 1fr;padding:16px}
+  .dv2 .dx-m3-nr{font-size:32px}
+}
+@media(prefers-reduced-motion:reduce){.dv2 a.dx-m3-vj-zeile:hover{transform:none}}
+/* Symbol-Kachel als Flex-Container: die Prozentgroesse des Symbols bezieht
+   sich so auf die feste Kachelgroesse (im Grid bliebe sie unaufgeloest). */
+.dv2 .dx-m3-icon,.dv2 .dx-m3-hero .dx-m3-icon,.dv2 .dx-m3-kachel .dx-m3-icon,.dv2 .dx-mn-icon{display:inline-flex;align-items:center;justify-content:center}
+.dv2 .dx-m3-vj-status:empty{display:none}
+/* Desktop: das Menue oben als eine einzige wischbare Leiste (Themen | Maerkte)
+   - so bleibt die Kernaussage des Hero im ersten Bildschirm. Telefon: zwei
+   Reihen wie gehabt. */
+@media(min-width:761px){
+  .dv2 .dx-mn-scroll{overflow-x:auto;scroll-snap-type:none;padding:4px 2px 14px;-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);mask-image:linear-gradient(90deg,#000 90%,transparent)}
+  .dv2 .dx-mn-reihen{flex-direction:row;width:max-content;gap:12px}
+  .dv2 .dx-mn-reihe{flex-wrap:nowrap}
+  .dv2 .dx-mn-reihe::before{content:none}
+  .dv2 .dx-mn-reihe+.dx-mn-reihe{padding-left:12px;border-left:1px solid var(--v2-line)}
+  .dv2 .dx-mn-chip{min-height:56px;padding:10px 20px 10px 11px;font-size:16px;border-radius:18px}
+  .dv2 .dx-mn-icon{width:36px;height:36px}
+}
+.dv2 .dx-mn-scroll:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+/* Neutrales Rollen-Etikett in "Warum": dunkle Schrift fuer 4,5:1. */
+.dv2 .dx-m3-warum-spalte.is-neutral h3,.dv2 .dx-m3-warum-spalte.is-open h3{color:var(--v2-ink)}
+
+/* ================================================================ Markets 3.8
+   Owner-Feedback: "Märkte / Direkt zu" las sich wie "Märkte geschlossen" -
+   beide Beschriftungen weg (die Seitenueberschrift bleibt fuer Screenreader).
+   "Zurueck zu Discover" kompakt ganz oben. Bedingungs-Boxen, Zustandswechsel,
+   Knoepfe und Beschriftungen tanzten aus der Reihe: einheitlich in die neue
+   Sprache (Symbol + fette Zeile + Kapsel), keine grauen Versalien mehr. */
+.dv2 .dx-maerkte>.dx-m3-titel{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+.dv2 .dx-maerkte>.dx-back{margin:0 0 6px;padding:10px 0;min-height:44px;font-size:14px;font-weight:700;color:var(--v2-ink)}
+
+/* Beschriftungen: Satzschreibung, halbfett, Akzentfarbe statt Versalien */
+.dv2 .dx-m3-eyebrow{font-size:13.5px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--m3-purple)}
+.dv2 .dx-m3-verlauf .dx-m3-eyebrow{color:#b3a8ff}
+.dv2 .dx-m3-hero .dx-m3-eyebrow{font-size:13px}
+.dv2 .dx-m3-blick-titel,.dv2 .dx-m3-anleger span{font-size:13px;letter-spacing:0;text-transform:none;font-weight:700}
+.dv2 .dx-m3-basis-eyebrow{font-size:12.5px;letter-spacing:0;text-transform:none;font-weight:600}
+.dv2 .dx-m3-tiefe h4{font-size:13px;letter-spacing:0;text-transform:none;font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-b-block-titel{font-size:13.5px;letter-spacing:0;font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-vj-top span{font-size:13px;letter-spacing:0;text-transform:none;font-weight:700;color:var(--m3-purple)}
+.dv2 .dx-m3-b-status b{text-transform:none;letter-spacing:0;font-size:13px}
+.dv2 .dx-m3-warum-spalte h3,.dv2 .dx-m3-warum-spalte.is-support h3,.dv2 .dx-m3-warum-spalte.is-headwind h3,.dv2 .dx-m3-warum-spalte.is-context h3,.dv2 .dx-m3-warum-spalte.is-open h3{text-transform:none;letter-spacing:0;font-size:12.5px}
+
+/* Knoepfe: gefuellte Kapseln mit Pfeil statt schwarzer Umrandung */
+.dv2 .dx-m3-chip{gap:4px;min-height:40px;padding:8px 14px;border:0;border-radius:999px;background:var(--m3-soft);color:var(--v2-ink);font-size:13.5px;font-weight:650;letter-spacing:-.005em;transition:background .15s ease}
+.dv2 .dx-m3-chip::after{content:"›";font-size:1.2em;line-height:1;opacity:.5}
+.dv2 .dx-m3-chip:hover{background:color-mix(in srgb,var(--v2-ink) 11%,transparent)}
+.dv2 .dx-m3-chip.is-leise{background:transparent;box-shadow:inset 0 0 0 1px var(--ap-linie)}
+.dv2 .dx-m3-aendern-spalte li .dx-m3-chip{background:var(--ap-karte)}
+
+/* Bedingungen (Bullish/Bearish): Symbol, fette Zeile, Stufen-Kapsel, leiser Text */
+.dv2 .dx-m3-aendern-spalte li{padding:14px;border-radius:16px}
+.dv2 .dx-m3-bed-kopf{display:flex;align-items:flex-start;gap:10px;margin:0 0 8px}
+.dv2 .dx-m3-aendern-spalte .dx-m3-aendern-ziel{margin:1px 0 0;font-size:15px!important;font-weight:600;letter-spacing:-.01em;text-transform:none;color:var(--v2-ink)}
+.dv2 .dx-m3-aendern-ziel b{font-weight:800}
+.dv2 .dx-m3-bed-stufe{display:inline-block;margin-top:5px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;color:var(--kt);background:color-mix(in srgb,var(--kt) 15%,transparent)}
+.dv2 .dx-m3-bed-stufe.is-besser{--kt:var(--m3-support)}.dv2 .dx-m3-bed-stufe.is-schlechter{--kt:var(--m3-headwind)}
+.dv2 .dx-m3-aendern-spalte .dx-m3-bed-text{margin:0 0 10px;font-size:14px;line-height:1.5;color:var(--v2-muted)}
+
+/* Zustandswechsel: App-Liste - Symbol je Dimension, Name, vorher -> jetzt, Datum */
+.dv2 .dx-m3-verlauf{--ap-linie:rgba(255,255,255,.09)}
+.dv2 .dx-m3-ereignisse h3{margin:0 0 4px;font-size:16px;font-weight:800;letter-spacing:-.01em}
+.dv2 .dx-m3-ereignisse ol{gap:0}
+.dv2 .dx-m3-ereignisse li{grid-template-columns:30px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--ap-linie);font-size:14px}
+.dv2 .dx-m3-ereignisse li:last-child{border-bottom:0}
+.dv2 .dx-m3-ereignisse li .dx-m3-ev-text b{display:block;font-size:14.5px;font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-ereignisse li .dx-m3-ev-text span{display:block;margin-top:1px;font-size:13px;color:var(--v2-muted)}
+.dv2 .dx-m3-ev-text strong{font-weight:700;color:var(--v2-ink)}
+.dv2 .dx-m3-ereignisse time{padding:3px 9px;border-radius:999px;background:var(--m3-soft);font-size:12px;font-weight:650;color:var(--v2-muted)}
+/* Feste Plaetze in der Zeile - eine alte Mobil-Regel schob jedes span
+   (auch das Symbol) in Spalte 2. */
+.dv2 .dx-m3-ereignisse li>.dx-m3-icon{grid-column:1;grid-row:1}
+.dv2 .dx-m3-ereignisse li>.dx-m3-ev-text{grid-column:2;grid-row:1;min-width:0}
+.dv2 .dx-m3-ereignisse li>time{grid-column:3;grid-row:1}
+.dv2 .dx-m3-bed-stufe{color:color-mix(in srgb,var(--kt) 68%,var(--v2-ink));background:color-mix(in srgb,var(--kt) 12%,transparent)}

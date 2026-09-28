@@ -273,6 +273,12 @@
           ])
         : null
     ]);
+    var stage=section.querySelector('.dx-feed-bild');
+    if(stage&&D.Featured&&D.Featured.feed){
+      var metrics=el('div',{class:'dx-feed-metrics'});
+      stage.replaceWith(metrics);metrics.appendChild(stage);
+      D.Featured.feed(karte,{universeId:universeId},metrics,stage);
+    }
     return section;
   }
 

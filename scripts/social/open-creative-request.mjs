@@ -49,9 +49,19 @@ const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/
 
 export const REGISTER = "social/data/creative-jobs.json";
 
-/** Der Branchname eines Requests. Eine Definition, nicht zwei. */
-export function branchFor(contentId) {
-  return "authoring/request/" + String(contentId);
+/** Der Branchname eines Requests. Eine Definition, nicht zwei.
+ *
+ * ANLAUF-SUFFIX (gefunden 26.09., vu-web-4e4d3aaef2a999a2-20260926): der
+ * erste Anlauf haelt seinen Branch/PR offen, solange niemand ihn schliesst
+ * - ein zweiter Anlauf zum SELBEN content_id kann dann nicht denselben
+ * Branchnamen bekommen. contentIdAus() (verify-creative-dispatch.mjs)
+ * erwartet dieses Suffix bereits (".../vu-xom-1-attempt3" -> "vu-xom-1")
+ * — es fehlte nur der Weg, es beim Oeffnen tatsaechlich anzuhaengen.
+ * Anlauf 1 bleibt ohne Suffix, unveraendert zum bisherigen Verhalten. */
+export function branchFor(contentId, attempt) {
+  const anlauf = Number(attempt) || 1;
+  return "authoring/request/" + String(contentId) +
+    (anlauf > 1 ? "-attempt" + anlauf : "");
 }
 
 /** Der Titel, an dem die Work-Automation den Request erkennt. */
@@ -88,6 +98,7 @@ export function pruefe(spec) {
 
   /* Der juengste Job zu diesem Inhalt entscheidet. */
   const job = jobs[jobs.length - 1];
+  const anlauf = Number(job.attempt) || 1;
 
   if (job.state !== "CREATIVE_JOB_REQUESTED") {
     return { ok: false, reason: "wrongState", job,
@@ -109,13 +120,13 @@ export function pruefe(spec) {
      dass ein frueherer Lauf weiter gekommen ist als sein Register. */
   if (spec.branchExists) {
     return { ok: false, reason: "branchExists",
-      message: "Der Branch " + branchFor(contentId) + " existiert bereits. " +
+      message: "Der Branch " + branchFor(contentId, anlauf) + " existiert bereits. " +
         "Ein frueherer Lauf ist weiter gekommen, als das Register vermerkt - " +
         "das gehoert angesehen und nicht ueberschrieben." };
   }
 
   return { ok: true, reason: null, job,
-    branch: branchFor(contentId), title: titleFor(contentId) };
+    branch: branchFor(contentId, anlauf), title: titleFor(contentId) };
 }
 
 /** Der PR-Text. Er sagt, WER den Job beschlossen hat und WARUM. */
@@ -148,8 +159,8 @@ function git(args, options) {
     Object.assign({ cwd: ROOT, encoding: "utf8" }, options || {})).trim();
 }
 
-export function branchVorhanden(contentId) {
-  const b = branchFor(contentId);
+export function branchVorhanden(contentId, attempt) {
+  const b = branchFor(contentId, attempt);
   try {
     if (git(["branch", "--list", b])) return true;
   } catch { /* egal */ }
@@ -174,16 +185,23 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     ? JSON.parse(readFileSync(registerPfad, "utf8")) : { jobs: [] };
   const briefPfad = join(ROOT, ChatGptWork.requestDir(CID), "authoring-brief.json");
 
+  /* Derselbe Anlauf, den pruefe() gleich intern aus demselben Job liest -
+     hier schon gebraucht, um VOR dem Aufruf zu wissen, welchen Branch
+     branchVorhanden() pruefen soll. */
+  const jobsFuerCid = (roh.jobs || []).filter((j) => j.contentId === CID);
+  const aktuellerJob = jobsFuerCid[jobsFuerCid.length - 1];
+  const ANLAUF = aktuellerJob ? (Number(aktuellerJob.attempt) || 1) : 1;
+
   const befund = pruefe({
     contentId: CID,
     briefExists: existsSync(briefPfad),
     jobs: roh.jobs || [],
-    branchExists: branchVorhanden(CID)
+    branchExists: branchVorhanden(CID, ANLAUF)
   });
 
   console.log("VISION UNIVERSE SOCIAL — Creative Request oeffnen");
   console.log("Inhalt:  " + CID);
-  console.log("Branch:  " + branchFor(CID));
+  console.log("Branch:  " + branchFor(CID, ANLAUF));
   console.log("Titel:   " + titleFor(CID));
 
   console.log("\n--- GATTER ---");
@@ -207,7 +225,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      sie sind der Nachweis, dass VU den Job beschlossen hat, und der
      gehoert nicht in den Zweig, den ein fremder Agent beschreibt.
      ------------------------------------------------------------------- */
-  const branch = branchFor(CID);
+  const branch = branchFor(CID, ANLAUF);
   git(["checkout", "-b", branch]);
   git(["add", "--", join("authoring/requests", CID, "authoring-brief.json")]);
   git(["-c", "user.name=vision-universe-bot",

@@ -28,6 +28,12 @@
    Ausfuehren:
      node scripts/social/request-creative-web.mjs
      node scripts/social/request-creative-web.mjs --write
+
+   Ein bereits VERIFIED Ergebnis fuer denselben content_id erzwungen
+   uebergehen (z.B. um eine Prompt-Aenderung real zu testen, waehrend
+   dieselbe Story weiter die Top-Story ist):
+     node scripts/social/request-creative-web.mjs --write \
+       --force-attempt 2 --attempt-reason "Owner-Test der Fixes X/Y/Z"
    ========================================================================= */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -55,6 +61,34 @@ export function baueEvidenzAusStory(auswahl) {
   });
 }
 
+/**
+ * Darf ein Anlauf erzwungen werden, und mit welcher Nummer?
+ *
+ * Reine Entscheidung, kein I/O — testbar ohne Register, Brief oder
+ * Netzwerk. Siehe die ausfuehrliche Begruendung am Aufrufer (CLI-Block
+ * unten): ein erzwungener Anlauf ist eine explizite Entscheidung, kein
+ * Automatismus, und braucht deshalb sowohl eine Nummer >= 2 als auch
+ * eine Begruendung.
+ */
+export function entscheideErzwungenenAnlauf(forceAttemptRaw, attemptReason) {
+  if (forceAttemptRaw === null || forceAttemptRaw === undefined) {
+    return { ok: true, attempt: null, reason: null };
+  }
+  const anlauf = Number(forceAttemptRaw);
+  if (!Number.isInteger(anlauf) || anlauf < 2) {
+    return { ok: false, reason: "invalidAttempt",
+      message: "--force-attempt muss eine ganze Zahl >= 2 sein " +
+        "(Anlauf 1 ist der Standardweg und braucht diese Fahne nicht)." };
+  }
+  if (!attemptReason) {
+    return { ok: false, reason: "missingReason",
+      message: "--force-attempt verlangt --attempt-reason: ein erzwungener " +
+        "Anlauf ist eine Entscheidung, keine Wiederholung, und die " +
+        "Begruendung gehoert in den Brief (attempt_reason)." };
+  }
+  return { ok: true, attempt: anlauf, reason: attemptReason };
+}
+
 export function baueVuBrief(auswahl, options) {
   options = options || {};
   return ContentBrief.build({
@@ -75,6 +109,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const WRITE = args.includes("--write");
   const NOW = arg("now", new Date().toISOString());
   const DATA_DIR = arg("data", "social/data");
+  const FORCE_ATTEMPT_RAW = arg("force-attempt", null);
+  const ATTEMPT_REASON = arg("attempt-reason", null);
+
+  /* ERZWUNGENER ANLAUF — EINE ENTSCHEIDUNG, KEIN AUTOMATISMUS.
+     HYDRATE BEFORE REGENERATE gilt zu Recht als Standard: dieselbe
+     Story soll nicht zweimal angefragt werden, nur weil ein Lauf sie
+     erneut auswaehlt. Aber genau das macht einen echten Test von
+     Prompt-Aenderungen unmoeglich, solange die Top-Story dieselbe
+     bleibt — ein bereits VERIFIED Job wird immer wiederverwendet, egal
+     wie sehr sich brandAssets.instruction seither geaendert hat.
+     buildAgentBrief() kennt den Anlauf bereits als Parameter: er
+     aendert die Bytes des Briefs und damit Blob-SHA und Processing
+     Key, sodass ein zweiter Anlauf sauber ein eigener Vorgang ist.
+     Hier wird dieser Weg nur ans CLI durchgereicht — kein neues
+     Verfahren, sondern ein fehlender Zugang zu einem bestehenden. */
+  const anlaufEntscheidung = entscheideErzwungenenAnlauf(FORCE_ATTEMPT_RAW, ATTEMPT_REASON);
+  if (!anlaufEntscheidung.ok) {
+    console.error(anlaufEntscheidung.message);
+    process.exit(2);
+  }
+  const erzwungenerAnlauf = anlaufEntscheidung.attempt;
 
   const auswahlPfad = join(ROOT, DATA_DIR, "web-story-selection.json");
   if (!existsSync(auswahlPfad)) {
@@ -95,7 +150,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
      Story (derselbe Link, derselbe Tag -> dieselbe contentId), entsteht
      kein zweiter Brief. */
   const bestehendeVerified = verifizierteJobsFuer(contentId, ROOT);
-  if (bestehendeVerified.length) {
+  if (bestehendeVerified.length && erzwungenerAnlauf === null) {
     const jobEintrag = bestehendeVerified[bestehendeVerified.length - 1];
     console.log("\n--- VERIFIED CREATIVE IM REGISTER ---");
     console.log(jobEintrag.creativeJobId + " (" + jobEintrag.state + ")");
@@ -107,12 +162,20 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
     console.log("VERIFIED_RESULT_UNAVAILABLE: " + hydriert.explanation +
       " — es wird ein neuer Brief erzeugt.");
+  } else if (bestehendeVerified.length) {
+    const jobEintrag = bestehendeVerified[bestehendeVerified.length - 1];
+    console.log("\n--- VERIFIED CREATIVE IM REGISTER ---");
+    console.log(jobEintrag.creativeJobId + " (" + jobEintrag.state + ")");
+    console.log("ERZWUNGENER ANLAUF " + erzwungenerAnlauf + " (" +
+      ATTEMPT_REASON + "): die Wiederverwendung wird explizit uebersprungen.");
   }
 
   const vuBrief = baueVuBrief(auswahl, { now: NOW });
 
   const agentBrief = ChatGptWork.buildAgentBrief(vuBrief, {
     contentId, variants: 1,
+    attempt: erzwungenerAnlauf || undefined,
+    attemptReason: erzwungenerAnlauf ? ATTEMPT_REASON : undefined,
     hookType: "web_story_grounded_de",
     hookStrategyId: "vu-web-story-grounded-de-v1",
     hookInstruction:
@@ -122,22 +185,68 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine " +
       "neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — " +
       "Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive " +
-      "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2).",
+      "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2). " +
+      /* DIE UNVERDICHTETE UEBERSETZUNG (gefunden 27.09., real geliefert bei
+         vu-web-32193db04816a8b3-20260926): `grounding_hook_en` ist manchmal
+         der volle, deskriptive Original-Titel (z.B. "From $6 eggs to $50,000
+         cars, these charts show how inflation has defined the past 5 years"),
+         wenn die Hook-Auswahl keinen kuerzeren Kandidaten findet. Der Agent
+         hat das bisher nahezu woertlich uebersetzt statt zu verdichten - eine
+         "Uebersetzung/Adaption" wurde als reine Uebersetzung gelesen. Das
+         Ergebnis ist im Bild ein dichter, beschreibender Satz statt eines
+         Hooks, der einen Scroll stoppt. */
+      "WICHTIG: ist `grounding_hook_en` lang oder beschreibend (mehr als etwa 8-10 Woerter, " +
+      "oder ein vollstaendiger, mehrteiliger Satz), UEBERSETZE NICHT WOERTLICH. Verdichte " +
+      "stattdessen auf den EINEN staerksten Kern dieser Aussage — die schaerfste Zahl, den " +
+      "schaerfsten Kontrast oder die schaerfste Spannung darin — und formuliere daraus einen " +
+      "kurzen, eigenstaendigen deutschen Satz (idealerweise unter 8 Woertern), der fuer sich " +
+      "allein auf einen Blick verstaendlich ist. Kein Nebensatz, keine Aufzaehlung von zwei " +
+      "Vergleichspunkten in einem Satz (z.B. nicht 'Von X bis Y: so Z') — waehle EINEN Punkt, " +
+      "nicht die ganze Aufzaehlung des Originaltitels.",
     visualStrategy: auswahl.motiv.strategy,
     visualInstruction: auswahl.motiv.instruction,
-    /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD", 26.09.):
-       dunkler, fast schwarzer Hintergrund, EIN ruhiger Petrol-/Mint-
-       Akzent (kein Regenbogen aus Akzenten), weisse/hellgraue Flaeche
-       fuer die Headline. Am realen Referenzbild des Owners orientiert
-       — dessen INHALT (Event, Datum, Motiv) ist keine Vorlage, nur Stil
-       und Farbklima. */
-    palette: ["near-black #050505 background", "one calm teal/mint " +
-      "accent color close to #5FE0C0 for a small highlight (a thin line, a badge, a " +
-      "glow) — used sparingly, not as a second dominant color", "white for the headline " +
-      "text", "soft grey for secondary text"],
-    style: "premium dark editorial technology visualization — a single confident teal/mint " +
-      "accent against a near-black background, clean bold sans-serif headline typography, " +
-      "generous breathing room, no clutter, no rainbow gradients",
+    /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD, COMIC-STIL",
+       26.09., dritte Iteration): die erste Fassung ("premium dark
+       editorial") lieferte ein photorealistisches KI-Stockfoto — Fed-
+       Gebaeude, Flaggen, Banknote, ein kleiner Roboter in der Ecke. Der
+       Owner hat es gegen ein echtes virales Beispiel (plakative Comic-/
+       Claymation-Anzeige, uebergrosser ausdrucksstarker Charakter,
+       riesige Typo, kaum Hintergrundablenkung) gehalten und geurteilt:
+       "damit gehen wir unter". Die zweite Fassung traf den Stil (schwarze
+       Flaeche, grosser Mint-Pfeil, dominante Typo) — aber "Atlas als
+       grosse, praesente Figur" wurde vom Modell als "Atlas fuellt den
+       Grossteil des Bildes" gelesen: der Owner hat das gemessen und mit
+       10-20% der Bildflaeche beziffert. Diese Fassung uebernimmt den
+       getroffenen Stil unveraendert und zieht ausschliesslich Atlas'
+       Groesse zurueck, auf ein kleines begleitendes Element vergleichbar
+       mit dem Logo. Weiterhin OHNE Atlas/Logo selbst umzuzeichnen (§12/
+       §18 in social/engines/brand.js verbieten das ausdruecklich —
+       erlaubt sind nur crop/scale/reframe/compose, keine Stiltrans-
+       formation der Figur oder des Zeichens selbst). */
+    palette: ["near-black #050505 background as a bold FLAT color field (not a " +
+      "photographic scene)", "one confident teal/mint accent close to #5FE0C0 used as a " +
+      "LARGE flat shape or color block (a poster panel, not a thin highlight)", "white for " +
+      "the headline text, set at poster scale", "soft grey for secondary text only"],
+    /* DER BEFUND, DER DIESEN STIL NIE VERLIESS (gefunden 27.09., real
+       geliefert bei vu-web-32193db04816a8b3-20260926 und dem erzwungenen
+       Anlauf 2 von vu-web-4e4d3aaef2a999a2-20260926): buildAgentBrief()
+       (chatgpt-work/adapter.js) liest das Feld unter dem Schluessel
+       `visualStyle`, nicht `style` — dieser Aufruf schickte seit der
+       ersten "GENERATIVES VOLLBILD, COMIC-STIL"-Fassung (26.09.) den
+       Stiltext unter dem falschen Schluessel. `options.style` existiert
+       im Adapter nicht; jeder bisherige Lauf fiel deshalb still auf den
+       Adapter-Default zurueck: "premium cinematic 3D technology
+       visualization" — GENAU der photorealistische, kinoreife Stil, den
+       der Owner von Anfang an ablehnte. Kein einziges der bisherigen
+       Comic-Stil-Worte hat den Agenten je erreicht. */
+    visualStyle: "bold flat graphic poster style — think premium app marketing ad or comic-panel " +
+      "ad, NOT a photorealistic scene and NOT a moody cinematic render. High-contrast flat " +
+      "color blocking, one single strong graphic idea instead of a busy realistic scene " +
+      "with many literal props (no detailed buildings, no crowds of flags, no photoreal " +
+      "objects laid out on a desk). Oversized, chunky, confident sans-serif headline " +
+      "typography as a PRIMARY graphic element filling a large share of the frame — not a " +
+      "small caption competing with a detailed background. Energetic, punchy, made to stop " +
+      "a scroll, not to look like a stock photo or a finance-news thumbnail.",
     /* -------------------------------------------------------------------
        VOLLBILD STATT FREIFLAECHE (Owner-Direktive "GENERATIVES VOLLBILD",
        26.09.): vorher liess dieser Schritt fuer Logo/Atlas/Hook-Text drei
@@ -148,17 +257,30 @@ if (import.meta.url === `file://${process.argv[1]}`) {
        mjs), der Agent komponiert das FERTIGE Bild selbst: Motiv, Hook-Text
        und Markenzeichen in einem Zug, damit es als EIN Entwurf wirkt statt
        als zwei uebereinandergelegte Schichten. ----------------------- */
-    visualComposition: "portrait 4:5. Compose ONE finished, publish-ready brand post — not " +
-      "a raw scene for later text overlay. Bake the German headline text (see " +
-      "hook_strategy) directly into the image as bold, large, perfectly legible " +
-      "typography in the upper-to-middle band, set against a calm, low-contrast part of " +
-      "the background (not over busy detail or bright highlights). Composite the exact " +
-      "brand logo file (see brand_assets.logo) small and quiet in the top-left corner, " +
-      "and the exact brand mascot file (see brand_assets.atlas) small in the bottom-right " +
-      "corner, not as the visual focal point. The main subject/motif occupies the center " +
-      "and right-of-center. The result must read as ONE cohesive, intentionally designed " +
-      "brand image — logo and mascot reproduced exactly as given, not redrawn or " +
-      "restyled.",
+    visualComposition: "portrait 4:5, edge-to-edge — no letterboxing, no black bars, the " +
+      "flat color field fills the entire frame. Compose ONE finished, publish-ready brand " +
+      "post — not a raw scene for later text overlay. Bake the German headline text (see " +
+      "hook_strategy) directly into the image as OVERSIZED, bold, perfectly legible " +
+      "typography that dominates roughly a third of the frame (upper band), set against " +
+      "the flat color field, not over busy detail. The headline typography and the " +
+      "supporting graphic motif (a shape, a symbol, an arrow, a gesture — one clear idea, " +
+      "never a cluttered realistic scene) are the MAIN visual content and together occupy " +
+      "most of the frame. Composite the exact brand mascot file (see brand_assets.atlas) " +
+      "as a SMALL supporting presence only. Concretely: Atlas's rendered width must be NO " +
+      "MORE than one-fifth (20%) of the full frame width, and he must be cropped to roughly " +
+      "head-and-shoulders or a small half-figure — never full body, never leaning on or " +
+      "framing the main motif, never positioned so he reads as one of the two or three main " +
+      "subjects of the poster. If in doubt, render him smaller, not larger: two real " +
+      "deliveries already rendered him too large despite this instruction, so treat 20% " +
+      "width as a hard ceiling, not a target to fill. He is a small signature cameo, sized " +
+      "like the logo, not a dominant foreground figure. It must never compete with the " +
+      "headline or the main motif for attention, and never occupy the visual center of the " +
+      "composition. Composite the " +
+      "exact brand logo file (see brand_assets.logo) small and quiet, top-left corner, as " +
+      "a signature, not a design element. The result must read as ONE cohesive, " +
+      "intentionally designed brand poster — logo and mascot reproduced exactly as given " +
+      "(only scaled/cropped/reframed per their brand contract), never redrawn or restyled " +
+      "into a different art style, and never enlarged into the main subject of the image.",
     restrictions: ["Keine Kurse im Bild", "Keine Renditezahlen", "Kein Wasserzeichen",
       "Keine Prognose-Aussage im Bildtext", "Logo und Atlas exakt aus den " +
       "angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"],
@@ -168,7 +290,33 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       instruction: "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. " +
         "Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene " +
         "komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation " +
-        "ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren)."
+        "ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren). " +
+        /* GESICHTSTREUE (Owner-Test 26.09., vu-web-4e4d3aaef2a999a2-20260926):
+           direkter Pixelvergleich mit dem Original-Asset zeigte ein leicht
+           abweichendes Gesicht (Laecheln, Mundwinkel) trotz "exakt,
+           unveraendert" — ein generatives Modell fuegt Referenzbilder nicht
+           pixelgenau ein, sondern interpretiert sie neu. Der Owner hat
+           entschieden: beim rein generativen Weg bleiben, aber die
+           Gesichtstreue in der Anweisung so stark wie moeglich betonen. */
+        "Atlas' Gesicht, Mimik und Proportionen muessen exakt dem Referenzbild " +
+        "entsprechen — dasselbe Laecheln, dieselben Gesichtszuege, derselbe " +
+        "Blick. Eine andere Pose, ein anderer Blickwinkel oder eine Handbewegung " +
+        "sind erlaubt; eine veraenderte, neu interpretierte oder auch nur leicht " +
+        "abweichende Mimik ist es nicht. " +
+        /* DER FEHLENDE VERTRAG (gefunden 26.09., PR vu-web-787176986cf7f5d8-20260926):
+           `brand_elements_announcement_required` stand als reine Kennzeichnung im
+           Brief, ohne dass der Agent je erfuhr, WELCHE Form die Rueckmeldung haben
+           muss. Er antwortete plausibel mit einer eigenen, beschreibenden Form
+           (`{logo, atlas, integration}`) statt der drei Booleans, die verifyResult()
+           unten tatsaechlich prueft — jedes Ergebnis fiel seither auf
+           brandElementsIncomplete, obwohl Logo und Atlas nachweislich im Bild
+           waren. Die Form steht jetzt woertlich im Brief, nicht nur im Pruefcode. */
+        "Wichtig fuer die Rueckmeldung: gib pro Bildvariante zusaetzlich ein Feld " +
+        "`brand_elements` mit GENAU diesen drei Boolean-Feldern zurueck: " +
+        "`includes_logo`, `includes_atlas`, `includes_hook_text_de` — jedes nur " +
+        "`true`, wenn das jeweilige Element tatsaechlich im fertigen Bild zu sehen " +
+        "ist. Kein Freitext, keine anderen Feldnamen, keine Dateipfade an dieser " +
+        "Stelle — nur diese drei Booleans."
     },
     requireBrandElementsAnnounced: true,
     width: 1080, height: 1350,
