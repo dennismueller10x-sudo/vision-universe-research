@@ -131,12 +131,14 @@ const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'div', 'ipo', 
 //  - NON_USD_REPORTING: Berichtswaehrung ist nicht USD; Kurs (USD) und Gewinn je
 //    Aktie (Landeswaehrung) waeren gemischt.
 //  - IMPLAUSIBLE_SHARE_BASIS: Tagesumsatz / Marktkapitalisierung unter 0,002 %
-//    oder Marktkapitalisierung ueber 7 Bio. USD - die Aktienbasis passt nicht zum Papier.
+//    oder ueber 100 %, Marktkapitalisierung <= 0 oder ueber 7 Bio. USD - die Aktienbasis
+//    passt nicht zum Papier (gemessen: Chewy 1.827 $, Tempus AI 15 Mio. $, Hinge Health 0 $).
 // Betroffene Werte werden NICHT gezeigt (null), statt falsch zu sein. Waehrungs-
 // neutrale Verhaeltnisse (Margen, Wachstum, Renditen, Verschuldungsgrad) bleiben.
 export const MIN_TURNOVER = 2e-5;
 export const FOREIGN_MIN_TURNOVER = 1e-3;
 export const MAX_MARKET_CAP = 7e12;
+export const MAX_TURNOVER = 1;
 export const SHARE_BASIS_COLUMNS = ['mcap', 'ev', 'pe', 'peg', 'ps', 'pb', 'evSales', 'evEbitda', 'pFcf', 'fcfYield', 'eps'];
 export const CURRENCY_COLUMNS = ['revenue', 'fcf', 'cash', 'totalDebt', 'netCash', 'eps'];
 
@@ -212,7 +214,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     const turnover = mcap && dollarVolRaw !== null ? dollarVolRaw / mcap : null;
     if (!currencyOk) vq = 'NON_USD_REPORTING';
     else if (foreignFiler && (turnover === null || turnover < FOREIGN_MIN_TURNOVER)) vq = 'FOREIGN_FILER';
-    else if (mcap && dollarVolRaw !== null && dollarVolRaw / mcap < MIN_TURNOVER) vq = 'IMPLAUSIBLE_SHARE_BASIS';
+    else if (mcap !== null && (mcap <= 0 || (dollarVolRaw !== null && (dollarVolRaw / mcap < MIN_TURNOVER || dollarVolRaw / mcap > MAX_TURNOVER)))) vq = 'IMPLAUSIBLE_SHARE_BASIS';
     else if (mcap && mcap > MAX_MARKET_CAP) vq = 'IMPLAUSIBLE_SHARE_BASIS';
     if (vq !== 'OK') { sanitized[vq] = (sanitized[vq] || 0) + 1; mcap = null; }
     const cash = annual(f, 'cash_and_equivalents');
@@ -287,7 +289,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       factors: factorMeta ? factorMeta.methodologyVersion : null
     },
     factorPublication: factorMeta ? { ...factorMeta.publication, asOf: factorMeta.asOf } : { compositeAllowed: false, rankingAllowed: false, reason: 'SOURCE_MISSING' },
-    valuationPolicy: { minTurnover: MIN_TURNOVER, foreignMinTurnover: FOREIGN_MIN_TURNOVER, maxMarketCap: MAX_MARKET_CAP, withheld: SHARE_BASIS_COLUMNS },
+    valuationPolicy: { minTurnover: MIN_TURNOVER, maxTurnover: MAX_TURNOVER, foreignMinTurnover: FOREIGN_MIN_TURNOVER, maxMarketCap: MAX_MARKET_CAP, withheld: SHARE_BASIS_COLUMNS },
     formulas: FORMULAS,
     dict: { sectors: SECTORS, majorGroups: MAJOR_GROUPS, divisions: DIVISIONS },
     coverage, columns: COLUMNS, cols

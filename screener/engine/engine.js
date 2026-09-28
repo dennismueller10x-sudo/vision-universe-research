@@ -250,8 +250,8 @@
     max = max || 4;
     var out = [];
     function push(id) { var f = Fields.field(id); if (f && f.available && f.kind === 'number' && out.indexOf(id) < 0 && out.length < max) out.push(id); }
-    Query.filters(q).forEach(function (f) { if (f.field !== 'ipoYear') push(f.field); });
-    FOCUS_METRICS[focus(q)].forEach(push);
+    if (!q.focus || q.focus === 'auto') Query.filters(q).forEach(function (f) { if (f.field !== 'ipoYear') push(f.field); });
+    FOCUS_METRICS[q.focus && q.focus !== 'auto' ? q.focus : focus(q)].forEach(push);
     FOCUS_METRICS.base.forEach(push);
     return out;
   }

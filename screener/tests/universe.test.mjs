@@ -68,7 +68,10 @@ test('Echtes Universum: Umfang, Trichter und Plausibilitaet', { skip: !existsSyn
   const vq = (sym) => art.cols.vq[ds.indexOf(sym)];
   for (const sym of ['TSM', 'BHP', 'LTM', 'TM']) if (ds.indexOf(sym) >= 0) { assert.notEqual(vq(sym), 'OK', sym); assert.equal(ds.value('marketCap', ds.indexOf(sym)), null, sym); assert.equal(ds.value('pe', ds.indexOf(sym)), null, sym); }
   for (const sym of ['NVDA', 'AAPL', 'ADP', 'JPM']) if (ds.indexOf(sym) >= 0) { assert.equal(vq(sym), 'OK', sym); assert.ok(ds.value('marketCap', ds.indexOf(sym)) > 5e10, sym); }
-  for (const m of ds.column('marketCap')) if (m !== null) assert.ok(m < 7e12);
+  for (const m of ds.column('marketCap')) if (m !== null) assert.ok(m > 0 && m < 7e12);
+  for (const sym of ['HNGE', 'CHWY', 'TEM']) if (ds.indexOf(sym) >= 0) assert.equal(ds.value('marketCap', ds.indexOf(sym)), null, sym);
+  const mc = ds.column('marketCap'), dv = ds.column('dollarVolume');
+  for (let i = 0; i < ds.size; i++) if (mc[i] !== null && dv[i] !== null) assert.ok(dv[i] / mc[i] <= 1, ds.symbol(i));
   // Quant-Gesamtscore bleibt gesperrt, solange die Publikation es nicht erlaubt
   assert.equal(art.factorPublication.compositeAllowed, false);
   assert.equal(Fields.field('quantScore').available, false);

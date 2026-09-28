@@ -94,10 +94,20 @@
       return 4 + Math.max(0, Math.min(1, (t - a) / (b - a))) * (W - 8);
     };
     h.bins.forEach(function (b, i) {
-      var bh = Math.max(b.count ? 2 : 0, (b.count / max) * (H - 26));
+      var bh = Math.max(b.count ? 2 : 0, (b.count / max) * (H - (opts.markerLabel ? 44 : 26)));
       node('rect', { x: (4 + i * bw + 0.8).toFixed(1), y: (H - 18 - bh).toFixed(1), width: Math.max(1, bw - 1.6).toFixed(1), height: bh.toFixed(1), rx: 2, class: 'b' + (opts.inRange && opts.inRange(b) ? ' is-in' : '') }, s);
     });
-    (opts.markers || []).forEach(function (m) { if (m !== null && isFinite(m)) node('line', { x1: X(m), x2: X(m), y1: 4, y2: H - 18, class: 't' }, s); });
+    var top = opts.markerLabel ? 22 : 4;
+    (opts.markers || []).forEach(function (m) {
+      if (m === null || !isFinite(m)) return;
+      var x = X(m);
+      node('line', { x1: x, x2: x, y1: top, y2: H - 18, class: 't' }, s);
+      if (opts.markerLabel) {
+        var txt = opts.markerLabel(m), w = Math.max(28, txt.length * 5.6 + 12), lx = Math.max(2, Math.min(W - w - 2, x - w / 2));
+        node('rect', { x: lx, y: 3, width: w, height: 16, rx: 8, class: 'lb' }, s);
+        var t = node('text', { x: lx + w / 2, y: 14.5, 'text-anchor': 'middle', class: 'lt' }, s); t.textContent = txt;
+      }
+    });
     if (opts.fmt) {
       var l = node('text', { x: 4, y: H - 4 }, s); l.textContent = (h.below ? '≤ ' : '') + opts.fmt(h.lo);
       var r = node('text', { x: W - 4, y: H - 4, 'text-anchor': 'end' }, s); r.textContent = (h.above ? '≥ ' : '') + opts.fmt(h.hi);
@@ -136,8 +146,8 @@
     }
     var lo = 10, hi = 100;
     var inv = function (arr) { return arr.map(function (v) { return 110 - v; }); };
-    node('path', { d: path(inv(base), W, H, 6, lo, hi), fill: 'none', stroke: 'var(--sc-warn)', 'stroke-width': 2, 'stroke-dasharray': '6 4' }, s);
-    node('path', { d: path(inv(line), W, H, 6, lo, hi), fill: 'none', stroke: 'var(--sc-text)', 'stroke-width': 2 }, s);
+    node('path', { d: path(inv(base), W, H, 6, lo, hi), fill: 'none', stroke: 'var(--sc-dim)', 'stroke-width': 2 }, s);
+    node('path', { d: path(inv(line), W, H, 6, lo, hi), fill: 'none', stroke: 'var(--sc-accent)', 'stroke-width': 2.2 }, s);
     return s;
   }
 

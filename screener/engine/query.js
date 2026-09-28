@@ -36,6 +36,7 @@
   var DEFAULT_WEIGHTS = { momentum: 40, growth: 30, quality: 20, value: 10 };
   var SORTABLE = ['match', 'marketCap', 'price', 'revenueGrowth', 'epsGrowth', 'roic', 'distance52wHigh', 'perf1d', 'perf1m', 'perf6m', 'perf1y', 'pe', 'grossMargin', 'fcfYield', 'relativeStrengthPct', 'name'];
   var MAX_FILTERS = 40, MAX_GROUPS = 6;
+  var FOCI = ['auto', 'momentum', 'growth', 'value', 'quality'];
 
   function empty(opts) {
     opts = opts || {};
@@ -43,7 +44,7 @@
       v: VERSION, universe: opts.universe || 'US_REAL', mode: opts.mode === 'pro' ? 'pro' : 'simple', logic: 'AND',
       groups: [{ id: 'g1', name: '', op: 'AND', filters: [] }],
       ranking: { enabled: false, weights: Object.assign({}, DEFAULT_WEIGHTS) },
-      sort: { field: 'marketCap', dir: 'desc' }, view: 'cards', columns: []
+      sort: { field: 'marketCap', dir: 'desc' }, view: 'cards', focus: 'auto', columns: []
     };
   }
   function clone(q) { return JSON.parse(JSON.stringify(q)); }
@@ -83,6 +84,7 @@
     if (s.field && SORTABLE.indexOf(s.field) < 0 && !(Fields.field(s.field) && Fields.field(s.field).available && Fields.field(s.field).kind === 'number')) throw Error('INVALID_QUERY:sort');
     q.sort = { field: s.field || (q.ranking.enabled ? 'match' : 'marketCap'), dir: s.dir === 'asc' ? 'asc' : 'desc' };
     q.view = ['cards', 'compact', 'table'].indexOf(input.view) >= 0 ? input.view : 'cards';
+    q.focus = FOCI.indexOf(input.focus) >= 0 ? input.focus : 'auto';
     q.columns = Array.isArray(input.columns) ? input.columns.filter(function (c) { return Fields.field(c); }).slice(0, 12) : [];
     return q;
   }
@@ -193,6 +195,7 @@
     var defSort = q.ranking.enabled ? 'match' : 'marketCap';
     if (q.sort.field !== defSort || q.sort.dir !== 'desc') p.set('sort', q.sort.field + ':' + q.sort.dir);
     if (q.view !== 'cards') p.set('view', q.view);
+    if (q.focus && q.focus !== 'auto') p.set('focus', q.focus);
     if (q.universe !== 'US_REAL') p.set('u', q.universe);
     return p;
   }
@@ -223,17 +226,18 @@
     }
     if (p.get('sort')) { var s2 = p.get('sort').split(':'); input.sort = { field: s2[0], dir: s2[1] }; }
     if (p.get('view')) input.view = p.get('view');
+    if (p.get('focus')) input.focus = p.get('focus');
     return validate(input);
   }
   /** Stabiler Schluessel eines Screens (fuer Verlauf und Monitoring). */
   function key(q) {
-    var c = clone(q); c.view = 'cards'; c.columns = [];
+    var c = clone(q); c.view = 'cards'; c.columns = []; c.focus = 'auto';
     c.groups.forEach(function (g) { g.filters.forEach(function (f) { delete f.id; }); });
     return JSON.stringify([c.universe, c.logic, c.groups.map(function (g) { return [g.op, g.filters]; }), c.ranking.enabled ? c.ranking.weights : null]);
   }
 
   var API = {
-    VERSION: 'vu-screener-query-1.0.0', SCHEMA_VERSION: VERSION, FAMILIES: FAMILIES, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS, SORTABLE: SORTABLE, MAX_FILTERS: MAX_FILTERS,
+    VERSION: 'vu-screener-query-1.0.0', SCHEMA_VERSION: VERSION, FOCI: FOCI, FAMILIES: FAMILIES, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS, SORTABLE: SORTABLE, MAX_FILTERS: MAX_FILTERS,
     empty: empty, clone: clone, validate: validate, validateFilter: validateFilter, filters: filters, count: count,
     addFilter: addFilter, updateFilter: updateFilter, removeFilter: removeFilter, moveFilter: moveFilter,
     addGroup: addGroup, removeGroup: removeGroup, toSimple: toSimple, hasProOnly: hasProOnly, weightSum: weightSum,

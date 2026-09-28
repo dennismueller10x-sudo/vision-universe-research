@@ -69,8 +69,8 @@ FCF-Rendite, PEG historisch); Sektor/Branche aus SEC-SIC; Quant-V2-Faktorevidenz
 
 **Plausibilitätsprüfung Aktienbasis** (`VALUATION_POLICY` in `build-universe.mjs`): Bei ausländischen Emittenten
 (ADR-Verhältnis unbekannt), Nicht-USD-Berichtswährung oder unplausibler Aktienbasis werden Marktkapitalisierung und
-alle Kurs-/Aktienzahl-Kennzahlen **zurückgehalten** (aktuell 709 Titel). Anlass: in den Quelldaten standen z. B.
-TSMC mit 11,7 Bio. $ und LATAM mit 30 Bio. $ Marktkapitalisierung. Margen und Wachstum bleiben gültig.
+alle Kurs-/Aktienzahl-Kennzahlen **zurückgehalten** (aktuell 765 Titel). Anlass: in den Quelldaten standen z. B.
+TSMC mit 11,7 Bio. $, LATAM mit 30 Bio. $, Chewy mit 1.827 $ und Hinge Health mit 0 $ Marktkapitalisierung. Margen und Wachstum bleiben gültig.
 
 Nicht verfügbar (sichtbar in der Bibliothek als „Daten folgen“, nie simuliert): Analystenschätzungen, Forward-KGV,
 Forward-Wachstum, Revisionen, Kursziele, EBITDA-Wachstum, Zinsdeckung, Current Ratio, ATR, Quant-Gesamtscore
@@ -102,3 +102,24 @@ CI: `.github/workflows/screener-ci.yml`.
 - Screens, Verlauf und Monitoring liegen auf dem Gerät; Benachrichtigungen sind vorbereitet, Zustellung braucht ein Backend.
 - ADRs mit hohem US-Handelsumsatz und Verhältnis ≠ 1 können die Plausibilitätsprüfung passieren (z. B. BeOne/ONC).
 - Die Quant-Faktorevidenz „Bewertung“ nutzt dieselbe Marktkapitalisierung wie die Quelle; der Screener zeigt sie unverändert.
+
+## Abgleich mit den Designvorlagen (8 Screens)
+
+Umgesetzt: Einstieg mit Universumszahl · Filter-Stack mit „Aktive Filter · Alle löschen“ und Live-Zahl ·
+Filter-Vorschläge (einzelne Kriterien mit der Trefferzahl, die sie ergeben – keine fertigen Screens) ·
+Filter-Impact als Zeitleiste mit kumulierter Veränderung · zweistufige Filterbibliothek mit Suche und
+Trefferzahl · Filter-Detail mit Leitfrage, Definition, Bedingung, großer Wertanzeige, Slider mit runder
+Skala, Histogramm mit Schwellen-Marke und datenbasiertem Hinweis · Einfach/Pro, Gruppen UND/ODER,
+Gewichtung · Karten/Kompakt/Tabelle, Sheet „Sortieren & Ansicht“, wählbarer Kennzahlen-Fokus ·
+Warum Treffer? · Quick Research (Umsatz, Bruttomarge, Free Cashflow, EPS als Jahresbalken) · Vergleich.
+
+Bewusste Abweichungen:
+- **Quant Score** erscheint nicht auf Karten, in der Tabelle, beim Sortieren oder im Vergleich (dort als
+  „noch nicht freigegeben“). Der Gesamtscore ist in Quant V2 gesperrt; stattdessen gibt es die
+  „Übereinstimmung“ (Pro-Ranking) und die Einzelfaktoren.
+- Hinweistexte im Filter-Detail sind **aus den Daten berechnet** („42 % der Aktien erfüllen …“),
+  nicht redaktionell („Viele erfolgreiche Wachstumsaktien …“) – das wäre eine unbelegte Aussage.
+- „Kurs vs. EMA 200“, „200-Tage-Hoch/-Tief“ fehlen: aus einem Jahr Tagesschluss nicht belastbar berechenbar.
+- Im Filter-Detail für Technik-Filter ein beschriftetes **Schema**; der echte Kursverlauf mit SMA 50/200
+  erscheint bei „Warum Treffer?“ und in Quick Research einer konkreten Aktie.
+- Keine Firmenlogos (Monogramme), keine Tab-Leiste „Analysen/Profil“ (dafür Screen · Treffer · Gespeichert · Watchlist).

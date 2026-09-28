@@ -237,8 +237,52 @@
     n('regimeFit', { group: 'vu', unit: 'score', label: 'Market Regime Fit', en: 'Market Regime Fit', source: 'factor', available: false, reason: NO_METHOD, keywords: ['regime', 'markt'] })
   ];
 
+  // Leitfrage (Filter-Detail) und Kurzbeschreibung (Bibliothek) in Alltagssprache.
+  var COPY = {
+    country: ['Wo ist die Aktie gelistet?', 'Land der Primärbörse'], region: ['In welcher Region wird gehandelt?', 'Region der Primärbörse'],
+    exchange: ['An welcher Börse wird gehandelt?', 'NASDAQ, NYSE, AMEX …'], sector: ['In welchem Sektor ist das Unternehmen tätig?', 'Technologie, Gesundheit, Finanzen …'],
+    industry: ['In welcher Branche genau?', 'SIC-Hauptgruppe der SEC'], ipoYear: ['Seit wann ist die Aktie an der Börse?', 'Jahr des ersten Handelstags'],
+    companyType: ['Um welche Wertpapierart handelt es sich?', 'Stammaktie, REIT, ADR …'], index: ['Ist die Aktie in einem großen Index?', 'S&P 500, Nasdaq-100, Dow Jones'],
+    marketCap: ['Wie groß ist ein Unternehmen an der Börse?', 'Von Micro bis Mega Cap'], enterpriseValue: ['Was kostet das Unternehmen inklusive Schulden?', 'Marktwert + Schulden − Kasse'],
+    price: ['Wie hoch ist der Aktienkurs?', 'Letzter Schlusskurs'], avgVolume: ['Wie viele Aktien werden täglich gehandelt?', 'Liquidität in Stück'],
+    dollarVolume: ['Wie viel Geld wird täglich umgesetzt?', 'Liquidität in Dollar'], beta: ['Wie stark schwankt die Aktie mit dem Markt?', 'Marktsensitivität'],
+    revenue: ['Wie viel Umsatz macht das Unternehmen?', 'Letzte zwölf Monate'],
+    revenueGrowth: ['Wie stark wächst der Umsatz eines Unternehmens?', 'Letzte zwölf Monate ggü. Vorjahr'], revenueCagr3: ['Wie stark ist der Umsatz über drei Jahre gewachsen?', 'Jährliche Wachstumsrate (CAGR)'],
+    revenueCagr10: ['Wie beständig wächst der Umsatz langfristig?', 'CAGR über zehn Jahre'], epsGrowth: ['Wächst der Gewinn je Aktie?', 'Letztes Geschäftsjahr ggü. Vorjahr'],
+    epsCagr3: ['Wie stark ist der Gewinn je Aktie über drei Jahre gewachsen?', 'Jährliche Wachstumsrate'], netIncomeGrowth: ['Wächst der Gewinn?', 'Jahresüberschuss, letzte zwölf Monate'],
+    fcfGrowth: ['Wächst der freie Cashflow?', 'Letztes Geschäftsjahr ggü. Vorjahr'], marginExpansion: ['Werden die Margen besser?', 'Operative Marge, Veränderung 3 Jahre'],
+    grossMargin: ['Wie viel bleibt nach den direkten Kosten übrig?', 'Preissetzungsmacht'], operatingMargin: ['Wie profitabel ist das Kerngeschäft?', 'Operatives Ergebnis je Umsatz'],
+    netMargin: ['Wie viel Gewinn bleibt vom Umsatz?', 'Jahresüberschuss je Umsatz'], fcfMargin: ['Wie viel freies Geld erwirtschaftet der Umsatz?', 'Free Cashflow je Umsatz'],
+    freeCashFlow: ['Wie viel freies Geld verdient das Unternehmen?', 'Letzte zwölf Monate'], eps: ['Wie viel Gewinn entfällt auf eine Aktie?', 'Verwässert, letzte zwölf Monate'],
+    roe: ['Wie gut verzinst sich das Eigenkapital?', 'Return on Equity'], roa: ['Wie effizient arbeitet das gesamte Vermögen?', 'Return on Assets'],
+    roic: ['Wie gut verzinst sich das eingesetzte Kapital?', 'Return on Invested Capital'], cashConversion: ['Kommt der Gewinn als Geld an?', 'Operativer Cashflow je Gewinn'],
+    debtToEquity: ['Wie hoch ist die Verschuldung?', 'Schulden im Verhältnis zum Eigenkapital'], netDebtEbitda: ['Wie schnell wären die Schulden getilgt?', 'Jahre operativen Ergebnisses'],
+    cash: ['Wie viel Geld liegt in der Kasse?', 'Zahlungsmittel'], netCash: ['Mehr Geld als Schulden?', 'Kasse minus Finanzschulden'], totalDebt: ['Wie viele Schulden hat das Unternehmen?', 'Kurz- und langfristig'],
+    pe: ['Wie teuer ist der Gewinn?', 'Kurs-Gewinn-Verhältnis'], peg: ['Ist das KGV durch Wachstum gedeckt?', 'KGV je Prozent EPS-Wachstum'], ps: ['Wie teuer ist der Umsatz?', 'Kurs-Umsatz-Verhältnis'],
+    pb: ['Wie teuer ist das Eigenkapital?', 'Kurs-Buchwert-Verhältnis'], evSales: ['Wie teuer ist der Umsatz inklusive Schulden?', 'EV / Umsatz'],
+    evEbitda: ['Wie teuer ist das operative Ergebnis?', 'EV / EBITDA'], pFcf: ['Wie teuer ist der freie Cashflow?', 'Kurs / Free Cashflow'], fcfYield: ['Welche Cashflow-Rendite bietet der Kurs?', 'Free Cashflow / Marktwert'],
+    perf1d: ['Wie hat sich der Kurs heute entwickelt?', 'Letzter Handelstag'], perf1w: ['Wie war die letzte Woche?', 'Fünf Handelstage'], perf1m: ['Wie war der letzte Monat?', 'Kursveränderung'],
+    perf3m: ['Wie waren die letzten drei Monate?', 'Kursveränderung'], perf6m: ['Wie waren die letzten sechs Monate?', 'Mittelfristiges Momentum'], perfYtd: ['Wie läuft das Jahr bisher?', 'Seit Jahresbeginn'],
+    perf1y: ['Wie war das letzte Jahr?', 'Zwölf Monate'], relativeStrength: ['Schlägt die Aktie den Markt?', 'Mehrrendite ggü. Markt, 6 Monate'],
+    relativeStrengthPct: ['Wie stark ist die Aktie im Vergleich zu allen anderen?', 'Rang 0–100 im Universum'], momentumPct: ['Wie stark ist das Momentum im Vergleich?', 'Rang 0–100 im Universum'],
+    priceVsSma20: ['Wie steht der Kurs zum kurzfristigen Trend?', 'Aktueller Kurs vs. 20-Tage-Durchschnitt'], priceVsSma50: ['Wie steht der Kurs zum mittelfristigen Trend?', 'Aktueller Kurs vs. 50-Tage-Durchschnitt'],
+    priceVsSma100: ['Wie steht der Kurs zum 100-Tage-Trend?', 'Aktueller Kurs vs. 100-Tage-Durchschnitt'], priceVsSma200: ['Wie steht der aktuelle Kurs zum langfristigen Trend?', 'Aktueller Kurs vs. SMA 200'],
+    sma50VsSma200: ['Liegt der mittelfristige über dem langfristigen Trend?', 'Golden / Death Cross'], priceVsEma21: ['Wie steht der Kurs zum exponentiellen Durchschnitt?', 'Exponential Moving Average (21)'],
+    distance52wHigh: ['Wie nah ist die Aktie am Jahreshoch?', 'Abstand zum 52-Wochen-Hoch'], distance52wLow: ['Wie weit ist die Aktie vom Jahrestief entfernt?', 'Abstand zum 52-Wochen-Tief'],
+    newHigh52w: ['Steht die Aktie auf einem neuen Jahreshoch?', 'Höchster Schluss seit 52 Wochen'], rsi: ['Ist die Aktie überkauft oder überverkauft?', 'Relative-Stärke-Index (14)'],
+    macd: ['Dreht das Momentum?', 'Trendfolge und Momentum'], bollinger: ['Wo steht der Kurs in seinem Schwankungsband?', 'Volatilität und Ausbrüche'],
+    volatility: ['Wie stark schwankt die Aktie?', 'Historische Schwankung'], relativeVolume: ['Wird gerade mehr gehandelt als üblich?', 'Volumen 20 vs. 60 Tage'],
+    maxDrawdown: ['Wie tief ist die Aktie im letzten Jahr gefallen?', 'Größter Verlust vom Hoch'],
+    qualityFactor: ['Wie stark ist die Qualität im Branchenvergleich?', 'Quant-V2-Faktorevidenz'], growthFactor: ['Wie stark ist das Wachstum im Branchenvergleich?', 'Quant-V2-Faktorevidenz'],
+    momentumFactor: ['Wie stark ist das Momentum im Branchenvergleich?', 'Quant-V2-Faktorevidenz'], valueFactor: ['Wie günstig ist die Bewertung im Vergleich?', 'Quant-V2-Faktorevidenz'],
+    profitabilityFactor: ['Wie profitabel im Branchenvergleich?', 'Quant-V2-Faktorevidenz'], revisionsFactor: ['Werden Schätzungen angehoben?', 'Quant-V2-Faktorevidenz'],
+    riskFactor: ['Wie gering ist das Risiko im Vergleich?', 'Quant-V2-Faktorevidenz']
+  };
+
   var BY_ID = {};
   FIELDS.forEach(function (f) {
+    if (COPY[f.id]) { f.question = COPY[f.id][0]; f.sub = COPY[f.id][1]; }
+    if (!f.sub) f.sub = f.available ? (f.desc || '') : 'Daten folgen';
     if (f.available === undefined) f.available = true;
     if (!f.short) f.short = f.label;
     f.pro = !!(f.pro || (GROUPS.filter(function (g) { return g.id === f.group; })[0] || {}).pro);
@@ -289,7 +333,7 @@
     return de(v, 0);
   }
   function pct(v, signed) {
-    var p = v * 100, a = Math.abs(p), d = a >= 100 ? 0 : a >= 10 ? 0 : 1;
+    var p = v * 100, a = Math.abs(p), d = a >= 10 || a === 0 || Number.isInteger(a) ? 0 : 1;
     var s = de(a, d) + NBSP + '%';
     if (p < 0 && Math.round(a * Math.pow(10, d)) !== 0) return '−' + s;
     return (signed && p > 0 ? '+' : '') + s;

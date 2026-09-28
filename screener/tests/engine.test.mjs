@@ -79,7 +79,7 @@ test('Why Match nennt jede Bedingung mit gemessenem Wert', () => {
   assert.equal(w.length, 2);
   assert.ok(w.every((x) => x.pass === true));
   assert.equal(w[0].shown, '500 Mio. $');
-  assert.equal(w[1].shown, '−2,0 %');
+  assert.equal(w[1].shown, '−2 %');
   const miss = Engine.why(ds, q([{ field: 'revenueGrowth', op: 'gt', value: 0 }]), ds.indexOf('CCC'))[0].items[0];
   assert.equal(miss.pass, null); assert.equal(miss.shown, 'Keine Daten');
 });

@@ -48,7 +48,7 @@ async function checkLayout(page, vp, label) {
     if (nav && nav.right > doc.clientWidth + 1) offenders.push('vu-navigation Menü abgeschnitten');
     // Inhalte, die aus ihrer Karte ragen (abgeschnitten)
     const clipped = [];
-    for (const card of document.querySelectorAll('.sc-rc, .sc-chip, .sc-kpi, .sc-why-item, .sc-row')) {
+    for (const card of document.querySelectorAll('.sc-rc, .sc-chip, .sc-kpi, .sc-why-item, .sc-row, .sc-cr, .sc-tl, .sc-libitem')) {
       const cr = card.getBoundingClientRect();
       for (const el of card.querySelectorAll('*')) { const rc = el.getBoundingClientRect(); if (rc.width && rc.right > cr.right + 1 && getComputedStyle(el).position !== 'absolute') { clipped.push((card.className.split(' ').pop()) + '>' + (el.className?.baseVal ?? el.className ?? el.tagName)); break; } }
       if (clipped.length > 3) break;
@@ -129,7 +129,7 @@ for (const theme of ['light', 'dark']) {
       await addViaSearch('52w', 'Abstand zum 52W-Hoch', async () => { await page.click('.sc-sheet.is-open .sc-preset:has-text("Näher als 10")'); });
       const chips = await page.$$eval('.sc-chip-body b', (b) => b.map((x) => x.textContent));
       if (chips.length !== 4) fail(vp, 'Erwartet 4 Filter, gefunden ' + chips.length + ': ' + chips.join(' | ')); else ok('Filterstack: ' + chips.join(' | '));
-      const funnel = await page.$$eval('.sc-step-count', (s) => s.map((x) => Number(x.textContent.replace(/\./g, ''))));
+      const funnel = await page.$$eval('.sc-tl-main b', (s) => s.map((x) => Number(x.textContent.replace(/\./g, ''))));
       if (funnel.length !== 5 || funnel.some((v, i) => i && v > funnel[i - 1])) fail(vp, 'Trichter nicht monoton: ' + funnel.join(' → ')); else ok('Filter-Impact: ' + funnel.join(' → '));
       await checkLayout(page, vp, 'Build');
       await shot(page, vp, '04-build', true);
