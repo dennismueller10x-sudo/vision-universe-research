@@ -253,3 +253,113 @@ Alle drei ohne Symptom in der Oberfläche — deshalb stehen sie hier.
    zugeklappten Fläche.** Eine mechanische Ersetzung (`main.append` →
    `profiZiel.append`) hatte die Zeile mitgenommen, die das Ergebnis einer
    Setup-Regel zeigt — obwohl sie mit dem Profi-Editor nichts zu tun hat.
+
+## 8. Warum Vercel für Quant nicht erforderlich ist
+
+Der Release stand am 28.09.2026 rot, und zwar nicht wegen des Codes:
+
+```
+Resource is limited - try again in 24 hours
+(more than 100, code: "api-deployments-free-per-day")
+```
+
+Ein Tageskontingent des Accounts. Die richtige Frage war deshalb nicht
+„wie reparieren wir den Build", sondern **„wofür baut Vercel hier
+überhaupt"**. Vier Fragen, vier im Repository gemessene Antworten.
+
+### 8.1 Wird das Quant-Frontend produktiv über Vercel ausgeliefert? Nein.
+
+`vercel.json` ruft als `buildCommand` das Skript
+`scripts/vu2/build-vercel-public.mjs` auf. Dieses Skript schreibt **genau
+eine Datei**: `.vercel-public/index.html`, **197 Byte**, ein Satz, `noindex`.
+Nachgemessen, nicht gelesen.
+
+Das Quant-Frontend kommt von GitHub Pages: `CNAME` =
+`research.visionuniverse.de`, `pages-release.yml` deployt über
+`actions/deploy-pages@v4` bei `push` auf `main`. Das gebaute Release
+umfasst **35.697 Dateien**.
+
+`.vercelignore` sagt es selbst, und zwar seit dem 22.09.:
+
+> Vercel hosts only the server-side Product Service. The reviewed product UI
+> and compact public artifacts are deployed by GitHub Pages.
+
+### 8.2 Hängen produktive APIs von Vercel ab? Drei existieren — Quant nutzt keine.
+
+Vercel hostet drei echte Serverless-Funktionen: `api/history.js`,
+`api/intraday.js`, `api/status.js`. **Sie bleiben, unangetastet.**
+
+Aber: **keine Frontend-Datei ruft sie auf.** Die einzigen Aufrufer im
+Repository sind `quant/tests/product-data-service.test.mjs` — und die laden
+sie direkt als Modul, nicht über HTTP. In `vu2/*.js` gibt es kein `fetch()`
+auf `/api/`, keine `.vercel.app`-Adresse und keine konfigurierbare
+API-Herkunft. (`/quant/api/*.js` sind lokale Skripte im gleichen Ursprung,
+keine Endpunkte — der Verzeichnisname führt in die Irre.)
+
+Der Live-Kurs-Strom läuft über Cloudflare
+(`wss://live.visionuniverse.de/live`), nicht über Vercel.
+
+Der Pages-Release kopiert die drei Funktionsdateien als **statischen Text**
+mit — auf Pages führen sie nicht aus. Das bestätigt die Trennung eher als
+sie zu verwischen.
+
+Das Ausführungsprotokoll hält zudem fest, dass diese Funktionen in der
+Produktion `NOT_CONFIGURED` melden und ihr Funktionsschalter ausdrücklich
+deaktiviert bleiben soll, bis eine Kosten- und Nebenläufigkeitskontrolle
+belegt ist. Sie sind geparkt, nicht tragend.
+
+### 8.3 Nutzt ein Quant-Workflow Vercel zwingend? Nein.
+
+**Keine einzige Datei in `.github/workflows/` nennt Vercel.** Die
+Vercel-Checks kommen von der GitHub-App, nicht aus der CI dieses Repos.
+
+### 8.4 Ist Vercel nur für Previews eingebunden? Fast — und das ist der Punkt.
+
+Nicht ausschließlich: die drei Funktionen liegen produktiv dort. Aber für
+den **PR-Pfad** trägt Vercel nur eine Vorschau bei — und die zeigt für
+einen Commit, der nur das Frontend anfasst, jenen 197-Byte-Platzhalter.
+Sie kostet ein Deployment aus dem gemeinsamen Tageskontingent und sagt
+nichts.
+
+### 8.5 Was daraufhin geändert wurde — und was nicht
+
+`vercel.json` erhält einen `ignoreCommand`:
+`node scripts/vu2/vercel-should-build.mjs`. Die Regel ist eng:
+
+| Lage | Entscheidung |
+|---|---|
+| `VERCEL_ENV=production` | **baut immer**, unabhängig von den Pfaden |
+| Vorschau, `api/`, `server/`, `vercel.json`, `.vercelignore` oder der Vercel-Build geändert | **baut** — die Vorschau ist aussagekräftig |
+| Vorschau, nichts davon geändert | **bricht ab** — kein Deployment |
+| Diff nicht ermittelbar | **baut** |
+
+Vercels Vertrag ist gegenläufig zur Intuition: **Exit 0 heißt abbrechen,
+Exit 1 heißt bauen.** Wer das verwechselt, schaltet die Auslieferung der
+Funktionen ab. Deshalb ist jeder unklare Fall ein Bauen, und deshalb hält
+`quant/tests/vercel-preview-boundary.test.mjs` die Richtung fest.
+
+**Nicht geändert:** die drei Funktionen, `server/`, der Pages-Deploy, die
+Produktionslogik. Vercel wurde nicht global entfernt — andere
+Vision-Universe-Produkte, die diese Funktionen später brauchen, verlieren
+nichts, und für die Produktion baut Vercel weiter.
+
+### 8.6 Zwei Einschränkungen, die ich nicht verschweige
+
+1. **Vercel war ohnehin kein Merge-Blocker.** Gemessen am PR: der Zustand
+   ist `unstable`, nicht `blocked` — der Vercel-Status ist nicht als
+   erforderlicher Check geführt. Er ließ den Release *rot aussehen*, ohne
+   ihn zu verhindern. Die Bereinigung nimmt das falsche Signal weg, nicht
+   eine echte Sperre.
+2. **Die Wirkung des `ignoreCommand` kann ich hier nicht beweisen.** Der
+   Netzzugang dieser Umgebung sperrt `vercel.com`, ich konnte die Semantik
+   also nicht an der Quelle nachlesen, sondern nur den Exit-Code-Vertrag
+   testen. Sollte Vercel den Schlüssel ignorieren, bleibt alles wie heute:
+   die Regel ist so gebaut, dass ihr schlechtester Fall der Status quo ist
+   und niemals eine ausgefallene Produktion. Ob sie greift, zeigt der
+   nächste PR, der nur das Frontend anfasst.
+
+Zusätzlich gemessen und offen: `research.visionuniverse.de` ist aus dieser
+Umgebung ebenfalls nicht erreichbar (403 der Netz-Richtlinie). Die Abnahme
+dieses Release stützt sich deshalb auf das **lokal gebaute** Release
+desselben Commits, nicht auf einen Abruf der ausgelieferten Seite. Das ist
+in den Belegen so benannt und keine stillschweigende Gleichsetzung.
