@@ -34,9 +34,9 @@
     const currency=el('div',{class:'v2-settings-row'},[el('div',{},[el('h2',{text:'Währung'}),el('p',{text:'Anzeige in Euro oder US-Dollar, sofern Kurse verfügbar sind.'})])]);
     const layer=global.VUFx&&global.VUFx.layer;
     if(layer&&global.VUFx.Switch)currency.append(global.VUFx.Switch.create({layer}));
-    const appearance=el('div',{class:'v2-settings-row'},[el('div',{},[el('h2',{text:'Darstellung'}),el('p',{text:'System folgt der Einstellung deines Geräts.'})])]);
+    const appearance=el('div',{class:'v2-settings-row'},[el('div',{},[el('h2',{text:'Darstellung'}),el('p',{text:'Standard ist Hell. Dunkel kannst du hier auswählen.'})])]);
     const choices=el('div',{class:'v2-settings-choices',role:'group','aria-label':'Darstellung'});
-    const paint=()=>{choices.replaceChildren();[['system','System'],['light','Hell'],['dark','Dunkel']].forEach(([mode,label])=>{const b=el('button',{type:'button',text:label,'aria-pressed':String(theme.mode()===mode)});b.onclick=()=>{theme.set(mode);paint();};choices.append(b);});};paint();appearance.append(choices);
+    const paint=()=>{choices.replaceChildren();[['light','Hell'],['dark','Dunkel']].forEach(([mode,label])=>{const b=el('button',{type:'button',text:label,'aria-pressed':String(theme.mode()===mode)});b.onclick=()=>{theme.set(mode);paint();};choices.append(b);});};paint();appearance.append(choices);
     box.append(currency,appearance);root.append(box);
   }
   const THEME_GROUPS=[['tech','Technologie & Vernetzung'],['health','Gesundheit'],['energy','Energie & Rohstoffe'],['industry','Industrie & Infrastruktur'],['finance','Finanzen & Immobilien'],['consumer','Konsum & Mobilität']];
@@ -273,7 +273,7 @@
       D.LiveHub.init({realtime:meta.realtime,calendar});
       document.querySelector('.v2-skip').onclick=event=>{event.preventDefault();const main=document.getElementById('v2-main');if(main){main.focus();main.scrollIntoView();}};
       let storage;try{storage=global.localStorage;}catch(_){}
-      theme=D.Theme.create({storage,document,matchMedia:q=>global.matchMedia(q)});D.theme=theme;D.memory=D.Memory.create();
+      theme=D.Theme.create({storage,document});D.theme=theme;D.memory=D.Memory.create();
       theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
       document.querySelector('vu-navigation')?.renderSettings();
       setupSearch();global.addEventListener('hashchange',route);
