@@ -244,6 +244,24 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByText('Keine Kursprognose und kein Kursziel.',{exact:true}).waitFor();
  }
  if(view==='screener'){
+  /* DER EINFACHE EINSTIEG ZUERST - er ist jetzt das, was ein Nutzer sieht.
+     Sechs Eigenschaften, ein Satz, der die Auswahl vorliest, und bei jedem
+     Treffer der gemessene Wert als Antwort auf "warum ist die Aktie hier?". */
+  const marken=await page.locator('.q-chip[aria-pressed]').allInnerTexts();
+  const erwarteteMarken=['Qualität','Wachstum','Momentum','Bewertung','Profitabilität','Risiko'];
+  if(marken.map(t=>t.trim()).join('|')!==erwarteteMarken.join('|'))
+   throw Error('die einfachen Kriterien sind nicht die erwarteten: '+marken.join('|'));
+  await page.locator('.q-sentence').filter({hasText:'Du suchst Aktien'}).waitFor();
+  const trefferZeilen=await page.locator('.q-hit').count();
+  if(!trefferZeilen)throw Error('der einfache Einstieg zeigt keine Treffer');
+  const ohneWert=(await page.locator('.q-hit .q-hit-why').allInnerTexts()).filter(t=>!/\d/.test(t));
+  if(ohneWert.length)throw Error('Trefferzeile ohne gemessenen Wert: '+ohneWert[0]);
+  /* Was der Screener NICHT kann, muss dastehen statt als Knopf zu erscheinen. */
+  await page.getByText(/Größe und Region sind noch keine Kriterien/).waitFor();
+  /* Der Profi-Modus liegt hinter einer Klappe. Sie muss geoeffnet werden,
+     bevor irgendetwas darin sichtbar ist - sonst prueft der Lauf einen
+     Editor, den der Browser gar nicht darstellt. */
+  await page.locator('.q-pro > summary').click();
   // The two methodologies must be separately selectable, and switching
   // must not carry rules across: a rule means something else over there.
   const methodology=page.getByRole('combobox',{name:'Methodik',exact:true});
@@ -266,7 +284,21 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.waitForFunction(()=>document.querySelectorAll('a.row').length>0);
   await page.goto(origin+'/vu2/?view=screener');await page.locator('main footer').waitFor();
  }
- if(view==='strategies'){await page.getByText(/6\.875 kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung/).waitFor();const query=await page.evaluate(()=>VUScreenerWorkspace.build([{field:'momentum6m',operator:'gte',value:10,scale:'raw'},{field:'revenueGrowth',operator:'gte',value:20,scale:'raw'}]));await page.goto(origin+'/vu2/?view=strategies&query='+encodeURIComponent(JSON.stringify(query)));await page.locator('main footer').waitFor();if(await page.locator('.strategy-rules p').count()!==2)throw Error('strategy rules lost');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 1 gespeichert',exact:true}).waitFor();await page.locator('#strategy-slippage').fill('10');await page.locator('#strategy-reason').fill('Konservativere Ausführung');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 2 gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('#strategy-slippage').inputValue()!=='10')throw Error('strategy version not restored');await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Aktuelle Kriterien-Auswahl',exact:true}).waitFor();if(await page.locator('a.row').count()!==1)throw Error('strategy filter mismatch');await page.route('**/quant/data/market/factors/factors-FULL_UNIVERSE.json',route=>route.abort());await page.reload();await page.locator('main footer').waitFor();await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Auswahl noch nicht auswertbar',exact:true}).waitFor();if(await page.locator('a.row').count())throw Error('unavailable strategy source rendered as selection');await page.unroute('**/quant/data/market/factors/factors-FULL_UNIVERSE.json');await page.reload();await page.locator('main footer').waitFor();}
+ if(view==='strategies'){
+  /* DER KATALOG ZUERST: acht Ansaetze mit Klartext, Bedingungen samt
+     Schwelle, heutigen Treffern - und einem, der bewusst nichts liefert. */
+  const karten=await page.locator('.q-catalog > .q-card h2').allInnerTexts();
+  if(karten.length<7)throw Error('der Strategie-Katalog zeigt nur '+karten.length+' Ansaetze');
+  const katalogText=await page.locator('.q-catalog').innerText();
+  if(!/Titel erfüllen heute alle Bedingungen/.test(katalogText))throw Error('kein Ansatz nennt seine heutigen Treffer');
+  if(!/Derzeit keine Auswahl/.test(katalogText))throw Error('der Ansatz ohne Datengrundlage sagt nicht, dass er nichts liefert');
+  /* KEINE TREFFERQUOTE. Die einzige veroeffentlichte historische Groesse ist
+     die Bestaendigkeit der Zuordnung, und sie muss von einer Erfolgsquote
+     ausdruecklich abgegrenzt sein. */
+  await page.getByText(/Eine historische Erfolgsquote je Ansatz ist nicht zertifiziert/).waitFor();
+  /* Der Regel-Editor liegt hinter einer Klappe und muss geoeffnet werden. */
+  await page.locator('.q-pro > summary').click();
+  await page.getByText(/6\.875 kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung/).waitFor();const query=await page.evaluate(()=>VUScreenerWorkspace.build([{field:'momentum6m',operator:'gte',value:10,scale:'raw'},{field:'revenueGrowth',operator:'gte',value:20,scale:'raw'}]));await page.goto(origin+'/vu2/?view=strategies&query='+encodeURIComponent(JSON.stringify(query)));await page.locator('main footer').waitFor();await page.locator('.q-pro > summary').click();if(await page.locator('.strategy-rules p').count()!==2)throw Error('strategy rules lost');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 1 gespeichert',exact:true}).waitFor();await page.locator('#strategy-slippage').fill('10');await page.locator('#strategy-reason').fill('Konservativere Ausführung');await page.getByRole('button',{name:'Version speichern',exact:true}).click();await page.getByRole('heading',{name:'Version 2 gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();await page.locator('.q-pro > summary').click();if(await page.locator('#strategy-slippage').inputValue()!=='10')throw Error('strategy version not restored');await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Aktuelle Kriterien-Auswahl',exact:true}).waitFor();if(await page.locator('a.row').count()!==1)throw Error('strategy filter mismatch');await page.route('**/quant/data/market/factors/factors-FULL_UNIVERSE.json',route=>route.abort());await page.reload();await page.locator('main footer').waitFor();await page.locator('.q-pro > summary').click();await page.getByRole('button',{name:'Aktuelle Kriterien prüfen',exact:true}).click();await page.getByRole('heading',{name:'Auswahl noch nicht auswertbar',exact:true}).waitFor();if(await page.locator('a.row').count())throw Error('unavailable strategy source rendered as selection');await page.unroute('**/quant/data/market/factors/factors-FULL_UNIVERSE.json');await page.reload();await page.locator('main footer').waitFor();}
  if(view==='portfolio'){await page.getByRole('heading',{name:'Noch keine Positionen',exact:true}).waitFor();await page.getByRole('textbox',{name:'Position Ticker'}).fill('NVDA');await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('10');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.getByRole('button',{name:'Bestände speichern',exact:true}).click();await page.getByRole('heading',{name:'Bestände gespeichert',exact:true}).waitFor();await page.reload();await page.locator('main footer').waitFor();if(await page.locator('.holding').count()!==1)throw Error('holdings not restored');await page.getByRole('textbox',{name:'Position Ticker'}).fill('TSLA');await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('1');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();/* Der Depotwert war 'Nicht verfuegbar', solange einer der beiden Titel keinen
    veroeffentlichten Schlusskurs hatte. Inzwischen haben beide einen, und die
    Summe steht da - zu Recht. Eine Pruefung auf die Absage allein prueft also

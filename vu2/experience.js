@@ -2430,6 +2430,20 @@ async function explainPage(){
     nicht als Fussnote. */
  main.append(stage('Keine Blackbox.','So entstehen Einordnungen, Setups und Vergleiche.',
   'Jede Aussage lässt sich auf eine Zahl, einen Zeitraum und eine Quelle zurückführen. Wo eine Zahl fehlt, steht der Grund — und kein Ersatzwert.'));
+ /* "WAS IST QUANT?" IST DIE ERSTE FRAGE DES AUFTRAGS an diese Seite - und
+    ihre Antwort steht im Sprachverzeichnis, nicht in dieser Datei. Beim
+    Umbau war die Überschrift verschwunden, weil die Bühne ihren Platz
+    einnahm; die Browser-QA hat es gemeldet. Die Bühne trägt jetzt den
+    Anspruch, diese Karte die Definition. */
+ main.append(card(LQ('quant'),null,[
+  /* Der Satz über Zahl, Zeitraum und Quelle steht schon auf der Bühne
+     darüber - zweimal dasselbe liest sich wie ein Fehler. */
+  el('p',{class:'q-card-intro',text:LB('quant')}),
+  /* Der interne Name gehört hinter eine Klappe, nicht in die Hauptkopie -
+     genau das prüft der Sprachwächter, und die alte Erklärseite hat es
+     ebenso gehalten. */
+  el('details',{},[el('summary',{text:'Fachbegriff'}),
+   el('p',{class:'muted',text:VUProductLanguage.pro('quant')+' · intern: '+VUProductLanguage.internal('quant')})])]));
  main.append(card('Die fünf Ebenen jeder Einschätzung',
   'Du kannst auf jeder Ebene aufhören. Wer nur das Ergebnis will, sieht kein Fachwort; wer prüfen will, kommt bis zur Methodik.',
   [tiles(5,[
