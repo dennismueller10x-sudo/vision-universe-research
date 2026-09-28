@@ -93,12 +93,18 @@ for(const width of [1440,390]){
      Eine Navigation, die auf einer Unterseite ein fremdes Produkt anbietet
      oder die Methodik verliert, ist genau der Rueckschritt, den dieser Lauf
      fangen soll. */
-  const bereiche=await page.locator('.q-bottom a').allInnerTexts();
-  const sollBereiche=['Home','Screener','Strategien','Aktien','Methodik'];
-  if(bereiche.map(t=>t.trim()).join('|')!==sollBereiche.join('|'))
-   bad.push('NAV:'+bereiche.map(t=>t.trim()).join('|'));
-  for(const fremd of ['Discover','Research','Markets','Portfolio'])
-   if(bereiche.some(t=>t.trim()===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
+  /* NUR FUER DIE QUANT-ANSICHTEN. Die Liste dieses Laufs enthaelt auch
+     Seiten ausserhalb von /vu2/ (etwa /quant/methodology/), und die tragen
+     diese Leiste nicht - eine Pruefung ueber alles meldete dort eine leere
+     Navigation und damit einen Fehler, den es nicht gibt. */
+  if(view.startsWith('/vu2/')){
+   const bereiche=await page.locator('.q-bottom a').allInnerTexts();
+   const sollBereiche=['Home','Screener','Strategien','Aktien','Methodik'];
+   if(bereiche.map(t=>t.trim()).join('|')!==sollBereiche.join('|'))
+    bad.push('NAV:'+bereiche.map(t=>t.trim()).join('|'));
+   for(const fremd of ['Discover','Research','Markets','Portfolio'])
+    if(bereiche.some(t=>t.trim()===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
+  }
 
   /* HISTORISCHE VERGLEICHSFAELLE: EINE ZAHL NUR MIT IHRER STICHPROBE.
      Die Regel des Vertrags (historical-cases-1.0.0) lautet: ein Median
