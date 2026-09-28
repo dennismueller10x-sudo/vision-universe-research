@@ -4,8 +4,6 @@
   var D = global.VUDiscover, S = global.QuantShell, el = S.el;
   function node(tag, cls, text) { return el(tag, { class: cls, text: text }); }
   function link(text, href, cls) { return el('a', { class: cls, href: href, text: text }); }
-  // Presentation-only typography: German nouns retain their capital letters.
-  // Unknown future contract titles are preserved exactly, never guessed.
   var titles = {
     'BEKANNTE NAMEN IN BEWEGUNG': 'Bekannte Namen in Bewegung',
     'DIE STÄRKSTEN AKTIEN': 'Die stärksten Aktien',
@@ -79,15 +77,10 @@
       }
       if (!svg) return false;
       var values = rendered && rendered.werte.filter(function (v) { return typeof v === 'number' && Number.isFinite(v); });
-      // Visual direction only: no metric or ranking is recomputed.
       if (!media.hasAttribute('data-live') && (!values || values.length < 2 || values[0] === values[values.length - 1])) svg.setAttribute('data-direction', 'neutral');
-      // A lazy historical chart may be replaced by the existing intraday
-      // client moments later. Keep watching that bounded host until the
-      // structured live state arrives; static inline charts need no observer.
       if (observer && (media.hasAttribute('data-live') || !media.hasAttribute('data-series'))) observer.disconnect();
       return true;
     }
-    // Inline series settle synchronously; only lazy series need an observer.
     if (!update() && global.MutationObserver) {
       observer = new MutationObserver(update);
       observer.observe(media, { childList: true, subtree: true });
@@ -95,7 +88,6 @@
     }
   }
   var tones = ['green', 'blue', 'violet', 'amber', 'teal', 'rose'];
-  /* Kompakte, seitlich wischbare Kachel mit kanonischen Werten und Kursreihen. */
   function tile(card, ctx, options) {
     options = options || {};
     var plain = D.Cards.klartext(card, options.rowId) || card.plain || {};
@@ -121,8 +113,6 @@
     var stage = node('div', 'v2-tile-stage'); stage.appendChild(media);
     var caption = node('span', 'v2-stock-caption'); stage.appendChild(caption); a.appendChild(stage);
     bindArtworkCaption(media, caption, card, ctx, chartRange);
-    // Kurs der Karte mit ihrem Datum: Der Chart darueber kann eine neuere
-    // Sitzung zeigen, eine Tagesveraenderung ohne Datum wuerde dem widersprechen.
     var price = D.Cards.valueOf(card.price);
     var foot = node('div', 'v2-tile-foot');
     if (typeof price === 'number' && Number.isFinite(price)) {
@@ -133,7 +123,6 @@
     a.appendChild(foot);
     return D.Featured.compact(card, ctx, a, stage);
   }
-  /* ---------- Themenwelten ---------- */
   var T = function () { return V.Themes; };
   function themeVisual(theme, cls) {
     var art = node('div', cls || 'v2-theme-art');
@@ -339,13 +328,11 @@
     var search = el('button', { class: 'v2-search-prompt', type: 'button', 'aria-label': 'Unternehmen oder Symbol suchen' }, [node('span', '', '⌕'), node('span', '', 'Unternehmen oder Symbol suchen'), node('span', 'v2-search-arrow', '↗')]);
     search.addEventListener('click', ctx.openSearch); introCopy.appendChild(search);
     intro.appendChild(introCopy);
-    // Hero-Bild 16:9 (1672×941): die Flaeche hat dasselbe Seitenverhaeltnis, es wird nichts beschnitten.
     var visual = node('div', 'v2-intro-visual'); visual.setAttribute('aria-hidden', 'true');
     visual.appendChild(el('img', { src: '/assets/themen/00-discovery-hero.webp', alt: '', width: '1672', height: '941', decoding: 'async', fetchpriority: 'high' }));
     visual.appendChild(node('p', 'v2-intro-tag', 'Bessere Entscheidungen für eine hellere Zukunft.'));
     intro.appendChild(visual);
     page.appendChild(intro);
-    // Der Marktstand und die Themenwelten kommen vor den Aktien-Reihen.
     var body = node('div', 'v2-journey'); page.appendChild(body);
     body.appendChild(marketToday(ctx));
     if (T()) body.appendChild(themesRail(ctx));

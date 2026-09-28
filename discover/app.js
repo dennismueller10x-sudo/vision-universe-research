@@ -230,9 +230,6 @@
         const resume=D.memory?D.memory.position(feedKey):0;
         const fullOrder=feed.order||[],batch=feed.batchSize||12;
         const start=Number.isInteger(resume)&&resume>0&&resume<fullOrder.length?resume:0;
-        // A continuation is the untouched suffix of the canonical order.
-        // Only its first batch is loaded; earlier viewed stocks need no DOM
-        // or additional requests, even after a very deep session.
         const order=fullOrder.slice(start);
         const cards=start?await Promise.all(order.slice(0,batch).map(async entry=>{
           const card=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+entry.s+'.json');
@@ -250,8 +247,6 @@
           feedHost.setAttribute('aria-label','Aktien weiter entdecken · '+order.length+' Titel in der verbleibenden Auswahl');
         }
       } else if(parts[0]==='maerkte'&&parts[1]){
-        /* Markets 2.0: ein Detail-System fuer alle Marktinstrumente.
-           Das Aufraeumen kuendigt das Live-Abo des Trackers. */
         document.title='Märkte — Discover — Vision Universe®';
         const dispose=await D.MarketDetail.render(root,decodeURIComponent(parts[1]),{calendar,isActive:active});
         if(typeof dispose==='function'){if(active())marketDispose=dispose;else dispose();}
@@ -283,9 +278,6 @@
       theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
       document.querySelector('vu-navigation')?.renderSettings();
       setupSearch();global.addEventListener('hashchange',route);
-      /* Zwei Gruende, neu zu zeichnen: die Kurse sind da, oder der
-         Nutzer hat umgeschaltet. Discover rechnet nichts um; es
-         fragt den Vertrag und stellt dar, was er sagt. */
       document.addEventListener('vu-currency-change',route);
       document.addEventListener('vu-fx-ready',route);
       if(global.VUFx&&global.VUFx.Bootstrap){
