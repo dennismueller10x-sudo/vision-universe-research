@@ -152,7 +152,7 @@
         b.onclick=async()=>{if(preference.get()===code)return;b.disabled=true;try{if(code!=='EUR'&&window.VUFx.Bootstrap)await window.VUFx.Bootstrap.ensureCurrency(code);layer.setDisplayCurrency(code);}catch(_){b.disabled=false;}this.renderSettings();};currency.append(b);
       }
       const theme=window.VUDiscover&&window.VUDiscover.theme;
-      for(const [mode,label] of [['system','System'],['light','Hell'],['dark','Dunkel']]){
+      for(const [mode,label] of [['light','Hell'],['dark','Dunkel']]){
         if(!theme){const a=document.createElement('a');a.href='/discover/#/settings';a.textContent=label;appearance.append(a);continue;}
         const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(theme.mode()===mode));b.onclick=()=>{theme.set(mode);this.renderSettings();};appearance.append(b);
       }
