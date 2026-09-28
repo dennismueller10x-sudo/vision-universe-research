@@ -118,3 +118,31 @@ test("Keine Providerlogik, keine Zustandsberechnung in der Oberflaeche", () => {
   assert.doesNotMatch(SRC, /tiingo|fmp|fred|api\.|apikey|fetch\(/i);
   assert.doesNotMatch(SRC, /environmentLevel|seriesSignals|moveRatio/, "Zustaende kommen fertig aus dem Core");
 });
+
+const EVIDENCE = JSON.parse(readFileSync(new URL("../../quant/data/market/validation/market-pulse-evidence.json", import.meta.url), "utf8"));
+
+test("Wie verlaesslich: Pruefung aus dem Auszug - Kernaussage, Modellrechnung nie allein, Methode, Grenzen, Quelle", () => {
+  const s = MI.pruefung(J(EVIDENCE), J(PULSE));
+  assert.equal(s.attrs.id, "maerkte-pruefung");
+  const t = text(s);
+  const erste = EVIDENCE.levels[0], letzte = EVIDENCE.levels[EVIDENCE.levels.length - 1];
+  assert.match(t, new RegExp("Nach „" + erste.label + "“ folgte in " + Math.round(erste.drawdownShare) + " von 100 Fällen"));
+  assert.equal(find(s, (n) => n.tag === "li" && /\bis-heute\b/.test(n.attrs.class || "")).length, 1, "genau eine Stufe als heute markiert");
+  /* Modellrechnung: immer neben "immer investiert" und neben dem juengeren Zeitraum */
+  const regel = EVIDENCE.illustration.rules.find((r) => r.minLevel === 2);
+  assert.match(t, /Immer investiert/);
+  assert.match(t, new RegExp("Seit " + regel.since2001.from.slice(0, 4)));
+  assert.match(t, /Ohne Kosten und Steuern/);
+  assert.match(t, /kein verlässlicher Hinweis auf künftige/);
+  assert.match(t, /Nur das Wissen von damals/);
+  assert.match(t, /Grenzen/);
+  assert.match(t, /Kenneth R\. French Data Library/);
+  assert.match(t, /keine Anlageberatung/);
+  assert.match(t, new RegExp(letzte.label));
+  assert.doesNotMatch(t, /\b(jetzt )?(kaufen|verkaufen)\b|Kaufsignal|sollten Sie|\d+\s*\/\s*100|Sharpe|Perzentil|Score/i);
+});
+
+test("Wie verlaesslich fail closed: ohne Auszug keine Sektion", () => {
+  assert.equal(MI.pruefung(null, J(PULSE)), null);
+  assert.equal(MI.pruefung({ levels: [] }, J(PULSE)), null);
+});

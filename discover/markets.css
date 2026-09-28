@@ -1046,3 +1046,83 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
 .dv2 .dx-m3-ereignisse li>.dx-m3-ev-text{grid-column:2;grid-row:1;min-width:0}
 .dv2 .dx-m3-ereignisse li>time{grid-column:3;grid-row:1}
 .dv2 .dx-m3-bed-stufe{color:color-mix(in srgb,var(--kt) 68%,var(--v2-ink));background:color-mix(in srgb,var(--kt) 12%,transparent)}
+
+/* ================================================================ Markets 3.9
+   "Wie verlaesslich ist diese Einordnung?" - die historische Pruefung
+   derselben Regeln seit 1929, offengelegt fuer Anleger (Entscheidung des
+   Eigentuemers). Vier Karten im Stil der unteren Sektionen: Kernaussage mit
+   Balken je Stufe, Modellrechnung neben "immer investiert", Methode in
+   Schritten, Bedeutung und Grenzen. Stufenfarben wie im Verlauf. */
+.dv2 .dx-glyph-loch-strich{fill:none;stroke:var(--c)}
+.dv2 .dx-m3-pruefung{display:flex;flex-direction:column;gap:14px}
+.dv2 .dx-m3-pr-raster{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:14px;align-items:stretch}
+.dv2 .dx-m3-pr-karte{display:flex;flex-direction:column;gap:12px;min-width:0;padding:20px;border-radius:20px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .dx-m3-pr-kopf{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--v2-muted)}
+.dv2 .dx-m3-pr-aussage{margin:0;font-size:21px;font-weight:800;line-height:1.28;letter-spacing:-.015em;color:var(--v2-ink)}
+.dv2 .dx-m3-pr-unter{margin:-4px 0 0;font-size:14px;line-height:1.5;color:var(--v2-muted)}
+.dv2 .dx-m3-pruefung .dx-m3-fuss{margin:0;font-size:12.5px;line-height:1.5;color:var(--v2-muted)}
+
+/* Kernaussage: eine Zeile je Stufe */
+.dv2 .dx-m3-pr-balken{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.dv2 .dx-m3-pr-balken li{--kt:var(--m3-neutral);display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) auto;align-items:center;gap:12px;font-size:14px}
+.dv2 .dx-m3-pr-balken li.is-l0{--kt:var(--m3-l0)}.dv2 .dx-m3-pr-balken li.is-l1{--kt:var(--m3-l1)}.dv2 .dx-m3-pr-balken li.is-l2{--kt:var(--m3-l2)}
+.dv2 .dx-m3-pr-balken li.is-l3{--kt:var(--m3-l3)}.dv2 .dx-m3-pr-balken li.is-l4{--kt:var(--m3-l4)}
+.dv2 .dx-m3-pr-stufe{display:flex;align-items:center;gap:7px;min-width:0;font-weight:650;color:var(--v2-ink)}
+.dv2 .dx-m3-pr-stufe i{flex:0 0 auto;width:10px;height:10px;border-radius:50%;background:var(--kt)}
+.dv2 .dx-m3-pr-stufe em{font-style:normal;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700;color:var(--v2-ink);background:color-mix(in srgb,var(--kt) 18%,transparent)}
+.dv2 .dx-m3-pr-spur{position:relative;height:12px;border-radius:999px;background:var(--m3-soft);overflow:hidden}
+.dv2 .dx-m3-pr-fuell{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--kt)}
+.dv2 .dx-m3-pr-balken b{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--v2-ink)}
+.dv2 .dx-m3-pr-balken li.is-heute{padding:6px 8px;margin:0 -8px;border-radius:12px;background:color-mix(in srgb,var(--kt) 9%,transparent)}
+
+/* Modellrechnung: Vergleichstabelle und Verlusttiefe */
+.dv2 .dx-m3-pr-vgl{display:flex;flex-direction:column;border-radius:14px;background:var(--m3-soft);padding:4px 14px}
+.dv2 .dx-m3-pr-vgl-zeile{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--ap-linie);font-size:14px}
+.dv2 .dx-m3-pr-vgl-zeile:last-child{border-bottom:0}
+.dv2 .dx-m3-pr-vgl-zeile.is-kopf{font-size:12.5px;font-weight:700;color:var(--v2-muted)}
+.dv2 .dx-m3-pr-vgl-zeile b{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--v2-ink)}
+.dv2 .dx-m3-pr-vgl-zeile .is-regel{color:var(--m3-support)}
+.dv2 .dx-m3-pr-vgl-zeile.is-kopf .is-regel{color:var(--m3-support)}
+.dv2 .dx-m3-pr-tiefe{display:flex;flex-direction:column;gap:6px}
+.dv2 .dx-m3-pr-tiefe-titel{font-size:12.5px;font-weight:700;color:var(--v2-muted)}
+.dv2 .dx-m3-pr-tiefe-spur{display:block;height:8px;border-radius:999px;background:var(--m3-soft);overflow:hidden}
+.dv2 .dx-m3-pr-tiefe-spur span{display:block;height:100%;border-radius:999px}
+.dv2 .dx-m3-pr-tiefe-spur .is-immer{background:var(--m3-l0)}.dv2 .dx-m3-pr-tiefe-spur .is-regel{background:var(--m3-l3)}
+.dv2 .dx-m3-pr-juenger{margin:0;font-size:14px;line-height:1.5;color:var(--v2-ink)}
+
+/* Methode: Schritte mit Symbol */
+.dv2 .dx-m3-pr-schritte{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.dv2 .dx-m3-pr-schritte li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start}
+.dv2 .dx-m3-pr-schritte b{display:block;font-size:15px;font-weight:750;color:var(--v2-ink)}
+.dv2 .dx-m3-pr-schritte p{margin:2px 0 0;font-size:14px;line-height:1.5;color:var(--v2-muted)}
+
+/* Bedeutung: ja / nein */
+.dv2 .dx-m3-pr-liste{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.dv2 .dx-m3-pr-liste li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start}
+.dv2 .dx-m3-pr-liste p{margin:3px 0 0;font-size:15px;line-height:1.5;color:var(--v2-ink)}
+.dv2 .dx-m3-pr-zeichen{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;font-size:14px;font-weight:800;color:#fff}
+.dv2 .dx-m3-pr-liste .is-ja .dx-m3-pr-zeichen{background:var(--m3-support)}
+.dv2 .dx-m3-pr-liste .is-nein .dx-m3-pr-zeichen{background:var(--m3-neutral)}
+
+/* Details: Tabelle, Zeitabschnitte, Grenzen, Quelle */
+.dv2 .dx-m3-pr-details{padding:16px 20px;border-radius:20px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .dx-m3-pr-details summary{font-size:15px;font-weight:700;cursor:pointer}
+.dv2 .dx-m3-pr-details h3{margin:18px 0 6px;font-size:14px;font-weight:750;letter-spacing:0}
+.dv2 .dx-m3-pr-details p,.dv2 .dx-m3-pr-details li{font-size:14px;line-height:1.55;color:var(--v2-ink)}
+.dv2 .dx-m3-pr-details ul{margin:0;padding-left:1.2em}
+.dv2 .dx-m3-pr-details a{color:var(--m3-context);font-weight:650}
+.dv2 .dx-m3-pr-tabelle-box{margin-top:12px;overflow-x:auto}
+.dv2 .dx-m3-pr-tabelle-box:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+.dv2 .dx-m3-pr-tabelle{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.dv2 .dx-m3-pr-tabelle caption{text-align:left;margin:0 0 8px;font-size:13px;color:var(--v2-muted)}
+.dv2 .dx-m3-pr-tabelle th,.dv2 .dx-m3-pr-tabelle td{padding:8px 10px 8px 0;text-align:right;border-bottom:1px solid var(--ap-linie);white-space:nowrap}
+.dv2 .dx-m3-pr-tabelle th:first-child{text-align:left}
+.dv2 .dx-m3-pr-tabelle thead th{font-size:12px;font-weight:700;color:var(--v2-muted)}
+
+@media(max-width:760px){
+  .dv2 .dx-m3-pr-karte{padding:18px 16px}
+  .dv2 .dx-m3-pr-aussage{font-size:19px}
+  .dv2 .dx-m3-pr-balken li{grid-template-columns:minmax(0,1fr) auto;row-gap:6px}
+  .dv2 .dx-m3-pr-balken .dx-m3-pr-spur{grid-column:1/-1;grid-row:2}
+  .dv2 .dx-m3-pr-vgl-zeile b{font-size:15.5px}
+}

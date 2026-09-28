@@ -4,7 +4,8 @@
 
    Historische Validierung der Markt-Einordnung. Liest nur, was im
    Repository liegt; ruft keinen Anbieter ab. Schreibt:
-     docs/market-validation/market-pulse-validation.json
+     docs/market-validation/market-pulse-validation.json   (intern)
+     quant/data/market/validation/market-pulse-evidence.json (Auszug fuer die Seite)
    (unter docs/: gehoert nicht zur veroeffentlichten Seite, siehe
    scripts/vu2/build-release.mjs permitted())
 
@@ -97,6 +98,9 @@ function studyFrench() {
       evaluation: evaluate(states, outcomes, { horizons: HORIZONS, levels: LEVELS, periods }),
       illustration: [1, 2].map((minLevel) => exposureIllustration(states, f.series.MARKET, { minLevel, cashDaily })),
       outOfSample: evaluate(states.filter((s) => s.date < "2001-01-01"), outcomes, { horizons: HORIZONS, levels: LEVELS }).byHorizon,
+      /* Dieselbe Veranschaulichung nur ab 2001 - damit die Seite nicht nur
+         den guenstigen Gesamtzeitraum zeigt. */
+      recentIllustration: [1, 2].map((minLevel) => exposureIllustration(states.filter((s) => s.date >= "2001-01-01"), f.series.MARKET, { minLevel, cashDaily })),
       _states: states
     };
   });
@@ -178,6 +182,51 @@ const macro = [studyMacro(A.id, A._states, read(`quant/data/market/multi-asset/s
 /* Auf der langen Grundlage (ab 1926) mit Branchen-Breite, wenn vorhanden. */
 const bLong = B.variants && (B.variants.find((v) => v.variant === "MIT_BRANCHEN_BREITE") || B.variants[0]);
 if (bLong) macro.push(studyMacro(B.id + " / " + bLong.variant, bLong._states, B._bench, "B"));
+/* --------------------------------------------- Veroeffentlichter Auszug
+   Die Seite "Maerkte" zeigt die Pruefung fuer Anleger (Entscheidung des
+   Eigentuemers vom 28.09.2026). Nur aggregierte Kennzahlen aus Studie B,
+   Variante ohne Breite (die Branchen-Breite ist nur eine Naeherung der
+   Produkt-Breite; "Konstruktiv" steht hier fuer beide oberen Stufen).
+   Keine Rohreihen - die bleiben im Runner. */
+function evidence(B) {
+  const v = B.variants && B.variants.find((x) => x.variant === "OHNE_BREITE");
+  if (!v) return null;
+  const e = v.evaluation, h = 63;
+  const lv = (t) => t.levels.filter((x) => x.days > 0).map((x) => ({ level: x.level, label: x.label,
+    drawdownShare: x.drawdownShareIndependent, drawdownCI95: x.drawdownCI95, samples: x.independent,
+    meanReturn: x.meanReturn, positiveShare: x.positiveShareIndependent }));
+  const dd = e.contrasts.tests.filter((t) => t.metric.startsWith("deutlicher"));
+  const ill = (x) => x && ({ cagr: round(x.strategy.cagr, 1), volatility: round(x.strategy.volatility, 1), maxDrawdown: round(x.strategy.maxDrawdown, 1),
+    investedShare: round(x.investedShare, 0), from: x.from, to: x.to,
+    buyAndHold: { cagr: round(x.buyAndHold.cagr, 1), maxDrawdown: round(x.buyAndHold.maxDrawdown, 1) } });
+  return {
+    schemaVersion: "vu-market-pulse-evidence-1.0.0",
+    methodVersion: MP.METHOD_VERSION, environmentVersion: MP.ENVIRONMENT_VERSION,
+    status: "RESEARCH_EVIDENCE",
+    statusNote: "Eigene historische Prüfung der unveränderten Regeln; keine Prognose, keine Anlageberatung.",
+    from: v.from, to: v.to,
+    source: { label: "Kenneth R. French Data Library (Tuck School of Business, Dartmouth)",
+              url: "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+              detail: "US-Gesamtmarkt inklusive Dividenden, täglich; eigene Auswertung von Vision Universe." },
+    horizon: { days: h, label: HORIZON_LABEL[h] }, drawdownLimit: -10,
+    topLevelNote: "Die Branchen-Breite der Geschichte ist nur eine Näherung. „Konstruktiv“ umfasst hier deshalb auch „Breit konstruktiv“.",
+    overallDrawdownShare: e.byHorizon[h].all.drawdownShareIndependent,
+    levels: lv(e.byHorizon[h]),
+    byHorizon: HORIZONS.map((x) => ({ days: x, label: HORIZON_LABEL[x], levels: lv(e.byHorizon[x]) })),
+    contrasts: dd.map((t) => ({ days: t.horizon, label: HORIZON_LABEL[t.horizon], lowShare: t.lowShare, lowSamples: t.lowN,
+                                highShare: t.highShare, highSamples: t.highN, p: t.p, significant: t.significantAfterBH })),
+    outOfSample: { to: "2000-12-31", levels: lv(v.outOfSample[h]) },
+    periods: e.subperiods.map((sp) => ({ id: sp.id.replace(/ \(.*\)$/, ""), levels: sp.levels.filter((x) => x.days > 0).map((x) => ({ level: x.level, label: x.label,
+      drawdownShare: x.drawdownShareIndependent, samples: x.independent })) })),
+    illustration: {
+      note: "Historische Modellrechnung: investiert ab der genannten Stufe, sonst Geldmarkt; Signal am Schlusskurs, wirksam einen Tag später; ohne Kosten und Steuern; US-Gesamtmarkt, nicht direkt investierbar.",
+      rules: [1, 2].map((m, i) => ({ minLevel: m, minLabel: LEVELS[m], all: ill(v.illustration[i]), since2001: ill(v.recentIllustration[i]) }))
+    }
+  };
+}
+const EVIDENCE = "quant/data/market/validation/market-pulse-evidence.json";
+const ev = evidence(B);
+
 const strip = (s) => { if (!s) return s; const { _states, _bench, ...rest } = s; if (rest.variants) rest.variants = rest.variants.map(({ _states: x, ...v }) => v); return rest; };
 
 const result = {
@@ -203,4 +252,9 @@ else {
   mkdirSync(join(root, dirname(OUT)), { recursive: true });
   writeFileSync(join(root, OUT), JSON.stringify(result, null, 1) + "\n");
   console.log("geschrieben:", OUT);
+  if (ev) {
+    mkdirSync(join(root, dirname(EVIDENCE)), { recursive: true });
+    writeFileSync(join(root, EVIDENCE), JSON.stringify(ev, null, 1) + "\n");
+    console.log("geschrieben:", EVIDENCE);
+  }
 }
