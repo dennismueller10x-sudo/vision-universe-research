@@ -44,6 +44,7 @@ const Service = require(join(ROOT, "quant/api/product-services.js"));
 const Policy = require(join(ROOT, "quant/engines/display-policy.js"));
 const Query = require(join(ROOT, "quant/engines/query.js"));
 const Classification = require(join(ROOT, "quant/engines/instrument-classification.js"));
+const Shape = require(join(ROOT, "quant/engines/journey-shape.js"));
 
 const api = Service.create({
   loadJSON: async (p) => JSON.parse(await readFile(join(ROOT, p), "utf8")),
@@ -111,11 +112,15 @@ function pruefungen(ctx) {
     }
   } else if (row.price && !row.price.reason) nein("KURS", "kein Kurs und kein Grund");
 
-  /* 4 Zusammenfassung */
-  if (brief && brief.headline) {
-    if (brief.headline.length < 30) nein("ZUSAMMENFASSUNG", "zu kurz: " + brief.headline);
-    if (CODE.test(brief.headline)) nein("ZUSAMMENFASSUNG", "interner Code: " + (brief.headline.match(CODE) || [])[0]);
-    if (HANDLUNG.test(brief.headline)) nein("ZUSAMMENFASSUNG", "Handlungssprache: " + (brief.headline.match(HANDLUNG) || [])[0]);
+  /* 4 Zusammenfassung. `headline` ist ein OBJEKT mit `sentence`; der erste
+     Bau dieser Pruefung hat das Objekt behandelt wie einen String - `.length`
+     war `undefined`, und `undefined < 30` ist falsch, also hat sie nie etwas
+     gefunden. */
+  const kopfsatz = brief && brief.headline && brief.headline.sentence ? brief.headline.sentence : null;
+  if (kopfsatz) {
+    if (kopfsatz.length < 30) nein("ZUSAMMENFASSUNG", "zu kurz: " + kopfsatz);
+    if (CODE.test(kopfsatz)) nein("ZUSAMMENFASSUNG", "interner Code: " + (kopfsatz.match(CODE) || [])[0]);
+    if (HANDLUNG.test(kopfsatz)) nein("ZUSAMMENFASSUNG", "Handlungssprache: " + (kopfsatz.match(HANDLUNG) || [])[0]);
   } else nein("ZUSAMMENFASSUNG", "kein Satz");
 
   /* 5 und 6: keine Aussage ohne Beleg, keine zwei gleichen Hauptaussagen */
@@ -157,15 +162,26 @@ function pruefungen(ctx) {
     }
   }
 
-  /* 7 reduzierte Reise */
-  const form = brief && brief.sources && brief.sources.shape;
+  /* 7 reduzierte Reise. Die Form steht nicht in `sources`, sie wird aus den
+     Stationen berechnet - `sources.shape` gibt es nicht, und die Pruefung lief
+     damit nie. */
+  let form = null;
+  if (brief && brief.sources) {
+    const d = brief.sources;
+    try {
+      form = Shape.assess(Shape.stationsFrom({ stock: d.stock, factors: d.factors, setup: d.setup,
+        patterns: d.patterns, match: d.match, technical: d.technical }));
+    } catch { form = null; }
+  }
   if (form && form.shape && form.shape !== "FULL") {
-    const saetze = [form.headline, form.sentence, form.outlook].filter(Boolean);
+    const saetze = [kopfsatz, ...(form.causes || []).map((c) => c.headline),
+      ...(form.causes || []).map((c) => c.sentence)].filter(Boolean);
     if (!saetze.length) nein("REDUZIERTE_REISE", "reduziert, aber ohne Satz");
     for (const satz of saetze) if (CODE.test(satz)) nein("REDUZIERTE_REISE", "Code im Satz: " + (satz.match(CODE) || [])[0]);
   }
 
   /* 8 Methodik */
+  void 0;
   if (factors && factors.state === "AVAILABLE") {
     if (!factors.methodologyVersion) nein("METHODIK", "keine Fassung genannt");
   }
@@ -240,8 +256,9 @@ async function main() {
       ticker, roles: rollenIds, name: row.name, securityType: (index.entries.find((e) => e.s === ticker) || {}).t || null,
       price: row.price && finite(row.price.value) ? row.price.value : null, priceAsOf: row.price ? row.price.asOf || null : null,
       factorState: row.factorState, factorReason: row.factorReason || null,
-      journeyShape: brief && brief.sources && brief.sources.shape ? brief.sources.shape.shape : null,
-      headline: brief && brief.headline ? brief.headline : null,
+      journeyShape: (() => { const d = (brief && brief.sources) || null; if (!d) return null;
+        try { return Shape.assess(Shape.stationsFrom({ stock: d.stock, factors: d.factors, setup: d.setup, patterns: d.patterns, match: d.match, technical: d.technical })).shape; } catch { return null; } })(),
+      headline: brief && brief.headline && brief.headline.sentence ? brief.headline.sentence : null,
       browserChecked: imBrowser.has(ticker),
       findings: befunde, ok: befunde.length === 0
     });

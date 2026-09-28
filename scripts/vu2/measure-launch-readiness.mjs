@@ -81,6 +81,10 @@ const HEAD = (() => { try { return execFileSync("git", ["rev-parse", "HEAD"], { 
    sein Artefakt geaendert, das hier steht. Nimmt man sie mit auf, macht jedes
    neue Messskript einen tadellosen Browser-Smoke ungueltig. */
 const RELEVANT = ["quant/engines", "quant/api", "vu2", "quant/methodology", "quant/data/product", "quant/data/universe", "quant/data/market"];
+/* Der Suite-Beleg haengt zusaetzlich an den Tests selbst: ein geaenderter Test
+   aendert, was die Suite beweist. Der Browser-Smoke haengt nicht daran - er
+   sieht die Tests nie. Zwei Belege, zwei Mengen. */
+const RELEVANT_SUITE = RELEVANT.concat(["quant/tests"]);
 /* Drei Dateien unter `quant/data/product` sind MESSERGEBNISSE und werden vom
    Produkt nie gelesen. Sie muessen ausgenommen werden, sonst macht der
    Launch-Bericht, sobald er eingecheckt ist, den Suite- und den Smoke-Beleg
@@ -90,16 +94,17 @@ const BERICHTSDATEIEN = new Set([
   "quant/data/product/acceptance-sample-v1.json",
   "quant/data/product/intelligence-coherence-v1.json"
 ]);
-function berichtGilt(bericht) {
+function berichtGilt(bericht, pfade) {
+  const relevant = pfade || RELEVANT;
   if (!bericht || !bericht.commit) return { ok: false, reason: "OHNE_COMMIT" };
   if (!HEAD) return { ok: false, reason: "OHNE_GIT" };
   if (bericht.commit === HEAD) return { ok: true, reason: "AUF_HEAD", changed: [] };
   try {
     execFileSync("git", ["merge-base", "--is-ancestor", bericht.commit, HEAD], { cwd: ROOT });
   } catch { return { ok: false, reason: "KEIN_VORFAHRE_VON_HEAD" }; }
-  const geaendert = execFileSync("git", ["diff", "--name-only", bericht.commit + "..HEAD", "--", ...RELEVANT], { cwd: ROOT })
+  const geaendert = execFileSync("git", ["diff", "--name-only", bericht.commit + "..HEAD", "--", ...relevant], { cwd: ROOT })
     .toString().trim().split("\n").filter(Boolean);
-  const offen = execFileSync("git", ["status", "--porcelain", "--", ...RELEVANT], { cwd: ROOT })
+  const offen = execFileSync("git", ["status", "--porcelain", "--", ...relevant], { cwd: ROOT })
     .toString().trim().split("\n").filter(Boolean).map((z) => z.slice(3));
   const alle = [...new Set([...geaendert, ...offen])].filter((pfad) => !BERICHTSDATEIEN.has(pfad));
   return alle.length
@@ -392,23 +397,61 @@ async function main() {
   const reduziert = [], fehlerbilder = [];
   for (const s of briefProbe) {
     const brief = await api.getIntelligenceBrief(s.ticker).catch(() => null);
-    if (!brief) continue;
-    if (brief.headline) { mitAuskunft += 1; primaer(s.ticker, "headline", brief.headline); }
+    if (!brief || brief.state !== "AVAILABLE") continue;
+    /* `headline` ist ein OBJEKT (`sentence`, `state`, `evidence`), kein String.
+       Der erste Bau dieses Gates hat das Objekt in die Sprachpruefung gegeben,
+       die jeden Nicht-String stillschweigend durchlaesst - der Kopfsatz war
+       damit NIE auf interne Codes oder Handlungssprache geprueft, und
+       `briefsWithHeadline` zaehlte 500 Objekte. */
+    const kopfsatz = brief.headline && brief.headline.sentence ? brief.headline.sentence : null;
+    if (kopfsatz) { mitAuskunft += 1; primaer(s.ticker, "headline", kopfsatz); }
+    else sprachfehler.push({ ticker: s.ticker, field: "headline", kind: "KEIN_SATZ", detail: String(brief.headline && brief.headline.state) });
     for (const gruppe of ["pro", "contra", "unknown"]) {
-      for (const p of brief[gruppe] || []) primaer(s.ticker, gruppe, p.statement || p.text || "");
+      for (const p of brief[gruppe] || []) {
+        primaer(s.ticker, gruppe, p.text || "");
+        /* Die Begruendung steht direkt darunter und ist genauso Nutzertext. */
+        primaer(s.ticker, gruppe + ".why", p.why || "");
+      }
     }
     if ((brief.pro || []).length && (brief.contra || []).length && (brief.unknown || []).length) mitDreiGruppen += 1;
     const leer = typeof brief.statementsWithoutEvidence === "function" ? brief.statementsWithoutEvidence() : (brief.statementsWithoutEvidence || []);
     if (leer && leer.length) { ohneBeleg += 1; sprachfehler.push({ ticker: s.ticker, field: "evidence", kind: "AUSSAGE_OHNE_BELEG", detail: String(leer.length) }); }
-    if (brief.methodologySwitch) methodikSichtbar += 1;
-    /* Gate 10 in derselben Runde: ein datenarmer Titel muss REDUZIERT
-       aussehen und nicht kaputt. */
-    const form = brief.sources && brief.sources.shape ? brief.sources.shape : null;
+    /* `methodologySwitch` ist immer da; sichtbar ist er nur, wenn er AKTIV
+       ist. Der erste Bau zaehlte das Objekt und kam auf 500 von 500. */
+    if (brief.methodologySwitch && brief.methodologySwitch.active) methodikSichtbar += 1;
+
+    /* GATE 10, IN DERSELBEN RUNDE: ein datenarmer Titel muss REDUZIERT
+       aussehen und nicht kaputt.
+
+       Die Form steht nicht in `sources` - sie wird aus den Stationen
+       BERECHNET, genau wie in der Kohaerenzmessung. Der erste Bau las
+       `sources.shape`, ein Feld, das es nicht gibt: er fand 0 reduzierte
+       Reisen in 500 Titeln, waehrend es auf derselben Stichprobe 91
+       REDUCED und 2 MINIMAL sind. Das Gate hat also nichts geprueft. */
+    const d = brief.sources || {};
+    let form = null;
+    try {
+      form = Shape.assess(Shape.stationsFrom({ stock: d.stock, factors: d.factors, setup: d.setup,
+        patterns: d.patterns, match: d.match, technical: d.technical }));
+    } catch { form = null; }
     if (form && form.shape && form.shape !== "FULL") {
       reduziert.push(s.ticker);
-      const saetze = [form.headline, form.sentence, form.outlook].filter(Boolean);
+      /* Was ein Leser sieht: der Kopfsatz der Auskunft und - wo die Reise
+         verdichtet ist - die Ursachengruppen mit ihrer Begruendung. Beides
+         muss da sein und darf keinen internen Code tragen. */
+      const saetze = [kopfsatz, ...(form.causes || []).map((c) => c.headline),
+        ...(form.causes || []).map((c) => c.sentence)].filter(Boolean);
       if (!saetze.length) fehlerbilder.push({ ticker: s.ticker, kind: "KEIN_SATZ", detail: form.shape });
-      for (const satz of saetze) if (CODE.test(satz)) fehlerbilder.push({ ticker: s.ticker, kind: "CODE_IM_SATZ", detail: (satz.match(CODE) || [])[0] });
+      for (const satz of saetze) {
+        if (CODE.test(satz)) fehlerbilder.push({ ticker: s.ticker, kind: "CODE_IM_SATZ", detail: (satz.match(CODE) || [])[0] + " in \"" + satz.slice(0, 70) + "\"" });
+      }
+      /* Und die Stationen, die fehlen, muessen ihren Grund nennen - sonst
+         sieht die Seite kaputt aus statt reduziert. */
+      for (const [id, station] of Object.entries(form.stations || {})) {
+        if (station && station.substantive === false && !station.reason) {
+          fehlerbilder.push({ ticker: s.ticker, kind: "STATION_OHNE_GRUND", detail: id });
+        }
+      }
     }
   }
   gates.push(gate("PRODUCT_LANGUAGE", "Kein interner Code, kein verbotener Begriff, keine Handlungssprache",
@@ -487,7 +530,9 @@ async function main() {
     fehlerbilder.length === 0,
     { briefSample: briefProbe.length, reducedInSample: reduziert.length,
       violations: fehlerbilder.length,
-      note: "Geprüft wird: jede reduzierte Reise trägt einen Nutzersatz, und in diesem Satz steht kein interner Code." },
+      note: "Die Form wird aus den Stationen berechnet (journey-shape). Geprüft wird: jede " +
+            "reduzierte Reise trägt einen Nutzersatz, in diesem Satz steht kein interner Code, " +
+            "und jede fehlende Station nennt ihren Grund." },
     fehlerbilder));
 
   /* --------------------------------------------------------------- 11 */
@@ -506,7 +551,7 @@ async function main() {
 
   /* --------------------------------------------------------------- 12 */
   const suite = await lesen(SUITE);
-  const suiteGeltung = berichtGilt(suite);
+  const suiteGeltung = berichtGilt(suite, RELEVANT_SUITE);
   const suiteFrisch = suiteGeltung.ok;
   gates.push(gate("REGRESSION_GUARDS", "Die Suite läuft grün und deckt die Launch-Regeln ab",
     !suiteFrisch ? null : suite.fail === 0 && suite.pass > 1500,

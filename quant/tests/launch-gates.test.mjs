@@ -149,9 +149,80 @@ test("NOT_MEASURED ist kein PASS", () => {
   /* Und der Smoke-Bericht muss zum gemessenen Stand gehoeren. */
   assert.match(quelle, /smokeFrisch/);
   assert.match(quelle, /suiteFrisch/);
+  /* Und der Suite-Beleg haengt zusaetzlich an den Tests selbst: ein
+     geaenderter Test aendert, was die Suite beweist. Der Smoke sieht die
+     Tests nie. */
+  assert.match(quelle, /RELEVANT_SUITE = RELEVANT\.concat\(\["quant\/tests"\]\)/);
+  assert.match(quelle, /berichtGilt\(suite, RELEVANT_SUITE\)/);
   const smoke = readFileSync(join(ROOT, "scripts/vu2/production-smoke.mjs"), "utf8");
   assert.match(smoke, /production-smoke-1\.0\.0/);
   assert.match(smoke, /commit/);
+});
+
+test("die Messung liest die Felder, die es gibt - und nicht die, die sie erwartet", async () => {
+  /* VIER PRUEFUNGEN, DIE NICHTS GEPRUEFT HABEN.
+
+     Am 28.09.2026 standen in der Launch-Messung vier Pruefungen, die gruen
+     waren, weil sie ins Leere lasen:
+
+       `brief.headline`          ist ein OBJEKT mit `sentence` - die
+                                 Sprachpruefung laesst jeden Nicht-String
+                                 durch, der Kopfsatz war also NIE geprueft.
+       `brief.sources.shape`     gibt es nicht - die Form wird aus den
+                                 Stationen berechnet. Das Gate ERROR_STATES
+                                 fand 0 reduzierte Reisen in 500 Titeln,
+                                 waehrend es 88 sind.
+       `brief.sources.change`    gibt es nicht - Veraenderungen stehen als
+                                 Punkte mit `kind === "change"` in den
+                                 Spalten. Alle sechs Titel galten als
+                                 unbeantwortet.
+       `brief.methodologySwitch` ist immer da; sichtbar ist er nur, wenn er
+                                 `active` ist. Gezaehlt wurden 500 von 500.
+
+     Dieser Test haelt die vier Felder fest, damit dieselbe Art Fehler nicht
+     unbemerkt zurueckkommt: er prueft die FORM der Auskunft an einem
+     Titel. */
+  const brief = await api.getIntelligenceBrief("AAPL");
+  assert.equal(brief.state, "AVAILABLE");
+  assert.equal(typeof brief.headline, "object", "headline ist kein Objekt mehr - die Messung muss mit");
+  assert.equal(typeof brief.headline.sentence, "string");
+  assert.ok(brief.headline.sentence.length > 30);
+  assert.equal(brief.sources.shape, undefined, "es gibt jetzt ein sources.shape - dann darf die Messung es lesen");
+  assert.equal(brief.sources.change, undefined, "es gibt jetzt ein sources.change - dann darf die Messung es lesen");
+  assert.equal(typeof brief.methodologySwitch, "object");
+  assert.equal(typeof brief.methodologySwitch.active, "boolean");
+  const punkte = [...brief.pro, ...brief.contra, ...brief.unknown];
+  assert.ok(punkte.length, "die Auskunft hat keine Punkte");
+  for (const punkt of punkte) {
+    assert.equal(typeof punkt.text, "string", "ein Punkt traegt seinen Satz nicht in `text`");
+    assert.equal(punkt.statement, undefined, "es gibt jetzt ein `statement` - dann darf die Messung es lesen");
+  }
+  assert.ok(punkte.some((p) => p.kind === "change"), "kein Punkt mit kind=change - dann ist 'was aendert sich' unbeantwortet");
+
+  /* Und die Messung selbst liest diese Felder auch so. */
+  const messung = readFileSync(join(ROOT, "scripts/vu2/measure-launch-readiness.mjs"), "utf8");
+  assert.match(messung, /brief\.headline\.sentence/);
+  assert.match(messung, /Shape\.assess\(Shape\.stationsFrom/);
+  assert.match(messung, /brief\.methodologySwitch\.active/);
+  assert.equal(/brief\.sources\.shape|brief\.sources && brief\.sources\.change/.test(messung), false,
+    "die Messung liest wieder ein Feld, das es nicht gibt");
+});
+
+test("die Gates, die etwas zaehlen, zaehlen nicht null", () => {
+  /* Ein Gate, das PASS meldet und dabei NICHTS gesehen hat, ist die
+     gefaehrlichste Zeile im Bericht. Drei Zahlen verraten es. */
+  const pfad = join(ROOT, "quant/data/product/launch-readiness-v1.json");
+  if (!existsSync(pfad)) return;
+  const bericht = JSON.parse(readFileSync(pfad, "utf8"));
+  const fakten = (id) => (bericht.gates.find((g) => g.id === id) || { facts: {} }).facts;
+  assert.ok(fakten("ERROR_STATES").reducedInSample > 20,
+    "ERROR_STATES hat nur " + fakten("ERROR_STATES").reducedInSample + " reduzierte Reisen gesehen");
+  assert.ok(fakten("PRODUCT_LANGUAGE").briefSample >= 100);
+  const sichtbar = fakten("METHODOLOGY_TRANSPARENCY").methodologySwitchVisibleInSample;
+  assert.ok(sichtbar > 0 && sichtbar < fakten("METHODOLOGY_TRANSPARENCY").briefSample,
+    "der Methodikwechsel ist bei allen oder bei keinem sichtbar (" + sichtbar + ") - das zaehlt das falsche Feld");
+  assert.ok(fakten("IDENTITY_CORRECTNESS").surfaceSample > 100);
+  assert.ok(fakten("PRICE_CONSISTENCY").pageSample > 100);
 });
 
 test("der Launch-Bericht nennt jedes Gate und sein Urteil", () => {

@@ -2,6 +2,48 @@
 
 Updated: 2026-09-28 UTC
 
+## LAUNCH_2026-09-28 — PUBLIC_BETA_LAUNCH_READY = PASS
+
+`launch-readiness-1.0.0` · Commit `fef154b972` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·
+0 offen · 0 rot
+
+Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`** (zehn Punkte, wie
+beauftragt). Alle drei Belege stammen vom **gleichen** Commit: Browser-Smoke gegen das gebaute
+Release (34 Ansichten × 2 Breiten, 0 Fehlschläge), Suite (1.966 / 1.966 / 0), Abnahmestichprobe
+(22 Titel, PASS).
+
+**Was dieser Satz nicht sagt:** `PASS` gilt für das Release aus diesem Commit, nicht für das, was
+in diesem Moment ausgeliefert wird. Der Default-Branch trägt diese 16 Commits noch nicht;
+`pages-release.yml` löst auf Push zum Default-Branch und auf Pull Requests aus. Der Schritt nach
+draußen ist ein Merge und damit eine Owner-Entscheidung.
+
+### Vier eigene Prüfungen waren grün, ohne etwas zu prüfen
+
+Das ist der wichtigste Befund dieses Zyklus, weil er die Messung selbst betrifft:
+
+| gelesen | existiert | Folge |
+|---|---|---|
+| `brief.headline` als String | ist ein **Objekt** mit `sentence` | der Kopfsatz war nie auf interne Codes oder Handlungssprache geprüft |
+| `brief.sources.shape` | gibt es nicht | ERROR_STATES fand **0** reduzierte Reisen in 500 Titeln — es sind 88 |
+| `brief.sources.change` | gibt es nicht | alle sechs Titel des Erlebnis-Gates galten als unbeantwortet |
+| `brief.methodologySwitch` als Flagge | ist immer da, `active` entscheidet | gezählt wurden 500 von 500 statt 71 |
+
+Dazu in der Abnahmestichprobe: `p.statement` statt `p.text` — die Doppel- und
+Widerspruchsprüfungen verglichen leere Strings. Und `DATA_FRESHNESS` bestand auf zwei geratenen
+Workflownamen, weil das Gate nur verlangte, dass *irgendein* Zeitplan existiert.
+
+Ein Gate, das PASS meldet und dabei nichts gesehen hat, ist gefährlicher als ein rotes. Ein Test
+hält deshalb jetzt die **Form** der Auskunft fest, und ein zweiter prüft, dass die Gates, die etwas
+zählen, nicht null zählen.
+
+### Was ein Widerspruch ist — und was nicht
+
+Die erste Fassung der Widerspruchsprüfung schlug auf `factorId` an und meldete vier der neun
+namentlich genannten Titel. MSFT trägt „Trendstruktur verbessert sich" (dafür) und „Kurstempo
+verschlechtert sich" (dagegen) — **zwei verschiedene Messungen derselben Familie**, beide wahr,
+jede mit ihrer Rechenregel darunter. Genau diese Unterscheidung war der Kern von M40. Ein
+Widerspruch ist dieselbe **Einordnung** auf beiden Seiten oder wortwörtlich derselbe Satz.
+
 ## M43 — DIE ZWÖLF LAUNCH-GATES, GEMESSEN (UND DIE ÜBERSICHT BEHAUPTETE 459 BEWERTUNGEN)
 
 `launch-readiness-1.0.0` · `scripts/vu2/measure-launch-readiness.mjs` ·

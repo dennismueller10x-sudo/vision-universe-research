@@ -1,7 +1,7 @@
 {
  "schemaVersion": "acceptance-sample-1.0.0",
- "generatedAt": "2026-09-28T07:30:35.000Z",
- "commit": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+ "generatedAt": "2026-09-28T07:44:35.000Z",
+ "commit": "fef154b9726cc8ec07f015cdb90403dbd2771327",
  "named": [
   "AAPL",
   "MSFT",
@@ -33,7 +33,7 @@
  "withFindings": 0,
  "browserChecked": 9,
  "smokeReport": {
-  "commit": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+  "commit": "fef154b9726cc8ec07f015cdb90403dbd2771327",
   "clean": true
  },
  "note": "Die neun genannten Titel stehen fest; die Rollen werden je Lauf über Prädikate besetzt und sind deshalb zwischen zwei Läufen gleich, solange sich die Daten nicht ändern. 'Im Browser geprüft' heißt: dieser Titel stand im Produktions-Smoke.",
@@ -49,37 +49,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine hohe Ertragskraft und ruhige Kursschwankungen. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
-    "state": "COMPLETE",
-    "strengths": [
-     "profitability",
-     "risk"
-    ],
-    "weaknesses": [],
-    "setupState": "SETUP_FORMING",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "profitability",
-      "value": 94.73,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 88.84,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "SETUP_FORMING",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine hohe Ertragskraft und ruhige Kursschwankungen. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -95,30 +66,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt ruhige Kursschwankungen. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
-    "state": "COMPLETE",
-    "strengths": [
-     "risk"
-    ],
-    "weaknesses": [],
-    "setupState": "WATCH",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 79.88,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "WATCH",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt ruhige Kursschwankungen. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -134,45 +83,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine hohe Ertragskraft und kräftiges Wachstum, dagegen eine angreifbare Bilanz. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
-    "state": "COMPLETE",
-    "strengths": [
-     "profitability",
-     "growth"
-    ],
-    "weaknesses": [
-     "quality"
-    ],
-    "setupState": "SETUP_FORMING",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "profitability",
-      "value": 98.31,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "growth",
-      "value": 86.86,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "quality",
-      "value": 42.91,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "SETUP_FORMING",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine hohe Ertragskraft und kräftiges Wachstum, dagegen eine angreifbare Bilanz. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -188,30 +100,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine hohe Ertragskraft. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
-    "state": "COMPLETE",
-    "strengths": [
-     "profitability"
-    ],
-    "weaknesses": [],
-    "setupState": "SETUP_FORMING",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "profitability",
-      "value": 81.04,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "SETUP_FORMING",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine hohe Ertragskraft. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -227,37 +117,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt ruhige Kursschwankungen und eine starke Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [
-     "risk",
-     "momentum"
-    ],
-    "weaknesses": [],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 80.66,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 78.06,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt ruhige Kursschwankungen und eine starke Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -273,37 +134,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt ruhige Kursschwankungen und eine starke Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [
-     "risk",
-     "momentum"
-    ],
-    "weaknesses": [],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 79.17,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 79.08,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt ruhige Kursschwankungen und eine starke Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -319,30 +151,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt ruhige Kursschwankungen. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
-    "state": "COMPLETE",
-    "strengths": [
-     "risk"
-    ],
-    "weaknesses": [],
-    "setupState": "WATCH",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 77.38,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "WATCH",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt ruhige Kursschwankungen. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -358,37 +168,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine schwache Kursentwicklung und schwaches Wachstum. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [],
-    "weaknesses": [
-     "momentum",
-     "growth"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 38.37,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "growth",
-      "value": 43.69,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine schwache Kursentwicklung und schwaches Wachstum. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -404,37 +185,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine angreifbare Bilanz und eine schwache Ertragskraft. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [],
-    "weaknesses": [
-     "quality",
-     "profitability"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "quality",
-      "value": 26.61,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "profitability",
-      "value": 39.17,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine angreifbare Bilanz und eine schwache Ertragskraft. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -450,37 +202,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine hohe Bewertung und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [],
-    "weaknesses": [
-     "value",
-     "momentum"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "value",
-      "value": 33.68,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 40.66,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine hohe Bewertung und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -496,45 +219,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine günstige Bewertung, dagegen eine schwache Kursentwicklung und starke Kursschwankungen. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [
-     "value"
-    ],
-    "weaknesses": [
-     "momentum",
-     "risk"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "value",
-      "value": 93.56,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 5.57,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 18.15,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine günstige Bewertung, dagegen eine schwache Kursentwicklung und starke Kursschwankungen. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -550,37 +236,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt starke Kursschwankungen und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [],
-    "weaknesses": [
-     "risk",
-     "momentum"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 32.3,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 33.21,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt starke Kursschwankungen und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -596,22 +253,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 116 vor.",
-    "state": "UNAVAILABLE",
-    "strengths": [],
-    "weaknesses": [],
-    "setupState": "UNAVAILABLE",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "bars",
-      "value": 116,
-      "unit": "sessions"
-     }
-    ]
-   },
+   "journeyShape": "REDUCED",
+   "headline": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 116 vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -627,15 +270,8 @@
    "priceAsOf": null,
    "factorState": "UNAVAILABLE",
    "factorReason": "NO_FACTOR_ROW",
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Für diesen Titel liegt noch keine auswertbare Einordnung der sieben Eigenschaften vor.",
-    "state": "UNAVAILABLE",
-    "strengths": [],
-    "weaknesses": [],
-    "setupState": "UNAVAILABLE",
-    "evidence": []
-   },
+   "journeyShape": "MINIMAL",
+   "headline": "Für diesen Titel liegt noch keine auswertbare Einordnung der sieben Eigenschaften vor.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -651,15 +287,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "UNAVAILABLE",
    "factorReason": "NOT_AN_EQUITY_LISTING",
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Dieser Titel ist ein börsengehandelter Fonds. Die Einordnung dieser Analyse beschreibt Unternehmen und gilt für ihn nicht.",
-    "state": "UNAVAILABLE",
-    "strengths": [],
-    "weaknesses": [],
-    "setupState": "UNAVAILABLE",
-    "evidence": []
-   },
+   "journeyShape": "REDUCED",
+   "headline": "Dieser Titel ist ein börsengehandelter Fonds. Die Einordnung dieser Analyse beschreibt Unternehmen und gilt für ihn nicht.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -675,38 +304,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt ruhige Kursschwankungen, dagegen eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [
-     "risk"
-    ],
-    "weaknesses": [
-     "momentum"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 83,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 32.15,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt ruhige Kursschwankungen, dagegen eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -722,37 +321,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt ruhige Kursschwankungen und eine hohe Ertragskraft. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
-    "state": "COMPLETE",
-    "strengths": [
-     "risk",
-     "profitability"
-    ],
-    "weaknesses": [],
-    "setupState": "WATCH",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 80.32,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "profitability",
-      "value": 75.44,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "WATCH",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt ruhige Kursschwankungen und eine hohe Ertragskraft. Ein bestätigtes Setup liegt noch nicht vor; die Lage ist beobachtungswürdig.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -768,37 +338,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt starke Kursschwankungen und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [],
-    "weaknesses": [
-     "risk",
-     "momentum"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 29.06,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "momentum",
-      "value": 34.92,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt starke Kursschwankungen und eine schwache Kursentwicklung. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": true,
    "findings": [],
    "ok": true
@@ -814,30 +355,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt ruhige Kursschwankungen. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
-    "state": "COMPLETE",
-    "strengths": [
-     "risk"
-    ],
-    "weaknesses": [],
-    "setupState": "SETUP_FORMING",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 81.57,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "SETUP_FORMING",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt ruhige Kursschwankungen. Ein Setup ist im Aufbau, aber noch nicht bestätigt.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -853,22 +372,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 84 vor.",
-    "state": "UNAVAILABLE",
-    "strengths": [],
-    "weaknesses": [],
-    "setupState": "UNAVAILABLE",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "bars",
-      "value": 84,
-      "unit": "sessions"
-     }
-    ]
-   },
+   "journeyShape": "REDUCED",
+   "headline": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 84 vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -884,37 +389,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Die Aktie zeigt eine angreifbare Bilanz und starke Kursschwankungen. Ein Setup liegt derzeit nicht vor.",
-    "state": "COMPLETE",
-    "strengths": [],
-    "weaknesses": [
-     "quality",
-     "risk"
-    ],
-    "setupState": "NO_SETUP",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "quality",
-      "value": 34.94,
-      "unit": "percentile"
-     },
-     {
-      "source": "factorEvidence",
-      "field": "risk",
-      "value": 43.89,
-      "unit": "percentile"
-     },
-     {
-      "source": "setupObservation",
-      "field": "classification.state",
-      "value": "NO_SETUP",
-      "unit": null
-     }
-    ]
-   },
+   "journeyShape": "FULL",
+   "headline": "Die Aktie zeigt eine angreifbare Bilanz und starke Kursschwankungen. Ein Setup liegt derzeit nicht vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true
@@ -930,22 +406,8 @@
    "priceAsOf": "2026-09-25",
    "factorState": "AVAILABLE",
    "factorReason": null,
-   "journeyShape": null,
-   "headline": {
-    "sentence": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 80 vor.",
-    "state": "UNAVAILABLE",
-    "strengths": [],
-    "weaknesses": [],
-    "setupState": "UNAVAILABLE",
-    "evidence": [
-     {
-      "source": "factorEvidence",
-      "field": "bars",
-      "value": 80,
-      "unit": "sessions"
-     }
-    ]
-   },
+   "journeyShape": "REDUCED",
+   "headline": "Für eine Einordnung dieses Titels werden 252 Handelstage benötigt; aktuell liegen 80 vor.",
    "browserChecked": false,
    "findings": [],
    "ok": true

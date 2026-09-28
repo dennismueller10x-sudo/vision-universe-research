@@ -1,21 +1,19 @@
 {
  "schemaVersion": "launch-readiness-1.0.0",
- "generatedAt": "2026-09-28T07:32:06.000Z",
- "commit": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+ "generatedAt": "2026-09-28T07:47:13.000Z",
+ "commit": "fef154b9726cc8ec07f015cdb90403dbd2771327",
  "northStar": "PUBLIC_BETA_LAUNCH_READY",
  "ordering": "Korrektheit > Coverage · Vertrauen > Vollständigkeit · Launch Readiness > Feature-Tiefe",
  "universe": 6875,
  "briefSample": 500,
- "PUBLIC_BETA_LAUNCH_READY": "FAIL",
+ "PUBLIC_BETA_LAUNCH_READY": "PASS",
  "p0Gates": 12,
  "p1Checks": 2,
  "gatesTotal": 14,
- "gatesPassed": 13,
+ "gatesPassed": 14,
  "gatesFailed": 0,
- "gatesNotMeasured": 1,
- "blocking": [
-  "REGRESSION_GUARDS"
- ],
+ "gatesNotMeasured": 0,
+ "blocking": [],
  "gates": [
   {
    "id": "IDENTITY_CORRECTNESS",
@@ -189,7 +187,7 @@
     "recovered": 0,
     "views": 34,
     "release": "/tmp/claude-0/release",
-    "commit": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+    "commit": "fef154b9726cc8ec07f015cdb90403dbd2771327",
     "validity": {
      "ok": true,
      "reason": "AUF_HEAD",
@@ -212,7 +210,7 @@
     "recovered": 0,
     "views": 34,
     "release": "/tmp/claude-0/release",
-    "commit": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+    "commit": "fef154b9726cc8ec07f015cdb90403dbd2771327",
     "validity": {
      "ok": true,
      "reason": "AUF_HEAD",
@@ -244,9 +242,9 @@
    "status": "PASS",
    "facts": {
     "briefSample": 500,
-    "reducedInSample": 0,
+    "reducedInSample": 88,
     "violations": 0,
-    "note": "Geprüft wird: jede reduzierte Reise trägt einen Nutzersatz, und in diesem Satz steht kein interner Code."
+    "note": "Die Form wird aus den Stationen berechnet (journey-shape). Geprüft wird: jede reduzierte Reise trägt einen Nutzersatz, in diesem Satz steht kein interner Code, und jede fehlende Station nennt ihren Grund."
    },
    "caseCount": 0,
    "cases": []
@@ -257,7 +255,7 @@
    "status": "PASS",
    "facts": {
     "documents": 4,
-    "methodologySwitchVisibleInSample": 500,
+    "methodologySwitchVisibleInSample": 71,
     "briefSample": 500,
     "violations": 0
    },
@@ -267,17 +265,18 @@
   {
    "id": "REGRESSION_GUARDS",
    "title": "Die Suite läuft grün und deckt die Launch-Regeln ab",
-   "status": "NOT_MEASURED",
+   "status": "PASS",
    "facts": {
-    "suiteReport": "/home/user/vision-universe-research/.launch/test-suite.json",
-    "exists": false,
-    "reportCommit": null,
-    "head": "17ef92bf361ea51943d3acb7aa6eb6d0e0533947",
+    "tests": 1966,
+    "pass": 1966,
+    "fail": 0,
+    "files": null,
+    "commit": "fef154b9726cc8ec07f015cdb90403dbd2771327",
     "validity": {
-     "ok": false,
-     "reason": "OHNE_COMMIT"
-    },
-    "note": "Ein Suite-Ergebnis von einem Stand, an dem sich seither Code oder Artefakte geaendert haben, ist fuer dieses Gate kein Beleg."
+     "ok": true,
+     "reason": "AUF_HEAD",
+     "changed": []
+    }
    },
    "caseCount": 0,
    "cases": []
