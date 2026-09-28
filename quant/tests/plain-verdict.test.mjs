@@ -144,3 +144,35 @@ test("über echte Titel entsteht nie ein Widerspruch", () => {
   }
   assert.ok(n > 100, "die Stichprobe ist zu klein, um etwas zu belegen: " + n);
 });
+
+test("der Aufklapper baut seinen Inhalt erst beim Oeffnen, aber er baut ihn", () => {
+  /* `mehr` haelt die Tiefe zurueck, bis jemand sie will. Genau das ist
+     die Stelle, an der ein Umbau still etwas verlieren kann: ein
+     Aufklapper, der nie fuellt, sieht aus wie ein Aufklapper, der leer
+     ist. Der Produktions-Smoke oeffnet deshalb alle <details> der
+     Aktienseite und prueft danach ALLE Zeilen - dieser Test haelt fest,
+     dass er das auch weiterhin tut. */
+  const smoke = readFileSync(join(ROOT, "scripts/vu2/production-smoke.mjs"), "utf8");
+  assert.match(smoke, /node\.open\s*=\s*true/,
+    "der Smoke oeffnet die Aufklapper nicht mehr - zugeklappte Tiefe bliebe ungeprueft");
+  assert.match(smoke, /ZU_WENIGE_ZEILEN/, "die Schwelle fuer eine leer aussehende Liste fehlt");
+  assert.match(smoke, /zeilen\.length<20/,
+    "die Schwelle wurde gesenkt, statt den Smoke aufklappen zu lassen");
+
+  const quelle = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
+  assert.match(quelle, /function mehr\(titel,bauen,offen\)/, "der Aufklapper fehlt");
+  assert.match(quelle, /addEventListener\('toggle'/,
+    "der Inhalt wird nicht mehr beim Oeffnen gebaut - dann ist er entweder immer da oder nie");
+});
+
+test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () => {
+  const quelle = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
+  const kopf = quelle.slice(quelle.indexOf("async function homePage(){"), quelle.indexOf("function weg("));
+  assert.ok(kopf.length > 200, "die Startseite ist nicht auffindbar");
+  assert.match(kopf, /q-hero/, "die Startseite hat keinen ersten Bildschirm mehr");
+  assert.match(kopf, /Aktien verstehen, ohne Vorwissen/,
+    "das Versprechen der Startseite ist verschwunden");
+  /* Drei Wege, nicht mehr. Ein vierter waere wieder eine Entscheidung. */
+  const wege = (kopf.match(/weg\('/g) || []).length;
+  assert.equal(wege, 3, "die Startseite bietet " + wege + " Wege an, drei sind vereinbart");
+});

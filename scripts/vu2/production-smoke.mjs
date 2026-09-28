@@ -205,6 +205,22 @@ for(const width of [1440,390]){
    console.log('     Screener: '+mitZahl+' von '+zeilen.length+' Zeilen mit Zahl · '+satz.slice(0,70));
   }
   if(view==='/vu2/?view=stocks'){
+   /* ZUERST AUFKLAPPEN, DANN ZAEHLEN.
+
+      Seit dem Einsteiger-Umbau stehen auf dieser Seite sechs Zeilen
+      offen; die uebrigen 34 liegen in einem <details>. Die Schwelle von
+      20 stammt aus der Zeit, als alle 40 offen standen, und sie meldete
+      deshalb ZU_WENIGE_ZEILEN=6.
+
+      Die Schwelle zu senken waere der falsche Weg gewesen: sie prueft,
+      dass die Hauptfunktion dieser Seite Titel liefert, und diese Absicht
+      gilt unveraendert. Stattdessen oeffnet der Smoke die Aufklapper und
+      prueft danach ALLE Zeilen auf Kurs und Namen. Das ist strenger als
+      vorher - es belegt zusaetzlich, dass der zugeklappte Inhalt
+      tatsaechlich gebaut wird und nicht leer ist. */
+   for(const d of await page.locator('#app details').all())
+    await d.evaluate(node=>{node.open=true;}).catch(()=>{});
+   await page.waitForTimeout(250);
    const zeilen=await page.locator('.q-hit').allInnerTexts();
    if(zeilen.length<20)bad.push('ZU_WENIGE_ZEILEN='+zeilen.length);
    else{
