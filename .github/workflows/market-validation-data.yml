@@ -1,0 +1,90 @@
+name: Markt-Validierung — Quelldaten
+
+# Holt frei zugaengliche Forschungsdaten fuer die historische Pruefung
+# der Markt-Einordnung (scripts/market/validate-market-pulse.mjs) und
+# schreibt NUR die aggregierte Auswertung nach docs/market-validation/.
+# Die Rohdaten bleiben im Runner: das Repository ist oeffentlich, und die
+# French-Reihen beruhen auf lizenzierten CRSP-Daten (Weitergabe nicht
+# gedeckt). Zitiert wird die Quelle in der Auswertung.
+#
+# KOSTEN
+#
+# Keine: kein Schluessel, kein bezahlter Anbieter, kein Zeitplan. Laeuft
+# nur manuell (workflow_dispatch) oder bei einem Push auf claude/**, dessen
+# Betreffzeile den Marker [mv-data] traegt. Ohne Marker wird der Job
+# uebersprungen und belegt keinen Runner. Ein Lauf braucht wenige Minuten.
+#
+# QUELLEN (oeffentlich, ohne Anmeldung)
+#
+#   Kenneth R. French Data Library (Tuck School of Business, Dartmouth):
+#     Faktoren taeglich (Markt, Zins), 6 Portfolios Groesse x B/M,
+#     49 Branchenportfolios - taeglich ab Juli 1926.
+#   FRED (Federal Reserve Bank of St. Louis), fredgraph.csv:
+#     SAHMREALTIME (Sahm-Regel in Echtzeit), T10Y3M (Zinskurve 10J-3M).
+#
+# docs/ gehoert nicht zur veroeffentlichten Seite (scripts/vu2/build-release.mjs,
+# permitted()). Das Ergebnis ist NOT_CERTIFIED und nur fuer interne Pruefung.
+#
+# EIGENE SPUR: beruehrt weder Quant noch Macro noch Discover-Daten.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/market-validation-data.yml'
+      - 'scripts/market/build-validation-sources.mjs'
+      - 'scripts/market/validate-market-pulse.mjs'
+      - 'scripts/market/lib/market-validation.mjs'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-validation-data-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  sources:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[mv-data]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests der Validierung
+        run: node --test discover/tests/market-validation.test.mjs
+      - name: Rohdaten laden (French, FRED)
+        run: |
+          set -euo pipefail
+          fr="$RUNNER_TEMP/french"; fred="$RUNNER_TEMP/fred"
+          mkdir -p "$fr" "$fred"
+          base="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp"
+          for f in F-F_Research_Data_Factors_daily 6_Portfolios_2x3_daily 49_Industry_Portfolios_daily; do
+            curl -fsSL --retry 4 --retry-delay 5 -o "$fr/$f.zip" "$base/${f}_CSV.zip"
+            unzip -o -q "$fr/$f.zip" -d "$fr"
+          done
+          ls -la "$fr"
+          # FRED ist Zusatz: faellt es aus, laeuft die Pruefung ohne diese Bedingung.
+          for id in SAHMREALTIME T10Y3M; do
+            if curl -fsSL --retry 4 --retry-delay 5 -o "$fred/$id.csv" "https://fred.stlouisfed.org/graph/fredgraph.csv?id=$id"; then
+              head -2 "$fred/$id.csv"; wc -l "$fred/$id.csv"
+            else
+              echo "::warning::FRED $id nicht erreichbar"; rm -f "$fred/$id.csv"
+            fi
+          done
+          echo "FRENCH_DIR=$fr" >> "$GITHUB_ENV"
+          echo "FRED_DIR=$fred" >> "$GITHUB_ENV"
+          echo "MV_SOURCES=$RUNNER_TEMP/sources" >> "$GITHUB_ENV"
+      - name: Quelldateien bauen
+        run: node scripts/market/build-validation-sources.mjs --french "$FRENCH_DIR" --fred "$FRED_DIR" --out "$MV_SOURCES"
+      - name: Validierung rechnen
+        run: node scripts/market/validate-market-pulse.mjs
+      - name: Ergebnis in den Zweig
+        run: |
+          bash scripts/ci/commit-and-push.sh \
+            "Markt-Validierung: Quelldaten und Ergebnis (manueller Lauf)" \
+            docs/market-validation/market-pulse-validation.json
