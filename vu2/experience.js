@@ -504,6 +504,133 @@ function journeyGapSection(shape,ticker,minimal){
  * Sie werden deshalb EINMAL geholt - die Dienstschicht ruft dafür dieselben
  * sechs Dienste, die diese Seite ohnehin gebraucht hat. Zwei Lesewege wären
  * zwei Stände desselben Titels auf einer Seite. */
+/* =========================================================================
+   HISTORISCHE VERGLEICHSFÄLLE — DIE FLÄCHE
+
+   Sie stellt zwei Ebenen NEBENEINANDER, weil jede allein in die Irre führt:
+
+   EBENE 1/2 · DIESER TITEL   "Wann galt diese Kurslage hier schon einmal?"
+                              Wenige Fälle, aber es ist derselbe Titel.
+   EBENE 3   · ALLE TITEL     "Wie verhielt sich die Grundgesamtheit?"
+                              Viele Fälle, aber es sind andere Unternehmen.
+
+   KEIN CHERRY PICKING. Der letzte vergleichbare Fall erscheint nur, wenn
+   auch die Verteilung erscheint - ein einzelnes Datum neben einer Rendite
+   ist eine Anekdote, die wie ein Beleg aussieht. Unter zehn abgeschlossenen
+   Fällen wird gar nichts gerechnet und die Anzahl genannt.
+
+   KEINE PROGNOSESPRACHE. Überschriften sind Fragen über die Vergangenheit
+   ("Was geschah danach?"), nie Aussagen über die Zukunft.
+   ========================================================================= */
+/* Eigener Name mit Absicht: `pct1` gibt es in dieser Datei schon, und zwei
+   Funktionen gleichen Namens im selben Gültigkeitsbereich sind kein
+   Versehen, das auffällt - die Zahlen sahen nur leicht anders aus. */
+function renditeText(x){return (x>=0?'+':'−')+Math.abs(x*100).toLocaleString('de-DE',{maximumFractionDigits:1})+' %';}
+function faelleKachel(h){
+ if(!h)return null;
+ if(!h.sufficient){
+  return el('div',{class:'q-case is-thin'},[
+   el('span',{class:'q-case-h',text:h.label}),
+   el('div',{class:'q-case-v',text:h.completed+' '+(h.completed===1?'Fall':'Fälle')}),
+   el('p',{class:'q-case-n',text:'Zu wenige abgeschlossene Vergleichsfälle für eine belastbare Aussage.'})]);
+ }
+ return el('div',{class:'q-case'},[
+  el('span',{class:'q-case-h',text:h.label}),
+  el('div',{class:'q-case-v',text:renditeText(h.medianReturn)}),
+  el('p',{class:'q-case-n',text:'Median aus '+h.completed+' Fällen · '+h.positive+' davon positiv'+
+   (Number.isFinite(h.medianDrawdown)?' · typischer Rückschlag '+renditeText(h.medianDrawdown):'')})]);
+}
+function historischeFaelleSection(faelle,ticker,name){
+ const section=el('section',{class:'q-card'});
+ section.append(el('div',{class:'q-card-head'},[el('h2',{text:'Ähnliche Situationen bei '+(name||ticker)})]));
+
+ if(!faelle||faelle.state!=='AVAILABLE'){
+  const grund=(faelle&&faelle.reason)||'SOURCE_MISSING';
+  const klartext={
+   NO_PRICE_CONDITION_TODAY:'Für diesen Titel gilt heute keine der geprüften Kursbedingungen. Ohne eine Lage gibt es nichts zu vergleichen.',
+   SERIES_TOO_SHORT:'Die veröffentlichte Kursgeschichte dieses Titels ist zu kurz, um frühere vergleichbare Phasen zu finden.',
+   NO_COMPARABLE_CASE:'Diese Lage ist in der Geschichte dieses Titels bisher nicht wieder aufgetreten.',
+   NOT_COVERED_BY_PATTERN_MATCH:'Dieser Titel ist in der Musterauswertung nicht enthalten.',
+   INVALID_IDENTITY:'Die Kennung dieses Titels ist nicht auswertbar.'
+  }[grund]||'Für diesen Titel liegt keine auswertbare Kursgeschichte vor.';
+  section.append(el('p',{class:'q-card-intro',text:klartext}));
+  section.append(el('p',{class:'muted',style:'font-size:13.5px',
+   text:'Es wird kein Ersatzwert und kein Durchschnitt aus anderen Unternehmen an diese Stelle gesetzt.'}));
+  return section;
+ }
+
+ section.append(el('span',{class:'q-level',text:'Ebene 1 · Dieser Titel'}));
+ section.append(el('p',{class:'q-card-intro',
+  text:'Gesucht wurden Wochen, in denen bei '+(name||ticker)+' dieselben Kursbedingungen galten wie heute. '+
+       'Zusammenhängende Wochen zählen als ein Fall.'}));
+
+ const bedingungen=el('div',{class:'q-chips',style:'margin-bottom:16px'});
+ for(const id of faelle.conditions||[])bedingungen.append(el('span',{class:'q-chip',style:'min-height:34px;font-size:13px',
+  text:BEDINGUNG_KLARTEXT[id]||id}));
+ if((faelle.conditions||[]).length)section.append(bedingungen);
+
+ section.append(el('p',{style:'margin:0 0 14px'},[
+  stateMark('neutral',faelle.episodes+' vergleichbare '+(faelle.episodes===1?'Phase':'Phasen')+
+   ' seit '+(faelle.from||'Beginn der Reihe'))]));
+
+ section.append(el('h3',{style:'font-size:15px;margin:18px 0 10px',text:'Was geschah danach?'}));
+ const kacheln=el('div',{class:'q-cases'});
+ for(const h of VUHistoricalCases.HORIZONS){const k=faelleKachel(faelle.horizons&&faelle.horizons[h.id]);if(k)kacheln.append(k);}
+ section.append(kacheln);
+
+ /* Der letzte Fall NUR neben der Verteilung - und nur, wenn die Verteilung
+    überhaupt gerechnet werden durfte. */
+ const m12=faelle.horizons&&faelle.horizons.m12;
+ if(m12&&m12.sufficient&&m12.lastCaseDate){
+  section.append(el('p',{class:'muted',style:'font-size:13.5px;margin:0 0 4px',
+   text:'Die letzte vergleichbare Phase mit abgeschlossenem Zwölf-Monats-Fenster begann am '+m12.lastCaseDate+
+        '. Sie ist einer von '+m12.completed+' Fällen und steht hier neben ihnen, nicht statt ihrer.'}));
+ }else if(!faelle.measured){
+  section.append(el('p',{style:'margin:6px 0 0'},[stateMark('warn',
+   'Zu wenige historische Vergleichsfälle für eine belastbare Aussage')]));
+  section.append(el('p',{class:'muted',style:'font-size:13.5px;margin:8px 0 0',
+   text:'Erst ab '+VUHistoricalCases.MIN_EPISODES+' abgeschlossenen Fällen wird ein Median gerechnet. Darunter bliebe eine Zahl ein Zufallswert — sie wird deshalb nicht gebildet.'}));
+ }
+
+ /* Ebene 3 daneben, damit die dünne Ebene 1 nicht allein steht. */
+ if(faelle.marketWide&&faelle.marketWide.available){
+  section.append(el('div',{style:'margin-top:24px;padding-top:20px;border-top:1px solid var(--q-card-line)'},[
+   el('span',{class:'q-level',text:'Ebene 3 · Alle Titel'}),
+   el('p',{class:'muted',style:'font-size:14px;margin:0 0 10px',
+    text:'Dieselben Bedingungen über die gesamte Grundgesamtheit ausgewertet — viele Fälle, aber andere Unternehmen. Diese Ebene steht vollständig im Abschnitt Chance und Risiko auf dieser Seite.'}),
+   faelle.marketWide.caveats&&faelle.marketWide.caveats.statement
+    ?el('p',{class:'muted',style:'font-size:13.5px;margin:0'},[el('em',{text:faelle.marketWide.caveats.statement})]):null]));
+ }
+
+ const stufen=[
+  ['Wie ein Fall gezählt wird',[
+   'Eine Bedingung, die mehrere Wochen am Stück gilt, ist ein Ereignis und nicht mehrere. Gezählt wird die erste Woche jeder zusammenhängenden Folge: '+
+   faelle.rawWeeks+' Trefferwochen ergeben '+faelle.episodes+' Fälle.',
+   'Phasen, deren Zeitfenster noch nicht abgelaufen ist, werden als offen gezählt und nicht gewertet.']],
+  ['Woraus gerechnet wurde',[
+   'Wochenschlusskurse dieses Titels, splitbereinigt, '+(faelle.from||'?')+' bis '+(faelle.to||'?')+' ('+faelle.weeks+' Wochen).',
+   'Bedingungen und Rechenweg stammen aus '+(faelle.methodologyVersion||'der Musterstudie')+', derselben Methodik wie die marktweite Auswertung. Darstellungsregeln: '+faelle.schemaVersion+'.']],
+  ['Was diese Zahlen nicht können',(faelle.limits||[]).slice()],
+  ['Warum hier keine Prognose steht',[
+   'Diese Zahlen beschreiben, was nach vergleichbaren Phasen der Vergangenheit geschah. Sie sagen nicht, was als Nächstes geschieht, und sie werden durch die Nähe zum Namen dieses Titels nicht zu einer Erwartung.']]
+ ];
+ const treppe=ladder(stufen);
+ if(treppe)section.append(treppe);
+ return section;
+}
+/* Die Begriffe der Studie in Produktsprache. Fehlt einer, steht seine
+   Kennung da - ein erfundener Klartext waere schlimmer als eine Kennung. */
+const BEDINGUNG_KLARTEXT={
+ 'near-52w-high':'Nahe dem Jahreshoch','at-all-time-high':'Am bisherigen Höchststand',
+ 'above-40w-line':'Über der langfristigen Linie','trend-stacked':'Kurzfristiger Trend über dem langfristigen',
+ 'quiet-range':'Ruhige Kursspanne','wide-range':'Weite Kursspanne','high-volatility':'Hohe Schwankung',
+ 'far-below-52w-high':'Weit unter dem Jahreshoch','deep-drawdown':'Tiefer Rückschlag vom Höchststand',
+ 'three-month-thrust':'Kräftiger Schub über drei Monate','six-month-thrust':'Kräftiger Schub über sechs Monate',
+ 'weak-12m-momentum':'Schwache Entwicklung über zwölf Monate',
+ 'strong-12m-momentum':'Starke Entwicklung über zwölf Monate',
+ 'very-strong-12m-momentum':'Sehr starke Entwicklung über zwölf Monate'
+};
+
 async function stockPage(ticker){const brief=await api.getIntelligenceBrief(ticker).catch(()=>null);
  const s=(brief&&brief.sources&&brief.sources.stock)||await api.getStockIntelligence(ticker);
  /* Kein Name heisst nicht: Ticker als Ueberschrift und Ticker als
@@ -606,6 +733,11 @@ async function stockPage(ticker){const brief=await api.getIntelligenceBrief(tick
  }else if(!reduziert){strength.append(notice(LU('factorDna'),LB('factorDna')));main.append(strength);}
  if(!reduziert||shape.substantive.includes('setup'))main.append(setupStateSection(setupObservation,setupIndex,ticker,hatAuskunft));
  if(!reduziert||shape.substantive.includes('patterns'))main.append(patternBalance(patterns,ticker,brief&&brief.pattern));
+ /* HISTORISCHE VERGLEICHSFAELLE. Sie folgen direkt auf die marktweiten
+    Muster, weil sie dieselbe Frage auf der eigenen Historie des Titels
+    beantworten - und weil die duenne Ebene 1 neben der dichten Ebene 3
+    stehen muss, nicht allein. */
+ main.append(historischeFaelleSection(await api.getHistoricalCases(ticker).catch(()=>null),ticker,s.name));
  main.append(actions(s.workspaces));
  const business=el('section',{class:'section stock-business'},[el('span',{class:'eyebrow',text:'Geschäft, Bewertung und Risiko'}),el('h2',{text:'Was zeigen die Unternehmenszahlen?'}),el('p',{class:'muted',text:'Ergebnisse verstehen, den Preis einordnen und Schwankungen prüfen. Jede Kennzahl führt zu ihrer Definition und zur vollständigen Analyse.'})]);
  if(s.quant?.state==='AVAILABLE'){
