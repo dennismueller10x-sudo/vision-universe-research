@@ -57,9 +57,9 @@
   }
   function navigation() {
     const routeKey=location.hash.replace(/^#\/?/,'').split('/')[0]||'home';
-    const current=(routeKey==='c'||routeKey==='thema')?'welten':routeKey;
+    const current=routeKey==='c'?(V.Themes.byRow(location.hash.split('/')[3])?'welten':'strategien'):routeKey==='thema'?'welten':routeKey;
     const nav=el('nav',{class:'v2-dock','aria-label':'Aktien entdecken'});
-    [['home','Start','#/','home'],['welten','Welten','#/welten','worlds'],['einzeln','Entdecken','#/einzeln/'+ctx.universeId,'explore'],['suche','Suchen',null,'search']].forEach(([key,label,href,icon])=>{
+    [['home','Start','#/','home'],['welten','Welten','#/welten','worlds'],['strategien','Strategien','#/strategien','strategies'],['einzeln','Entdecken','#/einzeln/'+ctx.universeId,'explore'],['suche','Suchen',null,'search']].forEach(([key,label,href,icon])=>{
       const item=el(href?'a':'button',{class:'v2-nav-item v2-nav-'+icon+(!href?' v2-dock-search':''),...(href?{href}:{type:'button','aria-haspopup':'dialog','aria-expanded':'false'}),...(current===key?{'aria-current':'page'}:{})},[
         el('span',{class:'v2-nav-icon v2-icon-'+icon,'aria-hidden':'true'}),el('span',{text:label})
       ]);
@@ -154,7 +154,7 @@
           symbols.forEach(symbol=>{const row=el('div',{class:'v2-watch-row'},[el('a',{href:'#/s/'+ctx.universeId+'/'+encodeURIComponent(symbol),text:symbol}),el('button',{type:'button',text:'Entfernen','aria-label':symbol+' aus Watchlist entfernen'})]);row.querySelector('button').onclick=()=>{saveWatchlist(symbol);row.remove();if(!list.children.length)route();};list.append(row);});
         }
       } else if(parts[0]==='welten'){
-        root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten & Aktienwelten'}),el('p',{class:'v2-lead',text:'Megatrends, Branchen und Rankings. Wähle eine Welt und entdecke die Aktien dahinter.'}));
+        root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten'}),el('p',{class:'v2-lead',text:'Entdecke Megatrends und Branchen. Wähle eine Welt und entdecke die Aktien dahinter.'}));
         root.append(el('div',{class:'v2-collection-hero'},[el('img',{src:V.Home.perspectiveImage('megatrends'),alt:'',width:'1254',height:'1254',decoding:'async'})]));
         root.append(el('div',{class:'v2-section-head'},[el('h2',{text:'Themenwelten'}),el('span',{text:V.Themes.all.length+' Welten'})]));
         const jumps=el('nav',{class:'v2-theme-jumps','aria-label':'Themenbereiche'});root.append(jumps);
@@ -166,17 +166,13 @@
           const grid=el('div',{class:'v2-theme-grid'});themes.forEach(t=>grid.append(V.Home.themeTile(t,ctx)));
           section.append(grid);root.append(section);
         });
-        root.append(el('div',{class:'v2-section-head'},[el('h2',{text:'Aktienwelten'}),el('span',{text:'Rankings & Perspektiven'})]));
+      } else if(parts[0]==='strategien'){
+        document.title='Strategien — Discover — Vision Universe®';
+        root.append(el('p',{class:'v2-eyebrow',text:'Gezielt entdecken'}),el('h1',{text:'Strategien'}),el('p',{class:'v2-lead',text:'Aktienauswahlen nach Wachstum, Qualität und Marktbewegung. Entdecke die Regeln und Unternehmen hinter jeder Auswahl.'}));
         const rows=(meta.rows||[]).find(entry=>entry.universeId===ctx.universeId);
-        const worlds=el('div',{class:'v2-world-directory'});
-        ((rows&&rows.rows)||[]).filter(row=>row.returned>0).forEach((row,index)=>{
-          const photo=V.Home.perspectiveImage(row.rowId);
-          worlds.append(el('a',{href:'#/c/'+ctx.universeId+'/'+row.rowId,class:'v2-world-door'+(photo?' has-image':''),'data-tone':String(index%4)},[
-            photo?el('img',{src:photo,alt:'',width:'1254',height:'1254',loading:'lazy',decoding:'async'}):null,
-            el('span',{class:'v2-world-door-count',text:row.returned+' Aktien'}),el('h2',{text:V.Home.title(row.title)}),el('p',{text:row.subtitle||''}),el('span',{class:'v2-world-door-arrow',text:'Entdecken ↗'})
-          ]));
-        });
-        root.append(worlds);
+        const list=el('div',{class:'v2-collection-links'});
+        ((rows&&rows.rows)||[]).filter(row=>row.returned>0&&!V.Themes.byRow(row.rowId)).forEach(row=>list.append(V.Home.strategyLink(row,ctx)));
+        root.append(list);
       } else if(parts[0]==='thema'&&parts[1]){
         const theme=V.Themes.bySlug(parts[1]);
         if(!theme){message(root,'Themenwelt nicht gefunden','Diese Themenwelt gibt es nicht. Alle Welten findest du in der Übersicht.');return;}
@@ -210,8 +206,8 @@
       } else if(parts[0]==='c'&&parts[2]){
         if(!/^[a-zA-Z0-9_-]+$/.test(parts[2]))throw Error('Ungültige Sammlung');
         const row=await S.loadJSON(BASE+'rows/'+ctx.universeId+'/'+parts[2]+'.json');if(!active())return;
-        root.append(el('a',{class:'v2-back',href:'#/',text:'← Übersicht'}));
         const rowTheme=V.Themes.byRow(row.rowId||parts[2]);
+        root.append(el('a',{class:'v2-back',href:rowTheme?'#/welten':'#/strategien',text:rowTheme?'← Themenwelten':'← Strategien'}));
         if(rowTheme)root.append(V.Home.themeBanner(rowTheme,{page:true,title:V.Home.title(row.title),subtitle:row.subtitle||rowTheme.line,evidence:(row.cards||[]).length+' Aktien'}));
         else {
           const photo=V.Home.perspectiveImage(row.rowId||parts[2]);
@@ -238,7 +234,7 @@
         if(!active())return;
         const feedHost=D.Feed.render(root,cards,{universeId:ctx.universeId,zurueck:'#/',order,batchSize:batch,
           merken:index=>{if(active()&&D.memory)D.memory.setPosition(feedKey,start+index);},
-          weiter:[{label:'Andere Aktienwelten',href:'#/welten'}]});
+          weiter:[{label:'Strategien entdecken',href:'#/strategien'}]});
         if(start){
           const restart=el('button',{type:'button',class:'v2-feed-restart',text:'Von vorn'});
           restart.onclick=()=>{if(D.memory)D.memory.setPosition(feedKey,0);route();};

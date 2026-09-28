@@ -52,6 +52,16 @@
     'top-10':'momentum-leader', 'megatrends':'megatrends'
   };
   function perspectiveImage(rowId) { return perspectiveImages[rowId] ? '/assets/discover-perspektiven/' + perspectiveImages[rowId] + '.jpeg' : null; }
+  function strategyLink(surface,ctx){
+    var href=surface.href||('#/c/'+ctx.universeId+'/'+surface.rowId);
+    var a=link('',href,'v2-collection-link'),visual=node('span','v2-collection-art');visual.setAttribute('aria-hidden','true');
+    var photo=perspectiveImage(surface.rowId||surface.id);
+    if(photo){visual.classList.add('has-image');visual.appendChild(el('img',{class:'v2-collection-image',src:photo,alt:'',width:'1254',height:'1254',loading:'lazy',decoding:'async'}));}
+    else visual.appendChild(node('span','v2-collection-glyph','↗'));
+    visual.appendChild(node('span','v2-collection-art-label',title(surface.title)));
+    var copy=node('span','v2-collection-copy');copy.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'));
+    a.append(visual,copy,node('span','v2-collection-arrow','→'));return a;
+  }
   var rangeLabels = { '1M': '1 Monat', '3M': '3 Monate', '6M': '6 Monate', '1J': '1 Jahr' };
   var freshnessLabels = { LIVE: 'Realtime', LAST_SESSION: 'Letzte Sitzung', STALE: 'Nicht aktuell', UNAVAILABLE: 'Nicht verfügbar' };
   function bindArtworkCaption(media, caption, card, ctx, range) {
@@ -341,29 +351,15 @@
     if (!home || !home.chunks || !home.chunks.length) { loading.textContent = 'Die Entdeckungsseite ist momentan nicht verfügbar. Die Suche bleibt erreichbar.'; return; }
     var seen = new Set(), count = 0, observer, rankings=[],topRendered=false,pulseRendered=false,collections=null;
     function active() { return page.isConnected; }
-    var perspectiveArt = {
-      'profitables-wachstum':['↗','Wachstum schafft Chancen'], 'comeback':['↺','Neuer Anlauf'],
-      'relative-strength':['△','Einen Schritt voraus'], 'qualitaet-wachstum':['✦','Stabilität für morgen'],
-      'bekannte-namen':['◎','Bekannte Namen'], 'fundamentale-turnarounds':['↺','Neustart']
-    };
     function addCollection(surface){
       if(!collections){
-        collections=node('section','v2-collection-directory v2-world');collections.dataset.surface='weitere-perspektiven';
+        collections=node('section','v2-collection-directory v2-world');collections.dataset.surface='strategien';
         collections.dataset.archetype='directory';
-        collections.append(node('p','v2-eyebrow','Weiter entdecken'),node('h2','','Weitere Perspektiven'),node('p','v2-world-subtitle','Entdecke weitere Aktienwelten und öffne die Auswahl, die dich interessiert.'));
+        collections.append(node('p','v2-eyebrow','Gezielt entdecken'),node('h2','','Strategien'),node('p','v2-world-subtitle','Entdecke Aktien nach Wachstum, Qualität und Marktbewegung.'));
+        collections.append(link('Alle Strategien →','#/strategien','v2-collection-all'));
         collections.appendChild(node('div','v2-collection-links'));body.appendChild(collections);
       }
-      var href=surface.href||('#/c/'+ctx.universeId+'/'+surface.rowId);
-      var a=link('',href,'v2-collection-link');
-      var visual=node('span','v2-collection-art');visual.setAttribute('aria-hidden','true');
-      var art=perspectiveArt[surface.id]||['✳',title(surface.title)];
-      var photo=perspectiveImage(surface.rowId||surface.id);
-      if(photo){visual.classList.add('has-image');visual.appendChild(el('img',{class:'v2-collection-image',src:photo,alt:'',width:'1254',height:'1254',loading:'lazy',decoding:'async'}));}
-      else visual.appendChild(node('span','v2-collection-glyph',art[0]));
-      visual.appendChild(node('span','v2-collection-art-label',art[1]));
-      var copy=node('span','v2-collection-copy');copy.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'));
-      a.append(visual,copy,node('span','v2-collection-arrow','→'));
-      collections.querySelector('.v2-collection-links').appendChild(a);
+      collections.querySelector('.v2-collection-links').appendChild(strategyLink(surface,ctx));
     }
     function draw(surface) {
       var view;
@@ -412,5 +408,5 @@
     } catch (error) { loading.textContent = 'Die Aktienwelten konnten nicht geladen werden.'; var retry = el('button', { type: 'button', text: 'Erneut versuchen', class: 'v2-load-more' }); retry.addEventListener('click', function () { page.remove(); render(root, ctx); }); body.appendChild(retry); }
     return function () { if (observer) observer.disconnect(); ctx.artworkDisposers.forEach(function (dispose) { dispose(); }); ctx.artworkDisposers.length = 0; };
   }
-  V.Home = { render: render, title: title, tile: tile, themeTile: themeTile, themeBanner: themeBanner, perspectiveImage: perspectiveImage };
+  V.Home = { render: render, title: title, tile: tile, themeTile: themeTile, themeBanner: themeBanner, perspectiveImage: perspectiveImage, strategyLink: strategyLink };
 })(window);
