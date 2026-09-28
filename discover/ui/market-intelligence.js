@@ -81,6 +81,8 @@
     saeulen: [["path", mit({ d: "M2.8 9.3L12 3.8l9.2 5.5z" })], ["rect", mit({ x: 4.6, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
               ["rect", mit({ x: 9.2, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 13.8, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
               ["rect", mit({ x: 17.4, y: 10.6, width: 2.1, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 2.8, y: 18.4, width: 18.4, height: 2.4, rx: 0.8 })]],
+    schild: [["path", mit({ d: "M12 2.6l7.6 3v5.7c0 4.7-3.2 8.5-7.6 10-4.4-1.5-7.6-5.3-7.6-10V5.6z" })],
+             ["path", { d: "M8.4 12.1l2.5 2.5 4.8-5", "stroke-width": "2.4", class: "dx-glyph-loch-strich" }]],
     waehrung: [["text", mit({ x: 12, y: 16.4, "text-anchor": "middle", "font-size": "12", "font-weight": "800", "letter-spacing": "-0.5", "font-family": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif" }), "€$"]]
   };
   /* Dimensionen und Vergleichszeilen auf ihr Symbol. */
@@ -430,15 +432,15 @@
 
   function tiefe(d) {
     return el("div", { class: "dx-m3-tiefe" }, [
-      el("h4", { text: "Zustand" }), el("p", { text: d.label + ". " + de(d.summary) }),
-      d.evidence && d.evidence.length ? el("h4", { text: "Belege" }) : null,
+      el("h3", { text: "Zustand" }), el("p", { text: d.label + ". " + de(d.summary) }),
+      d.evidence && d.evidence.length ? el("h3", { text: "Belege" }) : null,
       d.evidence && d.evidence.length ? el("ul", {}, d.evidence.map(function (e) {
         return el("li", { class: e.current === false ? "is-alt" : "" }, [el("span", { text: e.label + ": " }), el("b", { text: e.text }),
           e.current === false ? el("span", { class: "dx-m3-alt", text: " · Stand " + tagKurz(e.asOf) + ", nicht aktuell" }) : null].filter(Boolean));
       })) : null,
-      d.explanation ? el("h4", { text: "Was bedeutet das?" }) : null,
+      d.explanation ? el("h3", { text: "Was bedeutet das?" }) : null,
       d.explanation ? el("p", { text: d.explanation }) : null,
-      el("h4", { text: "Methodik" }), el("p", { class: "dx-m3-methodik", text: d.methodology })
+      el("h3", { text: "Methodik" }), el("p", { class: "dx-m3-methodik", text: d.methodology })
     ].filter(Boolean));
   }
 
@@ -882,6 +884,171 @@
     ].filter(Boolean));
   }
 
+  /* ------------------------------------------ Wie verlaesslich? (Pruefung)
+     Die historische Pruefung derselben Regeln (scripts/market/validate-
+     market-pulse.mjs, Auszug quant/data/market/validation/market-pulse-
+     evidence.json). Entscheidung des Eigentuemers vom 28.09.2026: die
+     Pruefung wird offengelegt - verstaendlich, mit Methodik, Grenzen und
+     Quelle. Die Modellrechnung steht immer neben "immer investiert" und
+     neben dem juengeren Zeitraum, nie allein. Diese Datei rechnet nichts
+     nach; sie zeigt, was der Auszug enthaelt. */
+  function pct(v, d) { return (v < 0 ? "−" : "") + zahl(Math.abs(v), d === undefined ? 1 : d) + "\u00a0%"; }
+  function vonHundert(v) { return Math.round(v) + " von 100"; }
+  function jahr(iso) { return iso ? iso.slice(0, 4) : ""; }
+  function tagLang(iso) { return iso ? iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(0, 4) : ""; }
+
+  function pruefung(ev, p) {
+    if (!ev || !ev.levels || ev.levels.length < 3 || !ev.illustration) return null;
+    var lv = ev.levels, erste = lv[0], letzte = lv[lv.length - 1];
+    var von = jahr(ev.from), bis = jahr(ev.to);
+    var jahre = Math.round((Date.parse(ev.to) - Date.parse(ev.from)) / (365.25 * 864e5));
+    var heute = p && p.environment && isNum(p.environment.level) ? Math.min(p.environment.level, letzte.level) : null;
+    var h = ev.horizon.label;
+
+    /* (1) Kernaussage mit Balken je Stufe */
+    var skala = Math.max.apply(null, lv.map(function (x) { return x.drawdownShare; })) * 1.15;
+    var balkenListe = el("ol", { class: "dx-m3-pr-balken" }, lv.map(function (x) {
+      var istHeute = x.level === heute;
+      return el("li", { class: "is-l" + x.level + (istHeute ? " is-heute" : "") }, [
+        el("span", { class: "dx-m3-pr-stufe" }, [el("i", { "aria-hidden": "true" }), el("span", { text: x.label }),
+          istHeute ? el("em", { text: "heute" }) : null].filter(Boolean)),
+        el("span", { class: "dx-m3-pr-spur", role: "img", "aria-label": x.label + ": in " + vonHundert(x.drawdownShare) + " Fällen ein Rückgang von 10 % oder mehr" }, [
+          el("span", { class: "dx-m3-pr-fuell", style: "width:" + Math.max(3, 100 * x.drawdownShare / skala).toFixed(1) + "%" })
+        ]),
+        el("b", { text: vonHundert(x.drawdownShare) })
+      ]);
+    }));
+    var kern = el("article", { class: "dx-m3-pr-karte dx-m3-pr-kern" }, [
+      el("div", { class: "dx-m3-pr-kopf" }, [iconChip("schild", "support"), el("span", { text: "Das Rückschlag-Risiko" })]),
+      el("p", { class: "dx-m3-pr-aussage", text: "Nach „" + erste.label + "“ folgte in " + vonHundert(erste.drawdownShare) +
+        " Fällen ein Rückgang von 10 % oder mehr – nach „" + letzte.label + "“ nur in " + vonHundert(letzte.drawdownShare) + "." }),
+      el("p", { class: "dx-m3-pr-unter", text: "Anteil der Fälle mit einem zeitweisen Minus von 10 % oder mehr in den folgenden " + h +
+        ". US-Gesamtmarkt " + von + " bis " + bis + "." }),
+      balkenListe,
+      el("p", { class: "dx-m3-fuss", text: "Zum Vergleich: über alle Tage " + vonHundert(ev.overallDrawdownShare) + ". " + (ev.topLevelNote || "") })
+    ]);
+
+    /* (2) Modellrechnung - immer neben "immer investiert" und dem juengeren Zeitraum */
+    var regel = ev.illustration.rules.filter(function (r) { return r.minLevel === 2; })[0] || ev.illustration.rules[0];
+    var m = regel && regel.all;
+    var modell = null;
+    if (m) {
+      var tiefe = Math.max(Math.abs(m.buyAndHold.maxDrawdown), Math.abs(m.maxDrawdown)) || 1;
+      var zeile = function (titel, a, b) {
+        return el("div", { class: "dx-m3-pr-vgl-zeile", role: "row" }, [el("span", { role: "rowheader", text: titel }), el("b", { role: "cell", text: a }), el("b", { role: "cell", class: "is-regel", text: b })]);
+      };
+      var r = regel.since2001;
+      modell = el("article", { class: "dx-m3-pr-karte dx-m3-pr-modell" }, [
+        el("div", { class: "dx-m3-pr-kopf" }, [iconChip("kurve", "context"), el("span", { text: "Historische Modellrechnung" })]),
+        el("p", { class: "dx-m3-pr-aussage", text: m.cagr >= m.buyAndHold.cagr - 1 ? "Fast gleiche Rendite, deutlich kleinere Verluste" : "Weniger Rendite, deutlich kleinere Verluste" }),
+        el("div", { class: "dx-m3-pr-vgl", role: "table", "aria-label": "Modellrechnung " + von + " bis " + bis }, [
+          el("div", { class: "dx-m3-pr-vgl-zeile is-kopf", role: "row" }, [el("span", { role: "columnheader", text: von + "–" + bis }),
+            el("span", { role: "columnheader", text: "Immer investiert" }), el("span", { role: "columnheader", class: "is-regel", text: "Nur ab „" + regel.minLabel + "“*" })]),
+          zeile("Rendite pro Jahr", pct(m.buyAndHold.cagr), pct(m.cagr)),
+          zeile("Größter Verlust", pct(m.buyAndHold.maxDrawdown), pct(m.maxDrawdown)),
+          zeile("Zeit am Markt", "100 %", pct(m.investedShare, 0))
+        ]),
+        el("div", { class: "dx-m3-pr-tiefe", "aria-hidden": "true" }, [
+          el("span", { class: "dx-m3-pr-tiefe-titel", text: "Größter Verlust im Vergleich" }),
+          el("span", { class: "dx-m3-pr-tiefe-spur" }, [el("span", { class: "is-immer", style: "width:" + (100 * Math.abs(m.buyAndHold.maxDrawdown) / tiefe).toFixed(1) + "%" })]),
+          el("span", { class: "dx-m3-pr-tiefe-spur" }, [el("span", { class: "is-regel", style: "width:" + (100 * Math.abs(m.maxDrawdown) / tiefe).toFixed(1) + "%" })])
+        ]),
+        r ? el("p", { class: "dx-m3-pr-juenger", text: "Seit " + jahr(r.from) + ": " + pct(r.cagr) + " statt " + pct(r.buyAndHold.cagr) +
+          " pro Jahr, größter Verlust " + pct(r.maxDrawdown) + " statt " + pct(r.buyAndHold.maxDrawdown) + "." }) : null,
+        el("p", { class: "dx-m3-fuss", text: "* Sonst Geldmarkt. Signal am Schlusskurs, umgesetzt einen Handelstag später. Ohne Kosten und Steuern; " +
+          "der US-Gesamtmarkt ist nicht direkt investierbar. Vergangene Ergebnisse sind kein verlässlicher Hinweis auf künftige Entwicklungen." })
+      ].filter(Boolean));
+    }
+
+    /* (3) So haben wir geprueft */
+    var gesichert = (ev.contrasts || []).filter(function (c) { return c.significant; }).map(function (c) { return c.label; });
+    var oos = ev.outOfSample && ev.outOfSample.levels, oosA = oos && oos[0], oosZ = oos && oos[oos.length - 1];
+    var schritte = [
+      ["regler", "Dieselben Regeln wie heute", "Trend, Momentum und Risiko mit genau den Schwellen, die auch heute gelten. Nichts wurde nachträglich angepasst, damit es besser aussieht."],
+      ["auge", "Nur das Wissen von damals", "Jeder Tag wird nur mit den Kursen bis zu diesem Tag eingeordnet und erst am nächsten Handelstag umgesetzt – ohne Rückschaufehler."],
+      ["kerzen", "Fast " + (Math.round(jahre / 10) * 10) + " Jahre, alle großen Krisen", "US-Gesamtmarkt inklusive Dividenden von " + von + " bis " + bis +
+        ": Weltwirtschaftskrise, Ölkrisen, Dotcom-Blase, Finanzkrise, Corona."],
+      ["lupe", "Gegen den Zufall geprüft", "Gezählt werden nur Zeiträume, die sich nicht überschneiden. " +
+        (gesichert.length ? "Der Unterschied zwischen vorsichtigen und konstruktiven Stufen ist nach " + gesichert.join(" und ") + " statistisch gesichert, auch nach Korrektur für Mehrfachtests."
+                          : "Der Unterschied ist derzeit statistisch nicht gesichert.")],
+      oosA ? ["trend", "Auch ohne Vorwissen bestätigt", "Die Regeln entstanden 2026. Die Jahre bis " + jahr(ev.outOfSample.to) + " kannten sie nicht – dort zeigt sich dasselbe Muster: „" +
+        oosA.label + "“ " + vonHundert(oosA.drawdownShare) + ", „" + oosZ.label + "“ " + vonHundert(oosZ.drawdownShare) + "."] : null
+    ].filter(Boolean);
+    var methode = el("article", { class: "dx-m3-pr-karte dx-m3-pr-methode" }, [
+      el("div", { class: "dx-m3-pr-kopf" }, [iconChip("regler", "neutral"), el("span", { text: "So haben wir geprüft" })]),
+      el("ol", { class: "dx-m3-pr-schritte" }, schritte.map(function (x) {
+        return el("li", {}, [iconChip(x[0], "context"), el("div", {}, [el("b", { text: x[1] }), el("p", { text: x[2] })])]);
+      }))
+    ]);
+
+    /* (4) Was es bedeutet - und was nicht */
+    var bedeutung = el("article", { class: "dx-m3-pr-karte dx-m3-pr-bedeutung" }, [
+      el("div", { class: "dx-m3-pr-kopf" }, [iconChip("kompass", "neutral"), el("span", { text: "Was das bedeutet – und was nicht" })]),
+      el("ul", { class: "dx-m3-pr-liste" }, [
+        el("li", { class: "is-ja" }, [el("span", { class: "dx-m3-pr-zeichen", "aria-hidden": "true", text: "✓" }),
+          el("p", { text: "Die Einordnung zeigt, wie groß das Risiko eines deutlichen Rückschlags ist." })]),
+        el("li", { class: "is-nein" }, [el("span", { class: "dx-m3-pr-zeichen", "aria-hidden": "true", text: "✕" }),
+          el("p", { text: "Sie sagt nicht voraus, ob die Kurse steigen: Nach „" + erste.label + "“ lag die durchschnittliche Rendite der folgenden " + h + " sogar bei " +
+            (erste.meanReturn >= 0 ? "+" : "") + pct(erste.meanReturn) + " – oft folgten kräftige Erholungen." })]),
+        el("li", { class: "is-nein" }, [el("span", { class: "dx-m3-pr-zeichen", "aria-hidden": "true", text: "✕" }),
+          el("p", { text: "Kein Signal zum Handeln und keine Anlageberatung – ein Werkzeug für die eigene Recherche." })])
+      ])
+    ]);
+
+    /* (5) Alle Zahlen, Grenzen, Quelle */
+    var hz = ev.byHorizon || [];
+    var tabelle = el("table", { class: "dx-m3-pr-tabelle" }, [
+      el("caption", { text: "Rückgang von 10 % oder mehr – Fälle von 100, je Zeitraum danach" }),
+      el("thead", {}, [el("tr", {}, [el("th", { scope: "col", text: "Stufe" })].concat(hz.map(function (x) { return el("th", { scope: "col", text: x.label }); }))
+        .concat([el("th", { scope: "col", text: "Ø Rendite " + h }), el("th", { scope: "col", text: "Fälle" })]))]),
+      el("tbody", {}, lv.map(function (x) {
+        return el("tr", {}, [el("th", { scope: "row", text: x.label })].concat(hz.map(function (y) {
+          var z = y.levels.filter(function (q) { return q.level === x.level; })[0];
+          return el("td", { text: z && isNum(z.drawdownShare) ? String(Math.round(z.drawdownShare)) : "–" });
+        })).concat([el("td", { text: (x.meanReturn >= 0 ? "+" : "") + pct(x.meanReturn) }), el("td", { text: String(x.samples) })]));
+      }))
+    ]);
+    var perioden = (ev.periods || []).map(function (sp) {
+      var a = sp.levels[0], z = sp.levels[sp.levels.length - 1];
+      return el("li", { text: sp.id.replace("-", "–") + ": „" + a.label + "“ " + vonHundert(a.drawdownShare) + ", „" + z.label + "“ " + vonHundert(z.drawdownShare) +
+        " (" + a.samples + " bzw. " + z.samples + " Fälle)" });
+    });
+    var spanne = function (x) { return x.drawdownCI95 ? Math.round(x.drawdownCI95[0]) + " und " + Math.round(x.drawdownCI95[1]) : "–"; };
+    var weitere = ev.illustration.rules.filter(function (q) { return q !== regel && q.all; }).map(function (q) {
+      return el("li", { text: "Nur ab „" + q.minLabel + "“ investiert: " + pct(q.all.cagr) + " pro Jahr, größter Verlust " + pct(q.all.maxDrawdown) + ", " + pct(q.all.investedShare, 0) + " der Zeit am Markt" +
+        (q.since2001 ? " (seit " + jahr(q.since2001.from) + ": " + pct(q.since2001.cagr) + ", " + pct(q.since2001.maxDrawdown) + ")" : "") + "." });
+    });
+    var details = el("details", { class: "dx-m3-regel dx-m3-pr-details" }, [
+      el("summary", { text: "Alle Zahlen, Grenzen und Quelle" }),
+      el("div", { class: "dx-m3-pr-tabelle-box", tabindex: "0", role: "region", "aria-label": "Tabelle: Rückgänge je Stufe und Zeitraum" }, [tabelle]),
+      el("h3", { text: "Jeder Zeitabschnitt einzeln (" + h + ")" }), el("ul", {}, perioden),
+      el("h3", { text: "Wie sicher sind die Zahlen?" }),
+      el("p", { text: "Mit 95 % Sicherheit liegt der wahre Anteil nach „" + erste.label + "“ zwischen " + spanne(erste) + " von 100, nach „" + letzte.label + "“ zwischen " +
+        spanne(letzte) + " von 100." + (erste.drawdownCI95 && letzte.drawdownCI95 ? (erste.drawdownCI95[0] > letzte.drawdownCI95[1]
+          ? " Die Spannen überschneiden sich nicht – der Unterschied ist kein Zufall." : " Die Spannen überschneiden sich – der Unterschied ist nicht sicher.") : "") }),
+      weitere.length ? el("h3", { text: "Weitere Modellrechnung" }) : null, weitere.length ? el("ul", {}, weitere) : null,
+      el("h3", { text: "Grenzen" }),
+      el("ul", {}, [
+        el("li", { text: "Die Geschichte kennt keine ETFs: Für die vier Markt-Tracker stehen Portfolios aus großen Wachstums- und Standardwerten sowie kleinen Werten." }),
+        el("li", { text: "Die Marktbreite der Seite zählt Einzelaktien; historisch ist sie nur über Branchen annähernd messbar. Deshalb fehlt „Breit konstruktiv“ als eigene Zeile." }),
+        el("li", { text: "Je Stufe gibt es nur " + Math.min.apply(null, lv.map(function (x) { return x.samples; })) + " bis " + Math.max.apply(null, lv.map(function (x) { return x.samples; })) +
+          " unabhängige Fälle – die Zahlen sind belastbar, aber nicht auf die Kommastelle genau." }),
+        el("li", { text: "Die Modellrechnung enthält keine Kosten, Steuern oder Verzögerungen über einen Tag hinaus." })
+      ]),
+      el("h3", { text: "Quelle" }),
+      el("p", {}, [document_text("Datengrundlage: "), el("a", { href: ev.source.url, rel: "noopener", target: "_blank", text: ev.source.label }),
+        document_text(". " + ev.source.detail + " Daten bis " + tagLang(ev.to) + ", monatlich aktualisiert.")])
+    ].filter(Boolean));
+
+    return el("section", { class: "dx-m3-pruefung", id: "maerkte-pruefung", "aria-label": "Wie verlässlich ist diese Einordnung?" }, [
+      kopfzeile("Geprüft seit " + von, "Wie verlässlich ist diese Einordnung?",
+        "Wir haben genau diese Regeln auf fast " + (Math.round(jahre / 10) * 10) + " Jahre US-Börsengeschichte angewendet – Tag für Tag nur mit den Daten, die damals bekannt waren."),
+      el("div", { class: "dx-m3-pr-raster" }, [kern, modell, methode, bedeutung].filter(Boolean)),
+      details,
+      el("p", { class: "dx-m3-fuss", text: "Eigene historische Prüfung von Vision Universe mit den unveränderten Regeln. Keine Prognose, keine Anlageberatung." })
+    ]);
+  }
+
   /* ----------------------------------------------- Markt jetzt: Stories */
 
   function stories(items, standText) {
@@ -931,7 +1098,7 @@
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MarketIntelligence = {
     hero: hero, kacheln: kacheln, landkarte: landkarte, glyph: symbolSvg, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
-    verlauf: verlauf, breite: breite, crossAsset: crossAsset, stories: stories, beleben: beleben,
+    verlauf: verlauf, breite: breite, crossAsset: crossAsset, pruefung: pruefung, stories: stories, beleben: beleben,
     naechsteBewertung: naechsteBewertung, zyklusText: zyklusText, ZEITRAEUME: ZEITRAEUME
   };
 })(typeof window !== "undefined" ? window : globalThis);

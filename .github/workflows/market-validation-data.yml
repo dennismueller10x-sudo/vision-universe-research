@@ -2,7 +2,9 @@ name: Markt-Validierung — Quelldaten
 
 # Holt frei zugaengliche Forschungsdaten fuer die historische Pruefung
 # der Markt-Einordnung (scripts/market/validate-market-pulse.mjs) und
-# schreibt NUR die aggregierte Auswertung nach docs/market-validation/.
+# schreibt NUR die aggregierte Auswertung nach docs/market-validation/
+# (intern) und den Auszug fuer die Seite "Maerkte" nach
+# quant/data/market/validation/market-pulse-evidence.json (veroeffentlicht).
 # Die Rohdaten bleiben im Runner: das Repository ist oeffentlich, und die
 # French-Reihen beruhen auf lizenzierten CRSP-Daten (Weitergabe nicht
 # gedeckt). Zitiert wird die Quelle in der Auswertung.
@@ -38,7 +40,8 @@ name: Markt-Validierung — Quelldaten
 #     SAHMREALTIME (Sahm-Regel in Echtzeit), T10Y3M (Zinskurve 10J-3M).
 #
 # docs/ gehoert nicht zur veroeffentlichten Seite (scripts/vu2/build-release.mjs,
-# permitted()). Das Ergebnis ist NOT_CERTIFIED und nur fuer interne Pruefung.
+# permitted()). Veroeffentlicht wird nur der Auszug mit aggregierten
+# Kennzahlen und Quellenangabe (Entscheidung des Eigentuemers, 28.09.2026).
 #
 # EIGENE SPUR: beruehrt weder Quant noch Macro noch Discover-Daten.
 
@@ -102,18 +105,19 @@ jobs:
         run: node scripts/market/validate-market-pulse.mjs
       - name: Nur Zeitstempel geaendert? Dann nichts speichern
         run: |
-          f=docs/market-validation/market-pulse-validation.json
-          if git cat-file -e "HEAD:$f" 2>/dev/null && git show "HEAD:$f" | node -e '
-            const fs = require("fs");
-            const ohne = (v) => JSON.stringify(v, (k, x) => (k === "generatedAt" || k === "retrievedAt" ? undefined : x));
-            const alt = JSON.parse(fs.readFileSync(0, "utf8")), neu = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
-            process.exit(ohne(alt) === ohne(neu) ? 0 : 1);
-          ' "$f"; then
-            echo "Keine neuen Zahlen - Ergebnis unveraendert, kein Commit."
-            git checkout -- "$f"
-          else
-            echo "Neue Zahlen - Ergebnis wird gespeichert."
-          fi
+          for f in docs/market-validation/market-pulse-validation.json quant/data/market/validation/market-pulse-evidence.json; do
+            if git cat-file -e "HEAD:$f" 2>/dev/null && git show "HEAD:$f" | node -e '
+              const fs = require("fs");
+              const ohne = (v) => JSON.stringify(v, (k, x) => (k === "generatedAt" || k === "retrievedAt" ? undefined : x));
+              const alt = JSON.parse(fs.readFileSync(0, "utf8")), neu = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              process.exit(ohne(alt) === ohne(neu) ? 0 : 1);
+            ' "$f"; then
+              echo "$f: keine neuen Zahlen - kein Commit."
+              git checkout -- "$f"
+            else
+              echo "$f: neue Zahlen - wird gespeichert."
+            fi
+          done
       - name: Ergebnis in den Zweig
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -125,4 +129,5 @@ jobs:
           esac
           bash scripts/ci/commit-and-push.sh \
             "Markt-Validierung: Ergebnis aktualisiert ($art)" \
-            docs/market-validation/market-pulse-validation.json
+            docs/market-validation/market-pulse-validation.json \
+            quant/data/market/validation/market-pulse-evidence.json

@@ -51,6 +51,7 @@
   var PULSE_CONFIG = "/quant/config/market-pulse.json";
   /* Markets 3.0: Verlauf des Marktumfelds (point in time, Core-Artefakt). */
   var PULSE_HISTORY = "/quant/data/market/intelligence/market-pulse-history.json";
+  var PULSE_EVIDENCE = "/quant/data/market/validation/market-pulse-evidence.json";
 
   /* Die Gruppen der Seite, je Assetklasse und Region. Nur Instrumente,
      die der Core fuehrt und freigibt; die Klasse ist Schutz gegen einen
@@ -285,6 +286,7 @@
   var THEMEN = [
     { ziel: "maerkte-aendern", label: "Bullish & Bearish", symbol: "pfeile", farbe: "#5e5ce6" },
     { ziel: "maerkte-verlauf", label: "12 Monate", symbol: "kurve", farbe: "#0a84ff" },
+    { ziel: "maerkte-pruefung", label: "Geprüft seit 1929", symbol: "schild", farbe: "#34c759" },
     { ziel: "maerkte-dimensionen", label: "5 Dimensionen", symbol: "regler", farbe: "#af52de" },
     { ziel: "maerkte-vorher-jetzt", label: "Was ist neu?", symbol: "funken", farbe: "#ff2d55" },
     { ziel: "maerkte-warum", label: "Warum?", symbol: "lupe", farbe: "#6e7b91" },
@@ -421,7 +423,7 @@
   /**
    * Markets 3.0: Einordnung zuerst, Belege danach.
    * HERO -> FUENF DIMENSIONEN -> VORHER/JETZT -> WARUM -> WORAUF ES ANKOMMT ->
-   * WAS WUERDE ES AENDERN -> VERLAUF -> MARKTBREITE -> CROSS ASSET ->
+   * WAS WUERDE ES AENDERN -> VERLAUF -> WIE VERLAESSLICH -> MARKTBREITE -> CROSS ASSET ->
    * MARKT JETZT -> AKTIEN IN BEWEGUNG -> ALLE MAERKTE.
    * @param {HTMLElement} root
    * @param {object} ctx {calendar, isActive}
@@ -431,9 +433,10 @@
     var MA = global.VUMultiAssetContract;
     var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
     function optional(p) { return S.loadJSON(p).catch(function () { return null; }); }
-    return Promise.all([S.loadJSON(SNAPSHOT), optional(CONFIG), optional(PULSE), optional(PULSE_CONFIG), optional(PULSE_HISTORY)]).then(function (r) {
+    return Promise.all([S.loadJSON(SNAPSHOT), optional(CONFIG), optional(PULSE), optional(PULSE_CONFIG), optional(PULSE_HISTORY),
+                        optional(PULSE_EVIDENCE)]).then(function (r) {
       if (ctx.isActive && !ctx.isActive()) return;
-      var snap = r[0], cfg = r[1], puls = r[2], pcfg = r[3], hist = r[4];
+      var snap = r[0], cfg = r[1], puls = r[2], pcfg = r[3], hist = r[4], beleg = r[5];
       var jetzt = new Date();
       var contracts = snap.instruments.map(function (c) {
         return MA.refresh(c, { now: jetzt, calendar: ctx.calendar, config: cfg || {} });
@@ -455,6 +458,7 @@
         dazu(MI.worauf(puls, nm));
         dazu(MI.bildAendern(puls, nm));
         verlaufNode = dazu(MI.verlauf(hist, puls));
+        if (MI.pruefung) dazu(MI.pruefung(beleg, puls));
         dazu(MI.breite(puls, hist));
         dazu(MI.crossAsset(puls, nm));
       } else if (puls) {

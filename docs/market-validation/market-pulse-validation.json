@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-validation-1.0.0",
  "methodVersion": "market-pulse-1.0.0",
  "environmentVersion": "market-environment-1.0.0",
- "generatedAt": "2026-09-28T09:54:43.102Z",
+ "generatedAt": "2026-09-28T13:29:38.930Z",
  "status": "NOT_CERTIFIED",
  "purpose": "Interne Prüfung, ob sich die Folgephasen je Einordnungsstufe unterscheiden. Keine Renditeaussage, keine Prognose, keine Produktanzeige.",
  "method": {
@@ -889,7 +889,7 @@
    "data": {
     "source": "Kenneth R. French Data Library (Tuck School of Business, Dartmouth): F-F_Research_Data_Factors_daily, 6_Portfolios_2x3_daily, 49_Industry_Portfolios_daily (wertgewichtet)",
     "citation": "Fama, E. F. und French, K. R.; Daten: Kenneth R. French Data Library, https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
-    "retrievedAt": "2026-09-28T09:53:45.441Z",
+    "retrievedAt": "2026-09-28T09:47:20.232Z",
     "roles": {
      "SPY": "MARKET – US-Gesamtmarkt (Mkt-RF + RF, alle Aktien an NYSE, AMEX, NASDAQ, wertgewichtet)",
      "QQQ": "BIG_LOBM – große Werte mit niedrigem Buchwert/Marktwert (Wachstum), Näherung für einen wachstumslastigen Large-Cap-Index",
@@ -2204,7 +2204,43 @@
         }
        ]
       }
-     }
+     },
+     "recentIllustration": [
+      {
+       "rule": "Investiert bei Stufe ≥ 1, sonst Geldmarkt; Signal am Schlusskurs, wirksam ab dem übernächsten Schlusskurs; ohne Kosten und Steuern.",
+       "strategy": {
+        "cagr": 7.869,
+        "volatility": 14.05,
+        "maxDrawdown": -37.557,
+        "sharpe": 0.56,
+        "years": 25.66
+       },
+       "buyAndHold": {
+        "cagr": 9.379,
+        "maxDrawdown": -54.566
+       },
+       "investedShare": 87.6,
+       "from": "2001-01-03",
+       "to": "2026-08-31"
+      },
+      {
+       "rule": "Investiert bei Stufe ≥ 2, sonst Geldmarkt; Signal am Schlusskurs, wirksam ab dem übernächsten Schlusskurs; ohne Kosten und Steuern.",
+       "strategy": {
+        "cagr": 6.992,
+        "volatility": 10.136,
+        "maxDrawdown": -21.164,
+        "sharpe": 0.69,
+        "years": 25.66
+       },
+       "buyAndHold": {
+        "cagr": 9.379,
+        "maxDrawdown": -54.566
+       },
+       "investedShare": 65,
+       "from": "2001-01-03",
+       "to": "2026-08-31"
+      }
+     ]
     },
     {
      "variant": "MIT_BRANCHEN_BREITE",
@@ -3666,7 +3702,43 @@
         }
        ]
       }
-     }
+     },
+     "recentIllustration": [
+      {
+       "rule": "Investiert bei Stufe ≥ 1, sonst Geldmarkt; Signal am Schlusskurs, wirksam ab dem übernächsten Schlusskurs; ohne Kosten und Steuern.",
+       "strategy": {
+        "cagr": 7.869,
+        "volatility": 14.05,
+        "maxDrawdown": -37.557,
+        "sharpe": 0.56,
+        "years": 25.66
+       },
+       "buyAndHold": {
+        "cagr": 9.379,
+        "maxDrawdown": -54.566
+       },
+       "investedShare": 87.6,
+       "from": "2001-01-03",
+       "to": "2026-08-31"
+      },
+      {
+       "rule": "Investiert bei Stufe ≥ 2, sonst Geldmarkt; Signal am Schlusskurs, wirksam ab dem übernächsten Schlusskurs; ohne Kosten und Steuern.",
+       "strategy": {
+        "cagr": 6.992,
+        "volatility": 10.136,
+        "maxDrawdown": -21.164,
+        "sharpe": 0.69,
+        "years": 25.66
+       },
+       "buyAndHold": {
+        "cagr": 9.379,
+        "maxDrawdown": -54.566
+       },
+       "investedShare": 65,
+       "from": "2001-01-03",
+       "to": "2026-08-31"
+      }
+     ]
     }
    ]
   },

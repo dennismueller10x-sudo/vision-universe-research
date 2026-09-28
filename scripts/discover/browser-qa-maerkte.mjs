@@ -131,6 +131,10 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  p('Cross Asset: Anlageklassen verlinkt, keine Kausalitaet',intel.ca.length>=3&&intel.ca.every(h=>/^#\/maerkte\//.test(h))&&/nicht, warum/.test(intel.m3Text),intel.ca);
  p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',intel.stories.length>=1&&intel.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),intel.stories);
  p('Kein Gesamtscore, keine Kauf-/Verkaufsaufforderung, Hinweis sichtbar',!/\d+\s*\/\s*100|Score \d|jetzt kaufen|verkaufen Sie|Kaufsignal/i.test(intel.m3Text)&&/keine Anlageberatung/.test(intel.m3Text),null);
+ const pr=await page.evaluate(()=>{const s=document.querySelector('#maerkte-pruefung');if(!s)return null;return {text:s.textContent,balken:s.querySelectorAll('.dx-m3-pr-balken li').length,
+   heute:s.querySelectorAll('.dx-m3-pr-balken li.is-heute').length,quelle:(s.querySelector('.dx-m3-pr-details a')||{}).href||''};});
+ p('Wie verlaesslich: Rueckschlag-Risiko je Stufe, heutige Stufe markiert',!!pr&&pr.balken>=4&&pr.heute===1&&/von 100 Fällen/.test(pr.text),pr&&{balken:pr.balken,heute:pr.heute});
+ p('Wie verlaesslich: Modellrechnung nie allein (immer investiert, seit 2001, ohne Kosten, Quelle)',!!pr&&/Immer investiert/.test(pr.text)&&/Seit 20\d\d:/.test(pr.text)&&/Ohne Kosten und Steuern/.test(pr.text)&&/ken\.french/.test(pr.quelle),pr&&pr.quelle);
  p('Movers verlinken auf Aktienseiten',intel.movers.length===0||intel.movers.every(h=>/^#\/s\/US_REAL\//.test(h)),intel.movers.slice(0,3));
  p('Jede Karte mit Wert ist ein Link zum Marktdetail',intel.kartenLinks.length>=28&&intel.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),intel.kartenLinks.length);
  /* Verlauf: Zeitraumwechsel veraendert Diagramm und Text (Standard ist 1J). */

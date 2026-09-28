@@ -1,6 +1,6 @@
 # Markt-Validierung – historische Prüfung der Einordnung
 
-Status: **NOT_CERTIFIED** · interne Prüfung · keine Renditeaussage, keine Produktanzeige
+Status: **NOT_CERTIFIED** · eigene historische Prüfung · auf der Seite „Märkte“ offengelegt (siehe unten)
 
 Frage: Unterscheiden sich die Folgephasen je Einordnungsstufe der Seite
 „Märkte“ (Defensiv … Breit konstruktiv)? Wenn die Stufen Aussagekraft haben,
@@ -86,14 +86,28 @@ kein Timing-Werkzeug.
 - Status NOT_CERTIFIED: Für Renditeaussagen gilt weiter die Verfassung
   (nur zertifizierte Backtests).
 
-## Empfehlung zur Anzeige (Entscheidung beim Eigentümer)
+## Anzeige auf der Seite (Entscheidung des Eigentümers, 28.09.2026)
 
-Vertretbar wäre – nach Freigabe und Lizenzklärung mit Prof. French –
-höchstens ein nüchterner Methodenhinweis ohne Zahlen zur Rendite, z. B.:
-„Historisch folgten auf defensive Einordnungen häufiger deutliche Rückgänge
-als auf konstruktive (US-Markt seit 1929). Das ist keine Prognose.“
-Nicht vertretbar: Rendite- oder Strategiekennzahlen, Timing-Versprechen.
-Bis zur Entscheidung wird nichts auf der Seite angezeigt.
+Die Prüfung wird auf der Seite „Märkte“ offengelegt – Abschnitt „Wie
+verlässlich ist diese Einordnung?“ (`#maerkte-pruefung`, Menü-Chip „Geprüft
+seit 1929“). Grundlage ist ein kleiner, veröffentlichter Auszug nur mit
+aggregierten Kennzahlen: `quant/data/market/validation/market-pulse-evidence.json`
+(Studie B, Variante ohne Breite; monatlich mit aktualisiert).
+
+Regeln der Darstellung (durch Tests und Browser-QA abgesichert):
+
+- Kernaussage ist das Rückschlag-Risiko je Stufe, mit markierter heutiger Stufe.
+- Die Modellrechnung steht **nie allein**: immer neben „immer investiert“, neben
+  dem jüngeren Zeitraum ab 2001 und mit dem Hinweis „ohne Kosten und Steuern,
+  nicht direkt investierbar, vergangene Ergebnisse kein verlässlicher Hinweis“.
+- Methode in Schritten, „Was es bedeutet – und was nicht“, alle Zahlen,
+  Unsicherheit, Grenzen und Quelle (mit Link) im aufklappbaren Teil.
+- Keine Handlungsaufforderung, keine Anlageberatung.
+
+Lizenz: Die French-Daten sind frei abrufbar, eine ausdrückliche Erlaubnis für
+kommerzielle Seiten gibt es nicht. Veröffentlicht werden nur eigene,
+aggregierte Auswertungen mit Quellenangabe, keine Rohreihen. Eine Anfrage bei
+Prof. French wurde bewusst nicht gestellt (Entscheidung des Eigentümers).
 
 ## Was wiederverwendet wird (nur gelesen, nichts verändert)
 
