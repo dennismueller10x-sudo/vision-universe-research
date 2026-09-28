@@ -1383,9 +1383,14 @@ async function strategyPage(){
     dem Katalog statt vor ihm. Wer eine eigene Strategie bauen will,
     findet hier dieselben Felder, dieselbe Speicherung, dieselbe Historie. */
  const builderZiel=el('div',{});
+ /* Wer mit `?query=` hier ankommt, kommt aus dem Screener und will genau
+    diese Regeln weiterentwickeln - dann steht der Editor offen. Dieselbe
+    Regel wie im Screener, aus demselben Grund. */
+ const mitRegelnImLink=params.has('query');
  const builderAnhaengen=()=>main.append(card('Eigene Strategie bauen',
   'Der vollständige Regel-Editor mit Gewichtung, Kosten und gespeicherten Versionen. Unverändert erhalten.',
-  [el('details',{class:'q-pro'},[el('summary',{text:'Strategie-Editor öffnen'}),builderZiel])]));
+  [el('details',{class:'q-pro',open:mitRegelnImLink||null},
+   [el('summary',{text:'Strategie-Editor öffnen'}),builderZiel])]));
  /* Bevor jemand eine eigene Regel baut: welche Stile es gibt und wie
     besetzt sie heute sind. Dieselbe Regel, die auf einer Aktienseite
     erklaert, warum ein Titel passt, waehlt hier die Titel aus. */
@@ -2788,9 +2793,16 @@ async function screenPage(){
    rows=[];S.clear(ruleList);query.filters.forEach(addRule);sort.value=query.sort[0].field;direction.value=query.sort[0].direction;apply();};
  }else profiles.disabled=true;
  profiZiel.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),el('label',{},[el('span',{text:'Strategie-Profil'}),profiles]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
+ /* WER MIT REGELN IM LINK ANKOMMT, HAT DEN EINFACHEN EINSTIEG SCHON HINTER
+    SICH. Aus Discover, aus einer gespeicherten Auswahl oder aus einer
+    Strategie führt der Weg direkt in diese Kriterien - und eine
+    zugeklappte Fläche wäre dort eine Sackgasse. Dasselbe Versehen hatte
+    schon den Setup-Einstieg von der Startseite getroffen. */
+ const mitRegelnImLink=['recipe','query','field','threshold'].some(k=>params.has(k));
  main.append(card('Profi-Modus',
   'Alle Kennzahlen, alle Vergleiche, beide Methodiken. Nichts davon ist weggefallen — es beginnt nur nicht mehr hier.',
-  [el('details',{class:'q-pro'},[el('summary',{text:'Kriterien selbst zusammenstellen'}),profiZiel])]));
+  [el('details',{class:'q-pro',open:mitRegelnImLink||null},
+   [el('summary',{text:'Kriterien selbst zusammenstellen'}),profiZiel])]));
  sort.onchange=direction.onchange=apply;ruleList.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();apply();}});if(!invalidLink)await apply();else share.hidden=true;
 }
 function recover(title,description,retry=false){S.clear(main);main.append(heading(title,description),actions([...(retry?[{label:'Erneut versuchen',href:location.pathname+location.search}]:[]),{label:'Research öffnen',href:href('research')},{label:'Zur Startseite',href:href('home')}]),el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau'}));}
