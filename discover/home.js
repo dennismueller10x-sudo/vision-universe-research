@@ -41,6 +41,19 @@
     'PROFITABLES WACHSTUM': 'Profitables Wachstum'
   };
   function title(text) { return text ? (Object.prototype.hasOwnProperty.call(titles, text) ? titles[text] : text) : 'Aktien entdecken'; }
+  var perspectiveImages = {
+    'profitables-wachstum':'profitables-wachstum', 'umsatz-waechst-stark':'umsatz-waechst-stark',
+    'gewinne-beschleunigen':'gewinne-beschleunigen', 'cashflow-maschinen':'cashflow-maschinen',
+    'margen-werden-staerker':'margen-werden-staerker', 'langfristige-compounder':'langfristige-compounder',
+    'relative-strength':'dem-markt-voraus', 'comeback':'comeback',
+    'fundamentale-turnarounds':'fundamentale-turnarounds', 'starke-bilanz-wachstum':'starke-bilanz-wachstum',
+    'trend-quality':'stabile-aufwaertstrends', 'ueberraschungen':'unter-dem-radar',
+    'momentum-leaders':'seit-monaten-im-aufwind', 'breakout-watch':'gerade-in-bewegung',
+    'new-52-week-highs':'neue-jahreshochs', 'sector-leaders':'die-staerksten-je-branche',
+    'bekannte-namen':'bekannte-namen-in-bewegung', 'market-leaders':'die-staerksten-aktien',
+    'top-10':'momentum-leader', 'megatrends':'megatrends'
+  };
+  function perspectiveImage(rowId) { return perspectiveImages[rowId] ? '/assets/discover-perspektiven/' + perspectiveImages[rowId] + '.jpeg' : null; }
   var rangeLabels = { '1M': '1 Monat', '3M': '3 Monate', '6M': '6 Monate', '1J': '1 Jahr' };
   var freshnessLabels = { LIVE: 'Realtime', LAST_SESSION: 'Letzte Sitzung', STALE: 'Nicht aktuell', UNAVAILABLE: 'Nicht verfügbar' };
   function bindArtworkCaption(media, caption, card, ctx, range) {
@@ -357,7 +370,10 @@
       var a=link('',href,'v2-collection-link');
       var visual=node('span','v2-collection-art');visual.setAttribute('aria-hidden','true');
       var art=perspectiveArt[surface.id]||['✳',title(surface.title)];
-      visual.append(node('span','v2-collection-glyph',art[0]),node('span','v2-collection-art-label',art[1]));
+      var photo=perspectiveImage(surface.rowId||surface.id);
+      if(photo){visual.classList.add('has-image');visual.appendChild(el('img',{class:'v2-collection-image',src:photo,alt:'',width:'1254',height:'1254',loading:'lazy',decoding:'async'}));}
+      else visual.appendChild(node('span','v2-collection-glyph',art[0]));
+      visual.appendChild(node('span','v2-collection-art-label',art[1]));
       var copy=node('span','v2-collection-copy');copy.append(node('strong','',title(surface.title)),node('span','',surface.subtitle||'Aktien entdecken'));
       a.append(visual,copy,node('span','v2-collection-arrow','→'));
       collections.querySelector('.v2-collection-links').appendChild(a);
@@ -409,5 +425,5 @@
     } catch (error) { loading.textContent = 'Die Aktienwelten konnten nicht geladen werden.'; var retry = el('button', { type: 'button', text: 'Erneut versuchen', class: 'v2-load-more' }); retry.addEventListener('click', function () { page.remove(); render(root, ctx); }); body.appendChild(retry); }
     return function () { if (observer) observer.disconnect(); ctx.artworkDisposers.forEach(function (dispose) { dispose(); }); ctx.artworkDisposers.length = 0; };
   }
-  V.Home = { render: render, title: title, tile: tile, themeTile: themeTile, themeBanner: themeBanner };
+  V.Home = { render: render, title: title, tile: tile, themeTile: themeTile, themeBanner: themeBanner, perspectiveImage: perspectiveImage };
 })(window);

@@ -155,6 +155,7 @@
         }
       } else if(parts[0]==='welten'){
         root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten & Aktienwelten'}),el('p',{class:'v2-lead',text:'Megatrends, Branchen und Rankings. Wähle eine Welt und entdecke die Aktien dahinter.'}));
+        root.append(el('div',{class:'v2-collection-hero'},[el('img',{src:V.Home.perspectiveImage('megatrends'),alt:'',width:'1254',height:'1254',decoding:'async'})]));
         root.append(el('div',{class:'v2-section-head'},[el('h2',{text:'Themenwelten'}),el('span',{text:V.Themes.all.length+' Welten'})]));
         const jumps=el('nav',{class:'v2-theme-jumps','aria-label':'Themenbereiche'});root.append(jumps);
         THEME_GROUPS.forEach(([group,label])=>{
@@ -169,8 +170,10 @@
         const rows=(meta.rows||[]).find(entry=>entry.universeId===ctx.universeId);
         const worlds=el('div',{class:'v2-world-directory'});
         ((rows&&rows.rows)||[]).filter(row=>row.returned>0).forEach((row,index)=>{
-          worlds.append(el('a',{href:'#/c/'+ctx.universeId+'/'+row.rowId,class:'v2-world-door','data-tone':String(index%4)},[
-            el('span',{class:'v2-world-door-count',text:row.returned+' Aktien'}),el('h2',{text:row.title}),el('p',{text:row.subtitle||''}),el('span',{class:'v2-world-door-arrow',text:'Entdecken ↗'})
+          const photo=V.Home.perspectiveImage(row.rowId);
+          worlds.append(el('a',{href:'#/c/'+ctx.universeId+'/'+row.rowId,class:'v2-world-door'+(photo?' has-image':''),'data-tone':String(index%4)},[
+            photo?el('img',{src:photo,alt:'',width:'1254',height:'1254',loading:'lazy',decoding:'async'}):null,
+            el('span',{class:'v2-world-door-count',text:row.returned+' Aktien'}),el('h2',{text:V.Home.title(row.title)}),el('p',{text:row.subtitle||''}),el('span',{class:'v2-world-door-arrow',text:'Entdecken ↗'})
           ]));
         });
         root.append(worlds);
@@ -210,7 +213,11 @@
         root.append(el('a',{class:'v2-back',href:'#/',text:'← Übersicht'}));
         const rowTheme=V.Themes.byRow(row.rowId||parts[2]);
         if(rowTheme)root.append(V.Home.themeBanner(rowTheme,{page:true,title:V.Home.title(row.title),subtitle:row.subtitle||rowTheme.line,evidence:(row.cards||[]).length+' Aktien'}));
-        else root.append(el('h1',{text:V.Home.title(row.title)}),el('p',{class:'v2-lead',text:row.subtitle||''}));
+        else {
+          const photo=V.Home.perspectiveImage(row.rowId||parts[2]);
+          if(photo)root.append(el('div',{class:'v2-collection-hero'},[el('img',{src:photo,alt:'',width:'1254',height:'1254',decoding:'async'})]));
+          root.append(el('h1',{text:V.Home.title(row.title)}),el('p',{class:'v2-lead',text:row.subtitle||''}));
+        }
         if(row.index&&row.index.asOf)root.append(el('p',{class:'v2-collection-source',text:'Mitglieder laut '+(row.index.proxy&&row.index.proxy.etf?'ETF-Bestand '+row.index.proxy.etf:'Indexeigentümer')+' · '+D.Cards.dateShort(row.index.asOf)}));
         if(row.editorial)root.append(el('p',{text:'Redaktionelle Themenzuordnung. Die Reihenfolge folgt der bestehenden Methodik.'}));
         if(row.rule){const rule=el('details',{class:'v2-rule'},[el('summary',{text:'Wie entsteht diese Auswahl?'}),el('p',{text:row.rule})]);root.append(rule);}
