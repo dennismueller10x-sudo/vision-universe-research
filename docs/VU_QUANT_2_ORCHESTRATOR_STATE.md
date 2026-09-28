@@ -2,6 +2,44 @@
 
 Updated: 2026-09-28 UTC
 
+## POST_LAUNCH_2026-09-28 — ERSTE BEOBACHTUNG, KEIN P0, KEIN P1
+
+POST-LAUNCH MODE. Gemessen wurde die **laufende Produktion**, nicht der Launch-Commit.
+
+**Der ausgelieferte Stand.** main ist auf `2d050f8003` (PR #268–#272). Alle fünf
+Auslieferungen seit dem Launch sind erfolgreich (Läufe 1012–1016, der jüngste fertig
+2026-09-28T12:00:51Z) — **kein Ausfall, keine Auslieferungsregression**. Unter `quant/`,
+`scripts/vu2`, `scripts/quant` und `vu2/` hat sich seit `e4435f8883` **nichts** geändert; die
+sieben neuen Commits sind Discover-Frontend, ein Workflow und Dokumente. Das Quant-2.0-Urteil
+des Launch gilt damit weiter — und ist auf dem aktuellen Stand nachgemessen, nicht angenommen:
+
+| Prüfung | Ergebnis |
+|---|---|
+| Launch-Gates auf dem Live-Release | `14 PASS · 0 FAIL · 0 offen` |
+| Produktions-Smoke (34 Ansichten) | CLEAN |
+| Suite | 1.968 Tests · 1.968 pass · 0 fail |
+| Abnahmestichprobe | 22 Titel · PASS |
+
+**Die Datenkette ist nicht eingefroren — und das ist gemessen, nicht unterstellt.** Der
+veröffentlichte Kursstand ist `2026-09-25` (6.429 Titel), das Verzeichnis ist von
+`2026-09-28T08:12:26Z`. Vier Kalendertage klingen nach Rückstand und sind keiner: der Zeitplan
+des Refresh ist `30 22 * * 1-5`, jetzt ist Montag 12:10 UTC, der letzte fällige Lauf war also
+Freitag 22:30 UTC — er ist (von GitHub verzögert) Samstag 00:46 UTC gelaufen und **erfolgreich**
+beendet (Lauf 582). Freitags Schluss **ist** der jüngste existierende Handelsschluss an einem
+Montagmittag; Montags Schluss holt der Lauf heute Abend. Die Materialisierung (Lauf 35) ist
+ebenfalls erfolgreich. `history-store-sync.yml` hat **null** Läufe, und das ist richtig: es ist
+der dokumentierte **Hebel von Hand**, den Push in die Ablage macht der Refresh selbst — genau
+diese Stufe nimmt das Freshness-Gate mit benannter Begründung aus, alle anderen drei müssen ohne
+Hand laufen.
+
+**Einordnung: 0 P0, 0 P1.** Kein falscher Wert, keine falsche Identität, keine kaputte
+Hauptfunktion, kein Ausfall, keine eingefrorene Kette, kein Sicherheitsbefund. Nichts Neues für
+den POST_LAUNCH_BACKLOG — die drei Punkte unten bleiben, wie sie sind.
+
+**Die eine offene Beobachtung** (keine Aufgabe, eine Kontrolle): dass der Abendlauf heute den
+Stand tatsächlich auf `2026-09-28` hebt. Bleibt er stehen, ist die Kette stehen geblieben, und
+das wäre das P0-Kriterium „Datenpipeline eingefroren". Nachsehen nach 22:30 UTC.
+
 ## PRODUCTION_2026-09-28 — PUBLIC_BETA_PRODUCTION = PASS
 
 **Veröffentlicht.** PR #266 ist auf main (`e4435f8883`), die Auslieferungsstrecke ist grün
