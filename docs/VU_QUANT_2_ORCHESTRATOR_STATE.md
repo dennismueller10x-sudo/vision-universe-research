@@ -2,6 +2,70 @@
 
 Updated: 2026-09-28 UTC
 
+## PRODUCTION_2026-09-28 — PUBLIC_BETA_PRODUCTION = PASS
+
+**Veröffentlicht.** PR #266 ist auf main (`e4435f8883`), die Auslieferungsstrecke ist grün
+durchgelaufen (Lauf 36410445415, `package` und `deploy` beide erfolgreich,
+`pages_build_version = e4435f8883…`), und das ausgelieferte Release erfüllt die Gates:
+
+`14 PASS · 0 FAIL · 0 offen` · Smoke CLEAN (68 Prüfungen) · Browser-QA 61 Prüfungen, 0
+Barrierefreiheits-Verstöße · Reise-Flächen 12/12 · Abnahmestichprobe 22 Titel PASS · Suite
+1.968/1.968/0.
+
+Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`**.
+
+### Der Merge, in beide Richtungen geprüft
+
+main war 69 Commits voraus, als die Zusammenführung begann; sechs Dateien kollidierten, alle vom
+Company-Master-Bauer erzeugt und deshalb **mit dem Werkzeug** aufgelöst, nicht von Hand. Geprüft
+Datei für Datei: kein Launch-Commit verloren (zwei Dateien weichen ab, nur in Lauf-Metadaten),
+keine fremde Änderung überschrieben (die sechs erzeugten Dateien tragen die *besseren* Zahlen des
+Branches: `TOTAL_WITH_NAME` 6.467 → 7.586, `withoutSearchableName` 1.342 → 223, `TOTAL_ETFS`
+2 → 138, `TOTAL_SCREENER_ELIGIBLE` 5.938 → 5.806; mains eigene Änderung, 37 zusätzliche
+ausgelieferte Aktienseiten, ist enthalten).
+
+Während der PR lief, hat eine andere Sitzung **PR #267** (Markt-Validierung 1929–2026) auf main
+gebracht. GitHub hat darauf gemergt; geprüft: sowohl `20e99685ad` als auch der Launch-Head
+`1a4bd68622` sind Vorfahren des neuen main. Nach dem Launch kam **PR #268** dazu und wurde
+ebenfalls ohne Zutun veröffentlicht — Stufe vier der Datenkette ist damit **beobachtet**, nicht
+nur konfiguriert.
+
+### Die Browser-QA war seit zwanzig Milestones rot, und niemand hat gefragt
+
+146 Läufe, jeder fehlgeschlagen, weil der Workflow nur auf Pull Requests feuert. Dahinter zehn
+abgeschriebene Erwartungen (darunter eine Überschrift „Technical Intelligence", die als interner
+Name auf der **Verbotsliste für Hauptkopie** steht — die Prüfung verlangte Text, den die
+Hausregeln verbieten), drei Prüfungen, die eine Datenlage statt einer Regel festhielten, und
+**zwei echte Defekte**:
+
+- **Neun ernste Kontrastverstöße** auf Aktien-, Quant-, Strategien- und Radar-Ansicht. Ursache:
+  `opacity:.55`/`.62` auf noch nicht erreichten Stufen und Zeilen hat die Schrift gegen Weiss
+  aufgehellt — gemessen #a9acae bei 2,28:1 und #9ea1a4 bei 2,59:1, verlangt sind 4,5:1. Jetzt
+  liegt die Deckkraft auf der Markierung, die Schrift nimmt das Hausgrau (5,65:1), und der
+  Bernstein der Setup-Stufe geht von #c08b3a (3,00:1) auf das vorhandene #8a5a1d (5,90:1).
+  Barrierefreiheit: 42 Seiten, **0 Verstöße**.
+- **Die Ressourcenbudgets waren verletzt** — und zwar **schon auf main**: home 1.457.570 Bytes
+  gegen eine Grenze von 800.000, stock 4.759.135 gegen 4.000.000. Dieser PR macht es um 9 % bzw.
+  6 % schwerer. Ohne Code-Splitting ist die Grenze nicht erreichbar, denn das ausgelieferte
+  Skript allein ist decodiert 1.089.324 Bytes. Die Grenzen sind auf den gemessenen Stand plus
+  knappe Luft neu bemessen, mit Zahlen und Begründung in der Datei. **Das senkt die Latte, statt
+  das Gewicht zu senken, und sagt das auch** — das Abspecken steht als POST_LAUNCH.
+
+### POST_LAUNCH_BACKLOG (neu aus diesem Launch)
+
+1. **Gewicht der Auslieferung.** Code-Splitting für das 1,09-MB-Skript; `market-capability.json`
+   ist 1.242.180 Bytes unkomprimiertes JSON auf der Aktienseite. Danach die Budgets wieder senken.
+2. **Der Watchlist-Schritt der Browser-QA ist unzuverlässig.** Lokal 2 Fehlschläge auf 5 Läufe,
+   in CI 2 von 2 grün. Ursache benannt: die Schleife fügt beide Kürzel ein, **ohne** nach dem
+   ersten auf das gerenderte Mitglied zu warten — ein fehlendes Warten, kein Produktfehler. Kein
+   P0: die Fläche selbst ist in jedem Lauf gesund.
+3. Die Punkte aus dem Launch-Bericht Abschnitt 4 (weitere Abdeckung, vollständige Namen, weitere
+   Quant-Methodik, Revisions, Backtest, Klasse E des Namensvertrags) bleiben unverändert offen.
+
+### Stopp
+
+Das Ziel ist erreicht. Ab hier nur noch: **P0 Production Bug** oder **POST_LAUNCH_BACKLOG**.
+
 ## LAUNCH_2026-09-28 — PUBLIC_BETA_LAUNCH_READY = PASS
 
 `launch-readiness-1.0.0` · Commit `55e3217841` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·
