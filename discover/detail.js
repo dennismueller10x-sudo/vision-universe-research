@@ -1,3 +1,7 @@
+
+
+
+
 (function (global) {
   "use strict";
   var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
@@ -33,6 +37,10 @@
       observers.forEach(function (observer) { observer.disconnect(); });
       unsubscribers.forEach(function (unsubscribe) { unsubscribe(); });
     };
+
+
+
+
     if (original) hub[method] = function () {
       var unsubscribe = original.apply(hub, arguments), finished = false;
       var once = function () {
@@ -85,6 +93,8 @@
     var back = page.querySelector(".dx-back");
     if (back) back.textContent = "← Aktien entdecken";
 
+
+
     if (hero && chart) {
       var context = node("section", "dv2-stock-context");
       context.setAttribute("aria-label", "Was bei dieser Aktie auffällt");
@@ -94,6 +104,7 @@
         if (item) context.appendChild(item);
       });
       if (context.textContent.trim()) chart.insertAdjacentElement("afterend", context);
+
       var art = hero.querySelector(".dx-dhero-art");
       if (art) art.remove();
     }
@@ -157,6 +168,8 @@
       var risksKicker = risks.querySelector(".dx-kicker");
       if (risksKicker) risksKicker.textContent = "04 / Chancen und Risiken";
     }
+
+
     var next = page.querySelector(".dx-chapter--next");
     Array.from(page.children).forEach(function (section) {
       if (section.querySelector && section.querySelector(".dx-rail")) section.classList.add("dv2-stock-neighbors");
@@ -178,6 +191,8 @@
       onward.href = "#/einzeln/" + encodeURIComponent(detail.universeId || "US_REAL");
       next.appendChild(onward);
     }
+
+
 
     page.querySelectorAll('[role="tablist"]').forEach(function (list, listIndex) {
       var tabs = Array.from(list.querySelectorAll('[role="tab"]'));
@@ -214,10 +229,26 @@
   function number(value, digits) {
     return value.toLocaleString("de-DE", { minimumFractionDigits: digits, maximumFractionDigits: digits });
   }
+
+
+
+
+
+
+
+
+
+
+
   function vuFormat(fn, value, currency, opts) {
     var F = (typeof VUFx !== "undefined" && VUFx && VUFx.Format) ? VUFx.Format : null;
     return (F && typeof F[fn] === "function") ? F[fn](value, currency || "USD", opts) : null;
   }
+
+
+
+
+
   function compactMoney(value, when) {
     var L = (typeof VUFx !== "undefined" && VUFx) ? VUFx.layer : null;
     var cur = "USD";
@@ -232,6 +263,8 @@
       ? vuFormat("formatCompact", value, cur, { numberLocale: "de-DE", decimals: 1 })
       : vuFormat("formatPrice", value, cur, { numberLocale: "de-DE", decimals: 2 });
     if (zentral) return zentral;
+
+
     var abs = Math.abs(value), scale = 1, suffix = " $";
     if (abs >= 1e12) { scale = 1e12; suffix = " Bio. $"; }
     else if (abs >= 1e9) { scale = 1e9; suffix = " Mrd. $"; }
@@ -379,6 +412,10 @@
     if (!chart) return null;
     function update() {
       chart.querySelectorAll("svg.dx-range-chart,svg.dx-micro--intraday").forEach(function (svg) {
+
+
+
+
         var points = svg.__punkte, basis = svg.__basis;
         if (!Array.isArray(points) || !points.length || !basis) return;
         var first = basis.close, last = points[points.length - 1].close;
@@ -407,6 +444,9 @@
     var low = Math.min.apply(null, values.concat([base]));
     var high = Math.max.apply(null, values.concat([base]));
     if (low === high) return;
+
+
+
     var span = high - low;
     if (low < base && high > base) {
       low -= span * .025; high += span * .025;
