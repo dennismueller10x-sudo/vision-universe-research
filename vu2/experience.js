@@ -1170,7 +1170,7 @@ function setupJourney(setup,observation,index,logik){
  const PATH=['ACTIVE','RISK_RISING','INVALIDATED','EXIT'];
  const section=el('section',{class:'section setup-section'},[
   el('span',{class:'eyebrow',text:'Situation'}),el('h2',{text:LQ('setupState')}),
-  el('ol',{class:'setup-journey','aria-label':'Setup-Zustände'},steps.map(state=>{
+  el('ol',{class:'setup-journey',tabindex:'0','aria-label':'Setup-Zustände, waagerecht scrollbar'},steps.map(state=>{
    const pending=PATH.includes(state)&&!pathOpen;
    return el('li',{class:'setup-step'+(active===state?' is-active':'')+(classification&&classification.state===state?' is-observed':'')+(pending?' is-pending':''),
     title:pending?LT('PATH_DEPENDENT_STATES_NOT_ACTIVATED'):LB(state)},[
