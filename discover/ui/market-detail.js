@@ -456,7 +456,7 @@
     var rolle = rollen.length || env ? el("div", { class: "dx-md-eo-rolle" }, [
       el("h3", { text: "Rolle im Marktumfeld" }),
       rollen.length ? el("ul", {}, rollen) : el("p", { text: "Dieser Markt fließt nicht direkt in die Einordnung des Marktumfelds ein – er wird als eigener Markt gezeigt." }),
-      env && env.level !== null ? el("a", { class: "dx-md-chip", href: "#/maerkte", text: "Marktumfeld: " + env.label + " – ansehen" }) : null
+      env && env.level !== null ? el("a", { class: "dx-md-chip", href: "#/maerkte/einordnung", text: "Marktumfeld: " + env.label + " – ansehen" }) : null
     ].filter(Boolean)) : null;
 
     return el("section", { class: "dx-md-einordnung", "aria-label": "Einordnung" }, [

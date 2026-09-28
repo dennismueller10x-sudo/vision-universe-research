@@ -10,6 +10,8 @@
 // Markets 3.0: Hero (Marktumfeld, erste fuenf Sekunden), fuenf Dimensionen, Vorher/Jetzt,
 // Warum, Worauf, Aendern, Verlauf (Zeitraumwechsel), Breite, Cross Asset, Geschichten,
 // zehn Bildschirme visuelle Abfolge, Einordnung auf den Detailseiten, axe hell/dunkel.
+// Markets 4.1: Uebersicht (Kurse zuerst, Marktstimmung, Top & Flop) und die
+// Erklaerung auf eigener Seite (#/maerkte/einordnung).
 // Usage: node scripts/discover/browser-qa-maerkte.mjs --url https://research.visionuniverse.de --out /tmp/maerkte-qa [--engine webkit] [--realtime]
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -82,6 +84,40 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  const fx=karten.EURUSD||{};p('EUR/USD als Kurs, nicht umgerechnet',/USD$/.test(fx.wert||'')&&!/€/.test(fx.wert||''),fx.wert);
  p('Keine Seitenfehler',pageErrors.length===0,pageErrors);
  if(key==='mobile')p('Kein Querlauf auf dem Telefon',!seite.querlauf,seite.querlauf);
+ /* Markets 4.1: Uebersicht wie in einer Broker-App - Kurse zuerst, eine
+    Karte Marktstimmung, die Erklaerung einen Tipp tiefer (#/maerkte/einordnung). */
+ const ov=await page.evaluate(()=>{const seite=document.querySelector('.dx-mk');if(!seite)return null;
+  const kinder=[...seite.children].map(n=>n.id||n.className.split(' ')[0]);
+  const st=document.getElementById('maerkte-stimmung');
+  return {kinder,titel:(seite.querySelector('h1')||{}).textContent||'',
+   titelSichtbar:(()=>{const h=seite.querySelector('h1');if(!h)return false;const r=h.getBoundingClientRect();return r.width>40&&r.height>20;})(),
+   stimmung:st?{text:st.textContent,link:(st.querySelector('a.dx-m3-st-link')||{}).getAttribute?.('href')}:null,
+   analyse:!!document.querySelector('.dx-m3-hero,#maerkte-dimensionen,#maerkte-warum'),
+   stories:[...document.querySelectorAll('.dx-m3-story')].map(s=>({titel:s.querySelector('h3').textContent,stand:(s.querySelector('.dx-m3-story-stand')||{}).textContent||'',
+     links:[...s.querySelectorAll('.dx-m3-story-wert')].map(a=>a.getAttribute('href'))})),
+   movers:[...document.querySelectorAll('.dx-movers-spalte a')].map(a=>a.getAttribute('href')),
+   kartenLinks:[...document.querySelectorAll('a.dx-markt-karte')].map(a=>a.getAttribute('href'))};});
+ const pos=id=>ov?ov.kinder.indexOf(id):-1;
+ p('Uebersicht: Titel "Märkte" sichtbar, Kategorien vor den Kursen',!!ov&&ov.titel==='Märkte'&&ov.titelSichtbar&&pos('dx-maerkte-nav')>=0&&pos('dx-maerkte-nav')<pos('maerkte-aktien'),ov&&ov.kinder);
+ p('Uebersicht: Aktienmaerkte -> Marktstimmung -> Top & Flop -> Was heute auffaellt -> weitere Maerkte',
+   pos('maerkte-aktien')<pos('maerkte-stimmung')&&pos('maerkte-stimmung')<pos('maerkte-movers')&&pos('maerkte-movers')<pos('maerkte-jetzt')&&pos('maerkte-jetzt')<pos('maerkte-energie'),ov&&ov.kinder);
+ p('Uebersicht: Marktstimmung mit Stufe, Rueckschlag-Risiko und Weg zur Einordnung',!!ov&&!!ov.stimmung&&/Rückschlag-Risiko: (normal|erhöht|gering)/.test(ov.stimmung.text)&&ov.stimmung.link==='#/maerkte/einordnung',ov&&ov.stimmung&&ov.stimmung.link);
+ p('Uebersicht: keine Analyse-Abschnitte auf der Kursseite',!!ov&&!ov.analyse,null);
+ p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',!!ov&&ov.stories.length>=1&&ov.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),ov&&ov.stories);
+ p('Movers verlinken auf Aktienseiten',!!ov&&(ov.movers.length===0||ov.movers.every(h=>/^#\/s\/US_REAL\//.test(h))),ov&&ov.movers.slice(0,3));
+ p('Jede Karte mit Wert ist ein Link zum Marktdetail',!!ov&&ov.kartenLinks.length>=28&&ov.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),ov&&ov.kartenLinks.length);
+ await page.screenshot({path:`${out}/maerkte-${key}.png`});
+ {const y0=await page.evaluate(()=>scrollY);await page.click('.dx-maerkte-sprung[data-ziel="maerkte-krypto"]');
+  /* Weicher Bildlauf ueber eine lange Seite: warten, bis er steht (max. 6 s). */
+  let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}
+  const sprung=await page.evaluate(()=>{const r=document.getElementById('maerkte-krypto').getBoundingClientRect();return {y:scrollY,top:r.top};});
+  p('Sprungleiste fuehrt zur Gruppe',sprung.y!==y0&&sprung.top>=-5&&sprung.top<250,sprung);
+  await page.screenshot({path:`${out}/maerkte-${key}-krypto.png`});}
+ /* Die Erklaerung: #/maerkte/einordnung */
+ await page.goto(base+'/discover/#/maerkte/einordnung',{waitUntil:'networkidle'});
+ await page.waitForSelector('.dx-m3-hero',{timeout:30000});
+ p('Einordnung: eigene Seite mit Titel und Weg zurueck zu den Maerkten',await page.evaluate(()=>{const b=document.querySelector('.dx-mk-einordnung>.dx-back');const h=document.querySelector('.dx-mk-einordnung h1');
+   return !!b&&b.getAttribute('href')==='#/maerkte'&&!!h&&/Marktstimmung/.test(h.textContent);}),null);
  /* Der Hero schneidet Ueberstand ab (overflow:hidden) - ein zu breiter Inhalt
     faellt deshalb nicht als Seiten-Querlauf auf, sondern als verschobener
     Gauge und abgeschnittener Text. Direkt messen. */
@@ -113,7 +149,7 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
   };
  });
  evidence[key].intelligence={environment:intel.environment,zustand:intel.zustand,aussage:intel.aussage,anleger:intel.anleger,zyklus:intel.zyklus,seit:intel.seit,
-  dims:intel.dims.map(d=>d.id+':'+d.state),vjTop:intel.vjTop,worauf:intel.worauf,aendern:intel.aendern,breite:intel.breite,stories:intel.stories.map(s=>s.titel)};
+  dims:intel.dims.map(d=>d.id+':'+d.state),vjTop:intel.vjTop,worauf:intel.worauf,aendern:intel.aendern,breite:intel.breite,stories:ov?ov.stories.map(s=>s.titel):[]};
  const LEVELS=['DEFENSIVE','CAUTIOUS','SELECTIVE','CONSTRUCTIVE','BROADLY_CONSTRUCTIVE'];
  p('Hero: Marktumfeld als Zustand (kein Score)',LEVELS.includes(intel.environment)&&intel.zustand.length>=5&&!/\d+\s*\/\s*100/.test(intel.zustand),{env:intel.environment,zustand:intel.zustand});
  p('Hero: Hauptaussage und Bedeutung fuer Anleger',intel.aussage.length>15&&intel.anleger.length>30,{aussage:intel.aussage,anleger:intel.anleger});
@@ -129,7 +165,6 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  p('Verlauf: Diagramm, Zeitraeume 1W-1J, Textfassung',intel.verlaufSvg&&JSON.stringify(intel.verlaufTf)===JSON.stringify(['1W','1M','3M','6M','1Y'])&&/Wechsel der Einordnung/.test(intel.verlaufSr),{tf:intel.verlaufTf,sr:intel.verlaufSr});
  p('Marktbreite: aktuell oder ehrlich NICHT AKTUELL',!!intel.breite&&(intel.breite!=='NOT_CURRENT'||/nicht aktuell/i.test(intel.breiteText)),intel.breite);
  p('Cross Asset: Anlageklassen verlinkt, keine Kausalitaet',intel.ca.length>=3&&intel.ca.every(h=>/^#\/maerkte\//.test(h))&&/nicht, warum/.test(intel.m3Text),intel.ca);
- p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',intel.stories.length>=1&&intel.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),intel.stories);
  p('Kein Gesamtscore, keine Kauf-/Verkaufsaufforderung, Hinweis sichtbar',!/\d+\s*\/\s*100|Score \d|jetzt kaufen|verkaufen Sie|Kaufsignal/i.test(intel.m3Text)&&/keine Anlageberatung/.test(intel.m3Text),null);
  const kf=await page.evaluate(()=>{const k=document.getElementById('maerkte-kurz');const h=document.querySelector('.dx-m3-hero');if(!k)return null;
    return {nachHero:!!h&&h.nextElementSibling===k,fragen:[...k.querySelectorAll('dt')].map(x=>x.textContent),text:k.textContent};});
@@ -141,8 +176,6 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
    heute:s.querySelectorAll('.dx-m3-pr-balken li.is-heute').length,quelle:(s.querySelector('.dx-m3-pr-details a')||{}).href||''};});
  p('Wie verlaesslich: Rueckschlag-Risiko je Stufe, heutige Stufe markiert',!!pr&&pr.balken>=4&&pr.heute===1&&/von 100 Fällen/.test(pr.text),pr&&{balken:pr.balken,heute:pr.heute});
  p('Wie verlaesslich: Modellrechnung nie allein (immer investiert, seit 2001, ohne Kosten, Quelle)',!!pr&&/Immer investiert/.test(pr.text)&&/Seit 20\d\d:/.test(pr.text)&&/Ohne Kosten und Steuern/.test(pr.text)&&/ken\.french/.test(pr.quelle),pr&&pr.quelle);
- p('Movers verlinken auf Aktienseiten',intel.movers.length===0||intel.movers.every(h=>/^#\/s\/US_REAL\//.test(h)),intel.movers.slice(0,3));
- p('Jede Karte mit Wert ist ein Link zum Marktdetail',intel.kartenLinks.length>=28&&intel.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),intel.kartenLinks.length);
  /* Verlauf: Zeitraumwechsel veraendert Diagramm und Text (Standard ist 1J). */
  const vor=intel.verlaufSr;
  await page.click('.dx-m3-tf button[data-range="3M"]');await page.waitForTimeout(300);
@@ -154,7 +187,7 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  /* "Direkt zu": Chips ganz oben vor dem Hero, jeder mit Symbol und echtem Ziel. */
  const mn=await page.evaluate(()=>{const n=document.getElementById('maerkte-direkt');if(!n)return null;const hero=document.querySelector('.dx-m3-hero');
   return {vorHero:!!hero&&n.nextElementSibling===hero,chips:[...n.querySelectorAll('.dx-mn-chip')].map(c=>({ziel:c.dataset.ziel,label:c.textContent.trim(),icon:!!c.querySelector('svg'),da:!!document.getElementById(c.dataset.ziel)}))};});
- p('Direkt zu: ganz oben vor dem Hero, Themen und alle Maerkte, jeder Chip mit Symbol und Ziel',mn&&mn.vorHero&&mn.chips.length>=GRUPPEN.length+6&&GRUPPEN.every(g=>mn.chips.some(c=>c.ziel==='maerkte-'+g))&&mn.chips.every(c=>c.icon&&c.da&&c.label.length>=3),mn);
+ p('Direkt zu (Einordnung): ganz oben vor dem Hero, jeder Chip mit Symbol und Ziel',mn&&mn.vorHero&&mn.chips.length>=8&&mn.chips.every(c=>c.icon&&c.da&&c.label.length>=3),mn);
  {await page.evaluate(()=>scrollTo(0,0));await page.click('.dx-mn-chip[data-ziel="maerkte-aendern"]');
   let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}
   const z=await page.evaluate(()=>document.getElementById('maerkte-aendern').getBoundingClientRect().top);
@@ -171,13 +204,7 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
   p('Visuelle Abfolge: mindestens 7 Flaechentypen in 10 Bildschirmen, keine reine Kartenwand',arten.size>=7&&folge.every(f=>!(f.length===1&&f[0]==='dx-maerkte-gruppe')),[...arten]);
   await page.evaluate(()=>scrollTo(0,0));
  }
- await page.screenshot({path:`${out}/maerkte-${key}.png`});
- const y0=await page.evaluate(()=>scrollY);await page.click('.dx-maerkte-sprung[data-ziel="maerkte-krypto"]');
- /* Weicher Bildlauf ueber eine lange Seite: warten, bis er steht (max. 6 s). */
- {let vor=-1,ruhig=0;for(let i=0;i<30&&ruhig<2;i++){await page.waitForTimeout(200);const y=await page.evaluate(()=>scrollY);ruhig=y===vor&&y>0?ruhig+1:0;vor=y;}}
- const sprung=await page.evaluate(()=>{const r=document.getElementById('maerkte-krypto').getBoundingClientRect();return {y:scrollY,top:r.top};});
- p('Sprungleiste fuehrt zur Gruppe',sprung.y!==y0&&sprung.top>=-5&&sprung.top<250,sprung);
- await page.screenshot({path:`${out}/maerkte-${key}-krypto.png`});
+ await page.screenshot({path:`${out}/einordnung-${key}.png`});
  await page.close();
 }
 /* ------------------------------------------------ Marktdetails */
@@ -232,11 +259,11 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
 {
  let axePath=null;try{axePath=require.resolve('axe-core/axe.min.js');}catch{}
  if(axePath){
-  for(const [route,scheme] of [['#/maerkte','light'],['#/maerkte','dark'],['#/maerkte/QQQ','light'],['#/maerkte/US10Y','dark']]){
+  for(const [route,scheme] of [['#/maerkte','light'],['#/maerkte','dark'],['#/maerkte/einordnung','light'],['#/maerkte/einordnung','dark'],['#/maerkte/QQQ','light'],['#/maerkte/US10Y','dark']]){
    /* Je Route eine frische Seite mit festem Farbschema: kein Themenwechsel
       (und keine Farbuebergaenge) waehrend der Messung. */
    const page=await browser.newPage({viewport:{width:390,height:844},colorScheme:scheme,reducedMotion:'reduce'});
-   await page.goto(base+'/discover/'+route,{waitUntil:'networkidle'});await page.waitForSelector(route==='#/maerkte'?'.dx-markt-karte':'.dx-md h1');
+   await page.goto(base+'/discover/'+route,{waitUntil:'networkidle'});await page.waitForSelector(route==='#/maerkte'?'.dx-markt-karte':route==='#/maerkte/einordnung'?'.dx-m3-hero':'.dx-md h1');
    await page.waitForTimeout(400);
    await page.addScriptTag({path:axePath});
    const v=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa']}}).then(r=>r.violations.filter(x=>['critical','serious'].includes(x.impact)).map(x=>({id:x.id,nodes:x.nodes.slice(0,3).map(n=>n.target)}))));
@@ -255,6 +282,10 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
  check('Navigation: Reload auf Detailroute',(await page.textContent('.dx-md h1')).trim()==='Bitcoin',null);
  await page.goBack({waitUntil:'networkidle'});await page.waitForSelector('.dx-maerkte',{timeout:15000}).catch(()=>null);
  check('Navigation: Browser-Zurueck fuehrt zur Uebersicht',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
+ await page.waitForSelector('a.dx-m3-st-link');await page.click('a.dx-m3-st-link');await page.waitForSelector('.dx-m3-hero');
+ check('Navigation: Marktstimmung oeffnet die Einordnung',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung',null);
+ await page.click('.dx-mk-einordnung>.dx-back');await page.waitForSelector('#maerkte-stimmung');
+ check('Navigation: aus der Einordnung zurueck zu den Maerkten',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
  await page.close();
 }
 /* Realtime der Tracker (Markets 3.0, 58.15) - nur mit --realtime gegen die
