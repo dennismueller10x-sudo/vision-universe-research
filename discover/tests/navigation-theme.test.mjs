@@ -22,7 +22,7 @@ test('the shared menu groups product routes and Discover destinations', () => {
     ['Discover','Markets & Data','Analyse','Research','Learn','Tools & Personal']);
   const routes = normalized.flatMap(([, entries]) => entries.map(([, href]) => href));
   assert.equal(new Set(routes).size, routes.length);
-  for (const route of ['/quant/','/dashboard/','/macro/','/etf/','/analysten/',
+  for (const route of ['/screener/','/quant/','/dashboard/','/macro/','/etf/','/analysten/',
     '/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/']) {
     assert.ok(routes.includes(route), `${route} fehlt`);
   }
