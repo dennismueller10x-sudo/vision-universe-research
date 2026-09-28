@@ -284,15 +284,16 @@
      Bereich. Die Farben sind Wiedererkennung, keine Marktbedeutung - Gruen
      und Orange bleiben "unterstuetzt" und "Gegenwind" vorbehalten. */
   var THEMEN = [
+    { ziel: "maerkte-kurz", label: "In 30 Sekunden", symbol: "kompass", farbe: "#34c759" },
+    { ziel: "maerkte-worauf", label: "Worauf achten", symbol: "auge", farbe: "#5856d6" },
     { ziel: "maerkte-aendern", label: "Bullish & Bearish", symbol: "pfeile", farbe: "#5e5ce6" },
-    { ziel: "maerkte-verlauf", label: "12 Monate", symbol: "kurve", farbe: "#0a84ff" },
-    { ziel: "maerkte-pruefung", label: "Geprüft seit 1929", symbol: "schild", farbe: "#34c759" },
-    { ziel: "maerkte-dimensionen", label: "5 Dimensionen", symbol: "regler", farbe: "#af52de" },
+    { ziel: "maerkte-pruefung", label: "Geprüft seit 1929", symbol: "schild", farbe: "#30b0c7" },
     { ziel: "maerkte-vorher-jetzt", label: "Was ist neu?", symbol: "funken", farbe: "#ff2d55" },
     { ziel: "maerkte-warum", label: "Warum?", symbol: "lupe", farbe: "#6e7b91" },
-    { ziel: "maerkte-worauf", label: "Worauf achten", symbol: "auge", farbe: "#5856d6" },
-    { ziel: "maerkte-breite", label: "Marktbreite", symbol: "balken", farbe: "#30b0c7" },
-    { ziel: "maerkte-crossasset", label: "Cross Asset", symbol: "knoten", farbe: "#007aff" },
+    { ziel: "maerkte-verlauf", label: "12 Monate", symbol: "kurve", farbe: "#0a84ff" },
+    { ziel: "maerkte-dimensionen", label: "Messwerte", symbol: "regler", farbe: "#af52de" },
+    { ziel: "maerkte-breite", label: "Wie viele steigen mit?", symbol: "balken", farbe: "#30b0c7" },
+    { ziel: "maerkte-crossasset", label: "Andere Anlagen", symbol: "knoten", farbe: "#007aff" },
     { ziel: "maerkte-jetzt", label: "Markt jetzt", symbol: "blitz", farbe: "#e6b000" },
     { ziel: "maerkte-movers", label: "Top & Flop", symbol: "hoch", farbe: "#ff375f" }
   ];
@@ -413,6 +414,11 @@
     ]);
   }
 
+  /** Zwischenueberschrift, die die Seite in Einsteiger- und Detailteil gliedert. */
+  function trenner(titel, text) {
+    return el("div", { class: "dx-m3-trenner" }, [el("h2", { text: titel }), el("p", { text: text })]);
+  }
+
   /** Anzeigenamen je Symbol fuer Verweise - beim Tracker Markt und Tracker. */
   function namen(contracts) {
     var n = {};
@@ -421,10 +427,7 @@
   }
 
   /**
-   * Markets 3.0: Einordnung zuerst, Belege danach.
-   * HERO -> FUENF DIMENSIONEN -> VORHER/JETZT -> WARUM -> WORAUF ES ANKOMMT ->
-   * WAS WUERDE ES AENDERN -> VERLAUF -> WIE VERLAESSLICH -> MARKTBREITE -> CROSS ASSET ->
-   * MARKT JETZT -> AKTIEN IN BEWEGUNG -> ALLE MAERKTE.
+   * Markets 3.0: Einordnung zuerst, Belege danach - Reihenfolge siehe unten.
    * @param {HTMLElement} root
    * @param {object} ctx {calendar, isActive}
    */
@@ -450,17 +453,25 @@
       function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
       var verlaufNode = null, heroNode = null;
       if (puls && MI && puls.environment) {
+        /* Einsteiger zuerst (Owner-Feedback: verstaendlich, mit klarem
+           Schluss): Hero -> Das Wichtigste in 30 Sekunden -> Kacheln ->
+           Worauf achten -> Was muesste passieren -> Wie verlaesslich ->
+           Was ist neu -> Warum -> Verlauf. Danach "Fuer Fortgeschrittene":
+           Messwerte, Beteiligung, andere Anlagen. Dann Kurse und Maerkte. */
         heroNode = dazu(MI.hero(puls, jetzt));
+        if (MI.kurzfassung) dazu(MI.kurzfassung(puls, beleg));
         if (MI.kacheln) dazu(MI.kacheln(puls, hist));
-        dazu(MI.landkarte(puls));
-        dazu(MI.vorherJetzt(puls));
-        dazu(MI.warum(puls));
         dazu(MI.worauf(puls, nm));
         dazu(MI.bildAendern(puls, nm));
-        verlaufNode = dazu(MI.verlauf(hist, puls));
         if (MI.pruefung) dazu(MI.pruefung(beleg, puls));
+        dazu(MI.vorherJetzt(puls));
+        dazu(MI.warum(puls));
+        verlaufNode = dazu(MI.verlauf(hist, puls));
+        dazu(trenner("Für Fortgeschrittene", "Die Messwerte hinter der Einordnung – mit Skalen, Schwellen, Belegen und Methodik."));
+        dazu(MI.landkarte(puls));
         dazu(MI.breite(puls, hist));
         dazu(MI.crossAsset(puls, nm));
+        dazu(trenner("Kurse und Bewegungen", "Was heute auffällt, die stärksten Aktien und alle Märkte mit Einheit, Stand und Quelle."));
       } else if (puls) {
         dazu(pulsBereich(puls));
       }

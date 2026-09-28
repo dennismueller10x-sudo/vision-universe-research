@@ -1127,3 +1127,54 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
   .dv2 .dx-m3-pr-vgl-zeile b{font-size:15.5px}
 }
 .dv2 .dx-m3-pr-klartext{margin:-6px 0 0;font-size:15px;font-weight:600;color:var(--v2-ink)}
+
+/* ================================================================ Markets 4.0
+   Owner-Feedback: "verstaendlicher - was kann ich daraus ziehen?"
+   (1) "Das Wichtigste in 30 Sekunden" direkt unter dem Hero: vier Fragen
+   in Alltagssprache, rechts die eine Zahl, die die Stufe mit der
+   Geschichte verbindet. (2) Zwischenueberschriften teilen die Seite in
+   Einsteigerteil, "Fuer Fortgeschrittene" und "Kurse und Bewegungen". */
+.dv2 .dx-m3-kurz{padding:22px;border-radius:24px;background:var(--ap-karte);box-shadow:var(--ap-schatten);display:flex;flex-direction:column;gap:16px}
+.dv2 .dx-m3-kf-kopf{display:flex;align-items:center;gap:10px}
+.dv2 .dx-m3-kf-kopf h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.dv2 .dx-m3-kf-raster{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:20px;align-items:start}
+.dv2 .dx-m3-kf-liste{margin:0;display:flex;flex-direction:column}
+.dv2 .dx-m3-kf-zeile{display:grid;grid-template-columns:9.5em minmax(0,1fr);gap:4px 16px;padding:14px 0;border-top:1px solid var(--ap-linie)}
+.dv2 .dx-m3-kf-zeile:first-child{border-top:0;padding-top:4px}
+.dv2 .dx-m3-kf-zeile dt{font-size:14px;font-weight:750;color:var(--m3-purple)}
+.dv2 .dx-m3-kf-zeile dd{margin:0;display:flex;flex-direction:column;gap:6px}
+.dv2 .dx-m3-kf-zeile dd p{margin:0;font-size:16px;line-height:1.5;color:var(--v2-ink)}
+.dv2 .dx-m3-kf-zeile dd p.dx-m3-kf-leise{font-size:14px;color:var(--v2-muted)}
+.dv2 .dx-m3-kf-heute{font-size:19px!important;font-weight:650}
+.dv2 .dx-m3-kf-stufe{--kt:var(--m3-neutral);display:inline-block;padding:2px 11px;border-radius:999px;font-weight:800;color:var(--v2-ink);background:color-mix(in srgb,var(--kt) 22%,transparent)}
+.dv2 .dx-m3-kf-stufe.is-l0,.dv2 .dx-m3-kf-zahl.is-l0{--kt:var(--m3-l0)}.dv2 .dx-m3-kf-stufe.is-l1,.dv2 .dx-m3-kf-zahl.is-l1{--kt:var(--m3-l1)}
+.dv2 .dx-m3-kf-stufe.is-l2,.dv2 .dx-m3-kf-zahl.is-l2{--kt:var(--m3-l2)}.dv2 .dx-m3-kf-stufe.is-l3,.dv2 .dx-m3-kf-zahl.is-l3{--kt:var(--m3-l3)}
+.dv2 .dx-m3-kf-stufe.is-l4,.dv2 .dx-m3-kf-zahl.is-l4{--kt:var(--m3-l4)}
+.dv2 .dx-m3-kf-gruende{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.dv2 .dx-m3-kf-gruende li{position:relative;padding-left:18px;font-size:16px;line-height:1.5}
+.dv2 .dx-m3-kf-gruende li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--m3-purple)}
+.dv2 .dx-m3-kf-zahl{--kt:var(--m3-neutral);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:22px 14px;border-radius:20px;
+  background:color-mix(in srgb,var(--kt) 13%,transparent)}
+.dv2 .dx-m3-kf-zahl b{font-size:64px;line-height:1;font-weight:850;letter-spacing:-.04em;color:var(--v2-ink)}
+.dv2 .dx-m3-kf-zahl span{font-size:16px;font-weight:750;color:var(--v2-ink)}
+.dv2 .dx-m3-kf-zahl small{margin-top:8px;font-size:12.5px;line-height:1.4;color:var(--v2-muted)}
+.dv2 .dx-m3-kf-aktionen{display:flex;flex-wrap:wrap;gap:8px}
+.dv2 .dx-m3-kurz .dx-m3-fuss{margin:0;font-size:12.5px;color:var(--v2-muted)}
+
+/* Zwischenueberschriften */
+.dv2 .dx-m3-trenner{margin:30px 0 -6px;padding:22px 0 0;border-top:1px solid var(--v2-line)}
+.dv2 .dx-m3-trenner h2{margin:0;font-size:26px;font-weight:850;letter-spacing:-.02em}
+.dv2 .dx-m3-trenner p{margin:6px 0 0;font-size:15px;line-height:1.5;color:var(--v2-muted);max-width:60ch}
+
+@media(max-width:760px){
+  .dv2 .dx-m3-kurz{padding:18px 16px;border-radius:22px}
+  .dv2 .dx-m3-kf-kopf h2{font-size:19px}
+  .dv2 .dx-m3-kf-raster{grid-template-columns:minmax(0,1fr);gap:14px}
+  .dv2 .dx-m3-kf-zahl{order:-1;flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 8px;padding:14px}
+  .dv2 .dx-m3-kf-zahl b{font-size:44px}
+  .dv2 .dx-m3-kf-zahl small{flex-basis:100%;margin-top:2px}
+  .dv2 .dx-m3-kf-zeile{grid-template-columns:minmax(0,1fr);padding:12px 0}
+  .dv2 .dx-m3-kf-zeile dd p,.dv2 .dx-m3-kf-gruende li{font-size:15px}
+  .dv2 .dx-m3-kf-heute{font-size:17px!important}
+  .dv2 .dx-m3-trenner h2{font-size:22px}
+}

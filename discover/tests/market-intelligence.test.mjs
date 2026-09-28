@@ -147,3 +147,26 @@ test("Wie verlaesslich fail closed: ohne Auszug keine Sektion", () => {
   assert.equal(MI.pruefung(null, J(PULSE)), null);
   assert.equal(MI.pruefung({ levels: [] }, J(PULSE)), null);
 });
+
+test("Das Wichtigste in 30 Sekunden: Heute, Warum, Was heisst das, Worauf achten - aus Artefakt und Auszug", () => {
+  const s = MI.kurzfassung(J(PULSE), J(EVIDENCE));
+  assert.equal(s.attrs.id, "maerkte-kurz");
+  const t = text(s);
+  const env = PULSE.environment;
+  const i = Math.min(env.level, EVIDENCE.levels.length - 1), hier = EVIDENCE.levels[i];
+  assert.match(t, new RegExp("Heute.*" + env.label));
+  assert.match(t, /Rückschlag-Risiko/);
+  assert.match(t, new RegExp("in " + Math.round(hier.drawdownShare) + " von 100 Fällen innerhalb von 3 Monaten"));
+  assert.match(t, new RegExp("Durchschnitt aller Tage \\(" + Math.round(EVIDENCE.overallDrawdownShare) + " von 100\\)"));
+  if (i > 0) assert.match(t, new RegExp("Rutscht die Einordnung auf „" + EVIDENCE.levels[i - 1].label + "“"));
+  assert.ok(MI.grundSaetze(J(PULSE)).length >= 3, "Gruende in Alltagssprache");
+  assert.match(t, /keine Anlageberatung/);
+  assert.doesNotMatch(t, /\b(jetzt )?(kaufen|verkaufen)\b|Kaufsignal|sollten Sie|\d+\s*\/\s*100|Momentum|Cross Asset/i);
+});
+
+test("Das Wichtigste in 30 Sekunden ohne Auszug: nur Heute und Warum, keine erfundene Geschichte", () => {
+  const t = text(MI.kurzfassung(J(PULSE), null));
+  assert.match(t, /Heute/);
+  assert.doesNotMatch(t, /von 100 Fällen|Worauf achten/);
+  assert.equal(MI.kurzfassung({ environment: { level: null } }, J(EVIDENCE)), null);
+});
