@@ -89,6 +89,32 @@ for(const width of [1440,390]){
   if(h1!==1)bad.push('H1='+h1);
   if(hits.length)bad.push('FORBIDDEN:'+hits.join('|'));
 
+  /* DIE FUENF BEREICHE SIND VON JEDER ANSICHT ERREICHBAR, UND NUR SIE.
+     Eine Navigation, die auf einer Unterseite ein fremdes Produkt anbietet
+     oder die Methodik verliert, ist genau der Rueckschritt, den dieser Lauf
+     fangen soll. */
+  const bereiche=await page.locator('.q-bottom a').allInnerTexts();
+  const sollBereiche=['Home','Screener','Strategien','Aktien','Methodik'];
+  if(bereiche.map(t=>t.trim()).join('|')!==sollBereiche.join('|'))
+   bad.push('NAV:'+bereiche.map(t=>t.trim()).join('|'));
+  for(const fremd of ['Discover','Research','Markets','Portfolio'])
+   if(bereiche.some(t=>t.trim()===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
+
+  /* HISTORISCHE VERGLEICHSFAELLE: EINE ZAHL NUR MIT IHRER STICHPROBE.
+     Die Regel des Vertrags (historical-cases-1.0.0) lautet: ein Median
+     erscheint erst ab zehn abgeschlossenen Faellen. Steht ein Median da und
+     die Stichprobe ist kleiner - oder fehlt sie -, waere genau die
+     Anekdote entstanden, die der Abschnitt vermeiden soll. */
+  if(/Ähnliche Situationen bei/.test(text)){
+   const abschnitt=await page.locator('.q-card').filter({hasText:'Ähnliche Situationen bei'}).innerText().catch(()=>'');
+   const medianZeilen=[...abschnitt.matchAll(/Median aus (\d+) Fällen/g)].map(m=>Number(m[1]));
+   for(const n of medianZeilen)if(n<10)bad.push('FALLZAHL_UNTER_SCHWELLE='+n);
+   if(/[+−]\d+,\d+ %/.test(abschnitt)&&!medianZeilen.length)
+    bad.push('RENDITE_OHNE_STICHPROBE');
+   for(const wort of ['wird wahrscheinlich','dürfte steigen','dürfte fallen','Kursziel','Prognose:'])
+    if(abschnitt.includes(wort))bad.push('PROGNOSESPRACHE:'+wort);
+  }
+
   /* OPTION C, IM GEBAUTEN RELEASE GEPRUEFT
 
      Kursstaerke und Anlegerrendite muessen nebeneinander stehen UND
