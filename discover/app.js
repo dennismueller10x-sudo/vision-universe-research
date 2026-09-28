@@ -190,7 +190,7 @@
         if(count)overview.append(el('p',{class:'v2-theme-facts',text:count+' Aktien aus dem Discover-Universum'+(row.asOf?' · Stand '+D.Cards.dateShort(row.asOf):'')+' · Redaktionelle Zuordnung'}));
         root.append(overview);
         if(row&&count){
-          if(row.rule){root.append(el('details',{class:'v2-rule'},[el('summary',{text:'Wie entsteht diese Auswahl?'}),el('p',{text:row.rule})]));}
+          if(row.rule){root.append(el('details',{class:'v2-rule',open:true},[el('summary',{text:'Wie entsteht diese Auswahl?'}),el('p',{text:row.rule})]));}
           if(D.memory)D.memory.recordCollection(row.rowId||theme.rowId);
           const detailCtx=Object.assign({},ctx,{artworkDisposers:[]});
           const featured=themeRail(row.cards.slice(0,4),detailCtx,'Im Blick',row.rowId);
@@ -220,7 +220,7 @@
         }
         if(row.index&&row.index.asOf)root.append(el('p',{class:'v2-collection-source',text:'Mitglieder laut '+(row.index.proxy&&row.index.proxy.etf?'ETF-Bestand '+row.index.proxy.etf:'Indexeigentümer')+' · '+D.Cards.dateShort(row.index.asOf)}));
         if(row.editorial)root.append(el('p',{text:'Redaktionelle Themenzuordnung. Die Reihenfolge folgt der bestehenden Methodik.'}));
-        if(row.rule){const rule=el('details',{class:'v2-rule'},[el('summary',{text:'Wie entsteht diese Auswahl?'}),el('p',{text:row.rule})]);root.append(rule);}
+        if(row.rule){const rule=el('details',{class:'v2-rule',open:true},[el('summary',{text:'Wie entsteht diese Auswahl?'}),el('p',{text:row.rule})]);root.append(rule);}
         if(D.memory)D.memory.recordCollection(row.rowId||parts[2]);
         if(row.sectors)root.append(D.Surfaces.sectors({title:row.title,sectors:row.sectors},ctx));
         else root.append(D.Cards.grid(row.cards||[],{rowId:row.rowId,universeId:ctx.universeId,world:row.world}));
@@ -259,7 +259,10 @@
         const result=await V.Home.render(root,Object.assign({},ctx,{isActive:active}));
         if(typeof result==='function')homeDispose=result;
       }
-      if(active())D.Cards.revealOnScroll(root);
+      if(active()){
+        D.Cards.revealOnScroll(root);
+        if(parts[0]==='c'||parts[0]==='thema')global.requestAnimationFrame(()=>{if(active())global.scrollTo(0,0);});
+      }
     } catch(err) {
       if(active())message(root,'Gerade nicht erreichbar','Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal.',true);
       console.error('Discover route',err);
@@ -278,6 +281,7 @@
       theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
       document.querySelector('vu-navigation')?.renderSettings();
       setupSearch();global.addEventListener('hashchange',route);
+      if('scrollRestoration' in history)history.scrollRestoration='manual';
       document.addEventListener('vu-currency-change',route);
       document.addEventListener('vu-fx-ready',route);
       if(global.VUFx&&global.VUFx.Bootstrap){
