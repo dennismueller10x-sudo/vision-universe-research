@@ -212,3 +212,29 @@ test("Strategien zeigen keine erfundene Trefferquote", () => {
     "die Beständigkeit muss ausdrücklich von einer Trefferquote abgegrenzt sein");
   assert.ok(!/Trefferquote:\s*'/.test(abschnitt), "keine Trefferquote als Wert");
 });
+
+test("Die Aktienseite sagt, warum es keine Gesamtnote gibt", () => {
+  /* Der Entwurf zeigte an dieser Stelle "Quant Score 91/100". Den gibt es
+     nicht - nicht weil er fehlt, sondern weil er abgelehnt ist. Ein Leser,
+     der die grosse Zahl sucht, verdient den Grund dort, wo er sie sucht. */
+  const von = experience.indexOf("const strength=el('section',{class:'section strength-section'}");
+  const abschnitt = experience.slice(von, von + 2600);
+  assert.ok(abschnitt.includes("Es gibt bewusst keine Gesamtnote"),
+    "die Absage an die Gesamtnote fehlt auf der Aktienseite");
+  assert.ok(/Zielkonflikt/.test(abschnitt), "der Grund muss dabeistehen, nicht nur die Absage");
+  /* Und sie darf nicht doch irgendwo in der Oberflaeche auftauchen. Geprueft
+     wird der Code OHNE Kommentare - der Satz, der die Absage begruendet,
+     nennt den abgelehnten Namen naturgemaess selbst, und daran darf diese
+     Pruefung nicht scheitern. */
+  const ohneKommentare = experience.replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.ok(!/Quant Score/.test(ohneKommentare), "'Quant Score' als Gesamtnote darf nicht in der Oberflaeche stehen");
+});
+
+test("Der Einstieg einer Setup-Regel landet nicht in einer zugeklappten Flaeche", () => {
+  /* Von der Startseite fuehrt "Bestaetigte Setups" mit &setupRule=... in den
+     Screener, um genau dieses Ergebnis zu sehen. Eine mechanische Ersetzung
+     hatte die Zeile in den Profi-Aufklapper mitgenommen. */
+  const zeile = experience.match(/if\(params\.has\('setupRule'\)\)(\w+)\.append/);
+  assert.ok(zeile, "die Setup-Regel-Zeile fehlt");
+  assert.equal(zeile[1], "main", "das Ergebnis der Setup-Regel gehoert auf die Seite, nicht in den Aufklapper");
+});

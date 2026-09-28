@@ -852,7 +852,17 @@ async function stockPage(ticker){const brief=await api.getIntelligenceBrief(tick
     Eine Leiste aus sieben Strichen ohne einen einzigen Wert ist keine
     Antwort, und ihre Absage steht unten in der Gruppe - einmal, mit Zahl. */
  if(strip&&shape.substantive.includes('factorStrength')){
-  strength.append(strip);strength.append(link('Woran das gemessen wurde',href('quant',ticker),'button secondary'));
+  strength.append(strip);
+  /* WARUM HIER KEINE EINZELNE ZAHL STEHT.
+     Der Entwurf zeigte an dieser Stelle "Quant Score 91/100". Den gibt es
+     nicht - nicht weil er fehlt, sondern weil er abgelehnt ist: eine Zahl,
+     die Qualitaet und Kursdynamik zu einem Wert verrechnet, verbirgt genau
+     den Zielkonflikt, den ein Anleger sehen muss. Ein Leser, der die grosse
+     Zahl sucht und sie nicht findet, verdient diesen Satz an der Stelle,
+     an der er sie sucht - nicht erst in der Methodik. */
+  strength.append(el('p',{class:'muted',style:'font-size:13.5px;max-width:640px',
+   text:'Es gibt bewusst keine Gesamtnote. Eine Zahl, die alle Eigenschaften zu einem Wert verrechnet, würde den Zielkonflikt verbergen, auf den es ankommt — etwa hohe Qualität bei anspruchsvoller Bewertung. Die sieben Eigenschaften stehen deshalb einzeln da.'}));
+  strength.append(link('Woran das gemessen wurde',href('quant',ticker),'button secondary'));
   main.append(strength);
  }else if(!reduziert){strength.append(notice(LU('factorDna'),LB('factorDna')));main.append(strength);}
  if(!reduziert||shape.substantive.includes('setup'))main.append(setupStateSection(setupObservation,setupIndex,ticker,hatAuskunft));
