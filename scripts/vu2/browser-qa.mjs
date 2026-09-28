@@ -424,14 +424,19 @@ await page.getByText(/^0 Treffer in 6875 verfügbaren Unternehmen · .+ · kein 
  await page.getByRole('button',{name:'Suche',exact:true}).click();await page.getByRole('textbox',{name:'Suche',exact:true}).fill('TSLA');
  await page.getByRole('dialog').getByRole('link',{name:/^TSLA ·/}).waitFor();await page.screenshot({path:out+'/canonical-search-'+width+'.png',fullPage:true});
  await page.getByRole('dialog').getByRole('link',{name:/^TSLA ·/}).click();await page.locator('main footer').waitFor();
- await page.getByRole('heading',{name:/Tesla/,exact:false}).waitFor();
+ /* Auf die ERSTE Ueberschrift festlegen: seit die Vergleichsfaelle den
+    Firmennamen in ihrer eigenen Ueberschrift tragen ("Aehnliche Situationen
+    bei Tesla Inc."), trifft ein blosses /Tesla/ zwei Elemente. Gemeint war
+    immer: die Aktienseite dieses Unternehmens ist offen. */
+ await page.locator('main h1').filter({hasText:'Tesla'}).waitFor();
  if(!await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('canonical stock intelligence missing or duplicated');await page.getByRole('link',{name:'Historische Fundamentals',exact:true}).waitFor();await page.getByRole('heading',{name:kursverlaufHeading,exact:true}).waitFor();if(productIntelligence)await page.getByRole('link',{name:'Vollständige Technical-Analyse',exact:true}).waitFor();else await page.getByText(/Kursfaktor-Evidenz/).waitFor();await auditAccessibility(page,'canonical-stock',width);
  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('canonical stock identity overflow');
  await page.screenshot({path:out+'/canonical-stock-'+width+'.png',fullPage:true});checks.push({view:'canonical-search-identity',width,pass:true});
  if(productIntelligence){for(const [view,ticker] of [['technical','TSLA'],['elliott','AMD']]){await page.goto(origin+'/vu2/?view='+view+'&ticker='+ticker);await page.locator('main footer').waitFor();await page.locator('.technical-chart-host svg').waitFor();if(await page.getByRole('combobox',{name:'Unternehmen'}).inputValue()!==ticker)throw Error(view+' broad identity lost for '+ticker);await page.getByRole('heading',{name:'Szenarien & Invalidation',exact:true}).waitFor();checks.push({view:'broad-'+view+'-'+ticker.toLowerCase(),width,pass:true});}}
  await page.route('**/quant/data/sec/quant-factor-inputs.json',route=>route.abort());
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
- await page.getByRole('heading',{name:/NVIDIA/,exact:false}).waitFor();if(!await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('panel outage hid independent canonical intelligence');
+ /* Dieselbe Mehrdeutigkeit wie bei Tesla: auf die erste Ueberschrift festlegen. */
+ await page.locator('main h1').filter({hasText:'NVIDIA'}).waitFor();if(!await page.locator('.q-chart').count()||await page.locator('.quote').count()!==1)throw Error('panel outage hid independent canonical intelligence');
  const independent=await page.evaluate(async()=>{const service=VUProductServices.create({loadJSON:QuantShell.loadJSON,displayPolicy:VUDisplayPolicy,queryEngine:VUQuery});const model=await service.getHistoricalPriceHistory('NVDA');const raw=await QuantShell.loadJSON(model.sourcePath);return model.identity.ticker==='NVDA'&&JSON.stringify(model.bars)===JSON.stringify(raw.points.map(([date,close])=>({date,close})));});
  if(!independent)throw Error('panel outage chart differs from canonical source');
  await page.route('**/quant/data/market/discover-series/**',route=>route.abort());
