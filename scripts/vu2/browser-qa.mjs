@@ -70,8 +70,52 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  if(await page.locator('h1').count()!==1)throw Error('missing heading '+view);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
  if(overflow)throw Error('page overflow '+view+' '+width);
- if(view==='home'){await page.locator('.market-freshness').waitFor();if(await page.locator(width===390?'.mobile-nav':'.nav').getByRole('link',{name:'Discover',exact:true}).getAttribute('href')!=='/discover/')throw Error('current main Discover not integrated');if(await page.locator('a.row').count()!==5)throw Error('real scope missing');await page.getByText('Kurse: letzter verfügbarer Tagesstand',{exact:true}).waitFor();await page.getByRole('link',{name:'Watchlist zusammenstellen',exact:true}).waitFor();await page.getByRole('button',{name:'Suche',exact:true}).click();await page.getByRole('textbox',{name:'Suche',exact:true}).fill('NVDA');await page.getByRole('dialog').getByRole('link',{name:/NVDA/}).waitFor();await page.getByRole('button',{name:'Schließen'}).click();
-  await page.route('**/quant/config/market-calendar.json',route=>route.abort());await page.reload();await page.locator('main footer').waitFor();await page.getByText('Handelsphase nicht bestätigt',{exact:true}).waitFor();if(await page.locator('a.row').count()!==5)throw Error('calendar outage hid research');await page.unroute('**/quant/config/market-calendar.json');await page.reload();await page.locator('main footer').waitFor();
+ if(view==='home'){
+  /* DIE FUENF BEREICHE, UND KEIN FREMDES PRODUKT.
+     Diese Pruefung stand vorher auf dem Kopf: sie verlangte, dass in der
+     Quant-Navigation ein Verweis "Discover" auf /discover/ zeigt. Discover
+     ist ein anderes Produkt; die Eigentuemerentscheidung vom 28.09.2026
+     nimmt es (mit Research, Markets und Portfolio) aus dieser Leiste.
+     Geprueft wird jetzt das Gegenteil - und zwar beides: dass die fuenf da
+     sind und dass die vier nicht da sind. */
+  const leiste=width<=900?'.q-bottom':'.nav';
+  const bereiche=await page.locator(leiste+' a').allInnerTexts();
+  const erwartet=['Home','Screener','Strategien','Aktien','Methodik'];
+  if(bereiche.map(t=>t.trim()).join('|')!==erwartet.join('|'))
+   throw Error('Quant-Navigation ist nicht die erwartete: '+bereiche.join('|'));
+  for(const fremd of ['Discover','Research','Markets','Portfolio'])
+   if(await page.locator(leiste).getByRole('link',{name:fremd,exact:true}).count())
+    throw Error(fremd+' steht in der Quant-Navigation');
+  /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE. */
+  await page.getByRole('heading',{name:'So nutzt du Quant',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Schnell starten',exact:true}).waitFor();
+  for(const [name,ziel] of [['Screener','view=screener'],['Strategien','view=strategies'],['Aktienanalyse','view=stocks']]){
+   const href=await page.locator('.q-card').getByRole('link',{name,exact:true}).first().getAttribute('href');
+   if(!href||!href.includes(ziel))throw Error('Einstieg '+name+' zeigt nicht auf '+ziel+': '+href);
+  }
+  /* "HEUTE IM FOKUS" IST KEIN ERFUNDENER FEED. Entweder stehen dort die
+     ausgewerteten Zustaende MIT ihrem Stichtag, oder es stehen die beiden
+     Wege, die ohne sie funktionieren. Ein dritter Fall waere erfunden. */
+  await page.getByRole('heading',{name:'Heute im Fokus',exact:true}).waitFor();
+  const fokus=await page.locator('.q-card').filter({hasText:'Heute im Fokus'}).innerText();
+  const mitStand=/Stand der Setup-Auswertung: \d{4}-\d{2}-\d{2}/.test(fokus);
+  const mitRueckfall=fokus.includes('Mit Kriterien starten')&&fokus.includes('Methodik lesen');
+  if(!mitStand&&!mitRueckfall)throw Error('Heute im Fokus zeigt weder ausgewertete Zustaende mit Stichtag noch den Rueckfall');
+  /* Bestand: Aktualitaetszeile, Datenstand, Watchlist-Einstieg, Suche. */
+  await page.locator('.market-freshness').waitFor();
+  await page.getByText('Kurse: letzter verfügbarer Tagesstand',{exact:true}).waitFor();
+  await page.getByRole('link',{name:'Watchlist zusammenstellen',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Suche',exact:true}).click();
+  await page.getByRole('textbox',{name:'Suche',exact:true}).fill('NVDA');
+  await page.getByRole('dialog').getByRole('link',{name:/NVDA/}).waitFor();
+  await page.getByRole('button',{name:'Schließen'}).click();
+  /* Faellt der Kalender aus, darf die Seite ihre Einstiege nicht verlieren. */
+  await page.route('**/quant/config/market-calendar.json',route=>route.abort());
+  await page.reload();await page.locator('main footer').waitFor();
+  await page.getByText('Handelsphase nicht bestätigt',{exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Schnell starten',exact:true}).waitFor();
+  await page.unroute('**/quant/config/market-calendar.json');
+  await page.reload();await page.locator('main footer').waitFor();
  }
  if(view==='stock'){await page.locator('.market-freshness').waitFor();if(await page.locator('[data-stock-family]').count()!==4||await page.locator('.stock-evidence-metric').count()!==8)throw Error('stock business evidence missing');await page.locator('[data-stock-family=quality]').getByText(pct(nvda.fundamentals.operatingMargin),{exact:true}).waitFor();await page.locator('[data-stock-family=growth]').getByText(pct(nvda.fundamentals.revenueGrowth),{exact:true}).waitFor();await page.locator('[data-stock-family=risk]').getByText(pct(nvda.fundamentals.volatility),{exact:true}).waitFor();await page.getByText('Warum ist das relevant?',{exact:true}).first().click();await page.getByRole('heading',{name:kursverlaufHeading,exact:true}).waitFor();await page.getByRole('heading',{name:trendLabel,exact:true}).waitFor();await page.getByRole('button',{name:'Max',exact:true}).click();if(await page.locator('.focus .q-chart').count()!==1)throw Error('MAX chart missing');await page.getByRole('button',{name:'1J',exact:true}).click();}
  if(view==='technical'||view==='elliott'){await page.locator('.technical-chart-host svg').waitFor();await page.getByRole('combobox',{name:'Chart-Zeitraum',exact:true}).selectOption('MAX');await page.getByRole('checkbox',{name:'Alternativen im Chart'}).check();const labels=page.getByRole('checkbox',{name:'Chart-Beschriftungen'});await labels.check();if(!await page.locator('.technical-chart-host .ann-label:not(.ann-now-label)').count())throw Error('chart labels missing');if(width===390)await labels.uncheck();await page.getByRole('heading',{name:'Szenarien & Invalidation',exact:true}).waitFor();await page.getByRole('heading',{name:'Alternative Zählung',exact:true}).waitFor();await page.getByText('Vollständige Zählung & Regeln',{exact:true}).first().click();if(await page.locator('.wave-count').first().locator('tbody tr').count()<40)throw Error('wave count truncated');await page.getByText('Vollständige Zählung & Regeln',{exact:true}).first().click();await page.getByRole('combobox',{name:'Chart-Zeitraum',exact:true}).selectOption('1Y');}

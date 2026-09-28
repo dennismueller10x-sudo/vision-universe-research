@@ -147,3 +147,67 @@ Microsoft, sondern ein Rauschwert.
 Das ist **keine neue Quant-Engine**: es ist die veröffentlichte Studienlogik,
 auf die eigene Reihe eines Titels angewandt, mit eigener Versionsnummer für die
 Darstellungs- und Schwellenregeln.
+
+---
+
+## 3. Die neue Informationsarchitektur
+
+| Bereich | Route | Die Frage, die er beantwortet | Was neu ist |
+|---|---|---|---|
+| **HOME** | `home` | „Was kann ich hier tun?" | Nutzenversprechen, vier Schritte, drei Einstiege, „Heute im Fokus" aus echten Setup-Zuständen |
+| **SCREENER** | `screener` | „Wie finde ich interessante Aktien?" | Einfacher Einstieg mit sechs Eigenschaften und vorgelesenem Satz; Profi-Editor unverändert dahinter |
+| **STRATEGIEN** | `strategies` | „Welche Art von Aktien suche ich?" | Katalog aus acht Ansätzen statt eines Regel-Editors; Editor dahinter |
+| **AKTIEN** | `stocks` | „Welches Unternehmen?" | Suche, zuletzt analysiert, gemessene Abdeckung — kein Katalog zum Blättern |
+| **METHODIK** | `explain` | „Warum kann ich dem Ergebnis trauen?" | Eigener Hauptbereich, fünf Transparenzebenen, vier neue Abschnitte |
+
+Die **Aktienanalyse** (`stock`) bleibt das Herzstück und gehört zu AKTIEN; die
+Faktor-, Kurs- und Vergleichsflächen hängen daran und behalten ihre Routen.
+
+### Wortmarke und Navigation
+
+Übermarke klein, Produktname gross in Quant-Grün, darunter ein Satz zum Ort
+(„Chancen finden.", „Strategien verstehen.", „Keine Blackbox."). Die untere
+Leiste zeigt die fünf Bereiche mit Strichzeichnungen, sitzt über
+`env(safe-area-inset-bottom)` plus 10 px Grundluft für Safaris Browserleiste
+und erscheint bis 900 px — genau dort verschwindet die obere Leiste, damit
+nie beide gleichzeitig dieselben fünf Ziele zeigen.
+
+## 4. Was die Messung gegen den Entwurf entschieden hat
+
+1. **Die NVIDIA-Statistik des Mockups wird nicht gebaut.** Siehe Abschnitt 2.
+   Für den gezeigten Titel gibt es einen einzigen abgeschlossenen Fall.
+2. **„Large Cap", „Small Cap", „USA", „Europa" und „Nähe 52W-Hoch" sind keine
+   Screener-Marken.** Der Screener führt für Grösse, Region und
+   Jahreshoch-Nähe kein Feld. Ein Knopf, der nichts filtert, ist eine Lüge in
+   Gestalt eines Bedienelements. Stattdessen steht unter den Marken, dass es
+   sie noch nicht gibt.
+3. **Keine Trefferquote je Strategie.** Der Strategie-Index führt
+   `historicalEvidence`, aber als `ASSIGNMENT_PERSISTENCE` über ein Fenster
+   von einem Tag. Das ist die Beständigkeit einer Zuordnung, nicht der Erfolg
+   eines Ansatzes. Die Zahl steht mit ihrem Fenster da, und daneben der Satz,
+   dass eine Erfolgsquote nicht zertifiziert ist.
+4. **Der Screener-Einstieg arbeitet nur auf Quant V2.** Eine Abfrage gehört
+   genau einer Methodik; eine Regel aus V1 bedeutet in V2 etwas anderes. Die
+   sechs Marken sind deshalb ausschliesslich Faktor-Evidenz.
+
+## 5. Zwei Verluste, die der Umbau selbst verursacht hat
+
+Beide wurden durch Messung gefunden, nicht durch Nachdenken — und beide sind
+als Test festgehalten, damit sie nicht wiederkehren.
+
+1. **Vier Ansichten waren nicht mehr erreichbar.** Die Liste der gültigen
+   Ansichten wurde aus der Navigation abgeleitet. Als die Leiste auf fünf
+   Bereiche schrumpfte, lieferten `portfolio`, `discover`, `markets` und
+   `research` „Diese Ansicht wurde nicht gefunden". Eine Leiste zu kürzen
+   hatte Funktionen abgeschaltet. Die Liste steht jetzt ausgeschrieben da.
+2. **Die Markt-Einordnung war von der Startseite verschwunden.** Gemeldet von
+   der Suite (`the journey starts with the market and ends at a share`). Der
+   Grund von damals gilt unverändert: ohne die Marktlage liest sich jede
+   Einzelbewegung, als stünde sie für sich.
+
+Dazu zwei stille Fehler beim Bauen, beide ohne Symptom in der Oberfläche:
+`pct1` war in `experience.js` schon vergeben — die zweite Deklaration
+gleichen Namens benutzte still die fremde Funktion, sichtbar nur am fehlenden
+Vorzeichen. Und die Suche der Aktienseite las `instruments`/`results`/
+`matches`; der Dienst antwortet mit `entries`, die Liste wäre immer leer
+geblieben.

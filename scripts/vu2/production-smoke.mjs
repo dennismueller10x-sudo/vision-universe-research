@@ -152,16 +152,28 @@ for(const width of [1440,390]){
      Fehlerfreiheit geprueft - eine unbenutzbare Hauptfunktion faellt so nie
      auf. Jetzt zaehlt er die Zahlen in den Zeilen. */
   if(view==='/vu2/?view=screener'){
+   /* Die Trefferzeile heisst seit dem Frontend-Umbau `.q-hit` und nicht
+      mehr `.row`. Der alte Ausdruck traf die Regelzeilen des Profi-Modus -
+      die tragen keine Zahl, also meldete der Smoke 50 leere Zeilen und die
+      echten 25 Treffer sah er gar nicht. Die Pruefabsicht bleibt: eine
+      Trefferliste ohne Zahlen ist eine kaputte Hauptfunktion. */
    const satz=(await page.locator('main p.muted').allInnerTexts()).find(t=>t.includes('Treffer'))||'';
-   const zeilen=await page.locator('.row:not(.eyebrow)').allInnerTexts();
-   const mitZahl=zeilen.filter(t=>/\d+,\d+/.test(t)).length;
+   const zeilen=await page.locator('.q-hit').allInnerTexts();
+   /* Die Zahl in einer Trefferzeile war frueher ein Kurs oder eine Rendite
+      und hatte deshalb immer eine Nachkommastelle. Der einfache Einstieg
+      zeigt den erfuellten Faktorwert, und der ist ganzzahlig ("Qualitaet 90
+      von 100"). Der alte Ausdruck /\d+,\d+/ fand ihn nicht und meldete 25
+      leere Zeilen, in denen die Zahl dastand. Die Absicht bleibt: eine
+      Trefferzeile ohne Wert - oder mit einer Absage statt eines Werts - ist
+      eine kaputte Hauptfunktion. */
+   const mitZahl=zeilen.filter(t=>/\d/.test(t)&&!/Nicht verfügbar|nicht bewertbar/.test(t)).length;
    if(!zeilen.length)bad.push('KEINE_TREFFER');
    else if(mitZahl<zeilen.length)bad.push('LEERE_ZEILEN='+(zeilen.length-mitZahl)+'/'+zeilen.length);
    if(/undefined/.test(satz))bad.push('UNDEFINED_IM_SATZ');
    console.log('     Screener: '+mitZahl+' von '+zeilen.length+' Zeilen mit Zahl · '+satz.slice(0,70));
   }
   if(view==='/vu2/?view=stocks'){
-   const zeilen=await page.locator('.row:not(.eyebrow)').allInnerTexts();
+   const zeilen=await page.locator('.q-hit').allInnerTexts();
    if(zeilen.length<20)bad.push('ZU_WENIGE_ZEILEN='+zeilen.length);
    else{
     const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)).length;

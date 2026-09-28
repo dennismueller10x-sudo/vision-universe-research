@@ -595,3 +595,38 @@ a.q-tile:hover h3{color:var(--q-green)}
 .q-pro>summary::after{content:'▾';font-size:12px}
 .q-pro[open]>summary::after{content:'▴'}
 .q-pro .intro{margin-bottom:20px}
+
+/* --- Genau EINE Navigation je Breite --- */
+/* Die obere Leiste verschwand erst bei 650 px, die untere erschien schon bei
+   900 px: dazwischen standen beide da und zeigten dieselben fünf Ziele. */
+@media(max-width:900px){.top .nav{display:none}}
+
+/* --- Desktop ist kein gestrecktes Smartphone --- */
+@media(min-width:1100px){
+ .q-stage{padding:40px 40px}
+ .q-stage h1{font-size:46px}
+ /* Der Strategie-Katalog nebeneinander: acht Ansätze untereinander sind auf
+    1440 px eine Kolonne Text mit sehr viel Weissraum daneben. */
+ .q-catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--q-gap);align-items:start}
+ .q-catalog>.q-card{margin-bottom:var(--q-gap)}
+ /* Zwei ruhige Karten nebeneinander statt zweier breiter Bänder. */
+ .q-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--q-gap);align-items:start}
+ .q-pair>.q-card{margin-bottom:var(--q-gap)}
+ /* Die Trefferliste bekommt auf dem Desktop ihre Begründungsspalte zurück. */
+ .q-hit{grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto}
+}
+@media(min-width:1500px){main{max-width:1360px}}
+
+/* --- Kopf der Aktienanalyse --- */
+.q-ident{padding:4px 0 22px;border-bottom:1px solid var(--q-card-line);margin-bottom:26px}
+.q-back{display:inline-flex;align-items:center;min-height:40px;font-size:13.5px;color:var(--muted)}
+.q-back::before{content:'← ';white-space:pre}
+.q-back:hover{color:var(--q-green)}
+.q-ident h1{font-size:38px;letter-spacing:-1.3px;margin:2px 0 6px;line-height:1.1}
+.q-ident-line{margin:0 0 10px;font-size:15px}
+.q-ident-line strong{font-weight:700;letter-spacing:.4px}
+.q-ident-price{margin:0;font-variant-numeric:tabular-nums}
+.q-ident-price strong{font-size:30px;font-weight:600;letter-spacing:-.8px}
+.q-ident-price span{font-size:14px}
+@media(max-width:650px){.q-ident h1{font-size:28px;letter-spacing:-.8px}
+ .q-ident-price strong{font-size:26px}}

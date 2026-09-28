@@ -735,11 +735,31 @@ async function aktienPage(){
   [liste],['Alle Zustände im Radar',href('radar')]));
 }
 
+function stockIdentity(s){
+ const benannt=s.name&&s.name!==s.ticker;
+ const kopf=el('section',{class:'q-ident'},[
+  el('a',{class:'q-back',href:href('stocks'),text:'Zurück zu Aktien'}),
+  el('h1',{text:benannt?s.name:'Aktienanalyse'})]);
+ const zeile=el('p',{class:'q-ident-line'});
+ zeile.append(el('strong',{text:s.ticker||''}));
+ if(!benannt)zeile.append(el('span',{class:'muted',
+  text:' · Für dieses Kürzel ist kein belegter Unternehmensname veröffentlicht.'}));
+ kopf.append(zeile);
+ /* KEIN KURS IN DIESEM KOPF. Er steht unmittelbar darunter im
+    Kursblock - zusammen mit seinem Stichtag, seiner Basis und der
+    Aktualitätszeile. Ihn hier zu wiederholen hiesse, dieselbe Zahl zweimal
+    zu zeigen und die zweite ohne ihre Einschränkungen. */
+ return kopf;
+}
 async function stockPage(ticker){const brief=await api.getIntelligenceBrief(ticker).catch(()=>null);
  const s=(brief&&brief.sources&&brief.sources.stock)||await api.getStockIntelligence(ticker);
  /* Kein Name heisst nicht: Ticker als Ueberschrift und Ticker als
     Untertitel. Dann steht die Ueberschrift fuer das, was sie ist. */
- main.append(heading((s.name&&s.name!==s.ticker)?s.name:'Aktienanalyse',s.ticker||''));
+ /* IDENTITÄT ZUERST, IN EINER ZEILE LESBAR: Unternehmen, Kürzel, Kurs,
+    Stichtag. Der alte Kopf trug die Augenbraue "Vision Universe · Preview"
+    über dem Firmennamen - eine Zeile, die nichts über diesen Titel sagt,
+    an der Stelle, an der ein Leser zuerst hinsieht. */
+ main.append(stockIdentity(s));
  /* WENN ZWEI QUELLEN VERSCHIEDENE GESELLSCHAFTEN NENNEN, STEHT DAS OBEN.
   *
   * Gemessen am 28.09.2026 nach company-naming-1.0.0: bei 310 Kuerzeln nennen
@@ -1336,7 +1356,9 @@ async function strategiekatalog(){
  const persistenz=index.historicalEvidence&&index.historicalEvidence.state==='AVAILABLE'?index.historicalEvidence:null;
  main.append(el('p',{class:'muted',style:'margin:-28px 0 20px;font-size:14px',
   text:'Stand der Auswertung: '+(index.asOf||'nicht angegeben')+' · '+index.profiles.length+' Ansätze · Methodik '+(index.methodologyVersion||'nicht angegeben')}));
- for(const profil of index.profiles)main.append(strategieKarte(profil,vertrag,persistenz));
+ const katalog=el('div',{class:'q-catalog'});
+ for(const profil of index.profiles)katalog.append(strategieKarte(profil,vertrag,persistenz));
+ main.append(katalog);
  main.append(card('Was diese Zahlen nicht sind',null,[
   el('p',{class:'q-card-intro',
    text:'Die Anzahl der Titel ist eine Auszählung von heute, keine Rangliste und keine Empfehlung. Eine historische Erfolgsquote je Ansatz ist nicht zertifiziert und wird deshalb nirgends gezeigt — auch nicht als Näherung.'}),
