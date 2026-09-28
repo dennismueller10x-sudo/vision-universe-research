@@ -941,6 +941,8 @@
       modell = el("article", { class: "dx-m3-pr-karte dx-m3-pr-modell" }, [
         el("div", { class: "dx-m3-pr-kopf" }, [iconChip("kurve", "context"), el("span", { text: "Historische Modellrechnung" })]),
         el("p", { class: "dx-m3-pr-aussage", text: m.cagr >= m.buyAndHold.cagr - 1 ? "Fast gleiche Rendite, deutlich kleinere Verluste" : "Weniger Rendite, deutlich kleinere Verluste" }),
+        el("p", { class: "dx-m3-pr-unter dx-m3-pr-klartext", text: pct(m.cagr) + " statt " + pct(m.buyAndHold.cagr) + " pro Jahr – aber der größte Verlust lag bei " +
+          pct(m.maxDrawdown, 0) + " statt " + pct(m.buyAndHold.maxDrawdown, 0) + " (" + von + "–" + bis + ", nur ab „" + regel.minLabel + "“ investiert)." }),
         el("div", { class: "dx-m3-pr-vgl", role: "table", "aria-label": "Modellrechnung " + von + " bis " + bis }, [
           el("div", { class: "dx-m3-pr-vgl-zeile is-kopf", role: "row" }, [el("span", { role: "columnheader", text: von + "–" + bis }),
             el("span", { role: "columnheader", text: "Immer investiert" }), el("span", { role: "columnheader", class: "is-regel", text: "Nur ab „" + regel.minLabel + "“*" })]),

@@ -131,6 +131,7 @@ test("Wie verlaesslich: Pruefung aus dem Auszug - Kernaussage, Modellrechnung ni
   /* Modellrechnung: immer neben "immer investiert" und neben dem juengeren Zeitraum */
   const regel = EVIDENCE.illustration.rules.find((r) => r.minLevel === 2);
   assert.match(t, /Immer investiert/);
+  assert.match(t, /pro Jahr – aber der größte Verlust lag bei −\d+\u00a0% statt −\d+\u00a0%/);
   assert.match(t, new RegExp("Seit " + regel.since2001.from.slice(0, 4)));
   assert.match(t, /Ohne Kosten und Steuern/);
   assert.match(t, /kein verlässlicher Hinweis auf künftige/);
