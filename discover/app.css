@@ -220,8 +220,14 @@ body.dv2{--v2-signal:#c8f531;--v2-radius-sm:12px;--v2-radius-md:20px;--v2-space-
 /* Im mobilen Feed darf eine lange Aktie ueber den sichtbaren Ausschnitt
    hinausreichen. Die Spur scrollt bis zum echten Ende samt Aktien-Link. */
 @media(max-width:760px){
-  .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{bottom:max(4px,env(safe-area-inset-bottom))}
-  body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 165px - env(safe-area-inset-bottom))}
+  /* Im Browser endet der sichtbare Viewport bereits vor Safaris Werkzeugleiste.
+     Deren Safe-Area-Abstand nochmals abzuziehen laesst die Navigation schweben. */
+  .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{bottom:2px}
+  body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 165px)}
   .dv2.v2-feed-active .dx-feed-spur{scroll-snap-type:y proximity}
   .dv2.v2-feed-active .dx-feed-screen{overflow:visible;padding-bottom:20px}
+}
+@media(max-width:760px) and (display-mode:standalone){
+  .dv2 .v2-dock,.dv2.v2-feed-active .v2-dock{bottom:max(4px,env(safe-area-inset-bottom))}
+  body.dv2.v2-feed-active .v2-main{height:calc(100dvh - 165px - env(safe-area-inset-bottom))}
 }
