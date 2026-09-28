@@ -41,7 +41,21 @@
     [37, 'freizeit-entertainment', 'Freizeit & Entertainment', 'Freizeitparks, Sport, Erlebnisse', 'Erlebnisse statt Dinge.', 'Freizeit wird Wert.', '#c44fb0', 'consumer', 'thema-freizeit-entertainment', true],
     [38, 'medien-werbung', 'Medien & Werbung', 'Content, Werbeplattformen, Medien', 'Aufmerksamkeit ist Währung.', 'Reichweite mit Wirkung.', '#8b54d6', 'tech', 'thema-medien-werbung', true],
     [39, 'streaming-gaming', 'Streaming & Gaming', 'Video-, Musik- und Spieleplattformen', 'Unterhaltung auf Abruf.', 'Play. Stream. Wiederholen.', '#a24dde', 'tech', 'thema-streaming-gaming', true],
-    [40, 'telekommunikation-netze', 'Telekommunikation & Netze', 'Mobilfunk, Glasfaser, Netzwerktechnik', 'Die Adern der Vernetzung.', 'Immer verbunden.', '#2f86c9', 'tech', 'thema-telekommunikation-netze', true]
+    [40, 'telekommunikation-netze', 'Telekommunikation & Netze', 'Mobilfunk, Glasfaser, Netzwerktechnik', 'Die Adern der Vernetzung.', 'Immer verbunden.', '#2f86c9', 'tech', 'thema-telekommunikation-netze', true],
+    [41, 'oel-gas-versorger', 'Öl, Gas & Versorger', 'Förderung, Raffinerien, Versorger', 'Die Energie, auf der die Welt heute noch läuft.', 'Klassische Energie. Beständige Nachfrage.', '#6b5b3e', 'energy', 'thema-oel-gas-versorger', false],
+    [42, 'chemie-werkstoffe', 'Chemie & Werkstoffe', 'Grundstoffe, Spezialchemie, Werkstoffe', 'Der unsichtbare Baustoff hinter jedem Produkt.', 'Stoffe, die alles verbinden.', '#6a8caf', 'industry', 'thema-chemie-werkstoffe', false],
+    [43, 'industrie-fertigung', 'Industrie & Fertigung', 'Maschinen, Bauteile, Fertigung', 'Die Fabriken hinter den Fabriken.', 'Fertigung im Detail.', '#8a8f99', 'industry', 'thema-industrie-fertigung', false],
+    [44, 'handel-einzelhandel', 'Handel & Einzelhandel', 'Läden, Supermärkte, Fachhandel', 'Wo Konsum jeden Tag stattfindet.', 'Handel vor Ort.', '#d98a3d', 'consumer', 'thema-handel-einzelhandel', false],
+    [45, 'grosshandel-distribution', 'Großhandel & Distribution', 'Zwischenhandel, Distribution, Logistiklager', 'Die Brücke zwischen Hersteller und Regal.', 'Zwischen Fabrik und Kunde.', '#7a92a3', 'industry', 'thema-grosshandel-distribution', false],
+    [46, 'bau-baustoffe', 'Bau & Baustoffe', 'Bauunternehmen, Baustoffe, Bauträger', 'Was gebaut wird, bevor es steht.', 'Fundament für morgen.', '#9c7a56', 'industry', 'thema-bau-baustoffe', false],
+    [47, 'transport-spedition', 'Transport & Spedition', 'Bahnen, Spediteure, Schifffahrt, Frachtflug', 'Wie Waren tatsächlich ihr Ziel erreichen.', 'Fracht in Bewegung.', '#4f7a8a', 'industry', 'thema-transport-spedition', false],
+    [48, 'papier-verpackung-forst', 'Papier, Verpackung & Forstwirtschaft', 'Holz, Papier, Verpackungen', 'Rohstoffe, die aus dem Wald kommen.', 'Verpackt und verarbeitet.', '#6f8a52', 'industry', 'thema-papier-verpackung-forst', false],
+    [49, 'textil-bekleidung', 'Textil & Bekleidung', 'Textilhersteller, Bekleidungsfirmen', 'Stoffe und Kleidung abseits der großen Marken.', 'Textilien im Alltag.', '#b06a8a', 'consumer', 'thema-textil-bekleidung', false],
+    [50, 'metallverarbeitung-stahl', 'Metallverarbeitung & Stahl', 'Stahlwerke, Gießereien, Metallverarbeiter', 'Der Werkstoff hinter Maschinen und Gebäuden.', 'Stahl formt Industrie.', '#78808a', 'industry', 'thema-metallverarbeitung-stahl', false],
+    [51, 'finanzdienstleistungen-vermoegen', 'Finanzdienstleistungen & Vermögensverwaltung', 'Broker, Kreditvermittler, Beteiligungen', 'Finanzdienstleister abseits der großen Banken.', 'Kapital im Hintergrund.', '#3f6a8f', 'finance', 'thema-finanzdienstleistungen-vermoegen', false],
+    [52, 'software-it-dienstleistungen', 'Unternehmenssoftware & IT-Dienstleistungen', 'Business-Software, IT-Beratung, Systeme', 'Die Software, die Unternehmen am Laufen hält.', 'Code für Unternehmen.', '#5a6ac0', 'tech', 'thema-software-it-dienstleistungen', false],
+    [53, 'dienstleistungen-bildung-personal', 'Dienstleistungen, Bildung & Personal', 'Bildung, Personal, Unternehmensdienste', 'Dienstleistungen abseits von Produkten.', 'Dienst am Unternehmen.', '#8a6ac0', 'industry', 'thema-dienstleistungen-bildung-personal', false],
+    [54, 'gesundheitsdienstleister', 'Gesundheitsdienstleister', 'Krankenhäuser, Kliniken, Labore', 'Die Versorgung selbst, nicht nur das Mittel dagegen.', 'Versorgung, die trägt.', '#4a9a8a', 'health', 'thema-gesundheitsdienstleister', false]
   ];
   var themes = list.map(function (t) {
     var file = String(t[0]).padStart(2, '0') + '-' + t[1];
