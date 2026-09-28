@@ -3,14 +3,12 @@
 
    IMMERSIVE STOCK DISCOVERY
 
-   Eine Aktie pro Bildschirm. Wischen führt zur nächsten. Mehr ist es
-   nicht - und mehr soll es auch nicht sein.
+   Aktien in einer fortlaufenden, frei scrollbaren Ansicht.
 
    WARUM DAS HIER KEIN FEED IM ÜBLICHEN SINN IST
 
-   Die Interaktion stammt erkennbar von den vertikalen Content-Apps, und
-   das ist Absicht: sie ist die beste Art, die es gibt, um eine Sache nach
-   der anderen anzusehen. Was NICHT übernommen wird, ist alles, womit
+   Die Aktien stehen nacheinander, ohne erzwungene Stopps. Was NICHT
+   übernommen wird, ist alles, womit
    diese Apps ihr Geld verdienen - kein endloses Nachladen ohne Ende, kein
    Autoplay, keine Likes, keine Zähler, kein "gerade heiß", kein
    Kaufen-Knopf. In einem Finanzprodukt wäre jede dieser Mechaniken eine
@@ -22,10 +20,8 @@
 
    WIE ES TECHNISCH FUNKTIONIERT
 
-   Mit `scroll-snap-type: y mandatory` und sonst nichts. Keine Geste wird
-   abgefangen, keine Transformation gerechnet, kein Scroll simuliert. Das
-   Ergebnis fühlt sich auf jedem Gerät wie das System an, weil es das
-   System ist - und es funktioniert mit Tastatur, Bildlaufleiste,
+   Natives Scrollen ohne Snap, abgefangene Gesten oder Transformation.
+   Das funktioniert mit Tastatur, Bildlaufleiste,
    Screenreader und reduzierter Bewegung, ohne dass dafür etwas gebaut
    werden musste.
 
@@ -170,6 +166,20 @@
       }, { root: spur, threshold: 0.55 });
       beobachter.observe(ende);
     }
+
+    /* Ohne Snap koennen zwei Aktien gleichzeitig sichtbar sein. Der Zaehler
+       folgt der Aktie in der Mitte der Spur, ohne alle Karten zu vermessen. */
+    var scrollFrame = 0;
+    spur.addEventListener("scroll", function () {
+      if (scrollFrame) return;
+      scrollFrame = global.requestAnimationFrame(function () {
+        scrollFrame = 0;
+        var bounds = spur.getBoundingClientRect();
+        var hit = spur.ownerDocument.elementFromPoint(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
+        var card = hit && hit.closest('.dx-feed-screen[data-symbol]');
+        if (card && spur.contains(card)) zaehler.textContent = (Number(card.dataset.index) + 1) + " von " + gesamt;
+      });
+    }, { passive: true });
 
     /* Die ersten Karten liegen bei. */
     karten.forEach(function (k, i) { anhaengen(k, i); });

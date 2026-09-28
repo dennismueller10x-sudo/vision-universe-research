@@ -257,6 +257,17 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  });
  await check(key+' feed is bounded and reaches the next stock',async()=>{
   const track=page.locator('.dx-feed-spur');await track.waitFor();
+  const freeScroll=await track.evaluate(async n=>{
+   const first=n.querySelector('.dx-feed-screen[data-symbol]');
+   const target=Math.round(first.getBoundingClientRect().height*.45);
+   n.scrollTop=target;
+   await new Promise(resolve=>setTimeout(resolve,350));
+   const result={target,actual:n.scrollTop,snap:getComputedStyle(n).scrollSnapType};
+   n.scrollTop=0;
+   return result;
+  });
+  assert.equal(freeScroll.snap,'none','Feed must not snap between stocks');
+  assert(Math.abs(freeScroll.actual-freeScroll.target)<=2,'Feed jumped away from a free-scroll position: '+JSON.stringify(freeScroll));
   const count=await page.locator('.dx-feed-screen[data-symbol]').count();assert(count>0&&count<=24,'Initial feed eagerly rendered '+count+' cards');
   const visible=()=>track.evaluate(n=>{const bounds=n.getBoundingClientRect();const cards=Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(card=>{const box=card.getBoundingClientRect();return {symbol:card.dataset.symbol,index:card.dataset.index,visibleHeight:Math.max(0,Math.min(box.bottom,bounds.bottom)-Math.max(box.top,bounds.top))};}).sort((a,b)=>b.visibleHeight-a.visibleHeight);return {height:n.clientHeight,viewport:innerHeight,scrollTop:n.scrollTop,card:cards[0]};});
   const before=await visible();assert(before.height>100&&before.height<=before.viewport,'Feed track is not viewport-bounded');
