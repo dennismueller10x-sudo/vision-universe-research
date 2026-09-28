@@ -361,7 +361,12 @@ await page.getByText(/^0 Treffer in 6875 verfügbaren Unternehmen · .+ · kein 
   if(await page.evaluate(()=>localStorage.getItem('vu2.watchlist.selection.v1'))!=='broken')throw Error('corrupt watchlist overwritten');
   await page.evaluate(value=>localStorage.setItem('vu2.watchlist.selection.v1',value),saved);await page.reload();await page.locator('main footer').waitFor();await page.getByText('Warum diese Einordnung?',{exact:true}).click();
   if(await page.evaluate(()=>localStorage.getItem('vu.quant.watchlist.v1'))!==null)throw Error('legacy demo was seeded');
-  await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();await page.locator('.home-watch-row').getByRole('link',{name:'NVDA',exact:true}).waitFor();await page.screenshot({path:out+'/home-personal-'+width+'.png',fullPage:true});await page.goto(origin+'/vu2/?view=watchlist');await page.locator('main footer').waitFor();await page.getByText('Warum diese Einordnung?',{exact:true}).click();
+  await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();
+  /* Die beobachteten Titel stehen jetzt in der Karte "Deine beobachteten
+     Titel" als Trefferzeile (.q-hit) und nicht mehr in .home-watch-row. Die
+     Absicht bleibt: was in der Watchlist gespeichert wurde, muss auf der
+     Startseite wieder auftauchen - sonst ist der Rundweg gebrochen. */
+  await page.locator('.q-card').filter({hasText:'Deine beobachteten Titel'}).locator('.q-hit').filter({hasText:'NVDA'}).first().waitFor();await page.screenshot({path:out+'/home-personal-'+width+'.png',fullPage:true});await page.goto(origin+'/vu2/?view=watchlist');await page.locator('main footer').waitFor();await page.getByText('Warum diese Einordnung?',{exact:true}).click();
   }
   if(view==='radar'){
    /* Der Satz lautete 'Quant V2 und Market Regime bleiben geschlossen.' -
