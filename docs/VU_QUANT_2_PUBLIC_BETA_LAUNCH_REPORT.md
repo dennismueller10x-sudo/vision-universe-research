@@ -2,7 +2,7 @@
 
 **`PUBLIC_BETA_LAUNCH_READY = PASS`**
 
-Stand: 2026-09-28 · Commit `fef154b972` · Branch `claude/quant-2-orchestration-hmuo69`
+Stand: 2026-09-28 · Commit `55e3217841` · Branch `claude/quant-2-orchestration-hmuo69`
 Messung: `quant/data/product/launch-readiness-v1.json` (`launch-readiness-1.0.0`)
 
 Alle drei Belege stammen vom **gleichen** Commit: der Produktions-Smoke lief gegen das aus
@@ -11,7 +11,7 @@ beides geprüft, statt es anzunehmen. **NOT_MEASURED gilt in dieser Messung nich
 
 **Eine Einschränkung vorweg, damit dieser Satz nicht mehr sagt, als er sagt:** `PASS` gilt für das
 Release, das aus diesem Commit entsteht — nicht für das, was in diesem Moment ausgeliefert wird.
-Der Default-Branch trägt diese 16 Commits noch nicht (`pages-release.yml` läuft auf Push zum
+Der Default-Branch trägt diese 17 Commits noch nicht (`pages-release.yml` läuft auf Push zum
 Default-Branch und auf Pull Requests). Der Schritt nach draußen ist ein Merge, und das ist eine
 Owner-Entscheidung, keine Messung.
 
@@ -53,7 +53,7 @@ Die zwölf P0-Gates, jedes mit seiner Messung:
 | 9 | NAVIGATION | 19 Ansichtsziele, 19 bekannt · 19 absolute Pfade, alle im **Release** vorhanden · 0 Wiederherstellungen |
 | 10 | ERROR STATES | 88 reduzierte Reisen in der 500er-Stichprobe · jede mit Nutzersatz, ohne internen Code, jede fehlende Station mit Grund |
 | 11 | METHODOLOGY TRANSPARENCY | 4 Methodikdateien mit Fassung · Methodikseite im Release · 71 sichtbare Methodikwechsel |
-| 12 | REGRESSION GUARDS | **1.966 Tests, 1.966 pass, 0 fail**, 101 s, auf diesem Commit |
+| 12 | REGRESSION GUARDS | **1.968 Tests, 1.968 pass, 0 fail**, 102 s, auf diesem Commit |
 
 ## 3. Welche Grenzen bewusst fail-closed bleiben
 
@@ -93,7 +93,7 @@ Nach der Anti-Perfektionsregel bewusst **nicht** vor dem ersten Release:
 
 ## 5. Teststand
 
-**1.966 Tests, 1.966 pass, 0 fail**, 101 s, Commit `fef154b972`
+**1.968 Tests, 1.968 pass, 0 fail**, 102 s, Commit `55e3217841`
 (`.launch/test-suite.json`, `test-suite-1.0.0`).
 
 Jede in diesem Zyklus neu eingeführte Regel ist **einzeln sabotiert** und hat ausgelöst: die
@@ -105,7 +105,7 @@ Auskunft fest (`headline.sentence`, `kind === "change"`, `methodologySwitch.acti
 ## 6. Smoke-Stand
 
 **PRODUCTION SMOKE CLEAN** · 34 Ansichten × 2 Breiten = 68 Prüfungen, 0 Fehlschläge, gegen das
-gebaute Release (`production-smoke-1.0.0`, Commit `fef154b972`).
+gebaute Release (`production-smoke-1.0.0`, Commit `55e3217841`).
 
 Darin neu: ein belegter ETF (AAAC), ein Vorzugspapier (ABR-P-D), ein Identitätskonflikt (AACI),
 eine zurückgehaltene Bewertung (ACGL), ein datenarmer Titel (ABTC) und eine Bank mit eigener
@@ -166,7 +166,7 @@ unterscheidbar bleiben („Alphabet Inc." gegen „Alphabet Inc. Class A").
 
 12 von 12 P0-Gates bestanden, 2 von 2 P1-Prüfungen bestanden, 0 offen, 0 rot — belegt durch einen
 sauberen Browser-Smoke gegen das gebaute Release, eine grüne Suite und eine
-Abnahmestichprobe ohne Befund, alle drei auf Commit `fef154b972`.
+Abnahmestichprobe ohne Befund, alle drei auf Commit `55e3217841`.
 
 Der nächste Schritt ist kein Bau, sondern eine Entscheidung: der Merge auf den Default-Branch.
 

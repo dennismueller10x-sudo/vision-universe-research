@@ -4,16 +4,16 @@ Updated: 2026-09-28 UTC
 
 ## LAUNCH_2026-09-28 — PUBLIC_BETA_LAUNCH_READY = PASS
 
-`launch-readiness-1.0.0` · Commit `fef154b972` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·
+`launch-readiness-1.0.0` · Commit `55e3217841` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·
 0 offen · 0 rot
 
 Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`** (zehn Punkte, wie
 beauftragt). Alle drei Belege stammen vom **gleichen** Commit: Browser-Smoke gegen das gebaute
-Release (34 Ansichten × 2 Breiten, 0 Fehlschläge), Suite (1.966 / 1.966 / 0), Abnahmestichprobe
+Release (34 Ansichten × 2 Breiten, 0 Fehlschläge), Suite (1.968 / 1.968 / 0), Abnahmestichprobe
 (22 Titel, PASS).
 
 **Was dieser Satz nicht sagt:** `PASS` gilt für das Release aus diesem Commit, nicht für das, was
-in diesem Moment ausgeliefert wird. Der Default-Branch trägt diese 16 Commits noch nicht;
+in diesem Moment ausgeliefert wird. Der Default-Branch trägt diese 17 Commits noch nicht;
 `pages-release.yml` löst auf Push zum Default-Branch und auf Pull Requests aus. Der Schritt nach
 draußen ist ein Merge und damit eine Owner-Entscheidung.
 
