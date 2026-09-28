@@ -18,12 +18,45 @@ const vuFormat=(fn,value,unit,opts)=>{
  if(R&&typeof R.isKnown==='function'&&!R.isKnown(unit))return null;
  return F[fn](value,unit,opts);
 };
-const params=new URLSearchParams(location.search),view=params.get('view')||'home';
+const params=new URLSearchParams(location.search);
+/* Sprechende Zweitnamen für die fünf Bereiche. Sie zeigen auf dieselben
+   Ansichten - ein neuer Name darf keine Route spalten. */
+const VIEW_ALIAS={methodik:'explain',methodology:'explain',aktien:'stocks',strategien:'strategies'};
+const view=VIEW_ALIAS[params.get('view')]||params.get('view')||'home';
 const href=(v,t)=>'/vu2/?view='+v+(t?'&ticker='+encodeURIComponent(t):'');
 const link=(label,url,cls)=>el('a',{text:label,href:url,class:cls});
 const n=(m,d=1)=>m&&Number.isFinite(m.value)?(vuFormat('formatPrice',m.value,m.unit,{numberLocale:'de-DE',decimals:d})||m.value.toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d})+(m.unit==='percent'?' %':m.unit==='USD'?' $':'')):m&&typeof m.value==='string'?m.value.replaceAll('_',' '):'Nicht verfügbar';
 const formatFactor=m=>!Number.isFinite(m.value)?'Nicht verfügbar':m.value.toLocaleString('de-DE',{maximumFractionDigits:2})+(m.metricId==='marginExpansion'?' Prozentpunkte':m.unit==='pct'?' %':m.unit==='x'?' ×':'');
-const nav=[['home','Home'],['markets','Markets'],['discover','Discover'],['research','Research'],['strategies','Strategies'],['portfolio','Portfolio']];
+/* =========================================================================
+   DIE QUANT-INTERNE NAVIGATION — FÜNF BEREICHE, SONST NICHTS.
+
+   Vision Universe ist die Übermarke, Quant ein eigenständiges Produkt darin.
+   Discover, Research, Markets und Portfolio sind andere Produkte oder
+   andere Ziele; sie bleiben erreichbar (siehe Capability Map in
+   docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md), aber sie stehen nicht in
+   dieser Leiste. Ein Produkt, dessen Hauptnavigation vier fremde Produkte
+   anbietet, erklärt sich selbst nicht.
+
+   Die Ansicht heisst weiter `explain` - eine Route umzubenennen bricht
+   bestehende Verweise, ohne dass ein Nutzer etwas davon hätte. `methodik`
+   ist als sprechender Zweitname zugelassen (siehe viewAlias).
+   ========================================================================= */
+const nav=[['home','Home'],['screener','Screener'],['strategies','Strategien'],['stocks','Aktien'],['explain','Methodik']];
+/* Strichzeichnungen statt Bildern: sie erben die Farbe des aktiven Zustands
+   und kosten keine zusätzliche Anfrage. */
+const NAV_ICON={
+ home:'M3 10.5 12 3l9 7.5M5.5 9.5V20h13V9.5',
+ screener:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14ZM20 20l-4.2-4.2',
+ strategies:'M4 20V11M10 20V5M16 20v-7M22 20H2',
+ stocks:'M4 7h16M4 12h16M4 17h10',
+ explain:'M12 3 4 6.2v5.3c0 4.4 3.2 8.2 8 9.5 4.8-1.3 8-5.1 8-9.5V6.2L12 3Zm-3 8.6 2.2 2.2L15.4 10'
+};
+function navIcon(id){
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');
+ const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+ p.setAttribute('d',NAV_ICON[id]||NAV_ICON.stocks);svg.append(p);return svg;
+}
 const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
  ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Was ist Quant?',href('explain')],['Kursstruktur',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
@@ -33,16 +66,127 @@ const groups=[
  ['News','/news/'],['Morning Briefing','/morning/'],['Weekly Magazine','/magazin/'],['Stock Reports','/reports/xpeng/'],['Academy','/academy/'],['Investment Guide','/guide/'],['Strategies',href('strategies')],['Radar',href('radar')],['Signals',href('signals')],['Watchlist',href('watchlist')],['Ask Atlas',href('atlas')]]]
 ];
 const app=document.getElementById('app');
-const researchViews=new Set(['discover','stocks','stock','fundamentals','technical','elliott','quant','explain','compare','screener']);
-const activeSection=researchViews.has(view)?'research':view;
-function navLink(id,label){const a=link(label,id==='discover'?'/discover/':href(id),id===activeSection?'active':'');if(id===activeSection)a.setAttribute('aria-current',id===view?'page':'location');return a;}
-const header=el('header',{class:'top'},[link('',href('home'),'brand'),el('nav',{class:'nav','aria-label':'Hauptnavigation'},nav.map(([id,label])=>navLink(id,label))),el('div',{class:'utility'},[link('Watchlist',href('watchlist')),link('Signals',href('signals')),el('button',{text:'Suche',onclick:()=>openSearch()})])]);
-header.querySelector('.brand').append(el('img',{src:'/assets/vision-universe-logo.png',alt:'Vision Universe®'}));
-const main=el('main',{id:'content',tabindex:'-1'});app.append(header,main,el('nav',{class:'mobile-nav','aria-label':'Mobile Navigation'},nav.filter(([id])=>id!=='strategies').map(([id,label])=>navLink(id,label))));
+/* Welcher der fünf Bereiche ist gerade offen? Die Einzelanalyse gehört zu
+   AKTIEN, die Faktor- und Kursarbeitsflächen ebenso: ein Nutzer, der von
+   der Aktienliste in die Analyse geht, soll nicht sehen, wie die Marke
+   unter ihm wegspringt. */
+const SECTION_OF={stock:'stocks',quant:'stocks',fundamentals:'stocks',technical:'stocks',elliott:'stocks',
+ compare:'stocks',watchlist:'stocks',signals:'stocks',radar:'screener',atlas:'explain'};
+const activeSection=SECTION_OF[view]||view;
+function navLink(id,label,withIcon){
+ const a=link(label,href(id),id===activeSection?'active':'');
+ if(id===activeSection)a.setAttribute('aria-current',id===view?'page':'location');
+ if(withIcon)a.prepend(navIcon(id));
+ return a;
+}
+/* Die Wortmarke aus den Mockups: Übermarke klein darüber, Produktname gross
+   in Quant-Grün, darunter ein Satz, der sagt, wo man ist. */
+const CLAIM={home:'Transparenz zuerst.',screener:'Chancen finden.',strategies:'Strategien verstehen.',
+ stocks:'Finden. Verstehen. Handeln.',explain:'Keine Blackbox.'};
+function brandBlock(){
+ const a=el('a',{href:href('home'),class:'q-brand','aria-label':'Vision Universe Quant · Startseite'},[
+  el('span',{class:'q-over',text:'Vision Universe'}),
+  el('span',{class:'q-word',text:'Quant'}),
+  el('span',{class:'q-claim',text:CLAIM[activeSection]||CLAIM.home})]);
+ return a;
+}
+const header=el('header',{class:'top'},[brandBlock(),
+ el('nav',{class:'nav','aria-label':'Quant-Navigation'},nav.map(([id,label])=>navLink(id,label))),
+ el('div',{class:'utility'},[link('Watchlist',href('watchlist')),el('button',{text:'Suche',onclick:()=>openSearch()})])]);
+const main=el('main',{id:'content',tabindex:'-1'});
+app.append(header,main,el('nav',{class:'q-bottom','aria-label':'Quant-Navigation'},
+ nav.map(([id,label])=>navLink(id,label,true))));
 const dialog=el('dialog',{'aria-label':'Unternehmen und Workspaces suchen'});app.append(dialog);
 dialog.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const controls=[...dialog.querySelectorAll('input,button,a[href]')].filter(n=>!n.disabled&&!n.hidden),first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
 let universe;
 function heading(title,description){return el('div',{class:'intro'},[el('div',{},[el('span',{class:'eyebrow',text:'Vision Universe® · Preview'}),el('h1',{text:title}),description?el('p',{class:'muted',text:description}):null])]);}
+
+/* =========================================================================
+   BAUSTEINE DER NEUEN OBERFLÄCHE
+
+   Sie sind bewusst klein und ohne eigenes Wissen über Daten: eine Karte
+   weiss nicht, was ein Faktor ist. Jede inhaltliche Entscheidung bleibt
+   bei der Seite, die den Baustein füllt, und jede Zahl bleibt bei dem
+   Dienst, der sie liefert.
+   ========================================================================= */
+const ICONS={
+ chart:'M4 20V10M10 20V4M16 20v-8M20 20H3',
+ search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14ZM20 20l-4.2-4.2',
+ star:'m12 3.6 2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8L12 3.6Z',
+ trend:'M3 17 9.5 10.5l3.5 3.5L21 6M21 6h-5M21 6v5',
+ layers:'M12 3 3 7.5 12 12l9-4.5L12 3ZM3 12.5 12 17l9-4.5M3 17 12 21.5 21 17',
+ shield:'M12 3 4 6.2v5.3c0 4.4 3.2 8.2 8 9.5 4.8-1.3 8-5.1 8-9.5V6.2L12 3Z',
+ doc:'M6 3h8l4 4v14H6V3Zm8 0v4h4M9 12h6M9 16h6',
+ clock:'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 3.8V12l3 1.8',
+ people:'M9 11a3.2 3.2 0 1 0 0-6.4A3.2 3.2 0 0 0 9 11Zm-6 8.5c0-3 2.7-4.7 6-4.7s6 1.7 6 4.7M17 11.2a2.6 2.6 0 1 0 0-5.2M18 15c2 .5 3.4 1.9 3.4 4',
+ bulb:'M9.2 18h5.6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5.9 1.1.9 1.8v.4h5.4v-.4c0-.7.3-1.3.9-1.8A6 6 0 0 0 12 3Z',
+ scale:'M12 4v16M6 8h12M4 8l-2 5h4l-2-5Zm16 0-2 5h4l-2-5ZM8 20h8',
+ target:'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 4.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z',
+ warn:'M12 4 2.5 20h19L12 4Zm0 5.5v5m0 3v.1',
+ filter:'M4 6h16M7 12h10M10 18h4',
+ compass:'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm3.5 4.5-2 5-5 2 2-5 5-2Z'
+};
+function glyph(name){
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+ svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');
+ const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+ p.setAttribute('d',ICONS[name]||ICONS.doc);svg.append(p);return svg;
+}
+/* Die Bühne oben auf jedem Bereich: Nutzenversprechen statt Modellname. */
+function stage(title,lead,sub,note){
+ const box=el('section',{class:'q-stage'},[el('h1',{text:title}),el('p',{class:'q-lead',text:lead})]);
+ if(sub)box.append(el('p',{class:'q-sub',text:sub}));
+ if(note)box.append(el('p',{class:'q-stage-note',text:note}));
+ return box;
+}
+function card(title,intro,body,more){
+ const head=el('div',{class:'q-card-head'},[el('h2',{text:title})]);
+ if(more)head.append(link(more[0],more[1],'q-more'));
+ const box=el('section',{class:'q-card'},[head]);
+ if(intro)box.append(el('p',{class:'q-card-intro',text:intro}));
+ for(const part of [].concat(body||[]))if(part)box.append(part);
+ return box;
+}
+function tile(icon,title,text,url){
+ const inner=[el('span',{class:'q-ico'},[glyph(icon)]),el('h3',{text:title}),el('p',{text})];
+ return url?el('a',{class:'q-tile',href:url},inner):el('div',{class:'q-tile'},inner);
+}
+function tiles(count,items){return el('div',{class:'q-tiles q-tiles-'+count},items);}
+function steps(items){
+ return el('div',{class:'q-steps'},items.map((it,i)=>el('div',{class:'q-step'},[
+  el('span',{class:'q-step-n',text:'Schritt '+(i+1)}),el('h3',{text:it[0]}),el('p',{text:it[1]})])));
+}
+function stateMark(kind,text){return el('span',{class:'q-state q-state-'+kind,text});}
+/* Die Belegtreppe: Bedeutung steht oben offen, alles darunter ist
+   aufklappbar. Ein Nutzer, der nur das Ergebnis will, sieht kein Fachwort;
+   einer, der es prüfen will, kommt bis zur Methodik. */
+function ladder(levels){
+ const box=el('div',{class:'q-ladder'});
+ for(const [label,parts] of levels){
+  if(!parts||!parts.length)continue;
+  const body=el('div',{class:'q-ladder-body'});
+  for(const p of parts)if(p)body.append(typeof p==='string'?el('p',{text:p}):p);
+  box.append(el('details',{},[el('summary',{text:label}),body]));
+ }
+ return box.children.length?box:null;
+}
+/* Ein Faktor mit Balken. `share` ist 0..1 oder null - null heisst
+   ausdruecklich "nicht bewertbar" und bekommt eine gestreifte Spur statt
+   eines Balkens der Laenge null, den man als "schlecht" lesen wuerde. */
+function factorBar(name,note,valueText,share,negative){
+ const row=el('div',{class:'q-factor'},[
+  el('div',{class:'q-factor-name',text:name},note?[el('span',{text:note})]:[]),
+  el('div',{class:'q-factor-val',text:valueText})]);
+ const bar=el('div',{class:'q-bar'+(share===null||share===undefined?' is-none':negative?' is-neg':'')});
+ if(share!==null&&share!==undefined)bar.append(el('i',{style:'width:'+Math.max(2,Math.min(100,share*100)).toFixed(1)+'%'}));
+ row.append(bar);return row;
+}
+function hitRow(ticker,name,why,numText,numNote){
+ return el('a',{class:'q-hit',href:href('stock',ticker)},[
+  el('div',{class:'q-hit-id'},[el('strong',{text:ticker}),el('span',{text:name||''})]),
+  el('p',{class:'q-hit-why',text:why||''}),
+  el('div',{class:'q-hit-num'},[el('strong',{text:numText||''}),numNote?el('span',{text:numNote}):null])]);
+}
 function notice(title,text){return el('div',{class:'notice'},[el('h3',{text:title}),el('p',{class:'muted',text})]);}
 /* EIN KUERZEL ZWEIMAL IST KEINE ZEILE.
  *
@@ -655,31 +799,120 @@ async function atlasPage(){
  }
  company.onchange=question.onchange=draw;main.append(el('div',{class:'atlas-controls'},[el('label',{},[el('span',{text:'Unternehmen'}),company]),el('label',{},[el('span',{text:'Deine Frage'}),question])]),answer,el('details',{},[el('summary',{text:'Wie Atlas an seine Antworten kommt'}),el('p',{text:'Diese Antworten werden aus denselben Produktdiensten wie Quant, Technical und Fundamentals zusammengestellt. Die zugehörigen Werkzeuge sind ausschließlich lesend; sie können weder freien Code ausführen noch beliebige Quellen abrufen oder eine Strategie speichern.'}),el('p',{text:'Ein später angebundenes Sprachmodell kann diese strukturierten Werkzeuge nutzen. In dieser Ansicht werden noch keine Fragen an einen KI-Anbieter übertragen.'}),link('Bisheriger AI-Workspace','/quant/ai/','button secondary')]));await draw();
 }
+/* =========================================================================
+   HOME — "WAS KANN ICH HIER TUN?"
+
+   Die alte Startseite begann mit fünf kuratierten Titeln. Das beantwortet
+   die Frage eines Nutzers, der schon weiss, was Quant ist - also fast
+   keines. Diese Seite beantwortet zuerst die Produktfrage und führt dann
+   in die drei Einstiege.
+
+   "Heute im Fokus" ist bewusst KEIN erfundener Feed: es sind die
+   veröffentlichten Setup-Zustände mit ihrer eigenen Regel und ihrem
+   eigenen Stichtag. Sie ändern sich mit jeder Materialisierung, sie sind
+   erklärbar, und wenn das Artefakt fehlt, steht dort nichts Erfundenes,
+   sondern der Einstieg über Screener und Methodik.
+   ========================================================================= */
 async function homePage(){
  let tickers=[],storageUnavailable=false;try{tickers=VUWatchlistWorkspace.load(localStorage);}catch{storageUnavailable=true;}
- /* Die Reise beginnt beim Markt und endet bei einer Aktie: erst wie breit
-    getragen die Lage ist, dann die eigenen Titel, dann die Analyse. Ohne
-    den ersten Schritt liest sich jede Einzelbewegung, als stuende sie fuer
-    sich - und die Startseite trug die Rubrik "Maerkte einordnen", ohne den
-    Markt einzuordnen. */
- const [data,regime]=await Promise.all([api.getHomeIntelligence(tickers),api.getMarketRegime().catch(()=>null)]);
- const observations=data.market.observations;
- main.append(heading('Was ist für dich wichtig?','Unternehmen beobachten. Veränderungen verstehen. Deine nächste Analyse finden.'));
+ const [data,setup]=await Promise.all([
+  api.getHomeIntelligence(tickers),
+  api.getSetupScreenIndex().catch(()=>({state:'UNAVAILABLE'}))]);
+
+ main.append(stage('Der Einstieg in bessere Aktienentscheidungen.',
+  'Quant analysiert Aktien nach festen Daten und Regeln und zeigt dir, was für und was gegen eine Aktie spricht.',
+  'Keine Meinung, keine Empfehlung: jede Einschätzung lässt sich bis auf den einzelnen Wert und die Methodik zurückverfolgen.',
+  'Alle Zahlen stammen aus veröffentlichten Daten. Wo eine Grundlage fehlt, sagt Quant das, statt zu schätzen.'));
+
+ main.append(card('So nutzt du Quant',
+  'Vier Schritte, vom ersten Blick bis zur nachvollziehbaren Begründung.',
+  [steps([
+   ['Aktien finden','Im Screener mit verständlichen Kriterien starten — Qualität, Wachstum, Momentum, Bewertung.'],
+   ['Strategie verstehen','Sehen, welche Art von Aktien ein Ansatz sucht und welche Bedingungen er stellt.'],
+   ['Aktie analysieren','Die Einzelanalyse zeigt Kurs, Faktoren, Setup und historische Vergleichsfälle.'],
+   ['Ergebnis nachvollziehen','Jede Aussage lässt sich aufklappen: Begründung, Komponenten, Daten, Methodik.']])]));
+
+ main.append(card('Schnell starten',null,[tiles(3,[
+  tile('search','Screener','Aktien nach klaren Kriterien finden — einfach beginnen, tiefer filtern, wenn du willst.',href('screener')),
+  tile('chart','Strategien','Vier Ansätze mit ihren Bedingungen, ihren Treffern und dem, was sie nicht erfüllen.',href('strategies')),
+  tile('layers','Aktienanalyse','Eine einzelne Aktie vollständig durchleuchten — mit Begründung und Gegenargument.',href('stocks'))])]));
+
+ /* ---- HEUTE IM FOKUS: echte Produktzustände oder gar keine ---- */
+ const fokus=el('div',{});
+ if(setup&&setup.state==='AVAILABLE'&&Array.isArray(setup.states)){
+  const nachZustand=Object.fromEntries(setup.states.map(s=>[s.state,s]));
+  const zeigbar=[
+   ['CONFIRMED','Bestätigte Setups','Struktur, Trend und Umsatz erfüllen gleichzeitig die Bedingung.'],
+   ['SETUP_FORMING','Vollständige Setups vor dem Auslöser','Alles steht, der auslösende Schritt fehlt noch.'],
+   ['WATCH','Auf der Beobachtungsliste','Der Trend trägt, die Bedingung ist aber noch nicht vollständig.']
+  ].filter(([id])=>nachZustand[id]&&Number.isFinite(nachZustand[id].count)&&nachZustand[id].count>0);
+  if(zeigbar.length){
+   fokus.append(el('div',{class:'q-tiles q-tiles-3'},zeigbar.map(([id,titel,satz])=>{
+    const s=nachZustand[id],regel=(s.rules||[]).find(r=>Array.isArray(r.tickers)&&r.tickers.length);
+    /* Der Screener liest `setupRule` (eine Regel-ID), nicht den Zustand:
+       ein Zustand kann mehrere Regeln haben, und die Fläche zeigt die
+       Regel, nicht den Sammelbegriff. */
+    const ziel=regel&&regel.screenable?href('screener')+'&setupRule='+encodeURIComponent(regel.ruleId):href('radar');
+    return el('a',{class:'q-tile',href:ziel},[
+     el('span',{class:'q-ico'},[glyph(id==='CONFIRMED'?'target':id==='SETUP_FORMING'?'trend':'clock')]),
+     el('h3',{text:s.count.toLocaleString('de-DE')+' '+titel}),
+     el('p',{text:satz})]);
+   })));
+   const beispiele=(nachZustand.CONFIRMED&&(nachZustand.CONFIRMED.rules||[])[0]||{}).tickers||[];
+   if(beispiele.length)fokus.append(el('p',{class:'muted',style:'font-size:13px;margin:18px 0 0',
+    text:'Zum Nachsehen: '+beispiele.slice(0,8).join(' · ')}));
+   fokus.append(el('p',{class:'muted',style:'font-size:13px;margin:10px 0 0',
+    text:'Stand der Setup-Auswertung: '+(setup.asOf||'nicht angegeben')+'. Die Zahlen ändern sich mit jeder Auswertung; sie sind keine Kaufliste.'}));
+  }
+ }
+ if(!fokus.children.length){
+  fokus.append(el('p',{class:'q-card-intro',text:'Für heute liegt keine ausgewertete Setup-Lage vor. Statt einer erfundenen Auswahl hier die beiden Wege, die ohne sie funktionieren:'}));
+  fokus.append(tiles(2,[
+   tile('filter','Mit Kriterien starten','Qualität, Momentum, Größe oder Region auswählen und die Treffer mit Begründung lesen.',href('screener')),
+   tile('shield','Methodik lesen','Verstehen, wie Faktoren, Setups und historische Vergleichsfälle zustande kommen.',href('explain'))]));
+ }
+ main.append(card('Heute im Fokus',
+  'Keine Auswahl von Hand: das sind die ausgewerteten Zustände des gesamten Universums, jeder mit seiner eigenen Regel.',
+  [fokus],['Alle Zustände ansehen',href('radar')]));
+
+ /* ---- Transparenz als Produktmerkmal ---- */
+ main.append(card('Nicht nur ein Score.',
+  'Eine Zahl allein ist keine Einschätzung. Quant legt jede Bewertung in fünf Ebenen offen — und sagt, wo sie aufhört.',
+  [tiles(3,[
+   tile('bulb','Nachvollziehbar','Du siehst, welche Faktoren zu einer Einschätzung führen — und welche dagegen sprechen.'),
+   tile('scale','Vergleichbar','Dieselben Kriterien für alle Titel. Keine Sonderbehandlung, keine nachträgliche Anpassung.'),
+   tile('warn','Ehrlich unvollständig','Fehlende Daten, zurückgehaltene Bewertungen und methodische Grenzen stehen sichtbar dabei.')]),
+   link('Wie Quant arbeitet',href('explain'),'button')]));
+
+ /* ---- Eigene Titel und Datenstand: erhalten, aber nicht mehr im Zentrum ---- */
+ const eigene=el('div',{});
+ if(storageUnavailable)eigene.append(el('p',{class:'q-card-intro',text:'Die gespeicherte Watchlist ist derzeit nicht lesbar. Sie wird nicht zurückgesetzt.'}));
+ else if(!data.watchlist||data.watchlist.state==='EMPTY')eigene.append(el('p',{class:'q-card-intro',text:'Du beobachtest noch keine Titel. Stelle eine Watchlist zusammen, um ihre Lage hier zu sehen.'}));
+ else{
+  const liste=el('div',{class:'q-hitlist'});
+  for(const s of data.watchlist.members.slice(0,4)){
+   liste.append(hitRow(s.ticker,null,
+    s.state!=='AVAILABLE'?'Analyse derzeit nicht verfügbar'
+     :!Number.isFinite(s.above200&&s.above200.value)?'Trend derzeit nicht verfügbar'
+     :s.above200.value>=0?'Am langfristigen Trendbereich oder darüber':'Unter dem langfristigen Trendbereich',
+    '',s.state==='AVAILABLE'?'Kursstand '+s.asOf:''));
+  }
+  eigene.append(liste);
+ }
+ eigene.append(link(tickers.length?'Watchlist öffnen':'Watchlist zusammenstellen',href('watchlist'),'button secondary'));
+ main.append(card('Deine beobachteten Titel',null,[eigene]));
+
  const session=el('div',{class:'home-session'});
- function showSession(s){S.clear(session);session.append(el('div',{},[el('strong',{text:s.label}),el('span',{class:'muted',text:s.state==='AVAILABLE'?' · Kalenderstand '+s.localDate+' '+s.localTime.slice(0,5)+' New York':' · Kalender derzeit nicht verfügbar'})]),el('span',{class:'pill',text:'Kurse: letzter verfügbarer Tagesstand'}));}
- showSession(data.session);main.append(session,freshness(data.health),el('p',{class:'muted home-session-note',text:'Die Handelsphase folgt dem Börsenkalender. Diese Vorschau zeigt keine Echtzeitkurse; eine geöffnete Börse bedeutet keinen aktiven Datenstream.'}));
- main.append(marketRegimeSection(regime));
- let refreshing=false;const timer=setInterval(async()=>{if(document.hidden||refreshing)return;refreshing=true;try{showSession(await api.getMarketSession());}finally{refreshing=false;}},60000);addEventListener('pagehide',()=>clearInterval(timer),{once:true});
- const personal=el('section',{class:'home-personal'},[el('span',{class:'eyebrow',text:'Deine Perspektive'}),el('h2',{text:'Unternehmen, die dich interessieren'})]);
- if(storageUnavailable)personal.append(notice('Deine Auswahl bleibt geschützt','Die gespeicherte Watchlist ist derzeit nicht lesbar. Sie wird nicht zurückgesetzt.'));
- else if(data.watchlist.state==='EMPTY')personal.append(el('p',{class:'muted',text:'Stelle deine eigene Watchlist zusammen. Hier findest du anschließend ihre aktuelle Kursstruktur und die passenden Analysen.'}));
- else{for(const s of data.watchlist.members.slice(0,3))personal.append(el('div',{class:'home-watch-row'},[link(s.ticker,href('stock',s.ticker)),el('span',{class:'muted',text:(s.state!=='AVAILABLE'?'Analyse derzeit nicht verfügbar':!Number.isFinite(s.above200?.value)?'Trend derzeit nicht verfügbar':s.above200.value>=0?'Am langfristigen Trendbereich oder darüber':'Unter dem langfristigen Trendbereich')+(s.state==='AVAILABLE'?' · Kursstand '+s.asOf:'')})]));if(data.watchlist.members.length>3)personal.append(el('p',{class:'muted',text:'Weitere '+(data.watchlist.members.length-3)+' Titel in deiner Watchlist.'}));}
- personal.append(link(tickers.length?'Deine Watchlist öffnen':'Watchlist zusammenstellen',href('watchlist'),'button'));
- const changes=el('section',{},[el('span',{class:'eyebrow',text:'Was sich verändert hat'}),el('h2',{text:'Nicht jede Bewegung ist ein neues Signal'}),el('p',{class:'muted',text:'Untersuche belegte Wechsel über Trendgrenzen und in der Kursentwicklung. Mit Datum, Vergleichswert und derselben Regel im Screener.'}),link('Historische Änderungen untersuchen',href('signals')+'&window=60','button secondary')]);
- main.append(el('div',{class:'home-priorities'},[personal,changes]));
- const markets=el('section',{class:'section'},[el('div',{class:'home-section-heading'},[el('div',{},[el('span',{class:'eyebrow',text:'Märkte einordnen'}),el('h2',{text:'Ausgewählte Unternehmen mit vollständiger Analyse'})]),link('Markets öffnen',href('markets'),'button secondary')]),el('p',{class:'scope-note',text:observations.length+' kuratierte Unternehmen. Das kanonische Produktuniversum bleibt über Suche und Aktienansichten erreichbar; diese Auswahl ist kein Gesamtmarktbild und kein Produkt-Gate.'})]);
- if(observations.length)markets.append(stockRows(observations.map(o=>o.stock),'momentum6m','6 Monate',true));else markets.append(notice('Marktdaten derzeit nicht verfügbar','Wir zeigen keine Ersatzkurse und leiten daraus keinen Marktstatus ab.'));
- main.append(markets,el('section',{class:'home-research section'},[el('div',{},[el('span',{class:'eyebrow',text:'Dein nächster Schritt'}),el('h2',{text:'Von der Frage zur vollständigen Analyse'}),el('p',{class:'muted',text:'Geführt starten oder direkt in den professionellen Workspace springen.'})]),el('div',{class:'links'},[link('Ideen mit sichtbaren Regeln entdecken',href('discover')),link('Eigene Kriterien im Screener kombinieren',href('screener')),link('Alle Research-Workspaces',href('research')),link('Morning Briefing','/morning/'),link('News','/news/'),link('Weekly Magazine','/magazin/'),link('Ask Atlas',href('atlas'))])]));
+ function showSession(s){S.clear(session);session.append(
+  el('div',{},[el('strong',{text:s.label}),el('span',{class:'muted',text:s.state==='AVAILABLE'?' · Kalenderstand '+s.localDate+' '+s.localTime.slice(0,5)+' New York':' · Kalender derzeit nicht verfügbar'})]),
+  el('span',{class:'pill',text:'Kurse: letzter verfügbarer Tagesstand'}));}
+ showSession(data.session);
+ main.append(card('Datenstand',
+  'Diese Vorschau zeigt keine Echtzeitkurse. Eine geöffnete Börse bedeutet keinen aktiven Datenstrom.',
+  [session,freshness(data.health)]));
+ let refreshing=false;const timer=setInterval(async()=>{if(document.hidden||refreshing)return;refreshing=true;
+  try{showSession(await api.getMarketSession());}finally{refreshing=false;}},60000);
+ addEventListener('pagehide',()=>clearInterval(timer),{once:true});
 }
 /* Kompakte Faktorlage für Listenansichten: dieselbe kanonische Reihenfolge
    und dieselben Bänder wie die Factor DNA, nur ohne Aufklappen. Ein Faktor
@@ -768,23 +1001,133 @@ async function portfolioPage(){
  const save=el('button',{class:'button',text:'Bestände speichern',onclick:()=>{try{VUPortfolioWorkspace.save(localStorage,positions);S.mount(message,notice('Bestände gespeichert','Nur in diesem Browser gespeichert. Keine Übertragung an einen Broker.'));}catch{S.mount(message,notice('Speichern nicht möglich','Die Eingaben bleiben hier sichtbar. Prüfe, ob der Browserspeicher verfügbar ist.'));}}});
  main.append(el('div',{class:'portfolio-editor'},[el('label',{},[el('span',{text:'Ticker'}),ticker]),el('label',{},[el('span',{text:'Stückzahl'}),quantity]),add,save]),message,holdings,el('details',{},[el('summary',{text:'Was diese Auswertung umfasst'}),el('p',{text:'Bewertet werden ausschließlich deine erfassten Stückzahlen mit vorhandenen USD-Schlusskursen. Nicht erfasst sind Cash, Gebühren, Steuern, Kaufkurse und Währungsumrechnung. Deshalb werden weder Gewinn noch Rendite ausgewiesen.'}),el('p',{text:'Die Gewichtung zeigt Konzentration innerhalb der erfassten Bestände. Sektor-, Korrelations- und Drawdown-Analysen benötigen weitere validierte Daten und werden hier nicht geschätzt.'})]),actions([{label:'Watchlist öffnen',href:href('watchlist')},{label:'Unternehmen vergleichen',href:href('compare')},{label:'Strategien',href:href('strategies')}]));await draw();
 }
+/* =========================================================================
+   STRATEGIEN — "WELCHE ART VON AKTIEN SUCHE ICH?"
+
+   Bisher begann dieser Bereich mit einem Regel-Editor. Das ist ein
+   Werkzeug für jemanden, der seine Strategie schon kennt. Wer sie noch
+   nicht kennt, braucht zuerst den Katalog: was sucht ein Ansatz, für wen
+   ist er gedacht, wo ist sein Hauptrisiko, wie viele Titel erfüllen ihn
+   heute - und welcher Ansatz gerade gar nichts liefert, samt Grund.
+
+   KEINE TREFFERQUOTE. Der Index führt `historicalEvidence`, aber das ist
+   ASSIGNMENT_PERSISTENCE über ein Zeitfenster von Tagen - also wie stabil
+   eine Zugehörigkeit ist, nicht wie oft ein Ansatz "recht hatte". Diese
+   Fläche zeigt die Zahl mit ihrem Fenster und sagt ausdrücklich, dass eine
+   Erfolgsquote nicht zertifiziert ist.
+   ========================================================================= */
+const FAKTOR_KLARTEXT={quality:'Qualität',growth:'Wachstum',momentum:'Kursstärke',value:'Bewertung',
+ profitability:'Profitabilität',revisions:'Erwartungstrend',risk:'Risiko'};
+function strategieKarte(profil,vertrag,persistenz){
+ const def=(vertrag&&(vertrag.profiles||[]).find(p=>p.profileId===profil.profileId))||null;
+ const verfuegbar=profil.availability&&profil.availability.state==='AVAILABLE'&&Number.isFinite(profil.count);
+ const koerper=[];
+
+ if(def&&def.plain)koerper.push(el('p',{class:'q-card-intro',text:def.plain}));
+
+ /* WAS DER ANSATZ SUCHT: die Bedingungen im Klartext, mit Schwelle. */
+ if(def&&def.conditions&&def.conditions.length){
+  const liste=el('div',{});
+  for(const c of def.conditions){
+   const name=FAKTOR_KLARTEXT[c.id]||c.id;
+   liste.append(el('div',{class:'q-factor'},[
+    el('div',{class:'q-factor-name',text:name},[el('span',{text:c.rationale||''})]),
+    el('div',{class:'q-factor-val',text:'ab '+c.value})]));
+  }
+  koerper.push(el('p',{style:'font-size:13px;font-weight:650;margin:4px 0 2px',text:'Diese Bedingungen müssen gleichzeitig erfüllt sein'}),liste);
+ }
+
+ /* WIE VIELE ERFÜLLEN IHN HEUTE - oder warum keiner. */
+ if(verfuegbar){
+  koerper.push(el('p',{style:'margin:18px 0 8px'},[
+   stateMark(profil.count>0?'pos':'neutral',profil.count.toLocaleString('de-DE')+' Titel erfüllen heute alle Bedingungen')]));
+  const titel=(profil.tickers||[]).slice(0,10);
+  if(titel.length){
+   const liste=el('div',{class:'q-chips',style:'margin-top:10px'});
+   for(const t of titel)liste.append(el('a',{class:'q-chip',href:href('stock',t),text:t}));
+   koerper.push(liste);
+   if(profil.count>titel.length)koerper.push(el('p',{class:'muted',style:'font-size:13px;margin:8px 0 0',
+    text:'und '+(profil.count-titel.length).toLocaleString('de-DE')+' weitere.'}));
+  }
+ }else{
+  const grund=(profil.availability&&profil.availability.reason)||'UNAVAILABLE';
+  koerper.push(el('p',{style:'margin:18px 0 8px'},[stateMark('warn','Derzeit keine Auswahl')]));
+  koerper.push(el('p',{class:'muted',style:'font-size:14px;margin:6px 0 0',
+   text:'Dieser Ansatz braucht eine Bedingung, die das Produkt nicht liefert, und liefert deshalb bewusst keine Liste statt einer unvollständigen. Grund: '+
+    (VUProductLanguage.has(grund)?VUProductLanguage.label(grund):grund)+'.'}));
+ }
+
+ /* DIE BELEGTREPPE für diesen Ansatz. */
+ const stufen=[];
+ if(def&&def.mainRisk)stufen.push(['Wo dieser Ansatz schwach wird',[def.mainRisk]]);
+ if(def&&def.conditions)stufen.push(['Gewichtung der Bedingungen',
+  [def.conditions.map(c=>(FAKTOR_KLARTEXT[c.id]||c.id)+' '+Math.round((c.weight||0)*100)+' %').join(' · '),
+   'Die Gewichtung beschreibt, wie stark eine Bedingung in die Übereinstimmung eingeht. Erfüllt sein müssen trotzdem alle.']]);
+ const p=persistenz&&persistenz.profiles?persistenz.profiles.find(x=>x.profileId===profil.profileId):null;
+ if(p&&Number.isFinite(p.persistence))stufen.push(['Wie stabil war die Zugehörigkeit?',
+  [Math.round(p.persistence*100)+' % der '+p.previousMembers+' Titel vom '+persistenz.from+' erfüllen den Ansatz am '+persistenz.to+' noch.',
+   'Das ist die Beständigkeit einer Zuordnung über dieses Fenster — KEINE Erfolgs- oder Trefferquote. Eine Aussage darüber, ob ein Ansatz in der Vergangenheit Geld verdient hätte, ist nicht zertifiziert und wird hier nicht behauptet.']]);
+ if(profil.predicateHash)stufen.push(['Regel und Methodik',
+  ['Regelkennung: '+profil.predicateHash+'. Dieselbe Regel wählt die Titel aus, die im Screener erscheinen, und begründet auf einer Aktienseite die Übereinstimmung.',
+   link('Methodik dieses Ansatzes',href('explain')+'#strategien','q-more')]]);
+ const treppe=ladder(stufen);
+ if(treppe)koerper.push(treppe);
+
+ if(verfuegbar&&profil.count>0)koerper.push(
+  link('Diese Titel im Screener öffnen',href('screener')+'&profil='+encodeURIComponent(profil.profileId),'button secondary'));
+
+ return card(def&&def.label||profil.label||profil.profileId,null,koerper);
+}
+
+async function strategiekatalog(){
+ const [index,profile]=await Promise.all([
+  api.getStrategyIndex().catch(()=>null),
+  api.getStrategyProfiles().catch(()=>null)]);
+ main.append(stage('Strategien verstehen.','Wähle einen Ansatz, der zu deinem Stil passt.',
+  'Jeder Ansatz sagt, welche Art von Unternehmen er sucht, welche Bedingungen er stellt, wo sein Hauptrisiko liegt — und wie viele Titel ihn heute erfüllen.'));
+ if(!index||index.state!=='AVAILABLE'||!Array.isArray(index.profiles)){
+  main.append(card('Ansätze derzeit nicht abrufbar',
+   'Die ausgewertete Zuordnung ist nicht verfügbar. Es wird keine Ersatzliste gezeigt.',
+   [link('Methodik lesen',href('explain'),'button secondary')]));
+  return;
+ }
+ const vertrag=profile&&profile.state==='AVAILABLE'?profile.contract:null;
+ const persistenz=index.historicalEvidence&&index.historicalEvidence.state==='AVAILABLE'?index.historicalEvidence:null;
+ main.append(el('p',{class:'muted',style:'margin:-28px 0 20px;font-size:14px',
+  text:'Stand der Auswertung: '+(index.asOf||'nicht angegeben')+' · '+index.profiles.length+' Ansätze · Methodik '+(index.methodologyVersion||'nicht angegeben')}));
+ for(const profil of index.profiles)main.append(strategieKarte(profil,vertrag,persistenz));
+ main.append(card('Was diese Zahlen nicht sind',null,[
+  el('p',{class:'q-card-intro',
+   text:'Die Anzahl der Titel ist eine Auszählung von heute, keine Rangliste und keine Empfehlung. Eine historische Erfolgsquote je Ansatz ist nicht zertifiziert und wird deshalb nirgends gezeigt — auch nicht als Näherung.'}),
+  persistenz?el('p',{class:'muted',style:'font-size:14px',
+   text:'Die einzige veröffentlichte historische Grösse ist die Beständigkeit der Zuordnung zwischen '+persistenz.from+' und '+persistenz.to+'. Sie sagt, wie stabil eine Zugehörigkeit ist, nicht wie gut ein Ansatz war.'}):null,
+  link('Wie Strategien entstehen',href('explain'),'button secondary')]));
+}
+
 async function strategyPage(){
- main.append(heading('Aus Überzeugung werden Regeln','Definiere Auswahl, Gewichtung und Kosten. Bewahre jede Änderung nachvollziehbar auf.'));
+ await strategiekatalog();
+ /* Der Regel-Editor bleibt vollständig erhalten - er steht jetzt hinter
+    dem Katalog statt vor ihm. Wer eine eigene Strategie bauen will,
+    findet hier dieselben Felder, dieselbe Speicherung, dieselbe Historie. */
+ const builderZiel=el('div',{});
+ const builderAnhaengen=()=>main.append(card('Eigene Strategie bauen',
+  'Der vollständige Regel-Editor mit Gewichtung, Kosten und gespeicherten Versionen. Unverändert erhalten.',
+  [el('details',{class:'q-pro'},[el('summary',{text:'Strategie-Editor öffnen'}),builderZiel])]));
  /* Bevor jemand eine eigene Regel baut: welche Stile es gibt und wie
     besetzt sie heute sind. Dieselbe Regel, die auf einer Aktienseite
     erklaert, warum ein Titel passt, waehlt hier die Titel aus. */
  const strategyIndex=await api.getStrategyIndex().catch(()=>null);
  const distribution=strategyDistribution(strategyIndex);
- if(distribution)main.append(distribution);
- const context=await api.getStrategyContext();if(context.state!=='AVAILABLE'){main.append(notice('Methodik derzeit nicht verfügbar','Der bestehende Strategy Builder bleibt erreichbar.'),actions([{label:'Strategy Builder öffnen',href:'/quant/strategies/builder/'}]));return;}
- main.append(el('p',{class:'scope-note',text:(context.currentSelection?.selectable||0).toLocaleString('de-DE')+' kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung. Ranking, Quant-V2-Score und historischer Test bleiben bis zur jeweiligen Zertifizierung geschlossen.'}));
- let saved,definition=context.definition;try{saved=VUStrategyWorkspace.load(localStorage);if(saved)definition=VUStrategy.getVersion(saved).definition;if(params.has('query'))definition=VUStrategy.createDefinition({...definition,filters:VUScreenerWorkspace.decode(params.get('query')).filters});}catch{main.append(notice('Gespeicherte Strategie prüfen','Der Entwurf oder die übergebenen Regeln sind nicht gültig. Vorhandene Daten werden nicht überschrieben.'));return;}
+ if(distribution)builderZiel.append(distribution);
+ const context=await api.getStrategyContext();if(context.state!=='AVAILABLE'){builderZiel.append(notice('Methodik derzeit nicht verfügbar','Der bestehende Strategy Builder bleibt erreichbar.'),actions([{label:'Strategy Builder öffnen',href:'/quant/strategies/builder/'}]));builderAnhaengen();return;}
+ builderZiel.append(el('p',{class:'scope-note',text:(context.currentSelection?.selectable||0).toLocaleString('de-DE')+' kanonische Produkttitel stehen der aktuellen Kriterienprüfung zur Verfügung. Ranking, Quant-V2-Score und historischer Test bleiben bis zur jeweiligen Zertifizierung geschlossen.'}));
+ let saved,definition=context.definition;try{saved=VUStrategyWorkspace.load(localStorage);if(saved)definition=VUStrategy.getVersion(saved).definition;if(params.has('query'))definition=VUStrategy.createDefinition({...definition,filters:VUScreenerWorkspace.decode(params.get('query')).filters});}catch{builderZiel.append(notice('Gespeicherte Strategie prüfen','Der Entwurf oder die übergebenen Regeln sind nicht gültig. Vorhandene Daten werden nicht überschrieben.'));builderAnhaengen();return;}
  const fields={};function input(id,label,value,attrs={}){const control=el('input',{id:'strategy-'+id,value:String(value),...attrs});fields[id]=control;return el('label',{class:'strategy-field'},[el('span',{text:label}),control]);}
  function select(id,label,value,options){const control=el('select',{'aria-label':label},options.map(([value,text])=>el('option',{value,text})));control.value=value;fields[id]=control;return el('label',{class:'strategy-field'},[el('span',{text:label}),control]);}
  const filters=el('div',{class:'strategy-rules'},definition.filters.length?definition.filters.map(f=>el('p',{text:(VUCatalog.field(f.field)?.label||f.field)+' '+(VUCatalog.operator(f.operator)?.label||f.operator)+' '+f.value+(f.scale==='percentile'?' · Perzentil':VUCatalog.field(f.field)?.unit==='pct'?' %':VUCatalog.field(f.field)?.unit==='usd'?' USD':'')})):[el('p',{text:'Noch keine Auswahlkriterien. Beginne im Screener und übernimm deine Regeln.'})]);
  let editHref=href('screener');try{editHref+='&query='+encodeURIComponent(VUScreenerWorkspace.encode(VUScreenerWorkspace.build(definition.filters)));}catch{}
  const names=Object.fromEntries(['quality','momentum','value','growth','risk'].map(id=>[id,L(id)])),status=el('div',{'aria-live':'polite'}),preview=el('section',{'aria-live':'polite'}),history=el('pre',{class:'query-code',text:saved?JSON.stringify(saved,null,2):'Noch keine gespeicherte Version.'});
- main.append(input('name','Name des Entwurfs',saved?.strategy.name||'Meine Investmentidee',{maxlength:'120'}),el('section',{class:'section'},[el('h2',{text:'1 · Welche Unternehmen kommen infrage?'}),filters,link('Kriterien im Screener bearbeiten',editHref,'button secondary')]),el('section',{class:'section'},[el('h2',{text:'2 · Was soll bei der Auswahl zählen?'}),el('p',{class:'muted',text:'Die Faktoranteile müssen zusammen 100 % ergeben. Sie definieren ein späteres Ranking; ein Quant-V2-Rang wird bis zur Zertifizierung nicht berechnet.'}),el('div',{class:'strategy-grid'},context.factors.map(f=>input(f,names[f]+' · Anteil in %',(definition.ranking.factors.find(r=>r.factor===f)?.weight||0)*100,{type:'number',min:'0',max:'100',step:'1'})))]),
+ builderZiel.append(input('name','Name des Entwurfs',saved?.strategy.name||'Meine Investmentidee',{maxlength:'120'}),el('section',{class:'section'},[el('h2',{text:'1 · Welche Unternehmen kommen infrage?'}),filters,link('Kriterien im Screener bearbeiten',editHref,'button secondary')]),el('section',{class:'section'},[el('h2',{text:'2 · Was soll bei der Auswahl zählen?'}),el('p',{class:'muted',text:'Die Faktoranteile müssen zusammen 100 % ergeben. Sie definieren ein späteres Ranking; ein Quant-V2-Rang wird bis zur Zertifizierung nicht berechnet.'}),el('div',{class:'strategy-grid'},context.factors.map(f=>input(f,names[f]+' · Anteil in %',(definition.ranking.factors.find(r=>r.factor===f)?.weight||0)*100,{type:'number',min:'0',max:'100',step:'1'})))]),
  el('section',{class:'section'},[el('h2',{text:'3 · Portfolio und Ausführung'}),el('div',{class:'strategy-grid'},[
  input('positions','Anzahl Positionen',definition.portfolio.positions,{type:'number',min:context.constraints.minPositions,max:context.constraints.maxPositions,step:'1'}),
  select('weighting','Positionsgewichtung',definition.portfolio.weighting,context.weightings.map(v=>[v,{equal:'Gleichgewichtet',score:'Nach Faktorwert',volatility:'Nach Volatilität'}[v]])),
@@ -798,7 +1141,8 @@ async function strategyPage(){
  const save=el('button',{class:'button',text:'Version speichern',onclick:()=>{try{const next=VUStrategyWorkspace.save(localStorage,{name:fields.name.value,definition:build(),reason:fields.reason.value});saved=next;history.textContent=JSON.stringify(next,null,2);fields.name.readOnly=true;S.mount(status,notice('Version '+next.strategy.latestVersion+' gespeichert','Dieser Entwurf liegt nur in diesem Browser. Vorherige Versionen bleiben erhalten.'));fields.reason.value='';}catch(e){S.mount(status,notice('Entwurf nicht gespeichert',/identical/.test(e.message)?'Die Definition ist unverändert. Es wurde keine zusätzliche Version angelegt.':/changeReason/.test(e.message)?'Bitte begründe die Änderung, damit die Version nachvollziehbar bleibt.':'Prüfe Zahlen, Gewichtungen und den Änderungsgrund. Faktoranteile müssen 100 % ergeben; Positionszahl und Konzentrationsgrenzen müssen zusammenpassen. Auch gesperrter Browserspeicher verhindert das Speichern.'));}}});
  const inspect=el('button',{class:'button secondary',text:'Aktuelle Kriterien prüfen',onclick:async()=>{try{const def=build(),query=VUScreenerWorkspace.build(def.filters),result=await api.screen(query);if(result.state!=='AVAILABLE')throw Error('SOURCE_UNAVAILABLE');S.mount(preview,el('div',{},[el('h2',{text:'Aktuelle Kriterien-Auswahl'}),el('p',{text:'Nur die Filter im freigegebenen Analysebereich. Kein historisches Ergebnis, kein Ranking und keine Portfolio-Zuteilung.'}),stockRows(result.stocks||[])]));}catch(e){S.mount(preview,notice('Auswahl noch nicht auswertbar','Prüfe die Definition und die unterstützten Screener-Kriterien.'));}}});
  fields.name.readOnly=!!saved;
- main.append(el('div',{class:'actions'},[save,inspect]),preview,el('section',{class:'section'},[el('h2',{text:'Vor einem historischen Test'}),el('p',{text:'Ein echter Backtest ist für diese Vorschau noch nicht freigegeben. Diese Prüfungen müssen gemeinsam bestanden sein:'}),...context.backtest.checks.map(([title,text])=>el('div',{class:'trust-row'},[el('strong',{text:title}),el('p',{class:'muted',text})]))]),el('details',{},[el('summary',{text:'Gespeicherte Versionen & Definition'}),history]),actions([{label:'Vollständiger Strategy Builder',href:'/quant/strategies/builder/'},{label:'Bestehende Backtest-Umgebung',href:'/quant/backtests/'}]));
+ builderZiel.append(el('div',{class:'actions'},[save,inspect]),preview,el('section',{class:'section'},[el('h2',{text:'Vor einem historischen Test'}),el('p',{text:'Ein echter Backtest ist für diese Vorschau noch nicht freigegeben. Diese Prüfungen müssen gemeinsam bestanden sein:'}),...context.backtest.checks.map(([title,text])=>el('div',{class:'trust-row'},[el('strong',{text:title}),el('p',{class:'muted',text})]))]),el('details',{},[el('summary',{text:'Gespeicherte Versionen & Definition'}),history]),actions([{label:'Vollständiger Strategy Builder',href:'/quant/strategies/builder/'},{label:'Bestehende Backtest-Umgebung',href:'/quant/backtests/'}]));
+ builderAnhaengen();
 }
 /* ---------------------------------------------------------------------------
    QUANT EXPERIENCE
@@ -1920,13 +2264,127 @@ async function setupRuleResult(ruleId){
   el('p',{class:'muted',text:'Regel '+found.ruleId+' · '+found.predicateHash+' · Zuordnung '+index.mappingVersion+'. Die Liste ist die Zuordnung der Kaskade und nicht die Treffermenge des Prädikats allein: ein Titel, auf den auch eine vorrangige Regel zutrifft, steht dort und nicht hier. Deshalb ist diese Regel unten nicht als bearbeitbare Abfrage geladen.'})]));
  return section;
 }
+/* =========================================================================
+   SCREENER · EINFACHER EINSTIEG
+
+   Der Nutzer startet bei einer Frage, nicht bei einem Feldnamen. Deshalb
+   sind die Marken hier Eigenschaften ("Qualität", "Momentum"), und was
+   sie technisch bedeuten, steht darunter als Satz, nicht als Formel.
+
+   EINE METHODIK JE ABFRAGE: der Screener-Workspace erzwingt das, und es
+   ist richtig so - eine Regel aus Quant V1 meint in V2 etwas anderes. Der
+   einfache Einstieg arbeitet deshalb ausschliesslich auf der
+   Faktor-Evidenz von Quant V2, dem Kanon des Produkts.
+
+   WAS HIER BEWUSST FEHLT: Grösse (Large/Small Cap) und Region. Der
+   Screener kennt dafür kein Feld. Eine Marke, die nichts filtert, wäre
+   eine Lüge in Gestalt eines Knopfes - deshalb steht stattdessen ein Satz
+   darüber, dass es sie noch nicht gibt.
+   ========================================================================= */
+const EINFACHE_KRITERIEN=[
+ ['quality','Qualität','Stabile Geschäftsmodelle und hohe Kapitalrenditen.'],
+ ['growth','Wachstum','Steigende Umsätze und Gewinne mit Substanz.'],
+ ['momentum','Momentum','Positive Kursdynamik und relative Stärke.'],
+ ['value','Bewertung','Attraktiver Preis im Branchen- und Historienvergleich.'],
+ ['profitability','Profitabilität','Verdient verlässlich Geld aus dem laufenden Geschäft.'],
+ ['risk','Risiko','Solide Bilanz und geringere Schwankungen.']
+];
+const EINFACH_SCHWELLE=70;
+async function einfacherScreener(){
+ const editor=VUScreenerWorkspace;
+ const methodik=editor.methodology('quantV2Evidence')||editor.methodologies[0];
+ const feld=(id)=>'quantV2.factorEvidence.'+id;
+ /* Vorauswahl aus dem Link, damit "Momentum Leader" von der Startseite
+    hier ankommt statt auf einer leeren Maske. */
+ const gewaehlt=new Set((params.get('faktoren')||'').split(',').map(s=>s.trim()).filter(Boolean)
+  .filter(id=>EINFACHE_KRITERIEN.some(([k])=>k===id)));
+ if(!gewaehlt.size)gewaehlt.add('quality');
+
+ const chips=el('div',{class:'q-chips'});
+ const satz=el('p',{class:'q-sentence','aria-live':'polite'});
+ const treffer=el('div',{'aria-live':'polite'});
+ const knopf=el('button',{class:'button',text:'Treffer anzeigen'});
+
+ function satzText(){
+  /* Deutsche Substantive bleiben gross, und ein Adjektiv vor einer Aufzählung
+     müsste sich beugen ("überdurchschnittlicher Qualität, Wachstum und
+     Momentum" ist falsch). Deshalb steht die Eigenschaft hinter dem Doppel-
+     punkt statt vor dem Substantiv. */
+  const namen=EINFACHE_KRITERIEN.filter(([id])=>gewaehlt.has(id)).map(([,label])=>label);
+  if(!namen.length)return 'Wähle mindestens eine Eigenschaft aus.';
+  const liste=namen.length===1?namen[0]:namen.slice(0,-1).join(', ')+' und '+namen.at(-1);
+  return namen.length===1
+   ?'Du suchst Aktien, die in '+liste+' überdurchschnittlich sind.'
+   :'Du suchst Aktien, die in allen diesen Eigenschaften überdurchschnittlich sind: '+liste+'.';
+ }
+ let lauf=0;
+ async function suchen(){
+  const meine=++lauf;
+  satz.textContent=satzText();
+  if(!gewaehlt.size){S.mount(treffer,el('p',{class:'muted',text:'Ohne Eigenschaft gibt es nichts zu filtern.'}));return;}
+  S.mount(treffer,el('p',{class:'muted',text:'Wird gesucht …'}));
+  const filter=[...gewaehlt].map(id=>({field:feld(id),operator:'gte',value:EINFACH_SCHWELLE,scale:'raw'}));
+  const sortierFeld=feld([...gewaehlt][0]);
+  let ergebnis;
+  try{ergebnis=await api.screen(editor.build(filter,[{field:sortierFeld,direction:'desc'}]));}
+  catch{ergebnis={state:'UNAVAILABLE'};}
+  if(meine!==lauf)return;
+  if(!ergebnis||ergebnis.state!=='AVAILABLE'){
+   S.mount(treffer,notice('Treffer derzeit nicht verfügbar','Die Auswertung konnte nicht geladen werden. Deine Auswahl bleibt bestehen.'));return;}
+  const liste=el('div',{class:'q-hitlist'});
+  for(const s of (ergebnis.stocks||[]).slice(0,25)){
+   const werte=EINFACHE_KRITERIEN.filter(([id])=>gewaehlt.has(id))
+    .map(([id,label])=>[label,s.evidence&&s.evidence[feld(id)]])
+    .filter(([,v])=>Number.isFinite(v));
+   /* WARUM IST DIESE AKTIE HIER? Die Antwort ist die erfüllte Bedingung
+      mit ihrem gemessenen Wert - nicht ein Etikett. */
+   const warum=werte.length
+    ?werte.map(([label,v])=>label+' '+Math.round(v)).join(' · ')+' von 100'
+    :'Die gewählten Faktoren sind für diesen Titel nicht bewertbar.';
+   const bewertet=s.evidence&&s.evidence['quantV2.factorEvidence.availableFactors'];
+   liste.append(hitRow(s.ticker,s.name,warum,
+    Number.isFinite(werte[0]&&werte[0][1])?String(Math.round(werte[0][1])):'–',
+    Number.isFinite(bewertet)?bewertet+' von 7 Faktoren bewertet':'nicht bewertet'));
+  }
+  const kopf=el('p',{class:'muted',style:'font-size:14px;margin:0 0 6px',
+   text:(ergebnis.stocks||[]).length+' Treffer in '+ergebnis.eligible+' auswertbaren Unternehmen · '+
+        methodik.label+' · sortiert nach '+EINFACHE_KRITERIEN.find(([id])=>feld(id)===sortierFeld)[1]+
+        ' · kein Gesamtmarkt-Ranking'});
+  S.mount(treffer,el('div',{},[kopf,liste,
+   (ergebnis.stocks||[]).length>25?el('p',{class:'muted',style:'font-size:13px',
+    text:'Gezeigt sind 25 von '+ergebnis.stocks.length+' zurückgegebenen Treffern. Der Screener gibt höchstens 50 Zeilen zurück — es ist keine vollständige Rangliste des Marktes, sondern die Spitze deiner Auswahl. Im Profi-Modus lässt sie sich verfeinern.'}):null]));
+ }
+ for(const [id,label,erklaerung] of EINFACHE_KRITERIEN){
+  const chip=el('button',{class:'q-chip',type:'button',text:label,title:erklaerung,
+   'aria-pressed':gewaehlt.has(id)?'true':'false'});
+  chip.onclick=()=>{
+   if(gewaehlt.has(id))gewaehlt.delete(id);else gewaehlt.add(id);
+   chip.setAttribute('aria-pressed',gewaehlt.has(id)?'true':'false');
+   suchen();
+  };
+  chips.append(chip);
+ }
+ knopf.onclick=suchen;
+
+ main.append(stage('Chancen finden.','Finde passende Aktien mit klaren Kriterien.',
+  'Wähle die Eigenschaften, die dir wichtig sind. Quant übersetzt sie in geprüfte Faktorwerte und zeigt bei jedem Treffer, warum er dabei ist.'));
+ main.append(card('Wonach suchst du?',null,[
+  chips,
+  el('p',{class:'muted',style:'font-size:13px;margin:10px 0 0',
+   text:'Eine Eigenschaft gilt ab '+EINFACH_SCHWELLE+' von 100 Punkten in der Faktor-Evidenz von Quant V2. Größe und Region sind noch keine Kriterien — dafür führt der Screener kein Feld.'}),
+  satz]));
+ main.append(card('Treffer',null,[treffer]));
+ await suchen();
+}
+
 async function screenPage(){
- main.append(heading('Aus einer Idee wird deine Auswahl','Kombiniere Geschäftsentwicklung und Kursstruktur. Alle Kriterien müssen gleichzeitig erfüllt sein.'));
- if(params.has('setupRule'))main.append(await setupRuleResult(params.get('setupRule')));
+ await einfacherScreener();
+ const profiZiel=el('div',{});
+ if(params.has('setupRule'))profiZiel.append(await setupRuleResult(params.get('setupRule')));
  const editor=VUScreenerWorkspace,recipe=api.getRecipes().find(r=>r.id===params.get('recipe'));
  let initial=recipe?.query||editor.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]),invalidLink=false;
- try{if(params.has('recipe')&&!recipe)throw Error('unknown recipe');if(params.has('query'))initial=editor.decode(params.get('query'));else if(params.has('field')||params.has('threshold'))initial=editor.build([{field:params.get('field')||'momentum6m',operator:'gte',value:Number(params.get('threshold')||0),scale:'raw'}]);}catch{invalidLink=true;main.append(notice('Gespeicherte Regeln konnten nicht geöffnet werden','Die Abfrage enthält ungültige oder in diesem Editor nicht unterstützte Kriterien. Es wurden keine Ersatzregeln ausgeführt. Erstelle hier eine neue Auswahl oder öffne den vollständigen Screener.'));}
- if(recipe)main.append(el('p',{class:'scope-note',text:'Aus Discover: '+recipe.title+'. Alle Kriterien bleiben veränderbar.'}));
+ try{if(params.has('recipe')&&!recipe)throw Error('unknown recipe');if(params.has('query'))initial=editor.decode(params.get('query'));else if(params.has('field')||params.has('threshold'))initial=editor.build([{field:params.get('field')||'momentum6m',operator:'gte',value:Number(params.get('threshold')||0),scale:'raw'}]);}catch{invalidLink=true;profiZiel.append(notice('Gespeicherte Regeln konnten nicht geöffnet werden','Die Abfrage enthält ungültige oder in diesem Editor nicht unterstützte Kriterien. Es wurden keine Ersatzregeln ausgeführt. Erstelle hier eine neue Auswahl oder öffne den vollständigen Screener.'));}
+ if(recipe)profiZiel.append(el('p',{class:'scope-note',text:'Aus Discover: '+recipe.title+'. Alle Kriterien bleiben veränderbar.'}));
  const ruleList=el('div',{class:'rule-list'}),out=el('section',{'aria-live':'polite'}),method=el('pre',{class:'query-code'}),share=link('Diese Auswahl erneut öffnen','#','button secondary'),strategyLink=link('Als Strategie weiterentwickeln','#','button secondary'),sort=el('select',{'aria-label':'Sortieren nach'}),direction=el('select',{'aria-label':'Sortierreihenfolge'},[['desc','Absteigend'],['asc','Aufsteigend']].map(([value,text])=>el('option',{value,text})));let rows=[],request=0;strategyLink.hidden=true;
  /* Eine Abfrage gehoert genau einer Methodik. Der Wechsel setzt die Regeln
     ausdruecklich zurueck, statt sie stillschweigend mitzunehmen - eine Regel
@@ -1990,7 +2448,10 @@ async function screenPage(){
    const next=editor.methodologyOf(query);if(next&&next.id!==current.id){current=next;methodSelect.value=next.id;fillSort();describeMethod();}
    rows=[];S.clear(ruleList);query.filters.forEach(addRule);sort.value=query.sort[0].field;direction.value=query.sort[0].direction;apply();};
  }else profiles.disabled=true;
- main.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),el('label',{},[el('span',{text:'Strategie-Profil'}),profiles]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
+ profiZiel.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),el('label',{},[el('span',{text:'Strategie-Profil'}),profiles]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
+ main.append(card('Profi-Modus',
+  'Alle Kennzahlen, alle Vergleiche, beide Methodiken. Nichts davon ist weggefallen — es beginnt nur nicht mehr hier.',
+  [el('details',{class:'q-pro'},[el('summary',{text:'Kriterien selbst zusammenstellen'}),profiZiel])]));
  sort.onchange=direction.onchange=apply;ruleList.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();apply();}});if(!invalidLink)await apply();else share.hidden=true;
 }
 function recover(title,description,retry=false){S.clear(main);main.append(heading(title,description),actions([...(retry?[{label:'Erneut versuchen',href:location.pathname+location.search}]:[]),{label:'Research öffnen',href:href('research')},{label:'Zur Startseite',href:href('home')}]),el('footer',{class:'footer',text:'Vision Universe® · Entwicklungsvorschau'}));}
