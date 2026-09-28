@@ -199,6 +199,14 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await page.locator('.dv2-stock-business').scrollIntoViewIfNeeded();await screenshot(page,key+'-crowdstrike-business');
  });
  await page.goto(base+'/discover/#/einzeln/US_REAL',{waitUntil:'networkidle'});
+ if(width===390)await check(key+' feed annual chart label stays above controls',async()=>{
+  const card=page.locator('.dx-feed-screen[data-symbol]').first();
+  await card.getByRole('tab',{name:'Umsatz'}).click();await card.locator('.v2-focus-bars').waitFor();
+  const caption=await card.locator('.v2-stock-caption').boundingBox(),tabs=await card.locator('.v2-focus-tabs').boundingBox();
+  assert(caption&&tabs&&caption.y+caption.height<=tabs.y-1,'Annual chart label overlaps chart controls');
+  assert(await card.locator('.dx-feed-metrics').evaluate(n=>n.scrollWidth<=n.clientWidth),'Annual chart overflows the feed');
+  await card.getByRole('tab',{name:'Chart'}).click();
+ });
  await check(key+' feed is bounded and swipes one screen',async()=>{
   const track=page.locator('.dx-feed-spur');await track.waitFor();
   const count=await page.locator('.dx-feed-screen[data-symbol]').count();assert(count>0&&count<=24,'Initial feed eagerly rendered '+count+' cards');
