@@ -344,8 +344,21 @@ await page.getByRole('button',{name:'TSLA entfernen',exact:true}).click();await 
 await page.getByText(/^0 Treffer in 6875 verfügbaren Unternehmen · .+ · kein Gesamtmarkt-Ranking$/).waitFor();await page.getByRole('spinbutton').fill('10');await page.getByRole('button',{name:'Kriterium hinzufügen'}).click();await page.getByRole('spinbutton').nth(1).fill('20');await page.getByRole('button',{name:'Anwenden'}).click();await page.getByText(/Treffer in 6875 verfügbaren Unternehmen · .+ · kein Gesamtmarkt-Ranking/).waitFor();await page.getByText('Regeln speichern & Methodik',{exact:true}).click();const saved=await page.getByRole('link',{name:'Diese Auswahl erneut öffnen'}).getAttribute('href');await page.goto(origin+'/vu2/?view=screener&query=invalid');await page.locator('main footer').waitFor();if(await page.locator('a.row').count())throw Error('invalid rules silently replaced');await page.goto(origin+saved);await page.locator('main footer').waitFor();if(await page.getByRole('spinbutton').count()!==2)throw Error('saved rules lost');await page.getByText(/Treffer in 6875 verfügbaren Unternehmen · .+ · kein Gesamtmarkt-Ranking/).waitFor();}
   if(view==='watchlist'){
   await page.getByRole('heading',{name:'Wen möchtest du beobachten?',exact:true}).waitFor();
-  for(const ticker of ['NVDA','TSLA']){await page.getByRole('textbox',{name:'Watchlist Ticker'}).fill(ticker);await page.getByRole('button',{name:'Titel hinzufügen',exact:true}).click();}
-  await page.waitForFunction(()=>document.querySelectorAll('.watchlist-member').length===2);if(await page.getByRole('heading',{name:'Analyse noch nicht verfügbar',exact:true}).count())throw Error('canonical watchlist member remained five-scope gated');
+  /* EIN FEHLENDES WARTEN, KEIN PRODUKTFEHLER - und seit dem Launch als
+     POST_LAUNCH_BACKLOG bekannt: die Schleife hat beide Kuerzel eingefuegt,
+     ohne nach dem ersten auf das gerenderte Mitglied zu warten. Das Feld
+     wird beim Rendern neu aufgebaut; das zweite `fill` traf dann
+     gelegentlich das alte Feld und der Eintrag ging verloren. Gemessen:
+     lokal 2 Fehlschlaege auf 5 Laeufe, in CI 2 von 2 gruen - also genau die
+     Art Flackern, die man einmal sieht und dann wegerklaert. Jetzt wartet
+     die Schleife nach jedem Eintrag auf seine Zeile. */
+  let erwartet=0;
+  for(const ticker of ['NVDA','TSLA']){
+   await page.getByRole('textbox',{name:'Watchlist Ticker'}).fill(ticker);
+   await page.getByRole('button',{name:'Titel hinzufügen',exact:true}).click();
+   erwartet+=1;
+   await page.waitForFunction(n=>document.querySelectorAll('.watchlist-member').length===n,erwartet);
+  }if(await page.getByRole('heading',{name:'Analyse noch nicht verfügbar',exact:true}).count())throw Error('canonical watchlist member remained five-scope gated');
   // Quant V2 evidence travels with the list: all seven factors per member,
   // a factor without a value stays visibly empty rather than disappearing.
   await page.waitForFunction(()=>document.querySelectorAll('.factor-strip').length===2);
