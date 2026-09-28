@@ -89,9 +89,16 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE. */
   await page.getByRole('heading',{name:'So nutzt du Quant',exact:true}).waitFor();
   await page.getByRole('heading',{name:'Schnell starten',exact:true}).waitFor();
+  /* Die Kachel ist EIN Verweis aus Symbol, Ueberschrift und Erklaersatz -
+     ihr zugaenglicher Name ist deshalb der ganze Text und nie nur
+     "Screener". Ein exakter Namensvergleich lief hier 30 s in einen
+     Timeout. Gesucht wird ueber die Ueberschrift, gelesen wird das Ziel. */
+  const einstiege=await page.locator('.q-tile').evaluateAll(
+   ns=>ns.map(n=>({titel:(n.querySelector('h3')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
   for(const [name,ziel] of [['Screener','view=screener'],['Strategien','view=strategies'],['Aktienanalyse','view=stocks']]){
-   const href=await page.locator('.q-card').getByRole('link',{name,exact:true}).first().getAttribute('href');
-   if(!href||!href.includes(ziel))throw Error('Einstieg '+name+' zeigt nicht auf '+ziel+': '+href);
+   const treffer=einstiege.find(e=>e.titel.trim()===name);
+   if(!treffer)throw Error('Einstieg '+name+' fehlt auf Home');
+   if(!treffer.ziel.includes(ziel))throw Error('Einstieg '+name+' zeigt nicht auf '+ziel+': '+treffer.ziel);
   }
   /* "HEUTE IM FOKUS" IST KEIN ERFUNDENER FEED. Entweder stehen dort die
      ausgewerteten Zustaende MIT ihrem Stichtag, oder es stehen die beiden
@@ -392,9 +399,14 @@ Object.defineProperty(window,'VUProductServices',{configurable:true,set(service)
 }});
 `;
  await route.fulfill({response,body:injected+await response.text()});});
- await page.goto(origin+'/vu2/?view=home');await page.getByRole('heading',{name:'Ansicht derzeit nicht verfügbar',exact:true}).waitFor();if(await page.locator('h1').count()!==1||await page.locator('a.row').count())throw Error('failed render retained partial content');await page.screenshot({path:out+'/render-recovery-'+width+'.png',fullPage:true});await page.unroute(serviceRoute);await page.getByRole('link',{name:'Erneut versuchen',exact:true}).click();await page.getByRole('heading',{name:'Was ist für dich wichtig?',exact:true}).waitFor();checks.push({view:'render-failure-recovery',width,pass:true});
+ await page.goto(origin+'/vu2/?view=home');await page.getByRole('heading',{name:'Ansicht derzeit nicht verfügbar',exact:true}).waitFor();if(await page.locator('h1').count()!==1||await page.locator('a.row').count())throw Error('failed render retained partial content');await page.screenshot({path:out+'/render-recovery-'+width+'.png',fullPage:true});await page.unroute(serviceRoute);await page.getByRole('link',{name:'Erneut versuchen',exact:true}).click();await page.getByRole('heading',{name:'Der Einstieg in bessere Aktienentscheidungen.',exact:true}).waitFor();checks.push({view:'render-failure-recovery',width,pass:true});
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
- const visibleNav=page.locator(width===390?'.mobile-nav':'.nav');if(await visibleNav.getByRole('link',{name:'Research',exact:true}).getAttribute('aria-current')!=='location')throw Error('research context missing');
+ /* Die Aktienanalyse gehoert zum Bereich AKTIEN und markiert ihn.
+    Vorher stand hier 'Research' - den Bereich gibt es in der
+    Quant-Navigation nicht mehr; die Absicht (die offene Seite faerbt
+    ihren Bereich ein) bleibt dieselbe. */
+ const visibleNav=page.locator(width<=900?'.q-bottom':'.nav');
+ if(await visibleNav.getByRole('link',{name:'Aktien',exact:true}).getAttribute('aria-current')!=='location')throw Error('Bereich AKTIEN ist auf der Aktienseite nicht markiert');
  await page.keyboard.press('Tab');if(!await page.locator('.skip').evaluate(e=>e===document.activeElement))throw Error('skip link not first');await page.keyboard.press('Enter');if(!await page.locator('main').evaluate(e=>e===document.activeElement))throw Error('skip target not focused');
  const searchButton=page.getByRole('button',{name:'Suche',exact:true});await searchButton.focus();await page.keyboard.press('Enter');const searchInput=page.getByRole('textbox',{name:'Suche',exact:true});await searchInput.fill('NVDA');await page.keyboard.press('Control+k');if(await searchInput.inputValue()!=='NVDA')throw Error('repeated command lost query');await page.getByRole('status').filter({hasText:'1 Unternehmen gefunden.'}).waitFor();
  for(let i=0;i<12;i++){await page.keyboard.press(i<6?'Tab':'Shift+Tab');if(!await page.getByRole('dialog').evaluate(e=>e.contains(document.activeElement)))throw Error('focus escaped modal');}await page.keyboard.press('Escape');if(!await searchButton.evaluate(e=>e===document.activeElement))throw Error('search focus not restored');checks.push({view:'keyboard-navigation',width,pass:true});
@@ -430,7 +442,10 @@ Object.defineProperty(window,'VUProductServices',{configurable:true,set(service)
   if(await live.evaluate(()=>__relayTest.closed)!==1)throw Error('subscription not released');
   checks.push({view:'trade-only-relay-test-fixture',width,pass:true,productionDataClaim:false});await live.close();
  }
- const tablet=await browser.newPage({viewport:{width:768,height:1024},deviceScaleFactor:1});for(const view of ['home','compare','research']){await tablet.goto(origin+'/vu2/?view='+view);await tablet.locator('main footer').waitFor();if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('tablet overflow '+view);const nav=tablet.locator('.nav');if(!await nav.isVisible()||await nav.locator('a').count()!==6)throw Error('tablet navigation incomplete');await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});}await tablet.close();
+ const tablet=await browser.newPage({viewport:{width:768,height:1024},deviceScaleFactor:1});for(const view of ['home','compare','research']){await tablet.goto(origin+'/vu2/?view='+view);await tablet.locator('main footer').waitFor();if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('tablet overflow '+view);/* Auf 768 px traegt die untere Leiste die Navigation; die obere ist ab
+    900 px ausgeblendet, damit nicht beide dieselben Ziele zeigen. */
+   const nav=tablet.locator('.q-bottom');if(!await nav.isVisible()||await nav.locator('a').count()!==5)throw Error('tablet navigation incomplete');
+   if(await tablet.locator('.top .nav').isVisible())throw Error('zwei Navigationen auf 768 px');await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});}await tablet.close();
  await writeFile(out+'/results.json',JSON.stringify({checks},null,2));await writeFile(out+'/performance.json',JSON.stringify({environment:'GitHub Actions local static server; not production performance',samples:performanceSamples},null,2));console.log(JSON.stringify({passed:checks.length,output:out}));
  await writeFile(out+'/resource-budgets.json',JSON.stringify({scope:'Decoded subresource bytes and request count; not production latency',results:resourceBudgets},null,2));
  console.log(JSON.stringify({resourceBudgetChecks:resourceBudgets.length,resourceBudgetFailures:resourceBudgets.filter(r=>!r.pass)}));

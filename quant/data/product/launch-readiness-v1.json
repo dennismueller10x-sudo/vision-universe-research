@@ -1,19 +1,25 @@
 {
  "schemaVersion": "launch-readiness-1.0.0",
- "generatedAt": "2026-09-28T12:12:54.000Z",
- "commit": "f208650761666cf1bcdd6430959e7a4dbea04b8a",
+ "generatedAt": "2026-09-28T13:52:11.000Z",
+ "commit": "ebde60c232fc11b681383f5a3c3d616065531853",
  "northStar": "PUBLIC_BETA_LAUNCH_READY",
  "ordering": "Korrektheit > Coverage · Vertrauen > Vollständigkeit · Launch Readiness > Feature-Tiefe",
  "universe": 6875,
  "briefSample": 500,
- "PUBLIC_BETA_LAUNCH_READY": "PASS",
+ "PUBLIC_BETA_LAUNCH_READY": "FAIL",
  "p0Gates": 12,
  "p1Checks": 2,
  "gatesTotal": 14,
- "gatesPassed": 14,
+ "gatesPassed": 9,
  "gatesFailed": 0,
- "gatesNotMeasured": 0,
- "blocking": [],
+ "gatesNotMeasured": 5,
+ "blocking": [
+  "MOBILE_390",
+  "DESKTOP_1440",
+  "NAVIGATION",
+  "REGRESSION_GUARDS",
+  "RELEASE_EXPERIENCE"
+ ],
  "gates": [
   {
    "id": "IDENTITY_CORRECTNESS",
@@ -177,22 +183,25 @@
   {
    "id": "MOBILE_390",
    "title": "Mobil 390 px: kein Überlauf, eine Überschrift, Inhalt vorhanden",
-   "status": "PASS",
+   "status": "NOT_MEASURED",
    "facts": {
-    "width": 390,
-    "checks": 34,
-    "failures": 0,
-    "overflow": 0,
-    "withoutSingleH1": 0,
-    "recovered": 0,
-    "views": 34,
-    "release": "/tmp/claude-0/rel-live",
-    "commit": "f208650761666cf1bcdd6430959e7a4dbea04b8a",
+    "smokeReport": "/home/user/vision-universe-research/.launch/production-smoke.json",
+    "exists": true,
+    "reportCommit": "f208650761666cf1bcdd6430959e7a4dbea04b8a",
+    "head": "ebde60c232fc11b681383f5a3c3d616065531853",
     "validity": {
-     "ok": true,
-     "reason": "AUF_HEAD",
-     "changed": []
-    }
+     "ok": false,
+     "reason": "SEITHER_GEAENDERT",
+     "changed": [
+      "quant/api/product-services.js",
+      "quant/engines/historical-cases.js",
+      "vu2/experience.css",
+      "vu2/experience.js",
+      "vu2/index.html"
+     ],
+     "changedCount": 5
+    },
+    "note": "Nur im Browser gegen das gebaute Release entscheidbar. Ohne passenden Smoke-Bericht kein Urteil."
    },
    "caseCount": 0,
    "cases": []
@@ -200,22 +209,25 @@
   {
    "id": "DESKTOP_1440",
    "title": "Desktop 1440 px: kein Überlauf, eine Überschrift, Inhalt vorhanden",
-   "status": "PASS",
+   "status": "NOT_MEASURED",
    "facts": {
-    "width": 1440,
-    "checks": 34,
-    "failures": 0,
-    "overflow": 0,
-    "withoutSingleH1": 0,
-    "recovered": 0,
-    "views": 34,
-    "release": "/tmp/claude-0/rel-live",
-    "commit": "f208650761666cf1bcdd6430959e7a4dbea04b8a",
+    "smokeReport": "/home/user/vision-universe-research/.launch/production-smoke.json",
+    "exists": true,
+    "reportCommit": "f208650761666cf1bcdd6430959e7a4dbea04b8a",
+    "head": "ebde60c232fc11b681383f5a3c3d616065531853",
     "validity": {
-     "ok": true,
-     "reason": "AUF_HEAD",
-     "changed": []
-    }
+     "ok": false,
+     "reason": "SEITHER_GEAENDERT",
+     "changed": [
+      "quant/api/product-services.js",
+      "quant/engines/historical-cases.js",
+      "vu2/experience.css",
+      "vu2/experience.js",
+      "vu2/index.html"
+     ],
+     "changedCount": 5
+    },
+    "note": "Nur im Browser gegen das gebaute Release entscheidbar. Ohne passenden Smoke-Bericht kein Urteil."
    },
    "caseCount": 0,
    "cases": []
@@ -223,13 +235,13 @@
   {
    "id": "NAVIGATION",
    "title": "Kein primärer Verweis führt ins Leere",
-   "status": "PASS",
+   "status": "NOT_MEASURED",
    "facts": {
-    "viewTargets": 19,
+    "viewTargets": 18,
     "knownViews": 19,
     "absolutePathsChecked": 19,
     "checkedAgainst": "RELEASE",
-    "smokeRecovered": 0,
+    "smokeRecovered": null,
     "note": null,
     "deadLinks": 0
    },
@@ -265,18 +277,23 @@
   {
    "id": "REGRESSION_GUARDS",
    "title": "Die Suite läuft grün und deckt die Launch-Regeln ab",
-   "status": "PASS",
+   "status": "NOT_MEASURED",
    "facts": {
-    "tests": 1968,
-    "pass": 1968,
-    "fail": 0,
-    "files": null,
-    "commit": "f208650761666cf1bcdd6430959e7a4dbea04b8a",
+    "suiteReport": "/home/user/vision-universe-research/.launch/test-suite.json",
+    "exists": true,
+    "reportCommit": "1cc23468d78da6b07cfc3ca4c0379686a5524a43",
+    "head": "ebde60c232fc11b681383f5a3c3d616065531853",
     "validity": {
-     "ok": true,
-     "reason": "AUF_HEAD",
-     "changed": []
-    }
+     "ok": false,
+     "reason": "SEITHER_GEAENDERT",
+     "changed": [
+      "quant/tests/frontend-transformation.test.mjs",
+      "vu2/experience.css",
+      "vu2/experience.js"
+     ],
+     "changedCount": 3
+    },
+    "note": "Ein Suite-Ergebnis von einem Stand, an dem sich seither Code oder Artefakte geaendert haben, ist fuer dieses Gate kein Beleg."
    },
    "caseCount": 0,
    "cases": []
@@ -284,7 +301,7 @@
   {
    "id": "RELEASE_EXPERIENCE",
    "title": "P1 · Die erste Bildschirmhoehe beantwortet die Einsteigerfragen",
-   "status": "PASS",
+   "status": "NOT_MEASURED",
    "facts": {
     "sample": [
      "AAPL",
@@ -296,7 +313,7 @@
     ],
     "answeringAll": 6,
     "progressiveDisclosure": "Bedeutung → Erklaerung → Evidenz → Methodik",
-    "smokeFindings": 0,
+    "smokeFindings": null,
     "note": "Die Lage im Bildschirm prueft der Smoke gegen das gebaute Release; ohne ihn bleibt das offen."
    },
    "caseCount": 0,
@@ -319,7 +336,7 @@
      "freshness-monitor.yml",
      "vu2-browser-qa.yml"
     ],
-    "releaseChecked": "/tmp/claude-0/rel-live/vu2/experience.js",
+    "releaseChecked": "/tmp/claude-0/rel-ft2/vu2/experience.js",
     "violations": 0
    },
    "caseCount": 0,

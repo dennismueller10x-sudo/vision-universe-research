@@ -2688,7 +2688,14 @@ async function einfacherScreener(){
 async function screenPage(){
  await einfacherScreener();
  const profiZiel=el('div',{});
- if(params.has('setupRule'))profiZiel.append(await setupRuleResult(params.get('setupRule')));
+ /* SELBSTGEFUNDEN BEIM PRUEFEN DES EIGENEN UMBAUS: dieser Aufruf ist mit
+    dem Profi-Editor in die zugeklappte Flaeche gewandert. Von der Startseite
+    kommt man mit `setupRule` hierher, um genau dieses Ergebnis zu sehen - und
+    landete vor einem geschlossenen Aufklapper. Der Grund war eine mechanische
+    Ersetzung (main.append -> profiZiel.append), die diese eine Zeile
+    mitgenommen hat, obwohl sie nichts mit dem Editor zu tun hat. */
+ if(params.has('setupRule'))main.append(card('Titel dieser Setup-Regel',null,
+  [await setupRuleResult(params.get('setupRule'))]));
  const editor=VUScreenerWorkspace,recipe=api.getRecipes().find(r=>r.id===params.get('recipe'));
  let initial=recipe?.query||editor.build([{field:'momentum6m',operator:'gte',value:0,scale:'raw'}]),invalidLink=false;
  try{if(params.has('recipe')&&!recipe)throw Error('unknown recipe');if(params.has('query'))initial=editor.decode(params.get('query'));else if(params.has('field')||params.has('threshold'))initial=editor.build([{field:params.get('field')||'momentum6m',operator:'gte',value:Number(params.get('threshold')||0),scale:'raw'}]);}catch{invalidLink=true;profiZiel.append(notice('Gespeicherte Regeln konnten nicht geöffnet werden','Die Abfrage enthält ungültige oder in diesem Editor nicht unterstützte Kriterien. Es wurden keine Ersatzregeln ausgeführt. Erstelle hier eine neue Auswahl oder öffne den vollständigen Screener.'));}

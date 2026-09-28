@@ -2,6 +2,51 @@
 
 Updated: 2026-09-28 UTC
 
+## FRONTEND_2_2026-09-28 — DIE FÜNF BEREICHE
+
+**Vollständige Frontend-Transformation**, nicht ein weiterer Milestone. Die Engine,
+die Datenarchitektur, die Methodik und die Materialisierungen bleiben unverändert; neu sind
+Informationsarchitektur, Navigation, Verständlichkeit, Hierarchie, Nutzerführung, Transparenz
+und die mobile Erfahrung. Vollständige Herleitung:
+**`docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md`**.
+
+### Die Navigation
+
+`HOME · SCREENER · STRATEGIEN · AKTIEN · METHODIK` — und sonst nichts. Discover, Research,
+Markets und Portfolio sind andere Produkte oder andere Ziele; sie bleiben über ihre Routen
+erreichbar, stehen aber nicht in einer Leiste, die erklären soll, was Quant kann.
+
+### Was die Messung gegen den Entwurf entschieden hat
+
+Das Mockup zeigt auf der NVIDIA-Seite „Ø +12,8 % nach 3 Monaten, in 8 von 10 Fällen positiv".
+Gemessen an NVIDIAs eigener Wochenhistorie seit 1999 gibt es für die heute geltende Kurslage
+**drei** vergleichbare Phasen und **einen** abgeschlossenen Zwölf-Monats-Fall. Die Zahl ist für
+den Titel, an dem sie gezeigt wird, nicht belegbar. Sie wurde nicht gebaut; stattdessen greift
+die Regel des Auftrags selbst („Zu wenige historische Vergleichsfälle für eine belastbare
+Aussage"), und daneben steht die marktweite Ebene, die für NVDA reich ist.
+
+Ebenso nicht gebaut: Screener-Marken für Größe, Region und Jahreshoch-Nähe (der Screener führt
+dafür kein Feld) und eine Trefferquote je Strategie (nicht zertifiziert; die einzige
+veröffentlichte historische Größe ist die Beständigkeit der Zuordnung über ein Fenster von
+einem Tag, und sie steht mit diesem Fenster da).
+
+### Neu: `historical-cases-1.0.0`
+
+Keine neue Engine und keine neue Datenquelle: `featuresAt`/`outcomeAfter` aus
+`pattern-research.js` auf der veröffentlichten Wochenreihe des Titels (MAX, splitbereinigt).
+Eigene Version nur für die Darstellungs- und Schwellenregeln: Episodenbündelung, Mindestmenge
+von zehn abgeschlossenen Fällen, nur Kursbedingungen, kein Einzelfall ohne Verteilung, genannte
+Grenzen. Gemessene Abdeckung: **33,7 %** der Titel erreichen zehn abgeschlossene
+Zwölf-Monats-Fälle.
+
+### Zwei Verluste, die der Umbau selbst verursacht hat
+
+1. Die Liste der gültigen Ansichten wurde aus der Navigation abgeleitet — als die Leiste
+   schrumpfte, waren `portfolio`, `discover`, `markets` und `research` nicht mehr erreichbar.
+2. Die Markt-Einordnung war von der Startseite verschwunden; die Suite hat es gemeldet.
+
+Beide repariert, beide als Test festgehalten.
+
 ## POST_LAUNCH_2026-09-28 — ERSTE BEOBACHTUNG, KEIN P0, KEIN P1
 
 POST-LAUNCH MODE. Gemessen wurde die **laufende Produktion**, nicht der Launch-Commit.

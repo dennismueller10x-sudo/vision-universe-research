@@ -211,3 +211,38 @@ gleichen Namens benutzte still die fremde Funktion, sichtbar nur am fehlenden
 Vorzeichen. Und die Suche der Aktienseite las `instruments`/`results`/
 `matches`; der Dienst antwortet mit `entries`, die Liste wäre immer leer
 geblieben.
+
+---
+
+## 6. Was diese Transformation bewusst NICHT anfasst
+
+1. **Die Titelauswahl der Arbeitsflächen ist ein Auswahlfeld mit 6.875 Einträgen.**
+   Gemessen auf `quant`, `technical`, `fundamentals` und `atlas`: das Bedienelement
+   `.workspace-controls` trägt **204.150 Zeichen** Optionstext. Auf einem Telefon
+   ist das keine Auswahl, sondern eine Wand. Der Befund ist **nicht** durch diesen
+   Umbau entstanden und liegt ausserhalb der fünf Bereiche; er gehört in den
+   POST_LAUNCH_BACKLOG und braucht dieselbe Suche, die die Aktienseite jetzt hat.
+2. **Das Gewicht der Auslieferung** (Code-Splitting für das 1,09-MB-Skript,
+   `market-capability.json` mit 1.242.180 Bytes) — unverändert offen aus dem Launch.
+3. **Portfolio** bleibt erreichbar und unverändert. Keine Depotanalyse, keine
+   Allokationsgrafik, kein Portfolio-Score, keine Handlungsaufforderung.
+4. **Die Ebene 2 der historischen Vergleichsfälle** (dieselbe Historie, aber
+   gelockerte Bedingungen) ist im Vertrag benannt und in der Methodik erklärt,
+   aber noch nicht als eigene Ansicht gebaut: Ebene 1 und Ebene 3 stehen
+   nebeneinander, Ebene 2 wäre eine dritte Zahlenreihe ohne neue Erkenntnis,
+   solange Ebene 1 für zwei Drittel der Titel ohnehin zu dünn ist.
+
+## 7. Selbstkritik: drei Fehler, die dieser Umbau selbst eingebaut hat
+
+Alle drei ohne Symptom in der Oberfläche — deshalb stehen sie hier.
+
+1. **`pct1` war schon vergeben.** Eine zweite Deklaration gleichen Namens im
+   selben Gültigkeitsbereich hat still die fremde Funktion benutzt. Sichtbar war
+   das nur am fehlenden Vorzeichen einer Rendite.
+2. **Die Suche der Aktienseite las geratene Feldnamen** (`instruments`,
+   `results`, `matches`). Der Dienst antwortet mit `entries`; die Trefferliste
+   wäre immer leer geblieben, ohne dass etwas kaputt ausgesehen hätte.
+3. **Der Einstieg „Bestätigte Setups" von der Startseite landete in einer
+   zugeklappten Fläche.** Eine mechanische Ersetzung (`main.append` →
+   `profiZiel.append`) hatte die Zeile mitgenommen, die das Ergebnis einer
+   Setup-Regel zeigt — obwohl sie mit dem Profi-Editor nichts zu tun hat.
