@@ -109,6 +109,17 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  p('Uebersicht: keine Analyse-Abschnitte auf der Kursseite',!!ov&&!ov.analyse,null);
  {const beleg=await page.evaluate(()=>{const a=document.querySelector('#maerkte-stimmung a.dx-m3-st-beleg');return a?{href:a.getAttribute('href'),text:a.textContent}:null;});
   p('Uebersicht: Stresstest-Beleg im Marktbarometer (x von y Abstuerzen, nachgerechnet)',!!beleg&&beleg.href==='#/maerkte/einordnung'&&/\d von \d großen Abstürzen früh erkannt/.test(beleg.text)&&/nachgerechnet/.test(beleg.text),beleg);}
+/* Markets 4.6: Knopf zur Erklaerung im Discover-Gruen vor dem Stresstest-Streifen,
+    darunter "Im Klartext" mit den grossen Zahlen und dem Schnitt aller Tage. */
+ {const kt=await page.evaluate(()=>{const st=document.getElementById('maerkte-stimmung'),k=document.getElementById('maerkte-klartext');
+   const link=st&&st.querySelector('a.dx-m3-st-link'),beleg=st&&st.querySelector('a.dx-m3-st-beleg');
+   return {knopfVorBeleg:!!link&&!!beleg&&!!(link.compareDocumentPosition(beleg)&Node.DOCUMENT_POSITION_FOLLOWING),
+    knopfFarbe:link?getComputedStyle(link).backgroundColor:'',knopfHoehe:link?link.getBoundingClientRect().height:0,
+    box:k?{text:k.textContent,zahlen:k.querySelectorAll('.dx-m3-kt-zahl').length,schnitt:(k.textContent.match(/Schnitt aller Tage/g)||[]).length}:null};});
+  p('Uebersicht: Knopf "Was heisst ...?" gruen, gross und vor dem Stresstest-Streifen',kt.knopfVorBeleg&&kt.knopfFarbe==='rgb(200, 245, 49)'&&kt.knopfHoehe>=60,kt);
+  p('Uebersicht: "Im Klartext" direkt unter dem Barometer - Bedeutung, vier grosse Zahlen, Schnitt aller Tage, Hinweis',
+   pos('maerkte-klartext')===pos('maerkte-stimmung')+1&&!!kt.box&&kt.box.zahlen===4&&kt.box.schnitt>=3&&/auf einen Blick/.test(kt.box.text)&&/lagen nach 1 Jahr im Plus/.test(kt.box.text)&&
+   /kein verlässlicher Hinweis/.test(kt.box.text)&&!/Kaufsignal|kaufen|verkaufen|sollten Sie/i.test(kt.box.text),kt.box&&{zahlen:kt.box.zahlen,schnitt:kt.box.schnitt});}
  p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',!!ov&&ov.stories.length>=1&&ov.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),ov&&ov.stories);
  p('Movers verlinken auf Aktienseiten',!!ov&&(ov.movers.length===0||ov.movers.every(h=>/^#\/s\/US_REAL\//.test(h))),ov&&ov.movers.slice(0,3));
  p('Jede Karte mit Wert ist ein Link zum Marktdetail',!!ov&&ov.kartenLinks.length>=28&&ov.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),ov&&ov.kartenLinks.length);
