@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "capability_probe",
+  "request_type": "CAPABILITY_PROBE",
+  "test_fixture": true,
+  "brief_id": "brief_probe_web_20260929",
+  "content_id": "vu-probe-web-20260929",
+  "brand": "Vision Universe",
+  "language": "de",
+  "objective": "Faehigkeitstest, KEIN Social Post. Vision Universe muss real wissen, ob du in genau diesem automatisierten Lauf oeffentliche Webseiten oeffnen und im Web suchen kannst. Davon haengt ab, ob du kuenftig selbst recherchierst oder ein vorbereitetes Recherchepaket bekommst. Bitte ehrlich: ein erfundenes Ergebnis ist schlimmer als ein 'nein'.",
+  "tasks": [
+    {
+      "id": "t1_open_url",
+      "instruction": "Oeffne diese URL live: https://www.cnbc.com/2026/09/29/anthropic-warns-ai-existential-risks-ipo-filing-reuters.html . Gib den Seitentitel (<title> oder Hauptueberschrift) wortwoertlich zurueck, den ersten Satz des Artikeltextes wortwoertlich, und den dritten Absatz des Artikels wortwoertlich. Wenn du die Seite nicht oeffnen kannst: opened=false und die genaue Fehlermeldung."
+    },
+    {
+      "id": "t2_open_url",
+      "instruction": "Oeffne diese URL live: https://www.tagesschau.de/wirtschaft/ . Gib die ersten drei Artikel-Ueberschriften zurueck, die dort JETZT stehen, wortwoertlich. Wenn nicht moeglich: opened=false und die genaue Fehlermeldung."
+    },
+    {
+      "id": "t3_web_search",
+      "instruction": "Suche im Web nach den wichtigsten Boersen- und Finanznachrichten von heute (29.09.2026). Nenne drei konkrete Meldungen mit Titel, Quelle, URL und Veroeffentlichungsdatum, die du tatsaechlich gefunden und geoeffnet hast. Wenn du keine Websuche hast: searched=false und warum."
+    },
+    {
+      "id": "t4_self_report",
+      "instruction": "Beschreibe knapp, welche Werkzeuge dir in diesem Lauf zur Verfuegung stehen (Browser/Websuche/Code-Ausfuehrung/Bildgenerierung/Git) und ob du mehrere Bilddateien in einem Lauf erzeugen und committen koenntest (nur einschaetzen, KEIN Bild erzeugen)."
+    }
+  ],
+  "output_contract": {
+    "path": "authoring/requests/vu-probe-web-20260929/authoring-result.json",
+    "format": "JSON",
+    "fields": {
+      "schema_version": "1.0",
+      "brief_id": "brief_probe_web_20260929",
+      "content_id": "vu-probe-web-20260929",
+      "request_type": "CAPABILITY_PROBE",
+      "web_access": "true | false - ob du in diesem Lauf wirklich eine oeffentliche Webseite geoeffnet hast",
+      "web_search": "true | false - ob du in diesem Lauf wirklich eine Websuche ausgefuehrt hast",
+      "t1_open_url": "{ opened, page_title, first_sentence, third_paragraph, error }",
+      "t2_open_url": "{ opened, headlines: [3], error }",
+      "t3_web_search": "{ searched, results: [{ title, source, url, published_at }], error }",
+      "t4_self_report": "{ tools: [...], multiple_images_per_run: 'ja | nein | unbekannt', notes }",
+      "processing": "{ status: 'completed' }"
+    }
+  },
+  "constraints": [
+    "Nichts erfinden. Was du nicht wirklich live geoeffnet hast, ist opened=false.",
+    "Kein Bild erzeugen.",
+    "Keine Veroeffentlichung.",
+    "Nur die eine Ergebnisdatei auf diesen Branch schreiben."
+  ],
+  "publishing_allowed": false
+}
