@@ -31,11 +31,38 @@ function text(n) { if (!n) return ""; if (typeof n === "string") return n; retur
 function find(n, pred, out = []) { if (!n || typeof n !== "object") return out; if (pred(n)) out.push(n); (n.children || []).forEach((c) => find(c, pred, out)); return out; }
 const byId = (teile, id) => teile.find((t) => t.attrs && t.attrs.id === id);
 
-test("Marktbarometer: sieben Teile in fester Reihenfolge, Details als eigene Unterseite", () => {
-  const teile = MB.render(J(PULSE), J(EV));
+const JETZT = new Date("2026-09-29T10:00:00Z");
+test("Marktbarometer: Teile in fester Reihenfolge, Details als eigene Unterseite", () => {
+  const teile = MB.render(J(PULSE), J(EV), JETZT);
   const ids = teile.map((t) => t.attrs.id || t.attrs.class);
-  assert.deepEqual(J(ids.slice(0, 6)), ["bm-heute", "bm-chance", "bm-vergleich", "bm-warum", "bm-wende", "bm-stufen"]);
-  assert.equal(teile[6].attrs.href, "#/maerkte/einordnung/details");
+  assert.deepEqual(J(ids.slice(0, 8)), ["bm-heute", "bm-chance", "bm-vergleich", "bm-krisen", "bm-warum", "bm-wende", "bm-stufen", "bm-kalender"]);
+  assert.equal(teile[8].attrs.href, "#/maerkte/einordnung/details");
+});
+
+test("Krisen-Check: jede Krise aus dem Auszug, Warnung und Rest des Absturzes, ehrliche Grenze", () => {
+  const k = byId(MB.render(J(PULSE), J(EV), JETZT), "bm-krisen");
+  const t = text(k);
+  const karten = find(k, (n) => n.tag === "article");
+  assert.equal(karten.length, EV.crises.length);
+  const corona = EV.crises.find((x) => x.id === "2020");
+  assert.match(t, /Corona-Crash/);
+  assert.match(t, new RegExp("−" + Math.round(Math.abs(corona.fall)) + "\u00a0%"));
+  assert.match(t, new RegExp(EV.crises.filter((x) => x.firstWarning).length + " von " + EV.crises.length));
+  assert.match(t, /Was das Barometer nicht kann/);
+  assert.match(t, /sagt den ersten Tag eines Absturzes nicht voraus/);
+});
+
+test("Kalender-Kontext: getrennt vom Barometer, aktueller Monat und Zyklusjahr markiert, Fallzahlen", () => {
+  const c = byId(MB.render(J(PULSE), J(EV), JETZT), "bm-kalender");
+  const t = text(c);
+  assert.match(t, /kein Teil des Barometers/);
+  assert.equal(MB.zyklusJahr(2026), 2);
+  assert.equal(MB.zyklusJahr(2028), 4);
+  assert.match(t, /Jetzt: September 2026 · Midterm-Jahr/);
+  const vor = EV.calendar.forward12.byCycleMonth.find((x) => x.cycleYear === 2 && x.month === 9);
+  assert.match(t, new RegExp(vor.n + " Fälle"));
+  assert.equal(find(c, (n) => n.attrs && /\bis-jetzt\b/.test(n.attrs.class || "") && /bm-monat\b/.test(n.attrs.class || "")).length, 1);
+  assert.equal(find(c, (n) => n.attrs && /\bis-jetzt\b/.test(n.attrs.class || "") && /bm-zjahr\b/.test(n.attrs.class || "")).length, 1);
 });
 
 test("Heute: Stufe als Wetter, fuenf Stufen in der Leiste", () => {
@@ -71,9 +98,9 @@ test("Vergleich: vier Ansichten, Werte je Stufe aus dem Auszug, ehrlicher Hinwei
 });
 
 test("Ohne Auszug: keine historischen Zahlen, nur Stand, Gruende, Wende, Stufen", () => {
-  const teile = MB.render(J(PULSE), null);
+  const teile = MB.render(J(PULSE), null, JETZT);
   const ids = teile.map((t) => t.attrs.id).filter(Boolean);
-  assert.ok(!ids.includes("bm-chance") && !ids.includes("bm-vergleich"));
+  assert.ok(!ids.includes("bm-chance") && !ids.includes("bm-vergleich") && !ids.includes("bm-krisen") && !ids.includes("bm-kalender"));
   assert.ok(ids.includes("bm-heute"));
   assert.doesNotMatch(teile.map(text).join(" "), /im Plus/);
   assert.equal(MB.render({ environment: { level: null } }, J(EV)), null);

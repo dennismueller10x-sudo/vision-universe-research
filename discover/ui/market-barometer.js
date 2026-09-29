@@ -14,6 +14,8 @@
      4 Warum steht es dort?              vier Symbol-Kacheln
      5 Was wuerde es bewegen?            besser / schlechter
      6 Die fuenf Stufen                  zum Wischen
+     + Krisen-Check (haette es gewarnt?) nach dem Vergleich,
+       Kalender-Kontext (kein Teil des Barometers) vor den Details
      7 Alle Details                      eigene Unterseite (#/maerkte/einordnung/details)
 
    WAS DIESE DATEI NICHT TUT
@@ -188,6 +190,111 @@
     ]);
   }
 
+  /* ------------------------------------ Krisen-Check: haette es gewarnt?
+     Owner-Frage: "Haette das Barometer vor Corona oder der Dotcom-Blase
+     angeschlagen?" Ehrlich beantwortet: am Hoch stand es meist auf
+     "Konstruktiv" - es erkennt den Umschwung, nicht den ersten Tag. */
+  var MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+  function krisen(ev) {
+    var ks = ev && ev.crises ? ev.crises.filter(function (k) { return isNum(k.fall); }) : [];
+    if (ks.length < 3) return null;
+    var mitWarnung = ks.filter(function (k) { return k.firstWarning; });
+    var avg = function (xs) { return xs.reduce(function (a, b) { return a + b; }, 0) / (xs.length || 1); };
+    var beiWarnung = avg(mitWarnung.map(function (k) { return k.firstWarning.fallAt; }));
+    var danach = avg(mitWarnung.map(function (k) { return k.firstWarning.restAfter; }));
+    var anteil = avg(ks.map(function (k) { return k.warningShare || 0; }));
+    function zahl3(gross, text, klein) {
+      return el("div", { class: "bm-krisen-zahl" }, [el("b", { text: gross }), el("p", { text: text }), klein ? el("small", { text: klein }) : null].filter(Boolean));
+    }
+    var karten = ks.slice().reverse().map(function (k) {
+      var w = k.firstWarning, lage = w ? Math.max(0, Math.min(100, 100 * w.fallAt / k.fall)) : null;
+      return el("article", { class: "bm-krise" }, [
+        el("p", { class: "bm-krise-jahr", text: k.peak.slice(0, 4) + (k.trough.slice(0, 4) !== k.peak.slice(0, 4) ? "–" + k.trough.slice(2, 4) : "") }),
+        el("h3", { text: k.name }),
+        el("b", { class: "bm-krise-fall", text: pct(k.fall, 0) }),
+        el("p", { class: "bm-krise-dauer", text: "vom Hoch zum Tief in " + k.tradingDays + " Handelstagen" }),
+        el("div", { class: "bm-krise-spur", "aria-hidden": "true" }, [
+          w ? el("span", { class: "bm-krise-vor", style: "width:" + lage.toFixed(1) + "%" }) : null,
+          w ? el("span", { class: "bm-krise-nach", style: "left:" + lage.toFixed(1) + "%;width:" + (100 - lage).toFixed(1) + "%" }) : null,
+          w ? el("i", { class: "bm-krise-marke", style: "left:" + lage.toFixed(1) + "%" }) : null
+        ].filter(Boolean)),
+        el("dl", {}, [
+          el("div", {}, [el("dt", { text: "Am Hoch" }), el("dd", { text: k.levelAtPeak || "–" })]),
+          el("div", {}, [el("dt", { text: "Warnung" }), el("dd", { text: w ? (w.tradingDaysAfterPeak === 0 ? "schon am Hoch" : "bei " + pct(w.fallAt, 0) + ", nach " + w.tradingDaysAfterPeak + " Tagen") : "keine" })]),
+          w ? el("div", { class: "is-wichtig" }, [el("dt", { text: "Danach fiel er noch" }), el("dd", { text: pct(w.restAfter, 0) })]) : null,
+          k.backConstructive ? el("div", {}, [el("dt", { text: "Wieder „Konstruktiv“" }), el("dd", { text: pct(k.backConstructive.riseFromTrough, 0, true) + " über dem Tief" })]) : null
+        ].filter(Boolean))
+      ]);
+    });
+    return el("section", { class: "bm-krisen", id: "bm-krisen", "aria-label": "Hätte das Barometer gewarnt?" }, [
+      kopf("Stresstest · " + ks.length + " große Abstürze", "Hätte das Barometer gewarnt?", "Mit genau denselben Regeln, Tag für Tag nur mit dem Wissen von damals – von der Weltwirtschaftskrise bis zum Zinsschock."),
+      el("div", { class: "bm-krisen-zahlen" }, [
+        zahl3(mitWarnung.length + " von " + ks.length, "Abstürzen hat es erkannt", "im Schnitt bei " + pct(beiWarnung, 0) + " Minus"),
+        zahl3(pct(danach, 0), "fiel der Markt nach der Warnung im Schnitt noch", "der größte Teil kam erst danach"),
+        zahl3(pct(anteil, 0), "des Weges nach unten stand es auf Warnstufe", "„Vorsichtig“ oder „Defensiv“")
+      ]),
+      el("p", { class: "bm-krise-legende" }, [el("span", { class: "is-vor", text: "Minus bis zur Warnung" }), el("span", { class: "is-nach", text: "Minus nach der Warnung" }),
+        el("span", { class: "is-marke", text: "Warnung" })]),
+      el("div", { class: "bm-krisen-reihe", tabindex: "0", role: "group", "aria-label": "Die Abstürze einzeln – wischen für mehr" }, karten),
+      el("div", { class: "bm-ehrlich" }, [el("span", { class: "bm-ehrlich-icon", "aria-hidden": "true" }, [glyph("lupe")].filter(Boolean)),
+        el("div", {}, [el("b", { text: "Was das Barometer nicht kann" }),
+          el("p", { text: "Es sagt den ersten Tag eines Absturzes nicht voraus – am Hoch stand es meist auf „Konstruktiv“. Es reagiert, sobald der Markt kippt, und bleibt dann auf der Warnstufe. " +
+            "Sehr schnelle Crashs wie 1987 oder Corona fängt es nur teilweise ab. Und nach dem Tief wird es erst spät wieder konstruktiv – ein Teil der Erholung fehlt." })])]),
+      ev.crisesNote ? el("p", { class: "bm-fuss", text: ev.crisesNote }) : null
+    ].filter(Boolean));
+  }
+
+  /* --------------------------- Kalender-Kontext: Saisonalitaet, Wahlzyklus
+     Ausdruecklich KEIN Teil des Barometers - eigene Statistik aus derselben
+     Reihe, mit Fallzahlen und Mehrfachtest bei den Monaten. */
+  function zyklusJahr(y) { var r = (((y - 1928) % 4) + 4) % 4; return r === 0 ? 4 : r; }
+  function kalender(ev, jetzt) {
+    var c = ev && ev.calendar;
+    if (!c || !c.months || c.months.length !== 12 || !c.cycle) return null;
+    jetzt = jetzt || new Date();
+    var m = jetzt.getUTCMonth() + 1, y = jetzt.getUTCFullYear(), cy = zyklusJahr(y);
+    var zy = c.cycle.filter(function (x) { return x.year === cy; })[0];
+    var vor = (c.forward12.byCycleMonth || []).filter(function (x) { return x.cycleYear === cy && x.month === m; })[0];
+    var basis = (c.forward12.byMonth || []).filter(function (x) { return x.month === m; })[0];
+    var mMax = Math.max.apply(null, c.months.map(function (x) { return Math.abs(x.meanReturn); })) || 1;
+    var monate = el("div", { class: "bm-monate", role: "img", "aria-label": "Durchschnittliche Rendite je Kalendermonat: " +
+      c.months.map(function (x) { return MONATE[x.month - 1] + " " + pct(x.meanReturn, 1, true); }).join(", ") }, c.months.map(function (x) {
+      var h = (50 * Math.abs(x.meanReturn) / mMax).toFixed(1);
+      return el("div", { class: "bm-monat" + (x.month === m ? " is-jetzt" : "") + (x.meanReturn < 0 ? " is-neg" : "") }, [
+        el("b", { text: (x.meanReturn > 0 ? "+" : x.meanReturn < 0 ? "−" : "") + zahl(Math.abs(x.meanReturn), 1) + (x.significant ? "*" : "") }),
+        el("div", { class: "bm-monat-spur" }, [el("span", { style: (x.meanReturn >= 0 ? "bottom:50%" : "top:50%") + ";height:" + h + "%" })]),
+        el("small", { text: MONATE[x.month - 1].slice(0, 3) })
+      ]);
+    }));
+    var zMax = Math.max.apply(null, c.cycle.map(function (x) { return Math.abs(x.meanReturn); })) || 1;
+    var zyklus = el("div", { class: "bm-zyklus", role: "img", "aria-label": "Rendite je Jahr im Präsidentschaftszyklus: " +
+      c.cycle.map(function (x) { return x.label + " " + pct(x.meanReturn, 1, true) + ", " + x.positiveShare + " % im Plus"; }).join("; ") }, c.cycle.map(function (x) {
+      return el("div", { class: "bm-zjahr" + (x.year === cy ? " is-jetzt" : "") }, [
+        el("b", { text: pct(x.meanReturn, 0, true) }),
+        el("div", { class: "bm-zjahr-spur" }, [el("span", { style: "height:" + Math.max(4, 100 * Math.max(0, x.meanReturn) / zMax).toFixed(1) + "%" })]),
+        el("span", { class: "bm-zjahr-name", text: x.label }),
+        el("small", { text: x.positiveShare + " % im Plus" + (x.year === cy ? " · jetzt" : "") })
+      ]);
+    }));
+    var jetztKarte = vor && vor.n ? el("div", { class: "bm-kal-jetzt" }, [
+      el("p", { class: "bm-kal-jetzt-kopf", text: "Jetzt: " + MONATE[m - 1] + " " + y + " · " + (zy ? zy.label : "") }),
+      el("b", { text: pct(vor.meanReturn, 1, true) }),
+      el("p", { text: "im Schnitt in den 12 Monaten ab Ende " + MONATE[m - 1] + " eines " + ({ 1: "Jahres nach der Wahl", 2: "Midterm-Jahres", 3: "Vorwahljahres", 4: "Wahljahres" }[cy]) }),
+      el("small", { text: vor.positiveShare + " von 100 Fällen im Plus · " + vor.n + " Fälle" + (basis ? " · über alle Jahre: " + pct(basis.meanReturn, 1, true) + ", " + basis.positiveShare + " % im Plus" : "") })
+    ]) : null;
+    return el("section", { class: "bm-kalender", id: "bm-kalender", "aria-label": "Kalender-Kontext: Saisonalität und Wahlzyklus" }, [
+      kopf("Kalender-Kontext · kein Teil des Barometers", "Saisonalität und Wahlzyklus", "Was der Kalender seit " + c.from.slice(0, 4) + " über den US-Aktienmarkt sagt – als Zusatzinformation, getrennt von der Einordnung."),
+      jetztKarte,
+      el("div", { class: "bm-kal-raster" }, [
+        el("div", { class: "bm-kal-karte" }, [el("h3", { text: "Die zwölf Monate" }), el("p", { class: "bm-unter", text: "Durchschnittliche Rendite je Monat" }), monate,
+          el("p", { class: "bm-fuss", text: "* statistisch gesichert (auch nach Korrektur für zwölf gleichzeitige Tests). Alle anderen Unterschiede können Zufall sein." })]),
+        el("div", { class: "bm-kal-karte" }, [el("h3", { text: "Der Präsidentschaftszyklus" }), el("p", { class: "bm-unter", text: "Durchschnittliche Jahresrendite im vierjährigen US-Wahlzyklus" }), zyklus,
+          el("p", { class: "bm-fuss", text: "Je Zyklusjahr nur rund " + (zy ? zy.n : 24) + " Jahre seit " + c.from.slice(0, 4) + "." })])
+      ]),
+      el("p", { class: "bm-fuss", text: ev.calendarNote || "" })
+    ].filter(Boolean));
+  }
+
   /* ------------------------------------------- 4 Warum steht es dort? */
   function warum(p) {
     var env = p.environment, m = MI();
@@ -262,11 +369,12 @@
   }
 
   /* ------------------------------------------------------- Seite */
-  function render(p, ev) {
+  function render(p, ev, jetzt) {
     var env = p && p.environment;
     if (!env || !isNum(env.level)) return null;
     var hist = ev && ev.levels && ev.levels.length >= 3 ? ev : null;
-    var teile = [heute(p), hist ? chance(p, hist) : null, hist ? vergleich(p, hist) : null, warum(p), wende(p), stufen(p, hist),
+    var teile = [heute(p), hist ? chance(p, hist) : null, hist ? vergleich(p, hist) : null, hist ? krisen(hist) : null, warum(p), wende(p), stufen(p, hist),
+      hist ? kalender(hist, jetzt) : null,
       el("a", { class: "bm-mehr", href: "#/maerkte/einordnung/details" }, [
         el("span", { class: "bm-mehr-icon", "aria-hidden": "true" }, [glyph("lupe")].filter(Boolean)),
         el("span", { class: "bm-mehr-text" }, [el("b", { text: "Alle Details, Messwerte und Methodik" }),
@@ -280,5 +388,5 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht };
+  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht, zyklusJahr: zyklusJahr };
 })(typeof window !== "undefined" ? window : globalThis);

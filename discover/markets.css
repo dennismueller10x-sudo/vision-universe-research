@@ -1399,3 +1399,80 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
 /* Gleiche Hoehe fuer alle Saeulen-Beschriftungen - sonst verschiebt ein
    umbrechendes "heute" die Saeule. */
 .dv2 .bm-saeule-name{display:flex;align-items:center;justify-content:center;min-height:2.9em;line-height:1.25}
+
+/* ================================================================ Markets 4.3
+   Krisen-Check ("Haette das Barometer gewarnt?") und Kalender-Kontext
+   (Saisonalitaet, Wahlzyklus - kein Teil des Barometers). */
+.dv2 .bm-krisen-zahlen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 14px}
+.dv2 .bm-krisen-zahl{display:flex;flex-direction:column;gap:4px;padding:18px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .bm-krisen-zahl b{font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--v2-ink)}
+.dv2 .bm-krisen-zahl p{margin:4px 0 0;font-size:15px;font-weight:650;line-height:1.35}
+.dv2 .bm-krisen-zahl small{font-size:13px;color:var(--v2-muted)}
+.dv2 .bm-krisen-reihe{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-width:none}
+.dv2 .bm-krisen-reihe::-webkit-scrollbar{display:none}
+.dv2 .bm-krisen-reihe:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+.dv2 .bm-krise{flex:0 0 262px;scroll-snap-align:start;display:flex;flex-direction:column;gap:6px;padding:18px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .bm-krise-jahr{margin:0;font-size:13px;font-weight:750;color:var(--m3-purple)}
+.dv2 .bm-krise h3{margin:0;font-size:20px;font-weight:850;letter-spacing:-.02em}
+.dv2 .bm-krise-fall{font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--m3-l0)}
+.dv2 .bm-krise-dauer{margin:0;font-size:13px;color:var(--v2-muted)}
+.dv2 .bm-krise-spur{position:relative;height:12px;margin:10px 0 6px;border-radius:999px;background:var(--m3-soft)}
+.dv2 .bm-krise-vor{position:absolute;left:0;top:0;bottom:0;border-radius:999px 0 0 999px;background:color-mix(in srgb,var(--m3-l0) 35%,transparent)}
+.dv2 .bm-krise-nach{position:absolute;top:0;bottom:0;border-radius:0 999px 999px 0;background:var(--m3-support)}
+.dv2 .bm-krise-marke{position:absolute;top:-5px;bottom:-5px;width:3px;margin-left:-1.5px;border-radius:3px;background:var(--v2-ink)}
+.dv2 .bm-krise dl{margin:4px 0 0;display:flex;flex-direction:column;gap:5px}
+.dv2 .bm-krise dl div{display:flex;justify-content:space-between;gap:10px;padding-top:5px;border-top:1px solid var(--ap-linie);font-size:13.5px}
+.dv2 .bm-krise dt{color:var(--v2-muted)}.dv2 .bm-krise dd{margin:0;font-weight:750;text-align:right;color:var(--v2-ink)}
+.dv2 .bm-krise dl div.is-wichtig dd{color:var(--m3-support);font-size:15px;font-weight:850}
+.dv2 .bm-ehrlich{display:flex;gap:12px;align-items:flex-start;margin:6px 0 10px;padding:16px 18px;border-radius:18px;background:color-mix(in srgb,var(--m3-headwind) 10%,transparent)}
+.dv2 .bm-ehrlich-icon{flex:0 0 auto;display:inline-flex;width:28px;height:28px;color:var(--m3-headwind)}
+.dv2 .bm-ehrlich-icon svg{width:100%;height:100%}
+.dv2 .bm-ehrlich b{font-size:16px;font-weight:800}
+.dv2 .bm-ehrlich p{margin:4px 0 0;font-size:15px;line-height:1.5;color:var(--v2-ink)}
+
+.dv2 .bm-kal-jetzt{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;padding:20px;border-radius:24px;color:#fff;
+  background:linear-gradient(135deg,#1d2b64,#3a1c71 60%,#5b2a86)}
+.dv2 .bm-kal-jetzt-kopf{margin:0;font-size:14px;font-weight:750;opacity:.8}
+.dv2 .bm-kal-jetzt b{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:1.05}
+.dv2 .bm-kal-jetzt p{margin:0;font-size:16px;font-weight:650;line-height:1.4}
+.dv2 .bm-kal-jetzt small{font-size:13.5px;opacity:.82}
+.dv2 .bm-kal-raster{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px}
+.dv2 .bm-kal-karte{display:flex;flex-direction:column;gap:6px;padding:18px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten);min-width:0}
+.dv2 .bm-kal-karte h3{margin:0;font-size:19px;font-weight:850}
+.dv2 .bm-kal-karte .bm-unter{margin:0 0 8px;font-size:14px}
+.dv2 .bm-monate{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;height:200px}
+.dv2 .bm-monat{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.dv2 .bm-monat b{font-size:11px;font-weight:800;color:var(--v2-ink);white-space:nowrap}
+.dv2 .bm-monat-spur{position:relative;flex:1;width:100%;max-width:26px;border-radius:6px;background:linear-gradient(var(--m3-soft),var(--m3-soft)) center/100% 1px no-repeat}
+.dv2 .bm-monat-spur span{position:absolute;left:0;right:0;border-radius:5px;background:color-mix(in srgb,var(--m3-support) 55%,transparent)}
+.dv2 .bm-monat.is-neg .bm-monat-spur span{background:color-mix(in srgb,var(--m3-l0) 60%,transparent)}
+.dv2 .bm-monat.is-jetzt .bm-monat-spur span{background:var(--m3-purple)}
+.dv2 .bm-monat small{font-size:11px;font-weight:650;color:var(--v2-muted)}
+.dv2 .bm-monat.is-jetzt small{color:var(--v2-ink);font-weight:850}
+.dv2 .bm-zyklus{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:end;height:220px}
+.dv2 .bm-zjahr{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;min-width:0;text-align:center}
+.dv2 .bm-zjahr b{font-size:20px;font-weight:900;letter-spacing:-.02em;color:var(--v2-ink)}
+.dv2 .bm-zjahr-spur{position:relative;flex:1;width:min(64px,80%);border-radius:12px 12px 5px 5px;background:var(--m3-soft);overflow:hidden}
+.dv2 .bm-zjahr-spur span{position:absolute;left:0;right:0;bottom:0;border-radius:12px 12px 5px 5px;background:color-mix(in srgb,var(--m3-context) 55%,transparent)}
+.dv2 .bm-zjahr.is-jetzt .bm-zjahr-spur span{background:var(--m3-purple)}
+.dv2 .bm-zjahr-name{display:flex;align-items:center;justify-content:center;min-height:2.6em;font-size:12.5px;font-weight:750;line-height:1.25;color:var(--v2-ink)}
+.dv2 .bm-zjahr small{font-size:11.5px;color:var(--v2-muted)}
+.dv2 .bm-zjahr.is-jetzt small{color:var(--v2-ink);font-weight:800}
+@media(max-width:760px){
+  .dv2 .bm-krisen-zahlen{grid-template-columns:minmax(0,1fr)}
+  .dv2 .bm-krisen-zahl{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:15px 16px}
+  .dv2 .bm-krisen-zahl b{font-size:32px}
+  .dv2 .bm-krisen-zahl p{margin:0;flex:1 1 60%}
+  .dv2 .bm-krisen-zahl small{flex-basis:100%}
+  .dv2 .bm-kal-jetzt b{font-size:42px}
+  .dv2 .bm-monate{height:170px;gap:2px}
+  .dv2 .bm-monat b{font-size:9.5px;letter-spacing:-.02em}
+  .dv2 .bm-monat small{font-size:9.5px}
+}
+.dv2 .bm-krise-legende{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 8px;font-size:13px;color:var(--v2-muted)}
+.dv2 .bm-krise-legende span{display:inline-flex;align-items:center;gap:6px}
+.dv2 .bm-krise-legende span::before{content:"";width:14px;height:8px;border-radius:999px}
+.dv2 .bm-krise-legende .is-vor::before{background:color-mix(in srgb,var(--m3-l0) 35%,transparent)}
+.dv2 .bm-krise-legende .is-nach::before{background:var(--m3-support)}
+.dv2 .bm-krise-legende .is-marke::before{width:3px;height:14px;border-radius:3px;background:var(--v2-ink)}
+.dv2 .bm-zjahr small{display:flex;align-items:flex-start;justify-content:center;min-height:2.7em;line-height:1.3}
