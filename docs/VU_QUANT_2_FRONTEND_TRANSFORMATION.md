@@ -838,3 +838,30 @@ kein Nebentext einer Trefferzeile darf auf *allen* Zeilen derselbe sein —
 und der Stichtag muss trotzdem dastehen, einmal, über der Liste. Ein Test
 auf den heutigen Wortlaut hätte genau diesen Fall gefangen und den
 nächsten nicht.
+
+### Und die Prüfung lief zuerst gar nicht
+
+Sie war grün — **aus dem falschen Grund.** Die Schleife der Browser-QA
+über die Ansichten enthielt `stock` (die Einzelseite), aber **nicht
+`stocks`** (die Übersicht). Der neue Block war toter Code.
+
+Aufgefallen ist es nur durch die Gegenprobe: im gebauten Release den
+Stichtag auf jeder Zeile wiederhergestellt und erwartet, dass die QA rot
+wird. Sie blieb grün. **Eine Prüfung, die nicht ausgeführt wird, sieht aus
+wie Abdeckung und ist keine** — und wäre nie aufgefallen, weil sie
+dauerhaft grün geblieben wäre.
+
+Mit `stocks` in der Schleife greift sie:
+
+```
+Error: der Zusatz "Stand 2026-09-28" steht auf allen 6 Zeilen
+       - er gehoert einmal ueber die Liste
+```
+
+Als Nebeneffekt laufen jetzt auch die allgemeinen Prüfungen über die
+Übersicht, die sie bisher ausließen: genau eine `h1`, kein horizontaler
+Überlauf, keine Doppelung von Anspruch und Überschrift.
+
+**Das ist die zweite Gegenprobe an einem Tag, die einen echten Mangel
+gefunden hat** (die erste: die Anspruch/Überschrift-Regel in Abschnitt 12,
+dort hielt sie). Eine grüne Prüfung ohne Gegenprobe ist eine Behauptung.

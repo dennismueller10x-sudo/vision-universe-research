@@ -97,7 +97,11 @@ async function auditAccessibility(page,view,width){
  await writeFile(out+'/accessibility.json',JSON.stringify({scope:'Automated WCAG 2.1 A/AA checks; not a manual accessibility certification',results:accessibility},null,2));
 }
 try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.addInitScript(time=>{const NativeDate=Date,fixed=NativeDate.parse(time);globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}};},staleClock.toISOString());const errors=[];page.on('pageerror',e=>errors.push(e.message));
- for(const view of ['home','stock','technical','elliott','quant','explain','fundamentals','discover','research','markets','screener','compare','strategies','signals','radar','portfolio','watchlist','atlas']){
+ /* `stocks` (die Uebersicht) fehlte hier - nur `stock` (die Einzelseite)
+    stand drin. Aufgefallen bei der Gegenprobe zu einer neuen Pruefung:
+    sie war gruen, weil ihr Block nie lief. Eine Pruefung, die nicht
+    ausgefuehrt wird, sieht aus wie Abdeckung und ist keine. */
+ for(const view of ['home','stock','stocks','technical','elliott','quant','explain','fundamentals','discover','research','markets','screener','compare','strategies','signals','radar','portfolio','watchlist','atlas']){
  const started=performance.now();await page.goto(origin+'/vu2/?view='+view+'&ticker=NVDA');await page.locator('main footer').waitFor();
  const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
  const budget=assessResourceBudget(view,resources);if(budget)resourceBudgets.push({...budget,width});
@@ -358,12 +362,28 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
 
      Geprueft wird deshalb die REGEL, nicht der heutige Text: kein
      Nebentext einer Trefferzeile darf auf ALLEN Zeilen derselbe sein. */
-  const zusatz=(await page.locator('.q-hit .q-hit-num span').allInnerTexts()).map(t=>t.trim()).filter(Boolean);
-  if(zusatz.length>1&&new Set(zusatz).size===1)
-   throw Error('der Zusatz "'+zusatz[0]+'" steht auf allen '+zusatz.length+' Zeilen - er gehoert einmal ueber die Liste');
-  const warum=(await page.locator('.q-hit .q-hit-why').allInnerTexts()).map(t=>t.trim()).filter(Boolean);
-  if(warum.length>1&&new Set(warum).size===1)
-   throw Error('"'+warum[0]+'" steht auf allen '+warum.length+' Zeilen mit Text - eine Ausnahme, die nie ausfaellt, ist keine');
+  /* SELBST GEFUNDEN, BEIM ERSTEN SAUBEREN LAUF DIESER PRUEFUNG.
+
+     Erst stand hier `.filter(Boolean)` vor dem Vergleich - und damit
+     verbot die Regel etwas Richtiges: die vier Ausnahmezeilen tragen
+     naturgemaess ALLE denselben Satz ("dieses Papier ist keine Aktie"),
+     und nach dem Filtern sah das aus wie "auf allen Zeilen".
+
+     Zwei Dinge, die ich verwechselt hatte:
+       ein Text auf ALLEN Zeilen  -> Tapete, der Defekt
+       ein Text auf EINIGEN       -> eine Kategorie, genau richtig
+
+     Verglichen wird deshalb gegen die Zahl ALLER Zeilen, nicht gegen die
+     der gefuellten. */
+  const zeilen=await page.locator('.q-hit').count();
+  const gleichAufAllen=(werte)=>{
+   const gesetzt=werte.map(t=>t.trim()).filter(Boolean);
+   return zeilen>1&&gesetzt.length===zeilen&&new Set(gesetzt).size===1?gesetzt[0]:null;
+  };
+  const zusatz=gleichAufAllen(await page.locator('.q-hit .q-hit-num span').allInnerTexts());
+  if(zusatz)throw Error('der Zusatz "'+zusatz+'" steht auf allen '+zeilen+' Zeilen - er gehoert einmal ueber die Liste');
+  const warum=gleichAufAllen(await page.locator('.q-hit .q-hit-why').allInnerTexts());
+  if(warum)throw Error('"'+warum+'" steht auf allen '+zeilen+' Zeilen - was immer dasteht, verdeckt die Ausnahme');
   /* Und der Stichtag muss trotzdem dastehen - einmal, ueber der Liste.
      Ihn ganz wegzulassen waere nicht Vereinfachung, sondern Verlust. */
   await page.getByText(/^Kurse: Stand \d{4}-\d{2}-\d{2}$/).waitFor();
