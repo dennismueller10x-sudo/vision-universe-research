@@ -120,6 +120,7 @@ const GENERIC = new Set(("american first united national general global internat
 export function namesAgree(a, b) {
   const x = tokenList(a), y = tokenList(b);
   if (!x.length || !y.length) return false;
+  if (x.join("") === y.join("")) return true;
   const [kurz, lang] = x.length <= y.length ? [x, new Set(y)] : [y, new Set(x)];
   if (kurz.every((t) => lang.has(t))) return true;
   const ys = new Set(y);
@@ -127,10 +128,25 @@ export function namesAgree(a, b) {
   return x[0] === y[0] && !GENERIC.has(x[0]);
 }
 
+/**
+ * Starker Namensbeleg: gleiche Buchstabenfolge, oder der kuerzere Name steckt
+ * ganz im laengeren und beginnt nicht mit einem allgemeinen Wort.
+ */
+export function namesStrong(a, b) {
+  const x = tokenList(a), y = tokenList(b);
+  if (!x.length || !y.length) return false;
+  if (x.join("") === y.join("")) return true;
+  const [kurz, lang] = x.length <= y.length ? [x, new Set(y)] : [y, new Set(x)];
+  return !GENERIC.has(kurz[0]) && kurz.every((t) => lang.has(t));
+}
+
 /** Namens-Weg: dieselben Namenswoerter, nicht mehr und nicht weniger. */
 export function namesEqual(a, b) {
   const x = nameTokens(a), y = nameTokens(b);
-  if (!x.size || x.size !== y.size) return false;
+  if (!x.size || !y.size) return false;
+  /* "ExxonMobil" = "Exxon Mobil" - dieselben Buchstaben, anders getrennt. */
+  if ([...x].join("") === [...y].join("")) return true;
+  if (x.size !== y.size) return false;
   for (const t of x) if (!y.has(t)) return false;
   return true;
 }
@@ -197,8 +213,11 @@ export function matchUniverse(universe, items) {
     else {
       const sym = normalizeTicker(row.symbol);
       const t = byTicker.get(sym) || [];
+      /* Eine abweichende CIK spricht gegen den Treffer - ausser die Firma
+         notiert unter genau diesem Ticker an NYSE/NASDAQ und der Name passt
+         stark (Umstrukturierungen wie BlackRock 2024 bringen neue CIKs). */
       cands = t.filter((e) => namesAgree(e.label, row.name) &&
-        !(cik && e.ciks.size && !e.ciks.has(cik)));
+        (!(cik && e.ciks.size && !e.ciks.has(cik)) || (e.usTickers.has(sym) && namesStrong(e.label, row.name))));
       /* Derselbe Ticker an mehreren Boersen der Welt: die US-Notierung zaehlt. */
       if (cands.length > 1) {
         const us = cands.filter((e) => e.usTickers.has(sym));
@@ -218,6 +237,20 @@ export function matchUniverse(universe, items) {
 const LICENSE_OK = /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?)$/;
 const RESTRICTIONS_OK = new Set(["", "trademarked"]);
 
+/**
+ * Lizenzcode aus der Commons-Metadata. Manche Dateien tragen nur den
+ * Kurznamen ("Public domain", "CC BY-SA 4.0") - der gilt dann.
+ */
+export function licenseCode(code, shortName) {
+  const c = String(code || "").toLowerCase().trim();
+  if (c) return c;
+  const n = String(shortName || "").trim();
+  if (/^public domain$/i.test(n)) return "pd";
+  if (/^cc0\b/i.test(n)) return "cc0";
+  const m = /^cc[ -]by(-sa)?[ -](\d\.\d)$/i.exec(n);
+  return m ? "cc-by" + (m[1] ? "-sa" : "") + "-" + m[2] : "";
+}
+
 function meta(ext, key) {
   const v = ext && ext[key] && ext[key].value;
   return v === undefined || v === null ? "" : String(v);
@@ -236,8 +269,8 @@ export function stripHtml(s) {
 export function checkLicense(info) {
   if (!info) return { ok: false, reason: "KEINE_DATEIINFO" };
   const ext = info.extmetadata || {};
-  const license = meta(ext, "License").toLowerCase().trim();
-  if (!LICENSE_OK.test(license)) return { ok: false, reason: "LIZENZ_NICHT_FREI:" + (license || "unbekannt") };
+  const license = licenseCode(meta(ext, "License"), meta(ext, "LicenseShortName"));
+  if (!LICENSE_OK.test(license)) return { ok: false, reason: "LIZENZ_NICHT_FREI:" + (license || meta(ext, "LicenseShortName") || "unbekannt") };
   const restrictions = meta(ext, "Restrictions").toLowerCase().split("|").map((s) => s.trim());
   if (restrictions.some((r) => !RESTRICTIONS_OK.has(r))) return { ok: false, reason: "EINSCHRAENKUNG:" + restrictions.join("|") };
   const author = stripHtml(meta(ext, "Artist"));
@@ -301,7 +334,8 @@ export function entityToItem(entity) {
   const lab = entity.labels && entity.labels.en;
   if (lab) names.push(lab.value);
   for (const a of (entity.aliases && entity.aliases.en) || []) names.push(a.value);
-  return { item: entity.id, label: lab ? lab.value : "", names, ciks, tickers, usTickers: new Set(), logos };
+  const listed = ["P414", "P5531", "P946", "P1278"].some((p) => claimValues(entity, p).length);
+  return { item: entity.id, label: lab ? lab.value : "", names, ciks, tickers, usTickers: new Set(), logos, listed };
 }
 
 /**
@@ -314,7 +348,12 @@ export function matchByName(row, candidates) {
     e.names.some((n) => namesEqual(n, row.name)) &&
     !(cik && e.ciks.size && !e.ciks.has(cik)) &&
     !(e.tickers.size && !e.tickers.has(sym)));
-  const unique = [...new Map(ok.map((e) => [e.item, e])).values()];
+  let unique = [...new Map(ok.map((e) => [e.item, e])).values()];
+  /* Zwei gleichnamige Items (etwa Konzern und Marke): das boersennotierte zaehlt. */
+  if (unique.length > 1) {
+    const listed = unique.filter((e) => e.listed);
+    if (listed.length === 1) unique = listed;
+  }
   if (unique.length !== 1) return { reason: unique.length ? "MEHRERE_ITEMS" : "KEIN_WIKIDATA_LOGO" };
   const titles = rankLogos(unique[0]);
   return { match: { item: unique[0].item, label: unique[0].label, title: titles[0], titles, via: "NAME" } };

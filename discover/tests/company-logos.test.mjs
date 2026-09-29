@@ -7,7 +7,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
-  entityToItem, matchByName, searchName
+  entityToItem, matchByName, searchName, namesStrong, licenseCode
 } from "../../scripts/discover/company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -98,7 +98,9 @@ test("Namens-Weg: nur exakter Name, Unternehmen, keine widersprechende Kennung",
   assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [andererTicker]).reason, "KEIN_WIKIDATA_LOGO");
   const alias = entityToItem(ent("Q24", "Hewlett-Packard", { P154: ["HP.svg"], P946: ["US40434L1052"] }, ["HP Inc."]));
   assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [alias]).match.item, "Q24");
-  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [firma, alias]).reason, "MEHRERE_ITEMS");
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [firma, alias]).match.item, "Q24");
+  const zweitesListed = entityToItem(ent("Q25", "HP Inc.", { P154: ["Y.svg"], P946: ["US0000000000"] }));
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [alias, zweitesListed]).reason, "MEHRERE_ITEMS");
   assert.ok(namesEqual("Exxon Mobil Corp", "Exxon Mobil Corporation"));
   assert.ok(!namesEqual("Exxon Mobil", "Mobil"));
 });
@@ -182,4 +184,21 @@ test("Social-Pipeline verwendet keine Firmenlogos", () => {
   pruefen(join(root, "social"));
   pruefen(join(root, "scripts", "social"));
   pruefen(join(root, "workers", "vision-universe-social"));
+});
+
+test("Zweite Runde: ExxonMobil, BlackRock, Hasbro, Lizenz nur als Kurzname", () => {
+  assert.ok(namesEqual("ExxonMobil", "Exxon Mobil"));
+  assert.ok(namesAgree("ExxonMobil", "Exxon Mobil"));
+  const blk = collectItems([b("Q30", "BlackRock", "BlackRock.svg", { ticker: "BLK", exch: "Q13677", cik: "1364742" })]);
+  assert.equal(matchUniverse([{ symbol: "BLK", name: "BlackRock Finance", cik: "2012383" }], blk).matches.get("BLK").item, "Q30");
+  const fremd = collectItems([b("Q31", "American Express", "Amex.svg", { ticker: "AXP", exch: "Q13677", cik: "4962" })]);
+  assert.equal(matchUniverse([{ symbol: "AXP", name: "American Airlines", cik: "6201" }], fremd).matches.size, 0);
+  assert.ok(!namesStrong("American Financial Group", "American"));
+  const konzern = entityToItem(ent("Q32", "Hasbro", { P154: ["Hasbro.svg"], P414: [{ id: "Q82059" }] }));
+  const marke = entityToItem(ent("Q33", "Hasbro", { P154: ["Hasbro2.svg"], P452: [{ id: "Q1" }] }));
+  assert.equal(matchByName({ symbol: "HAS", name: "Hasbro", cik: null }, [konzern, marke]).match.item, "Q32");
+  assert.equal(licenseCode("", "Public domain"), "pd");
+  assert.equal(licenseCode("", "CC BY-SA 4.0"), "cc-by-sa-4.0");
+  assert.equal(licenseCode("", "CC BY-NC 4.0"), "");
+  assert.equal(licenseCode("cc-by-3.0", "egal"), "cc-by-3.0");
 });
