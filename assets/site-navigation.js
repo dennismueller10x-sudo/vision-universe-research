@@ -3,7 +3,7 @@
   const groups = [
     ['Discover', [['Start','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]],
     ['Markets & Data', [['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫']]],
-    ['Analyse', [['Screener','/screener/','⧩'],['Quant','/quant/','⌁'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
+    ['Analyse', [['Frag Vision Universe','/ask/','?'],['Screener','/screener/','⧩'],['Quant','/quant/','⌁'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
     ['Research', [['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥']]],
     ['Learn', [['Academy','/academy/','✧'],['Guide','/guide/','◈']]],
     ['Tools & Personal', [['Budget','/budget/','▦']]]

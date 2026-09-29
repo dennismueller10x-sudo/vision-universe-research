@@ -1,0 +1,103 @@
+name: Cloudflare — Fragefunktion (vu-ask) ausrollen
+
+# Rollt workers/vu-ask aus (Cloudflare Workers Free, ein Durable Object).
+# Nur von Hand ausloesbar: Ein Worker, der Geld ausgeben kann, geht nie
+# durch einen beliebigen Push hinaus.
+#
+# SECRETS (GitHub -> Settings -> Secrets and variables -> Actions)
+#   CLOUDFLARE_API_TOKEN   liegt bereits vor
+#   ANTHROPIC_API_KEY      Schluessel aus console.anthropic.com
+#   VU_ASK_ADMIN_KEY       beliebige lange Zufallszeichenkette fuer den Lernbericht
+#   VU_ASK_SALT            beliebige lange Zufallszeichenkette
+#   TURNSTILE_SECRET       optional, Bot-Pruefung
+# Jedes Secret geht ueber stdin an `wrangler secret put` - nie ueber die
+# Kommandozeile, nie ins Protokoll.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: 'Nur pruefen, nichts ausrollen'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vu-ask-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Tests, Ausrollen, Smoke-Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests (Budget, Limits, Lernprotokoll)
+        run: node --test "workers/vu-ask/tests/*.test.mjs" "ask/tests/*.test.mjs"
+
+      - name: Liegen die Zugaenge vor?
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+        run: |
+          fehlt=0
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo "::error::CLOUDFLARE_API_TOKEN fehlt"; fehlt=1; }
+          [ -n "$ANTHROPIC_API_KEY" ] || { echo "::error::ANTHROPIC_API_KEY fehlt"; fehlt=1; }
+          [ -n "$VU_ASK_ADMIN_KEY" ] || { echo "::error::VU_ASK_ADMIN_KEY fehlt"; fehlt=1; }
+          exit $fehlt
+
+      - name: Ausrollen
+        id: deploy
+        if: ${{ !inputs.dryRun }}
+        working-directory: workers/vu-ask
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          npx --yes wrangler@4 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
+          url=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Secrets zu Cloudflare
+        if: ${{ !inputs.dryRun }}
+        working-directory: workers/vu-ask
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          VU_ASK_SALT: ${{ secrets.VU_ASK_SALT }}
+          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
+        run: |
+          for name in ANTHROPIC_API_KEY VU_ASK_ADMIN_KEY VU_ASK_SALT TURNSTILE_SECRET; do
+            value="${!name}"
+            if [ -n "$value" ]; then
+              printf '%s' "$value" | npx --yes wrangler@4 secret put "$name" > /dev/null 2>&1 && echo "$name hinterlegt" || { echo "::error::$name nicht hinterlegt"; exit 1; }
+            else
+              echo "$name nicht gesetzt - uebersprungen"
+            fi
+          done
+
+      - name: Smoke-Test (ohne Frage, kostet nichts)
+        if: ${{ !inputs.dryRun && steps.deploy.outputs.url != '' }}
+        run: |
+          curl --fail --silent "${{ steps.deploy.outputs.url }}/v1/health"
+          echo
+          curl --fail --silent -H 'origin: https://research.visionuniverse.de' "${{ steps.deploy.outputs.url }}/v1/quota?client=smoketest0001"
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Fragefunktion vu-ask'
+            echo ''
+            echo "Adresse: \`${{ steps.deploy.outputs.url }}\`"
+            echo ''
+            echo 'Diese Adresse in `ask/index.html` bei `<meta name="vu-ask-endpoint" content="">` eintragen, dann ist die Seite /ask/ aktiv.'
+          } >> "$GITHUB_STEP_SUMMARY"

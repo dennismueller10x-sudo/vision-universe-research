@@ -1,0 +1,54 @@
+# =============================================================================
+# VISION UNIVERSE — workers/vu-ask/wrangler.toml
+#
+# Die Fragefunktion ("Frag Vision Universe"). Cloudflare Workers Free:
+# ein Worker, ein Durable Object (SQLite), kein KV, kein R2, kein D1.
+#
+# DIE KOSTENSICHERUNGEN, VON AUSSEN NACH INNEN
+#
+#   1  Anthropic-Konto: nur Prepaid-Guthaben, automatisches Nachladen AUS.
+#      Ist das Guthaben aufgebraucht, lehnt die API ab - es entsteht keine
+#      Rechnung. Das ist die Sicherung, die auch dann greift, wenn in
+#      diesem Code ein Fehler steckt.
+#   2  VU_ASK_TOTAL_USD    Gesamtgrenze, bewusst unter dem Guthaben
+#   3  VU_ASK_MONTHLY_USD  Monatsgrenze
+#   4  VU_ASK_GLOBAL_DAILY Fragen pro Tag, alle Nutzer zusammen
+#   5  VU_ASK_PER_USER_DAILY  Fragen pro Anschluss und Tag
+#   6  VU_ASK_REQUESTS_PER_IP_DAILY  alle Anfragen pro Anschluss, auch
+#      kostenlose (Cache), gegen Dauerfeuer
+#
+# SECRETS (nie in diese Datei):
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put VU_ASK_ADMIN_KEY     fuer /v1/admin/report
+#   wrangler secret put VU_ASK_SALT          Salz fuer die Tages-Hashes
+#   wrangler secret put TURNSTILE_SECRET     optional: Bot-Pruefung
+# =============================================================================
+
+name = "vu-ask"
+main = "src/index.mjs"
+compatibility_date = "2026-09-17"
+workers_dev = true
+compatibility_flags = []
+
+[observability]
+enabled = true
+
+[[durable_objects.bindings]]
+name = "VU_ASK_GATE"
+class_name = "AskGate"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AskGate"]
+
+[vars]
+# Hauptschalter. "false" = keine einzige Anfrage an Anthropic.
+VU_ASK_ENABLED = "true"
+VU_ASK_MODEL = "claude-haiku-4-5"
+VU_ASK_PER_USER_DAILY = "1"
+VU_ASK_GLOBAL_DAILY = "200"
+VU_ASK_MONTHLY_USD = "20"
+VU_ASK_TOTAL_USD = "200"
+VU_ASK_MAX_OUTPUT_TOKENS = "1200"
+VU_ASK_REQUESTS_PER_IP_DAILY = "40"
+VU_ASK_ALLOWED_ORIGINS = "https://research.visionuniverse.de,https://vision-universe-research.vercel.app"
