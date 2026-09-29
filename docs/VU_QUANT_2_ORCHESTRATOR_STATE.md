@@ -3788,9 +3788,34 @@ Kette entfernt, werden zwei Tests rot; mit der Stufe sind alle neun gruen.
 
 - Heutiger Rueckstand aufgeholt: Lauf #46 (von Hand, 04:10–04:29 UTC)
   hat den Faktor-Stichtag auf **2026-09-28** gehoben.
-- Gemessen nach dem Merge von main: Ablage 2026-09-28, Produkt
-  2026-09-28, beide Rueckstand **0**, `QUANT_CURRENT = PASS`.
+- PR #282 gemergt (`a439da7`, 29.09.2026 06:11 UTC). Alle Checks auf dem
+  gepruefen Stand `880f5c4c`: sechs gruen, dreizehn korrekt uebersprungen,
+  keiner rot. Die Jobs `materialize` und `freshness-contract` erscheinen
+  als `skipped` — die Kette ist verdrahtet und richtig gegated: auf einem
+  Entwicklungszweig laeuft `refresh` nicht, also laeuft auch die Kette
+  dahinter nicht.
+- **Alle drei Stufen gemessen, auf dem gemergten main und gegen das daraus
+  gebaute Release:**
+
+  | Stufe | Stichtag | Rueckstand | Zustand |
+  |---|---|---|---|
+  | Letzte abgeschlossene Sitzung | 2026-09-28 | — | — |
+  | Dauerhafte Ablage | 2026-09-28 | **0** | `CURRENT` |
+  | Produkt-Materialisierung | 2026-09-28 | **0** | `CURRENT` |
+  | Ausgelieferter Stand (Release) | 2026-09-28 | **0** | `CURRENT` |
+
+  `QUANT_CURRENT = PASS`. Das Zielbild aus dem Entscheid (0/0/0) ist damit
+  einmal erreicht — von Hand herbeigefuehrt.
+- Der Frische-Bericht selbst ist **nicht versioniert**
+  (`quant/data/product/pipeline-freshness-v1.json`, `.gitignore`). Ein
+  committeter Frische-Bericht waere eine Datei, deren Stichtag am naechsten
+  Handelstag eine Aktualitaet behauptet, die sie nicht hat — die
+  Fehlerklasse in ihrer eigenen Messung. Die Kette liest ihn aus dem Lauf.
 - **Offen bis zum Beweis:** `DATA_PIPELINE_AUTOMATION = PASS` gilt erst,
   wenn eine **nicht von Hand gestartete** Nachtkette Refresh → Store →
   Product → Deploy durchlaufen hat und der ausgelieferte Stichtag aktuell
-  ist. Bis dahin ist die Kette gebaut, aber nicht bewiesen.
+  ist. Naechster planmaessiger Ausloeser: `cron '30 22 * * 1-5'`, also
+  **29.09.2026 22:30 UTC** zuzueglich der GitHub-ueblichen Verzoegerung.
+  Bis dahin ist die Kette gebaut und einmal von Hand durchgerechnet, aber
+  nicht bewiesen. 0/0/0 von Hand ist kein Beleg fuer Automatik — genau
+  diese Verwechslung war der P0.
