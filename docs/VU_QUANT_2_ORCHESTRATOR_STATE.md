@@ -49,6 +49,36 @@ Beide repariert, beide als Test festgehalten.
 
 ## POST_LAUNCH_2026-09-28 — ERSTE BEOBACHTUNG, KEIN P0, KEIN P1
 
+### Refresh-Kontrolle 2026-09-29 03:11 UTC — KEIN P0
+
+Gepruefte Frage: ist der Marktdaten-Refresh vom Montagabend gelaufen und
+steht der veroeffentlichte Kursstand jetzt auf 2026-09-28?
+
+Gemessen:
+
+- Lauf #691 (`market-data-refresh.yml`, event `schedule`, Zweig main) ist
+  am 2026-09-29 um 02:11:35 UTC gestartet und zum Zeitpunkt der Kontrolle
+  **in_progress** — weder rot noch ausgeblieben. Der Vorlauf #582 brauchte
+  90 Minuten (00:46 → 02:16), das Ende liegt also gegen 03:41 UTC.
+- Die Verzoegerung ist die bekannte: cron `30 22 * * 1-5`, GitHub feuert
+  spaeter. Der Montagslauf kommt deshalb am Dienstag frueh an.
+- Der Faktor-Stichtag steht noch auf **2026-09-25** (`asOf` im Shard
+  `factor-evidence-v1/NV.json.gz` auf main). Das ist die Folge des noch
+  laufenden Laufs, nicht sein Ausbleiben.
+- Der Strom fliesst nachweislich: main traegt den Commit
+  `Intraday-Snapshots: universe (2026-09-28 CLOSED, 5229 geschrieben,
+  6876 Anfragen)`.
+
+Bewertung: das P0-Kriterium "Datenpipeline eingefroren" ist **nicht**
+erfuellt. Es verlangt einen Stand, der stillsteht, UND einen Lauf, der rot
+ist oder gar nicht kam. Hier laeuft er. Ein P0 auszurufen, weil ein
+laufender Job noch nicht fertig ist, waere ein Fehlalarm — und ein
+Fehlalarm kostet genau das Vertrauen, das ein echtes P0 braucht.
+
+Offen und nachzuhalten: ob der Stichtag nach Abschluss des Laufs auf
+2026-09-28 steht. Dafuer ist eine Nachkontrolle gesetzt.
+
+
 POST-LAUNCH MODE. Gemessen wurde die **laufende Produktion**, nicht der Launch-Commit.
 
 **Der ausgelieferte Stand.** main ist auf `2d050f8003` (PR #268–#272). Alle fünf
