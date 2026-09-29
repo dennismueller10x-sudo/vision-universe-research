@@ -126,3 +126,21 @@ test("calendarStats: Monate, Zyklusjahre (1928 = Wahljahr), 12 Monate danach", a
   assert.equal(c.cycle.find((x) => x.year === 4).label, "Wahljahr");
   assert.ok(c.forward12.byCycleMonth.find((x) => x.cycleYear === 2 && x.month === 9).n >= 3);
 });
+
+test("recoverySignal: Baerenmarkt, erstes Signal (zu frueh) und erstes tragendes Signal", async () => {
+  const { recoverySignal } = await import("../../scripts/market/lib/market-validation.mjs");
+  const pts = [], br = [];
+  /* 0-9 Hoch 100 -> Absturz auf 70 (Tag 20) -> Zwischenhoch 80 (Tag 30) -> Tief 60 (Tag 60) -> 100 (Tag 110) */
+  for (let i = 0; i <= 120; i++) {
+    const v = i <= 10 ? 100 : i <= 20 ? 100 - 3 * (i - 10) : i <= 30 ? 70 + (i - 20) : i <= 60 ? 80 - (i - 30) * 2 / 3 : Math.min(101, 60 + (i - 60) * 0.82);
+    pts.push([day(i), v]);
+    br.push({ date: day(i), above50Pct: i === 30 || i === 70 ? 70 : 10 });
+  }
+  const r = recoverySignal(pts, br);
+  assert.equal(r.bears, 1);
+  const b = r.bearMarkets[0];
+  assert.equal(b.first.date, day(30));
+  assert.equal(b.first.false, true, "nach dem ersten Schub fiel der Markt noch von 80 auf 60");
+  assert.equal(b.firstLasting.date, day(70));
+  assert.equal(r.firstFalse, 1);
+});

@@ -118,6 +118,14 @@ Seit 29.09.2026 außerdem auf derselben Seite:
   05.06.2020). Seit 29.09.2026 steht der Stresstest als Bühne direkt nach
   „Heute“ (Kennzahlen im Median) und als Beleg-Streifen auf der Übersicht –
   immer mit „nachgerechnet mit den Regeln von heute“ und dieser Grenze.
+- **Frühe Erholungszeichen** (`recoverySignal`), eigenes Zeichen und kein
+  Teil des Barometers: Breitenschub im Bärenmarkt (Anteil über der
+  50-Tage-Linie binnen 20 Handelstagen von ≤ 20 % auf ≥ 65 %; feste Schwellen,
+  nicht optimiert). Über 16 Bärenmärkte seit 1929: erstes tragendes Zeichen
+  typisch +11 % über dem Tief (Barometer „Selektiv“: +28 %), aber in 4 von 16
+  kam das erste Zeichen zu früh (1930 −77 %, 1974 −35 %, 2001 −34 %,
+  2008 −47 %). Geprüft und verworfen: das Barometer selbst auf Böden zu
+  trimmen – das wäre Kurvenanpassung an sieben bekannte Crashs.
 - **Kalender-Kontext** (`calendarStats`), ausdrücklich kein Teil des
   Barometers: Kalendermonate mit t-Test und Benjamini-Hochberg,
   US-Präsidentschaftszyklus (1928 = Wahljahr) und die 12 Monate nach jedem

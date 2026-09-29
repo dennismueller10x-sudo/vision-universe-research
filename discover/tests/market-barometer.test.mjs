@@ -32,11 +32,12 @@ function find(n, pred, out = []) { if (!n || typeof n !== "object") return out; 
 const byId = (teile, id) => teile.find((t) => t.attrs && t.attrs.id === id);
 
 const JETZT = new Date("2026-09-29T10:00:00Z");
+const HIST = JSON.parse(readFileSync(new URL("../../quant/data/market/intelligence/market-pulse-history.json", import.meta.url), "utf8"));
 test("Marktbarometer: Teile in fester Reihenfolge, Details als eigene Unterseite", () => {
   const teile = MB.render(J(PULSE), J(EV), JETZT);
   const ids = teile.map((t) => t.attrs.id || t.attrs.class);
-  assert.deepEqual(J(ids.slice(0, 8)), ["bm-heute", "bm-krisen", "bm-chance", "bm-vergleich", "bm-warum", "bm-wende", "bm-stufen", "bm-kalender"]);
-  assert.equal(teile[8].attrs.href, "#/maerkte/einordnung/details");
+  assert.deepEqual(J(ids.slice(0, 9)), ["bm-heute", "bm-krisen", "bm-erholung", "bm-chance", "bm-vergleich", "bm-warum", "bm-wende", "bm-stufen", "bm-kalender"]);
+  assert.equal(teile[9].attrs.href, "#/maerkte/einordnung/details");
 });
 
 test("Stresstest: direkt nach Heute, jede Krise als Tabellenzeile, Median-Kennzahlen, Grenze bei Boeden", () => {
@@ -116,4 +117,22 @@ test("Keine Handlungsaufforderung, Quelle und Hinweis sichtbar", () => {
   assert.match(t, /Kenneth R\. French Data Library/);
   assert.match(t, /kein verlässlicher Hinweis auf künftige/);
   assert.match(t, /Keine Anlageberatung/);
+});
+
+test("Fruehe Erholungszeichen: eigenes Zeichen, Bilanz aus dem Auszug, Live-Zustand aus Risiko und Breitenhistorie", () => {
+  const e = byId(MB.render(J(PULSE), J(EV), JETZT, J(HIST)), "bm-erholung");
+  const t = text(e);
+  assert.match(t, /kein Teil des Barometers/);
+  assert.match(t, new RegExp(EV.recovery.firstFalse + " von " + EV.recovery.withSignal));
+  assert.match(t, /kein Signal zum Handeln/);
+  assert.doesNotMatch(t, /Kaufsignal|\bkaufen\b/i);
+  const rule = EV.recovery.rule;
+  const pulse = (dd) => ({ dimensions: { RISK: { evidence: [{ key: "drawdown52w", value: dd }] } } });
+  assert.equal(MB.erholungLive(pulse(-5), null, rule).zustand, "inaktiv");
+  const tage = (xs) => ({ days: xs.map((v, i) => ({ date: "2026-01-" + String(i + 1).padStart(2, "0"), metrics: { above50Pct: v } })) });
+  assert.equal(MB.erholungLive(pulse(-25), tage([10, 12]), rule).zustand, "zu-wenig");
+  assert.equal(MB.erholungLive(pulse(-25), tage(Array(25).fill(15)), rule).zustand, "baer");
+  const schub = MB.erholungLive(pulse(-25), tage(Array(24).fill(15).concat([70])), rule);
+  assert.equal(schub.zustand, "zeichen");
+  assert.equal(schub.seit, "2026-01-25");
 });

@@ -24,7 +24,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pointInTimeStates, forwardOutcomes, evaluate, exposureIllustration, frequencies, horizonStats, crisisReplay, calendarStats, MP, PR, round } from "./lib/market-validation.mjs";
+import { pointInTimeStates, forwardOutcomes, evaluate, exposureIllustration, frequencies, horizonStats, crisisReplay, calendarStats, recoverySignal, MP, PR, round } from "./lib/market-validation.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = new Set(process.argv.slice(2));
@@ -128,6 +128,7 @@ function studyFrench() {
     note: "Die Regeln wurden 2026 in Kenntnis der Jahre ab 2001 formuliert (nicht auf Rendite optimiert). Die Jahre vor 2001 sind für sie echte Außer-Stichproben-Daten.",
     variants,
     calendar: calendarStats(f.series.MARKET),
+    recovery: f.industryBreadth ? recoverySignal(f.series.MARKET, f.industryBreadth) : null,
     _bench: f.series.MARKET
   };
 }
@@ -238,6 +239,8 @@ function evidence(B) {
     crises: v.crises,
     crisesNote: "Dieselben Regeln, Tag für Tag nur mit den damals bekannten Kursen. Hoch und Tief sind aus der Reihe bestimmt; „Warnung“ = erster Tag auf „Vorsichtig“ oder „Defensiv“.",
     calendar: B.calendar,
+    recovery: B.recovery,
+    recoveryNote: "Eigenes Zeichen, kein Teil des Barometers. Historie mit 49 Branchen (Kenneth R. French Data Library); live zählt Vision Universe Einzelaktien – dieselbe Idee, feinere Messung. Feste Schwellen, nicht optimiert.",
     calendarNote: "Kalender-Statistik aus derselben Reihe – kein Teil des Barometers. Wenige Fälle je Zyklusjahr (rund 24); solche Muster sind bekannt und können sich abschwächen.",
     longTermNote: "Über alle Handelstage seit Beginn (sich überschneidende Zeiträume). Bei 5 Jahren gibt es je Stufe nur wenige Zeiträume, die sich nicht überschneiden – Unterschiede zwischen den Stufen sind dort nicht belastbar.",
     periods: e.subperiods.map((sp) => ({ id: sp.id.replace(/ \(.*\)$/, ""), levels: sp.levels.filter((x) => x.days > 0).map((x) => ({ level: x.level, label: x.label,
