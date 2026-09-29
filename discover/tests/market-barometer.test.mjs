@@ -35,21 +35,25 @@ const JETZT = new Date("2026-09-29T10:00:00Z");
 test("Marktbarometer: Teile in fester Reihenfolge, Details als eigene Unterseite", () => {
   const teile = MB.render(J(PULSE), J(EV), JETZT);
   const ids = teile.map((t) => t.attrs.id || t.attrs.class);
-  assert.deepEqual(J(ids.slice(0, 8)), ["bm-heute", "bm-chance", "bm-vergleich", "bm-krisen", "bm-warum", "bm-wende", "bm-stufen", "bm-kalender"]);
+  assert.deepEqual(J(ids.slice(0, 8)), ["bm-heute", "bm-krisen", "bm-chance", "bm-vergleich", "bm-warum", "bm-wende", "bm-stufen", "bm-kalender"]);
   assert.equal(teile[8].attrs.href, "#/maerkte/einordnung/details");
 });
 
-test("Krisen-Check: jede Krise aus dem Auszug, Warnung und Rest des Absturzes, ehrliche Grenze", () => {
+test("Stresstest: direkt nach Heute, jede Krise als Tabellenzeile, Median-Kennzahlen, Grenze bei Boeden", () => {
   const k = byId(MB.render(J(PULSE), J(EV), JETZT), "bm-krisen");
   const t = text(k);
-  const karten = find(k, (n) => n.tag === "article");
-  assert.equal(karten.length, EV.crises.length);
+  assert.equal(find(k, (n) => n.tag === "tr").length, EV.crises.length + 1, "Kopfzeile + eine Zeile je Krise");
   const corona = EV.crises.find((x) => x.id === "2020");
   assert.match(t, /Corona-Crash/);
-  assert.match(t, new RegExp("−" + Math.round(Math.abs(corona.fall)) + "\u00a0%"));
+  assert.match(t, new RegExp("−" + Math.round(Math.abs(corona.fall)) + "\\u00a0%"));
   assert.match(t, new RegExp(EV.crises.filter((x) => x.firstWarning).length + " von " + EV.crises.length));
-  assert.match(t, /Was das Barometer nicht kann/);
-  assert.match(t, /sagt den ersten Tag eines Absturzes nicht voraus/);
+  const st = MB.stresstest(J(EV));
+  const med = (xs) => { const s = xs.slice().sort((a, b) => a - b); return s.length % 2 ? s[s.length >> 1] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2; };
+  assert.equal(st.danach, med(EV.crises.filter((x) => x.firstWarning).map((x) => x.firstWarning.restAfter)));
+  assert.match(t, /Böden erkennt es nicht/);
+  assert.match(t, /sagt weder den ersten Tag eines Absturzes noch den Boden voraus/);
+  assert.match(t, /das Barometer gab es damals noch nicht/);
+  assert.match(t, /hätte das Barometer früh erkannt/);
 });
 
 test("Kalender-Kontext: getrennt vom Barometer, aktueller Monat und Zyklusjahr markiert, Fallzahlen", () => {

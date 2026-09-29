@@ -107,6 +107,8 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
  p('Uebersicht: Marktbarometer mit Stufe, Rueckschlag-Risiko und eindeutigem Knopf zur 2-Minuten-Erklaerung',!!ov&&!!ov.stimmung&&/Rückschlag-Risiko: (normal|erhöht|gering)/.test(ov.stimmung.text)&&
    /Was heißt „[^“]+“\?/.test(ov.stimmung.text)&&/In 2 Minuten erklärt/.test(ov.stimmung.text)&&ov.stimmung.link==='#/maerkte/einordnung',ov&&ov.stimmung&&ov.stimmung.link);
  p('Uebersicht: keine Analyse-Abschnitte auf der Kursseite',!!ov&&!ov.analyse,null);
+ {const beleg=await page.evaluate(()=>{const a=document.querySelector('#maerkte-stimmung a.dx-m3-st-beleg');return a?{href:a.getAttribute('href'),text:a.textContent}:null;});
+  p('Uebersicht: Stresstest-Beleg im Marktbarometer (x von y Abstuerzen, nachgerechnet)',!!beleg&&beleg.href==='#/maerkte/einordnung'&&/\d von \d großen Abstürzen früh erkannt/.test(beleg.text)&&/nachgerechnet/.test(beleg.text),beleg);}
  p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',!!ov&&ov.stories.length>=1&&ov.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),ov&&ov.stories);
  p('Movers verlinken auf Aktienseiten',!!ov&&(ov.movers.length===0||ov.movers.every(h=>/^#\/s\/US_REAL\//.test(h))),ov&&ov.movers.slice(0,3));
  p('Jede Karte mit Wert ist ein Link zum Marktdetail',!!ov&&ov.kartenLinks.length>=28&&ov.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),ov&&ov.kartenLinks.length);
@@ -129,7 +131,7 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
    mehr:(q('a.bm-mehr')||{getAttribute:()=>null}).getAttribute('href'),text:(q('.dx-bm')||{}).textContent||'',
    querlauf:document.documentElement.scrollWidth>innerWidth};});
  p('Marktbarometer: Titel, Weg zurueck, alle Teile in fester Reihenfolge',bm.titel==='Marktbarometer'&&bm.zurueck==='#/maerkte'&&
-   JSON.stringify(bm.folge)===JSON.stringify(['bm-heute','bm-chance','bm-vergleich','bm-krisen','bm-warum','bm-wende','bm-stufen','bm-kalender']),{folge:bm.folge,zurueck:bm.zurueck});
+   JSON.stringify(bm.folge)===JSON.stringify(['bm-heute','bm-krisen','bm-chance','bm-vergleich','bm-warum','bm-wende','bm-stufen','bm-kalender']),{folge:bm.folge,zurueck:bm.zurueck});
  p('Marktbarometer: Stufe als Wetter mit Leiste der fuenf Stufen',bm.stufe.length>=5&&bm.wetter.length>=4&&bm.leiste===5,{stufe:bm.stufe,wetter:bm.wetter});
  p('Marktbarometer: vier grosse Zahlen in Prozent und ein Fazit',bm.zahlen.length===4&&bm.zahlen.every(z=>/%$/.test(z))&&/Kurz gesagt:/.test(bm.fazit),bm.zahlen);
  p('Marktbarometer: Vergleich mit vier Ansichten, heutige Stufe markiert',bm.tabs.length===4&&bm.saeulen>=4&&bm.heute===1&&bm.chartFazit.length>20,{tabs:bm.tabs,saeulen:bm.saeulen});
@@ -138,11 +140,11 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
   p('Marktbarometer: Ansichtswechsel aendert Diagramm und Aussage',nach.p==='schlecht'&&nach.f!==vor&&/schlechten Jahr/.test(nach.f),nach);}
  p('Marktbarometer: Gruende als Symbol-Kacheln, fuenf Stufen zum Wischen, Weg zu allen Details',bm.gruende>=3&&bm.stufen===5&&bm.mehr==='#/maerkte/einordnung/details',{gruende:bm.gruende,stufen:bm.stufen,mehr:bm.mehr});
  {const kr=await page.evaluate(()=>{const k=document.getElementById('bm-krisen');const c=document.getElementById('bm-kalender');
-   return {krisen:k?k.querySelectorAll('.bm-krise').length:0,zahlen:k?[...k.querySelectorAll('.bm-krisen-zahl b')].map(b=>b.textContent):[],grenze:k?/nicht voraus/.test(k.textContent):false,
+   return {krisen:k?k.querySelectorAll('.bm-krisen-tabelle tbody tr').length:0,zahlen:k?[...k.querySelectorAll('.bm-krisen-zahl b')].map(b=>b.textContent):[],grenze:k?/Boden voraus/.test(k.textContent)&&/gab es damals noch nicht/.test(k.textContent):false,
     corona:k?/Corona-Crash/.test(k.textContent):false,dotcom:k?/Dotcom-Blase/.test(k.textContent):false,
     kalender:c?{getrennt:/kein Teil des Barometers/.test(c.textContent),jetzt:(c.querySelector('.bm-kal-jetzt-kopf')||{}).textContent||'',monate:c.querySelectorAll('.bm-monat').length,
      monatJetzt:c.querySelectorAll('.bm-monat.is-jetzt').length,zyklus:c.querySelectorAll('.bm-zjahr').length,zyklusJetzt:c.querySelectorAll('.bm-zjahr.is-jetzt').length}:null};});
-  p('Krisen-Check: sieben Abstuerze einzeln, drei Kennzahlen, Corona und Dotcom dabei, ehrliche Grenze',kr.krisen>=7&&kr.zahlen.length===3&&kr.corona&&kr.dotcom&&kr.grenze,{krisen:kr.krisen,zahlen:kr.zahlen});
+  p('Stresstest: direkt nach Heute, Tabelle der sieben Abstuerze, vier Kennzahlen, Corona und Dotcom dabei, ehrliche Grenze (Boeden, nachgerechnet)',kr.krisen>=7&&kr.zahlen.length===4&&kr.corona&&kr.dotcom&&kr.grenze,{krisen:kr.krisen,zahlen:kr.zahlen});
   p('Kalender-Kontext: getrennt vom Barometer, 12 Monate, 4 Zyklusjahre, jetzt markiert',!!kr.kalender&&kr.kalender.getrennt&&kr.kalender.monate===12&&kr.kalender.monatJetzt===1&&kr.kalender.zyklus===4&&kr.kalender.zyklusJetzt===1&&/^Jetzt: /.test(kr.kalender.jetzt),kr.kalender);}
  p('Marktbarometer: Quelle, Hinweis, keine Handlungsaufforderung',/French Data Library/.test(bm.text)&&/Keine Anlageberatung/.test(bm.text)&&!/jetzt kaufen|verkaufen Sie|Kaufsignal/i.test(bm.text),null);
  if(key==='mobile')p('Marktbarometer: kein Querlauf auf dem Telefon',!bm.querlauf,null);

@@ -195,51 +195,60 @@
      angeschlagen?" Ehrlich beantwortet: am Hoch stand es meist auf
      "Konstruktiv" - es erkennt den Umschwung, nicht den ersten Tag. */
   var MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-  function krisen(ev) {
+  function median(xs) { var s = xs.slice().sort(function (a, b) { return a - b; }); return s.length ? (s.length % 2 ? s[s.length >> 1] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : null; }
+  /* Kennzahlen des Stresstests - auch fuer die Karte auf der Uebersicht. */
+  function stresstest(ev) {
     var ks = ev && ev.crises ? ev.crises.filter(function (k) { return isNum(k.fall); }) : [];
     if (ks.length < 3) return null;
-    var mitWarnung = ks.filter(function (k) { return k.firstWarning; });
-    var avg = function (xs) { return xs.reduce(function (a, b) { return a + b; }, 0) / (xs.length || 1); };
-    var beiWarnung = avg(mitWarnung.map(function (k) { return k.firstWarning.fallAt; }));
-    var danach = avg(mitWarnung.map(function (k) { return k.firstWarning.restAfter; }));
-    var anteil = avg(ks.map(function (k) { return k.warningShare || 0; }));
-    function zahl3(gross, text, klein) {
-      return el("div", { class: "bm-krisen-zahl" }, [el("b", { text: gross }), el("p", { text: text }), klein ? el("small", { text: klein }) : null].filter(Boolean));
+    var mit = ks.filter(function (k) { return k.firstWarning; });
+    var boden = ks.filter(function (k) { return k.backSelective; });
+    return { krisen: ks, erkannt: mit.length, anzahl: ks.length,
+      beiWarnung: median(mit.map(function (k) { return k.firstWarning.fallAt; })),
+      danach: median(mit.map(function (k) { return k.firstWarning.restAfter; })),
+      anteil: median(ks.map(function (k) { return k.warningShare || 0; })),
+      boden: boden.length ? median(boden.map(function (k) { return k.backSelective.riseFromTrough; })) : null,
+      amTiefDefensiv: ks.filter(function (k) { return k.levelAtTrough === "Defensiv"; }).length };
+  }
+  function krisen(ev) {
+    var t = stresstest(ev);
+    if (!t) return null;
+    function zahl3(gross, text, klein, art) {
+      return el("div", { class: "bm-krisen-zahl" + (art ? " is-" + art : "") }, [el("b", { text: gross }), el("p", { text: text }), klein ? el("small", { text: klein }) : null].filter(Boolean));
     }
-    var karten = ks.slice().reverse().map(function (k) {
-      var w = k.firstWarning, lage = w ? Math.max(0, Math.min(100, 100 * w.fallAt / k.fall)) : null;
-      return el("article", { class: "bm-krise" }, [
-        el("p", { class: "bm-krise-jahr", text: k.peak.slice(0, 4) + (k.trough.slice(0, 4) !== k.peak.slice(0, 4) ? "–" + k.trough.slice(2, 4) : "") }),
-        el("h3", { text: k.name }),
-        el("b", { class: "bm-krise-fall", text: pct(k.fall, 0) }),
-        el("p", { class: "bm-krise-dauer", text: "vom Hoch zum Tief in " + k.tradingDays + " Handelstagen" }),
-        el("div", { class: "bm-krise-spur", "aria-hidden": "true" }, [
-          w ? el("span", { class: "bm-krise-vor", style: "width:" + lage.toFixed(1) + "%" }) : null,
-          w ? el("span", { class: "bm-krise-nach", style: "left:" + lage.toFixed(1) + "%;width:" + (100 - lage).toFixed(1) + "%" }) : null,
-          w ? el("i", { class: "bm-krise-marke", style: "left:" + lage.toFixed(1) + "%" }) : null
-        ].filter(Boolean)),
-        el("dl", {}, [
-          el("div", {}, [el("dt", { text: "Am Hoch" }), el("dd", { text: k.levelAtPeak || "–" })]),
-          el("div", {}, [el("dt", { text: "Warnung" }), el("dd", { text: w ? (w.tradingDaysAfterPeak === 0 ? "schon am Hoch" : "bei " + pct(w.fallAt, 0) + ", nach " + w.tradingDaysAfterPeak + " Tagen") : "keine" })]),
-          w ? el("div", { class: "is-wichtig" }, [el("dt", { text: "Danach fiel er noch" }), el("dd", { text: pct(w.restAfter, 0) })]) : null,
-          k.backConstructive ? el("div", {}, [el("dt", { text: "Wieder „Konstruktiv“" }), el("dd", { text: pct(k.backConstructive.riseFromTrough, 0, true) + " über dem Tief" })]) : null
-        ].filter(Boolean))
+    function jahre(k) { return k.peak.slice(0, 4) + (k.trough.slice(0, 4) !== k.peak.slice(0, 4) ? "–" + k.trough.slice(0, 4) : ""); }
+    var zeilen = t.krisen.slice().reverse().map(function (k) {
+      var w = k.firstWarning, b = k.backSelective;
+      return el("tr", {}, [
+        el("th", { scope: "row" }, [el("b", { text: k.name }), el("small", { text: jahre(k) })]),
+        el("td", { "data-label": "Absturz", class: "is-fall", text: pct(k.fall, 0) }),
+        el("td", { "data-label": "Am Hoch", text: k.levelAtPeak || "–" }),
+        el("td", { "data-label": "Warnung", text: w ? (w.tradingDaysAfterPeak === 0 ? "schon am Hoch" : "bei " + pct(w.fallAt, 0)) : "keine" }),
+        el("td", { "data-label": "Danach fiel er noch", class: "is-danach", text: w ? pct(w.restAfter, 0) : "–" }),
+        el("td", { "data-label": "Wieder „Selektiv“", class: "is-boden", text: b ? pct(b.riseFromTrough, 0, true) + " über dem Tief" : "–" })
       ]);
     });
-    return el("section", { class: "bm-krisen", id: "bm-krisen", "aria-label": "Hätte das Barometer gewarnt?" }, [
-      kopf("Stresstest · " + ks.length + " große Abstürze", "Hätte das Barometer gewarnt?", "Mit genau denselben Regeln, Tag für Tag nur mit dem Wissen von damals – von der Weltwirtschaftskrise bis zum Zinsschock."),
-      el("div", { class: "bm-krisen-zahlen" }, [
-        zahl3(mitWarnung.length + " von " + ks.length, "Abstürzen hat es erkannt", "im Schnitt bei " + pct(beiWarnung, 0) + " Minus"),
-        zahl3(pct(danach, 0), "fiel der Markt nach der Warnung im Schnitt noch", "der größte Teil kam erst danach"),
-        zahl3(pct(anteil, 0), "des Weges nach unten stand es auf Warnstufe", "„Vorsichtig“ oder „Defensiv“")
+    return el("section", { class: "bm-krisen", id: "bm-krisen", "aria-label": "Stresstest: Hätte das Barometer gewarnt?" }, [
+      el("div", { class: "bm-krisen-buehne" }, [
+        el("p", { class: "bm-krisen-eyebrow" }, [el("span", { class: "bm-krisen-schild", "aria-hidden": "true" }, [glyph("schild")].filter(Boolean)),
+          el("span", { text: "Stresstest seit " + t.krisen[0].peak.slice(0, 4) + " · mit den heutigen Regeln nachgerechnet" })]),
+        el("h2", { class: "bm-krisen-titel" }, [el("b", { text: t.erkannt + " von " + t.anzahl }), el("span", { text: "großen Abstürzen hätte das Barometer früh erkannt – bevor der größte Teil kam." })]),
+        el("div", { class: "bm-krisen-zahlen" }, [
+          zahl3("bei " + pct(t.beiWarnung, 0), "stand es typisch schon auf Warnstufe", "„Vorsichtig“ oder „Defensiv“", "warn"),
+          zahl3(pct(t.danach, 0), "fiel der Markt danach typisch noch", "der größte Teil kam nach der Warnung", "gut"),
+          zahl3(pct(t.anteil, 0), "des Weges nach unten auf Warnstufe", "im Median über alle sieben", "neutral"),
+          t.boden !== null ? zahl3(pct(t.boden, 0, true), "über dem Tief erst wieder „Selektiv“", "Böden erkennt es nicht – es bestätigt den Aufschwung", "grenze") : null
+        ].filter(Boolean)),
+        el("div", { class: "bm-krisen-tabelle-box" }, [el("table", { class: "bm-krisen-tabelle" }, [
+          el("caption", { text: "Die sieben großen Abstürze seit " + t.krisen[0].peak.slice(0, 4) + " – neueste zuerst" }),
+          el("thead", {}, [el("tr", {}, ["Absturz", "Minus", "Am Hoch", "Warnung", "Danach fiel er noch", "Wieder „Selektiv“"].map(function (x) { return el("th", { scope: "col", text: x }); }))]),
+          el("tbody", {}, zeilen)
+        ])])
       ]),
-      el("p", { class: "bm-krise-legende" }, [el("span", { class: "is-vor", text: "Minus bis zur Warnung" }), el("span", { class: "is-nach", text: "Minus nach der Warnung" }),
-        el("span", { class: "is-marke", text: "Warnung" })]),
-      el("div", { class: "bm-krisen-reihe", tabindex: "0", role: "group", "aria-label": "Die Abstürze einzeln – wischen für mehr" }, karten),
       el("div", { class: "bm-ehrlich" }, [el("span", { class: "bm-ehrlich-icon", "aria-hidden": "true" }, [glyph("lupe")].filter(Boolean)),
         el("div", {}, [el("b", { text: "Was das Barometer nicht kann" }),
-          el("p", { text: "Es sagt den ersten Tag eines Absturzes nicht voraus – am Hoch stand es meist auf „Konstruktiv“. Es reagiert, sobald der Markt kippt, und bleibt dann auf der Warnstufe. " +
-            "Sehr schnelle Crashs wie 1987 oder Corona fängt es nur teilweise ab. Und nach dem Tief wird es erst spät wieder konstruktiv – ein Teil der Erholung fehlt." })])]),
+          el("p", { text: "Es sagt weder den ersten Tag eines Absturzes noch den Boden voraus. Am Hoch stand es meist auf „Konstruktiv“, am Tief immer auf „Defensiv“ (" + t.amTiefDefensiv + " von " + t.anzahl + "). " +
+            "Es reagiert, sobald der Markt kippt, und bestätigt den neuen Aufschwung erst, wenn er trägt – bei Corona kam das spät. Sehr schnelle Crashs wie 1987 oder 2020 fängt es nur teilweise ab. " +
+            "Nachgerechnet mit den Regeln von heute – das Barometer gab es damals noch nicht." })])]),
       ev.crisesNote ? el("p", { class: "bm-fuss", text: ev.crisesNote }) : null
     ].filter(Boolean));
   }
@@ -373,7 +382,7 @@
     var env = p && p.environment;
     if (!env || !isNum(env.level)) return null;
     var hist = ev && ev.levels && ev.levels.length >= 3 ? ev : null;
-    var teile = [heute(p), hist ? chance(p, hist) : null, hist ? vergleich(p, hist) : null, hist ? krisen(hist) : null, warum(p), wende(p), stufen(p, hist),
+    var teile = [heute(p), hist ? krisen(hist) : null, hist ? chance(p, hist) : null, hist ? vergleich(p, hist) : null, warum(p), wende(p), stufen(p, hist),
       hist ? kalender(hist, jetzt) : null,
       el("a", { class: "bm-mehr", href: "#/maerkte/einordnung/details" }, [
         el("span", { class: "bm-mehr-icon", "aria-hidden": "true" }, [glyph("lupe")].filter(Boolean)),
@@ -388,5 +397,5 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht, zyklusJahr: zyklusJahr };
+  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht, zyklusJahr: zyklusJahr, stresstest: stresstest };
 })(typeof window !== "undefined" ? window : globalThis);

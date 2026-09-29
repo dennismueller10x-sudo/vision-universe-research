@@ -113,6 +113,11 @@ Seit 29.09.2026 außerdem auf derselben Seite:
   meist auf „Konstruktiv“ (Ausnahme Dotcom 2000: schon „Vorsichtig“). Es ist
   kein Frühwarnsystem für den ersten Tag, sehr schnelle Crashs (1987, 2020)
   fängt es nur teilweise ab, und nach dem Tief wird es spät wieder konstruktiv.
+  **Böden erkennt es nicht:** An allen sieben Tiefs stand es auf „Defensiv“;
+  wieder „Selektiv“ typisch erst rund +28 % über dem Tief (Corona: +45 %, am
+  05.06.2020). Seit 29.09.2026 steht der Stresstest als Bühne direkt nach
+  „Heute“ (Kennzahlen im Median) und als Beleg-Streifen auf der Übersicht –
+  immer mit „nachgerechnet mit den Regeln von heute“ und dieser Grenze.
 - **Kalender-Kontext** (`calendarStats`), ausdrücklich kein Teil des
   Barometers: Kalendermonate mit t-Test und Benjamini-Hochberg,
   US-Präsidentschaftszyklus (1928 = Wahljahr) und die 12 Monate nach jedem

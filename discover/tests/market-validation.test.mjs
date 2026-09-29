@@ -109,6 +109,9 @@ test("crisisReplay: Hoch, Tief, erste Warnung und Rest des Absturzes aus der Rei
   assert.equal(k.firstWarning.date, day(14));
   assert.equal(k.firstWarning.restAfter, round2(100 * (60 / 100 - 1)));
   assert.equal(k.backConstructive.date, day(35));
+  assert.equal(k.backSelective.date, day(35));
+  assert.equal(k.levelAtTrough, "D");
+  assert.equal(k.oldHighBack, null, "altes Hoch (110) nie wieder erreicht");
 });
 function round2(x) { return Math.round(x * 10) / 10; }
 
