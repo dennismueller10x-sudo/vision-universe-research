@@ -461,6 +461,9 @@ const advancedList = [
   advanced('MARKET_WIZARDS_NEXT', 'market-wizards', 'Weitere Market-Wizards-Modelle', 'Schwager / Coyle (Hrsg.)', 'Diverse', 'Das neue Market-Wizards-Buch ist nur als Vorschau zugänglich und wurde NICHT vollständig gelesen. Keine Regel wird daraus abgeleitet, bevor die Kapitel vorliegen.', ['SRC-MW-NEXTGEN']),
 ];
 
+// Gemeinsame Lifecycle-Regeln gehoeren zu jeder live gerechneten Strategie.
+for (const s of [momentum, weinstein, darvas, minervini]) s.rules.push(...lifecycleRules(s.strategy_version));
+
 export const STRATEGIES = [greenblatt, momentum, weinstein, darvas, minervini, ...advancedList];
 
 export const INTERNAL_SOURCES = [

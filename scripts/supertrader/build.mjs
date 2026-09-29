@@ -34,6 +34,7 @@ import greenblatt from './engine/strategies/greenblatt.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
+let CURRENT_REGIME = null;
 export const LIVE_ENGINES = [kkBreakout, weinstein, darvas, minervini];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
@@ -187,7 +188,7 @@ function measureCoverage(instruments, weeklySpans) {
   const intradayDir = rel('quant/data/market/intraday');
   const intradaySessions = exists(intradayDir) ? fs.readdirSync(intradayDir).filter((f) => /^\d{4}-\d{2}-\d{2}$/.test(f)).length : 0;
   return {
-    measuredAt: new Date().toISOString(),
+    measuredAt: null, // wird in build() auf den Eingabestand gesetzt (deterministisch)
     dailyOhlcvYears: r4(median(dailySpans)), dailyOhlcvSymbols: instruments.size,
     weeklyCloseYears: r4(median(weeklySpans)), weeklyVolumeFromDailyOnly: true,
     intradaySessionsRetained: intradaySessions, intradayHasOhlc: false, intradayInterval: '5min, nur Schlusskurse',
@@ -207,6 +208,20 @@ function measureCoverage(instruments, weeklySpans) {
       intraday: 'quant/data/market/intraday (Aufbewahrung laut Konfiguration: 2 Sitzungen)',
     },
   };
+}
+
+let SIC_CACHE = null;
+function sicInfo() {
+  if (SIC_CACHE) return SIC_CACHE;
+  const sic = readJson(rel('quant/data/product/sic-peer-taxonomy-v1.json'));
+  const col = Object.fromEntries(sic.rowColumns.map((c, i) => [c, i]));
+  const map = new Map();
+  for (const r of sic.rows) {
+    const d = r[col.sicDivision];
+    map.set(r[col.ticker], { division: d || null, name: d && sic.divisions[d] ? sic.divisions[d].name : null });
+  }
+  SIC_CACHE = map;
+  return map;
 }
 
 function greenblattCoverage() {
@@ -296,10 +311,12 @@ export function build() {
     Object.assign(inst, buildWeekly(inst, long, bench));
   }
   const coverage = measureCoverage(instruments, weeklySpans);
+  coverage.measuredAt = barsGeneratedAt;
   const gbCoverage = greenblattCoverage();
 
   const ctxOf = (inst) => ({ symbol: inst.symbol, bars: inst.bars, ind: inst.ind, cross: cross.get(inst.symbol), weekly: inst.weekly, weekAt: inst.weekAt });
 
+  CURRENT_REGIME = readJson(rel('quant/data/product/market-regime-v1.json')).regime || null;
   /* --- Live-Lauf je Strategie --- */
   const scanner = {};
   const ledgers = {};
@@ -338,6 +355,7 @@ export function build() {
       for (const s of res.finished) finishedNow.push(s);
       if (state.signal) {
         const last = n - 1;
+        if (!state.signal.regimeAtCreation) state.signal.regimeAtCreation = CURRENT_REGIME;
         state.signal.anchor = { date: inst.bars.date[last], close: inst.bars.close[last] };
         state.signal.lastPrice = inst.bars.close[last];
         stillOpen.push(state.signal);
@@ -395,7 +413,8 @@ export function build() {
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
   writeStockPages(signals);
   writeStrategyPages(registry);
-  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt, durationMs: Date.now() - t0 });
+  writeStaticPages();
+  writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
 }
@@ -448,7 +467,8 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
   const decorate = (s) => {
     const fund = fundOf(s.symbol);
     const inst = instruments.get(s.symbol);
-    const out = { ...s, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${s.symbol}.json` } : null };
+    const si = sicInfo().get(s.symbol) || {};
+    const out = { ...s, sicDivision: si.division || null, sicDivisionName: si.name || null, companyName: fund?.companyName || s.symbol, chart: inst ? { shard: inst.shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${s.symbol}.json` } : null };
     if (s.strategyId === 'MINERVINI_VCP' && fund) out.fundamentalsDisplay = { revenueGrowthTTM: fund.revenueGrowthTTM, earningsAcceleration: fund.earningsAcceleration, asOf: fund.fundamentalsAsOf, filtered: false };
     return out;
   };
@@ -459,13 +479,13 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     for (const s of open) counts[s.state]++;
     counts.CLOSED += closed.length; counts.INVALIDATED += invalidated.length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
-    const scan = scanner[id].top.map((x) => ({ ...x, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
+    const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
     strategiesOut[id] = { liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
     for (const s of scan) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: null, state: s.stage });
   }
   return {
-    schema: 'supertrader-signals-1.0.0', asOf: market.asOf, generatedAt: new Date().toISOString(),
+    schema: 'supertrader-signals-1.0.0', asOf: market.asOf, inputsGeneratedAt: market.freshness.barsGeneratedAt,
     policy: 'Ab SETUP wird jedes Signal mit allen Zustandswechseln dauerhaft protokolliert. Abgeschlossene und ungültige Signale — Gewinner wie Verlierer — werden nie gelöscht. DISCOVERED/WATCH sind tägliche Momentaufnahmen.',
     disclaimer: 'Modellsignale einer regelbasierten Strategie-Nachbildung. Keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Aussage über persönliche Eignung.',
     counts, strategies: strategiesOut, bySymbol,
@@ -543,6 +563,18 @@ function writeIfChanged(file, content) {
   if (exists(file) && fs.readFileSync(file, 'utf8') === content) return;
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content);
+}
+
+function writeStaticPages() {
+  const pages = [
+    ['index.html', 'home', 'Supertrader — Vision Universe®', 'Bewährte Strategien, transparente Regeln, ehrliche Backtests und laufende Modell-Signale.', 1],
+    ['signals/index.html', 'signals', 'Signale — Supertrader — Vision Universe®', 'Signalzentrum: Setup, Einstieg bereit, ausgelöst, aktiv, abgeschlossen — mit vollständiger Historie.', 2],
+    ['strategies/index.html', 'strategies', 'Strategien — Supertrader — Vision Universe®', 'Alle Strategy Worlds von Supertrader mit Research-, Daten- und Backteststatus.', 2],
+    ['backtests/index.html', 'backtests', 'Backtest Lab — Supertrader — Vision Universe®', 'Backtest Lab: Gates, Datenabdeckung, Ausführungsannahmen und Vergleich der Strategien.', 2],
+    ['stock/index.html', 'stock', 'Strategy Lens — Supertrader — Vision Universe®', 'Welche Supertrader-Modelle einen Titel erkennen.', 2],
+    ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Source Ledger und Methodik der Supertrader-Strategien.', 2],
+  ];
+  for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth }));
 }
 
 function writeStrategyPages(registry) {
