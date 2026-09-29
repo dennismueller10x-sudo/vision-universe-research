@@ -288,6 +288,7 @@ test("Website: Umwandlung in ein kleines PNG (falls sharp installiert ist)", asy
 test("Website: Logo aus dem Seitenkopf, wenn kein grosses Icon da ist", () => {
   const html = `<header><a class="brand"><img src="/assets/nvidia-logo-horz.svg" alt="NVIDIA"></a>
     <img src="/wp-content/uploads/novartis-logo-350x70.jpg" alt="Novartis">
+    <img src="/images/default-source/social-icons/x-logo.svg" alt="NVIDIA on X" class="nav-logo">
     <img src="/img/partner-logo-acme.png" class="partner-logo"></header>
     <link rel="icon" href="/favicon.ico">`;
   const { icons } = parseIconLinks(html, "https://www.nvidia.com/", "NVIDIA Corp");

@@ -30,7 +30,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons,
-  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain
+  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain, isLightOnTransparent
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
@@ -396,6 +396,15 @@ if (Number.isFinite(LIMIT)) { console.log("Begrenzter Lauf (--limit): nichts ges
 const behaltenePfade = new Set(Object.values(files).map((p) => p.slice("files/".length)));
 for (const f of readdirSync(FILES)) if (!f.startsWith(".") && !behaltenePfade.has(f)) rmSync(join(FILES, f));
 
+/* Helle Logos auf transparentem Grund bekommen in der Oberflaeche eine dunkle Flaeche. */
+const dunkel = [];
+try {
+  const sharpLib = (await import("sharp")).default;
+  for (const [sym, path] of Object.entries(files)) {
+    try { if (await isLightOnTransparent(readFileSync(join(OUT, path)), sharpLib)) dunkel.push(sym); } catch (e) { /* weiter */ }
+  }
+} catch (e) { console.log("     sharp fehlt - keine Pruefung auf helle Logos."); }
+
 const sortiert = (o) => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
 const generatedAt = new Date().toISOString();
 const grundZaehler = {};
@@ -407,7 +416,8 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify({
   sources: ["WIKIMEDIA_COMMONS", "WEBSITE"],
   boundary: "Logos dienen allein der Identifizierung des Unternehmens neben seinen eigenen Kursdaten. Zuerst Wikimedia Commons (nur freie Lizenz: gemeinfrei, CC0, CC BY, CC BY-SA, Apache 2.0, MIT), sonst das Icon der offiziellen Website des Unternehmens (Marke des Inhabers, keine Lizenz). Unveraendert und nur verkleinert. Nicht fuer Werbung, Social-Media-Beitraege oder eigene Grafiken. Quelle je Logo: credits.json.",
   count: Object.keys(files).length,
-  files: sortiert(files)
+  files: sortiert(files),
+  dark: dunkel.sort()
 }) + "\n");
 writeFileSync(join(OUT, "credits.json"), JSON.stringify({
   version: "company-logos-1.0.0", generatedAt, credits: sortiert(credits)

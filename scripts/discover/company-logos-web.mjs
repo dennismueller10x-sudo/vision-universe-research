@@ -91,6 +91,8 @@ export function parseIconLinks(html, baseUrl, companyName) {
     const src = a.src || a["data-src"] || "";
     const hint = [src, a.alt, a.class, a.id].join(" ");
     if (!src || !/logo/i.test(hint) || /(partner|award|footer|sponsor|badge|client|customer)/i.test(hint)) continue;
+    /* Social-Media-Symbole im Seitenkopf sind nicht das Firmenlogo (BankUnited -> X-Logo). */
+    if (/(social|twitter|x-logo|xlogo|facebook|linkedin|instagram|youtube|tiktok|threads|bluesky)/i.test(hint)) continue;
     /* Nur das eigene Logo: Firmenname oder Domain im Hinweis, oder klar als
        Seitenlogo ausgezeichnet - sonst trifft man Partnerlogos (Xencor ->
        Novartis). */
@@ -307,4 +309,23 @@ export function latestReport(recent) {
     if (i >= 0 && recent.primaryDocument[i]) return { form, accession: recent.accessionNumber[i], document: recent.primaryDocument[i] };
   }
   return null;
+}
+
+/**
+ * Helles Logo auf transparentem Grund (weisse Wortmarke fuer dunkle
+ * Seitenkoepfe)? Auf der weissen Logo-Flaeche waere es unsichtbar - die
+ * Oberflaeche zeigt es dann auf dunkler Flaeche. Das Bild bleibt unveraendert.
+ */
+export async function isLightOnTransparent(buf, sharp) {
+  const { data, info } = await sharp(buf).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let deckend = 0, hell = 0, durchsichtig = 0;
+  for (let i = 0; i < data.length; i += info.channels) {
+    const a = data[i + 3];
+    if (a < 32) { durchsichtig++; continue; }
+    deckend++;
+    const l = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+    if (l > 225) hell++;
+  }
+  const n = durchsichtig + deckend;
+  return deckend > 0 && durchsichtig / n > 0.1 && hell / deckend > 0.85;
 }

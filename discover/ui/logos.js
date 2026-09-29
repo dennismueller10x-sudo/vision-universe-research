@@ -17,7 +17,7 @@
   "use strict";
 
   var BASE = "/discover/logos/";
-  var files = null, credits = null, creditsLaden = null, warten = [];
+  var files = null, dunkel = {}, credits = null, creditsLaden = null, warten = [];
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
@@ -26,6 +26,7 @@
       .catch(function () { return { files: {} }; })
       .then(function (data) {
         files = (data && data.files) || {};
+        ((data && data.dark) || []).forEach(function (s) { dunkel[s] = true; });
         var offen = warten; warten = [];
         offen.forEach(function (fn) { fn(); });
       });
@@ -51,6 +52,8 @@
     img.addEventListener("load", function () {
       Array.prototype.slice.call(node.childNodes).forEach(function (c) { if (c !== img) node.removeChild(c); });
       node.classList.add("dx-logo--img");
+      /* Weisse Wortmarke fuer dunkle Seitenkoepfe: dunkle Flaeche statt weisser. */
+      if (dunkel[symbol]) node.classList.add("dx-logo--dark");
     });
     img.addEventListener("error", function () { if (img.parentNode) img.parentNode.removeChild(img); });
     img.src = BASE + pfad;
