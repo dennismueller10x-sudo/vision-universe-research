@@ -54,6 +54,14 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const Job = require(join(ROOT, "social/engines/creative-job.js"));
 
+/** Der Request-Branch eines Jobs - mit Anlauf-Suffix ab Anlauf 2, genau
+    wie open-creative-request.mjs::branchFor() ihn anlegt. Ohne Suffix fand
+    dieses Skript Anlauf-2-Jobs nie (real: PR #255/#258, 27.-29.09.). */
+export function zweigFuer(job) {
+  const anlauf = Number(job && job.attempt) || 1;
+  return "authoring/request/" + job.contentId + (anlauf > 1 ? "-attempt" + anlauf : "");
+}
+
 /** Die offenen Jobs, fuer die ueberhaupt ein Branch existieren kann. */
 export function offeneJobsMitPr(register) {
   return (register.jobs || []).filter((j) =>
@@ -81,7 +89,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("Offene Jobs mit Request-PR: " + jobs.length + "\n");
 
   for (const job of jobs) {
-    const zweig = "authoring/request/" + job.contentId;
+    const zweig = zweigFuer(job);
     console.log("--- " + job.contentId + " (PR #" + job.prNumber + ") ---");
     try {
       execFileSync("git", ["fetch", "origin", zweig],
@@ -93,7 +101,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
 
     const cmd = [join(ROOT, "scripts/social/ingest-creative.mjs"),
-      "--content-id", job.contentId];
+      "--content-id", job.contentId, "--ref", "origin/" + zweig, "--pr", String(job.prNumber)];
     if (WRITE) cmd.push("--write");
     try {
       execFileSync("node", cmd, { cwd: ROOT, stdio: "inherit" });

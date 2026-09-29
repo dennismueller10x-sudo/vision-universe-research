@@ -127,12 +127,19 @@ export const REDACT_MASK = MASK;
    getestet.
    ========================================================================= */
 export async function contentHash(spec) {
-  const kanonisch = JSON.stringify({
+  /* Carousel: alle Slides sind oeffentlich und gehoeren in den Abdruck.
+     Ein Einzelbild behaelt exakt die bisherige Form (CH5 prueft beide
+     Implementierungen gegeneinander). */
+  const o = {
     contentId: String((spec && spec.contentId) || ""),
-    imageUrl: String((spec && spec.imageUrl) || ""),
-    caption: String(spec && spec.caption !== undefined && spec.caption !== null
-      ? spec.caption : "")
-  });
+    imageUrl: String((spec && spec.imageUrl) || "")
+  };
+  if (spec && Array.isArray(spec.imageUrls) && spec.imageUrls.length > 1) {
+    o.imageUrls = spec.imageUrls.map((u) => String(u));
+  }
+  o.caption = String(spec && spec.caption !== undefined && spec.caption !== null
+    ? spec.caption : "");
+  const kanonisch = JSON.stringify(o);
   const daten = new TextEncoder().encode(kanonisch);
   const digest = await crypto.subtle.digest("SHA-256", daten);
   return Array.from(new Uint8Array(digest))

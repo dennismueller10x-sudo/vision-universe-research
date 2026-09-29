@@ -130,7 +130,7 @@ export function pruefe(spec) {
 }
 
 /** Der PR-Text. Er sagt, WER den Job beschlossen hat und WARUM. */
-export function bodyFor(contentId, job, entscheidung) {
+export function bodyFor(contentId, job, entscheidung, requestType) {
   return [
     "Automatisch erzeugt vom Social Orchestrator.",
     "",
@@ -139,7 +139,7 @@ export function bodyFor(contentId, job, entscheidung) {
     "| content_id | `" + contentId + "` |",
     "| creative_job_id | `" + (job.creativeJobId || "—") + "` |",
     "| processing_key | `" + (job.processingKey || "—") + "` |",
-    "| request_type | " + (job.revision ? "TEXT_REVISION" : "FULL_CREATIVE") + " |",
+    "| request_type | " + (requestType || (job.revision ? "TEXT_REVISION" : "FULL_CREATIVE")) + " |",
     "| Anlauf | " + (job.attempt || 1) + " |",
     "",
     "**Warum dieser Job:** " + (entscheidung || "Entscheidung des Orchestrators."),
@@ -210,11 +210,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(4);
   }
   console.log("Frei. Job " + befund.job.creativeJobId + " wartet auf seinen PR.");
+  const REQUEST_TYPE = (() => {
+    try {
+      const b = JSON.parse(readFileSync(briefPfad, "utf8"));
+      return b.request_type ? b.request_type + (b.creative_format ? " (" + b.creative_format + ")" : "") : null;
+    }
+    catch { return null; }
+  })();
 
   if (!WRITE) {
     console.log("\n(Kein --write: es wurde nichts gepusht und nichts geoeffnet.)");
     console.log("\n--- PR-TEXT ---");
-    console.log(bodyFor(CID, befund.job, GRUND));
+    console.log(bodyFor(CID, befund.job, GRUND, REQUEST_TYPE));
     process.exit(0);
   }
 
@@ -236,7 +243,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   console.log("\nGepusht: " + branch);
 
-  const body = bodyFor(CID, befund.job, GRUND);
+  const body = bodyFor(CID, befund.job, GRUND, REQUEST_TYPE);
 
   /* -------------------------------------------------------------------
      ZWEI SCHALTER, UND NUR EINER STEHT IM WORKFLOW

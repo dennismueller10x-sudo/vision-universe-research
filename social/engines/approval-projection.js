@@ -179,6 +179,35 @@
      nur weitergereicht. Diese Engine misst nichts — sie hat kein Netz
      und soll auch keines bekommen.
      ------------------------------------------------------------------- */
+  /* Die Slide-Adressen reisen nur bei einem echten Carousel mit - ein
+     Einzelbild behaelt exakt die bisherigen drei Felder. */
+  function mitSlides(k, payload) {
+    var urls = pfad(k, "content.imageUrls");
+    if (Array.isArray(urls) && urls.length > 1) payload.imageUrls = urls.slice();
+    return payload;
+  }
+
+  function carouselTeil(k) {
+    var urls = pfad(k, "content.imageUrls");
+    if (!Array.isArray(urls) || urls.length < 2) return null;
+    var slides = pfad(k, "presentation.slides") || [];
+    var zustellung = pfad(k, "assetDelivery.slides") || [];
+    return {
+      slideCount: urls.length,
+      slides: urls.map(function (u, i) {
+        var s = slides[i] || {};
+        var z = zustellung[i] || {};
+        return { index: i + 1, url: u, role: s.role || null, headline: s.headline || null,
+          zustand: z.url === u ? (z.zustand || null) : null };
+      }),
+      sources: (pfad(k, "presentation.sources") || []).map(function (q) {
+        return { source: q.source || null, url: q.url || null, publishedAt: q.publishedAt || null };
+      }),
+      story: pfad(k, "presentation.story") || null,
+      webAccess: pfad(k, "presentation.webAccess") === true
+    };
+  }
+
   function bildzustand(k) {
     var a = (k && k.assetDelivery) || null;
     var adresse = pfad(k, "content.imageUrl") || null;
@@ -238,7 +267,13 @@
          schon". */
       sha256: a.sha256 || null,
       bytes: a.bytes === undefined ? null : a.bytes,
-      dimensions: a.dimensions || null
+      dimensions: a.dimensions || null,
+      /* Carousel: das Urteil je Slide, damit der Worker vor der Sendung
+         jede Slide gegen ihren Abdruck pruefen kann. Einzelbild: fehlt. */
+      slides: Array.isArray(a.slides) ? a.slides.map(function (x) {
+        return { index: x.index, url: x.url, zustand: x.zustand, sha256: x.sha256 || null,
+          dimensions: x.dimensions || null };
+      }) : undefined
     };
   }
 
@@ -289,7 +324,7 @@
          Abdruck darueber. Kein zweiter Vorschautext, kein ersatzweise
          gerendertes Bild: sonst gibt der Owner etwas frei, das er
          nicht gesehen hat, und sieht etwas, das er nicht freigibt. */
-      payload: {
+      payload: mitSlides(k, {
         contentId: pfad(k, "content.contentId") || null,
         imageUrl: pfad(k, "content.imageUrl") || null,
         /* Das ist der FINAL_PUBLIC_TEXT: Caption, Leerzeile, Hashtags.
@@ -298,8 +333,16 @@
            Freigabe tauschen, waehrend der Abdruck weiter stimmt. */
         caption: pfad(k, "content.caption") === undefined
           ? null : pfad(k, "content.caption")
-      },
+      }),
       contentHash: k.contentHash || null,
+
+      /* -------------------------------------------------------------
+         CAROUSEL (Owner-Auftrag "WORK OWNS THE POST", 29.09.): EIN
+         Kandidat, mehrere Slides. Die Adressen gehoeren zur Sendung
+         (payload.imageUrls, im Abdruck), Rolle/Quellen/Story nur zur
+         Anzeige. Ein Einzelbild bekommt `carousel: null` und bleibt
+         byte-gleich wie bisher. */
+      carousel: carouselTeil(k),
 
       /* -------------------------------------------------------------
          DIE BESTANDTEILE — ZUM ZEIGEN, NICHT ZUM SENDEN
