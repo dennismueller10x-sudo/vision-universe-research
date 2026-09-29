@@ -61,7 +61,7 @@ const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
  ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Was ist Quant?',href('explain')],['Kursstruktur',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
  ['Märkte & Ideen','Zusammenhänge verstehen und Titel finden.',[
- ['Discover · Marktwelten','/discover/'],['Vordefinierte Screens',href('discover')],['Screener',href('screener')],['Professioneller Screener','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
+ ['Discover · Marktwelten','/discover/'],['Vordefinierte Screens',href('discover')],['Quant Screener',href('screener')],['Quant Screener (klassisch)','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
  ['Research & Wissen','Aktuelles einordnen. Tiefer verstehen.',[
  ['News','/news/'],['Morning Briefing','/morning/'],['Weekly Magazine','/magazin/'],['Stock Reports','/reports/xpeng/'],['Academy','/academy/'],['Investment Guide','/guide/'],['Strategies',href('strategies')],['Radar',href('radar')],['Signals',href('signals')],['Watchlist',href('watchlist')],['Ask Atlas',href('atlas')]]]
 ];
@@ -3164,7 +3164,7 @@ async function screenPage(){
    const next=editor.methodologyOf(query);if(next&&next.id!==current.id){current=next;methodSelect.value=next.id;fillSort();describeMethod();}
    rows=[];S.clear(ruleList);query.filters.forEach(addRule);sort.value=query.sort[0].field;direction.value=query.sort[0].direction;apply();};
  }else profiles.disabled=true;
- profiZiel.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),el('label',{},[el('span',{text:'Strategie-Profil'}),profiles]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Vollständigen Screener öffnen',href:'/quant/screener/'}]));
+ profiZiel.append(el('div',{class:'filter screener-method'},[el('label',{},[el('span',{text:'Methodik'}),methodSelect]),el('label',{},[el('span',{text:'Strategie-Profil'}),profiles]),methodNote]),ruleList,el('div',{class:'actions'},[el('button',{class:'button secondary',text:'Kriterium hinzufügen',onclick:()=>addRule()}),el('button',{class:'button',text:'Anwenden',onclick:apply})]),el('div',{class:'filter'},[el('span',{text:'Ergebnisse sortieren'}),sort,direction]),out,el('details',{},[el('summary',{text:'Regeln speichern & Methodik'}),el('p',{text:'Der Link enthält ausschließlich die Regeln. Ergebnisse werden beim Öffnen mit dem dann verfügbaren Datenstand neu berechnet. Keine historische Simulation.'}),share,strategyLink,el('p',{class:'muted',text:'Die bestehende Query Engine prüft dieselben Kriterien wie im professionellen Screener. Die Vorschau bleibt auf den bestehenden Analysebereich begrenzt.'}),method]),actions([{label:'Quant Screener (klassisch) öffnen',href:'/quant/screener/'}]));
  /* WER MIT REGELN IM LINK ANKOMMT, HAT DEN EINFACHEN EINSTIEG SCHON HINTER
     SICH. Aus Discover, aus einer gespeicherten Auswahl oder aus einer
     Strategie führt der Weg direkt in diese Kriterien - und eine
@@ -3274,7 +3274,34 @@ function sectionHead(eyebrow,termId,intro){
 const GUELTIGE_ANSICHTEN=new Set(['home','screener','strategies','stocks','explain',
  'stock','technical','elliott','quant','fundamentals','compare','watchlist','signals',
  'radar','atlas','portfolio','markets','discover','research']);
-async function render(){if(!GUELTIGE_ANSICHTEN.has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen der fünf Quant-Bereiche über die Navigation oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
+/* =========================================================================
+   DER SEITENTITEL NENNT DAS PRODUKT UND DEN BEREICH
+
+   Owner-Entscheid 29.09.2026 (Produktgrenze): Vision Universe hat ein
+   EIGENSTAENDIGES Produkt "Screener" unter /screener/. Quant hat einen
+   EIGENEN, internen Screener. Beide duerfen nicht verwechselt werden -
+   ausdruecklich auch nicht im Seitentitel.
+
+   Der Titel war bisher statisch ("Vision Universe® — Investment
+   Intelligence"), in jedem Bereich derselbe. Ein Reiter, der nicht sagt,
+   wo man ist, ist bei zwei gleichnamigen Produkten kein Schoenheitsfehler
+   mehr, sondern eine Verwechslungsquelle.
+
+   Der Screener heisst hier deshalb "Quant Screener" - das eigenstaendige
+   Produkt heisst schlicht "Screener". Keine Zusammenlegung der beiden
+   ohne ausdruecklichen Owner-Entscheid. */
+const TITEL={home:'Quant',screener:'Quant Screener',strategies:'Quant Anlagestile',
+ stocks:'Quant Aktien',explain:'Quant Methodik',stock:'Quant Aktienanalyse',
+ quant:'Quant Aktienanalyse',technical:'Quant Kursstruktur',elliott:'Quant Elliott Wave',
+ fundamentals:'Quant Fundamentaldaten',compare:'Quant Vergleich',watchlist:'Quant Watchlist',
+ signals:'Quant Signale',radar:'Quant Radar',atlas:'Quant Ask Atlas',
+ portfolio:'Quant Portfolio',markets:'Quant Märkte',discover:'Quant Screens',
+ research:'Quant Research'};
+function titelSetzen(){
+ const t=TITEL[view];
+ document.title=(t?t:'Quant')+' — Vision Universe®';
+}
+async function render(){titelSetzen();if(!GUELTIGE_ANSICHTEN.has(view)){recover('Diese Ansicht wurde nicht gefunden','Öffne einen der fünf Quant-Bereiche über die Navigation oder kehre zur Startseite zurück.');return;}universe=view==='home'||view==='stock'?{state:'AVAILABLE',stocks:[]} : await api.getUniverse();
  /* Die Quant-Familie lebt von diesen Texten. Ohne sie wird nicht
     halbfertig gezeichnet, sondern gesagt, was fehlt. */
  const needsLanguage=new Set(['quant','explain','watchlist','radar','stock','strategies','signals','screener','technical','home']);
