@@ -478,6 +478,8 @@
       function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
       /* Owner-Feedback: das Barometer ganz oben, dann die Kurse. */
       if (MI && MI.stimmung) dazu(MI.stimmung(d.puls, d.beleg));
+      var MBk = global.VUDiscover && global.VUDiscover.MarketBarometer;
+      if (MBk && MBk.klartext && d.puls) dazu(MBk.klartext(d.puls, d.beleg));
       else if (d.puls && !d.puls.environment) dazu(pulsBereich(d.puls));
       seite.appendChild(sprungleiste(gruppen));
       var aktien = gruppen.filter(function (g) { return g.id === "aktien"; })[0];

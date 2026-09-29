@@ -48,3 +48,17 @@ Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 | 38 | Medien & Werbung | `38-medien-werbung` | ✅ |
 | 39 | Streaming & Gaming | `39-streaming-gaming` | ✅ |
 | 40 | Telekommunikation & Netze | `40-telekommunikation-netze` | ✅ |
+| 41 | Öl, Gas & Versorger | `41-oel-gas` | ✅ |
+| 42 | Chemie & Werkstoffe | `42-chemie` | ✅ |
+| 43 | Industrie & Fertigung | `43-fertigung` | ✅ |
+| 44 | Handel & Einzelhandel | `44-einzelhandel` | ✅ |
+| 45 | Großhandel | `45-grosshandel` | ✅ |
+| 46 | Bau & Baustoffe | `46-bau` | ✅ |
+| 47 | Transport & Spedition | `47-spedition` | ✅ |
+| 48 | Papier & Verpackung | `48-papier` | ✅ |
+| 49 | Textil & Bekleidung | `49-textil` | ✅ |
+| 50 | Metallverarbeitung & Stahl | `50-stahl` | ✅ |
+| 51 | Finanzdienstleistungen | `51-finanzdienste` | ✅ |
+| 52 | Unternehmenssoftware & IT | `52-software-it` | ✅ |
+| 53 | Dienstleistungen | `53-unternehmen` | ✅ |
+| 54 | Gesundheitsdienstleister | `54-gesundheit` | ✅ |

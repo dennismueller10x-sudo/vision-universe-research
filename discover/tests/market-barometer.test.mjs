@@ -136,3 +136,19 @@ test("Fruehe Erholungszeichen: eigenes Zeichen, Bilanz aus dem Auszug, Live-Zust
   assert.equal(schub.zustand, "zeichen");
   assert.equal(schub.seit, "2026-01-25");
 });
+
+test("Im Klartext (Uebersicht): Bedeutung der Stufe, Zahlen aus dem Auszug neben dem Schnitt aller Tage", () => {
+  const p = J(PULSE), lv = p.environment.level;
+  const k = MB.klartext(p, J(EV));
+  assert.equal(k.attrs.id, "maerkte-klartext");
+  const t = text(k);
+  const j1 = EV.longTerm.find((x) => x.days === 252);
+  const a = j1.levels.find((x) => x.level === lv) || j1.levels.at(-1);
+  assert.ok(t.includes(MB.KLARTEXT[lv]));
+  assert.match(t, new RegExp(Math.round(a.positiveShare) + "\\u00a0% lagen nach 1 Jahr im Plus"));
+  assert.match(t, new RegExp("Schnitt aller Tage: " + Math.round(j1.all.positiveShare) + "\\u00a0%"));
+  assert.match(t, /in einem schlechten Jahr \(1 von 10\)/);
+  assert.match(t, /Vergangene Ergebnisse sind kein verlässlicher Hinweis/);
+  assert.doesNotMatch(t, /Kaufsignal|kaufen|verkaufen|sollten Sie/i);
+  assert.equal(MB.klartext(p, null), null, "ohne Auszug keine Zahlen");
+});
