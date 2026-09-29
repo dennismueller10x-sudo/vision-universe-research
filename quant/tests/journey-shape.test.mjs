@@ -195,7 +195,20 @@ test("the measured titles land in the shape their data justifies", async () => {
   assert.equal(acaa.shape, "REDUCED");
   assert.ok(acaa.noticesBefore > acaa.noticesAfter,
     "die Verdichtung spart keine einzige Box - dann ist sie keine");
-  assert.ok(acaa.groups.some((g) => /117 Handelstage/.test(g.explanation)));
+  /* DIE ZAHL WAECHST MIT JEDEM HANDELSTAG.
+     Hier stand "117 Handelstage" fest verdrahtet. Am 29.09.2026 ist der
+     Wert ein anderer, weil frische Kurse materialisiert wurden - der
+     Test wurde rot, obwohl nichts kaputt war. Eine Zusicherung, die
+     jeden Handelstag bricht, wird irgendwann abgeschaltet, und dann
+     fehlt sie.
+     Die Absicht war nie die Zahl 117, sondern: die Begruendung nennt die
+     gemessene Tiefe der Historie in Handelstagen statt nur "zu wenig
+     Daten". Genau das wird jetzt geprueft - mit Zahl, aber ohne sie
+     festzunageln. */
+  const tiefe = acaa.groups.find((g) => /\d+\s+Handelstage/.test(g.explanation || ""));
+  assert.ok(tiefe, "keine Gruppe nennt die gemessene Historientiefe in Handelstagen");
+  const tage = Number((tiefe.explanation.match(/(\d+)\s+Handelstage/) || [])[1]);
+  assert.ok(Number.isFinite(tage) && tage > 0, "die genannte Tiefe ist keine Zahl: " + tiefe.explanation);
 
   /* EDVA: kein Kurs, kein Verlauf - das ist keine kurze Reise, sondern eine
      eigene Aussage. */

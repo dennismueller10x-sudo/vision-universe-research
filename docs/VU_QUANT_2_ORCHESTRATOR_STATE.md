@@ -3701,3 +3701,96 @@ checks are the ones the activation gate measures.
 4. Keep `QUANT_V2_STATUS = SPECIFIED_NOT_ACTIVE`, composite WITHHELD, Revisions fail-closed,
    Market Regime fail-closed, Strategy ranking unavailable, Backtesting closed.
 5. Preserve `DISCOVERY_CHANGED = false` and `DISCOVERY_REGRESSION = false`.
+
+## DATA_PIPELINE_AUTOMATION — kanonische Kette (Owner-Entscheid 29.09.2026)
+
+### Was kaputt war
+
+`market-data-refresh` lief jede Nacht gruen. Die Produkt-Materialisierung
+hing an einem `workflow_run`-Ausloeser, der auf main **nie** gefeuert hat:
+beide Laeufe, die es je gab, waren von Hand gestartet. Der Faktor-Stichtag
+stand vier Tage still, und nichts hat angeschlagen — weil jede Pruefung auf
+die Farbe von Workflows sah statt auf den Stichtag im Artefakt.
+
+### Die neue Kette
+
+```
+market-data-refresh.yml
+  job: refresh              Provider-Abruf, Gate A/B, dauerhafte Ablage, Commit
+  job: materialize          needs: refresh   uses: product-intelligence-materialization.yml
+  job: freshness-contract   needs: [refresh, materialize]   if: always()
+```
+
+Kein PAT, kein externer API-Trigger, kein Secret nur zum Starten der
+naechsten Stufe. `needs` innerhalb derselben Orchestrierung. Die
+Materialisierung bleibt eine eigene Datei und eine logisch getrennte
+Stufe — sie wird jetzt **aufgerufen** (`workflow_call`) statt erhofft.
+
+Der alte `workflow_run`-Pfad bleibt als zweiter Guertel stehen. Sollte er
+je feuern, macht die Idempotenz daraus einen sauberen No-Op.
+
+### Drei Zustaende statt einem
+
+`scripts/quant/measure-pipeline-freshness.mjs` (`pipeline-freshness-1.0.0`)
+misst und schreibt `quant/data/product/pipeline-freshness-v1.json`:
+
+| Feld | Bedeutung |
+|---|---|
+| `LATEST_MARKET_SESSION` | letzte **abgeschlossene** Sitzung aus dem Boersenkalender |
+| `LATEST_DURABLE_STORE_ASOF` | `benchmark.last` der Faktor-Zusammenfassung |
+| `LATEST_PRODUCT_ASOF` | aeltester Stichtag der `factor-evidence-v1`-Shards |
+| `LATEST_DEPLOYED_PRODUCT_ASOF` | dasselbe im gebauten Release (`--release=`) |
+| `STORE_LAG_SESSIONS` / `PRODUCT_LAG_SESSIONS` / `PRODUCTION_LAG_SESSIONS` | Rueckstand in **Handelssitzungen** |
+| `MARKET_STORE_CURRENT` / `PRODUCT_MATERIALIZATION_CURRENT` / `PRODUCTION_CURRENT` | `CURRENT` · `BEHIND` · `UNKNOWN` |
+| `QUANT_CURRENT` | `PASS` nur wenn Ablage **und** Produkt auf 0 stehen |
+
+Zwei Regeln, die den blinden Fleck schliessen:
+
+- **`UNKNOWN` ist kein `PASS`.** Wo ein Stichtag nicht lesbar ist, wird
+  keine Zahl erfunden.
+- **Der Rueckstand zaehlt Sitzungen, nicht Tage.** Samstag ist der Freitag
+  die letzte Sitzung — kein Wochenend-Fehlalarm.
+
+Der Store-Stichtag kommt ausdruecklich **nicht** aus dem Intraday-Index:
+der traegt den Snapshot-Strom und ist regelmaessig einen Tag weiter. Wer
+ihn nimmt, misst die Ablage zu frisch und uebersieht genau den Rueckstand,
+um den es geht.
+
+### Fail closed
+
+`freshness-contract` laeuft mit `if: always()` — auch wenn die
+Materialisierung rot war, denn genau dann muss es jemand erfahren. Bei
+`QUANT_CURRENT != PASS` wird der Lauf rot mit `P0_DATA_PIPELINE_FROZEN`.
+
+### Idempotenz
+
+Steht `LATEST_PRODUCT_ASOF == LATEST_DURABLE_STORE_ASOF`, setzt die
+Materialisierung `noop=true`; 21 schwere Schritte haengen daran und
+werden uebersprungen. Dieselbe Kette darf damit sicher erneut laufen —
+und ein Wiederholungslauf ist genau das, was man nach einem Zwischenfall
+braucht.
+
+### Sicherheitsnetz
+
+`freshness-monitor.yml` bekommt den Job `produktstand`: er misst gegen
+`main` (die Quelle des Pages-Deploys), ob die Produkt-Artefakte die
+letzte abgeschlossene Sitzung tragen — nicht, ob Workflows gruen sind.
+Bei Rueckstand: `P0_DATA_PIPELINE_FROZEN`.
+
+### Regressionstest
+
+`quant/tests/pipeline-freshness-contract.test.mjs` haelt die Fehlerklasse
+fest: eine neue Ablage-Sitzung bei unveraendertem Produktstand darf nicht
+als gesund gelten. **Bewiesen:** wird die `materialize`-Stufe aus der
+Kette entfernt, werden zwei Tests rot; mit der Stufe sind alle neun gruen.
+
+### Stand
+
+- Heutiger Rueckstand aufgeholt: Lauf #46 (von Hand, 04:10–04:29 UTC)
+  hat den Faktor-Stichtag auf **2026-09-28** gehoben.
+- Gemessen nach dem Merge von main: Ablage 2026-09-28, Produkt
+  2026-09-28, beide Rueckstand **0**, `QUANT_CURRENT = PASS`.
+- **Offen bis zum Beweis:** `DATA_PIPELINE_AUTOMATION = PASS` gilt erst,
+  wenn eine **nicht von Hand gestartete** Nachtkette Refresh → Store →
+  Product → Deploy durchlaufen hat und der ausgelieferte Stichtag aktuell
+  ist. Bis dahin ist die Kette gebaut, aber nicht bewiesen.

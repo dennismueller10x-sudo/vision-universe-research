@@ -80,3 +80,77 @@ jobs:
         run: |
           echo "::error::Die veroeffentlichte Seite zeigt nicht den letzten Handelstag (siehe Zusammenfassung)."
           exit 1
+
+  # ===================================================================
+  # DAS SICHERHEITSNETZ: STEHT DER PRODUKTSTAND AUF DER LETZTEN SITZUNG?
+  #
+  # Der Job darueber fragt, ob die Seite den letzten Handelstag ZEIGT.
+  # Dieser hier fragt etwas anderes, und die Luecke dazwischen hat vier
+  # Tage lang niemand bemerkt: ob die Produkt-Artefakte, aus denen Quant
+  # seine Aussagen baut, ueberhaupt materialisiert wurden.
+  #
+  # Am 29.09.2026 war der Marktlauf jede Nacht gruen, die Kurse frisch -
+  # und der Faktor-Stichtag stand seit dem 25.09. Ein Waechter, der nur
+  # auf die Farbe von Workflows sieht, haette das nie gefunden. Dieser
+  # sieht auf den Stichtag im Artefakt.
+  #
+  # Gemessen wird gegen `main`, weil main die Quelle des Pages-Deploys
+  # ist: was hier steht, wird ausgeliefert.
+  #
+  # KEIN FEHLALARM AM WOCHENENDE: der Rueckstand zaehlt Handelssitzungen
+  # aus dem Boersenkalender, nicht Kalendertage. Samstagmittag ist der
+  # Freitag die letzte abgeschlossene Sitzung, und der Rueckstand ist 0.
+  # ===================================================================
+  produktstand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      contains(github.event.head_commit.message, '[freshness-check]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Stichtag der Produkt-Artefakte gegen die letzte Sitzung
+        id: stand
+        run: |
+          set +e
+          node scripts/quant/measure-pipeline-freshness.mjs --strict \
+            --out="$RUNNER_TEMP/pipeline-freshness.json"
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          set -e
+
+      - name: Bericht
+        if: always()
+        run: |
+          {
+            echo '### Produktstand gegen die letzte abgeschlossene Sitzung'
+            echo ''
+            if [ -f "$RUNNER_TEMP/pipeline-freshness.json" ]; then
+              node -e '
+                const j = require(process.env.RUNNER_TEMP + "/pipeline-freshness.json");
+                console.log("| Stufe | Stichtag | Rueckstand (Sitzungen) | Zustand |");
+                console.log("|---|---|---|---|");
+                console.log("| Letzte Sitzung | " + j.LATEST_MARKET_SESSION + " | - | - |");
+                console.log("| Dauerhafte Ablage | " + (j.LATEST_DURABLE_STORE_ASOF ?? "-") + " | " + (j.STORE_LAG_SESSIONS ?? "?") + " | " + j.MARKET_STORE_CURRENT + " |");
+                console.log("| Produkt | " + (j.LATEST_PRODUCT_ASOF ?? "-") + " | " + (j.PRODUCT_LAG_SESSIONS ?? "?") + " | " + j.PRODUCT_MATERIALIZATION_CURRENT + " |");
+                console.log("");
+                console.log("**QUANT_CURRENT = " + j.QUANT_CURRENT + "**");
+                console.log("");
+                console.log(j.headline);
+              '
+            else
+              echo 'Kein Bericht erzeugt.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: P0, wenn der Produktstand eingefroren ist
+        if: steps.stand.outputs.code != '0'
+        run: |
+          echo "::error::P0_DATA_PIPELINE_FROZEN - die Produkt-Artefakte tragen nicht die letzte abgeschlossene Handelssitzung."
+          exit 1
