@@ -30,7 +30,8 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons,
-  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain, isLightOnTransparent
+  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain, isLightOnTransparent,
+  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
@@ -149,7 +150,7 @@ async function webIcon(site, sharp, sym, companyName) {
       const { buf } = await holen(c.href, 3 * 1024 * 1024);
       const res = await toPng(buf, sharp, { logo: c.kind === "logo" });
       dbg(sym, c.kind, c.href, res.png ? "OK" : res.reason);
-      if (res.png) return { png: res.png, iconUrl: c.href };
+      if (res.png) return { png: res.png, iconUrl: c.href, ratio: res.ratio, kind: c.kind };
       grund = res.reason;
     } catch (e) { dbg(sym, c.kind, c.href, "Fehler", e.message); }
   }
@@ -157,7 +158,7 @@ async function webIcon(site, sharp, sym, companyName) {
     try {
       const res = await toPng(Buffer.from(inlineSvg), sharp, { logo: true });
       dbg(sym, "inline-svg", res.png ? "OK" : res.reason);
-      if (res.png) return { png: res.png, iconUrl: base + "#inline-svg-logo" };
+      if (res.png) return { png: res.png, iconUrl: base + "#inline-svg-logo", ratio: res.ratio, kind: "logo" };
     } catch (e) { dbg(sym, "inline-svg", "Fehler", e.message); }
   }
   return { reason: grund };
@@ -247,6 +248,11 @@ const infos = await imageinfo([...new Set(kandidaten.flatMap(([, m]) => m.titles
 
 /* ------------------------------------------------------------ Download */
 console.log("3/3  Verkleinerte Fassungen laden …");
+/* Aufbereitung (einheitliches 128er-Quadrat) braucht sharp; FORMAT zaehlt
+   hoch, wenn sich die Aufbereitung aendert - aeltere Dateien werden neu geholt. */
+const FORMAT = 2;
+let SHARP = null;
+try { SHARP = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Logos werden nicht einheitlich aufbereitet."); }
 const vorher = ONLY ? {} : (readJson(join(REAL_OUT, "credits.json"), { credits: {} }).credits || {});
 const files = {}, credits = {};
 if (!DRY) mkdirSync(FILES, { recursive: true });
@@ -263,7 +269,7 @@ for (const [sym, m0] of kandidaten) {
   if (!lic.ok) { reasons.set(sym, lic.reason); continue; }
   frei++;
   const alt = vorher[sym];
-  if (alt && alt.sha1 === info.sha1 && alt.path && existsSync(join(OUT, alt.path))) {
+  if (alt && alt.sha1 === info.sha1 && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
     files[sym] = alt.path; credits[sym] = { source: "WIKIMEDIA_COMMONS", ...alt }; behalten++; continue;
   }
   if (DRY) continue;
@@ -272,14 +278,15 @@ for (const [sym, m0] of kandidaten) {
     const mime = (res.headers.get("content-type") || "").split(";")[0].trim();
     const ext = MIME_EXT[mime];
     if (!ext) { reasons.set(sym, "FORMAT:" + mime); continue; }
-    const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length > 200 * 1024) { reasons.set(sym, "ZU_GROSS"); continue; }
-    const path = "files/" + sym + "." + ext;
-    for (const f of readdirSync(FILES)) if (f.startsWith(sym + ".") && f !== sym + "." + ext) rmSync(join(FILES, f));
+    let buf = Buffer.from(await res.arrayBuffer()), ratio = null, zielExt = ext;
+    if (buf.length > 1024 * 1024) { reasons.set(sym, "ZU_GROSS"); continue; }
+    if (SHARP) { const n = await normalizeLogo(buf, SHARP); buf = n.png; ratio = Math.round(n.ratio * 100) / 100; zielExt = "png"; }
+    const path = "files/" + sym + "." + zielExt;
+    for (const f of readdirSync(FILES)) if (f.startsWith(sym + ".") && f !== sym + "." + zielExt) rmSync(join(FILES, f));
     writeFileSync(join(OUT, path), buf);
     files[sym] = path;
     credits[sym] = {
-      source: "WIKIMEDIA_COMMONS", path, title: m.title, page: info.descriptionurl, sha1: info.sha1,
+      source: "WIKIMEDIA_COMMONS", path, title: m.title, page: info.descriptionurl, sha1: info.sha1, fmt: SHARP ? FORMAT : 1, ratio,
       license: lic.license, licenseName: lic.licenseName, licenseUrl: lic.licenseUrl,
       author: lic.author, attributionRequired: lic.attributionRequired,
       wikidata: m.item, via: m.via
@@ -298,8 +305,12 @@ if (!args["no-web"] && !DRY) {
   let sharp = null;
   try { sharp = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Website-Icons entfallen."); }
   if (sharp) {
-    console.log("4/4  Website-Icons fuer Titel ohne Commons-Logo …");
-    const ohne = universe.filter((r) => !files[r.symbol]).slice(0, LIMIT);
+    console.log("4/5  Website-Icons fuer Titel ohne Commons-Logo oder mit breitem Schriftzug …");
+    /* Ein breiter Schriftzug (NVIDIA 5:1) wird im Quadrat winzig. Hat die
+       Website ein quadratisches Symbol, geht das vor. */
+    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2).map(([s]) => s));
+    const ohne = universe.filter((r) => !files[r.symbol] || breit.has(r.symbol)).slice(0, LIMIT);
+    console.log(`     ${ohne.filter((r) => !files[r.symbol]).length} ohne Logo, ${breit.size} mit breitem Schriftzug`);
 
     /* Website: Wikidata (CIK, Ticker, Name), sonst SEC-Stammdaten. */
     const siteItems = collectItems(await sparql(SPARQL_SITE_BY_CIK));
@@ -354,13 +365,15 @@ if (!args["no-web"] && !DRY) {
     await pool(ohne.filter((r) => siteOf.has(r.symbol)), 8, async (r) => {
       const site = siteOf.get(r.symbol);
       const alt = vorher[r.symbol];
-      if (!args["refresh-web"] && alt && alt.source === "WEBSITE" && alt.host === site.host && alt.path && existsSync(join(OUT, alt.path))) {
+      if (!args["refresh-web"] && alt && alt.source === "WEBSITE" && alt.fmt === FORMAT && alt.host === site.host && alt.path && existsSync(join(OUT, alt.path))) {
         icons.set(r.symbol, { hash: alt.sha1, host: site.host, alt });
         return;
       }
       const res = await webIcon(site, sharp, r.symbol, r.name);
-      if (res.png) icons.set(r.symbol, { hash: createHash("sha1").update(res.png).digest("hex"), host: site.host, png: res.png, iconUrl: res.iconUrl, site });
-      else reasons.set(r.symbol, res.reason);
+      /* Ersetzt einen Commons-Schriftzug nur durch ein quadratisches Icon. */
+      if (breit.has(r.symbol) && files[r.symbol] && !(res.png && res.kind !== "logo" && res.ratio <= 1.4)) return;
+      if (res.png) icons.set(r.symbol, { hash: createHash("sha1").update(res.png).digest("hex"), host: site.host, png: res.png, iconUrl: res.iconUrl, site, ratio: res.ratio });
+      else if (!files[r.symbol]) reasons.set(r.symbol, res.reason);
     });
     const generisch = genericIcons(icons);
     for (const [sym, ic] of icons) {
@@ -371,13 +384,58 @@ if (!args["no-web"] && !DRY) {
       writeFileSync(join(OUT, path), ic.png);
       files[sym] = path;
       credits[sym] = { source: "WEBSITE", path, page: ic.site.url, host: ic.site.host, iconUrl: ic.iconUrl,
-                       sha1: ic.hash, via: ic.site.via, licenseName: "Marke des Inhabers" };
+                       sha1: ic.hash, via: ic.site.via, licenseName: "Marke des Inhabers", fmt: FORMAT,
+                       ratio: Math.round((ic.ratio || 1) * 100) / 100 };
       reasons.delete(sym);
       webNeu++;
     }
     console.log(`     Website-Icons: ${webNeu} neu, ${webBehalten} unveraendert, ${generisch.size} generisch verworfen`);
     for (const r of ohne) if (!siteOf.has(r.symbol) && reasons.get(r.symbol) === "KEIN_WIKIDATA_LOGO") reasons.set(r.symbol, "KEINE_WEBSITE_BEKANNT");
     webSites = Object.fromEntries([...siteOf].map(([sym, st]) => [sym, { url: st.url, via: st.via }]));
+
+    /* ------------------------------ Dritte Quelle: Logo aus SEC-Einreichung */
+    if (secUa && !args["no-sec-logo"]) {
+      const rest = universe.filter((r) => !files[r.symbol] && r.cik).slice(0, LIMIT);
+      console.log(`5/5  Logo aus SEC-Einreichungen fuer ${rest.length} Titel …`);
+      const stat = { ok: 0, ohneBild: 0, fehler: 0 };
+      let i = 0;
+      for (const r of rest) {
+        const alt = vorher[r.symbol];
+        if (!args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
+          files[r.symbol] = alt.path; credits[r.symbol] = alt; reasons.delete(r.symbol); stat.ok++; continue;
+        }
+        try {
+          const cik = String(Number(r.cik));
+          const sub = JSON.parse((await secHolen("https://data.sec.gov/submissions/CIK" + cik.padStart(10, "0") + ".json", 8 * 1024 * 1024, secUa)).buf.toString("utf8"));
+          let treffer = null;
+          for (const f of logoFilings(sub.filings && sub.filings.recent, 3)) {
+            const doc = "https://www.sec.gov/Archives/edgar/data/" + cik + "/" + f.accession.replace(/-/g, "") + "/" + f.document;
+            const bilder = secLogoImages((await secHolen(doc, 3 * 1024 * 1024, secUa)).buf.toString("utf8"), doc, r.name);
+            dbg(r.symbol, "SEC-Logo", f.form, doc, bilder.length + " Bild(er)");
+            for (const url of bilder) {
+              try {
+                const res = await toPng((await secHolen(url, 3 * 1024 * 1024, secUa)).buf, sharp, { logo: true });
+                dbg(r.symbol, "SEC-Logo", url, res.png ? "OK" : res.reason);
+                if (res.png) { treffer = { ...res, url, form: f.form, doc }; break; }
+              } catch (e) { dbg(r.symbol, "SEC-Logo", url, "Fehler", e.message); }
+            }
+            if (treffer) break;
+          }
+          if (!treffer) { stat.ohneBild++; continue; }
+          const path = "files/" + r.symbol + ".png";
+          for (const f of readdirSync(FILES)) if (f.startsWith(r.symbol + ".") && f !== r.symbol + ".png") rmSync(join(FILES, f));
+          writeFileSync(join(OUT, path), treffer.png);
+          files[r.symbol] = path;
+          credits[r.symbol] = { source: "SEC_FILING", path, page: treffer.doc, iconUrl: treffer.url, form: treffer.form,
+                                sha1: createHash("sha1").update(treffer.png).digest("hex"), via: "SEC_CIK",
+                                licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round(treffer.ratio * 100) / 100 };
+          reasons.delete(r.symbol);
+          stat.ok++;
+        } catch (e) { stat.fehler++; dbg(r.symbol, "SEC-Logo Fehler", e.message); }
+        if (++i % 250 === 0) console.log(`     … ${i} (${JSON.stringify(stat)})`);
+      }
+      console.log(`     SEC-Logos: ${JSON.stringify(stat)}`);
+    }
   }
 }
 
@@ -405,6 +463,38 @@ try {
   }
 } catch (e) { console.log("     sharp fehlt - keine Pruefung auf helle Logos."); }
 
+/* Abdeckung der wichtigen Indizes: S&P 500, NASDAQ-100, Dow Jones aus den
+   Discover-Daten (Fondsbestaende), MSCI World aus dem Bestand des iShares-
+   Fonds URTH (nur US-Notierungen - nur die stehen im Universum). */
+const indexAbdeckung = {};
+{
+  const mitglieder = { SP500: new Set(), NDX: new Set(), DJIA: new Set(), MSCI_WORLD: new Set() };
+  const stocksDir = join(root, "discover", "data", "stocks", "US_REAL");
+  const imUniversum = new Set(universe.map((r) => r.symbol));
+  if (existsSync(stocksDir)) {
+    for (const f of readdirSync(stocksDir)) {
+      try {
+        const d = JSON.parse(readFileSync(join(stocksDir, f), "utf8"));
+        for (const ix of d.indexMemberships || []) if (mitglieder[ix.indexId]) mitglieder[ix.indexId].add(d.symbol);
+      } catch (e) { /* weiter */ }
+    }
+  }
+  try {
+    const csv = (await holen("https://www.ishares.com/us/products/239696/ishares-msci-world-etf/1467271812596.ajax?fileType=csv&fileName=URTH_holdings&dataType=fund", 8 * 1024 * 1024, { truncate: true })).buf.toString("utf8");
+    const norm = (t) => String(t).toUpperCase().replace(/[.\-/ ]/g, "");
+    const nachNorm = new Map(universe.map((r) => [norm(r.symbol), r.symbol]));
+    for (const t of parseIsharesUsTickers(csv)) { const s = nachNorm.get(norm(t)); if (s) mitglieder.MSCI_WORLD.add(s); }
+    console.log(`     MSCI World (URTH): ${mitglieder.MSCI_WORLD.size} US-Titel im Universum`);
+  } catch (e) { console.log("     MSCI-World-Bestand nicht erreichbar:", e.message); }
+  for (const [id, set] of Object.entries(mitglieder)) {
+    const liste = [...set].filter((s) => imUniversum.has(s) || exclusions[s]).sort();
+    const ohneLogo = liste.filter((s) => !files[s]);
+    indexAbdeckung[id] = { members: liste.length, withLogo: liste.length - ohneLogo.length,
+                           missing: ohneLogo.map((s) => s + ":" + (exclusions[s] ? "AUSGESCHLOSSEN" : (reasons.get(s) || "?"))) };
+    console.log(`     ${id}: ${liste.length - ohneLogo.length}/${liste.length} mit Logo`);
+  }
+}
+
 const sortiert = (o) => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
 const generatedAt = new Date().toISOString();
 const grundZaehler = {};
@@ -413,8 +503,8 @@ for (const r of reasons.values()) { const k = r.split(":")[0]; grundZaehler[k] =
 writeFileSync(join(OUT, "index.json"), JSON.stringify({
   version: "company-logos-1.0.0",
   generatedAt,
-  sources: ["WIKIMEDIA_COMMONS", "WEBSITE"],
-  boundary: "Logos dienen allein der Identifizierung des Unternehmens neben seinen eigenen Kursdaten. Zuerst Wikimedia Commons (nur freie Lizenz: gemeinfrei, CC0, CC BY, CC BY-SA, Apache 2.0, MIT), sonst das Icon der offiziellen Website des Unternehmens (Marke des Inhabers, keine Lizenz). Unveraendert und nur verkleinert. Nicht fuer Werbung, Social-Media-Beitraege oder eigene Grafiken. Quelle je Logo: credits.json.",
+  sources: ["WIKIMEDIA_COMMONS", "WEBSITE", "SEC_FILING"],
+  boundary: "Logos dienen allein der Identifizierung des Unternehmens neben seinen eigenen Kursdaten. Zuerst Wikimedia Commons (nur freie Lizenz: gemeinfrei, CC0, CC BY, CC BY-SA, Apache 2.0, MIT), sonst das Icon der offiziellen Website des Unternehmens, sonst das Logo aus seinen SEC-Einreichungen (Marke des Inhabers, keine Lizenz). Unveraendert, nur verkleinert und einheitlich in ein Quadrat eingepasst. Nicht fuer Werbung, Social-Media-Beitraege oder eigene Grafiken. Quelle je Logo: credits.json.",
   count: Object.keys(files).length,
   files: sortiert(files),
   dark: dunkel.sort()
@@ -439,6 +529,7 @@ writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   downloaded: geladen + webNeu, unchanged: behalten + webBehalten,
   bySource: Object.values(credits).reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
   byVia: Object.values(credits).reduce((a, c) => ((a[c.via] = (a[c.via] || 0) + 1), a), {}),
+  indexCoverage: indexAbdeckung,
   byLicense: Object.values(credits).filter((c) => c.license).reduce((a, c) => ((a[c.license] = (a[c.license] || 0) + 1), a), {}),
   excluded: grundZaehler
 }, null, 1) + "\n");

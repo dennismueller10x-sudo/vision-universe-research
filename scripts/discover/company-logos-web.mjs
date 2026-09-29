@@ -229,9 +229,35 @@ export async function toPng(buf, sharp, opts = {}) {
   /* Ein Logo aus dem Seitenkopf darf breit sein (Wortmarke), ein Icon nicht. */
   const maxRatio = opts.logo ? 8 : 4;
   if (ratio > maxRatio || ratio < 1 / maxRatio) return { reason: "WEB_ICON_FORMAT" };
-  const out = await img.resize(OUT_SIZE, OUT_SIZE, { fit: "inside", withoutEnlargement: fmt !== "svg" })
-    .png({ compressionLevel: 9, palette: true, quality: 90 }).toBuffer();
-  return { png: out, width: meta.width || null, format: fmt };
+  const norm = await normalizeLogo(buf, sharp);
+  return { png: norm.png, ratio: norm.ratio, width: meta.width || null, format: fmt };
+}
+
+/**
+ * Einheitliches Format fuer jedes Logo, gleich aus welcher Quelle: leere
+ * Raender (transparent oder einfarbig) weg, dann mittig in ein Quadrat von
+ * 128 px mit gleichem Rand. Das Logo selbst wird weder beschnitten noch
+ * umgefaerbt oder verzerrt - nur verkleinert und gleich eingepasst, damit
+ * ein hohes Symbol (Apple) und ein flacher Schriftzug (NVIDIA) in der Liste
+ * gleich viel Platz bekommen.
+ * @returns {{png: Buffer, ratio: number}} ratio = Breite / Hoehe des Inhalts
+ */
+export async function normalizeLogo(buf, sharp) {
+  const fmt = sniff(buf);
+  const quelle = await sharp(buf, { limitInputPixels: 4096 * 4096, density: fmt === "svg" ? 300 : undefined }).ensureAlpha().png().toBuffer();
+  let inhalt = quelle;
+  try {
+    const t = await sharp(quelle).trim({ threshold: 12 }).png().toBuffer();
+    const m = await sharp(t).metadata();
+    if ((m.width || 0) >= 8 && (m.height || 0) >= 8) inhalt = t;
+  } catch (e) { /* einfarbig oder ohne Rand - so lassen */ }
+  const m = await sharp(inhalt).metadata();
+  const innen = OUT_SIZE - 2 * Math.round(OUT_SIZE * 0.06);
+  const klein = await sharp(inhalt).resize(innen, innen, { fit: "inside" }).png().toBuffer();
+  const png = await sharp({ create: { width: OUT_SIZE, height: OUT_SIZE, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: klein, gravity: "center" }])
+    .png({ compressionLevel: 9, palette: true, quality: 92 }).toBuffer();
+  return { png, ratio: (m.width || 1) / (m.height || 1) };
 }
 
 /**
@@ -328,4 +354,82 @@ export async function isLightOnTransparent(buf, sharp) {
   }
   const n = durchsichtig + deckend;
   return deckend > 0 && durchsichtig / n > 0.1 && hell / deckend > 0.85;
+}
+
+/* ------------------------------------------- Dritte Quelle: SEC-Einreichungen */
+
+/**
+ * Einreichungen, in denen das Firmenlogo als Bild steht - Proxy Statement
+ * (DEF 14A) und Geschaeftsbericht zuerst, dann Jahres- und Emissionsberichte.
+ */
+export function logoFilings(recent, max = 3) {
+  if (!recent || !Array.isArray(recent.form)) return [];
+  const rang = ["DEF 14A", "ARS", "DEFA14A", "10-K", "20-F", "40-F", "S-1", "F-1", "424B4", "6-K", "8-K"];
+  const out = [];
+  for (const form of rang) {
+    for (let i = 0; i < recent.form.length && out.length < max; i++) {
+      if (recent.form[i] === form && recent.primaryDocument[i]) {
+        out.push({ form, accession: recent.accessionNumber[i], document: recent.primaryDocument[i] });
+        break;
+      }
+    }
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
+/**
+ * Logo-Bilder in einer SEC-Einreichung: <img>, dessen Alternativtext oder
+ * Dateiname "logo" oder den Firmennamen traegt (Druckereien setzen
+ * alt="LOGO"). Unterschriften, Grafiken und Fotos zaehlen nicht.
+ */
+export function secLogoImages(html, docUrl, companyName) {
+  const text = String(html || "").slice(0, 600000);
+  const woerter = String(companyName || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/)
+    .filter((w) => w.length >= 4 && !/^(inc|corp|holdings|group|class|company|limited|technologies|international|trust)$/.test(w));
+  const out = [];
+  for (const m of text.matchAll(/<img\b[^>]*>/gi)) {
+    const a = attrs(m[0]);
+    const src = a.src || "";
+    const hinweis = ((a.alt || "") + " " + (a.title || "") + " " + src).toLowerCase();
+    if (!src || /^data:/i.test(src)) continue;
+    if (/(signature|sig_|chart|graph|photo|headshot|map|table|performance|arrow|check|box)/i.test(hinweis)) continue;
+    if (!/logo/.test(hinweis) && !woerter.some((w) => (a.alt || "").toLowerCase().includes(w))) continue;
+    try { out.push(new URL(src, docUrl).href); } catch (e) { /* weiter */ }
+    if (out.length >= 3) break;
+  }
+  return out;
+}
+
+/* ---------------------------------------------------- MSCI World (URTH) */
+
+/**
+ * iShares-Bestandsdatei (CSV) -> Ticker an US-Boersen. Die Datei beginnt
+ * mit einigen Kopfzeilen; die Tabelle startet mit "Ticker,".
+ */
+export function parseIsharesUsTickers(csv) {
+  const zeilen = String(csv || "").split(/\r?\n/);
+  const start = zeilen.findIndex((z) => /^"?Ticker"?,/.test(z));
+  if (start < 0) return [];
+  const spalten = (z) => {
+    const out = []; let cur = "", q = false;
+    for (const ch of z) {
+      if (ch === '"') q = !q;
+      else if (ch === "," && !q) { out.push(cur); cur = ""; }
+      else cur += ch;
+    }
+    out.push(cur);
+    return out.map((s) => s.trim());
+  };
+  const kopf = spalten(zeilen[start]);
+  const iT = kopf.indexOf("Ticker"), iX = kopf.indexOf("Exchange"), iA = kopf.indexOf("Asset Class");
+  const out = new Set();
+  for (const z of zeilen.slice(start + 1)) {
+    const f = spalten(z);
+    if (f.length < kopf.length - 2) continue;
+    if (iA >= 0 && !/equity/i.test(f[iA] || "")) continue;
+    if (iX >= 0 && !/(nasdaq|new york stock exchange|nyse)/i.test(f[iX] || "")) continue;
+    if (f[iT] && f[iT] !== "-") out.add(f[iT].toUpperCase());
+  }
+  return [...out];
 }

@@ -7,7 +7,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, sniff, icoLargestPng, genericIcons, toPng,
-  inlineLogoSvg, websiteFromFiling, filingText, latestReport, rootDomain, ownLogoHint
+  inlineLogoSvg, websiteFromFiling, filingText, latestReport, rootDomain, ownLogoHint,
+  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers
 } from "../../scripts/discover/company-logos-web.mjs";
 import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
@@ -124,8 +125,9 @@ test("Mehrere Items heisst kein Logo, mehrere Logos einer Firma nicht", () => {
   const neuer = collectItems([b("Q5", "Acme", "Alt.svg", { cik: "5", start: "+1990-01-01T00:00:00Z" }),
                               b("Q5", "Acme", "Neu.svg", { cik: "5", start: "+2021-01-01T00:00:00Z" })]);
   assert.equal(pickLogo(neuer.get("Q5")), "File:Neu.svg");
-  const icon = collectItems([b("Q5", "Acme", "Icon.svg", { cik: "5", icon: true, preferred: true }), b("Q5", "Acme", "Logo.svg", { cik: "5" })]);
-  assert.equal(pickLogo(icon.get("Q5")), "File:Logo.svg");
+  /* Quadratisches Symbol (P8972) vor breitem Schriftzug (P154). */
+  const icon = collectItems([b("Q5", "Acme", "Logo.svg", { cik: "5", preferred: true }), b("Q5", "Acme", "Icon.svg", { cik: "5", icon: true })]);
+  assert.equal(pickLogo(icon.get("Q5")), "File:Icon.svg");
   const bevorzugt = collectItems([b("Q5", "Acme", "A1.svg", { cik: "5" }), b("Q5", "Acme", "A2.svg", { cik: "5", preferred: true })]);
   assert.equal(pickLogo(bevorzugt.get("Q5")), "File:A2.svg");
   const zweiItems = collectItems([b("Q6", "Acme", "A.svg", { cik: "7" }), b("Q7", "Acme Sub", "B.svg", { cik: "7" })]);
@@ -165,11 +167,12 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
     assert.ok(existsSync(join(dir, path)), path);
     const c = credits[sym];
     assert.ok(c, "Nachweis fehlt: " + sym);
-    if (c.source === "WEBSITE") {
-      /* Website-Icon: immer PNG (nie eine fremde SVG), Quelle genannt, keine Lizenz behauptet. */
+    if (c.source === "WEBSITE" || c.source === "SEC_FILING") {
+      /* Website- oder SEC-Logo: immer PNG (nie eine fremde SVG), Quelle genannt, keine Lizenz behauptet. */
       assert.match(path, /\.png$/, sym);
       assert.match(c.page || "", /^https?:\/\//, sym);
-      assert.ok(c.host, "Website fehlt: " + sym);
+      if (c.source === "WEBSITE") assert.ok(c.host, "Website fehlt: " + sym);
+      else assert.match(c.page, /^https:\/\/www\.sec\.gov\//, sym);
       assert.equal(c.license, undefined, sym);
     } else {
       assert.match(c.license, /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?|apache-2\.0|mit)$/, sym);
@@ -334,4 +337,43 @@ test("Zweite Diagnose: Apache-Lizenz, nur das eigene Logo, breite Wortmarken", a
   const wortmarke = await sharp({ create: { width: 240, height: 48, channels: 4, background: "#036" } }).png().toBuffer();
   assert.ok((await toPng(wortmarke, sharp, { logo: true })).png);
   assert.equal((await toPng(wortmarke, sharp)).reason, "WEB_ICON_ZU_KLEIN");
+});
+
+test("Einheitliche Groesse: hohes Symbol und flacher Schriftzug fuellen dasselbe Feld", async (t) => {
+  let sharp;
+  try { sharp = (await import("sharp")).default; } catch (e) { t.skip("sharp nicht installiert"); return; }
+  /* Apple-artig: hoch, mit viel leerem Rand; NVIDIA-artig: flach. */
+  const hoch = await sharp({ create: { width: 300, height: 400, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: await sharp({ create: { width: 100, height: 120, channels: 4, background: "#000" } }).png().toBuffer(), left: 100, top: 140 }]).png().toBuffer();
+  const flach = await sharp({ create: { width: 500, height: 100, channels: 4, background: "#76b900" } }).png().toBuffer();
+  for (const [buf, ratio] of [[hoch, 100 / 120], [flach, 5]]) {
+    const n = await normalizeLogo(buf, sharp);
+    const m = await sharp(n.png).metadata();
+    assert.equal(m.width, 128); assert.equal(m.height, 128);
+    assert.ok(Math.abs(n.ratio - ratio) < 0.05, "Seitenverhaeltnis bleibt: " + n.ratio);
+    /* Inhalt reicht in der laengeren Richtung bis an den gemeinsamen Rand (6 %). */
+    const { info } = await sharp(n.png).trim({ threshold: 1 }).toBuffer({ resolveWithObject: true });
+    assert.ok(Math.max(info.width, info.height) >= 110 && Math.max(info.width, info.height) <= 114, "Inhalt " + info.width + "x" + info.height);
+  }
+});
+
+test("SEC: Einreichungen mit Logo und das Logo-Bild darin", () => {
+  const recent = { form: ["8-K", "DEF 14A", "10-K", "ARS"], accessionNumber: ["1", "2", "3", "4"], primaryDocument: ["a.htm", "p.htm", "k.htm", "ars.pdf"] };
+  assert.deepEqual(logoFilings(recent).map((f) => f.form), ["DEF 14A", "ARS", "10-K"]);
+  const html = `<img src="g1_signature.jpg" alt="signature"><img src="g2.jpg" alt="LOGO"><img src="chart1.jpg" alt="Performance chart">
+    <img src="g3.jpg" alt="United Airlines Holdings">`;
+  assert.deepEqual(secLogoImages(html, "https://www.sec.gov/Archives/edgar/data/100517/0001/p.htm", "United Airlines Holdings Inc"),
+    ["https://www.sec.gov/Archives/edgar/data/100517/0001/g2.jpg", "https://www.sec.gov/Archives/edgar/data/100517/0001/g3.jpg"]);
+});
+
+test("MSCI World: nur Aktien an US-Boersen aus der iShares-Datei", () => {
+  const csv = `iShares MSCI World ETF
+Fund Holdings as of,"Sep 26, 2026"
+ 
+Ticker,Name,Sector,Asset Class,Market Value,Weight (%),Notional Value,Quantity,Price,Location,Exchange,Currency,FX Rate,Market Currency,Accrual Date
+"NVDA","NVIDIA CORP","Information Technology","Equity","1,000","5.1","1,000","10","180","United States","NASDAQ","USD","1.00","USD","-"
+"ASML","ASML HOLDING NV","Information Technology","Equity","1,000","0.8","1,000","1","900","Netherlands","Euronext Amsterdam","EUR","1.1","EUR","-"
+"BRKB","BERKSHIRE HATHAWAY INC CLASS B","Financials","Equity","1,000","0.9","1,000","1","500","United States","New York Stock Exchange Inc.","USD","1.00","USD","-"
+"USD","USD CASH","Cash and/or Derivatives","Cash","1","0.1","1","1","1","United States","-","USD","1.00","USD","-"`;
+  assert.deepEqual(parseIsharesUsTickers(csv).sort(), ["BRKB", "NVDA"]);
 });

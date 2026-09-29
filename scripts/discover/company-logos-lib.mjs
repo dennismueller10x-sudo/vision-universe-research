@@ -28,7 +28,8 @@
 export const USER_AGENT =
   "VisionUniverseLogoSync/1.0 (https://github.com/dennismueller10x-sudo/vision-universe-research)";
 
-export const THUMB_WIDTH = 120;
+/* Commons liefert eine 256er-Fassung; aufbereitet wird auf 128 px (company-logos-web.mjs). */
+export const THUMB_WIDTH = 256;
 
 /* Wikidata-Items der Boersen, an denen das Produktuniversum handelt -
    bei mehreren Treffern fuer denselben Ticker entscheidet die US-Boerse. */
@@ -201,12 +202,13 @@ export function collectItems(bindings, into = new Map()) {
 
 /**
  * Alle aktuellen Logos eines Items in der Reihenfolge, in der sie versucht
- * werden: Logo vor Icon, bevorzugter Rang, neuestes Startdatum, SVG, Titel.
+ * werden: Icon (P8972, quadratisches Symbol) vor Logo (oft ein breiter
+ * Schriftzug), bevorzugter Rang, neuestes Startdatum, SVG, Titel.
  * Faellt das erste an der Lizenz, ist das naechste der Ersatz.
  */
 export function rankLogos(entry) {
   return [...entry.logos.entries()].sort(([ta, a], [tb, b]) =>
-    (a.icon - b.icon) || (b.preferred - a.preferred) ||
+    (b.icon - a.icon) || (b.preferred - a.preferred) ||
     (b.start > a.start ? 1 : b.start < a.start ? -1 : 0) ||
     (/\.svg$/i.test(tb) - /\.svg$/i.test(ta)) || (ta < tb ? -1 : ta > tb ? 1 : 0)
   ).map(([t]) => t);

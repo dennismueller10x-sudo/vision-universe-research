@@ -106,6 +106,12 @@
         return a;
       }
       p.appendChild(doc.createTextNode("Logo: "));
+      if (c.source === "SEC_FILING") {
+        p.appendChild(link("SEC-Einreichung des Unternehmens" + (c.form ? " (" + c.form + ")" : ""), c.page));
+        p.appendChild(doc.createTextNode(" · Marke des jeweiligen Inhabers, nur zur Identifizierung"));
+        p.hidden = false;
+        return;
+      }
       if (c.source === "WEBSITE") {
         p.appendChild(link("Website des Unternehmens" + (c.host ? " (" + c.host + ")" : ""), c.page));
         p.appendChild(doc.createTextNode(" · Marke des jeweiligen Inhabers, nur zur Identifizierung"));

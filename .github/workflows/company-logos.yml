@@ -45,7 +45,7 @@ jobs:
   logos:
     if: github.event_name != 'push' || contains(github.event.head_commit.message, '[company-logos]')
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
         with:
@@ -94,6 +94,6 @@ jobs:
             echo '### Firmenlogos'
             echo ''
             if [ -f discover/logos/summary.json ]; then
-              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Quelle | "+JSON.stringify(s.bySource)+" |"); console.log("| nach Lizenz (Commons) | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |");'
+              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Quelle | "+JSON.stringify(s.bySource)+" |"); console.log("| nach Lizenz (Commons) | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |"); for (const [k,v] of Object.entries(s.indexCoverage||{})) console.log("| "+k+" | "+v.withLogo+"/"+v.members+" "+(v.missing.length?"fehlen: "+v.missing.join(", "):"")+" |");'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
