@@ -650,7 +650,8 @@ function attachFundamentals(stock, model) {
   /* Bewertung: Kurs x Aktien gegen Umsatz/FCF, Kurs gegen Gewinn je Aktie.
      Basis (TTM oder FY) steht dran; nichts wird gemischt. */
   const preis = Contract.valueOf(stock.price);
-  const bewertung = valuationOf(model, g, preis);
+  const vol = stock.rawValues && isNum(stock.rawValues.avgVolume20d) ? stock.rawValues.avgVolume20d : null;
+  const bewertung = valuationOf(model, g, preis, isNum(vol) && isNum(preis) ? vol * preis : null);
   m.f_pe = bewertung.pe ? bewertung.pe.value : null;
   m.f_ps = bewertung.ps ? bewertung.ps.value : null;
   m.f_fcfYield = bewertung.fcfYield ? bewertung.fcfYield.value : null;
@@ -664,20 +665,80 @@ function attachFundamentals(stock, model) {
   stock.hook = fundamentalHook(model, sig);
 }
 
-function valuationOf(model, g, preis) {
+/* AKTIENBASIS DER BEWERTUNG
+
+   Marktkapitalisierung, KUV und FCF-Rendite verbinden den US-Kurs mit einer
+   SEC-Aktienzahl, das KGV den Kurs mit einem Gewinn je Aktie. Beides ist nur
+   richtig, wenn Aktienzahl und Waehrung zu dem Papier passen, das an der
+   US-Boerse gehandelt wird. Gemessen am 29.09.2026 war das nicht immer so:
+
+     Chewy        100 Aktien (SEC-Reihe "ausstehend" endet vor dem Boersengang
+                  2019) -> 1 827 $ Marktkapitalisierung
+     Hinge Health ausstehende Aktien 0 -> keine Marktkapitalisierung, obwohl die
+                  verwaesserte Aktienzahl (54,6 Mio., 2025) vorliegt
+     TSMC         25,9 Mrd. Stammaktien in Taiwan x ADR-Kurs (1 ADR = 5 Aktien),
+                  Zahlen in TWD -> 11,7 Bio. $ und ein KGV aus TWD-Gewinnen
+     LATAM        ADR = 2 000 Aktien -> 30 Bio. $, KGV 21 175
+     Tempus AI    verwaesserte Aktienzahl in Tausend gemeldet -> 15 Mio. $
+
+   Deshalb: (1) die AKTUELLSTE belegte Aktienzahl, nicht blind die erste
+   Reihe; veraltete Reihen (mehr als 400 Tage vor dem letzten Geschaeftsjahr)
+   gelten nicht. (2) Zurueckhalten statt falsch zeigen, wenn die Aktienbasis
+   nicht zum Papier passt - mit Grund in marketCapReason:
+     NON_USD_REPORTING        Berichtswaehrung nicht USD
+     FOREIGN_FILER            keine Quartalszahlen (typisch 20-F) und US-Tages-
+                              umsatz unter 0,1 % der rechnerischen Kapitalisierung
+     IMPLAUSIBLE_SHARE_BASIS  Tagesumsatz unter 0,002 % oder ueber 100 % der
+                              Kapitalisierung, oder mehr als 7 Bio. $
+   Das ADR-Verhaeltnis selbst liegt in keiner Quelle dieses Repositorys vor;
+   es wird nicht geraten. */
+const SHARE_BASIS = { staleDays: 400, minTurnover: 2e-5, foreignMinTurnover: 1e-3, maxTurnover: 1, maxMarketCap: 7e12 };
+function currentShares(model) {
+  const pick = (rows) => (rows && rows.length ? rows[rows.length - 1] : null);
+  const cands = [pick(model.annual.shares_outstanding), pick(model.annual.diluted_weighted_average_shares)]
+    .filter((r) => r && isNum(r.v) && r.v > 0 && r.end);
+  if (!cands.length) return null;
+  cands.sort((a, b) => String(b.end).localeCompare(String(a.end)));
+  const best = cands[0];
+  const years = model.years || [];
+  const fyEnd = (model.annual.revenue && model.annual.revenue.length ? model.annual.revenue[model.annual.revenue.length - 1].end : null)
+             || (years.length ? String(years[years.length - 1]) + "-12-31" : null);
+  if (fyEnd && (Date.parse(fyEnd) - Date.parse(best.end)) / 864e5 > SHARE_BASIS.staleDays) return null;
+  return best;
+}
+function shareBasis(model, preis, avgDollarVolume) {
+  const currency = model.units && (model.units.revenue || model.units.net_income || model.units.stockholders_equity || model.units.total_assets) || null;
+  if (currency && currency !== "USD") return { ok: false, reason: "NON_USD_REPORTING", currency };
+  const aktien = currentShares(model);
+  if (!aktien) return { ok: false, reason: "NO_CURRENT_SHARE_COUNT" };
+  const mcap = preis * aktien.v;
+  const turnover = isNum(avgDollarVolume) && mcap > 0 ? avgDollarVolume / mcap : null;
+  const foreign = !(model.coverage && model.coverage.ttmThrough);
+  if (foreign && (turnover === null || turnover < SHARE_BASIS.foreignMinTurnover)) return { ok: false, reason: "FOREIGN_FILER", aktien };
+  if (mcap > SHARE_BASIS.maxMarketCap || (turnover !== null && (turnover < SHARE_BASIS.minTurnover || turnover > SHARE_BASIS.maxTurnover)))
+    return { ok: false, reason: "IMPLAUSIBLE_SHARE_BASIS", aktien };
+  return { ok: true, aktien, currency: currency || "USD" };
+}
+
+function valuationOf(model, g, preis, avgDollarVolume) {
   const out = { available: false, basis: g.basis || null };
   if (!isNum(preis) || preis <= 0) { out.reason = "NO_PRICE"; return out; }
   const M = 1e6;
-  const aktienReihe = (model.annual.shares_outstanding && model.annual.shares_outstanding.length) ? model.annual.shares_outstanding
-                    : (model.annual.diluted_weighted_average_shares || []);
-  const aktien = aktienReihe.length ? aktienReihe[aktienReihe.length - 1] : null;
-  if (aktien && aktien.v > 0) {
-    out.marketCap = { value: preis * aktien.v, shares: aktien.v, sharesFy: aktien.fy, sharesEnd: aktien.end };
-    if (isNum(g.umsatzTTM) && g.umsatzTTM > 0) out.ps = { value: (preis * aktien.v) / (g.umsatzTTM * M), basis: g.basis, period: g.zeitraum, calculation: "Kurs x Aktien / Umsatz (" + g.basis + ")" };
-    const fcf = (model.ttm.free_cash_flow && isNum(model.ttm.free_cash_flow.v)) ? { v: model.ttm.free_cash_flow.v, basis: "TTM", through: model.ttm.free_cash_flow.through }
-              : (model.annual.free_cash_flow && model.annual.free_cash_flow.length) ? Object.assign({ basis: "FY" }, model.annual.free_cash_flow[model.annual.free_cash_flow.length - 1]) : null;
-    if (fcf) out.fcfYield = { value: fcf.v / (preis * aktien.v), basis: fcf.basis, through: fcf.through || null, fy: fcf.fy || null, calculation: "Free Cashflow (" + fcf.basis + ") / (Kurs x Aktien)" };
+  const basis = shareBasis(model, preis, avgDollarVolume);
+  if (!basis.ok) {
+    out.marketCapReason = basis.reason;
+    out.peReason = basis.reason === "NO_CURRENT_SHARE_COUNT" ? g.kgvStatus : basis.reason;
+    if (basis.reason === "NO_CURRENT_SHARE_COUNT" && g.kgvStatus === "CALCULATED" && isNum(g.kgv)) { delete out.peReason; out.pe = { value: g.kgv, basis: g.basis, eps: g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" }; }
+    out.available = !!out.pe;
+    out.price = preis;
+    return out;
   }
+  const aktien = basis.aktien;
+  out.marketCap = { value: preis * aktien.v, shares: aktien.v, sharesFy: aktien.fy, sharesEnd: aktien.end };
+  if (isNum(g.umsatzTTM) && g.umsatzTTM > 0) out.ps = { value: (preis * aktien.v) / (g.umsatzTTM * M), basis: g.basis, period: g.zeitraum, calculation: "Kurs x Aktien / Umsatz (" + g.basis + ")" };
+  const fcf = (model.ttm.free_cash_flow && isNum(model.ttm.free_cash_flow.v)) ? { v: model.ttm.free_cash_flow.v, basis: "TTM", through: model.ttm.free_cash_flow.through }
+            : (model.annual.free_cash_flow && model.annual.free_cash_flow.length) ? Object.assign({ basis: "FY" }, model.annual.free_cash_flow[model.annual.free_cash_flow.length - 1]) : null;
+  if (fcf) out.fcfYield = { value: fcf.v / (preis * aktien.v), basis: fcf.basis, through: fcf.through || null, fy: fcf.fy || null, calculation: "Free Cashflow (" + fcf.basis + ") / (Kurs x Aktien)" };
   if (g.kgvStatus === "CALCULATED" && isNum(g.kgv)) out.pe = { value: g.kgv, basis: g.basis, eps: g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" };
   else out.peReason = g.kgvStatus;
   out.available = !!(out.pe || out.ps || out.fcfYield);
