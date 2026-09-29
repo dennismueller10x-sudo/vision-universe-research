@@ -105,6 +105,7 @@
     a.setAttribute('data-symbol', card.symbol);
     a.setAttribute('data-tone', tones[(options.position || 0) % tones.length]);
     var head = node('div', 'v2-tile-head'), copy = node('div', 'v2-stock-copy');
+    if (D.Logos) head.appendChild(D.Logos.mark(card.symbol, { name: card.companyName, size: options.large ? 'md' : 'sm' }));
     var id = node('div', 'v2-tile-id');
     id.appendChild(node('span', 'v2-stock-symbol', card.symbol + (card.was ? ' · ' + card.was : '')));
     id.appendChild(node(options.large ? 'h2' : 'h3', 'v2-stock-name', card.companyName || card.symbol));

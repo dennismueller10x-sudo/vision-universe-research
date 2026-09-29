@@ -145,6 +145,7 @@
                          "aria-label": (card.companyName || card.symbol) + " ansehen" }, [
       el("div", { class: "dx-featured-copy" }, [
         el("p", { class: "dx-kicker", text: surface.kicker || "Im Blick" }),
+        D.Logos ? D.Logos.mark(card.symbol, { name: card.companyName, size: "lg", onlyLogo: true }) : null,
         el("h2", { class: "dx-featured-name", text: card.companyName || card.symbol }),
         card.was ? el("p", { class: "dx-was-line", text: card.was }) : null,
         text.story ? el("p", { class: "dx-featured-story" }, [

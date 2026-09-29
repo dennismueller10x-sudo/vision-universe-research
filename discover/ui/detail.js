@@ -416,10 +416,12 @@
       ]) : null,
       el("div", { class: "dx-dhero-inner" }, [
         el("div", {}, [
+          D.Logos ? D.Logos.mark(detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true }) : null,
           el("h1", { text: detail.companyName || detail.symbol }),
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
                                                detail.universeLabel]
             .filter(Boolean).map(function (t) { return el("span", { text: t }); })),
+          D.Logos ? D.Logos.creditLine(detail.symbol) : null,
           /* V4 §19: Index-Mitgliedschaft mit Herkunft und Stichtag - aus den
              veroeffentlichten Fondsbestaenden, nicht geraten. */
           Array.isArray(detail.indexMemberships) && detail.indexMemberships.length

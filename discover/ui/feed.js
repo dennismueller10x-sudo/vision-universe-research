@@ -242,6 +242,7 @@
         karte.herkunft
           ? el("p", { class: "dx-kicker", text: karte.herkunft })
           : null,
+        D.Logos ? D.Logos.mark(karte.symbol, { name: karte.companyName, size: "lg", onlyLogo: true }) : null,
         el("h2", { class: "dx-feed-name", text: karte.companyName || karte.symbol }),
         el("p", { class: "dx-feed-meta" }, [karte.symbol, karte.sector]
           .filter(Boolean).map(function (t) { return el("span", { text: t }); })),
