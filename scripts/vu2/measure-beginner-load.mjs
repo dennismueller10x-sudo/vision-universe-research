@@ -138,9 +138,39 @@ for (const [name, pfad] of ANSICHTEN) {
     const karten = [...wurzel.querySelectorAll('section,article,.card,.q-card,.panel')].filter(sichtbar).length;
     const entscheidungen = [...wurzel.querySelectorAll('a[href],button,select,input,[role=button],[tabindex]')].filter(sichtbar).length;
 
-    /* Saetze: an Satzzeichen trennen, Abkuerzungen in Kauf nehmen. */
-    const saetze = text.split(/[.!?] /).map((s) => s.trim()).filter((s) => s.split(' ').length > 2);
-    const langeSaetze = saetze.filter((s) => s.split(' ').length > 20).length;
+    /* SAETZE WERDEN JE TEXTBLOCK GEZAEHLT, NICHT UEBER DIE GANZE SEITE.
+
+       SELBST GEFUNDEN, ALS ZWEI MESSUNGEN SICH WIDERSPRACHEN: dieses
+       Werkzeug meldete fuer die Strategien-Seite 11 lange Saetze, eine
+       direkte Messung je Absatz fand 1.
+
+       Der Grund stand hier: `text` ist der ganze Seitentext mit
+       zusammengepressten Leerzeichen, und getrennt wurde an ". ". Damit
+       verschmilzt jede Ueberschrift mit dem folgenden Absatz zu EINEM
+       Satz, bis irgendwo ein Punkt kommt - "Quality Compounder Sucht
+       Unternehmen mit ...". Auf einer Seite mit elf Karten erzeugt das
+       elf lange Saetze, die niemand geschrieben hat.
+
+       Die Zahl bestrafte also Seiten dafuer, viele Bloecke zu haben -
+       und genau nach dieser Zahl haette ich als naechstes umgebaut.
+       Ein Lineal, das sich nach der Form der Seite biegt, misst nichts.
+
+       Es ist derselbe Fehler wie beim Zaehlen der Klickziele (dort
+       zaehlten Elemente in zugeklappten <details> mit): eine Messung
+       ueber die Seite statt ueber das, was ein Mensch als Einheit liest.
+
+       Jetzt: je Blockelement, an Satzzeichen getrennt. */
+    const bloecke = [...wurzel.querySelectorAll('p,li,h1,h2,h3,h4,summary,figcaption,dd,dt,blockquote,td,th')]
+      .filter(sichtbar);
+    const saetze = [];
+    for (const b of bloecke) {
+      if (b.querySelector('p,li,h1,h2,h3,h4,summary,figcaption,dd,dt,blockquote,td,th')) continue;
+      for (const s of (b.innerText || '').split(/(?<=[.!?])\s+/)) {
+        const t = s.trim();
+        if (t.split(/\s+/).filter(Boolean).length > 2) saetze.push(t);
+      }
+    }
+    const langeSaetze = saetze.filter((s) => s.split(/\s+/).filter(Boolean).length > 20).length;
     const zahlen = (text.match(/\d[\d.,]*/g) || []).length;
 
     return {

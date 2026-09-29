@@ -225,11 +225,21 @@ function factorBar(name,note,valueText,share,negative){
  if(share!==null&&share!==undefined)bar.append(el('i',{style:'width:'+Math.max(2,Math.min(100,share*100)).toFixed(1)+'%'}));
  row.append(bar);return row;
 }
-function hitRow(ticker,name,why,numText,numNote){
- return el('a',{class:'q-hit',href:href('stock',ticker)},[
+/* Die rechte Spalte traegt normalerweise eine Zahl - rechtsbuendig, mit
+   Ziffern gleicher Breite, damit Zeilen untereinander vergleichbar sind.
+   Mit `ton` traegt sie stattdessen ein Urteil in Worten, als Marke: dann
+   gelten Umbruch und Farbe des Tons statt Zahlensatz. Die vier anderen
+   Aufrufer reichen weiter Zahlen und bleiben unberuehrt. */
+const TON_KLASSE={gut:'pos',schwach:'neg',neutral:'neutral'};
+function hitRow(ticker,name,why,numText,numNote,ton){
+ const klasse=ton&&TON_KLASSE[ton];
+ return el('a',{class:'q-hit'+(klasse?' q-hit-urteil':''),href:href('stock',ticker)},[
   el('div',{class:'q-hit-id'},[el('strong',{text:ticker}),el('span',{text:name||''})]),
   el('p',{class:'q-hit-why',text:why||''}),
-  el('div',{class:'q-hit-num'},[el('strong',{text:numText||''}),numNote?el('span',{text:numNote}):null])]);
+  el('div',{class:'q-hit-num'},[
+   klasse?el('span',{class:'q-state q-state-'+klasse,text:numText||''})
+         :el('strong',{text:numText||''}),
+   numNote?el('span',{text:numNote}):null])]);
 }
 function notice(title,text){return el('div',{class:'notice'},[el('h3',{text:title}),el('p',{class:'muted',text})]);}
 /* EIN KUERZEL ZWEIMAL IST KEINE ZEILE.
@@ -2755,6 +2765,67 @@ const EINFACHE_KRITERIEN=[
  ['risk','Risiko','Solide Bilanz und geringere Schwankungen.']
 ];
 const EINFACH_SCHWELLE=70;
+/* =========================================================================
+   DAS KLARTEXT-URTEIL AUS EINER SCREENING-ZEILE
+
+   Die Screener-Antwort traegt in `evidence` die ganze Evidenzzeile: alle
+   sieben Faktoren plus die Zahl der bewerteten. Damit ist dasselbe Urteil
+   berechenbar, das auf der Aktienseite steht - ohne neues Artefakt und
+   ohne zweite Anfrage.
+
+   WARUM DAS IN DER TREFFERLISTE ZAEHLT: wer auf "Qualitaet" filtert, sieht
+   sonst nur, dass dieser Titel in Qualitaet stark ist. Dass er in allem
+   anderen schwach ist, steht erst auf der naechsten Seite. Das Urteil hier
+   ist die Warnung, die variiert - anders als der Hinweis, den es vorher
+   gab (siehe unten).
+   ========================================================================= */
+/* =========================================================================
+   WELCHER FAKTOR TRAEGT FUER KEINEN EINZIGEN TITEL EINEN WERT?
+
+   Gemessen am Stand vom 28.09.2026 ueber 6.297 Titel:
+
+     Kursstaerke        88,4 %      Bewertung           40,0 %
+     Risiko             88,4 %      Profitabilitaet     31,1 %
+     Unternehmensqual.  57,5 %      ERWARTUNGSTREND      0,0 %
+     Wachstum           50,9 %
+
+   `revisions` steht im Artefakt, zaehlt im Nenner von sieben mit und ist
+   nie gefuellt. Kein Titel erreicht deshalb 7 von 7; das Maximum ist 6,
+   und das haben 20,4 %.
+
+   Der Satz darueber gehoert EINMAL auf die Seite. Er wird hier gezaehlt
+   und nicht hineingeschrieben: sobald der Faktor Werte traegt,
+   verschwindet er von selbst. Eine harte Zahl waere im Moment richtig und
+   in drei Wochen eine Behauptung.
+   ========================================================================= */
+async function luekenSatz(){
+ const s=await api.getFactorEvidenceScreening().catch(()=>null);
+ if(!s||s.state!=='AVAILABLE'||!Array.isArray(s.rows)||!s.rows.length)return null;
+ const leer=[];
+ for(const id of VUFactorEvidence.FACTOR_ORDER){
+  const key='quantV2.factorEvidence.'+id;
+  if(!s.rows.some(r=>Number.isFinite(r[key])))
+   leer.push((VUFactorEvidence.FACTOR_MEANING[id]||{}).label||id);
+ }
+ if(!leer.length)return null;
+ const rest=VUFactorEvidence.FACTOR_ORDER.length-leer.length;
+ return el('p',{class:'muted',style:'font-size:13px;margin:8px 0 0',
+  text:(leer.length===1?'Ein Faktor trägt derzeit für keinen Titel einen Wert':
+        leer.length+' Faktoren tragen derzeit für keinen Titel einen Wert')+
+       ': '+leer.join(', ')+'. Geprüft wird deshalb auf höchstens '+rest+
+       ' der sieben Eigenschaften — für jeden Titel gleich, kein Mangel des einzelnen.'});
+}
+function urteilAusEvidenz(ev){
+ if(!ev||typeof VUPlainVerdict==='undefined'||typeof VUFactorEvidence==='undefined')return null;
+ const factors={};
+ for(const id of VUFactorEvidence.FACTOR_ORDER){
+  const v=ev['quantV2.factorEvidence.'+id];
+  factors[id]=Number.isFinite(v)
+   ?{state:'AVAILABLE',score:v}
+   :{state:'UNAVAILABLE',reason:'INPUT_NOT_MATERIALIZED',score:null};
+ }
+ try{return VUPlainVerdict.urteil({factors});}catch{return null;}
+}
 async function einfacherScreener(){
  const editor=VUScreenerWorkspace;
  const methodik=editor.methodology('quantV2Evidence')||editor.methodologies[0];
@@ -2828,18 +2899,69 @@ async function einfacherScreener(){
     ?werte.map(([label,v])=>{const b=VUFactorEvidence.band(v);
       return label+': '+(b?b.label.toLowerCase():'ohne Einordnung')+' ('+Math.round(v)+')';}).join(' · ')
     :'Für diesen Titel lässt sich das nicht prüfen.';
-   const bewertet=s.evidence&&s.evidence['quantV2.factorEvidence.availableFactors'];
+   /* ZWEI BEFUNDE AN DERSELBEN ZEILE, GEMESSEN AM GEBAUTEN RELEASE.
+
+      1. DIE ZAHL STAND ZWEIMAL DA. Die Zeile las sich
+         "Qualitaet: stark (90) | 90 | nur 6 von 7 pruefbar". Die rechte
+         Spalte trug 75 der 112 Zahlen dieser Seite - und ihre erste war
+         eine woertliche Doppelung der Zahl aus derselben Zeile.
+
+      2. "NUR X VON 7 PRUEFBAR" STAND AUF 25 VON 25 ZEILEN. Der Grund:
+         KEIN EINZIGER TITEL im Universum erreicht 7 von 7. Gemessen ueber
+         6.297 Titel traegt `revisions` bei 0,0 % einen Wert - das Feld
+         steht im Artefakt, zaehlt im Nenner mit und ist nie gefuellt.
+         Das Maximum ist 6, und das haben 20,4 %.
+         Der Satz war damit wahr und trotzdem irrefuehrend: er las sich
+         als Maengel DIESES Titels, waehrend die Luecke systemisch ist.
+         Eine Warnung, die immer an ist, warnt nicht mehr.
+
+      WAS JETZT DASTEHT: das Klartext-Urteil ueber alle bewerteten
+      Faktoren. Es variiert - und es ist genau die Auskunft, die einem
+      Einsteiger fehlt, wenn er auf eine Eigenschaft filtert: stark in
+      Qualitaet, aber wie sieht das Gesamtbild aus? Der Nenner dieses
+      Urteils sind die GEPRUEFTEN Punkte ("Stark in 3 von 5 geprueften
+      Punkten"), er beschreibt sich also selbst und braucht keine 7.
+      Die systemische Luecke steht EINMAL auf der Seite statt
+      fuenfundzwanzigmal.
+
+      Der gemessene Wert bleibt in `warum` - die QA verlangt ihn dort zu
+      Recht, und ein Band allein waere ein Etikett ohne Beleg. */
+   const urteil=urteilAusEvidenz(s.evidence);
+   const hatUrteil=urteil&&urteil.stufeId!=='KEINE_DATEN';
    liste.append(hitRow(s.ticker,s.name,warum,
-    Number.isFinite(werte[0]&&werte[0][1])?String(Math.round(werte[0][1])):'–',
-    Number.isFinite(bewertet)&&bewertet<7?'nur '+bewertet+' von 7 prüfbar':''));
+    hatUrteil?urteil.stufe:'',null,hatUrteil?urteil.ton:null));
   }
+  /* DIE ZEILE UEBER DER LISTE STAND GENAU DA, WO DER ERSTE TREFFER STUENDE.
+
+     Sie nannte vier Dinge auf einmal: Trefferzahl, Groesse des geprueften
+     Universums, Methodik ("Quant V2 · Factor Evidence" - im Sprachvertrag
+     erlaubt, am Kuechentisch trotzdem englischer Fachbegriff) und den
+     Sortierschluessel, den die Marken darueber ohnehin zeigen.
+
+     Was oben bleibt, sind die zwei Dinge, die ein Einsteiger hier
+     wirklich braucht:
+
+       - WIE VIELE ER SIEHT, und zwar ehrlich: "25 von 50" statt "50
+         Treffer" ueber einer Liste mit 25 Zeilen. Damit erklaert sich der
+         Unterschied von selbst und braucht keinen Absatz mehr.
+       - DASS DAS KEINE RANGLISTE DES MARKTES IST. Das ist die
+         gefaehrliche Fehllesart - "die 50 besten Aktien" - und sie gehoert
+         nicht hinter eine Klappe.
+
+     Alles andere liegt eine Ebene tiefer, bei der Frage, die man dazu
+     wirklich stellt. */
+  const anzahl=(ergebnis.stocks||[]).length,gezeigt=Math.min(anzahl,25);
+  const sortName=EINFACHE_KRITERIEN.find(([id])=>feld(id)===sortierFeld)[1];
   const kopf=el('p',{class:'muted',style:'font-size:14px;margin:0 0 6px',
-   text:(ergebnis.stocks||[]).length+' Treffer in '+ergebnis.eligible+' auswertbaren Unternehmen · '+
-        methodik.label+' · sortiert nach '+EINFACHE_KRITERIEN.find(([id])=>feld(id)===sortierFeld)[1]+
-        ' · kein Gesamtmarkt-Ranking'});
+   text:(anzahl>gezeigt?gezeigt+' von '+anzahl+' Treffern':anzahl+' Treffer')+
+        ' · keine Rangliste des Marktes'});
   S.mount(treffer,el('div',{},[kopf,liste,
-   (ergebnis.stocks||[]).length>25?el('p',{class:'muted',style:'font-size:13px',
-    text:'Gezeigt sind 25 von '+ergebnis.stocks.length+' zurückgegebenen Treffern. Der Screener gibt höchstens 50 Zeilen zurück — es ist keine vollständige Rangliste des Marktes, sondern die Spitze deiner Auswahl. Im Profi-Modus lässt sie sich verfeinern.'}):null]));
+   mehr('Woher kommen diese Treffer?',()=>[
+    el('p',{class:'muted',style:'font-size:13px;margin:0',
+     text:'Geprüft wurden '+ergebnis.eligible+' auswertbare Unternehmen, sortiert nach '+
+          sortName+'. Methodik: '+methodik.label+'.'}),
+    anzahl>gezeigt?el('p',{class:'muted',style:'font-size:13px;margin:8px 0 0',
+     text:'Der Screener gibt höchstens 50 Zeilen zurück. Das ist die Spitze deiner Auswahl, keine vollständige Rangliste — im Profi-Modus lässt sie sich verfeinern.'}):null])]));
  }
  for(const [id,label,erklaerung] of EINFACHE_KRITERIEN){
   const chip=el('button',{class:'q-chip',type:'button',text:label,title:erklaerung,
@@ -2853,13 +2975,48 @@ async function einfacherScreener(){
  }
  knopf.onclick=suchen;
 
- main.append(stage('Chancen finden.','Finde passende Aktien mit klaren Kriterien.',
-  'Wähle die Eigenschaften, die dir wichtig sind. Quant übersetzt sie in geprüfte Faktorwerte und zeigt bei jedem Treffer, warum er dabei ist.'));
+ /* DER ERSTE TREFFER GEHOERT IN DEN ERSTEN BILDSCHIRM.
+
+    Gemessen bei 390 x 844: der Hero war 256 px hoch, und die erste
+    Trefferzeile begann bei 909 px - 65 px unter der Falte. Wer hierher
+    kommt, sieht also drei Saetze ueber Aktien und keine Aktie.
+
+    Zwei Gruende, beide sichtbar im Screenshot:
+
+    1. "Chancen finden." stand ZWEIMAL da - einmal als Anspruch in der
+       Kopfzeile (CLAIM.screener), 200 px darunter nochmal als
+       Ueberschrift. Dieselben drei Woerter, zweimal.
+    2. Der dritte Satz erklaerte, dass jeder Treffer zeigt, warum er dabei
+       ist. Genau das steht seit diesem Umbau in jeder Zeile. Eine
+       Erklaerung fuer etwas, das die Oberflaeche vorfuehrt, kostet nur
+       Platz - und zwar den Platz, an dem das Vorgefuehrte stuende.
+
+    Die Kurzfassung sagt nur noch das Neue: "Waehle Eigenschaften" stuende
+    eine Karte tiefer schon als "Wonach suchst du?" ueber den Marken. */
+ main.append(stage('Aktien finden','Jeder Treffer zeigt, warum er dabei ist.'));
+ /* WAS IM ERSTEN BILDSCHIRM STEHT, ENTSCHEIDET, OB JEMAND BLEIBT.
+
+    Gemessen: die beiden Methodik-Absaetze standen offen ueber der
+    Trefferliste und trugen die erste Bildschirmhoehe von 82 auf 113
+    Woerter - 63 Woerter Methodik, bevor ein Einsteiger den ersten Treffer
+    sieht. Beide gehoeren zur Sache und bleiben vollstaendig; sie stehen
+    jetzt eine Ebene tiefer, hinter einer Frage, die man wirklich stellt.
+
+    Oben bleibt, was zum Handeln gehoert: die Marken und der Satz, der die
+    eigene Auswahl vorliest. */
+ const luecke=await luekenSatz();
  main.append(card('Wonach suchst du?',null,[
   chips,
-  el('p',{class:'muted',style:'font-size:13px;margin:10px 0 0',
-   text:'Eine Eigenschaft gilt ab '+EINFACH_SCHWELLE+' von 100 Punkten in der Faktor-Evidenz von Quant V2. Größe und Region sind noch keine Kriterien — dafür führt der Screener kein Feld.'}),
-  satz]));
+  satz,
+  mehr('Wie wird gefiltert?',()=>[
+   el('p',{class:'muted',style:'font-size:13px;margin:0',
+    text:'Eine Eigenschaft gilt ab '+EINFACH_SCHWELLE+' von 100 Punkten in der Faktor-Evidenz von Quant V2. Größe und Region sind noch keine Kriterien — dafür führt der Screener kein Feld.'}),
+   /* DIE SYSTEMISCHE LUECKE STEHT EINMAL, NICHT AUF JEDER TREFFERZEILE.
+      Zur Laufzeit aus dem Artefakt gezaehlt, nicht hier hineingeschrieben:
+      traegt ein Faktor eines Tages Werte, verschwindet der Satz von selbst.
+      Vorher stand stattdessen "nur 6 von 7 pruefbar" unter jedem Treffer -
+      wahr, aber irrefuehrend, weil kein Titel 7 erreicht. */
+   luecke])]));
  main.append(card('Treffer',null,[treffer]));
  await suchen();
 }
