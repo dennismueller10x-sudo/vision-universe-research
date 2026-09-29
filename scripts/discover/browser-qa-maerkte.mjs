@@ -115,11 +115,11 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
    const link=st&&st.querySelector('a.dx-m3-st-link'),beleg=st&&st.querySelector('a.dx-m3-st-beleg');
    return {knopfVorBeleg:!!link&&!!beleg&&!!(link.compareDocumentPosition(beleg)&Node.DOCUMENT_POSITION_FOLLOWING),
     knopfFarbe:link?getComputedStyle(link).backgroundColor:'',knopfHoehe:link?link.getBoundingClientRect().height:0,
-    box:k?{text:k.textContent,zahlen:k.querySelectorAll('.dx-m3-kt-zahl').length,schnitt:(k.textContent.match(/Schnitt aller Tage/g)||[]).length}:null};});
+    box:k?{text:k.textContent,zahlen:k.querySelectorAll('.dx-m3-kt-zahl').length,held:(()=>{const h=k.querySelector('.dx-m3-kt-held-zahl');return h?{text:h.textContent,px:parseFloat(getComputedStyle(h).fontSize)}:null;})(),balken:k.querySelectorAll('.dx-m3-kt-balken li').length,schnitt:(k.textContent.match(/Schnitt aller Tage/g)||[]).length}:null};});
   p('Uebersicht: Knopf "Was heisst ...?" gruen, gross und vor dem Stresstest-Streifen',kt.knopfVorBeleg&&kt.knopfFarbe==='rgb(200, 245, 49)'&&kt.knopfHoehe>=60,kt);
-  p('Uebersicht: "Im Klartext" direkt unter dem Barometer - Bedeutung, vier grosse Zahlen, Schnitt aller Tage, Hinweis',
-   pos('maerkte-klartext')===pos('maerkte-stimmung')+1&&!!kt.box&&kt.box.zahlen===4&&kt.box.schnitt>=3&&/auf einen Blick/.test(kt.box.text)&&/lagen nach 1 Jahr im Plus/.test(kt.box.text)&&
-   /kein verlässlicher Hinweis/.test(kt.box.text)&&!/Kaufsignal|kaufen|verkaufen|sollten Sie/i.test(kt.box.text),kt.box&&{zahlen:kt.box.zahlen,schnitt:kt.box.schnitt});}
+  p('Uebersicht: "Im Klartext" direkt unter dem Barometer - Bedeutung, Hauptzahl 1-Jahres-Rendite gross mit Marktvergleich, drei Zahlen, Hinweis',
+   pos('maerkte-klartext')===pos('maerkte-stimmung')+1&&!!kt.box&&kt.box.zahlen===3&&!!kt.box.held&&/^\+\d/.test(kt.box.held.text)&&kt.box.held.px>=52&&kt.box.balken===2&&/ähnlich dem S&P 500/.test(kt.box.text)&&kt.box.schnitt>=2&&/auf einen Blick/.test(kt.box.text)&&/lagen nach 1 Jahr im Plus/.test(kt.box.text)&&
+   /kein verlässlicher Hinweis/.test(kt.box.text)&&!/Kaufsignal|kaufen|verkaufen|sollten Sie/i.test(kt.box.text),kt.box&&{zahlen:kt.box.zahlen,schnitt:kt.box.schnitt,held:kt.box.held,balken:kt.box.balken});}
  p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',!!ov&&ov.stories.length>=1&&ov.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),ov&&ov.stories);
  p('Movers verlinken auf Aktienseiten',!!ov&&(ov.movers.length===0||ov.movers.every(h=>/^#\/s\/US_REAL\//.test(h))),ov&&ov.movers.slice(0,3));
  p('Jede Karte mit Wert ist ein Link zum Marktdetail',!!ov&&ov.kartenLinks.length>=28&&ov.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),ov&&ov.kartenLinks.length);
