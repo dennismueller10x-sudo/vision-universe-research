@@ -485,13 +485,18 @@ und er ist der Weg, den die Startseite einem Anfänger anbietet
 |---|---|---|---|---|---|---|
 | Start | 110 | 65 | 3 | 17 | 0 | 2,7 |
 | Aktien | 178 | 92 | 4 | 15 | 0 | 15,2 |
-| Methodik | 197 | 69 | 3 | 11 | 2 | 1,5 |
-| Strategien | 421 | 102 | 11 | 16 | **11** | 5,0 |
-| **Screener** | 499 | 82 | 4 | 39 | 6 | **22,4** |
-| Aktie NVDA | 595 | 81 | 7 | 31 | 5 | 10,8 |
+| Methodik | 197 | 69 | 3 | 11 | 1 | 1,5 |
+| Strategien | 421 | 102 | **11** | 16 | 1 | 5,0 |
+| **Screener** | 499 | 82 | 4 | **39** | 0 | **22,4** |
+| Aktie NVDA | 595 | 81 | 7 | 31 | 0 | 10,8 |
 
 22,4 Zahlen je 100 Wörter — die Wand aus Kennzahlen, die sich als „das ist
 nichts für mich" liest.
+
+> **Die Spalte „lange Sätze" trug bis zu diesem Durchgang falsche Zahlen.**
+> Sie stand zuerst mit 6 (Screener), 11 (Strategien) und 24 in der Summe in
+> dieser Tabelle. Die korrigierten Werte stehen oben. Warum, steht in
+> Abschnitt 11 — der Fehler lag im Messwerkzeug, nicht in den Seiten.
 
 ### Wo die Zahlen wirklich saßen
 
@@ -594,7 +599,7 @@ gefährliche Fehllesart und gehört nicht hinter eine Klappe.
 | Wörter | 499 | **342** |
 | davon erste Bildschirmhöhe | 82 | **58** |
 | Zahlen je 100 Wörter | 22,4 | **8,8** |
-| lange Sätze | 6 | **5** |
+| lange Sätze | 0 | 0 |
 | Fachbegriffe | 4 | **3** |
 | erster Treffer beginnt bei | 909 px | **728 px** |
 | Karten · Klickziele | 4 · 39 | 4 · 39 |
@@ -632,3 +637,75 @@ Drei weitere Stellen tragen denselben Nenner: die Watchlist-Zeile
 (`X / 7`). Sie sind hier **bewusst nicht mitgeändert** — die Messung galt
 dem Screener, und zwei Produkte in einem Durchgang umzubauen wäre eine
 Ausweitung ohne Befund. Derselbe Einwand gilt dort aber.
+
+## 11. Das Lineal war kaputt — zweimal, auf dieselbe Art
+
+Diese Messung entscheidet, welche Seite als nächste umgebaut wird. Ein
+Lineal, das sich nach der Form der Seite biegt, lenkt die Arbeit auf die
+falsche Stelle — und niemand merkt es, weil die Zahl ja aus einer Messung
+kommt.
+
+`measure-beginner-load.mjs` hatte zwei Fehler, **beide derselben Art**:
+gemessen wurde über die Seite statt über das, was ein Mensch als Einheit
+liest.
+
+### Erster Fehler: Klickziele in zugeklappten Aufklappern
+
+Gezählt wurden auch Elemente in geschlossenen `<details>`, weil Chromium
+dafür weiterhin ein Rechteck liefert. **436 statt 237 — um 84 % zu hoch.**
+Behoben mit `checkVisibility()` plus einem ausdrücklichen Gang über die
+Vorfahren. Beide Zustände wurden danach neu gemessen.
+
+### Zweiter Fehler: lange Sätze über den ganzen Seitentext
+
+```js
+const saetze = text.split(/[.!?] /)     // `text` ist die GANZE Seite
+```
+
+`text` ist der Seitentext mit zusammengepressten Leerzeichen. Getrennt
+wurde an `". "`. Damit verschmilzt **jede Überschrift mit dem folgenden
+Absatz** zu einem Satz, bis irgendwo ein Punkt kommt:
+
+```
+"Quality Compounder Sucht Unternehmen mit stabilen Geschäftsmodellen …"
+```
+
+Auf einer Seite mit elf Karten erzeugt das elf lange Sätze, die niemand
+geschrieben hat. Die Zahl bestrafte Seiten dafür, **viele Blöcke zu
+haben** — und genau nach dieser Zahl wäre als nächstes umgebaut worden.
+
+**Gemessen, korrigiert:**
+
+| | gemeldet | tatsächlich |
+|---|---|---|
+| Summe über sechs Ansichten | 24 | **2** |
+| Strategien | 11 | **1** |
+| Screener vorher → nachher | 6 → 5 | **0 → 0** |
+| Aktie NVDA | 5 | **0** |
+| Methodik | 2 | **1** |
+
+Aufgefallen ist es nur, weil zwei Messungen sich widersprachen: das
+Werkzeug meldete für Strategien 11, eine direkte Messung je Absatz fand 1.
+Ohne diesen Zufall wäre die Strategien-Seite als „elf lange Sätze"
+angefasst worden — an einem Problem, das sie nicht hat.
+
+### Was das für die bisherigen Aussagen bedeutet
+
+**Alle anderen Spalten sind unberührt.** Wörter, erste Bildschirmhöhe,
+Karten, Klickziele und Zahlendichte werden anders gezählt und sind von
+diesem Fehler nicht betroffen. Die Befunde zum Screener stehen unverändert:
+499 → 342 Wörter, erste Höhe 82 → 58, Zahlendichte 22,4 → 8,8.
+
+Falsch war nur die Spalte „lange Sätze" — und damit die Begründung, mit der
+Strategien als nächste Seite vorgemerkt war. **Die echte Last von
+Strategien sind die elf Karten und 102 Wörter im ersten Bildschirm**, nicht
+die Satzlänge.
+
+### Der Test
+
+`quant/tests/beginner-load-ruler.test.mjs` hält beide Reparaturen fest:
+dass je Blockelement getrennt wird, dass verschachtelte Blöcke nicht
+doppelt zählen, dass die Sichtbarkeitsprüfung für Sätze **und** Klickziele
+gilt — und dass die gemessene Begründung im Werkzeug stehen bleibt. Eine
+Fehlerklasse, die nur im Commit steht, wird beim nächsten Umbau wieder
+eingebaut.
