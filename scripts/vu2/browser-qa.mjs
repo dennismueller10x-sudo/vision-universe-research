@@ -137,7 +137,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
      sind und dass die vier nicht da sind. */
   const leiste=width<=900?'.q-bottom':'.nav';
   const bereiche=await page.locator(leiste+' a').allInnerTexts();
-  const erwartet=['Home','Screener','Strategien','Aktien','Methodik'];
+  /* Owner-Entscheid 29.09.2026: der Quant-interne Screener heisst
+     "Quant Screener". "Screener" allein ist das eigenstaendige Produkt
+     unter /screener/ und gehoert NICHT zu Quant. */
+  const erwartet=['Home','Quant Screener','Strategien','Aktien','Methodik'];
   if(bereiche.map(t=>t.trim()).join('|')!==erwartet.join('|'))
    throw Error('Quant-Navigation ist nicht die erwartete: '+bereiche.join('|'));
   for(const fremd of ['Discover','Research','Markets','Portfolio'])
@@ -649,14 +652,57 @@ Object.defineProperty(window,'VUProductServices',{configurable:true,set(service)
  await page.goto(origin+'/quant/technical/?symbol=NVDA&layer=ELLIOTT');await page.locator('[role="tab"][data-layer="ELLIOTT"][aria-selected="true"]').waitFor();await page.locator('.q-tech-chart-wrap svg').waitFor();await page.getByRole('heading',{name:'Szenarien',exact:true}).waitFor();await page.getByRole('button',{name:'Alternative',exact:true}).click();await page.screenshot({path:out+'/elliott-preserved-'+width+'.png',fullPage:true});checks.push({view:'elliott-preserved',width,pass:true});
  await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();await page.keyboard.press('Control+k');await page.getByRole('dialog').waitFor();await page.getByRole('textbox',{name:'Suche',exact:true}).fill('NVDA');await page.getByRole('dialog').getByRole('link',{name:/NVDA/}).click();await page.locator('main footer').waitFor();await page.locator('.quote').getByText(nvda.fundamentals.price.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' $',{exact:true}).waitFor();
  await page.getByRole('link',{name:'Full Chart',exact:true}).click();await page.locator('.q-chart').first().waitFor();await page.goBack();await page.locator('main footer').waitFor();
- for(const [name,heading] of [['Technical','Kursstruktur untersuchen'],['Elliott Wave','Elliott Wave · Szenarien verstehen'],['Historische Fundamentals','Wie entwickelt sich das Geschäft?'],['Quant',nvdaName]]){await page.getByRole('link',{name,exact:true}).click();await page.getByRole('heading',{name:heading,exact:true}).waitFor();await page.goBack();await page.locator('main footer').waitFor();}
+ /* DIE PRUEFUNG MUSS SAGEN, WELCHE FLAECHE SIE MEINT.
+
+    Seit der gemeinsame Plattform-Kopf auch auf Quant steht, gibt es den
+    Namen 'Quant' auf der Aktienseite zweimal: einmal als Vertiefungsknopf
+    IM INHALT (fuehrt in die Quant-Ansicht dieses Titels) und einmal im
+    Schnellzugriff des Kopfes (fuehrt in das Produkt Quant). Beides ist
+    richtig, und ein ungebundener Locator ist deshalb ab jetzt
+    zweideutig - gemessen: 'strict mode violation ... resolved to 2
+    elements'.
+
+    Die Knoepfe, um die es hier geht, stehen im Inhalt. Also wird im
+    Inhalt gesucht. Ein `.first()` waere die bequeme Variante und die
+    falsche: es wuerde auch dann gruen bleiben, wenn der Knopf aus dem
+    Inhalt verschwindet und nur noch der Kopfeintrag uebrig ist. */
+ const inhalt=page.locator('main#content');
+ for(const [name,heading] of [['Technical','Kursstruktur untersuchen'],['Elliott Wave','Elliott Wave · Szenarien verstehen'],['Historische Fundamentals','Wie entwickelt sich das Geschäft?'],['Quant',nvdaName]]){await inhalt.getByRole('link',{name,exact:true}).click();await page.getByRole('heading',{name:heading,exact:true}).waitFor();await page.goBack();await page.locator('main footer').waitFor();}
  await page.getByRole('link',{name:'Strategie definieren',exact:true}).click();
  /* Von der Aktienseite fuehrt der Weg auf die Strategieseite OHNE Regeln in
     der Adresse - dort steht der Katalog vorn und der Regel-Editor hinter
     seiner Klappe. Was im Editor liegt, wird erst nach dem Oeffnen sichtbar. */
  await page.locator('.q-pro > summary').click();
  await page.getByRole('heading',{name:'Vor einem historischen Test',exact:true}).waitFor();if(await page.getByRole('link',{name:'Bestehende Backtest-Umgebung',exact:true}).getAttribute('href')!=='/quant/backtests/')throw Error('professional backtest access lost');
- await page.goto(origin+'/vu2/?view=research');await page.locator('main footer').waitFor();const directory=await page.locator('.catalog a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/xpeng/','/academy/','/quant/ranking/','/quant/screener/'])if(!directory.includes(path))throw Error('preserved workspace missing '+path);
+ /* DER KATALOG FUEHRT AUS QUANT NICHT MEHR IN FREMDE PRODUKTE.
+
+    Bis zum 29.09.2026 hat diese Zeile das Gegenteil verlangt: der Katalog
+    MUSSTE Academy, Analysten, Discover, ETF, Hedgefonds, Macro, Magazin,
+    Morning, News und Reports fuehren. Der Owner-Entscheid zur
+    Produktarchitektur sagt: Discover, Quant, Screener, Research usw. sind
+    eigenstaendige Produkte, und innerhalb von Quant stehen ausschliesslich
+    Home, Quant Screener, Strategien, Aktien und Methodik. Ein Katalog, der
+    zehn andere Produkte als Quant-Unterpunkte auffuehrt, ist genau die
+    Vermischung, die der Entscheid verbietet.
+
+    Die Pruefung wird deshalb nicht geloescht, sondern umgedreht - und sie
+    prueft beide Haelften, sonst waere sie nur noch die Haelfte wert:
+
+      (a) Quant verlinkt in seinem Katalog nur eigene Flaechen.
+      (b) Die zehn Produkte sind trotzdem erreichbar, naemlich im
+          gemeinsamen Plattform-Kopf. Ohne (b) koennte man die Wege
+          einfach kappen und diese Datei bliebe still. */
+ await page.goto(origin+'/vu2/?view=research');await page.locator('main footer').waitFor();
+ const directory=await page.locator('.catalog a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+ const fremd=['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/dashboard/','/guide/','/budget/','/screener/'];
+ const ausgang=directory.filter(h=>h&&fremd.some(p=>h.startsWith(p)));
+ if(ausgang.length)throw Error('der Quant-Katalog fuehrt in fremde Produkte: '+ausgang.join(', '));
+ if(!directory.some(h=>h&&h.startsWith('/quant/')))throw Error('der Quant-Katalog verlinkt keine einzige Quant-Flaeche mehr - der Auszug greift nicht');
+ /* Der Kopf ist ein Web-Component mit offenem Shadow-Root; Playwrights
+    CSS-Engine sieht hinein. */
+ const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+ for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/screener/'])
+  if(!kopf.some(h=>h&&h.startsWith(path)))throw Error('der Plattform-Kopf fuehrt nicht mehr zu '+path+' - das Produkt ist aus Quant heraus unerreichbar');
  await page.keyboard.press('Control+k');await page.getByRole('dialog').waitFor();await page.keyboard.press('Escape');if(await page.getByRole('dialog').isVisible())throw Error('command dialog keyboard exit failed');checks.push({view:'guided-professional-journey',width,pass:true});
  if(errors.length)throw Error(errors.join('\n'));await page.close();}
  // Test-only relay fixture exercises the production UI without contacting a provider.

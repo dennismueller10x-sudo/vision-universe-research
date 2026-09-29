@@ -93,6 +93,36 @@ test("der Quant-interne Screener heisst im UI auch nach Quant", () => {
   }
 });
 
+test("auch die Knopf-Beschriftungen in den Quant-Screener nennen Quant", () => {
+  /* Die Pruefung darueber liest nur die Listenform ['Label', href(...)].
+     Gemessen am 29.09.2026 gab es zwei weitere Schreibweisen, und in
+     einer davon stand als Beschriftung schlicht "Screener" - der Name des
+     ANDEREN Produkts, als Knopf mitten in Quant:
+
+       actions([... {label:'Screener',href:href('screener')}])
+       link('Regel im Screener untersuchen', href('screener')+...)
+
+     Eine Regel, die nur eine von drei Schreibweisen kennt, ist keine
+     Regel. Diese hier liest alle drei.
+
+     NICHT geprueft wird Fliesstext ("Die Regeln bleiben im Screener
+     untersuchbar"). Dort steht der Begriff im Satz und nicht als Name
+     eines Ziels; wer ihn liest, ist bereits in Quant. Das ist eine
+     bewusste Grenze dieser Pruefung, keine Luecke aus Versehen. */
+  const q = ohneKommentare(QUANT);
+  const beschriftungen = [
+    ...[...q.matchAll(/link\(\s*'([^']*)'\s*,\s*href\('screener'\)/g)].map((m) => m[1]),
+    ...[...q.matchAll(/label:\s*'([^']*)'\s*,\s*href:\s*href\('screener'\)/g)].map((m) => m[1]),
+  ];
+  assert.ok(beschriftungen.length >= 5,
+    "nur " + beschriftungen.length + " Knopf-Beschriftungen gefunden - der Auszug greift nicht mehr");
+  for (const label of beschriftungen) {
+    if (!/Screener/.test(label)) continue;   /* "Regel prüfen" nennt kein Ziel */
+    assert.match(label, /Quant Screener/,
+      'der Knopf "' + label + '" fuehrt in den Quant-Screener und nennt das andere Produkt');
+  }
+});
+
 test("auch der klassische Quant-Screener traegt den Produktnamen", () => {
   const q = ohneKommentare(QUANT);
   const treffer = [...q.matchAll(/\['([^']*)',\s*'\/quant\/screener\/'/g)].map((m) => m[1]);

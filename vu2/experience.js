@@ -41,7 +41,11 @@ const formatFactor=m=>!Number.isFinite(m.value)?'Nicht verfügbar':m.value.toLoc
    bestehende Verweise, ohne dass ein Nutzer etwas davon hätte. `methodik`
    ist als sprechender Zweitname zugelassen (siehe viewAlias).
    ========================================================================= */
-const nav=[['home','Home'],['screener','Screener'],['strategies','Strategien'],['stocks','Aktien'],['explain','Methodik']];
+/* DIE FUENF BEREICHE VON QUANT - Owner-Entscheid 29.09.2026.
+   "Quant Screener", nicht "Screener": so heisst das eigenstaendige
+   Produkt unter /screener/, das NICHT zu Quant gehoert. Wer beide kennt,
+   muss an der Beschriftung sehen, in welchem er steht. */
+const nav=[['home','Home'],['screener','Quant Screener'],['strategies','Strategien'],['stocks','Aktien'],['explain','Methodik']];
 /* Strichzeichnungen statt Bildern: sie erben die Farbe des aktiven Zustands
    und kosten keine zusätzliche Anfrage. */
 const NAV_ICON={
@@ -57,13 +61,38 @@ function navIcon(id){
  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
  p.setAttribute('d',NAV_ICON[id]||NAV_ICON.stocks);svg.append(p);return svg;
 }
+/* =========================================================================
+   NUR QUANTS EIGENE FLAECHEN - KEINE FREMDEN PRODUKTE
+
+   Owner-Entscheid 29.09.2026 (Produktarchitektur): Vision Universe ist die
+   Uebermarke. Discover, Quant, Screener, Research sind EIGENSTAENDIGE
+   Produkte. Keine Konsolidierung, keine Vermischung von
+   Produktnavigation und Unterfunktionen.
+
+   Diese Liste trug elf Links in fremde Produkte: Academy, Analysten,
+   Discover, ETF, Guide, Hedgefonds, Macro, Magazin, Morning, News,
+   Reports. Damit war sie eine zweite, halbe Plattform-Navigation INNERHALB
+   von Quant - und sie wirkte an zwei Stellen:
+
+     - die Suche bot fremde Produkte als Treffer an ("ETF" tippen fuehrte
+       aus Quant heraus),
+     - die Flaechenuebersicht zeigte sie als Katalog.
+
+   Seit Quant den gemeinsamen Plattform-Kopf traegt (<vu-navigation>, wie
+   Discover und die uebrigen 44 Seiten), ist das nicht nur eine
+   Grenzverletzung, sondern doppelt: der Weg zu den anderen Produkten
+   steht oben, in derselben Komponente wie ueberall im Haus.
+
+   Was bleibt, sind Quants eigene Flaechen - die fuenf Bereiche und die
+   Unterfunktionen, die zu ihnen gehoeren, einschliesslich der klassischen
+   /quant/-Seiten. Die gehoeren Quant. */
 const groups=[
  ['Aktien & Analyse','Vom Unternehmen bis zur Kursstruktur.',[
  ['Aktien',href('stocks')],['Charts','/quant/stock/?ticker=NVDA'],['Fundamentals & Historie',href('fundamentals','NVDA')],['SEC Dateninspektor','/quant/data-inspector/'],['Was ist Quant?',href('explain')],['Kursstruktur',href('technical','NVDA')],['Elliott Wave',href('elliott','NVDA')],['Quant',href('quant','NVDA')],['Vergleichen',href('compare')]]],
- ['Märkte & Ideen','Zusammenhänge verstehen und Titel finden.',[
- ['Discover · Marktwelten','/discover/'],['Vordefinierte Screens',href('discover')],['Quant Screener',href('screener')],['Quant Screener (klassisch)','/quant/screener/'],['Rankings','/quant/ranking/'],['ETF Research & Vergleich','/etf/'],['Macro Intelligence','/macro/'],['Hedge Funds & Ownership','/hedgefonds/'],['Analyst Ratings','/analysten/']]],
- ['Research & Wissen','Aktuelles einordnen. Tiefer verstehen.',[
- ['News','/news/'],['Morning Briefing','/morning/'],['Weekly Magazine','/magazin/'],['Stock Reports','/reports/xpeng/'],['Academy','/academy/'],['Investment Guide','/guide/'],['Strategies',href('strategies')],['Radar',href('radar')],['Signals',href('signals')],['Watchlist',href('watchlist')],['Ask Atlas',href('atlas')]]]
+ ['Finden & Filtern','Titel nach der Quant-Logik suchen.',[
+ ['Quant Screener',href('screener')],['Quant Screener (klassisch)','/quant/screener/'],['Vordefinierte Screens',href('discover')],['Rankings','/quant/ranking/'],['Strategien',href('strategies')]]],
+ ['Beobachten & Vertiefen','Veränderungen sehen. Nachfragen.',[
+ ['Radar',href('radar')],['Signals',href('signals')],['Watchlist',href('watchlist')],['Ask Atlas',href('atlas')]]]
 ];
 const app=document.getElementById('app');
 /* Welcher der fünf Bereiche ist gerade offen? Die Einzelanalyse gehört zu
@@ -1088,7 +1117,7 @@ async function signalsPage(){
  if(data.partial)main.append(notice('Nicht alle Unternehmen auswertbar','Die Übersicht ist unvollständig. Fehlende Quellen erzeugen keine Ersatzereignisse.'));
  function draw(){const matching=data.events.filter(e=>company.value==='all'||e.ticker===company.value),events=matching.slice(0,200);S.clear(target);if(!events.length){target.append(notice('Keine belegten Wechsel in diesem Ausschnitt','Ein unveränderter Zustand ist kein neues Signal. Die Regeln bleiben im Screener untersuchbar.'));return;}
  for(const e of events){const title=e.definitionId==='positive-momentum'?(e.transition==='ENTERED'?'Sechs-Monats-Entwicklung wieder nicht negativ':'Sechs-Monats-Entwicklung wird negativ'):(e.transition==='ENTERED'?'Zurück am langfristigen Trendbereich':'Unter den langfristigen Trendbereich gefallen');
- target.append(el('article',{class:'signal-event'},[el('div',{class:'signal-date'},[el('span',{class:'eyebrow',text:e.asOf}),link(e.ticker,href('stock',e.ticker))]),el('div',{},[el('h2',{text:title}),el('p',{class:'muted',text:'Regel: '+e.rule+'. Vergleich '+e.previousAsOf+' → '+e.asOf+'.'}),el('details',{},[el('summary',{text:'Warum wurde der Wechsel erkannt?'}),...e.evidence.map(m=>el('p',{text:(VUCatalog.field(m.metricId)?.label||m.metricId)+': '+m.previous.toLocaleString('de-DE',{maximumFractionDigits:3})+' % → '+m.current.toLocaleString('de-DE',{maximumFractionDigits:3})+' %'})),el('p',{class:'muted',text:'Historische Beobachtung, keine Kauf- oder Verkaufsempfehlung. '+(e.expiration.at?'Abgelöst durch die nächste vorhandene Beobachtung vom '+e.expiration.at+'.':'Letzte Beobachtung dieses Datensatzes. Keine laufende Überwachung behauptet.')}),el('p',{class:'muted',text:'Definition '+e.definitionId+' · v'+e.definitionVersion+' · Daten bis '+e.snapshotAsOf})]),link('Regel im Screener untersuchen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(e.query)),'button secondary')])]));
+ target.append(el('article',{class:'signal-event'},[el('div',{class:'signal-date'},[el('span',{class:'eyebrow',text:e.asOf}),link(e.ticker,href('stock',e.ticker))]),el('div',{},[el('h2',{text:title}),el('p',{class:'muted',text:'Regel: '+e.rule+'. Vergleich '+e.previousAsOf+' → '+e.asOf+'.'}),el('details',{},[el('summary',{text:'Warum wurde der Wechsel erkannt?'}),...e.evidence.map(m=>el('p',{text:(VUCatalog.field(m.metricId)?.label||m.metricId)+': '+m.previous.toLocaleString('de-DE',{maximumFractionDigits:3})+' % → '+m.current.toLocaleString('de-DE',{maximumFractionDigits:3})+' %'})),el('p',{class:'muted',text:'Historische Beobachtung, keine Kauf- oder Verkaufsempfehlung. '+(e.expiration.at?'Abgelöst durch die nächste vorhandene Beobachtung vom '+e.expiration.at+'.':'Letzte Beobachtung dieses Datensatzes. Keine laufende Überwachung behauptet.')}),el('p',{class:'muted',text:'Definition '+e.definitionId+' · v'+e.definitionVersion+' · Daten bis '+e.snapshotAsOf})]),link('Regel im Quant Screener untersuchen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(e.query)),'button secondary')])]));
  }if(matching.length>events.length)target.append(el('p',{class:'muted',text:'Gezeigt werden 200 von '+matching.length+' belegten Wechseln. Bitte ein Unternehmen auswählen, um die Ansicht einzugrenzen.'}));}if(data.results.some(r=>r.state==='AVAILABLE'&&r.ticker===params.get('ticker')))company.value=params.get('ticker');company.onchange=draw;main.append(target,actions([{label:'Radar',href:href('radar')},{label:'Discover',href:href('discover')},{label:'Watchlist',href:href('watchlist')}]));draw();
 }
 /* Die Besetzung der Lagen zum Stichtag. Der Radar zeigt sonst WECHSEL;
@@ -1180,7 +1209,7 @@ async function radarPage(){
  }
  const select=el('select',{'aria-label':'Radar-Zeitraum'},[5,20,60].map(value=>el('option',{value:String(value),text:value+' EOD-Beobachtungen'})));select.value=String(lookback);select.onchange=()=>location.assign(href('radar')+'&window='+select.value);
  main.append(el('div',{class:'workspace-controls'},[select]),el('p',{class:'scope-note',text:data.coverage.available+' von '+data.coverage.requested+' Produkttiteln contract-konform auswertbar · '+data.eventTickerCount+' Titel mit belegtem Wechsel · '+data.eventCount+' Wechsel im Zeitraum'}),el('p',{class:'muted',text:'Jedes Element ist ein retrospektiver EOD-Zustandswechsel. Es ist weder Echtzeit- noch Handels- oder Ranking-Signal. Ein Gesamtscore wird weiterhin nicht gebildet.'}));
- const grid=el('div',{class:'radar-grid'});for(const module of data.modules){const section=el('section',{class:'radar-module'},[el('h2',{text:module.title}),el('p',{class:'muted',text:module.description})]);if(!module.items.length)section.append(el('p',{text:'Keine belegten Wechsel in diesem Ausschnitt.'}));for(const event of module.items){const metric=event.evidence?.[0];section.append(el('article',{class:'radar-item'},[el('div',{},[link(event.ticker,href('stock',event.ticker)),el('span',{class:'muted',text:event.asOf+' · '+event.previousAsOf+' → '+event.asOf})]),el('p',{text:metric&&Number.isFinite(metric.previous)&&Number.isFinite(metric.current)?metric.previous.toLocaleString('de-DE',{maximumFractionDigits:2})+' % → '+metric.current.toLocaleString('de-DE',{maximumFractionDigits:2})+' %':event.rule}),link('Regel prüfen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(event.query)),'button secondary')]));}grid.append(section);}if(regimeSection)main.append(regimeSection);main.append(grid);const distribution=setupDistribution(setupIndex);if(distribution)main.append(distribution);main.append(actions([{label:'Alle Signals',href:href('signals')+'&window='+lookback},{label:'Watchlist',href:href('watchlist')},{label:'Screener',href:href('screener')} ]));
+ const grid=el('div',{class:'radar-grid'});for(const module of data.modules){const section=el('section',{class:'radar-module'},[el('h2',{text:module.title}),el('p',{class:'muted',text:module.description})]);if(!module.items.length)section.append(el('p',{text:'Keine belegten Wechsel in diesem Ausschnitt.'}));for(const event of module.items){const metric=event.evidence?.[0];section.append(el('article',{class:'radar-item'},[el('div',{},[link(event.ticker,href('stock',event.ticker)),el('span',{class:'muted',text:event.asOf+' · '+event.previousAsOf+' → '+event.asOf})]),el('p',{text:metric&&Number.isFinite(metric.previous)&&Number.isFinite(metric.current)?metric.previous.toLocaleString('de-DE',{maximumFractionDigits:2})+' % → '+metric.current.toLocaleString('de-DE',{maximumFractionDigits:2})+' %':event.rule}),link('Regel prüfen',href('screener')+'&query='+encodeURIComponent(VUScreenerWorkspace.encode(event.query)),'button secondary')]));}grid.append(section);}if(regimeSection)main.append(regimeSection);main.append(grid);const distribution=setupDistribution(setupIndex);if(distribution)main.append(distribution);main.append(actions([{label:'Alle Signals',href:href('signals')+'&window='+lookback},{label:'Watchlist',href:href('watchlist')},{label:'Quant Screener',href:href('screener')} ]));
 }
 async function comparePage(){
  main.append(heading('Unternehmen im direkten Vergleich','Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis.'));
@@ -1497,7 +1526,7 @@ function strategieKarte(profil,vertrag,persistenz){
  if(treppe)detail.push(treppe);
 
  if(verfuegbar&&profil.count>0)koerper.push(
-  link('Diese Titel im Screener öffnen',href('screener')+'&profil='+encodeURIComponent(profil.profileId),'button secondary'));
+  link('Diese Titel im Quant Screener öffnen',href('screener')+'&profil='+encodeURIComponent(profil.profileId),'button secondary'));
 
  if(detail.length)koerper.push(mehr('Die genauen Bedingungen und heutigen Treffer',()=>detail));
  return card(def&&def.label||profil.label||profil.profileId,null,koerper);
@@ -1583,7 +1612,7 @@ async function strategyPage(){
  const filters=el('div',{class:'strategy-rules'},definition.filters.length?definition.filters.map(f=>el('p',{text:(VUCatalog.field(f.field)?.label||f.field)+' '+(VUCatalog.operator(f.operator)?.label||f.operator)+' '+f.value+(f.scale==='percentile'?' · Perzentil':VUCatalog.field(f.field)?.unit==='pct'?' %':VUCatalog.field(f.field)?.unit==='usd'?' USD':'')})):[el('p',{text:'Noch keine Auswahlkriterien. Beginne im Screener und übernimm deine Regeln.'})]);
  let editHref=href('screener');try{editHref+='&query='+encodeURIComponent(VUScreenerWorkspace.encode(VUScreenerWorkspace.build(definition.filters)));}catch{}
  const names=Object.fromEntries(['quality','momentum','value','growth','risk'].map(id=>[id,L(id)])),status=el('div',{'aria-live':'polite'}),preview=el('section',{'aria-live':'polite'}),history=el('pre',{class:'query-code',text:saved?JSON.stringify(saved,null,2):'Noch keine gespeicherte Version.'});
- builderZiel.append(input('name','Name des Entwurfs',saved?.strategy.name||'Meine Investmentidee',{maxlength:'120'}),el('section',{class:'section'},[el('h2',{text:'1 · Welche Unternehmen kommen infrage?'}),filters,link('Kriterien im Screener bearbeiten',editHref,'button secondary')]),el('section',{class:'section'},[el('h2',{text:'2 · Was soll bei der Auswahl zählen?'}),el('p',{class:'muted',text:'Die Faktoranteile müssen zusammen 100 % ergeben. Sie definieren ein späteres Ranking; ein Quant-V2-Rang wird bis zur Zertifizierung nicht berechnet.'}),el('div',{class:'strategy-grid'},context.factors.map(f=>input(f,names[f]+' · Anteil in %',(definition.ranking.factors.find(r=>r.factor===f)?.weight||0)*100,{type:'number',min:'0',max:'100',step:'1'})))]),
+ builderZiel.append(input('name','Name des Entwurfs',saved?.strategy.name||'Meine Investmentidee',{maxlength:'120'}),el('section',{class:'section'},[el('h2',{text:'1 · Welche Unternehmen kommen infrage?'}),filters,link('Kriterien im Quant Screener bearbeiten',editHref,'button secondary')]),el('section',{class:'section'},[el('h2',{text:'2 · Was soll bei der Auswahl zählen?'}),el('p',{class:'muted',text:'Die Faktoranteile müssen zusammen 100 % ergeben. Sie definieren ein späteres Ranking; ein Quant-V2-Rang wird bis zur Zertifizierung nicht berechnet.'}),el('div',{class:'strategy-grid'},context.factors.map(f=>input(f,names[f]+' · Anteil in %',(definition.ranking.factors.find(r=>r.factor===f)?.weight||0)*100,{type:'number',min:'0',max:'100',step:'1'})))]),
  el('section',{class:'section'},[el('h2',{text:'3 · Portfolio und Ausführung'}),el('div',{class:'strategy-grid'},[
  input('positions','Anzahl Positionen',definition.portfolio.positions,{type:'number',min:context.constraints.minPositions,max:context.constraints.maxPositions,step:'1'}),
  select('weighting','Positionsgewichtung',definition.portfolio.weighting,context.weightings.map(v=>[v,{equal:'Gleichgewichtet',score:'Nach Faktorwert',volatility:'Nach Volatilität'}[v]])),
@@ -2771,7 +2800,7 @@ async function discoverPage(){
  main.append(el('p',{class:'scope-note',text:'Capability-gesteuerte Auswahl aus dem kanonischen Produktuniversum. Diese Ergebnisse sind keine Rangliste des Gesamtmarkts.'}));
  for(const collection of data.collections){
   const result=collection.result;
-  const title=el('div',{},[el('span',{class:'eyebrow',text:'Entdecken · '+(result.state==='AVAILABLE'?result.stocks.length+' Treffer':'Daten fehlen')}),el('h2',{text:collection.title}),el('p',{class:'muted',text:collection.explanation}),el('p',{class:'recipe-rule',text:collection.rule}),link('Regeln im Screener bearbeiten',href('screener')+'&recipe='+encodeURIComponent(collection.id),'button secondary')]);
+  const title=el('div',{},[el('span',{class:'eyebrow',text:'Entdecken · '+(result.state==='AVAILABLE'?result.stocks.length+' Treffer':'Daten fehlen')}),el('h2',{text:collection.title}),el('p',{class:'muted',text:collection.explanation}),el('p',{class:'recipe-rule',text:collection.rule}),link('Regeln im Quant Screener bearbeiten',href('screener')+'&recipe='+encodeURIComponent(collection.id),'button secondary')]);
   const evidence=result.state==='AVAILABLE'?(result.stocks.length?stockRows(result.stocks,collection.field==='priceTo200dma'?'above200':collection.field,collection.field==='revenueGrowth'?'Umsatzwachstum':collection.field==='priceTo200dma'?'Abstand 200T':'6 Monate'):notice('Aktuell keine Treffer','Das Kriterium trifft auf kein Unternehmen im verfügbaren Analysebereich zu. Du kannst es im Screener verändern.')):notice('Auswahl derzeit nicht verfügbar','Die zugrunde liegenden Daten konnten nicht geladen werden.');
   main.append(el('section',{class:'collection'},[title,el('div',{},[evidence])]));
  }
