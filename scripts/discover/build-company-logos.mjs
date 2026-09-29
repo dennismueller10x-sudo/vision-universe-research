@@ -203,6 +203,10 @@ const exclusions = readJson(join(root, "discover", "config", "logo-exclusions.js
 const REJECTS = readJson(join(root, "discover", "config", "logo-rejects.json"), { urls: {}, titles: {} });
 const gesperrt = (url) => Boolean(url && (REJECTS.urls || {})[url]);
 const gesperrtTitel = (t) => Boolean(t && (REJECTS.titles || {})[t]);
+/* Firmen mit einem gesperrten SEC-Bild: dort liefert die SEC-Quelle
+   erfahrungsgemaess weitere Fehlgriffe (Unterschriften, Stimmzettel). */
+const SEC_GESPERRT = new Set(Object.entries(REJECTS.urls || {})
+  .filter(([url]) => /^https:\/\/www\.sec\.gov\//.test(url)).map(([, why]) => String(why).split(":")[0].trim()));
 const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r.cik || null]));
 const universe = search.entries
   .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
@@ -454,7 +458,7 @@ if (!args["no-web"] && !DRY) {
     if (secUa && !args["no-sec-logo"]) {
       /* Nur Titel ohne Logo. (Ein SEC-Bild als Ersatz fuer einen breiten
          Schriftzug brachte Deckblaetter und Fotos - verworfen.) */
-      const rest = universe.filter((r) => r.cik && !files[r.symbol]).slice(0, LIMIT);
+      const rest = universe.filter((r) => r.cik && !files[r.symbol] && !SEC_GESPERRT.has(r.symbol)).slice(0, LIMIT);
       console.log(`5/5  Logo aus SEC-Einreichungen fuer ${rest.length} Titel …`);
       const stat = { ok: 0, ohneBild: 0, fehler: 0 };
       let i = 0;

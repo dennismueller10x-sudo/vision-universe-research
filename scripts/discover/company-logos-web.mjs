@@ -391,7 +391,9 @@ export function logoFilings(recent, max = 3) {
  * Unterschriften, Grafiken und Fotos zaehlen nicht.
  */
 export function secLogoImages(html, docUrl, companyName, opts = {}) {
-  const text = String(html || "").slice(0, 600000);
+  /* Nur der obere Teil: dort steht das Logo; Unterschriften und Anhaenge
+     stehen weiter unten (Brown & Brown, Waters). */
+  const text = String(html || "").slice(0, 150000);
   const woerter = String(companyName || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/)
     .filter((w) => w.length >= 4 && !/^(inc|corp|holdings|group|class|company|limited|technologies|international|trust)$/.test(w));
   const out = [];
