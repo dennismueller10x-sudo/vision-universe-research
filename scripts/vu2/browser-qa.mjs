@@ -53,8 +53,43 @@ await writeFile(out+'/observation-context.json',JSON.stringify({sourceAsOf:nvda.
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.svg':'image/svg+xml'};
 const server=createServer(async(req,res)=>{try{let pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(pathname.split('/').some(s=>s.startsWith('.')))throw Error('private');if(pathname.endsWith('/'))pathname+='index.html';const file=resolve(root,'.'+pathname);if(!file.startsWith(root+sep))throw Error('path');res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');res.end(await readFile(file));}catch{res.statusCode=404;res.end('Not found');}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
-const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+/* Lokal liegt Chromium an einem festen Pfad, auf dem Runner sucht
+   Playwright selbst - dieselbe Regel wie im Produktions-Smoke. Ohne sie
+   laesst sich diese Pruefung ausserhalb von CI nicht nachstellen, und
+   ein Push ohne lokale Gegenprobe kostet eine Runde. */
+const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
+ ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
 const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[],resourceBudgets=[];
+/* ALLE AUFKLAPPER OEFFNEN - UND ZWAR WIRKLICH ALLE.
+
+   Der Einsteiger-Umbau baut den Inhalt eines <details> erst beim
+   Oeffnen. Eine Pruefung, die zugeklappten Inhalt nicht ansieht, wuerde
+   seinen Verlust nicht bemerken.
+
+   Naiv war: alle <summary> einsammeln und der Reihe nach klicken. Das
+   schlaegt fehl, weil ein geoeffneter Aufklapper VERSCHACHTELTE
+   Aufklapper nachlegt - das DOM verschiebt sich, und die vorher
+   eingesammelte Liste zeigt ins Leere. Gemessen: von drei Aufklappern
+   blieb der dritte zu, und die Zusicherung darunter lief in einen
+   Timeout.
+
+   Deshalb: nach jedem Oeffnen neu suchen, bis keiner mehr zu ist. Die
+   Schranke verhindert eine Endlosschleife, falls ein Aufklapper sich
+   selbst nachlegt. */
+async function alleAufklappen(page,wurzel){
+ const ort=wurzel||'#app';
+ /* Die Schranke war 12 und damit zu klein: die Aktienseite traegt
+     allein acht "Warum ist das relevant?"-Aufklapper plus die Belege
+     darueber. Wer zu frueh aufhoert, prueft die Haelfte und meldet
+     fehlende Kennzahlen, die nur zugeklappt sind. */
+ for(let runde=0;runde<80;runde++){
+  const zu=page.locator(ort+' details:not([open]) > summary');
+  const n=await zu.count();
+  if(!n)return;
+  await zu.first().click().catch(()=>{});
+  await page.waitForTimeout(60);
+ }
+}
 async function auditAccessibility(page,view,width){
  await page.addScriptTag({path:axePath});
  const result=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}));
@@ -86,45 +121,86 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   for(const fremd of ['Discover','Research','Markets','Portfolio'])
    if(await page.locator(leiste).getByRole('link',{name:fremd,exact:true}).count())
     throw Error(fremd+' steht in der Quant-Navigation');
-  /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE. */
-  await page.getByRole('heading',{name:'So nutzt du Quant',exact:true}).waitFor();
-  await page.getByRole('heading',{name:'Schnell starten',exact:true}).waitFor();
-  /* Die Kachel ist EIN Verweis aus Symbol, Ueberschrift und Erklaersatz -
-     ihr zugaenglicher Name ist deshalb der ganze Text und nie nur
-     "Screener". Ein exakter Namensvergleich lief hier 30 s in einen
-     Timeout. Gesucht wird ueber die Ueberschrift, gelesen wird das Ziel. */
-  const einstiege=await page.locator('.q-tile').evaluateAll(
-   ns=>ns.map(n=>({titel:(n.querySelector('h3')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
-  for(const [name,ziel] of [['Screener','view=screener'],['Strategien','view=strategies'],['Aktienanalyse','view=stocks']]){
+  /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE.
+
+     Vorher standen hier zwei Ueberschriften ("So nutzt du Quant",
+     "Schnell starten") und drei Kacheln. Der Einsteiger-Umbau hat die
+     Startseite von 551 auf 110 Woerter gekuerzt; diese Pruefung lief
+     danach 30 s in einen Timeout auf eine Ueberschrift, die es nicht
+     mehr gibt.
+
+     Die ABSICHT bleibt dieselbe und wird weiter geprueft: die
+     Startseite sagt in einem Satz, was Quant ist, und bietet die Wege
+     dorthin mit ihrem Ziel. Nur die Form hat sich geaendert - aus
+     Kacheln mit Ueberschrift wurden Wege mit der Frage, in der man sie
+     waehlt. */
+  await page.getByRole('heading',{name:'Aktien verstehen, ohne Vorwissen.',exact:true}).waitFor();
+  await page.locator('.q-hero-cta').waitFor();
+  /* Ein Weg ist EIN Verweis aus Symbol, Titel und Lage - sein
+     zugaenglicher Name ist deshalb der ganze Text und nie nur
+     "Screener". Ein exakter Namensvergleich lief hier frueher in einen
+     Timeout. Gesucht wird ueber den Titel, gelesen wird das Ziel. */
+  const einstiege=await page.locator('.q-weg').evaluateAll(
+   ns=>ns.map(n=>({titel:(n.querySelector('.q-weg-t')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
+  if(einstiege.length!==3)throw Error('Home bietet '+einstiege.length+' Wege an, erwartet sind drei');
+  for(const [name,ziel] of [['Aktie prüfen','view=stocks'],['Aktien finden','view=screener'],['Wie wir das machen','view=explain']]){
    const treffer=einstiege.find(e=>e.titel.trim()===name);
-   if(!treffer)throw Error('Einstieg '+name+' fehlt auf Home');
-   if(!treffer.ziel.includes(ziel))throw Error('Einstieg '+name+' zeigt nicht auf '+ziel+': '+treffer.ziel);
+   if(!treffer)throw Error('Weg "'+name+'" fehlt auf Home');
+   if(!treffer.ziel.includes(ziel))throw Error('Weg "'+name+'" zeigt nicht auf '+ziel+': '+treffer.ziel);
   }
   /* "HEUTE IM FOKUS" IST KEIN ERFUNDENER FEED. Entweder stehen dort die
      ausgewerteten Zustaende MIT ihrem Stichtag, oder es stehen die beiden
      Wege, die ohne sie funktionieren. Ein dritter Fall waere erfunden. */
-  await page.getByRole('heading',{name:'Heute im Fokus',exact:true}).waitFor();
-  const fokus=await page.locator('.q-card').filter({hasText:'Heute im Fokus'}).innerText();
-  const mitStand=/Stand der Setup-Auswertung: \d{4}-\d{2}-\d{2}/.test(fokus);
-  const mitRueckfall=fokus.includes('Mit Kriterien starten')&&fokus.includes('Methodik lesen');
-  if(!mitStand&&!mitRueckfall)throw Error('Heute im Fokus zeigt weder ausgewertete Zustaende mit Stichtag noch den Rueckfall');
-  /* Bestand: Aktualitaetszeile, Datenstand, Watchlist-Einstieg, Suche. */
+  /* Die Karte heisst jetzt "Heute" statt "Heute im Fokus", und der
+     Stichtag steht im Aufklapper darunter statt offen daneben. Die Regel
+     ist unveraendert: entweder ausgewertete Zustaende MIT Stichtag, oder
+     der ehrliche Satz, dass heute keine Lage vorliegt. Ein dritter Fall
+     waere erfunden. Der Aufklapper wird geoeffnet, sonst prueft diese
+     Zusicherung nur die Huelle. */
+  await page.getByRole('heading',{name:'Heute',exact:true}).waitFor();
+  const heuteKarte=page.locator('.q-card').filter({hasText:'Heute'}).first();
+  await alleAufklappen(page,'.q-card');
+  const fokus=await heuteKarte.innerText();
+  const mitStand=/Stand: \d{4}-\d{2}-\d{2}/.test(fokus);
+  const mitRueckfall=fokus.includes('keine ausgewertete Lage');
+  if(!mitStand&&!mitRueckfall)throw Error('Heute zeigt weder ausgewertete Zustaende mit Stichtag noch den ehrlichen Rueckfall: '+fokus.slice(0,160));
+  /* BESTAND: Aktualitaetszeile, Datenstand, Listen-Einstieg, Suche.
+
+     Der Datenstand liegt seit dem Einsteiger-Umbau im Aufklapper
+     "Woher die Zahlen kommen" - er ist wichtig, aber er ist nicht die
+     Antwort auf die erste Frage. Geprueft wird er weiter, nur eben nach
+     dem Oeffnen: eine Zusicherung, die zugeklappten Inhalt nicht
+     ansieht, wuerde seinen Verlust nicht bemerken. */
+  await alleAufklappen(page);
   await page.locator('.market-freshness').waitFor();
-  await page.getByText('Kurse: letzter verfügbarer Tagesstand',{exact:true}).waitFor();
-  await page.getByRole('link',{name:'Watchlist zusammenstellen',exact:true}).waitFor();
+  await page.getByText('Kurse: letzter Tagesstand',{exact:true}).waitFor();
+  await page.getByRole('link',{name:'Liste anlegen',exact:true}).waitFor();
   await page.getByRole('button',{name:'Suche',exact:true}).click();
   await page.getByRole('textbox',{name:'Suche',exact:true}).fill('NVDA');
   await page.getByRole('dialog').getByRole('link',{name:/NVDA/}).waitFor();
   await page.getByRole('button',{name:'Schließen'}).click();
-  /* Faellt der Kalender aus, darf die Seite ihre Einstiege nicht verlieren. */
+  /* FAELLT DER KALENDER AUS, DARF DIE SEITE IHRE EINSTIEGE NICHT
+     VERLIEREN - und sie darf die Handelsphase nicht erfinden.
+
+     Beides gilt unveraendert. Neu ist nur, wo es steht: die Marktlage
+     liegt im Aufklapper, und ein reload() schliesst ihn wieder. Wer hier
+     nicht erneut oeffnet, prueft eine zugeklappte Schublade und haelt
+     sie fuer leer. */
   await page.route('**/quant/config/market-calendar.json',route=>route.abort());
   await page.reload();await page.locator('main footer').waitFor();
+  if(await page.locator('.q-weg').count()!==3)
+   throw Error('Ohne Kalender verliert die Startseite ihre Einstiege');
+  await alleAufklappen(page);
   await page.getByText('Handelsphase nicht bestätigt',{exact:true}).waitFor();
-  await page.getByRole('heading',{name:'Schnell starten',exact:true}).waitFor();
   await page.unroute('**/quant/config/market-calendar.json');
   await page.reload();await page.locator('main footer').waitFor();
  }
- if(view==='stock'){await page.locator('.market-freshness').waitFor();if(await page.locator('[data-stock-family]').count()!==4||await page.locator('.stock-evidence-metric').count()!==8)throw Error('stock business evidence missing');await page.locator('[data-stock-family=quality]').getByText(pct(nvda.fundamentals.operatingMargin),{exact:true}).waitFor();await page.locator('[data-stock-family=growth]').getByText(pct(nvda.fundamentals.revenueGrowth),{exact:true}).waitFor();await page.locator('[data-stock-family=risk]').getByText(pct(nvda.fundamentals.volatility),{exact:true}).waitFor();await page.getByText('Warum ist das relevant?',{exact:true}).first().click();await page.getByRole('heading',{name:kursverlaufHeading,exact:true}).waitFor();await page.getByRole('heading',{name:trendLabel,exact:true}).waitFor();await page.getByRole('button',{name:'Max',exact:true}).click();if(await page.locator('.focus .q-chart').count()!==1)throw Error('MAX chart missing');await page.getByRole('button',{name:'1J',exact:true}).click();}
+ if(view==='stock'){
+  /* Die Belege der Aktienseite liegen seit dem Einsteiger-Umbau im
+     Aufklapper 'Warum wir das sagen'. Erst oeffnen, dann pruefen -
+     sonst misst diese Zusicherung eine geschlossene Schublade. */
+  await alleAufklappen(page);
+  await page.locator('.market-freshness').waitFor();if(await page.locator('[data-stock-family]').count()!==4||await page.locator('.stock-evidence-metric').count()!==8)throw Error('stock business evidence missing');await page.locator('[data-stock-family=quality]').getByText(pct(nvda.fundamentals.operatingMargin),{exact:true}).waitFor();await page.locator('[data-stock-family=growth]').getByText(pct(nvda.fundamentals.revenueGrowth),{exact:true}).waitFor();await page.locator('[data-stock-family=risk]').getByText(pct(nvda.fundamentals.volatility),{exact:true}).waitFor();await page.getByText('Warum ist das relevant?',{exact:true}).first().click();await page.getByRole('heading',{name:kursverlaufHeading,exact:true}).waitFor();await page.getByRole('heading',{name:trendLabel,exact:true}).waitFor();await page.getByRole('button',{name:'Max',exact:true}).click();if(await page.locator('.focus .q-chart').count()!==1)throw Error('MAX chart missing');await page.getByRole('button',{name:'1J',exact:true}).click();}
  if(view==='technical'||view==='elliott'){await page.locator('.technical-chart-host svg').waitFor();await page.getByRole('combobox',{name:'Chart-Zeitraum',exact:true}).selectOption('MAX');await page.getByRole('checkbox',{name:'Alternativen im Chart'}).check();const labels=page.getByRole('checkbox',{name:'Chart-Beschriftungen'});await labels.check();if(!await page.locator('.technical-chart-host .ann-label:not(.ann-now-label)').count())throw Error('chart labels missing');if(width===390)await labels.uncheck();await page.getByRole('heading',{name:'Szenarien & Invalidation',exact:true}).waitFor();await page.getByRole('heading',{name:'Alternative Zählung',exact:true}).waitFor();await page.getByText('Vollständige Zählung & Regeln',{exact:true}).first().click();if(await page.locator('.wave-count').first().locator('tbody tr').count()<40)throw Error('wave count truncated');await page.getByText('Vollständige Zählung & Regeln',{exact:true}).first().click();await page.getByRole('combobox',{name:'Chart-Zeitraum',exact:true}).selectOption('1Y');}
  if(view==='quant'){
   // Factor DNA is the canonical seven, always in the same order, and a
@@ -225,6 +301,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   await page.getByRole('combobox',{name:'Quant Unternehmen'}).selectOption('NVDA');await page.locator('main footer').waitFor();
  }
  if(view==='explain'){
+  /* DIE METHODIK IST JETZT EINE ANTWORT MIT ZEHN FRAGEN DARUNTER.
+     Vorher standen 1.228 Woerter in 28 Kaesten offen da. Alle Inhalte
+     sind erhalten, sie liegen nur im Aufklapper - erst oeffnen, dann
+     pruefen. Die Ueberschrift der Karte selbst steht offen. */
+  await alleAufklappen(page);
   await page.getByRole('heading',{name:productLanguage.question('quant'),exact:true}).waitFor();
   // Der Einsteigersatz steht im Sprachverzeichnis und wurde dort
   // ueberarbeitet; die abgeschriebene Fassung war seit M15 falsch.
