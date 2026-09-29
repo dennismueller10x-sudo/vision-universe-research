@@ -99,6 +99,11 @@ const STYLE = `
   .warnung { border-left:3px solid var(--tinte); padding-left:12px; }
   figure { margin:0 0 20px; }
   figure img { display:block; width:100%; height:auto; background:#f2f2f2; }
+  .karussell { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px;
+    -webkit-overflow-scrolling:touch; margin:0 0 8px; padding-bottom:6px; }
+  .karussell figure { flex:0 0 88%; scroll-snap-align:center; margin:0; }
+  .karussell figcaption { font-size:13px; margin-top:4px; }
+  .quellen li { margin-bottom:6px; word-break:break-word; }
   figcaption { margin-top:8px; }
   dl { margin:0 0 4px; }
   dt { font-size:11px; letter-spacing:.12em; text-transform:uppercase; font-weight:700;
@@ -291,7 +296,9 @@ ${abmelden()}`);
 <article>
   <p class="zaehler">${n + 1} von ${escapeHtml(String(anzahl))}</p>
   <h2 class="thema">${escapeHtml(i.thema || "Ohne Thema")}</h2>
-  <p class="hook">${escapeHtml(i.hook || "")}</p>
+  <p class="hook">${escapeHtml(i.hook || "")}</p>${i.slides ? `
+  <p class="leise">Carousel · ${escapeHtml(String(i.slides))} Slides${i.erstellt
+    ? " · erstellt " + escapeHtml(String(i.erstellt).slice(0, 16).replace("T", " ")) + " UTC" : ""}</p>` : ""}
   <p><a class="weiter" href="/approval/${encodeURIComponent(i.candidateId)}">Ansehen und entscheiden</a></p>
 </article>`).join("");
 
@@ -520,19 +527,20 @@ function laufZeile(n, jetzt) {
 function jetztPruefen() {
   return `<hr class="linie">
 <form method="POST" action="/approval/run">
-  <input type="hidden" name="modus" value="JETZT_PRUEFEN">
-  <button class="weiter" type="submit">Jetzt pruefen</button>
+  <input type="hidden" name="modus" value="MANUAL_NOW">
+  <button class="weiter" type="submit">JETZT POST ERSTELLEN</button>
 </form>
-<p class="leise">Startet dieselbe Pruefung, die der Zeitplan zweimal taeglich
-startet. Du ueberspringst damit die Uhr — nicht die Pruefungen.</p>
+<p class="leise">Startet genau einen neuen Auftrag an ChatGPT Work: aktuelle News
+recherchieren, die beste Story waehlen, Hook, Text, Hashtags und ein komplettes
+Carousel aus 3–4 Slides gestalten. Offene Beitraege hier blockieren das nicht —
+der neue kommt dazu. Veroeffentlicht wird nur, was du freigibst.</p>
 
 <form method="POST" action="/approval/run">
-  <input type="hidden" name="modus" value="MANUAL_NOW">
-  <button class="leer" type="submit">Jetzt Post erstellen</button>
+  <input type="hidden" name="modus" value="JETZT_PRUEFEN">
+  <button class="leer" type="submit">Jetzt pruefen</button>
 </form>
-<p class="leise">Ein Auftrag: es soll jetzt ein Beitrag entstehen. Das hebt
-Tagesobergrenze und Mindestabstand auf — nicht die Qualitaetstore, nicht die
-Grenze von einem laufenden Auftrag, und nicht deine Freigabe.</p>
+<p class="leise">Holt fertige Ergebnisse ab und startet denselben Lauf wie der
+Zeitplan. Du ueberspringst damit die Uhr — nicht die Pruefungen.</p>
 
 <form method="POST" action="/approval/run">
   <input type="hidden" name="modus" value="MANUAL_TOPIC">
@@ -706,6 +714,61 @@ dort steht.</p>`;
 Text oben und werden nicht noch einmal angehaengt.</p>${warnung}`;
 }
 
+/* -------------------------------------------------------------------------
+   CAROUSEL — EIN BEITRAG, MEHRERE SLIDES (Owner-Auftrag "WORK OWNS THE
+   POST", 29.09., §22/§43)
+
+   Wischbar ohne Skript: ein horizontaler Streifen mit Scroll-Snap. Jede
+   Slide ist genau das Bild, das unter dieser Adresse veroeffentlicht
+   wuerde. Ein Einzelbild bleibt die bisherige Figur.
+   ------------------------------------------------------------------------- */
+function slidesBlock(i, bild) {
+  const hinweis = bild.erreichbar ? "" : (bild.geprueft
+    ? " Es ist dort gerade nicht abrufbar."
+    : " Ob dort etwas liegt, wurde nicht geprueft.");
+  const c = i.carousel;
+  const urls = i.payload && Array.isArray(i.payload.imageUrls) ? i.payload.imageUrls : null;
+  if (!c || !urls || urls.length < 2) {
+    return `<figure>
+  <img src="${escapeHtml(i.payload.imageUrl)}" alt="" width="1080" height="1350">
+  <figcaption class="leise">Dieses Bild wuerde veroeffentlicht — unter genau dieser
+  Adresse.${hinweis}</figcaption>
+</figure>`;
+  }
+  const slides = urls.map((u, n) => {
+    const s = (c.slides || []).find((x) => x && x.url === u) || {};
+    const rolle = [s.role, s.headline].filter(Boolean).join(" · ");
+    return `<figure>
+  <img src="${escapeHtml(u)}" alt="Slide ${n + 1}" width="1080" height="1350" loading="${n ? "lazy" : "eager"}">
+  <figcaption class="leise">Slide ${n + 1} von ${urls.length}${rolle ? " — " + escapeHtml(rolle) : ""}</figcaption>
+</figure>`;
+  }).join("\n");
+  return `<div class="karussell" aria-label="Carousel mit ${urls.length} Slides">
+${slides}
+</div>
+<p class="leise">Carousel mit ${urls.length} Slides — zur Seite wischen. Genau diese
+Bilder wuerden veroeffentlicht, in dieser Reihenfolge.${hinweis}</p>`;
+}
+
+function storyBlock(i) {
+  const c = i.carousel;
+  if (!c) return "";
+  const warum = c.story && c.story.whyInteresting ? `
+<h2>Warum diese Story</h2>
+<p>${escapeHtml(c.story.whyInteresting)}</p>` : "";
+  const quellen = (c.sources || []).filter((q) => q && q.url);
+  const liste = quellen.length ? `
+<h2>Quellen</h2>
+<ul class="quellen">
+${quellen.map((q) => `  <li>${escapeHtml(q.source || "Quelle")}${q.publishedAt
+    ? " (" + escapeHtml(String(q.publishedAt).slice(0, 10)) + ")" : ""}<br>
+  <a href="${escapeHtml(q.url)}" rel="noopener noreferrer" target="_blank">${escapeHtml(q.url)}</a></li>`).join("\n")}
+</ul>` : `
+<h2>Quellen</h2>
+<p class="leise warnung">Der Creative Agent hat keine Quelle genannt.</p>`;
+  return warum + liste;
+}
+
 export function candidatePage(i, stelle, hinweis) {
   const a = i.anzeige || {};
   const w = i.warum || {};
@@ -740,13 +803,7 @@ export function candidatePage(i, stelle, hinweis) {
 ${zaehler}
 ${meldung}
 
-<figure>
-  <img src="${escapeHtml(i.payload.imageUrl)}" alt="" width="1080" height="1350">
-  <figcaption class="leise">Dieses Bild wuerde veroeffentlicht — unter genau dieser
-  Adresse.${bild.erreichbar ? "" : (bild.geprueft
-    ? ` Es ist dort gerade nicht abrufbar.`
-    : ` Ob dort etwas liegt, wurde nicht geprueft.`)}</figcaption>
-</figure>
+${slidesBlock(i, bild)}
 ${bild.erreichbar ? "" : `<p class="leise warnung">${escapeHtml(bild.satz ||
   "Das Bild ist derzeit nicht erreichbar.")}</p>`}
 
@@ -759,6 +816,8 @@ ${bild.erreichbar ? "" : `<p class="leise warnung">${escapeHtml(bild.satz ||
 einschliesslich der Hashtags.</p>
 
 ${tagBlock(i)}
+
+${storyBlock(i)}
 
 <h2>Steckbrief</h2>
 <dl>

@@ -171,7 +171,9 @@ test("RL14 · Die produktiven Schritte haengen an der Lease", () => {
   const w = readFileSync(join(ROOT, ".github/workflows/social-orchestrator.yml"), "utf8");
   assert.match(w, /--lease-claim/);
   assert.match(w, /--lease-release/);
-  for (const schritt of ["WEB RESEARCH", "CREATIVE JOB (WEB)", "VORBEREITEN (WEB)"]) {
+  /* Seit "WORK OWNS THE POST" (29.09.) arbeiten produktiv: der AUTO-
+     Auftrag, das Einholen fertiger Carousels und der Work-Start. */
+  for (const schritt of ["AUTO - Auftrag anlegen", "CAROUSEL-KANDIDATEN", "WORK-JOB STARTEN"]) {
     const ab = w.indexOf("- name: " + schritt);
     assert.ok(ab > 0, "Schritt nicht gefunden: " + schritt);
     const block = w.slice(ab, ab + 400);

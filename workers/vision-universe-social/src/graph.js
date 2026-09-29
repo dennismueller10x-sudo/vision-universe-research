@@ -767,6 +767,36 @@ export async function createMediaContainer(ctx, { instagramAccountId, accessToke
 }
 
 /**
+ * CAROUSEL (Owner-Auftrag "WORK OWNS THE POST", 29.09.): erst je Slide
+ * ein Kind-Container (is_carousel_item, ohne Caption), dann ein
+ * CAROUSEL-Container mit den Kindern und der Caption. Freigegeben wird
+ * nur der CAROUSEL-Container - dieselbe publishMediaContainer-Stufe wie
+ * beim Einzelbild, derselbe folgenlose Moment davor.
+ */
+export async function createCarouselItemContainer(ctx, { instagramAccountId, accessToken, imageUrl }) {
+  const result = await graph(ctx, `${instagramAccountId}/media`,
+    { image_url: String(imageUrl), is_carousel_item: "true" }, accessToken, { method: "POST" });
+  if (!result.ok) return result;
+  if (!result.data || !result.data.id) {
+    return fail("containerNotCreated",
+      "Die Plattform hat fuer eine Slide keinen Container geliefert. Es wurde nichts veroeffentlicht.");
+  }
+  return ok({ containerId: String(result.data.id) });
+}
+
+export async function createCarouselContainer(ctx, { instagramAccountId, accessToken, childIds, caption }) {
+  const params = { media_type: "CAROUSEL", children: (childIds || []).map(String).join(",") };
+  if (caption) params.caption = String(caption);
+  const result = await graph(ctx, `${instagramAccountId}/media`, params, accessToken, { method: "POST" });
+  if (!result.ok) return result;
+  if (!result.data || !result.data.id) {
+    return fail("containerNotCreated",
+      "Die Plattform hat keinen Carousel-Container geliefert. Es wurde nichts veroeffentlicht.");
+  }
+  return ok({ containerId: String(result.data.id) });
+}
+
+/**
  * Der Zustand eines Containers.
  *
  * Bei einem Bild ist er meist sofort FINISHED. Gefragt wird trotzdem:

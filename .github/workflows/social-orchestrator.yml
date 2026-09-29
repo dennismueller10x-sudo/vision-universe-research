@@ -67,7 +67,7 @@ on:
       # Datei und nicht der Worker.
       # -----------------------------------------------------------------
       modus:
-        description: 'JETZT_PRUEFEN | MANUAL_NOW | MANUAL_TOPIC'
+        description: 'JETZT_PRUEFEN | MANUAL_NOW (JETZT POST ERSTELLEN) | MANUAL_TOPIC | EINHOLEN'
         type: string
         default: 'JETZT_PRUEFEN'
       thema:
@@ -179,6 +179,68 @@ jobs:
         run: node scripts/social/reconcile-creative-jobs.mjs --write
 
       # =====================================================================
+      # DIE ENTSCHEIDUNGEN DES OWNERS ZURUECK
+      #
+      # Der Owner entscheidet am Telefon, der Worker haelt fest, dieser
+      # Schritt traegt ins Repository - durch decide-candidate.mjs, den
+      # bestehenden Weg. Dort haengt alles daran, was an einer
+      # Owner-Entscheidung haengt: der Zustandsuebergang durch die
+      # kanonische Maschine, der Schutz einer bereits getroffenen
+      # Entscheidung, und dass ein Ablehnungsgrund eine Rueckmeldung
+      # ueber die AUSWAHL ist und keine ueber die WIRKUNG.
+      #
+      # VOR dem Messen und vor dem Vorbereiten. Ein Lauf, der zuerst
+      # einen neuen Kandidaten baut und danach erfaehrt, dass der alte
+      # abgelehnt wurde, hat die Ablehnung nicht gelesen, als sie
+      # zaehlte.
+      #
+      # Exit 4 heisst "kein Schluessel" und ist eine Antwort.
+      #
+      # VOR DEN TESTS (Owner-Auftrag "WORK OWNS THE POST", 29.09., §44):
+      # Owner Decision Sync ist State-Synchronisierung. Eine rote
+      # Content-Testsuite darf nicht verhindern, dass ein REJECTED oder
+      # APPROVED ins Repository kommt - sonst stuende ein entschiedener
+      # Beitrag im naechsten Lauf wieder als offen da. Festschreiben laeuft
+      # deshalb auch nach einem roten Testschritt (if: always()).
+      # =====================================================================
+      - name: Die Entscheidungen des Owners abholen
+        if: inputs.nur_entscheiden != true
+        continue-on-error: true
+        env:
+          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
+            echo "Kein Admin-Schluessel: es wird nichts abgeholt."
+            exit 0
+          fi
+          node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
+            | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
+
+
+      # =====================================================================
+      # JETZT POST ERSTELLEN = EIN AUFTRAG, DER NICHT VERLOREN GEHT
+      # (Owner-Auftrag "WORK OWNS THE POST", 29.09., §45-§47)
+      #
+      # Der Knopfdruck wird ZUERST festgehalten - vor den Tests, damit ein
+      # roter Lauf ihn nicht verschluckt. Ob gerade ein Work-Job laeuft,
+      # spielt hier keine Rolle: der Auftrag wartet dann in der Schlange
+      # und wird der naechste Work-Job. Offene Candidates im Approval
+      # Center blockieren nie.
+      # =====================================================================
+      - name: JETZT POST ERSTELLEN - Auftrag festhalten
+        if: >-
+          inputs.nur_entscheiden != true &&
+          (inputs.modus == 'MANUAL_NOW' || inputs.modus == 'MANUAL_TOPIC')
+        env:
+          VU_SOCIAL_THEMA: ${{ inputs.modus == 'MANUAL_TOPIC' && inputs.thema || '' }}
+        run: |
+          set -euo pipefail
+          node scripts/social/run-post-job.mjs --enqueue --trigger MANUAL \
+            --run-id "${{ github.run_id }}" \
+            ${VU_SOCIAL_THEMA:+--topic "$VU_SOCIAL_THEMA"} --write
+
+      # =====================================================================
       # TESTS UND ISOLATION, BEVOR IRGENDETWAS GESCHIEHT
       #
       # Ein Betrieb, der auf rotem Code laeuft, schreibt Fehler in
@@ -223,7 +285,7 @@ jobs:
         # Text und wird NICHT in die Shell interpoliert, sondern nur ueber
         # die Umgebung gereicht; die Reinigung macht manual-mode.js.
         env:
-          VU_SOCIAL_MODUS: ${{ inputs.modus || '' }}
+          VU_SOCIAL_MODUS: ${{ inputs.modus != 'EINHOLEN' && inputs.modus || '' }}
           VU_SOCIAL_THEMA: ${{ inputs.thema || '' }}
         run: |
           set -euo pipefail
@@ -252,38 +314,6 @@ jobs:
           node scripts/social/run-orchestrator.mjs \
             --lease-claim "${{ github.run_id }}" \
             --von "${{ github.event_name }}"
-
-      # =====================================================================
-      # DIE ENTSCHEIDUNGEN DES OWNERS ZURUECK
-      #
-      # Der Owner entscheidet am Telefon, der Worker haelt fest, dieser
-      # Schritt traegt ins Repository - durch decide-candidate.mjs, den
-      # bestehenden Weg. Dort haengt alles daran, was an einer
-      # Owner-Entscheidung haengt: der Zustandsuebergang durch die
-      # kanonische Maschine, der Schutz einer bereits getroffenen
-      # Entscheidung, und dass ein Ablehnungsgrund eine Rueckmeldung
-      # ueber die AUSWAHL ist und keine ueber die WIRKUNG.
-      #
-      # VOR dem Messen und vor dem Vorbereiten. Ein Lauf, der zuerst
-      # einen neuen Kandidaten baut und danach erfaehrt, dass der alte
-      # abgelehnt wurde, hat die Ablehnung nicht gelesen, als sie
-      # zaehlte.
-      #
-      # Exit 4 heisst "kein Schluessel" und ist eine Antwort.
-      # =====================================================================
-      - name: Die Entscheidungen des Owners abholen
-        if: inputs.nur_entscheiden != true
-        continue-on-error: true
-        env:
-          VU_SOCIAL_ADMIN_KEY: ${{ secrets.VU_SOCIAL_ADMIN_KEY }}
-        run: |
-          set -euo pipefail
-          if [ -z "${VU_SOCIAL_ADMIN_KEY:-}" ]; then
-            echo "Kein Admin-Schluessel: es wird nichts abgeholt."
-            exit 0
-          fi
-          node scripts/social/ingest-owner-decisions.mjs --data social/data --write \
-            | tee /tmp/entscheidungen.txt || [ "$?" = "4" ]
 
       # =====================================================================
       # WEB-FIRST FULL-POST GENERATION — STANDARDPFAD (Owner-Direktive
@@ -405,139 +435,59 @@ jobs:
           echo "stillgelegt"
 
       # =====================================================================
-      # WEB-FIRST FULL-POST GENERATION (Owner-Direktive "DIRECT CREATIVE
-      # GOLDEN PATH — FINAL GO/NO-GO", 23.09., erweitert durch "WEB-FIRST
-      # + FULL-POST-GENERATION", 24.09.)
+      # WORK OWNS THE POST (Owner-Auftrag, 29.09.)
       #
-      # Der EINZIGE Themenpfad, fuer JEDEN Modus (JETZT_PRUEFEN,
-      # MANUAL_NOW, MANUAL_TOPIC, Zeitplan). Kein Discovery, kein Quant,
-      # kein Opportunity Slate, kein Screener - research-web-story.mjs
-      # kennt quant/ nicht und liest es nicht. Themen kommen
-      # ausschliesslich aus oeffentlichen, schluessellosen Nachrichten-
-      # Feeds (social/engines/web-research.js waehlt Story, Hook,
-      # Caption und Hashtags rein und ohne Netz; das Skript hier macht
-      # nur den Netzabruf).
+      # ONE STORY = ONE CHATGPT WORK JOB = ONE COMPLETE CAROUSEL. Recherche,
+      # Story, Angle, Hook, Caption, Hashtags, Dramaturgie und 3-4 finale
+      # Slides entstehen in EINEM Work-Auftrag. Vision Universe liefert nur
+      # ein duennes Recherchepaket (build-research-package.mjs: aktuelle
+      # Meldungen plus Originalartikel), Marke und Pruefkriterien - keine
+      # Story-Auswahl, keine Hook, kein Motiv. Der fruehere Web-Pfad
+      # (research-web-story -> request-creative-web -> manual-now-web-
+      # candidate) entschied das alles vor Work und ist hier ersetzt.
       #
-      # FAIL CLOSED: findet sich keine aktuelle, grounded Story, endet
-      # das Skript mit 4 (begruendete Verweigerung) und es entsteht
-      # nichts - kein Rueckfall auf die Ladder oder die Platte.
+      # MANUAL und AUTO sind dieselbe Engine: der Zeitplan legt nur einen
+      # AUTO-Auftrag in dieselbe Schlange.
       # =====================================================================
-      - name: WEB RESEARCH — aktuelle Story finden
-        id: webresearch
+      - name: AUTO - Auftrag anlegen, wenn nichts wartet und nichts laeuft
         if: >-
+          inputs.nur_entscheiden != true &&
           steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true
-        env:
-          VU_SOCIAL_THEMA_FREITEXT: >-
-            ${{ steps.plan.outputs.modus == 'MANUAL_TOPIC' && inputs.thema || '' }}
+          (inputs.modus == '' || inputs.modus == null || inputs.modus == 'JETZT_PRUEFEN')
         run: |
-          set -uo pipefail
-          # `cmd; rc=$?` ist UNTER DEM VON GITHUB ACTIONS ERZWUNGENEN
-          # `bash -e` UNSICHER: ein nichtnullwertiger Exit bricht die
-          # Shell ab, BEVOR `rc=$?` ueberhaupt laeuft - `set -uo pipefail`
-          # hebt das ererbte `-e` nicht auf. `cmd || rc=$?` ist die
-          # sichere Form (derselbe `tor()`-Kniff wie im Schritt daneben):
-          # die gesamte Liste endet auf die IMMER erfolgreiche Zuweisung,
-          # `-e` sieht keinen Grund zum Abbruch.
-          rc=0
-          node scripts/social/research-web-story.mjs --write \
-            ${VU_SOCIAL_THEMA_FREITEXT:+--thema-freitext "$VU_SOCIAL_THEMA_FREITEXT"} || rc=$?
-          if [ "$rc" -eq 4 ]; then
-            echo "::notice::Keine aktuelle, grounded Web-Story gefunden. Das ist eine " \
-              "begruendete Verweigerung, kein Ausfall - es entsteht nichts."
-            echo "gefunden=nein" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::Unerwarteter Abbruch ($rc) in research-web-story.mjs"
-            exit "$rc"
-          fi
-          echo "gefunden=ja" >> "$GITHUB_OUTPUT"
-          node -e "console.log('content_id=' + JSON.parse(require('fs').readFileSync('social/data/web-story-selection.json','utf8')).contentId)" \
-            >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          node scripts/social/run-post-job.mjs --auto-if-idle --run-id "${{ github.run_id }}" --write
 
-      # Dieselben DREI bestehenden Skripte wie im Quant-Pfad
-      # (dispatch-creative-job.mjs, open-creative-request.mjs,
-      # verify-creative-dispatch.mjs sind bereits generisch auf
-      # contentId - unveraendert wiederverwendet) - nur der Brief
-      # entsteht aus der Web-Story statt aus einem technischen Bundle
-      # (request-creative-web.mjs statt request-creative.mjs).
-      - name: CREATIVE JOB (WEB) — Brief, Register, Request-PR
+      # Fertige Work-Ergebnisse (oben eingeholt) werden zu Kandidaten -
+      # jeder VERIFIED Carousel-Job genau einmal, nie auf Kosten eines
+      # anderen offenen Kandidaten.
+      - name: CAROUSEL-KANDIDATEN - fertige Work-Ergebnisse ins Approval Center
         if: >-
-          steps.webresearch.outputs.gefunden == 'ja' &&
-          steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true
+          inputs.nur_entscheiden != true &&
+          steps.lease.outputs.produktiv_erlaubt == 'true'
+        run: |
+          set -euo pipefail
+          node scripts/social/make-carousel-candidates.mjs --data social/data --write
+
+      # Der aelteste wartende Auftrag wird zu genau einem Work-Job, sobald
+      # keiner mehr offen ist (MAX_OPEN_CREATIVE_JOBS bleibt 1: eine
+      # Kostengrenze fuer Work, die das Tempo drosselt, nicht die Zahl).
+      - name: WORK-JOB STARTEN - Recherchepaket, Carousel-Brief, Request-PR
+        id: workjob
+        if: >-
+          inputs.nur_entscheiden != true &&
+          steps.lease.outputs.produktiv_erlaubt == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          CONTENT_ID: ${{ steps.webresearch.outputs.content_id }}
         run: |
-          set -uo pipefail
-
-          tor() {
-            "$@"
-            rc=$?
-            if [ "$rc" -eq 4 ]; then
-              echo "::notice::Tor verweigert ($*). Das ist eine Antwort, kein Ausfall."
-              return 1
-            fi
-            if [ "$rc" -ne 0 ]; then
-              echo "::error::Unerwarteter Abbruch ($rc) in: $*"
-              exit "$rc"
-            fi
-            return 0
-          }
-
-          tor node scripts/social/request-creative-web.mjs --write || exit 0
-
-          tor node scripts/social/dispatch-creative-job.mjs \
-                --content-id "$CONTENT_ID" --write || exit 0
-
+          set -euo pipefail
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"
-
-          tor node scripts/social/open-creative-request.mjs \
-                --content-id "$CONTENT_ID" --write \
-                --reason "Direct Creative Editor: aktuelle Web-Story, kein Ergebnis und kein offener Job zu diesem Inhalt." \
-            || exit 0
-
-          node scripts/social/verify-creative-dispatch.mjs \
-            --branch "authoring/request/$CONTENT_ID"
-
-      # VERIFIED oder nicht - chatgpt-work arbeitet asynchron (siehe
-      # dessen Adapter). Liegt noch kein Ergebnis vor, endet dieses
-      # Skript mit 4: kein Kandidat, kein schlechter Rueckfall (§16 der
-      # frueheren, weiterhin gueltigen Golden-Path-Direktive). Der
-      # naechste Lauf (JETZT PRUEFEN oder Zeitplan) holt das Ergebnis,
-      # sobald es da ist, ueber denselben bestehenden Weg ("Creative-
-      # Ergebnisse von offenen Request-PRs holen", weiter oben).
-      - name: VORBEREITEN (WEB) — bis zum Publishing Gate, nicht darueber hinaus
-        if: >-
-          steps.webresearch.outputs.gefunden == 'ja' &&
-          steps.lease.outputs.produktiv_erlaubt == 'true' &&
-          inputs.nur_entscheiden != true
-        run: |
-          set -uo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq chromium-browser || sudo apt-get install -y -qq chromium
-          export CHROMIUM_PATH="$(command -v chromium-browser || command -v chromium)"
-
-          # Siehe Kommentar im WEB-RESEARCH-Schritt: `cmd || rc=$?`, nicht
-          # `cmd; rc=$?` - sonst bricht `set -e` (von GitHub Actions
-          # erzwungen) die Shell schon vor der Auswertung ab. Genau das
-          # geschah im realen Lauf 35896139660: NOCH_NICHT_VERIFIZIERT
-          # wurde korrekt gemeldet, aber der Schritt endete trotzdem als
-          # FAILURE statt als geplantes, begruendetes Exit 0.
-          rc=0
-          node scripts/social/manual-now-web-candidate.mjs --data social/data --write || rc=$?
-          if [ "$rc" -eq 4 ]; then
-            echo "::notice::Kein Kandidat aus der Web-Story (begruendete Verweigerung, " \
-              "z.B. noch nicht VERIFIED oder das Hard Final Creative Gate). Der naechste " \
-              "Lauf versucht es erneut."
-            exit 0
-          fi
-          if [ "$rc" -ne 0 ]; then
-            echo "::error::Unerwarteter Abbruch ($rc) in manual-now-web-candidate.mjs"
-            exit "$rc"
+          node scripts/social/run-post-job.mjs --write | tee /tmp/workjob.txt
+          if grep -q "Work-Job gestartet:" /tmp/workjob.txt; then
+            echo "gestartet=ja" >> "$GITHUB_OUTPUT"
+          else
+            echo "gestartet=nein" >> "$GITHUB_OUTPUT"
           fi
 
       # =====================================================================
@@ -637,7 +587,7 @@ jobs:
           set -euo pipefail
           if [ "${{ steps.plan.outputs.creative }}" = "ja" ] || \
              [ "${{ steps.plan.outputs.prepare }}" = "ja" ] || \
-             [ "${{ steps.webresearch.outputs.gefunden }}" = "ja" ]; then
+             [ "${{ steps.workjob.outputs.gestartet }}" = "ja" ]; then
             node scripts/social/run-orchestrator.mjs \
               --lease-release "${{ github.run_id }}" --produktiv
           else
@@ -646,7 +596,7 @@ jobs:
           fi
 
       - name: Festschreiben
-        if: inputs.nur_entscheiden != true
+        if: always() && inputs.nur_entscheiden != true
         run: |
           set -euo pipefail
           # `git diff` sieht neue Dateien nicht, und beim ersten Lauf

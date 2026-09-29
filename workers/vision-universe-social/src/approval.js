@@ -439,7 +439,9 @@ async function handleApprovalIndex(request, url, env, options = {}) {
     items: offen.map((i) => ({
       candidateId: i.candidateId,
       thema: i.anzeige && i.anzeige.thema ? i.anzeige.thema.value : null,
-      hook: i.anzeige && i.anzeige.hook ? i.anzeige.hook.value : null
+      hook: i.anzeige && i.anzeige.hook ? i.anzeige.hook.value : null,
+      slides: i.carousel && i.carousel.slideCount ? i.carousel.slideCount : null,
+      erstellt: i.createdAt || null
     })),
     held: schlange.held || [],
     decided: schlange.decided || [],
@@ -619,6 +621,7 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
   const nachgerechnet = await contentHash({
     contentId: eintrag.payload.contentId,
     imageUrl: eintrag.payload.imageUrl,
+    imageUrls: eintrag.payload.imageUrls,
     caption: eintrag.payload.caption
   });
   if (nachgerechnet !== eintrag.contentHash) {
@@ -688,6 +691,21 @@ async function pruefeFreigabe(schlange, candidateId, fingerprint) {
      Ablehnen bleibt moeglich. */
   if (!bild.sha256) {
     return { ok: false, zustand: "ASSET_FINGERPRINT_UNVERIFIED", eintrag };
+  }
+
+  /* CAROUSEL: jede Slide muss gemessen, erreichbar und mit Abdruck
+     vorliegen - fuer genau die Adressen, die gesendet wuerden. */
+  const urls = Array.isArray(eintrag.payload.imageUrls) ? eintrag.payload.imageUrls : null;
+  if (urls && urls.length > 1) {
+    const slides = Array.isArray(bild.slides) ? bild.slides : [];
+    for (let i = 0; i < urls.length; i += 1) {
+      const s = slides.find((x) => x && x.url === urls[i]);
+      if (!s) return { ok: false, zustand: "ASSET_REACHABILITY_UNVERIFIED", eintrag };
+      if (s.zustand !== "ASSET_PUBLICLY_REACHABLE") {
+        return { ok: false, zustand: "ASSET_NOT_REACHABLE", eintrag };
+      }
+      if (!s.sha256) return { ok: false, zustand: "ASSET_FINGERPRINT_UNVERIFIED", eintrag };
+    }
   }
 
   /* 3. Das Qualitaetstor. NICHT_ANWENDBAR ist kein Durchfallen - die
@@ -844,6 +862,10 @@ async function handlePublishDecision(candidateId, request, env, options) {
   const antwort = await options.publish({
     contentId: i.payload.contentId,
     imageUrl: i.payload.imageUrl,
+    /* Carousel: alle Slides, im Abdruck enthalten; Einzelbild: fehlt. */
+    imageUrls: Array.isArray(i.payload.imageUrls) && i.payload.imageUrls.length > 1
+      ? i.payload.imageUrls : undefined,
+    assetSlides: i.asset && Array.isArray(i.asset.slides) ? i.asset.slides : undefined,
     caption: i.payload.caption,
     /* Der Abdruck dessen, was der Owner gesehen hat. Der
        Veroeffentlichungspfad holt das Bild gleich selbst und haelt es
