@@ -85,7 +85,16 @@ const CLAIM={home:'Transparenz zuerst.',screener:'Chancen finden.',strategies:'S
  stocks:'Finden. Verstehen. Handeln.',explain:'Keine Blackbox.'};
 function brandBlock(){
  const a=el('a',{href:href('home'),class:'q-brand','aria-label':'Vision Universe Quant · Startseite'},[
-  el('span',{class:'q-over',text:'Vision Universe'}),
+  /* KEIN ZWEITES "VISION UNIVERSE".
+     Seit das Produkt den gemeinsamen Plattform-Kopf traegt (<vu-navigation>,
+     wie Discover und die uebrigen 44 Seiten), steht die Marke dort - als
+     Logo, ganz oben. Eine Zeile mit denselben Worten 100 px darunter war
+     dieselbe Doppelung wie "Chancen finden." und "Strategien verstehen."
+     zuvor: gemessen im ersten Bildschirm, und dort zaehlt jede Zeile.
+
+     Der Produktname BLEIBT: der Bereichsname im gemeinsamen Kopf ist unter
+     1120 px ausgeblendet, auf dem Smartphone saehe man sonst nicht mehr,
+     in welchem Produkt man ist. */
   el('span',{class:'q-word',text:'Quant'}),
   el('span',{class:'q-claim',text:CLAIM[activeSection]||CLAIM.home})]);
  return a;
