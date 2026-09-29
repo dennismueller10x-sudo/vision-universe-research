@@ -196,6 +196,12 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     await page.goto(base+'/discover/#/strategien',{waitUntil:'networkidle'});
     const strategies=page.locator('.v2-main .v2-collection-link');
     assert(await strategies.count()>=19,'Canonical Discover strategies must be listed');
+    for(const rowId of ['sp500-staerkste','djia-staerkste','ndx-staerkste','qualitaet-zum-preis','qualitaet-wachstum']){
+      const image=page.locator('.v2-main .v2-collection-link[href$="/'+rowId+'"] .v2-collection-image');
+      assert.equal(await image.count(),1,'Strategy artwork missing: '+rowId);
+      const src=await image.getAttribute('src');assert(src.endsWith('/'+rowId+'.jpeg'),'Wrong artwork for '+rowId+': '+src);
+      const response=await page.request.get(base+src);assert(response.ok()&&/^image\/jpeg/.test(response.headers()['content-type']||''),'Strategy artwork cannot load: '+src);
+    }
     assert.equal(await page.locator('.v2-theme-grid').count(),0,'Themes must not appear in Strategien');
     assert.equal(await page.locator('.v2-dock a[aria-current=page]').innerText(),'Strategien');
     const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy card overflows mobile viewport');

@@ -49,7 +49,10 @@
     'momentum-leaders':'seit-monaten-im-aufwind', 'breakout-watch':'gerade-in-bewegung',
     'new-52-week-highs':'neue-jahreshochs', 'sector-leaders':'die-staerksten-je-branche',
     'bekannte-namen':'bekannte-namen-in-bewegung', 'market-leaders':'die-staerksten-aktien',
-    'top-10':'momentum-leader', 'megatrends':'megatrends'
+    'top-10':'momentum-leader', 'megatrends':'megatrends',
+    'sp500-staerkste':'sp500-staerkste', 'djia-staerkste':'djia-staerkste',
+    'ndx-staerkste':'ndx-staerkste', 'qualitaet-zum-preis':'qualitaet-zum-preis',
+    'qualitaet-wachstum':'qualitaet-wachstum'
   };
   function perspectiveImage(rowId) { return perspectiveImages[rowId] ? '/assets/discover-perspektiven/' + perspectiveImages[rowId] + '.jpeg' : null; }
   function strategyLink(surface,ctx){
