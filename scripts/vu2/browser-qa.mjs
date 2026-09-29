@@ -342,6 +342,32 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(!explainModuleHeads.length||explainModuleHeads.some(t=>!t.trim().endsWith('?')))throw Error('eine Modulkarte stellt keine Frage: '+explainModuleHeads.join('|'));
   await page.getByText('Keine Kursprognose und kein Kursziel.',{exact:true}).waitFor();
  }
+ if(view==='stocks'){
+  /* EINE SPALTE, DIE AUF JEDER ZEILE DASSELBE SAGT, SAGT NICHTS.
+
+     Gemessen ueber alle 40 Zeilen der Uebersicht, aufgeklappt:
+
+       "Stand 2026-09-28"                            40 von 40
+       "Vollstaendig verbundene Analyse verfuegbar."  36 von 40
+       "Kein Aktienurteil - dieses Papier ist keine Aktie."  4 von 40
+
+     Der Stichtag machte 18 der 24 Zahlen dieser Spalte aus, und der Satz
+     auf 36 Zeilen verdeckte genau die vier, die wirklich etwas mitteilen.
+     Dieselbe Fehlerklasse wie "nur 6 von 7 pruefbar" im Screener: was
+     immer dasteht, wird nicht mehr gelesen.
+
+     Geprueft wird deshalb die REGEL, nicht der heutige Text: kein
+     Nebentext einer Trefferzeile darf auf ALLEN Zeilen derselbe sein. */
+  const zusatz=(await page.locator('.q-hit .q-hit-num span').allInnerTexts()).map(t=>t.trim()).filter(Boolean);
+  if(zusatz.length>1&&new Set(zusatz).size===1)
+   throw Error('der Zusatz "'+zusatz[0]+'" steht auf allen '+zusatz.length+' Zeilen - er gehoert einmal ueber die Liste');
+  const warum=(await page.locator('.q-hit .q-hit-why').allInnerTexts()).map(t=>t.trim()).filter(Boolean);
+  if(warum.length>1&&new Set(warum).size===1)
+   throw Error('"'+warum[0]+'" steht auf allen '+warum.length+' Zeilen mit Text - eine Ausnahme, die nie ausfaellt, ist keine');
+  /* Und der Stichtag muss trotzdem dastehen - einmal, ueber der Liste.
+     Ihn ganz wegzulassen waere nicht Vereinfachung, sondern Verlust. */
+  await page.getByText(/^Kurse: Stand \d{4}-\d{2}-\d{2}$/).waitFor();
+ }
  if(view==='screener'){
   /* DER EINFACHE EINSTIEG ZUERST - er ist jetzt das, was ein Nutzer sieht.
      Sechs Eigenschaften, ein Satz, der die Auswahl vorliest, und bei jedem

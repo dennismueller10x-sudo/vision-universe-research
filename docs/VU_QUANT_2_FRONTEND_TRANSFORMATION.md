@@ -786,3 +786,55 @@ für Seiten, die es noch nicht gibt. Vor dem Einbau über alle 18 gemessen:
 `explain`: „Keine Blackbox." über „Wir zeigen dir, wie wir rechnen").
 Die Prüfung hat also keine Nebenwirkungen — sie hält nur fest, was schon
 gilt.
+
+## 13. Die Aktien-Übersicht: zwei Konstanten, vierzigmal wiederholt
+
+Die Übersicht hatte mit **15,2 Zahlen je 100 Wörtern** die zweithöchste
+Dichte nach dem alten Screener. Vor dem Umbau stand aber die Frage, ob das
+überhaupt ein Defekt ist: **eine hohe Zahlendichte auf einer Kursliste ist
+keiner** — dort sind Zahlen der Inhalt. Also erst gemessen, wo sie sitzen.
+
+Über alle 40 Zeilen, aufgeklappt:
+
+| Spalte | verschiedene Werte |
+|---|---|
+| „Stand 2026-09-28" | **40 × dasselbe** |
+| „Vollständig verbundene Analyse verfügbar." | **36 × dasselbe** |
+| „Kein Aktienurteil — dieses Papier ist keine Aktie." | 4 × (die Ausnahme) |
+
+Von den 24 Zahlen der rechten Spalte waren **18 der immer gleiche
+Stichtag**. Und der Satz auf 36 Zeilen verdeckte genau die vier, die
+wirklich etwas mitteilen.
+
+Das ist dieselbe Fehlerklasse wie „nur 6 von 7 prüfbar" im Screener und
+wie der Wächter, der jede Nacht schrie: **was immer dasteht, wird nicht
+mehr gelesen — und verdeckt das, was nur manchmal dasteht.** Dreimal
+dieselbe Klasse an einem Tag, an drei verschiedenen Stellen.
+
+### Nachher
+
+```
+A     Agilent Technologies, Inc.                              175,21 $
+AA    Alcoa Corp                                               42,25 $
+AAAC  Columbia AAA CLO ETF  Kein Aktienurteil — keine Aktie.   20,11 $
+```
+
+| Aktien-Übersicht | vorher | nachher |
+|---|---|---|
+| Zahlen auf der Seite | 27 | **12** |
+| Zahlen je 100 Wörter | 15,2 | **7,6** |
+| Wörter | 178 | **157** |
+| erste Bildschirmhöhe | 92 | **81** |
+
+Der Stichtag steht **einmal** über der Liste — und zwar nur, wenn alle
+Zeilen denselben tragen. Weicht eine ab, behält sie ihren eigenen; dann
+ist er nämlich eine Auskunft und keine Tapete. Ihn ganz wegzulassen wäre
+kein Fortschritt, sondern Verlust.
+
+### Die Prüfung hält die Regel, nicht den Text
+
+`browser-qa.mjs` bekommt einen `stocks`-Block, der die **Regel** festhält:
+kein Nebentext einer Trefferzeile darf auf *allen* Zeilen derselbe sein —
+und der Stichtag muss trotzdem dastehen, einmal, über der Liste. Ein Test
+auf den heutigen Wortlaut hätte genau diesen Fall gefangen und den
+nächsten nicht.
