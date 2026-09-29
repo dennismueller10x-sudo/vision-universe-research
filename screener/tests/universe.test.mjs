@@ -69,7 +69,9 @@ test('Echtes Universum: Umfang, Trichter und Plausibilitaet', { skip: !existsSyn
   for (const sym of ['TSM', 'BHP', 'LTM', 'TM']) if (ds.indexOf(sym) >= 0) { assert.notEqual(vq(sym), 'OK', sym); assert.equal(ds.value('marketCap', ds.indexOf(sym)), null, sym); assert.equal(ds.value('pe', ds.indexOf(sym)), null, sym); }
   for (const sym of ['NVDA', 'AAPL', 'ADP', 'JPM']) if (ds.indexOf(sym) >= 0) { assert.equal(vq(sym), 'OK', sym); assert.ok(ds.value('marketCap', ds.indexOf(sym)) > 5e10, sym); }
   for (const m of ds.column('marketCap')) if (m !== null) assert.ok(m > 0 && m < 7e12);
-  for (const sym of ['HNGE', 'CHWY', 'TEM']) if (ds.indexOf(sym) >= 0) assert.equal(ds.value('marketCap', ds.indexOf(sym)), null, sym);
+  // Vor dem Discover-Fix zurueckgehalten, danach korrekt berechnet - nie ein Kleinstwert.
+  for (const sym of ['HNGE', 'CHWY']) if (ds.indexOf(sym) >= 0) { const m = ds.value('marketCap', ds.indexOf(sym)); assert.ok(m === null || m > 1e9, sym + ' ' + m); }
+  if (ds.indexOf('TEM') >= 0) assert.equal(ds.value('marketCap', ds.indexOf('TEM')), null);
   const mc = ds.column('marketCap'), dv = ds.column('dollarVolume');
   for (let i = 0; i < ds.size; i++) if (mc[i] !== null && dv[i] !== null) assert.ok(dv[i] / mc[i] <= 1, ds.symbol(i));
   // Quant-Gesamtscore bleibt gesperrt, solange die Publikation es nicht erlaubt

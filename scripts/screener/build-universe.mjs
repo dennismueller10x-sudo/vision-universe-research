@@ -208,7 +208,9 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     const currency = f ? (f.units?.revenue || f.units?.net_income || f.units?.stockholders_equity || f.units?.total_assets || null) : null;
     const foreignFiler = !!f && !f.ttmThrough;
     const currencyOk = !f || currency === 'USD';
-    let mcap = num(f?.valuation?.marketCap?.value) ?? num(fe?.marketCap);
+    // Nur die geprueft berechnete Discover-Bewertung. Kein Rueckgriff auf andere
+    // Quellen: dort standen u. a. 0 $ (Hinge Health) und veraltete Aktienzahlen.
+    let mcap = num(f?.valuation?.marketCap?.value);
     const dollarVolRaw = num(d.qualification?.avgDollarVolume20d);
     let vq = 'OK';
     const turnover = mcap && dollarVolRaw !== null ? dollarVolRaw / mcap : null;
