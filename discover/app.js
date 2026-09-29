@@ -39,7 +39,7 @@
     const paint=()=>{choices.replaceChildren();[['light','Hell'],['dark','Dunkel']].forEach(([mode,label])=>{const b=el('button',{type:'button',text:label,'aria-pressed':String(theme.mode()===mode)});b.onclick=()=>{theme.set(mode);paint();};choices.append(b);});};paint();appearance.append(choices);
     box.append(currency,appearance);root.append(box);
   }
-  const THEME_GROUPS=[['tech','Technologie & Vernetzung'],['health','Gesundheit'],['energy','Energie & Rohstoffe'],['industry','Industrie & Infrastruktur'],['finance','Finanzen & Immobilien'],['consumer','Konsum & Mobilität']];
+  const THEME_GROUPS=[['t','Technologie & Vernetzung'],['h','Gesundheit'],['e','Energie & Rohstoffe'],['i','Industrie & Infrastruktur'],['f','Finanzen & Immobilien'],['c','Konsum & Mobilität']];
   function themeRail(cards,detailCtx,title,rowId){
     if(!cards.length)return null;
     const section=el('section',{class:'v2-theme-stocks v2-world'},[el('div',{class:'v2-world-head'},[el('h2',{text:title})])]);

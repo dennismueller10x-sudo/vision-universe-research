@@ -96,6 +96,23 @@ function discoverSeriesIndex() {
 }
 const THEMES = readJSON(join(root, "discover", "config", "themes.json"));
 
+/* Vollstaendiger Themen-Index je Symbol: jede Themenwelt, in deren
+   Tickerliste ein Titel steht - unabhaengig von seinem Rang. Anders als
+   `memberships` (nur redaktionelle Top-60-Reihen, aus buildMemberships)
+   ist das die vollstaendige, ranglose Zugehoerigkeit: die Grundlage fuer
+   einen spaeteren Filter/Screener nach Themenwelt, der jeden Titel
+   findet und nicht nur die Spitze einer Reihe. */
+const THEME_INDEX = (function () {
+  const map = new Map();
+  for (const t of THEMES.themes || []) {
+    for (const symbol of t.tickers || []) {
+      if (!map.has(symbol)) map.set(symbol, []);
+      map.get(symbol).push({ id: t.id, rowId: "thema-" + t.id, title: t.title, world: t.world || null });
+    }
+  }
+  return map;
+})();
+
 /* Die Reihen: die der Methodik plus eine je Themenwelt. Themenreihen
    entstehen aus derselben Maschine wie alle anderen (buildRow) - mit
    einer Aufnahmeregel, die "steht in der Themenliste" heisst, und einer
@@ -1953,6 +1970,9 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     world: stock.world || null,
     /* Weiter entdecken: wo steht dieser Titel noch, und wer steht ihm nahe? */
     memberships: (memberships && memberships.get(stock.symbol)) || [],
+    /* Themenwelten-Zugehoerigkeit vollstaendig und ranglos (siehe
+       THEME_INDEX oben) - fuer einen Filter/Screener nach Themenwelt. */
+    themes: THEME_INDEX.get(stock.symbol) || [],
     similar: buildSimilar(universe, stock, 8),
     discoverNext: buildNextDiscovery(universe, stock, 8),
     series,
