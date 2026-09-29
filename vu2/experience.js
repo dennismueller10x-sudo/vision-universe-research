@@ -788,20 +788,51 @@ async function aktienPage(){
     dass keine Wand entsteht. Die uebrigen 34 bleiben vollstaendig. */
  const liste=el('div',{class:'q-hitlist'});
  const listeRest=el('div',{class:'q-hitlist'});
- for(const s of universe.stocks.slice(0,40)){
-  liste.append(hitRow(s.ticker,s.name&&s.name!==s.ticker?s.name:'',
-   s.factorState==='UNAVAILABLE'
-    ?(s.factorReason==='NOT_AN_EQUITY_LISTING'?'Kein Aktienurteil — dieses Papier ist keine Aktie.':'Faktorzeile für diesen Titel nicht verfügbar.')
-    :'Vollständig verbundene Analyse verfügbar.',
-   s.price&&Number.isFinite(s.price.value)?n(s.price,2):'',
-   s.price&&s.price.asOf?'Stand '+s.price.asOf:''));
+ const gezeigt=universe.stocks.slice(0,40);
+
+ /* =============================================================
+    ZWEI KONSTANTEN, VIERZIGMAL WIEDERHOLT.
+
+    Ueber alle 40 Zeilen gemessen (aufgeklappt, am gebauten Release):
+
+      "Stand 2026-09-28"                          40 von 40
+      "Vollstaendig verbundene Analyse verfuegbar." 36 von 40
+      "Kein Aktienurteil - dieses Papier ist keine Aktie."  4 von 40
+
+    Der Stichtag war auf jeder Zeile derselbe und machte 18 der 24
+    Zahlen dieser Spalte aus. Der Satz sagte auf 36 Zeilen dasselbe -
+    und genau dadurch fiel die AUSNAHME nicht auf, die einzige Zeile,
+    die wirklich etwas mitteilt: dass dieses Papier keine Aktie ist.
+
+    Dieselbe Fehlerklasse wie "nur 6 von 7 pruefbar" im Screener und wie
+    der Waechter, der jede Nacht schrie: was immer dasteht, wird nicht
+    mehr gelesen - und verdeckt das, was nur manchmal dasteht.
+
+    JETZT: der Stichtag steht EINMAL ueber der Liste, und zwar nur, wenn
+    alle Zeilen denselben tragen. Weicht eine ab, behaelt sie ihren
+    eigenen - dann ist er naemlich eine Auskunft und keine Tapete.
+    Der Normalfall sagt nichts; die Ausnahme steht da. */
+ const staende=new Set();
+ for(const s of gezeigt)if(s.price&&s.price.asOf)staende.add(s.price.asOf);
+ const einStand=staende.size===1?[...staende][0]:null;
+
+ for(const s of gezeigt){
+  const ausnahme=s.factorState==='UNAVAILABLE'
+   ?(s.factorReason==='NOT_AN_EQUITY_LISTING'?'Kein Aktienurteil — dieses Papier ist keine Aktie.':'Faktorzeile für diesen Titel nicht verfügbar.')
+   :'';
+  const eigenerStand=s.price&&s.price.asOf&&s.price.asOf!==einStand?'Stand '+s.price.asOf:'';
+  liste.append(hitRow(s.ticker,s.name&&s.name!==s.ticker?s.name:'',ausnahme,
+   s.price&&Number.isFinite(s.price.value)?n(s.price,2):'',eigenerStand));
  }
  /* Die ersten sechs bleiben in `liste`, alles weitere wandert in `listeRest`. */
  while(liste.children.length>6)listeRest.append(liste.children[6]);
  /* Vierzig Zeilen mit Kurs und Stichtag sind eine Zahlenwand - gemessen
     24,5 Zahlen je 100 Woerter, und das liest sich als "nicht fuer mich".
     Sie bleiben vollstaendig, aber zugeklappt: wer sucht, sucht oben. */
- main.append(card('Oder fang hier an',null,[liste,
+ main.append(card('Oder fang hier an',null,[
+  einStand?el('p',{class:'muted',style:'font-size:13px;margin:0 0 10px',
+   text:'Kurse: Stand '+einStand}):null,
+  liste,
   mehr('Mehr Titel zum Durchsehen',()=>[listeRest,
    el('p',{class:'muted',text:'Keine Rangliste — die Reihenfolge bedeutet nichts.'}),
    link('Alle Zustände im Radar',href('radar'),'button secondary')])]));
