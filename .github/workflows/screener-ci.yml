@@ -1,0 +1,52 @@
+name: Screener Quality Gates
+# Vision Universe Screener (/screener/): Engine-Tests, Universums-Artefakt aus
+# den echten Discover-Daten und Browser-QA auf iPhone, Tablet und Desktop.
+on:
+  pull_request:
+    paths: ['screener/**', 'scripts/screener/**', 'assets/site-navigation.js', 'scripts/vu2/build-release.mjs', '.github/workflows/screener-ci.yml']
+  push:
+    branches: [main]
+    paths: ['screener/**', 'scripts/screener/**', '.github/workflows/screener-ci.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: screener-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  screener:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build screener universe from committed product data
+        run: node scripts/screener/build-universe.mjs
+      - name: Engine, registry and universe tests
+        run: node --test "screener/tests/*.test.mjs" discover/tests/navigation-theme.test.mjs
+      - name: Browser QA dependencies
+        run: |
+          npm install --prefix /tmp/screener-qa-deps --no-audit --no-fund playwright@1.56.1
+          node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/screener-release"
+      - name: Browser QA (390, 430, 820, 1440 · light and dark)
+        env:
+          NODE_PATH: /tmp/screener-qa-deps/node_modules
+        run: |
+          mkdir -p /tmp/screener-evidence
+          test -f "$RUNNER_TEMP/screener-release/screener/data/universe-US_REAL.json"
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/screener-release" > /tmp/screener-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/screener/ > /dev/null && break; sleep 1; done
+          PLAYWRIGHT_PATH=/tmp/screener-qa-deps/node_modules/playwright node scripts/screener/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-evidence
+      - name: Preserve screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screener-browser-evidence
+          path: /tmp/screener-evidence
+          if-no-files-found: warn
