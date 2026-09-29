@@ -146,6 +146,7 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
   }
   let grund = "WEB_KEIN_ICON";
   for (const c of orderCandidates(found, new URL(base).origin).slice(0, 12)) {
+    if (gesperrt(c.href)) { dbg(sym, c.kind, c.href, "gesperrt"); continue; }
     try {
       const { buf } = await holen(c.href, 3 * 1024 * 1024);
       const res = await toPng(buf, sharp, { logo: c.kind === "logo", minIcon: iconOpts.minIcon });
@@ -154,7 +155,7 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
       grund = res.reason;
     } catch (e) { dbg(sym, c.kind, c.href, "Fehler", e.message); }
   }
-  if (inlineSvg) {
+  if (inlineSvg && !gesperrt(base + "#inline-svg-logo")) {
     try {
       const res = await toPng(Buffer.from(inlineSvg), sharp, { logo: true });
       dbg(sym, "inline-svg", res.png ? "OK" : res.reason);
@@ -197,6 +198,11 @@ async function imageinfo(titles) {
 const search = readJson(join(root, "discover", "data", "search", "US_REAL.json"));
 const names = readJson(join(root, "quant", "data", "market", "security-master", "company-names.json"), { rows: [] });
 const exclusions = readJson(join(root, "discover", "config", "logo-exclusions.json"), { symbols: {} }).symbols || {};
+/* Gesperrte BILDER (Unterschriften, Dokumentseiten, Fotos): die Firma
+   bleibt im Spiel, nur dieses Bild nicht (discover/config/logo-rejects.json). */
+const REJECTS = readJson(join(root, "discover", "config", "logo-rejects.json"), { urls: {}, titles: {} });
+const gesperrt = (url) => Boolean(url && (REJECTS.urls || {})[url]);
+const gesperrtTitel = (t) => Boolean(t && (REJECTS.titles || {})[t]);
 const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r.cik || null]));
 const universe = search.entries
   .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
@@ -250,14 +256,29 @@ console.log(`     ${items.size} Items mit Logo, ${matches.size} Titel ueber CIK/
 if (!args["no-name-search"]) {
   const offen = universe.filter((r) => reasons.get(r.symbol) === "KEIN_WIKIDATA_LOGO" && r.name && r.name !== r.symbol).slice(0, LIMIT);
   console.log(`     Namenssuche fuer ${offen.length} Titel …`);
+  /* Suchergebnisse bleiben im Zwischenspeicher (name-search.json): Wikidata
+     bremst bei Tausenden Suchen hintereinander (429), und ein gebremster Lauf
+     verlor sonst alle Namens-Treffer. Gesucht wird nur, was noch fehlt oder
+     aelter als 30 Tage ist; ein Fehler ueberschreibt nie ein gutes Ergebnis. */
+  const cachePfad = join(REAL_OUT, "name-search.json");
+  const nameCache = args["refresh-sites"] ? {} : (readJson(cachePfad, { results: {} }).results || {});
   const treffer = new Map();
+  let gesucht = 0, gebremst = 0;
   for (const [i, r] of offen.entries()) {
-    const url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=en&uselang=en&type=item&limit=7&search=" + encodeURIComponent(searchName(r.name));
-    try { treffer.set(r.symbol, ((await (await http(url)).json()).search || []).map((x) => x.id)); }
-    catch (e) { treffer.set(r.symbol, []); }
+    const q = searchName(r.name), alt = nameCache[r.symbol];
+    if (alt && alt.q === q && Date.now() - Date.parse(alt.at || 0) < 30 * 864e5) { treffer.set(r.symbol, alt.ids); continue; }
+    const url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=en&uselang=en&type=item&limit=7&search=" + encodeURIComponent(q);
+    try {
+      const ids = ((await (await http(url)).json()).search || []).map((x) => x.id);
+      treffer.set(r.symbol, ids);
+      nameCache[r.symbol] = { q, ids, at: new Date().toISOString() };
+      gesucht++;
+    } catch (e) { gebremst++; treffer.set(r.symbol, alt ? alt.ids : []); }
     if (i % 500 === 499) console.log(`     … ${i + 1}`);
-    await sleep(60);
+    await sleep(250);
   }
+  console.log(`     Namenssuche: ${gesucht} neu gesucht, ${offen.length - gesucht - gebremst} aus dem Zwischenspeicher, ${gebremst} gebremst`);
+  if (!ONLY && !Number.isFinite(LIMIT)) writeFileSync(cachePfad, JSON.stringify({ note: "Zwischenspeicher der Wikidata-Namenssuche (Symbol -> Suchbegriff, Item-IDs, Datum).", results: nameCache }) + "\n");
   const ids = [...new Set([...treffer.values()].flat())];
   const entities = new Map();
   for (let i = 0; i < ids.length; i += 50) {
@@ -296,6 +317,7 @@ for (const [sym, m0] of kandidaten) {
   /* Das erste Logo der Firma mit freier Lizenz - aeltere sind Ersatz. */
   let m = m0, info = null, lic = { ok: false, reason: "KEINE_DATEIINFO" };
   for (const title of m0.titles || [m0.title]) {
+    if (gesperrtTitel(title)) { dbg(sym, "Commons", title, "gesperrt"); continue; }
     const i = infos.get(title), l = checkLicense(i);
     dbg(sym, "Commons", title, i ? JSON.stringify(Object.fromEntries(Object.entries(i.extmetadata || {}).map(([k, v]) => [k, String(v.value).slice(0, 80)]))) : "keine Dateiinfo", "->", l.ok ? "frei" : l.reason);
     if (l.ok) { m = { ...m0, title }; info = i; lic = l; break; }
@@ -400,7 +422,7 @@ if (!args["no-web"] && !DRY) {
     await pool(ohne.filter((r) => siteOf.has(r.symbol)), 8, async (r) => {
       const site = siteOf.get(r.symbol);
       const alt = vorher[r.symbol];
-      if (!args["refresh-web"] && alt && alt.source === "WEBSITE" && alt.fmt === FORMAT && alt.host === site.host && alt.path && existsSync(join(OUT, alt.path))) {
+      if (!args["refresh-web"] && alt && alt.source === "WEBSITE" && alt.fmt === FORMAT && alt.host === site.host && !gesperrt(alt.iconUrl) && alt.path && existsSync(join(OUT, alt.path))) {
         icons.set(r.symbol, { hash: alt.sha1, host: site.host, alt });
         return;
       }
@@ -439,7 +461,7 @@ if (!args["no-web"] && !DRY) {
       for (const r of rest) {
         const alt = vorher[r.symbol];
         /* Nur nach der strengen Regel gefundene SEC-Logos werden weiterverwendet (rule). */
-        if (!args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.rule === "logo-hint" && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
+        if (!args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.rule === "logo-hint" && alt.fmt === FORMAT && !gesperrt(alt.iconUrl) && alt.path && existsSync(join(OUT, alt.path))) {
           files[r.symbol] = alt.path; credits[r.symbol] = alt; reasons.delete(r.symbol); stat.ok++; continue;
         }
         try {
@@ -451,6 +473,7 @@ if (!args["no-web"] && !DRY) {
             const bilder = secLogoImages((await secHolen(doc, 3 * 1024 * 1024, secUa)).buf.toString("utf8"), doc, r.name);
             dbg(r.symbol, "SEC-Logo", f.form, doc, bilder.length + " Bild(er)");
             for (const url of bilder) {
+              if (gesperrt(url)) { dbg(r.symbol, "SEC-Logo", url, "gesperrt"); continue; }
               try {
                 const res = await toPng((await secHolen(url, 3 * 1024 * 1024, secUa)).buf, sharp, { logo: true });
                 dbg(r.symbol, "SEC-Logo", url, res.png ? "OK" : res.reason);

@@ -160,6 +160,7 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
   const index = JSON.parse(readFileSync(join(dir, "index.json"), "utf8"));
   const credits = JSON.parse(readFileSync(join(dir, "credits.json"), "utf8")).credits;
   const exclusions = JSON.parse(readFileSync(join(root, "discover", "config", "logo-exclusions.json"), "utf8")).symbols;
+  const rejects = JSON.parse(readFileSync(join(root, "discover", "config", "logo-rejects.json"), "utf8"));
   assert.equal(index.count, Object.keys(index.files).length);
   for (const [sym, path] of Object.entries(index.files)) {
     assert.ok(safeSymbol(sym), sym);
@@ -180,6 +181,7 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
       if (c.attributionRequired) assert.ok(c.author, "Urheber fehlt: " + sym);
     }
     assert.ok(!exclusions[sym], "Ausgeschlossener Titel mit Logo: " + sym);
+    assert.ok(!(rejects.urls || {})[c.iconUrl] && !(rejects.titles || {})[c.title], "Gesperrtes Bild ausgeliefert: " + sym);
   }
   const imOrdner = existsSync(join(dir, "files")) ? readdirSync(join(dir, "files")).filter((f) => !f.startsWith(".")) : [];
   const belegt = new Set(Object.values(index.files).map((p) => p.slice(6)));
