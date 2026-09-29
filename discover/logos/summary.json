@@ -1,47 +1,49 @@
 {
- "generatedAt": "2026-09-29T16:00:52.725Z",
+ "generatedAt": "2026-09-29T17:35:40.085Z",
  "universe": 5980,
- "withLogo": 4366,
- "pct": 73,
- "downloaded": 4218,
- "unchanged": 0,
+ "withLogo": 4272,
+ "pct": 71.4,
+ "downloaded": 526,
+ "unchanged": 3661,
  "bySource": {
-  "WIKIMEDIA_COMMONS": 947,
-  "WEBSITE": 2755,
-  "SEC_FILING": 664
+  "WIKIMEDIA_COMMONS": 1009,
+  "WEBSITE": 2794,
+  "SEC_FILING": 469
  },
  "byVia": {
-  "CIK": 660,
-  "TICKER": 247,
-  "WIKIDATA_CIK": 658,
-  "SEC_CIK": 664,
-  "WIKIDATA_TICKER": 390,
-  "SEC_10K": 1288,
-  "NAME": 40,
-  "WIKIDATA_NAME": 140,
-  "SEC_20F": 234,
+  "CIK": 755,
+  "TICKER": 254,
+  "WIKIDATA_CIK": 668,
+  "WIKIDATA_TICKER": 392,
+  "SEC_10K": 1299,
+  "SEC_20F": 236,
+  "WIKIDATA_NAME": 154,
   "SEC_40F": 31,
   "SEC_F1": 5,
   "SEC_8K": 1,
   "SEC_10Q": 7,
-  "SEC_424B4": 1
+  "SEC_424B4": 1,
+  "SEC_CIK": 469
  },
  "indexCoverage": {
   "SP500": {
    "members": 497,
-   "withLogo": 492,
+   "withLogo": 491,
    "missing": [
+    "CIEN:WEB_KEIN_ICON",
     "CMS:WEB_KEIN_BILD",
     "DOC:WEB_KEIN_ICON",
+    "ESS:WEB_KEIN_ICON",
     "UAL:WEB_ICON_ZU_KLEIN",
-    "WTW:WEB_KEIN_ICON",
-    "ZBRA:WEB_KEIN_ICON"
+    "WTW:WEB_KEIN_ICON"
    ]
   },
   "NDX": {
    "members": 100,
-   "withLogo": 100,
-   "missing": []
+   "withLogo": 99,
+   "missing": [
+    "CCEP:WEB_KEIN_ICON"
+   ]
   },
   "DJIA": {
    "members": 30,
@@ -55,21 +57,25 @@
   }
  },
  "byLicense": {
-  "pd": 861,
-  "cc-by-sa-4.0": 54,
-  "cc-by-sa-3.0": 13,
-  "cc0": 9,
-  "cc-by-4.0": 5,
+  "pd": 920,
+  "cc-by-sa-4.0": 56,
+  "cc-by-sa-3.0": 14,
+  "cc0": 10,
+  "cc-by-4.0": 3,
   "cc-by-3.0": 2,
-  "cc-by-2.0": 3
+  "cc-by-2.0": 3,
+  "apache-2.0": 1
  },
  "excluded": {
-  "KEINE_WEBSITE_BEKANNT": 1210,
-  "WEB_KEIN_ICON": 155,
-  "NAME_ODER_CIK_WIDERSPRICHT": 33,
-  "WEB_ICON_ZU_KLEIN": 110,
-  "WEB_KEIN_BILD": 88,
-  "WEB_ICON_GENERISCH": 23,
-  "MEHRERE_ITEMS": 1
+  "KEINE_WEBSITE_BEKANNT": 1233,
+  "KEIN_WIKIDATA_LOGO": 2270,
+  "WEB_KEIN_BILD": 112,
+  "WEB_KEIN_ICON": 184,
+  "NAME_ODER_CIK_WIDERSPRICHT": 122,
+  "WEB_ICON_ZU_KLEIN": 127,
+  "WEB_ICON_GENERISCH": 25,
+  "MEHRERE_ITEMS": 8,
+  "EINSCHRAENKUNG": 1,
+  "LIZENZ_NICHT_FREI": 4
  }
 }
