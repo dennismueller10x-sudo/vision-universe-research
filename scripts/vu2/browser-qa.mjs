@@ -103,6 +103,24 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  const budget=assessResourceBudget(view,resources);if(budget)resourceBudgets.push({...budget,width});
  if(view==='home'&&resources.some(r=>r.path.includes('/daily/ref_')||r.path.includes('/fixtures/')))throw Error('Home loads raw history or fixtures');
  if(await page.locator('h1').count()!==1)throw Error('missing heading '+view);
+ /* KEINE SEITE WIEDERHOLT DEN ANSPRUCH AUS DER KOPFZEILE ALS UEBERSCHRIFT.
+
+    Zweimal gefunden, an zwei Tagen, auf zwei Seiten:
+      Screener     "Chancen finden."      Kopfzeile bei 50 px, h1 bei 142 px
+      Strategien   "Strategien verstehen." dieselben zwei Stellen
+
+    Dieselben Woerter zweimal, rund 90 px auseinander - und dazwischen
+    nichts. Der Platz kostet auf 390 px den ersten Treffer beziehungsweise
+    die erste vollstaendige Strategiekarte.
+
+    Die Regel steht hier statt im Quelltext einer einzelnen Seite, weil
+    sie fuer ALLE 18 Ansichten gilt, auch fuer die, die es noch nicht
+    gibt. Der Anspruch orientiert, die Ueberschrift benennt die Aufgabe -
+    wer beides gleich schreibt, hat eines davon verschenkt. */
+ const anspruch=(await page.locator('.q-claim').first().innerText().catch(()=>'')).trim();
+ const ueberschrift=(await page.locator('main h1').first().innerText().catch(()=>'')).trim();
+ if(anspruch&&ueberschrift&&anspruch.replace(/[.!?]+$/,'')===ueberschrift.replace(/[.!?]+$/,''))
+  throw Error('"'+ueberschrift+'" steht auf '+view+' zweimal: als Anspruch in der Kopfzeile und als Ueberschrift');
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
  if(overflow)throw Error('page overflow '+view+' '+width);
  if(view==='home'){
