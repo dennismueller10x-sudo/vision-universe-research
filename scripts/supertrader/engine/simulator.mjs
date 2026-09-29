@@ -127,6 +127,7 @@ export function simulate(strategy, ctx, opts = {}) {
         sig.stop = e.stop; sig.stopRuleId = e.stopRuleId; sig.remaining = 1; sig.exits = []; sig.stopHistory = [{ date, stop: round(e.stop), ruleId: e.stopRuleId }];
         if (e.volumeRatio !== undefined) sig.facts.breakoutVolumeRatio = e.volumeRatio;
         if (e.volumeVerified !== undefined) sig.facts.volumeVerified = e.volumeVerified;
+        if (e.quality) sig.quality = e.quality; // Qualitaet wird am Trigger endgueltig
         if (e.nextOpen) {
           transition(sig, 'TRIGGERED', date, e.ruleId, { price: round(bars.close[t]), note: 'Ausführung zur nächsten Eröffnung' });
           sig.order = { kind: 'BUY' };
@@ -157,6 +158,7 @@ export function simulate(strategy, ctx, opts = {}) {
         finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS; continue;
       }
       sig.levels = r.levels; sig.facts = r.facts; sig.rules = r.rules;
+      if (r.quality) sig.quality = r.quality;
       if (r.stage !== sig.state) transition(sig, r.stage, date, r.stage === 'ENTRY_READY' ? 'LC-NEAR-TRIGGER' : 'LC-AWAY-FROM-TRIGGER', { price: round(bars.close[t]) });
       continue;
     }
@@ -172,6 +174,7 @@ export function simulate(strategy, ctx, opts = {}) {
         symbol: ctx.symbol, createdAt: date, state: null, sessions: 0,
         levels: r.levels, facts: r.facts, rules: r.rules, transitions: [], exits: [],
       };
+      if (r.quality) s.quality = r.quality;
       transition(s, r.stage, date, r.stage === 'ENTRY_READY' ? 'LC-NEAR-TRIGGER' : 'LC-SETUP', { price: round(bars.close[t]) });
       state.signal = s;
     }

@@ -77,6 +77,23 @@ Signal append-only im Ledger (`supertrader/data/ledger/<STRATEGY>.json`) protoko
 gelöscht. Der erste Live-Lauf rechnet nicht zurück (`liveSince`). Rangfilter gelten bei der
 Entdeckung (`LC-RANK-AT-DISCOVERY`); ungültig wird ein Setup nur durch Strukturregeln.
 
+### Darvas-Qualitätsstufen A/B (Version 1.1.0)
+
+Innerhalb derselben Setup-Regeln klassifiziert Darvas jedes Setup als A oder B
+(`DAR-Q-*`, alle `VU_FORMALIZATION`, nicht backtest-validiert):
+
+| Kriterium | Regel |
+|---|---|
+| Marktregime | nicht `BROAD_WEAKNESS` (Regime zum Laufzeitpunkt, `market-regime-v1`) |
+| Relative Stärke | 6-Monats-Perzentil ≥ 90 |
+| Enge Box | Boxhöhe ≤ 12 % |
+| Mindestabstand Stop | Boxhöhe ≥ max(4 %, 1 × ADR20) |
+| Volumen am Trigger | Ausbruchstag ≥ 1,5 × 50-Tage-Volumen; vor dem Ausbruch offen, am Trigger endgültig |
+
+Nur A-Setups erscheinen prominent auf der Startseite. B-Setups stehen ausschließlich im
+eigenen Reiter des Signalzentrums und in der Darvas-World. Wartende Setups werden täglich neu
+klassifiziert; ab dem Trigger ist die Stufe eingefroren.
+
 ## 4. Ausgeführter Agent-Graph
 
 | Zustand | Agent / Funktion | Quality Gate | Recovery Path | Ergebnis |

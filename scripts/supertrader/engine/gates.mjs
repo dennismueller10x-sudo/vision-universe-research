@@ -32,7 +32,12 @@ export const REQUIREMENTS = {
 };
 
 export function evaluateGates(variantId, cov, extra = {}) {
-  const needs = REQUIREMENTS[variantId] || [];
+  const needs = REQUIREMENTS[variantId];
+  // Ohne definierte Gates gibt es nie eine Freigabe: "keine Pruefung" ist
+  // nicht "alle Pruefungen bestanden".
+  if (!needs || !needs.length) {
+    return { variantId, status: 'NOT_COMPARABLE', metricsPublishable: false, gates: [], failedGates: ['NO_GATE_DEFINITION'] };
+  }
   const timeframe = extra.timeframe || 'daily';
   const histYears = timeframe === 'weekly' ? cov.weeklyCloseYears : cov.dailyOhlcvYears;
   const volumeYears = cov.dailyOhlcvYears; // Volumen existiert nur mit Tages-OHLCV
