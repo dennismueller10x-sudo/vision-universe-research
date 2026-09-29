@@ -33,6 +33,63 @@ const Fresh = await import(join(ROOT, "scripts/quant/measure-pipeline-freshness.
 
 const REFRESH = join(ROOT, ".github/workflows/market-data-refresh.yml");
 const MATERIALIZE = join(ROOT, ".github/workflows/product-intelligence-materialization.yml");
+const MONITOR = join(ROOT, ".github/workflows/freshness-monitor.yml");
+
+/* ---------------------------------------------------------------------
+   HILFSMITTEL FUER DIE ZEITACHSE DES WAECHTERS
+
+   Gemessen an den echten planmaessigen Laeufen von market-data-refresh:
+   nominal 22:30, tatsaechlich gefeuert 22:40 bis 02:11 UTC (GitHub
+   verzoegert geplante Laeufe), Refresh 90 min, Materialisierung 19 min,
+   Vertrag 2 min. Spaetestes beobachtetes Ende also gegen 03:45 UTC -
+   gut fuenf Stunden nach dem nominalen Start.
+
+   Der Waechter braucht Reserve darauf, sonst misst er mitten in die
+   Kette. SIEBEN STUNDEN ist die Untergrenze, die dieser Test verlangt.
+   --------------------------------------------------------------------- */
+
+const KETTENBUDGET_MINUTEN = 7 * 60;
+
+/** Die `- cron: '...'`-Zeilen eines Workflows, in Reihenfolge. */
+function cronZeilen(yml) {
+  return [...yml.matchAll(/^\s*-\s*cron:\s*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
+}
+
+/** Der `if:`-Block eines Jobs, bis zum naechsten Schluessel auf Job-Ebene. */
+function jobBedingung(yml, job) {
+  const ab = yml.indexOf("\n  " + job + ":");
+  if (ab < 0) return null;
+  const rest = yml.slice(ab);
+  const m = rest.match(/\n    if:\s*>-?\s*\n((?:\s{6}.*\n)+)/);
+  return m ? m[1] : (rest.match(/\n    if:\s*(.*)/) || [null, null])[1];
+}
+
+/** Minute, Stunde und Wochentage eines 5-Feld-Crons (nur `M H * * DOW`). */
+function cronTeile(cron) {
+  const [min, std, dom, mon, dow] = cron.trim().split(/\s+/);
+  assert.equal(dom, "*", "dieser Test versteht nur `M H * * DOW`: " + cron);
+  assert.equal(mon, "*", "dieser Test versteht nur `M H * * DOW`: " + cron);
+  const tage = new Set();
+  for (const teil of dow.split(",")) {
+    if (teil === "*") { for (let d = 0; d < 7; d++) tage.add(d); continue; }
+    const spanne = teil.match(/^(\d)-(\d)$/);
+    if (spanne) { for (let d = +spanne[1]; d <= +spanne[2]; d++) tage.add(d % 7); }
+    else tage.add(+teil % 7);
+  }
+  return { min: +min, std: +std, tage };
+}
+
+/** Alle Feuerzeitpunkte eines Crons in einem Fenster von `tage` Tagen. */
+function feuerzeiten(cron, start, tage = 14) {
+  const { min, std, tage: dow } = cronTeile(cron);
+  const aus = [];
+  for (let i = 0; i < tage; i++) {
+    const t = new Date(Date.UTC(
+      start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate() + i, std, min, 0));
+    if (dow.has(t.getUTCDay())) aus.push(t);
+  }
+  return aus;
+}
 
 /* ---------------------------------------------------------------------
    1. DIE FEHLERKLASSE
@@ -128,6 +185,93 @@ test("die Materialisierung ist aufrufbar und idempotent", () => {
   const bedingt = (yml.match(/if: steps\.noetig\.outputs\.noop != 'true'/g) || []).length;
   assert.ok(bedingt >= 15,
     "nur " + bedingt + " Schritte haengen am No-Op - die Idempotenz greift nicht durch");
+});
+
+/* ---------------------------------------------------------------------
+   3. DER WAECHTER DARF NICHT MITTEN IN DIE KETTE MESSEN
+   --------------------------------------------------------------------- */
+
+test("kein Waechter-Slot liegt im Laufzeitfenster der Kette", () => {
+  /* Der Fehler, den dieser Test vor seinem ersten Feuern gefunden hat:
+     `produktstand` erbte vier Cron-Zeiten des Monitors, und eine davon
+     (23:15) liegt im Laufzeitfenster der Kette, die er ueberwacht. Er
+     haette jede Werktagsnacht P0_DATA_PIPELINE_FROZEN gemeldet, waehrend
+     alles in Ordnung ist - und ein Waechter, der jede Nacht schreit,
+     wird abgeschaltet.
+
+     Dieser Test leitet die Regel her statt sie zu behaupten: er nimmt die
+     Cron-Zeilen, die der Job wirklich annimmt, rechnet fuer jeden
+     Feuerzeitpunkt den erwarteten Stichtag aus und prueft, ob die Kette
+     fuer diesen Stichtag ueberhaupt Zeit hatte, fertig zu werden. */
+
+  const monitor = readFileSync(MONITOR, "utf8");
+  const bedingung = jobBedingung(monitor, "produktstand");
+  assert.ok(bedingung, "der Job `produktstand` hat keine Bedingung mehr");
+
+  /* Welcher Slot ist ausgenommen? Genau die, die die Bedingung
+     ausdruecklich ausschliesst. */
+  const ausgenommen = new Set(
+    [...bedingung.matchAll(/github\.event\.schedule\s*!=\s*'([^']+)'/g)].map((m) => m[1]));
+
+  const angenommen = cronZeilen(monitor).filter((c) => !ausgenommen.has(c));
+  assert.ok(angenommen.length > 0, "der Waechter nimmt keinen Slot mehr an - dann prueft er nie");
+
+  /* Wann startet die Kette? Aus ihrem eigenen Cron, nicht aus einer
+     Annahme. */
+  const kette = cronZeilen(readFileSync(REFRESH, "utf8"));
+  assert.equal(kette.length, 1, "die Kette hat " + kette.length + " Zeitplaene - dieser Test erwartet einen");
+  const kettenStart = cronTeile(kette[0]);
+
+  const verstoesse = [];
+  for (const cron of angenommen) {
+    for (const zeit of feuerzeiten(cron, new Date(Date.UTC(2026, 8, 28)))) {
+      const stichtag = Fresh.letzteSitzung(zeit);
+      if (!stichtag) continue;
+
+      /* Die Kette fuer diesen Stichtag startet am Abend des Stichtags. */
+      const [j, m, t] = stichtag.split("-").map(Number);
+      const start = Date.UTC(j, m - 1, t, kettenStart.std, kettenStart.min, 0);
+      const reserve = (zeit.getTime() - start) / 60000;
+
+      if (reserve < KETTENBUDGET_MINUTEN) {
+        verstoesse.push(
+          cron + " feuert " + zeit.toISOString().slice(0, 16) +
+          " und erwartet den Stichtag " + stichtag + " - die Kette dafuer startet erst " +
+          new Date(start).toISOString().slice(0, 16) +
+          " (" + Math.round(reserve) + " min Reserve, " + KETTENBUDGET_MINUTEN + " verlangt)");
+      }
+    }
+  }
+
+  assert.deepEqual(verstoesse, [],
+    "Waechter-Slots im Laufzeitfenster der Kette:\n  " + verstoesse.join("\n  "));
+});
+
+test("der Waechter prueft ueberhaupt noch, und zwar nach der Kette", () => {
+  /* Die Gegenprobe zum Test oben: man koennte ihn gruen machen, indem man
+     jeden Slot ausnimmt. Dann prueft nie jemand. Mindestens ein
+     angenommener Slot muss nach dem Ende der Kette liegen. */
+  const monitor = readFileSync(MONITOR, "utf8");
+  const bedingung = jobBedingung(monitor, "produktstand");
+  const ausgenommen = new Set(
+    [...bedingung.matchAll(/github\.event\.schedule\s*!=\s*'([^']+)'/g)].map((m) => m[1]));
+  const angenommen = cronZeilen(monitor).filter((c) => !ausgenommen.has(c));
+
+  /* Und der Wochenrhythmus muss halten: jede Handelssitzung braucht
+     danach mindestens eine Pruefung. Die Kette laeuft Mo-Fr; also muss
+     fuer jeden dieser Abende ein Waechter-Slot folgen. */
+  const geprueft = new Set();
+  for (const cron of angenommen) {
+    for (const zeit of feuerzeiten(cron, new Date(Date.UTC(2026, 8, 28)), 10)) {
+      const stichtag = Fresh.letzteSitzung(zeit);
+      if (stichtag) geprueft.add(stichtag);
+    }
+  }
+  assert.ok(geprueft.size >= 5,
+    "nur " + geprueft.size + " Stichtage werden in zehn Tagen ueberhaupt geprueft: " +
+    [...geprueft].join(", "));
+  assert.match(bedingung, /github\.event_name == 'schedule'/,
+    "der Waechter laeuft nicht mehr planmaessig - dann haengt er an einem Menschen");
 });
 
 test("der alte workflow_run-Pfad darf bleiben, aber nichts mehr tragen", () => {
