@@ -452,6 +452,50 @@
     ]);
   }
 
+  /* ------------------------------------- Uebersicht: Im Klartext
+     Owner-Feedback 29.09.2026: unter der Barometer-Karte auf #/maerkte
+     klar aufgeschluesselt, was die heutige Stufe bedeutet und was frueher
+     darauf folgte - die grossen Zahlen, ohne erst tiefer zu tippen. Jede
+     Zahl steht neben dem Schnitt aller Tage, damit keine Stufe besser
+     aussieht, als sie war. */
+  var KLARTEXT = [
+    "Der Markt ist angeschlagen: Trend und Beteiligung sind schwach. Deutliche Rückschläge kamen hier am häufigsten.",
+    "Mehr Gegenwind als Rückenwind: Der Trend ist brüchig, viele Aktien schwächeln.",
+    "Chancen ja, aber nicht auf breiter Front: Der Markt hat Schwung, doch nur ein Teil der Aktien zieht mit.",
+    "Der Markt hat Rückenwind: Trend, Schwung und Beteiligung passen zusammen.",
+    "Breiter Rückenwind: Trend, Schwung und Beteiligung passen – fast alles zieht mit."
+  ];
+  function klartext(p, ev) {
+    var env = p && p.environment;
+    if (!env || !isNum(env.level) || !ev || !ev.levels || ev.levels.length < 3) return null;
+    var j1 = lang(ev, 252), j5 = lang(ev, 1260);
+    var a = j1 && stufeIn(j1.levels, env.level), b = j5 && stufeIn(j5.levels, env.level);
+    if (!a) return null;
+    var alle = j1.all || null, skala = env.scale || [];
+    function kachel(rolle, gross, text, klein) {
+      return el("div", { class: "dx-m3-kt-zahl is-" + rolle }, [el("b", { text: gross }), el("p", { text: text }), klein ? el("small", { text: klein }) : null].filter(Boolean));
+    }
+    var vergleich = !alle ? "" : a.positiveShare - alle.positiveShare >= 4 ? "häufiger als" : a.positiveShare - alle.positiveShare <= -4 ? "seltener als" : "etwa so oft wie";
+    return el("section", { class: "dx-m3-klartext is-l" + env.level, id: "maerkte-klartext", "aria-label": "„" + env.label + "“ auf einen Blick" }, [
+      el("div", { class: "dx-m3-kt-kopf" }, [
+        wetterIcon(env.level),
+        el("div", {}, [el("p", { class: "dx-m3-kt-eyebrow", text: "Im Klartext · Stufe " + (env.level + 1) + " von " + (skala.length || 5) + " · " + WETTER[env.level].wort }),
+          el("h2", { text: "„" + env.label + "“ auf einen Blick" })])
+      ]),
+      el("p", { class: "dx-m3-kt-satz", text: KLARTEXT[env.level] }),
+      el("p", { class: "dx-m3-kt-frage", text: "Wer früher bei „" + env.label + "“ in den US-Aktienmarkt investiert hat – seit " + jahr(ev.from) + ":" }),
+      el("div", { class: "dx-m3-kt-zahlen" }, [
+        kachel("gut", pct(a.positiveShare, 0), "lagen nach 1 Jahr im Plus", alle ? "Schnitt aller Tage: " + pct(alle.positiveShare, 0) : null),
+        kachel("gut", pct(a.medianReturn, 1, true), "typische Rendite nach 1 Jahr", alle ? "Schnitt aller Tage: " + pct(alle.medianReturn, 1, true) : null),
+        b ? kachel("gut", pct(b.medianReturn, 0, true), "typisch nach 5 Jahren", b.positiveShare + " von 100 Fällen im Plus") : null,
+        kachel("warn", pct(a.bad10, 0, true), "in einem schlechten Jahr (1 von 10)", alle ? "Schnitt aller Tage: " + pct(alle.bad10, 0, true) : null)
+      ].filter(Boolean)),
+      el("p", { class: "dx-m3-kt-fazit" }, [el("b", { text: "Kurz gesagt: " }), txt("Bei „" + env.label + "“ lag man nach einem Jahr in " + Math.round(a.positiveShare) + " von 100 Fällen im Plus" +
+        (vergleich ? " – " + vergleich + " im Schnitt aller Tage." : "."))]),
+      el("p", { class: "dx-m3-kt-fuss", text: "US-Gesamtmarkt inklusive Dividenden, " + jahr(ev.from) + " bis " + jahr(ev.to) + ", mit den heutigen Regeln nachgerechnet. Vor Kosten und Steuern. Vergangene Ergebnisse sind kein verlässlicher Hinweis auf künftige Entwicklungen." })
+    ]);
+  }
+
   /* ------------------------------------------------------- Seite */
   function render(p, ev, jetzt, verlauf) {
     var env = p && p.environment;
@@ -472,5 +516,5 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht, zyklusJahr: zyklusJahr, stresstest: stresstest, erholungLive: erholungLive };
+  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht, zyklusJahr: zyklusJahr, stresstest: stresstest, erholungLive: erholungLive, klartext: klartext, KLARTEXT: KLARTEXT };
 })(typeof window !== "undefined" ? window : globalThis);

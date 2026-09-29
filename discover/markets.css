@@ -1585,3 +1585,44 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
   .dv2 .bm-erh-tabelle td:last-child{grid-column:1/-1}
   .dv2 .bm-erh-tabelle td::before{content:attr(data-label);font-size:11.5px;font-weight:700;color:var(--v2-muted)}
 }
+
+/* ================================================================ Markets 4.6
+   Owner-Feedback 29.09.2026: der Knopf zur Erklaerung im Discover-Gruen und
+   deutlicher, vor dem Stresstest-Streifen; darunter "Im Klartext" - was die
+   heutige Stufe bedeutet und was frueher darauf folgte (ui/market-barometer.js
+   klartext), jede Zahl neben dem Schnitt aller Tage. */
+.dv2 .dx-m3-stimmung .dx-m3-st-link{min-height:64px;padding:14px 14px 14px 20px;border-radius:18px;background:#c8f531;color:#10130b;
+  box-shadow:0 10px 26px -12px rgba(122,160,0,.75),inset 0 0 0 1px rgba(16,19,11,.08);transition:transform .15s ease,box-shadow .15s ease}
+.dv2 .dx-m3-stimmung .dx-m3-st-link b{font-size:18px;letter-spacing:-.02em}
+.dv2 .dx-m3-stimmung .dx-m3-st-link-text small{font-size:13.5px;font-weight:650;opacity:.78}
+.dv2 .dx-m3-stimmung .dx-m3-st-link i{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:40px;height:40px;border-radius:50%;
+  background:#10130b;color:#c8f531;font-size:24px;font-weight:700;padding-bottom:3px;box-sizing:border-box}
+.dv2 .dx-m3-stimmung .dx-m3-st-link:hover{transform:translateY(-1px);box-shadow:0 14px 30px -12px rgba(122,160,0,.9),inset 0 0 0 1px rgba(16,19,11,.1)}
+.dv2 .dx-m3-stimmung .dx-m3-st-link:focus-visible{outline:3px solid var(--v2-ink);outline-offset:3px}
+@media(min-width:761px){.dv2 .dx-m3-stimmung .dx-m3-st-link{min-width:360px}}
+@media(prefers-reduced-motion:reduce){.dv2 .dx-m3-stimmung .dx-m3-st-link{transition:none}.dv2 .dx-m3-stimmung .dx-m3-st-link:hover{transform:none}}
+
+.dv2 .dx-m3-klartext{--kt:var(--m3-neutral);display:flex;flex-direction:column;gap:14px;padding:22px;border-radius:24px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .dx-m3-klartext.is-l0{--kt:var(--m3-l0)}.dv2 .dx-m3-klartext.is-l1{--kt:var(--m3-l1)}.dv2 .dx-m3-klartext.is-l2{--kt:var(--m3-l2)}
+.dv2 .dx-m3-klartext.is-l3{--kt:var(--m3-l3)}.dv2 .dx-m3-klartext.is-l4{--kt:var(--m3-l4)}
+.dv2 .dx-m3-kt-kopf{display:flex;align-items:center;gap:12px}
+.dv2 .dx-m3-klartext .bm-wetter{color:#fff;background:color-mix(in srgb,var(--kt) 70%,#000)}
+.dv2 .dx-m3-kt-eyebrow{margin:0 0 2px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--v2-muted)}
+.dv2 .dx-m3-klartext h2{margin:0;font-size:24px;line-height:1.15;letter-spacing:-.03em}
+.dv2 .dx-m3-kt-satz{margin:0;font-size:17px;line-height:1.45;font-weight:600}
+.dv2 .dx-m3-kt-frage{margin:4px 0 0;font-size:14px;font-weight:700;color:var(--v2-muted)}
+.dv2 .dx-m3-kt-zahlen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.dv2 .dx-m3-kt-zahl{display:flex;flex-direction:column;gap:4px;padding:16px;border-radius:18px;background:var(--m3-soft)}
+.dv2 .dx-m3-kt-zahl b{font-size:34px;line-height:1;letter-spacing:-.045em;color:var(--m3-support)}
+.dv2 .dx-m3-kt-zahl.is-warn b{color:var(--m3-headwind)}
+.dv2 .dx-m3-kt-zahl p{margin:4px 0 0;font-size:14px;font-weight:700;line-height:1.3}
+.dv2 .dx-m3-kt-zahl small{font-size:12.5px;color:var(--v2-muted);line-height:1.35}
+.dv2 .dx-m3-kt-fazit{margin:0;padding:14px 16px;border-radius:16px;background:color-mix(in srgb,var(--kt) 12%,transparent);font-size:15px;line-height:1.45}
+.dv2 .dx-m3-kt-fuss{margin:0;font-size:12px;line-height:1.45;color:var(--v2-muted)}
+@media(max-width:760px){
+  .dv2 .dx-m3-klartext{padding:18px 16px}
+  .dv2 .dx-m3-kt-zahlen{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .dv2 .dx-m3-kt-zahl{padding:14px 12px}
+  .dv2 .dx-m3-kt-zahl b{font-size:28px}
+  .dv2 .dx-m3-stimmung .dx-m3-st-link b{font-size:17px}
+}

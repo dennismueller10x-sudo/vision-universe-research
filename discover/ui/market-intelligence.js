@@ -1010,8 +1010,8 @@
           })) : null
         ].filter(Boolean))
       ]),
-      beleg,
       link,
+      beleg,
       el("p", { class: "dx-m3-fuss", text: "Beschreibung nach festen Regeln – keine Prognose, keine Anlageberatung." })
     ].filter(Boolean));
   }
