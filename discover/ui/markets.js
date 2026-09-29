@@ -514,7 +514,7 @@
         el("header", { class: "dx-mk-kopf" }, [el("h1", { class: "dx-mk-titel", text: "Marktbarometer" }),
           el("p", { class: "dx-mk-unter", text: "In 2 Minuten: wo das Barometer steht, was das früher für Anleger hieß – und warum." })])
       ]);
-      var teile = MB && d.puls ? MB.render(d.puls, d.beleg) : null;
+      var teile = MB && d.puls ? MB.render(d.puls, d.beleg, d.jetzt) : null;
       if (teile) teile.forEach(function (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); });
       else seite.appendChild(el("p", { class: "dx-m3-leer", text: "Das Marktbarometer ist gerade nicht verfügbar." }));
       root.appendChild(seite);

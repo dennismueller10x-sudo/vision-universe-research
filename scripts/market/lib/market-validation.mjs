@@ -244,3 +244,87 @@ export function horizonStats(states, outcomes, h, levels) {
   };
   return { days: h, all: desc(rows), levels: levels.map((label, l) => ({ level: l, label, ...desc(rows.filter((r) => r.env === l)) })).filter((x) => x.days > 0) };
 }
+
+/**
+ * Krisen-Check: das Barometer Tag fuer Tag durch einen Absturz.
+ * Hoch und Tief werden in den genannten Suchfenstern aus der Reihe selbst
+ * bestimmt (kein handverlesenes Datum). Gemessen wird, welche Stufe am Hoch
+ * galt, wann zuerst "Vorsichtig" oder "Defensiv" kam, wie weit der Markt da
+ * schon gefallen war und wie viel des Absturzes noch folgte.
+ * @param states pointInTimeStates(...)
+ * @param points [[date, value]] - dieselbe Reihe wie fuer die Zustaende
+ * @param crises [{id, name, peakFrom, peakTo, troughTo}]
+ * @param levels Stufen-Labels
+ */
+export function crisisReplay(states, points, crises, levels) {
+  const lvl = new Map(states.map((s) => [s.date, s.env]));
+  const at = (d) => { const i = points.findIndex((p) => p[0] >= d); return i < 0 ? points.length - 1 : i; };
+  const pct = (a, b) => round(100 * (points[b][1] / points[a][1] - 1), 1);
+  return crises.map((k) => {
+    let ip = at(k.peakFrom);
+    for (let i = at(k.peakFrom); i <= at(k.peakTo); i++) if (points[i][1] > points[ip][1]) ip = i;
+    let it = ip;
+    for (let i = ip; i <= at(k.troughTo); i++) if (points[i][1] < points[it][1]) it = i;
+    const first = (pred) => { for (let i = ip; i <= it; i++) { const l = lvl.get(points[i][0]); if (l !== undefined && l !== null && pred(l)) return i; } return -1; };
+    const iw = first((l) => l <= 1), id = first((l) => l === 0);
+    let ir = -1;
+    for (let i = it; i < Math.min(points.length, it + 1000); i++) { const l = lvl.get(points[i][0]); if (l !== undefined && l !== null && l >= 3) { ir = i; break; } }
+    const lab = (i) => { const l = i >= 0 ? lvl.get(points[i][0]) : undefined; return l === undefined || l === null ? null : levels[l]; };
+    const weg = states.filter((s) => s.date >= points[ip][0] && s.date <= points[it][0]);
+    const punkt = (i) => i < 0 ? null : { date: points[i][0], fallAt: pct(ip, i), restAfter: pct(i, it), tradingDaysAfterPeak: i - ip };
+    return {
+      id: k.id, name: k.name, peak: points[ip][0], trough: points[it][0], fall: pct(ip, it), tradingDays: it - ip,
+      levelAtPeak: lab(ip), levelBefore20: lab(ip - 20), levelBefore60: lab(ip - 60),
+      firstWarning: punkt(iw), firstDefensive: punkt(id),
+      warningShare: weg.length ? round((100 * weg.filter((s) => s.env !== null && s.env <= 1).length) / weg.length, 0) : null,
+      backConstructive: ir < 0 ? null : { date: points[ir][0], riseFromTrough: pct(it, ir) }
+    };
+  });
+}
+
+/* Normalverteilung fuer zweiseitige p-Werte (Abramowitz-Stegun). */
+function normP(z) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp((-z * z) / 2);
+  const q = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return 2 * q;
+}
+
+/**
+ * Kalender-Statistik aus einer Tagesreihe: Kalendermonate, Jahre im
+ * US-Praesidentschaftszyklus (1928 = Wahljahr) und die 12 Monate nach jedem
+ * Monatsende je Zyklusjahr. Monate mit t-Test und Benjamini-Hochberg.
+ */
+export function calendarStats(points) {
+  const me = new Map();
+  for (const [d, v] of points) me.set(d.slice(0, 7), v);
+  const ks = [...me.keys()].sort();
+  const monat = [];
+  for (let i = 1; i < ks.length; i++) monat.push({ ym: ks[i], m: +ks[i].slice(5), r: me.get(ks[i]) / me.get(ks[i - 1]) - 1 });
+  const zyklus = (y) => { const r = (((y - 1928) % 4) + 4) % 4; return r === 0 ? 4 : r; };
+  const desc = (xs) => {
+    if (!xs.length) return { n: 0 };
+    const m = mean(xs), sd = Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / Math.max(1, xs.length - 1));
+    return { n: xs.length, meanReturn: round(100 * m, 2), medianReturn: round(100 * median(xs), 2), positiveShare: round((100 * xs.filter((v) => v > 0).length) / xs.length, 0),
+             t: sd > 0 ? round(m / (sd / Math.sqrt(xs.length)), 2) : null };
+  };
+  const months = Array.from({ length: 12 }, (_, i) => ({ month: i + 1, ...desc(monat.filter((o) => o.m === i + 1).map((o) => o.r)) }));
+  months.forEach((x) => { x.p = x.t === null ? null : round(normP(x.t), 4); });
+  const bh = PR.benjaminiHochberg(months.map((x) => x.p), 0.05);
+  months.forEach((x, i) => { x.significant = !!bh.passing[i]; });
+  const ye = new Map();
+  for (const [d, v] of points) ye.set(+d.slice(0, 4), v);
+  const jahre = [];
+  for (const y of [...ye.keys()].sort()) if (ye.has(y - 1) && (points[points.length - 1][0].slice(0, 4) !== String(y))) jahre.push({ y, r: ye.get(y) / ye.get(y - 1) - 1 });
+  const NAMEN = { 1: "Jahr nach der Wahl", 2: "Midterm-Jahr", 3: "Vorwahljahr", 4: "Wahljahr" };
+  const cycle = [1, 2, 3, 4].map((c) => ({ year: c, label: NAMEN[c], ...desc(jahre.filter((o) => zyklus(o.y) === c).map((o) => o.r)) }));
+  /* 12 Monate nach dem Monatsende (m, Jahr y) bis zum Monatsende (m, y+1). */
+  const vor = [];
+  for (const k of ks) { const y = +k.slice(0, 4), m = k.slice(5); const z = (y + 1) + "-" + m; if (me.has(z)) vor.push({ y, m: +m, r: me.get(z) / me.get(k) - 1 }); }
+  const forward12 = {
+    byMonth: Array.from({ length: 12 }, (_, i) => ({ month: i + 1, ...desc(vor.filter((o) => o.m === i + 1).map((o) => o.r)) })),
+    byCycleMonth: [1, 2, 3, 4].flatMap((c) => Array.from({ length: 12 }, (_, i) => ({ cycleYear: c, month: i + 1,
+      ...desc(vor.filter((o) => o.m === i + 1 && zyklus(o.y) === c).map((o) => o.r)) })))
+  };
+  return { from: ks[0], to: ks[ks.length - 1], electionReference: "1928 = Wahljahr (US-Präsidentschaftswahl alle vier Jahre)", months, cycle, forward12 };
+}

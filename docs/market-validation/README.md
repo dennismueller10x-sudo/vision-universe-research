@@ -104,6 +104,20 @@ langfristig lag man in jeder Stufe meist im Plus; die Stufe zeigt vor allem,
 wie tief es zwischendurch fallen kann. Alle Details liegen auf
 `#/maerkte/einordnung/details`.
 
+Seit 29.09.2026 außerdem auf derselben Seite:
+
+- **Krisen-Check** („Hätte das Barometer gewarnt?“, `crisisReplay`): sieben
+  große Abstürze seit 1929, Hoch und Tief aus der Reihe bestimmt. Ergebnis:
+  Das Barometer erkannte alle sieben – im Schnitt nach rund −6 % Minus;
+  danach fiel der Markt im Schnitt noch rund −44 %. Am Hoch selbst stand es
+  meist auf „Konstruktiv“ (Ausnahme Dotcom 2000: schon „Vorsichtig“). Es ist
+  kein Frühwarnsystem für den ersten Tag, sehr schnelle Crashs (1987, 2020)
+  fängt es nur teilweise ab, und nach dem Tief wird es spät wieder konstruktiv.
+- **Kalender-Kontext** (`calendarStats`), ausdrücklich kein Teil des
+  Barometers: Kalendermonate mit t-Test und Benjamini-Hochberg,
+  US-Präsidentschaftszyklus (1928 = Wahljahr) und die 12 Monate nach jedem
+  Monatsende je Zyklusjahr – mit Fallzahlen (rund 24 je Zyklusjahr).
+
 Regeln der Darstellung (durch Tests und Browser-QA abgesichert):
 
 - Kernaussage ist das Rückschlag-Risiko je Stufe, mit markierter heutiger Stufe.

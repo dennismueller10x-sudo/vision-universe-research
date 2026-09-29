@@ -96,3 +96,30 @@ test("horizonStats: Median, Anteil im Plus, schlechtes und gutes Zehntel je Stuf
   assert.equal(s.all.days, 100);
   assert.equal(s.levels[0].independent, 5);
 });
+
+test("crisisReplay: Hoch, Tief, erste Warnung und Rest des Absturzes aus der Reihe selbst", async () => {
+  const { crisisReplay } = await import("../../scripts/market/lib/market-validation.mjs");
+  const pts = [], states = [];
+  for (let i = 0; i < 40; i++) { const v = i <= 10 ? 100 + i : i <= 30 ? 110 - (i - 10) * 2.5 : 60 + (i - 30); pts.push([day(i), v]); states.push({ date: day(i), env: i < 14 ? 3 : i < 35 ? 0 : 3 }); }
+  const [k] = crisisReplay(states, pts, [{ id: "x", name: "X", peakFrom: day(0), peakTo: day(15), troughTo: day(35) }], ["D", "V", "S", "K", "B"]);
+  assert.equal(k.peak, day(10));
+  assert.equal(k.trough, day(30));
+  assert.equal(k.fall, round2(100 * (60 / 110 - 1)));
+  assert.equal(k.levelAtPeak, "K");
+  assert.equal(k.firstWarning.date, day(14));
+  assert.equal(k.firstWarning.restAfter, round2(100 * (60 / 100 - 1)));
+  assert.equal(k.backConstructive.date, day(35));
+});
+function round2(x) { return Math.round(x * 10) / 10; }
+
+test("calendarStats: Monate, Zyklusjahre (1928 = Wahljahr), 12 Monate danach", async () => {
+  const { calendarStats } = await import("../../scripts/market/lib/market-validation.mjs");
+  const pts = [];
+  let v = 100;
+  for (let y = 1927; y <= 1940; y++) for (let m = 1; m <= 12; m++) { v *= m === 9 ? 0.98 : 1.01; pts.push([`${y}-${String(m).padStart(2, "0")}-15`, v]); }
+  const c = calendarStats(pts);
+  assert.ok(c.months[8].meanReturn < 0, "September negativ");
+  assert.equal(c.months[8].positiveShare, 0);
+  assert.equal(c.cycle.find((x) => x.year === 4).label, "Wahljahr");
+  assert.ok(c.forward12.byCycleMonth.find((x) => x.cycleYear === 2 && x.month === 9).n >= 3);
+});
