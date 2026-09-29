@@ -341,5 +341,5 @@ writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   excluded: grundZaehler
 }, null, 1) + "\n");
 
-console.log(`Fertig: ${Object.keys(files).length}/${universe.length} Titel mit Logo (${geladen} neu, ${behalten} unveraendert).`);
+console.log(`Fertig: ${Object.keys(files).length}/${universe.length} Titel mit Logo (Commons ${geladen} neu/${behalten} unveraendert, Website ${webNeu} neu/${webBehalten} unveraendert).`);
 console.log("Ausgeschlossen:", JSON.stringify(grundZaehler));
