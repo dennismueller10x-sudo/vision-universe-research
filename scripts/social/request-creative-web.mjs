@@ -178,112 +178,114 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     attemptReason: erzwungenerAnlauf ? ATTEMPT_REASON : undefined,
     hookType: "web_story_grounded_de",
     hookStrategyId: "vu-web-story-grounded-de-v1",
+    /* =====================================================================
+       OWNER-DIREKTIVE "CREATIVE QUALITY RESET" (29.09.): der reale Post
+       "50.000 DOLLAR FUER EIN AUTO?" (vu-web-4e4d3aaef2a999a2-20260926,
+       geliefert NACH dem visualStyle-Fix aus PR #256) erfuellte jede
+       formale Regel dieses Briefs und war trotzdem kreativ schlecht -
+       generisches Auto auf Preisschild, Hook ohne Aussage, Atlas wirkt
+       aufgesetzt. Der Befund war nicht die Technik, sondern dass dieser
+       Brief ChatGPT Work zu stark mikromanagt hat: ein erzwungener
+       Universalstil (Flat-Comic-Poster), eine starre Farbwelt, starre
+       Layout-Zonen (Atlas <=20% Breite, Logo oben links, Headline im
+       oberen Drittel) und eine Hook, die mechanisch aus einem bereits
+       algorithmisch vorgewaehlten Titel-Fragment UEBERSETZT statt aus
+       der Story selbst ENTWICKELT wurde. Ab hier gilt: ChatGPT Work ist
+       Creative Director, Social Editor und Visual Designer fuer diesen
+       Post - nicht nur Bildgenerator. Pflicht bleibt ausschliesslich, was
+       Grounding, Marke, Sprache, Format und Endergebnis-Qualitaet
+       betrifft; die konkrete kreative Loesung (Bildidee, Hook-Formulierung,
+       Komposition, Stil) liegt beim Agenten. ===================== */
     hookInstruction:
-      "`grounding_hook_en` ist der aus der echten Quelle deterministisch gewaehlte Hook " +
-      "(siehe `source_story`) — NICHT auf Deutsch, nur Belegmaterial. Liefere GENAU EINE " +
-      "Hook-Variante: eine starke, kurze, soziale DEUTSCHE Uebersetzung/Adaption dieses " +
-      "Hooks. Dieselbe Kernaussage, dieselben Zahlen und Fakten aus `evidence`, keine " +
-      "neuen Behauptungen, keine Prognose. Alle sichtbaren Woerter auf Deutsch — " +
-      "Ausnahmen nur fuer Eigennamen, Ticker und Markennamen (Owner-Direktive " +
-      "WEB-FIRST + FULL-POST-GENERATION, 24.09., §5.1/§5.2). " +
-      /* DIE UNVERDICHTETE UEBERSETZUNG (gefunden 27.09., real geliefert bei
-         vu-web-32193db04816a8b3-20260926): `grounding_hook_en` ist manchmal
-         der volle, deskriptive Original-Titel (z.B. "From $6 eggs to $50,000
-         cars, these charts show how inflation has defined the past 5 years"),
-         wenn die Hook-Auswahl keinen kuerzeren Kandidaten findet. Der Agent
-         hat das bisher nahezu woertlich uebersetzt statt zu verdichten - eine
-         "Uebersetzung/Adaption" wurde als reine Uebersetzung gelesen. Das
-         Ergebnis ist im Bild ein dichter, beschreibender Satz statt eines
-         Hooks, der einen Scroll stoppt. */
-      "WICHTIG: ist `grounding_hook_en` lang oder beschreibend (mehr als etwa 8-10 Woerter, " +
-      "oder ein vollstaendiger, mehrteiliger Satz), UEBERSETZE NICHT WOERTLICH. Verdichte " +
-      "stattdessen auf den EINEN staerksten Kern dieser Aussage — die schaerfste Zahl, den " +
-      "schaerfsten Kontrast oder die schaerfste Spannung darin — und formuliere daraus einen " +
-      "kurzen, eigenstaendigen deutschen Satz (idealerweise unter 8 Woertern), der fuer sich " +
-      "allein auf einen Blick verstaendlich ist. Kein Nebensatz, keine Aufzaehlung von zwei " +
-      "Vergleichspunkten in einem Satz (z.B. nicht 'Von X bis Y: so Z') — waehle EINEN Punkt, " +
-      "nicht die ganze Aufzaehlung des Originaltitels.",
+      "`grounding_hook_en` ist NICHT die zu uebersetzende Hook, sondern nur EIN " +
+      "Signal unter mehreren - der Web-Research-Hook-Wettbewerb hat ihn algorithmisch " +
+      "vorausgewaehlt, nicht redaktionell. Massgeblich sind `source_story` (Titel, " +
+      "Beschreibung, Link) und `evidence` (die geprueften Fakten) als Grounding.\n\n" +
+      "Deine Aufgabe, wie ein menschlicher Creative Director: verstehe zuerst selbst, " +
+      "was an dieser Story wirklich passiert ist, warum sie fuer einen deutschen " +
+      "Anleger interessant ist, was daran ueberraschend ist und welche Konsequenz " +
+      "oder Spannung darin steckt. Entwickle DARAUS deine eigene, eigenstaendige " +
+      "deutsche Hook - nicht als Uebersetzung von `grounding_hook_en` oder des " +
+      "Original-Titels, sondern als deine redaktionelle Verdichtung der Story auf " +
+      "den einen staerksten Punkt.\n\n" +
+      "VERBOTENES DENKMUSTER: 'Artikel enthaelt eine grosse Zahl -> Hook = diese " +
+      "Zahl als Frage verpackt' (Beispiel, das NICHT wiederholt werden soll: " +
+      "'50.000 Dollar fuer ein Auto?' - eine isolierte Zahl ohne die eigentliche " +
+      "Geschichte dahinter). Eine Zahl darf die Hook staerken, ersetzt aber nie die " +
+      "Story.\n\n" +
+      "Qualitaetsmassstab: kurz, sofort verstaendlich, macht neugierig, enthaelt " +
+      "eine echte Aussage (keine woertliche Bandwurm-Uebersetzung des " +
+      "Originaltitels), erzeugt emotionale oder intellektuelle Spannung, ist fuer " +
+      "Anleger relevant, funktioniert auf einem Smartphone auf einen Blick. Die " +
+      "Hook-Art waehlst du frei - starke Aussage, ueberraschende Zahl, Widerspruch, " +
+      "Konsequenz, Frage, Warnsignal, historische Einordnung, ueberraschender " +
+      "Vergleich, starke Beobachtung - kein festes Template wird erzwungen.\n\n" +
+      "Nicht akzeptabel: interne Scores oder Screener-Sprache, technische " +
+      "Systemformulierungen, ein unveraendert uebernommener englischer Quelltitel, " +
+      "ein Satz, der zwei Vergleichspunkte in einer Aufzaehlung nennt statt EINEN " +
+      "klaren Punkt zu setzen (z.B. nicht 'Von X bis Y: so Z'). Alle sichtbaren " +
+      "Woerter Deutsch - Ausnahmen nur fuer Eigennamen, Ticker und Markennamen. " +
+      "Jede Zahl und jede Tatsache ausschliesslich aus `evidence`/`source_story` - " +
+      "nichts erfinden, keine Prognose.",
     visualStrategy: auswahl.motiv.strategy,
-    visualInstruction: auswahl.motiv.instruction,
-    /* DIE FARBWELT (Owner-Direktive "GENERATIVES VOLLBILD, COMIC-STIL",
-       26.09., dritte Iteration): die erste Fassung ("premium dark
-       editorial") lieferte ein photorealistisches KI-Stockfoto — Fed-
-       Gebaeude, Flaggen, Banknote, ein kleiner Roboter in der Ecke. Der
-       Owner hat es gegen ein echtes virales Beispiel (plakative Comic-/
-       Claymation-Anzeige, uebergrosser ausdrucksstarker Charakter,
-       riesige Typo, kaum Hintergrundablenkung) gehalten und geurteilt:
-       "damit gehen wir unter". Die zweite Fassung traf den Stil (schwarze
-       Flaeche, grosser Mint-Pfeil, dominante Typo) — aber "Atlas als
-       grosse, praesente Figur" wurde vom Modell als "Atlas fuellt den
-       Grossteil des Bildes" gelesen: der Owner hat das gemessen und mit
-       10-20% der Bildflaeche beziffert. Diese Fassung uebernimmt den
-       getroffenen Stil unveraendert und zieht ausschliesslich Atlas'
-       Groesse zurueck, auf ein kleines begleitendes Element vergleichbar
-       mit dem Logo. Weiterhin OHNE Atlas/Logo selbst umzuzeichnen (§12/
-       §18 in social/engines/brand.js verbieten das ausdruecklich —
-       erlaubt sind nur crop/scale/reframe/compose, keine Stiltrans-
-       formation der Figur oder des Zeichens selbst). */
-    palette: ["near-black #050505 background as a bold FLAT color field (not a " +
-      "photographic scene)", "one confident teal/mint accent close to #5FE0C0 used as a " +
-      "LARGE flat shape or color block (a poster panel, not a thin highlight)", "white for " +
-      "the headline text, set at poster scale", "soft grey for secondary text only"],
-    /* DER BEFUND, DER DIESEN STIL NIE VERLIESS (gefunden 27.09., real
-       geliefert bei vu-web-32193db04816a8b3-20260926 und dem erzwungenen
-       Anlauf 2 von vu-web-4e4d3aaef2a999a2-20260926): buildAgentBrief()
-       (chatgpt-work/adapter.js) liest das Feld unter dem Schluessel
-       `visualStyle`, nicht `style` — dieser Aufruf schickte seit der
-       ersten "GENERATIVES VOLLBILD, COMIC-STIL"-Fassung (26.09.) den
-       Stiltext unter dem falschen Schluessel. `options.style` existiert
-       im Adapter nicht; jeder bisherige Lauf fiel deshalb still auf den
-       Adapter-Default zurueck: "premium cinematic 3D technology
-       visualization" — GENAU der photorealistische, kinoreife Stil, den
-       der Owner von Anfang an ablehnte. Kein einziges der bisherigen
-       Comic-Stil-Worte hat den Agenten je erreicht. */
-    visualStyle: "bold flat graphic poster style — think premium app marketing ad or comic-panel " +
-      "ad, NOT a photorealistic scene and NOT a moody cinematic render. High-contrast flat " +
-      "color blocking, one single strong graphic idea instead of a busy realistic scene " +
-      "with many literal props (no detailed buildings, no crowds of flags, no photoreal " +
-      "objects laid out on a desk). Oversized, chunky, confident sans-serif headline " +
-      "typography as a PRIMARY graphic element filling a large share of the frame — not a " +
-      "small caption competing with a detailed background. Energetic, punchy, made to stop " +
-      "a scroll, not to look like a stock photo or a finance-news thumbnail.",
-    /* -------------------------------------------------------------------
-       VOLLBILD STATT FREIFLAECHE (Owner-Direktive "GENERATIVES VOLLBILD",
-       26.09.): vorher liess dieser Schritt fuer Logo/Atlas/Hook-Text drei
-       leere Zonen frei, die Stufe B (render-asset.mjs) danach IMMER
-       deterministisch fuellte. Der Owner hat das Ergebnis gesehen und es
-       als "Bild plus draufgeklebter Text" abgelehnt — Stufe B entfaellt
-       jetzt fuer diesen Pfad vollstaendig (siehe manual-now-web-candidate.
-       mjs), der Agent komponiert das FERTIGE Bild selbst: Motiv, Hook-Text
-       und Markenzeichen in einem Zug, damit es als EIN Entwurf wirkt statt
-       als zwei uebereinandergelegte Schichten. ----------------------- */
-    visualComposition: "portrait 4:5, edge-to-edge — no letterboxing, no black bars, the " +
-      "flat color field fills the entire frame. Compose ONE finished, publish-ready brand " +
-      "post — not a raw scene for later text overlay. Bake the German headline text (see " +
-      "hook_strategy) directly into the image as OVERSIZED, bold, perfectly legible " +
-      "typography that dominates roughly a third of the frame (upper band), set against " +
-      "the flat color field, not over busy detail. The headline typography and the " +
-      "supporting graphic motif (a shape, a symbol, an arrow, a gesture — one clear idea, " +
-      "never a cluttered realistic scene) are the MAIN visual content and together occupy " +
-      "most of the frame. Composite the exact brand mascot file (see brand_assets.atlas) " +
-      "as a SMALL supporting presence only. Concretely: Atlas's rendered width must be NO " +
-      "MORE than one-fifth (20%) of the full frame width, and he must be cropped to roughly " +
-      "head-and-shoulders or a small half-figure — never full body, never leaning on or " +
-      "framing the main motif, never positioned so he reads as one of the two or three main " +
-      "subjects of the poster. If in doubt, render him smaller, not larger: two real " +
-      "deliveries already rendered him too large despite this instruction, so treat 20% " +
-      "width as a hard ceiling, not a target to fill. He is a small signature cameo, sized " +
-      "like the logo, not a dominant foreground figure. It must never compete with the " +
-      "headline or the main motif for attention, and never occupy the visual center of the " +
-      "composition. Composite the " +
-      "exact brand logo file (see brand_assets.logo) small and quiet, top-left corner, as " +
-      "a signature, not a design element. The result must read as ONE cohesive, " +
-      "intentionally designed brand poster — logo and mascot reproduced exactly as given " +
-      "(only scaled/cropped/reframed per their brand contract), never redrawn or restyled " +
-      "into a different art style, and never enlarged into the main subject of the image.",
+    /* `auswahl.motiv.instruction` (Themenwelt-Motivkatalog) wird hier BEWUSST NICHT
+       mehr als Bildanweisung uebergeben: sie ist ein Oberbegriff-Motiv je Branche
+       ("Automobil-Fertigungslinie" fuer Auto-Stories, "Serverreihen" fuer
+       KI-Stories) - genau das Denkmuster, das Section 6 der Owner-Direktive als
+       Fehler benennt. Die visuelle Idee soll aus der KONKRETEN Story entstehen,
+       nicht aus der Branchen-Schublade. */
+    visualInstruction:
+      "Entwickle deine eigene visuelle Idee aus der Story selbst (`source_story`, " +
+      "`evidence`) - nicht aus dem Branchen-Oberbegriff. Eine Auto-Story ist nicht " +
+      "automatisch ein generisches Auto auf einem Preisschild, eine KI-Story nicht " +
+      "automatisch blau leuchtende Server, eine Zins-Story nicht automatisch ein " +
+      "Trading-Floor-Klischee. Finde die visuelle Metapher, die GENAU DIESE " +
+      "Geschichte transportiert, keine austauschbare Branchen-Illustration. " +
+      "Testfrage vor der Ausgabe: 'Wenn ich den Text entferne - erzaehlt das Bild " +
+      "trotzdem noch diese Geschichte?' Wenn nein, verwirf das Motiv und entwickle " +
+      "ein spezifischeres.",
+    palette: [
+      "Deine Wahl, passend zur Story und zum Ton dieses Posts - keine vorgeschriebene " +
+        "Farbwelt fuer jeden Post.",
+      "Vision Universe wirkt insgesamt hochwertig, redaktionell/editorial und " +
+        "markensicher - vermeide grelle Stock-Werbefarben ohne Bezug zur Story.",
+      "Eine dunkle, praemium Grundstimmung passt oft gut, ist aber keine Pflicht, " +
+        "wenn die Story eine andere Bildsprache verlangt."
+    ],
+    visualStyle:
+      "Kein vorgeschriebener Universalstil. Du entscheidest den Stil, der zu DIESER " +
+      "Story am besten passt - solange das Ergebnis hochwertig, redaktionell wirkt " +
+      "und wie aus einem Guss komponiert ist, kein Stockfoto und kein Finanz-News-" +
+      "Thumbnail. Zwei Negativbeispiele, die beide real vom Owner abgelehnt wurden " +
+      "und nicht wiederholt werden sollen: (1) photorealistisches, kinoreifes " +
+      "3D-Rendering mit generischen Requisiten (Gebaeude, Flaggen, Banknoten) - " +
+      "wirkt wie ein KI-Stockfoto, keine echte Bildidee; (2) ein zwanghaft immer " +
+      "gleicher flacher Comic-/Vektor-Poster-Stil mit generischem Motiv - formal " +
+      "korrekt, aber kreativ austauschbar und ohne echte Story. Beides ist eine " +
+      "Klischeefalle, kein Zielstil. Der Zielstil ist eine bewusste, zur Story " +
+      "passende kreative Entscheidung, kein wiederholtes Rezept.",
+    visualComposition:
+      "Portrait 4:5, randfuellend - komponiere EIN fertiges, veroeffentlichungsreifes " +
+      "Markenbild, kein Rohbild fuer eine spaetere Ueberlagerung. Baue die deutsche " +
+      "Hook direkt als Teil der Komposition ein (nicht als separat wirkende " +
+      "Kopfzeile) - kurz, gross genug um auf einem Smartphone sofort lesbar zu sein, " +
+      "aber die genaue Groesse, Position und Typografie liegen in deiner " +
+      "gestalterischen Verantwortung, nicht in einer vorgegebenen Zone. Motiv, Hook " +
+      "und Markenzeichen sollen wie EIN durchdachtes Design wirken, nicht wie " +
+      "uebereinandergelegte Schichten.\n\n" +
+      "Brand-Elemente: komponiere die exakte Vision-Universe-Logo-Datei (siehe " +
+      "brand_assets.logo) und den exakten Atlas (siehe brand_assets.atlas) " +
+      "unveraendert (nur skaliert/zugeschnitten/neu positioniert, nie neu gezeichnet " +
+      "oder umstilisiert) so in die Komposition, dass sie natuerlich wirken und die " +
+      "Bildidee nicht dominieren oder verdraengen - als wiedererkennbares " +
+      "Markenzeichen und kleine, vertrauenswuerdige Praesenz, nicht als Hauptfigur " +
+      "des Bildes. Eine bevorzugte, aber keine starre Pixel-Position: die " +
+      "Gesamtkomposition hat Vorrang vor blindem Pixelgehorsam.",
     restrictions: ["Keine Kurse im Bild", "Keine Renditezahlen", "Kein Wasserzeichen",
       "Keine Prognose-Aussage im Bildtext", "Logo und Atlas exakt aus den " +
-      "angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren"],
+      "angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren",
+      "Kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer " +
+      "Boersenticker"],
     brandAssets: {
       logo: Brand.LOGO_ASSET_PATH || "assets/vision-universe-logo.png",
       atlas: Brand.ATLAS_ASSET_PATH,
@@ -320,12 +322,21 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     },
     requireBrandElementsAnnounced: true,
     width: 1080, height: 1350,
-    objective: "Aus einer aktuellen, oeffentlich recherchierten Story EINEN fertigen, " +
-      "veroeffentlichungsreifen Markenpost erzeugen: Motiv, deutscher Hook-Text, Logo und " +
-      "Atlas in einem Zug komponiert — kein Diagramm, kein Dashboard, kein Bildschirmfoto, " +
-      "kein generischer Boersenticker, und kein Rohbild fuer eine spaetere Ueberlagerung. " +
-      "Hook und Caption durchgehend auf Deutsch (Owner-Direktive WEB-FIRST + " +
-      "FULL-POST-GENERATION, 24.09., §5.1).",
+    objective: "Du bist Creative Director fuer Vision Universe. Erstelle aus der " +
+      "folgenden aktuellen, oeffentlich recherchierten Finanz-/Boersenstory " +
+      "eigenstaendig einen hochwertigen deutschen Social-Media-Post im Format 4:5. " +
+      "Analysiere zuerst selbst: was ist die eigentliche Geschichte, warum ist sie " +
+      "fuer Anleger interessant, was ist der staerkste Social Hook, welche visuelle " +
+      "Idee erzaehlt diese Geschichte am besten? Entwickle daraus EIN vollstaendiges, " +
+      "fertiges Creative: Motiv, deutscher Hook-Text, Logo und Atlas in einem Zug " +
+      "komponiert — kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein " +
+      "generischer Boersenticker, kein Template, keine Datenkarte, und kein Rohbild " +
+      "fuer eine spaetere Ueberlagerung. Nutze `evidence` und `source_story` " +
+      "ausschliesslich als Grounding — erfinde keine Zahlen oder Tatsachen. Du hast " +
+      "ausdrueckliche kreative Freiheit bei Bildidee, Perspektive, Komposition, " +
+      "Typografie, visueller Metapher und Stil. Hook und Caption durchgehend auf " +
+      "Deutsch. Ziel: ein Post, bei dem ein deutscher Anleger im Feed stoppt und " +
+      "verstehen will, was hinter der Story steckt.",
     audience: "Anleger, die aktuelle Marktentwicklungen verfolgen"
   });
   agentBrief.grounding_hook_en = auswahl.hook;
@@ -338,7 +349,39 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   agentBrief.evidence_package = { package_id: contentId, as_of: auswahl.story.publishedAt,
     methodology_version: "web-research-1.0", data_version: "web-research-1.0" };
   agentBrief.source_story = { title: auswahl.story.title, link: auswahl.story.link,
-    source: auswahl.story.source, publishedAt: auswahl.story.publishedAt };
+    description: auswahl.story.description || null, source: auswahl.story.source,
+    publishedAt: auswahl.story.publishedAt };
+
+  /* DIE QUALITAETSPRUEFUNG VOR AUSLIEFERUNG (Owner-Direktive "CREATIVE QUALITY
+     RESET", 29.09., §12) — woertlich als Selbstpruefung an den Agenten
+     weitergegeben, statt nur intern beim Owner im Approval Center zu leben. */
+  agentBrief.self_check_before_delivery = [
+    "Versteht ein deutscher Nutzer die Hook sofort?",
+    "Erzaehlt die Hook die eigentliche Story — nicht nur eine isolierte Zahl?",
+    "Passt das Motiv wirklich zu dieser konkreten Story?",
+    "Wirken Bild, Text, Atlas und Logo wie EIN Design?",
+    "Sieht das Ergebnis nach hochwertigem Finanz-/Editorial-Content aus?",
+    "Wuerde dieses Creative zwischen professionellen Finanz-/Tech-Posts im Feed bestehen?",
+    "Ist irgendeine Zahl oder Aussage erfunden?",
+    "Ist die sichtbare Sprache durchgehend Deutsch?"
+  ];
+
+  /* DIE NEGATIVREFERENZ (§11): dokumentiert, nicht als Stilvorlage zum
+     Nachahmen, sondern als Qualitaetsschwelle, die zu ueberbieten ist. */
+  agentBrief.negative_reference = {
+    example_content_id: "vu-web-4e4d3aaef2a999a2-20260926",
+    example_hook: "50.000 DOLLAR FUER EIN AUTO?",
+    why_rejected: [
+      "Hook ohne eigentliche Aussage, nur eine isolierte Zahl aus dem Titel",
+      "generisches Auto auf einem Preisschild statt einer story-eigenen Bildidee",
+      "billige, zwanghaft flache Vektor-/Comic-Anmutung",
+      "Atlas wirkt aufgesetzt statt natuerlich integriert",
+      "Motiv erzaehlt keine konkrete Story",
+      "kein hochwertiges Vision-Universe-Premiumgefuehl"
+    ],
+    note: "Nicht pixelgenau vermeiden, sondern das Qualitaetsniveau uebertreffen: " +
+      "eine echte, story-eigene kreative Entscheidung statt eines austauschbaren Templates."
+  };
 
   const inhalt = JSON.stringify(agentBrief, null, 2) + "\n";
   const sha = ChatGptWork.blobSha(inhalt);
