@@ -543,7 +543,7 @@ Object.defineProperty(window,'VUProductServices',{configurable:true,set(service)
 }});
 `;
  await route.fulfill({response,body:injected+await response.text()});});
- await page.goto(origin+'/vu2/?view=home');await page.getByRole('heading',{name:'Ansicht derzeit nicht verfügbar',exact:true}).waitFor();if(await page.locator('h1').count()!==1||await page.locator('a.row').count())throw Error('failed render retained partial content');await page.screenshot({path:out+'/render-recovery-'+width+'.png',fullPage:true});await page.unroute(serviceRoute);await page.getByRole('link',{name:'Erneut versuchen',exact:true}).click();await page.getByRole('heading',{name:'Der Einstieg in bessere Aktienentscheidungen.',exact:true}).waitFor();checks.push({view:'render-failure-recovery',width,pass:true});
+ await page.goto(origin+'/vu2/?view=home');await page.getByRole('heading',{name:'Ansicht derzeit nicht verfügbar',exact:true}).waitFor();if(await page.locator('h1').count()!==1||await page.locator('a.row').count())throw Error('failed render retained partial content');await page.screenshot({path:out+'/render-recovery-'+width+'.png',fullPage:true});await page.unroute(serviceRoute);await page.getByRole('link',{name:'Erneut versuchen',exact:true}).click();await page.getByRole('heading',{name:'Aktien verstehen, ohne Vorwissen.',exact:true}).waitFor();checks.push({view:'render-failure-recovery',width,pass:true});
  await page.goto(origin+'/vu2/?view=stock&ticker=NVDA');await page.locator('main footer').waitFor();
  /* Die Aktienanalyse gehoert zum Bereich AKTIEN und markiert ihn.
     Vorher stand hier 'Research' - den Bereich gibt es in der
