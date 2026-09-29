@@ -19,6 +19,15 @@ name: Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)
 
 on:
   workflow_dispatch:
+    inputs:
+      only:
+        description: 'Diagnose: nur diese Ticker (kommagetrennt), schreibt nichts'
+        type: string
+        default: ''
+      refresh:
+        description: 'Website-Icons und -Adressen neu holen statt Zwischenspeicher'
+        type: boolean
+        default: false
   schedule:
     - cron: '17 4 * * 1'
   push:
@@ -51,12 +60,23 @@ jobs:
       - name: Logos (Commons mit freier Lizenz, sonst Website-Icon)
         env:
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
-        run: node scripts/discover/build-company-logos.mjs
+          ONLY: ${{ github.event.inputs.only }}
+          REFRESH: ${{ github.event.inputs.refresh }}
+        run: |
+          ARGS=""
+          if [ -n "$ONLY" ]; then
+            if ! [[ "$ONLY" =~ ^[A-Za-z0-9.,-]+$ ]]; then echo "Ungueltige Ticker-Liste"; exit 1; fi
+            ARGS="--only=$ONLY"
+          fi
+          if [ "$REFRESH" = "true" ]; then ARGS="$ARGS --refresh-web --refresh-sites"; fi
+          node scripts/discover/build-company-logos.mjs $ARGS
 
       - name: Pruefung (Zuordnung, Lizenzen, jede Datei belegt)
+        if: ${{ !github.event.inputs.only }}
         run: node --test discover/tests/company-logos.test.mjs
 
       - name: Commit und Push
+        if: ${{ !github.event.inputs.only }}
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "bot@visionuniverse.de"

@@ -6,7 +6,8 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  normalizeSite, parseIconLinks, parseManifest, orderCandidates, sniff, icoLargestPng, genericIcons, toPng
+  normalizeSite, parseIconLinks, parseManifest, orderCandidates, sniff, icoLargestPng, genericIcons, toPng,
+  inlineLogoSvg, websiteFromFiling, filingText, latestReport, rootDomain
 } from "../../scripts/discover/company-logos-web.mjs";
 import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
@@ -234,10 +235,10 @@ test("Website: Icons aus dem HTML, bestes zuerst, Standardpfade am Ende", () => 
   assert.equal(manifest, "https://x.com/site.webmanifest");
   assert.ok(!icons.some((i) => /safari/.test(i.href)));
   const order = orderCandidates(icons.concat(parseManifest({ icons: [{ src: "/m512.png", sizes: "512x512" }, { src: "/mono.png", sizes: "512x512", purpose: "monochrome" }] }, "https://x.com/")), "https://x.com");
-  assert.deepEqual(order.map((c) => c.href), [
-    "https://x.com/m512.png", "https://cdn.x.com/i192.png", "https://x.com/apple.png",
-    "https://x.com/favicon-32.png", "https://x.com/apple-touch-icon.png", "https://x.com/favicon.ico"
-  ]);
+  const hrefs = order.map((c) => c.href);
+  assert.deepEqual(hrefs.slice(0, 4), ["https://x.com/m512.png", "https://cdn.x.com/i192.png", "https://x.com/apple.png", "https://x.com/apple-touch-icon.png"]);
+  assert.ok(hrefs.indexOf("https://x.com/favicon-32.png") > hrefs.indexOf("https://x.com/favicon.svg"));
+  assert.equal(hrefs[hrefs.length - 1], "https://x.com/favicon.ico");
 });
 
 function pngBytes(w, h) {
@@ -282,4 +283,35 @@ test("Website: Umwandlung in ein kleines PNG (falls sharp installiert ist)", asy
   const ausSvg = await toPng(svg, sharp);
   assert.equal((await sharp(ausSvg.png).metadata()).format, "png");
   assert.equal((await toPng(Buffer.from("<html>nein</html>"), sharp)).reason, "WEB_KEIN_BILD");
+});
+
+test("Website: Logo aus dem Seitenkopf, wenn kein grosses Icon da ist", () => {
+  const html = `<header><a class="brand"><img src="/assets/nvidia-logo-horz.svg" alt="NVIDIA"></a>
+    <img src="/img/partner-logo-acme.png" class="partner-logo"></header>
+    <link rel="icon" href="/favicon.ico">`;
+  const { icons } = parseIconLinks(html, "https://www.nvidia.com/");
+  const logos = icons.filter((i) => i.kind === "logo").map((i) => i.href);
+  assert.deepEqual(logos, ["https://www.nvidia.com/assets/nvidia-logo-horz.svg"]);
+  const order = orderCandidates(icons, "https://www.nvidia.com").map((c) => c.href);
+  assert.ok(order.indexOf("https://www.nvidia.com/assets/nvidia-logo-horz.svg") < order.indexOf("https://www.nvidia.com/favicon.ico"));
+  const svg = inlineLogoSvg('<a class="site-logo" href="/">' + '<svg viewBox="0 0 100 20"><path d="' + "M0 0L1 1".repeat(40) + '"/></svg></a>');
+  assert.match(svg, /^<svg xmlns="http:\/\/www.w3.org\/2000\/svg"/);
+  assert.equal(inlineLogoSvg('<svg class="icon-cart"><path d="M0 0"/></svg>'), null);
+});
+
+test("SEC: Website aus 'our website' im Bericht, fremde Adressen zaehlen nicht", () => {
+  const text = filingText(`<p>Our website address is <a href="https://www.nvidia.com">www.nvidia.com</a>. Information on
+    our website is not incorporated. Reports are available at www.sec.gov. See www.fasb.org for standards.
+    Our transfer agent is Computershare (www.computershare.com).</p>`);
+  assert.equal(websiteFromFiling(text, "NVIDIA Corp"), "nvidia.com");
+  assert.equal(websiteFromFiling("Visit www.acme.com today. The SEC maintains www.sec.gov.", "Acme"), null);
+  assert.equal(websiteFromFiling("We make our reports available free of charge on our website at investors.acmebio.com.", "Acme Bio"), "acmebio.com");
+  assert.equal(rootDomain("ir.example.co.uk"), "example.co.uk");
+  assert.equal(rootDomain("www.fedex.com"), "fedex.com");
+});
+
+test("SEC: juengster Jahresbericht vor Quartalsbericht", () => {
+  const recent = { form: ["8-K", "10-Q", "10-K", "10-Q"], accessionNumber: ["a", "b", "c", "d"], primaryDocument: ["x.htm", "q.htm", "k.htm", "q2.htm"] };
+  assert.deepEqual(latestReport(recent), { form: "10-K", accession: "c", document: "k.htm" });
+  assert.equal(latestReport(null), null);
 });

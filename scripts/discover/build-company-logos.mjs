@@ -3,7 +3,8 @@
  * Firmenlogos fuer Discover - zwei Quellen in fester Reihenfolge.
  *
  *   node scripts/discover/build-company-logos.mjs [--limit=N] [--dry-run]
- *        [--no-name-search] [--no-web] [--refresh-web]
+ *        [--no-name-search] [--no-web] [--refresh-web] [--refresh-sites]
+ *        [--only=NVDA,PYPL --debug]   Diagnose einzelner Titel, schreibt nichts
  *
  * 1. Wikimedia Commons: Logo ueber Wikidata, nur mit freier Lizenz
  *    (Regeln: scripts/discover/company-logos-lib.mjs).
@@ -22,12 +23,14 @@
  * Titel in discover/config/logo-exclusions.json bekommen nie ein Logo -
  * dort landet, was ein Rechteinhaber entfernt haben moechte.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync, mkdtempSync } from "node:fs";
 import { join, dirname } from "node:path";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import {
-  normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons
+  normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons,
+  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
@@ -35,14 +38,19 @@ import {
 } from "./company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const OUT = join(root, "discover", "logos");
-const FILES = join(OUT, "files");
+const REAL_OUT = join(root, "discover", "logos");
 const args = Object.fromEntries(process.argv.slice(2).map((a) => {
   const [k, v] = a.replace(/^--/, "").split("=");
   return [k, v === undefined ? true : v];
 }));
 const LIMIT = args.limit ? Number(args.limit) : Infinity;
 const DRY = Boolean(args["dry-run"]);
+const ONLY = args.only ? new Set(String(args.only).toUpperCase().split(",").map((x) => x.trim()).filter(Boolean)) : null;
+const DEBUG = Boolean(args.debug) || Boolean(ONLY);
+const dbg = (...a) => { if (DEBUG) console.log("  [diag]", ...a); };
+/* Diagnose schreibt in einen Wegwerf-Ordner, nie ins Repository. */
+const OUT = ONLY ? mkdtempSync(join(tmpdir(), "logos-diag-")) : REAL_OUT;
+const FILES = join(OUT, "files");
 
 const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : fallback);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -67,38 +75,81 @@ async function pool(list, n, fn) {
   }));
 }
 
-async function holen(url, max) {
-  const res = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(12000),
-    headers: { "User-Agent": USER_AGENT, Accept: "text/html,image/*,*/*;q=0.8" } });
+/**
+ * Laedt hoechstens max Bytes (liest den Rest nicht - ein Jahresbericht kann
+ * 20 MB haben, die Website steht vorn). Mit truncate=false ist mehr ein Fehler.
+ */
+async function holen(url, max, { ua = WEB_USER_AGENT, truncate = false, accept = "text/html,image/*,*/*;q=0.8" } = {}) {
+  const res = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(15000),
+    headers: { "User-Agent": ua, Accept: accept, "Accept-Language": "en-US,en;q=0.8" } });
   if (!res.ok) throw new Error(String(res.status));
   const len = Number(res.headers.get("content-length") || 0);
-  if (len > max) throw new Error("ZU_GROSS");
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.length > max) throw new Error("ZU_GROSS");
-  return { buf, url: res.url || url };
+  if (len > max && !truncate) throw new Error("ZU_GROSS");
+  const teile = [];
+  let n = 0;
+  const reader = res.body.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    teile.push(value); n += value.length;
+    if (n > max) {
+      try { await reader.cancel(); } catch (e) { /* egal */ }
+      if (!truncate) throw new Error("ZU_GROSS");
+      break;
+    }
+  }
+  return { buf: Buffer.concat(teile.map((t) => Buffer.from(t))), url: res.url || url };
+}
+
+/* SEC: hoechstens ~8 Anfragen je Sekunde (Grenze der SEC: 10), eine nach der anderen. */
+let secLetzte = 0;
+async function secHolen(url, max, ua) {
+  const warte = secLetzte + 130 - Date.now();
+  if (warte > 0) await sleep(warte);
+  secLetzte = Date.now();
+  return holen(url, max, { ua, truncate: true, accept: "application/json,text/html,*/*" });
 }
 
 /** Das beste Icon einer Website als verkleinertes PNG, oder {reason}. */
-async function webIcon(site, sharp) {
-  let found = [], base = site.url;
+async function webIcon(site, sharp, sym) {
+  let found = [], base = site.url, inlineSvg = null;
+  /* Startseite, bei Fehler dieselbe Adresse mit bzw. ohne "www." */
+  const varianten = [site.url];
   try {
-    const seite = await holen(site.url, 3 * 1024 * 1024);
-    base = seite.url;
-    const { icons, manifest } = parseIconLinks(seite.buf.toString("utf8"), base);
-    found = icons;
-    if (manifest) {
-      try { found = found.concat(parseManifest(JSON.parse((await holen(manifest, 512 * 1024)).buf.toString("utf8")), manifest)); }
-      catch (e) { /* ohne Manifest */ }
-    }
-  } catch (e) { /* Startseite nicht erreichbar - Standardpfade versuchen */ }
-  let grund = "WEB_KEIN_ICON";
-  for (const c of orderCandidates(found, new URL(base).origin).slice(0, 6)) {
+    const u = new URL(site.url);
+    u.hostname = u.hostname.startsWith("www.") ? u.hostname.slice(4) : "www." + u.hostname;
+    varianten.push(u.href);
+  } catch (e) { /* nur die eine */ }
+  for (const url of varianten) {
     try {
-      const { buf } = await holen(c.href, 2 * 1024 * 1024);
-      const res = await toPng(buf, sharp);
+      const seite = await holen(url, 3 * 1024 * 1024, { truncate: true });
+      base = seite.url;
+      const r = parseIconLinks(seite.buf.toString("utf8"), base);
+      found = r.icons; inlineSvg = r.inlineSvg;
+      dbg(sym, "Startseite", base, found.length + " Kandidaten", inlineSvg ? "+ Inline-SVG" : "");
+      if (r.manifest) {
+        try { found = found.concat(parseManifest(JSON.parse((await holen(r.manifest, 512 * 1024)).buf.toString("utf8")), r.manifest)); }
+        catch (e) { dbg(sym, "Manifest", r.manifest, e.message); }
+      }
+      break;
+    } catch (e) { dbg(sym, "Startseite", url, "Fehler", e.message); }
+  }
+  let grund = "WEB_KEIN_ICON";
+  for (const c of orderCandidates(found, new URL(base).origin).slice(0, 12)) {
+    try {
+      const { buf } = await holen(c.href, 3 * 1024 * 1024);
+      const res = await toPng(buf, sharp, { logo: c.kind === "logo" });
+      dbg(sym, c.kind, c.href, res.png ? "OK" : res.reason);
       if (res.png) return { png: res.png, iconUrl: c.href };
       grund = res.reason;
-    } catch (e) { /* naechster Kandidat */ }
+    } catch (e) { dbg(sym, c.kind, c.href, "Fehler", e.message); }
+  }
+  if (inlineSvg) {
+    try {
+      const res = await toPng(Buffer.from(inlineSvg), sharp, { logo: true });
+      dbg(sym, "inline-svg", res.png ? "OK" : res.reason);
+      if (res.png) return { png: res.png, iconUrl: base + "#inline-svg-logo" };
+    } catch (e) { dbg(sym, "inline-svg", "Fehler", e.message); }
   }
   return { reason: grund };
 }
@@ -138,7 +189,7 @@ const names = readJson(join(root, "quant", "data", "market", "security-master", 
 const exclusions = readJson(join(root, "discover", "config", "logo-exclusions.json"), { symbols: {} }).symbols || {};
 const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r.cik || null]));
 const universe = search.entries
-  .filter((e) => safeSymbol(e.s) && !exclusions[e.s])
+  .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
   .map((e) => ({ symbol: e.s, name: e.n || e.s, cik: cikOf.get(e.s) || null }));
 console.log(`Discover-Universum: ${universe.length} Titel (${Object.keys(exclusions).length} ausgeschlossen)`);
 
@@ -187,7 +238,7 @@ const infos = await imageinfo([...new Set(kandidaten.flatMap(([, m]) => m.titles
 
 /* ------------------------------------------------------------ Download */
 console.log("3/3  Verkleinerte Fassungen laden …");
-const vorher = readJson(join(OUT, "credits.json"), { credits: {} }).credits || {};
+const vorher = ONLY ? {} : (readJson(join(REAL_OUT, "credits.json"), { credits: {} }).credits || {});
 const files = {}, credits = {};
 if (!DRY) mkdirSync(FILES, { recursive: true });
 let geladen = 0, behalten = 0, frei = 0;
@@ -196,6 +247,7 @@ for (const [sym, m0] of kandidaten) {
   let m = m0, info = null, lic = { ok: false, reason: "KEINE_DATEIINFO" };
   for (const title of m0.titles || [m0.title]) {
     const i = infos.get(title), l = checkLicense(i);
+    dbg(sym, "Commons", title, i ? JSON.stringify(Object.fromEntries(Object.entries(i.extmetadata || {}).map(([k, v]) => [k, String(v.value).slice(0, 80)]))) : "keine Dateiinfo", "->", l.ok ? "frei" : l.reason);
     if (l.ok) { m = { ...m0, title }; info = i; lic = l; break; }
     if (lic.reason === "KEINE_DATEIINFO") lic = l;
   }
@@ -232,7 +284,7 @@ for (const [sym, m0] of kandidaten) {
 }
 
 /* ------------------------------------------------ Zweite Quelle: Website */
-let webNeu = 0, webBehalten = 0;
+let webNeu = 0, webBehalten = 0, webSites = null;
 if (!args["no-web"] && !DRY) {
   let sharp = null;
   try { sharp = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Website-Icons entfallen."); }
@@ -250,22 +302,43 @@ if (!args["no-web"] && !DRY) {
       const site = quelle && (quelle.sites || []).map(normalizeSite).find(Boolean);
       if (site) siteOf.set(r.symbol, { ...site, via: "WIKIDATA_" + quelle.via });
     }
+    /* Gefundene Adressen bleiben im Zwischenspeicher - die SEC muss nicht
+       jede Woche 3000 Berichte liefern. */
+    const cache = args["refresh-sites"] ? {} : (readJson(join(REAL_OUT, "sites.json"), { sites: {} }).sites || {});
+    for (const r of ohne) {
+      if (siteOf.has(r.symbol) || !cache[r.symbol]) continue;
+      const site = normalizeSite(cache[r.symbol].url);
+      if (site) siteOf.set(r.symbol, { ...site, via: cache[r.symbol].via });
+    }
     const secUa = process.env.SEC_USER_AGENT;
     if (secUa) {
       const offen = ohne.filter((r) => !siteOf.has(r.symbol) && r.cik);
-      console.log(`     SEC-Stammdaten fuer ${offen.length} Titel …`);
-      await pool(offen, 4, async (r) => {
+      console.log(`     SEC fuer ${offen.length} Titel (Stammdaten, sonst Jahresbericht) …`);
+      const stat = { stamm: 0, bericht: 0, fehler: 0, ohne: 0 };
+      let i = 0;
+      for (const r of offen) {
         try {
-          const res = await fetch("https://data.sec.gov/submissions/CIK" + String(r.cik).padStart(10, "0") + ".json",
-            { headers: { "User-Agent": secUa }, signal: AbortSignal.timeout(15000) });
-          if (res.ok) {
-            const site = normalizeSite((await res.json()).website);
-            if (site) siteOf.set(r.symbol, { ...site, via: "SEC_CIK" });
-          }
-        } catch (e) { /* ohne Website */ }
-        await sleep(300);
-      });
-    }
+          const cik = String(Number(r.cik));
+          const sub = JSON.parse((await secHolen("https://data.sec.gov/submissions/CIK" + cik.padStart(10, "0") + ".json", 8 * 1024 * 1024, secUa)).buf.toString("utf8"));
+          let site = normalizeSite(sub.website) || normalizeSite(sub.investorWebsite);
+          let via = "SEC_STAMMDATEN";
+          if (!site) {
+            const rep = latestReport(sub.filings && sub.filings.recent);
+            if (rep) {
+              const url = "https://www.sec.gov/Archives/edgar/data/" + cik + "/" + rep.accession.replace(/-/g, "") + "/" + rep.document;
+              const dom = websiteFromFiling(filingText((await secHolen(url, 4 * 1024 * 1024, secUa)).buf.toString("utf8")), r.name);
+              dbg(r.symbol, "SEC", rep.form, url, "->", dom || "keine Adresse");
+              site = dom ? normalizeSite("https://www." + dom) : null;
+              via = "SEC_" + rep.form.replace(/\W/g, "");
+            }
+          } else dbg(r.symbol, "SEC-Stammdaten", site.url);
+          if (site) { siteOf.set(r.symbol, { ...site, via }); stat[via === "SEC_STAMMDATEN" ? "stamm" : "bericht"]++; }
+          else stat.ohne++;
+        } catch (e) { stat.fehler++; dbg(r.symbol, "SEC Fehler", e.message); }
+        if (++i % 250 === 0) console.log(`     … ${i} (${JSON.stringify(stat)})`);
+      }
+      console.log(`     SEC: ${JSON.stringify(stat)}`);
+    } else console.log("     SEC_USER_AGENT fehlt - keine SEC-Adressen.");
     console.log(`     ${siteOf.size} von ${ohne.length} Titeln mit offizieller Website`);
 
     const icons = new Map();
@@ -276,7 +349,7 @@ if (!args["no-web"] && !DRY) {
         icons.set(r.symbol, { hash: alt.sha1, host: site.host, alt });
         return;
       }
-      const res = await webIcon(site, sharp);
+      const res = await webIcon(site, sharp, r.symbol);
       if (res.png) icons.set(r.symbol, { hash: createHash("sha1").update(res.png).digest("hex"), host: site.host, png: res.png, iconUrl: res.iconUrl, site });
       else reasons.set(r.symbol, res.reason);
     });
@@ -294,6 +367,8 @@ if (!args["no-web"] && !DRY) {
       webNeu++;
     }
     console.log(`     Website-Icons: ${webNeu} neu, ${webBehalten} unveraendert, ${generisch.size} generisch verworfen`);
+    for (const r of ohne) if (!siteOf.has(r.symbol) && reasons.get(r.symbol) === "KEIN_WIKIDATA_LOGO") reasons.set(r.symbol, "KEINE_WEBSITE_BEKANNT");
+    webSites = Object.fromEntries([...siteOf].map(([sym, st]) => [sym, { url: st.url, via: st.via }]));
   }
 }
 
@@ -304,6 +379,10 @@ if (DRY) {
 
 /* Dateien, die zu keinem Titel mehr gehoeren, verschwinden - aber nur nach
    einem vollstaendigen Lauf, nie nach einem begrenzten. */
+if (ONLY) {
+  for (const sym of ONLY) console.log(`  [diag] ${sym}: ${files[sym] ? "LOGO " + (credits[sym] && credits[sym].source) + " " + ((credits[sym] && (credits[sym].iconUrl || credits[sym].title)) || "") : "OHNE LOGO - " + (reasons.get(sym) || "?")}`);
+  console.log("Diagnose (--only): nichts geschrieben."); process.exit(0);
+}
 if (Number.isFinite(LIMIT)) { console.log("Begrenzter Lauf (--limit): nichts geschrieben."); process.exit(0); }
 const behaltenePfade = new Set(Object.values(files).map((p) => p.slice("files/".length)));
 for (const f of readdirSync(FILES)) if (!f.startsWith(".") && !behaltenePfade.has(f)) rmSync(join(FILES, f));
@@ -323,6 +402,10 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify({
 }) + "\n");
 writeFileSync(join(OUT, "credits.json"), JSON.stringify({
   version: "company-logos-1.0.0", generatedAt, credits: sortiert(credits)
+}, null, 1) + "\n");
+if (webSites) writeFileSync(join(OUT, "sites.json"), JSON.stringify({
+  generatedAt, note: "Offizielle Websites (Wikidata P856 oder SEC: Stammdaten bzw. 'our website' im juengsten Bericht). Zwischenspeicher fuer die Website-Icons.",
+  sites: sortiert(webSites)
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "missing.json"), JSON.stringify({
   generatedAt,
