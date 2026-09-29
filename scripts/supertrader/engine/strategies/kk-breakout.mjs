@@ -40,12 +40,13 @@ function liquid(ctx, t, p) {
   return Number.isFinite(c) && c >= p.minPrice && Number.isFinite(dv) && dv >= p.minDollarVolume && Number.isFinite(adr) && adr >= p.minAdr;
 }
 
-export function scan(ctx, t, p = PARAMS) {
+export function scan(ctx, t, p = PARAMS, opts = {}) {
   const { bars, ind, cross } = ctx;
   if (t < 70 || !liquid(ctx, t, p)) return null;
   const pcts = [cross.mom21?.[t], cross.mom63?.[t], cross.mom126?.[t]].filter(Number.isFinite);
   const bestPct = pcts.length ? Math.max(...pcts) : null;
   const rules = { 'KK-BO-MOM-01': bestPct !== null && bestPct >= p.momentumPercentile };
+  if (!rules['KK-BO-MOM-01'] && opts.pending?.rules?.['KK-BO-MOM-01']) rules['KK-BO-MOM-01'] = true; // LC-RANK-AT-DISCOVERY
   if (!rules['KK-BO-MOM-01']) return null;
   const facts = { momentumPercentile: bestPct, adr20: ind.adr20[t] };
 

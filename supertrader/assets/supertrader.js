@@ -363,7 +363,7 @@
     rulesSec.id = 'regeln'; main.appendChild(rulesSec);
 
     // Historie
-    var histSec = section('Vollständige Signalhistorie', 'Nichts wird gelöscht', [st ? historyTable(st.closed.concat(st.invalidated), s) : empty('Noch keine Historie', 'Diese Strategie erzeugt noch keine Signale.')]);
+    var histSec = section('Vollständige Signalhistorie', 'Nichts wird gelöscht', st ? [historyTable(st.closed.concat(st.invalidated), s), h('p', { class: 'st-note', style: { 'margin-top': '8px' } }, ['Alle ' + st.closed.length + ' abgeschlossenen Signale sind oben aufgeführt; von ' + st.invalidatedTotal + ' ungültig gewordenen Setups die jüngsten ' + st.invalidated.length + '. Das vollständige, maschinenlesbare Protokoll: ', h('a', { href: st.ledgerPath, text: 'Ledger (JSON)' })])] : [empty('Noch keine Historie', 'Diese Strategie erzeugt noch keine Signale.')]);
     histSec.id = 'historie'; main.appendChild(histSec);
 
     var srcSec = section('Quellen und Methodik', null, [sourcesBlock(s, srcMap)]);

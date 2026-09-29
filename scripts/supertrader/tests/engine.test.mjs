@@ -83,7 +83,7 @@ function darvasRows({ gapOpen = null, crash = false } = {}) {
 
 function ctxOf(rows) {
   const bars = barsFrom(rows);
-  return { symbol: 'TEST', bars, ind: computeIndicators(bars), cross: {} };
+  return { symbol: 'TEST', bars, ind: computeIndicators(bars), cross: { mom126: new Array(rows.length).fill(90) } };
 }
 
 test('Darvas-Box: Oberkante und Unterkante werden kausal erkannt', () => {

@@ -22,7 +22,7 @@ test('Gate B: jede Regel hat ID, Klartext, Maschinenfassung, Parameter, Quelle, 
     assert.equal(r.strategy_version, s.strategy_version, `${r.rule_id} Version`);
     assert.ok(r.source_reference.length > 0, `${r.rule_id} ohne Quelle`);
     for (const id of r.source_reference) assert.ok(sourceIds.has(id), `${r.rule_id} verweist auf unbekannte Quelle ${id}`);
-    if (r.evidence_status === 'VU_FORMALIZATION') assert.equal(r.VU_formalization_flag, true, `${r.rule_id}: VU_FORMALIZATION ohne Flag`);
+    if (r.evidence_status === 'VU_FORMALIZATION' || r.evidence_status === 'VU_EXTENSION') assert.equal(r.VU_formalization_flag, true, `${r.rule_id}: VU_FORMALIZATION ohne Flag`);
     if (r.source_reference.includes('SRC-INTERNAL-VU')) assert.equal(r.VU_formalization_flag, true, `${r.rule_id}: interne Regel ohne VU-Flag`);
   } }
 });

@@ -147,7 +147,9 @@ export function simulate(strategy, ctx, opts = {}) {
       }
       const inv = strategy.invalidate(ctx, t, sig, params);
       if (inv) { transition(sig, 'INVALIDATED', date, inv, { price: round(bars.close[t]) }); finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS; continue; }
-      const r = strategy.scan(ctx, t, params);
+      // LC-RANK-AT-DISCOVERY: Rangfilter gelten bei Entdeckung; ein laufendes
+      // Setup wird nur durch seine Strukturregeln ungueltig.
+      const r = strategy.scan(ctx, t, params, { pending: sig });
       if (r === undefined) continue;
       lastScan = r;
       if (!r || !PENDING.has(r.stage)) {

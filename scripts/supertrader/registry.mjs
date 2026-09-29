@@ -44,6 +44,7 @@ const LIFECYCLE_COMMON = [
   ['LC-AWAY-FROM-TRIGGER', 'Der Kurs hat sich wieder weiter als 3 % vom Trigger entfernt.', 'trigger / close(t) - 1 > 0.03'],
   ['LC-SETUP-LOST', 'Eine Setup-Regel ist am Tagesschluss nicht mehr erfüllt; das Setup ist ungültig.', 'scan(t).stage not in {SETUP, ENTRY_READY}'],
   ['LC-ACTIVE', 'Die Modellposition läuft ohne Warnsignal.', 'position open && !warning'],
+  ['LC-RANK-AT-DISCOVERY', 'Rangfilter (Momentum-/RS-Perzentile) gelten bei der Entdeckung. Ein laufendes Setup wird nur durch seine Strukturregeln ungültig — sonst würde ein Rangwechsel von 98 auf 97 ein intaktes Setup täglich beenden.', 'pending: rankRule(t) := rankRule(t) || rankRule(createdAt)'],
   ['LC-COOLDOWN-01', 'Nach Abschluss oder Ungültigkeit wird derselbe Titel 5 Sitzungen nicht neu eröffnet, damit ein Setup nicht täglich neu „geboren“ wird.', 'reopen allowed if t > closedAt + 5'],
 ];
 const lifecycleRules = (v) => LIFECYCLE_COMMON.map(([id, plain, m]) => rule(v, id, plain, m, {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true));
@@ -299,7 +300,7 @@ const darvas = {
   automation_level: 'HYBRID',
   source_fidelity: f('Die berechnete Box ist eine VU-Variante — nicht „die originale Darvas-Formel“.', 'VU_FORMALIZATION'),
   story: 'Nicolas Darvas, Tänzer von Beruf, beschrieb 1960, wie er Aktien in gedachten „Kisten“ beobachtete: Eine starke Aktie pendelt zwischen einer Ober- und Unterkante. Bricht sie nach oben aus, entsteht eine neue, höhere Kiste — und der Stop wandert mit. Welche genaue Regel eine Kiste definiert, ist bis heute umstritten; Vision Universe zeigt deshalb offen, welche Variante hier gerechnet wird.',
-  how_it_thinks: ['Steht die Aktie nahe ihrem 52-Wochen-Hoch?', 'Hat sich eine Oberkante gebildet, die 3 Sitzungen hält?', 'Hat sich darunter eine Unterkante bestätigt?', 'Kauf beim Ausbruch über die Oberkante — Stop an der Unterkante', 'Mit jeder höheren Kiste wird der Stop nachgezogen'],
+  how_it_thinks: ['Steht die Aktie nahe ihrem 52-Wochen-Hoch und gehört sie zu den momentumstarken Titeln?', 'Hat sich eine Oberkante gebildet, die 3 Sitzungen hält?', 'Hat sich darunter eine Unterkante bestätigt?', 'Kauf beim Ausbruch über die Oberkante — Stop an der Unterkante', 'Mit jeder höheren Kiste wird der Stop nachgezogen'],
   universe: f('Wachstums- und momentumstarke Aktien', 'MULTI_SOURCE_CONFIRMED'),
   market: f('USA (Datenbestand)', 'VU_FORMALIZATION'),
   sector_rules: f('Zukunftsbranchen bevorzugt; nicht automatisiert', 'SECONDARY_ONLY'),
@@ -310,7 +311,7 @@ const darvas = {
   growth_filters: f('Siehe Fundamentalfilter — nicht automatisiert', 'SECONDARY_ONLY'),
   estimate_filters: NONE('Keine Schätzungen.'),
   momentum_filters: f('Nahe neuer Hochs (≥ 90 % des 52-Wochen-Hochs, VU-Schwelle)', 'MULTI_SOURCE_CONFIRMED', ['DAR-MOM-01']),
-  relative_strength_filters: NONE('Ein moderner RS-Score wäre VU_EXTENSION.'),
+  relative_strength_filters: f('6-Monats-Perzentil ≥ 80 als Übersetzung von „momentumstark“ — ausdrücklich VU_EXTENSION, kein Darvas-Original', 'VU_EXTENSION', ['DAR-MOM-02']),
   trend_filters: f('Steigende Boxsequenz', 'MULTI_SOURCE_CONFIRMED'),
   volatility_filters: f('Boxhöhe 3–25 %, Box an den Hochs', 'VU_FORMALIZATION', ['DAR-BOX-03', 'DAR-BOX-04']),
   volume_filters: f('Volumen als Ausbruchsindiz; kein belegtes Vielfaches', 'NOT_VERIFIABLE'),
@@ -345,8 +346,9 @@ const darvas = {
   sources: ['SRC-ND-BOOK', 'SRC-ND-DARVAS-SECONDARY', 'SRC-ND-INVESTOPEDIA', 'SRC-ND-TIME-1960', 'SRC-ND-NYCOA-1961', 'SRC-BL-DONCHIAN', 'SRC-BL-TURTLE'],
   track_record_note: 'Darvas’ berühmte Gewinnbehauptung wurde 1960 von der New Yorker Generalstaatsanwaltschaft angegriffen, die nur rund 216.000 USD nachvollziehen konnte. Status: DISPUTED. Die Testbarkeit des Box-Konzepts ist davon unabhängig.',
   rules: [
-    rule(DA_V, 'DAR-MOM-01', 'Die Aktie steht nahe ihrem 52-Wochen-Hoch (mindestens 90 %).', 'close >= 0.90 * high252', { nearHigh: 0.9 }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
-    rule(DA_V, 'DAR-BOX-01', 'Oberkante: ein lokales Hoch, das in den folgenden 3 Sitzungen nicht überschritten wird.', 'high(i) > max(high[i-3..i-1]) && max(high[i+1..t]) < high(i) && t >= i+3', { N: 3, variants: [3, 4, 5] }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-MOM-01', 'Die Aktie steht nahe ihrem 52-Wochen-Hoch (mindestens 90 %) — oder ihre Box bildet sich dort.', 'close >= 0.90 * high252 || boxTop >= 0.95 * high252', { nearHigh: 0.9, topNearHigh: 0.95 }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-MOM-02', 'Die Aktie gehört über 6 Monate zu den stärksten 20 % — die messbare Übersetzung von „momentumstark“. Ein Ranking ist kein Darvas-Original.', 'pctRank(ret126) >= 80', { percentile: 80 }, ['SRC-INTERNAL-VU'], 'VU_EXTENSION', true),
+    rule(DA_V, 'DAR-BOX-01', 'Oberkante: ein neues 20-Tage-Hoch, das in den folgenden 3 Sitzungen nicht überschritten wird.', 'high(i) > max(high[i-20..i-1]) && max(high[i+1..t]) < high(i) && t >= i+3', { N: 3, topLookback: 20, variants: [3, 4, 5] }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-BOX-02', 'Unterkante: das tiefste Tief nach der Oberkante, das 3 Sitzungen hält.', 'floor = min(low[i+1..t]); floorIndex + 3 <= t', { N: 3 }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-BOX-03', 'Die Box ist zwischen 3 % und 25 % hoch.', '0.03 <= 1 - bottom/top <= 0.25', { minHeight: 0.03, maxHeight: 0.25 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-BOX-04', 'Die Box bildet sich an den Hochs: Oberkante mindestens 95 % des 52-Wochen-Hochs.', 'boxTop >= 0.95 * high252', { topNearHigh: 0.95 }, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),

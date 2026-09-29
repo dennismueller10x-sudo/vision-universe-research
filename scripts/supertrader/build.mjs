@@ -475,12 +475,13 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
   for (const [id, l] of Object.entries(ledgers)) {
     const open = l.open.map(decorate);
     const closed = l.closed.map(decorate).sort((a, b) => lastDate(b).localeCompare(lastDate(a)));
-    const invalidated = l.invalidated.map(decorate).sort((a, b) => lastDate(b).localeCompare(lastDate(a)));
+    // Ungueltige Setups: die juengsten 150 im Produktartefakt, alle im Ledger.
+    const invalidated = l.invalidated.slice().sort((a, b) => lastDate(b).localeCompare(lastDate(a))).slice(0, 150).map(decorate);
     for (const s of open) counts[s.state]++;
-    counts.CLOSED += closed.length; counts.INVALIDATED += invalidated.length;
+    counts.CLOSED += closed.length; counts.INVALIDATED += l.invalidated.length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
     const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
-    strategiesOut[id] = { liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan } };
+    strategiesOut[id] = { liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: l.invalidated.length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
     for (const s of scan) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: null, state: s.stage });
   }

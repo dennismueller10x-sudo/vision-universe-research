@@ -62,7 +62,8 @@ test('Historie wird nicht geloescht: Ledger-Eintraege bleiben erhalten', () => {
   for (const [id, st] of Object.entries(signals.strategies)) {
     const ledger = JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${id}.json`), 'utf8'));
     assert.equal(ledger.closed.length, st.closed.length);
-    assert.equal(ledger.invalidated.length, st.invalidated.length);
+    assert.equal(ledger.invalidated.length, st.invalidatedTotal);
+    assert.ok(st.invalidated.length <= st.invalidatedTotal);
     assert.ok(ledger.liveSince && ledger.lastProcessed >= ledger.liveSince);
   }
 });

@@ -12,7 +12,9 @@ import { maxIn, minIn } from '../indicators.mjs';
 
 export const PARAMS = Object.freeze({
   confirmBars: 3,            // DAR-BOX-01 / DAR-BOX-02, Variante N = 3
+  topLookback: 20,           // DAR-BOX-01: Oberkante ist ein neues 20-Tage-Hoch (VU)
   nearHighPct: 0.90,         // DAR-MOM-01 (VU-Schwelle)
+  momentumPercentile: 80,    // DAR-MOM-02 (VU_EXTENSION: "momentumstarke Aktie" als 6-Monats-Perzentil)
   lookback: 60,
   maxBoxHeight: 0.25,        // VU
   minBoxHeight: 0.03,        // VU: keine gepinnten Mini-Boxen
@@ -29,8 +31,8 @@ export function findBox(bars, t, p = PARAMS, fromIndex = 0) {
   for (let i = t - N; i >= Math.max(fromIndex, t - p.lookback, N); i--) {
     const h = bars.high[i];
     if (!Number.isFinite(h)) continue;
-    const before = maxIn(bars.high, i - N, i - 1);
-    if (before && before.value >= h) continue;           // lokales Hoch
+    const before = maxIn(bars.high, i - p.topLookback, i - 1);
+    if (before && before.value >= h) continue;           // neues 20-Tage-Hoch, kein Zwischenhoch in der Box
     const after = maxIn(bars.high, i + 1, t);
     if (!after || after.value >= h) continue;            // seither nicht ueberschritten
     // Oberkante bestaetigt (N Sitzungen ohne hoeheres Hoch).
@@ -45,16 +47,22 @@ export function findBox(bars, t, p = PARAMS, fromIndex = 0) {
   return null;
 }
 
-export function scan(ctx, t, p = PARAMS) {
+export function scan(ctx, t, p = PARAMS, opts = {}) {
   const { bars, ind } = ctx;
   if (t < 60) return null;
   const c = bars.close[t];
   if (!(c >= p.minPrice) || !(ind.dollarVol20[t] >= p.minDollarVolume)) return null;
   const hi = ind.high252[t];
-  const rules = { 'DAR-MOM-01': Number.isFinite(hi) && c >= p.nearHighPct * hi };
-  if (!rules['DAR-MOM-01']) return null;
-  const facts = { distanceTo52wHigh: c / hi - 1 };
+  if (!Number.isFinite(hi)) return null;
+  // Nahe am Hoch: der Kurs, oder - sobald eine Box existiert - deren
+  // Oberkante. Ein Rueckgang INNERHALB einer intakten Box beendet sie nicht.
   const box = findBox(bars, t, p);
+  const rules = { 'DAR-MOM-01': c >= p.nearHighPct * hi || !!(box && box.top.value >= p.topNearHigh * hi) };
+  if (!rules['DAR-MOM-01']) return null;
+  const mom = ctx.cross?.mom126?.[t];
+  rules['DAR-MOM-02'] = (Number.isFinite(mom) && mom >= p.momentumPercentile) || !!opts.pending?.rules?.['DAR-MOM-02']; // LC-RANK-AT-DISCOVERY
+  if (!rules['DAR-MOM-02']) return null;
+  const facts = { distanceTo52wHigh: c / hi - 1, momentumPercentile: mom };
   rules['DAR-BOX-01'] = !!box;
   if (!box) return { stage: 'DISCOVERED', rules, facts, levels: {} };
   rules['DAR-BOX-02'] = !!box.bottom;

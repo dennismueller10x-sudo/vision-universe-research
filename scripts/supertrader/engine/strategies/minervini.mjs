@@ -104,11 +104,12 @@ export function trendTemplate(ctx, t, p = PARAMS) {
   return { rules, ok: Object.values(rules).every(Boolean), facts: { rsPercentile: rs ?? null, distanceTo52wHigh: hi ? c / hi - 1 : null, distanceFrom52wLow: lo ? c / lo - 1 : null } };
 }
 
-export function scan(ctx, t, p = PARAMS) {
+export function scan(ctx, t, p = PARAMS, opts = {}) {
   const { bars, ind } = ctx;
   if (t < 252) return null;
   if (!(bars.close[t] >= p.minPrice) || !(ind.dollarVol20[t] >= p.minDollarVolume)) return null;
   const tt = trendTemplate(ctx, t, p);
+  if (!tt.rules['MIN-RS-01'] && opts.pending?.rules?.['MIN-RS-01']) { tt.rules['MIN-RS-01'] = true; tt.ok = Object.values(tt.rules).every(Boolean); } // LC-RANK-AT-DISCOVERY
   if (!tt.ok) return null;
   const rules = { ...tt.rules };
   const facts = { ...tt.facts };
