@@ -333,3 +333,61 @@ export function calendarStats(points) {
   };
   return { from: ks[0], to: ks[ks.length - 1], electionReference: "1928 = Wahljahr (US-Präsidentschaftswahl alle vier Jahre)", months, cycle, forward12 };
 }
+
+/**
+ * Fruehe Erholungszeichen: Breitenschub nach einem Absturz. Eigenes Zeichen,
+ * KEIN Teil des Barometers. Feste Schwellen, vorab gesetzt und nicht
+ * optimiert: im Baerenmarkt (>= 20 % unter dem bisherigen Hoch) springt der
+ * Anteil ueber der 50-Tage-Linie binnen `window` Handelstagen von hoechstens
+ * `from` auf mindestens `to` Prozent.
+ * Gemessen je Baerenmarkt: das ERSTE Signal (so, wie man es erlebt haette)
+ * und wie weit es danach noch fiel; das erste TRAGENDE Signal und wie weit
+ * es ueber dem Tief lag.
+ * @param points [[date, value]] Marktreihe
+ * @param breadth [{date, above50Pct}]
+ */
+export const RECOVERY_RULE = { bear: 20, from: 20, to: 65, window: 20, cooldown: 20, falseDrop: 10 };
+export function recoverySignal(points, breadth, rule = RECOVERY_RULE) {
+  const br = new Map(breadth.map((b) => [b.date, b.above50Pct]));
+  const d = points.map((p) => p[0]), c = points.map((p) => p[1]), n = c.length;
+  const thrust = (i) => {
+    const t = br.get(d[i]);
+    if (!isNum(t) || t < rule.to || i < rule.window) return false;
+    let mn = Infinity;
+    for (let k = i - rule.window; k < i; k++) { const x = br.get(d[k]); if (isNum(x)) mn = Math.min(mn, x); }
+    return mn <= rule.from;
+  };
+  const baeren = [];
+  let peak = 0, b = null;
+  for (let i = 0; i < n; i++) {
+    if (c[i] > c[peak]) { if (b) { b.end = i; baeren.push(b); b = null; } peak = i; }
+    if (!b && c[i] <= (1 - rule.bear / 100) * c[peak]) b = { peak, start: i, trough: i };
+    if (b && c[i] < c[b.trough]) b.trough = i;
+  }
+  if (b) { b.end = n - 1; b.open = true; baeren.push(b); }
+  const pct = (a, z) => round(100 * (c[z] / c[a] - 1), 1);
+  const minAb = (s, e) => { let m = Infinity; for (let k = s; k <= e; k++) m = Math.min(m, c[k]); return m; };
+  const liste = baeren.map((B) => {
+    const sigs = [];
+    let letzt = -1e9;
+    for (let i = B.start; i <= B.end; i++) if (thrust(i)) { if (i - letzt > rule.cooldown) sigs.push(i); letzt = i; }
+    const falsch = (s) => minAb(s, B.end) <= (1 - rule.falseDrop / 100) * c[s];
+    const erst = sigs[0], tragend = sigs.find((s) => !falsch(s));
+    return {
+      peak: d[B.peak], trough: d[B.trough], fall: pct(B.peak, B.trough), open: !!B.open, signals: sigs.length, falseSignals: sigs.filter(falsch).length,
+      first: erst === undefined ? null : { date: d[erst], furtherDrop: round(100 * (minAb(erst, B.end) / c[erst] - 1), 1), false: falsch(erst),
+        forward12: erst + 252 < n ? pct(erst, erst + 252) : null },
+      firstLasting: tragend === undefined ? null : { date: d[tragend], riseFromTrough: pct(B.trough, tragend), tradingDaysFromTrough: tragend - B.trough }
+    };
+  });
+  const med = (xs) => (xs.length ? round(median(xs), 1) : null);
+  const mit = liste.filter((x) => x.first);
+  return {
+    rule, bears: liste.length, withSignal: mit.length, firstFalse: mit.filter((x) => x.first.false).length,
+    firstFurtherDropMedian: med(mit.map((x) => x.first.furtherDrop)), worstFirst: mit.length ? Math.min.apply(null, mit.map((x) => x.first.furtherDrop)) : null,
+    lastingRiseMedian: med(liste.filter((x) => x.firstLasting).map((x) => x.firstLasting.riseFromTrough)),
+    forward12Median: med(mit.filter((x) => isNum(x.first.forward12)).map((x) => x.first.forward12)),
+    allSignals: liste.reduce((a, x) => a + x.signals, 0), allFalse: liste.reduce((a, x) => a + x.falseSignals, 0),
+    bearMarkets: liste
+  };
+}

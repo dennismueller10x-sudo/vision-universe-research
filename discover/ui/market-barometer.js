@@ -253,6 +253,81 @@
     ].filter(Boolean));
   }
 
+  /* ------------------------------------------ Fruehe Erholungszeichen
+     Owner-Wunsch: "Hat es die Boeden erkannt?" - das Barometer nicht, und
+     es wird dafuer nicht verbogen. Stattdessen ein eigenes Zeichen (Breiten-
+     schub nach einem Absturz), getrennt vom Barometer, mit seiner ganzen
+     Bilanz: frueh, aber in langen Baerenmaerkten oft zu frueh.
+     Live: Baerenmarkt = SPY mind. 20 % unter dem 52-Wochen-Hoch (Risiko-
+     Messwert), Schub = Anteil der Aktien ueber der 50-Tage-Linie springt
+     binnen 20 Handelstagen von hoechstens 20 % auf mindestens 65 %
+     (Tageswerte aus der Historie). Fehlt die Breitenhistorie, sagt es das. */
+  function erholungLive(p, hist, rule) {
+    var risk = p.dimensions && p.dimensions.RISK;
+    var dd = null;
+    (risk && risk.evidence || []).forEach(function (e) { if (e.key === "drawdown52w" && isNum(e.value)) dd = e.value; });
+    if (dd === null) return { zustand: "offen", dd: null };
+    if (dd > -rule.bear) return { zustand: "inaktiv", dd: dd };
+    var tage = (hist && hist.days || []).filter(function (t) { return t.metrics && isNum(t.metrics.above50Pct); });
+    if (tage.length < rule.window + 1) return { zustand: "zu-wenig", dd: dd, tage: tage.length };
+    var schub = null;
+    for (var i = Math.max(rule.window, tage.length - 60); i < tage.length; i++) {
+      if (tage[i].metrics.above50Pct < rule.to) continue;
+      var mn = Infinity;
+      for (var k = i - rule.window; k < i; k++) mn = Math.min(mn, tage[k].metrics.above50Pct);
+      if (mn <= rule.from) schub = tage[i];
+    }
+    var letzt = tage[tage.length - 1];
+    return schub ? { zustand: "zeichen", dd: dd, seit: schub.date, jetzt: letzt.metrics.above50Pct } : { zustand: "baer", dd: dd, jetzt: letzt.metrics.above50Pct };
+  }
+  function erholung(p, ev, hist) {
+    var r = ev && ev.recovery;
+    if (!r || !r.bearMarkets || !r.bearMarkets.length) return null;
+    var rule = r.rule, live = erholungLive(p, hist, rule);
+    var ICON = { inaktiv: "puls", offen: "puls", "zu-wenig": "puls", baer: "runter", zeichen: "hoch" };
+    var ROLLE = { inaktiv: "neutral", offen: "neutral", "zu-wenig": "neutral", baer: "warn", zeichen: "gut" };
+    var titel = { inaktiv: "Zurzeit inaktiv", offen: "Nicht bestimmbar", "zu-wenig": "Bärenmarkt – noch zu wenig Breitenhistorie",
+      baer: "Bärenmarkt – noch kein Erholungszeichen", zeichen: "Frühes Erholungszeichen seit " + tag(live.seit) }[live.zustand];
+    var satz = {
+      inaktiv: "Das Zeichen schaut nur in Bärenmärkten – wenn der Markt mindestens " + rule.bear + " % unter seinem Hoch liegt. Heute: " + pct(live.dd, 1) + " unter dem 52-Wochen-Hoch.",
+      offen: "Der Abstand zum 52-Wochen-Hoch ist gerade nicht verfügbar.",
+      "zu-wenig": "Für den Breitenschub braucht es " + (rule.window + 1) + " Tage mit Breitendaten; gespeichert sind " + live.tage + ".",
+      baer: "Heute liegen " + (isNum(live.jetzt) ? pct(live.jetzt, 0) : "–") + " der Aktien über ihrer 50-Tage-Linie. Das Zeichen kommt, wenn der Anteil binnen " + rule.window + " Handelstagen von höchstens " + rule.from + " % auf mindestens " + rule.to + " % springt.",
+      zeichen: "Sehr viele Aktien ziehen zugleich wieder an. Früher kam das typisch rund " + pct(r.lastingRiseMedian, 0) + " über dem Tief – aber in langen Bärenmärkten auch zu früh (siehe unten)."
+    }[live.zustand];
+    var namen = { "1929": "Weltwirtschaftskrise", "1973": "Ölkrise", "1987": "Schwarzer Montag", "2000": "Dotcom-Blase", "2007": "Finanzkrise", "2020": "Corona-Crash", "2021": "Zinsschock" };
+    var zeilen = r.bearMarkets.filter(function (b) { return namen[b.peak.slice(0, 4)] && b.first; }).reverse().map(function (b) {
+      return el("tr", {}, [
+        el("th", { scope: "row" }, [el("b", { text: namen[b.peak.slice(0, 4)] }), el("small", { text: pct(b.fall, 0) })]),
+        el("td", { "data-label": "Erstes Zeichen", text: b.first.date.slice(8, 10) + "." + b.first.date.slice(5, 7) + "." + b.first.date.slice(0, 4) }),
+        el("td", { "data-label": "Danach fiel er noch", class: b.first.false ? "is-falsch" : "is-gut", text: b.first.false ? pct(b.first.furtherDrop, 1) + " – zu früh" : pct(b.first.furtherDrop, 1) + " – getragen" }),
+        el("td", { "data-label": "Erstes tragendes Zeichen", text: b.firstLasting ? pct(b.firstLasting.riseFromTrough, 0, true) + " über dem Tief" : "–" })
+      ]);
+    });
+    return el("section", { class: "bm-erholung", id: "bm-erholung", "aria-label": "Frühe Erholungszeichen" }, [
+      kopf("Eigenes Zeichen · kein Teil des Barometers", "Und die Böden? Frühe Erholungszeichen",
+        "Das Barometer bestätigt einen Aufschwung erst, wenn er trägt. Dieses Zeichen ist früher: Es meldet sich, wenn nach einem Absturz plötzlich sehr viele Aktien zugleich wieder anziehen."),
+      el("div", { class: "bm-erh-status is-" + ROLLE[live.zustand] }, [
+        el("span", { class: "bm-erh-icon", "aria-hidden": "true" }, [glyph(ICON[live.zustand])].filter(Boolean)),
+        el("div", {}, [el("p", { class: "bm-erh-jetzt", text: "Jetzt" }), el("b", { text: titel }), el("p", { text: satz })])
+      ]),
+      el("div", { class: "bm-erh-zahlen" }, [
+        el("div", { class: "bm-erh-zahl is-gut" }, [el("b", { text: pct(r.lastingRiseMedian, 0, true) }), el("p", { text: "über dem Tief – typisch beim ersten tragenden Zeichen" }),
+          el("small", { text: stresstest(ev) && stresstest(ev).boden !== null ? "zum Vergleich: das Barometer wurde typisch erst " + pct(stresstest(ev).boden, 0, true) + " über dem Tief wieder „Selektiv“" : "früher als das Barometer" })]),
+        el("div", { class: "bm-erh-zahl is-warn" }, [el("b", { text: r.firstFalse + " von " + r.withSignal }), el("p", { text: "Bärenmärkten: das erste Zeichen kam zu früh" }),
+          el("small", { text: "danach ging es noch mindestens 10 % tiefer" })]),
+        el("div", { class: "bm-erh-zahl is-warn" }, [el("b", { text: pct(r.worstFirst, 0) }), el("p", { text: "schlimmster Fall nach einem ersten Zeichen" }), el("small", { text: "Januar 1930, mitten in der Weltwirtschaftskrise" })])
+      ]),
+      el("div", { class: "bm-erh-tabelle-box" }, [el("table", { class: "bm-erh-tabelle" }, [
+        el("caption", { text: "Das erste Zeichen in den großen Abstürzen – so, wie man es damals erlebt hätte" }),
+        el("thead", {}, [el("tr", {}, ["Absturz", "Erstes Zeichen", "Danach fiel er noch", "Erstes tragendes Zeichen"].map(function (x) { return el("th", { scope: "col", text: x }); }))]),
+        el("tbody", {}, zeilen)
+      ])]),
+      el("p", { class: "bm-erh-fazit" }, [el("b", { text: "Kurz gesagt: " }), txt("In schnellen Erholungen wie 1987 oder 2020 war das erste Zeichen richtig. In langen Bärenmärkten – 1930, 1974, 2001, 2008 – kam das erste Zeichen zu früh. Es ist ein Hinweis zum Hinschauen, kein Signal zum Handeln.")]),
+      ev.recoveryNote ? el("p", { class: "bm-fuss", text: ev.recoveryNote + " Über alle " + r.bears + " Bärenmärkte: " + r.allSignals + " Zeichen, davon " + r.allFalse + " zu früh." }) : null
+    ].filter(Boolean));
+  }
+
   /* --------------------------- Kalender-Kontext: Saisonalitaet, Wahlzyklus
      Ausdruecklich KEIN Teil des Barometers - eigene Statistik aus derselben
      Reihe, mit Fallzahlen und Mehrfachtest bei den Monaten. */
@@ -378,11 +453,11 @@
   }
 
   /* ------------------------------------------------------- Seite */
-  function render(p, ev, jetzt) {
+  function render(p, ev, jetzt, verlauf) {
     var env = p && p.environment;
     if (!env || !isNum(env.level)) return null;
     var hist = ev && ev.levels && ev.levels.length >= 3 ? ev : null;
-    var teile = [heute(p), hist ? krisen(hist) : null, hist ? chance(p, hist) : null, hist ? vergleich(p, hist) : null, warum(p), wende(p), stufen(p, hist),
+    var teile = [heute(p), hist ? krisen(hist) : null, hist ? erholung(p, hist, verlauf) : null, hist ? chance(p, hist) : null, hist ? vergleich(p, hist) : null, warum(p), wende(p), stufen(p, hist),
       hist ? kalender(hist, jetzt) : null,
       el("a", { class: "bm-mehr", href: "#/maerkte/einordnung/details" }, [
         el("span", { class: "bm-mehr-icon", "aria-hidden": "true" }, [glyph("lupe")].filter(Boolean)),
@@ -397,5 +472,5 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht, zyklusJahr: zyklusJahr, stresstest: stresstest };
+  global.VUDiscover.MarketBarometer = { render: render, WETTER: WETTER, reihe: reihe, fazitAnsicht: fazitAnsicht, zyklusJahr: zyklusJahr, stresstest: stresstest, erholungLive: erholungLive };
 })(typeof window !== "undefined" ? window : globalThis);
