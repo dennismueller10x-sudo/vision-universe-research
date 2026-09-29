@@ -216,15 +216,22 @@ export async function toPng(buf, sharp, opts = {}) {
   if (!fmt) return { reason: "WEB_KEIN_BILD" };
   if (fmt === "ico") {
     const png = icoLargestPng(buf);
-    if (!png) return { reason: "WEB_ICON_ZU_KLEIN" };
-    buf = png; fmt = "png";
+    if (png) { buf = png; fmt = "png"; }
+    else if (opts.minIcon) {
+      /* BMP-Favicon: sharp liest kein ICO; groessten Eintrag als BMP-Datei nachbauen. */
+      const bmp = icoLargestBmp(buf);
+      if (!bmp) return { reason: "WEB_ICON_ZU_KLEIN" };
+      buf = await sharp(bmp.raw, { raw: { width: bmp.width, height: bmp.height, channels: 4 } }).png().toBuffer(); fmt = "png";
+    } else return { reason: "WEB_ICON_ZU_KLEIN" };
   }
   let img = sharp(buf, { limitInputPixels: 4096 * 4096, density: fmt === "svg" ? 300 : undefined });
   const meta = await img.metadata();
   /* Icon: beide Seiten ab 64 px. Wortmarke aus dem Seitenkopf: breit genug
      (ab 96 px) - sie ist naturgemaess flach. */
   const w = meta.width || 0, h = meta.height || 0;
-  if (fmt !== "svg" && (opts.logo ? (Math.max(w, h) < 96 || Math.min(w, h) < 16) : Math.min(w, h) < MIN_ICON)) return { reason: "WEB_ICON_ZU_KLEIN" };
+  /* Fuer Index-Werte ohne jede andere Quelle reicht ein Icon ab 32 px (minIcon). */
+  const minIcon = opts.minIcon || MIN_ICON;
+  if (fmt !== "svg" && (opts.logo ? (Math.max(w, h) < 96 || Math.min(w, h) < 16) : Math.min(w, h) < minIcon)) return { reason: "WEB_ICON_ZU_KLEIN" };
   const ratio = (meta.width || 1) / (meta.height || 1);
   /* Ein Logo aus dem Seitenkopf darf breit sein (Wortmarke), ein Icon nicht. */
   const maxRatio = opts.logo ? 8 : 4;
@@ -383,7 +390,7 @@ export function logoFilings(recent, max = 3) {
  * Dateiname "logo" oder den Firmennamen traegt (Druckereien setzen
  * alt="LOGO"). Unterschriften, Grafiken und Fotos zaehlen nicht.
  */
-export function secLogoImages(html, docUrl, companyName) {
+export function secLogoImages(html, docUrl, companyName, opts = {}) {
   const text = String(html || "").slice(0, 600000);
   const woerter = String(companyName || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/)
     .filter((w) => w.length >= 4 && !/^(inc|corp|holdings|group|class|company|limited|technologies|international|trust)$/.test(w));
@@ -397,6 +404,20 @@ export function secLogoImages(html, docUrl, companyName) {
     if (!/logo/.test(hinweis) && !woerter.some((w) => (a.alt || "").toLowerCase().includes(w))) continue;
     try { out.push(new URL(src, docUrl).href); } catch (e) { /* weiter */ }
     if (out.length >= 3) break;
+  }
+  /* Deckblatt: Ist kein Bild als Logo ausgezeichnet, steht im Proxy
+     Statement das Logo fast immer als erstes Bild ganz oben (nur fuer
+     Index-Werte, danach Sichtpruefung). */
+  if (!out.length && opts.firstImage) {
+    const kopf = text.slice(0, 80000);
+    const m = /<img\b[^>]*>/i.exec(kopf);
+    if (m) {
+      const a = attrs(m[0]);
+      const hinweis = ((a.alt || "") + " " + (a.src || "")).toLowerCase();
+      if (a.src && !/^data:/i.test(a.src) && !/(signature|sig_|chart|graph|photo|headshot|map)/.test(hinweis)) {
+        try { out.push(new URL(a.src, docUrl).href); } catch (e) { /* ohne */ }
+      }
+    }
   }
   return out;
 }
@@ -432,4 +453,30 @@ export function parseIsharesUsTickers(csv) {
     if (f[iT] && f[iT] !== "-") out.add(f[iT].toUpperCase());
   }
   return [...out];
+}
+
+/**
+ * Groesster BMP-Eintrag einer ICO-Datei als Rohpixel {raw, width, height} ueber eine
+ * kleine eigene Dekodierung (32-bit BGRA, wie bei modernen Favicons).
+ * Aeltere 8-/24-bit-Eintraege werden nicht gelesen.
+ */
+export function icoLargestBmp(buf) {
+  const n = buf.readUInt16LE(4);
+  let best = null;
+  for (let i = 0; i < n && 6 + 16 * (i + 1) <= buf.length; i++) {
+    const o = 6 + 16 * i;
+    const w = buf[o] || 256, h = buf[o + 1] || 256, size = buf.readUInt32LE(o + 8), off = buf.readUInt32LE(o + 12);
+    if (off + 40 > buf.length || off + size > buf.length) continue;
+    if (buf.readUInt32LE(off) !== 40 || buf.readUInt16LE(off + 14) !== 32) continue;
+    if (!best || w > best.w) best = { w, h, off };
+  }
+  if (!best) return null;
+  const { w, h, off } = best;
+  const rgba = Buffer.alloc(w * h * 4);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const s = off + 40 + ((h - 1 - y) * w + x) * 4, d = (y * w + x) * 4;
+    if (s + 3 >= buf.length) return null;
+    rgba[d] = buf[s + 2]; rgba[d + 1] = buf[s + 1]; rgba[d + 2] = buf[s]; rgba[d + 3] = buf[s + 3];
+  }
+  return { raw: rgba, width: w, height: h };
 }

@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, sniff, icoLargestPng, genericIcons, toPng,
   inlineLogoSvg, websiteFromFiling, filingText, latestReport, rootDomain, ownLogoHint,
-  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers
+  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers, icoLargestBmp
 } from "../../scripts/discover/company-logos-web.mjs";
 import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
@@ -376,4 +376,25 @@ Ticker,Name,Sector,Asset Class,Market Value,Weight (%),Notional Value,Quantity,P
 "BRKB","BERKSHIRE HATHAWAY INC CLASS B","Financials","Equity","1,000","0.9","1,000","1","500","United States","New York Stock Exchange Inc.","USD","1.00","USD","-"
 "USD","USD CASH","Cash and/or Derivatives","Cash","1","0.1","1","1","1","United States","-","USD","1.00","USD","-"`;
   assert.deepEqual(parseIsharesUsTickers(csv).sort(), ["BRKB", "NVDA"]);
+});
+
+test("Index-Rettung: erstes Bild im Proxy Statement, BMP-Favicon lesbar", async (t) => {
+  const html = `<p>Proxy</p><img src="g1.jpg" alt=""><p>Brief</p><img src="g2_signature.jpg" alt="">`;
+  assert.deepEqual(secLogoImages(html, "https://www.sec.gov/x/p.htm", "United Airlines"), []);
+  assert.deepEqual(secLogoImages(html, "https://www.sec.gov/x/p.htm", "United Airlines", { firstImage: true }), ["https://www.sec.gov/x/g1.jpg"]);
+  assert.deepEqual(secLogoImages('<img src="sig.jpg" alt="signature">', "https://www.sec.gov/x/p.htm", "X", { firstImage: true }), []);
+  /* ICO mit einem 32x32-BMP-Eintrag (32 bit): rote Flaeche. */
+  const w = 32, h = 32, bmpSize = 40 + w * h * 4;
+  const ico = Buffer.alloc(6 + 16 + bmpSize);
+  ico.writeUInt16LE(1, 2); ico.writeUInt16LE(1, 4);
+  ico[6] = w; ico[7] = h; ico.writeUInt32LE(bmpSize, 6 + 8); ico.writeUInt32LE(22, 6 + 12);
+  ico.writeUInt32LE(40, 22); ico.writeInt32LE(w, 26); ico.writeInt32LE(h * 2, 30); ico.writeUInt16LE(1, 34); ico.writeUInt16LE(32, 36);
+  for (let i = 0; i < w * h; i++) { const o = 62 + i * 4; ico[o] = 0; ico[o + 1] = 0; ico[o + 2] = 255; ico[o + 3] = 255; }
+  const bmp = icoLargestBmp(ico);
+  assert.equal(bmp.width, 32); assert.deepEqual([...bmp.raw.slice(0, 4)], [255, 0, 0, 255]);
+  let sharp;
+  try { sharp = (await import("sharp")).default; } catch (e) { t.skip("sharp nicht installiert"); return; }
+  assert.equal((await toPng(ico, sharp)).reason, "WEB_ICON_ZU_KLEIN");
+  const ok = await toPng(ico, sharp, { minIcon: 32 });
+  assert.equal((await sharp(ok.png).metadata()).width, 128);
 });

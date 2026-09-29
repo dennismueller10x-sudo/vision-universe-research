@@ -112,7 +112,7 @@ async function secHolen(url, max, ua) {
 }
 
 /** Das beste Icon einer Website als verkleinertes PNG, oder {reason}. */
-async function webIcon(site, sharp, sym, companyName) {
+async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
   let found = [], base = site.url, inlineSvg = null;
   /* Startseite, bei Fehler dieselbe Adresse mit bzw. ohne "www." */
   const varianten = [site.url];
@@ -148,7 +148,7 @@ async function webIcon(site, sharp, sym, companyName) {
   for (const c of orderCandidates(found, new URL(base).origin).slice(0, 12)) {
     try {
       const { buf } = await holen(c.href, 3 * 1024 * 1024);
-      const res = await toPng(buf, sharp, { logo: c.kind === "logo" });
+      const res = await toPng(buf, sharp, { logo: c.kind === "logo", minIcon: iconOpts.minIcon });
       dbg(sym, c.kind, c.href, res.png ? "OK" : res.reason);
       if (res.png) return { png: res.png, iconUrl: c.href, ratio: res.ratio, kind: c.kind };
       grund = res.reason;
@@ -202,6 +202,34 @@ const universe = search.entries
   .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
   .map((e) => ({ symbol: e.s, name: e.n || e.s, cik: cikOf.get(e.s) || null }));
 console.log(`Discover-Universum: ${universe.length} Titel (${Object.keys(exclusions).length} ausgeschlossen)`);
+
+/* ------------------------------------------------ Wichtige Indizes */
+/* S&P 500, NASDAQ-100, Dow Jones aus den Discover-Daten (Fondsbestaende),
+   MSCI World aus dem Bestand des iShares-Fonds URTH (nur US-Notierungen -
+   nur die stehen im Universum). Fuer diese Titel gelten die letzten
+   Rettungsstufen (erstes Bild im Proxy Statement, Favicon ab 32 px). */
+const INDEX_MITGLIEDER = { SP500: new Set(), NDX: new Set(), DJIA: new Set(), MSCI_WORLD: new Set() };
+{
+  const stocksDir = join(root, "discover", "data", "stocks", "US_REAL");
+  const imUniversum = new Set(universe.map((r) => r.symbol));
+  if (existsSync(stocksDir)) {
+    for (const f of readdirSync(stocksDir)) {
+      try {
+        const d = JSON.parse(readFileSync(join(stocksDir, f), "utf8"));
+        if (!imUniversum.has(d.symbol)) continue;
+        for (const ix of d.indexMemberships || []) if (INDEX_MITGLIEDER[ix.indexId]) INDEX_MITGLIEDER[ix.indexId].add(d.symbol);
+      } catch (e) { /* weiter */ }
+    }
+  }
+  try {
+    const csv = (await holen("https://www.ishares.com/us/products/239696/ishares-msci-world-etf/1467271812596.ajax?fileType=csv&fileName=URTH_holdings&dataType=fund", 8 * 1024 * 1024, { truncate: true })).buf.toString("utf8");
+    const norm = (t) => String(t).toUpperCase().replace(/[.\-/ ]/g, "");
+    const nachNorm = new Map(universe.map((r) => [norm(r.symbol), r.symbol]));
+    for (const t of parseIsharesUsTickers(csv)) { const s = nachNorm.get(norm(t)); if (s) INDEX_MITGLIEDER.MSCI_WORLD.add(s); }
+  } catch (e) { console.log("     MSCI-World-Bestand nicht erreichbar:", e.message); }
+  console.log("     Index-Titel im Universum:", Object.entries(INDEX_MITGLIEDER).map(([k, v]) => k + " " + v.size).join(", "));
+}
+const PRIORITAET = new Set(Object.values(INDEX_MITGLIEDER).flatMap((v) => [...v]));
 
 /* ------------------------------------------------------------- Wikidata */
 console.log("1/3  Wikidata: Logos ueber CIK und Ticker …");
@@ -395,13 +423,17 @@ if (!args["no-web"] && !DRY) {
 
     /* ------------------------------ Dritte Quelle: Logo aus SEC-Einreichung */
     if (secUa && !args["no-sec-logo"]) {
-      const rest = universe.filter((r) => !files[r.symbol] && r.cik).slice(0, LIMIT);
+      /* Ohne Logo - und Index-Titel mit breitem Schriftzug: dort nur ein
+         quadratischeres SEC-Logo (bis 1,6:1) als Ersatz. */
+      const breitIndex = (s) => PRIORITAET.has(s) && credits[s] && credits[s].ratio > 2.2;
+      const rest = universe.filter((r) => r.cik && (!files[r.symbol] || breitIndex(r.symbol))).slice(0, LIMIT);
       console.log(`5/5  Logo aus SEC-Einreichungen fuer ${rest.length} Titel …`);
       const stat = { ok: 0, ohneBild: 0, fehler: 0 };
       let i = 0;
       for (const r of rest) {
         const alt = vorher[r.symbol];
-        if (!args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
+        const nurQuadrat = !!files[r.symbol];
+        if (!nurQuadrat && !args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
           files[r.symbol] = alt.path; credits[r.symbol] = alt; reasons.delete(r.symbol); stat.ok++; continue;
         }
         try {
@@ -410,13 +442,14 @@ if (!args["no-web"] && !DRY) {
           let treffer = null;
           for (const f of logoFilings(sub.filings && sub.filings.recent, 3)) {
             const doc = "https://www.sec.gov/Archives/edgar/data/" + cik + "/" + f.accession.replace(/-/g, "") + "/" + f.document;
-            const bilder = secLogoImages((await secHolen(doc, 3 * 1024 * 1024, secUa)).buf.toString("utf8"), doc, r.name);
+            const bilder = secLogoImages((await secHolen(doc, 3 * 1024 * 1024, secUa)).buf.toString("utf8"), doc, r.name,
+                                         { firstImage: PRIORITAET.has(r.symbol) && /DEF 14A|ARS/.test(f.form) });
             dbg(r.symbol, "SEC-Logo", f.form, doc, bilder.length + " Bild(er)");
             for (const url of bilder) {
               try {
                 const res = await toPng((await secHolen(url, 3 * 1024 * 1024, secUa)).buf, sharp, { logo: true });
                 dbg(r.symbol, "SEC-Logo", url, res.png ? "OK" : res.reason);
-                if (res.png) { treffer = { ...res, url, form: f.form, doc }; break; }
+                if (res.png && (!nurQuadrat || res.ratio <= 1.6)) { treffer = { ...res, url, form: f.form, doc }; break; }
               } catch (e) { dbg(r.symbol, "SEC-Logo", url, "Fehler", e.message); }
             }
             if (treffer) break;
@@ -435,6 +468,24 @@ if (!args["no-web"] && !DRY) {
         if (++i % 250 === 0) console.log(`     … ${i} (${JSON.stringify(stat)})`);
       }
       console.log(`     SEC-Logos: ${JSON.stringify(stat)}`);
+    }
+
+    /* Letzte Stufe, nur Index-Titel ohne Logo: das Favicon ab 32 px. */
+    const letzte = universe.filter((r) => PRIORITAET.has(r.symbol) && !files[r.symbol] && siteOf.has(r.symbol));
+    if (letzte.length) {
+      console.log(`     Index-Titel ohne Logo, Favicon ab 32 px: ${letzte.length}`);
+      for (const r of letzte) {
+        const site = siteOf.get(r.symbol);
+        const res = await webIcon(site, sharp, r.symbol, r.name, { minIcon: 32 });
+        if (!res.png) continue;
+        const path = "files/" + r.symbol + ".png";
+        writeFileSync(join(OUT, path), res.png);
+        files[r.symbol] = path;
+        credits[r.symbol] = { source: "WEBSITE", path, page: site.url, host: site.host, iconUrl: res.iconUrl,
+                              sha1: createHash("sha1").update(res.png).digest("hex"), via: site.via,
+                              licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round((res.ratio || 1) * 100) / 100, small: true };
+        reasons.delete(r.symbol);
+      }
     }
   }
 }
@@ -463,36 +514,14 @@ try {
   }
 } catch (e) { console.log("     sharp fehlt - keine Pruefung auf helle Logos."); }
 
-/* Abdeckung der wichtigen Indizes: S&P 500, NASDAQ-100, Dow Jones aus den
-   Discover-Daten (Fondsbestaende), MSCI World aus dem Bestand des iShares-
-   Fonds URTH (nur US-Notierungen - nur die stehen im Universum). */
+/* Abdeckung der wichtigen Indizes (Mitglieder oben ermittelt). */
 const indexAbdeckung = {};
-{
-  const mitglieder = { SP500: new Set(), NDX: new Set(), DJIA: new Set(), MSCI_WORLD: new Set() };
-  const stocksDir = join(root, "discover", "data", "stocks", "US_REAL");
-  const imUniversum = new Set(universe.map((r) => r.symbol));
-  if (existsSync(stocksDir)) {
-    for (const f of readdirSync(stocksDir)) {
-      try {
-        const d = JSON.parse(readFileSync(join(stocksDir, f), "utf8"));
-        for (const ix of d.indexMemberships || []) if (mitglieder[ix.indexId]) mitglieder[ix.indexId].add(d.symbol);
-      } catch (e) { /* weiter */ }
-    }
-  }
-  try {
-    const csv = (await holen("https://www.ishares.com/us/products/239696/ishares-msci-world-etf/1467271812596.ajax?fileType=csv&fileName=URTH_holdings&dataType=fund", 8 * 1024 * 1024, { truncate: true })).buf.toString("utf8");
-    const norm = (t) => String(t).toUpperCase().replace(/[.\-/ ]/g, "");
-    const nachNorm = new Map(universe.map((r) => [norm(r.symbol), r.symbol]));
-    for (const t of parseIsharesUsTickers(csv)) { const s = nachNorm.get(norm(t)); if (s) mitglieder.MSCI_WORLD.add(s); }
-    console.log(`     MSCI World (URTH): ${mitglieder.MSCI_WORLD.size} US-Titel im Universum`);
-  } catch (e) { console.log("     MSCI-World-Bestand nicht erreichbar:", e.message); }
-  for (const [id, set] of Object.entries(mitglieder)) {
-    const liste = [...set].filter((s) => imUniversum.has(s) || exclusions[s]).sort();
-    const ohneLogo = liste.filter((s) => !files[s]);
-    indexAbdeckung[id] = { members: liste.length, withLogo: liste.length - ohneLogo.length,
-                           missing: ohneLogo.map((s) => s + ":" + (exclusions[s] ? "AUSGESCHLOSSEN" : (reasons.get(s) || "?"))) };
-    console.log(`     ${id}: ${liste.length - ohneLogo.length}/${liste.length} mit Logo`);
-  }
+for (const [id, set] of Object.entries(INDEX_MITGLIEDER)) {
+  const liste = [...set].sort();
+  const ohneLogo = liste.filter((s) => !files[s]);
+  indexAbdeckung[id] = { members: liste.length, withLogo: liste.length - ohneLogo.length,
+                         missing: ohneLogo.map((s) => s + ":" + (exclusions[s] ? "AUSGESCHLOSSEN" : (reasons.get(s) || "?"))) };
+  console.log(`     ${id}: ${liste.length - ohneLogo.length}/${liste.length} mit Logo`);
 }
 
 const sortiert = (o) => Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
