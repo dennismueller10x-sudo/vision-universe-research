@@ -337,8 +337,36 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(!trefferZeilen)throw Error('der einfache Einstieg zeigt keine Treffer');
   const ohneWert=(await page.locator('.q-hit .q-hit-why').allInnerTexts()).filter(t=>!/\d/.test(t));
   if(ohneWert.length)throw Error('Trefferzeile ohne gemessenen Wert: '+ohneWert[0]);
-  /* Was der Screener NICHT kann, muss dastehen statt als Knopf zu erscheinen. */
+  /* DIE RECHTE SPALTE TRAEGT EIN URTEIL, KEINE ZWEITE ZAHL.
+     Vorher stand dort die Zahl aus derselben Zeile noch einmal
+     ("Qualitaet: stark (90)" und daneben "90") - 75 der 112 Zahlen dieser
+     Seite lagen in dieser Spalte. Jetzt steht dort das Klartext-Urteil
+     ueber alle bewerteten Faktoren. Die Pruefung haelt fest, dass es ein
+     WORT ist und zur Tonlage passt: eine Zahl an dieser Stelle waere der
+     Rueckfall. */
+  const urteile=await page.locator('.q-hit .q-hit-num').allInnerTexts();
+  if(!urteile.length)throw Error('die Trefferzeilen tragen keine rechte Spalte');
+  const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild',
+   'Mehr Schwächen als Stärken','Überwiegend schwach',''];
+  const fremd=urteile.map(t=>t.trim()).filter(t=>!erlaubt.includes(t));
+  if(fremd.length)throw Error('rechte Spalte traegt kein Klartext-Urteil: '+JSON.stringify(fremd[0]));
+  if(urteile.every(t=>!t.trim()))throw Error('keine einzige Trefferzeile traegt ein Urteil');
+  const marke=await page.locator('.q-hit .q-hit-num .q-state').count();
+  if(!marke)throw Error('das Urteil ist nicht als Zustandsmarke gezeichnet');
+
+  /* Was der Screener NICHT kann, muss dastehen statt als Knopf zu
+     erscheinen - aber nicht zwingend im ersten Bildschirm. Die Methodik
+     liegt hinter "Wie wird gefiltert?"; die Pruefung oeffnet sie und
+     verlangt die Aussage darin. Erreichbar statt weggelassen ist der
+     Unterschied, auf den es hier ankommt. */
+  await page.locator('.q-mehr > summary').filter({hasText:'Wie wird gefiltert?'}).click();
   await page.getByText(/Größe und Region sind noch keine Kriterien/).waitFor();
+  /* Und die systemische Luecke gehoert genau EINMAL auf die Seite, nicht
+     unter jeden Treffer: kein Titel erreicht 7 von 7, weil ein Faktor fuer
+     keinen Titel einen Wert traegt. */
+  await page.getByText(/trägt derzeit für keinen Titel einen Wert/).waitFor();
+  const proZeile=await page.locator('.q-hit').filter({hasText:'von 7'}).count();
+  if(proZeile)throw Error(proZeile+' Trefferzeilen tragen wieder den Nenner 7 - kein Titel erreicht ihn');
   /* Der Profi-Modus liegt hinter einer Klappe. Sie muss geoeffnet werden,
      bevor irgendetwas darin sichtbar ist - sonst prueft der Lauf einen
      Editor, den der Browser gar nicht darstellt. */

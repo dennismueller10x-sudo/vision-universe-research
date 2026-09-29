@@ -502,6 +502,12 @@ a.q-tile:hover h3{color:var(--q-green)}
 .q-hit-num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .q-hit-num strong{display:block;font-size:16px;font-weight:650}
 .q-hit-num span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+/* Traegt die Spalte ein Urteil statt einer Zahl, gilt kein Zahlensatz:
+   "Mehr Schwaechen als Staerken" darf umbrechen, sonst schiebt es auf
+   390 px die Zeile auseinander. Die Breite ist begrenzt, damit Ticker und
+   Name ihren Platz behalten. */
+.q-hit-urteil .q-hit-num{white-space:normal;font-variant-numeric:normal;max-width:8.5rem}
+.q-hit-num .q-state{display:inline-flex;font-size:12px;margin:0;color:inherit;text-align:left}
 @media(max-width:650px){.q-hit{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:14px 0}
  .q-hit-why{grid-column:1/-1;order:3}}
 

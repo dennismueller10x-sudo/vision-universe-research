@@ -471,3 +471,164 @@ Ich hatte die Aktienliste vollständig zugeklappt. Der Smoke meldete
 Namen im Kopf herkommt, stand vor einem Suchfeld und sonst nichts. Ein
 leerer Bildschirm ist keine Vereinfachung. Jetzt stehen sechs Zeilen
 offen, die übrigen 34 liegen zu.
+
+## 10. Der Screener: die Zahlenwand, und was dahinter steckte
+
+Nach dem zweiten Durchgang war der Screener die gemessen schwerste Seite —
+und er ist der Weg, den die Startseite einem Anfänger anbietet
+(„Aktien finden · Du weißt noch nicht, welche"). Also genau der Weg des
+25-€-Sparers.
+
+**Gemessen bei 390 px, vor dem Umbau**, über sechs Ansichten:
+
+| Ansicht | Wörter | erste Höhe | Karten | Klickziele | lange Sätze | Zahlen/100 W |
+|---|---|---|---|---|---|---|
+| Start | 110 | 65 | 3 | 17 | 0 | 2,7 |
+| Aktien | 178 | 92 | 4 | 15 | 0 | 15,2 |
+| Methodik | 197 | 69 | 3 | 11 | 2 | 1,5 |
+| Strategien | 421 | 102 | 11 | 16 | **11** | 5,0 |
+| **Screener** | 499 | 82 | 4 | 39 | 6 | **22,4** |
+| Aktie NVDA | 595 | 81 | 7 | 31 | 5 | 10,8 |
+
+22,4 Zahlen je 100 Wörter — die Wand aus Kennzahlen, die sich als „das ist
+nichts für mich" liest.
+
+### Wo die Zahlen wirklich saßen
+
+Nicht geschätzt, sondern je Bereich gezählt (112 Zahlen auf der Seite):
+
+| Bereich | Zahlen | Wörter |
+|---|---|---|
+| **rechte Spalte der Treffer** | **75** | 150 |
+| Begründung („warum ist die Aktie hier?") | 25 | 75 |
+| Kopfzeile | 3 | 19 |
+| Ticker und Name | 0 | 96 |
+
+Eine Zeile las sich:
+
+```
+GL | Globe Life | Qualität: stark (90) | 90 | nur 6 von 7 prüfbar
+```
+
+**Die Zahl stand zweimal.** `(90)` in der Begründung, `90` in der Spalte
+daneben — dieselbe Zahl, dieselbe Zeile. Zwei Drittel aller Zahlen der
+Seite lagen in einer Spalte, die nichts trug, was die Zeile nicht schon
+sagte.
+
+### Der Befund dahinter: ein Nenner, den niemand erreicht
+
+„nur X von 7 prüfbar" stand auf **25 von 25 Zeilen**. Die Ursache ist
+keine Anzeigefrage. Gemessen über 6.297 Titel:
+
+| Faktor | Abdeckung |
+|---|---|
+| Kursstärke · Risiko | 88,4 % |
+| Unternehmensqualität | 57,5 % |
+| Wachstum | 50,9 % |
+| Bewertung | 40,0 % |
+| Profitabilität | 31,1 % |
+| **Erwartungstrend (`revisions`)** | **0,0 %** |
+
+`revisions` steht im veröffentlichten Artefakt, zählt im Nenner von sieben
+mit und trägt für **keinen einzigen Titel** einen Wert. Kein Titel erreicht
+7 von 7; das Maximum ist 6, und das haben 20,4 %.
+
+Der Satz war damit wahr und trotzdem irreführend: er las sich als Mangel
+**dieses** Titels, während die Lücke für alle gleich gilt. Eine Warnung,
+die auf jeder Zeile steht, warnt nicht mehr — dieselbe Fehlerklasse wie
+ein Wächter, der jede Nacht schreit.
+
+### Was an ihre Stelle getreten ist
+
+Die rechte Spalte trägt jetzt das **Klartext-Urteil** über alle bewerteten
+Faktoren — dieselbe Engine, die auf der Aktienseite steht, gerechnet aus
+Daten, die ohnehin in der Antwort liegen (kein neues Artefakt, keine
+zweite Anfrage). Es variiert, und es ist genau die Auskunft, die fehlte:
+
+```
+GL    Globe Life               Qualität: stark (90)   Mehr Stärken als Schwächen
+AGNT  AGNT, Inc.               Qualität: stark (88)   Überwiegend schwach
+MBLY  Mobileye Global Inc.     Qualität: stark (85)   Überwiegend schwach
+```
+
+**AGNT ist der Punkt.** Wer auf Qualität filtert, sah vorher „stark (88)"
+und nichts weiter. Dass der Titel im Gesamtbild schwach ist, stand erst
+eine Seite später. Jetzt warnt ihn die Zeile, in der er sucht.
+
+Der gemessene Wert bleibt in der Begründung — die Browser-QA verlangt ihn
+dort zu Recht, ein Band allein wäre ein Etikett ohne Beleg. Der Nenner des
+Urteils sind die **geprüften** Punkte („Stark in 3 von 5 geprüften
+Punkten"): er beschreibt sich selbst und braucht die 7 nicht. Die
+systemische Lücke steht **einmal** auf der Seite, hinter „Wie wird
+gefiltert?", und wird zur Laufzeit aus dem Artefakt gezählt — trägt
+`revisions` eines Tages Werte, verschwindet der Satz von allein.
+
+### Und was der Screenshot zeigte, das keine Zahl zeigte
+
+Die Messung sagte, es sei besser geworden. Das Bild sagte: **kein einziger
+Treffer ist zu sehen.** Der erste begann bei 909 px, das Fenster ist
+844 px hoch.
+
+Drei Ursachen, alle im Bild:
+
+1. **„Chancen finden." stand zweimal** — als Anspruch in der Kopfzeile und
+   200 px darunter nochmal als Überschrift.
+2. **Der Hero erklärte, was die Zeilen vorführen** („zeigt bei jedem
+   Treffer, warum er dabei ist") — 22 Wörter für etwas, das jetzt sichtbar
+   ist.
+3. **Die Zeile über der Liste nannte vier Dinge auf einmal**: Trefferzahl,
+   Universumsgröße, Methodik („Quant V2 · Factor Evidence" — im
+   Sprachvertrag erlaubt, am Küchentisch trotzdem englischer Fachbegriff)
+   und den Sortierschlüssel, den die Marken darüber ohnehin zeigen.
+
+Oben blieb, was ein Einsteiger hier braucht: **wie viele er sieht**, und
+zwar ehrlich („25 von 50 Treffern" statt „50 Treffer" über 25 Zeilen —
+damit erklärt sich der Unterschied von selbst und braucht keinen Absatz
+mehr), und **dass das keine Rangliste des Marktes ist**. Das ist die
+gefährliche Fehllesart und gehört nicht hinter eine Klappe.
+
+### Nachher
+
+| Screener | vorher | nachher |
+|---|---|---|
+| Wörter | 499 | **342** |
+| davon erste Bildschirmhöhe | 82 | **58** |
+| Zahlen je 100 Wörter | 22,4 | **8,8** |
+| lange Sätze | 6 | **5** |
+| Fachbegriffe | 4 | **3** |
+| erster Treffer beginnt bei | 909 px | **728 px** |
+| Karten · Klickziele | 4 · 39 | 4 · 39 |
+
+Der erste Treffer steht jetzt im ersten Bildschirm (Navigation ab 777 px,
+also eine halbe Zeile mit Ticker, Name und Urteilsmarke sichtbar). Keine
+Kennzahl hat sich verschlechtert.
+
+### Ein Test, der nicht veraltet
+
+`quant/tests/screener-hit-row.test.mjs` prüft die **Ableitung**, nicht den
+heutigen Messwert: dass der Faktorname aus der Methodik kommt und nicht im
+Code steht, dass das Urteil aus derselben Engine wie die Aktienseite
+kommt, und — über die echten 6.297 Zeilen — dass sich aus einer
+Screening-Zeile wirklich ein Urteil bilden lässt und dass es **variiert**.
+Eine Spalte, die auf jeder Zeile dasselbe sagt, wäre die Tapete, die
+gerade abgenommen wurde.
+
+**Beim ersten Lauf wurde einer dieser Tests rot, obwohl die Oberfläche
+sauber war**: er las den Abschnitt samt Kommentaren, und die erklären den
+Befund, indem sie die alte Zeichenkette zitieren. Ein Test, der die
+Begründung einer Reparatur für die Reparatur hält, verbietet, den eigenen
+Befund aufzuschreiben. Er prüft jetzt den Code ohne Kommentare — und
+verlangt zusätzlich, dass die Begründung im Code **stehen bleibt**.
+
+### Offen für den Eigentümer
+
+`revisions` bei 0,0 % ist keine Anzeigefrage, sondern eine Datenfrage:
+entweder wird der Faktor gefüllt, oder er gehört aus dem veröffentlichten
+Faktorsatz. Die Oberfläche sagt bis dahin ehrlich, dass er fehlt.
+
+Drei weitere Stellen tragen denselben Nenner: die Watchlist-Zeile
+(`X von 7 bewertet`), die Marke im Kopf der `/quant/`-Aktienseite
+(`X von 7 Eigenschaften bewertet`) und die Tabelle des Profi-Screeners
+(`X / 7`). Sie sind hier **bewusst nicht mitgeändert** — die Messung galt
+dem Screener, und zwei Produkte in einem Durchgang umzubauen wäre eine
+Ausweitung ohne Befund. Derselbe Einwand gilt dort aber.
