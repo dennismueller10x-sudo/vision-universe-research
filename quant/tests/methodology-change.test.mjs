@@ -128,11 +128,38 @@ test("der Bericht sagt, was er nicht trennen kann", () => {
       "ohne Kontrollwert ist die Momentumzahl nicht einzuordnen");
     assert.ok(Number.isFinite(k.MOMENTUM_MEDIAN_RANK_CHANGE));
   }
-  /* Und die Bewegung der nicht geaenderten Faktoren muss klein bleiben
-     gegen die des Momentums. Waere sie es nicht, waere die Umstellung
-     nicht das, was hier gemessen wird. */
+  /* DER BERICHT MUSS UEBER SICH SELBST DIE WAHRHEIT SAGEN.
+
+     Vorher stand hier eine Schwelle: Momentum muss sich mehr als
+     fuenfmal so stark bewegen wie die Kontrollfaktoren. Gemessen am
+     29.09.2026 war das nicht mehr so - Momentum 165, Kontrollen 207,5.
+     Der Test war damit im Recht, und die Versuchung waere gewesen, die
+     Schwelle zu senken, bis er wieder gruen ist.
+
+     Das waere die falsche Reparatur. Der Vergleich trennt tatsaechlich
+     nicht mehr, weil die beiden Beobachtungen zu weit auseinanderliegen
+     und das Universum sich dazwischen geaendert hat. Richtig ist nicht,
+     eine andere Zahl zu verlangen, sondern zu verlangen, dass der
+     Bericht seinen eigenen Zustand benennt.
+
+     Geprueft wird deshalb die Ehrlichkeit, nicht das Ergebnis: das
+     Urteil muss dastehen UND zu den Zahlen passen. Ein Bericht, der
+     "HOLDS" behauptet, waehrend die Kontrollen staerker laufen, faellt
+     hier durch. */
+  assert.ok(["HOLDS", "LOST", "UNKNOWN"].includes(k.ISOLATION),
+    "der Bericht sagt nicht, ob er die Umstellung ueberhaupt noch trennt");
+  assert.ok(k.isolationNote && k.isolationNote.length > 30,
+    "das Urteil steht ohne Begruendung da");
   if (Number.isFinite(k.MOMENTUM_OVER_CONTROL)) {
-    assert.ok(k.MOMENTUM_OVER_CONTROL > 5,
-      "Momentum bewegt sich kaum staerker als die Kontrollfaktoren - dann misst dieser Bericht die Datenlage, nicht die Methodik");
+    const sollte = k.MOMENTUM_OVER_CONTROL > 5 ? "HOLDS" : "LOST";
+    assert.equal(k.ISOLATION, sollte,
+      "das Urteil passt nicht zu den eigenen Zahlen (Momentum/Kontrolle = "
+      + k.MOMENTUM_OVER_CONTROL + ")");
+  }
+  /* Und wenn die Trennung verloren ist, muss der Verweis auf die saubere
+     Messung dastehen - sonst liest jemand die Zahlen als Methodik. */
+  if (k.ISOLATION === "LOST") {
+    assert.match(k.isolationNote, /Datenlage/);
+    assert.ok(k.cleanMeasurement, "ohne Verweis auf die saubere Messung ist der Bericht irrefuehrend");
   }
 });

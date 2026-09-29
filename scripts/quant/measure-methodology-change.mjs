@@ -204,6 +204,27 @@ function main() {
         MOMENTUM_MEDIAN_RANK_CHANGE: momentumMedian,
         MOMENTUM_OVER_CONTROL: finite(median) && median > 0 && finite(momentumMedian)
           ? round(momentumMedian / median, 1) : null,
+        /* DER BERICHT SAGT, OB ER NOCH TRENNT.
+           Gemessen am 29.09.2026: Momentum bewegte sich um 165 Raenge,
+           die Kontrollfaktoren um 207,5 - also MEHR. Damit misst dieser
+           Vergleich die Datenlage und nicht mehr die Umstellung, weil die
+           beiden Beobachtungen zu weit auseinanderliegen und das Universum
+           sich dazwischen geaendert hat.
+           Das darf der Bericht nicht verschweigen und auch nicht durch
+           eine gesenkte Schwelle uebertuenchen: er traegt das Urteil ueber
+           seine eigene Gueltigkeit als eigenes Feld. Wer die Zahlen liest,
+           sieht daneben, ob sie noch bedeuten, was ihr Name sagt. */
+        ISOLATION: (() => {
+          if (!finite(median) || !finite(momentumMedian) || median <= 0) return "UNKNOWN";
+          return momentumMedian / median > 5 ? "HOLDS" : "LOST";
+        })(),
+        isolationNote: (() => {
+          if (!finite(median) || !finite(momentumMedian) || median <= 0)
+            return "Ohne Kontrollwert laesst sich nicht sagen, ob dieser Vergleich die Umstellung trennt.";
+          return momentumMedian / median > 5
+            ? "Momentum bewegt sich deutlich staerker als die Kontrollfaktoren - der Abstand gehoert der Umstellung."
+            : "Die Kontrollfaktoren bewegen sich aehnlich stark oder staerker als Momentum. Dieser Vergleich misst die Datenlage, NICHT die Methodik. Die saubere Messung steht in der Studie unter cleanMeasurement.";
+        })(),
         note: "Die sechs nicht geaenderten Faktoren sind der Kontrollversuch. Ihre Bewegung ist Datenlage und Abdeckung, nicht Methodik. Nur der Abstand dazwischen gehoert der Umstellung.",
         cleanMeasurement: "docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md - dort beide Basen am selben Stichtag ueber dasselbe Universum."
       };
