@@ -2813,8 +2813,20 @@ async function einfacherScreener(){
       "Durchschnittlich", ...). Der Zahlenwert bleibt in der Spalte
       rechts - wer ihn will, findet ihn, aber er traegt die Zeile nicht
       mehr. */
+   /* DAS WORT TRAEGT DIE BEDEUTUNG, DIE ZAHL DEN BELEG.
+
+      Erst hatte ich hier nur das Band stehen ("Qualitaet: stark"), um
+      die Zahlendichte zu senken. Die Browser-QA hat das zu Recht
+      abgelehnt: sie verlangt in jeder Trefferzeile einen GEMESSENEN
+      Wert, und "stark" allein ist ein Etikett, das niemand nachpruefen
+      kann - genau die Art unbelegter Behauptung, die dieses Produkt
+      sonst ueberall vermeidet.
+      Also beides: das Wort fuer den Einsteiger, der Wert fuer den, der
+      es genau wissen will. Die Zahl steht in Klammern und traegt die
+      Zeile nicht mehr - das war der eigentliche Zweck der Aenderung. */
    const warum=werte.length
-    ?werte.map(([label,v])=>{const b=VUFactorEvidence.band(v);return label+': '+(b?b.label.toLowerCase():'ohne Einordnung');}).join(' · ')
+    ?werte.map(([label,v])=>{const b=VUFactorEvidence.band(v);
+      return label+': '+(b?b.label.toLowerCase():'ohne Einordnung')+' ('+Math.round(v)+')';}).join(' · ')
     :'Für diesen Titel lässt sich das nicht prüfen.';
    const bewertet=s.evidence&&s.evidence['quantV2.factorEvidence.availableFactors'];
    liste.append(hitRow(s.ticker,s.name,warum,
