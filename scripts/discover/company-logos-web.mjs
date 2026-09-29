@@ -68,7 +68,7 @@ function groesste(sizes) {
  * (einfarbige Safari-Silhouette) zaehlt nicht.
  * @returns {{icons: Array<{href, size, kind}>, manifest: string|null}}
  */
-export function parseIconLinks(html, baseUrl) {
+export function parseIconLinks(html, baseUrl, companyName) {
   const icons = [];
   let manifest = null;
   const head = String(html || "").slice(0, 400000);
@@ -91,16 +91,33 @@ export function parseIconLinks(html, baseUrl) {
     const src = a.src || a["data-src"] || "";
     const hint = [src, a.alt, a.class, a.id].join(" ");
     if (!src || !/logo/i.test(hint) || /(partner|award|footer|sponsor|badge|client|customer)/i.test(hint)) continue;
+    /* Nur das eigene Logo: Firmenname oder Domain im Hinweis, oder klar als
+       Seitenlogo ausgezeichnet - sonst trifft man Partnerlogos (Xencor ->
+       Novartis). */
+    if (!ownLogoHint(hint, baseUrl, companyName)) continue;
     let href;
     try { href = new URL(src.replace(/&amp;/g, "&"), baseUrl).href; } catch (e) { continue; }
     if (/^https?:/.test(href)) icons.push({ href, size: 0, kind: "logo" });
     if (icons.filter((i) => i.kind === "logo").length >= 3) break;
   }
-  return { icons, manifest, inlineSvg: inlineLogoSvg(head) };
+  return { icons, manifest, inlineSvg: inlineLogoSvg(head, baseUrl, companyName) };
+}
+
+const SEITENLOGO = /(site|brand|header|nav|navbar|main|primary|global|corporate|company|masthead|home)[-_ ]?logo|logo[-_ ]?(link|main|primary|header|brand|home)/i;
+
+/** Gehoert ein Logo-Hinweis zur Firma selbst? */
+export function ownLogoHint(hint, baseUrl, companyName) {
+  const h = String(hint || "").toLowerCase();
+  if (SEITENLOGO.test(h)) return true;
+  const woerter = String(companyName || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]/g, " ")
+    .split(/\s+/).filter((w) => w.length >= 3 && !/^(inc|corp|the|and|holdings|group|class|company|ltd|plc|technologies|international)$/.test(w));
+  let label = "";
+  try { label = rootDomain(new URL(baseUrl).hostname).split(".")[0]; } catch (e) { /* ohne */ }
+  return (label.length >= 3 && h.includes(label)) || woerter.some((w) => h.includes(w));
 }
 
 /** Ein <svg> im Seitenkopf, das als Logo ausgezeichnet ist (Klasse, ID, aria-label, title). */
-export function inlineLogoSvg(html) {
+export function inlineLogoSvg(html, baseUrl, companyName) {
   const text = String(html || "").slice(0, 250000);
   const re = /<svg\b[^>]*>/gi;
   let m;
@@ -109,6 +126,7 @@ export function inlineLogoSvg(html) {
     const tag = m[0];
     const innen = text.slice(m.index, m.index + 600);
     if (!/logo/i.test(tag) && !/<title>[^<]*logo/i.test(innen) && !/(class|id|aria-label)="[^"]*logo[^"]*"[^<]*$/i.test(vorher)) continue;
+    if (baseUrl !== undefined && !ownLogoHint(vorher.slice(-200) + tag + innen.slice(0, 300), baseUrl, companyName)) continue;
     const ende = text.indexOf("</svg>", m.index);
     if (ende < 0) continue;
     let svg = text.slice(m.index, ende + 6);
@@ -199,7 +217,10 @@ export async function toPng(buf, sharp, opts = {}) {
   }
   let img = sharp(buf, { limitInputPixels: 4096 * 4096, density: fmt === "svg" ? 300 : undefined });
   const meta = await img.metadata();
-  if (fmt !== "svg" && Math.min(meta.width || 0, meta.height || 0) < MIN_ICON) return { reason: "WEB_ICON_ZU_KLEIN" };
+  /* Icon: beide Seiten ab 64 px. Wortmarke aus dem Seitenkopf: breit genug
+     (ab 96 px) - sie ist naturgemaess flach. */
+  const w = meta.width || 0, h = meta.height || 0;
+  if (fmt !== "svg" && (opts.logo ? (Math.max(w, h) < 96 || Math.min(w, h) < 16) : Math.min(w, h) < MIN_ICON)) return { reason: "WEB_ICON_ZU_KLEIN" };
   const ratio = (meta.width || 1) / (meta.height || 1);
   /* Ein Logo aus dem Seitenkopf darf breit sein (Wortmarke), ein Icon nicht. */
   const maxRatio = opts.logo ? 8 : 4;

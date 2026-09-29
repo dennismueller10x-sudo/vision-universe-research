@@ -255,7 +255,7 @@ export function matchUniverse(universe, items) {
   return { matches, reasons };
 }
 
-const LICENSE_OK = /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?)$/;
+const LICENSE_OK = /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?|apache-2\.0|mit)$/;
 const RESTRICTIONS_OK = new Set(["", "trademarked"]);
 
 /**
@@ -268,6 +268,8 @@ export function licenseCode(code, shortName) {
   const n = String(shortName || "").trim();
   if (/^public domain$/i.test(n)) return "pd";
   if (/^cc0\b/i.test(n)) return "cc0";
+  if (/^apache license,? (version )?2\.0$/i.test(n)) return "apache-2.0";
+  if (/^mit( license)?$/i.test(n)) return "mit";
   const m = /^cc[ -]by(-sa)?[ -](\d\.\d)$/i.exec(n);
   return m ? "cc-by" + (m[1] ? "-sa" : "") + "-" + m[2] : "";
 }
@@ -295,6 +297,7 @@ export function checkLicense(info) {
   const restrictions = meta(ext, "Restrictions").toLowerCase().split("|").map((s) => s.trim());
   if (restrictions.some((r) => !RESTRICTIONS_OK.has(r))) return { ok: false, reason: "EINSCHRAENKUNG:" + restrictions.join("|") };
   const author = stripHtml(meta(ext, "Artist"));
+  /* Apache 2.0 und MIT verlangen den Urheber- und Lizenzhinweis wie CC BY. */
   const attributionRequired = license !== "pd" && license !== "cc0";
   if (attributionRequired && !author) return { ok: false, reason: "URHEBER_FEHLT" };
   return {

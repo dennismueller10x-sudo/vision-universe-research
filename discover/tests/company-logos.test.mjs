@@ -7,7 +7,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, sniff, icoLargestPng, genericIcons, toPng,
-  inlineLogoSvg, websiteFromFiling, filingText, latestReport, rootDomain
+  inlineLogoSvg, websiteFromFiling, filingText, latestReport, rootDomain, ownLogoHint
 } from "../../scripts/discover/company-logos-web.mjs";
 import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
@@ -172,7 +172,7 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
       assert.ok(c.host, "Website fehlt: " + sym);
       assert.equal(c.license, undefined, sym);
     } else {
-      assert.match(c.license, /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?)$/, sym);
+      assert.match(c.license, /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?|apache-2\.0|mit)$/, sym);
       assert.match(c.page || "", /^https:\/\/commons\.wikimedia\.org\//, sym);
       if (c.attributionRequired) assert.ok(c.author, "Urheber fehlt: " + sym);
     }
@@ -287,9 +287,10 @@ test("Website: Umwandlung in ein kleines PNG (falls sharp installiert ist)", asy
 
 test("Website: Logo aus dem Seitenkopf, wenn kein grosses Icon da ist", () => {
   const html = `<header><a class="brand"><img src="/assets/nvidia-logo-horz.svg" alt="NVIDIA"></a>
+    <img src="/wp-content/uploads/novartis-logo-350x70.jpg" alt="Novartis">
     <img src="/img/partner-logo-acme.png" class="partner-logo"></header>
     <link rel="icon" href="/favicon.ico">`;
-  const { icons } = parseIconLinks(html, "https://www.nvidia.com/");
+  const { icons } = parseIconLinks(html, "https://www.nvidia.com/", "NVIDIA Corp");
   const logos = icons.filter((i) => i.kind === "logo").map((i) => i.href);
   assert.deepEqual(logos, ["https://www.nvidia.com/assets/nvidia-logo-horz.svg"]);
   const order = orderCandidates(icons, "https://www.nvidia.com").map((c) => c.href);
@@ -314,4 +315,20 @@ test("SEC: juengster Jahresbericht vor Quartalsbericht", () => {
   const recent = { form: ["8-K", "10-Q", "10-K", "10-Q"], accessionNumber: ["a", "b", "c", "d"], primaryDocument: ["x.htm", "q.htm", "k.htm", "q2.htm"] };
   assert.deepEqual(latestReport(recent), { form: "10-K", accession: "c", document: "k.htm" });
   assert.equal(latestReport(null), null);
+});
+
+test("Zweite Diagnose: Apache-Lizenz, nur das eigene Logo, breite Wortmarken", async (t) => {
+  const info = (short) => ({ extmetadata: { LicenseShortName: { value: short }, Artist: { value: "NVIDIA" }, Restrictions: { value: "trademarked" } } });
+  const nv = checkLicense(info("Apache License 2.0"));
+  assert.ok(nv.ok); assert.equal(nv.license, "apache-2.0"); assert.ok(nv.attributionRequired);
+  assert.ok(!checkLicense(info("GNU General Public License v3")).ok);
+  assert.ok(!ownLogoHint("/wp-content/uploads/novartis-logo.jpg Novartis", "https://xencor.com/", "Xencor Inc"));
+  assert.ok(ownLogoHint("/img/xencor-logo.svg", "https://xencor.com/", "Xencor Inc"));
+  assert.ok(ownLogoHint("/content/dam/logo.svg site-logo", "https://www.norfolksouthern.com/", "Norfolk Southern"));
+  assert.ok(ownLogoHint("/is/image/emerson/logo", "https://www.emerson.com/en/corporate", "Emerson Electric"));
+  let sharp;
+  try { sharp = (await import("sharp")).default; } catch (e) { t.skip("sharp nicht installiert"); return; }
+  const wortmarke = await sharp({ create: { width: 240, height: 48, channels: 4, background: "#036" } }).png().toBuffer();
+  assert.ok((await toPng(wortmarke, sharp, { logo: true })).png);
+  assert.equal((await toPng(wortmarke, sharp)).reason, "WEB_ICON_ZU_KLEIN");
 });

@@ -30,7 +30,7 @@ import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons,
-  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport
+  WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
@@ -111,7 +111,7 @@ async function secHolen(url, max, ua) {
 }
 
 /** Das beste Icon einer Website als verkleinertes PNG, oder {reason}. */
-async function webIcon(site, sharp, sym) {
+async function webIcon(site, sharp, sym, companyName) {
   let found = [], base = site.url, inlineSvg = null;
   /* Startseite, bei Fehler dieselbe Adresse mit bzw. ohne "www." */
   const varianten = [site.url];
@@ -119,12 +119,21 @@ async function webIcon(site, sharp, sym) {
     const u = new URL(site.url);
     u.hostname = u.hostname.startsWith("www.") ? u.hostname.slice(4) : "www." + u.hostname;
     varianten.push(u.href);
+    /* Investoren- oder Laenderseite (ir.united.com): auch die Hauptdomain. */
+    const haupt = rootDomain(new URL(site.url).hostname);
+    if (haupt && haupt !== new URL(site.url).hostname.replace(/^www\./, "")) varianten.push("https://www." + haupt + "/");
   } catch (e) { /* nur die eine */ }
   for (const url of varianten) {
     try {
       const seite = await holen(url, 3 * 1024 * 1024, { truncate: true });
       base = seite.url;
-      const r = parseIconLinks(seite.buf.toString("utf8"), base);
+      const r = parseIconLinks(seite.buf.toString("utf8"), base, companyName);
+      /* Nur kleine Icons auf der Investorenseite: die Hauptseite versuchen. */
+      if (!r.icons.some((c) => c.size >= 64 || c.kind === "logo") && !r.inlineSvg && url !== varianten[varianten.length - 1]) {
+        dbg(sym, "Startseite", seite.url, "ohne grosses Icon - naechste Variante");
+        if (!found.length) { found = r.icons; base = seite.url; }
+        continue;
+      }
       found = r.icons; inlineSvg = r.inlineSvg;
       dbg(sym, "Startseite", base, found.length + " Kandidaten", inlineSvg ? "+ Inline-SVG" : "");
       if (r.manifest) {
@@ -349,7 +358,7 @@ if (!args["no-web"] && !DRY) {
         icons.set(r.symbol, { hash: alt.sha1, host: site.host, alt });
         return;
       }
-      const res = await webIcon(site, sharp, r.symbol);
+      const res = await webIcon(site, sharp, r.symbol, r.name);
       if (res.png) icons.set(r.symbol, { hash: createHash("sha1").update(res.png).digest("hex"), host: site.host, png: res.png, iconUrl: res.iconUrl, site });
       else reasons.set(r.symbol, res.reason);
     });
@@ -396,7 +405,7 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify({
   version: "company-logos-1.0.0",
   generatedAt,
   sources: ["WIKIMEDIA_COMMONS", "WEBSITE"],
-  boundary: "Logos dienen allein der Identifizierung des Unternehmens neben seinen eigenen Kursdaten. Zuerst Wikimedia Commons (nur freie Lizenz: gemeinfrei, CC0, CC BY, CC BY-SA), sonst das Icon der offiziellen Website des Unternehmens (Marke des Inhabers, keine Lizenz). Unveraendert und nur verkleinert. Nicht fuer Werbung, Social-Media-Beitraege oder eigene Grafiken. Quelle je Logo: credits.json.",
+  boundary: "Logos dienen allein der Identifizierung des Unternehmens neben seinen eigenen Kursdaten. Zuerst Wikimedia Commons (nur freie Lizenz: gemeinfrei, CC0, CC BY, CC BY-SA, Apache 2.0, MIT), sonst das Icon der offiziellen Website des Unternehmens (Marke des Inhabers, keine Lizenz). Unveraendert und nur verkleinert. Nicht fuer Werbung, Social-Media-Beitraege oder eigene Grafiken. Quelle je Logo: credits.json.",
   count: Object.keys(files).length,
   files: sortiert(files)
 }) + "\n");
