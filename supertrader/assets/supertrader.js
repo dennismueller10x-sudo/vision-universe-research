@@ -144,7 +144,7 @@
     ] : st === 'CLOSED' ? [
       ['Einstieg', num(s.entry && s.entry.price)], ['Ausstieg', num(s.exits && s.exits.length ? s.exits[s.exits.length - 1].price : null)], ['Ergebnis', pct(s.result && s.result.returnPct, 1, true)],
     ] : [
-      ['Trigger', num(lv.trigger)], ['Ungültig', num(lv.invalidation), 'bad'], [s.strategyId === 'MOMENTUM_BREAKOUT' ? 'Max. Risiko' : 'Risiko', riskOf(s) !== null ? pct(riskOf(s), 1) : '–'],
+      ['Trigger', num(lv.trigger)], ['Ungültig', num(lv.invalidation), 'bad'], ['Risiko', riskOf(s) !== null ? pct(riskOf(s), 1) : '–'],
     ];
     return h('a', { class: 'st-sig', href: stockUrl(s.symbol), style: worldVars(strat) }, [
       h('div', { class: 'top' }, [h('span', { class: 'strat', text: strat.world_name }), stateTag(st)]),

@@ -142,8 +142,8 @@ p { margin: 0 0 10px; }
 .st-sig .name { font-size: 12px; color: var(--st-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .st-sig .why { font-size: 13.5px; color: var(--st-text-2); }
 .st-levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.st-levels div { background: var(--st-bg-2); border-radius: 10px; padding: 8px; }
-.st-levels .k { font-size: 10px; hyphens: auto; overflow-wrap: anywhere; color: var(--st-muted); text-transform: uppercase; letter-spacing: .06em; }
+.st-levels div { background: var(--st-bg-2); border-radius: 10px; padding: 8px 7px; min-width: 0; }
+.st-levels .k { font-size: 11px; color: var(--st-muted); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .st-levels .v { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 14px; }
 .st-levels .v.bad { color: var(--st-bad); }
 .st-sig .strat { font-size: 12px; color: var(--w); font-weight: 700; }
