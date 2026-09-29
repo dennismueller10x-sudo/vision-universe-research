@@ -221,3 +221,26 @@ export function frequencies(states, levels) {
   for (const s of states) { const lab = s.env === null ? "keine" : levels[s.env]; env[lab] = (env[lab] || 0) + 1; }
   return { days: n, environment: Object.fromEntries(Object.entries(env).map(([a, v]) => [a, round((100 * v) / n, 1)])), trend: f("TREND"), momentum: f("MOMENTUM"), risk: f("RISK"), breadth: f("BREADTH") };
 }
+
+/**
+ * Lange Horizonte (1 Jahr, 5 Jahre) je Stufe: Median, Mittel, Anteil im Plus,
+ * schlechtes (10. Perzentil) und gutes (90. Perzentil) Ergebnis. Ueber alle
+ * Tage (ueberlappende Fenster) - "independent" nennt, wie viele sich nicht
+ * ueberschneiden, damit niemand die Genauigkeit ueberschaetzt.
+ * @param states pointInTimeStates(...)
+ * @param outcomes forwardOutcomes(points, [h], entryLag)
+ * @param h Horizont in Handelstagen
+ * @param levels Stufen-Labels
+ */
+export function horizonStats(states, outcomes, h, levels) {
+  const rows = states.map((s, i) => ({ env: s.env, i, o: outcomes.get(s.date) && outcomes.get(s.date)[h] })).filter((r) => r.o);
+  const q = (xs, p) => xs[Math.min(xs.length - 1, Math.max(0, Math.floor(p * (xs.length - 1))))];
+  const desc = (rs) => {
+    if (!rs.length) return { days: 0 };
+    const x = rs.map((r) => r.o.ret).sort((a, b) => a - b);
+    return { days: x.length, independent: rs.filter((r) => r.i % h === 0).length,
+      meanReturn: round(mean(x), 1), medianReturn: round(q(x, 0.5), 1), positiveShare: round((100 * x.filter((v) => v > 0).length) / x.length, 0),
+      bad10: round(q(x, 0.1), 1), good90: round(q(x, 0.9), 1) };
+  };
+  return { days: h, all: desc(rows), levels: levels.map((label, l) => ({ level: l, label, ...desc(rows.filter((r) => r.env === l)) })).filter((x) => x.days > 0) };
+}

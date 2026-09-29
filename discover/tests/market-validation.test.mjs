@@ -82,3 +82,17 @@ test("industryBreadth: Anteil ueber den Linien erst ab ausreichender Historie", 
 test("parseFredCsv: Punkt als fehlender Wert", () => {
   assert.deepEqual(parseFredCsv("observation_date,T10Y3M\n2020-01-02,0.5\n2020-01-03,.\n"), [["2020-01-02", 0.5]]);
 });
+
+test("horizonStats: Median, Anteil im Plus, schlechtes und gutes Zehntel je Stufe", async () => {
+  const { horizonStats } = await import("../../scripts/market/lib/market-validation.mjs");
+  const states = [], out = new Map();
+  for (let i = 0; i < 100; i++) { states.push({ date: day(i), env: i < 50 ? 0 : 1 }); out.set(day(i), { 10: { ret: i < 50 ? i - 25 : 10, worst: 0 } }); }
+  const s = horizonStats(states, out, 10, ["a", "b"]);
+  assert.equal(s.levels[0].days, 50);
+  assert.equal(s.levels[0].positiveShare, 48);
+  assert.equal(s.levels[0].bad10, -21);
+  assert.equal(s.levels[1].medianReturn, 10);
+  assert.equal(s.levels[1].positiveShare, 100);
+  assert.equal(s.all.days, 100);
+  assert.equal(s.levels[0].independent, 5);
+});
