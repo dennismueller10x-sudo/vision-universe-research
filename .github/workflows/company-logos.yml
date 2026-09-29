@@ -1,4 +1,4 @@
-name: Firmenlogos (Wikimedia Commons fuer Discover)
+name: Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)
 
 # Laedt je Titel des Discover-Universums hoechstens ein Firmenlogo aus
 # Wikimedia Commons - zugeordnet ueber die SEC-CIK (Wikidata P5531), sonst
@@ -6,6 +6,10 @@ name: Firmenlogos (Wikimedia Commons fuer Discover)
 # gemeinfrei ist oder unter CC0, CC BY oder CC BY-SA steht. Urheber und
 # Lizenz landen je Titel in discover/logos/credits.json und stehen auf der
 # Aktienseite (scripts/discover/build-company-logos.mjs).
+#
+# Wo Commons nichts hat, kommt das Icon von der offiziellen Website der
+# Firma (Adresse aus Wikidata oder den SEC-Stammdaten zur CIK), nur
+# verkleinert und als PNG (scripts/discover/company-logos-web.mjs).
 #
 # Die Laufzeitumgebung der Entwicklung erreicht Wikimedia nicht; der Abruf
 # laeuft deshalb hier. Aendert nichts ausser discover/logos/.
@@ -41,7 +45,12 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Logos aus Wikimedia Commons (nur freie Lizenzen)
+      - name: Bildbibliothek fuer die Website-Icons
+        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@0.34
+
+      - name: Logos (Commons mit freier Lizenz, sonst Website-Icon)
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
         run: node scripts/discover/build-company-logos.mjs
 
       - name: Pruefung (Zuordnung, Lizenzen, jede Datei belegt)
@@ -54,7 +63,7 @@ jobs:
           git add -A discover/logos
           if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
           Z=$(node -e 'const s=require("./discover/logos/summary.json"); console.log(s.withLogo+"/"+s.universe+" ("+s.pct+" %)")')
-          git commit -m "Firmenlogos: $Z Titel mit Logo aus Wikimedia Commons"
+          git commit -m "Firmenlogos: $Z Titel mit Logo (Wikimedia Commons und Firmen-Websites)"
           git pull --rebase origin "${{ github.ref_name }}"
           git push origin HEAD:"${{ github.ref_name }}"
 
@@ -65,6 +74,6 @@ jobs:
             echo '### Firmenlogos'
             echo ''
             if [ -f discover/logos/summary.json ]; then
-              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Lizenz | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |");'
+              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Quelle | "+JSON.stringify(s.bySource)+" |"); console.log("| nach Lizenz (Commons) | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |");'
             fi
           } >> "$GITHUB_STEP_SUMMARY"

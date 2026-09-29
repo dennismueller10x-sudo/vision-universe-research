@@ -102,9 +102,10 @@
                "für die öffentliche Anzeige (13.09.2026); der Vertragstext liegt nicht im Repository. Geschäftszahlen: U.S. Securities and Exchange Commission (EDGAR), gemeinfrei. " +
                "Index-Mitgliedschaft: öffentliche Bestandsveröffentlichungen der Fondsgesellschaften (BlackRock/iShares, Invesco, State Street/SPDR). " +
                "S&P 500 ist eine Marke von S&P Dow Jones Indices, NASDAQ-100 von Nasdaq, Inc., Dow Jones Industrial Average von S&P Dow Jones Indices."),
-        absatz("Firmenlogos: Wikimedia Commons, nur Dateien mit freier Lizenz (gemeinfrei, CC0, CC BY, CC BY-SA), unverändert und nur verkleinert. " +
-               "Urheber und Lizenz stehen auf der jeweiligen Aktienseite. Logos und Firmennamen sind Marken ihrer jeweiligen Inhaber; sie dienen hier " +
-               "allein der Identifizierung des Unternehmens und bedeuten keine Verbindung zu Vision Universe. Auf Wunsch eines Rechteinhabers wird ein Logo entfernt."),
+        absatz("Firmenlogos: zuerst Wikimedia Commons, nur Dateien mit freier Lizenz (gemeinfrei, CC0, CC BY, CC BY-SA); wo es dort keins gibt, " +
+               "das Icon von der offiziellen Website des Unternehmens. Logos werden unverändert und nur verkleinert gezeigt; die Quelle steht auf der " +
+               "jeweiligen Aktienseite. Logos und Firmennamen sind Marken ihrer jeweiligen Inhaber; sie dienen hier allein der Identifizierung des " +
+               "Unternehmens und bedeuten keine Verbindung zu Vision Universe. Auf Wunsch eines Rechteinhabers wird ein Logo entfernt."),
         absatz(meta.disclaimer || "Discover zeigt Kursverhalten, keine Anlageempfehlung.")
       ])
     ]);

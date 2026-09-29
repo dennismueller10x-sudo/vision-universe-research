@@ -6,6 +6,9 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  normalizeSite, parseIconLinks, parseManifest, orderCandidates, sniff, icoLargestPng, genericIcons, toPng
+} from "../../scripts/discover/company-logos-web.mjs";
+import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
   entityToItem, matchByName, searchName, namesStrong, licenseCode
 } from "../../scripts/discover/company-logos-lib.mjs";
@@ -149,7 +152,7 @@ test("Dateinamen bleiben im Logo-Ordner", () => {
   assert.equal(safeSymbol("a"), null);
 });
 
-test("Ausgelieferte Logos: jede Datei belegt, jede Lizenz frei", () => {
+test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", () => {
   const dir = join(root, "discover", "logos");
   const index = JSON.parse(readFileSync(join(dir, "index.json"), "utf8"));
   const credits = JSON.parse(readFileSync(join(dir, "credits.json"), "utf8")).credits;
@@ -161,9 +164,17 @@ test("Ausgelieferte Logos: jede Datei belegt, jede Lizenz frei", () => {
     assert.ok(existsSync(join(dir, path)), path);
     const c = credits[sym];
     assert.ok(c, "Nachweis fehlt: " + sym);
-    assert.match(c.license, /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?)$/, sym);
-    assert.match(c.page || "", /^https:\/\/commons\.wikimedia\.org\//, sym);
-    if (c.attributionRequired) assert.ok(c.author, "Urheber fehlt: " + sym);
+    if (c.source === "WEBSITE") {
+      /* Website-Icon: immer PNG (nie eine fremde SVG), Quelle genannt, keine Lizenz behauptet. */
+      assert.match(path, /\.png$/, sym);
+      assert.match(c.page || "", /^https?:\/\//, sym);
+      assert.ok(c.host, "Website fehlt: " + sym);
+      assert.equal(c.license, undefined, sym);
+    } else {
+      assert.match(c.license, /^(pd|cc0|cc-by(-sa)?-\d\.\d(-[a-z]{2,})?)$/, sym);
+      assert.match(c.page || "", /^https:\/\/commons\.wikimedia\.org\//, sym);
+      if (c.attributionRequired) assert.ok(c.author, "Urheber fehlt: " + sym);
+    }
     assert.ok(!exclusions[sym], "Ausgeschlossener Titel mit Logo: " + sym);
   }
   const imOrdner = existsSync(join(dir, "files")) ? readdirSync(join(dir, "files")).filter((f) => !f.startsWith(".")) : [];
@@ -201,4 +212,74 @@ test("Zweite Runde: ExxonMobil, BlackRock, Hasbro, Lizenz nur als Kurzname", () 
   assert.equal(licenseCode("", "CC BY-SA 4.0"), "cc-by-sa-4.0");
   assert.equal(licenseCode("", "CC BY-NC 4.0"), "");
   assert.equal(licenseCode("cc-by-3.0", "egal"), "cc-by-3.0");
+});
+
+/* --------------------------------------------- Zweite Quelle: Website */
+
+test("Website: nur echte Firmenseiten", () => {
+  assert.equal(normalizeSite("apple.com").origin, "https://apple.com");
+  assert.equal(normalizeSite("https://www.nvidia.com/en-us/").host, "nvidia.com");
+  assert.equal(normalizeSite("https://en.wikipedia.org/wiki/Apple_Inc."), null);
+  assert.equal(normalizeSite("https://www.linkedin.com/company/x"), null);
+  assert.equal(normalizeSite("ftp://example.com"), null);
+  assert.equal(normalizeSite(""), null);
+});
+
+test("Website: Icons aus dem HTML, bestes zuerst, Standardpfade am Ende", () => {
+  const html = `<head><link rel="icon" href="/favicon-32.png" sizes="32x32">
+    <link rel='apple-touch-icon' href="/apple.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://cdn.x.com/i192.png">
+    <link rel="mask-icon" href="/safari.svg"><link rel="manifest" href="/site.webmanifest"></head>`;
+  const { icons, manifest } = parseIconLinks(html, "https://x.com/de/");
+  assert.equal(manifest, "https://x.com/site.webmanifest");
+  assert.ok(!icons.some((i) => /safari/.test(i.href)));
+  const order = orderCandidates(icons.concat(parseManifest({ icons: [{ src: "/m512.png", sizes: "512x512" }, { src: "/mono.png", sizes: "512x512", purpose: "monochrome" }] }, "https://x.com/")), "https://x.com");
+  assert.deepEqual(order.map((c) => c.href), [
+    "https://x.com/m512.png", "https://cdn.x.com/i192.png", "https://x.com/apple.png",
+    "https://x.com/favicon-32.png", "https://x.com/apple-touch-icon.png", "https://x.com/favicon.ico"
+  ]);
+});
+
+function pngBytes(w, h) {
+  const b = Buffer.alloc(33);
+  Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(b, 0);
+  b.writeUInt32BE(w, 16); b.writeUInt32BE(h, 20);
+  return b;
+}
+
+test("Website: Bildformat aus den Bytes, ICO nur mit eingebettetem PNG", () => {
+  assert.equal(sniff(pngBytes(1, 1)), "png");
+  assert.equal(sniff(Buffer.from("<?xml version='1.0'?><svg xmlns='x'></svg>")), "svg");
+  assert.equal(sniff(Buffer.from("<!doctype html><html></html>")), null);
+  const png = pngBytes(256, 256);
+  const ico = Buffer.alloc(6 + 32 + png.length + 40);
+  ico.writeUInt16LE(1, 2); ico.writeUInt16LE(2, 4);
+  ico[6] = 32; ico.writeUInt32LE(40, 6 + 8); ico.writeUInt32LE(6 + 32 + png.length, 6 + 12);      // BMP 32px
+  ico[22] = 0; ico.writeUInt32LE(png.length, 22 + 8); ico.writeUInt32LE(6 + 32, 22 + 12);          // PNG 256px
+  png.copy(ico, 6 + 32);
+  assert.equal(sniff(ico), "ico");
+  assert.equal(icoLargestPng(ico).readUInt32BE(16), 256);
+});
+
+test("Website: dasselbe Icon auf drei Websites ist ein Baukasten-Icon", () => {
+  const icons = new Map([
+    ["GOOG", { hash: "g", host: "abc.xyz" }], ["GOOGL", { hash: "g", host: "abc.xyz" }],
+    ["A", { hash: "wp", host: "a.com" }], ["B", { hash: "wp", host: "b.com" }], ["C", { hash: "wp", host: "c.com" }]
+  ]);
+  assert.deepEqual([...genericIcons(icons)].sort(), ["A", "B", "C"]);
+});
+
+test("Website: Umwandlung in ein kleines PNG (falls sharp installiert ist)", async (t) => {
+  let sharp;
+  try { sharp = (await import("sharp")).default; } catch (e) { t.skip("sharp nicht installiert"); return; }
+  const gross = await sharp({ create: { width: 512, height: 512, channels: 4, background: "#c00" } }).png().toBuffer();
+  const res = await toPng(gross, sharp);
+  const meta = await sharp(res.png).metadata();
+  assert.equal(meta.format, "png"); assert.equal(meta.width, 128);
+  const klein = await sharp({ create: { width: 32, height: 32, channels: 4, background: "#c00" } }).png().toBuffer();
+  assert.equal((await toPng(klein, sharp)).reason, "WEB_ICON_ZU_KLEIN");
+  const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><script>alert(1)</script><rect width="24" height="24" fill="red"/></svg>');
+  const ausSvg = await toPng(svg, sharp);
+  assert.equal((await sharp(ausSvg.png).metadata()).format, "png");
+  assert.equal((await toPng(Buffer.from("<html>nein</html>"), sharp)).reason, "WEB_KEIN_BILD");
 });

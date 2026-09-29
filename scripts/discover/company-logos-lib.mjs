@@ -58,6 +58,23 @@ SELECT ?item ?itemLabel ?ticker ?exch ?cik ?logo ?rank ?start ?lp WHERE {
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }`;
 
+/* Offizielle Website (P856) fuer die zweite Quelle - dieselben Zuordnungs-
+   wege wie beim Logo, nur ohne Logo-Bedingung. */
+export const SPARQL_SITE_BY_CIK = `
+SELECT ?item ?itemLabel ?cik ?site WHERE {
+  ?item wdt:P5531 ?cik ; wdt:P856 ?site .
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}`;
+
+export const SPARQL_SITE_BY_TICKER = `
+SELECT ?item ?itemLabel ?ticker ?exch ?cik ?site WHERE {
+  ?item p:P414 ?xs . ?xs ps:P414 ?exch ; pq:P249 ?ticker .
+  FILTER NOT EXISTS { ?xs pq:P582 ?delisted }
+  ?item wdt:P856 ?site .
+  OPTIONAL { ?item wdt:P5531 ?cik . }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}`;
+
 export function normalizeCik(v) {
   if (v === null || v === undefined) return null;
   const digits = String(v).replace(/\D/g, "").replace(/^0+/, "");
@@ -158,9 +175,11 @@ export function collectItems(bindings, into = new Map()) {
   for (const b of bindings || []) {
     const item = qid(b.item && b.item.value);
     const title = commonsTitle(b.logo && b.logo.value);
-    if (!item || !title) continue;
+    const site = (b.site && b.site.value) || null;
+    if (!item || (!title && !site)) continue;
     let e = into.get(item);
-    if (!e) { e = { item, label: (b.itemLabel && b.itemLabel.value) || "", ciks: new Set(), tickers: new Set(), usTickers: new Set(), logos: new Map() }; into.set(item, e); }
+    if (!e) { e = { item, label: (b.itemLabel && b.itemLabel.value) || "", ciks: new Set(), tickers: new Set(), usTickers: new Set(), logos: new Map(), sites: new Set() }; into.set(item, e); }
+    if (site) e.sites.add(site);
     const cik = normalizeCik(b.cik && b.cik.value);
     if (cik) e.ciks.add(cik);
     if (b.ticker && b.ticker.value) {
@@ -168,6 +187,7 @@ export function collectItems(bindings, into = new Map()) {
       e.tickers.add(t);
       if (EXCHANGES[qid(b.exch && b.exch.value)]) e.usTickers.add(t);
     }
+    if (!title) continue;
     const alt = e.logos.get(title) || { preferred: false, start: "", icon: true };
     e.logos.set(title, {
       preferred: alt.preferred || /PreferredRank$/.test((b.rank && b.rank.value) || ""),
@@ -229,7 +249,8 @@ export function matchUniverse(universe, items) {
     if (!via) { reasons.set(row.symbol, "KEIN_WIKIDATA_LOGO"); continue; }
     if (cands.length > 1) { reasons.set(row.symbol, "MEHRERE_ITEMS"); continue; }
     const titles = rankLogos(cands[0]);
-    matches.set(row.symbol, { item: cands[0].item, label: cands[0].label, title: titles[0], titles, via });
+    matches.set(row.symbol, { item: cands[0].item, label: cands[0].label, title: titles[0] || null, titles, via,
+                              sites: [...(cands[0].sites || [])].sort() });
   }
   return { matches, reasons };
 }
@@ -323,7 +344,10 @@ export function entityToItem(entity) {
       });
     }
   }
-  if (!logos.size) return null;
+  const sites = new Set(claimValues(entity, "P856")
+    .filter((c) => !((c.qualifiers && c.qualifiers.P582) || []).length)
+    .map((c) => String(c.mainsnak.datavalue.value || "")).filter(Boolean));
+  if (!logos.size && !sites.size) return null;
   const ciks = new Set(claimValues(entity, "P5531").map((c) => normalizeCik(c.mainsnak.datavalue.value)).filter(Boolean));
   const tickers = new Set();
   for (const c of claimValues(entity, "P414")) {
@@ -335,7 +359,7 @@ export function entityToItem(entity) {
   if (lab) names.push(lab.value);
   for (const a of (entity.aliases && entity.aliases.en) || []) names.push(a.value);
   const listed = ["P414", "P5531", "P946", "P1278"].some((p) => claimValues(entity, p).length);
-  return { item: entity.id, label: lab ? lab.value : "", names, ciks, tickers, usTickers: new Set(), logos, listed };
+  return { item: entity.id, label: lab ? lab.value : "", names, ciks, tickers, usTickers: new Set(), logos, sites, listed };
 }
 
 /**
@@ -356,5 +380,6 @@ export function matchByName(row, candidates) {
   }
   if (unique.length !== 1) return { reason: unique.length ? "MEHRERE_ITEMS" : "KEIN_WIKIDATA_LOGO" };
   const titles = rankLogos(unique[0]);
-  return { match: { item: unique[0].item, label: unique[0].label, title: titles[0], titles, via: "NAME" } };
+  return { match: { item: unique[0].item, label: unique[0].label, title: titles[0] || null, titles, via: "NAME",
+                     sites: [...(unique[0].sites || [])].sort() } };
 }

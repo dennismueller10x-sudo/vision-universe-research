@@ -1,8 +1,9 @@
 /**
  * Firmenlogos - das Erkennungszeichen neben dem Namen.
  *
- * Quelle ist allein discover/logos/ (Wikimedia Commons, freie Lizenzen,
- * gebaut von scripts/discover/build-company-logos.mjs). Ein Logo steht nur
+ * Quelle ist discover/logos/ (gebaut von scripts/discover/build-company-
+ * logos.mjs): zuerst Wikimedia Commons mit freier Lizenz, sonst das Icon
+ * der offiziellen Website des Unternehmens. Ein Logo steht nur
  * neben seiner eigenen Aktie und identifiziert sie - es ist keine Aussage,
  * keine Empfehlung und keine Verbindung zum Unternehmen.
  *
@@ -86,7 +87,8 @@
     return creditsLaden.then(function (c) { return c[symbol] || null; });
   }
 
-  /** Zeile "Logo: Urheber · Lizenz · Wikimedia Commons" - leer, solange nichts vorliegt. */
+  /** Zeile "Logo: Urheber · Lizenz · Wikimedia Commons" bzw. "Logo: Website des
+      Unternehmens" - leer, solange nichts vorliegt. */
   function creditLine(symbol) {
     var doc = global.document;
     var p = doc.createElement("p");
@@ -101,6 +103,12 @@
         return a;
       }
       p.appendChild(doc.createTextNode("Logo: "));
+      if (c.source === "WEBSITE") {
+        p.appendChild(link("Website des Unternehmens" + (c.host ? " (" + c.host + ")" : ""), c.page));
+        p.appendChild(doc.createTextNode(" · Marke des jeweiligen Inhabers, nur zur Identifizierung"));
+        p.hidden = false;
+        return;
+      }
       if (c.author) p.appendChild(doc.createTextNode(c.author + " · "));
       p.appendChild(c.licenseUrl ? link(c.licenseName, c.licenseUrl) : doc.createTextNode(c.licenseName));
       p.appendChild(doc.createTextNode(" · "));
