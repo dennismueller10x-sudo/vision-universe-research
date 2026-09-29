@@ -709,3 +709,80 @@ doppelt zählen, dass die Sichtbarkeitsprüfung für Sätze **und** Klickziele
 gilt — und dass die gemessene Begründung im Werkzeug stehen bleibt. Eine
 Fehlerklasse, die nur im Commit steht, wird beim nächsten Umbau wieder
 eingebaut.
+
+## 12. Strategien: dieselben drei Schnitte, und was bewusst blieb
+
+Nach der Lineal-Korrektur (Abschnitt 11) war klar, dass Strategien **nicht**
+an langen Sätzen leidet — das war ein Messfehler. Die echte Last steht in
+den anderen Spalten: 421 Wörter, davon **102 im ersten Bildschirm**, und
+3.863 px Gesamtlänge.
+
+Gemessen bei 390 × 844, wo was beginnt:
+
+| Position | Inhalt |
+|---|---|
+| 50 px | „Strategien verstehen." — Anspruch in der Kopfzeile |
+| 142 px | „Strategien verstehen." — **dieselbe Überschrift nochmal** |
+| 187 px | „Wähle einen Ansatz, der zu deinem Stil passt." |
+| 252 px | 25 Wörter, die aufzählen, was jede Karte darunter zeigt |
+| 377 px | „Stand der Auswertung: … · 8 Ansätze · Methodik strategy-profile-1.0.0" |
+| **441 px** | **erste Strategiekarte** |
+
+Dieselben drei Befunde wie beim Screener, auf einer anderen Seite:
+
+1. **Die Überschrift wiederholte den Anspruch** — dieselben drei Wörter,
+   92 px auseinander, dazwischen nichts.
+2. **Der dritte Satz zählte auf, was die Karten vorführen** — und war
+   zugleich der einzige lange Satz der Seite.
+3. **Die technische Zeile nannte vier Dinge auf einmal.** Davon bleibt die
+   eine, die entscheidet, ob man den Zahlen trauen kann: der Stichtag. Die
+   Zahl der Ansätze steht als Karten darunter; die Methodikkennung gehört
+   zu den Vorbehalten am Fuß der Seite, wo ohnehin steht, was diese Zahlen
+   *nicht* sind.
+
+### Nachher
+
+| Strategien | vorher | nachher |
+|---|---|---|
+| Wörter | 421 | **398** |
+| davon erste Bildschirmhöhe | 102 | **85** |
+| lange Sätze | 1 | **0** |
+| **erste Strategiekarte bei** | **441 px** | **309 px** |
+| Karten · Klickziele | 11 · 16 | 11 · 16 |
+| Zahlen je 100 Wörter | 5,0 | 5,3 |
+
+Der erste Bildschirm zeigt jetzt eine **vollständige Strategie** — Name,
+was sie sucht, „7 Titel erfüllen heute alle Bedingungen", der Weg hinein —
+plus den Anfang der nächsten. Vorher war es eine angeschnittene Karte.
+
+**Zur Ehrlichkeit:** die Zahlendichte stieg von 5,0 auf 5,3. Nicht weil
+Zahlen dazukamen, sondern weil Wörter wegfielen und der Nenner schrumpfte.
+Die absolute Zahl der Zahlen ist unverändert.
+
+### Was bewusst NICHT gekürzt wurde
+
+**Die acht Strategiekarten.** Ein früherer Durchgang hat sie bereits von
+895 auf 421 Wörter und von 83 auf 16 Klickziele gebracht; jede trägt jetzt
+Name, einen Satz, die heutige Trefferzahl, einen Weg hinein und alles
+Weitere im Aufklapper.
+
+Acht echte Wahlmöglichkeiten rechtfertigen ihre Länge. Eine nackte
+Namensliste („GARP", „Value Momentum", „Future Leader") wäre für genau den
+Einsteiger wertlos, um den es hier geht — er weiß ja gerade nicht, was
+diese Namen bedeuten. Die Seite ist lang, weil es acht Antworten gibt,
+nicht weil sie schwätzt.
+
+### Die Regel wanderte in die QA
+
+Die Doppelung aus Anspruch und Überschrift ist **zweimal an zwei Tagen auf
+zwei Seiten** aufgetreten. Eine Regel, die man zweimal von Hand findet,
+gehört in eine Prüfung.
+
+Sie steht deshalb nicht im Quelltext einer einzelnen Seite, sondern in der
+Schleife der Browser-QA über **alle 18 Ansichten** — und gilt damit auch
+für Seiten, die es noch nicht gibt. Vor dem Einbau über alle 18 gemessen:
+**null Doppelungen**, alle anderen Seiten waren bereits sauber
+(`home`: „Transparenz zuerst." über „Aktien verstehen, ohne Vorwissen";
+`explain`: „Keine Blackbox." über „Wir zeigen dir, wie wir rechnen").
+Die Prüfung hat also keine Nebenwirkungen — sie hält nur fest, was schon
+gilt.

@@ -1467,8 +1467,24 @@ async function strategiekatalog(){
  const [index,profile]=await Promise.all([
   api.getStrategyIndex().catch(()=>null),
   api.getStrategyProfiles().catch(()=>null)]);
- main.append(stage('Strategien verstehen.','Wähle einen Ansatz, der zu deinem Stil passt.',
-  'Jeder Ansatz sagt, welche Art von Unternehmen er sucht, welche Bedingungen er stellt, wo sein Hauptrisiko liegt — und wie viele Titel ihn heute erfüllen.'));
+ /* DERSELBE BEFUND WIE AUF DER SCREENER-SEITE, GEMESSEN BEI 390 x 844:
+
+      50 px   "Strategien verstehen."   (Anspruch in der Kopfzeile)
+     142 px   "Strategien verstehen."   (dieselbe Ueberschrift nochmal)
+     187 px   "Waehle einen Ansatz, der zu deinem Stil passt."
+     252 px   25 Woerter, die aufzaehlen, was jede Karte darunter zeigt
+     377 px   "Stand der Auswertung: … · 8 Ansaetze · Methodik strategy-profile-1.0.0"
+     441 px   erste Strategiekarte
+
+   Dieselben drei Woerter standen zweimal, 92 px auseinander. Der dritte
+   Satz zaehlte auf, was die acht Karten darunter vorfuehren - und war
+   zugleich der einzige lange Satz der Seite.
+
+   Was bleibt, ist der Auftrag der Seite in einer Zeile. Die Karten
+   selbst sind NICHT gekuerzt: acht echte Wahlmoeglichkeiten rechtfertigen
+   ihre Laenge, und eine nackte Namensliste ("GARP", "Value Momentum")
+   waere fuer genau den Einsteiger wertlos, um den es hier geht. */
+ main.append(stage('Anlagestile','Jeder Ansatz sagt, was er sucht — und wie viele Aktien ihn heute erfüllen.'));
  if(!index||index.state!=='AVAILABLE'||!Array.isArray(index.profiles)){
   main.append(card('Ansätze derzeit nicht abrufbar',
    'Die ausgewertete Zuordnung ist nicht verfügbar. Es wird keine Ersatzliste gezeigt.',
@@ -1477,8 +1493,12 @@ async function strategiekatalog(){
  }
  const vertrag=profile&&profile.state==='AVAILABLE'?profile.contract:null;
  const persistenz=index.historicalEvidence&&index.historicalEvidence.state==='AVAILABLE'?index.historicalEvidence:null;
+ /* Von vier Angaben bleibt die eine, die entscheidet, ob man den Zahlen
+    trauen kann: der Stichtag. Die Zahl der Ansaetze steht als Karten
+    darunter, und die Methodikversion gehoert zu den Vorbehalten am Fuss
+    der Seite - dort, wo ohnehin steht, was diese Zahlen NICHT sind. */
  main.append(el('p',{class:'muted',style:'margin:-28px 0 20px;font-size:14px',
-  text:'Stand der Auswertung: '+(index.asOf||'nicht angegeben')+' · '+index.profiles.length+' Ansätze · Methodik '+(index.methodologyVersion||'nicht angegeben')}));
+  text:'Stand '+(index.asOf||'nicht angegeben')}));
  const katalog=el('div',{class:'q-catalog'});
  for(const profil of index.profiles)katalog.append(strategieKarte(profil,vertrag,persistenz));
  main.append(katalog);
@@ -1487,6 +1507,11 @@ async function strategiekatalog(){
    text:'Die Anzahl der Titel ist eine Auszählung von heute, keine Rangliste und keine Empfehlung. Eine historische Erfolgsquote je Ansatz ist nicht zertifiziert und wird deshalb nirgends gezeigt — auch nicht als Näherung.'}),
   persistenz?el('p',{class:'muted',style:'font-size:14px',
    text:'Die einzige veröffentlichte historische Grösse ist die Beständigkeit der Zuordnung zwischen '+persistenz.from+' und '+persistenz.to+'. Sie sagt, wie stabil eine Zugehörigkeit ist, nicht wie gut ein Ansatz war.'}):null,
+  /* Die Methodikkennung stand oben im ersten Bildschirm, wo sie niemanden
+     erreicht, der noch nicht weiss, was ein Ansatz ist. Hier steht sie bei
+     den anderen Vorbehalten - nachpruefbar und am richtigen Ort. */
+  el('p',{class:'muted',style:'font-size:13px',
+   text:index.profiles.length+' Ansätze · Methodik '+(index.methodologyVersion||'nicht angegeben')}),
   link('Wie Strategien entstehen',href('explain'),'button secondary')]));
 }
 
