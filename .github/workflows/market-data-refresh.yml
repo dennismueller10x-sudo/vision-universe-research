@@ -391,3 +391,90 @@ jobs:
               node -e 'const m = require("./discover/data/meta.json"); const u = m.universes.find(x => x.universeId === "US_REAL"); console.log("\nDiscover US_REAL: " + u.securities + " Titel, " + u.withPriceSeries + " mit Kursreihe, Faktoren " + JSON.stringify(u.factorCoverage));'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===================================================================
+  # DIE KANONISCHE KETTE
+  #
+  #   MARKET REFRESH -> DURABLE STORE -> PRODUCT MATERIALIZATION
+  #                  -> PRODUCT COMMIT -> PRODUCTION DEPLOY
+  #
+  # Owner-Entscheid vom 29.09.2026, nach einem P0: die Materialisierung
+  # haengt nicht mehr daran, dass ein zweiter Workflow ueber `workflow_run`
+  # zuverlaessig ausgeloest wird. Gemessen hatte dieser Ausloeser auf main
+  # NIE gefeuert - der Marktlauf war jede Nacht gruen, der Produktstand
+  # stand vier Tage still, und nichts hat angeschlagen.
+  #
+  # Kein PAT, kein externer API-Trigger, kein Secret nur zum Starten der
+  # naechsten Stufe: `needs` innerhalb derselben Orchestrierung.
+  #
+  # Die Materialisierung bleibt eine logisch getrennte Stufe in ihrer
+  # eigenen Datei - sie wird hier nur AUFGERUFEN statt gehofft.
+  # ===================================================================
+  materialize:
+    needs: refresh
+    # Nur wenn der Marktlauf wirklich durch ist, und nur auf dem
+    # Default-Branch: ein Entwicklungszweig soll keine Produktdaten
+    # veroeffentlichen.
+    if: needs.refresh.result == 'success' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/product-intelligence-materialization.yml
+    secrets: inherit
+
+  # ===================================================================
+  # FAIL CLOSED: EIN GRUENER MARKTLAUF IST KEIN AKTUELLER QUANT-STAND.
+  #
+  # Diese Stufe laeuft IMMER, auch wenn die Materialisierung
+  # fehlgeschlagen ist - denn genau dann muss jemand es erfahren. Sie
+  # misst den Freshness-Contract und faellt zu, wenn Ablage und
+  # Produktstand nicht auf derselben abgeschlossenen Sitzung stehen.
+  # ===================================================================
+  freshness-contract:
+    needs: [refresh, materialize]
+    if: always() && needs.refresh.result == 'success' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Drei Zustaende messen, nicht einen behaupten
+        id: contract
+        run: |
+          set +e
+          node scripts/quant/measure-pipeline-freshness.mjs --strict \
+            --out=quant/data/product/pipeline-freshness-v1.json
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          set -e
+
+      - name: Bericht in die Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Pipeline-Frische'
+            echo ''
+            if [ -f quant/data/product/pipeline-freshness-v1.json ]; then
+              node -e '
+                const j = require("./quant/data/product/pipeline-freshness-v1.json");
+                console.log("| Stufe | Stichtag | Rueckstand | Zustand |");
+                console.log("|---|---|---|---|");
+                console.log("| Letzte Sitzung | " + j.LATEST_MARKET_SESSION + " | - | - |");
+                console.log("| Dauerhafte Ablage | " + (j.LATEST_DURABLE_STORE_ASOF ?? "-") + " | " + (j.STORE_LAG_SESSIONS ?? "?") + " | " + j.MARKET_STORE_CURRENT + " |");
+                console.log("| Produkt | " + (j.LATEST_PRODUCT_ASOF ?? "-") + " | " + (j.PRODUCT_LAG_SESSIONS ?? "?") + " | " + j.PRODUCT_MATERIALIZATION_CURRENT + " |");
+                console.log("");
+                console.log("**QUANT_CURRENT = " + j.QUANT_CURRENT + "**");
+                console.log("");
+                console.log(j.headline);
+              '
+            else
+              echo 'Kein Bericht erzeugt.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail closed, wenn der Produktstand nicht mitgekommen ist
+        if: steps.contract.outputs.code != '0'
+        run: |
+          echo "::error::P0_DATA_PIPELINE_FROZEN - der Marktlauf war gruen, der Produktstand ist es nicht."
+          exit 1

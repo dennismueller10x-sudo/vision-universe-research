@@ -818,10 +818,8 @@ body.dx .num{font-variant-numeric:tabular-nums}
 
 /* ============================================ Einzeln entdecken (Feed)
 
-   Ein Bildschirm, eine Aktie. Die ganze Mechanik ist scroll-snap - kein
-   abgefangenes Wischen, kein gerechnetes Transform. Deshalb funktioniert
-   der Modus mit Tastatur, Bildlaufleiste und Screenreader, ohne dass
-   dafuer etwas gebaut werden musste.
+   Eine Aktie nach der anderen im nativen, frei laufenden Scrollbereich.
+   Wischen und Scrollen werden nicht abgefangen oder auf Karten eingerastet.
 
    dvh statt vh: auf dem Telefon waechst und schrumpft die Browserleiste,
    und ein Bildschirm in vh waere entweder zu hoch oder zu niedrig. */
@@ -851,12 +849,12 @@ body.dx-feed-aktiv{overflow:hidden}
 
 .dx-feed-spur{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
-  scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:none;-webkit-overflow-scrolling:touch;
   scrollbar-width:none;
 }
 .dx-feed-spur::-webkit-scrollbar{display:none}
 .dx-feed-screen{
-  position:relative;scroll-snap-align:start;scroll-snap-stop:always;
+  position:relative;
   min-height:100%;display:flex;align-items:center;overflow:hidden;
 }
 .dx-feed-bg{

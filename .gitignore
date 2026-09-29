@@ -50,3 +50,14 @@ tmp/
 tmp/product-proof/
 scripts/vu2/__pycache__/
 server/__pycache__/
+.launch/
+
+# Screener-Universum: Release-Projektion aus den Discover-Daten
+# (scripts/screener/build-universe.mjs). Lokal mit demselben Skript erzeugen.
+screener/data/
+
+# Der Frische-Bericht gilt fuer genau einen Lauf. Committet waere er eine
+# Datei, deren Stichtag eine Aktualitaet behauptet, die sie nicht mehr hat -
+# und das war der P0: ein Artefakt, das gruen aussah, waehrend es stillstand.
+# Die Kette liest ihn aus dem Lauf (Step Summary), nicht aus dem Repository.
+quant/data/product/pipeline-freshness-v1.json

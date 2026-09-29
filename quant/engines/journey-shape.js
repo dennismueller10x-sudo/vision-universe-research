@@ -106,6 +106,14 @@
      darunter die 89. Eine Station mit höchstens einer gehaltvollen Aussage
      hat nicht wenig zu sagen, sondern nichts; das ist eine eigene Form. */
   var MAX_WITHHELD_IN_FULL = 2;
+
+  /* Die naechste Schwelle, an der ein Kursfaktor aufgeht: Schwankungsbreite,
+     Verlusttage, groesster Rueckgang und Beta rechnen auf 252 Sitzungen. Das
+     Momentumfenster braucht mehr (273), aber genannt wird, was der Titel
+     zuerst erreicht. Dieselbe Zahl fuehrt die Faktor-Engine als
+     REQUIRED_BARS.risk; ein Test haelt die beiden gegeneinander, damit nicht
+     zwei Module verschiedene Schwellen nennen. */
+  var NAECHSTE_KURSFAKTOR_GRENZE = 252;
   var MINIMAL_MAX_SUBSTANTIVE = 1;
 
   function zahl(value) {
@@ -147,6 +155,49 @@
         return "Diese Auswertungen brauchen einen längeren Kursverlauf, als für diesen Titel vorliegt.";
       },
       outlook: "Das ändert sich von selbst, sobald der Titel länger gehandelt wird."
+    },
+    {
+      /* ZURUECKGEHALTEN IST NICHT DASSELBE WIE NICHT VORHANDEN.
+       *
+       * Ohne eigene Gruppe landet dieser Grund in der Auffanggruppe, und
+       * die schreibt den Code hin: „Der veroeffentlichte Grund lautet
+       * SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING." Das ist genau das, was
+       * ein interner Code in der Hauptsprache nie sein soll. */
+      id: "SHARE_COUNT_NOT_PER_LISTING",
+      codes: ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"],
+      headline: "Die Bewertung wird hier bewusst zurückgehalten",
+      sentence: function (detail) {
+        var zeilen = detail && Array.isArray(detail.issuerListings) ? detail.issuerListings.length : null;
+        return "Dieses Unternehmen hat " + (zeilen ? zeilen + " " : "mehrere ") +
+          "börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das Unternehmen " +
+          "als Ganzes. Welcher Anteil davon auf genau dieses Papier entfällt, steht nicht in den " +
+          "Unterlagen. Ein Börsenwert wäre hier also geschätzt, und alle Bewertungskennzahlen " +
+          "hängen an ihm - deshalb bleibt er offen.";
+      },
+      outlook: "Die Zahlen des Unternehmens selbst sind davon nicht betroffen und stehen weiter unten."
+    },
+    {
+      /* EIN FONDS IST KEINE AKTIE - UND DAS IST KEIN DATENMANGEL.
+       *
+       * Owner-Entscheidung vom 28.09.2026: 145 Titel tragen einen Namen, der
+       * ausdruecklich eine andere Gattung nennt (136 ETFs, 9 Vorzugspapiere).
+       * Die Aktienmethodik gilt fuer sie nicht, und ohne diese Gruppe sagte
+       * die Seite "erfuellt die Datenanforderungen derzeit nicht" - ein
+       * Mangel, wo eine Entscheidung steht, und "derzeit" waere zudem falsch:
+       * an einem Rentenfonds aendert sich das nie. */
+      id: "NOT_AN_EQUITY_LISTING",
+      codes: ["NOT_AN_EQUITY_LISTING"],
+      headline: "Dieses Papier ist keine Aktie",
+      sentence: function (detail) {
+        var was = { ETF: "ein börsengehandelter Fonds", ETN: "eine börsengehandelte Schuldverschreibung",
+          PREFERRED: "ein Vorzugspapier", FUND: "ein Fonds", WARRANT: "ein Optionsschein" }[detail.securityType] ||
+          "kein Anteil an einem Unternehmen";
+        return "Nach dem veröffentlichten Wertpapiernamen ist dieser Titel " + was + ". " +
+          "Die Kennzahlen dieser Analyse beschreiben Unternehmen - Bilanz, Gewinn, Wachstum, Bewertung. " +
+          "Auf ein solches Papier angewendet ergäben sie Zahlen, die nichts über es aussagen. " +
+          "Sie bleiben deshalb aus.";
+      },
+      outlook: "Kurs und Kursverlauf stehen weiter zur Verfügung; die Aktienanalyse nicht."
     },
     {
       id: "NO_SERIES",
@@ -408,9 +459,21 @@
     }
     if (hat("evidenceRow")) {
       var zahlen = faktorZahlen(src.evidenceRow);
-      out.factorStrength = { substantive: zahl(zahlen.available) !== null && zahlen.available > 0,
-        reason: src.evidenceRow ? "INPUT_NOT_MATERIALIZED" : "NOT_COVERED_BY_FACTOR_EVIDENCE",
-        detail: zahlen.total ? zahlen : {} };
+      var hatFaktor = zahl(zahlen.available) !== null && zahlen.available > 0;
+      /* Die Aktienseite hat keine Faktorzeile in der Hand, sondern die
+         Screening-Zeile - und die traegt keine Handelstage. Die Zahl kommt
+         deshalb aus dem Universumsverzeichnis, das sie aus dem Faktorlauf
+         selbst uebernimmt. Ohne Zahl bleibt es beim alten Grund: eine
+         Historienaussage ohne gemessene Laenge wird nicht erfunden. */
+      var stockBars = hat("stock") ? zahl((src.stock || {}).factorBars) : null;
+      var kursfaktorGrenze = NAECHSTE_KURSFAKTOR_GRENZE;
+      out.factorStrength = !hatFaktor && stockBars !== null && stockBars < kursfaktorGrenze
+        ? { substantive: false, reason: "INSUFFICIENT_HISTORY",
+            detail: { available: zahlen.available || 0, total: zahlen.total || 0,
+                      bars: stockBars, requiredBars: kursfaktorGrenze } }
+        : { substantive: hatFaktor,
+            reason: src.evidenceRow ? "INPUT_NOT_MATERIALIZED" : "NOT_COVERED_BY_FACTOR_EVIDENCE",
+            detail: zahlen.total ? zahlen : {} };
     }
     if (hat("factors")) {
       var fe = src.factors || {}, items = (fe.change && fe.change.items) || [];
@@ -424,9 +487,31 @@
       if (!hat("evidenceRow")) {
         var faktoren = fe.factors || [];
         var mitWert = faktoren.filter(function (f) { return f.state === "AVAILABLE"; });
-        out.factorStrength = { substantive: mitWert.length > 0,
-          reason: fe.state === "AVAILABLE" ? "INPUT_NOT_MATERIALIZED" : (fe.reason || "NOT_COVERED_BY_FACTOR_EVIDENCE"),
-          detail: faktoren.length ? { available: mitWert.length, total: faktoren.length } : {} };
+        /* WENN DIE KURSGESCHICHTE DIE GANZE URSACHE IST, SOLL SIE DASTEHEN.
+         *
+         * Gemessen am 26.09.2026: 784 der 786 Titel ohne einen einzigen
+         * Faktorwert tragen weniger als 252 Handelstage. Die Faktorzeile
+         * nennt dafuer jetzt ihre eigene Zahl, und diese Gruppe hat den Satz
+         * mit der Zahl schon - sie bekam nur nie den Anlass, ihn zu sagen.
+         * Genannt wird die NAECHSTE Schwelle, nicht die hoechste: die
+         * erreicht der Titel zuerst. */
+        var naechste = null;
+        for (var fi = 0; fi < faktoren.length; fi++) {
+          var grenze = faktoren[fi].history;
+          if (!grenze || !zahl(grenze.requiredBars)) continue;
+          if (!naechste || grenze.requiredBars < naechste.requiredBars) naechste = grenze;
+        }
+        out.factorStrength = mitWert.length === 0 && naechste
+          ? { substantive: false, reason: "INSUFFICIENT_HISTORY",
+              detail: { available: 0, total: faktoren.length,
+                        bars: naechste.bars, requiredBars: naechste.requiredBars } }
+          : { substantive: mitWert.length > 0,
+              reason: fe.state === "AVAILABLE" ? "INPUT_NOT_MATERIALIZED" : (fe.reason || "NOT_COVERED_BY_FACTOR_EVIDENCE"),
+              /* Die Gattung wandert in den Detailblock, damit die Gruppe
+                 "dieses Papier ist keine Aktie" sagen kann, WAS es ist. */
+              detail: fe.securityType
+                ? { securityType: fe.securityType, securityTypeBasis: fe.securityTypeBasis || null }
+                : (faktoren.length ? { available: mitWert.length, total: faktoren.length } : {}) };
       }
     }
     if (hat("setup")) {
@@ -468,6 +553,7 @@
     AREA: AREA,
     CAUSES: CAUSES.map(function (c) { return { id: c.id, codes: c.codes.slice(), headline: c.headline }; }),
     MAX_WITHHELD_IN_FULL: MAX_WITHHELD_IN_FULL,
+    NEXT_PRICE_FACTOR_BARS: NAECHSTE_KURSFAKTOR_GRENZE,
     MINIMAL_MAX_SUBSTANTIVE: MINIMAL_MAX_SUBSTANTIVE,
     knows: function (code) { return !!CAUSE_BY_CODE[code]; },
     causeIdFor: function (code) { return (CAUSE_BY_CODE[code] || { id: "OTHER" }).id; },

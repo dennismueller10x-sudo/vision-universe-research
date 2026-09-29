@@ -21,7 +21,11 @@ const History=typeof module!=='undefined'&&module.exports?require('./fundamental
 const Directory=typeof module!=='undefined'&&module.exports?require('../engines/instrument-directory.js'):g.VUInstrumentDirectory;
 const Master=typeof module!=='undefined'&&module.exports?require('../engines/company-master.js'):g.VUCompanyMaster;
 const FactorEvidence=typeof module!=='undefined'&&module.exports?require('../engines/factor-evidence.js'):g.VUFactorEvidence;
+const FundamentalInputs=typeof module!=='undefined'&&module.exports?require('../engines/fundamental-inputs.js'):g.VUFundamentalInputs;
+const IntelligenceBrief=typeof module!=='undefined'&&module.exports?require('../engines/intelligence-brief.js'):g.VUIntelligenceBrief;
+const Classification=typeof module!=='undefined'&&module.exports?require('../engines/instrument-classification.js'):g.VUInstrumentClassification;
 const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
+const HistoricalCases=typeof module!=='undefined'&&module.exports?require('../engines/historical-cases.js'):g.VUHistoricalCases;
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
@@ -134,7 +138,20 @@ function create(options){
   * A missing factor row remains missing (fail closed). */
  function broadRow(c,member){
   if(!member||typeof member.s!=='string'||typeof member.i!=='string'||typeof member.m!=='string')return null;
-  const f=c.factorIndex&&((c.factorIndex[member.m])||(c.factorIndex[member.s])),factorReady=!!f||Number(member.b)>0;
+  /* WANN EINE ZEILE EINE FAKTORAUSWERTUNG HAT.
+   *
+   * Bis zum 28.09.2026 stand hier `!!f||Number(member.b)>0` - also: es
+   * genuegt, dass die Kapazitaetsdatei Handelstage kennt. Gemessen hat die
+   * Uebersicht damit 6.755 Titel als faktorbewertet gefuehrt, waehrend es
+   * 6.296 Faktorzeilen gibt: 459 Zeilen behaupteten eine Auswertung, die die
+   * Aktienseite drei Klicks spaeter verneint ("liegt nicht vor"). 14 von 52
+   * Faellen einer Probe waren Papiere, die gar keine Aktie sind.
+   *
+   * Die Zahl der Handelstage ist eine Voraussetzung, kein Ergebnis. Geprueft
+   * wird deshalb nur noch, ob eine Zeile da ist; der Faktorindex deckt sich
+   * gemessen genau mit den Zeilen in den Schichtdateien (6.296 zu 6.296, in
+   * beide Richtungen 0 Abweichung). */
+  const f=c.factorIndex&&((c.factorIndex[member.m])||(c.factorIndex[member.s])),factorReady=!!f;
   const v=f&&f.values||{}, candidate=c.panel&&c.panel.securities&&c.panel.securities[member.s],today=new Date().toISOString().slice(0,10),legacy=candidate&&candidate.available&&candidate.provenance?.isMock===false&&validDate(candidate.marketData?.asOf)&&candidate.marketData.asOf<=today?candidate:null;
   const finite=x=>typeof x==='number'&&Number.isFinite(x);
   const derived=(value,unit)=>({value:finite(value)?value:null,unit,state:finite(value)?'AVAILABLE':'SOURCE_MISSING'});
@@ -166,7 +183,19 @@ function create(options){
   if(!consumer||consumer.dataMode!=='real'||consumer.isMock===true)return stock;
   const metrics=consumer.metrics||{},latest=consumer.fundamentals?.latest||{},derived=latest.derived||{};
   const measured=(value,unit)=>Number.isFinite(value)?{value,unit,state:'AVAILABLE'}:null,scaled=(value,unit)=>Number.isFinite(value)?measured(value*100,unit):null;
-  stock.name=consumer.companyName||stock.name;stock.industry=consumer.industry||consumer.sector||stock.industry;
+  /* DER NAME KOMMT NICHT VON HIER.
+   *
+   * Gemessen am 26.09.2026: bei 4.719 von 5.984 Titeln nannte die Uebersicht
+   * einen anderen Namen als die Aktienseite - "Apple Inc." gegen "Apple",
+   * "JPMorgan Chase & Co." gegen "JPMorgan Chase & Company", und bei AACI
+   * "Armada Acquisition Corp. III" gegen "Armada Acquisition Corp I", wo eine
+   * der beiden Angaben ueber die IDENTITAET falsch ist. Ursache war diese
+   * Zeile: der Konsum-Export hat den Namen des Wertpapierstamms ueberschrieben.
+   *
+   * Der Namensvertrag (company-naming-1.0.0) legt EINE Ebene als Produktname
+   * fest, und die fuehrt der Stamm. Die Branche bleibt, die kennt der Stamm
+   * nicht. */
+  stock.industry=consumer.industry||consumer.sector||stock.industry;
   stock.price=measured(consumer.price?.value,'USD')||stock.price;
   stock.consumerMetrics=metrics;if(stock.capabilities?.fundamentals===false)return stock;
   stock.revenueGrowth=scaled(metrics.f_revenueGrowthTTM,'percent')||stock.revenueGrowth;
@@ -191,7 +220,7 @@ function create(options){
    ['revisions','Revisions','Wie verändern sich Analystenerwartungen?',[metric('earningsRevisions','Earnings Revisions',null,'percent','LICENSED_ANALYST_PIT_NOT_AVAILABLE')]],
    ['risk','Risk','Welche Risiken zeigen die Kursdaten?',[metric('volatility','Volatilität',finite(stock.volatility?.value)?stock.volatility.value*100:null,'pct'),metric('maxDrawdown','Maximaler Drawdown',finite(stock.drawdown?.value)?Math.abs(stock.drawdown.value*100):null,'pct')]]
   ];
-  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:'quant-v2.1.0',methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
+  return {state:'AVAILABLE',version:'quant-evidence-1.0.0',ticker:stock.ticker,name:stock.name,asOf:stock.asOf,fundamentalsAsOf:stock.fundamentalsAsOf||stock.asOf,availableAt:stock.availableAt||stock.asOf,score:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'},pitEligible:false,families:families.map(([id,label,question,metrics])=>({id,label,question,metrics})),methodology:FactorEvidence.DERIVED_FROM,methodologyState:'SPECIFIED_NOT_ACTIVE',methodologyHref:'/quant/data-inspector/',legacyHref:'/quant/stock/?ticker='+encodeURIComponent(stock.ticker)};
  }
  async function setupFor(stock){
   if(!SetupState||!stock)return null;
@@ -234,6 +263,36 @@ function create(options){
   * nennt den erlaubten Namensraum, und die Engine weist ein Profil ab,
   * das darueber hinausgreift - deshalb steht hier keine zweite Pruefung. */
  let profilesPromise=null;
+ /* HISTORISCHE VERGLEICHSFAELLE JE TITEL.
+  * Die Frage ist "wann galt diese Kurslage hier schon einmal und was kam
+  * danach" - und sie wird aus zwei bereits veroeffentlichten Quellen
+  * beantwortet, ohne neues Artefakt und ohne neue Datenquelle: dem
+  * Pattern-Buendel (welche Begriffe gelten heute, und wie lauten sie) und
+  * der eigenen Wochenreihe des Titels (MAX, SPLIT_ADJUSTED), die
+  * getHistoricalPriceHistory schon vollstaendig gegen ihren Vertrag
+  * prueft. Gerechnet wird mit der Studien-Engine, nicht mit einer zweiten.
+  */
+ async function getHistoricalCases(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
+  if(!HistoricalCases)return unavailable('SOURCE_MISSING');
+  try{
+   const key=technicalShard(ticker);
+   const shard=await compressedJSON('/quant/data/product/pattern-match-v1/'+key+'.json.gz');
+   if(shard?.schemaVersion!=='pattern-match-1.0.0'||shard.shard!==key)return unavailable('INVALID_PATTERN_MATCH_ARTIFACT');
+   const source=shard.instruments?.[ticker];
+   if(!source)return unavailable('NOT_COVERED_BY_PATTERN_MATCH');
+   const history=await getHistoricalPriceHistory(ticker,{range:'MAX',grain:'weekly'});
+   if(history.state!=='AVAILABLE')return unavailable(history.reason||'HISTORY_UNAVAILABLE');
+   const result=HistoricalCases.assess({bars:history.bars,vocabulary:HistoricalCases.vocabulary(shard),holds:source.holds||[]});
+   return {...result,ticker,asOf:shard.asOf||null,seriesAsOf:history.asOf||null,
+    priceSeriesType:history.adjustmentStatus||null,
+    /* Die marktweite Ebene wird hier nicht gerechnet - nur benannt, damit
+     * die Flaeche beide Ebenen nebeneinander stellen kann. */
+    marketWide:{available:Array.isArray(shard.findings)&&shard.findings.length>0,
+     caveats:shard.caveats||null,baseRate:shard.baseRate??null,horizonMonths:shard.horizonMonths??null}};
+  }catch{return unavailable('SOURCE_MISSING');}
+ }
  async function getStrategyProfiles(){
   if(!profilesPromise)profilesPromise=(async()=>{
    try{
@@ -250,7 +309,16 @@ function create(options){
   if(profiles.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:profiles.reason||'PROFILES_UNAVAILABLE',profiles:[]};
   if(screening.state!=='AVAILABLE')return {state:'UNAVAILABLE',reason:screening.reason||'EVIDENCE_UNAVAILABLE',profiles:[]};
   const row=screening.rows.find(entry=>entry.ticker===ticker);
-  if(!row)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
+  if(!row){
+   /* Auch hier der richtige Grund: ein Fonds passt nicht zu keinem
+      AKTIEN-Anlagestil, weil er keine Aktie ist - nicht, weil Daten fehlen.
+      Die Kennung kommt aus dem Wertpapierstamm und nicht aus einer zweiten
+      Regel; ohne ihn bleibt es beim alten Grund. */
+   const i=await identity(ticker).catch(()=>null);
+   const fremd=nichtAktie(i);
+   return fremd?{state:'UNAVAILABLE',...fremd,profiles:[]}
+    :{state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE',profiles:[]};
+  }
   return {...StrategyMatch.evaluate(profiles.contract,row),ticker,asOf:screening.asOf};
  }
  /* DER ZUORDNUNGSWECHSEL EINES TITELS - NACHGESCHLAGEN, NICHT NACHGERECHNET.
@@ -454,11 +522,35 @@ function create(options){
     others:rows.filter(row=>row.state!=='HOLDS')};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
+ /* WARUM EIN PAPIER KEINE AKTIENANALYSE HAT: WEIL ES KEINE AKTIE IST.
+  *
+  * Owner-Entscheidung vom 28.09.2026. Der Materialisierer laesst diese Zeilen
+  * ausdruecklich weg (145 Titel: 136 ETFs, 9 Vorzugspapiere, alle mit dem
+  * Namen als Beleg). Ohne diese Abfrage sagte die Seite dann "gehoert zum
+  * Produktuniversum, erfuellt aber die Datenanforderungen der Faktor-Methodik
+  * derzeit nicht" - ein Datenmangel, wo eine Gattungsentscheidung steht. Das
+  * Woerterbuch verlangt fuer zwei Lagen zwei Texte, und "derzeit" waere hier
+  * zudem falsch: an einem Rentenfonds aendert sich das nie.
+  *
+  * Der Stamm ist die Grundlage, nicht eine zweite Regel - dieselbe Bedingung
+  * wie im Materialisierer und im Wertpapierstamm. */
+ /* Die Bedingung selbst steht in der Klassifikations-Engine und wird hier
+    GELESEN. Vorher stand sie als zwei eigene Listen in dieser Datei - und die
+    Uebersicht, die diese Datei nicht an dieser Stelle durchlaeuft, wusste
+    nichts davon. */
+ function nichtAktie(i){
+  const belegt=Classification.provenNonEquity(i);
+  if(!belegt)return null;
+  return {reason:'NOT_AN_EQUITY_LISTING',securityType:belegt.securityType,
+   securityTypeBasis:belegt.securityTypeBasis,name:(i&&i.companyName)||null};
+ }
  async function getFactorEvidence(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
   const i=await identity(ticker);
   if(!i)return {state:'UNAVAILABLE',reason:'NOT_IN_PRODUCT_UNIVERSE'};
+  const fremd=nichtAktie(i);
+  if(fremd)return {state:'UNAVAILABLE',...fremd};
   try{
    const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/factor-evidence-v1/'+key+'.json.gz');
    if(!FactorEvidence.validShard(shard,key))return {state:'UNAVAILABLE',reason:'INVALID_FACTOR_EVIDENCE_ARTIFACT'};
@@ -467,7 +559,11 @@ function create(options){
    const violations=FactorEvidence.publicationViolations(source);
    if(violations.length)return {state:'UNAVAILABLE',reason:'PUBLICATION_GATE_VIOLATED'};
    const record=FactorEvidence.hydrate(source,shard);
-   return {state:'AVAILABLE',ticker,name:i.companyName||ticker,
+   /* Kein Kuerzel als Name - dieselbe Regel wie in ohneErfundenenNamen, hier
+      an der Quelle, weil die Quant-Ansicht diesen Namen als Ueberschrift
+      setzt. Gemessen betraf das 6 von 977 Titeln einer Probe. */
+   return {state:'AVAILABLE',ticker,name:i.companyName&&i.companyName!==ticker?i.companyName:null,
+    nameReason:i.companyName&&i.companyName!==ticker?null:KEIN_NAME_GRUND,
     methodologyVersion:shard.methodologyVersion,derivedFrom:shard.derivedFrom,
     asOf:record.asOf,dataCutoff:record.dataCutoff,priceBasis:record.priceBasis,
     /* Kursstaerke und Anlegerrendite nebeneinander - die beiden Fragen,
@@ -480,6 +576,18 @@ function create(options){
        returns:record.investorReturn.returns||{},return12M1M:record.investorReturn.return12M1M??null}
      :{state:'UNAVAILABLE',reason:'NOT_IN_THIS_METHODOLOGY_VERSION',returns:{},return12M1M:null},
     fundamentalsAsOf:record.fundamentalsAsOf,fundamentalsAvailableAt:record.fundamentalsAvailableAt,
+    /* NACH WELCHER METHODIK GERECHNET WURDE.
+     *
+     * Ohne dieses Feld wechselte die Methodik lautlos: WSBCO zeigt die
+     * Eigenkapitalquote mit Gewicht 0,30, AAPL dieselbe Kennzahl mit 0,15 -
+     * dieselbe Beschriftung, eine andere Vorlage, und kein Wort dazu.
+     * Gemessen betrifft das 974 Titel. Und wo der Boersenwert bewusst
+     * zurueckgehalten wird, soll die Seite den Grund nennen koennen statt
+     * nur eine Leerstelle zu zeigen. */
+    template:record.template||null,
+    marketCapReason:record.marketCapReason||null,
+    marketCapPriceSource:record.marketCapPriceSource||null,
+    issuerListings:record.issuerListings||null,
     marketCap:record.marketCap,peer:record.peer,dataQuality:record.dataQuality,
     publication:shard.publication,composite:record.composite,
     factors:FactorEvidence.ordered(record),
@@ -568,24 +676,87 @@ function create(options){
   * Aktienseite zeichnet dieselbe Reihe.
   *
   * Fehlt das Verzeichnis, bleibt die Liste genau so, wie sie vorher war. */
+ /* Zwei Fassungen, ein Leser: 1.1.0 bringt den Bewertungsgrund und die Zahl
+  * der notierten Zeilen mit, an denselben Schluesseln. Eine Liste statt einer
+  * Gleichheit, damit ein aelteres Artefakt weiter gelesen wird - und keine
+  * offene Praefixpruefung, sonst laese dieser Weg auch eine Fassung, die es
+  * noch nicht gibt. */
+ const UNIVERSE_LIST_SCHEMAS=['universe-list-1.0.0','universe-list-1.1.0','universe-list-1.2.0','universe-list-1.3.0'];
  let universeList=null;
  async function universeIndex(){
   if(universeList!==null)return universeList;
   try{const d=await compressedJSON('/quant/data/product/universe-list-v1.json.gz');
-   if(!d||d.schemaVersion!=='universe-list-1.0.0'||!Array.isArray(d.entries))throw Error('contract');
+   if(!d||UNIVERSE_LIST_SCHEMAS.indexOf(d.schemaVersion)<0||!Array.isArray(d.entries))throw Error('contract');
    const byTicker={};
    for(const e of d.entries)if(e&&typeof e.s==='string')byTicker[e.s]=e;
    universeList={generatedAt:d.generatedAt,coverage:d.coverage||null,byTicker};
   }catch{universeList={generatedAt:null,coverage:null,byTicker:{}};}
   return universeList;
  }
+ /* EIN KUERZEL IST KEIN FIRMENNAME.
+
+    Gemessen am 28.09.2026: 18 Titel trugen im Dienst ihr Kuerzel als Namen
+    ("BNRG" hiess "BNRG"). Die Namensschicht sagt dazu genau, warum:
+    `PROVIDER_HAS_NO_NAME`, neuer Versuch ab 2026-10-14. Ein Kuerzel als Name
+    ist keine Luecke, sondern eine falsche Aussage - die Oberflaechen fangen
+    sie heute einzeln ab ("Firmenname nicht veroeffentlicht"), und jede neue
+    Flaeche muesste dieselbe Sonderregel kennen. Die Regel gehoert deshalb in
+    den Dienst: kein Name, dafuer ein Grund. */
+ const KEIN_NAME_GRUND='PROVIDER_HAS_NO_NAME';
+ function ohneErfundenenNamen(row){
+  if(row&&row.name&&row.ticker&&row.name===row.ticker){row.name=null;if(!row.nameReason)row.nameReason=KEIN_NAME_GRUND;}
+  return row;
+ }
+
  /* Ergaenzt eine Zeile um Namen und Kurs - und ueberschreibt NICHTS, was
     schon einen Wert hat. Ein Kurs, dessen Datum in der Zukunft liegt oder
     dessen Eintrag zu einem anderen Titel gehoert, wird nicht uebernommen. */
  function mitVerzeichnis(row,entry){
   if(!row||!entry||entry.s!==row.ticker)return row;
-  if(entry.n&&(!row.name||row.name===row.ticker))row.name=entry.n;
+  /* Der Name des Stamms gilt AUCH gegen einen bereits gesetzten - er ist die
+     Identitaetsquelle, und die Panelzeile traegt denselben Namen in Versalien
+     ("JPMORGAN CHASE & CO"). Alles andere in dieser Funktion ergaenzt nur. */
+  if(entry.n)row.name=entry.n;
+  /* EIN KURS OHNE STICHTAG IST EINE UNDATIERTE ZAHL.
+     Gemessen am 28.09.2026: fuenf Titel - genau die mit einer Panelzeile,
+     darunter AAPL, MSFT, NVDA und JPM - trugen `price` ohne `asOf`, waehrend
+     6.477 ihn tragen. Die Zeile selbst hatte ein Datum, die Kopfzahl also
+     auch; unsichtbar war es nicht, aber ungleich - und eine Flaeche, die
+     `price.asOf` liest, haette bei den vier prominentesten Titeln nichts
+     gefunden. Datiert wird nur, wenn der Kurs derselbe ist: ein fremdes Datum
+     an einer fremden Zahl waere der schwerere Fehler. */
+  if(row.price&&row.price.state==='AVAILABLE'&&!row.price.asOf&&entry.d&&
+     Number.isFinite(entry.c)&&Number.isFinite(row.price.value)&&Math.abs(entry.c-row.price.value)<=0.005){
+   row.price={...row.price,asOf:entry.d};
+  }
   if(entry.t&&!row.securityType)row.securityType=entry.t;
+  /* Auf WIE VIELEN Handelstagen der Faktorlauf gerechnet hat. Nur damit kann
+   * eine Seite sagen "fuer diese Auswertung werden 252 Handelstage gebraucht,
+   * aktuell liegen 187 vor" - gemessen betrifft dieser Satz 784 der 786 Titel
+   * ohne einen einzigen Faktorwert. Die Bar-Zahl der Kapazitaetsdatei ist eine
+   * andere Groesse und weicht in allen 6.441 Faellen ab; sie waere hier eine
+   * falsche Zahl in einem richtigen Satz. */
+  if(Number.isFinite(entry.b)&&!Number.isFinite(row.factorBars))row.factorBars=entry.b;
+  /* Was die Faktorschicht ueber die Bewertung DIESER Notierung entschieden
+     hat. Die Zeile traegt es mit, damit keine zweite Schicht eine Zahl nennt,
+     die die erste ausdruecklich zurueckhaelt. */
+  if(entry.v&&!row.marketCapReason)row.marketCapReason=entry.v;
+  /* BELEGT KEINE AKTIE: DIE LISTE SAGT ES JETZT AUCH.
+     Gemessen am 28.09.2026 fuehrte die Uebersicht 145 Fonds, Optionsscheine
+     und Vorzugspapiere mit `factorState = AVAILABLE`, waehrend dieselbe
+     Anwendung auf der Aktienseite "keine Aktie" sagte - zwei Aussagen ueber
+     denselben Titel. Kurs, Kursverlauf und die Kursstatistiken bleiben: sie
+     kommen aus der Reihe und nicht aus einer Unternehmensbewertung. Was
+     entfaellt, ist die Behauptung einer Aktienauswertung. */
+  if(entry.ne){row.factorState='UNAVAILABLE';row.factorReason='NOT_AN_EQUITY_LISTING';
+   if(row.capabilities)row.capabilities={...row.capabilities,factors:false,fundamentals:false};}
+  if(Number.isFinite(entry.il)&&!Number.isFinite(row.issuerListings))row.issuerListings=entry.il;
+  /* WO ZWEI QUELLEN VERSCHIEDENE GESELLSCHAFTEN NENNEN.
+     Gemessen: 310 Kuerzel im Verzeichnis. Die Angabe wird mitgefuehrt und
+     nicht entschieden - eine Oberflaeche soll sagen koennen, dass die
+     Zuordnung unsicher ist, statt eine von zwei Gesellschaften zu behaupten. */
+  if(entry.ic&&!row.identityConflict)row.identityConflict={kind:entry.ic,alternativeName:entry.ia||null,
+   contract:'company-naming-1.0.0'};
   const heute=new Date().toISOString().slice(0,10);
   if(!Number.isFinite(row.price&&row.price.value)&&Number.isFinite(entry.c)&&entry.c>0
      &&validDate(entry.d)&&entry.d<=heute&&(!row.price||row.price.reason!=='DISPLAY_NOT_PERMITTED')){
@@ -600,10 +771,56 @@ function create(options){
   }
   return row;
  }
+ /* DREI WEGE ZU EINER BEWERTUNG, UND NUR EINER HIELT SICH AN DIE SEMANTIK.
+  *
+  * Gemessen am 26.09.2026: von den 465 Titeln, deren Boersenwert M34
+  * ausdruecklich zurueckhaelt, zeigten 266 drei Zeilen tiefer doch ein
+  * Kurs-Gewinn- oder Kurs-Umsatz-Verhaeltnis - GOOGL 17,27 und 9,32, T 8,4
+  * und 1,52, JPM eine Ertragsrendite von 4,62 Prozent aus einem Boersenwert
+  * von 1.408 Mrd. Die Faktorschicht sagte "wird bewusst zurueckgehalten,
+  * weil die Aktienzahl dem Unternehmen und nicht dieser Notierung gilt", und
+  * die Kennzahlenschicht nannte genau die Zahl, die daraus entsteht. Fuer
+  * einen Leser widersprechen sich die beiden Saetze, und einer davon ist die
+  * Semantik, die als verbindlich gilt.
+  *
+  * Also faellt die Bewertung hier geschlossen - in derselben Form, die diese
+  * Schicht fuer eine fehlende Freigabe schon kennt: Wert null, Zustand
+  * UNAVAILABLE, Grund dabei. Das kostet Deckung (266 Titel, bis zu drei
+  * Kennzahlen je Titel) und ist der ausdruecklich gewaehlte Preis:
+  * Korrektheit vor Reichweite.
+  *
+  * NICHT betroffen ist NO_PIT_SHARE_COUNT (801 Titel). Dort fehlt der
+  * Faktorschicht ein zeitpunktsicherer Anteilsbestand; das ist eine andere
+  * Aussage als "die vorhandene Zahl gilt nicht fuer diese Zeile", und eine
+  * Zahl auf anderer Grundlage ist keine Fehlzuordnung. */
+ const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING'];
+ function withholdValuation(stock){
+  if(!stock||VALUATION_WITHHELD_REASONS.indexOf(stock.marketCapReason)<0)return stock;
+  const grund=stock.marketCapReason;
+  const gesperrt=FundamentalInputs.MARKET_CAP_DEPENDENT_PRODUCT_METRICS;
+  for(const key of gesperrt){
+   if(stock[key]&&typeof stock[key]==='object'&&'value' in stock[key])
+    stock[key]={value:null,unit:stock[key].unit||null,state:'UNAVAILABLE',reason:grund};
+  }
+  if(stock.consumerMetrics&&typeof stock.consumerMetrics==='object'){
+   /* Die Rohwerte des Konsum-Exports bleiben als Objekt erhalten, aber ohne
+      die Zahlen, die an der Zuordnung haengen - sonst liest eine Flaeche sie
+      am Modell vorbei wieder auf. */
+   for(const key of ['f_pe','f_ps','f_fcfYield'])if(key in stock.consumerMetrics)stock.consumerMetrics[key]=null;
+  }
+  if(stock.quant&&Array.isArray(stock.quant.families)){
+   for(const family of stock.quant.families)for(const item of (family.metrics||[])){
+    if(gesperrt.indexOf(item.metricId)>=0&&item.value!==null){item.value=null;item.state='UNAVAILABLE';item.reason=grund;}
+   }
+  }
+  stock.valuationWithheld={reason:grund,issuerListings:Number.isFinite(stock.issuerListings)?stock.issuerListings:null,
+   metrics:gesperrt.slice()};
+  return stock;
+ }
  async function getUniverse(){try{const c=await hydrateFullUniverseFactors(await hydrateCapabilities(await init()));
   const members=Array.isArray(c.capabilities&&c.capabilities.members)?c.capabilities.members:[];
   const index=await universeIndex();
-  const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s&&mitVerzeichnis(s,index.byTicker[s.ticker]);}).filter(Boolean);
+  const stocks=members.map(m=>{const s=broadRow(c,m);if(s&&!permission(c,s.ticker,'raw').allowed)s.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'DISPLAY_NOT_PERMITTED'};return s&&ohneErfundenenNamen(mitVerzeichnis(s,index.byTicker[s.ticker]));}).filter(Boolean);
   return {state:stocks.length?'AVAILABLE':'UNAVAILABLE',stocks,scope:'CANONICAL_PRODUCT_UNIVERSE',
    universeSize:stocks.length,factorReady:stocks.filter(s=>s.factorState==='AVAILABLE').length,
    productCapabilityState:c.productSummary?.schemaVersion==='1.0.0'?'AVAILABLE':'UNAVAILABLE',
@@ -739,7 +956,16 @@ function create(options){
      stock.price={value:null,unit:'USD',state:'UNAVAILABLE',reason:'NO_PUBLISHED_PRICE_SERIES'};
     }
    }
-   stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);return stock;
+   stock._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};stock.quant=await getQuantWorkspace(ticker);stock.setupState=await setupFor(stock);stock.health=await marketHealth([stock]);
+   /* Dasselbe Verzeichnis, das die Liste liest. Es traegt Name, letzten Kurs
+      und die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat -
+      die Aktienseite darf daran nicht weniger wissen als die Liste. */
+   try{const index=await universeIndex();mitVerzeichnis(stock,index.byTicker[ticker]);}catch{/* das Verzeichnis ist eine Ergaenzung, keine Bedingung */}
+   ohneErfundenenNamen(stock);
+   /* NACH dem Verzeichnis, weil erst es den Grund mitbringt - und nach der
+      Arbeitsflaeche, weil auch ihre Kennzahlen daran haengen. */
+   withholdValuation(stock);
+   return stock;
    }catch{const known=await identityOnlyStock(ticker,'SOURCE_MISSING');return known.identityState==='AVAILABLE'?known:unavailable('SOURCE_MISSING');}}
  async function getSignals({lookback=20}={}){
   if(![5,20,60].includes(lookback))return {state:'UNAVAILABLE',events:[],results:[],reason:'INVALID_SIGNAL_WINDOW'};
@@ -793,7 +1019,17 @@ function create(options){
  async function getPortfolioIntelligence(positions){try{const universe=await getUniverse(),c=await init();return PortfolioWorkspace.build(positions,{...universe,stocks:universe.stocks.map(stock=>permission(c,stock.ticker,'raw').allowed?stock:{...stock,marketState:'UNAVAILABLE'})});}catch{return unavailable('INVALID_PORTFOLIO');}}
  async function getStrategyContext(){
   try{const [quant,backtest,quantV2,universe]=await Promise.all([load('/quant/methodology/quant-v1.json'),load('/quant/methodology/backtest-v1.json'),load('/quant/methodology/quant-v2.json'),getUniverse()]);
-   if(quantV2?.methodologyVersion!=='quant-v2.1.0'||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
+   /* EINE FASSUNG, EINE QUELLE.
+    *
+    * Hier stand die Zeichenkette 'quant-v2.1.0' ein zweites Mal. Beim
+    * Sprung auf quant-v2.2.0 hat genau das die Strategieoberflaeche
+    * geschlossen - fail-closed, also richtig gesperrt, aber aus dem
+    * falschen Grund: nicht weil der Vertrag unbekannt war, sondern weil
+    * eine Kopie der Versionsnummer nicht mitgezogen wurde. Das Tor bleibt
+    * zu, wenn der Vertrag von dem abweicht, wogegen dieser Code geschrieben
+    * ist - es fragt jetzt die Faktor-Engine, die diese Bindung ohnehin
+    * fuehrt. */
+   if(quantV2?.methodologyVersion!==FactorEvidence.DERIVED_FROM||quantV2.status!=='SPECIFIED_NOT_ACTIVE'||quantV2.publication?.allowed!==false)throw Error('INVALID_QUANT_V2_GATE');
    Methodology.configure({quant,backtest,quantV2});return {state:'AVAILABLE',definition:Strategy.defaults(),factors:Strategy.RANKABLE_FACTORS,weightings:Strategy.WEIGHTINGS,
     currentSelection:{state:universe.state,scope:universe.scope,selectable:universe.productUniverseSize||universe.stocks.length,filterEngine:'CANONICAL_QUERY_ENGINE',ranking:{state:'UNAVAILABLE',reason:'QUANT_V2_NOT_ACTIVE'}},
     quantV2:{methodologyVersion:quantV2.methodologyVersion,status:quantV2.status,publicationAllowed:false,factorOrder:quantV2.factorOrder.slice(),factorReadiness:Object.fromEntries(quantV2.factorOrder.map(id=>[id,quantV2.factors[id].readiness]))},
@@ -808,8 +1044,21 @@ function create(options){
  }
  async function getQuantWorkspace(ticker){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const c=await hydrateCapabilities(await init());const stock=await row(c,ticker);if(stock)return QuantWorkspace.build(stock,{...c.panel.securities[ticker],securityId:stock.securityId},c.panel.versions);
-   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return unavailable('INVALID_IDENTITY');let broad=broadRow(c,member);if(!broad)return unavailable('SOURCE_MISSING');const consumer=await consumerFor(ticker);if(consumer)broad=applyConsumer(broad,consumer);broad._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};const model=broadQuantWorkspace(broad);if(!permission(c,ticker).allowed)for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))for(const item of family.metrics){item.value=null;item.state='UNAVAILABLE';item.reason='DISPLAY_NOT_PERMITTED';}return model;
+  /* Der Bewertungsgrund gilt fuer BEIDE Wege dieser Funktion - den Panelweg
+     und den breiten. Er wird deshalb einmal davor geholt und am Ende auf das
+     Ergebnis angewandt, statt zweimal formuliert zu werden. */
+  let grund=null,verzeichnisName=null;
+  try{const index=await universeIndex();const eintrag=index.byTicker[ticker];grund=eintrag&&eintrag.v?eintrag.v:null;verzeichnisName=eintrag&&eintrag.n?eintrag.n:null;}catch{}
+  /* DER NAME GILT AUCH HIER.
+     Gemessen am 28.09.2026 ueber eine Probe von 977 Titeln: 976 trugen auf
+     dieser Flaeche das KUERZEL als Firmennamen ("A" statt "Agilent
+     Technologies, Inc."), einer den Panelnamen in Versalien. Der breite Weg
+     laeuft nicht durch mitVerzeichnis, und der Panelweg liest die Panelzeile
+     - beide Namen sind nicht die Identitaetsquelle. */
+  const mitGrund=(model)=>{if(model&&model.state==='AVAILABLE'&&grund)withholdValuation({marketCapReason:grund,quant:model});
+   if(model&&model.state==='AVAILABLE'&&verzeichnisName)model.name=verzeichnisName;return ohneErfundenenNamen(model);};
+  try{const c=await hydrateCapabilities(await init());const stock=await row(c,ticker);if(stock)return mitGrund(QuantWorkspace.build(stock,{...c.panel.securities[ticker],securityId:stock.securityId},c.panel.versions));
+   const member=(c.capabilities.members||[]).find(m=>m.s===ticker);if(!member)return unavailable('INVALID_IDENTITY');let broad=broadRow(c,member);if(!broad)return unavailable('SOURCE_MISSING');const consumer=await consumerFor(ticker);if(consumer)broad=applyConsumer(broad,consumer);broad._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};const model=broadQuantWorkspace(broad);if(!permission(c,ticker).allowed)for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))for(const item of family.metrics){item.value=null;item.state='UNAVAILABLE';item.reason='DISPLAY_NOT_PERMITTED';}return mitGrund(model);
   }catch{return unavailable('SOURCE_MISSING');}
  }
  async function getTechnicalWorkspace(ticker){
@@ -933,7 +1182,32 @@ function create(options){
   return {state:'AVAILABLE',query:result.query,queryHash:result.queryHash,scope:universe.scope,
    eligible:rows.length,stocks:result.rows.map(r=>universe.stocks.find(s=>s.ticker===r.ticker))};
  }catch{return unavailable('SOURCE_OR_QUERY_UNAVAILABLE');}}
- return {searchInstruments,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
+ /* DIE EINE AUSKUNFT, AUS DEN VORHANDENEN MODULEN.
+  *
+  * Bis M40 beantwortete die Reise elf Fragen an elf Stellen - und keine
+  * davon zusammen. Hier werden die Antworten, die die Dienste ohnehin
+  * liefern, EINMAL geholt und der Auskunfts-Engine uebergeben. Kein zweiter
+  * Leseweg, keine zweite Schwelle, keine neue Quelle: was diese Funktion
+  * zurueckgibt, steht Wort fuer Wort auf den Werten, die die Module schon
+  * veroeffentlichen.
+  *
+  * Die Flaechen rufen sie, statt sich die Saetze selbst zu bilden - sonst
+  * haetten Aktienseite und Quant-Ansicht zwei Zusammenfassungen desselben
+  * Titels, und ein Leser zwei Wahrheiten. */
+ async function getIntelligenceBrief(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!IntelligenceBrief||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  const [stock,factors,setup,patterns,match,technical]=await Promise.all([
+   getStockIntelligence(ticker).catch(()=>null),
+   getFactorEvidence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getSetupObservation(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getPatternMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getStrategyMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
+   getTechnicalIntelligence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'}))]);
+  return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
+   sources:{stock,factors,setup,patterns,match,technical}};
+ }
+ return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

@@ -55,7 +55,7 @@
      auch nichts erfinden. */
   var TRACKED_FIELDS = [
     "symbol", "companyName", "companyNameStatus", "exchange", "mic", "country",
-    "currency", "securityType", "securityTypeConfidence", "shareClass", "subtype",
+    "currency", "securityType", "securityTypeConfidence", "securityTypeBasis", "shareClass", "subtype",
     "otc", "primaryListing", "primaryListingBasis", "active", "activeBasis",
     "delistedAt", "firstTradeDate", "lastTradeDate", "screenerEligible",
     "assetTypeRaw", "adrEvidence", "isin", "cusip", "figi", "cik", "cikSource", "lei",
@@ -82,6 +82,13 @@
   /* Wie die Gattungen des Wertpapierstamms auf die eigenen abbilden.
      Nur zum VERGLEICHEN, nicht zum Ueberschreiben: aus einem Widerspruch
      soll ein Befund werden, keine stille Korrektur. */
+  /* Welche Gattungen der AKTIEN-Screener ueberhaupt zeigt. Dieselbe Menge
+     fuehrt die Klassifikation als SCREENER_ELIGIBLE; sie steht hier ein
+     zweites Mal, weil dieses Modul die Entscheidung des Wertpapierstamms
+     dagegen haelt - ein Test haelt die beiden Mengen gegeneinander, damit
+     nicht zwei Antworten auf eine Frage entstehen. */
+  var SCREENER_TYPES = { COMMON_STOCK: true, ADR: true };
+
   var SECURITY_CLASS_TO_TYPE = {
     EQUITY_COMMON: "COMMON_STOCK", PREFERRED: "PREFERRED", ETF: "ETF", ETN: "ETN",
     MUTUAL_FUND: "FUND", CEF: "FUND", WARRANT: "WARRANT", RIGHT: "OTHER",
@@ -194,6 +201,10 @@
       currency: c.currency,
       securityType: c.instrumentType,
       securityTypeConfidence: c.confidence,
+      /* WORAUF die Gattung beruht. Ohne dieses Feld war eine Konfidenz nicht
+         nachpruefbar - und 7.495 Instrumente trugen HIGH, obwohl ihr einziger
+         Beleg die pauschale Anbieterangabe "Stock" war. */
+      securityTypeBasis: c.typeBasis || null,
       shareClass: c.shareClass,
       subtype: c.subtype,
       otc: c.otc === true,
@@ -748,6 +759,34 @@
     instrument.screenerReason = "Produktentscheidung des Wertpapierstamms: " + eligibility +
       (instrument.productEligibilityReason ? " (" + instrument.productEligibilityReason + ")" : "");
 
+    /* MIT EINER AUSNAHME: EIN POSITIVER BELEG GEGEN EINE AKTIE.
+     *
+     * Der Satz darueber gilt, solange die eigene Klassifikation SCHWAECHER
+     * ist als die Entscheidung - ein Tickermuster, das einen Optionsschein
+     * nicht verraet, darf den Wertpapierstamm nicht ueberstimmen. Umgekehrt
+     * gilt er nicht.
+     *
+     * Gemessen am 26.09.2026: 136 Instrumente heissen ausdruecklich "... ETF"
+     * (Columbia AAA CLO ETF, VanEck Bitcoin ETF, Ishares 1-10 Year Treasury
+     * Bond ETF) und standen mit ELIGIBLE im Aktienscreener, weil die
+     * Entscheidung auf derselben Anbieterangabe beruht, die fuer 7.801 von
+     * 7.803 Zeilen "Stock" lautet. Der Name ist hier der staerkere Beleg, und
+     * die Owner-Entscheidung vom 28.09.2026 gibt ihn ausdruecklich frei.
+     *
+     * Die Regel ist fail-closed und eng: nur wenn die Klassifikation eine
+     * NICHT-Aktien-Gattung mit HOHER Konfidenz aus einem positiven Beleg
+     * fuehrt. Ein COMMON_STOCK aus dem Restfall (LOW, RESIDUAL) aendert
+     * nichts - dort weiss die Klassifikation weniger als die Entscheidung. */
+    var belegteGattung = instrument.securityTypeConfidence === "HIGH" &&
+      (instrument.securityTypeBasis === "SECURITY_NAME" ||
+       instrument.securityTypeBasis === "PROVIDER_ASSET_TYPE");
+    if (instrument.screenerEligible && belegteGattung && !SCREENER_TYPES[instrument.securityType]) {
+      instrument.screenerEligible = false;
+      instrument.screenerReason = "Belegte Gattung " + instrument.securityType +
+        " (Grundlage: " + instrument.securityTypeBasis + "). Der Aktienscreener zeigt nur Aktien; " +
+        "die Produktentscheidung des Wertpapierstamms lautet " + eligibility + ".";
+    }
+
     /* Wo die eigene Klassifikation der Entscheidung widerspricht, wird das
        FESTGEHALTEN und nicht stillschweigend ueberschrieben. Ein
        Widerspruch ist ein Hinweis auf eine Regel, die etwas nicht sieht -
@@ -798,6 +837,10 @@
     toInstrument: toInstrument,
     syncUniverse: syncUniverse,
     changedFields: changedFields,
+    /* Welche Gattungen in einen Aktienscreener gehoeren, ist eine Regel und
+       kein Detail: die Launch-Messung muss sie LESEN und nicht abschreiben,
+       sonst messen zwei Listen gegeneinander. */
+    SCREENER_TYPES: SCREENER_TYPES,
     capabilityMatrix: capabilityMatrix,
     capabilityFlags: capabilityFlags,
     searchEntry: searchEntry,

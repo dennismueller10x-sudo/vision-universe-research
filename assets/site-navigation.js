@@ -1,9 +1,9 @@
 // Central navigation for every page. Add new menu entries only here.
 (() => {
   const groups = [
-    ['Discover', [['Start','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]],
+    ['Discover', [['Start','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]],
     ['Markets & Data', [['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫']]],
-    ['Analyse', [['Quant','/quant/','⌁'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
+    ['Analyse', [['Screener','/screener/','⧩'],['Quant','/quant/','⌁'],['Analysten','/analysten/','◇'],['Hedgefonds','/hedgefonds/','♙']]],
     ['Research', [['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥']]],
     ['Learn', [['Academy','/academy/','✧'],['Guide','/guide/','◈']]],
     ['Tools & Personal', [['Budget','/budget/','▦']]]
@@ -11,6 +11,7 @@
   const iconPaths = {
     '⌂':'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
     '◎':'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/>',
+    '◬':'<path d="M4 19V5m0 14h16M7 15l4-5 3 2 5-7m0 0v5m0-5h-5"/>',
     '◇':'<rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8 12 3 3 5-6"/>',
     '⌕':'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/>',
     '≋':'<path d="M2 9c3-3 5 3 8 0s5-3 8 0 3 2 4 1M2 15c3-3 5 3 8 0s5-3 8 0 3 2 4 1"/>',
@@ -25,6 +26,7 @@
     '▥':'<path d="M5 3h10l4 4v14H5zM15 3v5h4M8 12h8M8 16h8"/>',
     '✧':'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>',
     '◈':'<path d="m12 2 10 10-10 10L2 12zM12 7l5 5-5 5-5-5z"/>',
+    '⧩':'<path d="M4 5h16l-6 8v5l-4 2v-7z"/>',
     '▦':'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12m6-12v12"/>'
   };
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
@@ -65,6 +67,7 @@
         .icon{width:34px;height:34px;flex:none;display:grid;place-items:center;color:#f5f6f2}.icon svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.links a[aria-current=page] .icon{color:#101318}.settings{margin-top:24px;padding-top:20px;border-top:1px solid #ffffff30}.setting{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0;font-size:12px}
         .choices{display:flex;border:1px solid #ffffff38;border-radius:10px;padding:3px;gap:2px}.choices button,.choices a{display:block;border:0;border-radius:7px;background:transparent;color:#f5f6f2;padding:7px 9px;min-width:40px;font-size:11px;text-align:center;text-decoration:none}.choices [aria-pressed=true]{background:#f5f6f2;color:#101318}
         .panel a:focus-visible,.panel button:focus-visible{outline-color:#c8f531}
+        @media(max-width:1120px){.section{display:none}}
         @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:70px;gap:10px;min-width:0}.brand{min-width:0}.brand img{width:min(188px,52vw);max-width:100%}.section{display:none}.quick{display:none}.toggle{margin-left:auto;white-space:nowrap;padding:10px 12px;min-height:44px}.backdrop{inset:70px 0 0}.panel{top:70px;width:min(400px,100vw);padding:22px 24px calc(36px + env(safe-area-inset-bottom))}.links{grid-template-columns:1fr}.links a{min-height:44px;font-size:14px}.groups{gap:25px}}
         @media(max-width:360px){.shell{width:calc(100% - 24px)}.brand img{width:min(170px,51vw)}.panel{padding-inline:20px}}
         :host([theme="dark"]) header img{filter:invert(1) brightness(1.08)}
@@ -92,7 +95,7 @@
          sie sind - sie stehen in Daten, nicht auf dem Bildschirm. */
       const root = this.attachShadow({mode: 'open'});
       const inDiscover = location.pathname.startsWith('/discover/');
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/news/">News</a><a href="/quant/">Quant</a></nav><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰ Menü</button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a></nav><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰ Menü</button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
       const host=root.querySelector('.groups');
       groups.forEach(([heading,entries])=>{
         const section=document.createElement('section');section.className='group';
@@ -110,10 +113,20 @@
         });
         section.append(links);host.append(section);
       });
+      const syncActive=()=>{
+        host.querySelectorAll('.links a').forEach(a=>{
+          const url=new URL(a.href),collection=location.hash.startsWith('#/c/');
+          const rowId=collection?location.hash.split('/')[3]:null;
+          const theme=globalThis.VUDiscover?.Views?.Themes?.byRow(rowId);
+          const parent=theme?'#/welten':'#/strategien';
+          const active=url.pathname===location.pathname&&(collection?url.hash===parent:url.hash?(url.hash==='#/'?!location.hash||location.hash==='#/':location.hash.startsWith(url.hash)):true);
+          if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+        });
+      };
       root.querySelectorAll('.quick a').forEach(a=>{if(location.pathname.startsWith(a.getAttribute('href')))a.setAttribute('aria-current','page');});
       const panel=root.querySelector('.panel'),button=root.querySelector('.toggle');panel.inert=true;
       const close=()=>{this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');button.setAttribute('aria-expanded','false');button.setAttribute('aria-label','Menü öffnen');};
-      button.onclick=()=>{if(this.hasAttribute('open')){close();return;}this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Menü schließen');root.querySelector('.close').focus();};
+      button.onclick=()=>{if(this.hasAttribute('open')){close();return;}syncActive();this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');button.setAttribute('aria-expanded','true');button.setAttribute('aria-label','Menü schließen');root.querySelector('.close').focus();};
       root.querySelector('.close').onclick=()=>{close();button.focus();};root.querySelector('.backdrop').onclick=close;
       panel.addEventListener('click',event=>{if(event.target.closest('a'))close();});
       root.addEventListener('keydown',event=>{
@@ -141,7 +154,7 @@
         b.onclick=async()=>{if(preference.get()===code)return;b.disabled=true;try{if(code!=='EUR'&&window.VUFx.Bootstrap)await window.VUFx.Bootstrap.ensureCurrency(code);layer.setDisplayCurrency(code);}catch(_){b.disabled=false;}this.renderSettings();};currency.append(b);
       }
       const theme=window.VUDiscover&&window.VUDiscover.theme;
-      for(const [mode,label] of [['system','System'],['light','Hell'],['dark','Dunkel']]){
+      for(const [mode,label] of [['light','Hell'],['dark','Dunkel']]){
         if(!theme){const a=document.createElement('a');a.href='/discover/#/settings';a.textContent=label;appearance.append(a);continue;}
         const b=document.createElement('button');b.type='button';b.textContent=label;b.setAttribute('aria-pressed',String(theme.mode()===mode));b.onclick=()=>{theme.set(mode);this.renderSettings();};appearance.append(b);
       }

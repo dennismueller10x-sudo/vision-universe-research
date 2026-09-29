@@ -46,18 +46,30 @@
    ========================================================================= */
 import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { gzipSync } from "node:zlib";
+import { gzipSync, gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { createRequire } from "node:module";
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const PublishedClose = createRequire(import.meta.url)(join(ROOT, "quant/engines/published-close.js"));
+const Naming = createRequire(import.meta.url)(join(ROOT, "quant/engines/company-naming-contract.js"));
+const Classification = createRequire(import.meta.url)(join(ROOT, "quant/engines/instrument-classification.js"));
 const argv = process.argv.slice(2);
 const arg = (name, fallback) => {
   const i = argv.indexOf("--" + name);
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
 };
 const OUT = arg("out", join(ROOT, "quant/data/product/universe-list-v1.json.gz"));
-const SCHEMA_VERSION = "universe-list-1.0.0";
+/* 1.1.0: zwei Felder mehr, an denselben Schluesseln - `v` traegt den Grund,
+   aus dem der Boersenwert dieses Titels zurueckgehalten wird, `il` die Zahl
+   der notierten Zeilen seines Emittenten. Ohne sie konnte die Aktienseite
+   nicht wissen, was die Faktorschicht entschieden hat, und nannte drei Zeilen
+   tiefer ein Kurs-Gewinn-Verhaeltnis, das genau auf der zurueckgehaltenen
+   Zuordnung beruht (gemessen: 266 von 465 Titeln). Ein Leser dieser Datei,
+   der 1.0.0 erwartet, verliert dadurch nichts: beide Felder sind optional. */
+const SCHEMA_VERSION = "universe-list-1.3.0";
 const HEUTE = new Date().toISOString().slice(0, 10);
 
 const json = async (p) => JSON.parse(await readFile(p, "utf8"));
@@ -66,19 +78,29 @@ const json = async (p) => JSON.parse(await readFile(p, "utf8"));
    Eine Reihe, die dort nicht gezeichnet werden darf, liefert hier auch
    keinen Kurs - sonst zeigte die Liste eine Zahl, die die Detailseite
    verweigert. */
-function letzterPunkt(series) {
-  if (!series || series.schemaVersion !== "discover-series-1.1.0") return null;
-  if (series.dataMode !== "real" || series.source !== "tiingo" || series.provider !== "tiingo") return null;
-  if (series.status !== "CALCULATED" || series.priceSeriesType !== "SPLIT_ADJUSTED") return null;
-  if (series.grain !== "daily" || !series.publishBasis || !series.currency) return null;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(series.asOf || "") || series.asOf > HEUTE) return null;
-  if (!Array.isArray(series.points) || !series.points.length) return null;
-  const last = series.points[series.points.length - 1];
-  const datum = Array.isArray(last) ? last[0] : last && last.date;
-  const kurs = Array.isArray(last) ? last[1] : last && last.close;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(datum || "") || datum > HEUTE) return null;
-  if (!Number.isFinite(kurs) || kurs <= 0) return null;
-  return { close: kurs, date: datum, currency: series.currency };
+/* Die Pruefung stand hier und wird jetzt geteilt: seit dem 26.09.2026 liest
+   der Faktorlauf denselben Kurs, um einen Boersenwert zu bilden, wo kein
+   Technical-Buendel existiert. Zwei Kopien derselben Vertragspruefung waeren
+   zwei Vertraege, sobald einer von ihnen ergaenzt wird. */
+const letzterPunkt = (series) => PublishedClose.lastPoint(series, HEUTE);
+
+/* Der Name, der NICHT gezeigt wird. Gleichheit wird ohne Zeichensetzung und
+   Grossschreibung geprueft, sonst gilt "Corp." gegen "Corp" als zweiter Name. */
+function andererName(gezeigt, eintrag) {
+  /* Gleichheit nach DEM Begriff, den der Namensvertrag benutzt - nicht nach
+     einem eigenen. Der erste Versuch hat alle Nicht-Buchstaben entfernt, also
+     auch Leerzeichen, und damit Namen gleichgesetzt, die der Vertrag
+     unterscheidet; 23 Eintraege bekamen so sich selbst als "anderen Namen". */
+  const gleich = (a, b) => Naming.normalise(a) === Naming.normalise(b);
+  if (gleich(gezeigt, eintrag.issuerName)) return eintrag.securityName;
+  if (gleich(gezeigt, eintrag.securityName)) return eintrag.issuerName;
+  /* Keiner von beiden: dann nennt der kuerzere Satz die Emittentenebene, sie
+     traegt die Zahlen. Und wenn auch die dem gezeigten Namen entspricht, gibt
+     es keinen anderen zu nennen - dann bleibt es bei der Markierung. Gemessen
+     traf das 23 Eintraege, und ein "anderer Name", der derselbe ist, ist die
+     Art von Hinweis, die einen Leser ratlos macht. */
+  const wahl = eintrag.issuerName || eintrag.securityName;
+  return gleich(wahl, gezeigt) ? null : wahl;
 }
 
 async function namenAusCompanyMaster() {
@@ -100,15 +122,98 @@ async function namenAusCompanyMaster() {
   return { namen, typen, shards: dateien.length };
 }
 
+/* WELCHE TITEL BELEGT KEINE AKTIE SIND.
+
+   Die Uebersicht kann die 96 Instrumentendateien nicht bei jedem Seitenaufruf
+   lesen - und ohne diese Angabe hat sie gemessen 145 Fonds, Optionsscheine
+   und Vorzugspapiere als faktorbewertete Aktien gefuehrt, waehrend die
+   Aktienseite dazu "keine Aktie" sagte. Das Verzeichnis traegt die Angabe
+   deshalb mit. Die Bedingung selbst wird aus der Klassifikations-Engine
+   GELESEN (`provenNonEquity`) und hier nicht zum zweiten Mal formuliert. */
+async function belegtKeineAktie() {
+  const dir = join(ROOT, "quant/data/universe/instruments");
+  const treffer = new Map();
+  if (!existsSync(dir)) return treffer;
+  for (const datei of (await readdir(dir)).filter((n) => n.endsWith(".json"))) {
+    for (const instrument of (await json(join(dir, datei))).instruments || []) {
+      const belegt = Classification.provenNonEquity(instrument);
+      if (belegt && instrument.symbol) treffer.set(instrument.symbol, belegt.securityType);
+    }
+  }
+  return treffer;
+}
+
 async function main() {
   const capability = await json(join(ROOT, "quant/data/universe/market-capability.json"));
   const members = capability.members || [];
   if (!members.length) throw new Error("EMPTY_CAPABILITY");
   const { namen, typen, shards } = await namenAusCompanyMaster();
+  const keineAktie = await belegtKeineAktie();
+  let mitKeineAktie = 0;
+
+  /* WIE VIELE HANDELSTAGE DIE FAKTOREN WIRKLICH GESEHEN HABEN.
+   *
+   * Die Seite soll einem zu jungen Titel sagen "fuer diese Auswertung werden
+   * 252 Handelstage gebraucht, aktuell liegen 187 vor" - und diese Zahl gibt
+   * es nur an einer Stelle: im Faktor-Artefakt, das sie selbst gezaehlt hat.
+   * Die Bar-Zahl der Kapazitaetsdatei ist eine ANDERE Groesse: gemessen weicht
+   * sie in allen 6.441 Faellen ab (bei AA 936 gegen 0), weil sie den Bestand
+   * im Speicher zaehlt und nicht die Reihe, auf der gerechnet wurde. Sie hier
+   * zu nehmen waere eine falsche Zahl in einem richtigen Satz. */
+  const faktorBars = new Map();
+  /* UND DIE ENTSCHEIDUNG UEBER DIE BEWERTUNG.
+   *
+   * Dieselbe Datei, dieselbe Schleife: der Faktorlauf hat schon entschieden,
+   * ob sich der Boersenwert dieser Notierung ueberhaupt zuordnen laesst. Ohne
+   * diese Angabe im Verzeichnis muesste die Aktienseite den Faktor-Shard
+   * zusaetzlich laden, nur um zu erfahren, dass sie eine Zahl NICHT zeigen
+   * darf - und bis M40 hat sie es deshalb gar nicht erfahren. */
+  const bewertungGrund = new Map(), notierungen = new Map();
+
+  /* WO ZWEI QUELLEN VERSCHIEDENE GESELLSCHAFTEN NENNEN.
+   *
+   * Gemessen am 28.09.2026 nach company-naming-1.0.0: bei 379 Kuerzeln nennen
+   * die Emittentenebene (SEC ueber die CIK) und die Wertpapierebene (Metadaten
+   * des Kursanbieters) verschiedene Gesellschaften - AACI "Armada Acquisition
+   * Corp. III" gegen "Armada Acquisition Corp I", AEC "ANFIELD ENERGY INC."
+   * gegen "Associated Estates Realty Corp". Eine der beiden Angaben ist
+   * falsch, und lokal ist nicht entscheidbar, welche.
+   *
+   * Das wird MITGEFUEHRT und nicht entschieden: `ic` markiert den Konflikt,
+   * `ia` nennt den anderen Namen. Die Oberflaeche kann damit sagen, dass die
+   * Zuordnung unsicher ist, statt eine von zwei Gesellschaften zu behaupten. */
+  const konflikt = new Map();
+  {
+    const pfad = join(ROOT, "quant/data/product/naming-contract-v1.json");
+    if (existsSync(pfad)) {
+      const bericht = await json(pfad);
+      for (const eintrag of bericht.identityConflicts || []) {
+        /* Beide Namen mitnehmen. WELCHER der andere ist, entscheidet sich erst
+           am Eintrag: gezeigt wird der Name des Stamms, und der kann von der
+           Wahl des Vertrags abweichen. Der erste Versuch hat den Namen des
+           Vertrags verglichen und deshalb bei AACI zweimal denselben Namen
+           geschrieben - ein "anderer Name", der keiner war. */
+        konflikt.set(eintrag.ticker, { kind: eintrag.kind,
+          issuerName: eintrag.issuerName || null, securityName: eintrag.securityName || null });
+      }
+    }
+  }
+  const faktorDir = join(ROOT, "quant/data/product/factor-evidence-v1");
+  if (existsSync(faktorDir)) {
+    for (const datei of (await readdir(faktorDir))) {
+      if (!datei.endsWith(".json.gz") || datei === "screening.json.gz" || datei === "summary.json.gz") continue;
+      const shard = JSON.parse(gunzipSync(await readFile(join(faktorDir, datei))).toString("utf8"));
+      for (const [ticker, row] of Object.entries(shard.securities || {})) {
+        if (Number.isFinite(row.bars)) faktorBars.set(ticker, row.bars);
+        if (typeof row.marketCapReason === "string" && row.marketCapReason) bewertungGrund.set(ticker, row.marketCapReason);
+        if (Array.isArray(row.issuerListings) && row.issuerListings.length > 1) notierungen.set(ticker, row.issuerListings.length);
+      }
+    }
+  }
 
   const entries = [];
   const staende = {};
-  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0;
+  let mitKurs = 0, mitName = 0, ohneReihe = 0, reiheVerworfen = 0, mitBars = 0, mitBewertungsgrund = 0, mitKonflikt = 0;
   for (const member of members) {
     const name = namen.get(member.s) || null;
     let preis = null;
@@ -124,12 +229,23 @@ async function main() {
        Ein Eintrag ohne Kurs bleibt drin, wenn er einen Namen hat - die
        Liste soll wenigstens sagen koennen, WER das ist. */
     if (!name && !preis) continue;
+    const bars = faktorBars.has(member.s) ? faktorBars.get(member.s) : null;
+    if (bars !== null) mitBars += 1;
     entries.push({
       s: member.s,
       ...(name ? { n: name } : {}),
       ...(typen.get(member.s) ? { t: typen.get(member.s) } : {}),
-      ...(preis ? { c: preis.close, d: preis.date, u: preis.currency } : {})
+      ...(preis ? { c: preis.close, d: preis.date, u: preis.currency } : {}),
+      ...(bars !== null ? { b: bars } : {}),
+      ...(bewertungGrund.has(member.s) ? { v: bewertungGrund.get(member.s) } : {}),
+      ...(notierungen.has(member.s) ? { il: notierungen.get(member.s) } : {}),
+      ...(keineAktie.has(member.s) ? { ne: 1 } : {}),
+      ...(konflikt.has(member.s) ? { ic: konflikt.get(member.s).kind,
+        ...(andererName(name, konflikt.get(member.s)) ? { ia: andererName(name, konflikt.get(member.s)) } : {}) } : {})
     });
+    if (konflikt.has(member.s)) mitKonflikt += 1;
+    if (keineAktie.has(member.s)) mitKeineAktie += 1;
+    if (bewertungGrund.has(member.s)) mitBewertungsgrund += 1;
   }
 
   const report = {
@@ -138,13 +254,20 @@ async function main() {
     source: {
       universe: "quant/data/universe/market-capability.json",
       prices: "quant/data/market/discover-series (discover-series-1.1.0, split-adjusted daily)",
-      names: "quant/data/universe/search/sym (company-master-1.0.0, " + shards + " shards)"
+      names: "quant/data/universe/search/sym (company-master-1.0.0, " + shards + " shards)",
+      factorBars: "quant/data/product/factor-evidence-v1 (die Zahl der Handelstage, auf denen der Faktorlauf gerechnet hat)",
+      valuationReason: "quant/data/product/factor-evidence-v1 (marketCapReason und die Zahl der notierten Zeilen des Emittenten)",
+      identityConflict: "quant/data/product/naming-contract-v1.json (company-naming-1.0.0)",
+      provenNonEquity: "quant/data/universe/instruments (belegte Gattung nach instrument-classification provenNonEquity)"
     },
     /* Die Deckung steht IM Artefakt, damit ein Leser sie nicht selbst
        ausrechnen muss und ein Test sie halten kann. */
     coverage: {
       universe: members.length, entries: entries.length,
-      withName: mitName, withPrice: mitKurs,
+      withName: mitName, withPrice: mitKurs, withFactorBars: mitBars,
+      withValuationReason: mitBewertungsgrund,
+      withIdentityConflict: mitKonflikt,
+      provenNonEquity: mitKeineAktie,
       withoutSeries: ohneReihe, seriesRejected: reiheVerworfen,
       priceDates: Object.fromEntries(Object.entries(staende).sort((a, b) => b[1] - a[1]).slice(0, 8))
     },
@@ -160,6 +283,7 @@ async function main() {
   const kb = (n) => (n / 1024).toFixed(0) + " KB";
   process.stdout.write("Universums-Liste · " + entries.length + " Eintraege fuer " + members.length + " Titel\n");
   process.stdout.write("  mit Namen  " + String(mitName).padStart(5) + "\n");
+  process.stdout.write("  mit Handelstagen " + String(mitBars).padStart(5) + "\n");
   process.stdout.write("  mit Kurs   " + String(mitKurs).padStart(5) +
     "   (ohne Reihe " + ohneReihe + ", Reihe verworfen " + reiheVerworfen + ")\n");
   process.stdout.write("  Staende: " + Object.entries(report.coverage.priceDates)

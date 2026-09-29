@@ -14,8 +14,26 @@ name: Quant 2.0 Product Intelligence Materialization
 # conclusion == 'success' (was Gate B nicht freigibt, wird auch nicht
 # verarbeitet). Kein Anbieter-Abruf, keine Schleife: der Abruf reagiert nicht
 # auf Pushes nach main.
+# DIESE STUFE HING AN EINEM AUSLOESER, DER NIE GEFEUERT HAT.
+#
+# Gemessen am 29.09.2026: `workflow_run` auf den Marktlauf steht seit
+# Wochen in dieser Datei, der referenzierte Name stimmt zeichengenau - und
+# auf main ist dieser Workflow trotzdem GENAU ZWEIMAL gelaufen, beide Male
+# von Hand. Der Marktlauf war jede Nacht gruen, der Produktstand stand
+# still, und nichts hat angeschlagen.
+#
+# Owner-Entscheid vom 29.09.2026: die Kette laeuft innerhalb EINER
+# Orchestrierung ueber `needs`, nicht ueber `workflow_run` und
+# ausdruecklich nicht ueber einen PAT. Diese Datei bleibt eine eigene
+# Stufe - sie wird jetzt aber vom Marktlauf AUFGERUFEN (`workflow_call`)
+# statt auf ein Ereignis zu hoffen.
+#
+# `workflow_run` bleibt als Guertel neben dem Hosentraeger stehen: sollte
+# es je funktionieren, ist der Lauf durch die Idempotenz-Stufe unten ein
+# sauberer No-Op statt einer doppelten Materialisierung.
 on:
   workflow_dispatch:
+  workflow_call:
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
@@ -35,6 +53,7 @@ concurrency:
 jobs:
   materialize:
     if: >-
+      github.event_name == 'workflow_call' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&
@@ -50,7 +69,34 @@ jobs:
         with:
           node-version: '22'
 
+      # IDEMPOTENZ: DIESELBE KETTE DARF SICHER ERNEUT LAUFEN.
+      #
+      # Steht der Produktstand schon auf der Sitzung, die die Ablage
+      # traegt, gibt es nichts zu materialisieren. Dann bricht diese Stufe
+      # nicht ab, sondern hoert sauber auf - `noop=true`. Alle schweren
+      # Schritte darunter haengen an `noop != 'true'`.
+      #
+      # Ohne das kostet jeder Wiederholungslauf eine knappe Stunde
+      # Rechenzeit fuer ein Ergebnis, das schon dasteht - und ein
+      # Wiederholungslauf ist genau das, was man nach einem Zwischenfall
+      # braucht.
+      - name: Ist ueberhaupt etwas zu materialisieren?
+        id: noetig
+        run: |
+          set -e
+          node scripts/quant/measure-pipeline-freshness.mjs --out="$RUNNER_TEMP/freshness-vorher.json" || true
+          STORE=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_DURABLE_STORE_ASOF||"")')
+          PRODUCT=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_PRODUCT_ASOF||"")')
+          echo "Ablage: ${STORE:-unbekannt} · Produkt: ${PRODUCT:-unbekannt}"
+          if [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
+            echo "noop=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Produktstand entspricht der Ablage ($STORE) - nichts zu materialisieren."
+          else
+            echo "noop=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Existing R2 credentials are available
+        if: steps.noetig.outputs.noop != 'true'
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -62,6 +108,7 @@ jobs:
           done
 
       - name: Measured read-only recovery preflight
+        if: steps.noetig.outputs.noop != 'true'
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -73,6 +120,7 @@ jobs:
           --out "$RUNNER_TEMP/product-intelligence-preflight.json"
 
       - name: Restore existing canonical history to runner-private state
+        if: steps.noetig.outputs.noop != 'true'
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -94,6 +142,7 @@ jobs:
       # Store, den die Materialisierung ohnehin liest - keine neue
       # Pipeline, kein neuer Anbieter.
       - name: Return basis input audit over the canonical history
+        if: steps.noetig.outputs.noop != 'true'
         run: >-
           node scripts/market/audit-return-basis.mjs
           --work-dir "$RUNNER_TEMP/canonical-history"
@@ -106,6 +155,7 @@ jobs:
       # nichts: QUANT_V2_MOMENTUM_RETURN_BASIS bleibt
       # PENDING_METHOD_DECISION.
       - name: Return basis study over the canonical history
+        if: steps.noetig.outputs.noop != 'true'
         run: >-
           node --max-old-space-size=6144 scripts/market/study-return-basis-universe.mjs
           --work-dir "$RUNNER_TEMP/canonical-history"
@@ -115,9 +165,11 @@ jobs:
       # gefehlt hat, damit nie ein Papier mit der Ueberschrift
       # "ueber das Produktuniversum" auf fuenf Titeln steht.
       - name: Render the return basis study document
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/render-return-basis-study.mjs
 
       - name: Materialize Technical, Signals and Elliott Product Data
+        if: steps.noetig.outputs.noop != 'true'
         run: >-
           node scripts/technical/materialize-product-intelligence.mjs
           --work-dir "$RUNNER_TEMP/canonical-history"
@@ -126,6 +178,7 @@ jobs:
       # existing SEC consumer fundamentals and the SIC peer taxonomy. It
       # calls no provider and needs no history beyond what is already here.
       - name: Materialize broad Factor Evidence and Change Product Data
+        if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=4096 scripts/quant/build-factor-evidence.mjs
 
       # Punkt 9 der Owner-Entscheidung: nach der Materialisierung messen,
@@ -133,6 +186,7 @@ jobs:
       # veroeffentlichte Beobachtungen und rechnet nichts neu. Vor der
       # ersten 2.0.0-Beobachtung sagt es das und bricht nicht ab.
       - name: Measure what the methodology change actually changed
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/measure-methodology-change.mjs
 
       # The Setup observation is a projection over the bundles written above.
@@ -140,6 +194,7 @@ jobs:
       # cutoff; the path-dependent states open only once that history is
       # ordered and the mapping is approved.
       - name: Materialize broad Setup Observations
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/build-setup-observations.mjs
 
       # Pattern Research liest ausschliesslich die kanonischen Wochenreihen
@@ -147,30 +202,35 @@ jobs:
       # bereits veroeffentlicht. Es wird nichts daran geschrieben, kein Provider
       # angefragt und keine Historie geholt - die Reihen liegen im Repository.
       - name: Materialize Pattern Research study
+        if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/quant/build-pattern-research.mjs
 
       # Die zweite Hypothesenfamilie: dieselbe Maschinerie, aber die Frage
       # nach dem Unternehmen statt nach dem Chart. Liest die bestehenden
       # SEC-Consumer-Bundles zeitpunktgenau nach Einreichungsdatum.
       - name: Materialize Pattern Research fundamental overlay
+        if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/quant/build-pattern-research-fundamentals.mjs
 
       # VU Pattern Match projiziert die beiden Studien auf je einen Titel:
       # welche vorregistrierten Muster er heute erfuellt. Liest die soeben
       # geschriebenen Studien und die kanonischen Wochenreihen.
       - name: Materialize VU Pattern Match
+        if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/quant/build-pattern-match.mjs
 
       # Dieselben Profile, andersherum gelesen. Der Materializer rechnet
       # jedes Praedikat ueber die Query-Engine nach und schreibt keine
       # Liste, die nicht seine Antwort ist.
       - name: Materialize Strategy Screening Index
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/build-strategy-index.mjs
 
       # Beschreibt die Breite des gemessenen Marktes an einem Stichtag und
       # haengt die Beobachtung an die unveraenderliche Reihe an. Uebergaenge
       # bleiben hinter ihrem eigenen Gate.
       - name: Materialize Market Regime
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/build-market-regime.mjs
 
       # DIE REISE, VON DER SEITE DES LESERS GEZAEHLT.
@@ -192,15 +252,19 @@ jobs:
       # index.html, also ein 404. Die Seite entsteht aus dem Verzeichnis
       # selbst, damit ein neuer Vertrag nicht stillschweigend fehlt.
       - name: Render the methodology index page
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/build-methodology-index.mjs
 
       - name: Materialize the universe list index
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/build-universe-list.mjs
 
       - name: Measure the Stock Intelligence journey
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/vu2/measure-journey.mjs --sample 500
 
       - name: Contract and regression tests
+        if: steps.noetig.outputs.noop != 'true'
         run: |
           node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs quant/tests/technical-unavailability.test.mjs quant/tests/journey-coverage.test.mjs quant/tests/market-calendar.test.mjs quant/tests/assignment-change.test.mjs quant/tests/observation-extension.test.mjs quant/tests/analysis-lag.test.mjs quant/tests/regime-observation-immutability.test.mjs quant/tests/pattern-unavailability.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
@@ -212,12 +276,15 @@ jobs:
       # ihren eigenen Blocker nach, damit sie nicht zu einem vagen
       # "noch nicht" verrottet.
       - name: Product completeness
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/quant/assert-product-completeness.mjs
 
       - name: Public data hygiene
+        if: steps.noetig.outputs.noop != 'true'
         run: node scripts/market/assert-public-data-hygiene.mjs
 
       - name: Commit materialized Product Data to the current branch
+        if: steps.noetig.outputs.noop != 'true'
         run: |
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"

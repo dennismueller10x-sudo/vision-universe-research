@@ -27,12 +27,14 @@
   var S = global.QuantShell;
   var el = S.el;
 
+  /* Alltagsnamen zuerst (Owner-Feedback: verstaendlich fuer Einsteiger);
+     das Fachwort steht klein daneben, damit Kenner es wiederfinden. */
   var DIM = {
     TREND: { name: "Trend", frage: "Liegen die großen US-Märkte im Aufwärtstrend?" },
-    BREADTH: { name: "Marktbreite", frage: "Wie viele Aktien tragen die Bewegung mit?" },
-    MOMENTUM: { name: "Momentum", frage: "Hat der Markt Kraft über Monate?" },
-    RISK: { name: "Risiko", frage: "Wie stark schwankt der Markt tatsächlich?" },
-    CROSS_ASSET: { name: "Cross Asset", frage: "Was bewegt sich gleichzeitig über Anlageklassen?" }
+    BREADTH: { name: "Beteiligung", fach: "Marktbreite", frage: "Wie viele Aktien steigen mit?" },
+    MOMENTUM: { name: "Schwung", fach: "Momentum", frage: "Hat der Markt Kraft über Monate?" },
+    RISK: { name: "Risiko", fach: "Schwankung", frage: "Wie stark schwankt der Markt tatsächlich?" },
+    CROSS_ASSET: { name: "Andere Anlagen", fach: "Cross Asset", frage: "Was bewegt sich gleichzeitig bei Zinsen, Gold, Öl und Bitcoin?" }
   };
   var DIM_REIHE = ["TREND", "BREADTH", "MOMENTUM", "RISK", "CROSS_ASSET"];
   var ROLLE = { support: "Unterstützt das Marktbild", neutral: "Noch nicht bestätigt", headwind: "Gegenwind",
@@ -81,6 +83,8 @@
     saeulen: [["path", mit({ d: "M2.8 9.3L12 3.8l9.2 5.5z" })], ["rect", mit({ x: 4.6, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
               ["rect", mit({ x: 9.2, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 13.8, y: 10.6, width: 2.6, height: 6.8, rx: 0.8 })],
               ["rect", mit({ x: 17.4, y: 10.6, width: 2.1, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 2.8, y: 18.4, width: 18.4, height: 2.4, rx: 0.8 })]],
+    schild: [["path", mit({ d: "M12 2.6l7.6 3v5.7c0 4.7-3.2 8.5-7.6 10-4.4-1.5-7.6-5.3-7.6-10V5.6z" })],
+             ["path", { d: "M8.4 12.1l2.5 2.5 4.8-5", "stroke-width": "2.4", class: "dx-glyph-loch-strich" }]],
     waehrung: [["text", mit({ x: 12, y: 16.4, "text-anchor": "middle", "font-size": "12", "font-weight": "800", "letter-spacing": "-0.5", "font-family": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif" }), "€$"]]
   };
   /* Dimensionen und Vergleichszeilen auf ihr Symbol. */
@@ -392,7 +396,7 @@
     if (ca && ca.evidence && ca.evidence.length) {
       var obs = ca.observations || [];
       var deutlich = ca.evidence.filter(function (e) { return e.notable; }).length;
-      liste.push(kachel({ id: "cross-asset", breit: true, ton: "context", ziel: "maerkte-crossasset", kicker: "Cross Asset · ein Monat",
+      liste.push(kachel({ id: "cross-asset", breit: true, ton: "context", ziel: "maerkte-crossasset", kicker: "Andere Anlagen · ein Monat",
         titel: obs.length ? obs[0].text.replace(/\.$/, "") : "Ruhiges Gesamtbild über die Anlageklassen",
         text: deutlich + " von " + ca.evidence.length + " Anlageklassen deutlich bewegt" + (obs.length > 1 ? " · " + obs.slice(1).map(function (o) { return o.text; }).join(" ") : "."),
         bild: [konstellation(ca.evidence)] }));
@@ -430,15 +434,15 @@
 
   function tiefe(d) {
     return el("div", { class: "dx-m3-tiefe" }, [
-      el("h4", { text: "Zustand" }), el("p", { text: d.label + ". " + de(d.summary) }),
-      d.evidence && d.evidence.length ? el("h4", { text: "Belege" }) : null,
+      el("h3", { text: "Zustand" }), el("p", { text: d.label + ". " + de(d.summary) }),
+      d.evidence && d.evidence.length ? el("h3", { text: "Belege" }) : null,
       d.evidence && d.evidence.length ? el("ul", {}, d.evidence.map(function (e) {
         return el("li", { class: e.current === false ? "is-alt" : "" }, [el("span", { text: e.label + ": " }), el("b", { text: e.text }),
           e.current === false ? el("span", { class: "dx-m3-alt", text: " · Stand " + tagKurz(e.asOf) + ", nicht aktuell" }) : null].filter(Boolean));
       })) : null,
-      d.explanation ? el("h4", { text: "Was bedeutet das?" }) : null,
+      d.explanation ? el("h3", { text: "Was bedeutet das?" }) : null,
       d.explanation ? el("p", { text: d.explanation }) : null,
-      el("h4", { text: "Methodik" }), el("p", { class: "dx-m3-methodik", text: d.methodology })
+      el("h3", { text: "Methodik" }), el("p", { class: "dx-m3-methodik", text: d.methodology })
     ].filter(Boolean));
   }
 
@@ -484,7 +488,7 @@
       }
       var kopf = el("summary", { class: "dx-m3-dim-kopf" }, [
         el("span", { class: "dx-m3-dim-name" }, [iconChip(k, r),
-          el("span", { class: "dx-m3-dim-txt" }, [el("b", { text: DIM[k].name }), el("small", { text: DIM[k].frage })])]),
+          el("span", { class: "dx-m3-dim-txt" }, [el("b", { text: DIM[k].name }), el("small", { text: DIM[k].frage + (DIM[k].fach ? " · " + DIM[k].fach : "") })])]),
         el("span", { class: "dx-m3-dim-zustand is-" + r }, [el("i", { "aria-hidden": "true", text: ROLLE_ZEICHEN[r] }), el("b", { text: d.label }), el("small", { text: ROLLE[r] })]),
         ga ? skala(k, ga, d) : el("span", { class: "dx-m3-spur is-leer", "aria-hidden": "true" }),
         el("span", { class: "dx-m3-dim-wert", text: wert })
@@ -492,8 +496,8 @@
       return el("details", { class: "dx-m3-dim is-" + r, id: "puls-" + k.toLowerCase(), "data-dimension": k, "data-state": d.state }, [kopf, tiefe(d)]);
     });
     return el("section", { class: "dx-m3-karte", id: "maerkte-dimensionen", "aria-label": "Die fünf Dimensionen des Marktumfelds" }, [
-      kopfzeile("Vision Universe Market Intelligence", "Fünf Dimensionen, ein Bild",
-        "Jede Zeile zeigt den gemessenen Wert auf seiner Skala mit den echten Schwellen der Methodik. Der Ring markiert die vorherige Bewertung. Antippen für Belege und Methodik."),
+      kopfzeile("Die Messwerte im Detail", "Fünf Messwerte, ein Bild",
+        "Aus diesen fünf Messwerten entsteht die Einordnung. Jede Zeile zeigt den Wert auf seiner Skala mit den echten Schwellen; der Ring markiert die vorherige Bewertung. Antippen für Belege und Methodik."),
       el("div", { class: "dx-m3-dims" }, zeilen),
       el("p", { class: "dx-m3-fuss", text: "Makro-Umfeld (Inflation, Wachstum, Arbeitsmarkt): noch nicht zertifiziert und deshalb nicht Teil der Einordnung. Kein Gesamtscore." })
     ]);
@@ -651,7 +655,7 @@
         })) : el("p", { class: "dx-m3-leer", text: "Keine einzelne Veränderung würde die Einordnung in diese Richtung verschieben." })]);
     }
     return el("section", { class: "dx-m3-aendern", id: "maerkte-aendern", "aria-label": "Bullish, Base Case, Bearish – was würde das Marktbild verändern?" }, [
-      kopfzeile("Transparenz", "Bullish, Base Case, Bearish", "Mit derselben Regel gerechnet: welche einzelne Veränderung die Einordnung „" +
+      kopfzeile("Bullish, Base Case, Bearish", "Was müsste passieren, damit sich die Einordnung ändert?", "Mit derselben Regel gerechnet: welche einzelne Veränderung die Einordnung „" +
         (p.environment ? p.environment.label : "") + "“ verschieben würde. Echte Schwellen, aktuelle Messwerte – keine Prognose, keine erfundene Wahrscheinlichkeit."),
       el("div", { class: "dx-m3-aendern-raster" }, [spalte("Bullish", c.better, "besser"), basisKarte(p.environment),
                                                     spalte("Bearish", c.worse, "schlechter")].filter(Boolean))
@@ -772,7 +776,7 @@
     var story = aktuell ? d.summary : "Die Tagesdaten des Aktienuniversums stammen vom " + tagKurz(d.asOf) +
       ", der letzte Handelstag war der " + tagKurz(d.expectedAsOf) + " – deshalb keine Einordnung. Im Marktumfeld zählt die Marktbreite so lange weder dafür noch dagegen.";
     var teile = [
-      kopfzeile("Marktbreite", "Wie viele Aktien tragen die Marktbewegung mit?", "Die großen Indizes können steigen, während nur wenige Aktien zulegen. Die Marktbreite zeigt, wie breit eine Bewegung getragen ist."),
+      kopfzeile("Beteiligung · Marktbreite", "Wie viele Aktien steigen mit?", "Die großen Indizes können steigen, während nur wenige Aktien zulegen. Deshalb zählen wir, wie viele Aktien über ihrem Trend liegen."),
       el("p", { class: "dx-m3-b-status is-" + String(d.state).toLowerCase() }, [el("b", { text: d.label }), document_text(" " + story)])
     ];
     var reihen = [];
@@ -874,12 +878,286 @@
       ])]);
     });
     return el("section", { class: "dx-m3-ca", id: "maerkte-crossasset", "aria-label": "Cross Asset" }, [
-      kopfzeile("Cross Asset · ein Monat", obs.length ? obs[0].text.replace(/\.$/, "") : "Ruhiges Gesamtbild über die Anlageklassen",
+      kopfzeile("Andere Anlagen · Cross Asset · ein Monat", obs.length ? obs[0].text.replace(/\.$/, "") : "Ruhiges Gesamtbild über die Anlageklassen",
         "Wie ungewöhnlich war der letzte Monat je Anlageklasse – gemessen an ihrer eigenen typischen Monatsbewegung. Die Linien markieren „deutlich“ (1-fach typisch)."),
       obs.length > 1 ? el("ul", { class: "dx-m3-ca-obs" }, obs.slice(1).map(function (o) { return el("li", { text: o.text }); })) : null,
       el("div", { class: "dx-m3-ca-flaeche" }, [konstellation(d.evidence), el("ul", { class: "dx-m3-ca-liste" }, zeilen)].filter(Boolean)),
       el("p", { class: "dx-m3-fuss", text: "Beschrieben wird, was sich gleichzeitig bewegt – nicht, warum. Steigende Renditen, steigendes Gold oder Bitcoin gelten nicht automatisch als gut oder schlecht." })
     ].filter(Boolean));
+  }
+
+  /* ------------------------------------- Das Wichtigste in 30 Sekunden
+     Owner-Feedback: "Was kann ich daraus ziehen?" Eine Karte direkt unter
+     dem Hero beantwortet in Alltagssprache vier Fragen - Heute? Warum? Was
+     heisst das? Worauf achten? - und verbindet die heutige Stufe mit der
+     historischen Pruefung. Alle Saetze kommen aus den Zustaenden des
+     Artefakts und aus dem Pruefungs-Auszug; ohne Auszug entfallen die
+     beiden Geschichts-Zeilen. Keine Handlungsaufforderung. */
+  function grundSaetze(p) {
+    var d = p.dimensions || {}, out = [];
+    var t = d.TREND, b = d.BREADTH, m = d.MOMENTUM, r = d.RISK;
+    if (t && t.state !== "UNAVAILABLE") out.push({ POSITIVE: "Die großen US-Indizes steigen.", NEGATIVE: "Die großen US-Indizes fallen.",
+      MIXED: "Die großen US-Indizes haben keinen klaren Trend." }[t.state] || de(t.summary));
+    if (b && (b.state === "BROAD" || b.state === "NARROW" || b.state === "MIXED")) {
+      var a50 = (b.evidence || []).filter(function (e) { return e.key === "above50"; })[0];
+      out.push(b.state === "BROAD" ? "Die meisten Aktien steigen mit." : b.state === "NARROW"
+        ? "Nur " + (a50 && isNum(a50.value) ? "rund " + Math.round(a50.value) + " % der" : "wenige") + " Aktien steigen mit – die Bewegung tragen wenige."
+        : "Etwa die Hälfte der Aktien steigt mit.");
+    }
+    if (m && m.state !== "UNAVAILABLE") out.push(m.state === "RISING" ? "Die letzten Monate liefen gut" + (/Tempo lässt nach/.test(m.summary) ? ", das Tempo lässt aber nach." : ".")
+      : m.state === "FALLING" ? "Die letzten Monate liefen schwach" + (/Abwärtsdruck lässt nach/.test(m.summary) ? ", der Druck lässt aber nach." : ".")
+      : "Die letzten Monate brachten keine klare Richtung.");
+    if (r && r.state !== "UNAVAILABLE") out.push(r.state === "NORMAL" ? "Die Kurse schwanken im üblichen Rahmen." : de(r.summary));
+    return out;
+  }
+
+  function kurzfassung(p, ev) {
+    var env = p && p.environment;
+    if (!env || !isNum(env.level)) return null;
+    var lv = ev && ev.levels && ev.levels.length >= 3 ? ev.levels : null;
+    var hier = null, runter = null, rauf = null, schnitt = null;
+    if (lv) {
+      var i = Math.min(env.level, lv.length - 1);
+      hier = lv[i]; runter = lv[i - 1] || null; rauf = lv[i + 1] || null; schnitt = ev.overallDrawdownShare;
+    }
+    var diff = hier && isNum(schnitt) ? hier.drawdownShare - schnitt : null;
+    var risikoWort = diff === null ? null : diff > 3 ? "erhöhtes" : diff < -3 ? "geringeres" : "normales";
+    var gruende = grundSaetze(p);
+    function zeile(frage, inhalt) {
+      return el("div", { class: "dx-m3-kf-zeile" }, [el("dt", { text: frage }), el("dd", {}, inhalt)]);
+    }
+    var zeilen = [
+      zeile("Heute", [el("p", { class: "dx-m3-kf-heute" }, [el("b", { class: "dx-m3-kf-stufe is-l" + env.level, text: env.label }),
+        risikoWort ? document_text(" – " + risikoWort + " Rückschlag-Risiko") : null].filter(Boolean)),
+        env.scale && env.scale.length ? el("p", { class: "dx-m3-kf-leise", text: "Stufe " + (env.level + 1) + " von " + env.scale.length + ", von „" + env.scale[0].label +
+          "“ bis „" + env.scale[env.scale.length - 1].label + "“." }) : null].filter(Boolean)),
+      gruende.length ? zeile("Warum?", [el("ul", { class: "dx-m3-kf-gruende" }, gruende.map(function (g) { return el("li", { text: g }); }))]) : null,
+      hier ? zeile("Was heißt das?", [el("p", { text: "Bei dieser Einordnung folgte seit " + jahr(ev.from) + " in " + vonHundert(hier.drawdownShare) +
+        " Fällen innerhalb von " + dativ(ev.horizon.label) + " ein Rückgang von 10 % oder mehr – " +
+        (Math.abs(diff) <= 1.5 ? "etwa so oft wie" : diff > 0 ? "häufiger als" : "seltener als") + " im Durchschnitt aller Tage (" + vonHundert(schnitt) + ")." }),
+        el("p", { class: "dx-m3-kf-leise", text: risikoWort === "normales" ? "Das Rückschlag-Risiko liegt im üblichen Rahmen – weder besonders hoch noch besonders niedrig."
+          : risikoWort === "erhöhtes" ? "Deutliche Rückschläge kamen in dieser Lage häufiger vor als üblich." : "Deutliche Rückschläge kamen in dieser Lage seltener vor als üblich." })]) : null,
+      hier && (runter || rauf) ? zeile("Worauf achten?", [
+        runter ? el("p", { text: "Rutscht die Einordnung auf „" + runter.label + "“, lag das Risiko früher bei " + vonHundert(runter.drawdownShare) + "." }) : null,
+        rauf ? el("p", { text: "Steigt sie auf „" + rauf.label + "“, lag es bei " + vonHundert(rauf.drawdownShare) + "." }) : null
+      ].filter(Boolean)) : null
+    ].filter(Boolean);
+    var zahlBlock = hier ? el("div", { class: "dx-m3-kf-zahl is-l" + env.level, "aria-hidden": "true" }, [
+      el("b", { text: String(Math.round(hier.drawdownShare)) }), el("span", { text: "von 100" }),
+      el("small", { text: "Rückschläge ≥ 10 % in " + dativ(ev.horizon.label) + " · Schnitt " + Math.round(schnitt) })
+    ]) : null;
+    return el("section", { class: "dx-m3-kurz", id: "maerkte-kurz", "aria-label": "Das Wichtigste in 30 Sekunden" }, [
+      el("div", { class: "dx-m3-kf-kopf" }, [iconChip("kompass", "context"), el("h2", { text: "Das Wichtigste in 30 Sekunden" })]),
+      el("div", { class: "dx-m3-kf-raster" }, [el("dl", { class: "dx-m3-kf-liste" }, zeilen), zahlBlock].filter(Boolean)),
+      el("div", { class: "dx-m3-kf-aktionen" }, [knopf("Was müsste passieren?", "maerkte-aendern", "dx-m3-chip"),
+        hier ? knopf("So haben wir das geprüft", "maerkte-pruefung", "dx-m3-chip") : null, knopf("Warum genau?", "maerkte-warum", "dx-m3-chip is-leise")].filter(Boolean)),
+      el("p", { class: "dx-m3-fuss", text: "Beschreibung aus festen Regeln und fast 100 Jahren Börsengeschichte – keine Prognose, keine Anlageberatung." })
+    ]);
+  }
+
+  /* ------------------------------------------- Marktstimmung (Uebersicht)
+     Eine Karte auf der Kursuebersicht (#/maerkte): Stufe, ein Satz, das
+     Rueckschlag-Risiko aus der Pruefung - und der Weg zur ganzen Erklaerung
+     (#/maerkte/einordnung). Wie ein "Stimmungs"-Widget in einer Broker-App:
+     klein, eindeutig, ein Tipp fuer mehr. */
+  function stimmung(p, ev) {
+    var env = p && p.environment;
+    if (!env || !isNum(env.level)) return null;
+    var lv = ev && ev.levels && ev.levels.length >= 3 ? ev.levels : null;
+    var hier = lv ? lv[Math.min(env.level, lv.length - 1)] : null;
+    var schnitt = ev && isNum(ev.overallDrawdownShare) ? ev.overallDrawdownShare : null;
+    var diff = hier && schnitt !== null ? hier.drawdownShare - schnitt : null;
+    var risiko = diff === null ? null : diff > 3 ? "erhöht" : diff < -3 ? "gering" : "normal";
+    var skala = env.scale || [];
+    var link = el("a", { class: "dx-m3-st-link", href: "#/maerkte/einordnung" }, [el("span", { text: "Einordnung verstehen" }), el("i", { "aria-hidden": "true", text: "›" })]);
+    return el("section", { class: "dx-m3-stimmung is-l" + env.level, id: "maerkte-stimmung", "aria-label": "Marktstimmung" }, [
+      el("div", { class: "dx-m3-st-kopf" }, [iconChip("kompass", "context"), el("div", {}, [el("h2", { text: "Marktstimmung" }),
+        el("p", { text: "US-Aktienmarkt · Einordnung von Vision Universe" })])]),
+      el("div", { class: "dx-m3-st-raster" }, [
+        el("div", { class: "dx-m3-st-gauge" }, [regimeGauge(env, null)].filter(Boolean)),
+        el("div", { class: "dx-m3-st-text" }, [
+          el("p", { class: "dx-m3-st-stufe" }, [el("b", { text: env.label }), el("span", { text: "Stufe " + (env.level + 1) + " von " + (skala.length || 5) })]),
+          el("p", { class: "dx-m3-st-satz", text: env.statement }),
+          hier ? el("p", { class: "dx-m3-st-risiko is-" + risiko }, [el("b", { text: "Rückschlag-Risiko: " + risiko }),
+            document_text(" – früher in " + vonHundert(hier.drawdownShare) + " Fällen ein Minus von 10 % oder mehr in " + dativ(ev.horizon.label) +
+              " (Schnitt " + Math.round(schnitt) + ").")]) : null,
+          skala.length ? el("ol", { class: "dx-m3-st-leiste", "aria-hidden": "true" }, skala.map(function (x, i) {
+            return el("li", { class: "is-l" + i + (i === env.level ? " is-aktiv" : ""), title: x.label });
+          })) : null
+        ].filter(Boolean))
+      ]),
+      link,
+      el("p", { class: "dx-m3-fuss", text: "Beschreibung nach festen Regeln – keine Prognose, keine Anlageberatung." })
+    ]);
+  }
+
+  /* ------------------------------------------ Wie verlaesslich? (Pruefung)
+     Die historische Pruefung derselben Regeln (scripts/market/validate-
+     market-pulse.mjs, Auszug quant/data/market/validation/market-pulse-
+     evidence.json). Entscheidung des Eigentuemers vom 28.09.2026: die
+     Pruefung wird offengelegt - verstaendlich, mit Methodik, Grenzen und
+     Quelle. Die Modellrechnung steht immer neben "immer investiert" und
+     neben dem juengeren Zeitraum, nie allein. Diese Datei rechnet nichts
+     nach; sie zeigt, was der Auszug enthaelt. */
+  function pct(v, d) { return (v < 0 ? "−" : "") + zahl(Math.abs(v), d === undefined ? 1 : d) + "\u00a0%"; }
+  function vonHundert(v) { return Math.round(v) + " von 100"; }
+  /* "3 Monate" nach "in"/"von" im Dativ: "in 3 Monaten". */
+  function dativ(label) { return String(label).replace(/Monate$/, "Monaten"); }
+  function jahr(iso) { return iso ? iso.slice(0, 4) : ""; }
+  function tagLang(iso) { return iso ? iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(0, 4) : ""; }
+
+  function pruefung(ev, p) {
+    if (!ev || !ev.levels || ev.levels.length < 3 || !ev.illustration) return null;
+    var lv = ev.levels, erste = lv[0], letzte = lv[lv.length - 1];
+    var von = jahr(ev.from), bis = jahr(ev.to);
+    var jahre = Math.round((Date.parse(ev.to) - Date.parse(ev.from)) / (365.25 * 864e5));
+    var heute = p && p.environment && isNum(p.environment.level) ? Math.min(p.environment.level, letzte.level) : null;
+    var h = ev.horizon.label;
+
+    /* (1) Kernaussage mit Balken je Stufe */
+    var skala = Math.max.apply(null, lv.map(function (x) { return x.drawdownShare; })) * 1.15;
+    var balkenListe = el("ol", { class: "dx-m3-pr-balken" }, lv.map(function (x) {
+      var istHeute = x.level === heute;
+      return el("li", { class: "is-l" + x.level + (istHeute ? " is-heute" : "") }, [
+        el("span", { class: "dx-m3-pr-stufe" }, [el("i", { "aria-hidden": "true" }), el("span", { text: x.label }),
+          istHeute ? el("em", { text: "heute" }) : null].filter(Boolean)),
+        el("span", { class: "dx-m3-pr-spur", role: "img", "aria-label": x.label + ": in " + vonHundert(x.drawdownShare) + " Fällen ein Rückgang von 10 % oder mehr" }, [
+          el("span", { class: "dx-m3-pr-fuell", style: "width:" + Math.max(3, 100 * x.drawdownShare / skala).toFixed(1) + "%" })
+        ]),
+        el("b", { text: vonHundert(x.drawdownShare) })
+      ]);
+    }));
+    var kern = el("article", { class: "dx-m3-pr-karte dx-m3-pr-kern" }, [
+      el("div", { class: "dx-m3-pr-kopf" }, [iconChip("schild", "support"), el("span", { text: "Das Rückschlag-Risiko" })]),
+      el("p", { class: "dx-m3-pr-aussage", text: "Nach „" + erste.label + "“ folgte in " + vonHundert(erste.drawdownShare) +
+        " Fällen ein Rückgang von 10 % oder mehr – nach „" + letzte.label + "“ nur in " + vonHundert(letzte.drawdownShare) + "." }),
+      el("p", { class: "dx-m3-pr-unter", text: "Anteil der Fälle mit einem zeitweisen Minus von 10 % oder mehr in den folgenden " + dativ(h) +
+        ". US-Gesamtmarkt " + von + " bis " + bis + "." }),
+      balkenListe,
+      el("p", { class: "dx-m3-fuss", text: "Zum Vergleich: über alle Tage " + vonHundert(ev.overallDrawdownShare) + ". " + (ev.topLevelNote || "") })
+    ]);
+
+    /* (2) Modellrechnung - immer neben "immer investiert" und dem juengeren Zeitraum */
+    var regel = ev.illustration.rules.filter(function (r) { return r.minLevel === 2; })[0] || ev.illustration.rules[0];
+    var m = regel && regel.all;
+    var modell = null;
+    if (m) {
+      var tiefe = Math.max(Math.abs(m.buyAndHold.maxDrawdown), Math.abs(m.maxDrawdown)) || 1;
+      var zeile = function (titel, a, b) {
+        return el("div", { class: "dx-m3-pr-vgl-zeile", role: "row" }, [el("span", { role: "rowheader", text: titel }), el("b", { role: "cell", text: a }), el("b", { role: "cell", class: "is-regel", text: b })]);
+      };
+      var r = regel.since2001;
+      modell = el("article", { class: "dx-m3-pr-karte dx-m3-pr-modell" }, [
+        el("div", { class: "dx-m3-pr-kopf" }, [iconChip("kurve", "context"), el("span", { text: "Historische Modellrechnung" })]),
+        el("p", { class: "dx-m3-pr-aussage", text: m.cagr >= m.buyAndHold.cagr - 1 ? "Fast gleiche Rendite, deutlich kleinere Verluste" : "Weniger Rendite, deutlich kleinere Verluste" }),
+        el("p", { class: "dx-m3-pr-unter dx-m3-pr-klartext", text: pct(m.cagr) + " statt " + pct(m.buyAndHold.cagr) + " pro Jahr – aber der größte Verlust lag bei " +
+          pct(m.maxDrawdown, 0) + " statt " + pct(m.buyAndHold.maxDrawdown, 0) + " (" + von + "–" + bis + ", nur ab „" + regel.minLabel + "“ investiert)." }),
+        el("div", { class: "dx-m3-pr-vgl", role: "table", "aria-label": "Modellrechnung " + von + " bis " + bis }, [
+          el("div", { class: "dx-m3-pr-vgl-zeile is-kopf", role: "row" }, [el("span", { role: "columnheader", text: von + "–" + bis }),
+            el("span", { role: "columnheader", text: "Immer investiert" }), el("span", { role: "columnheader", class: "is-regel", text: "Nur ab „" + regel.minLabel + "“*" })]),
+          zeile("Rendite pro Jahr", pct(m.buyAndHold.cagr), pct(m.cagr)),
+          zeile("Größter Verlust", pct(m.buyAndHold.maxDrawdown), pct(m.maxDrawdown)),
+          zeile("Zeit am Markt", "100 %", pct(m.investedShare, 0))
+        ]),
+        el("div", { class: "dx-m3-pr-tiefe", "aria-hidden": "true" }, [
+          el("span", { class: "dx-m3-pr-tiefe-titel", text: "Größter Verlust im Vergleich" }),
+          el("span", { class: "dx-m3-pr-tiefe-spur" }, [el("span", { class: "is-immer", style: "width:" + (100 * Math.abs(m.buyAndHold.maxDrawdown) / tiefe).toFixed(1) + "%" })]),
+          el("span", { class: "dx-m3-pr-tiefe-spur" }, [el("span", { class: "is-regel", style: "width:" + (100 * Math.abs(m.maxDrawdown) / tiefe).toFixed(1) + "%" })])
+        ]),
+        r ? el("p", { class: "dx-m3-pr-juenger", text: "Seit " + jahr(r.from) + ": " + pct(r.cagr) + " statt " + pct(r.buyAndHold.cagr) +
+          " pro Jahr, größter Verlust " + pct(r.maxDrawdown) + " statt " + pct(r.buyAndHold.maxDrawdown) + "." }) : null,
+        el("p", { class: "dx-m3-fuss", text: "* Sonst Geldmarkt. Signal am Schlusskurs, umgesetzt einen Handelstag später. Ohne Kosten und Steuern; " +
+          "der US-Gesamtmarkt ist nicht direkt investierbar. Vergangene Ergebnisse sind kein verlässlicher Hinweis auf künftige Entwicklungen." })
+      ].filter(Boolean));
+    }
+
+    /* (3) So haben wir geprueft */
+    var gesichert = (ev.contrasts || []).filter(function (c) { return c.significant; }).map(function (c) { return c.label; });
+    var oos = ev.outOfSample && ev.outOfSample.levels, oosA = oos && oos[0], oosZ = oos && oos[oos.length - 1];
+    var schritte = [
+      ["regler", "Dieselben Regeln wie heute", "Trend, Momentum und Risiko mit genau den Schwellen, die auch heute gelten. Nichts wurde nachträglich angepasst, damit es besser aussieht."],
+      ["auge", "Nur das Wissen von damals", "Jeder Tag wird nur mit den Kursen bis zu diesem Tag eingeordnet und erst am nächsten Handelstag umgesetzt – ohne Rückschaufehler."],
+      ["kerzen", "Fast " + (Math.round(jahre / 10) * 10) + " Jahre, alle großen Krisen", "US-Gesamtmarkt inklusive Dividenden von " + von + " bis " + bis +
+        ": Weltwirtschaftskrise, Ölkrisen, Dotcom-Blase, Finanzkrise, Corona."],
+      ["lupe", "Gegen den Zufall geprüft", "Gezählt werden nur Zeiträume, die sich nicht überschneiden. " +
+        (gesichert.length ? "Der Unterschied zwischen vorsichtigen und konstruktiven Stufen ist nach " + gesichert.join(" und ") + " statistisch gesichert, auch nach Korrektur für Mehrfachtests."
+                          : "Der Unterschied ist derzeit statistisch nicht gesichert.")],
+      oosA ? ["trend", "Auch ohne Vorwissen bestätigt", "Die Regeln entstanden 2026. Die Jahre bis " + jahr(ev.outOfSample.to) + " kannten sie nicht – dort zeigt sich dasselbe Muster: „" +
+        oosA.label + "“ " + vonHundert(oosA.drawdownShare) + ", „" + oosZ.label + "“ " + vonHundert(oosZ.drawdownShare) + "."] : null
+    ].filter(Boolean);
+    var methode = el("article", { class: "dx-m3-pr-karte dx-m3-pr-methode" }, [
+      el("div", { class: "dx-m3-pr-kopf" }, [iconChip("regler", "neutral"), el("span", { text: "So haben wir geprüft" })]),
+      el("ol", { class: "dx-m3-pr-schritte" }, schritte.map(function (x) {
+        return el("li", {}, [iconChip(x[0], "context"), el("div", {}, [el("b", { text: x[1] }), el("p", { text: x[2] })])]);
+      }))
+    ]);
+
+    /* (4) Was es bedeutet - und was nicht */
+    var bedeutung = el("article", { class: "dx-m3-pr-karte dx-m3-pr-bedeutung" }, [
+      el("div", { class: "dx-m3-pr-kopf" }, [iconChip("kompass", "neutral"), el("span", { text: "Was das bedeutet – und was nicht" })]),
+      el("ul", { class: "dx-m3-pr-liste" }, [
+        el("li", { class: "is-ja" }, [el("span", { class: "dx-m3-pr-zeichen", "aria-hidden": "true", text: "✓" }),
+          el("p", { text: "Die Einordnung zeigt, wie groß das Risiko eines deutlichen Rückschlags ist." })]),
+        el("li", { class: "is-nein" }, [el("span", { class: "dx-m3-pr-zeichen", "aria-hidden": "true", text: "✕" }),
+          el("p", { text: "Sie sagt nicht voraus, ob die Kurse steigen: Nach „" + erste.label + "“ lag die durchschnittliche Rendite der folgenden " + h + " sogar bei " +
+            (erste.meanReturn >= 0 ? "+" : "") + pct(erste.meanReturn) + " – oft folgten kräftige Erholungen." })]),
+        el("li", { class: "is-nein" }, [el("span", { class: "dx-m3-pr-zeichen", "aria-hidden": "true", text: "✕" }),
+          el("p", { text: "Kein Signal zum Handeln und keine Anlageberatung – ein Werkzeug für die eigene Recherche." })])
+      ])
+    ]);
+
+    /* (5) Alle Zahlen, Grenzen, Quelle */
+    var hz = ev.byHorizon || [];
+    var tabelle = el("table", { class: "dx-m3-pr-tabelle" }, [
+      el("caption", { text: "Rückgang von 10 % oder mehr – Fälle von 100, je Zeitraum danach" }),
+      el("thead", {}, [el("tr", {}, [el("th", { scope: "col", text: "Stufe" })].concat(hz.map(function (x) { return el("th", { scope: "col", text: x.label }); }))
+        .concat([el("th", { scope: "col", text: "Ø Rendite " + h }), el("th", { scope: "col", text: "Fälle" })]))]),
+      el("tbody", {}, lv.map(function (x) {
+        return el("tr", {}, [el("th", { scope: "row", text: x.label })].concat(hz.map(function (y) {
+          var z = y.levels.filter(function (q) { return q.level === x.level; })[0];
+          return el("td", { text: z && isNum(z.drawdownShare) ? String(Math.round(z.drawdownShare)) : "–" });
+        })).concat([el("td", { text: (x.meanReturn >= 0 ? "+" : "") + pct(x.meanReturn) }), el("td", { text: String(x.samples) })]));
+      }))
+    ]);
+    var perioden = (ev.periods || []).map(function (sp) {
+      var a = sp.levels[0], z = sp.levels[sp.levels.length - 1];
+      return el("li", { text: sp.id.replace("-", "–") + ": „" + a.label + "“ " + vonHundert(a.drawdownShare) + ", „" + z.label + "“ " + vonHundert(z.drawdownShare) +
+        " (" + a.samples + " bzw. " + z.samples + " Fälle)" });
+    });
+    var spanne = function (x) { return x.drawdownCI95 ? Math.round(x.drawdownCI95[0]) + " und " + Math.round(x.drawdownCI95[1]) : "–"; };
+    var weitere = ev.illustration.rules.filter(function (q) { return q !== regel && q.all; }).map(function (q) {
+      return el("li", { text: "Nur ab „" + q.minLabel + "“ investiert: " + pct(q.all.cagr) + " pro Jahr, größter Verlust " + pct(q.all.maxDrawdown) + ", " + pct(q.all.investedShare, 0) + " der Zeit am Markt" +
+        (q.since2001 ? " (seit " + jahr(q.since2001.from) + ": " + pct(q.since2001.cagr) + ", " + pct(q.since2001.maxDrawdown) + ")" : "") + "." });
+    });
+    var details = el("details", { class: "dx-m3-regel dx-m3-pr-details" }, [
+      el("summary", { text: "Alle Zahlen, Grenzen und Quelle" }),
+      el("div", { class: "dx-m3-pr-tabelle-box", tabindex: "0", role: "region", "aria-label": "Tabelle: Rückgänge je Stufe und Zeitraum" }, [tabelle]),
+      el("h3", { text: "Jeder Zeitabschnitt einzeln (" + h + ")" }), el("ul", {}, perioden),
+      el("h3", { text: "Wie sicher sind die Zahlen?" }),
+      el("p", { text: "Mit 95 % Sicherheit liegt der wahre Anteil nach „" + erste.label + "“ zwischen " + spanne(erste) + " von 100, nach „" + letzte.label + "“ zwischen " +
+        spanne(letzte) + " von 100." + (erste.drawdownCI95 && letzte.drawdownCI95 ? (erste.drawdownCI95[0] > letzte.drawdownCI95[1]
+          ? " Die Spannen überschneiden sich nicht – der Unterschied ist kein Zufall." : " Die Spannen überschneiden sich – der Unterschied ist nicht sicher.") : "") }),
+      weitere.length ? el("h3", { text: "Weitere Modellrechnung" }) : null, weitere.length ? el("ul", {}, weitere) : null,
+      el("h3", { text: "Grenzen" }),
+      el("ul", {}, [
+        el("li", { text: "Die Geschichte kennt keine ETFs: Für die vier Markt-Tracker stehen Portfolios aus großen Wachstums- und Standardwerten sowie kleinen Werten." }),
+        el("li", { text: "Die Marktbreite der Seite zählt Einzelaktien; historisch ist sie nur über Branchen annähernd messbar. Deshalb fehlt „Breit konstruktiv“ als eigene Zeile." }),
+        el("li", { text: "Je Stufe gibt es nur " + Math.min.apply(null, lv.map(function (x) { return x.samples; })) + " bis " + Math.max.apply(null, lv.map(function (x) { return x.samples; })) +
+          " unabhängige Fälle – die Zahlen sind belastbar, aber nicht auf die Kommastelle genau." }),
+        el("li", { text: "Die Modellrechnung enthält keine Kosten, Steuern oder Verzögerungen über einen Tag hinaus." })
+      ]),
+      el("h3", { text: "Quelle" }),
+      el("p", {}, [document_text("Datengrundlage: "), el("a", { href: ev.source.url, rel: "noopener", target: "_blank", text: ev.source.label }),
+        document_text(". " + ev.source.detail + " Daten bis " + tagLang(ev.to) + ", monatlich aktualisiert.")])
+    ].filter(Boolean));
+
+    return el("section", { class: "dx-m3-pruefung", id: "maerkte-pruefung", "aria-label": "Wie verlässlich ist diese Einordnung?" }, [
+      kopfzeile("Geprüft seit " + von, "Wie verlässlich ist diese Einordnung?",
+        "Wir haben genau diese Regeln auf fast " + (Math.round(jahre / 10) * 10) + " Jahre US-Börsengeschichte angewendet – Tag für Tag nur mit den Daten, die damals bekannt waren."),
+      el("div", { class: "dx-m3-pr-raster" }, [kern, modell, methode, bedeutung].filter(Boolean)),
+      details,
+      el("p", { class: "dx-m3-fuss", text: "Eigene historische Prüfung von Vision Universe mit den unveränderten Regeln. Keine Prognose, keine Anlageberatung." })
+    ]);
   }
 
   /* ----------------------------------------------- Markt jetzt: Stories */
@@ -931,7 +1209,7 @@
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MarketIntelligence = {
     hero: hero, kacheln: kacheln, landkarte: landkarte, glyph: symbolSvg, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
-    verlauf: verlauf, breite: breite, crossAsset: crossAsset, stories: stories, beleben: beleben,
+    verlauf: verlauf, breite: breite, crossAsset: crossAsset, pruefung: pruefung, kurzfassung: kurzfassung, grundSaetze: grundSaetze, stimmung: stimmung, stories: stories, beleben: beleben,
     naechsteBewertung: naechsteBewertung, zyklusText: zyklusText, ZEITRAEUME: ZEITRAEUME
   };
 })(typeof window !== "undefined" ? window : globalThis);

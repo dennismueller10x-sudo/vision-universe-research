@@ -59,7 +59,7 @@ async function premiumMobileAudit(page,key){
  });
  designEvidence.push({key,type:'premium-material',...material});
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
- assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=8,'Dock needs a visible safe-area gap');assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=8&&material.dock.right>=8,'Dock must float inside viewport');assert(material.dock.bottom>=2&&material.dock.bottom<=6,'Browser dock must sit at the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks premium capsule geometry');assert(/blur\(/.test(material.dock.backdropFilter),'Dock has no real backdrop blur');assert(material.dock.borderWidth>0&&!/^none$/.test(material.dock.boxShadow),'Dock needs material border and depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
 
  const surfaces=page.locator('.v2-journey > [data-surface]');
  const intensity=await surfaces.evaluateAll(nodes=>nodes.map((node,index)=>{let owner=node,s=getComputedStyle(owner),raw=s.backgroundColor,m=(raw.match(/[\d.]+/g)||[]).map(Number);while(owner.parentElement&&(raw==='transparent'||(m.length>3&&m[3]===0))){owner=owner.parentElement;s=getComputedStyle(owner);raw=s.backgroundColor;m=(raw.match(/[\d.]+/g)||[]).map(Number);}m=m.slice(0,3);const max=Math.max(...m),min=Math.min(...m),lum=m.length===3?(m[0]+m[1]+m[2])/3:null;return {index,id:node.dataset.surface,archetype:node.dataset.archetype||'',background:raw,lum,saturation:m.length===3?max-min:0};}));
@@ -99,6 +99,25 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  page.on('pageerror',e=>errors.push({key,message:e.message}));
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+ await check(key+' fresh visit starts light regardless of device scheme',async()=>{
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+  assert.equal(await page.locator('html').getAttribute('data-theme-mode'),'light');
+  assert.equal(await page.locator('vu-navigation').getAttribute('theme'),'light');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#ffffff');
+ });
+ if(width===390)await check(key+' dark setting is explicit and persists',async()=>{
+  await page.goto(base+'/discover/#/settings',{waitUntil:'domcontentloaded'});
+  const choices=page.locator('.v2-settings-choices button');await choices.first().waitFor();
+  assert.deepEqual(await choices.allTextContents(),['Hell','Dunkel']);
+  await choices.getByText('Dunkel').click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+  await page.reload({waitUntil:'domcontentloaded'});
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+  await page.locator('.v2-settings-choices button').getByText('Hell').click();
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+  await page.goto(base+'/discover/',{waitUntil:'domcontentloaded'});
+  await page.locator('.v2-hero-track .v2-stock').first().waitFor({state:'visible'});
+ });
  await check(key+' canonical page is indexable',async()=>{const robots=page.locator('meta[name=robots]');assert(!(await robots.count())||!(await robots.getAttribute('content')).includes('noindex'),'canonical /discover/ must not be noindex');});
  await check(key+' main visible',async()=>assert(await page.locator('main').isVisible()));
  await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/entdeck|versteh/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['hero action',page.locator('.v2-intro-cta').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
@@ -115,7 +134,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' shared menu separates Discover from platform products',async()=>{
   const nav=page.locator('vu-navigation');
   const destinations=await nav.locator('.group:first-child .links a').evaluateAll(nodes=>nodes.map(n=>({label:n.lastChild.textContent.trim(),href:n.getAttribute('href')})));
-  assert.deepEqual(destinations.map(x=>x.label),['Start','Welten','Entdecken','Suchen','Märkte','Watchlist']);
+  assert.deepEqual(destinations.map(x=>x.label),['Start','Welten','Strategien','Entdecken','Suchen','Märkte','Watchlist']);
   assert(destinations.every(x=>x.href.startsWith('/discover/#/')),'Discover shortcuts must stay inside Discover');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
   if(width<500){
@@ -162,13 +181,33 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
  await check(key+' responsive navigation remains reachable',async()=>{
   const nav=page.locator('.v2-dock');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
-  assert(state.labels.length>=4,'Navigation needs named home/world/feed/search destinations');assert(state.labels.every(i=>i.label),'Navigation contains an unlabeled action');assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
-  if(width<500){assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=8&&gap<=80,'Mobile navigation must float above the safe-area edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Mobile targets smaller than 44px');assert(state.paddingBottom>=0);}
+  assert.deepEqual(state.labels.map(i=>i.label),['Start','Welten','Strategien','Entdecken','Suchen']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
+  if(width<500){assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=2&&gap<=6,'Mobile browser navigation must sit at the viewport edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Mobile targets smaller than 44px');assert(state.paddingBottom>=0);}
   else assert.notEqual(state.position,'fixed','Desktop must use its distinct header navigation');interactionEvidence.push({key,type:'responsive-navigation',...state});
  });
  if(engine==='chromium'&&width===390&&colorScheme==='light'){
   await check(key+' premium mobile material and diversity',()=>premiumMobileAudit(page,key));
-  await check(key+' compact worlds lead to compact multi-card collections',async()=>{await page.goto(base+'/discover/#/welten',{waitUntil:'networkidle'});const themeTiles=page.locator('.v2-theme-grid .v2-theme-tile');assert(await themeTiles.count()>=40,'All 40 Themenwelten must be listed');assert(await page.locator('.v2-theme-grid .v2-theme-tile img').count()>=1,'Themenwelten need their photos');const t1=await themeTiles.nth(0).boundingBox(),t2=await themeTiles.nth(1).boundingBox();assert(t1&&t2&&Math.abs(t1.y-t2.y)<4,'Mobile Themenwelten must form a compact two-column grid');const doors=page.locator('.v2-world-directory .v2-world-door');assert(await doors.count()>=8,'World directory needs multiple data-backed entrances');const styles=await doors.evaluateAll(nodes=>nodes.slice(0,4).map(n=>getComputedStyle(n).backgroundImage||getComputedStyle(n).backgroundColor));assert(new Set(styles).size>=3,'World entrances lack visual differentiation');const first=await doors.nth(0).boundingBox(),second=await doors.nth(1).boundingBox();assert(first&&second&&first.height<=page.viewportSize().height*.42,'World choice is still oversized: '+(first&&first.height));assert(Math.abs(first.y-second.y)<4&&first.width<page.viewportSize().width*.55,'Mobile worlds must form a compact two-column directory');await screenshot(page,key+'-worlds');const href=await doors.first().getAttribute('href');await page.goto(base+'/discover-v2/'+href,{waitUntil:'networkidle'});const stock=page.locator('.v2-main>.dx-grid .dx-poster').first();await stock.waitFor({state:'visible'});const card=await stock.boundingBox(),neighbour=await page.locator('.v2-main>.dx-grid .dx-poster').nth(1).boundingBox();assert(card&&neighbour&&Math.abs(card.y-neighbour.y)<4,'Collection must show several stocks side by side');assert(card.width<page.viewportSize().width*.55&&card.height<page.viewportSize().height*.7,'World stock card is still oversized: '+JSON.stringify(card));await screenshot(page,key+'-world-stocks');await page.goto(base+'/discover-v2/',{waitUntil:'networkidle'});await page.locator('.v2-hero-track .v2-stock').first().waitFor();});
+  await check(key+' themes and strategies stay separate',async()=>{
+    await page.goto(base+'/discover/#/welten',{waitUntil:'networkidle'});
+    const themes=page.locator('.v2-theme-grid .v2-theme-tile');
+    assert(await themes.count()>=40,'All 40 Themenwelten must be listed');
+    assert.equal(await page.locator('.v2-world-directory,.v2-collection-links').count(),0,'Strategies must not appear in Welten');
+    await screenshot(page,key+'-worlds');
+    await page.goto(base+'/discover/#/strategien',{waitUntil:'networkidle'});
+    const strategies=page.locator('.v2-main .v2-collection-link');
+    assert(await strategies.count()>=19,'Canonical Discover strategies must be listed');
+    assert.equal(await page.locator('.v2-theme-grid').count(),0,'Themes must not appear in Strategien');
+    assert.equal(await page.locator('.v2-dock a[aria-current=page]').innerText(),'Strategien');
+    const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy card overflows mobile viewport');
+    await screenshot(page,key+'-strategies');
+    const href=await strategies.first().getAttribute('href');
+    await page.goto(base+'/discover/'+href,{waitUntil:'networkidle'});
+    assert.equal(await page.locator('.v2-back').getAttribute('href'),'#/strategien');
+    const stock=page.locator('.v2-main>.dx-grid .dx-poster').first();await stock.waitFor({state:'visible'});
+    await screenshot(page,key+'-strategy-stocks');
+    await page.goto(base+'/discover/',{waitUntil:'networkidle'});
+    await page.locator('.v2-hero-track .v2-stock').first().waitFor();
+  });
   await check(key+' home freshness contract is visible',async()=>{await page.locator('.v2-hero-track .dx-lazy-media').first().scrollIntoViewIfNeeded();await page.waitForTimeout(250);const live=page.locator('.v2-stock .dx-lazy-media[data-live]');assert(await live.count()>0,'Home does not consume canonical snapshot/intraday artwork');const invalid=await live.evaluateAll(nodes=>nodes.filter(n=>!['LIVE','LAST_SESSION','STALE','UNAVAILABLE'].includes(n.dataset.freshness||'')).map(n=>({symbol:n.dataset.symbol,freshness:n.dataset.freshness})));assert.deepEqual(invalid,[]);const caption=await page.locator('.v2-hero-track .v2-stock-caption').first().innerText();assert(/Tagesverlauf|Kursverlauf|nicht verfügbar|Keine Kursreihe/i.test(caption),'Structured period/source caption is missing: '+caption);});
  }
  await check(key+' search opens traps focus and restores it',async()=>{const opener=page.locator('.v2-dock-search:visible').first();await opener.click();const input=page.locator('input[type=search]').first();await input.waitFor({state:'visible'});await input.fill('AAPL');await page.waitForFunction(()=>Array.from(document.querySelectorAll('.dx-search .dx-result')).some(n=>/Apple|AAPL/.test(n.textContent)));for(let i=0;i<12;i++){await page.keyboard.press(i<6?'Tab':'Shift+Tab');assert(await page.locator('.dx-search').evaluate(n=>n.contains(document.activeElement)),'Focus escaped search');}await screenshot(page,key+'-search');if(width===390)await check(key+' search accessibility',()=>a11y(page,key+'-search'));await page.keyboard.press('Escape');await input.waitFor({state:'hidden'});assert(await opener.evaluate(n=>n===document.activeElement),'Search opener focus not restored');});
@@ -199,6 +238,15 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await page.locator('.dv2-stock-business').scrollIntoViewIfNeeded();await screenshot(page,key+'-crowdstrike-business');
  });
  await page.goto(base+'/discover/#/einzeln/US_REAL',{waitUntil:'networkidle'});
+ if(width<500)await check(key+' feed stock link remains reachable above the dock',async()=>{
+  const card=page.locator('.dx-feed-screen[data-symbol]').first(),button=card.locator('.dx-cta .dx-btn');
+  await button.evaluate(n=>n.scrollIntoView({block:'end',behavior:'instant'}));
+  const bounds=await page.evaluate(()=>{const button=document.querySelector('.dx-feed-screen[data-symbol] .dx-cta .dx-btn'),dock=document.querySelector('.v2-dock'),track=document.querySelector('.dx-feed-spur');const b=button.getBoundingClientRect(),d=dock.getBoundingClientRect(),t=track.getBoundingClientRect();return {button:b.toJSON(),dock:d.toJSON(),track:t.toJSON(),hit:document.elementFromPoint(b.left+b.width/2,b.top+b.height/2)?.closest('.dx-btn')===button,scrollTop:track.scrollTop};});
+  assert(bounds.button.top>=bounds.track.top&&bounds.button.bottom<=Math.min(bounds.dock.top-8,bounds.track.bottom),'Stock action is covered by the dock: '+JSON.stringify(bounds));
+  assert(bounds.hit,'Stock action is not tappable');
+  await card.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));
+  interactionEvidence.push({key,type:'feed-action-clearance',...bounds});
+ });
  if(width===390)await check(key+' feed annual chart label stays above controls',async()=>{
   const card=page.locator('.dx-feed-screen[data-symbol]').first();
   await card.getByRole('tab',{name:'Umsatz'}).click();await card.locator('.v2-focus-bars').waitFor();
@@ -207,15 +255,26 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert(await card.locator('.dx-feed-metrics').evaluate(n=>n.scrollWidth<=n.clientWidth),'Annual chart overflows the feed');
   await card.getByRole('tab',{name:'Chart'}).click();
  });
- await check(key+' feed is bounded and swipes one screen',async()=>{
+ await check(key+' feed is bounded and reaches the next stock',async()=>{
   const track=page.locator('.dx-feed-spur');await track.waitFor();
+  const freeScroll=await track.evaluate(async n=>{
+   const first=n.querySelector('.dx-feed-screen[data-symbol]');
+   const target=Math.round(first.getBoundingClientRect().height*.45);
+   n.scrollTop=target;
+   await new Promise(resolve=>setTimeout(resolve,350));
+   const result={target,actual:n.scrollTop,snap:getComputedStyle(n).scrollSnapType};
+   n.scrollTop=0;
+   return result;
+  });
+  assert.equal(freeScroll.snap,'none','Feed must not snap between stocks');
+  assert(Math.abs(freeScroll.actual-freeScroll.target)<=2,'Feed jumped away from a free-scroll position: '+JSON.stringify(freeScroll));
   const count=await page.locator('.dx-feed-screen[data-symbol]').count();assert(count>0&&count<=24,'Initial feed eagerly rendered '+count+' cards');
   const visible=()=>track.evaluate(n=>{const bounds=n.getBoundingClientRect();const cards=Array.from(n.querySelectorAll('.dx-feed-screen[data-symbol]')).map(card=>{const box=card.getBoundingClientRect();return {symbol:card.dataset.symbol,index:card.dataset.index,visibleHeight:Math.max(0,Math.min(box.bottom,bounds.bottom)-Math.max(box.top,bounds.top))};}).sort((a,b)=>b.visibleHeight-a.visibleHeight);return {height:n.clientHeight,viewport:innerHeight,scrollTop:n.scrollTop,card:cards[0]};});
   const before=await visible();assert(before.height>100&&before.height<=before.viewport,'Feed track is not viewport-bounded');
   const counterBefore=await page.locator('.dx-feed-zaehler').innerText();
-  await track.evaluate(n=>{n.scrollTop=n.clientHeight;});await waitCounter(page,2);
+  await page.locator('.dx-feed-screen[data-symbol]').nth(1).evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await waitCounter(page,2);
   const after=await visible(),counterAfter=await page.locator('.dx-feed-zaehler').innerText();
-  assert(after.scrollTop>0,'Feed did not scroll');assert.notEqual(after.card.symbol,before.card.symbol,'Visible stock did not change');assert.equal(after.card.index,'1','One screen scroll did not reach second stock');assert.notEqual(counterAfter,counterBefore,'Feed counter did not follow visible stock');assert(/^2 von /i.test(counterAfter),'Counter does not identify second stock: '+counterAfter);
+  assert(after.scrollTop>0,'Feed did not scroll');assert.notEqual(after.card.symbol,before.card.symbol,'Visible stock did not change');assert.equal(after.card.index,'1','Scrolling did not reach second stock');assert.notEqual(counterAfter,counterBefore,'Feed counter did not follow visible stock');assert(/^2 von /i.test(counterAfter),'Counter does not identify second stock: '+counterAfter);
   interactionEvidence.push({key,type:'feed-single-screen',initialCards:count,before,after,counterBefore,counterAfter});
   await screenshot(page,key+'-feed-second-stock');
  });

@@ -1,0 +1,499 @@
+{
+ "schemaVersion": "vu-market-pulse-evidence-1.0.0",
+ "methodVersion": "market-pulse-1.0.0",
+ "environmentVersion": "market-environment-1.0.0",
+ "status": "RESEARCH_EVIDENCE",
+ "statusNote": "Eigene historische Prüfung der unveränderten Regeln; keine Prognose, keine Anlageberatung.",
+ "from": "1929-02-06",
+ "to": "2026-08-31",
+ "source": {
+  "label": "Kenneth R. French Data Library (Tuck School of Business, Dartmouth)",
+  "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+  "detail": "US-Gesamtmarkt inklusive Dividenden, täglich; eigene Auswertung von Vision Universe."
+ },
+ "horizon": {
+  "days": 63,
+  "label": "3 Monate"
+ },
+ "drawdownLimit": -10,
+ "topLevelNote": "Die Branchen-Breite der Geschichte ist nur eine Näherung. „Konstruktiv“ umfasst hier deshalb auch „Breit konstruktiv“.",
+ "overallDrawdownShare": 14.3,
+ "levels": [
+  {
+   "level": 0,
+   "label": "Defensiv",
+   "drawdownShare": 27,
+   "drawdownCI95": [
+    17.6,
+    39
+   ],
+   "samples": 63,
+   "meanReturn": 3.89,
+   "positiveShare": 54
+  },
+  {
+   "level": 1,
+   "label": "Vorsichtig",
+   "drawdownShare": 19.8,
+   "drawdownCI95": [
+    12.7,
+    29.4
+   ],
+   "samples": 86,
+   "meanReturn": 1.92,
+   "positiveShare": 68.6
+  },
+  {
+   "level": 2,
+   "label": "Selektiv",
+   "drawdownShare": 13.5,
+   "drawdownCI95": [
+    7.5,
+    23.1
+   ],
+   "samples": 74,
+   "meanReturn": 2.63,
+   "positiveShare": 62.2
+  },
+  {
+   "level": 3,
+   "label": "Konstruktiv",
+   "drawdownShare": 7.7,
+   "drawdownCI95": [
+    4.6,
+    12.5
+   ],
+   "samples": 182,
+   "meanReturn": 2.77,
+   "positiveShare": 70.3
+  }
+ ],
+ "byHorizon": [
+  {
+   "days": 21,
+   "label": "1 Monat",
+   "levels": [
+    {
+     "level": 0,
+     "label": "Defensiv",
+     "drawdownShare": 12.6,
+     "drawdownCI95": [
+      8.5,
+      18.4
+     ],
+     "samples": 174,
+     "meanReturn": 1.12,
+     "positiveShare": 58
+    },
+    {
+     "level": 1,
+     "label": "Vorsichtig",
+     "drawdownShare": 9.1,
+     "drawdownCI95": [
+      6.2,
+      13.1
+     ],
+     "samples": 275,
+     "meanReturn": 0.74,
+     "positiveShare": 62.9
+    },
+    {
+     "level": 2,
+     "label": "Selektiv",
+     "drawdownShare": 2.4,
+     "drawdownCI95": [
+      1.1,
+      5.2
+     ],
+     "samples": 248,
+     "meanReturn": 1.03,
+     "positiveShare": 59.7
+    },
+    {
+     "level": 3,
+     "label": "Konstruktiv",
+     "drawdownShare": 1,
+     "drawdownCI95": [
+      0.4,
+      2.2
+     ],
+     "samples": 519,
+     "meanReturn": 0.82,
+     "positiveShare": 64
+    }
+   ]
+  },
+  {
+   "days": 63,
+   "label": "3 Monate",
+   "levels": [
+    {
+     "level": 0,
+     "label": "Defensiv",
+     "drawdownShare": 27,
+     "drawdownCI95": [
+      17.6,
+      39
+     ],
+     "samples": 63,
+     "meanReturn": 3.89,
+     "positiveShare": 54
+    },
+    {
+     "level": 1,
+     "label": "Vorsichtig",
+     "drawdownShare": 19.8,
+     "drawdownCI95": [
+      12.7,
+      29.4
+     ],
+     "samples": 86,
+     "meanReturn": 1.92,
+     "positiveShare": 68.6
+    },
+    {
+     "level": 2,
+     "label": "Selektiv",
+     "drawdownShare": 13.5,
+     "drawdownCI95": [
+      7.5,
+      23.1
+     ],
+     "samples": 74,
+     "meanReturn": 2.63,
+     "positiveShare": 62.2
+    },
+    {
+     "level": 3,
+     "label": "Konstruktiv",
+     "drawdownShare": 7.7,
+     "drawdownCI95": [
+      4.6,
+      12.5
+     ],
+     "samples": 182,
+     "meanReturn": 2.77,
+     "positiveShare": 70.3
+    }
+   ]
+  },
+  {
+   "days": 126,
+   "label": "6 Monate",
+   "levels": [
+    {
+     "level": 0,
+     "label": "Defensiv",
+     "drawdownShare": 27,
+     "drawdownCI95": [
+      15.4,
+      43
+     ],
+     "samples": 37,
+     "meanReturn": 6.2,
+     "positiveShare": 75.7
+    },
+    {
+     "level": 1,
+     "label": "Vorsichtig",
+     "drawdownShare": 27.7,
+     "drawdownCI95": [
+      16.9,
+      41.8
+     ],
+     "samples": 47,
+     "meanReturn": 4.5,
+     "positiveShare": 66
+    },
+    {
+     "level": 2,
+     "label": "Selektiv",
+     "drawdownShare": 18.9,
+     "drawdownCI95": [
+      9.5,
+      34.2
+     ],
+     "samples": 37,
+     "meanReturn": 5.43,
+     "positiveShare": 75.7
+    },
+    {
+     "level": 3,
+     "label": "Konstruktiv",
+     "drawdownShare": 19.8,
+     "drawdownCI95": [
+      12.5,
+      29.7
+     ],
+     "samples": 81,
+     "meanReturn": 5.71,
+     "positiveShare": 69.1
+    }
+   ]
+  }
+ ],
+ "contrasts": [
+  {
+   "days": 21,
+   "label": "1 Monat",
+   "lowShare": 10.5,
+   "lowSamples": 449,
+   "highShare": 1,
+   "highSamples": 519,
+   "p": 0,
+   "significant": true
+  },
+  {
+   "days": 63,
+   "label": "3 Monate",
+   "lowShare": 22.8,
+   "lowSamples": 149,
+   "highShare": 7.7,
+   "highSamples": 182,
+   "p": 0.0001,
+   "significant": true
+  },
+  {
+   "days": 126,
+   "label": "6 Monate",
+   "lowShare": 27.4,
+   "lowSamples": 84,
+   "highShare": 19.8,
+   "highSamples": 81,
+   "p": 0.2489,
+   "significant": false
+  }
+ ],
+ "outOfSample": {
+  "to": "2000-12-31",
+  "levels": [
+   {
+    "level": 0,
+    "label": "Defensiv",
+    "drawdownShare": 24,
+    "drawdownCI95": [
+     14.3,
+     37.4
+    ],
+    "samples": 50,
+    "meanReturn": 3.97,
+    "positiveShare": 58
+   },
+   {
+    "level": 1,
+    "label": "Vorsichtig",
+    "drawdownShare": 20.6,
+    "drawdownCI95": [
+     12.5,
+     32.2
+    ],
+    "samples": 63,
+    "meanReturn": 1.64,
+    "positiveShare": 65.1
+   },
+   {
+    "level": 2,
+    "label": "Selektiv",
+    "drawdownShare": 15.4,
+    "drawdownCI95": [
+     8,
+     27.5
+    ],
+    "samples": 52,
+    "meanReturn": 2.42,
+    "positiveShare": 59.6
+   },
+   {
+    "level": 3,
+    "label": "Konstruktiv",
+    "drawdownShare": 6.5,
+    "drawdownCI95": [
+     3.5,
+     11.9
+    ],
+    "samples": 138,
+    "meanReturn": 3,
+    "positiveShare": 71
+   }
+  ]
+ },
+ "periods": [
+  {
+   "id": "1927-1945",
+   "levels": [
+    {
+     "level": 0,
+     "label": "Defensiv",
+     "drawdownShare": 35,
+     "samples": 20
+    },
+    {
+     "level": 1,
+     "label": "Vorsichtig",
+     "drawdownShare": 36,
+     "samples": 25
+    },
+    {
+     "level": 2,
+     "label": "Selektiv",
+     "drawdownShare": 50,
+     "samples": 10
+    },
+    {
+     "level": 3,
+     "label": "Konstruktiv",
+     "drawdownShare": 4,
+     "samples": 25
+    }
+   ]
+  },
+  {
+   "id": "1946-1972",
+   "levels": [
+    {
+     "level": 0,
+     "label": "Defensiv",
+     "drawdownShare": 17.6,
+     "samples": 17
+    },
+    {
+     "level": 1,
+     "label": "Vorsichtig",
+     "drawdownShare": 6.7,
+     "samples": 15
+    },
+    {
+     "level": 2,
+     "label": "Selektiv",
+     "drawdownShare": 5.6,
+     "samples": 18
+    },
+    {
+     "level": 3,
+     "label": "Konstruktiv",
+     "drawdownShare": 6.6,
+     "samples": 61
+    }
+   ]
+  },
+  {
+   "id": "1973-2000",
+   "levels": [
+    {
+     "level": 0,
+     "label": "Defensiv",
+     "drawdownShare": 15.4,
+     "samples": 13
+    },
+    {
+     "level": 1,
+     "label": "Vorsichtig",
+     "drawdownShare": 13,
+     "samples": 23
+    },
+    {
+     "level": 2,
+     "label": "Selektiv",
+     "drawdownShare": 8.3,
+     "samples": 24
+    },
+    {
+     "level": 3,
+     "label": "Konstruktiv",
+     "drawdownShare": 7.7,
+     "samples": 52
+    }
+   ]
+  },
+  {
+   "id": "2001-heute",
+   "levels": [
+    {
+     "level": 0,
+     "label": "Defensiv",
+     "drawdownShare": 38.5,
+     "samples": 13
+    },
+    {
+     "level": 1,
+     "label": "Vorsichtig",
+     "drawdownShare": 17.4,
+     "samples": 23
+    },
+    {
+     "level": 2,
+     "label": "Selektiv",
+     "drawdownShare": 9.1,
+     "samples": 22
+    },
+    {
+     "level": 3,
+     "label": "Konstruktiv",
+     "drawdownShare": 11.4,
+     "samples": 44
+    }
+   ]
+  }
+ ],
+ "illustration": {
+  "note": "Historische Modellrechnung: investiert ab der genannten Stufe, sonst Geldmarkt; Signal am Schlusskurs, wirksam einen Tag später; ohne Kosten und Steuern; US-Gesamtmarkt, nicht direkt investierbar.",
+  "rules": [
+   {
+    "minLevel": 1,
+    "minLabel": "Vorsichtig",
+    "all": {
+     "cagr": 9.7,
+     "volatility": 13.4,
+     "maxDrawdown": -60.8,
+     "investedShare": 85,
+     "from": "1929-02-07",
+     "to": "2026-08-31",
+     "buyAndHold": {
+      "cagr": 9.8,
+      "maxDrawdown": -84.1
+     }
+    },
+    "since2001": {
+     "cagr": 7.9,
+     "volatility": 14.1,
+     "maxDrawdown": -37.6,
+     "investedShare": 88,
+     "from": "2001-01-03",
+     "to": "2026-08-31",
+     "buyAndHold": {
+      "cagr": 9.4,
+      "maxDrawdown": -54.6
+     }
+    }
+   },
+   {
+    "minLevel": 2,
+    "minLabel": "Selektiv",
+    "all": {
+     "cagr": 9.2,
+     "volatility": 9.5,
+     "maxDrawdown": -35.3,
+     "investedShare": 63,
+     "from": "1929-02-07",
+     "to": "2026-08-31",
+     "buyAndHold": {
+      "cagr": 9.8,
+      "maxDrawdown": -84.1
+     }
+    },
+    "since2001": {
+     "cagr": 7,
+     "volatility": 10.1,
+     "maxDrawdown": -21.2,
+     "investedShare": 65,
+     "from": "2001-01-03",
+     "to": "2026-08-31",
+     "buyAndHold": {
+      "cagr": 9.4,
+      "maxDrawdown": -54.6
+     }
+    }
+   }
+  ]
+ }
+}
