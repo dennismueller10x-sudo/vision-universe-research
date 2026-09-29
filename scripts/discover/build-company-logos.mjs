@@ -14,6 +14,7 @@
  *   discover/logos/index.json    Symbol -> Datei (fuer die Oberflaeche)
  *   discover/logos/credits.json  Symbol -> Quelle, Urheber, Lizenz
  *   discover/logos/summary.json  Abdeckung und Ausschlussgruende
+ *   discover/logos/missing.json  je Titel ohne Logo der Grund
  *
  * Titel in discover/config/logo-exclusions.json bekommen nie ein Logo -
  * dort landet, was ein Rechteinhaber entfernt haben moechte.
@@ -23,7 +24,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, MIME_EXT,
-  collectItems, matchUniverse, checkLicense, safeSymbol
+  collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName
 } from "./company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -95,12 +96,42 @@ console.log("1/3  Wikidata: Logos ueber CIK und Ticker …");
 const items = collectItems(await sparql(SPARQL_BY_CIK));
 collectItems(await sparql(SPARQL_BY_TICKER), items);
 const { matches, reasons } = matchUniverse(universe, items);
-console.log(`     ${items.size} Items mit Logo, ${matches.size} Titel zugeordnet`);
+console.log(`     ${items.size} Items mit Logo, ${matches.size} Titel ueber CIK/Ticker zugeordnet`);
+
+/* Namens-Weg: nur fuer Titel, zu denen Wikidata bisher gar nichts kennt -
+   ein Titel mit widersprechendem Treffer bleibt ohne Logo. */
+if (!args["no-name-search"]) {
+  const offen = universe.filter((r) => reasons.get(r.symbol) === "KEIN_WIKIDATA_LOGO" && r.name && r.name !== r.symbol).slice(0, LIMIT);
+  console.log(`     Namenssuche fuer ${offen.length} Titel …`);
+  const treffer = new Map();
+  for (const [i, r] of offen.entries()) {
+    const url = "https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=en&uselang=en&type=item&limit=7&search=" + encodeURIComponent(searchName(r.name));
+    try { treffer.set(r.symbol, ((await (await http(url)).json()).search || []).map((x) => x.id)); }
+    catch (e) { treffer.set(r.symbol, []); }
+    if (i % 500 === 499) console.log(`     … ${i + 1}`);
+    await sleep(60);
+  }
+  const ids = [...new Set([...treffer.values()].flat())];
+  const entities = new Map();
+  for (let i = 0; i < ids.length; i += 50) {
+    const url = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=claims|labels|aliases&languages=en&maxlag=5&ids=" + ids.slice(i, i + 50).join("|");
+    const data = await (await http(url)).json();
+    for (const [id, ent] of Object.entries(data.entities || {})) entities.set(id, entityToItem(ent));
+    await sleep(150);
+  }
+  let neu = 0;
+  for (const r of offen) {
+    const res = matchByName(r, (treffer.get(r.symbol) || []).map((id) => entities.get(id)).filter(Boolean));
+    if (res.match) { matches.set(r.symbol, res.match); reasons.delete(r.symbol); neu++; }
+    else reasons.set(r.symbol, res.reason);
+  }
+  console.log(`     Namenssuche: ${neu} weitere Titel zugeordnet`);
+}
 
 /* -------------------------------------------------------------- Commons */
 console.log("2/3  Commons: Lizenz je Datei …");
 const kandidaten = [...matches.entries()].slice(0, LIMIT);
-const infos = await imageinfo([...new Set(kandidaten.map(([, m]) => m.title))]);
+const infos = await imageinfo([...new Set(kandidaten.flatMap(([, m]) => m.titles || [m.title]))]);
 
 /* ------------------------------------------------------------ Download */
 console.log("3/3  Verkleinerte Fassungen laden …");
@@ -108,9 +139,14 @@ const vorher = readJson(join(OUT, "credits.json"), { credits: {} }).credits || {
 const files = {}, credits = {};
 if (!DRY) mkdirSync(FILES, { recursive: true });
 let geladen = 0, behalten = 0, frei = 0;
-for (const [sym, m] of kandidaten) {
-  const info = infos.get(m.title);
-  const lic = checkLicense(info);
+for (const [sym, m0] of kandidaten) {
+  /* Das erste Logo der Firma mit freier Lizenz - aeltere sind Ersatz. */
+  let m = m0, info = null, lic = { ok: false, reason: "KEINE_DATEIINFO" };
+  for (const title of m0.titles || [m0.title]) {
+    const i = infos.get(title), l = checkLicense(i);
+    if (l.ok) { m = { ...m0, title }; info = i; lic = l; break; }
+    if (lic.reason === "KEINE_DATEIINFO") lic = l;
+  }
   if (!lic.ok) { reasons.set(sym, lic.reason); continue; }
   frei++;
   const alt = vorher[sym];
@@ -169,6 +205,11 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify({
 }) + "\n");
 writeFileSync(join(OUT, "credits.json"), JSON.stringify({
   version: "company-logos-1.0.0", generatedAt, credits: sortiert(credits)
+}, null, 1) + "\n");
+writeFileSync(join(OUT, "missing.json"), JSON.stringify({
+  generatedAt,
+  note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz.",
+  reasons: sortiert(Object.fromEntries([...reasons].filter(([sym]) => !files[sym])))
 }, null, 1) + "\n");
 writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   generatedAt,

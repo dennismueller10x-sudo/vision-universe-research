@@ -6,7 +6,8 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  normalizeCik, commonsTitle, namesAgree, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol
+  normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
+  entityToItem, matchByName, searchName
 } from "../../scripts/discover/company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -16,6 +17,9 @@ function b(item, label, logo, extra = {}) {
   const r = { item: { value: "http://www.wikidata.org/entity/" + item }, itemLabel: { value: label },
               logo: { value: FP + encodeURIComponent(logo) },
               rank: { value: "http://wikiba.se/ontology#" + (extra.preferred ? "PreferredRank" : "NormalRank") } };
+  if (extra.start) r.start = { value: extra.start };
+  r.lp = { value: "http://www.wikidata.org/prop/" + (extra.icon ? "P8972" : "P154") };
+  if (extra.exch) r.exch = { value: "http://www.wikidata.org/entity/" + extra.exch };
   if (extra.cik) r.cik = { value: extra.cik };
   if (extra.ticker) r.ticker = { value: extra.ticker };
   return r;
@@ -56,6 +60,49 @@ test("Zuordnung: CIK zuerst, Ticker nur mit passendem Namen", () => {
   assert.equal(reasons.get("NONE"), "KEIN_WIKIDATA_LOGO");
 });
 
+test("Namensabgleich des Ticker-Wegs ist streng genug fuer alle Boersen", () => {
+  assert.ok(namesAgree("American Airlines Group", "American Airlines"));
+  assert.ok(!namesAgree("American Express", "American Airlines"));
+  assert.ok(!namesAgree("First Solar", "First Horizon"));
+  assert.ok(namesAgree("HP Inc", "HP"));
+  const items = collectItems([
+    b("Q10", "Alcoa Corporation", "Alcoa.svg", { ticker: "AA", exch: "Q13677" }),
+    b("Q11", "Alcoa Australia", "AlcoaAU.svg", { ticker: "AA", exch: "Q1" })
+  ]);
+  assert.equal(matchUniverse([{ symbol: "AA", name: "Alcoa", cik: null }], items).matches.get("AA").item, "Q10");
+});
+
+test("Suchname ohne Aktiengattung und ADR-Zusatz", () => {
+  assert.equal(searchName("Visa Class A"), "Visa");
+  assert.equal(searchName("Shell Plc ADR (Representing - )"), "Shell Plc");
+  assert.equal(searchName("Carnival Corporation Ltd (Paired Stock)"), "Carnival Corporation Ltd");
+  assert.equal(searchName("Novo Nordisk"), "Novo Nordisk");
+});
+
+function ent(id, label, claims, aliases = []) {
+  const snak = (v) => ({ mainsnak: { datavalue: { value: v } }, rank: "normal" });
+  const c = {};
+  for (const [p, vals] of Object.entries(claims)) c[p] = vals.map((v) => typeof v === "object" && v.q ? { ...snak(v.v), qualifiers: v.q } : snak(v));
+  return { id, labels: { en: { value: label } }, aliases: { en: aliases.map((value) => ({ value })) }, claims: c };
+}
+
+test("Namens-Weg: nur exakter Name, Unternehmen, keine widersprechende Kennung", () => {
+  const firma = entityToItem(ent("Q20", "HP Inc.", { P154: ["HP logo 2012.svg"], P452: [{ id: "Q1" }] }));
+  const ohneFirma = entityToItem(ent("Q21", "HP", { P154: ["HP.svg"] }));
+  assert.equal(ohneFirma, null);
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: "47217" }, [firma]).match.title, "File:HP logo 2012.svg");
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Enterprise", cik: null }, [firma]).reason, "KEIN_WIKIDATA_LOGO");
+  const andereCik = entityToItem(ent("Q22", "HP Inc.", { P154: ["X.svg"], P5531: ["0000000001"] }));
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: "47217" }, [andereCik]).reason, "KEIN_WIKIDATA_LOGO");
+  const andererTicker = entityToItem(ent("Q23", "HP Inc.", { P154: ["X.svg"], P414: [{ v: { id: "Q13677" }, q: { P249: [{ datavalue: { value: "HPE" } }] } }] }));
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [andererTicker]).reason, "KEIN_WIKIDATA_LOGO");
+  const alias = entityToItem(ent("Q24", "Hewlett-Packard", { P154: ["HP.svg"], P946: ["US40434L1052"] }, ["HP Inc."]));
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [alias]).match.item, "Q24");
+  assert.equal(matchByName({ symbol: "HPQ", name: "HP Inc", cik: null }, [firma, alias]).reason, "MEHRERE_ITEMS");
+  assert.ok(namesEqual("Exxon Mobil Corp", "Exxon Mobil Corporation"));
+  assert.ok(!namesEqual("Exxon Mobil", "Mobil"));
+});
+
 test("Ticker-Treffer mit abweichender CIK wird verworfen", () => {
   const items = collectItems([b("Q9", "Delta Air Lines", "Delta.svg", { ticker: "DAL", cik: "27904" })]);
   const { matches, reasons } = matchUniverse([{ symbol: "DAL", name: "Delta Air Lines", cik: "99999" }], items);
@@ -63,9 +110,16 @@ test("Ticker-Treffer mit abweichender CIK wird verworfen", () => {
   assert.equal(reasons.get("DAL"), "NAME_ODER_CIK_WIDERSPRICHT");
 });
 
-test("Mehrdeutig heisst: kein Logo", () => {
-  const zweiLogos = collectItems([b("Q5", "Acme", "A1.svg", { cik: "5" }), b("Q5", "Acme", "A2.svg", { cik: "5" })]);
-  assert.equal(pickLogo(zweiLogos.get("Q5")), null);
+test("Mehrere Items heisst kein Logo, mehrere Logos einer Firma nicht", () => {
+  const zweiLogos = collectItems([b("Q5", "Acme", "A1.svg", { cik: "5" }), b("Q5", "Acme", "A2.png", { cik: "5" })]);
+  assert.equal(pickLogo(zweiLogos.get("Q5")), "File:A1.svg");
+  assert.deepEqual(matchUniverse([{ symbol: "ACM", name: "Acme", cik: "5" }], zweiLogos).matches.get("ACM").titles,
+                   ["File:A1.svg", "File:A2.png"]);
+  const neuer = collectItems([b("Q5", "Acme", "Alt.svg", { cik: "5", start: "+1990-01-01T00:00:00Z" }),
+                              b("Q5", "Acme", "Neu.svg", { cik: "5", start: "+2021-01-01T00:00:00Z" })]);
+  assert.equal(pickLogo(neuer.get("Q5")), "File:Neu.svg");
+  const icon = collectItems([b("Q5", "Acme", "Icon.svg", { cik: "5", icon: true, preferred: true }), b("Q5", "Acme", "Logo.svg", { cik: "5" })]);
+  assert.equal(pickLogo(icon.get("Q5")), "File:Logo.svg");
   const bevorzugt = collectItems([b("Q5", "Acme", "A1.svg", { cik: "5" }), b("Q5", "Acme", "A2.svg", { cik: "5", preferred: true })]);
   assert.equal(pickLogo(bevorzugt.get("Q5")), "File:A2.svg");
   const zweiItems = collectItems([b("Q6", "Acme", "A.svg", { cik: "7" }), b("Q7", "Acme Sub", "B.svg", { cik: "7" })]);
