@@ -293,9 +293,7 @@
     { ziel: "maerkte-verlauf", label: "12 Monate", symbol: "kurve", farbe: "#0a84ff" },
     { ziel: "maerkte-dimensionen", label: "Messwerte", symbol: "regler", farbe: "#af52de" },
     { ziel: "maerkte-breite", label: "Wie viele steigen mit?", symbol: "balken", farbe: "#30b0c7" },
-    { ziel: "maerkte-crossasset", label: "Andere Anlagen", symbol: "knoten", farbe: "#007aff" },
-    { ziel: "maerkte-jetzt", label: "Markt jetzt", symbol: "blitz", farbe: "#e6b000" },
-    { ziel: "maerkte-movers", label: "Top & Flop", symbol: "hoch", farbe: "#ff375f" }
+    { ziel: "maerkte-crossasset", label: "Andere Anlagen", symbol: "knoten", farbe: "#007aff" }
   ];
   var GRUPPE_SYMBOL = { aktien: ["kerzen", "#2f6fed"], energie: ["flamme", "#e8590c"], edelmetalle: ["barren", "#d49a0a"],
                         krypto: ["bitcoin", "#7c5cff"], "us-renditen": ["prozent", "#1f4fb8"], "eu-renditen": ["prozent", "#0a84ff"],
@@ -406,8 +404,8 @@
         ])]);
       }))]);
     }
-    return el("section", { class: "dx-maerkte-movers", id: "maerkte-movers", "aria-label": "Aktien in Bewegung" }, [
-      el("h2", { text: "Aktien in Bewegung" }),
+    return el("section", { class: "dx-maerkte-movers", id: "maerkte-movers", "aria-label": "Top & Flop heute" }, [
+      el("h2", { text: "Top & Flop heute" }),
       el("p", { class: "dx-maerkte-unter", text: "Sitzung vom " + standText(m.session) + " gegenüber " + standText(m.previousSession) +
         (m.complete ? "" : " (Sitzung läuft)") + " · " + m.eligible + " liquide Titel aus dem Discover-Universum" }),
       el("div", { class: "dx-movers-raster" }, [spalte("Stärkste Gewinner", m.gainers, "hoch", "kurs-up"), spalte("Stärkste Verlierer", m.losers, "runter", "kurs-down")])
@@ -426,39 +424,94 @@
     return n;
   }
 
+  /* ---------------------------------------------- Seitenaufbau (4.1)
+     Owner-Feedback: "Wuerde das ein Robinhood- oder Trade-Republic-Nutzer
+     verstehen?" Dort ist "Maerkte" zuerst eine Kursuebersicht; Analyse
+     liegt einen Tipp tiefer. Deshalb zwei Seiten:
+
+     #/maerkte             UEBERSICHT - Kategorien, Aktienmaerkte, eine
+                           Karte "Marktstimmung", Top & Flop, was heute
+                           auffaellt, weitere Maerkte.
+     #/maerkte/einordnung  EINORDNUNG - die ganze Erklaerung: Stufe, das
+                           Wichtigste in 30 Sekunden, worauf achten, was
+                           muesste passieren, wie verlaesslich, was ist neu,
+                           warum, Verlauf; danach "Fuer Fortgeschrittene". */
+  function ladeDaten(ctx) {
+    var MA = global.VUMultiAssetContract;
+    function optional(p) { return S.loadJSON(p).catch(function () { return null; }); }
+    return Promise.all([S.loadJSON(SNAPSHOT), optional(CONFIG), optional(PULSE), optional(PULSE_CONFIG), optional(PULSE_HISTORY),
+                        optional(PULSE_EVIDENCE)]).then(function (r) {
+      var jetzt = new Date();
+      var contracts = r[0].instruments.map(function (c) {
+        return MA.refresh(c, { now: jetzt, calendar: ctx.calendar, config: r[1] || {} });
+      });
+      return { snap: r[0], puls: r[2], pcfg: r[3], hist: r[4], beleg: r[5], jetzt: jetzt, contracts: contracts, nm: namen(contracts) };
+    });
+  }
+
+  function gruppenSektion(g, layer, titel) {
+    return el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": titel || g.titel }, [
+      el("h2", { text: titel || g.titel }),
+      el("div", { class: "dx-maerkte-raster", tabindex: "0", role: "group", "aria-label": (titel || g.titel) + " – wischen für mehr" }, g.karten.map(function (c) { return karte(c, layer); }))
+    ]);
+  }
+
   /**
-   * Markets 3.0: Einordnung zuerst, Belege danach - Reihenfolge siehe unten.
+   * UEBERSICHT (#/maerkte): wie in einer Broker-App - zuerst Kurse.
    * @param {HTMLElement} root
    * @param {object} ctx {calendar, isActive}
    */
   function render(root, ctx) {
     ctx = ctx || {};
-    var MA = global.VUMultiAssetContract;
     var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
-    function optional(p) { return S.loadJSON(p).catch(function () { return null; }); }
-    return Promise.all([S.loadJSON(SNAPSHOT), optional(CONFIG), optional(PULSE), optional(PULSE_CONFIG), optional(PULSE_HISTORY),
-                        optional(PULSE_EVIDENCE)]).then(function (r) {
+    return ladeDaten(ctx).then(function (d) {
       if (ctx.isActive && !ctx.isActive()) return;
-      var snap = r[0], cfg = r[1], puls = r[2], pcfg = r[3], hist = r[4], beleg = r[5];
-      var jetzt = new Date();
-      var contracts = snap.instruments.map(function (c) {
-        return MA.refresh(c, { now: jetzt, calendar: ctx.calendar, config: cfg || {} });
-      });
       var layer = global.VUFx && global.VUFx.layer;
-      var nm = namen(contracts);
-      var seite = el("div", { class: "dx-page dx-maerkte dx-m3" }, [
+      var gruppen = gruppieren(d.contracts);
+      var seite = el("div", { class: "dx-page dx-maerkte dx-m3 dx-mk" }, [
         el("a", { class: "dx-back", href: "#/", text: "← Discover" }),
-        el("h1", { class: "dx-m3-titel", text: "Märkte" })
+        el("header", { class: "dx-mk-kopf" }, [
+          el("h1", { class: "dx-mk-titel", text: "Märkte" }),
+          el("p", { class: "dx-mk-unter", text: "Kurse, Stimmung und die größten Bewegungen · Stand " + (standText(d.snap.generatedAt) || "unbekannt") })
+        ]),
+        sprungleiste(gruppen)
+      ]);
+      function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
+      var aktien = gruppen.filter(function (g) { return g.id === "aktien"; })[0];
+      if (aktien) dazu(gruppenSektion(aktien, layer));
+      if (MI && MI.stimmung) dazu(MI.stimmung(d.puls, d.beleg));
+      else if (d.puls && !d.puls.environment) dazu(pulsBereich(d.puls));
+      dazu(moversBereich(d.puls));
+      dazu(marktJetzt(d.contracts, d.pcfg, d.jetzt));
+      var weitere = gruppen.filter(function (g) { return g.id !== "aktien"; });
+      if (weitere.length) dazu(el("div", { class: "dx-m3-trenner", id: "maerkte-alle" }, [el("h2", { text: "Weitere Märkte" }),
+        el("p", { text: "Rohstoffe, Krypto, Zinsen und Devisen – antippen für Verlauf und Einordnung. Renditen bewegen sich in Basispunkten." })]));
+      weitere.forEach(function (g) { dazu(gruppenSektion(g, layer)); });
+      seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(d.snap.generatedAt) || "unbekannt") +
+        ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand. Informationen zur eigenen Recherche, keine Anlageberatung." }));
+      root.appendChild(seite);
+      if (MI && MI.beleben) MI.beleben(root);
+    });
+  }
+
+  /**
+   * EINORDNUNG (#/maerkte/einordnung): die Erklaerung, einen Tipp tiefer.
+   * Einsteiger zuerst, dann "Fuer Fortgeschrittene".
+   */
+  function renderEinordnung(root, ctx) {
+    ctx = ctx || {};
+    var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
+    return ladeDaten(ctx).then(function (d) {
+      if (ctx.isActive && !ctx.isActive()) return;
+      var puls = d.puls, nm = d.nm, beleg = d.beleg, hist = d.hist;
+      var seite = el("div", { class: "dx-page dx-maerkte dx-m3 dx-mk-einordnung" }, [
+        el("a", { class: "dx-back", href: "#/maerkte", text: "← Märkte" }),
+        el("h1", { class: "dx-mk-titel is-klein", text: "Marktstimmung verstehen" })
       ]);
       function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
       var verlaufNode = null, heroNode = null;
       if (puls && MI && puls.environment) {
-        /* Einsteiger zuerst (Owner-Feedback: verstaendlich, mit klarem
-           Schluss): Hero -> Das Wichtigste in 30 Sekunden -> Kacheln ->
-           Worauf achten -> Was muesste passieren -> Wie verlaesslich ->
-           Was ist neu -> Warum -> Verlauf. Danach "Fuer Fortgeschrittene":
-           Messwerte, Beteiligung, andere Anlagen. Dann Kurse und Maerkte. */
-        heroNode = dazu(MI.hero(puls, jetzt));
+        heroNode = dazu(MI.hero(puls, d.jetzt));
         if (MI.kurzfassung) dazu(MI.kurzfassung(puls, beleg));
         if (MI.kacheln) dazu(MI.kacheln(puls, hist));
         dazu(MI.worauf(puls, nm));
@@ -471,30 +524,14 @@
         dazu(MI.landkarte(puls));
         dazu(MI.breite(puls, hist));
         dazu(MI.crossAsset(puls, nm));
-        dazu(trenner("Kurse und Bewegungen", "Was heute auffällt, die stärksten Aktien und alle Märkte mit Einheit, Stand und Quelle."));
       } else if (puls) {
         dazu(pulsBereich(puls));
+      } else {
+        dazu(el("p", { class: "dx-m3-leer", text: "Die Einordnung ist gerade nicht verfügbar." }));
       }
-      dazu(marktJetzt(contracts, pcfg, jetzt));
-      dazu(moversBereich(puls));
-      var gruppen = gruppieren(contracts);
-      dazu(el("section", { class: "dx-maerkte-alle", id: "maerkte-alle", "aria-label": "Alle Märkte" }, [
-        el("h2", { text: "Alle Märkte" }),
-        el("p", { class: "dx-maerkte-lead", text: "Jeder Markt mit Einheit, Stand und Quelle – antippen für Verlauf und Einordnung. " +
-          "Aktienmärkte erscheinen über gekennzeichnete Markt-Tracker, nicht als offizieller Indexstand; Renditen bewegen sich in Basispunkten." }),
-        sprungleiste(gruppen)
-      ]));
-      gruppen.forEach(function (g) {
-        dazu(el("section", { class: "dx-maerkte-gruppe", id: "maerkte-" + g.id, "aria-label": g.titel }, [
-          el("h2", { text: g.titel }),
-          el("div", { class: "dx-maerkte-raster", tabindex: "0", role: "group", "aria-label": g.titel + " – wischen für mehr" }, g.karten.map(function (c) { return karte(c, layer); }))
-        ]));
-      });
-      /* Erst jetzt, da alle Bereiche stehen: nur Chips mit echtem Ziel. */
-      var direkt = heroNode ? direktZu(seite, gruppen) : null;
+      var direkt = heroNode ? direktZu(seite, []) : null;
       if (direkt) seite.insertBefore(direkt, heroNode);
-      seite.appendChild(el("p", { class: "dx-maerkte-stand", text: "Datenstand: " + (standText(snap.generatedAt) || "unbekannt") +
-        ". Beträge in der gewählten Anzeigewährung; Punkte, Prozent und Zinssätze werden nicht umgerechnet. Informationen zur eigenen Recherche, keine Anlageberatung." }));
+      seite.appendChild(el("p", { class: "dx-maerkte-stand" }, [el("a", { href: "#/maerkte", text: "← Zurück zu allen Märkten" })]));
       root.appendChild(seite);
       if (verlaufNode && verlaufNode._zeichnen) verlaufNode._zeichnen();
       if (MI && MI.beleben) MI.beleben(root);
@@ -502,7 +539,7 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.Markets = { render: render, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
+  global.VUDiscover.Markets = { render: render, renderEinordnung: renderEinordnung, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
                                 veraenderungText: veraenderungText, standText: standText, marktText: marktText,
                                 frischeText: frischeText, referenzText: referenzText,
                                 marktJetzt: marktJetzt, marktJetztItems: marktJetztItems, pulsBereich: pulsBereich, moversBereich: moversBereich, namen: namen,

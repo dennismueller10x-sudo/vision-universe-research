@@ -226,7 +226,7 @@
     var section=node('section','v2-pulse-teaser');section.dataset.surface='market-pulse';
     section.dataset.archetype='market';
     var copy=node('div','');copy.append(node('p','v2-eyebrow','Discover · Märkte'),node('h2','','Market Pulse'),node('p','v2-pulse-statement','Wie sieht der Markt gerade insgesamt aus?'));
-    copy.appendChild(link('Market Pulse öffnen →','#/maerkte','v2-pill v2-pill-light'));section.appendChild(copy);
+    copy.appendChild(link('Marktstimmung verstehen →','#/maerkte/einordnung','v2-pill v2-pill-light'));section.appendChild(copy);
     S.loadJSON('/quant/data/market/intelligence/market-pulse.json').then(function(p){
       if(!section.isConnected||!p.environment)return;
       var env=p.environment;copy.querySelector('.v2-pulse-statement').textContent=env.statement||'Das Marktumfeld im Überblick.';
