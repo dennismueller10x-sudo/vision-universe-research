@@ -100,13 +100,37 @@ jobs:
   # KEIN FEHLALARM AM WOCHENENDE: der Rueckstand zaehlt Handelssitzungen
   # aus dem Boersenkalender, nicht Kalendertage. Samstagmittag ist der
   # Freitag die letzte abgeschlossene Sitzung, und der Rueckstand ist 0.
+  #
+  # UND KEIN FEHLALARM MITTEN IN DER KETTE. Der Slot `15 23 * * 1-5` liegt
+  # im Laufzeitfenster der Kette, die dieser Job ueberwacht - er ist
+  # deshalb ausgenommen. Gemessen an den echten planmaessigen Laeufen:
+  #
+  #   nominal 22:30 -> tatsaechlich gefeuert 22:40 bis 02:11 UTC
+  #   (GitHub verzoegert geplante Laeufe um bis zu 3,5 Stunden)
+  #   Refresh 90 min + Materialisierung 19 min + Vertrag 2 min
+  #   => fertig typisch zwischen 02:00 und 04:00 UTC
+  #
+  # Um 23:15 hat die Kette meist nicht einmal begonnen. Der Job wuerde
+  # jede Werktagsnacht P0_DATA_PIPELINE_FROZEN melden, waehrend alles in
+  # Ordnung ist. Ein Waechter, der jede Nacht schreit, wird abgeschaltet -
+  # und dann fehlt er, wenn es zaehlt. Dieselbe Begruendung wie beim
+  # Wochenende, nur auf der Zeitachse eines Tages.
+  #
+  # Der Slot `30 6 * * 2-6` ist die eigentliche Pruefung nach der Kette:
+  # rund drei Stunden Reserve nach dem spaetesten beobachteten Ende.
+  # Der Job `monitor` behaelt 23:15 - er misst die veroeffentlichte Seite,
+  # nicht den Produktstand, und haengt nicht an dieser Kette.
+  #
+  # quant/tests/pipeline-freshness-contract.test.mjs leitet diese Regel
+  # aus den Cron-Zeilen her, statt sie nur zu behaupten: wer einen Slot
+  # ins Laufzeitfenster legt, macht den Test rot.
   # ===================================================================
   produktstand:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (github.event_name == 'schedule' && github.event.schedule != '15 23 * * 1-5') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4

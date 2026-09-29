@@ -3811,11 +3811,64 @@ Kette entfernt, werden zwei Tests rot; mit der Stufe sind alle neun gruen.
   committeter Frische-Bericht waere eine Datei, deren Stichtag am naechsten
   Handelstag eine Aktualitaet behauptet, die sie nicht hat — die
   Fehlerklasse in ihrer eigenen Messung. Die Kette liest ihn aus dem Lauf.
-- **Offen bis zum Beweis:** `DATA_PIPELINE_AUTOMATION = PASS` gilt erst,
-  wenn eine **nicht von Hand gestartete** Nachtkette Refresh → Store →
-  Product → Deploy durchlaufen hat und der ausgelieferte Stichtag aktuell
-  ist. Naechster planmaessiger Ausloeser: `cron '30 22 * * 1-5'`, also
-  **29.09.2026 22:30 UTC** zuzueglich der GitHub-ueblichen Verzoegerung.
+- Pages-Deploy fuer `a439da7` gruen (Lauf 1112, 06:11–06:16 UTC): Build,
+  Produktions-Smoke, Liefervertrag und Deploy. Ausgeliefert 06:16:21 UTC.
+
+### Befund: der eigene Waechter haette jede Werktagsnacht Fehlalarm gegeben
+
+Vor seinem ersten planmaessigen Feuern gefunden. `produktstand` erbte die
+vier Cron-Zeilen des Monitors, und eine davon liegt **im Laufzeitfenster
+der Kette, die er ueberwacht**.
+
+Gemessen an den echten planmaessigen Laeufen von `market-data-refresh`:
+
+| Nominal | Tatsaechlich gefeuert | Verzoegerung | Refresh-Dauer |
+|---|---|---|---|
+| 22:30 | 29.09. **02:11** | +3h41 | 93 min |
+| 22:30 | 26.09. **00:46** | +2h16 | 90 min |
+| 22:30 | 25.09. **00:41** | +2h11 | — |
+| 22:30 | 21.09. **22:40** | +10 min | — |
+
+GitHub feuert geplante Laeufe um bis zu **3,5 Stunden** verspaetet, und der
+Refresh braucht **90 Minuten** (nicht 20 — die 19 Minuten von Lauf #46
+waren die Materialisierung, nicht der Refresh). Die Kette ist damit
+typisch erst zwischen **02:00 und 04:00 UTC** fertig.
+
+Der Slot `15 23 * * 1-5` erwartet um 23:15 den Stichtag des laufenden
+Tages. Die Kette dafuer startet nominal um 22:30 und hat meist nicht
+einmal begonnen. **45 Minuten Reserve, wo rund fuenf Stunden gebraucht
+werden.** Der Job haette jede Werktagsnacht `P0_DATA_PIPELINE_FROZEN`
+gemeldet, waehrend alles in Ordnung ist.
+
+Ein Waechter, der jede Nacht schreit, wird abgeschaltet — und dann fehlt
+er, wenn es zaehlt. Dieselbe Begruendung wie beim Wochenende, nur auf der
+Zeitachse eines Tages. Der Owner-Entscheid sagt „kein Fehlalarm"; das
+gilt nicht nur fuer Wochenenden.
+
+**Behoben:** `produktstand` nimmt den Slot `15 23 * * 1-5` aus
+(`github.event.schedule !=`). Der Job `monitor` behaelt ihn — er misst die
+veroeffentlichte Seite, nicht den Produktstand, und haengt nicht an dieser
+Kette. Die eigentliche Pruefung nach der Kette ist `30 6 * * 2-6`: rund
+drei Stunden Reserve nach dem spaetesten beobachteten Ende.
+
+**Der Test leitet die Regel her, statt sie zu behaupten.** Er nimmt die
+Cron-Zeilen, die der Job wirklich annimmt, rechnet fuer jeden
+Feuerzeitpunkt den erwarteten Stichtag aus und prueft, ob die Kette dafuer
+Zeit hatte. Gegenprobe gefahren: ohne die Ausnahme wird er rot und nennt
+Datum und Zahl — „45 min Reserve, 420 verlangt", fuer jede Werktagsnacht.
+Ein zweiter Test haelt die Gegenrichtung: man koennte ihn gruen machen,
+indem man jeden Slot ausnimmt — dann prueft nie jemand. Er verlangt, dass
+in zehn Tagen mindestens fuenf Stichtage geprueft werden.
+
+### Offen
+
+- **`DATA_PIPELINE_AUTOMATION = PASS` gilt erst,** wenn eine **nicht von
+  Hand gestartete** Nachtkette Refresh → Store → Product → Deploy
+  durchlaufen hat und der ausgelieferte Stichtag aktuell ist. Naechster
+  planmaessiger Ausloeser: `cron '30 22 * * 1-5'`, nominal **29.09.2026
+  22:30 UTC**, nach der Messung oben tatsaechlich eher **30.09. 00:40 bis
+  02:11 UTC**, fertig gegen **02:00 bis 04:00 UTC**. Gepruefte wird
+  deshalb nach dem Waechter-Slot 06:30.
   Bis dahin ist die Kette gebaut und einmal von Hand durchgerechnet, aber
   nicht bewiesen. 0/0/0 von Hand ist kein Beleg fuer Automatik — genau
   diese Verwechslung war der P0.
