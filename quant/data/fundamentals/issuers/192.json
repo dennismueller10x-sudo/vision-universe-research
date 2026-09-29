@@ -791,10 +791,10 @@
     {
       "cik": "0002076192",
       "name": "Westin Acquisition Corp",
-      "sic": "6770",
-      "rawFacts": 146,
-      "mappedFacts": 81,
-      "unmappedFacts": 66,
+      "sic": "8011",
+      "rawFacts": 314,
+      "mappedFacts": 179,
+      "unmappedFacts": 152,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -805,11 +805,11 @@
         "WSTNU"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 5,
       "firstPeriodEnd": "2025-06-30",
-      "lastPeriodEnd": "2026-03-31",
-      "historyYears": 0.0,
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -846,17 +846,17 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2026-06-30",
+          "lastAvailablePeriod": "2026-06-30",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 1,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2026-06-30",
+          "lastAvailablePeriod": "2026-06-30",
           "historyYears": 0.0
         },
         "revenue": {
@@ -874,18 +874,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-06-30",
-          "lastAvailablePeriod": "2025-06-30",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -905,34 +905,35 @@
         }
       },
       "quality": {
-        "HIGH": 15
+        "HIGH": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 15,
-        "resolvedValues": 15
+        "datableValues": 23,
+        "resolvedValues": 23
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 73,
+        "total": 162,
         "by_severity": {
-          "INFO": 66,
-          "WARNING": 7
+          "INFO": 152,
+          "WARNING": 10
         },
         "by_code": {
-          "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 66
+          "UNEXPECTED_DURATION": 10,
+          "UNKNOWN_CONCEPT": 152
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-057804",
-        "filing_date": "2026-05-15",
-        "form": "10-Q",
-        "periodic_filings": 3
+        "accession": "0001213900-26-104251",
+        "filing_date": "2026-09-29",
+        "form": "10-K",
+        "periodic_filings": 6,
+        "acceptance_datetime": "2026-09-28T20:50:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -941,7 +942,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "b21ad3ad0578ccfba2bcaf4036a44f8314571f1ff64dd3a3ab13a378934a58be",
+      "sourceDigest": "23184d5de4231d2ea6efc929bb921764d297ac71508689bd6f6a9e216d5a49f5",
       "issuerId": "iss_cik_0002076192"
     }
   ]

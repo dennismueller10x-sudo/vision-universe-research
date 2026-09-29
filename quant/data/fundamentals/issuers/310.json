@@ -1216,10 +1216,10 @@
       "cik": "0002146310",
       "name": "Inflection Point Acquisition Corp. VIII",
       "sic": "6770",
-      "rawFacts": 0,
-      "mappedFacts": 0,
-      "unmappedFacts": 0,
-      "calendarYears": 0,
+      "rawFacts": 28,
+      "mappedFacts": 5,
+      "unmappedFacts": 19,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -1229,9 +1229,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "quarterlyPeriods": 1,
+      "firstPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1298,14 +1298,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1327,22 +1327,36 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 2
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 2,
+        "resolvedValues": 2
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 0,
-        "by_severity": {},
-        "by_code": {}
+        "total": 22,
+        "by_severity": {
+          "INFO": 19,
+          "WARNING": 3
+        },
+        "by_code": {
+          "UNEXPECTED_DURATION": 3,
+          "UNKNOWN_CONCEPT": 19
+        }
       },
-      "latestFiling": null,
+      "latestFiling": {
+        "accession": "0001213900-26-103634",
+        "filing_date": "2026-09-28",
+        "form": "10-Q",
+        "periodic_filings": 1,
+        "acceptance_datetime": "2026-09-25T22:08:24.000Z"
+      },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -1351,7 +1365,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "7c7345554164f2d15f4c9d4a9b91100bfdbb72215f2a65d900a5b60808c9b945",
+      "sourceDigest": "12e4d58f52404ffdc223ba447114b9ae0a6f624f8fd0b295b9602882efa016e4",
       "issuerId": "iss_cik_0002146310"
     }
   ]

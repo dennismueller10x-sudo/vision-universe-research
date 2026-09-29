@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-09-28T13:57:40.257Z",
+  "generated_at_utc": "2026-09-29T12:55:53.364Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5048,
+    "withDeliveredStockPage": 5047,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -10820,6 +10820,20 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "CGCF",
+      "name": "Cartesian Growth Corp IV",
+      "cik": "0002126043",
+      "instrumentId": "vu_09522060f171fb",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "CGCFW"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "CGEM",
       "name": "Cullinan Therapeutics, Inc.",
       "cik": "0001789972",
@@ -13403,17 +13417,6 @@
       "cik": "0001709628",
       "instrumentId": "vu_824c2f5f741a56",
       "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "CSAN",
-      "name": "Cosan S.A.",
-      "cik": "0001430162",
-      "instrumentId": "vu_fb7f48c98e5dcb",
-      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Traegt heute eine Aktienseite.",
@@ -33939,6 +33942,21 @@
       "role": "deliveredStockPage"
     },
     {
+      "ticker": "MRCO",
+      "name": "Mercator Acquisition Corp.",
+      "cik": "0002106436",
+      "instrumentId": "vu_96f7954219e80a",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Traegt heute eine Aktienseite.",
+      "alsoTickers": [
+        "MRCOU",
+        "MRCOW"
+      ],
+      "role": "deliveredStockPage"
+    },
+    {
       "ticker": "MRCY",
       "name": "Mercury Systems Inc",
       "cik": "0001049521",
@@ -43965,17 +43983,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "RITR",
-      "name": "Reitar Logtech Holdings Ltd",
-      "cik": "0001951229",
-      "instrumentId": "vu_e90c705c9889cc",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "RIVN",
       "name": "Rivian Automotive, Inc. / DE",
       "cik": "0001874178",
@@ -47719,17 +47726,6 @@
       "name": "Sanofi",
       "cik": "0001121404",
       "instrumentId": "vu_118ffb23e762d4",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "SNYR",
-      "name": "Synergy CHC Corp.",
-      "cik": "0001562733",
-      "instrumentId": "vu_a92e6d254f4864",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -58486,20 +58482,6 @@
       "role": "universe"
     },
     {
-      "ticker": "CGCF",
-      "name": "Cartesian Growth Corp IV",
-      "cik": "0002126043",
-      "instrumentId": "vu_09522060f171fb",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "CGCFW"
-      ],
-      "role": "universe"
-    },
-    {
       "ticker": "CHAI",
       "name": "Core AI Holdings, Inc.",
       "cik": "0001649009",
@@ -58717,6 +58699,17 @@
       "cik": "0001053691",
       "instrumentId": "vu_2b2fa785e506fa",
       "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "CSAN",
+      "name": "Cosan S.A.",
+      "cik": "0001430162",
+      "instrumentId": "vu_fb7f48c98e5dcb",
+      "exchange": "NYSE",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
@@ -60401,21 +60394,6 @@
       "role": "universe"
     },
     {
-      "ticker": "MRCO",
-      "name": "Mercator Acquisition Corp.",
-      "cik": "0002106436",
-      "instrumentId": "vu_96f7954219e80a",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Aus dem Company Master; US-Emittent mit CIK.",
-      "alsoTickers": [
-        "MRCOU",
-        "MRCOW"
-      ],
-      "role": "universe"
-    },
-    {
       "ticker": "MTAKU",
       "name": "Market Technology Acquisition Corp",
       "cik": "0002133136",
@@ -61196,6 +61174,17 @@
       "role": "universe"
     },
     {
+      "ticker": "RITR",
+      "name": "Reitar Logtech Holdings Ltd",
+      "cik": "0001951229",
+      "instrumentId": "vu_e90c705c9889cc",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "RNAQU",
       "name": "Rainier Acquisition Corp",
       "cik": "0002147219",
@@ -61504,6 +61493,17 @@
       "name": "Soligenix, Inc.",
       "cik": "0000812796",
       "instrumentId": "vu_3539bd1d672de4",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "SNYR",
+      "name": "Synergy CHC Corp.",
+      "cik": "0001562733",
+      "instrumentId": "vu_a92e6d254f4864",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",

@@ -1336,10 +1336,10 @@
       "cik": "0002131040",
       "name": "Robinhood Ventures Fund II",
       "sic": null,
-      "rawFacts": 0,
-      "mappedFacts": 0,
-      "unmappedFacts": 0,
-      "calendarYears": 0,
+      "rawFacts": 78,
+      "mappedFacts": 22,
+      "unmappedFacts": 57,
+      "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0331",
@@ -1347,10 +1347,10 @@
         "RVII"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
+      "annualPeriods": 1,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-06-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1389,14 +1389,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1416,17 +1416,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2026-03-31",
+          "lastAvailablePeriod": "2026-03-31",
           "historyYears": 0.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2026-03-31",
+          "lastAvailablePeriod": "2026-03-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -1446,22 +1446,36 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 8
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 8,
+        "resolvedValues": 8
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 0,
-        "by_severity": {},
-        "by_code": {}
+        "total": 58,
+        "by_severity": {
+          "INFO": 57,
+          "WARNING": 1
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 1,
+          "UNKNOWN_CONCEPT": 57
+        }
       },
-      "latestFiling": null,
+      "latestFiling": {
+        "accession": "0002131040-26-000008",
+        "filing_date": "2026-09-28",
+        "form": "10-Q",
+        "periodic_filings": 1,
+        "acceptance_datetime": "2026-09-28T20:05:41.000Z"
+      },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -1470,7 +1484,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "2cbb0e6f9a64ead9a1cd068dd2ad17ab1b9e115b07bf7a393b4f6de41b751f4c",
+      "sourceDigest": "53af518b00ac3fb578d87f97acdaae1d91c836f011056d29e74b6698168ef6aa",
       "issuerId": "iss_cik_0002131040"
     }
   ]

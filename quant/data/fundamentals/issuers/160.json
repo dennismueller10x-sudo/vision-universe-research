@@ -846,9 +846,9 @@
       "cik": "0002027160",
       "name": "Vantage Corp (Singapore)",
       "sic": "4731",
-      "rawFacts": 514,
-      "mappedFacts": 195,
-      "unmappedFacts": 346,
+      "rawFacts": 790,
+      "mappedFacts": 298,
+      "unmappedFacts": 532,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -967,25 +967,26 @@
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 354,
+        "total": 545,
         "by_severity": {
-          "INFO": 346,
-          "WARNING": 8
+          "INFO": 532,
+          "WARNING": 13
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 8,
-          "UNKNOWN_CONCEPT": 346
+          "CONCEPT_DISAGREEMENT": 13,
+          "UNKNOWN_CONCEPT": 532
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-034794",
-        "filing_date": "2026-07-27",
-        "form": "20-F",
-        "periodic_filings": 2
+        "accession": "0001493152-26-044422",
+        "filing_date": "2026-09-28",
+        "form": "20-F/A",
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-09-28T10:15:37.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -994,7 +995,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "a96f79be01ca0758a6830a708488208f781778cf88d67c36ca5cbedfa0e8f1d9",
+      "sourceDigest": "81f8116a4b63d638bd29f0b52d99317a4c1666cae490272cd024c9efc3e9847e",
       "issuerId": "iss_cik_0002027160"
     }
   ]
