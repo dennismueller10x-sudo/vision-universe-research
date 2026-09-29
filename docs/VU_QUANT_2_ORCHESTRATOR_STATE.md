@@ -78,6 +78,64 @@ Fehlalarm kostet genau das Vertrauen, das ein echtes P0 braucht.
 Offen und nachzuhalten: ob der Stichtag nach Abschluss des Laufs auf
 2026-09-28 steht. Dafuer ist eine Nachkontrolle gesetzt.
 
+### Nachkontrolle 04:10 UTC — P0: DIE PRODUKT-MATERIALISIERUNG HAT KEINE AUTOMATIK
+
+Der Lauf ist durch und gruen — und genau das ist das Problem.
+
+| Glied | Zustand |
+|---|---|
+| `market-data-refresh.yml` #691 | **success**, 02:11 → 03:44, Commit `707d2f6` mit 12.515 Dateien |
+| Produkt-Shards in diesem Commit | **null** — der Refresh schreibt sie nicht |
+| `product-intelligence-materialization.yml` auf main | **zwei Laeufe insgesamt**, beide `workflow_dispatch` (25. und 26.09.) |
+| Faktor-Stichtag `factor-evidence-v1` | **2026-09-25** |
+
+Die Kette ist zweiteilig und am zweiten Glied offen. Der Refresh baut
+Tageskurse und die Marktfaktoren
+(`quant/data/market/factors/factors-FULL_UNIVERSE.json`, Schritt 12,
+19 Sekunden). Die Shards, die das Frontend liest, schreibt
+`scripts/quant/build-factor-evidence.mjs` — und das ruft nur
+`product-intelligence-materialization.yml` auf.
+
+Dieser Workflow traegt auf main einen `workflow_run`-Auslöser auf genau
+den Refresh, und der referenzierte Name stimmt zeichengenau mit dessen
+`name:` ueberein (byteweise verglichen). **Er hat trotzdem noch nie
+gefeuert.** Die einzigen beiden Laeufe auf main kamen von Hand.
+
+WARUM DAS SCHLIMMER IST ALS EIN ROTER LAUF
+
+Ein roter Lauf alarmiert. Hier ist jede Nacht alles gruen, und der
+Produktstand bewegt sich nur, wenn ein Mensch daran denkt. Genau deshalb
+stand der Stichtag seit dem 25.09. still, ohne dass eine Pruefung
+angeschlagen haette.
+
+SOFORTMASSNAHME (getan)
+
+`product-intelligence-materialization.yml` auf main von Hand angestossen
+(04:10 UTC) — derselbe Weg, auf dem der Stand bisher immer vorangekommen
+ist. Das hebt den Stichtag, behebt aber die Ursache nicht.
+
+OFFEN — OWNER-ENTSCHEIDUNG
+
+Warum GitHub den `workflow_run` nicht ausloest, ist von hier aus nicht
+abschliessend feststellbar: Auslöser, Zweig und Name sind korrekt. Andere
+Workflows dieses Repos (`pages-release.yml`) werden nachweislich per
+`workflow_run` ausgeloest, der Mechanismus funktioniert hier also
+grundsaetzlich. Belastbare Reparaturvorschlaege, absteigend nach
+Verlaesslichkeit:
+
+1. Die Materialisierung an einen eigenen `schedule` haengen, zeitlich
+   nach dem Refresh. Unabhaengig von `workflow_run`.
+2. Den Refresh am Ende selbst `workflow_dispatch` auf die Materialisierung
+   ausloesen lassen (per API-Aufruf mit einem Token, das erneute Laeufe
+   ausloesen darf — `GITHUB_TOKEN` tut das bewusst nicht).
+3. Beide Schritte in EINEN Workflow legen. Am wenigsten beweglich, aber
+   dann gibt es keine Kette, die reissen kann.
+
+Bis eine davon steht, ist der Produktstand nur so frisch wie der letzte
+Handgriff. Das gehoert nicht in den Backlog, sondern ist die Ursache
+eines P0.
+
+
 
 POST-LAUNCH MODE. Gemessen wurde die **laufende Produktion**, nicht der Launch-Commit.
 
