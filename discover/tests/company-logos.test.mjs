@@ -326,6 +326,8 @@ test("Zweite Diagnose: Apache-Lizenz, nur das eigene Logo, breite Wortmarken", a
   assert.ok(ownLogoHint("/img/xencor-logo.svg", "https://xencor.com/", "Xencor Inc"));
   assert.ok(ownLogoHint("/content/dam/logo.svg site-logo", "https://www.norfolksouthern.com/", "Norfolk Southern"));
   assert.ok(ownLogoHint("/is/image/emerson/logo", "https://www.emerson.com/en/corporate", "Emerson Electric"));
+  assert.ok(ownLogoHint('<svg aria-label="HP logo" class="c-logo">', "https://www.hp.com/us-en/home.html", "HP Inc"));
+  assert.ok(!ownLogoHint("/assets/php-logo.png", "https://www.hp.com/", "HP Inc"));
   let sharp;
   try { sharp = (await import("sharp")).default; } catch (e) { t.skip("sharp nicht installiert"); return; }
   const wortmarke = await sharp({ create: { width: 240, height: 48, channels: 4, background: "#036" } }).png().toBuffer();

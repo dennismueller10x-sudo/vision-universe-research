@@ -110,10 +110,12 @@ export function ownLogoHint(hint, baseUrl, companyName) {
   const h = String(hint || "").toLowerCase();
   if (SEITENLOGO.test(h)) return true;
   const woerter = String(companyName || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9 ]/g, " ")
-    .split(/\s+/).filter((w) => w.length >= 3 && !/^(inc|corp|the|and|holdings|group|class|company|ltd|plc|technologies|international)$/.test(w));
+    .split(/\s+/).filter((w) => w.length >= 2 && !/^(inc|corp|co|the|and|holdings|group|class|company|ltd|plc|technologies|international)$/.test(w));
   let label = "";
   try { label = rootDomain(new URL(baseUrl).hostname).split(".")[0]; } catch (e) { /* ohne */ }
-  return (label.length >= 3 && h.includes(label)) || woerter.some((w) => h.includes(w));
+  /* Kurze Namen (HP, GE, 3M) nur als eigenes Wort - "hp" steckt auch in "php". */
+  const trifft = (w) => w.length >= 4 ? h.includes(w) : new RegExp("(^|[^a-z0-9])" + w.replace(/[^a-z0-9]/g, "") + "([^a-z0-9]|$)").test(h);
+  return (label.length >= 2 && trifft(label)) || woerter.some(trifft);
 }
 
 /** Ein <svg> im Seitenkopf, das als Logo ausgezeichnet ist (Klasse, ID, aria-label, title). */
