@@ -386,9 +386,9 @@ export function logoFilings(recent, max = 3) {
 }
 
 /**
- * Logo-Bilder in einer SEC-Einreichung: <img>, dessen Alternativtext oder
- * Dateiname "logo" oder den Firmennamen traegt (Druckereien setzen
- * alt="LOGO"). Unterschriften, Grafiken und Fotos zaehlen nicht.
+ * Logo-Bilder in einer SEC-Einreichung: <img>, dessen Alternativtext,
+ * Titel oder Dateiname "logo" traegt (Druckereien setzen alt="LOGO").
+ * Unterschriften, Grafiken und Fotos zaehlen nicht.
  */
 export function secLogoImages(html, docUrl, companyName, opts = {}) {
   const text = String(html || "").slice(0, 600000);
@@ -401,7 +401,9 @@ export function secLogoImages(html, docUrl, companyName, opts = {}) {
     const hinweis = ((a.alt || "") + " " + (a.title || "") + " " + src).toLowerCase();
     if (!src || /^data:/i.test(src)) continue;
     if (/(signature|sig_|chart|graph|photo|headshot|map|table|performance|arrow|check|box)/i.test(hinweis)) continue;
-    if (!/logo/.test(hinweis) && !woerter.some((w) => (a.alt || "").toLowerCase().includes(w))) continue;
+    /* Nur ausdruecklich als Logo bezeichnete Bilder - der Firmenname im
+       Alternativtext traf auch Titelseiten und Fotos (Micron, Cadence). */
+    if (!/logo/.test(hinweis)) continue;
     try { out.push(new URL(src, docUrl).href); } catch (e) { /* weiter */ }
     if (out.length >= 3) break;
   }

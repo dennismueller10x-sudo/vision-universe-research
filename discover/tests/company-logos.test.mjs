@@ -360,10 +360,11 @@ test("Einheitliche Groesse: hohes Symbol und flacher Schriftzug fuellen dasselbe
 test("SEC: Einreichungen mit Logo und das Logo-Bild darin", () => {
   const recent = { form: ["8-K", "DEF 14A", "10-K", "ARS"], accessionNumber: ["1", "2", "3", "4"], primaryDocument: ["a.htm", "p.htm", "k.htm", "ars.pdf"] };
   assert.deepEqual(logoFilings(recent).map((f) => f.form), ["DEF 14A", "ARS", "10-K"]);
+  /* Nur ausdruecklich als Logo bezeichnet - ein Bild mit dem Firmennamen kann eine Titelseite sein. */
   const html = `<img src="g1_signature.jpg" alt="signature"><img src="g2.jpg" alt="LOGO"><img src="chart1.jpg" alt="Performance chart">
-    <img src="g3.jpg" alt="United Airlines Holdings">`;
+    <img src="g3.jpg" alt="United Airlines Holdings"><img src="ual_logo.png" alt="">`;
   assert.deepEqual(secLogoImages(html, "https://www.sec.gov/Archives/edgar/data/100517/0001/p.htm", "United Airlines Holdings Inc"),
-    ["https://www.sec.gov/Archives/edgar/data/100517/0001/g2.jpg", "https://www.sec.gov/Archives/edgar/data/100517/0001/g3.jpg"]);
+    ["https://www.sec.gov/Archives/edgar/data/100517/0001/g2.jpg", "https://www.sec.gov/Archives/edgar/data/100517/0001/ual_logo.png"]);
 });
 
 test("MSCI World: nur Aktien an US-Boersen aus der iShares-Datei", () => {

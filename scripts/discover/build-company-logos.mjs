@@ -222,10 +222,17 @@ const INDEX_MITGLIEDER = { SP500: new Set(), NDX: new Set(), DJIA: new Set(), MS
     }
   }
   try {
-    const csv = (await holen("https://www.ishares.com/us/products/239696/ishares-msci-world-etf/1467271812596.ajax?fileType=csv&fileName=URTH_holdings&dataType=fund", 8 * 1024 * 1024, { truncate: true })).buf.toString("utf8");
+    /* Wie scripts/market/build-index-membership.mjs: iShares liefert die
+       Bestandsdatei nur mit Browser-Kennung, teils als UTF-16. */
+    const { buf: roh } = await holen("https://www.ishares.com/us/products/239696/ishares-msci-world-etf/1467271812596.ajax?fileType=csv&fileName=URTH_holdings&dataType=fund",
+      8 * 1024 * 1024, { truncate: true, accept: "text/csv, text/plain, application/octet-stream, */*",
+                         ua: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36" });
+    const csv = roh[0] === 0xff && roh[1] === 0xfe ? roh.slice(2).toString("utf16le") : roh.toString("utf8").replace(/^\uFEFF/, "");
     const norm = (t) => String(t).toUpperCase().replace(/[.\-/ ]/g, "");
     const nachNorm = new Map(universe.map((r) => [norm(r.symbol), r.symbol]));
-    for (const t of parseIsharesUsTickers(csv)) { const s = nachNorm.get(norm(t)); if (s) INDEX_MITGLIEDER.MSCI_WORLD.add(s); }
+    const ticker = parseIsharesUsTickers(csv);
+    if (!ticker.length) console.log("     MSCI-World-Bestand ohne US-Titel - Dateikopf:", csv.slice(0, 200).replace(/\s+/g, " "));
+    for (const t of ticker) { const s = nachNorm.get(norm(t)); if (s) INDEX_MITGLIEDER.MSCI_WORLD.add(s); }
   } catch (e) { console.log("     MSCI-World-Bestand nicht erreichbar:", e.message); }
   console.log("     Index-Titel im Universum:", Object.entries(INDEX_MITGLIEDER).map(([k, v]) => k + " " + v.size).join(", "));
 }
@@ -423,17 +430,16 @@ if (!args["no-web"] && !DRY) {
 
     /* ------------------------------ Dritte Quelle: Logo aus SEC-Einreichung */
     if (secUa && !args["no-sec-logo"]) {
-      /* Ohne Logo - und Index-Titel mit breitem Schriftzug: dort nur ein
-         quadratischeres SEC-Logo (bis 1,6:1) als Ersatz. */
-      const breitIndex = (s) => PRIORITAET.has(s) && credits[s] && credits[s].ratio > 2.2;
-      const rest = universe.filter((r) => r.cik && (!files[r.symbol] || breitIndex(r.symbol))).slice(0, LIMIT);
+      /* Nur Titel ohne Logo. (Ein SEC-Bild als Ersatz fuer einen breiten
+         Schriftzug brachte Deckblaetter und Fotos - verworfen.) */
+      const rest = universe.filter((r) => r.cik && !files[r.symbol]).slice(0, LIMIT);
       console.log(`5/5  Logo aus SEC-Einreichungen fuer ${rest.length} Titel …`);
       const stat = { ok: 0, ohneBild: 0, fehler: 0 };
       let i = 0;
       for (const r of rest) {
         const alt = vorher[r.symbol];
-        const nurQuadrat = !!files[r.symbol];
-        if (!nurQuadrat && !args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
+        /* Nur nach der strengen Regel gefundene SEC-Logos werden weiterverwendet (rule). */
+        if (!args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.rule === "logo-hint" && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
           files[r.symbol] = alt.path; credits[r.symbol] = alt; reasons.delete(r.symbol); stat.ok++; continue;
         }
         try {
@@ -442,14 +448,14 @@ if (!args["no-web"] && !DRY) {
           let treffer = null;
           for (const f of logoFilings(sub.filings && sub.filings.recent, 3)) {
             const doc = "https://www.sec.gov/Archives/edgar/data/" + cik + "/" + f.accession.replace(/-/g, "") + "/" + f.document;
-            const bilder = secLogoImages((await secHolen(doc, 3 * 1024 * 1024, secUa)).buf.toString("utf8"), doc, r.name,
-                                         { firstImage: PRIORITAET.has(r.symbol) && /DEF 14A|ARS/.test(f.form) });
+            const bilder = secLogoImages((await secHolen(doc, 3 * 1024 * 1024, secUa)).buf.toString("utf8"), doc, r.name);
             dbg(r.symbol, "SEC-Logo", f.form, doc, bilder.length + " Bild(er)");
             for (const url of bilder) {
               try {
                 const res = await toPng((await secHolen(url, 3 * 1024 * 1024, secUa)).buf, sharp, { logo: true });
                 dbg(r.symbol, "SEC-Logo", url, res.png ? "OK" : res.reason);
-                if (res.png && (!nurQuadrat || res.ratio <= 1.6)) { treffer = { ...res, url, form: f.form, doc }; break; }
+                /* Hochformat wie eine Briefseite (0,65-0,85) ist ein Deckblatt, kein Logo. */
+                if (res.png && !(res.ratio >= 0.65 && res.ratio <= 0.85)) { treffer = { ...res, url, form: f.form, doc }; break; }
               } catch (e) { dbg(r.symbol, "SEC-Logo", url, "Fehler", e.message); }
             }
             if (treffer) break;
@@ -461,7 +467,7 @@ if (!args["no-web"] && !DRY) {
           files[r.symbol] = path;
           credits[r.symbol] = { source: "SEC_FILING", path, page: treffer.doc, iconUrl: treffer.url, form: treffer.form,
                                 sha1: createHash("sha1").update(treffer.png).digest("hex"), via: "SEC_CIK",
-                                licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round(treffer.ratio * 100) / 100 };
+                                licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round(treffer.ratio * 100) / 100, rule: "logo-hint" };
           reasons.delete(r.symbol);
           stat.ok++;
         } catch (e) { stat.fehler++; dbg(r.symbol, "SEC-Logo Fehler", e.message); }
