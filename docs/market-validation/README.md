@@ -94,6 +94,16 @@ seit 1929“). Grundlage ist ein kleiner, veröffentlichter Auszug nur mit
 aggregierten Kennzahlen: `quant/data/market/validation/market-pulse-evidence.json`
 (Studie B, Variante ohne Breite; monatlich mit aktualisiert).
 
+Seit 29.09.2026 zusätzlich das **Marktbarometer in zwei Minuten**
+(`#/maerkte/einordnung`, `discover/ui/market-barometer.js`): je Stufe der
+Anteil im Plus und die typische Rendite nach 1 und 5 Jahren, ein schlechtes
+Jahr (10. Perzentil) und das Rückschlag-Risiko – aus `longTerm` im Auszug
+(`horizonStats`, über alle Handelstage; bei 5 Jahren mit dem Hinweis, dass
+es je Stufe nur wenige unabhängige Zeiträume gibt). Kernaussage der Daten:
+langfristig lag man in jeder Stufe meist im Plus; die Stufe zeigt vor allem,
+wie tief es zwischendurch fallen kann. Alle Details liegen auf
+`#/maerkte/einordnung/details`.
+
 Regeln der Darstellung (durch Tests und Browser-QA abgesichert):
 
 - Kernaussage ist das Rückschlag-Risiko je Stufe, mit markierter heutiger Stufe.

@@ -85,6 +85,16 @@
               ["rect", mit({ x: 17.4, y: 10.6, width: 2.1, height: 6.8, rx: 0.8 })], ["rect", mit({ x: 2.8, y: 18.4, width: 18.4, height: 2.4, rx: 0.8 })]],
     schild: [["path", mit({ d: "M12 2.6l7.6 3v5.7c0 4.7-3.2 8.5-7.6 10-4.4-1.5-7.6-5.3-7.6-10V5.6z" })],
              ["path", { d: "M8.4 12.1l2.5 2.5 4.8-5", "stroke-width": "2.4", class: "dx-glyph-loch-strich" }]],
+    /* Wetter fuer die fuenf Stufen des Marktbarometers */
+    sonne: [["circle", mit({ cx: 12, cy: 12, r: 4.6 })], ["path", { d: "M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6M5.4 5.4l1.8 1.8M16.8 16.8l1.8 1.8M5.4 18.6l1.8-1.8M16.8 7.2l1.8-1.8", "stroke-width": "2.2" }]],
+    heiter: [["circle", mit({ cx: 10, cy: 9.5, r: 4.2 })], ["path", { d: "M10 2.4v1.8M3 9.5h1.8M5 4.5l1.3 1.3M15 4.5l-1.3 1.3", "stroke-width": "2" }],
+             ["path", mit({ d: "M9.5 20.5h9a3.3 3.3 0 0 0 .4-6.6 4.6 4.6 0 0 0-8.8.9 2.9 2.9 0 0 0-.6 5.7z" })]],
+    wechselhaft: [["circle", mit({ cx: 8.6, cy: 8.2, r: 4 })], ["path", { d: "M8.6 1.9v1.6M2.3 8.2h1.6M4.2 3.8l1.1 1.1", "stroke-width": "2" }],
+                  ["path", mit({ d: "M7 20.6h11a4 4 0 0 0 .5-8 5.6 5.6 0 0 0-10.7 1.1A3.5 3.5 0 0 0 7 20.6z" })]],
+    regen: [["path", mit({ d: "M6.5 15.2h11a4 4 0 0 0 .5-8 5.6 5.6 0 0 0-10.7 1.1 3.5 3.5 0 0 0-.8 6.9z" })],
+            ["path", { d: "M8.5 18l-1 2.6M12.5 18l-1 2.6M16.5 18l-1 2.6", "stroke-width": "2.2" }]],
+    gewitter: [["path", mit({ d: "M6.5 14.6h11a4 4 0 0 0 .5-8 5.6 5.6 0 0 0-10.7 1.1 3.5 3.5 0 0 0-.8 6.9z" })],
+               ["path", mit({ d: "M12.8 13.2l-3.4 5h2.6l-1.2 4.4 4.4-6h-2.7l1.4-3.4z" })]],
     waehrung: [["text", mit({ x: 12, y: 16.4, "text-anchor": "middle", "font-size": "12", "font-weight": "800", "letter-spacing": "-0.5", "font-family": "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif" }), "€$"]]
   };
   /* Dimensionen und Vergleichszeilen auf ihr Symbol. */
@@ -893,22 +903,27 @@
      historischen Pruefung. Alle Saetze kommen aus den Zustaenden des
      Artefakts und aus dem Pruefungs-Auszug; ohne Auszug entfallen die
      beiden Geschichts-Zeilen. Keine Handlungsaufforderung. */
-  function grundSaetze(p) {
-    var d = p.dimensions || {}, out = [];
-    var t = d.TREND, b = d.BREADTH, m = d.MOMENTUM, r = d.RISK;
-    if (t && t.state !== "UNAVAILABLE") out.push({ POSITIVE: "Die großen US-Indizes steigen.", NEGATIVE: "Die großen US-Indizes fallen.",
-      MIXED: "Die großen US-Indizes haben keinen klaren Trend." }[t.state] || de(t.summary));
-    if (b && (b.state === "BROAD" || b.state === "NARROW" || b.state === "MIXED")) {
-      var a50 = (b.evidence || []).filter(function (e) { return e.key === "above50"; })[0];
-      out.push(b.state === "BROAD" ? "Die meisten Aktien steigen mit." : b.state === "NARROW"
+  /* Ein Satz in Alltagssprache je Messwert - null, wenn nicht bestimmbar. */
+  function grundSatz(p, k) {
+    var d = (p.dimensions || {})[k];
+    if (!d || d.state === "UNAVAILABLE" || d.state === "NOT_CURRENT") return null;
+    if (k === "TREND") return { POSITIVE: "Die großen US-Indizes steigen.", NEGATIVE: "Die großen US-Indizes fallen.",
+      MIXED: "Die großen US-Indizes haben keinen klaren Trend." }[d.state] || de(d.summary);
+    if (k === "BREADTH") {
+      if (d.state !== "BROAD" && d.state !== "NARROW" && d.state !== "MIXED") return null;
+      var a50 = (d.evidence || []).filter(function (e) { return e.key === "above50"; })[0];
+      return d.state === "BROAD" ? "Die meisten Aktien steigen mit." : d.state === "NARROW"
         ? "Nur " + (a50 && isNum(a50.value) ? "rund " + Math.round(a50.value) + " % der" : "wenige") + " Aktien steigen mit – die Bewegung tragen wenige."
-        : "Etwa die Hälfte der Aktien steigt mit.");
+        : "Etwa die Hälfte der Aktien steigt mit.";
     }
-    if (m && m.state !== "UNAVAILABLE") out.push(m.state === "RISING" ? "Die letzten Monate liefen gut" + (/Tempo lässt nach/.test(m.summary) ? ", das Tempo lässt aber nach." : ".")
-      : m.state === "FALLING" ? "Die letzten Monate liefen schwach" + (/Abwärtsdruck lässt nach/.test(m.summary) ? ", der Druck lässt aber nach." : ".")
-      : "Die letzten Monate brachten keine klare Richtung.");
-    if (r && r.state !== "UNAVAILABLE") out.push(r.state === "NORMAL" ? "Die Kurse schwanken im üblichen Rahmen." : de(r.summary));
-    return out;
+    if (k === "MOMENTUM") return d.state === "RISING" ? "Die letzten Monate liefen gut" + (/Tempo lässt nach/.test(d.summary) ? ", das Tempo lässt aber nach." : ".")
+      : d.state === "FALLING" ? "Die letzten Monate liefen schwach" + (/Abwärtsdruck lässt nach/.test(d.summary) ? ", der Druck lässt aber nach." : ".")
+      : "Die letzten Monate brachten keine klare Richtung.";
+    if (k === "RISK") return d.state === "NORMAL" ? "Die Kurse schwanken im üblichen Rahmen." : de(d.summary);
+    return null;
+  }
+  function grundSaetze(p) {
+    return ["TREND", "BREADTH", "MOMENTUM", "RISK"].map(function (k) { return grundSatz(p, k); }).filter(Boolean);
   }
 
   function kurzfassung(p, ev) {
@@ -969,9 +984,11 @@
     var diff = hier && schnitt !== null ? hier.drawdownShare - schnitt : null;
     var risiko = diff === null ? null : diff > 3 ? "erhöht" : diff < -3 ? "gering" : "normal";
     var skala = env.scale || [];
-    var link = el("a", { class: "dx-m3-st-link", href: "#/maerkte/einordnung" }, [el("span", { text: "Einordnung verstehen" }), el("i", { "aria-hidden": "true", text: "›" })]);
-    return el("section", { class: "dx-m3-stimmung is-l" + env.level, id: "maerkte-stimmung", "aria-label": "Marktstimmung" }, [
-      el("div", { class: "dx-m3-st-kopf" }, [iconChip("kompass", "context"), el("div", {}, [el("h2", { text: "Marktstimmung" }),
+    var link = el("a", { class: "dx-m3-st-link", href: "#/maerkte/einordnung" }, [
+      el("span", { class: "dx-m3-st-link-text" }, [el("b", { text: "Was heißt „" + env.label + "“?" }), el("small", { text: "In 2 Minuten erklärt – mit Zahlen seit 1929" })]),
+      el("i", { "aria-hidden": "true", text: "›" })]);
+    return el("section", { class: "dx-m3-stimmung is-l" + env.level, id: "maerkte-stimmung", "aria-label": "Marktbarometer" }, [
+      el("div", { class: "dx-m3-st-kopf" }, [iconChip("kompass", "context"), el("div", {}, [el("h2", { text: "Marktbarometer" }),
         el("p", { text: "US-Aktienmarkt · Einordnung von Vision Universe" })])]),
       el("div", { class: "dx-m3-st-raster" }, [
         el("div", { class: "dx-m3-st-gauge" }, [regimeGauge(env, null)].filter(Boolean)),
@@ -1209,7 +1226,8 @@
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.MarketIntelligence = {
     hero: hero, kacheln: kacheln, landkarte: landkarte, glyph: symbolSvg, vorherJetzt: vorherJetzt, warum: warum, worauf: worauf, bildAendern: bildAendern,
-    verlauf: verlauf, breite: breite, crossAsset: crossAsset, pruefung: pruefung, kurzfassung: kurzfassung, grundSaetze: grundSaetze, stimmung: stimmung, stories: stories, beleben: beleben,
+    verlauf: verlauf, breite: breite, crossAsset: crossAsset, pruefung: pruefung, kurzfassung: kurzfassung, grundSaetze: grundSaetze, grundSatz: grundSatz, stimmung: stimmung,
+    gauge: regimeGauge, iconChip: iconChip, DIM: DIM, stories: stories, beleben: beleben,
     naechsteBewertung: naechsteBewertung, zyklusText: zyklusText, ZEITRAEUME: ZEITRAEUME
   };
 })(typeof window !== "undefined" ? window : globalThis);

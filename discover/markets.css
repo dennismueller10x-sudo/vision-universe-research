@@ -1243,3 +1243,159 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
 }
 .dv2 .dx-m3-st-gauge{padding-bottom:18px}
 @media(min-width:761px){.dv2 .dx-m3-st-link{align-self:flex-start;min-width:300px}}
+
+/* ================================================================ Markets 4.2
+   Owner-Feedback: "In zwei Minuten wissen, ob ich eine gute Chance habe -
+   grosse Zahlen, Diagramme, Icons, Swipen." Das Marktbarometer
+   (#/maerkte/einordnung, ui/market-barometer.js): Wetter statt Fachwort,
+   vier grosse Zahlen, ein Diagramm mit vier Ansichten, Symbol-Kacheln,
+   Stufen zum Wischen. Details auf #/maerkte/einordnung/details. */
+.dv2 .dx-m3-st-link-text{display:flex;flex-direction:column;gap:2px}
+.dv2 .dx-m3-st-link-text small{font-size:13px;font-weight:600;opacity:.72}
+
+.dv2 .dx-bm{display:flex;flex-direction:column;gap:30px}
+.dv2 .dx-bm>.dx-back,.dv2 .dx-bm>.dx-mk-kopf{margin-bottom:-18px}
+.dv2 .dx-bm section{--kt:var(--m3-neutral)}
+.dv2 .dx-bm .is-l0{--kt:var(--m3-l0)}.dv2 .dx-bm .is-l1{--kt:var(--m3-l1)}.dv2 .dx-bm .is-l2{--kt:var(--m3-l2)}
+.dv2 .dx-bm .is-l3{--kt:var(--m3-l3)}.dv2 .dx-bm .is-l4{--kt:var(--m3-l4)}
+.dv2 .bm-kopf{margin:0 0 14px}
+.dv2 .bm-eyebrow{margin:0 0 6px;font-size:13.5px;font-weight:700;color:var(--m3-purple)}
+.dv2 .bm-kopf h2{margin:0;font-size:28px;font-weight:850;letter-spacing:-.025em;line-height:1.15}
+.dv2 .bm-unter{margin:6px 0 0;font-size:15.5px;line-height:1.5;color:var(--v2-muted);max-width:62ch}
+.dv2 .bm-fuss{margin:0;font-size:12.5px;line-height:1.55;color:var(--v2-muted)}
+.dv2 .bm-leer{margin:0;font-size:14px;color:var(--v2-muted)}
+.dv2 .bm-wetter{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:44px;height:44px;border-radius:14px;
+  color:var(--kt);background:color-mix(in srgb,var(--kt) 15%,transparent)}
+.dv2 .bm-wetter svg{width:72%;height:72%}
+.dv2 .bm-wetter.is-gross{width:96px;height:96px;border-radius:28px}
+
+/* 1 Heute */
+.dv2 .bm-heute{position:relative;overflow:hidden;padding:24px;border-radius:28px;color:#fff;background:#0d1117;
+  background-image:radial-gradient(120% 90% at 85% 0%,color-mix(in srgb,var(--kt) 38%,transparent),transparent 60%)}
+.dv2 .bm-heute .bm-eyebrow{color:rgba(255,255,255,.72)}
+.dv2 .bm-heute-raster{display:grid;grid-template-columns:260px minmax(0,1fr);gap:26px;align-items:center}
+.dv2 .bm-heute-bild{display:flex;flex-direction:column;align-items:center;gap:6px}
+.dv2 .bm-heute .bm-wetter{color:#fff;background:color-mix(in srgb,var(--kt) 70%,#000)}
+.dv2 .bm-heute-gauge{width:220px;padding-bottom:14px}
+.dv2 .bm-heute-gauge .dx-m3-gauge-band{opacity:.3}
+.dv2 .bm-heute.is-l0 .dx-m3-gauge-band.is-l0,.dv2 .bm-heute.is-l1 .dx-m3-gauge-band.is-l1,.dv2 .bm-heute.is-l2 .dx-m3-gauge-band.is-l2,
+.dv2 .bm-heute.is-l3 .dx-m3-gauge-band.is-l3,.dv2 .bm-heute.is-l4 .dx-m3-gauge-band.is-l4{opacity:1}
+.dv2 .bm-heute-wetter{margin:0;font-size:18px;font-weight:750;color:var(--kt)}
+.dv2 .bm-heute-stufe{margin:2px 0 8px;font-size:58px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.dv2 .bm-heute-satz{margin:0 0 18px;font-size:21px;font-weight:650;line-height:1.35}
+.dv2 .bm-leiste{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0;padding:0;list-style:none}
+.dv2 .bm-leiste li{display:flex;flex-direction:column;gap:6px;font-size:11.5px;font-weight:650;color:rgba(255,255,255,.55)}
+.dv2 .bm-leiste i{height:8px;border-radius:999px;background:rgba(255,255,255,.14)}
+.dv2 .bm-leiste li.is-aktiv{color:#fff}.dv2 .bm-leiste li.is-aktiv i{background:var(--kt)}
+
+/* 2 Grosse Zahlen */
+.dv2 .bm-zahlen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.dv2 .bm-zahl{--z:var(--m3-support);display:flex;flex-direction:column;gap:4px;padding:18px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .bm-zahl.is-neutral{--z:var(--m3-context)}.dv2 .bm-zahl.is-warn{--z:var(--m3-headwind)}
+.dv2 .bm-zahl-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0 0 8px;border-radius:11px;color:#fff;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--z) 70%,#fff),var(--z) 75%)}
+.dv2 .bm-zahl-icon svg{width:62%;height:62%}
+.dv2 .bm-zahl b{font-size:44px;font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--v2-ink);font-variant-numeric:tabular-nums}
+.dv2 .bm-zahl p{margin:4px 0 0;font-size:15px;font-weight:650;line-height:1.35;color:var(--v2-ink)}
+.dv2 .bm-zahl small{font-size:13px;line-height:1.4;color:var(--v2-muted)}
+.dv2 .bm-fazit{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;padding:16px 18px;border-radius:18px;font-size:17px;line-height:1.5;
+  background:color-mix(in srgb,var(--m3-purple) 10%,transparent);color:var(--v2-ink)}
+.dv2 .bm-fazit-icon{flex:0 0 auto;display:inline-flex;width:26px;height:26px;color:var(--m3-purple)}
+.dv2 .bm-fazit-icon svg{width:100%;height:100%}
+
+/* 3 Vergleich: Tabs + Saeulen */
+.dv2 .bm-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+.dv2 .bm-tabs::-webkit-scrollbar{display:none}
+.dv2 .bm-tabs button{flex:0 0 auto;min-height:42px;padding:9px 16px;border:0;border-radius:999px;font:inherit;font-size:14.5px;font-weight:700;
+  color:var(--v2-ink);background:var(--m3-soft);cursor:pointer}
+.dv2 .bm-tabs button[aria-pressed="true"]{color:var(--ap-karte);background:var(--v2-ink)}
+.dv2 .bm-tabs button:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+.dv2 .bm-chart-box{padding:20px;border-radius:24px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .bm-chart{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:end;height:300px}
+.dv2 .bm-saeule{display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;min-width:0;text-align:center}
+.dv2 .bm-saeule-wert{font-size:26px;font-weight:900;letter-spacing:-.03em;color:var(--v2-ink);font-variant-numeric:tabular-nums}
+.dv2 .bm-saeule-spur{position:relative;flex:1;width:min(76px,80%);border-radius:14px 14px 6px 6px;background:var(--m3-soft);overflow:hidden}
+.dv2 .bm-saeule-spur span{position:absolute;left:0;right:0;bottom:0;border-radius:14px 14px 6px 6px;background:color-mix(in srgb,var(--kt) 55%,transparent)}
+.dv2 .bm-saeule.is-heute .bm-saeule-spur span{background:var(--kt)}
+.dv2 .bm-saeule-name{font-size:13.5px;font-weight:700;color:var(--v2-ink)}
+.dv2 .bm-saeule em{font-style:normal;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:800;color:var(--v2-ink);background:color-mix(in srgb,var(--kt) 22%,transparent)}
+.dv2 .bm-saeule .bm-wetter{width:36px;height:36px;border-radius:11px}
+.dv2 .bm-chart-fazit{margin:16px 0 0;font-size:16.5px;font-weight:600;line-height:1.5;color:var(--v2-ink)}
+.dv2 .bm-vergleich .bm-fuss{margin-top:10px}
+
+/* 4 Gruende */
+.dv2 .bm-gruende{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.dv2 .bm-grund{--r:var(--m3-neutral);display:flex;flex-direction:column;gap:6px;padding:18px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten);
+  border-top:4px solid var(--r)}
+.dv2 .bm-grund.is-support{--r:var(--m3-support)}.dv2 .bm-grund.is-headwind{--r:var(--m3-headwind)}
+.dv2 .bm-grund-kopf{display:flex;align-items:center;gap:10px}
+.dv2 .bm-grund-kopf .dx-m3-icon{width:40px;height:40px;border-radius:12px}
+.dv2 .bm-grund-name{font-size:15px;font-weight:750;color:var(--v2-muted)}
+.dv2 .bm-grund-rolle{margin-left:auto;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:800;color:var(--v2-ink);background:color-mix(in srgb,var(--r) 18%,transparent)}
+.dv2 .bm-grund-zustand{margin-top:6px;font-size:21px;font-weight:850;letter-spacing:-.02em;color:var(--v2-ink)}
+.dv2 .bm-grund p{margin:0;font-size:15px;line-height:1.5;color:var(--v2-ink)}
+
+/* 5 Wende */
+.dv2 .bm-wende-raster{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
+.dv2 .bm-wende-spalte{--w:var(--m3-support);padding:18px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .bm-wende-spalte.is-warn{--w:var(--m3-headwind)}
+.dv2 .bm-wende-kopf{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.dv2 .bm-wende-kopf h3{margin:0;font-size:19px;font-weight:850}
+.dv2 .bm-wende-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;color:#fff;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--w) 70%,#fff),var(--w) 75%)}
+.dv2 .bm-wende-icon svg{width:64%;height:64%}
+.dv2 .bm-wende-spalte ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.dv2 .bm-wende-spalte li{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:14px;background:var(--m3-soft);font-size:15px;line-height:1.45}
+.dv2 .bm-wende-spalte li b{align-self:flex-start;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:800;color:var(--v2-ink);background:color-mix(in srgb,var(--kt) 20%,transparent)}
+
+/* 6 Stufen zum Wischen */
+.dv2 .bm-stufen-reihe{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-width:none}
+.dv2 .bm-stufen-reihe::-webkit-scrollbar{display:none}
+.dv2 .bm-stufen-reihe:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+.dv2 .bm-stufe{flex:0 0 240px;scroll-snap-align:start;display:flex;flex-direction:column;gap:6px;padding:18px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten)}
+.dv2 .bm-stufe.is-heute{box-shadow:var(--ap-schatten),inset 0 0 0 2.5px var(--kt)}
+.dv2 .bm-stufe-kopf{display:flex;align-items:center;justify-content:space-between}
+.dv2 .bm-stufe-kopf em{font-style:normal;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:800;color:var(--v2-ink);background:color-mix(in srgb,var(--kt) 22%,transparent)}
+.dv2 .bm-stufe-wetter{margin:8px 0 0;font-size:14px;font-weight:750;color:var(--v2-muted)}
+.dv2 .bm-stufe h3{margin:0;font-size:22px;font-weight:850;letter-spacing:-.02em}
+.dv2 .bm-stufe-satz{margin:0;font-size:14.5px;line-height:1.45;color:var(--v2-ink)}
+.dv2 .bm-stufe dl{margin:8px 0 0;display:flex;flex-direction:column;gap:6px}
+.dv2 .bm-stufe dl div{display:flex;justify-content:space-between;gap:10px;padding-top:6px;border-top:1px solid var(--ap-linie);font-size:13.5px}
+.dv2 .bm-stufe dt{color:var(--v2-muted)}.dv2 .bm-stufe dd{margin:0;font-weight:800;color:var(--v2-ink)}
+
+/* 7 Mehr */
+.dv2 .bm-mehr{display:flex;align-items:center;gap:14px;padding:18px 20px;border-radius:22px;background:var(--ap-karte);box-shadow:var(--ap-schatten);color:var(--v2-ink);text-decoration:none}
+.dv2 .bm-mehr-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:44px;height:44px;border-radius:13px;color:#fff;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--m3-purple) 70%,#fff),var(--m3-purple) 75%)}
+.dv2 .bm-mehr-icon svg{width:60%;height:60%}
+.dv2 .bm-mehr-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dv2 .bm-mehr-text b{font-size:17px;font-weight:800}
+.dv2 .bm-mehr-text small{font-size:13.5px;color:var(--v2-muted)}
+.dv2 .bm-mehr i{margin-left:auto;font-style:normal;font-size:26px;opacity:.5}
+.dv2 .bm-mehr:focus-visible{outline:2px solid var(--v2-ink);outline-offset:3px}
+
+@media(max-width:760px){
+  .dv2 .dx-bm{gap:26px}
+  .dv2 .bm-kopf h2{font-size:24px}
+  .dv2 .bm-heute{padding:20px 18px;border-radius:26px}
+  .dv2 .bm-heute-raster{grid-template-columns:minmax(0,1fr);gap:8px}
+  .dv2 .bm-heute-bild{flex-direction:row;justify-content:center;gap:14px}
+  .dv2 .bm-wetter.is-gross{width:72px;height:72px;border-radius:22px}
+  .dv2 .bm-heute-gauge{width:170px}
+  .dv2 .bm-heute-stufe{font-size:46px}
+  .dv2 .bm-heute-satz{font-size:18px}
+  .dv2 .bm-leiste span{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dv2 .bm-zahlen{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .dv2 .bm-zahl{padding:15px 14px}
+  .dv2 .bm-zahl b{font-size:34px}
+  .dv2 .bm-zahl p{font-size:14px}
+  .dv2 .bm-chart{height:260px;gap:8px}
+  .dv2 .bm-saeule-wert{font-size:19px}
+  .dv2 .bm-saeule-name{font-size:12px;overflow-wrap:anywhere}
+  .dv2 .bm-chart-box{padding:16px 12px}
+  .dv2 .bm-fazit{font-size:15.5px}
+}
+.dv2 .bm-saeule.is-heute .bm-saeule-name{padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--kt) 22%,transparent)}
+/* Gleiche Hoehe fuer alle Saeulen-Beschriftungen - sonst verschiebt ein
+   umbrechendes "heute" die Saeule. */
+.dv2 .bm-saeule-name{display:flex;align-items:center;justify-content:center;min-height:2.9em;line-height:1.25}

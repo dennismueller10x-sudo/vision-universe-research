@@ -24,7 +24,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pointInTimeStates, forwardOutcomes, evaluate, exposureIllustration, frequencies, MP, PR, round } from "./lib/market-validation.mjs";
+import { pointInTimeStates, forwardOutcomes, evaluate, exposureIllustration, frequencies, horizonStats, MP, PR, round } from "./lib/market-validation.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = new Set(process.argv.slice(2));
@@ -86,6 +86,9 @@ function studyFrench() {
                                                   breadthAt: withBreadth ? breadthAt : null });
   const cashDaily = f.riskFreeDaily ? new Map(f.riskFreeDaily) : null;
   const outcomes = forwardOutcomes(f.series.MARKET, HORIZONS, 1);
+  /* Lange Horizonte fuer die Anlegerfrage "Was hiess diese Stufe nach 1 bzw. 5 Jahren?" */
+  const LANG = [{ days: 252, label: "1 Jahr" }, { days: 1260, label: "5 Jahre" }];
+  const outcomesLang = forwardOutcomes(f.series.MARKET, LANG.map((x) => x.days), 1);
   const periods = [
     { id: "1927-1945", from: "1927-01-01", to: "1945-12-31" }, { id: "1946-1972", from: "1946-01-01", to: "1972-12-31" },
     { id: "1973-2000 (vor Regelentwurf-Daten)", from: "1973-01-01", to: "2000-12-31" }, { id: "2001-heute", from: "2001-01-01", to: "2099-12-31" }];
@@ -100,6 +103,7 @@ function studyFrench() {
       outOfSample: evaluate(states.filter((s) => s.date < "2001-01-01"), outcomes, { horizons: HORIZONS, levels: LEVELS }).byHorizon,
       /* Dieselbe Veranschaulichung nur ab 2001 - damit die Seite nicht nur
          den guenstigen Gesamtzeitraum zeigt. */
+      longTerm: LANG.map((x) => ({ ...horizonStats(states, outcomesLang, x.days, LEVELS), label: x.label })),
       recentIllustration: [1, 2].map((minLevel) => exposureIllustration(states.filter((s) => s.date >= "2001-01-01"), f.series.MARKET, { minLevel, cashDaily })),
       _states: states
     };
@@ -216,6 +220,8 @@ function evidence(B) {
     contrasts: dd.map((t) => ({ days: t.horizon, label: HORIZON_LABEL[t.horizon], lowShare: t.lowShare, lowSamples: t.lowN,
                                 highShare: t.highShare, highSamples: t.highN, p: t.p, significant: t.significantAfterBH })),
     outOfSample: { to: "2000-12-31", levels: lv(v.outOfSample[h]) },
+    longTerm: v.longTerm,
+    longTermNote: "Über alle Handelstage seit Beginn (sich überschneidende Zeiträume). Bei 5 Jahren gibt es je Stufe nur wenige Zeiträume, die sich nicht überschneiden – Unterschiede zwischen den Stufen sind dort nicht belastbar.",
     periods: e.subperiods.map((sp) => ({ id: sp.id.replace(/ \(.*\)$/, ""), levels: sp.levels.filter((x) => x.days > 0).map((x) => ({ level: x.level, label: x.label,
       drawdownShare: x.drawdownShareIndependent, samples: x.independent })) })),
     illustration: {

@@ -243,8 +243,7 @@
           feedHost.setAttribute('aria-label','Aktien weiter entdecken · '+order.length+' Titel in der verbleibenden Auswahl');
         }
       } else if(parts[0]==='maerkte'&&parts[1]==='einordnung'){
-        document.title='Marktstimmung verstehen — Discover — Vision Universe®';
-        await D.Markets.renderEinordnung(root,{calendar,isActive:active});
+        await D.Markets.renderEinordnung(root,{calendar,isActive:active,teil:parts[2]});
       } else if(parts[0]==='maerkte'&&parts[1]){
         document.title='Märkte — Discover — Vision Universe®';
         const dispose=await D.MarketDetail.render(root,decodeURIComponent(parts[1]),{calendar,isActive:active});
