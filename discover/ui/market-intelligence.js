@@ -987,6 +987,13 @@
     var link = el("a", { class: "dx-m3-st-link", href: "#/maerkte/einordnung" }, [
       el("span", { class: "dx-m3-st-link-text" }, [el("b", { text: "Was heißt „" + env.label + "“?" }), el("small", { text: "In 2 Minuten erklärt – mit Zahlen seit 1929" })]),
       el("i", { "aria-hidden": "true", text: "›" })]);
+    var MB = global.VUDiscover && global.VUDiscover.MarketBarometer;
+    var st = MB && MB.stresstest ? MB.stresstest(ev) : null;
+    var beleg = st ? el("a", { class: "dx-m3-st-beleg", href: "#/maerkte/einordnung" }, [
+      el("span", { class: "dx-m3-st-beleg-icon", "aria-hidden": "true" }, [symbolSvg("schild")].filter(Boolean)),
+      el("span", { class: "dx-m3-st-beleg-text" }, [el("b", { text: "Stresstest seit " + st.krisen[0].peak.slice(0, 4) + ": " + st.erkannt + " von " + st.anzahl + " großen Abstürzen früh erkannt" }),
+        el("small", { text: "Mit den heutigen Regeln nachgerechnet – typisch Warnung bei " + pct(st.beiWarnung, 0) + ", danach fiel der Markt noch " + pct(st.danach, 0) + "." })])
+    ]) : null;
     return el("section", { class: "dx-m3-stimmung is-l" + env.level, id: "maerkte-stimmung", "aria-label": "Marktbarometer" }, [
       el("div", { class: "dx-m3-st-kopf" }, [iconChip("kompass", "context"), el("div", {}, [el("h2", { text: "Marktbarometer" }),
         el("p", { text: "US-Aktienmarkt · Einordnung von Vision Universe" })])]),
@@ -1003,9 +1010,10 @@
           })) : null
         ].filter(Boolean))
       ]),
+      beleg,
       link,
       el("p", { class: "dx-m3-fuss", text: "Beschreibung nach festen Regeln – keine Prognose, keine Anlageberatung." })
-    ]);
+    ].filter(Boolean));
   }
 
   /* ------------------------------------------ Wie verlaesslich? (Pruefung)

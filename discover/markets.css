@@ -1476,3 +1476,68 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
 .dv2 .bm-krise-legende .is-nach::before{background:var(--m3-support)}
 .dv2 .bm-krise-legende .is-marke::before{width:3px;height:14px;border-radius:3px;background:var(--v2-ink)}
 .dv2 .bm-zjahr small{display:flex;align-items:flex-start;justify-content:center;min-height:2.7em;line-height:1.3}
+
+/* ================================================================ Markets 4.4
+   Owner-Feedback: "Das muessen wir richtig fett markieren." Der Stresstest
+   als Buehne direkt nach "Heute": grosse Zahl, Kennzahlen, die Tabelle der
+   sieben Abstuerze - und die Grenze (Boeden) gleich daneben, damit die
+   Aussage glaubwuerdig bleibt. Auf der Uebersicht ein Beleg-Streifen. */
+.dv2 .bm-krisen-buehne{position:relative;overflow:hidden;padding:26px 24px;border-radius:28px;color:#fff;
+  background:radial-gradient(110% 80% at 100% 0%,rgba(52,199,89,.28),transparent 55%),linear-gradient(160deg,#0b1f17,#0d1117 60%)}
+.dv2 .bm-krisen-eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:14px;font-weight:750;color:rgba(255,255,255,.78)}
+.dv2 .bm-krisen-schild{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;--c:#1f9d55;color:#fff;
+  background:linear-gradient(180deg,#5fd08f,#1f9d55 75%)}
+.dv2 .bm-krisen-schild svg{width:64%;height:64%}
+.dv2 .bm-krisen-titel{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin:0 0 20px;font-weight:800}
+.dv2 .bm-krisen-titel b{font-size:84px;font-weight:900;letter-spacing:-.05em;line-height:.95;color:#5fd08f}
+.dv2 .bm-krisen-titel span{flex:1 1 280px;font-size:24px;line-height:1.3;letter-spacing:-.015em}
+.dv2 .bm-krisen-buehne .bm-krisen-zahlen{grid-template-columns:repeat(4,minmax(0,1fr));margin:0 0 18px}
+.dv2 .bm-krisen-buehne .bm-krisen-zahl{background:rgba(255,255,255,.06);box-shadow:none;border:1px solid rgba(255,255,255,.08)}
+.dv2 .bm-krisen-buehne .bm-krisen-zahl b{color:#fff;font-size:36px}
+.dv2 .bm-krisen-buehne .bm-krisen-zahl.is-gut b{color:#5fd08f}
+.dv2 .bm-krisen-buehne .bm-krisen-zahl.is-warn b{color:#ffa24a}
+.dv2 .bm-krisen-buehne .bm-krisen-zahl.is-grenze b{color:#c9d1dc}
+.dv2 .bm-krisen-buehne .bm-krisen-zahl p{color:#fff}
+.dv2 .bm-krisen-buehne .bm-krisen-zahl small{color:rgba(255,255,255,.66)}
+.dv2 .bm-krisen-tabelle-box{border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.dv2 .bm-krisen-tabelle{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.dv2 .bm-krisen-tabelle caption{padding:14px 16px 6px;text-align:left;font-size:13px;font-weight:700;color:rgba(255,255,255,.7)}
+.dv2 .bm-krisen-tabelle th,.dv2 .bm-krisen-tabelle td{padding:12px 16px;text-align:left;border-top:1px solid rgba(255,255,255,.08);font-size:15px;color:#fff}
+.dv2 .bm-krisen-tabelle thead th{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.62)}
+.dv2 .bm-krisen-tabelle tbody th b{display:block;font-size:16px;font-weight:800}
+.dv2 .bm-krisen-tabelle tbody th small{font-size:12.5px;color:rgba(255,255,255,.6)}
+.dv2 .bm-krisen-tabelle td.is-fall{font-size:20px;font-weight:900;color:#ff8a80}
+.dv2 .bm-krisen-tabelle td.is-danach{font-size:22px;font-weight:900;color:#5fd08f}
+.dv2 .bm-krisen-tabelle td.is-boden{color:rgba(255,255,255,.72)}
+/* Uebersicht: Beleg-Streifen */
+.dv2 .dx-m3-st-beleg{position:relative;z-index:1;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;text-decoration:none;color:var(--v2-ink);
+  background:color-mix(in srgb,var(--m3-support) 12%,transparent);border:1px solid color-mix(in srgb,var(--m3-support) 30%,transparent)}
+.dv2 .dx-m3-st-beleg-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:36px;height:36px;border-radius:11px;--c:#1f9d55;color:#fff;
+  background:linear-gradient(180deg,#5fd08f,#1f9d55 75%)}
+.dv2 .dx-m3-st-beleg-icon svg{width:64%;height:64%}
+.dv2 .dx-m3-st-beleg-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dv2 .dx-m3-st-beleg-text b{font-size:15.5px;font-weight:800}
+.dv2 .dx-m3-st-beleg-text small{font-size:13px;color:var(--v2-muted)}
+.dv2 .dx-m3-st-beleg:focus-visible{outline:2px solid var(--v2-ink);outline-offset:2px}
+@media(max-width:760px){
+  .dv2 .bm-krisen-buehne{padding:22px 18px;border-radius:26px}
+  .dv2 .bm-krisen-titel b{font-size:64px}
+  .dv2 .bm-krisen-titel span{font-size:19px}
+  .dv2 .bm-krisen-buehne .bm-krisen-zahlen{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .dv2 .bm-krisen-buehne .bm-krisen-zahl{flex-direction:column;align-items:flex-start;padding:13px 12px}
+  .dv2 .bm-krisen-buehne .bm-krisen-zahl b{font-size:27px}
+  .dv2 .bm-krisen-buehne .bm-krisen-zahl p{margin:2px 0 0;font-size:13.5px}
+  /* Tabelle wird zu Karten */
+  .dv2 .bm-krisen-tabelle thead{display:none}
+  .dv2 .bm-krisen-tabelle,.dv2 .bm-krisen-tabelle tbody,.dv2 .bm-krisen-tabelle tr{display:block}
+  .dv2 .bm-krisen-tabelle tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+  .dv2 .bm-krisen-tabelle tbody th{grid-column:1/-1;padding:0;border:0}
+  .dv2 .bm-krisen-tabelle td{display:flex;flex-direction:column;gap:1px;padding:0;border:0;font-size:14px}
+  .dv2 .bm-krisen-tabelle td::before{content:attr(data-label);font-size:11.5px;font-weight:700;color:rgba(255,255,255,.55)}
+  .dv2 .bm-krisen-tabelle td.is-fall{font-size:18px}.dv2 .bm-krisen-tabelle td.is-danach{font-size:19px}
+}
+@media(max-width:760px){
+  .dv2 .bm-krisen-buehne .bm-krisen-zahl p{flex:none}
+  .dv2 .bm-krisen-buehne .bm-krisen-zahl small{flex-basis:auto;font-size:12px}
+  .dv2 .bm-krisen-tabelle caption{display:block;padding:14px 16px 4px}
+}

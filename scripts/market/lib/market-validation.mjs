@@ -267,8 +267,10 @@ export function crisisReplay(states, points, crises, levels) {
     for (let i = ip; i <= at(k.troughTo); i++) if (points[i][1] < points[it][1]) it = i;
     const first = (pred) => { for (let i = ip; i <= it; i++) { const l = lvl.get(points[i][0]); if (l !== undefined && l !== null && pred(l)) return i; } return -1; };
     const iw = first((l) => l <= 1), id = first((l) => l === 0);
-    let ir = -1;
+    let ir = -1, is = -1, ih = -1;
     for (let i = it; i < Math.min(points.length, it + 1000); i++) { const l = lvl.get(points[i][0]); if (l !== undefined && l !== null && l >= 3) { ir = i; break; } }
+    for (let i = it; i < Math.min(points.length, it + 1000); i++) { const l = lvl.get(points[i][0]); if (l !== undefined && l !== null && l >= 2) { is = i; break; } }
+    for (let i = it; i < points.length; i++) if (points[i][1] >= points[ip][1]) { ih = i; break; }
     const lab = (i) => { const l = i >= 0 ? lvl.get(points[i][0]) : undefined; return l === undefined || l === null ? null : levels[l]; };
     const weg = states.filter((s) => s.date >= points[ip][0] && s.date <= points[it][0]);
     const punkt = (i) => i < 0 ? null : { date: points[i][0], fallAt: pct(ip, i), restAfter: pct(i, it), tradingDaysAfterPeak: i - ip };
@@ -277,7 +279,10 @@ export function crisisReplay(states, points, crises, levels) {
       levelAtPeak: lab(ip), levelBefore20: lab(ip - 20), levelBefore60: lab(ip - 60),
       firstWarning: punkt(iw), firstDefensive: punkt(id),
       warningShare: weg.length ? round((100 * weg.filter((s) => s.env !== null && s.env <= 1).length) / weg.length, 0) : null,
-      backConstructive: ir < 0 ? null : { date: points[ir][0], riseFromTrough: pct(it, ir) }
+      levelAtTrough: lab(it),
+      backSelective: is < 0 ? null : { date: points[is][0], riseFromTrough: pct(it, is), tradingDaysAfterTrough: is - it },
+      backConstructive: ir < 0 ? null : { date: points[ir][0], riseFromTrough: pct(it, ir), tradingDaysAfterTrough: ir - it },
+      oldHighBack: ih < 0 ? null : { date: points[ih][0], riseFromTrough: pct(it, ih) }
     };
   });
 }
