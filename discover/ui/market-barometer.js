@@ -465,6 +465,31 @@
     "Der Markt hat Rückenwind: Trend, Schwung und Beteiligung passen zusammen.",
     "Breiter Rückenwind: Trend, Schwung und Beteiligung passen – fast alles zieht mit."
   ];
+  /* Die Hauptzahl: typische Rendite nach 1 Jahr - gross, daneben derselbe
+     Wert fuer den ganzen Markt (gleiche Messung) als Balken. Die bekannte
+     Durchschnittsrendite pro Jahr steht nur als Satz dabei: sie ist eine
+     andere Messung (jaehrlich verzinst) und waere neben dem Einjahreswert
+     kein fairer Vergleich. */
+  function held(a, alle, ev) {
+    var bh = ev.illustration && ev.illustration.rules && ev.illustration.rules[0] && ev.illustration.rules[0].all && ev.illustration.rules[0].all.buyAndHold;
+    var max = Math.max(a.medianReturn, alle ? alle.medianReturn : 0, 1) * 1.08;
+    function balken(cls, name, wert) {
+      return el("li", { class: cls }, [el("span", { text: name }),
+        el("span", { class: "dx-m3-kt-spur", "aria-hidden": "true" }, [el("span", { style: "width:" + Math.max(3, 100 * Math.max(0, wert) / max).toFixed(1) + "%" })]),
+        el("b", { text: pct(wert, 1, true) })]);
+    }
+    return el("div", { class: "dx-m3-kt-held" }, [
+      el("p", { class: "dx-m3-kt-held-label", text: "Typische Rendite nach 1 Jahr" }),
+      el("b", { class: "dx-m3-kt-held-zahl", text: pct(a.medianReturn, 1, true) }),
+      el("p", { class: "dx-m3-kt-held-satz", text: "Die Hälfte der Fälle lag darüber, die Hälfte darunter." }),
+      alle ? el("ol", { class: "dx-m3-kt-balken", "aria-label": "Typische Rendite nach 1 Jahr im Vergleich" }, [
+        balken("is-stufe", "Bei dieser Stufe", a.medianReturn),
+        balken("is-markt", "US-Aktienmarkt insgesamt", alle.medianReturn)
+      ]) : null,
+      alle ? el("p", { class: "dx-m3-kt-held-vergleich", text: "(Zum Vergleich: breiter US-Aktienmarkt, ähnlich dem S&P 500 – typisch " + pct(alle.medianReturn, 1, true) +
+        " nach 1 Jahr, egal bei welcher Stufe" + (bh && isNum(bh.cagr) ? "; über alle Jahre seit " + jahr(ev.from) + " im Schnitt " + pct(bh.cagr, 1, true) + " pro Jahr" : "") + ".)" }) : null
+    ].filter(Boolean));
+  }
   function klartext(p, ev) {
     var env = p && p.environment;
     if (!env || !isNum(env.level) || !ev || !ev.levels || ev.levels.length < 3) return null;
@@ -484,9 +509,9 @@
       ]),
       el("p", { class: "dx-m3-kt-satz", text: KLARTEXT[env.level] }),
       el("p", { class: "dx-m3-kt-frage", text: "Wer früher bei „" + env.label + "“ in den US-Aktienmarkt investiert hat – seit " + jahr(ev.from) + ":" }),
+      held(a, alle, ev),
       el("div", { class: "dx-m3-kt-zahlen" }, [
         kachel("gut", pct(a.positiveShare, 0), "lagen nach 1 Jahr im Plus", alle ? "Schnitt aller Tage: " + pct(alle.positiveShare, 0) : null),
-        kachel("gut", pct(a.medianReturn, 1, true), "typische Rendite nach 1 Jahr", alle ? "Schnitt aller Tage: " + pct(alle.medianReturn, 1, true) : null),
         b ? kachel("gut", pct(b.medianReturn, 0, true), "typisch nach 5 Jahren", b.positiveShare + " von 100 Fällen im Plus") : null,
         kachel("warn", pct(a.bad10, 0, true), "in einem schlechten Jahr (1 von 10)", alle ? "Schnitt aller Tage: " + pct(alle.bad10, 0, true) : null)
       ].filter(Boolean)),

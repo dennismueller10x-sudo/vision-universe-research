@@ -148,6 +148,13 @@ test("Im Klartext (Uebersicht): Bedeutung der Stufe, Zahlen aus dem Auszug neben
   assert.match(t, new RegExp(Math.round(a.positiveShare) + "\\u00a0% lagen nach 1 Jahr im Plus"));
   assert.match(t, new RegExp("Schnitt aller Tage: " + Math.round(j1.all.positiveShare) + "\\u00a0%"));
   assert.match(t, /in einem schlechten Jahr \(1 von 10\)/);
+  const held = find(k, (n) => n.attrs && n.attrs.class === "dx-m3-kt-held")[0];
+  assert.ok(held, "typische Rendite nach 1 Jahr als Hauptzahl");
+  const ht = text(held);
+  assert.ok(ht.includes(String(a.medianReturn).replace(".", ",")), "Hauptzahl aus dem Auszug");
+  assert.match(ht, /ähnlich dem S&P 500/);
+  assert.match(ht, new RegExp("im Schnitt \\+" + String(EV.illustration.rules[0].all.buyAndHold.cagr).replace(".", ",") + "\u00a0% pro Jahr"));
+  assert.equal(find(k, (n) => n.attrs && n.attrs.class && n.attrs.class.split(" ").includes("dx-m3-kt-zahl")).length, 3);
   assert.match(t, /Vergangene Ergebnisse sind kein verlässlicher Hinweis/);
   assert.doesNotMatch(t, /Kaufsignal|kaufen|verkaufen|sollten Sie/i);
   assert.equal(MB.klartext(p, null), null, "ohne Auszug keine Zahlen");
