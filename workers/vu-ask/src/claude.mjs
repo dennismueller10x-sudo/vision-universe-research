@@ -62,7 +62,11 @@ export async function interpret({ apiKey, model, question, maxOutputTokens, fetc
     const type = body && body.error && body.error.type;
     const msg = String(body && body.error && body.error.message || "");
     if (/credit balance|billing|purchase credits/i.test(msg)) return { ok: false, error: "CREDIT_EXHAUSTED", billed: false };
-    return { ok: false, error: res.status === 429 ? "UPSTREAM_RATE_LIMIT" : "UPSTREAM_" + (type || res.status), billed: false };
+    /* Die Meldung von Anthropic wird mitgegeben (gekuerzt): Sie enthaelt
+       keine Geheimnisse, macht aber einen Fehler in Anfrage oder Schema
+       ohne Rateraten sichtbar. */
+    return { ok: false, error: res.status === 429 ? "UPSTREAM_RATE_LIMIT" : "UPSTREAM_" + (type || res.status), billed: false,
+      detail: (res.status + " " + msg).replace(/sk-ant-[A-Za-z0-9_-]+/g, "<key>").slice(0, 300) };
   }
   const usage = body && body.usage;
   if (!body || body.stop_reason === "refusal") return { ok: false, error: "REFUSED", billed: true, usage };

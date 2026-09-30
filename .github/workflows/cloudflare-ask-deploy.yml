@@ -133,7 +133,7 @@ jobs:
                -H "x-vu-access: $ADMIN" --data "$body" > /tmp/answer.json
           node -e '
             const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
-            if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.message || ""); process.exit(1); }
+            if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
             const r = a.result;
             console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
             console.log("Verstanden:", r.understood);

@@ -201,6 +201,8 @@ test("Anthropic-Fehler: keine Kosten, Kontingent zurueck, Tagesgrenze bleibt bel
   const { gate, storage } = makeGate(ENV, anthropic(null, { status: 529 }));
   const r = await ask(gate, "Welche Aktien sind guenstig bewertet?");
   assert.equal(r.status, 502);
+  assert.equal(r.body.code, "UPSTREAM_overloaded_error");
+  assert.match(r.body.detail, /^529/);
   assert.equal(r.body.quota.remainingToday, 1);
   assert.equal(storage.map.get("m:2026-09").usd, 0);
   assert.equal(storage.map.get("d:2026-09-29").llm, 1);
