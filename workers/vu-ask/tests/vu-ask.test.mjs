@@ -299,3 +299,38 @@ test("Ohne eingerichtetes Salz erzeugt das Tor selbst eines und behaelt es", asy
   await ask(gate, "Zweite Frage zu Aktien", { ip: "8.8.8.8", clientId: "client-eeeeeeee" });
   assert.equal(storage.map.get("salt"), salt);
 });
+
+/* ------------------------------------------------------- Zugangsschranke */
+
+test("Zugangsschranke: ohne oder mit falschem Passwort kein Zugriff, nichts gezaehlt", async () => {
+  const { createHash } = await import("node:crypto");
+  const hash = createHash("sha256").update("VU-TEST-PASS-WORT").digest("hex");
+  const env = fakeEnv({ ...ENV, VU_ASK_ACCESS_HASH: hash });
+  const req = (pw) => new Request("https://ask.example/v1/ask", {
+    method: "POST", headers: { origin: "https://research.visionuniverse.de", "cf-connecting-ip": "6.6.6.6", ...(pw ? { "x-vu-access": pw } : {}) },
+    body: JSON.stringify({ question: "Welche Aktien stehen auf einem Jahreshoch?", clientId: "client-ffffffff" }),
+  });
+  assert.equal((await worker.fetch(req(), env)).status, 401);
+  assert.equal((await worker.fetch(req("falsch"), env)).status, 401);
+  const q = await worker.fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "falsch" } }), env);
+  assert.equal(q.status, 401);
+  const ok = await worker.fetch(req("VU-TEST-PASS-WORT"), env);
+  assert.equal(ok.status, 200);
+  const pre = await worker.fetch(new Request("https://ask.example/v1/ask", { method: "OPTIONS", headers: { origin: "https://research.visionuniverse.de" } }), env);
+  assert.match(pre.headers.get("access-control-allow-headers"), /x-vu-access/);
+});
+
+test("Zugangsschranke: eigenes Passwort als Secret gilt zusaetzlich zum Hash", async () => {
+  const env = fakeEnv({ ...ENV, VU_ASK_ACCESS_HASH: "0".repeat(64), VU_ASK_ACCESS_PASSWORD: "mein-passwort" });
+  const r = await worker.fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "mein-passwort" } }), env);
+  assert.equal(r.status, 200);
+});
+
+test("Konfiguration: Beta-Grenzen liegen unter den 5 $ Prepaid", async () => {
+  const { readFileSync } = await import("node:fs");
+  const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
+  const v = (k) => Number((toml.match(new RegExp(k + ' = "([^"]+)"')) || [])[1]);
+  assert.ok(v("VU_ASK_TOTAL_USD") < 5 && v("VU_ASK_MONTHLY_USD") < 5);
+  assert.equal(v("VU_ASK_PER_USER_DAILY"), 10);
+  assert.match(toml, /VU_ASK_ACCESS_HASH = "[0-9a-f]{64}"/);
+});

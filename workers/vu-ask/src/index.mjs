@@ -3,8 +3,8 @@
 
    DER EINGANG DER FRAGEFUNKTION
 
-     POST /v1/ask            { question, clientId, turnstileToken? }
-     GET  /v1/quota?client=  verbleibende Fragen heute
+     POST /v1/ask            { question, clientId, turnstileToken? }   Kopf x-vu-access
+     GET  /v1/quota?client=  verbleibende Fragen heute                 Kopf x-vu-access
      GET  /v1/admin/report   Lernbericht (Authorization: Bearer <Admin-Key>)
      GET  /v1/health
 
@@ -28,7 +28,7 @@ function corsHeaders(origin, env) {
   return {
     "access-control-allow-origin": origin,
     "access-control-allow-methods": "GET, POST, OPTIONS",
-    "access-control-allow-headers": "content-type",
+    "access-control-allow-headers": "content-type, x-vu-access",
     "access-control-max-age": "86400",
     vary: "origin",
   };
@@ -53,6 +53,28 @@ function sameSecret(a, b) {
 
 function gate(env) { return env.VU_ASK_GATE.get(env.VU_ASK_GATE.idFromName("global")); }
 
+async function sha256Hex(text) {
+  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/* ZUGANGSSCHRANKE (Beta). Ist VU_ASK_ACCESS_HASH (SHA-256 des Passworts,
+   in wrangler.toml) oder das Secret VU_ASK_ACCESS_PASSWORD gesetzt, braucht
+   jede Frage den Kopf x-vu-access mit dem Passwort. Im oeffentlichen
+   Repository steht nur der Hash; das Passwort hat rund 80 Bit Zufall und
+   laesst sich aus dem Hash nicht zurueckgewinnen. Die Schranke steht VOR
+   dem Durable Object: ohne Passwort beruehrt eine Anfrage weder Zaehler
+   noch Budget - das haelt auch Bots vollstaendig draussen. */
+async function accessGranted(request, env) {
+  const hash = String(env.VU_ASK_ACCESS_HASH || "").trim().toLowerCase();
+  const plain = env.VU_ASK_ACCESS_PASSWORD || "";
+  if (!hash && !plain) return true;
+  const given = (request.headers.get("x-vu-access") || "").trim();
+  if (!given || given.length > 200) return false;
+  if (plain && sameSecret(given, plain)) return true;
+  return !!hash && sameSecret(await sha256Hex(given), hash);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -66,6 +88,9 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { status: origin && cors["access-control-allow-origin"] ? 204 : 403, headers: cors });
 
     if (url.pathname === "/v1/health") return respond(200, { ok: true, service: "vu-ask" }, cors);
+
+    const locked = (url.pathname === "/v1/ask" || url.pathname === "/v1/quota") && request.method !== "OPTIONS" && !(await accessGranted(request, env));
+    if (locked) return respond(401, { ok: false, reason: "ACCESS_REQUIRED", message: "Bitte das Zugangspasswort eingeben." }, cors);
 
     if (url.pathname === "/v1/ask") {
       if (request.method !== "POST") return respond(405, { ok: false, reason: "METHOD_NOT_ALLOWED" }, cors);

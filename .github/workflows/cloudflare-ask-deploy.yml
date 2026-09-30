@@ -56,8 +56,18 @@ jobs:
         working-directory: workers/vu-ask
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Optional: GitHub -> Settings -> Secrets and variables -> Actions ->
+          # Variables. Hat Vorrang vor wrangler.toml - so laesst sich die
+          # Fragenzahl ohne Codeaenderung umstellen.
+          PER_USER_DAILY: ${{ vars.VU_ASK_PER_USER_DAILY }}
         run: |
-          npx --yes wrangler@4 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
+          extra=()
+          if [ -n "$PER_USER_DAILY" ]; then
+            [[ "$PER_USER_DAILY" =~ ^[0-9]{1,4}$ ]] || { echo "::error::VU_ASK_PER_USER_DAILY muss eine Zahl sein"; exit 1; }
+            extra+=(--var "VU_ASK_PER_USER_DAILY:$PER_USER_DAILY")
+            echo "Fragen pro Nutzer und Tag aus GitHub-Variable: $PER_USER_DAILY"
+          fi
+          npx --yes wrangler@4 deploy "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
           url=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
@@ -69,6 +79,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
           TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
+          VU_ASK_ACCESS_PASSWORD: ${{ secrets.VU_ASK_ACCESS_PASSWORD }}
         run: |
           if [ -z "$VU_ASK_ADMIN_KEY" ]; then
             VU_ASK_ADMIN_KEY=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
@@ -77,6 +88,7 @@ jobs:
           put() { printf '%s' "$2" | npx --yes wrangler@4 secret put "$1" > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
           put VU_ASK_ADMIN_KEY "$VU_ASK_ADMIN_KEY"
           if [ -n "$TURNSTILE_SECRET" ]; then put TURNSTILE_SECRET "$TURNSTILE_SECRET"; fi
+          if [ -n "$VU_ASK_ACCESS_PASSWORD" ]; then put VU_ASK_ACCESS_PASSWORD "$VU_ASK_ACCESS_PASSWORD"; fi
           if [ -n "$ANTHROPIC_API_KEY" ]; then
             put ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
             echo "claude=true" >> "$GITHUB_OUTPUT"
@@ -90,8 +102,12 @@ jobs:
         run: |
           sleep 5
           curl --fail --silent "${{ steps.deploy.outputs.url }}/v1/health" > /dev/null
-          curl --fail --silent "${{ steps.deploy.outputs.url }}/v1/quota?client=smoketest0001" | grep -q '"enabled"'
-          echo "Worker antwortet."
+          code=$(curl --silent -o /dev/null -w '%{http_code}' "${{ steps.deploy.outputs.url }}/v1/quota?client=smoketest0001")
+          case "$code" in
+            200) echo "Worker antwortet (ohne Zugangsschranke).";;
+            401) echo "Worker antwortet, Zugangsschranke aktiv.";;
+            *) echo "::error::Unerwartete Antwort $code"; exit 1;;
+          esac
 
       - name: Zusammenfassung
         if: always()

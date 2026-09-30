@@ -86,11 +86,38 @@
     h('h1', { class: 'ak-h1', text: 'Stellen Sie Ihre Investmentfrage in eigenen Worten.' }),
     h('p', { class: 'ak-lead', text: 'Die AI übersetzt Ihre Frage in Filter – gerechnet wird ausschließlich auf den Daten von Vision Universe: Screener, Supertrader und Quant-Faktoren. Sie sehen immer zuerst, wie Ihre Frage verstanden wurde.' })
   ]));
+  /* Zugangsschranke der Beta: Passwort einmal je Geraet, danach gemerkt.
+     Geprueft wird im Worker - hier wird es nur mitgeschickt. */
+  var accessInput = h('input', { type: 'password', autocomplete: 'current-password', 'aria-label': 'Zugangspasswort', placeholder: 'Zugangspasswort' });
+  var accessMsg = h('p', { class: 'ak-fine', 'aria-live': 'polite' });
+  var accessForm = h('form', { class: 'ak-form ak-access', hidden: true, onsubmit: function (e) {
+    e.preventDefault();
+    var v = accessInput.value.trim();
+    if (!v) return;
+    try { localStorage.setItem('vu-ask-access', v); } catch (err) {}
+    access = v; accessInput.value = ''; refreshQuota();
+  } }, [
+    h('h3', { text: 'Beta-Zugang' }),
+    h('p', { class: 'ak-fine', text: 'Die Fragefunktion ist in der Testphase passwortgeschützt.' }),
+    h('div', { class: 'ak-form-row' }, [accessInput, h('button', { class: 'ak-btn ak-btn-primary', type: 'submit', text: 'Freischalten' })]),
+    accessMsg
+  ]);
+  var access = '';
+  try { access = localStorage.getItem('vu-ask-access') || ''; } catch (e) {}
+  function authHeaders(extra) { var hd = Object.assign({}, extra || {}); if (access) hd['x-vu-access'] = access; return hd; }
+  function lock(wrong) {
+    accessForm.hidden = false; form.hidden = true;
+    accessMsg.textContent = wrong ? 'Das Passwort ist nicht korrekt.' : '';
+    if (wrong) { try { localStorage.removeItem('vu-ask-access'); } catch (e) {} access = ''; }
+  }
+  function unlock() { accessForm.hidden = true; form.hidden = false; }
+
+  main.appendChild(accessForm);
   main.appendChild(form);
   main.appendChild(h('div', { class: 'ak-examples', 'aria-label': 'Beispielfragen' }, EXAMPLES.map(function (x) {
     return h('button', { class: 'ak-chip', type: 'button', text: x, onclick: function () { input.value = x; input.focus(); } });
   })));
-  main.appendChild(h('p', { class: 'ak-fine', text: 'In der Beta ist eine neue Frage pro Tag möglich; bereits gestellte Fragen werden kostenlos aus dem Archiv beantwortet. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung Ihres Browsers (in Chrome über Google-Server).' : '') }));
+  main.appendChild(h('p', { class: 'ak-fine', text: 'In der Beta ist die Zahl neuer Fragen pro Tag begrenzt; bereits gestellte Fragen werden kostenlos aus dem Archiv beantwortet. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung Ihres Browsers (in Chrome über Google-Server).' : '') }));
   main.appendChild(conversation);
 
   if (!ENDPOINT) {
@@ -113,9 +140,13 @@
       : 'Ihre neue Frage für heute ist verbraucht – bekannte Fragen gehen weiterhin.';
   }
   function refreshQuota() {
-    fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()))
-      .then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }).then(setQuota)
-      .catch(function () { quotaEl.textContent = 'Die Fragefunktion ist noch nicht freigeschaltet.'; sendBtn.disabled = true; });
+    fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()), { headers: authHeaders() })
+      .then(function (r) {
+        if (r.status === 401) { lock(!!access); throw Error('LOCKED'); }
+        if (!r.ok) throw Error('HTTP ' + r.status);
+        unlock(); return r.json();
+      }).then(setQuota)
+      .catch(function (e) { if (e.message === 'LOCKED') return; quotaEl.textContent = 'Die Fragefunktion ist noch nicht freigeschaltet.'; sendBtn.disabled = true; });
   }
 
   function loadTurnstile() {
@@ -151,12 +182,13 @@
     ]);
     conversation.insertBefore(turn, conversation.firstChild);
     Promise.all([
-      fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: { 'content-type': 'application/json' },
+      fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }),
         body: JSON.stringify({ question: question, clientId: clientId(), turnstileToken: turnstileToken }) })
         .then(function (r) { return r.json(); }),
       adapter.load().catch(function () { return null; })
     ]).then(function (res) {
       var answer = res[0];
+      if (answer.reason === 'ACCESS_REQUIRED') { turn.remove(); lock(true); return; }
       setQuota(answer.quota);
       if (turnstileToken && window.turnstile) { window.turnstile.reset(turnstileMount); turnstileToken = null; }
       turn.lastChild.remove();
