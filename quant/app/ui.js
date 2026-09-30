@@ -174,7 +174,7 @@
   function poster(o) {
     return el("a", { class: "q-card qx-poster", href: routes.stock(o.ticker), dataset: { symbol: o.ticker },
       "aria-label": (o.name || o.ticker) + (o.story ? " — " + o.story : "") + " – Analyse öffnen" }, [
-      logo(o.ticker, o.name, "md"),
+      logo(o.ticker, o.name, "md", { initialOnly: !!o.initialOnly }),
       el("b", { class: "q-card-name", text: o.name || o.ticker }),
       el("span", { class: "q-card-why", text: o.story || o.ticker }),
       el("span", { class: "q-card-foot" }, [el("span", { class: "q-score " + (o.big ? toneClass(o.tone) : "none"), text: o.big ? (o.bigLabel ? o.bigLabel + " " : "") + o.big : (o.foot || o.ticker) })])

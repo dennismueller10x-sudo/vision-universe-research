@@ -31,7 +31,7 @@
     var best = v ? v.factors.filter(function (f) { return f.state === "AVAILABLE"; }).sort(function (a, b) { return b.score - a.score; })[0] : null;
     return X.poster({ ticker: t, name: nameOf(ctx, t),
       big: best ? String(Math.round(best.score)) : null, bigLabel: best ? best.name : null, tone: best ? best.tone : null,
-      story: opts.story || (v && v.overall.id !== "KEINE_DATEN" ? v.overall.text : null), foot: opts.foot });
+      story: opts.story || (v && v.overall.id !== "KEINE_DATEN" ? v.overall.text : null), foot: opts.foot, initialOnly: !!opts.initialOnly });
   }
   function screeningRows(ctx) {
     return ctx.api.getFactorEvidenceScreening().then(function (sc) {
@@ -127,7 +127,9 @@
         /* Eine Reihe je Strategie - das Datum steht EINMAL im Kopf. */
         if (i < 3) sections.push(X.world("Neu in „" + label + "“", t.entered.length + (t.entered.length === 1 ? " Aktie erfüllt" : " Aktien erfüllen") + " seit dem Stand vom " + X.dateDe(he.to) + " neu alle Bedingungen (vorher " + X.dateDe(he.from) + ")" +
           (t.exited && t.exited.length ? "; " + t.exited.length + (t.exited.length === 1 ? " ist" : " sind") + " herausgefallen" : "") + ".", [X.rail(list.slice(0, 14).map(function (tk) {
-          return quantPoster(ctx, tk, rowBy, { story: "Erfüllt jetzt alle Bedingungen" });
+          /* Logos nur in "Heute interessant" - in den Schienen darunter die
+             Buchstaben-Marke, sonst sprengen die Bilder das Anfragebudget. */
+          return quantPoster(ctx, tk, rowBy, { story: "Erfüllt jetzt alle Bedingungen", initialOnly: true });
         }), "Neu in " + label)], { href: X.routes.strategy(t.profileId), label: "Strategie ansehen" }));
       });
     }
@@ -237,7 +239,7 @@
           el("label", {}, [el("span", { text: "Universum" }), el("select", { disabled: true, "aria-label": "Universum" }, [el("option", { text: "US-Aktien" })])]),
           el("label", {}, [el("span", { text: "Stand" }), el("select", { disabled: true, "aria-label": "Stand" }, [el("option", { text: "letzter Lauf" })])])])]),
       el("div", { class: "q-filter-foot" }, [el("span", { class: "qx-small", style: "margin:0", text: "Quant prüft US-Aktien; Region und Universum sind deshalb fest." }),
-        el("a", { class: "q-toggle", href: X.routes.screenerPro(), "aria-pressed": "false" }, [el("i", { "aria-hidden": "true" }), el("span", { text: "Pro Modus" })])])
+        el("a", { class: "q-toggle", href: X.routes.screenerPro() }, [el("i", { "aria-hidden": "true" }), el("span", { text: "Pro Modus einschalten" })])])
     ]);
     function syncChips() { chipsHost.querySelectorAll("button[data-factor]").forEach(function (b) { b.setAttribute("aria-pressed", sel.factors.indexOf(b.dataset.factor) >= 0 ? "true" : "false"); }); minIn.value = String(sel.min); maxIn.value = String(sel.max); drawRange(); }
     function sync() { list.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", chosen && b.dataset.question === chosen.id ? "true" : "false"); }); syncChips(); }

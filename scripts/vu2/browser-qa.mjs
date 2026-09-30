@@ -128,7 +128,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
      Zweimal gefunden (Screener "Chancen finden.", Strategien "Strategien
      verstehen."): dieselben Woerter zweimal, rund 90 px auseinander. Der
      Anspruch steht in der Kopfzeile (Discovers .v2-bar-caption). */
-  const anspruch=(await page.locator('.qx-bar .v2-bar-caption').first().textContent().catch(()=>'')||'').trim();
+  /* Konzept-Design: die Kopfzeile traegt keinen Anspruch mehr. Ohne
+     Element nicht 30 s auf textContent warten - gezaehlt wird zuerst. */
+  const anspruchNode=page.locator('.qx-bar .v2-bar-caption').first();
+  const anspruch=(await anspruchNode.count()?(await anspruchNode.textContent().catch(()=>''))||'':'').trim();
   const ueberschrift=(await page.locator('main h1').first().innerText().catch(()=>'')).trim();
   const norm=t=>t.toLowerCase().replace(/[.!?–-]+/g,' ').replace(/\s+/g,' ').trim();
   if(anspruch&&ueberschrift&&norm(anspruch)===norm(ueberschrift))befund(view,width,'"'+ueberschrift+'" steht zweimal: als Anspruch in der Kopfzeile und als Ueberschrift');
@@ -406,7 +409,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
-  await page.locator('#qx-main h1').filter({hasText:'Aktien verstehen'}).waitFor();
+  /* Konzept-Design: die Startseite fragt "Was möchtest du heute analysieren?". */
+  await page.locator('#qx-main h1').filter({hasText:'Was möchtest du heute analysieren'}).waitFor();
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 

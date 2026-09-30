@@ -82,7 +82,7 @@ body.qd .down{color:var(--q-down)}
 .qd .qx-notice,.qd .dx-note{margin:14px 0;padding:14px 16px;border-radius:var(--q-radius-sm);background:var(--q-panel);border:1px solid var(--q-line)}
 .qd .qx-notice b,.qd .dx-note b{display:block;font-size:14px;color:var(--q-text)}
 .qd .qx-notice p,.qd .dx-note p{margin:6px 0 0;font-size:13.5px;color:var(--q-muted);line-height:1.55}
-.qd .qx-code{white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--q-bg2);border:1px solid var(--q-line);border-radius:12px;padding:12px 14px;margin:10px 0 0;color:var(--q-muted);overflow-x:auto}
+.qd .qx-code{white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--q-bg2);border:1px solid var(--q-line);border-radius:12px;padding:12px 14px;margin:10px 0 0;color:var(--q-muted);overflow-wrap:anywhere}
 .qd .qx-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-size:11.5px;font-weight:800;white-space:nowrap;background:var(--q-panel2);color:var(--q-muted)}
 .qd .qx-pill.up{background:var(--q-lime-soft);color:var(--q-up)}
 .qd .qx-pill.down{background:rgba(255,107,94,.14);color:var(--q-down)}
@@ -136,7 +136,7 @@ body.qd .down{color:var(--q-down)}
 .qd .q-tile::after{content:"›";font-size:22px;color:#6b7078}
 .qd .q-tile.is-off{background:#2a2e34;color:var(--q-muted)}
 .qd .q-tile.is-off .q-icon{background:#343940;color:var(--q-muted)}
-.qd .q-tile.is-off small{color:var(--q-dim)}
+.qd .q-tile.is-off small{color:#b9bec5}
 .qd .q-tile.is-off::after{content:""}
 
 /* ------------------------------------------------------------ Aktienkarten (Heute interessant) */
@@ -369,7 +369,7 @@ body.qd .down{color:var(--q-down)}
 .qd .qx-comp{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;align-items:center;gap:6px 14px;padding:10px 0;border-bottom:1px solid var(--q-line)}
 .qd .qx-comp .dx-bewertung-name{font-size:13px}
 .qd .qx-comp small{grid-column:1/-1;font-size:11.5px;line-height:1.5;color:var(--q-dim)}
-.qd .qx-comp.is-missing{opacity:.7}
+.qd .qx-comp.is-missing .dx-bewertung-name,.qd .qx-comp.is-missing small{color:var(--q-muted)}
 @media (max-width:560px){.qd .qx-comp{grid-template-columns:minmax(0,1fr) auto}.qd .qx-comp .dx-bewertung-balken{grid-column:1/-1;grid-row:2}}
 .qd .dx-bewertung-balken{display:block;height:6px;border-radius:6px;background:var(--q-line);overflow:hidden}
 .qd .dx-bewertung-balken i{display:block;height:100%;background:var(--q-lime)}
@@ -459,8 +459,6 @@ body.qd .down{color:var(--q-down)}
 .qd .q-toggle{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:99px;background:var(--q-card);color:var(--q-card-text);font-weight:850;font-size:13px;text-decoration:none}
 .qd .q-toggle i{position:relative;display:inline-block;width:36px;height:20px;border-radius:20px;background:#c9ccc5}
 .qd .q-toggle i::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
-.qd .q-toggle[aria-pressed=true] i{background:#111}
-.qd .q-toggle[aria-pressed=true] i::after{left:19px}
 .qd .q-results{background:var(--q-card);color:var(--q-card-text);border-radius:var(--q-radius);padding:14px;margin-top:14px}
 .qd .q-results-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 4px 10px}
 .qd .q-results-head b{font-size:17px}
@@ -595,3 +593,7 @@ dialog.qx-dialog::backdrop{background:rgba(0,0,0,.6)}
 @media (max-width:600px){.qd .q-tiles .q-tile{grid-template-columns:minmax(0,1fr);align-content:start;gap:10px}
  .qd .q-tiles .q-tile::after{position:absolute;right:14px;top:14px}}
 @media (max-width:640px){.qd .qx-rule{grid-template-columns:minmax(0,1fr) !important}}
+/* Discovers gedimmte Schrift (#6d6d78) ist fuer helle Flaechen gedacht; auf
+   Quants dunklen Flaechen reicht sie nicht fuer 4,5:1. */
+body.qd{--discover-dim:#9aa0a8}
+.qd .qx-quote small{color:var(--q-muted)}
