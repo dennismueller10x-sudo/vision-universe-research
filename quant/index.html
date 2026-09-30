@@ -3,18 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f7f7f4">
+<meta name="theme-color" content="#ffffff">
 <title>Quant – Aktien verstehen · Vision Universe®</title>
 <meta name="description" content="Vision Universe® Quant: Aktien nach festen Daten und Regeln verstehen – was dafür spricht, was dagegen, was sich verändert und was früher in ähnlichen Situationen geschah. Nachvollziehbar bis zu den Rohdaten.">
 <link rel="canonical" href="/quant/">
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="/quant/app/app.css">
+<!-- Dieselben Stylesheets wie Discover (discover/index.html), in derselben
+     Reihenfolge - Quant sieht aus wie Discover, weil es Discovers Gestaltung
+     benutzt. /quant/app/app.css ergaenzt nur Quants eigene Bausteine. -->
+<link rel="stylesheet" href="/quant/ui/quant.css">
+<link rel="stylesheet" href="/discover/discover.css">
 <link rel="stylesheet" href="/assets/site-navigation.css">
+<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie in Discover. -->
+<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/discover/app.css">
+<link rel="stylesheet" href="/discover/home.css">
+<link rel="stylesheet" href="/discover/detail.css">
+<link rel="stylesheet" href="/quant/ui/technical-chart.css">
+<link rel="stylesheet" href="/quant/app/app.css">
 </head>
-<body class="qx">
-<a class="qx-skip" href="#qx-main">Zum Inhalt</a>
-<vu-navigation theme="light"></vu-navigation>
-<div id="qx-app"><main class="qx-main"><p class="qx-loading">Quant wird geladen …</p></main></div>
+<body class="dx dv2 qx">
+<a class="v2-skip qx-skip" href="#qx-main">Zum Inhalt</a>
+<vu-navigation theme="light" no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script>
+<div id="qx-app"><main class="v2-main qx-main"><p class="qx-loading">Quant wird geladen …</p></main></div>
 <noscript><p style="padding:24px">Quant benötigt JavaScript.</p></noscript>
 <script src="/assets/site-navigation.js"></script>
 <script src="/quant/ui/shell.js"></script>
@@ -77,6 +88,7 @@
 <script src="/quant/engines/fx/money-format.js"></script>
 <script src="/discover/ui/live-hub.js"></script>
 <script src="/discover/ui/microchart.js"></script>
+<script src="/discover/ui/logos.js"></script>
 <script src="/quant/app/view-model.js"></script>
 <script src="/quant/app/ui.js"></script>
 <script src="/quant/app/chart.js"></script>

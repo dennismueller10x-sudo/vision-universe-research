@@ -19,10 +19,10 @@
 
   /* =============================================================== TECHNIK */
   async function technical(main, ctx, ticker, elliott) {
-    main.append(el("a", { class: "qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }),
-      el("span", { class: "qx-eyebrow", text: "Kursstruktur · " + ticker }),
+    main.append(el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }),
+      el("span", { class: "v2-eyebrow", text: "Kursstruktur · " + ticker }),
       el("h1", { class: "qx-h1", text: "Technische Analyse & Elliott-Wellen" }),
-      el("p", { class: "qx-lead", text: "Trend, Unterstützungen, Szenarien und Elliott-Zählungen – mit den Bedingungen, unter denen sie gelten, und denen, die sie ungültig machen." }));
+      el("p", { class: "v2-lead qx-lead", text: "Trend, Unterstützungen, Szenarien und Elliott-Zählungen – mit den Bedingungen, unter denen sie gelten, und denen, die sie ungültig machen." }));
     var host = el("div", {}, [X.loading()]); main.append(host);
     var data = await ctx.api.getTechnicalWorkspace(ticker).catch(function () { return null; });
     host.replaceChildren();
@@ -47,7 +47,7 @@
       chart, el("p", { class: "qx-small", text: "Durchgezogen: Historie · gestrichelt: Projektion. Analysestand " + X.dateDe(data.asOf) + " · Kursbasis " + (data.priceBasis === "SPLIT_ADJUSTED" ? "splitbereinigt" : data.priceBasis) + "." }));
     draw();
     if (primary) host.append(X.section(primary.label, "Szenarien beschreiben Bedingungen – keine gesicherten Vorhersagen.", [el("div", { class: "qx-grid qx-grid-2" }, (data.scenarios || []).map(function (s) {
-      return X.card([el("span", { class: "qx-eyebrow", text: s.kind === "PRIMARY" ? "Hauptszenario" : "Alternative" }), el("h3", { class: "qx-h3", text: s.label }),
+      return X.card([el("span", { class: "v2-eyebrow", text: s.kind === "PRIMARY" ? "Hauptszenario" : "Alternative" }), el("h3", { class: "qx-h3", text: s.label }),
         el("dl", { class: "qx-kv" }, [el("dt", { text: "Bestätigung" }), el("dd", { style: "text-align:left", text: s.confirmation || "–" }),
           el("dt", { text: "Ungültig bei" }), el("dd", { text: price(s.invalidation && s.invalidation.price) }),
           el("dt", { text: "Zielzonen" }), el("dd", { text: (s.targets || []).map(function (t) { return price(t.zoneLow) + "–" + price(t.zoneHigh); }).join(" · ") || "–" })]),
@@ -75,10 +75,10 @@
   /* ================================================================ ZAHLEN */
   async function fundamentals(main, ctx, ticker, params) {
     var C = global.VUFundamentalsContract;
-    main.append(el("a", { class: "qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }),
-      el("span", { class: "qx-eyebrow", text: "Unternehmenszahlen · " + ticker }),
+    main.append(el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }),
+      el("span", { class: "v2-eyebrow", text: "Unternehmenszahlen · " + ticker }),
       el("h1", { class: "qx-h1", text: "Wie entwickelt sich das Geschäft?" }),
-      el("p", { class: "qx-lead", text: "Geschäftszahlen über die Jahre – mit Berichtszeitraum, Meldedatum und Herkunft aus SEC-Meldungen." }));
+      el("p", { class: "v2-lead qx-lead", text: "Geschäftszahlen über die Jahre – mit Berichtszeitraum, Meldedatum und Herkunft aus SEC-Meldungen." }));
     var metricId = C.metrics.some(function (m) { return m.id === params.get("kennzahl"); }) ? params.get("kennzahl") : "revenue";
     var periodId = ["annual", "quarterly", "ttm"].indexOf(params.get("periode")) >= 0 ? params.get("periode") : "annual";
     var metric = select("Kennzahl", C.metrics.map(function (m) { return [m.id, m.label]; }), metricId);
@@ -103,8 +103,8 @@
       var fmt = function (x) { return (x.value / scale).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
       if (!latest) { target.replaceChildren(X.notice("Keine Werte", "Für diese Kennzahl liegen keine gemeldeten Werte vor.")); return; }
       target.replaceChildren(
-        X.card([el("span", { class: "qx-eyebrow", text: r.name || ticker }), el("h2", { class: "qx-h2", text: r.metric.label }),
-          el("div", { class: "qx-quote" }, [el("b", { class: "num", style: "font-size:36px", text: fmt(latest) + " " + unit }), el("small", { text: latest.label + " · " + (latest.start ? X.dateDe(latest.start) + " bis " : "Stichtag ") + X.dateDe(latest.end) })]),
+        X.card([el("span", { class: "v2-eyebrow", text: r.name || ticker }), el("h2", { class: "qx-h2", text: r.metric.label }),
+          el("div", { class: "dx-price qx-quote" }, [el("b", { class: "num", style: "font-size:36px", text: fmt(latest) + " " + unit }), el("small", { text: latest.label + " · " + (latest.start ? X.dateDe(latest.start) + " bis " : "Stichtag ") + X.dateDe(latest.end) })]),
           global.QuantCharts.barChart({ title: r.metric.label + " nach Berichtsperiode", description: "Gemeldete Werte je Periode.", width: Math.min(1100, main.clientWidth - (innerWidth < 760 ? 76 : 100)), maxLabels: innerWidth < 650 ? 4 : 10, height: 280,
             items: known.map(function (x) { return { label: period.value === "annual" ? String(x.fiscalYear) : x.fiscalPeriod + " " + String(x.fiscalYear).slice(-2), value: x.value / scale }; }),
             yFormat: function (v) { return v.toLocaleString("de-DE", { maximumFractionDigits: 1 }); } }),
@@ -124,8 +124,8 @@
 
   /* ============================================================= VERGLEICH */
   async function compare(main, ctx, list) {
-    main.append(el("span", { class: "qx-eyebrow", text: "Vergleich" }), el("h1", { class: "qx-h1", text: "Aktien im direkten Vergleich" }),
-      el("p", { class: "qx-lead", text: "Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis – ohne Rangfolge und ohne Empfehlung." }));
+    main.append(el("span", { class: "v2-eyebrow", text: "Vergleich" }), el("h1", { class: "qx-h1", text: "Aktien im direkten Vergleich" }),
+      el("p", { class: "v2-lead qx-lead", text: "Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis – ohne Rangfolge und ohne Empfehlung." }));
     var selected;
     try { selected = global.VUCompareWorkspace.validate(list && list.length > 1 ? list : (list && list.length === 1 ? [list[0], list[0] === "MSFT" ? "AAPL" : "MSFT"] : ["NVDA", "MSFT"])); }
     catch (e) { main.append(X.notice("Auswahl prüfen", "Wähle zwei bis vier unterschiedliche Kürzel. Diese Auswahl wird nicht automatisch ersetzt.")); return; }

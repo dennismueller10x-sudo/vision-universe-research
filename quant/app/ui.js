@@ -1,8 +1,21 @@
 /* =========================================================================
    VISION UNIVERSE QUANT — app/ui.js                  Oberflaechen-Bausteine
 
-   Kleine, gemeinsam genutzte Bausteine. Keine Berechnung, keine Daten:
-   was hier steht, zeichnet nur, was das View Model sagt.
+   Quant spricht dieselbe Gestaltungssprache wie Discover - nicht nach-
+   gebaut, sondern mit DENSELBEN Klassen und Stylesheets (discover.css,
+   app.css, home.css, detail.css), die Discover in Produktion benutzt:
+
+     v2-bar / v2-main / v2-footer / v2-dock      Rahmen der Seite
+     dx-chapter / dx-kicker / dx-chapter-lead    Kapitel wie auf der Aktienseite
+     v2-world / v2-world-head / v2-world-more    Reihen wie auf der Startseite
+     dx-poster / dx-rail / dx-grid               Aktienkarten und Schienen
+     dx-weitere / dx-zahlen-grade / v2-pill      Aufklapper, Stufen, Knoepfe
+
+   Die qx-/qc-Klassen daneben tragen KEINE Gestaltung. Sie sind Anker fuer
+   Tests und QA, damit diese pruefen, was da ist - nicht, wie es aussieht.
+
+   Keine Berechnung, keine Daten: was hier steht, zeichnet nur, was das
+   View Model sagt.
    ========================================================================= */
 (function (global) {
   "use strict";
@@ -18,6 +31,7 @@
     { id: "aktien", label: "Aktien", href: "#/aktien" },
     { id: "methodik", label: "Methodik", href: "#/methodik" }
   ];
+  /* Linien-Icons in der Strichstaerke der Discover-Leiste (1,7 px auf 19 px). */
   var ICON = {
     home: "M3 10.5 12 3l9 7.5M5.5 9.5V20h13V9.5",
     screener: "M4 5h16M7 12h10M10 19h4",
@@ -48,34 +62,55 @@
     compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); }
   };
 
+  /* Die Tonwerte des View Models in Discovers Farbklassen. */
+  var TONE = { good: "up", bad: "down", neutral: "warm", unknown: "" };
+  function toneClass(tone) { return TONE[tone] || ""; }
+
   function link(text, href, cls) { return el("a", { href: href, class: cls || null, text: text }); }
-  function btn(text, href, kind) { return el("a", { href: href, class: "qx-btn" + (kind ? " " + kind : ""), text: text }); }
-  function section(title, intro, kids, more, eyebrow, id) {
-    return el("section", { class: "qx-section", id: id || null }, [
-      el("div", { class: "qx-section-head" }, [
-        el("div", {}, [eyebrow ? el("span", { class: "qx-eyebrow", text: eyebrow }) : null,
-          el("h2", { class: "qx-h2", text: title }), intro ? el("p", { text: intro }) : null]),
-        more ? link(more.label, more.href) : null
+  /* Knoepfe sind Discovers Pillen: dunkel fuer den naechsten Schritt,
+     hell fuer alles Weitere. */
+  function btn(text, href, kind) {
+    return el("a", { href: href, class: "v2-pill " + (kind === "secondary" || kind === "ghost" ? "v2-pill-ghost" : "v2-pill-dark") + " qx-btn" + (kind ? " " + kind : ""), text: text });
+  }
+  function actions(kids) { return el("div", { class: "qx-actions" }, kids); }
+
+  /* Ein Kapitel wie auf Discovers Aktienseite: Kicker, grosse Zeile, Lead. */
+  function section(title, intro, kids, more, eyebrow, id, cls) {
+    return el("section", { class: "dx-chapter qx-section" + (cls ? " " + cls : ""), id: id || null }, [
+      eyebrow ? el("p", { class: "dx-kicker", text: eyebrow }) : null,
+      el("h2", { text: title }),
+      intro ? el("p", { class: "dx-chapter-lead", text: intro }) : null
+    ].concat(kids || [], more ? [el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [link(more.label, more.href)])] : []));
+  }
+  /* Eine Reihe wie auf Discovers Startseite: Titel, Unterzeile, "Alle ansehen". */
+  function world(title, subtitle, kids, more, cls) {
+    return el("section", { class: "v2-world qx-section" + (cls ? " " + cls : "") }, [
+      el("div", { class: "v2-world-head" }, [
+        el("div", {}, [el("h2", { text: title }), subtitle ? el("p", { class: "v2-world-subtitle", text: subtitle }) : null]),
+        more ? el("a", { class: "v2-world-more", href: more.href, text: more.label }) : null
       ])
     ].concat(kids || []));
   }
   function card(kids, cls) { return el("div", { class: "qx-card" + (cls ? " " + cls : "") }, kids); }
-  function notice(title, text) { return el("div", { class: "qx-notice", role: "note" }, [el("strong", { text: title }), el("p", { text: text })]); }
-  function pill(text, tone) { return el("span", { class: "qx-pill tone-" + (tone || "unknown"), text: text }); }
-  /* Ein Aufklapper, dessen Inhalt erst beim Oeffnen entsteht - die Tiefe
-     kostet nichts, solange niemand hineinsieht. */
+  function notice(title, text) {
+    return el("div", { class: "dx-note qx-notice", role: "note" }, [el("b", { text: title }), el("p", { text: text })]);
+  }
+  function pill(text, tone) { return el("span", { class: "dx-zahlen-grade qx-pill " + toneClass(tone), dataset: { tone: tone || "unknown" }, text: text }); }
+  /* Ein Aufklapper in Discovers Form ("WEITERE PUNKTE (6) +"), dessen
+     Inhalt erst beim Oeffnen entsteht - die Tiefe kostet nichts, solange
+     niemand hineinsieht. */
   function more(title, build, opts) {
     opts = opts || {};
     var body = el("div", { class: "qx-more-body" });
-    var d = el("details", { class: "qx-more", id: opts.id || null }, [
-      el("summary", {}, [el("span", { text: title }), opts.hint ? el("small", { text: opts.hint }) : null]), body]);
+    var d = el("details", { class: "dx-weitere qx-more", id: opts.id || null }, [
+      el("summary", {}, [el("span", { text: title }), opts.hint ? el("small", { text: " · " + opts.hint }) : null]), body]);
     var built = false;
     function fill() { if (built) return; built = true; var kids = build(); (Array.isArray(kids) ? kids : [kids]).forEach(function (k) { if (k) body.append(k); }); }
     d.addEventListener("toggle", function () { if (d.open) fill(); });
     if (opts.open) { d.open = true; fill(); }
     return d;
   }
-  function loading(text) { return el("div", { class: "qx-loading", role: "status" }, [el("span", { text: text || "Wird geladen …" }), el("div", { class: "qx-skel" }), el("div", { class: "qx-skel", style: "width:70%" })]); }
+  function loading(text) { return el("div", { class: "qx-loading", role: "status" }, [el("span", { class: "dx-art-skeleton", text: text || "Wird geladen …" })]); }
   function dateDe(iso) {
     if (!iso) return "–";
     var p = String(iso).slice(0, 10).split("-");
@@ -98,26 +133,74 @@
     if (!s) return "Firmenname nicht veröffentlicht";
     return s.name && s.name !== s.ticker ? s.name : "Firmenname nicht veröffentlicht";
   }
+  /* Das Firmenlogo aus Discovers Logo-Verzeichnis - wo keins vorliegt, der
+     Anfangsbuchstabe. Erfunden wird keins. */
+  function logo(ticker, name, size, opts) {
+    var L = global.VUDiscover && global.VUDiscover.Logos;
+    if (!L) return el("span", { class: "dx-logo dx-logo--" + (size || "md"), "aria-hidden": "true", text: String(name || ticker || "·").charAt(0).toUpperCase() });
+    opts = opts || {};
+    return L.mark(ticker, { name: name, size: size || "md", onlyLogo: !!opts.onlyLogo, wide: !!opts.wide });
+  }
 
-  /* Eine Aktienzeile: Name, Kuerzel, Grund, Einordnung. Kein Wert ohne
-     Bedeutung, keine Bedeutung ohne Wert. */
+  /* Eine Aktienzeile: Logo, Name, Kuerzel, Grund, Einordnung - in der Form
+     der Discover-Suchtreffer. Kein Wert ohne Bedeutung. */
   function stockRow(o) {
-    return el("a", { class: "qx-row", href: routes.stock(o.ticker) }, [
+    return el("a", { class: "qx-row", href: routes.stock(o.ticker), dataset: { symbol: o.ticker } }, [
+      logo(o.ticker, o.name, "sm"),
       el("div", { class: "qx-row-main" }, [
-        el("div", { class: "qx-row-title" }, [el("strong", { class: "qx-ticker", text: o.ticker }), el("span", { text: o.name || "" })]),
+        el("div", { class: "qx-row-title" }, [el("strong", { class: "qx-row-name", text: o.name || o.ticker }), el("span", { class: "qx-ticker", text: o.ticker })]),
         o.why ? el("div", { class: "qx-row-why", text: o.why }) : null
       ]),
       el("div", { class: "qx-row-side" }, [
         o.pill ? pill(o.pill.text, o.pill.tone) : null,
-        o.side ? el("div", { class: "num", text: o.side }) : null,
+        o.side ? el("b", { class: "num", text: o.side }) : null,
         o.sideNote ? el("small", { text: o.sideNote }) : null
       ])
     ]);
   }
+  /* Eine Aktienkarte in Discovers Posterform: Logo und Name oben, eine
+     grosse Aussage, ein Satz, der Weg zur Analyse. */
+  function poster(o) {
+    return el("a", { class: "dx-poster dx-poster--compact qx-poster", href: routes.stock(o.ticker), dataset: { symbol: o.ticker },
+      "aria-label": (o.name || o.ticker) + (o.story ? " — " + o.story : "") + " – Analyse öffnen" }, [
+      el("div", { class: "dx-poster-top" }, [logo(o.ticker, o.name, "md"),
+        el("div", { class: "dx-poster-id" }, [el("b", { class: "dx-poster-name", text: o.name || o.ticker }),
+          el("span", { class: "dx-poster-sub" }, [el("span", { class: "dx-poster-sym", text: o.ticker })])])]),
+      o.big ? el("div", { class: "dx-zahl" }, [el("b", { class: "num " + toneClass(o.tone), text: o.big }), o.bigLabel ? el("span", { text: o.bigLabel }) : null]) : null,
+      o.story ? el("p", { class: "dx-story" }, [el("i", { class: "dx-story-dot", "aria-hidden": "true" }), document.createTextNode(o.story)]) : null,
+      el("div", { class: "dx-poster-foot" }, [o.foot ? el("span", { class: "dx-zusatz", text: o.foot }) : el("span"), el("span", { class: "dx-poster-cta", text: "Analyse →" })])
+    ]);
+  }
+  /* Eine waagerechte Schiene wie in Discover, mit Vor- und Zurueck-Knopf. */
+  function rail(items, label) {
+    var track = el("div", { class: "dx-rail", role: "list", "aria-label": label || null, tabindex: "0" });
+    items.forEach(function (it) { var li = el("div", { role: "listitem" }); li.append(it); track.append(li); });
+    function chevron(left) {
+      var s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true");
+      var p = document.createElementNS("http://www.w3.org/2000/svg", "polyline"); p.setAttribute("points", left ? "15 18 9 12 15 6" : "9 18 15 12 9 6");
+      p.setAttribute("fill", "none"); p.setAttribute("stroke", "currentColor"); p.setAttribute("stroke-width", "2"); s.append(p);
+      return el("i", {}, [s]);
+    }
+    var prev = el("button", { class: "dx-rail-nav dx-rail-nav--prev", type: "button", "aria-label": "Zurück", hidden: true }, [chevron(true)]);
+    var next = el("button", { class: "dx-rail-nav dx-rail-nav--next", type: "button", "aria-label": "Weiter" }, [chevron(false)]);
+    function step(dir) { track.scrollBy({ left: dir * Math.max(280, track.clientWidth * 0.8), behavior: "smooth" }); }
+    prev.addEventListener("click", function () { step(-1); });
+    next.addEventListener("click", function () { step(1); });
+    function check() { prev.hidden = track.scrollLeft < 12; next.hidden = track.scrollLeft + track.clientWidth >= track.scrollWidth - 12; }
+    track.addEventListener("scroll", check, { passive: true });
+    global.setTimeout(check, 60);
+    return el("div", { class: "dx-rail-wrap qx-rail" }, [prev, track, next]);
+  }
+  /* Kuerzel als Discover-Chips ("S&P 500", "NASDAQ-100"). */
   function tickerChips(list, max) {
     var shown = (list || []).slice(0, max || 12);
-    return el("div", { class: "qx-tickers" }, shown.map(function (t) { return el("a", { href: routes.stock(t), text: t }); }));
+    return el("p", { class: "dx-index-badges qx-tickers" }, shown.map(function (t) { return el("a", { class: "dx-index-badge", href: routes.stock(t), text: t }); }));
   }
+  /* Eine Kennzahl-Kachel in Discovers Raster (dv2-valuation-card). */
+  function stat(label, value, sub, tone) {
+    return el("div", { class: "dv2-valuation-card qx-stat" }, [el("span", { text: label }), el("b", { class: "num " + toneClass(tone), text: value }), sub ? el("small", { text: sub }) : null]);
+  }
+  function stats(list) { return el("div", { class: "dv2-valuation-grid qx-stats" }, list); }
 
   /* ----------------------------------------------------------- Merkliste
      Der Schluessel ist Quants eigener (vu.quant.watchlist.v1) - geteilt mit
@@ -139,8 +222,9 @@
   };
 
   global.QX = {
-    NAV: NAV, icon: icon, routes: routes, link: link, btn: btn, section: section, card: card, notice: notice,
-    pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName,
-    stockRow: stockRow, tickerChips: tickerChips, watch: watch, recent: recent, el: el
+    NAV: NAV, icon: icon, routes: routes, link: link, btn: btn, actions: actions, section: section, world: world, card: card, notice: notice,
+    pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName, logo: logo,
+    stockRow: stockRow, poster: poster, rail: rail, tickerChips: tickerChips, stat: stat, stats: stats, toneClass: toneClass,
+    watch: watch, recent: recent, el: el
   };
 })(window);

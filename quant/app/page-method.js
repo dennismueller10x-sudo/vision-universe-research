@@ -28,8 +28,8 @@
   var TEMPLATE_LABEL = { BALANCE_SHEET_FINANCIAL: "Banken und bilanzbasierte Finanzunternehmen", INSURANCE_CARRIER: "Versicherer", REAL_ESTATE_TRUST: "Immobilien-REITs" };
 
   function topicHead(main, t, lead) {
-    main.append(el("a", { class: "qx-back", href: X.routes.method(), text: "← Methodik" }),
-      el("span", { class: "qx-eyebrow", text: "Methodik" }), el("h1", { class: "qx-h1", text: t.title }), lead ? el("p", { class: "qx-lead", text: lead }) : null);
+    main.append(el("a", { class: "v2-back qx-back", href: X.routes.method(), text: "← Methodik" }),
+      el("span", { class: "v2-eyebrow", text: "Methodik" }), el("h1", { class: "qx-h1", text: t.title }), lead ? el("p", { class: "v2-lead qx-lead", text: lead }) : null);
   }
   function para(t) { return el("p", { text: t }); }
 
@@ -59,20 +59,22 @@
   }
 
   function start(main) {
-    main.append(el("span", { class: "qx-eyebrow", text: "Methodik" }),
+    main.append(el("span", { class: "v2-eyebrow", text: "Methodik" }),
       el("h1", { class: "qx-h1", text: "Warum kann ich dem Ergebnis vertrauen?" }),
-      el("p", { class: "qx-lead", text: "Keine Blackbox. Jede Einschätzung hat einen Grund – und jeder Grund führt bis zu den Daten, aus denen er entsteht." }));
-    main.append(el("div", { class: "qx-grid qx-grid-2", style: "margin-top:8px" }, [
-      X.card([el("h3", { class: "qx-h3", text: "Belegte Daten, mit Stichtag" }), el("p", { class: "qx-small", text: "Geschäftszahlen aus SEC-Meldungen, Kurse von Tiingo. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war." })]),
-      X.card([el("h3", { class: "qx-h3", text: "Gleiche Regeln für jede Aktie" }), el("p", { class: "qx-small", text: "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst." })]),
-      X.card([el("h3", { class: "qx-h3", text: "Lieber keine Aussage als eine falsche" }), el("p", { class: "qx-small", text: "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt (fail-closed)." })]),
-      X.card([el("h3", { class: "qx-h3", text: "Keine Gesamtnote, keine Prognose" }), el("p", { class: "qx-small", text: "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird." })])
-    ]));
-    main.append(X.section("Themen", null, [el("div", { class: "qx-method-grid" }, TOPICS.map(function (t) {
-      return el("a", { class: "qx-row qx-card", style: "border-radius:var(--qx-radius);", href: X.routes.method(t.id) }, [
-        el("div", { class: "qx-row-main" }, [el("strong", { text: t.title }), el("div", { class: "qx-row-why", text: t.text })]), el("span", { "aria-hidden": "true", text: "→" })]);
+      el("p", { class: "v2-lead qx-lead", text: "Keine Blackbox. Jede Einschätzung hat einen Grund – und jeder Grund führt bis zu den Daten, aus denen er entsteht." }));
+    /* Vier Grundsaetze als nummerierte Reihe (wie Discovers Einstieg
+       "01 Geschaeft · 02 Entwicklung ..."), dann die Themen als Tueren. */
+    main.append(el("div", { class: "qx-steps qx-principles" }, [
+      ["Belegte Daten, mit Stichtag", "Geschäftszahlen aus SEC-Meldungen, Kurse von Tiingo. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war."],
+      ["Gleiche Regeln für jede Aktie", "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst."],
+      ["Lieber keine Aussage als eine falsche", "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt (fail-closed)."],
+      ["Keine Gesamtnote, keine Prognose", "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
+    ].map(function (p, i) { return el("div", {}, [el("span", { class: "v2-eyebrow", text: "0" + (i + 1) }), el("b", { text: p[0] }), el("p", { text: p[1] })]); })));
+    main.append(X.world("Themen", "Jede Frage zur Rechnung – mit den Zahlen aus den veröffentlichten Daten.", [el("div", { class: "v2-world-directory qx-method-grid" }, TOPICS.map(function (t, i) {
+      return el("a", { class: "v2-world-door", href: X.routes.method(t.id), dataset: { tone: String(i % 4) } }, [
+        el("span", { class: "v2-world-door-count", text: "Methodik · " + (i < 9 ? "0" : "") + (i + 1) }), el("h2", { text: t.title }), el("p", { text: t.text }), el("span", { class: "v2-world-door-arrow", text: "Öffnen →" })]);
     }))]));
-    main.append(el("div", { class: "qx-actions" }, [X.btn("Methodik im Detail (technische Dokumentation)", "/quant/methodology/", "secondary"), X.btn("SEC-Dateninspektor", "/quant/data-inspector/", "secondary")]));
+    main.append(X.actions([X.btn("Methodik im Detail (technische Dokumentation)", "/quant/methodology/", "secondary"), X.btn("SEC-Dateninspektor", "/quant/data-inspector/", "secondary")]));
   }
 
   async function daten(main, ctx, t) {
@@ -82,9 +84,9 @@
       X.card([el("h3", { class: "qx-h3", text: "Geschäftszahlen: SEC EDGAR" }), para("Umsatz, Gewinn, Cashflow, Bilanz – aus den Pflichtmeldungen der Unternehmen (10-K, 10-Q). Maßgeblich ist, wann eine Zahl öffentlich wurde, nicht der Berichtszeitraum."), X.btn("Rohdaten prüfen", "/quant/data-inspector/", "secondary")]),
       X.card([el("h3", { class: "qx-h3", text: "Kurse: Tiingo" }), para("Tagesschlusskurse, splitbereinigt; während der Handelszeit 5-Minuten-Kurse (IEX) und auf der Aktienseite optional ein laufender Kurs. Dividenden sind in Kursentwicklungen nicht enthalten.")])
     ]));
-    if (sum && sum.counts) main.append(X.section("Wie groß ist das Universum?", "Stand " + X.dateDe(sum.asOf || (sum.generatedAt || "").slice(0, 10)) + ".", [el("div", { class: "qx-stats" }, [
+    if (sum && sum.counts) main.append(X.section("Wie groß ist das Universum?", "Stand " + X.dateDe(sum.asOf || (sum.generatedAt || "").slice(0, 10)) + ".", [el("div", { class: "dv2-valuation-grid qx-stats" }, [
       ["US-Titel im Produktuniversum", sum.counts.productUniverse], ["mit veröffentlichter Faktoranalyse", sum.counts.published], ["davon mit Geschäftszahlen", sum.counts.withFundamentals], ["mit belegtem Börsenwert", sum.counts.withMarketCap]
-    ].map(function (p) { return el("div", { class: "qx-stat" }, [el("span", { text: p[0] }), el("b", { class: "num", text: typeof p[1] === "number" ? p[1].toLocaleString("de-DE") : "–" })]); }))]));
+    ].map(function (p) { return el("div", { class: "dv2-valuation-card qx-stat" }, [el("span", { text: p[0] }), el("b", { class: "num", text: typeof p[1] === "number" ? p[1].toLocaleString("de-DE") : "–" })]); }))]));
     main.append(X.section("Wie aktuell?", null, [el("ul", {}, [
       el("li", { text: "Tageskurse und Faktoren werden an jedem Handelstag nach Börsenschluss neu berechnet und veröffentlicht." }),
       el("li", { text: "5-Minuten-Kurse werden während der Sitzung im Takt erneuert; die Seite nennt den Stand mit Uhrzeit." }),
@@ -103,7 +105,7 @@
       var f = VM.FACTORS[id];
       var comps = Object.keys(cs).filter(function (k) { return k.indexOf(id + ":") === 0; }).map(function (k) { return cs[k]; });
       var d = el("details", { class: "qx-factor tone-neutral", id: "m-" + id, open: focus === id ? true : null }, [
-        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "qx-tag", text: f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
+        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "dx-index-badge qx-tag", text: f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
         el("div", { class: "qx-factor-body" }, [para(f.measures), f.notMeasures ? el("p", { class: "qx-small", text: f.notMeasures }) : null, el("p", { class: "qx-small", text: f.higher }),
           emptyText[id] ? X.notice("Derzeit für keine Aktie ein Wert", emptyText[id]) : null,
           comps.length ? el("div", {}, comps.map(function (c) {

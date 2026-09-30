@@ -102,16 +102,23 @@
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
     var st = { range: null, intraday: null, long: null, longLoading: false, touched: false, disposed: false, unsub: null };
 
-    var headPrice = el("b", { class: "qc-price num" });
-    var headDelta = el("span", { class: "qc-delta num" });
-    var headWord = el("span", { class: "qc-word" });
-    var headMeta = el("p", { class: "qc-meta" });
-    var plot = el("div", { class: "qc-plot", "aria-live": "off" });
-    var bar = el("div", { class: "qc-ranges", role: "group", "aria-label": "Zeitraum des Charts" });
-    var note = el("p", { class: "qc-note" });
-    var node = el("section", { class: "qc-chart", "aria-label": "Kursverlauf " + o.ticker }, [
-      el("div", { class: "qc-head" }, [el("div", { class: "qc-head-price" }, [headPrice, headDelta, headWord]), headMeta]),
-      plot, bar, note
+    /* Dieselbe Gliederung wie Discovers Chart (discover/ui/detail.js
+       chartSection): Zeitraum-Leiste (dx-tf), Kopf mit Kurs, Veraenderung
+       und Zeitpunkt (dx-chart-hero), die Flaeche, die Fussnote. */
+    var headPrice = el("b", { class: "num qc-price" });
+    var headDelta = el("span", { class: "num qc-delta" });
+    var headWord = el("span", { class: "dx-chart-hero-wort qc-word" });
+    var headMeta = el("span", { class: "dx-chart-hero-span qc-meta" });
+    var headNode = el("div", { class: "dx-chart-hero qc-head" }, [
+      el("div", { class: "dx-chart-hero-preis" }, [headPrice, headDelta, headWord]),
+      el("div", { class: "dx-chart-hero-meta" }, [headMeta])]);
+    var plot = el("div", { class: "dx-range-chart-wrap qc-plot", "aria-live": "off" });
+    var bar = el("div", { class: "dx-tf qc-ranges", role: "group", "aria-label": "Zeitraum des Charts" });
+    var note = el("p", { class: "dx-intraday-note qc-note" });
+    var box = el("div", { class: "dx-chart" }, [headNode, plot, note]);
+    var node = el("section", { class: "dx-chapter dx-chapter--chart qc-chart", "aria-label": "Kursverlauf " + o.ticker }, [
+      el("h2", { text: "Kursverlauf" }),
+      el("div", {}, [el("div", { class: "dx-chart-head" }, [bar]), box])
     ]);
 
     var buttons = {};
@@ -136,48 +143,67 @@
         buttons[r.id].classList.toggle("is-active", r.id === st.range);
       });
     }
-    function width() { return Math.max(280, Math.round(plot.getBoundingClientRect().width || node.getBoundingClientRect().width || 340)); }
-    function height() { return global.innerWidth < 720 ? 240 : 340; }
+    /* Discovers Mass (chartMass): volle Breite, am Handy gut die Haelfte
+       des Bildschirms hoch - der Chart ist die Hauptflaeche. */
+    var mobile = function () { return global.innerWidth < 860; };
+    function width() { return Math.max(280, Math.round(box.getBoundingClientRect().width || node.getBoundingClientRect().width || (mobile() ? global.innerWidth - 40 : 1100))); }
+    function height() { return mobile() ? Math.round(Math.max(300, Math.min(global.innerHeight * 0.52, 480))) : 440; }
 
-    function scrub(svg, base, fmtWhen, word) {
-      if (!svg || !svg.__punkte || !svg.__punkte.length) return;
-      var pts = svg.__punkte;
-      var cursor = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      cursor.setAttribute("class", "qc-cursor"); cursor.setAttribute("y1", "0"); cursor.setAttribute("y2", svg.viewBox.baseVal.height);
-      cursor.style.display = "none"; svg.appendChild(cursor);
+    /* Beruehrung wie in Discover (beruehrung): Finger oder Zeiger zeigen den
+       Kurs an dieser Stelle - im Kopf und als Marke im Bild. Loslassen
+       stellt den letzten Kurs wieder her. */
+    function scrub(svg, base, fmtWhen) {
+      if (!svg || !svg.__punkte || svg.__punkte.length < 2) return;
+      var pts = svg.__punkte, frame = svg.__basis || {};
+      var ns = "http://www.w3.org/2000/svg";
+      var g = document.createElementNS(ns, "g"); g.setAttribute("class", "dx-scrub"); g.setAttribute("aria-hidden", "true");
+      var line = document.createElementNS(ns, "line"); line.setAttribute("class", "dx-scrub-line qc-cursor");
+      var dot = document.createElementNS(ns, "circle"); dot.setAttribute("class", "dx-scrub-node"); dot.setAttribute("r", "5");
+      g.appendChild(line); g.appendChild(dot);
+      var vb = (svg.getAttribute("viewBox") || "0 0 0 0").split(" ").map(Number);
       var resting = { price: headPrice.textContent, delta: headDelta.textContent, deltaClass: headDelta.className, word: headWord.textContent };
-      function at(evt) {
-        var rect = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
-        var x = (evt.clientX - rect.left) * (vb.width / rect.width);
-        var best = pts[0];
-        for (var i = 1; i < pts.length; i++) if (Math.abs(pts[i].x - x) < Math.abs(best.x - x)) best = pts[i];
-        cursor.setAttribute("x1", best.x); cursor.setAttribute("x2", best.x); cursor.style.display = ""; node.classList.add("is-scrub");
-        headPrice.textContent = global.QX.money(best.close, o.currency || "USD");
-        var d = isNum(base) && base > 0 ? (best.close / base - 1) * 100 : null;
+      var on = false;
+      function nearest(clientX) {
+        var rect = svg.getBoundingClientRect(), x = (clientX - rect.left) / Math.max(1, rect.width) * vb[2];
+        var best = pts[0], d = Infinity;
+        for (var i = 0; i < pts.length; i++) { var dd = Math.abs(pts[i].x - x); if (dd < d) { d = dd; best = pts[i]; } }
+        return best;
+      }
+      function show(evt) {
+        var pt = nearest(evt.clientX);
+        if (!on) { on = true; svg.appendChild(g); svg.classList.add("dx-scrubbing"); node.classList.add("is-scrub"); }
+        line.setAttribute("x1", pt.x); line.setAttribute("x2", pt.x);
+        line.setAttribute("y1", frame.padTop || 0); line.setAttribute("y2", vb[3] - (frame.padBottom || 0));
+        dot.setAttribute("cx", pt.x); dot.setAttribute("cy", pt.y);
+        headPrice.textContent = global.QX.money(pt.close, o.currency || "USD");
+        var d = isNum(base) && base > 0 ? (pt.close / base - 1) * 100 : null;
         headDelta.textContent = signedPct(d);
-        headDelta.className = "qc-delta num " + (d > 0 ? "up" : d < 0 ? "down" : "");
-        headWord.textContent = fmtWhen(best);
+        headDelta.className = "num qc-delta " + (d > 0 ? "up" : d < 0 ? "down" : "");
+        headWord.textContent = fmtWhen(pt);
       }
       function rest() {
-        cursor.style.display = "none"; node.classList.remove("is-scrub");
+        if (!on) return;
+        on = false; if (g.parentNode) g.parentNode.removeChild(g);
+        svg.classList.remove("dx-scrubbing"); node.classList.remove("is-scrub");
         headPrice.textContent = resting.price; headDelta.textContent = resting.delta;
         headDelta.className = resting.deltaClass; headWord.textContent = resting.word;
       }
-      svg.addEventListener("pointermove", at);
-      svg.addEventListener("pointerdown", at);
+      svg.addEventListener("pointerdown", function (e) { if (e.pointerType === "mouse" && e.button !== 0) return; show(e); });
+      svg.addEventListener("pointermove", function (e) { if (on || e.pointerType === "mouse") show(e); });
       svg.addEventListener("pointerleave", rest);
       svg.addEventListener("pointerup", function (e) { if (e.pointerType !== "mouse") rest(); });
+      svg.addEventListener("pointercancel", rest);
     }
 
     function head(price, delta, word, meta) {
       headPrice.textContent = global.QX.money(price, o.currency || "USD");
       headDelta.textContent = signedPct(delta);
-      headDelta.className = "qc-delta num " + (delta > 0 ? "up" : delta < 0 ? "down" : "");
+      headDelta.className = "num qc-delta " + (delta > 0 ? "up" : delta < 0 ? "down" : "");
       headWord.textContent = word;
       headMeta.textContent = meta || "";
     }
     function empty(title, text) {
-      plot.replaceChildren(el("div", { class: "qc-empty" }, [el("strong", { text: title }), el("span", { text: text })]));
+      plot.replaceChildren(el("div", { class: "dx-empty qc-empty" }, [el("b", { text: title }), el("span", { text: text })]));
     }
 
     function drawIntraday() {
@@ -193,11 +219,12 @@
         (q && q.label ? " · " + q.label : ""));
       var svg = MC && MC.renderIntraday ? MC.renderIntraday(snap, { width: width(), height: height(), axis: true, symbol: o.ticker, label: q && q.label }) : null;
       if (!svg) { empty("Kein Tagesverlauf", "Der Tagesverlauf dieses Titels ist unvollständig."); return; }
-      svg.classList.add("qc-svg");
+      svg.classList.add("dx-intraday-chart", "qc-svg");
+      plot.className = "dx-intraday qc-plot";
       plot.replaceChildren(svg);
       plot.dataset.sourceState = q ? q.state : "";
       plot.dataset.live = frozen ? "complete" : (snap.streaming ? "streaming" : "running");
-      scrub(svg, base, function (pt) { return pt.time + " Uhr New York"; }, "heute");
+      scrub(svg, base, function (pt) { return pt.time + " New York"; });
       var satz = { REALTIME: "Der Kurs läuft mit; die letzte Zahl ist eine Kursreferenz aus einem Teilmarkt, kein Abschluss.",
         SNAPSHOT: "Die Sitzung läuft; der Verlauf wächst mit dem nächsten Stand.",
         FINAL_SESSION: "Die Sitzung ist abgeschlossen; dieser Verlauf bleibt so stehen." };
@@ -220,9 +247,11 @@
       var svg = MC.renderRange(pts, { width: width(), height: height(), symbol: o.ticker, range: r.id === "1Y" ? "1Y" : r.id, label: r.word, grain: weekly ? "weekly" : "daily" });
       if (!svg) { empty("Zeitraum nicht verfügbar", "Zu wenige Kurse im Zeitraum."); return; }
       svg.classList.add("qc-svg");
+      plot.className = "dx-range-chart-wrap qc-plot";
+      plot.dataset.range = r.id; plot.dataset.grain = weekly ? "weekly" : "daily";
       plot.replaceChildren(svg);
       delete plot.dataset.sourceState; delete plot.dataset.live;
-      scrub(svg, first, function (pt) { return "am " + dateDe(pt.date); }, r.word);
+      scrub(svg, first, function (pt) { return dateDe(pt.date); });
       var capt = [];
       capt.push(r.id === "5D" ? "Tagesschlusskurse der letzten Handelstage (5-Minuten-Kurse werden nur für den aktuellen Tag aufbewahrt)"
         : weekly ? "Wochenschlusskurse vor " + dateDe(eod[0][0]) + ", danach Tagesschlusskurse" : "Tagesschlusskurse");
