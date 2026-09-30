@@ -106,14 +106,16 @@
   function setQuota(q) {
     quota = q || quota;
     if (!quota) return;
-    if (!quota.enabled) { quotaEl.textContent = 'Die Fragefunktion ist gerade pausiert. Bereits gestellte Fragen werden weiter beantwortet.'; return; }
+    if (!quota.enabled) { quotaEl.textContent = 'Die Fragefunktion ist noch nicht freigeschaltet.'; sendBtn.disabled = true; return; }
+    sendBtn.disabled = false;
     quotaEl.textContent = quota.remainingToday > 0
       ? 'Heute noch ' + quota.remainingToday + (quota.remainingToday === 1 ? ' neue Frage' : ' neue Fragen')
       : 'Ihre neue Frage für heute ist verbraucht – bekannte Fragen gehen weiterhin.';
   }
   function refreshQuota() {
     fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()))
-      .then(function (r) { return r.json(); }).then(setQuota).catch(function () {});
+      .then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }).then(setQuota)
+      .catch(function () { quotaEl.textContent = 'Die Fragefunktion ist noch nicht freigeschaltet.'; sendBtn.disabled = true; });
   }
 
   function loadTurnstile() {
@@ -164,7 +166,7 @@
     }).catch(function () {
       turn.lastChild.remove();
       turn.appendChild(card('Keine Verbindung', 'Die Fragefunktion ist gerade nicht erreichbar. Bitte später erneut versuchen.', true));
-    }).then(function () { busy = false; sendBtn.disabled = !ENDPOINT; });
+    }).then(function () { busy = false; sendBtn.disabled = !ENDPOINT || !!(quota && !quota.enabled); });
   }
 
   function card(title, text, warn) {

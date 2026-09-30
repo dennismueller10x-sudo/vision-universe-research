@@ -52,7 +52,7 @@ function anthropic(output, { status = 200, stop = "end_turn", usage = { input_to
   return fn;
 }
 
-const ENV = { VU_ASK_ENABLED: "true", ANTHROPIC_API_KEY: "sk-test", VU_ASK_SALT: "salz", VU_ASK_ADMIN_KEY: "admin-geheim" };
+const ENV = { VU_ASK_ENABLED: "true", ANTHROPIC_API_KEY: "sk-test", VU_ASK_ADMIN_KEY: "admin-geheim" };
 
 function makeGate(env = ENV, fetchImpl = anthropic(MINERVINI_ANSWER), now = Date.parse("2026-09-29T12:00:00Z")) {
   const storage = memoryStorage();
@@ -289,4 +289,13 @@ test("Eingang: eigene Seite bekommt Antwort mit CORS-Kopf", async () => {
   assert.equal(r.headers.get("access-control-allow-origin"), "https://research.visionuniverse.de");
   const body = await r.json();
   assert.equal(body.result.kind, "screen");
+});
+
+test("Ohne eingerichtetes Salz erzeugt das Tor selbst eines und behaelt es", async () => {
+  const { gate, storage } = makeGate();
+  await ask(gate, "Erste Frage zu Aktien");
+  const salt = storage.map.get("salt");
+  assert.match(salt, /^[0-9a-f]{64}$/);
+  await ask(gate, "Zweite Frage zu Aktien", { ip: "8.8.8.8", clientId: "client-eeeeeeee" });
+  assert.equal(storage.map.get("salt"), salt);
 });

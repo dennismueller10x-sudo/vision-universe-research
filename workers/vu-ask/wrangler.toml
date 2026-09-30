@@ -17,11 +17,10 @@
 #   6  VU_ASK_REQUESTS_PER_IP_DAILY  alle Anfragen pro Anschluss, auch
 #      kostenlose (Cache), gegen Dauerfeuer
 #
-# SECRETS (nie in diese Datei):
-#   wrangler secret put ANTHROPIC_API_KEY
-#   wrangler secret put VU_ASK_ADMIN_KEY     fuer /v1/admin/report
-#   wrangler secret put VU_ASK_SALT          Salz fuer die Tages-Hashes
-#   wrangler secret put TURNSTILE_SECRET     optional: Bot-Pruefung
+# SECRETS (nie in diese Datei) setzt der Workflow
+# .github/workflows/cloudflare-ask-deploy.yml. Von Hand einzurichten ist nur
+# das GitHub-Secret ANTHROPIC_API_KEY; der Admin-Key wird abgeleitet, das
+# Salz erzeugt der Worker selbst. Optional: TURNSTILE_SECRET.
 # =============================================================================
 
 name = "vu-ask"

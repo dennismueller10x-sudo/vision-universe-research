@@ -7,9 +7,10 @@
 <link rel="icon" href="data:,">
 <title>Frag Vision Universe</title>
 <meta name="description" content="Stellen Sie eine Investmentfrage in eigenen Worten – Vision Universe übersetzt sie in Filter und rechnet sie auf echten Daten aus Screener, Supertrader und Quant.">
-<!-- Adresse des Workers workers/vu-ask. Leer = Fragefunktion noch nicht
-     freigeschaltet; die Seite sagt das dann, statt still zu scheitern. -->
-<meta name="vu-ask-endpoint" content="">
+<!-- Adresse des Workers workers/vu-ask. Antwortet er nicht oder fehlt der
+     Anthropic-Schluessel, sagt die Seite "noch nicht freigeschaltet", statt
+     still zu scheitern. Leer = Fragefunktion aus. -->
+<meta name="vu-ask-endpoint" content="https://vu-ask.little-credit-15d3.workers.dev">
 <!-- Optional: Cloudflare-Turnstile-Site-Key (oeffentlich). Leer = aus. -->
 <meta name="vu-ask-turnstile" content="">
 <link rel="stylesheet" href="/assets/site-navigation.css">

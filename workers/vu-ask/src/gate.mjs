@@ -76,11 +76,24 @@ export class AskGate {
     }
   }
 
-  salt() { return this.env.VU_ASK_SALT || this.env.VU_ASK_ADMIN_KEY || "vu-ask"; }
+  /* Das Salz fuer die Tages-Hashes. Ist keins als Secret gesetzt, erzeugt
+     das Objekt beim ersten Aufruf selbst eines und behaelt es - niemand
+     muss es kennen oder einrichten, und es verlaesst den Speicher nie. */
+  async salt() {
+    if (this.env.VU_ASK_SALT) return this.env.VU_ASK_SALT;
+    if (this._salt) return this._salt;
+    let salt = await this.storage.get("salt");
+    if (!salt) {
+      salt = Array.from(crypto.getRandomValues(new Uint8Array(32)), (b) => b.toString(16).padStart(2, "0")).join("");
+      await this.storage.put("salt", salt);
+    }
+    return (this._salt = salt);
+  }
 
   async identities(ip, clientId, day) {
-    const ipHash = await sha(`${this.salt()}|${day}|ip|${ip}`);
-    const clientHash = CLIENT_ID.test(clientId || "") ? await sha(`${this.salt()}|${day}|client|${clientId}`) : null;
+    const salt = await this.salt();
+    const ipHash = await sha(`${salt}|${day}|ip|${ip}`);
+    const clientHash = CLIENT_ID.test(clientId || "") ? await sha(`${salt}|${day}|client|${clientId}`) : null;
     return { ipKey: `u:${day}:${ipHash}`, clientKey: clientHash ? `u:${day}:c${clientHash}` : null, rateKey: `r:${day}:${ipHash}` };
   }
 

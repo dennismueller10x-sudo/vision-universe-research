@@ -44,20 +44,21 @@ Claude lernt nicht von selbst. Das Lernen passiert über diesen Kreislauf:
 3. Der Lernbericht fasst das nach Häufigkeit zusammen, jeweils mit Beispielfragen:
 
 ```bash
-curl -s -H "Authorization: Bearer $VU_ASK_ADMIN_KEY" https://vu-ask.<subdomain>.workers.dev/v1/admin/report | jq
+curl -s -H "Authorization: Bearer $VU_ASK_ADMIN_KEY" https://vu-ask.little-credit-15d3.workers.dev/v1/admin/report | jq
 ```
 
-   Die wichtigsten Felder: `missingData` (die meistgewünschten fehlenden Daten), `notUnderstood` (Fragen, die nicht übersetzt werden konnten), `byStatus` und `spend`.
+   Der Admin-Key ist, wenn kein eigenes Secret gesetzt ist, `HMAC-SHA256(CLOUDFLARE_API_TOKEN, "vu-ask-admin-v1")` in Hex. Weil das Repository öffentlich ist, wird der Bericht bewusst nicht in einem Actions-Protokoll ausgegeben. Die wichtigsten Felder: `missingData` (die meistgewünschten fehlenden Daten), `notUnderstood` (Fragen, die nicht übersetzt werden konnten), `byStatus` und `spend`.
 4. Wird ein Feld im Screener freigeschaltet (`screener/engine/fields.js`), kennt die Fragefunktion es automatisch. Anweisung und Antwortschema werden aus dieser Datei erzeugt.
 
-## Einrichtung (einmalig)
+## Einrichtung (einmalig, etwa 5 Minuten)
 
-1. **Anthropic:** console.anthropic.com → API-Key anlegen. Unter Billing das **Auto-Reload ausschalten** und optional unter Limits ein Monatslimit setzen.
-2. **GitHub-Secrets anlegen:** `ANTHROPIC_API_KEY`, `VU_ASK_ADMIN_KEY` und `VU_ASK_SALT` (je eine lange Zufallszeichenkette, z. B. `openssl rand -hex 32`). `TURNSTILE_SECRET` ist optional.
-3. **Ausrollen:** Actions → *Cloudflare — Fragefunktion (vu-ask) ausrollen* → Run workflow. Die Zusammenfassung zeigt die Adresse `https://vu-ask.<subdomain>.workers.dev`.
-4. **Seite freischalten:** Die Adresse in `ask/index.html` bei `<meta name="vu-ask-endpoint" content="">` eintragen und veröffentlichen. Mit Turnstile zusätzlich den öffentlichen Site-Key bei `vu-ask-turnstile` eintragen.
+Von Hand ist **nur der Anthropic-Schlüssel** einzurichten. Alles andere erledigt sich selbst: Der Cloudflare-Zugang liegt schon vor, den Admin-Key leitet der Workflow ab, das Salz erzeugt der Worker, und die Adresse steht bereits in `ask/index.html`.
 
-Grenzen ändern: die Werte in `wrangler.toml` anpassen und den Workflow erneut ausführen.
+1. **console.anthropic.com:** unter Settings → Billing das **Auto-Reload ausschalten**. Unter Settings → API Keys → „Create Key“ einen Schlüssel anlegen und kopieren (er wird nur einmal angezeigt).
+2. **GitHub:** im Repository unter Settings → Secrets and variables → Actions → „New repository secret“ den Namen `ANTHROPIC_API_KEY` eintragen und den Schlüssel als Wert.
+3. **Ausrollen:** Nach dem Merge rollt der Workflow *Cloudflare — Fragefunktion (vu-ask) ausrollen* automatisch aus. Wurde der Schlüssel erst danach hinterlegt, den Workflow einmal von Hand starten (Actions → Workflow → „Run workflow“).
+
+Grenzen ändern: die Werte in `wrangler.toml` anpassen und mergen, dann wird automatisch neu ausgerollt.
 
 ## Tests
 
