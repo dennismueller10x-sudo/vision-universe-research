@@ -141,6 +141,13 @@ async function allesAufklappen(page){
  }
 }
 
+/* Der Live-Kursdienst (wss://live.visionuniverse.de) laesst nur die
+   veroeffentlichten Domains zu; der Rauchtest laeuft auf 127.0.0.1 und
+   wird waehrend der US-Handelszeit bewusst mit 403 abgewiesen. Das ist
+   dieselbe Lage wie eine gescheiterte Anfrage an einen fremden Host und
+   kein Fehler des Releases. Ein WebSocket zum Release selbst zaehlt
+   weiter als Fehler. */
+const fremdeLiveAbsage=t=>{const m=/^WebSocket connection to '(wss?:\/\/[^']+)' failed/.exec(t);return Boolean(m)&&!m[1].replace(/^ws/,'http').startsWith(origin);};
 let failures=0;
 for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
@@ -151,7 +158,7 @@ for(const width of [1440,390]){
     das Release selbst ist ein Fehler. 404 bleibt ausgenommen: der
     Produktdienst probiert fuer duenne Titel bewusst mehrere Quellen. */
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremdFehlgeschlagen=true;else errors.push('requestfailed: '+r.url().replace(origin,''));});
- page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
+ page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('favicon')||t.includes('404'))return;if(fremdFehlgeschlagen&&/^Failed to load resource: net::ERR_/.test(t))return;if(fremdeLiveAbsage(t))return;errors.push('console: '+t.split('\n')[0]);});
  for(const view of VIEWS.filter(v=>!ONLY||v.includes(ONLY))){
   await page.goto('about:blank');
   await page.goto(origin+view);
