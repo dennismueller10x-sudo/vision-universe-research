@@ -48,7 +48,7 @@
   /* Kuechentisch-Saetze je Faktor. Beschreibend, nie auffordernd: das
      Produkt sagt, wie etwas ist, nicht was jemand tun soll. */
   var KLARTEXT = {
-    quality:       { hoch: "Solide finanziert",                    tief: "Finanziell angreifbar" },
+    quality:       { hoch: "Solide Bilanz, Gewinne gedeckt",       tief: "Schwächen bei Bilanz oder Gewinnqualität" },
     growth:        { hoch: "Wächst kräftig",                       tief: "Wächst kaum" },
     momentum:      { hoch: "Kurs läuft besser als der Markt",      tief: "Kurs läuft schlechter als der Markt" },
     value:         { hoch: "Günstig bewertet",                     tief: "Teuer bezahlt" },

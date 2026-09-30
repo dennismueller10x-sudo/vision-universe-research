@@ -82,3 +82,66 @@ test("industryBreadth: Anteil ueber den Linien erst ab ausreichender Historie", 
 test("parseFredCsv: Punkt als fehlender Wert", () => {
   assert.deepEqual(parseFredCsv("observation_date,T10Y3M\n2020-01-02,0.5\n2020-01-03,.\n"), [["2020-01-02", 0.5]]);
 });
+
+test("horizonStats: Median, Anteil im Plus, schlechtes und gutes Zehntel je Stufe", async () => {
+  const { horizonStats } = await import("../../scripts/market/lib/market-validation.mjs");
+  const states = [], out = new Map();
+  for (let i = 0; i < 100; i++) { states.push({ date: day(i), env: i < 50 ? 0 : 1 }); out.set(day(i), { 10: { ret: i < 50 ? i - 25 : 10, worst: 0 } }); }
+  const s = horizonStats(states, out, 10, ["a", "b"]);
+  assert.equal(s.levels[0].days, 50);
+  assert.equal(s.levels[0].positiveShare, 48);
+  assert.equal(s.levels[0].bad10, -21);
+  assert.equal(s.levels[0].lossShare10, 30, "ret < -10 bei i = 0..14 von 50");
+  assert.equal(s.levels[1].medianReturn, 10);
+  assert.equal(s.levels[1].positiveShare, 100);
+  assert.equal(s.all.days, 100);
+  assert.equal(s.levels[0].independent, 5);
+});
+
+test("crisisReplay: Hoch, Tief, erste Warnung und Rest des Absturzes aus der Reihe selbst", async () => {
+  const { crisisReplay } = await import("../../scripts/market/lib/market-validation.mjs");
+  const pts = [], states = [];
+  for (let i = 0; i < 40; i++) { const v = i <= 10 ? 100 + i : i <= 30 ? 110 - (i - 10) * 2.5 : 60 + (i - 30); pts.push([day(i), v]); states.push({ date: day(i), env: i < 14 ? 3 : i < 35 ? 0 : 3 }); }
+  const [k] = crisisReplay(states, pts, [{ id: "x", name: "X", peakFrom: day(0), peakTo: day(15), troughTo: day(35) }], ["D", "V", "S", "K", "B"]);
+  assert.equal(k.peak, day(10));
+  assert.equal(k.trough, day(30));
+  assert.equal(k.fall, round2(100 * (60 / 110 - 1)));
+  assert.equal(k.levelAtPeak, "K");
+  assert.equal(k.firstWarning.date, day(14));
+  assert.equal(k.firstWarning.restAfter, round2(100 * (60 / 100 - 1)));
+  assert.equal(k.backConstructive.date, day(35));
+  assert.equal(k.backSelective.date, day(35));
+  assert.equal(k.levelAtTrough, "D");
+  assert.equal(k.oldHighBack, null, "altes Hoch (110) nie wieder erreicht");
+});
+function round2(x) { return Math.round(x * 10) / 10; }
+
+test("calendarStats: Monate, Zyklusjahre (1928 = Wahljahr), 12 Monate danach", async () => {
+  const { calendarStats } = await import("../../scripts/market/lib/market-validation.mjs");
+  const pts = [];
+  let v = 100;
+  for (let y = 1927; y <= 1940; y++) for (let m = 1; m <= 12; m++) { v *= m === 9 ? 0.98 : 1.01; pts.push([`${y}-${String(m).padStart(2, "0")}-15`, v]); }
+  const c = calendarStats(pts);
+  assert.ok(c.months[8].meanReturn < 0, "September negativ");
+  assert.equal(c.months[8].positiveShare, 0);
+  assert.equal(c.cycle.find((x) => x.year === 4).label, "Wahljahr");
+  assert.ok(c.forward12.byCycleMonth.find((x) => x.cycleYear === 2 && x.month === 9).n >= 3);
+});
+
+test("recoverySignal: Baerenmarkt, erstes Signal (zu frueh) und erstes tragendes Signal", async () => {
+  const { recoverySignal } = await import("../../scripts/market/lib/market-validation.mjs");
+  const pts = [], br = [];
+  /* 0-9 Hoch 100 -> Absturz auf 70 (Tag 20) -> Zwischenhoch 80 (Tag 30) -> Tief 60 (Tag 60) -> 100 (Tag 110) */
+  for (let i = 0; i <= 120; i++) {
+    const v = i <= 10 ? 100 : i <= 20 ? 100 - 3 * (i - 10) : i <= 30 ? 70 + (i - 20) : i <= 60 ? 80 - (i - 30) * 2 / 3 : Math.min(101, 60 + (i - 60) * 0.82);
+    pts.push([day(i), v]);
+    br.push({ date: day(i), above50Pct: i === 30 || i === 70 ? 70 : 10 });
+  }
+  const r = recoverySignal(pts, br);
+  assert.equal(r.bears, 1);
+  const b = r.bearMarkets[0];
+  assert.equal(b.first.date, day(30));
+  assert.equal(b.first.false, true, "nach dem ersten Schub fiel der Markt noch von 80 auf 60");
+  assert.equal(b.firstLasting.date, day(70));
+  assert.equal(r.firstFalse, 1);
+});

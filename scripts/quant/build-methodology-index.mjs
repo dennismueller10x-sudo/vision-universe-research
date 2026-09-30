@@ -179,7 +179,7 @@ async function main() {
 ${karten}
  <p class="meta">Erzeugt aus dem Verzeichnis <code>quant/methodology/</code> am ${heute}. Diese Seite
   beschreibt nichts, was nicht in den Verträgen steht, und ist keine Anlageempfehlung.</p>
- <a class="back" href="/vu2/?view=explain">Zurück zur Erklärseite</a>
+ <a class="back" href="/quant/#/methodik">Zurück zur Methodik</a>
 </main>
 </body>
 </html>

@@ -282,11 +282,18 @@ test("AD19 · Der Dispatch haengt an der Entscheidung, nicht am Lauf", () => {
   assert.match(WORKFLOW.slice(altAb, altAb + 200), /if:\s*false/,
     "Der alte Quant-Dispatch muss fuer jeden Modus stillgelegt sein");
 
-  const ab = WORKFLOW.indexOf("- name: CREATIVE JOB (WEB)");
-  assert.ok(ab > 0, "Der Schritt CREATIVE JOB (WEB) fehlt");
+  /* Seit "WORK OWNS THE POST" (29.09.) haengt der Dispatch an einer
+     festgehaltenen Entscheidung: einem Auftrag in der Post-Schlange
+     (Knopfdruck des Owners oder AUTO) - und an der Lease. Ob gestartet
+     wird, entscheidet post-queue.naechsterSchritt(), nicht der Lauf. */
+  const ab = WORKFLOW.indexOf("- name: WORK-JOB STARTEN");
+  assert.ok(ab > 0, "Der Schritt WORK-JOB STARTEN fehlt");
   const block = WORKFLOW.slice(ab, ab + 500);
-  assert.match(block, /steps\.webresearch\.outputs\.gefunden == 'ja'/,
-    "Der Web-First-Dispatch haengt nicht mehr an der Entscheidung");
+  assert.match(block, /steps\.lease\.outputs\.produktiv_erlaubt == 'true'/,
+    "Der Work-Start haengt nicht an der Lease");
+  const lauf = readFileSync("scripts/social/run-post-job.mjs", "utf8");
+  assert.match(lauf, /Queue\.naechsterSchritt\(/);
+  assert.match(lauf, /plan\.handlung !== "DISPATCH"\) process\.exit\(0\)/);
   /* Und der Orchestrator gibt diese Zeile nur aus, wenn er sie
      entschieden hat. */
   const runner = readFileSync("scripts/social/run-orchestrator.mjs", "utf8");

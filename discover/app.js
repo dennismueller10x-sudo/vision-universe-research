@@ -39,7 +39,7 @@
     const paint=()=>{choices.replaceChildren();[['light','Hell'],['dark','Dunkel']].forEach(([mode,label])=>{const b=el('button',{type:'button',text:label,'aria-pressed':String(theme.mode()===mode)});b.onclick=()=>{theme.set(mode);paint();};choices.append(b);});};paint();appearance.append(choices);
     box.append(currency,appearance);root.append(box);
   }
-  const THEME_GROUPS=[['tech','Technologie & Vernetzung'],['health','Gesundheit'],['energy','Energie & Rohstoffe'],['industry','Industrie & Infrastruktur'],['finance','Finanzen & Immobilien'],['consumer','Konsum & Mobilität']];
+  const THEME_GROUPS=[['t','Technologie & Vernetzung'],['h','Gesundheit'],['e','Energie & Rohstoffe'],['i','Industrie & Infrastruktur'],['f','Finanzen & Immobilien'],['c','Konsum & Mobilität']];
   function themeRail(cards,detailCtx,title,rowId){
     if(!cards.length)return null;
     const section=el('section',{class:'v2-theme-stocks v2-world'},[el('div',{class:'v2-world-head'},[el('h2',{text:title})])]);
@@ -243,8 +243,7 @@
           feedHost.setAttribute('aria-label','Aktien weiter entdecken · '+order.length+' Titel in der verbleibenden Auswahl');
         }
       } else if(parts[0]==='maerkte'&&parts[1]==='einordnung'){
-        document.title='Marktstimmung verstehen — Discover — Vision Universe®';
-        await D.Markets.renderEinordnung(root,{calendar,isActive:active});
+        await D.Markets.renderEinordnung(root,{calendar,isActive:active,teil:parts[2]});
       } else if(parts[0]==='maerkte'&&parts[1]){
         document.title='Märkte — Discover — Vision Universe®';
         const dispose=await D.MarketDetail.render(root,decodeURIComponent(parts[1]),{calendar,isActive:active});

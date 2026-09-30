@@ -93,7 +93,7 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Interner Begriff | `Pattern Research / pattern-research-1.0.0` |
 | Schlüssel | `patternEngine` |
 | **User Label** | **Wie sahen ähnliche Situationen früher aus?** |
-| Als Frage | Wie sahen ähnliche Situationen früher aus? |
+| Als Frage | Was geschah früher in ähnlichen Situationen? |
 | Erklärung für Einsteiger | Wenn eine Aktie früher so aussah wie diese heute — was ist dann in den zwei Jahren danach passiert? Gezählt über hunderttausende Fälle, nicht über ein berühmtes Beispiel. |
 | Professional Label | Pattern Research · bedingte Häufigkeiten |
 | Tooltip | Häufigkeiten aus der Vergangenheit. Keine Wahrscheinlichkeit für diesen Titel. |
@@ -284,19 +284,19 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 
 ## Die sieben Eigenschaften
 
-### Unternehmensqualität
+### Bilanz- & Ergebnisqualität
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `quality / qualityScore` |
 | Schlüssel | `quality` |
-| **User Label** | **Unternehmensqualität** |
-| Als Frage | Steht das Unternehmen solide da? |
-| Erklärung für Einsteiger | Wie solide das Unternehmen finanziert ist und wie verlässlich es verdient. |
+| **User Label** | **Bilanz- & Ergebnisqualität** |
+| Als Frage | Wie belastbar sind Bilanz und ausgewiesene Gewinne? |
+| Erklärung für Einsteiger | Wie solide das Unternehmen finanziert ist, ob seine Gewinne durch echten Zahlungsfluss gedeckt sind und wie stabil die Marge war. Wie viel es verdient, misst die Profitabilität. |
 | Professional Label | Quality (quantV2.factorEvidence.quality) |
 | Tooltip | Bilanz, Verschuldung, Stabilität der Erträge — im Vergleich zu anderen Unternehmen. |
-| Negativer Zustand | Die Finanzlage ist schwächer als bei den meisten anderen. |
-| Nicht verfügbar | Zur Unternehmensqualität liegen nicht genug geprüfte Geschäftszahlen vor. |
+| Negativer Zustand | Bilanz oder Gewinnqualität sind schwächer als bei den meisten anderen. |
+| Nicht verfügbar | Zur Bilanz- und Ergebnisqualität liegen nicht genug geprüfte Geschäftszahlen vor. |
 
 ### Wachstum
 

@@ -955,10 +955,10 @@
       "cik": "0001842556",
       "name": "EON Resources Inc.",
       "sic": "1311",
-      "rawFacts": 3647,
-      "mappedFacts": 1059,
-      "unmappedFacts": 2574,
-      "calendarYears": 4,
+      "rawFacts": 4007,
+      "mappedFacts": 1135,
+      "unmappedFacts": 2865,
+      "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -967,11 +967,11 @@
         "EONR-WT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 5,
-      "quarterlyPeriods": 22,
+      "annualPeriods": 6,
+      "quarterlyPeriods": 23,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2025-09-30",
-      "historyYears": 4.0,
+      "lastPeriodEnd": "2025-12-31",
+      "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 1,
@@ -981,11 +981,11 @@
           "historyYears": 0.0
         },
         "eps_diluted": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 9,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "free_cash_flow": {
           "annualPeriods": 1,
@@ -1001,60 +1001,60 @@
           ]
         },
         "long_term_debt": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2022-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 2.0
-        },
-        "net_income": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 18,
-          "firstAvailablePeriod": "2021-12-31",
-          "lastAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
-        "operating_cash_flow": {
+        "net_income": {
           "annualPeriods": 4,
           "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 3.0
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.0
         },
-        "revenue": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2022-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 2.0
-        },
-        "short_term_debt": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 10,
-          "firstAvailablePeriod": "2022-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 2.0
-        },
-        "stockholders_equity": {
+        "operating_cash_flow": {
           "annualPeriods": 5,
           "quarterlyPeriods": 20,
-          "firstAvailablePeriod": "2020-12-31",
-          "lastAvailablePeriod": "2024-12-31",
+          "firstAvailablePeriod": "2021-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
+        },
+        "revenue": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
         },
         "total_assets": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2020-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
         },
         "total_debt": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2022-12-31",
-          "lastAvailablePeriod": "2024-12-31",
-          "historyYears": 2.0,
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0,
           "derivedFrom": [
             [
               "total_debt"
@@ -1067,38 +1067,39 @@
         }
       },
       "quality": {
-        "HIGH": 123,
+        "HIGH": 139,
         "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 143,
-        "resolvedValues": 143
+        "datableValues": 159,
+        "resolvedValues": 159
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 2806,
+        "total": 3112,
         "by_severity": {
-          "INFO": 2574,
-          "WARNING": 232
+          "INFO": 2865,
+          "WARNING": 247
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 87,
-          "PERIOD_MISMATCH": 9,
-          "RESTATEMENT_CONFLICT": 85,
+          "CONCEPT_DISAGREEMENT": 98,
+          "PERIOD_MISMATCH": 11,
+          "RESTATEMENT_CONFLICT": 87,
           "UNEXPECTED_DURATION": 51,
-          "UNKNOWN_CONCEPT": 2574
+          "UNKNOWN_CONCEPT": 2865
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-047665",
-        "filing_date": "2026-04-27",
-        "form": "10-K/A",
-        "periodic_filings": 19
+        "accession": "0001213900-26-103762",
+        "filing_date": "2026-09-28",
+        "form": "10-K",
+        "periodic_filings": 20,
+        "acceptance_datetime": "2026-09-28T12:25:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -1107,7 +1108,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "fbb4a9d89b4b81c1d0329958fc10f63992d1039b7920f63e5e27c369132d14cd",
+      "sourceDigest": "c415585ce4416d601555bd59a23dce03b206dc352d7d6cde895910bcbddbf306",
       "issuerId": "iss_cik_0001842556"
     }
   ]

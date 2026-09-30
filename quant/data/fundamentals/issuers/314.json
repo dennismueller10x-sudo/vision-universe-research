@@ -636,10 +636,10 @@
       "cik": "0001926314",
       "name": "Ocean Capital Acquisition Corp",
       "sic": "6770",
-      "rawFacts": 0,
-      "mappedFacts": 0,
-      "unmappedFacts": 0,
-      "calendarYears": 0,
+      "rawFacts": 91,
+      "mappedFacts": 47,
+      "unmappedFacts": 51,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -650,11 +650,11 @@
         "OCAC-WT"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 0,
-      "firstPeriodEnd": null,
-      "lastPeriodEnd": null,
-      "historyYears": 0.0,
+      "annualPeriods": 3,
+      "quarterlyPeriods": 3,
+      "firstPeriodEnd": "2024-06-30",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -691,18 +691,18 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 0,
+          "annualPeriods": 2,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2025-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 1.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 0,
+          "annualPeriods": 2,
           "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "firstAvailablePeriod": "2025-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 1.0
         },
         "revenue": {
           "annualPeriods": 0,
@@ -719,18 +719,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 3,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2024-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 2.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2025-06-30",
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -749,22 +749,37 @@
           ]
         }
       },
-      "quality": {},
+      "quality": {
+        "HIGH": 13,
+        "MEDIUM": 1
+      },
       "pit": {
-        "state": "PIT_UNAVAILABLE",
-        "datableValues": 0,
-        "resolvedValues": 0
+        "state": "PIT_READY",
+        "datableValues": 14,
+        "resolvedValues": 14
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 0,
-        "by_severity": {},
-        "by_code": {}
+        "total": 54,
+        "by_severity": {
+          "INFO": 51,
+          "WARNING": 3
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 3,
+          "UNKNOWN_CONCEPT": 51
+        }
       },
-      "latestFiling": null,
+      "latestFiling": {
+        "accession": "0001493152-26-044555",
+        "filing_date": "2026-09-28",
+        "form": "10-K",
+        "periodic_filings": 1,
+        "acceptance_datetime": "2026-09-28T20:01:48.000Z"
+      },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -773,7 +788,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "234a00aa3435e032863771aa551b9bb30cb65d4754557a2cb847b451f7bdefdf",
+      "sourceDigest": "dba428a5c7a912f67959e5949982bd443645d94dc5cf19f7281317b18f8c098c",
       "issuerId": "iss_cik_0001926314"
     },
     {

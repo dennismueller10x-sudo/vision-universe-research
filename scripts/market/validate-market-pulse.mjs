@@ -24,7 +24,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pointInTimeStates, forwardOutcomes, evaluate, exposureIllustration, frequencies, MP, PR, round } from "./lib/market-validation.mjs";
+import { pointInTimeStates, forwardOutcomes, evaluate, exposureIllustration, frequencies, horizonStats, crisisReplay, calendarStats, recoverySignal, MP, PR, round } from "./lib/market-validation.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = new Set(process.argv.slice(2));
@@ -67,6 +67,18 @@ function studyRepository() {
   };
 }
 
+/* Die grossen Abstuerze seit 1929. Nur Suchfenster - Hoch und Tief
+   bestimmt crisisReplay aus der Reihe selbst. */
+const KRISEN = [
+  { id: "1929", name: "Weltwirtschaftskrise", peakFrom: "1929-06-01", peakTo: "1929-12-31", troughTo: "1932-12-31" },
+  { id: "1973", name: "Ölkrise", peakFrom: "1972-10-01", peakTo: "1973-06-30", troughTo: "1974-12-31" },
+  { id: "1987", name: "Schwarzer Montag", peakFrom: "1987-06-01", peakTo: "1987-09-30", troughTo: "1987-12-31" },
+  { id: "2000", name: "Dotcom-Blase", peakFrom: "1999-12-01", peakTo: "2000-12-31", troughTo: "2002-12-31" },
+  { id: "2008", name: "Finanzkrise", peakFrom: "2007-06-01", peakTo: "2007-12-31", troughTo: "2009-06-30" },
+  { id: "2020", name: "Corona-Crash", peakFrom: "2019-12-01", peakTo: "2020-03-01", troughTo: "2020-06-30" },
+  { id: "2022", name: "Zinsschock", peakFrom: "2021-11-01", peakTo: "2022-01-31", troughTo: "2022-12-31" }
+];
+
 /* ------------------------------------------------ B: Kenneth-French-Daten */
 function studyFrench() {
   const f = readOptional(`${SRC}/french-daily.json`);
@@ -86,6 +98,9 @@ function studyFrench() {
                                                   breadthAt: withBreadth ? breadthAt : null });
   const cashDaily = f.riskFreeDaily ? new Map(f.riskFreeDaily) : null;
   const outcomes = forwardOutcomes(f.series.MARKET, HORIZONS, 1);
+  /* Lange Horizonte fuer die Anlegerfrage "Was hiess diese Stufe nach 1 bzw. 5 Jahren?" */
+  const LANG = [{ days: 252, label: "1 Jahr" }, { days: 1260, label: "5 Jahre" }];
+  const outcomesLang = forwardOutcomes(f.series.MARKET, LANG.map((x) => x.days), 1);
   const periods = [
     { id: "1927-1945", from: "1927-01-01", to: "1945-12-31" }, { id: "1946-1972", from: "1946-01-01", to: "1972-12-31" },
     { id: "1973-2000 (vor Regelentwurf-Daten)", from: "1973-01-01", to: "2000-12-31" }, { id: "2001-heute", from: "2001-01-01", to: "2099-12-31" }];
@@ -100,6 +115,10 @@ function studyFrench() {
       outOfSample: evaluate(states.filter((s) => s.date < "2001-01-01"), outcomes, { horizons: HORIZONS, levels: LEVELS }).byHorizon,
       /* Dieselbe Veranschaulichung nur ab 2001 - damit die Seite nicht nur
          den guenstigen Gesamtzeitraum zeigt. */
+      longTerm: LANG.map((x) => ({ ...horizonStats(states, outcomesLang, x.days, LEVELS), label: x.label,
+        /* Juengerer Zeitraum getrennt: haelt das Muster auch ohne die fruehen Jahrzehnte? */
+        since2001: horizonStats(states.filter((s) => s.date >= "2001-01-01"), outcomesLang, x.days, LEVELS) })),
+      crises: crisisReplay(states, f.series.MARKET, KRISEN, LEVELS),
       recentIllustration: [1, 2].map((minLevel) => exposureIllustration(states.filter((s) => s.date >= "2001-01-01"), f.series.MARKET, { minLevel, cashDaily })),
       _states: states
     };
@@ -110,6 +129,8 @@ function studyFrench() {
             priceType: "Gesamtrendite inklusive Ausschüttungen", breadth: f.industryBreadthNote },
     note: "Die Regeln wurden 2026 in Kenntnis der Jahre ab 2001 formuliert (nicht auf Rendite optimiert). Die Jahre vor 2001 sind für sie echte Außer-Stichproben-Daten.",
     variants,
+    calendar: calendarStats(f.series.MARKET),
+    recovery: f.industryBreadth ? recoverySignal(f.series.MARKET, f.industryBreadth) : null,
     _bench: f.series.MARKET
   };
 }
@@ -216,6 +237,14 @@ function evidence(B) {
     contrasts: dd.map((t) => ({ days: t.horizon, label: HORIZON_LABEL[t.horizon], lowShare: t.lowShare, lowSamples: t.lowN,
                                 highShare: t.highShare, highSamples: t.highN, p: t.p, significant: t.significantAfterBH })),
     outOfSample: { to: "2000-12-31", levels: lv(v.outOfSample[h]) },
+    longTerm: v.longTerm,
+    crises: v.crises,
+    crisesNote: "Dieselben Regeln, Tag für Tag nur mit den damals bekannten Kursen. Hoch und Tief sind aus der Reihe bestimmt; „Warnung“ = erster Tag auf „Vorsichtig“ oder „Defensiv“.",
+    calendar: B.calendar,
+    recovery: B.recovery,
+    recoveryNote: "Eigenes Zeichen, kein Teil des Barometers. Historie mit 49 Branchen (Kenneth R. French Data Library); live zählt Vision Universe Einzelaktien – dieselbe Idee, feinere Messung. Feste Schwellen, nicht optimiert.",
+    calendarNote: "Kalender-Statistik aus derselben Reihe – kein Teil des Barometers. Wenige Fälle je Zyklusjahr (rund 24); solche Muster sind bekannt und können sich abschwächen.",
+    longTermNote: "Über alle Handelstage seit Beginn (sich überschneidende Zeiträume). Bei 5 Jahren gibt es je Stufe nur wenige Zeiträume, die sich nicht überschneiden – Unterschiede zwischen den Stufen sind dort nicht belastbar.",
     periods: e.subperiods.map((sp) => ({ id: sp.id.replace(/ \(.*\)$/, ""), levels: sp.levels.filter((x) => x.days > 0).map((x) => ({ level: x.level, label: x.label,
       drawdownShare: x.drawdownShareIndependent, samples: x.independent })) })),
     illustration: {

@@ -1,0 +1,9 @@
+{
+  "research_mode": "WORK_WEB_RESEARCH",
+  "web_access_verified": false,
+  "note": "Owner-Auftrag WORK OWNS THE POST (29.09.): ob der automatisierte ChatGPT-Work-Agent Webseiten oeffnen kann, ist noch nicht gemessen. Der Brief bittet deshalb um eigene Recherche UND liefert das Recherchepaket als Startmaterial; der Agent meldet in research.web_access und sources[].opened_by_agent, was wirklich geschah. Nach dem ersten realen Lauf wird web_access_verified aus dieser Meldung gesetzt - bei false wechselt research_mode auf PACKAGE_ONLY.",
+  "contract_findings": [
+    "PR #299: request_type muss FULL_CREATIVE oder TEXT_REVISION sein.",
+    "PR #300: FULL_CREATIVE verlangt visual_strategy und erlaubt EIN Asset (assets/visual-01.png) - ein Carousel reist deshalb als Bogen."
+  ]
+}

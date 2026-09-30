@@ -316,8 +316,10 @@ test("OR12 · Der Zeitplan veroeffentlicht nicht und entscheidet nicht", () => {
      Schritt ist stillgelegt, if: false), auch wenn make-publish-
      candidate.mjs als geteilte Abhaengigkeit weiterhin importiert
      wird (manual-now-web-candidate.mjs). */
-  for (const noetig of ["run-orchestrator.mjs", "research-web-story.mjs",
-                        "manual-now-web-candidate.mjs"]) {
+  /* Seit "WORK OWNS THE POST" (29.09.): ein Work-Job je Beitrag,
+     gestartet aus der Post-Schlange, eingeholt als Carousel-Kandidat. */
+  for (const noetig of ["run-orchestrator.mjs", "run-post-job.mjs",
+                        "make-carousel-candidates.mjs"]) {
     assert.ok(yml.includes(noetig), "fehlt: " + noetig);
   }
 });
@@ -473,31 +475,31 @@ test("OR16 · Platte, alter Creative-Job- und VORBEREITEN-Schritt sind fuer " +
   assert.match(messen, /steps\.plan\.outputs\.modus\s*!=\s*'MANUAL_TOPIC'/);
 });
 
-test("OR17 · WEB RESEARCH ist der einzige Themenpfad, fuer jeden Modus gleich", () => {
+test("OR17 · WORK-JOB STARTEN ist der einzige Kandidatenpfad, fuer jeden Modus gleich", () => {
+  /* Owner-Auftrag "WORK OWNS THE POST" (29.09.): der fruehere Web-Pfad
+     (research-web-story -> request-creative-web -> manual-now-web-
+     candidate) entschied Story, Hook und Motiv VOR Work. Er ist ersetzt:
+     EIN Work-Job besitzt den ganzen Beitrag, fuer jeden Modus gleich. */
   const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
-  const idx = yml.indexOf("WEB RESEARCH — aktuelle Story finden");
-  assert.ok(idx !== -1, "Schritt WEB RESEARCH fehlt.");
-  const block = yml.slice(idx, idx + 1500);
-  /* Kein modus-Vergleich mehr in der IF-BEDINGUNG (zwischen "if:" und
-     "env:") - der Schritt laeuft fuer JETZT_PRUEFEN, MANUAL_NOW,
-     MANUAL_TOPIC und den Zeitplan gleich. Der modus-Vergleich, der im
-     "env:"-Block danach steht, ist etwas anderes: er setzt
-     VU_SOCIAL_THEMA_FREITEXT nur bei MANUAL_TOPIC (kein Ausschluss,
-     sondern der bestehende Themafilter). */
+  const idx = yml.indexOf("- name: WORK-JOB STARTEN");
+  assert.ok(idx !== -1, "Schritt WORK-JOB STARTEN fehlt.");
+  const block = yml.slice(idx, idx + 900);
   const ifKlausel = block.slice(block.indexOf("if:"), block.indexOf("env:"));
-  assert.ok(!/steps\.plan\.outputs\.modus ==/.test(ifKlausel),
-    "WEB RESEARCH darf keinen Modus mehr ausschliessen: " + ifKlausel);
-  assert.match(block, /research-web-story\.mjs/);
-
-  for (const noetig of ["request-creative-web.mjs", "manual-now-web-candidate.mjs",
-    "dispatch-creative-job.mjs", "open-creative-request.mjs", "verify-creative-dispatch.mjs"]) {
-    assert.ok(yml.includes(noetig), "fehlt im Workflow: " + noetig);
+  assert.ok(!/modus\s*==/.test(ifKlausel),
+    "WORK-JOB STARTEN darf keinen Modus ausschliessen: " + ifKlausel);
+  assert.match(block, /run-post-job\.mjs --write/);
+  for (const alt of ["node scripts/social/research-web-story.mjs",
+    "node scripts/social/request-creative-web.mjs", "node scripts/social/manual-now-web-candidate.mjs"]) {
+    assert.ok(!yml.includes(alt), "alter Vorentscheidungs-Pfad noch aktiv: " + alt);
   }
-
-  /* Keine der beiden neuen Handlungsketten darf Freigabe/Ablehnung
-     ausloesen - dieselbe Invariante wie OR12, nur fuer den neuen Pfad. */
+  const lauf = readFileSync("scripts/social/run-post-job.mjs", "utf8");
+  for (const noetig of ["build-research-package.mjs", "request-carousel.mjs",
+    "dispatch-creative-job.mjs", "open-creative-request.mjs", "verify-creative-dispatch.mjs"]) {
+    assert.ok(lauf.includes(noetig), "fehlt in run-post-job.mjs: " + noetig);
+  }
   for (const flagge of ["--approve", "--reject", "--hold", "--refine"]) {
     assert.ok(!block.includes(flagge));
+    assert.ok(!lauf.includes(flagge));
   }
 });
 
@@ -526,28 +528,18 @@ test("OR18 · Der Web-First-Pfad liest quant/ nirgends", () => {
 /* nicht auf. Die sichere Form ist `node ... || rc=$?` (derselbe        */
 /* Kniff wie die bestehende `tor()`-Funktion im Schritt daneben).       */
 /* ------------------------------------------------------------------ */
-test("OR19 · WEB RESEARCH und VORBEREITEN (WEB) werten Exit 4 sicher unter " +
-  "GitHub Actions' bash -e aus", () => {
-  const yml = readFileSync(".github/workflows/social-orchestrator.yml", "utf8");
-
-  for (const [marker, skript] of [
-    ["WEB RESEARCH — aktuelle Story finden", "research-web-story.mjs"],
-    ["VORBEREITEN (WEB) — bis zum Publishing Gate", "manual-now-web-candidate.mjs"]
-  ]) {
-    const start = yml.indexOf(marker);
-    assert.ok(start !== -1, "Schritt fehlt: " + marker);
-    const block = yml.slice(start, start + 2000);
-
-    assert.match(block, new RegExp("node scripts/social/" + skript.replace(".", "\\.") +
-      "[\\s\\S]{0,220}?\\|\\|\\s*rc=\\$\\?"),
-      marker + " muss `... || rc=$?` verwenden, nicht `...; rc=$?` - sonst bricht " +
-      "GitHub Actions' `bash -e` die Shell vor der Auswertung von Exit 4 ab.");
-
-    /* Der Fehlerfall aus dem realen Lauf: ein alleinstehendes `rc=$?`
-       DIREKT nach dem node-Aufruf (ohne `||` auf demselben Fortsetzungs-
-       block) darf nicht mehr vorkommen. */
-    assert.ok(!new RegExp("node scripts/social/" + skript.replace(".", "\\.") +
-      "[\\s\\S]{0,220}?[^|]\\n\\s*rc=\\$\\?").test(block),
-      marker + " enthaelt noch das unsichere `cmd; rc=$?`-Muster.");
-  }
+test("OR19 · Ein leeres Recherchepaket (Exit 4) bricht den Lauf nicht ab, " +
+  "es wird als Fehlversuch des Auftrags gezaehlt", () => {
+  /* Frueher werteten WEB RESEARCH/VORBEREITEN (WEB) Exit 4 selbst unter
+     bash -e aus. Seit "WORK OWNS THE POST" ruft run-post-job.mjs das
+     Recherchepaket per spawnSync: ein Exit != 0 wird dort als
+     Fehlversuch des Auftrags verbucht (hoechstens drei, dann FAILED) und
+     der Schritt endet mit 0 - der Lauf geht weiter bis zum Festschreiben. */
+  const lauf = readFileSync("scripts/social/run-post-job.mjs", "utf8");
+  assert.match(lauf, /spawnSync/);
+  assert.match(lauf, /schritt\("build-research-package\.mjs"[\s\S]{0,120}if \(paket\.code !== 0\) scheitern/);
+  assert.match(lauf, /Queue\.fehlschlag\(/);
+  const scheitern = lauf.slice(lauf.indexOf("const scheitern"), lauf.indexOf("const scheitern") + 300);
+  assert.match(scheitern, /process\.exit\(0\)/);
 });
+

@@ -94,6 +94,53 @@ seit 1929“). Grundlage ist ein kleiner, veröffentlichter Auszug nur mit
 aggregierten Kennzahlen: `quant/data/market/validation/market-pulse-evidence.json`
 (Studie B, Variante ohne Breite; monatlich mit aktualisiert).
 
+Seit 29.09.2026 zusätzlich das **Marktbarometer in zwei Minuten**
+(`#/maerkte/einordnung`, `discover/ui/market-barometer.js`): je Stufe der
+Anteil im Plus und die typische Rendite nach 1 und 5 Jahren, ein schlechtes
+Jahr (10. Perzentil) und das Rückschlag-Risiko – aus `longTerm` im Auszug
+(`horizonStats`, über alle Handelstage; bei 5 Jahren mit dem Hinweis, dass
+es je Stufe nur wenige unabhängige Zeiträume gibt). Kernaussage der Daten:
+langfristig lag man in jeder Stufe meist im Plus; die Stufe zeigt vor allem,
+wie tief es zwischendurch fallen kann. Alle Details liegen auf
+`#/maerkte/einordnung/details`.
+
+Seit 29.09.2026 außerdem auf derselben Seite:
+
+- **Krisen-Check** („Hätte das Barometer gewarnt?“, `crisisReplay`): sieben
+  große Abstürze seit 1929, Hoch und Tief aus der Reihe bestimmt. Ergebnis:
+  Das Barometer erkannte alle sieben – im Schnitt nach rund −6 % Minus;
+  danach fiel der Markt im Schnitt noch rund −44 %. Am Hoch selbst stand es
+  meist auf „Konstruktiv“ (Ausnahme Dotcom 2000: schon „Vorsichtig“). Es ist
+  kein Frühwarnsystem für den ersten Tag, sehr schnelle Crashs (1987, 2020)
+  fängt es nur teilweise ab, und nach dem Tief wird es spät wieder konstruktiv.
+  **Böden erkennt es nicht:** An allen sieben Tiefs stand es auf „Defensiv“;
+  wieder „Selektiv“ typisch erst rund +28 % über dem Tief (Corona: +45 %, am
+  05.06.2020). Seit 29.09.2026 steht der Stresstest als Bühne direkt nach
+  „Heute“ (Kennzahlen im Median) und als Beleg-Streifen auf der Übersicht –
+  immer mit „nachgerechnet mit den Regeln von heute“ und dieser Grenze.
+- **Was das Barometer verschiebt – und was nicht** (`horizonStats`,
+  `lossShare10`, `since2001`): Die typische Rendite nach 1 Jahr ist bei allen
+  Stufen ähnlich (+12 bis +16 %; „Defensiv“ am höchsten, weil nach Crashs
+  starke Erholungen folgen). Deutlich verschoben werden die Chance, nach
+  1 Jahr im Plus zu sein (67 von 100 bei „Vorsichtig“ bis 80 bei
+  „Konstruktiv“), und der Anteil mit mehr als 10 % Verlust (20 bis 9 von
+  100). Seit 2001 für sich gerechnet dasselbe Muster (74 bzw. 86 im Plus;
+  21 bzw. 3 mit mehr als 10 % Verlust). Anzeige-Entscheidung 30.09.2026: Die
+  Übersicht zeigt deshalb „x von 100 im Plus“ als Hauptzahl, die Rendite nur
+  als ehrliche Nebenzahl.
+- **Frühe Erholungszeichen** (`recoverySignal`), eigenes Zeichen und kein
+  Teil des Barometers: Breitenschub im Bärenmarkt (Anteil über der
+  50-Tage-Linie binnen 20 Handelstagen von ≤ 20 % auf ≥ 65 %; feste Schwellen,
+  nicht optimiert). Über 16 Bärenmärkte seit 1929: erstes tragendes Zeichen
+  typisch +11 % über dem Tief (Barometer „Selektiv“: +28 %), aber in 4 von 16
+  kam das erste Zeichen zu früh (1930 −77 %, 1974 −35 %, 2001 −34 %,
+  2008 −47 %). Geprüft und verworfen: das Barometer selbst auf Böden zu
+  trimmen – das wäre Kurvenanpassung an sieben bekannte Crashs.
+- **Kalender-Kontext** (`calendarStats`), ausdrücklich kein Teil des
+  Barometers: Kalendermonate mit t-Test und Benjamini-Hochberg,
+  US-Präsidentschaftszyklus (1928 = Wahljahr) und die 12 Monate nach jedem
+  Monatsende je Zyklusjahr – mit Fallzahlen (rund 24 je Zyklusjahr).
+
 Regeln der Darstellung (durch Tests und Browser-QA abgesichert):
 
 - Kernaussage ist das Rückschlag-Risiko je Stufe, mit markierter heutiger Stufe.

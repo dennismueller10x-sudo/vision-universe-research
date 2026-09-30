@@ -474,13 +474,16 @@
           el("h1", { class: "dx-mk-titel", text: "Märkte" }),
           el("p", { class: "dx-mk-unter", text: "Kurse, Stimmung und die größten Bewegungen · Stand " + (standText(d.snap.generatedAt) || "unbekannt") })
         ]),
-        sprungleiste(gruppen)
       ]);
       function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
+      /* Owner-Feedback: das Barometer ganz oben, dann die Kurse. */
+      if (MI && MI.stimmung) dazu(MI.stimmung(d.puls, d.beleg));
+      var MBk = global.VUDiscover && global.VUDiscover.MarketBarometer;
+      if (MBk && MBk.klartext && d.puls) dazu(MBk.klartext(d.puls, d.beleg));
+      else if (d.puls && !d.puls.environment) dazu(pulsBereich(d.puls));
+      seite.appendChild(sprungleiste(gruppen));
       var aktien = gruppen.filter(function (g) { return g.id === "aktien"; })[0];
       if (aktien) dazu(gruppenSektion(aktien, layer));
-      if (MI && MI.stimmung) dazu(MI.stimmung(d.puls, d.beleg));
-      else if (d.puls && !d.puls.environment) dazu(pulsBereich(d.puls));
       dazu(moversBereich(d.puls));
       dazu(marktJetzt(d.contracts, d.pcfg, d.jetzt));
       var weitere = gruppen.filter(function (g) { return g.id !== "aktien"; });
@@ -495,18 +498,46 @@
   }
 
   /**
-   * EINORDNUNG (#/maerkte/einordnung): die Erklaerung, einen Tipp tiefer.
-   * Einsteiger zuerst, dann "Fuer Fortgeschrittene".
+   * MARKTBAROMETER IN ZWEI MINUTEN (#/maerkte/einordnung): grosse Zahlen,
+   * ein Diagramm, Symbol-Kacheln, Stufen zum Wischen (ui/market-barometer.js).
    */
   function renderEinordnung(root, ctx) {
     ctx = ctx || {};
+    /* Der Router reicht Unterseiten durch (#/maerkte/einordnung/details) -
+       so bleibt app.js im Ressourcenbudget der Discover-QA. */
+    if (ctx.teil === "details") return renderDetails(root, ctx);
+    if (global.document) global.document.title = "Marktbarometer — Discover — Vision Universe®";
+    var MB = global.VUDiscover && global.VUDiscover.MarketBarometer;
+    var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
+    return ladeDaten(ctx).then(function (d) {
+      if (ctx.isActive && !ctx.isActive()) return;
+      var seite = el("div", { class: "dx-page dx-maerkte dx-m3 dx-bm" }, [
+        el("a", { class: "dx-back", href: "#/maerkte", text: "← Märkte" }),
+        el("header", { class: "dx-mk-kopf" }, [el("h1", { class: "dx-mk-titel", text: "Marktbarometer" }),
+          el("p", { class: "dx-mk-unter", text: "In 2 Minuten: wo das Barometer steht, was das früher für Anleger hieß – und warum." })])
+      ]);
+      var teile = MB && d.puls ? MB.render(d.puls, d.beleg, d.jetzt, d.hist) : null;
+      if (teile) teile.forEach(function (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); });
+      else seite.appendChild(el("p", { class: "dx-m3-leer", text: "Das Marktbarometer ist gerade nicht verfügbar." }));
+      root.appendChild(seite);
+      if (MI && MI.beleben) MI.beleben(root);
+    });
+  }
+
+  /**
+   * ALLE DETAILS (#/maerkte/einordnung/details): die ganze Erklaerung fuer
+   * alle, die es genau wissen wollen. Einsteiger zuerst, dann "Fuer Fortgeschrittene".
+   */
+  function renderDetails(root, ctx) {
+    ctx = ctx || {};
+    if (global.document) global.document.title = "Marktbarometer – alle Details — Discover — Vision Universe®";
     var MI = global.VUDiscover && global.VUDiscover.MarketIntelligence;
     return ladeDaten(ctx).then(function (d) {
       if (ctx.isActive && !ctx.isActive()) return;
       var puls = d.puls, nm = d.nm, beleg = d.beleg, hist = d.hist;
       var seite = el("div", { class: "dx-page dx-maerkte dx-m3 dx-mk-einordnung" }, [
-        el("a", { class: "dx-back", href: "#/maerkte", text: "← Märkte" }),
-        el("h1", { class: "dx-mk-titel is-klein", text: "Marktstimmung verstehen" })
+        el("a", { class: "dx-back", href: "#/maerkte/einordnung", text: "← Marktbarometer" }),
+        el("h1", { class: "dx-mk-titel is-klein", text: "Marktbarometer – alle Details" })
       ]);
       function dazu(n) { if (n) { if (n.classList) n.classList.add("dx-m3-reveal"); seite.appendChild(n); } return n; }
       var verlaufNode = null, heroNode = null;
@@ -531,7 +562,7 @@
       }
       var direkt = heroNode ? direktZu(seite, []) : null;
       if (direkt) seite.insertBefore(direkt, heroNode);
-      seite.appendChild(el("p", { class: "dx-maerkte-stand" }, [el("a", { href: "#/maerkte", text: "← Zurück zu allen Märkten" })]));
+      seite.appendChild(el("p", { class: "dx-maerkte-stand" }, [el("a", { href: "#/maerkte/einordnung", text: "← Zurück zum Marktbarometer" })]));
       root.appendChild(seite);
       if (verlaufNode && verlaufNode._zeichnen) verlaufNode._zeichnen();
       if (MI && MI.beleben) MI.beleben(root);
@@ -539,7 +570,7 @@
   }
 
   global.VUDiscover = global.VUDiscover || {};
-  global.VUDiscover.Markets = { render: render, renderEinordnung: renderEinordnung, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
+  global.VUDiscover.Markets = { render: render, renderEinordnung: renderEinordnung, renderDetails: renderDetails, gruppieren: gruppieren, wertText: wertText, kopfText: kopfText, semantikKurz: semantikKurz,
                                 veraenderungText: veraenderungText, standText: standText, marktText: marktText,
                                 frischeText: frischeText, referenzText: referenzText,
                                 marktJetzt: marktJetzt, marktJetztItems: marktJetztItems, pulsBereich: pulsBereich, moversBereich: moversBereich, namen: namen,

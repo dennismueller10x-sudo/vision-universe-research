@@ -12,6 +12,9 @@
 // zehn Bildschirme visuelle Abfolge, Einordnung auf den Detailseiten, axe hell/dunkel.
 // Markets 4.1: Uebersicht (Kurse zuerst, Marktstimmung, Top & Flop) und die
 // Erklaerung auf eigener Seite (#/maerkte/einordnung).
+// Markets 4.2: Marktbarometer ganz oben; #/maerkte/einordnung als
+// 2-Minuten-Seite (Wetter, grosse Zahlen, Vergleich, Gruende, Stufen),
+// alle Details auf #/maerkte/einordnung/details.
 // Usage: node scripts/discover/browser-qa-maerkte.mjs --url https://research.visionuniverse.de --out /tmp/maerkte-qa [--engine webkit] [--realtime]
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -99,10 +102,24 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
    kartenLinks:[...document.querySelectorAll('a.dx-markt-karte')].map(a=>a.getAttribute('href'))};});
  const pos=id=>ov?ov.kinder.indexOf(id):-1;
  p('Uebersicht: Titel "Märkte" sichtbar, Kategorien vor den Kursen',!!ov&&ov.titel==='Märkte'&&ov.titelSichtbar&&pos('dx-maerkte-nav')>=0&&pos('dx-maerkte-nav')<pos('maerkte-aktien'),ov&&ov.kinder);
- p('Uebersicht: Aktienmaerkte -> Marktstimmung -> Top & Flop -> Was heute auffaellt -> weitere Maerkte',
-   pos('maerkte-aktien')<pos('maerkte-stimmung')&&pos('maerkte-stimmung')<pos('maerkte-movers')&&pos('maerkte-movers')<pos('maerkte-jetzt')&&pos('maerkte-jetzt')<pos('maerkte-energie'),ov&&ov.kinder);
- p('Uebersicht: Marktstimmung mit Stufe, Rueckschlag-Risiko und Weg zur Einordnung',!!ov&&!!ov.stimmung&&/Rückschlag-Risiko: (normal|erhöht|gering)/.test(ov.stimmung.text)&&ov.stimmung.link==='#/maerkte/einordnung',ov&&ov.stimmung&&ov.stimmung.link);
+ p('Uebersicht: Marktbarometer ganz oben -> Kategorien -> Aktienmaerkte -> Top & Flop -> Was heute auffaellt -> weitere Maerkte',
+   pos('maerkte-stimmung')>=0&&pos('maerkte-stimmung')<pos('dx-maerkte-nav')&&pos('dx-maerkte-nav')<pos('maerkte-aktien')&&pos('maerkte-aktien')<pos('maerkte-movers')&&pos('maerkte-movers')<pos('maerkte-jetzt')&&pos('maerkte-jetzt')<pos('maerkte-energie'),ov&&ov.kinder);
+ p('Uebersicht: Marktbarometer mit Stufe, Rueckschlag-Risiko und eindeutigem Knopf zur 2-Minuten-Erklaerung',!!ov&&!!ov.stimmung&&/Rückschlag-Risiko: (normal|erhöht|gering)/.test(ov.stimmung.text)&&
+   /Was heißt „[^“]+“\?/.test(ov.stimmung.text)&&/In 2 Minuten erklärt/.test(ov.stimmung.text)&&ov.stimmung.link==='#/maerkte/einordnung',ov&&ov.stimmung&&ov.stimmung.link);
  p('Uebersicht: keine Analyse-Abschnitte auf der Kursseite',!!ov&&!ov.analyse,null);
+ {const beleg=await page.evaluate(()=>{const a=document.querySelector('#maerkte-stimmung a.dx-m3-st-beleg');return a?{href:a.getAttribute('href'),text:a.textContent}:null;});
+  p('Uebersicht: Stresstest-Beleg im Marktbarometer (x von y Abstuerzen, nachgerechnet)',!!beleg&&beleg.href==='#/maerkte/einordnung'&&/\d von \d großen Abstürzen früh erkannt/.test(beleg.text)&&/nachgerechnet/.test(beleg.text),beleg);}
+/* Markets 4.6: Knopf zur Erklaerung im Discover-Gruen vor dem Stresstest-Streifen,
+    darunter "Im Klartext" mit den grossen Zahlen und dem Schnitt aller Tage. */
+ {const kt=await page.evaluate(()=>{const st=document.getElementById('maerkte-stimmung'),k=document.getElementById('maerkte-klartext');
+   const link=st&&st.querySelector('a.dx-m3-st-link'),beleg=st&&st.querySelector('a.dx-m3-st-beleg');
+   return {knopfVorBeleg:!!link&&!!beleg&&!!(link.compareDocumentPosition(beleg)&Node.DOCUMENT_POSITION_FOLLOWING),
+    knopfFarbe:link?getComputedStyle(link).backgroundColor:'',knopfHoehe:link?link.getBoundingClientRect().height:0,
+    box:k?{text:k.textContent,zahlen:k.querySelectorAll('.dx-m3-kt-zahl').length,held:(()=>{const h=k.querySelector('.dx-m3-kt-held-zahl');return h?{text:h.textContent,px:parseFloat(getComputedStyle(h).fontSize)}:null;})(),balken:k.querySelectorAll('.dx-m3-kt-stufen li').length,heute:k.querySelectorAll('.dx-m3-kt-stufen li.is-heute').length,stapel:k.querySelectorAll('.dx-m3-kt-stapel').length,schnitt:(k.textContent.match(/Schnitt aller Tage/g)||[]).length}:null};});
+  p('Uebersicht: Knopf "Was heisst ...?" gruen, gross und vor dem Stresstest-Streifen',kt.knopfVorBeleg&&kt.knopfFarbe==='rgb(200, 245, 49)'&&kt.knopfHoehe>=60,kt);
+  p('Uebersicht: "Im Klartext" direkt unter dem Barometer - Bedeutung, Hauptzahl x von 100 im Plus, Aufteilung je Stufe, Rendite als Nebenzahl, Hinweis',
+   pos('maerkte-klartext')===pos('maerkte-stimmung')+1&&!!kt.box&&kt.box.zahlen===3&&!!kt.box.held&&/^\d+ von 100$/.test(kt.box.held.text)&&kt.box.held.px>=48&&kt.box.balken>=4&&kt.box.heute===1&&kt.box.stapel===kt.box.balken+1&&/verschiebt kaum die Höhe der typischen Rendite/.test(kt.box.text)&&/ähnlich dem S&P 500/.test(kt.box.text)&&/auf einen Blick/.test(kt.box.text)&&/\d+ im Plus/.test(kt.box.text)&&
+   /kein verlässlicher Hinweis/.test(kt.box.text)&&!/Kaufsignal|kaufen|verkaufen|sollten Sie/i.test(kt.box.text),kt.box&&{zahlen:kt.box.zahlen,schnitt:kt.box.schnitt,held:kt.box.held,balken:kt.box.balken,heute:kt.box.heute,stapel:kt.box.stapel});}
  p('Markt jetzt: Geschichten mit Stand, jede Bewegung verlinkt',!!ov&&ov.stories.length>=1&&ov.stories.every(s=>/Stand|Handelstag/.test(s.stand)&&s.links.length&&s.links.every(h=>/^#\/maerkte\/[A-Z0-9_]+$/.test(h))),ov&&ov.stories);
  p('Movers verlinken auf Aktienseiten',!!ov&&(ov.movers.length===0||ov.movers.every(h=>/^#\/s\/US_REAL\//.test(h))),ov&&ov.movers.slice(0,3));
  p('Jede Karte mit Wert ist ein Link zum Marktdetail',!!ov&&ov.kartenLinks.length>=28&&ov.kartenLinks.every(h=>/^#\/maerkte\//.test(h)),ov&&ov.kartenLinks.length);
@@ -113,11 +130,45 @@ for(const [key,viewport] of [['mobile',{width:390,height:844}],['desktop',{width
   const sprung=await page.evaluate(()=>{const r=document.getElementById('maerkte-krypto').getBoundingClientRect();return {y:scrollY,top:r.top};});
   p('Sprungleiste fuehrt zur Gruppe',sprung.y!==y0&&sprung.top>=-5&&sprung.top<250,sprung);
   await page.screenshot({path:`${out}/maerkte-${key}-krypto.png`});}
- /* Die Erklaerung: #/maerkte/einordnung */
+ /* Markets 4.2: das Marktbarometer in zwei Minuten (#/maerkte/einordnung). */
  await page.goto(base+'/discover/#/maerkte/einordnung',{waitUntil:'networkidle'});
+ await page.waitForSelector('#bm-heute',{timeout:30000});
+ const bm=await page.evaluate(()=>{const q=s=>document.querySelector(s);const t=s=>(q(s)||{}).textContent||'';
+  return {folge:[...document.querySelectorAll('.dx-bm>section')].map(n=>n.id),zurueck:(q('.dx-bm>.dx-back')||{getAttribute:()=>null}).getAttribute('href'),
+   titel:t('.dx-bm h1'),stufe:t('.bm-heute-stufe'),wetter:t('.bm-heute-wetter'),leiste:document.querySelectorAll('.bm-leiste li').length,
+   zahlen:[...document.querySelectorAll('.bm-zahl b')].map(b=>b.textContent),fazit:t('.bm-fazit'),
+   tabs:[...document.querySelectorAll('.bm-tabs button')].map(b=>b.textContent),saeulen:document.querySelectorAll('.bm-saeule').length,heute:document.querySelectorAll('.bm-saeule.is-heute').length,
+   chartFazit:t('.bm-chart-fazit'),gruende:document.querySelectorAll('.bm-grund').length,stufen:document.querySelectorAll('.bm-stufe').length,
+   mehr:(q('a.bm-mehr')||{getAttribute:()=>null}).getAttribute('href'),text:(q('.dx-bm')||{}).textContent||'',
+   querlauf:document.documentElement.scrollWidth>innerWidth};});
+ p('Marktbarometer: Titel, Weg zurueck, alle Teile in fester Reihenfolge',bm.titel==='Marktbarometer'&&bm.zurueck==='#/maerkte'&&
+   JSON.stringify(bm.folge)===JSON.stringify(['bm-heute','bm-krisen','bm-erholung','bm-chance','bm-vergleich','bm-warum','bm-wende','bm-stufen','bm-kalender']),{folge:bm.folge,zurueck:bm.zurueck});
+ p('Marktbarometer: Stufe als Wetter mit Leiste der fuenf Stufen',bm.stufe.length>=5&&bm.wetter.length>=4&&bm.leiste===5,{stufe:bm.stufe,wetter:bm.wetter});
+ p('Marktbarometer: vier grosse Zahlen in Prozent und ein Fazit',bm.zahlen.length===4&&bm.zahlen.every(z=>/%$/.test(z))&&/Kurz gesagt:/.test(bm.fazit),bm.zahlen);
+ p('Marktbarometer: Vergleich mit vier Ansichten, heutige Stufe markiert',bm.tabs.length===4&&bm.saeulen>=4&&bm.heute===1&&bm.chartFazit.length>20,{tabs:bm.tabs,saeulen:bm.saeulen});
+ {const vor=bm.chartFazit;await page.click('.bm-tabs button[data-ansicht="schlecht"]');await page.waitForTimeout(150);
+  const nach=await page.evaluate(()=>({f:document.querySelector('.bm-chart-fazit').textContent,p:document.querySelector('.bm-tabs button[aria-pressed="true"]').dataset.ansicht}));
+  p('Marktbarometer: Ansichtswechsel aendert Diagramm und Aussage',nach.p==='schlecht'&&nach.f!==vor&&/schlechten Jahr/.test(nach.f),nach);}
+ p('Marktbarometer: Gruende als Symbol-Kacheln, fuenf Stufen zum Wischen, Weg zu allen Details',bm.gruende>=3&&bm.stufen===5&&bm.mehr==='#/maerkte/einordnung/details',{gruende:bm.gruende,stufen:bm.stufen,mehr:bm.mehr});
+ {const kr=await page.evaluate(()=>{const k=document.getElementById('bm-krisen');const c=document.getElementById('bm-kalender');
+   return {krisen:k?k.querySelectorAll('.bm-krisen-tabelle tbody tr').length:0,zahlen:k?[...k.querySelectorAll('.bm-krisen-zahl b')].map(b=>b.textContent):[],grenze:k?/Boden voraus/.test(k.textContent)&&/gab es damals noch nicht/.test(k.textContent):false,
+    corona:k?/Corona-Crash/.test(k.textContent):false,dotcom:k?/Dotcom-Blase/.test(k.textContent):false,
+    kalender:c?{getrennt:/kein Teil des Barometers/.test(c.textContent),jetzt:(c.querySelector('.bm-kal-jetzt-kopf')||{}).textContent||'',monate:c.querySelectorAll('.bm-monat').length,
+     monatJetzt:c.querySelectorAll('.bm-monat.is-jetzt').length,zyklus:c.querySelectorAll('.bm-zjahr').length,zyklusJetzt:c.querySelectorAll('.bm-zjahr.is-jetzt').length}:null};});
+  p('Stresstest: direkt nach Heute, Tabelle der sieben Abstuerze, vier Kennzahlen, Corona und Dotcom dabei, ehrliche Grenze (Boeden, nachgerechnet)',kr.krisen>=7&&kr.zahlen.length===4&&kr.corona&&kr.dotcom&&kr.grenze,{krisen:kr.krisen,zahlen:kr.zahlen});
+  p('Kalender-Kontext: getrennt vom Barometer, 12 Monate, 4 Zyklusjahre, jetzt markiert',!!kr.kalender&&kr.kalender.getrennt&&kr.kalender.monate===12&&kr.kalender.monatJetzt===1&&kr.kalender.zyklus===4&&kr.kalender.zyklusJetzt===1&&/^Jetzt: /.test(kr.kalender.jetzt),kr.kalender);}
+ {const er=await page.evaluate(()=>{const e=document.getElementById('bm-erholung');if(!e)return null;
+   return {getrennt:/kein Teil des Barometers/.test(e.textContent),status:(e.querySelector('.bm-erh-status b')||{}).textContent||'',
+    zeilen:e.querySelectorAll('.bm-erh-tabelle tbody tr').length,zufrueh:e.querySelectorAll('.bm-erh-tabelle td.is-falsch').length,handeln:/kein Signal zum Handeln/.test(e.textContent)};});
+  p('Fruehe Erholungszeichen: eigenes Zeichen, Status jetzt, erstes Zeichen je grossem Absturz, zu fruehe Zeichen sichtbar',!!er&&er.getrennt&&er.status.length>5&&er.zeilen>=7&&er.zufrueh>=1&&er.handeln,er);}
+ p('Marktbarometer: Quelle, Hinweis, keine Handlungsaufforderung',/French Data Library/.test(bm.text)&&/Keine Anlageberatung/.test(bm.text)&&!/jetzt kaufen|verkaufen Sie|Kaufsignal/i.test(bm.text),null);
+ if(key==='mobile')p('Marktbarometer: kein Querlauf auf dem Telefon',!bm.querlauf,null);
+ await page.screenshot({path:`${out}/barometer-${key}.png`,fullPage:true});
+ /* Alle Details: #/maerkte/einordnung/details */
+ await page.goto(base+'/discover/#/maerkte/einordnung/details',{waitUntil:'networkidle'});
  await page.waitForSelector('.dx-m3-hero',{timeout:30000});
- p('Einordnung: eigene Seite mit Titel und Weg zurueck zu den Maerkten',await page.evaluate(()=>{const b=document.querySelector('.dx-mk-einordnung>.dx-back');const h=document.querySelector('.dx-mk-einordnung h1');
-   return !!b&&b.getAttribute('href')==='#/maerkte'&&!!h&&/Marktstimmung/.test(h.textContent);}),null);
+ p('Details: eigene Seite mit Titel und Weg zurueck zum Marktbarometer',await page.evaluate(()=>{const b=document.querySelector('.dx-mk-einordnung>.dx-back');const h=document.querySelector('.dx-mk-einordnung h1');
+   return !!b&&b.getAttribute('href')==='#/maerkte/einordnung'&&!!h&&/alle Details/.test(h.textContent);}),null);
  /* Der Hero schneidet Ueberstand ab (overflow:hidden) - ein zu breiter Inhalt
     faellt deshalb nicht als Seiten-Querlauf auf, sondern als verschobener
     Gauge und abgeschnittener Text. Direkt messen. */
@@ -259,11 +310,11 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
 {
  let axePath=null;try{axePath=require.resolve('axe-core/axe.min.js');}catch{}
  if(axePath){
-  for(const [route,scheme] of [['#/maerkte','light'],['#/maerkte','dark'],['#/maerkte/einordnung','light'],['#/maerkte/einordnung','dark'],['#/maerkte/QQQ','light'],['#/maerkte/US10Y','dark']]){
+  for(const [route,scheme] of [['#/maerkte','light'],['#/maerkte','dark'],['#/maerkte/einordnung','light'],['#/maerkte/einordnung','dark'],['#/maerkte/einordnung/details','light'],['#/maerkte/einordnung/details','dark'],['#/maerkte/QQQ','light'],['#/maerkte/US10Y','dark']]){
    /* Je Route eine frische Seite mit festem Farbschema: kein Themenwechsel
       (und keine Farbuebergaenge) waehrend der Messung. */
    const page=await browser.newPage({viewport:{width:390,height:844},colorScheme:scheme,reducedMotion:'reduce'});
-   await page.goto(base+'/discover/'+route,{waitUntil:'networkidle'});await page.waitForSelector(route==='#/maerkte'?'.dx-markt-karte':route==='#/maerkte/einordnung'?'.dx-m3-hero':'.dx-md h1');
+   await page.goto(base+'/discover/'+route,{waitUntil:'networkidle'});await page.waitForSelector(route==='#/maerkte'?'.dx-markt-karte':route==='#/maerkte/einordnung'?'#bm-heute':route==='#/maerkte/einordnung/details'?'.dx-m3-hero':'.dx-md h1');
    await page.waitForTimeout(400);
    await page.addScriptTag({path:axePath});
    const v=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa']}}).then(r=>r.violations.filter(x=>['critical','serious'].includes(x.impact)).map(x=>({id:x.id,nodes:x.nodes.slice(0,3).map(n=>n.target)}))));
@@ -282,10 +333,14 @@ for(const [key,viewport,scheme] of [['390-light',{width:390,height:844},'light']
  check('Navigation: Reload auf Detailroute',(await page.textContent('.dx-md h1')).trim()==='Bitcoin',null);
  await page.goBack({waitUntil:'networkidle'});await page.waitForSelector('.dx-maerkte',{timeout:15000}).catch(()=>null);
  check('Navigation: Browser-Zurueck fuehrt zur Uebersicht',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
- await page.waitForSelector('a.dx-m3-st-link');await page.click('a.dx-m3-st-link');await page.waitForSelector('.dx-m3-hero');
- check('Navigation: Marktstimmung oeffnet die Einordnung',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung',null);
- await page.click('.dx-mk-einordnung>.dx-back');await page.waitForSelector('#maerkte-stimmung');
- check('Navigation: aus der Einordnung zurueck zu den Maerkten',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
+ await page.waitForSelector('a.dx-m3-st-link');await page.click('a.dx-m3-st-link');await page.waitForSelector('#bm-heute');
+ check('Navigation: Marktbarometer oeffnet die 2-Minuten-Erklaerung',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung',null);
+ await page.click('a.bm-mehr');await page.waitForSelector('.dx-m3-hero');
+ check('Navigation: von dort zu allen Details',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung/details',null);
+ await page.click('.dx-mk-einordnung>.dx-back');await page.waitForSelector('#bm-heute');
+ check('Navigation: aus den Details zurueck zum Marktbarometer',(await page.evaluate(()=>location.hash))==='#/maerkte/einordnung',null);
+ await page.click('.dx-bm>.dx-back');await page.waitForSelector('#maerkte-stimmung');
+ check('Navigation: aus dem Marktbarometer zurueck zu den Maerkten',(await page.evaluate(()=>location.hash))==='#/maerkte',null);
  await page.close();
 }
 /* Realtime der Tracker (Markets 3.0, 58.15) - nur mit --realtime gegen die

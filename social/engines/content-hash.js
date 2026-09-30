@@ -39,13 +39,21 @@
   var nodeCrypto = isNode ? require("crypto") : null;
 
   /** Die kanonische Form. Feste Reihenfolge, nicht sortiert. */
+  /* Ein Carousel (Owner-Auftrag "WORK OWNS THE POST", 29.09.) macht
+     ALLE Slides oeffentlich - sie gehoeren deshalb in den Abdruck. Ein
+     Einzelbild behaelt exakt die bisherige Form: bereits erteilte
+     Freigaben bleiben gueltig. */
   function canonical(spec) {
-    return JSON.stringify({
+    var o = {
       contentId: String((spec && spec.contentId) || ""),
-      imageUrl: String((spec && spec.imageUrl) || ""),
-      caption: String(spec && spec.caption !== undefined && spec.caption !== null
-        ? spec.caption : "")
-    });
+      imageUrl: String((spec && spec.imageUrl) || "")
+    };
+    if (spec && Array.isArray(spec.imageUrls) && spec.imageUrls.length > 1) {
+      o.imageUrls = spec.imageUrls.map(function (u) { return String(u); });
+    }
+    o.caption = String(spec && spec.caption !== undefined && spec.caption !== null
+      ? spec.caption : "");
+    return JSON.stringify(o);
   }
 
   /** SHA-256 in Hex. Synchron, weil dieses Repository Node voraussetzt. */

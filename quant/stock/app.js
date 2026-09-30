@@ -46,7 +46,7 @@
         return S.loadJSON(S.BASE + "data/universe/market-capability.json", { attempts: 1 }).then(function (capabilities) {
           var member = capabilities && capabilities.members && capabilities.members.filter(function (m) { return m.s === ticker; })[0];
           if (member) {
-            window.location.assign("/vu2/?view=stock&ticker=" + encodeURIComponent(ticker));
+            window.location.assign("/quant/#/aktie/" + encodeURIComponent(ticker));
             return;
           }
           return S.loadJSON(GOLDEN_FIVE_PANEL, { attempts: 1 }).catch(function () { return null; })

@@ -14,6 +14,13 @@
 
    Zu jeder Regel gehoert die Gegenprobe: der Fall, in dem der Test FALLEN
    muss. Ein Test, der nur den guten Fall kennt, haelt nichts.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – "die Seite benutzt
+   den Vertrag" prüfte vu2/experience.js und vu2/index.html; beide sind
+   ersetzt (experience.js geloescht, vu2/index.html nur noch Umleitung). Die
+   Zusage richtet sich jetzt an die neue Aktienseite quant/app/page-stock.js
+   (samt View Model quant/app/view-model.js) und an die kanonische Seite
+   quant/index.html. Die Engine-Faelle oben und unten sind unveraendert.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -218,17 +225,29 @@ test("the measured titles land in the shape their data justifies", async () => {
 });
 
 test("the page uses the contract and does not keep a second copy of the rule", () => {
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  const ohneKommentare = seite.replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.match(ohneKommentare, /VUJourneyShape\.assess\(VUJourneyShape\.stationsFrom\(/);
+  const ohneKommentare = (t) => t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|\s)\/\/[^\n]*/g, "$1");
+  /* Die Aktienseite und ihr View Model zusammen: wo die Form gebildet wird,
+     ist eine Entscheidung des Frontends - DASS sie aus dem Vertrag kommt,
+     ist die Zusage. */
+  const seite = ["quant/app/page-stock.js", "quant/app/view-model.js"]
+    .map((p) => ohneKommentare(readFileSync(join(ROOT, p), "utf8"))).join("\n");
+  assert.match(seite, /VUJourneyShape\.assess\(\s*(?:global\.)?VUJourneyShape\.stationsFrom\(|Shape\.assess\(\s*Shape\.stationsFrom\(/,
+    "die neue Aktienseite bildet die verdichtete Reise nicht aus quant/engines/journey-shape.js");
   /* Die Substanzregeln duerfen NICHT zweimal existieren: eine zweite Kopie
      in der Seite driftet von der Messung weg, und dann zeigt die Seite eine
      andere Form als die Zahl im Bericht behauptet. */
-  assert.equal(/function stockStations\(/.test(ohneKommentare), false,
-    "die Seite haelt wieder eine eigene Fassung der Substanzregeln");
-  /* Und die verdichtete Auskunft muss ueberhaupt gesetzt werden. */
-  assert.match(ohneKommentare, /journeyGapSection\(shape/);
-  const html = readFileSync(join(ROOT, "vu2/index.html"), "utf8");
+  for (const datei of ["page-stock.js", "view-model.js", "pages.js", "app.js"]) {
+    const text = ohneKommentare(readFileSync(join(ROOT, "quant/app", datei), "utf8"));
+    assert.equal(/function stockStations\(/.test(text), false,
+      "quant/app/" + datei + " haelt wieder eine eigene Fassung der Substanzregeln");
+  }
+  /* Und die verdichtete Auskunft muss ueberhaupt gesetzt werden: die
+     Gruppen der Form (headline/explanation) erreichen die Seite. */
+  const stockPage = ohneKommentare(readFileSync(join(ROOT, "quant/app/page-stock.js"), "utf8"));
+  assert.match(stockPage, /\.groups\b[\s\S]{0,400}\.(headline|explanation)\b/,
+    "die Aktienseite setzt die Gruppen der verdichteten Reise nicht");
+  /* Die kanonische Seite laedt die Engine. */
+  const html = readFileSync(join(ROOT, "quant/index.html"), "utf8");
   assert.match(html, /engines\/journey-shape\.js/);
 });
 

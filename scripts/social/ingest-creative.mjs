@@ -164,7 +164,10 @@ export function pruefeErgebnis(ref, contentId, options) {
     briefId: brief.brief_id,
     contentId: contentId,
     briefBlobSha: shaGerechnet,
-    hookType: brief.hook_strategy && brief.hook_strategy.hook_type
+    hookType: brief.hook_strategy && brief.hook_strategy.hook_type,
+    requestType: Contract.istCarousel(brief) ? Contract.FULL_CAROUSEL : (brief.request_type || null),
+    requireBrandElements: !!(brief.authoring_requirements &&
+      brief.authoring_requirements.brand_elements_announcement_required)
   });
 
   /* Die Assets: frisch aus dem Ref gelesen, nicht aus dem, was der
@@ -449,7 +452,8 @@ export function legeAb(ref, contentId, bericht) {
 export function hydrateVerifiedJob(contentId, jobEintrag, options) {
   options = options || {};
   const repoRoot = options.repoRoot || ROOT;
-  const zweig = "authoring/request/" + contentId;
+  const anlauf = Number(jobEintrag && jobEintrag.attempt) || 1;
+  const zweig = "authoring/request/" + contentId + (anlauf > 1 ? "-attempt" + anlauf : "");
 
   const kandidaten = [];
   if (jobEintrag && jobEintrag.resultCommitSha) {

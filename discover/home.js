@@ -49,7 +49,10 @@
     'momentum-leaders':'seit-monaten-im-aufwind', 'breakout-watch':'gerade-in-bewegung',
     'new-52-week-highs':'neue-jahreshochs', 'sector-leaders':'die-staerksten-je-branche',
     'bekannte-namen':'bekannte-namen-in-bewegung', 'market-leaders':'die-staerksten-aktien',
-    'top-10':'momentum-leader', 'megatrends':'megatrends'
+    'top-10':'momentum-leader', 'megatrends':'megatrends',
+    'sp500-staerkste':'sp500-staerkste', 'djia-staerkste':'djia-staerkste',
+    'ndx-staerkste':'ndx-staerkste', 'qualitaet-zum-preis':'qualitaet-zum-preis',
+    'qualitaet-wachstum':'qualitaet-wachstum'
   };
   function perspectiveImage(rowId) { return perspectiveImages[rowId] ? '/assets/discover-perspektiven/' + perspectiveImages[rowId] + '.jpeg' : null; }
   function strategyLink(surface,ctx){
@@ -227,7 +230,7 @@
     var section=node('section','v2-pulse-teaser');section.dataset.surface='market-pulse';
     section.dataset.archetype='market';
     var copy=node('div','');copy.append(node('p','v2-eyebrow','Discover · Märkte'),node('h2','','Market Pulse'),node('p','v2-pulse-statement','Wie sieht der Markt gerade insgesamt aus?'));
-    copy.appendChild(link('Marktstimmung verstehen →','#/maerkte/einordnung','v2-pill v2-pill-light'));section.appendChild(copy);
+    copy.appendChild(link('Marktbarometer verstehen →','#/maerkte/einordnung','v2-pill v2-pill-light'));section.appendChild(copy);
     S.loadJSON('/quant/data/market/intelligence/market-pulse.json').then(function(p){
       if(!section.isConnected||!p.environment)return;
       var env=p.environment;copy.querySelector('.v2-pulse-statement').textContent=env.statement||'Das Marktumfeld im Überblick.';

@@ -21,6 +21,14 @@
    Was hier gehalten wird: wo die Faktorschicht zurückhält, hält jede Schicht
    zurück - und sagt den Grund, statt „Daten fehlen" zu behaupten. Es fehlt
    nichts; es wird eine Zahl nicht genannt, die sich nur schätzen ließe.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – die Flaechen-Tests
+   (KENNZAHL_GRUND, kennzahlGrund, "Bewusst nicht genannt", selected={...})
+   prueften Quelltext in vu2/experience.js, das geloescht ist. Der Grundsatz
+   steht jetzt in quant/app/view-model.js (REASON / reasonText, per
+   require() geprueft), der Kennzahlenkasten ist der Abschnitt
+   "Unternehmenszahlen" von quant/app/page-stock.js - er wird in einem
+   DOM-Doppel mit den echten Dateien gezeichnet und gelesen.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -28,6 +36,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -143,30 +152,39 @@ test("der Bestand ist vollständig abgedeckt - kein Titel entgeht der Regel", ()
     fehlen.length + " von " + zurueck + " zurückgehaltenen Titeln fehlen im Verzeichnis");
 });
 
-test("statt der Zahl steht der Grund - nicht der Satz, dass Daten fehlen", () => {
+const VM = require(join(ROOT, "quant/app/view-model.js"));
+
+test("statt der Zahl steht der Grund - nicht der Satz, dass Daten fehlen", async () => {
   /* Das Wörterbuch verlangt für „nicht vorhanden" und „bewusst
      zurückgehalten" zwei verschiedene Texte. Der Unterschied ist der ganze
      Punkt: im ersten Fall fehlt etwas, im zweiten hat das Haus sich
      entschieden. */
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  const block = seite.slice(seite.indexOf("const KENNZAHL_GRUND={"), seite.indexOf("function kennzahlGrund("));
-  assert.ok(block.length > 200, "der Grundtext für die zurückgehaltene Bewertung fehlt");
-  assert.ok(block.includes(GRUND), "der Grund ist nicht zugeordnet");
-  /* Erst den EINEN Eintrag abgrenzen, dann darin prüfen. Ein Fenster bis zum
-     Blockende prüft sonst seinen eigenen Rand: die übrigen Schlüssel der
-     Tabelle sind selbst interne Codes. Genau daran hat sich der
-     Branchenvorlagen-Test in M39 zweimal selbst ausgelöst. */
-  const schluessel = [...block.matchAll(/\n? ?([A-Z][A-Z_]{4,}):/g)].map((m) => m[1]);
-  assert.ok(schluessel.includes(GRUND), "der Grund steht nicht als eigener Schlüssel in der Tabelle");
-  let satz = block.slice(block.indexOf(GRUND) + GRUND.length + 1);
-  for (const anderer of schluessel) if (anderer !== GRUND) satz = satz.split(anderer + ":")[0];
-  assert.ok(satz.length > 200, "der Satz ist zu kurz, um etwas zu erklären");
-  assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(satz), false,
-    "interner Code im Nutzersatz: " + satz.slice(0, 160));
-  /* Und die Fläche ruft ihn auf, statt den alten Satz zu schreiben. */
-  assert.match(seite, /text:m\.state==='AVAILABLE'\?'Datenstand '[^:]*:kennzahlGrund\(m\)/);
-  /* Der Wert selbst steht als Aussage da und nicht als „Nicht verfügbar". */
-  assert.match(seite, /m\.reason==='SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING'\?'Bewusst nicht genannt'/);
+  assert.ok(VM.REASON && Object.prototype.hasOwnProperty.call(VM.REASON, GRUND),
+    "der Grund ist im View Model nicht zugeordnet");
+  const satz = VM.reasonText(GRUND);
+  /* Kein Rueckfall auf den allgemeinen Satz "es fehlen Daten". */
+  assert.notEqual(satz, VM.reasonText("__UNBEKANNT__"), "der Grund faellt auf den Satz zurueck, dass Daten fehlen");
+  assert.notEqual(satz, VM.reasonText("INPUT_NOT_MATERIALIZED"), "zurückgehalten liest sich wie nicht vorhanden");
+  assert.ok(satz.length > 200, "der Satz ist zu kurz, um etwas zu erklären (" + satz.length + " Zeichen): " + satz);
+  assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(satz), false, "interner Code im Nutzersatz: " + satz.slice(0, 160));
+
+  /* Und die Fläche ruft ihn auf, statt die Zahl stumm wegzulassen: der
+     Kennzahlenkasten eines zurückgehaltenen Titels sagt, dass die
+     Bewertung bewusst nicht genannt wird - und warum. */
+  let geprueft = 0;
+  for (const ticker of ZURUECKGEHALTEN) {
+    const s = await api.getStockIntelligence(ticker);
+    if (s.marketCapReason !== GRUND || !s.quant || s.quant.state !== "AVAILABLE") continue;
+    const kasten = await zahlenAbschnitt(s);
+    if (!kasten) continue;
+    geprueft += 1;
+    const text = kasten.textContent;
+    assert.match(text, /[Bb]ewusst nicht genannt/, ticker + ": der Kasten laesst die Bewertung stumm weg: " + text.slice(0, 300));
+    assert.ok(text.includes(satz), ticker + ": der Kasten nennt den Grund nicht");
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(text), false, ticker + ": interner Code im Kasten");
+    break;
+  }
+  assert.ok(geprueft >= 1, "kein zurückgehaltener Titel mit Kennzahlenkasten gefunden - dann prueft dieser Fall nichts");
 });
 
 test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => {
@@ -174,16 +192,19 @@ test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => 
      earningsYield/priceToFcf, der breite als priceEarnings/priceSales.
      Die Auswahl der Seite kannte nur die ersten - für jeden Titel ausserhalb
      des Panels stand die Frage „Welcher Preis steht dem Geschäft
-     gegenüber?" über einem leeren Kasten. */
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  const auswahl = seite.slice(seite.indexOf("const selected={quality:"), seite.indexOf("};", seite.indexOf("const selected={quality:")));
+     gegenüber?" über einem leeren Kasten.
+     Die Auswahl steht jetzt in page-stock.js (figuresSection, `wanted`). */
+  const seite = readFileSync(join(ROOT, "quant/app/page-stock.js"), "utf8");
+  const start = seite.indexOf("var wanted = {");
+  assert.ok(start > 0, "die Kennzahlenauswahl der Aktienseite ist nicht auffindbar");
+  const auswahl = seite.slice(start, seite.indexOf("};", start));
   for (const key of ["earningsYield", "priceToFcf", "priceEarnings", "priceSales"]) {
     assert.ok(auswahl.includes(key), "die Auswahl der Bewertungsfamilie kennt '" + key + "' nicht");
   }
-  /* Und der Kasten entsteht nur mit wenigstens einer Zeile - in JEDER Form. */
-  assert.match(seite, /s\.quant\.families\.filter\(f=>selected\[f\.id\]&&\(f\.metrics\|\|\[\]\)\.some\(m=>zeige\(f,m\)\)\)/);
   /* Verhalten dazu: über beide Wege trägt die Bewertungsfamilie mindestens
-     eine Kennzahl, die die Seite auch auswählt. */
+     eine Kennzahl, die die Seite auch auswählt - und der gezeichnete Kasten
+     hat Zeilen. Ein Kasten ohne Zeile entsteht in KEINER Form: entweder
+     Kennzahlen oder ein Satz, warum keine. */
   const AUSGEWAEHLT = ["earningsYield", "priceToFcf", "priceEarnings", "priceSales"];
   for (const ticker of ["AAPL", "WBD"]) {
     const s = await api.getStockIntelligence(ticker);
@@ -191,5 +212,87 @@ test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => 
     if (!familie) continue;
     const treffer = (familie.metrics || []).filter((m) => AUSGEWAEHLT.includes(m.metricId));
     assert.ok(treffer.length > 0, ticker + ": die Bewertungsfamilie trägt keine Kennzahl der Auswahl");
+    const kasten = await zahlenAbschnitt(s);
+    assert.ok(kasten, ticker + ": die Seite zeichnet keinen Kennzahlenkasten");
+    const zeilen = knoten(kasten, (n) => /(^| )qx-stat( |$)/.test(n.className));
+    assert.ok(zeilen.length > 0, ticker + ": der Kennzahlenkasten hat keine einzige Zeile");
+    assert.ok(zeilen.some((z) => treffer.some((m) => z.textContent.includes(m.label))),
+      ticker + ": keine Bewertungskennzahl im Kasten");
   }
+  /* Und ohne eine einzige zeigbare Kennzahl steht ein Satz statt eines
+     leeren Kastens. */
+  const leer = await zahlenAbschnitt({ ticker: "LEER", state: "AVAILABLE", identityState: "AVAILABLE", name: "Leer AG",
+    quant: { state: "AVAILABLE", families: [{ id: "value", metrics: [{ metricId: "priceSales", state: "UNAVAILABLE", value: null }] }] } });
+  assert.ok(leer, "ohne Kennzahl verschwindet der Abschnitt - dann fehlt der Satz, warum");
+  assert.equal(knoten(leer, (n) => /(^| )qx-stats( |$)/.test(n.className)).length, 0, "ein leerer Kennzahlenkasten ist entstanden");
+  assert.ok(knoten(leer, (n) => n.getAttribute && n.getAttribute("role") === "note").length > 0, "statt des leeren Kastens steht kein Satz");
 });
+
+/* ------------------------------------------------------------------------
+   DIE SEITE AUSGEFUEHRT, NICHT GELESEN.
+
+   Ein kleines DOM-Doppel, in dem die echten Dateien der neuen Oberflaeche
+   laufen (quant/ui/shell.js fuer el(), quant/app/view-model.js, ui.js,
+   page-stock.js). Geprueft wird, was im Kopf der Aktienseite STEHT - nicht,
+   welche Zeichenfolge im Quelltext vorkommt. Hier: der Abschnitt
+   "Unternehmenszahlen" (id "zahlen") der fertig gezeichneten Seite. Der
+   Chart ist ein Doppel; alle Abfragen ausser getStockIntelligence
+   antworten mit null - geprueft wird, was die Seite aus der
+   Dienstantwort dieses Titels macht.
+   ------------------------------------------------------------------------ */
+function seitenUmgebung() {
+  const textNode = (s) => ({ nodeType: 3, textContent: String(s), children: [] });
+  function element(tag) {
+    return {
+      tagName: String(tag).toUpperCase(), nodeType: 1, children: [], attributes: {}, dataset: {}, style: {},
+      listeners: {}, className: "", _text: "", open: false, value: "", disabled: false,
+      classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      get textContent() { return this._text + this.children.map((c) => c.textContent).join(""); },
+      set textContent(v) { this._text = String(v); this.children = []; },
+      get firstChild() { return this.children[0] || null; },
+      get isConnected() { return true; },
+      appendChild(c) { this.children.push(c); return c; },
+      removeChild(c) { this.children = this.children.filter((x) => x !== c); return c; },
+      append(...k) { for (const c of k) if (c !== null && c !== undefined) this.appendChild(typeof c === "string" ? textNode(c) : c); },
+      replaceChildren(...k) { this.children = []; this._text = ""; this.append(...k); },
+      setAttribute(k, v) { this.attributes[k] = String(v); if (k === "id") this.id = String(v); },
+      getAttribute(k) { return k in this.attributes ? this.attributes[k] : null; },
+      removeAttribute(k) { delete this.attributes[k]; },
+      addEventListener(k, f) { (this.listeners[k] ||= []).push(f); },
+      removeEventListener() {}, dispatchEvent() {},
+      querySelector() { return null; }, querySelectorAll() { return []; },
+      getBoundingClientRect() { return { width: 640, height: 320, left: 0, top: 0 }; },
+      scrollIntoView() {}, focus() {}, showModal() { this.open = true; }, close() { this.open = false; }
+    };
+  }
+  const document = { createElement: element, createElementNS: (_, t) => element(t), createTextNode: textNode,
+    body: element("body"), readyState: "loading", title: "", activeElement: null,
+    addEventListener() {}, querySelector: () => null, getElementById: () => null };
+  const win = { document, console, setTimeout, clearTimeout, URLSearchParams, Event: class {},
+    location: { hash: "", search: "", pathname: "/quant/" }, history: { replaceState() {} },
+    localStorage: { getItem: () => null, setItem() {} }, innerWidth: 1200,
+    addEventListener() {}, removeEventListener() {}, scrollTo() {} };
+  win.window = win;
+  vm.createContext(win);
+  const lade = (...pfade) => { for (const p of pfade) vm.runInContext(readFileSync(join(ROOT, p), "utf8"), win, { filename: p }); };
+  return { win, document, lade };
+}
+function knoten(node, pred, out = []) {
+  if (!node || !node.children) return out;
+  if (node.nodeType === 1 && pred(node)) out.push(node);
+  for (const c of node.children) knoten(c, pred, out);
+  return out;
+}
+async function zahlenAbschnitt(stock) {
+  const { win, document, lade } = seitenUmgebung();
+  lade("quant/ui/shell.js", "quant/engines/plain-verdict.js", "quant/app/view-model.js", "quant/app/ui.js", "quant/app/page-stock.js");
+  win.VUQuantChart = { create: () => ({ node: document.createElement("section"), dispose() {} }) };
+  const main = document.createElement("main");
+  const nichts = async () => null;
+  const dienst = new Proxy({ getStockIntelligence: async () => stock }, { get: (t, k) => (k in t ? t[k] : nichts) });
+  const ctx = new Proxy({ api: dienst, names: {}, types: {}, entries: {}, loadNames: async () => ({}),
+    patternWords: async () => ({}), hubReady: async () => false, distribution: async () => { throw new Error("offline"); } },
+  { get: (t, k) => (k in t ? t[k] : nichts) });
+  await win.QXStock.render(main, stock.ticker, ctx);
+  return knoten(main, (n) => n.id === "zahlen")[0] || null;
+}

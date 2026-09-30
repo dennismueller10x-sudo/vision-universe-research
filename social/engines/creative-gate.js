@@ -77,8 +77,14 @@
      Archetyp Evidenz fand), faellt der Kandidat hier auf, statt still
      durchzugehen. */
   var NEGATIVE_HOOK_MUSTER = [
-    /^[\d.,]+\s*[a-z%]*\s+(schlusskurs|kurs)\s*[-—]\s*[a-z0-9.]{1,10}\.?$/i,
-    /\d+\s+von\s+\d+\s+gepr(ue|ü)ften\s+titeln/i
+    /^[\d.,]+\s*[a-z%]*\s+(schlusskurs|kurs)\s*[-—–]\s*[a-z0-9.]{1,10}\.?$/i,
+    /\d+\s+von\s+\d+\s+gepr(ue|ü)ften\s+titeln/i,
+    /* Owner-Auftrag "WORK OWNS THE POST" (29.09.), §7: woertlich benannte
+       Negativbeispiele - Headline-Verdichtung, isolierte Zahl, englischer
+       Quelltitel. */
+    /^b(ö|oe)rsengang mit existenzwarnung[.!]?$/i,
+    /^50\.000 dollar f(ü|ue)r ein auto\??$/i,
+    /^10-year u\.s\. treasury yield tops/i
   ];
 
   function istNegativeHookFixture(hook) {

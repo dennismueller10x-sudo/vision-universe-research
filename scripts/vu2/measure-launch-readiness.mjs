@@ -29,7 +29,7 @@
        [--release <verzeichnis>] [--brief-sample 500] [--out <pfad>]
    ========================================================================= */
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
@@ -80,7 +80,9 @@ const HEAD = (() => { try { return execFileSync("git", ["rev-parse", "HEAD"], { 
    Skript aendert das Produkt erst, wenn es gelaufen ist - und dann hat sich
    sein Artefakt geaendert, das hier steht. Nimmt man sie mit auf, macht jedes
    neue Messskript einen tadellosen Browser-Smoke ungueltig. */
-const RELEVANT = ["quant/engines", "quant/api", "vu2", "quant/methodology", "quant/data/product", "quant/data/universe", "quant/data/market"];
+/* Seit dem 30.09.2026 ist die Oberflaeche quant/index.html + quant/app/
+   (vu2/ ist nur noch ein Umleitungsstueck und bleibt trotzdem drin). */
+const RELEVANT = ["quant/engines", "quant/api", "quant/app", "quant/index.html", "vu2", "quant/methodology", "quant/data/product", "quant/data/universe", "quant/data/market"];
 /* Der Suite-Beleg haengt zusaetzlich an den Tests selbst: ein geaenderter Test
    aendert, was die Suite beweist. Der Browser-Smoke haengt nicht daran - er
    sieht die Tests nie. Zwei Belege, zwei Mengen. */
@@ -486,24 +488,32 @@ async function main() {
   }
 
   /* ---------------------------------------------------------------- 9 */
-  const frontend = await readFile(join(ROOT, "vu2/experience.js"), "utf8");
-  /* Welche Ansichten es gibt, steht an ZWEI Stellen: in der Zulassungsmenge
-     am Anfang von render() (die teils aus `nav` kommt, also nicht als
-     Literal dort steht) und in den Zweigen darunter. Der erste Bau dieses
-     Gates las nur die erste und meldete discover, research, markets und
-     portfolio als unbekannt, obwohl jede einen eigenen Zweig hat. Gelesen
-     werden deshalb beide. */
-  const router = frontend.slice(frontend.indexOf("async function render(){"));
-  const bekannt = new Set([
-    ...(router.slice(0, 900).match(/'[a-z]+'/g) || []).map((x) => x.slice(1, -1)),
-    ...(router.match(/view==='([a-z]+)'/g) || []).map((x) => x.slice(8, -1)),
-    ...(frontend.match(/nav\s*=\s*\[[^\]]*\]/) || [""])[0].split("'").filter((x) => /^[a-z]+$/.test(x))
-  ]);
-  const navZiele = new Set((frontend.match(/href\('([a-z]+)'/g) || []).map((s) => s.slice(6, -1)));
+  /* DAS FRONTEND IST DIE HASH-APP UNTER /quant/ (seit 30.09.2026): die
+     Shell mit dem Router in quant/app/app.js, die Seiten in quant/app/*.js,
+     der Rahmen in quant/index.html. Gelesen wird das Verzeichnis, damit eine
+     neue Seitendatei nicht ungelesen bleibt. */
+  const appDateien = readdirSync(join(ROOT, "quant/app")).filter((f) => f.endsWith(".js")).sort();
+  const frontend = (await Promise.all(appDateien.map((f) => readFile(join(ROOT, "quant/app", f), "utf8")))).join("\n")
+    + "\n" + await readFile(join(ROOT, "quant/index.html"), "utf8");
+  const ohneKommentar = frontend.replace(/\/\*[\s\S]*?\*\//g, "");
+  /* Welche Routen es gibt, steht in parse(): je ein `case`-Zweig. Die leere
+     Route ("#/") ist Home. */
+  const shell = await readFile(join(ROOT, "quant/app/app.js"), "utf8");
+  const parseTeil = shell.slice(shell.indexOf("function parse("), shell.indexOf("var SECTION"));
+  const bekannt = new Set(["", ...(parseTeil.match(/case "([a-z]+)":/g) || []).map((x) => x.split('"')[1])]);
+  /* Die Ziele: jeder Hash-Verweis im Quelltext ("#/aktien", "#/methodik")
+     und jedes Ziel der Routenhelfer in ui.js (`return "#/..."`). Geprueft
+     wird das erste Segment gegen die Routen des Routers. */
+  const navZiele = new Set((ohneKommentar.match(/"#\/([a-z]*)/g) || []).map((s) => s.slice(3)));
   const totLinks = [];
   for (const ziel of navZiele) if (!bekannt.has(ziel)) totLinks.push({ kind: "UNBEKANNTE_ANSICHT", detail: ziel });
   const basis = RELEASE || ROOT;
-  for (const pfad of new Set((frontend.match(/'\/[a-z0-9_/.-]+\/'/g) || []).map((s) => s.slice(1, -1)))) {
+  /* Absolute Seitenpfade ("/quant/methodology/", "/quant/data-inspector/").
+     Datenverzeichnisse, die als Praefix eines Dateinamens im Quelltext
+     stehen (/quant/data/..., /quant/config/...), sind keine Seiten. */
+  const seitenPfade = new Set((ohneKommentar.match(/"\/[a-z0-9_/.-]+\/"/g) || []).map((s) => s.slice(1, -1))
+    .filter((pfad) => !/\/(data|config)\//.test(pfad)));
+  for (const pfad of seitenPfade) {
     const datei = join(basis, pfad.replace(/^\//, ""), "index.html");
     if (!existsSync(datei)) totLinks.push({ kind: "TOTER_PFAD", detail: pfad, checkedIn: basis === ROOT ? "REPOSITORY" : "RELEASE" });
   }
@@ -518,7 +528,7 @@ async function main() {
       : wiederhergestellt === 0;
   gates.push(gate("NAVIGATION", "Kein primärer Verweis führt ins Leere", navUrteil,
     { viewTargets: navZiele.size, knownViews: bekannt.size,
-      absolutePathsChecked: new Set((frontend.match(/'\/[a-z0-9_/.-]+\/'/g) || [])).size,
+      absolutePathsChecked: seitenPfade.size,
       checkedAgainst: basis === ROOT ? "REPOSITORY" : "RELEASE",
       smokeRecovered: wiederhergestellt,
       note: basis === ROOT ? "Gegen das Repository geprüft. Ein Release liefert nur, was `git ls-files` kennt - mit --release wird gegen die Auslieferung geprüft." : null,
@@ -602,28 +612,45 @@ async function main() {
 
   /* ------------------------------------------------------- P1: HYGIENE */
   const hygiene = [];
-  const seitenQuelle = frontend + "\n" + await readFile(join(ROOT, "vu2/index.html"), "utf8");
+  const seitenQuelle = frontend;
   const verlangt = [
-    ["BETA_MARKIERUNG", /Entwicklungsvorschau|Preview|Beta/],
+    /* Die Kennzeichnung muss eine KENNZEICHNUNG sein. Der alte Ausdruck
+       /Beta/ traf im neuen Frontend nur den Finanzbegriff "Marktsensitivität
+       (Beta)" - also eine Pruefung, die bestanden haette, ohne dass die
+       Seite irgendwo sagt, dass sie eine Vorschau ist. */
+    ["BETA_MARKIERUNG", /Entwicklungsvorschau|Preview|Public Beta|Beta-Version|\bBeta\s*·|·\s*Beta\b/],
     ["DISCLAIMER", /Keine Anlageempfehlung/],
     ["QUELLENHINWEIS", /SEC EDGAR/],
     ["ANBIETERHINWEIS", /Tiingo/],
     ["METHODIKSEITE", /\/quant\/methodology\//],
-    ["AKTUALITAET", /Kursstand/]
+    /* Der Kurs traegt seinen Stand: vorher "Kursstand", in der neuen App
+       "Schlusskurs am <Datum>" im Kopf jeder Aktienseite. */
+    ["AKTUALITAET", /Kursstand|Schlusskurs am /]
   ];
   for (const [id, muster] of verlangt) if (!muster.test(seitenQuelle)) hygiene.push({ kind: "FEHLT", detail: id });
   /* Kein Geheimnis und keine interne Fehlersuche im ausgelieferten Skript.
-     Geprueft wird das RELEASE, nicht der Quelltext - im Release liegt, was
-     der Browser bekommt. */
-  const gebaut = join(basis, "vu2/experience.js");
-  if (existsSync(gebaut)) {
-    const text = await readFile(gebaut, "utf8");
+     Geprueft wird das RELEASE (quant/release-bundle.js), nicht der
+     Quelltext - im Release liegt, was der Browser bekommt. Ohne --release
+     wird ersatzweise der Quelltext der App geprueft und das im Bericht
+     vermerkt. */
+  const gebaut = RELEASE ? join(basis, "quant/release-bundle.js") : null;
+  const auslieferung = gebaut ? (existsSync(gebaut) ? await readFile(gebaut, "utf8") : null) : frontend;
+  if (auslieferung !== null) {
+    const text = auslieferung;
     for (const [id, muster] of [
       ["SCHLUESSEL", /(api[_-]?key|secret|token)\s*[:=]\s*['"][A-Za-z0-9_\-]{16,}/i],
       ["BEARER", /Bearer\s+[A-Za-z0-9._\-]{20,}/],
       ["FEHLERSUCHE", /console\.(debug|trace)\(/],
       ["PLATZHALTER", /\bTODO\b|\bFIXME\b|\bXXX\b/]
-    ]) if (muster.test(text)) hygiene.push({ kind: id, detail: (text.match(muster) || [])[0].slice(0, 60) });
+    ]) {
+      /* Das Release-Bundle traegt jetzt auch die Engines. Deren Konstanten
+         (`token:"DISTANCE_52W_HIGH"`) sind Bezeichner, keine Geheimnisse:
+         ein Wert nur aus Grossbuchstaben, Ziffern und Unterstrichen zaehlt
+         nicht. Jeder andere Treffer bleibt ein Befund. */
+      const alle = [...text.matchAll(new RegExp(muster.source, muster.flags.includes("g") ? muster.flags : muster.flags + "g"))]
+        .map((m) => m[0]).filter((t) => id !== "SCHLUESSEL" || !/['"][A-Z0-9_]+$/.test(t));
+      if (alle.length) hygiene.push({ kind: id, detail: alle[0].slice(0, 60) });
+    }
   } else hygiene.push({ kind: "RELEASE_NICHT_GEPRUEFT", detail: "kein gebautes Skript unter " + gebaut });
   /* Ueberwachung und ein reproduzierbarer Weg nach draussen. */
   const wacht = ["freshness-monitor.yml", "vu2-browser-qa.yml"].filter((d) => existsSync(join(ROOT, ".github/workflows", d)));
@@ -631,7 +658,7 @@ async function main() {
   gates.push(gate("PUBLIC_BETA_HYGIENE", "P1 · Kennzeichnung, Quellen, Aktualitaet, keine Geheimnisse",
     hygiene.length === 0,
     { required: verlangt.map(([id]) => id), monitoring: wacht,
-      releaseChecked: existsSync(gebaut) ? gebaut.replace(ROOT + "/", "") : null,
+      releaseChecked: gebaut ? (existsSync(gebaut) ? gebaut.replace(ROOT + "/", "") : null) : "quant/app (Quelltext, ohne --release)",
       violations: hygiene.length }, hygiene));
 
   /* ------------------------------------------------------------ Urteil */

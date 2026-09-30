@@ -274,8 +274,13 @@ test("WR28 · sammleFakten() zerlegt eine Jahreszahl ohne Trennzeichen nicht in 
 test("WR29 · baueCaption() dupliziert den Titel nicht an 'U.S.' als falschem Satzende", () => {
   const storyWahl = WR.waehleStory([treasuryItem()], { now: JETZT });
   const hookWahl = WR.waehleHook(storyWahl.gewaehlt);
-  assert.equal(hookWahl.ok, true);
-  const caption = WR.baueCaption(storyWahl.gewaehlt, hookWahl.gewaehlt.text);
+  /* Owner-Auftrag "WORK OWNS THE POST" (29.09.): der englische Quelltitel
+     "10-year U.S. Treasury yield tops ..." ist ausdruecklich KEINE Hook -
+     der alte Pfad darf ihn nicht mehr waehlen. Die Caption-Pruefung laeuft
+     deshalb mit dem Titel selbst als Hook-Text, dem haertesten Fall. */
+  if (hookWahl.ok) assert.doesNotMatch(hookWahl.gewaehlt.text, /^10-year u\.s\. treasury yield tops/i);
+  const caption = WR.baueCaption(storyWahl.gewaehlt,
+    hookWahl.ok ? hookWahl.gewaehlt.text : storyWahl.gewaehlt.title);
   assert.ok(!/10-year U\.S\.\s+Treasury/i.test(caption) || caption.indexOf("10-year U.S.") ===
     caption.lastIndexOf("10-year U.S."), "der Titel-Anfang darf nicht doppelt vorkommen");
   const vorkommen = caption.split("10-year U.S.").length - 1;
