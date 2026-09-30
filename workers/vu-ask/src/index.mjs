@@ -71,6 +71,9 @@ async function accessGranted(request, env) {
   if (!hash && !plain) return true;
   const given = (request.headers.get("x-vu-access") || "").trim();
   if (!given || given.length > 200) return false;
+  /* Der Admin-Key oeffnet die Schranke ebenfalls - fuer den Live-Test im
+     Deploy-Workflow, der das Beta-Passwort nicht kennt. */
+  if (env.VU_ASK_ADMIN_KEY && sameSecret(given, env.VU_ASK_ADMIN_KEY)) return true;
   if (plain && sameSecret(given, plain)) return true;
   return !!hash && sameSecret(await sha256Hex(given), hash);
 }

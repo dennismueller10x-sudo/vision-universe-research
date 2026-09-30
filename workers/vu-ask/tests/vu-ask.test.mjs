@@ -334,3 +334,9 @@ test("Konfiguration: Beta-Grenzen liegen unter den 5 $ Prepaid", async () => {
   assert.equal(v("VU_ASK_PER_USER_DAILY"), 10);
   assert.match(toml, /VU_ASK_ACCESS_HASH = "[0-9a-f]{64}"/);
 });
+
+test("Zugangsschranke: der Admin-Key oeffnet sie fuer den Live-Test", async () => {
+  const env = fakeEnv({ ...ENV, VU_ASK_ACCESS_HASH: "0".repeat(64) });
+  const r = await worker.fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "admin-geheim" } }), env);
+  assert.equal(r.status, 200);
+});
