@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-09-30T12:44:41.774Z",
+ "generatedAt": "2026-09-30T20:07:32.978Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-09-30T12:44:41.774Z",
+  "generatedAt": "2026-09-30T20:07:32.978Z",
   "dataAsOf": "2026-09-29",
   "previousDataAsOf": "2026-09-28",
   "schedule": {
@@ -172,10 +172,10 @@
     "key": "US10Y",
     "label": "US-Rendite 10 Jahre",
     "from": "5,24 %",
-    "to": "5,26 %",
+    "to": "5,29 %",
     "change": "CONTEXT",
-    "delta": 2,
-    "deltaText": "+2 bp",
+    "delta": 5,
+    "deltaText": "+5 bp",
     "symbol": "US10Y"
    }
   ],
@@ -553,16 +553,16 @@
     },
     {
      "key": "advDecl",
-     "label": "Gestiegen / gefallen",
-     "text": "1665 / 2454 von 4247 (39 % gestiegen)",
-     "advancers": 1665,
-     "decliners": 2454,
-     "unchanged": 128,
-     "evaluated": 4247,
-     "session": "2026-09-29",
-     "previousSession": "2026-09-28",
-     "complete": true,
-     "asOf": "2026-09-29T20:55:00.000Z",
+     "label": "Gestiegen / gefallen (Sitzung läuft)",
+     "text": "532 / 755 von 1308 (41 % gestiegen)",
+     "advancers": 532,
+     "decliners": 755,
+     "unchanged": 21,
+     "evaluated": 1308,
+     "session": "2026-09-30",
+     "previousSession": "2026-09-29",
+     "complete": false,
+     "asOf": "2026-09-30T18:55:00.000Z",
      "current": true
     }
    ],
@@ -673,11 +673,11 @@
     {
      "key": "US10Y",
      "label": "US-Rendite 10 Jahre",
-     "text": "+53 bp · 2,2-fach typisch (deutlich)",
-     "change": 53,
-     "ratio": 2.18,
+     "text": "+54 bp · 2,2-fach typisch (deutlich)",
+     "change": 54,
+     "ratio": 2.22,
      "notable": true,
-     "asOf": "2026-09-29",
+     "asOf": "2026-09-30",
      "kind": "BP"
     },
     {
@@ -693,11 +693,11 @@
     {
      "key": "OIL",
      "label": "Öl (WTI)",
-     "text": "+10,5 % · 0,7-fach typisch",
-     "change": 10.549,
-     "ratio": 0.66,
+     "text": "+13,7 % · 0,9-fach typisch",
+     "change": 13.705,
+     "ratio": 0.85,
      "notable": false,
-     "asOf": "2026-09-22",
+     "asOf": "2026-09-29",
      "kind": "PERCENT"
     },
     {
@@ -749,68 +749,68 @@
   "CROSS_ASSET": "OBSERVED"
  },
  "movers": {
-  "session": "2026-09-29",
-  "previousSession": "2026-09-28",
-  "complete": true,
-  "asOf": "2026-09-29T20:55:00.000Z",
+  "session": "2026-09-30",
+  "previousSession": "2026-09-29",
+  "complete": false,
+  "asOf": "2026-09-30T18:55:00.000Z",
   "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
   "filter": {
    "minAvgDollarVolume20d": 20000000,
    "minPrice": 5
   },
-  "eligible": 2007,
+  "eligible": 882,
   "gainers": [
    {
-    "symbol": "IOVA",
-    "name": "Iovance Biotherapeutics",
-    "changePercent": 31.48
+    "symbol": "ROG",
+    "name": "Rogers",
+    "changePercent": 14.13
    },
    {
-    "symbol": "CCL",
-    "name": "Carnival Corporation Ltd (Paired Stock)",
-    "changePercent": 13.45
+    "symbol": "PGEN",
+    "name": "Precigen",
+    "changePercent": 9.06
    },
    {
-    "symbol": "AXTX",
-    "name": "Tradr 2X Long AXTI Daily",
-    "changePercent": 12.5
+    "symbol": "ZETA",
+    "name": "Zeta Global Holdings Class A",
+    "changePercent": 9.01
    },
    {
-    "symbol": "PWP",
-    "name": "Perella Weinberg Partners Class A",
-    "changePercent": 11.73
+    "symbol": "FORM",
+    "name": "FormFactor",
+    "changePercent": 8.07
    },
    {
-    "symbol": "WRBY",
-    "name": "Warby Parker Class A",
-    "changePercent": 11.39
+    "symbol": "ACMR",
+    "name": "ACM Research Class A",
+    "changePercent": 7.87
    }
   ],
   "losers": [
    {
-    "symbol": "QURE",
-    "name": "uniQure",
-    "changePercent": -37.44
+    "symbol": "LQDA",
+    "name": "Liquidia",
+    "changePercent": -47.61
    },
    {
-    "symbol": "FICO",
-    "name": "Fair Isaac",
-    "changePercent": -26.69
+    "symbol": "ETON",
+    "name": "Eton Pharmaceuticals",
+    "changePercent": -15.14
    },
    {
-    "symbol": "TANH",
-    "name": "Tantech Holdings",
-    "changePercent": -15.64
+    "symbol": "NMIH",
+    "name": "NMI Holdings Class A",
+    "changePercent": -10.63
    },
    {
-    "symbol": "WGS",
-    "name": "GeneDx Holdings Class A",
-    "changePercent": -11.9
+    "symbol": "JBL",
+    "name": "Jabil",
+    "changePercent": -10.59
    },
    {
-    "symbol": "NESR",
-    "name": "National Energy Services Reunited",
-    "changePercent": -11.17
+    "symbol": "MTG",
+    "name": "MGIC Investment",
+    "changePercent": -8.28
    }
   ],
   "method": "Veraenderung vom letzten Punkt der Vorsitzung zum letzten Punkt der juengsten Sitzung (5-Minuten-Kurse). Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Kein Volumen im Intraday-Pfad - deshalb keine Volumenspitzen."
@@ -999,13 +999,13 @@
   },
   "WTI": {
    "kind": "PRICE",
-   "asOf": "2026-09-22",
-   "last": 96.41,
-   "observations": 9506,
+   "asOf": "2026-09-29",
+   "last": 96.16,
+   "observations": 9511,
    "changes": {
-    "1M": 10.55,
-    "3M": 29.2,
-    "1Y": 53.06
+    "1M": 13.7,
+    "3M": 36.28,
+    "1Y": 49.62
    },
    "high52w": {
     "date": "2026-04-07",
@@ -1015,18 +1015,18 @@
     "date": "2025-12-16",
     "value": 55.44
    },
-   "rangePosition": 69.3,
-   "dist50": 8.86,
-   "dist200": 17.05,
+   "rangePosition": 68.9,
+   "dist50": 7.1,
+   "dist200": 15.53,
    "trend": "POSITIVE",
-   "drawdown52w": -15.86,
-   "vol20": 44.76,
+   "drawdown52w": -16.08,
+   "vol20": 84.24,
    "volContext": {
     "median": 34.9,
-    "p25": 25.6,
-    "p75": 43.9,
+    "p25": 25.7,
+    "p75": 44,
     "samples": 1246,
-    "from": "2021-09-23",
+    "from": "2021-09-30",
     "state": "HIGHER"
    },
    "roles": [
@@ -1034,19 +1034,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +10,5 % – das 0,7-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +13,7 % – das 0,9-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "BRENT": {
    "kind": "PRICE",
-   "asOf": "2026-09-22",
-   "last": 114.89,
-   "observations": 9092,
+   "asOf": "2026-09-29",
+   "last": 113.96,
+   "observations": 9097,
    "changes": {
-    "1M": 18.54,
-    "3M": 51.79,
-    "1Y": 71.81
+    "1M": 26.97,
+    "3M": 61.74,
+    "1Y": 65.16
    },
    "high52w": {
     "date": "2026-04-07",
@@ -1056,31 +1056,31 @@
     "date": "2025-12-16",
     "value": 59.93
    },
-   "rangePosition": 70.2,
-   "dist50": 17.22,
-   "dist200": 27.95,
+   "rangePosition": 69,
+   "dist50": 12.41,
+   "dist200": 25.01,
    "trend": "POSITIVE",
-   "drawdown52w": -16.87,
-   "vol20": 63.23,
+   "drawdown52w": -17.55,
+   "vol20": 63.09,
    "volContext": {
     "median": 32.5,
-    "p25": 25.3,
-    "p75": 44.2,
+    "p25": 25.4,
+    "p75": 44.3,
     "samples": 1262,
-    "from": "2021-09-23",
+    "from": "2021-09-30",
     "state": "HIGHER"
    },
    "roles": []
   },
   "NATGAS": {
    "kind": "PRICE",
-   "asOf": "2026-09-22",
-   "last": 2.9,
-   "observations": 5692,
+   "asOf": "2026-09-29",
+   "last": 3.18,
+   "observations": 5697,
    "changes": {
-    "1M": 2.84,
-    "3M": -7.94,
-    "1Y": 0
+    "1M": 12.77,
+    "3M": -4.79,
+    "1Y": 8.53
    },
    "high52w": {
     "date": "2026-01-23",
@@ -1090,18 +1090,18 @@
     "date": "2026-04-24",
     "value": 2.54
    },
-   "rangePosition": 1.3,
-   "dist50": 3.28,
-   "dist200": -18.9,
+   "rangePosition": 2.3,
+   "dist50": 11.94,
+   "dist200": -9.89,
    "trend": "MIXED",
-   "drawdown52w": -90.56,
-   "vol20": 44.19,
+   "drawdown52w": -89.65,
+   "vol20": 47.61,
    "volContext": {
     "median": 88.6,
     "p25": 68.4,
     "p75": 124.5,
     "samples": 1246,
-    "from": "2021-09-23",
+    "from": "2021-09-30",
     "state": "LOWER"
    },
    "roles": []
@@ -1292,13 +1292,13 @@
   },
   "US2Y": {
    "kind": "YIELD",
-   "asOf": "2026-09-29",
-   "last": 4.89,
-   "observations": 9192,
+   "asOf": "2026-09-30",
+   "last": 4.88,
+   "observations": 9193,
    "changes": {
-    "1M": 55,
-    "3M": 75,
-    "1Y": 126
+    "1M": 54,
+    "3M": 71,
+    "1Y": 128
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1308,85 +1308,85 @@
     "date": "2026-02-27",
     "value": 3.38
    },
-   "rangePosition": 98.1,
-   "vs200": 95.2,
-   "vs50": 49.2,
+   "rangePosition": 97.4,
+   "vs200": 93.5,
+   "vs50": 46.9,
    "roles": []
   },
   "US5Y": {
    "kind": "YIELD",
-   "asOf": "2026-09-29",
-   "last": 5.06,
-   "observations": 9192,
+   "asOf": "2026-09-30",
+   "last": 5.09,
+   "observations": 9193,
    "changes": {
-    "1M": 58,
-    "3M": 87,
-    "1Y": 132
+    "1M": 60,
+    "3M": 85,
+    "1Y": 135
    },
    "high52w": {
-    "date": "2026-09-29",
-    "value": 5.06
+    "date": "2026-09-30",
+    "value": 5.09
    },
    "low52w": {
     "date": "2026-02-27",
     "value": 3.51
    },
    "rangePosition": 100,
-   "vs200": 96.3,
-   "vs50": 51.1,
+   "vs200": 98.7,
+   "vs50": 52.6,
    "roles": []
   },
   "US10Y": {
    "kind": "YIELD",
-   "asOf": "2026-09-29",
-   "last": 5.26,
-   "observations": 9192,
+   "asOf": "2026-09-30",
+   "last": 5.29,
+   "observations": 9193,
    "changes": {
-    "1M": 53,
-    "3M": 82,
-    "1Y": 111
+    "1M": 54,
+    "3M": 81,
+    "1Y": 113
    },
    "high52w": {
-    "date": "2026-09-29",
-    "value": 5.26
+    "date": "2026-09-30",
+    "value": 5.29
    },
    "low52w": {
     "date": "2026-02-27",
     "value": 3.97
    },
    "rangePosition": 100,
-   "vs200": 82.1,
-   "vs50": 46.2,
+   "vs200": 84.6,
+   "vs50": 47.9,
    "roles": [
     {
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +53 bp – das 2,2-Fache einer typischen Monatsbewegung, also deutlich."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +54 bp – das 2,2-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
   "US30Y": {
    "kind": "YIELD",
-   "asOf": "2026-09-29",
-   "last": 5.59,
-   "observations": 8198,
+   "asOf": "2026-09-30",
+   "last": 5.64,
+   "observations": 8199,
    "changes": {
-    "1M": 37,
-    "3M": 68,
-    "1Y": 88
+    "1M": 39,
+    "3M": 67,
+    "1Y": 91
    },
    "high52w": {
-    "date": "2026-09-29",
-    "value": 5.59
+    "date": "2026-09-30",
+    "value": 5.64
    },
    "low52w": {
     "date": "2025-10-22",
     "value": 4.54
    },
    "rangePosition": 100,
-   "vs200": 60,
-   "vs50": 32.5,
+   "vs200": 64.6,
+   "vs50": 36.5,
    "roles": []
   },
   "DE2Y": {
@@ -1460,9 +1460,9 @@
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-09-28",
+   "asOf": "2026-09-29",
    "last": 3.88,
-   "observations": 6594,
+   "observations": 6595,
    "changes": {
     "1M": 25,
     "3M": 25,
@@ -1477,8 +1477,8 @@
     "value": 3.62
    },
    "rangePosition": 52,
-   "vs200": 23.6,
-   "vs50": 21,
+   "vs200": 23.5,
+   "vs50": 20.5,
    "roles": []
   },
   "QQQ": {
@@ -1792,9 +1792,9 @@
    },
    "US10Y": {
     "symbol": "US10Y",
-    "asOf": "2026-09-29",
+    "asOf": "2026-09-30",
     "horizon": 21,
-    "samples": 2497
+    "samples": 2498
    },
    "GOLD": {
     "symbol": "XAUUSD",
@@ -1804,7 +1804,7 @@
    },
    "OIL": {
     "symbol": "WTI",
-    "asOf": "2026-09-22",
+    "asOf": "2026-09-29",
     "horizon": 21,
     "samples": 2497
    },
@@ -1828,9 +1828,9 @@
    "source": "quant/data/market/factors/factors-FULL_UNIVERSE.json"
   },
   "intraday": {
-   "session": "2026-09-29",
-   "previousSession": "2026-09-28",
-   "asOf": "2026-09-29T20:55:00.000Z"
+   "session": "2026-09-30",
+   "previousSession": "2026-09-29",
+   "asOf": "2026-09-30T18:55:00.000Z"
   }
  }
 }
