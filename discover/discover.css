@@ -851,6 +851,9 @@ body.dx-feed-aktiv{overflow:hidden}
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
   scroll-snap-type:none;-webkit-overflow-scrolling:touch;
   scrollbar-width:none;
+  /* Abstand unten: die Aktion einer Karte endet nie genau an der Kante
+     (Rundung unter einem Pixel lag sonst unter dem Dock). */
+  scroll-padding-bottom:12px;
 }
 .dx-feed-spur::-webkit-scrollbar{display:none}
 .dx-feed-screen{

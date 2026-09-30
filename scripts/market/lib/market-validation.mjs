@@ -240,6 +240,7 @@ export function horizonStats(states, outcomes, h, levels) {
     const x = rs.map((r) => r.o.ret).sort((a, b) => a - b);
     return { days: x.length, independent: rs.filter((r) => r.i % h === 0).length,
       meanReturn: round(mean(x), 1), medianReturn: round(q(x, 0.5), 1), positiveShare: round((100 * x.filter((v) => v > 0).length) / x.length, 0),
+      lossShare10: round((100 * x.filter((v) => v < -10).length) / x.length, 0),
       bad10: round(q(x, 0.1), 1), good90: round(q(x, 0.9), 1) };
   };
   return { days: h, all: desc(rows), levels: levels.map((label, l) => ({ level: l, label, ...desc(rows.filter((r) => r.env === l)) })).filter((x) => x.days > 0) };
