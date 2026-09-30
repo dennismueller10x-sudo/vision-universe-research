@@ -140,9 +140,9 @@ body.qd .down{color:var(--q-down)}
 .qd .q-tile.is-off::after{content:""}
 
 /* ------------------------------------------------------------ Aktienkarten (Heute interessant) */
-.qd .q-cards{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 12px;scrollbar-width:none}
+.qd .q-cards{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,180px);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 12px;scrollbar-width:none}
 .qd .q-cards::-webkit-scrollbar{display:none}
-@media (min-width:980px){.qd .q-cards{grid-auto-columns:minmax(200px,1fr)}}
+@media (min-width:980px){.qd .q-cards{grid-auto-columns:minmax(200px,230px)}}
 .qd .q-card{scroll-snap-align:start;display:flex;flex-direction:column;gap:6px;min-height:176px;padding:16px;border-radius:18px;background:var(--q-card);color:var(--q-card-text);text-decoration:none}
 .qd .q-card .dx-logo{width:52px;height:52px;border-radius:12px;margin-bottom:6px;background:#fff}
 .qd .q-card b.q-card-name{font-size:14px;line-height:1.2;font-weight:850}
@@ -589,3 +589,8 @@ dialog.qx-dialog::backdrop{background:rgba(0,0,0,.6)}
 .qd .q-hist{margin-top:10px}
 .qd .qx-factor>summary .qx-tag{align-self:flex-start;padding:3px 10px;font-size:10.5px}
 .qd .qx-factor>summary .qx-factor-name{font-size:16px;font-weight:850}
+.qd .q-hero--page h1{margin-bottom:10px}
+.qd .q-hero--page .q-searchbar{margin-top:14px}
+@media (max-width:979px){.qd .q-hero-tag{display:none}}
+@media (max-width:600px){.qd .q-tiles .q-tile{grid-template-columns:minmax(0,1fr);align-content:start;gap:10px}
+ .qd .q-tiles .q-tile::after{position:absolute;right:14px;top:14px}}

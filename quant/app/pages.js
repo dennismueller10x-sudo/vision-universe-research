@@ -75,7 +75,7 @@
     var cardsHost = el("div", {}, [X.loading("Aktien werden geladen …")]);
     page.append(X.section("Heute interessant", null, [cardsHost], { href: X.routes.stocks(), label: "Alle ansehen" }));
     page.append(el("div", { class: "q-tiles", style: "margin-top:14px;grid-template-columns:repeat(2,minmax(0,1fr))" }, [
-      X.tile({ icon: "bars", title: "Backtesting", text: "Strategietests sind noch nicht freigegeben – bis Universum und Kapitalmaßnahmen zertifiziert sind." }),
+      X.tile({ icon: "bars", title: "Backtesting", text: "Noch nicht freigegeben – deshalb keine Trefferquote." }),
       X.tile({ icon: "clock", title: "Historische Fälle", text: "Was in ähnlichen Situationen früher geschah", href: X.routes.method("historie") })]));
 
     var kpis = el("div", { class: "q-stats qx-kpis" }, [X.loading("Aktuelle Stände werden geladen …")]);
@@ -300,7 +300,7 @@
       var v = VM.fromScreeningRow(s.evidence), val = s.evidence && s.evidence[FIELD(factors[0])];
       return X.stockRow({ ticker: s.ticker, name: X.companyName(s), kicker: strat[s.ticker] || null, why: screeningWhy(s.evidence, factors), withLogo: i < 8,
         score: { label: shortName(factors[0]), value: typeof val === "number" ? Math.round(val) : null, tone: typeof val === "number" ? VM.factorView({ id: factors[0], state: "AVAILABLE", score: val, components: [] }).tone : null },
-        verdict: v && v.overall.id !== "KEINE_DATEN" ? { text: "Gesamt: " + v.overall.text.charAt(0).toLowerCase() + v.overall.text.slice(1), tone: v.overall.tone } : null });
+        verdict: v && v.overall.id !== "KEINE_DATEN" ? { text: "Eigenschaften: " + v.overall.text.charAt(0).toLowerCase() + v.overall.text.slice(1), tone: v.overall.tone } : null });
     });
     /* Die Zahl der Treffer wird gezaehlt, nicht aus der begrenzten Liste
        abgelesen: dieselben veroeffentlichten Faktorwerte, dieselbe Regel. */
@@ -453,9 +453,9 @@
     var list = profiles.contract.profiles;
     if (id) return strategyDetail(main, ctx, list.filter(function (p) { return p.profileId === id; })[0], byId[id], index, profiles.contract);
     /* Wie Discovers Strategien-Seite: Bild, Name, ein Satz, Pfeil. */
-    main.append(el("p", { class: "v2-eyebrow", text: "Strategien" }),
+    main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Strategien" }),
       el("h1", { class: "qx-h1", text: "Welche Art von Unternehmen suchst du?" }),
-      el("p", { class: "v2-lead", text: "Jeder Anlagestil sucht eine bestimmte Art von Unternehmen. Quant prüft täglich, welche Aktien alle Bedingungen erfüllen – für jede Aktie mit denselben Regeln." }));
+      el("p", { class: "q-hero-lead v2-lead", text: "Jeder Anlagestil sucht eine bestimmte Art von Unternehmen. Quant prüft täglich, welche Aktien alle Bedingungen erfüllen – für jede Aktie mit denselben Regeln." })]));
     main.append(el("div", { class: "v2-collection-links qx-strats" }, list.map(function (p) {
       var ix = byId[p.profileId], art = STRATEGY_ART(p.profileId);
       var blocked = ix && ix.availability && ix.availability.state !== "AVAILABLE";
@@ -535,11 +535,12 @@
   /* ============================================================== AKTIEN */
   var KNOWN = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA", "JPM", "V", "KO", "PG", "JNJ", "XOM", "T", "SO", "O"];
   async function stocks(main, ctx) {
-    main.append(el("p", { class: "v2-eyebrow", text: "Aktien" }), el("h1", { class: "qx-h1", text: "Welche Aktie möchtest du verstehen?" }));
-    var input = el("input", { type: "search", class: "qx-select qx-stock-search",
+    var input = el("input", { type: "search", class: "qx-stock-search",
       placeholder: "Name oder Kürzel, z. B. Apple oder NVDA", "aria-label": "Aktie suchen", autocomplete: "off" });
     var results = el("div", { "aria-live": "polite", style: "margin-top:12px" });
-    main.append(el("div", { class: "v2-search-prompt qx-search-field" }, [el("span", { "aria-hidden": "true", text: "⌕" }), input]), results);
+    main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Aktien" }),
+      el("h1", { class: "qx-h1", text: "Welche Aktie möchtest du verstehen?" }),
+      el("label", { class: "q-searchbar qx-search-field" }, [X.icon("search"), input, el("i", { "aria-hidden": "true", text: "→" })])]), results);
     var req = 0;
     input.addEventListener("input", async function () {
       var mine = ++req, q = input.value.trim();
