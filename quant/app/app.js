@@ -261,7 +261,7 @@
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
         case "methodik": await global.QXMethod.render(main, ctx, r.topic, r.params); break;
         default:
-          main.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Diese Seite gibt es nicht" }), el("p", { class: "v2-lead", text: "Öffne einen der fünf Bereiche von Quant über die Navigation." }),
+          main.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Diese Seite gibt es nicht" }), X.notice("Unbekannte Adresse", "Diese Adresse gehört zu keinem Bereich von Quant. Öffne einen der fünf Bereiche über die Navigation."),
             X.actions([X.btn("Zur Startseite", "#/")])]));
       }
     } catch (err) {

@@ -306,3 +306,13 @@ body.dv2.qx .qx-stock .qx-stock-top .v2-watch-button{margin:0}
 body.dv2.qx .v2-main>.dx-chapter>.dx-kicker,body.dv2.qx .v2-main>div>.dx-chapter>.dx-kicker{color:var(--v2-muted)}
 body.dv2.qx .dx-chapter--journey .qx-small,body.dv2.qx .dx-chapter--journey .qx-more summary{color:var(--discover-muted)}
 body.dv2.qx .dx-chapter--journey .qx-small b{color:var(--discover-text)}
+
+/* Desktop: Chart und Einordnung nebeneinander - die Antwort steht in der
+   ersten Bildschirmhoehe (M40), der Chart bleibt die grosse Flaeche. */
+@media (min-width:1100px){
+  body.dv2.qx .qx-stock-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:0 48px;align-items:start}
+  body.dv2.qx .qx-stock-layout>*{min-width:0}
+  body.dv2.qx .qx-stock-layout .dv2-stock-context{display:block;padding-top:44px;border-top:0}
+  body.dv2.qx .qx-stock-layout .dv2-stock-context .dx-dhero-story{font-size:clamp(24px,2.2vw,32px)}
+  body.dv2.qx .qx-stock-layout .dx-waage{grid-template-columns:1fr}
+}
