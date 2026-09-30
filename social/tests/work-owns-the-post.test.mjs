@@ -445,5 +445,5 @@ test("WOP24 · Meldet der Agent den Abbruch, schliesst der Abgleich den Job - ei
     { now: "2026-09-30T06:00:00Z", agentStatus: "ASSET_CONTRACT_MISMATCH" });
   assert.equal(r.ok, true, r.message);
   assert.equal(r.to, "CREATIVE_JOB_FAILED");
-  assert.equal(reg.all()[0].failureType, "ASSET_CONTRACT_MISMATCH");
+  assert.equal(reg.all()[0].failureType, "AGENT_REPORTED_ASSET_CONTRACT_MISMATCH");
 });

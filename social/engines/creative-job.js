@@ -589,7 +589,9 @@
           schrittOptionen.failureType = "NEVER_DISPATCHED";
         }
         if (evidenzArt === "AGENT_ABBRUCH_GEMELDET" && weg[k] === ziel) {
-          schrittOptionen.failureType = options.agentStatus || "AGENT_REPORTED_FAILURE";
+          /* Eigene Kategorie: der Agent lief und meldete den Abbruch selbst -
+             kein Wiederholungssturm (CJ11), kein Nie-gelaufen. */
+          schrittOptionen.failureType = "AGENT_REPORTED_" + (options.agentStatus || "FAILURE");
         }
         /* Die Ergebnis-Provenance gehoert an den Schritt, der VERIFIED
            erreicht - nicht an einen Zwischenschritt, der noch keine
