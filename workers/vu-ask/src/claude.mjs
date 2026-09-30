@@ -36,7 +36,16 @@ export function promptChars(question) { return SYSTEM_PROMPT.length + JSON.strin
  *   billed: true = berechnet, false = sicher nicht berechnet,
  *           null = unbekannt (Zeitueberschreitung, Verbindungsabbruch)
  */
+/* Eine Workspace-ID sieht aus wie "wrkspc_…". Alles andere (Name,
+   Leerzeichen, versehentlich ein Schluessel) wird nicht mitgeschickt -
+   Anthropic lehnte die Anfrage sonst ab. */
+export function cleanWorkspaceId(v) {
+  const s = String(v || "").trim();
+  return /^wrkspc_[A-Za-z0-9]+$/.test(s) ? s : null;
+}
+
 export async function interpret({ apiKey, workspaceId, model, question, maxOutputTokens, fetchImpl = fetch }) {
+  workspaceId = cleanWorkspaceId(workspaceId);
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   let res;

@@ -11,7 +11,7 @@ import worker from "../src/index.mjs";
 import { admit, costOf, limitsFrom, worstCase } from "../src/budget.mjs";
 import { translate, statusOf } from "../src/translate.mjs";
 import { OUTPUT_SCHEMA, FIELD_IDS, SYSTEM_PROMPT } from "../src/catalog.mjs";
-import { buildRequest } from "../src/claude.mjs";
+import { buildRequest, cleanWorkspaceId } from "../src/claude.mjs";
 
 function memoryStorage() {
   const m = new Map();
@@ -377,4 +377,11 @@ test("Workspace-ID wird mitgeschickt, wenn gesetzt - sonst nicht", async () => {
   const without = makeGate();
   await ask(without.gate, "Welche Aktien stehen auf einem Jahreshoch?");
   assert.ok(!("anthropic-workspace-id" in without.fetchImpl.calls[0].headers));
+});
+
+test("Workspace-ID: nur die Form wrkspc_… wird verwendet, Leerzeichen entfernt", () => {
+  assert.equal(cleanWorkspaceId(" wrkspc_01AbC \n"), "wrkspc_01AbC");
+  assert.equal(cleanWorkspaceId("Default"), null);
+  assert.equal(cleanWorkspaceId("sk-ant-api03-xyz"), null);
+  assert.equal(cleanWorkspaceId(""), null);
 });

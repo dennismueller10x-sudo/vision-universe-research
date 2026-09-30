@@ -96,7 +96,16 @@ jobs:
           if [ -n "$TURNSTILE_SECRET" ]; then put TURNSTILE_SECRET "$TURNSTILE_SECRET"; fi
           if [ -n "$VU_ASK_ACCESS_PASSWORD" ]; then put VU_ASK_ACCESS_PASSWORD "$VU_ASK_ACCESS_PASSWORD"; fi
           # Nur noetig, wenn der API-Schluessel keinem Workspace zugeordnet ist.
-          if [ -n "$ANTHROPIC_WORKSPACE_ID" ]; then put ANTHROPIC_WORKSPACE_ID "$ANTHROPIC_WORKSPACE_ID"; fi
+          if [ -n "$ANTHROPIC_WORKSPACE_ID" ]; then
+            ws=$(printf '%s' "$ANTHROPIC_WORKSPACE_ID" | tr -d '[:space:]')
+            # Die Form wird geprueft, der Wert nie ausgegeben.
+            if [[ "$ws" =~ ^wrkspc_[A-Za-z0-9]+$ ]]; then
+              put ANTHROPIC_WORKSPACE_ID "$ws"
+            else
+              echo "::warning::ANTHROPIC_WORKSPACE_ID hat nicht die Form wrkspc_… (Laenge ${#ws}, beginnt mit '${ws:0:3}…') - wird nicht verwendet."
+              printf '%s' "" | npx --yes wrangler@4 secret delete ANTHROPIC_WORKSPACE_ID --force > /dev/null 2>&1 || true
+            fi
+          fi
           if [ -n "$ANTHROPIC_API_KEY" ]; then
             put ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
             echo "claude=true" >> "$GITHUB_OUTPUT"
