@@ -30,7 +30,7 @@
       host.append(X.notice("Technische Analyse nicht verfügbar", "Für diesen Titel ist keine vollständige technische Auswertung veröffentlicht."), el("div", { class: "qx-actions" }, [X.btn("Zur Aktienanalyse", X.routes.stock(ticker), "secondary")]));
       return;
     }
-    var chart = el("div", { class: "qx-card", style: "padding:12px" });
+    var chart = el("div", { class: "qx-card", style: "padding:12px;overflow-x:auto", tabindex: "0", role: "region", "aria-label": "Kursstruktur-Chart" });
     var layer = select("Chart-Ebene", [["AUTO", "Übersicht"], ["STRUCTURE", "Marktstruktur"], ["TREND", "Trend"], ["MOMENTUM", "Momentum"], ["SUPPORT_RESISTANCE", "Unterstützung / Widerstand"], ["FIBONACCI", "Fibonacci"], ["ELLIOTT", "Elliott-Wellen"]], elliott ? "ELLIOTT" : "AUTO");
     var range = select("Zeitraum", [["3M", "3 Monate"], ["6M", "6 Monate"], ["YTD", "Seit Jahresbeginn"], ["1Y", "1 Jahr"], ["MAX", "Analysefenster"]], "1Y");
     var mode = select("Darstellung", [["candles", "Kerzen"], ["line", "Linie"]], "candles");
