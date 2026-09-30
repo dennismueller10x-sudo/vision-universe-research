@@ -31,10 +31,21 @@ export const PARAMS = Object.freeze({
   qualityTriggerVolume: 1.5, // DAR-Q-VOL: Ausbruchsvolumen >= 1,5x 50-Tage-Schnitt
 });
 
-// A/B-Qualitaet eines gueltigen Setups. Kriterien mit null sind (noch)
-// nicht pruefbar - z. B. das Volumen vor dem Ausbruch. Ein A-Setup braucht
-// alle pruefbaren Kriterien; das Volumen am Trigger entscheidet endgueltig.
-export function quality(ctx, t, levels, p = PARAMS, triggerVolumeRatio = null) {
+// A/B-Qualitaet (VU_FORMALIZATION, Version 1.2.0) - in ZWEI Phasen:
+//
+//   PRE_BREAKOUT (vor dem Ausbruch): Das Ausbruchsvolumen existiert noch nicht.
+//     A_CANDIDATE = alle vier vorab pruefbaren Kriterien erfuellt
+//                   (Regime, Staerke, enge Box, Stopabstand); Volumen offen.
+//     B_SETUP     = mindestens eines davon nicht erfuellt.
+//   CONFIRMED (am Bestaetigungstag, Schluss ueber der Oberkante):
+//     A_ENTRY     = A-Kandidat UND Volumen des Bestaetigungstags >= 1,5x.
+//     B_ENTRY     = sonst - auch wenn Volumendaten fehlen (nicht pruefbar).
+//
+// Kriterien mit null sind nicht pruefbar. "blockedOnlyByRegime" markiert
+// Setups, die ausschliesslich an der Regime-Sperre scheitern.
+export const PRE_CRITERIA = ['DAR-Q-REGIME', 'DAR-Q-RS', 'DAR-Q-TIGHT', 'DAR-Q-STOP'];
+
+export function quality(ctx, t, levels, p = PARAMS, confirmationVolumeRatio, phase = 'PRE_BREAKOUT') {
   const adr = ctx.ind.adr20[t];
   const mom = ctx.cross?.mom126?.[t];
   const height = Number.isFinite(levels.boxTop) && Number.isFinite(levels.boxBottom) ? 1 - levels.boxBottom / levels.boxTop : null;
@@ -44,15 +55,19 @@ export function quality(ctx, t, levels, p = PARAMS, triggerVolumeRatio = null) {
     'DAR-Q-RS': Number.isFinite(mom) ? mom >= p.qualityRsPercentile : null,
     'DAR-Q-TIGHT': height !== null ? height <= p.qualityMaxHeight : null,
     'DAR-Q-STOP': height !== null && Number.isFinite(adr) ? height >= Math.max(p.qualityMinStop, p.qualityMinStopAdr * adr) : null,
-    'DAR-Q-VOL': Number.isFinite(triggerVolumeRatio) ? triggerVolumeRatio >= p.qualityTriggerVolume : null,
+    'DAR-Q-VOL': phase === 'CONFIRMED' && Number.isFinite(confirmationVolumeRatio) ? confirmationVolumeRatio >= p.qualityTriggerVolume : null,
   };
-  const pre = ['DAR-Q-REGIME', 'DAR-Q-RS', 'DAR-Q-TIGHT', 'DAR-Q-STOP'];
-  const tier = pre.every((k) => criteria[k] === true) && criteria['DAR-Q-VOL'] !== false ? 'A' : 'B';
+  const preOk = PRE_CRITERIA.every((k) => criteria[k] === true);
+  const othersOk = PRE_CRITERIA.filter((k) => k !== 'DAR-Q-REGIME').every((k) => criteria[k] === true);
+  let label;
+  if (phase === 'CONFIRMED') label = preOk && criteria['DAR-Q-VOL'] === true ? 'A_ENTRY' : 'B_ENTRY';
+  else label = preOk ? 'A_CANDIDATE' : 'B_SETUP';
+  const failed = PRE_CRITERIA.filter((k) => criteria[k] === false).concat(phase === 'CONFIRMED' && criteria['DAR-Q-VOL'] !== true ? ['DAR-Q-VOL'] : []);
   return {
-    tier, criteria, regime,
-    measures: { rsPercentile: Number.isFinite(mom) ? Math.round(mom * 10) / 10 : null, boxHeight: height, adr20: adr, triggerVolumeRatio },
-    volumePending: criteria['DAR-Q-VOL'] === null,
-    final: criteria['DAR-Q-VOL'] !== null,
+    phase, label, tier: label.startsWith('A') ? 'A' : 'B', criteria, regime, failed,
+    blockedOnlyByRegime: phase === 'PRE_BREAKOUT' && criteria['DAR-Q-REGIME'] === false && othersOk,
+    volumeStatus: phase === 'PRE_BREAKOUT' ? 'PENDING_UNTIL_BREAKOUT' : (Number.isFinite(confirmationVolumeRatio) ? 'MEASURED' : 'MISSING'),
+    measures: { rsPercentile: Number.isFinite(mom) ? Math.round(mom * 10) / 10 : null, boxHeight: height, adr20: adr, confirmationVolumeRatio: Number.isFinite(confirmationVolumeRatio) ? confirmationVolumeRatio : null },
   };
 }
 
@@ -116,17 +131,23 @@ export function scan(ctx, t, p = PARAMS, opts = {}) {
   return { stage: distance <= p.entryReadyDistance ? 'ENTRY_READY' : 'SETUP', rules, facts, levels, quality: quality(ctx, t, levels, p) };
 }
 
-export function entry(ctx, t, pending, p = PARAMS, fill) {
-  const { bars } = ctx;
-  const trig = pending.levels.trigger;
-  if (!(bars.high[t] > trig)) return null;
-  const f = fill.stopBuy(trig, bars.open[t]);
-  const stop = pending.levels.boxBottom;
-  // Volumen am Trigger: Ausbruchstag gegen den 50-Tage-Schnitt bis zum Vortag.
-  const v50 = ctx.ind.vol50[t - 1];
+// DAR-ENTRY-D1: Tagesschluss ueber der Oberkante bestaetigt den Ausbruch
+// (Original DAR-ENTRY-01: Kauf beim Ausbruch - intraday, mit Tagesdaten nicht
+// belegbar). Am Bestaetigungstag wird die Qualitaet endgueltig: Volumen des
+// Bestaetigungstags gegen den 50-Tage-Schnitt bis zum Vortag.
+export function confirm(ctx, t, pending, p = PARAMS) {
+  const { bars, ind } = ctx;
+  if (!(bars.close[t] > pending.levels.trigger)) return null;
+  const v50 = ind.vol50[t - 1];
   const volumeRatio = Number.isFinite(v50) && v50 > 0 && Number.isFinite(bars.volume[t]) ? bars.volume[t] / v50 : null;
-  const q = quality(ctx, t - 1, pending.levels, p, volumeRatio);
-  return { fill: f.price, gapped: f.gapped, stop, ruleId: 'DAR-ENTRY-01', stopRuleId: 'DAR-STOP-01', sameBarStop: bars.low[t] <= stop, volumeRatio, quality: q };
+  const q = quality(ctx, t - 1, pending.levels, p, volumeRatio, 'CONFIRMED');
+  return { ruleId: 'DAR-ENTRY-D1', basis: 'DAILY_CLOSE', close: bars.close[t], volumeRatio, quality: q };
+}
+
+// Modelleinstieg zur Eroeffnung; DAR-STOP-01: Stop an der Boxunterkante.
+// Keine Gap-Sperre (im Original nicht belegt); ein Gap wird protokolliert.
+export function planEntry(ctx, t, sig) {
+  return { stop: sig.levels.boxBottom, stopRuleId: 'DAR-STOP-01' };
 }
 
 export function invalidate(ctx, t, pending, p = PARAMS) {
@@ -149,8 +170,9 @@ export function manage(ctx, t, pos, p = PARAMS) {
 }
 
 export default {
-  id: 'DARVAS_BOX', variant: 'DARVAS_BOX_N3_VU', version: '1.1.0', timeframe: 'daily',
-  PARAMS, scan, entry, invalidate, manage, quality,
-  // Taegliche Neuklassifikation wartender Setups (vor dem Trigger).
+  id: 'DARVAS_BOX', variant: 'DARVAS_BOX_N3_VU', version: '1.2.0', timeframe: 'daily',
+  manageCompatible: ['1.0.0', '1.1.0', '1.2.0'],
+  PARAMS, scan, confirm, planEntry, invalidate, manage, quality,
+  // Taegliche Neuklassifikation wartender Setups (vor dem Ausbruch).
   classify: (ctx, t, sig) => quality(ctx, t, sig.levels),
 };

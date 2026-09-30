@@ -98,8 +98,12 @@ export function scan(ctx, t, p = PARAMS) {
 }
 
 // Ausloesung: Wochenschluss ueber dem Widerstand; Ausfuehrung zur naechsten
-// Eroeffnung. Deshalb liefert entry() eine "nextOpen"-Order statt Fill.
-export function entry(ctx, t, pending, p = PARAMS) {
+// Eroeffnung der Folgewoche (planEntry).
+// WEIN-ST2-01: Bestaetigung nur am vollstaendigen Wochenende, wenn der
+// Wochenschluss den Widerstand ueberschreitet. WEIN-VOL-01: Wochenvolumen
+// >= 1,5x Schnitt; zu wenig Volumen -> kein Einstieg. Fehlen Volumendaten,
+// wird bestaetigt, aber als "Volumen nicht pruefbar" protokolliert (WEIN-VOL-02).
+export function confirm(ctx, t, pending, p = PARAMS) {
   const k = ctx.weekAt?.[t];
   if (k === null || k === undefined) return null;
   const w = ctx.weekly;
@@ -107,8 +111,13 @@ export function entry(ctx, t, pending, p = PARAMS) {
   const vol = w.volume[k], avg = w.volAvg[k];
   const volumeCheck = Number.isFinite(vol) && Number.isFinite(avg) && avg > 0 ? vol / avg : null;
   const volOk = volumeCheck === null ? null : volumeCheck >= p.volumeMultiple;
-  if (volOk === false) return { notTaken: true, ruleId: 'WEIN-VOL-01', note: `Ausbruch ohne Volumenbestätigung (${volumeCheck.toFixed(2)}× Durchschnitt).` };
-  return { nextOpen: true, stop: pending.levels.invalidation, ruleId: 'WEIN-ST2-01', stopRuleId: 'WEIN-STOP-VU', volumeRatio: volumeCheck, volumeVerified: volOk === true };
+  if (volOk === false) return { notTaken: true, ruleId: 'WEIN-VOL-01', note: `Wochenschluss über dem Widerstand, aber nur ${volumeCheck.toFixed(2)}× Durchschnittsvolumen — kein Einstieg.` };
+  return { ruleId: volOk === null ? 'WEIN-VOL-02' : 'WEIN-ST2-01', basis: 'WEEKLY_CLOSE', close: w.close[k], volumeRatio: volumeCheck, volumeVerified: volOk };
+}
+
+// Modelleinstieg zur Eroeffnung der Folgewoche; Stop 2 % unter der Basis.
+export function planEntry(ctx, t, sig) {
+  return { stop: sig.levels.invalidation, stopRuleId: 'WEIN-STOP-VU' };
 }
 
 export function invalidate(ctx, t, pending, p = PARAMS) {
@@ -135,6 +144,7 @@ export function manage(ctx, t, pos, p = PARAMS) {
 }
 
 export default {
-  id: 'WEINSTEIN_STAGE', variant: 'WEINSTEIN_STAGE2_WEEKLY', version: '1.0.0', timeframe: 'weekly',
-  PARAMS, scan, entry, invalidate, manage,
+  id: 'WEINSTEIN_STAGE', variant: 'WEINSTEIN_STAGE2_WEEKLY', version: '1.1.0', timeframe: 'weekly',
+  manageCompatible: ['1.0.0', '1.1.0'],
+  PARAMS, scan, confirm, planEntry, invalidate, manage,
 };

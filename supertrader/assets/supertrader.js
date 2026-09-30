@@ -41,7 +41,12 @@
   var STATUS_TONE = { RESEARCHED: 'good', LIVE_MONITORING: 'info', HYBRID_MODEL: 'warn', VU_FORMALIZATION: 'warn', SOURCE_PARTIAL: 'warn', DATA_COVERAGE_PENDING: 'bad', DATA_COVERAGE_INSUFFICIENT: 'bad', BACKTEST_PENDING: '', ADVANCED_RESEARCH: '' };
   var EVIDENCE_TEXT = { PRIMARY_EXPLICIT: 'Original, ausdrücklich', PRIMARY_INFERRED: 'Original, abgeleitet', MULTI_SOURCE_CONFIRMED: 'Mehrfach bestätigt', SECONDARY_ONLY: 'Nur Sekundärquelle', DISPUTED: 'Umstritten', VU_FORMALIZATION: 'VU-Formalisierung', VU_EXTENSION: 'VU-Erweiterung', NOT_VERIFIABLE: 'Nicht belegbar' };
   var EVIDENCE_TONE = { PRIMARY_EXPLICIT: 'good', PRIMARY_INFERRED: 'good', MULTI_SOURCE_CONFIRMED: 'good', SECONDARY_ONLY: 'warn', DISPUTED: 'bad', VU_FORMALIZATION: 'info', VU_EXTENSION: 'info', NOT_VERIFIABLE: '' };
-  var STATE_LABEL = { DISCOVERED: 'Entdeckt', WATCH: 'Beobachten', SETUP: 'Setup', ENTRY_READY: 'Einstieg bereit', TRIGGERED: 'Ausgelöst', ACTIVE: 'Aktiv', WARNING: 'Warnung', EXIT: 'Ausstieg', CLOSED: 'Abgeschlossen', INVALIDATED: 'Ungültig' };
+  // Nutzerphasen: strikt getrennt. „Nahe am Trigger“ ist Vorbereitung, kein Einstieg.
+  var STATE_LABEL = { DISCOVERED: 'Kandidat', WATCH: 'Kandidat', SETUP: 'Einstieg vorbereitet', ENTRY_READY: 'Vorbereitet · nahe Trigger', TRIGGERED: 'Einstieg bestätigt', ACTIVE: 'Modellposition aktiv', WARNING: 'Warnung', EXIT: 'Ausstieg ausgelöst', CLOSED: 'Geschlossen', INVALIDATED: 'Ungültig' };
+  var BASIS_SHORT = { DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss', CLOSE: 'Schluss', LOW: 'Tief' };
+  function dateShort(d) { return d ? dateDe(d) : '–'; }
+  var BASIS_TEXT = { DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss', CLOSE: 'Tagesschluss', LOW: 'Tagestief', NEXT_OPEN: 'Eröffnung Folgetag', STOP_ORDER_ASSUMPTION: 'Stop-Order-Annahme', OPEN_BELOW_STOP: 'Eröffnung unter Stop', OPEN: 'Eröffnung' };
+  var QLABEL = { A_CANDIDATE: 'A-Kandidat', B_SETUP: 'B-Setup', A_ENTRY: 'A-Einstieg', B_ENTRY: 'B-Einstieg' };
   var LIVE_ORDER = ['ENTRY_READY', 'TRIGGERED', 'ACTIVE', 'WARNING', 'EXIT', 'SETUP'];
 
   function chip(text, tone, title) { return h('span', { class: 'st-chip' + (tone ? ' ' + tone : ''), title: title || null }, [h('span', { class: 'dot' }), text]); }
@@ -115,14 +120,14 @@
     var lv = s.levels || {};
     switch (s.state || s.stage) {
       case 'DISCOVERED': case 'WATCH': return 'Nur Beobachtung — es gibt noch kein Setup.';
-      case 'SETUP': return 'Setup erkannt, aber noch weit vom Trigger entfernt. Erst ein Kurs über ' + num(lv.trigger) + ' würde auslösen.';
-      case 'ENTRY_READY': return 'Kurs nahe am Trigger. Erst ein Kurs über ' + num(lv.trigger) + (s.strategyId === 'WEINSTEIN_STAGE' ? ' auf Wochenschlussbasis' : '') + ' würde den Status auf „Ausgelöst“ ändern.';
-      case 'TRIGGERED': return 'Das Modell hat am ' + dateDe(s.entry ? s.entry.date : lastT(s).date) + ' ausgelöst.';
-      case 'ACTIVE': return 'Modellposition läuft; der Stop liegt bei ' + num(s.stop) + '.';
+      case 'SETUP': return 'Einstieg vorbereitet, Kurs noch mehr als 3 % unter dem Trigger. Erst ein ' + (s.strategyId === 'WEINSTEIN_STAGE' ? 'Wochenschluss' : 'Tagesschluss') + ' über ' + num(lv.trigger) + ' bestätigt den Einstieg.';
+      case 'ENTRY_READY': return 'Kurs nahe am Trigger — das ist noch kein Einstieg. Erst ein ' + (s.strategyId === 'WEINSTEIN_STAGE' ? 'Wochenschluss' : 'Tagesschluss') + ' über ' + num(lv.trigger) + ' bestätigt ihn.';
+      case 'TRIGGERED': return 'Einstieg am ' + dateDe(s.confirmation ? s.confirmation.date : lastT(s).date) + ' per Schlusskurs bestätigt. Der Modelleinstieg folgt zur nächsten Eröffnung — noch keine Ausführung.';
+      case 'ACTIVE': return 'Modellposition aktiv (keine reale Order); der Stop liegt bei ' + num(s.stop) + '.';
       case 'WARNING': return 'Modellposition läuft mit Warnsignal; der Stop liegt bei ' + num(s.stop) + '.';
       case 'EXIT': return 'Ausstiegsregel ausgelöst — Ausführung zur nächsten Eröffnung.';
-      case 'CLOSED': return 'Abgeschlossen mit ' + pct(s.result && s.result.returnPct, 1, true) + '.';
-      case 'INVALIDATED': return 'Setup ungültig geworden (' + lastT(s).ruleId + ').';
+      case 'CLOSED': return 'Modellposition geschlossen mit ' + pct(s.result && s.result.returnPct, 1, true) + '.';
+      case 'INVALIDATED': return lastT(s).ruleId === 'LC-VERSION-RETIRED' ? 'Durch neue Regelversion abgelöst — nicht umgedeutet, sondern unter der neuen Version neu gesucht.' : 'Setup ungültig geworden (' + lastT(s).ruleId + ').';
       default: return '';
     }
   }
@@ -182,7 +187,32 @@
   function qualityBadge(s) {
     if (!s.quality) return null;
     var q = s.quality;
-    return h('span', { class: 'st-q st-q-' + q.tier, title: 'VU-Qualitätsstufe, nicht backtest-validiert' }, [q.tier + '-Setup' + (q.tier === 'A' && q.volumePending ? ' · Volumen am Trigger offen' : '')]);
+    return h('span', { class: 'st-q st-q-' + q.tier, title: 'VU-Qualitätsstufe, nicht backtest-validiert' }, [(QLABEL[q.label] || q.tier + '-Setup') + (q.label === 'A_CANDIDATE' ? ' · Volumen offen' : '')]);
+  }
+
+  // Ein-/Ausstiegsblock: Status, geplante Schwellen mit Datenstand, tatsächliche
+  // Modellausführung (nur wenn vorhanden) und nächste Handlung mit Regel.
+  function planRows(p) {
+    var rows = [];
+    var inPos = !!p.entry;
+    rows.push(['Trigger', num(p.trigger.value), 'geplant · ' + (BASIS_SHORT[p.trigger.basis] || '') + ' > · Stand ' + dateShort(p.trigger.dataAsOf)]);
+    if (p.stop) rows.push(['Stop', num(p.stop.value), p.stop.ruleId + ' · Stand ' + dateDe(p.stop.dataAsOf), 'bad']);
+    else rows.push(['Ungültig', num(p.invalidation.value), 'geplant · ' + (BASIS_SHORT[p.invalidation.basis] || '') + ' < · Stand ' + dateShort(p.invalidation.dataAsOf), 'bad']);
+    if (p.confirmation && !inPos) rows.push(['Bestätigt', num(p.confirmation.close), (BASIS_TEXT[p.confirmation.basis] || '') + ' ' + dateDe(p.confirmation.date)]);
+    rows.push(inPos ? ['Modell\u00ADeinstieg', num(p.entry.price), (BASIS_TEXT[p.entry.basis] || '') + ' ' + dateDe(p.entry.date) + (p.entry.gappedAboveTrigger ? ' · Gap' : '')] : ['Modell\u00ADeinstieg', 'keiner', p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung']);
+    var lastExit = p.exits && p.exits.length ? p.exits[p.exits.length - 1] : null;
+    if (lastExit) rows.push(['Ausstieg', num(lastExit.price), (BASIS_TEXT[lastExit.basis] || lastExit.basis) + ' ' + dateDe(lastExit.date) + ' · ' + lastExit.ruleId]);
+    return rows;
+  }
+  function entryExitBlock(s, compact) {
+    var p = s.plan;
+    if (!p) return null;
+    return h('div', { class: 'st-plan' + (compact ? ' compact' : ''), 'data-phase': p.phase }, [
+      h('div', { class: 'st-plan-status' }, [h('span', { class: 'ph', text: p.phaseLabel }), h('span', { class: 'since', text: 'seit ' + dateDe(p.since) + ' · ' + (p.sinceRuleId || '') })]),
+      h('div', { class: 'st-plan-grid' }, planRows(p).map(function (r) { return h('div', { class: 'c' }, [h('div', { class: 'k', text: r[0] }), h('div', { class: 'v' + (r[3] ? ' ' + r[3] : ''), text: r[1] }), h('div', { class: 'd', text: r[2] })]); })),
+      h('div', { class: 'st-plan-next' }, [h('span', { class: 'k', text: 'Nächste Handlung des Modells' }), h('p', { text: p.nextAction.text }), h('span', { class: 'r', text: 'Regel ' + p.nextAction.ruleId + ' · Datenstand ' + dateDe(p.nextAction.dataAsOf) + (p.reason ? ' · ' + p.reason : '') })]),
+      s.dataStatus ? h('div', { class: 'st-banner', text: s.dataStatus.note }) : null,
+    ]);
   }
 
   function signalCard(s, strat) {
@@ -200,8 +230,9 @@
       h('div', { class: 'top' }, [h('span', { class: 'strat', text: strat.world_name }), h('span', { class: 'st-tags' }, [qualityBadge(s), stateTag(st)])]),
       h('div', null, [h('div', { class: 'sym', text: s.symbol }), h('div', { class: 'name', text: s.companyName || '' })]),
       h('div', { class: 'why', text: whyText(s) }),
-      (lv.trigger || open || st === 'CLOSED') ? h('div', { class: 'st-levels' }, levels.map(function (l) { return h('div', null, [h('div', { class: 'k', text: l[0] }), h('div', { class: 'v' + (l[2] ? ' ' + l[2] : ''), text: l[1] })]); })) : null,
-      h('div', { class: 'st-small', text: stateSentence(s) + (open || st === 'CLOSED' ? ' Werte aus dem Live-Protokoll des Modells, kein Backtest.' : '') }),
+      s.plan ? entryExitBlock(s, true) : (lv.trigger || open || st === 'CLOSED') ? h('div', { class: 'st-levels' }, levels.map(function (l) { return h('div', null, [h('div', { class: 'k', text: l[0] }), h('div', { class: 'v' + (l[2] ? ' ' + l[2] : ''), text: l[1] })]); })) : null,
+      s.plan ? null : h('div', { class: 'st-small', text: stateSentence(s) }),
+      open || st === 'CLOSED' ? h('div', { class: 'st-small', text: 'Werte aus dem Live-Protokoll des Modells, kein Backtest, keine reale Order.' }) : null,
       trustStrip(strat),
     ]);
   }
@@ -239,8 +270,8 @@
       h('div', { class: 'st-tile', style: { 'grid-column': 'span 2' } }, [h('div', { class: 'k', text: 'Marktregime (Produktuniversum)' }), h('div', { class: 'v s', text: mk.regime.label }), h('div', { class: 'd', text: mk.regime.plain || '' })]),
       tile('Strategy Worlds live', String(core.filter(function (s) { return s.engine; }).length) + ' / ' + core.length, 'Greenblatt wartet auf Datenfelder'),
       tile('Setups im Fokus', String(live.filter(function (s) { return !s.entry && focusable(s); }).length), live.filter(function (s) { return s.state === 'ENTRY_READY' && focusable(s); }).length + ' nahe am Trigger' + (dq ? ' · ohne ' + dq.B + ' Darvas-B' : '')),
-      tile('Ausgelöst', String(triggeredToday), 'Signale im Status „Ausgelöst“'),
-      tile('Modellpositionen', String(activeCnt), 'aktiv, Warnung oder Ausstieg'),
+      tile('Einstieg bestätigt', String(triggeredToday), triggeredToday ? 'Modelleinstieg zur nächsten Eröffnung' : 'noch kein bestätigter Einstieg'),
+      tile('Modellpositionen', String(activeCnt), activeCnt ? 'aktiv, Warnung oder Ausstieg · keine realen Orders' : 'keine — es gab noch keinen Modelleinstieg'),
     ]), h('p', { class: 'st-note', text: 'Datenfrische: Tageskurse bis ' + dateDe(mk.freshness.barsThrough) + ' (kanonische Materialisierung ' + dateDe((mk.freshness.barsGeneratedAt || '').slice(0, 10)) + '). ' + (mk.regime.notAForecast || '') })]));
 
     // Heute im Fokus
@@ -251,7 +282,7 @@
       focus.length
       ? h('div', { class: 'st-rail' }, focus.map(function (s) { return signalCard(s, S[s.strategyId]); }))
       : empty('Heute kein Setup', 'Keine der Strategien sieht auf dem letzten Tagesschluss ein Setup. Supertrader erzeugt keine künstlichen Signale — der Scanner beobachtet weiter.'),
-      dq ? h('p', { class: 'st-note', style: { 'margin-top': '10px' } }, ['Darvas Boxes zeigt hier nur A-Setups: heute ' + dq.A + '. ' + (D.market.regime.id === 'BROAD_WEAKNESS' ? 'Das Marktregime „breite Schwäche“ schließt A-Setups aus. ' : '') + dq.B + ' B-Setups stehen im ', h('a', { href: BASE + 'signals/?strategy=DARVAS_BOX&quality=B', text: 'Signalzentrum' }), '.']) : null],
+      dq ? h('p', { class: 'st-note', style: { 'margin-top': '10px' } }, ['Darvas Boxes zeigt hier nur A: heute ' + ((dq.byLabel || {}).A_CANDIDATE || 0) + ' A-Kandidaten (vor dem Ausbruch) und ' + ((dq.byLabel || {}).A_ENTRY || 0) + ' A-Einstiege (Ausbruch bestätigt). ' + (D.market.regime.id === 'BROAD_WEAKNESS' ? 'Die Regime-Sperre (VU, keine Darvas-Originalregel) schließt A bei „breiter Schwäche“ aus. ' : '') + dq.B + ' B-Setups stehen im ', h('a', { href: BASE + 'signals/?strategy=DARVAS_BOX&quality=B', text: 'Signalzentrum' }), '.']) : null],
     h('a', { class: 'st-more', href: BASE + 'signals/', text: 'Alle Signale →' })));
 
     // Strategy Worlds
@@ -364,7 +395,7 @@
     }
 
     main.appendChild(section('Auf einen Blick', 'Transparenz', [trustPanel(s)]));
-    main.appendChild(h('nav', { class: 'st-seg', 'aria-label': 'Abschnitte', style: { 'margin-top': '16px' } }, [['story', 'Story'], ['signale', 'Signale'], ['backtest', 'Backtest'], ['regeln', 'Regeln'], ['historie', 'Historie'], ['quellen', 'Quellen']].map(function (x) { return h('button', { type: 'button', onclick: function () { var t = document.getElementById(x[0]); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, text: x[1] }); })));
+    main.appendChild(h('nav', { class: 'st-seg', 'aria-label': 'Abschnitte', style: { 'margin-top': '16px' } }, [['story', 'Story'], ['signale', 'Signale'], ['regelkarte', 'Regelkarte'], ['backtest', 'Backtest'], ['regeln', 'Regeln'], ['historie', 'Historie'], ['quellen', 'Quellen']].map(function (x) { return h('button', { type: 'button', onclick: function () { var t = document.getElementById(x[0]); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, text: x[1] }); })));
 
     // Story
     var story = section('So denkt dieses Modell', 'Strategie-Story', [
@@ -389,10 +420,13 @@
       var sorted = st.open.slice().sort(function (a, b) { return LIVE_ORDER.indexOf(a.state) - LIVE_ORDER.indexOf(b.state); });
       if (s.quality_tiers) {
         var A = sorted.filter(function (x) { return x.quality && x.quality.tier === 'A'; });
+        var Acand = A.filter(function (x) { return x.quality.label === 'A_CANDIDATE'; }), Aentry = A.filter(function (x) { return x.quality.label === 'A_ENTRY'; });
         var B = sorted.filter(function (x) { return !x.quality || x.quality.tier !== 'A'; });
         liveKids.push(qualityExplainer(s, st, A.length, B.length));
-        liveKids.push(h('h3', { class: 'st-h3', text: 'A-Setups (' + A.length + ')' }));
-        liveKids.push(A.length ? h('div', { class: 'st-rail' }, A.slice(0, 24).map(function (x) { return signalCard(x, s); })) : empty('Heute kein A-Setup', (D.market.regime.id === 'BROAD_WEAKNESS' ? 'Das Marktregime „breite Schwäche“ schließt A-Setups aus. ' : '') + 'Kein Setup erfüllt alle Qualitätskriterien.'));
+        liveKids.push(h('h3', { class: 'st-h3', text: 'A-Einstiege — Ausbruch per Schluss bestätigt (' + Aentry.length + ')' }));
+        liveKids.push(Aentry.length ? h('div', { class: 'st-rail' }, Aentry.slice(0, 24).map(function (x) { return signalCard(x, s); })) : empty('Kein A-Einstieg', 'Es gibt noch keinen bestätigten Darvas-Ausbruch, der alle Kriterien inklusive Volumen am Bestätigungstag erfüllt.'));
+        liveKids.push(h('h3', { class: 'st-h3', text: 'A-Kandidaten — vor dem Ausbruch (' + Acand.length + ')' }));
+        liveKids.push(Acand.length ? h('div', { class: 'st-rail' }, Acand.slice(0, 24).map(function (x) { return signalCard(x, s); })) : empty('Heute kein A-Kandidat', (D.market.regime.id === 'BROAD_WEAKNESS' ? 'Die Regime-Sperre (VU, keine Darvas-Originalregel) schließt A bei „breiter Schwäche“ aus. ' : '') + 'Kein Setup erfüllt alle Kriterien vor dem Ausbruch.'));
         liveKids.push(h('h3', { class: 'st-h3', text: 'B-Setups (' + B.length + ') — gültig, aber nicht im Fokus' }));
         liveKids.push(B.length ? h('div', { class: 'st-rail' }, B.slice(0, 12).map(function (x) { return signalCard(x, s); })) : empty('Keine B-Setups', ''));
         if (B.length > 12) liveKids.push(h('a', { class: 'st-more', href: BASE + 'signals/?strategy=' + id + '&quality=B', text: 'Alle ' + B.length + ' B-Setups im Signalzentrum →' }));
@@ -406,7 +440,7 @@
       var chartPick = sorted.filter(function (x) { return !x.quality || x.quality.tier === 'A'; })[0] || sorted[0];
       if (chartPick) mountSignalChart(chartHost, chartPick, s);
       liveKids.push(h('h3', { style: { 'margin-top': '22px', 'font-size': '17px' }, text: 'Setup Scanner — Beobachtungsliste' }));
-      liveKids.push(h('p', { class: 'st-note', text: st.scanner.watch + ' Titel „Beobachten“, ' + st.scanner.discovered + ' „Entdeckt“ (Momentaufnahme ' + dateDe(sig.asOf) + '). Diese Stufen werden nicht protokolliert — erst ab „Setup“.' }));
+      liveKids.push(h('p', { class: 'st-note', text: st.scanner.watch + ' Titel „Beobachten“, ' + st.scanner.discovered + ' „Entdeckt“ (Momentaufnahme ' + dateDe(sig.asOf) + '). Kandidaten werden nicht protokolliert — erst ab „Einstieg vorbereitet“.' }));
       liveKids.push(scannerTable(st.scanner.top.slice(0, 25), s));
       sigSec = section('Aktuelle Signale', 'Live-Beobachtung seit ' + dateDe(st.liveSince), liveKids);
     } else {
@@ -418,6 +452,9 @@
     var runs = bt.runs.filter(function (r) { return r.strategyId === id; });
     var btSec = section('Backtest', 'Historische Prüfung', [backtestPanel(runs, cov, s), variantsTable(s, runs)]);
     btSec.id = 'backtest'; main.appendChild(btSec);
+
+    // Regelkarte
+    if (s.rule_cards && s.rule_cards.length) { var rcSec = section('Regelkarte: Einstieg, Invalidation, Ausstieg', 'Maschinenlesbar · ' + s.rule_cards[0].variant_id, [ruleCardBlock(s, s.rule_cards[0])]); rcSec.id = 'regelkarte'; main.appendChild(rcSec); }
 
     // Regeln
     var orig = s.rules.filter(function (r) { return !r.VU_formalization_flag; });
@@ -451,12 +488,31 @@
       h('div', { class: 'st-qrows' }, s.quality_tiers.rules.map(function (k) {
         var c = counts[k] || { t: 0, f: 0, n: 0 };
         return h('div', { class: 'st-qrow', title: byId[k] ? byId[k].plain_language_explanation : '' }, [
-          h('div', null, [h('strong', { text: (s.quality_tiers.labels || {})[k] || k }), h('div', { class: 'st-small', text: k })]),
+          h('div', null, [h('strong', { text: (s.quality_tiers.labels || {})[k] || k }), h('div', { class: 'st-small', text: k + (k === 'DAR-Q-REGIME' ? ' · VU-Sperre, kein Darvas-Original' : '') })]),
           h('div', { class: 'st-qcounts' }, [h('span', { class: 'ok', text: '✓ ' + c.t }), h('span', { class: 'no', text: '✕ ' + c.f }), h('span', { class: 'op', text: '… ' + c.n })]),
         ]);
       })),
       h('details', { class: 'st-details', style: { 'margin-top': '8px' } }, [h('summary', { text: 'Kriterien im Wortlaut' }), h('div', null, [h('ul', null, s.quality_tiers.rules.map(function (k) { return h('li', { text: k + ': ' + (byId[k] ? byId[k].plain_language_explanation : '') }); }))])]),
-      h('p', { class: 'st-small', style: { 'margin-top': '8px' }, text: 'Heute ' + nA + ' A- und ' + nB + ' B-Setups. „Offen“ beim Volumen heißt: wird erst am Ausbruchstag geprüft.' }),
+      st.quality && st.quality.bBreakdown ? h('div', { class: 'st-bsplit' }, [
+        h('div', null, [h('div', { class: 'v', text: String(st.quality.bBreakdown.blockedOnlyByRegime) }), h('div', { class: 'k', text: 'B nur wegen Regime-Sperre' })]),
+        h('div', null, [h('div', { class: 'v', text: String(st.quality.bBreakdown.failOtherCriteria) }), h('div', { class: 'k', text: 'B wegen weiterer Kriterien' })]),
+      ]) : null,
+      h('p', { class: 'st-small', style: { 'margin-top': '8px' }, text: 'Heute ' + nA + ' A und ' + nB + ' B. Die Regime-Sperre ist eine Vision-Universe-Annahme — keine Darvas-Originalregel und nicht backtest-geprüft. „Offen“ beim Volumen heißt: wird erst am Bestätigungstag geprüft und zählt vorher nicht gegen A.' }),
+    ]);
+  }
+
+  var PROV_TEXT = { ORIGINAL: 'Original', VU: 'VU-Formalisierung', MIXED: 'Original + VU', NONE: 'keine Regel' };
+  var PROV_TONE = { ORIGINAL: 'good', VU: 'info', MIXED: 'warn', NONE: '' };
+  function ruleCardBlock(s, card) {
+    var c = card.completeness || {};
+    var tone = c.status === 'COMPLETE' ? 'info' : c.status === 'INACTIVE' ? '' : 'warn';
+    var row = function (x) { return h('div', { class: 'st-rc-row' }, [h('div', { class: 'h' }, [h('strong', { text: x.title }), chip(PROV_TEXT[x.provenance] || x.provenance, PROV_TONE[x.provenance])]), h('p', { text: x.text }), x.rules.length ? h('div', { class: 'st-small', text: x.rules.join(' · ') }) : null]); };
+    return h('div', { class: 'st-rc' }, [
+      h('div', { class: 'st-banner ' + tone, text: (c.status === 'COMPLETE' ? 'Regeln vollständig mechanisch. ' : c.status === 'INACTIVE' ? 'Inaktiv — ' + (card.activationCondition || '') + ' ' : 'Unvollständig: ' + (c.incomplete || []).join('; ') + '. ') + (c.note || '') + (c.status === 'COMPLETE' && c.incomplete && c.incomplete.length ? ' Offen: ' + c.incomplete.join('; ') + '.' : '') }),
+      h('div', { class: 'st-rc-meta st-small', text: 'Regelversion ' + card.rule_version + ' · Zeitbasis ' + ({ daily: 'Tagesbalken', weekly: 'Wochenschluss', annual: 'jährliches Rebalancing' }[card.timeframe] || card.timeframe) + ' · Herkunft je Abschnitt aus den Regel-IDs abgeleitet' }),
+      h('div', { class: 'st-rc-list' }, card.sections.map(row)),
+      card.edge_cases && card.edge_cases.length ? h('details', { class: 'st-details', style: { 'margin-top': '8px' } }, [h('summary', { text: 'Gaps, fehlendes Volumen, fehlende Daten, Konflikte (' + card.edge_cases.length + ')' }), h('div', { class: 'st-rc-list' }, card.edge_cases.map(row))]) : null,
+      h('details', { class: 'st-details', style: { 'margin-top': '8px' } }, [h('summary', { text: 'Benötigte Daten' }), h('ul', null, card.required_data.map(function (d) { return h('li', { text: d.item + ' — ' + d.rules.join(', ') }); }))]),
     ]);
   }
 
@@ -567,17 +623,19 @@
         var mas = s.strategyId === 'MINERVINI_VCP' ? [[50, 'var(--ma50)', true], [150, 'var(--ma150)', true], [200, 'var(--ma200)', true]] : s.strategyId === 'MOMENTUM_BREAKOUT' ? [[10, 'var(--ma10)', true], [20, 'var(--ma20)', true], [50, 'var(--ma50)', false]] : [[50, 'var(--ma50)', false]];
         mas.forEach(function (m) { overlays.push({ id: 'ma' + m[0], label: m[0] + '-Tage-Linie', color: m[1], values: STChart.sma(closes, m[0]), on: m[2] }); });
       }
-      if (isFinite(lv.trigger)) levels.push({ id: 'trigger', label: s.strategyId === 'WEINSTEIN_STAGE' ? 'Widerstand' : (s.strategyId === 'MINERVINI_VCP' ? 'Pivot' : 'Trigger'), value: lv.trigger, color: '#fde047' });
-      if (s.entry) levels.push({ id: 'entry', label: 'Einstieg', value: s.entry.price, color: '#4ade80', dash: '2 3' });
-      if (isFinite(s.stop)) levels.push({ id: 'stop', label: 'Stop', value: s.stop, color: '#e66767' });
-      else if (isFinite(lv.invalidation)) levels.push({ id: 'inv', label: 'Ungültig unter', value: lv.invalidation, color: '#e66767' });
+      var pAsOf = s.plan ? ' · geplant, Stand ' + dateDe(s.plan.trigger.dataAsOf) : ' · geplant';
+      if (isFinite(lv.trigger)) levels.push({ id: 'trigger', label: (s.strategyId === 'WEINSTEIN_STAGE' ? 'Widerstand' : (s.strategyId === 'MINERVINI_VCP' ? 'Pivot' : 'Trigger')) + pAsOf, value: lv.trigger, color: '#fde047' });
+      if (s.entry) levels.push({ id: 'entry', label: 'Modelleinstieg ' + dateDe(s.entry.date) + ' (Eröffnung)', value: s.entry.price, color: '#4ade80', dash: '2 3' });
+      if (isFinite(s.stop)) levels.push({ id: 'stop', label: 'Stop (' + (s.stopRuleId || '') + ')', value: s.stop, color: '#e66767' });
+      else if (isFinite(lv.invalidation)) levels.push({ id: 'inv', label: 'Ungültig unter' + pAsOf, value: lv.invalidation, color: '#e66767' });
       if (s.strategyId === 'DARVAS_BOX' && isFinite(lv.boxBottom)) boxes.push({ from: lv.boxTopDate, to: null, top: lv.boxTop, bottom: lv.boxBottom, color: '#ff7a1a', label: 'Darvas-Box (VU)' });
       if (s.strategyId === 'MOMENTUM_BREAKOUT' && lv.baseStartDate) boxes.push({ from: lv.baseStartDate, to: null, top: lv.baseHigh, bottom: lv.baseLow, color: '#2f7bff', label: 'Basis (VU)' });
       if (s.strategyId === 'WEINSTEIN_STAGE' && lv.baseStartDate) boxes.push({ from: nearestDate(bars.date, lv.baseStartDate), to: null, top: lv.resistance, bottom: lv.baseSupport, color: '#8b5cf6', label: 'Stage-1-Basis' });
+      if (s.confirmation) markers.push({ date: s.confirmation.date, price: s.confirmation.close, kind: 'confirm' });
       if (s.entry) markers.push({ date: s.entry.date, price: s.entry.price, kind: 'entry' });
       (s.exits || []).forEach(function (x, i, arr) { markers.push({ date: x.date, price: x.price, kind: i < arr.length - 1 || x.fraction < 1 ? 'partial' : 'exit' }); });
       STChart.render(box, { bars: bars, mode: weekly ? 'line' : 'candles', window: weekly ? 156 : 130, overlays: overlays, levels: levels, boxes: boxes, markers: markers, showVolume: !weekly, title: s.symbol + ' mit Strategie-Overlays',
-        status: weekly ? 'Wöchentliche Schlusskurse aus der kanonischen Langzeitreihe; Volumenprüfung nur, soweit Tagesdaten vorliegen.' : 'Split-adjustierte Tageskerzen der kanonischen Materialisierung (' + (bars.date.length) + ' Sitzungen, bis ' + dateDe(bars.date[bars.date.length - 1]) + '). Ältere Historie ist öffentlich nicht verfügbar und wird nicht vorgetäuscht.' });
+        status: (s.entry ? 'Modelleinstieg ▲ zur Eröffnung am ' + dateDe(s.entry.date) + '. ' : 'Noch kein Modelleinstieg — Trigger und Invalidation sind geplante Schwellen, keine Ausführungen. ') + weekly ? 'Wöchentliche Schlusskurse aus der kanonischen Langzeitreihe; Volumenprüfung nur, soweit Tagesdaten vorliegen.' : 'Split-adjustierte Tageskerzen der kanonischen Materialisierung (' + (bars.date.length) + ' Sitzungen, bis ' + dateDe(bars.date[bars.date.length - 1]) + '). Ältere Historie ist öffentlich nicht verfügbar und wird nicht vorgetäuscht.' });
     }).catch(function (e) {
       host.innerHTML = '';
       host.appendChild(empty('Chart nicht verfügbar', e && e.message === 'GZIP_DECOMPRESSION_UNSUPPORTED' ? 'Dieser Browser kann die komprimierten Kursdaten nicht entpacken.' : 'Die Kursdaten für diesen Titel konnten nicht geladen werden. Es wird kein Ersatzchart gezeichnet.'));
@@ -597,15 +655,15 @@
       st.open.concat(st.closed, st.invalidated).forEach(function (x) { rows.push(x); });
       st.scanner.top.forEach(function (x) { rows.push(Object.assign({ strategyId: id, state: x.stage, scanner: true }, x)); });
     });
-    main.appendChild(h('div', { class: 'st-hero st-hero-sm' }, [h('div', { class: 'st-kicker', text: 'Signalzentrum' }), h('h1', null, [h('span', { text: 'Signale' })]), h('p', { class: 'st-lead', text: 'Jeder Zustand entsteht aus einer deterministischen Regel. Ab „Setup“ wird jedes Signal mit allen Wechseln protokolliert — auch Verlierer und ungültige Setups.' })]));
+    main.appendChild(h('div', { class: 'st-hero st-hero-sm' }, [h('div', { class: 'st-kicker', text: 'Signalzentrum' }), h('h1', null, [h('span', { text: 'Signale' })]), h('p', { class: 'st-lead', text: 'Jeder Zustand entsteht aus einer deterministischen Regel. Ab „Einstieg vorbereitet“ wird jedes Signal mit allen Wechseln, Regelversion und Datenstand protokolliert — auch Verlierer, ungültige und durch neue Regelversionen abgelöste Setups.' })]));
 
-    var groups = [['LIVE', 'Live'], ['BSETUP', 'Darvas B-Setups'], ['WATCH', 'Beobachten'], ['SETUP', 'Setup'], ['ENTRY_READY', 'Einstieg bereit'], ['TRIGGERED', 'Ausgelöst'], ['ACTIVE', 'Aktiv'], ['WARNING', 'Warnung'], ['EXIT', 'Ausstieg'], ['CLOSED', 'Abgeschlossen'], ['INVALIDATED', 'Ungültig']];
+    var groups = [['LIVE', 'Live'], ['BSETUP', 'Darvas B-Setups'], ['WATCH', 'Kandidaten'], ['SETUP', 'Vorbereitet'], ['ENTRY_READY', 'Nahe Trigger'], ['TRIGGERED', 'Einstieg bestätigt'], ['ACTIVE', 'Modellposition'], ['WARNING', 'Warnung'], ['EXIT', 'Ausstieg ausgelöst'], ['CLOSED', 'Geschlossen'], ['INVALIDATED', 'Ungültig']];
     var seg = h('div', { class: 'st-seg', role: 'group', 'aria-label': 'Status' });
     var list = h('div', { class: 'st-grid g1 g2w', style: { 'margin-top': '8px' } });
     var countNote = h('p', { class: 'st-note' });
     // B-Setups erscheinen nur im eigenen Reiter (oder mit Qualitätsfilter B),
     // damit das Signalzentrum nicht wie ein breiter Screener wirkt.
-    function isB(x) { return !!(x.quality && x.quality.tier === 'B' && !x.entry); }
+    function isB(x) { return !!(x.quality && x.quality.tier === 'B' && (x.state === 'SETUP' || x.state === 'ENTRY_READY')); }
     function matchStatus(x, s) {
       if (s === 'BSETUP') return !x.scanner && isB(x);
       if (isB(x) && f.quality !== 'B') return false;
@@ -727,9 +785,10 @@
       setWorld(s);
       Array.prototype.forEach.call(tabs.children, function (b) { b.setAttribute('aria-selected', String(b._x === x)); });
       card.innerHTML = '';
-      card.appendChild(h('div', { class: 'st-grid g1 g2w' }, [signalCard(x, s), h('div', { class: 'st-card' }, [
+      card.appendChild(h('div', { class: 'st-grid g1 g2w' }, [x.plan ? h('div', { class: 'st-lens-plan', style: worldVars(s), 'aria-label': s.world_name + ' · Ein- und Ausstieg' }, [entryExitBlock(x, false), qualityBadge(x)]) : signalCard(x, s), h('div', { class: 'st-card' }, [
         h('div', { class: 'st-kicker', text: 'Warum wird die Aktie gezeigt?' }), h('p', { style: { 'margin-top': '6px' }, text: whyText(x) }),
         h('div', { class: 'st-kicker', style: { 'margin-top': '10px' }, text: 'Status' }), h('p', { style: { 'margin-top': '6px' }, text: stateSentence(x) }),
+        x.plan ? h('p', { class: 'st-small', text: 'Ausstieg laut Regelkarte: ' + x.plan.exitSummary + '.' }) : null,
         x.levels && x.levels.stopPlan ? h('div', null, [h('div', { class: 'st-kicker', style: { 'margin-top': '10px' }, text: 'Risiko' }), h('p', { style: { 'margin-top': '6px' }, text: x.levels.stopPlan + '.' })]) : null,
         h('div', { class: 'st-kicker', style: { 'margin-top': '10px' }, text: 'Methodentreue' }), h('p', { style: { 'margin-top': '6px' }, text: fidelityText(s) }),
         x.fundamentalsDisplay ? h('p', { class: 'st-small', text: 'Fundamentals (nur Anzeige, kein Filter): Umsatzwachstum TTM ' + pct(x.fundamentalsDisplay.revenueGrowthTTM, 1, true) + ', Gewinnbeschleunigung ' + pct(x.fundamentalsDisplay.earningsAcceleration, 1, true) + ' · Stand ' + dateDe(x.fundamentalsDisplay.asOf) }) : null,
@@ -766,16 +825,16 @@
   function qualityList(x, s) {
     var byId = {}; s.rules.forEach(function (r) { byId[r.rule_id] = r; });
     var q = x.quality;
-    return h('div', { style: { 'margin-top': '10px' } }, [h('div', { class: 'st-kicker', text: 'Qualitätsstufe ' + q.tier + ' (VU, nicht validiert)' }), h('ul', { class: 'st-gates', style: { 'margin-top': '6px' } }, Object.keys(q.criteria).map(function (k) {
+    return h('div', { style: { 'margin-top': '10px' } }, [h('div', { class: 'st-kicker', text: (QLABEL[q.label] || 'Qualitätsstufe ' + q.tier) + ' (VU, nicht validiert)' }), h('ul', { class: 'st-gates', style: { 'margin-top': '6px' } }, Object.keys(q.criteria).map(function (k) {
       var v = q.criteria[k];
-      return h('li', { class: v === true ? 'pass' : v === false ? 'fail' : 'open' }, [h('span', { class: 'i', text: v === true ? '✓' : v === false ? '✕' : '…' }), h('span', null, [(s.quality_tiers && s.quality_tiers.labels && s.quality_tiers.labels[k]) || k, h('span', { class: 'm', text: k + (v === null ? ' · wird am Ausbruchstag geprüft' : '') })])]);
+      return h('li', { class: v === true ? 'pass' : v === false ? 'fail' : 'open' }, [h('span', { class: 'i', text: v === true ? '✓' : v === false ? '✕' : '…' }), h('span', null, [(s.quality_tiers && s.quality_tiers.labels && s.quality_tiers.labels[k]) || k, h('span', { class: 'm', text: k + (v === null && k === 'DAR-Q-VOL' ? (q.phase === 'CONFIRMED' ? ' · Volumen fehlt — nicht prüfbar' : ' · wird am Bestätigungstag geprüft') : '') + (k === 'DAR-Q-REGIME' ? ' · VU-Sperre, kein Darvas-Original' : '') })])]);
     }))]);
   }
   function historyOf(entries, S) {
     var persisted = entries.filter(function (x) { return !x.scanner; });
-    if (!persisted.length) return empty('Noch keine protokollierten Signale', 'Für diesen Titel gibt es bisher nur Beobachtungen. Protokolliert wird ab „Setup“.');
+    if (!persisted.length) return empty('Noch keine protokollierten Signale', 'Für diesen Titel gibt es bisher nur Beobachtungen. Protokolliert wird ab „Einstieg vorbereitet“.');
     return h('div', { class: 'st-table-wrap' }, [h('table', { class: 'st-table' }, [h('thead', null, [h('tr', null, [h('th', { text: 'Datum' }), h('th', { text: 'Strategie' }), h('th', { text: 'Zustand' }), h('th', { text: 'Regel' }), h('th', { text: 'Kurs' })])]), h('tbody', null, [].concat.apply([], persisted.map(function (x) {
-      return x.transitions.map(function (t) { return h('tr', null, [h('td', { text: dateDe(t.date) }), h('td', { text: S[x.strategyId].world_name }), h('td', null, [stateTag(t.state)]), h('td', { text: t.ruleId + (t.note ? ' · ' + t.note : '') }), h('td', { class: 'num', text: num(t.price) })]); });
+      return x.transitions.map(function (t) { return h('tr', null, [h('td', { text: dateDe(t.date) }), h('td', { text: S[x.strategyId].world_name }), h('td', null, [stateTag(t.state)]), h('td', { text: t.ruleId + ' · v' + (t.ruleVersion || x.version) + (t.ruleId === 'LC-VERSION-RETIRED' ? ' · durch neue Regelversion abgelöst' : ''), title: t.note || null }), h('td', { class: 'num', text: num(t.price) + (t.priceBasis ? ' ' + (BASIS_TEXT[t.priceBasis] || t.priceBasis) : '') })]); });
     })).sort(function (a, b) { return 0; }))])]);
   }
   // Letzter Kurs aus der bestehenden Discovery-Intraday-Auslieferung (IEX,
