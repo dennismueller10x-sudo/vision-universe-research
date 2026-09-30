@@ -46,6 +46,26 @@ export function cacheText(q) {
     .split(/\s+/).filter((w) => w && !FILLERS.has(w)).join(" ");
 }
 
+/* Nachfrage: die vorherige Frage und ihre Interpretation (kompakt, vom
+   Browser mitgeschickt) werden dem Modell vorangestellt. Alles wird hier
+   neu begrenzt - der Browser ist keine vertrauenswuerdige Quelle. */
+export function followUpPrompt(question, previous) {
+  if (!previous || typeof previous !== "object") return question;
+  const prevQ = cleanQuestion(previous.question);
+  if (!prevQ) return question;
+  const pick = (v, n) => (Array.isArray(v) ? v.slice(0, n) : []);
+  const compact = {
+    kind: typeof previous.kind === "string" ? previous.kind.slice(0, 20) : "screen",
+    filters: pick(previous.filters, 24).map((f) => Array.isArray(f) ? f.slice(0, 4).map((x) => (typeof x === "string" ? x.slice(0, 40) : Array.isArray(x) ? x.slice(0, 12).map(String) : x)) : null).filter(Boolean),
+    tickers: pick(previous.tickers, 10).map((t) => String(t).slice(0, 12)),
+    show: pick(previous.show, 8).map((t) => String(t).slice(0, 40)),
+    supertrader: previous.supertrader && typeof previous.supertrader === "object"
+      ? { strategy: String(previous.supertrader.strategy || "").slice(0, 30), mode: String(previous.supertrader.mode || "").slice(0, 10) } : null,
+  };
+  return "VORHERIGE FRAGE: " + prevQ + "\nVORHERIGE INTERPRETATION (Filter als [Feld, Operator, Wert, Wert2]): " +
+    JSON.stringify(compact).slice(0, 2500) + "\nNEUE NACHRICHT (Korrektur oder Ergaenzung): " + question;
+}
+
 export async function sha(text) {
   const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
   return Array.from(bytes.slice(0, 16), (b) => b.toString(16).padStart(2, "0")).join("");
@@ -130,7 +150,8 @@ export class AskGate {
 
     /* 2 — Schon einmal uebersetzt? Dann kostet die Frage nichts und
            verbraucht kein Kontingent. */
-    const cacheKey = "c:" + (await sha(cacheText(question)));
+    const prompt = followUpPrompt(question, body.previous);
+    const cacheKey = "c:" + (await sha(cacheText(prompt)));
     const cached = await this.storage.get(cacheKey);
     if (cached && now - cached.at < CACHE_DAYS * 864e5) {
       await this.log({ question, source: "cache", result: cached.result, status: cached.status });
@@ -151,7 +172,7 @@ export class AskGate {
     if (emptyAt && now - emptyAt < 15 * 60e3) return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId);
 
     /* 4 — Die Grenzen. Gerechnet wird mit dem schlechtesten Fall. */
-    const reserve = worstCase(limits.model, promptChars(question), limits.maxOutputTokens);
+    const reserve = worstCase(limits.model, promptChars(prompt), limits.maxOutputTokens);
     const got = await this.storage.get(["t", "m:" + month, "d:" + day]);
     const total = got.get("t") || { usd: 0, calls: 0 };
     const monthly = got.get("m:" + month) || { usd: 0, calls: 0 };
@@ -165,7 +186,7 @@ export class AskGate {
 
     /* 5 — Reservieren, dann erst fragen. */
     await this.book({ month, day, ids, usd: reserve, userLlm: 1, dayLlm: 1 });
-    const answer = await interpret({ apiKey: this.env.ANTHROPIC_API_KEY, workspaceId: this.env.ANTHROPIC_WORKSPACE_ID, model: limits.model, question,
+    const answer = await interpret({ apiKey: this.env.ANTHROPIC_API_KEY, workspaceId: this.env.ANTHROPIC_WORKSPACE_ID, model: limits.model, question: prompt,
       maxOutputTokens: limits.maxOutputTokens, fetchImpl: this.fetchImpl });
 
     /* 6 — Abrechnen: Reservierung durch die echten Kosten ersetzen. */

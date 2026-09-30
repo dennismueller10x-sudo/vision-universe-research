@@ -100,8 +100,13 @@
   /* ------------------------------------------------------------ Aufbau */
   var Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
   var canSpeak = 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function';
-  var input = h('textarea', { id: 'ak-q', rows: '1', 'aria-label': 'Ihre Frage an Vision Universe', maxlength: '400',
-    placeholder: Speech ? 'Frag Atlas … oder aufs Mikrofon tippen' : 'Frag Atlas …' });
+  var PLACEHOLDER = 'Ihre Frage an Atlas …';
+  var input = h('textarea', { id: 'ak-q', rows: '2', 'aria-label': 'Ihre Frage an Vision Universe', maxlength: '400', placeholder: PLACEHOLDER });
+  var followText = h('span', { class: 'ak-follow-q' });
+  var followBar = h('div', { class: 'ak-follow', hidden: true }, [
+    h('span', { class: 'ak-follow-label', text: 'Nachfrage zu' }), followText,
+    h('button', { class: 'ak-follow-x', type: 'button', 'aria-label': 'Neue Frage statt Nachfrage', onclick: function () { setContext(null); input.focus(); } }, 'Neue Frage')
+  ]);
   var sendBtn = h('button', { class: 'ak-send', type: 'submit', 'aria-label': 'Frage senden' }, [icon('send')]);
   var micBtn = Speech ? h('button', { class: 'ak-mic', type: 'button', 'aria-pressed': 'false', 'aria-label': 'Frage sprechen', onclick: dictate }, [icon('mic')]) : null;
   var readAloud = canSpeak && (function () { try { return localStorage.getItem('vu-ask-read') !== '0'; } catch (e) { return true; } })();
@@ -114,11 +119,13 @@
   var spokenQuestion = false;
 
   var form = h('form', { class: 'ak-bar', onsubmit: function (e) { e.preventDefault(); submit(); } }, [
-    h('div', { class: 'ak-bar-row' }, [input, micBtn, sendBtn]),
+    followBar,
+    h('div', { class: 'ak-bar-row' }, [input, h('div', { class: 'ak-bar-buttons' }, [micBtn, sendBtn])]),
+    h('p', { class: 'ak-bar-hint', text: Speech ? 'Tippen oder aufs Mikrofon drücken und sprechen – Pausen sind erlaubt.' : 'Stellen Sie Ihre Frage in eigenen Worten.' }),
     turnstileMount
   ]);
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); } });
-  input.addEventListener('input', function () { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 180) + 'px'; });
+  input.addEventListener('input', function () { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 220) + 'px'; });
 
   /* Zugangsschranke der Beta: Passwort einmal je Geraet, danach gemerkt.
      Geprueft wird im Worker - hier wird es nur mitgeschickt. */
@@ -239,39 +246,66 @@
 
   /* ------------------------------------------------------ Sprache */
   var recognition = null;
+  /* Sprechen mit Pausen: Die Browser-Erkennung beendet sich bei Stille oft
+     von selbst. Solange der Nutzer nicht fertig ist, wird sie deshalb neu
+     gestartet. Fertig ist er, wenn er aufs Mikrofon tippt oder 4 Sekunden
+     lang nichts Neues sagt - erst dann geht die Frage hinaus. */
+  var SILENCE_MS = 4000;
   function dictate() {
-    if (recognition) { recognition.stop(); return; }
+    if (recognition) { recognition.finish(); return; }
     stopSpeaking();
-    var rec = recognition = new Speech();
-    rec.lang = 'de-DE'; rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
-    var finalText = '';
-    input.value = '';
+    var base = input.value.trim() ? input.value.trim() + ' ' : '';
+    var committed = '', interim = '', done = false, silence = null, active = null;
+    var state = recognition = { finish: finish };
     document.body.classList.add('ak-listening');
     micBtn.setAttribute('aria-pressed', 'true');
-    voiceEl.textContent = 'Ich höre zu …';
-    rec.onresult = function (e) {
-      var interim = '';
-      finalText = '';
-      for (var i = 0; i < e.results.length; i++) {
-        if (e.results[i].isFinal) finalText += e.results[i][0].transcript; else interim += e.results[i][0].transcript;
-      }
-      input.value = (finalText + interim).slice(0, 400);
-      voiceEl.textContent = interim ? 'Ich höre zu …' : '';
-    };
-    rec.onerror = function (e) {
-      voiceEl.textContent = e.error === 'not-allowed' || e.error === 'service-not-allowed'
-        ? 'Mikrofon nicht freigegeben. Bitte den Zugriff im Browser erlauben.'
-        : e.error === 'no-speech' ? 'Nichts gehört – bitte noch einmal versuchen.' : '';
-    };
-    rec.onend = function () {
-      recognition = null;
+    micBtn.setAttribute('aria-label', 'Fertig – Frage senden');
+    voiceEl.textContent = 'Ich höre zu … Pausen sind kein Problem. Zum Senden aufs Mikrofon tippen.';
+    function show() { input.value = (base + committed + interim).slice(0, 400); input.dispatchEvent(new Event('input')); }
+    function armSilence() {
+      clearTimeout(silence);
+      silence = setTimeout(function () { if ((committed + interim).trim()) finish(); }, SILENCE_MS);
+    }
+    function start() {
+      var rec = active = new Speech();
+      rec.lang = 'de-DE'; rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = true;
+      rec.onresult = function (e) {
+        interim = '';
+        for (var i = e.resultIndex; i < e.results.length; i++) {
+          var t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) committed += (committed && !/\s$/.test(committed) ? ' ' : '') + t.trim() + ' ';
+          else interim += t;
+        }
+        show(); armSilence();
+      };
+      rec.onerror = function (e) {
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+          voiceEl.textContent = 'Mikrofon nicht freigegeben. Bitte den Zugriff im Browser erlauben.'; done = true; cleanup(false);
+        }
+      };
+      rec.onend = function () {
+        if (active !== rec) return;
+        if (!done) { try { start(); } catch (err) { finish(); } }
+      };
+      try { rec.start(); } catch (err) { finish(); }
+    }
+    function cleanup(send) {
+      clearTimeout(silence);
+      if (recognition === state) recognition = null;
       document.body.classList.remove('ak-listening');
       micBtn.setAttribute('aria-pressed', 'false');
-      /* Sprechen heisst Fragen: Sobald die Aufnahme endet, geht die Frage
-         ohne weiteren Klick hinaus. */
-      if (input.value.trim().length >= 3) { voiceEl.textContent = ''; spokenQuestion = true; submit(); }
-    };
-    rec.start();
+      micBtn.setAttribute('aria-label', 'Frage sprechen');
+      if (send && input.value.trim().length >= 3) { voiceEl.textContent = ''; spokenQuestion = true; submit(); }
+      else if (send) voiceEl.textContent = 'Nichts gehört – bitte noch einmal versuchen.';
+    }
+    function finish() {
+      if (done) return;
+      done = true; interim = interim.trim(); if (interim) { committed += interim; interim = ''; show(); }
+      var rec = active; active = null;
+      try { rec && rec.stop(); } catch (err) {}
+      cleanup(true);
+    }
+    start();
   }
 
   function toggleRead() {
@@ -297,6 +331,7 @@
     if (busy || !ENDPOINT || question.length < 3) return;
     busy = true; sendBtn.disabled = true; document.body.classList.add('ak-busy');
     var turn = h('section', { class: 'ak-turn', 'aria-live': 'polite' }, [
+      context ? h('p', { class: 'ak-q-ref', text: 'Nachfrage zu ' + followText.textContent }) : null,
       h('p', { class: 'ak-q', text: question }),
       h('div', { class: 'ak-state' }, [h('span', { class: 'ak-spin', 'aria-hidden': 'true' }), 'Ihre Frage wird übersetzt …'])
     ]);
@@ -304,7 +339,7 @@
     try { turn.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
     Promise.all([
       fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }),
-        body: JSON.stringify({ question: question, clientId: clientId(), turnstileToken: turnstileToken }) })
+        body: JSON.stringify({ question: question, clientId: clientId(), turnstileToken: turnstileToken, previous: context }) })
         .then(function (r) { return r.json(); }),
       adapter.load().catch(function () { return null; })
     ]).then(function (res) {
@@ -316,7 +351,7 @@
       turn.lastChild.remove();
       if (!answer.ok) { turn.appendChild(card('Keine Auswertung', answer.message || 'Die Frage konnte nicht ausgewertet werden.', true)); return; }
       input.value = '';
-      return render(turn, answer).then(function (summary) { speak(summary); });
+      return render(turn, answer, context ? context.question + ' → ' + question : question).then(function (summary) { speak(summary); });
     }).catch(function () {
       turn.lastChild.remove();
       turn.appendChild(card('Keine Verbindung', 'Die Fragefunktion ist gerade nicht erreichbar. Bitte später erneut versuchen.', true));
@@ -328,57 +363,144 @@
   }
 
   /* ---------------------------------------------------------- Antwort */
+  /* Kontext fuer Nachfragen: die zuletzt beantwortete Frage in kompakter
+     Form. Die naechste Eingabe bezieht sich darauf, bis der Nutzer den
+     Bezug aufhebt. */
+  var context = null;
+  function compactOf(question, r) {
+    return {
+      question: question.length > 390 ? '…' + question.slice(-389) : question, kind: r.kind,
+      filters: r.query ? Query.filters(r.query).map(function (f) { return [f.field, f.op, f.value, f.value2]; }) : [],
+      tickers: r.tickers || [], show: r.show || [], supertrader: r.supertrader || null
+    };
+  }
+  function setContext(c) {
+    context = c;
+    followBar.hidden = !c;
+    followText.textContent = c ? '„' + (c.question.length > 90 ? c.question.slice(0, 88) + '…' : c.question) + '“' : '';
+    input.placeholder = c ? 'Nachfrage, z. B. „nur positives Wachstum“ …' : PLACEHOLDER;
+  }
+
   /** Rendert die Antwort; liefert eine kurze Zusammenfassung zum Vorlesen. */
-  function render(turn, answer) {
+  function render(turn, answer, question) {
     var r = answer.result;
-    turn.appendChild(understood(r, answer.source));
     var gaps = (r.missing || []).filter(function (m) { return m.type !== 'withheld'; }).map(function (m) { return m.wish; });
     var gapText = gaps.length ? ' Noch nicht verfügbar: ' + gaps.join(', ') + '.' : '';
     function say(title, text, warn) { turn.appendChild(card(title, text, warn)); return Promise.resolve(title + '. ' + text); }
 
-    if (r.kind === 'forecast') return say('Keine Prognosen', 'Vision Universe sagt keine Kurse voraus und gibt keine Kaufempfehlungen. Sie können aber nach Kennzahlen, Trends und Strategiesignalen suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“');
-    if (r.kind === 'off_topic') return say('Keine Investmentfrage', 'Hier lassen sich Fragen zu Aktien, Kennzahlen und den Vision-Universe-Strategien beantworten.');
-    if (r.kind === 'unclear') return say('Nicht eindeutig', 'Die Frage ließ sich nicht sicher in Filter übersetzen. Versuchen Sie es mit einer konkreten Kennzahl, Größe oder Strategie.' + gapText);
+    var understoodMount = h('div', {}), resultMount = h('div', {}), atlasMount = h('div', {});
+    turn.appendChild(understoodMount);
+    if (r.kind === 'forecast') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Prognosen', 'Vision Universe sagt keine Kurse voraus und gibt keine Kaufempfehlungen. Sie können aber nach Kennzahlen, Trends und Strategiesignalen suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“'); }
+    if (r.kind === 'off_topic') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Investmentfrage', 'Hier lassen sich Fragen zu Aktien, Kennzahlen und den Vision-Universe-Strategien beantworten.'); }
+    if (r.kind === 'unclear') { understoodMount.appendChild(understood(r, answer.source)); return say('Nicht eindeutig', 'Die Frage ließ sich nicht sicher in Filter übersetzen. Versuchen Sie es mit einer konkreten Kennzahl, Größe oder Strategie.' + gapText); }
 
     var ds = adapter.dataset();
-    if (!ds) return say('Daten nicht verfügbar', 'Das Aktienuniversum konnte nicht geladen werden. Bitte die Seite neu laden.', true);
+    if (!ds) { understoodMount.appendChild(understood(r, answer.source)); return say('Daten nicht verfügbar', 'Das Aktienuniversum konnte nicht geladen werden. Bitte die Seite neu laden.', true); }
     if (Fields.setDictionary && ds.meta) Fields.setDictionary(ds.meta.dict || null);
+    turn.appendChild(atlasMount);
+    turn.appendChild(resultMount);
+    turn.appendChild(h('div', { class: 'ak-actions ak-turn-actions' }, [
+      h('button', { class: 'ak-btn ak-btn-sm', type: 'button', onclick: function () { setContext(compactOf(question, r)); input.focus(); try { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} } }, 'Diese Frage verfeinern')
+    ]));
 
     var needSignals = !!r.supertrader;
     return (needSignals ? signals() : Promise.resolve(null)).then(function (sig) {
-      if (needSignals && !sig) turn.appendChild(card('Supertrader-Signale nicht geladen', 'Der Strategiestatus kann gerade nicht angezeigt werden.', true));
+      if (needSignals && !sig) resultMount.appendChild(card('Supertrader-Signale nicht geladen', 'Der Strategiestatus kann gerade nicht angezeigt werden.', true));
       if (r.kind === 'stock') {
+        understoodMount.appendChild(understood(r, answer.source));
         var st = Ask.runStock(ds, r, sig);
-        turn.appendChild(stockBlock(st));
+        resultMount.appendChild(stockBlock(st));
         var found = st.stocks.filter(function (x) { return x.found; });
-        if (!found.length) return 'Ich habe keine passende Aktie im Universum gefunden.' + gapText;
-        return found.map(function (x) {
-          return (x.name || x.symbol) + ': ' + st.columns.slice(0, 3).map(function (c) { return header(c) + ' ' + Fields.format(c, x.values[c]); }).join(', ');
-        }).join('. ') + '.' + gapText;
+        var text = !found.length ? 'Ich habe keine passende Aktie im Universum gefunden.' + gapText
+          : found.map(function (x) {
+            return (x.name || x.symbol) + ': ' + st.columns.slice(0, 3).map(function (c) { return header(c) + ' ' + Fields.format(c, x.values[c]); }).join(', ');
+          }).join('. ') + '.' + gapText;
+        atlasMount.appendChild(atlasCard(text, [], r));
+        setContext(compactOf(question, r));
+        return text;
       }
       /* Die Abfrage wird hier noch einmal geprueft - der Browser rechnet
          nur, was die Screener-Validierung durchlaesst. */
       var limit = r.query.limit;
       r.query = Query.validate(r.query); r.query.limit = limit;
-      var res = Ask.runScreen(ds, r, sig);
-      turn.appendChild(screenBlock(res, r));
-      if (!res.matched) return 'Keine Aktie erfüllt alle Bedingungen.' + gapText;
-      var top = res.rows.slice(0, 3).map(function (x) { return x.name || x.symbol; });
-      return (res.matched === 1 ? 'Eine Aktie erfüllt' : res.matched + ' Aktien erfüllen') + ' alle Bedingungen' +
-        (top.length ? ', darunter ' + top.join(', ') : '') + '.' + gapText;
+
+      /* Rechnen und zeichnen - auch nach jeder Aenderung an den Chips,
+         kostenlos im Browser, ohne neue Anfrage an die AI. */
+      var spoken = '';
+      function refresh(first) {
+        var res = Ask.runScreen(ds, r, sig);
+        understoodMount.textContent = ''; resultMount.textContent = ''; atlasMount.textContent = '';
+        understoodMount.appendChild(understood(r, answer.source, function (kind, id) {
+          if (kind === 'filter') r.query.groups.forEach(function (g) { g.filters = g.filters.filter(function (f) { return f.id !== id; }); });
+          else r.supertrader = null;
+          refresh(false);
+          setContext(compactOf(question, r));
+        }));
+        resultMount.appendChild(screenBlock(res, r));
+        var tips = res.matched <= 3 ? relaxations(ds, r, sig, res.matched) : [];
+        var top = res.rows.slice(0, 3).map(function (x) { return x.name || x.symbol; });
+        spoken = !res.matched ? 'Keine Aktie erfüllt alle Bedingungen gleichzeitig.' :
+          (res.matched === 1 ? 'Eine Aktie erfüllt' : res.matched + ' Aktien erfüllen') + ' alle Bedingungen' + (top.length ? ', darunter ' + top.join(', ') : '') + '.';
+        var text = spoken + (tips.length ? ' Mit einer gelockerten Bedingung fände ich mehr – siehe Vorschläge.' : '') + gapText;
+        atlasMount.appendChild(atlasCard(text, tips, r, function (tip) {
+          if (tip.kind === 'filter') r.query.groups.forEach(function (g) { g.filters = g.filters.filter(function (f) { return f.id !== tip.id; }); });
+          else r.supertrader = null;
+          refresh(false);
+          setContext(compactOf(question, r));
+        }));
+        if (!first) try { atlasMount.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+      }
+      refresh(true);
+      setContext(compactOf(question, r));
+      return spoken + gapText;
     });
   }
 
-  function understood(r, source) {
+  /* Was brächte es, eine Bedingung wegzulassen? Rechnet jede Variante
+     durch - im Browser, ohne Kosten. */
+  function relaxations(ds, r, sig, current) {
+    var out = [];
+    Query.filters(r.query).forEach(function (f) {
+      var copy = Object.assign({}, r, { query: Query.clone(r.query) });
+      copy.query.limit = r.query.limit;
+      copy.query.groups.forEach(function (g) { g.filters = g.filters.filter(function (x) { return x.id !== f.id; }); });
+      var n = Ask.runScreen(ds, copy, sig).matched;
+      if (n > current) out.push({ kind: 'filter', id: f.id, label: 'Ohne „' + Fields.describeFilter(f) + '“', count: n });
+    });
+    if (r.supertrader && r.supertrader.mode === 'require') {
+      var n2 = Ask.runScreen(ds, Object.assign({}, r, { supertrader: null }), sig).matched;
+      if (n2 > current) out.push({ kind: 'strategy', label: 'Ohne „' + Ask.STRATEGY_LABELS[r.supertrader.strategy] + '“', count: n2 });
+    }
+    return out.sort(function (a, b) { return a.count - b.count; }).slice(0, 3);
+  }
+
+  function atlasCard(text, tips, r, onTip) {
+    var notes = (r.notes || []).filter(function (n) { return !/^Nicht ausgewertet/.test(n); });
+    return h('div', { class: 'ak-atlas' }, [
+      h('span', { class: 'ak-atlas-icon', 'aria-hidden': 'true' }, [icon('spark')]),
+      h('div', { class: 'ak-atlas-body' }, [
+        h('b', { text: 'Atlas' }),
+        h('p', { text: text }),
+        notes.length ? h('p', { class: 'ak-atlas-hint', text: 'Annahme: ' + notes.join(' · ') + ' – mit einer Nachfrage wie „nur positives Wachstum“ passe ich das an.' }) : null,
+        tips.length ? h('div', { class: 'ak-tips' }, tips.map(function (t) {
+          return h('button', { class: 'ak-tip', type: 'button', onclick: function () { onTip(t); } }, [t.label + ': ', h('b', { text: t.count + ' Treffer' })]);
+        })) : null
+      ])
+    ]);
+  }
+
+  function understood(r, source, onRemove) {
     var rules = [];
-    if (r.query) Query.filters(r.query).forEach(function (f) { rules.push(Fields.describeFilter(f)); });
-    if (r.supertrader) rules.push((r.supertrader.mode === 'require' ? 'Erfüllt: ' : 'Status: ') + Ask.STRATEGY_LABELS[r.supertrader.strategy]);
-    if (r.tickers && r.tickers.length) rules.push('Aktie: ' + r.tickers.join(', '));
+    if (r.query) Query.filters(r.query).forEach(function (f) { rules.push({ text: Fields.describeFilter(f), kind: 'filter', id: f.id }); });
+    if (r.supertrader) rules.push({ text: (r.supertrader.mode === 'require' ? 'Erfüllt: ' : 'Status: ') + Ask.STRATEGY_LABELS[r.supertrader.strategy], kind: 'strategy' });
+    if (r.tickers && r.tickers.length) rules.push({ text: 'Aktie: ' + r.tickers.join(', ') });
     var box = h('div', { class: 'ak-card' }, [
       h('h3', {}, ['So habe ich Ihre Frage verstanden', source === 'cache' ? h('span', { class: 'ak-badge', text: 'aus dem Archiv – kein Kontingent verbraucht' }) : null]),
       r.understood ? h('p', { text: r.understood }) : null,
-      rules.length ? h('ul', { class: 'ak-rules' }, rules.map(function (t) { return h('li', { text: t }); })) : null,
-      r.notes && r.notes.length ? h('ul', { class: 'ak-notes' }, r.notes.map(function (t) { return h('li', { text: t }); })) : null
+      rules.length ? h('ul', { class: 'ak-rules' }, rules.map(function (x) {
+        return h('li', {}, [x.text, onRemove && x.kind ? h('button', { class: 'ak-rule-x', type: 'button', 'aria-label': 'Bedingung entfernen: ' + x.text, title: 'Entfernen (kostenlos neu rechnen)', onclick: function () { onRemove(x.kind, x.id); } }, '×') : null]);
+      })) : null,
+      onRemove && rules.length ? h('p', { class: 'ak-fine', text: 'Tippen Sie auf ×, um eine Bedingung zu entfernen – das rechnet sofort und kostenlos neu.' }) : null
     ]);
     if (!r.missing || !r.missing.length) return box;
     var wrap = h('div', {}, [box]);
