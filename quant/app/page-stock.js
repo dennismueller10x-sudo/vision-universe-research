@@ -424,6 +424,9 @@
         el("p", { style: "margin:4px 0 0", text: g.explanation }), g.outlook ? el("p", { class: "qx-small", style: "margin:4px 0 0", text: g.outlook }) : null,
         g.areas && g.areas.length ? el("p", { class: "qx-small", style: "margin:4px 0 0", text: "Betrifft: " + g.areas.join(" · ") }) : null]);
     });
+    /* Die konkreten Gruende mit Zahl, dort wo ein Leser nach ihnen sucht. */
+    if (technical && technical.state !== "AVAILABLE") { var tr = VM.technicalReasonText(technical.unavailability); if (tr) gapNodes.push(el("p", { class: "qx-small", text: "Kursstruktur: " + tr })); }
+    if (patterns && patterns.state !== "AVAILABLE") { var pr = VM.patternReasonText(patterns.unavailability); if (pr) gapNodes.push(el("p", { class: "qx-small", text: "Marktmuster: " + pr })); }
     if (entry.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") gapNodes.push(el("p", { class: "qx-small", text: "Börsenwert: " + VM.reasonText("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") + (entry.il > 1 ? " Das Unternehmen hat " + entry.il + " börsennotierte Aktiengattungen." : "") }));
     bodyHost.append(X.section("Daten und Grenzen", "Was Quant für diese Aktie weiß – und was nicht.", [X.card([
       el("dl", { class: "qx-kv" }, [

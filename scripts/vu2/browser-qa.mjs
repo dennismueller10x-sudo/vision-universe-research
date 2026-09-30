@@ -179,8 +179,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!await page.locator('#qx-main a.qx-row').count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
    if(ohneWert.length)befund(view,width,'Trefferzeile ohne gemessenen Wert: '+ohneWert[0]);
    /* Die rechte Spalte traegt ein URTEIL, keine zweite Zahl. */
-   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-side .qx-pill').allTextContents()).map(t=>t.trim());
-   const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild','Mehr Schwächen als Stärken','Überwiegend schwach'];
+   /* Die Marke darf ein "Gesamt:" voranstellen - geprueft wird das Urteil. */
+   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-side .qx-pill').allTextContents()).map(t=>t.trim().replace(/^Gesamt:\s*/,'').toLowerCase());
+   const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild','Mehr Schwächen als Stärken','Überwiegend schwach'].map(t=>t.toLowerCase());
    const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
    if(fremdesUrteil.length)befund(view,width,'rechte Spalte traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
@@ -204,10 +205,19 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const basis=page.getByRole('combobox',{name:'Datenbasis',exact:true});
    if(await basis.locator('option').count()<2)befund(view,width,'screener methodologies missing');
    if(!await page.locator('#qx-main a.qx-row').count())befund(view,width,'Profi-Modus liefert nichts');
+   /* Ein Wert ausserhalb der Skala (999 von 100) ist entweder "keine
+      Treffer" oder eine sichtbare Absage - nie das alte Ergebnis unter
+      einer neuen Regel. */
+   const vorher=await page.locator('#qx-main section p.qx-small').first().innerText().catch(()=>'');
    await page.getByRole('spinbutton',{name:'Vergleichswert'}).first().fill('999');
    await page.getByRole('button',{name:'Treffer anzeigen',exact:true}).click();
-   await page.getByText('Keine Treffer',{exact:true}).waitFor();
-   if(await page.locator('#qx-main a.qx-row').count())befund(view,width,'unerfuellbare Regel liefert Treffer');
+   const antwort=await page.waitForFunction(()=>/Keine Treffer|Regel unvollständig|nicht verfügbar|ungültig/i.test(document.querySelector('#qx-main').innerText),null,{timeout:8000}).then(()=>true,()=>false);
+   if(!antwort)befund(view,width,'Regel 999 von 100: keine Antwort, das alte Ergebnis bleibt stehen ('+vorher.slice(0,40)+')');
+   else if(await page.locator('#qx-main a.qx-row').count())befund(view,width,'unerfuellbare Regel liefert Treffer');
+   /* Wirft die App dabei unbehandelt, ist das ein eigener Befund dieser
+      Ansicht - und nicht ein namenloser Konsolenfehler am Ende. */
+   const geworfen=errors.filter(e=>/INVALID_SCREEN_RULES/.test(e));
+   if(geworfen.length){befund(view,width,'Regel 999 wirft unbehandelt: '+geworfen[0].slice(0,80));errors.splice(0,errors.length,...errors.filter(e=>!/INVALID_SCREEN_RULES/.test(e)));}
    await page.getByRole('spinbutton',{name:'Vergleichswert'}).first().fill('80');
    await page.getByRole('button',{name:'Treffer anzeigen',exact:true}).click();
    await page.locator('#qx-main a.qx-row').first().waitFor();
@@ -285,10 +295,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(/\b[A-Z]{3,}_[A-Z][A-Z_]{2,}\b/.test(text))befund(view,width,'interner Code im Haupttext');
    if(!/Was fehlt/.test(await page.locator('#grenzen').innerText()))befund(view,width,'die Luecken sind nicht benannt');
   }
+  let danach=null;
   if(view==='aktie-unbekannt'){
    if((await page.locator('main h1').innerText()).trim()!=='Aktie nicht gefunden')befund(view,width,'unbekanntes Kuerzel ohne Absage');
-   await page.getByRole('link',{name:'Aktie suchen',exact:true}).click();
-   await bereit(page,'aktien');
+   danach=async()=>{await page.locator('#qx-main').getByRole('link',{name:'Aktie suchen',exact:true}).click();await bereit(page,'aktien');};
   }
   if(view==='technik'||view==='elliott'){
    await page.locator('#qx-main .qx-card svg').first().waitFor();
@@ -298,6 +308,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('#qx-main .qx-card svg').first().waitFor();
    await page.getByRole('heading',{name:'Basiszählung',exact:true}).waitFor();
    await page.locator('#elliott details.qx-more > summary').first().click();
+   await page.locator('#elliott table tbody tr').first().waitFor();
    if(await page.locator('#elliott table tbody tr').count()<5)befund(view,width,'wave count truncated');
    if(!/Hauptszenario/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'kein Hauptszenario');
    await page.getByRole('combobox',{name:'Zeitraum',exact:true}).selectOption('1Y');
@@ -330,11 +341,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   }
   if(view==='nicht-gefunden'){
    await page.getByRole('heading',{name:'Diese Seite gibt es nicht',exact:true}).waitFor();
-   await page.getByRole('link',{name:'Zur Startseite',exact:true}).click();
-   await bereit(page,'home');
+   danach=async()=>{await page.getByRole('link',{name:'Zur Startseite',exact:true}).click();await bereit(page,'home');};
   }
   await auditAccessibility(page,view,width);
   await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}
+  if(danach)await danach();
   checks.push({view,width,pass:true});
  });}
 
@@ -439,24 +450,44 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
  await page.close();}
 
  // Test-only relay fixture exercises the production UI without contacting a provider.
+ //
+ // Der Chart abonniert den Live-Strom jetzt selbst (ein Chart, derselbe Hub
+ // wie Discover); einen Start-Knopf gibt es nicht mehr. Geprueft wird: eine
+ // Verbindung, nur zum eigenen Relay, nur fuer diesen Titel, und sie wird
+ // beim Verlassen der Seite freigegeben. Ein Kursangebot (QUOTE) und ein
+ // unbestimmtes Ereignis bewegen den gezeigten Kurs nie. Dass ein
+ // bestaetigter Trade ihn bewegt, laesst sich mit den ausgelieferten Daten
+ // nicht zeigen: der letzte veroeffentlichte Tagesverlauf ist abgeschlossen
+ // (regularComplete), und ein abgeschlossener Tag bleibt zu Recht stehen.
  for(const width of [1440,390]){await versuch('relay-fixture',width,async()=>{
   const live=await browser.newPage({viewport:{width,height:1000}});
   await live.addInitScript(()=>{
    const NativeDate=Date,fixed=NativeDate.parse('2026-09-18T15:00:00Z');window.Date=class extends NativeDate{constructor(...a){super(...(a.length?a:[fixed]));}static now(){return fixed;}};
-   window.__relayTest={opens:0,urls:[],closed:0};
-   window.WebSocket=class{constructor(url){window.__relayTest.urls.push(String(url));window.__relayTest.opens++;window.__relayTest.socket=this;setTimeout(()=>this.onopen?.({}),0);}send(){}close(){window.__relayTest.closed++;}};
+   window.__relayTest={opens:0,urls:[],sent:[],closed:0};
+   window.WebSocket=class{constructor(url){window.__relayTest.urls.push(String(url));window.__relayTest.opens++;window.__relayTest.socket=this;setTimeout(()=>this.onopen?.({}),0);}send(value){window.__relayTest.sent.push(JSON.parse(value));}close(){window.__relayTest.closed++;}};
   });
-  await live.goto(Q+'#/aktie/TSLA');await bereit(live,'aktie');
-  const t=await live.evaluate(()=>__relayTest);
-  /* Hoechstens EINE Verbindung, und nur zum eigenen Relay. */
+  await live.goto(Q+'#/aktie/TSLA');await bereit(live,'aktie');await live.waitForTimeout(3200);
+  const t=await live.evaluate(()=>({opens:__relayTest.opens,urls:__relayTest.urls,sent:__relayTest.sent}));
   if(t.opens>1)befund('relay-fixture',width,t.opens+' Live-Verbindungen fuer eine Seite');
   if(t.urls.some(u=>u!=='wss://live.visionuniverse.de/live'))befund('relay-fixture',width,'unexpected relay: '+t.urls.join(', '));
+  const fremdeTitel=t.sent.flatMap(m=>m.symbols||[]).filter(x=>x!=='TSLA');
+  if(fremdeTitel.length)befund('relay-fixture',width,'abonniert fremde Titel: '+fremdeTitel.join(','));
+  if(t.opens){
+   const kurs=async()=>live.evaluate(()=>[document.querySelector('.qc-price').textContent,document.querySelector('.qx-quote b').textContent].join('|'));
+   const vorher=await kurs();
+   const send=(type,price)=>live.evaluate(([type,price])=>__relayTest.socket.onmessage({data:JSON.stringify({op:'u',schemaVersion:'vu-live-update-1.1.0',v:[['TSLA',price,Date.now(),price,price,price,price,Date.now()-1000]],semantics:[{priceType:type,messageForm:'iexTyped',candlePriceType:'REALTIME_REFERENCE'}]})}),[type,price]);
+   await send('QUOTE',9999);await live.waitForTimeout(300);
+   if(await kurs()!==vorher)befund('relay-fixture',width,'quote moved price');
+   await send('UNSPECIFIED',9999);await live.waitForTimeout(300);
+   if(await kurs()!==vorher)befund('relay-fixture',width,'untyped event moved price');
+  }
   if(await live.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund('relay-fixture',width,'live stock overflow');
   await live.screenshot({path:out+'/live-relay-test-fixture-'+width+'.png',fullPage:true});
   /* Wer die Seite verlaesst, gibt die Verbindung frei. */
   await live.evaluate(()=>{location.hash='#/';});await bereit(live,'home');await live.waitForTimeout(300);
-  const nach=await live.evaluate(()=>__relayTest);
-  if(nach.opens&&!nach.closed&&process.env.VU_QA_STRICT_RELAY)befund('relay-fixture',width,'subscription not released');
+  const nach=await live.evaluate(()=>({opens:__relayTest.opens,closed:__relayTest.closed,sent:__relayTest.sent}));
+  const abgemeldet=nach.sent.some(m=>/unsub/i.test(m.op||''));
+  if(nach.opens&&nach.closed<nach.opens&&!abgemeldet)befund('relay-fixture',width,'subscription not released');
   checks.push({view:'trade-only-relay-test-fixture',width,pass:true,productionDataClaim:false,relayOpens:nach.opens,relayClosed:nach.closed});await live.close();
  });}
 
