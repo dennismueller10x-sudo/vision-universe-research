@@ -382,10 +382,7 @@ export function build() {
       closed: closed.map(stripForSave), invalidated: invalidated.map(stripForSave),
     };
     snap.sort((a, b) => (a.stage === b.stage ? rankFact(b) - rankFact(a) : a.stage === 'WATCH' ? -1 : 1));
-    // symbols: ALLE Titel der Momentaufnahme, nicht nur die Top 60 - die
-    // Fragefunktion (/ask/) prueft damit "erfuellt die Strategie heute" fuer
-    // jeden Titel, ohne dass ein fehlender Eintrag als "nein" gelesen wird.
-    scanner[engine.id] = { discovered: snap.filter((s) => s.stage === 'DISCOVERED').length, watch: snap.filter((s) => s.stage === 'WATCH').length, top: snap.slice(0, 60), symbols: snap.map((s) => s.symbol).sort() };
+    scanner[engine.id] = { discovered: snap.filter((s) => s.stage === 'DISCOVERED').length, watch: snap.filter((s) => s.stage === 'WATCH').length, top: snap.slice(0, 60) };
     log(`${engine.id}: offen ${stillOpen.length}, neu abgeschlossen ${finishedNow.length}, Scanner ${snap.length}`);
   }
 
@@ -488,7 +485,7 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
     const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
     const quality = { A: open.filter((x) => x.quality?.tier === 'A').length, B: open.filter((x) => x.quality?.tier === 'B').length };
-    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: l.invalidated.length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
+    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: l.invalidated.length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
     for (const s of scan) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: null, state: s.stage });
   }
