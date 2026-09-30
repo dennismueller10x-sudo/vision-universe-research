@@ -526,7 +526,7 @@ body.qd .down{color:var(--q-down)}
 .qd .q-limits .q-icon svg{width:24px;height:24px}
 .qd .q-limits b{font-size:13.5px}
 .qd .q-limits span{font-size:12.5px;color:var(--q-muted);line-height:1.45}
-@media (max-width:560px){.qd .q-limits>div{grid-template-columns:32px minmax(0,1fr)}.qd .q-limits span{grid-column:2}}
+@media (max-width:560px){.qd .q-limits>div{grid-template-columns:32px minmax(0,1fr);gap:2px 12px}.qd .q-limits .q-icon{grid-row:span 2}.qd .q-limits b,.qd .q-limits span{grid-column:2}.qd .q-bands{gap:4px}.qd .q-bands small{font-size:9.5px;overflow-wrap:anywhere}}
 .qd .qx-method-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:10px}
 .qd .qx-table-wrap{overflow-x:auto}
 .qd .qx-table{width:100%;border-collapse:collapse;font-size:13px}
@@ -582,3 +582,10 @@ dialog.qx-dialog::backdrop{background:rgba(0,0,0,.6)}
 @media (min-width:1100px){.qd .qx-stock-layout{grid-template-rows:auto auto 1fr}.qd .qx-stock-layout>.qx-glance{grid-column:2;grid-row:1/span 3}
  .qd .qx-stock-layout>.q-setup-wrap,.qd .qx-stock-layout>.q-duo{grid-column:1;margin:0}}
 .qd .qx-stock-layout>.q-setup-wrap{margin:0}
+.qd .q-hero--method h1{margin-bottom:8px}
+.qd .q-principle-list{list-style:none;margin:12px 0 0}
+.qd .q-rowlink.is-static::after{content:none}
+.qd .q-num{display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;background:#111;color:var(--q-lime);font-weight:900;font-size:13px}
+.qd .q-hist{margin-top:10px}
+.qd .qx-factor>summary .qx-tag{align-self:flex-start;padding:3px 10px;font-size:10.5px}
+.qd .qx-factor>summary .qx-factor-name{font-size:16px;font-weight:850}
