@@ -104,7 +104,7 @@ jobs:
       - name: Build static product delivery
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/site"
       - name: Compact the reviewed browser bundle
-        run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/vu2/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/vu2/release-bundle.js"
+        run: /tmp/vu2-release/node_modules/.bin/esbuild "$RUNNER_TEMP/site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/site/quant/release-bundle.js"
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
       # Unterschied ist real: dort laeuft die Seite als ein gebuendeltes
       # Skript, die Artefakte liegen unter ihren Auslieferungspfaden, und
@@ -149,7 +149,12 @@ jobs:
           test ! -d "$SITE_ROOT/quant/data/sec/canonical"
           test ! -d "$SITE_ROOT/quant/data/sec/consumer"
           test ! -d "$SITE_ROOT/quant/data/fundamentals"
-          grep -F 'location.replace("/vu2/"' "$SITE_ROOT/quant/index.html"
+          # /quant/ ist das kanonische Produkt (gebuendelt), /vu2/ und /Quant/
+          # sind genau EIN Sprung dorthin - keine Umleitungskette.
+          grep -F '/quant/release-bundle.js?v=' "$SITE_ROOT/quant/index.html"
+          ! grep -F 'location.replace' "$SITE_ROOT/quant/index.html"
+          grep -F 'location.replace("/quant/"+location.search+location.hash)' "$SITE_ROOT/vu2/index.html"
+          cmp "$SITE_ROOT/vu2/index.html" "$SITE_ROOT/Quant/index.html"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -90,8 +90,11 @@
      be understandable before any formula is shown. */
   var FACTOR_MEANING = {
     quality: {
-      label: "Unternehmensqualität",
-      question: "Wie solide ist das Unternehmen aufgestellt?",
+      /* NVDA-Audit 30.09.2026 (docs/VU_QUANT_FRONTEND_REBUILD.md): der
+         Faktor misst Bilanz, Ergebnisqualitaet und Stabilitaet - keine
+         Ertragskraft. "Unternehmensqualitaet" versprach mehr. */
+      label: "Bilanz- & Ergebnisqualität",
+      question: "Wie belastbar sind Bilanz und ausgewiesene Gewinne?",
       plain: "Qualität fragt, ob ein Unternehmen stabil finanziert ist und ob die ausgewiesenen Gewinne durch echten Zahlungsfluss gedeckt sind.",
       higherMeans: "Höher bedeutet solidere Bilanz und belastbarere Rechnungslegung. Es ist keine Empfehlung."
     },

@@ -27,6 +27,14 @@
 
    Diese Tests halten die Grenze fest - und zwar so, dass sie beim
    naechsten Umbau bricht, statt still zu verschwimmen.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – der Quant
+   Screener lebt jetzt unter /quant/#/screener (einfach) und
+   #/screener/profi (Regeleditor), gebaut aus quant/app/*.js; vu2/ ist nur
+   noch eine Weiterleitung. Geprueft wird deshalb die neue Oberflaeche:
+   Bereichsliste NAV (quant/app/ui.js), Seitentitel TITLE (quant/app/app.js),
+   Beschriftungen aller Verweise auf X.routes.screener/screenerPro und die
+   Speicherschluessel aller quant/app-Dateien.
    ========================================================================= */
 
 import { test } from "node:test";
@@ -34,9 +42,18 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
-const QUANT = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
+const APP_FILES = ["ui.js", "pages.js", "page-stock.js", "page-tools.js", "page-method.js", "app.js", "chart.js", "view-model.js"];
+const QUANT = APP_FILES.map((f) => readFileSync(join(ROOT, "quant/app", f), "utf8")).join("\n");
+const APP = readFileSync(join(ROOT, "quant/app/app.js"), "utf8");
+/* Die Bereichsliste, wie ui.js sie tatsaechlich ausliefert. */
+const sandbox = { QuantShell: { el() { return {}; } } };
+sandbox.window = sandbox;
+vm.createContext(sandbox);
+vm.runInContext(readFileSync(join(ROOT, "quant/app/ui.js"), "utf8"), sandbox);
+const QX = sandbox.QX;
 const NAV = readFileSync(join(ROOT, "assets/site-navigation.js"), "utf8");
 
 /** Quelltext ohne Kommentare: die Regeln gelten fuer das, was die
@@ -54,7 +71,7 @@ test("beide Produkte existieren getrennt im Repository", () => {
     "das eigenstaendige Produkt /screener/ fehlt");
   assert.ok(existsSync(join(ROOT, "screener/engine/store.js")),
     "das eigenstaendige Produkt hat seine eigene Ablage verloren");
-  assert.ok(existsSync(join(ROOT, "vu2/experience.js")),
+  assert.ok(existsSync(join(ROOT, "quant/index.html")) && existsSync(join(ROOT, "quant/app/app.js")),
     "das Quant-Frontend fehlt");
 });
 
@@ -62,10 +79,17 @@ test("Quant verlinkt niemals das eigenstaendige Screener-Produkt als seinen eige
   /* Quant DARF auf /screener/ verweisen - aber nur als fremdes Produkt,
      nie als eigener Bereich. Der gefaehrliche Fall ist ein Eintrag in der
      Bereichsleiste oder eine Ansicht, die dorthin fuehrt. */
-  const q = ohneKommentare(QUANT);
-  const bereiche = q.slice(q.indexOf("const nav="), q.indexOf("const nav=") + 400);
-  assert.doesNotMatch(bereiche, /\/screener\//,
-    "die Bereichsleiste von Quant fuehrt aus dem Produkt heraus in das eigenstaendige Screener-Produkt");
+  assert.ok(QX.NAV.length === 5, "die Bereichsleiste hat nicht mehr fuenf Bereiche");
+  for (const n of QX.NAV) {
+    assert.doesNotMatch(n.href, /\/screener\//,
+      "die Bereichsleiste von Quant fuehrt aus dem Produkt heraus in das eigenstaendige Screener-Produkt");
+    assert.match(n.href, /^#\//, n.label + " fuehrt aus Quant heraus: " + n.href);
+  }
+  /* Kopf- und Tab-Leiste entstehen beide aus dieser Liste. */
+  assert.equal((ohneKommentare(APP).match(/X\.NAV\.map\(/g) || []).length, 2);
+  /* Und die Routen des Quant Screeners bleiben innerhalb von /quant/. */
+  assert.match(QX.routes.screener(), /^#\/screener/);
+  assert.match(QX.routes.screenerPro(), /^#\/screener\/profi/);
 });
 
 test("die Plattform-Navigation fuehrt Screener als eigenstaendiges Produkt", () => {
@@ -83,9 +107,9 @@ test("der Quant-interne Screener heisst im UI auch nach Quant", () => {
   /* Der Owner-Entscheid ausdruecklich: das eigenstaendige Produkt heisst
      schlicht "Screener", der Quant-interne "Quant Screener". Ein Link
      namens nur "Screener", der in Quants eigenen Screener fuehrt, ist
-     genau die Verwechslung, die vermieden werden soll. */
-  const q = ohneKommentare(QUANT);
-  const treffer = [...q.matchAll(/\['([^']*)',\s*href\('screener'\)/g)].map((m) => m[1]);
+     genau die Verwechslung, die vermieden werden soll. Frontend-Rebuild:
+     der Bereichseintrag steht in NAV. */
+  const treffer = QX.NAV.filter((n) => /^#\/screener/.test(n.href)).map((n) => n.label);
   assert.ok(treffer.length > 0, "kein beschrifteter Verweis auf den Quant-Screener gefunden");
   for (const label of treffer) {
     assert.match(label, /Quant/,
@@ -94,46 +118,49 @@ test("der Quant-interne Screener heisst im UI auch nach Quant", () => {
 });
 
 test("auch die Knopf-Beschriftungen in den Quant-Screener nennen Quant", () => {
-  /* Die Pruefung darueber liest nur die Listenform ['Label', href(...)].
-     Gemessen am 29.09.2026 gab es zwei weitere Schreibweisen, und in
-     einer davon stand als Beschriftung schlicht "Screener" - der Name des
-     ANDEREN Produkts, als Knopf mitten in Quant:
+  /* Gemessen am 29.09.2026 stand als Beschriftung schlicht "Screener" -
+     der Name des ANDEREN Produkts, als Knopf mitten in Quant. Eine Regel,
+     die nur eine Schreibweise kennt, ist keine Regel. Frontend-Rebuild:
+     die neue Oberflaeche kennt drei Schreibweisen eines Verweises auf
+     X.routes.screener / X.routes.screenerPro - diese Pruefung liest alle
+     drei:
 
-       actions([... {label:'Screener',href:href('screener')}])
-       link('Regel im Screener untersuchen', href('screener')+...)
+       X.btn("Label", X.routes.screener(...))       / X.link(...)
+       { ..., cta: "Label", href: X.routes.screener(...) }   (Home-Tueren)
+       el("a", { href: X.routes.screener(...), ..., text: "Label" })
 
-     Eine Regel, die nur eine von drei Schreibweisen kennt, ist keine
-     Regel. Diese hier liest alle drei.
-
-     NICHT geprueft wird Fliesstext ("Die Regeln bleiben im Screener
-     untersuchbar"). Dort steht der Begriff im Satz und nicht als Name
-     eines Ziels; wer ihn liest, ist bereits in Quant. Das ist eine
-     bewusste Grenze dieser Pruefung, keine Luecke aus Versehen. */
+     NICHT geprueft wird Fliesstext. Dort steht der Begriff im Satz und
+     nicht als Name eines Ziels; wer ihn liest, ist bereits in Quant. */
   const q = ohneKommentare(QUANT);
+  const ziel = String.raw`X\.routes\.screener(?:Pro)?\(`;
   const beschriftungen = [
-    ...[...q.matchAll(/link\(\s*'([^']*)'\s*,\s*href\('screener'\)/g)].map((m) => m[1]),
-    ...[...q.matchAll(/label:\s*'([^']*)'\s*,\s*href:\s*href\('screener'\)/g)].map((m) => m[1]),
+    ...[...q.matchAll(new RegExp(String.raw`X\.(?:btn|link)\(\s*"([^"]*)"\s*,\s*` + ziel, "g"))].map((m) => m[1]),
+    ...[...q.matchAll(new RegExp(String.raw`cta:\s*"([^"]*)"\s*,\s*href:\s*` + ziel, "g"))].map((m) => m[1]),
+    ...[...q.matchAll(new RegExp(String.raw`el\("a",\s*\{\s*href:\s*` + ziel + String.raw`[^\n]*?text:\s*"([^"]*)"`, "g"))].map((m) => m[1])
   ];
   assert.ok(beschriftungen.length >= 5,
     "nur " + beschriftungen.length + " Knopf-Beschriftungen gefunden - der Auszug greift nicht mehr");
+  assert.ok(beschriftungen.some((l) => /Quant Screener/.test(l)), "kein Knopf nennt den Quant Screener beim Namen");
   for (const label of beschriftungen) {
-    if (!/Screener/.test(label)) continue;   /* "Regel prüfen" nennt kein Ziel */
+    if (!/Screener/.test(label)) continue;   /* "Alle Setups" nennt kein Ziel */
     assert.match(label, /Quant Screener/,
       'der Knopf "' + label + '" fuehrt in den Quant-Screener und nennt das andere Produkt');
   }
+  /* Auch die Seite selbst nennt sich so (Eyebrow des Screeners). */
+  assert.match(q, /async function screener\([^)]*\) \{\s*main\.append\(el\("span", \{ class: "qx-eyebrow", text: "Quant Screener" \}\)/);
 });
 
 test("auch der klassische Quant-Screener traegt den Produktnamen", () => {
   const q = ohneKommentare(QUANT);
-  const treffer = [...q.matchAll(/\['([^']*)',\s*'\/quant\/screener\/'/g)].map((m) => m[1]);
+  /* Verweise der neuen Oberflaeche auf die klassische Seite /quant/screener/. */
+  const treffer = [
+    ...[...q.matchAll(/X\.(?:btn|link)\(\s*"([^"]*)"\s*,\s*"\/quant\/screener\/[^"]*"/g)].map((m) => m[1]),
+    ...[...q.matchAll(/href:\s*"\/quant\/screener\/[^"]*"[^\n]*?text:\s*"([^"]*)"/g)].map((m) => m[1])
+  ];
   for (const label of treffer) {
     assert.match(label, /Quant/,
       '"' + label + '" fuehrt nach /quant/screener/ und nennt Quant nicht');
   }
-  /* Und der Knopf am Fuss des Profi-Editors. */
-  const knopf = q.match(/label:\s*'([^']*Screener[^']*)',\s*href:\s*'\/quant\/screener\/'/);
-  if (knopf) assert.match(knopf[1], /Quant/,
-    'der Knopf "' + knopf[1] + '" oeffnet den Quant-Screener und nennt Quant nicht');
 });
 
 /* ---------------------------------------------------------------------
@@ -143,16 +170,20 @@ test("auch der klassische Quant-Screener traegt den Produktnamen", () => {
 test("der Seitentitel nennt Bereich und Produkt", () => {
   /* Der Titel war statisch und in jedem Bereich derselbe. Bei zwei
      gleichnamigen Produkten ist ein Reiter, der nicht sagt wo man ist,
-     eine Verwechslungsquelle. */
-  assert.match(QUANT, /document\.title\s*=/,
+     eine Verwechslungsquelle. Frontend-Rebuild: TITLE in quant/app/app.js,
+     gesetzt in route(). */
+  const route = APP.slice(APP.indexOf("async function route("), APP.indexOf("document.addEventListener(\"click\""));
+  assert.match(route, /document\.title\s*=\s*\(TITLE\[r\.view\]/,
     "der Seitentitel wird nicht mehr je Bereich gesetzt");
-  const titel = QUANT.slice(QUANT.indexOf("const TITEL="), QUANT.indexOf("async function render()"));
-  assert.match(titel, /screener:\s*'Quant Screener'/,
+  const titel = APP.slice(APP.indexOf("var TITLE = {"), APP.indexOf("};", APP.indexOf("var TITLE = {")));
+  assert.match(titel, /screener:\s*"Quant Screener"/,
     "der Titel des Quant-Screeners nennt Quant nicht");
   /* Kein Bereich darf schlicht "Screener" heissen - so heisst das andere
      Produkt. */
-  assert.doesNotMatch(titel, /:\s*'Screener'/,
+  assert.doesNotMatch(titel, /:\s*"Screener"/,
     "ein Quant-Bereich traegt den Titel des eigenstaendigen Produkts");
+  /* Und der Titel nennt das Produkt. */
+  assert.match(route, /" · Vision Universe®"/);
 });
 
 /* ---------------------------------------------------------------------
@@ -165,7 +196,7 @@ test("die Produkte teilen keinen Speicherschluessel", () => {
      dass ein Filter des einen Produkts den des anderen ueberschreibt. */
   const dateien = {
     "screener/engine/store.js": readFileSync(join(ROOT, "screener/engine/store.js"), "utf8"),
-    "vu2/experience.js": QUANT,
+    "quant/app/*.js": QUANT,
   };
   const schluessel = {};
   for (const [datei, text] of Object.entries(dateien)) {
@@ -173,7 +204,11 @@ test("die Produkte teilen keinen Speicherschluessel", () => {
       [...text.matchAll(/['"](vu[-.][a-zA-Z0-9.-]+)['"]/g)].map((m) => m[1])
         .concat([...text.matchAll(/['"](vu2\.[a-zA-Z0-9.-]+)['"]/g)].map((m) => m[1])));
   }
-  const a = schluessel["screener/engine/store.js"], b = schluessel["vu2/experience.js"];
+  const a = schluessel["screener/engine/store.js"], b = schluessel["quant/app/*.js"];
+  /* Die Auswertung muss die Schluessel der neuen Oberflaeche ueberhaupt
+     sehen - sonst prueft sie nichts. */
+  assert.ok(b.has("vu.quant.watchlist.v1") && b.has("vu.quant.recent.v1"), "die Quant-Schluessel wurden nicht gefunden");
+  for (const k of b) assert.match(k, /^vu\.quant\.|^vu2\./, "der Schluessel " + k + " ordnet sich nicht Quant zu");
   const gemeinsam = [...a].filter((k) => b.has(k));
   assert.deepEqual(gemeinsam, [],
     "beide Produkte schreiben unter demselben Schluessel: " + gemeinsam.join(", ") +

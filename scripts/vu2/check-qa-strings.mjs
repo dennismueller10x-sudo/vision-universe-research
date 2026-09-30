@@ -24,12 +24,17 @@
    Aufruf:  node scripts/vu2/check-qa-strings.mjs
    ========================================================================= */
 
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
 import {dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const R=join(dirname(fileURLToPath(import.meta.url)),'../..')+'/';
 const qa=readFileSync(R+'scripts/vu2/browser-qa.mjs','utf8');
-const src=readFileSync(R+'vu2/experience.js','utf8')+readFileSync(R+'vu2/index.html','utf8')
+/* Seit dem 30.09.2026 ist die Oberflaeche die Hash-App unter /quant/:
+   quant/index.html und jede Datei in quant/app/. Gelesen wird das
+   Verzeichnis, nicht eine Liste - eine neue Datei darf hier nicht fehlen. */
+const app=readdirSync(R+'quant/app').filter(f=>f.endsWith('.js')).sort()
+  .map(f=>readFileSync(R+'quant/app/'+f,'utf8')).join('\n');
+const src=app+readFileSync(R+'quant/index.html','utf8')
   +readFileSync(R+'quant/ui/shell.js','utf8')
   +readFileSync(R+'quant/methodology/product-language-v1.json','utf8');
 const muster=[/name:\s*'([^'\\]{6,})'/g,/hasText:\s*'([^'\\]{6,})'/g,/getByText\(\s*'([^'\\]{6,})'/g];

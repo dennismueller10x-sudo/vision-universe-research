@@ -21,6 +21,13 @@
      3. Ohne Reihe steht der gemessene Grund da, nicht die Behauptung.
      4. Eine fehlende Freigabe bleibt eine fehlende Freigabe - dieser Weg
         macht aus DISPLAY_NOT_PERMITTED keinen Kurs.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – Punkt 2 prüfte ein
+   Quelltextmuster in vu2/experience.js (geloescht). Jetzt wird der Kopf der
+   neuen Aktienseite (quant/app/page-stock.js) in einem DOM-Doppel mit den
+   echten Dateien gezeichnet und das Datum AM KURS gelesen. Punkt 4 gilt
+   auch fuer die Kopfzahl der Seite: sie darf einen gesperrten Kurs nicht
+   aus der gezeichneten Reihe nachholen.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -28,6 +35,7 @@ import { readFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -66,8 +74,17 @@ test("a price carries its own date, because the row's asOf is the fundamentals d
      Datum an den anderen Wert schreibt, datiert den Kurs falsch. */
   assert.notEqual(stock.price.asOf, null);
   if (stock.asOf) assert.ok(stock.price.asOf >= stock.asOf || stock.price.asOf !== stock.asOf);
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  assert.match(seite, /\(s\.price&&s\.price\.asOf\)\|\|s\.asOf/,
+  /* Die Seite schreibt das Datum DES KURSES an den Kurs - gelesen am
+     gezeichneten Kopf, nicht am Quelltext. Damit der Fall etwas prueft,
+     bekommt die Antwort ein abweichendes Geschaeftszahlen-Datum. */
+  const probe = { ...stock, asOf: "2020-01-31" };
+  const kopf = await kopfDerAktienseite(probe);
+  const kurs = knoten(kopf, (n) => /(^| )qx-quote( |$)/.test(n.className))[0];
+  assert.ok(kurs, "die Aktienseite zeichnet keine Kurszeile");
+  const [j, m, t] = stock.price.asOf.split("-");
+  assert.ok(kurs.textContent.includes(t + "." + m + "." + j) || kurs.textContent.includes(stock.price.asOf),
+    "die Seite schreibt nicht das Datum des Kurses an den Kurs: " + kurs.textContent);
+  assert.equal(/31\.01\.2020|2020-01-31/.test(kurs.textContent), false,
     "die Seite zeigt weiter das Datum der Geschaeftszahlen am Kurs");
 });
 
@@ -122,6 +139,19 @@ test("a missing display permission stays a missing permission", async () => {
      Weg tot waere. */
   const offen = await api.getStockIntelligence("ALL-P-B");
   assert.ok(Number.isFinite(offen.price.value), "der offene Titel hat keinen Kurs - der Weg ist tot");
+
+  /* Und die Kopfzahl der Aktienseite holt den gesperrten Kurs nicht aus der
+     gezeichneten Reihe nach. Die alte Seite schrieb nur stock.price; die neue
+     darf keinen zweiten Weg zur Zahl haben. Gegenprobe: der offene Titel
+     zeigt seinen Kurs. */
+  const zahl = (kopf) => {
+    const kurs = knoten(kopf, (n) => /(^| )qx-quote( |$)/.test(n.className))[0];
+    assert.ok(kurs, "die Aktienseite zeichnet keine Kurszeile");
+    return knoten(kurs, (n) => n.tagName === "B")[0].textContent;
+  };
+  assert.equal(/\d/.test(zahl(await kopfDerAktienseite(stock))), false,
+    "die Aktienseite zeigt fuer einen gesperrten Titel trotzdem einen Kurs (aus der Chartreihe)");
+  assert.match(zahl(await kopfDerAktienseite(offen)), /\d/, "der offene Titel zeigt keinen Kurs - der Weg ist tot");
 });
 
 test("the measured cohort gained a price, and the rest says why not", async () => {
@@ -153,3 +183,75 @@ test("the measured cohort gained a price, and the rest says why not", async () =
   assert.equal(fremdeGruende, 0, "ein Titel ohne Kurs nennt einen unbenannten Grund");
   assert.ok(ohne <= 30, ohne + " Titel ohne Kurs - das ist mehr als gemessen (19)");
 });
+
+/* ------------------------------------------------------------------------
+   DIE SEITE AUSGEFUEHRT, NICHT GELESEN.
+
+   Ein kleines DOM-Doppel, in dem die echten Dateien der neuen Oberflaeche
+   laufen (quant/ui/shell.js fuer el(), quant/app/view-model.js, ui.js,
+   page-stock.js). Geprueft wird, was im Kopf der Aktienseite STEHT - nicht,
+   welche Zeichenfolge im Quelltext vorkommt. Alle Abfragen nach dem Kopf
+   bleiben absichtlich offen: der Kopf steht, bevor die Seite auf Faktoren,
+   Setup und Chart wartet, und genau er wird hier gelesen.
+   ------------------------------------------------------------------------ */
+function seitenUmgebung() {
+  const textNode = (s) => ({ nodeType: 3, textContent: String(s), children: [] });
+  function element(tag) {
+    return {
+      tagName: String(tag).toUpperCase(), nodeType: 1, children: [], attributes: {}, dataset: {}, style: {},
+      listeners: {}, className: "", _text: "", open: false, value: "", disabled: false,
+      classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      get textContent() { return this._text + this.children.map((c) => c.textContent).join(""); },
+      set textContent(v) { this._text = String(v); this.children = []; },
+      get firstChild() { return this.children[0] || null; },
+      get isConnected() { return true; },
+      appendChild(c) { this.children.push(c); return c; },
+      removeChild(c) { this.children = this.children.filter((x) => x !== c); return c; },
+      append(...k) { for (const c of k) if (c !== null && c !== undefined) this.appendChild(typeof c === "string" ? textNode(c) : c); },
+      replaceChildren(...k) { this.children = []; this._text = ""; this.append(...k); },
+      setAttribute(k, v) { this.attributes[k] = String(v); if (k === "id") this.id = String(v); },
+      getAttribute(k) { return k in this.attributes ? this.attributes[k] : null; },
+      removeAttribute(k) { delete this.attributes[k]; },
+      addEventListener(k, f) { (this.listeners[k] ||= []).push(f); },
+      removeEventListener() {}, dispatchEvent() {},
+      querySelector() { return null; }, querySelectorAll() { return []; },
+      getBoundingClientRect() { return { width: 640, height: 320, left: 0, top: 0 }; },
+      scrollIntoView() {}, focus() {}, showModal() { this.open = true; }, close() { this.open = false; }
+    };
+  }
+  const document = { createElement: element, createElementNS: (_, t) => element(t), createTextNode: textNode,
+    body: element("body"), readyState: "loading", title: "", activeElement: null,
+    addEventListener() {}, querySelector: () => null, getElementById: () => null };
+  const win = { document, console, setTimeout, clearTimeout, URLSearchParams, Event: class {},
+    location: { hash: "", search: "", pathname: "/quant/" }, history: { replaceState() {} },
+    localStorage: { getItem: () => null, setItem() {} }, innerWidth: 1200,
+    addEventListener() {}, removeEventListener() {}, scrollTo() {} };
+  win.window = win;
+  vm.createContext(win);
+  const lade = (...pfade) => { for (const p of pfade) vm.runInContext(readFileSync(join(ROOT, p), "utf8"), win, { filename: p }); };
+  return { win, document, lade };
+}
+function knoten(node, pred, out = []) {
+  if (!node || !node.children) return out;
+  if (node.nodeType === 1 && pred(node)) out.push(node);
+  for (const c of node.children) knoten(c, pred, out);
+  return out;
+}
+/* Der Kopf der Aktienseite fuer genau diese Dienstantwort. */
+async function kopfDerAktienseite(stock) {
+  const { win, document, lade } = seitenUmgebung();
+  lade("quant/ui/shell.js", "quant/engines/plain-verdict.js", "quant/app/view-model.js", "quant/app/ui.js", "quant/app/page-stock.js");
+  const main = document.createElement("main");
+  const offen = () => new Promise(() => {});
+  const api = new Proxy({ getIntelligenceBrief: async () => null, getStockIntelligence: async () => stock },
+    { get: (t, k) => (k in t ? t[k] : offen) });
+  /* Namensverzeichnis leer und sofort da: der Kopf nennt dann, was der
+     Dienst fuer DIESEN Titel liefert. Alles andere bleibt offen. */
+  const ctx = new Proxy({ api, names: {}, types: {}, entries: {}, loadNames: async () => ({}) },
+    { get: (t, k) => (k in t ? t[k] : offen) });
+  win.QXStock.render(main, stock.ticker, ctx);
+  for (let i = 0; i < 10; i++) await new Promise((r) => setImmediate(r));
+  const kopf = main.children.find((c) => knoten(c, (n) => n.tagName === "H1").length);
+  assert.ok(kopf, "die Aktienseite hat fuer " + stock.ticker + " keinen Kopf gezeichnet");
+  return kopf;
+}

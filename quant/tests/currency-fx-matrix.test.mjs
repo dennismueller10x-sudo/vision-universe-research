@@ -18,12 +18,19 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { buildUsdEurSeries, EXPLICIT, HOLIDAYS_2021 } from "./fixtures/fx-usd-eur.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FX = join(ROOT, "quant", "engines", "fx");
+/* Frontend-Rebuild (quant/app): Prüfintention erhalten – das Quant-Frontend
+   ist nicht mehr vu2/experience.js, sondern quant/index.html +
+   quant/app/*.js (vu2/index.html ist nur noch eine Weiterleitung). Die
+   frontend-gekoppelten Pruefungen (O16-2, A1) lesen deshalb ALLE Dateien
+   unter quant/app/ statt einer einzigen. Engine-Pruefungen sind unveraendert. */
+const QUANT_APP = readdirSync(join(ROOT, "quant", "app")).filter((d) => d.endsWith(".js")).sort()
+  .map((d) => "quant/app/" + d);
 
 const Rates      = require(join(FX, "fx-rates.js"));
 const Freshness  = require(join(FX, "fx-freshness.js"));
@@ -1495,14 +1502,27 @@ test("O16-1 · Keine offene Klasse-A-Stelle mehr, und keine still weggeklassifiz
     "Das Bewertungs-Gate bleibt unveraendert, bis der Owner entscheidet");
 });
 
-test("O16-2 · vu2 formatiert zentral und rechnet weiterhin nicht um", () => {
-  const src = readFileSync(join(ROOT, "vu2", "experience.js"), "utf8");
-  assert.match(src, /VUFx[\s\S]{0,80}Format/, "Die Formatierung kommt aus dem Core");
-  assert.match(src, /vuFormat\(/, "und sie wird auch benutzt, nicht nur geladen");
-  assert.ok(!/usdToEur|toEur\s*\(|\*\s*0\.8[0-9]/.test(src),
-    "Diese Seite darf keine eigene Umrechnung besitzen (O-12)");
+test("O16-2 · Quant formatiert zentral und rechnet weiterhin nicht um", () => {
+  assert.ok(QUANT_APP.length >= 8, "quant/app/ ist (fast) leer - der Test prueft dann nichts");
+  /* Der zentrale Baustein: ui.js money() formatiert ueber den Core ... */
+  const ui = readFileSync(join(ROOT, "quant", "app", "ui.js"), "utf8");
+  assert.match(ui, /VUFx[\s\S]{0,80}Format/, "Die Formatierung kommt aus dem Core");
+  assert.match(ui, /\.formatPrice\(/, "und sie wird auch benutzt, nicht nur geladen");
+  /* ... und die Seiten benutzen diesen Baustein. */
+  assert.ok(QUANT_APP.some((d) => d !== "quant/app/ui.js" && /X\.money\(/.test(readFileSync(join(ROOT, d), "utf8"))),
+    "keine Seite benutzt X.money - dann formatiert jemand anders");
+  for (const datei of QUANT_APP) {
+    const src = readFileSync(join(ROOT, datei), "utf8");
+    assert.ok(!/usdToEur|toEur\s*\(|\*\s*0\.8[0-9]/.test(src),
+      `${datei} darf keine eigene Umrechnung besitzen (O-12)`);
+    /* "Zentral" heisst: kein zweiter Geldformatierer neben ui.js money(). */
+    if (datei !== "quant/app/ui.js") {
+      assert.ok(!/function\s+money\s*\(/.test(src),
+        `${datei} definiert einen eigenen Geldformatierer statt X.money / VUFx.Format.formatPrice`);
+    }
+  }
 
-  const page = readFileSync(join(ROOT, "vu2", "index.html"), "utf8");
+  const page = readFileSync(join(ROOT, "quant", "index.html"), "utf8");
   const geladen = [...page.matchAll(/quant\/engines\/fx\/([a-z-]+)\.js/g)].map((m) => m[1]);
   assert.deepEqual(geladen, ["currency-registry", "money-format"],
     "Nur Registry und Formatierung - die Engine gehoert nicht auf eine Seite, die nichts umrechnet");
@@ -1514,7 +1534,7 @@ test("O16-2 · vu2 formatiert zentral und rechnet weiterhin nicht um", () => {
     { maximumFractionDigits: d, minimumFractionDigits: d }) + " $";
   for (const [wert, d] of [[326.57, 2], [1.5, 2], [0, 2], [-7.25, 2], [12345.678, 0]]) {
     assert.equal(Format.formatPrice(wert, "USD", { numberLocale: "de-DE", decimals: d }),
-      alt(wert, d), `vu2-Darstellung weicht ab bei ${wert}`);
+      alt(wert, d), `Quant-Darstellung weicht ab bei ${wert}`);
   }
 });
 
@@ -1571,7 +1591,7 @@ test("A1 · Der Bootstrap ist die EINZIGE Stelle, die einen Vertrag baut", () =>
   for (const datei of ["discover/app.js", "discover/home.js",
                        "discover/ui/cards.js", "discover/ui/detail.js",
                        "discover/ui/detail-fundamentals.js", "discover/ui/surfaces.js",
-                       "discover/detail.js", "vu2/experience.js"]) {
+                       "discover/detail.js", "quant/index.html", ...QUANT_APP]) {
     const src = readFileSync(join(ROOT, datei), "utf8");
     assert.ok(!/createLayer\s*\(/.test(src), `${datei} baut einen eigenen Currency Contract`);
     assert.ok(!/createEngine\s*\(/.test(src), `${datei} baut eine eigene Engine`);

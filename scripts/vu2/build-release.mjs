@@ -71,28 +71,33 @@ export async function buildRelease({root,output}){
   await writeFile(resolve(output,p),JSON.stringify(await load(p)));
  }
  // Concatenate classic scripts in their existing document order. Original
- // modules remain available to every other workspace, including Discovery.
- const html=await readFile(resolve(root,'vu2/index.html'),'utf8');
- const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
- if(!tags.length||tags.length!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
- const chunks=[];
- for(const tag of tags){const p=tag[1].startsWith('/')?tag[1].slice(1):'vu2/'+tag[1];
-  if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
-  chunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
+ // modules remain available to every other workspace, including Discover.
+ // The canonical Quant product lives at /quant/ (quant/index.html).
+ async function bundlePage(page,bundlePath){
+  const html=await readFile(resolve(root,page),'utf8');
+  const tags=[...html.matchAll(/<script src="([^"]+)"><\/script>/g)];
+  if(!tags.length||tags.length!==(html.match(/<script\b/g)||[]).length)throw Error('UNSUPPORTED_SCRIPT_TAG');
+  const dir=page.slice(0,page.lastIndexOf('/')+1),chunks=[];
+  for(const tag of tags){const p=tag[1].startsWith('/')?tag[1].slice(1):dir+tag[1];
+   if(!paths.includes(p)||!permitted(p))throw Error('INVALID_BUNDLE_INPUT');
+   chunks.push('/* '+p+' */\n'+await readFile(resolve(root,p),'utf8'));
+  }
+  const bundle=chunks.join('\n;\n'),bundleVersion=createHash('sha256').update(bundle).digest('hex').slice(0,16);
+  await writeFile(resolve(output,bundlePath),bundle);
+  let bundled=html;for(const tag of tags)bundled=bundled.replace(tag[0],'');
+  bundled=bundled.replace('</body>','<script src="/'+bundlePath+'?v='+bundleVersion+'"></script></body>');
+  await writeFile(resolve(output,page),bundled);
+  return bundleVersion;
  }
- const bundle=chunks.join('\n;\n'),bundleVersion=createHash('sha256').update(bundle).digest('hex').slice(0,16);
- await writeFile(resolve(output,'vu2/release-bundle.js'),bundle);
- let bundled=html;for(const tag of tags)bundled=bundled.replace(tag[0],'');
- bundled=bundled.replace('</body>','<script src="/vu2/release-bundle.js?v='+bundleVersion+'"></script></body>');
- await writeFile(resolve(output,'vu2/index.html'),bundled);
- // Activate the reviewed Quant 2.0 entry only in the release projection.
- // Source workspaces stay intact, keeping rollback a reversible Git action.
- const quantEntry='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=/vu2/"><link rel="canonical" href="/vu2/"><title>Vision Universe® Quant 2.0</title></head><body><p><a href="/vu2/">Vision Universe® Quant 2.0 öffnen</a></p><script>location.replace("/vu2/"+location.search+location.hash)</script></body></html>';
- await mkdir(resolve(output,'quant'),{recursive:true});
- await writeFile(resolve(output,'quant/index.html'),quantEntry);
+ const quantBundle=await bundlePage('quant/index.html','quant/release-bundle.js');
+ // Former entries (/vu2/, /Quant/) are one hop to the canonical product.
+ // The query string travels along; /quant/ maps ?view=... to its routes.
+ const legacyEntry='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><link rel="canonical" href="/quant/"><title>Vision Universe® Quant</title><script>location.replace("/quant/"+location.search+location.hash)</script></head><body><p><a href="/quant/">Vision Universe® Quant öffnen</a></p></body></html>';
+ await mkdir(resolve(output,'vu2'),{recursive:true});
+ await writeFile(resolve(output,'vu2/index.html'),legacyEntry);
  // Preserve the capitalized entry used in owner-facing launch links.
  await mkdir(resolve(output,'Quant'),{recursive:true});
- await writeFile(resolve(output,'Quant/index.html'),quantEntry);
+ await writeFile(resolve(output,'Quant/index.html'),legacyEntry);
  // Screener universe: a release projection of the Discover data shipped in
  // this very release, so the screener never lags the product it filters.
  // A failure must not block the whole site: the screener then shows its
@@ -102,7 +107,7 @@ export async function buildRelease({root,output}){
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
- const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,status:'PASS'};
+ const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};
  await writeFile(resolve(output,'release-delivery.json'),JSON.stringify(report,null,2));return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

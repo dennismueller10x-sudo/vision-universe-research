@@ -13,7 +13,7 @@
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
@@ -127,7 +127,9 @@ test("ein Kuerzel ist kein Firmenname - auf keiner Flaeche", async () => {
   }
   /* Und die Oberflaeche sagt es in Alltagssprache, statt das Feld leer zu
      lassen oder den Code zu zeigen. */
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
+  /* Die Oberflaeche ist seit dem 30.09.2026 die App unter quant/app/. */
+  const seite = readdirSync(join(ROOT, "quant/app")).filter((f) => f.endsWith(".js")).sort()
+    .map((f) => readFileSync(join(ROOT, "quant/app", f), "utf8")).join("\n");
   assert.match(seite, /Firmenname nicht veröffentlicht/);
   /* Der Code darf im KOMMENTAR stehen - dort erklaert er die Regel und steht
      auf keiner Seite. Geprueft wird der Quelltext ohne Kommentare; die
