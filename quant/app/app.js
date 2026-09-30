@@ -189,6 +189,9 @@
     }
     /* Der Fokus bleibt im Dialog, solange er offen ist. */
     dialog.addEventListener("keydown", function (e) {
+      /* Escape schliesst den Dialog sofort - in einem Suchfeld wuerde der
+         Browser sonst zuerst nur die Eingabe leeren. */
+      if (e.key === "Escape") { e.preventDefault(); close(); return; }
       if (e.key !== "Tab") return;
       var f = [input].concat(items());
       var i = f.indexOf(document.activeElement);
