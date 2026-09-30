@@ -1,10 +1,18 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {assessResourceBudget} from './resource-budget.mjs';
+import {assessResourceBudget,budgets} from './resource-budget.mjs';
 const resource=(bytes,path='/quant/data/universe.json')=>({bytes,path});
 test('recorded baseline fits and a byte regression fails',()=>{
  assert.equal(assessResourceBudget('home',[resource(550404)]).pass,true);
- assert.deepEqual(assessResourceBudget('home',[resource(1700001)]).failures,['decodedBytes']);
+ /* DIE GRENZE WIRD GELESEN, NICHT ABGESCHRIEBEN.
+    Hier stand 1700001 - die Grenze plus eins. Als der gemeinsame
+    Plattform-Kopf am 29.09.2026 die home-Grenze angehoben hat, wurde
+    dieser Test rot, ohne dass an der geprueften REGEL etwas falsch war:
+    er hatte nur eine Zahl abgeschrieben, die inzwischen woanders steht.
+    Geprueft wird die Regel "ein Byte ueber der Grenze faellt durch" -
+    und die gilt unabhaengig davon, wo die Grenze gerade liegt. */
+ assert.deepEqual(assessResourceBudget('home',[resource(budgets.home.decodedBytes+1)]).failures,['decodedBytes']);
+ assert.equal(assessResourceBudget('home',[resource(budgets.home.decodedBytes)]).pass,true);
 });
 test('many small requests cannot evade the request budget',()=>{
  assert.deepEqual(assessResourceBudget('screener',Array.from({length:46},()=>resource(1))).failures,['requests']);

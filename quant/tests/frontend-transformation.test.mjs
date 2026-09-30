@@ -47,10 +47,20 @@ test("Die Quant-Navigation führt genau die fünf Bereiche", () => {
   const match = experience.match(/const nav=(\[\[.*?\]\]);/);
   assert.ok(match, "nav-Liste nicht gefunden");
   const ids = [...match[1].matchAll(/\['([a-z]+)','([^']+)'\]/g)].map((m) => [m[1], m[2]]);
+  /* Owner-Entscheid 29.09.2026 (Produktarchitektur): Quant hat genau fuenf
+     Bereiche, und der Screener heisst darin "Quant Screener". "Screener"
+     allein ist der Name eines EIGENSTAENDIGEN Produkts unter /screener/,
+     das nicht zu Quant gehoert. Wer beide kennt, muss an der Beschriftung
+     sehen, in welchem er steht. */
   assert.deepEqual(ids, [
-    ["home", "Home"], ["screener", "Screener"], ["strategies", "Strategien"],
+    ["home", "Home"], ["screener", "Quant Screener"], ["strategies", "Strategien"],
     ["stocks", "Aktien"], ["explain", "Methodik"]
   ]);
+  /* Und kein Bereich darf schlicht "Screener" heissen. */
+  for (const [, label] of ids) {
+    assert.notEqual(label, "Screener",
+      'ein Quant-Bereich traegt den Namen des eigenstaendigen Produkts');
+  }
 });
 
 test("Kein fremdes Produkt steht in der Quant-Navigation", () => {

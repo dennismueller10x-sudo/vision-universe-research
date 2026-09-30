@@ -99,10 +99,22 @@ for(const width of [1440,390]){
      Navigation und damit einen Fehler, den es nicht gibt. */
   if(view.startsWith('/vu2/')){
    const bereiche=await page.locator('.q-bottom a').allInnerTexts();
-   const sollBereiche=['Home','Screener','Strategien','Aktien','Methodik'];
+   /* "Quant Screener", nicht "Screener" - Owner-Entscheid 29.09.2026.
+      "Screener" allein ist der Name eines EIGENSTAENDIGEN Produkts unter
+      /screener/, das nicht zu Quant gehoert.
+
+      Diese fuenf Namen stehen hier ABSICHTLICH woertlich. An anderen
+      Stellen habe ich heute abgeschriebene Werte durch gelesene ersetzt -
+      hier waere das falsch herum: der Smoke prueft, was ein Mensch auf der
+      ausgelieferten Seite liest. Laese er die Erwartung aus derselben
+      Quelle, aus der die Seite gebaut wird, ginge eine falsche Umbenennung
+      unbemerkt durch. Dass eine Umbenennung diese Datei mitzieht, ist der
+      Zweck, nicht der Preis. */
+   const sollBereiche=['Home','Quant Screener','Strategien','Aktien','Methodik'];
    if(bereiche.map(t=>t.trim()).join('|')!==sollBereiche.join('|'))
     bad.push('NAV:'+bereiche.map(t=>t.trim()).join('|'));
-   for(const fremd of ['Discover','Research','Markets','Portfolio'])
+   /* Und der Name des anderen Produkts darf hier ueberhaupt nicht stehen. */
+   for(const fremd of ['Discover','Research','Markets','Portfolio','Screener'])
     if(bereiche.some(t=>t.trim()===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
   }
 

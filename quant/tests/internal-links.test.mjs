@@ -62,7 +62,32 @@ function wirdAusgeliefert(pfad) {
 
 test("every internal link the app offers leads somewhere the release serves", () => {
   const ziele = verlinkteZiele();
-  assert.ok(ziele.length >= 20, "nur " + ziele.length + " Ziele gefunden - liest dieser Test noch das Richtige?");
+  /* DIE SELBSTPRUEFUNG DIESES TESTS.
+
+     Sie stand als blosse Zahl da (">= 20") und sollte nur sagen: findet
+     der Auszug oben ueberhaupt noch etwas, oder hat ein Umbau die
+     Link-Schreibweise geaendert und der Test prueft seitdem die leere
+     Menge?
+
+     Am 29.09.2026 fiel die Zahl auf 15 - nicht weil der Auszug brach,
+     sondern weil der Owner-Entscheid zur Produktarchitektur elf Links in
+     FREMDE Produkte aus Quant entfernt hat (Academy, Analysten, Discover,
+     ETF, Guide, Hedgefonds, Macro, Magazin, Morning, News, Reports).
+     Quant verlinkt seitdem nur noch eigene Flaechen; der Weg zu den
+     anderen Produkten steht im gemeinsamen Plattform-Kopf.
+
+     Eine Zahl, die man bei jeder solchen Aenderung nachzieht, schuetzt
+     nichts. Statt sie zu senken, prueft die Selbstpruefung jetzt, dass
+     BEKANNTE Ziele wirklich gefunden werden - das bricht laut, wenn der
+     Auszug kaputtgeht, und bleibt still, wenn sich die Produktgrenze
+     verschiebt. */
+  const muss = ["/quant/screener/", "/quant/ranking/", "/quant/stock/?ticker=NVDA"];
+  for (const pfad of muss) {
+    assert.ok(ziele.includes(pfad),
+      "der Auszug findet " + pfad + " nicht mehr - er liest vermutlich nicht mehr das Richtige (" +
+      ziele.length + " Ziele insgesamt)");
+  }
+  assert.ok(ziele.length >= 10, "nur " + ziele.length + " Ziele gefunden - der Auszug greift nicht mehr");
   const tot = [];
   for (const ziel of ziele) {
     /* Laufzeitziele der eigenen App (?view=...) pruefen die Smoke-Ansichten;

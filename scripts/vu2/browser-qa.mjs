@@ -137,7 +137,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
      sind und dass die vier nicht da sind. */
   const leiste=width<=900?'.q-bottom':'.nav';
   const bereiche=await page.locator(leiste+' a').allInnerTexts();
-  const erwartet=['Home','Screener','Strategien','Aktien','Methodik'];
+  /* Owner-Entscheid 29.09.2026: der Quant-interne Screener heisst
+     "Quant Screener". "Screener" allein ist das eigenstaendige Produkt
+     unter /screener/ und gehoert NICHT zu Quant. */
+  const erwartet=['Home','Quant Screener','Strategien','Aktien','Methodik'];
   if(bereiche.map(t=>t.trim()).join('|')!==erwartet.join('|'))
    throw Error('Quant-Navigation ist nicht die erwartete: '+bereiche.join('|'));
   for(const fremd of ['Discover','Research','Markets','Portfolio'])
@@ -487,7 +490,7 @@ if(depotWert==='Nicht verfügbar'){
  if(!/\d{2}\.\d{2}\.\d{2,4}|\d{4}-\d{2}-\d{2}/.test(depotSatz))throw Error('Depotwert ohne Bewertungsstichtag: '+depotSatz);
 }
 await page.getByRole('button',{name:'TSLA entfernen',exact:true}).click();await page.getByRole('button',{name:'Bearbeiten',exact:true}).click();await page.getByRole('spinbutton',{name:'Stückzahl'}).fill('12');await page.getByRole('button',{name:'Position übernehmen',exact:true}).click();await page.getByRole('button',{name:'Bestände speichern',exact:true}).click();await page.reload();await page.locator('main footer').waitFor();await page.locator('.portfolio-total .quote').getByText((12*nvda.fundamentals.price).toLocaleString('de-DE',{style:'currency',currency:'USD',maximumFractionDigits:2}),{exact:true}).waitFor();}
- if(view==='signals'){if(productIntelligence){if(defaultSignals?.lookback!==20||defaultSignals?.counts?.requested!==productIntelligence.counts.productUniverse)throw Error('default signals artifact does not match product universe');await page.getByText(defaultSignals.counts.available+' von '+defaultSignals.counts.requested+' Unternehmen contract-konform geprüft',{exact:false}).waitFor();if(await page.locator('.signal-event').count()>200)throw Error('broad signals rendered an unbounded event list');const company=page.getByRole('combobox',{name:'Signals Unternehmen'}),ticker=await company.locator('option').nth(1).getAttribute('value');if(!ticker)throw Error('broad signals contain no evidenced company');await company.selectOption(ticker);if(!await page.locator('.signal-event').count())throw Error('broad signal company filter failed');}else{await page.getByRole('heading',{name:'Keine belegten Wechsel in diesem Ausschnitt',exact:true}).waitFor();await page.getByRole('combobox',{name:'Signal-Zeitraum'}).selectOption('60');await page.locator('main footer').waitFor();if(await page.locator('.signal-event').count()!==4)throw Error('historical transitions missing');await page.getByRole('combobox',{name:'Signals Unternehmen'}).selectOption('MSFT');if(await page.locator('.signal-event').count()!==2)throw Error('signal company filter failed');}await page.getByText('Warum wurde der Wechsel erkannt?',{exact:true}).first().click();await page.getByRole('link',{name:'Regel im Screener untersuchen',exact:true}).first().click();await page.locator('main footer').waitFor();if(!['momentum6m','priceTo200dma'].includes(await page.getByRole('combobox',{name:'Kennzahl'}).inputValue()))throw Error('signal rule handoff lost');await page.goto(origin+'/vu2/?view=signals&window=60');await page.locator('main footer').waitFor();}
+ if(view==='signals'){if(productIntelligence){if(defaultSignals?.lookback!==20||defaultSignals?.counts?.requested!==productIntelligence.counts.productUniverse)throw Error('default signals artifact does not match product universe');await page.getByText(defaultSignals.counts.available+' von '+defaultSignals.counts.requested+' Unternehmen contract-konform geprüft',{exact:false}).waitFor();if(await page.locator('.signal-event').count()>200)throw Error('broad signals rendered an unbounded event list');const company=page.getByRole('combobox',{name:'Signals Unternehmen'}),ticker=await company.locator('option').nth(1).getAttribute('value');if(!ticker)throw Error('broad signals contain no evidenced company');await company.selectOption(ticker);if(!await page.locator('.signal-event').count())throw Error('broad signal company filter failed');}else{await page.getByRole('heading',{name:'Keine belegten Wechsel in diesem Ausschnitt',exact:true}).waitFor();await page.getByRole('combobox',{name:'Signal-Zeitraum'}).selectOption('60');await page.locator('main footer').waitFor();if(await page.locator('.signal-event').count()!==4)throw Error('historical transitions missing');await page.getByRole('combobox',{name:'Signals Unternehmen'}).selectOption('MSFT');if(await page.locator('.signal-event').count()!==2)throw Error('signal company filter failed');}await page.getByText('Warum wurde der Wechsel erkannt?',{exact:true}).first().click();await page.getByRole('link',{name:'Regel im Quant Screener untersuchen',exact:true}).first().click();await page.locator('main footer').waitFor();if(!['momentum6m','priceTo200dma'].includes(await page.getByRole('combobox',{name:'Kennzahl'}).inputValue()))throw Error('signal rule handoff lost');await page.goto(origin+'/vu2/?view=signals&window=60');await page.locator('main footer').waitFor();}
  if(view==='fundamentals'){await page.locator('.q-chart .bar').first().waitFor();await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('ttm');await page.getByText('TTM noch nicht verfügbar',{exact:true}).waitFor();await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('quarterly');await page.getByText('Berichtszeitraum beachten',{exact:true}).waitFor();await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).selectOption('free_cash_flow');await page.getByRole('heading',{name:'Freier Cashflow',exact:true}).waitFor();await page.locator('.q-chart .bar').first().waitFor();await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('annual');await page.getByRole('rowheader').filter({hasText:/^FY /}).first().waitFor();await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).selectOption('revenue');await page.getByRole('heading',{name:'Umsatz',exact:true}).waitFor();
   await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).selectOption('net_income');await page.getByRole('combobox',{name:'Berichtsart'}).selectOption('ttm');await page.getByText('TTM noch nicht verfügbar',{exact:true}).waitFor();const saved=await page.getByRole('link',{name:'Diese Historie erneut öffnen',exact:true}).getAttribute('href');await page.goto(origin+saved);await page.getByText('TTM noch nicht verfügbar',{exact:true}).waitFor();if(await page.getByRole('combobox',{name:'Fundamentale Kennzahl'}).inputValue()!=='net_income'||await page.getByRole('combobox',{name:'Unternehmen',exact:true}).inputValue()!=='NVDA')throw Error('history link lost state');
   await page.goto(origin+'/vu2/?view=fundamentals&ticker=TSLA');await page.getByRole('heading',{name:'Umsatz',exact:true}).waitFor();if(await page.getByRole('combobox',{name:'Unternehmen',exact:true}).inputValue()!=='TSLA'||!await page.locator('.q-chart').count())throw Error('canonical consumer history missing or substituted');await page.getByText('Meldedatum · Tagesgenauigkeit',{exact:true}).waitFor();await page.screenshot({path:out+'/canonical-fundamentals-'+width+'.png',fullPage:true});await auditAccessibility(page,'canonical-fundamentals',width);
@@ -501,7 +504,7 @@ await page.getByRole('button',{name:'TSLA entfernen',exact:true}).click();await 
   await page.goto(origin+'/vu2/?view=fundamentals&ticker=NVDA&metric=unknown');await page.getByText('Historienauswahl prüfen',{exact:true}).waitFor();if(await page.locator('.q-chart').count())throw Error('invalid metric rendered fallback');await page.goto(origin+'/vu2/?view=fundamentals&ticker=NVDA');await page.getByRole('heading',{name:'Umsatz',exact:true}).waitFor();}
  if(view==='research'){for(const href of await page.locator('.catalog a').evaluateAll(links=>links.map(a=>a.href))){const response=await page.request.get(href);if(!response.ok())throw Error('workspace link unavailable '+href);}}
  if(view==='markets'){if(await page.locator('.market-observation').count()!==5)throw Error('market observations missing');await page.getByText('Warum?',{exact:true}).first().click();await page.getByText(/Abstand zum 200-Tage-Durchschnitt:/).first().waitFor();}
- if(view==='discover'){if(await page.locator('.collection').count()!==3)throw Error('collections missing');await page.getByRole('link',{name:'Regeln im Screener bearbeiten'}).nth(1).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Kennzahl'}).inputValue()!=='revenueGrowth'||await page.getByRole('spinbutton').inputValue()!=='20')throw Error('recipe handoff lost');await page.goto(origin+'/vu2/?view=discover');await page.locator('main footer').waitFor();}
+ if(view==='discover'){if(await page.locator('.collection').count()!==3)throw Error('collections missing');await page.getByRole('link',{name:'Regeln im Quant Screener bearbeiten'}).nth(1).click();await page.locator('main footer').waitFor();if(await page.getByRole('combobox',{name:'Kennzahl'}).inputValue()!=='revenueGrowth'||await page.getByRole('spinbutton').inputValue()!=='20')throw Error('recipe handoff lost');await page.goto(origin+'/vu2/?view=discover');await page.locator('main footer').waitFor();}
  if(view==='screener'){
   /* Ohne Regeln im Link ist der Profi-Modus zugeklappt; dieser Abschnitt
      bedient ihn und muss ihn deshalb oeffnen. Kommt jemand MIT Regeln
@@ -649,14 +652,57 @@ Object.defineProperty(window,'VUProductServices',{configurable:true,set(service)
  await page.goto(origin+'/quant/technical/?symbol=NVDA&layer=ELLIOTT');await page.locator('[role="tab"][data-layer="ELLIOTT"][aria-selected="true"]').waitFor();await page.locator('.q-tech-chart-wrap svg').waitFor();await page.getByRole('heading',{name:'Szenarien',exact:true}).waitFor();await page.getByRole('button',{name:'Alternative',exact:true}).click();await page.screenshot({path:out+'/elliott-preserved-'+width+'.png',fullPage:true});checks.push({view:'elliott-preserved',width,pass:true});
  await page.goto(origin+'/vu2/?view=home');await page.locator('main footer').waitFor();await page.keyboard.press('Control+k');await page.getByRole('dialog').waitFor();await page.getByRole('textbox',{name:'Suche',exact:true}).fill('NVDA');await page.getByRole('dialog').getByRole('link',{name:/NVDA/}).click();await page.locator('main footer').waitFor();await page.locator('.quote').getByText(nvda.fundamentals.price.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' $',{exact:true}).waitFor();
  await page.getByRole('link',{name:'Full Chart',exact:true}).click();await page.locator('.q-chart').first().waitFor();await page.goBack();await page.locator('main footer').waitFor();
- for(const [name,heading] of [['Technical','Kursstruktur untersuchen'],['Elliott Wave','Elliott Wave · Szenarien verstehen'],['Historische Fundamentals','Wie entwickelt sich das Geschäft?'],['Quant',nvdaName]]){await page.getByRole('link',{name,exact:true}).click();await page.getByRole('heading',{name:heading,exact:true}).waitFor();await page.goBack();await page.locator('main footer').waitFor();}
+ /* DIE PRUEFUNG MUSS SAGEN, WELCHE FLAECHE SIE MEINT.
+
+    Seit der gemeinsame Plattform-Kopf auch auf Quant steht, gibt es den
+    Namen 'Quant' auf der Aktienseite zweimal: einmal als Vertiefungsknopf
+    IM INHALT (fuehrt in die Quant-Ansicht dieses Titels) und einmal im
+    Schnellzugriff des Kopfes (fuehrt in das Produkt Quant). Beides ist
+    richtig, und ein ungebundener Locator ist deshalb ab jetzt
+    zweideutig - gemessen: 'strict mode violation ... resolved to 2
+    elements'.
+
+    Die Knoepfe, um die es hier geht, stehen im Inhalt. Also wird im
+    Inhalt gesucht. Ein `.first()` waere die bequeme Variante und die
+    falsche: es wuerde auch dann gruen bleiben, wenn der Knopf aus dem
+    Inhalt verschwindet und nur noch der Kopfeintrag uebrig ist. */
+ const inhalt=page.locator('main#content');
+ for(const [name,heading] of [['Technical','Kursstruktur untersuchen'],['Elliott Wave','Elliott Wave · Szenarien verstehen'],['Historische Fundamentals','Wie entwickelt sich das Geschäft?'],['Quant',nvdaName]]){await inhalt.getByRole('link',{name,exact:true}).click();await page.getByRole('heading',{name:heading,exact:true}).waitFor();await page.goBack();await page.locator('main footer').waitFor();}
  await page.getByRole('link',{name:'Strategie definieren',exact:true}).click();
  /* Von der Aktienseite fuehrt der Weg auf die Strategieseite OHNE Regeln in
     der Adresse - dort steht der Katalog vorn und der Regel-Editor hinter
     seiner Klappe. Was im Editor liegt, wird erst nach dem Oeffnen sichtbar. */
  await page.locator('.q-pro > summary').click();
  await page.getByRole('heading',{name:'Vor einem historischen Test',exact:true}).waitFor();if(await page.getByRole('link',{name:'Bestehende Backtest-Umgebung',exact:true}).getAttribute('href')!=='/quant/backtests/')throw Error('professional backtest access lost');
- await page.goto(origin+'/vu2/?view=research');await page.locator('main footer').waitFor();const directory=await page.locator('.catalog a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/xpeng/','/academy/','/quant/ranking/','/quant/screener/'])if(!directory.includes(path))throw Error('preserved workspace missing '+path);
+ /* DER KATALOG FUEHRT AUS QUANT NICHT MEHR IN FREMDE PRODUKTE.
+
+    Bis zum 29.09.2026 hat diese Zeile das Gegenteil verlangt: der Katalog
+    MUSSTE Academy, Analysten, Discover, ETF, Hedgefonds, Macro, Magazin,
+    Morning, News und Reports fuehren. Der Owner-Entscheid zur
+    Produktarchitektur sagt: Discover, Quant, Screener, Research usw. sind
+    eigenstaendige Produkte, und innerhalb von Quant stehen ausschliesslich
+    Home, Quant Screener, Strategien, Aktien und Methodik. Ein Katalog, der
+    zehn andere Produkte als Quant-Unterpunkte auffuehrt, ist genau die
+    Vermischung, die der Entscheid verbietet.
+
+    Die Pruefung wird deshalb nicht geloescht, sondern umgedreht - und sie
+    prueft beide Haelften, sonst waere sie nur noch die Haelfte wert:
+
+      (a) Quant verlinkt in seinem Katalog nur eigene Flaechen.
+      (b) Die zehn Produkte sind trotzdem erreichbar, naemlich im
+          gemeinsamen Plattform-Kopf. Ohne (b) koennte man die Wege
+          einfach kappen und diese Datei bliebe still. */
+ await page.goto(origin+'/vu2/?view=research');await page.locator('main footer').waitFor();
+ const directory=await page.locator('.catalog a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+ const fremd=['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/dashboard/','/guide/','/budget/','/screener/'];
+ const ausgang=directory.filter(h=>h&&fremd.some(p=>h.startsWith(p)));
+ if(ausgang.length)throw Error('der Quant-Katalog fuehrt in fremde Produkte: '+ausgang.join(', '));
+ if(!directory.some(h=>h&&h.startsWith('/quant/')))throw Error('der Quant-Katalog verlinkt keine einzige Quant-Flaeche mehr - der Auszug greift nicht');
+ /* Der Kopf ist ein Web-Component mit offenem Shadow-Root; Playwrights
+    CSS-Engine sieht hinein. */
+ const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+ for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/screener/'])
+  if(!kopf.some(h=>h&&h.startsWith(path)))throw Error('der Plattform-Kopf fuehrt nicht mehr zu '+path+' - das Produkt ist aus Quant heraus unerreichbar');
  await page.keyboard.press('Control+k');await page.getByRole('dialog').waitFor();await page.keyboard.press('Escape');if(await page.getByRole('dialog').isVisible())throw Error('command dialog keyboard exit failed');checks.push({view:'guided-professional-journey',width,pass:true});
  if(errors.length)throw Error(errors.join('\n'));await page.close();}
  // Test-only relay fixture exercises the production UI without contacting a provider.
