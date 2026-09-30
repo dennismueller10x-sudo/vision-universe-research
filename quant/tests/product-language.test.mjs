@@ -359,9 +359,13 @@ test("the entry page answers the two headline questions itself", async () => {
   const render = slice(stockPage, "async function render(", "global.QXStock");
   /* Staerke: die Quant-Einordnung (verdictCard) auf der Einstiegsseite. */
   assert.match(render, /layout\.append\(verdictCard\(vm[,)]/, "the entry page does not answer the strength question");
-  /* Discover-Angleichung: die Einordnung wird VOR dem Chart angehaengt. */
-  assert.ok(render.indexOf("layout.append(verdictCard(") > 0 && render.indexOf("layout.append(verdictCard(") < render.indexOf("layout.append(chart.node)"),
-    "die Auskunft steht hinter dem Chart");
+  /* Discover-Angleichung: Kurs, Chart, Einordnung wie auf Discovers
+     Aktienseite - die Einordnung folgt UNMITTELBAR auf den einen Chart,
+     nichts steht dazwischen. Ihre Lage (erste Bildschirmhoehe bei 1440 px,
+     hoechstens zwei bei 390 px) misst der Production-Smoke (M40). */
+  const chartAt = render.indexOf("layout.append(chart.node);");
+  assert.ok(chartAt > 0, "der Chart wird nicht in die Einordnungs-Zeile gesetzt");
+  assert.match(render.slice(chartAt), /^layout\.append\(chart\.node\);\s*layout\.append\(verdictCard\(vm/, "zwischen Chart und Einordnung steht etwas anderes");
   /* Chance gegen Risiko: die Marktmuster (Gewinn- UND Verlustseite) im
      Replay derselben Seite. */
   assert.match(render, /replaySection\(vm, words\)/, "the entry page carries no opportunity-against-risk answer");

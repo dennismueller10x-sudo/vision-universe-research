@@ -218,7 +218,10 @@
       var next = e.shiftKey ? (i <= 0 ? f.length - 1 : i - 1) : (i >= f.length - 1 ? 0 : i + 1);
       f[next].focus();
     });
-    dialog.addEventListener("close", function () { dialog.classList.remove("on"); document.body.classList.remove("dx-suche-offen"); if (opener && opener.focus) opener.focus(); });
+    /* Das close-Ereignis kommt verzoegert. Wurde der Dialog inzwischen
+       wieder geoeffnet (Escape, sofort Strg+K), darf es ihn nicht
+       unsichtbar machen und den Fokus nicht wegnehmen. */
+    dialog.addEventListener("close", function () { if (dialog.open) return; dialog.classList.remove("on"); document.body.classList.remove("dx-suche-offen"); if (opener && opener.focus) opener.focus(); });
     function close() { if (dialog.open) dialog.close ? dialog.close() : dialog.removeAttribute("open"); dialog.classList.remove("on"); document.body.classList.remove("dx-suche-offen"); }
     document.addEventListener("keydown", function (e) {
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");

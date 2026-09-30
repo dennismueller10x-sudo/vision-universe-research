@@ -68,7 +68,7 @@
     journey.append(X.world("Was möchtest du herausfinden?", null, [doors([
       { kicker: "Aktie", title: "Aktie analysieren", text: "Wie gut ist eine konkrete Aktie – und warum?", cta: "Aktie suchen", href: X.routes.stocks() },
       { kicker: "Quant Screener", title: "Aktien finden", text: "Starte mit einer Frage – etwa nach Kursstärke oder solider Bilanz.", cta: "Fragen ansehen", href: X.routes.screener() },
-      { kicker: "Strategien", title: "Anlagestile entdecken", text: "Welche Art von Unternehmen sucht ein Stil – und wer passt heute?", cta: "Strategien", href: X.routes.strategies() },
+      { kicker: "Strategien", title: "Strategien entdecken", text: "Welche Art von Unternehmen sucht ein Stil – und wer passt heute?", cta: "Strategien", href: X.routes.strategies() },
       { kicker: "Kursbild", title: "Aktuelle Setups", text: "Wo baut sich im Kursbild gerade etwas auf?", cta: "Setups ansehen", href: X.routes.screener("frage=setups") }
     ])]));
     var rails = el("div", { class: "qx-rails" }, [X.loading("Aktien werden geladen …")]);

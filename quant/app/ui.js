@@ -137,8 +137,11 @@
      Anfangsbuchstabe. Erfunden wird keins. */
   function logo(ticker, name, size, opts) {
     var L = global.VUDiscover && global.VUDiscover.Logos;
-    if (!L) return el("span", { class: "dx-logo dx-logo--" + (size || "md"), "aria-hidden": "true", text: String(name || ticker || "·").charAt(0).toUpperCase() });
     opts = opts || {};
+    /* In langen Listen (Screener, Mitglieder einer Strategie) steht die
+       Buchstaben-Marke - vierzig Einzelbilder waeren vierzig Anfragen fuer
+       ein Erkennungszeichen, das die Zeile ohnehin mit Namen traegt. */
+    if (!L || opts.initialOnly) return el("span", { class: "dx-logo dx-logo--" + (size || "md"), "aria-hidden": "true", text: L && L.initial ? L.initial(name, ticker) : String(name || ticker || "·").charAt(0).toUpperCase() });
     return L.mark(ticker, { name: name, size: size || "md", onlyLogo: !!opts.onlyLogo, wide: !!opts.wide });
   }
 
@@ -146,9 +149,9 @@
      der Discover-Suchtreffer. Kein Wert ohne Bedeutung. */
   function stockRow(o) {
     return el("a", { class: "qx-row", href: routes.stock(o.ticker), dataset: { symbol: o.ticker } }, [
-      logo(o.ticker, o.name, "sm"),
+      logo(o.ticker, o.name, "sm", { initialOnly: true }),
       el("div", { class: "qx-row-main" }, [
-        el("div", { class: "qx-row-title" }, [el("strong", { class: "qx-row-name", text: o.name || o.ticker }), el("span", { class: "qx-ticker", text: o.ticker })]),
+        el("div", { class: "qx-row-title" }, [el("span", { class: "qx-row-name", text: o.name || o.ticker }), el("span", { class: "qx-ticker", text: o.ticker })]),
         o.why ? el("div", { class: "qx-row-why", text: o.why }) : null
       ]),
       el("div", { class: "qx-row-side" }, [

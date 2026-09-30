@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="de">
+<!-- Hell wie Discovers Voreinstellung. Quant liest keine Speicherschluessel anderer Produkte. -->
+<html lang="de" data-theme="light" data-theme-mode="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -14,8 +15,6 @@
 <link rel="stylesheet" href="/quant/ui/quant.css">
 <link rel="stylesheet" href="/discover/discover.css">
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie in Discover. -->
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/discover/app.css">
 <link rel="stylesheet" href="/discover/home.css">
 <link rel="stylesheet" href="/discover/detail.css">
@@ -24,7 +23,7 @@
 </head>
 <body class="dx dv2 qx">
 <a class="v2-skip qx-skip" href="#qx-main">Zum Inhalt</a>
-<vu-navigation theme="light" no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script>
+<vu-navigation theme="light" no-preview></vu-navigation>
 <div id="qx-app"><main class="v2-main qx-main"><p class="qx-loading">Quant wird geladen …</p></main></div>
 <noscript><p style="padding:24px">Quant benötigt JavaScript.</p></noscript>
 <script src="/assets/site-navigation.js"></script>

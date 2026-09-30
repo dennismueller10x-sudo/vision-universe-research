@@ -287,3 +287,17 @@ body.dv2.qx .qx-qa .dx-bewertung-satz dd{font-size:clamp(17px,2vw,21px);line-hei
 body.dv2.qx .qx-qa .dv2-valuation-card dd p{margin:0 0 6px}
 body.dv2.qx .qx-strategy-sentence{margin-top:0}
 body.dv2.qx .qx-stock-layout{display:block}
+/* Am Handy bleibt Quants schmale Kopfzeile stehen (Marke, Beta, Suche):
+   die Leiste unten traegt die fuenf Bereiche, die Suche braucht einen Ort. */
+@media (max-width:760px){
+  body.dv2.qx .v2-bar{display:flex;padding:8px 20px 4px;gap:10px}
+  body.dv2.qx .qx-search-btn{min-height:40px;padding:8px 14px}
+}
+body.dv2.qx .qx-verdict-top .dx-dhero-story{margin-bottom:10px}
+body.dv2.qx .qx-verdict-top[data-tone=good] .dx-story-dot{background:var(--discover-up)}
+body.dv2.qx .qx-verdict-top[data-tone=bad] .dx-story-dot{background:var(--discover-down)}
+body.dv2.qx .qx-verdict-top[data-tone=neutral] .dx-story-dot{background:var(--discover-warm)}
+body.dv2.qx .qx-waage-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:-.035em;line-height:1.15;margin:34px 0 16px}
+body.dv2.qx .qx-stock-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+body.dv2.qx .qx-stock-top .dx-back{margin:0}
+body.dv2.qx .qx-stock .qx-stock-top .v2-watch-button{margin:0}

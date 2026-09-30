@@ -114,7 +114,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremd=true;});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('404')||t.includes('favicon'))return;if(absichtlich>0&&/^Failed to load resource: net::ERR_FAILED/.test(t)){absichtlich--;return;}if(fremd&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
- const leiste=width>=1000?'header nav.qx-nav':'nav.qx-tabbar';
+ /* Discover-Angleichung (30.09.2026): Kopf- und Tab-Leiste sind EINE
+    Leiste wie Discovers v2-dock - am Desktop oben mittig, am Handy unten. */
+ const leiste='nav.v2-dock.qx-nav';
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
@@ -125,38 +127,44 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   /* KEINE SEITE WIEDERHOLT DEN ANSPRUCH AUS DER KOPFZEILE ALS UEBERSCHRIFT.
      Zweimal gefunden (Screener "Chancen finden.", Strategien "Strategien
      verstehen."): dieselben Woerter zweimal, rund 90 px auseinander. Der
-     Anspruch steht jetzt in der Marke (.qx-brand span). */
-  const anspruch=(await page.locator('.qx-brand span').first().innerText().catch(()=>'')).trim();
+     Anspruch steht in der Kopfzeile (Discovers .v2-bar-caption). */
+  const anspruch=(await page.locator('.qx-bar .v2-bar-caption').first().textContent().catch(()=>'')||'').trim();
   const ueberschrift=(await page.locator('main h1').first().innerText().catch(()=>'')).trim();
   const norm=t=>t.toLowerCase().replace(/[.!?–-]+/g,' ').replace(/\s+/g,' ').trim();
   if(anspruch&&ueberschrift&&norm(anspruch)===norm(ueberschrift))befund(view,width,'"'+ueberschrift+'" steht zweimal: als Anspruch in der Kopfzeile und als Ueberschrift');
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,width,'page overflow');
-  /* DIE FUENF BEREICHE, UND KEIN FREMDES PRODUKT - in beiden Leisten, und
-     bei jeder Breite ist genau eine davon sichtbar. */
-  for(const nav of ['header nav.qx-nav','nav.qx-tabbar']){
-   const bereiche=(await page.locator(nav+' a').allTextContents()).map(t=>t.trim());
-   if(bereiche.join('|')!==SOLL_BEREICHE.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+nav+' '+bereiche.join('|'));
+  /* DIE FUENF BEREICHE, UND KEIN FREMDES PRODUKT - in genau einer Leiste,
+     die bei jeder Breite sichtbar ist und dort steht, wo man sie erwartet. */
+  if(await page.locator('nav.qx-nav, nav.qx-tabbar').count()!==1)befund(view,width,'zwei Navigationen');
+  {
+   const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
+   if(bereiche.join('|')!==SOLL_BEREICHE.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
    for(const fremdes of ['Discover','Research','Markets','Portfolio','Screener'])
-    if(await page.locator(nav).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
+    if(await page.locator(leiste).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
   }
   if(!await page.locator(leiste).isVisible())befund(view,width,'die Navigation dieser Breite ist nicht sichtbar: '+leiste);
-  if(await page.locator(width>=1000?'nav.qx-tabbar':'header nav.qx-nav').isVisible())befund(view,width,'zwei Navigationen sichtbar');
+  {
+   const box=await page.locator(leiste).boundingBox();
+   const oben=await page.evaluate(()=>window.scrollY);
+   if(box&&width>=1000&&box.y+oben>220)befund(view,width,'die Leiste steht am Desktop nicht oben');
+   if(box&&width<1000&&box.y+box.height<page.viewportSize().height-4)befund(view,width,'die Leiste steht am Handy nicht unten');
+  }
 
   if(view==='home'){
    /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE: ein Satz, was Quant ist,
       eine Suche, und die Wege dorthin mit ihrem Ziel. */
    if(!(await page.locator('.qx-hero .qx-lead').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
    await page.locator('button.qx-searchbox').waitFor();
-   const einstiege=await page.locator('a.qx-door').evaluateAll(ns=>ns.map(n=>({titel:(n.querySelector('strong')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
+   const einstiege=await page.locator('a.qx-door').evaluateAll(ns=>ns.map(n=>({titel:(n.querySelector('h2,strong')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
    for(const [name,ziel] of [['Aktie analysieren','#/aktien'],['Aktien finden','#/screener'],['Strategien entdecken','#/strategien'],['Aktuelle Setups','#/screener?frage=setups']]){
     const treffer=einstiege.find(e=>e.titel.trim()===name);
     if(!treffer)befund(view,width,'Weg "'+name+'" fehlt auf Home');
     else if(treffer.ziel!==ziel)befund(view,width,'Weg "'+name+'" zeigt nicht auf '+ziel+': '+treffer.ziel);
    }
-   /* "HEUTE INTERESSANT" IST KEIN ERFUNDENER FEED. Entweder stehen dort die
+   /* "HEUTE BEI QUANT" IST KEIN ERFUNDENER FEED. Entweder stehen dort die
       ausgewerteten Zustaende MIT ihrem Stichtag, oder der ehrliche Satz,
       dass nichts abrufbar ist. Ein dritter Fall waere erfunden. */
-   const heute=await page.locator('section.qx-section').filter({hasText:'Heute interessant'}).innerText();
+   const heute=await page.locator('section.qx-section').filter({hasText:'Heute bei Quant'}).innerText();
    const mitStand=/\d{2}\.\d{2}\.\d{4}/.test(heute)&&/Stand|→/.test(heute);
    if(!mitStand&&!heute.includes('Gerade keine Veränderungen abrufbar'))befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall');
    /* Quellen und die Absage an Empfehlung, Prognose, Kursziel. */
@@ -445,7 +453,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
     und diese Pruefung bliebe still. */
  await versuch('platform-header',width,async()=>{
   await frisch(page,'#/','home');
-  const quantLinks=await page.locator('header nav.qx-nav a, nav.qx-tabbar a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+  const quantLinks=await page.locator('nav.v2-dock.qx-nav a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+  if(quantLinks.length!==5)befund('platform-header',width,'die Quant-Leiste hat nicht fuenf Bereiche: '+quantLinks.length);
   if(quantLinks.some(h=>!h||!h.startsWith('#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
   const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
   for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/screener/'])
@@ -497,15 +506,15 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   checks.push({view:'trade-only-relay-test-fixture',width,pass:true,productionDataClaim:false,relayOpens:nach.opens,relayClosed:nach.closed});await live.close();
  });}
 
- /* 768 PX: DIE UNTERE LEISTE TRAEGT DIE NAVIGATION. Die Kopfnavigation ist
-    unter 1000 px ausgeblendet, damit nicht beide dieselben Ziele zeigen. */
+ /* 768 PX: DIE LEISTE IST DA UND VOLLSTAENDIG - es gibt genau eine, damit
+    nicht zwei dieselben Ziele zeigen (Discovers v2-dock). */
  const tablet=await browser.newPage({viewport:{width:768,height:1024},deviceScaleFactor:1});
  for(const [view,hash] of [['home','#/'],['vergleich','#/vergleich/NVDA,MSFT'],['methodik','#/methodik'],['aktie-nvda','#/aktie/NVDA']]){await versuch(view,768,async()=>{
   await frisch(tablet,hash);
   if(await tablet.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,768,'tablet overflow');
   const nav=tablet.locator('nav.qx-tabbar');
   if(!await nav.isVisible()||await nav.locator('a').count()!==5)befund(view,768,'tablet navigation incomplete');
-  if(await tablet.locator('header nav.qx-nav').isVisible())befund(view,768,'zwei Navigationen auf 768 px');
+  if(await tablet.locator('nav.qx-nav, nav.qx-tabbar').count()!==1)befund(view,768,'zwei Navigationen auf 768 px');
   await tablet.screenshot({path:out+'/'+view+'-768.png',fullPage:true});checks.push({view,width:768,pass:true});
  });}
  await tablet.close();
