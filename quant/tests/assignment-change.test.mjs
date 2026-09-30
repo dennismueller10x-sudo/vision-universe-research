@@ -20,6 +20,18 @@
      2. Ein Wechsel ist eine Beobachtung zwischen zwei VEROEFFENTLICHTEN
         Staenden - kein Ereignis von heute. Die Oberflaeche muss das sagen,
         nicht nur der Kommentar hier.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – die Wechselzeile
+   (assignmentChangeLine) stand in vu2/experience.js, das geloescht ist. Die
+   neue Oberflaeche (quant/app) hat KEINE Entsprechung: kein Satz im View
+   Model, kein Aufruf von getAssignmentChange auf der Aktienseite, und die
+   Strategie-Flaechen in pages.js nennen Wechsel ohne "kein Ereignis von
+   heute" und teils nur mit einem Datum ("seit <to>"). Die Zusagen bleiben
+   deshalb stehen und richten sich an die Stelle, an die solche Saetze im
+   Umbau gehoeren: quant/app/view-model.js (assignmentChangeText, per
+   require() ausgefuehrt) und die Flaechen in quant/app/*.js. Sie schlagen
+   fehl, bis das Frontend den Satz wieder fuehrt - bewusst, nicht
+   abgeschwaecht.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -228,14 +240,18 @@ test("the service answers all three cases, and a change names its two dates", as
   assert.equal(await service.getAssignmentChange("nicht valide"), null);
 });
 
-/* Die Zeile ausgefuehrt und nicht nur gelesen: el() wird durch ein Doppel
-   ersetzt, das Klasse und Text festhaelt. Geprueft wird der Satz. */
+/* Die Zeile ausgefuehrt und nicht nur gelesen - jetzt als Satz aus dem View
+   Model der neuen Oberflaeche. Vorher baute assignmentChangeLine ein <p>;
+   geprueft wurde schon damals der Text. */
+const VM = require(join(root, "quant/app/view-model.js"));
 function surfaceLine() {
-  const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
-  const von = source.indexOf("function assignmentChangeLine("), bis = source.indexOf("function strategyMatchSection(", von);
-  assert.ok(von > 0 && bis > von, "die Wechselzeile steht nicht mehr in experience.js");
-  const el = (tag, attrs) => ({ tag, ...attrs });
-  return new Function("el", source.slice(von, bis) + "\nreturn assignmentChangeLine;")(el);
+  assert.equal(typeof VM.assignmentChangeText, "function",
+    "quant/app/view-model.js hat keinen Satz fuer den Zuordnungswechsel (assignmentChangeText fehlt) - "
+    + "der Wechsel erreicht den Leser nicht mehr in Alltagssprache");
+  return (change) => {
+    const text = VM.assignmentChangeText(change);
+    return text === null || text === undefined ? null : { text };
+  };
 }
 
 test("all three cases reach the reader in plain words", () => {
@@ -244,8 +260,8 @@ test("all three cases reach the reader in plain words", () => {
   /* Nichts geaendert ist eine Antwort und steht ausdruecklich da. */
   const ruhig = line({ state: "NO_CHANGE", from: "2026-09-23", to: "2026-09-24", entered: [], exited: [] });
   assert.match(ruhig.text, /nichts geändert/);
-  assert.match(ruhig.text, /2026-09-23/);
-  assert.match(ruhig.text, /2026-09-24/);
+  assert.match(ruhig.text, /2026-09-23|23\.09\.2026/);
+  assert.match(ruhig.text, /2026-09-24|24\.09\.2026/);
   /* Rein, raus, und beides zusammen - jeweils mit dem Profilnamen, den ein
      Leser kennt, nie mit der internen Kennung. */
   const rein = line({ state: "CHANGED", from: "2026-09-23", to: "2026-09-24",
@@ -267,18 +283,36 @@ test("all three cases reach the reader in plain words", () => {
 });
 
 test("the surface sentence names the two published states and calls itself no event", () => {
-  const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
-  const von = source.indexOf("function assignmentChangeLine(");
-  const bis = source.indexOf("function strategyMatchSection(", von);
-  assert.ok(von > 0 && bis > von, "die Wechselzeile steht nicht mehr in experience.js");
-  const block = source.slice(von, bis);
+  /* Vorher als Quelltextmuster an assignmentChangeLine geprueft
+     (change.from, change.to, "kein Ereignis von heute", "keine Prognose",
+     kein roher Zustand). Jetzt als Verhalten am Satz: */
+  const line = surfaceLine();
+  const text = VM.assignmentChangeText({ state: "CHANGED", from: "2026-09-23", to: "2026-09-24",
+    entered: [{ profileId: "garp", label: "GARP", predicateHash: "rule_0000000000000000" }], exited: [] });
+  assert.ok(line && text, "kein Satz fuer einen belegten Wechsel");
   /* Beide Staende im Satz - "seit gestern" ohne Datum liest sich wie ein
      Ereignis von heute. */
-  assert.match(block, /change\.from/);
-  assert.match(block, /change\.to/);
-  assert.match(block, /kein Ereignis von heute/);
-  assert.match(block, /keine Prognose/);
+  assert.match(text, /2026-09-23|23\.09\.2026/);
+  assert.match(text, /2026-09-24|24\.09\.2026/);
+  assert.match(text, /kein Ereignis von heute/);
+  assert.match(text, /keine Prognose/);
   /* Kein roher Zustand im Satz. */
-  assert.equal(/'[^']*\b(ENTERED|EXITED|CHANGED|NO_CHANGE)\b[^']*'/.test(block.replace(/change\.state!?==?='(CHANGED|NO_CHANGE)'/g, "")), false,
-    "ein roher Zustandsname steht im Satz");
+  assert.equal(/\b(ENTERED|EXITED|CHANGED|NO_CHANGE)\b/.test(text), false, "ein roher Zustandsname steht im Satz");
+
+  /* Und die Aktienseite fragt den Wechsel dieses Titels ueberhaupt ab und
+     setzt den Satz - in der alten Seite stand er unter dem Strategy Match. */
+  const ohneKommentare = (t) => t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|\s)\/\/[^\n]*/g, "$1");
+  const seite = ohneKommentare(readFileSync(join(root, "quant/app/page-stock.js"), "utf8"));
+  assert.match(seite, /getAssignmentChange\(/, "die Aktienseite fragt den Zuordnungswechsel nicht ab");
+  assert.match(seite, /VM\.assignmentChangeText\(/, "die Aktienseite setzt den Wechselsatz nicht");
+
+  /* Jede Flaeche, die Wechsel aus dem Strategie-Index zeigt, nennt beide
+     Staende und sagt, dass es kein Ereignis von heute ist. */
+  const pages = ohneKommentare(readFileSync(join(root, "quant/app/pages.js"), "utf8"));
+  if (/historicalEvidence\.transitions/.test(pages)) {
+    assert.match(pages, /kein Ereignis von heute/,
+      "pages.js zeigt Zuordnungswechsel, ohne zu sagen, dass es kein Ereignis von heute ist");
+    assert.equal(/\(seit " \+ X\.dateDe\([^)]*historicalEvidence\.to\)/.test(pages), false,
+      "pages.js nennt einen Wechsel nur mit einem Datum (\"seit <to>\") - das liest sich wie ein Ereignis von heute");
+  }
 });

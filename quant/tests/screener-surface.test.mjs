@@ -24,6 +24,10 @@
      1. Beide Methodiken liefern Zeilen, die ihre eigene Spalte fuellen
         koennen - gemessen an den echten Artefakten.
      2. In `screenPage` verdeckt keine innere Deklaration die Methodik.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – die Pruefung der
+   Seite liest jetzt screenerPro() in quant/app/pages.js und das View Model
+   quant/app/view-model.js statt vu2/experience.js.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -88,32 +92,51 @@ test("a V2 query returns rows that can fill the V2 columns", async () => {
 });
 
 test("nothing inside the screener page shadows the selected methodology", () => {
-  /* Ein Gueltigkeitsbereich-Fehler ist von aussen nicht messbar: die Dienste
-     bleiben richtig, nur die Seite liest den falschen Wert. Deshalb hier eine
-     Quellpruefung - ohne Kommentare gelesen, weil der Abschnitt den alten
-     Fehler ERKLAERT und ein Text ueber eine Regel nicht die Regel ist. */
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8")
+  /* Frontend-Rebuild (quant/app): screenPage() aus vu2/experience.js ist
+     ersetzt durch screenerPro() in quant/app/pages.js (#/screener/profi).
+     Dieselbe Pruefung dort: genau eine Deklaration von `current` (die
+     Methodik), der Zaehler fuer verworfene Anfragen heisst anders und
+     verwirft veraltete Antworten. Ein Gueltigkeitsbereich-Fehler ist von
+     aussen nicht messbar, deshalb Quellpruefung ohne Kommentare. */
+  const seite = readFileSync(join(ROOT, "quant/app/pages.js"), "utf8")
     .replace(/\/\*[\s\S]*?\*\//g, "");
-  const start = seite.indexOf("async function screenPage()");
-  assert.ok(start > 0, "screenPage gibt es nicht mehr - dann prueft dieser Fall nichts");
-  const ende = seite.indexOf("\nasync function ", start + 10);
+  const start = seite.indexOf("async function screenerPro(");
+  assert.ok(start > 0, "screenerPro gibt es nicht mehr - dann prueft dieser Fall nichts");
+  const ende = seite.indexOf("\n  async function ", start + 10);
   const koerper = seite.slice(start, ende > 0 ? ende : undefined);
   /* Genau eine Deklaration von `current`: die Methodik. */
   const deklarationen = koerper.match(/(?:let|const|var)\s+current\b/g) || [];
   assert.equal(deklarationen.length, 1,
-    "in screenPage gibt es " + deklarationen.length + " Deklarationen von `current` - eine verdeckt die andere");
-  assert.match(koerper, /let current=editor\.methodologyOf\(initial\)/);
+    "in screenerPro gibt es " + deklarationen.length + " Deklarationen von `current` - eine verdeckt die andere");
+  assert.match(koerper, /var current = W\.methodologyOf\(initial\)/);
+  /* Die Tabelle entscheidet nach der gewaehlten Methodik, nicht nach einem Zaehler. */
+  assert.match(koerper, /current\.id !== "legacy"/);
   /* Und der Zaehler fuer verworfene Anfragen heisst anders. */
-  assert.match(koerper, /const anfrage=\+\+request/);
-  assert.match(koerper, /if\(anfrage!==request\)return/);
+  const apply = koerper.slice(koerper.indexOf("async function apply("));
+  assert.match(apply, /var mine = \+\+request/);
+  assert.match(apply, /if \(mine !== request\) return/);
+  /* Die Antwort wird erst NACH der Pruefung gezeichnet. */
+  assert.ok(apply.indexOf("if (mine !== request) return") < apply.indexOf("code.textContent"),
+    "die Ergebnisse werden vor der Pruefung auf veraltete Anfragen gezeichnet");
+
+  /* Der einfache Screener (#/screener) verwirft ebenso veraltete Antworten,
+     wenn der Nutzer schnell zwischen Fragen wechselt. */
+  const einfach = seite.slice(seite.indexOf("async function screener("), seite.indexOf("async function factorHits("));
+  assert.match(einfach, /var mine = \+\+run_id/);
+  assert.match(einfach, /if \(mine !== run_id\) return/);
 });
 
-test("eine eigene Branchenvorlage wird auf der Seite genannt, nicht verschwiegen", () => {
+test("eine eigene Branchenvorlage wird auf der Seite genannt, nicht verschwiegen", async () => {
   /* Gemessen: 974 Titel rechnen nach einer eigenen Vorlage. WSBCO zeigte die
      Eigenkapitalquote mit Gewicht 0,30 und AAPL dieselbe Kennzahl mit 0,15 -
-     dieselbe Beschriftung, eine andere Methodik, kein Wort dazu. */
-  const src = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  assert.match(src, /branchenvorlageHinweis\(data\)/, "der Hinweis wird nicht in die Faktorsektion gesetzt");
+     dieselbe Beschriftung, eine andere Methodik, kein Wort dazu.
+
+     Frontend-Rebuild (quant/app): branchenvorlageHinweis()/VORLAGE_ERKLAERUNG
+     aus vu2/experience.js sind entfallen. Die Aussagen kommen jetzt aus dem
+     View Model (quant/app/view-model.js, factorView().reference bzw.
+     stock().template) und werden in der Faktorsektion der Aktienseite
+     (quant/app/page-stock.js factorCard) gezeichnet. Geprueft wird deshalb
+     am Verhalten des View Models mit echten Artefakten. */
 
   /* Der Dienst muss die Vorlage ueberhaupt durchreichen - ohne sie kann die
      Seite sie nicht nennen. */
@@ -121,28 +144,67 @@ test("eine eigene Branchenvorlage wird auf der Seite genannt, nicht verschwiegen
   assert.match(service, /template:record\.template\|\|null/,
     "getFactorEvidence reicht die Vorlage nicht durch");
 
-  /* Und jede der drei Vorlagen hat eine Erklaerung in Alltagssprache - eine
-     Vorlage ohne Satz waere ein Name ohne Bedeutung. */
-  const Contract = createRequire(import.meta.url)("../engines/quant-methodology-contract.js");
-  /* Erst den Block der Erklaerungen abgrenzen, dann darin je Vorlage pruefen.
-     Ein unbegrenztes Fenster prueft sonst seinen eigenen Rand: die Namen der
-     uebrigen Vorlagen und der Name des Blocks sind selbst interne Codes -
-     dieser Test hat sich daran zweimal selbst ausgeloest. */
-  const blockStart = src.indexOf("const VORLAGE_ERKLAERUNG={");
-  assert.ok(blockStart > 0, "der Block der Erklaerungen fehlt");
-  const block = src.slice(blockStart, src.indexOf("\n};", blockStart));
+  const VM = require(join(ROOT, "quant/app/view-model.js"));
+  const Contract = require(join(ROOT, "quant/engines/quant-methodology-contract.js"));
+  const strings = (o, out = []) => {
+    if (typeof o === "string") out.push(o);
+    else if (Array.isArray(o)) o.forEach((x) => strings(x, out));
+    else if (o && typeof o === "object") Object.keys(o).forEach((k) => strings(o[k], out));
+    return out;
+  };
+  /* Je Vorlage ein echter Titel aus den veroeffentlichten Artefakten. */
+  const beispiel = { BALANCE_SHEET_FINANCIAL: "JPM", INSURANCE_CARRIER: "PGR", REAL_ESTATE_TRUST: "O" };
+  const texte = {};
   for (const id of Contract.TEMPLATES) {
-    const stelle = block.indexOf(id + ":");
-    assert.ok(stelle > 0, "keine Erklaerung fuer " + id);
-    let satz = block.slice(stelle + id.length + 1);
-    for (const anderer of Contract.TEMPLATES) satz = satz.split(anderer + ":")[0];
-    assert.ok(satz.length > 80, id + ": die Erklaerung ist zu kurz fuer einen Satz");
-    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(satz), false,
-      "interner Code in der Erklaerung von " + id + ": " + satz.slice(0, 120));
+    assert.ok(beispiel[id], "kein Beispieltitel fuer die Vorlage " + id + " - Test ergaenzen");
+    const record = await api.getFactorEvidence(beispiel[id]);
+    assert.equal(record.state, "AVAILABLE");
+    assert.equal(record.template && record.template.id, id, beispiel[id] + " rechnet nicht mehr nach " + id);
+    const vm = VM.stock({ ticker: beispiel[id], factors: record });
+    /* Die Vorlage wird in der Faktorsektion genannt. */
+    assert.ok(vm.factors.length > 0);
+    for (const f of vm.factors) {
+      assert.match(f.reference, /Branchenvorlage/, beispiel[id] + "/" + f.id + ": die Vorlage wird nicht genannt");
+    }
+    /* Was das View Model ueber die Vorlage SAGT: die Methodikebene jedes
+       Faktors (reference) und jeder aus stock().template abgeleitete Text.
+       Die roh durchgereichten Felder des Artefakts (id, label, version,
+       appliesTo) und die Kennzahl-Notizen der Engine zaehlen nicht - ein
+       durchgereichtes Datenfeld ist noch keine Aussage an den Nutzer. */
+    const roh = new Set(Object.values(record.template).map(String));
+    const vorlagenTexte = vm.factors.map((f) => f.reference)
+      .concat(strings(vm.template).filter((t) => !roh.has(t)));
+    /* Die Fassung steht in der Methodikebene, nicht in der ersten Zeile des
+       Faktors (why/label). */
+    assert.ok(vorlagenTexte.some((t) => t.includes(record.template.version)),
+      beispiel[id] + ": die Fassung " + record.template.version + " der Vorlage wird in der Methodikebene nicht genannt");
+    for (const f of vm.factors) {
+      assert.ok(!String(f.why || "").includes(record.template.version) && !String(f.label || "").includes(record.template.version),
+        beispiel[id] + "/" + f.id + ": die Fassung steht in der ersten Zeile statt in der Methodikebene");
+    }
+    /* Vergleichbar machen: Name der Vorlage, SIC-Angaben und Fassung
+       herausnehmen - was dann noch vorlagen-spezifisch ist, ist die
+       Erklaerung in Alltagssprache. */
+    texte[id] = vorlagenTexte.map((t) => t.split(record.template.label).join("")
+      .split(record.template.version).join("").replace(/SIC [0-9 -]+/g, "SIC"));
   }
-  /* Die Fassung steht in der Methodikebene und nicht in der ersten Zeile. */
-  const hinweis = src.slice(src.indexOf("function branchenvorlageHinweis"), src.indexOf("function factorRow"));
-  const ersteZeile = hinweis.indexOf("Für diesen Titel gilt");
-  const fassung = hinweis.indexOf("Fassung '+vorlage.version");
-  assert.ok(ersteZeile > 0 && fassung > ersteZeile, "die Fassung steht vor dem Nutzersatz");
+  const ohneVorlage = VM.stock({ ticker: "AAPL", factors: await api.getFactorEvidence("AAPL") });
+  const allgemein = new Set(ohneVorlage.factors.map((f) => f.reference.replace(/SIC [0-9 -]+/g, "SIC")));
+  /* Jede der drei Vorlagen hat eine eigene Erklaerung in Alltagssprache -
+     eine Vorlage ohne Satz waere ein Name ohne Bedeutung. */
+  for (const id of Contract.TEMPLATES) {
+    const andere = new Set(Contract.TEMPLATES.filter((x) => x !== id).flatMap((x) => texte[x]));
+    const eigen = texte[id].filter((t) => !andere.has(t) && !allgemein.has(t) && t.length > 80);
+    assert.ok(eigen.length > 0,
+      "keine eigene Erklaerung in Alltagssprache fuer " + id + " (mehr als 80 Zeichen, ohne den Namen der Vorlage)");
+    for (const satz of eigen) {
+      assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(satz), false,
+        "interner Code in der Erklaerung von " + id + ": " + satz.slice(0, 120));
+    }
+  }
+
+  /* Die Aktienseite zeichnet diese Aussage in der Faktorsektion. */
+  const seite = readFileSync(join(ROOT, "quant/app/page-stock.js"), "utf8");
+  const karte = seite.slice(seite.indexOf("function factorCard("), seite.indexOf("function conditions("));
+  assert.match(karte, /f\.reference/, "factorCard zeichnet den Vergleichs-/Vorlagenhinweis nicht");
 });

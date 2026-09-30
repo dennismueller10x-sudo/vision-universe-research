@@ -14,6 +14,13 @@
       pruefbar - und wird hier gepruft, damit ein spaeterer Umbau, der
       das Frontend doch an Vercel bindet, diesen Test bricht statt
       stillschweigend eine falsche Doku zu hinterlassen.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – das Quant-Frontend
+   liegt jetzt in quant/index.html + quant/app/*.js (vu2/ ist nur noch eine
+   Weiterleitung). Die Beispiel-Diffs nennen deshalb die neuen Frontend-
+   Dateien, und die Behauptung "ruft keine Vercel-Funktion auf" wird ueber
+   JEDES Skript geprueft, das quant/index.html laedt (inkl. der geteilten
+   Discover-Bausteine), plus die verbliebenen vu2/-Dateien.
    ========================================================================= */
 
 import { test } from "node:test";
@@ -27,21 +34,21 @@ import { entscheide, BAUEN, ABBRECHEN, VERCEL_PFADE } from "../../scripts/vu2/ve
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 test("die Produktion baut immer, auch wenn nur das Frontend geaendert wurde", () => {
-  const e = entscheide({ umgebung: "production", dateien: ["vu2/experience.js"] });
+  const e = entscheide({ umgebung: "production", dateien: ["quant/app/app.js"] });
   assert.equal(e.code, BAUEN, "die Produktion darf ein Kontingent nie schonen: " + e.grund);
 });
 
 test("eine Vorschau ohne Vercel-eigene Aenderung wird abgebrochen", () => {
   const e = entscheide({
     umgebung: "preview",
-    dateien: ["vu2/experience.js", "vu2/experience.css", "quant/data/product/setup-states-v1.json", "docs/X.md"],
+    dateien: ["quant/app/app.js", "quant/app/app.css", "quant/index.html", "vu2/index.html", "quant/data/product/setup-states-v1.json", "docs/X.md"],
   });
   assert.equal(e.code, ABBRECHEN, "eine Vorschau des 197-Byte-Platzhalters kostet ein Deployment und sagt nichts");
 });
 
 test("eine Vorschau MIT Vercel-eigener Aenderung wird gebaut", () => {
   for (const datei of ["api/history.js", "server/http.js", "vercel.json", "scripts/vu2/build-vercel-public.mjs"]) {
-    const e = entscheide({ umgebung: "preview", dateien: ["vu2/experience.js", datei] });
+    const e = entscheide({ umgebung: "preview", dateien: ["quant/app/app.js", datei] });
     assert.equal(e.code, BAUEN, datei + " gehoert Vercel, die Vorschau ist aussagekraeftig: " + e.grund);
   }
 });
@@ -70,10 +77,18 @@ test("das Quant-Frontend ruft keine Vercel-Funktion auf", () => {
   /* Die Behauptung, auf der die ganze Bereinigung beruht. Bricht dieser
      Test, ist die Doku falsch geworden - dann ist Vercel fuer Quant doch
      produktiv, und die Vorschau-Regel gehoert zurueckgenommen. */
-  const dateien = readdirSync(join(ROOT, "vu2")).filter((d) => d.endsWith(".js") || d.endsWith(".html"));
-  assert.ok(dateien.length >= 2, "vu2/ ist leer - der Test prueft dann nichts");
+  const html = readFileSync(join(ROOT, "quant/index.html"), "utf8");
+  const geladen = [...html.matchAll(/<script src="\/([^"]+)"><\/script>/g)].map((m) => m[1]);
+  const app = readdirSync(join(ROOT, "quant/app")).filter((d) => d.endsWith(".js")).map((d) => "quant/app/" + d);
+  /* Jede App-Datei muss wirklich geladen werden - sonst prueft der Test
+     eine Liste, die das Produkt nicht ist. */
+  for (const d of app) assert.ok(geladen.includes(d), d + " wird von quant/index.html nicht geladen");
+  const vu2 = readdirSync(join(ROOT, "vu2")).filter((d) => d.endsWith(".js") || d.endsWith(".html")).map((d) => "vu2/" + d);
+  const dateien = [...new Set(["quant/index.html", ...geladen, ...vu2])];
+  assert.ok(app.length >= 8, "quant/app/ ist (fast) leer - der Test prueft dann nichts");
+  assert.ok(dateien.length >= 2 + app.length, "zu wenige Frontend-Dateien - der Test prueft dann nichts");
   for (const d of dateien) {
-    const text = readFileSync(join(ROOT, "vu2", d), "utf8");
+    const text = readFileSync(join(ROOT, d), "utf8");
     assert.doesNotMatch(text, /\.vercel\.app/, d + " nennt eine Vercel-Adresse");
     assert.doesNotMatch(text, /fetch\(\s*["'`]\/api\//, d + " ruft /api/ direkt auf");
     /* /quant/api/*.js sind lokale Skripte, keine Endpunkte - deshalb
