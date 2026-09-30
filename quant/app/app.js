@@ -127,47 +127,65 @@
     }
   };
 
-  /* ------------------------------------------------------------ Shell */
-  var main, navLinks = [], tabLinks = [];
+  /* ------------------------------------------------------------ Shell
+     Derselbe Rahmen wie Discover (discover/app.js shell()): v2-bar oben,
+     v2-main, v2-footer, und die Leiste v2-dock - am Handy unten, am
+     Desktop oben mittig. Nur die Bereiche sind Quants eigene fuenf. */
+  var main, navLinks = [];
+  function dockItem(n) {
+    var a = el("a", { class: "v2-nav-item qx-nav-" + n.id, href: n.href, dataset: { nav: n.id } }, [
+      el("span", { class: "v2-nav-icon qx-nav-icon", "aria-hidden": "true" }, [X.icon(n.id)]), el("span", { text: n.label })]);
+    navLinks.push(a); return a;
+  }
   function buildShell() {
     var root = document.getElementById("qx-app");
-    var bar = el("header", { class: "qx-bar" }, [el("div", { class: "qx-bar-in" }, [
-      el("a", { class: "qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [el("b", {}, [document.createTextNode("Quant"), el("i", { text: "." })]), el("span", { class: "qx-beta", text: "Beta" }), el("span", { text: "Aktien verstehen. Mit Gründen." })]),
-      el("nav", { class: "qx-nav", "aria-label": "Quant" }, X.NAV.map(function (n) { var a = el("a", { href: n.href, dataset: { nav: n.id } }, [X.icon(n.id), el("span", { text: n.label })]); navLinks.push(a); return a; })),
-      el("button", { type: "button", class: "qx-search-btn", "aria-label": "Aktie suchen", onclick: function () { search.open(); } }, [X.icon("search"), el("span", { text: "Suchen" }), el("kbd", { text: "/" })])
-    ])]);
-    main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
-    var tabs = el("nav", { class: "qx-tabbar", "aria-label": "Quant" }, X.NAV.map(function (n) { var a = el("a", { href: n.href, dataset: { nav: n.id } }, [X.icon(n.id), el("span", { text: n.label })]); tabLinks.push(a); return a; }));
-    var foot = el("footer", { class: "qx-foot" }, [
-      el("p", {}, [el("b", { text: "Vision Universe® Quant" }), document.createTextNode(" · Beta: Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel.")]),
-      el("p", {}, [document.createTextNode("Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. "), el("a", { href: "#/methodik", text: "Methodik" }), document.createTextNode(" · "), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), document.createTextNode(" · "), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" })])
+    var bar = el("header", { class: "v2-bar qx-bar" }, [
+      el("a", { class: "v2-markets-link qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [document.createTextNode("Quant"), el("span", { class: "v2-preview qx-beta", text: "Beta" })]),
+      el("span", { class: "v2-bar-caption", text: "Verstehen. Prüfen. Einordnen." }),
+      el("button", { type: "button", class: "v2-pill v2-pill-ghost qx-search-btn", "aria-label": "Aktie suchen", onclick: function () { search.open(); } }, [X.icon("search"), el("span", { text: "Suchen" })])
     ]);
-    root.replaceChildren(bar, main, foot, tabs);
+    main = el("main", { class: "v2-main qx-main", id: "qx-main", tabindex: "-1" });
+    /* Oben (Desktop) und unten (Handy) ist es DIESELBE Leiste - wie in
+       Discover; die Tests finden sie unter beiden Namen. */
+    var dock = el("nav", { class: "v2-dock qx-nav qx-tabbar", "aria-label": "Quant" }, X.NAV.map(dockItem));
+    var foot = el("footer", { class: "v2-footer qx-foot" }, [
+      el("b", { text: "VISION UNIVERSE® QUANT" }),
+      el("p", { text: "Aktien verstehen – mit nachvollziehbaren Gründen." }),
+      el("p", {}, [el("span", { class: "v2-preview", text: "Beta" }), document.createTextNode(" Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel.")]),
+      el("p", {}, [document.createTextNode("Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. "), el("a", { href: "#/methodik", text: "Methodik" }), document.createTextNode(" · "), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), document.createTextNode(" · "), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" }), document.createTextNode(" · "), el("a", { href: "/discover/", text: "Discover" })])
+    ]);
+    root.replaceChildren(bar, main, foot, dock);
     document.querySelector(".qx-skip").addEventListener("click", function (e) { e.preventDefault(); main.focus(); main.scrollIntoView(); });
   }
   function markNav(section) {
-    navLinks.concat(tabLinks).forEach(function (a) { if (a.dataset.nav === section) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    navLinks.forEach(function (a) { if (a.dataset.nav === section) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   }
 
-  /* ------------------------------------------------------------ Suche */
+  /* ------------------------------------------------------------ Suche
+     Discovers Suchflaeche (dx-search): gross, ruhig, Logo und Name je
+     Treffer. Als <dialog>, damit der Fokus im Dialog bleibt. */
   var search = (function () {
-    var dialog = el("dialog", { class: "qx-dialog", "aria-label": "Aktie suchen" });
-    var input = el("input", { type: "search", placeholder: "Name oder Kürzel", "aria-label": "Aktie suchen", autocomplete: "off", role: "combobox", "aria-expanded": "false", "aria-controls": "qx-search-list" });
-    var list = el("div", { class: "qx-dialog-results", id: "qx-search-list", role: "listbox" });
-    var status = el("p", { class: "qx-dialog-status", role: "status", "aria-live": "polite" });
-    dialog.append(el("div", { class: "qx-dialog-in" }, [input, list, status]));
+    var dialog = el("dialog", { class: "dx-search qx-dialog", "aria-label": "Aktie suchen" });
+    var input = el("input", { type: "search", placeholder: "Unternehmen oder Kürzel", "aria-label": "Aktie suchen", autocomplete: "off", role: "combobox", "aria-expanded": "false", "aria-controls": "qx-search-list" });
+    var closeBtn = el("button", { type: "button", class: "dx-search-close", text: "Schließen", onclick: function () { close(); } });
+    var list = el("div", { class: "dx-results qx-dialog-results", id: "qx-search-list", role: "listbox" });
+    var status = el("p", { class: "dx-hint dx-search-hint qx-dialog-status", role: "status", "aria-live": "polite" });
+    dialog.append(el("div", { class: "dx-search-inner" }, [el("h2", { text: "Aktie analysieren" }), el("div", { class: "dx-search-field" }, [input, closeBtn]), status, list]));
     var req = 0, sel = -1;
     function items() { return Array.prototype.slice.call(list.querySelectorAll(".qx-hit")); }
     function select(i) { var it = items(); sel = Math.max(0, Math.min(it.length - 1, i)); it.forEach(function (a, k) { a.setAttribute("aria-selected", k === sel ? "true" : "false"); }); if (it[sel]) it[sel].scrollIntoView({ block: "nearest" }); }
     async function update() {
       var mine = ++req, q = input.value.trim();
-      if (!q) { list.replaceChildren(); status.textContent = "Tippe einen Namen oder ein Kürzel."; input.setAttribute("aria-expanded", "false"); return; }
+      if (!q) { list.replaceChildren(); status.textContent = "Tippe einen Namen oder ein Kürzel · ↑ ↓ zum Auswählen · Enter öffnet die Analyse"; input.setAttribute("aria-expanded", "false"); return; }
       status.textContent = "Wird gesucht …";
       var r = await api.searchInstruments(q, 12).catch(function () { return { state: "SOURCE_MISSING", entries: [] }; });
       if (mine !== req) return;
       if (r.state !== "AVAILABLE") { list.replaceChildren(); status.textContent = "Die Suche ist derzeit nicht verfügbar."; return; }
       list.replaceChildren.apply(list, r.entries.map(function (e) {
-        return el("a", { class: "qx-hit", role: "option", href: X.routes.stock(e.ticker), "aria-selected": "false", onclick: function () { close(); } }, [el("strong", { text: e.ticker }), el("span", { text: X.companyName(e) })]);
+        var name = X.companyName(e) === "Firmenname nicht veröffentlicht" ? e.ticker : e.name;
+        return el("a", { class: "dx-result qx-hit", role: "option", href: X.routes.stock(e.ticker), "aria-selected": "false", onclick: function () { close(); } }, [
+          el("span", { class: "dx-result-mark", "aria-hidden": "true", text: e.ticker }), X.logo(e.ticker, name, "sm"),
+          el("span", { class: "nm" }, [document.createTextNode(name), el("em", { text: e.ticker })]), el("span"), el("span", { class: "val", text: "Analyse →" })]);
       }));
       sel = -1; input.setAttribute("aria-expanded", r.entries.length ? "true" : "false");
       status.textContent = r.entries.length ? r.entries.length + " Treffer – mit Pfeiltasten wählen, Enter öffnet." : "Keine passenden Aktien gefunden.";
@@ -185,6 +203,7 @@
       if (dialog.open) { input.focus(); return; }
       opener = document.activeElement;
       dialog.showModal ? dialog.showModal() : dialog.setAttribute("open", "");
+      dialog.classList.add("on"); document.body.classList.add("dx-suche-offen");
       input.value = ""; update(); input.focus();
     }
     /* Der Fokus bleibt im Dialog, solange er offen ist. */
@@ -193,14 +212,17 @@
          Browser sonst zuerst nur die Eingabe leeren. */
       if (e.key === "Escape") { e.preventDefault(); close(); return; }
       if (e.key !== "Tab") return;
-      var f = [input].concat(items());
+      var f = [input, closeBtn].concat(items());
       var i = f.indexOf(document.activeElement);
       e.preventDefault();
       var next = e.shiftKey ? (i <= 0 ? f.length - 1 : i - 1) : (i >= f.length - 1 ? 0 : i + 1);
       f[next].focus();
     });
-    dialog.addEventListener("close", function () { if (opener && opener.focus) opener.focus(); });
-    function close() { if (dialog.open) dialog.close ? dialog.close() : dialog.removeAttribute("open"); }
+    /* Das close-Ereignis kommt verzoegert. Wurde der Dialog inzwischen
+       wieder geoeffnet (Escape, sofort Strg+K), darf es ihn nicht
+       unsichtbar machen und den Fokus nicht wegnehmen. */
+    dialog.addEventListener("close", function () { if (dialog.open) return; dialog.classList.remove("on"); document.body.classList.remove("dx-suche-offen"); if (opener && opener.focus) opener.focus(); });
+    function close() { if (dialog.open) dialog.close ? dialog.close() : dialog.removeAttribute("open"); dialog.classList.remove("on"); document.body.classList.remove("dx-suche-offen"); }
     document.addEventListener("keydown", function (e) {
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");
       if ((e.key === "/" && !typing) || (e.key.toLowerCase() === "k" && (e.ctrlKey || e.metaKey))) { e.preventDefault(); open(); }
@@ -221,6 +243,8 @@
     main.setAttribute("aria-busy", "true");
     main.dataset.ready = "false";
     main.dataset.view = r.view;
+    /* Die Aktienseite traegt dieselbe Klasse wie in Discover (dx-detail). */
+    main.className = "v2-main qx-main" + (r.view === "aktie" ? " dx-detail" : "");
     global.scrollTo(0, 0);
     try {
       await ctx.language();
@@ -237,12 +261,13 @@
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;
         case "methodik": await global.QXMethod.render(main, ctx, r.topic, r.params); break;
         default:
-          main.append(el("h1", { class: "qx-h1", text: "Diese Seite gibt es nicht" }), X.notice("Unbekannte Adresse", "Öffne einen der fünf Bereiche von Quant über die Navigation."),
-            el("div", { class: "qx-actions" }, [X.btn("Zur Startseite", "#/")]));
+          main.append(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Diese Seite gibt es nicht" }), X.notice("Unbekannte Adresse", "Diese Adresse gehört zu keinem Bereich von Quant. Öffne einen der fünf Bereiche über die Navigation."),
+            X.actions([X.btn("Zur Startseite", "#/")])]));
       }
     } catch (err) {
       if (gen !== generation) return;
-      main.replaceChildren(el("h1", { class: "qx-h1", text: "Gerade nicht erreichbar" }), X.notice("Die Seite konnte nicht aufgebaut werden", "Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal."), el("div", { class: "qx-actions" }, [el("button", { type: "button", class: "qx-btn", text: "Erneut versuchen", onclick: route })]));
+      main.replaceChildren(el("section", { class: "v2-message" }, [el("h1", { class: "qx-h1", text: "Gerade nicht erreichbar" }), el("p", { class: "v2-lead", text: "Die Seite konnte nicht aufgebaut werden: Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal." }),
+        el("button", { type: "button", class: "v2-button qx-btn", text: "Erneut versuchen", onclick: route })]));
       if (global.console) console.error("Quant route", err);
     } finally {
       if (gen === generation) { main.setAttribute("aria-busy", "false"); main.dataset.ready = "true"; }

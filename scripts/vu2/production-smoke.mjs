@@ -215,7 +215,15 @@ for(const width of [1440,390]){
       durch. Dass eine Umbenennung diese Datei mitzieht, ist der Zweck,
       nicht der Preis. */
    const sollBereiche=['Home','Quant Screener','Strategien','Aktien','Methodik'];
-   for(const leiste of ['header nav.qx-nav','nav.qx-tabbar']){
+   /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
+      Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
+      Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie
+      vorher: genau die fuenf Bereiche, der richtige markiert, kein fremdes
+      Produkt, und die Leiste steht dort, wo man sie bei dieser Breite
+      erwartet. */
+   const leiste='nav.v2-dock.qx-nav.qx-tabbar';
+   if(await page.locator(leiste).count()!==1)bad.push('NAV_ANZAHL:'+await page.locator(leiste).count());
+   {
     const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
     if(bereiche.join('|')!==sollBereiche.join('|'))bad.push('NAV:'+leiste+':'+bereiche.join('|'));
     /* Und der Name eines anderen Produkts darf hier ueberhaupt nicht stehen. */
@@ -225,10 +233,12 @@ for(const width of [1440,390]){
     const soll=SECTION[route];
     if(soll&&markiert.map(t=>t.trim()).join('|')!==soll)bad.push('NAV_MARKE:'+leiste+':'+markiert.join('|'));
    }
-   const kopfSichtbar=await page.locator('header nav.qx-nav').isVisible();
-   const leisteSichtbar=await page.locator('nav.qx-tabbar').isVisible();
-   if(width>=1000&&(!kopfSichtbar||leisteSichtbar))bad.push('NAV_SICHTBAR:kopf='+kopfSichtbar+',leiste='+leisteSichtbar);
-   if(width<1000&&(kopfSichtbar||!leisteSichtbar))bad.push('NAV_SICHTBAR:kopf='+kopfSichtbar+',leiste='+leisteSichtbar);
+   const box=await page.locator(leiste).boundingBox();
+   const hoehe=page.viewportSize().height;
+   const sichtbar=await page.locator(leiste).isVisible();
+   if(!sichtbar||!box)bad.push('NAV_SICHTBAR:'+sichtbar);
+   else if(width>=1000&&box.y>220)bad.push('NAV_ORT:desktop_nicht_oben:y='+Math.round(box.y));
+   else if(width<1000&&box.y+box.height<hoehe-4)bad.push('NAV_ORT:handy_nicht_unten:y='+Math.round(box.y));
   }
 
   /* DER SCREENER ZEIGT, WAS ER FINDET (M29).
@@ -282,7 +292,10 @@ for(const width of [1440,390]){
    if(!zeilen)bad.push('KEINE_TREFFER');
   }
   if(route==='aktien'){
-   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||'',n:(n.querySelector('span')||{}).textContent||''})));
+   /* Discover-Angleichung: #/aktien zeigt Discovers Aktienkarten (dx-poster)
+      in Schienen statt Zeilen. Gezaehlt wird dasselbe: jede Aktie steht mit
+      ihrem Namen da, nicht nur mit dem Kuerzel. */
+   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster .dx-poster-top').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker,.dx-poster-sym')||{}).textContent||'',n:(n.querySelector('.qx-row-name,.dx-poster-name')||n.querySelector('span')||{}).textContent||''})));
    if(!zeilen.length)bad.push('KEINE_ZEILEN');
    const mitName=zeilen.filter(x=>x.n&&x.n!==x.t).length;
    if(zeilen.length&&mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
@@ -499,7 +512,7 @@ for(const width of [1440,390]){
     Ansicht mit dem richtigen markierten Bereich. */
  {
   const bad=[];
-  const leiste=width>=1000?'header nav.qx-nav':'nav.qx-tabbar';
+  const leiste='nav.v2-dock.qx-nav';
   const ansicht=async(v)=>page.waitForFunction(x=>{const m=document.querySelector('main#qx-main');return m&&m.dataset.view===x&&m.getAttribute('aria-busy')==='false'&&!m.querySelector('.qx-loading');},v,{timeout:45000}).then(()=>true,()=>false);
   const marke=async()=>(await page.locator(leiste+' a[aria-current="page"]').allTextContents()).map(t=>t.trim()).join('|');
   await page.goto('about:blank');await page.goto(origin+'/quant/#/');await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));

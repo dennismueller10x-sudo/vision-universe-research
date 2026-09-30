@@ -91,9 +91,33 @@
 //
 // scripts/vu2/resource-budget.test.mjs haelt fest, dass keine Grenze
 // lockerer ist als die vom 29.09.2026.
+// NEU BEMESSEN AM 30.09.2026 (ZWEITER DURCHGANG) - DISCOVER-ANGLEICHUNG.
+//
+// Owner-Auftrag: Quant sieht aus wie Discover, weil es Discovers
+// Gestaltung BENUTZT. Das kostet messbar, und nur das wird hier angehoben -
+// beide Werte bleiben innerhalb der Grundlinie vom 29.09.2026
+// (resource-budget.test.mjs). Gemessen am gebauten, minifizierten Release:
+//
+//   Pfad                                   Bytes    Anfr.
+//   /discover/{discover,app,home,detail}.css 228.855    4
+//   /quant/ui/quant.css + technical-chart   37.709    2
+//   /discover/logos/index.json             115.814    1
+//   Firmenlogos (je Karte, lazy)       ~2-12.000 je 1
+//
+//   Ansicht   gemessen    Anfr.   Grenze vorher
+//   stock    5.436.842      38    5.450.000 / 45  -> 5.700.000 / 45
+//   home     1.754.126      38    1.820.000 / 30  -> 1.820.000 / 45
+//
+// stock haelt die alte Grenze lokal, aber ohne Luft fuer die Schriften, die
+// in CI dazukommen (bis ~0,25 MB); die Grenze geht deshalb auf die
+// Grundlinie, nicht darueber. home bleibt bei den Bytes, die Anfragen
+// wachsen um die Logos der Aktienkarten in den Schienen (lazy, nur was im
+// Bild ist). Vermieden statt angehoben wurde: die 1,7 MB grosse Logo-
+// Lizenzliste (erst in Sichtweite geladen) und vierzig Einzel-Logos in
+// Trefferlisten (Buchstaben-Marke) - screener misst wieder 21 Anfragen.
 export const budgets=Object.freeze({
- home:{decodedBytes:1820000,requests:30,history:false},
- stock:{decodedBytes:5450000,requests:45,history:true},
+ home:{decodedBytes:1820000,requests:45,history:false},
+ stock:{decodedBytes:5700000,requests:45,history:true},
  // These two workspaces intentionally evaluate the canonical full-universe
  // factor artifact. Other pages must not pay this cost eagerly.
  screener:{decodedBytes:30500000,requests:30,history:false},

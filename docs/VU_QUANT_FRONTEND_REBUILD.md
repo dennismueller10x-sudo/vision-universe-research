@@ -160,7 +160,41 @@ abgeschlossenen Fällen, sonst „Zu wenige historische Vergleichsfälle“), un
 Gesamtmarkt (vorregistrierte, out-of-sample gehaltene Muster gegen die
 Grundgesamtheit). Kein Einzelfall wird herausgegriffen, keine Prognose.
 
-## 6. Post-Launch-Backlog
+## 6. Discover-Angleichung (30.09.2026, zweiter Durchgang)
+
+Owner-Rueckmeldung nach dem ersten Release: das Frontend war eine eigene,
+Discover nur aehnliche Gestaltung ("nur eine kleine Optik-Aenderung von
+Quant"). Der Auftrag war die Angleichung an Discover. Umgesetzt wird sie
+deshalb nicht als Nachbau, sondern mit Discovers eigenen Bausteinen:
+
+- **Dieselben Stylesheets.** `quant/index.html` laedt, was
+  `discover/index.html` laedt: `quant/ui/quant.css`, `discover/discover.css`,
+  `discover/app.css`, `discover/home.css`, `discover/detail.css` (ohne
+  `markets.css`/`featured.css`, die Quant nicht braucht). Discover selbst
+  bleibt unveraendert (0 Zeilen Diff unter `discover/`).
+- **Dieselben Klassen.** Rahmen `v2-bar` / `v2-main` / `v2-footer` /
+  `v2-dock` (eine Leiste: Desktop oben mittig, Handy unten); Aktienseite
+  `article.dv2-stock` mit `dx-dhero` (Firmenlogo aus `discover/ui/logos.js`),
+  Discovers Chartaufbau (`dx-tf`, `dx-chart-hero`, `dx-scrub`),
+  `dv2-stock-context`, `dv2-research-entry`, `dx-chapter` mit Kicker,
+  `dx-zahlen`, das goldene Band `dx-chapter--journey`, `dv2-stock-valuation`,
+  `dx-waage`, `dx-bewertung-zeile`; Home mit `v2-intro`, `v2-market-kpi`,
+  `v2-world-door`, `dx-poster`-Schienen und `v2-pulse-teaser`; Strategien mit
+  `v2-collection-link` und Discovers Perspektiven-Fotografie.
+- **`quant/app/app.css`** enthaelt nur Quant-eigene Bausteine (Faktor-
+  Aufklapper, Setup-Stufen, Bedingungslisten, Screener-Fragen,
+  Regel-Editor) in Discovers Tokens (`--v2-*`, `--discover-*`).
+- **qx-/qc-Klassen** bleiben als Anker fuer Tests und QA, ohne Gestaltung.
+
+Inhaltliche Verbesserungen im selben Zug: Die Aktienkarten auf Home und
+unter Aktien tragen jeweils eine eigene Aussage (staerkste gemessene
+Eigenschaft als Zahl, Quant-Einordnung als Satz); "Neu in einer Strategie"
+steht als eine Reihe je Strategie mit dem Datum EINMAL im Kopf statt an
+jeder Zeile. Lange Trefferlisten zeigen Discovers Buchstaben-Marke statt
+vierzig Einzel-Logos; die 1,7 MB grosse Logo-Lizenzliste wird erst geladen,
+wenn der Seitenfuss in Sichtweite kommt.
+
+## 7. Post-Launch-Backlog
 
 - Stufen-Kalibrierung, Nettoverschuldung, Accrual-Periodenabgleich (Owner).
 - „Quant-Einordnung ansehen“ in Discover und „In Discover entdecken“ in Quant –

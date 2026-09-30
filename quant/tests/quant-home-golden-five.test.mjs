@@ -49,9 +49,15 @@ test("GF1 · Quant Home fuehrt ohne spezielle URL zu den Golden Five: Suche auf 
   const stocksStart = pages.indexOf("async function stocks(");
   assert.ok(stocksStart > 0, "Aktien-Seite in quant/app/pages.js nicht gefunden");
   const stocks = pages.slice(stocksStart);
-  const known = stocks.match(/X\.section\("Bekannte Aktien"[^\n]*X\.tickerChips\(\[([^\]]*)\],\s*(\d+)\)/);
-  assert.ok(known, "#/aktien muss eine Liste bekannter Aktien zeigen");
-  const listed = known[1].match(/"([A-Z.]+)"/g).map((x) => x.slice(1, -1));
+  /* Discover-Angleichung (30.09.2026): die Liste steht als KNOWN in
+     pages.js und wird als Discover-Schiene aus Aktienkarten gezeigt
+     (X.world("Bekannte Aktien", ..., X.rail(KNOWN.map(... X.poster ...)))). */
+  const knownList = pages.match(/var KNOWN = \[([^\]]*)\];/);
+  assert.ok(knownList, "#/aktien muss eine Liste bekannter Aktien zeigen");
+  const shown = stocks.match(/X\.world\("Bekannte Aktien"[^\n]*X\.rail\(KNOWN(\.slice\(0,\s*(\d+)\))?\.map\([^\n]*X\.poster\(\{ ticker: t/);
+  assert.ok(shown, "#/aktien muss eine Liste bekannter Aktien zeigen");
+  const listed = knownList[1].match(/"([A-Z.]+)"/g).map((x) => x.slice(1, -1));
+  const known = [null, null, shown[2] || String(listed.length)];
   const panel = JSON.parse(read("data/sec/quant-factor-inputs.json"));
   ["AAPL", "MSFT", "NVDA", "JPM", "XOM"].forEach((t) => {
     assert.ok(listed.includes(t), t + " fehlt unter \"Bekannte Aktien\" auf #/aktien");
@@ -61,8 +67,9 @@ test("GF1 · Quant Home fuehrt ohne spezielle URL zu den Golden Five: Suche auf 
   const max = Number(known[2]);
   assert.ok(max >= listed.length, "tickerChips kuerzt die Liste auf " + max + " von " + listed.length);
 
-  /* Jeder Chip verlinkt auf die Aktienanalyse #/aktie/<TICKER>. */
+  /* Jeder Chip und jede Karte verlinkt auf die Aktienanalyse #/aktie/<TICKER>. */
   assert.match(ui, /function tickerChips[\s\S]*?href:\s*routes\.stock\(t\)/, "tickerChips muss auf routes.stock verlinken");
+  assert.match(ui, /function poster[\s\S]*?href:\s*routes\.stock\(o\.ticker\)/, "die Aktienkarte muss auf routes.stock verlinken");
   assert.match(ui, /stock:\s*function\s*\(t\)\s*\{\s*return\s*"#\/aktie\/"/, "routes.stock muss auf #/aktie/<T> zeigen");
   assert.match(app, /case "aktie":[\s\S]*?r\.view\s*=/, "der Router muss #/aktie/<T> als Aktienanalyse auffassen");
 });

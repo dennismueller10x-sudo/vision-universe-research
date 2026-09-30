@@ -108,9 +108,13 @@ test("Die Quant-Navigation führt genau die fünf Bereiche", () => {
   for (const n of QX.NAV) {
     assert.notEqual(routing.parse(n.href).view, "notfound", n.label + " fuehrt ins Leere: " + n.href);
   }
-  /* Kopf- und Tab-Leiste werden beide aus derselben Liste gebaut - keine
-     zweite, abweichende Navigation. */
-  assert.equal((appSrc.match(/X\.NAV\.map\(/g) || []).length, 2, "Kopf- und Tab-Leiste muessen aus X.NAV entstehen");
+  /* Die Bereichsleiste wird aus derselben Liste gebaut - keine zweite,
+     abweichende Navigation. Discover-Angleichung (30.09.2026): Kopf- und
+     Tab-Leiste sind jetzt EINE Leiste wie Discovers v2-dock (am Desktop
+     oben mittig, am Handy unten) - also genau ein Aufbau aus X.NAV, und
+     keine weitere Liste von Bereichen daneben. */
+  assert.equal((appSrc.match(/X\.NAV\.map\(/g) || []).length, 1, "die Bereichsleiste muss aus X.NAV entstehen - genau einmal");
+  assert.match(appSrc, /el\("nav", \{ class: "v2-dock[^"]*qx-nav[^"]*qx-tabbar"[^\n]*X\.NAV\.map\(/, "Kopf- und Tab-Leiste sind nicht dieselbe, aus X.NAV gebaute Leiste");
 });
 
 test("Kein fremdes Produkt steht in der Quant-Navigation", () => {

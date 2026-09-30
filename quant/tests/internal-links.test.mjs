@@ -153,7 +153,9 @@ test("the link targets are really tracked files, so the release contains them", 
     .split("\0").filter(Boolean));
   const fehlen = [];
   for (const ziel of [...verlinkteZiele(), ...seitenZiele()]) {
-    const rein = ziel.split("?")[0].replace(/^\/+/, "");
+    /* Wie wirdAusgeliefert(): weder Abfrage noch Fragment gehoeren zum
+       Dateipfad ("/discover/#/s/US_REAL/NVDA" ist die Datei /discover/). */
+    const rein = ziel.split("?")[0].split("#")[0].replace(/^\/+/, "");
     if (!rein) continue;
     /* Der Schraegstrich wird EINMAL gesetzt. Ein frueherer Entwurf hat
        "quant/stock/" + "/index.html" gerechnet und die Seite deshalb fuer
