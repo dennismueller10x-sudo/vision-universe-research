@@ -369,3 +369,12 @@ test("Modell: nur Haiku hat einen Preis - jedes andere Modell wird nicht aufgeru
   assert.notEqual(r.status, 200);
   assert.equal(fetchImpl.calls.length, 0);
 });
+
+test("Workspace-ID wird mitgeschickt, wenn gesetzt - sonst nicht", async () => {
+  const withWs = makeGate({ ...ENV, ANTHROPIC_WORKSPACE_ID: "wrkspc_test" });
+  await ask(withWs.gate, "Welche Aktien stehen auf einem Jahreshoch?");
+  assert.equal(withWs.fetchImpl.calls[0].headers["anthropic-workspace-id"], "wrkspc_test");
+  const without = makeGate();
+  await ask(without.gate, "Welche Aktien stehen auf einem Jahreshoch?");
+  assert.ok(!("anthropic-workspace-id" in without.fetchImpl.calls[0].headers));
+});

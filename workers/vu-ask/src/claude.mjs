@@ -36,14 +36,19 @@ export function promptChars(question) { return SYSTEM_PROMPT.length + JSON.strin
  *   billed: true = berechnet, false = sicher nicht berechnet,
  *           null = unbekannt (Zeitueberschreitung, Verbindungsabbruch)
  */
-export async function interpret({ apiKey, model, question, maxOutputTokens, fetchImpl = fetch }) {
+export async function interpret({ apiKey, workspaceId, model, question, maxOutputTokens, fetchImpl = fetch }) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   let res;
   try {
     res = await fetchImpl(API_URL, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+      headers: {
+        "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01",
+        /* Nur fuer Schluessel ohne festen Workspace: Anthropic verlangt dann
+           die Workspace-ID ausdruecklich (Secret ANTHROPIC_WORKSPACE_ID). */
+        ...(workspaceId ? { "anthropic-workspace-id": workspaceId } : {}),
+      },
       body: JSON.stringify(buildRequest({ model, question, maxOutputTokens })),
       signal: ctrl.signal,
     });

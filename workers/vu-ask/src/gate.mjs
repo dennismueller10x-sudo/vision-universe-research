@@ -165,7 +165,7 @@ export class AskGate {
 
     /* 5 — Reservieren, dann erst fragen. */
     await this.book({ month, day, ids, usd: reserve, userLlm: 1, dayLlm: 1 });
-    const answer = await interpret({ apiKey: this.env.ANTHROPIC_API_KEY, model: limits.model, question,
+    const answer = await interpret({ apiKey: this.env.ANTHROPIC_API_KEY, workspaceId: this.env.ANTHROPIC_WORKSPACE_ID, model: limits.model, question,
       maxOutputTokens: limits.maxOutputTokens, fetchImpl: this.fetchImpl });
 
     /* 6 — Abrechnen: Reservierung durch die echten Kosten ersetzen. */
