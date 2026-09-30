@@ -105,9 +105,15 @@ async function versuch(view,width,fn){try{await fn();}catch(e){befund(view,width
 
 try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.addInitScript(time=>{const NativeDate=Date,fixed=NativeDate.parse(time);globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}};},staleClock.toISOString());
  const errors=[];let fremd=false;
+ /* Absichtlich abgebrochene Anfragen (Ausfallbilder) erzeugen je eine
+    Konsolenzeile "net::ERR_FAILED". Sie werden gezaehlt und genau so oft
+    uebergangen - jede weitere Zeile bleibt ein Befund. Vorher verdeckte
+    ein zufaellig fehlschlagender Fremdabruf (Webfont) diese Zeilen lokal,
+    und in CI, wo er gelingt, wurden sie zum Befund. */
+ let absichtlich=0;
  page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremd=true;});
- page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('404')||t.includes('favicon'))return;if(fremd&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
+ page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('404')||t.includes('favicon'))return;if(absichtlich>0&&/^Failed to load resource: net::ERR_FAILED/.test(t)){absichtlich--;return;}if(fremd&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
  const leiste=width>=1000?'header nav.qx-nav':'nav.qx-tabbar';
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
@@ -158,7 +164,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const satz of ['Keine Anlageempfehlung','SEC EDGAR','Tiingo'])if(!fuss.includes(satz))befund(view,width,'Fusszeile ohne '+satz);
    if(!await page.locator('footer.qx-foot a[href="/quant/methodology/"]').count())befund(view,width,'Fusszeile ohne Methodik im Detail');
    /* FAELLT DER KALENDER AUS, DARF DIE SEITE IHRE EINSTIEGE NICHT VERLIEREN. */
-   await page.route('**/quant/config/market-calendar.json',route=>route.abort());
+   await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
    await page.reload();await bereit(page,'home');
    if(await page.locator('a.qx-door').count()!==4)befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
    await page.unroute('**/quant/config/market-calendar.json');
@@ -352,13 +358,13 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  /* AUSFALLBILDER. */
  await versuch('panel-outage',width,async()=>{
   /* Faellt das Faktor-Panel aus, bleiben Identitaet, Kurs und Chart. */
-  await page.route('**/quant/data/sec/quant-factor-inputs.json',route=>route.abort());
+  await page.route('**/quant/data/sec/quant-factor-inputs.json',route=>{absichtlich++;return route.abort();});
   await frisch(page,'#/aktie/NVDA','aktie');
   await page.locator('.qx-stock-hero h1').filter({hasText:'NVIDIA'}).waitFor();
   if(await page.locator('section.qc-chart').count()!==1||await page.locator('.qx-quote').count()!==1)befund('panel-outage',width,'panel outage hid independent canonical intelligence');
   await page.unroute('**/quant/data/sec/quant-factor-inputs.json');
   /* Faellt die Kurshistorie aus, erfindet der Chart keinen Verlauf. */
-  for(const p of ['**/quant/data/market/discover-series/**','**/quant/data/market/golden-preview/daily/**','**/quant/data/market/intraday/**','**/quant/data/market/discover-series-long/**','**/discover/data/stocks/**'])await page.route(p,route=>route.abort());
+  for(const p of ['**/quant/data/market/discover-series/**','**/quant/data/market/golden-preview/daily/**','**/quant/data/market/intraday/**','**/quant/data/market/discover-series-long/**','**/discover/data/stocks/**'])await page.route(p,route=>{absichtlich++;return route.abort();});
   await frisch(page,'#/aktie/NVDA','aktie');
   await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return c&&(c.dataset.range||c.querySelector('.qc-empty:not(:empty)'));},null,{timeout:10000}).catch(()=>{});
   if(await page.locator('section.qc-chart .qc-plot svg').count())befund('panel-outage',width,'history outage fabricated a chart');
