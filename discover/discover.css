@@ -2237,6 +2237,13 @@ body.dx-feed-aktiv .dx-fnav,body.dx-suche-offen .dx-fnav{display:none}
 .dx-poster-top > .dx-poster-id{flex:1;min-width:0}
 .dx-sector-row > div > .dx-logo{align-self:center}
 .dx-result > .dx-logo{position:relative}
+@media (max-width:560px){
+  .dx-dhero-title{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+  .dx-dhero-title .dx-logo--lg{--logo-size:40px}
+  .dx-dhero-title .dx-logo--lg.dx-logo--img{margin:0}
+  .dx-dhero-title .dx-logo--wide{width:calc(var(--logo-size) * min(var(--logo-w, 1), 2.2))}
+  body.dv2 .dv2-stock .dx-dhero-title h1,.dx-dhero-title h1{flex:1;min-width:0;margin:0}
+}
 .dx-logo-credit{margin:6px 0 0;font-size:10.5px;line-height:1.4;color:var(--discover-dim)}
 .dx-logo-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 body.dv2 .v2-tile-head > .dx-logo{margin-top:1px}
