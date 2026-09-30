@@ -54,7 +54,9 @@
       el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen, macht keine Prognosen und nennt keine Kursziele." })]));
 
     var r = await Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
-      ctx.api.getRadarIntelligence({ lookback: 5, limit: 12 }).catch(function () { return null; }), ctx.api.getMarketRegime().catch(function () { return null; }),
+      /* Kein Radar auf Home: er laedt das ganze Faehigkeitsverzeichnis
+         (1,2 MB) plus Signale - fuer eine Karte. Home bleibt im Budget. */
+      null, ctx.api.getMarketRegime().catch(function () { return null; }),
       ctx.api.getStrategyProfiles().catch(function () { return null; })]);
     var setupIdx = r[0], stratIdx = r[1], radar = r[2], regime = r[3], profiles = r[4];
     var cards = [];
@@ -163,7 +165,7 @@
         el("p", { class: "qx-small", text: result.method }),
         el("div", { class: "qx-actions" }, [X.btn("Im Profi-Modus verfeinern", X.routes.screenerPro(result.query ? "query=" + encodeURIComponent(global.VUScreenerWorkspace.encode(result.query)) : ""), "secondary")]));
     }
-    sync(); run();
+    sync(); await run();
   }
 
   async function factorHits(ctx, q) {
@@ -227,9 +229,9 @@
   /* -------------------------------------------------------- Profi-Modus */
   async function screenerPro(main, ctx, params) {
     var W = global.VUScreenerWorkspace, api = ctx.api;
-    var initial;
+    var initial, invalidLink = false;
     try { initial = params.get("query") ? W.decode(params.get("query")) : W.build([{ field: FIELD("momentum"), operator: "gte", value: 70, scale: "raw" }], [{ field: FIELD("momentum"), direction: "desc" }]); }
-    catch (e) { main.append(X.notice("Gespeicherte Regeln konnten nicht geöffnet werden", "Die Abfrage enthält ungültige Kriterien. Es wurden keine Ersatzregeln ausgeführt.")); initial = W.build([{ field: FIELD("momentum"), operator: "gte", value: 70, scale: "raw" }], [{ field: FIELD("momentum"), direction: "desc" }]); }
+    catch (e) { invalidLink = true; main.append(X.notice("Gespeicherte Regeln konnten nicht geöffnet werden", "Die Abfrage enthält ungültige Kriterien. Es wurden keine Ersatzregeln ausgeführt – stelle unten eigene Regeln zusammen und tippe auf „Treffer anzeigen“.")); initial = W.build([{ field: FIELD("momentum"), operator: "gte", value: 70, scale: "raw" }], [{ field: FIELD("momentum"), direction: "desc" }]); }
     var current = W.methodologyOf(initial) || W.methodologies[0];
     var methodSelect = el("select", { class: "qx-select", "aria-label": "Datenbasis" }, W.methodologies.map(function (m) { return el("option", { value: m.id, text: m.label }); }));
     methodSelect.value = current.id;
@@ -275,7 +277,9 @@
           return { field: r.field.value, operator: r.op.value, value: v, scale: "raw" };
         });
       } catch (e) { out.replaceChildren(X.notice("Regel unvollständig", "Bitte gib für jede Regel einen gültigen Wert ein.")); return; }
-      var query = W.build(filters, [{ field: sort.value, direction: dir.value }]);
+      var query;
+      try { query = W.build(filters, [{ field: sort.value, direction: dir.value }]); }
+      catch (e) { out.replaceChildren(X.notice("Regeln nicht ausführbar", "Mindestens eine Regel liegt außerhalb dessen, was die Kennzahl zulässt. Es werden keine Treffer gezeigt, bis die Regeln gültig sind.")); code.textContent = ""; return; }
       out.replaceChildren(X.loading("Wird gesucht …"));
       var res = await api.screen(query).catch(function () { return null; });
       if (mine !== request) return;
@@ -306,7 +310,7 @@
       el("div", { class: "qx-rule", style: "margin-top:16px;grid-template-columns:2fr 1fr" }, [sort, dir]),
       el("div", { class: "qx-actions" }, [el("button", { type: "button", class: "qx-btn", text: "Treffer anzeigen", onclick: apply }), share])
     ]), el("div", { class: "qx-section" }, [out]), X.more("Die Abfrage als Regeltext", function () { return code; }));
-    await apply();
+    if (!invalidLink) await apply();
   }
 
   /* ========================================================== STRATEGIEN */
@@ -334,7 +338,7 @@
       return el("a", { class: "qx-card qx-strat", href: X.routes.strategy(p.profileId), style: "text-decoration:none", dataset: { profile: p.profileId } }, [
         el("h3", { class: "qx-h3", text: p.label }), el("p", { text: p.plain }),
         el("div", { class: "qx-chips" }, p.conditions.map(function (c) { var fid = c.id; return el("span", { class: "qx-tag", text: (VM.FACTORS[fid] ? VM.FACTORS[fid].name : fid) + " ≥ " + c.value }); })),
-        el("span", { class: "qx-strat-count", text: blocked ? "Derzeit nicht prüfbar: " + VM.reasonText(ix.availability.reason, "Eine benötigte Eigenschaft hat keine Daten.") : ix ? ix.count.toLocaleString("de-DE") + " Aktien erfüllen heute alle Bedingungen" : "" })]);
+        el("span", { class: "qx-strat-count", text: blocked || !ix || typeof ix.count !== "number" ? "Derzeit nicht prüfbar: " + VM.reasonText(ix && ix.availability && ix.availability.reason, "Eine benötigte Eigenschaft hat für keine Aktie Werte.") : ix.count.toLocaleString("de-DE") + " Aktien erfüllen heute alle Bedingungen" })]);
     })), el("p", { class: "qx-small", style: "margin-top:16px", text: "Es gibt bewusst keine Erfolgs- oder Trefferquote: Wie ein Stil in der Vergangenheit abgeschnitten hätte, ist ein Backtest – und der bleibt geschlossen, bis Universum, Kapitalmaßnahmen und Ausführung zertifiziert sind. Stand " + X.dateDe(index && index.asOf) + "." }),
       el("div", { class: "qx-actions" }, [X.btn("Wie Strategien geprüft werden", X.routes.method("strategien"), "secondary")]));
   }
@@ -356,12 +360,13 @@
     ]));
     var members = (ix && ix.tickers) || [];
     var membersHost = el("div");
-    main.append(X.section("Wer passt heute?", ix ? ix.count.toLocaleString("de-DE") + " Aktien erfüllen am " + X.dateDe(index.asOf) + " alle Bedingungen." : "Derzeit nicht verfügbar.", [membersHost]));
+    var countable = ix && typeof ix.count === "number" && (!ix.availability || ix.availability.state === "AVAILABLE");
+    main.append(X.section("Wer passt heute?", countable ? ix.count.toLocaleString("de-DE") + " Aktien erfüllen am " + X.dateDe(index.asOf) + " alle Bedingungen." : "Diese Strategie ist derzeit nicht prüfbar: " + VM.reasonText(ix && ix.availability && ix.availability.reason, "eine benötigte Eigenschaft hat für keine Aktie Werte."), [membersHost]));
     var tr = index && index.historicalEvidence && (index.historicalEvidence.transitions || []).filter(function (t) { return t.profileId === p.profileId; })[0];
     var screening = await ctx.api.getFactorEvidenceScreening().catch(function () { return null; });
     var rowBy = {}; ((screening && screening.rows) || []).forEach(function (r) { rowBy[r.ticker] = r; });
     var ids = p.conditions.map(function (c) { return c.id; });
-    membersHost.append(members.length ? el("div", { class: "qx-list" }, members.slice(0, 30).map(function (t) {
+    membersHost.append(!countable ? X.notice("Keine Zuordnung", "Solange eine benötigte Eigenschaft keine Werte hat, wird keine Aktie diesem Stil zugeordnet – auch nicht näherungsweise.") : members.length ? el("div", { class: "qx-list" }, members.slice(0, 30).map(function (t) {
       var row = rowBy[t];
       return X.stockRow({ ticker: t, name: nameOf(ctx, t), why: row ? screeningWhy(row, ids) : null });
     })) : X.notice("Heute kein Treffer", "Keine Aktie erfüllt derzeit alle Bedingungen."),

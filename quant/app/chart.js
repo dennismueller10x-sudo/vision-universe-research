@@ -206,7 +206,7 @@
       /* Nur ein LAUFENDER Tag aktualisiert den Kurs im Kopf der Seite. Nach
          Schluss gilt der offizielle Schlusskurs der Tagesreihe - der letzte
          5-Minuten-Kurs ist kein Schlusskurs. */
-      if (o.onPrice && !frozen) o.onPrice({ price: last, delta: delta, when: frozen ? "Schluss " + dateDe(snap.sessionDate) : (snap.asOfLocal ? "Stand " + String(snap.asOfLocal).slice(0, 5) + " Uhr New York" : "heute"), live: !frozen });
+      if (o.onPrice) o.onPrice({ price: last, delta: delta, when: frozen ? "Letzter 5-Minuten-Kurs am " + dateDe(snap.sessionDate) : "Stand " + dateDe(snap.sessionDate) + (snap.asOfLocal ? ", " + String(snap.asOfLocal).slice(0, 5) + " Uhr New York" : ""), live: !frozen && !(q && q.state === "STALE") });
     }
 
     function drawRange(r) {

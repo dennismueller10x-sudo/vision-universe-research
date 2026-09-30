@@ -132,14 +132,14 @@
   function buildShell() {
     var root = document.getElementById("qx-app");
     var bar = el("header", { class: "qx-bar" }, [el("div", { class: "qx-bar-in" }, [
-      el("a", { class: "qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [el("b", {}, [document.createTextNode("Quant"), el("i", { text: "." })]), el("span", { text: "Aktien verstehen. Mit Gründen." })]),
+      el("a", { class: "qx-brand", href: "#/", "aria-label": "Quant – Startseite" }, [el("b", {}, [document.createTextNode("Quant"), el("i", { text: "." })]), el("span", { class: "qx-beta", text: "Beta" }), el("span", { text: "Aktien verstehen. Mit Gründen." })]),
       el("nav", { class: "qx-nav", "aria-label": "Quant" }, X.NAV.map(function (n) { var a = el("a", { href: n.href, dataset: { nav: n.id } }, [X.icon(n.id), el("span", { text: n.label })]); navLinks.push(a); return a; })),
       el("button", { type: "button", class: "qx-search-btn", "aria-label": "Aktie suchen", onclick: function () { search.open(); } }, [X.icon("search"), el("span", { text: "Suchen" }), el("kbd", { text: "/" })])
     ])]);
     main = el("main", { class: "qx-main", id: "qx-main", tabindex: "-1" });
     var tabs = el("nav", { class: "qx-tabbar", "aria-label": "Quant" }, X.NAV.map(function (n) { var a = el("a", { href: n.href, dataset: { nav: n.id } }, [X.icon(n.id), el("span", { text: n.label })]); tabLinks.push(a); return a; }));
     var foot = el("footer", { class: "qx-foot" }, [
-      el("p", {}, [el("b", { text: "Vision Universe® Quant" }), document.createTextNode(" · Keine Anlageempfehlung, keine Prognose, kein Kursziel.")]),
+      el("p", {}, [el("b", { text: "Vision Universe® Quant" }), document.createTextNode(" · Beta: Gesamtnote und historische Strategietests sind noch nicht freigegeben. Keine Anlageempfehlung, keine Prognose, kein Kursziel.")]),
       el("p", {}, [document.createTextNode("Daten: SEC EDGAR (Geschäftszahlen), Tiingo (Kurse) – jeweils mit Stichtag. "), el("a", { href: "#/methodik", text: "Methodik" }), document.createTextNode(" · "), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), document.createTextNode(" · "), el("a", { href: "/quant/data-inspector/", text: "SEC-Dateninspektor" })])
     ]);
     root.replaceChildren(bar, main, foot, tabs);
@@ -179,7 +179,24 @@
       else if (e.key === "Enter") { var it = items(); var t = it[sel >= 0 ? sel : 0]; if (t) { e.preventDefault(); location.hash = t.getAttribute("href"); close(); } }
     });
     dialog.addEventListener("click", function (e) { if (e.target === dialog) close(); });
-    function open() { if (!dialog.isConnected) document.body.append(dialog); if (!dialog.open) { dialog.showModal ? dialog.showModal() : dialog.setAttribute("open", ""); } input.value = ""; update(); input.focus(); }
+    var opener = null;
+    function open() {
+      if (!dialog.isConnected) document.body.append(dialog);
+      if (dialog.open) { input.focus(); return; }
+      opener = document.activeElement;
+      dialog.showModal ? dialog.showModal() : dialog.setAttribute("open", "");
+      input.value = ""; update(); input.focus();
+    }
+    /* Der Fokus bleibt im Dialog, solange er offen ist. */
+    dialog.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab") return;
+      var f = [input].concat(items());
+      var i = f.indexOf(document.activeElement);
+      e.preventDefault();
+      var next = e.shiftKey ? (i <= 0 ? f.length - 1 : i - 1) : (i >= f.length - 1 ? 0 : i + 1);
+      f[next].focus();
+    });
+    dialog.addEventListener("close", function () { if (opener && opener.focus) opener.focus(); });
     function close() { if (dialog.open) dialog.close ? dialog.close() : dialog.removeAttribute("open"); }
     document.addEventListener("keydown", function (e) {
       var typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");
@@ -199,6 +216,7 @@
     document.title = (TITLE[r.view] || "Quant") + " · Vision Universe®";
     main.replaceChildren();
     main.setAttribute("aria-busy", "true");
+    main.dataset.ready = "false";
     main.dataset.view = r.view;
     global.scrollTo(0, 0);
     try {
@@ -221,7 +239,7 @@
       }
     } catch (err) {
       if (gen !== generation) return;
-      main.append(X.notice("Gerade nicht erreichbar", "Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal."), el("div", { class: "qx-actions" }, [el("button", { type: "button", class: "qx-btn", text: "Erneut versuchen", onclick: route })]));
+      main.replaceChildren(el("h1", { class: "qx-h1", text: "Gerade nicht erreichbar" }), X.notice("Die Seite konnte nicht aufgebaut werden", "Die Daten konnten nicht geladen werden. Bitte versuche es noch einmal."), el("div", { class: "qx-actions" }, [el("button", { type: "button", class: "qx-btn", text: "Erneut versuchen", onclick: route })]));
       if (global.console) console.error("Quant route", err);
     } finally {
       if (gen === generation) { main.setAttribute("aria-busy", "false"); main.dataset.ready = "true"; }

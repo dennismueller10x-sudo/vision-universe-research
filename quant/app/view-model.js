@@ -298,16 +298,40 @@
     INSURANCE_CARRIER: "Versicherer verwalten Beiträge ihrer Kunden in der Bilanz: statt Bruttomarge und Verschuldung zählen Eigenkapital, stabile Erträge und Ertrag auf das eingesetzte Kapital",
     REAL_ESTATE_TRUST: "REITs schütten fast alle Gewinne aus und bilanzieren hohe Abschreibungen auf Immobilien: gemessen werden deshalb Zahlungsfluss, Ausschüttungsdeckung und Ertrag auf die Bilanzsumme"
   };
+  var TEMPLATE_NAME = { BALANCE_SHEET_FINANCIAL: "Banken und bilanzbasierte Finanzunternehmen", INSURANCE_CARRIER: "Versicherer", REAL_ESTATE_TRUST: "Immobilien-REITs" };
   function referenceText(f, record) {
     var p = f.peer || (record && record.peer) || null;
     var tmpl = record && record.template;
     var parts = [];
     if (tmpl && tmpl.id) parts.push((TEMPLATE_PLAIN[tmpl.id] || "Für diese Unternehmensart gilt eine eigene Vorlage mit passenden Kennzahlen") +
-      " (Branchenvorlage „" + (tmpl.label || tmpl.id) + "“" + (tmpl.version ? ", Fassung " + tmpl.version : "") + ")");
+      " (Branchenvorlage „" + (TEMPLATE_NAME[tmpl.id] || tmpl.label || tmpl.id) + "“" + (tmpl.version ? ", Fassung " + tmpl.version : "") + ")");
     if (p && p.level === "sic4_industry") parts.push("verglichen mit Unternehmen derselben Branche (SIC " + p.industry + ") und dem Gesamtmarkt, gewichtet 70 : 30");
     else if (p && p.level === "sic_division") parts.push("verglichen mit Unternehmen desselben Wirtschaftszweigs und dem Gesamtmarkt, gewichtet 70 : 30");
     else parts.push("verglichen mit allen bewerteten Aktien");
     return capital(parts.join("; ")) + ".";
+  }
+
+  /* ---------------------------------------- Kursstaerke vs. Anlegerrendite
+
+     Option C: die Kursentwicklung (Momentum-Komponente, ohne Ausschuettung)
+     und die Anlegerrendite (mit Ausschuettungen) stehen nebeneinander - nur
+     fuer Zeitraeume, fuer die BEIDE eine Zahl haben. Ein halbes Paar
+     erklaert den Unterschied nicht, sondern verdeckt ihn. */
+  function returnKinds(record) {
+    if (!record || !Array.isArray(record.factors)) return null;
+    var m = record.factors.filter(function (f) { return f.id === "momentum"; })[0];
+    var comp = function (id) { var c = ((m && m.components) || []).filter(function (x) { return x.id === id; })[0]; return c && c.state === "AVAILABLE" && isNum(c.raw) ? c.raw : null; };
+    var inv = record.investorReturn || { state: "UNAVAILABLE" };
+    var anl = function (k) { if (inv.state !== "AVAILABLE") return null; var v = k === null ? inv.return12M1M : inv.returns && inv.returns[k]; return isNum(v) ? v : null; };
+    var rows = [["3 Monate", "priceReturn3m", "3M"], ["6 Monate", "priceReturn6m", "6M"], ["12 Monate ohne den letzten", "priceReturn12m1m", null]]
+      .map(function (r) { return { label: r[0], price: comp(r[1]), investor: anl(r[2]) }; })
+      .filter(function (r) { return isNum(r.price) && isNum(r.investor); });
+    if (!rows.length) return { state: "UNAVAILABLE", rows: [] };
+    var widest = rows.reduce(function (a, r) { return Math.abs(r.investor - r.price) > Math.abs(a.investor - a.price) ? r : a; }, rows[0]);
+    var gap = widest.investor - widest.price;
+    return { state: "AVAILABLE", rows: rows.map(function (r) { return { label: r.label, price: pct(r.price, 1, true), investor: pct(r.investor, 1, true), priceRaw: r.price, investorRaw: r.investor }; }),
+      text: Math.abs(gap) < 0.0005 ? "Kein Unterschied: In diesen Zeiträumen gab es keine Ausschüttungen, die die reine Kursbewegung übersteigen."
+        : "Über " + widest.label + " lagen die Ausschüttungen bei " + pct(Math.abs(gap), 1) + " – so viel mehr, als die reine Kursbewegung zeigt." };
   }
 
   /* ------------------------------------------------ Gesamteinordnung */
@@ -748,6 +772,7 @@
       overall: record ? overall(factors) : null,
       proCon: record ? proCon(factors) : null,
       gaps: record ? gapGroups(factors) : [],
+      returns: returnKinds(record),
       change: changeView(record && record.change),
       setup: setupView(src.brief, src.setup),
       strategy: strategyView(src.match, src.brief),
@@ -789,7 +814,7 @@
     distributionOf: distributionOf, windowText: windowText, componentValue: componentValue, reasonText: reasonText, pct: pct,
     factorView: factorView, overall: overall, proCon: proCon, changeView: changeView, setupView: setupView,
     setupLabel: setupLabel, useLanguage: useLanguage, STRATEGY_REASON: STRATEGY_REASON, assignmentChangeText: assignmentChangeText, strategyView: strategyView, replayView: replayView, gapSentence: gapSentence,
-    stock: stock, fromScreeningRow: fromScreeningRow, gapGroups: gapGroups,
+    stock: stock, fromScreeningRow: fromScreeningRow, gapGroups: gapGroups, returnKinds: returnKinds,
     TECHNICAL_REASON: TECHNICAL_REASON, PATTERN_REASON: PATTERN_REASON,
     technicalReasonText: technicalReasonText, patternReasonText: patternReasonText, analysisLagText: analysisLagText,
     IDENTITY_REASON: IDENTITY_REASON, identityNote: identityNote

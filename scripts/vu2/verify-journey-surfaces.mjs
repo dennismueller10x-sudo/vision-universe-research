@@ -56,7 +56,7 @@ const checks=[
  /* Die Bildunterschrift gehoert zum Tagesschluss-Zeitraum; auf 1T steht
     dort die Quelle des Tagesverlaufs. Deshalb zuerst 1J. */
  ["NVDA","section.qc-chart .qc-note",/(^|[^t] )splitbereinigt/,"1J"],
- ["APGE","#setup",/Was würde das Setup ungültig machen\?|Was müsste als Nächstes passieren\?/],
+ ["APGE","#setup",/Was würde das Setup ungültig machen\?/i],
  ["AAAP","#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
  ["AACB","#setup","messbaren Bedingungen"],
  /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: Kurs und
@@ -79,7 +79,9 @@ for(const width of [1440,390]){
    await page.waitForTimeout(200);
   }
   for(let i=0;i<200;i++){const n=await page.evaluate(()=>{const d=document.querySelector("#qx-main details:not([open])");if(!d)return 0;d.open=true;return 1;});if(!n)break;await page.waitForTimeout(20);}
-  const text=await page.locator(sel).first().innerText().catch(()=>"");
+  /* textContent statt innerText: innerText folgt text-transform, und die
+     Fragen im Setup-Abschnitt stehen in Versalien. */
+  const text=(await page.locator(sel).first().textContent().catch(()=>"")||"").replace(/\s+/g," ");
   const ok=typeof expect==="string"?text.includes(expect):expect.test(text);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   if(!ok||overflow||fehler.length)bad++;

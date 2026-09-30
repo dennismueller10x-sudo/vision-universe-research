@@ -366,7 +366,9 @@ for(const width of [1440,390]){
     /* Und die Setup-Frage mit ihrer Folgefrage. */
     const setupText=await page.locator('#setup').innerText().catch(()=>'');
     const grenzen=await page.locator('#grenzen').innerText().catch(()=>'');
-    if(!/Gibt es ein Setup\?/.test(setupText)&&!/Setup:/.test(grenzen))bad.push('SETUPFRAGE_FEHLT');
+    /* innerText folgt text-transform (Dachzeilen stehen in Versalien) -
+       deshalb ohne Ruecksicht auf Gross-/Kleinschreibung. */
+    if(!/Gibt es ein Setup\?|Wie weit ist die Aktie im Setup\?/i.test(setupText)&&!/Setup:/.test(grenzen))bad.push('SETUPFRAGE_FEHLT');
     if(setupText&&!/Was würde das Setup ungültig machen\?|Was müsste als Nächstes passieren\?|Kein Setup|keine Beobachtung/i.test(setupText))bad.push('ENDE_UNBEANTWORTET');
    }
 
@@ -457,7 +459,9 @@ for(const width of [1440,390]){
       aus zwei anderen Wegen. */
    if(ZURUECKHALTUNG.includes(stock)){
     const alles=await page.locator('main#qx-main').innerText();
-    const genannt=/Bewertung (bewusst |wird hier bewusst )?zurückgehalten|Börsenwert wird deshalb nicht genannt|Börsenwert ist nicht belegt/.test(alles);
+    /* Die Absage hat ihren Wortlaut mehrfach gewechselt; verlangt wird, dass
+       sie dasteht und ihren Grund (den Boersenwert) nennt. */
+    const genannt=/Bewertung (bewusst |wird hier bewusst )?zurückgehalten|Börsenwert wird deshalb nicht genannt|Börsenwert ist nicht belegt|braucht den Börsenwert genau dieser Notierung/.test(alles);
     if(!genannt)bad.push('ZURUECKHALTUNG_UNGENANNT');
     const zahlen=await page.locator('#zahlen .qx-stat').allInnerTexts();
     const vielfache=zahlen.filter(t=>/\d+(,\d+)?\s*×/.test(t)||/Kurs-Gewinn|Kurs-Umsatz/.test(t)&&/\d/.test(t));

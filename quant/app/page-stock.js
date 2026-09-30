@@ -158,7 +158,7 @@
     ]);
     var kids = [el("div", { class: "qx-card" }, [
       el("div", { style: "display:flex;gap:10px;align-items:center;flex-wrap:wrap" }, [X.pill(s.label, s.state === "CONFIRMED" ? "good" : s.state === "NO_SETUP" ? "unknown" : "neutral"),
-        el("span", { class: "qx-small", text: "Datenstand des Laufs " + X.dateDe(s.asOf) + " – das ist der Stand der technischen Auswertung, nicht dem täglichen Kursstand gleichzusetzen" + (s.previous && s.previous.label ? " · vorher: " + s.previous.label + " (" + X.dateDe(s.previous.asOf) + ")" : "") + "." })]),
+        el("span", { class: "qx-small", text: "Datenstand des Laufs " + X.dateDe(s.asOf) + " – das ist der Stand der technischen Auswertung, nicht dem täglichen Kursstand gleichzusetzen" + (s.previous && s.previous.label && s.previous.asOf && s.asOf && s.previous.asOf < s.asOf ? " · vorher: " + s.previous.label + " (" + X.dateDe(s.previous.asOf) + ")" : "") + "." })]),
       ladder, qa,
       el("p", { class: "qx-small", text: "Ein Setup beschreibt, was am Stichtag im Kursbild beobachtbar ist – kein Kursziel, keine Einstiegsregel und keine Aussage darüber, ob es eintritt." }),
       X.more("Alle geprüften Bedingungen", function () { return [conditions(s.conditions, "Keine Bedingungen veröffentlicht."), X.link("Wie Setups entstehen", X.routes.method("setups"), "qx-btn ghost")]; })
@@ -274,7 +274,7 @@
     if (!stats.length) return [X.notice("Keine Unternehmenszahlen", "Die Geschäftszahlen dieses Titels erfüllen die Anforderungen der Methodik nicht.")];
     return [el("div", { class: "qx-stats" }, stats.slice(0, 10)),
       Object.keys(withheld).length ? el("p", { class: "qx-small", text: Object.keys(withheld).map(function (r) { return VM.reasonText(r); }).join(" ") }) : null,
-      el("p", { class: "qx-small", text: "Geschäftszahlen bis " + X.dateDe(s.quant.fundamentalsAsOf) + " (bekannt seit " + X.dateDe(s.quant.availableAt) + "), Quelle SEC EDGAR. Marktbezogene Kennzahlen bis " + X.dateDe(s.quant.asOf) + ". Bewertungen sind kein Urteil über einen fairen Preis." }),
+      el("p", { class: "qx-small", text: [s.quant.fundamentalsAsOf ? "Geschäftszahlen bis " + X.dateDe(s.quant.fundamentalsAsOf) + (s.quant.availableAt ? " (bekannt seit " + X.dateDe(s.quant.availableAt) + ")" : "") + ", Quelle SEC EDGAR." : "Quelle der Geschäftszahlen: SEC EDGAR.", s.quant.asOf ? "Marktbezogene Kennzahlen bis " + X.dateDe(s.quant.asOf) + "." : null, "Bewertungen sind kein Urteil über einen fairen Preis."].filter(Boolean).join(" ") }),
       el("div", { class: "qx-actions" }, [X.btn("Entwicklung über die Jahre", X.routes.fundamentals(ticker), "secondary")])];
   }
 
@@ -321,7 +321,8 @@
        auch wenn eine Reihe geladen waere. */
     var priceAllowed = !(s.price && s.price.reason === "DISPLAY_NOT_PERMITTED");
     if (!priceAllowed) { eod = []; last = null; prev = null; }
-    if (priceAllowed && s.price && typeof s.price.value === "number") {
+    var hasDailyPrice = priceAllowed && s.price && typeof s.price.value === "number";
+    if (hasDailyPrice) {
       setQuote(s.price.value, last && prev && prev[1] > 0 ? (last[1] / prev[1] - 1) * 100 : null,
         "Schlusskurs am " + X.dateDe(s.price.asOf || (last && last[0]) || s.asOf) + " · USD");
     } else {
@@ -364,7 +365,7 @@
       adjusted: s.chart && s.chart.adjustmentStatus === "splitAdjusted", splitEvents: s.chart && s.chart.splitEvents,
       longPath: s.masterMemberId && /^[A-Za-z0-9_-]+$/.test(s.masterMemberId) ? "/quant/data/market/discover-series-long/" + s.masterMemberId + ".json" : null,
       loadJSON: global.QuantShell.loadJSON,
-      onPrice: function (p) { if (typeof p.price === "number") setQuote(p.price, p.delta, p.when + " · USD"); } });
+      onPrice: function (p) { if (typeof p.price === "number" && (p.live || !hasDailyPrice)) setQuote(p.price, p.delta, p.when + " · USD"); } });
     disposers.push(chart.dispose);
 
     var layout = el("div", { class: "qx-stock-layout" }, [chart.node]);
@@ -381,8 +382,8 @@
     }
 
     /* ------------------------------------------------------ Navigation */
-    var toc = [["einordnung", "Faktoren", hasFactors && vm.overall.rated > 0], ["veraenderung", "Veränderung", vm.change.state === "AVAILABLE"], ["setup", "Setup", vm.setup.state !== "UNAVAILABLE"],
-      ["strategie", "Strategie", vm.strategy.state === "AVAILABLE"], ["historie", "Historie", true], ["technik", "Kursstruktur", true], ["zahlen", "Zahlen", !!(s.quant && s.quant.state === "AVAILABLE")], ["grenzen", "Daten & Grenzen", true]]
+    var toc = [["einordnung", "Faktoren", hasFactors && vm.overall.rated > 0], ["rendite", "Ertrag", !!(vm.returns && vm.returns.state === "AVAILABLE")], ["veraenderung", "Veränderung", vm.change.state === "AVAILABLE"], ["setup", "Setup", vm.setup.state !== "UNAVAILABLE"],
+      ["strategie", "Strategie", vm.strategy.state === "AVAILABLE"], ["historie", "Historie", true], ["technik", "Kursstruktur", !!(technical && technical.state === "AVAILABLE")], ["zahlen", "Zahlen", !!(s.quant && s.quant.state === "AVAILABLE")], ["grenzen", "Daten & Grenzen", true]]
       .filter(function (t) { return t[2]; });
     bodyHost.append(el("nav", { class: "qx-toc", "aria-label": "Abschnitte der Analyse" }, toc.map(function (t) {
       return el("a", { href: "#" + t[0], onclick: function (e) { e.preventDefault(); var n = document.getElementById(t[0]); if (n) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, text: t[1] });
@@ -393,6 +394,13 @@
         [el("div", { class: "qx-factors" }, vm.factors.map(function (f) { return factorCard(f, ticker); })),
           el("p", { class: "qx-small", text: "Wert 0–100: gewichtetes Mittel der Rangplätze der einzelnen Kennzahlen, 50 ist die Mitte. Die Stufen sind feste Wertgrenzen (ab 90 sehr stark, ab 75 stark, ab 45 durchschnittlich, ab 25 schwach) – keine Anteile des Marktes. Die Position im Markt ist deshalb eigens gezählt. Stand " + X.dateDe(vm.asOf && vm.asOf.factors) + (vm.asOf && vm.asOf.fundamentals ? ", Geschäftszahlen bis " + X.dateDe(vm.asOf.fundamentals) : "") + "." })],
         { href: X.routes.method("faktoren"), label: "Wie Faktoren entstehen →" }, "Die sieben Eigenschaften", "einordnung"));
+    }
+    if (vm.returns && vm.returns.state === "AVAILABLE") {
+      bodyHost.append(X.section("Kurs und Ertrag", "Die Kursstärke misst nur den Kurs. Die Anlegerrendite rechnet Ausschüttungen mit ein – deshalb können beide Zahlen verschieden sein.", [X.card([
+        el("div", { class: "qx-stats qx-returns" }, vm.returns.rows.map(function (r) {
+          return el("div", { class: "qx-stat" }, [el("span", { text: r.label }), el("p", { class: "qx-small", style: "margin:4px 0 0;color:var(--qx-ink)", text: "Kursstärke " + r.price + " · Anlegerrendite " + r.investor })]);
+        })),
+        el("p", { class: "qx-small", text: vm.returns.text })])], null, "Kursentwicklung", "rendite"));
     }
     if (vm.change.state === "AVAILABLE") {
       var moving = vm.change.items.filter(function (i) { return i.tone !== "neutral"; });
@@ -411,8 +419,11 @@
     if (vm.setup.state !== "UNAVAILABLE") bodyHost.append(X.section("Wie weit ist die Aktie im Setup?", "Wo die Aktie im Kursbild steht, warum – und was als Nächstes passieren müsste.", setupSection(vm, ticker), null, "Kursbild", "setup"));
     if (vm.strategy.state === "AVAILABLE") bodyHost.append(X.section("Welche Strategie passt?", "Geprüft wird, welche Bedingungen eines Anlagestils die Aktie heute erfüllt.", strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien →" }, "Anlagestil", "strategie"));
     bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Was früher geschah – bei dieser Aktie in derselben Kurslage und im gesamten Markt in ähnlichen Lagen.", replaySection(vm, words), null, "Rückblick", "historie"));
-    bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "Technik und Elliott-Wellen", "technik"));
-    if (s.quant && s.quant.state === "AVAILABLE") bodyHost.append(X.section("Unternehmenszahlen", "Die wichtigsten Kennzahlen aus Geschäft, Bewertung und Risiko.", figuresSection(s, ticker), null, "Geschäftszahlen", "zahlen"));
+    /* Absagen stehen EINMAL, gesammelt unter "Daten und Grenzen" - nicht als
+       Stapel von Hinweisen quer ueber die Seite. */
+    if (technical && technical.state === "AVAILABLE") bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "Technik und Elliott-Wellen", "technik"));
+    var figures = s.quant && s.quant.state === "AVAILABLE" ? figuresSection(s, ticker) : null;
+    if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) bodyHost.append(X.section("Unternehmenszahlen", "Die wichtigsten Kennzahlen aus Geschäft, Bewertung und Risiko.", figures, null, "Geschäftszahlen", "zahlen"));
 
     /* ------------------------------------------------- Daten & Grenzen */
     /* Was fehlt, bildet der Vertrag (quant/engines/journey-shape.js) - dieselbe
@@ -430,7 +441,7 @@
     if (entry.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") gapNodes.push(el("p", { class: "qx-small", text: "Börsenwert: " + VM.reasonText("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") + (entry.il > 1 ? " Das Unternehmen hat " + entry.il + " börsennotierte Aktiengattungen." : "") }));
     bodyHost.append(X.section("Daten und Grenzen", "Was Quant für diese Aktie weiß – und was nicht.", [X.card([
       el("dl", { class: "qx-kv" }, [
-        el("dt", { text: "Kurs" }), el("dd", { text: "Tiingo, Tagesschluss bis " + X.dateDe(last && last[0]) }),
+        el("dt", { text: "Kurs" }), el("dd", { text: last ? "Tiingo, Tagesschluss bis " + X.dateDe(last[0]) : "keine veröffentlichte Tagesreihe" }),
         el("dt", { text: "Geschäftszahlen" }), el("dd", { text: vm.asOf && vm.asOf.fundamentals ? "SEC EDGAR, bis " + X.dateDe(vm.asOf.fundamentals) : "keine" }),
         el("dt", { text: "Faktoren" }), el("dd", { text: vm.asOf ? "Stand " + X.dateDe(vm.asOf.factors) : "keine" }),
         el("dt", { text: "Setup" }), el("dd", { text: vm.setup.asOf ? "Stand " + X.dateDe(vm.setup.asOf) : "keins" })
