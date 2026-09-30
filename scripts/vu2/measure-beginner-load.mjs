@@ -60,13 +60,16 @@ export const FACHBEGRIFFE = [
   'liquidität', 'liquiditaet', 'allokation', 'diversifikation',
 ];
 
+/* Die sechs Hauptansichten der Hash-App unter /quant/ (seit 30.09.2026;
+   vorher /vu2/?view=...). Dieselben sechs Fragen, dieselbe Reihenfolge -
+   damit die Zahlen vor und nach dem Umbau nebeneinander lesbar bleiben. */
 const ANSICHTEN = [
-  ['Start', '/vu2/'],
-  ['Screener', '/vu2/?view=screener'],
-  ['Strategien', '/vu2/?view=strategies'],
-  ['Aktien', '/vu2/?view=stocks'],
-  ['Aktie NVDA', '/vu2/?view=stock&ticker=NVDA'],
-  ['Methodik', '/vu2/?view=explain'],
+  ['Start', '/quant/#/'],
+  ['Screener', '/quant/#/screener'],
+  ['Strategien', '/quant/#/strategien'],
+  ['Aktien', '/quant/#/aktien'],
+  ['Aktie NVDA', '/quant/#/aktie/NVDA'],
+  ['Methodik', '/quant/#/methodik'],
 ];
 
 const mime = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png'};
@@ -92,8 +95,16 @@ const page = await browser.newPage({viewport: {width: 390, height: 844}});
 
 const zeilen = [];
 for (const [name, pfad] of ANSICHTEN) {
-  await page.goto(origin + pfad, {waitUntil: 'networkidle'}).catch(() => {});
-  await page.waitForTimeout(1200);
+  /* Frisch laden und auf die fertige Route warten: `data-ready` wird bei
+     einem Hash-Wechsel nicht zurueckgesetzt, eine bloße Wartezeit misst
+     sonst womoeglich den Ladeplatzhalter. */
+  await page.goto('about:blank');
+  await page.goto(origin + pfad, {waitUntil: 'load'}).catch(() => {});
+  await page.waitForFunction(() => {
+    const m = document.querySelector('main#qx-main');
+    return !!m && m.dataset.ready === 'true' && m.getAttribute('aria-busy') === 'false' && !m.querySelector('.qx-loading');
+  }, null, {timeout: 45000}).catch(() => {});
+  await page.waitForTimeout(600);
 
   const m = await page.evaluate(() => {
     /* ZUGEKLAPPTES ZAEHLT NICHT - UND DAS IST NICHT SELBSTVERSTAENDLICH.
@@ -121,7 +132,10 @@ for (const [name, pfad] of ANSICHTEN) {
       const r = el.getBoundingClientRect();
       return r.width > 0 && r.height > 0;
     };
-    const wurzel = document.querySelector('#app') || document.body;
+    /* Die App liegt in #qx-app: Kopf, Inhalt, Fusszeile und die untere
+       Leiste - also alles, was ein Nutzer von Quant sieht, ohne den
+       gemeinsamen Plattform-Kopf. Vorher war das #app. */
+    const wurzel = document.querySelector('#qx-app') || document.querySelector('#app') || document.body;
     const text = (wurzel.innerText || '').replace(/\s+/g, ' ').trim();
     const worte = text ? text.split(' ').filter(Boolean) : [];
 
@@ -135,7 +149,7 @@ for (const [name, pfad] of ANSICHTEN) {
     }
     const obenWorte = obenText.replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
 
-    const karten = [...wurzel.querySelectorAll('section,article,.card,.q-card,.panel')].filter(sichtbar).length;
+    const karten = [...wurzel.querySelectorAll('section,article,.card,.q-card,.qx-card,.panel')].filter(sichtbar).length;
     const entscheidungen = [...wurzel.querySelectorAll('a[href],button,select,input,[role=button],[tabindex]')].filter(sichtbar).length;
 
     /* SAETZE WERDEN JE TEXTBLOCK GEZAEHLT, NICHT UEBER DIE GANZE SEITE.
