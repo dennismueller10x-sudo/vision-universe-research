@@ -301,7 +301,7 @@ test("the state list is read from the published assignment, never re-derived in 
      list. Die Setup-Frage liefert deshalb keine Abfrage fuer den Editor. */
   assert.equal(/W\.build|VUScreenerWorkspace\.(build|decode)|query:/.test(surfaces.setupHits), false,
     "the setup result hands a rule to the editor");
-  assert.match(slice(pages, "async function screener(", "async function factorHits("), /if \(q\.setups\) result = await setupHits\(ctx\)/);
+  assert.match(slice(pages, "async function screener(", "async function factorHits("), /if \((q && )?q\.setups\) result = await setupHits\(ctx\)/);
 });
 
 test("a state whose tier is closed shows its reason, and never a count", async () => {

@@ -114,7 +114,7 @@ test("Die Quant-Navigation führt genau die fünf Bereiche", () => {
      oben mittig, am Handy unten) - also genau ein Aufbau aus X.NAV, und
      keine weitere Liste von Bereichen daneben. */
   assert.equal((appSrc.match(/X\.NAV\.map\(/g) || []).length, 1, "die Bereichsleiste muss aus X.NAV entstehen - genau einmal");
-  assert.match(appSrc, /el\("nav", \{ class: "v2-dock[^"]*qx-nav[^"]*qx-tabbar"[^\n]*X\.NAV\.map\(/, "Kopf- und Tab-Leiste sind nicht dieselbe, aus X.NAV gebaute Leiste");
+  assert.match(appSrc, /el\("nav", \{ class: "[^"]*\bv2-dock[^"]*qx-nav[^"]*qx-tabbar"[^\n]*X\.NAV\.map\(/, "Kopf- und Tab-Leiste sind nicht dieselbe, aus X.NAV gebaute Leiste");
 });
 
 test("Kein fremdes Produkt steht in der Quant-Navigation", () => {
@@ -327,7 +327,15 @@ test("Der einfache Screener behauptet keine Kriterien, die es nicht gibt", () =>
   }
   /* Die Faktor-Fragen filtern wirklich auf genau diese Felder. */
   const faktor = abschnitt(pagesSrc, "async function factorHits(", "async function setupHits(");
-  assert.match(faktor, /q\.factors\.map\(function \(id\) \{ return \{ field: FIELD\(id\), operator: "gte", value: SIMPLE_THRESHOLD/);
+  /* Konzept-Design: der Screener hat einen Wertebereich (min/max). Die
+     Fragen setzen ihn auf SIMPLE_THRESHOLD..100 - "stark" bleibt dieselbe
+     Schwelle, gefiltert wird weiterhin auf genau diese Felder. */
+  assert.match(faktor, /factors\.map\(function \(id\) \{ return \{ field: FIELD\(id\), operator: "gte", value: min/);
+  const einfach = abschnitt(pagesSrc, "async function screener(", "async function factorHits(");
+  assert.match(einfach, /sel\.min = SIMPLE_THRESHOLD; sel\.max = 100;/, "eine Frage setzt die Schwelle nicht auf SIMPLE_THRESHOLD");
+  /* Keine Marke fuer ein Kriterium, das es nicht gibt - auch nicht als Faktor-Chip. */
+  assert.ok(!/label: "(Größe|Grösse|Region|Marktkapitalisierung)"/.test(einfach + pagesSrc.slice(pagesSrc.indexOf("FILTER_CHIPS"), pagesSrc.indexOf("FILTER_CHIPS") + 1500)),
+    "der Screener zeigt eine Marke fuer ein Kriterium, das es nicht gibt");
   assert.match(pagesSrc, /var FIELD = function \(id\) \{ return "quantV2\.factorEvidence\." \+ id; \}/);
 });
 
@@ -392,6 +400,6 @@ test("Der Einstieg einer Setup-Regel landet nicht in einer zugeklappten Flaeche"
   assert.equal(routing.parse(QX.routes.screener("frage=setups")).pro, false, "Setups landen im Profi-Modus");
   const einfach = abschnitt(pagesSrc, "async function screener(", "async function factorHits(");
   assert.match(einfach, /params\.get\("frage"\)/, "die Frage aus der Adresse wird nicht gelesen");
-  assert.match(einfach, /main\.append\(list, sentence, out\)/, "das Ergebnis gehoert auf die Seite, nicht in den Aufklapper");
+  assert.match(einfach, /main\.append\([^;]*\blist, panel, sentence, results\)/, "das Ergebnis gehoert auf die Seite, nicht in den Aufklapper");
   assert.ok(!/X\.more\(/.test(einfach), "im einfachen Screener liegt das Ergebnis in einem Aufklapper");
 });

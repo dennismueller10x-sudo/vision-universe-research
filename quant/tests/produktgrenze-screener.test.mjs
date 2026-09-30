@@ -152,7 +152,8 @@ test("auch die Knopf-Beschriftungen in den Quant-Screener nennen Quant", () => {
   }
   /* Auch die Seite selbst nennt sich so (Eyebrow des Screeners, seit der
      Discover-Angleichung Discovers v2-eyebrow). */
-  assert.match(q, /async function screener\([^)]*\) \{\s*main\.append\(el\("p", \{ class: "v2-eyebrow", text: "Quant Screener" \}\)/);
+  /* Konzept-Design: der Titel steht als h1 im Globus-Hero des Screeners. */
+  assert.match(q, /async function screener\([^)]*\) \{\s*main\.append\(el\("header", \{ class: "q-hero[^"]*" \}, \[[\s\S]{0,200}?el\("h1", \{ class: "qx-h1", text: pro \? "Quant Screener · Profi" : "Quant Screener" \}\)/);
 });
 
 test("auch der klassische Quant-Screener traegt den Produktnamen", () => {

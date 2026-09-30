@@ -66,10 +66,10 @@
     ]));
 
     page.append(X.section("Quick Access", null, [doors([
-      { icon: "bars", kicker: "Aktie", title: "Aktie analysieren", text: "Fundamentaldaten, Faktoren und Setups", href: X.routes.stocks() },
-      { icon: "filter", kicker: "Quant Screener", title: "Quant Screener", text: "Aktien nach deinen Kriterien finden", href: X.routes.screener() },
-      { icon: "network", kicker: "Strategien", title: "Strategien", text: "Anlagestile und wer heute passt", href: X.routes.strategies() },
-      { icon: "setups", kicker: "Kursbild", title: "Aktuelle Setups", text: "Konkrete Chancen aus dem Kursbild", href: X.routes.screener("frage=setups") }
+      { kicker: "Aktie", icon: "bars", title: "Aktie analysieren", text: "Fundamentaldaten, Faktoren und Setups", href: X.routes.stocks() },
+      { kicker: "Quant Screener", icon: "filter", title: "Quant Screener", text: "Aktien nach deinen Kriterien finden", href: X.routes.screener() },
+      { kicker: "Strategien", icon: "network", title: "Strategien", text: "Anlagestile und wer heute passt", href: X.routes.strategies() },
+      { kicker: "Kursbild", icon: "setups", title: "Aktuelle Setups", text: "Konkrete Chancen aus dem Kursbild", href: X.routes.screener("frage=setups") }
     ])], { href: X.routes.method(), label: "Alle Tools" }));
 
     var cardsHost = el("div", {}, [X.loading("Aktien werden geladen …")]);
@@ -170,14 +170,13 @@
   }
 
   /* Die Filter-Chips der Screener-Tafel. Nur, was Quant misst, ist
-     waehlbar; Sentiment und Groesse stehen da, sind aber ohne Datenbasis
+     waehlbar; Erwartungstrend und Sentiment stehen da, sind aber ohne Datenbasis
      und deshalb gesperrt - mit dem Grund am Chip. */
   var FILTER_CHIPS = [
     { id: "momentum", label: "Momentum" }, { id: "quality", label: "Qualität" }, { id: "value", label: "Value" }, { id: "risk", label: "Low Volatility" },
     { id: "growth", label: "Wachstum" }, { id: "profitability", label: "Profitabilität" },
     { id: "revisions", label: "Erwartungstrend", off: "Für den Erwartungstrend gibt es keine lizenzierte, zeitpunktgenaue Datenquelle." },
-    { id: "sentiment", label: "Sentiment", off: "Quant verwendet keine Sentiment-Daten." },
-    { id: "size", label: "Größe", off: "Die Unternehmensgröße ist in Quant kein Faktor." }
+    { id: "sentiment", label: "Sentiment", off: "Quant verwendet keine Sentiment-Daten." }
   ];
   function shortName(id) { var c = FILTER_CHIPS.filter(function (x) { return x.id === id; })[0]; return c ? c.label : (VM.FACTORS[id] ? VM.FACTORS[id].name : id); }
 
