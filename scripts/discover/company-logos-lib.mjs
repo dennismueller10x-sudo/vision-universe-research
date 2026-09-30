@@ -288,6 +288,43 @@ export function stripHtml(s) {
 }
 
 /**
+ * Urheberangabe aus Commons lesbar machen: Commons fuehrt im Feld "Artist"
+ * oft Hochlade-Protokolle, Vorlagenreste und Zusaetze wie "(vectorization)".
+ * Uebrig bleiben die Namen - Firma bzw. Gestalter, dann wer die Datei
+ * erstellt hat. Kein Name faellt weg: Leer wird die Angabe nur bei
+ * "unbekannt"/"null".
+ */
+export function cleanAuthor(raw) {
+  let s = String(raw || "").replace(/\s+/g, " ").trim();
+  if (!s) return null;
+  s = s.replace(/\{\{([^}]*)\}\}/g, (m, inner) => inner.split("|").pop());
+  s = s.replace(/https?:\/\/(www\.)?([^\s/]+)\S*/gi, "$2");
+  s = s.replace(/Transferred from .*$/gi, " ")
+       .replace(/\b\d{1,2} \w+ \d{4} \(original upload date\);?/gi, " ")
+       .replace(/Later version\(s\) were uploaded by ([^.]*?) at [\w.]+ ?(Wikipedia)?\s*\.*/gi, ", $1")
+       .replace(/The original uploader was (.+?) at [\w ]*Wikipedia\s*\.*/gi, ", $1")
+       .replace(/Uploaded by (\S+) at [\w.]+/gi, ", $1")
+       .replace(/\b(?:SVG version|converted to PNG|Vector graphics logo|vectori[sz]ed|redrawn) by\b/gi, ",")
+       .replace(/\b(?:Vectori[sz]ation|Vector|Original|Logo|File|derivative work)\s*:/gi, ",")
+       .replace(/\b[\w.-]+\.(?:png|svg|jpe?g|gif)\s*:?/gi, " ")
+       .replace(/\( ?talk ?\)|\[ ?\d+ ?\]|Tel ?\([^)]*\)[\d -]*|™\/®|[™®]|\beh\?|Powered by \w+|- for use on Wikipedia\.?.*$|Done with their permission\.?/gi, " ")
+       .replace(/\((?:logo|vectori[sz]ation|upload|owner|history|typeface( creator)?|design firm|company|car company|правообладатель)\)/gi, ",")
+       .replace(/^Компания\s+/i, "")
+       .replace(/\bUser:\s*/g, "");
+  s = s.replace(/\(\s*,?\s*/g, "(").replace(/\s*\)/g, ")").replace(/\(\)/g, " ");
+  const teile = [];
+  for (let t of s.split(/\s*[,;]\s*(?:and\s+)?/)) {
+    t = t.replace(/^[\s.:\-–]+|[\s:\-–]+$|(?<=\s)\.$/g, "").trim()
+      .replace(/^by\s+/i, "").replace(/^unknown\s*\(([^)]+)\)$/i, "$1").replace(/(\b[A-Za-z]{5,})\.$/, "$1").replace(/\s+/g, " ");
+    if (!t || /^(unknown|null|unknown (author|artist))( unknown( author| artist)?)?$/i.test(t)) continue;
+    const doppelt = /^(.+) \1$/.exec(t); if (doppelt) t = doppelt[1];
+    if (!teile.some((x) => x.toLowerCase() === t.toLowerCase())) teile.push(t);
+  }
+  const out = teile.join(", ").slice(0, 140).trim();
+  return out || null;
+}
+
+/**
  * Lizenzpruefung einer Commons-imageinfo.
  * @returns {{ok:true, license, licenseName, licenseUrl, author, attributionRequired} | {ok:false, reason}}
  */
@@ -298,7 +335,9 @@ export function checkLicense(info) {
   if (!LICENSE_OK.test(license)) return { ok: false, reason: "LIZENZ_NICHT_FREI:" + (license || meta(ext, "LicenseShortName") || "unbekannt") };
   const restrictions = meta(ext, "Restrictions").toLowerCase().split("|").map((s) => s.trim());
   if (restrictions.some((r) => !RESTRICTIONS_OK.has(r))) return { ok: false, reason: "EINSCHRAENKUNG:" + restrictions.join("|") };
-  const author = stripHtml(meta(ext, "Artist"));
+  const roh = stripHtml(meta(ext, "Artist"));
+  /* Bereinigt; wo die Bereinigung nichts uebrig laesst, bleibt der Rohtext. */
+  const author = cleanAuthor(roh) || (/^(null|unknown( author| artist)?( unknown( author| artist)?)?)$/i.test(roh) ? "" : roh);
   /* Apache 2.0 und MIT verlangen den Urheber- und Lizenzhinweis wie CC BY. */
   const attributionRequired = license !== "pd" && license !== "cc0";
   if (attributionRequired && !author) return { ok: false, reason: "URHEBER_FEHLT" };

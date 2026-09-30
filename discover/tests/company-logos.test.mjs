@@ -12,7 +12,7 @@ import {
 } from "../../scripts/discover/company-logos-web.mjs";
 import {
   normalizeCik, commonsTitle, namesAgree, namesEqual, collectItems, pickLogo, matchUniverse, checkLicense, safeSymbol,
-  entityToItem, matchByName, searchName, namesStrong, licenseCode
+  entityToItem, matchByName, searchName, namesStrong, licenseCode, cleanAuthor
 } from "../../scripts/discover/company-logos-lib.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -183,7 +183,16 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
     assert.ok(!exclusions[sym], "Ausgeschlossener Titel mit Logo: " + sym);
     assert.ok(!(rejects.urls || {})[c.iconUrl] && !(rejects.titles || {})[c.title], "Gesperrtes Bild ausgeliefert: " + sym);
   }
-  const imOrdner = existsSync(join(dir, "files")) ? readdirSync(join(dir, "files")).filter((f) => !f.startsWith(".")) : [];
+  /* Breite Fassung: nur zu einem ausgelieferten Logo, immer PNG, wirklich breit. */
+  for (const [sym, r] of Object.entries(index.wide || {})) {
+    assert.ok(index.files[sym], "Breite Fassung ohne Logo: " + sym);
+    assert.equal(credits[sym].wide, "files/wide/" + sym + ".png", sym);
+    assert.ok(existsSync(join(dir, credits[sym].wide)), sym);
+    assert.ok(r >= 1.6, sym);
+  }
+  const breiteDateien = existsSync(join(dir, "files", "wide")) ? readdirSync(join(dir, "files", "wide")).filter((f) => !f.startsWith(".")) : [];
+  for (const f of breiteDateien) assert.ok((index.wide || {})[f.replace(/\.png$/, "")], "Breite Datei ohne Eintrag: " + f);
+  const imOrdner = existsSync(join(dir, "files")) ? readdirSync(join(dir, "files")).filter((f) => !f.startsWith(".") && f !== "wide") : [];
   const belegt = new Set(Object.values(index.files).map((p) => p.slice(6)));
   for (const f of imOrdner) assert.ok(belegt.has(f), "Datei ohne Eintrag: " + f);
 });
@@ -356,6 +365,12 @@ test("Einheitliche Groesse: hohes Symbol und flacher Schriftzug fuellen dasselbe
     /* Inhalt reicht in der laengeren Richtung bis an den gemeinsamen Rand (6 %). */
     const { info } = await sharp(n.png).trim({ threshold: 1 }).toBuffer({ resolveWithObject: true });
     assert.ok(Math.max(info.width, info.height) >= 110 && Math.max(info.width, info.height) <= 114, "Inhalt " + info.width + "x" + info.height);
+    /* Breite Fassung nur fuer den Schriftzug: ohne Quadrat, bis 512 x 128. */
+    if (ratio < 1.6) assert.equal(n.wide, null);
+    else {
+      const w = await sharp(n.wide).metadata();
+      assert.equal(w.width, 512); assert.ok(Math.abs(w.width / w.height - ratio) < 0.1, w.width + "x" + w.height);
+    }
   }
 });
 
@@ -405,4 +420,20 @@ test("Index-Rettung: erstes Bild im Proxy Statement, BMP-Favicon lesbar", async 
   assert.equal((await toPng(ico, sharp)).reason, "WEB_ICON_ZU_KLEIN");
   const ok = await toPng(ico, sharp, { minIcon: 32 });
   assert.equal((await sharp(ok.png).metadata()).width, 128);
+});
+
+test("Urheberangabe aus Commons: lesbar, kein Name faellt weg", () => {
+  assert.equal(cleanAuthor("Tesla (logo), Fry1989 eh? (vectorization)"), "Tesla, Fry1989");
+  assert.equal(cleanAuthor("Original: Rob Janoff"), "Rob Janoff");
+  assert.equal(cleanAuthor("The original uploader was KUsam at English Wikipedia ."), "KUsam");
+  assert.equal(cleanAuthor("™/®General Motors Company Tel(11)94017-9623"), "General Motors Company");
+  assert.equal(cleanAuthor("Original: Cleveland-Cliffs Vector: Grmike"), "Cleveland-Cliffs, Grmike");
+  assert.equal(cleanAuthor("Ituran Location and Control Ltd."), "Ituran Location and Control Ltd.");
+  assert.equal(cleanAuthor("Advanced Micro Devices, Inc."), "Advanced Micro Devices, Inc.");
+  assert.equal(cleanAuthor("Unknown author Unknown author"), null);
+  assert.equal(cleanAuthor("null"), null);
+  /* Pflichtangabe (CC BY): bleibt nichts Lesbares, gilt der Rohtext. */
+  const info = (artist) => ({ extmetadata: { LicenseShortName: { value: "CC BY-SA 4.0" }, License: { value: "cc-by-sa-4.0" }, Artist: { value: artist } } });
+  assert.equal(checkLicense(info("Tesla (logo), Fry1989 eh? (vectorization)")).author, "Tesla, Fry1989");
+  assert.equal(checkLicense(info("null")).reason, "URHEBER_FEHLT");
 });

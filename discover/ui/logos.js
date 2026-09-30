@@ -17,7 +17,7 @@
   "use strict";
 
   var BASE = "/discover/logos/";
-  var files = null, dunkel = {}, credits = null, creditsLaden = null, warten = [];
+  var files = null, dunkel = {}, breit = {}, credits = null, creditsLaden = null, warten = [];
 
   function laden() {
     if (!global.fetch) { files = {}; return; }
@@ -27,6 +27,7 @@
       .then(function (data) {
         files = (data && data.files) || {};
         ((data && data.dark) || []).forEach(function (s) { dunkel[s] = true; });
+        breit = (data && data.wide) || {};
         var offen = warten; warten = [];
         offen.forEach(function (fn) { fn(); });
       });
@@ -38,9 +39,17 @@
     return m ? m[0].toUpperCase() : "·";
   }
 
-  function fuellen(node, symbol, sofort) {
+  function fuellen(node, symbol, sofort, weit) {
     var pfad = files && files[symbol];
     if (!pfad) return;
+    /* Breiter Schriftzug: gleich hohe, aber breitere Kachel, damit NVIDIA
+       optisch so gross wirkt wie das Apple-Symbol. Die Breite waechst
+       gedaempft mit dem Seitenverhaeltnis (hoechstens das Dreifache). */
+    var r = weit && breit[symbol];
+    if (r) {
+      pfad = "files/wide/" + symbol + ".png";
+      node.style.setProperty("--logo-w", String(Math.min(3, Math.max(1, Math.pow(r, 0.6))).toFixed(2)));
+    }
     /* Das Bild haengt sofort im Knoten (sonst stellt der Browser ein
        "lazy" Bild ausserhalb des Dokuments womoeglich nie zu) und wird erst
        sichtbar, wenn es geladen ist - bis dahin bleibt der Buchstabe. */
@@ -52,6 +61,7 @@
     img.addEventListener("load", function () {
       Array.prototype.slice.call(node.childNodes).forEach(function (c) { if (c !== img) node.removeChild(c); });
       node.classList.add("dx-logo--img");
+      if (r) node.classList.add("dx-logo--wide");
       /* Weisse Wortmarke fuer dunkle Seitenkoepfe: dunkle Flaeche statt weisser. */
       if (dunkel[symbol]) node.classList.add("dx-logo--dark");
     });
@@ -62,7 +72,8 @@
 
   /**
    * @param {string} symbol
-   * @param {object} opts {name, size: "sm"|"md"|"lg", onlyLogo: kein Buchstabe}
+   * @param {object} opts {name, size: "sm"|"md"|"lg", onlyLogo: kein Buchstabe,
+   *                       wide: breite Fassung fuer Schriftzuege (Aktienseite)}
    * @returns {HTMLElement}
    */
   function mark(symbol, opts) {
@@ -72,8 +83,8 @@
     node.setAttribute("aria-hidden", "true");
     node.setAttribute("data-logo", symbol || "");
     if (!opts.onlyLogo) node.textContent = initial(opts.name, symbol);
-    if (files) fuellen(node, symbol, opts.onlyLogo);
-    else warten.push(function () { fuellen(node, symbol, opts.onlyLogo); });
+    if (files) fuellen(node, symbol, opts.onlyLogo, opts.wide);
+    else warten.push(function () { fuellen(node, symbol, opts.onlyLogo, opts.wide); });
     return node;
   }
 

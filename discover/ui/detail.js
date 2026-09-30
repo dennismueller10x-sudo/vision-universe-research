@@ -416,7 +416,7 @@
       ]) : null,
       el("div", { class: "dx-dhero-inner" }, [
         el("div", {}, [
-          D.Logos ? D.Logos.mark(detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true }) : null,
+          D.Logos ? D.Logos.mark(detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
           el("h1", { text: detail.companyName || detail.symbol }),
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
                                                detail.universeLabel]

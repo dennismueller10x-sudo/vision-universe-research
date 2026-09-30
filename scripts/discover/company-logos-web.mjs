@@ -21,6 +21,8 @@
 
 export const MIN_ICON = 64;
 export const OUT_SIZE = 128;
+/* Ab diesem Seitenverhaeltnis gibt es zusaetzlich die breite Fassung. */
+export const WIDE_RATIO = 1.6, WIDE_W = 512, WIDE_H = 128;
 
 /* Ehrliche Crawler-Kennung im ueblichen Format - viele CDNs lassen
    "compatible; ...bot"-Kennungen durch, eine nackte Kennung nicht. */
@@ -237,7 +239,7 @@ export async function toPng(buf, sharp, opts = {}) {
   const maxRatio = opts.logo ? 8 : 4;
   if (ratio > maxRatio || ratio < 1 / maxRatio) return { reason: "WEB_ICON_FORMAT" };
   const norm = await normalizeLogo(buf, sharp);
-  return { png: norm.png, ratio: norm.ratio, width: meta.width || null, format: fmt };
+  return { png: norm.png, ratio: norm.ratio, wide: norm.wide, width: meta.width || null, format: fmt };
 }
 
 /**
@@ -247,7 +249,7 @@ export async function toPng(buf, sharp, opts = {}) {
  * umgefaerbt oder verzerrt - nur verkleinert und gleich eingepasst, damit
  * ein hohes Symbol (Apple) und ein flacher Schriftzug (NVIDIA) in der Liste
  * gleich viel Platz bekommen.
- * @returns {{png: Buffer, ratio: number}} ratio = Breite / Hoehe des Inhalts
+ * @returns {{png: Buffer, ratio: number, wide: Buffer|null}} ratio = Breite / Hoehe des Inhalts
  */
 export async function normalizeLogo(buf, sharp) {
   const fmt = sniff(buf);
@@ -264,7 +266,13 @@ export async function normalizeLogo(buf, sharp) {
   const png = await sharp({ create: { width: OUT_SIZE, height: OUT_SIZE, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
     .composite([{ input: klein, gravity: "center" }])
     .png({ compressionLevel: 9, palette: true, quality: 92 }).toBuffer();
-  return { png, ratio: (m.width || 1) / (m.height || 1) };
+  const ratio = (m.width || 1) / (m.height || 1);
+  /* Breiter Schriftzug (NVIDIA, AMD): zusaetzlich ohne Quadrat, bis
+     512 x 128 px - fuer die breite Kachel auf der Aktienseite. */
+  const wide = ratio >= WIDE_RATIO
+    ? await sharp(inhalt).resize(WIDE_W, WIDE_H, { fit: "inside" }).png({ compressionLevel: 9, palette: true, quality: 92 }).toBuffer()
+    : null;
+  return { png, ratio, wide };
 }
 
 /**

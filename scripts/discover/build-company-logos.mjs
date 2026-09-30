@@ -31,7 +31,7 @@ import { createHash } from "node:crypto";
 import {
   normalizeSite, parseIconLinks, parseManifest, orderCandidates, toPng, genericIcons,
   WEB_USER_AGENT, websiteFromFiling, filingText, latestReport, rootDomain, isLightOnTransparent,
-  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers
+  normalizeLogo, logoFilings, secLogoImages, parseIsharesUsTickers, WIDE_RATIO
 } from "./company-logos-web.mjs";
 import {
   USER_AGENT, THUMB_WIDTH, SPARQL_BY_CIK, SPARQL_BY_TICKER, SPARQL_SITE_BY_CIK, SPARQL_SITE_BY_TICKER, MIME_EXT,
@@ -151,7 +151,7 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
       const { buf } = await holen(c.href, 3 * 1024 * 1024);
       const res = await toPng(buf, sharp, { logo: c.kind === "logo", minIcon: iconOpts.minIcon });
       dbg(sym, c.kind, c.href, res.png ? "OK" : res.reason);
-      if (res.png) return { png: res.png, iconUrl: c.href, ratio: res.ratio, kind: c.kind };
+      if (res.png) return { png: res.png, wide: res.wide, iconUrl: c.href, ratio: res.ratio, kind: c.kind };
       grund = res.reason;
     } catch (e) { dbg(sym, c.kind, c.href, "Fehler", e.message); }
   }
@@ -159,7 +159,7 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
     try {
       const res = await toPng(Buffer.from(inlineSvg), sharp, { logo: true });
       dbg(sym, "inline-svg", res.png ? "OK" : res.reason);
-      if (res.png) return { png: res.png, iconUrl: base + "#inline-svg-logo", ratio: res.ratio, kind: "logo" };
+      if (res.png) return { png: res.png, wide: res.wide, iconUrl: base + "#inline-svg-logo", ratio: res.ratio, kind: "logo" };
     } catch (e) { dbg(sym, "inline-svg", "Fehler", e.message); }
   }
   return { reason: grund };
@@ -310,7 +310,22 @@ const infos = await imageinfo([...new Set(kandidaten.flatMap(([, m]) => m.titles
 console.log("3/3  Verkleinerte Fassungen laden …");
 /* Aufbereitung (einheitliches 128er-Quadrat) braucht sharp; FORMAT zaehlt
    hoch, wenn sich die Aufbereitung aendert - aeltere Dateien werden neu geholt. */
-const FORMAT = 2;
+const FORMAT = 3;
+/* Format 2 kannte die breite Fassung noch nicht: nur breite Logos werden
+   deshalb neu geholt, quadratische bleiben. */
+const aktuell = (alt) => alt && alt.path && existsSync(join(OUT, alt.path)) &&
+  (alt.fmt === FORMAT ? (!alt.wide || existsSync(join(OUT, alt.wide))) : alt.fmt === 2 && !(alt.ratio >= WIDE_RATIO));
+/* Klappt das Neuladen nicht, bleibt das bisherige quadratische Logo
+   (Format 2) - ohne breite Fassung, aber ohne Luecke. */
+const ersatz = (alt) => alt && alt.fmt === 2 && alt.path && existsSync(join(OUT, alt.path)) && !gesperrt(alt.iconUrl) && !gesperrtTitel(alt.title);
+/* Breite Fassung (NVIDIA, AMD) unter files/wide/ - nur fuer die Aktienseite. */
+function breitSchreiben(sym, buf) {
+  const p = join(FILES, "wide", sym + ".png");
+  if (!buf) { if (existsSync(p)) rmSync(p); return null; }
+  mkdirSync(join(FILES, "wide"), { recursive: true });
+  writeFileSync(p, buf);
+  return "files/wide/" + sym + ".png";
+}
 let SHARP = null;
 try { SHARP = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Logos werden nicht einheitlich aufbereitet."); }
 const vorher = ONLY ? {} : (readJson(join(REAL_OUT, "credits.json"), { credits: {} }).credits || {});
@@ -330,8 +345,8 @@ for (const [sym, m0] of kandidaten) {
   if (!lic.ok) { reasons.set(sym, lic.reason); continue; }
   frei++;
   const alt = vorher[sym];
-  if (alt && alt.sha1 === info.sha1 && alt.fmt === FORMAT && alt.path && existsSync(join(OUT, alt.path))) {
-    files[sym] = alt.path; credits[sym] = { source: "WIKIMEDIA_COMMONS", ...alt }; behalten++; continue;
+  if (alt && alt.sha1 === info.sha1 && aktuell(alt)) {
+    files[sym] = alt.path; credits[sym] = { source: "WIKIMEDIA_COMMONS", ...alt, author: lic.author }; behalten++; continue;
   }
   if (DRY) continue;
   try {
@@ -339,15 +354,15 @@ for (const [sym, m0] of kandidaten) {
     const mime = (res.headers.get("content-type") || "").split(";")[0].trim();
     const ext = MIME_EXT[mime];
     if (!ext) { reasons.set(sym, "FORMAT:" + mime); continue; }
-    let buf = Buffer.from(await res.arrayBuffer()), ratio = null, zielExt = ext;
+    let buf = Buffer.from(await res.arrayBuffer()), ratio = null, zielExt = ext, breit = null;
     if (buf.length > 1024 * 1024) { reasons.set(sym, "ZU_GROSS"); continue; }
-    if (SHARP) { const n = await normalizeLogo(buf, SHARP); buf = n.png; ratio = Math.round(n.ratio * 100) / 100; zielExt = "png"; }
+    if (SHARP) { const n = await normalizeLogo(buf, SHARP); buf = n.png; breit = n.wide; ratio = Math.round(n.ratio * 100) / 100; zielExt = "png"; }
     const path = "files/" + sym + "." + zielExt;
     for (const f of readdirSync(FILES)) if (f.startsWith(sym + ".") && f !== sym + "." + zielExt) rmSync(join(FILES, f));
     writeFileSync(join(OUT, path), buf);
     files[sym] = path;
     credits[sym] = {
-      source: "WIKIMEDIA_COMMONS", path, title: m.title, page: info.descriptionurl, sha1: info.sha1, fmt: SHARP ? FORMAT : 1, ratio,
+      source: "WIKIMEDIA_COMMONS", path, wide: breitSchreiben(sym, breit), title: m.title, page: info.descriptionurl, sha1: info.sha1, fmt: SHARP ? FORMAT : 1, ratio,
       license: lic.license, licenseName: lic.licenseName, licenseUrl: lic.licenseUrl,
       author: lic.author, attributionRequired: lic.attributionRequired,
       wikidata: m.item, via: m.via
@@ -355,6 +370,7 @@ for (const [sym, m0] of kandidaten) {
     geladen++;
     await sleep(150);
   } catch (e) {
+    if (ersatz(alt) && alt.sha1 === info.sha1) { files[sym] = alt.path; credits[sym] = { source: "WIKIMEDIA_COMMONS", ...alt, author: lic.author }; behalten++; continue; }
     reasons.set(sym, "DOWNLOAD_FEHLER");
     console.log(`     ${sym}: ${e.message}`);
   }
@@ -426,14 +442,15 @@ if (!args["no-web"] && !DRY) {
     await pool(ohne.filter((r) => siteOf.has(r.symbol)), 8, async (r) => {
       const site = siteOf.get(r.symbol);
       const alt = vorher[r.symbol];
-      if (!args["refresh-web"] && alt && alt.source === "WEBSITE" && alt.fmt === FORMAT && alt.host === site.host && !gesperrt(alt.iconUrl) && alt.path && existsSync(join(OUT, alt.path))) {
+      if (!args["refresh-web"] && alt && alt.source === "WEBSITE" && aktuell(alt) && alt.host === site.host && !gesperrt(alt.iconUrl)) {
         icons.set(r.symbol, { hash: alt.sha1, host: site.host, alt });
         return;
       }
       const res = await webIcon(site, sharp, r.symbol, r.name);
       /* Ersetzt einen Commons-Schriftzug nur durch ein quadratisches Icon. */
       if (breit.has(r.symbol) && files[r.symbol] && !(res.png && res.kind !== "logo" && res.ratio <= 1.4)) return;
-      if (res.png) icons.set(r.symbol, { hash: createHash("sha1").update(res.png).digest("hex"), host: site.host, png: res.png, iconUrl: res.iconUrl, site, ratio: res.ratio });
+      if (res.png) icons.set(r.symbol, { hash: createHash("sha1").update(res.png).digest("hex"), host: site.host, png: res.png, wide: res.wide, iconUrl: res.iconUrl, site, ratio: res.ratio });
+      else if (alt && alt.source === "WEBSITE" && alt.host === site.host && ersatz(alt)) icons.set(r.symbol, { hash: alt.sha1, host: site.host, alt });
       else if (!files[r.symbol]) reasons.set(r.symbol, res.reason);
     });
     const generisch = genericIcons(icons);
@@ -444,7 +461,7 @@ if (!args["no-web"] && !DRY) {
       for (const f of readdirSync(FILES)) if (f.startsWith(sym + ".") && f !== sym + ".png") rmSync(join(FILES, f));
       writeFileSync(join(OUT, path), ic.png);
       files[sym] = path;
-      credits[sym] = { source: "WEBSITE", path, page: ic.site.url, host: ic.site.host, iconUrl: ic.iconUrl,
+      credits[sym] = { source: "WEBSITE", path, wide: breitSchreiben(sym, ic.wide), page: ic.site.url, host: ic.site.host, iconUrl: ic.iconUrl,
                        sha1: ic.hash, via: ic.site.via, licenseName: "Marke des Inhabers", fmt: FORMAT,
                        ratio: Math.round((ic.ratio || 1) * 100) / 100 };
       reasons.delete(sym);
@@ -465,7 +482,7 @@ if (!args["no-web"] && !DRY) {
       for (const r of rest) {
         const alt = vorher[r.symbol];
         /* Nur nach der strengen Regel gefundene SEC-Logos werden weiterverwendet (rule). */
-        if (!args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.rule === "logo-hint" && alt.fmt === FORMAT && !gesperrt(alt.iconUrl) && alt.path && existsSync(join(OUT, alt.path))) {
+        if (!args["refresh-web"] && alt && alt.source === "SEC_FILING" && alt.rule === "logo-hint" && aktuell(alt) && !gesperrt(alt.iconUrl)) {
           files[r.symbol] = alt.path; credits[r.symbol] = alt; reasons.delete(r.symbol); stat.ok++; continue;
         }
         try {
@@ -487,17 +504,23 @@ if (!args["no-web"] && !DRY) {
             }
             if (treffer) break;
           }
+          if (!treffer && alt && alt.source === "SEC_FILING" && alt.rule === "logo-hint" && ersatz(alt)) {
+            files[r.symbol] = alt.path; credits[r.symbol] = alt; reasons.delete(r.symbol); stat.ok++; continue;
+          }
           if (!treffer) { stat.ohneBild++; continue; }
           const path = "files/" + r.symbol + ".png";
           for (const f of readdirSync(FILES)) if (f.startsWith(r.symbol + ".") && f !== r.symbol + ".png") rmSync(join(FILES, f));
           writeFileSync(join(OUT, path), treffer.png);
           files[r.symbol] = path;
-          credits[r.symbol] = { source: "SEC_FILING", path, page: treffer.doc, iconUrl: treffer.url, form: treffer.form,
+          credits[r.symbol] = { source: "SEC_FILING", path, wide: breitSchreiben(r.symbol, treffer.wide), page: treffer.doc, iconUrl: treffer.url, form: treffer.form,
                                 sha1: createHash("sha1").update(treffer.png).digest("hex"), via: "SEC_CIK",
                                 licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round(treffer.ratio * 100) / 100, rule: "logo-hint" };
           reasons.delete(r.symbol);
           stat.ok++;
-        } catch (e) { stat.fehler++; dbg(r.symbol, "SEC-Logo Fehler", e.message); }
+        } catch (e) {
+          stat.fehler++; dbg(r.symbol, "SEC-Logo Fehler", e.message);
+          if (alt && alt.source === "SEC_FILING" && alt.rule === "logo-hint" && ersatz(alt)) { files[r.symbol] = alt.path; credits[r.symbol] = alt; reasons.delete(r.symbol); }
+        }
         if (++i % 250 === 0) console.log(`     … ${i} (${JSON.stringify(stat)})`);
       }
       console.log(`     SEC-Logos: ${JSON.stringify(stat)}`);
@@ -514,7 +537,7 @@ if (!args["no-web"] && !DRY) {
         const path = "files/" + r.symbol + ".png";
         writeFileSync(join(OUT, path), res.png);
         files[r.symbol] = path;
-        credits[r.symbol] = { source: "WEBSITE", path, page: site.url, host: site.host, iconUrl: res.iconUrl,
+        credits[r.symbol] = { source: "WEBSITE", path, wide: breitSchreiben(r.symbol, res.wide), page: site.url, host: site.host, iconUrl: res.iconUrl,
                               sha1: createHash("sha1").update(res.png).digest("hex"), via: site.via,
                               licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round((res.ratio || 1) * 100) / 100, small: true };
         reasons.delete(r.symbol);
@@ -536,7 +559,11 @@ if (ONLY) {
 }
 if (Number.isFinite(LIMIT)) { console.log("Begrenzter Lauf (--limit): nichts geschrieben."); process.exit(0); }
 const behaltenePfade = new Set(Object.values(files).map((p) => p.slice("files/".length)));
-for (const f of readdirSync(FILES)) if (!f.startsWith(".") && !behaltenePfade.has(f)) rmSync(join(FILES, f));
+for (const f of readdirSync(FILES)) if (!f.startsWith(".") && f !== "wide" && !behaltenePfade.has(f)) rmSync(join(FILES, f));
+/* Breite Fassungen nur zu Titeln, deren Logo sie auch hat. */
+const breitePfade = new Set(Object.entries(credits).filter(([s, c]) => c.wide && files[s]).map(([, c]) => c.wide.slice("files/wide/".length)));
+if (existsSync(join(FILES, "wide"))) for (const f of readdirSync(join(FILES, "wide"))) if (!breitePfade.has(f)) rmSync(join(FILES, "wide", f));
+for (const c of Object.values(credits)) if (!c.wide) delete c.wide;
 
 /* Helle Logos auf transparentem Grund bekommen in der Oberflaeche eine dunkle Flaeche. */
 const dunkel = [];
@@ -569,6 +596,8 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify({
   boundary: "Logos dienen allein der Identifizierung des Unternehmens neben seinen eigenen Kursdaten. Zuerst Wikimedia Commons (nur freie Lizenz: gemeinfrei, CC0, CC BY, CC BY-SA, Apache 2.0, MIT), sonst das Icon der offiziellen Website des Unternehmens, sonst das Logo aus seinen SEC-Einreichungen (Marke des Inhabers, keine Lizenz). Unveraendert, nur verkleinert und einheitlich in ein Quadrat eingepasst. Nicht fuer Werbung, Social-Media-Beitraege oder eigene Grafiken. Quelle je Logo: credits.json.",
   count: Object.keys(files).length,
   files: sortiert(files),
+  /* Seitenverhaeltnis der breiten Fassung (files/wide/<Titel>.png). */
+  wide: sortiert(Object.fromEntries(Object.entries(credits).filter(([s, c]) => c.wide && files[s]).map(([s, c]) => [s, c.ratio]))),
   dark: dunkel.sort()
 }) + "\n");
 writeFileSync(join(OUT, "credits.json"), JSON.stringify({
