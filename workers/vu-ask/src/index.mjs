@@ -16,7 +16,7 @@ import { AskGate } from "./gate.mjs";
 export { AskGate };
 
 const DEFAULT_ORIGINS = ["https://research.visionuniverse.de", "https://vision-universe-research.vercel.app"];
-const MAX_BODY = 4096;
+const MAX_BODY = 8192;
 
 function origins(env) {
   const list = String(env.VU_ASK_ALLOWED_ORIGINS || "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -105,7 +105,7 @@ export default {
       if (raw.length > MAX_BODY) return respond(413, { ok: false, reason: "TOO_LARGE" }, cors);
       let body;
       try { body = JSON.parse(raw); } catch (e) { return respond(400, { ok: false, reason: "INVALID_JSON" }, cors); }
-      return forward("/ask", { method: "POST", body: JSON.stringify({ question: body.question, clientId: body.clientId, turnstileToken: body.turnstileToken }) });
+      return forward("/ask", { method: "POST", body: JSON.stringify({ question: body.question, clientId: body.clientId, turnstileToken: body.turnstileToken, previous: body.previous }) });
     }
 
     if (url.pathname === "/v1/quota" && request.method === "GET") {

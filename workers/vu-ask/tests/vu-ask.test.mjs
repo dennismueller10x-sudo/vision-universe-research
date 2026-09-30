@@ -277,7 +277,7 @@ test("Eingang: fremde Herkunft und fehlender Admin-Key werden abgewiesen", async
   assert.equal(report.status, 401);
   const ok = await worker.fetch(new Request("https://ask.example/v1/admin/report", { headers: { authorization: "Bearer admin-geheim" } }), env);
   assert.equal(ok.status, 200);
-  const big = await worker.fetch(new Request("https://ask.example/v1/ask", { method: "POST", headers: { origin: "https://research.visionuniverse.de" }, body: "x".repeat(5000) }), env);
+  const big = await worker.fetch(new Request("https://ask.example/v1/ask", { method: "POST", headers: { origin: "https://research.visionuniverse.de" }, body: "x".repeat(9000) }), env);
   assert.equal(big.status, 413);
 });
 
@@ -384,4 +384,25 @@ test("Workspace-ID: nur die Form wrkspc_… wird verwendet, Leerzeichen entfernt
   assert.equal(cleanWorkspaceId("Default"), null);
   assert.equal(cleanWorkspaceId("sk-ant-api03-xyz"), null);
   assert.equal(cleanWorkspaceId(""), null);
+});
+
+test("Nachfrage: vorherige Frage und Interpretation gehen mit, neuer Cache-Schluessel", async () => {
+  const { gate, fetchImpl } = makeGate({ ...ENV, VU_ASK_PER_USER_DAILY: "100" });
+  await ask(gate, "Aktien mit hohem Umsatzwachstum");
+  const r = await gate.fetch(new Request("https://gate/ask", { method: "POST", headers: { "x-vu-ip": "1.2.3.4" },
+    body: JSON.stringify({ question: "nicht 20 Prozent, sondern positiv", clientId: "client-aaaaaaaa",
+      previous: { question: "Aktien mit hohem Umsatzwachstum", kind: "screen", filters: [["revenueGrowth", "gt", 0.2, null]], tickers: [], show: [], supertrader: null } }) }));
+  assert.equal(r.status, 200);
+  assert.equal(fetchImpl.calls.length, 2);
+  const sent = fetchImpl.calls[1].body.messages[0].content;
+  assert.match(sent, /VORHERIGE FRAGE: Aktien mit hohem Umsatzwachstum/);
+  assert.match(sent, /revenueGrowth/);
+  assert.match(sent, /NEUE NACHRICHT \(Korrektur oder Ergaenzung\): nicht 20 Prozent, sondern positiv/);
+});
+
+test("Nachfrage: unbrauchbarer Kontext wird ignoriert", async () => {
+  const { followUpPrompt } = await import("../src/gate.mjs");
+  assert.equal(followUpPrompt("Frage zu Aktien", null), "Frage zu Aktien");
+  assert.equal(followUpPrompt("Frage zu Aktien", { question: "x" }), "Frage zu Aktien");
+  assert.ok(followUpPrompt("Neu", { question: "Alte Frage", filters: "kaputt" }).includes("VORHERIGE FRAGE: Alte Frage"));
 });
