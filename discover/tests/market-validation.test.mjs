@@ -91,6 +91,7 @@ test("horizonStats: Median, Anteil im Plus, schlechtes und gutes Zehntel je Stuf
   assert.equal(s.levels[0].days, 50);
   assert.equal(s.levels[0].positiveShare, 48);
   assert.equal(s.levels[0].bad10, -21);
+  assert.equal(s.levels[0].lossShare10, 30, "ret < -10 bei i = 0..14 von 50");
   assert.equal(s.levels[1].medianReturn, 10);
   assert.equal(s.levels[1].positiveShare, 100);
   assert.equal(s.all.days, 100);

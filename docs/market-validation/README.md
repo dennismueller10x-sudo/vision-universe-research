@@ -118,6 +118,16 @@ Seit 29.09.2026 außerdem auf derselben Seite:
   05.06.2020). Seit 29.09.2026 steht der Stresstest als Bühne direkt nach
   „Heute“ (Kennzahlen im Median) und als Beleg-Streifen auf der Übersicht –
   immer mit „nachgerechnet mit den Regeln von heute“ und dieser Grenze.
+- **Was das Barometer verschiebt – und was nicht** (`horizonStats`,
+  `lossShare10`, `since2001`): Die typische Rendite nach 1 Jahr ist bei allen
+  Stufen ähnlich (+12 bis +16 %; „Defensiv“ am höchsten, weil nach Crashs
+  starke Erholungen folgen). Deutlich verschoben werden die Chance, nach
+  1 Jahr im Plus zu sein (67 von 100 bei „Vorsichtig“ bis 80 bei
+  „Konstruktiv“), und der Anteil mit mehr als 10 % Verlust (20 bis 9 von
+  100). Seit 2001 für sich gerechnet dasselbe Muster (74 bzw. 86 im Plus;
+  21 bzw. 3 mit mehr als 10 % Verlust). Anzeige-Entscheidung 30.09.2026: Die
+  Übersicht zeigt deshalb „x von 100 im Plus“ als Hauptzahl, die Rendite nur
+  als ehrliche Nebenzahl.
 - **Frühe Erholungszeichen** (`recoverySignal`), eigenes Zeichen und kein
   Teil des Barometers: Breitenschub im Bärenmarkt (Anteil über der
   50-Tage-Linie binnen 20 Handelstagen von ≤ 20 % auf ≥ 65 %; feste Schwellen,

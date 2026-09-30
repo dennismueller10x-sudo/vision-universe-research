@@ -326,6 +326,7 @@
     "meanReturn": 11.2,
     "medianReturn": 13.1,
     "positiveShare": 74,
+    "lossShare10": 14,
     "bad10": -13.7,
     "good90": 33.8
    },
@@ -338,6 +339,7 @@
      "meanReturn": 12.7,
      "medianReturn": 15.7,
      "positiveShare": 71,
+     "lossShare10": 19,
      "bad10": -24.8,
      "good90": 39.9
     },
@@ -349,6 +351,7 @@
      "meanReturn": 9.8,
      "medianReturn": 13,
      "positiveShare": 67,
+     "lossShare10": 20,
      "bad10": -21.4,
      "good90": 37.7
     },
@@ -360,6 +363,7 @@
      "meanReturn": 10.6,
      "medianReturn": 12,
      "positiveShare": 73,
+     "lossShare10": 13,
      "bad10": -12.3,
      "good90": 31.7
     },
@@ -371,11 +375,75 @@
      "meanReturn": 11.8,
      "medianReturn": 12.9,
      "positiveShare": 80,
+     "lossShare10": 9,
      "bad10": -8.7,
      "good90": 30.6
     }
    ],
-   "label": "1 Jahr"
+   "label": "1 Jahr",
+   "since2001": {
+    "days": 252,
+    "all": {
+     "days": 6200,
+     "independent": 25,
+     "meanReturn": 11.4,
+     "medianReturn": 13.9,
+     "positiveShare": 80,
+     "lossShare10": 12,
+     "bad10": -13.5,
+     "good90": 29
+    },
+    "levels": [
+     {
+      "level": 0,
+      "label": "Defensiv",
+      "days": 797,
+      "independent": 3,
+      "meanReturn": 13.1,
+      "medianReturn": 18,
+      "positiveShare": 72,
+      "lossShare10": 20,
+      "bad10": -27.6,
+      "good90": 41.6
+     },
+     {
+      "level": 1,
+      "label": "Vorsichtig",
+      "days": 1444,
+      "independent": 3,
+      "meanReturn": 10.9,
+      "medianReturn": 15.1,
+      "positiveShare": 74,
+      "lossShare10": 21,
+      "bad10": -19.2,
+      "good90": 35
+     },
+     {
+      "level": 2,
+      "label": "Selektiv",
+      "days": 1298,
+      "independent": 5,
+      "meanReturn": 11.1,
+      "medianReturn": 13.5,
+      "positiveShare": 79,
+      "lossShare10": 14,
+      "bad10": -14.6,
+      "good90": 29.4
+     },
+     {
+      "level": 3,
+      "label": "Konstruktiv",
+      "days": 2661,
+      "independent": 14,
+      "meanReturn": 11.2,
+      "medianReturn": 13.1,
+      "positiveShare": 86,
+      "lossShare10": 3,
+      "bad10": -3.2,
+      "good90": 23.7
+     }
+    ]
+   }
   },
   {
    "days": 1260,
@@ -385,6 +453,7 @@
     "meanReturn": 71.4,
     "medianReturn": 71.9,
     "positiveShare": 90,
+    "lossShare10": 6,
     "bad10": -0.1,
     "good90": 140.3
    },
@@ -397,6 +466,7 @@
      "meanReturn": 82.9,
      "medianReturn": 81.7,
      "positiveShare": 88,
+     "lossShare10": 9,
      "bad10": -4.1,
      "good90": 176.9
     },
@@ -408,6 +478,7 @@
      "meanReturn": 67.2,
      "medianReturn": 69.3,
      "positiveShare": 86,
+     "lossShare10": 9,
      "bad10": -7.7,
      "good90": 140.9
     },
@@ -419,6 +490,7 @@
      "meanReturn": 68.7,
      "medianReturn": 73.9,
      "positiveShare": 90,
+     "lossShare10": 3,
      "bad10": -0.1,
      "good90": 128.3
     },
@@ -430,11 +502,75 @@
      "meanReturn": 71,
      "medianReturn": 70.1,
      "positiveShare": 93,
+     "lossShare10": 4,
      "bad10": 5,
      "good90": 137.6
     }
    ],
-   "label": "5 Jahre"
+   "label": "5 Jahre",
+   "since2001": {
+    "days": 1260,
+    "all": {
+     "days": 5192,
+     "independent": 5,
+     "meanReturn": 68.6,
+     "medianReturn": 73.5,
+     "positiveShare": 95,
+     "lossShare10": 2,
+     "bad10": 6.7,
+     "good90": 118.4
+    },
+    "levels": [
+     {
+      "level": 0,
+      "label": "Defensiv",
+      "days": 633,
+      "independent": 1,
+      "meanReturn": 88.7,
+      "medianReturn": 94.7,
+      "positiveShare": 100,
+      "lossShare10": 0,
+      "bad10": 25.3,
+      "good90": 144.7
+     },
+     {
+      "level": 1,
+      "label": "Vorsichtig",
+      "days": 1223,
+      "independent": 1,
+      "meanReturn": 68.9,
+      "medianReturn": 71.3,
+      "positiveShare": 97,
+      "lossShare10": 0,
+      "bad10": 11.4,
+      "good90": 131.4
+     },
+     {
+      "level": 2,
+      "label": "Selektiv",
+      "days": 1071,
+      "independent": 0,
+      "meanReturn": 73.5,
+      "medianReturn": 80.7,
+      "positiveShare": 97,
+      "lossShare10": 2,
+      "bad10": 9,
+      "good90": 113.3
+     },
+     {
+      "level": 3,
+      "label": "Konstruktiv",
+      "days": 2265,
+      "independent": 3,
+      "meanReturn": 60.5,
+      "medianReturn": 67,
+      "positiveShare": 93,
+      "lossShare10": 3,
+      "bad10": 2.2,
+      "good90": 106.8
+     }
+    ]
+   }
   }
  ],
  "crises": [

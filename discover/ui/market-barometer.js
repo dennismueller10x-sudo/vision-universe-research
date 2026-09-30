@@ -465,42 +465,71 @@
     "Der Markt hat Rückenwind: Trend, Schwung und Beteiligung passen zusammen.",
     "Breiter Rückenwind: Trend, Schwung und Beteiligung passen – fast alles zieht mit."
   ];
-  /* Die Hauptzahl: typische Rendite nach 1 Jahr - gross, daneben derselbe
-     Wert fuer den ganzen Markt (gleiche Messung) als Balken. Die bekannte
-     Durchschnittsrendite pro Jahr steht nur als Satz dabei: sie ist eine
-     andere Messung (jaehrlich verzinst) und waere neben dem Einjahreswert
-     kein fairer Vergleich. */
-  function held(a, alle, ev) {
-    var bh = ev.illustration && ev.illustration.rules && ev.illustration.rules[0] && ev.illustration.rules[0].all && ev.illustration.rules[0].all.buyAndHold;
-    var max = Math.max(a.medianReturn, alle ? alle.medianReturn : 0, 1) * 1.08;
-    function balken(cls, name, wert) {
-      return el("li", { class: cls }, [el("span", { text: name }),
-        el("span", { class: "dx-m3-kt-spur", "aria-hidden": "true" }, [el("span", { style: "width:" + Math.max(3, 100 * Math.max(0, wert) / max).toFixed(1) + "%" })]),
-        el("b", { text: pct(wert, 1, true) })]);
-    }
+  /* Die Hauptsache: Das Barometer verschiebt kaum die Hoehe der typischen
+     Rendite (bei allen Stufen aehnlich), wohl aber die Chance, nach einem
+     Jahr im Plus zu sein, und wie oft es mehr als 10 % nach unten ging.
+     Darum ist die Hauptzahl "x von 100 im Plus" - als Balken aus drei
+     Teilen, und darunter dieselbe Aufteilung fuer jede Stufe. Owner-
+     Feedback 30.09.2026: "Ziel muss sein, bessere Rendite-Wahrschein-
+     lichkeiten zu zeigen." */
+  function teile(x) {
+    var plus = Math.round(x.positiveShare), minus = Math.round(x.lossShare10);
+    return { plus: plus, minus: minus, mitte: Math.max(0, 100 - plus - minus) };
+  }
+  function stapel(x, gross) {
+    var t = teile(x);
+    return el("span", { class: "dx-m3-kt-stapel" + (gross ? " is-gross" : ""), "aria-hidden": "true" }, [
+      el("span", { class: "is-plus", style: "width:" + t.plus + "%" }),
+      el("span", { class: "is-mitte", style: "width:" + t.mitte + "%" }),
+      el("span", { class: "is-minus", style: "width:" + t.minus + "%" })]);
+  }
+  function hatVerlust(liste) { return liste && liste.length && liste.every(function (x) { return isNum(x.lossShare10) && isNum(x.positiveShare); }); }
+  function chancen(env, j1) {
+    var a = stufeIn(j1.levels, env.level), t = teile(a);
+    var heute = Math.min(env.level, j1.levels[j1.levels.length - 1].level);
+    var zeilen = j1.levels.map(function (x) {
+      var u = teile(x), ist = x.level === heute;
+      return el("li", { class: "is-l" + x.level + (ist ? " is-heute" : "") }, [
+        el("span", { class: "dx-m3-kt-name" }, [el("span", { text: x.label }), ist ? el("em", { text: "heute" }) : null].filter(Boolean)),
+        stapel(x, false),
+        el("span", { class: "dx-m3-kt-wert", text: u.plus + " im Plus · " + u.minus + " unter −10 %" })
+      ]);
+    });
     return el("div", { class: "dx-m3-kt-held" }, [
-      el("p", { class: "dx-m3-kt-held-label", text: "Typische Rendite nach 1 Jahr" }),
-      el("b", { class: "dx-m3-kt-held-zahl", text: pct(a.medianReturn, 1, true) }),
-      el("p", { class: "dx-m3-kt-held-satz", text: "Die Hälfte der Fälle lag darüber, die Hälfte darunter." }),
-      alle ? el("ol", { class: "dx-m3-kt-balken", "aria-label": "Typische Rendite nach 1 Jahr im Vergleich" }, [
-        balken("is-stufe", "Bei dieser Stufe", a.medianReturn),
-        balken("is-markt", "US-Aktienmarkt insgesamt", alle.medianReturn)
-      ]) : null,
-      alle ? el("p", { class: "dx-m3-kt-held-vergleich", text: "(Zum Vergleich: breiter US-Aktienmarkt, ähnlich dem S&P 500 – typisch " + pct(alle.medianReturn, 1, true) +
-        " nach 1 Jahr, egal bei welcher Stufe" + (bh && isNum(bh.cagr) ? "; über alle Jahre seit " + jahr(ev.from) + " im Schnitt " + pct(bh.cagr, 1, true) + " pro Jahr" : "") + ".)" }) : null
-    ].filter(Boolean));
+      el("p", { class: "dx-m3-kt-held-label", text: "Von 100 Fällen bei „" + env.label + "“ – so stand man 1 Jahr später da:" }),
+      el("div", { class: "dx-m3-kt-held-kopf" }, [
+        el("b", { class: "dx-m3-kt-held-zahl", text: t.plus + " von 100" }),
+        el("span", { class: "dx-m3-kt-held-satz", text: "im Plus" })]),
+      stapel(a, true),
+      el("ul", { class: "dx-m3-kt-legende" }, [
+        el("li", { class: "is-plus" }, [el("i", { "aria-hidden": "true" }), el("b", { text: String(t.plus) }), txt(" im Plus")]),
+        el("li", { class: "is-mitte" }, [el("i", { "aria-hidden": "true" }), el("b", { text: String(t.mitte) }), txt(" leicht im Minus (bis −10 %)")]),
+        el("li", { class: "is-minus" }, [el("i", { "aria-hidden": "true" }), el("b", { text: String(t.minus) }), txt(" mehr als 10 % im Minus")])
+      ]),
+      el("p", { class: "dx-m3-kt-vergleich-titel", text: "Und bei den anderen Stufen?" }),
+      el("ol", { class: "dx-m3-kt-stufen", "aria-label": "Nach 1 Jahr im Plus und mehr als 10 % im Minus, je Stufe" }, zeilen)
+    ]);
   }
   function klartext(p, ev) {
     var env = p && p.environment;
     if (!env || !isNum(env.level) || !ev || !ev.levels || ev.levels.length < 3) return null;
     var j1 = lang(ev, 252), j5 = lang(ev, 1260);
     var a = j1 && stufeIn(j1.levels, env.level), b = j5 && stufeIn(j5.levels, env.level);
-    if (!a) return null;
+    if (!a || !hatVerlust(j1.levels)) return null;
     var alle = j1.all || null, skala = env.scale || [];
     function kachel(rolle, gross, text, klein) {
       return el("div", { class: "dx-m3-kt-zahl is-" + rolle }, [el("b", { text: gross }), el("p", { text: text }), klein ? el("small", { text: klein }) : null].filter(Boolean));
     }
-    var vergleich = !alle ? "" : a.positiveShare - alle.positiveShare >= 4 ? "häufiger als" : a.positiveShare - alle.positiveShare <= -4 ? "seltener als" : "etwa so oft wie";
+    var med = j1.levels.map(function (x) { return x.medianReturn; });
+    var spanne = "+" + zahl(Math.floor(Math.min.apply(null, med)), 0) + " bis +" + zahl(Math.ceil(Math.max.apply(null, med)), 0) + " %";
+    var best = j1.levels.reduce(function (m, x) { return x.positiveShare > m.positiveShare ? x : m; }, j1.levels[0]);
+    var schlecht = j1.levels.reduce(function (m, x) { return x.positiveShare < m.positiveShare ? x : m; }, j1.levels[0]);
+    var verl = j1.levels.map(function (x) { return x.lossShare10; });
+    var lage = !alle ? "" : a.positiveShare - alle.positiveShare >= 4 ? "„" + env.label + "“ gehört zu den günstigeren Stufen. "
+      : a.positiveShare - alle.positiveShare <= -4 ? "„" + env.label + "“ gehört zu den ungünstigeren Stufen. " : "„" + env.label + "“ liegt in der Mitte – ein normales Umfeld. ";
+    var neu = j1.since2001 && hatVerlust(j1.since2001.levels) ? j1.since2001.levels : null;
+    var neuBest = neu ? stufeIn(neu, best.level) : null, neuSchlecht = neu ? stufeIn(neu, schlecht.level) : null;
+    var bh = ev.illustration && ev.illustration.rules && ev.illustration.rules[0] && ev.illustration.rules[0].all && ev.illustration.rules[0].all.buyAndHold;
     return el("section", { class: "dx-m3-klartext is-l" + env.level, id: "maerkte-klartext", "aria-label": "„" + env.label + "“ auf einen Blick" }, [
       el("div", { class: "dx-m3-kt-kopf" }, [
         wetterIcon(env.level),
@@ -508,17 +537,20 @@
           el("h2", { text: "„" + env.label + "“ auf einen Blick" })])
       ]),
       el("p", { class: "dx-m3-kt-satz", text: KLARTEXT[env.level] }),
-      el("p", { class: "dx-m3-kt-frage", text: "Wer früher bei „" + env.label + "“ in den US-Aktienmarkt investiert hat – seit " + jahr(ev.from) + ":" }),
-      held(a, alle, ev),
+      chancen(env, j1),
+      el("p", { class: "dx-m3-kt-fazit" }, [el("b", { text: "Kurz gesagt: " }), txt(lage + "Das Barometer verschiebt kaum die Höhe der typischen Rendite – die lag bei allen Stufen bei " + spanne +
+        " nach 1 Jahr. Es verschiebt die Chance, im Plus zu landen: von " + Math.round(schlecht.positiveShare) + " („" + schlecht.label + "“) bis " + Math.round(best.positiveShare) + " von 100 („" + best.label +
+        "“) – und wie oft es mehr als 10 % nach unten ging: " + Math.min.apply(null, verl) + " bis " + Math.max.apply(null, verl) + " von 100.")]),
+      neuBest && neuSchlecht ? el("p", { class: "dx-m3-kt-neu" }, [el("b", { text: "Auch in den jüngeren Jahren: " }),
+        txt("Seit 2001 für sich gerechnet dasselbe Muster – „" + best.label + "“ " + Math.round(neuBest.positiveShare) + " von 100 im Plus, „" + schlecht.label + "“ " + Math.round(neuSchlecht.positiveShare) + ".")]) : null,
       el("div", { class: "dx-m3-kt-zahlen" }, [
-        kachel("gut", pct(a.positiveShare, 0), "lagen nach 1 Jahr im Plus", alle ? "Schnitt aller Tage: " + pct(alle.positiveShare, 0) : null),
+        kachel("neutral", pct(a.medianReturn, 1, true), "typische Rendite nach 1 Jahr", "bei allen Stufen ähnlich (" + spanne + ")" + (alle ? "; Markt gesamt " + pct(alle.medianReturn, 1, true) : "")),
         b ? kachel("gut", pct(b.medianReturn, 0, true), "typisch nach 5 Jahren", b.positiveShare + " von 100 Fällen im Plus") : null,
         kachel("warn", pct(a.bad10, 0, true), "in einem schlechten Jahr (1 von 10)", alle ? "Schnitt aller Tage: " + pct(alle.bad10, 0, true) : null)
       ].filter(Boolean)),
-      el("p", { class: "dx-m3-kt-fazit" }, [el("b", { text: "Kurz gesagt: " }), txt("Bei „" + env.label + "“ lag man nach einem Jahr in " + Math.round(a.positiveShare) + " von 100 Fällen im Plus" +
-        (vergleich ? " – " + vergleich + " im Schnitt aller Tage." : "."))]),
-      el("p", { class: "dx-m3-kt-fuss", text: "US-Gesamtmarkt inklusive Dividenden, " + jahr(ev.from) + " bis " + jahr(ev.to) + ", mit den heutigen Regeln nachgerechnet. Vor Kosten und Steuern. Vergangene Ergebnisse sind kein verlässlicher Hinweis auf künftige Entwicklungen." })
-    ]);
+      el("p", { class: "dx-m3-kt-fuss", text: "US-Gesamtmarkt inklusive Dividenden (ähnlich dem S&P 500" + (bh && isNum(bh.cagr) ? "; seit " + jahr(ev.from) + " im Schnitt " + pct(bh.cagr, 1, true) + " pro Jahr" : "") + "), " +
+        jahr(ev.from) + " bis " + jahr(ev.to) + ", mit den heutigen Regeln nachgerechnet – das Barometer gab es damals noch nicht. Vor Kosten und Steuern. Vergangene Ergebnisse sind kein verlässlicher Hinweis auf künftige Entwicklungen." })
+    ].filter(Boolean));
   }
 
   /* ------------------------------------------------------- Seite */
