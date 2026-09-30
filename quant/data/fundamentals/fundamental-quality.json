@@ -2,38 +2,38 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1877814,
+      "RESOLVED_VALUES": 1877929,
       "ISSUERS_WITH_VALUES": 5340
     },
     "byState": {
-      "VALID": 1708180,
-      "WARNING": 169634
+      "VALID": 1708287,
+      "WARNING": 169642
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 49661550
+      "RAW_XBRL_FACTS_WITH_FINDING": 49664131
     },
     "byState": {
-      "AMBIGUOUS": 1335059,
-      "RESTATED": 313370,
+      "AMBIGUOUS": 1335092,
+      "RESTATED": 313343,
       "NON_COMPARABLE": 70492,
-      "MISSING": 47922911,
-      "WARNING": 19718
+      "MISSING": 47925500,
+      "WARNING": 19704
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 47922911,
-      "CONCEPT_DISAGREEMENT": 1327413,
-      "RESTATEMENT_CONFLICT": 313370,
+      "UNKNOWN_CONCEPT": 47925500,
+      "CONCEPT_DISAGREEMENT": 1327431,
+      "RESTATEMENT_CONFLICT": 313343,
       "UNEXPECTED_DURATION": 54378,
-      "FISCAL_PERIOD_CONFLICT": 14885,
+      "FISCAL_PERIOD_CONFLICT": 14871,
       "PERIOD_MISMATCH": 14853,
       "FUTURE_DATA_LEAK": 7480,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2589,
       "EXTREME_VALUE": 2244,
       "UNIT_MISMATCH": 1261,
-      "UNPLACEABLE_PERIOD": 166
+      "UNPLACEABLE_PERIOD": 181
     },
     "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
   },
@@ -114,5 +114,5 @@
       "mapping_version": "1.5.0"
     }
   },
-  "generatedAtUtc": "2026-09-29T12:57:01+00:00"
+  "generatedAtUtc": "2026-09-30T12:44:31+00:00"
 }
