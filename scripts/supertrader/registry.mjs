@@ -288,7 +288,7 @@ const weinstein = {
 };
 
 /* ============================== DARVAS ============================== */
-const DA_V = '1.0.0';
+const DA_V = '1.1.0';
 const darvas = {
   strategy_id: 'DARVAS_BOX', strategy_version: DA_V, slug: 'darvas-boxes',
   strategy_name: 'Darvas Box Engine', world_name: 'Darvas Boxes', tagline: 'Steigende Kisten. Kauf beim Ausbruch, Stop an der Kiste.',
@@ -336,9 +336,16 @@ const darvas = {
   known_failure_modes: f('Seitwärtsmärkte, Fehlausbrüche, Boxdefinition beeinflusst Ergebnis stark', 'VU_FORMALIZATION'),
   discretionary_elements: f('Ursprüngliche Boxbildung hatte Interpretationsspielraum', 'MULTI_SOURCE_CONFIRMED'),
   prohibited_interpretations: ['Niemals „exakt die originale Darvas-Formel“ behaupten', 'Die Zwei-Millionen-Dollar-Erzählung ist DISPUTED — weder als bewiesen noch als widerlegt darstellen'],
-  lifecycle_mapping: { DISCOVERED: 'nahe 52-Wochen-Hoch', WATCH: 'Oberkante bestätigt', SETUP: 'Box bestätigt', ENTRY_READY: 'Kurs ≤ 3 % unter Oberkante', TRIGGERED: 'Oberkante überschritten', ACTIVE: 'steigende Boxen', WARNING: 'zurück in die alte Box', EXIT: 'Stop ausgelöst', CLOSED: 'geschlossen', INVALIDATED: 'Unterkante bricht vor Einstieg' },
+  lifecycle_mapping: { DISCOVERED: 'nahe 52-Wochen-Hoch', WATCH: 'Oberkante bestätigt', SETUP: 'Box bestätigt (A- oder B-Setup)', ENTRY_READY: 'Kurs ≤ 3 % unter Oberkante', TRIGGERED: 'Oberkante überschritten', ACTIVE: 'steigende Boxen', WARNING: 'zurück in die alte Box', EXIT: 'Stop ausgelöst', CLOSED: 'geschlossen', INVALIDATED: 'Unterkante bricht vor Einstieg' },
+  quality_tiers: {
+    note: 'A/B ist eine Vision-Universe-Klassifikation innerhalb derselben Setup-Regeln. Sie ist nicht backtest-validiert: ob A-Setups historisch besser waren, ist offen. Sie ordnet nur, wie sauber ein Setup aussieht.',
+    A: 'Alle Kriterien erfüllt: Regime nicht schwach, 6-Monats-Stärke Top 10 %, Box ≤ 12 %, Stop ≥ 4 % und ≥ 1 ADR entfernt; Volumen am Trigger ≥ 1,5× (bis zum Ausbruch offen).',
+    B: 'Gültiges Darvas-Setup nach den Grundregeln, aber mindestens ein Qualitätskriterium nicht erfüllt. Nur im Signalzentrum und in der Strategy World sichtbar.',
+    rules: ['DAR-Q-REGIME', 'DAR-Q-RS', 'DAR-Q-TIGHT', 'DAR-Q-STOP', 'DAR-Q-VOL'],
+    labels: { 'DAR-Q-REGIME': 'Marktregime nicht schwach', 'DAR-Q-RS': 'Top 10 % Stärke (6 Monate)', 'DAR-Q-TIGHT': 'Enge Box (≤ 12 %)', 'DAR-Q-STOP': 'Stop ≥ 4 % und ≥ 1 ADR entfernt', 'DAR-Q-VOL': 'Volumen am Trigger ≥ 1,5×' },
+  },
   variants: [
-    { variant_id: 'DARVAS_BOX_N3_VU', label: 'Box mit 3-Sitzungen-Bestätigung (VU)', active: true, status: 'LIVE_MONITORING', vu_formalization: true },
+    { variant_id: 'DARVAS_BOX_N3_VU', label: 'Box mit 3-Sitzungen-Bestätigung (VU), Qualitätsstufen A/B', active: true, status: 'LIVE_MONITORING', vu_formalization: true },
     { variant_id: 'DARVAS_BOX_N4_VU', label: '4-Sitzungen-Bestätigung (VU)', active: false, status: 'BACKTEST_PENDING', vu_formalization: true },
     { variant_id: 'DARVAS_BOX_N5_VU', label: '5-Sitzungen-Bestätigung (VU)', active: false, status: 'BACKTEST_PENDING', vu_formalization: true },
   ],
@@ -355,6 +362,11 @@ const darvas = {
     rule(DA_V, 'DAR-ENTRY-01', 'Kauf, sobald die Oberkante überschritten wird.', 'high(t) > boxTop; fill = max(boxTop, open) + slippage', {}, ['SRC-ND-DARVAS-SECONDARY', 'SRC-ND-BOOK'], 'MULTI_SOURCE_CONFIRMED', false),
     rule(DA_V, 'DAR-STOP-01', 'Stop an der Unterkante; mit jeder höheren bestätigten Box nachziehen.', 'stop = max(stop, latestConfirmedBoxBottom above entry)', {}, ['SRC-ND-DARVAS-SECONDARY'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-PYR-01', 'In steigende Boxen aufstocken — Version 1 simuliert das nicht.', 'add after new higher box breakout (not simulated v1)', {}, ['SRC-ND-DARVAS-SECONDARY'], 'MULTI_SOURCE_CONFIRMED', false),
+    rule(DA_V, 'DAR-Q-REGIME', 'A-Setup nur, wenn das Marktregime nicht „breite Schwäche“ ist. Darvas’ Ansatz lebt von bullischen Trends.', "marketRegime(runDate) != 'BROAD_WEAKNESS'", { source: 'quant/data/product/market-regime-v1.json', basis: 'Regime zum Laufzeitpunkt; keine Regimehistorie' }, ['SRC-ND-DARVAS-SECONDARY', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-Q-RS', 'A-Setup nur für die stärksten 10 % über 6 Monate (strenger als die Grundregel mit 20 %).', 'pctRank(ret126) >= 90', { percentile: 90 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-Q-TIGHT', 'A-Setup nur bei enger Box: höchstens 12 % zwischen Ober- und Unterkante.', '1 - boxBottom/boxTop <= 0.12', { maxHeight: 0.12 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-Q-STOP', 'A-Setup nur, wenn der Stop weit genug unter dem Trigger liegt, um nicht vom normalen Tagesrauschen ausgelöst zu werden: mindestens 4 % und mindestens eine durchschnittliche Tagesspanne.', '1 - boxBottom/boxTop >= max(0.04, ADR20)', { minStop: 0.04, minStopAdr: 1 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+    rule(DA_V, 'DAR-Q-VOL', 'Volumen am Trigger: Der Ausbruchstag braucht mindestens das 1,5-fache des 50-Tage-Volumens. Vor dem Ausbruch ist das offen; ohne Volumen wird ein A-Setup beim Trigger zu B.', 'volume(t) / sma50(volume)(t-1) >= 1.5', { multiple: 1.5 }, ['SRC-ND-DARVAS-SECONDARY', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-WARN-01', 'Warnung, wenn der Kurs zurück unter die alte Oberkante fällt.', 'close < entryBoxTop', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
     rule(DA_V, 'DAR-INV-01', 'Tief unter der Unterkante vor dem Einstieg: Box gebrochen.', 'low(t) < boxBottom', {}, ['SRC-ND-DARVAS-SECONDARY'], 'MULTI_SOURCE_CONFIRMED', false),
     rule(DA_V, 'DAR-INV-02', 'Box, die 30 Sitzungen nicht ausbricht, verfällt.', 'pendingSessions > 30', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),

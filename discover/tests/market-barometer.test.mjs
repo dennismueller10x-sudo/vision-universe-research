@@ -137,7 +137,7 @@ test("Fruehe Erholungszeichen: eigenes Zeichen, Bilanz aus dem Auszug, Live-Zust
   assert.equal(schub.seit, "2026-01-25");
 });
 
-test("Im Klartext (Uebersicht): Bedeutung der Stufe, Zahlen aus dem Auszug neben dem Schnitt aller Tage", () => {
+test("Im Klartext (Uebersicht): Chance im Plus als Hauptzahl, Aufteilung je Stufe, Rendite ehrlich als Nebenzahl", () => {
   const p = J(PULSE), lv = p.environment.level;
   const k = MB.klartext(p, J(EV));
   assert.equal(k.attrs.id, "maerkte-klartext");
@@ -145,17 +145,23 @@ test("Im Klartext (Uebersicht): Bedeutung der Stufe, Zahlen aus dem Auszug neben
   const j1 = EV.longTerm.find((x) => x.days === 252);
   const a = j1.levels.find((x) => x.level === lv) || j1.levels.at(-1);
   assert.ok(t.includes(MB.KLARTEXT[lv]));
-  assert.match(t, new RegExp(Math.round(a.positiveShare) + "\\u00a0% lagen nach 1 Jahr im Plus"));
-  assert.match(t, new RegExp("Schnitt aller Tage: " + Math.round(j1.all.positiveShare) + "\\u00a0%"));
-  assert.match(t, /in einem schlechten Jahr \(1 von 10\)/);
   const held = find(k, (n) => n.attrs && n.attrs.class === "dx-m3-kt-held")[0];
-  assert.ok(held, "typische Rendite nach 1 Jahr als Hauptzahl");
   const ht = text(held);
-  assert.ok(ht.includes(String(a.medianReturn).replace(".", ",")), "Hauptzahl aus dem Auszug");
-  assert.match(ht, /ähnlich dem S&P 500/);
-  assert.match(ht, new RegExp("im Schnitt \\+" + String(EV.illustration.rules[0].all.buyAndHold.cagr).replace(".", ",") + "\u00a0% pro Jahr"));
-  assert.equal(find(k, (n) => n.attrs && n.attrs.class && n.attrs.class.split(" ").includes("dx-m3-kt-zahl")).length, 3);
+  assert.match(ht, new RegExp(Math.round(a.positiveShare) + " von 100"), "Hauptzahl: x von 100 im Plus");
+  const minus = Math.round(a.lossShare10), mitte = 100 - Math.round(a.positiveShare) - minus;
+  assert.match(ht, new RegExp(mitte + "\\s+leicht im Minus"));
+  assert.match(ht, new RegExp(minus + "\\s+mehr als 10 % im Minus"));
+  const zeilen = find(held, (n) => n.tag === "li" && n.attrs.class && /^is-l\d/.test(n.attrs.class));
+  assert.equal(zeilen.length, j1.levels.length, "eine Zeile je Stufe");
+  assert.equal(zeilen.filter((z) => z.attrs.class.includes("is-heute")).length, 1);
+  j1.levels.forEach((x) => assert.match(ht, new RegExp(Math.round(x.positiveShare) + " im Plus · " + Math.round(x.lossShare10) + " unter −10 %")));
+  assert.match(t, /verschiebt kaum die Höhe der typischen Rendite/);
+  assert.match(t, /Seit 2001 für sich gerechnet dasselbe Muster/);
+  assert.match(t, /ähnlich dem S&P 500; seit \d{4} im Schnitt \+/);
   assert.match(t, /Vergangene Ergebnisse sind kein verlässlicher Hinweis/);
   assert.doesNotMatch(t, /Kaufsignal|kaufen|verkaufen|sollten Sie/i);
+  assert.equal(find(k, (n) => n.attrs && n.attrs.class && n.attrs.class.split(" ").includes("dx-m3-kt-zahl")).length, 3);
   assert.equal(MB.klartext(p, null), null, "ohne Auszug keine Zahlen");
+  const ohne = J(EV); ohne.longTerm.forEach((x) => x.levels.forEach((l) => delete l.lossShare10));
+  assert.equal(MB.klartext(p, ohne), null, "ohne Verlustanteil keine halbe Box");
 });

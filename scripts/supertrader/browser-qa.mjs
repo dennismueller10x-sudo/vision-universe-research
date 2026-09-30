@@ -57,11 +57,14 @@ async function main() {
   routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-empty']);
 
   const browser = await chromium.launch({ executablePath: args.chromium || undefined });
-  const viewports = [['mobile', { width: 390, height: 844 }, true], ['desktop', { width: 1280, height: 900 }, false]];
+  const pw = loadPlaywright();
+  const iphone = pw.devices && pw.devices['iPhone 14'] ? { ...pw.devices['iPhone 14'] } : { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true };
+  delete iphone.defaultBrowserType;
+  const viewports = [['mobile', iphone, true], ['desktop', { viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1 }, false]];
   const failures = [];
   const report = [];
   for (const [vpName, vp, isMobile] of viewports) {
-    const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: isMobile ? 2 : 1, isMobile, hasTouch: isMobile });
+    const ctx = await browser.newContext(vp);
     for (const [name, url, selector] of routes) {
       const page = await ctx.newPage();
       const errors = [];
@@ -76,6 +79,8 @@ async function main() {
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),
         bottomNav: (() => { const b = document.querySelector('.st-bottom'); return b ? getComputedStyle(b).display !== 'none' : false; })(),
+        homeB: location.pathname === '/supertrader/' ? document.querySelectorAll('.st-section:nth-of-type(2) .st-q-B, .st-rail .st-q-B').length : 0,
+        cardsWithoutTrust: [...document.querySelectorAll('.st-sig')].filter((c) => !c.querySelector('.st-trust')).length,
         buyTone: /jetzt kaufen|buy now|kaufempfehlung(?! |,)|kaufen sie/i.test(document.body.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')),
         textLen: document.body.innerText.length,
       }));
@@ -84,6 +89,8 @@ async function main() {
       if (isMobile && !m.bottomNav) errors.push('Bottom-Navigation fehlt');
       if (!isMobile && m.bottomNav) errors.push('Bottom-Navigation auf Desktop sichtbar');
       if (m.buyTone) errors.push('Kaufaufforderungs-Ton gefunden');
+      if (name === 'home' && m.homeB) errors.push(`${m.homeB} Darvas-B-Setups prominent auf der Startseite`);
+      if (m.cardsWithoutTrust) errors.push(`${m.cardsWithoutTrust} Signalkarten ohne Transparenz-Leiste`);
       const shot = path.join(OUT, `${vpName}-${name}.png`);
       await page.screenshot({ path: shot, fullPage: name === 'home' || name === 'lens' });
       report.push({ viewport: vpName, route: url, ms: Date.now() - t0, errors });

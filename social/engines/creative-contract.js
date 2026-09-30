@@ -63,7 +63,41 @@
      Auftragstyp, den niemand stellt, waere Code ohne Aufrufer - und
      der erste echte Bedarf wuerde ihn ohnehin anders formen, als man
      ihn sich spekulativ ausgedacht haette. */
+  /* CAROUSEL (Owner-Auftrag "WORK OWNS THE POST", 29.09.): EIN Work-Job
+     recherchiert, schreibt und gestaltet einen kompletten Beitrag aus 3-4
+     zusammengehoerigen Slides.
+
+     Er reist als request_type FULL_CREATIVE mit creative_format
+     CAROUSEL - nicht als eigener request_type. Realer Befund (PR #299,
+     29.09.): der Creative Agent weist jeden anderen request_type mit
+     CONTRACT_MISMATCH ab ("supports only FULL_CREATIVE and
+     TEXT_REVISION"); sein Vertrag liegt ausserhalb dieses Repositories.
+     FULL_CAROUSEL bleibt die INTERNE Bezeichnung dieser Auftragsart. */
+  var CAROUSEL = "FULL_CAROUSEL";
+  var CAROUSEL_FORMAT = "CAROUSEL";
+  var CAROUSEL_MIN = 3;
+  var CAROUSEL_MAX = 4;
   var TYPEN = [VOLL, TEXT];
+
+  /** Ist dieser Brief ein Carousel-Auftrag? */
+  /* Realer Befund (PR #300): der Vertrag des Agenten erlaubt EIN Asset.
+     Ein Carousel reist deshalb als EIN Bogen (`carousel_sheet`) mit 3-4
+     Paneelen nebeneinander. Die Slides zaehlen die Paneele, nicht die
+     Dateien. Ohne Bogen zaehlen die Bildvarianten (ein spaeter erweiterter
+     Vertrag mit einer Datei je Slide bleibt damit gueltig). */
+  function carouselSlideAnzahl(result) {
+    var v = Array.isArray(result && result.visual_variants) ? result.visual_variants : [];
+    if (v.length === 1 && v[0] && v[0].carousel_sheet) {
+      var panels = v[0].carousel_sheet.panels;
+      return Array.isArray(panels) ? panels.length : 0;
+    }
+    return v.length;
+  }
+
+  function istCarousel(brief) {
+    var b = brief || {};
+    return b.request_type === VOLL && b.creative_format === CAROUSEL_FORMAT;
+  }
 
   var ERBEN = "INHERIT_VERIFIED_ASSET";
   var ERZEUGEN = "GENERATE_NEW_ASSET";
@@ -133,6 +167,24 @@
     }
 
     var visual = b.visual || {};
+
+    if (istCarousel(b)) {
+      if (visual.mode && visual.mode !== ERZEUGEN) {
+        befunde.push({ field: "visual.mode",
+          message: "FULL_CAROUSEL erzeugt neue Slides. " + visual.mode +
+            " passt dazu nicht." });
+      }
+      if (b.authoring_requirements &&
+          b.authoring_requirements.actual_image_asset_required === false) {
+        befunde.push({ field: "authoring_requirements.actual_image_asset_required",
+          message: "FULL_CAROUSEL ohne Bildpflicht ist kein Carousel." });
+      }
+      return befunde.length ? mitBefunden(CAROUSEL, befunde)
+        : { ok: true, requestType: CAROUSEL, visualMode: ERZEUGEN,
+            regenerationAllowed: true,
+            explanation: "FULL_CAROUSEL: Recherche, Text und " + CAROUSEL_MIN +
+              "-" + CAROUSEL_MAX + " neue Slides aus einem Auftrag." };
+    }
 
     if (typ === VOLL) {
       if (visual.mode && visual.mode !== ERZEUGEN) {
@@ -232,7 +284,14 @@
     var varianten = Array.isArray(r.visual_variants) ? r.visual_variants : [];
     var befunde = [];
 
-    if (vertrag.requestType === VOLL) {
+    if (vertrag.requestType === CAROUSEL) {
+      var slides = carouselSlideAnzahl(r);
+      if (slides < CAROUSEL_MIN || slides > CAROUSEL_MAX) {
+        befunde.push({ id: "slideCount",
+          message: "FULL_CAROUSEL verlangt " + CAROUSEL_MIN + " oder " +
+            CAROUSEL_MAX + " Slides, geliefert: " + slides + "." });
+      }
+    } else if (vertrag.requestType === VOLL) {
       if (!varianten.length) {
         befunde.push({ id: "missingVisual",
           message: "FULL_CREATIVE ohne visual_variants. Das Bild war der " +
@@ -356,7 +415,9 @@
   }
 
   var api = {
-    FULL_CREATIVE: VOLL, TEXT_REVISION: TEXT, TYPEN: TYPEN,
+    FULL_CREATIVE: VOLL, TEXT_REVISION: TEXT, FULL_CAROUSEL: CAROUSEL,
+    CAROUSEL_FORMAT: CAROUSEL_FORMAT, CAROUSEL_MIN: CAROUSEL_MIN, CAROUSEL_MAX: CAROUSEL_MAX,
+    istCarousel: istCarousel, carouselSlideAnzahl: carouselSlideAnzahl, TYPEN: TYPEN,
     INHERIT_VERIFIED_ASSET: ERBEN, GENERATE_NEW_ASSET: ERZEUGEN,
     ERBFELDER: ERBFELDER,
     WIDERSPRUCH: WIDERSPRUCH,

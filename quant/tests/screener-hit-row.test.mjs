@@ -25,6 +25,14 @@
    dass sie nicht selbst veralten: sie pruefen die ABLEITUNG, nicht den
    heutigen Messwert. Traegt `revisions` eines Tages Werte, bleiben sie
    gruen und die Oberflaeche zieht von allein nach.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – der einfache
+   Screener ist jetzt #/screener in quant/app/pages.js (screener(),
+   factorHits(), screeningWhy()), die Trefferzeile X.stockRow (ui.js), das
+   Urteil der Zeile kommt aus VM.fromScreeningRow -> overall() in
+   quant/app/view-model.js, das quant/engines/plain-verdict.js aufruft.
+   Geprueft wird am Verhalten des View Models ueber echte Screening-Zeilen
+   und an der Quelle der Trefferliste.
    ========================================================================= */
 
 import { test } from "node:test";
@@ -39,13 +47,18 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const Evidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
 const Verdict = require(join(ROOT, "quant/engines/plain-verdict.js"));
-const QUELLE = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
+const VM = require(join(ROOT, "quant/app/view-model.js"));
+const QUELLE = readFileSync(join(ROOT, "quant/app/pages.js"), "utf8");
+const VM_QUELLE = readFileSync(join(ROOT, "quant/app/view-model.js"), "utf8");
+const METHODIK = readFileSync(join(ROOT, "quant/app/page-method.js"), "utf8");
 const SCREENING = join(ROOT, "quant/data/product/factor-evidence-v1/screening.json.gz");
 
 /** Der Abschnitt, der die Trefferliste des einfachen Screeners baut. */
 function einfacherScreenerQuelle() {
-  const ab = QUELLE.indexOf("async function einfacherScreener()");
-  const bis = QUELLE.indexOf("async function screenPage()");
+  /* screeningWhy (Begruendung der Zeile) bis einschliesslich highHits:
+     alles, was die Trefferliste des einfachen Screeners baut. */
+  const ab = QUELLE.indexOf("function screeningWhy(");
+  const bis = QUELLE.indexOf("/* -------------------------------------------------------- Profi-Modus");
   assert.ok(ab > 0 && bis > ab, "der einfache Screener ist nicht mehr auffindbar");
   return QUELLE.slice(ab, bis);
 }
@@ -71,27 +84,46 @@ test("keine Trefferzeile nennt einen Nenner, den kein Titel erreicht", () => {
     "der Hinweis 'von 7 prüfbar' ist zurueck - kein Titel erreicht diesen Nenner");
   assert.doesNotMatch(abschnitt, /\bvon 7\b/,
     "in der Trefferliste steht wieder ein fester Nenner 7");
+  /* Am Verhalten: was die Zeile aus dem View Model zeigt (die Einordnung
+     im Pill), nennt keinen festen Nenner. */
+  if (existsSync(SCREENING)) {
+    const j = JSON.parse(gunzipSync(readFileSync(SCREENING)));
+    for (const [, werte] of Object.entries(j.rows).slice(0, 500)) {
+      const row = Object.fromEntries(j.fields.map((f, i) => [f, werte[i]]));
+      const v = VM.fromScreeningRow(row);
+      assert.doesNotMatch(v.overall.text, /\bvon 7\b/, "die Einordnung der Zeile nennt den Nenner 7: " + v.overall.text);
+    }
+  }
   /* Die Gegenprobe zur Gegenprobe: der Befund selbst darf und soll im
      Code stehen. Faende dieser Test ihn nicht mehr, waere die Erklaerung
-     verlorengegangen - und der naechste Umbau macht denselben Fehler. */
-  assert.match(einfacherScreenerQuelle(), /von 7/,
+     verlorengegangen - und der naechste Umbau macht denselben Fehler.
+     Frontend-Rebuild: die Erklaerung steht jetzt bei overall() im View
+     Model, von dem die Trefferzeile ihre Einordnung bekommt. */
+  const overall = VM_QUELLE.slice(VM_QUELLE.indexOf("* Die Einordnung eines Titels"), VM_QUELLE.indexOf("function overall("));
+  assert.match(overall, /Nenner ist\s+\*?\s*die Zahl der bewerteten Faktoren, nicht sieben/,
     "die Begruendung, warum der Nenner 7 hier nicht steht, ist aus dem Code verschwunden");
 });
 
 test("die rechte Spalte wiederholt nicht die Zahl aus derselben Zeile", () => {
   /* Der Rueckfall waere, den Sortierwert erneut in die Spalte zu legen -
      genau das stand vorher da und machte zwei Drittel aller Zahlen der
-     Seite aus. */
+     Seite aus. Frontend-Rebuild: die rechte Spalte von X.stockRow ist
+     pill/side; in factorHits traegt sie die Einordnung. */
   const abschnitt = einfacherScreenerQuelle();
-  const zeile = abschnitt.slice(abschnitt.indexOf("liste.append(hitRow("));
-  const bis = zeile.indexOf("\n  }");
-  const aufruf = zeile.slice(0, bis > 0 ? bis : 400);
-  assert.doesNotMatch(aufruf, /Math\.round\(werte\[0\]/,
-    "die Spalte traegt wieder den ersten Faktorwert - dieselbe Zahl wie in der Begruendung");
-  assert.match(aufruf, /urteil\.stufe/,
+  const factorHits = abschnitt.slice(abschnitt.indexOf("async function factorHits("), abschnitt.indexOf("async function setupHits("));
+  const aufruf = factorHits.slice(factorHits.indexOf("X.stockRow("), factorHits.indexOf("});", factorHits.indexOf("X.stockRow(")));
+  assert.ok(aufruf.length > 50, "die Trefferzeile ist nicht auffindbar");
+  assert.doesNotMatch(aufruf, /\bside:/,
+    "die Spalte traegt wieder einen Faktorwert - dieselbe Zahl wie in der Begruendung");
+  assert.match(aufruf, /v\.overall\.text/,
     "die Spalte traegt kein Klartext-Urteil mehr");
-  assert.match(aufruf, /urteil\.ton/,
+  assert.match(aufruf, /tone: v\.overall\.tone/,
     "das Urteil wird ohne Tonlage gezeichnet - dann ist es eine Beschriftung, keine Auskunft");
+  /* Und die Einordnung ist wirklich ein Wort, keine Zahl. */
+  const v = VM.fromScreeningRow({ "quantV2.factorEvidence.quality": 90, "quantV2.factorEvidence.growth": 80,
+    "quantV2.factorEvidence.momentum": 50, "quantV2.factorEvidence.value": 20 });
+  assert.doesNotMatch(v.overall.text, /\d/, "die Einordnung traegt eine Zahl: " + v.overall.text);
+  assert.ok(v.overall.tone, "die Einordnung hat keine Tonlage");
 });
 
 /* ---------------------------------------------------------------------
@@ -100,28 +132,45 @@ test("die rechte Spalte wiederholt nicht die Zahl aus derselben Zeile", () => {
 
 test("das Urteil der Trefferzeile kommt aus derselben Engine wie die Aktienseite", () => {
   /* Zwei Urteile aus zwei Rechenwegen waeren frueher oder spaeter zwei
-     verschiedene Urteile ueber denselben Titel. */
-  assert.match(QUELLE, /function urteilAusEvidenz\(ev\)/,
+     verschiedene Urteile ueber denselben Titel. Frontend-Rebuild: die
+     Bruecke ist VM.fromScreeningRow; Aktienseite (VM.stock) und
+     Trefferzeile gehen beide durch VM.overall -> VUPlainVerdict.urteil. */
+  const factorHits = QUELLE.slice(QUELLE.indexOf("async function factorHits("), QUELLE.indexOf("async function setupHits("));
+  assert.match(factorHits, /VM\.fromScreeningRow\(s\.evidence\)/,
     "die Bruecke von der Evidenzzeile zum Urteil fehlt");
-  const bruecke = QUELLE.slice(QUELLE.indexOf("function urteilAusEvidenz(ev)"),
-    QUELLE.indexOf("async function einfacherScreener()"));
-  assert.match(bruecke, /VUPlainVerdict\.urteil/,
+  const overall = VM_QUELLE.slice(VM_QUELLE.indexOf("function overall("), VM_QUELLE.indexOf("function proCon("));
+  assert.match(overall, /PV\.urteil\(/,
     "die Trefferzeile rechnet ihr Urteil selbst statt es aus der Engine zu holen");
-  assert.match(bruecke, /VUFactorEvidence\.FACTOR_ORDER/,
-    "die Faktoren sind aufgezaehlt statt aus der Methodik genommen");
+  assert.match(VM_QUELLE, /require\("\.\.\/engines\/plain-verdict\.js"\) : global\.VUPlainVerdict/);
+  /* Die Faktoren kommen aus der Methodik: die Liste des View Models ist
+     dieselbe wie die der Faktor-Engine. */
+  assert.deepEqual(VM.ORDER, Evidence.FACTOR_ORDER,
+    "die Faktoren sind anders aufgezaehlt als in der Methodik");
+  /* Aktienseite und Trefferzeile kommen fuer dieselben Werte zum selben Urteil. */
+  const werte = { quality: 92, growth: 78, momentum: 40, value: 22, profitability: 81, risk: 55 };
+  const row = Object.fromEntries(Object.entries(werte).map(([id, v]) => ["quantV2.factorEvidence." + id, v]));
+  const zeile = VM.fromScreeningRow(row).overall;
+  const seite = VM.stock({ factors: { state: "AVAILABLE", factors: Object.entries(werte).map(([id, score]) => ({ id, state: "AVAILABLE", score, components: [] })) } }).overall;
+  assert.equal(zeile.id, seite.id);
+  assert.equal(zeile.text, seite.text);
 });
 
 test("die systemische Luecke wird gezaehlt, nicht hineingeschrieben", () => {
   /* Ein hart notierter Faktorname waere heute richtig und in drei Wochen
-     eine Behauptung. Der Satz muss aus den Daten entstehen. */
-  assert.match(QUELLE, /async function luekenSatz\(\)/, "der Satz zur systemischen Luecke fehlt");
-  const satz = QUELLE.slice(QUELLE.indexOf("async function luekenSatz()"),
-    QUELLE.indexOf("function urteilAusEvidenz(ev)"));
-  assert.match(satz, /getFactorEvidenceScreening/,
-    "der Satz liest die Abdeckung nicht aus dem veroeffentlichten Artefakt");
-  assert.match(satz, /FACTOR_ORDER/, "er prueft nicht alle Faktoren der Methodik");
-  assert.match(satz, /FACTOR_MEANING/, "der Faktorname kommt nicht aus der Methodik");
-  assert.doesNotMatch(satz, /Erwartungstrend|revisions/,
+     eine Behauptung. Der Satz muss aus den Daten entstehen.
+     Frontend-Rebuild: luekenSatz() aus dem alten Screener ist entfallen;
+     die systemische Luecke nennt jetzt die Methodik-Seite
+     (quant/app/page-method.js). Dort wird geprueft, dass sie aus der
+     veroeffentlichten Verteilung (ctx.distributionRows ->
+     getFactorEvidenceScreening) gezaehlt und nicht an einen Faktornamen
+     geschrieben ist. */
+  const app = readFileSync(join(ROOT, "quant/app/app.js"), "utf8");
+  assert.match(app, /distributionRows: function[\s\S]*?getFactorEvidenceScreening\(\)/,
+    "die Verteilung liest die Abdeckung nicht aus dem veroeffentlichten Artefakt");
+  assert.match(app, /VUQuantViewModel\.ORDER\.forEach/, "sie prueft nicht alle Faktoren der Methodik");
+  const quelle = ohneKommentare(METHODIK) + ohneKommentare(QUELLE);
+  assert.match(quelle, /distribution(?:Rows)?\(\)/, "die Methodik-Seite liest die Verteilung nicht");
+  assert.doesNotMatch(quelle, /id === "revisions"|"Erwartungstrend[^"]*ohne Daten|höchstens sechs von sieben/,
     "der heute leere Faktor steht als Name im Code - das veraltet, sobald er Werte traegt");
 });
 
@@ -159,6 +208,12 @@ test("das Urteil laesst sich aus einer Screening-Zeile wirklich bilden", () => {
     /* Der Widerspruch, der die Engine einmal hatte, darf hier nicht zurueck. */
     if (u.ton === "schwach") assert.doesNotMatch(u.zaehlsatz, /^Stark/);
     if (u.ton === "gut") assert.doesNotMatch(u.zaehlsatz, /^Schwach/);
+    /* Und die Oberflaeche (View Model) kommt ueber dieselbe Zeile zum
+       selben Urteil. */
+    const row = Object.fromEntries(felder.map((f, i) => [f, werte[i]]));
+    const v = VM.fromScreeningRow(row).overall;
+    assert.equal(v.id, u.stufeId, "Trefferzeile und Engine urteilen verschieden");
+    assert.notEqual(v.id, "KEINE_DATEN");
   }
   assert.equal(ohneUrteil, 0,
     ohneUrteil + " Treffer traegen kein Urteil - die Spalte bliebe dort leer");
@@ -184,4 +239,11 @@ test("der Nenner des Urteils sind die geprueften Punkte, nicht die sieben", () =
     "der Zaehlsatz nennt einen anderen Nenner als die bewerteten Punkte: " + u.zaehlsatz);
   assert.doesNotMatch(u.zaehlsatz, /von 7/,
     "das Urteil rechnet gegen sieben, obwohl nur vier geprueft sind");
+  /* Dasselbe am View Model, das die Oberflaeche zeichnet. */
+  const vm = VM.overall(Evidence.FACTOR_ORDER.map((id, i) => VM.factorView(i < 4
+    ? { id, state: "AVAILABLE", score: 90 - i * 25, components: [] }
+    : { id, state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", components: [] })));
+  assert.equal(vm.rated, 4);
+  assert.match(vm.sub, /von 4 gemessenen Eigenschaften/, "die Oberflaeche nennt einen anderen Nenner: " + vm.sub);
+  assert.doesNotMatch(vm.sub + vm.text, /von 7/);
 });

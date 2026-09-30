@@ -214,3 +214,45 @@ test('Portfolio und Kennzahlen: synthetischer Verlauf', () => {
   assert.ok(m.totalReturn > 0);
   assert.ok(Number.isFinite(m.sharpe));
 });
+
+test('Darvas-Qualitaet: A nur bei allen Kriterien; schwaches Regime erzwingt B', () => {
+  const ctx = ctxOf(darvasRows());
+  const t = 268;
+  ctx.ind.adr20[t] = 0.02;
+  ctx.cross.mom126 = new Array(ctx.bars.date.length).fill(95);
+  const levels = { boxTop: 100, boxBottom: 94 };
+  ctx.regime = 'MIXED';
+  assert.equal(darvas.quality(ctx, t, levels).tier, 'A');
+  assert.equal(darvas.quality(ctx, t, levels).volumePending, true);
+  ctx.regime = 'BROAD_WEAKNESS';
+  assert.equal(darvas.quality(ctx, t, levels).tier, 'B');
+  ctx.regime = 'MIXED';
+  assert.equal(darvas.quality(ctx, t, { boxTop: 100, boxBottom: 80 }).tier, 'B', 'zu weite Box');
+  ctx.ind.adr20[t] = 0.08;
+  assert.equal(darvas.quality(ctx, t, levels).tier, 'B', 'Stop innerhalb einer Tagesspanne');
+  ctx.ind.adr20[t] = 0.02;
+  ctx.regime = null;
+  assert.equal(darvas.quality(ctx, t, levels).tier, 'B', 'ohne Regime kein A');
+});
+
+test('Darvas-Qualitaet: Volumen am Trigger entscheidet endgueltig', () => {
+  const ctx = ctxOf(darvasRows());
+  ctx.regime = 'BROAD_STRENGTH';
+  ctx.cross.mom126 = new Array(ctx.bars.date.length).fill(95);
+  const t = 269; // Ausbruchstag in darvasRows
+  ctx.ind.adr20[t - 1] = 0.02;
+  const pending = { levels: { trigger: 100, boxTop: 100, boxBottom: 94 }, sessions: 1 };
+  ctx.bars.volume[t] = 1e6; // unter 1,5x des Schnitts (~2e6)
+  const weak = darvas.entry(ctx, t, pending, darvas.PARAMS, { stopBuy: (l, o) => stopBuyFill(l, o) });
+  assert.equal(weak.quality.tier, 'B');
+  assert.equal(weak.quality.final, true);
+  ctx.bars.volume[t] = 5e6;
+  const strong = darvas.entry(ctx, t, pending, darvas.PARAMS, { stopBuy: (l, o) => stopBuyFill(l, o) });
+  assert.equal(strong.quality.tier, 'A');
+});
+
+test('Gates: Variante ohne Gate-Definition wird nie freigegeben', () => {
+  const g = evaluateGates('UNBEKANNT', { dailyOhlcvYears: 30 }, {});
+  assert.equal(g.metricsPublishable, false);
+  assert.equal(g.status, 'NOT_COMPARABLE');
+});

@@ -22,7 +22,39 @@ export const PARAMS = Object.freeze({
   entryReadyDistance: 0.03,
   minPrice: 5, minDollarVolume: 5e6,
   maxPendingSessions: 30,
+  // Qualitaetsstufe (VU_FORMALIZATION, Version 1.1.0). Die Setup-Regeln oben
+  // bleiben unveraendert; A/B klassifiziert nur, wie sauber ein Setup ist.
+  qualityRsPercentile: 90,   // DAR-Q-RS
+  qualityMaxHeight: 0.12,    // DAR-Q-TIGHT: enge Box
+  qualityMinStop: 0.04,      // DAR-Q-STOP: Stop mindestens 4 % ...
+  qualityMinStopAdr: 1.0,    // ... und mindestens 1 ADR unter dem Trigger
+  qualityTriggerVolume: 1.5, // DAR-Q-VOL: Ausbruchsvolumen >= 1,5x 50-Tage-Schnitt
 });
+
+// A/B-Qualitaet eines gueltigen Setups. Kriterien mit null sind (noch)
+// nicht pruefbar - z. B. das Volumen vor dem Ausbruch. Ein A-Setup braucht
+// alle pruefbaren Kriterien; das Volumen am Trigger entscheidet endgueltig.
+export function quality(ctx, t, levels, p = PARAMS, triggerVolumeRatio = null) {
+  const adr = ctx.ind.adr20[t];
+  const mom = ctx.cross?.mom126?.[t];
+  const height = Number.isFinite(levels.boxTop) && Number.isFinite(levels.boxBottom) ? 1 - levels.boxBottom / levels.boxTop : null;
+  const regime = ctx.regime || null;
+  const criteria = {
+    'DAR-Q-REGIME': regime ? regime !== 'BROAD_WEAKNESS' : null,
+    'DAR-Q-RS': Number.isFinite(mom) ? mom >= p.qualityRsPercentile : null,
+    'DAR-Q-TIGHT': height !== null ? height <= p.qualityMaxHeight : null,
+    'DAR-Q-STOP': height !== null && Number.isFinite(adr) ? height >= Math.max(p.qualityMinStop, p.qualityMinStopAdr * adr) : null,
+    'DAR-Q-VOL': Number.isFinite(triggerVolumeRatio) ? triggerVolumeRatio >= p.qualityTriggerVolume : null,
+  };
+  const pre = ['DAR-Q-REGIME', 'DAR-Q-RS', 'DAR-Q-TIGHT', 'DAR-Q-STOP'];
+  const tier = pre.every((k) => criteria[k] === true) && criteria['DAR-Q-VOL'] !== false ? 'A' : 'B';
+  return {
+    tier, criteria, regime,
+    measures: { rsPercentile: Number.isFinite(mom) ? Math.round(mom * 10) / 10 : null, boxHeight: height, adr20: adr, triggerVolumeRatio },
+    volumePending: criteria['DAR-Q-VOL'] === null,
+    final: criteria['DAR-Q-VOL'] !== null,
+  };
+}
 
 // Juengste Box, deren Oberkante bis einschliesslich t nicht ueberschritten
 // wurde. Nutzt nur Balken <= t.
@@ -81,7 +113,7 @@ export function scan(ctx, t, p = PARAMS, opts = {}) {
   });
   const distance = box.top.value / c - 1;
   facts.distanceToTrigger = distance;
-  return { stage: distance <= p.entryReadyDistance ? 'ENTRY_READY' : 'SETUP', rules, facts, levels };
+  return { stage: distance <= p.entryReadyDistance ? 'ENTRY_READY' : 'SETUP', rules, facts, levels, quality: quality(ctx, t, levels, p) };
 }
 
 export function entry(ctx, t, pending, p = PARAMS, fill) {
@@ -90,7 +122,11 @@ export function entry(ctx, t, pending, p = PARAMS, fill) {
   if (!(bars.high[t] > trig)) return null;
   const f = fill.stopBuy(trig, bars.open[t]);
   const stop = pending.levels.boxBottom;
-  return { fill: f.price, gapped: f.gapped, stop, ruleId: 'DAR-ENTRY-01', stopRuleId: 'DAR-STOP-01', sameBarStop: bars.low[t] <= stop };
+  // Volumen am Trigger: Ausbruchstag gegen den 50-Tage-Schnitt bis zum Vortag.
+  const v50 = ctx.ind.vol50[t - 1];
+  const volumeRatio = Number.isFinite(v50) && v50 > 0 && Number.isFinite(bars.volume[t]) ? bars.volume[t] / v50 : null;
+  const q = quality(ctx, t - 1, pending.levels, p, volumeRatio);
+  return { fill: f.price, gapped: f.gapped, stop, ruleId: 'DAR-ENTRY-01', stopRuleId: 'DAR-STOP-01', sameBarStop: bars.low[t] <= stop, volumeRatio, quality: q };
 }
 
 export function invalidate(ctx, t, pending, p = PARAMS) {
@@ -113,6 +149,8 @@ export function manage(ctx, t, pos, p = PARAMS) {
 }
 
 export default {
-  id: 'DARVAS_BOX', variant: 'DARVAS_BOX_N3_VU', version: '1.0.0', timeframe: 'daily',
-  PARAMS, scan, entry, invalidate, manage,
+  id: 'DARVAS_BOX', variant: 'DARVAS_BOX_N3_VU', version: '1.1.0', timeframe: 'daily',
+  PARAMS, scan, entry, invalidate, manage, quality,
+  // Taegliche Neuklassifikation wartender Setups (vor dem Trigger).
+  classify: (ctx, t, sig) => quality(ctx, t, sig.levels),
 };

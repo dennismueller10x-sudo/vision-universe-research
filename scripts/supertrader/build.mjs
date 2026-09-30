@@ -314,7 +314,7 @@ export function build() {
   coverage.measuredAt = barsGeneratedAt;
   const gbCoverage = greenblattCoverage();
 
-  const ctxOf = (inst) => ({ symbol: inst.symbol, bars: inst.bars, ind: inst.ind, cross: cross.get(inst.symbol), weekly: inst.weekly, weekAt: inst.weekAt });
+  const ctxOf = (inst) => ({ symbol: inst.symbol, bars: inst.bars, ind: inst.ind, cross: cross.get(inst.symbol), weekly: inst.weekly, weekAt: inst.weekAt, regime: CURRENT_REGIME });
 
   CURRENT_REGIME = readJson(rel('quant/data/product/market-regime-v1.json')).regime || null;
   /* --- Live-Lauf je Strategie --- */
@@ -357,6 +357,9 @@ export function build() {
         const last = n - 1;
         if (!state.signal.regimeAtCreation) state.signal.regimeAtCreation = CURRENT_REGIME;
         state.signal.anchor = { date: inst.bars.date[last], close: inst.bars.close[last] };
+        // Qualitaet wartender Setups wird taeglich neu klassifiziert; ab dem
+        // Trigger ist sie eingefroren (Volumen am Trigger entschieden).
+        if (engine.classify && PENDING.has(state.signal.state)) state.signal.quality = engine.classify(ctx, last, state.signal);
         state.signal.lastPrice = inst.bars.close[last];
         stillOpen.push(state.signal);
       }
@@ -484,7 +487,8 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     counts.CLOSED += closed.length; counts.INVALIDATED += l.invalidated.length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
     const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
-    strategiesOut[id] = { liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: l.invalidated.length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
+    const quality = { A: open.filter((x) => x.quality?.tier === 'A').length, B: open.filter((x) => x.quality?.tier === 'B').length };
+    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: l.invalidated.length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
     for (const s of scan) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: null, state: s.stage });
   }
@@ -504,9 +508,11 @@ function buildBacktests(registry, coverage, gbCoverage) {
       const engine = LIVE_ENGINES.find((e) => e.variant === v.variant_id);
       const timeframe = engine?.timeframe || (s.strategy_id === 'WEINSTEIN_STAGE' ? 'weekly' : 'daily');
       const gateId = v.variant_id === 'KK_COMMON_BREAKOUT_ORH' ? 'KK_COMMON_BREAKOUT_ORH' : mapVariant(v.variant_id);
-      const g = evaluateGates(gateId, coverage, {
+      const g = v.status === 'ADVANCED_RESEARCH'
+        ? { status: 'ADVANCED_RESEARCH', metricsPublishable: false, gates: [], failedGates: ['ADVANCED_RESEARCH'] }
+        : evaluateGates(gateId, coverage, {
         timeframe, baselines: s.baselines, missingFields: s.strategy_id === 'GREENBLATT_VALUE' ? gbCoverage.missingFields : [],
-      });
+        });
       out.push({
         strategyId: s.strategy_id, variantId: v.variant_id, label: v.label, active: v.active, vuFormalization: v.vu_formalization,
         status: g.status, metricsPublishable: g.metricsPublishable, metrics: null,
@@ -527,6 +533,7 @@ function buildBacktests(registry, coverage, gbCoverage) {
 function mapVariant(v) {
   if (v.startsWith('KK_COMMON_BREAKOUT')) return 'KK_COMMON_BREAKOUT_DAILY';
   if (v.startsWith('WEINSTEIN_STAGE2')) return 'WEINSTEIN_STAGE2_WEEKLY';
+  if (v === 'GREENBLATT_GLOBAL_VU') return v; // keine Gate-Definition -> NOT_COMPARABLE
   if (v.startsWith('DARVAS')) return 'DARVAS_BOX_N3_VU';
   if (v.startsWith('MINERVINI')) return 'MINERVINI_TT_VCP_A';
   if (v.startsWith('GREENBLATT')) return 'GREENBLATT_US_ORIGINAL';

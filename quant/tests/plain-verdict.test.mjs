@@ -14,6 +14,12 @@
 
    3. Es gibt keine Gesamtnote. Wenn jemand spaeter eine einbaut, soll
       dieser Test brechen und nicht die Produktdoku still falsch werden.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – die beiden
+   Oberflaechen-Tests am Ende lesen jetzt quant/app/ui.js (X.more) bzw.
+   quant/app/pages.js (home) statt vu2/experience.js; der Aufklapper wird
+   am Verhalten geprueft. Die Pruefung von scripts/vu2/production-smoke.mjs
+   ist unveraendert.
    ========================================================================= */
 
 import { test } from "node:test";
@@ -23,6 +29,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gunzipSync } from "node:zlib";
 import { createRequire } from "node:module";
+import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -159,20 +166,70 @@ test("der Aufklapper baut seinen Inhalt erst beim Oeffnen, aber er baut ihn", ()
   assert.match(smoke, /zeilen\.length<20/,
     "die Schwelle wurde gesenkt, statt den Smoke aufklappen zu lassen");
 
-  const quelle = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  assert.match(quelle, /function mehr\(titel,bauen,offen\)/, "der Aufklapper fehlt");
-  assert.match(quelle, /addEventListener\('toggle'/,
-    "der Inhalt wird nicht mehr beim Oeffnen gebaut - dann ist er entweder immer da oder nie");
+  /* Frontend-Rebuild: der Aufklapper ist X.more(title, build, opts) in
+     quant/app/ui.js. Er wird hier am Verhalten geprueft - mit einem
+     minimalen Knoten-Ersatz fuer QuantShell.el. */
+  const quelle = readFileSync(join(ROOT, "quant/app/ui.js"), "utf8");
+  assert.match(quelle, /function more\(title, build, opts\)/, "der Aufklapper fehlt");
+  function knoten(tag, attrs, kids) {
+    const n = { tag, attrs: attrs || {}, kids: [], listeners: {}, open: false };
+    n.append = (...xs) => { xs.forEach((x) => { if (x) n.kids.push(x); }); };
+    n.addEventListener = (typ, fn) => { (n.listeners[typ] = n.listeners[typ] || []).push(fn); };
+    n.fire = (typ) => (n.listeners[typ] || []).forEach((fn) => fn());
+    (Array.isArray(kids) ? kids : kids ? [kids] : []).forEach((k) => { if (k) n.kids.push(k); });
+    return n;
+  }
+  const sandbox = { QuantShell: { el: knoten } };
+  sandbox.window = sandbox;
+  vm.createContext(sandbox);
+  vm.runInContext(quelle, sandbox);
+  let gebaut = 0;
+  const d = sandbox.QX.more("Mehr", () => { gebaut++; return [knoten("p", {}, []), knoten("p", {}, [])]; });
+  assert.equal(d.tag, "details", "der Aufklapper ist kein <details>");
+  assert.equal(gebaut, 0, "der Inhalt wird gebaut, bevor jemand aufklappt");
+  const body = d.kids.find((k) => k.attrs && k.attrs.class === "qx-more-body");
+  assert.ok(body, "der Aufklapper hat keinen Inhaltsbereich");
+  d.open = true; d.fire("toggle");
+  assert.equal(gebaut, 1, "der Inhalt wird nicht mehr beim Oeffnen gebaut - dann ist er entweder immer da oder nie");
+  assert.equal(body.kids.length, 2, "der Aufklapper oeffnet sich, bleibt aber leer");
+  d.open = false; d.fire("toggle"); d.open = true; d.fire("toggle");
+  assert.equal(gebaut, 1, "der Inhalt wird bei jedem Oeffnen neu gebaut");
+  assert.equal(body.kids.length, 2);
+  /* Ein offen gestarteter Aufklapper ist sofort gefuellt. */
+  let sofort = 0;
+  sandbox.QX.more("Offen", () => { sofort++; return knoten("p", {}, []); }, { open: true });
+  assert.equal(sofort, 1, "ein offen gestarteter Aufklapper ist leer");
 });
 
 test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () => {
-  const quelle = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  const kopf = quelle.slice(quelle.indexOf("async function homePage(){"), quelle.indexOf("function weg("));
+  /* Frontend-Rebuild: die Startseite ist home() in quant/app/pages.js; der
+     erste Bildschirm ist .qx-hero, die Wege sind die Tueren (doors()). Das
+     Versprechen lautet jetzt "Aktien verstehen – mit nachvollziehbaren
+     Gründen." (neue Formulierung des Rebuilds; geprueft wird, dass der
+     erste Bildschirm mit dem Versprechen "Aktien verstehen" als h1 fuehrt
+     und die Suche - die Antwort - gleich darunter anbietet). */
+  const quelle = readFileSync(join(ROOT, "quant/app/pages.js"), "utf8");
+  const kopf = quelle.slice(quelle.indexOf("async function home("), quelle.indexOf("/* ============================================================ SCREENER"));
   assert.ok(kopf.length > 200, "die Startseite ist nicht auffindbar");
-  assert.match(kopf, /q-hero/, "die Startseite hat keinen ersten Bildschirm mehr");
-  assert.match(kopf, /Aktien verstehen, ohne Vorwissen/,
+  /* Discover-Angleichung (30.09.2026): der erste Bildschirm ist Discovers
+     Intro (header.v2-intro, zusaetzlich .qx-hero), die Tueren sind
+     Discovers v2-world-door. */
+  const heroAt = kopf.indexOf('el("header", { class: "v2-intro qx-intro qx-hero" }');
+  assert.ok(heroAt > 0, "die Startseite hat keinen ersten Bildschirm mehr");
+  const hero = kopf.slice(heroAt, kopf.indexOf("]));", heroAt));
+  assert.ok(hero.length > 50, "die Startseite hat keinen ersten Bildschirm mehr");
+  assert.match(hero, /el\("h1", \{ text: "Aktien verstehen/,
     "das Versprechen der Startseite ist verschwunden");
-  /* Drei Wege, nicht mehr. Ein vierter waere wieder eine Entscheidung. */
-  const wege = (kopf.match(/weg\('/g) || []).length;
-  assert.equal(wege, 3, "die Startseite bietet " + wege + " Wege an, drei sind vereinbart");
+  assert.match(hero, /onclick: ctx\.openSearch/, "der erste Bildschirm bietet keine Antwort an (Suche)");
+  assert.ok(heroAt < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");
+  /* Eine feste, kleine Zahl von Wegen - keine Auswahlwand. Vereinbart
+     waren drei; der Frontend-Rebuild-Auftrag des Owners (30.09.2026, Teil 2
+     "R. HOME") legt ausdruecklich VIER fest: Aktie analysieren, Quant
+     Screener, Strategien, Aktuelle Setups. Die Pruefung bleibt exakt - ein
+     fuenfter Weg waere wieder eine Entscheidung. */
+  const tueren = kopf.slice(kopf.indexOf("doors(["), kopf.indexOf("])]));", kopf.indexOf("doors([")));
+  const wege = (tueren.match(/\{ kicker: "/g) || []).length;
+  assert.equal(wege, 4, "die Startseite bietet " + wege + " Wege an, vier sind vereinbart (Owner-Auftrag R)");
+  for (const ziel of ["X.routes.stocks()", "X.routes.screener()", "X.routes.strategies()", 'X.routes.screener("frage=setups")'])
+    assert.ok(tueren.includes(ziel), "der vereinbarte Weg fehlt: " + ziel);
 });

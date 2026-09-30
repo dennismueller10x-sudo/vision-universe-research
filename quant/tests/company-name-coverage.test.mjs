@@ -18,6 +18,14 @@
    Gehalten wird hier nicht die Zahl der Namen, sondern die Regel: ein
    Kürzel ist kein Name, und was ohne Namen bleibt, hat einen belegten
    Grund. Geprüft am echten Bestand.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – "die Übersicht
+   schreibt kein Kürzel zweimal" prüfte Quelltextmuster in vu2/experience.js
+   (zeilenName, stockIdentity), das geloescht ist. Die Regel wohnt jetzt in
+   quant/app/ui.js (QX.companyName, QX.stockRow) und im Kopf von
+   quant/app/page-stock.js. Beides wird ausgefuehrt: die Zeile und der Kopf
+   der Aktienseite in einem DOM-Doppel mit den echten Dateien, an einem
+   echten Titel ohne Namen aus dem Dienst.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -25,6 +33,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -129,25 +138,42 @@ test("die Hülle entscheidet vor dem Inhalt - ein Vorzugs-ETF ist ein Fonds", ()
   assert.equal(etn, "ETN");
 });
 
-test("die Übersicht schreibt kein Kürzel zweimal", () => {
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  assert.match(seite, /const zeilenName=\(s\)=>\(s\.name&&s\.name!==s\.ticker\)\?s\.name:'Firmenname nicht veröffentlicht'/,
-    "die Zeile hat keinen eigenen Satz für einen fehlenden Namen");
-  assert.match(seite, /text:zeilenName\(s\)/, "die Liste benutzt den Satz nicht");
+test("die Übersicht schreibt kein Kürzel zweimal", async () => {
+  const { win, lade } = seitenUmgebung();
+  lade("quant/ui/shell.js", "quant/app/ui.js");
+  const X = win.QX;
+  /* Die Zeile hat einen eigenen Satz fuer einen fehlenden Namen - und ein
+     Kuerzel, das als Name geliefert wird, ist kein Name. */
+  const SATZ = "Firmenname nicht veröffentlicht";
+  assert.equal(X.companyName({ ticker: "AAAC", name: null }), SATZ, "die Zeile hat keinen eigenen Satz für einen fehlenden Namen");
+  assert.equal(X.companyName({ ticker: "AAAC", name: "AAAC" }), SATZ, "ein Kürzel wird als Name ausgegeben");
+  assert.equal(X.companyName({ ticker: "AAAC", name: "Columbia AAA CLO ETF" }), "Columbia AAA CLO ETF");
+  /* Und die Liste benutzt den Satz: die gezeichnete Zeile nennt das Kuerzel
+     genau einmal. */
+  const zeile = X.stockRow({ ticker: "AAAC", name: X.companyName({ ticker: "AAAC", name: "AAAC" }) });
+  assert.equal(zeile.textContent.split("AAAC").length - 1, 1, "die Zeile schreibt das Kürzel zweimal: " + zeile.textContent);
+  assert.ok(zeile.textContent.includes(SATZ));
+  /* Alle Listen der neuen Oberflaeche fuehren den Namen ueber companyName
+     oder ueber das Namensverzeichnis, das Kuerzel-Namen gar nicht erst
+     aufnimmt - nie ueber das rohe Namensfeld. */
+  const pages = readFileSync(join(ROOT, "quant/app/pages.js"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.equal(/stockRow\(\{[^}]*name:\s*s\.name\b/.test(pages), false, "eine Liste schreibt das rohe Namensfeld");
+
   /* Und die Aktienseite macht aus einem fehlenden Namen keine Überschrift
      aus dem Kürzel, unter der dasselbe Kürzel ein zweites Mal steht.
-     Die Regel ist dieselbe wie vorher; sie wohnt seit dem Frontend-Umbau in
-     `stockIdentity` statt in einem `heading(...)`-Aufruf. Geprüft wird
-     deshalb die Regel und nicht mehr die alte Zeile. */
-  const kopf = seite.slice(seite.indexOf("function stockIdentity(s){"),
-                           seite.indexOf("async function stockPage"));
-  assert.ok(kopf.length > 200, "der Kopf der Aktienseite ist nicht auffindbar");
-  assert.match(kopf, /const benannt=s\.name&&s\.name!==s\.ticker/,
-    "der Kopf unterscheidet nicht zwischen belegtem Namen und blossem Kürzel");
-  assert.match(kopf, /el\('h1',\{text:benannt\?s\.name:'Aktienanalyse'\}\)/,
-    "ohne belegten Namen darf das Kürzel nicht zur Überschrift werden");
-  assert.match(kopf, /Für dieses Kürzel ist kein belegter Unternehmensname veröffentlicht/,
+     Geprueft am gezeichneten Kopf, fuer einen echten Titel ohne Namen. */
+  const api = Service();
+  const ohne = (await api.getUniverse()).stocks.find((s) => !s.name);
+  if (!ohne) return;   /* derzeit hat jeder Titel einen Namen */
+  const stock = await api.getStockIntelligence(ohne.ticker);
+  const kopf = await kopfDerAktienseite(stock);
+  const h1 = knoten(kopf, (n) => n.tagName === "H1")[0];
+  assert.notEqual(h1.textContent.trim(), stock.ticker,
+    "ohne belegten Namen darf das Kürzel nicht zur Überschrift werden (" + stock.ticker + ")");
+  assert.ok(kopf.textContent.includes(SATZ) || /kein belegter Unternehmensname/.test(kopf.textContent),
     "ein fehlender Name muss als Satz dastehen, nicht als Wiederholung des Kürzels");
+  const vorkommen = kopf.textContent.split(stock.ticker).length - 1;
+  assert.ok(vorkommen <= 1, "der Kopf der Aktienseite schreibt das Kürzel " + vorkommen + "-mal: " + kopf.textContent);
 });
 
 test("der Gattungsbericht belegt jedes Muster und klassifiziert nach keinem mehrdeutigen", () => {
@@ -172,3 +198,86 @@ test("der Gattungsbericht belegt jedes Muster und klassifiziert nach keinem mehr
   /* Und der Bericht nennt ausdrücklich, welche frühere Aussage er korrigiert. */
   assert.match(b.correctsEarlierStatement, /M37/);
 });
+
+/* ------------------------------------------------------------------------
+   DIE SEITE AUSGEFUEHRT, NICHT GELESEN.
+
+   Ein kleines DOM-Doppel, in dem die echten Dateien der neuen Oberflaeche
+   laufen (quant/ui/shell.js fuer el(), quant/app/view-model.js, ui.js,
+   page-stock.js). Geprueft wird, was im Kopf der Aktienseite STEHT - nicht,
+   welche Zeichenfolge im Quelltext vorkommt. Alle Abfragen nach dem Kopf
+   bleiben absichtlich offen: der Kopf steht, bevor die Seite auf Faktoren,
+   Setup und Chart wartet, und genau er wird hier gelesen.
+   ------------------------------------------------------------------------ */
+function seitenUmgebung() {
+  const textNode = (s) => ({ nodeType: 3, textContent: String(s), children: [] });
+  function element(tag) {
+    return {
+      tagName: String(tag).toUpperCase(), nodeType: 1, children: [], attributes: {}, dataset: {}, style: {},
+      listeners: {}, className: "", _text: "", open: false, value: "", disabled: false,
+      classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      get textContent() { return this._text + this.children.map((c) => c.textContent).join(""); },
+      set textContent(v) { this._text = String(v); this.children = []; },
+      get firstChild() { return this.children[0] || null; },
+      get isConnected() { return true; },
+      appendChild(c) { this.children.push(c); return c; },
+      removeChild(c) { this.children = this.children.filter((x) => x !== c); return c; },
+      append(...k) { for (const c of k) if (c !== null && c !== undefined) this.appendChild(typeof c === "string" ? textNode(c) : c); },
+      replaceChildren(...k) { this.children = []; this._text = ""; this.append(...k); },
+      setAttribute(k, v) { this.attributes[k] = String(v); if (k === "id") this.id = String(v); },
+      getAttribute(k) { return k in this.attributes ? this.attributes[k] : null; },
+      removeAttribute(k) { delete this.attributes[k]; },
+      addEventListener(k, f) { (this.listeners[k] ||= []).push(f); },
+      removeEventListener() {}, dispatchEvent() {},
+      querySelector() { return null; }, querySelectorAll() { return []; },
+      getBoundingClientRect() { return { width: 640, height: 320, left: 0, top: 0 }; },
+      scrollIntoView() {}, focus() {}, showModal() { this.open = true; }, close() { this.open = false; }
+    };
+  }
+  const document = { createElement: element, createElementNS: (_, t) => element(t), createTextNode: textNode,
+    body: element("body"), readyState: "loading", title: "", activeElement: null,
+    addEventListener() {}, querySelector: () => null, getElementById: () => null };
+  const win = { document, console, setTimeout, clearTimeout, URLSearchParams, Event: class {},
+    location: { hash: "", search: "", pathname: "/quant/" }, history: { replaceState() {} },
+    localStorage: { getItem: () => null, setItem() {} }, innerWidth: 1200,
+    addEventListener() {}, removeEventListener() {}, scrollTo() {} };
+  win.window = win;
+  vm.createContext(win);
+  const lade = (...pfade) => { for (const p of pfade) vm.runInContext(readFileSync(join(ROOT, p), "utf8"), win, { filename: p }); };
+  return { win, document, lade };
+}
+function knoten(node, pred, out = []) {
+  if (!node || !node.children) return out;
+  if (node.nodeType === 1 && pred(node)) out.push(node);
+  for (const c of node.children) knoten(c, pred, out);
+  return out;
+}
+/* Der Kopf der Aktienseite fuer genau diese Dienstantwort. */
+async function kopfDerAktienseite(stock) {
+  const { win, document, lade } = seitenUmgebung();
+  lade("quant/ui/shell.js", "quant/engines/plain-verdict.js", "quant/app/view-model.js", "quant/app/ui.js", "quant/app/page-stock.js");
+  const main = document.createElement("main");
+  const offen = () => new Promise(() => {});
+  const api = new Proxy({ getIntelligenceBrief: async () => null, getStockIntelligence: async () => stock },
+    { get: (t, k) => (k in t ? t[k] : offen) });
+  /* Namensverzeichnis leer und sofort da: der Kopf nennt dann, was der
+     Dienst fuer DIESEN Titel liefert. Alles andere bleibt offen. */
+  const ctx = new Proxy({ api, names: {}, types: {}, entries: {}, loadNames: async () => ({}) },
+    { get: (t, k) => (k in t ? t[k] : offen) });
+  win.QXStock.render(main, stock.ticker, ctx);
+  for (let i = 0; i < 10; i++) await new Promise((r) => setImmediate(r));
+  const kopf = main.children.find((c) => knoten(c, (n) => n.tagName === "H1").length);
+  assert.ok(kopf, "die Aktienseite hat fuer " + stock.ticker + " keinen Kopf gezeichnet");
+  return kopf;
+}
+
+function Service() {
+  const Services = require(join(ROOT, "quant/api/product-services.js"));
+  const Policy = require(join(ROOT, "quant/engines/display-policy.js"));
+  const Query = require(join(ROOT, "quant/engines/query.js"));
+  return Services.create({
+    loadJSON: async (p) => JSON.parse(readFileSync(join(ROOT, p), "utf8")),
+    loadCompressedJSON: async (p) => JSON.parse(gunzipSync(readFileSync(join(ROOT, p))).toString("utf8")),
+    displayPolicy: Policy, queryEngine: Query
+  });
+}

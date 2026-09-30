@@ -20,6 +20,13 @@
      3. Ein Konflikt wird festgehalten, nie still überschrieben.
      4. Liste und Aktienseite nennen denselben Namen, wenn sie dieselbe
         Wertpapierzeile meinen.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – der Konflikthinweis
+   (identitaetsHinweis/IDENTITAET_GRUND) stand in vu2/experience.js, das
+   geloescht ist. Er wohnt jetzt in quant/app/view-model.js (identityNote,
+   IDENTITY_REASON) und wird von quant/app/page-stock.js in den Kopf der
+   Aktienseite gesetzt. Geprueft wird beides als Verhalten: der Satz per
+   require(), die Seite in einem DOM-Doppel mit den echten Dateien.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -27,6 +34,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
+import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -242,21 +250,105 @@ test("ein Konflikt steht auf der Seite und wird nicht still entschieden", async 
     "der \"andere Name\" ist derselbe Name");
   const sauber = await api.getStockIntelligence("AAPL");
   assert.equal(sauber.identityConflict, undefined, "AAPL traegt eine Konfliktangabe");
-  /* Und die Seite zeigt es - mit beiden Namen und ohne internen Code zuerst. */
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  assert.match(seite, /if\(s\.identityConflict\)main\.append\(identitaetsHinweis\(s\)\)/);
-  const block = seite.slice(seite.indexOf("function identitaetsHinweis("), seite.indexOf("function briefListe("));
-  assert.match(block, /zwei verschiedene Firmennamen/);
-  assert.match(block, /alternativeName/);
-  assert.match(block, /entscheiden diese Frage nicht/);
-  /* Die Erklaerungen je Art sind Alltagssprache. */
-  /* Der Name der Tabelle ist selbst ein interner Code - die Pruefung beginnt
-     deshalb NACH der Klammer und nicht bei der Deklaration. Genau daran hat
-     sich schon der Branchenvorlagen-Test zweimal selbst ausgeloest. */
-  const grundStart = seite.indexOf("const IDENTITAET_GRUND={");
-  const grund = seite.slice(seite.indexOf("{", grundStart) + 1, seite.indexOf("function identitaetsHinweis("));
+  /* Und die Seite zeigt es - mit beiden Namen und ohne internen Code zuerst.
+     Vorher Quelltextmuster in experience.js; jetzt der Satz aus dem View
+     Model, ausgefuehrt, und der gezeichnete Kopf der Aktienseite. */
+  const VM = require(join(ROOT, "quant/app/view-model.js"));
+  const hinweis = VM.identityNote(konflikt);
+  assert.ok(hinweis, "das View Model macht aus dem Konflikt keinen Hinweis");
+  assert.match(hinweis.title, /zwei verschiedene Firmennamen/);
+  assert.ok(hinweis.shown.includes(konflikt.name), "der angezeigte Name steht nicht im Hinweis");
+  assert.ok(hinweis.shown.includes(konflikt.identityConflict.alternativeName), "der andere Name steht nicht im Hinweis");
+  assert.match(hinweis.why, /entscheiden diese Frage nicht/);
+  assert.equal(VM.identityNote(sauber), null, "ein Titel ohne Konflikt bekommt einen Konflikthinweis");
+  /* Die Erklaerungen je Art sind Alltagssprache - keine Art ohne Satz,
+     kein interner Code darin. */
   for (const art of ["D", "F", "G"]) {
-    assert.ok(new RegExp("\\b" + art + ":").test(grund), "keine Erklaerung fuer Konfliktart " + art);
+    assert.ok(typeof VM.IDENTITY_REASON[art] === "string" && VM.IDENTITY_REASON[art].length > 30,
+      "keine Erklaerung fuer Konfliktart " + art);
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(VM.IDENTITY_REASON[art]), false, "interner Code in der Erklaerung zu " + art);
   }
-  assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(grund), false, "interner Code in der Erklaerung");
+  for (const teil of [hinweis.title, hinweis.shown, hinweis.why]) {
+    assert.equal(/[A-Z]{3,}_[A-Z_]{3,}/.test(teil), false, "interner Code im Hinweis: " + teil);
+  }
+  /* Die Seite zeichnet ihn - beide Namen im Kopf von AACI, keiner bei AAPL. */
+  const kopf = (await kopfDerAktienseite(konflikt)).textContent;
+  assert.match(kopf, /zwei verschiedene Firmennamen/, "die Aktienseite zeigt den Konflikt nicht");
+  assert.ok(kopf.includes(konflikt.name) && kopf.includes(konflikt.identityConflict.alternativeName),
+    "die Aktienseite nennt nicht beide Namen");
+  assert.match(kopf, /entscheiden diese Frage nicht/);
+  const kopfSauber = (await kopfDerAktienseite(sauber)).textContent;
+  assert.equal(/zwei verschiedene Firmennamen/.test(kopfSauber), false, "AAPL zeigt einen Konflikthinweis");
 });
+
+/* ------------------------------------------------------------------------
+   DIE SEITE AUSGEFUEHRT, NICHT GELESEN.
+
+   Ein kleines DOM-Doppel, in dem die echten Dateien der neuen Oberflaeche
+   laufen (quant/ui/shell.js fuer el(), quant/app/view-model.js, ui.js,
+   page-stock.js). Geprueft wird, was im Kopf der Aktienseite STEHT - nicht,
+   welche Zeichenfolge im Quelltext vorkommt. Alle Abfragen nach dem Kopf
+   bleiben absichtlich offen: der Kopf steht, bevor die Seite auf Faktoren,
+   Setup und Chart wartet, und genau er wird hier gelesen.
+   ------------------------------------------------------------------------ */
+function seitenUmgebung() {
+  const textNode = (s) => ({ nodeType: 3, textContent: String(s), children: [] });
+  function element(tag) {
+    return {
+      tagName: String(tag).toUpperCase(), nodeType: 1, children: [], attributes: {}, dataset: {}, style: {},
+      listeners: {}, className: "", _text: "", open: false, value: "", disabled: false,
+      classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      get textContent() { return this._text + this.children.map((c) => c.textContent).join(""); },
+      set textContent(v) { this._text = String(v); this.children = []; },
+      get firstChild() { return this.children[0] || null; },
+      get isConnected() { return true; },
+      appendChild(c) { this.children.push(c); return c; },
+      removeChild(c) { this.children = this.children.filter((x) => x !== c); return c; },
+      append(...k) { for (const c of k) if (c !== null && c !== undefined) this.appendChild(typeof c === "string" ? textNode(c) : c); },
+      replaceChildren(...k) { this.children = []; this._text = ""; this.append(...k); },
+      setAttribute(k, v) { this.attributes[k] = String(v); if (k === "id") this.id = String(v); },
+      getAttribute(k) { return k in this.attributes ? this.attributes[k] : null; },
+      removeAttribute(k) { delete this.attributes[k]; },
+      addEventListener(k, f) { (this.listeners[k] ||= []).push(f); },
+      removeEventListener() {}, dispatchEvent() {},
+      querySelector() { return null; }, querySelectorAll() { return []; },
+      getBoundingClientRect() { return { width: 640, height: 320, left: 0, top: 0 }; },
+      scrollIntoView() {}, focus() {}, showModal() { this.open = true; }, close() { this.open = false; }
+    };
+  }
+  const document = { createElement: element, createElementNS: (_, t) => element(t), createTextNode: textNode,
+    body: element("body"), readyState: "loading", title: "", activeElement: null,
+    addEventListener() {}, querySelector: () => null, getElementById: () => null };
+  const win = { document, console, setTimeout, clearTimeout, URLSearchParams, Event: class {},
+    location: { hash: "", search: "", pathname: "/quant/" }, history: { replaceState() {} },
+    localStorage: { getItem: () => null, setItem() {} }, innerWidth: 1200,
+    addEventListener() {}, removeEventListener() {}, scrollTo() {} };
+  win.window = win;
+  vm.createContext(win);
+  const lade = (...pfade) => { for (const p of pfade) vm.runInContext(readFileSync(join(ROOT, p), "utf8"), win, { filename: p }); };
+  return { win, document, lade };
+}
+function knoten(node, pred, out = []) {
+  if (!node || !node.children) return out;
+  if (node.nodeType === 1 && pred(node)) out.push(node);
+  for (const c of node.children) knoten(c, pred, out);
+  return out;
+}
+/* Der Kopf der Aktienseite fuer genau diese Dienstantwort. */
+async function kopfDerAktienseite(stock) {
+  const { win, document, lade } = seitenUmgebung();
+  lade("quant/ui/shell.js", "quant/engines/plain-verdict.js", "quant/app/view-model.js", "quant/app/ui.js", "quant/app/page-stock.js");
+  const main = document.createElement("main");
+  const offen = () => new Promise(() => {});
+  const api = new Proxy({ getIntelligenceBrief: async () => null, getStockIntelligence: async () => stock },
+    { get: (t, k) => (k in t ? t[k] : offen) });
+  /* Namensverzeichnis leer und sofort da: der Kopf nennt dann, was der
+     Dienst fuer DIESEN Titel liefert. Alles andere bleibt offen. */
+  const ctx = new Proxy({ api, names: {}, types: {}, entries: {}, loadNames: async () => ({}) },
+    { get: (t, k) => (k in t ? t[k] : offen) });
+  win.QXStock.render(main, stock.ticker, ctx);
+  for (let i = 0; i < 10; i++) await new Promise((r) => setImmediate(r));
+  const kopf = main.children.find((c) => knoten(c, (n) => n.tagName === "H1").length);
+  assert.ok(kopf, "die Aktienseite hat fuer " + stock.ticker + " keinen Kopf gezeichnet");
+  return kopf;
+}

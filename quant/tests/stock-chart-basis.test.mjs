@@ -10,17 +10,26 @@
    Option C bindet das Modul `chart` auf SPLIT_ADJUSTED_PRICE. Diese Datei
    haelt beides fest: dass der Befund echt war (an den gelieferten Daten)
    und dass die gezeichnete Reihe ihn nicht mehr enthaelt.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – die Bildunterschrift
+   stand in vu2/experience.js (chartBasis, geloescht). Der Chart der
+   Aktienseite ist jetzt quant/app/chart.js (VUQuantChart.create), und
+   page-stock.js reicht ihm die Basis aus s.chart.adjustmentStatus. Die
+   Unterschrift wird ausgefuehrt und gelesen - fuer beide Basen - und die
+   kanonische Seite quant/index.html muss return-series.js laden.
    ========================================================================= */
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
+import { join } from "node:path";
+import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const Series = require("../engines/return-series.js");
 const ROOT = new URL("../../", import.meta.url);
 const services = readFileSync(new URL("quant/api/product-services.js", ROOT), "utf8");
-const experience = readFileSync(new URL("vu2/experience.js", ROOT), "utf8");
+const ROOT_PATH = ROOT.pathname;
 
 const GOLDEN = ["ref_NVDA", "ref_AAPL", "ref_MSFT", "ref_JPM", "ref_XOM"];
 function payload(id) {
@@ -85,14 +94,106 @@ test("the service reconstructs rather than picking a column, and says which it d
   assert.match(services, /adjustmentStatus:splitbereinigt\?'splitAdjusted':'unadjusted'/);
 });
 
-test("the caption follows the series instead of asserting a basis", () => {
-  assert.match(experience, /const chartBasis=s\.chart&&s\.chart\.adjustmentStatus==='splitAdjusted'/);
-  assert.match(experience, /Splitbereinigte Schlusskurse · USD\. Splits sind herausgerechnet/);
-  assert.match(experience, /fehlen die Splitfaktoren, deshalb können Splits als Kurssprünge erscheinen/);
+/* Die Unterschrift des gezeichneten Zeitraums fuer genau diese Basis. */
+async function unterschrift(adjusted, splitEvents) {
+  const { win, lade } = seitenUmgebung();
+  lade("quant/ui/shell.js", "quant/app/ui.js", "quant/app/chart.js");
+  /* Die Zeichenkomponente selbst ist Discover-Code und hier nicht Thema:
+     ein Doppel, das ein SVG-Stellvertreter liefert. Geprueft wird der Text
+     darunter. */
+  win.VUDiscover = { MicroChart: { renderRange: () => ({ classList: { add() {} }, getAttribute: () => null, nodeType: 1, children: [], textContent: "" }) } };
+  const eod = [];
+  for (let d = new Date("2025-06-02T00:00:00Z"); eod.length < 300; d.setUTCDate(d.getUTCDate() + 1)) {
+    if (d.getUTCDay() === 0 || d.getUTCDay() === 6) continue;
+    eod.push([d.toISOString().slice(0, 10), 100 + eod.length / 10]);
+  }
+  const chart = win.VUQuantChart.create({ ticker: "NVDA", eod, currency: "USD", adjusted, splitEvents });
+  chart.draw("1Y");
+  const note = knoten(chart.node, (n) => /(^| )qc-note( |$)/.test(n.className))[0];
+  assert.ok(note, "der Chart hat keine Bildunterschrift");
+  chart.dispose();
+  return note.textContent;
+}
+
+test("the caption follows the series instead of asserting a basis", async () => {
+  /* Vorher drei Quelltextmuster in experience.js (chartBasis aus
+     adjustmentStatus, zwei Saetze). Jetzt ausgefuehrt: dieselbe Komponente,
+     zwei Basen, zwei Saetze. */
+  const bereinigt = await unterschrift(true, 1);
+  assert.match(bereinigt, /[Ss]plitbereinigt/);
+  assert.match(bereinigt, /Split.{0,20}herausgerechnet/);
+  assert.match(bereinigt, /USD/);
+  /* Der bereinigte Fall behauptet keine Kurssprünge ... */
+  assert.equal(/nicht splitbereinigt|Kurssprung/.test(bereinigt), false,
+    "die bereinigte Reihe traegt den Satz der unbereinigten: " + bereinigt);
+  /* ... und der unbereinigte sagt, dass sie erscheinen koennen. */
+  const roh = await unterschrift(false, 0);
+  assert.match(roh, /nicht splitbereinigt/);
+  assert.match(roh, /Splits können als Kurssprung erscheinen/);
   /* Der alte, feste Satz ist weg - nicht danebengestellt. */
-  assert.equal(/text:'Unbereinigte Schlusskurse · USD\. Splits können historische Kurssprünge verursachen\.'/.test(experience), false);
+  for (const text of [bereinigt, roh]) {
+    assert.equal(/Unbereinigte Schlusskurse · USD\. Splits können historische Kurssprünge verursachen\./.test(text), false);
+  }
+  /* Die Aktienseite leitet die Basis aus dem Vertrag ab und setzt sie nicht
+     fest. */
+  const seite = readFileSync(new URL("quant/app/page-stock.js", ROOT), "utf8");
+  assert.match(seite, /adjusted:\s*s\.chart && s\.chart\.adjustmentStatus === "splitAdjusted"/,
+    "die Aktienseite leitet die Basis des Charts nicht aus adjustmentStatus ab");
   /* Und die Engine ist in der Seite geladen, sonst faellt die
-     Rekonstruktion im Browser still aus. */
-  const index = readFileSync(new URL("vu2/index.html", ROOT), "utf8");
+     Rekonstruktion im Browser still aus. Kanonisch ist quant/index.html;
+     vu2/index.html ist nur noch ein Umleitungsstummel. */
+  const index = readFileSync(new URL("quant/index.html", ROOT), "utf8");
   assert.match(index, /quant\/engines\/return-series\.js/);
 });
+
+/* ------------------------------------------------------------------------
+   DIE SEITE AUSGEFUEHRT, NICHT GELESEN.
+
+   Ein kleines DOM-Doppel, in dem die echten Dateien der neuen Oberflaeche
+   laufen (quant/ui/shell.js fuer el(), quant/app/chart.js). Geprueft wird, was im Kopf der Aktienseite STEHT - nicht,
+   welche Zeichenfolge im Quelltext vorkommt. Hier: die Bildunterschrift
+   des Charts der Aktienseite (quant/app/chart.js).
+   ------------------------------------------------------------------------ */
+function seitenUmgebung() {
+  const textNode = (s) => ({ nodeType: 3, textContent: String(s), children: [] });
+  function element(tag) {
+    return {
+      tagName: String(tag).toUpperCase(), nodeType: 1, children: [], attributes: {}, dataset: {}, style: {},
+      listeners: {}, className: "", _text: "", open: false, value: "", disabled: false,
+      classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
+      get textContent() { return this._text + this.children.map((c) => c.textContent).join(""); },
+      set textContent(v) { this._text = String(v); this.children = []; },
+      get firstChild() { return this.children[0] || null; },
+      get isConnected() { return true; },
+      appendChild(c) { this.children.push(c); return c; },
+      removeChild(c) { this.children = this.children.filter((x) => x !== c); return c; },
+      append(...k) { for (const c of k) if (c !== null && c !== undefined) this.appendChild(typeof c === "string" ? textNode(c) : c); },
+      replaceChildren(...k) { this.children = []; this._text = ""; this.append(...k); },
+      setAttribute(k, v) { this.attributes[k] = String(v); if (k === "id") this.id = String(v); },
+      getAttribute(k) { return k in this.attributes ? this.attributes[k] : null; },
+      removeAttribute(k) { delete this.attributes[k]; },
+      addEventListener(k, f) { (this.listeners[k] ||= []).push(f); },
+      removeEventListener() {}, dispatchEvent() {},
+      querySelector() { return null; }, querySelectorAll() { return []; },
+      getBoundingClientRect() { return { width: 640, height: 320, left: 0, top: 0 }; },
+      scrollIntoView() {}, focus() {}, showModal() { this.open = true; }, close() { this.open = false; }
+    };
+  }
+  const document = { createElement: element, createElementNS: (_, t) => element(t), createTextNode: textNode,
+    body: element("body"), readyState: "loading", title: "", activeElement: null,
+    addEventListener() {}, querySelector: () => null, getElementById: () => null };
+  const win = { document, console, setTimeout, clearTimeout, URLSearchParams, Event: class {},
+    location: { hash: "", search: "", pathname: "/quant/" }, history: { replaceState() {} },
+    localStorage: { getItem: () => null, setItem() {} }, innerWidth: 1200,
+    addEventListener() {}, removeEventListener() {}, scrollTo() {} };
+  win.window = win;
+  vm.createContext(win);
+  const lade = (...pfade) => { for (const p of pfade) vm.runInContext(readFileSync(join(ROOT_PATH, p), "utf8"), win, { filename: p }); };
+  return { win, document, lade };
+}
+function knoten(node, pred, out = []) {
+  if (!node || !node.children) return out;
+  if (node.nodeType === 1 && pred(node)) out.push(node);
+  for (const c of node.children) knoten(c, pred, out);
+  return out;
+}

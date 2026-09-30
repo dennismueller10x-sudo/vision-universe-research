@@ -17,6 +17,12 @@
      2. der bestehende Bundle-Vertrag bleibt unberuehrt,
      3. jeder Code, den der Produzent erzeugen kann, hat auf der
         Oberflaeche einen Satz - und kein roher Enum-Wert erscheint.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – TECHNICAL_REASON
+   und technicalReasonText sind aus vu2/experience.js (geloescht) nach
+   quant/app/view-model.js gewandert und werden dort per require() geprueft.
+   Zusaetzlich wird festgehalten, dass die neue Aktienseite
+   (quant/app/page-stock.js) den Satz auch tatsaechlich aufruft.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -126,11 +132,13 @@ test("a demand that does not exceed what is there is withheld instead of contrad
 /* ---------------------------------------------- 3. Die Oberflaeche */
 
 function oberflaeche() {
-  const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
-  const von = source.indexOf("const TECHNICAL_REASON={");
-  const bis = source.indexOf("async function stockPage(", von);
-  assert.ok(von > 0 && bis > von, "der Satzbaustein steht nicht mehr in experience.js");
-  return new Function(source.slice(von, bis) + "\nreturn { TECHNICAL_REASON, technicalReasonText };")();
+  /* Vorher als Ausschnitt aus vu2/experience.js per new Function() gebaut.
+     Jetzt das UMD-Modul der neuen Oberflaeche - dieselben zwei Namen. */
+  const VM = require("../app/view-model.js");
+  assert.equal(typeof VM.technicalReasonText, "function", "view-model.js exportiert technicalReasonText nicht");
+  assert.ok(VM.TECHNICAL_REASON && typeof VM.TECHNICAL_REASON.TECHNICAL_PARTIAL === "function",
+    "view-model.js exportiert TECHNICAL_REASON nicht");
+  return { TECHNICAL_REASON: VM.TECHNICAL_REASON, technicalReasonText: VM.technicalReasonText };
 }
 
 test("every reason the producer can write has a sentence, and none shows a raw code", () => {
@@ -167,6 +175,19 @@ test("the history sentence names both numbers, and holds back the one it lacks",
   assert.match(mitZahlen, /20/);
   const ohneZahlen = technicalReasonText({ reason: "INSUFFICIENT_HISTORY", bars: null, requiredBars: null });
   assert.equal(/\d/.test(ohneZahlen), false, "ohne Zahlen darf keine Zahl im Satz stehen: " + ohneZahlen);
+});
+
+test("the surface actually reads the reason, at the structure section and in the data limits", () => {
+  /* Ein Satz, den keine Seite aufruft, erreicht niemanden. Die neue
+     Aktienseite hat zwei Stellen fuer die fehlende Kursstruktur: den
+     Abschnitt "Kursstruktur" und "Daten und Grenzen". Beide muessen den
+     Grund dieses Titels nennen, nicht nur den Oberbegriff. */
+  const seite = readFileSync(join(root, "quant/app/page-stock.js"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const abschnitt = seite.slice(seite.indexOf("function technicalSection("), seite.indexOf("function figuresSection("));
+  assert.match(abschnitt, /VM\.technicalReasonText\(t(?: && t)?\.unavailability\)/,
+    "der Abschnitt Kursstruktur nennt den Grund nicht");
+  assert.match(seite, /VM\.technicalReasonText\(technical\.unavailability\)/,
+    "Daten und Grenzen nennt den Grund der Kursstruktur nicht");
 });
 
 /* ------------------------------------------------------------------------

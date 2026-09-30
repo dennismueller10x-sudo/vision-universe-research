@@ -115,7 +115,9 @@ function studyFrench() {
       outOfSample: evaluate(states.filter((s) => s.date < "2001-01-01"), outcomes, { horizons: HORIZONS, levels: LEVELS }).byHorizon,
       /* Dieselbe Veranschaulichung nur ab 2001 - damit die Seite nicht nur
          den guenstigen Gesamtzeitraum zeigt. */
-      longTerm: LANG.map((x) => ({ ...horizonStats(states, outcomesLang, x.days, LEVELS), label: x.label })),
+      longTerm: LANG.map((x) => ({ ...horizonStats(states, outcomesLang, x.days, LEVELS), label: x.label,
+        /* Juengerer Zeitraum getrennt: haelt das Muster auch ohne die fruehen Jahrzehnte? */
+        since2001: horizonStats(states.filter((s) => s.date >= "2001-01-01"), outcomesLang, x.days, LEVELS) })),
       crises: crisisReplay(states, f.series.MARKET, KRISEN, LEVELS),
       recentIllustration: [1, 2].map((minLevel) => exposureIllustration(states.filter((s) => s.date >= "2001-01-01"), f.series.MARKET, { minLevel, cashDaily })),
       _states: states

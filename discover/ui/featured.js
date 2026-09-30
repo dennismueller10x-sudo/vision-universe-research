@@ -89,6 +89,7 @@
     var box=node('article','v2-focus v2-stock');box.dataset.symbol=card.symbol;
     var top=node('div','v2-focus-top');
     var identity=node('div','');identity.append(node('span','v2-eyebrow',card.symbol+(card.was?' · '+card.was:'')),node('h3','',card.companyName||card.symbol));
+    if(D.Logos)identity.prepend(D.Logos.mark(card.symbol,{name:card.companyName,size:'md'}));
     top.append(identity,link('Unternehmensprofil ↗',href,'v2-focus-link'));box.appendChild(top);
     if(plain.zahl){var performance=node('div','v2-focus-performance');performance.append(node('strong',plain.zahl.ton||'',plain.zahl.wert),node('span','',plain.zahl.label));box.appendChild(performance);}
     var stage=node('div','v2-focus-stage');box.appendChild(stage);

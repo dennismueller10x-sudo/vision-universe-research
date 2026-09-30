@@ -109,6 +109,7 @@
         var knopf = el("button", { class: "dx-result", type: "button", role: "option",
                                    "aria-selected": "false", "data-world": hit.w || null }, [
           el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.s }),
+          D.Logos ? D.Logos.mark(hit.s, { name: hit.n, size: "sm" }) : el("span"),
           /* Zuerst die Firma, dann das Kuerzel - dieselbe Reihenfolge wie
              auf der Karte. Wer sucht, tippt "energ" und erwartet
              Firmennamen, keine Kuerzelliste. */

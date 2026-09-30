@@ -135,23 +135,74 @@
     return null;
   }
 
+  /* ---------------------------------------------- Transparenz (überall) */
+  var TRUST = { bt: null, cov: null };
+  function activeVariant(strat) { return (strat.variants || []).filter(function (v) { return v.active; })[0] || null; }
+  function btRun(strat) { if (!TRUST.bt) return null; var v = activeVariant(strat); return TRUST.bt.runs.filter(function (r) { return r.strategyId === strat.strategy_id && (!v || r.variantId === v.variant_id); })[0] || null; }
+  function dataLabel(strat) {
+    var c = TRUST.cov && TRUST.cov.coverage; if (!c) return null;
+    if (strat.strategy_id === 'WEINSTEIN_STAGE') return 'Daten: Wochenschluss ' + num(c.weeklyCloseYears, 0) + ' J., Volumen ' + num(c.dailyOhlcvYears, 1) + ' J.';
+    if (strat.strategy_id === 'GREENBLATT_VALUE') return 'Daten: 3 Pflichtfelder fehlen';
+    return 'Daten: Tages-OHLCV ' + num(c.dailyOhlcvYears, 1) + ' J.';
+  }
+  function methodLabel(strat) {
+    if (strat.product_status.indexOf('HYBRID_MODEL') >= 0) return 'Hybrid-Modell (VU-Formalisierung)';
+    var v = activeVariant(strat);
+    if (v && v.vu_formalization) return 'VU-Formalisierung';
+    return strat.advanced ? 'Research' : 'Originalregeln';
+  }
+  function statusLabel(strat) {
+    if (strat.advanced) return 'Research in progress';
+    if (!strat.engine) return 'Keine Signale (Datenabdeckung)';
+    return 'Live-Beobachtung seit Tagesschluss';
+  }
+  // Kompakte Leiste auf jeder Karte: Status · Daten · Methode · Validierung.
+  function trustStrip(strat) {
+    var r = btRun(strat), c = TRUST.cov && TRUST.cov.coverage;
+    var data = !c ? null : strat.strategy_id === 'WEINSTEIN_STAGE' ? 'Woche ' + num(c.weeklyCloseYears, 0) + ' J.' : 'Tagesdaten ' + num(c.dailyOhlcvYears, 1) + ' J.';
+    var method = methodLabel(strat).indexOf('Hybrid') === 0 ? 'Hybrid · VU' : methodLabel(strat);
+    return h('div', { class: 'st-trust', 'aria-label': 'Transparenz: ' + statusLabel(strat) + ', ' + (dataLabel(strat) || '') + ', ' + methodLabel(strat) + ', nicht backtest-validiert' + (r ? ' (' + (STATUS_TEXT[r.status] || r.status) + ')' : '') }, [
+      chip(strat.engine ? 'Live' : 'Kein Live', strat.engine ? 'info' : ''),
+      data ? chip(data, 'warn') : null,
+      chip(method, method === 'Originalregeln' ? 'good' : 'warn'),
+      chip('Nicht validiert', 'bad', r ? 'Backtest: ' + (STATUS_TEXT[r.status] || r.status) : null),
+    ]);
+  }
+  // Großes Panel für Strategie- und Lens-Seiten.
+  function trustPanel(strat) {
+    var r = btRun(strat), c = TRUST.cov && TRUST.cov.coverage;
+    var failed = r ? r.gates.filter(function (g) { return !g.pass; }).map(function (g) { return g.label; }) : [];
+    return h('div', { class: 'st-grid g1 g2w st-trust-panel' }, [
+      h('div', { class: 'st-tile' }, [h('div', { class: 'k', text: 'Strategie-Status' }), h('div', { class: 'v s', text: statusLabel(strat) }), h('div', { class: 'd', text: strat.product_status.map(function (p) { return STATUS_TEXT[p] || p; }).join(' · ') })]),
+      h('div', { class: 'st-tile' }, [h('div', { class: 'k', text: 'Datenabdeckung' }), h('div', { class: 'v s', text: dataLabel(strat) ? dataLabel(strat).replace('Daten: ', '') : '–' }), h('div', { class: 'd', text: c ? 'Survivorship-Kontrolle: ' + (c.survivorshipControls ? 'aktiv' : 'fehlt') + ' · Intraday-Historie: ' + c.intradaySessionsRetained + ' Sitzungen · PIT-Bilanzen: ' + c.pitFundamentalSymbols + ' Titel' : '' })]),
+      h('div', { class: 'st-tile' }, [h('div', { class: 'k', text: 'Formalisierung' }), h('div', { class: 'v s', text: methodLabel(strat) }), h('div', { class: 'd', text: (strat.rules || []).filter(function (x) { return x.VU_formalization_flag; }).length + ' von ' + (strat.rules || []).length + ' Regeln sind Vision-Universe-Übersetzungen, nicht Originalregeln.' })]),
+      h('div', { class: 'st-tile st-tile-bad' }, [h('div', { class: 'k', text: 'Backtest-Validierung' }), h('div', { class: 'v s', text: 'Nicht validiert' }), h('div', { class: 'd', text: r ? (STATUS_TEXT[r.status] || r.status) + ' — offen: ' + failed.join(', ') + '. Deshalb keine Rendite-, Drawdown- oder Trefferquoten-Zahl.' : 'Kein Backtest definiert.' })]),
+    ]);
+  }
+  function qualityBadge(s) {
+    if (!s.quality) return null;
+    var q = s.quality;
+    return h('span', { class: 'st-q st-q-' + q.tier, title: 'VU-Qualitätsstufe, nicht backtest-validiert' }, [q.tier + '-Setup' + (q.tier === 'A' && q.volumePending ? ' · Volumen am Trigger offen' : '')]);
+  }
+
   function signalCard(s, strat) {
     var st = s.state || s.stage;
     var open = !!s.entry;
     var lv = s.levels || {};
     var levels = open ? [
-      ['Einstieg', num(s.entry.price)], ['Stop', num(s.stop), 'bad'], ['Seit Einstieg', isFinite(s.lastPrice) ? pct(s.lastPrice / s.entry.price - 1, 1, true) : '–'],
+      ['Einstieg', num(s.entry.price)], ['Stop', num(s.stop), 'bad'], ['Modell live', isFinite(s.lastPrice) ? pct(s.lastPrice / s.entry.price - 1, 1, true) : '–'],
     ] : st === 'CLOSED' ? [
-      ['Einstieg', num(s.entry && s.entry.price)], ['Ausstieg', num(s.exits && s.exits.length ? s.exits[s.exits.length - 1].price : null)], ['Ergebnis', pct(s.result && s.result.returnPct, 1, true)],
+      ['Einstieg', num(s.entry && s.entry.price)], ['Ausstieg', num(s.exits && s.exits.length ? s.exits[s.exits.length - 1].price : null)], ['Live-Ergebnis', pct(s.result && s.result.returnPct, 1, true)],
     ] : [
       ['Trigger', num(lv.trigger)], ['Ungültig', num(lv.invalidation), 'bad'], ['Risiko', riskOf(s) !== null ? pct(riskOf(s), 1) : '–'],
     ];
     return h('a', { class: 'st-sig', href: stockUrl(s.symbol), style: worldVars(strat) }, [
-      h('div', { class: 'top' }, [h('span', { class: 'strat', text: strat.world_name }), stateTag(st)]),
+      h('div', { class: 'top' }, [h('span', { class: 'strat', text: strat.world_name }), h('span', { class: 'st-tags' }, [qualityBadge(s), stateTag(st)])]),
       h('div', null, [h('div', { class: 'sym', text: s.symbol }), h('div', { class: 'name', text: s.companyName || '' })]),
       h('div', { class: 'why', text: whyText(s) }),
       (lv.trigger || open || st === 'CLOSED') ? h('div', { class: 'st-levels' }, levels.map(function (l) { return h('div', null, [h('div', { class: 'k', text: l[0] }), h('div', { class: 'v' + (l[2] ? ' ' + l[2] : ''), text: l[1] })]); })) : null,
-      h('div', { class: 'st-small', text: stateSentence(s) }),
+      h('div', { class: 'st-small', text: stateSentence(s) + (open || st === 'CLOSED' ? ' Werte aus dem Live-Protokoll des Modells, kein Backtest.' : '') }),
+      trustStrip(strat),
     ]);
   }
 
@@ -169,6 +220,8 @@
     var core = reg.strategies.filter(function (s) { return !s.advanced; });
     var adv = reg.strategies.filter(function (s) { return s.advanced; });
     var live = allLive(sig);
+    var dq = sig.strategies.DARVAS_BOX && sig.strategies.DARVAS_BOX.quality;
+    var focusable = function (s) { return !s.quality || s.quality.tier === 'A'; };
     var c = sig.counts;
 
     main.appendChild(h('div', { class: 'st-hero' }, [
@@ -185,16 +238,20 @@
     main.appendChild(section('Market Pulse', 'Heute', [h('div', { class: 'st-grid g3 g6' }, [
       h('div', { class: 'st-tile', style: { 'grid-column': 'span 2' } }, [h('div', { class: 'k', text: 'Marktregime (Produktuniversum)' }), h('div', { class: 'v s', text: mk.regime.label }), h('div', { class: 'd', text: mk.regime.plain || '' })]),
       tile('Strategy Worlds live', String(core.filter(function (s) { return s.engine; }).length) + ' / ' + core.length, 'Greenblatt wartet auf Datenfelder'),
-      tile('Neue Setups', String(c.SETUP + c.ENTRY_READY), c.ENTRY_READY + ' nahe am Trigger'),
+      tile('Setups im Fokus', String(live.filter(function (s) { return !s.entry && focusable(s); }).length), live.filter(function (s) { return s.state === 'ENTRY_READY' && focusable(s); }).length + ' nahe am Trigger' + (dq ? ' · ohne ' + dq.B + ' Darvas-B' : '')),
       tile('Ausgelöst', String(triggeredToday), 'Signale im Status „Ausgelöst“'),
       tile('Modellpositionen', String(activeCnt), 'aktiv, Warnung oder Ausstieg'),
     ]), h('p', { class: 'st-note', text: 'Datenfrische: Tageskurse bis ' + dateDe(mk.freshness.barsThrough) + ' (kanonische Materialisierung ' + dateDe((mk.freshness.barsGeneratedAt || '').slice(0, 10)) + '). ' + (mk.regime.notAForecast || '') })]));
 
     // Heute im Fokus
-    var focus = live.slice().sort(function (a, b) { return LIVE_ORDER.indexOf(a.state) - LIVE_ORDER.indexOf(b.state); }).slice(0, 10);
-    main.appendChild(section('Heute im Fokus', 'Setups & Signale', [focus.length
+    // Prominent nur, was die Qualitätsschwelle erfüllt: Darvas ausschließlich als A-Setup.
+    var focus = live.filter(focusable).sort(function (a, b) { return LIVE_ORDER.indexOf(a.state) - LIVE_ORDER.indexOf(b.state); }).slice(0, 10);
+    main.appendChild(section('Heute im Fokus', 'Setups & Signale', [
+      h('div', { class: 'st-banner', style: { 'margin-bottom': '12px' }, text: 'Kein Supertrader-Modell ist backtest-validiert. Signale zeigen, was eine Regel heute erkennt — nicht, dass sie historisch funktioniert hat.' }),
+      focus.length
       ? h('div', { class: 'st-rail' }, focus.map(function (s) { return signalCard(s, S[s.strategyId]); }))
-      : empty('Heute kein Setup', 'Keine der Strategien sieht auf dem letzten Tagesschluss ein Setup. Supertrader erzeugt keine künstlichen Signale — der Scanner beobachtet weiter.')],
+      : empty('Heute kein Setup', 'Keine der Strategien sieht auf dem letzten Tagesschluss ein Setup. Supertrader erzeugt keine künstlichen Signale — der Scanner beobachtet weiter.'),
+      dq ? h('p', { class: 'st-note', style: { 'margin-top': '10px' } }, ['Darvas Boxes zeigt hier nur A-Setups: heute ' + dq.A + '. ' + (D.market.regime.id === 'BROAD_WEAKNESS' ? 'Das Marktregime „breite Schwäche“ schließt A-Setups aus. ' : '') + dq.B + ' B-Setups stehen im ', h('a', { href: BASE + 'signals/?strategy=DARVAS_BOX&quality=B', text: 'Signalzentrum' }), '.']) : null],
     h('a', { class: 'st-more', href: BASE + 'signals/', text: 'Alle Signale →' })));
 
     // Strategy Worlds
@@ -234,7 +291,7 @@
       h('div', { class: 'who', text: s.originator }),
       h('h3', { text: s.world_name }),
       h('div', { class: 'tag', text: s.tagline }),
-      h('div', { class: 'foot' }, s.product_status.slice(0, 3).map(statusChip)),
+      h('div', { class: 'foot' }, s.product_status.slice(0, 3).map(statusChip).concat(s.advanced ? [] : [chip('Nicht backtest-validiert', 'bad')])),
     ]);
   }
 
@@ -277,7 +334,7 @@
   /* ========================================================== STRATEGIES */
   function renderStrategies(D) {
     var reg = D.registry;
-    main.appendChild(h('div', { class: 'st-hero' }, [h('div', { class: 'st-kicker', text: 'Strategy Worlds' }), h('h1', null, [h('span', { text: 'Strategien' })]), h('p', { class: 'st-lead', text: 'Jede Strategie läuft über dieselbe versionierte Engine: gleiche Lebenszyklus-Zustände, gleiche Ausführungsannahmen, gleiche Gates. Originalregeln und Vision-Universe-Formalisierungen sind getrennt ausgewiesen.' })]));
+    main.appendChild(h('div', { class: 'st-hero st-hero-sm' }, [h('div', { class: 'st-kicker', text: 'Strategy Worlds' }), h('h1', null, [h('span', { text: 'Strategien' })]), h('p', { class: 'st-lead', text: 'Jede Strategie läuft über dieselbe versionierte Engine: gleiche Lebenszyklus-Zustände, gleiche Ausführungsannahmen, gleiche Gates. Originalregeln und Vision-Universe-Formalisierungen sind getrennt ausgewiesen.' })]));
     main.appendChild(section('Live-Welten', null, [h('div', { class: 'st-grid g1 g2w' }, reg.strategies.filter(function (s) { return !s.advanced; }).map(worldCard))]));
     main.appendChild(section('Advanced / Coming Next', 'Research in progress', [h('p', { class: 'st-lead', text: 'Diese Methoden sind als Architektur vorbereitet. Sie zeigen keine Ergebnisse und keine Signale, bis Research- und Datengates bestanden sind.' }), h('div', { class: 'st-grid g1 g2w' }, reg.strategies.filter(function (s) { return s.advanced; }).map(worldCard))]));
     main.appendChild(disclaimer());
@@ -306,6 +363,7 @@
       return;
     }
 
+    main.appendChild(section('Auf einen Blick', 'Transparenz', [trustPanel(s)]));
     main.appendChild(h('nav', { class: 'st-seg', 'aria-label': 'Abschnitte', style: { 'margin-top': '16px' } }, [['story', 'Story'], ['signale', 'Signale'], ['backtest', 'Backtest'], ['regeln', 'Regeln'], ['historie', 'Historie'], ['quellen', 'Quellen']].map(function (x) { return h('button', { type: 'button', onclick: function () { var t = document.getElementById(x[0]); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, text: x[1] }); })));
 
     // Story
@@ -328,12 +386,25 @@
     var sigSec;
     if (st) {
       var liveKids = [];
-      liveKids.push(st.open.length ? h('div', { class: 'st-rail' }, st.open.slice().sort(function (a, b) { return LIVE_ORDER.indexOf(a.state) - LIVE_ORDER.indexOf(b.state); }).slice(0, 24).map(function (x) { return signalCard(x, s); }))
-        : empty('Aktuell kein Setup', 'Die Regeln dieser Strategie sind heute für keinen Titel erfüllt. Supertrader zeigt das so, statt ein Signal zu erfinden.'));
+      var sorted = st.open.slice().sort(function (a, b) { return LIVE_ORDER.indexOf(a.state) - LIVE_ORDER.indexOf(b.state); });
+      if (s.quality_tiers) {
+        var A = sorted.filter(function (x) { return x.quality && x.quality.tier === 'A'; });
+        var B = sorted.filter(function (x) { return !x.quality || x.quality.tier !== 'A'; });
+        liveKids.push(qualityExplainer(s, st, A.length, B.length));
+        liveKids.push(h('h3', { class: 'st-h3', text: 'A-Setups (' + A.length + ')' }));
+        liveKids.push(A.length ? h('div', { class: 'st-rail' }, A.slice(0, 24).map(function (x) { return signalCard(x, s); })) : empty('Heute kein A-Setup', (D.market.regime.id === 'BROAD_WEAKNESS' ? 'Das Marktregime „breite Schwäche“ schließt A-Setups aus. ' : '') + 'Kein Setup erfüllt alle Qualitätskriterien.'));
+        liveKids.push(h('h3', { class: 'st-h3', text: 'B-Setups (' + B.length + ') — gültig, aber nicht im Fokus' }));
+        liveKids.push(B.length ? h('div', { class: 'st-rail' }, B.slice(0, 12).map(function (x) { return signalCard(x, s); })) : empty('Keine B-Setups', ''));
+        if (B.length > 12) liveKids.push(h('a', { class: 'st-more', href: BASE + 'signals/?strategy=' + id + '&quality=B', text: 'Alle ' + B.length + ' B-Setups im Signalzentrum →' }));
+      } else {
+        liveKids.push(st.open.length ? h('div', { class: 'st-rail' }, sorted.slice(0, 24).map(function (x) { return signalCard(x, s); }))
+          : empty('Aktuell kein Setup', 'Die Regeln dieser Strategie sind heute für keinen Titel erfüllt. Supertrader zeigt das so, statt ein Signal zu erfinden.'));
+      }
       if (st.open.length > 24) liveKids.push(h('a', { class: 'st-more', href: BASE + 'signals/?strategy=' + id, text: 'Alle ' + st.open.length + ' Signale →' }));
       var chartHost = h('div', { style: { 'margin-top': '14px' } });
       liveKids.push(chartHost);
-      if (st.open[0]) mountSignalChart(chartHost, st.open.slice().sort(function (a, b) { return LIVE_ORDER.indexOf(a.state) - LIVE_ORDER.indexOf(b.state); })[0], s);
+      var chartPick = sorted.filter(function (x) { return !x.quality || x.quality.tier === 'A'; })[0] || sorted[0];
+      if (chartPick) mountSignalChart(chartHost, chartPick, s);
       liveKids.push(h('h3', { style: { 'margin-top': '22px', 'font-size': '17px' }, text: 'Setup Scanner — Beobachtungsliste' }));
       liveKids.push(h('p', { class: 'st-note', text: st.scanner.watch + ' Titel „Beobachten“, ' + st.scanner.discovered + ' „Entdeckt“ (Momentaufnahme ' + dateDe(sig.asOf) + '). Diese Stufen werden nicht protokolliert — erst ab „Setup“.' }));
       liveKids.push(scannerTable(st.scanner.top.slice(0, 25), s));
@@ -371,6 +442,24 @@
     main.appendChild(disclaimer(sig));
   }
 
+  function qualityExplainer(s, st, nA, nB) {
+    var byId = {}; s.rules.forEach(function (r) { byId[r.rule_id] = r; });
+    var counts = {}; st.open.forEach(function (x) { if (!x.quality) return; Object.keys(x.quality.criteria).forEach(function (k) { var v = x.quality.criteria[k]; counts[k] = counts[k] || { t: 0, f: 0, n: 0 }; counts[k][v === true ? 't' : v === false ? 'f' : 'n']++; }); });
+    return h('div', { class: 'st-card', style: { 'margin-bottom': '12px' } }, [
+      h('div', { class: 'st-kicker', text: 'Qualitätsstufen A / B · VU-Formalisierung' }),
+      h('p', { style: { 'margin-top': '6px' }, text: s.quality_tiers.note }),
+      h('div', { class: 'st-qrows' }, s.quality_tiers.rules.map(function (k) {
+        var c = counts[k] || { t: 0, f: 0, n: 0 };
+        return h('div', { class: 'st-qrow', title: byId[k] ? byId[k].plain_language_explanation : '' }, [
+          h('div', null, [h('strong', { text: (s.quality_tiers.labels || {})[k] || k }), h('div', { class: 'st-small', text: k })]),
+          h('div', { class: 'st-qcounts' }, [h('span', { class: 'ok', text: '✓ ' + c.t }), h('span', { class: 'no', text: '✕ ' + c.f }), h('span', { class: 'op', text: '… ' + c.n })]),
+        ]);
+      })),
+      h('details', { class: 'st-details', style: { 'margin-top': '8px' } }, [h('summary', { text: 'Kriterien im Wortlaut' }), h('div', null, [h('ul', null, s.quality_tiers.rules.map(function (k) { return h('li', { text: k + ': ' + (byId[k] ? byId[k].plain_language_explanation : '') }); }))])]),
+      h('p', { class: 'st-small', style: { 'margin-top': '8px' }, text: 'Heute ' + nA + ' A- und ' + nB + ' B-Setups. „Offen“ beim Volumen heißt: wird erst am Ausbruchstag geprüft.' }),
+    ]);
+  }
+
   function ruleCard(r, srcMap) {
     return h('div', { class: 'st-rule' }, [
       h('div', { class: 'h' }, [h('span', { class: 'id', text: r.rule_id }), evidenceChip(r.evidence_status)]),
@@ -402,7 +491,7 @@
   }
   function historyTable(list, s) {
     if (!list.length) return empty('Noch keine abgeschlossenen Signale', 'Das Live-Protokoll hat gerade erst begonnen. Jedes Signal ab „Setup“ erscheint hier nach Abschluss oder Ungültigkeit — Gewinner wie Verlierer, dauerhaft.');
-    return h('div', { class: 'st-table-wrap' }, [h('table', { class: 'st-table' }, [h('thead', null, [h('tr', null, [h('th', { text: 'Titel' }), h('th', { text: 'Status' }), h('th', { text: 'Eröffnet' }), h('th', { text: 'Ende' }), h('th', { text: 'Regel' }), h('th', { text: 'Ergebnis' })])]), h('tbody', null, list.map(function (x) {
+    return h('div', { class: 'st-table-wrap' }, [h('table', { class: 'st-table' }, [h('thead', null, [h('tr', null, [h('th', { text: 'Titel' }), h('th', { text: 'Status' }), h('th', { text: 'Eröffnet' }), h('th', { text: 'Ende' }), h('th', { text: 'Regel' }), h('th', { text: 'Live-Ergebnis' })])]), h('tbody', null, list.map(function (x) {
       var r = x.result && x.result.returnPct;
       return h('tr', null, [h('td', null, [h('a', { href: stockUrl(x.symbol), text: x.symbol })]), h('td', null, [stateTag(x.state)]), h('td', { text: dateDe(x.createdAt) }), h('td', { text: dateDe(lastT(x).date) }), h('td', { text: lastT(x).ruleId || '' }), h('td', { class: 'num ' + (r > 0 ? 'pos' : r < 0 ? 'neg' : ''), text: r === undefined || r === null ? '–' : pct(r, 1, true) })]);
     }))])]);
@@ -501,20 +590,29 @@
     var reg = D.registry, sig = D.signals;
     var S = stratById(reg);
     var params = new URLSearchParams(location.search);
-    var f = { status: params.get('status') || 'LIVE', strategy: params.get('strategy') || '', horizon: params.get('horizon') || '', division: params.get('division') || '', rstatus: params.get('rstatus') || '' };
+    var f = { status: params.get('status') || 'LIVE', strategy: params.get('strategy') || '', horizon: params.get('horizon') || '', division: params.get('division') || '', rstatus: params.get('rstatus') || '', quality: params.get('quality') || '' };
     var rows = [];
     Object.keys(sig.strategies).forEach(function (id) {
       var st = sig.strategies[id];
       st.open.concat(st.closed, st.invalidated).forEach(function (x) { rows.push(x); });
       st.scanner.top.forEach(function (x) { rows.push(Object.assign({ strategyId: id, state: x.stage, scanner: true }, x)); });
     });
-    main.appendChild(h('div', { class: 'st-hero' }, [h('div', { class: 'st-kicker', text: 'Signalzentrum' }), h('h1', null, [h('span', { text: 'Signale' })]), h('p', { class: 'st-lead', text: 'Jeder Zustand entsteht aus einer deterministischen Regel. Ab „Setup“ wird jedes Signal mit allen Wechseln protokolliert — auch Verlierer und ungültige Setups.' })]));
+    main.appendChild(h('div', { class: 'st-hero st-hero-sm' }, [h('div', { class: 'st-kicker', text: 'Signalzentrum' }), h('h1', null, [h('span', { text: 'Signale' })]), h('p', { class: 'st-lead', text: 'Jeder Zustand entsteht aus einer deterministischen Regel. Ab „Setup“ wird jedes Signal mit allen Wechseln protokolliert — auch Verlierer und ungültige Setups.' })]));
 
-    var groups = [['LIVE', 'Live'], ['WATCH', 'Beobachten'], ['SETUP', 'Setup'], ['ENTRY_READY', 'Einstieg bereit'], ['TRIGGERED', 'Ausgelöst'], ['ACTIVE', 'Aktiv'], ['WARNING', 'Warnung'], ['EXIT', 'Ausstieg'], ['CLOSED', 'Abgeschlossen'], ['INVALIDATED', 'Ungültig']];
+    var groups = [['LIVE', 'Live'], ['BSETUP', 'Darvas B-Setups'], ['WATCH', 'Beobachten'], ['SETUP', 'Setup'], ['ENTRY_READY', 'Einstieg bereit'], ['TRIGGERED', 'Ausgelöst'], ['ACTIVE', 'Aktiv'], ['WARNING', 'Warnung'], ['EXIT', 'Ausstieg'], ['CLOSED', 'Abgeschlossen'], ['INVALIDATED', 'Ungültig']];
     var seg = h('div', { class: 'st-seg', role: 'group', 'aria-label': 'Status' });
     var list = h('div', { class: 'st-grid g1 g2w', style: { 'margin-top': '8px' } });
     var countNote = h('p', { class: 'st-note' });
-    function matchStatus(x, s) { if (s === 'LIVE') return !x.scanner && LIVE_ORDER.indexOf(x.state) >= 0; if (s === 'WATCH') return x.scanner; return x.state === s && !x.scanner; }
+    // B-Setups erscheinen nur im eigenen Reiter (oder mit Qualitätsfilter B),
+    // damit das Signalzentrum nicht wie ein breiter Screener wirkt.
+    function isB(x) { return !!(x.quality && x.quality.tier === 'B' && !x.entry); }
+    function matchStatus(x, s) {
+      if (s === 'BSETUP') return !x.scanner && isB(x);
+      if (isB(x) && f.quality !== 'B') return false;
+      if (s === 'LIVE') return !x.scanner && LIVE_ORDER.indexOf(x.state) >= 0;
+      if (s === 'WATCH') return x.scanner;
+      return x.state === s && !x.scanner;
+    }
     function sel(label, key, opts) {
       var s = h('select', { 'aria-label': label, onchange: function () { f[key] = s.value; update(); } }, [h('option', { value: '', text: label + ': alle' })].concat(opts.map(function (o) { return h('option', { value: o[0], text: o[1], selected: f[key] === o[0] ? true : null }); })));
       return s;
@@ -526,6 +624,7 @@
       sel('Zeithorizont', 'horizon', [['daily', 'Tagesbasis (Swing)'], ['weekly', 'Wochenbasis (Position)']]),
       sel('Branche (SIC)', 'division', Object.keys(divisions).sort().map(function (k) { return [k, divisions[k]]; })),
       sel('Research-Status', 'rstatus', [['HYBRID_MODEL', 'Hybrid-Modell'], ['VU_FORMALIZATION', 'VU-Formalisierung'], ['RESEARCHED', 'Research abgeschlossen']]),
+      sel('Qualität (Darvas)', 'quality', [['A', 'A-Setups'], ['B', 'B-Setups']]),
       h('select', { 'aria-label': 'Markt', disabled: true }, [h('option', { text: 'Markt: USA' })]),
       h('select', { 'aria-label': 'Marktregime', disabled: true }, [h('option', { text: 'Regime: ' + D.market.regime.label })]),
     ]);
@@ -536,6 +635,7 @@
         if (f.horizon && (s.engine && s.engine.timeframe) !== f.horizon) return false;
         if (f.division && x.sicDivision !== f.division) return false;
         if (f.rstatus && s.product_status.indexOf(f.rstatus) < 0) return false;
+        if (f.quality && !(x.quality && x.quality.tier === f.quality)) return false;
         return true;
       });
       seg.innerHTML = '';
@@ -551,7 +651,7 @@
       var q = new URLSearchParams(); Object.keys(f).forEach(function (k) { if (f[k] && !(k === 'status' && f[k] === 'LIVE')) q.set(k, f[k]); });
       history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
     }
-    main.appendChild(h('section', { class: 'st-section' }, [filters, seg, countNote, list]));
+    main.appendChild(h('section', { class: 'st-section' }, [h('div', { class: 'st-banner', style: { 'margin-bottom': '12px' }, text: 'Alle Signale stammen aus nicht backtest-validierten Regelmodellen. Darvas-B-Setups sind gültig nach den Grundregeln, erfüllen aber nicht alle Qualitätskriterien.' }), filters, seg, countNote, list]));
     update();
     main.appendChild(disclaimer(sig));
   }
@@ -562,8 +662,9 @@
     var reg = D.registry, bt = D.backtests, cov = D.coverage;
     var core = reg.strategies.filter(function (s) { return !s.advanced; });
     var c = cov.coverage;
-    main.appendChild(h('div', { class: 'st-hero' }, [h('div', { class: 'st-kicker', text: 'Backtest Lab' }), h('h1', null, [h('span', { text: 'Backtests' })]), h('p', { class: 'st-lead', text: 'Keine Strategie gilt als erfolgreich, weil sie berühmt ist. Supertrader prüft jede vorab definierte Variante mit derselben Engine wie die Live-Signale — und zeigt eine Zahl erst, wenn die Datengrundlage sie trägt.' })]));
+    main.appendChild(h('div', { class: 'st-hero st-hero-sm' }, [h('div', { class: 'st-kicker', text: 'Backtest Lab' }), h('h1', null, [h('span', { text: 'Backtests' })]), h('p', { class: 'st-lead', text: 'Keine Strategie gilt als erfolgreich, weil sie berühmt ist. Supertrader prüft jede vorab definierte Variante mit derselben Engine wie die Live-Signale — und zeigt eine Zahl erst, wenn die Datengrundlage sie trägt.' })]));
 
+    main.appendChild(h('div', { class: 'st-banner', style: { 'margin-top': '18px' }, text: 'Stand heute: keine Strategie ist backtest-validiert, keine Variante besteht alle Datengates. Supertrader zeigt deshalb keine Rendite, keinen Drawdown, keine Trefferquote und keinen Trust Score.' }));
     main.appendChild(section('Warum noch keine Renditezahlen?', 'Ebene 1 · Im Klartext', [h('div', { class: 'st-grid g1 g2w' }, [
       h('div', { class: 'st-card' }, [h('h3', { style: { 'font-size': '17px', 'margin-bottom': '6px' }, text: 'Die Gewinner von heute verzerren die Vergangenheit' }), h('p', { class: 'st-lead', text: 'Wer nur Aktien testet, die es heute noch gibt, lässt Pleiten und Übernahmen aus. Das macht fast jede Strategie besser, als sie war. Die öffentlichen Artefakte enthalten ' + c.delistedWithPriceHistory + ' Kursreihen inaktiver Titel, aber keine aktive Survivorship-Kontrolle und nur ' + c.historicalMembershipDates + ' historische Stichtage der Indexzugehörigkeit.' })]),
       h('div', { class: 'st-card' }, [h('h3', { style: { 'font-size': '17px', 'margin-bottom': '6px' }, text: 'Ein Jahr ist kein Marktzyklus' }), h('p', { class: 'st-lead', text: 'Öffentlich liegen Tageskerzen für ' + num(c.dailyOhlcvYears, 1) + ' Jahre vor, Wochenschlusskurse für im Median ' + num(c.weeklyCloseYears, 1) + ' Jahre (ohne Volumen). Für Out-of-Sample- und Walk-forward-Tests verlangt Supertrader mindestens ' + cov.minHistoryYears + ' Jahre.' })]),
@@ -576,7 +677,7 @@
     main.appendChild(section('Gates je Strategie', 'Ebene 3 · Methodik', core.map(function (s) {
       var runs = bt.runs.filter(function (r) { return r.strategyId === s.strategy_id; });
       return h('details', { class: 'st-details', style: { 'margin-bottom': '8px', 'border-left': '3px solid ' + s.theme.accent } }, [h('summary', null, [s.world_name, h('span', { class: 'st-chips' }, [statusChip((runs.filter(function (r) { return r.active; })[0] || runs[0]).status)])]), h('div', null, runs.map(function (r) {
-        return h('div', { style: { 'margin-bottom': '14px' } }, [h('div', { class: 'st-chips', style: { 'margin-bottom': '6px' } }, [chip(r.variantId), statusChip(r.status), r.active ? chip('Live-Variante', 'info') : null]), h('p', { class: 'st-small', text: r.label }), gatesList(r)]);
+        return h('div', { style: { 'margin-bottom': '14px' } }, [h('div', { class: 'st-chips', style: { 'margin-bottom': '6px' } }, [chip(r.variantId), statusChip(r.status), r.active ? chip('Live-Variante', 'info') : null]), h('p', { class: 'st-small', text: r.label }), r.gates.length ? gatesList(r) : h('p', { class: 'st-small', text: r.status === 'ADVANCED_RESEARCH' ? 'Research-Variante: noch keine Gate-Definition, daher keine Kennzahl.' : 'Keine Gate-Definition — nicht vergleichbar, keine Kennzahl.' })]);
       }))]);
     })));
 
@@ -633,7 +734,9 @@
         h('div', { class: 'st-kicker', style: { 'margin-top': '10px' }, text: 'Methodentreue' }), h('p', { style: { 'margin-top': '6px' }, text: fidelityText(s) }),
         x.fundamentalsDisplay ? h('p', { class: 'st-small', text: 'Fundamentals (nur Anzeige, kein Filter): Umsatzwachstum TTM ' + pct(x.fundamentalsDisplay.revenueGrowthTTM, 1, true) + ', Gewinnbeschleunigung ' + pct(x.fundamentalsDisplay.earningsAcceleration, 1, true) + ' · Stand ' + dateDe(x.fundamentalsDisplay.asOf) }) : null,
         rulesPassed(x, s),
+        x.quality ? qualityList(x, s) : null,
       ])]));
+      card.appendChild(h('div', { style: { 'margin-top': '12px' } }, [trustPanel(s)]));
       mountSignalChart(chartHost, x, s);
     }
     entries.forEach(function (x) {
@@ -658,6 +761,14 @@
     return h('div', { style: { 'margin-top': '10px' } }, [h('div', { class: 'st-kicker', text: 'Geprüfte Regeln' }), h('ul', { class: 'st-gates', style: { 'margin-top': '6px' } }, Object.keys(x.rules).map(function (k) {
       var r = byId[k];
       return h('li', { class: x.rules[k] ? 'pass' : 'fail' }, [h('span', { class: 'i', text: x.rules[k] ? '✓' : '✕' }), h('span', null, [k, h('span', { class: 'm', text: r ? r.plain_language_explanation : '' })])]);
+    }))]);
+  }
+  function qualityList(x, s) {
+    var byId = {}; s.rules.forEach(function (r) { byId[r.rule_id] = r; });
+    var q = x.quality;
+    return h('div', { style: { 'margin-top': '10px' } }, [h('div', { class: 'st-kicker', text: 'Qualitätsstufe ' + q.tier + ' (VU, nicht validiert)' }), h('ul', { class: 'st-gates', style: { 'margin-top': '6px' } }, Object.keys(q.criteria).map(function (k) {
+      var v = q.criteria[k];
+      return h('li', { class: v === true ? 'pass' : v === false ? 'fail' : 'open' }, [h('span', { class: 'i', text: v === true ? '✓' : v === false ? '✕' : '…' }), h('span', null, [(s.quality_tiers && s.quality_tiers.labels && s.quality_tiers.labels[k]) || k, h('span', { class: 'm', text: k + (v === null ? ' · wird am Ausbruchstag geprüft' : '') })])]);
     }))]);
   }
   function historyOf(entries, S) {
@@ -691,7 +802,7 @@
   /* ============================================================ SOURCES */
   function renderSources(D) {
     var reg = D.registry, src = D.sources;
-    main.appendChild(h('div', { class: 'st-hero' }, [h('div', { class: 'st-kicker', text: 'Quellen & Methodik' }), h('h1', null, [h('span', { text: 'Quellen' })]), h('p', { class: 'st-lead', text: src.policy })]));
+    main.appendChild(h('div', { class: 'st-hero st-hero-sm' }, [h('div', { class: 'st-kicker', text: 'Quellen & Methodik' }), h('h1', null, [h('span', { text: 'Quellen' })]), h('p', { class: 'st-lead', text: src.policy })]));
     main.appendChild(h('div', { class: 'st-banner', style: { 'margin-top': '18px' }, text: src.retrievalNote }));
     var used = {}; reg.strategies.forEach(function (s) { (s.sources || []).forEach(function (id) { (used[id] = used[id] || []).push(s.world_name); }); });
     main.appendChild(section('Source Ledger (' + src.sources.length + ')', 'Dauerhafte Quellen', [h('div', { class: 'st-table-wrap' }, [h('table', { class: 'st-table' }, [h('thead', null, [h('tr', null, [h('th', { text: 'ID' }), h('th', { text: 'Quelle' }), h('th', { text: 'Typ / Level' }), h('th', { text: 'Evidenz' }), h('th', { text: 'Verwendet in' })])]), h('tbody', null, src.sources.map(function (x) {
@@ -703,10 +814,11 @@
   }
 
   /* ============================================================== Boot */
-  var NEEDS = { home: ['registry', 'signals', 'market', 'backtests'], strategies: ['registry'], strategy: ['registry', 'signals', 'backtests', 'coverage', 'sources'], signals: ['registry', 'signals', 'market'], backtests: ['registry', 'backtests', 'coverage', 'market'], stock: ['registry', 'signals', 'market'], sources: ['registry', 'sources'] };
+  var NEEDS = { home: ['registry', 'signals', 'market', 'backtests', 'coverage'], strategies: ['registry', 'backtests', 'coverage'], strategy: ['registry', 'signals', 'backtests', 'coverage', 'sources', 'market'], signals: ['registry', 'signals', 'market', 'backtests', 'coverage'], backtests: ['registry', 'backtests', 'coverage', 'market'], stock: ['registry', 'signals', 'market', 'backtests', 'coverage'], sources: ['registry', 'sources'] };
   var need = NEEDS[page] || ['registry'];
   Promise.all(need.map(function (n) { return getJSON(n + '.json'); })).then(function (res) {
     var D = {}; need.forEach(function (n, i) { D[n] = res[i]; });
+    TRUST.bt = D.backtests || null; TRUST.cov = D.coverage || null;
     chrome((D.signals && D.signals.asOf) || (D.coverage && D.coverage.asOf) || null);
     ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, backtests: renderBacktests, stock: renderStock, sources: renderSources }[page] || renderHome)(D);
     if (location.hash) { var t = document.getElementById(location.hash.slice(1)); if (t) t.scrollIntoView(); }

@@ -20,6 +20,14 @@
    Die Luecke enthaelt keinen Defekt: die 104 Wochen sind die Anforderung der
    Studie. Was fehlte, war der Satz. Sechs Titel stehen bei genau 103 Wochen -
    fuer die ist "eine Woche fehlt noch" die wahre Auskunft.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – PATTERN_REASON und
+   patternReasonText sind aus vu2/experience.js (geloescht) nach
+   quant/app/view-model.js gewandert und werden per require() geprueft. Die
+   zwei Musterflaechen der alten Seite (patternMatchSection,
+   evidenceTrustSection) heissen auf der neuen Aktienseite "Was geschah
+   frueher? - Ähnliche Situationen im gesamten Markt" (VM.replayView) und
+   "Daten und Grenzen" (page-stock.js); beide muessen den Grund nennen.
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -165,12 +173,13 @@ test("the setup gap borrows the technical reason instead of inventing a second o
 
 /* ------------------------------------------------------- 3. Die Oberflaeche */
 
+const VM = require(join(root, "quant/app/view-model.js"));
 function surface() {
-  const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
-  const von = source.indexOf("const PATTERN_REASON={");
-  const bis = source.indexOf("function technicalReasonText(", von);
-  assert.ok(von > 0 && bis > von, "der Satzbaustein steht nicht mehr in experience.js");
-  return new Function(source.slice(von, bis) + "\nreturn { PATTERN_REASON, patternReasonText };")();
+  /* Vorher als Ausschnitt aus vu2/experience.js gebaut; jetzt das UMD-Modul
+     der neuen Oberflaeche mit denselben zwei Namen. */
+  assert.equal(typeof VM.patternReasonText, "function", "view-model.js exportiert patternReasonText nicht");
+  assert.ok(VM.PATTERN_REASON, "view-model.js exportiert PATTERN_REASON nicht");
+  return { PATTERN_REASON: VM.PATTERN_REASON, patternReasonText: VM.patternReasonText };
 }
 
 test("every reason the producer can write has a sentence, and none shows a raw code", () => {
@@ -200,8 +209,25 @@ test("the history sentence names both numbers and holds back what it lacks", () 
 
 test("both pattern surfaces say it, not just one", () => {
   /* Die Belastbarkeitsstation liest dasselbe Artefakt. Stand der Grund nur an
-     der einen Stelle, widersprachen sich zwei Abschnitte derselben Seite. */
-  const source = readFileSync(join(root, "vu2/experience.js"), "utf8");
-  const stellen = [...source.matchAll(/patternReasonText\(patterns&&patterns\.unavailability\)/g)];
-  assert.equal(stellen.length, 2, "erwartet in patternMatchSection UND evidenceTrustSection");
+     der einen Stelle, widersprachen sich zwei Abschnitte derselben Seite.
+
+     Neue Oberflaeche, zwei Stellen:
+       1. "Daten und Grenzen" (page-stock.js) - Aufruf im Quelltext,
+       2. die Marktmuster-Ebene von Historical Replay (VM.replayView) - als
+          Verhalten: fehlt das Muster mit belegtem Grund, nennt die Ebene
+          diesen Grund und nicht den Pauschalsatz "trifft kein Muster zu".
+          "Kein Muster trifft zu" und "nicht messbar, 103 von 104 Wochen"
+          sind zwei verschiedene Auskuenfte. */
+  const seite = readFileSync(join(root, "quant/app/page-stock.js"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const stellen = [...seite.matchAll(/VM\.patternReasonText\(patterns(?:\s*&&\s*patterns)?\.unavailability\)/g)];
+  assert.ok(stellen.length >= 1, "Daten und Grenzen nennt den Grund der Musterluecke nicht");
+
+  const unavailability = { reason: "INSUFFICIENT_WEEKLY_HISTORY", weeks: 103, requiredWeeks: REQUIRED, schemaVersion: SCHEMA };
+  const erwartet = VM.patternReasonText(unavailability);
+  const replay = VM.replayView(null, { pattern: { state: "UNAVAILABLE" } }, { state: "UNAVAILABLE", unavailability });
+  const markt = replay.levels.find((l) => l.id === "MARKET_WIDE");
+  assert.ok(markt, "die Marktmuster-Ebene fehlt");
+  assert.equal(markt.state, "UNAVAILABLE");
+  assert.ok(markt.text.includes(erwartet),
+    "die Marktmuster-Ebene nennt den Grund nicht, den \"Daten und Grenzen\" nennt: " + markt.text);
 });

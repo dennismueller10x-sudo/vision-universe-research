@@ -1626,32 +1626,44 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
   .dv2 .dx-m3-kt-zahl b{font-size:28px}
   .dv2 .dx-m3-stimmung .dx-m3-st-link b{font-size:17px}
 }
-/* Markets 4.7: die typische Rendite nach 1 Jahr als Hauptzahl, daneben der
-   ganze Markt (gleiche Messung) als Balken. */
-.dv2 .dx-m3-kt-held{display:flex;flex-direction:column;gap:6px;padding:22px;border-radius:20px;
-  background:color-mix(in srgb,var(--m3-support) 11%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--m3-support) 22%,transparent)}
-.dv2 .dx-m3-kt-held-label{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em}
-.dv2 .dx-m3-kt-held-zahl{font-size:clamp(56px,8vw,76px);line-height:.95;letter-spacing:-.055em;color:var(--m3-support);font-weight:850}
-.dv2 .dx-m3-kt-held-satz{margin:0;font-size:13px;color:var(--v2-muted)}
-.dv2 .dx-m3-kt-balken{display:flex;flex-direction:column;gap:8px;margin:10px 0 2px;padding:0;list-style:none}
-.dv2 .dx-m3-kt-balken li{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) auto;align-items:center;gap:10px;font-size:13.5px;font-weight:650}
-.dv2 .dx-m3-kt-spur{height:12px;border-radius:999px;background:var(--m3-soft);overflow:hidden}
-.dv2 .dx-m3-kt-spur>span{display:block;height:100%;border-radius:inherit;background:var(--m3-support)}
-.dv2 .dx-m3-kt-balken li.is-markt .dx-m3-kt-spur>span{background:var(--m3-neutral)}
-.dv2 .dx-m3-kt-balken b{min-width:62px;text-align:right;font-variant-numeric:tabular-nums}
-.dv2 .dx-m3-kt-held-vergleich{margin:2px 0 0;font-size:13px;line-height:1.45;color:var(--v2-muted)}
+/* Markets 4.7 (30.09.2026): Hauptzahl "x von 100 im Plus" als Balken aus drei
+   Teilen (im Plus / leicht im Minus / mehr als 10 % im Minus), darunter
+   dieselbe Aufteilung je Stufe - so sieht man, was das Barometer verschiebt. */
+.dv2 .dx-m3-klartext{--kt-plus:var(--m3-support);--kt-mitte:color-mix(in srgb,var(--m3-neutral) 38%,transparent);--kt-minus:var(--m3-l0)}
+.dv2 .dx-m3-kt-held{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:20px;
+  background:color-mix(in srgb,var(--m3-support) 9%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--m3-support) 20%,transparent)}
+.dv2 .dx-m3-kt-held-label{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1.35}
+.dv2 .dx-m3-kt-held-kopf{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.dv2 .dx-m3-kt-held-zahl{font-size:clamp(52px,7vw,72px);line-height:.95;letter-spacing:-.055em;color:var(--kt-plus);font-weight:850}
+.dv2 .dx-m3-kt-held-satz{font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--kt-plus)}
+.dv2 .dx-m3-kt-stapel{display:flex;width:100%;height:12px;border-radius:999px;overflow:hidden;background:var(--m3-soft)}
+.dv2 .dx-m3-kt-stapel.is-gross{height:26px;border-radius:10px}
+.dv2 .dx-m3-kt-stapel>span{display:block;height:100%}
+.dv2 .dx-m3-kt-stapel>.is-plus{background:var(--kt-plus)}.dv2 .dx-m3-kt-stapel>.is-mitte{background:var(--kt-mitte)}.dv2 .dx-m3-kt-stapel>.is-minus{background:var(--kt-minus)}
+.dv2 .dx-m3-kt-stapel>span+span{box-shadow:inset 2px 0 0 var(--ap-karte)}
+.dv2 .dx-m3-kt-legende{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;padding:0;list-style:none;font-size:14px}
+.dv2 .dx-m3-kt-legende li{display:inline-flex;align-items:center;gap:6px}
+.dv2 .dx-m3-kt-legende i{width:12px;height:12px;border-radius:4px;flex:0 0 auto}
+.dv2 .dx-m3-kt-legende .is-plus i{background:var(--kt-plus)}.dv2 .dx-m3-kt-legende .is-mitte i{background:var(--kt-mitte)}.dv2 .dx-m3-kt-legende .is-minus i{background:var(--kt-minus)}
+.dv2 .dx-m3-kt-legende b{font-variant-numeric:tabular-nums}
+.dv2 .dx-m3-kt-vergleich-titel{margin:8px 0 0;font-size:14px;font-weight:800}
+.dv2 .dx-m3-kt-stufen{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.dv2 .dx-m3-kt-stufen li{display:grid;grid-template-columns:150px minmax(0,1fr) 200px;align-items:center;gap:12px;font-size:13.5px}
+.dv2 .dx-m3-kt-stufen li.is-heute{font-weight:800}
+.dv2 .dx-m3-kt-name{display:inline-flex;align-items:center;gap:6px}
+.dv2 .dx-m3-kt-name em{font-style:normal;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:var(--v2-ink);color:var(--ap-karte)}
+.dv2 .dx-m3-kt-wert{font-variant-numeric:tabular-nums;color:var(--v2-muted);text-align:right}
+.dv2 .dx-m3-kt-stufen li.is-heute .dx-m3-kt-wert{color:var(--v2-ink)}
+.dv2 .dx-m3-kt-neu{margin:0;font-size:14px;line-height:1.45;color:var(--v2-muted)}
+.dv2 .dx-m3-kt-neu b{color:var(--v2-ink)}
+.dv2 .dx-m3-kt-zahl.is-neutral b{color:var(--v2-ink)}
 .dv2 .dx-m3-klartext .dx-m3-kt-zahlen{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:760px){
   .dv2 .dx-m3-kt-held{padding:18px 16px}
-  .dv2 .dx-m3-kt-balken li{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}
-  .dv2 .dx-m3-kt-balken li>span:first-child{grid-column:1 / -1}
-  .dv2 .dx-m3-kt-spur{grid-column:1}
+  .dv2 .dx-m3-kt-stufen li{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}
+  .dv2 .dx-m3-kt-stufen .dx-m3-kt-stapel{grid-column:1 / -1;grid-row:2}
+  .dv2 .dx-m3-kt-wert{font-size:12.5px}
+  .dv2 .dx-m3-kt-legende{flex-direction:column}
   .dv2 .dx-m3-klartext .dx-m3-kt-zahlen{grid-template-columns:repeat(2,minmax(0,1fr))}
   .dv2 .dx-m3-klartext .dx-m3-kt-zahl.is-warn{grid-column:1 / -1}
-}
-@media(min-width:761px){
-  .dv2 .dx-m3-kt-held{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);column-gap:36px;align-items:center}
-  .dv2 .dx-m3-kt-held>.dx-m3-kt-held-label,.dv2 .dx-m3-kt-held>.dx-m3-kt-held-zahl,.dv2 .dx-m3-kt-held>.dx-m3-kt-held-satz{grid-column:1}
-  .dv2 .dx-m3-kt-held>.dx-m3-kt-balken{grid-column:2;grid-row:1 / span 2;align-self:end;margin:0}
-  .dv2 .dx-m3-kt-held>.dx-m3-kt-held-vergleich{grid-column:2;grid-row:3}
 }

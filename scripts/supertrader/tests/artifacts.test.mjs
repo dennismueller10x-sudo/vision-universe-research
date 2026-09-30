@@ -19,7 +19,12 @@ test('Gate E: keine Kennzahl ohne bestandene Gates', () => {
       assert.equal(r.trustScore.value, null, `${r.variantId} Trust Score ohne Gates`);
       assert.ok(r.failedGates.length > 0);
     }
-    assert.ok(['BACKTEST_READY', 'BACKTEST_PENDING', 'DATA_COVERAGE_PENDING', 'DATA_COVERAGE_INSUFFICIENT', 'NOT_COMPARABLE'].includes(r.status), r.status);
+    assert.ok(['BACKTEST_READY', 'BACKTEST_PENDING', 'DATA_COVERAGE_PENDING', 'DATA_COVERAGE_INSUFFICIENT', 'NOT_COMPARABLE', 'ADVANCED_RESEARCH'].includes(r.status), r.status);
+    // Eine Freigabe braucht definierte UND bestandene Gates.
+    if (r.metricsPublishable || r.status === 'BACKTEST_READY') {
+      assert.ok(r.gates.length > 0, `${r.variantId}: Freigabe ohne Gates`);
+      assert.ok(r.gates.every((g) => g.pass), `${r.variantId}: Freigabe trotz offener Gates`);
+    }
   }
 });
 
@@ -83,4 +88,15 @@ test('Produktseiten existieren fuer alle Routen', () => {
 test('Kein Kaufaufforderungs-Ton in Artefakten und Oberflaeche', () => {
   const texts = [fs.readFileSync(path.join(ROOT, 'supertrader/assets/supertrader.js'), 'utf8'), JSON.stringify(registry)];
   for (const t of texts) assert.doesNotMatch(t, /jetzt kaufen|buy now|kaufen sie|strong buy|garantiert/i);
+});
+
+test('Darvas: jedes offene Setup traegt eine Qualitaetsstufe mit allen Kriterien', () => {
+  const d = signals.strategies.DARVAS_BOX;
+  const reg = registry.strategies.find((s) => s.strategy_id === 'DARVAS_BOX');
+  for (const s of d.open) {
+    assert.ok(s.quality && ['A', 'B'].includes(s.quality.tier), s.id);
+    for (const k of reg.quality_tiers.rules) assert.ok(k in s.quality.criteria, `${s.id}: ${k}`);
+    if (s.quality.criteria['DAR-Q-REGIME'] === false) assert.equal(s.quality.tier, 'B', `${s.id}: A trotz schwachem Regime`);
+  }
+  assert.equal(d.quality.A + d.quality.B, d.open.length);
 });

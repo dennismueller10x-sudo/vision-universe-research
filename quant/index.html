@@ -1,38 +1,100 @@
-<!DOCTYPE html>
-<html lang="de">
+<!doctype html>
+<!-- Hell wie Discovers Voreinstellung. Quant liest keine Speicherschluessel anderer Produkte. -->
+<html lang="de" data-theme="light" data-theme-mode="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Vision Universe® Quant — Investment Intelligence</title>
-<meta name="description" content="VU Quant Score, Factor DNA, Quant Radar und Strategie-Signale fuer ein synthetisches Aktienuniversum. Von der Investmentidee zur ueberpruefbaren Evidenz.">
+<title>Quant – Aktien verstehen · Vision Universe®</title>
+<meta name="description" content="Vision Universe® Quant: Aktien nach festen Daten und Regeln verstehen – was dafür spricht, was dagegen, was sich verändert und was früher in ähnlichen Situationen geschah. Nachvollziehbar bis zu den Rohdaten.">
+<link rel="canonical" href="/quant/">
+<link rel="icon" href="data:,">
+<!-- Dieselben Stylesheets wie Discover (discover/index.html), in derselben
+     Reihenfolge - Quant sieht aus wie Discover, weil es Discovers Gestaltung
+     benutzt. /quant/app/app.css ergaenzt nur Quants eigene Bausteine. -->
 <link rel="stylesheet" href="/quant/ui/quant.css">
-<link rel="stylesheet" href="/assets/site-navigation.css"></head>
-<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
-
-<header class="q-header vu-tools">
-  <strong>Vision Universe® Quant</strong>
-  <div class="q-header-right">
-    <span id="q-datastamp" class="q-hide-sm"></span>
-    <a class="q-home-link" href="/">Vision Universe</a>
-  </div>
-</header>
-
-<div class="q-tabs-wrap">
-  <nav class="q-tabs" id="q-tabs" aria-label="Quant-Navigation"></nav>
-</div>
-
-<main class="q-shell" id="q-main"></main>
-
-<script src="/quant/engines/hash.js"></script>
-<script src="/quant/engines/schema.js"></script>
-<script src="/quant/engines/catalog.js"></script>
-<script src="/quant/engines/provider.js"></script>
-<script src="/quant/engines/methodology.js"></script>
-<script src="/quant/engines/radar.js"></script>
+<link rel="stylesheet" href="/discover/discover.css">
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/discover/app.css">
+<link rel="stylesheet" href="/discover/home.css">
+<link rel="stylesheet" href="/discover/detail.css">
+<link rel="stylesheet" href="/quant/ui/technical-chart.css">
+<link rel="stylesheet" href="/quant/app/app.css">
+</head>
+<body class="dx dv2 qx">
+<a class="v2-skip qx-skip" href="#qx-main">Zum Inhalt</a>
+<vu-navigation theme="light" no-preview></vu-navigation>
+<div id="qx-app"><main class="v2-main qx-main"><p class="qx-loading">Quant wird geladen …</p></main></div>
+<noscript><p style="padding:24px">Quant benötigt JavaScript.</p></noscript>
+<script src="/assets/site-navigation.js"></script>
 <script src="/quant/ui/shell.js"></script>
 <script src="/quant/ui/charts.js"></script>
-<script src="/quant/ui/components.js"></script>
-<script src="/quant/app.js"></script>
+<script src="/quant/ui/technical-chart.js"></script>
+<script src="/quant/engines/chart-ranges.js"></script>
+<script src="/quant/engines/series-sampling.js"></script>
+<script src="/quant/engines/display-policy.js"></script>
+<script src="/quant/engines/schema.js"></script>
+<script src="/quant/engines/catalog.js"></script>
+<script src="/quant/engines/hash.js"></script>
+<script src="/quant/engines/instrument-classification.js"></script>
+<script src="/quant/engines/company-master.js"></script>
+<script src="/quant/engines/instrument-directory.js"></script>
+<script src="/quant/engines/query.js"></script>
+<script src="/quant/engines/rule-contract.js"></script>
+<script src="/quant/api/fundamentals-contract.js"></script>
+<script src="/quant/api/screener-workspace.js"></script>
+<script src="/quant/api/technical-workspace-contract.js"></script>
+<script src="/quant/engines/market-metric-registry.js"></script>
+<script src="/quant/engines/metric-registry.js"></script>
+<script src="/quant/api/quant-workspace-contract.js"></script>
+<script src="/quant/engines/methodology.js"></script>
+<script src="/quant/engines/strategy.js"></script>
+<script src="/quant/api/strategy-workspace.js"></script>
+<script src="/quant/api/portfolio-workspace.js"></script>
+<script src="/quant/api/watchlist-workspace.js"></script>
+<script src="/quant/engines/return-series.js"></script>
+<script src="/quant/engines/price-semantics.js"></script>
+<script src="/quant/engines/panel-builder.js"></script>
+<script src="/quant/engines/factors.js"></script>
+<script src="/quant/engines/realtime/market-hours.js"></script>
+<script src="/quant/engines/realtime/trading-session.js"></script>
+<script src="/quant/engines/realtime/freshness.js"></script>
+<script src="/quant/engines/realtime/source-state.js"></script>
+<script src="/quant/api/market-signal-contract.js"></script>
+<script src="/quant/api/market-session-contract.js"></script>
+<script src="/quant/engines/market-eod-gate.js"></script>
+<script src="/quant/api/market-health-contract.js"></script>
+<script src="/quant/api/compare-workspace.js"></script>
+<script src="/quant/engines/realtime/intraday-snapshot.js"></script>
+<script src="/quant/engines/realtime/transport.js"></script>
+<script src="/quant/api/live-relay-client.js"></script>
+<script src="/quant/engines/setup-state-contract.js"></script>
+<script src="/quant/engines/factor-evidence.js"></script>
+<script src="/quant/engines/change-engine.js"></script>
+<script src="/quant/engines/strategy-match.js"></script>
+<script src="/quant/engines/setup-engine.js"></script>
+<script src="/quant/engines/market-regime.js"></script>
+<script src="/quant/engines/product-language.js"></script>
+<script src="/quant/engines/pattern-research.js"></script>
+<script src="/quant/engines/journey-shape.js"></script>
+<script src="/quant/engines/fundamental-inputs.js"></script>
+<script src="/quant/engines/historical-cases.js"></script>
+<script src="/quant/engines/intelligence-brief.js"></script>
+<script src="/quant/engines/plain-verdict.js"></script>
+<script src="/quant/engines/product-capabilities.js"></script>
+<script src="/quant/api/product-services.js"></script>
+<script src="/quant/engines/fx/currency-registry.js"></script>
+<script src="/quant/engines/fx/money-format.js"></script>
+<script src="/discover/ui/live-hub.js"></script>
+<script src="/discover/ui/microchart.js"></script>
+<script src="/discover/ui/logos.js"></script>
+<script src="/quant/app/view-model.js"></script>
+<script src="/quant/app/ui.js"></script>
+<script src="/quant/app/chart.js"></script>
+<script src="/quant/app/pages.js"></script>
+<script src="/quant/app/page-stock.js"></script>
+<script src="/quant/app/page-tools.js"></script>
+<script src="/quant/app/page-method.js"></script>
+<script src="/quant/app/app.js"></script>
 </body>
 </html>

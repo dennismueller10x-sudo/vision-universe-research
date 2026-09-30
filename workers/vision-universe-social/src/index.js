@@ -52,6 +52,7 @@ import {
   authorizationUrl, loginMode, exchangeCode, exchangeForLongLived, resolveAccounts,
   debugToken, probePageLinkage, resolveAccountsFromAssets,
   createMediaContainer, mediaContainerStatus, publishMediaContainer, verifyMedia,
+  createCarouselItemContainer, createCarouselContainer,
   mediaInsights, MEDIA_INSIGHT_CALLS,
   fetchPermissions, probeAccount, accountInsights, recentMedia, revokePermissions,
   REQUIRED_SCOPES, DEFAULT_API_VERSION,
@@ -706,10 +707,48 @@ async function handlePublish(request, url, env) {
    Diese Funktion prueft KEINE Berechtigung. Wer sie aufruft, hat das
    getan - und das steht hier, damit es niemand fuer vergessen haelt.
    ===================================================================== */
+/* Die Kind-Container eines Carousels, jeder bis FINISHED abgewartet,
+   dann der CAROUSEL-Container. Scheitert irgendein Schritt, ist noch
+   NICHTS oeffentlich - Kind-Container ohne Freigabe verfallen. */
+async function carouselContainer(ctx, record, imageUrls, caption) {
+  const kinder = [];
+  for (const url of imageUrls) {
+    const k = await createCarouselItemContainer(ctx, {
+      instagramAccountId: record.instagramAccountId, accessToken: record.pageAccessToken, imageUrl: url });
+    if (!k.ok) return k;
+    for (let i = 0; i < CONTAINER_TRIES; i += 1) {
+      const s = await mediaContainerStatus(ctx, { containerId: k.data.containerId,
+        accessToken: record.pageAccessToken });
+      const z = s.ok ? s.data : null;
+      if (!z || z.statusCode === "FINISHED" || z.statusCode === null) break;
+      if (z.statusCode === "ERROR" || z.statusCode === "EXPIRED") {
+        return { ok: false, reason: "carouselItemNotReady",
+          message: "Slide-Container " + k.data.containerId + " steht auf " + z.statusCode + "." };
+      }
+    }
+    kinder.push(k.data.containerId);
+  }
+  return createCarouselContainer(ctx, { instagramAccountId: record.instagramAccountId,
+    accessToken: record.pageAccessToken, childIds: kinder, caption });
+}
+
 async function publishCore(body, env) {
   const contentId = String((body && body.contentId) || "").trim();
   const imageUrl = String((body && body.imageUrl) || "").trim();
   const caption = String(body && body.caption === undefined ? "" : body.caption);
+  /* CAROUSEL (Owner-Auftrag "WORK OWNS THE POST", 29.09.): mehrere
+     Slides sind EIN Beitrag. Die erste Adresse ist imageUrl; der Abdruck
+     deckt alle Slides ab (redact.js::contentHash). */
+  const imageUrls = (body && Array.isArray(body.imageUrls) && body.imageUrls.length > 1)
+    ? body.imageUrls.map((u) => String(u || "").trim()) : null;
+  if (imageUrls && (imageUrls[0] !== imageUrl || imageUrls.some((u) => !u))) {
+    return json({ error: "carouselMismatch", published: false,
+      message: "imageUrls[0] muss imageUrl sein und keine Slide-Adresse darf leer sein." }, 400);
+  }
+  if (imageUrls && imageUrls.length > 10) {
+    return json({ error: "carouselTooLong", published: false,
+      message: "Ein Instagram-Carousel hat hoechstens 10 Slides." }, 400);
+  }
 
   /* -------------------------------------------------------------------
      WAS DER OWNER GESEHEN HAT — ALS ABDRUCK, NICHT ALS ADRESSE
@@ -765,7 +804,7 @@ async function publishCore(body, env) {
     /* Nachgerechnet aus dem, was TATSAECHLICH gesendet werden soll —
        nicht aus dem, was die Freigabe behauptet. Eine Freigabe, die
        ihren eigenen Gegenstand mitbringt, prueft nichts. */
-    const tatsaechlich = await contentHash({ contentId, imageUrl, caption });
+    const tatsaechlich = await contentHash({ contentId, imageUrl, imageUrls, caption });
 
     if (tatsaechlich !== gewuenscht) {
       return json({
@@ -886,10 +925,32 @@ async function publishCore(body, env) {
       actualSha256: bild.actualSha256 || null }, 400);
   }
 
-  const container = await createMediaContainer(ctx, {
-    instagramAccountId: record.instagramAccountId,
-    accessToken: record.pageAccessToken, imageUrl, caption
-  });
+  /* CAROUSEL: jede weitere Slide wird genauso geprueft wie die erste,
+     BEVOR ein Container entsteht - eine kaputte Slide 3 soll nicht erst
+     nach zwei angelegten Containern auffallen. */
+  if (imageUrls) {
+    const erwartet = Array.isArray(body && body.assetSlides) ? body.assetSlides
+      : (body && body.approval && Array.isArray(body.approval.assetSlides) ? body.approval.assetSlides : []);
+    for (let i = 1; i < imageUrls.length; i += 1) {
+      const e = erwartet.find((x) => x && x.url === imageUrls[i]) || {};
+      const b = await pruefeBild(imageUrls[i], ctx.fetchImpl,
+        { sha256: e.sha256 ? String(e.sha256).toLowerCase() : null, dimensions: e.dimensions || null });
+      if (!b.ok) {
+        await settleClaim(env, contentId, { state: "FAILED", stage: "imageCheck",
+          error: { reason: b.reason, message: b.message, slide: i + 1 }, now: beginn });
+        return json({ error: b.reason, message: "Slide " + (i + 1) + ": " + b.message,
+          stage: "imageCheck", slide: i + 1, published: false, contentId,
+          expectedSha256: b.expectedSha256 || null, actualSha256: b.actualSha256 || null }, 400);
+      }
+    }
+  }
+
+  const container = imageUrls
+    ? await carouselContainer(ctx, record, imageUrls, caption)
+    : await createMediaContainer(ctx, {
+      instagramAccountId: record.instagramAccountId,
+      accessToken: record.pageAccessToken, imageUrl, caption
+    });
   if (!container.ok) {
     const fehler = metaFehlerdaten(container, env);
     await settleClaim(env, contentId, { state: "FAILED", stage: "createContainer",
@@ -953,6 +1014,7 @@ async function publishCore(body, env) {
     mediaType: geprueft.ok ? geprueft.data.mediaType : null,
     timestamp: geprueft.ok ? geprueft.data.timestamp : null,
     containerId: container.data.containerId,
+    slides: imageUrls ? imageUrls.length : 1,
     account: record.instagramUsername,
     verified: geprueft.ok
   }, geprueft.ok ? 200 : 207);
@@ -1935,6 +1997,18 @@ function pruefeProjektion(p) {
       return { ok: false, reason: "insecureImageUrl",
         message: "Eintrag " + i.candidateId + " nennt ein Bild, das nicht ueber " +
           "https erreichbar ist." };
+    }
+    /* CAROUSEL: die Slide-Adressen sind Teil der Sendung. Die erste ist
+       imageUrl, jede ist https, hoechstens 10 (Instagram-Grenze). */
+    if (nutz.imageUrls !== undefined && nutz.imageUrls !== null) {
+      const u = nutz.imageUrls;
+      if (!Array.isArray(u) || u.length < 2 || u.length > 10 ||
+          u.some((x) => typeof x !== "string" || !/^https:\/\//.test(x)) ||
+          u[0] !== nutz.imageUrl) {
+        return { ok: false, reason: "badCarousel",
+          message: "Eintrag " + i.candidateId + ": imageUrls muss 2-10 https-Adressen " +
+            "tragen, die erste gleich imageUrl." };
+      }
     }
     if (typeof i.contentHash !== "string" || !/^[0-9a-f]{64}$/.test(i.contentHash)) {
       return { ok: false, reason: "itemWithoutHash",

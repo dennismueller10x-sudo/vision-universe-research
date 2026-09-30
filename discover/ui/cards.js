@@ -394,6 +394,12 @@
 
   function D() { return global.VUDiscover; }
 
+  /* Das Firmenlogo vor dem Namen (ui/logos.js) - fehlt das Modul, fehlt es. */
+  function logo(card, size, only) {
+    var L = D() && D().Logos;
+    return L ? L.mark(card.symbol, { name: card.companyName, size: size, onlyLogo: only }) : null;
+  }
+
   /* ------------------------------------------------------------- Signale */
   /* Welche Farbwelt gehört zu welchem Signal? Dieselbe Zuordnung wie im
      Build (discover-v1.json → visualLanguage.signalWorlds); sie steht hier
@@ -459,6 +465,7 @@
         (text.story ? " — " + text.story : "") + " öffnen"
     }, [
       el("div", { class: "dx-poster-top" }, [
+        logo(card, "md"),
         el("div", { class: "dx-poster-id" }, [
           /* Der Name ist die Überschrift. Wo keiner ausgeliefert wird,
              übernimmt das Kürzel diese Rolle - erfunden wird keiner. */
@@ -567,6 +574,7 @@
       return el("div", { class: "dx-sector-row" }, [
         el("i", { text: String(index + 1) }),
         el("div", { style: "min-width:0" }, [
+          logo(card, "sm"),
           el("b", { text: card.companyName || card.symbol }),
           el("em", { text: card.companyName ? card.symbol : (card.exchange || "") })
         ]),

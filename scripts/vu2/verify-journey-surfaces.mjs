@@ -7,12 +7,18 @@
    prueft die sechs Saetze, an denen am 25.09.2026 eine falsche Auskunft
    stand - jeder mit einem Titel, an dem der Fall wirklich auftritt:
 
-     stock NVDA   Bildunterschrift des Charts: splitbereinigt, nicht roh
-     stock APGE   "Was diesen Zustand aendern wuerde" ist da
-     stock AAAP   Musternenner zaehlt pruefbare, nicht vorregistrierte
-     quant AACB   Setup-Bedingungen zaehlen messbare
-     quant AAAC   kein messbares Profil ist eine Luecke, kein Nichtpassen
-     quant A      historische Evidenz nennt ihren Abstand
+     NVDA   Bildunterschrift des Charts: splitbereinigt, nicht roh
+     APGE   was das Setup beenden wuerde, ist da
+     AAAP   der Musternenner nennt, wovon er zaehlt
+     AACB   Setup-Bedingungen zaehlen messbare
+     AAAC   ein belegter ETF: keine Unternehmensanalyse - eine Luecke mit
+            Grund, kein Nichtpassen
+     A      die Stil-Zuordnung nennt den Abstand zwischen zwei Staenden
+
+   Seit dem 30.09.2026 ist das die Aktienseite der Hash-App
+   (/quant/#/aktie/<T>); die fruehere Trennung in "stock" und "quant" gibt
+   es nicht mehr - beide Auskuenfte stehen auf derselben Seite, jede in
+   ihrem Abschnitt (#setup, #historie, #strategie, Einordnung).
 
    Geprueft wird das AUSGELIEFERTE Verzeichnis, nicht das Repository: die
    Reihenfolge der Skripte in index.html und der gebuendelte Auslieferstand
@@ -45,37 +51,41 @@ await new Promise(r=>server.listen(0,"127.0.0.1",r));
 const origin="http://127.0.0.1:"+server.address().port;
 const browser=await chromium.launch({headless:true,args:["--no-sandbox"],executablePath:process.env.VU_CHROMIUM||undefined});
 let bad=0;
+/* [Titel, Abschnitt, erwarteter Satz (Text oder Ausdruck), vorher zu drueckender Zeitraum] */
 const checks=[
- ["stock","NVDA",".focus p.muted","Splitbereinigte Schlusskurse"],
- ["stock","APGE",".setup-change summary","Was diesen Zustand ändern würde"],
- ["stock","AAAP",".pattern-balance","prüfbaren Mustern"],
- ["quant","AACB",".setup-count","messbaren Bedingungen"],
- /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR.
-    Vorher stand hier die allgemeine Stil-Absage ("lässt sich derzeit kein
-    Anlagestil prüfen"). Der Titel ist ein belegter ETF, und die Reise sagt
-    deshalb etwas Genaueres: Kurs und Kursverlauf bleiben, die Aktienanalyse
-    entfällt - und nennt die betroffenen Bereiche. Ein .match-section gibt es
-    dort zu Recht nicht mehr. Diese Zeile prueft jetzt, dass die
-    Umklassifizierung auf der Seite ankommt. */
- ["quant","AAAC",".journey-gap","die Aktienanalyse nicht"],
- /* Und der Satz ueber die zwei veroeffentlichten Staende hat seine
-    Methodikversion verloren; die Aussage selbst steht unveraendert da:
-    "Zwischen den beiden veröffentlichten Ständen (2026-09-24 → 2026-09-25)
-    hat sich an der Zuordnung dieses Titels nichts geändert." */
- ["quant","A",".match-section","Zwischen den beiden veröffentlichten Ständen"]
+ /* Die Bildunterschrift gehoert zum Tagesschluss-Zeitraum; auf 1T steht
+    dort die Quelle des Tagesverlaufs. Deshalb zuerst 1J. */
+ ["NVDA","section.qc-chart .qc-note",/(^|[^t] )splitbereinigt/,"1J"],
+ ["APGE","#setup",/Was würde das Setup ungültig machen\?/i],
+ ["AAAP","#historie",/\d+ von \d+ Mustern|nicht prüfbar/],
+ ["AACB","#setup","messbaren Bedingungen"],
+ /* AAAC IST SEIT DER OWNER-ENTSCHEIDUNG 1 KEIN AKTIENFALL MEHR: Kurs und
+    Kursverlauf bleiben, die Aktienanalyse entfaellt - mit Grund. */
+ ["AAAC","#qx-main","Die Unternehmensanalyse gilt nur für Aktien"],
+ /* Der Satz ueber die zwei veroeffentlichten Staende steht im Abschnitt
+    der Anlagestile: "An der Zuordnung ... hat sich zwischen den
+    veröffentlichten Ständen vom ... und ... nichts geändert." */
+ ["A","#strategie","veröffentlichten Ständen"]
 ];
 for(const width of [1440,390]){
- for(const [view,ticker,sel,expect] of checks){
+ for(const [ticker,sel,expect,zeitraum] of checks){
   const page=await browser.newPage({viewport:{width,height:1300}});
   const fehler=[];page.on("pageerror",e=>fehler.push(e.message));
-  await page.goto(origin+"/vu2/?view="+view+"&ticker="+ticker);
-  await page.locator("main footer").waitFor({timeout:25000});
-  for(const d of await page.locator("details").all()){try{await d.locator("summary").first().click({timeout:300});}catch{}}
-  const text=await page.locator("main").innerText();
-  const ok=text.includes(expect);
+  await page.goto(origin+"/quant/#/aktie/"+ticker);
+  await page.waitForFunction(()=>{const m=document.querySelector("main#qx-main");return m&&m.dataset.ready==="true"&&m.getAttribute("aria-busy")==="false"&&!m.querySelector(".qx-loading");},null,{timeout:45000});
+  if(zeitraum){
+   await page.waitForFunction(()=>{const c=document.querySelector("section.qc-chart");return c&&c.dataset.range;},null,{timeout:10000}).catch(()=>{});
+   await page.locator("section.qc-chart .qc-range",{hasText:new RegExp("^"+zeitraum+"$")}).click().catch(()=>{});
+   await page.waitForTimeout(200);
+  }
+  for(let i=0;i<200;i++){const n=await page.evaluate(()=>{const d=document.querySelector("#qx-main details:not([open])");if(!d)return 0;d.open=true;return 1;});if(!n)break;await page.waitForTimeout(20);}
+  /* textContent statt innerText: innerText folgt text-transform, und die
+     Fragen im Setup-Abschnitt stehen in Versalien. */
+  const text=(await page.locator(sel).first().textContent().catch(()=>"")||"").replace(/\s+/g," ");
+  const ok=typeof expect==="string"?text.includes(expect):expect.test(text);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   if(!ok||overflow||fehler.length)bad++;
-  console.log((ok?"OK  ":"FEHLT ")+width+" "+view+" "+ticker+" · overflow "+overflow+" · Fehler "+(fehler.join(";")||"keine")+(ok?"":" · erwartet: "+expect));
+  console.log((ok?"OK  ":"FEHLT ")+width+" "+ticker+" "+sel+" · overflow "+overflow+" · Fehler "+(fehler.join(";")||"keine")+(ok?"":" · erwartet: "+expect));
   await page.close();
  }
 }

@@ -18,6 +18,11 @@
      3. Kein interner Name steht in einer Ueberschrift - das Woerterbuch
         erlaubt ihn in der Methodik-Ebene, aber nie zuerst.
      4. Der Knopf auf der Erklaerseite zeigt auf genau diesen Pfad.
+
+   Frontend-Rebuild (quant/app): Prüfintention erhalten – die Erklaerseite
+   ist jetzt die Route #/methodik (quant/app/page-method.js) und nicht mehr
+   vu2/experience.js. Geprueft wird dort der Knopf „Methodik im Detail" und
+   zusaetzlich der gleichnamige Link im Fuss jeder Seite (quant/app/app.js).
    ========================================================================= */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -77,8 +82,10 @@ test("no forbidden internal name appears in a heading", () => {
 });
 
 test("the button on the explain view points at this page", () => {
-  const seite = readFileSync(join(ROOT, "vu2/experience.js"), "utf8");
-  assert.match(seite, /label:'Methodik im Detail',href:'\/quant\/methodology\/'/);
+  const seite = readFileSync(join(ROOT, "quant/app/page-method.js"), "utf8");
+  assert.match(seite, /X\.btn\("Methodik im Detail[^"]*",\s*"\/quant\/methodology\/"/);
+  const shell = readFileSync(join(ROOT, "quant/app/app.js"), "utf8");
+  assert.match(shell, /href:\s*"\/quant\/methodology\/",\s*text:\s*"Methodik im Detail"/);
   /* Und der Smoke sieht den Pfad an - sonst faellt die Seite beim naechsten
      Umbau still wieder aus. */
   const smoke = readFileSync(join(ROOT, "scripts/vu2/production-smoke.mjs"), "utf8");

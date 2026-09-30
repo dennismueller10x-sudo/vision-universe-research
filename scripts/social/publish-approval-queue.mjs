@@ -140,6 +140,7 @@ export async function baue(kandidaten, options = {}) {
     const frisch = ContentHash.contentHash({
       contentId: k.content && k.content.contentId,
       imageUrl: k.content && k.content.imageUrl,
+      imageUrls: k.content && k.content.imageUrls,
       caption: k.content && k.content.caption
     });
     if (frisch !== k.contentHash) {
@@ -205,6 +206,36 @@ export async function baue(kandidaten, options = {}) {
           dimensions: befund.dimensions || null
         }
       });
+
+      /* -----------------------------------------------------------
+         CAROUSEL: JEDE SLIDE WIRD ABGERUFEN
+
+         Meta holt jede Slide einzeln ab. Eine unerreichbare Slide 3
+         laesst die ganze Veroeffentlichung scheitern - also sperrt sie
+         auch die Freigabe: das Gesamturteil ist das schlechteste
+         Einzelurteil. */
+      const urls = (k.content && Array.isArray(k.content.imageUrls)) ? k.content.imageUrls : [];
+      if (urls.length > 1) {
+        const slides = [];
+        for (let i = 0; i < urls.length; i += 1) {
+          const g = i === 0 ? geholt : await holeAsset(urls[i]);
+          const b = i === 0 ? befund : AssetDelivery.beurteile({ url: urls[i],
+            antwort: g.antwort, bytes: g.bytes, koerperText: g.koerperText, fehler: g.fehler });
+          slides.push({ index: i + 1, url: urls[i], zustand: b.zustand, grund: b.grund || null,
+            sha256: b.sha256 || null, bytes: b.bytes === undefined ? null : b.bytes,
+            dimensions: b.dimensions || null });
+        }
+        const schlecht = slides.find((x) => x.zustand !== "ASSET_PUBLICLY_REACHABLE");
+        const ad = nachId[id].assetDelivery;
+        nachId[id] = Object.assign({}, nachId[id], {
+          assetDelivery: Object.assign({}, ad, schlecht ? {
+            zustand: schlecht.zustand,
+            grund: "SLIDE_" + schlecht.index + ":" + (schlecht.grund || schlecht.zustand),
+            satz: "Slide " + schlecht.index + " ist nicht oeffentlich abrufbar (" +
+              schlecht.url + ") - das Carousel kann so nicht veroeffentlicht werden."
+          } : {}, { slides })
+        });
+      }
     }
   }
 

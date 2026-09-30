@@ -74,7 +74,7 @@
      einordnet. Wer das umdreht, schreibt das Gegenteil hin.
      --------------------------------------------------------------------- */
   var PHRASES = {
-    quality:       { high: "eine solide Bilanz",             low: "eine angreifbare Bilanz" },
+    quality:       { high: "eine belastbare Bilanz",         low: "Schwächen bei Bilanz- oder Gewinnqualität" },
     growth:        { high: "kräftiges Wachstum",             low: "schwaches Wachstum" },
     momentum:      { high: "eine starke Kursentwicklung",    low: "eine schwache Kursentwicklung" },
     value:         { high: "eine günstige Bewertung",        low: "eine hohe Bewertung" },
@@ -629,7 +629,7 @@
       sample: faelle,
       sampleSentence: "Gezählt über " + faelle.toLocaleString("de-DE") + " vergleichbare Beobachtungen der Vergangenheit.",
       robust: belastbar,
-      robustSentence: belastbar + " von " + holds.length + " Mustern hielten auch außerhalb des Zeitraums, in dem sie gefunden wurden.",
+      robustSentence: belastbar + " von " + holds.length + (holds.length === 1 ? " Muster " : " Mustern ") + (belastbar === 1 ? "hielt" : "hielten") + " auch außerhalb des Zeitraums, in dem " + (belastbar === 1 ? "es" : "sie") + " gefunden wurde" + (belastbar === 1 ? "" : "n") + ".",
       horizon: patterns.horizon || null,
       caveat: patterns.caveats ? patterns.caveats.statement : null,
       evidence: [beleg("patternMatch", "holds.asymmetryMedian", asym, "ratio"),

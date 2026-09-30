@@ -766,7 +766,7 @@ body.dx .num{font-variant-numeric:tabular-nums}
   align-content:start;grid-auto-rows:min-content}
 .dx-result{
   position:relative;overflow:hidden;
-  display:grid;grid-template-columns:1fr 96px 92px;align-items:center;gap:16px;
+  display:grid;grid-template-columns:auto minmax(0,1fr) 96px 92px;align-items:center;gap:16px;
   padding:13px 14px;border-radius:12px;border:1px solid transparent;
   background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer;
   transition:background var(--discover-motion-fast) var(--discover-ease),
@@ -851,6 +851,9 @@ body.dx-feed-aktiv{overflow:hidden}
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
   scroll-snap-type:none;-webkit-overflow-scrolling:touch;
   scrollbar-width:none;
+  /* Abstand unten: die Aktion einer Karte endet nie genau an der Kante
+     (Rundung unter einem Pixel lag sonst unter dem Dock). */
+  scroll-padding-bottom:12px;
 }
 .dx-feed-spur::-webkit-scrollbar{display:none}
 .dx-feed-screen{
@@ -1350,7 +1353,7 @@ body.dx-feed-aktiv{overflow:hidden}
   .dx-price small{max-width:none}
   .dx-why-lead{font-size:19px}
   .dx-contrib{grid-template-columns:104px 1fr 42px}
-  .dx-result{grid-template-columns:1fr 64px 72px;gap:10px}
+  .dx-result{grid-template-columns:auto minmax(0,1fr) 64px 72px;gap:10px}
   .dx-result svg{width:74px;height:26px}
   .dx-search-inner{padding:8vh 18px 30px}
   .dx-chapter{padding-top:34px}
@@ -2207,3 +2210,44 @@ body.dx-feed-aktiv .dx-fnav,body.dx-suche-offen .dx-fnav{display:none}
 .dx-analyse:not([open]) > summary.dx-trenner{padding-bottom:30px;border-bottom:1px solid var(--discover-line)}
 .dx-waage-weitere{margin-top:12px;padding-top:8px}
 .dx-waage-weitere ul{margin-top:12px}
+
+/* ------------------------------------------------------------ Firmenlogos
+   Das Logo steht auf einer eigenen hellen Flaeche - in beiden Farbschemata
+   gleich, weil Firmenlogos fuer hellen Grund gemacht sind. Es wird nur
+   verkleinert, nie umgefaerbt oder beschnitten (ui/logos.js). Ohne Logo
+   steht der Anfangsbuchstabe in einer ruhigen Flaeche, damit Name und
+   Zahlen in jeder Karte an derselben Stelle beginnen. */
+.dx-logo{
+  --logo-size:32px;
+  flex:none;display:inline-grid;place-items:center;box-sizing:border-box;
+  width:var(--logo-size);height:var(--logo-size);border-radius:calc(var(--logo-size) * .28);
+  background:var(--discover-surface-2,color-mix(in srgb,var(--discover-text) 7%,transparent));
+  color:var(--discover-muted);font-weight:750;font-size:calc(var(--logo-size) * .42);line-height:1;
+  overflow:hidden;
+}
+.dx-logo--sm{--logo-size:24px}
+.dx-logo--lg{--logo-size:52px}
+.dx-logo--img{background:#fff;box-shadow:inset 0 0 0 1px rgba(10,11,14,.08);padding:calc(var(--logo-size) * .08)}
+.dx-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.dx-logo--wide{width:calc(var(--logo-size) * var(--logo-w, 1));padding:calc(var(--logo-size) * .12) calc(var(--logo-size) * .14)}
+.dx-logo--img.dx-logo--dark{background:#16181d;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.dx-logo--only:not(.dx-logo--img){display:none}
+.dx-logo--lg.dx-logo--img{margin:0 0 14px}
+.dx-poster-top > .dx-logo{margin-right:-2px}
+.dx-poster-top > .dx-poster-id{flex:1;min-width:0}
+.dx-sector-row > div > .dx-logo{align-self:center}
+.dx-result > .dx-logo{position:relative}
+@media (max-width:560px){
+  .dx-dhero-title{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+  .dx-dhero-title .dx-logo--lg{--logo-size:40px}
+  .dx-dhero-title .dx-logo--lg.dx-logo--img{margin:0}
+  .dx-dhero-title .dx-logo--wide{width:calc(var(--logo-size) * min(var(--logo-w, 1), 2.2))}
+  body.dv2 .dv2-stock .dx-dhero-title h1,.dx-dhero-title h1{flex:1;min-width:0;margin:0}
+}
+.dx-logo-credit{margin:6px 0 0;font-size:10.5px;line-height:1.4;color:var(--discover-dim)}
+.dx-logo-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+body.dv2 .v2-tile-head > .dx-logo{margin-top:1px}
+body.dv2 .v2-tile-head > .v2-tile-id{flex:1}
+body.dv2 .v2-focus-top .dx-logo{margin:0 0 10px}
+.dx-logo:not(.dx-logo--img){position:relative}
+.dx-logo:not(.dx-logo--img) img{position:absolute;inset:0;opacity:0}

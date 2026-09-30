@@ -1,0 +1,318 @@
+/* =========================================================================
+   VISION UNIVERSE QUANT — app/app.css
+
+   Quant benutzt Discovers Gestaltung: dieselben Stylesheets
+   (discover.css, app.css, home.css, detail.css), dieselben Klassen,
+   dieselben Tokens (--v2-*, --discover-*). Diese Datei ergaenzt NUR die
+   Bausteine, die es in Discover nicht gibt - Faktor-Aufklapper,
+   Setup-Stufen, Bedingungslisten, Screener-Fragen, Regel-Editor - und
+   formt sie in Discovers Sprache: Haarlinien statt Kaesten, grosse
+   Zahlen, Grossbuchstaben-Kicker, Pillen, keine eigene Farbwelt.
+   ========================================================================= */
+
+/* ------------------------------------------------------------ Rahmen */
+body.dv2.qx .v2-bar{justify-content:flex-start}
+body.dv2.qx .qx-brand{display:inline-flex;align-items:center;gap:8px;font-weight:800;letter-spacing:-.02em;text-decoration:none}
+body.dv2.qx .qx-search-btn{margin-left:16px;min-height:40px;padding:8px 16px;gap:8px}
+body.dv2.qx .qx-search-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round}
+body.dv2.qx .qx-nav-icon svg{display:block;width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+body.dv2.qx .v2-footer .v2-preview{margin-right:6px}
+body.dv2.qx .v2-main:focus{outline:none}
+/* Wie #v2-shell in Discover: die Leiste sitzt am Desktop oben mittig im Rahmen. */
+body.dv2.qx #qx-app{position:relative}
+body.dv2.qx .v2-bar-caption{margin-left:auto}
+@media (max-width:1320px){body.dv2.qx .v2-bar-caption{display:none}body.dv2.qx .qx-search-btn{margin-left:auto}}
+@media (min-width:761px) and (max-width:1090px){body.dv2.qx .v2-dock .v2-nav-item span:last-child{display:none}}
+@media (max-width:760px){
+  body.dv2.qx .v2-dock .v2-nav-item span:last-child{white-space:normal;text-align:center;line-height:1.15}
+}
+
+/* Die Suche als Dialog im Top-Layer - dieselbe Flaeche wie Discovers Suche. */
+dialog.dx-search.qx-dialog{max-width:none;max-height:none;width:100%;height:100%;margin:0;padding:0;border:0;background:var(--v2-bg);color:var(--v2-ink)}
+dialog.dx-search.qx-dialog::backdrop{background:transparent}
+dialog.dx-search.qx-dialog .dx-result{text-decoration:none;color:inherit}
+
+/* ------------------------------------------------------------ Grundformen */
+body.dv2.qx .qx-h1{font-size:clamp(32px,5vw,66px);letter-spacing:-.045em;line-height:1.05;margin:8px 0 14px}
+body.dv2.qx .qx-small{font-size:13px;line-height:1.6;color:var(--v2-muted);margin:10px 0 0}
+body.dv2.qx .qx-sub{font-size:15px;font-weight:750;letter-spacing:-.01em;margin:22px 0 10px}
+body.dv2.qx .qx-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 0}
+body.dv2.qx .qx-loading{padding:40px 0;color:var(--v2-muted)}
+body.dv2.qx .qx-loading .dx-art-skeleton{position:static;display:inline-block;letter-spacing:.14em;text-transform:uppercase;font-size:11px}
+body.dv2.qx .dx-note{margin:16px 0}
+body.dv2.qx .dx-note p{margin:6px 0 0}
+body.dv2.qx .qx-card{border:0;border-radius:20px;padding:22px;background:var(--v2-panel);min-width:0}
+body.dv2.qx .qx-code{white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--v2-panel);border-radius:10px;padding:12px 14px;margin:10px 0 0;color:var(--v2-ink);overflow-x:auto}
+body.dv2.qx .qx-section{scroll-margin-top:90px}
+body.dv2.qx .v2-world{margin-top:56px}
+body.dv2.qx .dx-index-badge{text-decoration:none;color:inherit}
+body.dv2.qx a.dx-index-badge:hover{border-color:var(--discover-text)}
+body.dv2.qx .dx-kapitel-fuss--link a{font-weight:700}
+
+/* Kennzahl-Kacheln (dv2-valuation-card) auch ausserhalb der Bewertung. */
+body.dv2.qx .dv2-valuation-grid{margin:22px 0 0}
+body.dv2.qx .dv2-valuation-card{min-width:0;overflow-wrap:break-word}
+body.dv2.qx .dv2-valuation-card>p{font-size:15px;line-height:1.5;margin:10px 0 0}
+body.dv2.qx .dv2-valuation-card b.up{color:var(--discover-up)}
+body.dv2.qx .dv2-valuation-card b.down{color:var(--discover-down)}
+
+/* ------------------------------------------------------------ Aktienzeile
+   In der Form der Discover-Suchtreffer: Logo, Name, Kuerzel, Satz, Stufe. */
+body.dv2.qx .qx-list{display:flex;flex-direction:column;border-top:1px solid var(--v2-line)}
+body.dv2.qx .qx-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--v2-line);text-decoration:none;color:inherit;transition:background .15s ease}
+body.dv2.qx .qx-row:hover,body.dv2.qx .qx-row:focus-visible{background:var(--v2-panel)}
+body.dv2.qx .qx-row-main{min-width:0}
+body.dv2.qx .qx-row-title{display:flex;gap:8px;align-items:baseline;min-width:0}
+body.dv2.qx .qx-row-name{font-size:15px;font-weight:700;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.dv2.qx .qx-ticker{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--v2-muted);flex:none}
+body.dv2.qx .qx-row-why{font-size:13px;line-height:1.45;color:var(--v2-muted);margin-top:3px}
+body.dv2.qx .qx-row-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
+body.dv2.qx .qx-row-side small{font-size:11px;color:var(--v2-muted)}
+body.dv2.qx .qx-row .dx-logo{flex:none}
+
+/* Stufen-Chips (dx-zahlen-grade) auch ausserhalb der Zahlen-Karten. */
+body.dv2.qx .qx-pill{display:inline-flex;align-items:center;white-space:nowrap}
+body.dv2.qx .qx-pill.up{background:color-mix(in srgb,var(--discover-up) 13%,transparent);color:var(--discover-up)}
+body.dv2.qx .qx-pill.down{background:color-mix(in srgb,var(--discover-down) 12%,transparent);color:var(--discover-down)}
+body.dv2.qx .qx-pill.warm{background:color-mix(in srgb,var(--discover-warm) 14%,transparent);color:var(--discover-warm)}
+body.dv2.qx .qx-pill:not(.up):not(.down):not(.warm){background:var(--v2-panel);color:var(--v2-muted)}
+
+/* Karten-Raster und Schienen fuer Aktienkarten (dx-poster). */
+body.dv2.qx .qx-poster-grid{padding:0;margin-top:18px}
+body.dv2.qx .qx-rail .dx-rail{padding-left:0;padding-right:0}
+body.dv2.qx .dx-poster{color:inherit;text-decoration:none}
+
+/* ------------------------------------------------------------ Aktienseite */
+body.dv2.qx .qx-stock .v2-watch-button{display:flex;margin:0 0 4px auto}
+body.dv2.qx .qx-stock h1,body.dv2.qx .qx-stock h2{overflow-wrap:break-word;hyphens:auto}
+body.dv2.qx .qx-stock-id b{font-weight:700;color:var(--discover-text)}
+body.dv2.qx .qx-quote small{display:block;margin-top:6px;font-size:12px;color:var(--discover-muted)}
+body.dv2.qx .qx-quote .qx-quote-none{font-size:clamp(22px,3vw,32px)}
+body.dv2.qx .qx-glance .dx-dhero-sigs{margin-top:18px}
+body.dv2.qx .qx-glance a.dx-sig{text-decoration:none;color:inherit}
+body.dv2.qx .qx-glance .dx-zeitachse small{display:block;font-size:11px;color:var(--discover-muted);margin-top:3px}
+body.dv2.qx .qx-verdict-top[data-tone=good] .dx-story-dot{background:var(--discover-up)}
+body.dv2.qx .qx-verdict-top[data-tone=bad] .dx-story-dot{background:var(--discover-down)}
+body.dv2.qx .qx-verdict-top[data-tone=neutral] .dx-story-dot{background:var(--discover-warm)}
+body.dv2.qx .qx-verdict-top[data-tone=unknown] .dx-story-dot{background:var(--discover-muted)}
+body.dv2.qx .qx-waage-link{text-decoration:none;color:inherit}
+body.dv2.qx .qx-waage-link:hover b{text-decoration:underline}
+body.dv2.qx .qx-middle{font-size:15px;line-height:1.55;margin:22px 0 0;color:var(--discover-text)}
+body.dv2.qx .qx-pc-empty{font-size:14px;color:var(--discover-muted);margin:14px 0 0}
+body.dv2.qx .qx-waage-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+body.dv2.qx .qx-open-col{border-top:3px solid var(--discover-line-strong,var(--v2-line))}
+@media (max-width:860px){body.dv2.qx .qx-waage-3{grid-template-columns:1fr}}
+
+/* 01: Faktor-Karten - Discovers Zahlen-Karte als Aufklapper. Geoeffnet
+   nimmt sie die ganze Breite des Rasters ein. */
+body.dv2.qx .qx-factor{display:block;min-width:0;text-align:left;overflow-wrap:break-word}
+body.dv2.qx .qx-factor>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;width:100%;min-height:0;padding:0}
+body.dv2.qx .qx-factor .dx-zahlen-kopf{flex-wrap:wrap;gap:6px 10px}
+body.dv2.qx .qx-factor .dx-zahlen-satz{max-width:62ch}
+@media (max-width:620px){body.dv2.qx .dv2-stock .qx-factors{grid-template-columns:1fr}}
+body.dv2.qx .qx-factor>summary::-webkit-details-marker{display:none}
+body.dv2.qx .qx-factor .dx-zahlen-cta::after{content:" +"}
+body.dv2.qx .qx-factor[open] .dx-zahlen-cta::after{content:" −"}
+body.dv2.qx .qx-factor[open]{grid-column:1/-1}
+body.dv2.qx .qx-meter{display:block;align-self:stretch;height:4px;border-radius:4px;background:var(--discover-line);margin:12px 0 2px;overflow:hidden}
+body.dv2.qx .qx-meter i{display:block;height:100%;border-radius:4px;background:var(--discover-text)}
+body.dv2.qx .qx-factor.tone-good .qx-meter i{background:var(--discover-up)}
+body.dv2.qx .qx-factor.tone-bad .qx-meter i{background:var(--discover-down)}
+body.dv2.qx .qx-factor.tone-neutral .qx-meter i{background:var(--discover-warm)}
+body.dv2.qx .qx-factor-body{padding:8px 0 6px;border-top:1px solid var(--discover-line);margin-top:16px}
+body.dv2.qx .qx-comp{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;align-items:center;gap:6px 14px;margin:0;padding:12px 0;border-bottom:1px solid var(--discover-line)}
+body.dv2.qx .qx-comp small{grid-column:1/-1;font-size:12px;line-height:1.5;color:var(--discover-muted)}
+body.dv2.qx .qx-comp.is-missing .dx-bewertung-name,body.dv2.qx .qx-comp.is-missing b{color:var(--discover-muted)}
+@media (max-width:560px){body.dv2.qx .qx-comp{grid-template-columns:minmax(0,1fr) auto}body.dv2.qx .qx-comp .dx-bewertung-balken{grid-column:1/-1;grid-row:2}}
+
+/* 02: Veraenderungen als Discovers Satzliste; der Punkt traegt den Ton. */
+body.dv2.qx .qx-changes li{flex-wrap:wrap;row-gap:4px}
+body.dv2.qx .qx-changes li>span{flex:1 1 0;min-width:0}
+body.dv2.qx .qx-changes small{white-space:normal;margin-left:0;padding-left:0;flex-basis:100%;font-size:12.5px;line-height:1.45}
+body.dv2.qx .qx-change.tone-good .dx-story-dot{background:var(--discover-up)}
+body.dv2.qx .qx-change.tone-bad .dx-story-dot{background:var(--discover-down)}
+body.dv2.qx .qx-change.tone-neutral .dx-story-dot{background:var(--discover-muted)}
+
+/* 03: Setup-Stufen als Leiste. */
+body.dv2.qx .qx-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;list-style:none;padding:0;margin:22px 0 18px}
+body.dv2.qx .qx-ladder li{position:relative;padding:14px 0 0;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--discover-muted)}
+body.dv2.qx .qx-ladder li::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:5px;background:var(--discover-line)}
+body.dv2.qx .qx-ladder li.is-past::before{background:color-mix(in srgb,var(--discover-text) 45%,transparent)}
+body.dv2.qx .qx-ladder li.is-now{color:var(--discover-text)}
+body.dv2.qx .qx-ladder li.is-now::before{background:var(--discover-text)}
+body.dv2.qx .qx-qa{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+
+/* Bedingungen (Setup, Anlagestil): Marke, Satz, Beleg - wie die Waage. */
+body.dv2.qx .qx-conds{list-style:none;padding:0;margin:12px 0 0}
+body.dv2.qx .qx-conds li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--discover-line)}
+body.dv2.qx .qx-conds li:first-child{border-top:0}
+body.dv2.qx .qx-conds b{display:block;font-size:14px;line-height:1.4}
+body.dv2.qx .qx-conds span{display:block;font-size:12.5px;line-height:1.5;color:var(--discover-muted);margin-top:2px}
+body.dv2.qx .qx-conds .dx-waage-marke{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:800}
+body.dv2.qx .qx-conds li.tone-good .dx-waage-marke{background:color-mix(in srgb,var(--discover-up) 15%,transparent);color:var(--discover-up)}
+body.dv2.qx .qx-conds li.tone-bad .dx-waage-marke{background:color-mix(in srgb,var(--discover-down) 14%,transparent);color:var(--discover-down)}
+body.dv2.qx .qx-conds li.tone-unknown .dx-waage-marke{background:var(--discover-line);color:var(--discover-muted)}
+
+/* 04: Anlagestil mit Discovers Perspektiven-Bild. */
+body.dv2.qx .qx-strategy-link{margin:22px 0 8px}
+
+/* 05: Rueckblick. */
+body.dv2.qx .qx-replay-level{padding:8px 0 22px;border-bottom:1px solid var(--discover-line)}
+body.dv2.qx .qx-replay-level:last-of-type{border-bottom:0}
+body.dv2.qx .qx-horizons small{display:block;font-size:11px;line-height:1.4;color:var(--discover-muted);margin-top:4px}
+body.dv2.qx .qx-bars2 h3{margin-top:18px}
+
+/* Daten und Grenzen. */
+body.dv2.qx .qx-kv>div{display:flex;justify-content:space-between;gap:16px}
+body.dv2.qx .qx-kv b{text-align:right}
+
+/* ------------------------------------------------------------ Home */
+body.dv2.qx .qx-intro .v2-intro-visual img{object-fit:cover}
+body.dv2.qx .qx-kpi .v2-market-change{font-size:clamp(26px,3.4vw,36px)}
+body.dv2.qx .qx-kpi{text-decoration:none;color:inherit}
+body.dv2.qx .qx-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--v2-line);margin-top:18px}
+body.dv2.qx .qx-steps>div{padding:22px 22px 22px 0;border-right:1px solid var(--v2-line)}
+body.dv2.qx .qx-steps>div+div{padding-left:22px}
+body.dv2.qx .qx-steps>div:last-child{border-right:0}
+body.dv2.qx .qx-steps b{display:block;font-size:20px;letter-spacing:-.03em;margin:8px 0 8px}
+body.dv2.qx .qx-steps p{margin:0;font-size:13.5px;line-height:1.55;color:var(--v2-muted)}
+@media (max-width:760px){body.dv2.qx .qx-steps{grid-template-columns:1fr}body.dv2.qx .qx-steps>div{border-right:0;border-bottom:1px solid var(--v2-line);padding:18px 0}body.dv2.qx .qx-steps>div+div{padding-left:0}}
+
+/* ------------------------------------------------------------ Screener */
+body.dv2.qx .qx-mode{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--v2-line);border-radius:99px;margin:6px 0 24px}
+body.dv2.qx .qx-mode a{padding:9px 18px;border-radius:99px;font-size:13px;font-weight:700;text-decoration:none;color:var(--v2-muted)}
+body.dv2.qx .qx-mode a[aria-current=page]{background:var(--v2-ink);color:var(--v2-bg)}
+body.dv2.qx .qx-questions{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px;margin:8px 0 26px}
+body.dv2.qx .qx-question{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;min-height:128px;padding:20px;border:0;border-radius:20px;background:#d7c7f4;color:#251938;transition:transform .2s ease,box-shadow .2s ease}
+body.dv2.qx .qx-question:nth-child(4n+2){background:#d4f0de;color:#17342d}
+body.dv2.qx .qx-question:nth-child(4n+3){background:#f1d991;color:#362b10}
+body.dv2.qx .qx-question:nth-child(4n+4){background:#c5e9ee;color:#19383b}
+body.dv2.qx .qx-question strong{font-size:18px;line-height:1.15;letter-spacing:-.03em}
+body.dv2.qx .qx-question span{font-size:12.5px;line-height:1.45;opacity:.85}
+body.dv2.qx .qx-question:hover{transform:translateY(-3px)}
+body.dv2.qx .qx-question[aria-pressed=true]{box-shadow:0 0 0 3px var(--v2-ink)}
+body.dv2.qx .qx-question[aria-pressed=true] strong::after{content:"  ✓"}
+body.dv2.qx .qx-sentence{font-size:clamp(22px,2.8vw,32px);font-weight:650;letter-spacing:-.03em;line-height:1.3;max-width:34ch;margin:10px 0 6px}
+body.dv2.qx .qx-count{font-size:13px;color:var(--v2-muted);margin:0 0 18px}
+body.dv2.qx .qx-editor{border-top:1px solid var(--v2-line);padding-top:18px}
+body.dv2.qx .qx-editor label{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--v2-muted);margin:0 0 8px}
+body.dv2.qx .qx-select,body.dv2.qx .qx-rule select,body.dv2.qx .qx-rule input{min-height:44px;padding:10px 14px;border:1px solid var(--v2-line);border-radius:12px;background:var(--v2-bg);color:var(--v2-ink);font:inherit;font-size:14px;min-width:0;max-width:100%}
+body.dv2.qx .qx-rules{display:flex;flex-direction:column;gap:10px}
+body.dv2.qx .qx-rule{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center}
+body.dv2.qx .qx-remove{min-height:44px;padding:0 14px;border:1px solid var(--v2-line);border-radius:99px;background:none;color:var(--v2-muted);font-size:12px}
+@media (max-width:600px){body.dv2.qx .qx-rule{grid-template-columns:1fr 1fr}body.dv2.qx .qx-rule>:first-child{grid-column:1/-1}}
+
+/* ------------------------------------------------------------ Strategien */
+body.dv2.qx .qx-strat .v2-collection-copy small{display:block;margin-top:8px;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--v2-ink)}
+body.dv2.qx .qx-strat-hero{margin:8px 0 22px}
+body.dv2.qx .qx-strat-hero img{width:100%;max-height:340px;object-fit:cover;border-radius:22px;display:block}
+
+/* ------------------------------------------------------------ Methodik */
+body.dv2.qx .qx-principles{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.dv2.qx .qx-principles>div:nth-child(2n){border-right:0}
+body.dv2.qx .qx-principles>div:nth-child(2n+1){padding-left:0}
+body.dv2.qx .qx-principles>div:nth-child(2n){padding-left:22px}
+body.dv2.qx .qx-principles>div:nth-child(-n+2){border-bottom:1px solid var(--v2-line)}
+body.dv2.qx .qx-prose{max-width:760px}
+body.dv2.qx .qx-prose p{font-size:16px;line-height:1.7}
+body.dv2.qx .qx-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:16px 0 0}
+body.dv2.qx .qx-table th,body.dv2.qx .qx-table td{padding:10px 8px;border-bottom:1px solid var(--v2-line);text-align:right;font-variant-numeric:tabular-nums}
+body.dv2.qx .qx-table th:first-child,body.dv2.qx .qx-table td:first-child{text-align:left}
+body.dv2.qx .qx-table th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted);font-weight:700}
+body.dv2.qx .qx-table-wrap{overflow-x:auto}
+
+/* ------------------------------------------------------------ Bewegung */
+@media (prefers-reduced-motion:reduce){body.dv2.qx .qx-question,body.dv2.qx .qx-method-grid a,body.dv2.qx .qx-row{transition:none}}
+
+/* Suchfeld der Aktien-Seite in Discovers Suchpille. */
+body.dv2.qx .qx-search-field{max-width:640px;margin:8px 0 6px}
+body.dv2.qx .qx-search-field input{flex:1;min-width:0;border:0;background:transparent;padding:6px 0;font-size:16px;color:inherit;min-height:0}
+body.dv2.qx .qx-search-field input:focus{outline:none}
+body.dv2.qx .qx-search-field:focus-within{outline:3px solid #9fbaed;outline-offset:3px}
+body.dv2.qx .qx-strats{margin-top:22px}
+body.dv2.qx .qx-rules-box{margin:20px 0 10px}
+body.dv2.qx .qx-kpi-word{font-size:clamp(20px,2.6vw,28px)!important;line-height:1.1}
+@media (max-width:760px){
+  body.dv2.qx .qx-kpis{grid-template-columns:1fr;gap:10px}
+  body.dv2.qx .qx-kpis .v2-market-kpi{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:14px}
+  body.dv2.qx .qx-kpis .v2-market-change{grid-column:2;grid-row:1;margin:0;text-align:right}
+  body.dv2.qx .qx-kpis .v2-market-fresh{grid-column:1/-1;margin-top:6px}
+}
+body.dv2.qx .qx-kpis .v2-market-change{color:var(--v2-ink)}
+body.dv2.qx .qx-poster .dx-zahl span{max-width:14ch}
+@media (max-width:620px){
+  body.dv2.qx .qx-row{grid-template-columns:auto minmax(0,1fr);row-gap:8px}
+  body.dv2.qx .qx-row-side{grid-column:2;align-items:flex-start;text-align:left;flex-direction:row;flex-wrap:wrap;gap:8px}
+  body.dv2.qx .qx-questions{grid-template-columns:1fr 1fr;gap:10px}
+  body.dv2.qx .qx-question{min-height:0;padding:16px 14px;border-radius:16px}
+  body.dv2.qx .qx-question strong{font-size:15.5px}
+  body.dv2.qx .qx-question span{font-size:12px}
+}
+body.dv2.qx .qx-strat .v2-collection-copy small{font-weight:600;color:var(--v2-muted);line-height:1.5}
+
+/* ------------------------------------------------------------ Methodik & Werkzeuge
+   Dieselben Grundformen wie die Kapitel: grosse Zeilen, Haarlinien. */
+body.dv2.qx .qx-h2{font-size:clamp(24px,3vw,36px);line-height:1.12;letter-spacing:-.045em;margin:0 0 14px}
+body.dv2.qx .qx-h3{font-size:19px;line-height:1.2;letter-spacing:-.03em;font-weight:750;margin:0 0 10px}
+body.dv2.qx .qx-grid{display:grid;gap:14px;margin-top:18px}
+body.dv2.qx .qx-grid-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+body.dv2.qx .qx-grid-3{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+body.dv2.qx .qx-grid>*{min-width:0}
+body.dv2.qx dl.qx-kv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);margin:14px 0 0;border-top:1px solid var(--v2-line)}
+body.dv2.qx dl.qx-kv dt,body.dv2.qx dl.qx-kv dd{margin:0;padding:10px 0;border-bottom:1px solid var(--v2-line);font-size:14px}
+body.dv2.qx dl.qx-kv dt{color:var(--v2-muted)}
+body.dv2.qx dl.qx-kv dd{font-weight:650;text-align:right}
+body.dv2.qx .qx-factor>summary .qx-factor-name{font-size:17px;font-weight:750;letter-spacing:-.02em}
+body.dv2.qx .qx-factor>summary .qx-factor-q{font-size:13.5px;line-height:1.5;color:var(--discover-muted,var(--v2-muted))}
+body.dv2.qx .qx-card .qx-factor,body.dv2.qx .qx-factors>.qx-factor:not(.dx-zahlen-karte){padding:18px 0;border-bottom:1px solid var(--v2-line)}
+body.dv2.qx .qx-factors:not(.dx-zahlen){display:flex;flex-direction:column;border-top:1px solid var(--v2-line)}
+body.dv2.qx .qx-row.qx-card{border:1px solid var(--v2-line);border-radius:18px;padding:16px}
+
+/* Die Chart-Bausteine aus /quant/ui (Kursstruktur, Geschaeftszahlen) lesen
+   ihre Farben aus diesen Namen - hier aus Discovers Palette gespeist. */
+body.dv2.qx{--ink:var(--v2-ink);--bg:var(--v2-bg);--surface:var(--v2-bg);--surface-2:var(--v2-panel);--line:var(--v2-line);--line-strong:var(--v2-muted);
+  --muted:var(--v2-muted);--muted-2:var(--v2-muted);--green:#12a150;--green-ink:#087942;--red:#d0453a;--red-ink:#b33129;--red-bg:#fbe9e7;
+  --blue:#3b6fd8;--purple:#7a5bd6;--purple-bg:#efe9fb;--yellow:#c89a16;--radius:12px;--radius-sm:8px;--radius-lg:20px;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+html:not([data-theme=light]) body.dv2.qx{--green-ink:#3fd98a;--red-ink:#ff7a70;--red-bg:#3a1714;--purple-bg:#2a2140}
+body.dv2.qx .dx-chapter{padding-left:0;padding-right:0}
+@media (max-width:760px){body.dv2.qx .qx-principles{grid-template-columns:1fr}body.dv2.qx .qx-principles>div,body.dv2.qx .qx-principles>div:nth-child(2n){padding:18px 0;border-right:0;border-bottom:1px solid var(--v2-line)}}
+body.dv2.qx .qx-muted{font-size:15px;line-height:1.55;color:var(--discover-muted,var(--v2-muted));margin:8px 0 0}
+body.dv2.qx .qx-bars2 .dx-bewertung-zeile:not(.dx-bewertung-zeile--eigen) .dx-bewertung-name{color:var(--discover-muted)}
+body.dv2.qx .qx-bars2 .tone-good.dx-bewertung-zeile--eigen .dx-bewertung-balken i{background:var(--discover-up)}
+body.dv2.qx .qx-bars2 .tone-bad.dx-bewertung-zeile--eigen .dx-bewertung-balken i{background:var(--discover-down)}
+body.dv2.qx .qx-qa{display:grid;gap:14px;margin:18px 0 0}
+body.dv2.qx .qx-qa dt{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--discover-muted);margin:0 0 6px}
+body.dv2.qx .qx-qa dd{margin:0}
+body.dv2.qx .qx-qa .dx-bewertung-satz dd{font-size:clamp(17px,2vw,21px);line-height:1.4}
+body.dv2.qx .qx-qa .dv2-valuation-card dd p{margin:0 0 6px}
+body.dv2.qx .qx-strategy-sentence{margin-top:0}
+body.dv2.qx .qx-stock-layout{display:block}
+/* Am Handy bleibt Quants schmale Kopfzeile stehen (Marke, Beta, Suche):
+   die Leiste unten traegt die fuenf Bereiche, die Suche braucht einen Ort. */
+@media (max-width:760px){
+  body.dv2.qx .v2-bar{display:flex;padding:8px 20px 4px;gap:10px}
+  body.dv2.qx .qx-search-btn{min-height:40px;padding:8px 14px}
+}
+body.dv2.qx .qx-verdict-top .dx-dhero-story{margin-bottom:10px}
+body.dv2.qx .qx-verdict-top[data-tone=good] .dx-story-dot{background:var(--discover-up)}
+body.dv2.qx .qx-verdict-top[data-tone=bad] .dx-story-dot{background:var(--discover-down)}
+body.dv2.qx .qx-verdict-top[data-tone=neutral] .dx-story-dot{background:var(--discover-warm)}
+body.dv2.qx .qx-waage-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:-.035em;line-height:1.15;margin:34px 0 16px}
+body.dv2.qx .qx-stock-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+body.dv2.qx .qx-stock-top .dx-back{margin:0}
+body.dv2.qx .qx-stock .qx-stock-top .v2-watch-button{margin:0}
+/* Kontrast (axe): Kicker ausserhalb der Aktienseite in Discovers gedaempftem
+   Grau statt Gold; Kleintext im dunklen Band in den Farben des Bands. */
+body.dv2.qx .v2-main>.dx-chapter>.dx-kicker,body.dv2.qx .v2-main>div>.dx-chapter>.dx-kicker{color:var(--v2-muted)}
+body.dv2.qx .dx-chapter--journey .qx-small,body.dv2.qx .dx-chapter--journey .qx-more summary{color:var(--discover-muted)}
+body.dv2.qx .dx-chapter--journey .qx-small b{color:var(--discover-text)}
+
+/* Desktop: Chart und Einordnung nebeneinander - die Antwort steht in der
+   ersten Bildschirmhoehe (M40), der Chart bleibt die grosse Flaeche. */
+@media (min-width:1100px){
+  body.dv2.qx .qx-stock-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:0 48px;align-items:start}
+  body.dv2.qx .qx-stock-layout>*{min-width:0}
+  body.dv2.qx .qx-stock-layout .dv2-stock-context{display:block;padding-top:44px;border-top:0}
+  body.dv2.qx .qx-stock-layout .dv2-stock-context .dx-dhero-story{font-size:clamp(24px,2.2vw,32px)}
+  body.dv2.qx .qx-stock-layout .dx-waage{grid-template-columns:1fr}
+}
