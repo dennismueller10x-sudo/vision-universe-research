@@ -114,7 +114,8 @@
     NO_FUNDAMENTALS: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
     FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
     MARKET_CAP_UNAVAILABLE: "Der Börsenwert ist nicht belegt; Bewertungskennzahlen lassen sich deshalb nicht bilden.",
-    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Die Aktienzahl lässt sich dieser Notierung nicht sicher zuordnen; der Börsenwert wird deshalb nicht genannt.",
+    SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Diese Kennzahl braucht den Börsenwert genau dieser Notierung. Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes – welcher Anteil auf dieses Papier entfällt, steht nicht in den Unterlagen. Die Kennzahl wird deshalb bewusst nicht genannt, statt sie zu schätzen.",
+    DISPLAY_NOT_PERMITTED: "Für diesen Titel ist die Anzeige des Kurses und marktbezogener Werte nicht freigegeben.",
     NOT_APPLICABLE: "Für diese Art von Unternehmen ist die Kennzahl nicht aussagekräftig.",
     TEMPLATE_NOT_APPLICABLE: "Für diese Art von Unternehmen ist die Kennzahl nicht aussagekräftig.",
     NOT_AN_EQUITY_LISTING: "Dieser Titel ist keine Stammaktie (etwa ein ETF oder eine Vorzugsaktie). Die Unternehmensanalyse gilt nur für Aktien.",
@@ -290,11 +291,19 @@
     };
   }
 
+  /* Warum eine Unternehmensart eigene Kennzahlen bekommt - in
+     Alltagssprache, je Vorlage ein eigener Satz. */
+  var TEMPLATE_PLAIN = {
+    BALANCE_SHEET_FINANCIAL: "Bei Banken und bilanzbasierten Finanzunternehmen ist die Bilanz das Geschäft selbst: Umsatz- und Margenkennzahlen passen nicht, deshalb zählen Eigenkapital, Ertrag auf die Bilanzsumme und Ausschüttungsdeckung",
+    INSURANCE_CARRIER: "Versicherer verwalten Beiträge ihrer Kunden in der Bilanz: statt Bruttomarge und Verschuldung zählen Eigenkapital, stabile Erträge und Ertrag auf das eingesetzte Kapital",
+    REAL_ESTATE_TRUST: "REITs schütten fast alle Gewinne aus und bilanzieren hohe Abschreibungen auf Immobilien: gemessen werden deshalb Zahlungsfluss, Ausschüttungsdeckung und Ertrag auf die Bilanzsumme"
+  };
   function referenceText(f, record) {
     var p = f.peer || (record && record.peer) || null;
     var tmpl = record && record.template;
     var parts = [];
-    if (tmpl && tmpl.label) parts.push("Branchenvorlage „" + tmpl.label + "“: Kennzahlen, die zu dieser Unternehmensart passen");
+    if (tmpl && tmpl.id) parts.push((TEMPLATE_PLAIN[tmpl.id] || "Für diese Unternehmensart gilt eine eigene Vorlage mit passenden Kennzahlen") +
+      " (Branchenvorlage „" + (tmpl.label || tmpl.id) + "“" + (tmpl.version ? ", Fassung " + tmpl.version : "") + ")");
     if (p && p.level === "sic4_industry") parts.push("verglichen mit Unternehmen derselben Branche (SIC " + p.industry + ") und dem Gesamtmarkt, gewichtet 70 : 30");
     else if (p && p.level === "sic_division") parts.push("verglichen mit Unternehmen desselben Wirtschaftszweigs und dem Gesamtmarkt, gewichtet 70 : 30");
     else parts.push("verglichen mit allen bewerteten Aktien");
@@ -327,9 +336,11 @@
     var u = PV.urteil(factors.map(function (f) {
       return { id: f.id, state: f.state, score: f.score, band: f.band };
     }));
-    var id = rated.length < 3 ? "KEINE_DATEN" : u.stufeId;
+    /* Die Stufe ist die der Engine - auch bei wenigen gemessenen
+       Eigenschaften; der Satz darunter sagt dann, wie wenige es sind. */
+    var id = u.stufeId;
     var sub = rated.length < 3
-      ? (rated.length ? "Nur " + rated.length + " von 7 Eigenschaften lassen sich messen – zu wenig für ein Gesamtbild." : "Keine der sieben Eigenschaften lässt sich für diesen Titel messen.")
+      ? (rated.length ? "Nur " + rated.length + " von " + factors.length + " Eigenschaften lassen sich messen – ein dünnes Bild." : "Keine der sieben Eigenschaften lässt sich für diesen Titel messen.")
       : u.stark + " von " + u.bewertet + " gemessenen Eigenschaften stark, " + u.schwach + " schwach, " + u.mittel + " im Mittelfeld.";
     return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub,
       rated: u.bewertet, strong: u.stark, weak: u.schwach, middle: u.mittel, total: factors.length,
@@ -408,10 +419,12 @@
     { id: "NO_SETUP", label: "Kein Setup", short: "Nichts zu sehen" },
     { id: "WATCH", label: "Beobachten", short: "Trend trägt, noch keine Situation" },
     { id: "SETUP_FORMING", label: "Setup entsteht", short: "Aufbau vollständig, Auslöser fehlt" },
-    { id: "CONFIRMED", label: "Bestätigt", short: "Alle Bedingungen erfüllt" }
+    { id: "CONFIRMED", label: "Setup bestätigt", short: "Alle Bedingungen erfüllt" }
   ];
-  var SETUP_LATE = { ACTIVE: "Läuft", RISK_RISING: "Risiko steigt", INVALIDATED: "Ungültig", EXIT: "Beendet" };
+  var SETUP_LATE = { ACTIVE: "Trend läuft", RISK_RISING: "Risiko steigt", INVALIDATED: "Setup nicht mehr gültig", EXIT: "Ausstiegsbedingung erreicht" };
   function setupLabel(state) {
+    var w = lang(state);
+    if (w) return w;
     for (var i = 0; i < SETUP_STAGES.length; i++) if (SETUP_STAGES[i].id === state) return SETUP_STAGES[i].label;
     return SETUP_LATE[state] || null;
   }
@@ -438,10 +451,16 @@
   function humanField(c) {
     return lang(c.field) || FIELD_WORD[c.field] || (c.label && c.label.replace(/^Technical /, "")) || c.field || "Bedingung";
   }
+  var Catalog = (typeof module !== "undefined" && module.exports) ? require("../engines/catalog.js") : global.VUCatalog;
+  function fieldUnit(field) {
+    try { var f = Catalog && field && Catalog.field(field); return f ? f.unit : null; } catch (e) { return null; }
+  }
   function humanValue(v, field) {
     if (v === null || v === undefined) return null;
     if (Array.isArray(v)) return v.map(function (x) { return humanValue(x, field); }).filter(Boolean).join(" oder ");
-    if (typeof v === "number") return de(v, 2);
+    /* Die Einheit steht im Katalog: ein Verhaeltnis wird als Prozent
+       gelesen (-0,15 ist ein Abstand von 15 %). */
+    if (typeof v === "number") return fieldUnit(field) === "ratio" ? pct(v, 1) : de(v, 2);
     if (typeof v === "boolean") return v ? "ja" : "nein";
     /* Kein Eintrag: der rohe Wert bleibt draussen. */
     return (field && lang(field + "." + v)) || VALUE_WORD[v] || null;
@@ -485,38 +504,79 @@
   function conditionLabel(label) {
     return String(label || "").replace(/^Quant V2 · /, "").replace(/^Qualität$/, FACTORS.quality.name);
   }
+  /* Jeder Grund des Strategy-Match-Vertrags hat einen eigenen Satz: "nichts
+     messbar" ist ein Ergebnis, kein Ladefehler. */
+  var STRATEGY_REASON = {
+    INSUFFICIENT_MEASURABLE_WEIGHT: "Für diese Aktie ist zu wenig vom Gewicht der Bedingungen messbar – ein Anlagestil lässt sich nicht belastbar prüfen. Das ist ein Ergebnis der Prüfung, kein Ladefehler.",
+    INSUFFICIENT_MEASURABLE_CONDITIONS: "Für diese Aktie sind weniger als zwei Bedingungen eines Anlagestils messbar. Ein Stil wird deshalb nicht zugeordnet.",
+    NO_EVIDENCE: "Für diese Aktie liegt keine Faktoranalyse vor, gegen die sich ein Anlagestil prüfen ließe."
+  };
+  var STRATEGY_LOAD_FAILURE = "Für diesen Titel lässt sich kein Anlagestil prüfen – die dafür nötigen Faktorwerte fehlen.";
   function strategyView(match, brief) {
-    if (!match || match.state !== "AVAILABLE" || !Array.isArray(match.profiles)) {
-      return { state: "UNAVAILABLE", text: reasonText(match && match.reason, "Für diesen Titel lässt sich kein Anlagestil prüfen – die dafür nötigen Faktorwerte fehlen.") };
+    if (!match) return { state: "UNAVAILABLE", text: STRATEGY_LOAD_FAILURE };
+    if (match.state !== "AVAILABLE" || !Array.isArray(match.profiles)) {
+      return { state: "UNAVAILABLE", reason: match.reason || null, text: STRATEGY_REASON[match.reason] || reasonText(match.reason, STRATEGY_LOAD_FAILURE) };
     }
     var profiles = match.profiles.filter(function (p) { return p.state === "AVAILABLE" && isNum(p.match); })
       .sort(function (a, b) { return b.match - a.match; });
-    if (!profiles.length) return { state: "UNAVAILABLE", text: "Für keinen Anlagestil sind genug Bedingungen messbar." };
+    if (!profiles.length) {
+      var r = (match.profiles[0] && match.profiles[0].reason) || "INSUFFICIENT_MEASURABLE_CONDITIONS";
+      return { state: "UNAVAILABLE", reason: r, text: STRATEGY_REASON[r] || STRATEGY_LOAD_FAILURE };
+    }
     var best = profiles[0];
     function conds(p) {
       return (p.conditions || []).map(function (c) {
-        return { label: conditionLabel(c.label), state: c.state === "MET" ? "MET" : c.state === "NOT_MET" ? "NOT_MET" : "OPEN",
+        var st = c.state === "MET" ? "MET" : c.state === "NOT_MET" ? "NOT_MET" : "OPEN";
+        return { label: conditionLabel(c.label), state: st,
           value: isNum(c.value) ? Math.round(c.value) : null, threshold: c.threshold, operator: c.operator,
           text: conditionLabel(c.label) + (isNum(c.value) ? " " + Math.round(c.value) : " ohne Wert") + " · verlangt " + (c.operator === "gte" ? "mindestens " : c.operator === "lte" ? "höchstens " : "") + c.threshold,
+          demand: "verlangt " + (c.operator === "gte" ? "mindestens " : c.operator === "lte" ? "höchstens " : "") + c.threshold,
+          value2: isNum(c.value) ? "aktuell " + Math.round(c.value) : null,
           rationale: c.rationale || null };
       });
     }
+    function counted(list) {
+      var met = list.filter(function (c) { return c.state === "MET"; }).length;
+      var notMet = list.filter(function (c) { return c.state === "NOT_MET"; }).length;
+      var open = list.length - met - notMet;
+      return met + " von " + (met + notMet) + " messbaren Bedingungen erfüllt" +
+        (open ? " · " + open + " weitere " + (open === 1 ? "ist" : "sind") + " nicht messbar und " + (open === 1 ? "zählt" : "zählen") + " weder als erfüllt noch als verletzt" : "");
+    }
     var bestConds = conds(best);
-    /* "Passt" nur, wenn keine Bedingung verletzt oder offen ist. Sonst ist
-       es die naechste Uebereinstimmung - und der Satz sagt das. */
+    /* "Passt" nur, wenn keine Bedingung verletzt oder offen ist. Eine gute
+       Uebereinstimmung (Band des Vertrags) heisst "am ehesten"; darunter
+       steht der Befund, dass nichts gut passt - und der naechste Stil. */
     var fits = bestConds.every(function (c) { return c.state === "MET"; });
+    var scaled = best.match <= 1 ? best.match * 100 : best.match;
+    var good = best.band ? (best.band === "FIT" || best.band === "STRONG_FIT") : scaled >= 70;
+    var sentence = fits ? "Passt aktuell zu " + best.label + "."
+      : good ? "Am ehesten passt die Aktie aktuell zu " + best.label + "."
+      : "Zu keinem Anlagestil passt dieser Titel derzeit gut. Am nächsten kommt " + best.label + ".";
     return {
-      state: "AVAILABLE",
-      sentence: (fits ? "Passt aktuell zu " : "Am ehesten passt die Aktie aktuell zu ") + best.label + ".",
+      state: "AVAILABLE", sentence: sentence, fits: fits, good: good,
       best: { id: best.profileId, label: best.label, plain: best.plain, risk: best.mainRisk, match: best.match,
-        bandLabel: best.bandLabel, fits: fits,
+        bandLabel: best.bandLabel, fits: fits, countText: counted(bestConds),
         met: bestConds.filter(function (c) { return c.state === "MET"; }),
         notMet: bestConds.filter(function (c) { return c.state === "NOT_MET"; }),
         open: bestConds.filter(function (c) { return c.state === "OPEN"; }) },
-      others: profiles.slice(1).map(function (p) { return { id: p.profileId, label: p.label, match: p.match, bandLabel: p.bandLabel, conditions: conds(p) }; }),
+      others: profiles.slice(1).map(function (p) { var cs = conds(p); return { id: p.profileId, label: p.label, match: p.match, bandLabel: p.bandLabel, conditions: cs, countText: counted(cs) }; }),
       methodologyVersion: match.methodologyVersion || null
     };
   }
+
+  /* Wechsel der Stil-Zuordnung zwischen zwei veroeffentlichten Staenden.
+     Beide Daten stehen im Satz - "seit gestern" liest sich wie ein
+     Ereignis von heute, und das ist es nicht. */
+  function assignmentChangeText(change) {
+    if (!change || (change.state !== "CHANGED" && change.state !== "NO_CHANGE")) return null;
+    var span = "zwischen den veröffentlichten Ständen vom " + dateDe(change.from) + " und " + dateDe(change.to);
+    if (change.state === "NO_CHANGE") return "An der Zuordnung zu den Anlagestilen hat sich " + span + " nichts geändert.";
+    var parts = [];
+    if ((change.entered || []).length) parts.push("neu erfüllt: " + change.entered.map(function (e) { return e.label; }).join(", "));
+    if ((change.exited || []).length) parts.push("nicht mehr erfüllt: " + change.exited.map(function (e) { return e.label; }).join(", "));
+    return "Veränderung " + span + " – " + parts.join(" · ") + ". Eine Beobachtung zwischen zwei Ständen – kein Ereignis von heute, kein Signal und keine Prognose.";
+  }
+  function dateDe(iso) { var p = String(iso || "").slice(0, 10).split("-"); return p.length === 3 ? p[2] + "." + p[1] + "." + p[0] : String(iso || "–"); }
 
   /* -------------------------------------------------- Historical Replay */
 
@@ -558,6 +618,10 @@
     if (p && p.state === "AVAILABLE") {
       out.levels.push({ id: "MARKET_WIDE", title: "Ähnliche Situationen im gesamten Markt", state: "AVAILABLE",
         text: p.sentence, upside: p.upside, downside: p.downside, sample: p.sampleSentence, robust: p.robustSentence,
+        coverage: patterns && patterns.coverage ? patterns.coverage : null,
+        coverageText: patterns && patterns.coverage && patterns.coverage.notMeasurable > 0
+          ? patterns.coverage.notMeasurable + " der vorregistrierten Muster sind für diese Aktie nicht prüfbar, weil ein Merkmal fehlt; geprüft wurden " + patterns.coverage.measurable + "."
+          : null,
         direction: p.direction, horizonMonths: patterns && patterns.horizonMonths || 24,
         holds: p.holds });
     } else {
@@ -719,12 +783,12 @@
   }
 
   var api = {
-    VERSION: VERSION, ORDER: ORDER, BAND_ORDER: BAND_ORDER, BAND_MIN: BAND_MIN, FACTORS: FACTORS,
+    VERSION: VERSION, ORDER: ORDER, TEMPLATE_PLAIN: TEMPLATE_PLAIN, BAND_ORDER: BAND_ORDER, BAND_MIN: BAND_MIN, FACTORS: FACTORS,
     SETUP_STAGES: SETUP_STAGES, CHANGE_TEXT: CHANGE_TEXT, REASON: REASON,
     band: band, bandWord: bandWord, factorLabel: factorLabel, rankIn: rankIn, rankSentence: rankSentence,
     distributionOf: distributionOf, windowText: windowText, componentValue: componentValue, reasonText: reasonText, pct: pct,
     factorView: factorView, overall: overall, proCon: proCon, changeView: changeView, setupView: setupView,
-    setupLabel: setupLabel, useLanguage: useLanguage, strategyView: strategyView, replayView: replayView, gapSentence: gapSentence,
+    setupLabel: setupLabel, useLanguage: useLanguage, STRATEGY_REASON: STRATEGY_REASON, assignmentChangeText: assignmentChangeText, strategyView: strategyView, replayView: replayView, gapSentence: gapSentence,
     stock: stock, fromScreeningRow: fromScreeningRow, gapGroups: gapGroups,
     TECHNICAL_REASON: TECHNICAL_REASON, PATTERN_REASON: PATTERN_REASON,
     technicalReasonText: technicalReasonText, patternReasonText: patternReasonText, analysisLagText: analysisLagText,

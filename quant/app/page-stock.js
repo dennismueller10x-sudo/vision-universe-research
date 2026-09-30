@@ -95,7 +95,7 @@
       return el("li", { class: "tone-" + tone }, [
         el("span", { "aria-hidden": "true", text: c.state === "MET" ? "✓" : c.state === "NOT_MET" ? "✗" : "–" }),
         el("div", {}, [el("span", { text: c.label + (c.state === "OPEN" ? " – nicht messbar" : "") }),
-          el("small", { text: [c.demand, c.value].filter(Boolean).join(" · ") || c.text || "" })])
+          el("small", { text: ([c.demand, c.value || c.value2].filter(function (x) { return x && typeof x === "string"; }).join(" · ") || c.text || "") + (c.state === "OPEN" ? " · zählt weder als erfüllt noch als verletzt" : "") })])
       ]);
     }));
   }
@@ -118,7 +118,7 @@
     var top = el("div", { class: "qx-verdict-top tone-" + o.tone }, [
       el("span", { class: "qx-eyebrow", text: "Quant-Einordnung" }),
       el("h2", { text: o.text }),
-      el("p", { class: "qx-small", style: "margin:0", text: o.sub + " Eine Gesamtnote gibt es bewusst nicht." })
+      el("p", { class: "qx-small", style: "margin:0", text: o.sub + " Eine Gesamtnote gibt es bewusst nicht: Sie würde den Zielkonflikt verbergen, auf den es ankommt – etwa hohe Qualität bei anspruchsvoller Bewertung." })
     ]);
     function col(title, tone, items, empty) {
       return el("div", { class: "qx-pc-col tone-" + tone }, [el("h3", { text: title }),
@@ -158,7 +158,7 @@
     ]);
     var kids = [el("div", { class: "qx-card" }, [
       el("div", { style: "display:flex;gap:10px;align-items:center;flex-wrap:wrap" }, [X.pill(s.label, s.state === "CONFIRMED" ? "good" : s.state === "NO_SETUP" ? "unknown" : "neutral"),
-        el("span", { class: "qx-small", text: "Stand " + X.dateDe(s.asOf) + (s.previous && s.previous.label ? " · vorher: " + s.previous.label + " (" + X.dateDe(s.previous.asOf) + ")" : "") })]),
+        el("span", { class: "qx-small", text: "Datenstand des Laufs " + X.dateDe(s.asOf) + " – das ist der Stand der technischen Auswertung, nicht dem täglichen Kursstand gleichzusetzen" + (s.previous && s.previous.label ? " · vorher: " + s.previous.label + " (" + X.dateDe(s.previous.asOf) + ")" : "") + "." })]),
       ladder, qa,
       el("p", { class: "qx-small", text: "Ein Setup beschreibt, was am Stichtag im Kursbild beobachtbar ist – kein Kursziel, keine Einstiegsregel und keine Aussage darüber, ob es eintritt." }),
       X.more("Alle geprüften Bedingungen", function () { return [conditions(s.conditions, "Keine Bedingungen veröffentlicht."), X.link("Wie Setups entstehen", X.routes.method("setups"), "qx-btn ghost")]; })
@@ -166,13 +166,16 @@
     return kids;
   }
 
-  function strategySection(vm) {
+  function strategySection(vm, change) {
     var s = vm.strategy;
-    if (s.state !== "AVAILABLE") return [X.notice("Kein Anlagestil prüfbar", s.text)];
+    var changeText = VM.assignmentChangeText(change);
+    if (s.state !== "AVAILABLE") return [X.notice("Kein Anlagestil prüfbar", s.text), changeText ? el("p", { class: "qx-small", text: changeText }) : null];
     var b = s.best;
     return [el("div", { class: "qx-card" }, [
       el("h3", { class: "qx-h3", text: s.sentence }),
+      el("p", { class: "qx-small", style: "margin-top:0", text: b.label + ": " + b.countText + "." + (s.fits ? "" : " Das beschreibt die Nähe zu einem Bedingungssatz und keine Prognose.") }),
       el("p", { class: "qx-muted", style: "margin-top:0", text: b.plain }),
+      changeText ? el("p", { class: "qx-small", text: changeText }) : null,
       el("div", { class: "qx-grid qx-grid-3", style: "margin-top:12px" }, [
         el("div", { class: "qx-pc-col tone-good" }, [el("h3", { text: "Erfüllt" }), conditions(b.met, "Keine Bedingung erfüllt.")]),
         el("div", { class: "qx-pc-col tone-unknown" }, [el("h3", { text: "Offen" }), conditions(b.open, "Alle Bedingungen sind messbar.")]),
@@ -185,7 +188,7 @@
           var met = o.conditions.filter(function (c) { return c.state === "MET"; }).length;
           return el("a", { class: "qx-row", href: X.routes.strategy(o.id) }, [
             el("div", { class: "qx-row-main" }, [el("div", { class: "qx-row-title" }, [el("strong", { text: o.label })]),
-              el("div", { class: "qx-row-why", text: met + " von " + o.conditions.length + " Bedingungen erfüllt" })]),
+              el("div", { class: "qx-row-why", text: o.countText })]),
             el("div", { class: "qx-row-side", text: (o.bandLabel || "") })]);
         })), el("p", { class: "qx-small", text: "Gezählt werden erfüllte Bedingungen – keine Trefferquote und keine historische Erfolgsaussage." })];
       })
@@ -224,7 +227,7 @@
             bar("Deutlicher Verlust", down.conditional, down.base, "bad"), bar("… im Markt", down.base, null, "unknown")]));
           c.push(el("p", { class: "qx-small", text: up.sentence + " " + down.sentence + " Zeitraum: " + lv.horizonMonths + " Monate." }));
         }
-        c.push(el("p", { class: "qx-small", text: [lv.sample, lv.robust].filter(Boolean).join(" ") }));
+        c.push(el("p", { class: "qx-small", text: [lv.sample, lv.robust, lv.coverageText].filter(Boolean).join(" ") }));
       } else c.push(el("p", { class: "qx-muted", text: lv.text }));
       kids.push(el("div", { class: "qx-card" }, c));
     });
@@ -252,16 +255,25 @@
   function figuresSection(s, ticker) {
     if (!s.quant || s.quant.state !== "AVAILABLE") return [X.notice("Keine Unternehmenszahlen", "Für diesen Titel liegen keine auswertbaren Geschäftszahlen aus SEC-Meldungen vor.")];
     var wanted = { quality: ["operatingMargin", "fcfMargin", "netMargin"], growth: ["revenueGrowth", "epsGrowth"], value: ["priceEarnings", "priceSales", "earningsYield", "priceToFcf", "fcfYield"], risk: ["volatility", "maxDrawdown"] };
-    var stats = [];
+    var stats = [], withheld = {};
     s.quant.families.forEach(function (fam) {
       (fam.metrics || []).forEach(function (m) {
-        if (!wanted[fam.id] || wanted[fam.id].indexOf(m.metricId) < 0 || m.state !== "AVAILABLE" || typeof m.value !== "number") return;
+        if (!wanted[fam.id] || wanted[fam.id].indexOf(m.metricId) < 0) return;
+        /* Bewusst zurueckgehalten ist nicht dasselbe wie fehlend: der Wert
+           steht als "bewusst nicht genannt" da, der Grund darunter. */
+        if (m.reason === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING" || m.reason === "DISPLAY_NOT_PERMITTED") {
+          withheld[m.reason] = true;
+          stats.push(el("div", { class: "qx-stat" }, [el("span", { text: m.label }), el("b", { text: "Bewusst nicht genannt" })]));
+          return;
+        }
+        if (m.state !== "AVAILABLE" || typeof m.value !== "number") return;
         var v = m.value.toLocaleString("de-DE", { maximumFractionDigits: 1 }) + (m.unit === "pct" ? " %" : m.unit === "x" ? " ×" : m.metricId === "marginExpansion" ? " Pp." : "");
         stats.push(el("div", { class: "qx-stat", title: m.description || "" }, [el("span", { text: m.label }), el("b", { class: "num", text: v })]));
       });
     });
     if (!stats.length) return [X.notice("Keine Unternehmenszahlen", "Die Geschäftszahlen dieses Titels erfüllen die Anforderungen der Methodik nicht.")];
-    return [el("div", { class: "qx-stats" }, stats.slice(0, 8)),
+    return [el("div", { class: "qx-stats" }, stats.slice(0, 10)),
+      Object.keys(withheld).length ? el("p", { class: "qx-small", text: Object.keys(withheld).map(function (r) { return VM.reasonText(r); }).join(" ") }) : null,
       el("p", { class: "qx-small", text: "Geschäftszahlen bis " + X.dateDe(s.quant.fundamentalsAsOf) + " (bekannt seit " + X.dateDe(s.quant.availableAt) + "), Quelle SEC EDGAR. Marktbezogene Kennzahlen bis " + X.dateDe(s.quant.asOf) + ". Bewertungen sind kein Urteil über einen fairen Preis." }),
       el("div", { class: "qx-actions" }, [X.btn("Entwicklung über die Jahre", X.routes.fundamentals(ticker), "secondary")])];
   }
@@ -304,9 +316,17 @@
         el("span", { class: "num " + (delta > 0 ? "up" : delta < 0 ? "down" : ""), text: typeof delta === "number" ? X.signed(delta, 2) + " zum Vortag" : "" }),
         el("small", { text: when }));
     }
-    var priceValue = s.price && typeof s.price.value === "number" ? s.price.value : last && last[1];
-    setQuote(priceValue, last && prev && prev[1] > 0 ? (last[1] / prev[1] - 1) * 100 : null,
-      "Schlusskurs am " + X.dateDe((s.price && s.price.asOf) || (last && last[0]) || s.asOf) + " · USD");
+    /* Der Kurs im Kopf ist der veroeffentlichte Kurs des Dienstes - ohne
+       zweiten Weg zur Zahl. Ist die Anzeige nicht freigegeben, bleibt sie es,
+       auch wenn eine Reihe geladen waere. */
+    var priceAllowed = !(s.price && s.price.reason === "DISPLAY_NOT_PERMITTED");
+    if (!priceAllowed) { eod = []; last = null; prev = null; }
+    if (priceAllowed && s.price && typeof s.price.value === "number") {
+      setQuote(s.price.value, last && prev && prev[1] > 0 ? (last[1] / prev[1] - 1) * 100 : null,
+        "Schlusskurs am " + X.dateDe(s.price.asOf || (last && last[0]) || s.asOf) + " · USD");
+    } else {
+      quote.replaceChildren(el("b", { style: "font-size:24px", text: priceAllowed ? "Kein Kurs veröffentlicht" : "Kurs nicht freigegeben" }), el("small", { text: priceAllowed ? "Für diesen Titel liegt kein veröffentlichter Kurs vor." : VM.reasonText("DISPLAY_NOT_PERMITTED") }));
+    }
     await ctx.loadNames().catch(function () { return null; });
     var entry = ctx.entries[ticker] || {};
     var kind = s.securityType || entry.t || null;
@@ -315,7 +335,7 @@
       kind && kind !== "COMMON_STOCK" ? el("span", { class: "qx-tag", text: KIND[kind] || "keine Stammaktie" }) : null,
       entry.il > 1 ? el("span", { class: "qx-tag", text: "eine von " + entry.il + " Aktiengattungen" }) : null]);
     heroHost.append(el("header", { class: "qx-stock-hero" }, [
-      el("div", { class: "qx-stock-top" }, [el("h1", { text: X.companyName(s) === "Firmenname nicht veröffentlicht" ? ticker : s.name }), watchBtn]),
+      el("div", { class: "qx-stock-top" }, [el("h1", { text: X.companyName(s) === "Firmenname nicht veröffentlicht" ? "Aktienanalyse" : s.name }), watchBtn]),
       X.companyName(s) === "Firmenname nicht veröffentlicht" ? el("p", { class: "qx-small", style: "margin:0", text: "Firmenname nicht veröffentlicht" }) : null,
       idLine, quote]));
     var idn = VM.identityNote(s);
@@ -327,6 +347,7 @@
       src.factors || api.getFactorEvidence(ticker).catch(function () { return null; }),
       src.setup || api.getSetupObservation(ticker).catch(function () { return null; }),
       src.match || api.getStrategyMatch(ticker).catch(function () { return null; }),
+      api.getAssignmentChange(ticker).catch(function () { return null; }),
       src.technical || api.getTechnicalIntelligence(ticker).catch(function () { return null; }),
       src.patterns || api.getPatternMatch(ticker).catch(function () { return null; }),
       api.getHistoricalCases(ticker).catch(function () { return null; }),
@@ -334,12 +355,12 @@
       ctx.patternWords().catch(function () { return {}; }),
       ctx.hubReady().catch(function () { return false; })
     ]);
-    var factors = results[0], setup = results[1], match = results[2], technical = results[3], patterns = results[4], cases = results[5], dist = results[6], words = results[7] || {};
+    var factors = results[0], setup = results[1], match = results[2], assignment = results[3], technical = results[4], patterns = results[5], cases = results[6], dist = results[7], words = results[8] || {};
     var vm = VM.stock({ ticker: ticker, factors: factors, brief: brief, setup: setup, match: match, cases: cases, patterns: patterns, technical: technical, distribution: dist });
     bodyHost.replaceChildren();
 
     /* ---------------------------------------------------------- Chart */
-    var chart = global.VUQuantChart.create({ ticker: ticker, eod: eod, currency: "USD",
+    var chart = !priceAllowed ? { node: X.notice("Kursverlauf nicht freigegeben", VM.reasonText("DISPLAY_NOT_PERMITTED")), dispose: function () {} } : global.VUQuantChart.create({ ticker: ticker, eod: eod, currency: "USD",
       adjusted: s.chart && s.chart.adjustmentStatus === "splitAdjusted", splitEvents: s.chart && s.chart.splitEvents,
       longPath: s.masterMemberId && /^[A-Za-z0-9_-]+$/.test(s.masterMemberId) ? "/quant/data/market/discover-series-long/" + s.masterMemberId + ".json" : null,
       loadJSON: global.QuantShell.loadJSON,
@@ -368,10 +389,10 @@
     })));
 
     if (hasFactors && vm.overall.rated > 0) {
-      bodyHost.append(X.section("Die sieben Eigenschaften", "Jede Eigenschaft wird im Vergleich zu allen anderen Aktien eingeordnet. Antippen zeigt, woraus der Wert besteht – bis zu den Rohdaten.",
+      bodyHost.append(X.section("Was macht diese Aktie stark oder schwach?", "Sieben Eigenschaften, jede wird im Vergleich zu allen anderen Aktien eingeordnet. Antippen zeigt, woraus der Wert besteht – bis zu den Rohdaten.",
         [el("div", { class: "qx-factors" }, vm.factors.map(function (f) { return factorCard(f, ticker); })),
           el("p", { class: "qx-small", text: "Wert 0–100: gewichtetes Mittel der Rangplätze der einzelnen Kennzahlen, 50 ist die Mitte. Die Stufen sind feste Wertgrenzen (ab 90 sehr stark, ab 75 stark, ab 45 durchschnittlich, ab 25 schwach) – keine Anteile des Marktes. Die Position im Markt ist deshalb eigens gezählt. Stand " + X.dateDe(vm.asOf && vm.asOf.factors) + (vm.asOf && vm.asOf.fundamentals ? ", Geschäftszahlen bis " + X.dateDe(vm.asOf.fundamentals) : "") + "." })],
-        { href: X.routes.method("faktoren"), label: "Wie Faktoren entstehen →" }, "Woran gemessen", "einordnung"));
+        { href: X.routes.method("faktoren"), label: "Wie Faktoren entstehen →" }, "Die sieben Eigenschaften", "einordnung"));
     }
     if (vm.change.state === "AVAILABLE") {
       var moving = vm.change.items.filter(function (i) { return i.tone !== "neutral"; });
@@ -380,26 +401,30 @@
         return el("div", { class: "qx-change tone-" + i.tone }, [el("span", { class: "qx-change-mark", "aria-hidden": "true", text: CHANGE_MARK[i.tone] }),
           el("strong", { text: i.text }), el("span", { text: i.group + " · " + (i.window || "") + (i.to ? " · " + i.to : "") })]);
       }
-      bodyHost.append(X.section("Was verändert sich?", vm.change.text + " Stand " + X.dateDe(vm.change.asOf) + ".", [
+      bodyHost.append(X.section("Was verändert sich gerade?", vm.change.text + " Stand " + X.dateDe(vm.change.asOf) + ".", [
         moving.length ? el("div", { class: "qx-changes" }, moving.map(changeItem)) : el("p", { class: "qx-muted", text: "Keine deutliche Veränderung." }),
         still.length ? X.more("Unverändert (" + still.length + ")", function () { return el("div", { class: "qx-changes" }, still.map(changeItem)); }) : null,
         vm.change.open.length ? X.more("Nicht messbar (" + vm.change.open.length + ")", function () { return vm.change.open.map(function (o) { return el("p", { class: "qx-small" }, [el("b", { text: o.label + ": " }), document.createTextNode(o.text)]); }); }) : null,
         X.more("Wie die Veränderung gemessen wird", function () { return vm.change.items.map(function (i) { return el("p", { class: "qx-small" }, [el("b", { text: i.label + ": " }), document.createTextNode((i.how || "") + (i.from && i.to ? " (" + i.from + " → " + i.to + ")" : ""))]); }); })
-      ], null, "Change", "veraenderung"));
+      ], null, "Veränderung", "veraenderung"));
     }
-    if (vm.setup.state !== "UNAVAILABLE") bodyHost.append(X.section("Gibt es ein Setup?", "Wo die Aktie im Kursbild steht, warum – und was als Nächstes passieren müsste.", setupSection(vm, ticker), null, "Setup", "setup"));
-    if (vm.strategy.state === "AVAILABLE") bodyHost.append(X.section("Welcher Anlagestil passt?", "Geprüft wird, welche Bedingungen eines Stils die Aktie heute erfüllt.", strategySection(vm), { href: X.routes.strategies(), label: "Alle Strategien →" }, "Strategy Match", "strategie"));
-    bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Drei Blickwinkel: dieselbe Aktie in derselben Kurslage und der gesamte Markt in ähnlichen Lagen.", replaySection(vm, words), null, "Historical Replay", "historie"));
-    bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "Technik & Elliott", "technik"));
-    if (s.quant && s.quant.state === "AVAILABLE") bodyHost.append(X.section("Unternehmenszahlen", "Die wichtigsten Kennzahlen aus Geschäft, Bewertung und Risiko.", figuresSection(s, ticker), null, "Fundamentals", "zahlen"));
+    if (vm.setup.state !== "UNAVAILABLE") bodyHost.append(X.section("Wie weit ist die Aktie im Setup?", "Wo die Aktie im Kursbild steht, warum – und was als Nächstes passieren müsste.", setupSection(vm, ticker), null, "Kursbild", "setup"));
+    if (vm.strategy.state === "AVAILABLE") bodyHost.append(X.section("Welche Strategie passt?", "Geprüft wird, welche Bedingungen eines Anlagestils die Aktie heute erfüllt.", strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien →" }, "Anlagestil", "strategie"));
+    bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Was früher geschah – bei dieser Aktie in derselben Kurslage und im gesamten Markt in ähnlichen Lagen.", replaySection(vm, words), null, "Rückblick", "historie"));
+    bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "Technik und Elliott-Wellen", "technik"));
+    if (s.quant && s.quant.state === "AVAILABLE") bodyHost.append(X.section("Unternehmenszahlen", "Die wichtigsten Kennzahlen aus Geschäft, Bewertung und Risiko.", figuresSection(s, ticker), null, "Geschäftszahlen", "zahlen"));
 
     /* ------------------------------------------------- Daten & Grenzen */
-    var gaps = [];
-    if (entry.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") gaps.push("Börsenwert: " + VM.reasonText("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") + (entry.il > 1 ? " Das Unternehmen hat " + entry.il + " börsennotierte Aktiengattungen." : ""));
-    if (!hasFactors) gaps.push(VM.reasonText(factors && factors.reason, "Keine Faktoranalyse veröffentlicht."));
-    if (vm.setup.state === "UNAVAILABLE") gaps.push("Setup: " + (VM.technicalReasonText(setup && setup.unavailability) || "keine Beobachtung veröffentlicht."));
-    if (technical && technical.state !== "AVAILABLE") { var tr = VM.technicalReasonText(technical.unavailability); if (tr) gaps.push("Kursstruktur: " + tr); }
-    if (patterns && patterns.state !== "AVAILABLE") { var pr = VM.patternReasonText(patterns.unavailability); if (pr) gaps.push("Marktmuster: " + pr); }
+    /* Was fehlt, bildet der Vertrag (quant/engines/journey-shape.js) - dieselbe
+       Regel wie die Messung, keine zweite Fassung in der Seite. */
+    var Shape = global.VUJourneyShape;
+    var shape = Shape ? Shape.assess(Shape.stationsFrom({ stock: s, factors: factors, setup: setup, patterns: patterns, technical: technical })) : { groups: [] };
+    var gapNodes = (shape.groups || []).map(function (g) {
+      return el("div", { class: "qx-open", style: "margin-top:8px", dataset: { cause: g.causeId || "" } }, [el("strong", { text: g.headline }),
+        el("p", { style: "margin:4px 0 0", text: g.explanation }), g.outlook ? el("p", { class: "qx-small", style: "margin:4px 0 0", text: g.outlook }) : null,
+        g.areas && g.areas.length ? el("p", { class: "qx-small", style: "margin:4px 0 0", text: "Betrifft: " + g.areas.join(" · ") }) : null]);
+    });
+    if (entry.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") gapNodes.push(el("p", { class: "qx-small", text: "Börsenwert: " + VM.reasonText("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") + (entry.il > 1 ? " Das Unternehmen hat " + entry.il + " börsennotierte Aktiengattungen." : "") }));
     bodyHost.append(X.section("Daten und Grenzen", "Was Quant für diese Aktie weiß – und was nicht.", [X.card([
       el("dl", { class: "qx-kv" }, [
         el("dt", { text: "Kurs" }), el("dd", { text: "Tiingo, Tagesschluss bis " + X.dateDe(last && last[0]) }),
@@ -407,7 +432,7 @@
         el("dt", { text: "Faktoren" }), el("dd", { text: vm.asOf ? "Stand " + X.dateDe(vm.asOf.factors) : "keine" }),
         el("dt", { text: "Setup" }), el("dd", { text: vm.setup.asOf ? "Stand " + X.dateDe(vm.setup.asOf) : "keins" })
       ]),
-      gaps.length ? el("div", {}, [el("h3", { class: "qx-h3", style: "font-size:15px", text: "Was fehlt" })].concat(gaps.map(function (g) { return el("p", { class: "qx-small", text: g }); }))) : null,
+      gapNodes.length ? el("div", { dataset: { journeyShape: shape.shape || "" } }, [el("h3", { class: "qx-h3", style: "font-size:15px", text: "Was fehlt – und warum" })].concat(gapNodes)) : null,
       el("p", { class: "qx-small", text: vm.isNot }),
       el("div", { class: "qx-actions" }, [X.btn("Methodik", X.routes.method(), "secondary"), X.btn("SEC-Daten prüfen", "/quant/data-inspector/", "secondary"), X.btn("Vergleichen", X.routes.compare([ticker]), "secondary")])
     ])], null, "Transparenz", "grenzen"));

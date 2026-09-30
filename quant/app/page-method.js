@@ -33,6 +33,20 @@
   }
   function para(t) { return el("p", { text: t }); }
 
+  /* Welche Eigenschaft traegt heute fuer KEINE Aktie einen Wert - gezaehlt
+     aus den veroeffentlichten Werten, nicht als Name in den Code
+     geschrieben. Der Grund kommt aus dem Faktordatensatz einer Aktie. */
+  async function emptyFactors(ctx) {
+    var r = await Promise.all([ctx.distributionRows().catch(function () { return null; }), ctx.api.getFactorEvidence("MSFT").catch(function () { return null; })]);
+    var dist = r[0], sample = r[1];
+    if (!dist) return { dist: null, empty: [] };
+    var empty = VM.ORDER.filter(function (id) { return !(dist[id] && dist[id].length); }).map(function (id) {
+      var f = sample && sample.factors ? sample.factors.filter(function (x) { return x.id === id; })[0] : null;
+      return { id: id, name: VM.FACTORS[id].name, text: VM.reasonText(f && f.reason) };
+    });
+    return { dist: dist, empty: empty };
+  }
+
   async function specs(ctx) {
     var shard = await global.QuantShell.loadCompressedJSON("/quant/data/product/factor-evidence-v1/MS.json.gz");
     return shard;
@@ -83,13 +97,15 @@
     var shard = await specs(ctx).catch(function () { return null; });
     var cs = (shard && shard.componentSpecs) || {};
     var focus = params && params.get("faktor");
+    var gap = await emptyFactors(ctx);
+    var emptyText = {}; gap.empty.forEach(function (e) { emptyText[e.id] = e.text; });
     main.append(el("div", { class: "qx-factors" }, VM.ORDER.map(function (id) {
       var f = VM.FACTORS[id];
       var comps = Object.keys(cs).filter(function (k) { return k.indexOf(id + ":") === 0; }).map(function (k) { return cs[k]; });
       var d = el("details", { class: "qx-factor tone-neutral", id: "m-" + id, open: focus === id ? true : null }, [
         el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "qx-tag", text: f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
         el("div", { class: "qx-factor-body" }, [para(f.measures), f.notMeasures ? el("p", { class: "qx-small", text: f.notMeasures }) : null, el("p", { class: "qx-small", text: f.higher }),
-          id === "revisions" ? X.notice("Derzeit ohne Daten", VM.reasonText("BLOCKED_EXTERNAL")) : null,
+          emptyText[id] ? X.notice("Derzeit für keine Aktie ein Wert", emptyText[id]) : null,
           comps.length ? el("div", {}, comps.map(function (c) {
             return el("div", { class: "qx-comp" }, [el("span", { text: c.label }), el("b", { text: Math.round(c.weight * 100) + " %" }),
               el("small", { text: (c.direction === "lower" ? "Niedriger ist besser" : "Höher ist besser") + " · " + VM.windowText(c.window) + " · " + c.input + (c.note ? " · " + c.note : "") })]);
@@ -101,7 +117,7 @@
       para("Ein Beispiel ist NVIDIA (Stand der Prüfung: 28.09.2026). Eigenkapitalquote (76 %) und fünf von fünf Jahren mit positivem freien Zahlungsfluss sind stark. Schwach sind zwei Kennzahlen: Der ausgewiesene Gewinn der letzten zwölf Monate lag deutlich über dem operativen Zahlungsfluss, ein großer Teil davon nicht-operative Erträge und gebundenes Umlaufvermögen. Und die operative Marge hat sich in fünf Jahren stark verändert (16 % bis 62 %) – ein struktureller Anstieg, den die Stabilitätsmessung als Schwankung zählt. Die Verschuldungskennzahl fehlt für diesen Titel und fällt aus der Gewichtung."),
       el("p", { class: "qx-small", text: "Das Ergebnis wurde nachgerechnet und ist kein Rechenfehler. Es ist eine Aussage über Bilanz- und Ergebnisqualität, nicht über die Qualität des Geschäfts. Deshalb heißt der Faktor so – und deshalb steht er neben der Profitabilität, nicht an ihrer Stelle." })
     ])], null, "Nachgeprüft"));
-    var dist = await ctx.distributionRows().catch(function () { return null; });
+    var dist = gap.dist;
     if (dist) {
       main.append(X.section("Wie die Stufen verteilt sind", "Die Stufen sind feste Wertgrenzen auf dem Faktorwert – keine Anteile des Marktes. Weil ein Faktorwert ein Mittel aus mehreren Rangplätzen ist, sammeln sich die Werte in der Mitte. „Sehr stark“ ist deshalb viel seltener als jede zehnte Aktie. Gezählt über alle veröffentlichten Werte:", [
         el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Verteilung der Stufen je Faktor" }, [el("table", { class: "qx-table" }, [
@@ -186,15 +202,18 @@
 
   async function grenzen(main, ctx, t) {
     topicHead(main, t, "Was Quant bewusst nicht sagt – und wo die Daten derzeit enden.");
-    main.append(el("div", { class: "qx-grid qx-grid-2" }, [
-      X.card([el("h3", { class: "qx-h3", text: "Erwartungstrend: ohne Daten" }), para(VM.reasonText("BLOCKED_EXTERNAL")), el("p", { class: "qx-small", text: "Deshalb werden höchstens sechs von sieben Eigenschaften bewertet – für jede Aktie gleich." })]),
+    var gap = await emptyFactors(ctx);
+    main.append(el("div", { class: "qx-grid qx-grid-2" }, [].concat(gap.empty.map(function (e) {
+      return X.card([el("h3", { class: "qx-h3", text: e.name + ": derzeit ohne Werte" }), para(e.text),
+        el("p", { class: "qx-small", text: "Deshalb werden für jede Aktie höchstens " + (VM.ORDER.length - gap.empty.length) + " von " + VM.ORDER.length + " Eigenschaften bewertet – für alle gleich." })]);
+    }), [
       X.card([el("h3", { class: "qx-h3", text: "Keine Gesamtnote" }), para("Ein Gesamtwert ist spezifiziert, aber nicht freigegeben, solange Erwartungstrend, Branchenvergleich und zeitpunktgenaue Historie nicht produktionsreif sind.")]),
       X.card([el("h3", { class: "qx-h3", text: "Fehlende Kennzahlen" }), para("Fehlt eine Kennzahl, fällt ihr Gewicht aus dem Faktor. Unter 80 % Abdeckung entsteht kein Faktorwert. Auf jeder Aktienseite steht, welche Kennzahl fehlt."),
         el("p", { class: "qx-small", text: "Bekannte Lücke: Die Nettoverschuldung liegt derzeit nur für einen kleinen Teil der Aktien vor, weil Schulden- und Cashflow-Zeiträume noch nicht sicher zusammenpassen. Sie wird erst eingerechnet, wenn das belegt ist." })]),
       X.card([el("h3", { class: "qx-h3", text: "Datenarme Aktien" }), para("Junge Aktien, Börsengänge oder selten gehandelte Titel haben oft zu wenig Historie. Quant nennt dann die Zahl: „Für diese Analyse werden 252 Handelstage benötigt; vorhanden sind 116.“")]),
       X.card([el("h3", { class: "qx-h3", text: "ETFs und Vorzugsaktien" }), para(VM.reasonText("NOT_AN_EQUITY_LISTING") + " Kursverlauf und Kursstruktur werden trotzdem gezeigt, wo sie vorliegen.")]),
       X.card([el("h3", { class: "qx-h3", text: "Keine Empfehlung" }), para("Quant ordnet ein. Es gibt keine Kauf- oder Verkaufsempfehlungen, keine Kursziele und keine Wahrscheinlichkeiten für zukünftige Kurse.")])
-    ]));
+    ])));
   }
 
   async function versionen(main, ctx, t) {

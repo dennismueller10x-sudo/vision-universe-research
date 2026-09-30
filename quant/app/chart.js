@@ -47,8 +47,7 @@
 
   function isNum(v) { return typeof v === "number" && isFinite(v); }
   function el(tag, attrs, kids) { return global.QuantShell.el(tag, attrs, kids); }
-  /* Geld wird an EINER Stelle formatiert (QX.money -> VUFx.Format). */
-  function money(v, cur) { return global.QX.money(v, cur || "USD"); }
+  /* Geld wird an EINER Stelle formatiert: QX.money -> VUFx.Format. */
   function signedPct(v) {
     if (!isNum(v)) return "";
     return (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " %";
@@ -153,7 +152,7 @@
         var best = pts[0];
         for (var i = 1; i < pts.length; i++) if (Math.abs(pts[i].x - x) < Math.abs(best.x - x)) best = pts[i];
         cursor.setAttribute("x1", best.x); cursor.setAttribute("x2", best.x); cursor.style.display = ""; node.classList.add("is-scrub");
-        headPrice.textContent = money(best.close, o.currency);
+        headPrice.textContent = global.QX.money(best.close, o.currency || "USD");
         var d = isNum(base) && base > 0 ? (best.close / base - 1) * 100 : null;
         headDelta.textContent = signedPct(d);
         headDelta.className = "qc-delta num " + (d > 0 ? "up" : d < 0 ? "down" : "");
@@ -171,7 +170,7 @@
     }
 
     function head(price, delta, word, meta) {
-      headPrice.textContent = money(price, o.currency);
+      headPrice.textContent = global.QX.money(price, o.currency || "USD");
       headDelta.textContent = signedPct(delta);
       headDelta.className = "qc-delta num " + (delta > 0 ? "up" : delta < 0 ? "down" : "");
       headWord.textContent = word;
@@ -190,7 +189,7 @@
       var q = SS ? SS.bestimme({ resolution: Hub && Hub.resolution ? Hub.resolution() : null, snapshot: p.snapshot, live: p.live, now: new Date() }) : null;
       var frozen = !!(q && q.isFrozen) || snap.regularComplete === true;
       head(last, delta, frozen ? "am " + dateDe(snap.sessionDate) + (snap.lastRegularLocal ? ", letzter 5-Minuten-Kurs " + String(snap.lastRegularLocal).slice(0, 5) + " Uhr" : "") : "heute",
-        (isNum(snap.previousClose) ? "seit Vortagesschluss " + money(snap.previousClose, o.currency) : "seit dem ersten Kurs des Tages") +
+        (isNum(snap.previousClose) ? "seit Vortagesschluss " + global.QX.money(snap.previousClose, o.currency || "USD") : "seit dem ersten Kurs des Tages") +
         (q && q.label ? " · " + q.label : ""));
       var svg = MC && MC.renderIntraday ? MC.renderIntraday(snap, { width: width(), height: height(), axis: true, symbol: o.ticker, label: q && q.label }) : null;
       if (!svg) { empty("Kein Tagesverlauf", "Der Tagesverlauf dieses Titels ist unvollständig."); return; }

@@ -15,10 +15,29 @@ test('recorded baseline fits and a byte regression fails',()=>{
  assert.equal(assessResourceBudget('home',[resource(budgets.home.decodedBytes)]).pass,true);
 });
 test('many small requests cannot evade the request budget',()=>{
- assert.deepEqual(assessResourceBudget('screener',Array.from({length:46},()=>resource(1))).failures,['requests']);
+ for(const view of Object.keys(budgets)){
+  assert.deepEqual(assessResourceBudget(view,Array.from({length:budgets[view].requests+1},()=>resource(1))).failures,['requests']);
+  assert.equal(assessResourceBudget(view,Array.from({length:budgets[view].requests},()=>resource(1))).pass,true);
+ }
+});
+/* KEINE GRENZE IST LOCKERER ALS AM 29.09.2026.
+   Das neue Frontend hat die Budgets am 30.09.2026 neu bemessen - enger, wo
+   es leichter geworden ist, und fuer Home unveraendert, obwohl Home heute
+   darueber liegt (Ursache in resource-budget.mjs). Eine Anhebung muss
+   diese Tabelle mitziehen und damit sichtbar begruendet werden. */
+test('no budget is looser than the 29.09.2026 baseline',()=>{
+ const baseline={home:{decodedBytes:1820000,requests:45},stock:{decodedBytes:5700000,requests:50},
+  screener:{decodedBytes:31000000,requests:45},screenerPro:{decodedBytes:31000000,requests:45}};
+ assert.deepEqual(Object.keys(budgets).sort(),Object.keys(baseline).sort());
+ for(const [view,b] of Object.entries(baseline)){
+  assert.ok(budgets[view].decodedBytes<=b.decodedBytes,view+': '+budgets[view].decodedBytes+' Bytes > '+b.decodedBytes);
+  assert.ok(budgets[view].requests<=b.requests,view+': '+budgets[view].requests+' Anfragen > '+b.requests);
+ }
+ /* Nur die Aktienseite darf Kurshistorie laden. */
+ assert.deepEqual(Object.entries(budgets).filter(([,b])=>b.history).map(([v])=>v),['stock']);
 });
 test('cheap history fanout and fixtures fail independently of size',()=>{
- for(const view of ['home','screener','discover'])assert.throws(()=>assessResourceBudget(view,[resource(1,'/quant/data/market/daily/ref_NVDA.json')]),/fanout/);
+ for(const view of ['home','screener','screenerPro'])assert.throws(()=>assessResourceBudget(view,[resource(1,'/quant/data/market/daily/ref_NVDA.json')]),/fanout/);
  assert.throws(()=>assessResourceBudget('stock',[resource(1,'/quant/tests/fixtures/example.json')]),/Fixture/);
  assert.equal(assessResourceBudget('stock',[resource(2135178,'/quant/data/market/daily/ref_NVDA.json')]).pass,true);
 });

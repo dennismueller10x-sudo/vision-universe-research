@@ -59,7 +59,9 @@
     var setupIdx = r[0], stratIdx = r[1], radar = r[2], regime = r[3], profiles = r[4];
     var cards = [];
     if (setupIdx && setupIdx.state === "AVAILABLE") {
-      var conf = setupIdx.states.filter(function (s) { return s.state === "CONFIRMED"; })[0], form = setupIdx.states.filter(function (s) { return s.state === "SETUP_FORMING"; })[0];
+      /* Nur offene Stufen tragen eine Zahl; eine geschlossene hat count null. */
+      var open = function (s) { return s && s.availability && s.availability.state === "AVAILABLE" && typeof s.count === "number"; };
+      var conf = setupIdx.states.filter(function (s) { return s.state === "CONFIRMED" && open(s); })[0], form = setupIdx.states.filter(function (s) { return s.state === "SETUP_FORMING" && open(s); })[0];
       var confT = conf ? [].concat.apply([], conf.rules.map(function (x) { return x.tickers || []; })) : [];
       cards.push(X.card([el("span", { class: "qx-eyebrow", text: "Setups · Stand " + X.dateDe(setupIdx.asOf) }),
         el("h3", { class: "qx-h3", text: (conf ? conf.count : 0).toLocaleString("de-DE") + " bestätigte Setups" }),
@@ -72,7 +74,7 @@
       var entered = he.transitions.filter(function (t) { return t.entered && t.entered.length; });
       if (entered.length) cards.push(X.card([el("span", { class: "qx-eyebrow", text: "Strategien · " + X.dateDe(he.from) + " → " + X.dateDe(he.to) }),
         el("h3", { class: "qx-h3", text: "Neu in einer Strategie" }),
-        el("p", { class: "qx-small", text: "Aktien, die seit dem letzten Stand alle Bedingungen eines Anlagestils erfüllen." })].concat(entered.slice(0, 3).map(function (t) {
+        el("p", { class: "qx-small", text: "Aktien, die zwischen den veröffentlichten Ständen vom " + X.dateDe(he.from) + " und " + X.dateDe(he.to) + " neu alle Bedingungen eines Anlagestils erfüllen – eine Beobachtung zwischen zwei Ständen, kein Ereignis von heute." })].concat(entered.slice(0, 3).map(function (t) {
           return el("div", { style: "margin-top:10px" }, [el("a", { href: X.routes.strategy(t.profileId), style: "font-weight:700;text-decoration:none", text: labels[t.profileId] || t.profileId }),
             el("span", { class: "qx-small", text: " · " + t.entered.length + " neu" + (t.exited && t.exited.length ? ", " + t.exited.length + " herausgefallen" : "") }), X.tickerChips(ctx.commonFirst(t.entered), 8)]);
         }))));
@@ -428,7 +430,7 @@
     if (r[1] && r[1].historicalEvidence && r[1].historicalEvidence.transitions) {
       r[1].historicalEvidence.transitions.forEach(function (t) {
         var label = ((r[1].profiles || []).filter(function (p) { return p.profileId === t.profileId; })[0] || {}).label || t.profileId;
-        (t.entered || []).slice(0, 3).forEach(function (tk) { rows.push(X.stockRow({ ticker: tk, name: nameOf(ctx, tk), why: "Neu in der Strategie " + label + " (seit " + X.dateDe(r[1].historicalEvidence.to) + ")", pill: { text: "Neu", tone: "good" } })); });
+        (t.entered || []).slice(0, 3).forEach(function (tk) { rows.push(X.stockRow({ ticker: tk, name: nameOf(ctx, tk), why: "Neu in der Strategie " + label + " (zwischen " + X.dateDe(r[1].historicalEvidence.from) + " und " + X.dateDe(r[1].historicalEvidence.to) + " – kein Ereignis von heute)", pill: { text: "Neu", tone: "good" } })); });
       });
     }
     if (r[0] && r[0].state === "AVAILABLE") {

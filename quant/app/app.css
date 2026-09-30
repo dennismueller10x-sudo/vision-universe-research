@@ -240,6 +240,8 @@ body.qx :focus-visible { outline: 2px solid var(--qx-accent); outline-offset: 2p
 .qx-pc { display: grid; gap: 12px; }
 @media (min-width: 640px) { .qx-pc { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1000px) { .qx-verdict-card .qx-pc { grid-template-columns: 1fr; } }
+/* Telefon: die Antwort steht vor dem Chart (M40) - am Schreibtisch daneben. */
+@media (max-width: 999px) { .qx-verdict-card { order: -1; } .qx-stock-layout { display: flex; flex-direction: column; } }
 .qx-pc-col { border-radius: var(--qx-radius); padding: 14px 16px; background: var(--tone-soft); }
 .qx-pc-col h3 { margin: 0 0 8px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--tone); }
 .qx-pc-col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
