@@ -194,7 +194,30 @@ jeder Zeile. Lange Trefferlisten zeigen Discovers Buchstaben-Marke statt
 vierzig Einzel-Logos; die 1,7 MB grosse Logo-Lizenzliste wird erst geladen,
 wenn der Seitenfuss in Sichtweite kommt.
 
-## 7. Post-Launch-Backlog
+## 7. Konzept-Design (30.09.2026, dritter Durchgang)
+
+Grundlage: fünf Konzepttafeln des Owners (Home & Einstieg, Screener &
+Signals, Aktienanalyse/Setup/Backtesting, Methodik & Transparenz, Neuer
+Aufbau). Owner-Entscheide: **Design 1:1, ehrlich befüllt** – jede Kachel
+der Tafeln steht, wo keine Daten sind, steht „noch nicht verfügbar“ mit
+Grund; **keine Gesamtnote** (Wert-Pillen tragen immer den Namen der
+Eigenschaft); **Einstieg/Stop/Ziele** werden als gekennzeichnetes Szenario
+der technischen Auswertung gezeigt.
+
+| Bereich | Umsetzung | Datenquelle |
+|---|---|---|
+| Gestaltung | dunkles App-System (`body.qd`, `quant/app/app.css`), Akzent #c8f531, Globus-Hero (SVG), weiße Karten, Dock unten (mobil) / oben (Desktop) | – |
+| Home | Globus-Hero mit Suche und Chips, Quick Access (4 Wege), „Heute interessant“, Backtesting/Historische Fälle, Heute bei Quant, Strategie-Schienen | Setup-Index, Strategie-Index, Marktlage |
+| Screener | Schnellwahl-Fragen, Faktor-Chips, Wertebereich min–max, feste Region/Universum (gesperrt, mit Grund), Pro-Modus-Schalter, Ergebnisliste mit benanntem Wert | Faktor-Screening (unverändert) |
+| Aktie | Kopf mit Logo/Kurs/Merken, Tabs Übersicht/Analyse/Setup/Backtesting/News, Faktor-Kacheln, Chart + Einordnung, Setup-Karte (Einstieg, Stop-Loss, Invalidation, Ziele, Chance/Risiko), Historische Fälle, Backtesting (nicht freigegeben), News (nicht angebunden, Verweis auf /news/) | `getTechnicalWorkspace` (nur TECHNICAL_READY), sonst Setup-Beobachtung |
+| Methodik | Hero „Transparenz schafft Vertrauen.“, Tabs, Themenliste, Prinzipien, Stufen-Skala mit echten Grenzen, Verteilung als Histogramm (5er-Klassen, NVDA markiert), Grenzen, Transparenz-Matrix | Faktor-Screening, Methodik-Artefakte |
+
+Vertrag: `technical-workspace-contract.js` reicht `entry`, `entryStatus`,
+`stop` und `tradeSetup` (Status, Chance/Risiko, Setup-Qualität) durch –
+Werte, die `engines/technical/trade-setup.js` bereits rechnet. Engines,
+Daten und Pipeline sind unverändert; Discover ebenso.
+
+## 8. Post-Launch-Backlog
 
 - Stufen-Kalibrierung, Nettoverschuldung, Accrual-Periodenabgleich (Owner).
 - „Quant-Einordnung ansehen“ in Discover und „In Discover entdecken“ in Quant –

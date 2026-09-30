@@ -302,7 +302,9 @@ for(const width of [1440,390]){
    /* Discover-Angleichung: #/aktien zeigt Discovers Aktienkarten (dx-poster)
       in Schienen statt Zeilen. Gezaehlt wird dasselbe: jede Aktie steht mit
       ihrem Namen da, nicht nur mit dem Kuerzel. */
-   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster .dx-poster-top').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker,.dx-poster-sym')||{}).textContent||'',n:(n.querySelector('.qx-row-name,.dx-poster-name')||n.querySelector('span')||{}).textContent||''})));
+   /* Konzept-Design: Karten (a.qx-poster) tragen den Namen in .q-card-name,
+      das Kuerzel im data-symbol. */
+   const zeilen=await page.locator('main#qx-main a.qx-row .qx-row-title, main#qx-main a.qx-poster').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||n.dataset.symbol||'',n:(n.querySelector('.qx-row-name,.q-card-name')||n.querySelector('span')||{}).textContent||''})));
    if(!zeilen.length)bad.push('KEINE_ZEILEN');
    const mitName=zeilen.filter(x=>x.n&&x.n!==x.t).length;
    if(zeilen.length&&mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
