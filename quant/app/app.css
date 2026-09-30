@@ -1,318 +1,599 @@
 /* =========================================================================
-   VISION UNIVERSE QUANT — app/app.css
+   VISION UNIVERSE QUANT — app/app.css            Gestaltung nach Owner-Konzept
 
-   Quant benutzt Discovers Gestaltung: dieselben Stylesheets
-   (discover.css, app.css, home.css, detail.css), dieselben Klassen,
-   dieselben Tokens (--v2-*, --discover-*). Diese Datei ergaenzt NUR die
-   Bausteine, die es in Discover nicht gibt - Faktor-Aufklapper,
-   Setup-Stufen, Bedingungslisten, Screener-Fragen, Regel-Editor - und
-   formt sie in Discovers Sprache: Haarlinien statt Kaesten, grosse
-   Zahlen, Grossbuchstaben-Kicker, Pillen, keine eigene Farbwelt.
+   Umsetzung der fuenf Konzepttafeln vom 30.09.2026 (Home & Einstieg,
+   Quant Screener & Signals, Aktienanalyse/Setup/Backtesting, Methodik &
+   Transparenz, Neuer Aufbau): eine dunkle App-Flaeche, Lime als einzige
+   Akzentfarbe, helle Kacheln fuer die Wege, runde Pillen, eine Leiste
+   unten mit fuenf Bereichen, die Weltkugel im Kopf.
+
+   discover/discover.css bleibt geladen - fuer Chart (MicroChart), Logos
+   und Suchtreffer; body.dx liefert dessen dunkle Grundwerte. Die qx-/qc-
+   Klassen sind Anker fuer Tests und QA, keine Gestaltung.
    ========================================================================= */
 
-/* ------------------------------------------------------------ Rahmen */
-body.dv2.qx .v2-bar{justify-content:flex-start}
-body.dv2.qx .qx-brand{display:inline-flex;align-items:center;gap:8px;font-weight:800;letter-spacing:-.02em;text-decoration:none}
-body.dv2.qx .qx-search-btn{margin-left:16px;min-height:40px;padding:8px 16px;gap:8px}
-body.dv2.qx .qx-search-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round}
-body.dv2.qx .qx-nav-icon svg{display:block;width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-body.dv2.qx .v2-footer .v2-preview{margin-right:6px}
-body.dv2.qx .v2-main:focus{outline:none}
-/* Wie #v2-shell in Discover: die Leiste sitzt am Desktop oben mittig im Rahmen. */
-body.dv2.qx #qx-app{position:relative}
-body.dv2.qx .v2-bar-caption{margin-left:auto}
-@media (max-width:1320px){body.dv2.qx .v2-bar-caption{display:none}body.dv2.qx .qx-search-btn{margin-left:auto}}
-@media (min-width:761px) and (max-width:1090px){body.dv2.qx .v2-dock .v2-nav-item span:last-child{display:none}}
-@media (max-width:760px){
-  body.dv2.qx .v2-dock .v2-nav-item span:last-child{white-space:normal;text-align:center;line-height:1.15}
+body.qd{
+  --q-bg:#050607; --q-bg2:#0b0d10; --q-panel:#121519; --q-panel2:#191d22; --q-line:#252a31; --q-line2:#343a42;
+  --q-text:#f4f5f1; --q-muted:#a6abb3; --q-dim:#80868f;
+  --q-lime:#c8f531; --q-lime-soft:rgba(200,245,49,.14); --q-lime-ink:#0f1305;
+  --q-card:#f5f6f2; --q-card2:#ffffff; --q-card-text:#101216; --q-card-muted:#5a6068; --q-card-line:#e3e5df;
+  --q-up:#b9ee3c; --q-down:#ff6b5e; --q-warm:#f2c14e; --q-unknown:#8c929a;
+  --q-radius:20px; --q-radius-sm:14px; --q-shell:1180px;
+  --discover-up:#b9ee3c; --discover-down:#ff6b5e; --w:#c8f531;
+  margin:0; background:var(--q-bg); color:var(--q-text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums;
 }
+body.qd *{box-sizing:border-box}
+body.qd a{color:inherit}
+body.qd button{font:inherit;cursor:pointer}
+body.qd [hidden]{display:none!important}
+body.qd :focus-visible{outline:3px solid var(--q-lime);outline-offset:3px;border-radius:8px}
+body.qd .num{font-variant-numeric:tabular-nums}
+body.qd .up{color:var(--q-up)}
+body.qd .down{color:var(--q-down)}
 
-/* Die Suche als Dialog im Top-Layer - dieselbe Flaeche wie Discovers Suche. */
-dialog.dx-search.qx-dialog{max-width:none;max-height:none;width:100%;height:100%;margin:0;padding:0;border:0;background:var(--v2-bg);color:var(--v2-ink)}
-dialog.dx-search.qx-dialog::backdrop{background:transparent}
-dialog.dx-search.qx-dialog .dx-result{text-decoration:none;color:inherit}
+/* ------------------------------------------------------------ Rahmen */
+.qd .qx-skip{position:fixed;left:16px;top:-120px;z-index:3000;background:var(--q-lime);color:var(--q-lime-ink);padding:12px 18px;border-radius:12px;font-weight:800;text-decoration:none}
+.qd .qx-skip:focus{top:12px}
+.qd .q-top{max-width:var(--q-shell);margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px 20px}
+.qd .q-brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:850;letter-spacing:.14em;font-size:12px;text-transform:uppercase;color:var(--q-lime)}
+.qd .q-beta{font-size:10px;letter-spacing:.12em;padding:4px 8px;border-radius:99px;border:1px solid var(--q-line2);color:var(--q-muted)}
+.qd .q-top-nav{display:flex;gap:4px;margin-left:auto}
+.qd .q-top-nav a{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:99px;text-decoration:none;font-size:13px;font-weight:700;color:var(--q-muted)}
+.qd .q-top-nav a[aria-current=page]{background:var(--q-lime);color:var(--q-lime-ink)}
+.qd .q-top-nav svg,.qd .q-dock svg,.qd .q-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.qd .q-search-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 16px;border-radius:99px;border:1px solid var(--q-line2);background:var(--q-panel);color:var(--q-text);font-size:13px;font-weight:700}
+.qd .q-search-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.qd .v2-main.qx-main,.qd .qx-main{display:block;max-width:var(--q-shell);margin:0 auto;padding:4px 20px 120px;min-height:70vh}
+.qd .qx-main:focus{outline:none}
+.qd .q-foot{max-width:var(--q-shell);margin:0 auto;padding:28px 20px 130px;border-top:1px solid var(--q-line);color:var(--q-dim);font-size:12px;line-height:1.75}
+.qd .q-foot b{color:var(--q-text);letter-spacing:.14em;font-size:13px}
+.qd .q-foot a{color:var(--q-muted)}
+.qd .q-foot p{max-width:760px;margin:6px 0}
+
+/* Die Leiste unten - wie auf allen Tafeln. Am Desktop steht dieselbe
+   Leiste oben in der Kopfzeile; unten wird sie dann ausgeblendet. */
+.qd .q-dock{position:fixed;left:0;right:0;bottom:0;z-index:900;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:rgba(8,9,11,.96);border-top:1px solid var(--q-line);backdrop-filter:blur(14px)}
+.qd .q-dock a{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:8px 2px;border-radius:16px;text-decoration:none;color:var(--q-muted);font-size:11px;font-weight:700;text-align:center;line-height:1.15}
+.qd .q-dock a[aria-current=page]{color:var(--q-lime);background:var(--q-lime-soft)}
+@media (min-width:980px){
+  .qd .q-dock{position:static;display:flex;gap:4px;padding:0;margin:0 auto;background:none;border:0;backdrop-filter:none;width:auto}
+  .qd .q-dock a{flex-direction:row;gap:8px;padding:10px 14px;border-radius:99px;font-size:13px}
+  .qd .q-dock a[aria-current=page]{background:var(--q-lime);color:var(--q-lime-ink)}
+  .qd .q-foot{padding-bottom:40px}
+  .qd .qx-main{padding-bottom:60px}
+}
+@media (max-width:979px){.qd .q-top{padding:12px 16px}.qd .qx-main{padding:4px 16px 120px}}
 
 /* ------------------------------------------------------------ Grundformen */
-body.dv2.qx .qx-h1{font-size:clamp(32px,5vw,66px);letter-spacing:-.045em;line-height:1.05;margin:8px 0 14px}
-body.dv2.qx .qx-small{font-size:13px;line-height:1.6;color:var(--v2-muted);margin:10px 0 0}
-body.dv2.qx .qx-sub{font-size:15px;font-weight:750;letter-spacing:-.01em;margin:22px 0 10px}
-body.dv2.qx .qx-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 0}
-body.dv2.qx .qx-loading{padding:40px 0;color:var(--v2-muted)}
-body.dv2.qx .qx-loading .dx-art-skeleton{position:static;display:inline-block;letter-spacing:.14em;text-transform:uppercase;font-size:11px}
-body.dv2.qx .dx-note{margin:16px 0}
-body.dv2.qx .dx-note p{margin:6px 0 0}
-body.dv2.qx .qx-card{border:0;border-radius:20px;padding:22px;background:var(--v2-panel);min-width:0}
-body.dv2.qx .qx-code{white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--v2-panel);border-radius:10px;padding:12px 14px;margin:10px 0 0;color:var(--v2-ink);overflow-x:auto}
-body.dv2.qx .qx-section{scroll-margin-top:90px}
-body.dv2.qx .v2-world{margin-top:56px}
-body.dv2.qx .dx-index-badge{text-decoration:none;color:inherit}
-body.dv2.qx a.dx-index-badge:hover{border-color:var(--discover-text)}
-body.dv2.qx .dx-kapitel-fuss--link a{font-weight:700}
+.qd .qx-h1{font-size:clamp(30px,5vw,56px);line-height:1.04;letter-spacing:-.04em;font-weight:850;margin:10px 0 12px}
+.qd .q-kicker,.qd .v2-eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--q-lime);margin:0 0 10px}
+.qd .v2-lead,.qd .qx-lead{font-size:16px;line-height:1.6;color:var(--q-muted);max-width:720px;margin:0 0 18px}
+.qd .qx-small{font-size:12.5px;line-height:1.6;color:var(--q-dim);margin:10px 0 0}
+.qd .qx-muted{font-size:14.5px;line-height:1.55;color:var(--q-muted);margin:8px 0 0}
+.qd .qx-sub{font-size:15px;font-weight:800;margin:20px 0 10px}
+.qd .qx-actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0}
+.qd .qx-btn,.qd .v2-pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:99px;font-size:13.5px;font-weight:800;text-decoration:none;border:1px solid transparent}
+.qd .qx-btn.v2-pill-dark,.qd .v2-pill-dark{background:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qx-btn.v2-pill-ghost,.qd .v2-pill-ghost{background:transparent;color:var(--q-text);border-color:var(--q-line2)}
+.qd .qx-loading{padding:36px 0;color:var(--q-dim);font-size:13px}
+.qd .qx-notice,.qd .dx-note{margin:14px 0;padding:14px 16px;border-radius:var(--q-radius-sm);background:var(--q-panel);border:1px solid var(--q-line)}
+.qd .qx-notice b,.qd .dx-note b{display:block;font-size:14px;color:var(--q-text)}
+.qd .qx-notice p,.qd .dx-note p{margin:6px 0 0;font-size:13.5px;color:var(--q-muted);line-height:1.55}
+.qd .qx-code{white-space:pre-wrap;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--q-bg2);border:1px solid var(--q-line);border-radius:12px;padding:12px 14px;margin:10px 0 0;color:var(--q-muted);overflow-wrap:anywhere}
+.qd .qx-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-size:11.5px;font-weight:800;white-space:nowrap;background:var(--q-panel2);color:var(--q-muted)}
+.qd .qx-pill.up{background:var(--q-lime-soft);color:var(--q-up)}
+.qd .qx-pill.down{background:rgba(255,107,94,.14);color:var(--q-down)}
+.qd .qx-pill.warm{background:rgba(242,193,78,.14);color:var(--q-warm)}
+.qd .dx-index-badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0}
+.qd .dx-index-badge{display:inline-flex;align-items:center;padding:7px 12px;border-radius:99px;border:1px solid var(--q-line2);font-size:12px;font-weight:700;text-decoration:none;color:var(--q-text)}
+.qd a.dx-index-badge:hover{border-color:var(--q-lime)}
 
-/* Kennzahl-Kacheln (dv2-valuation-card) auch ausserhalb der Bewertung. */
-body.dv2.qx .dv2-valuation-grid{margin:22px 0 0}
-body.dv2.qx .dv2-valuation-card{min-width:0;overflow-wrap:break-word}
-body.dv2.qx .dv2-valuation-card>p{font-size:15px;line-height:1.5;margin:10px 0 0}
-body.dv2.qx .dv2-valuation-card b.up{color:var(--discover-up)}
-body.dv2.qx .dv2-valuation-card b.down{color:var(--discover-down)}
+/* Aufklapper ("Weitere Punkte +") */
+.qd details.qx-more{border-top:1px solid var(--q-line);margin-top:14px}
+.qd details.qx-more>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--q-text)}
+.qd details.qx-more>summary::-webkit-details-marker{display:none}
+.qd details.qx-more>summary::after{content:"+";font-size:18px;color:var(--q-lime)}
+.qd details.qx-more[open]>summary::after{content:"−"}
+.qd details.qx-more>summary small{font-weight:600;color:var(--q-dim)}
+.qd .qx-more-body{padding:0 0 12px}
 
-/* ------------------------------------------------------------ Aktienzeile
-   In der Form der Discover-Suchtreffer: Logo, Name, Kuerzel, Satz, Stufe. */
-body.dv2.qx .qx-list{display:flex;flex-direction:column;border-top:1px solid var(--v2-line)}
-body.dv2.qx .qx-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid var(--v2-line);text-decoration:none;color:inherit;transition:background .15s ease}
-body.dv2.qx .qx-row:hover,body.dv2.qx .qx-row:focus-visible{background:var(--v2-panel)}
-body.dv2.qx .qx-row-main{min-width:0}
-body.dv2.qx .qx-row-title{display:flex;gap:8px;align-items:baseline;min-width:0}
-body.dv2.qx .qx-row-name{font-size:15px;font-weight:700;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-body.dv2.qx .qx-ticker{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--v2-muted);flex:none}
-body.dv2.qx .qx-row-why{font-size:13px;line-height:1.45;color:var(--v2-muted);margin-top:3px}
-body.dv2.qx .qx-row-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right}
-body.dv2.qx .qx-row-side small{font-size:11px;color:var(--v2-muted)}
-body.dv2.qx .qx-row .dx-logo{flex:none}
+/* Abschnitt: Kopf wie "Quick Access  ·  Alle Tools →" */
+.qd .qx-section{margin-top:34px;scroll-margin-top:84px}
+.qd .q-sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:0 0 14px}
+.qd .q-sec-head h2{font-size:clamp(20px,2.6vw,28px);line-height:1.15;letter-spacing:-.03em;font-weight:800;margin:0}
+.qd .q-sec-head a{flex:none;font-size:13px;font-weight:800;text-decoration:none;color:var(--q-text);white-space:nowrap}
+.qd .q-sec-head a::after{content:" →"}
+.qd .q-sec-intro{font-size:13.5px;line-height:1.55;color:var(--q-muted);margin:-6px 0 14px;max-width:760px}
 
-/* Stufen-Chips (dx-zahlen-grade) auch ausserhalb der Zahlen-Karten. */
-body.dv2.qx .qx-pill{display:inline-flex;align-items:center;white-space:nowrap}
-body.dv2.qx .qx-pill.up{background:color-mix(in srgb,var(--discover-up) 13%,transparent);color:var(--discover-up)}
-body.dv2.qx .qx-pill.down{background:color-mix(in srgb,var(--discover-down) 12%,transparent);color:var(--discover-down)}
-body.dv2.qx .qx-pill.warm{background:color-mix(in srgb,var(--discover-warm) 14%,transparent);color:var(--discover-warm)}
-body.dv2.qx .qx-pill:not(.up):not(.down):not(.warm){background:var(--v2-panel);color:var(--v2-muted)}
+/* ------------------------------------------------------------ Hero mit Weltkugel */
+.qd .q-hero{position:relative;overflow:hidden;border-radius:26px;background:radial-gradient(120% 90% at 85% 10%,#1a2410 0%,#07090a 55%,#050607 100%);border:1px solid var(--q-line);padding:30px 24px 22px;margin:8px 0 0;isolation:isolate}
+.qd .q-hero .q-globe{position:absolute;right:-70px;top:-60px;width:330px;height:330px;z-index:-1;opacity:.95;pointer-events:none}
+.qd .q-hero h1{font-size:clamp(30px,6vw,52px);line-height:1.02;letter-spacing:-.04em;font-weight:850;margin:0 0 12px;max-width:15ch}
+.qd .q-hero p.q-hero-lead{font-size:14.5px;line-height:1.55;color:#c9ccd1;max-width:46ch;margin:0 0 18px}
+.qd .q-hero-tag{position:absolute;right:22px;top:118px;font-size:9px;font-weight:800;letter-spacing:.16em;line-height:1.6;text-transform:uppercase;color:#c9ccd1;text-align:left}
+.qd .q-searchbar{display:flex;align-items:center;gap:12px;width:100%;max-width:640px;min-height:56px;padding:6px 6px 6px 18px;border-radius:99px;background:#fff;color:var(--q-card-text);border:0;text-align:left;font-size:14.5px}
+.qd .q-searchbar svg{width:20px;height:20px;fill:none;stroke:#2b2f35;stroke-width:2;flex:none}
+.qd .q-searchbar span{flex:1;color:#6a7078;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qd .q-searchbar input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;color:var(--q-card-text)}
+.qd .q-searchbar i{flex:none;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--q-lime);color:var(--q-lime-ink);font-style:normal;font-weight:900;font-size:20px}
+.qd .q-chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.qd .q-chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:7px 14px;border-radius:99px;border:1px solid var(--q-line2);background:transparent;color:var(--q-text);font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap}
+.qd .q-chip[aria-pressed=true],.qd .q-chip.is-on{background:var(--q-lime);border-color:var(--q-lime);color:var(--q-lime-ink)}
+.qd .q-chip.is-off{opacity:.55}
+@media (min-width:980px){.qd .q-hero{padding:48px 44px 34px}.qd .q-hero .q-globe{width:520px;height:520px;right:-60px;top:-120px}.qd .q-hero-tag{top:auto;bottom:34px;right:44px}}
 
-/* Karten-Raster und Schienen fuer Aktienkarten (dx-poster). */
-body.dv2.qx .qx-poster-grid{padding:0;margin-top:18px}
-body.dv2.qx .qx-rail .dx-rail{padding-left:0;padding-right:0}
-body.dv2.qx .dx-poster{color:inherit;text-decoration:none}
+/* ------------------------------------------------------------ Kacheln (Quick Access) */
+.qd .q-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:980px){.qd .q-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.qd .q-tile{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;min-height:84px;padding:16px;border-radius:18px;background:var(--q-card);color:var(--q-card-text);text-decoration:none;border:0;text-align:left;transition:transform .18s ease}
+.qd .q-tile:hover{transform:translateY(-2px)}
+.qd .q-tile .q-icon{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:#e9ebe5;color:#111}
+.qd .q-tile strong{display:block;font-size:14.5px;line-height:1.2;font-weight:800}
+.qd .q-tile small{display:block;margin-top:4px;font-size:12px;line-height:1.35;color:var(--q-card-muted)}
+.qd .q-tile::after{content:"›";font-size:22px;color:#6b7078}
+.qd .q-tile.is-off{background:#2a2e34;color:var(--q-muted)}
+.qd .q-tile.is-off .q-icon{background:#343940;color:var(--q-muted)}
+.qd .q-tile.is-off small{color:#b9bec5}
+.qd .q-tile.is-off::after{content:""}
+
+/* ------------------------------------------------------------ Aktienkarten (Heute interessant) */
+.qd .q-cards{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,180px);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 12px;scrollbar-width:none}
+.qd .q-cards::-webkit-scrollbar{display:none}
+@media (min-width:980px){.qd .q-cards{grid-auto-columns:minmax(200px,230px)}}
+.qd .q-card{scroll-snap-align:start;display:flex;flex-direction:column;gap:6px;min-height:176px;padding:16px;border-radius:18px;background:var(--q-card);color:var(--q-card-text);text-decoration:none}
+.qd .q-card .dx-logo{width:52px;height:52px;border-radius:12px;margin-bottom:6px;background:#fff}
+.qd .q-card b.q-card-name{font-size:14px;line-height:1.2;font-weight:850}
+.qd .q-card span.q-card-why{font-size:12px;line-height:1.35;color:var(--q-card-muted)}
+.qd .q-card .q-card-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px}
+.qd .q-card .q-score{display:inline-flex;padding:5px 10px;border-radius:99px;background:#e6f7b8;color:#23300a;font-size:11.5px;font-weight:850}
+.qd .q-card .q-score.down{background:#fde1dd;color:#8a2219}
+.qd .q-card .q-score.warm{background:#faeccb;color:#6b4d05}
+.qd .q-card .q-score.none{background:#e9ebe5;color:#5a6068}
+.qd .q-card .q-card-foot::after{content:"→";font-weight:900;color:#1a1d22}
+
+/* ------------------------------------------------------------ Listen (Treffer) */
+.qd .qx-list{display:flex;flex-direction:column;gap:10px}
+.qd .qx-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--q-card);color:var(--q-card-text);text-decoration:none}
+.qd .qx-row .dx-logo{width:42px;height:42px;border-radius:12px;background:#fff;color:#1a1d22}
+.qd .qx-row-main{min-width:0}
+.qd .qx-row-kicker{display:block;font-size:11px;font-weight:800;color:#1b1f25;margin-bottom:2px}
+.qd .qx-row-title{display:flex;align-items:baseline;gap:8px;min-width:0}
+.qd .qx-row-name{font-size:14.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qd .qx-ticker{font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--q-card-muted);flex:none}
+.qd .qx-row-why{font-size:12px;line-height:1.4;color:var(--q-card-muted);margin-top:2px}
+.qd .qx-row-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.qd .qx-row-side small{font-size:11px;color:var(--q-card-muted)}
+.qd .qx-row .qx-pill{background:#e6f7b8;color:#23300a}
+.qd .qx-row .qx-pill.down{background:#fde1dd;color:#8a2219}
+.qd .qx-row .qx-pill.warm{background:#faeccb;color:#6b4d05}
+.qd .qx-row .qx-pill:not(.up):not(.down):not(.warm){background:#e9ebe5;color:#5a6068}
+.qd .q-scorebox{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:54px;padding:6px 8px;border-radius:12px;background:#e6f7b8;color:#1d2708}
+.qd .q-scorebox small{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#4c5a1c}
+.qd .q-scorebox b{font-size:20px;line-height:1.1;font-weight:900}
+.qd .q-scorebox.down{background:#fde1dd;color:#7c1d15}.qd .q-scorebox.down small{color:#8a2219}
+.qd .q-scorebox.warm{background:#faeccb;color:#5c4204}.qd .q-scorebox.warm small{color:#6b4d05}
+.qd .q-scorebox.none{background:#e9ebe5;color:#5a6068}.qd .q-scorebox.none small{color:#5a6068}
+@media (max-width:600px){.qd .qx-row{grid-template-columns:auto minmax(0,1fr) auto;padding:12px}}
+
+/* ------------------------------------------------------------ Dunkle Karten */
+.qd .q-panel,.qd .qx-card{background:var(--q-panel);border:1px solid var(--q-line);border-radius:var(--q-radius);padding:18px}
+.qd .q-panel h3,.qd .qx-card h3{font-size:16px;font-weight:800;margin:0 0 8px}
+.qd .qx-grid{display:grid;gap:12px;margin-top:14px}
+.qd .qx-grid-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.qd .qx-grid-3{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.qd .qx-grid>*{min-width:0}
+.qd .qx-h3{font-size:17px;font-weight:800;margin:0 0 8px}
+.qd .qx-h2{font-size:clamp(22px,3vw,30px);letter-spacing:-.03em;margin:0 0 12px}
+
+/* Zahlen-Streifen ("68 %  |  +42,6 %  |  12") */
+.qd .q-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:1px;background:var(--q-line);border:1px solid var(--q-line);border-radius:var(--q-radius-sm);overflow:hidden;margin:14px 0 0}
+.qd .q-stat,.qd .qx-stat{background:var(--q-panel);padding:14px 16px;min-width:0}
+.qd .q-stat b,.qd .qx-stat b{display:block;font-size:clamp(20px,3vw,28px);line-height:1.1;font-weight:850;letter-spacing:-.02em}
+.qd .q-stat span,.qd .qx-stat span{display:block;margin-top:4px;font-size:12px;color:var(--q-muted)}
+.qd .q-stat small,.qd .qx-stat small{display:block;margin-top:2px;font-size:11px;color:var(--q-dim)}
+.qd .qx-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:1px;background:var(--q-line);border:1px solid var(--q-line);border-radius:var(--q-radius-sm);overflow:hidden;margin:14px 0 0}
 
 /* ------------------------------------------------------------ Aktienseite */
-body.dv2.qx .qx-stock .v2-watch-button{display:flex;margin:0 0 4px auto}
-body.dv2.qx .qx-stock h1,body.dv2.qx .qx-stock h2{overflow-wrap:break-word;hyphens:auto}
-body.dv2.qx .qx-stock-id b{font-weight:700;color:var(--discover-text)}
-body.dv2.qx .qx-quote small{display:block;margin-top:6px;font-size:12px;color:var(--discover-muted)}
-body.dv2.qx .qx-quote .qx-quote-none{font-size:clamp(22px,3vw,32px)}
-body.dv2.qx .qx-glance .dx-dhero-sigs{margin-top:18px}
-body.dv2.qx .qx-glance a.dx-sig{text-decoration:none;color:inherit}
-body.dv2.qx .qx-glance .dx-zeitachse small{display:block;font-size:11px;color:var(--discover-muted);margin-top:3px}
-body.dv2.qx .qx-verdict-top[data-tone=good] .dx-story-dot{background:var(--discover-up)}
-body.dv2.qx .qx-verdict-top[data-tone=bad] .dx-story-dot{background:var(--discover-down)}
-body.dv2.qx .qx-verdict-top[data-tone=neutral] .dx-story-dot{background:var(--discover-warm)}
-body.dv2.qx .qx-verdict-top[data-tone=unknown] .dx-story-dot{background:var(--discover-muted)}
-body.dv2.qx .qx-waage-link{text-decoration:none;color:inherit}
-body.dv2.qx .qx-waage-link:hover b{text-decoration:underline}
-body.dv2.qx .qx-middle{font-size:15px;line-height:1.55;margin:22px 0 0;color:var(--discover-text)}
-body.dv2.qx .qx-pc-empty{font-size:14px;color:var(--discover-muted);margin:14px 0 0}
-body.dv2.qx .qx-waage-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-body.dv2.qx .qx-open-col{border-top:3px solid var(--discover-line-strong,var(--v2-line))}
-@media (max-width:860px){body.dv2.qx .qx-waage-3{grid-template-columns:1fr}}
+.qd .q-stock-head{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 0 6px}
+.qd .q-back{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--q-line2);text-decoration:none;font-size:18px;color:var(--q-text)}
+.qd .q-stock-head .dx-logo{width:48px;height:48px;border-radius:14px;background:#fff}
+.qd .q-stock-head h1{font-size:clamp(20px,3.2vw,30px);line-height:1.1;letter-spacing:-.02em;margin:0;font-weight:850;overflow-wrap:anywhere}
+.qd .q-stock-meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--q-muted);margin-top:2px}
+.qd .q-stock-meta b{color:var(--q-text)}
+.qd .q-stock-price{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0 4px}
+.qd .q-stock-price .qx-quote b{font-size:clamp(28px,5vw,44px);font-weight:900;letter-spacing:-.03em;line-height:1}
+.qd .q-stock-price .qx-quote span{display:inline-block;margin-left:10px;font-size:14px;font-weight:800}
+.qd .q-stock-price .qx-quote small{display:block;margin-top:6px;font-size:11.5px;color:var(--q-dim)}
+.qd .q-stock-price .qx-quote .qx-quote-none{font-size:22px}
+.qd .qx-watch{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:46px;height:46px;padding:0 14px;border-radius:99px;border:0;background:var(--q-lime);color:var(--q-lime-ink);font-weight:900;font-size:13px}
+.qd .qx-watch[aria-pressed=false]{background:var(--q-panel2);color:var(--q-text);border:1px solid var(--q-line2)}
+@media (min-width:980px){.qd .q-stock-head{grid-template-columns:auto auto minmax(0,1fr) auto}.qd .q-stock-price{grid-column:auto}}
 
-/* 01: Faktor-Karten - Discovers Zahlen-Karte als Aufklapper. Geoeffnet
-   nimmt sie die ganze Breite des Rasters ein. */
-body.dv2.qx .qx-factor{display:block;min-width:0;text-align:left;overflow-wrap:break-word}
-body.dv2.qx .qx-factor>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;width:100%;min-height:0;padding:0}
-body.dv2.qx .qx-factor .dx-zahlen-kopf{flex-wrap:wrap;gap:6px 10px}
-body.dv2.qx .qx-factor .dx-zahlen-satz{max-width:62ch}
-@media (max-width:620px){body.dv2.qx .dv2-stock .qx-factors{grid-template-columns:1fr}}
-body.dv2.qx .qx-factor>summary::-webkit-details-marker{display:none}
-body.dv2.qx .qx-factor .dx-zahlen-cta::after{content:" +"}
-body.dv2.qx .qx-factor[open] .dx-zahlen-cta::after{content:" −"}
-body.dv2.qx .qx-factor[open]{grid-column:1/-1}
-body.dv2.qx .qx-meter{display:block;align-self:stretch;height:4px;border-radius:4px;background:var(--discover-line);margin:12px 0 2px;overflow:hidden}
-body.dv2.qx .qx-meter i{display:block;height:100%;border-radius:4px;background:var(--discover-text)}
-body.dv2.qx .qx-factor.tone-good .qx-meter i{background:var(--discover-up)}
-body.dv2.qx .qx-factor.tone-bad .qx-meter i{background:var(--discover-down)}
-body.dv2.qx .qx-factor.tone-neutral .qx-meter i{background:var(--discover-warm)}
-body.dv2.qx .qx-factor-body{padding:8px 0 6px;border-top:1px solid var(--discover-line);margin-top:16px}
-body.dv2.qx .qx-comp{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;align-items:center;gap:6px 14px;margin:0;padding:12px 0;border-bottom:1px solid var(--discover-line)}
-body.dv2.qx .qx-comp small{grid-column:1/-1;font-size:12px;line-height:1.5;color:var(--discover-muted)}
-body.dv2.qx .qx-comp.is-missing .dx-bewertung-name,body.dv2.qx .qx-comp.is-missing b{color:var(--discover-muted)}
-@media (max-width:560px){body.dv2.qx .qx-comp{grid-template-columns:minmax(0,1fr) auto}body.dv2.qx .qx-comp .dx-bewertung-balken{grid-column:1/-1;grid-row:2}}
+/* Tabs (Übersicht · Analyse · Setup · Backtesting · News) */
+.qd .q-tabs{position:sticky;top:0;z-index:50;display:flex;gap:6px;overflow-x:auto;padding:10px 0;margin:6px 0 4px;background:linear-gradient(var(--q-bg) 80%,rgba(5,6,7,0));scrollbar-width:none}
+.qd .q-tabs::-webkit-scrollbar{display:none}
+.qd .q-tabs a{flex:none;padding:9px 16px;border-radius:99px;border:1px solid var(--q-line2);font-size:13px;font-weight:800;text-decoration:none;color:var(--q-muted)}
+.qd .q-tabs a[aria-current=true]{background:transparent;color:var(--q-lime);border-color:var(--q-lime)}
 
-/* 02: Veraenderungen als Discovers Satzliste; der Punkt traegt den Ton. */
-body.dv2.qx .qx-changes li{flex-wrap:wrap;row-gap:4px}
-body.dv2.qx .qx-changes li>span{flex:1 1 0;min-width:0}
-body.dv2.qx .qx-changes small{white-space:normal;margin-left:0;padding-left:0;flex-basis:100%;font-size:12.5px;line-height:1.45}
-body.dv2.qx .qx-change.tone-good .dx-story-dot{background:var(--discover-up)}
-body.dv2.qx .qx-change.tone-bad .dx-story-dot{background:var(--discover-down)}
-body.dv2.qx .qx-change.tone-neutral .dx-story-dot{background:var(--discover-muted)}
+/* Banner "NVIDIA · die Einordnung" */
+.qd .q-banner{position:relative;overflow:hidden;border-radius:22px;padding:22px 20px;min-height:150px;background:radial-gradient(100% 120% at 90% 20%,#1d2a0c 0%,#0a0c0e 60%);border:1px solid var(--q-line);isolation:isolate}
+.qd .q-banner .q-globe{position:absolute;right:-60px;top:-50px;width:260px;height:260px;z-index:-1;opacity:.8}
+.qd .q-banner .dx-logo{position:absolute;right:22px;bottom:18px;width:72px;height:72px;border-radius:18px;background:#fff;opacity:.95}
+.qd .q-banner h2{font-size:clamp(24px,4vw,34px);letter-spacing:-.03em;margin:0 0 6px;font-weight:900}
+.qd .q-banner p{margin:0;max-width:34ch;color:#d3d6da;font-size:14.5px;line-height:1.45}
+.qd .q-banner[data-tone=good] h2{color:var(--q-lime)}
+.qd .q-banner[data-tone=bad] h2{color:var(--q-down)}
+.qd .q-banner[data-tone=neutral] h2{color:var(--q-warm)}
 
-/* 03: Setup-Stufen als Leiste. */
-body.dv2.qx .qx-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;list-style:none;padding:0;margin:22px 0 18px}
-body.dv2.qx .qx-ladder li{position:relative;padding:14px 0 0;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--discover-muted)}
-body.dv2.qx .qx-ladder li::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:5px;background:var(--discover-line)}
-body.dv2.qx .qx-ladder li.is-past::before{background:color-mix(in srgb,var(--discover-text) 45%,transparent)}
-body.dv2.qx .qx-ladder li.is-now{color:var(--discover-text)}
-body.dv2.qx .qx-ladder li.is-now::before{background:var(--discover-text)}
-body.dv2.qx .qx-qa{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+/* Faktor-Kacheln ("Faktoren im Überblick") */
+.qd .q-factor-tiles{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(120px,1fr);gap:10px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.qd .q-factor-tiles::-webkit-scrollbar{display:none}
+@media (min-width:980px){.qd .q-factor-tiles{grid-auto-flow:row;grid-template-columns:repeat(7,minmax(0,1fr))}}
+.qd .q-ftile{display:flex;flex-direction:column;gap:4px;min-height:118px;padding:14px;border-radius:16px;background:var(--q-card);color:var(--q-card-text);text-decoration:none}
+.qd .q-ftile span{font-size:12px;font-weight:800}
+.qd .q-ftile b{font-size:30px;line-height:1;font-weight:900;letter-spacing:-.03em;margin-top:4px}
+.qd .q-ftile small{margin-top:auto;font-size:11px;font-weight:800}
+.qd .q-ftile.tone-good small{color:#3f6b00}
+.qd .q-ftile.tone-bad small{color:#b3261a}
+.qd .q-ftile.tone-neutral small{color:#8a6300}
+.qd .q-ftile.tone-unknown{background:#2a2e34;color:var(--q-muted)}
+.qd .q-ftile.tone-unknown b{font-size:22px}
+.qd .q-ftile i{display:block;height:4px;border-radius:4px;background:#dfe2da;margin-top:8px;overflow:hidden}
+.qd .q-ftile i::before{content:"";display:block;height:100%;width:var(--v,0%);background:#9fcb1c}
+.qd .q-ftile.tone-bad i::before{background:#e0584b}
+.qd .q-ftile.tone-neutral i::before{background:#d9a722}
 
-/* Bedingungen (Setup, Anlagestil): Marke, Satz, Beleg - wie die Waage. */
-body.dv2.qx .qx-conds{list-style:none;padding:0;margin:12px 0 0}
-body.dv2.qx .qx-conds li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--discover-line)}
-body.dv2.qx .qx-conds li:first-child{border-top:0}
-body.dv2.qx .qx-conds b{display:block;font-size:14px;line-height:1.4}
-body.dv2.qx .qx-conds span{display:block;font-size:12.5px;line-height:1.5;color:var(--discover-muted);margin-top:2px}
-body.dv2.qx .qx-conds .dx-waage-marke{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:800}
-body.dv2.qx .qx-conds li.tone-good .dx-waage-marke{background:color-mix(in srgb,var(--discover-up) 15%,transparent);color:var(--discover-up)}
-body.dv2.qx .qx-conds li.tone-bad .dx-waage-marke{background:color-mix(in srgb,var(--discover-down) 14%,transparent);color:var(--discover-down)}
-body.dv2.qx .qx-conds li.tone-unknown .dx-waage-marke{background:var(--discover-line);color:var(--discover-muted)}
+/* Kursentwicklung: der eine Chart, dunkel, Lime-Linie */
+.qd .qc-chart{background:var(--q-panel);border:1px solid var(--q-line);border-radius:var(--q-radius);padding:16px 16px 12px;margin-top:0}
+.qd .qc-chart>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.qd .qc-chart .dx-chart-head{order:3}
+.qd .qc-chart .qc-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px}
+.qd .qc-chart .dx-chart-hero-preis{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.qd .qc-chart .qc-price{font-size:20px;font-weight:900}
+.qd .qc-chart .qc-delta{font-size:15px;font-weight:900}
+.qd .qc-chart .qc-word{font-size:12px;color:var(--q-dim)}
+.qd .qc-chart .qc-meta{font-size:11.5px;color:var(--q-dim)}
+.qd .qc-chart .qc-plot{margin-top:8px;color:var(--q-lime)}
+.qd .qc-chart .qc-plot svg{display:block;width:100%;height:auto;touch-action:pan-y}
+.qd .qc-chart .dx-range-line,.qd .qc-chart .dx-art-line{stroke:var(--q-lime)}
+.qd .qc-chart [data-direction=down] .dx-range-line,.qd .qc-chart svg[data-direction=down] .dx-art-line,.qd .qc-chart svg[data-direction=down] .dx-range-line{stroke:var(--q-down)}
+.qd .qc-chart .dx-art-fill{fill:rgba(200,245,49,.08)}
+.qd .qc-chart .dx-scrub-line{stroke:rgba(255,255,255,.35);stroke-width:1}
+.qd .qc-chart .dx-scrub-node{fill:var(--q-lime);stroke:#000;stroke-width:2}
+.qd .qc-ranges,.qd .dx-tf{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 0 2px}
+.qd .qc-ranges::-webkit-scrollbar{display:none}
+.qd .qc-range{flex:none;min-width:40px;min-height:34px;padding:6px 10px;border-radius:99px;border:0;background:transparent;color:var(--q-muted);font-size:12.5px;font-weight:800}
+.qd .qc-range[aria-pressed=true]{background:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qc-range:disabled{opacity:.35;cursor:not-allowed}
+.qd .qc-note{font-size:11px;line-height:1.5;color:var(--q-dim);margin:8px 0 0}
+.qd .qc-empty,.qd .dx-empty{display:flex;flex-direction:column;gap:4px;padding:40px 12px;text-align:center;color:var(--q-muted)}
+.qd .qc-chart .dx-chart{display:flex;flex-direction:column}
+.qd .qc-chart>div{display:flex;flex-direction:column}
 
-/* 04: Anlagestil mit Discovers Perspektiven-Bild. */
-body.dv2.qx .qx-strategy-link{margin:22px 0 8px}
+/* Setup-Karte (Einstieg · Stop-Loss · Invalidation · Ziele) */
+.qd .q-setup{background:var(--q-panel);border:1px solid var(--q-line);border-radius:var(--q-radius);padding:16px}
+.qd .q-setup-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.qd .q-setup-head strong{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:850}
+.qd .q-setup-head strong::before{content:"";width:22px;height:22px;border-radius:6px;background:var(--q-lime-soft);box-shadow:inset 0 0 0 2px var(--q-lime)}
+.qd .q-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--q-muted)}
+.qd .q-status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--q-unknown)}
+.qd .q-status.is-on{color:var(--q-lime)}.qd .q-status.is-on::before{background:var(--q-lime)}
+.qd .q-status.is-wait::before{background:var(--q-warm)}
+.qd .q-levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--q-line);border-radius:14px;overflow:hidden}
+.qd .q-levels>div{background:var(--q-panel2);padding:12px}
+.qd .q-levels span{display:block;font-size:11.5px;color:var(--q-muted)}
+.qd .q-levels b{display:block;margin-top:4px;font-size:clamp(15px,2vw,19px);font-weight:900}
+.qd .q-levels small{display:block;margin-top:2px;font-size:10.5px;color:var(--q-dim)}
+.qd .q-levels .is-stop b{color:var(--q-down)}
+.qd .q-levels .is-target b{color:var(--q-lime)}
+.qd .q-levels .is-missing b{color:var(--q-dim);font-size:13px}
+@media (max-width:600px){.qd .q-levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.qd .q-scenario-note{font-size:11.5px;line-height:1.5;color:var(--q-dim);margin:10px 0 0}
 
-/* 05: Rueckblick. */
-body.dv2.qx .qx-replay-level{padding:8px 0 22px;border-bottom:1px solid var(--discover-line)}
-body.dv2.qx .qx-replay-level:last-of-type{border-bottom:0}
-body.dv2.qx .qx-horizons small{display:block;font-size:11px;line-height:1.4;color:var(--discover-muted);margin-top:4px}
-body.dv2.qx .qx-bars2 h3{margin-top:18px}
+/* Zwei dunkle Zahlen-Kacheln (Historische Fälle · Backtesting) */
+.qd .q-duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.qd .q-duo>a,.qd .q-duo>div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:center;padding:16px;border-radius:18px;background:var(--q-panel);border:1px solid var(--q-line);text-decoration:none;color:var(--q-text)}
+.qd .q-duo .q-icon{grid-row:span 3;color:var(--q-lime)}
+.qd .q-duo span{font-size:12.5px;font-weight:800}
+.qd .q-duo b{font-size:clamp(20px,3vw,28px);font-weight:900;line-height:1.1}
+.qd .q-duo small{font-size:11px;color:var(--q-dim)}
+.qd .q-duo .is-off b{color:var(--q-dim);font-size:15px}
 
-/* Daten und Grenzen. */
-body.dv2.qx .qx-kv>div{display:flex;justify-content:space-between;gap:16px}
-body.dv2.qx .qx-kv b{text-align:right}
+/* Einordnung / Waage */
+.qd .qx-verdict-card{margin-top:16px}
+.qd .qx-verdict-top{display:block}
+.qd .dx-dhero-story{font-size:clamp(22px,3vw,30px);font-weight:850;letter-spacing:-.02em;line-height:1.2;margin:0 0 6px}
+.qd .dx-dhero-hook{font-size:14px;color:var(--q-muted);margin:0 0 12px}
+.qd .dx-story-dot,.qd .dx-hook-mark{display:none}
+.qd .qx-verdict-top[data-tone=good] .dx-dhero-story{color:var(--q-lime)}
+.qd .qx-verdict-top[data-tone=bad] .dx-dhero-story{color:var(--q-down)}
+.qd .qx-verdict-top[data-tone=neutral] .dx-dhero-story{color:var(--q-warm)}
+.qd .dx-waage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+@media (max-width:760px){.qd .dx-waage{grid-template-columns:1fr}}
+.qd .dx-waage-spalte{background:var(--q-panel);border:1px solid var(--q-line);border-radius:18px;padding:16px;border-top:3px solid var(--q-line2);min-width:0}
+.qd .dx-waage-spalte--pro{border-top-color:var(--q-lime)}
+.qd .dx-waage-spalte--contra{border-top-color:var(--q-down)}
+.qd .dx-waage-spalte h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--q-muted);margin:0 0 8px}
+.qd .dx-waage-spalte ul{list-style:none;margin:0;padding:0}
+.qd .dx-waage-spalte li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--q-line)}
+.qd .dx-waage-spalte li:first-child{border-top:0}
+.qd .dx-waage-marke{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-style:normal;font-weight:900;font-size:12px;background:var(--q-panel2);color:var(--q-muted)}
+.qd .dx-waage-spalte--pro .dx-waage-marke{background:var(--q-lime-soft);color:var(--q-lime)}
+.qd .dx-waage-spalte--contra .dx-waage-marke{background:rgba(255,107,94,.14);color:var(--q-down)}
+.qd .dx-waage-spalte b{display:block;font-size:14px}
+.qd .dx-waage-spalte span{display:block;font-size:12.5px;line-height:1.5;color:var(--q-muted);margin-top:2px}
+.qd .qx-waage-link{text-decoration:none}
+.qd .qx-waage-title{font-size:18px;font-weight:850;margin:20px 0 8px}
+.qd .qx-middle{font-size:14px;margin:14px 0 0;color:var(--q-muted)}
+.qd .qx-middle b{color:var(--q-text)}
+.qd .qx-pc-empty{font-size:13px;color:var(--q-dim);margin:6px 0 0}
+.qd .qx-waage-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.qd .qx-waage-3{grid-template-columns:1fr}}
+.qd .dx-kann{list-style:none;margin:10px 0 0;padding:0}
+.qd .dx-kann li{padding:10px 0;border-top:1px solid var(--q-line);font-size:13.5px;line-height:1.5;color:var(--q-muted)}
+.qd .dx-kann li b{color:var(--q-text)}
+.qd .dx-zeitachse{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin:14px 0 0}
+.qd .dx-zeitachse>div{background:var(--q-panel);border:1px solid var(--q-line);border-radius:14px;padding:10px 12px}
+.qd .dx-zeitachse span{display:block;font-size:11px;color:var(--q-muted)}
+.qd .dx-zeitachse b{display:block;font-size:18px;font-weight:900;margin-top:2px}
+.qd .dx-zeitachse small{display:block;font-size:10.5px;color:var(--q-dim);margin-top:2px}
+.qd .dx-dhero-sigs{display:none}
 
-/* ------------------------------------------------------------ Home */
-body.dv2.qx .qx-intro .v2-intro-visual img{object-fit:cover}
-body.dv2.qx .qx-kpi .v2-market-change{font-size:clamp(26px,3.4vw,36px)}
-body.dv2.qx .qx-kpi{text-decoration:none;color:inherit}
-body.dv2.qx .qx-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--v2-line);margin-top:18px}
-body.dv2.qx .qx-steps>div{padding:22px 22px 22px 0;border-right:1px solid var(--v2-line)}
-body.dv2.qx .qx-steps>div+div{padding-left:22px}
-body.dv2.qx .qx-steps>div:last-child{border-right:0}
-body.dv2.qx .qx-steps b{display:block;font-size:20px;letter-spacing:-.03em;margin:8px 0 8px}
-body.dv2.qx .qx-steps p{margin:0;font-size:13.5px;line-height:1.55;color:var(--v2-muted)}
-@media (max-width:760px){body.dv2.qx .qx-steps{grid-template-columns:1fr}body.dv2.qx .qx-steps>div{border-right:0;border-bottom:1px solid var(--v2-line);padding:18px 0}body.dv2.qx .qx-steps>div+div{padding-left:0}}
+/* 01 Faktoren: aufklappbare Karten */
+.qd .dx-zahlen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.qd .dx-zahlen{grid-template-columns:1fr}}
+.qd .qx-factor{display:block;min-width:0;background:var(--q-panel);border:1px solid var(--q-line);border-radius:18px;padding:16px}
+.qd .qx-factor[open]{grid-column:1/-1}
+.qd .qx-factor>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.qd .qx-factor>summary::-webkit-details-marker{display:none}
+.qd .dx-zahlen-kopf{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.qd .dx-zahlen-label{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--q-muted)}
+.qd .dx-zahlen-zahl{font-size:36px;font-weight:900;line-height:1;letter-spacing:-.03em}
+.qd .dx-zahlen-einheit{font-size:12px;color:var(--q-dim)}
+.qd .dx-zahlen-satz{font-size:13px;line-height:1.5;color:var(--q-muted);margin:4px 0 0}
+.qd .dx-zahlen-cta{font-size:12.5px;font-weight:800;color:var(--q-lime)}
+.qd .dx-zahlen-cta::after{content:" +"}
+.qd .qx-factor[open] .dx-zahlen-cta::after{content:" −"}
+.qd .qx-meter{display:block;height:5px;border-radius:5px;background:var(--q-line);overflow:hidden;margin:8px 0 2px;align-self:stretch}
+.qd .qx-meter i{display:block;height:100%;background:var(--q-lime)}
+.qd .qx-factor.tone-bad .qx-meter i{background:var(--q-down)}
+.qd .qx-factor.tone-neutral .qx-meter i{background:var(--q-warm)}
+.qd .qx-factor-body{margin-top:14px;padding-top:12px;border-top:1px solid var(--q-line)}
+.qd .dx-firma{display:flex;flex-direction:column}
+.qd .dx-firma>div{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--q-line);font-size:13px}
+.qd .dx-firma span{color:var(--q-muted)}
+.qd .dx-firma b{text-align:right}
+.qd .qx-comp{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;align-items:center;gap:6px 14px;padding:10px 0;border-bottom:1px solid var(--q-line)}
+.qd .qx-comp .dx-bewertung-name{font-size:13px}
+.qd .qx-comp small{grid-column:1/-1;font-size:11.5px;line-height:1.5;color:var(--q-dim)}
+.qd .qx-comp.is-missing .dx-bewertung-name,.qd .qx-comp.is-missing small{color:var(--q-muted)}
+@media (max-width:560px){.qd .qx-comp{grid-template-columns:minmax(0,1fr) auto}.qd .qx-comp .dx-bewertung-balken{grid-column:1/-1;grid-row:2}}
+.qd .dx-bewertung-balken{display:block;height:6px;border-radius:6px;background:var(--q-line);overflow:hidden}
+.qd .dx-bewertung-balken i{display:block;height:100%;background:var(--q-lime)}
+.qd .dx-bewertung-zeile{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) auto;align-items:center;gap:12px;padding:8px 0}
+.qd .dx-bewertung-zeile .dx-bewertung-name{font-size:13px;color:var(--q-muted)}
+.qd .dx-bewertung-zeile--eigen .dx-bewertung-name{color:var(--q-text);font-weight:800}
+.qd .dx-bewertung-zeile:not(.dx-bewertung-zeile--eigen) .dx-bewertung-balken i{background:var(--q-unknown)}
+.qd .dx-bewertung-zeile.tone-bad.dx-bewertung-zeile--eigen .dx-bewertung-balken i{background:var(--q-down)}
+.qd .dx-bewertung-lesart{font-size:15px;line-height:1.5;margin:8px 0 0}
+.qd .dx-bewertung-erklaerung{font-size:13px;line-height:1.55;color:var(--q-muted);margin:8px 0 0}
+.qd .dx-kapitel-fuss{font-size:12px;line-height:1.6;color:var(--q-dim);margin:14px 0 0}
+.qd .dx-kapitel-fuss--link a{color:var(--q-lime);font-weight:800}
 
-/* ------------------------------------------------------------ Screener */
-body.dv2.qx .qx-mode{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--v2-line);border-radius:99px;margin:6px 0 24px}
-body.dv2.qx .qx-mode a{padding:9px 18px;border-radius:99px;font-size:13px;font-weight:700;text-decoration:none;color:var(--v2-muted)}
-body.dv2.qx .qx-mode a[aria-current=page]{background:var(--v2-ink);color:var(--v2-bg)}
-body.dv2.qx .qx-questions{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px;margin:8px 0 26px}
-body.dv2.qx .qx-question{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;min-height:128px;padding:20px;border:0;border-radius:20px;background:#d7c7f4;color:#251938;transition:transform .2s ease,box-shadow .2s ease}
-body.dv2.qx .qx-question:nth-child(4n+2){background:#d4f0de;color:#17342d}
-body.dv2.qx .qx-question:nth-child(4n+3){background:#f1d991;color:#362b10}
-body.dv2.qx .qx-question:nth-child(4n+4){background:#c5e9ee;color:#19383b}
-body.dv2.qx .qx-question strong{font-size:18px;line-height:1.15;letter-spacing:-.03em}
-body.dv2.qx .qx-question span{font-size:12.5px;line-height:1.45;opacity:.85}
-body.dv2.qx .qx-question:hover{transform:translateY(-3px)}
-body.dv2.qx .qx-question[aria-pressed=true]{box-shadow:0 0 0 3px var(--v2-ink)}
-body.dv2.qx .qx-question[aria-pressed=true] strong::after{content:"  ✓"}
-body.dv2.qx .qx-sentence{font-size:clamp(22px,2.8vw,32px);font-weight:650;letter-spacing:-.03em;line-height:1.3;max-width:34ch;margin:10px 0 6px}
-body.dv2.qx .qx-count{font-size:13px;color:var(--v2-muted);margin:0 0 18px}
-body.dv2.qx .qx-editor{border-top:1px solid var(--v2-line);padding-top:18px}
-body.dv2.qx .qx-editor label{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--v2-muted);margin:0 0 8px}
-body.dv2.qx .qx-select,body.dv2.qx .qx-rule select,body.dv2.qx .qx-rule input{min-height:44px;padding:10px 14px;border:1px solid var(--v2-line);border-radius:12px;background:var(--v2-bg);color:var(--v2-ink);font:inherit;font-size:14px;min-width:0;max-width:100%}
-body.dv2.qx .qx-rules{display:flex;flex-direction:column;gap:10px}
-body.dv2.qx .qx-rule{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center}
-body.dv2.qx .qx-remove{min-height:44px;padding:0 14px;border:1px solid var(--v2-line);border-radius:99px;background:none;color:var(--v2-muted);font-size:12px}
-@media (max-width:600px){body.dv2.qx .qx-rule{grid-template-columns:1fr 1fr}body.dv2.qx .qx-rule>:first-child{grid-column:1/-1}}
+/* Veraenderungen als Liste */
+.qd .qx-changes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.qd .qx-change{display:grid;grid-template-columns:10px minmax(0,1fr);gap:4px 12px;align-items:baseline;padding:12px 14px;border-radius:14px;background:var(--q-panel);border:1px solid var(--q-line)}
+.qd .qx-change i{display:block;width:8px;height:8px;border-radius:50%;background:var(--q-unknown)}
+.qd .qx-change.tone-good i{background:var(--q-lime)}
+.qd .qx-change.tone-bad i{background:var(--q-down)}
+.qd .qx-change span{font-size:14px;font-weight:700}
+.qd .qx-change small{grid-column:2;font-size:12px;color:var(--q-dim);white-space:normal;margin:0;padding:0}
 
-/* ------------------------------------------------------------ Strategien */
-body.dv2.qx .qx-strat .v2-collection-copy small{display:block;margin-top:8px;font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--v2-ink)}
-body.dv2.qx .qx-strat-hero{margin:8px 0 22px}
-body.dv2.qx .qx-strat-hero img{width:100%;max-height:340px;object-fit:cover;border-radius:22px;display:block}
+/* Setup-Stufen + Bedingungen */
+.qd .qx-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;list-style:none;padding:0;margin:14px 0}
+.qd .qx-ladder li{position:relative;padding:12px 0 0;font-size:11.5px;font-weight:800;color:var(--q-dim)}
+.qd .qx-ladder li::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:5px;background:var(--q-line)}
+.qd .qx-ladder li.is-past::before{background:rgba(200,245,49,.45)}
+.qd .qx-ladder li.is-now{color:var(--q-lime)}
+.qd .qx-ladder li.is-now::before{background:var(--q-lime)}
+.qd .qx-qa{display:grid;gap:12px;margin:12px 0 0;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.qd .qx-qa>div{background:var(--q-panel);border:1px solid var(--q-line);border-radius:16px;padding:14px}
+.qd .qx-qa dt{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--q-muted);margin:0 0 6px}
+.qd .qx-qa dd{margin:0;font-size:14px;line-height:1.5}
+.qd .qx-qa dd p{margin:0 0 6px}
+.qd .qx-conds{list-style:none;margin:10px 0 0;padding:0}
+.qd .qx-conds li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid var(--q-line)}
+.qd .qx-conds li:first-child{border-top:0}
+.qd .qx-conds b{display:block;font-size:13.5px}
+.qd .qx-conds span{display:block;font-size:12px;color:var(--q-dim);margin-top:2px}
+.qd .qx-conds li.tone-good .dx-waage-marke{background:var(--q-lime-soft);color:var(--q-lime)}
+.qd .qx-conds li.tone-bad .dx-waage-marke{background:rgba(255,107,94,.14);color:var(--q-down)}
+.qd .dv2-valuation-question{font-size:18px;font-weight:850;margin:4px 0 0}
+
+/* Strategie-Link mit Bild */
+.qd .v2-collection-link{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;align-items:center;padding:8px;border-radius:18px;background:var(--q-card);color:var(--q-card-text);text-decoration:none;margin:12px 0}
+.qd .v2-collection-art{position:relative;display:block;width:96px;height:96px;border-radius:12px;overflow:hidden;background:#1a1d22}
+.qd .v2-collection-image{width:100%;height:100%;object-fit:cover;display:block}
+.qd .v2-collection-art-label{position:absolute;left:8px;right:8px;bottom:6px;font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.qd .v2-collection-glyph{display:flex;align-items:center;justify-content:center;height:100%;font-size:26px;color:var(--q-lime)}
+.qd .v2-collection-copy strong{display:block;font-size:16px;font-weight:850;line-height:1.2}
+.qd .v2-collection-copy span{display:block;font-size:12.5px;color:var(--q-card-muted);margin-top:4px;line-height:1.45}
+.qd .v2-collection-copy small{display:block;margin-top:6px;font-size:11.5px;font-weight:700;color:#3b4148}
+.qd .v2-collection-arrow{font-size:20px;padding-right:8px}
+.qd .v2-collection-links{display:flex;flex-direction:column}
+.qd .v2-collection-hero img{width:100%;max-height:280px;object-fit:cover;border-radius:22px;display:block;margin:8px 0 16px}
+.qd details.v2-rule{background:var(--q-panel);border:1px solid var(--q-line);border-radius:18px;padding:4px 16px 14px;margin:14px 0}
+.qd details.v2-rule>summary{padding:12px 0;font-weight:800;cursor:pointer}
+
+/* Daten und Grenzen */
+.qd dl.qx-kv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);margin:10px 0 0}
+.qd dl.qx-kv dt,.qd dl.qx-kv dd{margin:0;padding:10px 0;border-bottom:1px solid var(--q-line);font-size:13.5px}
+.qd dl.qx-kv dt{color:var(--q-muted)}
+.qd dl.qx-kv dd{text-align:right;font-weight:700}
+.qd .dx-foot{padding:10px 0;font-size:11px;color:var(--q-dim)}
+.qd .dx-logo-credit a{color:var(--q-muted)}
+
+/* ------------------------------------------------------------ Quant Screener */
+.qd .q-note-box{display:inline-block;max-width:210px;padding:10px 12px;border-radius:12px;border:1px solid var(--q-line2);background:rgba(20,23,27,.8);font-size:11.5px;line-height:1.4;color:#c9ccd1}
+.qd .q-note-box b{color:var(--q-lime)}
+.qd .q-filter{background:var(--q-panel);border:1px solid var(--q-line);border-radius:var(--q-radius);padding:16px;margin-top:14px}
+.qd .q-filter h3{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:850;margin:0 0 10px}
+.qd .q-filter h3 a{font-size:12.5px;font-weight:800;text-decoration:none}
+.qd .q-range{margin:18px 0 0;padding:14px;border-radius:16px;background:var(--q-card);color:var(--q-card-text)}
+.qd .q-range-head{display:flex;justify-content:space-between;font-size:12px;color:var(--q-card-muted)}
+.qd .q-range-head b{color:var(--q-card-text)}
+.qd .q-range-track{position:relative;height:30px;margin-top:8px}
+.qd .q-range-track::before{content:"";position:absolute;left:0;right:0;top:13px;height:4px;border-radius:4px;background:#dfe2da}
+.qd .q-range-fill{position:absolute;top:13px;height:4px;border-radius:4px;background:#9fcb1c}
+.qd .q-range input[type=range]{position:absolute;left:0;right:0;top:4px;width:100%;margin:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none;height:22px}
+.qd .q-range input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:22px;height:22px;border-radius:50%;background:#111;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer}
+.qd .q-range input[type=range]::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;border-radius:50%;background:#111;border:3px solid #fff;cursor:pointer}
+.qd .q-range-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--q-card-muted)}
+.qd .q-selects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.qd .q-selects label{display:flex;flex-direction:column;gap:6px;font-size:11.5px;font-weight:800;color:var(--q-card-muted)}
+.qd .q-selects select,.qd .qx-select,.qd .qx-rule select,.qd .qx-rule input{min-height:42px;padding:8px 12px;border-radius:12px;border:1px solid var(--q-card-line);background:#fff;color:var(--q-card-text);font:inherit;font-size:13.5px;min-width:0;max-width:100%}
+.qd .q-filter-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+.qd .q-toggle{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:99px;background:var(--q-card);color:var(--q-card-text);font-weight:850;font-size:13px;text-decoration:none}
+.qd .q-toggle i{position:relative;display:inline-block;width:36px;height:20px;border-radius:20px;background:#c9ccc5}
+.qd .q-toggle i::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .15s}
+.qd .q-results{background:var(--q-card);color:var(--q-card-text);border-radius:var(--q-radius);padding:14px;margin-top:14px}
+.qd .q-results-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 4px 10px}
+.qd .q-results-head b{font-size:17px}
+.qd .q-results-head span{font-size:12.5px;font-weight:800;color:#3b4148}
+.qd .q-results .qx-list{gap:0}
+.qd .q-results .qx-row{border-radius:0;padding:12px 4px;border-top:1px solid var(--q-card-line);background:transparent}
+.qd .q-results .qx-count{font-size:12px;color:var(--q-card-muted);margin:0 4px 6px}
+.qd .q-results .qx-small{color:var(--q-card-muted)}
+.qd .q-results .qx-notice{background:#eef0ea;border-color:var(--q-card-line)}
+.qd .q-results .qx-notice b{color:var(--q-card-text)}
+.qd .q-results .qx-notice p{color:var(--q-card-muted)}
+.qd .qx-sentence{font-size:clamp(17px,2.2vw,22px);font-weight:800;margin:18px 0 0}
+.qd .qx-questions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.qd .qx-question{display:inline-flex;align-items:center;min-height:36px;padding:7px 14px;border-radius:99px;border:1px solid var(--q-line2);background:transparent;color:var(--q-text);font-size:12.5px;font-weight:800}
+.qd .qx-question[aria-pressed=true]{background:var(--q-lime);border-color:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qx-question span{display:none}
+.qd .qx-mode{display:inline-flex;gap:4px;padding:4px;border-radius:99px;border:1px solid var(--q-line2);margin:14px 0 0}
+.qd .qx-mode a{padding:8px 16px;border-radius:99px;font-size:13px;font-weight:800;text-decoration:none;color:var(--q-muted)}
+.qd .qx-mode a[aria-current=page]{background:var(--q-lime);color:var(--q-lime-ink)}
+.qd .qx-editor{background:var(--q-panel);border:1px solid var(--q-line);border-radius:var(--q-radius);padding:16px;margin-top:14px}
+.qd .qx-editor label{display:block;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--q-muted);margin:10px 0 8px}
+.qd .qx-rules{display:flex;flex-direction:column;gap:10px}
+.qd .qx-rule{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center}
+.qd .qx-remove{min-height:42px;padding:0 14px;border:1px solid var(--q-line2);border-radius:99px;background:none;color:var(--q-muted);font-size:12px}
+@media (max-width:600px){.qd .qx-rule{grid-template-columns:1fr 1fr}.qd .qx-rule>:first-child{grid-column:1/-1}.qd .q-selects{grid-template-columns:1fr 1fr}}
 
 /* ------------------------------------------------------------ Methodik */
-body.dv2.qx .qx-principles{grid-template-columns:repeat(2,minmax(0,1fr))}
-body.dv2.qx .qx-principles>div:nth-child(2n){border-right:0}
-body.dv2.qx .qx-principles>div:nth-child(2n+1){padding-left:0}
-body.dv2.qx .qx-principles>div:nth-child(2n){padding-left:22px}
-body.dv2.qx .qx-principles>div:nth-child(-n+2){border-bottom:1px solid var(--v2-line)}
-body.dv2.qx .qx-prose{max-width:760px}
-body.dv2.qx .qx-prose p{font-size:16px;line-height:1.7}
-body.dv2.qx .qx-table{width:100%;border-collapse:collapse;font-size:13.5px;margin:16px 0 0}
-body.dv2.qx .qx-table th,body.dv2.qx .qx-table td{padding:10px 8px;border-bottom:1px solid var(--v2-line);text-align:right;font-variant-numeric:tabular-nums}
-body.dv2.qx .qx-table th:first-child,body.dv2.qx .qx-table td:first-child{text-align:left}
-body.dv2.qx .qx-table th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-muted);font-weight:700}
-body.dv2.qx .qx-table-wrap{overflow-x:auto}
+.qd .q-rows{display:flex;flex-direction:column;gap:10px;background:var(--q-card);border-radius:var(--q-radius);padding:10px}
+.qd .q-rowlink{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px;border-radius:14px;color:var(--q-card-text);text-decoration:none}
+.qd .q-rowlink+.q-rowlink{border-top:1px solid var(--q-card-line)}
+.qd .q-rowlink .q-icon{display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;color:#111}
+.qd .q-rowlink .q-icon svg{width:26px;height:26px}
+.qd .q-rowlink strong{display:block;font-size:14.5px;font-weight:850}
+.qd .q-rowlink small{display:block;margin-top:2px;font-size:12px;color:var(--q-card-muted);line-height:1.4}
+.qd .q-rowlink::after{content:"›";font-size:22px;color:#6b7078}
+.qd .q-principles{display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;background:#eef0ea;color:var(--q-card-text)}
+.qd .q-principles .q-shield{flex:none;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;background:#111;color:var(--q-lime)}
+.qd .q-principles .q-shield svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2}
+.qd .q-principles b{display:block;font-size:14px;margin-bottom:6px}
+.qd .q-principles span{display:inline-flex;margin:0 6px 6px 0;padding:4px 10px;border-radius:99px;background:#fff;font-size:11.5px;font-weight:700}
+.qd .q-bands{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:12px 0}
+.qd .q-bands div{padding:10px 6px;border-radius:12px;text-align:center;color:#1b1f25}
+.qd .q-bands b{display:block;font-size:14px;font-weight:900}
+.qd .q-bands small{display:block;font-size:10.5px;font-weight:700}
+.qd .q-bands .b1{background:#f6b8b1}.qd .q-bands .b2{background:#f8cfa3}.qd .q-bands .b3{background:#f6e7a2}.qd .q-bands .b4{background:#d7f2a0}.qd .q-bands .b5{background:#b4ee5a}
+.qd .q-hist{position:relative;background:var(--q-card);color:var(--q-card-text);border-radius:var(--q-radius);padding:16px 16px 10px}
+.qd .q-hist svg{display:block;width:100%;height:auto}
+.qd .q-hist .q-hist-axis{font-size:10px;fill:#6a7078}
+.qd .q-hist-title{font-size:13px;font-weight:800;margin:0 0 8px}
+.qd .q-hist-title span{font-weight:600;color:var(--q-card-muted)}
+.qd .q-matrix{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.qd .q-matrix{grid-template-columns:1fr}}
+.qd .q-matrix>div{border-radius:16px;padding:14px}
+.qd .q-matrix .is-yes{background:#eef8d6;color:#1c2408}
+.qd .q-matrix .is-no{background:#fbe4e1;color:#3a0f0b}
+.qd .q-matrix h3{font-size:14px;font-weight:900;margin:0 0 8px}
+.qd .q-matrix ul{list-style:none;margin:0;padding:0}
+.qd .q-matrix li{font-size:12.5px;line-height:1.4;padding:5px 0 5px 20px;position:relative}
+.qd .q-matrix .is-yes li::before{content:"✓";position:absolute;left:0;color:#3f6b00;font-weight:900}
+.qd .q-matrix .is-no li::before{content:"✕";position:absolute;left:0;color:#b3261a;font-weight:900}
+.qd .q-limits{display:flex;flex-direction:column;gap:8px}
+.qd .q-limits>div{display:grid;grid-template-columns:40px 110px minmax(0,1fr);gap:12px;align-items:center;padding:12px;border-radius:14px;background:var(--q-panel);border:1px solid var(--q-line)}
+.qd .q-limits .q-icon svg{width:24px;height:24px}
+.qd .q-limits b{font-size:13.5px}
+.qd .q-limits span{font-size:12.5px;color:var(--q-muted);line-height:1.45}
+@media (max-width:560px){.qd .q-limits>div{grid-template-columns:32px minmax(0,1fr);gap:2px 12px}.qd .q-limits .q-icon{grid-row:span 2}.qd .q-limits b,.qd .q-limits span{grid-column:2}.qd .q-bands{gap:4px}.qd .q-bands small{font-size:9.5px;overflow-wrap:anywhere}}
+.qd .qx-method-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:10px}
+.qd .qx-table-wrap{overflow-x:auto}
+.qd .qx-table{width:100%;border-collapse:collapse;font-size:13px}
+.qd .qx-table th,.qd .qx-table td{padding:9px 8px;border-bottom:1px solid var(--q-line);text-align:right}
+.qd .qx-table th:first-child,.qd .qx-table td:first-child{text-align:left}
+.qd .qx-table th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--q-muted)}
+.qd .qx-prose p{font-size:15px;line-height:1.7;color:#d6d9dd;max-width:760px}
+.qd .qx-kv-list{margin:0}
 
-/* ------------------------------------------------------------ Bewegung */
-@media (prefers-reduced-motion:reduce){body.dv2.qx .qx-question,body.dv2.qx .qx-method-grid a,body.dv2.qx .qx-row{transition:none}}
+/* Technische Charts aus /quant/ui (Kursstruktur, Geschaeftszahlen) */
+body.qd{--ink:var(--q-text);--bg:var(--q-bg);--surface:var(--q-panel);--surface-2:var(--q-panel2);--line:var(--q-line);--line-strong:var(--q-line2);
+  --muted:var(--q-muted);--muted-2:var(--q-dim);--green:#b9ee3c;--green-ink:#b9ee3c;--red:#ff6b5e;--red-ink:#ff6b5e;--red-bg:#3a1714;
+  --blue:#6f9dff;--purple:#b29cff;--purple-bg:#2a2140;--yellow:#f2c14e;--radius:14px;--radius-sm:10px;--radius-lg:20px;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 
-/* Suchfeld der Aktien-Seite in Discovers Suchpille. */
-body.dv2.qx .qx-search-field{max-width:640px;margin:8px 0 6px}
-body.dv2.qx .qx-search-field input{flex:1;min-width:0;border:0;background:transparent;padding:6px 0;font-size:16px;color:inherit;min-height:0}
-body.dv2.qx .qx-search-field input:focus{outline:none}
-body.dv2.qx .qx-search-field:focus-within{outline:3px solid #9fbaed;outline-offset:3px}
-body.dv2.qx .qx-strats{margin-top:22px}
-body.dv2.qx .qx-rules-box{margin:20px 0 10px}
-body.dv2.qx .qx-kpi-word{font-size:clamp(20px,2.6vw,28px)!important;line-height:1.1}
-@media (max-width:760px){
-  body.dv2.qx .qx-kpis{grid-template-columns:1fr;gap:10px}
-  body.dv2.qx .qx-kpis .v2-market-kpi{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;column-gap:14px}
-  body.dv2.qx .qx-kpis .v2-market-change{grid-column:2;grid-row:1;margin:0;text-align:right}
-  body.dv2.qx .qx-kpis .v2-market-fresh{grid-column:1/-1;margin-top:6px}
-}
-body.dv2.qx .qx-kpis .v2-market-change{color:var(--v2-ink)}
-body.dv2.qx .qx-poster .dx-zahl span{max-width:14ch}
-@media (max-width:620px){
-  body.dv2.qx .qx-row{grid-template-columns:auto minmax(0,1fr);row-gap:8px}
-  body.dv2.qx .qx-row-side{grid-column:2;align-items:flex-start;text-align:left;flex-direction:row;flex-wrap:wrap;gap:8px}
-  body.dv2.qx .qx-questions{grid-template-columns:1fr 1fr;gap:10px}
-  body.dv2.qx .qx-question{min-height:0;padding:16px 14px;border-radius:16px}
-  body.dv2.qx .qx-question strong{font-size:15.5px}
-  body.dv2.qx .qx-question span{font-size:12px}
-}
-body.dv2.qx .qx-strat .v2-collection-copy small{font-weight:600;color:var(--v2-muted);line-height:1.5}
+/* Suche (Dialog) */
+dialog.qx-dialog{max-width:none;max-height:none;width:100%;height:100%;margin:0;padding:0;border:0;background:var(--q-bg);color:var(--q-text)}
+dialog.qx-dialog::backdrop{background:rgba(0,0,0,.6)}
+.qd .q-dialog-in{max-width:760px;margin:0 auto;padding:24px 16px}
+.qd .q-dialog-in h2{font-size:24px;margin:8px 0 14px}
+.qd .q-dialog-close{min-height:40px;padding:0 14px;border-radius:99px;border:0;background:#e9ebe5;color:#111;font-weight:800;flex:none}
+.qd .qx-dialog-status{font-size:12.5px;color:var(--q-dim);margin:12px 4px}
+.qd .qx-dialog-results{display:flex;flex-direction:column;gap:8px}
+.qd .qx-hit{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--q-card);color:var(--q-card-text);text-decoration:none}
+.qd .qx-hit[aria-selected=true]{box-shadow:0 0 0 3px var(--q-lime)}
+.qd .qx-hit .dx-logo{width:36px;height:36px;border-radius:10px;background:#fff}
+.qd .qx-hit b{display:block;font-size:14px}
+.qd .qx-hit em{display:block;font-style:normal;font-size:11.5px;color:var(--q-card-muted)}
+.qd .qx-hit span.val{font-size:12px;font-weight:800}
 
-/* ------------------------------------------------------------ Methodik & Werkzeuge
-   Dieselben Grundformen wie die Kapitel: grosse Zeilen, Haarlinien. */
-body.dv2.qx .qx-h2{font-size:clamp(24px,3vw,36px);line-height:1.12;letter-spacing:-.045em;margin:0 0 14px}
-body.dv2.qx .qx-h3{font-size:19px;line-height:1.2;letter-spacing:-.03em;font-weight:750;margin:0 0 10px}
-body.dv2.qx .qx-grid{display:grid;gap:14px;margin-top:18px}
-body.dv2.qx .qx-grid-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
-body.dv2.qx .qx-grid-3{grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
-body.dv2.qx .qx-grid>*{min-width:0}
-body.dv2.qx dl.qx-kv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);margin:14px 0 0;border-top:1px solid var(--v2-line)}
-body.dv2.qx dl.qx-kv dt,body.dv2.qx dl.qx-kv dd{margin:0;padding:10px 0;border-bottom:1px solid var(--v2-line);font-size:14px}
-body.dv2.qx dl.qx-kv dt{color:var(--v2-muted)}
-body.dv2.qx dl.qx-kv dd{font-weight:650;text-align:right}
-body.dv2.qx .qx-factor>summary .qx-factor-name{font-size:17px;font-weight:750;letter-spacing:-.02em}
-body.dv2.qx .qx-factor>summary .qx-factor-q{font-size:13.5px;line-height:1.5;color:var(--discover-muted,var(--v2-muted))}
-body.dv2.qx .qx-card .qx-factor,body.dv2.qx .qx-factors>.qx-factor:not(.dx-zahlen-karte){padding:18px 0;border-bottom:1px solid var(--v2-line)}
-body.dv2.qx .qx-factors:not(.dx-zahlen){display:flex;flex-direction:column;border-top:1px solid var(--v2-line)}
-body.dv2.qx .qx-row.qx-card{border:1px solid var(--v2-line);border-radius:18px;padding:16px}
+@media (prefers-reduced-motion:reduce){.qd *{transition:none!important;scroll-behavior:auto!important}}
+.qd .qx-row-verdict{display:block;margin-top:6px}
+.qd .q-hero--screener h1{margin-bottom:8px}
+.qd .q-hero--screener .qx-mode{display:flex;width:max-content}
 
-/* Die Chart-Bausteine aus /quant/ui (Kursstruktur, Geschaeftszahlen) lesen
-   ihre Farben aus diesen Namen - hier aus Discovers Palette gespeist. */
-body.dv2.qx{--ink:var(--v2-ink);--bg:var(--v2-bg);--surface:var(--v2-bg);--surface-2:var(--v2-panel);--line:var(--v2-line);--line-strong:var(--v2-muted);
-  --muted:var(--v2-muted);--muted-2:var(--v2-muted);--green:#12a150;--green-ink:#087942;--red:#d0453a;--red-ink:#b33129;--red-bg:#fbe9e7;
-  --blue:#3b6fd8;--purple:#7a5bd6;--purple-bg:#efe9fb;--yellow:#c89a16;--radius:12px;--radius-sm:8px;--radius-lg:20px;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-html:not([data-theme=light]) body.dv2.qx{--green-ink:#3fd98a;--red-ink:#ff7a70;--red-bg:#3a1714;--purple-bg:#2a2140}
-body.dv2.qx .dx-chapter{padding-left:0;padding-right:0}
-@media (max-width:760px){body.dv2.qx .qx-principles{grid-template-columns:1fr}body.dv2.qx .qx-principles>div,body.dv2.qx .qx-principles>div:nth-child(2n){padding:18px 0;border-right:0;border-bottom:1px solid var(--v2-line)}}
-body.dv2.qx .qx-muted{font-size:15px;line-height:1.55;color:var(--discover-muted,var(--v2-muted));margin:8px 0 0}
-body.dv2.qx .qx-bars2 .dx-bewertung-zeile:not(.dx-bewertung-zeile--eigen) .dx-bewertung-name{color:var(--discover-muted)}
-body.dv2.qx .qx-bars2 .tone-good.dx-bewertung-zeile--eigen .dx-bewertung-balken i{background:var(--discover-up)}
-body.dv2.qx .qx-bars2 .tone-bad.dx-bewertung-zeile--eigen .dx-bewertung-balken i{background:var(--discover-down)}
-body.dv2.qx .qx-qa{display:grid;gap:14px;margin:18px 0 0}
-body.dv2.qx .qx-qa dt{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--discover-muted);margin:0 0 6px}
-body.dv2.qx .qx-qa dd{margin:0}
-body.dv2.qx .qx-qa .dx-bewertung-satz dd{font-size:clamp(17px,2vw,21px);line-height:1.4}
-body.dv2.qx .qx-qa .dv2-valuation-card dd p{margin:0 0 6px}
-body.dv2.qx .qx-strategy-sentence{margin-top:0}
-body.dv2.qx .qx-stock-layout{display:block}
-/* Am Handy bleibt Quants schmale Kopfzeile stehen (Marke, Beta, Suche):
-   die Leiste unten traegt die fuenf Bereiche, die Suche braucht einen Ort. */
-@media (max-width:760px){
-  body.dv2.qx .v2-bar{display:flex;padding:8px 20px 4px;gap:10px}
-  body.dv2.qx .qx-search-btn{min-height:40px;padding:8px 14px}
-}
-body.dv2.qx .qx-verdict-top .dx-dhero-story{margin-bottom:10px}
-body.dv2.qx .qx-verdict-top[data-tone=good] .dx-story-dot{background:var(--discover-up)}
-body.dv2.qx .qx-verdict-top[data-tone=bad] .dx-story-dot{background:var(--discover-down)}
-body.dv2.qx .qx-verdict-top[data-tone=neutral] .dx-story-dot{background:var(--discover-warm)}
-body.dv2.qx .qx-waage-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:-.035em;line-height:1.15;margin:34px 0 16px}
-body.dv2.qx .qx-stock-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
-body.dv2.qx .qx-stock-top .dx-back{margin:0}
-body.dv2.qx .qx-stock .qx-stock-top .v2-watch-button{margin:0}
-/* Kontrast (axe): Kicker ausserhalb der Aktienseite in Discovers gedaempftem
-   Grau statt Gold; Kleintext im dunklen Band in den Farben des Bands. */
-body.dv2.qx .v2-main>.dx-chapter>.dx-kicker,body.dv2.qx .v2-main>div>.dx-chapter>.dx-kicker{color:var(--v2-muted)}
-body.dv2.qx .dx-chapter--journey .qx-small,body.dv2.qx .dx-chapter--journey .qx-more summary{color:var(--discover-muted)}
-body.dv2.qx .dx-chapter--journey .qx-small b{color:var(--discover-text)}
-
-/* Desktop: Chart und Einordnung nebeneinander - die Antwort steht in der
-   ersten Bildschirmhoehe (M40), der Chart bleibt die grosse Flaeche. */
-@media (min-width:1100px){
-  body.dv2.qx .qx-stock-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:0 48px;align-items:start}
-  body.dv2.qx .qx-stock-layout>*{min-width:0}
-  body.dv2.qx .qx-stock-layout .dv2-stock-context{display:block;padding-top:44px;border-top:0}
-  body.dv2.qx .qx-stock-layout .dv2-stock-context .dx-dhero-story{font-size:clamp(24px,2.2vw,32px)}
-  body.dv2.qx .qx-stock-layout .dx-waage{grid-template-columns:1fr}
-}
+/* Aktienseite: Ergaenzungen zum Konzept */
+.qd .q-stock-name{min-width:0}
+.qd .q-stock-meta .qx-tag{padding:2px 8px;font-size:11px}
+.qd .q-setup-head h2{margin:0;font-size:inherit}
+.qd .q-rr{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;margin:12px 0 0;padding:12px 14px;border-radius:14px;background:var(--q-panel2)}
+.qd .q-rr span{font-size:12px;color:var(--q-muted);font-weight:800}
+.qd .q-rr b{font-size:14px;font-weight:850}
+.qd .q-setup-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin:12px 0 0;font-size:13px;font-weight:800}
+.qd .q-setup-links a{color:var(--q-lime)}
+.qd .q-news .q-tile{max-width:none}
+.qd .q-overview .q-sec-intro{margin-top:8px}
+.qd .dx-dhero-story,.qd .dx-dhero-hook{display:block}
+.qd .qx-stock-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-top:8px}
+.qd .qx-stock-layout>*{min-width:0}
+@media (min-width:1100px){.qd .qx-stock-layout{grid-template-columns:minmax(0,1fr) 400px;align-items:start}
+ .qd .qx-stock-layout .qx-verdict-card,.qd .qx-stock-layout .qx-glance{margin-top:0;padding:18px;border-radius:var(--q-radius);background:var(--q-panel);border:1px solid var(--q-line)}
+ .qd .qx-stock-layout .dx-waage{grid-template-columns:1fr}
+ .qd .qx-stock-layout .qx-returns{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1100px){.qd .qx-stock-layout{grid-template-rows:auto auto 1fr}.qd .qx-stock-layout>.qx-glance{grid-column:2;grid-row:1/span 3}
+ .qd .qx-stock-layout>.q-setup-wrap,.qd .qx-stock-layout>.q-duo{grid-column:1;margin:0}}
+.qd .qx-stock-layout>.q-setup-wrap{margin:0}
+.qd .q-hero--method h1{margin-bottom:8px}
+.qd .q-principle-list{list-style:none;margin:12px 0 0}
+.qd .q-rowlink.is-static::after{content:none}
+.qd .q-num{display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;border-radius:12px;background:#111;color:var(--q-lime);font-weight:900;font-size:13px}
+.qd .q-hist{margin-top:10px}
+.qd .qx-factor>summary .qx-tag{align-self:flex-start;padding:3px 10px;font-size:10.5px}
+.qd .qx-factor>summary .qx-factor-name{font-size:16px;font-weight:850}
+.qd .q-hero--page h1{margin-bottom:10px}
+.qd .q-hero--page .q-searchbar{margin-top:14px}
+@media (max-width:979px){.qd .q-hero-tag{display:none}}
+@media (max-width:600px){.qd .q-tiles .q-tile{grid-template-columns:minmax(0,1fr);align-content:start;gap:10px}
+ .qd .q-tiles .q-tile::after{position:absolute;right:14px;top:14px}}
+@media (max-width:640px){.qd .qx-rule{grid-template-columns:minmax(0,1fr) !important}}
+/* Discovers gedimmte Schrift (#6d6d78) ist fuer helle Flaechen gedacht; auf
+   Quants dunklen Flaechen reicht sie nicht fuer 4,5:1. */
+body.qd{--discover-dim:#9aa0a8}
+.qd .qx-quote small{color:var(--q-muted)}

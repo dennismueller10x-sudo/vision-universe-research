@@ -128,7 +128,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
      Zweimal gefunden (Screener "Chancen finden.", Strategien "Strategien
      verstehen."): dieselben Woerter zweimal, rund 90 px auseinander. Der
      Anspruch steht in der Kopfzeile (Discovers .v2-bar-caption). */
-  const anspruch=(await page.locator('.qx-bar .v2-bar-caption').first().textContent().catch(()=>'')||'').trim();
+  /* Konzept-Design: die Kopfzeile traegt keinen Anspruch mehr. Ohne
+     Element nicht 30 s auf textContent warten - gezaehlt wird zuerst. */
+  const anspruchNode=page.locator('.qx-bar .v2-bar-caption').first();
+  const anspruch=(await anspruchNode.count()?(await anspruchNode.textContent().catch(()=>''))||'':'').trim();
   const ueberschrift=(await page.locator('main h1').first().innerText().catch(()=>'')).trim();
   const norm=t=>t.toLowerCase().replace(/[.!?–-]+/g,' ').replace(/\s+/g,' ').trim();
   if(anspruch&&ueberschrift&&norm(anspruch)===norm(ueberschrift))befund(view,width,'"'+ueberschrift+'" steht zweimal: als Anspruch in der Kopfzeile und als Ueberschrift');
@@ -156,7 +159,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!(await page.locator('.qx-hero .qx-lead').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
    await page.locator('button.qx-searchbox').waitFor();
    const einstiege=await page.locator('a.qx-door').evaluateAll(ns=>ns.map(n=>({titel:(n.querySelector('h2,strong')||{}).textContent||'',ziel:n.getAttribute('href')||''})));
-   for(const [name,ziel] of [['Aktie analysieren','#/aktien'],['Aktien finden','#/screener'],['Strategien entdecken','#/strategien'],['Aktuelle Setups','#/screener?frage=setups']]){
+   for(const [name,ziel] of [['Aktie analysieren','#/aktien'],['Quant Screener','#/screener'],['Strategien','#/strategien'],['Aktuelle Setups','#/screener?frage=setups']]){
     const treffer=einstiege.find(e=>e.titel.trim()===name);
     if(!treffer)befund(view,width,'Weg "'+name+'" fehlt auf Home');
     else if(treffer.ziel!==ziel)befund(view,width,'Weg "'+name+'" zeigt nicht auf '+ziel+': '+treffer.ziel);
@@ -192,13 +195,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ohneWert=(await page.locator('#qx-main a.qx-row .qx-row-why').allInnerTexts()).filter(t=>!/\d/.test(t));
    if(!await page.locator('#qx-main a.qx-row').count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
    if(ohneWert.length)befund(view,width,'Trefferzeile ohne gemessenen Wert: '+ohneWert[0]);
-   /* Die rechte Spalte traegt ein URTEIL, keine zweite Zahl. */
-   /* Die Marke darf ein "Gesamt:" voranstellen - geprueft wird das Urteil. */
-   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-side .qx-pill').allTextContents()).map(t=>t.trim().replace(/^Gesamt:\s*/,'').toLowerCase());
+   /* Jede Trefferzeile traegt ein URTEIL in Worten, keine zweite Zahl.
+      Konzept-Design: es steht unter dem Namen (.qx-row-verdict), die rechte
+      Spalte zeigt den Wert der gefilterten Eigenschaft - mit ihrem Namen.
+      Die Marke stellt "Eigenschaften:" voran - geprueft wird das Urteil. */
+   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-verdict .qx-pill').allTextContents()).map(t=>t.trim().replace(/^(Gesamt|Eigenschaften):\s*/,'').toLowerCase());
    const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild','Mehr Schwächen als Stärken','Überwiegend schwach'].map(t=>t.toLowerCase());
    const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
-   if(fremdesUrteil.length)befund(view,width,'rechte Spalte traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
+   if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
    /* Die Methodik der Frage steht dabei: was "stark" heisst. */
    await page.getByText(/„Stark“ heißt hier: Wert 70 oder mehr/).waitFor();
    /* Und der Weg in den Profi-Modus traegt die Regel mit. */
@@ -404,7 +409,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
-  await page.locator('#qx-main h1').filter({hasText:'Aktien verstehen'}).waitFor();
+  /* Konzept-Design: die Startseite fragt "Was möchtest du heute analysieren?". */
+  await page.locator('#qx-main h1').filter({hasText:'Was möchtest du heute analysieren'}).waitFor();
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 

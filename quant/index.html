@@ -1,30 +1,27 @@
 <!doctype html>
-<!-- Hell wie Discovers Voreinstellung. Quant liest keine Speicherschluessel anderer Produkte. -->
-<html lang="de" data-theme="light" data-theme-mode="light">
+<!-- Dunkel wie die Konzepttafeln. Quant liest keine Speicherschluessel anderer Produkte. -->
+<html lang="de" data-theme="dark" data-theme-mode="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#050607">
 <title>Quant – Aktien verstehen · Vision Universe®</title>
 <meta name="description" content="Vision Universe® Quant: Aktien nach festen Daten und Regeln verstehen – was dafür spricht, was dagegen, was sich verändert und was früher in ähnlichen Situationen geschah. Nachvollziehbar bis zu den Rohdaten.">
 <link rel="canonical" href="/quant/">
 <link rel="icon" href="data:,">
-<!-- Dieselben Stylesheets wie Discover (discover/index.html), in derselben
-     Reihenfolge - Quant sieht aus wie Discover, weil es Discovers Gestaltung
-     benutzt. /quant/app/app.css ergaenzt nur Quants eigene Bausteine. -->
+<!-- Gestaltung nach den Konzepttafeln (quant/app/app.css). discover.css
+     bleibt fuer Chart, Logos und Suchtreffer geladen; technical-chart.css
+     fuer die Kursstruktur. -->
 <link rel="stylesheet" href="/quant/ui/quant.css">
 <link rel="stylesheet" href="/discover/discover.css">
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<link rel="stylesheet" href="/discover/app.css">
-<link rel="stylesheet" href="/discover/home.css">
-<link rel="stylesheet" href="/discover/detail.css">
 <link rel="stylesheet" href="/quant/ui/technical-chart.css">
 <link rel="stylesheet" href="/quant/app/app.css">
 </head>
-<body class="dx dv2 qx">
-<a class="v2-skip qx-skip" href="#qx-main">Zum Inhalt</a>
-<vu-navigation theme="light" no-preview></vu-navigation>
-<div id="qx-app"><main class="v2-main qx-main"><p class="qx-loading">Quant wird geladen …</p></main></div>
+<body class="dx qd qx">
+<a class="qx-skip" href="#qx-main">Zum Inhalt</a>
+<vu-navigation theme="dark" no-preview></vu-navigation>
+<div id="qx-app"><main class="qx-main"><p class="qx-loading">Quant wird geladen …</p></main></div>
 <noscript><p style="padding:24px">Quant benötigt JavaScript.</p></noscript>
 <script src="/assets/site-navigation.js"></script>
 <script src="/quant/ui/shell.js"></script>

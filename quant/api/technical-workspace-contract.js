@@ -36,7 +36,13 @@ function build(file,{ticker,now=new Date().toISOString().slice(0,10)}){
  return {state:'AVAILABLE',version:'1.0.0',ticker,asOf:b.dataCutoff,analysisTime:b.analysisTime,snapshotId:file.snapshotId,methodology:b.methodologyVersion,
   priceBasis:b.priceSeriesType,chart:{bars,annotations:b.annotations.annotations,series:b.chartSeries},
   scenarios:b.scenarios.scenarios.map(s=>({id:s.scenarioId,kind:s.type,label:{PRIMARY:'Basisszenario',ALTERNATIVE:'Alternatives Szenario',BEAR:'Abwärtsszenario'}[s.type]||'Weiteres Szenario',status:states[s.status]||'Status prüfen',direction:s.direction,
-   invalidation:s.invalidation,targets:s.targetZones||[],confirmation:s.whatMustHappen,expiration:s.expiryRule,support:s.supportingEvidence||[],conflicts:s.conflictingEvidence||[]})),
+   invalidation:s.invalidation,targets:s.targetZones||[],confirmation:s.whatMustHappen,expiration:s.expiryRule,support:s.supportingEvidence||[],conflicts:s.conflictingEvidence||[],
+   /* Owner-Entscheid 30.09.2026: Einstieg, Stop und Ziele werden als
+      gekennzeichnetes Szenario gezeigt. Durchgereicht wird, was die
+      Engine (trade-setup.js) bereits rechnet - nichts wird hier ergaenzt. */
+   entry:s.entryZone&&Number.isFinite(s.entryZone.zoneLow)&&Number.isFinite(s.entryZone.zoneHigh)?{zoneLow:s.entryZone.zoneLow,zoneHigh:s.entryZone.zoneHigh}:null,entryStatus:s.entryStatus||null,
+   stop:s.tradeStop&&Number.isFinite(s.tradeStop.price)?{price:s.tradeStop.price,note:s.tradeStop.note||null}:null})),
+  tradeSetup:b.tradeSetup&&typeof b.tradeSetup.status==='string'?{status:b.tradeSetup.status,scenarioId:b.tradeSetup.scenarioId||null,riskReward:b.tradeSetup.riskReward||null,setupQuality:Number.isFinite(b.tradeSetup.setupQuality)?b.tradeSetup.setupQuality:null,missing:b.tradeSetup.missing||[]}:null,
   elliott:{status:elliott.status,label:elliottUnavailable?'Keine validierte Zählung verfügbar':elliott.status==='AMBIGUOUS'?'Mehrere Zählungen sind möglich':'Zählung im Detail prüfen',primary:elliott.primaryCount,alternative:elliott.alternativeCount,methodology:elliott.methodologyVersion,methodFit:elliott.confidence,isProbability:false,disclaimer:elliott.disclaimer||'Keine Wahrscheinlichkeit.'},
   legacyHref:'/quant/technical/?symbol='+encodeURIComponent(ticker),priceHistoryHref:'/quant/#/aktie/'+encodeURIComponent(ticker)};
 }

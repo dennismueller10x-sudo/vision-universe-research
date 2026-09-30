@@ -214,11 +214,15 @@ test("die Startseite fuehrt mit einer Antwort, nicht mit einer Erklaerung", () =
   /* Discover-Angleichung (30.09.2026): der erste Bildschirm ist Discovers
      Intro (header.v2-intro, zusaetzlich .qx-hero), die Tueren sind
      Discovers v2-world-door. */
-  const heroAt = kopf.indexOf('el("header", { class: "v2-intro qx-intro qx-hero" }');
+  /* Konzept-Design (Owner, 30.09.2026, Tafel "Quant Home & Einstieg"):
+     der erste Bildschirm ist der Globus-Hero (q-hero) mit der Frage "Was
+     möchtest du heute analysieren?" und der Suche direkt darunter. Die
+     Absicht bleibt: zuerst die Antwort (Suche), keine Erklaerung. */
+  const heroAt = kopf.indexOf('el("header", { class: "q-hero v2-intro qx-intro qx-hero" }');
   assert.ok(heroAt > 0, "die Startseite hat keinen ersten Bildschirm mehr");
   const hero = kopf.slice(heroAt, kopf.indexOf("]));", heroAt));
   assert.ok(hero.length > 50, "die Startseite hat keinen ersten Bildschirm mehr");
-  assert.match(hero, /el\("h1", \{ text: "Aktien verstehen/,
+  assert.match(hero, /el\("h1", \{ text: "Was möchtest du heute analysieren\?"/,
     "das Versprechen der Startseite ist verschwunden");
   assert.match(hero, /onclick: ctx\.openSearch/, "der erste Bildschirm bietet keine Antwort an (Suche)");
   assert.ok(heroAt < kopf.indexOf("doors(["), "die Startseite fuehrt mit den Wegen statt mit dem Versprechen");
