@@ -85,6 +85,7 @@ jobs:
           VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
           TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
           VU_ASK_ACCESS_PASSWORD: ${{ secrets.VU_ASK_ACCESS_PASSWORD }}
+          ANTHROPIC_WORKSPACE_ID: ${{ secrets.ANTHROPIC_WORKSPACE_ID }}
         run: |
           if [ -z "$VU_ASK_ADMIN_KEY" ]; then
             VU_ASK_ADMIN_KEY=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
@@ -94,6 +95,17 @@ jobs:
           put VU_ASK_ADMIN_KEY "$VU_ASK_ADMIN_KEY"
           if [ -n "$TURNSTILE_SECRET" ]; then put TURNSTILE_SECRET "$TURNSTILE_SECRET"; fi
           if [ -n "$VU_ASK_ACCESS_PASSWORD" ]; then put VU_ASK_ACCESS_PASSWORD "$VU_ASK_ACCESS_PASSWORD"; fi
+          # Nur noetig, wenn der API-Schluessel keinem Workspace zugeordnet ist.
+          if [ -n "$ANTHROPIC_WORKSPACE_ID" ]; then
+            ws=$(printf '%s' "$ANTHROPIC_WORKSPACE_ID" | tr -d '[:space:]')
+            # Die Form wird geprueft, der Wert nie ausgegeben.
+            if [[ "$ws" =~ ^wrkspc_[A-Za-z0-9]+$ ]]; then
+              put ANTHROPIC_WORKSPACE_ID "$ws"
+            else
+              echo "::warning::ANTHROPIC_WORKSPACE_ID hat nicht die Form wrkspc_… (Laenge ${#ws}, beginnt mit '${ws:0:3}…') - wird nicht verwendet."
+              printf '%s' "" | npx --yes wrangler@4 secret delete ANTHROPIC_WORKSPACE_ID --force > /dev/null 2>&1 || true
+            fi
+          fi
           if [ -n "$ANTHROPIC_API_KEY" ]; then
             put ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
             echo "claude=true" >> "$GITHUB_OUTPUT"
@@ -133,7 +145,7 @@ jobs:
                -H "x-vu-access: $ADMIN" --data "$body" > /tmp/answer.json
           node -e '
             const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
-            if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.message || ""); process.exit(1); }
+            if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
             const r = a.result;
             console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
             console.log("Verstanden:", r.understood);

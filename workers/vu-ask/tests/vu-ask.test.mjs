@@ -11,7 +11,7 @@ import worker from "../src/index.mjs";
 import { admit, costOf, limitsFrom, worstCase } from "../src/budget.mjs";
 import { translate, statusOf } from "../src/translate.mjs";
 import { OUTPUT_SCHEMA, FIELD_IDS, SYSTEM_PROMPT } from "../src/catalog.mjs";
-import { buildRequest } from "../src/claude.mjs";
+import { buildRequest, cleanWorkspaceId } from "../src/claude.mjs";
 
 function memoryStorage() {
   const m = new Map();
@@ -201,6 +201,8 @@ test("Anthropic-Fehler: keine Kosten, Kontingent zurueck, Tagesgrenze bleibt bel
   const { gate, storage } = makeGate(ENV, anthropic(null, { status: 529 }));
   const r = await ask(gate, "Welche Aktien sind guenstig bewertet?");
   assert.equal(r.status, 502);
+  assert.equal(r.body.code, "UPSTREAM_overloaded_error");
+  assert.match(r.body.detail, /^529/);
   assert.equal(r.body.quota.remainingToday, 1);
   assert.equal(storage.map.get("m:2026-09").usd, 0);
   assert.equal(storage.map.get("d:2026-09-29").llm, 1);
@@ -366,4 +368,20 @@ test("Modell: nur Haiku hat einen Preis - jedes andere Modell wird nicht aufgeru
   const r = await ask(gate, "Welche Aktien stehen auf einem Jahreshoch?");
   assert.notEqual(r.status, 200);
   assert.equal(fetchImpl.calls.length, 0);
+});
+
+test("Workspace-ID wird mitgeschickt, wenn gesetzt - sonst nicht", async () => {
+  const withWs = makeGate({ ...ENV, ANTHROPIC_WORKSPACE_ID: "wrkspc_test" });
+  await ask(withWs.gate, "Welche Aktien stehen auf einem Jahreshoch?");
+  assert.equal(withWs.fetchImpl.calls[0].headers["anthropic-workspace-id"], "wrkspc_test");
+  const without = makeGate();
+  await ask(without.gate, "Welche Aktien stehen auf einem Jahreshoch?");
+  assert.ok(!("anthropic-workspace-id" in without.fetchImpl.calls[0].headers));
+});
+
+test("Workspace-ID: nur die Form wrkspc_… wird verwendet, Leerzeichen entfernt", () => {
+  assert.equal(cleanWorkspaceId(" wrkspc_01AbC \n"), "wrkspc_01AbC");
+  assert.equal(cleanWorkspaceId("Default"), null);
+  assert.equal(cleanWorkspaceId("sk-ant-api03-xyz"), null);
+  assert.equal(cleanWorkspaceId(""), null);
 });

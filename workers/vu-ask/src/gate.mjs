@@ -165,7 +165,7 @@ export class AskGate {
 
     /* 5 — Reservieren, dann erst fragen. */
     await this.book({ month, day, ids, usd: reserve, userLlm: 1, dayLlm: 1 });
-    const answer = await interpret({ apiKey: this.env.ANTHROPIC_API_KEY, model: limits.model, question,
+    const answer = await interpret({ apiKey: this.env.ANTHROPIC_API_KEY, workspaceId: this.env.ANTHROPIC_WORKSPACE_ID, model: limits.model, question,
       maxOutputTokens: limits.maxOutputTokens, fetchImpl: this.fetchImpl });
 
     /* 6 — Abrechnen: Reservierung durch die echten Kosten ersetzen. */
@@ -185,8 +185,9 @@ export class AskGate {
       return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId);
     }
     if (!answer.ok) {
-      await this.log({ question, source: "claude", status: "error", error: answer.error, usd: actual });
-      return json(502, { ok: false, reason: "UPSTREAM", message: "Die Frage konnte gerade nicht ausgewertet werden. Ihr Kontingent wurde nicht belastet.",
+      await this.log({ question, source: "claude", status: "error", error: answer.error + (answer.detail ? " | " + answer.detail : ""), usd: actual });
+      return json(502, { ok: false, reason: "UPSTREAM", code: answer.error, detail: answer.detail || null,
+        message: "Die Frage konnte gerade nicht ausgewertet werden. Ihr Kontingent wurde nicht belastet.",
         quota: await this.quota(ip, body.clientId) });
     }
 

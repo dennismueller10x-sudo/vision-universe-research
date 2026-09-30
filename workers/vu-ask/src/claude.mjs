@@ -36,14 +36,28 @@ export function promptChars(question) { return SYSTEM_PROMPT.length + JSON.strin
  *   billed: true = berechnet, false = sicher nicht berechnet,
  *           null = unbekannt (Zeitueberschreitung, Verbindungsabbruch)
  */
-export async function interpret({ apiKey, model, question, maxOutputTokens, fetchImpl = fetch }) {
+/* Eine Workspace-ID sieht aus wie "wrkspc_…". Alles andere (Name,
+   Leerzeichen, versehentlich ein Schluessel) wird nicht mitgeschickt -
+   Anthropic lehnte die Anfrage sonst ab. */
+export function cleanWorkspaceId(v) {
+  const s = String(v || "").trim();
+  return /^wrkspc_[A-Za-z0-9]+$/.test(s) ? s : null;
+}
+
+export async function interpret({ apiKey, workspaceId, model, question, maxOutputTokens, fetchImpl = fetch }) {
+  workspaceId = cleanWorkspaceId(workspaceId);
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   let res;
   try {
     res = await fetchImpl(API_URL, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+      headers: {
+        "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01",
+        /* Nur fuer Schluessel ohne festen Workspace: Anthropic verlangt dann
+           die Workspace-ID ausdruecklich (Secret ANTHROPIC_WORKSPACE_ID). */
+        ...(workspaceId ? { "anthropic-workspace-id": workspaceId } : {}),
+      },
       body: JSON.stringify(buildRequest({ model, question, maxOutputTokens })),
       signal: ctrl.signal,
     });
@@ -62,7 +76,11 @@ export async function interpret({ apiKey, model, question, maxOutputTokens, fetc
     const type = body && body.error && body.error.type;
     const msg = String(body && body.error && body.error.message || "");
     if (/credit balance|billing|purchase credits/i.test(msg)) return { ok: false, error: "CREDIT_EXHAUSTED", billed: false };
-    return { ok: false, error: res.status === 429 ? "UPSTREAM_RATE_LIMIT" : "UPSTREAM_" + (type || res.status), billed: false };
+    /* Die Meldung von Anthropic wird mitgegeben (gekuerzt): Sie enthaelt
+       keine Geheimnisse, macht aber einen Fehler in Anfrage oder Schema
+       ohne Rateraten sichtbar. */
+    return { ok: false, error: res.status === 429 ? "UPSTREAM_RATE_LIMIT" : "UPSTREAM_" + (type || res.status), billed: false,
+      detail: (res.status + " " + msg).replace(/sk-ant-[A-Za-z0-9_-]+/g, "<key>").slice(0, 300) };
   }
   const usage = body && body.usage;
   if (!body || body.stop_reason === "refusal") return { ok: false, error: "REFUSED", billed: true, usage };
