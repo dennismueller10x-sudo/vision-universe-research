@@ -51,19 +51,17 @@ function slide(i, extra) {
     brand_elements: { includes_logo: true, includes_atlas: i === 1, includes_hook_text_de: i === 1 } }, extra || {});
 }
 
-/* Die Lieferform des aktiven Agentenvertrags (PR #300): EIN Bogen. */
-function panel(i, be) {
-  return { slide_index: i, role: i === 1 ? "cover" : "story",
-    brand_elements: be || { includes_logo: true, includes_atlas: i === 1, includes_hook_text_de: i === 1 } };
+/* Die Lieferform des aktiven Agentenvertrags: EIN Bild, das Cover,
+   dazu der vollstaendige Plan aller Slides (COVER_FIRST). */
+function plan(i, extra) {
+  return Object.assign({ slide_index: i, role: ["HOOK / COVER", "KEY INSIGHT", "EINORDNUNG"][i - 1],
+    headline_de: "Aussage " + i, key_content: "Inhalt " + i, visual_concept: "Motiv " + i,
+    atlas: i === 1 }, extra || {});
 }
 
-function bogen(panels, extra) {
-  return Object.assign({ visual_variant_id: "sheet", visual_strategy: "CAROUSEL_SHEET",
-    asset_path: "authoring/requests/x/assets/visual-01.png", mime_type: "image/png",
-    width: panels.length * 1080, height: 1350, asset_byte_size: 10, asset_sha256: "a".repeat(64),
-    brand_elements: { includes_logo: true, includes_atlas: true, includes_hook_text_de: true },
-    carousel_sheet: { slide_count: panels.length, panel_width: 1080, panel_height: 1350, panels } },
-  extra || {});
+function cover(extra) {
+  return Object.assign(slide(1, { asset_path: "authoring/requests/x/assets/visual-01.png",
+    width: 1092, height: 1440 }), extra || {});
 }
 
 function ergebnis(extra) {
@@ -74,10 +72,11 @@ function ergebnis(extra) {
       opened_by_agent: true }],
     hook_variants: [{ hook_variant_id: "h", hook_type: Work.CAROUSEL_HOOK_TYPE, text: "Doppelter Gewinn, halber Jubel" }],
     caption: "Der Konzern verdoppelt seinen Gewinn. Keine Anlageberatung.",
-    hashtags: ["#Halbleiter", "Boerse"], carousel_plan: [], slide_count: 3,
+    hashtags: ["#Halbleiter", "Boerse"], carousel_plan: [plan(1), plan(2), plan(3)], slide_count: 3,
     editorial_gate: { story_quality: "PASS", hook_standalone_quality: "PASS",
       caption_standalone_quality: "PASS", fact_grounding: "PASS" },
-    visual_variants: [bogen([panel(1), panel(2), panel(3)])],
+    visual_variants: [cover()],
+    style_references_check: [],
     carousel_checks: { atlas_only_on_slide_1: true, logo_on_all_slides: true, logo_position_consistent: true },
     research: { web_access: true, mode_used: "WORK_WEB_RESEARCH" }
   }, extra || {});
@@ -131,38 +130,51 @@ test("WOP3 · Der Carousel-Brief reist als FULL_CREATIVE/CAROUSEL (einzig vom Ag
   assert.equal(Contract.validateRequest({ request_type: "FULL_CAROUSEL" }).reason, "unknownRequestType");
 });
 
-test("WOP4 · Kein Stil-Mikromanagement: keine Palette, kein Stil, kein Motiv, keine Layout-Zonen", () => {
+test("WOP4 · Rahmen statt Schablone: Designsprache ja, Layout-Zonen und Pixelvorgaben nein", () => {
   const b = brief();
   const text = JSON.stringify(b);
-  /* Pflichtfeld des Agentenvertrags - aber nur die Lieferform, kein Stil. */
-  assert.equal(b.visual_strategy.strategy_id, "CAROUSEL_SHEET");
+  /* Pflichtfeld des Agentenvertrags (PR #300): die Designsprache, kein Stilrezept. */
+  assert.equal(b.visual_strategy.strategy_id, "VU_EDITORIAL_PREMIUM");
   for (const k of ["palette", "style", "composition"]) {
-    assert.equal(b.visual_strategy[k], undefined, "visual_strategy." + k + " ist Stil-Mikromanagement");
+    assert.equal(b.visual_strategy[k], undefined, "visual_strategy." + k + " waere ein Stilrezept");
   }
   assert.equal(b.grounding_hook_en, undefined, "keine vorgewaehlte Hook");
   for (const verboten of ["#5FE0C0", "20%", "one-fifth", "bold flat", "comic-panel", "Serverreihen",
-    "premium cinematic 3D"]) {
+    "premium cinematic 3D", "carousel_sheet", "Bogen ist", "panel_width"]) {
     assert.ok(!text.includes(verboten), "Brief enthaelt " + verboten);
   }
+  assert.match(b.art_direction.principle, /Kein starres Template/);
   assert.equal(b.authoring_requirements.hook_variant_count, 1);
   assert.equal(b.authoring_requirements.internal_hook_exploration, true);
   assert.deepEqual(b.hook_strategy.negative_fixtures.slice(0, 2),
     ["BÖRSENGANG MIT EXISTENZWARNUNG", "50.000 DOLLAR FÜR EIN AUTO?"]);
 });
 
-test("WOP5 · Atlas nur auf Slide 1, Logo auf allen, 3-4 Slides, Editorial Gate, Quellen", () => {
-  const c = brief().carousel;
+test("WOP5 · 3 Slides Standard, Atlas nur Slide 1, Logo oben links auf allen, Cover zuerst", () => {
+  const b = brief();
+  const c = b.carousel;
+  assert.match(c.slide_count, /Standard: 3 Slides/);
+  assert.deepEqual(c.slides.map((s) => s.role), ["HOOK / COVER", "KEY INSIGHT", "EINORDNUNG"]);
+  assert.match(c.slides[1].contains, /KEIN Atlas/);
+  assert.match(c.slides[2].contains, /KEIN Atlas/);
   assert.match(c.atlas_contract, /AUSSCHLIESSLICH auf Slide 1/);
-  assert.match(c.logo_contract, /auf ALLEN Slides/);
+  assert.match(c.logo_contract, /auf ALLEN Slides, bevorzugt oben links/);
   assert.match(c.text_on_image, /BÖRSE\|NGANG/);
-  assert.match(brief().editorial_gate.rule, /OHNE Bild/);
-  const a = brief().asset_requirements;
-  assert.equal(a.count, 1, "der aktive Agentenvertrag erlaubt EIN Asset (PR #300)");
+  assert.match(b.editorial_gate.rule, /OHNE Bild/);
+  /* COVER_FIRST: der aktive Vertrag erlaubt EIN Asset (PR #300), ein Bogen scheitert (PR #303). */
+  assert.equal(b.delivery.mode, "COVER_FIRST");
+  assert.match(b.delivery.deliver_now, /kein Bogen/);
+  const a = b.asset_requirements;
+  assert.equal(a.count, 1);
   assert.match(a.deterministic_path, /\/assets\/visual-01\.png$/);
-  assert.equal(a.carousel_sheet.panel_width, 1080);
-  assert.equal(a.carousel_sheet.panel_height, 1350);
-  assert.equal(a.carousel_sheet.gutter, 0);
-  assert.equal(brief().authoring_requirements.sources_required, true);
+  assert.match(a.format_note, /skaliere oder beschneide nicht/);
+  assert.match(b.caption_guidance, /allein zum Cover/);
+  assert.equal(b.authoring_requirements.sources_required, true);
+  /* MULTI_ASSET ist vorbereitet: eine Datei je Slide, sobald der Vertrag es erlaubt. */
+  const m = brief({ delivery: "MULTI_ASSET" });
+  assert.equal(m.delivery.mode, "MULTI_ASSET");
+  assert.equal(m.asset_requirements.deterministic_paths.length, 4);
+  assert.match(m.asset_requirements.deterministic_paths[0], /slide-01\.png$/);
 });
 
 test("WOP6 · Recherchemodus, Owner-Thema, leeres Paket", () => {
@@ -185,46 +197,52 @@ test("WOP7 · Eine neue content_id je Auftrag, im vu-post-Namensraum", () => {
 
 /* ----------------------------------------------------- Ergebnisvertrag */
 
-test("WOP8 · Ein vollstaendiges Carousel-Ergebnis besteht die Carousel-Pruefung", () => {
+test("WOP8 · Ein vollstaendiges Cover-First-Ergebnis besteht die Carousel-Pruefung", () => {
   assert.deepEqual(Work.verifyCarousel(ergebnis()), []);
   const vertrag = Contract.validateResult(ergebnis(), brief());
   assert.equal(vertrag.ok, true, vertrag.explanation);
+  assert.equal(Work.carouselLieferung(ergebnis()).modus, "COVER_FIRST");
+  assert.equal(Work.carouselLieferung(ergebnis()).geplant, 3);
 });
 
 test("WOP9 · Atlas ausserhalb von Slide 1, fehlendes Logo, zu viele Tags, keine Quelle, Gate nicht PASS", () => {
   const ids = (r) => Work.verifyCarousel(r).map((b) => b.id);
-  const mit = (panels) => ergebnis({ visual_variants: [bogen(panels)], slide_count: panels.length });
-  assert.ok(ids(mit([panel(1), panel(2, { includes_logo: true, includes_atlas: true }), panel(3)]))
+  assert.ok(ids(ergebnis({ carousel_plan: [plan(1), plan(2, { atlas: true }), plan(3)] }))
     .includes("atlasOutsideCover"));
-  assert.ok(ids(mit([panel(1), panel(2), panel(3, { includes_logo: false, includes_atlas: false })]))
-    .includes("logoMissing"));
+  assert.ok(ids(ergebnis({ visual_variants: [cover({ brand_elements: { includes_logo: false,
+    includes_atlas: true, includes_hook_text_de: true } })] })).includes("logoMissing"));
+  assert.ok(ids(ergebnis({ visual_variants: [cover({ brand_elements: { includes_logo: true,
+    includes_atlas: false, includes_hook_text_de: true } })] })).includes("atlasMissingOnCover"));
+  assert.ok(ids(ergebnis({ carousel_plan: [plan(1), plan(2, { visual_concept: "" }), plan(3)] }))
+    .includes("planIncomplete"));
   assert.ok(ids(ergebnis({ hashtags: ["a", "b", "c", "d", "e", "f"] })).includes("hashtags"));
   assert.ok(ids(ergebnis({ sources: [] })).includes("sources"));
   assert.ok(ids(ergebnis({ editorial_gate: { story_quality: "PASS", hook_standalone_quality: "FAIL",
     caption_standalone_quality: "PASS", fact_grounding: "PASS" } })).includes("editorialGate:hook_standalone_quality"));
-  assert.ok(ids(mit([panel(1), panel(2)])).includes("slideCount"));
-  const zuWenig = Contract.validateResult(ergebnis({ visual_variants: [bogen([panel(1), panel(2)])] }), brief());
+  assert.ok(ids(ergebnis({ carousel_plan: [plan(1), plan(2)], slide_count: 2 })).includes("slideCount"));
+  const zuWenig = Contract.validateResult(ergebnis({ carousel_plan: [plan(1), plan(2)] }), brief());
   assert.equal(zuWenig.ok, false);
-  /* Bogenmasse muessen zu den Paneelen passen - sonst liegt die Naht falsch. */
-  assert.ok(ids(ergebnis({ visual_variants: [bogen([panel(1), panel(2), panel(3)], { width: 3000 })] }))
-    .includes("sheetSize"));
-  assert.ok(ids(ergebnis({ visual_variants: [slide(1)] })).includes("sheetMissing"));
-  /* Ein spaeter erweiterter Vertrag mit einer Datei je Slide bleibt gueltig. */
+  /* MULTI_ASSET: eine Datei je Slide bleibt gueltig; Atlas auf Slide 2 nicht. */
   assert.deepEqual(Work.verifyCarousel(ergebnis({ visual_variants: [slide(1), slide(2), slide(3)] })), []);
+  assert.ok(ids(ergebnis({ visual_variants: [slide(1), slide(2, { brand_elements: { includes_logo: true,
+    includes_atlas: true } }), slide(3)] })).includes("atlasOutsideCover"));
 });
 
 /* ------------------------------------------------------------ Kandidat */
 
-test("WOP10 · EIN Carousel = EIN Kandidat, der nichts abloest", () => {
-  const urls = [1, 2, 3].map((n) => "https://research.visionuniverse.de/assets/social/c-s" + n + ".png");
-  const k = baueKandidat(brief(), ergebnis(), urls, { now: NOW });
+test("WOP10 · Cover-First = EIN Kandidat als Einzelbild, Plan reist mit, nichts wird abgeloest", () => {
+  const url = "https://research.visionuniverse.de/assets/social/c-cover.png";
+  const k = baueKandidat(brief(), ergebnis(), [url], { now: NOW });
   assert.equal(k.state, "AWAITING_APPROVAL");
   assert.equal(k.supersedes, null);
   assert.deepEqual(k.supersedesAll, []);
-  assert.deepEqual(k.content.imageUrls, urls);
-  assert.equal(k.content.imageUrl, urls[0]);
-  assert.equal(k.presentation.mediaFormat, "CAROUSEL");
-  assert.equal(k.presentation.slideCount, 3);
+  assert.equal(k.content.imageUrl, url);
+  assert.equal(k.content.imageUrls, undefined, "ein Bild bleibt ein Einzelbild");
+  assert.equal(k.presentation.mediaFormat, "IMAGE");
+  assert.equal(k.presentation.deliveryMode, "COVER_FIRST");
+  assert.equal(k.presentation.slideCount, 1);
+  assert.equal(k.presentation.plannedSlideCount, 3);
+  assert.equal(k.presentation.carouselPlan.length, 3);
   assert.deepEqual(k.presentation.hashtags, ["Halbleiter", "Boerse"]);
   assert.equal(k.content.caption, Hashtags.finalerText(k.presentation.captionBase, k.presentation.hashtags),
     "Vorschau = Sendung: Caption + Tags lassen sich zurueckrechnen");
@@ -233,6 +251,13 @@ test("WOP10 · EIN Carousel = EIN Kandidat, der nichts abloest", () => {
   const gate = Gate.pruefe(k, { rendered: true, atlasBefund: { passed: true }, logoBefund: { passed: true },
     assetExists: true });
   assert.equal(gate.ok, true, gate.erklaerung);
+
+  /* MULTI_ASSET: drei Dateien = EIN Carousel-Kandidat. */
+  const urls = [1, 2, 3].map((n) => "https://research.visionuniverse.de/assets/social/c-s" + n + ".png");
+  const m = baueKandidat(brief(), ergebnis({ visual_variants: [slide(1), slide(2), slide(3)] }), urls, { now: NOW });
+  assert.deepEqual(m.content.imageUrls, urls);
+  assert.equal(m.presentation.mediaFormat, "CAROUSEL");
+  assert.equal(m.presentation.slideCount, 3);
 });
 
 test("WOP11 · Eine Entscheidung ist endgueltig: zu einer content_id entsteht nie ein zweiter Kandidat", () => {
@@ -357,32 +382,68 @@ test("WOP21 · Orchestrator: Owner-Sync und Knopfdruck vor den Tests, Festschrei
   assert.match(l, /modus=EINHOLEN/);
 });
 
-test("WOP22 · Der Bogen wird an den Paneelgrenzen verlustfrei getrennt - Pixel fuer Pixel", () => {
-  const Slice = require("../engines/png-slice.js");
-  const w = 3 * 8, h = 6, bpp = 4;
-  const pixel = Buffer.alloc(w * h * bpp);
-  for (let i = 0; i < pixel.length; i += 1) pixel[i] = (i * 31 + 7) & 255;
-  const png = Slice.schreibe({ width: w, height: h, colorType: 6, bpp, pixel });
-  const teile = Slice.schneide(png, 3);
-  assert.equal(teile.length, 3);
-  teile.forEach((t, n) => {
-    const r = Slice.lies(t.png);
-    assert.equal(r.width, 8);
-    assert.equal(r.height, h);
-    for (let y = 0; y < h; y += 1) {
-      assert.deepEqual(r.pixel.subarray(y * 8 * bpp, (y + 1) * 8 * bpp),
-        pixel.subarray(y * w * bpp + n * 8 * bpp, y * w * bpp + (n + 1) * 8 * bpp));
-    }
-  });
-  assert.throws(() => Slice.schneide(png, 5), /SLICE_WIDTH_NOT_DIVISIBLE/);
-  assert.throws(() => Slice.lies(Buffer.from("kein png")), /PNG_SIGNATURE/);
+test("WOP22 · Die Owner-Referenzbilder erreichen Work als Dateien - und sind keine Faktenquelle", () => {
+  const StyleRefs = require("../engines/style-references.js");
+  const manifest = JSON.parse(readFileSync(join(ROOT, StyleRefs.MANIFEST), "utf8"));
+  assert.equal(manifest.files.length, 4);
+  const befund = StyleRefs.lieferbefund(manifest, (p) => readFileSync(join(ROOT, p)));
+  assert.equal(befund.delivered, true, befund.satz);
+
+  const b = brief({ styleReferences: { manifest, befund } });
+  assert.equal(b.style_references.files.length, 4);
+  assert.equal(b.style_references.delivered_in_checkout, true);
+  assert.match(b.style_references.not_facts, /KEINE Faktenquelle und KEIN Themenvorschlag/);
+  assert.match(b.style_references.check_required, /dominant_text/);
+  assert.equal(b.authoring_requirements.style_references_check_required, true);
+  assert.ok(b.constraints.includes("Keine Fakten aus den Referenzbildern."));
+
+  /* Kein Markerwort steht im Klartext im Brief - Work kann es nur im Bild finden. */
+  const marker = new Set(manifest.files.flatMap((f) => f.marker_sha256));
+  const imBrief = StyleRefs.woerter(JSON.stringify(b)).map((w) => StyleRefs.sha256("vu-style-ref:" + w));
+  assert.ok(!imBrief.some((h) => marker.has(h)), "ein Markerwort steht im Brief");
 });
 
-test("WOP23 · Der Kandidat aus einem Bogen traegt 3 Slides zu je 1080x1350 und den Bogen als Herkunft", () => {
-  const urls = [1, 2, 3].map((n) => "https://research.visionuniverse.de/assets/social/c-s" + n + ".png");
-  const k = baueKandidat(brief(), ergebnis(), urls, { now: NOW });
-  assert.equal(k.presentation.slideCount, 3);
-  k.presentation.slides.forEach((s) => { assert.equal(s.width, 1080); assert.equal(s.height, 1350); });
-  assert.equal(k.provenance.visual.sheet.panels, 3);
-  assert.equal(k.provenance.visual.sheet.slicing, "lossless-panel-cut");
+test("WOP23 · Sichtung wird gemessen: passender Bildtext ja, erfundener oder fehlender nein", () => {
+  const StyleRefs = require("../engines/style-references.js");
+  const manifest = { files: [
+    { path: "x/ref-a.png", marker_sha256: [StyleRefs.markerHash("Leuchtturm")] },
+    { path: "x/ref-b.png", marker_sha256: [StyleRefs.markerHash("Wolkenkratzer")] }] };
+  const gut = StyleRefs.sichtung([{ path: "ref-a.png", dominant_text: "Der LEUCHTTURM steht" },
+    { path: "ref-b.png", dominant_text: "wolkenkratzer." }], manifest);
+  assert.equal(gut.seen, 2);
+  const halb = StyleRefs.sichtung([{ path: "ref-a.png", dominant_text: "Leuchtturm" },
+    { path: "ref-b.png", dominant_text: "Ein schoenes Bild" }], manifest);
+  assert.equal(halb.seen, 1);
+  const nichts = StyleRefs.sichtung(undefined, manifest);
+  assert.equal(nichts.measured, false);
+  /* Eine veraenderte Datei gilt nicht als geliefert. */
+  const lief = StyleRefs.lieferbefund({ files: [{ path: "a", sha256: StyleRefs.sha256("original") }] },
+    () => Buffer.from("veraendert"));
+  assert.equal(lief.delivered, false);
+});
+
+test("WOP24 · Meldet der Agent den Abbruch, schliesst der Abgleich den Job - ein Neustart danach nicht", async () => {
+  const { letzteAgentMeldung } = await import("../../scripts/social/sync-creative-invocations.mjs");
+  const Job = require("../engines/creative-job.js");
+  const KEY = "brief_x:vu-post-1:abc:1.0";
+  const meldung = (art, status, at, key) => ({ created_at: at,
+    body: "VU_CREATIVE_AGENT_" + art + "\nprocessing_key: " + (key || KEY) + "\nstatus: " + status });
+  const abbruch = [meldung("INVOCATION", "STARTED", "2026-09-29T21:08:42Z"),
+    meldung("FAILURE", "ASSET_CONTRACT_MISMATCH", "2026-09-29T21:13:52Z"),
+    meldung("INVOCATION", "STARTED", "2026-09-29T22:00:00Z", "brief_y:anderer:def:1.0")];
+  assert.equal(letzteAgentMeldung(abbruch, KEY).art, "FAILURE");
+  assert.equal(letzteAgentMeldung(abbruch, KEY).status, "ASSET_CONTRACT_MISMATCH");
+  const neustart = abbruch.concat([meldung("INVOCATION", "STARTED", "2026-09-29T21:20:00Z")]);
+  assert.equal(letzteAgentMeldung(neustart, KEY).art, "INVOCATION", "ein spaeterer Start hebt den Abbruch auf");
+  assert.equal(letzteAgentMeldung(abbruch, "unbekannt"), null);
+
+  assert.equal(Job.EVIDENZ.AGENT_ABBRUCH_GEMELDET, "CREATIVE_JOB_FAILED");
+  const reg = Job.createRegistry([{ creativeJobId: "job_1", contentId: "vu-post-1", processingKey: KEY,
+    state: "CREATIVE_JOB_DISPATCHED", prNumber: 303, history: [],
+    createdAt: "2026-09-29T21:07:05Z", updatedAt: "2026-09-29T21:07:05Z" }]);
+  const r = reg.reconcile("job_1", "AGENT_ABBRUCH_GEMELDET",
+    { now: "2026-09-30T06:00:00Z", agentStatus: "ASSET_CONTRACT_MISMATCH" });
+  assert.equal(r.ok, true, r.message);
+  assert.equal(r.to, "CREATIVE_JOB_FAILED");
+  assert.equal(reg.all()[0].failureType, "ASSET_CONTRACT_MISMATCH");
 });
