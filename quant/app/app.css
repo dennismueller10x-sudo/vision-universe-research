@@ -301,3 +301,8 @@ body.dv2.qx .qx-waage-title{font-size:clamp(20px,2.4vw,28px);letter-spacing:-.03
 body.dv2.qx .qx-stock-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
 body.dv2.qx .qx-stock-top .dx-back{margin:0}
 body.dv2.qx .qx-stock .qx-stock-top .v2-watch-button{margin:0}
+/* Kontrast (axe): Kicker ausserhalb der Aktienseite in Discovers gedaempftem
+   Grau statt Gold; Kleintext im dunklen Band in den Farben des Bands. */
+body.dv2.qx .v2-main>.dx-chapter>.dx-kicker,body.dv2.qx .v2-main>div>.dx-chapter>.dx-kicker{color:var(--v2-muted)}
+body.dv2.qx .dx-chapter--journey .qx-small,body.dv2.qx .dx-chapter--journey .qx-more summary{color:var(--discover-muted)}
+body.dv2.qx .dx-chapter--journey .qx-small b{color:var(--discover-text)}
