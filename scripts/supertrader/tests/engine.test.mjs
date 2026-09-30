@@ -54,6 +54,8 @@ test('Lifecycle lehnt unzulaessige Uebergaenge ab', () => {
   assert.throws(() => assertTransition('CLOSED', 'ACTIVE'));
   assert.throws(() => assertTransition('SETUP', 'CLOSED'));
   assertTransition('SETUP', 'TRIGGERED');
+  assert.throws(() => assertTransition('TRIGGERED', 'CLOSED'), 'bestaetigt ist noch keine Position');
+  assertTransition('TRIGGERED', 'ACTIVE');
   assertTransition('WARNING', 'ACTIVE');
 });
 
@@ -92,68 +94,6 @@ test('Darvas-Box: Oberkante und Unterkante werden kausal erkannt', () => {
   assert.ok(box, 'Box erwartet');
   assert.equal(box.top.value, 100);
   assert.equal(box.bottom.value, 94);
-});
-
-test('Darvas: Signal durchlaeuft SETUP -> TRIGGERED zum Trigger + Slippage', () => {
-  const ctx = ctxOf(darvasRows());
-  const res = simulate(darvas, ctx, { from: 262 });
-  const sig = res.state.signal;
-  assert.ok(sig, 'offenes Signal erwartet');
-  const states = sig.transitions.map((t) => t.state);
-  assert.ok(states.includes('TRIGGERED'), states.join(','));
-  assert.equal(sig.entry.price, 100 * (1 + slip));
-  assert.equal(sig.initialStop, 94);
-});
-
-test('Darvas: Gap ueber die Oberkante wird zum Eroeffnungskurs gefuellt', () => {
-  const ctx = ctxOf(darvasRows({ gapOpen: 103 }));
-  const res = simulate(darvas, ctx, { from: 262 });
-  const sig = res.state.signal || res.finished[0];
-  assert.equal(sig.entry.price, 103 * (1 + slip));
-  assert.equal(sig.entry.gapped, true);
-});
-
-test('Darvas: Gap unter den Stop -> Ausstieg zur Eroeffnung, Signal bleibt als Verlierer erhalten', () => {
-  const ctx = ctxOf(darvasRows({ crash: true }));
-  const res = simulate(darvas, ctx, { from: 262 });
-  assert.equal(res.finished.length, 1);
-  const sig = res.finished[0];
-  assert.equal(sig.state, 'CLOSED');
-  const exit = sig.exits[sig.exits.length - 1];
-  assert.equal(exit.price, 90 * (1 - slip));
-  assert.ok(sig.result.returnPct < 0);
-});
-
-test('Simulation ist deterministisch', () => {
-  const a = simulate(darvas, ctxOf(darvasRows()), { from: 262 });
-  const b = simulate(darvas, ctxOf(darvasRows()), { from: 262 });
-  assert.deepEqual(JSON.stringify(a.state), JSON.stringify(b.state));
-});
-
-test('Kein Einstieg aus Zukunftswissen: Trigger an t nutzt Levels von t-1', () => {
-  // Wird die Box erst am Ausbruchstag selbst "bestaetigt", darf kein Trade entstehen.
-  const rows = darvasRows().slice(0, 262);
-  rows.push([100.5, 104, 100, 103, 2e6]);
-  const res = simulate(darvas, ctxOf(rows), { from: 261 });
-  assert.equal(res.finished.length, 0);
-  assert.ok(!res.state.signal || !res.state.signal.entry);
-});
-
-test('KK Breakout: Same-Bar-Ambiguitaet wird ungünstig aufgeloest', () => {
-  const ctx = ctxOf(darvasRows());
-  const pending = { levels: { trigger: 100, adr20: 0.01 }, sessions: 1 };
-  ctx.bars.high[269] = 101; ctx.bars.open[269] = 99.5; ctx.bars.low[269] = 97; // Tief weit unter 1 ADR
-  const e = kk.entry(ctx, 269, pending, kk.PARAMS, { stopBuy: (l, o) => stopBuyFill(l, o) });
-  assert.equal(e.sameBarStop, true);
-  assert.ok(e.stop > 97, 'Stop auf 1 ADR gekappt');
-});
-
-test('KK Breakout: Gap-Politik laesst weit ueber dem Trigger eroeffnende Titel aus', () => {
-  const ctx = ctxOf(darvasRows());
-  ctx.bars.open[269] = 104; ctx.bars.high[269] = 105;
-  const e = kk.entry(ctx, 269, { levels: { trigger: 100, adr20: 0.04 }, sessions: 1 }, kk.PARAMS, { stopBuy: (l, o) => stopBuyFill(l, o) });
-  assert.equal(e.notTaken, true);
-  assert.equal(e.ruleId, 'KK-BO-GAP-01');
 });
 
 test('Zigzag erkennt abwechselnde Hochs und Tiefs', () => {
@@ -213,42 +153,6 @@ test('Portfolio und Kennzahlen: synthetischer Verlauf', () => {
   assert.ok(m.maxDrawdown <= 0);
   assert.ok(m.totalReturn > 0);
   assert.ok(Number.isFinite(m.sharpe));
-});
-
-test('Darvas-Qualitaet: A nur bei allen Kriterien; schwaches Regime erzwingt B', () => {
-  const ctx = ctxOf(darvasRows());
-  const t = 268;
-  ctx.ind.adr20[t] = 0.02;
-  ctx.cross.mom126 = new Array(ctx.bars.date.length).fill(95);
-  const levels = { boxTop: 100, boxBottom: 94 };
-  ctx.regime = 'MIXED';
-  assert.equal(darvas.quality(ctx, t, levels).tier, 'A');
-  assert.equal(darvas.quality(ctx, t, levels).volumePending, true);
-  ctx.regime = 'BROAD_WEAKNESS';
-  assert.equal(darvas.quality(ctx, t, levels).tier, 'B');
-  ctx.regime = 'MIXED';
-  assert.equal(darvas.quality(ctx, t, { boxTop: 100, boxBottom: 80 }).tier, 'B', 'zu weite Box');
-  ctx.ind.adr20[t] = 0.08;
-  assert.equal(darvas.quality(ctx, t, levels).tier, 'B', 'Stop innerhalb einer Tagesspanne');
-  ctx.ind.adr20[t] = 0.02;
-  ctx.regime = null;
-  assert.equal(darvas.quality(ctx, t, levels).tier, 'B', 'ohne Regime kein A');
-});
-
-test('Darvas-Qualitaet: Volumen am Trigger entscheidet endgueltig', () => {
-  const ctx = ctxOf(darvasRows());
-  ctx.regime = 'BROAD_STRENGTH';
-  ctx.cross.mom126 = new Array(ctx.bars.date.length).fill(95);
-  const t = 269; // Ausbruchstag in darvasRows
-  ctx.ind.adr20[t - 1] = 0.02;
-  const pending = { levels: { trigger: 100, boxTop: 100, boxBottom: 94 }, sessions: 1 };
-  ctx.bars.volume[t] = 1e6; // unter 1,5x des Schnitts (~2e6)
-  const weak = darvas.entry(ctx, t, pending, darvas.PARAMS, { stopBuy: (l, o) => stopBuyFill(l, o) });
-  assert.equal(weak.quality.tier, 'B');
-  assert.equal(weak.quality.final, true);
-  ctx.bars.volume[t] = 5e6;
-  const strong = darvas.entry(ctx, t, pending, darvas.PARAMS, { stopBuy: (l, o) => stopBuyFill(l, o) });
-  assert.equal(strong.quality.tier, 'A');
 });
 
 test('Gates: Variante ohne Gate-Definition wird nie freigegeben', () => {

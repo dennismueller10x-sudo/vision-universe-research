@@ -94,6 +94,14 @@ Nur A-Setups erscheinen prominent auf der Startseite. B-Setups stehen ausschlie�
 eigenen Reiter des Signalzentrums und in der Darvas-World. Wartende Setups werden täglich neu
 klassifiziert; ab dem Trigger ist die Stufe eingefroren.
 
+### Ein-/Ausstiegslogik (Simulator 2.0)
+
+Bestätigung per Tages- bzw. Wochenschluss, Modelleinstieg zur nächsten Eröffnung, Stop als
+gekennzeichnete Stop-Order-Annahme, Konfliktreihenfolge, Datenlücken, Versionspolitik und
+Append-only-Prüfung des Ledgers: siehe `docs/SUPERTRADER_ENTRY_EXIT_RULES.md`. Strategien liefern
+dafür `scan`, `confirm`, `planEntry`, `invalidate`, `manage` und erklären mit `manageCompatible`,
+welche früheren Versionen sie als Position weiterführen dürfen.
+
 ## 4. Ausgeführter Agent-Graph
 
 | Zustand | Agent / Funktion | Quality Gate | Recovery Path | Ergebnis |

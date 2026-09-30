@@ -95,23 +95,28 @@ export function scan(ctx, t, p = PARAMS, opts = {}) {
   return { stage: distance <= p.entryReadyDistance ? 'ENTRY_READY' : 'SETUP', rules, facts, levels };
 }
 
-// Einstieg an Balken t fuer ein Setup, das bis t-1 bekannt war.
-export function entry(ctx, t, pending, p = PARAMS, fill) {
-  const { bars } = ctx;
-  const trig = pending.levels.trigger;
-  if (!(bars.high[t] > trig)) return null;
-  const adr = pending.levels.adr20;
-  if (Number.isFinite(adr) && bars.open[t] > trig * (1 + p.gapSkipAdrMultiple * adr)) {
-    return { notTaken: true, ruleId: 'KK-BO-GAP-01', note: 'Eröffnung zu weit über dem Trigger — Gap-Politik: nicht verfolgt.' };
+// KK-BO-ENTRY-D1: Bestaetigung, wenn der TAGESSCHLUSS von t den Trigger
+// (bekannt seit t-1) ueberschreitet. Ein Intraday-Hoch ueber dem Trigger
+// reicht nicht: mit Tagesbalken ist nicht belegbar, ob und wo gehandelt wurde.
+export function confirm(ctx, t, pending) {
+  const c = ctx.bars.close[t];
+  if (!(c > pending.levels.trigger)) return null;
+  return { ruleId: 'KK-BO-ENTRY-D1', basis: 'DAILY_CLOSE', close: c };
+}
+
+// Modelleinstieg zur Eroeffnung von t (Tag nach der Bestaetigung).
+// KK-BO-GAP-01: Eroeffnung mehr als 0,5 ADR ueber dem Trigger -> kein Einstieg.
+// KK-BO-STOP-D1: Stop = Tief des Bestaetigungstags, hoechstens 1 ADR unter der
+// Eroeffnung. (Original KK-BO-STOP-01: Tief des Einstiegstags - mit einem
+// Einstieg zur Eroeffnung ist dieses Tief beim Einstieg noch unbekannt.)
+export function planEntry(ctx, t, sig, p = PARAMS) {
+  const open = ctx.bars.open[t];
+  const trig = sig.levels.trigger, adr = sig.levels.adr20;
+  if (Number.isFinite(adr) && open > trig * (1 + p.gapSkipAdrMultiple * adr)) {
+    return { notTaken: true, ruleId: 'KK-BO-GAP-01', note: `Eröffnung ${open.toFixed(2)} mehr als 0,5 ADR über dem Trigger — kein Modelleinstieg.` };
   }
-  const f = fill.stopBuy(trig, bars.open[t]);
-  // KK-BO-STOP-01: Stop = Tagestief, aber nicht breiter als 1 ADR.
-  const capped = Number.isFinite(adr) ? f.price * (1 - adr) : -Infinity;
-  const stop = Math.max(bars.low[t], capped);
-  // Same-Bar: lag das Tagestief unter dem gekappten Stop, ist nicht
-  // entscheidbar, ob der Stop nach dem Einstieg erreicht wurde -> ungünstig.
-  const sameBarStop = bars.low[t] < capped;
-  return { fill: f.price, gapped: f.gapped, stop, ruleId: 'KK-BO-ENTRY-D1', sameBarStop, stopRuleId: 'KK-BO-STOP-01' };
+  const capped = Number.isFinite(adr) ? open * (1 - adr) : -Infinity;
+  return { stop: Math.max(sig.confirmation.low, capped), stopRuleId: 'KK-BO-STOP-D1' };
 }
 
 export function invalidate(ctx, t, pending, p = PARAMS) {
@@ -137,6 +142,9 @@ export function manage(ctx, t, pos, p = PARAMS) {
 }
 
 export default {
-  id: 'MOMENTUM_BREAKOUT', variant: 'KK_COMMON_BREAKOUT_DAILY', version: '1.0.0', timeframe: 'daily',
-  PARAMS, scan, entry, invalidate, manage,
+  id: 'MOMENTUM_BREAKOUT', variant: 'KK_COMMON_BREAKOUT_DAILY', version: '1.1.0', timeframe: 'daily',
+  // Positionsfuehrung (manage) ist seit 1.0.0 unveraendert: offene Modellpositionen
+  // aelterer Versionen duerfen damit weitergefuehrt werden.
+  manageCompatible: ['1.0.0', '1.1.0'],
+  PARAMS, scan, confirm, planEntry, invalidate, manage,
 };
