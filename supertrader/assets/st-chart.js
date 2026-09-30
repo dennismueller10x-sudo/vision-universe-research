@@ -93,7 +93,7 @@
     (cfg.overlays || []).forEach(function (o) { addToggle(o.id, o.label, o.color); });
     (cfg.levels || []).forEach(function (o) { addToggle(o.id, o.label, o.color); });
     if (cfg.boxes && cfg.boxes.length) addToggle('__boxes', cfg.boxes[0].label || 'Box', cfg.boxes[0].color || '#ff7a1a');
-    if (cfg.markers && cfg.markers.length) addToggle('__markers', 'Ein-/Ausstiege', '#ffffff');
+    if (cfg.markers && cfg.markers.length) addToggle('__markers', 'Bestätigung · Modell-Ein-/Ausstiege', '#ffffff');
     host.appendChild(tools);
 
     var wrap = document.createElement('div');
@@ -194,6 +194,7 @@
       if (state.on.__markers) (cfg.markers || []).forEach(function (M) {
         var mi = idx[M.date]; if (mi === undefined || mi < from) return;
         var my = y(M.price), mx = x(mi), entry = M.kind === 'entry';
+        if (M.kind === 'confirm') { el('circle', { cx: mx, cy: my, r: 5, fill: 'none', stroke: '#fde047', 'stroke-width': 2 }, svg); return; }
         var path = entry ? 'M' + mx + ' ' + (my + 3) + 'l-6 10h12z' : 'M' + mx + ' ' + (my - 3) + 'l-6 -10h12z';
         el('path', { d: path, fill: entry ? '#4ade80' : (M.kind === 'partial' ? '#fde047' : '#f472b6'), stroke: '#07080c', 'stroke-width': 2 }, svg);
       });

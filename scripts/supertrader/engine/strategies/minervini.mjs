@@ -133,13 +133,21 @@ export function scan(ctx, t, p = PARAMS, opts = {}) {
   return { stage: distance <= p.entryReadyDistance ? 'ENTRY_READY' : 'SETUP', rules, facts, levels };
 }
 
-export function entry(ctx, t, pending, p = PARAMS, fill) {
-  const { bars } = ctx;
-  const trig = pending.levels.trigger;
-  if (!(bars.high[t] > trig)) return null;
-  const f = fill.stopBuy(trig, bars.open[t]);
-  const stop = Math.max(pending.levels.contractionLow, f.price * (1 - p.maxRisk));
-  return { fill: f.price, gapped: f.gapped, stop, ruleId: 'MIN-ENTRY-01', stopRuleId: 'MIN-STOP-VU', sameBarStop: bars.low[t] <= stop };
+// MIN-ENTRY-D1: Tagesschluss ueber dem Pivot bestaetigt den Ausbruch.
+// Das Ausbruchsvolumen wird protokolliert, aber nicht gefiltert (HYBRID).
+export function confirm(ctx, t, pending) {
+  const { bars, ind } = ctx;
+  if (!(bars.close[t] > pending.levels.trigger)) return null;
+  const v50 = ind.vol50[t - 1];
+  const volumeRatio = Number.isFinite(v50) && v50 > 0 && Number.isFinite(bars.volume[t]) ? bars.volume[t] / v50 : null;
+  return { ruleId: 'MIN-ENTRY-D1', basis: 'DAILY_CLOSE', close: bars.close[t], volumeRatio };
+}
+
+// Modelleinstieg zur Eroeffnung; MIN-STOP-VU: Kontraktionstief, hoechstens
+// 10 % unter der Eroeffnung.
+export function planEntry(ctx, t, sig, p = PARAMS) {
+  const open = ctx.bars.open[t];
+  return { stop: Math.max(sig.levels.contractionLow, open * (1 - p.maxRisk)), stopRuleId: 'MIN-STOP-VU' };
 }
 
 export function invalidate(ctx, t, pending, p = PARAMS) {
@@ -158,6 +166,7 @@ export function manage(ctx, t, pos) {
 }
 
 export default {
-  id: 'MINERVINI_VCP', variant: 'MINERVINI_TT_VCP_A', version: '1.0.0', timeframe: 'daily',
-  PARAMS, scan, entry, invalidate, manage,
+  id: 'MINERVINI_VCP', variant: 'MINERVINI_TT_VCP_A', version: '1.1.0', timeframe: 'daily',
+  manageCompatible: ['1.0.0', '1.1.0'],
+  PARAMS, scan, confirm, planEntry, invalidate, manage,
 };
