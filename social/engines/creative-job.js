@@ -189,7 +189,24 @@
        nicht geschlossen. Eine fehlende Messung ist keine Messung, die
        "nein" sagt.
        ----------------------------------------------------------------- */
-    DISPATCH_NIE_ERFOLGT: "CREATIVE_JOB_FAILED"
+    DISPATCH_NIE_ERFOLGT: "CREATIVE_JOB_FAILED",
+    /* -----------------------------------------------------------------
+       DER AGENT HAT DEN ABBRUCH SELBST GEMELDET
+
+       PR #303 (29.09.): der Agent meldete VU_CREATIVE_AGENT_FAILURE /
+       ASSET_CONTRACT_MISMATCH ("No asset or authoring-result.json was
+       committed") - und der Job stand danach weiter auf DISPATCHED.
+       Niemand las die Meldung, MAX_OPEN_CREATIVE_JOBS = 1 hielt den
+       Slot, und jeder weitere Knopfdruck wartete auf einen Job, der
+       laengst zu Ende war.
+
+       Das ist eine Aussage UEBER DAS ERGEBNIS, von der einzigen Stelle,
+       die sie treffen kann: dem Agenten selbst, mit identischem
+       processing_key, als JUENGSTE seiner Meldungen (ein spaeterer
+       Neustart derselben Verarbeitung haebe sie auf). Gemessen wird im
+       Aufrufer, hier nur zugelassen.
+       ----------------------------------------------------------------- */
+    AGENT_ABBRUCH_GEMELDET: "CREATIVE_JOB_FAILED"
   };
 
   /* Was ausdruecklich NICHT genuegt. Steht als Liste da, damit ein
@@ -570,6 +587,11 @@
            beobachtbar gelaufen zu sein. */
         if (evidenzArt === "DISPATCH_NIE_ERFOLGT" && weg[k] === ziel) {
           schrittOptionen.failureType = "NEVER_DISPATCHED";
+        }
+        if (evidenzArt === "AGENT_ABBRUCH_GEMELDET" && weg[k] === ziel) {
+          /* Eigene Kategorie: der Agent lief und meldete den Abbruch selbst -
+             kein Wiederholungssturm (CJ11), kein Nie-gelaufen. */
+          schrittOptionen.failureType = "AGENT_REPORTED_" + (options.agentStatus || "FAILURE");
         }
         /* Die Ergebnis-Provenance gehoert an den Schritt, der VERIFIED
            erreicht - nicht an einen Zwischenschritt, der noch keine

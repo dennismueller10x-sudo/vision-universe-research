@@ -80,16 +80,16 @@
   var TYPEN = [VOLL, TEXT];
 
   /** Ist dieser Brief ein Carousel-Auftrag? */
-  /* Realer Befund (PR #300): der Vertrag des Agenten erlaubt EIN Asset.
-     Ein Carousel reist deshalb als EIN Bogen (`carousel_sheet`) mit 3-4
-     Paneelen nebeneinander. Die Slides zaehlen die Paneele, nicht die
-     Dateien. Ohne Bogen zaehlen die Bildvarianten (ein spaeter erweiterter
-     Vertrag mit einer Datei je Slide bleibt damit gueltig). */
+  /* Die Slide-Zahl eines Carousel-Ergebnisses. Der aktive Agentenvertrag
+     erlaubt EIN Asset (PR #300), ein Bogen haelt die Masse nicht
+     (PR #303): liegt genau eine Bildvariante vor, ist das das Cover
+     (COVER_FIRST) und die Slide-Zahl steht im carousel_plan. Sonst traegt
+     jede Slide ihre eigene Datei (MULTI_ASSET). */
   function carouselSlideAnzahl(result) {
     var v = Array.isArray(result && result.visual_variants) ? result.visual_variants : [];
-    if (v.length === 1 && v[0] && v[0].carousel_sheet) {
-      var panels = v[0].carousel_sheet.panels;
-      return Array.isArray(panels) ? panels.length : 0;
+    if (v.length === 1) {
+      var plan = result && result.carousel_plan;
+      return Array.isArray(plan) ? plan.length : 0;
     }
     return v.length;
   }

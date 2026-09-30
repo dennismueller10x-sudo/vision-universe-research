@@ -36,7 +36,7 @@ const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 const ContentHash = require(join(ROOT, "social/engines/content-hash.js"));
-const PngSlice = require(join(ROOT, "social/engines/png-slice.js"));
+const StyleRefs = require(join(ROOT, "social/engines/style-references.js"));
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
 const CreativeGate = require(join(ROOT, "social/engines/creative-gate.js"));
 const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/adapter.js"));
@@ -88,9 +88,12 @@ export function offeneCarouselJobs(jobs, vorhanden) {
  */
 export function baueKandidat(brief, ergebnis, slideUrls, options) {
   const now = options.now;
-  const teile = ChatGptWork.carouselSlides(ergebnis);
-  const bogen = teile.bogen;
-  const slides = teile.slides.sort((a, b) => Number(a.slide_index) - Number(b.slide_index));
+  /* COVER_FIRST (Ein-Asset-Vertrag): EIN Bild, das Cover. Der Kandidat
+     ist dann ein Einzelbild; die geplanten Slides 2..n reisen als Plan
+     mit, damit der Owner die Dramaturgie sieht, bewertet wird das Cover. */
+  const lieferung = ChatGptWork.carouselLieferung(ergebnis);
+  const nurCover = lieferung.modus === ChatGptWork.COVER_FIRST;
+  const slides = lieferung.slides;
   const hook = String(((ergebnis.hook_variants || [])[0] || {}).text || "").trim();
   let captionBase = String(ergebnis.caption || "").trim();
   if (!/anlageberatung/i.test(captionBase)) captionBase = (captionBase + " " + HINWEIS).trim();
@@ -98,7 +101,10 @@ export function baueKandidat(brief, ergebnis, slideUrls, options) {
   const caption = captionBase + (hashtags.length ? "\n\n" + hashtags.map((t) => "#" + t).join(" ") : "");
   const contentId = brief.content_id;
 
-  const inhalt = { contentId, imageUrl: slideUrls[0], imageUrls: slideUrls, caption };
+  /* Ein Bild bleibt ein Einzelbild - byte-gleich zum bisherigen Inhalt. */
+  const inhalt = slideUrls.length > 1
+    ? { contentId, imageUrl: slideUrls[0], imageUrls: slideUrls, caption }
+    : { contentId, imageUrl: slideUrls[0], caption };
   const abdruck = ContentHash.contentHash(inhalt);
   const candidateId = "cand_" + String(now).slice(0, 10).replace(/-/g, "") + "_" +
     Hash.prefixedHash("c", { packageId: contentId, hash: abdruck }).slice(2, 10);
@@ -122,15 +128,17 @@ export function baueKandidat(brief, ergebnis, slideUrls, options) {
       sources: quellen,
       slides: slides.map((s, i) => ({ index: i + 1, role: s.slide_role || (plan[i] && plan[i].role) || null,
         headline: (plan[i] && plan[i].headline_de) || null, url: slideUrls[i],
-        width: bogen ? ChatGptWork.PANEL_BREITE : s.width,
-        height: bogen ? ChatGptWork.PANEL_HOEHE : s.height })),
+        width: s.width, height: s.height })),
       slideCount: slides.length,
+      plannedSlideCount: lieferung.geplant,
+      deliveryMode: lieferung.modus,
+      styleReferences: options.styleReferences || null,
       carouselPlan: plan,
       editorialGate: ergebnis.editorial_gate || null,
       researchMode: (ergebnis.research && ergebnis.research.mode_used) ||
         (brief.research && brief.research.mode) || null,
       webAccess: !!(ergebnis.research && ergebnis.research.web_access === true),
-      visualType: "GENERATIVE", mediaFormat: "CAROUSEL",
+      visualType: "GENERATIVE", mediaFormat: nurCover ? "IMAGE" : "CAROUSEL",
       plannedHourUtc: new Date(now).getUTCHours(),
       timingSource: trigger,
       timingReason: trigger === "AUTO" ? "Automatischer Lauf desselben Work-Prozesses."
@@ -153,16 +161,11 @@ export function baueKandidat(brief, ergebnis, slideUrls, options) {
       audienceFrame: null, learningDimensions: {
         slideCount: slides.length, hookType: ChatGptWork.CAROUSEL_HOOK_TYPE,
         researchMode: (brief.research && brief.research.mode) || null },
-      archetype: "WORK_STORY", hook, mediaFormat: "CAROUSEL", visualType: "GENERATIVE",
+      archetype: "WORK_STORY", hook, mediaFormat: nurCover ? "IMAGE" : "CAROUSEL", visualType: "GENERATIVE",
       visual: { origin: "generative",
-        sheet: bogen ? { variantId: bogen.visual_variant_id || null, assetPath: bogen.asset_path,
-          assetSha256: bogen.asset_sha256, width: bogen.width, height: bogen.height,
-          panels: slides.length, slicing: "lossless-panel-cut" } : null,
-        slides: slides.map((s, i) => ({ index: i + 1,
-          variantId: bogen ? null : (s.visual_variant_id || null),
-          assetPath: bogen ? null : s.asset_path,
-          assetSha256: bogen ? null : s.asset_sha256,
-          mimeType: bogen ? "image/png" : s.mime_type })) },
+        deliveryMode: lieferung.modus, plannedSlides: lieferung.geplant,
+        slides: slides.map((s, i) => ({ index: i + 1, variantId: s.visual_variant_id || null,
+          assetPath: s.asset_path, assetSha256: s.asset_sha256, mimeType: s.mime_type })) },
       caption, plannedHourUtc: new Date(now).getUTCHours(),
       experimentId: null, decidedMode: "DIRECT", approval: null, mediaId: null,
       measurements: [], learning: null,
@@ -219,31 +222,35 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       continue;
     }
 
-    /* Der Bogen wird an den Paneelgrenzen verlustfrei getrennt; eine
-       Datei je Slide (spaeterer Vertrag) reist unveraendert. */
-    const teile = ChatGptWork.carouselSlides(ergebnis);
-    const slides = teile.slides.slice().sort((a, b) => Number(a.slide_index) - Number(b.slide_index));
+    /* Die Dateien reisen unveraendert - keine Neugestaltung, kein Schnitt. */
+    const slides = ChatGptWork.carouselLieferung(ergebnis).slides;
     const zielDir = ausgabePfad(ROOT, ASSET_DIR);
     let dateien;
     try {
-      if (teile.bogen) {
-        const stuecke = PngSlice.schneide(readFileSync(join(ROOT, teile.bogen.asset_path)), slides.length);
-        const falsch = stuecke.find((t) => t.width !== ChatGptWork.PANEL_BREITE ||
-          t.height !== ChatGptWork.PANEL_HOEHE);
-        if (falsch) throw new Error("PANEL_SIZE " + falsch.width + "x" + falsch.height);
-        dateien = stuecke.map((t) => ({ bytes: t.png, name: cid + "-s" + t.index + ".png" }));
-      } else {
-        dateien = slides.map((s, i) => {
-          const endung = /jpe?g/i.test(s.mime_type || "") ? "jpg" : "png";
-          return { bytes: readFileSync(join(ROOT, s.asset_path)), name: cid + "-s" + (i + 1) + "." + endung };
-        });
-      }
+      dateien = slides.map((s, i) => {
+        const endung = /jpe?g/i.test(s.mime_type || "") ? "jpg" : "png";
+        return { bytes: readFileSync(join(ROOT, s.asset_path)),
+          name: cid + (slides.length > 1 ? "-s" + (i + 1) : "-cover") + "." + endung };
+      });
     } catch (err) {
       console.error("SLIDES_UNAVAILABLE: " + String(err && err.message || err).slice(0, 200));
       continue;
     }
     const urls = dateien.map((d) => siteBase() + "/" + ASSET_DIR + "/" + d.name);
-    const kandidat = baueKandidat(brief, ergebnis, urls, { now: NOW });
+    /* REFERENCE_IMAGES_SEEN_BY_WORK: gemessen an Text, der nur im Bild steht. */
+    const manifestPfad = join(ROOT, StyleRefs.MANIFEST);
+    const sicht = existsSync(manifestPfad)
+      ? StyleRefs.sichtung(ergebnis.style_references_check, JSON.parse(readFileSync(manifestPfad, "utf8")))
+      : null;
+    const referenzBefund = {
+      deliveredInCheckout: !!(brief.style_references && brief.style_references.delivered_in_checkout),
+      seenByWork: sicht ? sicht.measured && sicht.seen === sicht.total : false,
+      seen: sicht ? sicht.seen : 0, total: sicht ? sicht.total : 0,
+      satz: sicht ? sicht.satz : "Kein Manifest - nicht messbar."
+    };
+    console.log("REFERENCE_IMAGES_DELIVERED_TO_WORK = " + referenzBefund.deliveredInCheckout);
+    console.log("REFERENCE_IMAGES_SEEN_BY_WORK = " + referenzBefund.seenByWork + " (" + referenzBefund.satz + ")");
+    const kandidat = baueKandidat(brief, ergebnis, urls, { now: NOW, styleReferences: referenzBefund });
 
     const alleSlidesDa = dateien.every((d) => d.bytes && d.bytes.length > 0);
     const gate = CreativeGate.pruefe(kandidat, {

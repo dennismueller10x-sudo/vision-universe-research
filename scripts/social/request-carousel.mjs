@@ -31,6 +31,7 @@ const ChatGptWork = require(join(ROOT, "social/providers/authoring/chatgpt-work/
 const Ledger = require(join(ROOT, "social/engines/invocation-ledger.js"));
 const Learnings = require(join(ROOT, "social/engines/social-learnings.js"));
 const Brand = require(join(ROOT, "social/engines/brand.js"));
+const StyleRefs = require(join(ROOT, "social/engines/style-references.js"));
 
 /* Der Forschungsmodus des automatisierten Work-Agenten. Er wird nicht
    angenommen, sondern gemessen (Faehigkeitstest vu-probe-web-20260929);
@@ -62,8 +63,22 @@ export const NEGATIVE_REFERENZEN = [
       "Risiko-Story -> Abgrund ist eine naheliegende, keine eigene Metapher"] }
 ];
 
+/* Die Owner-Referenzbilder (30.09.): Manifest lesen und MESSEN, ob jede
+   Datei unveraendert im Checkout liegt, aus dem der Brief-Commit entsteht.
+   Das Ergebnis reist im Brief mit - gemessen, nicht behauptet. */
+export function referenzen(root) {
+  const pfad = join(root, StyleRefs.MANIFEST);
+  if (!existsSync(pfad)) return null;
+  const manifest = JSON.parse(readFileSync(pfad, "utf8"));
+  const befund = StyleRefs.lieferbefund(manifest, (p) => {
+    const abs = join(root, p);
+    return existsSync(abs) ? readFileSync(abs) : null;
+  });
+  return { manifest, befund };
+}
+
 export function baueBrief(options) {
-  return ChatGptWork.buildCarouselBrief({
+  const brief = ChatGptWork.buildCarouselBrief({
     contentId: options.contentId,
     briefId: briefIdFuer(options.contentId, options.now),
     now: options.now,
@@ -76,8 +91,16 @@ export function baueBrief(options) {
     positiveReferences: [],
     brandAssets: { logo: Brand.LOGO_ASSET_PATH || "assets/vision-universe-logo.png",
       atlas: Brand.ATLAS_ASSET_PATH || "assets/atlas.png" },
-    width: 1080, height: 1350
+    width: 1080, height: 1350,
+    delivery: options.delivery,
+    styleReferences: options.styleReferences && options.styleReferences.manifest
   });
+  if (brief.style_references && options.styleReferences) {
+    const b = options.styleReferences.befund;
+    brief.style_references.delivered_in_checkout = b.delivered;
+    brief.style_references.delivery_measurement = b.satz;
+  }
+  return brief;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -105,9 +128,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const lernen = existsSync(perfPfad)
     ? Learnings.ableiten(JSON.parse(readFileSync(perfPfad, "utf8"))) : [];
 
+  const refs = referenzen(ROOT);
   const brief = baueBrief({ contentId: CID, now: NOW, trigger: TRIGGER, researchMode: MODUS,
     researchPackage: paket || { stories: [], already_covered_urls: [] }, socialLearnings: lernen,
-    ownerTopic: OWNER_TOPIC });
+    ownerTopic: OWNER_TOPIC, delivery: konfig.delivery_mode || ChatGptWork.COVER_FIRST,
+    styleReferences: refs });
 
   const inhalt = JSON.stringify(brief, null, 2) + "\n";
   const sha = ChatGptWork.blobSha(inhalt);
@@ -118,6 +143,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log("content_id:     " + CID);
   console.log("Recherche:      " + MODUS + " (" + ((paket && paket.stories.length) || 0) + " Storys im Paket)");
   console.log("Learnings:      " + lernen.length);
+  console.log("Lieferung:      " + brief.delivery.mode);
+  console.log("REFERENCE_IMAGES_DELIVERED_TO_WORK = " + !!(refs && refs.befund.delivered) +
+    (refs ? " (" + refs.befund.satz + ")" : " (kein Manifest)"));
   console.log("processing_key: " + key);
 
   const ledgerPfad = join(ROOT, LEDGER_DATEI);

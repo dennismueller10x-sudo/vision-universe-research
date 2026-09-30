@@ -53,6 +53,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
+import { letzteAgentMeldung } from "./sync-creative-invocations.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -223,7 +224,45 @@ function evidenzFuer(job, ergebnisse, ledger, nachfolger, register) {
     }
   }
 
+  /* -------------------------------------------------------------------
+     DER ABBRUCH, DEN DER AGENT SELBST GEMELDET HAT (PR #303)
+
+     Gemessen an den Kommentaren des Request-PR: ist die juengste
+     VU_CREATIVE_AGENT_*-Meldung mit identischem processing_key ein
+     FAILURE, hat der Agent diesen Auftrag beendet, ohne zu liefern.
+     Nicht messbar ist nicht "abgebrochen" - dann bleibt der Job offen.
+     ------------------------------------------------------------------- */
+  if (!belege.length && job.prNumber && job.processingKey) {
+    const messung = agentMeldung(job);
+    if (messung.gemessen && messung.letzte && messung.letzte.art === "FAILURE") {
+      belege.push({ art: "AGENT_ABBRUCH_GEMELDET", quelle: messung.quelle,
+        status: messung.letzte.status,
+        detail: "VU_CREATIVE_AGENT_FAILURE (" + (messung.letzte.status || "ohne Status") +
+          ") am " + messung.letzte.at + ": " + String(messung.letzte.reason || "").slice(0, 200) });
+    } else if (!messung.gemessen) {
+      belege.push({ art: "UNGEMESSEN", quelle: messung.quelle, ungeeignet: true,
+        detail: "Die Agent-Meldungen liessen sich nicht lesen: " + messung.grund +
+          ". Ungeprueft ist kein Abbruch." });
+    }
+  }
+
   return belege;
+}
+
+/** Die juengste Agent-Meldung zum processing_key dieses Jobs, gemessen am PR. */
+function agentMeldung(job) {
+  const quelle = "gh api issues/" + job.prNumber + "/comments";
+  try {
+    const roh = execFileSync("gh", ["api", "--paginate",
+      "repos/{owner}/{repo}/issues/" + job.prNumber + "/comments"],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    /* --paginate haengt Seiten als einzelne JSON-Arrays aneinander. */
+    const kommentare = JSON.parse("[" + roh.trim().replace(/\]\s*\[/g, "],[") + "]").flat();
+    return { gemessen: true, quelle, letzte: letzteAgentMeldung(kommentare, job.processingKey) };
+  } catch (err) {
+    return { gemessen: false, quelle,
+      grund: String((err && err.message) || err).split("\n")[0].slice(0, 120) };
+  }
 }
 
 /* Wie lange ein Job ohne PR stehen darf, bevor die Messung ueberhaupt
@@ -304,7 +343,8 @@ for (const job of offene) {
     { now: NOW, note: erste.quelle,
       /* Die Messung reist mit. Die Engine verlangt sie ausdruecklich
          und schliesst ohne sie nicht. */
-      keinPullRequest: erste.art === "DISPATCH_NIE_ERFOLGT" ? true : undefined });
+      keinPullRequest: erste.art === "DISPATCH_NIE_ERFOLGT" ? true : undefined,
+      agentStatus: erste.art === "AGENT_ABBRUCH_GEMELDET" ? (erste.status || undefined) : undefined });
 
   befunde.push({ creativeJobId: job.creativeJobId, contentId: job.contentId,
     vorher: r.from || job.state, nachher: r.geaendert ? r.to : job.state,
