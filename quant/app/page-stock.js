@@ -535,12 +535,12 @@
        sie wird nachgeladen und nur fuer Titel mit vollstaendiger
        Auswertung gelesen. */
     var setupCard = el("section", { class: "qx-section q-setup-wrap", id: "setup-karte" });
-    bodyHost.append(setupCard);
+    layout.append(setupCard);
     renderSetupCard(setupCard, vm, null, technical, ticker);
     if (technical && technical.state === "AVAILABLE" && technical.fullWorkspace && api.getTechnicalWorkspace) {
       api.getTechnicalWorkspace(ticker).then(function (ws) { if (setupCard.isConnected) renderSetupCard(setupCard, vm, ws, technical, ticker); }).catch(function () { return null; });
     }
-    bodyHost.append(duoTiles(vm));
+    layout.append(duoTiles(vm));
 
     if (hasFactors && o.rated > 0) {
       bodyHost.append(X.section("Was macht diese Aktie stark oder schwach?", "Jede Eigenschaft wird im Vergleich zu allen anderen Aktien eingeordnet. Antippen zeigt, woraus der Wert besteht – bis zu den Rohdaten.",
