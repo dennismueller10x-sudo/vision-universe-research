@@ -1,0 +1,99 @@
+name: Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)
+
+# Laedt je Titel des Discover-Universums hoechstens ein Firmenlogo aus
+# Wikimedia Commons - zugeordnet ueber die SEC-CIK (Wikidata P5531), sonst
+# ueber Ticker + Boerse mit Namensabgleich - und nur, wenn die Commons-Datei
+# gemeinfrei ist oder unter CC0, CC BY oder CC BY-SA steht. Urheber und
+# Lizenz landen je Titel in discover/logos/credits.json und stehen auf der
+# Aktienseite (scripts/discover/build-company-logos.mjs).
+#
+# Wo Commons nichts hat, kommt das Icon von der offiziellen Website der
+# Firma (Adresse aus Wikidata oder den SEC-Stammdaten zur CIK), nur
+# verkleinert und als PNG (scripts/discover/company-logos-web.mjs).
+#
+# Die Laufzeitumgebung der Entwicklung erreicht Wikimedia nicht; der Abruf
+# laeuft deshalb hier. Aendert nichts ausser discover/logos/.
+#
+# Ausloeser: Dispatch, woechentlich montags, oder ein Push mit der Marke
+# `[company-logos]`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Diagnose: nur diese Ticker (kommagetrennt), schreibt nichts'
+        type: string
+        default: ''
+      refresh:
+        description: 'Website-Icons und -Adressen neu holen statt Zwischenspeicher'
+        type: boolean
+        default: false
+  schedule:
+    - cron: '17 4 * * 1'
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: company-logos
+  cancel-in-progress: false
+
+jobs:
+  logos:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[company-logos]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bildbibliothek fuer die Website-Icons
+        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@0.34
+
+      - name: Logos (Commons mit freier Lizenz, sonst Website-Icon)
+        env:
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          ONLY: ${{ github.event.inputs.only }}
+          REFRESH: ${{ github.event.inputs.refresh }}
+        run: |
+          ARGS=""
+          if [ -n "$ONLY" ]; then
+            if ! [[ "$ONLY" =~ ^[A-Za-z0-9.,-]+$ ]]; then echo "Ungueltige Ticker-Liste"; exit 1; fi
+            ARGS="--only=$ONLY"
+          fi
+          if [ "$REFRESH" = "true" ]; then ARGS="$ARGS --refresh-web --refresh-sites"; fi
+          node scripts/discover/build-company-logos.mjs $ARGS
+
+      - name: Pruefung (Zuordnung, Lizenzen, jede Datei belegt)
+        if: ${{ !github.event.inputs.only }}
+        run: node --test discover/tests/company-logos.test.mjs
+
+      - name: Commit und Push
+        if: ${{ !github.event.inputs.only }}
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "bot@visionuniverse.de"
+          git add -A discover/logos
+          if git diff --cached --quiet; then echo "Keine Aenderung."; exit 0; fi
+          Z=$(node -e 'const s=require("./discover/logos/summary.json"); console.log(s.withLogo+"/"+s.universe+" ("+s.pct+" %)")')
+          git commit -m "Firmenlogos: $Z Titel mit Logo (Wikimedia Commons und Firmen-Websites)"
+          git pull --rebase origin "${{ github.ref_name }}"
+          git push origin HEAD:"${{ github.ref_name }}"
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Firmenlogos'
+            echo ''
+            if [ -f discover/logos/summary.json ]; then
+              node -e 'const s=require("./discover/logos/summary.json"); console.log("| Kennzahl | Wert |"); console.log("|---|---|"); console.log("| Universum | "+s.universe+" |"); console.log("| mit Logo | "+s.withLogo+" ("+s.pct+" %) |"); console.log("| neu geladen | "+s.downloaded+" |"); console.log("| nach Zuordnung | "+JSON.stringify(s.byVia)+" |"); console.log("| nach Quelle | "+JSON.stringify(s.bySource)+" |"); console.log("| nach Lizenz (Commons) | "+JSON.stringify(s.byLicense)+" |"); console.log("| ohne Logo | "+JSON.stringify(s.excluded)+" |"); for (const [k,v] of Object.entries(s.indexCoverage||{})) console.log("| "+k+" | "+v.withLogo+"/"+v.members+" "+(v.missing.length?"fehlen: "+v.missing.join(", "):"")+" |");'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -416,7 +416,12 @@
       ]) : null,
       el("div", { class: "dx-dhero-inner" }, [
         el("div", {}, [
-          el("h1", { text: detail.companyName || detail.symbol }),
+          /* Logo und Name: am Desktop uebereinander, am Handy in einer Zeile,
+             damit der Kurs weit oben bleibt. */
+          el("div", { class: "dx-dhero-title" }, [
+            D.Logos ? D.Logos.mark(detail.symbol, { name: detail.companyName, size: "lg", onlyLogo: true, wide: true }) : null,
+            el("h1", { text: detail.companyName || detail.symbol })
+          ]),
           el("p", { class: "dx-dhero-meta" }, [detail.symbol, detail.exchange, detail.sector,
                                                detail.universeLabel]
             .filter(Boolean).map(function (t) { return el("span", { text: t }); })),
@@ -1831,7 +1836,9 @@
         document.createTextNode("Stand " + (detail.asOf ? C().dateShort(detail.asOf) : "unbekannt") + " · "),
         el("a", { href: "#/daten", text: "Daten & Quellen" }),
         document.createTextNode(" · " + (detail.disclaimer || "Keine Anlageempfehlung."))
-      ])
+      ]),
+      /* Herkunft des Logos (Urheber und Lizenz bzw. Website/SEC). */
+      D.Logos ? D.Logos.creditLine(detail.symbol) : null
     ]);
   }
 

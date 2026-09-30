@@ -1,0 +1,145 @@
+/**
+ * Firmenlogos - das Erkennungszeichen neben dem Namen.
+ *
+ * Quelle ist discover/logos/ (gebaut von scripts/discover/build-company-
+ * logos.mjs): zuerst Wikimedia Commons mit freier Lizenz, sonst das Icon
+ * der offiziellen Website des Unternehmens. Ein Logo steht nur
+ * neben seiner eigenen Aktie und identifiziert sie - es ist keine Aussage,
+ * keine Empfehlung und keine Verbindung zum Unternehmen.
+ *
+ * Wo kein Logo vorliegt, steht der Anfangsbuchstabe des Namens in einer
+ * neutralen Flaeche. Erfunden oder nachgezeichnet wird kein Logo.
+ *
+ * Die Liste laedt einmal im Hintergrund. Was vorher gezeichnet wird, traegt
+ * zunaechst den Buchstaben und bekommt sein Logo nach, sobald sie da ist.
+ */
+(function (global) {
+  "use strict";
+
+  var BASE = "/discover/logos/";
+  var files = null, dunkel = {}, breit = {}, credits = null, creditsLaden = null, warten = [];
+
+  function laden() {
+    if (!global.fetch) { files = {}; return; }
+    global.fetch(BASE + "index.json", { cache: "default" })
+      .then(function (r) { return r.ok ? r.json() : { files: {} }; })
+      .catch(function () { return { files: {} }; })
+      .then(function (data) {
+        files = (data && data.files) || {};
+        ((data && data.dark) || []).forEach(function (s) { dunkel[s] = true; });
+        breit = (data && data.wide) || {};
+        var offen = warten; warten = [];
+        offen.forEach(function (fn) { fn(); });
+      });
+  }
+
+  function initial(name, symbol) {
+    var s = String(name || symbol || "").replace(/^the\s+/i, "").trim();
+    var m = /[A-Za-z0-9ÄÖÜäöü]/.exec(s);
+    return m ? m[0].toUpperCase() : "·";
+  }
+
+  function fuellen(node, symbol, sofort, weit) {
+    var pfad = files && files[symbol];
+    if (!pfad) return;
+    /* Breiter Schriftzug: gleich hohe, aber breitere Kachel, damit NVIDIA
+       optisch so gross wirkt wie das Apple-Symbol. Die Breite waechst
+       gedaempft mit dem Seitenverhaeltnis (hoechstens das Dreifache). */
+    var r = weit && breit[symbol];
+    if (r) {
+      pfad = "files/wide/" + symbol + ".png";
+      node.style.setProperty("--logo-w", String(Math.min(3, Math.max(1, Math.pow(r, 0.6))).toFixed(2)));
+    }
+    /* Das Bild haengt sofort im Knoten (sonst stellt der Browser ein
+       "lazy" Bild ausserhalb des Dokuments womoeglich nie zu) und wird erst
+       sichtbar, wenn es geladen ist - bis dahin bleibt der Buchstabe. */
+    var img = global.document.createElement("img");
+    img.alt = "";
+    /* Ein ausgeblendetes Logo (onlyLogo) laedt der Browser "lazy" nie. */
+    img.loading = sofort ? "eager" : "lazy";
+    img.decoding = "async";
+    img.addEventListener("load", function () {
+      Array.prototype.slice.call(node.childNodes).forEach(function (c) { if (c !== img) node.removeChild(c); });
+      node.classList.add("dx-logo--img");
+      if (r) node.classList.add("dx-logo--wide");
+      /* Weisse Wortmarke fuer dunkle Seitenkoepfe: dunkle Flaeche statt weisser. */
+      if (dunkel[symbol]) node.classList.add("dx-logo--dark");
+    });
+    img.addEventListener("error", function () { if (img.parentNode) img.parentNode.removeChild(img); });
+    img.src = BASE + pfad;
+    node.appendChild(img);
+  }
+
+  /**
+   * @param {string} symbol
+   * @param {object} opts {name, size: "sm"|"md"|"lg", onlyLogo: kein Buchstabe,
+   *                       wide: breite Fassung fuer Schriftzuege (Aktienseite)}
+   * @returns {HTMLElement}
+   */
+  function mark(symbol, opts) {
+    opts = opts || {};
+    var node = global.document.createElement("span");
+    node.className = "dx-logo dx-logo--" + (opts.size || "md") + (opts.onlyLogo ? " dx-logo--only" : "");
+    node.setAttribute("aria-hidden", "true");
+    node.setAttribute("data-logo", symbol || "");
+    if (!opts.onlyLogo) node.textContent = initial(opts.name, symbol);
+    if (files) fuellen(node, symbol, opts.onlyLogo, opts.wide);
+    else warten.push(function () { fuellen(node, symbol, opts.onlyLogo, opts.wide); });
+    return node;
+  }
+
+  /** Urheber und Lizenz fuer die Aktienseite - laedt erst, wenn sie gebraucht werden. */
+  function credit(symbol) {
+    if (!creditsLaden) {
+      creditsLaden = global.fetch
+        ? global.fetch(BASE + "credits.json", { cache: "default" })
+            .then(function (r) { return r.ok ? r.json() : { credits: {} }; })
+            .catch(function () { return { credits: {} }; })
+            .then(function (d) { credits = (d && d.credits) || {}; return credits; })
+        : Promise.resolve({});
+    }
+    return creditsLaden.then(function (c) { return c[symbol] || null; });
+  }
+
+  /** Zeile "Logo: Urheber · Lizenz · Wikimedia Commons" bzw. "Logo: Website des
+      Unternehmens" - leer, solange nichts vorliegt. */
+  function creditLine(symbol) {
+    var doc = global.document;
+    var p = doc.createElement("p");
+    p.className = "dx-logo-credit";
+    p.hidden = true;
+    credit(symbol).then(function (c) {
+      if (!c) return;
+      function link(text, href) {
+        var a = doc.createElement("a");
+        a.textContent = text;
+        if (href) { a.href = href; a.target = "_blank"; a.rel = "noopener noreferrer"; }
+        return a;
+      }
+      p.appendChild(doc.createTextNode("Logo: "));
+      if (c.source === "SEC_FILING") {
+        p.appendChild(link("SEC-Einreichung des Unternehmens" + (c.form ? " (" + c.form + ")" : ""), c.page));
+        p.appendChild(doc.createTextNode(" · Marke des jeweiligen Inhabers, nur zur Identifizierung"));
+        p.hidden = false;
+        return;
+      }
+      if (c.source === "WEBSITE") {
+        p.appendChild(link("Website des Unternehmens" + (c.host ? " (" + c.host + ")" : ""), c.page));
+        p.appendChild(doc.createTextNode(" · Marke des jeweiligen Inhabers, nur zur Identifizierung"));
+        p.hidden = false;
+        return;
+      }
+      if (c.author) p.appendChild(doc.createTextNode(c.author + " · "));
+      p.appendChild(c.licenseUrl ? link(c.licenseName, c.licenseUrl) : doc.createTextNode(c.licenseName));
+      p.appendChild(doc.createTextNode(" · "));
+      p.appendChild(link("Wikimedia Commons", c.page));
+      p.appendChild(doc.createTextNode(" · Marke des jeweiligen Inhabers, nur zur Identifizierung"));
+      p.hidden = false;
+    });
+    return p;
+  }
+
+  var D = (global.VUDiscover = global.VUDiscover || {});
+  D.Logos = { mark: mark, credit: credit, creditLine: creditLine, initial: initial };
+  if (global.document) laden();
+})(typeof window !== "undefined" ? window : globalThis);
