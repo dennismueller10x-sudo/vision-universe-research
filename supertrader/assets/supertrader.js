@@ -190,6 +190,13 @@
     return h('span', { class: 'st-q st-q-' + q.tier, title: 'VU-Qualitätsstufe, nicht backtest-validiert' }, [(QLABEL[q.label] || q.tier + '-Setup') + (q.label === 'A_CANDIDATE' ? ' · Volumen offen' : '')]);
   }
 
+  // Neubewertung nach Regelwechsel: kein neues Marktereignis, Herkunft sichtbar.
+  function reassessNote(s) {
+    var r = s.discovery && s.discovery.kind === 'RULE_VERSION_REASSESSMENT' && s.discovery.reassessment;
+    if (!r) return null;
+    return h('div', { class: 'st-reassess', title: r.previousSignalId }, [h('strong', { text: 'Neubewertung nach Regelwechsel' }), ' · kein neues Marktereignis · Kursstand ' + dateDe(r.priceDataAsOf) + ' · zuerst entdeckt ' + dateDe(r.originalDiscoveryDate) + ' unter v' + r.previousVersion + ', neu bewertet unter v' + s.version]);
+  }
+
   // Ein-/Ausstiegsblock: Status, geplante Schwellen mit Datenstand, tatsächliche
   // Modellausführung (nur wenn vorhanden) und nächste Handlung mit Regel.
   function planRows(p) {
@@ -208,7 +215,7 @@
     var p = s.plan;
     if (!p) return null;
     return h('div', { class: 'st-plan' + (compact ? ' compact' : ''), 'data-phase': p.phase }, [
-      h('div', { class: 'st-plan-status' }, [h('span', { class: 'ph', text: p.phaseLabel }), h('span', { class: 'since', text: 'seit ' + dateDe(p.since) + ' · ' + (p.sinceRuleId || '') })]),
+      h('div', { class: 'st-plan-status' }, [h('span', { class: 'ph', text: p.phaseLabel }), h('span', { class: 'since', text: 'seit ' + dateDe(p.since) + ' · ' + (p.sinceRuleId || '') + (s.discovery && s.discovery.kind === 'RULE_VERSION_REASSESSMENT' ? ' · Neubewertung (Regelwechsel)' : '') })]),
       h('div', { class: 'st-plan-grid' }, planRows(p).map(function (r) { return h('div', { class: 'c' }, [h('div', { class: 'k', text: r[0] }), h('div', { class: 'v' + (r[3] ? ' ' + r[3] : ''), text: r[1] }), h('div', { class: 'd', text: r[2] })]); })),
       h('div', { class: 'st-plan-next' }, [h('span', { class: 'k', text: 'Nächste Handlung des Modells' }), h('p', { text: p.nextAction.text }), h('span', { class: 'r', text: 'Regel ' + p.nextAction.ruleId + ' · Datenstand ' + dateDe(p.nextAction.dataAsOf) + (p.reason ? ' · ' + p.reason : '') })]),
       s.dataStatus ? h('div', { class: 'st-banner', text: s.dataStatus.note }) : null,
@@ -230,6 +237,7 @@
       h('div', { class: 'top' }, [h('span', { class: 'strat', text: strat.world_name }), h('span', { class: 'st-tags' }, [qualityBadge(s), stateTag(st)])]),
       h('div', null, [h('div', { class: 'sym', text: s.symbol }), h('div', { class: 'name', text: s.companyName || '' })]),
       h('div', { class: 'why', text: whyText(s) }),
+      reassessNote(s),
       s.plan ? entryExitBlock(s, true) : (lv.trigger || open || st === 'CLOSED') ? h('div', { class: 'st-levels' }, levels.map(function (l) { return h('div', null, [h('div', { class: 'k', text: l[0] }), h('div', { class: 'v' + (l[2] ? ' ' + l[2] : ''), text: l[1] })]); })) : null,
       s.plan ? null : h('div', { class: 'st-small', text: stateSentence(s) }),
       open || st === 'CLOSED' ? h('div', { class: 'st-small', text: 'Werte aus dem Live-Protokoll des Modells, kein Backtest, keine reale Order.' }) : null,
@@ -269,7 +277,7 @@
     main.appendChild(section('Market Pulse', 'Heute', [h('div', { class: 'st-grid g3 g6' }, [
       h('div', { class: 'st-tile', style: { 'grid-column': 'span 2' } }, [h('div', { class: 'k', text: 'Marktregime (Produktuniversum)' }), h('div', { class: 'v s', text: mk.regime.label }), h('div', { class: 'd', text: mk.regime.plain || '' })]),
       tile('Strategy Worlds live', String(core.filter(function (s) { return s.engine; }).length) + ' / ' + core.length, 'Greenblatt wartet auf Datenfelder'),
-      tile('Setups im Fokus', String(live.filter(function (s) { return !s.entry && focusable(s); }).length), live.filter(function (s) { return s.state === 'ENTRY_READY' && focusable(s); }).length + ' nahe am Trigger' + (dq ? ' · ohne ' + dq.B + ' Darvas-B' : '')),
+      tile('Setups im Fokus', String(live.filter(function (s) { return !s.entry && focusable(s); }).length), live.filter(function (s) { return s.state === 'ENTRY_READY' && focusable(s); }).length + ' nahe am Trigger' + (dq ? ' · ohne ' + dq.B + ' Darvas-B' : '') + ' · neu seit letztem Datenstand: ' + (c.NEW_SINCE_PREVIOUS_DATA || 0) + (c.REASSESSED_AFTER_RULE_CHANGE ? ', Neubewertungen nach Regelwechsel: ' + c.REASSESSED_AFTER_RULE_CHANGE : '')),
       tile('Einstieg bestätigt', String(triggeredToday), triggeredToday ? 'Modelleinstieg zur nächsten Eröffnung' : 'noch kein bestätigter Einstieg'),
       tile('Modellpositionen', String(activeCnt), activeCnt ? 'aktiv, Warnung oder Ausstieg · keine realen Orders' : 'keine — es gab noch keinen Modelleinstieg'),
     ]), h('p', { class: 'st-note', text: 'Datenfrische: Tageskurse bis ' + dateDe(mk.freshness.barsThrough) + ' (kanonische Materialisierung ' + dateDe((mk.freshness.barsGeneratedAt || '').slice(0, 10)) + '). ' + (mk.regime.notAForecast || '') })]));
@@ -307,11 +315,12 @@
 
     // Alle Modellresultate
     var closed = 0, inv = 0, since = null;
-    Object.keys(sig.strategies).forEach(function (k) { closed += sig.strategies[k].closed.length; inv += sig.strategies[k].invalidated.length; var l = sig.strategies[k].liveSince; if (l && (!since || l < since)) since = l; });
+    Object.keys(sig.strategies).forEach(function (k) { closed += sig.strategies[k].closed.length; inv += sig.strategies[k].invalidatedTotal; var l = sig.strategies[k].liveSince; if (l && (!since || l < since)) since = l; });
     main.appendChild(section('Alle Modellresultate bleiben sichtbar', 'Transparenz', [h('div', { class: 'st-grid g3' }, [
       tile('Live-Protokoll seit', dateDe(since), 'kein rückwirkendes Auffüllen'),
       tile('Abgeschlossene Signale', String(closed), 'Gewinner und Verlierer'),
       tile('Ungültig gewordene Setups', String(inv), 'bleiben ebenfalls stehen'),
+      tile('Durch Regelwechsel abgelöst', String(c.RETIRED_BY_RULE_VERSION || 0), 'kein Marktereignis · auf gleichem Kursstand neu bewertet'),
     ]), h('p', { class: 'st-note', style: { 'margin-top': '10px' }, text: sig.policy })], h('a', { class: 'st-more', href: BASE + 'signals/?status=CLOSED', text: 'Historie →' })));
     main.appendChild(disclaimer(sig));
   }
@@ -471,7 +480,7 @@
     rulesSec.id = 'regeln'; main.appendChild(rulesSec);
 
     // Historie
-    var histSec = section('Vollständige Signalhistorie', 'Nichts wird gelöscht', st ? [historyTable(st.closed.concat(st.invalidated), s), h('p', { class: 'st-note', style: { 'margin-top': '8px' } }, ['Alle ' + st.closed.length + ' abgeschlossenen Signale sind oben aufgeführt; von ' + st.invalidatedTotal + ' ungültig gewordenen Setups die jüngsten ' + st.invalidated.length + '. Das vollständige, maschinenlesbare Protokoll: ', h('a', { href: st.ledgerPath, text: 'Ledger (JSON)' })])] : [empty('Noch keine Historie', 'Diese Strategie erzeugt noch keine Signale.')]);
+    var histSec = section('Vollständige Signalhistorie', 'Nichts wird gelöscht', st ? [historyTable(st.closed.concat(st.invalidated), s), h('p', { class: 'st-note', style: { 'margin-top': '8px' } }, ['Alle ' + st.closed.length + ' abgeschlossenen Signale sind oben aufgeführt; von ' + st.invalidatedTotal + ' ungültig gewordenen Setups die jüngsten ' + st.invalidated.length + '. ' + (st.retiredTotal ? st.retiredTotal + ' Setups wurden durch einen Regelwechsel abgelöst und auf gleichem Kursstand neu bewertet (Signalzentrum → Regelwechsel). ' : '') + 'Das vollständige, maschinenlesbare Protokoll: ', h('a', { href: st.ledgerPath, text: 'Ledger (JSON)' })])] : [empty('Noch keine Historie', 'Diese Strategie erzeugt noch keine Signale.')]);
     histSec.id = 'historie'; main.appendChild(histSec);
 
     var srcSec = section('Quellen und Methodik', null, [sourcesBlock(s, srcMap)]);
@@ -504,11 +513,18 @@
   var PROV_TEXT = { ORIGINAL: 'Original', VU: 'VU-Formalisierung', MIXED: 'Original + VU', NONE: 'keine Regel' };
   var PROV_TONE = { ORIGINAL: 'good', VU: 'info', MIXED: 'warn', NONE: '' };
   function ruleCardBlock(s, card) {
-    var c = card.completeness || {};
-    var tone = c.status === 'COMPLETE' ? 'info' : c.status === 'INACTIVE' ? '' : 'warn';
+    var ex = card.executable || {}, sb = card.source_basis || {}, hv = card.historical_validation || {};
     var row = function (x) { return h('div', { class: 'st-rc-row' }, [h('div', { class: 'h' }, [h('strong', { text: x.title }), chip(PROV_TEXT[x.provenance] || x.provenance, PROV_TONE[x.provenance])]), h('p', { text: x.text }), x.rules.length ? h('div', { class: 'st-small', text: x.rules.join(' · ') }) : null]); };
+    var EX = { EXECUTABLE: ['Technisch ausführbar', 'info'], NOT_EXECUTABLE: ['Nicht ausführbar', 'bad'] };
+    var SB = { ORIGINAL_PRINCIPLES_VU_EXECUTION: ['Original-Prinzipien, VU-Umsetzung', 'warn'], SECONDARY_SOURCES_VU_THRESHOLDS: ['Sekundärquellen, VU-Schwellen', 'warn'], SECONDARY_SOURCES_VU_BOX_DEFINITION: ['Sekundärquellen, VU-Boxdefinition', 'warn'], EXIT_NOT_SOURCE_BACKED: ['Ausstieg nicht quellenbelegt', 'bad'], OFFICIAL_SITE_AND_REPLICATIONS: ['Offizielle Website + Replikationen', 'good'] };
+    var HV = { NOT_VALIDATED: ['Historisch nicht validiert', 'bad'], GATES_PASSED_RUN_PENDING: ['Gates bestanden, Lauf ausstehend', 'warn'] };
+    var tri = function (k, map, st, text) { var m = map[st] || [st, '']; return h('div', { class: 'st-rc-tri' }, [h('div', { class: 'k', text: k }), chip(m[0], m[1]), h('p', { class: 'st-small', text: text })]); };
     return h('div', { class: 'st-rc' }, [
-      h('div', { class: 'st-banner ' + tone, text: (c.status === 'COMPLETE' ? 'Regeln vollständig mechanisch. ' : c.status === 'INACTIVE' ? 'Inaktiv — ' + (card.activationCondition || '') + ' ' : 'Unvollständig: ' + (c.incomplete || []).join('; ') + '. ') + (c.note || '') + (c.status === 'COMPLETE' && c.incomplete && c.incomplete.length ? ' Offen: ' + c.incomplete.join('; ') + '.' : '') }),
+      h('div', { class: 'st-rc-tris' }, [
+        tri('1 · Regel technisch ausführbar', EX, ex.status, (ex.note || '') + (ex.gaps && ex.gaps.length ? ' Lücken: ' + ex.gaps.join('; ') + '.' : '') + (card.inactive ? ' ' + (card.activationCondition || '') : '')),
+        tri('2 · Quellenlage', SB, sb.status, (sb.note || '') + (sb.ruleCounts ? ' Regeln dieser Karte: ' + sb.ruleCounts.original + ' Original, ' + sb.ruleCounts.vu + ' VU.' : '') + ' ' + (sb.fidelityNote || '')),
+        tri('3 · Historische Validierung', HV, hv.status, (hv.note || '') + (hv.failedGates && hv.failedGates.length ? ' Offene Gates: ' + hv.failedGates.join(', ') + '.' : '')),
+      ]),
       h('div', { class: 'st-rc-meta st-small', text: 'Regelversion ' + card.rule_version + ' · Zeitbasis ' + ({ daily: 'Tagesbalken', weekly: 'Wochenschluss', annual: 'jährliches Rebalancing' }[card.timeframe] || card.timeframe) + ' · Herkunft je Abschnitt aus den Regel-IDs abgeleitet' }),
       h('div', { class: 'st-rc-list' }, card.sections.map(row)),
       card.edge_cases && card.edge_cases.length ? h('details', { class: 'st-details', style: { 'margin-top': '8px' } }, [h('summary', { text: 'Gaps, fehlendes Volumen, fehlende Daten, Konflikte (' + card.edge_cases.length + ')' }), h('div', { class: 'st-rc-list' }, card.edge_cases.map(row))]) : null,
@@ -653,11 +669,12 @@
     Object.keys(sig.strategies).forEach(function (id) {
       var st = sig.strategies[id];
       st.open.concat(st.closed, st.invalidated).forEach(function (x) { rows.push(x); });
+      (st.retired || []).forEach(function (x) { rows.push(Object.assign({ retiredRow: true }, x)); });
       st.scanner.top.forEach(function (x) { rows.push(Object.assign({ strategyId: id, state: x.stage, scanner: true }, x)); });
     });
     main.appendChild(h('div', { class: 'st-hero st-hero-sm' }, [h('div', { class: 'st-kicker', text: 'Signalzentrum' }), h('h1', null, [h('span', { text: 'Signale' })]), h('p', { class: 'st-lead', text: 'Jeder Zustand entsteht aus einer deterministischen Regel. Ab „Einstieg vorbereitet“ wird jedes Signal mit allen Wechseln, Regelversion und Datenstand protokolliert — auch Verlierer, ungültige und durch neue Regelversionen abgelöste Setups.' })]));
 
-    var groups = [['LIVE', 'Live'], ['BSETUP', 'Darvas B-Setups'], ['WATCH', 'Kandidaten'], ['SETUP', 'Vorbereitet'], ['ENTRY_READY', 'Nahe Trigger'], ['TRIGGERED', 'Einstieg bestätigt'], ['ACTIVE', 'Modellposition'], ['WARNING', 'Warnung'], ['EXIT', 'Ausstieg ausgelöst'], ['CLOSED', 'Geschlossen'], ['INVALIDATED', 'Ungültig']];
+    var groups = [['LIVE', 'Live'], ['BSETUP', 'Darvas B-Setups'], ['WATCH', 'Kandidaten'], ['SETUP', 'Vorbereitet'], ['ENTRY_READY', 'Nahe Trigger'], ['TRIGGERED', 'Einstieg bestätigt'], ['ACTIVE', 'Modellposition'], ['WARNING', 'Warnung'], ['EXIT', 'Ausstieg ausgelöst'], ['CLOSED', 'Geschlossen'], ['INVALIDATED', 'Ungültig'], ['RETIRED', 'Regelwechsel']];
     var seg = h('div', { class: 'st-seg', role: 'group', 'aria-label': 'Status' });
     var list = h('div', { class: 'st-grid g1 g2w', style: { 'margin-top': '8px' } });
     var countNote = h('p', { class: 'st-note' });
@@ -665,6 +682,8 @@
     // damit das Signalzentrum nicht wie ein breiter Screener wirkt.
     function isB(x) { return !!(x.quality && x.quality.tier === 'B' && (x.state === 'SETUP' || x.state === 'ENTRY_READY')); }
     function matchStatus(x, s) {
+      if (x.retiredRow) return s === 'RETIRED';
+      if (s === 'RETIRED') return false;
       if (s === 'BSETUP') return !x.scanner && isB(x);
       if (isB(x) && f.quality !== 'B') return false;
       if (s === 'LIVE') return !x.scanner && LIVE_ORDER.indexOf(x.state) >= 0;
@@ -705,13 +724,21 @@
       list.innerHTML = '';
       countNote.textContent = shown.length + ' Einträge · Stand ' + dateDe(sig.asOf) + (f.status === 'WATCH' ? ' · Beobachtungsliste zeigt je Strategie die 60 stärksten Kandidaten; insgesamt ' + (sig.counts.WATCH) + ' „Beobachten“ und ' + sig.counts.DISCOVERED + ' „Entdeckt“.' : '');
       if (!shown.length) list.appendChild(empty('Keine Signale in dieser Auswahl', f.status === 'CLOSED' || f.status === 'INVALIDATED' ? 'Das Live-Protokoll läuft seit ' + dateDe(firstLive(sig)) + '. Abgeschlossene Signale erscheinen hier dauerhaft — es werden keine Ergebnisse rückwirkend erzeugt.' : 'Für diese Filter gibt es heute keinen Eintrag.'));
-      shown.slice(0, 120).forEach(function (x) { list.appendChild(signalCard(x, S[x.strategyId])); });
+      if (f.status === 'RETIRED') { list.appendChild(retiredTable(shown, S)); } else shown.slice(0, 120).forEach(function (x) { list.appendChild(signalCard(x, S[x.strategyId])); });
       var q = new URLSearchParams(); Object.keys(f).forEach(function (k) { if (f[k] && !(k === 'status' && f[k] === 'LIVE')) q.set(k, f[k]); });
       history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
     }
     main.appendChild(h('section', { class: 'st-section' }, [h('div', { class: 'st-banner', style: { 'margin-bottom': '12px' }, text: 'Alle Signale stammen aus nicht backtest-validierten Regelmodellen. Darvas-B-Setups sind gültig nach den Grundregeln, erfüllen aber nicht alle Qualitätskriterien.' }), filters, seg, countNote, list]));
     update();
     main.appendChild(disclaimer(sig));
+  }
+  function retiredTable(rows, S) {
+    if (!rows.length) return empty('Keine abgelösten Setups', 'Kein Regelwechsel hat wartende Setups abgelöst.');
+    return h('div', { class: 'st-card', style: { 'min-width': '0' } }, [
+      h('p', { class: 'st-small', text: 'Diese Setups wurden unter einer früheren Regelversion entdeckt. Beim Regelwechsel wurden sie protokolliert beendet — nicht umgedeutet — und auf demselben Kursstand unter der neuen Version neu bewertet. Das ist kein neues Marktereignis.' }),
+      h('div', { class: 'st-table-wrap' }, [h('table', { class: 'st-table' }, [h('thead', null, [h('tr', null, [h('th', { text: 'Titel' }), h('th', { text: 'Strategie' }), h('th', { text: 'Entdeckt' }), h('th', { text: 'Wechsel' }), h('th', { text: 'Nachfolger' })])]),
+        h('tbody', null, rows.map(function (x) { var r = x.retiredBy || {}; return h('tr', null, [h('td', null, [h('a', { href: stockUrl(x.symbol), text: x.symbol })]), h('td', { text: S[x.strategyId].world_name }), h('td', { text: dateDe(x.createdAt) + ' · v' + x.version }), h('td', { text: 'v' + r.fromVersion + ' → v' + r.toVersion + ' am ' + dateDe(r.date) }), h('td', { text: r.successorId ? 'neu bewertet' : 'unter neuer Version kein Setup' })]); }))])]),
+    ]);
   }
   function firstLive(sig) { var d = null; Object.keys(sig.strategies).forEach(function (k) { var l = sig.strategies[k].liveSince; if (l && (!d || l < d)) d = l; }); return d; }
 
@@ -785,7 +812,7 @@
       setWorld(s);
       Array.prototype.forEach.call(tabs.children, function (b) { b.setAttribute('aria-selected', String(b._x === x)); });
       card.innerHTML = '';
-      card.appendChild(h('div', { class: 'st-grid g1 g2w' }, [x.plan ? h('div', { class: 'st-lens-plan', style: worldVars(s), 'aria-label': s.world_name + ' · Ein- und Ausstieg' }, [entryExitBlock(x, false), qualityBadge(x)]) : signalCard(x, s), h('div', { class: 'st-card' }, [
+      card.appendChild(h('div', { class: 'st-grid g1 g2w' }, [x.plan ? h('div', { class: 'st-lens-plan', style: worldVars(s), 'aria-label': s.world_name + ' · Ein- und Ausstieg' }, [entryExitBlock(x, false), reassessNote(x), qualityBadge(x)]) : signalCard(x, s), h('div', { class: 'st-card' }, [
         h('div', { class: 'st-kicker', text: 'Warum wird die Aktie gezeigt?' }), h('p', { style: { 'margin-top': '6px' }, text: whyText(x) }),
         h('div', { class: 'st-kicker', style: { 'margin-top': '10px' }, text: 'Status' }), h('p', { style: { 'margin-top': '6px' }, text: stateSentence(x) }),
         x.plan ? h('p', { class: 'st-small', text: 'Ausstieg laut Regelkarte: ' + x.plan.exitSummary + '.' }) : null,
@@ -806,7 +833,9 @@
     main.appendChild(tabs);
     main.appendChild(card);
     main.appendChild(chartHost);
-    main.appendChild(section('Signalhistorie für ' + sym, null, [historyOf(entries, S)]));
+    var retiredHere = [];
+    Object.keys(sig.strategies).forEach(function (id) { (sig.strategies[id].retired || []).forEach(function (x) { if (x.symbol === sym) retiredHere.push(x); }); });
+    main.appendChild(section('Signalhistorie für ' + sym, null, [historyOf(entries.concat(retiredHere), S), retiredHere.length ? h('p', { class: 'st-note', style: { 'margin-top': '8px' }, text: retiredHere.length + ' Eintrag/Einträge „durch Regelwechsel abgelöst“ (LC-VERSION-RETIRED): gleicher Kursstand, unter der neuen Regelversion neu bewertet — kein neues Marktereignis.' }) : null]));
     main.appendChild(h('p', { style: { 'margin-top': '18px' } }, [h('a', { class: 'st-more', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym), text: 'Vollständige Aktienansicht in Discovery →' })]));
     main.appendChild(disclaimer(sig));
     show(pick);

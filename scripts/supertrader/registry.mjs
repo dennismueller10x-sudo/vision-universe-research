@@ -530,7 +530,9 @@ momentum.rule_cards = [{
     sec('volume', 'Fehlendes Volumen', 'Volumen ist für diese Variante kein Pflichtkriterium; fehlt es, ändert sich nichts an Bestätigung oder Ausstieg.', []),
     EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
   ],
-  completeness: { status: 'COMPLETE', incomplete: [], note: 'Ein-, Stop- und Ausstiegsregeln vollständig mechanisch. Abweichung vom Original: Daily-Schluss statt Opening-Range-High (Intraday-Historie fehlt).' },
+  executable: { status: 'EXECUTABLE', gaps: [], note: 'Alle Phasen von Kandidat bis Ausstieg sind mechanisch definiert und laufen im Simulator.' },
+  source_basis: { status: 'ORIGINAL_PRINCIPLES_VU_EXECUTION', note: 'Momentumfilter, Teilverkauf und 10-Tage-Trailing folgen Kullamägis eigener Beschreibung. Einstieg per Tagesschluss, enge Basis, Gap- und Invalidationsregeln sind VU; der Original-Einstieg (Opening Range) ist mangels Intraday-Historie nicht abgebildet.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
 }];
 
 weinstein.rule_cards = [{
@@ -557,7 +559,9 @@ weinstein.rule_cards = [{
     sec('volume', 'Fehlendes Volumen', 'Fehlt das Wochenvolumen, gilt der Ausbruch als bestätigt, die Volumenregel wird als „nicht prüfbar“ ausgewiesen.', ['WEIN-VOL-02']),
     EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
   ],
-  completeness: { status: 'COMPLETE', incomplete: ['Volumenregel nur im ~1-Jahres-Tagesfenster prüfbar'], note: 'Ausstieg per 30-Wochen-Linie ist mehrfach belegt; Stop-Abstände sind VU.' },
+  executable: { status: 'EXECUTABLE', gaps: ['Volumenregel nur im ~1-Jahres-Tagesfenster prüfbar; sonst „nicht prüfbar“ (WEIN-VOL-02)'], note: 'Alle Phasen mechanisch definiert.' },
+  source_basis: { status: 'SECONDARY_SOURCES_VU_THRESHOLDS', note: 'Phasenmodell, Wochenschluss-Ausbruch und 30-Wochen-Ausstieg sind in Sekundärquellen mehrfach beschrieben; das Buch wurde nicht vollständig gelesen. Stage-Klassifikator, Basislänge, Stop-Abstände und Volumenvielfaches sind VU.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
 }];
 
 darvas.rule_cards = [{
@@ -586,7 +590,9 @@ darvas.rule_cards = [{
     sec('regime', 'Regimewechsel', 'Die Regime-Sperre ist VU. Der Regimestand wird täglich neu gelesen; ein vorbereitetes Setup kann dadurch zwischen A-Kandidat und B-Setup wechseln. Ab der Bestätigung ist die Stufe eingefroren.', ['DAR-Q-REGIME']),
     EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
   ],
-  completeness: { status: 'COMPLETE', incomplete: ['Pyramiding (DAR-PYR-01) nicht simuliert'], note: 'Einziger Ausstieg ist der nachgezogene Box-Stop — das entspricht dem Original; die Boxdefinition ist VU.' },
+  executable: { status: 'EXECUTABLE', gaps: ['Pyramiding (DAR-PYR-01) nicht simuliert'], note: 'Alle Phasen mechanisch definiert.' },
+  source_basis: { status: 'SECONDARY_SOURCES_VU_BOX_DEFINITION', note: 'Ausbruch über die Box und nachgezogener Stop sind mehrfach belegt; die konkrete Boxdefinition, Qualitätsstufen und die Regime-Sperre sind VU. Darvas’ eigene Ergebnisse sind umstritten.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
 }];
 
 minervini.rule_cards = [{
@@ -613,7 +619,9 @@ minervini.rule_cards = [{
     sec('volume', 'Fehlendes Volumen', 'Ohne Volumen ist MIN-VCP-02 nicht erfüllt — es entsteht kein Setup. Das Ausbruchsvolumen wird angezeigt, nicht gefiltert.', ['MIN-VCP-02']),
     EDGE.missingData, EDGE.conflictPre, EDGE.conflictPos, EDGE.openBelowStop, EDGE.version,
   ],
-  completeness: { status: 'INCOMPLETE', incomplete: ['Ausstieg: nur VU-Hilfsregel (Schluss unter 50-Tage-Linie); Minervinis Verkaufsregeln sind nicht mechanisch belegt'], note: 'Der Ausstieg ist keine belastbare Originalregel. Die Variante bleibt Beobachtung.' },
+  executable: { status: 'EXECUTABLE', gaps: [], note: 'Technisch ausführbar — der Ausstieg allerdings nur über eine VU-Hilfsregel.' },
+  source_basis: { status: 'EXIT_NOT_SOURCE_BACKED', note: 'Trend Template ist mehrfach belegt; die VCP-Erkennung ist VU. Für den Ausstieg gibt es keine belastbare, mechanisch belegte Originalregel — MIN-EXIT-VU-01 (Schluss unter 50-Tage-Linie) ist eine Hilfsregel.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
 }];
 
 greenblatt.rule_cards = [{
@@ -632,7 +640,9 @@ greenblatt.rule_cards = [{
     sec('exit', 'Ausstieg', 'Nach etwa einem Jahr ersetzen: Verlierer kurz vor, Gewinner kurz nach einem Jahr. Kein Stop, kein Kursziel — beides wäre nicht Greenblatt.', ['GB-EXIT-01']),
   ],
   edge_cases: [],
-  completeness: { status: 'INACTIVE', incomplete: ['Pflichtfelder für Return on Capital fehlen', 'Point-in-Time-Fundamentaldaten nur für 5 Titel'], note: 'Eigene Ranking-/Rebalancing-Logik, bewusst ohne Stop/Take-Profit. Keine Signale, bis die Daten vorliegen.' },
+  executable: { status: 'NOT_EXECUTABLE', gaps: ['Pflichtfelder für Return on Capital fehlen', 'Point-in-Time-Fundamentaldaten nur für 5 Titel'], note: 'Eigene Ranking-/Rebalancing-Logik, bewusst ohne Stop/Take-Profit. Keine Signale, bis die Daten vorliegen.' },
+  source_basis: { status: 'OFFICIAL_SITE_AND_REPLICATIONS', note: 'Portfoliomechanik laut offizieller Website; Kennzahlenformel über unabhängige Replikationen bestätigt.', fidelityReview: 'NOT_PERFORMED', fidelityNote: 'Quellen nur per Suchtreffer bestätigt, Inhalte nicht direkt abgerufen; der Source-Fidelity-Pass steht aus. Originaltreue ist damit nicht geprüft.' },
+  historical_validation: { status: 'NOT_VALIDATED', note: 'Kein Backtest hat die Datengates bestanden; keine Aussage über historische Wirksamkeit.' },
 }];
 
 // Herkunft je Sektion aus den Regeln ableiten.
@@ -643,6 +653,9 @@ for (const s of [momentum, weinstein, darvas, minervini, greenblatt]) {
       const flags = x.rules.map((id) => byId.get(id)).filter(Boolean).map((r) => r.VU_formalization_flag);
       x.provenance = !flags.length ? 'NONE' : flags.every(Boolean) ? 'VU' : flags.some(Boolean) ? 'MIXED' : 'ORIGINAL';
     }
+    // Quellenlage in Zahlen: wie viele der Regeln dieser Karte sind Original, wie viele VU.
+    const ids = [...new Set([...card.sections, ...card.edge_cases].flatMap((x) => x.rules))].map((id) => byId.get(id)).filter(Boolean);
+    card.source_basis.ruleCounts = { original: ids.filter((r) => !r.VU_formalization_flag).length, vu: ids.filter((r) => r.VU_formalization_flag).length };
   }
 }
 

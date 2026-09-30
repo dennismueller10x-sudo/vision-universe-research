@@ -322,6 +322,19 @@ export function assertAppendOnly(before, after) {
   }
 }
 
+// Neubewertung nach Regelwechsel (kein neues Marktereignis): Das unter der neuen
+// Version auf DEMSELBEN Kursstand erkannte Signal verweist auf seinen Vorgaenger,
+// behaelt dessen urspruengliches Entdeckungsdatum und nennt den verwendeten Kursstand.
+export function linkReassessment(prev, sig) {
+  const first = prev.transitions[0] || {};
+  sig.discovery = { ...sig.discovery, kind: 'RULE_VERSION_REASSESSMENT',
+    reassessment: { previousSignalId: prev.id, previousVersion: prev.version, originalDiscoveryDate: prev.createdAt, originalDataAsOf: first.dataAsOf || first.date || prev.createdAt, priceDataAsOf: sig.createdAt, retiredOn: prev.retiredBy.date, note: 'Neubewertung nach Regelwechsel auf unverändertem Kursstand — kein neues Marktereignis.' } };
+  if (sig.transitions[0]) sig.transitions[0].origin = 'RULE_VERSION_REASSESSMENT';
+  prev.retiredBy.successorId = sig.id;
+}
+export const isReassessment = (s) => s.discovery?.kind === 'RULE_VERSION_REASSESSMENT';
+export const isRetired = (s) => s.state === 'INVALIDATED' && s.transitions?.[s.transitions.length - 1]?.ruleId === 'LC-VERSION-RETIRED';
+
 /* ------------------------------------------------------------ Main */
 export function build() {
   const t0 = Date.now();
@@ -368,6 +381,7 @@ export function build() {
     // neuen Version auf demselben Datenstand neu gesucht (neue ID).
     const { open: openKept, retired } = applyVersionPolicy(engine, ledger.open, lastProcessed, barsGeneratedAt);
     const retiredSymbols = new Set(retired.map((x) => x.symbol));
+    const retiredBySymbol = new Map(retired.map((x) => [x.symbol, x]));
     const openBySymbol = new Map(openKept.map((s) => [s.symbol, s]));
     const seen = new Set();
     const finishedNow = [...retired];
@@ -416,6 +430,8 @@ export function build() {
         if (engine.classify && PENDING.has(state.signal.state)) state.signal.quality = engine.classify(ctx, last, state.signal);
         state.signal.lastPrice = inst.bars.close[last];
         state.signal.lastPriceDate = inst.bars.date[last];
+        const prev = retiredBySymbol.get(inst.symbol);
+        if (prev && !prev.retiredBy.successorId && state.signal.createdAt <= lastProcessed) linkReassessment(prev, state.signal);
         stillOpen.push(state.signal);
       }
       // Scanner-Momentaufnahme (DISCOVERED/WATCH) fuer Titel ohne offenes Signal.
@@ -436,10 +452,11 @@ export function build() {
       stillOpen.push(s);
     }
     const closed = [...ledger.closed, ...finishedNow.filter((s) => s.state === 'CLOSED')];
+    for (const r of retired) if (r.retiredBy.successorId === undefined) r.retiredBy.successorId = null;
     const invalidated = [...ledger.invalidated, ...finishedNow.filter((s) => s.state === 'INVALIDATED')];
     ledgers[engine.id] = {
       ...ledger, variant: engine.variant, version: engine.version,
-      liveSince: ledger.liveSince || asOf, lastProcessed: asOf,
+      liveSince: ledger.liveSince || asOf, lastProcessed: asOf, previousDataAsOf: lastProcessed && lastProcessed !== asOf ? lastProcessed : (ledger.previousDataAsOf ?? null),
       open: stillOpen.map(stripForSave).sort((a, b) => a.symbol.localeCompare(b.symbol)),
       closed: closed.map(stripForSave), invalidated: invalidated.map(stripForSave),
     };
@@ -472,6 +489,11 @@ export function build() {
   const sources = buildSources();
   const signals = buildSignals(ledgers, scanner, fundOf, instruments, market);
   const backtests = buildBacktests(registry, coverage, gbCoverage);
+  // Historische Validierung je Regelkarte aus den gemessenen Gates, nicht behauptet.
+  for (const s of registry.strategies) for (const card of s.rule_cards || []) {
+    const run = backtests.runs.find((r) => r.variantId === card.variant_id);
+    card.historical_validation = { ...card.historical_validation, status: run?.metricsPublishable ? 'GATES_PASSED_RUN_PENDING' : 'NOT_VALIDATED', gateStatus: run?.status || null, failedGates: run?.failedGates || [] };
+  }
 
   writeJson(path.join(DATA, 'registry.json'), registry);
   writeJson(path.join(DATA, 'sources.json'), sources);
@@ -532,7 +554,7 @@ function buildSources() {
 function buildSignals(ledgers, scanner, fundOf, instruments, market) {
   const strategiesOut = {};
   const bySymbol = {};
-  const counts = Object.fromEntries(STATES.map((s) => [s, 0]));
+  const counts = { ...Object.fromEntries(STATES.map((s) => [s, 0])), RETIRED_BY_RULE_VERSION: 0, REASSESSED_AFTER_RULE_CHANGE: 0, NEW_SINCE_PREVIOUS_DATA: 0 };
   const decorate = (s) => {
     const fund = fundOf(s.symbol);
     const inst = instruments.get(s.symbol);
@@ -545,13 +567,20 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
     const open = l.open.map(decorate);
     const closed = l.closed.map(decorate).sort((a, b) => lastDate(b).localeCompare(lastDate(a)));
     // Ungueltige Setups: die juengsten 150 im Produktartefakt, alle im Ledger.
-    const invalidated = l.invalidated.slice().sort((a, b) => lastDate(b).localeCompare(lastDate(a))).slice(0, 150).map(decorate);
+    // Durch Regelwechsel abgeloeste Setups sind kein Marktereignis: getrennt von
+    // ungueltig gewordenen Setups gezaehlt und ausgeliefert.
+    const realInvalid = l.invalidated.filter((x) => !isRetired(x));
+    const retiredList = l.invalidated.filter(isRetired);
+    const invalidated = realInvalid.slice().sort((a, b) => lastDate(b).localeCompare(lastDate(a))).slice(0, 150).map(decorate);
+    const retired = retiredList.map((x) => ({ id: x.id, symbol: x.symbol, strategyId: x.strategyId, version: x.version, createdAt: x.createdAt, state: x.state, retiredBy: x.retiredBy, transitions: x.transitions, levels: x.levels, companyName: fundOf(x.symbol)?.companyName || x.symbol }));
     for (const s of open) counts[s.state]++;
-    counts.CLOSED += closed.length; counts.INVALIDATED += l.invalidated.length;
+    counts.CLOSED += closed.length; counts.INVALIDATED += realInvalid.length; counts.RETIRED_BY_RULE_VERSION += retiredList.length;
+    counts.REASSESSED_AFTER_RULE_CHANGE += open.filter(isReassessment).length;
+    counts.NEW_SINCE_PREVIOUS_DATA += open.filter((x) => !isReassessment(x) && x.createdAt > (l.previousDataAsOf || '')).length;
     counts.DISCOVERED += scanner[id].discovered; counts.WATCH += scanner[id].watch;
     const scan = scanner[id].top.map((x) => ({ ...x, sicDivision: sicInfo().get(x.symbol)?.division || null, sicDivisionName: sicInfo().get(x.symbol)?.name || null, companyName: fundOf(x.symbol)?.companyName || x.symbol, chart: instruments.get(x.symbol) ? { shard: instruments.get(x.symbol).shard, weeklyPath: `/quant/data/market/discover-series-long/ref_${x.symbol}.json` } : null }));
     const quality = qualitySummary(open);
-    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: l.invalidated.length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
+    strategiesOut[id] = { quality: open.some((x) => x.quality) ? quality : null, liveSince: l.liveSince, lastProcessed: l.lastProcessed, variant: l.variant, version: l.version, open, closed, invalidated, invalidatedTotal: realInvalid.length, retired, retiredTotal: retiredList.length, reassessed: open.filter(isReassessment).length, ledgerPath: `/supertrader/data/ledger/${id}.json`, scanner: { discovered: scanner[id].discovered, watch: scanner[id].watch, top: scan, symbols: scanner[id].symbols } };
     for (const s of [...open, ...closed, ...invalidated]) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: s.id, state: s.state });
     for (const s of scan) (bySymbol[s.symbol] ||= []).push({ strategyId: id, id: null, state: s.stage });
   }

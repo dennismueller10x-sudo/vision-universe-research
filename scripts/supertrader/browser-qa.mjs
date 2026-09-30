@@ -48,6 +48,7 @@ async function main() {
   const routes = [
     ['home', '/supertrader/', '.st-hero h1'],
     ['signals', '/supertrader/signals/', '.st-seg button'],
+    ['signals-retired', '/supertrader/signals/?status=RETIRED', '.st-table'],
     ['strategies', '/supertrader/strategies/', '.st-world'],
     ['backtests', '/supertrader/backtests/', '.st-cmp-row'],
     ['sources', '/supertrader/sources/', '.st-table'],

@@ -214,7 +214,7 @@ export function simulate(strategy, ctx, opts = {}) {
       const s = {
         id: `${strategy.id}:${ctx.symbol}:${date}:v${strategy.version}`, strategyId: strategy.id, variant: strategy.variant, version: strategy.version,
         symbol: ctx.symbol, createdAt: date, state: null, sessions: 0,
-        discovery: { date, dataAsOf: date, ruleVersion: strategy.version, recordedAt: meta.recordedAt, simulator: SIMULATOR_VERSION },
+        discovery: { date, dataAsOf: date, kind: 'NEW_SETUP', ruleVersion: strategy.version, recordedAt: meta.recordedAt, simulator: SIMULATOR_VERSION },
         levels: r.levels, facts: r.facts, rules: r.rules, transitions: [], exits: [],
         levelHistory: [{ date, trigger: round(r.levels.trigger), invalidation: round(r.levels.invalidation), ruleVersion: meta.ruleVersion }],
       };

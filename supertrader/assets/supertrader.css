@@ -321,3 +321,11 @@ details.st-details > div { padding: 0 16px 16px; }
   .st-plan-next { padding: 6px 9px; }
 }
 .st-plan-grid .k { white-space: normal; overflow: visible; }
+.st-reassess { font-size: 11.5px; line-height: 1.35; color: var(--st-text-2); background: rgba(96,165,250,.08); border: 1px solid rgba(96,165,250,.28); border-radius: 10px; padding: 6px 9px; }
+.st-reassess strong { color: var(--st-info); }
+.st-rc-tris { display: grid; grid-template-columns: 1fr; gap: 6px; }
+@media (min-width: 900px) { .st-rc-tris { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.st-rc-tri { background: var(--st-surface); border: 1px solid var(--st-line); border-radius: var(--st-radius-s); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.st-rc-tri .k { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--st-muted); }
+.st-rc-tri p { margin: 0; }
+@media (max-width: 640px) { .st-lens-head .st-kicker { display: none; } }

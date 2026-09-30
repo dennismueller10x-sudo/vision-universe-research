@@ -67,7 +67,8 @@ test('Historie wird nicht geloescht: Ledger-Eintraege bleiben erhalten', () => {
   for (const [id, st] of Object.entries(signals.strategies)) {
     const ledger = JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${id}.json`), 'utf8'));
     assert.equal(ledger.closed.length, st.closed.length);
-    assert.equal(ledger.invalidated.length, st.invalidatedTotal);
+    assert.equal(ledger.invalidated.length, st.invalidatedTotal + st.retiredTotal, "ungueltige + abgeloeste = alle Ledger-Eintraege");
+    assert.equal(st.retired.length, st.retiredTotal, "alle abgeloesten Setups ausgeliefert");
     assert.ok(st.invalidated.length <= st.invalidatedTotal);
     assert.ok(ledger.liveSince && ledger.lastProcessed >= ledger.liveSince);
   }
@@ -113,11 +114,18 @@ test('Regelkarten: jede Live-Variante hat eine vollstaendige Karte mit existiere
     for (const e of ['gap', 'volume', 'missingData', 'conflictPre', 'conflictPos', 'version']) assert.ok(card.edge_cases.some((x) => x.id === e), `${id}: Randfall ${e}`);
     const ids = new Set(s.rules.map((r) => r.rule_id));
     for (const x of [...card.sections, ...card.edge_cases]) { for (const r of x.rules) assert.ok(ids.has(r), `${id}: ${r}`); assert.ok(['ORIGINAL', 'VU', 'MIXED', 'NONE'].includes(x.provenance)); }
-    assert.ok(['COMPLETE', 'INCOMPLETE'].includes(card.completeness.status));
+    // Drei getrennte Aussagen: ausfuehrbar, Quellenlage, historische Validierung.
+    assert.equal(card.executable.status, 'EXECUTABLE', id);
+    assert.ok(card.source_basis.status && card.source_basis.fidelityReview === 'NOT_PERFORMED', `${id}: Originaltreue als geprueft ausgegeben`);
+    assert.ok(card.source_basis.ruleCounts.original + card.source_basis.ruleCounts.vu > 0);
+    assert.equal(card.historical_validation.status, 'NOT_VALIDATED', `${id}: ohne bestandene Gates keine Validierung`);
+    assert.ok(card.historical_validation.failedGates.length > 0);
+    assert.equal(card.completeness, undefined, `${id}: pauschales „vollständig“ ist abgeschafft`);
     assert.ok(ids.has(card.plan.confirmRuleId) && ids.has(card.plan.invalidationRuleId));
   }
   const mi = registry.strategies.find((x) => x.strategy_id === 'MINERVINI_VCP').rule_cards[0];
-  assert.equal(mi.completeness.status, 'INCOMPLETE', 'Minervini-Ausstieg ist keine belastbare Originalregel');
+  assert.equal(mi.source_basis.status, 'EXIT_NOT_SOURCE_BACKED', 'Minervini-Ausstieg ist keine belastbare Originalregel');
+  assert.equal(registry.strategies.find((x) => x.strategy_id === 'GREENBLATT_VALUE').rule_cards[0].executable.status, 'NOT_EXECUTABLE');
   const gb = registry.strategies.find((x) => x.strategy_id === 'GREENBLATT_VALUE').rule_cards[0];
   assert.equal(gb.inactive, true);
   assert.ok(gb.sections.some((x) => x.id === 'rebalance'));
@@ -155,4 +163,35 @@ test('Versionswechsel: abgeloeste Signale bleiben im Ledger, neue tragen die Ver
     for (const s of ledger.open) assert.ok(s.id.endsWith(`:v${s.version}`), s.id);
     for (const s of ledger.invalidated.filter((x) => x.transitions.at(-1).ruleId === 'LC-VERSION-RETIRED')) assert.notEqual(s.version, st.version);
   }
+});
+
+test('Regelwechsel ist kein Marktereignis: Neubewertungen verweisen auf Vorgaenger und Kursstand', () => {
+  let retired = 0, reassessed = 0;
+  for (const [id, st] of Object.entries(signals.strategies)) {
+    const ledger = JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${id}.json`), 'utf8'));
+    const all = new Map([...ledger.open, ...ledger.closed, ...ledger.invalidated].map((s) => [s.id, s]));
+    for (const r of ledger.invalidated.filter((x) => x.transitions.at(-1).ruleId === 'LC-VERSION-RETIRED')) {
+      retired++;
+      assert.ok('successorId' in r.retiredBy, `${r.id}: Nachfolger nicht dokumentiert`);
+      if (!r.retiredBy.successorId) continue;
+      const n = all.get(r.retiredBy.successorId);
+      assert.ok(n, `${r.id}: Nachfolger fehlt im Ledger`);
+      const ra = n.discovery.reassessment;
+      assert.equal(n.discovery.kind, 'RULE_VERSION_REASSESSMENT');
+      assert.equal(ra.previousSignalId, r.id);
+      assert.equal(ra.originalDiscoveryDate, r.createdAt, 'urspruengliches Entdeckungsdatum bleibt');
+      assert.ok(n.createdAt <= r.retiredBy.date, `${n.id}: Neubewertung datiert nach dem Kursstand des Wechsels`);
+      assert.equal(ra.priceDataAsOf, n.createdAt);
+      assert.equal(n.transitions[0].origin, 'RULE_VERSION_REASSESSMENT');
+    }
+    const open = st.open.filter((x) => x.discovery?.kind === 'RULE_VERSION_REASSESSMENT');
+    reassessed += open.length;
+    assert.equal(st.retiredTotal, ledger.invalidated.filter((x) => x.transitions.at(-1).ruleId === 'LC-VERSION-RETIRED').length);
+    assert.ok(!st.invalidated.some((x) => x.transitions.at(-1).ruleId === 'LC-VERSION-RETIRED'), 'Abgeloeste Setups nicht als ungueltig ausgeliefert');
+  }
+  assert.equal(signals.counts.RETIRED_BY_RULE_VERSION, retired);
+  assert.equal(signals.counts.REASSESSED_AFTER_RULE_CHANGE, reassessed);
+  const allOpen = Object.values(signals.strategies).flatMap((st) => st.open);
+  assert.equal(signals.counts.NEW_SINCE_PREVIOUS_DATA, allOpen.filter((x) => x.discovery?.kind !== 'RULE_VERSION_REASSESSMENT' && x.createdAt > (JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data/ledger', `${x.strategyId}.json`), 'utf8')).previousDataAsOf || '')).length, 'Neubewertungen zaehlen nicht als neue Setups');
+  for (const x of allOpen) assert.ok(x.createdAt <= signals.asOf, `${x.id}: Entdeckung nach dem Datenstand`);
 });

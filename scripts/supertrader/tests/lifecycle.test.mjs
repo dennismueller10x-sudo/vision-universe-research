@@ -9,7 +9,7 @@ import { simulate } from '../engine/simulator.mjs';
 import { phaseOf } from '../engine/lifecycle.mjs';
 import darvas from '../engine/strategies/darvas.mjs';
 import kk from '../engine/strategies/kk-breakout.mjs';
-import { applyVersionPolicy, assertAppendOnly, planOf } from '../build.mjs';
+import { applyVersionPolicy, assertAppendOnly, planOf, linkReassessment, isReassessment } from '../build.mjs';
 
 const slip = DEFAULT_EXECUTION.slippageBps / 10000;
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} != ${b}`);
@@ -291,4 +291,30 @@ test('Plan: geplante Schwellen sind als geplant markiert, Einstieg nur als tatsa
   assert.equal(p2.entry.kind, 'MODEL_EXECUTION');
   assert.equal(p2.entry.basis, 'NEXT_OPEN');
   assert.equal(p2.phase, 'POSITION');
+});
+
+test('Regression: Neubewertung nach Regelwechsel erscheint nicht als neues Setup vom Laufdatum', () => {
+  // Setup unter alter Version am letzten Kursstand entdeckt.
+  const rows = base();
+  const ctx = ctxOf(rows);
+  const dataDate = ctx.bars.date[rows.length - 1];
+  const oldEngine = { ...darvas, version: '1.1.0' };
+  const first = simulate(oldEngine, ctx, { from: 262, recordedAt: 'r1' }).state.signal;
+  assert.ok(first && first.version === '1.1.0');
+  const before = { open: [JSON.parse(JSON.stringify(first))], closed: [], invalidated: [] };
+  // Regelwechsel, KEIN neuer Balken: Build-Lauf Tage spaeter auf demselben Kursstand.
+  const { retired } = applyVersionPolicy(darvas, [first], dataDate, 'r2');
+  const re = simulate(darvas, ctx, { from: rows.length - 1, recordedAt: 'r2' }).state.signal;
+  assert.ok(re, 'neue Version erkennt das Setup auf demselben Kursstand');
+  linkReassessment(retired[0], re);
+  assert.ok(isReassessment(re));
+  assert.equal(re.createdAt, dataDate, 'Datum ist der Kursstand, nicht das Laufdatum');
+  assert.equal(re.discovery.reassessment.originalDiscoveryDate, first.createdAt);
+  assert.equal(re.discovery.reassessment.priceDataAsOf, dataDate);
+  assert.equal(re.discovery.reassessment.previousVersion, '1.1.0');
+  assert.equal(retired[0].retiredBy.successorId, re.id);
+  assert.notEqual(re.id, first.id);
+  assertAppendOnly(before, { open: [re], closed: [], invalidated: [retired[0]] });
+  // Ein echtes neues Setup traegt dagegen NEW_SETUP.
+  assert.equal(first.discovery.kind, 'NEW_SETUP');
 });
