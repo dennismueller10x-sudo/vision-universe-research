@@ -279,7 +279,7 @@
       } catch (e) { out.replaceChildren(X.notice("Regel unvollständig", "Bitte gib für jede Regel einen gültigen Wert ein.")); return; }
       var query;
       try { query = W.build(filters, [{ field: sort.value, direction: dir.value }]); }
-      catch (e) { out.replaceChildren(X.notice("Regeln nicht ausführbar", "Mindestens eine Regel liegt außerhalb dessen, was die Kennzahl zulässt. Es werden keine Treffer gezeigt, bis die Regeln gültig sind.")); code.textContent = ""; return; }
+      catch (e) { out.replaceChildren(X.notice("Regeln nicht ausführbar", "Mindestens eine Regel liegt außerhalb dessen, was die Kennzahl zulässt. Es werden keine Treffer gezeigt, bis die Regeln gültig sind.")); return; }
       out.replaceChildren(X.loading("Wird gesucht …"));
       var res = await api.screen(query).catch(function () { return null; });
       if (mine !== request) return;
