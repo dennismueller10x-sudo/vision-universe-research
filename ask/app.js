@@ -19,11 +19,20 @@
 
   var ENDPOINT = (meta('vu-ask-endpoint') || '').replace(/\/+$/, '');
   var TURNSTILE_KEY = meta('vu-ask-turnstile');
-  var EXAMPLES = [
-    'Gib mir alle Aktien mit neuem 52-Wochen-Hoch, Marktkapitalisierung über 300 Millionen, aber unter 2 Milliarden, die ins Minervini-Raster passen – mit Quant-Faktoren',
-    'Wie stark ist der Free Cashflow bei Nvidia gewachsen?',
-    'Welche profitablen Tech-Aktien haben im letzten halben Jahr am meisten zugelegt?',
-    'Zeig mir günstig bewertete Small Caps mit wenig Schulden'
+  /* Ideen fuer den Einstieg - echte Fragen, die heute vollstaendig
+     beantwortet werden koennen. */
+  var IDEAS = [
+    { icon: 'trend', text: 'Profitable Small Caps mit neuem 52-Wochen-Hoch im Minervini-Raster',
+      q: 'Gib mir alle Aktien mit neuem 52-Wochen-Hoch, Marktkapitalisierung über 300 Millionen, aber unter 2 Milliarden, die ins Minervini-Raster passen – mit Quant-Faktoren' },
+    { icon: 'doc', text: 'Wie stark ist der Free Cashflow bei Nvidia gewachsen?', q: 'Wie stark ist der Free Cashflow bei Nvidia gewachsen?' },
+    { icon: 'scale', text: 'Nvidia vs. AMD vs. Broadcom – Wachstum und Bewertung', q: 'Vergleiche Nvidia, AMD und Broadcom bei Umsatzwachstum, Marge und KGV' },
+    { icon: 'funnel', text: 'Günstig bewertete Small Caps mit wenig Schulden', q: 'Zeig mir günstig bewertete Small Caps mit wenig Schulden' }
+  ];
+  var MODULES = [
+    { icon: 'quant', name: 'Quant', text: 'Faktoren. Muster. Scores.', href: '/quant/' },
+    { icon: 'funnel', name: 'Screener', text: 'Chancen. Filter. Setups.', href: '/screener/' },
+    { icon: 'compass', name: 'Discover', text: 'Märkte. Themen. Ideen.', href: '/discover/' },
+    { icon: 'trend', name: 'SuperTrader', text: 'Strategien. Signale. Edge.', href: '/supertrader/' }
   ];
 
   var main = document.getElementById('ak-main');
@@ -53,7 +62,17 @@
     mic: 'M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0M12 17v4m-3 0h6',
     send: 'M5 12h13m-5-6 6 6-6 6',
     speaker: 'M4 9v6h4l5 4V5L8 9H4Zm12.5-1.5a6 6 0 0 1 0 9m-2-6.5a2.5 2.5 0 0 1 0 4',
-    lock: 'M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z'
+    lock: 'M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z',
+    spark: 'M12 3v5m0 8v5M3 12h5m8 0h5M6.5 6.5l3 3m5 5 3 3m0-11-3 3m-5 5-3 3',
+    quant: 'M5 20V13m5 7V8m5 12V11m5 9V4',
+    funnel: 'M4 5h16l-6 7.5V19l-4 1.5v-8L4 5Z',
+    compass: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3.5-12.5-2 5-5 2 2-5 5-2Z',
+    trend: 'M4 19 10 13l3 3 7-8m-5 0h5v5',
+    doc: 'M7 3h7l4 4v14H7V3Zm7 0v4h4M10 12h5m-5 4h5',
+    scale: 'M12 4v16m-6 0h12M5 8h14M5 8l-2.5 6a2.5 2.5 0 0 0 5 0L5 8Zm14 0-2.5 6a2.5 2.5 0 0 0 5 0L19 8Z',
+    shield: 'M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Zm-3 9 2 2 4-4',
+    arrow: 'M9 6l6 6-6 6',
+    check: 'M5 12.5 9.5 17 19 7'
   };
   function icon(name) {
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -81,8 +100,8 @@
   /* ------------------------------------------------------------ Aufbau */
   var Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
   var canSpeak = 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function';
-  var input = h('textarea', { id: 'ak-q', rows: '2', 'aria-label': 'Ihre Frage an Vision Universe', maxlength: '400',
-    placeholder: Speech ? 'Fragen oder aufs Mikrofon tippen und sprechen …' : 'Stellen Sie Ihre Frage in eigenen Worten …' });
+  var input = h('textarea', { id: 'ak-q', rows: '1', 'aria-label': 'Ihre Frage an Vision Universe', maxlength: '400',
+    placeholder: Speech ? 'Frag Atlas … oder aufs Mikrofon tippen' : 'Frag Atlas …' });
   var sendBtn = h('button', { class: 'ak-send', type: 'submit', 'aria-label': 'Frage senden' }, [icon('send')]);
   var micBtn = Speech ? h('button', { class: 'ak-mic', type: 'button', 'aria-pressed': 'false', 'aria-label': 'Frage sprechen', onclick: dictate }, [icon('mic')]) : null;
   var readAloud = canSpeak && (function () { try { return localStorage.getItem('vu-ask-read') !== '0'; } catch (e) { return true; } })();
@@ -127,28 +146,58 @@
   }
   function unlock() { accessForm.hidden = true; form.hidden = false; toolsRow.hidden = false; examplesEl.hidden = false; }
 
-  var toolsRow = h('div', { class: 'ak-tools' }, [quotaEl, speakBtn]);
-  var examplesEl = h('div', { class: 'ak-examples', 'aria-label': 'Beispielfragen' }, EXAMPLES.map(function (x) {
-    return h('button', { class: 'ak-chip', type: 'button', text: x, onclick: function () { input.value = x; input.focus(); } });
-  }));
+  var toolsRow = h('div', { class: 'ak-status' }, [
+    h('span', { class: 'ak-live' }, [h('i', { 'aria-hidden': 'true' }), '3 Systeme verbunden']),
+    h('span', { class: 'ak-status-list', text: 'Screener · SuperTrader · Quant-Faktoren' }),
+    quotaEl, speakBtn
+  ]);
+  function ask(q) { input.value = q; input.dispatchEvent(new Event('input')); input.focus(); try { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} }
+  var examplesEl = h('section', { class: 'ak-section', 'aria-labelledby': 'ak-ideas-h' }, [
+    h('div', { class: 'ak-section-head' }, [h('h2', { id: 'ak-ideas-h', text: 'Ideen für Sie' })]),
+    h('div', { class: 'ak-ideas' }, IDEAS.map(function (x) {
+      return h('button', { class: 'ak-idea', type: 'button', onclick: function () { ask(x.q); } }, [
+        h('span', { class: 'ak-idea-icon' }, [icon(x.icon)]), h('span', { class: 'ak-idea-text', text: x.text }), h('span', { class: 'ak-idea-go' }, [icon('arrow')])
+      ]);
+    }))
+  ]);
+  var modulesEl = h('section', { class: 'ak-section', 'aria-labelledby': 'ak-mod-h' }, [
+    h('div', { class: 'ak-section-head' }, [h('h2', { id: 'ak-mod-h', text: 'Quick Access' }), h('a', { href: '/', class: 'ak-more' }, ['Alle Module', icon('arrow')])]),
+    h('div', { class: 'ak-modules' }, MODULES.map(function (m) {
+      return h('a', { class: 'ak-module', href: m.href }, [
+        h('span', { class: 'ak-module-icon' }, [icon(m.icon)]),
+        h('span', { class: 'ak-module-text' }, [h('b', { text: m.name }), h('small', { text: m.text })]),
+        icon('arrow')
+      ]);
+    }))
+  ]);
 
-  main.appendChild(h('section', { class: 'ak-hero' }, [
-    h('div', { class: 'ak-hero-inner' }, [
-      h('div', { class: 'ak-orb', 'aria-hidden': 'true' }, [h('span'), h('span'), h('span')]),
-      h('p', { class: 'ak-kicker', text: 'Vision Universe AI · Beta' }),
-      h('h1', { class: 'ak-h1' }, ['Fragen Sie. ', h('span', { text: 'Vision Universe rechnet.' })]),
-      h('p', { class: 'ak-lead', text: 'Schreiben oder sprechen Sie Ihre Investmentfrage in eigenen Worten. Die AI übersetzt sie in Filter – jede Zahl stammt aus den Daten von Vision Universe, nicht aus der AI.' }),
-      accessForm,
-      form,
-      voiceEl,
-      toolsRow,
-      examplesEl,
-      h('ul', { class: 'ak-sources', 'aria-label': 'Durchsuchte Daten' }, [
-        ['5.399', 'US-Aktien'], ['78', 'Kennzahlen'], ['4', 'Supertrader-Strategien'], ['7', 'Quant-Faktoren']
-      ].map(function (x) { return h('li', {}, [h('b', { text: x[0] }), ' ' + x[1]]); }))
-    ])
+  main.appendChild(h('header', { class: 'ak-top' }, [
+    h('div', {}, [
+      h('h1', { class: 'ak-title' }, [icon('spark'), 'Ask Atlas']),
+      h('p', { class: 'ak-sub', text: 'Ihre intelligente Verbindung zum Vision-Universe-Ökosystem.' }),
+      h('ul', { class: 'ak-checks' }, ['Echte Daten', 'Verifizierte Quellen', 'Sprachsteuerung'].map(function (t) {
+        return h('li', {}, [h('span', { class: 'ak-check' }, [icon('check')]), t]);
+      }))
+    ]),
+    h('div', { class: 'ak-orb', 'aria-hidden': 'true' }, [h('span'), h('span'), h('span')])
   ]));
+  main.appendChild(h('section', { class: 'ak-stage' }, [
+    h('div', { class: 'ak-globe', 'aria-hidden': 'true' }),
+    h('div', { class: 'ak-stage-copy' }, [
+      h('p', { class: 'ak-kicker', text: 'Vision Universe Intelligence' }),
+      h('h2', { class: 'ak-h1', text: 'Was möchten Sie heute analysieren?' }),
+      h('p', { class: 'ak-lead', text: 'Stellen Sie Ihre Frage zu Aktien, Kennzahlen und Strategien – getippt oder gesprochen. Atlas übersetzt sie in Filter; jede Zahl stammt aus den Daten von Vision Universe.' })
+    ]),
+    h('p', { class: 'ak-stage-side', text: 'Mehr Perspektive. Bessere Entscheidungen.' })
+  ]));
+  main.appendChild(h('div', { class: 'ak-askwrap' }, [accessForm, form, voiceEl, toolsRow]));
   main.appendChild(conversation);
+  main.appendChild(modulesEl);
+  main.appendChild(examplesEl);
+  main.appendChild(h('div', { class: 'ak-verified' }, [
+    h('span', { class: 'ak-verified-icon' }, [icon('shield')]),
+    h('div', {}, [h('b', { text: 'Verified by Vision Universe' }), h('span', { text: 'AI interpretiert. Vision Universe liefert die Daten.' })])
+  ]));
   main.appendChild(h('p', { class: 'ak-fine ak-foot', text: 'Beta: Die Zahl neuer Fragen pro Tag ist begrenzt; bereits gestellte Fragen werden kostenlos aus dem Archiv beantwortet. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung Ihres Browsers (in Chrome über Google-Server).' : '') }));
 
   if (!ENDPOINT) {
