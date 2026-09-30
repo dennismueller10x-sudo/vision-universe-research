@@ -180,7 +180,7 @@
 
   main.appendChild(h('header', { class: 'ak-top' }, [
     h('div', {}, [
-      h('h1', { class: 'ak-title' }, [icon('spark'), 'Ask Atlas']),
+      h('h1', { class: 'ak-title' }, [icon('spark'), 'AI Atlas']),
       h('p', { class: 'ak-sub', text: 'Ihre intelligente Verbindung zum Vision-Universe-Ökosystem.' }),
       h('ul', { class: 'ak-checks' }, ['Echte Daten', 'Verifizierte Quellen', 'Sprachsteuerung'].map(function (t) {
         return h('li', {}, [h('span', { class: 'ak-check' }, [icon('check')]), t]);
