@@ -56,11 +56,14 @@ VU_ASK_PER_USER_DAILY = "10"
 VU_ASK_GLOBAL_DAILY = "100"
 
 # ---- Geld --------------------------------------------------------------------
-# Aufgeladen sind 5 $ Prepaid (ohne Auto-Reload). Die Grenzen liegen knapp
-# darunter: Der Worker stoppt mit einer sauberen Meldung, bevor Anthropic
-# wegen leeren Guthabens ablehnt. Wird nachgeladen, beide Werte erhoehen.
-VU_ASK_MONTHLY_USD = "4.5"
-VU_ASK_TOTAL_USD = "4.5"
+# DIE HARTE GRENZE IST DAS PREPAID-GUTHABEN BEI ANTHROPIC (ohne Auto-Reload):
+# Ist es aufgebraucht, lehnt Anthropic ab, es entsteht keine Rechnung, und
+# die Seite meldet "Kontingent aufgebraucht". Nach dem Aufladen geht es von
+# selbst weiter - ohne Codeaenderung.
+# Die beiden Werte hier sind nur ein Sicherheitsnetz gegen Fehler in diesem
+# Code und greifen im Normalbetrieb nie.
+VU_ASK_MONTHLY_USD = "100"
+VU_ASK_TOTAL_USD = "100000"
 VU_ASK_MAX_OUTPUT_TOKENS = "1200"
 VU_ASK_REQUESTS_PER_IP_DAILY = "60"
 

@@ -147,6 +147,9 @@ export class AskGate {
       return this.refuse(403, "BOT_CHECK", ip, body.clientId);
     }
 
+    const emptyAt = await this.storage.get("creditEmptyAt");
+    if (emptyAt && now - emptyAt < 15 * 60e3) return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId);
+
     /* 4 — Die Grenzen. Gerechnet wird mit dem schlechtesten Fall. */
     const reserve = worstCase(limits.model, promptChars(question), limits.maxOutputTokens);
     const got = await this.storage.get(["t", "m:" + month, "d:" + day]);
@@ -173,6 +176,14 @@ export class AskGate {
        Tagesgrenze mit absichtlich scheiternden Fragen umgehen. */
     await this.book({ month, day, ids, usd, userLlm: answer.ok ? 0 : -1, dayLlm: 0, calls: answer.billed === false ? 0 : 1 });
 
+    if (answer.error === "CREDIT_EXHAUSTED") {
+      /* Das Prepaid-Guthaben bei Anthropic ist leer - die gewollte harte
+         Grenze. 15 Minuten lang wird gar nicht mehr gefragt; danach wird
+         einmal neu versucht, damit eine Aufladung ohne Eingriff wirkt. */
+      await this.storage.put("creditEmptyAt", now);
+      await this.log({ question, source: "claude", status: "rejected", error: "CREDIT_EXHAUSTED" });
+      return this.refuse(429, "CREDIT_EXHAUSTED", ip, body.clientId);
+    }
     if (!answer.ok) {
       await this.log({ question, source: "claude", status: "error", error: answer.error, usd: actual });
       return json(502, { ok: false, reason: "UPSTREAM", message: "Die Frage konnte gerade nicht ausgewertet werden. Ihr Kontingent wurde nicht belastet.",

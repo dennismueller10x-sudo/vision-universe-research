@@ -15,14 +15,16 @@ Eine neue Frage kostet mit Haiku 4.5 ($1 / $5 je Mio. Token) nach Schätzung **e
 
 Die Grenzen wirken von außen nach innen:
 
-| # | Grenze | Wo | Standard |
+| # | Grenze | Wo | Einstellung |
 |---|---|---|---|
-| 1 | **Prepaid-Guthaben, automatisches Nachladen AUS** | console.anthropic.com → Billing | 250 $ |
-| 2 | Gesamtbudget | `VU_ASK_TOTAL_USD` | 200 $ |
-| 3 | Monatsbudget | `VU_ASK_MONTHLY_USD` | 20 $ |
-| 4 | Fragen pro Tag, alle Nutzer | `VU_ASK_GLOBAL_DAILY` | 200 |
-| 5 | Fragen pro Anschluss/Browser und Tag | `VU_ASK_PER_USER_DAILY` | 1 |
-| 6 | Alle Anfragen pro Anschluss und Tag (auch Cache) | `VU_ASK_REQUESTS_PER_IP_DAILY` | 40 |
+| 1 | **Prepaid-Guthaben, automatisches Nachladen AUS** – die harte Grenze | console.anthropic.com → Billing | 5 $ |
+| 2 | Sicherheitsnetz gegen Codefehler (greift im Normalbetrieb nie) | `VU_ASK_MONTHLY_USD` | 100 $ |
+| 3 | Fragen pro Tag, alle Nutzer | `VU_ASK_GLOBAL_DAILY` | 100 |
+| 4 | Fragen pro Anschluss/Browser und Tag | `VU_ASK_PER_USER_DAILY` oder GitHub-Variable | 10 |
+| 5 | Alle Anfragen pro Anschluss und Tag (auch Cache) | `VU_ASK_REQUESTS_PER_IP_DAILY` | 60 |
+| 6 | Beta-Passwort | `VU_ASK_ACCESS_HASH` (nur der Hash) | aktiv |
+
+Ist das Guthaben leer, meldet die Seite „Kontingent aufgebraucht“; der Worker fragt dann 15 Minuten lang gar nicht mehr und versucht es danach einmal neu. **Nachladen genügt – keine Codeänderung.** Modell ist ausschließlich Claude Haiku 4.5; der Worker kennt für kein anderes Modell einen Preis und ruft keines auf.
 
 - **Grenze 1 ist die entscheidende.** Ist das Guthaben aufgebraucht und das Nachladen aus, lehnt Anthropic ab. Eine Rechnung kann dann nicht entstehen, auch nicht bei einem Fehler in diesem Code. Zusätzlich empfehlenswert: unter *Limits* ein Monats-Ausgabenlimit für den Workspace setzen.
 - **Die Grenzen 2–5 rechnen vorher.** Vor jedem Aufruf wird der schlechteste Fall reserviert, also die volle Eingabe plus die maximale Ausgabe. Passt die Reservierung nicht mehr unter eine Grenze, geht keine Anfrage hinaus.

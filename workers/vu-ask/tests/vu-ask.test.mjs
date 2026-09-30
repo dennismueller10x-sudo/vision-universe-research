@@ -326,11 +326,12 @@ test("Zugangsschranke: eigenes Passwort als Secret gilt zusaetzlich zum Hash", a
   assert.equal(r.status, 200);
 });
 
-test("Konfiguration: Beta-Grenzen liegen unter den 5 $ Prepaid", async () => {
+test("Konfiguration: Beta-Grenzen (harte Geldgrenze ist das Prepaid-Guthaben)", async () => {
   const { readFileSync } = await import("node:fs");
   const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
   const v = (k) => Number((toml.match(new RegExp(k + ' = "([^"]+)"')) || [])[1]);
-  assert.ok(v("VU_ASK_TOTAL_USD") < 5 && v("VU_ASK_MONTHLY_USD") < 5);
+  assert.ok(v("VU_ASK_MONTHLY_USD") > 0 && v("VU_ASK_GLOBAL_DAILY") > 0);
+  assert.match(toml, /VU_ASK_MODEL = "claude-haiku-4-5"/);
   assert.equal(v("VU_ASK_PER_USER_DAILY"), 10);
   assert.match(toml, /VU_ASK_ACCESS_HASH = "[0-9a-f]{64}"/);
 });
@@ -339,4 +340,30 @@ test("Zugangsschranke: der Admin-Key oeffnet sie fuer den Live-Test", async () =
   const env = fakeEnv({ ...ENV, VU_ASK_ACCESS_HASH: "0".repeat(64) });
   const r = await worker.fetch(new Request("https://ask.example/v1/quota?client=x", { headers: { "x-vu-access": "admin-geheim" } }), env);
   assert.equal(r.status, 200);
+});
+
+test("Leeres Anthropic-Guthaben: saubere Meldung, keine Kosten, 15 Minuten keine weiteren Aufrufe", async () => {
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    calls.push(url);
+    return new Response(JSON.stringify({ type: "error", error: { type: "invalid_request_error", message: "Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits." } }), { status: 400 });
+  };
+  const { gate, storage, clock } = makeGate({ ...ENV, VU_ASK_PER_USER_DAILY: "100" }, fetchImpl);
+  const a = await ask(gate, "Erste Frage zu Aktien");
+  assert.equal(a.body.reason, "CREDIT_EXHAUSTED");
+  assert.match(a.body.message, /aufgebraucht/);
+  assert.equal(a.body.quota.remainingToday, 100, "Kontingent zurueck");
+  assert.equal(storage.map.get("m:2026-09").usd, 0);
+  await ask(gate, "Zweite Frage zu Aktien");
+  assert.equal(calls.length, 1, "innerhalb von 15 Minuten kein zweiter Aufruf");
+  clock.t += 16 * 60e3;
+  await ask(gate, "Dritte Frage zu Aktien");
+  assert.equal(calls.length, 2, "danach ein neuer Versuch - eine Aufladung wirkt ohne Eingriff");
+});
+
+test("Modell: nur Haiku hat einen Preis - jedes andere Modell wird nicht aufgerufen", async () => {
+  const { gate, fetchImpl } = makeGate({ ...ENV, VU_ASK_MODEL: "claude-fable-5-1" });
+  const r = await ask(gate, "Welche Aktien stehen auf einem Jahreshoch?");
+  assert.notEqual(r.status, 200);
+  assert.equal(fetchImpl.calls.length, 0);
 });

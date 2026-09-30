@@ -60,6 +60,8 @@ export async function interpret({ apiKey, model, question, maxOutputTokens, fetc
        "credit balance" heisst: das Prepaid-Guthaben ist leer - genau die
        Sicherung, die greifen soll. */
     const type = body && body.error && body.error.type;
+    const msg = String(body && body.error && body.error.message || "");
+    if (/credit balance|billing|purchase credits/i.test(msg)) return { ok: false, error: "CREDIT_EXHAUSTED", billed: false };
     return { ok: false, error: res.status === 429 ? "UPSTREAM_RATE_LIMIT" : "UPSTREAM_" + (type || res.status), billed: false };
   }
   const usage = body && body.usage;

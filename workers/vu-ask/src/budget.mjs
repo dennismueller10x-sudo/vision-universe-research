@@ -103,5 +103,6 @@ export const REASON_TEXT = {
   MONTHLY_BUDGET: "Das Monatsbudget der Fragefunktion ist ausgeschöpft.",
   TOTAL_BUDGET: "Das Budget der Fragefunktion ist ausgeschöpft.",
   RATE_LIMIT: "Zu viele Anfragen von diesem Anschluss. Bitte morgen erneut versuchen.",
+  CREDIT_EXHAUSTED: "Das Kontingent der Fragefunktion ist aufgebraucht. Bereits gestellte Fragen werden weiter beantwortet.",
   BOT_CHECK: "Die Sicherheitsprüfung ist fehlgeschlagen. Bitte die Seite neu laden.",
 };
