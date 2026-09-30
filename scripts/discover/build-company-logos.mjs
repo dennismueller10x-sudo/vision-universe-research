@@ -394,7 +394,14 @@ if (!args["no-web"] && !DRY) {
     collectItems(await sparql(SPARQL_SITE_BY_TICKER), siteItems);
     const siteMatches = matchUniverse(ohne, siteItems).matches;
     const siteOf = new Map();
+    /* Von Hand gepflegte Adressen gehen vor (discover/config/logo-sites.json). */
+    const kuratiert = readJson(join(root, "discover", "config", "logo-sites.json"), { symbols: {} }).symbols || {};
     for (const r of ohne) {
+      const site = kuratiert[r.symbol] && normalizeSite(kuratiert[r.symbol]);
+      if (site) siteOf.set(r.symbol, { ...site, via: "KURATIERT" });
+    }
+    for (const r of ohne) {
+      if (siteOf.has(r.symbol)) continue;
       const quelle = siteMatches.get(r.symbol) || matches.get(r.symbol);
       const site = quelle && (quelle.sites || []).map(normalizeSite).find(Boolean);
       if (site) siteOf.set(r.symbol, { ...site, via: "WIKIDATA_" + quelle.via });

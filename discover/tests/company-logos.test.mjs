@@ -437,3 +437,11 @@ test("Urheberangabe aus Commons: lesbar, kein Name faellt weg", () => {
   assert.equal(checkLicense(info("Tesla (logo), Fry1989 eh? (vectorization)")).author, "Tesla, Fry1989");
   assert.equal(checkLicense(info("null")).reason, "URHEBER_FEHLT");
 });
+
+test("Kuratierte Websites: gueltige Adressen, nur Titel des Universums", () => {
+  const sites = JSON.parse(readFileSync(join(root, "discover", "config", "logo-sites.json"), "utf8")).symbols;
+  for (const [sym, url] of Object.entries(sites)) {
+    assert.ok(safeSymbol(sym), sym);
+    assert.ok(normalizeSite(url), sym + ": " + url);
+  }
+});
