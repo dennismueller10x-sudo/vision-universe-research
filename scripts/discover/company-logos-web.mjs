@@ -371,7 +371,9 @@ export async function isLightOnTransparent(buf, sharp) {
  */
 export function logoFilings(recent, max = 3) {
   if (!recent || !Array.isArray(recent.form)) return [];
-  const rang = ["DEF 14A", "ARS", "DEFA14A", "10-K", "20-F", "40-F", "S-1", "F-1", "424B4", "6-K", "8-K"];
+  /* Ohne 424B4: im endgueltigen Prospekt stehen auf dem Deckblatt die
+     Logos der Emissionsbanken, nicht das der Firma. */
+  const rang = ["DEF 14A", "ARS", "DEFA14A", "10-K", "20-F", "40-F", "S-1", "F-1", "6-K", "8-K"];
   const out = [];
   for (const form of rang) {
     for (let i = 0; i < recent.form.length && out.length < max; i++) {
@@ -406,6 +408,10 @@ export function secLogoImages(html, docUrl, companyName, opts = {}) {
     /* Nur ausdruecklich als Logo bezeichnete Bilder - der Firmenname im
        Alternativtext traf auch Titelseiten und Fotos (Micron, Cadence). */
     if (!/logo/.test(hinweis)) continue;
+    /* Emissionsbanken, Kanzleien, Treuhaender: ihr Logo steht im Prospekt
+       neben dem der Firma - nur, wenn die Firma selbst so heisst. */
+    const fremd = /(securities|underwrit|bookrunner|kingswood|viewtrade|ogier|revere|eddid|maxim|craft|prime.?number|digital.?offering|bancroft|arc.?group|network.?1|wealth)/.exec(hinweis);
+    if (fremd && !String(companyName || "").toLowerCase().includes(fremd[1].replace(/\W.*$/, ""))) continue;
     try { out.push(new URL(src, docUrl).href); } catch (e) { /* weiter */ }
     if (out.length >= 3) break;
   }

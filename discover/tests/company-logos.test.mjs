@@ -386,6 +386,11 @@ test("Index-Rettung: erstes Bild im Proxy Statement, BMP-Favicon lesbar", async 
   assert.deepEqual(secLogoImages(html, "https://www.sec.gov/x/p.htm", "United Airlines"), []);
   assert.deepEqual(secLogoImages(html, "https://www.sec.gov/x/p.htm", "United Airlines", { firstImage: true }), ["https://www.sec.gov/x/g1.jpg"]);
   assert.deepEqual(secLogoImages('<img src="sig.jpg" alt="signature">', "https://www.sec.gov/x/p.htm", "X", { firstImage: true }), []);
+  /* Prospekt: Logo der Emissionsbank neben dem der Firma - nur die Firma zaehlt. */
+  const prosp = '<img src="kingswood_logo.jpg" alt="Kingswood Capital logo"><img src="viewtrade-logo.png"><img src="acme_logo.png">';
+  assert.deepEqual(secLogoImages(prosp, "https://www.sec.gov/x/p.htm", "Acme Holdings"), ["https://www.sec.gov/x/acme_logo.png"]);
+  assert.deepEqual(secLogoImages('<img src="securities_logo.png">', "https://www.sec.gov/x/p.htm", "Cathay Securities Inc"), ["https://www.sec.gov/x/securities_logo.png"]);
+  assert.ok(!logoFilings({ form: ["424B4"], accessionNumber: ["1"], primaryDocument: ["p.htm"] }).length);
   /* ICO mit einem 32x32-BMP-Eintrag (32 bit): rote Flaeche. */
   const w = 32, h = 32, bmpSize = 40 + w * h * 4;
   const ico = Buffer.alloc(6 + 16 + bmpSize);
