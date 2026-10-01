@@ -25,9 +25,10 @@ export function seedPages(seed) {
    const total=pagination?.total==null?null:Number(pagination.total);
    for(let i=0;i<rows.length;i+=limit) {
     const page=rows.slice(i,i+limit),offset=start+i;
-    result.push({...e,ok:true,params:{...(e.params||{}),limit,offset},data:{pagination:{limit,offset,count:page.length,total:Number.isInteger(total)&&total>=0?total:null},data:endpoint==='exchanges'?page:{tickers:page}},seeded:true});
+    const normalizedPagination={limit,offset,count:page.length,total:Number.isInteger(total)&&total>=0?total:null};
+    result.push({...e,ok:true,pagination:normalizedPagination,nextOffset:offset+page.length,complete:Number.isInteger(total)&&offset+page.length>=total,params:{...(e.params||{}),limit,offset},data:{pagination:normalizedPagination,data:endpoint==='exchanges'?page:{tickers:page}},seeded:true,sourceRunId:seed.run?.runId||seed.runId||null});
    }
-  } else if(e.ok||e.reason)result.push({...e,params:e.params||{},seeded:true});
+  } else if(e.ok||e.reason)result.push({...e,params:e.params||{},seeded:true,sourceRunId:seed.run?.runId||seed.runId||null});
  }
  return result;
 }
