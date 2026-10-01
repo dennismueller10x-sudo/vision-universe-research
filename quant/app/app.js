@@ -38,7 +38,7 @@
       technical: okT ? "#/aktie/" + t + "/technik" : "#/aktien", elliott: okT ? "#/aktie/" + t + "/technik?elliott=1" : "#/aktien",
       fundamentals: okT ? "#/aktie/" + t + "/zahlen" : "#/aktien",
       compare: "#/vergleich" + (p.get("tickers") ? "/" + p.get("tickers") : okT ? "/" + t : ""),
-      watchlist: "#/aktien", signals: "#/radar", radar: "#/radar", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
+      watchlist: "#/aktien", signals: "#/radar", radar: "#/radar", backtest: "#/backtest", backtesting: "#/backtest", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
     };
     var target = map[view] || "#/";
     if (view === "screener") {
@@ -59,6 +59,7 @@
       case "strategien": r.view = "strategien"; r.id = parts[1] || null; break;
       case "aktien": r.view = "aktien"; break;
       case "radar": r.view = "radar"; break;
+      case "backtest": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
       case "aktie":
         r.ticker = String(parts[1] || "").toUpperCase();
         r.view = !/^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "notfound" : parts[2] === "technik" ? "technik" : parts[2] === "zahlen" ? "zahlen" : "aktie";
@@ -69,8 +70,8 @@
     }
     return r;
   }
-  var SECTION = { home: "home", radar: "home", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
-  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
+  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
+  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
@@ -248,6 +249,7 @@
       switch (r.view) {
         case "home": await global.QXPages.home(main, ctx); break;
         case "radar": await ctx.loadNames(); await global.QXPages.radar(main, ctx, r.params); break;
+        case "backtest": await global.QXBacktest.render(main, ctx, r.id); break;
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;

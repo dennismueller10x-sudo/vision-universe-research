@@ -315,7 +315,7 @@
         el("ul", {}, k.checks.filter(function (ch) { return ch.state === "FAIL"; }).map(function (ch) { return el("li", {}, [el("span", { text: ch.label + " – " }), el("small", { text: "nötig: " + ch.required + " · heute: " + ch.measured })]); }))]);
     })).concat([el("p", { class: "qx-small", text: "Solange eine dieser Bedingungen fehlt, veröffentlicht Quant für diese Arten keine Trefferquote und keine Rendite – eine Zahl ohne diese Grundlage sähe belastbarer aus, als sie ist." })])));
     kids.push(foot(r.isNot + " Die Fälle überlappen sich zeitlich und sind nicht unabhängig; Dividenden sind nicht enthalten."));
-    kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie Historical Replay rechnet", X.routes.method("historie"))]));
+    kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie Historical Replay rechnet", X.routes.method("historie")), el("span", { text: " · " }), X.link("Regeln und Setups im Backtesting", X.routes.backtest())]));
     return [el("div", { class: "qx-replay" }, kids)];
   }
 
@@ -651,8 +651,20 @@
     var evidence = await (api.getEvidenceStatus ? api.getEvidenceStatus().catch(function () { return null; }) : null);
     bodyHost.append(X.section("Was geschah früher in ähnlichen Situationen?", "Bei dieser Aktie in derselben Kurslage – und im gesamten Markt in ähnlichen Lagen. Keine Prognose.", replaySection(vm, words, evidence), { href: X.routes.method("historie"), label: "Wie das gerechnet wird" }, "02 / Historisch getestet", "historie"));
 
+    /* 4b: Radar-Status - die Verfolgung dieser Aktie: Zustand jetzt und
+       davor, seit wann, Ausloeser, Invalidierung, naechste Bedingung,
+       Evidenzstand und der historische Beleg je Ereignis. */
+    var trackHost = el("div", { class: "q-track-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Radar-Status wird geladen …" })]);
+    bodyHost.append(X.section("Radar-Status", "Was Quant für diese Aktie verfolgt – mit Datum und historischem Beleg. Keine Empfehlung.", [trackHost],
+      { href: X.routes.backtest(), label: "Backtesting" }, "03 / Radar-Status", "radar-status"));
+    (api.getSignalTracking ? api.getSignalTracking(ticker).catch(function () { return null; }) : Promise.resolve(null)).then(function (tr) {
+      if (!trackHost.isConnected) return;
+      var kids = global.QXBacktest ? global.QXBacktest.trackingSection(tr, ctx) : null;
+      trackHost.replaceChildren.apply(trackHost, kids || [el("p", { class: "qx-small", text: tr && tr.reason === "NOT_IN_SETUP_UNIVERSE" ? "Diese Aktie gehört nicht zum Setup-Universum; der Radar verfolgt sie nicht." : "Für diese Aktie liegt kein Radar-Status vor." })]);
+    });
+
     /* 5: Pro / Contra. */
-    if (hasFactors && o.rated >= 3) bodyHost.append(X.section("Was spricht dafür – und was dagegen?", null, balanceSection(vm), null, "03 / Pro und Contra", "dafuer"));
+    if (hasFactors && o.rated >= 3) bodyHost.append(X.section("Was spricht dafür – und was dagegen?", null, balanceSection(vm), null, "04 / Pro und Contra", "dafuer"));
 
     /* 6: Faktoren - die Kacheln im Ueberblick, darunter jede Eigenschaft
        bis zu den Rohdaten. */
@@ -660,9 +672,9 @@
       bodyHost.append(X.section("Was macht diese Aktie stark oder schwach?", "Jede Eigenschaft wird im Vergleich zu allen anderen Aktien eingeordnet. Antippen zeigt, woraus der Wert besteht – bis zu den Rohdaten.",
         [factorTiles(vm), el("div", { class: "dx-zahlen qx-factors" }, vm.factors.map(function (f) { return factorCard(f, ticker); })),
           foot("Wert 0–100: gewichtetes Mittel der Rangplätze der einzelnen Kennzahlen, 50 ist die Mitte. Die Stufen sind feste Wertgrenzen (ab 90 sehr stark, ab 75 stark, ab 45 durchschnittlich, ab 25 schwach) – keine Anteile des Marktes. Die Position im Markt ist deshalb eigens gezählt. Stand " + X.dateDe(vm.asOf && vm.asOf.factors) + (vm.asOf && vm.asOf.fundamentals ? ", Geschäftszahlen bis " + X.dateDe(vm.asOf.fundamentals) : "") + ".")],
-        { href: X.routes.method("faktoren"), label: "Wie Faktoren entstehen →" }, "04 / Die sieben Eigenschaften", "einordnung"));
+        { href: X.routes.method("faktoren"), label: "Wie Faktoren entstehen →" }, "05 / Die sieben Eigenschaften", "einordnung"));
     } else if (!hasFactors) {
-      bodyHost.append(X.section("Eigenschaften", null, [X.notice("Keine Faktoren", VM.reasonText(factors && factors.reason, "Für diesen Titel ist keine Faktoranalyse veröffentlicht."))], null, "04 / Die sieben Eigenschaften", "einordnung"));
+      bodyHost.append(X.section("Eigenschaften", null, [X.notice("Keine Faktoren", VM.reasonText(factors && factors.reason, "Für diesen Titel ist keine Faktoranalyse veröffentlicht."))], null, "05 / Die sieben Eigenschaften", "einordnung"));
     }
     if (vm.change.state === "AVAILABLE") {
       var moving = vm.change.items.filter(function (i) { return i.tone !== "neutral"; });
@@ -675,14 +687,14 @@
         still.length ? X.more("Unverändert (" + still.length + ")", function () { return el("ul", { class: "dx-story-list dx-story-list--detail qx-changes" }, still.map(changeItem)); }) : null,
         vm.change.open.length ? X.more("Nicht messbar (" + vm.change.open.length + ")", function () { return vm.change.open.map(function (x) { return el("p", { class: "qx-small" }, [el("b", { text: x.label + ": " }), el("span", { text: x.text })]); }); }) : null,
         X.more("Wie die Veränderung gemessen wird", function () { return vm.change.items.map(function (i) { return el("p", { class: "qx-small" }, [el("b", { text: i.label + ": " }), el("span", { text: (i.how || "") + (i.from && i.to ? " (" + i.from + " → " + i.to + ")" : "") })]); }); })
-      ], null, "05 / In Bewegung", "veraenderung"));
+      ], null, "06 / In Bewegung", "veraenderung"));
     }
-    bodyHost.append(X.section("Welche Strategie passt?", "Geprüft wird, welche Bedingungen eines Anlagestils die Aktie heute erfüllt.", strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien →" }, "06 / Anlagestil", "strategie"));
+    bodyHost.append(X.section("Welche Strategie passt?", "Geprüft wird, welche Bedingungen eines Anlagestils die Aktie heute erfüllt.", strategySection(vm, assignment), { href: X.routes.strategies(), label: "Alle Strategien →" }, "07 / Anlagestil", "strategie"));
     /* Absagen stehen EINMAL, gesammelt unter "Daten und Grenzen" - nicht als
        Stapel von Hinweisen quer ueber die Seite. */
-    if (technical && technical.state === "AVAILABLE") bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "07 / Technik und Elliott-Wellen", "technik"));
+    if (technical && technical.state === "AVAILABLE") bodyHost.append(X.section("Kursstruktur", "Trend, Dynamik und Schwankung aus der technischen Analyse.", technicalSection(technical, ticker), null, "08 / Technik und Elliott-Wellen", "technik"));
     var figures = s.quant && s.quant.state === "AVAILABLE" ? figuresSection(s, ticker) : null;
-    if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) bodyHost.append(X.section("Kennzahlen", null, figures, null, "08 / Unternehmenszahlen", "zahlen"));
+    if (figures && !(figures.length === 1 && figures[0].classList && figures[0].classList.contains("qx-notice"))) bodyHost.append(X.section("Kennzahlen", null, figures, null, "09 / Unternehmenszahlen", "zahlen"));
 
     /* News: Quant hat keine eigene Nachrichtenquelle. Die Kachel bleibt
        (Owner-Entscheid: Design 1:1, ehrlich befuellt) und sagt das. */

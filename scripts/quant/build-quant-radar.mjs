@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =========================================================================
-   Materialize Quant Radar (quant-radar-1.0.0).
+   Materialize Quant Radar (quant-radar-1.1.0, Alert-Vertrag 2.0.0).
 
    "Was ist heute neu?" - ausschliesslich aus Artefakten, die bereits
    veroeffentlicht sind. Gelesen werden:
@@ -14,6 +14,9 @@
      quant/data/market/factors/factors-FULL_UNIVERSE.json      (newHigh52w)
      quant/data/product/pattern-match-v1/<SHARD>.json.gz
      quant/data/market/discover-series-long/<securityId>.json   (Vergleichsfaelle)
+     quant/data/product/signal-backtest-v1.json                 (Backtest-Beleg je Signal)
+     quant/data/product/setup-backtest-v1.json                  (Backtest-Beleg je Setup-Wechsel)
+     quant/data/universe/instruments/<SHARD>.json               (issuerId)
 
    Geschrieben werden:
 
@@ -21,6 +24,10 @@
      quant/data/product/setup-lifecycle-v1.json.gz  Lebenszyklus je Titel
      quant/data/product/radar-history/pattern-holds/<asOf>.json.gz
         Beginn der Musterhistorie: "neues Muster" braucht zwei Staende.
+     quant/data/product/radar-history/replay-evidence/<asOf>.json.gz
+        Evidenzstufe des Rueckblicks je Titel: "Evidenz veraendert" braucht zwei Staende.
+     quant/data/product/radar-ticker-v1/<SHARD>.json.gz
+        je Titel Lebenszyklus, Karte und Verfolgung (Watchlist).
 
    Kein Ereignis entsteht aus eigener Rechnung. Ein Ereignis ist immer der
    Unterschied zwischen zwei veroeffentlichten Staenden derselben Engine -
@@ -107,12 +114,50 @@ function nextStep(t) {
   return { state: higher.state, ruleId: higher.ruleId, open, total: higher.conditions.filter((c) => c.measurable !== false).length };
 }
 
+/* ------------------------------------------------- Alert-Vertrag 2.0.0 */
+const DETECTED_AT = new Date().toISOString();
+const readStudy = (f) => (existsSync(P("quant/data/product", f)) ? json(P("quant/data/product", f)) : null);
+const STUDIES = { "signal-backtest-v1": readStudy("signal-backtest-v1.json"), "setup-backtest-v1": readStudy("setup-backtest-v1.json") };
+const FIRST_REASON = ["pit", "lookahead", "sample", "survivorship", "returnBasis", "oos", "walkForward"];
+const backtestCache = {};
+/* Historische Evidenz je Ereignistyp - aus der Studie, nie aus eigener
+   Rechnung. Freigegeben nur, wenn die Vertrauensregel es erlaubt. */
+function backtestEvidenceFor(type) {
+  if (backtestCache[type]) return backtestCache[type];
+  const src = Radar.BACKTEST_SOURCE[type] || { reason: "NO_STUDY" };
+  const study = src.study ? STUDIES[src.study] : null, rule = study ? study.rules.find((r) => r.id === src.ruleId) : null;
+  let out;
+  if (!src.study) out = { state: "WITHHELD", reason: src.reason, trust: "NOT_READY" };
+  else if (!rule) out = { state: "WITHHELD", reason: "STUDY_NOT_PUBLISHED", trust: "NOT_READY", study: src.study };
+  else if (!rule.display.allowed) {
+    const failed = FIRST_REASON.find((id) => rule.checks[id] && rule.checks[id].state !== "PASS");
+    out = { state: "WITHHELD", reason: (failed && rule.checks[failed].reason) || "TRUST_NOT_READY", trust: rule.trust, study: src.study, ruleId: rule.id,
+      occurrences: rule.occurrences, titles: rule.sample.titles, returnType: rule.returnType };
+  } else {
+    const c = rule.card;
+    out = { state: "AVAILABLE", study: src.study, ruleId: rule.id, studyAsOf: study.asOf, returnType: rule.returnType, grain: rule.grain, horizon: c.horizon,
+      n: c.n, occurrences: rule.occurrences, positiveShare: c.positiveShare, median: c.median, typicalDrawdown: c.typicalDrawdown, chanceRisk: c.chanceRisk,
+      medianExcess: c.medianExcess, trust: rule.trust, sentence: rule.display.sentence, caveats: rule.display.caveats };
+  }
+  return (backtestCache[type] = out);
+}
+const ISSUER = {};
+for (const f of readdirSync(P("quant/data/universe/instruments")).filter((x) => x.endsWith(".json"))) {
+  for (const i of json(P("quant/data/universe/instruments", f)).instruments || []) if (i.issuerId && !ISSUER[i.symbol]) ISSUER[i.symbol] = i.issuerId;
+}
+const defined = (text, extra) => Object.assign({ state: "DEFINED", text }, extra || {});
+const notDefined = (reason) => ({ state: "NOT_DEFINED", reason });
+
 /* ---------------------------------------------------------------- Ereignisse */
 const events = [];
 function push(e) {
   const t = Radar.TYPE[e.eventType];
-  events.push(Object.assign({ id: e.eventType.toLowerCase() + "_" + e.ticker + "_" + e.occurredAt + (e.key ? "_" + e.key : ""),
-    schemaVersion: Radar.ALERT_EVENT_SCHEMA, source: t.source, direction: e.direction || t.tone, delivery: "NOT_CONFIGURED" }, e, { key: undefined }));
+  const be = backtestEvidenceFor(e.eventType);
+  const ev = Object.assign({ id: e.eventType.toLowerCase() + "_" + e.ticker + "_" + e.occurredAt + (e.key ? "_" + e.key : ""),
+    schemaVersion: Radar.ALERT_EVENT_SCHEMA, source: t.source, direction: e.direction || t.tone, delivery: "NOT_CONFIGURED",
+    issuerId: ISSUER[e.ticker] || null, detectedAt: DETECTED_AT, subject: e.key || null, backtestEvidence: be, trustState: be.trust }, e, { key: undefined });
+  ev.dedupeKey = Radar.dedupeKey(ev);
+  events.push(ev);
 }
 const securityOf = (t) => (setupNow[t] && setupNow[t].securityId) || null;
 const label = (state) => (Radar.LIFECYCLE.find((l) => l.id === state) || {}).label || state;
@@ -134,6 +179,10 @@ for (const t of Object.keys(latest.rows)) {
     explanation: type === "SETUP_WEAKENED"
       ? "Von „" + label(a) + "“ auf „" + label(b) + "“: eine Bedingung der bisherigen Stufe gilt am " + latest.date + " nicht mehr."
       : "Von „" + label(a) + "“ auf „" + label(b) + "“ am " + de(latest.date) + ".",
+    trigger: defined("Setup-Stufe „" + label(b) + "“ am Stichtag erreicht", { rule: setupNow[t] && setupNow[t].observation ? setupNow[t].observation.r : null }),
+    invalidation: type === "SETUP_WEAKENED" ? notDefined("WEAKENING_ENDS_THE_SETUP")
+      : typeof cur[1] === "number" && setupNow[t] && cur[1] < setupNow[t].close ? defined("Schluss unter " + cur[1] + " (Invalidierungsmarke der Setup-Beobachtung)", { price: cur[1], rule: "setup.invalidated.below-previous-invalidation" })
+      : notDefined("NO_INVALIDATION_BELOW_CLOSE"),
     evidence: [{ source: "setup-observation-history", metricId: "setupState", previous: a, current: b, previousAsOf: before.date, asOf: latest.date }]
       .concat(cur[1] !== null && cur[1] !== undefined ? [{ source: "setup-observations-v1", metricId: "invalidationPrice", current: cur[1], unit: "USD" }] : []),
     nextCondition: next ? { state: next.state, label: label(next.state), open: next.open, total: next.total } : null });
@@ -149,6 +198,8 @@ for (const e of signals.events || []) {
   push({ eventType: type, ticker: e.ticker, securityId: securityOf(e.ticker), occurredAt: e.asOf, previousAsOf: e.previousAsOf || null,
     previousState: { rule: e.rule, holds: e.transition !== "ENTERED" }, currentState: { rule: e.rule, holds: e.transition === "ENTERED" },
     explanation: (e.transition === "ENTERED" ? "Erfüllt jetzt: " : "Erfüllt nicht mehr: ") + e.rule + ".",
+    trigger: defined((e.transition === "ENTERED" ? "Erfüllt: " : "Nicht mehr erfüllt: ") + e.rule, { definitionId: e.definitionId, definitionVersion: e.definitionVersion || null }),
+    invalidation: defined(e.transition === "ENTERED" ? "Die Regel gilt wieder nicht mehr: " + e.rule : "Die Regel gilt wieder: " + e.rule, { definitionId: e.definitionId }),
     evidence: (e.evidence || []).map((x) => ({ source: "technical-signals-v1", metricId: x.metricId, previous: x.previous, current: x.current, unit: x.unit || null, previousAsOf: e.previousAsOf || null, asOf: e.asOf })),
     nextCondition: null });
 }
@@ -165,6 +216,8 @@ if (he.state === "AVAILABLE" && isDate(he.to)) {
         push({ eventType: type, key: tr.profileId, ticker: t, securityId: securityOf(t), occurredAt: he.to, previousAsOf: he.from,
           previousState: { profileId: tr.profileId, matches: type !== "STRATEGY_MATCH_NEW" }, currentState: { profileId: tr.profileId, matches: type === "STRATEGY_MATCH_NEW" },
           explanation: (type === "STRATEGY_MATCH_NEW" ? "Erfüllt jetzt alle Bedingungen von „" : "Erfüllt nicht mehr alle Bedingungen von „") + (profileLabel[tr.profileId] || tr.profileId) + "“.",
+          trigger: defined((type === "STRATEGY_MATCH_NEW" ? "Alle Bedingungen von „" : "Eine Bedingung von „") + (profileLabel[tr.profileId] || tr.profileId) + (type === "STRATEGY_MATCH_NEW" ? "“ erfüllt" : "“ nicht mehr erfüllt"), { profileId: tr.profileId }),
+          invalidation: defined(type === "STRATEGY_MATCH_NEW" ? "Eine Bedingung des Anlagestils gilt nicht mehr" : "Alle Bedingungen gelten wieder", { profileId: tr.profileId }),
           evidence: [{ source: "strategy-index-v1", metricId: "assignment", profileId: tr.profileId, predicateHash: tr.predicateHash || null, previousAsOf: he.from, asOf: he.to }],
           nextCondition: null });
       }
@@ -197,6 +250,8 @@ if (fPrev) {
       push({ eventType: type, key: id, direction: up ? "up" : "down", ticker: t, securityId: securityOf(t), occurredAt: fNow.asOf, previousAsOf: fPrev.asOf,
         previousState: { factorId: id, score: Math.round(a), band: ba }, currentState: { factorId: id, score: Math.round(b), band: bb },
         explanation: name + ": von „" + VM.bandWord(id, ba) + "“ (" + Math.round(a) + ") auf „" + VM.bandWord(id, bb) + "“ (" + Math.round(b) + ").",
+        trigger: defined("Stufenwechsel um mindestens " + FACTOR_MIN_MOVE + " Punkte: " + VM.bandWord(id, ba) + " → " + VM.bandWord(id, bb), { factorId: id }),
+        invalidation: notDefined("FACTOR_CHANGE_HAS_NO_INVALIDATION"),
         evidence: [{ source: "factor-evidence-history", metricId: "quantV2.factorEvidence." + id, previous: a, current: b, unit: "score", previousAsOf: fPrev.asOf, asOf: fNow.asOf }],
         nextCondition: null });
     });
@@ -212,6 +267,8 @@ for (const s of factorsFile.securities || []) {
   push({ eventType: "NEW_52W_HIGH", ticker: s.ticker, securityId: securityOf(s.ticker) || s.securityId || null, occurredAt: s.asOf, previousAsOf: null,
     previousState: null, currentState: { newHigh52w: true, distanceTo52wHigh: s.values.distanceTo52wHigh ?? null },
     explanation: "Das Tageshoch am " + de(s.asOf) + " erreicht den höchsten Kurs der letzten 52 Wochen.",
+    trigger: defined("Tageshoch ≥ höchstes Hoch der letzten 252 Handelstage", { metricId: "newHigh52w" }),
+    invalidation: notDefined("EVENT_HAS_NO_INVALIDATION"),
     evidence: [{ source: "market-factors", metricId: "newHigh52w", current: true, asOf: s.asOf }].concat(typeof s.values.distanceTo52wHigh === "number" ? [{ source: "market-factors", metricId: "distanceTo52wHigh", current: s.values.distanceTo52wHigh, unit: "ratio", asOf: s.asOf }] : []),
     nextCondition: null });
 }
@@ -246,14 +303,11 @@ if (patternDates.length >= 2) {
     push({ eventType: "PATTERN_MATCH_NEW", ticker: t, securityId: securityOf(t), occurredAt: b.asOf, previousAsOf: a.asOf,
       previousState: { holds: (a.rows[t] || []).length }, currentState: { holds: holds.length, added },
       explanation: "Neu erfüllte, marktweit geprüfte Bedingung" + (added.length === 1 ? "" : "en") + ": " + added.join(", ") + ".",
+      trigger: defined("Neu erfüllt: " + added.join(", ")), invalidation: defined("Die Bedingung gilt nicht mehr"),
       evidence: added.map((id) => ({ source: "pattern-match-v1", metricId: "holds", current: id, previousAsOf: a.asOf, asOf: b.asOf })),
       nextCondition: null });
   }
 }
-
-/* ------------------------------------------------------------ Karten */
-const byTicker = {};
-for (const e of events) (byTicker[e.ticker] = byTicker[e.ticker] || []).push(e);
 
 function replayFor(t) {
   const sec = securityOf(t), shard = patternShards[shardKey(t)];
@@ -270,11 +324,49 @@ function replayFor(t) {
     medianDrawdown: h ? h.medianDrawdown : null, chanceRisk: h ? h.chanceRisk : null, evidence: h ? h.evidence : "WITHHELD" };
 }
 
+/* ------------------------------------------------- EVIDENZ: Rueckblick je Titel
+   Die Evidenzstufe des Rueckblicks (6 Monate) wird fuer jeden Titel
+   gesichert. "Evidenz veraendert" ist der Unterschied zum vorigen Stand. */
+const replayAll = {};
+for (const t of Object.keys(lifecycle)) replayAll[t] = replayFor(t);
+const evidenceLevel = (r) => (!r ? "NONE" : r.state !== "AVAILABLE" ? "UNAVAILABLE" : r.sufficient ? r.evidence : "WITHHELD");
+const EVIDENCE_HISTORY = P("quant/data/product/radar-history/replay-evidence");
+{
+  const file = join(EVIDENCE_HISTORY, latest.date + ".json.gz");
+  if (!existsSync(file)) writeGz(file, { schemaVersion: "replay-evidence-snapshot-1.0.0", asOf: latest.date, horizon: "m6",
+    rows: Object.fromEntries(Object.entries(replayAll).map(([t, r]) => [t, [evidenceLevel(r), r && r.episodes ? r.episodes : 0]])) });
+}
+const evidenceDates = existsSync(EVIDENCE_HISTORY) ? readdirSync(EVIDENCE_HISTORY).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).map((f) => f.slice(0, 10)).sort() : [];
+let evidenceOpen = false;
+if (evidenceDates.length >= 2) {
+  evidenceOpen = true;
+  const a = gz(join(EVIDENCE_HISTORY, evidenceDates[evidenceDates.length - 2] + ".json.gz")), b = gz(join(EVIDENCE_HISTORY, evidenceDates[evidenceDates.length - 1] + ".json.gz"));
+  const word = { BROAD: "breit", THIN: "dünn", WITHHELD: "zurückgehalten", UNAVAILABLE: "nicht verfügbar", NONE: "keine" };
+  for (const [t, row] of Object.entries(b.rows || {})) {
+    const old = (a.rows || {})[t];
+    if (!old || old[0] === row[0]) continue;
+    const rank = { NONE: 0, UNAVAILABLE: 0, WITHHELD: 1, THIN: 2, BROAD: 3 };
+    push({ eventType: "EVIDENCE_CHANGED", direction: (rank[row[0]] || 0) > (rank[old[0]] || 0) ? "up" : "down", ticker: t, securityId: securityOf(t), occurredAt: b.asOf, previousAsOf: a.asOf,
+      previousState: { evidence: old[0], episodes: old[1] }, currentState: { evidence: row[0], episodes: row[1] },
+      explanation: "Rückblick nach 6 Monaten: von „" + (word[old[0]] || old[0]) + "“ (" + old[1] + " Fälle) auf „" + (word[row[0]] || row[0]) + "“ (" + row[1] + " Fälle).",
+      trigger: defined("Evidenzstufe des Rückblicks gewechselt"), invalidation: notDefined("NOT_A_TRADABLE_EVENT"),
+      evidence: [{ source: "historical-cases", metricId: "replayEvidence.m6", previous: old[0], current: row[0], previousAsOf: a.asOf, asOf: b.asOf }],
+      nextCondition: null });
+  }
+}
+
+/* ------------------------------------------------------------ Karten */
+const byTicker = {};
+for (const e of events) (byTicker[e.ticker] = byTicker[e.ticker] || []).push(e);
+const compactBacktest = (be) => (be.state === "AVAILABLE"
+  ? { state: "AVAILABLE", n: be.n, positiveShare: be.positiveShare, median: be.median, typicalDrawdown: be.typicalDrawdown, chanceRisk: be.chanceRisk, medianExcess: be.medianExcess, trust: be.trust, returnType: be.returnType, horizon: be.horizon }
+  : { state: "WITHHELD", reason: be.reason, trust: be.trust });
+
 let cards = Object.keys(byTicker).map((t) => {
   const s = setupNow[t], lc = lifecycle[t];
   return {
     ticker: t, securityId: securityOf(t),
-    events: byTicker[t].map((e) => ({ id: e.id, eventType: e.eventType, direction: e.direction, occurredAt: e.occurredAt, explanation: e.explanation })),
+    events: byTicker[t].map((e) => ({ id: e.id, eventType: e.eventType, direction: e.direction, occurredAt: e.occurredAt, explanation: e.explanation, trustState: e.trustState, backtest: compactBacktest(e.backtestEvidence) })),
     setup: lc ? { state: lc[0], since: lc[1], sinceIsLowerBound: !!lc[2], previous: lc[3], previousAsOf: lc[4],
       /* Nur eine Marke UNTER dem Kurs ist eine Invalidierung eines
          Aufwaerts-Setups; liegt sie darueber, stammt sie aus einem
@@ -287,7 +379,7 @@ let cards = Object.keys(byTicker).map((t) => {
   };
 });
 /* Vergleichsfaelle fuer alle Karten - sie gehen in die Sortierung ein. */
-for (const c of cards) c.replay = replayFor(c.ticker);
+for (const c of cards) c.replay = replayAll[c.ticker] || null;
 cards.sort(Radar.compareCards);
 
 /* Die vorderen Karten bekommen Einstieg, Trigger, Stop und Ziele aus dem
@@ -328,12 +420,13 @@ const reversal = gate && (gate.checks || []).find((c) => c.id === "REVERSAL_BEHA
 
 const CLOSED = {
   SETUP_INVALIDATED: "PATH_DEPENDENT_STATES_NOT_ACTIVATED",
-  PATTERN_MATCH_NEW: patternOpen ? null : "PATTERN_HISTORY_STARTED"
+  PATTERN_MATCH_NEW: patternOpen ? null : "PATTERN_HISTORY_STARTED",
+  EVIDENCE_CHANGED: evidenceOpen ? null : "EVIDENCE_HISTORY_STARTED"
 };
 const asOf = [latest.date, signalAsOf, he.to, fNow.asOf, marketAsOf].filter(isDate).sort().pop();
 
 const radar = {
-  schemaVersion: "quant-radar-1.0.0", engineVersion: Radar.VERSION, alertEventSchema: Radar.ALERT_EVENT_SCHEMA,
+  schemaVersion: "quant-radar-1.1.0", engineVersion: Radar.VERSION, alertEventSchema: Radar.ALERT_EVENT_SCHEMA,
   generatedAt: new Date().toISOString(), asOf,
   sources: {
     setup: { from: before.date, to: latest.date, snapshots: setupDates, mappingVersion: "setup-mapping-1.0.0" },
@@ -341,8 +434,12 @@ const radar = {
     strategy: { from: he.from || null, to: he.to || null },
     factors: { from: fPrev ? fPrev.asOf : null, to: fNow.asOf, methodologyVersion: factorVersion, minMove: FACTOR_MIN_MOVE },
     market: { asOf: marketAsOf },
-    pattern: { asOf: patternAsOf, snapshots: patternDates }
+    pattern: { asOf: patternAsOf, snapshots: patternDates },
+    replayEvidence: { snapshots: evidenceDates },
+    backtest: Object.fromEntries(Object.entries(STUDIES).map(([k, v]) => [k, v ? { asOf: v.asOf, engineVersion: v.engineVersion, returnType: v.returnType } : null]))
   },
+  alertContract: { schema: Radar.ALERT_EVENT_SCHEMA, fields: Radar.EVENT_FIELDS, delivery: "NOT_CONFIGURED", dedupe: "securityId|eventType|subject|occurredAt" },
+  backtestEvidence: Object.fromEntries(Radar.EVENT_TYPES.map((t) => [t.id, backtestEvidenceFor(t.id)])),
   eventTypes: Radar.EVENT_TYPES.map((t) => ({ id: t.id, label: t.label, plain: t.plain, source: t.source, tone: t.tone,
     state: CLOSED[t.id] ? "CLOSED" : "OPEN", reason: CLOSED[t.id] || null })),
   priorityRule: Radar.PRIORITY_RULE,
@@ -364,7 +461,12 @@ const radar = {
     SETUP_TRANSITIONS: transitionsAll, SETUP_TRANSITIONS_LATEST: Object.keys(latest.rows).filter((t) => before.rows[t] && before.rows[t][0] !== latest.rows[t][0]).length,
     HISTORICAL_REPLAY_COVERAGE: { cards: cards.length, computed: replayComputed, sufficient: replaySufficient },
     WATCHLIST_TRACKABLE_TITLES: Object.keys(lifecycle).length,
-    ALERT_READY_EVENTS: events.length - violations.length, ALERT_CONTRACT_VIOLATIONS: violations.length
+    ALERT_READY_EVENTS: events.length - violations.length, ALERT_CONTRACT_VIOLATIONS: violations.length,
+    RADAR_EVENTS_WITH_BACKTEST: events.filter((e) => e.backtestEvidence.state === "AVAILABLE").length,
+    EVENT_TYPES_WITH_BACKTEST: Radar.EVENT_TYPES.filter((t) => backtestEvidenceFor(t.id).state === "AVAILABLE").map((t) => t.id),
+    EVENT_TYPES_BACKTEST_WITHHELD: Radar.EVENT_TYPES.filter((t) => backtestEvidenceFor(t.id).state !== "AVAILABLE").map((t) => ({ id: t.id, reason: backtestEvidenceFor(t.id).reason, trust: backtestEvidenceFor(t.id).trust })),
+    DEDUPE_KEYS_UNIQUE: new Set(events.map((e) => e.dedupeKey)).size === events.length,
+    WATCHLIST_EVENTS_TRACKABLE: Object.keys(lifecycle).length
   },
   events, cards
 };
@@ -381,6 +483,23 @@ writeGz(P("quant/data/product/setup-lifecycle-v1.json.gz"), {
 /* Je Titel-Shard (dieselbe Einteilung wie die uebrigen Produkt-Shards):
    Lebenszyklus und Radar-Karte. Die Aktienseite laedt so ~1 KB statt des
    ganzen Radars und der ganzen Lebenszyklus-Tabelle. */
+/* Verfolgung je Titel (Watchlist): Zustand jetzt und davor, seit wann, wie
+   lange, Ausloeser und Invalidierung, naechste Bedingung, Evidenzstand.
+   Kein Portfolio: keine Stueckzahl, kein Einstand, keine Rendite. */
+function trackingOf(t) {
+  const lc = lifecycle[t], s = setupNow[t], r = replayAll[t];
+  const days = lc ? Math.round((Date.parse(latest.date) - Date.parse(lc[1])) / 86400000) : null;
+  const inv = s && s.levels && typeof s.levels.invalidationPrice === "number" && s.levels.invalidationPrice < s.close ? s.levels.invalidationPrice : null;
+  const next = nextStep(t);
+  return {
+    asOf: latest.date, current: lc ? lc[0] : null, previous: lc ? lc[3] : null, enteredAt: lc ? lc[1] : null, enteredAtIsLowerBound: lc ? !!lc[2] : null, durationDays: days,
+    trigger: s && s.observation && s.observation.r ? (mapping.cascade.rules.find((x) => x.ruleId === s.observation.r) || {}).plain || null : null,
+    invalidation: inv, close: s ? s.close : null,
+    nextCondition: next ? { state: next.state, label: label(next.state), open: next.open.length, total: next.total } : null,
+    evidenceState: evidenceLevel(r), episodes: r && r.episodes ? r.episodes : 0,
+    backtest: lc && (lc[0] === "CONFIRMED" || lc[0] === "SETUP_FORMING") ? compactBacktest(backtestEvidenceFor(lc[0] === "CONFIRMED" ? "SETUP_CONFIRMED" : "SETUP_NEW")) : null
+  };
+}
 const TICKER_DIR = P("quant/data/product/radar-ticker-v1");
 mkdirSync(TICKER_DIR, { recursive: true });
 for (const f of readdirSync(TICKER_DIR)) if (/\.json\.gz$/.test(f)) writeFileSync(join(TICKER_DIR, f), "");
@@ -388,10 +507,10 @@ const cardBy = Object.fromEntries(cards.map((c) => [c.ticker, c]));
 const tShards = {};
 for (const t of Object.keys(lifecycle)) {
   const key = shardKey(t);
-  (tShards[key] = tShards[key] || {})[t] = { lifecycle: lifecycle[t], card: cardBy[t] || null };
+  (tShards[key] = tShards[key] || {})[t] = { lifecycle: lifecycle[t], card: cardBy[t] || null, tracking: trackingOf(t) };
 }
 for (const [key, rows] of Object.entries(tShards)) {
-  writeGz(join(TICKER_DIR, key + ".json.gz"), { schemaVersion: "radar-ticker-1.0.0", engineVersion: Radar.VERSION, shard: key, asOf: latest.date, radarAsOf: asOf,
+  writeGz(join(TICKER_DIR, key + ".json.gz"), { schemaVersion: "radar-ticker-1.1.0", engineVersion: Radar.VERSION, shard: key, asOf: latest.date, radarAsOf: asOf,
     snapshots: setupDates, columns: ["state", "since", "sinceIsLowerBound", "previousState", "previousAsOf"], rows });
 }
 for (const f of readdirSync(TICKER_DIR)) if (/\.json\.gz$/.test(f) && !tShards[f.slice(0, -8)]) { const { unlinkSync } = await import("node:fs"); unlinkSync(join(TICKER_DIR, f)); }

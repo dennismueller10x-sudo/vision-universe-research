@@ -61,7 +61,8 @@ const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/produ
    die Themen aus quant/app/page-method.js (TOPICS) und die Strategien aus
    quant/methodology/strategy-profiles-v1.json - und verlangt jede davon in
    dieser Liste. Was der Smoke nicht anschaut, verfaellt (M26, M28, M29). */
-const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups',
+const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant/#/radar?filter=historisch',
+ '/quant/#/backtest','/quant/#/backtest/NEW_52W_HIGH','/quant/#/backtest/SETUP_CONFIRMED',
  '/quant/#/screener',
  '/quant/#/screener?frage=qualitaet','/quant/#/screener?frage=momentum','/quant/#/screener?frage=wachstum-qualitaet',
  '/quant/#/screener?frage=guenstig','/quant/#/screener?frage=ruhig','/quant/#/screener?frage=setups','/quant/#/screener?frage=hoch',
