@@ -37647,6 +37647,198 @@
           "label": "index-gap-latest",
           "requiresAssetType": "EQUITY",
           "metadataSymbol": "OBCK.DE"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "7203.T",
+            "exchange": "XJPX",
+            "date_from": "2021-09-24",
+            "date_to": "2021-10-06",
+            "limit": 1000
+          },
+          "label": "scale-toyota-split",
+          "region": "ASIA"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "7203.T",
+            "exchange": "XJPX",
+            "date_from": "2021-09-24",
+            "date_to": "2021-10-06",
+            "limit": 1000
+          },
+          "label": "scale-toyota-split",
+          "region": "ASIA"
+        },
+        {
+          "endpoint": "intraday/latest",
+          "params": {
+            "symbols": "NVDA",
+            "exchange": "IEXG",
+            "interval": "5min",
+            "limit": 10
+          },
+          "label": "scale-live-audit",
+          "region": "US"
+        },
+        {
+          "endpoint": "intraday",
+          "params": {
+            "symbols": "NVDA",
+            "exchange": "IEXG",
+            "interval": "5min",
+            "date_from": "2026-10-01",
+            "date_to": "2026-10-01",
+            "limit": 1000
+          },
+          "label": "scale-intraday-session",
+          "region": "US"
+        },
+        {
+          "endpoint": "intraday/latest",
+          "params": {
+            "symbols": "SPY",
+            "exchange": "IEXG",
+            "interval": "5min",
+            "limit": 10
+          },
+          "label": "scale-live-audit",
+          "region": "US"
+        },
+        {
+          "endpoint": "intraday",
+          "params": {
+            "symbols": "SPY",
+            "exchange": "IEXG",
+            "interval": "5min",
+            "date_from": "2026-10-01",
+            "date_to": "2026-10-01",
+            "limit": 1000
+          },
+          "label": "scale-intraday-session",
+          "region": "US"
+        },
+        {
+          "endpoint": "intraday/latest",
+          "params": {
+            "symbols": "SAP.DE",
+            "exchange": "XETR",
+            "interval": "5min",
+            "limit": 10
+          },
+          "label": "scale-live-audit",
+          "region": "EUROPE"
+        },
+        {
+          "endpoint": "intraday",
+          "params": {
+            "symbols": "SAP.DE",
+            "exchange": "XETR",
+            "interval": "5min",
+            "date_from": "2026-10-01",
+            "date_to": "2026-10-01",
+            "limit": 1000
+          },
+          "label": "scale-intraday-session",
+          "region": "EUROPE"
+        },
+        {
+          "endpoint": "intraday/latest",
+          "params": {
+            "symbols": "MC.XPAR",
+            "exchange": "XPAR",
+            "interval": "5min",
+            "limit": 10
+          },
+          "label": "scale-live-audit",
+          "region": "EUROPE"
+        },
+        {
+          "endpoint": "intraday",
+          "params": {
+            "symbols": "MC.XPAR",
+            "exchange": "XPAR",
+            "interval": "5min",
+            "date_from": "2026-10-01",
+            "date_to": "2026-10-01",
+            "limit": 1000
+          },
+          "label": "scale-intraday-session",
+          "region": "EUROPE"
+        },
+        {
+          "endpoint": "intraday/latest",
+          "params": {
+            "symbols": "AZN.L",
+            "exchange": "XLON",
+            "interval": "5min",
+            "limit": 10
+          },
+          "label": "scale-live-audit",
+          "region": "EUROPE"
+        },
+        {
+          "endpoint": "intraday",
+          "params": {
+            "symbols": "AZN.L",
+            "exchange": "XLON",
+            "interval": "5min",
+            "date_from": "2026-10-01",
+            "date_to": "2026-10-01",
+            "limit": 1000
+          },
+          "label": "scale-intraday-session",
+          "region": "EUROPE"
+        },
+        {
+          "endpoint": "intraday/latest",
+          "params": {
+            "symbols": "005930.KS",
+            "exchange": "XKRX",
+            "interval": "5min",
+            "limit": 10
+          },
+          "label": "scale-live-audit",
+          "region": "ASIA"
+        },
+        {
+          "endpoint": "intraday",
+          "params": {
+            "symbols": "005930.KS",
+            "exchange": "XKRX",
+            "interval": "5min",
+            "date_from": "2026-10-01",
+            "date_to": "2026-10-01",
+            "limit": 1000
+          },
+          "label": "scale-intraday-session",
+          "region": "ASIA"
+        },
+        {
+          "endpoint": "intraday/latest",
+          "params": {
+            "symbols": "EUNL.DE",
+            "exchange": "XETR",
+            "interval": "5min",
+            "limit": 10
+          },
+          "label": "scale-live-audit",
+          "region": "EUROPE"
+        },
+        {
+          "endpoint": "intraday",
+          "params": {
+            "symbols": "EUNL.DE",
+            "exchange": "XETR",
+            "interval": "5min",
+            "date_from": "2026-10-01",
+            "date_to": "2026-10-01",
+            "limit": 1000
+          },
+          "label": "scale-intraday-session",
+          "region": "EUROPE"
         }
       ]
     },

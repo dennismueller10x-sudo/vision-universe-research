@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {createMarketstackClient}=require('../../providers/marketstack/client.js');
+const {assetType}=require('../../providers/marketstack/adapter.js');
 export function requestKey(endpoint,params={}) {
  return endpoint.replace(/^\//,'')+'?'+Object.keys(params).filter(k=>params[k]!=null).sort().map(k=>encodeURIComponent(k)+'='+encodeURIComponent(String(params[k]))).join('&');
 }
@@ -99,14 +100,24 @@ if(process.argv[1]&&resolve(process.argv[1])===resolve(new URL(import.meta.url).
     const metadata=collector.state.tasks[requestKey('tickers/'+symbol,{})];
     const body=metadata?JSON.parse(readFileSync(join(arg('out','.market-cache/marketstack/scale'),metadata.file))).data:null;
     const row=body?.data||body;
-    const type=String(row?.asset_type||row?.item_type||row?.type||'').toUpperCase();
-    if(type!==task.requiresAssetType){results.push({label:task.label,endpoint:task.endpoint,params:task.params,reason:'assetTypePrerequisiteNotVerified',ok:false});continue;}
+    const type=assetType(row?.asset_type||row?.item_type||row?.type)?.toUpperCase();
+    if(type!==task.requiresAssetType||row?.symbol!==symbol||task.mic&&row?.stock_exchange?.mic!==task.mic){results.push({label:task.label,endpoint:task.endpoint,params:task.params,reason:'assetTypePrerequisiteNotVerified',ok:false});continue;}
    }
    if(task.endpoint==='etfholdings'&&task.region!=='US'&&nonUSHoldingsFailures>=2){results.push({label:task.label,endpoint:task.endpoint,params:task.params,reason:'nonUSHoldingsCircuitBreaker',ok:false});continue;}
    const e=await collector.query(task.endpoint,task.params,task.label,{targetSecurityIds:task.targetSecurityIds||[],region:task.region||null});
    results.push({endpoint:task.endpoint,params:task.params,label:task.label,ok:e.ok,reason:e.reason||null,fromCache:e.seeded||false});
    if(task.endpoint==='etfholdings'&&task.region!=='US'&&!e.ok)nonUSHoldingsFailures++;else if(task.endpoint==='etfholdings'&&task.region!=='US')nonUSHoldingsFailures=0;
    if(e.reason==='budgetExceeded')break;
+   if(task.maxPages>1 && e.ok && e.data?.pagination) {
+    let offset=Number(e.data.pagination.offset)+Number(e.data.pagination.count),total=Number(e.data.pagination.total);
+    const limit=Number(task.params.limit||1000);
+    for(let page=1;page<Math.min(task.maxPages,10)&&Number.isSafeInteger(total)&&offset<total;page++){
+     const next=await collector.query(task.endpoint,{...task.params,limit,offset},task.label,{region:task.region||null});
+     results.push({endpoint:task.endpoint,label:task.label,ok:next.ok,reason:next.reason||null});
+     if(!next.ok||Number(next.data?.pagination?.offset)!==offset||Number(next.data?.pagination?.total)!==total)break;
+     const count=Number(next.data.pagination.count);if(!Number.isSafeInteger(count)||count<1)break;offset+=count;
+    }
+   }
   }
  }
  const summary=collector.finish({phase,results});
