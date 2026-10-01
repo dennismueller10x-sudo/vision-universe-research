@@ -32,8 +32,8 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-radar-1.0.0";
-  var ALERT_EVENT_SCHEMA = "quant-alert-event-1.0.0";
+  var VERSION = "quant-radar-1.1.0";
+  var ALERT_EVENT_SCHEMA = "quant-alert-event-2.0.0";
 
   /* Die Ereignistypen. `tone` ordnet ein (up = verbessert, down =
      verschlechtert, info = neutral), `rank` ist der erste Sortierschluessel
@@ -53,13 +53,45 @@
     { id: "SETUP_INVALIDATED", source: "SETUP", tone: "down", rank: 11, label: "Setup ungültig", plain: "Der Kurs schloss unter der Invalidierungsmarke eines laufenden Setups." },
     { id: "STRATEGY_MATCH_LOST", source: "STRATEGY", tone: "down", rank: 12, label: "Strategie verlassen", plain: "Die Aktie erfüllt eine Bedingung des Anlagestils nicht mehr." },
     { id: "MOMENTUM_DETERIORATED", source: "SIGNAL", tone: "down", rank: 13, label: "Momentum verschlechtert", plain: "Die Kursentwicklung über 6 Monate ist negativ geworden." },
-    { id: "TREND_DOWN", source: "SIGNAL", tone: "down", rank: 14, label: "Unter die langfristige Linie", plain: "Der Kurs ist unter seinen langfristigen Durchschnitt gefallen." }
+    { id: "TREND_DOWN", source: "SIGNAL", tone: "down", rank: 14, label: "Unter die langfristige Linie", plain: "Der Kurs ist unter seinen langfristigen Durchschnitt gefallen." },
+    { id: "EVIDENCE_CHANGED", source: "EVIDENCE", tone: "info", rank: 15, label: "Historische Evidenz verändert", plain: "Die Zahl abgeschlossener Vergleichsfälle derselben Aktie hat eine Evidenzstufe überschritten oder verlassen." }
   ];
   var TYPE = {};
   EVENT_TYPES.forEach(function (t) { TYPE[t.id] = t; });
 
-  /* Pflichtfelder eines Alert-Ereignisses (Owner-Auftrag 01.10.2026). */
-  var EVENT_FIELDS = ["id", "securityId", "ticker", "eventType", "occurredAt", "previousState", "currentState", "explanation", "evidence", "nextCondition"];
+  /* Pflichtfelder eines Alert-Ereignisses. 1.0.0: Owner-Auftrag 01.10.2026
+     (Daily Usefulness); 2.0.0: Backtest & Signal Intelligence - Emittent,
+     Erkennungszeit, Ausloeser, Invalidierung, Backtest-Beleg, Vertrauen und
+     ein stabiler Schluessel gegen doppelte Zustellung. */
+  var EVENT_FIELDS = ["id", "securityId", "ticker", "issuerId", "eventType", "occurredAt", "detectedAt", "previousState", "currentState",
+    "trigger", "invalidation", "explanation", "evidence", "backtestEvidence", "trustState", "nextCondition", "dedupeKey"];
+  var TRUST_STATES = ["NOT_READY", "LIMITED", "USABLE", "ROBUST"];
+
+  /* Woher die historische Evidenz je Ereignistyp kommt. Ein Typ ohne
+     Studie steht mit seinem Grund hier, nicht stillschweigend leer. */
+  var BACKTEST_SOURCE = {
+    SETUP_CONFIRMED: { study: "setup-backtest-v1", ruleId: "SETUP_CONFIRMED" },
+    SETUP_NEW: { study: "setup-backtest-v1", ruleId: "SETUP_NEW" },
+    SETUP_WEAKENED: { study: "setup-backtest-v1", ruleId: "SETUP_WEAKENED" },
+    MOMENTUM_IMPROVED: { study: "signal-backtest-v1", ruleId: "MOMENTUM_IMPROVED" },
+    MOMENTUM_DETERIORATED: { study: "signal-backtest-v1", ruleId: "MOMENTUM_DETERIORATED" },
+    TREND_UP: { study: "signal-backtest-v1", ruleId: "TREND_UP" },
+    TREND_DOWN: { study: "signal-backtest-v1", ruleId: "TREND_DOWN" },
+    NEW_52W_HIGH: { study: "signal-backtest-v1", ruleId: "NEW_52W_HIGH" },
+    SETUP_INVALIDATED: { reason: "PATH_STATES_CLOSED" },
+    STRATEGY_MATCH_NEW: { reason: "MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT" },
+    STRATEGY_MATCH_LOST: { reason: "MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT" },
+    FACTOR_CHANGED: { reason: "FACTOR_HISTORY_TOO_SHORT" },
+    RISK_RISING: { reason: "FACTOR_HISTORY_TOO_SHORT" },
+    PATTERN_MATCH_NEW: { reason: "PATTERN_MATCH_HISTORY_TOO_SHORT" },
+    EVIDENCE_CHANGED: { reason: "NOT_A_TRADABLE_EVENT" }
+  };
+
+  /* Ein Ereignis wird genau einmal zugestellt: gleiche Aktie, gleicher Typ,
+     gleicher Schluessel, gleicher Stichtag -> gleicher dedupeKey. */
+  function dedupeKey(event) {
+    return [event.securityId || event.ticker, event.eventType, event.subject || "-", event.occurredAt].join("|");
+  }
 
   /* Die Lebenszyklus-Stufen der Setup-Engine in ihrer Reihenfolge. Die
      ersten vier sind am Stichtag entscheidbar, die letzten vier brauchen
@@ -132,6 +164,15 @@
     if (event.occurredAt && !/^\d{4}-\d{2}-\d{2}$/.test(event.occurredAt)) errors.push("INVALID_OCCURRED_AT");
     if (!Array.isArray(event.evidence) || !event.evidence.length) errors.push("EVIDENCE_REQUIRED");
     if (typeof event.explanation !== "string" || !event.explanation) errors.push("EXPLANATION_REQUIRED");
+    if (typeof event.detectedAt !== "string" || !/^\d{4}-\d{2}-\d{2}T/.test(event.detectedAt) || event.detectedAt.slice(0, 10) < event.occurredAt) errors.push("INVALID_DETECTED_AT");
+    if (!event.trigger || event.trigger.state !== "DEFINED" || !event.trigger.text) errors.push("TRIGGER_REQUIRED");
+    if (!event.invalidation || (event.invalidation.state === "DEFINED" ? !event.invalidation.text : event.invalidation.state !== "NOT_DEFINED" || !event.invalidation.reason)) errors.push("INVALIDATION_REQUIRED");
+    var be = event.backtestEvidence;
+    if (!be || (be.state !== "AVAILABLE" && be.state !== "WITHHELD")) errors.push("BACKTEST_EVIDENCE_REQUIRED");
+    else if (be.state === "AVAILABLE" && (!be.study || !be.returnType || !(be.n > 0) || !be.horizon || TRUST_STATES.indexOf(be.trust) < 1)) errors.push("BACKTEST_EVIDENCE_INCOMPLETE");
+    else if (be.state === "WITHHELD" && !be.reason) errors.push("BACKTEST_WITHHELD_WITHOUT_REASON");
+    if (TRUST_STATES.indexOf(event.trustState) < 0 || (be && event.trustState !== (be.trust || "NOT_READY"))) errors.push("TRUST_STATE_MISMATCH");
+    if (event.dedupeKey !== dedupeKey(event)) errors.push("DEDUPE_KEY_MISMATCH");
     /* Was hier nie stehen darf - dieselbe Liste wie bei Setup und Studie. */
     ["probability", "successRate", "expectedReturn", "targetPrice", "winRate", "hitRate", "recommendation", "forecast"].forEach(function (k) {
       if (Object.prototype.hasOwnProperty.call(event, k)) errors.push("FORBIDDEN_KEY_" + k);
@@ -143,6 +184,7 @@
     VERSION: VERSION, ALERT_EVENT_SCHEMA: ALERT_EVENT_SCHEMA,
     EVENT_TYPES: EVENT_TYPES, TYPE: TYPE, EVENT_FIELDS: EVENT_FIELDS,
     LIFECYCLE: LIFECYCLE, MATURITY: MATURITY, PRIORITY_RULE: PRIORITY_RULE,
+    TRUST_STATES: TRUST_STATES, BACKTEST_SOURCE: BACKTEST_SOURCE, dedupeKey: dedupeKey,
     cardKeys: cardKeys, compareCards: compareCards, eventViolations: eventViolations
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

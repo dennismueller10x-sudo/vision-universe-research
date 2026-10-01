@@ -84,6 +84,11 @@ const strategyProfiles = (json(P("quant/methodology/strategy-profiles-v1.json"))
 const setupCascade = gz(join(SETUP_DIR, readdirSync(SETUP_DIR).find((f) => /^[A-Z0-9._-]{2}\.json\.gz$/.test(f)))).cascade || [];
 const setupRules = setupCascade.filter((r) => r.always !== true).length;
 
+/* Setup- und Signal-Backtest: aus den Studien, nicht aus eigener Rechnung. */
+const setupStudy = existsSync(P("quant/data/product/setup-backtest-v1.json")) ? json(P("quant/data/product/setup-backtest-v1.json")) : null;
+const signalStudy = existsSync(P("quant/data/product/signal-backtest-v1.json")) ? json(P("quant/data/product/signal-backtest-v1.json")) : null;
+const setupConfirmed = setupStudy ? setupStudy.rules.find((r) => r.id === "SETUP_CONFIRMED") : null;
+
 function check(id, label, required, measured, pass) { return { id, label, required, measured, state: pass ? "PASS" : "FAIL" }; }
 
 const kinds = [
@@ -112,14 +117,25 @@ const kinds = [
       check("EXECUTION_AUDIT", "Geprüfter, reproduzierbarer Lauf", "auditierter Lauf", "keiner", false)
     ] },
   { id: "SETUP_BACKTEST", label: "Setup-Backtest", question: "Wie entwickelten sich Aktien, nachdem dasselbe Setup entstand?",
-    state: "WITHHELD", reason: "SETUP_OUTCOMES_NOT_CERTIFIED",
+    state: "WITHHELD", reason: "SETUP_OUTCOMES_NOT_CERTIFIED", trust: setupConfirmed ? setupConfirmed.trust : "NOT_READY",
     checks: [
-      check("SETUP_HISTORY", "Veröffentlichte Setup-Stichtage", "mindestens 12 Stichtage über 90 Tage", setupHistory.length + " Stichtage über " + days + " Tage", setupHistory.length >= 12 && days >= 90),
-      check("FIRST_OUTCOME", "Erster abgeschlossener 1-Monats-Ausgang", "Ausgang liegt vor", firstOutcome ? "frühestens am " + firstOutcome : "kein Stichtag", false),
-      check("EFFECTIVE_SAMPLE", "Effektive Stichprobe je Zustand", "mindestens " + ((technicalEvidence && technicalEvidence.minEffectiveSample) || 30), String((technicalEvidence && technicalEvidence.effectiveSampleSize) || 0), false),
-      check("REVERSAL", "Stabilität der Zustände (Umkehranteil)", "unter 20 %", gate.checks && gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR") ? Math.round(gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR").measured.share * 100) + " %" : "?", gate.checks && gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR") ? gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR").state === "PASS" : false),
+      check("REPLAY_PIT", "Point-in-Time-Wiederholung, gegen veröffentlichte Stände geprüft", "alle nachgerechneten Stände gleich",
+        setupStudy ? setupStudy.parity.checked + " Stände nachgerechnet, " + setupStudy.parity.mismatches + " Abweichungen" : "keine Wiederholung", !!setupStudy && setupStudy.parity.checked > 0 && setupStudy.parity.mismatches === 0),
+      check("REPLAY_TITLES", "Titel in der Wiederholung", "mindestens 20 Titel",
+        setupStudy ? setupStudy.source.titles.length + " Titel (" + setupStudy.source.titles.map((t) => t.ticker).slice(0, 8).join(", ") + (setupStudy.source.titles.length > 8 ? " …" : "") + ")" : "0", !!setupStudy && setupStudy.source.titles.length >= 20),
+      check("EFFECTIVE_SAMPLE", "Bestätigte Setups mit 6-Monats-Ausgang", "mindestens 100 aus 20 Titeln",
+        setupConfirmed ? setupConfirmed.sample.n + " aus " + setupConfirmed.sample.titles + " Titeln" : "0", !!setupConfirmed && setupConfirmed.sample.n >= 100 && setupConfirmed.sample.titles >= 20),
+      check("REVERSAL", "Stabilität: Anteil bestätigter Setups, die beim nächsten Wochenschluss wieder wechseln", "unter 20 %",
+        setupConfirmed && setupConfirmed.reversalNextObservation !== null ? Math.round(setupConfirmed.reversalNextObservation * 100) + " %" : "?", !!setupConfirmed && setupConfirmed.reversalNextObservation !== null && setupConfirmed.reversalNextObservation < 0.2),
+      check("SURVIVORSHIP", "Überlebenden-Kontrolle", "Kontrolle aktiv", "heute gelistete Titel", false),
       check("CERTIFICATION", "Methodische Freigabe der Setup-Ausgänge", "zertifiziert", (setupMethod.requirements || {}).backtestCertification === "CERTIFIED" ? "zertifiziert" : "nicht zertifiziert", false)
-    ] }
+    ] },
+  { id: "SIGNAL_BACKTEST", label: "Signal-Backtest", question: "Was geschah marktweit, nachdem dasselbe Radar-Signal auftrat?",
+    state: signalStudy && signalStudy.rules.some((r) => r.display.allowed) ? "PUBLISHED" : "WITHHELD",
+    reason: signalStudy ? (signalStudy.rules.some((r) => r.display.allowed) ? null : "TRUST_NOT_READY") : "STUDY_NOT_PUBLISHED",
+    engine: signalStudy ? signalStudy.engineVersion : null, returnType: signalStudy ? signalStudy.returnType : null,
+    rules: signalStudy ? signalStudy.rules.map((r) => ({ id: r.id, trust: r.trust, n: r.sample.n, titles: r.sample.titles, displayAllowed: r.display.allowed, failed: r.trustReasons.map((x) => x.id) })) : [],
+    gate: { rule: signalStudy ? signalStudy.trustRule.plain : null } }
 ];
 
 const status = {

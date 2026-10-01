@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-01T05:06:01.298Z",
+ "generatedAt": "2026-10-01T08:53:59.677Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -154,33 +154,41 @@
    "question": "Wie entwickelten sich Aktien, nachdem dasselbe Setup entstand?",
    "state": "WITHHELD",
    "reason": "SETUP_OUTCOMES_NOT_CERTIFIED",
+   "trust": "NOT_READY",
    "checks": [
     {
-     "id": "SETUP_HISTORY",
-     "label": "Veröffentlichte Setup-Stichtage",
-     "required": "mindestens 12 Stichtage über 90 Tage",
-     "measured": "4 Stichtage über 18 Tage",
-     "state": "FAIL"
+     "id": "REPLAY_PIT",
+     "label": "Point-in-Time-Wiederholung, gegen veröffentlichte Stände geprüft",
+     "required": "alle nachgerechneten Stände gleich",
+     "measured": "20 Stände nachgerechnet, 0 Abweichungen",
+     "state": "PASS"
     },
     {
-     "id": "FIRST_OUTCOME",
-     "label": "Erster abgeschlossener 1-Monats-Ausgang",
-     "required": "Ausgang liegt vor",
-     "measured": "frühestens am 2026-10-10",
+     "id": "REPLAY_TITLES",
+     "label": "Titel in der Wiederholung",
+     "required": "mindestens 20 Titel",
+     "measured": "5 Titel (AAPL, JPM, MSFT, NVDA, XOM)",
      "state": "FAIL"
     },
     {
      "id": "EFFECTIVE_SAMPLE",
-     "label": "Effektive Stichprobe je Zustand",
-     "required": "mindestens 30",
-     "measured": "0",
+     "label": "Bestätigte Setups mit 6-Monats-Ausgang",
+     "required": "mindestens 100 aus 20 Titeln",
+     "measured": "55 aus 5 Titeln",
      "state": "FAIL"
     },
     {
      "id": "REVERSAL",
-     "label": "Stabilität der Zustände (Umkehranteil)",
+     "label": "Stabilität: Anteil bestätigter Setups, die beim nächsten Wochenschluss wieder wechseln",
      "required": "unter 20 %",
-     "measured": "72 %",
+     "measured": "78 %",
+     "state": "FAIL"
+    },
+    {
+     "id": "SURVIVORSHIP",
+     "label": "Überlebenden-Kontrolle",
+     "required": "Kontrolle aktiv",
+     "measured": "heute gelistete Titel",
      "state": "FAIL"
     },
     {
@@ -191,6 +199,83 @@
      "state": "FAIL"
     }
    ]
+  },
+  {
+   "id": "SIGNAL_BACKTEST",
+   "label": "Signal-Backtest",
+   "question": "Was geschah marktweit, nachdem dasselbe Radar-Signal auftrat?",
+   "state": "PUBLISHED",
+   "reason": null,
+   "engine": "signal-backtest-1.0.0",
+   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "rules": [
+    {
+     "id": "MOMENTUM_IMPROVED",
+     "trust": "LIMITED",
+     "n": 93597,
+     "titles": 5453,
+     "displayAllowed": true,
+     "failed": [
+      "oos",
+      "walkForward",
+      "survivorship",
+      "returnBasis"
+     ]
+    },
+    {
+     "id": "MOMENTUM_DETERIORATED",
+     "trust": "LIMITED",
+     "n": 93984,
+     "titles": 5474,
+     "displayAllowed": true,
+     "failed": [
+      "oos",
+      "walkForward",
+      "survivorship",
+      "returnBasis"
+     ]
+    },
+    {
+     "id": "TREND_UP",
+     "trust": "LIMITED",
+     "n": 90548,
+     "titles": 5409,
+     "displayAllowed": true,
+     "failed": [
+      "oos",
+      "walkForward",
+      "survivorship",
+      "returnBasis"
+     ]
+    },
+    {
+     "id": "TREND_DOWN",
+     "trust": "LIMITED",
+     "n": 90650,
+     "titles": 5432,
+     "displayAllowed": true,
+     "failed": [
+      "oos",
+      "walkForward",
+      "survivorship",
+      "returnBasis"
+     ]
+    },
+    {
+     "id": "NEW_52W_HIGH",
+     "trust": "LIMITED",
+     "n": 59110,
+     "titles": 5198,
+     "displayAllowed": true,
+     "failed": [
+      "survivorship",
+      "returnBasis"
+     ]
+    }
+   ],
+   "gate": {
+    "rule": "Eine Stufe gilt nur, wenn jede für sie verlangte Prüfung bestanden ist. Ohne Überlebende-Kontrolle und ohne Gesamtrendite bleibt jede Auswertung eingeschränkt."
+   }
   }
  ],
  "measures": {
