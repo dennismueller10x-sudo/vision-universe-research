@@ -35,6 +35,7 @@ import donchian from './engine/strategies/donchian.mjs';
 import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
+import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
@@ -503,6 +504,8 @@ export function build() {
   signals.partialChecks = partial;
   for (const [id, pc] of Object.entries(partial)) for (const c of pc.candidates) (signals.bySymbol[c.symbol] ||= []).push({ strategyId: id, id: null, state: 'PARTIAL_CHECK' });
   const pilot = args['skip-pilot'] ? null : buildPilotArtifact(ROOT);
+  // Historisches Replay: Demonstration an echten vergangenen Balken, nie im Ledger.
+  const replay = buildReplayArtifact({ engine: donchian, instruments, ctxOf, planOf, asOf, generatedAt: barsGeneratedAt });
   const backtests = buildBacktests(registry, coverage, gbCoverage);
   // Historische Validierung je Regelkarte aus den gemessenen Gates, nicht behauptet.
   for (const s of registry.strategies) for (const card of s.rule_cards || []) {
@@ -518,6 +521,7 @@ export function build() {
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
+  writeJson(path.join(DATA, 'replay.json'), replay);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
   writeStockPages(signals);
   writeStrategyPages(registry);
@@ -828,6 +832,7 @@ function writeStaticPages() {
     ['strategies/index.html', 'strategies', 'Strategien — Supertrader — Vision Universe®', 'Alle Strategy Worlds von Supertrader mit Research-, Daten- und Backteststatus.', 2],
     ['backtests/index.html', 'backtests', 'Backtest Lab — Supertrader — Vision Universe®', 'Backtest Lab: Gates, Datenabdeckung, Ausführungsannahmen und Vergleich der Strategien.', 2],
     ['stock/index.html', 'stock', 'Strategy Lens — Supertrader — Vision Universe®', 'Welche Supertrader-Modelle einen Titel erkennen.', 2],
+    ['beispiel/index.html', 'replay', 'Beispiel eines Modell-Zyklus — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Einstieg, Stop und Ausstieg ablaufen. Kein aktuelles Signal.', 2],
     ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Source Ledger und Methodik der Supertrader-Strategien.', 2],
   ];
   for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth }));

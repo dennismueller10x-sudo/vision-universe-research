@@ -20,6 +20,11 @@ export const PARAMS = Object.freeze({
   minPrice: 10,              // DON-LIQ-VU
   minDollarVolume: 20e6,     // DON-LIQ-VU
   minAdr: 0.01,              // DON-LIQ-VU: schliesst z. B. Titel in laufender Uebernahme aus (Kurs am Angebotspreis)
+  // v1.1.0 (Pruefrunde 5): Die Tagesspanne allein uebersah festhaengende Kurse,
+  // wenn ein frueherer Sprung (z. B. Tag der Uebernahmemeldung) die ATR noch
+  // traegt - gemessen an ACVA am 28.09.2026: 10-Tage-Tief 0,9 % unter dem
+  // 20-Tage-Hoch bei 3,3 % ATR. Jetzt zusaetzlich: Kanal >= 2 % breit.
+  minChannelWidth: 0.02,     // DON-LIQ-VU
   readyDistance: 0.03,       // VU: vorbereitet, wenn <= 3 % unter dem Kanal-Hoch
   setupDistance: 0.06,       // VU: Beobachtung bis 6 %
   maxPendingSessions: 10,    // DON-INV-02 (VU)
@@ -47,6 +52,7 @@ export function scan(ctx, t, p = PARAMS) {
   const distance = ch.high / c - 1;
   const rules = { 'DON-LIQ-VU': true, 'DON-NEAR-VU': distance <= p.setupDistance };
   const facts = { distanceToTrigger: distance, atr20Pct: n / c, channelWidth: ch.high / ch.low - 1 };
+  if (facts.channelWidth < (p.minChannelWidth ?? 0)) return null;
   const levels = { trigger: ch.high, triggerDate: ch.highDate, invalidation: ch.low, channelHigh: ch.high, channelLow: ch.low, n, stopPlan: '2N unter dem Einstieg (N = 20-Tage-ATR); Ausstieg bei Schluss unter dem 10-Tage-Tief' };
   if (distance > p.setupDistance) return null;
   // Persistiert wird nur "vorbereitet" (<= 3 %); 3-6 % ist Beobachtung (Momentaufnahme).
@@ -83,7 +89,8 @@ export function manage(ctx, t, pos, p = PARAMS) {
 }
 
 export default {
-  id: 'DONCHIAN_TURTLE', variant: 'DONCHIAN_TURTLE_S1_DAILY', version: '1.0.0', timeframe: 'daily',
-  manageCompatible: ['1.0.0'],
+  id: 'DONCHIAN_TURTLE', variant: 'DONCHIAN_TURTLE_S1_DAILY', version: '1.1.0', timeframe: 'daily',
+  // Ein-/Ausstieg und Stop sind unveraendert - laufende Positionen aus 1.0.0 bleiben verwaltbar.
+  manageCompatible: ['1.0.0', '1.1.0'],
   PARAMS, scan, confirm, planEntry, invalidate, manage,
 };

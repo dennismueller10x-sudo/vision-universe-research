@@ -58,6 +58,9 @@ async function main() {
   const csSym = signals.partialChecks?.CANSLIM?.candidates?.[0]?.symbol;
   if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist']);
   routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-emptybox']);
+  if (fs.existsSync(path.join(SITE, 'supertrader/data/replay.json'))) routes.push(['replay', '/supertrader/beispiel/', '.st-demo-banner']);
+  const watchSym = (signals.strategies.DONCHIAN_TURTLE?.open || []).find((x) => !x.entry)?.symbol;
+  if (watchSym) routes.push(['lens-watch', `/supertrader/stock/${watchSym}/`, '.st-lensblock']);
 
   const browser = await chromium.launch({ executablePath: args.chromium || undefined });
   const pw = loadPlaywright();
@@ -77,7 +80,7 @@ async function main() {
       const t0 = Date.now();
       await page.goto(base + url, { waitUntil: 'networkidle' });
       try { await page.waitForSelector(selector, { timeout: 15000 }); } catch { errors.push(`selector ${selector} fehlt`); }
-      if (name === 'lens') { try { await page.waitForSelector('.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
+      if (name === 'lens' || name === 'replay') { try { await page.waitForSelector('.st-chart svg path', { timeout: 20000 }); } catch { errors.push('Chart nicht gezeichnet'); } }
       const m = await page.evaluate(() => ({
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),
@@ -93,6 +96,12 @@ async function main() {
         lensPlanBottom: (() => { const n = document.querySelector('.st-lensblock .st-next'); return n ? n.getBoundingClientRect().bottom : null; })(),
         ruleCard: !!document.querySelector('.st-assess'),
         freshness: !!document.querySelector('.st-fresh'),
+        // Beobachtungsliste (Donchian) nie als „vorbereitet“ beschriftet
+        watchAsPrepared: [...document.querySelectorAll('.st-card2, .st-lensblock')].filter((c) => /Donchian/.test(c.textContent) && c.querySelector('.st-phase[data-p="prep"]')).length,
+        watchTile: !!document.querySelector('.st-kpi[data-p="watch"]'),
+        // interne Regel-/Gate-Codes nicht im sichtbaren Text
+        codes: (document.body.innerText.match(/\b(?:DON|KK|DAR|MIN|WEI|LC|PILOT)-[A-Z0-9-]+\b/g) || []).slice(0, 3),
+        replayBanner: /kein aktuelles Signal/.test(document.body.innerText),
         partialAsSignal: /CAN-SLIM-Signal(?! )/.test(document.body.innerText.replace(/kein(em)? CAN-SLIM-Signal/gi, '')),
       }));
       if (m.overflow > 1) errors.push(`horizontaler Ueberlauf ${m.overflow}px`);
@@ -103,6 +112,10 @@ async function main() {
       if (name === 'home' && m.homeB) errors.push(`${m.homeB} Darvas-B-Setups prominent auf der Startseite`);
       if (m.cardsWithoutPhase) errors.push(`${m.cardsWithoutPhase} Aktienkarten ohne Phasenabzeichen`);
       if (m.partialAsSignal) errors.push('Teiltreffer als CAN-SLIM-Signal bezeichnet');
+      if (m.watchAsPrepared) errors.push(`${m.watchAsPrepared} Donchian-Eintraege als „vorbereitet“ beschriftet (Beobachtungsliste)`);
+      if (name === 'home' && signals.strategies.DONCHIAN_TURTLE?.open?.length && !m.watchTile) errors.push('Beobachtungsliste fehlt auf der Startseite');
+      if (['home', 'signals', 'lens', 'lens-watch', 'backtests', 'replay'].includes(name) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
+      if (name === 'replay' && !m.replayBanner) errors.push('Replay ohne Kennzeichnung „kein aktuelles Signal“');
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);
       if (m.plannedUnlabeled) errors.push(`${m.plannedUnlabeled} Schwellen ohne „geplant“/Datenstand`);
