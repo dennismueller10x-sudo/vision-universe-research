@@ -31,6 +31,10 @@ jobs:
           path: ${{ runner.temp }}/marketstack-scale
           key: marketstack-scale-${{ github.ref_name }}-${{ github.run_id }}
           restore-keys: marketstack-scale-${{ github.ref_name }}-
+      - name: Recover interrupted accounting before provider calls
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/market/recover-marketstack-scale.mjs --out="$RUNNER_TEMP/marketstack-scale"
       - name: Reuse prior bounded evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -53,31 +57,31 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: marketstack-scale-core-${{ github.run_id }}
+          name: marketstack-scale-core-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/marketstack-scale/checkpoint.json
           retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: marketstack-scale-part0-${{ github.run_id }}
+          name: marketstack-scale-part0-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/marketstack-scale/responses/0/
           retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: marketstack-scale-part1-${{ github.run_id }}
+          name: marketstack-scale-part1-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/marketstack-scale/responses/1/
           retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: marketstack-scale-part2-${{ github.run_id }}
+          name: marketstack-scale-part2-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/marketstack-scale/responses/2/
           retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: marketstack-scale-part3-${{ github.run_id }}
+          name: marketstack-scale-part3-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/marketstack-scale/responses/3/
           retention-days: 7
       - uses: actions/cache/save@v4
