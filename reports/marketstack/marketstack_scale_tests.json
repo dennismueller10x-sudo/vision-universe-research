@@ -194,5 +194,74 @@
     "failed": 0
   },
   "executionEnvironmentRecovered": true,
-  "checkedAt": "2026-10-01T20:10:58.539020+00:00"
+  "checkedAt": "2026-10-01T20:24:25.350628+00:00",
+  "exactHeadRelease": {
+    "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
+    "buildStatus": "PASS",
+    "secBytes": 4895565,
+    "secBudget": 8388608,
+    "storage": "EXISTING_R2_UNCHANGED",
+    "smokePassed": 140,
+    "smokeFailed": 0,
+    "journeysPassed": 12,
+    "journeysFailed": 0,
+    "smokeEvidenceSHA256": "e7b576abb30006769315f1b02e2e571288b1a091098fa7bf318689520edc597a"
+  },
+  "remoteCI": {
+    "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
+    "successfulWorkflows": [
+      {
+        "name": "Quant CI",
+        "runId": 36919867325,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867325"
+      },
+      {
+        "name": "Marketstack additive regression",
+        "runId": 36919867343,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867343"
+      },
+      {
+        "name": "Global equities additive regression",
+        "runId": 36919867334,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867334"
+      },
+      {
+        "name": "SEC Fundamentals CI",
+        "runId": 36919867345,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867345"
+      },
+      {
+        "name": "Company Master",
+        "runId": 36919867322,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867322"
+      },
+      {
+        "name": "Currency and FX",
+        "runId": 36919867458,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867458"
+      },
+      {
+        "name": "Quant Browser QA",
+        "runId": 36919867339,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867339"
+      }
+    ],
+    "packageWorkflow": {
+      "runId": 36919867337,
+      "event": "pull_request",
+      "conclusion": "CANCELLED_BEFORE_ANY_JOB",
+      "attempts": 3,
+      "cause": "SHARED_PAGES_PRODUCTION_PENDING_CONCURRENCY_REPLACEMENT",
+      "productionQueueChanged": false,
+      "localExactHeadReleaseVerified": true
+    },
+    "vercelPreview": "EXTERNAL_DEPLOYMENT_RATE_LIMIT"
+  }
 }
