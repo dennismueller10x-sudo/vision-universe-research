@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-10-01T09:42:50.574Z",
+  "generatedAt": "2026-10-01T18:46:23.558Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.2.0",
@@ -11,7 +11,7 @@
   "sources": {
     "ingestStatus": "2026-10-01T09:39:52.659Z",
     "factors": "2026-10-01T09:40:12.951Z",
-    "intradaySession": "2026-09-30",
+    "intradaySession": "2026-10-01",
     "discover": "2026-10-01T09:42:46.034Z"
   },
   "counts": {
@@ -23,8 +23,8 @@
     "marketDataFetched": 6874,
     "historicalAvailable": 5661,
     "historicalQualityAccepted": 6529,
-    "intradayAvailable": 5286,
-    "liveCapable": 1364,
+    "intradayAvailable": 1350,
+    "liveCapable": 1350,
     "factorEligible": 6445,
     "fundamentals": 5378,
     "fundamentals10y": 2261,
@@ -36,8 +36,7 @@
     "providerMappingsMissing": 0
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3922,
-    "NO_IEX_BARS": 1588,
+    "NO_INTRADAY_SNAPSHOT": 5439,
     "NO_FUNDAMENTALS:NO_CIK": 1359,
     "NO_STOCK_PAGE": 880,
     "INSUFFICIENT_HISTORY": 832,
@@ -48,6 +47,7 @@
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 138,
     "INACTIVE": 120,
     "NOT_TRADING:STALE_SERIES": 99,
+    "NO_IEX_BARS": 86,
     "NO_FACTOR_ROW:FAIL": 78,
     "NO_COMPACT_SERIES": 36,
     "NAME_MISSING": 20,
@@ -58,8 +58,7 @@
     "NOT_CONSUMER_INSTRUMENT:UNIT": 2,
     "QUALITY_REJECTED:too_few_bars": 2,
     "NOT_INGESTED_YET": 1,
-    "NO_FACTOR_ROW:NO_MARKET_DATA": 1,
-    "NO_INTRADAY_SNAPSHOT": 1
+    "NO_FACTOR_ROW:NO_MARKET_DATA": 1
   },
   "spotCheck": [
     {
