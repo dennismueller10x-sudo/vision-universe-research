@@ -190,3 +190,21 @@ test("QUANT_DECISION_INTELLIGENCE ist gemessen und jedes Kriterium belegt", () =
   /* Die Stichprobe deckt die verlangten Faelle ab - auch die schwierigen. */
   for (const k of ["Bank", "REIT", "junge Aktie", "datenarme Aktie", "Small Cap"]) assert.ok(di.sample.some((r) => r.kind === k), k);
 });
+
+test("alert ledger: a key alarms once, a re-run of the same radar date keeps it new", () => {
+  const ev = () => [{ dedupeKey: "A" }, { dedupeKey: "B" }];
+  const keys = {};
+  const first = ev(); Radar.markSeen(keys, first, "2026-09-30", "2026-10-01T05:00:00Z");
+  assert.deepEqual(first.map((e) => e.isNew), [true, true]);
+  /* Wiederholter Lauf zum selben Stichtag: weiter neu, erste Erkennung bleibt. */
+  const rerun = ev(); Radar.markSeen(keys, rerun, "2026-09-30", "2026-10-01T13:00:00Z");
+  assert.deepEqual(rerun.map((e) => e.isNew), [true, true]);
+  assert.equal(rerun[0].detectedAt, "2026-10-01T05:00:00Z");
+  /* Naechster Stichtag: derselbe Zustand alarmiert nicht noch einmal, ein neuer schon. */
+  const next = [{ dedupeKey: "A" }, { dedupeKey: "C" }]; Radar.markSeen(keys, next, "2026-10-01", "2026-10-02T05:00:00Z");
+  assert.deepEqual(next.map((e) => e.isNew), [false, true]);
+  /* Sabotage: eine Ledger-Regel, die jeden bekannten Schluessel als alt meldet, faellt hier durch. */
+  const broken = (k, es) => es.forEach((e) => { e.isNew = !k[e.dedupeKey]; k[e.dedupeKey] = k[e.dedupeKey] || ["x", "2026-09-30"]; });
+  const k2 = {}; broken(k2, ev()); const again = ev(); broken(k2, again);
+  assert.notDeepEqual(again.map((e) => e.isNew), rerun.map((e) => e.isNew));
+});

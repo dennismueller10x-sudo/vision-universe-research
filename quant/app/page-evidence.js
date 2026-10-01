@@ -76,6 +76,13 @@
     return share(b.positiveShare) + " im Plus nach 6 M. vs. " + share(b.basePositiveShare) + " Base Rate derselben Wochen → " + pp(b.deltaPositiveShare) +
       (b.deltaCi ? " (95 %: " + pp(b.deltaCi[0]) + " bis " + pp(b.deltaCi[1]) + ")" : "");
   }
+  /* Hält der Abstand zur Base Rate im jüngsten Testzeitraum? Ohne diesen Satz
+     wirkt eine Differenz belastbarer, als sie ist. */
+  function oosHint(b) {
+    if (!b || typeof b.deltaPositiveShare !== "number" || typeof b.edgeOutOfSample !== "boolean") return null;
+    if (!b.edgeOutOfSample) return "Im jüngsten Testzeitraum nicht robust genug bestätigt.";
+    return b.deltaPositiveShare < 0 ? "Im jüngsten Testzeitraum bestätigt – schwächer als die Base Rate." : "Im jüngsten Testzeitraum bestätigt.";
+  }
   function reasonText(code) { return REASON[code] || "Eine Bedingung der Vertrauensregel ist nicht erfüllt."; }
   function pct(v, d, signed) { return typeof v === "number" && isFinite(v) ? VM.pct(v, d === undefined ? 1 : d, signed) : "–"; }
   function share(v) { return typeof v === "number" && isFinite(v) ? Math.round(v * 100) + " %" : "–"; }
@@ -106,7 +113,8 @@
           el("dt", { text: "Fälle" }), el("dd", { class: "num", text: int(b.n) }),
           el("dt", { text: "≈ unabhängig" }), el("dd", { class: "num", text: int(b.effectiveN) }),
           el("dt", { text: "typ. Rückgang" }), el("dd", { class: "num down", text: pct(b.typicalDrawdown, 1) })]),
-        opts.compact ? null : el("small", { class: "q-rc-hist-note", text: returnWord(b.returnType) + " · Median " + pct(b.median, 1, true) + " · keine Prognose" })
+        oosHint(b) ? el("p", { class: "q-rc-hist-oos" + (b.edgeOutOfSample ? "" : " is-weak"), text: oosHint(b) }) : null,
+        el("small", { class: "q-rc-hist-note", text: "Median " + pct(b.median, 1, true) + " nach 6 M. · " + (opts.compact ? (b.returnType === "TOTAL_RETURN" ? "Gesamtrendite" : "Kursrendite") : returnWord(b.returnType) + " · keine Prognose") })
       ]);
     }
     var first = (events || [])[0], w = first && first.backtest;
@@ -137,7 +145,7 @@
       kids.push(el("ul", { class: "q-track-events" }, tr.events.map(function (e) {
         var t = T[e.eventType] || {};
         return el("li", { class: "tone-" + (e.direction || t.tone || "info") }, [el("b", { text: (t.label || e.eventType) + " · " + X.dateDe(e.occurredAt) }), el("span", { text: e.explanation }),
-          e.backtest ? el("small", { text: e.backtest.state === "AVAILABLE" ? "Historisch getestet: " + (baseLine(e.backtest) || share(e.backtest.positiveShare) + " im Plus nach 6 M.") + " · Vertrauen " + TRUST_WORD[e.backtest.trust]
+          e.backtest ? el("small", { text: e.backtest.state === "AVAILABLE" ? "Historisch getestet: " + (baseLine(e.backtest) || share(e.backtest.positiveShare) + " im Plus nach 6 M.") + " · Evidenz " + TRUST_WORD[e.backtest.trust] + (oosHint(e.backtest) ? " · " + oosHint(e.backtest) : "")
             : "Historischer Backtest noch nicht freigegeben: " + reasonText(e.backtest.reason) }) : null]);
       })));
     } else kids.push(el("p", { class: "qx-small", text: "Zum letzten Stand kein neues Ereignis bei dieser Aktie." }));

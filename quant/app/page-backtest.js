@@ -240,7 +240,8 @@
       setupProgress(setupCert, outcomes, ruleId).forEach(function (n) { main.append(n); });
     } else if (ruleId) main.append(X.notice("Regel nicht gefunden", "Diese Regel gibt es nicht. Wähle oben eine Regel oder ein Setup."));
 
-    main.append(X.section("Stand der Zertifizierung", "Jede Art steht in genau einem Status, der aus gemessenen Gates folgt: zertifiziert, eingeschränkt, sammelt Historie oder zurückgehalten.", [el("div", { class: "q-evkinds" }, cert.kinds.map(function (k) {
+    var nOf = function (st) { return cert.kinds.filter(function (k) { return k.status === st; }).length; };
+    main.append(X.section("Stand der Zertifizierung", "Zertifiziert: " + nOf("CERTIFIED") + " von " + cert.kinds.length + " Backtest-Arten · eingeschränkt " + nOf("LIMITED") + " · sammelt Historie " + nOf("COLLECTING_HISTORY") + " · zurückgehalten " + nOf("WITHHELD") + ". Jeder Status folgt aus gemessenen Gates.", [el("div", { class: "q-evkinds" }, cert.kinds.map(function (k) {
       var eta = k.eta && (k.eta.membership || k.eta.factor || k.eta.historyDates);
       return el("div", { class: "q-evkind " + (k.status === "CERTIFIED" ? "is-on" : k.status === "LIMITED" ? "is-limited" : "is-off") }, [el("b", { text: k.label }), statusBadge(k.status, k.tier),
         el("ul", {}, k.gates.map(function (g) { return el("li", { class: g.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (g.state === "PASS" ? "✓ " : "✗ ") + g.label }),
@@ -248,7 +249,7 @@
         k.reason ? el("p", { class: "qx-small", text: reasonText(k.reason) }) : null,
         eta && eta.date ? el("p", { class: "qx-small", text: "Voraussichtlich genug Historie: " + X.dateDe(eta.date) + " (wird täglich neu geprüft)." }) : null,
         k.ownerApproval && k.ownerApproval.required ? el("p", { class: "qx-small", text: "Nach bestandenen Gates ist eine Owner-Freigabe nötig." }) : null]);
-    })), el("p", { class: "qx-small", text: "Überlebende: Gate " + (cert.survivorship.gate === "PASS" ? "bestanden" : "nicht bestanden") + ", Kontrolle " + (cert.survivorship.control === "PASS" ? "aktiv" : "nicht vorhanden") + ". " +
+    })), el("p", { class: "qx-small", text: "Überlebende: Gate " + (cert.survivorship.gate === "PASS" ? "bestanden (kein Backtest steht deshalb über „eingeschränkt“)" : "nicht bestanden") + ", Kontrolle " + (cert.survivorship.control === "PASS" ? "aktiv" : "nicht vorhanden – delistete Titel fehlen in den Ergebnissen, sie wirken eher zu günstig") + ". " +
       int(cert.survivorship.DELISTED_IDENTIFIED) + " delistete Titel bekannt, davon " + int(cert.survivorship.DELISTED_WITH_HISTORY) + " mit sauberer Kurshistorie." })], { href: X.routes.method("historie"), label: "Methodik" }));
   }
 

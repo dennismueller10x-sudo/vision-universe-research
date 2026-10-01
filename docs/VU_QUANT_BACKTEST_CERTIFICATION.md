@@ -82,10 +82,11 @@ Gemessen heute: 4 Stände über 18 Tage, 1.009 Wechsel und noch kein abgeschloss
 
 ## Produkt
 
-- **Radar-Karten und Aktienseite:** Sie zeigen „Historisch beobachtet / getestet / zertifiziert“ mit Status. Jede Trefferquote steht zusammen mit Base Rate, Differenz, Intervall und effektiver Fallzahl.
+- **Radar-Karten und Aktienseite:** Sie zeigen „Historisch beobachtet / getestet / zertifiziert“ mit Status. Jede Trefferquote steht zusammen mit Base Rate, Differenz, Intervall, Fällen, effektiver Fallzahl, Median und typischem Rückgang. Hält der Abstand im jüngsten Testzeitraum nicht (`edgeOutOfSample = false`), steht dort ausdrücklich „Im jüngsten Testzeitraum nicht robust genug bestätigt.“
+- **`#/backtest`:** Die Übersicht nennt offen „Zertifiziert: 0 von 6 Backtest-Arten“. Die Überlebenden-Kontrolle heißt dort „nicht vorhanden – delistete Titel fehlen in den Ergebnissen“; ein PASS erscheint nur für das Gate.
 - **Alert-Vertrag 3.0.0:**
   - `effectiveAt`, `validUntil` (7 Tage), `baseRate` und `isNew`.
-  - Das Ledger sorgt dafür, dass derselbe `dedupeKey` nur einmal alarmiert.
+  - Das Ledger sorgt dafür, dass derselbe `dedupeKey` nur einmal alarmiert. Ein Eintrag merkt sich den Radar-Stichtag der ersten Erkennung; ein wiederholter Lauf zum selben Stichtag meldet seine Alerts weiter als neu (`Radar.markSeen`, Regressionstest mit Sabotage).
   - Ein Ereignis mit Evidenz, aber ohne Base Rate, verletzt den Vertrag.
 - **Beobachtete Aktien:** Sie haben einen Verlauf über 90 Tage (`radar-history/events`).
 - **`#/backtest`:** Die Seite zeigt die Zertifizierungsübersicht, den Setup-Fortschritt und die Signal-Regeln. Die Kachel mit der Base-Rate-Differenz steht dort vor allen anderen Zahlen.

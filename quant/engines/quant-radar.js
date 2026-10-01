@@ -193,12 +193,25 @@
     return errors;
   }
 
+  /* Alert-Ledger: derselbe dedupeKey alarmiert genau einmal. Ein Eintrag ist
+     [detectedAt, radarAsOf]; neu ist ein Ereignis, das noch keinen Eintrag hat
+     oder dessen erste Erkennung zum selben Radar-Stichtag gehoert (ein
+     wiederholter Lauf desselben Tages verschluckt keinen Alert). */
+  function markSeen(keys, events, asOf, detectedAt) {
+    events.forEach(function (e) {
+      var seen = keys[e.dedupeKey];
+      if (seen) { e.detectedAt = seen[0]; e.isNew = seen[1] === asOf; }
+      else { keys[e.dedupeKey] = [detectedAt, asOf]; e.isNew = true; }
+    });
+    return keys;
+  }
+
   var api = {
     VERSION: VERSION, ALERT_EVENT_SCHEMA: ALERT_EVENT_SCHEMA,
     EVENT_TYPES: EVENT_TYPES, TYPE: TYPE, EVENT_FIELDS: EVENT_FIELDS,
     LIFECYCLE: LIFECYCLE, MATURITY: MATURITY, PRIORITY_RULE: PRIORITY_RULE,
     TRUST_STATES: TRUST_STATES, BACKTEST_SOURCE: BACKTEST_SOURCE, dedupeKey: dedupeKey,
-    cardKeys: cardKeys, compareCards: compareCards, eventViolations: eventViolations
+    cardKeys: cardKeys, compareCards: compareCards, eventViolations: eventViolations, markSeen: markSeen
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else global.VUQuantRadar = api;

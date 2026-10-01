@@ -49,7 +49,7 @@ const VM = require(join(ROOT, "quant/app/view-model.js"));
 const P = (...p) => join(ROOT, ...p);
 const gz = (file) => JSON.parse(gunzipSync(readFileSync(file)));
 const json = (file) => JSON.parse(readFileSync(file, "utf8"));
-const writeGz = (file, value) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, gzipSync(Buffer.from(JSON.stringify(value)))); };
+const writeGz = (file, value) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, gzipSync(Buffer.from(JSON.stringify(value)), { level: 9 })); };
 const shardKey = (t) => (t + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_");
 const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ""));
 const de = (d) => (isDate(d) ? d.slice(8, 10) + "." + d.slice(5, 7) + "." + d.slice(0, 4) : String(d));
@@ -149,6 +149,7 @@ function backtestEvidenceFor(type) {
       n: c.n, occurrences: rule.occurrences, positiveShare: c.positiveShare, median: c.median, typicalDrawdown: c.typicalDrawdown, chanceRisk: c.chanceRisk,
       medianExcess: c.medianExcess, trust: rule.trust, sentence: rule.display.sentence, caveats: rule.display.caveats,
       basePositiveShare: c.basePositiveShare, deltaPositiveShare: c.deltaPositiveShare, deltaCi: c.deltaCi, effectiveN: c.effectiveN,
+      edgeOutOfSample: !!rule.edgeOutOfSample,
       certification: (() => { const k = certKind("SIGNAL_BACKTEST"), r = k && (k.rules || []).find((x) => x.id === rule.id); return r ? { status: r.status, tier: k.tier, readiness: r.readiness } : null; })() };
   }
   return (backtestCache[type] = out);
@@ -379,16 +380,16 @@ if (evidenceDates.length >= 2) {
    Ein Alert nur fuer einen wirklich neuen Zustand: derselbe dedupeKey
    (Titel, Typ, Gegenstand, Stichtag) alarmiert genau einmal. detectedAt ist
    der Zeitpunkt der ersten Erkennung. Eintraege aelter als 60 Tage fallen
-   heraus - sie liegen weit hinter jeder Gueltigkeit. */
+   heraus - sie liegen weit hinter jeder Gueltigkeit. Der Eintrag merkt sich
+   den Radar-Stichtag der ersten Erkennung: ein wiederholter Lauf zum selben
+   Stichtag meldet denselben Zustand weiter als neu, statt ihn zu verschlucken. */
+const asOf = [latest.date, signalAsOf, he.to, fNow.asOf, marketAsOf].filter(isDate).sort().pop();
 const LEDGER = P("quant/data/product/radar-history/alert-ledger.json.gz");
 const ledger = existsSync(LEDGER) ? gz(LEDGER) : { schemaVersion: "alert-ledger-1.0.0", keys: {} };
 const cutoffLedger = new Date(Date.parse(DETECTED_AT) - 60 * 86400000).toISOString();
-for (const [k, v] of Object.entries(ledger.keys)) if (v < cutoffLedger) delete ledger.keys[k];
-for (const e of events) {
-  if (ledger.keys[e.dedupeKey]) { e.detectedAt = ledger.keys[e.dedupeKey]; e.isNew = false; }
-  else { ledger.keys[e.dedupeKey] = DETECTED_AT; e.isNew = true; }
-}
-writeGz(LEDGER, { schemaVersion: "alert-ledger-1.0.0", updatedAt: DETECTED_AT, retentionDays: 60, keys: ledger.keys });
+for (const [k, v] of Object.entries(ledger.keys)) if (!Array.isArray(v) || v[0] < cutoffLedger) delete ledger.keys[k];
+Radar.markSeen(ledger.keys, events, asOf, DETECTED_AT);
+writeGz(LEDGER, { schemaVersion: "alert-ledger-1.1.0", entry: ["detectedAt", "radarAsOf"], updatedAt: DETECTED_AT, retentionDays: 60, keys: ledger.keys });
 
 /* Ereignis-Historie je Stichtag (Watchlist: was ist bei einer Aktie in den
    letzten Wochen passiert). Nur abgeleitete Zustaende, keine Kurse. */
@@ -409,7 +410,7 @@ const byTicker = {};
 for (const e of events) (byTicker[e.ticker] = byTicker[e.ticker] || []).push(e);
 const compactBacktest = (be) => (be.state === "AVAILABLE"
   ? { state: "AVAILABLE", n: be.n, positiveShare: be.positiveShare, median: be.median, typicalDrawdown: be.typicalDrawdown, chanceRisk: be.chanceRisk, medianExcess: be.medianExcess, trust: be.trust, returnType: be.returnType, horizon: be.horizon,
-      basePositiveShare: be.basePositiveShare, deltaPositiveShare: be.deltaPositiveShare, deltaCi: be.deltaCi, effectiveN: be.effectiveN, certification: be.certification || null }
+      basePositiveShare: be.basePositiveShare, deltaPositiveShare: be.deltaPositiveShare, deltaCi: be.deltaCi, effectiveN: be.effectiveN, edgeOutOfSample: be.edgeOutOfSample === true, certification: be.certification || null }
   : { state: "WITHHELD", reason: be.reason, trust: be.trust, certification: be.certification || null, progress: be.progress || null });
 
 let cards = Object.keys(byTicker).map((t) => {
@@ -473,7 +474,6 @@ const CLOSED = {
   PATTERN_MATCH_NEW: patternOpen ? null : "PATTERN_HISTORY_STARTED",
   EVIDENCE_CHANGED: evidenceOpen ? null : "EVIDENCE_HISTORY_STARTED"
 };
-const asOf = [latest.date, signalAsOf, he.to, fNow.asOf, marketAsOf].filter(isDate).sort().pop();
 
 const radar = {
   schemaVersion: "quant-radar-1.2.0", engineVersion: Radar.VERSION, alertEventSchema: Radar.ALERT_EVENT_SCHEMA,
