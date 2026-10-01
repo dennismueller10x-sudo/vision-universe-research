@@ -406,3 +406,14 @@ test("Nachfrage: unbrauchbarer Kontext wird ignoriert", async () => {
   assert.equal(followUpPrompt("Frage zu Aktien", { question: "x" }), "Frage zu Aktien");
   assert.ok(followUpPrompt("Neu", { question: "Alte Frage", filters: "kaputt" }).includes("VORHERIGE FRAGE: Alte Frage"));
 });
+
+test("spoken misrecognitions are interpreted by sound, not marked unclear", () => {
+  assert.match(SYSTEM_PROMPT, /SPRACHEINGABE/);
+  assert.match(SYSTEM_PROMPT, /"Ganzow".*-> Quant Score/);
+  assert.match(SYSTEM_PROMPT, /NICHT unclear/);
+});
+
+test("the cache key carries a prompt fingerprint so a changed prompt never serves old answers", async () => {
+  const { PROMPT_FINGERPRINT } = await import("../src/gate.mjs");
+  assert.match(PROMPT_FINGERPRINT, /^[0-9a-f]{1,8}$/);
+});
