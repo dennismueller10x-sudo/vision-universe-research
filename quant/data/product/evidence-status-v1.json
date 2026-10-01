@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-01T08:53:59.677Z",
+ "generatedAt": "2026-10-01T11:21:31.366Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,9 +35,9 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5872,
-    "covered": 5552,
-    "available": 5334,
+    "universe": 5878,
+    "covered": 5553,
+    "available": 5335,
     "sufficient": {
      "m1": 2242,
      "m3": 2155,
@@ -48,7 +48,7 @@
      "m6": 627
     },
     "reasons": {
-     "NOT_COVERED": 320,
+     "NOT_COVERED": 325,
      "NO_PRICE_CONDITION_TODAY": 123,
      "NO_COMPARABLE_CASE": 95
     }
@@ -154,34 +154,34 @@
    "question": "Wie entwickelten sich Aktien, nachdem dasselbe Setup entstand?",
    "state": "WITHHELD",
    "reason": "SETUP_OUTCOMES_NOT_CERTIFIED",
-   "trust": "NOT_READY",
+   "trust": "LIMITED",
    "checks": [
     {
      "id": "REPLAY_PIT",
      "label": "Point-in-Time-Wiederholung, gegen veröffentlichte Stände geprüft",
      "required": "alle nachgerechneten Stände gleich",
-     "measured": "20 Stände nachgerechnet, 0 Abweichungen",
+     "measured": "166 Stände nachgerechnet, 0 Abweichungen",
      "state": "PASS"
     },
     {
      "id": "REPLAY_TITLES",
      "label": "Titel in der Wiederholung",
      "required": "mindestens 20 Titel",
-     "measured": "5 Titel (AAPL, JPM, MSFT, NVDA, XOM)",
-     "state": "FAIL"
+     "measured": "37 Titel (AAPL, ACLO, ACMR, AEE, AIFF, AVAH, BDC, BFAM …)",
+     "state": "PASS"
     },
     {
      "id": "EFFECTIVE_SAMPLE",
      "label": "Bestätigte Setups mit 6-Monats-Ausgang",
      "required": "mindestens 100 aus 20 Titeln",
-     "measured": "55 aus 5 Titeln",
-     "state": "FAIL"
+     "measured": "267 aus 30 Titeln",
+     "state": "PASS"
     },
     {
      "id": "REVERSAL",
      "label": "Stabilität: Anteil bestätigter Setups, die beim nächsten Wochenschluss wieder wechseln",
      "required": "unter 20 %",
-     "measured": "78 %",
+     "measured": "75 %",
      "state": "FAIL"
     },
     {
@@ -287,9 +287,9 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5872,
-   "covered": 5552,
-   "available": 5334,
+   "universe": 5878,
+   "covered": 5553,
+   "available": 5335,
    "sufficient": {
     "m1": 2242,
     "m3": 2155,
@@ -300,7 +300,7 @@
     "m6": 627
    },
    "reasons": {
-    "NOT_COVERED": 320,
+    "NOT_COVERED": 325,
     "NO_PRICE_CONDITION_TODAY": 123,
     "NO_COMPARABLE_CASE": 95
    }
