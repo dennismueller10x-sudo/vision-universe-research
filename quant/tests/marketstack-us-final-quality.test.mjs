@@ -50,8 +50,10 @@ test('new official cover/removal and explicit ticker transition explanations rem
   const removals={generatedAt:'2026-10-01T19:00:00Z',rows:[{securityId:'ref_A',expectedStaleObservationExplained:true,corporateActionEvidence:[]}]};
   const result=finalizeUSQuality(...args,[],calendar,{}, {generatedAt:'2026-10-01T17:00:00Z',removals});
   assert.equal(result.generatedAt,'2026-10-01T19:00:00.000Z');assert.equal(result.rows[0].classification,'EXPECTED_STALE');assert.equal(result.rows[0].safe_for_eod,false);
+  assert.equal(result.totals.primaryClassificationDetermined,1);assert.equal(result.totals.observableDefectClassified,0);
   removals.rows[0].expectedStaleObservationExplained=false;removals.rows[0].corporateActionEvidence=[{oldSymbol:'A',newSymbol:'B'}];
   const renamed=finalizeUSQuality(...args,[],calendar,{}, {removals});assert.equal(renamed.rows[0].classification,'CORPORATE_ACTION');assert.equal(renamed.rows[0].safe_for_quant,false);
+  assert.equal(renamed.totals.primaryClassificationDetermined,1);assert.equal(renamed.totals.observableDefectClassified,0);
 });
 
 test('literal independently quoted subordinated notes distinguish role mismatch from unexplained type conflict',()=>{
