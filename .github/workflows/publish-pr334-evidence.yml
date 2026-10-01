@@ -1,0 +1,67 @@
+name: Publish verified PR334 evidence
+on:
+  push:
+    branches: [feat/marketstack-scale-coverage-20261001]
+    paths: [.github/workflows/publish-pr334-evidence.yml]
+  workflow_dispatch:
+    inputs:
+      manifest_sha:
+        description: SHA of the verified private-publication Git blob manifest
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' && github.repository == 'dennismueller10x-sudo/vision-universe-research' && github.ref == 'refs/heads/feat/marketstack-scale-coverage-20261001'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify and materialize the fixed evidence commit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MANIFEST_SHA: ${{ inputs.manifest_sha }}
+        run: |
+          node --input-type=module <<'JS'
+          import {createHash} from 'node:crypto';
+          import {writeFileSync} from 'node:fs';
+          import {join} from 'node:path';
+          const expectedCommit='32093b32a8ee09257cbcbc277c230cac6964292c';
+          const sha=process.env.MANIFEST_SHA;
+          if(!/^[a-f0-9]{40}$/.test(sha||''))throw Error('INVALID_MANIFEST_SHA');
+          async function blob(id){
+            if(!/^[a-f0-9]{40}$/.test(id))throw Error('INVALID_BLOB_SHA');
+            const r=await fetch('https://api.github.com/repos/'+process.env.GITHUB_REPOSITORY+'/git/blobs/'+id,{headers:{Authorization:'Bearer '+process.env.GITHUB_TOKEN,Accept:'application/vnd.github+json'}});
+            if(!r.ok)throw Error('GITHUB_BLOB_HTTP_'+r.status);
+            const value=await r.json();
+            if(value.encoding!=='base64'||value.size>2000000)throw Error('UNSAFE_BLOB');
+            const bytes=Buffer.from(value.content,'base64');
+            const objectSHA=createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
+            if(objectSHA!==id)throw Error('BLOB_OBJECT_SHA_MISMATCH');
+            return bytes;
+          }
+          const manifest=JSON.parse((await blob(sha)).toString('utf8'));
+          if(manifest.commit!==expectedCommit||manifest.base!=='1ff0ec3085ef10b58f7cc0bf936eab4da8c26889'||manifest.branch!=='feat/marketstack-scale-coverage-20261001'||!Array.isArray(manifest.parts)||manifest.parts.length>64||manifest.bytes>64000000)throw Error('UNSAFE_MANIFEST');
+          const parts=[];
+          for(const p of manifest.parts){const bytes=await blob(p.sha);if(bytes.length!==p.bytes||createHash('sha256').update(bytes).digest('hex')!==p.sha256)throw Error('PART_HASH_MISMATCH');parts.push(bytes);}
+          const pack=Buffer.concat(parts);
+          if(pack.length!==manifest.bytes||createHash('sha256').update(pack).digest('hex')!==manifest.sha256)throw Error('PACK_HASH_MISMATCH');
+          writeFileSync(join(process.env.RUNNER_TEMP,'pr334-evidence.pack'),pack,{mode:0o600});
+          console.log('Verified fixed evidence pack: '+pack.length+' bytes');
+          JS
+          git index-pack --stdin --strict < "$RUNNER_TEMP/pr334-evidence.pack"
+          git cat-file -e 32093b32a8ee09257cbcbc277c230cac6964292c^{commit}
+      - name: Merge the verified evidence without rewriting the branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git merge --no-ff --no-edit 32093b32a8ee09257cbcbc277c230cac6964292c
+          git push origin HEAD:refs/heads/feat/marketstack-scale-coverage-20261001
