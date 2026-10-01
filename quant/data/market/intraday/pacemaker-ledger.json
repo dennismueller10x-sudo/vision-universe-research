@@ -10,36 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-10-01T13:59:14.989Z",
+  "updatedAt": "2026-10-01T14:13:24.879Z",
   "cycles": [
-    {
-      "cycle": 3,
-      "runId": "36718613727",
-      "triggerAt": "2026-09-30T13:59:15.313Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "09:59:15",
-      "fetchStartAt": "2026-09-30T13:59:15.314Z",
-      "fetchEndAt": "2026-09-30T14:13:17.374Z",
-      "session": "2026-09-30",
-      "written": 1229,
-      "requests": 1431,
-      "notPublishable": 181,
-      "addAt": "2026-09-30T14:13:17.378Z",
-      "commitAt": "2026-09-30T14:13:17.697Z",
-      "pushAt": "2026-09-30T14:13:24.606Z",
-      "sha": "ac0d274003",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-09-30T14:13:17.355Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "FAIL",
-        "codes": [
-          "auslieferungZuWeitHinterher"
-        ]
-      }
-    },
     {
       "cycle": 4,
       "runId": "36718613727",
@@ -633,6 +605,34 @@
       "written": 1203,
       "requests": 1436,
       "notPublishable": 231,
+      "addAt": "2026-10-01T13:59:14.989Z",
+      "commitAt": "2026-10-01T13:59:15.373Z",
+      "pushAt": "2026-10-01T13:59:21.884Z",
+      "sha": "f8994ca0e1",
+      "changed": true,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-10-01T13:59:14.969Z",
+      "pushed": true,
+      "watchdog": {
+        "verdict": "WARNING",
+        "codes": [
+          "auslieferungVerspaetet"
+        ]
+      }
+    },
+    {
+      "cycle": 3,
+      "runId": "36865680383",
+      "triggerAt": "2026-10-01T13:59:22.289Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "09:59:22",
+      "fetchStartAt": "2026-10-01T13:59:22.290Z",
+      "fetchEndAt": "2026-10-01T14:13:24.876Z",
+      "session": "2026-10-01",
+      "written": 1240,
+      "requests": 1436,
+      "notPublishable": 178,
       "addAt": null,
       "commitAt": null,
       "pushAt": null,
@@ -640,7 +640,7 @@
       "changed": false,
       "ok": true,
       "reason": null,
-      "snapshotAt": "2026-10-01T13:59:14.969Z"
+      "snapshotAt": "2026-10-01T14:13:24.856Z"
     }
   ]
 }
