@@ -1,0 +1,307 @@
+{
+  "environment": {
+    "node": "24.19.0",
+    "python": "3.12",
+    "browser": "Chromium 145.0.7632.6 (Playwright build 1208), pinned Playwright 1.58.2; same browser build as GitHub"
+  },
+  "quant": {
+    "command": "node --test quant/tests/*.test.mjs",
+    "tests": 2497,
+    "passed": 2497,
+    "failed": 0,
+    "skipped": 0,
+    "freshFinalizationRun": true,
+    "sourceCommit": "1ff0ec3085ef10b58f7cc0bf936eab4da8c26889",
+    "durationMilliseconds": 77892.846905
+  },
+  "products": {
+    "command": "node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs",
+    "tests": 460,
+    "passed": 455,
+    "failed": 0,
+    "skipped": 5,
+    "freshFinalizationRun": true
+  },
+  "sec": {
+    "command": "python3 -m unittest discover -s scripts/quant/tests",
+    "passed": 484,
+    "failed": 0,
+    "freshFinalizationRun": true
+  },
+  "esef": {
+    "command": "python3 -m unittest discover -s scripts/fundamentals/tests",
+    "passed": 7,
+    "failed": 0,
+    "freshFinalizationRun": true
+  },
+  "realLVMH": {
+    "canonicalFactsPreserved": 12,
+    "preExistingDiagnosticIssues": 543,
+    "pitAndProvenancePreserved": true
+  },
+  "discoverBrowser": {
+    "functionalChecksPassed": 201,
+    "accessibilityChecks": 16,
+    "failed": 0,
+    "freshFinalizationRun": true
+  },
+  "quantBrowser": {
+    "functionalChecksPassed": 90,
+    "resourceGatesPassed": 8,
+    "resourceGatesTotal": 8,
+    "accessibilityPages": 76,
+    "violations": 0,
+    "acceptedBaselineFunctionalChecksPassed": 88,
+    "stockDecodedByteDelta": null,
+    "uncontrolledBrowserVersionRunHadExtraLazyImageBytes": 416861,
+    "freshFinalizationRun": true,
+    "note": "Cold isolated browser context for every budget route, native lazy-image prefetch distance zero only in QA; all fetched resources counted. about:blank alone retains image/request history and is not a cold measurement. Real below-fold image separately scrolled, loaded and decoded. No product network optimization claim or budget relaxation.",
+    "measurement": {
+      "scope": "Cold isolated browser context, initial viewport before interaction; all fetched subresources counted",
+      "browserVersion": "145.0.7632.6",
+      "browserArgs": [
+        "--no-sandbox",
+        "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
+      ],
+      "nativeLazyImagePrefetchDistancePx": 0,
+      "isolatedContextPerBudgetRoute": true,
+      "waitForUsedLayoutFonts": true,
+      "productNetworkImprovementClaim": false
+    },
+    "lazyImageEvidence": [
+      {
+        "width": 1440,
+        "initial": {
+          "scrollY": 0,
+          "viewportHeight": 1000,
+          "images": [
+            {
+              "path": "/discover/logos/files/NVDA.png",
+              "loading": "eager",
+              "top": 185.96875,
+              "height": 39.6875,
+              "complete": true,
+              "naturalWidth": 128
+            },
+            {
+              "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+              "loading": "lazy",
+              "top": 6249.734375,
+              "height": 96,
+              "complete": false,
+              "naturalWidth": 0
+            }
+          ]
+        },
+        "scrolled": {
+          "scrollY": 5722,
+          "top": 504.484375,
+          "complete": true,
+          "naturalWidth": 1254,
+          "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+          "resourceObserved": true
+        }
+      },
+      {
+        "width": 390,
+        "initial": {
+          "scrollY": 0,
+          "viewportHeight": 1000,
+          "images": [
+            {
+              "path": "/discover/logos/files/NVDA.png",
+              "loading": "eager",
+              "top": 152.15625,
+              "height": 39.6875,
+              "complete": true,
+              "naturalWidth": 128
+            },
+            {
+              "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+              "loading": "lazy",
+              "top": 9762.8125,
+              "height": 96,
+              "complete": false,
+              "naturalWidth": 0
+            }
+          ]
+        },
+        "scrolled": {
+          "scrollY": 9227,
+          "top": 494.5625,
+          "complete": true,
+          "naturalWidth": 1254,
+          "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+          "resourceObserved": true
+        }
+      }
+    ],
+    "qaSourceSHA256": "2f998c7c20b3798717f8fb318dda1424ee5ed82c6311812893a6c67ae494c1a6",
+    "evidenceSHA256": {
+      "results.json": "08fd8aae3f557f4cce7797f14f06af0911771c87ff7e0df362b245d89a2cf051",
+      "resource-budgets.json": "5c576204de5d9fa05ae8a28251351ee9e22e457b226b1c58e300269cf7f269bd",
+      "accessibility.json": "5b63c100238db222773005735b2fe3edb2a86828f794f414307ca3d91ba9ffb8"
+    },
+    "stockObservations": [
+      {
+        "width": 1440,
+        "decodedBytes": 5461156,
+        "requests": 37,
+        "pass": true
+      },
+      {
+        "width": 390,
+        "decodedBytes": 5461156,
+        "requests": 37,
+        "pass": true
+      }
+    ],
+    "contextHistoryCauseEvidenceSHA256": "d4302c14ef6310603595baffedf0393c53ebfe2f14186f181c02c90dd1c77bd8",
+    "historicalSharedContextCI": [
+      {
+        "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
+        "runId": 36919867339,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "sourceCommit": "5eaf689d623c289504a87df33689f93271476f4a",
+        "runId": 36921683328,
+        "conclusion": "FAILURE",
+        "stockMobileDecodedBytes": 5926273,
+        "extraLazyImageBytes": 416861,
+        "cause": "PRIOR_REAL_GARP_STRATEGY_IMAGE_LOAD_IN_REUSED_CONTEXT;REPRODUCED_INDEPENDENTLY_AT_BOTH_WIDTHS",
+        "codeAndProviderDataUnchanged": true
+      }
+    ]
+  },
+  "globalBrowser": {
+    "allPricedListingChecksPassed": 278,
+    "metadataOnlyChecksPassed": 12,
+    "newChartWatchlistChecksPassed": 8,
+    "legacyAndGlobalAppSmokePassed": 63,
+    "boundedSearchQueriesPassed": 6,
+    "freshFinalizationRun": true
+  },
+  "publicDataAndSecretGuards": "PASS",
+  "independentReview": "PASS_ALL_FINDINGS_RESOLVED",
+  "protectedOutputs": "NO_BYTE_CHANGES",
+  "servingRegression": {
+    "command": "python3 -m unittest scripts.vu2.test_fundamentals_serving scripts.vu2.test_product_data_api",
+    "passed": 32,
+    "failed": 0
+  },
+  "resourceBudgetUnit": {
+    "command": "node --test scripts/vu2/resource-budget.test.mjs",
+    "passed": 6,
+    "failed": 0
+  },
+  "operatorHardening": {
+    "command": "node --test quant/tests/marketstack-europe*.test.mjs",
+    "passed": 38,
+    "failed": 0,
+    "fullLocalSuiteBeforeAdditionalRegressionTest": 2392
+  },
+  "journeySurfaces": {
+    "command": "node scripts/vu2/verify-journey-surfaces.mjs --site <fresh-release>",
+    "passed": 12,
+    "failed": 0
+  },
+  "searchScalability": {
+    "queries": 6,
+    "requestCounts": [
+      3,
+      3,
+      3,
+      3,
+      2,
+      3
+    ],
+    "decodedByteRange": [
+      35676,
+      57011
+    ],
+    "resultLimit": 14,
+    "fullUniversePayload": false,
+    "failed": 0
+  },
+  "executionEnvironmentRecovered": true,
+  "checkedAt": "2026-10-01T20:47:59.777056+00:00",
+  "exactHeadRelease": {
+    "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
+    "buildStatus": "PASS",
+    "secBytes": 4895565,
+    "secBudget": 8388608,
+    "storage": "EXISTING_R2_UNCHANGED",
+    "smokePassed": 140,
+    "smokeFailed": 0,
+    "journeysPassed": 12,
+    "journeysFailed": 0,
+    "smokeEvidenceSHA256": "e7b576abb30006769315f1b02e2e571288b1a091098fa7bf318689520edc597a"
+  },
+  "remoteCI": {
+    "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
+    "successfulWorkflows": [
+      {
+        "name": "Quant CI",
+        "runId": 36919867325,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867325"
+      },
+      {
+        "name": "Marketstack additive regression",
+        "runId": 36919867343,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867343"
+      },
+      {
+        "name": "Global equities additive regression",
+        "runId": 36919867334,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867334"
+      },
+      {
+        "name": "SEC Fundamentals CI",
+        "runId": 36919867345,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867345"
+      },
+      {
+        "name": "Company Master",
+        "runId": 36919867322,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867322"
+      },
+      {
+        "name": "Currency and FX",
+        "runId": 36919867458,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867458"
+      },
+      {
+        "name": "Quant Browser QA",
+        "runId": 36919867339,
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36919867339"
+      }
+    ],
+    "packageWorkflow": {
+      "runId": 36919867337,
+      "event": "pull_request",
+      "conclusion": "CANCELLED_BEFORE_ANY_JOB",
+      "attempts": 3,
+      "cause": "SHARED_PAGES_PRODUCTION_PENDING_CONCURRENCY_REPLACEMENT",
+      "productionQueueChanged": false,
+      "localExactHeadReleaseVerified": true
+    },
+    "vercelPreview": "EXTERNAL_DEPLOYMENT_RATE_LIMIT",
+    "scope": "HISTORICAL_SOURCE_COMMIT_AS_SPECIFIED; DOES_NOT_CERTIFY_LATER_COLD_CONTEXT_QA"
+  },
+  "additionalRemotePackage": {
+    "sourceCommit": "5eaf689d623c289504a87df33689f93271476f4a",
+    "runId": 36921683074,
+    "conclusion": "SUCCESS",
+    "packageConclusion": "SUCCESS",
+    "deployConclusion": "SKIPPED",
+    "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36921683074"
+  }
+}

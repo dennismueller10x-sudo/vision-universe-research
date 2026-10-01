@@ -1,0 +1,4831 @@
+{
+  "generatedAt": "2026-10-01T16:03:59.434Z",
+  "sourceSystem": "DEUTSCHE_BOERSE_PUBLIC_INDEX_CONSTITUENTS",
+  "sourceURL": "https://api.live.deutsche-boerse.com/v1/search/equity_search",
+  "snapshotSHA256": "0b589202540ab34c72e1e8a61db3522f42c9e6f9d94066dabd1f29f2be62d78c",
+  "compositionEffectiveAt": null,
+  "historicalMembershipAvailability": "UNKNOWN",
+  "coverageLevel": "OFFICIAL_CURRENT_SNAPSHOT_DIRECTORY_MATCH_NOT_HISTORY",
+  "indices": [
+    {
+      "index": "DAX",
+      "indexISIN": "DE0008469008",
+      "officialPage": "https://live.deutsche-boerse.com/indices/dax/constituents",
+      "retrievedAt": "2026-10-01T14:11:48.741Z",
+      "compositionEffectiveAt": null,
+      "completeSnapshot": true,
+      "observedComponents": 40,
+      "reportedComponents": 40,
+      "exactISINVenueMatches": 40,
+      "directMetadataIdentityMatches": 37,
+      "exactDirectoryOrMetadataIdentityMatches": 40,
+      "unmatchedComponentsDirectlyTested": 0,
+      "unmatchedObservedComponents": 0,
+      "fullIndexDirectoryCoverage": true,
+      "components": [
+        {
+          "isin": "DE0007164600",
+          "mic": "XETR",
+          "name": "SAP SE",
+          "wkn": "716460",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SAP.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SAP.DE",
+              "checkedAt": "2026-10-01T11:08:39.459Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SAP.DE",
+              "returnedISIN": "DE0007164600",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006231004",
+          "mic": "XETR",
+          "name": "Infineon Technologies AG",
+          "wkn": "623100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "IFX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "IFX.DE",
+              "checkedAt": "2026-10-01T11:08:43.389Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "IFX.DE",
+              "returnedISIN": "DE0006231004",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0008404005",
+          "mic": "XETR",
+          "name": "Allianz SE",
+          "wkn": "840400",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ALV.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ALV.DE",
+              "checkedAt": "2026-10-01T11:08:40.834Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ALV.DE",
+              "returnedISIN": "DE0008404005",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005140008",
+          "mic": "XETR",
+          "name": "Deutsche Bank AG",
+          "wkn": "514000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DBK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DBK.DE",
+              "checkedAt": "2026-10-01T11:08:44.442Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DBK.DE",
+              "returnedISIN": "DE0005140008",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007236101",
+          "mic": "XETR",
+          "name": "Siemens AG",
+          "wkn": "723610",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SIE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SIE.DE",
+              "checkedAt": "2026-10-01T11:08:39.826Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SIE.DE",
+              "returnedISIN": "DE0007236101",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000ENER6Y0",
+          "mic": "XETR",
+          "name": "Siemens Energy AG",
+          "wkn": "ENER6Y",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ENR.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ENR.DE",
+              "checkedAt": "2026-10-01T11:08:49.049Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ENR.DE",
+              "returnedISIN": "DE000ENER6Y0",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005557508",
+          "mic": "XETR",
+          "name": "Deutsche Telekom AG",
+          "wkn": "555750",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DTE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DTE.DE",
+              "checkedAt": "2026-10-01T11:08:41.387Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DTE.DE",
+              "returnedISIN": "DE0005557508",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007030009",
+          "mic": "XETR",
+          "name": "Rheinmetall AG",
+          "wkn": "703000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "RHM.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "RHM.DE",
+              "checkedAt": "2026-10-01T11:08:40.350Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "RHM.DE",
+              "returnedISIN": "DE0007030009",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000CBK1001",
+          "mic": "XETR",
+          "name": "Commerzbank AG",
+          "wkn": "CBK100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "CBK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "CBK.DE",
+              "checkedAt": "2026-10-01T11:08:44.939Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "CBK.DE",
+              "returnedISIN": "DE000CBK1001",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006047004",
+          "mic": "XETR",
+          "name": "Heidelberg Materials AG ",
+          "wkn": "604700",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HEI.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HEI.DE",
+              "checkedAt": "2026-10-01T15:56:46.376Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HEI.DE",
+              "returnedISIN": "DE0006047004",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1ML7J1",
+          "mic": "XETR",
+          "name": "Vonovia SE",
+          "wkn": "A1ML7J",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "VNA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "VNA.DE",
+              "checkedAt": "2026-10-01T11:08:47.512Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "VNA.DE",
+              "returnedISIN": "DE000A1ML7J1",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0008430026",
+          "mic": "XETR",
+          "name": "Münchener Rück AG",
+          "wkn": "843002",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "MUV2.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "MUV2.DE",
+              "checkedAt": "2026-10-01T11:08:43.910Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "MUV2.DE",
+              "returnedISIN": "DE0008430026",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000BAY0017",
+          "mic": "XETR",
+          "name": "Bayer AG",
+          "wkn": "BAY001",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BAYN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BAYN.DE",
+              "checkedAt": "2026-10-01T15:56:24.245Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BAYN.DE",
+              "returnedISIN": "DE000BAY0017",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000BASF111",
+          "mic": "XETR",
+          "name": "BASF SE",
+          "wkn": "BASF11",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BAS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BAS.DE",
+              "checkedAt": "2026-10-01T11:08:42.888Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BAS.DE",
+              "returnedISIN": "DE000BASF111",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007100000",
+          "mic": "XETR",
+          "name": "Mercedes Benz Group AG (ehemals Daimler)",
+          "wkn": "710000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "MBG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "MBG.DE",
+              "checkedAt": "2026-10-01T11:08:41.895Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "MBG.DE",
+              "returnedISIN": "DE0007100000",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005190003",
+          "mic": "XETR",
+          "name": "BMW AG St",
+          "wkn": "519000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BMW.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BMW.DE",
+              "checkedAt": "2026-10-01T11:08:42.391Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BMW.DE",
+              "returnedISIN": "DE0005190003",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007664039",
+          "mic": "XETR",
+          "name": "Volkswagen AG Vz",
+          "wkn": "766403",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "VOW3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "VOW3.DE",
+              "checkedAt": "2026-10-01T15:56:44.583Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "VOW3.DE",
+              "returnedISIN": "DE0007664039",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005552004",
+          "mic": "XETR",
+          "name": "DHL AG",
+          "wkn": "555200",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DHL.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DHL.DE",
+              "checkedAt": "2026-10-01T15:58:59.312Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DHL.DE",
+              "returnedISIN": "DE0005552004",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000ENAG999",
+          "mic": "XETR",
+          "name": "E.ON SE",
+          "wkn": "ENAG99",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EOAN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EOAN.DE",
+              "checkedAt": "2026-10-01T11:08:48.016Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EOAN.DE",
+              "returnedISIN": "DE000ENAG999",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005810055",
+          "mic": "XETR",
+          "name": "Deutsche Börse AG",
+          "wkn": "581005",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DB1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DB1.DE",
+              "checkedAt": "2026-10-01T15:56:40.270Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DB1.DE",
+              "returnedISIN": "DE0005810055",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "NL0000235190",
+          "mic": "XETR",
+          "name": "Airbus SE",
+          "wkn": "938914",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AIR.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AIR.DE",
+              "checkedAt": "2026-10-01T15:57:06.195Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AIR.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1EWWW0",
+          "mic": "XETR",
+          "name": "adidas AG",
+          "wkn": "A1EWWW",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ADS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ADS.DE",
+              "checkedAt": "2026-10-01T11:08:45.955Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ADS.DE",
+              "returnedISIN": "DE000A1EWWW0",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000DTR0CK8",
+          "mic": "XETR",
+          "name": "Daimler Truck Holding AG",
+          "wkn": "DTR0CK",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DTG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DTG.DE",
+              "checkedAt": "2026-10-01T15:58:32.739Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DTG.DE",
+              "returnedISIN": "DE000DTR0CK8",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007037129",
+          "mic": "XETR",
+          "name": "RWE AG St",
+          "wkn": "703712",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "RWE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "RWE.DE",
+              "checkedAt": "2026-10-01T11:08:48.528Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "RWE.DE",
+              "returnedISIN": "DE0007037129",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0008402215",
+          "mic": "XETR",
+          "name": "Hannover Rück SE",
+          "wkn": "840221",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HNR1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HNR1.DE",
+              "checkedAt": "2026-10-01T15:57:35.974Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HNR1.DE",
+              "returnedISIN": "DE0008402215",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000FRE5EN2",
+          "mic": "XETR",
+          "name": "Fresenius SE & Co. KGaA",
+          "wkn": "FRE5EN",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FRE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FRE.DE",
+              "checkedAt": "2026-10-01T15:56:47.385Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FRE.DE",
+              "returnedISIN": "DE0005785604",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A12DM80",
+          "mic": "XETR",
+          "name": "Scout24 SE",
+          "wkn": "A12DM8",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "G24.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "G24.DE",
+              "checkedAt": "2026-10-01T15:57:22.848Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "G24.DE",
+              "returnedISIN": "DE000A12DM80",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000SHL1006",
+          "mic": "XETR",
+          "name": "Siemens Healthineers AG",
+          "wkn": "SHL100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SHL.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SHL.DE",
+              "checkedAt": "2026-10-01T15:58:42.477Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SHL.DE",
+              "returnedISIN": "DE000SHL1006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000SYM9999",
+          "mic": "XETR",
+          "name": "Symrise AG",
+          "wkn": "SYM999",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SY1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SY1.DE",
+              "checkedAt": "2026-10-01T15:57:01.896Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SY1.DE",
+              "returnedISIN": "DE000SYM9999",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006048432",
+          "mic": "XETR",
+          "name": "Henkel AG & Co. KGaA Vz",
+          "wkn": "604843",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HEN3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HEN3.DE",
+              "checkedAt": "2026-10-01T11:08:46.982Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HEN3.DE",
+              "returnedISIN": "DE0006048432",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0D9PT0",
+          "mic": "XETR",
+          "name": "MTU Aero Engines AG",
+          "wkn": "A0D9PT",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "MTX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "MTX.DE",
+              "checkedAt": "2026-10-01T15:56:53.741Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "MTX.DE",
+              "returnedISIN": "DE000A0D9PT0",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005439004",
+          "mic": "XETR",
+          "name": "Continental AG",
+          "wkn": "543900",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "CON.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "CON.DE",
+              "checkedAt": "2026-10-01T15:56:45.352Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "CON.DE",
+              "returnedISIN": "DE0005439004",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006599905",
+          "mic": "XETR",
+          "name": "Merck KGaA",
+          "wkn": "659990",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "MRK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "MRK.DE",
+              "checkedAt": "2026-10-01T15:56:49.414Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "MRK.DE",
+              "returnedISIN": "DE0006599905",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006070006",
+          "mic": "XETR",
+          "name": "HOCHTIEF AG",
+          "wkn": "607000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HOT.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HOT.DE",
+              "checkedAt": "2026-10-01T15:57:54.033Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HOT.DE",
+              "returnedISIN": "DE0006070006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1DAHH0",
+          "mic": "XETR",
+          "name": "Brenntag SE",
+          "wkn": "A1DAHH",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BNR.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BNR.DE",
+              "checkedAt": "2026-10-01T15:57:20.213Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BNR.DE",
+              "returnedISIN": "DE000A1DAHH0",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005200000",
+          "mic": "XETR",
+          "name": "Beiersdorf AG",
+          "wkn": "520000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BEI.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BEI.DE",
+              "checkedAt": "2026-10-01T11:08:45.460Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BEI.DE",
+              "returnedISIN": "DE0005200000",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006602006",
+          "mic": "XETR",
+          "name": "GEA Group Aktiengesellschaft",
+          "wkn": "660200",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "G1A.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "G1A.DE",
+              "checkedAt": "2026-10-01T15:56:34.175Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "G1A.DE",
+              "returnedISIN": "DE0006602006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000ZAL1111",
+          "mic": "XETR",
+          "name": "Zalando SE",
+          "wkn": "ZAL111",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ZAL.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ZAL.DE",
+              "checkedAt": "2026-10-01T15:56:50.172Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ZAL.DE",
+              "returnedISIN": "DE000ZAL1111",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005785802",
+          "mic": "XETR",
+          "name": "Fresenius Medical Care AG",
+          "wkn": "578580",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FME.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FME.DE",
+              "checkedAt": "2026-10-01T15:56:45.868Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FME.DE",
+              "returnedISIN": "DE0005785802",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "NL0015002SN0",
+          "mic": "XETR",
+          "name": "Qiagen NV Registered Shs",
+          "wkn": "A41HBE",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "QIA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "QIA.DE",
+              "checkedAt": "2026-10-01T15:56:40.515Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "QIA.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        }
+      ]
+    },
+    {
+      "index": "MDAX",
+      "indexISIN": "DE0008467416",
+      "officialPage": "https://live.deutsche-boerse.com/indices/mdax/constituents",
+      "retrievedAt": "2026-10-01T14:11:53.018Z",
+      "compositionEffectiveAt": null,
+      "completeSnapshot": true,
+      "observedComponents": 50,
+      "reportedComponents": 50,
+      "exactISINVenueMatches": 47,
+      "directMetadataIdentityMatches": 45,
+      "exactDirectoryOrMetadataIdentityMatches": 47,
+      "unmatchedComponentsDirectlyTested": 3,
+      "unmatchedObservedComponents": 3,
+      "fullIndexDirectoryCoverage": false,
+      "components": [
+        {
+          "isin": "DE0006766504",
+          "mic": "XETR",
+          "name": "Aurubis AG",
+          "wkn": "676650",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "NDA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "NDA.DE",
+              "checkedAt": "2026-10-01T15:56:53.483Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "NDA.DE",
+              "returnedISIN": "DE0006766504",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000RENK730",
+          "mic": "XETR",
+          "name": "RENK Group AG",
+          "wkn": "RENK73",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "R3NK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "R3NK.DE",
+              "checkedAt": "2026-10-01T15:59:00.583Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "R3NK.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000LEG1110",
+          "mic": "XETR",
+          "name": "LEG Immobilien SE",
+          "wkn": "LEG111",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "LEG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "LEG.DE",
+              "checkedAt": "2026-10-01T15:57:41.060Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "LEG.DE",
+              "returnedISIN": "DE000LEG1110",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000EVNK013",
+          "mic": "XETR",
+          "name": "Evonik Industries AG",
+          "wkn": "EVNK01",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EVK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EVK.DE",
+              "checkedAt": "2026-10-01T15:56:57.559Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EVK.DE",
+              "returnedISIN": "DE000EVNK013",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007500001",
+          "mic": "XETR",
+          "name": "thyssenkrupp AG",
+          "wkn": "750000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TKA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TKA.DE",
+              "checkedAt": "2026-10-01T15:56:48.166Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TKA.DE",
+              "returnedISIN": "DE0007500001",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000TUAG505",
+          "mic": "XETR",
+          "name": "TUI AG",
+          "wkn": "TUAG50",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TUI1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TUI1.DE",
+              "checkedAt": "2026-10-01T15:56:50.696Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TUI1.DE",
+              "returnedISIN": "DE000TUAG505",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0WMPJ6",
+          "mic": "XETR",
+          "name": "AIXTRON SE",
+          "wkn": "A0WMPJ",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AIXA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AIXA.DE",
+              "checkedAt": "2026-10-01T11:08:50.616Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AIXA.DE",
+              "returnedISIN": "DE000A0WMPJ6",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005470306",
+          "mic": "XETR",
+          "name": "CTS Eventim AG & Co. KGaA",
+          "wkn": "547030",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EVD.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EVD.DE",
+              "checkedAt": "2026-10-01T15:56:57.812Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EVD.DE",
+              "returnedISIN": "DE0005470306",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0008232125",
+          "mic": "XETR",
+          "name": "Deutsche Lufthansa AG",
+          "wkn": "823212",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "LHA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "LHA.DE",
+              "checkedAt": "2026-10-01T15:56:45.600Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "LHA.DE",
+              "returnedISIN": "DE0008232125",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000PAG9113",
+          "mic": "XETR",
+          "name": "Porsche AG Vz",
+          "wkn": "PAG911",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "P911.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "P911.DE",
+              "checkedAt": "2026-10-01T15:58:43.255Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "P911.DE",
+              "returnedISIN": "DE000PAG9113",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000HAG0005",
+          "mic": "XETR",
+          "name": "HENSOLDT AG",
+          "wkn": "HAG000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HAG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HAG.DE",
+              "checkedAt": "2026-10-01T15:58:03.737Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HAG.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000DWS1007",
+          "mic": "XETR",
+          "name": "DWS Group GmbH & Co. KGaA",
+          "wkn": "DWS100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DWS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DWS.DE",
+              "checkedAt": "2026-10-01T15:57:59.384Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DWS.DE",
+              "returnedISIN": "DE000DWS1007",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0Z2ZZ5",
+          "mic": "XETR",
+          "name": "freenet AG",
+          "wkn": "A0Z2ZZ",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FNTN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FNTN.DE",
+              "checkedAt": "2026-10-01T15:56:57.317Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FNTN.DE",
+              "returnedISIN": "DE000A0Z2ZZ5",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000PAH0038",
+          "mic": "XETR",
+          "name": "Porsche Automobil Holding SE",
+          "wkn": "PAH003",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "PAH3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "PAH3.DE",
+              "checkedAt": "2026-10-01T15:56:52.975Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "PAH3.DE",
+              "returnedISIN": "DE000PAH0038",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0D6554",
+          "mic": "XETR",
+          "name": "Nordex SE",
+          "wkn": "A0D655",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "NDX1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "NDX1.DE",
+              "checkedAt": "2026-10-01T15:56:32.897Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "NDX1.DE",
+              "returnedISIN": "DE000A0D6554",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006969603",
+          "mic": "XETR",
+          "name": "PUMA SE",
+          "wkn": "696960",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "PUM.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "PUM.DE",
+              "checkedAt": "2026-10-01T11:08:46.477Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "PUM.DE",
+              "returnedISIN": "DE0006969603",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006452907",
+          "mic": "XETR",
+          "name": "Nemetschek SE",
+          "wkn": "645290",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "NEM.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "NEM.DE",
+              "checkedAt": "2026-10-01T15:56:53.233Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "NEM.DE",
+              "returnedISIN": "DE0006452907",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006202005",
+          "mic": "XETR",
+          "name": "Salzgitter AG",
+          "wkn": "620200",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SZG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SZG.DE",
+              "checkedAt": "2026-10-01T15:56:48.647Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SZG.DE",
+              "returnedISIN": "DE0006202005",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005909006",
+          "mic": "XETR",
+          "name": "Bilfinger SE",
+          "wkn": "590900",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "GBF.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "GBF.DE",
+              "checkedAt": "2026-10-01T15:56:22.970Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "GBF.DE",
+              "returnedISIN": "DE0005909006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000KGX8881",
+          "mic": "XETR",
+          "name": "KION GROUP AG",
+          "wkn": "KGX888",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "KGX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "KGX.DE",
+              "checkedAt": "2026-10-01T15:56:55.017Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "KGX.DE",
+              "returnedISIN": "DE000KGX8881",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000KSAG888",
+          "mic": "XETR",
+          "name": "K+S Aktiengesellschaft",
+          "wkn": "KSAG88",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SDF.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SDF.DE",
+              "checkedAt": "2026-10-01T15:56:46.150Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SDF.DE",
+              "returnedISIN": "DE000KSAG888",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000TLX1005",
+          "mic": "XETR",
+          "name": "Talanx Aktiengesellschaft",
+          "wkn": "TLX100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TLX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TLX.DE",
+              "checkedAt": "2026-10-01T15:57:01.392Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TLX.DE",
+              "returnedISIN": "DE000TLX1005",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007165631",
+          "mic": "XETR",
+          "name": "Sartorius AG Vz",
+          "wkn": "716563",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SRT3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SRT3.DE",
+              "checkedAt": "2026-10-01T15:57:08.033Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SRT3.DE",
+              "returnedISIN": "DE0007165631",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005158703",
+          "mic": "XETR",
+          "name": "Bechtle AG",
+          "wkn": "515870",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BC8.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BC8.DE",
+              "checkedAt": "2026-10-01T15:57:14.070Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BC8.DE",
+              "returnedISIN": "DE0005158703",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000FTG1111",
+          "mic": "XETR",
+          "name": "flatexDEGIRO SE",
+          "wkn": "FTG111",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FTK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FTK.DE",
+              "checkedAt": "2026-10-01T15:58:03.296Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FTK.DE",
+              "returnedISIN": "DE000FTG1111",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006305006",
+          "mic": "XETR",
+          "name": "Deutz AG",
+          "wkn": "630500",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DEZ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DEZ.DE",
+              "checkedAt": "2026-10-01T15:56:58.337Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DEZ.DE",
+              "returnedISIN": "DE0006305006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005470405",
+          "mic": "XETR",
+          "name": "LANXESS AG",
+          "wkn": "547040",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "LXS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "LXS.DE",
+              "checkedAt": "2026-10-01T15:56:19.435Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "LXS.DE",
+              "returnedISIN": "DE0005470405",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0008303504",
+          "mic": "XETR",
+          "name": "TAG Immobilien AG",
+          "wkn": "830350",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TEG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TEG.DE",
+              "checkedAt": "2026-10-01T15:56:47.158Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TEG.DE",
+              "returnedISIN": "DE0008303504",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005677108",
+          "mic": "XETR",
+          "name": "Elmos Semiconductor SE",
+          "wkn": "567710",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ELG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ELG.DE",
+              "checkedAt": "2026-10-01T15:57:41.823Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ELG.DE",
+              "returnedISIN": "DE0005677108",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000SHA0100",
+          "mic": "XETR",
+          "name": "SCHAEFFLER AG NA O.N.",
+          "wkn": "SHA010",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SHA0.DE",
+              "checkedAt": "2026-10-01T14:43:15.776Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "LU1673108939",
+          "mic": "XETR",
+          "name": "Aroundtown SA",
+          "wkn": "A2DW8Z",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AT1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AT1.DE",
+              "checkedAt": "2026-10-01T15:57:20.690Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AT1.DE",
+              "returnedISIN": "LU1673108939",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000KBX1006",
+          "mic": "XETR",
+          "name": "Knorr-Bremse AG",
+          "wkn": "KBX100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "KBX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "KBX.DE",
+              "checkedAt": "2026-10-01T15:58:03.979Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "KBX.DE",
+              "returnedISIN": "DE000KBX1006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000TRAT0N7",
+          "mic": "XETR",
+          "name": "TRATON SE ",
+          "wkn": "TRAT0N",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "8TRA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "8TRA.DE",
+              "checkedAt": "2026-10-01T15:58:46.046Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "8TRA.DE",
+              "returnedISIN": "DE000TRAT0N7",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000WAF3001",
+          "mic": "XETR",
+          "name": "Siltronic AG",
+          "wkn": "WAF300",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "WAF.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "WAF.DE",
+              "checkedAt": "2026-10-01T15:57:28.349Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "WAF.DE",
+              "returnedISIN": "DE000WAF3001",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A3E00M1",
+          "mic": "XETR",
+          "name": "IONOS Group SE",
+          "wkn": "A3E00M",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "IOS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "IOS.DE",
+              "checkedAt": "2026-10-01T15:58:35.341Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "IOS.DE",
+              "returnedISIN": "DE000A3E00M1",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1K0235",
+          "mic": "XETR",
+          "name": "SUSS MicroTec SE",
+          "wkn": "A1K023",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SMHN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SMHN.DE",
+              "checkedAt": "2026-10-01T15:56:51.728Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SMHN.DE",
+              "returnedISIN": "DE000A1K0235",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000TKMS001",
+          "mic": "XETR",
+          "name": "TKMS AG & Co KGaA",
+          "wkn": "TKMS00",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TKMS.DE",
+              "checkedAt": "2026-10-01T14:43:16.056Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2E4K43",
+          "mic": "XETR",
+          "name": "Delivery Hero SE",
+          "wkn": "A2E4K4",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DHER.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DHER.DE",
+              "checkedAt": "2026-10-01T15:58:15.918Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DHER.DE",
+              "returnedISIN": "DE000A2E4K43",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2NB601",
+          "mic": "XETR",
+          "name": "Jenoptik AG",
+          "wkn": "A2NB60",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "JEN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "JEN.DE",
+              "checkedAt": "2026-10-01T15:56:20.175Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "JEN.DE",
+              "returnedISIN": "DE000A2NB601",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007010803",
+          "mic": "XETR",
+          "name": "Rational AG",
+          "wkn": "701080",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "RAA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "RAA.DE",
+              "checkedAt": "2026-10-01T15:56:52.468Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "RAA.DE",
+              "returnedISIN": "DE0007010803",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A3E5D64",
+          "mic": "XETR",
+          "name": "FUCHS SE Vz.",
+          "wkn": "A3E5D6",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FPE3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FPE3.DE",
+              "checkedAt": "2026-10-01T15:56:23.231Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FPE3.DE",
+              "returnedISIN": "DE000A3E5D64",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006335003",
+          "mic": "XETR",
+          "name": "Krones AG",
+          "wkn": "633500",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "KRN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "KRN.DE",
+              "checkedAt": "2026-10-01T15:56:19.930Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "KRN.DE",
+              "returnedISIN": "DE0006335003",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000AUM0V10",
+          "mic": "XETR",
+          "name": "AUMOVIO SE",
+          "wkn": "AUM0V1",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AMV0.DE",
+              "checkedAt": "2026-10-01T14:43:16.270Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "LU0061462528",
+          "mic": "XETR",
+          "name": "RTL Group S.A.",
+          "wkn": "861149",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "RRTL.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "RRTL.DE",
+              "checkedAt": "2026-10-01T15:57:56.590Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "RRTL.DE",
+              "returnedISIN": "LU0061462528",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2LQ884",
+          "mic": "XETR",
+          "name": "AUTO1 Group SE",
+          "wkn": "A2LQ88",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AG1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AG1.DE",
+              "checkedAt": "2026-10-01T15:58:30.194Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AG1.DE",
+              "returnedISIN": "DE000A2LQ884",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005089031",
+          "mic": "XETR",
+          "name": "United Internet AG",
+          "wkn": "508903",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "UTDI.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "UTDI.DE",
+              "checkedAt": "2026-10-01T15:57:01.116Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "UTDI.DE",
+              "returnedISIN": "DE0005089031",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007493991",
+          "mic": "XETR",
+          "name": "Ströer SE & Co. KGaA",
+          "wkn": "749399",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SAX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SAX.DE",
+              "checkedAt": "2026-10-01T15:57:02.900Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SAX.DE",
+              "returnedISIN": "DE0007493991",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005773303",
+          "mic": "XETR",
+          "name": "Fraport AG",
+          "wkn": "577330",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FRA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FRA.DE",
+              "checkedAt": "2026-10-01T15:56:57.049Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FRA.DE",
+              "returnedISIN": "DE0005773303",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000WCH8881",
+          "mic": "XETR",
+          "name": "Wacker Chemie AG",
+          "wkn": "WCH888",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "WCH.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "WCH.DE",
+              "checkedAt": "2026-10-01T15:56:41.538Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "WCH.DE",
+              "returnedISIN": "DE000WCH8881",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A13SX22",
+          "mic": "XETR",
+          "name": "HELLA GmbH & Co. KGaA",
+          "wkn": "A13SX2",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HLE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HLE.DE",
+              "checkedAt": "2026-10-01T15:57:37.250Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HLE.DE",
+              "returnedISIN": "DE000A13SX22",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        }
+      ]
+    },
+    {
+      "index": "SDAX",
+      "indexISIN": "DE0009653386",
+      "officialPage": "https://live.deutsche-boerse.com/indices/sdax/constituents",
+      "retrievedAt": "2026-10-01T14:11:57.347Z",
+      "compositionEffectiveAt": null,
+      "completeSnapshot": true,
+      "observedComponents": 70,
+      "reportedComponents": 70,
+      "exactISINVenueMatches": 65,
+      "directMetadataIdentityMatches": 54,
+      "exactDirectoryOrMetadataIdentityMatches": 65,
+      "unmatchedComponentsDirectlyTested": 5,
+      "unmatchedObservedComponents": 5,
+      "fullIndexDirectoryCoverage": false,
+      "components": [
+        {
+          "isin": "NL0012044747",
+          "mic": "XETR",
+          "name": "Redcare Pharmacy N.V.",
+          "wkn": "A2AR94",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "RDC.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "RDC.DE",
+              "checkedAt": "2026-10-01T15:58:59.047Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "RDC.DE",
+              "returnedISIN": "NL0012044747",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005936124",
+          "mic": "XETR",
+          "name": "OHB SE",
+          "wkn": "593612",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "OHB.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "OHB.DE",
+              "checkedAt": "2026-10-01T15:57:53.269Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "OHB.DE",
+              "returnedISIN": "DE0005936124",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006450000",
+          "mic": "XETR",
+          "name": "LPKF Laser & Electronics SE",
+          "wkn": "645000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "LPK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "LPK.DE",
+              "checkedAt": "2026-10-01T15:56:54.756Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "LPK.DE",
+              "returnedISIN": "DE0006450000",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2YN900",
+          "mic": "XETR",
+          "name": "TeamViewer SE",
+          "wkn": "A2YN90",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TMV.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TMV.DE",
+              "checkedAt": "2026-10-01T15:58:03.461Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TMV.DE",
+              "returnedISIN": "DE000A2YN900",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0DJ6J9",
+          "mic": "XETR",
+          "name": "SMA Solar Technology AG",
+          "wkn": "A0DJ6J",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "S92.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "S92.DE",
+              "checkedAt": "2026-10-01T15:56:52.225Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "S92.DE",
+              "returnedISIN": "DE000A0DJ6J9",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A41YHG1",
+          "mic": "XETR",
+          "name": "ALZCHEM GROUP AG NA O.N.",
+          "wkn": "A41YHG",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ACT0.DE",
+              "checkedAt": "2026-10-01T14:43:16.708Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            },
+            {
+              "requestedSymbol": "ACT.DE",
+              "checkedAt": "2026-10-01T15:56:14.199Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ACT.DE",
+              "returnedISIN": "DE000A2YNT30",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005419105",
+          "mic": "XETR",
+          "name": "CANCOM SE",
+          "wkn": "541910",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "COK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "COK.DE",
+              "checkedAt": "2026-10-01T15:56:59.065Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "COK.DE",
+              "returnedISIN": "DE0005419105",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007461006",
+          "mic": "XETR",
+          "name": "PVA TePla AG",
+          "wkn": "746100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TPE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TPE.DE",
+              "checkedAt": "2026-10-01T15:57:48.456Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TPE.DE",
+              "returnedISIN": "DE0007461006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005664809",
+          "mic": "XETR",
+          "name": "EVOTEC SE",
+          "wkn": "566480",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EVT.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EVT.DE",
+              "checkedAt": "2026-10-01T15:57:31.917Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EVT.DE",
+              "returnedISIN": "DE0005664809",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A161408",
+          "mic": "XETR",
+          "name": "HelloFresh SE",
+          "wkn": "A16140",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HFG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HFG.DE",
+              "checkedAt": "2026-10-01T15:58:42.236Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HFG.DE",
+              "returnedISIN": "DE000A161408",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1PHFF7",
+          "mic": "XETR",
+          "name": "Hugo Boss AG",
+          "wkn": "A1PHFF",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BOSS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BOSS.DE",
+              "checkedAt": "2026-10-01T15:57:17.910Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BOSS.DE",
+              "returnedISIN": "DE000A1PHFF7",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A3H2200",
+          "mic": "XETR",
+          "name": "Nagarro SE",
+          "wkn": "A3H220",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "NA9.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "NA9.DE",
+              "checkedAt": "2026-10-01T15:58:46.794Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "NA9.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "AT100ASTA001",
+          "mic": "XETR",
+          "name": "ASTA ENERGY SOLUTIONS AG",
+          "wkn": "A4214T",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "1AST.DE",
+              "checkedAt": "2026-10-01T14:43:16.923Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005104400",
+          "mic": "XETR",
+          "name": "ATOSS Software SE",
+          "wkn": "510440",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AOF.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AOF.DE",
+              "checkedAt": "2026-10-01T15:57:15.856Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AOF.DE",
+              "returnedISIN": "DE0005104400",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005493365",
+          "mic": "XETR",
+          "name": "Hypoport SE",
+          "wkn": "549336",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HYQ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HYQ.DE",
+              "checkedAt": "2026-10-01T15:57:23.239Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HYQ.DE",
+              "returnedISIN": "DE0005493365",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006219934",
+          "mic": "XETR",
+          "name": "Jungheinrich AG",
+          "wkn": "621993",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "JUN3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "JUN3.DE",
+              "checkedAt": "2026-10-01T15:56:55.280Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "JUN3.DE",
+              "returnedISIN": "DE0006219934",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006200108",
+          "mic": "XETR",
+          "name": "Indus Holding AG",
+          "wkn": "620010",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "INH.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "INH.DE",
+              "checkedAt": "2026-10-01T15:56:20.945Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "INH.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0JL9W6",
+          "mic": "XETR",
+          "name": "Verbio SE",
+          "wkn": "A0JL9W",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "VBK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "VBK.DE",
+              "checkedAt": "2026-10-01T15:57:24.541Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "VBK.DE",
+              "returnedISIN": "DE000A0JL9W6",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007297004",
+          "mic": "XETR",
+          "name": "Südzucker AG",
+          "wkn": "729700",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SZU.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SZU.DE",
+              "checkedAt": "2026-10-01T15:56:48.477Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SZU.DE",
+              "returnedISIN": "DE0007297004",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007276503",
+          "mic": "XETR",
+          "name": "secunet Security Networks AG",
+          "wkn": "727650",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "YSN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "YSN.DE",
+              "checkedAt": "2026-10-01T15:56:46.627Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "YSN.DE",
+              "returnedISIN": "DE0007276503",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005800601",
+          "mic": "XETR",
+          "name": "GFT Technologies SE",
+          "wkn": "580060",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "GFT.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "GFT.DE",
+              "checkedAt": "2026-10-01T15:57:45.404Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "GFT.DE",
+              "returnedISIN": "DE0005800601",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007231326",
+          "mic": "XETR",
+          "name": "Sixt SE St",
+          "wkn": "723132",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SIX2.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SIX2.DE",
+              "checkedAt": "2026-10-01T15:56:51.952Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SIX2.DE",
+              "returnedISIN": "DE0007231326",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005313704",
+          "mic": "XETR",
+          "name": "Carl Zeiss Meditec AG",
+          "wkn": "531370",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AFX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AFX.DE",
+              "checkedAt": "2026-10-01T15:57:04.926Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AFX.DE",
+              "returnedISIN": "DE0005313704",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "LU1704650164",
+          "mic": "XETR",
+          "name": "Befesa SA",
+          "wkn": "A2H5Z1",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BFSA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BFSA.DE",
+              "checkedAt": "2026-10-01T15:58:31.718Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BFSA.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005545503",
+          "mic": "XETR",
+          "name": "1&1 AG",
+          "wkn": "554550",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "1U1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "1U1.DE",
+              "checkedAt": "2026-10-01T15:58:04.247Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "1U1.DE",
+              "returnedISIN": "DE0005545503",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "AT0000A0E9W5",
+          "mic": "XETR",
+          "name": "Kontron AG",
+          "wkn": "A0X9EJ",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "KTN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "KTN.DE",
+              "checkedAt": "2026-10-01T15:58:05.239Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1H8BV3",
+          "mic": "XETR",
+          "name": "NORMA Group SE",
+          "wkn": "A1H8BV",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "NOEJ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "NOEJ.DE",
+              "checkedAt": "2026-10-01T15:56:28.589Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "NOEJ.DE",
+              "returnedISIN": "DE000A1H8BV3",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "LU2333563281",
+          "mic": "XETR",
+          "name": "tonies SE",
+          "wkn": "A3CM2W",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TNIE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TNIE.DE",
+              "checkedAt": "2026-10-01T15:58:17.737Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TNIE.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007667107",
+          "mic": "XETR",
+          "name": "Vossloh AG",
+          "wkn": "766710",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "VOS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "VOS.DE",
+              "checkedAt": "2026-10-01T15:56:47.884Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "VOS.DE",
+              "returnedISIN": "DE0007667107",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "BG1100003166",
+          "mic": "XETR",
+          "name": "Shelly Group SE",
+          "wkn": "A2DGX9",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SLYG.DE",
+              "checkedAt": "2026-10-01T14:43:17.118Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006083405",
+          "mic": "XETR",
+          "name": "HORNBACH Holding AG & Co. KGaA",
+          "wkn": "608340",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HBH.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HBH.DE",
+              "checkedAt": "2026-10-01T15:57:26.049Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HBH.DE",
+              "returnedISIN": "DE0006083405",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A255F11",
+          "mic": "XETR",
+          "name": "Friedrich Vorwerk Group SE",
+          "wkn": "A255F1",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "VH2.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "VH2.DE",
+              "checkedAt": "2026-10-01T15:58:16.688Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "VH2.DE",
+              "returnedISIN": "DE000A255F11",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006569908",
+          "mic": "XETR",
+          "name": "MLP SE",
+          "wkn": "656990",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "MLP.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "MLP.DE",
+              "checkedAt": "2026-10-01T15:56:53.987Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "MLP.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005403901",
+          "mic": "XETR",
+          "name": "CEWE Stiftung & Co. KGaA",
+          "wkn": "540390",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "CWC.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "CWC.DE",
+              "checkedAt": "2026-10-01T15:57:34.214Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "CWC.DE",
+              "returnedISIN": "DE0005403901",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005565204",
+          "mic": "XETR",
+          "name": "Dürr AG",
+          "wkn": "556520",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DUE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DUE.DE",
+              "checkedAt": "2026-10-01T15:57:33.414Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DUE.DE",
+              "returnedISIN": "DE0005565204",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A3ENQ51",
+          "mic": "XETR",
+          "name": "Schott Pharma AG & CO KGaA",
+          "wkn": "A3ENQ5",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "1SXP.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "1SXP.DE",
+              "checkedAt": "2026-10-01T15:59:04.676Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "1SXP.DE",
+              "returnedISIN": "DE000A3ENQ51",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000VNC0014",
+          "mic": "XETR",
+          "name": "VINCORION SE",
+          "wkn": "VNC001",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "V1NC.DE",
+              "checkedAt": "2026-10-01T14:43:17.381Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000JST4000",
+          "mic": "XETR",
+          "name": "Jost Werke SE",
+          "wkn": "JST400",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "JST.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "JST.DE",
+              "checkedAt": "2026-10-01T15:58:44.298Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "JST.DE",
+              "returnedISIN": "DE000JST4000",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006292030",
+          "mic": "XETR",
+          "name": "KSB SE & Co. KGaA Vz",
+          "wkn": "629203",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "KSB3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "KSB3.DE",
+              "checkedAt": "2026-10-01T15:57:08.227Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "KSB3.DE",
+              "returnedISIN": "DE0006292030",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000SAFH001",
+          "mic": "XETR",
+          "name": "SAF-HOLLAND SE",
+          "wkn": "SAFH00",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SFQ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SFQ.DE",
+              "checkedAt": "2026-10-01T15:57:56.840Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SFQ.DE",
+              "returnedISIN": "LU0307018795",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000BCK2223",
+          "mic": "XETR",
+          "name": "Ottobock SE & Co. KGaA",
+          "wkn": "BCK222",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "OBCK.DE",
+              "checkedAt": "2026-10-01T14:43:17.708Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0008019001",
+          "mic": "XETR",
+          "name": "Deutsche Pfandbriefbank AG",
+          "wkn": "801900",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "PBB.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "PBB.DE",
+              "checkedAt": "2026-10-01T15:57:05.176Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "PBB.DE",
+              "returnedISIN": "DE0008019001",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005772206",
+          "mic": "XETR",
+          "name": "Fielmann Group AG",
+          "wkn": "577220",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FIE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FIE.DE",
+              "checkedAt": "2026-10-01T15:56:47.649Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FIE.DE",
+              "returnedISIN": "DE0005772206",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005659700",
+          "mic": "XETR",
+          "name": "Eckert & Ziegler SE",
+          "wkn": "565970",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EUZ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EUZ.DE",
+              "checkedAt": "2026-10-01T15:57:06.961Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EUZ.DE",
+              "returnedISIN": "DE0005659700",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007568578",
+          "mic": "XETR",
+          "name": "SFC Energy AG",
+          "wkn": "756857",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "F3C.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "F3C.DE",
+              "checkedAt": "2026-10-01T15:57:22.224Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "F3C.DE",
+              "returnedISIN": "DE0007568578",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A3H2333",
+          "mic": "XETR",
+          "name": "HAMBORNER REIT AG NA O.N.",
+          "wkn": "A3H233",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HABA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HABA.DE",
+              "checkedAt": "2026-10-01T15:58:07.806Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HABA.DE",
+              "returnedISIN": "DE000A3H2333",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005102008",
+          "mic": "XETR",
+          "name": "Basler AG",
+          "wkn": "510200",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BSL.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BSL.DE",
+              "checkedAt": "2026-10-01T15:57:17.127Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BSL.DE",
+              "returnedISIN": "DE0005102008",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005550636",
+          "mic": "XETR",
+          "name": "Drägerwerk AG & Co. KGaA Vz",
+          "wkn": "555063",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DRW3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DRW3.DE",
+              "checkedAt": "2026-10-01T15:56:37.214Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DRW3.DE",
+              "returnedISIN": "DE0005550636",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "LU0775917882",
+          "mic": "XETR",
+          "name": "Grand City Properties S.A.",
+          "wkn": "A1JXCV",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "GYC.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "GYC.DE",
+              "checkedAt": "2026-10-01T15:57:38.773Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "GYC.DE",
+              "returnedISIN": "LU0775917882",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007074007",
+          "mic": "XETR",
+          "name": "KWS SAAT SE & Co. KGaA",
+          "wkn": "707400",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "KWS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "KWS.DE",
+              "checkedAt": "2026-10-01T11:08:50.106Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "KWS.DE",
+              "returnedISIN": "DE0007074007",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2NB650",
+          "mic": "XETR",
+          "name": "Mutares SE & Co. KGaA",
+          "wkn": "A2NB65",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "MUX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "MUX.DE",
+              "checkedAt": "2026-10-01T15:57:31.386Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "MUX.DE",
+              "returnedISIN": "DE000A2NB650",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000WACK012",
+          "mic": "XETR",
+          "name": "Wacker Neuson SE",
+          "wkn": "WACK01",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "WAC.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "WAC.DE",
+              "checkedAt": "2026-10-01T15:57:51.595Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "WAC.DE",
+              "returnedISIN": "DE000WACK012",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1MMCC8",
+          "mic": "XETR",
+          "name": "Medios AG",
+          "wkn": "A1MMCC",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ILM1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ILM1.DE",
+              "checkedAt": "2026-10-01T15:58:04.994Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ILM1.DE",
+              "returnedISIN": "DE000A1MMCC8",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000PAT1AG3",
+          "mic": "XETR",
+          "name": "PATRIZIA SE",
+          "wkn": "PAT1AG",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "PAT.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "PAT.DE",
+              "checkedAt": "2026-10-01T15:58:47.308Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "PAT.DE",
+              "returnedISIN": "DE000PAT1AG3",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000BEAU1Y4",
+          "mic": "XETR",
+          "name": "DOUGLAS AG  NA O.N.",
+          "wkn": "BEAU1Y",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DOU.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DOU.DE",
+              "checkedAt": "2026-10-01T15:59:03.136Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DOU.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000STAB1L8",
+          "mic": "XETR",
+          "name": "STABILUS SE INH. O.N.",
+          "wkn": "STAB1L",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "STM.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "STM.DE",
+              "checkedAt": "2026-10-01T15:58:46.540Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "STM.DE",
+              "returnedISIN": "LU1066226637",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A161N30",
+          "mic": "XETR",
+          "name": "grenke AG",
+          "wkn": "A161N3",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "GLJ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "GLJ.DE",
+              "checkedAt": "2026-10-01T15:56:22.466Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "GLJ.DE",
+              "returnedISIN": "DE000A161N30",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2GS5D8",
+          "mic": "XETR",
+          "name": "Dermapharm Holding SE",
+          "wkn": "A2GS5D",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DMP.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DMP.DE",
+              "checkedAt": "2026-10-01T15:58:33.508Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DMP.DE",
+              "returnedISIN": "DE000A2GS5D8",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A40ESU3",
+          "mic": "XETR",
+          "name": "Einhell Germany AG",
+          "wkn": "A40ESU",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EIN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EIN.DE",
+              "checkedAt": "2026-10-01T15:59:04.164Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1TNUT7",
+          "mic": "XETR",
+          "name": "Deutsche Beteiligungs AG",
+          "wkn": "A1TNUT",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DBAN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DBAN.DE",
+              "checkedAt": "2026-10-01T15:57:21.447Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DBAN.DE",
+              "returnedISIN": "DE000A1TNUT7",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007314007",
+          "mic": "XETR",
+          "name": "Heidelberger Druckmaschinen AG",
+          "wkn": "731400",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HDD.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HDD.DE",
+              "checkedAt": "2026-10-01T15:56:21.706Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HDD.DE",
+              "returnedISIN": "DE0007314007",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005313506",
+          "mic": "XETR",
+          "name": "Energiekontor AG",
+          "wkn": "531350",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EKT.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EKT.DE",
+              "checkedAt": "2026-10-01T15:57:41.320Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EKT.DE",
+              "returnedISIN": "DE0005313506",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0008051004",
+          "mic": "XETR",
+          "name": "Wüstenrot & Württembergische AG",
+          "wkn": "805100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "WUW.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "WUW.DE",
+              "checkedAt": "2026-10-01T15:56:42.296Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "WUW.DE",
+              "returnedISIN": "DE0008051004",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005759807",
+          "mic": "XETR",
+          "name": "init innovation in traffic systems SE",
+          "wkn": "575980",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "IXX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "IXX.DE",
+              "checkedAt": "2026-10-01T15:56:20.436Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "IXX.DE",
+              "returnedISIN": "DE0005759807",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000SPG1003",
+          "mic": "XETR",
+          "name": "Springer Nature AG & Co. KGaA",
+          "wkn": "SPG100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SPG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SPG.DE",
+              "checkedAt": "2026-10-01T15:59:04.938Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0ETBQ4",
+          "mic": "XETR",
+          "name": "MBB SE",
+          "wkn": "A0ETBQ",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "MBB.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "MBB.DE",
+              "checkedAt": "2026-10-01T11:08:49.586Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "MBB.DE",
+              "returnedISIN": "DE000A0ETBQ4",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007274136",
+          "mic": "XETR",
+          "name": "Sto SE & Co. KGaA",
+          "wkn": "727413",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "STO3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "STO3.DE",
+              "checkedAt": "2026-10-01T15:56:51.193Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "STO3.DE",
+              "returnedISIN": "DE0007274136",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007480204",
+          "mic": "XETR",
+          "name": "Deutsche EuroShop SE",
+          "wkn": "748020",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DEQ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DEQ.DE",
+              "checkedAt": "2026-10-01T15:57:33.930Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DEQ.DE",
+              "returnedISIN": "DE0007480204",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005103006",
+          "mic": "XETR",
+          "name": "Adtran Networks SE",
+          "wkn": "510300",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ADV.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ADV.DE",
+              "checkedAt": "2026-10-01T15:56:43.842Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ADV.DE",
+              "returnedISIN": "DE0005103006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0JBPG2",
+          "mic": "XETR",
+          "name": "PNE AG",
+          "wkn": "A0JBPG",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "PNE3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "PNE3.DE",
+              "checkedAt": "2026-10-01T15:56:32.131Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "PNE3.DE",
+              "returnedISIN": "DE000A0JBPG2",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        }
+      ]
+    },
+    {
+      "index": "TECDAX",
+      "indexISIN": "DE0007203275",
+      "officialPage": "https://live.deutsche-boerse.com/indices/tecdax/constituents",
+      "retrievedAt": "2026-10-01T14:12:00.681Z",
+      "compositionEffectiveAt": null,
+      "completeSnapshot": true,
+      "observedComponents": 30,
+      "reportedComponents": 30,
+      "exactISINVenueMatches": 29,
+      "directMetadataIdentityMatches": 26,
+      "exactDirectoryOrMetadataIdentityMatches": 29,
+      "unmatchedComponentsDirectlyTested": 1,
+      "unmatchedObservedComponents": 1,
+      "fullIndexDirectoryCoverage": false,
+      "components": [
+        {
+          "isin": "DE0007164600",
+          "mic": "XETR",
+          "name": "SAP SE",
+          "wkn": "716460",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SAP.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SAP.DE",
+              "checkedAt": "2026-10-01T11:08:39.459Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SAP.DE",
+              "returnedISIN": "DE0007164600",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006231004",
+          "mic": "XETR",
+          "name": "Infineon Technologies AG",
+          "wkn": "623100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "IFX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "IFX.DE",
+              "checkedAt": "2026-10-01T11:08:43.389Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "IFX.DE",
+              "returnedISIN": "DE0006231004",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005557508",
+          "mic": "XETR",
+          "name": "Deutsche Telekom AG",
+          "wkn": "555750",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DTE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DTE.DE",
+              "checkedAt": "2026-10-01T11:08:41.387Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DTE.DE",
+              "returnedISIN": "DE0005557508",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0WMPJ6",
+          "mic": "XETR",
+          "name": "AIXTRON SE",
+          "wkn": "A0WMPJ",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AIXA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AIXA.DE",
+              "checkedAt": "2026-10-01T11:08:50.616Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AIXA.DE",
+              "returnedISIN": "DE000A0WMPJ6",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000SHL1006",
+          "mic": "XETR",
+          "name": "Siemens Healthineers AG",
+          "wkn": "SHL100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SHL.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SHL.DE",
+              "checkedAt": "2026-10-01T15:58:42.477Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SHL.DE",
+              "returnedISIN": "DE000SHL1006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000HAG0005",
+          "mic": "XETR",
+          "name": "HENSOLDT AG",
+          "wkn": "HAG000",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "HAG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "HAG.DE",
+              "checkedAt": "2026-10-01T15:58:03.737Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "HAG.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0Z2ZZ5",
+          "mic": "XETR",
+          "name": "freenet AG",
+          "wkn": "A0Z2ZZ",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "FNTN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "FNTN.DE",
+              "checkedAt": "2026-10-01T15:56:57.317Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "FNTN.DE",
+              "returnedISIN": "DE000A0Z2ZZ5",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0D6554",
+          "mic": "XETR",
+          "name": "Nordex SE",
+          "wkn": "A0D655",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "NDX1.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "NDX1.DE",
+              "checkedAt": "2026-10-01T15:56:32.897Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "NDX1.DE",
+              "returnedISIN": "DE000A0D6554",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0006452907",
+          "mic": "XETR",
+          "name": "Nemetschek SE",
+          "wkn": "645290",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "NEM.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "NEM.DE",
+              "checkedAt": "2026-10-01T15:56:53.233Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "NEM.DE",
+              "returnedISIN": "DE0006452907",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005936124",
+          "mic": "XETR",
+          "name": "OHB SE",
+          "wkn": "593612",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "OHB.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "OHB.DE",
+              "checkedAt": "2026-10-01T15:57:53.269Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "OHB.DE",
+              "returnedISIN": "DE0005936124",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2YN900",
+          "mic": "XETR",
+          "name": "TeamViewer SE",
+          "wkn": "A2YN90",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TMV.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TMV.DE",
+              "checkedAt": "2026-10-01T15:58:03.461Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TMV.DE",
+              "returnedISIN": "DE000A2YN900",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "NL0015002SN0",
+          "mic": "XETR",
+          "name": "Qiagen NV Registered Shs",
+          "wkn": "A41HBE",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "QIA.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "QIA.DE",
+              "checkedAt": "2026-10-01T15:56:40.515Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "QIA.DE",
+              "returnedISIN": null,
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007165631",
+          "mic": "XETR",
+          "name": "Sartorius AG Vz",
+          "wkn": "716563",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SRT3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SRT3.DE",
+              "checkedAt": "2026-10-01T15:57:08.033Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SRT3.DE",
+              "returnedISIN": "DE0007165631",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005158703",
+          "mic": "XETR",
+          "name": "Bechtle AG",
+          "wkn": "515870",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "BC8.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "BC8.DE",
+              "checkedAt": "2026-10-01T15:57:14.070Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "BC8.DE",
+              "returnedISIN": "DE0005158703",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0DJ6J9",
+          "mic": "XETR",
+          "name": "SMA Solar Technology AG",
+          "wkn": "A0DJ6J",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "S92.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "S92.DE",
+              "checkedAt": "2026-10-01T15:56:52.225Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "S92.DE",
+              "returnedISIN": "DE000A0DJ6J9",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005677108",
+          "mic": "XETR",
+          "name": "Elmos Semiconductor SE",
+          "wkn": "567710",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "ELG.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "ELG.DE",
+              "checkedAt": "2026-10-01T15:57:41.823Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "ELG.DE",
+              "returnedISIN": "DE0005677108",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0007461006",
+          "mic": "XETR",
+          "name": "PVA TePla AG",
+          "wkn": "746100",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "TPE.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "TPE.DE",
+              "checkedAt": "2026-10-01T15:57:48.456Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "TPE.DE",
+              "returnedISIN": "DE0007461006",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005664809",
+          "mic": "XETR",
+          "name": "EVOTEC SE",
+          "wkn": "566480",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EVT.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EVT.DE",
+              "checkedAt": "2026-10-01T15:57:31.917Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EVT.DE",
+              "returnedISIN": "DE0005664809",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000WAF3001",
+          "mic": "XETR",
+          "name": "Siltronic AG",
+          "wkn": "WAF300",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "WAF.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "WAF.DE",
+              "checkedAt": "2026-10-01T15:57:28.349Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "WAF.DE",
+              "returnedISIN": "DE000WAF3001",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A3E00M1",
+          "mic": "XETR",
+          "name": "IONOS Group SE",
+          "wkn": "A3E00M",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "IOS.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "IOS.DE",
+              "checkedAt": "2026-10-01T15:58:35.341Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "IOS.DE",
+              "returnedISIN": "DE000A3E00M1",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A1K0235",
+          "mic": "XETR",
+          "name": "SUSS MicroTec SE",
+          "wkn": "A1K023",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "SMHN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "SMHN.DE",
+              "checkedAt": "2026-10-01T15:56:51.728Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "SMHN.DE",
+              "returnedISIN": "DE000A1K0235",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A2NB601",
+          "mic": "XETR",
+          "name": "Jenoptik AG",
+          "wkn": "A2NB60",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "JEN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "JEN.DE",
+              "checkedAt": "2026-10-01T15:56:20.175Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "JEN.DE",
+              "returnedISIN": "DE000A2NB601",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005104400",
+          "mic": "XETR",
+          "name": "ATOSS Software SE",
+          "wkn": "510440",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AOF.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AOF.DE",
+              "checkedAt": "2026-10-01T15:57:15.856Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AOF.DE",
+              "returnedISIN": "DE0005104400",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005089031",
+          "mic": "XETR",
+          "name": "United Internet AG",
+          "wkn": "508903",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "UTDI.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "UTDI.DE",
+              "checkedAt": "2026-10-01T15:57:01.116Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "UTDI.DE",
+              "returnedISIN": "DE0005089031",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000A0JL9W6",
+          "mic": "XETR",
+          "name": "Verbio SE",
+          "wkn": "A0JL9W",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "VBK.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "VBK.DE",
+              "checkedAt": "2026-10-01T15:57:24.541Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "VBK.DE",
+              "returnedISIN": "DE000A0JL9W6",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005313704",
+          "mic": "XETR",
+          "name": "Carl Zeiss Meditec AG",
+          "wkn": "531370",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "AFX.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "AFX.DE",
+              "checkedAt": "2026-10-01T15:57:04.926Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "AFX.DE",
+              "returnedISIN": "DE0005313704",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "AT0000A0E9W5",
+          "mic": "XETR",
+          "name": "Kontron AG",
+          "wkn": "A0X9EJ",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "KTN.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "KTN.DE",
+              "checkedAt": "2026-10-01T15:58:05.239Z",
+              "status": "RETURNED_IDENTITY_MISMATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE000BCK2223",
+          "mic": "XETR",
+          "name": "Ottobock SE & Co. KGaA",
+          "wkn": "BCK222",
+          "directoryStatus": "ABSENT_CLASSIFIED_COMPLETE_DIRECTORY",
+          "providerSymbols": [],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "OBCK.DE",
+              "checkedAt": "2026-10-01T14:43:17.708Z",
+              "status": "REQUESTED_SYMBOL_NOT_FOUND",
+              "httpStatus": 404,
+              "providerErrorCode": "not_found_error",
+              "returnedSymbol": null,
+              "returnedISIN": null,
+              "returnedMIC": null
+            }
+          ],
+          "directIdentityStatus": "TESTED_WITHOUT_EXACT_MATCH",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005659700",
+          "mic": "XETR",
+          "name": "Eckert & Ziegler SE",
+          "wkn": "565970",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "EUZ.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "EUZ.DE",
+              "checkedAt": "2026-10-01T15:57:06.961Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "EUZ.DE",
+              "returnedISIN": "DE0005659700",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        },
+        {
+          "isin": "DE0005550636",
+          "mic": "XETR",
+          "name": "Drägerwerk AG & Co. KGaA Vz",
+          "wkn": "555063",
+          "directoryStatus": "EXACT_ISIN_VENUE_MATCH",
+          "providerSymbols": [
+            "DRW3.DE"
+          ],
+          "directIdentityProbes": [
+            {
+              "requestedSymbol": "DRW3.DE",
+              "checkedAt": "2026-10-01T15:56:37.214Z",
+              "status": "EXACT_ISIN_VENUE_METADATA_MATCH",
+              "httpStatus": 200,
+              "providerErrorCode": null,
+              "returnedSymbol": "DRW3.DE",
+              "returnedISIN": "DE0005550636",
+              "returnedMIC": "XETR"
+            }
+          ],
+          "directIdentityStatus": "VERIFIED",
+          "historyValidation": "NOT_ESTABLISHED_BY_MEMBERSHIP",
+          "consumerEligibility": "NOT_GRANTED"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The snapshot is current as retrieved, with no constituent-effective date or historical PIT membership claim.",
+    "Missing exact joins may reflect a stale directory, changed security/symbol or absent coverage; direct identity probes are required.",
+    "A 404 establishes absence of the requested provider symbol at observation time, not every possible provider alias.",
+    "US ADRs and another venue never substitute for the index constituent security/listing."
+  ]
+}

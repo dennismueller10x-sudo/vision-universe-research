@@ -1,0 +1,61 @@
+// Official operator inventories are a discovery tier, never canonical admission evidence.
+import {readFileSync} from 'node:fs';
+import {resolve,sep} from 'node:path';
+import {responseProvenance} from './marketstack-evidence-provenance.mjs';
+import {officialMnemonic,evidenceCurrency,evidenceMic,evidenceType} from './europe-reference-match.mjs';
+export function readOperatorEODEvidence(directory,input,label=null){
+ if(!directory||!input)return [];
+ const root=resolve(directory),checkpoint=JSON.parse(readFileSync(resolve(root,'checkpoint.json'))),mics=new Set(input.inventories.map(row=>row.candidateProviderMIC)),evidence=[];
+ for(const task of Object.values(checkpoint.tasks||{})){
+  if(task.endpoint!=='eod'||!mics.has(task.params?.exchange)||label&&task.label!==label)continue;
+  if(!/^responses\/[0-9]+\/[a-f0-9]{64}\.json$/.test(task.file||''))throw Error('INVALID_PRIVATE_EVIDENCE_PATH');
+  const path=resolve(root,task.file);if(!path.startsWith(root+sep))throw Error('PRIVATE_EVIDENCE_PATH_ESCAPES_ROOT');
+  const endpoint=JSON.parse(readFileSync(path)),provenance=responseProvenance(endpoint,checkpoint,task);evidence.push({...endpoint,...provenance,checkedAt:endpoint.checkedAt||task.checkedAt||null,evidenceRunId:provenance.sourceRunId,evidenceRunAttribution:provenance.sourceRunAttribution});
+ }
+ return evidence;
+}
+function summarizeEOD(symbol,mic,evidence){
+ const relevant=evidence.filter(endpoint=>endpoint.params?.exchange===mic&&String(endpoint.params?.symbols||'').split(',').includes(symbol));
+ if(!relevant.length)return{state:'UNMEASURED',deliveredBarCount:null,validOHLCBarCount:null,currencyUnresolvedBarCount:null};
+ const windows=relevant.map(endpoint=>({dateFrom:endpoint.params.date_from||null,dateTo:endpoint.params.date_to||null,checkedAt:endpoint.checkedAt||null,runId:endpoint.sourceRunId||endpoint.evidenceRunId||null,sourceRunAttribution:endpoint.sourceRunAttribution||endpoint.evidenceRunAttribution||null,requestSucceeded:endpoint.ok===true,pagination:endpoint.data?.pagination||null})),requestFailureCount=relevant.filter(endpoint=>endpoint.ok!==true).length;
+ if(requestFailureCount===relevant.length)return{state:'REQUEST_FAILED',requestFailureCount,deliveredBarCount:null,validOHLCBarCount:null,currencyUnresolvedBarCount:null,windows,coverage:'UNKNOWN_NOT_CANONICAL',consumerEligibility:'NOT_GRANTED'};
+ const entries=relevant.flatMap(endpoint=>endpoint.ok&&Array.isArray(endpoint.data?.data)?endpoint.data.data.filter(bar=>bar.symbol===symbol).map(bar=>({bar,endpoint})):[]),bars=entries.map(entry=>entry.bar),dates=new Set();
+ const dateValid=bar=>{const day=String(bar.date||'').slice(0,10);if(!/^\d{4}-\d{2}-\d{2}(?:T| |$)/.test(bar.date||''))return false;const parsed=new Date(day+'T00:00:00Z');return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===day;};
+ const outsideWindow=({bar,endpoint})=>dateValid(bar)&&((endpoint.params.date_from&&bar.date.slice(0,10)<endpoint.params.date_from)||(endpoint.params.date_to&&bar.date.slice(0,10)>endpoint.params.date_to));
+ const valid=entry=>{const bar=entry.bar;return[bar.open,bar.high,bar.low,bar.close].every(value=>Number.isFinite(value)&&value>0)&&bar.low<=Math.min(bar.open,bar.close)&&bar.high>=Math.max(bar.open,bar.close)&&bar.high>=bar.low&&(bar.volume===null||bar.volume===undefined||Number.isFinite(bar.volume)&&bar.volume>=0)&&bar.exchange===mic&&dateValid(bar)&&!outsideWindow(entry);};
+ let duplicates=0;for(const bar of bars){const date=bar.date?.slice(0,10);if(dates.has(date))duplicates++;dates.add(date);}
+ return{state:bars.length?'DELIVERED_BOUNDED_EOD_UNADMITTED':'NO_BARS_RETURNED',requestFailureCount,deliveredBarCount:bars.length,validOHLCBarCount:entries.filter(valid).length,invalidOHLCBarCount:entries.filter(entry=>!valid(entry)).length,invalidDateBarCount:bars.filter(bar=>!dateValid(bar)).length,outOfRequestedWindowBarCount:entries.filter(outsideWindow).length,duplicateDateCount:duplicates,zeroVolumeBarCount:bars.filter(bar=>bar.volume===0).length,currencyUnresolvedBarCount:bars.filter(bar=>!bar.price_currency&&!bar.currency).length,providerPriceCurrencies:[...new Set(bars.map(bar=>bar.price_currency||bar.currency).filter(Boolean))].sort(),firstDate:[...dates].filter(Boolean).sort()[0]||null,lastDate:[...dates].filter(Boolean).sort().at(-1)||null,windows,coverage:'UNKNOWN_NOT_CANONICAL',consumerEligibility:'NOT_GRANTED'};
+}
+export function analyzeOperatorCandidates(input,discovered,eodEvidence=[]){
+ if(!input)return null;
+ if(input.schemaVersion!=='europe-official-operator-reference-1.0.0'||!Array.isArray(input.rows)||!Array.isArray(input.inventories))throw Error('INVALID_OPERATOR_REFERENCE_SCHEMA');
+ const rows=[],byVenue=new Map();
+ for(const inventory of input.inventories){
+  const mic=inventory.candidateProviderMIC;
+  if(!/^[A-Z0-9]{4}$/.test(mic)||!Number.isInteger(inventory.officialInventoryCount)||inventory.officialInventoryCount<0)throw Error('INVALID_OPERATOR_INVENTORY');
+  if(byVenue.has(mic))throw Error('DUPLICATE_OPERATOR_INVENTORY');
+  byVenue.set(mic,{...inventory,referenceSegmentMIC:null,confirmationState:'OPERATOR_DIRECTORY_CANDIDATES_ONLY',providerIdentityConfirmedCount:null,canonicalAdmission:'NOT_GRANTED',observedMnemonicCandidates:0,observedShares:0,observedDepositaryReceipts:0,observedETFs:0,contradictoryProviderEvidenceCount:0,ambiguousObservedSymbols:0,missingObservedSymbols:0,quoteUnits:{}});
+ }
+ const indexes=new Map();for(const[mic,venue]of discovered){const index=new Map();for(const row of venue.rows.values()){const key=officialMnemonic(row.symbol,mic);if(!index.has(key))index.set(key,[]);index.get(key).push(row);}indexes.set(mic,index);}
+ const seen=new Set();
+ for(const ref of input.rows){
+  const summary=byVenue.get(ref.candidateProviderMIC);
+  if(!summary||ref.referenceOperatingMIC!==summary.referenceOperatingMIC||!ref.symbol||!/^[A-Z]{2}[A-Z0-9]{9}[0-9]$/.test(ref.isin)||!['EQUITY','ETF'].includes(ref.assetType)||!input.sources?.[ref.sourceId])throw Error('INVALID_OPERATOR_REFERENCE_ROW');
+  if(ref.referenceSegmentMIC)throw Error('OPERATOR_TIER_REQUIRES_UNRESOLVED_SEGMENT');
+  const key=[ref.candidateProviderMIC,ref.symbol,ref.isin,ref.quoteUnit].join('@');if(seen.has(key))throw Error('DUPLICATE_OPERATOR_REFERENCE_ROW');seen.add(key);
+  const matches=indexes.get(ref.candidateProviderMIC)?.get(ref.symbol)||[],provider=matches.length===1?matches[0]:null;
+  const currency=evidenceCurrency(provider),expectedCurrency=ref.quoteUnit==='GBX'?'GBP':ref.quoteUnit||null,conflicts=[];
+  if(provider?._evidenceConflicts?.length)conflicts.push('REPEATED_METADATA_CONFLICT');
+  if(provider?.isin&&provider.isin!==ref.isin)conflicts.push('PROVIDER_ISIN_CONFLICT');
+  if(evidenceMic(provider)&&evidenceMic(provider)!==ref.candidateProviderMIC)conflicts.push('PROVIDER_EXCHANGE_MISMATCH');
+  if(evidenceType(provider)&&evidenceType(provider)!==ref.assetType)conflicts.push('PROVIDER_ASSET_TYPE_CONFLICT');
+  if(currency&&expectedCurrency&&currency!==expectedCurrency&&currency!==ref.quoteUnit)conflicts.push('PROVIDER_CURRENCY_CONFLICT');
+  const state=provider?'UNIQUE_OBSERVED_MNEMONIC':matches.length?'AMBIGUOUS_OBSERVED_SYMBOLS':'NO_OBSERVED_MNEMONIC';
+  if(provider){summary.observedMnemonicCandidates++;summary[ref.assetType==='ETF'?'observedETFs':ref.officialInstrumentCode==='DPRS'?'observedDepositaryReceipts':'observedShares']++;summary.quoteUnits[ref.quoteUnit||'UNKNOWN']=(summary.quoteUnits[ref.quoteUnit||'UNKNOWN']||0)+1;if(conflicts.length)summary.contradictoryProviderEvidenceCount++;}
+  else summary[matches.length?'ambiguousObservedSymbols':'missingObservedSymbols']++;
+  rows.push({officialSymbol:ref.symbol,officialISIN:ref.isin,officialName:ref.name||null,officialAssetType:ref.assetType,officialInstrumentCode:ref.officialInstrumentCode||null,listingType:ref.listingType||'UNKNOWN',quoteUnit:ref.quoteUnit||null,tradingCurrency:expectedCurrency,issuerCountry:null,referenceOperatingMIC:ref.referenceOperatingMIC,referenceSegmentMIC:null,officialMarket:ref.officialMarket||null,officialSegmentCode:ref.officialSegmentCode||null,officialTradingSystem:ref.officialTradingSystem||null,officialMarketCode:ref.officialMarketCode||null,candidateProviderMIC:ref.candidateProviderMIC,observedProviderSymbol:provider?.symbol||null,observedMnemonicState:state,providerIdentityState:conflicts.length?'CONTRADICTORY_EVIDENCE':'UNCONFIRMED_IN_OPERATOR_TIER',providerIdentityConflicts:conflicts,providerQuoteUnitState:ref.quoteUnit==='GBX'?'PENCE_REQUIRES_EXPLICIT_PROVIDER_UNIT_MATCH':'UNCONFIRMED_IN_OPERATOR_TIER',consumerEligibility:'NOT_GRANTED',sourceId:ref.sourceId,providerMetadata:{observed:!!provider?.metadataEvidenceEndpoint,endpoint:provider?.metadataEvidenceEndpoint||null,checkedAt:provider?.metadataEvidenceCheckedAt||null,runId:provider?.metadataEvidenceRunId||null,sourceRunAttribution:provider?.metadataEvidenceRunAttribution||null,isinState:provider?.isin?(provider.isin===ref.isin?'EXACT':'CONFLICT'):'MISSING',micState:evidenceMic(provider)?(evidenceMic(provider)===ref.candidateProviderMIC?'EXACT':'CONFLICT'):'MISSING',assetTypeState:evidenceType(provider)?(evidenceType(provider)===ref.assetType?'EXACT':'CONFLICT'):'MISSING',currencyState:currency?(currency===expectedCurrency||currency===ref.quoteUnit?'REPORTED_MATCH_UNIT_REVIEW_REQUIRED':'CONFLICT'):'MISSING'},eodEvidence:provider?summarizeEOD(provider.symbol,ref.candidateProviderMIC,eodEvidence):{state:'UNMEASURED'}});
+ }
+ const inventories=[...byVenue.values()];
+ for(const inventory of inventories){const members=rows.filter(row=>row.candidateProviderMIC===inventory.candidateProviderMIC);inventory.providerMetadataObserved=members.filter(row=>row.providerMetadata.observed).length;inventory.metadataExactISINAndProviderDeclaredMIC=members.filter(row=>row.providerMetadata.observed&&row.providerMetadata.isinState==='EXACT'&&row.providerMetadata.micState==='EXACT'&&!row.providerIdentityConflicts.length).length;inventory.metadataCurrencyMissing=members.filter(row=>row.providerMetadata.observed&&row.providerMetadata.currencyState==='MISSING').length;inventory.boundedEODSymbolsWithBars=members.filter(row=>row.eodEvidence.deliveredBarCount>0).length;inventory.boundedEODDeliveredBars=members.reduce((n,row)=>n+(row.eodEvidence.deliveredBarCount||0),0);inventory.boundedEODValidOHLCBars=members.reduce((n,row)=>n+(row.eodEvidence.validOHLCBarCount||0),0);inventory.boundedEODCurrencyUnresolvedBars=members.reduce((n,row)=>n+(row.eodEvidence.currencyUnresolvedBarCount||0),0);const measured=members.filter(row=>row.eodEvidence.state!=='UNMEASURED');inventory.boundedEODRequestFailures=members.reduce((n,row)=>n+(row.eodEvidence.requestFailureCount||0),0);inventory.boundedEODState=!measured.length?'UNMEASURED':measured.every(row=>row.eodEvidence.state==='REQUEST_FAILED')?'REQUEST_FAILED':'MEASURED_BOUNDED_UNADMITTED';if(inventory.boundedEODState==='UNMEASURED'||inventory.boundedEODState==='REQUEST_FAILED')for(const key of ['boundedEODSymbolsWithBars','boundedEODDeliveredBars','boundedEODValidOHLCBars','boundedEODCurrencyUnresolvedBars'])inventory[key]=null;}
+ return{schemaVersion:'europe-official-operator-candidates-1.0.0',state:'OFFICIAL_OPERATOR_DIRECTORY_CANDIDATES_NOT_CONFIRMED_PROVIDER_LISTINGS',providerReplacementDecision:'DEFERRED',sources:input.sources,counts:{officialInventoryInstruments:inventories.reduce((n,r)=>n+r.officialInventoryCount,0),officialDetailedReferenceRows:rows.length,observedMnemonicCandidates:inventories.reduce((n,r)=>n+r.observedMnemonicCandidates,0),contradictoryProviderEvidenceCount:inventories.reduce((n,r)=>n+r.contradictoryProviderEvidenceCount,0),providerIdentityConfirmedCount:null,canonicalAdmissionCount:0},inventories,limitations:['This operator-directory tier does not alter strict classified candidates or canonical admission.','An exact observed mnemonic is not confirmed provider ISIN, segment MIC, price history or realtime coverage.','Operating MIC and official market segment codes remain separate; unreported segment MIC is null.','GBX is a pence quote unit; GBP currency does not establish the provider price unit.','Official SHRS includes fund/trust shares; ordinary common-company equity status is not inferred.','Zero strict classified candidates means unmeasured outside validated subsets, not zero provider equity support.'],rows};
+}

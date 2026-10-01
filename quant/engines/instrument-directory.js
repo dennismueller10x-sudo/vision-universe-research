@@ -353,7 +353,7 @@
     /* Additive listing directory. Never infer a global identity from a
        ticker-only US price/fundamental lookup. Explicit IDs are checked
        before any legacy data path is used. */
-    var extensionCache = { manifest: null, instruments: {}, search: {}, history: {} };
+    var extensionCache = { manifest: null, instruments: {}, search: {}, searchPages: {}, history: {} };
     function extensionManifest() {
       if (!extensionBase) return Promise.resolve(null);
       if (!extensionCache.manifest) extensionCache.manifest = Promise.resolve().then(function () {
@@ -372,6 +372,41 @@
       }).catch(function () { return null; });
       return bucket[key];
     }
+    function foldSearch(value) { return upper(value).normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+    function searchEntryMatches(row, folded) {
+      return [row.ticker,row.symbol,row.companyName,row.name,row.exchange,row.mic,row.country,row.listingCountry,row.region,row.listingRegion,row.isin]
+        .concat(row.aliases || []).some(function(value) { return value && foldSearch(value).indexOf(folded)>=0; });
+    }
+    function extensionSearchShard(key, query, opts) {
+      return extensionShard("search",key).then(function(shard) {
+        if(!shard || shard.schemaVersion!=="global-search-pages-1.0.0") return {shard:shard,hasMore:false,offset:0,pageRequests:0};
+        var folded=foldSearch(query), terms=[folded].concat(nameTokens(folded).slice(0,2)).map(function(term){return term.replace(/[^A-Z0-9]/g,"");});
+        var pages=(shard.pages || []).filter(function(page) {
+          return page && typeof page.path==="string" && new RegExp("^"+key+"/[0-9]{4}\\.json$").test(page.path) &&
+            terms.some(function(term){return term && page.firstTerm<=term+"\uffff" && page.lastTerm>=term;}) &&
+            (!opts.listingCountry || (page.listingCountries || []).indexOf(opts.listingCountry)>=0) &&
+            (!opts.listingRegion || (page.listingRegions || []).indexOf(opts.listingRegion)>=0);
+        });
+        var exactTerm=folded.replace(/[^A-Z0-9]/g,"");
+        pages.sort(function(a,b){return Number((b.exactSymbols || []).indexOf(exactTerm)>=0)-Number((a.exactSymbols || []).indexOf(exactTerm)>=0);});
+        var offset=0;
+        var entries=[],seen={},loaded=0,limit=opts.limit || 20;
+        function next() {
+          if(offset>=pages.length || loaded>=2 || entries.filter(function(row){return searchEntryMatches(row,folded);}).length>=limit)
+            return Promise.resolve({shard:{entries:entries},hasMore:offset<pages.length,offset:offset,pageRequests:loaded});
+          var page=pages[offset++],path=extensionBase+"search/"+page.path;loaded++;
+          if(!extensionCache.searchPages[path])extensionCache.searchPages[path]=Promise.resolve().then(function(){return load(path);}).catch(function(){return null;});
+          return extensionCache.searchPages[path].then(function(payload){
+            ((payload && payload.entries) || []).forEach(function(row){
+              if(!validExtension(row) || seen[row.listingId] || (opts.listingCountry && row.listingCountry!==opts.listingCountry) || (opts.listingRegion && row.listingRegion!==opts.listingRegion))return;
+              seen[row.listingId]=true;entries.push(row);
+            });
+            return next();
+          });
+        }
+        return next();
+      });
+    }
     function explicitId(ref) {
       return ref && typeof ref === "object" ? (ref.listingId || ref.instrumentId || ref.i || ref.securityId || null) : null;
     }
@@ -385,7 +420,7 @@
         /^[A-Z]{3}$/.test(row.tradingCurrency || "") && !!row.mic;
     }
     function extensionSecurityType(row) {
-      return row.assetType === "ETF" ? "ETF" : row.listingType === "PREFERRED" ? "PREFERRED" : row.listingType === "ADR" ? "ADR" : row.listingType === "UNKNOWN" ? "EQUITY" : "COMMON_STOCK";
+      return row.assetType === "ETF" ? "ETF" : row.listingType === "PREFERRED" ? "PREFERRED" : row.listingType === "ADR" ? "ADR" : (row.listingType === "UNKNOWN" || row.listingType === "PREFERRED_HINT") ? "EQUITY" : "COMMON_STOCK";
     }
     function extensionInstrument(row) {
       return Object.assign({}, row, { instrumentId: row.listingId,
@@ -442,9 +477,10 @@
     function compactExtension(row) {
       if (!validExtension(row)) return null;
       var flags = ["HAS_PROFILE"];
-      if (row.price && Number.isFinite(row.price.value) && row.price.value > 0) flags.push("HAS_PRICE_SNAPSHOT");
+      (row.cap || []).forEach(function(flag){if(["HAS_PRICE_SNAPSHOT","HAS_PRICE_HISTORY"].indexOf(flag)>=0 && flags.indexOf(flag)<0)flags.push(flag);});
+      if (row.price && Number.isFinite(row.price.value) && row.price.value > 0 && flags.indexOf("HAS_PRICE_SNAPSHOT")<0) flags.push("HAS_PRICE_SNAPSHOT");
       var historyCoverage = row.coverage && (row.coverage.price_history || row.coverage.priceHistory);
-      if (row.historyPath && (historyCoverage === "FULL" || historyCoverage === "PARTIAL")) flags.push("HAS_PRICE_HISTORY");
+      if (row.historyPath && (historyCoverage === "FULL" || historyCoverage === "PARTIAL") && flags.indexOf("HAS_PRICE_HISTORY")<0) flags.push("HAS_PRICE_HISTORY");
       return Object.assign({}, row, { i: row.listingId, li: row.listingId, s: refSymbol(row),
         n: row.companyName || row.name || null, x: row.exchange, c: row.listingCountry || row.country,
         cc: row.country, rg: row.region || row.listingRegion || null, u: row.tradingCurrency, ci: row.companyId || null,
@@ -459,8 +495,8 @@
         var key = Master.shardKey(token); if (keys.indexOf(key) < 0) keys.push(key);
       });
       var legacySearch = opts.extensionOnly ? Promise.resolve({ status: "OK", entries: [], shardsLoaded: 0 }) : search(query, opts);
-      return Promise.all([legacySearch, Promise.all(keys.map(function (key) { return extensionShard("search", key); }))]).then(function (results) {
-        var legacy = results[0], shards = results[1];
+      return Promise.all([legacySearch, Promise.all(keys.map(function (key) { return extensionSearchShard(key, query, opts); }))]).then(function (results) {
+        var legacy = results[0], pageResults = results[1], shards = pageResults.map(function(result){return result.shard;});
         if (legacy.status !== "OK") return legacy;
         var pool = legacy.entries.slice(), extra = [], seen = {};
         pool.forEach(function (r) { seen[r.li || r.i] = true; });
@@ -495,8 +531,9 @@
         exact.concat(starts, names, contains, metadata).forEach(function (entry) {
           if (!ranked.some(function (row) { return row.i === entry.i; })) ranked.push(entry);
         });
+        var more=pageResults.some(function(result){return result.hasMore;});
         return { status: "OK", shardsLoaded: legacy.shardsLoaded + shards.filter(Boolean).length,
-          entries: ranked.slice(0, limit) };
+          ...(more ? {truncated:true} : {}), entries: ranked.slice(0, limit) };
       });
     }
     function extensionData(ref, callback, legacyCallback) {

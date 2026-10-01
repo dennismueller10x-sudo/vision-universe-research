@@ -4,6 +4,7 @@ import {createRequire} from 'node:module';
 const require = createRequire(import.meta.url);
 const {normalizeETFHoldings} = require('../../providers/marketstack/etf.js');
 const fixture = require('./fixtures/marketstack-voo-holdings.json');
+const dateFixture = require('./fixtures/marketstack-ief-holdings-dates.json');
 const identity = {securityId: 'security_voo', listingId: 'listing_voo_arcx', assetType: 'etf', symbol: 'VOO', isin: 'US9229083632'};
 const normalize = (payload = fixture.payload, id = identity) => normalizeETFHoldings(payload, id, {retrievedAt: fixture.retrievedAt});
 
@@ -58,8 +59,19 @@ test('unknown weights remain null; duplicate and malformed rows are retained and
 
 test('report dates must be calendar-valid; modern retrieval cannot manufacture PIT', () => {
   const payload = structuredClone(fixture.payload);
-  payload.output.attributes.end_report_period = '2024-02-30';
+  payload.output.attributes.date_report_period = '2024-02-30';
   assert.equal(normalize(payload).reason, 'reportDateMissing');
   assert.equal(normalize().data.publicAvailableAt, null);
   assert.equal(normalize().data.provenance.retrieved_at, fixture.retrievedAt);
+});
+
+test('real IEF N-PORT date pair separates actual holdings as-of from future fiscal year end',()=>{
+  const actual=normalizeETFHoldings(dateFixture.payload,{securityId:'security_ief',listingId:'listing_ief_arcx',assetType:'etf',symbol:'IEF',isin:'US4642874402'},{retrievedAt:dateFixture.retrievedAt});
+  assert.equal(actual.ok,true);assert.equal(actual.data.reportDate,'2026-05-31');
+  assert.equal(actual.data.actualAsOf,'2026-05-31');assert.equal(actual.data.fundFiscalYearEnd,'2027-02-28');
+  assert.equal(actual.data.reportPeriodStart,'2026-05-31');assert.equal(actual.data.reportPeriodEnd,'2027-02-28');
+  assert.equal(actual.data.dateSemantics.legacyPeriodFields,'PROVIDER_LABELS_NOT_PERIOD_BOUNDARIES');
+  assert.equal(actual.data.publicAvailableAt,null);assert.equal(actual.data.coverage,'NONE');
+  const missing=structuredClone(dateFixture.payload);delete missing.output.attributes.date_report_period;
+  assert.equal(normalizeETFHoldings(missing,{securityId:'security_ief',listingId:'listing_ief_arcx',assetType:'etf',symbol:'IEF'}).reason,'reportDateMissing');
 });

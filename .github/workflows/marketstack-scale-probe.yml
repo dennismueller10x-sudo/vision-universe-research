@@ -1,0 +1,91 @@
+name: Marketstack bounded scale evidence
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [discovery, us-gaps, validation, etf]
+        default: discovery
+  push:
+    branches: ['feat/marketstack-scale-*']
+    paths: ['scripts/market/scale-marketstack.mjs', 'quant/config/marketstack-scale-plan.json', '.github/workflows/marketstack-scale-probe.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-scale-evidence
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[marketstack-scale]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/cache/restore@v4
+        id: scale-cache
+        with:
+          path: ${{ runner.temp }}/marketstack-scale
+          key: marketstack-scale-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: marketstack-scale-${{ github.ref_name }}-
+      - name: Recover interrupted accounting before provider calls
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/market/recover-marketstack-scale.mjs --out="$RUNNER_TEMP/marketstack-scale"
+      - name: Reuse prior bounded evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for run_id in 36852153799 36853405425 36854621111 36856401441 36858301835; do
+            directory="$RUNNER_TEMP/marketstack-scale-seeds/$run_id"
+            if [ ! -d "$directory" ]; then
+              mkdir -p "$directory"
+              gh run download "$run_id" --repo "$GITHUB_REPOSITORY" --name marketstack-probe --dir "$directory"
+            fi
+          done
+      - name: Bounded scaled evidence collection
+        timeout-minutes: 35
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+          VU_SCALE_PHASE: ${{ inputs.phase || (contains(github.event.head_commit.message, '[scale-us-gaps]') && 'us-gaps') || (contains(github.event.head_commit.message, '[scale-validation]') && 'validation') || (contains(github.event.head_commit.message, '[scale-etf]') && 'etf') || 'discovery' }}
+        run: node scripts/market/scale-marketstack.mjs --phase="$VU_SCALE_PHASE" --out="$RUNNER_TEMP/marketstack-scale" --seeds="$RUNNER_TEMP/marketstack-scale-seeds"
+      - name: Production remains protected
+        run: git diff --exit-code -- quant/data discover/data dashboard/data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-scale-core-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/marketstack-scale/checkpoint.json
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-scale-part0-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/marketstack-scale/responses/0/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-scale-part1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/marketstack-scale/responses/1/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-scale-part2-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/marketstack-scale/responses/2/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-scale-part3-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/marketstack-scale/responses/3/
+          retention-days: 7
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ runner.temp }}/marketstack-scale
+          key: marketstack-scale-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}

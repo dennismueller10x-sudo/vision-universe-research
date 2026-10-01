@@ -32,7 +32,11 @@ function normalizeETFHoldings(payload, identity, options = {}) {
   const symbol = text(identity.provider_symbol || identity.symbol);
   if (!symbol || text(attributes.ticker) !== symbol) return {ok: false, reason: 'symbolMismatch'};
   if (identity.isin && text(attributes.isin) !== identity.isin) return {ok: false, reason: 'isinMismatch'};
-  const reportDate = date(attributes.end_report_period || attributes.date_report_period);
+  // N-PORT repPdDate is the holdings as-of date; repPdEnd is fiscal year end.
+  // Marketstack labels these as a start/end pair, but a future fiscal year end
+  // must never advance holdings freshness or point-in-time availability.
+  const reportDate = date(attributes.date_report_period);
+  const fundFiscalYearEnd = date(attributes.end_report_period);
   if (!reportDate) return {ok: false, reason: 'reportDateMissing'};
   const anomalies = [], seen = new Map();
   const holdings = rows.map((row, index) => {
@@ -71,8 +75,14 @@ function normalizeETFHoldings(payload, identity, options = {}) {
       secFileNumber: text(payload.basics && payload.basics.file_number), lei: text(payload.basics && payload.basics.reg_lei),
       seriesName: text(attributes.series_name), seriesId: text(attributes.series_id),
       seriesLEI: text(attributes.series_lei), isin: text(attributes.isin)},
-    portfolioScope: 'REPORTED_FUND_SERIES', reportDate,
+    portfolioScope: 'REPORTED_FUND_SERIES', reportDate, actualAsOf: reportDate, fundFiscalYearEnd,
+    // Retained for existing serialized consumers. These provider-labelled
+    // fields are not the start and end of the holdings reporting period.
     reportPeriodStart: date(attributes.date_report_period), reportPeriodEnd: date(attributes.end_report_period),
+    dateSemantics: {actualAsOfField: 'date_report_period', fundFiscalYearEndField: 'end_report_period',
+      legacyPeriodFields: 'PROVIDER_LABELS_NOT_PERIOD_BOUNDARIES',
+      authoritativeSchema: 'https://www.sec.gov/files/edgar/filer-information/specifications/edgar-form-n-port-xml-tech-spec-113.zip',
+      actualAsOfConcept: 'NPORT.genInfo.repPdDate', fundFiscalYearEndConcept: 'NPORT.genInfo.repPdEnd'},
     signatureDate: date(payload.output.signature && payload.output.signature.date_signed),
     publicAvailableAt: null, // A signature is not an SEC acceptance/publication timestamp.
     holdings, coverage: holdings.some(h => h.valid) ? 'PARTIAL' : 'NONE',

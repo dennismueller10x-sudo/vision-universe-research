@@ -1,0 +1,1452 @@
+{
+  "schemaVersion": "marketstack-us-class-removal-crosscheck-1.0.0",
+  "generatedAt": "2026-10-01T19:14:02.876Z",
+  "asOfDate": "2026-10-01",
+  "protectedBaselineSource": {
+    "path": "quant/data/market/security-master/eligibility.json",
+    "sha256": "dbdaa84369116276ba168306d4dcce6989a883fba84434af374ca9b9894734af"
+  },
+  "canonicalWrites": 0,
+  "requestsMadeByGenerator": 0,
+  "sources": [
+    {
+      "path": "reports/marketstack/us_marketstack_quality_flags.json",
+      "sha256": "5b361ee8768f72a4fc847a5de6fed94881c1dee5183d76e13507a204e006677e"
+    },
+    {
+      "privateArtifact": true,
+      "sha256": "3e35f2206c33ef918dec02a9d27741349266250d58e7fdc885f487ea56852863"
+    },
+    {
+      "privateArtifact": true,
+      "sha256": "f42b179a3f6133e47d14f5a20e3c654a95439f57a2fbfc826afd82b845dba4a3"
+    },
+    {
+      "privateArtifact": true,
+      "sha256": "432ed9f08740597981980c7dbc4579237e4c5d53d930c8ee0f1b8ac1f3ec7777"
+    },
+    {
+      "privateArtifact": true,
+      "sha256": "7bc9579a9b6e1c2f5990130be934661ca0ec23cdf22f25b92ca8729797660260"
+    },
+    {
+      "privateArtifact": true,
+      "sha256": "12153775b156f6f51710eb4908926d512692db3ad85a0cf816ed61de4b037f6d"
+    }
+  ],
+  "sourcePublicRequestAccounting": {
+    "submissionsAndArchiveAttempts": 89,
+    "coverpageAttempts": 9,
+    "symbolEventAttempts": 10,
+    "total": 108,
+    "discardedUnrelatedForm425ArchiveReads": 62,
+    "paidMarketstack": 0
+  },
+  "totals": {
+    "investigated": 460,
+    "independentScopedRemovals": 12,
+    "additionalStaleExplanations": 10,
+    "unrelatedOrAmbiguousClassCandidates": 2,
+    "documentedTickerChanges": 1,
+    "safetyPromotions": 0
+  },
+  "rows": [
+    {
+      "securityId": "ref_AIHS",
+      "ticker": "AIHS",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [
+        {
+          "source": "https://www.sec.gov/Archives/edgar/data/1711012/000121390026093717/ea0303367-8k_senmiao.htm",
+          "sha256": "927dd42b4fb68a39b634714e42098e82ca2ad0b372edd4db9e47fd8c0cf384c3",
+          "filingType": "8-K",
+          "filingDate": "2026-08-26",
+          "accessionNumber": "0001213900-26-093717",
+          "issuerCik": "0001711012",
+          "oldSymbol": "AIHS",
+          "newSymbol": "VAI",
+          "declaration": "new trading symbol “VAI,” replacing its current trading symbol “AIHS,",
+          "declaredCUSIP": "817225303",
+          "currentOfficialListing": {
+            "symbol": "VAI",
+            "mic": "XNAS",
+            "securityName": "Valor Energy Incorporated - Common Stock",
+            "etfFlag": "N",
+            "testIssue": "N",
+            "cqsSymbol": null,
+            "nasdaqSymbol": "VAI",
+            "role": "EQUITY_COMMON",
+            "source": "nasdaqlisted.txt"
+          },
+          "currentOfficialSEC": {
+            "cik": "0001711012",
+            "name": "Valor Energy Inc",
+            "exchange": "Nasdaq"
+          },
+          "declaredChangeConditional": true,
+          "automaticAliasApproved": false,
+          "effectiveLastTradeDateKnown": false,
+          "providerSecurityIdentifiers": [
+            {
+              "isin": "US8172251055",
+              "cusip": "817225105"
+            }
+          ],
+          "identityBasis": "EXPLICIT_OFFICIAL_OLD_TO_NEW_SYMBOL_DECLARATION_AND_CURRENT_INDEPENDENT_NEW_SYMBOL_ISSUER_VENUE",
+          "note": "Documented symbol transition. Historical share-class continuity/provider prices remain quarantined; this is not an approved Marketstack alias."
+        }
+      ],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001711012",
+          "source": "https://data.sec.gov/submissions/CIK0001711012.json",
+          "sha256": "fcdab4dd957e8ad115970f6478acb703027f8f25e195dbd7e54b16995a545b58",
+          "currentName": "Valor Energy Inc",
+          "currentTickers": [
+            "VAI"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_AREN",
+      "ticker": "AREN",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0000894871",
+          "source": "https://data.sec.gov/submissions/CIK0000894871.json",
+          "sha256": "963288ee953201c6a7797be9800c5c3059911975e30774412789cd3fb47017b9",
+          "currentName": "Paradium.AI, Inc.",
+          "currentTickers": [
+            "PAAI"
+          ],
+          "currentExchanges": [
+            "NYSE"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_AVB",
+      "ticker": "AVB",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0000915912",
+          "tradingSymbol": "AVB",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Common Stock, par value $0.01 per share",
+          "shareClassToken": null,
+          "mic": "XNYS",
+          "coverContextRef": "c-1",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/915912/000091591226000020/avb-20260630.htm",
+            "sha256": "16d53a634eb4dd62185b9857173cacc3a2a921cbebd080994f9689532266b83c",
+            "filingType": "10-Q",
+            "filingDate": "2026-07-30",
+            "acceptedAt": "2026-07-30T20:24:25.000Z",
+            "accessionNumber": "0000915912-26-000020"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/915912/000087666126000689/primary_doc.xml",
+            "sha256": "63072ed154c50212531e6411152f62e30f7808591e391fdd89b90ef9a45a7c02",
+            "form": "25-NSE",
+            "filingDate": "2026-08-17",
+            "accessionNumber": "0000876661-26-000689",
+            "issuerName": "AVALONBAY COMMUNITIES INC",
+            "securityClassDescription": "Common Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0000915912",
+          "source": "https://data.sec.gov/submissions/CIK0000915912.json",
+          "sha256": "6c090ea7b181ed8730c355418030b1f39b7889279205f52a471b74483841a5bb",
+          "currentName": "AVALONBAY COMMUNITIES INC",
+          "currentTickers": [],
+          "currentExchanges": [],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-17",
+              "accessionNumber": "0000876661-26-000689",
+              "source": "https://www.sec.gov/Archives/edgar/data/915912/000087666126000689/primary_doc.xml",
+              "sha256": "63072ed154c50212531e6411152f62e30f7808591e391fdd89b90ef9a45a7c02",
+              "parsedIssuerCik": "0000915912",
+              "exchangeName": "NEW YORK STOCK EXCHANGE LLC",
+              "securityClassDescription": "Common Stock"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_BCAR",
+      "ticker": "BCAR",
+      "originalStatus": "MISSING_PROVIDER_CURRENCY",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": false,
+      "evidence": [
+        {
+          "issuerCik": "0002065779",
+          "tradingSymbol": "BCAR",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Class A ordinary shares, par value $0.0001 per share",
+          "shareClassToken": "A",
+          "mic": "XNAS",
+          "coverContextRef": "From2026-01-012026-06-30_custom_ClassOrdinarySharesParValue0.0001PerShareMember",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/2065779/000182912626008863/dboralarcacq1_10q.htm",
+            "sha256": "4cc681df6b7cc94015a912f0b97ced7f58a71ae328401ead8b39e38b4b1f2859",
+            "filingType": "10-Q",
+            "filingDate": "2026-08-14",
+            "acceptedAt": "2026-08-14T19:14:24.000Z",
+            "accessionNumber": "0001829126-26-008863"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/2065779/000135445726000829/primary_doc.xml",
+            "sha256": "9756f735e62a9022ada2001bb8fd19187c0c402fb1b2df2c29450320709519d2",
+            "form": "25-NSE",
+            "filingDate": "2026-08-27",
+            "accessionNumber": "0001354457-26-000829",
+            "issuerName": "D. Boral ARC Acquisition I Corp.",
+            "securityClassDescription": "Class A Ordinary Shares, Warrants, Units",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_BCARU",
+      "ticker": "BCARU",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0002065779",
+          "tradingSymbol": "BCARU",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Units, each consisting of one Class A ordinary share and one-half of one redeemable warrant",
+          "shareClassToken": null,
+          "mic": "XNAS",
+          "coverContextRef": "From2026-01-012026-06-30_custom_UnitsEachConsistingOfOneClassOrdinaryShareAndOnehalfOfOneRedeemableWarrantMember",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/2065779/000182912626008863/dboralarcacq1_10q.htm",
+            "sha256": "4cc681df6b7cc94015a912f0b97ced7f58a71ae328401ead8b39e38b4b1f2859",
+            "filingType": "10-Q",
+            "filingDate": "2026-08-14",
+            "acceptedAt": "2026-08-14T19:14:24.000Z",
+            "accessionNumber": "0001829126-26-008863"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/2065779/000135445726000829/primary_doc.xml",
+            "sha256": "9756f735e62a9022ada2001bb8fd19187c0c402fb1b2df2c29450320709519d2",
+            "form": "25-NSE",
+            "filingDate": "2026-08-27",
+            "accessionNumber": "0001354457-26-000829",
+            "issuerName": "D. Boral ARC Acquisition I Corp.",
+            "securityClassDescription": "Class A Ordinary Shares, Warrants, Units",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0002065779",
+          "source": "https://data.sec.gov/submissions/CIK0002065779.json",
+          "sha256": "f9a5f004ed3aba6cc2e66ea541fe22bdf7fe5e340ca3ecd9f88032e6ae914555",
+          "currentName": "D. Boral ARC Acquisition I Corp.",
+          "currentTickers": [
+            "BCARU",
+            "BCARW"
+          ],
+          "currentExchanges": [
+            "Nasdaq",
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-27",
+              "accessionNumber": "0001354457-26-000829",
+              "source": "https://www.sec.gov/Archives/edgar/data/2065779/000135445726000829/primary_doc.xml",
+              "sha256": "9756f735e62a9022ada2001bb8fd19187c0c402fb1b2df2c29450320709519d2",
+              "parsedIssuerCik": "0002065779",
+              "exchangeName": "Nasdaq Stock Market LLC",
+              "securityClassDescription": "Class A Ordinary Shares, Warrants, Units"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_BNRG",
+      "ticker": "BNRG",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001901215",
+          "source": "https://data.sec.gov/submissions/CIK0001901215.json",
+          "sha256": "7414fbb71527a8d7c117a5ea8cb5b6eb0381d298ff9b4cdb460fdf68274bd0d0",
+          "currentName": "BRENX LTD.",
+          "currentTickers": [
+            "BRNX"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_BTOG",
+      "ticker": "BTOG",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001735556",
+          "source": "https://data.sec.gov/submissions/CIK0001735556.json",
+          "sha256": "02629025d6eea89ce392324d3a403e4f35ebfaf8cb88eb6af3bf91bfdb12ec7f",
+          "currentName": "SANGRIX INC.",
+          "currentTickers": [
+            "SGRX"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_DRMA",
+      "ticker": "DRMA",
+      "originalStatus": "CURRENCY_MISMATCH",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001853816",
+          "source": "https://data.sec.gov/submissions/CIK0001853816.json",
+          "sha256": "fba12933747220abd254eb673fe5ed9f1b7b6a877d5491b2be7244eb9ba5d784",
+          "currentName": "Dermata Therapeutics, Inc.",
+          "currentTickers": [
+            "DRMA",
+            "DRMAW"
+          ],
+          "currentExchanges": [
+            "Nasdaq",
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-17",
+              "accessionNumber": "0001354457-26-000799",
+              "source": "https://www.sec.gov/Archives/edgar/data/1853816/000135445726000799/primary_doc.xml",
+              "sha256": "5128799703d2237f2107d2a597803017be3418cfbfaa45b3f2f2a121fc0cff8f",
+              "parsedIssuerCik": "0001853816",
+              "exchangeName": "Nasdaq Stock Market LLC",
+              "securityClassDescription": "Warrant"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": [
+        "FORM25_OTHER_SECURITY_CLASS_NOT_TARGET"
+      ]
+    },
+    {
+      "securityId": "ref_DRMAW",
+      "ticker": "DRMAW",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001853816",
+          "tradingSymbol": "DRMAW",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Warrants, exercisable for one share of Common Stock",
+          "shareClassToken": null,
+          "mic": "XNAS",
+          "coverContextRef": "From2026-01-012026-06-30_custom_WarrantsExercisableForOneShareOfCommonStockMember",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1853816/000149315226037127/form10-q.htm",
+            "sha256": "05d8fadff46cd8f78e2e1d74b3df57280e4ef58276508d4ab940e0d84ae5c371",
+            "filingType": "10-Q",
+            "filingDate": "2026-08-11",
+            "acceptedAt": "2026-08-11T20:07:41.000Z",
+            "accessionNumber": "0001493152-26-037127"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1853816/000135445726000799/primary_doc.xml",
+            "sha256": "5128799703d2237f2107d2a597803017be3418cfbfaa45b3f2f2a121fc0cff8f",
+            "form": "25-NSE",
+            "filingDate": "2026-08-17",
+            "accessionNumber": "0001354457-26-000799",
+            "issuerName": "Dermata Therapeutics, Inc.",
+            "securityClassDescription": "Warrant",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(2)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001853816",
+          "source": "https://data.sec.gov/submissions/CIK0001853816.json",
+          "sha256": "fba12933747220abd254eb673fe5ed9f1b7b6a877d5491b2be7244eb9ba5d784",
+          "currentName": "Dermata Therapeutics, Inc.",
+          "currentTickers": [
+            "DRMA",
+            "DRMAW"
+          ],
+          "currentExchanges": [
+            "Nasdaq",
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-17",
+              "accessionNumber": "0001354457-26-000799",
+              "source": "https://www.sec.gov/Archives/edgar/data/1853816/000135445726000799/primary_doc.xml",
+              "sha256": "5128799703d2237f2107d2a597803017be3418cfbfaa45b3f2f2a121fc0cff8f",
+              "parsedIssuerCik": "0001853816",
+              "exchangeName": "Nasdaq Stock Market LLC",
+              "securityClassDescription": "Warrant"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_FBRX",
+      "ticker": "FBRX",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001419041",
+          "tradingSymbol": "FBRX",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Common Stock",
+          "shareClassToken": null,
+          "mic": "XNAS",
+          "coverContextRef": "C_4d74824a-e369-478d-b5d9-cd874d500d62",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1419041/000119312526346787/fbrx-20260630.htm",
+            "sha256": "d81f6496be3ae1d64f0bbfbfd851f3fb69a7307003476c03b8ab37407e24d7d8",
+            "filingType": "10-Q",
+            "filingDate": "2026-08-12",
+            "acceptedAt": "2026-08-12T20:01:40.000Z",
+            "accessionNumber": "0001193125-26-346787"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1419041/000135445726000824/primary_doc.xml",
+            "sha256": "f8533c7eaf329d25497fae400aac3ed93df5044256c997cf16dbb66365e866a7",
+            "form": "25-NSE",
+            "filingDate": "2026-08-27",
+            "accessionNumber": "0001354457-26-000824",
+            "issuerName": "Forte Biosciences, Inc.",
+            "securityClassDescription": "Common Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001419041",
+          "source": "https://data.sec.gov/submissions/CIK0001419041.json",
+          "sha256": "9187e3e34339926783e2afdc95a96be588b7d9cebd9d97d6c2c055328d402f4c",
+          "currentName": "Forte Biosciences, Inc.",
+          "currentTickers": [
+            "FBRX"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-27",
+              "accessionNumber": "0001354457-26-000824",
+              "source": "https://www.sec.gov/Archives/edgar/data/1419041/000135445726000824/primary_doc.xml",
+              "sha256": "f8533c7eaf329d25497fae400aac3ed93df5044256c997cf16dbb66365e866a7",
+              "parsedIssuerCik": "0001419041",
+              "exchangeName": "Nasdaq Stock Market LLC",
+              "securityClassDescription": "Common Stock"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_GLYC",
+      "ticker": "GLYC",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001253689",
+          "source": "https://data.sec.gov/submissions/CIK0001253689.json",
+          "sha256": "51bfc75ca7f99ec7b056a3c3dae79175dc843185f99c3c87db4eae56f8ddc893",
+          "currentName": "CRESCENT BIOPHARMA, INC.",
+          "currentTickers": [
+            "CBIO"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_HRYU",
+      "ticker": "HRYU",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001911545",
+          "source": "https://data.sec.gov/submissions/CIK0001911545.json",
+          "sha256": "26664e3e31e7636b70d5de04af4be8671273680f0cb0808c3328016229cc262d",
+          "currentName": "Global Interactive Technologies, Inc.",
+          "currentTickers": [
+            "GITS"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_IWFL",
+      "ticker": "IWFL",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001114446",
+          "source": "https://data.sec.gov/submissions/CIK0001114446.json",
+          "sha256": "686962885f98a11be5d799bcf8d869e19df1a86c5d45212bf6686fd784f7d029",
+          "currentName": "UBS AG",
+          "currentTickers": [
+            "AMUB",
+            "BDCX",
+            "BDCZ",
+            "CEFD",
+            "HDLB",
+            "IFED",
+            "MLPB",
+            "MLPR",
+            "MVRL",
+            "PFFL",
+            "SMHB",
+            "UCIB"
+          ],
+          "currentExchanges": [
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-19",
+              "accessionNumber": "0001143362-26-000310",
+              "source": "https://www.sec.gov/Archives/edgar/data/1114446/000114336226000310/primary_doc.xml",
+              "sha256": "5bb0414ceaffe38765365870a643a9c43e7ad3813301fdeb68c16a23d1715188",
+              "parsedIssuerCik": "0001114446",
+              "exchangeName": "NYSE ARCA, INC.",
+              "securityClassDescription": "ETRACS 2x Leveraged US Value Factor TR ETN; ETRACS 2x Leveraged US Growth Factor TR ETN; ETRACS 2x Leveraged US Size Factor TR ETN; ETRACS 2x Leveraged MSCI US Momentum Factor TR ETN; ETRACS 2x Leveraged MSCI US Quality Factor TR ETN; ETRACS 2x Leveraged US Dividend Factor TR ETN; ETRACS 2x Leveraged MSCI US Minimum Volatility Factor TR ETN"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_IWML",
+      "ticker": "IWML",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001114446",
+          "source": "https://data.sec.gov/submissions/CIK0001114446.json",
+          "sha256": "686962885f98a11be5d799bcf8d869e19df1a86c5d45212bf6686fd784f7d029",
+          "currentName": "UBS AG",
+          "currentTickers": [
+            "AMUB",
+            "BDCX",
+            "BDCZ",
+            "CEFD",
+            "HDLB",
+            "IFED",
+            "MLPB",
+            "MLPR",
+            "MVRL",
+            "PFFL",
+            "SMHB",
+            "UCIB"
+          ],
+          "currentExchanges": [
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-19",
+              "accessionNumber": "0001143362-26-000310",
+              "source": "https://www.sec.gov/Archives/edgar/data/1114446/000114336226000310/primary_doc.xml",
+              "sha256": "5bb0414ceaffe38765365870a643a9c43e7ad3813301fdeb68c16a23d1715188",
+              "parsedIssuerCik": "0001114446",
+              "exchangeName": "NYSE ARCA, INC.",
+              "securityClassDescription": "ETRACS 2x Leveraged US Value Factor TR ETN; ETRACS 2x Leveraged US Growth Factor TR ETN; ETRACS 2x Leveraged US Size Factor TR ETN; ETRACS 2x Leveraged MSCI US Momentum Factor TR ETN; ETRACS 2x Leveraged MSCI US Quality Factor TR ETN; ETRACS 2x Leveraged US Dividend Factor TR ETN; ETRACS 2x Leveraged MSCI US Minimum Volatility Factor TR ETN"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_JAB",
+      "ticker": "JAB",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0002128739",
+          "source": "https://data.sec.gov/submissions/CIK0002128739.json",
+          "sha256": "936339b09505c8990c0e15f22e34064f277c4472032472f9bc546eda548f5152",
+          "currentName": "JAB Acquisition Corp I",
+          "currentTickers": [
+            "ATLQ",
+            "ATLQR",
+            "ATLQU",
+            "ATLQW"
+          ],
+          "currentExchanges": [
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_LBRDA",
+      "ticker": "LBRDA",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001611983",
+          "tradingSymbol": "LBRDA",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Series A common stock",
+          "shareClassToken": "A",
+          "mic": "XNAS",
+          "coverContextRef": "Duration_1_1_2026_To_6_30_2026_us-gaap_StatementClassOfStockAxis_us-gaap_CommonClassAMember_H8JIaMD8rUGCA6_tavWNlw",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1611983/000110465926088133/lbrda-20260630x10q.htm",
+            "sha256": "f256a398f1357948a4580c663a6eb8d6ef1ab7772babb582bce32973c200f22b",
+            "filingType": "10-Q",
+            "filingDate": "2026-07-29",
+            "acceptedAt": "2026-07-29T20:06:58.000Z",
+            "accessionNumber": "0001104659-26-088133"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1611983/000135445726000811/primary_doc.xml",
+            "sha256": "0e9ea25c138295ee4c372a2d07589e1ca0c7a97623ff010dec6c7e864425c071",
+            "form": "25-NSE",
+            "filingDate": "2026-08-20",
+            "accessionNumber": "0001354457-26-000811",
+            "issuerName": "Liberty Broadband Corp",
+            "securityClassDescription": "Class A Common Stock, Class C Common Stock, and Series A Cumulative Redeemable Preferred Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001611983",
+          "source": "https://data.sec.gov/submissions/CIK0001611983.json",
+          "sha256": "0ace0f917eb96e25be8139cbb8a4c4dba4ea3ee559d5003e3debf6a4e5a89f86",
+          "currentName": "Liberty Broadband Corp",
+          "currentTickers": [
+            "LBRDK",
+            "LBRDA",
+            "LBRDP"
+          ],
+          "currentExchanges": [
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-20",
+              "accessionNumber": "0001354457-26-000811",
+              "source": "https://www.sec.gov/Archives/edgar/data/1611983/000135445726000811/primary_doc.xml",
+              "sha256": "0e9ea25c138295ee4c372a2d07589e1ca0c7a97623ff010dec6c7e864425c071",
+              "parsedIssuerCik": "0001611983",
+              "exchangeName": "Nasdaq Stock Market LLC",
+              "securityClassDescription": "Class A Common Stock, Class C Common Stock, and Series A Cumulative Redeemable Preferred Stock"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_LBRDK",
+      "ticker": "LBRDK",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001611983",
+          "tradingSymbol": "LBRDK",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Series C common stock",
+          "shareClassToken": "C",
+          "mic": "XNAS",
+          "coverContextRef": "Duration_1_1_2026_To_6_30_2026_us-gaap_StatementClassOfStockAxis_us-gaap_CommonClassCMember_pvy9Lkk_iEGawh17TpukMw",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1611983/000110465926088133/lbrda-20260630x10q.htm",
+            "sha256": "f256a398f1357948a4580c663a6eb8d6ef1ab7772babb582bce32973c200f22b",
+            "filingType": "10-Q",
+            "filingDate": "2026-07-29",
+            "acceptedAt": "2026-07-29T20:06:58.000Z",
+            "accessionNumber": "0001104659-26-088133"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1611983/000135445726000811/primary_doc.xml",
+            "sha256": "0e9ea25c138295ee4c372a2d07589e1ca0c7a97623ff010dec6c7e864425c071",
+            "form": "25-NSE",
+            "filingDate": "2026-08-20",
+            "accessionNumber": "0001354457-26-000811",
+            "issuerName": "Liberty Broadband Corp",
+            "securityClassDescription": "Class A Common Stock, Class C Common Stock, and Series A Cumulative Redeemable Preferred Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_LBRDP",
+      "ticker": "LBRDP",
+      "originalStatus": "MISSING_PROVIDER_CURRENCY",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": false,
+      "evidence": [
+        {
+          "issuerCik": "0001611983",
+          "tradingSymbol": "LBRDP",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Series A Cumulative Redeemable preferred stock",
+          "shareClassToken": "A",
+          "mic": "XNAS",
+          "coverContextRef": "Duration_1_1_2026_To_6_30_2026_us-gaap_StatementClassOfStockAxis_lbrda_SeriesCumulativeRedeemablePreferredStockMember_v4HS_3erREazOcfQ8cpreA",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1611983/000110465926088133/lbrda-20260630x10q.htm",
+            "sha256": "f256a398f1357948a4580c663a6eb8d6ef1ab7772babb582bce32973c200f22b",
+            "filingType": "10-Q",
+            "filingDate": "2026-07-29",
+            "acceptedAt": "2026-07-29T20:06:58.000Z",
+            "accessionNumber": "0001104659-26-088133"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1611983/000135445726000811/primary_doc.xml",
+            "sha256": "0e9ea25c138295ee4c372a2d07589e1ca0c7a97623ff010dec6c7e864425c071",
+            "form": "25-NSE",
+            "filingDate": "2026-08-20",
+            "accessionNumber": "0001354457-26-000811",
+            "issuerName": "Liberty Broadband Corp",
+            "securityClassDescription": "Class A Common Stock, Class C Common Stock, and Series A Cumulative Redeemable Preferred Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_LIDRW",
+      "ticker": "LIDRW",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001818644",
+          "tradingSymbol": "LIDRW",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Warrants to purchase one share of common stock",
+          "shareClassToken": null,
+          "mic": "XNAS",
+          "coverContextRef": "d_2026-01-01_2026-06-30_StatementClassOfStockAxis-WarrantMember",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1818644/000143774926026354/lidr20260630_10q.htm",
+            "sha256": "6adcd197c5ee92750c536a36dad926489b8562beb2445415e35bcc899cec2646",
+            "filingType": "10-Q",
+            "filingDate": "2026-08-06",
+            "acceptedAt": "2026-08-06T21:07:51.000Z",
+            "accessionNumber": "0001437749-26-026354"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1818644/000135445726000785/primary_doc.xml",
+            "sha256": "232e0691b7ea11d37a66a9c7600589bf6029f4d15ab279fa1da58ea4c3720ad5",
+            "form": "25-NSE",
+            "filingDate": "2026-08-13",
+            "accessionNumber": "0001354457-26-000785",
+            "issuerName": "AEye, Inc.",
+            "securityClassDescription": "Warrant",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(2)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001818644",
+          "source": "https://data.sec.gov/submissions/CIK0001818644.json",
+          "sha256": "158a6934a408506ba8fa4dd40bb79fec90f6d11633c819aca98d7c2709382c02",
+          "currentName": "AEye, Inc.",
+          "currentTickers": [
+            "LIDR"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-13",
+              "accessionNumber": "0001354457-26-000785",
+              "source": "https://www.sec.gov/Archives/edgar/data/1818644/000135445726000785/primary_doc.xml",
+              "sha256": "232e0691b7ea11d37a66a9c7600589bf6029f4d15ab279fa1da58ea4c3720ad5",
+              "parsedIssuerCik": "0001818644",
+              "exchangeName": "Nasdaq Stock Market LLC",
+              "securityClassDescription": "Warrant"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_MDV",
+      "ticker": "MDV",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001645873",
+          "tradingSymbol": "MDV",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Class C Common Stock, $0.001 par value per share",
+          "shareClassToken": "C",
+          "mic": "XNYS",
+          "coverContextRef": "c-2",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1645873/000164587326000079/none-20260630.htm",
+            "sha256": "1e9082325da779be3b36fada3e7d124327d1b39b1d4b3ba22dacf9c350ffcdf5",
+            "filingType": "10-Q",
+            "filingDate": "2026-08-11",
+            "acceptedAt": "2026-08-11T20:15:15.000Z",
+            "accessionNumber": "0001645873-26-000079"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1645873/000087666126000679/primary_doc.xml",
+            "sha256": "e064432c6873209b84efd7f0e28888c84def63e69d4931391401c8c447981ee3",
+            "form": "25-NSE",
+            "filingDate": "2026-08-12",
+            "accessionNumber": "0000876661-26-000679",
+            "issuerName": "MODIV INDUSTRIAL, INC.",
+            "securityClassDescription": "Class C Common Stock; 7.375% Series A Cumulative Redeemable Perpetual Preferred Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001645873",
+          "source": "https://data.sec.gov/submissions/CIK0001645873.json",
+          "sha256": "adc209abe67f5195b5b9e68a180ecc0942347f040ff867a174d4834727835583",
+          "currentName": "MODIV INDUSTRIAL, INC.",
+          "currentTickers": [
+            "MDV",
+            "MDV-PA"
+          ],
+          "currentExchanges": [
+            "NYSE",
+            "NYSE"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-12",
+              "accessionNumber": "0000876661-26-000679",
+              "source": "https://www.sec.gov/Archives/edgar/data/1645873/000087666126000679/primary_doc.xml",
+              "sha256": "e064432c6873209b84efd7f0e28888c84def63e69d4931391401c8c447981ee3",
+              "parsedIssuerCik": "0001645873",
+              "exchangeName": "NEW YORK STOCK EXCHANGE LLC",
+              "securityClassDescription": "Class C Common Stock; 7.375% Series A Cumulative Redeemable Perpetual Preferred Stock"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_MDV_P_A",
+      "ticker": "MDV-P-A",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001645873",
+          "tradingSymbol": "MDV.PA",
+          "symbolBasis": "SERIES_PRESERVING_OFFICIAL_PREFERRED_COVERPAGE_NOT_PROVIDER_ALIAS_APPROVAL",
+          "securityClassTitle": "7.375% Series A Cumulative Redeemable Perpetual Preferred Stock, $0.001 par value per share",
+          "shareClassToken": "A",
+          "mic": "XNYS",
+          "coverContextRef": "c-3",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1645873/000164587326000079/none-20260630.htm",
+            "sha256": "1e9082325da779be3b36fada3e7d124327d1b39b1d4b3ba22dacf9c350ffcdf5",
+            "filingType": "10-Q",
+            "filingDate": "2026-08-11",
+            "acceptedAt": "2026-08-11T20:15:15.000Z",
+            "accessionNumber": "0001645873-26-000079"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1645873/000087666126000679/primary_doc.xml",
+            "sha256": "e064432c6873209b84efd7f0e28888c84def63e69d4931391401c8c447981ee3",
+            "form": "25-NSE",
+            "filingDate": "2026-08-12",
+            "accessionNumber": "0000876661-26-000679",
+            "issuerName": "MODIV INDUSTRIAL, INC.",
+            "securityClassDescription": "Class C Common Stock; 7.375% Series A Cumulative Redeemable Perpetual Preferred Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_MESA",
+      "ticker": "MESA",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0000810332",
+          "source": "https://data.sec.gov/submissions/CIK0000810332.json",
+          "sha256": "5c3f3f11c09863136d7bf5fdd61061c34ecbd0d532b04350e57c0590466bc654",
+          "currentName": "REPUBLIC AIRWAYS HOLDINGS INC.",
+          "currentTickers": [
+            "RJET"
+          ],
+          "currentExchanges": [
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_NTZ",
+      "ticker": "NTZ",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0000900391",
+          "source": "https://data.sec.gov/submissions/CIK0000900391.json",
+          "sha256": "a4e1092c82ce0690166d8b80dbbbc8e73ab0a42cf654c38de8c88a47ec7579c2",
+          "currentName": "NATUZZI S P A",
+          "currentTickers": [
+            "NTZ"
+          ],
+          "currentExchanges": [
+            null
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_NYMT",
+      "ticker": "NYMT",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001273685",
+          "source": "https://data.sec.gov/submissions/CIK0001273685.json",
+          "sha256": "d0f144069ac0958c5e663623073f6f0e6f6910e82e6b00a7162ecf68fed1e47c",
+          "currentName": "ADAMAS TRUST, INC.",
+          "currentTickers": [
+            "ADAM",
+            "ADAMG",
+            "ADAMH",
+            "ADAMI",
+            "ADAMK",
+            "ADAML",
+            "ADAMM",
+            "ADAMN",
+            "ADAMO",
+            "ADAMZ"
+          ],
+          "currentExchanges": [
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq",
+            "Nasdaq"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_QULL",
+      "ticker": "QULL",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001114446",
+          "source": "https://data.sec.gov/submissions/CIK0001114446.json",
+          "sha256": "686962885f98a11be5d799bcf8d869e19df1a86c5d45212bf6686fd784f7d029",
+          "currentName": "UBS AG",
+          "currentTickers": [
+            "AMUB",
+            "BDCX",
+            "BDCZ",
+            "CEFD",
+            "HDLB",
+            "IFED",
+            "MLPB",
+            "MLPR",
+            "MVRL",
+            "PFFL",
+            "SMHB",
+            "UCIB"
+          ],
+          "currentExchanges": [
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-19",
+              "accessionNumber": "0001143362-26-000310",
+              "source": "https://www.sec.gov/Archives/edgar/data/1114446/000114336226000310/primary_doc.xml",
+              "sha256": "5bb0414ceaffe38765365870a643a9c43e7ad3813301fdeb68c16a23d1715188",
+              "parsedIssuerCik": "0001114446",
+              "exchangeName": "NYSE ARCA, INC.",
+              "securityClassDescription": "ETRACS 2x Leveraged US Value Factor TR ETN; ETRACS 2x Leveraged US Growth Factor TR ETN; ETRACS 2x Leveraged US Size Factor TR ETN; ETRACS 2x Leveraged MSCI US Momentum Factor TR ETN; ETRACS 2x Leveraged MSCI US Quality Factor TR ETN; ETRACS 2x Leveraged US Dividend Factor TR ETN; ETRACS 2x Leveraged MSCI US Minimum Volatility Factor TR ETN"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_SCDL",
+      "ticker": "SCDL",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001114446",
+          "source": "https://data.sec.gov/submissions/CIK0001114446.json",
+          "sha256": "686962885f98a11be5d799bcf8d869e19df1a86c5d45212bf6686fd784f7d029",
+          "currentName": "UBS AG",
+          "currentTickers": [
+            "AMUB",
+            "BDCX",
+            "BDCZ",
+            "CEFD",
+            "HDLB",
+            "IFED",
+            "MLPB",
+            "MLPR",
+            "MVRL",
+            "PFFL",
+            "SMHB",
+            "UCIB"
+          ],
+          "currentExchanges": [
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-19",
+              "accessionNumber": "0001143362-26-000310",
+              "source": "https://www.sec.gov/Archives/edgar/data/1114446/000114336226000310/primary_doc.xml",
+              "sha256": "5bb0414ceaffe38765365870a643a9c43e7ad3813301fdeb68c16a23d1715188",
+              "parsedIssuerCik": "0001114446",
+              "exchangeName": "NYSE ARCA, INC.",
+              "securityClassDescription": "ETRACS 2x Leveraged US Value Factor TR ETN; ETRACS 2x Leveraged US Growth Factor TR ETN; ETRACS 2x Leveraged US Size Factor TR ETN; ETRACS 2x Leveraged MSCI US Momentum Factor TR ETN; ETRACS 2x Leveraged MSCI US Quality Factor TR ETN; ETRACS 2x Leveraged US Dividend Factor TR ETN; ETRACS 2x Leveraged MSCI US Minimum Volatility Factor TR ETN"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": []
+    },
+    {
+      "securityId": "ref_TWO",
+      "ticker": "TWO",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": true,
+      "expectedStaleObservationExplained": true,
+      "evidence": [
+        {
+          "issuerCik": "0001465740",
+          "tradingSymbol": "TWO",
+          "symbolBasis": "EXACT_OFFICIAL_TRADING_SYMBOL",
+          "securityClassTitle": "Common Stock, par value $0.01 per share",
+          "shareClassToken": null,
+          "mic": "XNYS",
+          "coverContextRef": "c-2",
+          "cover": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1465740/000146574026000031/two-20260630.htm",
+            "sha256": "13d4a5e14953683e46fff3f9e1a5c96b262946e214e106545802c5f3fb90bb81",
+            "filingType": "10-Q",
+            "filingDate": "2026-07-29",
+            "acceptedAt": "2026-07-29T14:25:31.000Z",
+            "accessionNumber": "0001465740-26-000031"
+          },
+          "removal": {
+            "source": "https://www.sec.gov/Archives/edgar/data/1465740/000087666126000705/primary_doc.xml",
+            "sha256": "0ac48f214c3860029647d6a20e009698e80d9376eb830cda7b4efdff8286c781",
+            "form": "25-NSE",
+            "filingDate": "2026-08-25",
+            "accessionNumber": "0000876661-26-000705",
+            "issuerName": "TWO HARBORS INVESTMENT CORP.",
+            "securityClassDescription": "Common Stock",
+            "ruleProvision": "17 CFR 240.12d2-2(a)(3)"
+          },
+          "identityBasis": "INDEPENDENT_SEC_CIK_TRADING_SYMBOL_CLASS_CONTEXT_AND_EXACT_FORM25_CLASS_VENUE",
+          "exactSecurityIdentifierAvailable": false,
+          "worldwideDelistingProven": false,
+          "effectiveLastTradeDateKnown": false,
+          "note": "Official class/venue removal notification only. No new canonical status, provider alias, price repair or historical PIT fact."
+        }
+      ],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001465740",
+          "source": "https://data.sec.gov/submissions/CIK0001465740.json",
+          "sha256": "eb1df90b2489bfa39f2e73cbbdeab62117a6214dc48c91ee0715377c995b10cb",
+          "currentName": "TWO HARBORS INVESTMENT CORP.",
+          "currentTickers": [
+            "TWO-PC",
+            "TWO-PB",
+            "TWO-PA",
+            "TWOD"
+          ],
+          "currentExchanges": [
+            "NYSE",
+            "NYSE",
+            "NYSE",
+            "NYSE"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": [
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-09-28",
+              "accessionNumber": "0000876661-26-000795",
+              "source": "https://www.sec.gov/Archives/edgar/data/1465740/000087666126000795/primary_doc.xml",
+              "sha256": "ed0016d859f9f041ccd7ec7245c202fe3f9e99ec4372d6d3d237bb3055f67159",
+              "parsedIssuerCik": "0001465740",
+              "exchangeName": "NEW YORK STOCK EXCHANGE LLC",
+              "securityClassDescription": "8.125% Series A Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock; 7.625% Series B Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock; 7.25% Series C Fixed-to-Floating Rate Cumulative Redeemable Preferred Stock"
+            },
+            {
+              "form": "25",
+              "filingDate": "2026-09-24",
+              "accessionNumber": "0001104659-26-110353",
+              "source": "https://www.sec.gov/Archives/edgar/data/1465740/000110465926110353/tm2626001d1_25.htm",
+              "sha256": "f97873dc23e1e4477702e3a3ea0f957e87a59c191dfddba8bd4c2a0f287719f0",
+              "parsedIssuerCik": null,
+              "exchangeName": null,
+              "securityClassDescription": null
+            },
+            {
+              "form": "25-NSE",
+              "filingDate": "2026-08-25",
+              "accessionNumber": "0000876661-26-000705",
+              "source": "https://www.sec.gov/Archives/edgar/data/1465740/000087666126000705/primary_doc.xml",
+              "sha256": "0ac48f214c3860029647d6a20e009698e80d9376eb830cda7b4efdff8286c781",
+              "parsedIssuerCik": "0001465740",
+              "exchangeName": "NEW YORK STOCK EXCHANGE LLC",
+              "securityClassDescription": "Common Stock"
+            }
+          ]
+        }
+      ],
+      "rejectedCandidateReasons": [
+        "FORM25_OTHER_SECURITY_CLASS_NOT_TARGET"
+      ]
+    },
+    {
+      "securityId": "ref_ZTEK",
+      "ticker": "ZTEK",
+      "originalStatus": "STALE_LATEST_ACTIVE",
+      "officialScopedRemovalCorroborated": false,
+      "expectedStaleObservationExplained": false,
+      "evidence": [],
+      "corporateActionEvidence": [],
+      "publicIssuerContextCandidates": [
+        {
+          "issuerCik": "0001904501",
+          "source": "https://data.sec.gov/submissions/CIK0001904501.json",
+          "sha256": "aef219a3dd91a8e14a4e039860927a44ef2567863a55638329fef74adf7f66b4",
+          "currentName": "Zentek Ltd.",
+          "currentTickers": [
+            "ZTEKF"
+          ],
+          "currentExchanges": [
+            "OTC"
+          ],
+          "identityScope": "PROVIDER_CANDIDATE_ISSUER_NOT_APPROVED_BASELINE_IDENTITY",
+          "scopedRemovalFilings": []
+        }
+      ],
+      "rejectedCandidateReasons": []
+    }
+  ]
+}
