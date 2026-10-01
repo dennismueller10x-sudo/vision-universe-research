@@ -1,0 +1,94 @@
+name: Company Intelligence (isolated preview)
+on:
+  pull_request:
+    paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
+  push:
+    branches: [main]
+    paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: 'Comma-separated master tickers (blank = resumable batch)'
+        type: string
+        default: 'AAPL,NVDA,TSLA,MSFT,XPEV,PLTR,SOFI,ROOT,U,XYZ,TOST,TGT,AFRM,META,GOOG,GOOGL,ACU,SGI'
+      live_sources:
+        description: 'Opt in to public feeds, SEC metadata and IR discovery'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: company-intelligence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Isolated parsers, resolver, failure states and static API
+        run: |
+          python3 -m unittest discover -s scripts/company_intelligence/tests -v
+          node --test scripts/company_intelligence/tests/*.test.mjs
+      - name: Existing products and SEC regressions
+        run: |
+          node --test quant/tests/*.test.mjs discover/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs screener/tests/*.test.mjs
+          python3 scripts/quant/cli.py test
+          node --test scripts/access-gate/build.test.mjs scripts/vu2/resource-budget.test.mjs ask/tests/*.test.mjs academy/engines/*.test.mjs worker/tests/*.test.mjs
+          python3 -m unittest discover -s scripts/vu2 -p 'test_*.py'
+      - name: Reject changes to protected production paths
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+          changed=$(git diff --name-only "origin/$BASE_REF" HEAD -- quant discover supertrader screener dashboard providers scripts/quant scripts/universe scripts/market scripts/vu2 api server vercel.json)
+          if [ -n "$changed" ]; then echo "$changed"; exit 1; fi
+  preview:
+    if: github.event_name == 'workflow_dispatch'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache/restore@v4
+        id: state
+        with:
+          path: .company-intelligence
+          key: company-intelligence-v1-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: company-intelligence-v1-${{ github.ref_name }}-
+      - name: Bounded resumable preview batch
+        env:
+          TICKERS: ${{ inputs.tickers }}
+          LIVE_SOURCES: ${{ inputs.live_sources }}
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+        run: |
+          if [ "${{ steps.state.outputs.cache-hit }}" != 'true' ]; then echo 'No exact cache hit: restoring latest available state; a cache miss initializes a new working store.'; fi
+          args=(backfill --limit 25 --request-budget 160 --max-seconds 480)
+          if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
+          if [ "$LIVE_SOURCES" = 'true' ]; then args+=(--network --sec-fetch --discover-ir); fi
+          python3 scripts/company_intelligence/cli.py "${args[@]}"
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .company-intelligence
+          key: company-intelligence-v1-${{ github.ref_name }}-${{ github.run_id }}
+      - name: Reviewable snapshots and health (no deployment)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: company-intelligence-preview-${{ github.run_id }}
+          path: |
+            .company-intelligence/public/
+            .company-intelligence/latest-run.json
+            .company-intelligence/state.sqlite
+          retention-days: 14
