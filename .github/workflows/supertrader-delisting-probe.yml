@@ -7,6 +7,12 @@ name: Supertrader Probeabruf delisteter Titel
 # gibt nur Anzahlen/Daten/Verhaeltnisse aus (keine Kursniveaus).
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'probe (Kursanfragen, ~65) oder list-stats (nur Tickerliste)'
+        type: choice
+        options: [probe, list-stats]
+        default: probe
   push:
     branches:
       - 'claude/**'
@@ -17,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   probe:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[supertrader-probe]')
+    if: github.event_name == 'workflow_dispatch' || (contains(github.event.head_commit.message, '[supertrader-probe]') || contains(github.event.head_commit.message, '[supertrader-probe:list-stats]'))
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -28,4 +34,4 @@ jobs:
       - name: Probeabruf (Anzahlen, keine Kurse)
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-        run: node scripts/supertrader/probe/delisting-probe.mjs
+        run: node scripts/supertrader/probe/delisting-probe.mjs ${{ (inputs.mode == 'list-stats' || contains(github.event.head_commit.message, '[supertrader-probe:list-stats]')) && '--list-stats' || '' }}

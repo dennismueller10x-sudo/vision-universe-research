@@ -101,6 +101,25 @@ async function main() {
   const rows = lines.slice(1).map((l) => { const c = l.split(','); return Object.fromEntries(head.map((h, i) => [h, c[i]])); });
   const byTicker = new Map();
   for (const r of rows) (byTicker.get(r.ticker) || byTicker.set(r.ticker, []).get(r.ticker)).push(r);
+  if (process.argv.includes('--list-stats')) {
+    // Nur die Tickerliste (keine Kursanfragen): Abdeckung delisteter Listings je Endjahr.
+    const isStockL = (r) => r.assetType === 'Stock' && r.priceCurrency === 'USD' && EXCH.has(r.exchange);
+    const byYear = {};
+    for (const r of rows) {
+      if (!isStockL(r) || !r.endDate || r.endDate >= '2026-01-01') continue;
+      const y = r.endDate.slice(0, 4);
+      const e = byYear[y] ||= { ended: 0, withStart: 0, plainTicker: 0, tickerReusedLater: 0 };
+      e.ended++;
+      if (r.startDate) e.withStart++;
+      if (/^[A-Z]{1,5}$/.test(r.ticker)) e.plainTicker++;
+      if (byTicker.get(r.ticker).some((x) => x !== r && x.startDate && x.startDate > r.endDate)) e.tickerReusedLater++;
+    }
+    const activeNow = rows.filter((r) => isStockL(r) && (!r.endDate || r.endDate >= '2026-01-01')).length;
+    console.log('PROBE_RESULT_BEGIN');
+    console.log(JSON.stringify({ schema: 'supertrader-delisting-list-stats-1.0.0', ranAt: new Date().toISOString(), requests, rows: rows.length, activeNowMajorUsdStock: activeNow, endedByYear: byYear }));
+    console.log('PROBE_RESULT_END');
+    return;
+  }
   const isStock = (r) => r.assetType === 'Stock' && r.priceCurrency === 'USD' && EXCH.has(r.exchange);
   const ended = (r) => r.endDate && r.endDate < '2026-01-01';
   const A = [];
