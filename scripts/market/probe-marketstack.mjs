@@ -23,7 +23,20 @@ if (key) {
     return r;
   }
   function save() { report.accounting = client.stats(); mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, JSON.stringify(report, null, 2) + '\n'); }
-  if (arg('phase', 'initial') === 'followup') {
+  if (arg('phase', 'initial') === 'final') {
+    const r = await client.paginate('/exchanges/XNAS/tickers',{limit:1000,offset:40000},{maxPages:10,extract:body=>body.data?.tickers});
+    report.endpoints.push({endpoint:'exchanges/XNAS/tickers',params:{limit:1000,offset:40000},label:'complete-us-directory-resume',checkedAt:new Date().toISOString(),...r});save();
+    for(const ticker of ['SAP','SIE','RHM','ALV','DTE','EUNL','VWCE','SXR8','SXRV','IS3N','EXSA','EXS1','EUNA','ISPA']) await probe('stockprice',{ticker,exchange:'GER'},'local-currency-snapshot');
+    await probe('stockprice',{ticker:'SHEL',exchange:'LSE'},'local-currency-snapshot');
+    await probe('eod',{symbols:'NVDA',exchange:'XNAS',date_from:'2015-01-02',date_to:'2015-01-09',limit:100},'history-depth-probe');
+    await probe('eod',{symbols:'SAP.DE',exchange:'XETR',date_from:'2010-01-01',date_to:'2010-01-15',limit:100},'history-depth-probe');
+    if(process.env.TIINGO_API_KEY) {
+      const Tiingo = require('../../providers/tiingo/adapter.js');const Symbols=require('../../quant/engines/symbol-mapping.js');
+      const registry=Symbols.createRegistry(['NVDA','AAPL','SPY'].map(t=>({securityId:'ref_'+t,providerId:'tiingo',providerSymbol:t,mic:t==='SPY'?'ARCX':'XNAS',currency:'USD',country:'US',confidence:'verified'})));
+      const tiingo=Tiingo.createTiingoProvider({apiKey:process.env.TIINGO_API_KEY,fetchImpl:fetch,symbolRegistry:registry,limits:{maxRetries:0,concurrency:1,requestsPerDay:3}});
+      for(const symbol of ['NVDA','AAPL','SPY']){const r=await tiingo.getQuote('ref_'+symbol);report.endpoints.push({endpoint:'canonical-quote',params:{symbol},label:'tiingo-live-reference',checkedAt:new Date().toISOString(),...r});save();}
+    }
+  } else if (arg('phase', 'initial') === 'followup') {
     const selected = JSON.parse(require('node:fs').readFileSync('quant/config/marketstack-probe.json')).listings;
     for (const r of selected) {
       await probe('tickers/' + r.symbol, {}, 'listing-identity');
@@ -47,7 +60,7 @@ if (key) {
       const Tiingo = require('../../providers/tiingo/adapter.js');
       const Symbols = require('../../quant/engines/symbol-mapping.js');
       const registry = Symbols.createRegistry(['NVDA','AAPL','SPY'].map(t=>({securityId:'ref_'+t,providerId:'tiingo',providerSymbol:t,mic:t==='SPY'?'ARCX':'XNAS',currency:'USD',country:'US',confidence:'verified'})));
-      const tiingo = Tiingo.createTiingoProvider({apiKey:process.env.TIINGO_API_KEY,symbolRegistry:registry,limits:{maxRetries:0,concurrency:1,requestsPerDay:3}});
+      const tiingo = Tiingo.createTiingoProvider({apiKey:process.env.TIINGO_API_KEY,fetchImpl:fetch,symbolRegistry:registry,limits:{maxRetries:0,concurrency:1,requestsPerDay:3}});
       for(const t of ['NVDA','AAPL','SPY']) {const r=await tiingo.getQuote('ref_'+t);report.endpoints.push({endpoint:'canonical-quote',params:{symbol:t},label:'tiingo-live-reference',checkedAt:new Date().toISOString(),...r});save();}
     }
   } else {
