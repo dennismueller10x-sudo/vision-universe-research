@@ -1,5 +1,7 @@
 # Marketstack versus Tiingo: measured US benchmark
 
+> This document records the accepted PR #330 baseline. Current scale measurements, expanded branch data and deferred provider decision are documented in [MARKETSTACK_SCALE_ENGINEERING_REPORT](MARKETSTACK_SCALE_ENGINEERING_REPORT.md). Production Tiingo/SEC/ESEF routing remains unchanged.
+
 Measured on 2026-10-01 against the accepted retained US baseline. The complete bounded latest-EOD run checked all 6,738 exact API-directory matches and accepted 6,278 latest observations. Among 5,941 active VU-classified common equities, 4,618 passed: 77.73% of that baseline. Latest checks do not establish issuer identity or historical equivalence. Tiingo remains operational and authoritative for its existing production roles; replacement is not justified by this evidence.
 
 ## Complete baseline identity comparison

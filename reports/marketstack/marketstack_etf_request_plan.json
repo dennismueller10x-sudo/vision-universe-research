@@ -1,0 +1,2405 @@
+{
+  "schemaVersion": "marketstack-etf-request-plan-1.0.0",
+  "generatedAt": "2026-10-01",
+  "state": "BOUNDED_PLAN_PENDING_NEW_AUTHENTICATED_RESULTS",
+  "existingEvidenceReused": [
+    "SPY/QQQ holdings unavailable",
+    "VOO fund-series holdings2024-12-31",
+    "EUNL.DE holdings transport timeout",
+    "etflist contamination",
+    "Xetra full classified2374ETFlistings/2290ISIN"
+  ],
+  "publicCSVSource": "https://marketstack.com/download/supported_tickers_2.csv",
+  "representatives": [
+    {
+      "symbol": "VTI",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "VT",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "VXUS",
+      "mic": "XNAS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "SCHD",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "VUG",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "VTV",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "BND",
+      "mic": "XNAS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "BNDX",
+      "mic": "XNAS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IEMG",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "EFA",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "EEM",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "TLT",
+      "mic": "XNAS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "AGG",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IEF",
+      "mic": "XNAS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "SHY",
+      "mic": "XNAS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "TIP",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "LQD",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "HYG",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "GLD",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IAU",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "SLV",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "USMV",
+      "mic": "BATS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "QUAL",
+      "mic": "BATS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "MTUM",
+      "mic": "BATS",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IJH",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IJR",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "XLF",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "XLE",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "XLK",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "ARKK",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "FLIN",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "JEPI",
+      "mic": "ARCX",
+      "region": "US",
+      "classification": "ETF_CATALOG_CANDIDATE",
+      "classificationSource": "MARKETSTACK_PUBLIC_SUPPORTED_TICKERS_CSV",
+      "catalogCurrency": "USD",
+      "duplicateCatalogRows": 1,
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IUSN.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BF4RFH31",
+      "tradingCurrency": "EUR",
+      "name": "iShares MSCI World Small Cap UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "XZW0.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BZ02LR44",
+      "tradingCurrency": "EUR",
+      "name": "Xtrackers MSCI World ESG UCITS ETF 1C",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "PABW.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE000CL68Z69",
+      "tradingCurrency": "EUR",
+      "name": "Amundi MSCI World Climate Paris Aligned UCITS ETF ",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "VWCE.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BK5BQT80",
+      "tradingCurrency": "EUR",
+      "name": "Vanguard FTSE All-World UCITS ETF USD Accumulation",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "EQEU.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BYVTMS52",
+      "tradingCurrency": "EUR",
+      "name": "Invesco EQQQ NASDAQ-100 UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "ZPRS.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BCBJG560",
+      "tradingCurrency": "EUR",
+      "name": "SPDR MSCI World Small Cap UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "WTDM.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BZ56RG20",
+      "tradingCurrency": "EUR",
+      "name": "WisdomTree US Quality Dividend Growth UCITS ETF - ",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "HY3M.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BF541080",
+      "tradingCurrency": "EUR",
+      "name": "VanEck Emerging Markets High Yield Bond UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "FLXD.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BF2B0L69",
+      "tradingCurrency": "EUR",
+      "name": "Franklin European Quality Dividend UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "UETW.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BD4TXV59",
+      "tradingCurrency": "EUR",
+      "name": "UBS Core MSCI World UCITS ETF USD acc",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "JPGL.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00BJRCLL96",
+      "tradingCurrency": "EUR",
+      "name": "JPM Global Equity Multi-Factor UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "H4ZJ.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETF_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "IE00B4X9L533",
+      "tradingCurrency": "EUR",
+      "name": "HSBC MSCI World UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IBTA.XLON",
+      "mic": "XLON",
+      "region": "GB",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "iShares $ Treasury Bond 1-3yr UCITS ETF USD (Acc)",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "VERX.XLON",
+      "mic": "XLON",
+      "region": "GB",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "Vanguard FTSE Developed Europe ex UK UCITS ETF Dis",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "USFR.XLON",
+      "mic": "XLON",
+      "region": "GB",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "WISDOMTREE USD FLOATING RATE TREASURY BOND UCITS E",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "GLAD.XSWX",
+      "mic": "XSWX",
+      "region": "CH",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "SPDR Bloomberg Glb Agg Bond USD Hdg UCITS ETF (Acc",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "RBOT.XSWX",
+      "mic": "XSWX",
+      "region": "CH",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "iShares Automation & Robotics UCITS ETF USD (Acc)",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "LQDA.XSWX",
+      "mic": "XSWX",
+      "region": "CH",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "iShares $ Corp Bond UCITS ETF",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "SSAC.AS",
+      "mic": "XAMS",
+      "region": "OTHER_EUROPE",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "iShares MSCI ACWI UCITS ETF USD",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "IMIE.PA",
+      "mic": "XPAR",
+      "region": "OTHER_EUROPE",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "SPDR MSCI All Country World Investable Market UCIT",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "VUAA.MI",
+      "mic": "XMIL",
+      "region": "OTHER_EUROPE",
+      "classification": "FUND_NAME_CANDIDATE",
+      "classificationSource": "MARKETSTACK_AUTHENTICATED_VENUE_DIRECTORY",
+      "name": "Vanguard S&amp;P 500 UCITS ETF USD Accumulation",
+      "metadataRequired": true
+    },
+    {
+      "symbol": "4GLD.DE",
+      "mic": "XETR",
+      "region": "DE",
+      "classification": "ETC_OFFICIAL_EXCHANGE_VERIFIED",
+      "classificationSource": "XETRA_T7_2026_10_01",
+      "isin": "DE000A0S9GB0",
+      "name": "DT.BOERSE COM. XETRA-GOLD",
+      "metadataRequired": true,
+      "holdingsExcluded": true,
+      "equityETFAdmissionExcluded": true
+    }
+  ],
+  "newHoldingsSymbols": [
+    "VTI",
+    "VT",
+    "VXUS",
+    "SCHD",
+    "VUG",
+    "VTV",
+    "BND",
+    "BNDX",
+    "IEMG",
+    "EFA",
+    "EEM",
+    "TLT",
+    "AGG",
+    "IEF",
+    "SHY",
+    "TIP",
+    "LQD",
+    "HYG",
+    "GLD",
+    "IAU",
+    "SLV",
+    "USMV",
+    "QUAL",
+    "MTUM",
+    "IJH",
+    "IJR",
+    "XLF",
+    "XLE",
+    "XLK",
+    "ARKK",
+    "FLIN",
+    "JEPI",
+    "IUSN.DE",
+    "VWCE.DE",
+    "ZPRS.DE",
+    "IBTA.XLON",
+    "GLAD.XSWX"
+  ],
+  "holdingsEndpoint": "/etfholdings",
+  "estimatedHoldingsCreditsMaximumNoRetry": 740,
+  "holdingsRetryLimit": 0,
+  "nonUSHoldingsCircuitBreaker": {
+    "stopAfterConsecutiveFailures": 2,
+    "failures": [
+      "dataUnavailable",
+      "timeout",
+      "invalidHoldingsResponse"
+    ],
+    "skipRemainingNonUSControls": true,
+    "neverGuessAlternativeTickerAliases": true
+  },
+  "requests": [
+    {
+      "endpoint": "/tickers/VTI",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VTI",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/VT",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VT",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/VXUS",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VXUS",
+      "mic": "XNAS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/SCHD",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "SCHD",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/VUG",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VUG",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/VTV",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VTV",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/BND",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "BND",
+      "mic": "XNAS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/BNDX",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "BNDX",
+      "mic": "XNAS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IEMG",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IEMG",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/EFA",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "EFA",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/EEM",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "EEM",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/TLT",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "TLT",
+      "mic": "XNAS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/AGG",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "AGG",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IEF",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IEF",
+      "mic": "XNAS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/SHY",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "SHY",
+      "mic": "XNAS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/TIP",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "TIP",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/LQD",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "LQD",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/HYG",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "HYG",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/GLD",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "GLD",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IAU",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IAU",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/SLV",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "SLV",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/USMV",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "USMV",
+      "mic": "BATS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/QUAL",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "QUAL",
+      "mic": "BATS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/MTUM",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "MTUM",
+      "mic": "BATS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IJH",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IJH",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IJR",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IJR",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/XLF",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "XLF",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/XLE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "XLE",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/XLK",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "XLK",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/ARKK",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "ARKK",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/FLIN",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "FLIN",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/JEPI",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "JEPI",
+      "mic": "ARCX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IUSN.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IUSN.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/XZW0.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "XZW0.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/PABW.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "PABW.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/VWCE.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VWCE.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/EQEU.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "EQEU.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/ZPRS.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "ZPRS.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/WTDM.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "WTDM.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/HY3M.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "HY3M.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/FLXD.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "FLXD.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/UETW.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "UETW.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/JPGL.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "JPGL.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/H4ZJ.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "H4ZJ.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IBTA.XLON",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IBTA.XLON",
+      "mic": "XLON",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/VERX.XLON",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VERX.XLON",
+      "mic": "XLON",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/USFR.XLON",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "USFR.XLON",
+      "mic": "XLON",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/GLAD.XSWX",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "GLAD.XSWX",
+      "mic": "XSWX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/RBOT.XSWX",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "RBOT.XSWX",
+      "mic": "XSWX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/LQDA.XSWX",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "LQDA.XSWX",
+      "mic": "XSWX",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/SSAC.AS",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "SSAC.AS",
+      "mic": "XAMS",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/IMIE.PA",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "IMIE.PA",
+      "mic": "XPAR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/VUAA.MI",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "VUAA.MI",
+      "mic": "XMIL",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/tickers/4GLD.DE",
+      "params": {},
+      "label": "etf-audit-metadata",
+      "symbol": "4GLD.DE",
+      "mic": "XETR",
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "VTI",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "VTI",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "VT",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "VT",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "VXUS",
+        "exchange": "XNAS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "VXUS",
+      "mic": "XNAS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "SCHD",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "SCHD",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "VUG",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "VUG",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "VTV",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "VTV",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "BND",
+        "exchange": "XNAS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "BND",
+      "mic": "XNAS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "BNDX",
+        "exchange": "XNAS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "BNDX",
+      "mic": "XNAS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "IEMG",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "IEMG",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "EFA",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "EFA",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "EEM",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "EEM",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "TLT",
+        "exchange": "XNAS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "TLT",
+      "mic": "XNAS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "AGG",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "AGG",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "IEF",
+        "exchange": "XNAS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "IEF",
+      "mic": "XNAS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "SHY",
+        "exchange": "XNAS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "SHY",
+      "mic": "XNAS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "TIP",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "TIP",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "LQD",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "LQD",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "HYG",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "HYG",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "GLD",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "GLD",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "IAU",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "IAU",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "SLV",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "SLV",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "USMV",
+        "exchange": "BATS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "USMV",
+      "mic": "BATS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "QUAL",
+        "exchange": "BATS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "QUAL",
+      "mic": "BATS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "MTUM",
+        "exchange": "BATS",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "MTUM",
+      "mic": "BATS",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "IJH",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "IJH",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "IJR",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "IJR",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "XLF",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "XLF",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "XLE",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "XLE",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "XLK",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "XLK",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "ARKK",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "ARKK",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "FLIN",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "FLIN",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "JEPI",
+        "exchange": "ARCX",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "JEPI",
+      "mic": "ARCX",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "IUSN.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "IUSN.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "XZW0.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "XZW0.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "PABW.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "PABW.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "VWCE.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "VWCE.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "EQEU.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "EQEU.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "ZPRS.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "ZPRS.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "WTDM.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "WTDM.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "HY3M.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "HY3M.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "FLXD.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "FLXD.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "UETW.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "UETW.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "JPGL.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "JPGL.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "H4ZJ.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "H4ZJ.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/eod",
+      "params": {
+        "symbols": "4GLD.DE",
+        "exchange": "XETR",
+        "date_from": "2016-01-01",
+        "date_to": "2026-09-30",
+        "limit": 1000,
+        "sort": "ASC"
+      },
+      "label": "etf-audit-history",
+      "symbol": "4GLD.DE",
+      "mic": "XETR",
+      "maxPages": 3,
+      "reuseCachedResponses": true
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "VTI",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "VTI",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "VT",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "VT",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "VXUS",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "VXUS",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "SCHD",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "SCHD",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "VUG",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "VUG",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "VTV",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "VTV",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "BND",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "BND",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "BNDX",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "BNDX",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "IEMG",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "IEMG",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "EFA",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "EFA",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "EEM",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "EEM",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "TLT",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "TLT",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "AGG",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "AGG",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "IEF",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "IEF",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "SHY",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "SHY",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "TIP",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "TIP",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "LQD",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "LQD",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "HYG",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "HYG",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "GLD",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "GLD",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "IAU",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "IAU",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "SLV",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "SLV",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "USMV",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "USMV",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "QUAL",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "QUAL",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "MTUM",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "MTUM",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "IJH",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "IJH",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "IJR",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "IJR",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "XLF",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "XLF",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "XLE",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "XLE",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "XLK",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "XLK",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "ARKK",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "ARKK",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "FLIN",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "FLIN",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "JEPI",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "JEPI",
+      "maxAttempts": 1,
+      "region": "US"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "IUSN.DE",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "IUSN.DE",
+      "maxAttempts": 1,
+      "region": "DE"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "VWCE.DE",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "VWCE.DE",
+      "maxAttempts": 1,
+      "region": "DE"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "ZPRS.DE",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "ZPRS.DE",
+      "maxAttempts": 1,
+      "region": "DE"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "IBTA.XLON",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "IBTA.XLON",
+      "maxAttempts": 1,
+      "region": "GB"
+    },
+    {
+      "endpoint": "/etfholdings",
+      "params": {
+        "ticker": "GLAD.XSWX",
+        "limit": 1000
+      },
+      "label": "etf-audit-holdings",
+      "symbol": "GLAD.XSWX",
+      "maxAttempts": 1,
+      "region": "CH"
+    }
+  ],
+  "budgetPolicy": {
+    "maximumCredits": 1100,
+    "maximumHTTPAttempts": 250,
+    "holdingsMultiplier": 20,
+    "costClassification": "DOCUMENTED_ESTIMATE_ATTEMPTS_RESERVED_CONSERVATIVELY",
+    "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+  },
+  "limitations": [
+    "ISIN prefixes are not verified fund domicile",
+    "Issuer families inferred from names are not legal issuer identity",
+    "Official FirstTradingDate is not fund inception",
+    "Global directory reference totals are not ETF totals",
+    "Gold4GLD.DE is ETC and remains outside ETF/equity consumers"
+  ],
+  "existingValidatedListings": [
+    {
+      "symbol": "SPY",
+      "mic": "ARCX",
+      "assetType": "ETF",
+      "tradingCurrency": "USD",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "canonicalListingId": "vu_9b526524b8cf52de20c5af44"
+    },
+    {
+      "symbol": "QQQ",
+      "mic": "XNAS",
+      "assetType": "ETF",
+      "tradingCurrency": "USD",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "canonicalListingId": "vu_c77bb77d037ce80129a45f44"
+    },
+    {
+      "symbol": "VOO",
+      "mic": "ARCX",
+      "assetType": "ETF",
+      "tradingCurrency": "USD",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "canonicalListingId": "vu_00c9890713dbd09075a11b64"
+    },
+    {
+      "symbol": "VTI",
+      "mic": "ARCX",
+      "assetType": "ETF",
+      "tradingCurrency": "USD",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "canonicalListingId": null
+    },
+    {
+      "symbol": "IWM",
+      "mic": "ARCX",
+      "assetType": "ETF",
+      "tradingCurrency": "USD",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "canonicalListingId": null
+    },
+    {
+      "symbol": "ARKK",
+      "mic": "ARCX",
+      "assetType": "ETF",
+      "tradingCurrency": "USD",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "canonicalListingId": null
+    },
+    {
+      "symbol": "EUNL.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_fa85322d99172d04d94c347c"
+    },
+    {
+      "symbol": "VWCE.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_4b9f6ea7c25e2c9d66d7bf3c"
+    },
+    {
+      "symbol": "SXR8.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_83833194ecb6f40fc3f3d7e1"
+    },
+    {
+      "symbol": "SXRV.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_7ba9bbc649ee8aeb9bb70848"
+    },
+    {
+      "symbol": "IS3N.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_58f0ad1c110314d4943a1db9"
+    },
+    {
+      "symbol": "EXSA.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_aa863bcad697942af0750359"
+    },
+    {
+      "symbol": "EXS1.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_2b51e97effb3831d6f4d3284"
+    },
+    {
+      "symbol": "EUNA.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_d8863076af3a9462278d7ee6"
+    },
+    {
+      "symbol": "ISPA.DE",
+      "mic": "XETR",
+      "assetType": "ETF",
+      "tradingCurrency": "EUR",
+      "source": "PR330_MEASURED_VALIDATED_ETF_PRICE_SAMPLE",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "canonicalListingId": "vu_1cf865fada22b7303e742a0b"
+    }
+  ]
+}

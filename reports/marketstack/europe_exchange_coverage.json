@@ -1,0 +1,1721 @@
+{
+  "schemaVersion": "europe-exchange-coverage-1.0.0",
+  "generatedAt": "2026-10-01T17:17:36.824Z",
+  "providerReplacementDecision": "DEFERRED",
+  "state": "MEASURED_METADATA_ONLY_OUTSIDE_VALIDATED_SUBSET",
+  "counts": {
+    "requestedCountries": 13,
+    "venuesAnalyzed": 20,
+    "observedProviderListings": 260657,
+    "classifiedEquityCandidates": 13393,
+    "classifiedETFCandidates": 6423,
+    "distinctClassifiedEquityISINs": 11288,
+    "distinctClassifiedETFISINs": 2933,
+    "germanVenueLegalEquityCandidates": 11612,
+    "germanVenueProviderIdentityAdmissibleEquityCandidates": 11606,
+    "germanDomesticCommonEquities": null,
+    "classificationUnknown": 240841,
+    "currencyUnresolved": 240811,
+    "canonicalEuropeanListings": 6912,
+    "canonicalEuropeanPriceHistoryValidatedListings": 268
+  },
+  "additionalOfficialOperatorReferences": {
+    "schemaVersion": "europe-official-operator-candidates-1.0.0",
+    "state": "OFFICIAL_OPERATOR_DIRECTORY_CANDIDATES_NOT_CONFIRMED_PROVIDER_LISTINGS",
+    "providerReplacementDecision": "DEFERRED",
+    "sources": {
+      "WIENER_PRIME_AT000AGRANA3": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/agrana-beteiligungs-ag-AT000AGRANA3/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:02:57.720091+00:00",
+        "cached": false,
+        "sha256": "e83e8554fd0b8b4882298d3ecd087cc3d50968ec5a772aa45e7de8197e7498d7"
+      },
+      "WIENER_PRIME_AT00000AMAG3": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/amag-austria-metall-ag-AT00000AMAG3/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:02:57.713527+00:00",
+        "cached": false,
+        "sha256": "e486c848c411e4ca04cbceb434088ce3cc7891ee5a9099b6ccbcd28ad663f86a"
+      },
+      "WIENER_PRIME_AT0000730007": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/andritz-ag-AT0000730007/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:02:58.372673+00:00",
+        "cached": false,
+        "sha256": "570821055aa18b1e45dd7ff21d35b2b8f22793658195b6f3b461d508d5d24adf"
+      },
+      "WIENER_PRIME_AT0000969985": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/at-s-austria-tech-systemtech-AT0000969985/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:02:59.835189+00:00",
+        "cached": false,
+        "sha256": "1fbe9ed57d12647bde50228eba7efae70df2ed3a246176d9102f347f2a0e700b"
+      },
+      "WIENER_PRIME_AT0000A325L0": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/austriacard-holdings-ag-AT0000A325L0/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:02:59.508357+00:00",
+        "cached": false,
+        "sha256": "b20ac6364540670637c13febf12048109ff61c6904ddc7b67913baadc80412c6"
+      },
+      "WIENER_PRIME_AT0000KTMI02": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/bajaj-mobility-ag-AT0000KTMI02/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:00.083687+00:00",
+        "cached": false,
+        "sha256": "4f4f80e50723ccf587a7833a4ffffcf685123542d85a080f198d184932d80a12"
+      },
+      "WIENER_PRIME_AT0000BAWAG2": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/bawag-group-ag-AT0000BAWAG2/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:00.839507+00:00",
+        "cached": false,
+        "sha256": "37afda32f15619ae06ad7683e376d47c35fdaf89a3fa0c347c9b56d63ba00cdd"
+      },
+      "WIENER_PRIME_AT0000641352": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/ca-immobilien-anlagen-ag-AT0000641352/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:02.043769+00:00",
+        "cached": false,
+        "sha256": "d825082d0cd0a51a5c3ea1bddd6c5d26a768dd248c32027dd2510f9edb5755ad"
+      },
+      "WIENER_PRIME_AT0000A21KS2": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/cpi-europe-ag-AT0000A21KS2/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:01.158431+00:00",
+        "cached": false,
+        "sha256": "1ace4f48ef2ece86cf74b3b994b3097444d7709db9181862af19290c03900447"
+      },
+      "WIENER_PRIME_AT0000818802": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/do-co-aktiengesellschaft-AT0000818802/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:01.946316+00:00",
+        "cached": false,
+        "sha256": "7a34ec59800603fa16fae7b62299d6c353b59d9db2df5169d5e4c5f7957b24e6"
+      },
+      "WIENER_PRIME_AT0000652011": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/erste-group-bank-ag-AT0000652011/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:03.948135+00:00",
+        "cached": false,
+        "sha256": "4de0cd89f9936df7dcd83cdbfe16b744a4938b10890616362e85c3762e51a024"
+      },
+      "WIENER_PRIME_AT000000ETS9": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/eurotelesites-ag-AT000000ETS9/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:04.066882+00:00",
+        "cached": false,
+        "sha256": "61d52b34b0ccffe569fc3a3fae182418ab8e324932638b290965a21514ab16c8"
+      },
+      "WIENER_PRIME_AT0000741053": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/evn-ag-AT0000741053/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:03.953039+00:00",
+        "cached": false,
+        "sha256": "20b2245c768ae67ab0f8408e5561f3c513b1aad4bfe6a098de392a848a4d2ac9"
+      },
+      "WIENER_PRIME_AT00000FACC2": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/facc-ag-AT00000FACC2/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:05.497153+00:00",
+        "cached": false,
+        "sha256": "b04fd3a80245b4ba98128d16b982818badb9509a2a30e0349764fbe5ea7c2a71"
+      },
+      "WIENER_PRIME_AT00000VIE62": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/flughafen-wien-ag-AT00000VIE62/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:05.749525+00:00",
+        "cached": false,
+        "sha256": "2169c68b046fdfaa311675840afd03d6efcd4382de93babdfd9f8915b882dcd5"
+      },
+      "WIENER_PRIME_ATFREQUENT09": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/frequentis-ag-ATFREQUENT09/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:05.769893+00:00",
+        "cached": false,
+        "sha256": "9e27899239e348086c57a7b2e58bfd3d092587174581c0d34b0f04c4f72a0acd"
+      },
+      "WIENER_PRIME_AT000KAPSCH9": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/kapsch-trafficcom-ag-AT000KAPSCH9/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:07.053185+00:00",
+        "cached": false,
+        "sha256": "8aa5c84227edef4c85383bff9b4727c017a38d9521472fd3843c69c31c33b27f"
+      },
+      "WIENER_PRIME_AT0000644505": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/lenzing-ag-AT0000644505/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:07.298571+00:00",
+        "cached": false,
+        "sha256": "76bf5adacb9e9800d36f6dc27df457abf5f3f57bf3f29b277b51ede5c9e8b2b9"
+      },
+      "WIENER_PRIME_AT0000938204": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/mayr-melnhof-karton-ag-AT0000938204/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:07.287292+00:00",
+        "cached": false,
+        "sha256": "6ca5521ea5481bc72e18aa05b2a55ba6627ed7baca2240298ba9be87510df72a"
+      },
+      "WIENER_PRIME_AT0000APOST4": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/oesterreichische-post-ag-AT0000APOST4/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:08.489400+00:00",
+        "cached": false,
+        "sha256": "16604784224964a616902d59b7538f64423168d7dc5d00ce4cc825e74fc3cfb3"
+      },
+      "WIENER_PRIME_AT0000743059": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/omv-ag-AT0000743059/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T15:17:25.018532+00:00",
+        "cached": true,
+        "sha256": "be94a25e55769ef0a7bb300b27f847abbbaf401abf95445371ba74b9404c76a6"
+      },
+      "WIENER_PRIME_AT0000758305": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/palfinger-ag-AT0000758305/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:08.789520+00:00",
+        "cached": false,
+        "sha256": "cf23a13e53b9821bdb1a8dbc075061d804a5a1425761e74b33514cd1382c88f9"
+      },
+      "WIENER_PRIME_AT0000A00XX9": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/polytec-holding-ag-AT0000A00XX9/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:08.824078+00:00",
+        "cached": false,
+        "sha256": "20b6c1508973885f8cc5bb6efdc6acf8904008607f5f0bf280e688af8bd36157"
+      },
+      "WIENER_PRIME_AT0000609607": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/porr-ag-AT0000609607/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:10.143196+00:00",
+        "cached": false,
+        "sha256": "83c3631107fd7ab20ade6a703f17bf93fb1d19816dc408d71203b40044ed9db7"
+      },
+      "WIENER_PRIME_AT0000606306": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/raiffeisen-bank-internat-ag-AT0000606306/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:10.921277+00:00",
+        "cached": false,
+        "sha256": "b01d4a7a84d27a4683a4c98a9bd62e38a3a7aacf10fa7a2a0f87f7ba763e9a18"
+      },
+      "WIENER_PRIME_NL0012650360": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/rhi-magnesita-nv-NL0012650360/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:10.817441+00:00",
+        "cached": false,
+        "sha256": "635911a69fc1d1420060c24978f128498e45a1f82d1ba6b0a0f7734cf7b64089"
+      },
+      "WIENER_PRIME_AT0000922554": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/rosenbauer-international-ag-AT0000922554/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:12.293139+00:00",
+        "cached": false,
+        "sha256": "747b1402d0840713d19253ef4c4bd3a2e20988131a8336c6766ee3637f7a4b0e"
+      },
+      "WIENER_PRIME_AT0000946652": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/sbo-ag-AT0000946652/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:12.364237+00:00",
+        "cached": false,
+        "sha256": "32eeba9e5f64690388e80dd97be6dade0276de50443c64f8b78d8f87a1733185"
+      },
+      "WIENER_PRIME_AT0000785555": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/semperit-ag-holding-AT0000785555/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:12.577367+00:00",
+        "cached": false,
+        "sha256": "4730087245e2e11e1e5e548cd4474b35ea2f47e1d15a9d507c3668fae1536cf9"
+      },
+      "WIENER_PRIME_AT000000STR1": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/strabag-se-AT000000STR1/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:13.789052+00:00",
+        "cached": false,
+        "sha256": "5b586926b1ca3529ec0385380b25aea70aac4153f253480a1b0a13d6924ad9cf"
+      },
+      "WIENER_PRIME_AT0000720008": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/telekom-austria-ag-AT0000720008/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:14.107024+00:00",
+        "cached": false,
+        "sha256": "0b532411a8b82501307793207c7aa482938c73f5c4066e618aa474f14691da78"
+      },
+      "WIENER_PRIME_AT0000815402": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/ubm-development-ag-AT0000815402/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:14.009836+00:00",
+        "cached": false,
+        "sha256": "50e8ec95fc796af578a6094519f635efd942bf5415c59ec00e9c0a5030b85c8a"
+      },
+      "WIENER_PRIME_AT0000821103": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/uniqa-insurance-group-ag-AT0000821103/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:21.555510+00:00",
+        "cached": false,
+        "sha256": "24eb205f9def707c8a3ccf25bf20c729d7caafc7cca372f5b698a84b3cd7bb92"
+      },
+      "WIENER_PRIME_AT0000746409": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/verbund-ag-kat-a-AT0000746409/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:15.534669+00:00",
+        "cached": false,
+        "sha256": "8ec86f7ad391111eb907ecd7eb96160e87e87d8af121b1a7c501967a99873d4e"
+      },
+      "WIENER_PRIME_AT0000908504": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/vienna-insurance-group-ag-AT0000908504/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:21.675004+00:00",
+        "cached": false,
+        "sha256": "bd5a6ca159739a82acc245bb688497a29ed735024f911436602d8c9cd89c94c9"
+      },
+      "WIENER_PRIME_AT0000937503": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/voestalpine-ag-AT0000937503/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:17.070790+00:00",
+        "cached": false,
+        "sha256": "6f22ae912a8e77a0f28fad39333f4c938f1e52302e16c2bb0165e246f48f3fa5"
+      },
+      "WIENER_PRIME_AT0000831706": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/wienerberger-ag-AT0000831706/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:18.505665+00:00",
+        "cached": false,
+        "sha256": "17554901858bd04331b1cc14bf2fba4b84a5cdcf3d00be448d3fd08211f68588"
+      },
+      "WIENER_PRIME_AT0000837307": {
+        "url": "https://www.wienerborse.at/en/stock-prime-market/zumtobel-group-ag-AT0000837307/",
+        "source_system": "WIENER_BOERSE_OFFICIAL_PRIME_MARKET_SHARE_METADATA",
+        "retrievedAt": "2026-10-01T17:03:19.962132+00:00",
+        "cached": false,
+        "sha256": "2fabba88f45d0b5bd1440b5f61450e77ce1f63304305398d765a79608e4eeefc"
+      },
+      "BME_SIBE_ES0125220311": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0125220311&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.250168+00:00",
+        "sha256": "2e7df5b4ff09bcbf5c85b56436fc2ccf31bd2f10e40d44560289ea916fab3254",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0132105018": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0132105018&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.202321+00:00",
+        "sha256": "8e7c95cab57ac7e0f53d4955ce66b220dc473689293c84407911ceff2557901c",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0167050915": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0167050915&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.441531+00:00",
+        "sha256": "57757cd1e1c11b9b9207b5ed75fc38d9b7c39749fbed0d30fccfad659d27aa4f",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0106000013": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0106000013&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.461232+00:00",
+        "sha256": "a3b8d1272be5bd2e3d4958280ac435c856312d2f40d66ab644851b9bd7c63aca",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105287009": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105287009&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.655568+00:00",
+        "sha256": "35ce4ca77f9412c8b26c0339fa0624e4d83425a0d756f83926dfa3b718f3b0ea",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105046017": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105046017&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.839922+00:00",
+        "sha256": "34c7b017b7bcdb4399ee16b0039b63c78170161458ae463e31937265d2c20492",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_NL0000235190": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=NL0000235190&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.949700+00:00",
+        "sha256": "65017c21211c3d86c42d38c97b7990968428c887846dd848f50fcf9d709d20f4",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0152768612": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0152768612&language=en",
+        "retrievedAt": "2026-10-01T17:10:33.890123+00:00",
+        "sha256": "1fdefc8a4b5787e7888c48d194baa8f85efaf18a332c28b2afe2ce861202b0d1",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0126501131": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0126501131&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.119617+00:00",
+        "sha256": "3d866ed5c3aedb71cdacf0103ee5f9a87bda95474638544ad1eb0f8815ba9df0",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0157097017": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0157097017&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.154892+00:00",
+        "sha256": "35beb71546b6b94e72fa36adfa13b4dccf8076c676936b3d6e1bcffed3eef113",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0109067019": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0109067019&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.186319+00:00",
+        "sha256": "d00e3ce1d47864829d208990db04a90dc61bb8348dcc5f34dea22f619663c44e",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0109260291": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0109260291&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.353416+00:00",
+        "sha256": "2508843592c60c76a6b09930210360b4b1ecc30779c9d59726b20af0b0108819",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105375002": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105375002&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.424409+00:00",
+        "sha256": "4d39afb531410b3ae86b7de225791445c174a518907436a05826024e092e8145",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_LU0569974404": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=LU0569974404&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.406326+00:00",
+        "sha256": "f71199a039087a210ed6b4151cfd6c9ed9822e96238a0ef0d65210e6f86ee416",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_LU1598757687": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=LU1598757687&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.591969+00:00",
+        "sha256": "cfaf73865afaf9e12eced017c15919be11b631eb595cca059b447b826d3cf882",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105376059": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105376059&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.637071+00:00",
+        "sha256": "c87e784cd59277f5c5e77a39700feec755296392e33864940276d5ab79a180e9",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105521001": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105521001&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.773126+00:00",
+        "sha256": "fce2b6674a2f2ffde4b0f9af24db59ef9fdf180dd96c25f8ab61266d66532fa3",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0109427734": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0109427734&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.825714+00:00",
+        "sha256": "1b4995350de910cb90461b6e67291050b61216aeb70bf7404bbf0dfc0643f1b7",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105148003": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105148003&language=en",
+        "retrievedAt": "2026-10-01T17:10:34.878324+00:00",
+        "sha256": "ad39afb5c64c65bea84c65d2a20c4daff084d9a93bd2d92fb7597c8f61b58ab7",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0136463017": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0136463017&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.039933+00:00",
+        "sha256": "9451018b8fa28e21c001f31b2a4daebe7c610a3bc1f018786a53d4288c4ca2d3",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0112458312": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0112458312&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.062624+00:00",
+        "sha256": "c422dab6773f32a8ef1fc88e2861801dcba5bed83ce1e17c2f45a8e9d795b267",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0113211835": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0113211835&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.161196+00:00",
+        "sha256": "3d2d78d3f0745938a66335388421b07c4ee51efbb20bb7cc8d3ab918bc1cbd72",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0113860A34": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0113860A34&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.264472+00:00",
+        "sha256": "e1fbbb19e26ccce959646142ddfac1d11ad7a676ff5ed5587ea10892dfd723a6",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0113900J37": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0113900J37&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.325998+00:00",
+        "sha256": "8f813736980b76684206165f0f238f24817ff0a79525483b2d4b691e004fb804",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0113679I37": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0113679I37&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.421462+00:00",
+        "sha256": "206dc578ac026032555fff9d513339c82349a37312f2a1b29e8f119c306b59c1",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_AU000000BKY0": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=AU000000BKY0&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.485567+00:00",
+        "sha256": "86902150b7cce0bb45c10b85010079de06398bf99aef82cbca7a9307850e1648",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0115002018": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0115002018&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.598142+00:00",
+        "sha256": "df161809a3adb9777a423ee82c122d868d72e81abd2af394ad0763016ee57ed4",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0140609019": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0140609019&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.711113+00:00",
+        "sha256": "01451915e0caa9b87802629a2445ad8689a65fb1465b6392067e7c1691ac6d87",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0114400007": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0114400007&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.688266+00:00",
+        "sha256": "ed4799e98b7f48bc94b3e1063b9b5a450f8f7db1207cc26459c9f8bb4414b2b4",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105229001": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105229001&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.798537+00:00",
+        "sha256": "0b587badac9608d2b685efc337f62129103e17c078ba1a559853f0278d0ef994",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105066007": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105066007&language=en",
+        "retrievedAt": "2026-10-01T17:10:35.891653+00:00",
+        "sha256": "d94cddfb97202f192b30972736d92ce8bd87e119e2c6c4942ddefbf1a353f63b",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0117360117": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0117360117&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.083619+00:00",
+        "sha256": "95bcadda5ce6a8e5183b1dd85e1df43d7796178b8a1eb73674a7f9bb3a858bb3",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105027009": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105027009&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.056069+00:00",
+        "sha256": "d51a4b8c72c21dacd404b228d10a15f0beba2f77cf9b53f639f9045e46dd4302",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0132955008": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0132955008&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.131087+00:00",
+        "sha256": "30afe1cf513e585d12f1e80207d2c02a36c5248cb05e064bf870e88fb27a8753",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0158300410": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0158300410&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.289247+00:00",
+        "sha256": "7a7057b9fdc3d07e971ca03c5809e6aa2cc18e92ffad09d264deed513fabfa70",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105630315": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105630315&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.294344+00:00",
+        "sha256": "c5111bb109f4bb0ec53c8251603fa739b835733fac1a9e883d86509f3448e401",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105884011": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105884011&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.323171+00:00",
+        "sha256": "aadd31e70169939f038a1ffa66fbddc710ce0706036ea38151ab12bcedbc96e0",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0119037010": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0119037010&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.493619+00:00",
+        "sha256": "5bf3c2a5ce55decbb0e2e2e5eae6f610a867667a47282bbfa1bb18f444563809",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_GB00BDCPN049": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=GB00BDCPN049&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.507882+00:00",
+        "sha256": "4a25d63048f049c19fcde1c61aa498a962bfd0b875b58f628b9b3a053ee2f69a",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0139140174": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0139140174&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.540324+00:00",
+        "sha256": "e4925e75c0da987da7edef52a8bd902add909fcd659ab0c1859bfbdf695fc292",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0121975009": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0121975009&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.702704+00:00",
+        "sha256": "23a10e9325ad0b9d93b1dbd3aa1d5ddfcc734256d3ca372f24a169c2c9fb17b2",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105563003": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105563003&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.716922+00:00",
+        "sha256": "8e2bac552a1b61f82332eee6b99769d88c968883af013eeed4042cd7174ad334",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105848008": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105848008&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.747623+00:00",
+        "sha256": "b9204a7aedaa17bc55d48f6ccdd50315db61dcf9ecf519572b6b35e156db0d70",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0110047919": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0110047919&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.916168+00:00",
+        "sha256": "30829811fb985724d148cb377b37261bce3dfb0041c785d7ab84ea298986d0f7",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0126251018": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0126251018&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.935148+00:00",
+        "sha256": "186955381bda3f801e7f3881a7bab2db927ab3cfa909b43e002c7285673b6484",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0126775008": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0126775008&language=en",
+        "retrievedAt": "2026-10-01T17:10:36.959649+00:00",
+        "sha256": "ffb6ca42045138f540c2e05c3c56cfb44137637fd1126943877de2097ef10b12",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0106043005": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0106043005&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.139388+00:00",
+        "sha256": "8521a09844022b3515c51fcfe00b17b8d85e87bdacea418a7147af1f70e94f20",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105548004": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105548004&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.346932+00:00",
+        "sha256": "f0c7f6bff915ed92a5a96e4bdc8822e215140b4387f00da315b4d32cc65f99db",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_LU1048328220": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=LU1048328220&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.426977+00:00",
+        "sha256": "0b2144c43ee103d9f1fe505dafe6b3c05b176cc8efaceb7fa0fa4b4a990a7b97",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0129743318": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0129743318&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.433176+00:00",
+        "sha256": "dcfadcdc9e60b74daad39e3f3952e53d36ab05696d04f8925506b14bce7ec006",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0130960018": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0130960018&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.575252+00:00",
+        "sha256": "be7c003c8022a0e0d8c67f3d99e36643dfb05e39fd4e24195cf134d86f946c19",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0130625512": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0130625512&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.645310+00:00",
+        "sha256": "016067ecd7065adc5e1f7e4118d110f1ab79e8bb88af85ba59609bf764a16489",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0130670112": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0130670112&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.646561+00:00",
+        "sha256": "95b07f391fdcb0b108f0534e8cd4ce0ab6bf39e9f4b6156923905ca32b3fc798",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0134950F36": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0134950F36&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.799345+00:00",
+        "sha256": "3e3c46340875ed8d705a88df92ffe00600c0283d7da8f8e52b50d02141e68f2f",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_NL0015001FS8": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=NL0015001FS8&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.865755+00:00",
+        "sha256": "181b408ef03c7a0d5878a93c4f92041c096c93c75fa08cc853cd2ecde6b8b835",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0137650018": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0137650018&language=en",
+        "retrievedAt": "2026-10-01T17:10:37.880061+00:00",
+        "sha256": "7cbf391cda9cbb29c63f7a71288746cb11761f800bf22aac55a4cc64307a49f6",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0122060314": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0122060314&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.012912+00:00",
+        "sha256": "f3fb6dfbb75818450593ee970ad406b87ae2355cd1ffbc5ea1406af15dd22e32",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0141571192": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0141571192&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.084097+00:00",
+        "sha256": "02676709fe5971bb7d5ca26d623d3c7c630b4013793eaa8b6ac0a6130130794a",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105223004": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105223004&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.101758+00:00",
+        "sha256": "be6bc5727a13caa3264296f84f432cf0754aefb5ac21869b6ee7e4f0d63502c5",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105130001": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105130001&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.215275+00:00",
+        "sha256": "d8105e09262f678c5ec36b3ea0ad8407b1aab96f977514d3c01cb360a80032ef",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105079000": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105079000&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.301628+00:00",
+        "sha256": "b2543fe7ddd55679be069ab2b3f10992a95b72f2c9f54470980fd3a3220a1703",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0171996087": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0171996087&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.330463+00:00",
+        "sha256": "666f9f406d03c0879bf9b93349070f318c48eb198064c36bb73cace90e9385ec",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0180918015": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0180918015&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.425748+00:00",
+        "sha256": "f0f057ab23b950593685f1f9806382da9ba2995cfc9fcf64d8d58065da55ab01",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0172708234": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0172708234&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.512289+00:00",
+        "sha256": "1932e82e507dfc7b0f5ab4cdd02e12e78636294786382bca4a92271461a1a019",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_GB00BNXJB679": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=GB00BNXJB679&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.525956+00:00",
+        "sha256": "11ab57d4ff2ad0296f890b87faa7b5324ecfe0c04af7bc21cf7b68b2b8053907",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0144580Y14": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0144580Y14&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.634423+00:00",
+        "sha256": "4f60a0340f7a6bff26a5a94dd2adc1126d0bffbf271358bcfaf29a3df3eb9d9b",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0147561015": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0147561015&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.725842+00:00",
+        "sha256": "2f9e3c27cbf32b8f73992b99cd4ba270e26ecba4509248a4dc2d36b6ad1759e8",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0118594417": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0118594417&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.752626+00:00",
+        "sha256": "b451bfe80048b4bceabf7f6f6917221e852d6501de9cabeecda2751803ebdb23",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0148396007": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0148396007&language=en",
+        "retrievedAt": "2026-10-01T15:30:48.690134+00:00",
+        "sha256": "d62496f3edac9c09aff3b094074d3fa529d88909eae7f51d6940d5b004c717e1",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0154653911": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0154653911&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.843196+00:00",
+        "sha256": "ee07e2dd5e48caa6d02f9330a16ac1ebfed83fd4b854c1f1915e89019d928e8a",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0105836003": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0105836003&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.949046+00:00",
+        "sha256": "9720fbdce2c72e3a2e271823395d953d44c1fd803780400d0f0577ac6cf07ab8",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0143421073": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0143421073&language=en",
+        "retrievedAt": "2026-10-01T17:10:38.956335+00:00",
+        "sha256": "62dd7126b9c2d4db31f3c1582c82b7e9fbec210f8a01d45a254daeb86f2450f6",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "BME_SIBE_ES0177542018": {
+        "url": "https://apiweb.bolsasymercados.es/Market/v1/EQ/ShareDetailsInfo?ISIN=ES0177542018&language=en",
+        "retrievedAt": "2026-10-01T17:10:39.051403+00:00",
+        "sha256": "d4f6c9377f1b307a9d81e5bbaedf76856f6b5e03b1e2ba9e714c971323364060",
+        "source_system": "BME_OFFICIAL_EQ_SHARE_DETAILS_METADATA_ONLY"
+      },
+      "LSE_OFFICIAL_CASH_INSTRUMENT_WORKBOOK": {
+        "url": "https://docs.londonstockexchange.com/sites/default/files/reports/Instrument%20list_84.xlsx",
+        "discoveredFrom": "https://www.londonstockexchange.com/reports?tab=instruments",
+        "asOf": "2026-09-30",
+        "sha256": "1162655f46d241305f1176b2f165be762a2015e3ce90eefd276cb876b95808cf",
+        "source_system": "LONDON_STOCK_EXCHANGE_OFFICIAL_CASH_INSTRUMENT_LIST"
+      }
+    },
+    "counts": {
+      "officialInventoryInstruments": 5370,
+      "officialDetailedReferenceRows": 5321,
+      "observedMnemonicCandidates": 3928,
+      "contradictoryProviderEvidenceCount": 0,
+      "providerIdentityConfirmedCount": null,
+      "canonicalAdmissionCount": 0
+    },
+    "inventories": [
+      {
+        "listingCountry": "AT",
+        "referenceOperatingMIC": "XWBO",
+        "candidateProviderMIC": "XWBO",
+        "officialInventoryCount": 38,
+        "metadataRetrievedCount": 38,
+        "metadataFailures": 0,
+        "scope": "OFFICIAL_PRIME_MARKET_SHARES",
+        "referenceSegmentMIC": null,
+        "confirmationState": "OPERATOR_DIRECTORY_CANDIDATES_ONLY",
+        "providerIdentityConfirmedCount": null,
+        "canonicalAdmission": "NOT_GRANTED",
+        "observedMnemonicCandidates": 36,
+        "observedShares": 36,
+        "observedDepositaryReceipts": 0,
+        "observedETFs": 0,
+        "contradictoryProviderEvidenceCount": 0,
+        "ambiguousObservedSymbols": 0,
+        "missingObservedSymbols": 2,
+        "quoteUnits": {
+          "EUR": 36
+        },
+        "providerMetadataObserved": 36,
+        "metadataExactISINAndProviderDeclaredMIC": 33,
+        "metadataCurrencyMissing": 36,
+        "boundedEODSymbolsWithBars": 35,
+        "boundedEODDeliveredBars": 245,
+        "boundedEODValidOHLCBars": 245,
+        "boundedEODCurrencyUnresolvedBars": 245,
+        "boundedEODRequestFailures": 0,
+        "boundedEODState": "MEASURED_BOUNDED_UNADMITTED"
+      },
+      {
+        "listingCountry": "ES",
+        "referenceOperatingMIC": "BMEX",
+        "candidateProviderMIC": "XMAD",
+        "officialInventoryCount": 122,
+        "metadataRetrievedCount": 73,
+        "metadataFailures": 49,
+        "metadataFailureState": "HTTP403_PUBLIC_DETAILS",
+        "scope": "OFFICIAL_SIBE_CURRENT_LISTED_SHARES",
+        "referenceSegmentMIC": null,
+        "confirmationState": "OPERATOR_DIRECTORY_CANDIDATES_ONLY",
+        "providerIdentityConfirmedCount": null,
+        "canonicalAdmission": "NOT_GRANTED",
+        "observedMnemonicCandidates": 68,
+        "observedShares": 68,
+        "observedDepositaryReceipts": 0,
+        "observedETFs": 0,
+        "contradictoryProviderEvidenceCount": 0,
+        "ambiguousObservedSymbols": 0,
+        "missingObservedSymbols": 5,
+        "quoteUnits": {
+          "EUR": 68
+        },
+        "providerMetadataObserved": 4,
+        "metadataExactISINAndProviderDeclaredMIC": 4,
+        "metadataCurrencyMissing": 4,
+        "boundedEODSymbolsWithBars": null,
+        "boundedEODDeliveredBars": null,
+        "boundedEODValidOHLCBars": null,
+        "boundedEODCurrencyUnresolvedBars": null,
+        "boundedEODRequestFailures": 0,
+        "boundedEODState": "UNMEASURED"
+      },
+      {
+        "listingCountry": "GB",
+        "referenceOperatingMIC": "XLON",
+        "candidateProviderMIC": "XLON",
+        "officialInventoryCount": 5210,
+        "metadataRetrievedCount": 5210,
+        "metadataFailures": 0,
+        "officialSheets": [
+          {
+            "sheet": "1.1 Shares",
+            "rows": 1547
+          },
+          {
+            "sheet": "1.2 Depository Receipts",
+            "rows": 94
+          },
+          {
+            "sheet": "1.3 ETFs",
+            "rows": 3569
+          }
+        ],
+        "asOf": "2026-09-30",
+        "scope": "OFFICIAL_SHRS_DPRS_ETFS_EXCLUDES_OTHER_EQUITY_LIKE_AND_NON_EQUITY",
+        "referenceSegmentMIC": null,
+        "confirmationState": "OPERATOR_DIRECTORY_CANDIDATES_ONLY",
+        "providerIdentityConfirmedCount": null,
+        "canonicalAdmission": "NOT_GRANTED",
+        "observedMnemonicCandidates": 3824,
+        "observedShares": 1240,
+        "observedDepositaryReceipts": 29,
+        "observedETFs": 2555,
+        "contradictoryProviderEvidenceCount": 0,
+        "ambiguousObservedSymbols": 136,
+        "missingObservedSymbols": 1250,
+        "quoteUnits": {
+          "GBX": 1947,
+          "USD": 1140,
+          "EUR": 117,
+          "GBP": 616,
+          "JPY": 4
+        },
+        "providerMetadataObserved": 2,
+        "metadataExactISINAndProviderDeclaredMIC": 2,
+        "metadataCurrencyMissing": 2,
+        "boundedEODSymbolsWithBars": null,
+        "boundedEODDeliveredBars": null,
+        "boundedEODValidOHLCBars": null,
+        "boundedEODCurrencyUnresolvedBars": null,
+        "boundedEODRequestFailures": 0,
+        "boundedEODState": "UNMEASURED"
+      }
+    ],
+    "limitations": [
+      "This operator-directory tier does not alter strict classified candidates or canonical admission.",
+      "An exact observed mnemonic is not confirmed provider ISIN, segment MIC, price history or realtime coverage.",
+      "Operating MIC and official market segment codes remain separate; unreported segment MIC is null.",
+      "GBX is a pence quote unit; GBP currency does not establish the provider price unit.",
+      "Official SHRS includes fund/trust shares; ordinary common-company equity status is not inferred.",
+      "Zero strict classified candidates means unmeasured outside validated subsets, not zero provider equity support."
+    ]
+  },
+  "limitations": [
+    "German venue legal equity candidates include foreign secondary listings; they are not a measured domestic German common-stock universe. Non-Xetra German venues are census-only and excluded from new canonical foundation admission.",
+    "Listing country is exchange geography and never inferred issuer domicile.",
+    "Directory has_eod/has_intraday flags are provider metadata and do not establish delivered market-data coverage.",
+    "Reference candidates retain NOT_GRANTED eligibility until canonical identity/classification/currency/history gates pass.",
+    "An official securities category can include rights, warrants and equity certificates; unclassified broad categories remain UNKNOWN.",
+    "Active/inactive totals are null unless status has been measured for the complete directory."
+  ],
+  "venues": [
+    {
+      "mic": "XETR",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 8959,
+      "observedUniqueProviderSymbols": 8959,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 674,
+      "classifiedETFCandidates": 2374,
+      "classificationUnknown": 5911,
+      "currencyUnresolved": 5911,
+      "measuredCanonicalEquityListings": 674,
+      "measuredCanonicalETFListings": 2374,
+      "measuredCanonicalPriceHistoryListings": 250,
+      "canonicalMetadataOnlyListings": 2798,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 6,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XPAR",
+      "listingCountry": "FR",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 4673,
+      "observedUniqueProviderSymbols": 4673,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 331,
+      "classifiedETFCandidates": 445,
+      "classificationUnknown": 3897,
+      "currencyUnresolved": 3874,
+      "measuredCanonicalEquityListings": 294,
+      "measuredCanonicalETFListings": 445,
+      "measuredCanonicalPriceHistoryListings": 3,
+      "canonicalMetadataOnlyListings": 736,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XAMS",
+      "listingCountry": "NL",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 2713,
+      "observedUniqueProviderSymbols": 2713,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 111,
+      "classifiedETFCandidates": 276,
+      "classificationUnknown": 2326,
+      "currencyUnresolved": 2323,
+      "measuredCanonicalEquityListings": 99,
+      "measuredCanonicalETFListings": 276,
+      "measuredCanonicalPriceHistoryListings": 1,
+      "canonicalMetadataOnlyListings": 374,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 2,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XBRU",
+      "listingCountry": "BE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 238,
+      "observedUniqueProviderSymbols": 238,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 108,
+      "classifiedETFCandidates": 1,
+      "classificationUnknown": 129,
+      "currencyUnresolved": 125,
+      "measuredCanonicalEquityListings": 100,
+      "measuredCanonicalETFListings": 1,
+      "measuredCanonicalPriceHistoryListings": 2,
+      "canonicalMetadataOnlyListings": 99,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 1,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XMIL",
+      "listingCountry": "IT",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 3271,
+      "observedUniqueProviderSymbols": 3271,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 207,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 3064,
+      "currencyUnresolved": 3064,
+      "measuredCanonicalEquityListings": 193,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 1,
+      "canonicalMetadataOnlyListings": 192,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XMAD",
+      "listingCountry": "ES",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 1001,
+      "observedUniqueProviderSymbols": 1001,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 2,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 999,
+      "currencyUnresolved": 999,
+      "measuredCanonicalEquityListings": 2,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 2,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": {
+        "listingCountry": "ES",
+        "referenceOperatingMIC": "BMEX",
+        "candidateProviderMIC": "XMAD",
+        "officialInventoryCount": 122,
+        "metadataRetrievedCount": 73,
+        "metadataFailures": 49,
+        "metadataFailureState": "HTTP403_PUBLIC_DETAILS",
+        "scope": "OFFICIAL_SIBE_CURRENT_LISTED_SHARES",
+        "referenceSegmentMIC": null,
+        "confirmationState": "OPERATOR_DIRECTORY_CANDIDATES_ONLY",
+        "providerIdentityConfirmedCount": null,
+        "canonicalAdmission": "NOT_GRANTED",
+        "observedMnemonicCandidates": 68,
+        "observedShares": 68,
+        "observedDepositaryReceipts": 0,
+        "observedETFs": 0,
+        "contradictoryProviderEvidenceCount": 0,
+        "ambiguousObservedSymbols": 0,
+        "missingObservedSymbols": 5,
+        "quoteUnits": {
+          "EUR": 68
+        },
+        "providerMetadataObserved": 4,
+        "metadataExactISINAndProviderDeclaredMIC": 4,
+        "metadataCurrencyMissing": 4,
+        "boundedEODSymbolsWithBars": null,
+        "boundedEODDeliveredBars": null,
+        "boundedEODValidOHLCBars": null,
+        "boundedEODCurrencyUnresolvedBars": null,
+        "boundedEODRequestFailures": 0,
+        "boundedEODState": "UNMEASURED"
+      }
+    },
+    {
+      "mic": "XWBO",
+      "listingCountry": "AT",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 2813,
+      "observedUniqueProviderSymbols": 2813,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 2,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 2811,
+      "currencyUnresolved": 2811,
+      "measuredCanonicalEquityListings": 2,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 2,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": {
+        "listingCountry": "AT",
+        "referenceOperatingMIC": "XWBO",
+        "candidateProviderMIC": "XWBO",
+        "officialInventoryCount": 38,
+        "metadataRetrievedCount": 38,
+        "metadataFailures": 0,
+        "scope": "OFFICIAL_PRIME_MARKET_SHARES",
+        "referenceSegmentMIC": null,
+        "confirmationState": "OPERATOR_DIRECTORY_CANDIDATES_ONLY",
+        "providerIdentityConfirmedCount": null,
+        "canonicalAdmission": "NOT_GRANTED",
+        "observedMnemonicCandidates": 36,
+        "observedShares": 36,
+        "observedDepositaryReceipts": 0,
+        "observedETFs": 0,
+        "contradictoryProviderEvidenceCount": 0,
+        "ambiguousObservedSymbols": 0,
+        "missingObservedSymbols": 2,
+        "quoteUnits": {
+          "EUR": 36
+        },
+        "providerMetadataObserved": 36,
+        "metadataExactISINAndProviderDeclaredMIC": 33,
+        "metadataCurrencyMissing": 36,
+        "boundedEODSymbolsWithBars": 35,
+        "boundedEODDeliveredBars": 245,
+        "boundedEODValidOHLCBars": 245,
+        "boundedEODCurrencyUnresolvedBars": 245,
+        "boundedEODRequestFailures": 0,
+        "boundedEODState": "MEASURED_BOUNDED_UNADMITTED"
+      }
+    },
+    {
+      "mic": "XSWX",
+      "listingCountry": "CH",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 29075,
+      "observedUniqueProviderSymbols": 29075,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 231,
+      "classifiedETFCandidates": 1456,
+      "classificationUnknown": 27388,
+      "currencyUnresolved": 27388,
+      "measuredCanonicalEquityListings": 223,
+      "measuredCanonicalETFListings": 1456,
+      "measuredCanonicalPriceHistoryListings": 2,
+      "canonicalMetadataOnlyListings": 1677,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36885254528",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XLON",
+      "listingCountry": "GB",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 36699,
+      "observedUniqueProviderSymbols": 36699,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 0,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 36699,
+      "currencyUnresolved": 36699,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36885254528",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": "GBP/GBX quote unit must be verified per listing; no venue currency assumption.",
+      "additionalOfficialOperatorReferences": {
+        "listingCountry": "GB",
+        "referenceOperatingMIC": "XLON",
+        "candidateProviderMIC": "XLON",
+        "officialInventoryCount": 5210,
+        "metadataRetrievedCount": 5210,
+        "metadataFailures": 0,
+        "officialSheets": [
+          {
+            "sheet": "1.1 Shares",
+            "rows": 1547
+          },
+          {
+            "sheet": "1.2 Depository Receipts",
+            "rows": 94
+          },
+          {
+            "sheet": "1.3 ETFs",
+            "rows": 3569
+          }
+        ],
+        "asOf": "2026-09-30",
+        "scope": "OFFICIAL_SHRS_DPRS_ETFS_EXCLUDES_OTHER_EQUITY_LIKE_AND_NON_EQUITY",
+        "referenceSegmentMIC": null,
+        "confirmationState": "OPERATOR_DIRECTORY_CANDIDATES_ONLY",
+        "providerIdentityConfirmedCount": null,
+        "canonicalAdmission": "NOT_GRANTED",
+        "observedMnemonicCandidates": 3824,
+        "observedShares": 1240,
+        "observedDepositaryReceipts": 29,
+        "observedETFs": 2555,
+        "contradictoryProviderEvidenceCount": 0,
+        "ambiguousObservedSymbols": 136,
+        "missingObservedSymbols": 1250,
+        "quoteUnits": {
+          "GBX": 1947,
+          "USD": 1140,
+          "EUR": 117,
+          "GBP": 616,
+          "JPY": 4
+        },
+        "providerMetadataObserved": 2,
+        "metadataExactISINAndProviderDeclaredMIC": 2,
+        "metadataCurrencyMissing": 2,
+        "boundedEODSymbolsWithBars": null,
+        "boundedEODDeliveredBars": null,
+        "boundedEODValidOHLCBars": null,
+        "boundedEODCurrencyUnresolvedBars": null,
+        "boundedEODRequestFailures": 0,
+        "boundedEODState": "UNMEASURED"
+      }
+    },
+    {
+      "mic": "XCSE",
+      "listingCountry": "DK",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 2081,
+      "observedUniqueProviderSymbols": 2081,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 107,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 1974,
+      "currencyUnresolved": 1974,
+      "measuredCanonicalEquityListings": 106,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 1,
+      "canonicalMetadataOnlyListings": 105,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 1,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XSTO",
+      "listingCountry": "SE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 4376,
+      "observedUniqueProviderSymbols": 4376,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 379,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 3997,
+      "currencyUnresolved": 3997,
+      "measuredCanonicalEquityListings": 370,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 2,
+      "canonicalMetadataOnlyListings": 368,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 1,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XOSL",
+      "listingCountry": "NO",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 599,
+      "observedUniqueProviderSymbols": 599,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 182,
+      "classifiedETFCandidates": 1,
+      "classificationUnknown": 416,
+      "currencyUnresolved": 416,
+      "measuredCanonicalEquityListings": 169,
+      "measuredCanonicalETFListings": 1,
+      "measuredCanonicalPriceHistoryListings": 1,
+      "canonicalMetadataOnlyListings": 169,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XHEL",
+      "listingCountry": "FI",
+      "requestedCountry": true,
+      "primaryRequestedVenue": true,
+      "providerReportedInstrumentTotal": 205,
+      "observedUniqueProviderSymbols": 205,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 127,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 78,
+      "currencyUnresolved": 78,
+      "measuredCanonicalEquityListings": 127,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 1,
+      "canonicalMetadataOnlyListings": 126,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XFRA",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": false,
+      "providerReportedInstrumentTotal": 91828,
+      "observedUniqueProviderSymbols": 91828,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 10932,
+      "classifiedETFCandidates": 1870,
+      "classificationUnknown": 79026,
+      "currencyUnresolved": 79026,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": null,
+          "sourceRunAttribution": "UNKNOWN_SEEDED_ORIGINAL_RUN"
+        },
+        {
+          "runId": "36885254528",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XBER",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": false,
+      "providerReportedInstrumentTotal": 16288,
+      "observedUniqueProviderSymbols": 16288,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 0,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 16288,
+      "currencyUnresolved": 16288,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        },
+        {
+          "runId": "36885254528",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XMUN",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": false,
+      "providerReportedInstrumentTotal": 15617,
+      "observedUniqueProviderSymbols": 15617,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 0,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 15617,
+      "currencyUnresolved": 15617,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": "36885254528",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "DUSD",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": false,
+      "providerReportedInstrumentTotal": 14000,
+      "observedUniqueProviderSymbols": 14000,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 0,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 14000,
+      "currencyUnresolved": 14000,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": "36885254528",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XSTU",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": false,
+      "providerReportedInstrumentTotal": 17932,
+      "observedUniqueProviderSymbols": 17932,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 0,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 17932,
+      "currencyUnresolved": 17932,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": "36885254528",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XHAM",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": false,
+      "providerReportedInstrumentTotal": 5332,
+      "observedUniqueProviderSymbols": 5332,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 0,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 5332,
+      "currencyUnresolved": 5332,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    },
+    {
+      "mic": "XHAN",
+      "listingCountry": "DE",
+      "requestedCountry": true,
+      "primaryRequestedVenue": false,
+      "providerReportedInstrumentTotal": 2957,
+      "observedUniqueProviderSymbols": 2957,
+      "directoryComplete": true,
+      "classifiedEquityCandidates": 0,
+      "classifiedETFCandidates": 0,
+      "classificationUnknown": 2957,
+      "currencyUnresolved": 2957,
+      "measuredCanonicalEquityListings": 0,
+      "measuredCanonicalETFListings": 0,
+      "measuredCanonicalPriceHistoryListings": 0,
+      "canonicalMetadataOnlyListings": 0,
+      "totalActiveInstruments": null,
+      "totalInactiveInstruments": null,
+      "totalEquityUniverse": null,
+      "totalETFUniverse": null,
+      "priceHistoryCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "liveCoverage": "UNKNOWN_OUTSIDE_CANONICAL_VALIDATED_SUBSET",
+      "corporateActionCoverage": "UNKNOWN",
+      "paginationAnomaly": null,
+      "referenceConflictCount": 0,
+      "sourceRuns": [
+        {
+          "runId": "36877329938",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION"
+        }
+      ],
+      "currencyWarning": null,
+      "additionalOfficialOperatorReferences": null
+    }
+  ]
+}

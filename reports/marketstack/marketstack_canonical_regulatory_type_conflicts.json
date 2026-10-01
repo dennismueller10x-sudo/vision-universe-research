@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "marketstack-canonical-security-class-conflicts-1.0.0",
+  "generatedAt": "2026-10-01T18:47:00.183721+00:00",
+  "currentReferenceFilter": "latest_received_flag:1 AND never_published_flag:0; current published security reference facets, not recent-trade certification",
+  "conflicts": [
+    {
+      "listingId": "vu_6b24d6c83b8cfb600b306902",
+      "securityId": "sec_isin_BE0003730448",
+      "isin": "BE0003730448",
+      "symbol": "QFG",
+      "mic": "XBRU",
+      "CFICodes": [
+        "CIOIES"
+      ],
+      "referenceResponseSHA256": "8e6e13128f555337efae3648a9e20d4ecfd11232d0580d120e71744ba44dbd41",
+      "retrievedAt": "2026-10-01T18:42:49.767051+00:00",
+      "hasDeliveredHistory": false,
+      "coverage": {
+        "price_eod": "NONE",
+        "price_history": "NONE",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "UNKNOWN",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "legacyAccepted58": false,
+      "decision": "LEGAL_INSTRUMENT_ROLE_REVIEW_NO_AUTOMATIC_ETF_OR_FUND_CONVERSION"
+    }
+  ],
+  "counts": {
+    "listings": 1,
+    "accepted58": 0,
+    "withHistory": 0
+  },
+  "productionMutation": false,
+  "securityReferenceArtifact": "reports/marketstack/germany_security_type_reference.json",
+  "securityReferenceSHA256": "7c77654fe5bf980dddb363162b330db4e275f0a7a332e09c345b985a56f0da7a"
+}

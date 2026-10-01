@@ -1,5 +1,7 @@
 # Global market coverage
 
+> This document records the accepted PR #330 baseline. Current scale measurements, expanded branch data and deferred provider decision are documented in [MARKETSTACK_SCALE_ENGINEERING_REPORT](MARKETSTACK_SCALE_ENGINEERING_REPORT.md). Production Tiingo/SEC/ESEF routing remains unchanged.
+
 Measured with Marketstack Professional through bounded GitHub Actions probes on 2026-10-01. Source runs and per-request timestamps are in `reports/marketstack/marketstack_exchange_coverage.json`. Tiingo, SEC and the accepted global identity architecture remain intact.
 
 ## Exchange discovery

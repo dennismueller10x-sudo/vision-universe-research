@@ -1,0 +1,5039 @@
+{
+  "schemaVersion": "germany-marketstack-exchange-coverage-1.0.0",
+  "generatedAt": "2026-10-01T16:03:59.343Z",
+  "scope": "SECURITIES_LISTED_ON_VERIFIED_GERMAN_VENUES",
+  "allRequestedDirectoriesObserved": false,
+  "countryScope": "DE_LISTING_VENUES_NOT_ISSUER_DOMICILE",
+  "exchangeMetadataSource": {
+    "sourceSystem": "ISO_OFFICIAL_MIC_PLUS_PUBLIC_PROVIDER_CATALOG",
+    "sourceURL": "https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv",
+    "isoInputPath": "/workspace/scratch/marketstack/iso10383_mic.csv",
+    "note": "Registered cash market candidates do not prove provider entitlement/prices.",
+    "registeredProviderDECount": 217,
+    "activeProviderDECount": 183,
+    "completeProviderExchangeRowsObserved": 2883,
+    "providerCapturedRunId": "36887919408",
+    "catalogCountsArePreexistingPublicHints": true
+  },
+  "registeredGermanProviderCodesObserved": 217,
+  "registeredGermanProviderCodesActive": 183,
+  "registeredGermanProviderCodesExpired": 34,
+  "invalidMICFormatRegistrationRows": 1,
+  "registrations": [
+    {
+      "providerMIC": "21XX",
+      "name": "21X",
+      "operatingMIC": "21XX",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "360D",
+      "name": "360X DLT - MTF",
+      "operatingMIC": "360X",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "360M",
+      "name": "360X MTF",
+      "operatingMIC": "360X",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "360T",
+      "name": "360T",
+      "operatingMIC": "360T",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "360X",
+      "name": "360X",
+      "operatingMIC": "360X",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "3DXE",
+      "name": "3DXE",
+      "operatingMIC": "360T",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "AUTO",
+      "name": "AUTOBAHN FX",
+      "operatingMIC": "DBOX",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BAAD",
+      "name": "BAADER BANK",
+      "operatingMIC": "BAAD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BDEA",
+      "name": "BAYERNLB - IDEAL FX",
+      "operatingMIC": "BLBB",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BERA",
+      "name": "BOERSE BERLIN - REGULIERTER MARKT",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BERB",
+      "name": "BOERSE BERLIN - FREIVERKEHR",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BERC",
+      "name": "BOERSE BERLIN - BERLIN SECOND REGULATED MARKET",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BGFI",
+      "name": "BERENBERG FIXED INCOME",
+      "operatingMIC": "BGSI",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BGFX",
+      "name": "BERENBERG FX",
+      "operatingMIC": "BGSI",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BGSI",
+      "name": "BERENBERG",
+      "operatingMIC": "BGSI",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BINV",
+      "name": "BOND INVEST",
+      "operatingMIC": "BINV",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BLBB",
+      "name": "BAYERNLB",
+      "operatingMIC": "BLBB",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BLBS",
+      "name": "BAYERNLB - BONDS MARKET",
+      "operatingMIC": "BLBB",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BLEQ",
+      "name": "BAYERNLB - EQUITIES MARKET",
+      "operatingMIC": "BLBB",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BLFX",
+      "name": "BAYERNLB - FX DERIVATIVES MARKET",
+      "operatingMIC": "BLBB",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BLIQ",
+      "name": "BAYERNLB - LIQP BONDS MARKET",
+      "operatingMIC": "BLBB",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BOCF",
+      "name": "BANK OF CHINA LIMITED - FRANKFURT BRANCH",
+      "operatingMIC": "BOCF",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BPAG",
+      "name": "BANK PICTET & CIE (EUROPE) AG",
+      "operatingMIC": "BPAG",
+      "status": "EXPIRED",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "BSFX",
+      "name": "BAYERNLB - FX HANDEL",
+      "operatingMIC": "BLBB",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CATS",
+      "name": "CATS",
+      "operatingMIC": "CATS",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CBKA",
+      "name": "COMMERZBANK AG",
+      "operatingMIC": "CBKA",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CBKC",
+      "name": "COMMERZBANK  COMMODITY DERIVATIVES",
+      "operatingMIC": "CBKA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CBKD",
+      "name": "COMMERZBANK EQUITY DERIVATIVES",
+      "operatingMIC": "CBKA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CBKE",
+      "name": "COMMERZBANK EQUITY",
+      "operatingMIC": "CBKA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CBKF",
+      "name": "COMMERZBANK COMMANDER",
+      "operatingMIC": "CBKA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CBKG",
+      "name": "COMMERZBANK FIXED INCOME",
+      "operatingMIC": "CBKA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CBKS",
+      "name": "COMMERZBANK INTEREST RATE SWAPS",
+      "operatingMIC": "CBKA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CDSI",
+      "name": "CREDIT SUISSE (DEUTSCHLAND) AG",
+      "operatingMIC": "CSDA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CGEC",
+      "name": "CITIGROUP GLOBAL MARKETS  EUROPE AG - EMEA LIQUIDITY HUB",
+      "operatingMIC": "CGMD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CGEE",
+      "name": "CITI MATCH DE CONTRA LIQUIDITY",
+      "operatingMIC": "CGMD",
+      "status": "EXPIRED",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CGEP",
+      "name": "CITIPULSE EEA CONTRA LIQUIDITY",
+      "operatingMIC": "CGMD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CGET",
+      "name": "CITIGROUP GLOBAL MARKETS  EUROPE AG - EMEA TRADING",
+      "operatingMIC": "CGMD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CGMD",
+      "name": "CITIGROUP GLOBAL MARKETS EUROPE AG",
+      "operatingMIC": "CGMD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "CSDA",
+      "name": "CREDIT SUISSE AKTIENGESELLSCHAFT",
+      "operatingMIC": "CSDA",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DAPA",
+      "name": "DEUTSCHE BOERSE AG - APA SERVICE",
+      "operatingMIC": "DAPA",
+      "status": "ACTIVE",
+      "marketCategory": "APPA",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DBAG",
+      "name": "DEUTSCHE BANK AG",
+      "operatingMIC": "DBAG",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DBAO",
+      "name": "DEUTSCHE BANK AUTOBAHN OFF VENUE FX PLATFORM",
+      "operatingMIC": "DBOX",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DBDX",
+      "name": "DEUTSCHE BOERSE DIGITAL EXCHANGE",
+      "operatingMIC": "DBDX",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DBES",
+      "name": "DEUTSCHE BANK AG - SYSTEMATIC INTERNALISER",
+      "operatingMIC": "DBAG",
+      "status": "EXPIRED",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DBLN",
+      "name": "DEUTSCHE BANK AG - LONDON",
+      "operatingMIC": "DBAG",
+      "status": "EXPIRED",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DBMO",
+      "name": "DEUTSCHE BANK - MANUAL OTC",
+      "operatingMIC": "DBAG",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DBOX",
+      "name": "DEUTSCHE BANK OFF EXCHANGE TRADING",
+      "operatingMIC": "DBOX",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DEKA",
+      "name": "DEKABANK DEUTSCHE GIROZENTRALE",
+      "operatingMIC": "DEKA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DUSA",
+      "name": "BOERSE DUESSELDORF - REGULIERTER MARKT",
+      "operatingMIC": "XDUS",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DUSB",
+      "name": "BOERSE DUESSELDORF - FREIVERKEHR",
+      "operatingMIC": "XDUS",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DUSC",
+      "name": "BOERSE DUESSELDORF - QUOTRIX - REGULIERTER MARKT",
+      "operatingMIC": "XDUS",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DUSD",
+      "name": "BOERSE DUESSELDORF - QUOTRIX MTF",
+      "operatingMIC": "XDUS",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "DZBK",
+      "name": "DZ BANK",
+      "operatingMIC": "DZBK",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EBLX",
+      "name": "BLOCKMATCH EUROPE DARK",
+      "operatingMIC": "XIGG",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "ECAG",
+      "name": "EUREX CLEARING AG",
+      "operatingMIC": "ECAG",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "ECGS",
+      "name": "EUREX CLEARING AG - SME",
+      "operatingMIC": "ECAG",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EFTP",
+      "name": "ENERGIEFINANZ TRADING PLATFORM",
+      "operatingMIC": "EFTP",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "ENTW",
+      "name": "BLOCKMATCH EUROPE NT",
+      "operatingMIC": "XIGG",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EQTA",
+      "name": "BOERSE BERLIN EQUIDUCT TRADING - REGULIERTER MARKT",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EQTB",
+      "name": "BOERSE BERLIN EQUIDUCT TRADING - BERLIN SECOND REGULATED MARKET",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EQTC",
+      "name": "BOERSE BERLIN EQUIDUCT TRADING - FREIVERKEHR",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EQTD",
+      "name": "BOERSE BERLIN EQUIDUCT TRADING - OTC",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "ERFQ",
+      "name": "BLOCKMATCH EUROPE SELECT",
+      "operatingMIC": "XIGG",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EUWA",
+      "name": "EUWAX AG",
+      "operatingMIC": "EUWA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "EUWX",
+      "name": "EUWAX",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FICX",
+      "name": "FINANCIAL INFORMATION CONTRIBUTORS EXCHANGE",
+      "operatingMIC": "FICX",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FRAA",
+      "name": "BOERSE FRANKFURT - REGULIERTER MARKT",
+      "operatingMIC": "XFRA",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FRAB",
+      "name": "BOERSE FRANKFURT - FREIVERKEHR",
+      "operatingMIC": "XFRA",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FRAD",
+      "name": "DEUTSCHE BOERSE MID-POINT CROSS",
+      "operatingMIC": "XFRA",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FRAS",
+      "name": "BOERSE FRANKFURT - SCALE",
+      "operatingMIC": "XFRA",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FRAU",
+      "name": "BOERSE FRANKFURT - REGULIERTERMARKT - OFF-BOOK",
+      "operatingMIC": "XFRA",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FRAV",
+      "name": "BOERSE FRANKFURT - FREIVERKEHR - OFF-BOOK",
+      "operatingMIC": "XFRA",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "FRAW",
+      "name": "BOERSE FRANKFURT - SCALE - OFF-BOOK",
+      "operatingMIC": "XFRA",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "GMEX",
+      "name": "GREENMARKET EXCHANGE",
+      "operatingMIC": "GMEX",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "GSBE",
+      "name": "GOLDMAN SACHS BANK EUROPE SE",
+      "operatingMIC": "GSBE",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "GSEI",
+      "name": "GOLDMAN SACHS BANK EUROPE SE - SYSTEMATIC INTERNALISER",
+      "operatingMIC": "GSBE",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMA",
+      "name": "BOERSE HAMBURG - REGULIERTER MARKT",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMB",
+      "name": "BOERSE HAMBURG - FREIVERKEHR",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAML",
+      "name": "BOERSE HAMBURG - LANG AND SCHWARZ EXCHANGE",
+      "operatingMIC": "XHAM",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMM",
+      "name": "BOERSE HAMBURG - LANG AND SCHWARZ EXCHANGE - REGULIERTER MARKT",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMN",
+      "name": "BOERSE HAMBURG - LANG AND SCHWARZ EXCHANGE - FREIVERKEHR",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMO",
+      "name": "BOERSE HAMBURG - ELECTRONIC TRADING",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMP",
+      "name": "BOERSE HAMBURG - REGULIERTER MARKT - ELECTRONIC TRADING",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMQ",
+      "name": "BOERSE HAMBURG - FREIVERKEHR - ELECTRONIC TRADING",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMX",
+      "name": "BOERSE HAMBURG - ELECTRONIC TRADING 2",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMY",
+      "name": "BOERSE HAMBURG - ELECTRONIC TRADING 2 - REGULIERTER MARKT",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAMZ",
+      "name": "BOERSE HAMBURG - ELECTRONIC TRADING 2 - FREIVERKEHR",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HANA",
+      "name": "BOERSE HANNOVER - REGULIERTER MARKT",
+      "operatingMIC": "XHAN",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HANB",
+      "name": "BOERSE HANNOVER - FREIVERKEHR",
+      "operatingMIC": "XHAN",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HANC",
+      "name": "BOERSE HANNOVER - REGULIERTER MARKT -EUROPEAN INVESTOR EXCHANGE",
+      "operatingMIC": "XHAN",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HAND",
+      "name": "BOERSE HANNOVER - FREIVERKEHR - EUROPEAN INVESTOR EXCHANGE",
+      "operatingMIC": "XHAN",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HANE",
+      "name": "BOERSE HANNOVER - EUROPEAN INVESTOR EXCHANGE",
+      "operatingMIC": "XHAN",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HELA",
+      "name": "HELABA",
+      "operatingMIC": "HELA",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "HSBT",
+      "name": "HSBC TRINKAUS AND BURKHARDT AG",
+      "operatingMIC": "HSBT",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "IKBS",
+      "name": "IKB DEUTSCHE INDUSTRIEBANK AG",
+      "operatingMIC": "IKBS",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "JEFE",
+      "name": "JEFFERIES EUROPE",
+      "operatingMIC": "JEFE",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "JESI",
+      "name": "JEFFERIES EUROPE - SYSTEMATIC INTERNALISER",
+      "operatingMIC": "JEFE",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "JPEU",
+      "name": "J.P. MORGAN SE",
+      "operatingMIC": "JPEU",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "LBBW",
+      "name": "LBBW - LANDESBANK BADEN-WUERTTEMBERG",
+      "operatingMIC": "LBBW",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "LBCW",
+      "name": "LLOYDS BANK CORPORATE MARKETS WERTPAPIERHANDELSBANK GMBH",
+      "operatingMIC": "LBCW",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "LBWL",
+      "name": "LBBW - LANDESBANK BADEN-WUERTTEMBERG - LIQUIDITY PROVIDER",
+      "operatingMIC": "LBBW",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "LBWS",
+      "name": "LBBW - LANDESBANK BADEN-WUERTTEMBERG - SYSTEMATIC INTERNALISER",
+      "operatingMIC": "LBBW",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "LIGA",
+      "name": "LIGA BANK EG",
+      "operatingMIC": "LIGA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "LSSI",
+      "name": "LANG AND SCHWARZ TRADE CENTER",
+      "operatingMIC": "LSSI",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MESI",
+      "name": "MORGAN STANLEY EUROPE S.E. - SYSTEMATIC INTERNALISER",
+      "operatingMIC": "MSEU",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MHBD",
+      "name": "MIZUHO BANK, LTD. DUESSELDORF BRANCH",
+      "operatingMIC": "MHBD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MHEU",
+      "name": "MIZUHO SECURITIES EUROPE",
+      "operatingMIC": "MHEU",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MSEU",
+      "name": "MORGAN STANLEY EUROPE S.E.",
+      "operatingMIC": "MSEU",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MUNA",
+      "name": "BOERSE MUENCHEN - REGULIERTER MARKT",
+      "operatingMIC": "XMUN",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MUNB",
+      "name": "BOERSE MUENCHEN - FREIVERKEHR",
+      "operatingMIC": "XMUN",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MUNC",
+      "name": "BOERSE MUENCHEN - GETTEX - REGULIERTER MARKT",
+      "operatingMIC": "XMUN",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "MUND",
+      "name": "BOERSE MUENCHEN - GETTEX - FREIVERKEHR",
+      "operatingMIC": "XMUN",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "NCME",
+      "name": "SMBC NIKKO CAPITAL MARKETS EUROPE GMBH",
+      "operatingMIC": "NCME",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "NESI",
+      "name": "NOMURA FINANCIAL PRODUCTS EUROPE GMBH",
+      "operatingMIC": "NESI",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "NLBX",
+      "name": "NORDDEUTSCHE LANDESBANK - GIROZENTRALE",
+      "operatingMIC": "NLBX",
+      "status": "EXPIRED",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "NORD",
+      "name": "HSH NORDBANK",
+      "operatingMIC": "NORD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "OLBB",
+      "name": "OLDENBURGISCHE LANDESBANK AG FX  HANDEL",
+      "operatingMIC": "OLBB",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "PLUS",
+      "name": "BOERSE MUENCHEN - FREIVERKHER - PLUS - EUROPE",
+      "operatingMIC": "XMUN",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "RBCG",
+      "name": "RBC CAPITAL MARKETS (EUROPE) GMBH",
+      "operatingMIC": "RBCG",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SCAG",
+      "name": "STANDARD CHARTERED BANK AG",
+      "operatingMIC": "SCAG",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SCLB",
+      "name": "SCALABLE CAPITAL",
+      "operatingMIC": "SCLB",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SEBA",
+      "name": "STIFEL EUROPE BANK AG",
+      "operatingMIC": "SEBA",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SMBD",
+      "name": "SUMITOMO MITSUI BANKING CORPORATION - DUESSELDORF BRANCH",
+      "operatingMIC": "SMBD",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SMFF",
+      "name": "SMBC BANK EU AG",
+      "operatingMIC": "SMFF",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SPEX",
+      "name": "SPECTRUM MARKETS",
+      "operatingMIC": "SPEX",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SSBI",
+      "name": "STATE STREET BANK INTERNATIONAL GMBH",
+      "operatingMIC": "SSBI",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SSBM",
+      "name": "STATE STREET BANK INTERNATIONAL FX",
+      "operatingMIC": "SSBI",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "SSWM",
+      "name": "SSW MARKET MAKING",
+      "operatingMIC": "SSWM",
+      "status": "EXPIRED",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUA",
+      "name": "BOERSE STUTTGART - REGULIERTER MARKT",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUB",
+      "name": "BOERSE STUTTGART - FREIVERKEHR",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUC",
+      "name": "BOERSE STUTTGART - REGULIERTER MARKT - TECHNICAL PLATFORM 2",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUD",
+      "name": "BOERSE STUTTGART - FREIVERKEHR - TECHNICAL PLATFORM 2",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUE",
+      "name": "BOERSE STUTTGART - REGULIERTER MARKT - TECHNICAL PLATFORM 3",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUF",
+      "name": "BOERSE STUTTGART - FREIVERKEHR - TECHNICAL PLATFORM 3",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUH",
+      "name": "BOERSE STUTTGART - FREIVERKEHR - TECHNICAL PLATFORM 4",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUJ",
+      "name": "BOERSE STUTTGART - FREIVERKEHR - DLT",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "STUL",
+      "name": "BOERSE STUTTGART - FREIVERKEHR - TECHNICAL PLATFORM 2 - DLT",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "TBSX",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE",
+      "operatingMIC": "TBSX",
+      "status": "EXPIRED",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "TGAT",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE",
+      "operatingMIC": "TGAT",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "TGSI",
+      "name": "TRADEGATE AG - SYSTEMATIC INTERNALISER",
+      "operatingMIC": "TGAT",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "TPDE",
+      "name": "TULLETT PREBON SECURITIES - FRANKFURT - OTF",
+      "operatingMIC": "TPDE",
+      "status": "EXPIRED",
+      "marketCategory": "OTFS",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "TRBX",
+      "name": "TRADE REPUBLIC BANK",
+      "operatingMIC": "TRBX",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "TSFF",
+      "name": "TULLETT PREBON SECURITIES - FRANKFURT - OTF - CORPORATE BONDS AND SECURITISED DEBT",
+      "operatingMIC": "TPDE",
+      "status": "EXPIRED",
+      "marketCategory": "OTFS",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "TSFG",
+      "name": "TULLETT PREBON SECURITIES - FRANKFURT - OTF - GOVERNMENT BONDS - EX GILTS",
+      "operatingMIC": "TPDE",
+      "status": "EXPIRED",
+      "marketCategory": "OTFS",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:18.339Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "UBSD",
+      "name": "UBS EUROPE SE",
+      "operatingMIC": "UBSD",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "UBSI",
+      "name": "UBS EUROPE SE",
+      "operatingMIC": "UBSL",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "UBSL",
+      "name": "UBS EUROPE SE - TRADING",
+      "operatingMIC": "UBSL",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "UCDE",
+      "name": "UNICREDIT BANK AG",
+      "operatingMIC": "UCDE",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "VONT",
+      "name": "BANK VONTOBEL EUROPE AG",
+      "operatingMIC": "VONT",
+      "status": "ACTIVE",
+      "marketCategory": "SINT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "VTLS",
+      "name": "TRADELINK",
+      "operatingMIC": "VWDX",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "VTPS",
+      "name": "TRADEPLUS",
+      "operatingMIC": "VWDX",
+      "status": "ACTIVE",
+      "marketCategory": "OTFS",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "VWDA",
+      "name": "VWD - APA SERVICE",
+      "operatingMIC": "VWDX",
+      "status": "ACTIVE",
+      "marketCategory": "APPA",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "VWDX",
+      "name": "VWD TRANSACTIONSOLUTIONS AG",
+      "operatingMIC": "VWDX",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XBER",
+      "name": "BOERSE BERLIN",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XBRE",
+      "name": "BREMER WERTPAPIERBOERSE",
+      "operatingMIC": "XBRE",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XCEF",
+      "name": "DEUTSCHE BOERSE -  CEF - REAL-TIME FEED",
+      "operatingMIC": "XCEF",
+      "status": "ACTIVE",
+      "marketCategory": "OTHR",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XCTS",
+      "name": "BOERSE STUTTGART - TECHNICAL PLATFORM 4",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XDBC",
+      "name": "DEUTSCHE BOERSE AG - CUSTOMIZED INDICES",
+      "operatingMIC": "XFRA",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XDBV",
+      "name": "DEUTSCHE BOERSE AG - VOLATILITY INDICES",
+      "operatingMIC": "XFRA",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XDBX",
+      "name": "DEUTSCHE BOERSE AG - INDICES",
+      "operatingMIC": "XFRA",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XDEX",
+      "name": "BOERSE STUTTGART - DIGITAL EXCHANGE",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XDTB",
+      "name": "DTB DEUTSCHE TERMINBOERSE GMBH",
+      "operatingMIC": "XDTB",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XDUS",
+      "name": "BOERSE DUESSELDORF",
+      "operatingMIC": "XDUS",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XDWZ",
+      "name": "DEUTSCHE BOERSE AG, FRANKFURT AM MAIN",
+      "operatingMIC": "XDWZ",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XECB",
+      "name": "ECB EXCHANGE RATES",
+      "operatingMIC": "XECB",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XECC",
+      "name": "EUROPEAN COMMODITY CLEARING AG",
+      "operatingMIC": "XECC",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEEE",
+      "name": "EUROPEAN ENERGY EXCHANGE",
+      "operatingMIC": "XEEE",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEEO",
+      "name": "EUROPEAN ENERGY EXCHANGE - NON-MTF MARKET",
+      "operatingMIC": "XEEE",
+      "status": "EXPIRED",
+      "marketCategory": "OTFS",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEER",
+      "name": "EUROPEAN ENERGY EXCHANGE - REGULATED MARKET",
+      "operatingMIC": "XEEE",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEHQ",
+      "name": "EUREX REPO - HQLA MARKET",
+      "operatingMIC": "XEUP",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEMA",
+      "name": "XETRA MIDPOINT REGULATED MARKET",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEMB",
+      "name": "XETRA MIDPOINT OPEN MARKET",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEMI",
+      "name": "XETRA MIDPOINT SCALE",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEQT",
+      "name": "BOERSE BERLIN EQUIDUCT TRADING",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEQU",
+      "name": "BOERSE BERLIN EQUIDUCT TRADING - US",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XERE",
+      "name": "EUREX REPO - FUNDING AND FINANCING PRODUCTS",
+      "operatingMIC": "XEUP",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XERT",
+      "name": "EUREX REPO - TRIPARTY",
+      "operatingMIC": "XEUP",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETA",
+      "name": "XETRA - REGULIERTER MARKT",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETB",
+      "name": "XETRA - FREIVERKEHR",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETC",
+      "name": "XETRA INTERNATIONAL MARKET - REGULATED MARKET",
+      "operatingMIC": "XETI",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETD",
+      "name": "XETRA INTERNATIONAL MARKET - OPEN MARKET",
+      "operatingMIC": "XETI",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETE",
+      "name": "XETRA - NON-FINANCIAL INSTRUMENTS",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETI",
+      "name": "XETRA INTERNATIONAL MARKET",
+      "operatingMIC": "XETI",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETR",
+      "name": "XETRA",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETRA",
+      "name": "Deutsche Börse Xetra",
+      "operatingMIC": null,
+      "status": "ACTIVE",
+      "marketCategory": null,
+      "validMICFormat": false,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETS",
+      "name": "XETRA - SCALE",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETU",
+      "name": "XETRA - REGULIERTERMARKT - OFF-BOOK",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETV",
+      "name": "XETRA - FREIVERKEHR - OFF-BOOK",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETW",
+      "name": "XETRA - SCALE - OFF-BOOK",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XETX",
+      "name": "XETRA - NON-FINANCIAL INSTRUMENTS - OFF-BOOK",
+      "operatingMIC": "XETR",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEUB",
+      "name": "EUREX BONDS",
+      "operatingMIC": "XETR",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEUM",
+      "name": "EUREX REPO SECLEND MARKET",
+      "operatingMIC": "XEUP",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEUP",
+      "name": "EUREX REPO GMBH",
+      "operatingMIC": "XEUP",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XEUR",
+      "name": "EUREX DEUTSCHLAND",
+      "operatingMIC": "XEUR",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XFRA",
+      "name": "DEUTSCHE BOERSE AG",
+      "operatingMIC": "XFRA",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XGAT",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE - FREIVERKEHR",
+      "operatingMIC": "TGAT",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XGRM",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE - REGULIERTER MARKT",
+      "operatingMIC": "TGAT",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XHAM",
+      "name": "HANSEATISCHE WERTPAPIERBOERSE HAMBURG",
+      "operatingMIC": "XHAM",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XHAN",
+      "name": "NIEDERSAECHSISCHE BOERSE ZU HANNOVER",
+      "operatingMIC": "XHAN",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XHCE",
+      "name": "RISK MANAGEMENT EXCHANGE",
+      "operatingMIC": "XHCE",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XIGG",
+      "name": "BLOCKMATCH EUROPE",
+      "operatingMIC": "XIGG",
+      "status": "ACTIVE",
+      "marketCategory": "MLTF",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XINV",
+      "name": "INVESTRO",
+      "operatingMIC": "XINV",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XMUN",
+      "name": "BOERSE MUENCHEN",
+      "operatingMIC": "XMUN",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XNEW",
+      "name": "NEWEX",
+      "operatingMIC": "XFRA",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XPOT",
+      "name": "EUROPEAN ENERGY EXCHANGE - OTF GAS MARKET",
+      "operatingMIC": "XEEE",
+      "status": "EXPIRED",
+      "marketCategory": "OTFS",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XPSF",
+      "name": "EUROPEAN ENERGY EXCHANGE - REGULATED GAS MARKET",
+      "operatingMIC": "XEEE",
+      "status": "ACTIVE",
+      "marketCategory": "RMKT",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XQTX",
+      "name": "BOERSE DUESSELDORF - QUOTRIX",
+      "operatingMIC": "XDUS",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XRTR",
+      "name": "RTR (REUTERS-REALTIME-DATEN)",
+      "operatingMIC": "XRTR",
+      "status": "EXPIRED",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XSC1",
+      "name": "BOERSE FRANKFURT WARRANTS TECHNICAL 1",
+      "operatingMIC": "XSCO",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XSC2",
+      "name": "BOERSE FRANKFURT WARRANTS TECHNICAL 2",
+      "operatingMIC": "XSCO",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XSC3",
+      "name": "BOERSE FRANKFURT WARRANTS TECHNICAL 3",
+      "operatingMIC": "XSCO",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XSCO",
+      "name": "BOERSE FRANKFURT WARRANTS TECHNICAL",
+      "operatingMIC": "XSCO",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XSTF",
+      "name": "BOERSE STUTTGART - TECHNICAL PLATFORM 2",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XSTP",
+      "name": "BOERSE STUTTGART - TECHNICAL PLATFORM 3",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XSTU",
+      "name": "BOERSE STUTTGART",
+      "operatingMIC": "XSTU",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T10:56:34.127Z",
+      "directoryCoverage": "COMPLETE_OBSERVED",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "XXSC",
+      "name": "FRANKFURT CEF SC",
+      "operatingMIC": "XXSC",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    },
+    {
+      "providerMIC": "ZOBX",
+      "name": "ZOBEX",
+      "operatingMIC": "XBER",
+      "status": "ACTIVE",
+      "marketCategory": "NSPD",
+      "validMICFormat": true,
+      "checkedAt": "2026-10-01T14:35:24.417Z",
+      "directoryCoverage": "UNMEASURED_OR_REQUEST_UNAVAILABLE",
+      "note": "Registration alone does not establish data access, asset types, prices or issuer geography."
+    }
+  ],
+  "venues": [
+    {
+      "mic": "XFRA",
+      "name": "DEUTSCHE BOERSE AG",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XFRA",
+        ".F"
+      ],
+      "catalogReportedRows": 91729,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T10:56:47.889Z",
+            "seeded": true,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:34:59.735Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 2000,
+            "end": 3000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:01.470Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 3000,
+            "end": 4000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:03.355Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 4000,
+            "end": 5000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:04.708Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 5000,
+            "end": 6000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:06.305Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 6000,
+            "end": 7000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:08.199Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 7000,
+            "end": 8000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:10.403Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 8000,
+            "end": 9000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:13.404Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 9000,
+            "end": 10000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:15.539Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 10000,
+            "end": 11000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:18.205Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 11000,
+            "end": 12000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:21.039Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 12000,
+            "end": 13000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:23.442Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 13000,
+            "end": 14000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:26.341Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 14000,
+            "end": 15000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:28.775Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 15000,
+            "end": 16000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:30.964Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 16000,
+            "end": 17000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:34.293Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 17000,
+            "end": 18000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:37.613Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 18000,
+            "end": 19000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:41.276Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 19000,
+            "end": 20000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:45.211Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 20000,
+            "end": 21000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:50.919Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 21000,
+            "end": 22000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:55.996Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 22000,
+            "end": 23000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:35:59.583Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 23000,
+            "end": 24000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:02.971Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 24000,
+            "end": 25000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:06.688Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 25000,
+            "end": 26000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:10.847Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 26000,
+            "end": 27000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:14.727Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 27000,
+            "end": 28000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:18.776Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 28000,
+            "end": 29000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:22.429Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 29000,
+            "end": 30000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:26.181Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 30000,
+            "end": 31000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:29.392Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 31000,
+            "end": 32000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:31.987Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 32000,
+            "end": 33000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:35.306Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 33000,
+            "end": 34000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:38.328Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 34000,
+            "end": 35000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:41.924Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 35000,
+            "end": 36000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:45.920Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 36000,
+            "end": 37000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:49.451Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 37000,
+            "end": 38000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:52.136Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 38000,
+            "end": 39000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:53.891Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 39000,
+            "end": 40000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:56.277Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 40000,
+            "end": 41000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:36:58.791Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 41000,
+            "end": 42000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:01.343Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 42000,
+            "end": 43000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:04.337Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 43000,
+            "end": 44000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:06.678Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 44000,
+            "end": 45000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:10.280Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 45000,
+            "end": 46000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:14.424Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 46000,
+            "end": 47000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:17.930Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 47000,
+            "end": 48000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:21.234Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 48000,
+            "end": 49000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:24.541Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 49000,
+            "end": 50000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:26.681Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 50000,
+            "end": 51000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:28.558Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 51000,
+            "end": 52000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:30.198Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 52000,
+            "end": 53000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:32.992Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 53000,
+            "end": 54000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:35.611Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 54000,
+            "end": 55000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:38.412Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 55000,
+            "end": 56000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:40.820Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 56000,
+            "end": 57000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:42.920Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 57000,
+            "end": 58000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:44.600Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 58000,
+            "end": 59000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:46.169Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 59000,
+            "end": 60000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:47.625Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 60000,
+            "end": 61000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:49.199Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 61000,
+            "end": 62000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:50.740Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 62000,
+            "end": 63000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:52.229Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 63000,
+            "end": 64000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:53.891Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 64000,
+            "end": 65000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:55.900Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 65000,
+            "end": 66000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:57.941Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 66000,
+            "end": 67000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:37:59.785Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 67000,
+            "end": 68000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:01.555Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 68000,
+            "end": 69000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:03.279Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 69000,
+            "end": 70000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:04.789Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 70000,
+            "end": 71000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:06.323Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 71000,
+            "end": 72000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:07.810Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 72000,
+            "end": 73000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:09.268Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 73000,
+            "end": 74000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:10.958Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 74000,
+            "end": 75000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:12.673Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 75000,
+            "end": 76000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:14.438Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 76000,
+            "end": 77000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:16.655Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 77000,
+            "end": 78000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:19.191Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 78000,
+            "end": 79000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:21.248Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 79000,
+            "end": 80000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:23.204Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 80000,
+            "end": 81000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:24.835Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 81000,
+            "end": 82000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:26.271Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 82000,
+            "end": 83000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:27.628Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 83000,
+            "end": 84000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:29.082Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 84000,
+            "end": 85000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:30.286Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 85000,
+            "end": 86000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:31.525Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 86000,
+            "end": 87000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:32.894Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 87000,
+            "end": 88000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:34.440Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 88000,
+            "end": 89000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:35.954Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 89000,
+            "end": 90000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:37.438Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 90000,
+            "end": 91000,
+            "total": 91828,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:38.796Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 91000,
+            "end": 91828,
+            "total": 91828,
+            "valid": true,
+            "rows": 828,
+            "checkedAt": "2026-10-01T15:38:40.256Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 91828,
+        "observedProviderRows": 91828,
+        "uniqueProviderSymbols": 91828,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "CLASSIFIED_CANDIDATE": 12802,
+          "REFERENCE_UNRESOLVED": 76119,
+          "EXCLUDED_NON_EQUITY_ETF": 2245,
+          "SYMBOL_SUFFIX_UNVERIFIED": 662
+        },
+        "classifiedEquityListingCandidates": 10932,
+        "classifiedETFListingCandidates": 1870,
+        "equityPreferredNameHints": 18,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 444
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": true,
+      "officialReferenceUpdatedAt": "2026-10-01",
+      "officialActiveEquityInstrumentCount": 14711,
+      "officialActiveEquityISINsExactDirectoryMatched": 10807,
+      "officialActiveEquityISINsUnmatched": 3904,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XBER",
+      "name": "BOERSE BERLIN",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XBER",
+        ".BE"
+      ],
+      "catalogReportedRows": 16210,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:35:47.920Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:35:56.427Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 2000,
+            "end": 3000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:40.671Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 3000,
+            "end": 4000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:41.049Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 4000,
+            "end": 5000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:41.494Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 5000,
+            "end": 6000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:41.897Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 6000,
+            "end": 7000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:42.353Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 7000,
+            "end": 8000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:42.828Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 8000,
+            "end": 9000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:43.282Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 9000,
+            "end": 10000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:43.830Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 10000,
+            "end": 11000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:44.570Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 11000,
+            "end": 12000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:45.109Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 12000,
+            "end": 13000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:45.581Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 13000,
+            "end": 14000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:46.000Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 14000,
+            "end": 15000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:46.465Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 15000,
+            "end": 16000,
+            "total": 16288,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:46.939Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 16000,
+            "end": 16288,
+            "total": 16288,
+            "valid": true,
+            "rows": 288,
+            "checkedAt": "2026-10-01T15:38:47.277Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 16288,
+        "observedProviderRows": 16288,
+        "uniqueProviderSymbols": 16288,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "REFERENCE_UNRESOLVED": 16136,
+          "SYMBOL_SUFFIX_UNVERIFIED": 152
+        },
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XMUN",
+      "name": "BOERSE MUENCHEN",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XMUN",
+        ".MU"
+      ],
+      "catalogReportedRows": 15554,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:47.661Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:48.054Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 2000,
+            "end": 3000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:48.452Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 3000,
+            "end": 4000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:48.814Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 4000,
+            "end": 5000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:49.228Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 5000,
+            "end": 6000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:49.584Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 6000,
+            "end": 7000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:49.944Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 7000,
+            "end": 8000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:50.325Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 8000,
+            "end": 9000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:50.743Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 9000,
+            "end": 10000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:51.156Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 10000,
+            "end": 11000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:51.552Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 11000,
+            "end": 12000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:51.921Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 12000,
+            "end": 13000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:52.327Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 13000,
+            "end": 14000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:52.750Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 14000,
+            "end": 15000,
+            "total": 15617,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:53.151Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 15000,
+            "end": 15617,
+            "total": 15617,
+            "valid": true,
+            "rows": 617,
+            "checkedAt": "2026-10-01T15:38:53.511Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 15617,
+        "observedProviderRows": 15617,
+        "uniqueProviderSymbols": 15617,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "REFERENCE_UNRESOLVED": 15356,
+          "SYMBOL_SUFFIX_UNVERIFIED": 261
+        },
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "DUSD",
+      "name": "BOERSE DUESSELDORF - QUOTRIX MTF",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".DUSD",
+        ".DU"
+      ],
+      "catalogReportedRows": 13932,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:53.889Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:54.451Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 2000,
+            "end": 3000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:54.833Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 3000,
+            "end": 4000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:55.213Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 4000,
+            "end": 5000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:55.664Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 5000,
+            "end": 6000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:56.067Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 6000,
+            "end": 7000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:56.511Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 7000,
+            "end": 8000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:56.928Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 8000,
+            "end": 9000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:57.308Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 9000,
+            "end": 10000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:57.694Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 10000,
+            "end": 11000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:58.102Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 11000,
+            "end": 12000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:58.548Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 12000,
+            "end": 13000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:59.023Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 13000,
+            "end": 14000,
+            "total": 14000,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:38:59.493Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 14000,
+        "observedProviderRows": 14000,
+        "uniqueProviderSymbols": 14000,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "REFERENCE_UNRESOLVED": 13797,
+          "SYMBOL_SUFFIX_UNVERIFIED": 203
+        },
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XSTU",
+      "name": "BOERSE STUTTGART",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XSTU",
+        ".SG"
+      ],
+      "catalogReportedRows": 13788,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:00.007Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:00.511Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 2000,
+            "end": 3000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:00.906Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 3000,
+            "end": 4000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:01.309Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 4000,
+            "end": 5000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:01.799Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 5000,
+            "end": 6000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:02.334Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 6000,
+            "end": 7000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:02.776Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 7000,
+            "end": 8000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:03.270Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 8000,
+            "end": 9000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:03.710Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 9000,
+            "end": 10000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:04.214Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 10000,
+            "end": 11000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:04.746Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 11000,
+            "end": 12000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:05.317Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 12000,
+            "end": 13000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:05.940Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 13000,
+            "end": 14000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:06.530Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 14000,
+            "end": 15000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:07.079Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 15000,
+            "end": 16000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:07.658Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 16000,
+            "end": 17000,
+            "total": 17932,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T15:39:08.268Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 17000,
+            "end": 17932,
+            "total": 17932,
+            "valid": true,
+            "rows": 932,
+            "checkedAt": "2026-10-01T15:39:08.851Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 17932,
+        "observedProviderRows": 17932,
+        "uniqueProviderSymbols": 17932,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "REFERENCE_UNRESOLVED": 17317,
+          "SYMBOL_SUFFIX_UNVERIFIED": 615
+        },
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XETR",
+      "name": "XETRA",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".DE",
+        ".XETR"
+      ],
+      "catalogReportedRows": 8919,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T10:56:46.871Z",
+            "seeded": true,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": true
+          },
+          {
+            "start": 2000,
+            "end": 3000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": true
+          },
+          {
+            "start": 3000,
+            "end": 4000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": true
+          },
+          {
+            "start": 4000,
+            "end": 5000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": true
+          },
+          {
+            "start": 5000,
+            "end": 6000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": true
+          },
+          {
+            "start": 6000,
+            "end": 7000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": true
+          },
+          {
+            "start": 7000,
+            "end": 8000,
+            "total": 8959,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": true
+          },
+          {
+            "start": 8000,
+            "end": 8959,
+            "total": 8959,
+            "valid": true,
+            "rows": 959,
+            "checkedAt": "2026-10-01T11:37:07.124Z",
+            "seeded": true,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 8959,
+        "observedProviderRows": 8959,
+        "uniqueProviderSymbols": 8959,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "REFERENCE_UNRESOLVED": 5522,
+          "CLASSIFIED_CANDIDATE": 3054,
+          "SYMBOL_SUFFIX_UNVERIFIED": 192,
+          "EXCLUDED_NON_EQUITY_ETF": 191
+        },
+        "classifiedEquityListingCandidates": 680,
+        "classifiedETFListingCandidates": 2374,
+        "equityPreferredNameHints": 13,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 353
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": true,
+      "officialReferenceUpdatedAt": "2026-10-01",
+      "officialActiveEquityInstrumentCount": 1416,
+      "officialActiveEquityISINsExactDirectoryMatched": 680,
+      "officialActiveEquityISINsUnmatched": 736,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XHAM",
+      "name": "HANSEATISCHE WERTPAPIERBOERSE HAMBURG",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XHAM",
+        ".HM"
+      ],
+      "catalogReportedRows": 5261,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 5332,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:36:48.540Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 5332,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:36:54.001Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 2000,
+            "end": 3000,
+            "total": 5332,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:36:56.608Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 3000,
+            "end": 4000,
+            "total": 5332,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:37:01.462Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 4000,
+            "end": 5000,
+            "total": 5332,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:37:06.488Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 5000,
+            "end": 5332,
+            "total": 5332,
+            "valid": true,
+            "rows": 332,
+            "checkedAt": "2026-10-01T14:37:12.162Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 5332,
+        "observedProviderRows": 5332,
+        "uniqueProviderSymbols": 5332,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "REFERENCE_UNRESOLVED": 5143,
+          "SYMBOL_SUFFIX_UNVERIFIED": 189
+        },
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XHAN",
+      "name": "NIEDERSAECHSISCHE BOERSE ZU HANNOVER",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XHAN",
+        ".HA"
+      ],
+      "catalogReportedRows": 2949,
+      "source": {
+        "batches": [
+          {
+            "start": 0,
+            "end": 1000,
+            "total": 2957,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:37:13.809Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 1000,
+            "end": 2000,
+            "total": 2957,
+            "valid": true,
+            "rows": 1000,
+            "checkedAt": "2026-10-01T14:37:16.839Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          },
+          {
+            "start": 2000,
+            "end": 2957,
+            "total": 2957,
+            "valid": true,
+            "rows": 957,
+            "checkedAt": "2026-10-01T14:37:18.795Z",
+            "seeded": false,
+            "legacyCursorIgnored": false
+          }
+        ],
+        "errors": [],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": true,
+      "counts": {
+        "reportedInstruments": 2957,
+        "observedProviderRows": 2957,
+        "uniqueProviderSymbols": 2957,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {
+          "REFERENCE_UNRESOLVED": 2868,
+          "SYMBOL_SUFFIX_UNVERIFIED": 89
+        },
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XDUS",
+      "name": "BOERSE DUESSELDORF",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XDUS"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:19.252Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "TGAT",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".TGAT"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:19.713Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XGAT",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE - FREIVERKEHR",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XGAT"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:20.246Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XGRM",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE - REGULIERTER MARKT",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XGRM"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:20.673Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "MUND",
+      "name": "BOERSE MUENCHEN - GETTEX - FREIVERKEHR",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".MUND"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:21.379Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "MUNC",
+      "name": "BOERSE MUENCHEN - GETTEX - REGULIERTER MARKT",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".MUNC"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:21.659Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "DUSC",
+      "name": "BOERSE DUESSELDORF - QUOTRIX - REGULIERTER MARKT",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".DUSC"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:22.092Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    },
+    {
+      "mic": "XQTX",
+      "name": "BOERSE DUESSELDORF - QUOTRIX",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XQTX"
+      ],
+      "catalogReportedRows": 0,
+      "source": {
+        "batches": [],
+        "errors": [
+          {
+            "reason": "providerError",
+            "checkedAt": "2026-10-01T14:37:22.459Z",
+            "httpStatus": 422,
+            "providerErrorType": "no_valid_exchange_provided",
+            "providerErrorCode": "no_valid_exchange_provided",
+            "offset": 0
+          }
+        ],
+        "gaps": [],
+        "inconsistentTotals": false
+      },
+      "directoryComplete": false,
+      "counts": {
+        "reportedInstruments": null,
+        "observedProviderRows": 0,
+        "uniqueProviderSymbols": 0,
+        "invalidProviderRows": 0,
+        "duplicateProviderRows": 0,
+        "byStatus": {},
+        "classifiedEquityListingCandidates": 0,
+        "classifiedETFListingCandidates": 0,
+        "equityPreferredNameHints": 0,
+        "independentlyVerifiedCommonEquities": null,
+        "independentlyVerifiedPreferredEquities": null,
+        "germanIssuerEquities": null,
+        "equityGermanISINNamespace": 0
+      },
+      "limitations": [
+        "Venue country, ISIN namespace, primary listing MIC and country of issue do not establish issuer domicile.",
+        "CS proves the broad equity type, not common/preferred share rights. Preferred names are hints only.",
+        "Directory flags and reference identity never grant history, corporate-action or consumer eligibility."
+      ],
+      "officialReferenceAvailable": false,
+      "officialReferenceUpdatedAt": null,
+      "officialActiveEquityInstrumentCount": null,
+      "officialActiveEquityISINsExactDirectoryMatched": null,
+      "officialActiveEquityISINsUnmatched": null,
+      "actualEODPriceCoverage": "NOT_ESTABLISHED_BY_DIRECTORY",
+      "maximumHistoryDepth": null,
+      "corporateActionCoverage": "UNKNOWN",
+      "intradayCoverage": "UNKNOWN",
+      "realtimeCoverage": "UNKNOWN",
+      "completeVenueEquityCount": null
+    }
+  ],
+  "limitations": [
+    "The equity count is an exact venue/reference-classified subset, not every German-domiciled issuer.",
+    "ISIN prefix and primary-listing MIC are not issuer domicile. Company count and verified common/preferred counts remain unknown.",
+    "Unresolved directory records are retained as unknown, never guessed from names or discarded as unsupported equities.",
+    "Multiple venues of the same ISIN do not create additional companies or automatically become preferred consumer listings.",
+    "Provider aliases are retained as evidence; distinct listing identities deduplicate asset type, ISIN, MIC and trading currency.",
+    "Classification and directory coverage do not grant history, adjustment, technical or product eligibility."
+  ]
+}

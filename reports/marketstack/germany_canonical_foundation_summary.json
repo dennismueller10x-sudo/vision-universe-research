@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "germany-canonical-metadata-foundation-summary-1.0.0",
+  "generatedAt": "2026-10-01T16:03:59.343Z",
+  "counts": {
+    "listings": 3048,
+    "equities": 674,
+    "etfs": 2374,
+    "existingIDsRetained": 32,
+    "blocked": 0,
+    "priceCoverageGranted": 0,
+    "freshValidationVetoedCandidates": 6
+  },
+  "publication": "CENTRAL_REVIEW_REQUIRED_NO_PUBLIC_WRITES",
+  "productionActivated": false,
+  "generationScript": "scripts/market/build-marketstack-germany-reports.mjs",
+  "blockedDecisions": [],
+  "freshValidationVetoes": [
+    {
+      "providerSymbol": "FRE.DE",
+      "reasons": [
+        "METADATA_ISIN_MISMATCH"
+      ]
+    },
+    {
+      "providerSymbol": "DKG.DE",
+      "reasons": [
+        "METADATA_ASSET_TYPE_MISMATCH"
+      ]
+    },
+    {
+      "providerSymbol": "CLIQ.DE",
+      "reasons": [
+        "METADATA_ISIN_MISMATCH"
+      ]
+    },
+    {
+      "providerSymbol": "SFQ.DE",
+      "reasons": [
+        "METADATA_ISIN_MISMATCH"
+      ]
+    },
+    {
+      "providerSymbol": "HABA.DE",
+      "reasons": [
+        "METADATA_ASSET_TYPE_MISMATCH"
+      ]
+    },
+    {
+      "providerSymbol": "STM.DE",
+      "reasons": [
+        "METADATA_ISIN_MISMATCH"
+      ]
+    }
+  ],
+  "retainedExistingListingIds": [
+    "vu_3c7c01927ab7a86b17b1d0d9",
+    "vu_aad857f8e6d415cee8958a65",
+    "vu_04b1276b272b4716baa13c14",
+    "vu_730891e58f281748fd390a12",
+    "vu_9368a3d7f3311c9e7265bdd1",
+    "vu_8ead3376a97b3f45457311c9",
+    "vu_4a0a4886b8c74c9c1cc72c54",
+    "vu_59e1b1a6c5fec36e70fb75a1",
+    "vu_b64cf85da27f89d425d1fba7",
+    "vu_6e08a1b0da219a739c555cdc",
+    "vu_1dea35fdb68f5cf068901d23",
+    "vu_d8863076af3a9462278d7ee6",
+    "vu_fa85322d99172d04d94c347c",
+    "vu_2b51e97effb3831d6f4d3284",
+    "vu_aa863bcad697942af0750359",
+    "vu_b7fe26cd5cd22f6a6e9eafb8",
+    "vu_754873ecf2aa41ea060fccf7",
+    "vu_58f0ad1c110314d4943a1db9",
+    "vu_1cf865fada22b7303e742a0b",
+    "vu_4ce435ab63316162d59dc1ee",
+    "vu_5ec910546a3618e5e1850f1a",
+    "vu_74e79becb7391fe13bd9ae55",
+    "vu_d8bf8aec2c089af2a90d7964",
+    "vu_3dc5a6e147758fcd30d5162a",
+    "vu_f016312b2f21d9c141432804",
+    "vu_7846323a669b806f0bbd4596",
+    "vu_cfa3ed50fc188ed8c18affdf",
+    "vu_993c96c4b38f6f5410a7aa77",
+    "vu_83833194ecb6f40fc3f3d7e1",
+    "vu_7ba9bbc649ee8aeb9bb70848",
+    "vu_199112ed28b64b8c9e1536bc",
+    "vu_4b9f6ea7c25e2c9d66d7bf3c"
+  ],
+  "limitations": [
+    "Metadata-only coverage never overwrites existing real histories during the central merge.",
+    "Unknown issuer domicile and company identity stay null; no fund/company conflation or generated prices.",
+    "Preferred name hints do not prove legal share rights; neither absence of a hint nor CS grants common-equity status."
+  ]
+}

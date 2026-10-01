@@ -1,0 +1,112 @@
+{
+  "environment": {
+    "node": "24.19.0",
+    "python": "3.12",
+    "browser": "Chromium 1243 via pinned Playwright 1.58.2; GitHub uses its pinned browser build"
+  },
+  "quant": {
+    "command": "node --test quant/tests/*.test.mjs",
+    "tests": 2497,
+    "passed": 2497,
+    "failed": 0,
+    "skipped": 0,
+    "freshFinalizationRun": true,
+    "sourceCommit": "1ff0ec3085ef10b58f7cc0bf936eab4da8c26889",
+    "durationMilliseconds": 77892.846905
+  },
+  "products": {
+    "command": "node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs",
+    "tests": 460,
+    "passed": 455,
+    "failed": 0,
+    "skipped": 5,
+    "freshFinalizationRun": true
+  },
+  "sec": {
+    "command": "python3 -m unittest discover -s scripts/quant/tests",
+    "passed": 484,
+    "failed": 0,
+    "freshFinalizationRun": true
+  },
+  "esef": {
+    "command": "python3 -m unittest discover -s scripts/fundamentals/tests",
+    "passed": 7,
+    "failed": 0,
+    "freshFinalizationRun": true
+  },
+  "realLVMH": {
+    "canonicalFactsPreserved": 12,
+    "preExistingDiagnosticIssues": 543,
+    "pitAndProvenancePreserved": true
+  },
+  "discoverBrowser": {
+    "functionalChecksPassed": 201,
+    "accessibilityChecks": 16,
+    "failed": 0,
+    "freshFinalizationRun": true
+  },
+  "quantBrowser": {
+    "functionalChecksPassed": 88,
+    "resourceGatesPassed": 8,
+    "resourceGatesTotal": 8,
+    "accessibilityPages": 76,
+    "violations": 0,
+    "acceptedBaselineFunctionalChecksPassed": 88,
+    "stockDecodedByteDelta": null,
+    "uncontrolledBrowserVersionRunHadExtraLazyImageBytes": 416861,
+    "freshFinalizationRun": true,
+    "note": "Final release passed all budgets without relaxation; prior accepted/current comparison showed 2656-byte Directory delta."
+  },
+  "globalBrowser": {
+    "allPricedListingChecksPassed": 278,
+    "metadataOnlyChecksPassed": 12,
+    "newChartWatchlistChecksPassed": 8,
+    "legacyAndGlobalAppSmokePassed": 63,
+    "boundedSearchQueriesPassed": 6,
+    "freshFinalizationRun": true
+  },
+  "publicDataAndSecretGuards": "PASS",
+  "independentReview": "PASS_ALL_FINDINGS_RESOLVED",
+  "protectedOutputs": "NO_BYTE_CHANGES",
+  "servingRegression": {
+    "command": "python3 -m unittest scripts.vu2.test_fundamentals_serving scripts.vu2.test_product_data_api",
+    "passed": 32,
+    "failed": 0
+  },
+  "resourceBudgetUnit": {
+    "command": "node --test scripts/vu2/resource-budget.test.mjs",
+    "passed": 6,
+    "failed": 0
+  },
+  "operatorHardening": {
+    "command": "node --test quant/tests/marketstack-europe*.test.mjs",
+    "passed": 38,
+    "failed": 0,
+    "fullLocalSuiteBeforeAdditionalRegressionTest": 2392
+  },
+  "journeySurfaces": {
+    "command": "node scripts/vu2/verify-journey-surfaces.mjs --site <fresh-release>",
+    "passed": 12,
+    "failed": 0
+  },
+  "searchScalability": {
+    "queries": 6,
+    "requestCounts": [
+      3,
+      3,
+      3,
+      3,
+      2,
+      3
+    ],
+    "decodedByteRange": [
+      35676,
+      57011
+    ],
+    "resultLimit": 14,
+    "fullUniversePayload": false,
+    "failed": 0
+  },
+  "executionEnvironmentRecovered": true,
+  "checkedAt": "2026-10-01T19:36:38Z"
+}
