@@ -36122,6 +36122,3338 @@
               ]
             }
           ]
+        },
+        {
+          "id": "us-current-common-complete-BATS-0",
+          "label": "us-current-common-gap-coverage",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "CBOE",
+            "exchange": "BATS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 1,
+          "targets": [
+            {
+              "symbol": "CBOE",
+              "mic": "BATS",
+              "securityIds": [
+                "ref_CBOE"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "us-current-common-complete-XASE-0",
+          "label": "us-current-common-gap-coverage",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "ACU,AIM,AIRI,AMBO,AMS,APT,APUS,ARMP,ATNM,AWX,AXIL,BCHT,BDL,BESS,BHB,BKTI,BQ,BRBS,BRN,CANF,CCEL,CITR,CIX,CKX,CMT,COE,CPHI,CTGO,CVM,CVR,CVU,DC,DDC,DIT,DNN,DSS,DXF,EGG,ELA,ELLO,ELMD,EP,EPM,ESP,EVI,EXOD,FJET,FLYX,FSI,FSP,GBR,GENC,GPUS,GTE,HYLN,IGC,IMO,INDO,INFU,INLX,INTT,IOR,ITP,JOB,KULR,LCTX,LEGO,LGL,LODE,MCRP,MHH,MI,MLSS,MRT,MSN,MTNB,MWG,MXC,MYO,NAK,NHC,NINE,NNVC,NRXS,NTIP,OGEN,OPHC,OPTT,PAAI,PED,PLAG,PLG,PLX,POAS,PRK,PW,PZG,REED,REI,RGNT",
+            "exchange": "XASE",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 100,
+          "targets": [
+            {
+              "symbol": "ACU",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ACU"
+              ]
+            },
+            {
+              "symbol": "AIM",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_AIM"
+              ]
+            },
+            {
+              "symbol": "AIRI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_AIRI"
+              ]
+            },
+            {
+              "symbol": "AMBO",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_AMBO"
+              ]
+            },
+            {
+              "symbol": "AMS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_AMS"
+              ]
+            },
+            {
+              "symbol": "APT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_APT"
+              ]
+            },
+            {
+              "symbol": "APUS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_APUS"
+              ]
+            },
+            {
+              "symbol": "ARMP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ARMP"
+              ]
+            },
+            {
+              "symbol": "ATNM",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ATNM"
+              ]
+            },
+            {
+              "symbol": "AWX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_AWX"
+              ]
+            },
+            {
+              "symbol": "AXIL",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_AXIL"
+              ]
+            },
+            {
+              "symbol": "BCHT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BCHT"
+              ]
+            },
+            {
+              "symbol": "BDL",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BDL"
+              ]
+            },
+            {
+              "symbol": "BESS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BESS"
+              ]
+            },
+            {
+              "symbol": "BHB",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BHB"
+              ]
+            },
+            {
+              "symbol": "BKTI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BKTI"
+              ]
+            },
+            {
+              "symbol": "BQ",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BQ"
+              ]
+            },
+            {
+              "symbol": "BRBS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BRBS"
+              ]
+            },
+            {
+              "symbol": "BRN",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_BRN"
+              ]
+            },
+            {
+              "symbol": "CANF",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CANF"
+              ]
+            },
+            {
+              "symbol": "CCEL",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CCEL"
+              ]
+            },
+            {
+              "symbol": "CITR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CITR"
+              ]
+            },
+            {
+              "symbol": "CIX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CIX"
+              ]
+            },
+            {
+              "symbol": "CKX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CKX"
+              ]
+            },
+            {
+              "symbol": "CMT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CMT"
+              ]
+            },
+            {
+              "symbol": "COE",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_COE"
+              ]
+            },
+            {
+              "symbol": "CPHI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CPHI"
+              ]
+            },
+            {
+              "symbol": "CTGO",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CTGO"
+              ]
+            },
+            {
+              "symbol": "CVM",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CVM"
+              ]
+            },
+            {
+              "symbol": "CVR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CVR"
+              ]
+            },
+            {
+              "symbol": "CVU",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_CVU"
+              ]
+            },
+            {
+              "symbol": "DC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_DC"
+              ]
+            },
+            {
+              "symbol": "DDC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_DDC"
+              ]
+            },
+            {
+              "symbol": "DIT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_DIT"
+              ]
+            },
+            {
+              "symbol": "DNN",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_DNN"
+              ]
+            },
+            {
+              "symbol": "DSS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_DSS"
+              ]
+            },
+            {
+              "symbol": "DXF",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_DXF"
+              ]
+            },
+            {
+              "symbol": "EGG",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_EGG"
+              ]
+            },
+            {
+              "symbol": "ELA",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ELA"
+              ]
+            },
+            {
+              "symbol": "ELLO",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ELLO"
+              ]
+            },
+            {
+              "symbol": "ELMD",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ELMD"
+              ]
+            },
+            {
+              "symbol": "EP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_EP"
+              ]
+            },
+            {
+              "symbol": "EPM",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_EPM"
+              ]
+            },
+            {
+              "symbol": "ESP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ESP"
+              ]
+            },
+            {
+              "symbol": "EVI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_EVI"
+              ]
+            },
+            {
+              "symbol": "EXOD",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_EXOD"
+              ]
+            },
+            {
+              "symbol": "FJET",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_FJET"
+              ]
+            },
+            {
+              "symbol": "FLYX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_FLYX"
+              ]
+            },
+            {
+              "symbol": "FSI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_FSI"
+              ]
+            },
+            {
+              "symbol": "FSP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_FSP"
+              ]
+            },
+            {
+              "symbol": "GBR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_GBR"
+              ]
+            },
+            {
+              "symbol": "GENC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_GENC"
+              ]
+            },
+            {
+              "symbol": "GPUS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_GPUS"
+              ]
+            },
+            {
+              "symbol": "GTE",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_GTE"
+              ]
+            },
+            {
+              "symbol": "HYLN",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_HYLN"
+              ]
+            },
+            {
+              "symbol": "IGC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_IGC"
+              ]
+            },
+            {
+              "symbol": "IMO",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_IMO"
+              ]
+            },
+            {
+              "symbol": "INDO",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_INDO"
+              ]
+            },
+            {
+              "symbol": "INFU",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_INFU"
+              ]
+            },
+            {
+              "symbol": "INLX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_INLX"
+              ]
+            },
+            {
+              "symbol": "INTT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_INTT"
+              ]
+            },
+            {
+              "symbol": "IOR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_IOR"
+              ]
+            },
+            {
+              "symbol": "ITP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ITP"
+              ]
+            },
+            {
+              "symbol": "JOB",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_JOB"
+              ]
+            },
+            {
+              "symbol": "KULR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_KULR"
+              ]
+            },
+            {
+              "symbol": "LCTX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_LCTX"
+              ]
+            },
+            {
+              "symbol": "LEGO",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_LEGO"
+              ]
+            },
+            {
+              "symbol": "LGL",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_LGL"
+              ]
+            },
+            {
+              "symbol": "LODE",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_LODE"
+              ]
+            },
+            {
+              "symbol": "MCRP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MCRP"
+              ]
+            },
+            {
+              "symbol": "MHH",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MHH"
+              ]
+            },
+            {
+              "symbol": "MI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MI"
+              ]
+            },
+            {
+              "symbol": "MLSS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MLSS"
+              ]
+            },
+            {
+              "symbol": "MRT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MRT"
+              ]
+            },
+            {
+              "symbol": "MSN",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MSN"
+              ]
+            },
+            {
+              "symbol": "MTNB",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MTNB"
+              ]
+            },
+            {
+              "symbol": "MWG",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MWG"
+              ]
+            },
+            {
+              "symbol": "MXC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MXC"
+              ]
+            },
+            {
+              "symbol": "MYO",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_MYO"
+              ]
+            },
+            {
+              "symbol": "NAK",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_NAK"
+              ]
+            },
+            {
+              "symbol": "NHC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_NHC"
+              ]
+            },
+            {
+              "symbol": "NINE",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_NINE"
+              ]
+            },
+            {
+              "symbol": "NNVC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_NNVC"
+              ]
+            },
+            {
+              "symbol": "NRXS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_NRXS"
+              ]
+            },
+            {
+              "symbol": "NTIP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_NTIP"
+              ]
+            },
+            {
+              "symbol": "OGEN",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_OGEN"
+              ]
+            },
+            {
+              "symbol": "OPHC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_OPHC"
+              ]
+            },
+            {
+              "symbol": "OPTT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_OPTT"
+              ]
+            },
+            {
+              "symbol": "PAAI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PAAI"
+              ]
+            },
+            {
+              "symbol": "PED",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PED"
+              ]
+            },
+            {
+              "symbol": "PLAG",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PLAG"
+              ]
+            },
+            {
+              "symbol": "PLG",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PLG"
+              ]
+            },
+            {
+              "symbol": "PLX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PLX"
+              ]
+            },
+            {
+              "symbol": "POAS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_POAS"
+              ]
+            },
+            {
+              "symbol": "PRK",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PRK"
+              ]
+            },
+            {
+              "symbol": "PW",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PW"
+              ]
+            },
+            {
+              "symbol": "PZG",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_PZG"
+              ]
+            },
+            {
+              "symbol": "REED",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_REED"
+              ]
+            },
+            {
+              "symbol": "REI",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_REI"
+              ]
+            },
+            {
+              "symbol": "RGNT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_RGNT"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "us-current-common-complete-XASE-100",
+          "label": "us-current-common-gap-coverage",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "RLGT,ROLR,RVP,SEB,SIF,SLND,SOAR,STRW,STXS,SYNX,TGEN,THM,TMP,TMQ,TOPP,TOPS,TRX,UAC,UAVS,UEC,UMAC,USBC,UUU,UUUU,VGZ,VNRX,WRN,WWR,WYY,XPL,XTNT,YCBD",
+            "exchange": "XASE",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 32,
+          "targets": [
+            {
+              "symbol": "RLGT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_RLGT"
+              ]
+            },
+            {
+              "symbol": "ROLR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_ROLR"
+              ]
+            },
+            {
+              "symbol": "RVP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_RVP"
+              ]
+            },
+            {
+              "symbol": "SEB",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_SEB"
+              ]
+            },
+            {
+              "symbol": "SIF",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_SIF"
+              ]
+            },
+            {
+              "symbol": "SLND",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_SLND"
+              ]
+            },
+            {
+              "symbol": "SOAR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_SOAR"
+              ]
+            },
+            {
+              "symbol": "STRW",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_STRW"
+              ]
+            },
+            {
+              "symbol": "STXS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_STXS"
+              ]
+            },
+            {
+              "symbol": "SYNX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_SYNX"
+              ]
+            },
+            {
+              "symbol": "TGEN",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_TGEN"
+              ]
+            },
+            {
+              "symbol": "THM",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_THM"
+              ]
+            },
+            {
+              "symbol": "TMP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_TMP"
+              ]
+            },
+            {
+              "symbol": "TMQ",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_TMQ"
+              ]
+            },
+            {
+              "symbol": "TOPP",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_TOPP"
+              ]
+            },
+            {
+              "symbol": "TOPS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_TOPS"
+              ]
+            },
+            {
+              "symbol": "TRX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_TRX"
+              ]
+            },
+            {
+              "symbol": "UAC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_UAC"
+              ]
+            },
+            {
+              "symbol": "UAVS",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_UAVS"
+              ]
+            },
+            {
+              "symbol": "UEC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_UEC"
+              ]
+            },
+            {
+              "symbol": "UMAC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_UMAC"
+              ]
+            },
+            {
+              "symbol": "USBC",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_USBC"
+              ]
+            },
+            {
+              "symbol": "UUU",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_UUU"
+              ]
+            },
+            {
+              "symbol": "UUUU",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_UUUU"
+              ]
+            },
+            {
+              "symbol": "VGZ",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_VGZ"
+              ]
+            },
+            {
+              "symbol": "VNRX",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_VNRX"
+              ]
+            },
+            {
+              "symbol": "WRN",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_WRN"
+              ]
+            },
+            {
+              "symbol": "WWR",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_WWR"
+              ]
+            },
+            {
+              "symbol": "WYY",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_WYY"
+              ]
+            },
+            {
+              "symbol": "XPL",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_XPL"
+              ]
+            },
+            {
+              "symbol": "XTNT",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_XTNT"
+              ]
+            },
+            {
+              "symbol": "YCBD",
+              "mic": "XASE",
+              "securityIds": [
+                "ref_YCBD"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "us-current-common-complete-XNAS-0",
+          "label": "us-current-common-gap-coverage",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "ABTC,ACIC,ADAC,ADUR,ADV,AENT,AEP,AEVA,ALF,ALMU,AMLX,AMPL,AMRX,ANTX,APA,APLD,ASO,ATTO,AVBH,BCAL,BEAG,BEEP,BETR,BGLC,BHRB,BHST,BIOX,BIVI,BKR,BMR,BRFH,BRTX,BTCS,BTLN,BTQ,BTTC,BVFL,BYRN,BZAI,CAPS,CBC,CCC,CCEP,CEG,CELZ,CEPL,CETY,CGEM,CGTL,CIIT,CISO,CMTV,CNL,CNXC,COO,COSM,CPB,CRE,CRMD,CTAA,CXDO,CYCU,CYN,CZFS,DASH,DCTH,DPU,DPZ,DRH,DRS,DRVN,DTST,DUKR,DYN,DYNC,EFSI,EGHT,ENSC,EPRX,ESOA,EU,EVO,EVRG,FCUV,FER,FKWL,FLNA,FLUX,FMAC,FNGR,FNRN,FNWD,FRD,FRST,FSLY,FSUN,FTAI,FTLF,FWDI,GBFH",
+            "exchange": "XNAS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 100,
+          "targets": [
+            {
+              "symbol": "ABTC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ABTC"
+              ]
+            },
+            {
+              "symbol": "ACIC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ACIC"
+              ]
+            },
+            {
+              "symbol": "ADAC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ADAC"
+              ]
+            },
+            {
+              "symbol": "ADUR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ADUR"
+              ]
+            },
+            {
+              "symbol": "ADV",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ADV"
+              ]
+            },
+            {
+              "symbol": "AENT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_AENT"
+              ]
+            },
+            {
+              "symbol": "AEP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_AEP"
+              ]
+            },
+            {
+              "symbol": "AEVA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_AEVA"
+              ]
+            },
+            {
+              "symbol": "ALF",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ALF"
+              ]
+            },
+            {
+              "symbol": "ALMU",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ALMU"
+              ]
+            },
+            {
+              "symbol": "AMLX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_AMLX"
+              ]
+            },
+            {
+              "symbol": "AMPL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_AMPL"
+              ]
+            },
+            {
+              "symbol": "AMRX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_AMRX"
+              ]
+            },
+            {
+              "symbol": "ANTX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ANTX"
+              ]
+            },
+            {
+              "symbol": "APA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_APA"
+              ]
+            },
+            {
+              "symbol": "APLD",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_APLD"
+              ]
+            },
+            {
+              "symbol": "ASO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ASO"
+              ]
+            },
+            {
+              "symbol": "ATTO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ATTO"
+              ]
+            },
+            {
+              "symbol": "AVBH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_AVBH"
+              ]
+            },
+            {
+              "symbol": "BCAL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BCAL"
+              ]
+            },
+            {
+              "symbol": "BEAG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BEAG"
+              ]
+            },
+            {
+              "symbol": "BEEP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BEEP"
+              ]
+            },
+            {
+              "symbol": "BETR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BETR"
+              ]
+            },
+            {
+              "symbol": "BGLC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BGLC"
+              ]
+            },
+            {
+              "symbol": "BHRB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BHRB"
+              ]
+            },
+            {
+              "symbol": "BHST",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BHST"
+              ]
+            },
+            {
+              "symbol": "BIOX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BIOX"
+              ]
+            },
+            {
+              "symbol": "BIVI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BIVI"
+              ]
+            },
+            {
+              "symbol": "BKR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BKR"
+              ]
+            },
+            {
+              "symbol": "BMR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BMR"
+              ]
+            },
+            {
+              "symbol": "BRFH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BRFH"
+              ]
+            },
+            {
+              "symbol": "BRTX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BRTX"
+              ]
+            },
+            {
+              "symbol": "BTCS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BTCS"
+              ]
+            },
+            {
+              "symbol": "BTLN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BTLN"
+              ]
+            },
+            {
+              "symbol": "BTQ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BTQ"
+              ]
+            },
+            {
+              "symbol": "BTTC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BTTC"
+              ]
+            },
+            {
+              "symbol": "BVFL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BVFL"
+              ]
+            },
+            {
+              "symbol": "BYRN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BYRN"
+              ]
+            },
+            {
+              "symbol": "BZAI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_BZAI"
+              ]
+            },
+            {
+              "symbol": "CAPS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CAPS"
+              ]
+            },
+            {
+              "symbol": "CBC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CBC"
+              ]
+            },
+            {
+              "symbol": "CCC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CCC"
+              ]
+            },
+            {
+              "symbol": "CCEP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CCEP"
+              ]
+            },
+            {
+              "symbol": "CEG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CEG"
+              ]
+            },
+            {
+              "symbol": "CELZ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CELZ"
+              ]
+            },
+            {
+              "symbol": "CEPL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CEPL"
+              ]
+            },
+            {
+              "symbol": "CETY",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CETY"
+              ]
+            },
+            {
+              "symbol": "CGEM",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CGEM"
+              ]
+            },
+            {
+              "symbol": "CGTL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CGTL"
+              ]
+            },
+            {
+              "symbol": "CIIT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CIIT"
+              ]
+            },
+            {
+              "symbol": "CISO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CISO"
+              ]
+            },
+            {
+              "symbol": "CMTV",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CMTV"
+              ]
+            },
+            {
+              "symbol": "CNL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CNL"
+              ]
+            },
+            {
+              "symbol": "CNXC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CNXC"
+              ]
+            },
+            {
+              "symbol": "COO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_COO"
+              ]
+            },
+            {
+              "symbol": "COSM",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_COSM"
+              ]
+            },
+            {
+              "symbol": "CPB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CPB"
+              ]
+            },
+            {
+              "symbol": "CRE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CRE"
+              ]
+            },
+            {
+              "symbol": "CRMD",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CRMD"
+              ]
+            },
+            {
+              "symbol": "CTAA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CTAA"
+              ]
+            },
+            {
+              "symbol": "CXDO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CXDO"
+              ]
+            },
+            {
+              "symbol": "CYCU",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CYCU"
+              ]
+            },
+            {
+              "symbol": "CYN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CYN"
+              ]
+            },
+            {
+              "symbol": "CZFS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_CZFS"
+              ]
+            },
+            {
+              "symbol": "DASH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DASH"
+              ]
+            },
+            {
+              "symbol": "DCTH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DCTH"
+              ]
+            },
+            {
+              "symbol": "DPU",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DPU"
+              ]
+            },
+            {
+              "symbol": "DPZ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DPZ"
+              ]
+            },
+            {
+              "symbol": "DRH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DRH"
+              ]
+            },
+            {
+              "symbol": "DRS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DRS"
+              ]
+            },
+            {
+              "symbol": "DRVN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DRVN"
+              ]
+            },
+            {
+              "symbol": "DTST",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DTST"
+              ]
+            },
+            {
+              "symbol": "DUKR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DUKR"
+              ]
+            },
+            {
+              "symbol": "DYN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DYN"
+              ]
+            },
+            {
+              "symbol": "DYNC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_DYNC"
+              ]
+            },
+            {
+              "symbol": "EFSI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_EFSI"
+              ]
+            },
+            {
+              "symbol": "EGHT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_EGHT"
+              ]
+            },
+            {
+              "symbol": "ENSC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ENSC"
+              ]
+            },
+            {
+              "symbol": "EPRX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_EPRX"
+              ]
+            },
+            {
+              "symbol": "ESOA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ESOA"
+              ]
+            },
+            {
+              "symbol": "EU",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_EU"
+              ]
+            },
+            {
+              "symbol": "EVO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_EVO"
+              ]
+            },
+            {
+              "symbol": "EVRG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_EVRG"
+              ]
+            },
+            {
+              "symbol": "FCUV",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FCUV"
+              ]
+            },
+            {
+              "symbol": "FER",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FER"
+              ]
+            },
+            {
+              "symbol": "FKWL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FKWL"
+              ]
+            },
+            {
+              "symbol": "FLNA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FLNA"
+              ]
+            },
+            {
+              "symbol": "FLUX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FLUX"
+              ]
+            },
+            {
+              "symbol": "FMAC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FMAC"
+              ]
+            },
+            {
+              "symbol": "FNGR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FNGR"
+              ]
+            },
+            {
+              "symbol": "FNRN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FNRN"
+              ]
+            },
+            {
+              "symbol": "FNWD",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FNWD"
+              ]
+            },
+            {
+              "symbol": "FRD",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FRD"
+              ]
+            },
+            {
+              "symbol": "FRST",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FRST"
+              ]
+            },
+            {
+              "symbol": "FSLY",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FSLY"
+              ]
+            },
+            {
+              "symbol": "FSUN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FSUN"
+              ]
+            },
+            {
+              "symbol": "FTAI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FTAI"
+              ]
+            },
+            {
+              "symbol": "FTLF",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FTLF"
+              ]
+            },
+            {
+              "symbol": "FWDI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_FWDI"
+              ]
+            },
+            {
+              "symbol": "GBFH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GBFH"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "us-current-common-complete-XNAS-100",
+          "label": "us-current-common-gap-coverage",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "GCT,GDC,GEN,GIPR,GIW,GIX,GLE,GOAI,GOVX,GSAT,GTBP,GTX,HCTI,HELP,HGBL,HHS,HMR,HON,HQ,HST,HTCO,HTOO,HTZ,IBIO,INNV,INTZ,IPW,IQST,ISBA,IVDA,JATT,JMSB,KDP,KG,KMB,KRT,LAB,LEE,LIN,LWLG,LZ,MATH,MBLY,MCHB,MDCX,MKZR,MODD,MWH,MXL,NCPL,NCRA,NEOV,NMFC,NMTC,NSPR,NTRB,NWE,ODYS,OM,ONDS,OPXS,OUST,PAGP,PANW,PBLS,PCSA,PLTR,PMCB,PMTS,POWW,PPCB,PRE,PRME,PROP,PSIX,QS,QUBT,RCAT,REAX,REVB,RGC,RGS,ROP,RSSS,RZLT,SAIC,SBFM,SCWO,SENS,SERV,SFD,SGP,SHAZ,SILO,SKYE,SLNG,SMID,SMTI,SMTK,SNWV",
+            "exchange": "XNAS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 100,
+          "targets": [
+            {
+              "symbol": "GCT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GCT"
+              ]
+            },
+            {
+              "symbol": "GDC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GDC"
+              ]
+            },
+            {
+              "symbol": "GEN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GEN"
+              ]
+            },
+            {
+              "symbol": "GIPR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GIPR"
+              ]
+            },
+            {
+              "symbol": "GIW",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GIW"
+              ]
+            },
+            {
+              "symbol": "GIX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GIX"
+              ]
+            },
+            {
+              "symbol": "GLE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GLE"
+              ]
+            },
+            {
+              "symbol": "GOAI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GOAI"
+              ]
+            },
+            {
+              "symbol": "GOVX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GOVX"
+              ]
+            },
+            {
+              "symbol": "GSAT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GSAT"
+              ]
+            },
+            {
+              "symbol": "GTBP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GTBP"
+              ]
+            },
+            {
+              "symbol": "GTX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_GTX"
+              ]
+            },
+            {
+              "symbol": "HCTI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HCTI"
+              ]
+            },
+            {
+              "symbol": "HELP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HELP"
+              ]
+            },
+            {
+              "symbol": "HGBL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HGBL"
+              ]
+            },
+            {
+              "symbol": "HHS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HHS"
+              ]
+            },
+            {
+              "symbol": "HMR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HMR"
+              ]
+            },
+            {
+              "symbol": "HON",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HON"
+              ]
+            },
+            {
+              "symbol": "HQ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HQ"
+              ]
+            },
+            {
+              "symbol": "HST",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HST"
+              ]
+            },
+            {
+              "symbol": "HTCO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HTCO"
+              ]
+            },
+            {
+              "symbol": "HTOO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HTOO"
+              ]
+            },
+            {
+              "symbol": "HTZ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_HTZ"
+              ]
+            },
+            {
+              "symbol": "IBIO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_IBIO"
+              ]
+            },
+            {
+              "symbol": "INNV",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_INNV"
+              ]
+            },
+            {
+              "symbol": "INTZ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_INTZ"
+              ]
+            },
+            {
+              "symbol": "IPW",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_IPW"
+              ]
+            },
+            {
+              "symbol": "IQST",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_IQST"
+              ]
+            },
+            {
+              "symbol": "ISBA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ISBA"
+              ]
+            },
+            {
+              "symbol": "IVDA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_IVDA"
+              ]
+            },
+            {
+              "symbol": "JATT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_JATT"
+              ]
+            },
+            {
+              "symbol": "JMSB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_JMSB"
+              ]
+            },
+            {
+              "symbol": "KDP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_KDP"
+              ]
+            },
+            {
+              "symbol": "KG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_KG"
+              ]
+            },
+            {
+              "symbol": "KMB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_KMB"
+              ]
+            },
+            {
+              "symbol": "KRT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_KRT"
+              ]
+            },
+            {
+              "symbol": "LAB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_LAB"
+              ]
+            },
+            {
+              "symbol": "LEE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_LEE"
+              ]
+            },
+            {
+              "symbol": "LIN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_LIN"
+              ]
+            },
+            {
+              "symbol": "LWLG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_LWLG"
+              ]
+            },
+            {
+              "symbol": "LZ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_LZ"
+              ]
+            },
+            {
+              "symbol": "MATH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MATH"
+              ]
+            },
+            {
+              "symbol": "MBLY",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MBLY"
+              ]
+            },
+            {
+              "symbol": "MCHB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MCHB"
+              ]
+            },
+            {
+              "symbol": "MDCX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MDCX"
+              ]
+            },
+            {
+              "symbol": "MKZR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MKZR"
+              ]
+            },
+            {
+              "symbol": "MODD",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MODD"
+              ]
+            },
+            {
+              "symbol": "MWH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MWH"
+              ]
+            },
+            {
+              "symbol": "MXL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_MXL"
+              ]
+            },
+            {
+              "symbol": "NCPL",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NCPL"
+              ]
+            },
+            {
+              "symbol": "NCRA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NCRA"
+              ]
+            },
+            {
+              "symbol": "NEOV",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NEOV"
+              ]
+            },
+            {
+              "symbol": "NMFC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NMFC"
+              ]
+            },
+            {
+              "symbol": "NMTC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NMTC"
+              ]
+            },
+            {
+              "symbol": "NSPR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NSPR"
+              ]
+            },
+            {
+              "symbol": "NTRB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NTRB"
+              ]
+            },
+            {
+              "symbol": "NWE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_NWE"
+              ]
+            },
+            {
+              "symbol": "ODYS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ODYS"
+              ]
+            },
+            {
+              "symbol": "OM",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_OM"
+              ]
+            },
+            {
+              "symbol": "ONDS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ONDS"
+              ]
+            },
+            {
+              "symbol": "OPXS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_OPXS"
+              ]
+            },
+            {
+              "symbol": "OUST",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_OUST"
+              ]
+            },
+            {
+              "symbol": "PAGP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PAGP"
+              ]
+            },
+            {
+              "symbol": "PANW",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PANW"
+              ]
+            },
+            {
+              "symbol": "PBLS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PBLS"
+              ]
+            },
+            {
+              "symbol": "PCSA",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PCSA"
+              ]
+            },
+            {
+              "symbol": "PLTR",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PLTR"
+              ]
+            },
+            {
+              "symbol": "PMCB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PMCB"
+              ]
+            },
+            {
+              "symbol": "PMTS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PMTS"
+              ]
+            },
+            {
+              "symbol": "POWW",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_POWW"
+              ]
+            },
+            {
+              "symbol": "PPCB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PPCB"
+              ]
+            },
+            {
+              "symbol": "PRE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PRE"
+              ]
+            },
+            {
+              "symbol": "PRME",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PRME"
+              ]
+            },
+            {
+              "symbol": "PROP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PROP"
+              ]
+            },
+            {
+              "symbol": "PSIX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_PSIX"
+              ]
+            },
+            {
+              "symbol": "QS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_QS"
+              ]
+            },
+            {
+              "symbol": "QUBT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_QUBT"
+              ]
+            },
+            {
+              "symbol": "RCAT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_RCAT"
+              ]
+            },
+            {
+              "symbol": "REAX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_REAX"
+              ]
+            },
+            {
+              "symbol": "REVB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_REVB"
+              ]
+            },
+            {
+              "symbol": "RGC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_RGC"
+              ]
+            },
+            {
+              "symbol": "RGS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_RGS"
+              ]
+            },
+            {
+              "symbol": "ROP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ROP"
+              ]
+            },
+            {
+              "symbol": "RSSS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_RSSS"
+              ]
+            },
+            {
+              "symbol": "RZLT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_RZLT"
+              ]
+            },
+            {
+              "symbol": "SAIC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SAIC"
+              ]
+            },
+            {
+              "symbol": "SBFM",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SBFM"
+              ]
+            },
+            {
+              "symbol": "SCWO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SCWO"
+              ]
+            },
+            {
+              "symbol": "SENS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SENS"
+              ]
+            },
+            {
+              "symbol": "SERV",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SERV"
+              ]
+            },
+            {
+              "symbol": "SFD",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SFD"
+              ]
+            },
+            {
+              "symbol": "SGP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SGP"
+              ]
+            },
+            {
+              "symbol": "SHAZ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SHAZ"
+              ]
+            },
+            {
+              "symbol": "SILO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SILO"
+              ]
+            },
+            {
+              "symbol": "SKYE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SKYE"
+              ]
+            },
+            {
+              "symbol": "SLNG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SLNG"
+              ]
+            },
+            {
+              "symbol": "SMID",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SMID"
+              ]
+            },
+            {
+              "symbol": "SMTI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SMTI"
+              ]
+            },
+            {
+              "symbol": "SMTK",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SMTK"
+              ]
+            },
+            {
+              "symbol": "SNWV",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SNWV"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "us-current-common-complete-XNAS-200",
+          "label": "us-current-common-gap-coverage",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "SOTK,SOWG,SPCX,SSII,SSM,SURG,SWIM,TCRX,TLN,TOMZ,TPCS,TRON,TRT,TSSI,VABK,VBIO,VHC,VHUB,VIVK,VNCE,VS,WETH,WFCF,WKSP,WMG,WMT,WRAP,XE,XRX,XXII,ZYME",
+            "exchange": "XNAS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 31,
+          "targets": [
+            {
+              "symbol": "SOTK",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SOTK"
+              ]
+            },
+            {
+              "symbol": "SOWG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SOWG"
+              ]
+            },
+            {
+              "symbol": "SPCX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SPCX"
+              ]
+            },
+            {
+              "symbol": "SSII",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SSII"
+              ]
+            },
+            {
+              "symbol": "SSM",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SSM"
+              ]
+            },
+            {
+              "symbol": "SURG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SURG"
+              ]
+            },
+            {
+              "symbol": "SWIM",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_SWIM"
+              ]
+            },
+            {
+              "symbol": "TCRX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_TCRX"
+              ]
+            },
+            {
+              "symbol": "TLN",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_TLN"
+              ]
+            },
+            {
+              "symbol": "TOMZ",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_TOMZ"
+              ]
+            },
+            {
+              "symbol": "TPCS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_TPCS"
+              ]
+            },
+            {
+              "symbol": "TRON",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_TRON"
+              ]
+            },
+            {
+              "symbol": "TRT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_TRT"
+              ]
+            },
+            {
+              "symbol": "TSSI",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_TSSI"
+              ]
+            },
+            {
+              "symbol": "VABK",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_VABK"
+              ]
+            },
+            {
+              "symbol": "VBIO",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_VBIO"
+              ]
+            },
+            {
+              "symbol": "VHC",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_VHC"
+              ]
+            },
+            {
+              "symbol": "VHUB",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_VHUB"
+              ]
+            },
+            {
+              "symbol": "VIVK",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_VIVK"
+              ]
+            },
+            {
+              "symbol": "VNCE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_VNCE"
+              ]
+            },
+            {
+              "symbol": "VS",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_VS"
+              ]
+            },
+            {
+              "symbol": "WETH",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_WETH"
+              ]
+            },
+            {
+              "symbol": "WFCF",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_WFCF"
+              ]
+            },
+            {
+              "symbol": "WKSP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_WKSP"
+              ]
+            },
+            {
+              "symbol": "WMG",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_WMG"
+              ]
+            },
+            {
+              "symbol": "WMT",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_WMT"
+              ]
+            },
+            {
+              "symbol": "WRAP",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_WRAP"
+              ]
+            },
+            {
+              "symbol": "XE",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_XE"
+              ]
+            },
+            {
+              "symbol": "XRX",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_XRX"
+              ]
+            },
+            {
+              "symbol": "XXII",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_XXII"
+              ]
+            },
+            {
+              "symbol": "ZYME",
+              "mic": "XNAS",
+              "securityIds": [
+                "ref_ZYME"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "us-current-common-complete-XNYS-0",
+          "label": "us-current-common-gap-coverage",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "AHRT,ALIT,AMR,AMTB,AMTD,ARDT,AUB,AVNT,BARK,BEBE,BFLY,BLDR,BMNR,BNL,BOBS,BUR,BWMX,CALY,CBAN,CLBR,COOK,COSO,CTRE,CVLG,CXM,DFH,DINO,DOCS,EFOR,EQBK,ETSY,EVAC,EXPD,FLUT,FOUR,GBCI,GENI,GRBK,GRMN,HHH,HLIO,HLLY,HOMB,HTB,IIIN,JACS,JAN,KFRC,KNSL,KNTK,LOB,LUCK,LUXE,MATV,NIC,NTST,NYC,PAAS,PATH,PCOR,PERF,PFLT,PNNT,PRIM,PS,QXO,RHLD,RNST,SBSI,SES,SFBS,SG,SKIL,SKYH,SLGN,SMBK,SMRT,SNDA,SOUL,SPIR,SSB,SST,STEM,TCBX,TFIN,TGLS,TRAD,TRIN,UHAL,VATE,VIRT,VRTS,VTEX,WT,XPER,XTND",
+            "exchange": "XNYS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 96,
+          "targets": [
+            {
+              "symbol": "AHRT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_AHRT"
+              ]
+            },
+            {
+              "symbol": "ALIT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_ALIT"
+              ]
+            },
+            {
+              "symbol": "AMR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_AMR"
+              ]
+            },
+            {
+              "symbol": "AMTB",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_AMTB"
+              ]
+            },
+            {
+              "symbol": "AMTD",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_AMTD"
+              ]
+            },
+            {
+              "symbol": "ARDT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_ARDT"
+              ]
+            },
+            {
+              "symbol": "AUB",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_AUB"
+              ]
+            },
+            {
+              "symbol": "AVNT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_AVNT"
+              ]
+            },
+            {
+              "symbol": "BARK",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BARK"
+              ]
+            },
+            {
+              "symbol": "BEBE",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BEBE"
+              ]
+            },
+            {
+              "symbol": "BFLY",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BFLY"
+              ]
+            },
+            {
+              "symbol": "BLDR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BLDR"
+              ]
+            },
+            {
+              "symbol": "BMNR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BMNR"
+              ]
+            },
+            {
+              "symbol": "BNL",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BNL"
+              ]
+            },
+            {
+              "symbol": "BOBS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BOBS"
+              ]
+            },
+            {
+              "symbol": "BUR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BUR"
+              ]
+            },
+            {
+              "symbol": "BWMX",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_BWMX"
+              ]
+            },
+            {
+              "symbol": "CALY",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_CALY"
+              ]
+            },
+            {
+              "symbol": "CBAN",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_CBAN"
+              ]
+            },
+            {
+              "symbol": "CLBR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_CLBR"
+              ]
+            },
+            {
+              "symbol": "COOK",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_COOK"
+              ]
+            },
+            {
+              "symbol": "COSO",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_COSO"
+              ]
+            },
+            {
+              "symbol": "CTRE",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_CTRE"
+              ]
+            },
+            {
+              "symbol": "CVLG",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_CVLG"
+              ]
+            },
+            {
+              "symbol": "CXM",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_CXM"
+              ]
+            },
+            {
+              "symbol": "DFH",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_DFH"
+              ]
+            },
+            {
+              "symbol": "DINO",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_DINO"
+              ]
+            },
+            {
+              "symbol": "DOCS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_DOCS"
+              ]
+            },
+            {
+              "symbol": "EFOR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_EFOR"
+              ]
+            },
+            {
+              "symbol": "EQBK",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_EQBK"
+              ]
+            },
+            {
+              "symbol": "ETSY",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_ETSY"
+              ]
+            },
+            {
+              "symbol": "EVAC",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_EVAC"
+              ]
+            },
+            {
+              "symbol": "EXPD",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_EXPD"
+              ]
+            },
+            {
+              "symbol": "FLUT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_FLUT"
+              ]
+            },
+            {
+              "symbol": "FOUR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_FOUR"
+              ]
+            },
+            {
+              "symbol": "GBCI",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_GBCI"
+              ]
+            },
+            {
+              "symbol": "GENI",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_GENI"
+              ]
+            },
+            {
+              "symbol": "GRBK",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_GRBK"
+              ]
+            },
+            {
+              "symbol": "GRMN",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_GRMN"
+              ]
+            },
+            {
+              "symbol": "HHH",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_HHH"
+              ]
+            },
+            {
+              "symbol": "HLIO",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_HLIO"
+              ]
+            },
+            {
+              "symbol": "HLLY",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_HLLY"
+              ]
+            },
+            {
+              "symbol": "HOMB",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_HOMB"
+              ]
+            },
+            {
+              "symbol": "HTB",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_HTB"
+              ]
+            },
+            {
+              "symbol": "IIIN",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_IIIN"
+              ]
+            },
+            {
+              "symbol": "JACS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_JACS"
+              ]
+            },
+            {
+              "symbol": "JAN",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_JAN"
+              ]
+            },
+            {
+              "symbol": "KFRC",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_KFRC"
+              ]
+            },
+            {
+              "symbol": "KNSL",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_KNSL"
+              ]
+            },
+            {
+              "symbol": "KNTK",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_KNTK"
+              ]
+            },
+            {
+              "symbol": "LOB",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_LOB"
+              ]
+            },
+            {
+              "symbol": "LUCK",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_LUCK"
+              ]
+            },
+            {
+              "symbol": "LUXE",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_LUXE"
+              ]
+            },
+            {
+              "symbol": "MATV",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_MATV"
+              ]
+            },
+            {
+              "symbol": "NIC",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_NIC"
+              ]
+            },
+            {
+              "symbol": "NTST",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_NTST"
+              ]
+            },
+            {
+              "symbol": "NYC",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_NYC"
+              ]
+            },
+            {
+              "symbol": "PAAS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PAAS"
+              ]
+            },
+            {
+              "symbol": "PATH",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PATH"
+              ]
+            },
+            {
+              "symbol": "PCOR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PCOR"
+              ]
+            },
+            {
+              "symbol": "PERF",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PERF"
+              ]
+            },
+            {
+              "symbol": "PFLT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PFLT"
+              ]
+            },
+            {
+              "symbol": "PNNT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PNNT"
+              ]
+            },
+            {
+              "symbol": "PRIM",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PRIM"
+              ]
+            },
+            {
+              "symbol": "PS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_PS"
+              ]
+            },
+            {
+              "symbol": "QXO",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_QXO"
+              ]
+            },
+            {
+              "symbol": "RHLD",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_RHLD"
+              ]
+            },
+            {
+              "symbol": "RNST",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_RNST"
+              ]
+            },
+            {
+              "symbol": "SBSI",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SBSI"
+              ]
+            },
+            {
+              "symbol": "SES",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SES"
+              ]
+            },
+            {
+              "symbol": "SFBS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SFBS"
+              ]
+            },
+            {
+              "symbol": "SG",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SG"
+              ]
+            },
+            {
+              "symbol": "SKIL",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SKIL"
+              ]
+            },
+            {
+              "symbol": "SKYH",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SKYH"
+              ]
+            },
+            {
+              "symbol": "SLGN",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SLGN"
+              ]
+            },
+            {
+              "symbol": "SMBK",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SMBK"
+              ]
+            },
+            {
+              "symbol": "SMRT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SMRT"
+              ]
+            },
+            {
+              "symbol": "SNDA",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SNDA"
+              ]
+            },
+            {
+              "symbol": "SOUL",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SOUL"
+              ]
+            },
+            {
+              "symbol": "SPIR",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SPIR"
+              ]
+            },
+            {
+              "symbol": "SSB",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SSB"
+              ]
+            },
+            {
+              "symbol": "SST",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_SST"
+              ]
+            },
+            {
+              "symbol": "STEM",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_STEM"
+              ]
+            },
+            {
+              "symbol": "TCBX",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_TCBX"
+              ]
+            },
+            {
+              "symbol": "TFIN",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_TFIN"
+              ]
+            },
+            {
+              "symbol": "TGLS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_TGLS"
+              ]
+            },
+            {
+              "symbol": "TRAD",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_TRAD"
+              ]
+            },
+            {
+              "symbol": "TRIN",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_TRIN"
+              ]
+            },
+            {
+              "symbol": "UHAL",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_UHAL"
+              ]
+            },
+            {
+              "symbol": "VATE",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_VATE"
+              ]
+            },
+            {
+              "symbol": "VIRT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_VIRT"
+              ]
+            },
+            {
+              "symbol": "VRTS",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_VRTS"
+              ]
+            },
+            {
+              "symbol": "VTEX",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_VTEX"
+              ]
+            },
+            {
+              "symbol": "WT",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_WT"
+              ]
+            },
+            {
+              "symbol": "XPER",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_XPER"
+              ]
+            },
+            {
+              "symbol": "XTND",
+              "mic": "XNYS",
+              "securityIds": [
+                "ref_XTND"
+              ]
+            }
+          ]
         }
       ]
     },
