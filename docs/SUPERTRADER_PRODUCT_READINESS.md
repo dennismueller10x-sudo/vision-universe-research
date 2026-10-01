@@ -1,4 +1,12 @@
-# Supertrader — Product Readiness (Stand 30.09.2026, Daten bis 28.09.2026)
+# Supertrader — Product Readiness (Stand 01.10.2026, Daten bis 28.09.2026)
+
+> Runde 4:
+> - Donchian/Turtle ist live.
+> - CAN SLIM (5 von 7 Kriterien) und Piotroski (8 von 9 Signalen) laufen als gekennzeichnete Teilprüfungen.
+> - Ein explorativer Wochen-Pilot liegt vor (Donchian 20/10, nur heute gelistete Titel; Ergebnis: −2,5 % p. a. gegenüber +8,1 % beim Vergleichsuniversum, kein Nachweis).
+> - Die mobile Oberfläche ist neu gestaltet.
+>
+> Die vollständige Matrix steht in `docs/SUPERTRADER_PRODUCT_MATRIX.md`.
 
 Kurzfassung: Supertrader ist als **transparente, regelbasierte Live-Beobachtung** nutzbar.
 Kein Modell ist backtest-validiert; Supertrader zeigt deshalb nirgends Rendite, Drawdown,

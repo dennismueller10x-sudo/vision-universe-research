@@ -9,6 +9,7 @@
 // MULTI_SOURCE_CONFIRMED, SECONDARY_ONLY, DISPUTED, VU_FORMALIZATION,
 // VU_EXTENSION, NOT_VERIFIABLE.
 
+import { buildR4 } from './registry-r4.mjs';
 export const REGISTRY_VERSION = 'supertrader-registry-1.0.0';
 
 export const EVIDENCE = ['PRIMARY_EXPLICIT', 'PRIMARY_INFERRED', 'MULTI_SOURCE_CONFIRMED', 'SECONDARY_ONLY', 'DISPUTED', 'VU_FORMALIZATION', 'VU_EXTENSION', 'NOT_VERIFIABLE'];
@@ -463,6 +464,9 @@ const minervini = {
   ],
 };
 
+/* ===================== RUNDE 4: Donchian, CAN SLIM, Piotroski ===================== */
+const { donchian, canslim, piotroski } = buildR4({ f, NONE, NV, rule, DNA_FIELDS });
+
 /* ============================ ADVANCED ============================ */
 function advanced(id, slug, name, originator, family, why, sources, status = ['ADVANCED_RESEARCH']) {
   const pending = f('Research in progress — noch nicht spezifiziert.', 'NOT_VERIFIABLE');
@@ -483,14 +487,11 @@ function advanced(id, slug, name, originator, family, why, sources, status = ['A
 const advancedList = [
   advanced('KK_EPISODIC_PIVOT', 'kullamaegi-episodic-pivot', 'Kullamägi Episodic Pivot', 'Kristjan Kullamägi', 'Event-driven Momentum', 'Überraschender Katalysator, Gap ≥ 10 %, extremes Volumen. Blockiert durch fehlende historische Konsens-, Guidance- und News-Zeitstempel.', ['SRC-KK-SETUPS', 'SRC-KK-FAQ']),
   advanced('KK_PARABOLIC_SHORT', 'kullamaegi-parabolic-short', 'Kullamägi Parabolic Short', 'Kristjan Kullamägi', 'Exhaustion Short', 'Sein riskantestes Setup. Blockiert durch fehlende Borrow-/Locate-, Gebühren- und Intraday-Ausführungsdaten.', ['SRC-KK-SETUPS']),
-  advanced('CANSLIM', 'can-slim', 'CAN SLIM', 'William O’Neil', 'Growth-Momentum', 'Nächste Research-Welle: Vergleichsfamilie für Minervini.', ['SRC-BL-CANSLIM', 'SRC-BL-CANSLIM-IBD']),
-  advanced('PIOTROSKI_F', 'piotroski-f-score', 'Piotroski F-Score', 'Joseph Piotroski', 'Value-Quality', 'Nächste Research-Welle: Vergleichsfamilie für Greenblatt.', ['SRC-BL-PIOTROSKI']),
-  advanced('DONCHIAN_TURTLE', 'donchian-turtle', 'Donchian / Turtle Trend', 'Richard Donchian / Richard Dennis', 'Trendfolge', 'Nächste Research-Welle: Vergleichsfamilie für Darvas.', ['SRC-BL-DONCHIAN', 'SRC-BL-TURTLE']),
   advanced('MARKET_WIZARDS_NEXT', 'market-wizards', 'Weitere Market-Wizards-Modelle', 'Schwager / Coyle (Hrsg.)', 'Diverse', 'Das neue Market-Wizards-Buch ist nur als Vorschau zugänglich und wurde NICHT vollständig gelesen. Keine Regel wird daraus abgeleitet, bevor die Kapitel vorliegen.', ['SRC-MW-NEXTGEN']),
 ];
 
 // Gemeinsame Lifecycle-Regeln gehoeren zu jeder live gerechneten Strategie.
-for (const s of [momentum, weinstein, darvas, minervini]) s.rules.push(...lifecycleRules(s.strategy_version));
+for (const s of [momentum, weinstein, darvas, minervini, donchian]) s.rules.push(...lifecycleRules(s.strategy_version));
 
 /* ============================ REGELKARTEN ============================ */
 // Eine Regelkarte je live gerechneter Variante: was vorbereitet, was bestaetigt,
@@ -646,7 +647,7 @@ greenblatt.rule_cards = [{
 }];
 
 // Herkunft je Sektion aus den Regeln ableiten.
-for (const s of [momentum, weinstein, darvas, minervini, greenblatt]) {
+for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, canslim, piotroski]) {
   const byId = new Map(s.rules.map((r) => [r.rule_id, r]));
   for (const card of s.rule_cards) {
     for (const x of [...card.sections, ...card.edge_cases]) {
@@ -659,7 +660,11 @@ for (const s of [momentum, weinstein, darvas, minervini, greenblatt]) {
   }
 }
 
-export const STRATEGIES = [greenblatt, momentum, weinstein, darvas, minervini, ...advancedList];
+export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, canslim, piotroski, greenblatt, ...advancedList];
+// Produktmodus: LIVE (Ein-/Ausstiege werden gerechnet), PARTIAL_CHECK (nur
+// pruefbare Kriterien, keine Signale), DATA_PENDING (Regeln beschrieben, Daten
+// fehlen), RESEARCH (nur Namenskarte, keine Regeln).
+for (const s of STRATEGIES) if (!s.mode) s.mode = s.advanced ? 'RESEARCH' : s.strategy_id === 'GREENBLATT_VALUE' ? 'DATA_PENDING' : 'LIVE';
 
 export const INTERNAL_SOURCES = [
   { source_id: 'SRC-INTERNAL-VU', title: 'Vision-Universe-Formalisierung (Supertrader Registry)', author: 'Vision Universe', publisher_or_site: 'research.visionuniverse.de', url: null, source_type: 'VU_INTERNAL', level: null, access: 'PUBLIC_FULL', retrieved_at: null, url_verification: 'NOT_APPLICABLE', content_retrieved_by_vu: true, used_for: [], claims_supported: 'Messbare Übersetzung qualitativer Regeln. Keine Aussage über die Originalmethode.', evidence_status_ceiling: 'VU_FORMALIZATION', notes: 'Jede Regel mit dieser Quelle trägt VU_formalization_flag = true.' },
