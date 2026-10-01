@@ -1,0 +1,153 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const {createMarketstackClient,estimateCredits}=require('../../providers/marketstack/client.js');
+const {createMarketstackProvider,normalizeBar,assetType}=require('../../providers/marketstack/adapter.js');
+const response=(data,status=200,headers={})=>({status,headers:{get:k=>headers[k]??null},text:async()=>JSON.stringify(data)});
+const client=(extra={})=>createMarketstackClient({apiKey:'TEST_SECRET_NEVER_LOG',minIntervalMs:0,baseBackoffMs:0,sleep:async()=>{},...extra});
+const mapping={symbol:'SAP.DE',exchange:'XETR',currency:'EUR',assetType:'equity',listingId:'listing_sap_xetr',securityId:'security_sap'};
+const row={symbol:'SAP.DE',exchange:'XETR',price_currency:'EUR',asset_type:'Stock',date:'2026-09-30T00:00:00+0000',open:200,high:210,low:199,close:208,volume:1000,adj_open:100,adj_high:105,adj_low:99.5,adj_close:104,adj_volume:2000,split_factor:2,dividend:1};
+const provider=(fetchImpl,extra={})=>createMarketstackProvider({client:client({fetchImpl}),mappings:{sap:mapping},...extra});
+test('cost accounting reserves ETF multiplier and symbols on every page',()=>{
+ assert.equal(estimateCredits('/etflist'),20);assert.equal(estimateCredits('/etfholdings'),20);assert.equal(estimateCredits('/eod',{symbols:'AAPL,MSFT,AAPL'}),2);
+});
+test('no credential means zero calls',async()=>{
+ let calls=0;const c=client({apiKey:'',fetchImpl:async()=>{calls++;}});assert.equal((await c.request('/exchanges')).reason,'notConfigured');assert.equal(calls,0);
+});
+test('credentials injected only at fetch and absent from result/error/accounting',async()=>{
+ const c=client({maxRetries:0,fetchImpl:async url=>{assert.match(url,/access_key=TEST_SECRET_NEVER_LOG/);throw new Error(url);}});
+ const result=await c.request('/eod',{symbols:'AAPL'});assert.equal(result.reason,'networkError');assert.ok(!JSON.stringify({result,stats:c.stats(),health:c.health()}).includes('TEST_SECRET_NEVER_LOG'));
+});
+test('provider error text and nested credentials are sanitized',async()=>{
+ const c=client({fetchImpl:async()=>response({data:[{safe:'x',access_key:'TEST_SECRET_NEVER_LOG',name:'TEST_SECRET_NEVER_LOG'}]})});
+ const res=await c.request('/exchanges');assert.ok(!JSON.stringify(res).includes('TEST_SECRET_NEVER_LOG'));assert.equal(res.data.data[0].name,'[REDACTED]');
+});
+test('ETF safety budget blocks before sending and retries reserve credits',async()=>{
+ let calls=0;const c=client({maxCredits:21,fetchImpl:async()=>{calls++;return response({},503);}});
+ const res=await c.request('/etfholdings',{ticker:'SPY'});assert.equal(res.reason,'budgetExceeded');assert.equal(calls,1);assert.equal(c.stats().estimatedCreditsConsumed,20);
+});
+test('HTTP and HTTP200 monthly quotas never retry; entitlements remain explicit',async()=>{
+ for(const status of [200,429]) {
+  let calls=0;const c=client({fetchImpl:async()=>{calls++;return response({error:{code:'too_many_requests',message:'TEST_SECRET_NEVER_LOG'}},status);}});
+  assert.equal((await c.request('/eod')).reason,'quotaExceeded');assert.equal(calls,1);
+ }
+ const c=client({fetchImpl:async()=>response({error:{code:'function_access_restricted'}},403)});
+ assert.equal((await c.request('/company_facts')).reason,'entitlementRestricted');
+});
+test('rate throttling respects Retry-After and succeeds, including body-less429',async()=>{
+ for(const body of [{error:{code:'rate_limit_reached'}},{}]) {
+  let calls=0,waits=[];const c=client({sleep:async ms=>waits.push(ms),fetchImpl:async()=>++calls===1?response(body,429,{'retry-after':'2'}):response({data:[]})});
+  assert.equal((await c.request('/exchanges')).ok,true);assert.equal(calls,2);assert.deepEqual(waits,[2000]);assert.equal(c.stats().requestsAttempted,2);
+ }
+});
+test('timeout bounds hanging body and does not leak a URL',async()=>{
+ const c=client({timeoutMs:10,maxRetries:0,fetchImpl:async()=>({status:200,text:async()=>new Promise(()=>{})})});
+ assert.equal((await c.request('/exchanges')).reason,'timeout');assert.equal(c.stats().requestsAttempted,1);
+});
+test('pagination returns all pages, resume cursor on safety block, detects stalled offset',async()=>{
+ const c=client({fetchImpl:async url=>{const offset=Number(new URL(url).searchParams.get('offset'));return response({pagination:{offset,count:1,total:2},data:[{offset}]});}});
+ const res=await c.paginate('/exchanges',{limit:1});assert.deepEqual(res.data,[{offset:0},{offset:1}]);assert.equal(res.complete,true);
+ const blocked=client({maxRequests:1,fetchImpl:async()=>response({pagination:{offset:0,count:1,total:2},data:[1]})});
+ const partial=await blocked.paginate('/exchanges',{limit:1});assert.equal(partial.complete,false);assert.equal(partial.nextOffset,1);assert.deepEqual(partial.data,[1]);
+ const stalled=client({fetchImpl:async()=>response({pagination:{offset:0,count:1,total:3},data:[1]})});
+ assert.equal((await stalled.paginate('/exchanges',{limit:1})).reason,'invalidPagination');
+});
+test('cache and concurrent identical requests consume one HTTP request',async()=>{
+ let calls=0;const c=client({fetchImpl:async()=>{calls++;return response({data:[1]});}});
+ await Promise.all([c.request('/exchanges'),c.request('/exchanges')]);assert.equal((await c.request('/exchanges')).fromCache,true);assert.equal(calls,1);assert.equal(c.stats().deduplicated,1);
+});
+test('batching is bounded and retains remaining work',async()=>{
+ const c=client({maxCredits:2,fetchImpl:async()=>response({data:[]})});
+ const res=await c.requestBatches('/eod',['A','B','C'],{}, {batchSize:2});assert.equal(res.ok,false);assert.equal(res.processed,2);assert.equal(res.remaining,1);
+});
+test('non-provider destinations, credential parameters, relative traversal rejected',async()=>{
+ assert.throws(()=>client({baseUrl:'https://example.com'}));assert.throws(()=>client({baseUrl:'http://api.marketstack.com'}));
+ const c=client();assert.equal((await c.request('/../eod')).reason,'invalidEndpoint');assert.equal((await c.request('/eod',{access_key:'bad'})).reason,'invalidParameters');
+});
+test('listing identity mandatory; no symbol-only/currency/asset type inference',async()=>{
+ let calls=0;const p=provider(async()=>{calls++;});assert.equal((await p.getDailyBars('SAP')).reason,'symbolUnmapped');assert.equal(calls,0);
+ const bad=provider(async()=>{}, {mappings:{sap:{symbol:'SAP.DE'}}});assert.equal((await bad.getDailyBars('sap')).reason,'incompleteListingIdentity');
+ assert.equal(assetType('ETF'),'etf');assert.equal(assetType('Fund'),null);assert.equal(assetType('Preferred Stock'),null);
+});
+test('canonical normalization preserves raw+adjusted/currency/freshness and rejects bad bars',()=>{
+ const good=normalizeBar('sap',row,mapping,{retrievedAt:'2026-10-01T10:00:00Z'});assert.equal(good.ok,true);assert.equal(good.bar.currency,'EUR');assert.equal(good.bar.close,208);assert.equal(good.bar.adjustedClose,null);assert.equal(good.bar.adjustmentObservation.close,104);assert.equal(good.bar.adjustmentStatus,'unknown');assert.equal(good.bar.delay_state,'EOD_ONLY');
+ for(const bad of [{close:0},{low:220},{volume:-1},{adj_close:-2},{date:'2026-02-30'},{split_factor:0}])assert.equal(normalizeBar('sap',{...row,...bad},mapping).ok,false);
+ assert.equal(normalizeBar('sap',{...row,price_currency:'USD'},mapping).reason,'currencyMismatch');
+ assert.equal(normalizeBar('sap',{...row,exchange:'XNYS'},mapping).reason,'exchangeMismatch');
+});
+test('provider sorts/dedupes, rejects mixed venue, exposes anomalies, caches actions',async()=>{
+ let calls=0;const p=provider(async()=>{calls++;return response({data:[row,row,{...row,date:'2026-09-29',close:0}]});});
+ const res=await p.getDailyBars('sap');assert.equal(res.available,true);assert.equal(res.data.bars.length,1);assert.equal(res.data.anomalies.length,2);
+ const actions=await p.getCorporateActions('sap');assert.equal(actions.data.length,2);assert.equal(actions.data[0].announcedAt,null);assert.equal(calls,1);
+ const invalid=provider(async()=>response({data:[row,{...row,price_currency:'USD'}]}));assert.equal((await invalid.getDailyBars('sap')).reason,'identityMismatch');
+});
+test('ETF listing prices remain usable while equity fundamentals are absent',async()=>{
+ const etf={...mapping,symbol:'SPY',exchange:'ARCX',currency:'USD',assetType:'etf'};
+ const p=provider(async()=>response({data:[{...row,symbol:'SPY',exchange:'ARCX',price_currency:'USD',asset_type:'ETF'}]}),{mappings:{spy:etf}});
+ const res=await p.getDailyBars('spy');assert.equal(res.data.assetType,'etf');assert.equal(typeof p.getFacts,'undefined');
+});
+test('LSE pence cannot silently become GBP',async()=>{
+ const p=provider(async()=>response({data:[{...row,symbol:'SHEL.L',exchange:'XLON',price_currency:'GBX'}]}),{mappings:{shell:{...mapping,symbol:'SHEL.L',exchange:'XLON',currency:'GBP'}}});
+ assert.equal((await p.getDailyBars('shell')).reason,'identityMismatch');
+});
+test('quotes preserve EOD and intraday UNKNOWN delay, no LIVE claim',async()=>{
+ const p=provider(async()=>response({data:[row]}));assert.equal((await p.getQuote('sap')).data.delay_state,'EOD_ONLY');
+ const i=provider(async()=>response({data:[{...row,symbol:'SAP-DE',exchange:'IEXG',marketstack_last:209}]}),{mappings:{sap:{...mapping,intradayExchange:'IEXG'}}});const quote=await i.getQuote('sap',{frequency:'INTRADAY'});assert.equal(quote.data.last,209);assert.equal(quote.data.delay_state,'UNKNOWN');
+ assert.equal(p.capabilities.sets.market.realtime,null);
+});
+test('snapshot venue/currency and multi-match ambiguity are gated',async()=>{
+ const good=provider(async()=>response({data:[{ticker:'SAP.DE',exchange_code:'XETR',currency:'EUR',price:'209.5',trade_last:'2026-10-01T10:00:00Z'}]}));assert.equal((await good.getQuote('sap',{frequency:'SNAPSHOT'})).data.last,209.5);
+ const bad=provider(async()=>response({data:[row,row]}));assert.equal((await bad.getQuote('sap')).reason,'ambiguousListing');
+});
+
+test('HTTP200 internal errors retry without billing or secret claims',async()=>{let calls=0;const c=client({fetchImpl:async()=>++calls===1?response({error:{code:'internal_error'}}):response({data:[]})});assert.equal((await c.request('/exchanges')).ok,true);assert.equal(c.stats().requestsAttempted,2);});
+
+test('official numeric code plus type errors classify entitlement and terminal quotas',async()=>{
+ for(const type of ['usage_limit_reached','daily_limit_reached','fair_use_limit_reached','fairuse_limit_reached']) {
+  let calls=0;const c=client({fetchImpl:async()=>{calls++;return response({error:{code:104,type,info:'TEST_SECRET_NEVER_LOG'}},429);}});
+  assert.equal((await c.request('/eod')).reason,'quotaExceeded');assert.equal(calls,1);
+ }
+ const c=client({fetchImpl:async()=>response({error:{code:105,type:'function_access_restricted'}},403)});
+ assert.equal((await c.request('/company_facts')).reason,'entitlementRestricted');
+ let calls=0;const r=client({fetchImpl:async()=>++calls===1?response({error:{code:106,type:'rate_limit_reached'}},429):response({data:[]})});
+ assert.equal((await r.request('/exchanges')).ok,true);assert.equal(calls,2);
+ let attempts=0;const i=client({fetchImpl:async()=>++attempts===1?response({error:{code:0,type:'internal_error'}},500):response({data:[]})});assert.equal((await i.request('/exchanges')).ok,true);assert.equal(attempts,2);
+});
+test('metadata normalizes direct singular and wrapped plural exchange responses',async()=>{
+ for(const payload of [{name:'SAP SE',symbol:'SAP.DE',isin:'DE0007164600',item_type:'equity',stock_exchange:{mic:'XETR'}},{data:{name:'SAP SE',symbol:'SAP.DE',stock_exchanges:[{mic:'XETR'}]}}]) {
+  const p=provider(async()=>response(payload));const meta=await p.getMetadata('sap');assert.equal(meta.available,true);assert.equal(meta.data.name,'SAP SE');assert.equal(meta.data.currency,'EUR');assert.equal(meta.data.assetType,'equity');
+ }
+ const p=provider(async()=>response({name:'Wrong',symbol:'SAP',stock_exchange:{mic:'XNYS'}}));assert.equal((await p.getMetadata('sap')).reason,'symbolMismatch');
+});
+
+test('intraday trading date uses exchange timezone including DST and midnight',()=>{
+ const us={...mapping,symbol:'AAPL',exchange:'XNAS',currency:'USD',timezone:'America/New_York',intradayExchange:'IEXG'};
+ const late={...row,symbol:'AAPL',exchange:'IEXG',price_currency:'USD',date:'2026-10-01T00:00:00Z'};
+ assert.equal(normalizeBar('aapl',late,us,{frequency:'INTRADAY'}).bar.date,'2026-09-30');
+ const winter={...late,date:'2026-01-03T01:00:00Z'};assert.equal(normalizeBar('aapl',winter,us,{frequency:'INTRADAY'}).bar.date,'2026-01-02');
+ assert.equal(normalizeBar('sap',row,mapping,{frequency:'INTRADAY'}).reason,'intradayVenueUnmapped');
+ assert.equal(normalizeBar('sap',row,{...mapping,timezone:'Europe/Berlin',intradayExchange:'XETR'},{frequency:'INTRADAY'}).bar.date,'2026-09-30');
+});
+
+test('company ratings documented endpoint throttle is independent of global pacing',async()=>{
+ let clock=0,waits=[];const c=client({cacheTtlMs:0,now:()=>clock,sleep:async ms=>{waits.push(ms);clock+=ms;},fetchImpl:async()=>response({data:[]})});
+ await c.request('/companyratings',{ticker:'AAPL'});await c.request('/companyratings',{ticker:'MSFT'});assert.deepEqual(waits,[60000]);assert.equal(c.stats().requestsAttempted,2);
+});
+
+test('measured nested venue ticker response paginates and 200 domain errors are unavailable',async()=>{
+ const c=client({fetchImpl:async url=>{const offset=Number(new URL(url).searchParams.get('offset'));return response({pagination:{offset,count:1,total:2},data:{mic:'XETR',tickers:[{symbol:offset?'SIE.DE':'SAP.DE'}]}});}});
+ const list=await c.paginate('/exchanges/XETR/tickers',{limit:1});assert.equal(list.complete,true);assert.equal(list.data.length,2);
+ const missing=client({fetchImpl:async()=>response({code:404,message:'error',details:'No data is available for this ticker at the moment.'})});
+ const result=await missing.request('/etfholdings',{ticker:'SPY'});assert.equal(result.ok,false);assert.equal(result.reason,'dataUnavailable');assert.equal(result.providerErrorCode,404);
+});
+test('symbol accounting separates unique request symbols from retry/page units',async()=>{
+ let calls=0;const c=client({fetchImpl:async()=>++calls===1?response({},503):response({data:[]})});
+ await c.request('/eod',{symbols:'NVDA,AAPL'});await c.request('/intraday',{symbols:'NVDA'});assert.equal(c.stats().symbolsProcessed,2);assert.equal(c.stats().symbolRequestUnits,5);
+});
+test('explicit IEX source mapping leaves canonical Nasdaq listing identity intact',async()=>{
+ const us={...mapping,symbol:'NVDA',exchange:'XNAS',mic:'XNAS',currency:'USD',timezone:'America/New_York',intradayExchange:'IEXG'};
+ let exchange=null;const p=provider(async url=>{exchange=new URL(url).searchParams.get('exchange');return response({data:[{...row,symbol:'NVDA',exchange:'IEXG',price_currency:'USD',date:'2026-09-30T00:00:00Z'}]});},{mappings:{nvda:us}});
+ const res=await p.getIntradayBars('nvda');assert.equal(res.available,true);assert.equal(exchange,'IEXG');assert.equal(res.data.bars[0].sourceVenue,'IEXG');assert.equal(res.data.bars[0].date,'2026-09-29');assert.equal(res.provenance.listing_exchange,'XNAS');assert.equal(res.provenance.provider_exchange,'IEXG');
+ const unmapped=provider(async()=>{throw Error('must not request');},{mappings:{nvda:{...us,intradayExchange:null}}});assert.equal((await unmapped.getIntradayBars('nvda')).reason,'intradayVenueUnmapped');
+});

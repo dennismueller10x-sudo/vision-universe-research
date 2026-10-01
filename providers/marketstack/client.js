@@ -31,9 +31,11 @@ function createMarketstackClient(options = {}) {
   const base = new URL(baseUrl);
   if (base.protocol !== 'https:' || base.username || base.password || base.search || base.hash) throw new Error('Marketstack base URL must be credential-free HTTPS');
   if (base.hostname !== 'api.marketstack.com' && options.allowTestBaseUrl !== true) throw new Error('Marketstack credentials may only be sent to api.marketstack.com');
-  const stats = {provider:'marketstack',requestsAttempted:0,estimatedCreditsConsumed:0,cacheHits:0,deduplicated:0,retries:0,budgetBlocks:0,errors:0,symbolsProcessed:0,creditSemantics:'CONSERVATIVE_ESTIMATE',documentation:DOCUMENTATION};
-  const cache = new Map(), inflight = new Map();
+  const stats = {provider:'marketstack',requestsAttempted:0,estimatedCreditsConsumed:0,cacheHits:0,deduplicated:0,retries:0,budgetBlocks:0,errors:0,symbolsProcessed:0,symbolRequestUnits:0,creditSemantics:'CONSERVATIVE_ESTIMATE',documentation:DOCUMENTATION};
+  const cache = new Map(), inflight = new Map(), seenSymbols=new Set();
   let queue = Promise.resolve(), lastAttempt = null, lastError = null, attemptContext;
+  const endpointAttempts=new Map();
+  const endpointIntervals={ '/companyratings':60000,...(options.endpointIntervals||{}) };
   const sanitize = value => {
     if (typeof value === 'string') return value.split(String(apiKey || '\u0000')).join('[REDACTED]').replace(/access_key(?:=|%3D)[^&\s"<>]+/gi,'access_key=[REDACTED]');
     if (Array.isArray(value)) return value.map(sanitize);
@@ -48,9 +50,12 @@ function createMarketstackClient(options = {}) {
       stats.budgetBlocks++; ctx.failure = error('budgetExceeded',null,'Marketstack run safety budget exhausted','clientBudget');
       return {status:403,text:async () => '{}'};
     }
-    const wait = lastAttempt === null ? 0 : Math.max(0,minIntervalMs - (now()-lastAttempt));
+    const lastEndpoint=endpointAttempts.get(ctx.endpoint),endpointGap=endpointIntervals[ctx.endpoint]||0;
+    const wait = Math.max(lastAttempt === null ? 0 : Math.max(0,minIntervalMs - (now()-lastAttempt)),lastEndpoint===undefined ? 0 : Math.max(0,endpointGap-(now()-lastEndpoint)));
     if (wait) await sleep(wait);
-    stats.requestsAttempted++; stats.estimatedCreditsConsumed += cost; lastAttempt = now();
+    stats.requestsAttempted++; stats.estimatedCreditsConsumed += cost; lastAttempt = now();endpointAttempts.set(ctx.endpoint,lastAttempt);
+    const requestedSymbols=ctx.params.symbols?String(ctx.params.symbols).split(',').filter(Boolean):ctx.params.ticker?[String(ctx.params.ticker)]:[];
+    stats.symbolRequestUnits+=requestedSymbols.length;requestedSymbols.forEach(symbol=>seenSymbols.add(symbol));stats.symbolsProcessed=seenSymbols.size;
     const url = new URL(publicUrl); url.searchParams.set('access_key',apiKey);
     const controller = new AbortController();
     let timer;
@@ -63,10 +68,14 @@ function createMarketstackClient(options = {}) {
         try { body = JSON.parse(raw); } catch (_) { ctx.failure = error('invalidResponse',response.status,'Marketstack returned non-JSON data'); body = {}; }
         if (response.status === 429 && !(body && body.error)) ctx.failure = error('rateLimited',429,'Marketstack rate limit reached');
         if (response.status === 404 && !(body && body.error)) ctx.failure = error('dataUnavailable',404,'Marketstack resource unavailable');
+        if(body&&typeof body==='object'&&!body.error&&Number(body.code)>=400&&String(body.message||'').toLowerCase()==='error') {
+          body={error:{code:Number(body.code),type:Number(body.code)===404?'data_not_available':Number(body.code)>=500?'internal_error':'provider_error'}};
+        }
         if (body && body.error) {
-          const code = String(body.error.code || 'providerError');
-          const reason = ({function_access_restricted:'entitlementRestricted',unauthorized:'authError',too_many_requests:'quotaExceeded',rate_limit_reached:'rateLimited',data_not_available:'dataUnavailable'})[code] || 'providerError';
-          ctx.failure = error(reason,response.status,'Marketstack error: ' + code);
+          const numericTypes={105:'function_access_restricted',106:'rate_limit_reached',104:'usage_limit_reached',0:'internal_error'};
+          const code = String(body.error.type || numericTypes[body.error.code] || body.error.code || 'providerError');
+          const reason = ({function_access_restricted:'entitlementRestricted',unauthorized:'authError',too_many_requests:'quotaExceeded',usage_limit_reached:'quotaExceeded',daily_limit_reached:'quotaExceeded',fair_use_limit_reached:'quotaExceeded',fairuse_limit_reached:'quotaExceeded',monthly_limit_reached:'quotaExceeded',rate_limit_reached:'rateLimited',data_not_available:'dataUnavailable',internal_error:'internalError',maintenance:'internalError'})[code] || 'providerError';
+          ctx.failure = {...error(reason,response.status,'Marketstack error: ' + code),providerErrorType:sanitize(code),providerErrorCode:sanitize(body.error.code??null)};
           ctx.providerCode = sanitize(code);
         }
         const header = response.headers && typeof response.headers.get === 'function' ? response.headers.get('retry-after') : null;
@@ -103,11 +112,10 @@ function createMarketstackClient(options = {}) {
         if(res.ok && !ctx.failure) {
           const result = {ok:true,data:res.data,fromCache:false,stale:false,retrievedAt:new Date(now()).toISOString()};
           if(ttl>0) cache.set(key,{result,expires:now()+ttl});
-          stats.symbolsProcessed += params.symbols ? String(params.symbols).split(',').filter(Boolean).length : (params.ticker ? 1 : 0);
           lastError=null;return result;
         }
         const failure = ctx.failure || error(res.status===401 ? 'authError' : res.status===403 ? 'entitlementRestricted' : 'requestFailed',res.status,'Marketstack request failed');
-        const transient = ['networkError','timeout','rateLimited'].includes(failure.reason) || (!ctx.failure && [408,425,500,502,503,504].includes(res.status));
+        const transient = ['networkError','timeout','rateLimited','internalError'].includes(failure.reason) || (!ctx.failure && [408,425,500,502,503,504].includes(res.status));
         if(transient && retry<maxRetries) {
           const backoff = Math.max((options.baseBackoffMs ?? 500)*2**retry,ctx.retryAfterMs || 0);
           if(backoff>60000) {lastError={...failure,retryAfterSeconds:backoff/1000};return lastError;}
@@ -129,7 +137,7 @@ function createMarketstackClient(options = {}) {
       const res=await request(endpoint,{...params,limit,offset},opts);
       if(!res.ok) return {...res,data:rows,complete:false,pages,nextOffset:offset,pagination};
       retrievedAt=res.retrievedAt;
-      const page=opts.extract ? opts.extract(res.data) : res.data.data;
+      const page=opts.extract ? opts.extract(res.data) : Array.isArray(res.data.data)?res.data.data:res.data.data&&res.data.data.tickers;
       pagination=res.data.pagination || null;
       if(!Array.isArray(page)) return {...error('invalidResponse',null,'Expected a paginated data array'),data:rows,complete:false,pages:pages+1,nextOffset:offset};
       if(pagination && (Number(pagination.offset)!==offset || (pagination.count!==undefined && Number(pagination.count)!==page.length))) return {...error('invalidPagination',null,'Provider pagination did not advance as requested'),data:rows,complete:false,pages:pages+1,nextOffset:offset};
@@ -141,7 +149,7 @@ function createMarketstackClient(options = {}) {
     return {...error('pageBudgetExceeded',null,'Marketstack page safety limit reached','clientBudget'),data:rows,complete:false,pages,nextOffset:offset,pagination,retrievedAt};
   }
   async function requestBatches(endpoint, symbols, params = {}, opts = {}) {
-    const batchSize=opts.batchSize || 100;
+    const batchSize=opts.batchSize ?? 100;
     if(!Number.isInteger(batchSize)||batchSize<1||batchSize>100) return error('invalidBatchSize',null,'Batch size must be 1..100','validation');
     const unique=[...new Set(symbols)];const results=[];
     for(let i=0;i<unique.length;i+=batchSize) {
