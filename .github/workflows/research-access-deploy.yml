@@ -1,4 +1,4 @@
-name: Deploy only Research Access from PR 328
+name: Activate only existing Research Access route
 on:
   push:
     branches: ['codex/research-access-deploy-20261001']
@@ -9,143 +9,136 @@ concurrency:
   group: vu-research-access-deploy
   cancel-in-progress: false
 jobs:
-  deploy:
+  activate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-        with:
-          # Exactly the reviewed implementation in PR 328; no other Worker source.
-          ref: 380968d55cd426163c9de35e2c3fd3fdc414608b
-          sparse-checkout: workers/research-access
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - run: node --test workers/research-access/tests/access.test.mjs
-      - name: Verify configured access, deploy only reviewed Worker, then check password
-        working-directory: workers/research-access
+      - name: Diagnose existing Worker and activate only Research DNS and route
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ACCOUNT_VARIABLE: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
-          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
-          WRANGLER_SEND_METRICS: 'false'
         run: |
           python3 - <<'PY'
-          import json, os, re, subprocess, sys, tomllib, urllib.request, urllib.error
+          import json, os, re, sys, urllib.request, urllib.error, time
           from pathlib import Path
-
-          worker = 'vu-research-access'
-          config = tomllib.loads(Path('wrangler.toml').read_text())
-          assert config['name'] == worker
-          assert config['main'] == 'src/index.mjs'
-          assert config['workers_dev'] is False and config['preview_urls'] is False
-          assert config['routes'] == [{'pattern': 'research.visionuniverse.de/*', 'zone_name': 'visionuniverse.de'}]
+          worker, host, pattern = 'vu-research-access', 'research.visionuniverse.de', 'research.visionuniverse.de/*'
+          status = {'worker_deployed': False, 'secret_recognized': False, 'route_configured': False,
+              'dns_proxied': False, 'gate_live': False, 'deep_links_protected': False, 'logout_works': False,
+              'origin_preserved': False, 'authenticated_live_test': False, 'blocker': ''}
           token = os.environ.get('CLOUDFLARE_API_TOKEN', '')
           account = os.environ.get('ACCOUNT_VARIABLE') or os.environ.get('ACCOUNT_SECRET')
-          account_source = 'CLOUDFLARE_ACCOUNT_ID variable/secret'
           if not account:
               match = re.fullmatch(r'https://([0-9a-f]{32})\.r2\.cloudflarestorage\.com/?', os.environ.get('VU_HISTORY_S3_ENDPOINT', ''), re.I)
               account = match[1] if match else None
-              account_source = 'existing VU_HISTORY_S3_ENDPOINT'
-          status = {'worker_deployed': False, 'route_activated_by_this_run': False, 'password_set': False, 'manual_password_required': False}
-
           def finish(blocker='', failed=False):
               status['blocker'] = blocker
-              Path('/tmp/research-access-status.json').write_text(json.dumps(status))
+              Path('/tmp/research-access-activation.json').write_text(json.dumps(status))
               print(json.dumps(status), flush=True)
               sys.exit(1 if failed else 0)
-
-          if not token or not account or not re.fullmatch(r'[0-9a-f]{32}', account, re.I):
-              finish('Required Cloudflare GitHub credentials are not configured', True)
-          print('Cloudflare GitHub credentials are configured; account selected from ' + account_source, flush=True)
-          os.environ['CLOUDFLARE_ACCOUNT_ID'] = account
+          if not token or not account:
+              finish('CLOUDFLARE_API_TOKEN and the existing account configuration are required', True)
           base = 'https://api.cloudflare.com/client/v4'
           prefix = f'/accounts/{account}/workers/scripts/{worker}'
-
-          def api(path, method='GET', body=None, content_type='application/json'):
-              data = body if isinstance(body, bytes) else json.dumps(body).encode() if body is not None else None
-              request = urllib.request.Request(base + path, data=data, method=method,
-                  headers={'Authorization': 'Bearer ' + token, 'Content-Type': content_type})
+          def api(path, permission, method='GET', body=None):
+              req = urllib.request.Request(base + path, data=json.dumps(body).encode() if body is not None else None,
+                  method=method, headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
               try:
-                  with urllib.request.urlopen(request, timeout=60) as response:
-                      result = json.load(response)
+                  with urllib.request.urlopen(req, timeout=45) as response: payload = json.load(response)
               except urllib.error.HTTPError as error:
-                  finish('Cloudflare API request rejected (HTTP ' + str(error.code) + ')', True)
+                  finish('Cloudflare HTTP ' + str(error.code) + ': ' + permission +
+                      ' is required on CLOUDFLARE_API_TOKEN for the selected account/visionuniverse.de zone', True)
               except Exception:
-                  finish('Cloudflare API request could not complete', True)
-              if not result.get('success'):
-                  finish('Cloudflare API operation was unsuccessful', True)
-              return result['result']
-
-          scripts = api(f'/accounts/{account}/workers/scripts')
-          exists = any(item.get('id') == worker for item in scripts)
-          status['worker_previously_existed'] = exists
-          previous_secrets = set()
-          if exists:
-              previous_secrets = {item['name'] for item in api(prefix + '/secrets')}
-
-          def wrangler(*arguments):
-              # Capture everything; never publish Wrangler/API diagnostic output or secrets.
-              result = subprocess.run(['npx', '--yes', 'wrangler@4.145.0', *arguments, '--config', 'wrangler.toml'],
-                  input='', text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
-              if result.returncode:
-                  diagnostic = result.stdout + result.stderr
-                  codes = sorted(set(re.findall(r'\[code:\s*(\d+)\]', diagnostic)))
-                  categories = [label for label, pattern in [
-                      ('first-deploy-required', r"(?:deploy|deployed).{0,80}(?:first|before)|(?:not|never|hasn.t).{0,30}deployed"),
-                      ('authentication', r'authentication|authenticate|unauthorized'),
-                      ('permissions', r'permission|forbidden'),
-                      ('missing-worker', r'Worker.{0,30}(?:not found|does not exist)'),
-                      ('compatibility-date', r'compatibility.{0,30}(?:date|future)'),
-                  ] if re.search(pattern, diagnostic, re.I)]
-                  finish('Research-only Wrangler operation failed: ' + ' '.join(arguments[:2]) +
-                      '; exit=' + str(result.returncode) + '; codes=' + ','.join(codes) + '; categories=' + ','.join(categories), True)
-              return result.stdout
-
-          # Version commands deploy only this script and do not publish the route.
-          # This lets us stop for a missing password without taking Research offline.
-          if exists:
-              uploaded = wrangler('versions', 'upload', '--keep-vars', '--message', 'Deploy reviewed Research gate from PR 328')
-              match = re.search(r'Worker Version ID:\s*([0-9a-f-]{36})', uploaded, re.I)
-              if not match:
-                  finish('Uploaded version could not be identified safely', True)
-              wrangler('versions', 'deploy', match[1] + '@100', '--yes')
-          else:
-              # Wrangler serializes the exact reviewed config and bundle. Upload
-              # its multipart artifact to this script only; routes are a separate
-              # API operation and remain untouched until the password is ready.
-              wrangler('deploy', '--dry-run', '--outfile', '/tmp/research-worker-upload.multipart')
-              bundle = Path('/tmp/research-worker-upload.multipart').read_bytes()
-              boundary = bundle.split(b'\r\n', 1)[0][2:].decode('ascii')
-              if not re.fullmatch(r'[A-Za-z0-9_-]+', boundary):
-                  finish('Unexpected upload boundary', True)
-              api(prefix, 'PUT', bundle, 'multipart/form-data; boundary=' + boundary)
-              status['worker_deployed'] = True
-              api(prefix + '/subdomain', 'POST', {'enabled': False, 'previews_enabled': False})
-          status['worker_deployed'] = True
-          current_secrets = {item['name'] for item in api(prefix + '/secrets')}
-          if not previous_secrets.issubset(current_secrets):
-              finish('Existing Research worker secret names did not survive deployment', True)
-          if 'RESEARCH_ACCESS_PASSWORD' in current_secrets:
-              status['password_set'] = True
-              finish('Password already present; route activation and live verification are next')
-          password = os.environ.get('RESEARCH_ACCESS_PASSWORD', '')
-          if not password:
-              status['manual_password_required'] = True
-              finish('Set RESEARCH_ACCESS_PASSWORD manually on vu-research-access')
-          # Create only the missing Research secret. Do not modify any existing secret.
-          api(prefix + '/secrets', 'PUT', {'name': 'RESEARCH_ACCESS_PASSWORD', 'text': password, 'type': 'secret_text'})
-          status['password_set'] = 'RESEARCH_ACCESS_PASSWORD' in {item['name'] for item in api(prefix + '/secrets')}
-          if not status['password_set']:
-              finish('Research password binding could not be confirmed', True)
-          finish('Password configured; route activation and live verification are next')
+                  finish('Cloudflare API connection failed while checking ' + permission, True)
+              if not payload.get('success'):
+                  finish('Cloudflare operation failed; required access: ' + permission, True)
+              return payload['result']
+          deployments = api(prefix + '/deployments', 'Account / Workers Scripts / Read')
+          active = deployments.get('deployments', []) if isinstance(deployments, dict) else deployments
+          status['worker_deployed'] = bool(active and active[0].get('versions'))
+          if not status['worker_deployed']: finish('vu-research-access has no active deployed version', True)
+          bindings = api(prefix + '/secrets', 'Account / Workers Scripts / Read')
+          status['secret_recognized'] = any(x.get('name') == 'RESEARCH_ACCESS_PASSWORD' for x in bindings)
+          if not status['secret_recognized']: finish('RESEARCH_ACCESS_PASSWORD binding is missing on Production', True)
+          print('Existing Research deployment and password binding confirmed; no code or secret will be changed.', flush=True)
+          api(prefix + '/schedules', 'Account / Workers Scripts / Read')
+          subdomain = api(prefix + '/subdomain', 'Account / Workers Scripts / Read')
+          domains = api(f'/accounts/{account}/workers/domains', 'Account / Workers Scripts / Read')
+          research_domains = [d for d in domains if d.get('hostname') == host]
+          status['custom_domain_count'] = len(research_domains)
+          status['workers_dev_enabled'] = bool(subdomain.get('enabled'))
+          if research_domains:
+              finish('Research has a Worker Custom Domain; restore the GitHub Pages origin before using a zone route', True)
+          zones = api('/zones?name=visionuniverse.de&account.id=' + account, 'Zone / Zone / Read')
+          if len(zones) != 1 or zones[0].get('status') != 'active':
+              finish('Active visionuniverse.de zone is not visible in this account. Grant Zone / Zone / Read on CLOUDFLARE_API_TOKEN and ensure the zone is active in the configured account.', True)
+          zone = zones[0]['id']
+          route_path = f'/zones/{zone}/workers/routes'
+          routes_before = api(route_path, 'Zone / Workers Routes / Read')
+          others_before = {r['id']: r for r in routes_before if r.get('pattern') != pattern}
+          exact = [r for r in routes_before if r.get('pattern') == pattern]
+          if len(exact) > 1 or exact and exact[0].get('script') != worker:
+              finish('Exact Research route belongs to another Worker; no other route was changed', True)
+          dns_path = f'/zones/{zone}/dns_records?name={host}&per_page=100'
+          records_before = api(dns_path, 'Zone / DNS / Read')
+          if not records_before or any(r.get('type') not in ['A', 'AAAA', 'CNAME'] or not r.get('proxiable') for r in records_before):
+              finish('Research origin DNS records are missing or cannot be proxied; restore GitHub Pages origin DNS manually', True)
+          allowed_v4 = {'185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153'}
+          allowed_v6 = {'2606:50c0:8000::153', '2606:50c0:8001::153', '2606:50c0:8002::153', '2606:50c0:8003::153'}
+          for record in records_before:
+              content = record.get('content', '').lower().rstrip('.')
+              correct = record['type'] == 'A' and content in allowed_v4 or record['type'] == 'AAAA' and content in allowed_v6 or record['type'] == 'CNAME' and content == 'dennismueller10x-sudo.github.io'
+              if not correct: finish('Research DNS differs from verified GitHub Pages origin; no DNS target was changed', True)
+          status['origin_preserved'] = True
+          print('GitHub Pages DNS origin confirmed; exact Research route and Research proxy flags are the only allowed writes.', flush=True)
+          if not exact: api(route_path, 'Zone / Workers Routes / Edit', 'POST', {'pattern': pattern, 'script': worker})
+          status['route_configured'] = True
+          for record in records_before:
+              if not record.get('proxied'):
+                  api(f'/zones/{zone}/dns_records/{record["id"]}', 'Zone / DNS / Edit', 'PATCH', {'proxied': True})
+          records_after = api(dns_path, 'Zone / DNS / Read')
+          assert {(r['id'], r['type'], r['content']) for r in records_before} == {(r['id'], r['type'], r['content']) for r in records_after}
+          status['dns_proxied'] = all(r.get('proxied') for r in records_after)
+          routes_after = api(route_path, 'Zone / Workers Routes / Read')
+          assert others_before == {r['id']: r for r in routes_after if r.get('pattern') != pattern}
+          assert any(r.get('pattern') == pattern and r.get('script') == worker for r in routes_after)
+          print('Research route configured, Research DNS proxied, all other routes unchanged.', flush=True)
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl): return None
+          opener = urllib.request.build_opener(NoRedirect())
+          def probe(path, method='GET', data=None, headers=None):
+              req = urllib.request.Request('https://' + host + path, method=method, data=data, headers=headers or {})
+              try: response = opener.open(req, timeout=20)
+              except urllib.error.HTTPError as error: response = error
+              with response: return response.code, response.headers, response.read(200000)
+          for attempt in range(24):
+              try:
+                  code, headers, body = probe('/?gate-check=' + str(time.time_ns()))
+                  if code == 303 and headers.get('Location', '').startswith('/__research/login?next='):
+                      status['gate_live'] = True
+                      break
+              except Exception: pass
+              time.sleep(5)
+          if not status['gate_live']:
+              finish('Route/DNS configured but live requests have not reached gate; check authoritative DNS propagation and proxy/SSL settings', True)
+          code, headers, body = probe('/__research/login')
+          assert code == 200 and b'VISION UNIVERSE' in body and b'type="password"' in body and b'Zugang' in body
+          assert b'<script' not in body and b'<link' not in body
+          protected = ['/discover', '/quant/', '/supertrader', '/screener', '/markets', '/stocks/AAPL', '/quant/data/sec/inspector/AAPL.json', '/assets/site-navigation.css']
+          status['deep_links_protected'] = all(probe(path)[0] == 303 for path in protected)
+          assert status['deep_links_protected']
+          code, headers, body = probe('/__research/logout')
+          assert code == 200 and b'Zugang zur' in body
+          code, headers, body = probe('/__research/logout', 'POST', b'', {'Origin': 'https://' + host})
+          status['logout_works'] = code == 303 and headers.get('Location') == '/__research/login' and 'Max-Age=0' in headers.get('Set-Cookie', '')
+          assert status['logout_works']
+          finish('Correct-password login and authenticated CSS/JS/image loading need a manual browser check; Cloudflare secret values are write-only and were neither read nor changed.')
           PY
-      - name: Retain only non-secret deployment status
+      - name: Retain only non-secret activation status
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: research-access-status
-          path: /tmp/research-access-status.json
+          name: research-access-activation
+          path: /tmp/research-access-activation.json
           if-no-files-found: ignore
