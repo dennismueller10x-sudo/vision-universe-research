@@ -475,18 +475,29 @@ function create(options){
   })();
   return radarPromise;
  }
- /* Lebenszyklus eines Titels: aktueller Setup-Zustand, seit wann, vorher. */
- let lifecyclePromise=null;
- async function getSetupLifecycle(ticker){
+ /* Lebenszyklus und Radar-Karte EINES Titels - aus seinem Shard (~1 KB),
+  * nicht aus dem ganzen Radar. */
+ async function radarTicker(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
-  if(!lifecyclePromise)lifecyclePromise=compressedJSON('/quant/data/product/setup-lifecycle-v1.json.gz').catch(()=>{lifecyclePromise=null;return null;});
-  const l=await lifecyclePromise;
-  if(!l||l.schemaVersion!=='setup-lifecycle-1.0.0')return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
-  const row=l.rows?.[ticker];
-  if(!row)return {state:'UNAVAILABLE',reason:'NOT_IN_SETUP_UNIVERSE',asOf:l.asOf};
-  return {state:'AVAILABLE',ticker,asOf:l.asOf,snapshots:l.snapshots,lifecycle:l.lifecycle,pathTier:l.pathTier,
-   current:row[0],since:row[1],sinceIsLowerBound:row[2]===1,previous:row[3],previousAsOf:row[4]};
+  try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/radar-ticker-v1/'+key+'.json.gz');
+   if(shard?.schemaVersion!=='radar-ticker-1.0.0'||shard.shard!==key||(QuantRadar&&shard.engineVersion!==QuantRadar.VERSION))return {state:'UNAVAILABLE',reason:'INVALID_RADAR_ARTIFACT'};
+   const row=shard.rows?.[ticker];
+   if(!row)return {state:'UNAVAILABLE',reason:'NOT_IN_SETUP_UNIVERSE',asOf:shard.asOf};
+   return {state:'AVAILABLE',ticker,shard,row};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ async function getSetupLifecycle(ticker){
+  const r=await radarTicker(ticker);if(r.state!=='AVAILABLE')return r;
+  const l=r.row.lifecycle;
+  return {state:'AVAILABLE',ticker:r.ticker,asOf:r.shard.asOf,snapshots:r.shard.snapshots,lifecycle:QuantRadar?QuantRadar.LIFECYCLE:null,
+   pathTier:{state:'CLOSED',reason:'PATH_DEPENDENT_STATES_NOT_ACTIVATED'},
+   current:l[0],since:l[1],sinceIsLowerBound:l[2]===1,previous:l[3],previousAsOf:l[4]};
+ }
+ /* Die Radar-Karte eines Titels (oder null: heute nichts Neues). */
+ async function getRadarCard(ticker){
+  const r=await radarTicker(ticker);if(r.state!=='AVAILABLE')return r;
+  return {state:'AVAILABLE',ticker:r.ticker,radarAsOf:r.shard.radarAsOf,card:r.row.card||null};
  }
  /* Stand der vier Evidenzarten - veroeffentlicht oder mit gemessenen Gates. */
  async function getEvidenceStatus(){
@@ -1247,7 +1258,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getSetupLifecycle,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getSetupLifecycle,getRadarCard,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

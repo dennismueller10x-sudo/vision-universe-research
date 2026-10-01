@@ -121,7 +121,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
-  if(budgetKey){const budget=assessResourceBudget(budgetKey,resources);if(budget)resourceBudgets.push({...budget,route:hash,width});}
+  if(budgetKey){const budget=assessResourceBudget(budgetKey,resources);if(budget){resourceBudgets.push({...budget,route:hash,width});
+   /* Bei einer Verletzung die groessten Posten ausgeben - sonst ist ein
+      roter Budget-Lauf in CI nicht ohne das Artefakt zu deuten. */
+   if(!budget.pass)console.log('BUDGET '+view+'@'+width+': '+resources.slice().sort((a,b)=>b.bytes-a.bytes).slice(0,15).map(r=>r.bytes+' '+r.path).join(' | '));}}
   if(view==='home'&&resources.some(r=>r.path.includes('/daily/ref_')||r.path.includes('/fixtures/')))befund(view,width,'Home loads raw history or fixtures');
   const h1=await page.locator('h1').count();
   if(h1!==1)befund(view,width,'H1='+h1);

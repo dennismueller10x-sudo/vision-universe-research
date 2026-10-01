@@ -455,11 +455,11 @@
   }
   function nowContent(ticker, radar, lc) {
     var out = [];
-    var card = radar && radar.state === "AVAILABLE" ? (radar.cards || []).filter(function (c) { return c.ticker === ticker; })[0] : null;
+    var card = radar && radar.state === "AVAILABLE" ? radar.card : null;
     if (card && card.events.length) {
       out.push(el("ul", { class: "q-events" }, card.events.map(eventLine)));
     } else if (radar && radar.state === "AVAILABLE") {
-      out.push(el("p", { class: "q-now-none", text: "Zum letzten Stand (" + X.dateDe(radar.asOf) + ") meldet Quant für diese Aktie keine neue Veränderung." }));
+      out.push(el("p", { class: "q-now-none", text: "Zum letzten Stand (" + X.dateDe(radar.radarAsOf) + ") meldet Quant für diese Aktie keine neue Veränderung." }));
     }
     if (lc && lc.state === "AVAILABLE" && lc.current !== "NO_SETUP") {
       out.push(el("p", { class: "q-now-line" }, [el("b", { text: "Setup: " }), el("span", { text: lifecycleLabel(lc.current) + " · " + (lc.sinceIsLowerBound ? "mindestens seit " : "seit ") + X.dateDe(lc.since) + (lc.previous ? " · vorher: " + lifecycleLabel(lc.previous) : "") })]));
@@ -629,7 +629,7 @@
     layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten und Grenzen“.", nowHost));
     bodyHost.append(layout);
     var lifecycleBox = el("div", { class: "q-lifecycle-host" });
-    Promise.all([api.getQuantRadar ? api.getQuantRadar().catch(function () { return null; }) : null,
+    Promise.all([api.getRadarCard ? api.getRadarCard(ticker).catch(function () { return null; }) : null,
       api.getSetupLifecycle ? api.getSetupLifecycle(ticker).catch(function () { return null; }) : null]).then(function (rl) {
       if (!nowHost.isConnected) return;
       nowHost.replaceChildren.apply(nowHost, nowContent(ticker, rl[0], rl[1]));

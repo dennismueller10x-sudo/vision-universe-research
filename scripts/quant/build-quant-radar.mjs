@@ -378,5 +378,23 @@ writeGz(P("quant/data/product/setup-lifecycle-v1.json.gz"), {
   rows: lifecycle
 });
 
+/* Je Titel-Shard (dieselbe Einteilung wie die uebrigen Produkt-Shards):
+   Lebenszyklus und Radar-Karte. Die Aktienseite laedt so ~1 KB statt des
+   ganzen Radars und der ganzen Lebenszyklus-Tabelle. */
+const TICKER_DIR = P("quant/data/product/radar-ticker-v1");
+mkdirSync(TICKER_DIR, { recursive: true });
+for (const f of readdirSync(TICKER_DIR)) if (/\.json\.gz$/.test(f)) writeFileSync(join(TICKER_DIR, f), "");
+const cardBy = Object.fromEntries(cards.map((c) => [c.ticker, c]));
+const tShards = {};
+for (const t of Object.keys(lifecycle)) {
+  const key = shardKey(t);
+  (tShards[key] = tShards[key] || {})[t] = { lifecycle: lifecycle[t], card: cardBy[t] || null };
+}
+for (const [key, rows] of Object.entries(tShards)) {
+  writeGz(join(TICKER_DIR, key + ".json.gz"), { schemaVersion: "radar-ticker-1.0.0", engineVersion: Radar.VERSION, shard: key, asOf: latest.date, radarAsOf: asOf,
+    snapshots: setupDates, columns: ["state", "since", "sinceIsLowerBound", "previousState", "previousAsOf"], rows });
+}
+for (const f of readdirSync(TICKER_DIR)) if (/\.json\.gz$/.test(f) && !tShards[f.slice(0, -8)]) { const { unlinkSync } = await import("node:fs"); unlinkSync(join(TICKER_DIR, f)); }
+
 console.log(JSON.stringify({ asOf, events: events.length, byType, cards: cards.length, replay: radar.measures.HISTORICAL_REPLAY_COVERAGE,
   summary: radar.summary, lifecycle: Object.keys(lifecycle).length, transitionsAll }, null, 1));

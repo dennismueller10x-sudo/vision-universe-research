@@ -119,6 +119,9 @@ test("Dienste liefern Radar, Lebenszyklus und Evidenz-Status", async () => {
   assert.equal(r.state, "AVAILABLE");
   assert.equal(r.dropped, 0);
   assert.equal(r.cards.length, radar.cards.length);
+  const card = await api.getRadarCard(radar.cards[0].ticker);
+  assert.equal(card.state, "AVAILABLE");
+  assert.deepEqual(card.card.events.map((e) => e.id), radar.cards[0].events.map((e) => e.id), "der Titel-Shard traegt dieselbe Karte wie der Radar");
   const l = await api.getSetupLifecycle("NVDA");
   assert.equal(l.state, "AVAILABLE");
   assert.equal(l.current, lifecycle.rows.NVDA[0]);
