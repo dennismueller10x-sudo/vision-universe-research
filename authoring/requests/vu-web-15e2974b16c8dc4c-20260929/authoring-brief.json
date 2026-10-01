@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_f69853c585d49c51",
+  "content_id": "vu-web-15e2974b16c8dc4c-20260929",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "single-post",
+  "topic": "Anthropic warns investors of AI’s 'existential risk to humanity' in IPO prospectus, reports say",
+  "objective": "Du bist Creative Director fuer Vision Universe. Erstelle aus der folgenden aktuellen, oeffentlich recherchierten Finanz-/Boersenstory eigenstaendig einen hochwertigen deutschen Social-Media-Post im Format 4:5. Analysiere zuerst selbst: was ist die eigentliche Geschichte, warum ist sie fuer Anleger interessant, was ist der staerkste Social Hook, welche visuelle Idee erzaehlt diese Geschichte am besten? Entwickle daraus EIN vollstaendiges, fertiges Creative: Motiv, deutscher Hook-Text, Logo und Atlas in einem Zug komponiert — kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer Boersenticker, kein Template, keine Datenkarte, und kein Rohbild fuer eine spaetere Ueberlagerung. Nutze `evidence` und `source_story` ausschliesslich als Grounding — erfinde keine Zahlen oder Tatsachen. Du hast ausdrueckliche kreative Freiheit bei Bildidee, Perspektive, Komposition, Typografie, visueller Metapher und Stil. Hook und Caption durchgehend auf Deutsch. Ziel: ein Post, bei dem ein deutscher Anleger im Feed stoppt und verstehen will, was hinter der Story steckt.",
+  "audience": "Anleger, die aktuelle Marktentwicklungen verfolgen",
+  "hook_strategy": {
+    "strategy_id": "vu-web-story-grounded-de-v1",
+    "hook_type": "web_story_grounded_de",
+    "instruction": "`grounding_hook_en` ist NICHT die zu uebersetzende Hook, sondern nur EIN Signal unter mehreren - der Web-Research-Hook-Wettbewerb hat ihn algorithmisch vorausgewaehlt, nicht redaktionell. Massgeblich sind `source_story` (Titel, Beschreibung, Link) und `evidence` (die geprueften Fakten) als Grounding.\n\nDeine Aufgabe, wie ein menschlicher Creative Director: verstehe zuerst selbst, was an dieser Story wirklich passiert ist, warum sie fuer einen deutschen Anleger interessant ist, was daran ueberraschend ist und welche Konsequenz oder Spannung darin steckt. Entwickle DARAUS deine eigene, eigenstaendige deutsche Hook - nicht als Uebersetzung von `grounding_hook_en` oder des Original-Titels, sondern als deine redaktionelle Verdichtung der Story auf den einen staerksten Punkt.\n\nVERBOTENES DENKMUSTER: 'Artikel enthaelt eine grosse Zahl -> Hook = diese Zahl als Frage verpackt' (Beispiel, das NICHT wiederholt werden soll: '50.000 Dollar fuer ein Auto?' - eine isolierte Zahl ohne die eigentliche Geschichte dahinter). Eine Zahl darf die Hook staerken, ersetzt aber nie die Story.\n\nQualitaetsmassstab: kurz, sofort verstaendlich, macht neugierig, enthaelt eine echte Aussage (keine woertliche Bandwurm-Uebersetzung des Originaltitels), erzeugt emotionale oder intellektuelle Spannung, ist fuer Anleger relevant, funktioniert auf einem Smartphone auf einen Blick. Die Hook-Art waehlst du frei - starke Aussage, ueberraschende Zahl, Widerspruch, Konsequenz, Frage, Warnsignal, historische Einordnung, ueberraschender Vergleich, starke Beobachtung - kein festes Template wird erzwungen.\n\nNicht akzeptabel: interne Scores oder Screener-Sprache, technische Systemformulierungen, ein unveraendert uebernommener englischer Quelltitel, ein Satz, der zwei Vergleichspunkte in einer Aufzaehlung nennt statt EINEN klaren Punkt zu setzen (z.B. nicht 'Von X bis Y: so Z'). Alle sichtbaren Woerter Deutsch - Ausnahmen nur fuer Eigennamen, Ticker und Markennamen. Jede Zahl und jede Tatsache ausschliesslich aus `evidence`/`source_story` - nichts erfinden, keine Prognose."
+  },
+  "visual_strategy": {
+    "strategy_id": "GENERATIVE",
+    "instruction": "Entwickle deine eigene visuelle Idee aus der Story selbst (`source_story`, `evidence`) - nicht aus dem Branchen-Oberbegriff. Eine Auto-Story ist nicht automatisch ein generisches Auto auf einem Preisschild, eine KI-Story nicht automatisch blau leuchtende Server, eine Zins-Story nicht automatisch ein Trading-Floor-Klischee. Finde die visuelle Metapher, die GENAU DIESE Geschichte transportiert, keine austauschbare Branchen-Illustration. Testfrage vor der Ausgabe: 'Wenn ich den Text entferne - erzaehlt das Bild trotzdem noch diese Geschichte?' Wenn nein, verwirf das Motiv und entwickle ein spezifischeres.",
+    "creative_freedom": "Motiv, Komposition, Lichtfuehrung und Materialitaet innerhalb der Strategie.",
+    "palette": [
+      "Deine Wahl, passend zur Story und zum Ton dieses Posts - keine vorgeschriebene Farbwelt fuer jeden Post.",
+      "Vision Universe wirkt insgesamt hochwertig, redaktionell/editorial und markensicher - vermeide grelle Stock-Werbefarben ohne Bezug zur Story.",
+      "Eine dunkle, praemium Grundstimmung passt oft gut, ist aber keine Pflicht, wenn die Story eine andere Bildsprache verlangt."
+    ],
+    "style": "Kein vorgeschriebener Universalstil. Du entscheidest den Stil, der zu DIESER Story am besten passt - solange das Ergebnis hochwertig, redaktionell wirkt und wie aus einem Guss komponiert ist, kein Stockfoto und kein Finanz-News-Thumbnail. Zwei Negativbeispiele, die beide real vom Owner abgelehnt wurden und nicht wiederholt werden sollen: (1) photorealistisches, kinoreifes 3D-Rendering mit generischen Requisiten (Gebaeude, Flaggen, Banknoten) - wirkt wie ein KI-Stockfoto, keine echte Bildidee; (2) ein zwanghaft immer gleicher flacher Comic-/Vektor-Poster-Stil mit generischem Motiv - formal korrekt, aber kreativ austauschbar und ohne echte Story. Beides ist eine Klischeefalle, kein Zielstil. Der Zielstil ist eine bewusste, zur Story passende kreative Entscheidung, kein wiederholtes Rezept.",
+    "composition": "Portrait 4:5, randfuellend - komponiere EIN fertiges, veroeffentlichungsreifes Markenbild, kein Rohbild fuer eine spaetere Ueberlagerung. Baue die deutsche Hook direkt als Teil der Komposition ein (nicht als separat wirkende Kopfzeile) - kurz, gross genug um auf einem Smartphone sofort lesbar zu sein, aber die genaue Groesse, Position und Typografie liegen in deiner gestalterischen Verantwortung, nicht in einer vorgegebenen Zone. Motiv, Hook und Markenzeichen sollen wie EIN durchdachtes Design wirken, nicht wie uebereinandergelegte Schichten.\n\nBrand-Elemente: komponiere die exakte Vision-Universe-Logo-Datei (siehe brand_assets.logo) und den exakten Atlas (siehe brand_assets.atlas) unveraendert (nur skaliert/zugeschnitten/neu positioniert, nie neu gezeichnet oder umstilisiert) so in die Komposition, dass sie natuerlich wirken und die Bildidee nicht dominieren oder verdraengen - als wiedererkennbares Markenzeichen und kleine, vertrauenswuerdige Praesenz, nicht als Hauptfigur des Bildes. Eine bevorzugte, aber keine starre Pixel-Position: die Gesamtkomposition hat Vorrang vor blindem Pixelgehorsam.",
+    "restrictions": [
+      "Keine Kurse im Bild",
+      "Keine Renditezahlen",
+      "Kein Wasserzeichen",
+      "Keine Prognose-Aussage im Bildtext",
+      "Logo und Atlas exakt aus den angegebenen Dateien uebernehmen, nicht neu zeichnen oder stilisieren",
+      "Kein Diagramm, kein Dashboard, kein Bildschirmfoto, kein generischer Boersenticker"
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "atlas": "assets/atlas.png",
+    "instruction": "Beide Dateien liegen unveraendert im selben Checkout wie dieser Brief. Als Bildreferenz verwenden und unveraendert (nur skaliert) in die Szene komponieren — keine Neuzeichnung, keine Farb- oder Stiltransformation ausser Skalierung (§18: Logo nicht neu zeichnen oder textuell approximieren). Atlas' Gesicht, Mimik und Proportionen muessen exakt dem Referenzbild entsprechen — dasselbe Laecheln, dieselben Gesichtszuege, derselbe Blick. Eine andere Pose, ein anderer Blickwinkel oder eine Handbewegung sind erlaubt; eine veraenderte, neu interpretierte oder auch nur leicht abweichende Mimik ist es nicht. Wichtig fuer die Rueckmeldung: gib pro Bildvariante zusaetzlich ein Feld `brand_elements` mit GENAU diesen drei Boolean-Feldern zurueck: `includes_logo`, `includes_atlas`, `includes_hook_text_de` — jedes nur `true`, wenn das jeweilige Element tatsaechlich im fertigen Bild zu sehen ist. Kein Freitext, keine anderen Feldnamen, keine Dateipfade an dieser Stelle — nur diese drei Booleans."
+  },
+  "evidence": [
+    {
+      "id": "ev1",
+      "statement": "Anthropic's IPO filing dedicates 80 pages to the risks of AI, nearly double the 48 pages it spends discussing its business plans, according to Reuters.",
+      "value": "80",
+      "unit": null,
+      "entity": "AI",
+      "metric": "Web-Beleg 1",
+      "source": "CNBC Top News",
+      "observed_at": "2026-09-29T08:43:59.000Z"
+    },
+    {
+      "id": "ev2",
+      "statement": "Anthropic's IPO filing dedicates 80 pages to the risks of AI, nearly double the 48 pages it spends discussing its business plans, according to Reuters.",
+      "value": "48",
+      "unit": null,
+      "entity": "AI",
+      "metric": "Web-Beleg 2",
+      "source": "CNBC Top News",
+      "observed_at": "2026-09-29T08:43:59.000Z"
+    }
+  ],
+  "must_not_claim": [
+    {
+      "id": "causality",
+      "text": "Keine Ursache behaupten. Die Belege beschreiben eine Lage; eine Lage ist nicht ihr eigener Grund."
+    },
+    {
+      "id": "forecast",
+      "text": "Keine Prognose. Kein Beleg sagt etwas ueber die Zukunft."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    },
+    {
+      "id": "comparison",
+      "text": "Kein Vergleich mit anderen Titeln, Zeitraeumen oder Durchschnitten — es liegt nur ein Beleg zu einem Gegenstand vor."
+    },
+    {
+      "id": "trend",
+      "text": "Keine Entwicklung ueber Zeit behaupten ('steigt seit', 'faellt weiter') — es liegt ein Stand vor, keine Reihe."
+    }
+  ],
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-web-15e2974b16c8dc4c-20260929/assets/visual-01.png",
+    "announced_fields_required": [
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "evidence_refs_required": true,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "publishing_allowed": false
+  },
+  "constraints": [
+    "Jede Zahl im Text muss exakt aus `evidence` stammen.",
+    "Nichts ausrechnen, nichts aufrunden, keine Jahreszahlen ergaenzen.",
+    "Keine anderen Titel nennen.",
+    "Hook-Strategie ausschliesslich aus diesem Brief uebernehmen.",
+    "Visual Strategy ausschliesslich aus diesem Brief uebernehmen.",
+    "Kein `selected_hook` — nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Keine Veroeffentlichung."
+  ],
+  "publishing_allowed": false,
+  "grounding_hook_en": "Anthropic warns investors of AI’s 'existential risk to humanity' in IPO prospectus, reports say",
+  "unavailable": [],
+  "evidence_package": {
+    "package_id": "vu-web-15e2974b16c8dc4c-20260929",
+    "as_of": "2026-09-29T08:43:59.000Z",
+    "methodology_version": "web-research-1.0",
+    "data_version": "web-research-1.0"
+  },
+  "source_story": {
+    "title": "Anthropic warns investors of AI’s 'existential risk to humanity' in IPO prospectus, reports say",
+    "link": "https://www.cnbc.com/2026/09/29/anthropic-warns-ai-existential-risks-ipo-filing-reuters.html",
+    "description": "Anthropic's IPO filing dedicates 80 pages to the risks of AI, nearly double the 48 pages it spends discussing its business plans, according to Reuters.",
+    "source": "CNBC Top News",
+    "publishedAt": "2026-09-29T08:43:59.000Z"
+  },
+  "self_check_before_delivery": [
+    "Versteht ein deutscher Nutzer die Hook sofort?",
+    "Erzaehlt die Hook die eigentliche Story — nicht nur eine isolierte Zahl?",
+    "Passt das Motiv wirklich zu dieser konkreten Story?",
+    "Wirken Bild, Text, Atlas und Logo wie EIN Design?",
+    "Sieht das Ergebnis nach hochwertigem Finanz-/Editorial-Content aus?",
+    "Wuerde dieses Creative zwischen professionellen Finanz-/Tech-Posts im Feed bestehen?",
+    "Ist irgendeine Zahl oder Aussage erfunden?",
+    "Ist die sichtbare Sprache durchgehend Deutsch?"
+  ],
+  "negative_reference": {
+    "example_content_id": "vu-web-4e4d3aaef2a999a2-20260926",
+    "example_hook": "50.000 DOLLAR FUER EIN AUTO?",
+    "why_rejected": [
+      "Hook ohne eigentliche Aussage, nur eine isolierte Zahl aus dem Titel",
+      "generisches Auto auf einem Preisschild statt einer story-eigenen Bildidee",
+      "billige, zwanghaft flache Vektor-/Comic-Anmutung",
+      "Atlas wirkt aufgesetzt statt natuerlich integriert",
+      "Motiv erzaehlt keine konkrete Story",
+      "kein hochwertiges Vision-Universe-Premiumgefuehl"
+    ],
+    "note": "Nicht pixelgenau vermeiden, sondern das Qualitaetsniveau uebertreffen: eine echte, story-eigene kreative Entscheidung statt eines austauschbaren Templates."
+  }
+}
