@@ -10,7 +10,7 @@ Deutschland: SAP und BNTX über ihre bestehenden US-Listings. Insgesamt 23 europ
 
 ## 3. Tiingo Coverage
 
-Offizielles Supported-Tickers-Verzeichnis real geladen und gehasht: 108.908 Einträge. Keine lokale EUR-/CHF-/GBP-/Nordics-/Japan-/Korea-/Taiwan-/Indien-Coverage im geprüften Verzeichnis nachgewiesen; elf USD-LSE-Stock-Einträge belegen keine allgemeine London-Coverage. Intraday, Live und Account-Entitlement werden daraus nicht abgeleitet. Eine zusätzliche begrenzte credentialed Probe ist als read-only Betriebsjob vorhanden; lokale Ausführung meldete korrekt `NOT_CONFIGURED`. Neue lokale Symbolkonventionen wurden nicht erfunden.
+Offizielles Supported-Tickers-Verzeichnis real geladen und gehasht: 108.908 Einträge. Keine lokale EUR-/CHF-/GBP-/Nordics-/Japan-/Korea-/Taiwan-/Indien-Coverage im geprüften Verzeichnis nachgewiesen; elf USD-LSE-Stock-Einträge belegen keine allgemeine London-Coverage. Intraday, Live und allgemeines Account-Entitlement werden daraus nicht abgeleitet. Die authentifizierte read-only Probe über den vorhandenen GitHub-Secret ist **PASS**: NVDA, SAP, ASML, NVO, NVS, TSM, BABA, XPEV; acht Requests, jeweils sechs positive USD-Tagesbars, alle 48 Werte stimmen am selben Datum mit der vorhandenen Historie überein. Aggregierter Nachweis: `quant/data/universe/global-tiingo-probe.json`, [Run 36829971442](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36829971442). Neue lokale Symbolkonventionen wurden nicht erfunden.
 
 ## 4. Fundamentals
 
@@ -46,19 +46,21 @@ Identity-/Duplicate-/Equity-/Currency-Gates; geprüfte Listing-Zuordnung; ADR-Ra
 
 ## 7. Tests
 
-Untouched Baseline: Quant 2.054; SEC 484; Produkte 333 bestanden, fünf bestehende Skips. Nach Implementierung: Quant 2.066, Produkte 333, SEC 484 und sieben neue Python-Filing-/OAM-Tests bestanden; keine Failures. Zusätzliche gezielte Identity-/ADR-/Screener-Checks grün. Master-Verifikation: 683 bestanden, null Befunde. Gemeinsamer FX-Regression-Guard grün. Vorhandener Release-Build: PASS, Screener mit 5.399 Titeln. Isolierter vollständiger Discover-Build: 5.992 reale Details. Discovery/Initial-Rollout/Filing-Ingestion idempotent überprüft. Reale Quellen: Tiingo-Verzeichnis, vier SEC-Companyfacts und echtes LVMH-ESEF-Paket.
+Untouched Baseline: Quant 2.054; SEC 484; Produkte 333 bestanden, fünf bestehende Skips. Nach Implementierung: Quant 2.066; nach konfliktfreier Aktualisierung auf `main` eae006ee8 nochmals **2.078 Quant-Tests** bestanden. Produkte 333, SEC 484 und sieben neue Python-Filing-/OAM-Tests bestanden; keine Failures. Zusätzliche gezielte Identity-/ADR-/Screener-Checks grün. Master-Verifikation: 683 bestanden, null Befunde. Gemeinsamer FX-Regression-Guard grün. Vorhandener Release-Build erneut PASS auf aktuellem Main-Stand, Screener mit 5.399 Titeln. Isolierter vollständiger Discover-Build: 5.992 reale Details. Discovery/Initial-Rollout/Filing-Ingestion idempotent überprüft. Reale Quellen: Tiingo-Verzeichnis, authentifizierte acht-symbolige Tiingo-EOD-Probe, vier SEC-Companyfacts und echtes LVMH-ESEF-Paket.
 
 ## 8. Regressions
 
 Alle nicht angereicherten Stock-Detaildateien byteweise unverändert; keine Änderungen vorhandener Kurs-/SEC-Artefakte oder US-Membership. Zusätzliche globale Felder und Safety-Reasons sind additiv. Tägliche US-PIT-Semantik und bestehende Route-Namespaces erhalten. Keine Schema-Migration, kein UI-Redesign, keine neue Quant-Methodik, kein Production-Deployment.
 
+Das ursprüngliche Discover-CI verglich einen kompletten Neubau mit dem eingecheckten Stand: neue Safety-Gates entziehen sechs ausländischen Titeln unbelegte Bewertungswerte und ändern dadurch die Vergleichsmediane. Unverändertes `main` eae006ee8 separat gebaut: null Drift-Dateien außer dem erlaubten Meta-Zeitstempel. Der Fehler war somit durch diese Erweiterung ausgelöst, kein vorhandener Baseline-Fehler. CI prüft jetzt zwei isolierte Neubauten auf Determinismus und schützt separat alle ursprünglichen Master-Felder, Membership, Kurs-/SEC-Artefakte und nicht angereicherten Detaildateien. Ein späterer kompletter Daily-Build kann Vergleichsmediane durch den kleineren belegten Valuation-Pool ändern; die Formel bleibt unverändert. Discover-Browser-Budget bleibt bei 180 KB, aktuelle View-Ressourcen 179.898 Bytes.
+
 ## 9. Blockers
 
-Lokale Market-Data-/Entitlement-Coverage ist beim bestehenden Provider nicht belegt; lokale Fallback-Credentials fehlen. Diese Arbeitsumgebung besitzt keinen Tiingo-Key; der vorhandene GitHub-Secret kann nur im kontrollierten read-only Probe-Job geprüft werden. Einzelne nationale Quellen antworteten hier 403/503. Dies blockiert keine bereits implementierte SEC-/ESEF-/Identity-Arbeit.
+Lokale Market-Data-/Entitlement-Coverage ist beim bestehenden Provider nicht belegt; lokale Fallback-Credentials fehlen. Der vorhandene Tiingo-GitHub-Secret funktioniert nachweislich für die geprüften US-EOD-Listings und ist kein verbleibender Blocker. Einzelne nationale Quellen antworteten hier 403/503. Weitere Filing-Feeds, European Serving und belegte historische ADR-/Share-/EPS-Basis bleiben Implementierungsarbeit; sie werden nicht pauschal als externe Blocker bezeichnet.
 
 ## 10. Next Actions
 
-1. Credentialed Probe auswerten und geeigneten bereits erlaubten Provider für tatsächliche lokale Listings nachweisen; dann die noch tickerbasierten Materializer mit realen Listing-Kollisionen validieren.
+1. Geeigneten bereits erlaubten Provider für tatsächliche lokale Listings nachweisen; dann die noch tickerbasierten Materializer mit realen Listing-Kollisionen validieren.
 2. Belegte ADR-/Share-/EPS-Ratios und deren historische Changes ergänzen; foreign Monetary-Serving über die vorhandene Currency-Infrastruktur vervollständigen.
 3. Weitere offizielle nationale Filing-Discovery-Adapter und European Serving-Projektionen ergänzen; Annual/Interim-Coverage getrennt führen.
 

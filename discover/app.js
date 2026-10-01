@@ -20,7 +20,7 @@
   function watchButton(root,symbol,detail){
     const ref=Watch.reference(symbol,detail,ctx.universeId);
     const button=el('button',{type:'button',class:'v2-watch-button'});
-    const paint=()=>{const saved=watchlist().some(r=>r.listingId&&ref.listingId?r.listingId===ref.listingId:r.ticker===symbol&&r.universeId===ref.universeId);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));button.disabled=!ref.listingId&&!saved;};
+    const paint=()=>{const saved=Watch.contains(localStorage,ref);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));button.disabled=!ref.listingId&&!saved;};
     button.onclick=()=>{saveWatchlist(ref);paint();};paint();root.prepend(button);
   }
   function settings(root){
@@ -103,7 +103,7 @@
     const result=await dir.getInstrument(symbol);
     if(!active())return;
     if(result.status!=='OK'){message(root,'Aktie nicht gefunden','Prüfe das Kürzel oder suche nach dem Unternehmensnamen.');return;}
-    if(listingId&&decodeURIComponent(listingId)!==(result.instrument.listingId||result.instrument.instrumentId))throw Error('Listing passt nicht zur Aktienseite');
+    Watch.assertListing(result.instrument,listingId);
     const [manifest,hits]=await Promise.all([dir.manifest().catch(()=>null),dir.search(symbol,{limit:1}).catch(()=>null)]);
     if(!active())return;
     root.classList.add('dx-detail');
@@ -130,7 +130,7 @@
         const index=await S.loadJSON(BASE+'stock-index/'+ctx.universeId+'.json');if(!active())return;
         if(index.symbols.includes(symbol)){
           const detail=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+symbol+'.json');if(!active())return;
-          if(parts[3]&&decodeURIComponent(parts[3])!==(detail.listingId||detail.instrumentId))throw Error('Listing passt nicht zur Aktienseite');
+          Watch.assertListing(detail,parts[3]);
           root.classList.add('dx-detail');V.Detail.render(root,detail,ctx);
           watchButton(root,symbol,detail);
           document.title=(detail.companyName||symbol)+' — Discover';

@@ -30,3 +30,10 @@ jobs:
           python3 -m unittest discover -s scripts/fundamentals/tests
       - name: Read-only real artifact quality gates
         run: node scripts/universe/validate-global-equities.mjs
+      - name: Protected US data baseline on expansion reviews
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD -- quant/engines/global-equities.js scripts/universe/materialize-global-equities.mjs | grep -q .; then
+            node scripts/universe/verify-global-baseline.mjs --base=origin/${{ github.base_ref }}
+          fi
