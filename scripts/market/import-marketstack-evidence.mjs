@@ -35,7 +35,9 @@ export function importEvidence(probe, references, existing=[]) {
   const known=existing.filter(r=>r.mic===venue.mic&&((r.ticker||r.symbol)===ticker||(isin&&r.isin===isin)));
   if(known.length>1){blocked('AMBIGUOUS_EXISTING_LISTING');continue;}
   const issuer=meta.cik?existing.find(r=>String(r.cik||'').padStart(10,'0')===String(meta.cik).padStart(10,'0')):null;
-  const prior=known[0], listingId=prior?.listingId||prior?.instrumentId||'vu_'+hash(key), securityId=prior?.securityId||(isin?'sec_isin_'+isin:'sec_listing_'+hash(key));
+  const prior=known[0];
+  if(prior?.isin&&isin&&prior.isin!==isin){blocked('EXISTING_SECURITY_IDENTITY_MISMATCH');continue;}
+  const listingId=prior?.listingId||prior?.instrumentId||'vu_'+hash(key), securityId=prior?.securityId||(isin?'sec_isin_'+isin:'sec_listing_'+hash(key));
   if(keys.has(key)){blocked('DUPLICATE_LISTING');continue;}
   const mapping={symbol,exchange:venue.mic,mic:venue.mic,currency,assetType:type,securityId,listingId};
   const bars=[], anomalies=[];
