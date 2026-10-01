@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "marketstack-europe-probe-1.0.0",
+  "purpose": "Bounded metadata and 20-month EOD validation across remaining European venues; discovery inputs only, no production eligibility.",
+  "source": "AUTHENTICATED_PROVIDER_VENUE_METADATA",
+  "maxListings": 12,
+  "listings": [
+    {
+      "symbol": "UCB.BR",
+      "mic": "XBRU",
+      "discoveredName": "UCB SA",
+      "discoveryEndpoint": "exchanges/XBRU/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:48.927Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "ABI.BR",
+      "mic": "XBRU",
+      "discoveredName": "Anheuser-Busch InBev SA/NV",
+      "discoveryEndpoint": "exchanges/XBRU/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:48.927Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "ITX.MC",
+      "mic": "XMAD",
+      "discoveredName": "Industria de Diseño Textil, S.A.",
+      "discoveryEndpoint": "exchanges/XMAD/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:49.682Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "IBE.MC",
+      "mic": "XMAD",
+      "discoveredName": "Iberdrola, S.A.",
+      "discoveryEndpoint": "exchanges/XMAD/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:49.682Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "OMV.VI",
+      "mic": "XWBO",
+      "discoveredName": "OMV Aktiengesellschaft",
+      "discoveryEndpoint": "exchanges/XWBO/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:49.992Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "VOE.VI",
+      "mic": "XWBO",
+      "discoveredName": "Voestalpine AG",
+      "discoveryEndpoint": "exchanges/XWBO/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:49.992Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "ATCO-A.ST",
+      "mic": "XSTO",
+      "discoveredName": "Atlas Copco AB",
+      "discoveryEndpoint": "exchanges/XSTO/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:51.969Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "VOLV-B.ST",
+      "mic": "XSTO",
+      "discoveredName": "AB Volvo",
+      "discoveryEndpoint": "exchanges/XSTO/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:51.969Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "DNB.OL",
+      "mic": "XOSL",
+      "discoveredName": "DNB Bank ASA",
+      "discoveryEndpoint": "exchanges/XOSL/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:52.414Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "KNEBV.HE",
+      "mic": "XHEL",
+      "discoveredName": "KONE Oyj",
+      "discoveryEndpoint": "exchanges/XHEL/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:52.695Z",
+      "expectedAssetType": "EQUITY",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "IBTA.XLON",
+      "mic": "XLON",
+      "discoveredName": "iShares $ Treasury Bond 1-3yr UCITS ETF USD (Acc)",
+      "discoveryEndpoint": "exchanges/XLON/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:51.165Z",
+      "expectedAssetType": "ETF",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    },
+    {
+      "symbol": "VERX.XLON",
+      "mic": "XLON",
+      "discoveredName": "Vanguard FTSE Developed Europe ex UK UCITS ETF Dis",
+      "discoveryEndpoint": "exchanges/XLON/tickers",
+      "discoveryRunId": "36852153799",
+      "discoveryCheckedAt": "2026-10-01T10:56:51.165Z",
+      "expectedAssetType": "ETF",
+      "typeValidationRequired": true,
+      "currencyValidationRequired": true
+    }
+  ]
+}

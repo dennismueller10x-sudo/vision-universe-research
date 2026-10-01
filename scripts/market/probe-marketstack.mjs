@@ -1,6 +1,6 @@
 // Bounded, server-only evidence collection. No production writes or source switch.
 import { createRequire } from 'node:module';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 const require = createRequire(import.meta.url);
 const { createMarketstackClient } = require('../../providers/marketstack/client.js');
@@ -23,7 +23,15 @@ if (key) {
     return r;
   }
   function save() { report.accounting = client.stats(); mkdirSync(dirname(out), { recursive: true }); writeFileSync(out, JSON.stringify(report, null, 2) + '\n'); }
-  if (arg('phase', 'initial') === 'finish') {
+  if (arg('phase', 'initial') === 'us-full') {
+    // Deliberate one-time whole-US latest benchmark. Its independent hard ceiling
+    // is 7,400 symbol credits, never a historical/full-month backfill.
+    const {runFullUSLatest}=await import('./benchmark-marketstack-us-latest.mjs');
+    const full=await runFullUSLatest(JSON.parse(readFileSync('reports/marketstack/marketstack_tiingo_us_api_diff.json')),{outputPath:resolve(dirname(out),'us-latest.json')});
+    report.fullUSLatest={complete:full.complete,state:full.state,summary:full.summary,budgetUsed:full.budgetUsed};save();
+    const selected=JSON.parse(readFileSync('quant/config/marketstack-europe-probe.json')).listings;
+    for(const row of selected){await probe('tickers/'+row.symbol,{},'listing-identity');await probe('eod',{symbols:row.symbol,exchange:row.mic,date_from:'2025-01-01',date_to:'2026-09-30',limit:1000},'global-qualified-eod');}
+  } else if (arg('phase', 'initial') === 'finish') {
     const r=await client.paginate('/exchanges/XETR/tickers',{limit:1000},{maxPages:25,extract:body=>body.data?.tickers});
     report.endpoints.push({endpoint:'exchanges/XETR/tickers',params:{limit:1000},label:'complete-german-directory',checkedAt:new Date().toISOString(),...r});save();
     await probe('eod',{symbols:'NVDA',exchange:'XNAS',date_from:'2015-01-02',date_to:'2015-01-09',limit:100},'history-depth-probe');
