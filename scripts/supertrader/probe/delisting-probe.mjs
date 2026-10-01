@@ -115,8 +115,12 @@ async function main() {
       if (byTicker.get(r.ticker).some((x) => x !== r && x.startDate && x.startDate > r.endDate)) e.tickerReusedLater++;
     }
     const activeNow = rows.filter((r) => isStockL(r) && (!r.endDate || r.endDate >= '2026-01-01')).length;
+    // Lebende Listings zu Jahresbeginn (nur Kuerzel ohne Zusatz, Beginn bekannt) -> Delisting-Quote je Jahr.
+    const plain = rows.filter((r) => isStockL(r) && /^[A-Z]{1,5}$/.test(r.ticker) && r.startDate);
+    const aliveAt = {};
+    for (let y = 2005; y <= 2026; y++) { const d = `${y}-01-01`; aliveAt[y] = plain.filter((r) => r.startDate <= d && (!r.endDate || r.endDate >= d)).length; }
     console.log('PROBE_RESULT_BEGIN');
-    console.log(JSON.stringify({ schema: 'supertrader-delisting-list-stats-1.0.0', ranAt: new Date().toISOString(), requests, rows: rows.length, activeNowMajorUsdStock: activeNow, endedByYear: byYear }));
+    console.log(JSON.stringify({ schema: 'supertrader-delisting-list-stats-1.0.0', ranAt: new Date().toISOString(), requests, rows: rows.length, activeNowMajorUsdStock: activeNow, aliveAtYearStartPlain: aliveAt, endedByYear: byYear }));
     console.log('PROBE_RESULT_END');
     return;
   }
