@@ -4,6 +4,7 @@
   const V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
   const el = S.el, BASE = '/discover/data/';
   let generation = 0, meta, calendar, search, theme, previousFocus, homeDispose, marketDispose;
+  const GLOBAL_MARKET_BASE = '/quant/data/global-market/';
   const ctx = { universeId: 'US_REAL', openSearch: () => search.open() };
   function syncThemeChrome(state) {
     const color=state&&state.resolved==='light'?'#ffffff':'#08080a';
@@ -18,7 +19,7 @@
   function watchlist(){try{return Watch.load(localStorage);}catch(_){return [];}}
   function saveWatchlist(ref){try{return Watch.toggle(localStorage,ref);}catch(_){return false;}}
   function watchButton(root,symbol,detail){
-    const ref=Watch.reference(symbol,detail,ctx.universeId);
+    const ref=Watch.reference(symbol,detail,detail&&detail.universeId||ctx.universeId);
     const button=el('button',{type:'button',class:'v2-watch-button'});
     const paint=()=>{const saved=Watch.isSaved(watchlist(),ref);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));button.disabled=!ref.listingId&&!saved;};
     button.onclick=()=>{saveWatchlist(ref);paint();};paint();root.prepend(button);
@@ -75,7 +76,7 @@
     host.append(bar,main,footer(),dock); return main;
   }
   function setupSearch() {
-    search=D.Search.create({universeId:()=>ctx.universeId});document.body.append(search.node);
+    search=D.Search.create({universeId:()=>ctx.universeId,extensionBase:GLOBAL_MARKET_BASE});document.body.append(search.node);
     const open=search.open;
     search.open=()=>{previousFocus=document.activeElement;open();};
     document.addEventListener('keydown',event=>{if(event.key==='/'&&!search.node.classList.contains('on'))previousFocus=document.activeElement;},true);
@@ -98,19 +99,7 @@
       else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     });
   }
-  async function instrument(root,symbol,active,listingId) {
-    const dir=global.VUInstrumentDirectory.create({});
-    const result=await dir.getInstrument(symbol);
-    if(!active())return;
-    if(result.status!=='OK'){message(root,'Aktie nicht gefunden','Prüfe das Kürzel oder suche nach dem Unternehmensnamen.');return;}
-    Watch.assertListing(result.instrument,listingId);
-    const [manifest,hits]=await Promise.all([dir.manifest().catch(()=>null),dir.search(symbol,{limit:1}).catch(()=>null)]);
-    if(!active())return;
-    root.classList.add('dx-detail');
-    V.Detail.renderInstrument(root,{instrument:result.instrument,alternateListings:result.alternateListings,
-      capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
-    watchButton(root,symbol,result.instrument);
-  }
+  const listingOptions=active=>({active,context:ctx,extensionBase:GLOBAL_MARKET_BASE,message,assertListing:Watch.assertListing,watchButton,renderInstrument:V.Detail.renderInstrument});
   async function route() {
     if(!meta)return;
     const id=++generation,active=()=>generation===id;
@@ -127,6 +116,7 @@
       if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
         if(!/^[A-Z0-9.\-]{1,24}$/.test(symbol))throw Error('Ungültiges Aktienkürzel');
+        if(parts[1]==='GLOBAL_MARKET'){await D.Detail.loadGlobalInstrument(root,symbol,decodeURIComponent(parts[3]||''),listingOptions(active));return;}
         const index=await S.loadJSON(BASE+'stock-index/'+ctx.universeId+'.json');if(!active())return;
         if(index.symbols.includes(symbol)){
           const detail=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+symbol+'.json');if(!active())return;
@@ -135,7 +125,7 @@
           watchButton(root,symbol,detail);
           document.title=(detail.companyName||symbol)+' — Discover';
           if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world});
-        }else await instrument(root,symbol,active,parts[3]);
+        }else await D.Detail.loadMasterInstrument(root,symbol,parts[3],listingOptions(active));
       } else if(parts[0]==='settings'){
         settings(root);
       } else if(parts[0]==='suche'){

@@ -1,0 +1,208 @@
+{
+  "schemaVersion": "marketstack-fundamental-crosscheck-1.0.0",
+  "generatedAt": "2026-10-01T12:09:27.607Z",
+  "state": "BLOCKED_ENTITLEMENT_FOR_FACTS",
+  "primarySource": "VU_SEC_EDGAR",
+  "externalSourceRelation": "SAME_REGULATORY_SOURCE",
+  "entitlements": [
+    {
+      "runId": "36852153799",
+      "endpoint": "company_facts",
+      "params": {
+        "cik_code": "0000320193",
+        "limit": 1
+      },
+      "checkedAt": "2026-10-01T11:01:50.037Z",
+      "accessible": false,
+      "status": 403,
+      "reason": "entitlementRestricted"
+    },
+    {
+      "runId": "36852153799",
+      "endpoint": "concept/accounts_payable",
+      "params": {
+        "cik_code": "0000320193",
+        "limit": 1
+      },
+      "checkedAt": "2026-10-01T11:01:50.275Z",
+      "accessible": false,
+      "status": 403,
+      "reason": "entitlementRestricted"
+    },
+    {
+      "runId": "36852153799",
+      "endpoint": "submissions",
+      "params": {
+        "cik_code": "0000320193",
+        "limit": 1
+      },
+      "checkedAt": "2026-10-01T11:01:50.507Z",
+      "accessible": false,
+      "status": 403,
+      "reason": "entitlementRestricted"
+    },
+    {
+      "runId": "36852153799",
+      "endpoint": "tickerinfo",
+      "params": {
+        "ticker": "AAPL"
+      },
+      "checkedAt": "2026-10-01T11:01:50.781Z",
+      "accessible": true,
+      "status": null,
+      "reason": null
+    },
+    {
+      "runId": "36852153799",
+      "endpoint": "companyratings",
+      "params": {
+        "ticker": "AAPL"
+      },
+      "checkedAt": "2026-10-01T11:01:51.038Z",
+      "accessible": false,
+      "status": 403,
+      "reason": "entitlementRestricted"
+    },
+    {
+      "runId": "36853405425",
+      "endpoint": "tickerinfo",
+      "params": {
+        "ticker": "SAP.DE"
+      },
+      "checkedAt": "2026-10-01T11:12:22.700Z",
+      "accessible": true,
+      "status": null,
+      "reason": null
+    },
+    {
+      "runId": "36853405425",
+      "endpoint": "tickerinfo",
+      "params": {
+        "ticker": "EUNL.DE"
+      },
+      "checkedAt": "2026-10-01T11:12:22.955Z",
+      "accessible": true,
+      "status": null,
+      "reason": null
+    }
+  ],
+  "valueCrosschecks": [
+    {
+      "metric": "revenue",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "gross_profit",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "operating_income",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "net_income",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "eps_basic",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "eps_diluted",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "operating_cash_flow",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "capital_expenditures",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "free_cash_flow",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "cash_and_equivalents",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "total_debt",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "total_assets",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "total_liabilities",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "stockholders_equity",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    },
+    {
+      "metric": "shares_outstanding",
+      "status": "NOT_COMPARED",
+      "vuValue": null,
+      "marketstackValue": null,
+      "reason": "MARKETSTACK_COMPANY_FACTS_ENTITLEMENT_RESTRICTED"
+    }
+  ],
+  "comparedActualFactPairs": 0,
+  "canonicalMetricsOverwritten": 0,
+  "pitDatesOverwritten": 0,
+  "secStatus": "REGRESSION_GREEN",
+  "esefStatus": "ARCHITECTURE_PRESERVED_REGRESSION_GREEN",
+  "business": {
+    "factsAndConcepts": "SECOND_ACCESS_PATH_TO_SEC_NOT_INDEPENDENT_VALIDATION",
+    "companyStatements": "NO_NAMED_ENDPOINT_IN_CURRENT_DOCUMENTED_SCHEMA",
+    "companyDetails": "TICKERINFO_OBSERVED_ACCESSIBLE_ON_CURRENT_ACCOUNT",
+    "companyRatings": "RESTRICTED_UNMEASURED",
+    "upgradePerformed": false
+  }
+}

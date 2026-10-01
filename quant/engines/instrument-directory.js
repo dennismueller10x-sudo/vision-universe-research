@@ -73,12 +73,14 @@
    *   base      Pfad des Masters (Standard /quant/data/universe/).
    *   loadJSON  Lader. Muss ein Promise liefern.
    *   deliveredBase  Pfad der ausgelieferten Discover-Payloads.
+   *   extensionBase  Optional canonical global listing directory; legacy defaults stay unchanged.
    */
   function create(options) {
     options = options || {};
     var base = options.base || DEFAULT_BASE;
     var deliveredBase = options.deliveredBase || "/discover/data/";
     var load = options.loadJSON || defaultLoader();
+    var extensionBase = options.extensionBase ? String(options.extensionBase).replace(/\/+$/, "") + "/" : null;
 
     var cache = { manifest: null, searchManifest: null, shards: {}, sym: {}, name: {}, missing: {} };
 
@@ -348,17 +350,219 @@
       });
     }
 
+    /* Additive listing directory. Never infer a global identity from a
+       ticker-only US price/fundamental lookup. Explicit IDs are checked
+       before any legacy data path is used. */
+    var extensionCache = { manifest: null, instruments: {}, search: {}, history: {} };
+    function extensionManifest() {
+      if (!extensionBase) return Promise.resolve(null);
+      if (!extensionCache.manifest) extensionCache.manifest = Promise.resolve().then(function () {
+        return load(extensionBase + "manifest.json");
+      }).then(function (m) {
+        return m && m.schemaVersion === "global-market-1.0.0" ? m : null;
+      }).catch(function () { return null; });
+      return extensionCache.manifest;
+    }
+    function extensionShard(kind, key) {
+      var bucket = extensionCache[kind];
+      if (!bucket[key]) bucket[key] = extensionManifest().then(function (m) {
+        var members = m && m[kind === "instruments" ? "instrumentShards" : "searchShards"] || [];
+        if (!members.some(function (s) { return (typeof s === "string" ? s : s.shard) === key; })) return null;
+        return load(extensionBase + kind + "/" + key + ".json");
+      }).catch(function () { return null; });
+      return bucket[key];
+    }
+    function explicitId(ref) {
+      return ref && typeof ref === "object" ? (ref.listingId || ref.instrumentId || ref.i || ref.securityId || null) : null;
+    }
+    function refSymbol(ref) {
+      return typeof ref === "string" ? upper(ref) : upper(ref && (ref.symbol || ref.ticker || ref.s));
+    }
+    function validExtension(row) {
+      return row && /^vu_[a-f0-9]+$/.test(row.listingId) &&
+        /^[A-Z0-9][A-Z0-9.\-]{0,31}$/.test(refSymbol(row)) &&
+        (row.assetType === "EQUITY" || row.assetType === "ETF") &&
+        /^[A-Z]{3}$/.test(row.tradingCurrency || "") && !!row.mic;
+    }
+    function extensionSecurityType(row) {
+      return row.assetType === "ETF" ? "ETF" : row.listingType === "PREFERRED" ? "PREFERRED" : row.listingType === "ADR" ? "ADR" : row.listingType === "UNKNOWN" ? "EQUITY" : "COMMON_STOCK";
+    }
+    function extensionInstrument(row) {
+      return Object.assign({}, row, { instrumentId: row.listingId,
+        symbol: refSymbol(row), companyName: row.companyName || row.name || null,
+        currency: row.tradingCurrency, securityType: extensionSecurityType(row) });
+    }
+    function findExtension(ref) {
+      var symbol = refSymbol(ref), wanted = explicitId(ref);
+      if (!symbol) return Promise.resolve({ status: "BAD_REQUEST", instrument: null });
+      return extensionShard("instruments", Master.shardKey(symbol)).then(function (shard) {
+        var rows = ((shard && shard.instruments) || []).filter(function (r) {
+          return validExtension(r) && refSymbol(r) === symbol &&
+            (!ref.mic || ref.mic === r.mic) &&
+            (!ref.exchange || upper(ref.exchange) === upper(r.exchange));
+        });
+        var hits = wanted ? rows.filter(function (r) {
+          return r.listingId === wanted || r.securityId === wanted;
+        }) : rows;
+        if (hits.length !== 1) return { status: hits.length > 1 ? "AMBIGUOUS_IDENTITY" : "NOT_IN_UNIVERSE", instrument: null };
+        return { status: "OK", instrument: extensionInstrument(hits[0]),
+          alternateListings: rows.filter(function (r) { return r.listingId !== hits[0].listingId; }).map(function (r) {
+            return { instrumentId: r.listingId, listingId: r.listingId, exchange: r.exchange, mic: r.mic, active: r.active };
+          }) };
+      });
+    }
+    function findLegacy(ref) {
+      var wanted = explicitId(ref), symbol = refSymbol(ref);
+      if (!symbol) return Promise.resolve({ status: "BAD_REQUEST", instrument: null });
+      return loadShard("instrument", Master.shardKey(symbol.indexOf("REF_") === 0 ? symbol.slice(4) : symbol)).then(function (shard) {
+        var rows = ((shard && shard.instruments) || []).filter(function (r) {
+          return (upper(r.symbol) === symbol || (r.legacyIds || []).some(function (id) { return upper(id) === symbol; })) &&
+            (!wanted || r.instrumentId === wanted || r.listingId === wanted || (r.legacyIds || []).includes(wanted)) &&
+            (!ref.mic || ref.mic === r.mic) && (!ref.exchange || upper(ref.exchange) === upper(r.exchange));
+        });
+        if (!rows.length) return { status: "NOT_IN_UNIVERSE", instrument: null };
+        var primary = rows.filter(function (r) { return r.primaryListing === true; });
+        if (rows.length > 1 && (wanted || primary.length !== 1)) return { status: "AMBIGUOUS_IDENTITY", instrument: null };
+        return { status: "OK", instrument: rows.length === 1 ? rows[0] : primary[0], alternateListings: [] };
+      });
+    }
+    function getExtendedInstrument(ref) {
+      var wanted = explicitId(ref), symbol = refSymbol(ref), venue = ref && typeof ref === "object" && (ref.mic || ref.exchange);
+      if (ref && ref.universeId === "GLOBAL_MARKET") return findExtension(ref);
+      // Bare ticker requests keep the original US lookup and aliases.
+      if (!wanted && !venue) return getInstrument(symbol).then(function (result) {
+        return result.status === "NOT_IN_UNIVERSE" ? findExtension(ref) : result;
+      });
+      // Explicit identity/venue constraints must never fall back to an
+      // unconstrained ticker after a miss, including for existing US rows.
+      return findLegacy(ref).then(function (result) {
+        return result.status === "NOT_IN_UNIVERSE" ? findExtension(ref) : result;
+      });
+    }
+    function compactExtension(row) {
+      if (!validExtension(row)) return null;
+      var flags = ["HAS_PROFILE"];
+      if (row.price && Number.isFinite(row.price.value) && row.price.value > 0) flags.push("HAS_PRICE_SNAPSHOT");
+      var historyCoverage = row.coverage && (row.coverage.price_history || row.coverage.priceHistory);
+      if (row.historyPath && (historyCoverage === "FULL" || historyCoverage === "PARTIAL")) flags.push("HAS_PRICE_HISTORY");
+      return Object.assign({}, row, { i: row.listingId, li: row.listingId, s: refSymbol(row),
+        n: row.companyName || row.name || null, x: row.exchange, c: row.listingCountry || row.country,
+        cc: row.country, rg: row.region || row.listingRegion || null, u: row.tradingCurrency, ci: row.companyId || null,
+        t: extensionSecurityType(row), a: row.active === false ? 0 : 1, cap: flags });
+    }
+    function searchExtended(query, opts) {
+      opts = opts || {};
+      var q = upper(query), limit = opts.limit || 20;
+      function fold(value) { return upper(value).normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+      var folded = fold(q), keys = [Master.shardKey(folded)];
+      nameTokens(folded).slice(0, 2).forEach(function (token) {
+        var key = Master.shardKey(token); if (keys.indexOf(key) < 0) keys.push(key);
+      });
+      var legacySearch = opts.extensionOnly ? Promise.resolve({ status: "OK", entries: [], shardsLoaded: 0 }) : search(query, opts);
+      return Promise.all([legacySearch, Promise.all(keys.map(function (key) { return extensionShard("search", key); }))]).then(function (results) {
+        var legacy = results[0], shards = results[1];
+        if (legacy.status !== "OK") return legacy;
+        var pool = legacy.entries.slice(), extra = [], seen = {};
+        pool.forEach(function (r) { seen[r.li || r.i] = true; });
+        shards.forEach(function (shard) {
+          ((shard && shard.entries) || []).forEach(function (row) {
+            var compact = compactExtension(row);
+            if (!compact || (opts.listingCountry && compact.listingCountry !== opts.listingCountry) ||
+                (opts.listingRegion && compact.listingRegion !== opts.listingRegion)) return;
+            // Reused accepted listing IDs represent one listing. Enrich
+            // that same search identity with its canonical extension row.
+            if (seen[compact.i]) pool = pool.filter(function (entry) { return (entry.li || entry.i) !== compact.i; });
+            if (extra.some(function (entry) { return entry.i === compact.i; })) return;
+            seen[compact.i] = true; extra.push(compact);
+          });
+        });
+        // Global metadata remains searchable, including accented names and
+        // identifiers. Keep the established US ranking ahead of additional
+        // metadata matches and retain distinct listing identities.
+        var exact = [], starts = [], names = [], contains = [], metadata = [];
+        extra.forEach(function (entry) {
+          var symbol = fold(entry.s), name = fold(entry.n);
+          if (symbol === folded) exact.push(entry);
+          else if (symbol.indexOf(folded) === 0) starts.push(entry);
+          else if (name.indexOf(folded) === 0) names.push(entry);
+          else if (name.indexOf(folded) >= 0 || symbol.indexOf(folded) >= 0) contains.push(entry);
+          else if ([entry.exchange, entry.mic, entry.country, entry.listingCountry, entry.region, entry.listingRegion, entry.isin].concat(entry.aliases || [])
+            .some(function (value) { return value && fold(value).indexOf(folded) >= 0; })) metadata.push(entry);
+        });
+        var ranked = Master.rankMatches(pool.concat(exact, starts, names, contains), q, 0);
+        // Folded matches omitted by the legacy ranker (e.g. Nestlé/NESTLE)
+        // and metadata matches follow ordinary symbol/name results.
+        exact.concat(starts, names, contains, metadata).forEach(function (entry) {
+          if (!ranked.some(function (row) { return row.i === entry.i; })) ranked.push(entry);
+        });
+        return { status: "OK", shardsLoaded: legacy.shardsLoaded + shards.filter(Boolean).length,
+          entries: ranked.slice(0, limit) };
+      });
+    }
+    function extensionData(ref, callback, legacyCallback) {
+      var legacyLookup = ref && ref.universeId === "GLOBAL_MARKET"
+        ? Promise.resolve({ status: "NOT_IN_UNIVERSE" }) : findLegacy(ref);
+      return legacyLookup.then(function (legacy) {
+        if (legacy.status === "OK") return legacyCallback(legacy.instrument);
+        if (legacy.status !== "NOT_IN_UNIVERSE") return { status: legacy.status, value: null, bars: null, fundamentals: null };
+        return findExtension(ref).then(function (result) {
+          if (result.status !== "OK") return { status: result.status, value: null, bars: null, fundamentals: null,
+            reason: "The requested listing identity is not available." };
+          return callback(result.instrument);
+        });
+      });
+    }
+    function getExtendedPrice(ref, opts) {
+      if (!explicitId(ref) && !(ref && typeof ref === "object" && (ref.mic || ref.exchange || ref.universeId === "GLOBAL_MARKET"))) return getPrice(ref, opts);
+      return extensionData(ref, function (row) {
+        var price = row.price;
+        if (!price || !Number.isFinite(price.value) || price.value <= 0) return { status: "NOT_DELIVERED", value: null };
+        return { status: "OK", value: price.value, changePercent: null, asOf: price.asOf || null,
+          currency: row.tradingCurrency, listingId: row.listingId,
+          delayState: price.delayState || "EOD_ONLY", dataFrequency: "EOD",
+          marketTimestamp: price.marketTimestamp || null, providerTimestamp: price.providerTimestamp || null, retrievedAt: price.retrievedAt || null };
+      }, function (row) { return getPrice({ symbol: row.symbol }, opts); });
+    }
+    function getExtendedHistory(ref, opts) {
+      if (!explicitId(ref) && !(ref && typeof ref === "object" && (ref.mic || ref.exchange || ref.universeId === "GLOBAL_MARKET"))) return getPriceHistory(ref, opts);
+      return extensionData(ref, function (row) {
+        // Resolve only an identifier-derived local path. Provider metadata
+        // must never be able to point the browser at an arbitrary URL.
+        var expected = "history/" + row.listingId + ".json";
+        if (row.historyPath !== expected) return { status: "NOT_DELIVERED", bars: null };
+        if (!extensionCache.history[row.listingId]) extensionCache.history[row.listingId] = Promise.resolve().then(function () {
+          return load(extensionBase + expected);
+        }).then(function (payload) {
+          if (!payload || !Array.isArray(payload.bars) || !payload.bars.length ||
+              (payload.listingId && payload.listingId !== row.listingId) ||
+              (payload.currency && payload.currency !== row.tradingCurrency) ||
+              (payload.tradingCurrency && payload.tradingCurrency !== row.tradingCurrency)) return { status: "NOT_DELIVERED", bars: null };
+          return { status: "OK", bars: payload.bars, source: "delivered", listingId: row.listingId,
+            currency: row.tradingCurrency, delayState: "EOD_ONLY", dataFrequency: "EOD",
+            adjustmentStatus: payload.adjustmentStatus || "unknown", quality: payload.quality || null };
+        }).catch(function () { return { status: "NOT_DELIVERED", bars: null }; });
+        return extensionCache.history[row.listingId];
+      }, function (row) { return getPriceHistory({ symbol: row.symbol }, opts); });
+    }
+    function getExtendedFundamentals(ref) {
+      if (!explicitId(ref) && !(ref && typeof ref === "object" && (ref.mic || ref.exchange || ref.universeId === "GLOBAL_MARKET"))) return getFundamentals(ref);
+      return extensionData(ref, function (row) {
+        return { status: row.assetType === "ETF" ? "NOT_APPLICABLE" : "NOT_DELIVERED", fundamentals: null,
+          reason: row.assetType === "ETF" ? "Company fundamentals do not apply to ETFs." : "Canonical company fundamentals are not delivered for this listing." };
+      }, function (row) { return getFundamentals({ symbol: row.symbol }); });
+    }
+
     return {
       VERSION: VERSION,
       base: base,
       manifest: manifest,
       searchManifest: searchManifest,
-      getInstrument: getInstrument,
-      search: search,
+      getInstrument: extensionBase ? getExtendedInstrument : getInstrument,
+      search: extensionBase ? searchExtended : search,
       capabilities: capabilities,
-      getPrice: getPrice,
-      getPriceHistory: getPriceHistory,
-      getFundamentals: getFundamentals,
+      getPrice: extensionBase ? getExtendedPrice : getPrice,
+      getPriceHistory: extensionBase ? getExtendedHistory : getPriceHistory,
+      getFundamentals: extensionBase ? getExtendedFundamentals : getFundamentals,
       getSimilarStocks: getSimilarStocks
     };
   }

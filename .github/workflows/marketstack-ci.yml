@@ -1,0 +1,30 @@
+name: Marketstack additive regression
+on:
+  pull_request:
+    paths: ['providers/marketstack/**', 'quant/engines/global-market.js', 'quant/engines/instrument-directory.js', 'quant/data/global-market/**', 'quant/config/marketstack*.json', 'reports/marketstack/**', 'quant/tests/**', 'scripts/market/*marketstack*', 'scripts/universe/build-global-market.mjs', '.github/workflows/marketstack-*.yml']
+  push:
+    branches: ['feat/marketstack-*']
+    paths: ['providers/marketstack/**', 'quant/engines/global-market.js', 'quant/engines/instrument-directory.js', 'quant/data/global-market/**', 'quant/config/marketstack*.json', 'reports/marketstack/**', 'quant/tests/**', 'scripts/market/*marketstack*', 'scripts/universe/build-global-market.mjs', '.github/workflows/marketstack-*.yml']
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r scripts/fundamentals/requirements.txt
+      - run: node --test quant/tests/*.test.mjs
+      - run: node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs
+      - run: python3 -m unittest discover -s scripts/quant/tests
+      - run: python3 -m unittest discover -s scripts/fundamentals/tests
+      - name: Protected identity and public data gates
+        run: |
+          node scripts/universe/validate-global-equities.mjs
+          node scripts/market/assert-no-secrets.mjs
+          node scripts/market/assert-public-data-hygiene.mjs

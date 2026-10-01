@@ -1867,7 +1867,7 @@
     ]));
 
     var gattung = {
-      COMMON_STOCK: "Stammaktie", ADR: "American Depositary Receipt", PREFERRED: "Vorzugsaktie",
+      COMMON_STOCK: "Stammaktie", EQUITY: "Aktie", ADR: "American Depositary Receipt", PREFERRED: "Vorzugsaktie",
       ETF: "ETF", ETN: "ETN", FUND: "Fonds", WARRANT: "Optionsschein",
       OTHER: "sonstiges Instrument", UNKNOWN: "Gattung nicht bestimmbar"
     }[inst.securityType] || inst.securityType;
@@ -1878,11 +1878,56 @@
                 .filter(Boolean).join(" · ") }),
       el("h1", { text: inst.companyName || inst.symbol }),
       el("p", { class: "dx-hero-sub", text: inst.companyName
-        ? inst.symbol + " · " + (inst.country || "Land unbekannt")
+        ? inst.symbol + " · " + (inst.universeId === "GLOBAL_MARKET"
+          ? "Handelsland " + (inst.listingCountry || "unbekannt") + " · " + (inst.assetType === "ETF" ? "Fondsdomizil " + (inst.fundDomicile || "unbekannt") : "Unternehmensland " + (inst.country || "unbekannt"))
+          : (inst.country || "Land unbekannt"))
         : "Für diesen Titel liegt kein Firmenname vor. Die Tickerliste des Kursanbieters " +
           "führt keine Namen; angezeigt wird deshalb das Kürzel." })
     ]);
     root.appendChild(kopf);
+
+    // The canonical extension supplies its own delivered evidence. This
+    // path reuses the shared chart and never subscribes a local ticker to
+    // the US live feed or applies USD display conversion.
+    var canonical = inst.universeId === "GLOBAL_MARKET";
+    if (canonical) {
+      var price = result.price, history = result.history;
+      var format = global.VUFx && global.VUFx.Format;
+      var currency = inst.tradingCurrency || inst.currency;
+      var priceText = function (value) {
+        return format && format.formatPrice ? format.formatPrice(value, currency, { numberLocale: "de-DE" }) : String(value) + " " + currency;
+      };
+      if (price && price.status === "OK" && isNum(price.value)) {
+        kopf.appendChild(el("p", { class: "dx-price num", text: priceText(price.value) }));
+        kopf.appendChild(el("p", { class: "dx-hint", "data-frequency": "EOD", text: "Tagesschluss · " + (price.asOf || "Datum nicht verfügbar") + " · " + currency }));
+      }
+      var bars = history && history.status === "OK" && Array.isArray(history.bars) ? history.bars : [];
+      if (bars.length > 1 && QC && QC.lineChart) {
+        var chart = el("div", { class: "dx-chart", "data-listing-id": inst.listingId, "data-currency": currency });
+        chart.appendChild(QC.lineChart({ dates: bars.map(function (bar) { return bar.date; }),
+          series: [{ values: bars.map(function (bar) { return bar.close; }), label: inst.companyName || inst.symbol }],
+          width: Math.max(300, Math.min(720, global.innerWidth - 48)), height: 340,
+          yFormat: priceText, title: (inst.companyName || inst.symbol) + " · " + currency,
+          description: "Historische Schlusskurse in der Originalwährung. Tagesschlusskurse." }));
+        var chartSection = el("section", { class: "dx-chapter dx-chapter--chart dx-fade" }, [
+          el("h2", { text: "Kursverlauf" }), chart,
+          el("p", { class: "dx-hint", text: bars[0].date + " – " + bars[bars.length - 1].date + " · " + bars.length + " Tageskurse · " + currency + " · historische Schlusskurse" })
+        ]);
+        var partial = (inst.quality && inst.quality.status === "PARTIAL") ||
+          (history.quality && history.quality.status === "PARTIAL") ||
+          (inst.coverage && inst.coverage.price_history === "PARTIAL");
+        var missingDays = (inst.quality && inst.quality.quarantinedCandles > 0) ||
+          (history.quality && history.quality.quarantinedCandles > 0) ||
+          (Array.isArray(inst.missingDates) && inst.missingDates.length > 0) ||
+          (Array.isArray(history.missingDates) && history.missingDates.length > 0);
+        var warning = partial ? "Begrenzte historische Datenabdeckung." : "";
+        if (missingDays) warning += (warning ? " " : "") + "Einzelne Tageskurse fehlen.";
+        if (!history.adjustmentStatus || history.adjustmentStatus === "unknown") warning += (warning ? " " : "") + "Kursbereinigung nicht verifiziert.";
+        if (warning) chartSection.appendChild(el("p", { class: "dx-hint", text: warning }));
+        root.appendChild(chartSection);
+      }
+    }
+
 
     /* Stammdaten. Jede Zeile ist eine Angabe aus dem Master, keine
        abgeleitete Aussage. */
@@ -1897,8 +1942,15 @@
       ["Status", inst.active === false
         ? "beendet" + (inst.delistedAt ? " am " + inst.delistedAt : "")
         : (inst.active === true ? "laufendes Listing" : "nicht belegbar")],
-      ["CIK (SEC)", inst.cik || "keine"]
+      [inst.assetType === "ETF" ? "Fondskennung" : "CIK (SEC)", inst.assetType === "ETF" ? (inst.fundId || "nicht angegeben") : (inst.cik || "keine")]
     ];
+    if (canonical) {
+      zeilen = zeilen.filter(function (row) { return row[0] !== "Interne Kennung" && row[0] !== "CIK (SEC)" && row[0] !== "Fondskennung" && row[0] !== "Land"; });
+      zeilen.push(["Handelsland", inst.listingCountry || "nicht bekannt"]);
+      zeilen.push(inst.assetType === "ETF" ? ["Fondsdomizil", inst.fundDomicile || "nicht bekannt"] : ["Unternehmensland", inst.country || "nicht bekannt"]);
+      zeilen.push(["ISIN", inst.isin || "nicht verfügbar"]);
+      if (inst.wkn) zeilen.push(["WKN", inst.wkn]);
+    }
     var tabelle = el("section", { class: "dx-chapter dx-fade" }, [
       el("h2", { text: "Stammdaten" }),
       el("dl", { class: "dx-stammdaten" }, zeilen.reduce(function (acc, z) {
@@ -1926,6 +1978,10 @@
        "Analystendaten sind lizenzpflichtig und nicht Teil dieses Systems."],
       ["Themen", caps.HAS_THEMES, "Themen sind im Modell vorgesehen und noch nicht befüllt."]
     ];
+    if (canonical && inst.assetType === "ETF") kannListe = kannListe.filter(function (row) { return row[0] !== "Geschäftszahlen" && row[0] !== "Bewertung"; });
+    if (canonical) kannListe.forEach(function (row) {
+      if (row[0] === "Geschäftszahlen") row[2] = "Für dieses Listing liegen keine kanonischen Geschäftszahlen vor.";
+    });
     root.appendChild(el("section", { class: "dx-chapter dx-fade" }, [
       el("h2", { text: "Was für diesen Titel vorliegt" }),
       el("ul", { class: "dx-kann" }, kannListe.map(function (k) {
@@ -1952,17 +2008,50 @@
     root.appendChild(el("footer", { class: "dx-foot" }, [
       el("div", {}, [
         el("b", { text: "Quelle: " }),
-        document.createTextNode("Vision Universe® Company Master · " +
+        document.createTextNode((canonical ? "Vision Universe® Listing-Verzeichnis · " : "Vision Universe® Company Master · ") +
           (result.masterVersion || "company-master") + " · Stand " + (result.asOf || "unbekannt"))
       ]),
-      el("div", { style: "margin-top:6px" }, [document.createTextNode(
-        "Diese Seite zeigt ausschließlich, was über den Titel bekannt ist. Für Kennzahlen, " +
+      el("div", { style: "margin-top:6px" }, [document.createTextNode(canonical
+        ? "Historische Kurse in der Originalwährung. Weitere Kennzahlen erscheinen nur bei belegter Datenabdeckung."
+        : "Diese Seite zeigt ausschließlich, was über den Titel bekannt ist. Für Kennzahlen, " +
         "Verlaufsbild und Einordnung braucht es Daten, die für diesen Titel nicht ausgeliefert " +
         "werden — sie werden hier nicht ersetzt.")])
     ]));
   }
 
+  async function loadMasterInstrument(root,symbol,listingId,options) {
+    const active=options.active, ctx=options.context;
+    const dir=global.VUInstrumentDirectory.create({extensionBase:options.extensionBase});
+    const result=await dir.getInstrument(listingId?{symbol,listingId:decodeURIComponent(listingId)}:symbol);
+    if(!active())return;
+    if(result.status!=='OK'){options.message(root,'Aktie nicht gefunden','Prüfe das Kürzel oder suche nach dem Unternehmensnamen.');return;}
+    options.assertListing(result.instrument,listingId);
+    const [manifest,hits]=await Promise.all([dir.manifest().catch(()=>null),dir.search(symbol,{limit:1}).catch(()=>null)]);
+    if(!active())return;
+    root.classList.add('dx-detail');
+    options.renderInstrument(root,{instrument:result.instrument,alternateListings:result.alternateListings,
+      capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
+    options.watchButton(root,symbol,result.instrument);
+  }
+  async function loadGlobalInstrument(root,symbol,listingId,options) {
+    if(!listingId||!/^vu_[a-f0-9]+$/.test(listingId)){options.message(root,'Listing nicht gefunden','Öffne das Listing über die Suche.');return;}
+    const active=options.active, ctx=options.context;
+    const dir=global.VUInstrumentDirectory.create({extensionBase:options.extensionBase});
+    const ref={symbol,listingId,universeId:'GLOBAL_MARKET'};
+    const result=await dir.getInstrument(ref);if(!active())return;
+    if(result.status!=='OK'||result.instrument.universeId!=='GLOBAL_MARKET'){options.message(root,'Listing nicht gefunden','Dieses Listing ist nicht verfügbar.');return;}
+    options.assertListing(result.instrument,listingId);
+    const [price,history]=await Promise.all([dir.getPrice(ref),dir.getPriceHistory(ref)]);if(!active())return;
+    const inst=result.instrument;
+    root.classList.add('dx-detail');
+    options.renderInstrument(root,{instrument:inst,alternateListings:result.alternateListings,
+      capabilities:{HAS_PROFILE:true,HAS_PRICE_SNAPSHOT:price.status==='OK',HAS_PRICE_HISTORY:history.status==='OK'},
+      price,history,masterVersion:'global-market-1.0.0',asOf:price.asOf||null},Object.assign({},ctx,{universeId:'GLOBAL_MARKET'}));
+    options.watchButton(root,symbol,inst);document.title=(inst.companyName||inst.name||symbol)+' — Discover';
+  }
+
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.Detail = { render: render, renderInstrument: renderInstrument,
+                               loadMasterInstrument: loadMasterInstrument, loadGlobalInstrument: loadGlobalInstrument,
                                OVERLAYS: OVERLAYS, PANES: PANES };
 })(window);

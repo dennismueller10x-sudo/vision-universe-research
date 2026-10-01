@@ -1,0 +1,3032 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-01T11:20:40.534Z",
+  "sourceRun": {
+    "source": "github-actions",
+    "runId": "36852153799",
+    "commit": "757b22c089080f6fa36f8cddb6253b2cdb32098c"
+  },
+  "sourceRuns": [
+    {
+      "source": "github-actions",
+      "runId": "36852153799",
+      "commit": "757b22c089080f6fa36f8cddb6253b2cdb32098c"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36853405425",
+      "commit": "f3a4967a76838dc4e4c27fa1bd300b5b0b4cb34c"
+    }
+  ],
+  "sourceProbe": [
+    {
+      "sha256": "6e0c9f8eae3985941bf107814ac82092ab1292b6b0d8763ca6beb79921edc61b",
+      "path": "/workspace/scratch/marketstack-probe-1/probe.json"
+    },
+    {
+      "sha256": "719fd5ba8b83e53effb1bf75cf4318a1a854b1997b52ee5852f9e5468eb7786a",
+      "path": "/workspace/scratch/marketstack-probe-2/probe.json"
+    }
+  ],
+  "provider": "marketstack",
+  "evidence": "AUTHENTICATED_PROFESSIONAL_PROBE",
+  "tolerances": {
+    "rawOHLCRelative": 0.005,
+    "adjustedObservationRelative": 0.01,
+    "volumeRelative": 0.1
+  },
+  "summary": {
+    "symbolsAttempted": 29,
+    "symbolsWithPrices": 27,
+    "emptySymbols": [
+      "BRK.B",
+      "BRK.A"
+    ],
+    "statusCounts": {
+      "IDENTITY_BLOCKED": 11,
+      "IDENTITY_ACCEPTED": 11,
+      "EMPTY_RESPONSE": 2,
+      "REFERENCE_UNAVAILABLE": 5
+    },
+    "identityAnomalies": 32,
+    "rawReferenceSymbols": 5,
+    "rawDatesCompared": 20,
+    "rawMaterialDiscrepancies": 0,
+    "rawDiscrepanciesByField": {},
+    "splitAdjustedReferenceDiagnosticSymbols": 17,
+    "diagnosticDatesCompared": 103,
+    "diagnosticDiscrepancies": 0
+  },
+  "qualifiedSummary": {
+    "symbolsAttempted": 8,
+    "symbolsWithPrices": 7,
+    "statusCounts": {
+      "IDENTITY_BLOCKED": 4,
+      "IDENTITY_ACCEPTED": 2,
+      "EMPTY_RESPONSE": 1,
+      "QUALITY_PARTIAL": 1
+    },
+    "rejectedIdentityRows": 17,
+    "emptySymbols": [
+      "PLTR"
+    ],
+    "rawDatesCompared": 20,
+    "rawMaterialDiscrepancies": 0
+  },
+  "historicalSummary": {
+    "windowsWithRawReference": 2,
+    "datesCompared": 16,
+    "materialDiscrepancies": 19,
+    "discrepanciesByField": {
+      "volume": 7,
+      "open": 3,
+      "high": 3,
+      "low": 3,
+      "close": 3
+    },
+    "qualityAnomalies": [
+      {
+        "date": "2024-06-03",
+        "reason": "invalidAdjustedOHLC",
+        "reportedCurrency": null,
+        "reportedMic": "XNAS"
+      },
+      {
+        "date": "2020-09-01",
+        "reason": "invalidAdjustedOHLC",
+        "reportedCurrency": "USD",
+        "reportedMic": "XNAS"
+      },
+      {
+        "date": "2020-08-26",
+        "reason": "invalidAdjustedOHLC",
+        "reportedCurrency": "USD",
+        "reportedMic": "XNAS"
+      },
+      {
+        "date": "2020-08-25",
+        "reason": "invalidAdjustedOHLC",
+        "reportedCurrency": "USD",
+        "reportedMic": "XNAS"
+      }
+    ],
+    "splitBasisReview": [
+      {
+        "symbol": "NVDA",
+        "date": "2024-06-04",
+        "splitDate": "2024-06-10",
+        "splitRatio": 10,
+        "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 9.999999157005307
+      },
+      {
+        "symbol": "NVDA",
+        "date": "2024-06-05",
+        "splitDate": "2024-06-10",
+        "splitRatio": 10,
+        "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 10.000000283874895
+      },
+      {
+        "symbol": "NVDA",
+        "date": "2024-06-06",
+        "splitDate": "2024-06-10",
+        "splitRatio": 10,
+        "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 9.999999593799387
+      },
+      {
+        "symbol": "NVDA",
+        "date": "2024-06-07",
+        "splitDate": "2024-06-10",
+        "splitRatio": 10,
+        "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 9.999999418020698
+      },
+      {
+        "symbol": "AAPL",
+        "date": "2020-08-24",
+        "splitDate": "2020-08-31",
+        "splitRatio": 4,
+        "reason": "PROVIDER_RAW_PRICE_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 4
+      },
+      {
+        "symbol": "AAPL",
+        "date": "2020-08-24",
+        "splitDate": "2020-08-31",
+        "splitRatio": 4,
+        "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 3.9999980574540794
+      },
+      {
+        "symbol": "AAPL",
+        "date": "2020-08-27",
+        "splitDate": "2020-08-31",
+        "splitRatio": 4,
+        "reason": "PROVIDER_RAW_PRICE_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 4
+      },
+      {
+        "symbol": "AAPL",
+        "date": "2020-08-27",
+        "splitDate": "2020-08-31",
+        "splitRatio": 4,
+        "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 4.00000041143696
+      },
+      {
+        "symbol": "AAPL",
+        "date": "2020-08-28",
+        "splitDate": "2020-08-31",
+        "splitRatio": 4,
+        "reason": "PROVIDER_RAW_PRICE_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 4
+      },
+      {
+        "symbol": "AAPL",
+        "date": "2020-08-28",
+        "splitDate": "2020-08-31",
+        "splitRatio": 4,
+        "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+        "observedRatio": 4.000001790759209
+      }
+    ]
+  },
+  "intraday": [
+    {
+      "symbol": "NVDA",
+      "interval": "5min",
+      "afterHoursRequested": true,
+      "checkedAt": "2026-10-01T11:01:01.374Z",
+      "ok": true,
+      "bars": 115,
+      "mics": {
+        "IEXG": 115
+      },
+      "firstTimestamp": "2026-09-29T12:00:00+0000",
+      "lastTimestamp": "2026-09-29T21:30:00+0000",
+      "missingVolume": 31,
+      "classification": "INTRADAY",
+      "realtimeVerified": false,
+      "notes": "Historical response only; no refresh, latency, spread, complete-session or realtime equivalence established."
+    }
+  ],
+  "latestIntraday": [
+    {
+      "symbol": "NVDA",
+      "requestedExchange": "IEXG",
+      "checkedAt": "2026-10-01T11:09:37.685Z",
+      "ok": true,
+      "bars": 1,
+      "observations": [
+        {
+          "timestamp": "2026-09-30T20:00:00+0000",
+          "exchange": "IEXG",
+          "close": 227.21,
+          "providerLast": 228.67,
+          "volume": 2358166
+        }
+      ],
+      "realtimeVerified": false,
+      "interpretation": "Returned close and marketstack_last have different semantics; timestamp alone does not prove realtime equivalence."
+    },
+    {
+      "symbol": "SPY",
+      "requestedExchange": "IEXG",
+      "checkedAt": "2026-10-01T11:09:40.374Z",
+      "ok": true,
+      "bars": 1,
+      "observations": [
+        {
+          "timestamp": "2026-09-30T20:00:00+0000",
+          "exchange": "IEXG",
+          "close": 764.2,
+          "providerLast": 762.36,
+          "volume": 637045
+        }
+      ],
+      "realtimeVerified": false,
+      "interpretation": "Returned close and marketstack_last have different semantics; timestamp alone does not prove realtime equivalence."
+    },
+    {
+      "symbol": "SAP.DE",
+      "requestedExchange": "XETR",
+      "checkedAt": "2026-10-01T11:10:41.386Z",
+      "ok": true,
+      "bars": 0,
+      "observations": [],
+      "realtimeVerified": false,
+      "interpretation": "Returned close and marketstack_last have different semantics; timestamp alone does not prove realtime equivalence."
+    }
+  ],
+  "limitations": [
+    "A purposive 29-symbol probe is not a statistically representative complete-universe price benchmark.",
+    "Currency and venue disagreements quarantine the entire series; accepted rows are reported only as isolated diagnostics.",
+    "Discover-series references are split adjusted, so close agreement is not raw OHLC or total-return equivalence evidence.",
+    "Historical adjusted prices remain unverified; observations never populate canonical adjustedClose.",
+    "Sample endpoints establish returned windows only, not maximum history depth or complete corporate-action coverage."
+  ],
+  "rawDiscrepancies": [],
+  "historicalDiscrepancies": [
+    {
+      "symbol": "NVDA",
+      "date": "2024-06-04",
+      "field": "volume",
+      "reference": 40332401,
+      "candidate": 403323976,
+      "relativeDifference": 0.8999999915700524
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2024-06-05",
+      "field": "volume",
+      "reference": 52840178,
+      "candidate": 528401795,
+      "relativeDifference": 0.9000000028387489
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2024-06-06",
+      "field": "volume",
+      "reference": 66469619,
+      "candidate": 664696163,
+      "relativeDifference": 0.8999999959379937
+    },
+    {
+      "symbol": "NVDA",
+      "date": "2024-06-07",
+      "field": "volume",
+      "reference": 41238580,
+      "candidate": 412385776,
+      "relativeDifference": 0.8999999941802066
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-24",
+      "field": "open",
+      "reference": 514.79,
+      "candidate": 128.6975,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-24",
+      "field": "high",
+      "reference": 515.14,
+      "candidate": 128.785,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-24",
+      "field": "low",
+      "reference": 495.745,
+      "candidate": 123.9375,
+      "relativeDifference": 0.7499974785423958
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-24",
+      "field": "close",
+      "reference": 503.43,
+      "candidate": 125.8575,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-24",
+      "field": "volume",
+      "reference": 86484442,
+      "candidate": 345937600,
+      "relativeDifference": 0.749999878590821
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-27",
+      "field": "open",
+      "reference": 508.57,
+      "candidate": 127.1425,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-27",
+      "field": "high",
+      "reference": 509.94,
+      "candidate": 127.485,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-27",
+      "field": "low",
+      "reference": 495.33,
+      "candidate": 123.8325,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-27",
+      "field": "close",
+      "reference": 500.04,
+      "candidate": 125.01,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-27",
+      "field": "volume",
+      "reference": 38888096,
+      "candidate": 155552400,
+      "relativeDifference": 0.7500000257148074
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-28",
+      "field": "open",
+      "reference": 504.05,
+      "candidate": 126.0125,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-28",
+      "field": "high",
+      "reference": 505.77,
+      "candidate": 126.4425,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-28",
+      "field": "low",
+      "reference": 498.31,
+      "candidate": 124.5775,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-28",
+      "field": "close",
+      "reference": 499.23,
+      "candidate": 124.8075,
+      "relativeDifference": 0.75
+    },
+    {
+      "symbol": "AAPL",
+      "date": "2020-08-28",
+      "field": "volume",
+      "reference": 46907479,
+      "candidate": 187630000,
+      "relativeDifference": 0.7500001119224005
+    }
+  ],
+  "measurements": [
+    {
+      "symbol": "NVDA",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:34.354Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 6,
+        "ARS": 2
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_NVDA.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "17d881c3a89e026e235677b96e2238553700a06c899a641f957a462713ed7b31",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "ARS",
+          "reportedMic": "XNAS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "ARS",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 6,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 5,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-21",
+        "missingCandidateDates": [
+          "2026-09-24",
+          "2026-09-25"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-21",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-23",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-28",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-29",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 5,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "AAPL",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:34.781Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_AAPL.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "d5c89d97463207a84c77bb7c1c0d52f9b6309bff428271157416a46b6d4540a0",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 7,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-21",
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-21",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-23",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-24",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-25",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-28",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-29",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": true
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 7,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "PLTR",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:34.978Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_PLTR.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "a55725216327fbf8d109e8e977fdcb8b6167959301af3f14209198779b15598b",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-30",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-29",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-28",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-25",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-23",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-22",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-21",
+          "reason": "exchangeMismatch",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 0,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 0,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-21",
+          "2026-09-22",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "missingReferenceDates": [],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "TSLA",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:35.236Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 7,
+        "GBP": 1
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_TSLA.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "d49b4a6867220a0004238998f35dea35af21f5e5dfaa737aef321737af9b3193",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "GBP",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 7,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 6,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-24"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "MSFT",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:35.473Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 7,
+        "EUR": 1
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_MSFT.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "7401ab518ba24cfe0c17a878a3b693092c72ad94db794391f0c3fbe347a704d6",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "EUR",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 7,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 6,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-21",
+        "missingCandidateDates": [
+          "2026-09-24"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-21",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-23",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-25",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-28",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-29",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 6,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "JPM",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:35.731Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 2,
+        "MXN": 6
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_JPM.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "66535e5d76ec0c1f51bd96d30e7fc1962d52a77ed39db8999d3efadfe027c799",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-29",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-28",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-23",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-21",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 2,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 1,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-22",
+        "missingCandidateDates": [
+          "2026-09-21",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 1,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "XOM",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:35.980Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 2,
+        "MXN": 6
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_XOM.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "8f220460d29ca77268ed5102ff775b383087fb64eabd46ad42ae42f817b5acd7",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-29",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-28",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-23",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-21",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 2,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 1,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-22",
+        "missingCandidateDates": [
+          "2026-09-21",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 1,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "BRK.B",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:36.220Z",
+      "endpointSucceeded": true,
+      "providerBars": 0,
+      "paginationComplete": true,
+      "providerCurrencies": {},
+      "providerMics": {},
+      "referenceSource": "CANONICAL_IDENTITY_ONLY_NO_REFERENCE_PRICES",
+      "referenceBasis": "NO_REFERENCE_PRICES",
+      "referenceSha256": null,
+      "status": "EMPTY_RESPONSE",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "BRK.A",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:36.460Z",
+      "endpointSucceeded": true,
+      "providerBars": 0,
+      "paginationComplete": true,
+      "providerCurrencies": {},
+      "providerMics": {},
+      "referenceSource": "quant/data/market/discover-series/ref_BRK_A.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "12117a159d1fa0899d7901e976153f33ecd4181c06884eb4bf3024396e5609cb",
+      "status": "EMPTY_RESPONSE",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "GOOG",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:36.719Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 7,
+        "EUR": 1
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_GOOG.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "6b152f2c108b611aa2d8b5bd40f60fc8dfb54caa69ccb15eb0ffcf8c1f68a145",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "EUR",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 7,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 6,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-24"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "GOOGL",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:36.975Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 7,
+        "CLP": 1
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_GOOGL.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "c9c83f900e3940d3b67b260894a60e8915bf0d1b12e10012e64b256556cecf6a",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "CLP",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 7,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 6,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-24"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "TSM",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:37.242Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_TSM.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "cc9e6725ddbf1077510a6a60de50030798b21210bc53f3a3cca68491c5a905c1",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "BABA",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:37.483Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 6,
+        "ARS": 2
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_BABA.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "22f28ae32c40eb75e5768f78affed4cee113f09f42080c0f04a0ca6e04e720d1",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "ARS",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "ARS",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 6,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 5,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-24",
+          "2026-09-25"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "XPEV",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:37.731Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_XPEV.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "d596065578b2a25f32688ecd9bb5658127767a94b604f2de3d9c366827dfaf9f",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "F",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:37.975Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 5,
+        "MXN": 3
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_F.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "594742275a4d0a3c3a78e9d927d6e3c8c260cf5d2658f7044b20a6effbff45d7",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-23",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 5,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 4,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "RIVN",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:38.239Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_RIVN.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "4e03a70a23e4153fb012443f047718e493e61fef6467211de8db7572db6fabbd",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "ARM",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:38.482Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_ARM.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "1830250e6e272ee9471b19bdf4e573294d24c600fafb6374f76f3c4e29666d2c",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "GME",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:38.734Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 7,
+        "PLN": 1
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_GME.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "17719b135c1bcb9ac92e83783da41c271c41da1d3461408ea55090c9420cc10e",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "PLN",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 7,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 6,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-24"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "CROX",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:38.985Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_CROX.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "4d1f9c963eefcdc3dd4b6a364ff5c3b11ba27305fe86c0ea8e17e81247b49468",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "ACMR",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:39.242Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_ACMR.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "d156fbc4354da97622cee504333e79b81e2dfcd5491c0c237df2ab94b38546f7",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "ASTS",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:39.485Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_ASTS.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "32f4b12189ff6b96f87366e4ce3cdc2e3f33e9ab6923383eb2b145b879b41e26",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "RKLB",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:39.743Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_RKLB.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "7de99abd5102cc91dc89da38a207a51716c9841f5a43f2e78b1b47f1557efcc5",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "KOPN",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:39.989Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_KOPN.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "25e60e6093ee4bbecdcb7ebad299d18a741a669b96c46b4cc0a85994669e2839",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "SPY",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:40.248Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "ARCX": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_SPY.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "e571235bf49ce94c4f609826abc49622c7efb5f81d4f22a8c1d6e35f1e4549b4",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 7,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "QQQ",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:40.506Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": null,
+      "referenceBasis": null,
+      "referenceSha256": null,
+      "status": "REFERENCE_UNAVAILABLE",
+      "anomalies": [],
+      "providerActionObservations": [
+        {
+          "date": "2026-09-21",
+          "splitFactor": 1,
+          "dividend": 0.75143
+        }
+      ],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "VOO",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:40.743Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "ARCX": 8
+      },
+      "referenceSource": null,
+      "referenceBasis": null,
+      "referenceSha256": null,
+      "status": "REFERENCE_UNAVAILABLE",
+      "anomalies": [],
+      "providerActionObservations": [
+        {
+          "date": "2026-09-28",
+          "splitFactor": 1,
+          "dividend": 1.823
+        }
+      ],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "VTI",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:40.984Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "ARCX": 8
+      },
+      "referenceSource": null,
+      "referenceBasis": null,
+      "referenceSha256": null,
+      "status": "REFERENCE_UNAVAILABLE",
+      "anomalies": [],
+      "providerActionObservations": [
+        {
+          "date": "2026-09-28",
+          "splitFactor": 1,
+          "dividend": 0.956
+        }
+      ],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "IWM",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:41.236Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "ARCX": 8
+      },
+      "referenceSource": null,
+      "referenceBasis": null,
+      "referenceSha256": null,
+      "status": "REFERENCE_UNAVAILABLE",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "ARKK",
+      "kind": "us-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T10:56:41.488Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "ARCX": 8
+      },
+      "referenceSource": null,
+      "referenceBasis": null,
+      "referenceSha256": null,
+      "status": "REFERENCE_UNAVAILABLE",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "NVDA",
+      "kind": "corporate-action-window",
+      "from": "2024-06-03",
+      "to": "2024-06-14",
+      "checkedAt": "2026-10-01T11:01:51.308Z",
+      "endpointSucceeded": true,
+      "providerBars": 10,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "ABSENT": 10
+      },
+      "providerMics": {
+        "XNAS": 10
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_NVDA.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "17d881c3a89e026e235677b96e2238553700a06c899a641f957a462713ed7b31",
+      "status": "QUALITY_PARTIAL",
+      "anomalies": [
+        {
+          "date": "2024-06-03",
+          "reason": "invalidAdjustedOHLC",
+          "reportedCurrency": null,
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [
+        {
+          "date": "2024-06-11",
+          "splitFactor": 1,
+          "dividend": 0.01
+        },
+        {
+          "date": "2024-06-10",
+          "splitFactor": 10,
+          "dividend": 0
+        }
+      ],
+      "acceptedBars": 9,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 9,
+        "referenceFirst": "2024-06-03",
+        "candidateFirst": "2024-06-04",
+        "missingCandidateDates": [
+          "2024-06-03"
+        ],
+        "missingReferenceDates": [],
+        "discrepancies": [
+          {
+            "date": "2024-06-04",
+            "field": "volume",
+            "reference": 40332401,
+            "candidate": 403323976,
+            "relativeDifference": 0.8999999915700524
+          },
+          {
+            "date": "2024-06-05",
+            "field": "volume",
+            "reference": 52840178,
+            "candidate": 528401795,
+            "relativeDifference": 0.9000000028387489
+          },
+          {
+            "date": "2024-06-06",
+            "field": "volume",
+            "reference": 66469619,
+            "candidate": 664696163,
+            "relativeDifference": 0.8999999959379937
+          },
+          {
+            "date": "2024-06-07",
+            "field": "volume",
+            "reference": 41238580,
+            "candidate": 412385776,
+            "relativeDifference": 0.8999999941802066
+          }
+        ],
+        "unavailable": [
+          {
+            "date": "2024-06-04",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-05",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-06",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-07",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-10",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-11",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-12",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-13",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2024-06-14",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 9,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0.002757985885388777,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "PARTIAL_PROVIDER_METADATA_CANONICAL_MAPPING_REQUIRED",
+      "corporateActionEndpoints": [
+        {
+          "kind": "split-endpoint",
+          "ok": true,
+          "count": 1,
+          "observations": [
+            {
+              "date": "2024-06-10",
+              "symbol": "NVDA",
+              "splitFactor": 10,
+              "dividend": null
+            }
+          ]
+        },
+        {
+          "kind": "dividend-endpoint",
+          "ok": true,
+          "count": 1,
+          "observations": [
+            {
+              "date": "2024-06-11",
+              "symbol": "NVDA",
+              "splitFactor": null,
+              "dividend": 0.01
+            }
+          ]
+        }
+      ],
+      "canonicalActionObservations": [
+        {
+          "date": "2024-06-10",
+          "splitFactor": 10,
+          "dividend": 0
+        },
+        {
+          "date": "2024-06-11",
+          "splitFactor": 1,
+          "dividend": 0.01
+        }
+      ],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": [
+        {
+          "date": "2024-06-04",
+          "splitDate": "2024-06-10",
+          "splitRatio": 10,
+          "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 9.999999157005307
+        },
+        {
+          "date": "2024-06-05",
+          "splitDate": "2024-06-10",
+          "splitRatio": 10,
+          "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 10.000000283874895
+        },
+        {
+          "date": "2024-06-06",
+          "splitDate": "2024-06-10",
+          "splitRatio": 10,
+          "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 9.999999593799387
+        },
+        {
+          "date": "2024-06-07",
+          "splitDate": "2024-06-10",
+          "splitRatio": 10,
+          "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 9.999999418020698
+        }
+      ]
+    },
+    {
+      "symbol": "AAPL",
+      "kind": "corporate-action-window",
+      "from": "2020-08-24",
+      "to": "2020-09-04",
+      "checkedAt": "2026-10-01T11:01:52.052Z",
+      "endpointSucceeded": true,
+      "providerBars": 10,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 10
+      },
+      "providerMics": {
+        "XNAS": 10
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_AAPL.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "d5c89d97463207a84c77bb7c1c0d52f9b6309bff428271157416a46b6d4540a0",
+      "status": "QUALITY_PARTIAL",
+      "anomalies": [
+        {
+          "date": "2020-09-01",
+          "reason": "invalidAdjustedOHLC",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNAS"
+        },
+        {
+          "date": "2020-08-26",
+          "reason": "invalidAdjustedOHLC",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNAS"
+        },
+        {
+          "date": "2020-08-25",
+          "reason": "invalidAdjustedOHLC",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [
+        {
+          "date": "2020-08-31",
+          "splitFactor": 4,
+          "dividend": 0
+        }
+      ],
+      "acceptedBars": 7,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 7,
+        "referenceFirst": "2020-08-24",
+        "candidateFirst": "2020-08-24",
+        "missingCandidateDates": [
+          "2020-08-25",
+          "2020-08-26",
+          "2020-09-01"
+        ],
+        "missingReferenceDates": [],
+        "discrepancies": [
+          {
+            "date": "2020-08-24",
+            "field": "open",
+            "reference": 514.79,
+            "candidate": 128.6975,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-24",
+            "field": "high",
+            "reference": 515.14,
+            "candidate": 128.785,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-24",
+            "field": "low",
+            "reference": 495.745,
+            "candidate": 123.9375,
+            "relativeDifference": 0.7499974785423958
+          },
+          {
+            "date": "2020-08-24",
+            "field": "close",
+            "reference": 503.43,
+            "candidate": 125.8575,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-24",
+            "field": "volume",
+            "reference": 86484442,
+            "candidate": 345937600,
+            "relativeDifference": 0.749999878590821
+          },
+          {
+            "date": "2020-08-27",
+            "field": "open",
+            "reference": 508.57,
+            "candidate": 127.1425,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-27",
+            "field": "high",
+            "reference": 509.94,
+            "candidate": 127.485,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-27",
+            "field": "low",
+            "reference": 495.33,
+            "candidate": 123.8325,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-27",
+            "field": "close",
+            "reference": 500.04,
+            "candidate": 125.01,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-27",
+            "field": "volume",
+            "reference": 38888096,
+            "candidate": 155552400,
+            "relativeDifference": 0.7500000257148074
+          },
+          {
+            "date": "2020-08-28",
+            "field": "open",
+            "reference": 504.05,
+            "candidate": 126.0125,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-28",
+            "field": "high",
+            "reference": 505.77,
+            "candidate": 126.4425,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-28",
+            "field": "low",
+            "reference": 498.31,
+            "candidate": 124.5775,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-28",
+            "field": "close",
+            "reference": 499.23,
+            "candidate": 124.8075,
+            "relativeDifference": 0.75
+          },
+          {
+            "date": "2020-08-28",
+            "field": "volume",
+            "reference": 46907479,
+            "candidate": 187630000,
+            "relativeDifference": 0.7500001119224005
+          }
+        ],
+        "unavailable": [
+          {
+            "date": "2020-08-24",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2020-08-27",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2020-08-28",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2020-08-31",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2020-09-02",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2020-09-03",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2020-09-04",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 7,
+        "materialDifferences": [
+          {
+            "date": "2020-08-24",
+            "referenceAdjustedClose": 121.9827256508,
+            "providerObservedAdjustedClose": 123.9611,
+            "relativeDifference": 0.01595963854144563
+          },
+          {
+            "date": "2020-08-27",
+            "referenceAdjustedClose": 121.1613176299,
+            "providerObservedAdjustedClose": 123.1264,
+            "relativeDifference": 0.0159598783859514
+          },
+          {
+            "date": "2020-08-28",
+            "referenceAdjustedClose": 120.9650519966,
+            "providerObservedAdjustedClose": 122.9269,
+            "relativeDifference": 0.015959468622408986
+          },
+          {
+            "date": "2020-08-31",
+            "referenceAdjustedClose": 125.067246036,
+            "providerObservedAdjustedClose": 127.0957,
+            "relativeDifference": 0.01596005186642816
+          },
+          {
+            "date": "2020-09-02",
+            "referenceAdjustedClose": 127.3545887255,
+            "providerObservedAdjustedClose": 129.4201,
+            "relativeDifference": 0.015959740986910047
+          },
+          {
+            "date": "2020-09-03",
+            "referenceAdjustedClose": 117.1584679234,
+            "providerObservedAdjustedClose": 119.0586,
+            "relativeDifference": 0.015959637326493022
+          },
+          {
+            "date": "2020-09-04",
+            "referenceAdjustedClose": 117.2360049637,
+            "providerObservedAdjustedClose": 119.1374,
+            "relativeDifference": 0.015959682151028998
+          }
+        ],
+        "maxRelativeDifference": 0.01596005186642816,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [
+        {
+          "kind": "split-endpoint",
+          "ok": true,
+          "count": 1,
+          "observations": [
+            {
+              "date": "2020-08-31",
+              "symbol": "AAPL",
+              "splitFactor": 4,
+              "dividend": null
+            }
+          ]
+        },
+        {
+          "kind": "dividend-endpoint",
+          "ok": true,
+          "count": 0,
+          "observations": []
+        }
+      ],
+      "canonicalActionObservations": [
+        {
+          "date": "2020-08-31",
+          "splitFactor": 4,
+          "dividend": 0
+        }
+      ],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": [
+        {
+          "date": "2020-08-24",
+          "splitDate": "2020-08-31",
+          "splitRatio": 4,
+          "reason": "PROVIDER_RAW_PRICE_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 4
+        },
+        {
+          "date": "2020-08-24",
+          "splitDate": "2020-08-31",
+          "splitRatio": 4,
+          "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 3.9999980574540794
+        },
+        {
+          "date": "2020-08-27",
+          "splitDate": "2020-08-31",
+          "splitRatio": 4,
+          "reason": "PROVIDER_RAW_PRICE_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 4
+        },
+        {
+          "date": "2020-08-27",
+          "splitDate": "2020-08-31",
+          "splitRatio": 4,
+          "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 4.00000041143696
+        },
+        {
+          "date": "2020-08-28",
+          "splitDate": "2020-08-31",
+          "splitRatio": 4,
+          "reason": "PROVIDER_RAW_PRICE_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 4
+        },
+        {
+          "date": "2020-08-28",
+          "splitDate": "2020-08-31",
+          "splitRatio": 4,
+          "reason": "PROVIDER_RAW_VOLUME_APPEARS_ALREADY_SPLIT_ADJUSTED",
+          "observedRatio": 4.000001790759209
+        }
+      ]
+    },
+    {
+      "symbol": "SPY",
+      "kind": "corporate-action-window",
+      "from": "2026-09-01",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:01:52.802Z",
+      "endpointSucceeded": true,
+      "providerBars": 21,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 21
+      },
+      "providerMics": {
+        "ARCX": 21
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_SPY.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "e571235bf49ce94c4f609826abc49622c7efb5f81d4f22a8c1d6e35f1e4549b4",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [
+        {
+          "date": "2026-09-18",
+          "splitFactor": 1,
+          "dividend": 1.89
+        }
+      ],
+      "acceptedBars": 21,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 20,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [
+        {
+          "kind": "split-endpoint",
+          "ok": true,
+          "count": 0,
+          "observations": []
+        },
+        {
+          "kind": "dividend-endpoint",
+          "ok": true,
+          "count": 1,
+          "observations": [
+            {
+              "date": "2026-09-18",
+              "symbol": "SPY",
+              "splitFactor": null,
+              "dividend": 1.89
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:33.914Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 6,
+        "ARS": 2
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_NVDA.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "17d881c3a89e026e235677b96e2238553700a06c899a641f957a462713ed7b31",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "ARS",
+          "reportedMic": "XNAS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "ARS",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 6,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 5,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-21",
+        "missingCandidateDates": [
+          "2026-09-24",
+          "2026-09-25"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-21",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-23",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-28",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-29",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 5,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "AAPL",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:34.175Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_AAPL.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "d5c89d97463207a84c77bb7c1c0d52f9b6309bff428271157416a46b6d4540a0",
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 7,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-21",
+        "missingCandidateDates": [],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-21",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-23",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-24",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-25",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-28",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-29",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": true
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 7,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "JPM",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:34.426Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 2,
+        "MXN": 6
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_JPM.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "66535e5d76ec0c1f51bd96d30e7fc1962d52a77ed39db8999d3efadfe027c799",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-29",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-28",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-23",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-21",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 2,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 1,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-22",
+        "missingCandidateDates": [
+          "2026-09-21",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 1,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "XOM",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:34.671Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 2,
+        "MXN": 6
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_XOM.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "8f220460d29ca77268ed5102ff775b383087fb64eabd46ad42ae42f817b5acd7",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-29",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-28",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-25",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-23",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-21",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "MXN",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 2,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 1,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-22",
+        "missingCandidateDates": [
+          "2026-09-21",
+          "2026-09-23",
+          "2026-09-24",
+          "2026-09-25",
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 1,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "MSFT",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:34.950Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 7,
+        "EUR": 1
+      },
+      "providerMics": {
+        "XNAS": 8
+      },
+      "referenceSource": "quant/data/market/golden-preview/daily/ref_MSFT.json",
+      "referenceBasis": "RAW_OHLC",
+      "referenceSha256": "7401ab518ba24cfe0c17a878a3b693092c72ad94db794391f0c3fbe347a704d6",
+      "status": "IDENTITY_BLOCKED",
+      "anomalies": [
+        {
+          "date": "2026-09-24",
+          "reason": "currencyMismatch",
+          "reportedCurrency": "EUR",
+          "reportedMic": "XNAS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 7,
+      "comparison": {
+        "status": "COMPARED",
+        "datesCompared": 6,
+        "referenceFirst": "2026-09-21",
+        "candidateFirst": "2026-09-21",
+        "missingCandidateDates": [
+          "2026-09-24"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "discrepancies": [],
+        "unavailable": [
+          {
+            "date": "2026-09-21",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-22",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-23",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-25",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-28",
+            "field": "adjustedClose"
+          },
+          {
+            "date": "2026-09-29",
+            "field": "adjustedClose"
+          }
+        ],
+        "adjudication": "FLAG_ONLY_NO_AUTOMATIC_OVERWRITE",
+        "basis": "RAW_OHLC_ACCEPTED_ROWS_ONLY",
+        "providerBasis": "UNVERIFIED_PROVIDER_RAW_FIELDS",
+        "seriesRoutable": false
+      },
+      "adjustedDiagnostic": {
+        "trust": "UNVERIFIED_OBSERVATION_ONLY",
+        "canonicalAdjustedClosePopulated": false,
+        "observationsCompared": 6,
+        "materialDifferences": [],
+        "maxRelativeDifference": 0,
+        "interpretation": "Different retrieval dates and adjustment methodologies remain possible; no source is adjudicated."
+      },
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": [],
+      "canonicalActionObservations": [],
+      "canonicalActionsMissingAcceptedProviderDate": [],
+      "splitBasisReview": []
+    },
+    {
+      "symbol": "PLTR",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:35.197Z",
+      "endpointSucceeded": true,
+      "providerBars": 0,
+      "paginationComplete": true,
+      "providerCurrencies": {},
+      "providerMics": {},
+      "referenceSource": "quant/data/market/discover-series/ref_PLTR.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "a55725216327fbf8d109e8e977fdcb8b6167959301af3f14209198779b15598b",
+      "status": "EMPTY_RESPONSE",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 0,
+      "comparison": null,
+      "adjustedDiagnostic": null
+    },
+    {
+      "symbol": "BRK-B",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:35.447Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "CANONICAL_IDENTITY_ONLY_NO_REFERENCE_PRICES",
+      "referenceBasis": "NO_REFERENCE_PRICES",
+      "referenceSha256": null,
+      "status": "IDENTITY_ACCEPTED",
+      "anomalies": [],
+      "providerActionObservations": [],
+      "acceptedBars": 8,
+      "comparison": null,
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    },
+    {
+      "symbol": "BRK-A",
+      "kind": "us-qualified-eod",
+      "from": "2026-09-21",
+      "to": "2026-09-30",
+      "checkedAt": "2026-10-01T11:09:35.699Z",
+      "endpointSucceeded": true,
+      "providerBars": 8,
+      "paginationComplete": true,
+      "providerCurrencies": {
+        "USD": 8
+      },
+      "providerMics": {
+        "XNYS": 8
+      },
+      "referenceSource": "quant/data/market/discover-series/ref_BRK_A.json",
+      "referenceBasis": "SPLIT_ADJUSTED_CLOSE",
+      "referenceSha256": "12117a159d1fa0899d7901e976153f33ecd4181c06884eb4bf3024396e5609cb",
+      "status": "QUALITY_PARTIAL",
+      "anomalies": [
+        {
+          "date": "2026-09-28",
+          "reason": "invalidOHLC",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        },
+        {
+          "date": "2026-09-23",
+          "reason": "invalidOHLC",
+          "reportedCurrency": "USD",
+          "reportedMic": "XNYS"
+        }
+      ],
+      "providerActionObservations": [],
+      "acceptedBars": 6,
+      "comparison": {
+        "basis": "SPLIT_ADJUSTED_REFERENCE_VS_RAW_PROVIDER_DIAGNOSTIC",
+        "status": "NON_EQUIVALENT_BASIS_DIAGNOSTIC_ONLY",
+        "datesCompared": 5,
+        "discrepancies": [],
+        "unavailable": [],
+        "missingCandidateDates": [
+          "2026-09-23",
+          "2026-09-28"
+        ],
+        "missingReferenceDates": [
+          "2026-09-30"
+        ],
+        "seriesRoutable": false,
+        "adjustmentEquivalenceVerified": false
+      },
+      "adjustedDiagnostic": null,
+      "currencyEvidence": "EXPLICIT_PROVIDER_METADATA",
+      "corporateActionEndpoints": []
+    }
+  ]
+}

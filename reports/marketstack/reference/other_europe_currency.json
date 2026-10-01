@@ -1,0 +1,42 @@
+{
+  "matches": [
+    {
+      "provider_symbol": "NESN.SW",
+      "isin": "CH0038863350",
+      "mic": "XSWX",
+      "trading_currency": "CHF",
+      "official_symbol": "NESN",
+      "match_method": "EXACT_ISIN_OFFICIAL_SYMBOL_TRADING_CURRENCY",
+      "source": {
+        "source_system": "SIX_OFFICIAL_SHARE_REFERENCE",
+        "source_url": "https://www.six-group.com/sheldon/share_details/v3/CH0038863350CHF4/share/info.json",
+        "instrument_url": "https://www.six-group.com/en/market-data/shares/share-explorer/share-details.CH0038863350CHF4.html",
+        "retrieved_at": "2026-10-01T11:23:43.898680+00:00",
+        "sha256": "2467026324200af5b2d32ffc6418a3b2efd96ba0c3f2556cf780bdf53bfd46f1"
+      }
+    },
+    {
+      "provider_symbol": "NOVO-B.CO",
+      "isin": "DK0060534915",
+      "mic": "XCSE",
+      "trading_currency": "DKK",
+      "match_method": "OFFICIAL_ISSUER_B_SHARE_COPENHAGEN_QUOTE",
+      "currency_evidence": {
+        "Change": "-4.20",
+        "CurrentPrice": "249.00",
+        "Currency": "DKK",
+        "Date": "01/10/2026",
+        "Time": "01:06 PM"
+      },
+      "source": {
+        "source_system": "NOVO_NORDISK_OFFICIAL_ISSUER_SHARE_QUOTE",
+        "source_url": "https://www.novonordisk.com/bin/nncorp/investors/stockprice?serviceURL=https%3A%2F%2Firs.tools.investis.com%2FClients%2Fdk%2Fnovo_nordisk1%2Fxml%2Fxml.aspx%3Fformat%3Djson",
+        "instrument_url": "https://www.novonordisk.com/investors/share-information.html",
+        "retrieved_at": "2026-10-01T11:23:43.898690+00:00",
+        "sha256": "cc134e735c1726d9da7253541032fad756fec8b0e9fdf4b819137031377ed800",
+        "quote_context": "Issuer page explicitly identifies B shares listed on Nasdaq Copenhagen; its single stockquote widget returns Currency DKK."
+      }
+    }
+  ],
+  "total_matches": 2
+}

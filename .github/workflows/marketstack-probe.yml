@@ -1,0 +1,36 @@
+name: Marketstack bounded evidence probe
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feat/marketstack-*']
+    paths: ['providers/marketstack/**', 'scripts/market/probe-marketstack.mjs', '.github/workflows/marketstack-probe.yml']
+permissions:
+  contents: read
+concurrency:
+  group: marketstack-bounded-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[marketstack-probe]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bounded server-side evidence collection
+        timeout-minutes: 12
+        env:
+          VU_PROBE_PHASE: ${{ contains(github.event.head_commit.message, '[marketstack-us-full]') && 'us-full' || contains(github.event.head_commit.message, '[marketstack-finish]') && 'finish' || contains(github.event.head_commit.message, '[marketstack-final]') && 'final' || contains(github.event.head_commit.message, '[marketstack-followup]') && 'followup' || 'initial' }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/probe-marketstack.mjs --out="$RUNNER_TEMP/marketstack-probe/probe.json" --max-credits=600 --phase="$VU_PROBE_PHASE"
+      - name: Protected production artifacts
+        run: git diff --exit-code -- quant/data dashboard/data discover/data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-probe
+          path: ${{ runner.temp }}/marketstack-probe/
+          retention-days: 7

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "marketstack-history-live-evidence-1.0.0",
+  "generatedAt": "2026-10-01T12:09:27.608Z",
+  "historyDepth": [
+    {
+      "providerSymbol": "NVDA",
+      "exchange": "XNAS",
+      "requestedFrom": "2015-01-02",
+      "requestedTo": "2015-01-09",
+      "accessible": true,
+      "dates": [
+        "2015-01-02",
+        "2015-01-05",
+        "2015-01-06",
+        "2015-01-07",
+        "2015-01-08",
+        "2015-01-09"
+      ],
+      "maximumDepthEstablished": false
+    },
+    {
+      "providerSymbol": "SAP.DE",
+      "exchange": "XETR",
+      "requestedFrom": "2010-01-01",
+      "requestedTo": "2010-01-15",
+      "accessible": true,
+      "dates": [
+        "2010-01-04",
+        "2010-01-05",
+        "2010-01-06",
+        "2010-01-07",
+        "2010-01-08",
+        "2010-01-11",
+        "2010-01-12",
+        "2010-01-13",
+        "2010-01-14",
+        "2010-01-15"
+      ],
+      "maximumDepthEstablished": false
+    }
+  ],
+  "tiingoQuotes": [
+    {
+      "symbol": "NVDA",
+      "available": false,
+      "checkedAt": "2026-10-01T11:12:23.096Z",
+      "marketTimestamp": null,
+      "quoteTimestamp": null,
+      "lastSaleTimestamp": null,
+      "lastTradeAvailable": false,
+      "referenceAvailable": false
+    },
+    {
+      "symbol": "AAPL",
+      "available": false,
+      "checkedAt": "2026-10-01T11:12:23.227Z",
+      "marketTimestamp": null,
+      "quoteTimestamp": null,
+      "lastSaleTimestamp": null,
+      "lastTradeAvailable": false,
+      "referenceAvailable": false
+    },
+    {
+      "symbol": "SPY",
+      "available": false,
+      "checkedAt": "2026-10-01T11:12:23.358Z",
+      "marketTimestamp": null,
+      "quoteTimestamp": null,
+      "lastSaleTimestamp": null,
+      "lastTradeAvailable": false,
+      "referenceAvailable": false
+    },
+    {
+      "symbol": "NVDA",
+      "available": true,
+      "checkedAt": "2026-10-01T11:37:07.669Z",
+      "marketTimestamp": "2026-09-30T20:00:00+00:00",
+      "quoteTimestamp": null,
+      "lastSaleTimestamp": null,
+      "lastTradeAvailable": false,
+      "referenceAvailable": true
+    },
+    {
+      "symbol": "AAPL",
+      "available": true,
+      "checkedAt": "2026-10-01T11:37:07.717Z",
+      "marketTimestamp": "2026-09-30T20:00:00+00:00",
+      "quoteTimestamp": null,
+      "lastSaleTimestamp": null,
+      "lastTradeAvailable": false,
+      "referenceAvailable": true
+    },
+    {
+      "symbol": "SPY",
+      "available": true,
+      "checkedAt": "2026-10-01T11:37:07.743Z",
+      "marketTimestamp": "2026-09-30T20:00:00+00:00",
+      "quoteTimestamp": null,
+      "lastSaleTimestamp": null,
+      "lastTradeAvailable": false,
+      "referenceAvailable": true
+    }
+  ],
+  "regionalDelay": {
+    "US": "INTRADAY",
+    "Germany": "EOD_ONLY",
+    "Europe": "EOD_ONLY",
+    "Asia": "EOD_ONLY",
+    "ETFs": "EOD_ONLY"
+  },
+  "usRealtimeVerified": false,
+  "usIntradayIntervalBarsVerified": false,
+  "usETFIntradaySnapshotsObserved": true,
+  "limitations": [
+    "Before US open, both latest-provider snapshots carried the preceding session close timestamp. Intraday latency, premarket and after-hours equivalence are not established.",
+    "Marketstack IEX-derived payloads are snapshots, not verified interval OHLC candles.",
+    "No US holiday/session rules are applied to global EOD records; dates stay provider trading dates."
+  ]
+}

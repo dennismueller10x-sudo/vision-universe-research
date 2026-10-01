@@ -1,0 +1,1909 @@
+{
+  "schemaVersion": "provider-coverage-summary-1.0.0",
+  "generatedAt": "2026-10-01T12:09:27.607Z",
+  "providerDecision": "C",
+  "productionActivated": false,
+  "existingUS": {
+    "universeMembers": 7803,
+    "ELIGIBLE": 5940,
+    "SEPARATE_CLASS": 782,
+    "EXCLUDED": 928,
+    "REVIEW": 153,
+    "productUniverse": 6875,
+    "directory": {
+      "TOTAL_EXISTING_TIINGO": 7803,
+      "TOTAL_MARKETSTACK_MATCHED": 6738,
+      "TOTAL_MARKETSTACK_MISSING": 1064,
+      "TOTAL_UNRESOLVED": 1,
+      "TOTAL_EOD_ADVERTISED": 6738,
+      "TOTAL_SYMBOL_MISMATCH": 0,
+      "TOTAL_EXCHANGE_MISMATCH": 540,
+      "TOTAL_DATA_MISMATCH": null,
+      "TOTAL_ACTUAL_PRICES_TESTED_IN_COMPLETE_UNIVERSE": 0
+    },
+    "latest": {
+      "totalBaseline": 7803,
+      "metadataMatchedTargets": 6738,
+      "symbolsAttempted": 6738,
+      "remainingSymbols": 0,
+      "pendingRetryOrUnattemptedSymbols": 0,
+      "completeResponseBatches": 69,
+      "totalBatches": 69,
+      "byStatus": {
+        "VALID_LATEST": 6278,
+        "STALE_LATEST_ACTIVE": 53,
+        "CURRENCY_MISMATCH": 342,
+        "MISSING_PROVIDER_CURRENCY": 16,
+        "ASSET_TYPE_MISMATCH": 20,
+        "INVALID_OHLC": 29
+      },
+      "validLatest": 6278,
+      "actualPriceQualityRejected": 460,
+      "activeCommonEquities": {
+        "total": 5000,
+        "validLatest": 4618,
+        "byStatus": {
+          "VALID_LATEST": 4618,
+          "STALE_LATEST_ACTIVE": 30,
+          "CURRENCY_MISMATCH": 325,
+          "MISSING_PROVIDER_CURRENCY": 11,
+          "ASSET_TYPE_MISMATCH": 14,
+          "INVALID_OHLC": 2
+        }
+      },
+      "product": {
+        "total": 5838,
+        "validLatest": 5426,
+        "byStatus": {
+          "VALID_LATEST": 5426,
+          "STALE_LATEST_ACTIVE": 35,
+          "CURRENCY_MISMATCH": 342,
+          "MISSING_PROVIDER_CURRENCY": 15,
+          "ASSET_TYPE_MISMATCH": 18,
+          "INVALID_OHLC": 2
+        }
+      },
+      "consumer": {
+        "total": 5423,
+        "validLatest": 5018,
+        "byStatus": {
+          "VALID_LATEST": 5018,
+          "STALE_LATEST_ACTIVE": 31,
+          "CURRENCY_MISMATCH": 342,
+          "MISSING_PROVIDER_CURRENCY": 12,
+          "ASSET_TYPE_MISMATCH": 18,
+          "INVALID_OHLC": 2
+        }
+      }
+    },
+    "protectedArtifactsChanged": 0
+  },
+  "prepared": {
+    "total": 58,
+    "equities": 46,
+    "etfs": 12,
+    "byListingCountry": {
+      "DE": 32,
+      "NL": 1,
+      "FR": 2,
+      "DK": 1,
+      "CH": 1,
+      "IT": 1,
+      "KR": 2,
+      "HK": 2,
+      "TW": 2,
+      "IN": 1,
+      "US": 3,
+      "BE": 2,
+      "ES": 2,
+      "AT": 2,
+      "SE": 2,
+      "NO": 1,
+      "FI": 1
+    },
+    "byTradingCurrency": {
+      "EUR": 43,
+      "DKK": 1,
+      "CHF": 1,
+      "KRW": 2,
+      "HKD": 2,
+      "TWD": 2,
+      "INR": 1,
+      "USD": 3,
+      "SEK": 2,
+      "NOK": 1
+    },
+    "active": 32,
+    "inactive": 0,
+    "activeUnknown": 26,
+    "preferred": 1,
+    "duplicates": 0,
+    "unsupportedObservedCandidates": 5,
+    "missingHistory": 0,
+    "missingCompanyFundamentals": 46,
+    "missingVerifiedAdjustmentBasis": 58,
+    "validCandles": 23016,
+    "quarantinedCandles": 1394
+  },
+  "xetraDiscovery": {
+    "providerDirectoryInstrumentRows": 8959,
+    "providerDirectoryUniqueSymbols": 8959,
+    "exactReferenceMatchedRows": 3245,
+    "activeClassifiedEquityListingCandidates": 680,
+    "preferredNameHintCandidates": 12,
+    "equityCandidatesWithoutPreferredNameHint": 668,
+    "activeClassifiedETFListingCandidates": 2374,
+    "uniqueETFISINCandidates": 2290,
+    "excludedNonEquityETFListingCandidates": 191,
+    "unresolvedInstrumentRows": 5714,
+    "historyUncheckedClassifiedCandidates": 3022,
+    "branchPreparedClassifiedCandidates": 32,
+    "productionActivatedCandidates": 0,
+    "potentialSameISINMICCurrencyAliasGroups": 0,
+    "partialPreparedSubsetCandidates": 32
+  },
+  "products": {
+    "Identity": "PARTIAL",
+    "Search": "WORKING",
+    "Watchlists": "WORKING",
+    "Charts": "PARTIAL",
+    "Discover": "PARTIAL",
+    "Screener": "PARTIAL",
+    "Quant": "PARTIAL",
+    "FactorDNA": "PARTIAL",
+    "Rankings": "PARTIAL",
+    "SuperTrader": "PARTIAL",
+    "Markets": "PARTIAL",
+    "Research": "PARTIAL",
+    "ETFInfrastructure": "PARTIAL"
+  },
+  "existingUSProductStatus": "WORKING",
+  "globalEquityEngineAdmission": 0,
+  "listings": [
+    {
+      "listingId": "vu_cfa3ed50fc188ed8c18affdf",
+      "securityId": "sec_isin_DE0007164600",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 43,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_993c96c4b38f6f5410a7aa77",
+      "securityId": "sec_isin_DE0007236101",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_f016312b2f21d9c141432804",
+      "securityId": "sec_isin_DE0007030009",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_04b1276b272b4716baa13c14",
+      "securityId": "sec_isin_DE0008404005",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 47,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_b64cf85da27f89d425d1fba7",
+      "securityId": "sec_isin_DE0005557508",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_74e79becb7391fe13bd9ae55",
+      "securityId": "sec_isin_DE0007100000",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-08",
+        "staleDays": 23,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 21,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_8ead3376a97b3f45457311c9",
+      "securityId": "sec_isin_DE0005190003",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 48,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_730891e58f281748fd390a12",
+      "securityId": "sec_isin_DE000BASF111",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 46,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_754873ecf2aa41ea060fccf7",
+      "securityId": "sec_isin_DE0006231004",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 47,
+        "unexplainedJumps": 2,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_d8bf8aec2c089af2a90d7964",
+      "securityId": "sec_isin_DE0008430026",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_59e1b1a6c5fec36e70fb75a1",
+      "securityId": "sec_isin_DE0005140008",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 47,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_4a0a4886b8c74c9c1cc72c54",
+      "securityId": "sec_isin_DE000CBK1001",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_9368a3d7f3311c9e7265bdd1",
+      "securityId": "sec_isin_DE0005200000",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 45,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_3c7c01927ab7a86b17b1d0d9",
+      "securityId": "sec_isin_DE000A1EWWW0",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 46,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_3dc5a6e147758fcd30d5162a",
+      "securityId": "sec_isin_DE0006969603",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_b7fe26cd5cd22f6a6e9eafb8",
+      "securityId": "sec_isin_DE0006048432",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_199112ed28b64b8c9e1536bc",
+      "securityId": "sec_isin_DE000A1ML7J1",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 43,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_1dea35fdb68f5cf068901d23",
+      "securityId": "sec_isin_DE000ENAG999",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_7846323a669b806f0bbd4596",
+      "securityId": "sec_isin_DE0007037129",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_6e08a1b0da219a739c555cdc",
+      "securityId": "sec_isin_DE000ENER6Y0",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 41,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_5ec910546a3618e5e1850f1a",
+      "securityId": "sec_isin_DE000A0ETBQ4",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 47,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_4ce435ab63316162d59dc1ee",
+      "securityId": "sec_isin_DE0007074007",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 46,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_aad857f8e6d415cee8958a65",
+      "securityId": "sec_isin_DE000A0WMPJ6",
+      "assetType": "EQUITY",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 1,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_2190530e5aadb651044d45b8",
+      "securityId": "sec_isin_NL0010273215",
+      "assetType": "EQUITY",
+      "listingCountry": "NL",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 4,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_801dc74ea4161255d5543cc7",
+      "securityId": "sec_isin_FR0000121014",
+      "assetType": "EQUITY",
+      "listingCountry": "FR",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_3188015e595450f3ef4a4cc3",
+      "securityId": "sec_isin_NL0000235190",
+      "assetType": "EQUITY",
+      "listingCountry": "FR",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 17,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_095a659992e820415d7cf19b",
+      "securityId": "sec_isin_DK0060534915",
+      "assetType": "EQUITY",
+      "listingCountry": "DK",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "DKK",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_8cc794ee8c0f8aceec1ebc80",
+      "securityId": "sec_isin_CH0038863350",
+      "assetType": "EQUITY",
+      "listingCountry": "CH",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "CHF",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_d3b20c03cba92b97f93979a1",
+      "securityId": "sec_isin_NL0011585146",
+      "assetType": "EQUITY",
+      "listingCountry": "IT",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 15,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_d6a3e82cea3cf634e9929874",
+      "securityId": "sec_isin_KR7005930003",
+      "assetType": "EQUITY",
+      "listingCountry": "KR",
+      "country": null,
+      "listingRegion": "ASIA_PACIFIC",
+      "tradingCurrency": "KRW",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_93c67b8a1a9f25a8ce00ea2e",
+      "securityId": "sec_isin_KR7000660001",
+      "assetType": "EQUITY",
+      "listingCountry": "KR",
+      "country": null,
+      "listingRegion": "ASIA_PACIFIC",
+      "tradingCurrency": "KRW",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 1,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_e8e826b04ab3db5fc056199a",
+      "securityId": "sec_isin_KYG875721634",
+      "assetType": "EQUITY",
+      "listingCountry": "HK",
+      "country": null,
+      "listingRegion": "ASIA_PACIFIC",
+      "tradingCurrency": "HKD",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 1,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_a9ab612737dbb32e1b16a9cc",
+      "securityId": "sec_isin_CNE100000296",
+      "assetType": "EQUITY",
+      "listingCountry": "HK",
+      "country": null,
+      "listingRegion": "ASIA_PACIFIC",
+      "tradingCurrency": "HKD",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 1,
+        "unexplainedJumps": 1,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_27204d8443698e645f305225",
+      "securityId": "sec_isin_TW0002454006",
+      "assetType": "EQUITY",
+      "listingCountry": "TW",
+      "country": null,
+      "listingRegion": "ASIA_PACIFIC",
+      "tradingCurrency": "TWD",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 2,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_b3ddabdcb108a17f0d362872",
+      "securityId": "sec_isin_TW0002317005",
+      "assetType": "EQUITY",
+      "listingCountry": "TW",
+      "country": null,
+      "listingRegion": "ASIA_PACIFIC",
+      "tradingCurrency": "TWD",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 1,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_e8a44a6a3731d4fb5987d0be",
+      "securityId": "sec_isin_INE002A01018",
+      "assetType": "EQUITY",
+      "listingCountry": "IN",
+      "country": null,
+      "listingRegion": "ASIA_PACIFIC",
+      "tradingCurrency": "INR",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_fa85322d99172d04d94c347c",
+      "securityId": "sec_isin_IE00B4L5Y983",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-28",
+        "staleDays": 3,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 27,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_4b9f6ea7c25e2c9d66d7bf3c",
+      "securityId": "sec_isin_IE00BK5BQT80",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-28",
+        "staleDays": 3,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 41,
+        "unexplainedJumps": 2,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_83833194ecb6f40fc3f3d7e1",
+      "securityId": "sec_isin_IE00B5BMR087",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-28",
+        "staleDays": 3,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_7ba9bbc649ee8aeb9bb70848",
+      "securityId": "sec_isin_IE00B53SZB19",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 46,
+        "unexplainedJumps": 1,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_58f0ad1c110314d4943a1db9",
+      "securityId": "sec_isin_IE00BKM4GZ66",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 43,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_aa863bcad697942af0750359",
+      "securityId": "sec_isin_DE0002635307",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 44,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_2b51e97effb3831d6f4d3284",
+      "securityId": "sec_isin_DE0005933931",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 42,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_d8863076af3a9462278d7ee6",
+      "securityId": "sec_isin_IE00BDBRDM35",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 43,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_1cf865fada22b7303e742a0b",
+      "securityId": "sec_isin_DE000A0F5UH1",
+      "assetType": "ETF",
+      "listingCountry": "DE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-28",
+        "staleDays": 3,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 24,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_9b526524b8cf52de20c5af44",
+      "securityId": "sec_isin_US78462F1030",
+      "assetType": "ETF",
+      "listingCountry": "US",
+      "country": null,
+      "listingRegion": "NORTH_AMERICA",
+      "tradingCurrency": "USD",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 5,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_c77bb77d037ce80129a45f44",
+      "securityId": "sec_isin_US46090E1038",
+      "assetType": "ETF",
+      "listingCountry": "US",
+      "country": null,
+      "listingRegion": "NORTH_AMERICA",
+      "tradingCurrency": "USD",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 2,
+        "unexplainedJumps": 1,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_00c9890713dbd09075a11b64",
+      "securityId": "sec_isin_US9229083632",
+      "assetType": "ETF",
+      "listingCountry": "US",
+      "country": null,
+      "listingRegion": "NORTH_AMERICA",
+      "tradingCurrency": "USD",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "UNKNOWN"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-30",
+        "staleDays": 1,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 5,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_39592b8ad084ba0d10207126",
+      "securityId": "sec_isin_BE0003739530",
+      "assetType": "EQUITY",
+      "listingCountry": "BE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 5,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_cfe716a681b79079491eb674",
+      "securityId": "sec_isin_BE0974293251",
+      "assetType": "EQUITY",
+      "listingCountry": "BE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 8,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_06c5d84ad24453f5277ef935",
+      "securityId": "sec_isin_ES0148396007",
+      "assetType": "EQUITY",
+      "listingCountry": "ES",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 2,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_9f9b5d09744b2efa69fce6b8",
+      "securityId": "sec_isin_ES0144580Y14",
+      "assetType": "EQUITY",
+      "listingCountry": "ES",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 2,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_84ee29ef7ae9dfe304f89eb1",
+      "securityId": "sec_isin_AT0000743059",
+      "assetType": "EQUITY",
+      "listingCountry": "AT",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_f065bb782c290bf15b0334ba",
+      "securityId": "sec_isin_AT0000937503",
+      "assetType": "EQUITY",
+      "listingCountry": "AT",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 1,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_f0d3782cc5739ffe447073de",
+      "securityId": "sec_isin_SE0011166610",
+      "assetType": "EQUITY",
+      "listingCountry": "SE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "SEK",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 1,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_734595de0676273d9366add2",
+      "securityId": "sec_listing_734595de0676273d9366add2",
+      "assetType": "EQUITY",
+      "listingCountry": "SE",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "SEK",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 2,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_b45213a66ca525de0ab941be",
+      "securityId": "sec_isin_NO0010161896",
+      "assetType": "EQUITY",
+      "listingCountry": "NO",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "NOK",
+      "coverage": {
+        "price_eod": "PARTIAL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "PARTIAL",
+        "quarantinedCandles": 2,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    },
+    {
+      "listingId": "vu_bc38a8d1dcad773d22178cf0",
+      "securityId": "sec_isin_FI0009013403",
+      "assetType": "EQUITY",
+      "listingCountry": "FI",
+      "country": null,
+      "listingRegion": "EUROPE",
+      "tradingCurrency": "EUR",
+      "coverage": {
+        "price_eod": "FULL",
+        "price_history": "PARTIAL",
+        "intraday": "UNKNOWN",
+        "realtime": "UNKNOWN",
+        "corporate_actions": "PARTIAL",
+        "fundamentals": "NONE",
+        "technical": "NONE",
+        "etf_holdings": "NONE"
+      },
+      "freshness": {
+        "lastTradingDate": "2026-09-29",
+        "staleDays": 2,
+        "delayState": "EOD_ONLY"
+      },
+      "quality": {
+        "status": "VALID_OBSERVED_WINDOW",
+        "quarantinedCandles": 0,
+        "unexplainedJumps": 0,
+        "priceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+      }
+    }
+  ],
+  "limitations": [
+    "WORKING describes validated shared Search/Watchlists; other global products remain coverage gated. Existing US engines are unchanged.",
+    "Issuer links and reporting currencies remain unresolved; ESEF architecture is retained without invented fundamentals.",
+    "No global realtime or complete exchange holiday calendar is asserted. No Tiingo removal or production migration occurred."
+  ]
+}

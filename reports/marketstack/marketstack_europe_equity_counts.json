@@ -1,0 +1,3188 @@
+{
+  "schemaVersion": "marketstack-measured-coverage-1.0.0",
+  "generatedAt": "2026-10-01T12:07:01.548390+00:00",
+  "state": "MEASURED_PARTIAL",
+  "sourceRuns": [
+    {
+      "source": "github-actions",
+      "runId": "36852153799",
+      "commit": "757b22c089080f6fa36f8cddb6253b2cdb32098c"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36853405425",
+      "commit": "f3a4967a76838dc4e4c27fa1bd300b5b0b4cb34c"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36854621111",
+      "commit": "428ba5a1570e29b04e70ee6b90c0212695f44cc2"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36856401441",
+      "commit": "db7a59a5563ab678d7c36d8abde740ff8aebd6da"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36858301835",
+      "commit": "bbbc4b36a6d211dec94379ebc451f791f453f1c1"
+    }
+  ],
+  "source": "AUTHENTICATED_GITHUB_ACTIONS",
+  "unmeasuredValuesAreNull": true,
+  "countryCounts": [
+    {
+      "venueCountry": "DE",
+      "mic": [
+        "XETR",
+        "XFRA"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 100787,
+      "sampledInstrumentRows": 9959,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 23,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 23,
+      "preparedETFListings": 9,
+      "productionActivated": false,
+      "classifiedXetraEquityCandidates": 680,
+      "classifiedXetraETFCandidates": 2374,
+      "candidateHistoryUnchecked": 3022,
+      "fullXetraDirectoryObserved": true,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "FR",
+      "mic": [
+        "XPAR"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 4673,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 2,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 2,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "NL",
+      "mic": [
+        "XAMS"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 2713,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 1,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 1,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "BE",
+      "mic": [
+        "XBRU"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 238,
+      "sampledInstrumentRows": 238,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 2,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 2,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "IT",
+      "mic": [
+        "XMIL"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 3271,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 1,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 1,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "ES",
+      "mic": [
+        "XMAD"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 1001,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 2,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 2,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "AT",
+      "mic": [
+        "XWBO"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 2813,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 2,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 2,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "CH",
+      "mic": [
+        "XSWX"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 29075,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 1,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 1,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "GB",
+      "mic": [
+        "XLON"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 36699,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 1,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 0,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "DK",
+      "mic": [
+        "XCSE"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 2081,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 1,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 1,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "SE",
+      "mic": [
+        "XSTO"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 4376,
+      "sampledInstrumentRows": 1000,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 2,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 2,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "NO",
+      "mic": [
+        "XOSL"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 599,
+      "sampledInstrumentRows": 599,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 1,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 1,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    },
+    {
+      "venueCountry": "FI",
+      "mic": [
+        "XHEL"
+      ],
+      "reportedInstrumentsAcrossProbedVenues": 205,
+      "sampledInstrumentRows": 205,
+      "completeEquityUniverseCount": null,
+      "completeETFUniverseCount": null,
+      "uniqueEODStockSymbolsVerifiedInSamples": 1,
+      "providerIntradayFlagsTrueInSample": 0,
+      "preparedEquityListings": 1,
+      "preparedETFListings": 0,
+      "productionActivated": false,
+      "equityPriceSampleCountNote": "Observed classified equity samples, including gated listings. This is not a complete universe or common-equity-only count."
+    }
+  ],
+  "representativeCandidates": [
+    {
+      "requestedName": "SAP",
+      "scope": "GERMANY",
+      "symbol": "SAP.DE",
+      "observedMetadata": [
+        {
+          "symbol": "SAP.DE",
+          "name": "SAP SE",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "SAP.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:39.701Z",
+          "requestSucceeded": true,
+          "returnedBars": 437,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "SAP SE",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 437,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0007164600",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_cfa3ed50fc188ed8c18affdf",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Siemens",
+      "scope": "GERMANY",
+      "symbol": "SIE.DE",
+      "observedMetadata": [
+        {
+          "symbol": "SIE.DE",
+          "name": "Siemens Aktiengesellschaft",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Siemens",
+          "checkedAt": "2026-10-01T10:56:42.019Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "SIE.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:40.208Z",
+          "requestSucceeded": true,
+          "returnedBars": 437,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Siemens Aktiengesellschaft",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 437,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0007236101",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_993c96c4b38f6f5410a7aa77",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Rheinmetall",
+      "scope": "GERMANY",
+      "symbol": "RHM.DE",
+      "observedMetadata": [
+        {
+          "symbol": "RHM.DE",
+          "name": "Rheinmetall AG",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Rheinmetall",
+          "checkedAt": "2026-10-01T10:56:42.263Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "RHM.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:40.715Z",
+          "requestSucceeded": true,
+          "returnedBars": 440,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Rheinmetall AG",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 440,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0007030009",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_f016312b2f21d9c141432804",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Allianz",
+      "scope": "GERMANY",
+      "symbol": "ALV.DE",
+      "observedMetadata": [
+        {
+          "symbol": "ALV.DE",
+          "name": "Allianz SE",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "ALV.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:41.259Z",
+          "requestSucceeded": true,
+          "returnedBars": 439,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Allianz SE",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 439,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0008404005",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_04b1276b272b4716baa13c14",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Deutsche Telekom",
+      "scope": "GERMANY",
+      "symbol": "DTE.DE",
+      "observedMetadata": [
+        {
+          "symbol": "DTE.DE",
+          "name": "Deutsche Telekom AG",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Deutsche Telekom",
+          "checkedAt": "2026-10-01T10:56:42.858Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "DTE.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:41.746Z",
+          "requestSucceeded": true,
+          "returnedBars": 436,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Deutsche Telekom AG",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 436,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0005557508",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_b64cf85da27f89d425d1fba7",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Mercedes-Benz",
+      "scope": "GERMANY",
+      "symbol": "MBG.DE",
+      "observedMetadata": [
+        {
+          "symbol": "MBG.DE",
+          "name": "Mercedes-Benz Group AG",
+          "mic": "XETR",
+          "itemType": "equity",
+          "isin": "DE0007100000",
+          "has_eod": null,
+          "has_intraday": null,
+          "endpoint": "tickers/MBG.DE",
+          "checkedAt": "2026-10-01T11:08:41.895Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "MBG.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:42.257Z",
+          "requestSucceeded": true,
+          "returnedBars": 423,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-08T00:00:00+0000",
+          "name": "Mercedes-Benz Group AG",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 423,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0007100000",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_74e79becb7391fe13bd9ae55",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "BMW",
+      "scope": "GERMANY",
+      "symbol": "BMW.DE",
+      "observedMetadata": [
+        {
+          "symbol": "BMW.DE",
+          "name": "Bayerische Motoren Werke Aktiengesellschaft",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "BMW.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:42.759Z",
+          "requestSucceeded": true,
+          "returnedBars": 438,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Bayerische Motoren Werke Aktiengesellschaft",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 438,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0005190003",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_8ead3376a97b3f45457311c9",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "BASF",
+      "scope": "GERMANY",
+      "symbol": "BAS.DE",
+      "observedMetadata": [
+        {
+          "symbol": "BAS.DE",
+          "name": "BASF SE",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "BAS.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:43.262Z",
+          "requestSucceeded": true,
+          "returnedBars": 438,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "BASF SE",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 438,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE000BASF111",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_730891e58f281748fd390a12",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Infineon",
+      "scope": "GERMANY",
+      "symbol": "IFX.DE",
+      "observedMetadata": [
+        {
+          "symbol": "IFX.DE",
+          "name": "Infineon Technologies AG",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "IFX.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:43.781Z",
+          "requestSucceeded": true,
+          "returnedBars": 436,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Infineon Technologies AG",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 436,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0006231004",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_754873ecf2aa41ea060fccf7",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Munich Re",
+      "scope": "GERMANY",
+      "symbol": "MUV2.DE",
+      "observedMetadata": [
+        {
+          "symbol": "MUV2.DE",
+          "name": "Münchener Rückversicherungs-Gesellschaft Aktienges",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "MUV2.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:44.297Z",
+          "requestSucceeded": true,
+          "returnedBars": 437,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Münchener Rückversicherungs-Gesellschaft Aktienges",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 437,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0008430026",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_d8bf8aec2c089af2a90d7964",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Deutsche Bank",
+      "scope": "GERMANY",
+      "symbol": "DBK.DE",
+      "observedMetadata": [
+        {
+          "symbol": "DBK.DE",
+          "name": "Deutsche Bank Aktiengesellschaft",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "DBK.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:44.803Z",
+          "requestSucceeded": true,
+          "returnedBars": 437,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Deutsche Bank Aktiengesellschaft",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 437,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0005140008",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_59e1b1a6c5fec36e70fb75a1",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Commerzbank",
+      "scope": "GERMANY",
+      "symbol": "CBK.DE",
+      "observedMetadata": [
+        {
+          "symbol": "CBK.DE",
+          "name": "Commerzbank AG",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "CBK.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:45.324Z",
+          "requestSucceeded": true,
+          "returnedBars": 439,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Commerzbank AG",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 439,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE000CBK1001",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_4a0a4886b8c74c9c1cc72c54",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Beiersdorf",
+      "scope": "GERMANY",
+      "symbol": "BEI.DE",
+      "observedMetadata": [
+        {
+          "symbol": "BEI.DE",
+          "name": "Beiersdorf Aktiengesellschaft",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "BEI.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:45.817Z",
+          "requestSucceeded": true,
+          "returnedBars": 438,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Beiersdorf Aktiengesellschaft",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 438,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0005200000",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_9368a3d7f3311c9e7265bdd1",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Adidas",
+      "scope": "GERMANY",
+      "symbol": "ADS.DE",
+      "observedMetadata": [
+        {
+          "symbol": "ADS.DE",
+          "name": "adidas AG",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "ADS.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:46.339Z",
+          "requestSucceeded": true,
+          "returnedBars": 437,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "adidas AG",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 437,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE000A1EWWW0",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_3c7c01927ab7a86b17b1d0d9",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Puma",
+      "scope": "GERMANY",
+      "symbol": "PUM.DE",
+      "observedMetadata": [
+        {
+          "symbol": "PUM.DE",
+          "name": "PUMA SE",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "PUM.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:46.839Z",
+          "requestSucceeded": true,
+          "returnedBars": 437,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "PUMA SE",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 437,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0006969603",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_3dc5a6e147758fcd30d5162a",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Henkel preferred",
+      "scope": "GERMANY",
+      "symbol": "HEN3.DE",
+      "observedMetadata": [
+        {
+          "symbol": "HEN3.DE",
+          "name": "Henkel AG &amp; Co. KGaA",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "HEN3.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:47.372Z",
+          "requestSucceeded": true,
+          "returnedBars": 437,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Henkel AG &amp; Co. KGaA",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 437,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0006048432",
+      "instrumentSubtype": "PREFERRED",
+      "commonEquityVerified": false,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_b7fe26cd5cd22f6a6e9eafb8",
+      "listingType": "PREFERRED",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Vonovia",
+      "scope": "GERMANY",
+      "symbol": "VNA.DE",
+      "observedMetadata": [
+        {
+          "symbol": "VNA.DE",
+          "name": "Vonovia SE",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "VNA.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:47.876Z",
+          "requestSucceeded": true,
+          "returnedBars": 440,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Vonovia SE",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 440,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE000A1ML7J1",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_199112ed28b64b8c9e1536bc",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "E.ON",
+      "scope": "GERMANY",
+      "symbol": "EOAN.DE",
+      "observedMetadata": [
+        {
+          "symbol": "EOAN.DE",
+          "name": "E.ON SE",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "EOAN.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:48.382Z",
+          "requestSucceeded": true,
+          "returnedBars": 438,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "E.ON SE",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 438,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE000ENAG999",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_1dea35fdb68f5cf068901d23",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "RWE",
+      "scope": "GERMANY",
+      "symbol": "RWE.DE",
+      "observedMetadata": [
+        {
+          "symbol": "RWE.DE",
+          "name": "RWE Aktiengesellschaft",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XETR/tickers",
+          "checkedAt": "2026-10-01T10:56:46.871Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "RWE.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:48.900Z",
+          "requestSucceeded": true,
+          "returnedBars": 438,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "RWE Aktiengesellschaft",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 438,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE0007037129",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_7846323a669b806f0bbd4596",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Siemens Energy",
+      "scope": "GERMANY",
+      "symbol": "ENR.DE",
+      "observedMetadata": [
+        {
+          "symbol": "ENR.DE",
+          "name": "Siemens Energy AG",
+          "mic": "XETR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Siemens",
+          "checkedAt": "2026-10-01T10:56:42.019Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "ENR.DE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:49.435Z",
+          "requestSucceeded": true,
+          "returnedBars": 440,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Siemens Energy AG",
+          "mic": "XETR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 440,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "DE000ENER6Y0",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_6e08a1b0da219a739c555cdc",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "ASML",
+      "scope": "EUROPE",
+      "symbol": "ASML.AS",
+      "observedMetadata": [
+        {
+          "symbol": "ASML.AS",
+          "name": "ASML Holding N.V.",
+          "mic": "XAMS",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "ASML",
+          "checkedAt": "2026-10-01T10:56:43.111Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "ASML.AS",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:51.508Z",
+          "requestSucceeded": true,
+          "returnedBars": 442,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "ASML Holding N.V.",
+          "mic": "XAMS",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "EUR",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 442,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "NL0010273215",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_2190530e5aadb651044d45b8",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "LVMH",
+      "scope": "EUROPE",
+      "symbol": "MC.PA",
+      "observedMetadata": [
+        {
+          "symbol": "MC.PA",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
+          "mic": "XPAR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "LVMH",
+          "checkedAt": "2026-10-01T10:56:43.370Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "MC.PA",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:52.070Z",
+          "requestSucceeded": true,
+          "returnedBars": 443,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "LVMH Moët Hennessy - Louis Vuitton, Société Europé",
+          "mic": "XPAR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "EUR",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 443,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "FR0000121014",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_801dc74ea4161255d5543cc7",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Airbus",
+      "scope": "EUROPE",
+      "symbol": "AIR.PA",
+      "observedMetadata": [
+        {
+          "symbol": "AIR.PA",
+          "name": "Airbus SE",
+          "mic": "XPAR",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Airbus",
+          "checkedAt": "2026-10-01T10:56:43.607Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "AIR.PA",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:52.585Z",
+          "requestSucceeded": true,
+          "returnedBars": 400,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Airbus SE",
+          "mic": "XPAR",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "EUR",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 400,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "NL0000235190",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_3188015e595450f3ef4a4cc3",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Novo Nordisk",
+      "scope": "EUROPE",
+      "symbol": "NOVO-B.CO",
+      "observedMetadata": [
+        {
+          "symbol": "NOVO-B.CO",
+          "name": "Novo Nordisk A/S",
+          "mic": "XCSE",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Novo Nordisk",
+          "checkedAt": "2026-10-01T10:56:43.860Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "NOVO-B.CO",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:53.099Z",
+          "requestSucceeded": true,
+          "returnedBars": 393,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Novo Nordisk A/S",
+          "mic": "XCSE",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "DKK",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 393,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "DKK",
+      "validatedISIN": "DK0060534915",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_095a659992e820415d7cf19b",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Nestlé",
+      "scope": "EUROPE",
+      "symbol": "NESN.SW",
+      "observedMetadata": [
+        {
+          "symbol": "NESN.SW",
+          "name": "Nestlé S.A.",
+          "mic": "XSWX",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Nestle",
+          "checkedAt": "2026-10-01T10:56:44.100Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "NESN.SW",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:53.613Z",
+          "requestSucceeded": true,
+          "returnedBars": 391,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-03T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Nestlé S.A.",
+          "mic": "XSWX",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "CHF",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 391,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "CHF",
+      "validatedISIN": "CH0038863350",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_8cc794ee8c0f8aceec1ebc80",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Shell",
+      "scope": "EUROPE",
+      "symbol": "SHEL.L",
+      "observedMetadata": [
+        {
+          "symbol": "SHEL.L",
+          "name": "Shell plc",
+          "mic": "XLON",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Shell",
+          "checkedAt": "2026-10-01T10:56:44.358Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "SHEL.L",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:54.129Z",
+          "requestSucceeded": true,
+          "returnedBars": 395,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-28T00:00:00+0000",
+          "name": "Shell plc",
+          "mic": "XLON",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "GBP",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 395,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Ferrari",
+      "scope": "EUROPE",
+      "symbol": "RACE.MI",
+      "observedMetadata": [
+        {
+          "symbol": "RACE.MI",
+          "name": "Ferrari N.V.",
+          "mic": "XMIL",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Ferrari",
+          "checkedAt": "2026-10-01T10:56:44.594Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "RACE.MI",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:54.651Z",
+          "requestSucceeded": true,
+          "returnedBars": 400,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Ferrari N.V.",
+          "mic": "XMIL",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "EUR",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 400,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "NL0011585146",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_d3b20c03cba92b97f93979a1",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Samsung Electronics",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "005930.KS",
+      "observedMetadata": [
+        {
+          "symbol": "005930.KS",
+          "name": "Samsung Electronics Co., Ltd.",
+          "mic": "XKRX",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Samsung",
+          "checkedAt": "2026-10-01T10:56:44.869Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "005930.KS",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:55.163Z",
+          "requestSucceeded": true,
+          "returnedBars": 371,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "Samsung Electronics Co., Ltd.",
+          "mic": "XKRX",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "KRW",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 371,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_d6a3e82cea3cf634e9929874",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "SK Hynix",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "000660.KS",
+      "observedMetadata": [
+        {
+          "symbol": "000660.KS",
+          "name": "SK hynix Inc.",
+          "mic": "XKRX",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "SK Hynix",
+          "checkedAt": "2026-10-01T10:56:45.081Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "000660.KS",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:55.674Z",
+          "requestSucceeded": true,
+          "returnedBars": 373,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "SK hynix Inc.",
+          "mic": "XKRX",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "KRW",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 373,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_93c67b8a1a9f25a8ce00ea2e",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Toyota",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "7203.T",
+      "observedMetadata": [
+        {
+          "symbol": "7203.T",
+          "name": "Toyota Motor Corporation",
+          "mic": "XJPX",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Toyota",
+          "checkedAt": "2026-10-01T10:56:45.359Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "7203.T",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:56.182Z",
+          "requestSucceeded": true,
+          "returnedBars": 370,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-06T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Toyota Motor Corporation",
+          "mic": "XJPX",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 370,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Sony",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "6758.T",
+      "observedMetadata": [
+        {
+          "symbol": "6758.T",
+          "name": "Sony Group Corporation",
+          "mic": "XJPX",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "tickerslist",
+          "search": "Sony",
+          "checkedAt": "2026-10-01T10:56:45.612Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "6758.T",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:56.711Z",
+          "requestSucceeded": true,
+          "returnedBars": 374,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-06T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Sony Group Corporation",
+          "mic": "XJPX",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": null,
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 374,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Nintendo",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "7974.T",
+      "observedMetadata": [],
+      "priceTests": [],
+      "metadataPresentInObservedPages": false,
+      "priceBarsObserved": 0,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Keyence",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "6861.T",
+      "observedMetadata": [],
+      "priceTests": [],
+      "metadataPresentInObservedPages": false,
+      "priceBarsObserved": 0,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Tokyo Electron",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "8035.T",
+      "observedMetadata": [],
+      "priceTests": [],
+      "metadataPresentInObservedPages": false,
+      "priceBarsObserved": 0,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Tencent",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "0700.HK",
+      "observedMetadata": [
+        {
+          "symbol": "0700.HK",
+          "name": "TENCENT",
+          "mic": "XHKG",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XHKG/tickers",
+          "checkedAt": "2026-10-01T10:56:54.509Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "0700.HK",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:57.231Z",
+          "requestSucceeded": true,
+          "returnedBars": 382,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "TENCENT",
+          "mic": "XHKG",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "HKD",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 382,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_e8e826b04ab3db5fc056199a",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "BYD",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "1211.HK",
+      "observedMetadata": [
+        {
+          "symbol": "1211.HK",
+          "name": "BYD COMPANY",
+          "mic": "XHKG",
+          "itemType": "equity",
+          "isin": "CNE100000296",
+          "has_eod": null,
+          "has_intraday": null,
+          "endpoint": "tickers/1211.HK",
+          "checkedAt": "2026-10-01T11:08:57.394Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "1211.HK",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:57.766Z",
+          "requestSucceeded": true,
+          "returnedBars": 381,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "BYD COMPANY",
+          "mic": "XHKG",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "HKD",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 381,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_a9ab612737dbb32e1b16a9cc",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "MediaTek",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "2454.TW",
+      "observedMetadata": [
+        {
+          "symbol": "2454.TW",
+          "name": "MediaTek Inc.",
+          "mic": "XTAI",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XTAI/tickers",
+          "checkedAt": "2026-10-01T10:56:54.064Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "2454.TW",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:58.284Z",
+          "requestSucceeded": true,
+          "returnedBars": 374,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "MediaTek Inc.",
+          "mic": "XTAI",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "TWD",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 374,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_27204d8443698e645f305225",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Hon Hai / Foxconn",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "2317.TW",
+      "observedMetadata": [
+        {
+          "symbol": "2317.TW",
+          "name": "Hon Hai Precision Industry Co., Ltd.",
+          "mic": "XTAI",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XTAI/tickers",
+          "checkedAt": "2026-10-01T10:56:54.064Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "2317.TW",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:58.811Z",
+          "requestSucceeded": true,
+          "returnedBars": 371,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "Hon Hai Precision Industry Co., Ltd.",
+          "mic": "XTAI",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "TWD",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 371,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_b3ddabdcb108a17f0d362872",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Reliance",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "RELIANCE.NS",
+      "observedMetadata": [
+        {
+          "symbol": "RELIANCE.NS",
+          "name": "Reliance Industries Limited",
+          "mic": "XNSE",
+          "itemType": "equity",
+          "isin": "INE002A01018",
+          "has_eod": null,
+          "has_intraday": null,
+          "endpoint": "tickers/RELIANCE.NS",
+          "checkedAt": "2026-10-01T11:08:58.986Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "RELIANCE.NS",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:08:59.348Z",
+          "requestSucceeded": true,
+          "returnedBars": 390,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-01T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "Reliance Industries Limited",
+          "mic": "XNSE",
+          "providerAssetType": null,
+          "metadataAssetType": "equity",
+          "priceCurrency": "INR",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 390,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_e8a44a6a3731d4fb5987d0be",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "MercadoLibre",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "MELI",
+      "observedMetadata": [],
+      "priceTests": [],
+      "metadataPresentInObservedPages": false,
+      "priceBarsObserved": 0,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "TSMC ADR",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "TSM",
+      "observedMetadata": [
+        {
+          "symbol": "TSM",
+          "name": "Taiwan Semiconductor Manufacturing",
+          "mic": "XNYS",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XNYS/tickers",
+          "checkedAt": "2026-10-01T11:09:31.976Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "TSM",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T10:56:37.242Z",
+          "requestSucceeded": true,
+          "returnedBars": 8,
+          "dateFromRequested": "2026-09-21",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2026-09-21T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "Taiwan Semiconductor Manufacturing",
+          "mic": "XNYS",
+          "providerAssetType": "Stock",
+          "metadataAssetType": null,
+          "priceCurrency": "USD",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 8,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Alibaba ADR",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "BABA",
+      "observedMetadata": [
+        {
+          "symbol": "BABA",
+          "name": "Alibaba Group Holding Ltd",
+          "mic": "XNYS",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XNYS/tickers",
+          "checkedAt": "2026-10-01T11:09:31.976Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "BABA",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T10:56:37.483Z",
+          "requestSucceeded": true,
+          "returnedBars": 8,
+          "dateFromRequested": "2026-09-21",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2026-09-21T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "Alibaba Group Holding Ltd",
+          "mic": "XNYS",
+          "providerAssetType": "Stock",
+          "metadataAssetType": null,
+          "priceCurrency": "USD",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 8,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "XPeng ADR",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "XPEV",
+      "observedMetadata": [
+        {
+          "symbol": "XPEV",
+          "name": "XPeng Inc",
+          "mic": "XNYS",
+          "has_eod": true,
+          "has_intraday": false,
+          "endpoint": "exchanges/XNYS/tickers",
+          "checkedAt": "2026-10-01T11:09:31.976Z"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "XPEV",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T10:56:37.731Z",
+          "requestSucceeded": true,
+          "returnedBars": 8,
+          "dateFromRequested": "2026-09-21",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2026-09-21T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "XPeng Inc",
+          "mic": "XNYS",
+          "providerAssetType": "Stock",
+          "metadataAssetType": null,
+          "priceCurrency": "USD",
+          "coverageClassification": "EOD_ONLY",
+          "note": "Only requested window measured; history depth and realtime not inferred."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 8,
+      "classificationVerified": true,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "JD.com ADR",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "JD",
+      "observedMetadata": [],
+      "priceTests": [],
+      "metadataPresentInObservedPages": false,
+      "priceBarsObserved": 0,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Baidu ADR",
+      "scope": "GLOBAL_SELECT",
+      "symbol": "BIDU",
+      "observedMetadata": [],
+      "priceTests": [],
+      "metadataPresentInObservedPages": false,
+      "priceBarsObserved": 0,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": null,
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "UCB SA",
+      "scope": "EUROPE",
+      "symbol": "UCB.BR",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/UCB.BR",
+          "sourceRunId": "36858301835",
+          "isin": "BE0003739530",
+          "item_type": "equity",
+          "mic": "XBRU"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "UCB.BR",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:56:58.926Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 402,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "UCB SA",
+          "mic": "XBRU",
+          "metadataAssetType": "equity",
+          "metadataISIN": "BE0003739530",
+          "priceCurrency": "EUR",
+          "observedPriceCurrencyCounts": {
+            "EUR": 402
+          },
+          "validatedTradingCurrency": "EUR",
+          "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 402,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "BE0003739530",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_39592b8ad084ba0d10207126",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Anheuser-Busch InBev SA/NV",
+      "scope": "EUROPE",
+      "symbol": "ABI.BR",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/ABI.BR",
+          "sourceRunId": "36858301835",
+          "isin": "BE0974293251",
+          "item_type": "equity",
+          "mic": "XBRU"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "ABI.BR",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:56:59.696Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 400,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Anheuser-Busch InBev SA/NV",
+          "mic": "XBRU",
+          "metadataAssetType": "equity",
+          "metadataISIN": "BE0974293251",
+          "priceCurrency": "EUR",
+          "observedPriceCurrencyCounts": {
+            "EUR": 400
+          },
+          "validatedTradingCurrency": "EUR",
+          "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 400,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "BE0974293251",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_cfe716a681b79079491eb674",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Industria de Diseño Textil, S.A.",
+      "scope": "EUROPE",
+      "symbol": "ITX.MC",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/ITX.MC",
+          "sourceRunId": "36858301835",
+          "isin": "ES0148396007",
+          "item_type": "equity",
+          "mic": "XMAD"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "ITX.MC",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:00.543Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 402,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Industria de Diseño Textil, S.A.",
+          "mic": "XMAD",
+          "metadataAssetType": "equity",
+          "metadataISIN": "ES0148396007",
+          "priceCurrency": null,
+          "observedPriceCurrencyCounts": {
+            "NULL": 402
+          },
+          "validatedTradingCurrency": "EUR",
+          "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 402,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "ES0148396007",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_06c5d84ad24453f5277ef935",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Iberdrola, S.A.",
+      "scope": "EUROPE",
+      "symbol": "IBE.MC",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/IBE.MC",
+          "sourceRunId": "36858301835",
+          "isin": "ES0144580Y14",
+          "item_type": "equity",
+          "mic": "XMAD"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "IBE.MC",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:01.368Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 403,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Iberdrola, S.A.",
+          "mic": "XMAD",
+          "metadataAssetType": "equity",
+          "metadataISIN": "ES0144580Y14",
+          "priceCurrency": null,
+          "observedPriceCurrencyCounts": {
+            "NULL": 403
+          },
+          "validatedTradingCurrency": "EUR",
+          "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 403,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "ES0144580Y14",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_9f9b5d09744b2efa69fce6b8",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "OMV Aktiengesellschaft",
+      "scope": "EUROPE",
+      "symbol": "OMV.VI",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/OMV.VI",
+          "sourceRunId": "36858301835",
+          "isin": "AT0000743059",
+          "item_type": "equity",
+          "mic": "XWBO"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "OMV.VI",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:01.896Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 398,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "OMV Aktiengesellschaft",
+          "mic": "XWBO",
+          "metadataAssetType": "equity",
+          "metadataISIN": "AT0000743059",
+          "priceCurrency": null,
+          "observedPriceCurrencyCounts": {
+            "NULL": 398
+          },
+          "validatedTradingCurrency": "EUR",
+          "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 398,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "AT0000743059",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_84ee29ef7ae9dfe304f89eb1",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Voestalpine AG",
+      "scope": "EUROPE",
+      "symbol": "VOE.VI",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/VOE.VI",
+          "sourceRunId": "36858301835",
+          "isin": "AT0000937503",
+          "item_type": "equity",
+          "mic": "XWBO"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "VOE.VI",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:02.662Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 400,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Voestalpine AG",
+          "mic": "XWBO",
+          "metadataAssetType": "equity",
+          "metadataISIN": "AT0000937503",
+          "priceCurrency": null,
+          "observedPriceCurrencyCounts": {
+            "NULL": 400
+          },
+          "validatedTradingCurrency": "EUR",
+          "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 400,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "AT0000937503",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_f065bb782c290bf15b0334ba",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "Atlas Copco AB",
+      "scope": "EUROPE",
+      "symbol": "ATCO-A.ST",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/ATCO-A.ST",
+          "sourceRunId": "36858301835",
+          "isin": "SE0011166610",
+          "item_type": "equity",
+          "mic": "XSTO"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "ATCO-A.ST",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:03.220Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 395,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "Atlas Copco AB",
+          "mic": "XSTO",
+          "metadataAssetType": "equity",
+          "metadataISIN": "SE0011166610",
+          "priceCurrency": "SEK",
+          "observedPriceCurrencyCounts": {
+            "SEK": 395
+          },
+          "validatedTradingCurrency": "SEK",
+          "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 395,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "SEK",
+      "validatedISIN": "SE0011166610",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_f0d3782cc5739ffe447073de",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "AB Volvo",
+      "scope": "EUROPE",
+      "symbol": "VOLV-B.ST",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/VOLV-B.ST",
+          "sourceRunId": "36858301835",
+          "isin": null,
+          "item_type": "equity",
+          "mic": "XSTO"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "VOLV-B.ST",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:04.038Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 394,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "AB Volvo",
+          "mic": "XSTO",
+          "metadataAssetType": "equity",
+          "metadataISIN": null,
+          "priceCurrency": "SEK",
+          "observedPriceCurrencyCounts": {
+            "SEK": 394
+          },
+          "validatedTradingCurrency": "SEK",
+          "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 394,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "SEK",
+      "validatedISIN": null,
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_734595de0676273d9366add2",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "DNB Bank ASA",
+      "scope": "EUROPE",
+      "symbol": "DNB.OL",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/DNB.OL",
+          "sourceRunId": "36858301835",
+          "isin": "NO0010161896",
+          "item_type": "equity",
+          "mic": "XOSL"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "DNB.OL",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:04.539Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 396,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "DNB Bank ASA",
+          "mic": "XOSL",
+          "metadataAssetType": "equity",
+          "metadataISIN": "NO0010161896",
+          "priceCurrency": "NOK",
+          "observedPriceCurrencyCounts": {
+            "NOK": 396
+          },
+          "validatedTradingCurrency": "NOK",
+          "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 396,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "NOK",
+      "validatedISIN": "NO0010161896",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_b45213a66ca525de0ab941be",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "KONE Oyj",
+      "scope": "EUROPE",
+      "symbol": "KNEBV.HE",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/KNEBV.HE",
+          "sourceRunId": "36858301835",
+          "isin": "FI0009013403",
+          "item_type": "equity",
+          "mic": "XHEL"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "KNEBV.HE",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:05.075Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 394,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-01-02T00:00:00+0000",
+          "lastObservedDate": "2026-09-29T00:00:00+0000",
+          "name": "KONE Oyj",
+          "mic": "XHEL",
+          "metadataAssetType": "equity",
+          "metadataISIN": "FI0009013403",
+          "priceCurrency": "EUR",
+          "observedPriceCurrencyCounts": {
+            "EUR": 394
+          },
+          "validatedTradingCurrency": "EUR",
+          "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 394,
+      "classificationVerified": true,
+      "validatedTradingCurrency": "EUR",
+      "validatedISIN": "FI0009013403",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_bc38a8d1dcad773d22178cf0",
+      "listingType": "UNKNOWN",
+      "historyCoverage": "PARTIAL"
+    },
+    {
+      "requestedName": "ISHARES IBONDS DEC 2021 TERM TREASURY ETF",
+      "scope": "EUROPE",
+      "symbol": "IBTA.XLON",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/IBTA.XLON",
+          "sourceRunId": "36858301835",
+          "isin": "US4510511060",
+          "item_type": null,
+          "mic": "XLON"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "IBTA.XLON",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:05.543Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 317,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-04-01T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "ISHARES IBONDS DEC 2021 TERM TREASURY ETF",
+          "mic": "XLON",
+          "metadataAssetType": null,
+          "metadataISIN": "US4510511060",
+          "priceCurrency": null,
+          "observedPriceCurrencyCounts": {
+            "USD": 229,
+            "GBP": 88
+          },
+          "validatedTradingCurrency": null,
+          "tradingCurrencySource": null,
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "BLOCKED_MIXED_CURRENCY_AND_METADATA_CONFLICT",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime. UK UCITS candidates are blocked because provider identity/type conflicts and mixed price currencies cannot be reconciled."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 317,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": "US4510511060",
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedName": "Vertex, Inc.",
+      "scope": "EUROPE",
+      "symbol": "VERX.XLON",
+      "observedMetadata": [
+        {
+          "endpoint": "tickers/VERX.XLON",
+          "sourceRunId": "36858301835",
+          "isin": "US92538J1060",
+          "item_type": "equity",
+          "mic": "XLON"
+        }
+      ],
+      "priceTests": [
+        {
+          "requestedSymbol": "VERX.XLON",
+          "endpoint": "eod",
+          "checkedAt": "2026-10-01T11:57:06.098Z",
+          "sourceRunId": "36858301835",
+          "requestSucceeded": true,
+          "returnedBars": 317,
+          "dateFromRequested": "2025-01-01",
+          "dateToRequested": "2026-09-30",
+          "firstObservedDate": "2025-04-01T00:00:00+0000",
+          "lastObservedDate": "2026-09-30T00:00:00+0000",
+          "name": "Vertex, Inc.",
+          "mic": "XLON",
+          "metadataAssetType": "equity",
+          "metadataISIN": "US92538J1060",
+          "priceCurrency": null,
+          "observedPriceCurrencyCounts": {
+            "GBP": 313,
+            "USD": 4
+          },
+          "validatedTradingCurrency": null,
+          "tradingCurrencySource": null,
+          "coverageClassification": "EOD_ONLY",
+          "dataQualityState": "BLOCKED_MIXED_CURRENCY_AND_METADATA_CONFLICT",
+          "branchPrepared": false,
+          "productionActivated": false,
+          "note": "Observed window only; no verified adjustment basis or realtime. UK UCITS candidates are blocked because provider identity/type conflicts and mixed price currencies cannot be reconciled."
+        }
+      ],
+      "metadataPresentInObservedPages": true,
+      "priceBarsObserved": 317,
+      "classificationVerified": false,
+      "validatedTradingCurrency": null,
+      "validatedISIN": "US92538J1060",
+      "branchPrepared": false,
+      "productionActivated": false
+    }
+  ],
+  "indexMembershipCoverage": {
+    "DAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable.",
+    "MDAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable.",
+    "SDAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable.",
+    "TecDAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable."
+  },
+  "warning": "Directory-only candidates are not production imports or investable common-equity counts.",
+  "externalListingCurrencyEvidence": "marketstack_trading_currency_evidence.json",
+  "supplementaryNotes": [
+    "Authenticated direct ticker metadata supplies item_type/ISIN/MIC; European EOD rows omit asset_type/name/price_currency.",
+    "Official Xetra reference file updated2026-10-01 verifies23 German currency matches and9 ETF listings, supplying missingETFISINs.",
+    "Official Euronext verifiesEUR forASML/LVMH/Airbus/Ferrari; SIX verifiesCHF forNestlé; NovoNordiskissuer quote verifiesDKK.",
+    "HEN3 is preferred despite broad provider equity type and officialCS code; exclude from common-equity-only eligibility."
+  ],
+  "preparedExtension": {
+    "branchPrepared": true,
+    "productionActivated": false,
+    "productionDeployed": false,
+    "canonicalManifest": "quant/data/global-market/manifest.json",
+    "canonicalImportReport": "reports/marketstack/marketstack_canonical_import.json",
+    "counts": {
+      "totalPreparedListings": 58,
+      "equityListings": 46,
+      "germanVenueEquityListings": 23,
+      "otherEuropeanVenueEquityListings": 16,
+      "asianVenueEquityListings": 7,
+      "etfListings": 12,
+      "germanVenueETFListings": 9,
+      "usVenueETFListings": 3,
+      "preferredEquityListings": 1,
+      "validCanonicalBars": 23016,
+      "quarantinedProviderBars": 1394,
+      "partialHistoryListings": 58,
+      "equityListingsMissingFundamentals": 46
+    },
+    "coverageRules": [
+      "Counts describe tested prepared extension, not total provider/venue universes or issuer domiciles.",
+      "Every history is PARTIAL with unverified corporate actions and price basis.",
+      "Only bounded close-chart/display support is prepared; no technical, Quant, Factor DNA or fundamentals eligibility.",
+      "Accepted US master, Tiingo, SEC and ESEF are unchanged. Unknown issuer identity/domicile remain null."
+    ]
+  },
+  "branchPrepared": true,
+  "productionActivated": false,
+  "fullXetraClassifiedCandidateArtifact": "marketstack_xetra_classified_candidates.json",
+  "fullXetraClassifiedCandidateCounts": {
+    "providerDirectoryInstrumentRows": 8959,
+    "providerDirectoryUniqueSymbols": 8959,
+    "exactReferenceMatchedRows": 3245,
+    "activeClassifiedEquityListingCandidates": 680,
+    "preferredNameHintCandidates": 12,
+    "equityCandidatesWithoutPreferredNameHint": 668,
+    "activeClassifiedETFListingCandidates": 2374,
+    "uniqueETFISINCandidates": 2290,
+    "excludedNonEquityETFListingCandidates": 191,
+    "unresolvedInstrumentRows": 5714,
+    "historyUncheckedClassifiedCandidates": 3022,
+    "branchPreparedClassifiedCandidates": 32,
+    "productionActivatedCandidates": 0,
+    "potentialSameISINMICCurrencyAliasGroups": 0,
+    "partialPreparedSubsetCandidates": 32
+  },
+  "candidateHistoryValidation": "32_PARTIAL_PREPARED_SUBSET;3022_UNCHECKED",
+  "priceSamples": [
+    {
+      "requestedSymbol": "UCB.BR",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:56:58.926Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 402,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "UCB SA",
+      "mic": "XBRU",
+      "metadataAssetType": "equity",
+      "metadataISIN": "BE0003739530",
+      "priceCurrency": "EUR",
+      "observedPriceCurrencyCounts": {
+        "EUR": 402
+      },
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_39592b8ad084ba0d10207126",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "ABI.BR",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:56:59.696Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 400,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "Anheuser-Busch InBev SA/NV",
+      "mic": "XBRU",
+      "metadataAssetType": "equity",
+      "metadataISIN": "BE0974293251",
+      "priceCurrency": "EUR",
+      "observedPriceCurrencyCounts": {
+        "EUR": 400
+      },
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_cfe716a681b79079491eb674",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "ITX.MC",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:00.543Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 402,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "Industria de Diseño Textil, S.A.",
+      "mic": "XMAD",
+      "metadataAssetType": "equity",
+      "metadataISIN": "ES0148396007",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "NULL": 402
+      },
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_06c5d84ad24453f5277ef935",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "IBE.MC",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:01.368Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 403,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "Iberdrola, S.A.",
+      "mic": "XMAD",
+      "metadataAssetType": "equity",
+      "metadataISIN": "ES0144580Y14",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "NULL": 403
+      },
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_9f9b5d09744b2efa69fce6b8",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "OMV.VI",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:01.896Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 398,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "OMV Aktiengesellschaft",
+      "mic": "XWBO",
+      "metadataAssetType": "equity",
+      "metadataISIN": "AT0000743059",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "NULL": 398
+      },
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_84ee29ef7ae9dfe304f89eb1",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "VOE.VI",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:02.662Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 400,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "Voestalpine AG",
+      "mic": "XWBO",
+      "metadataAssetType": "equity",
+      "metadataISIN": "AT0000937503",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "NULL": 400
+      },
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": "OFFICIAL_INSTRUMENT_REFERENCE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_f065bb782c290bf15b0334ba",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "ATCO-A.ST",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:03.220Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 395,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "Atlas Copco AB",
+      "mic": "XSTO",
+      "metadataAssetType": "equity",
+      "metadataISIN": "SE0011166610",
+      "priceCurrency": "SEK",
+      "observedPriceCurrencyCounts": {
+        "SEK": 395
+      },
+      "validatedTradingCurrency": "SEK",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_f0d3782cc5739ffe447073de",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "VOLV-B.ST",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:04.038Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 394,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "AB Volvo",
+      "mic": "XSTO",
+      "metadataAssetType": "equity",
+      "metadataISIN": null,
+      "priceCurrency": "SEK",
+      "observedPriceCurrencyCounts": {
+        "SEK": 394
+      },
+      "validatedTradingCurrency": "SEK",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_734595de0676273d9366add2",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "DNB.OL",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:04.539Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 396,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "DNB Bank ASA",
+      "mic": "XOSL",
+      "metadataAssetType": "equity",
+      "metadataISIN": "NO0010161896",
+      "priceCurrency": "NOK",
+      "observedPriceCurrencyCounts": {
+        "NOK": 396
+      },
+      "validatedTradingCurrency": "NOK",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_b45213a66ca525de0ab941be",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "KNEBV.HE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:05.075Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 394,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "KONE Oyj",
+      "mic": "XHEL",
+      "metadataAssetType": "equity",
+      "metadataISIN": "FI0009013403",
+      "priceCurrency": "EUR",
+      "observedPriceCurrencyCounts": {
+        "EUR": 394
+      },
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "OBSERVED_RAW_PENDING_CANONICAL_QUALITY_GATES",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime.",
+      "canonicalListingId": "vu_bc38a8d1dcad773d22178cf0",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "IBTA.XLON",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:05.543Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 317,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-04-01T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "ISHARES IBONDS DEC 2021 TERM TREASURY ETF",
+      "mic": "XLON",
+      "metadataAssetType": null,
+      "metadataISIN": "US4510511060",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "USD": 229,
+        "GBP": 88
+      },
+      "validatedTradingCurrency": null,
+      "tradingCurrencySource": null,
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "BLOCKED_MIXED_CURRENCY_AND_METADATA_CONFLICT",
+      "branchPrepared": false,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime. UK UCITS candidates are blocked because provider identity/type conflicts and mixed price currencies cannot be reconciled."
+    },
+    {
+      "requestedSymbol": "VERX.XLON",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:06.098Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 317,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-04-01T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "Vertex, Inc.",
+      "mic": "XLON",
+      "metadataAssetType": "equity",
+      "metadataISIN": "US92538J1060",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "GBP": 313,
+        "USD": 4
+      },
+      "validatedTradingCurrency": null,
+      "tradingCurrencySource": null,
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "BLOCKED_MIXED_CURRENCY_AND_METADATA_CONFLICT",
+      "branchPrepared": false,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime. UK UCITS candidates are blocked because provider identity/type conflicts and mixed price currencies cannot be reconciled."
+    }
+  ],
+  "indexMembershipAccessEvidence": "reports/marketstack/marketstack_german_index_coverage.json"
+}
