@@ -59,16 +59,16 @@ jobs:
         # Der Currency Core selbst (quant/engines/fx) bleibt geschuetzt.
         run: |
           git fetch origin ${{ github.base_ref }} --depth=1
-          if git diff --name-only origin/${{ github.base_ref }}...HEAD -- quant/engines/global-equities.js quant/data/universe/global-equities.json | grep -q .; then
+          if git diff --name-only origin/${{ github.base_ref }} HEAD -- quant/engines/global-equities.js quant/data/universe/global-equities.json | grep -q .; then
             node scripts/universe/verify-global-baseline.mjs --base=origin/${{ github.base_ref }}
             exit 0
           fi
           scope="quant providers scripts/quant scripts/technical scripts/market dashboard macro academy"
           nachweise=":(exclude)quant/tests/currency-fx-matrix.test.mjs :(exclude)quant/config/currency-formatting-baseline.json :(exclude)quant/data/market/fx/currency-debt-register.json"
-          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise | wc -l)
+          changed=$(git diff --name-only origin/${{ github.base_ref }} HEAD -- $scope $nachweise | wc -l)
           if [ "$changed" -gt 0 ]; then
             echo "Discover veraendert Dateien ausserhalb seines Moduls:"
-            git diff --name-only origin/${{ github.base_ref }}...HEAD -- $scope $nachweise
+            git diff --name-only origin/${{ github.base_ref }} HEAD -- $scope $nachweise
             exit 1
           fi
           echo "Keine bestehende Engine veraendert."

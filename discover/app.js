@@ -20,7 +20,7 @@
   function watchButton(root,symbol,detail){
     const ref=Watch.reference(symbol,detail,ctx.universeId);
     const button=el('button',{type:'button',class:'v2-watch-button'});
-    const paint=()=>{const saved=Watch.contains(localStorage,ref);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));button.disabled=!ref.listingId&&!saved;};
+    const paint=()=>{const saved=Watch.isSaved(watchlist(),ref);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));button.disabled=!ref.listingId&&!saved;};
     button.onclick=()=>{saveWatchlist(ref);paint();};paint();root.prepend(button);
   }
   function settings(root){

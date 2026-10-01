@@ -95,6 +95,11 @@ test('watchlists preserve legacy entries and distinguish equal tickers by listin
   assert.equal(Watch.load(storage).filter(r => r.ticker === 'ABC').length, 2);
   Watch.toggle(storage, first);
   assert.equal(Watch.contains(storage, second), true);
+  assert.equal(Watch.isSaved(Watch.load(storage), first), false);
+  assert.equal(Watch.isSaved(Watch.load(storage), second), true);
+  assert.deepEqual(Watch.load({ getItem() { throw Error('storage disabled'); } }), []);
+  assert.doesNotThrow(() => Watch.assertListing({ instrumentId: 'vu_bbb' }, 'vu_bbb'));
+  assert.throws(() => Watch.assertListing({ instrumentId: 'vu_bbb' }, 'vu_aaa'), /Listing/);
   assert.equal(saved.get('vu-discover-watchlist-v1'), before);
   Watch.toggle(storage, Watch.reference('SAP', { listingId: 'vu_ccc' }));
   assert.deepEqual(JSON.parse(saved.get('vu-discover-watchlist-v1')), ['NVDA']);

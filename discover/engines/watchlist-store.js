@@ -21,7 +21,8 @@
   function matches(row, ref) {
     return row.listingId && ref.listingId ? row.listingId === ref.listingId : row.ticker === ref.ticker && row.universeId === ref.universeId;
   }
-  function contains(storage, ref) { return load(storage).some(function (r) { return matches(r, ref); }); }
+  function isSaved(rows, ref) { return rows.some(function (r) { return matches(r, ref); }); }
+  function contains(storage, ref) { return isSaved(load(storage), ref); }
   function assertListing(detail, listingId) {
     if (listingId && decodeURIComponent(listingId) !== (detail.listingId || detail.instrumentId)) throw Error('Listing passt nicht zur Aktienseite');
   }
@@ -39,7 +40,7 @@
     storage.setItem(KEY, JSON.stringify(rows));
     return !found;
   }
-  var api = { load: load, reference: reference, contains: contains, toggle: toggle, assertListing: assertListing };
+  var api = { load: load, reference: reference, contains: contains, toggle: toggle, assertListing: assertListing, isSaved: isSaved };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else global.VUWatchlistStore = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
