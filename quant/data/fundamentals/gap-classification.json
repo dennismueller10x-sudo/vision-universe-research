@@ -13,8 +13,8 @@
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
-      "count": 753,
-      "percent": 10.9527,
+      "count": 747,
+      "percent": 10.8655,
       "recoverability": "RESOLVES_WITH_TIME",
       "examples": [
         {
@@ -89,8 +89,8 @@
     },
     {
       "cause": "NO_CIK",
-      "count": 341,
-      "percent": 4.96,
+      "count": 344,
+      "percent": 5.0036,
       "recoverability": "REQUIRES_REVIEW",
       "examples": [
         {
@@ -165,8 +165,8 @@
     },
     {
       "cause": "INSUFFICIENT_HISTORY",
-      "count": 53,
-      "percent": 0.7709,
+      "count": 56,
+      "percent": 0.8145,
       "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -242,15 +242,15 @@
   ],
   "byRecoverability": {
     "SEC_RECOVERABLE": 1,
-    "EXTERNAL_PROVIDER_CANDIDATE": 95,
-    "RESOLVES_WITH_TIME": 798,
+    "EXTERNAL_PROVIDER_CANDIDATE": 99,
+    "RESOLVES_WITH_TIME": 791,
     "BY_DESIGN": 511,
-    "REQUIRES_REVIEW": 341
+    "REQUIRES_REVIEW": 344
   },
   "mainGroups": {
     "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
     "SEC_RECOVERABLE": 1,
-    "EXTERNAL_PROVIDER_CANDIDATE": 95
+    "EXTERNAL_PROVIDER_CANDIDATE": 99
   },
   "recoverabilityNote": "REQUIRES_REVIEW ist keine dritte Meinung, sondern die Weigerung zu raten: Titel ohne CIK, deren Kuerzel auch die beiden SEC-Verzeichnisse nicht fuehren. Ob dort etwas liegt, ist von hier aus nicht entscheidbar. Sie in eine der beiden Hauptgruppen zu schieben hiesse, die Anbieterfrage per Rundung zu beantworten. RESOLVES_WITH_TIME und BY_DESIGN sind aus dem gleichen Grund eigene Zustaende: eine Notiz von 2026 hat keine drei Jahresabschluesse, und ein Vorzug meldet keinen eigenen - beides kann kein Anbieter liefern, und beides als Anbieterkandidat zu zaehlen wuerde den Einkauf begruenden, den diese Titel nicht brauchen. byRecoverability traegt die Gruppe NACH der Feinklassifikation (\u00a75): ein SPAC ohne Umsatz ist BY_DESIGN, eine junge Notierung RESOLVES_WITH_TIME, ein leeres companyfacts EXTERNAL_PROVIDER_CANDIDATE. byRecoverabilityCoarse ist die Zaehlung davor.",
   "secTickerDirectory": {
@@ -261,10 +261,10 @@
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
   "byRecoverabilityCoarse": {
     "SEC_RECOVERABLE": 148,
-    "EXTERNAL_PROVIDER_CANDIDATE": 53,
-    "RESOLVES_WITH_TIME": 753,
+    "EXTERNAL_PROVIDER_CANDIDATE": 56,
+    "RESOLVES_WITH_TIME": 747,
     "BY_DESIGN": 451,
-    "REQUIRES_REVIEW": 341
+    "REQUIRES_REVIEW": 344
   },
   "regroupedByFineClassification": 147,
   "versions": {
@@ -291,16 +291,16 @@
         "PERCENT": 9.92,
         "TOP_CAUSES": [
           {
+            "cause": "NO_CIK",
+            "count": 334
+          },
+          {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
             "count": 332
           },
           {
-            "cause": "NO_CIK",
-            "count": 331
-          },
-          {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 19
+            "count": 16
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
@@ -314,7 +314,7 @@
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 361
+            "count": 359
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
@@ -322,7 +322,7 @@
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 34
+            "count": 36
           },
           {
             "cause": "FOREIGN_ISSUER",
@@ -334,7 +334,7 @@
           }
         ],
         "SEC_RECOVERABLE_COUNT": 1,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 76
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 79
       },
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
@@ -344,11 +344,11 @@
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 428
+            "count": 425
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 53
+            "count": 56
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -356,7 +356,7 @@
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 53
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 56
       },
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
@@ -378,7 +378,7 @@
           }
         ],
         "SEC_RECOVERABLE_COUNT": 1,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 42
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 43
       },
       {
         "priority": "PRIORITY_5_EDGE_CASES",
@@ -392,7 +392,7 @@
           },
           {
             "cause": "VERY_YOUNG_LISTING",
-            "count": 186
+            "count": 185
           },
           {
             "cause": "NO_CIK",
@@ -404,13 +404,13 @@
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 19
+            "count": 20
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 38
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 40
       }
     ]
   },
-  "generatedAtUtc": "2026-09-30T12:44:31+00:00"
+  "generatedAtUtc": "2026-10-01T13:22:40+00:00"
 }

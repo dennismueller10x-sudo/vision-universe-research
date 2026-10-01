@@ -6,10 +6,10 @@
       "cik": "0000010329",
       "name": "BASSETT FURNITURE INDUSTRIES INC",
       "sic": "2511",
-      "rawFacts": 20183,
-      "mappedFacts": 6340,
-      "unmappedFacts": 14041,
-      "calendarYears": 18,
+      "rawFacts": 20476,
+      "mappedFacts": 6331,
+      "unmappedFacts": 14227,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1128",
@@ -17,14 +17,14 @@
         "BSET"
       ],
       "status": "INGESTED",
-      "annualPeriods": 18,
-      "quarterlyPeriods": 68,
-      "firstPeriodEnd": "2009-11-28",
-      "lastPeriodEnd": "2026-05-30",
-      "historyYears": 16.0,
+      "annualPeriods": 19,
+      "quarterlyPeriods": 70,
+      "firstPeriodEnd": "2008-11-29",
+      "lastPeriodEnd": "2026-08-29",
+      "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 17,
+          "annualPeriods": 16,
           "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2009-11-28",
           "lastAvailablePeriod": "2025-11-29",
@@ -32,14 +32,14 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-11-28",
           "lastAvailablePeriod": "2025-11-29",
           "historyYears": 16.0
         },
         "free_cash_flow": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "annualPeriods": 15,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2009-11-28",
           "lastAvailablePeriod": "2025-11-29",
           "historyYears": 16.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-11-28",
           "lastAvailablePeriod": "2025-11-29",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "annualPeriods": 15,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2009-11-28",
           "lastAvailablePeriod": "2025-11-29",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-11-28",
           "lastAvailablePeriod": "2025-11-29",
           "historyYears": 16.0
@@ -86,15 +86,15 @@
           "historyYears": 3.0
         },
         "stockholders_equity": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 62,
-          "firstAvailablePeriod": "2009-11-28",
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
+          "firstAvailablePeriod": "2008-11-29",
           "lastAvailablePeriod": "2025-11-29",
-          "historyYears": 16.0
+          "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-11-27",
           "lastAvailablePeriod": "2025-11-29",
           "historyYears": 15.0
@@ -117,40 +117,42 @@
         }
       },
       "quality": {
-        "HIGH": 567,
+        "HIGH": 570,
         "MEDIUM": 34
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 601,
-        "resolvedValues": 601
+        "datableValues": 604,
+        "resolvedValues": 604
       },
       "qualitySummary": {
         "rules_version": "1.0.0",
-        "total": 14475,
+        "total": 14781,
         "by_severity": {
-          "INFO": 14041,
+          "INFO": 14227,
           "ERROR": 1,
-          "WARNING": 433
+          "WARNING": 553
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 367,
+          "CONCEPT_DISAGREEMENT": 365,
           "FISCAL_PERIOD_CONFLICT": 16,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 48,
+          "RESTATEMENT_CONFLICT": 46,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 14041
+          "UNKNOWN_CONCEPT": 14227,
+          "UNPLACEABLE_PERIOD": 124
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-022289",
-        "filing_date": "2026-07-01",
+        "accession": "0001437749-26-031602",
+        "filing_date": "2026-09-30",
         "form": "10-Q",
-        "periodic_filings": 128
+        "periodic_filings": 129,
+        "acceptance_datetime": "2026-09-30T20:13:51.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.10.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -159,7 +161,7 @@
           "mapping_version": "1.5.0"
         }
       },
-      "sourceDigest": "5aaadeac03f657c7dac5622d61e4fcffabec73c119f83a30428c865728704eed",
+      "sourceDigest": "e9a706c5ab951e154718e93fdd5944d6e0b883f84e4146d04711476ffe32f573",
       "issuerId": "iss_cik_0000010329"
     },
     {
