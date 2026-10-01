@@ -1,0 +1,216 @@
+{
+  "references": [
+    {
+      "path": ".market-cache/marketstack/reference/t7-xetr-allTradableInstruments.csv",
+      "source": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "expectedSHA256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db"
+    },
+    {
+      "path": ".market-cache/marketstack/reference/t7-xfra-BF-allTradableInstruments.csv",
+      "source": {
+        "source_system": "DEUTSCHE_BOERSE_FRANKFURT_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/2289108/abe6be4b0da1ec31fa93361c112796b0/data/t7-xfra-BF-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads/frankfurt-downloads",
+        "retrieved_at": "2026-10-01T14:09:27.162001+00:00",
+        "sha256": "c960e188a3f2e21c4a380ed7d5997d46e94a97e4b93fbba76dc23ecbaba890bf",
+        "bytes": 44167597
+      },
+      "expectedSHA256": "c960e188a3f2e21c4a380ed7d5997d46e94a97e4b93fbba76dc23ecbaba890bf"
+    }
+  ],
+  "probes": [],
+  "venues": [
+    {
+      "mic": "XFRA",
+      "name": "DEUTSCHE BOERSE AG",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XFRA",
+        ".F"
+      ],
+      "catalogReportedRows": 91729
+    },
+    {
+      "mic": "XBER",
+      "name": "BOERSE BERLIN",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XBER",
+        ".BE"
+      ],
+      "catalogReportedRows": 16210
+    },
+    {
+      "mic": "XMUN",
+      "name": "BOERSE MUENCHEN",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XMUN",
+        ".MU"
+      ],
+      "catalogReportedRows": 15554
+    },
+    {
+      "mic": "DUSD",
+      "name": "BOERSE DUESSELDORF - QUOTRIX MTF",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".DUSD",
+        ".DU"
+      ],
+      "catalogReportedRows": 13932
+    },
+    {
+      "mic": "XSTU",
+      "name": "BOERSE STUTTGART",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XSTU",
+        ".SG"
+      ],
+      "catalogReportedRows": 13788
+    },
+    {
+      "mic": "XETR",
+      "name": "XETRA",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".DE",
+        ".XETR"
+      ],
+      "catalogReportedRows": 8919
+    },
+    {
+      "mic": "XHAM",
+      "name": "HANSEATISCHE WERTPAPIERBOERSE HAMBURG",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XHAM",
+        ".HM"
+      ],
+      "catalogReportedRows": 5261
+    },
+    {
+      "mic": "XHAN",
+      "name": "NIEDERSAECHSISCHE BOERSE ZU HANNOVER",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XHAN",
+        ".HA"
+      ],
+      "catalogReportedRows": 2949
+    },
+    {
+      "mic": "XDUS",
+      "name": "BOERSE DUESSELDORF",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XDUS"
+      ],
+      "catalogReportedRows": 0
+    },
+    {
+      "mic": "TGAT",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".TGAT"
+      ],
+      "catalogReportedRows": 0
+    },
+    {
+      "mic": "XGAT",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE - FREIVERKEHR",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XGAT"
+      ],
+      "catalogReportedRows": 0
+    },
+    {
+      "mic": "XGRM",
+      "name": "TRADEGATE BERLIN STOCK EXCHANGE - REGULIERTER MARKT",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XGRM"
+      ],
+      "catalogReportedRows": 0
+    },
+    {
+      "mic": "MUND",
+      "name": "BOERSE MUENCHEN - GETTEX - FREIVERKEHR",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".MUND"
+      ],
+      "catalogReportedRows": 0
+    },
+    {
+      "mic": "MUNC",
+      "name": "BOERSE MUENCHEN - GETTEX - REGULIERTER MARKT",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".MUNC"
+      ],
+      "catalogReportedRows": 0
+    },
+    {
+      "mic": "DUSC",
+      "name": "BOERSE DUESSELDORF - QUOTRIX - REGULIERTER MARKT",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".DUSC"
+      ],
+      "catalogReportedRows": 0
+    },
+    {
+      "mic": "XQTX",
+      "name": "BOERSE DUESSELDORF - QUOTRIX",
+      "listingCountry": "DE",
+      "providerSuffixes": [
+        ".XQTX"
+      ],
+      "catalogReportedRows": 0
+    }
+  ],
+  "indexSnapshot": "reports/marketstack/reference/german_index_constituents.json",
+  "exchangeMetadataSource": {
+    "sourceSystem": "ISO_OFFICIAL_MIC_PLUS_PUBLIC_PROVIDER_CATALOG",
+    "sourceURL": "https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv",
+    "note": "Registered cash market candidates do not prove provider entitlement/prices.",
+    "registeredProviderDECount": 217,
+    "activeProviderDECount": 183,
+    "completeProviderExchangeRowsObserved": 2883,
+    "providerCapturedRunId": "36887919408",
+    "catalogCountsArePreexistingPublicHints": true
+  },
+  "workingDirectories": [
+    ".market-cache/marketstack/scale"
+  ],
+  "existingCanonicalLayer": ".market-cache/marketstack/accepted-base-58.json",
+  "foundationVenues": [
+    "XETR"
+  ],
+  "identityProbes": [],
+  "equityValidation": {
+    "mic": "XETR",
+    "maxCalendarAgeDays": 7
+  },
+  "indexAliasCandidates": [
+    {
+      "expectedISIN": "DE000A41YHG1",
+      "mic": "XETR",
+      "providerSymbol": "ACT.DE",
+      "discovery": "Captured complete Xetra directory AlzChem name; identity unverified until direct metadata"
+    }
+  ]
+}
