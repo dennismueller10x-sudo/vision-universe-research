@@ -12,12 +12,19 @@
 
      VUDiscover.MicroChart.renderRange     Zeitraum-Chart (Tagesschluss)
      VUDiscover.MicroChart.renderIntraday  Tagesverlauf (5-Minuten-Kurse)
-     VUDiscover.LiveHub.live               Snapshot + optionaler Live-Strom
+     VUDiscover.LiveHub.subscribe          veroeffentlichter Tagesverlauf (Snapshot)
+     VULiveRelayClient                     Live-Strom, nur bestaetigte Trades
      VURealtime.SourceState.bestimme       Etikett und Fussnote des Tages
 
    1T nimmt den veroeffentlichten Intraday-Snapshot; ist die Boerse offen
    und der Live-Strom verfuegbar, schreibt jeder neue Kurs DENSELBEN Chart
    fort. Kein zweiter Chart, kein zweiter Weg.
+
+   Den Live-Kurs liefert Quants eigener Relay-Client (chartMovement
+   TRADE_EVENTS_ONLY), nicht der Strom des Discover-Hubs: der Hub uebernimmt
+   jeden Preis einer Nachricht, auch ein Kursangebot (QUOTE). Gemessen am
+   01.10.2026 bei offenem Handelstag: ein QUOTE setzte den Kurs im Kopf von
+   354,67 $ auf 9.999,00 $. Den Kurs bewegt nur ein bestaetigter Trade.
 
    5T: aufbewahrt werden nur zwei Intraday-Sitzungen - fuenf Tage
    5-Minuten-Kurse gibt es nicht. 5T zeigt deshalb die Tagesschlusskurse
@@ -77,8 +84,8 @@
   }
   /* Dieselbe Regel wie discover/ui/detail.js mitLaufendemKurs: der letzte
      Punkt wird ersetzt oder ein neuer angehaengt - nichts interpoliert. */
-  function withLive(p) {
-    var snap = p && p.snapshot, live = p && p.live;
+  function withLive(p, live) {
+    var snap = p && p.snapshot;
     if (!snap || !live || !live.fresh || !isNum(live.price) || snap.regularComplete) return snap;
     var zeit = ortszeit(live.at, snap.timezone);
     if (!zeit) return snap;
@@ -100,7 +107,7 @@
     var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
     var SS = global.VURealtime && global.VURealtime.SourceState;
     var eod = (o.eod || []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]); });
-    var st = { range: null, intraday: null, long: null, longLoading: false, touched: false, disposed: false, unsub: null };
+    var st = { range: null, intraday: null, long: null, longLoading: false, touched: false, disposed: false, unsub: null, relay: null, trade: null };
 
     /* Dieselbe Gliederung wie Discovers Chart (discover/ui/detail.js
        chartSection): Zeitraum-Leiste (dx-tf), Kopf mit Kurs, Veraenderung
@@ -207,12 +214,12 @@
     }
 
     function drawIntraday() {
-      var p = st.intraday, snap = withLive(p);
+      var p = st.intraday, snap = withLive(p, st.trade);
       var pts = (snap.points || []).filter(function (x) { return x && isNum(x[1]); });
       var last = pts.length ? pts[pts.length - 1][1] : null;
       var base = isNum(snap.previousClose) ? snap.previousClose : (pts.length ? pts[0][1] : null);
       var delta = isNum(last) && isNum(base) && base > 0 ? (last / base - 1) * 100 : null;
-      var q = SS ? SS.bestimme({ resolution: Hub && Hub.resolution ? Hub.resolution() : null, snapshot: p.snapshot, live: p.live, now: new Date() }) : null;
+      var q = SS ? SS.bestimme({ resolution: Hub && Hub.resolution ? Hub.resolution() : null, snapshot: p.snapshot, live: st.trade, now: new Date() }) : null;
       var frozen = !!(q && q.isFrozen) || snap.regularComplete === true;
       head(last, delta, frozen ? "am " + dateDe(snap.sessionDate) + (snap.lastRegularLocal ? ", letzter 5-Minuten-Kurs " + String(snap.lastRegularLocal).slice(0, 5) + " Uhr" : "") : "heute",
         (isNum(snap.previousClose) ? "seit Vortagesschluss " + global.QX.money(snap.previousClose, o.currency || "USD") : "seit dem ersten Kurs des Tages") +
@@ -301,13 +308,36 @@
       }
       var first = true;
       if (Hub && Hub.enabled && Hub.enabled()) {
-        st.unsub = (Hub.live || Hub.subscribe)(o.ticker, function (p) {
+        st.unsub = Hub.subscribe(o.ticker, function (p) {
           st.intraday = p && p.snapshot ? p : null;
+          if (st.intraday && !st.intraday.snapshot.regularComplete) startRelay();
           if (first) { first = false; if (!st.touched) draw(available("1D") ? "1D" : "1Y"); return; }
           if (st.range === "1D") draw("1D"); else syncButtons();
         });
         global.setTimeout(function () { if (first) { first = false; if (!st.touched) draw("1Y"); } }, 3000);
       } else draw("1Y");
+    }
+
+    /* Live nur bei offener Boerse und laufendem Tag, eine Verbindung je
+       Seite, nur fuer diesen Titel. Der Client laesst ausschliesslich
+       bestaetigte Trades durch; ein Kursangebot bewegt nichts. */
+    function startRelay() {
+      var RC = global.VULiveRelayClient;
+      if (st.relay || st.disposed || !RC || !o.realtime || typeof global.WebSocket !== "function") return;
+      var r = Hub && Hub.resolution ? Hub.resolution() : null;
+      if (!r || r.marketState !== "OPEN") return;
+      st.relay = { pending: true };
+      Promise.resolve(o.realtime()).then(function (cap) {
+        if (st.disposed || !cap || cap.state !== "AVAILABLE") { st.relay = null; return; }
+        var client = RC.create({ capability: cap, connect: function (url) { return new global.WebSocket(url); },
+          onChange: function (snap) {
+            var last = snap && snap.isLive && snap.last;
+            st.trade = last ? { fresh: true, price: last.price, at: new Date(last.timestamp).toISOString(), priceType: "TRADE" } : null;
+            if (st.range === "1D" && !st.disposed) draw("1D");
+          } });
+        st.relay = client;
+        client.start();
+      }).catch(function () { st.relay = null; });
     }
 
     var resizeTimer = null;
@@ -325,6 +355,8 @@
         st.disposed = true;
         global.removeEventListener("resize", onResize);
         if (st.unsub) { try { st.unsub(); } catch (e) { /* bereits gekuendigt */ } st.unsub = null; }
+        if (st.relay && st.relay.stop) { try { st.relay.stop("PAGE_LEFT"); } catch (e) { /* bereits zu */ } }
+        st.relay = null; st.trade = null;
       }
     };
   }
