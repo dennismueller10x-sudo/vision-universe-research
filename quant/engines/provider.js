@@ -145,7 +145,7 @@
   var VENDOR_MARKERS = [
     "twelve_data", "twelveData", "twelvedata",
     "intrinio", "eodhd", "eod_historical",
-    "tiingo", "polygon", "alphavantage", "alpha_vantage",
+    "tiingo", "marketstack", "polygon", "alphavantage", "alpha_vantage",
     "refinitiv", "lseg", "factset", "bloomberg", "capitaliq", "capital_iq",
     "morningstar", "yfinance", "yahoo_finance"
   ];

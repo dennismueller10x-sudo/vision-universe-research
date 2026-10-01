@@ -61,6 +61,8 @@ function isBrowserFile(file) {
 test("S1 · Kein Anbieterschluessel liegt in irgendeiner committeten Datei", () => {
   // Formen echter Schluessel bekannter Anbieter und generischer Zuweisungen.
   const patterns = [
+    { name: "access_key literal", re: /\baccess_key\b\s*[:=]\s*["'][A-Za-z0-9_\-]{12,}["']/i },
+    { name: "access_key URL value", re: /[?&]access_key=[A-Za-z0-9_\-]{12,}/i },
     { name: "apikey-Zuweisung mit Literal", re: /\bapi[_-]?key\b\s*[:=]\s*["'][A-Za-z0-9_\-]{12,}["']/i },
     { name: "apikey als URL-Parameter mit Wert", re: /[?&]apikey=(?!\$\{|\{\{|"\s*\+|["']?\s*$)[A-Za-z0-9_\-]{12,}/i },
     { name: "token-Zuweisung mit Literal", re: /\b(access_token|auth_token|secret_key|client_secret)\b\s*[:=]\s*["'][A-Za-z0-9._\-]{12,}["']/i },

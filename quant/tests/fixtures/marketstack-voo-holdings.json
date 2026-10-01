@@ -1,0 +1,154 @@
+{
+  "source": "MARKETSTACK_AUTHENTICATED_GITHUB_ACTIONS_PROBE",
+  "run": {
+    "source": "github-actions",
+    "runId": "36852153799",
+    "commit": "757b22c089080f6fa36f8cddb6253b2cdb32098c"
+  },
+  "retrievedAt": "2026-10-01T11:01:49.270Z",
+  "fixtureScope": "Five verbatim rows from real VOO fund-series response; intentionally partial.",
+  "payload": {
+    "basics": {
+      "fund_name": "VANGUARD INDEX FUNDS",
+      "file_number": "811-02652",
+      "cik": "0000036405",
+      "reg_lei": "549300G6KNDK44WUN559"
+    },
+    "output": {
+      "attributes": {
+        "series_name": "VANGUARD 500 INDEX FUND",
+        "series_id": "S000002839",
+        "series_lei": "12WZ1W76P8QD4VJ6OB47",
+        "ticker": "VOO",
+        "isin": "US9229083632",
+        "date_report_period": "2024-12-31",
+        "end_report_period": "2024-12-31",
+        "final_filing": false
+      },
+      "signature": {
+        "date_signed": "2025-02-27",
+        "name_of_applicant": "VANGUARD INDEX FUNDS",
+        "signature": "Ashley Grim",
+        "signer_name": "Ashley Grim",
+        "title": "Treasurer"
+      },
+      "holdings": [
+        {
+          "investment_security": {
+            "lei": "98450079DA0B78DD6764",
+            "isin": "US9100471096",
+            "name": "United Airlines Holdings Inc",
+            "cusip": "910047109",
+            "title": "UNITED AIRLINES",
+            "units": "NS",
+            "balance": "8902043.00000000",
+            "currency": "USD",
+            "value_usd": "864388375.30000000",
+            "loan_by_fund": "N",
+            "percent_value": "0.064039295060",
+            "asset_category": "EC",
+            "payoff_profile": "Long",
+            "restricted_sec": "N",
+            "cash_collateral": "N",
+            "issuer_category": "CORP",
+            "fair_value_level": "1",
+            "invested_country": "US",
+            "non_cash_collateral": "N"
+          }
+        },
+        {
+          "investment_security": {
+            "lei": "549300HKCZ31D08NEI41",
+            "isin": "US2538681030",
+            "name": "Digital Realty Trust Inc",
+            "cusip": "253868103",
+            "title": "DIGITAL REALTY",
+            "units": "NS",
+            "balance": "8440263.00000000",
+            "currency": "USD",
+            "value_usd": "1496711837.79000000",
+            "loan_by_fund": "N",
+            "percent_value": "0.110885770492",
+            "asset_category": "EC",
+            "payoff_profile": "Long",
+            "restricted_sec": "N",
+            "cash_collateral": "N",
+            "issuer_category": "CORP",
+            "fair_value_level": "1",
+            "invested_country": "US",
+            "non_cash_collateral": "N"
+          }
+        },
+        {
+          "investment_security": {
+            "lei": "N/A",
+            "isin": null,
+            "name": "N/A",
+            "cusip": "N/A",
+            "title": "Receive PAYCOM SOFTWARE Pay Overnight Rate +0.85",
+            "units": "NC",
+            "balance": "45000.00000000",
+            "currency": "USD",
+            "value_usd": "-185850.00000000",
+            "loan_by_fund": "N",
+            "percent_value": "-0.00001376892",
+            "asset_category": "DE",
+            "payoff_profile": "N/A",
+            "restricted_sec": "N",
+            "cash_collateral": "N",
+            "issuer_category": "OTHER",
+            "fair_value_level": "2",
+            "invested_country": "N/A",
+            "non_cash_collateral": "N"
+          }
+        },
+        {
+          "investment_security": {
+            "lei": "1I6HV0TLSTR3A4XQ6L78",
+            "isin": null,
+            "name": "Vanguard Cmt Funds-Vanguard Market Liquidity Fund",
+            "cusip": "N/A",
+            "title": "Vanguard Market Liquidity Fund",
+            "units": "NS",
+            "balance": "253271.59000000",
+            "currency": "USD",
+            "value_usd": "25327159.00000000",
+            "loan_by_fund": "N",
+            "percent_value": "0.001876394285",
+            "asset_category": "STIV",
+            "payoff_profile": "Long",
+            "restricted_sec": "N",
+            "cash_collateral": "Y",
+            "issuer_category": "CORP",
+            "fair_value_level": "1",
+            "invested_country": "US",
+            "non_cash_collateral": "N"
+          }
+        },
+        {
+          "investment_security": {
+            "lei": "1I6HV0TLSTR3A4XQ6L78",
+            "isin": null,
+            "name": "Vanguard Cmt Funds-Vanguard Market Liquidity Fund",
+            "cusip": "N/A",
+            "title": "Vanguard Market Liquidity Fund",
+            "units": "NS",
+            "balance": "1082914032.70000000",
+            "currency": "USD",
+            "value_usd": "1082914032.70000000",
+            "loan_by_fund": "N",
+            "percent_value": "0.080229041998",
+            "asset_category": "STIV",
+            "payoff_profile": "Long",
+            "restricted_sec": "N",
+            "cash_collateral": "N",
+            "issuer_category": "CORP",
+            "fair_value_level": "1",
+            "invested_country": "US",
+            "non_cash_collateral": "N"
+          }
+        }
+      ]
+    }
+  }
+}

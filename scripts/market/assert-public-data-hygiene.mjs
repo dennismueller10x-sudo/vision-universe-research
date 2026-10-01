@@ -413,10 +413,19 @@ if (maSnapshot && Array.isArray(maSnapshot.instruments)) {
   }
 }
 
-if (findings.length) {
-  console.error("PUBLIC DATA HYGIENE FAILED");
-  findings.forEach((finding) => console.error(`  - ${finding}`));
-  process.exit(1);
+// A global listing extension never inherits the US display authorization.
+const globalListings = json("quant/data/global-market/listings.json");
+const globalHistoryDir = join(root,"quant/data/global-market/history");
+const allowedGlobal = new Set((globalListings?.listings || []).map(r=>r.listingId));
+if (existsSync(globalHistoryDir)) {
+ for (const name of readdirSync(globalHistoryDir).filter(n=>n.endsWith('.json'))) {
+  const path="quant/data/global-market/history/"+name, payload=json(path);
+  if (!allowedGlobal.has(name.slice(0,-5)) || !payload || !payload.publishBasis || !payload.publishCheckedAt || payload.listingId+'.json'!==name) findings.push(path+": undeclared history or missing display provenance");
+  if (!payload?.displayOnly || !Array.isArray(payload?.bars) || payload.bars.some(b=>Object.keys(b).some(k=>!['date','close'].includes(k)))) findings.push(path+": public provider OHLC/volume dump is not a bounded close chart");
+ }
 }
-
-console.log("Public data hygiene: no commercial-provider raw bars or provider-derived symbol outputs in delivered paths.");
+if (findings.length) {
+ console.error("PUBLIC DATA HYGIENE FAILED");
+ findings.forEach(f=>console.error("  - "+f));process.exit(1);
+}
+console.log("Public data hygiene: no commercial-provider raw bars outside scoped previews; delivered charts match explicit display provenance.");

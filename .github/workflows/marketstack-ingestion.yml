@@ -1,0 +1,63 @@
+name: Marketstack additive ingestion
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [discovery, backfill, incremental]
+        default: discovery
+      exchange:
+        type: string
+        default: XETR
+  schedule:
+    - cron: '20 22 * * 1-5'
+permissions:
+  contents: read
+concurrency:
+  group: marketstack-ingestion
+  cancel-in-progress: false
+jobs:
+  ingest:
+    # Remains opt-in until verified identities and real coverage are delivered.
+    if: github.event_name == 'workflow_dispatch' || vars.VU_MARKETSTACK_INGESTION_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: month
+        run: echo "value=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/marketstack
+          key: marketstack-${{ steps.month.outputs.value }}-${{ github.run_id }}
+          restore-keys: |
+            marketstack-${{ steps.month.outputs.value }}-
+            marketstack-
+      - name: Bounded canonical working-store import
+        timeout-minutes: 15
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+          VU_PHASE: ${{ inputs.phase || 'incremental' }}
+          VU_EXCHANGE: ${{ inputs.exchange || 'XETR' }}
+        run: |
+          node scripts/market/ingest-marketstack.mjs \
+            --phase="$VU_PHASE" --exchange="$VU_EXCHANGE" \
+            --listings=quant/data/global-market/listings.json \
+            --max-requests=100 --max-credits=100 --monthly-ceiling=5000 --max-pages=10
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .market-cache/marketstack
+          key: marketstack-${{ steps.month.outputs.value }}-${{ github.run_id }}
+      - name: Protected production artifacts
+        if: always()
+        run: git diff --exit-code -- quant/data dashboard/data discover/data
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-ingestion-status
+          path: .market-cache/marketstack/latest-run.json
+          retention-days: 7

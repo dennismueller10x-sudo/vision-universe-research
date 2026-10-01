@@ -171,7 +171,11 @@ function createMarketStore(options) {
 
       const bars = Object.keys(byDate).sort().map((d) => byDate[d]);
       const payload = Object.assign({}, existing || {}, meta || {}, {
-        securityId: securityId,
+        // Global ingestion addresses storage by Listing, while each candle
+        // retains its canonical Security. Legacy security-keyed stores keep
+        // their original envelope when no explicit listing metadata is given.
+        securityId: meta && meta.listingId && meta.canonicalSecurityId ? meta.canonicalSecurityId : securityId,
+        ...(meta && meta.listingId && meta.canonicalSecurityId ? {storageKey:securityId} : {}),
         provider: providerId,
         barCount: bars.length,
         first: bars.length ? bars[0].date : null,

@@ -23,7 +23,7 @@ jobs:
       - name: Identity, canonical data and protected US engines
         run: node --test quant/tests/*.test.mjs
       - name: Protected product consumers
-        run: node --test discover/tests/*.test.mjs screener/tests/*.test.mjs supertrader/tests/*.test.mjs
+        run: node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs
       - name: SEC and official filing parser
         run: |
           python3 -m unittest discover -s scripts/quant/tests

@@ -203,3 +203,5 @@ test("Der Datensatz enthaelt echte Marktzyklen (Drawdown > 30 %)", () => {
   }
   assert.ok(maxDd < -0.3, `maximaler Drawdown nur ${(maxDd * 100).toFixed(1)} %`);
 });
+
+test("Canonical vendor leakage guard also rejects Marketstack-specific product keys",()=>{assert.deepEqual(Provider.findVendorLeakage({marketstack_symbol:'SAP.DE'}),['$.marketstack_symbol']);assert.deepEqual(Provider.findVendorLeakage({provider_symbol:'SAP.DE',provider:'marketstack'}),[]);});
