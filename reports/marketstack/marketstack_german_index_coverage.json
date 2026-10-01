@@ -1,0 +1,279 @@
+{
+  "generatedAt": "2026-10-01T13:09:49.523062+00:00",
+  "state": "BLOCKED_DATED_FULL_COMPOSITION_SOURCE",
+  "requestedIndices": [
+    "DAX",
+    "MDAX",
+    "SDAX",
+    "TecDAX"
+  ],
+  "observations": [
+    {
+      "index": "DAX",
+      "officialURL": "https://stoxx.com/index/dax/",
+      "pageHTTPStatus": 200,
+      "topComponentNamesObserved": [
+        "SIEMENS",
+        "SAP",
+        "ALLIANZ",
+        "SIEMENS ENERGY",
+        "AIRBUS",
+        "DEUTSCHE TELEKOM",
+        "INFINEON TECHNOLOGIES",
+        "MUENCHENER RUECK",
+        "DEUTSCHE BANK",
+        "DHL"
+      ],
+      "topComponentNameCount": 10,
+      "componentISINsAvailable": false,
+      "datedFullCompositionAvailable": false,
+      "indexMembershipEffectiveAt": null,
+      "fullComponentCountMeasured": null,
+      "providerMembershipMatchesMeasured": null,
+      "useForAuthoritativeISINJoin": false,
+      "reason": "Official HTML exposes only top-ten names/country, without ISIN or composition-effective date. Index quote timestamp is not a constituent-effective date.",
+      "downloadSHA256": "7433fe053ab6df761a86f37b2c1eca3e2272ce2a9fd7b2d7691bf8b10e4e93f8"
+    },
+    {
+      "index": "MDAX",
+      "officialURL": "https://stoxx.com/index/mdax/",
+      "pageHTTPStatus": 200,
+      "topComponentNamesObserved": [
+        "THYSSENKRUPP",
+        "LUFTHANSA",
+        "TALANX",
+        "KNORR BREMSE",
+        "SARTORIUS PREF.",
+        "EVONIK INDUSTRIES",
+        "DR ING HC F PORSCHE PREF.",
+        "NORDEX",
+        "HENSOLDT",
+        "AIXTRON"
+      ],
+      "topComponentNameCount": 10,
+      "componentISINsAvailable": false,
+      "datedFullCompositionAvailable": false,
+      "indexMembershipEffectiveAt": null,
+      "fullComponentCountMeasured": null,
+      "providerMembershipMatchesMeasured": null,
+      "useForAuthoritativeISINJoin": false,
+      "reason": "Official HTML exposes only top-ten names/country, without ISIN or composition-effective date. Index quote timestamp is not a constituent-effective date.",
+      "downloadSHA256": "e0d86390580afe4d63b13789a657dba970d4d0b6c0a519a4a6b0d0b30c635e89"
+    },
+    {
+      "index": "SDAX",
+      "officialURL": "https://stoxx.com/index/sdyp/",
+      "pageHTTPStatus": 200,
+      "topComponentNamesObserved": [
+        "SMA SOLAR TECHNOLOGY",
+        "ALZCHEM",
+        "BEFESA SA",
+        "JUNGHEINRICH PREF",
+        "CARL ZEISS MEDITEC",
+        "REDCARE PHARMACY",
+        "DRAEGERWERK PREF.",
+        "JOST WERKE",
+        "HUGO BOSS",
+        "SAF-HOLLAND"
+      ],
+      "topComponentNameCount": 10,
+      "componentISINsAvailable": false,
+      "datedFullCompositionAvailable": false,
+      "indexMembershipEffectiveAt": null,
+      "fullComponentCountMeasured": null,
+      "providerMembershipMatchesMeasured": null,
+      "useForAuthoritativeISINJoin": false,
+      "reason": "Official HTML exposes only top-ten names/country, without ISIN or composition-effective date. Index quote timestamp is not a constituent-effective date.",
+      "downloadSHA256": "115ec024e0941b0d1f2c057aeede30a64b35608be62d9de724d917094e652e9d"
+    },
+    {
+      "index": "TecDAX",
+      "officialURL": "https://stoxx.com/index/tdxk/",
+      "pageHTTPStatus": 200,
+      "topComponentNamesObserved": [
+        "SAP",
+        "INFINEON TECHNOLOGIES",
+        "DEUTSCHE TELEKOM",
+        "SIEMENS HEALTHINEERS",
+        "QIAGEN",
+        "SARTORIUS PREF.",
+        "NORDEX",
+        "HENSOLDT",
+        "AIXTRON",
+        "NEMETSCHEK"
+      ],
+      "topComponentNameCount": 10,
+      "componentISINsAvailable": false,
+      "datedFullCompositionAvailable": false,
+      "indexMembershipEffectiveAt": null,
+      "fullComponentCountMeasured": null,
+      "providerMembershipMatchesMeasured": null,
+      "useForAuthoritativeISINJoin": false,
+      "reason": "Official HTML exposes only top-ten names/country, without ISIN or composition-effective date. Index quote timestamp is not a constituent-effective date.",
+      "downloadSHA256": "d36b7d8cd4078e25b351b10c5c032d11bf93325ae8f8f795d4cf6e905c9a5789"
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/CompositionFiles/dax.csv",
+      "checkedAt": "2026-10-01T13:07:29.623057+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/CompositionFiles/mdax.csv",
+      "checkedAt": "2026-10-01T13:07:29.624061+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/CompositionFiles/sdax.csv",
+      "checkedAt": "2026-10-01T13:07:29.624794+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://www.stoxx.com/document/Indices/Current/HistoricalData/CompositionFiles/tecdax.csv",
+      "checkedAt": "2026-10-01T13:07:29.625510+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://www.stoxx.com/document/Indices/Current/CompositionFiles/dax.csv",
+      "checkedAt": "2026-10-01T13:07:29.625922+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://stoxx.com/index/dax/",
+      "checkedAt": "2026-10-01T13:07:29.626908+00:00",
+      "status": 200,
+      "finalURL": "https://stoxx.com/index/dax/",
+      "bytes": 246051,
+      "contentType": "text/html; charset=UTF-8",
+      "sha256": "7433fe053ab6df761a86f37b2c1eca3e2272ce2a9fd7b2d7691bf8b10e4e93f8"
+    },
+    {
+      "url": "https://stoxx.com/index/mdax/",
+      "checkedAt": "2026-10-01T13:07:29.888008+00:00",
+      "status": 200,
+      "finalURL": "https://stoxx.com/index/mdax/",
+      "bytes": 151930,
+      "contentType": "text/html; charset=UTF-8",
+      "sha256": "e0d86390580afe4d63b13789a657dba970d4d0b6c0a519a4a6b0d0b30c635e89"
+    },
+    {
+      "url": "https://stoxx.com/index/sdax/",
+      "checkedAt": "2026-10-01T13:07:29.898565+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://stoxx.com/index/tecdax/",
+      "checkedAt": "2026-10-01T13:07:29.913992+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://www.dax-indices.com/index-details?isin=DE0008469008",
+      "checkedAt": "2026-10-01T13:07:29.931112+00:00",
+      "status": 200,
+      "finalURL": "https://stoxx.com/index/DAX/",
+      "bytes": 245014,
+      "contentType": "text/html; charset=UTF-8",
+      "sha256": "bafec851c539855482a45a0aee29ee3f0b5d586d95504e65bb733904068727ba"
+    },
+    {
+      "url": "https://www.boerse-frankfurt.de/index/dax/constituents",
+      "checkedAt": "2026-10-01T13:07:29.971499+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://www.dax-indices.com/documents/10180/5155926/DAX_components.xls",
+      "checkedAt": "2026-10-01T13:07:30.252010+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 400: Bad Request"
+    },
+    {
+      "url": "https://stoxx.com/index/sdyp/",
+      "checkedAt": "2026-10-01T13:08:50.161383+00:00",
+      "status": 200,
+      "finalURL": "https://stoxx.com/index/sdyp/",
+      "bytes": 147005,
+      "contentType": "text/html; charset=UTF-8",
+      "sha256": "115ec024e0941b0d1f2c057aeede30a64b35608be62d9de724d917094e652e9d"
+    },
+    {
+      "url": "https://stoxx.com/index/tdxk/",
+      "checkedAt": "2026-10-01T13:08:50.162181+00:00",
+      "status": 200,
+      "finalURL": "https://stoxx.com/index/tdxk/",
+      "bytes": 473095,
+      "contentType": "text/html; charset=UTF-8",
+      "sha256": "d36b7d8cd4078e25b351b10c5c032d11bf93325ae8f8f795d4cf6e905c9a5789"
+    },
+    {
+      "url": "https://stoxx.com/index/dax/?factsheet=true",
+      "checkedAt": "2026-10-01T13:08:50.162791+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 429: Too Many Requests"
+    },
+    {
+      "url": "https://www.stoxx.com/factsheets",
+      "checkedAt": "2026-10-01T13:08:50.163405+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://stoxx.com/factsheets/",
+      "checkedAt": "2026-10-01T13:08:50.163918+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://www.stoxx.com/documents/stoxxnet/Documents/Indices/Current/CompositionFiles/dax.csv",
+      "checkedAt": "2026-10-01T13:08:50.164908+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://www.stoxx.com/documents/stoxxnet/Documents/Indices/Current/CompositionFiles/mdax.csv",
+      "checkedAt": "2026-10-01T13:08:50.375241+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://www.stoxx.com/documents/stoxxnet/Documents/Indices/Current/CompositionFiles/sdyp.csv",
+      "checkedAt": "2026-10-01T13:08:50.499682+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://www.stoxx.com/documents/stoxxnet/Documents/Indices/Current/CompositionFiles/tdxk.csv",
+      "checkedAt": "2026-10-01T13:08:50.643758+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    },
+    {
+      "url": "https://stoxx.com/document/Indices/Current/CompositionFiles/dax.csv",
+      "checkedAt": "2026-10-01T13:08:50.665390+00:00",
+      "errorType": "HTTPError",
+      "error": "HTTP Error 503: Service Unavailable"
+    }
+  ],
+  "limitations": [
+    "Legacy official STOXX composition/factsheets document URLs return HTTP 503 Service Unavailable from this environment. This is observed access failure; entitlement requirement is not proven.",
+    "Modern official index pages are accessible and expose ten component names per index but no dated full membership identifiers.",
+    "DAX modern factsheet request returns HTTP 429 Too Many Requests; bounded investigation stops without bypassing throttle.",
+    "Legacy DAX component XLS URL returns HTTP 400; old Frankfurt constituents route HTTP 404.",
+    "No Wikipedia membership or ETF proxy holdings used. No ticker/name-only join asserted as exact ISIN index coverage. No Marketstack calls made."
+  ],
+  "providerUniverseEvidenceAvailable": {
+    "directoryArtifact": "marketstack_xetra_classified_candidates.json",
+    "providerDirectorySymbols": 8959,
+    "officiallyClassifiedEquityCandidates": 680
+  },
+  "requiredResolution": "Obtain a dated complete constituent composition with security ISINs from STOXX or a valid official public export, then join exact ISIN+XETR. No history admission follows from directory matching.",
+  "schemaVersion": "marketstack-german-index-access-1.0.0"
+}

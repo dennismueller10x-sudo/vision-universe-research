@@ -2764,10 +2764,10 @@
     }
   ],
   "indexMembershipCoverage": {
-    "DAX": "UNKNOWN: no dated authoritative membership feed was ingested; representative matches do not establish full index coverage.",
-    "MDAX": "UNKNOWN: no dated authoritative membership feed was ingested; representative matches do not establish full index coverage.",
-    "SDAX": "UNKNOWN: no dated authoritative membership feed was ingested; representative matches do not establish full index coverage.",
-    "TecDAX": "UNKNOWN: no dated authoritative membership feed was ingested; representative matches do not establish full index coverage."
+    "DAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable.",
+    "MDAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable.",
+    "SDAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable.",
+    "TecDAX": "UNKNOWN: official pages expose ten names but no ISIN or membership-effective date; official full composition exports returned HTTP 503 and modern DAX factsheet HTTP 429. Full dated identity matching is unavailable."
   },
   "warning": "Directory-only candidates are not production imports or investable common-equity counts.",
   "externalListingCurrencyEvidence": "marketstack_trading_currency_evidence.json",
@@ -3183,5 +3183,6 @@
       "productionActivated": false,
       "note": "Observed window only; no verified adjustment basis or realtime. UK UCITS candidates are blocked because provider identity/type conflicts and mixed price currencies cannot be reconciled."
     }
-  ]
+  ],
+  "indexMembershipAccessEvidence": "reports/marketstack/marketstack_german_index_coverage.json"
 }
