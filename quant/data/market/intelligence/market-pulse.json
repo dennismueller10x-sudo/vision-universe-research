@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-10-01T10:16:25.377Z",
+ "generatedAt": "2026-10-01T18:29:13.580Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-10-01T10:16:25.377Z",
+  "generatedAt": "2026-10-01T18:29:13.580Z",
   "dataAsOf": "2026-09-30",
   "previousDataAsOf": "2026-09-29",
   "schedule": {
@@ -555,16 +555,16 @@
     },
     {
      "key": "advDecl",
-     "label": "Gestiegen / gefallen",
-     "text": "1415 / 2684 von 4204 (34 % gestiegen)",
-     "advancers": 1415,
-     "decliners": 2684,
-     "unchanged": 105,
-     "evaluated": 4204,
-     "session": "2026-09-30",
-     "previousSession": "2026-09-29",
-     "complete": true,
-     "asOf": "2026-09-30T20:55:00.000Z",
+     "label": "Gestiegen / gefallen (Sitzung läuft)",
+     "text": "703 / 578 von 1302 (54 % gestiegen)",
+     "advancers": 703,
+     "decliners": 578,
+     "unchanged": 21,
+     "evaluated": 1302,
+     "session": "2026-10-01",
+     "previousSession": "2026-09-30",
+     "complete": false,
+     "asOf": "2026-10-01T18:15:00.000Z",
      "current": true
     }
    ],
@@ -751,68 +751,68 @@
   "CROSS_ASSET": "OBSERVED"
  },
  "movers": {
-  "session": "2026-09-30",
-  "previousSession": "2026-09-29",
-  "complete": true,
-  "asOf": "2026-09-30T20:55:00.000Z",
+  "session": "2026-10-01",
+  "previousSession": "2026-09-30",
+  "complete": false,
+  "asOf": "2026-10-01T18:15:00.000Z",
   "universe": "Discover-Aktienuniversum (stock-index US_REAL)",
   "filter": {
    "minAvgDollarVolume20d": 20000000,
    "minPrice": 5
   },
-  "eligible": 1999,
+  "eligible": 890,
   "gainers": [
    {
-    "symbol": "UTHR",
-    "name": "United Therapeutics",
-    "changePercent": 12.49
+    "symbol": "ACN",
+    "name": "Accenture Class A",
+    "changePercent": 17.38
    },
    {
-    "symbol": "ROG",
-    "name": "Rogers",
-    "changePercent": 11
+    "symbol": "EFOR",
+    "name": "ASGN Inc",
+    "changePercent": 12.57
    },
    {
-    "symbol": "CAPR",
-    "name": "Capricor Therapeutics",
+    "symbol": "VICR",
+    "name": "Vicor",
     "changePercent": 10.5
    },
    {
-    "symbol": "VRME",
-    "name": "VerifyMe",
-    "changePercent": 9.95
+    "symbol": "GLOB",
+    "name": "Globant",
+    "changePercent": 10.1
    },
    {
-    "symbol": "GLND",
-    "name": "Greenland Energy",
-    "changePercent": 9.62
+    "symbol": "COHR",
+    "name": "Coherent",
+    "changePercent": 9.87
    }
   ],
   "losers": [
    {
+    "symbol": "CTVA",
+    "name": "Corteva",
+    "changePercent": -84.31
+   },
+   {
+    "symbol": "UMAC",
+    "name": "Unusual Machines",
+    "changePercent": -10.92
+   },
+   {
     "symbol": "LQDA",
     "name": "Liquidia",
-    "changePercent": -57.23
+    "changePercent": -10.73
    },
    {
-    "symbol": "ETON",
-    "name": "Eton Pharmaceuticals",
-    "changePercent": -13.05
+    "symbol": "PSKY",
+    "name": "Paramount Skydance Class B",
+    "changePercent": -7.74
    },
    {
-    "symbol": "JBL",
-    "name": "Jabil",
-    "changePercent": -10.11
-   },
-   {
-    "symbol": "BLLN",
-    "name": "Billiontoone Class A",
-    "changePercent": -9.94
-   },
-   {
-    "symbol": "CBRS",
-    "name": "Cerebras Systems Class A",
-    "changePercent": -8.93
+    "symbol": "RGEN",
+    "name": "Repligen",
+    "changePercent": -7.4
    }
   ],
   "method": "Veraenderung vom letzten Punkt der Vorsitzung zum letzten Punkt der juengsten Sitzung (5-Minuten-Kurse). Nur liquide Titel (Dollarumsatz 20 Tage >= 20 Mio., Kurs >= 5 USD). Kein Volumen im Intraday-Pfad - deshalb keine Volumenspitzen."
@@ -824,34 +824,34 @@
  "instruments": {
   "N225": {
    "kind": "PRICE",
-   "asOf": "2026-09-30",
-   "last": 66753.72,
-   "observations": 19209,
+   "asOf": "2026-10-01",
+   "last": 68956.72,
+   "observations": 19210,
    "changes": {
-    "1M": 0.67,
-    "3M": -5.28,
-    "1Y": 48.56
+    "1M": 4.14,
+    "3M": 0.33,
+    "1Y": 54.78
    },
    "high52w": {
     "date": "2026-06-25",
     "value": 72366.34
    },
    "low52w": {
-    "date": "2025-10-01",
-    "value": 44550.85
+    "date": "2025-10-02",
+    "value": 44936.73
    },
-   "rangePosition": 79.8,
-   "dist50": 1.98,
-   "dist200": 11.02,
+   "rangePosition": 87.6,
+   "dist50": 5.28,
+   "dist200": 14.5,
    "trend": "POSITIVE",
-   "drawdown52w": -7.76,
-   "vol20": 20.34,
+   "drawdown52w": -4.71,
+   "vol20": 23.31,
    "volContext": {
     "median": 18.5,
     "p25": 15.6,
     "p75": 23.5,
-    "samples": 1220,
-    "from": "2021-10-01",
+    "samples": 1221,
+    "from": "2021-10-02",
     "state": "USUAL"
    },
    "roles": []
@@ -1393,13 +1393,13 @@
   },
   "DE2Y": {
    "kind": "YIELD",
-   "asOf": "2026-09-30",
-   "last": 3.24,
-   "observations": 7399,
+   "asOf": "2026-10-01",
+   "last": 3.21,
+   "observations": 7400,
    "changes": {
-    "1M": 35,
-    "3M": 74,
-    "1Y": 123
+    "1M": 31,
+    "3M": 70,
+    "1Y": 120
    },
    "high52w": {
     "date": "2026-09-28",
@@ -1409,19 +1409,19 @@
     "date": "2025-10-17",
     "value": 1.87
    },
-   "rangePosition": 94.5,
-   "vs200": 70.3,
-   "vs50": 29.7,
+   "rangePosition": 92.4,
+   "vs200": 66.7,
+   "vs50": 26,
    "roles": []
   },
   "DE10Y": {
    "kind": "YIELD",
-   "asOf": "2026-09-30",
-   "last": 3.64,
-   "observations": 7399,
+   "asOf": "2026-10-01",
+   "last": 3.66,
+   "observations": 7400,
    "changes": {
-    "1M": 27,
-    "3M": 67,
+    "1M": 34,
+    "3M": 66,
     "1Y": 86
    },
    "high52w": {
@@ -1432,39 +1432,39 @@
     "date": "2025-10-22",
     "value": 2.62
    },
-   "rangePosition": 95.3,
-   "vs200": 53.5,
-   "vs50": 27,
+   "rangePosition": 97.2,
+   "vs200": 55.1,
+   "vs50": 28.2,
    "roles": []
   },
   "DE30Y": {
    "kind": "YIELD",
-   "asOf": "2026-09-30",
-   "last": 3.99,
-   "observations": 6647,
+   "asOf": "2026-10-01",
+   "last": 4.03,
+   "observations": 6648,
    "changes": {
-    "1M": 9,
+    "1M": 24,
     "3M": 42,
-    "1Y": 68
+    "1Y": 70
    },
    "high52w": {
-    "date": "2026-09-29",
+    "date": "2026-10-01",
     "value": 4.03
    },
    "low52w": {
     "date": "2025-10-22",
     "value": 3.15
    },
-   "rangePosition": 95.5,
-   "vs200": 32.3,
-   "vs50": 13.2,
+   "rangePosition": 100,
+   "vs200": 36.1,
+   "vs50": 16.7,
    "roles": []
   },
   "US_EFFR": {
    "kind": "RATE",
-   "asOf": "2026-09-29",
+   "asOf": "2026-09-30",
    "last": 3.88,
-   "observations": 6595,
+   "observations": 6596,
    "changes": {
     "1M": 25,
     "3M": 25,
@@ -1479,8 +1479,8 @@
     "value": 3.62
    },
    "rangePosition": 52,
-   "vs200": 23.5,
-   "vs50": 20.5,
+   "vs200": 23.4,
+   "vs50": 20,
    "roles": []
   },
   "QQQ": {
@@ -1830,9 +1830,9 @@
    "source": "quant/data/market/factors/factors-FULL_UNIVERSE.json"
   },
   "intraday": {
-   "session": "2026-09-30",
-   "previousSession": "2026-09-29",
-   "asOf": "2026-09-30T20:55:00.000Z"
+   "session": "2026-10-01",
+   "previousSession": "2026-09-30",
+   "asOf": "2026-10-01T18:15:00.000Z"
   }
  }
 }
