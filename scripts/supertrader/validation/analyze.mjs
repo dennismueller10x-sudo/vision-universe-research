@@ -26,6 +26,7 @@ const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const Store = require(path.join(root, 'quant/engines/history-store.js'));
 const Guard = require(path.join(root, 'quant/engines/zero-cost-guard.js'));
+const Master = require(path.join(root, 'quant/engines/us-security-master.js'));
 
 const argv = process.argv.slice(2);
 const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
@@ -131,6 +132,7 @@ async function main() {
   const cls = new Map(elig.decisions.map((d) => [d.ticker, d.instrument_type]));
   const storeActive = new Map(uni.securities.filter((s) => s.active !== false).map((s) => [s.ticker, { startDate: s.startDate, instrumentType: cls.get(s.ticker) || null }]));
   const listings = L.buildListingTable(rows, storeActive);
+  const listedRoots = Master.collectListedRoots(rows);
   const hash = L.tableHash(listings);
   log(`Listings ${listings.length}, Hash ${hash.slice(0, 12)}`);
 
@@ -165,7 +167,11 @@ async function main() {
   for (const l of listings) {
     if (l.source === 'STORE_ACTIVE') { if (L.INCLUDED_CLASSES.has(l.storeClass)) members.push({ l, from: 'STORE' }); continue; }
     const e = manifest[l.id];
-    if (e && (e.status === 'OK' || e.status === 'PARTIAL') && e.included) members.push({ l, from: 'R2' });
+    // Gattung mit dem aktuellen Regelstand (inkl. Amendment A1) neu bestimmen
+    if (e && (e.status === 'OK' || e.status === 'PARTIAL')) {
+      e.included = l.source === 'UNFETCHABLE_REUSED' ? e.included : L.classifyListing(Master, l, e.name, listedRoots).included;
+      if (e.included) members.push({ l, from: 'R2' });
+    }
   }
   const todo = LIMIT ? members.slice(0, LIMIT) : members;
   log(`Universumsmitglieder ${members.length} (Speicher ${members.filter((m) => m.from === 'STORE').length}, neu ${members.filter((m) => m.from === 'R2').length})`);
@@ -181,7 +187,7 @@ async function main() {
   }
   log(`Pass A: ${rawById.size} neue Reihen geladen`);
 
-  const out = { quality: [], trades: { base: [], cost2: [] }, ew: null, duplicates: [], droppedOutside: 0 };
+  const out = { quality: [], trades: { base: [], cost2: [] }, ew: null, duplicates: [], droppedOutside: 0, seriesBreaks: [] };
   const n = calendar.length;
   const ew = { S0_LAST_PRICE: { sum: new Float64Array(n), cnt: new Float64Array(n) }, S1_MINUS_30: { sum: new Float64Array(n), cnt: new Float64Array(n) }, S2_DISTRESS_ZERO: { sum: new Float64Array(n), cnt: new Float64Array(n) }, SURVIVOR: { sum: new Float64Array(n), cnt: new Float64Array(n) } };
   const duplicateIds = new Set();
@@ -189,13 +195,18 @@ async function main() {
   const sample = { trades: [] };
 
   const processSeries = (m, raw) => {
-    const l = m.l;
-    const inWin = raw.filter((b) => b.date >= l.startDate && b.date <= (l.listEnd || W.to));
+    const inWin = raw.filter((b) => b.date >= m.l.startDate && b.date <= (m.l.listEnd || W.to));
     out.droppedOutside += raw.length - inWin.length;
+    const segs = L.splitSegments(inWin);
+    if (segs.length > 1) out.seriesBreaks.push({ id: m.l.id, segments: segs.length, gaps: segs.slice(1).map((s, i) => [segs[i][segs[i].length - 1].date, s[0].date]) });
+    segs.forEach((seg, k) => processSegment({ ...m, l: k ? { ...m.l, id: `${m.l.id}#${k}` } : m.l, segEnd: k < segs.length - 1 }, seg));
+  };
+  const processSegment = (m, inWin) => {
+    const l = m.l;
     if (inWin.length < 30) { out.quality.push({ id: l.id, from: m.from, skipped: 'TOO_FEW_BARS', bars: inWin.length }); return; }
-    const delisted = !l.active;
+    const delisted = !l.active || m.segEnd;
     const q = quality(l, inWin, calIndex, calendar);
-    q.id = l.id; q.from = m.from; q.delisted = delisted; q.endYear = l.listEnd?.slice(0, 4) || null;
+    q.id = l.id; q.from = m.from; q.delisted = delisted; q.segEnd = !!m.segEnd; q.endYear = m.segEnd ? q.last.slice(0, 4) : l.listEnd?.slice(0, 4) || null;
     out.quality.push(q);
     const ctx = rawToCtx(l.id, inWin);
     for (const [k, exec] of [['base', DEFAULT_EXECUTION], ['cost2', EXEC2]]) {
@@ -288,9 +299,12 @@ async function main() {
   const pick = [...all].filter((t) => !t.terminal).sort((a, b) => L.sha256(a.id).localeCompare(L.sha256(b.id))).slice(0, 20);
   const c3 = [];
   for (const t of pick) {
-    const m = members.find((x) => x.l.id === t.listingId);
-    let raw = rawById.get(t.listingId);
+    const baseId = t.listingId.split('#')[0];
+    const m = members.find((x) => x.l.id === baseId);
+    let raw = rawById.get(baseId);
     if (!raw) { const s = await main.getSeries(m.l.ticker); raw = rawFromStoreBars(s.bars).filter((b) => b.date >= m.l.startDate); }
+    const seg = L.splitSegments(raw.filter((b) => b.date <= (m.l.listEnd || W.to))).find((sg) => sg.some((b) => b.date === t.entry.date));
+    if (seg) raw = seg;
     c3.push(verifyTrade(t, raw));
   }
   // C4: Ankerfaelle
@@ -324,15 +338,16 @@ async function main() {
     runs, ew: ewStats, spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') },
     controls: { C2maxRelDiff: c2max, C3: c3, C4: c4, C5: ext },
     duplicatesSample: out.duplicates.slice(0, 30),
+    seriesBreaks: { count: out.seriesBreaks.length, sample: out.seriesBreaks.slice(0, 40) },
     budget: budget.spent,
   };
-  {
+  if (!LIMIT) {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE', classB: sp.classB } }));
   }
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   const sealed = L.encryptForOwner(pem, Buffer.from(JSON.stringify(result)));
-  fs.writeFileSync(path.join(OUT_DIR, 'analyze.sealed.json'), sealed);
+  fs.writeFileSync(path.join(OUT_DIR, LIMIT ? 'analyze-smoke.sealed.json' : 'analyze.sealed.json'), sealed);
   log(`Verschlüsseltes Ergebnis geschrieben (${sealed.length} Byte)`);
 }
 
@@ -340,7 +355,7 @@ function count(arr, f) { const o = {}; for (const x of arr) { const k = f(x); o[
 
 function summarizeQuality(qs) {
   const ok = qs.filter((q) => !q.skipped);
-  const del = ok.filter((q) => q.delisted);
+  const del = ok.filter((q) => q.delisted && !q.segEnd);
   const pct = (a, p) => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : null; };
   const miss = ok.map((q) => (q.expectedDays ? q.missingDays / q.expectedDays : 0));
   const byEndYear = {};

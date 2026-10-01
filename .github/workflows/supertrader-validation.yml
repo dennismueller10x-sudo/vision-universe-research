@@ -5,6 +5,7 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:subset]   Teilmenge abrufen (~150 Anfragen)
 #   [supertrader-validation:full]     alle offenen Listings abrufen (fortsetzbar)
 #   [supertrader-validation:analyze]  Qualitaet, Universum, Backtest (keine Tiingo-Kursanfragen)
+#   [supertrader-validation:analyze-smoke]  Technischer Probelauf der Auswertung (400 Reihen)
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
 # nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
 # kann sie lesen) auf den Zweig claude/supertrader-validation-results gelegt.
@@ -21,7 +22,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: supertrader-validation
+  group: supertrader-validation-${{ contains(github.event.head_commit.message, ':analyze-smoke]') && 'smoke' || 'main' }}
   cancel-in-progress: false
 jobs:
   run:
@@ -40,7 +41,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
         if: steps.mode.outputs.mode == 'subset'
@@ -50,7 +51,7 @@ jobs:
             curl -sL --max-time 20 "$u" | sed 's/<[^>]*>/\n/g' | grep -iE "unique symbol|symbols per month|requests per (hour|day)|per hour|per day|internal|commercial|redistribut" | sed 's/^[[:space:]]*//' | sort -u | head -40 || true
           done
       - name: Abruf (nur Fortschrittszahlen im Log)
-        if: steps.mode.outputs.mode != 'analyze'
+        if: steps.mode.outputs.mode == 'subset' || steps.mode.outputs.mode == 'full'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -60,7 +61,7 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: node scripts/supertrader/validation/fetch.mjs --mode ${{ steps.mode.outputs.mode }} --out "$RUNNER_TEMP/val"
       - name: Auswertung (verschluesselt)
-        if: steps.mode.outputs.mode == 'analyze'
+        if: steps.mode.outputs.mode == 'analyze' || steps.mode.outputs.mode == 'analyze-smoke'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -69,7 +70,7 @@ jobs:
           VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
-        run: node scripts/supertrader/validation/analyze.mjs --out "$RUNNER_TEMP/val"
+        run: node scripts/supertrader/validation/analyze.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'analyze-smoke' && '--limit 400' || '' }}
       - name: Verschluesseltes Ergebnis ablegen
         if: always()
         env:

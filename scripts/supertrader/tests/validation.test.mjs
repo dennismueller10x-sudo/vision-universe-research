@@ -177,3 +177,18 @@ test('V-S1 Teilmenge: deterministisch, enthaelt fruehe, spaete, neu vergebene un
   assert.equal(a.filter((l) => l.endDate < '2018').length >= 12, true);
   assert.ok(a.some((l) => l.ticker === 'TWX')); assert.equal(a.filter((l) => l.source === 'UNFETCHABLE_REUSED').length, 8);
 });
+
+test('V-A1/A2 Amendments vor dem Vollabruf: gehebelte Produkte ausgeschlossen, Reihenbruch bei Luecke > 30 Tage', async () => {
+  const { createRequire } = await import('node:module');
+  const Master = createRequire(import.meta.url)('../../../quant/engines/us-security-master.js');
+  const l = { ticker: 'ABC', exchange: 'NYSE', startDate: '2010-01-04', listEnd: '' };
+  assert.equal(L.classifyListing(Master, l, 'Tradr 2X Short CLSK Daily', {}).included, false);
+  assert.equal(L.classifyListing(Master, l, 'Direxion Daily Semiconductor Bull 3X Shares', {}).included, false);
+  assert.equal(L.classifyListing(Master, l, 'Bear State Financial Inc', {}).included, true);
+  const raw = [...tradingDays('2019-01-02', 100), ...tradingDays('2020-09-01', 50)].map((d) => ({ date: d, close: 1 }));
+  const segs = L.splitSegments(raw);
+  assert.deepEqual(segs.map((s) => s.length), [100, 50]);
+  const p = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/supertrader/validation/PREREGISTRATION.json'), 'utf8'));
+  assert.deepEqual(p.amendments.map((a) => a.id), ['A1', 'A2']);
+  assert.ok(p.amendments.every((a) => /Vollabruf/.test(a.before)));
+});

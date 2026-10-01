@@ -16,7 +16,8 @@
     ],
     "unknown": "Grenze für eindeutige Symbole pro Monat ist im Repo nicht dokumentiert. Der Lauf misst und stoppt bei der ersten Limit-Antwort; er umgeht sie nicht.",
     "storage": "Rohreihen nur im privaten R2-Eimer (Provider-Namensraum tiingo-delisted, eigener Nutzungszähler, Zero-Cost-Guard mit Summe beider Nutzungen). Nichts im Repository, nichts in öffentlichen Logs oder Artefakten.",
-    "results": "Ergebnisse verlassen den Runner nur verschlüsselt (RSA-OAEP-4096 + AES-256-GCM, öffentlicher Schlüssel results-public-key.pem). Logs enthalten nur Fortschrittszahlen."
+    "results": "Ergebnisse verlassen den Runner nur verschlüsselt (RSA-OAEP-4096 + AES-256-GCM, öffentlicher Schlüssel results-public-key.pem). Logs enthalten nur Fortschrittszahlen.",
+    "providerTermsEvidence": "Öffentliche Tiingo-Seiten (Preise, Übersicht, Bedingungen) liefern ohne JavaScript keinen Text (Lauf 36863446810). Anbieterzusagen zu Monats-Symbolgrenzen sind damit nicht belegt; der Lauf stoppt bei der ersten Limit-Antwort."
   },
   "listings": {
     "source": "Tiingo supported_tickers.zip (ticker, exchange, assetType, priceCurrency, startDate, endDate)",
@@ -180,5 +181,23 @@
     "C3 20 zufällig gezogene Trades unabhängig aus Rohbalken nachgerechnet (Signal-, Einstiegs-, Ausstiegsdatum und -kurs)",
     "C4 Stichprobe Delisting-Fälle (Übernahme, Insolvenz, neu vergebenes Kürzel) mit Reihenende und Abrechnung",
     "C5 extremste 10 Trade-Renditen gegen Rohbalken und Split-Ereignisse geprüft"
+  ],
+  "amendments": [
+    {
+      "id": "A1",
+      "date": "2026-10-01",
+      "after": "Teilmenge (48 Listings, nur Identitäts- und Qualitätsprüfung, keine Backtest-Rechnung)",
+      "before": "Vollabruf und jede Strategierechnung",
+      "change": "Namensebene ergänzt: gehebelte/inverse Produkte und als 'Stock' geführte ETFs/ETNs (z. B. '2X Short … Daily') gelten als ETF und sind ausgeschlossen.",
+      "reason": "Teilmenge zeigte ein gehebeltes Short-Produkt als EQUITY_COMMON."
+    },
+    {
+      "id": "A2",
+      "date": "2026-10-01",
+      "after": "Teilmenge",
+      "before": "Vollabruf und jede Strategierechnung",
+      "change": "Reihenbruch: Lücke > 30 Kalendertage trennt eine Reihe in Abschnitte. Offene Position am Abschnittsende wird wie ein Delisting nach S0/S1/S2 abgerechnet; der Folgeabschnitt beginnt neu. Keine Rendite über eine Lücke hinweg.",
+      "reason": "Teilmenge: Insolvenz und Neuemission unter gleichem Kürzel als eine Reihe mit Lücke (CHK 2020/21); ohne Bruch entstünde eine erfundene Rendite über die Lücke."
+    }
   ]
 }

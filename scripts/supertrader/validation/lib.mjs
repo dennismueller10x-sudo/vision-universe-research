@@ -193,6 +193,7 @@ export function decryptSealed(privateKeyPem, sealedJson) {
 // Namensebene des Live-Universums (company-names: Name weist WARRANT, UNIT,
 // RIGHT, PREFERRED aus -> diese Gattung).
 const NAME_FORM = [
+  ['ETF', /(\b\d+(\.\d+)?X\b.*\b(LONG|SHORT|DAILY|BULL|BEAR)\b|\b(DAILY|BULL|BEAR|LONG|SHORT)\b.*\b\d+(\.\d+)?X\b|\bLEVERAGED\b|\bINVERSE\b|\bDAILY TARGET\b|\bULTRA ?(PRO|SHORT)\b|\bETF\b|\bETN\b)/i],
   ['PREFERRED', /\b(PREFERRED|PFD|PREF\.)/i], ['WARRANT', /\bWARRANTS?\b/i],
   ['RIGHT', /\bRIGHTS?\b/i], ['UNIT', /\bUNITS?\b/i],
 ];
@@ -201,4 +202,19 @@ export function classifyListing(Master, listing, name, listedRoots, today = '202
   let cls = r.instrumentType, basis = 'classifySecurity';
   if (name) for (const [k, re] of NAME_FORM) if (re.test(name) && cls !== k) { cls = k; basis = 'nameForm'; break; }
   return { cls, confidence: r.classificationConfidence, basis, included: INCLUDED_CLASSES.has(cls) };
+}
+
+// Reihenbruch (Amendment A2): Luecke > 30 Kalendertage zwischen zwei Balken
+// trennt die Reihe in Abschnitte. Ein Abschnitt vor einem Bruch endet wie ein
+// Delisting (Szenarioabrechnung); der naechste beginnt neu (eigene Vorlaufzeit).
+export const MAX_GAP_DAYS = 30;
+export function splitSegments(raw) {
+  const segs = [];
+  let cur = [];
+  for (const b of raw) {
+    if (cur.length && days(cur[cur.length - 1].date, b.date) > MAX_GAP_DAYS) { segs.push(cur); cur = []; }
+    cur.push(b);
+  }
+  if (cur.length) segs.push(cur);
+  return segs;
 }
