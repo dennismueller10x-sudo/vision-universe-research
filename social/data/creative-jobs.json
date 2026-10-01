@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T13:54:03.976Z",
+  "generatedAt": "2026-10-01T21:22:03.584Z",
   "note": "Rekonstruiert aus den Kommentaren der Request-PRs und dem Invocation Ledger. Keine neue Work-Ausfuehrung. Jede Zeile nennt, woher sie stammt; was nicht geprueft wurde, steht als null und nicht als Schaetzung.",
   "jobs": [
     {
@@ -1017,6 +1017,33 @@
       "resultCommitSha": "d45ca9e5842de48f62c94984de0cf742c542d4e3",
       "resultRef": "origin/authoring/request/vu-post-20261001-d69124c984",
       "resultBlobSha": "cbc1d304d256c27e90d4891a7974be9f0605c652"
+    },
+    {
+      "creativeJobId": "job_vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:attempt1",
+      "contentId": "vu-post-20261001-2dc13b600e",
+      "briefId": "brief_c6e30a408ab294b0",
+      "briefBlobSha": "80815522e070ab8ea2926319866425118a7e5505",
+      "processingKey": "brief_c6e30a408ab294b0:vu-post-20261001-2dc13b600e:80815522e070ab8ea2926319866425118a7e5505:1.0",
+      "attempt": 1,
+      "revision": null,
+      "state": "CREATIVE_JOB_DISPATCHED",
+      "createdAt": "2026-10-01T21:22:03.584Z",
+      "updatedAt": "2026-10-01T21:22:03.584Z",
+      "prNumber": 337,
+      "deliveryIds": [],
+      "observedStarts": 0,
+      "history": [
+        {
+          "state": "CREATIVE_JOB_REQUESTED",
+          "at": "2026-10-01T21:22:03.584Z",
+          "note": null
+        },
+        {
+          "state": "CREATIVE_JOB_DISPATCHED",
+          "at": "2026-10-01T21:22:03.584Z",
+          "note": "PR vom Orchestrator geoeffnet."
+        }
+      ]
     }
   ],
   "budget": {
