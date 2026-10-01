@@ -141,3 +141,20 @@ test("Evidenz-Status: vier Arten, getrennt; geschlossene Arten nennen gemessene 
   for (const k of [byId.STRATEGY_BACKTEST, byId.SETUP_BACKTEST]) for (const verboten of ["hitRate", "cagr", "sharpe", "medianReturn", "positiveShare"]) assert.ok(!JSON.stringify(k).includes(verboten));
   assert.ok(evidence.measures.HISTORICAL_REPLAY_COVERAGE.sufficient.m6 > 0);
 });
+
+test("eine Karten-Invalidierung liegt immer unter dem Kurs (Aufwaerts-Setup)", () => {
+  for (const c of radar.cards) {
+    if (c.setup && typeof c.setup.invalidation === "number") assert.ok(c.setup.invalidation < c.setup.close, c.ticker + ": Invalidierung ueber dem Kurs");
+    if (c.trade && c.trade.state === "AVAILABLE") assert.ok(c.trade.invalidation < c.trade.entry[0], c.ticker + ": Trade-Invalidierung nicht unter der Einstiegszone");
+  }
+});
+
+test("QUANT_DECISION_INTELLIGENCE ist gemessen und jedes Kriterium belegt", () => {
+  const di = JSON.parse(readFileSync(new URL("quant/data/product/decision-intelligence-v1.json", root), "utf8"));
+  assert.equal(di.schemaVersion, "decision-intelligence-1.0.0");
+  assert.equal(di.criteria.length, 8);
+  for (const c of di.criteria) assert.ok(typeof c.measured === "string" && c.measured.length > 5, c.question);
+  assert.equal(di.verdict, di.criteria.every((c) => c.pass) ? "PASS" : "FAIL");
+  /* Die Stichprobe deckt die verlangten Faelle ab - auch die schwierigen. */
+  for (const k of ["Bank", "REIT", "junge Aktie", "datenarme Aktie", "Small Cap"]) assert.ok(di.sample.some((r) => r.kind === k), k);
+});

@@ -276,7 +276,11 @@ let cards = Object.keys(byTicker).map((t) => {
     ticker: t, securityId: securityOf(t),
     events: byTicker[t].map((e) => ({ id: e.id, eventType: e.eventType, direction: e.direction, occurredAt: e.occurredAt, explanation: e.explanation })),
     setup: lc ? { state: lc[0], since: lc[1], sinceIsLowerBound: !!lc[2], previous: lc[3], previousAsOf: lc[4],
-      invalidation: s && s.levels ? s.levels.invalidationPrice ?? null : null, firstTarget: s && s.levels ? s.levels.exitPrice ?? null : null, close: s ? s.close : null } : null,
+      /* Nur eine Marke UNTER dem Kurs ist eine Invalidierung eines
+         Aufwaerts-Setups; liegt sie darueber, stammt sie aus einem
+         Abwaertsszenario und wird hier nicht gezeigt. */
+      invalidation: s && s.levels && typeof s.levels.invalidationPrice === "number" && s.levels.invalidationPrice < s.close ? s.levels.invalidationPrice : null,
+      firstTarget: s && s.levels && typeof s.levels.exitPrice === "number" && s.levels.exitPrice > s.close ? s.levels.exitPrice : null, close: s ? s.close : null } : null,
     next: nextStep(t),
     factorCoverage: factorCoverage[t] || 0,
     replay: null, trade: null

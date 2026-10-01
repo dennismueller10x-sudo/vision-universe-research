@@ -381,6 +381,22 @@
     }
     var targets = sc && sc.targets ? sc.targets.slice(0, 2) : [];
     var on = st.state === "CONFIRMED", status = st.state === "UNAVAILABLE" ? "Kein Setup beobachtet" : st.label;
+    /* Ein Abwaertsszenario hat seine Invalidierung UEBER dem Kurs. "Ungueltig
+       unter" und "Interessant ab" waeren dort falsch - die Karte sagt dann,
+       was das Szenario ist, und zeigt keinen Einstieg (Setups der Setup-
+       Engine sind Aufwaerts-Situationen). */
+    var bear = !!(sc && sc.direction && sc.direction !== "BULLISH");
+    if (bear) {
+      host.replaceChildren(el("div", { class: "q-setup" }, [el("div", { class: "q-setup-head" }, [el("h2", {}, [el("strong", { text: "Setup" })]),
+          el("span", { class: "q-status " + (on ? "is-on" : st.state === "UNAVAILABLE" ? "" : "is-wait"), text: status })]),
+        el("div", { class: "q-levels is-bear", role: "group", "aria-label": "Szenario-Marken" }, [
+          cell("is-entry", "Basisszenario", sc.direction === "BEARISH" ? "Abwärts" : "Ohne klare Richtung", "kein Einstieg ausgewiesen"),
+          cell("is-inv", "Ungültig über", typeof invPrice === "number" ? usd(invPrice) : null, typeof invPrice === "number" ? "Schluss darüber: Abwärtsszenario ungültig" : null),
+          cell("is-target is-down", "Zielzonen abwärts", targets.length ? targets.map(zone).join(" · ") : null, targets.length ? targets.map(function (t, i) { return "Ziel " + (i + 1); }).join(" · ") : null)]),
+        lifecycleNote || null,
+        el("p", { class: "q-scenario-note", text: "Das technische Basisszenario vom " + X.dateDe(ws.asOf) + " zeigt " + (sc.direction === "BEARISH" ? "abwärts" : "keine klare Richtung") + ". Quant weist dafür keinen Einstieg aus – ein Setup ist hier eine Aufwärts-Situation. Keine Empfehlung." })]));
+      return;
+    }
     var kids = [el("div", { class: "q-setup-head" }, [el("h2", {}, [el("strong", { text: "Setup" })]),
         el("span", { class: "q-status " + (on ? "is-on" : st.state === "UNAVAILABLE" ? "" : "is-wait"), text: status })]),
       el("div", { class: "q-levels", role: "group", "aria-label": "Szenario-Marken" }, [
