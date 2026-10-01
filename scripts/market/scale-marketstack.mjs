@@ -7,6 +7,10 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {createMarketstackClient}=require('../../providers/marketstack/client.js');
 const {assetType}=require('../../providers/marketstack/adapter.js');
+export function verifiedTaskMetadata(entry,task) {
+ const row=entry?.data?.data||entry?.data,symbol=task.metadataSymbol||task.params?.ticker||task.params?.symbols;
+ return entry?.ok===true&&row?.symbol===symbol&&assetType(row?.asset_type||row?.item_type||row?.type)?.toUpperCase()===task.requiresAssetType&&(!task.mic||row?.stock_exchange?.mic===task.mic)&&!(task.endpoint==='etfholdings'&&!task.mic);
+}
 export function requestKey(endpoint,params={}) {
  return endpoint.replace(/^\//,'')+'?'+Object.keys(params).filter(k=>params[k]!=null).sort().map(k=>encodeURIComponent(k)+'='+encodeURIComponent(String(params[k]))).join('&');
 }
@@ -48,17 +52,19 @@ export function createCollector(options) {
  const opening={requestsAttempted:run.requestsAttempted,estimatedCreditsConsumed:run.estimatedCreditsConsumed};
  const ceiling=options.totalCredits??25000,credits=Math.max(0,Math.min((options.maxCredits??2000)-opening.estimatedCreditsConsumed,ceiling-previous-opening.estimatedCreditsConsumed));
  const updateStats=stats=>{Object.assign(run,stats);run.requestsAttempted=opening.requestsAttempted+stats.requestsAttempted;run.estimatedCreditsConsumed=opening.estimatedCreditsConsumed+stats.estimatedCreditsConsumed;};
- const client=options.client||createMarketstackClient({...options.clientOptions,maxCredits:credits,maxRequests:Math.max(0,(options.maxRequests??2000)-opening.requestsAttempted),maxRetries:0,timeoutMs:12000,minIntervalMs:250,onAttempt:s=>{updateStats(s);persist();}});
- let budgetBlocked=false;
+ const client=options.client||createMarketstackClient({...options.clientOptions,maxCredits:credits,maxRequests:Math.max(0,(options.maxRequests??2000)-opening.requestsAttempted),maxRetries:0,timeoutMs:options.timeoutMs??45000,minIntervalMs:250,onAttempt:s=>{updateStats(s);persist();}});
+ let budgetBlocked=false,terminalReason=null;
  async function query(endpoint,params={},label='scale-evidence',extra={}) {
   endpoint=endpoint.replace(/^\//,'');const key=requestKey(endpoint,params),old=state.tasks[key];
-  if(old && !options.retryFailed)return JSON.parse(readFileSync(join(root,old.file)));
+  if(old){const cached=JSON.parse(readFileSync(join(root,old.file)));if(!options.retryFailed||!['timeout','networkError','rateLimited','internalError','requestFailed'].includes(cached.reason))return cached;}
   if(old?.ok)return JSON.parse(readFileSync(join(root,old.file)));
+  if(terminalReason)return {ok:false,reason:terminalReason,endpoint,params,label};
   if(budgetBlocked)return {ok:false,reason:'budgetExceeded',endpoint,params,label};
   const started=Date.now(),r=await client.request('/'+endpoint,params,{cacheTtlMs:0});
   if(r.reason==='budgetExceeded'){budgetBlocked=true;return {...r,endpoint,params,label};}
   const entry={endpoint,params,label,...extra,checkedAt:new Date().toISOString(),durationMs:Date.now()-started,...r};
   save(entry);updateStats(client.stats());persist();
+  if(['quotaExceeded','authError','accountingPersistenceFailed','rateLimited'].includes(r.reason))terminalReason=r.reason;
   if(run.requestsAttempted%25===0)console.log(JSON.stringify({phase:options.phase,attempts:run.requestsAttempted,credits:run.estimatedCreditsConsumed,cachedTasks:Object.keys(state.tasks).length}));
   return entry;
  }
@@ -78,7 +84,7 @@ export function createCollector(options) {
   return {mic,complete:false,rows,pages,total,nextOffset:offset,reason:'pageBudgetExceeded'};
  }
  function allEntries(){return Object.values(state.tasks).map(t=>JSON.parse(readFileSync(join(root,t.file))));}
- function finish(extra={}){run.finishedAt=new Date().toISOString();updateStats(client.stats());state.lastRun={runId,...extra};persist();return {runId,requestsAttempted:run.requestsAttempted,estimatedCreditsConsumed:run.estimatedCreditsConsumed,totalScaleCredits:Object.values(state.runs).reduce((n,r)=>n+r.estimatedCreditsConsumed,0),budgetBlocked,...extra};}
+ function finish(extra={}){run.finishedAt=new Date().toISOString();updateStats(client.stats());state.lastRun={runId,...extra};persist();return {runId,requestsAttempted:run.requestsAttempted,estimatedCreditsConsumed:run.estimatedCreditsConsumed,totalScaleCredits:Object.values(state.runs).reduce((n,r)=>n+r.estimatedCreditsConsumed,0),budgetBlocked,terminalReason,...extra};}
  return {query,directory,allEntries,finish,state};
 }
 function readSeeds(root){const files=[];if(!existsSync(root))return files;for(const e of readdirSync(root,{withFileTypes:true})){const p=join(root,e.name);if(e.isDirectory())files.push(...readSeeds(p));else if(e.name==='probe.json')files.push(JSON.parse(readFileSync(p)));}return files;}
@@ -87,7 +93,7 @@ if(process.argv[1]&&resolve(process.argv[1])===resolve(new URL(import.meta.url).
  if(!process.env.MARKETSTACK_API_KEY)throw Error('MARKETSTACK_API_KEY_NOT_CONFIGURED');
  const phase=arg('phase','discovery'),plan=JSON.parse(readFileSync(arg('plan','quant/config/marketstack-scale-plan.json'))),settings=plan.phases[phase];
  if(!settings)throw Error('UNKNOWN_SCALE_PHASE');
- const collector=createCollector({output:arg('out','.market-cache/marketstack/scale'),seeds:readSeeds(arg('seeds','.market-cache/marketstack/scale-seeds')),phase,runId:process.env.GITHUB_RUN_ID||'local',maxCredits:settings.maxCredits,maxRequests:settings.maxRequests,totalCredits:plan.totalAdditionalCreditCeiling});
+ const collector=createCollector({output:arg('out','.market-cache/marketstack/scale'),seeds:readSeeds(arg('seeds','.market-cache/marketstack/scale-seeds')),phase,runId:process.env.GITHUB_RUN_ID||'local',maxCredits:settings.maxCredits,maxRequests:settings.maxRequests,totalCredits:plan.totalAdditionalCreditCeiling,retryFailed:settings.retryTransientFailures,timeoutMs:settings.timeoutMs});
  let results=[];
  if(phase==='discovery') {
   results.push(await collector.directory(null));
@@ -98,23 +104,23 @@ if(process.argv[1]&&resolve(process.argv[1])===resolve(new URL(import.meta.url).
    if(task.requiresAssetType) {
     const symbol=task.metadataSymbol||task.params.ticker||task.params.symbols;
     const metadata=collector.state.tasks[requestKey('tickers/'+symbol,{})];
-    const body=metadata?JSON.parse(readFileSync(join(arg('out','.market-cache/marketstack/scale'),metadata.file))).data:null;
-    const row=body?.data||body;
-    const type=assetType(row?.asset_type||row?.item_type||row?.type)?.toUpperCase();
-    if(type!==task.requiresAssetType||row?.symbol!==symbol||task.mic&&row?.stock_exchange?.mic!==task.mic){results.push({label:task.label,endpoint:task.endpoint,params:task.params,reason:'assetTypePrerequisiteNotVerified',ok:false});continue;}
+    const entry=metadata?JSON.parse(readFileSync(join(arg('out','.market-cache/marketstack/scale'),metadata.file))):null;
+    if(!verifiedTaskMetadata(entry,task)){results.push({label:task.label,endpoint:task.endpoint,params:task.params,reason:'assetTypePrerequisiteNotVerified',ok:false});continue;}
    }
    if(task.endpoint==='etfholdings'&&task.region!=='US'&&nonUSHoldingsFailures>=2){results.push({label:task.label,endpoint:task.endpoint,params:task.params,reason:'nonUSHoldingsCircuitBreaker',ok:false});continue;}
    const e=await collector.query(task.endpoint,task.params,task.label,{targetSecurityIds:task.targetSecurityIds||[],region:task.region||null});
    results.push({endpoint:task.endpoint,params:task.params,label:task.label,ok:e.ok,reason:e.reason||null,fromCache:e.seeded||false});
    if(task.endpoint==='etfholdings'&&task.region!=='US'&&!e.ok)nonUSHoldingsFailures++;else if(task.endpoint==='etfholdings'&&task.region!=='US')nonUSHoldingsFailures=0;
-   if(e.reason==='budgetExceeded')break;
+   if(['budgetExceeded','quotaExceeded','authError','accountingPersistenceFailed','rateLimited'].includes(e.reason))break;
    if(task.maxPages>1 && e.ok && e.data?.pagination) {
     let offset=Number(e.data.pagination.offset)+Number(e.data.pagination.count),total=Number(e.data.pagination.total);
     const limit=Number(task.params.limit||1000);
     for(let page=1;page<Math.min(task.maxPages,10)&&Number.isSafeInteger(total)&&offset<total;page++){
      const next=await collector.query(task.endpoint,{...task.params,limit,offset},task.label,{region:task.region||null});
-     results.push({endpoint:task.endpoint,label:task.label,ok:next.ok,reason:next.reason||null});
-     if(!next.ok||Number(next.data?.pagination?.offset)!==offset||Number(next.data?.pagination?.total)!==total)break;
+     const pageRows=next.data?.data;
+     const valid=next.ok&&Array.isArray(pageRows)&&Number(next.data?.pagination?.offset)===offset&&Number(next.data?.pagination?.total)===total&&Number(next.data?.pagination?.count)===pageRows.length&&Number(next.data?.pagination?.limit)===limit;
+     results.push({endpoint:task.endpoint,label:task.label,ok:valid,reason:valid?null:next.reason||'invalidPagination'});
+     if(!valid)break;
      const count=Number(next.data.pagination.count);if(!Number.isSafeInteger(count)||count<1)break;offset+=count;
     }
    }

@@ -34,8 +34,14 @@
         "XCSE",
         "XSTO",
         "XOSL",
-        "XHEL"
-      ]
+        "XHEL",
+        "XEQT",
+        "HAML",
+        "HAMM",
+        "HAMN"
+      ],
+      "retryTransientFailures": true,
+      "timeoutMs": 45000
     },
     "us-gaps": {
       "maxCredits": 4000,
@@ -15929,7 +15935,7 @@
           "label": "us-gap-latest-diagnostic",
           "endpoint": "/eod/latest",
           "params": {
-            "symbols": "AAL,ABCB,ABL,ABNB,ACAD,ACEI,ACGL,ACII,ACLO,ACT,ACTS,ACVA,ADBE,ADCT,ADI,ADP,ADSK,AEMD,AIHS,AIRS,ALAR,ALIT,ALLR,ALLT,ALT,ALVO,AMAL,AMAT,AMD,AMGN,AMPH,AMR,AMSC,AMTB,AMTD,ANV,APAD,APGE,ARCT,ARDT,AREC,ARGX,ARIS,ARKO,ARTL,ASML,ASND,ASTL,ATAI,AUB,AURA,AVNT,AVT,BBGI,BBSI,BCAR,BDRX,BFC,BFLY,BIIB,BLDR,BLKB,BLRX,BMBL,BNRG,BOBS,BOOM,BSBK,BSY,BTOG,BUR,BVS,BWAY,BWB,BWMX,CAC,CALY,CAN,CASH,CASS,CBAN,CBNK,CBRG,CCAP,CCB,CCCX,CDNA,CDW,CENT,CG,CHNL,CMII,CODX,COOK,CRDL,CRNX,CRON,CRWD,CSWI,CTRE",
+            "symbols": "AAL,ABCB,ABL,ABNB,ACAD,ACEI,ACGL,ACII,ACLO,ACT,ACTS,ACVA,ADBE,ADCT,ADI,ADP,ADSK,AEMD,AIHS,AIRS,ALAR,ALIT,ALLR,ALLT,ALT,ALVO,AMAL,AMAT,AMD,AMGN,AMPH,AMR,AMSC,AMTB,AMTD,ANV,APAD,ARCT,ARDT,AREC,ARGX,ARIS,ARKO,ARTL,ASML,ASND,ASTL,AUB,AURA,AVNT,AVT,BBGI,BBSI,BCAR,BDRX,BFC,BFLY,BIIB,BLDR,BLKB,BLRX,BMBL,BNRG,BOBS,BOOM,BSBK,BSY,BTOG,BUR,BVS,BWAY,BWB,BWMX,CAC,CALY,CAN,CASH,CASS,CBAN,CBNK,CBRG,CCAP,CCB,CCCX,CDNA,CDW,CENT,CG,CHNL,CMII,CODX,COOK,CRDL,CRON,CRWD,CSWI,CTRE,CVLG,DCOMG,DDI",
             "exchange": "XNAS",
             "limit": 1000
           },
@@ -16790,29 +16796,6 @@
               ]
             },
             {
-              "id": "XNAS:APGE",
-              "symbol": "APGE",
-              "mic": "XNAS",
-              "priority": 1,
-              "targets": [
-                {
-                  "securityId": "ref_APGE",
-                  "baselineSymbol": "APGE",
-                  "expectedMics": [
-                    "XNAS"
-                  ],
-                  "baselineInstrumentType": "EQUITY_COMMON",
-                  "investigativeType": "EQUITY_COMMON",
-                  "baselineActiveStatus": "ACTIVE",
-                  "expectedCurrency": "USD",
-                  "diagnosticReason": "ONE_BOUNDED_RECHECK_OF_REJECTED_LATEST",
-                  "candidateBasis": "ORIGINAL_EXACT_DIRECTORY_MATCH",
-                  "consumerUseApproved": false,
-                  "canonicalWritesApproved": false
-                }
-              ]
-            },
-            {
               "id": "XNAS:ARCT",
               "symbol": "ARCT",
               "mic": "XNAS",
@@ -17028,29 +17011,6 @@
                 {
                   "securityId": "ref_ASTL",
                   "baselineSymbol": "ASTL",
-                  "expectedMics": [
-                    "XNAS"
-                  ],
-                  "baselineInstrumentType": "EQUITY_COMMON",
-                  "investigativeType": "EQUITY_COMMON",
-                  "baselineActiveStatus": "ACTIVE",
-                  "expectedCurrency": "USD",
-                  "diagnosticReason": "ONE_BOUNDED_RECHECK_OF_REJECTED_LATEST",
-                  "candidateBasis": "ORIGINAL_EXACT_DIRECTORY_MATCH",
-                  "consumerUseApproved": false,
-                  "canonicalWritesApproved": false
-                }
-              ]
-            },
-            {
-              "id": "XNAS:ATAI",
-              "symbol": "ATAI",
-              "mic": "XNAS",
-              "priority": 1,
-              "targets": [
-                {
-                  "securityId": "ref_ATAI",
-                  "baselineSymbol": "ATAI",
                   "expectedMics": [
                     "XNAS"
                   ],
@@ -18124,29 +18084,6 @@
               ]
             },
             {
-              "id": "XNAS:CRNX",
-              "symbol": "CRNX",
-              "mic": "XNAS",
-              "priority": 1,
-              "targets": [
-                {
-                  "securityId": "ref_CRNX",
-                  "baselineSymbol": "CRNX",
-                  "expectedMics": [
-                    "XNAS"
-                  ],
-                  "baselineInstrumentType": "EQUITY_COMMON",
-                  "investigativeType": "EQUITY_COMMON",
-                  "baselineActiveStatus": "ACTIVE",
-                  "expectedCurrency": "USD",
-                  "diagnosticReason": "ONE_BOUNDED_RECHECK_OF_REJECTED_LATEST",
-                  "candidateBasis": "ORIGINAL_EXACT_DIRECTORY_MATCH",
-                  "consumerUseApproved": false,
-                  "canonicalWritesApproved": false
-                }
-              ]
-            },
-            {
               "id": "XNAS:CRON",
               "symbol": "CRON",
               "mic": "XNAS",
@@ -18237,23 +18174,7 @@
                   "canonicalWritesApproved": false
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "us-gap-extra-XNAS-100",
-          "label": "us-gap-latest-diagnostic",
-          "endpoint": "/eod/latest",
-          "params": {
-            "symbols": "CVLG,DCOMG,DDI,DFH,DINE,DKNG,DOCS,DOMO,DRMA,DTIL,DVXE,ECOR,EMBC,ENLV,ENTL,EQBK,ESTA,ETSY,EXPD,EYE,EYES,FBRX,FGNX,FHB,FLNT,FMKT,FOUR,FRIZ,FROG,FRSX,FWRG,GBCI,GEG,GENC,GENI,GGR,GH,GLYC,GNMX,GO,GOSS,GPOR,GRBK,GRMN,GROM,HLIO,HOMB,HONIV,HOPE,HRYU,HTB,HVII,HWC,IDYN,IIIN,INFA,INSE,INSG,INTA,INTM,ISPC,JAN,KFRC,KNSL,KNTK,KOD,KWM,LBRDA,LBRDK,LEGO,LGO,LMNX,LOB,LOHA,LOOP,LQDA,LUCK,LUCY,MATV,MDB,MEMY,MESA,META,MIST,MSBI,MUSE,MYSZ,NCNC,NCSM,NEWP,NEXT,NIC,NRXS,NTST,NYMT,OGI,ONTX,OPHC,OPTT,OSW",
-            "exchange": "XNAS",
-            "limit": 1000
-          },
-          "maxPages": 1,
-          "cacheTtlMs": 0,
-          "retries": 0,
-          "conservativeEstimatedCredits": 100,
-          "targets": [
+            },
             {
               "id": "XNAS:CVLG",
               "symbol": "CVLG",
@@ -18322,7 +18243,23 @@
                   "canonicalWritesApproved": false
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "id": "us-gap-extra-XNAS-100",
+          "label": "us-gap-latest-diagnostic",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "DFH,DINE,DKNG,DOCS,DOMO,DRMA,DTIL,DVXE,ECOR,EMBC,ENLV,ENTL,EQBK,ESTA,ETSY,EXPD,EYE,EYES,FBRX,FGNX,FHB,FLNT,FMKT,FOUR,FRIZ,FROG,FRSX,FWRG,GBCI,GEG,GENC,GENI,GGR,GH,GLYC,GNMX,GO,GOSS,GPOR,GRBK,GRMN,GROM,HLIO,HOMB,HONIV,HOPE,HRYU,HTB,HVII,HWC,IDYN,IIIN,INFA,INSE,INSG,INTA,INTM,ISPC,JAN,KFRC,KNSL,KNTK,KOD,KWM,LBRDA,LBRDK,LEGO,LGO,LMNX,LOB,LOHA,LOOP,LQDA,LUCK,LUCY,MATV,MDB,MEMY,MESA,META,MIST,MSBI,MUSE,MYSZ,NCNC,NEWP,NEXT,NIC,NRXS,NTST,NYMT,OGI,ONTX,OPHC,OPTT,OSW,PAAS,PATH,PAX,PAYS",
+            "exchange": "XNAS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 100,
+          "targets": [
             {
               "id": "XNAS:DFH",
               "symbol": "DFH",
@@ -20279,29 +20216,6 @@
               ]
             },
             {
-              "id": "XNAS:NCSM",
-              "symbol": "NCSM",
-              "mic": "XNAS",
-              "priority": 1,
-              "targets": [
-                {
-                  "securityId": "ref_NCSM",
-                  "baselineSymbol": "NCSM",
-                  "expectedMics": [
-                    "XNAS"
-                  ],
-                  "baselineInstrumentType": "EQUITY_COMMON",
-                  "investigativeType": "EQUITY_COMMON",
-                  "baselineActiveStatus": "ACTIVE",
-                  "expectedCurrency": "USD",
-                  "diagnosticReason": "ONE_BOUNDED_RECHECK_OF_REJECTED_LATEST",
-                  "candidateBasis": "ORIGINAL_EXACT_DIRECTORY_MATCH",
-                  "consumerUseApproved": false,
-                  "canonicalWritesApproved": false
-                }
-              ]
-            },
-            {
               "id": "XNAS:NEWP",
               "symbol": "NEWP",
               "mic": "XNAS",
@@ -20553,23 +20467,7 @@
                   "canonicalWritesApproved": false
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "us-gap-extra-XNAS-200",
-          "label": "us-gap-latest-diagnostic",
-          "endpoint": "/eod/latest",
-          "params": {
-            "symbols": "PAAS,PATH,PAX,PAYS,PCLN,PCOR,PCT,PERF,PFLT,PMN,PMNT,PNNT,POLA,PPBT,PRIM,PS,QUIZ,QXO,REAL,REED,REPL,RGNT,RHLD,RITR,RNST,RRR,SBSI,SERA,SES,SFBS,SFIX,SG,SHEL,SINT,SKIL,SLGN,SLND,SLS,SMBK,SMRT,SND,SNDA,SOMN,SONO,SPNT,SPT,SSB,SSRM,STEM,STEN,STRO,STXS,STYL,SVMH,SYNX,TARA,TCBX,TFIN,TGEN,TGLS,TLRY,TOPP,TOPS,TPG,TRAD,TRIL,TRINI,TRINZ,TRVI,TTD,UHAL,UMAC,UNIT,USMD,VBNK,VEON,VERX,VIR,VIRT,VMD,VRTS,VSEE,VTEX,WILC,WSC,WT,WWR,XPER,XTND,ZTEK,AAAP,AACBR,AACIW,AACPW,ANSCW,ARQQW,ASPCR,BBCQU,BCARU,BCOR",
-            "exchange": "XNAS",
-            "limit": 1000
-          },
-          "maxPages": 1,
-          "cacheTtlMs": 0,
-          "retries": 0,
-          "conservativeEstimatedCredits": 100,
-          "targets": [
+            },
             {
               "id": "XNAS:PAAS",
               "symbol": "PAAS",
@@ -20661,7 +20559,23 @@
                   "canonicalWritesApproved": false
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "id": "us-gap-extra-XNAS-200",
+          "label": "us-gap-latest-diagnostic",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "PCLN,PCOR,PCT,PERF,PFLT,PMN,PMNT,PNNT,POLA,PPBT,PRIM,PS,QUIZ,QXO,REAL,REED,REPL,RGNT,RHLD,RITR,RNST,RRR,SBSI,SERA,SES,SFBS,SFIX,SG,SHEL,SINT,SKIL,SLGN,SLND,SLS,SMBK,SMRT,SND,SNDA,SOMN,SONO,SPNT,SPT,SSB,SSRM,STEM,STEN,STRO,STXS,STYL,SVMH,SYNX,TARA,TCBX,TFIN,TGEN,TGLS,TLRY,TOPP,TOPS,TPG,TRAD,TRIL,TRINI,TRINZ,TRVI,TTD,UHAL,UMAC,UNIT,USMD,VBNK,VEON,VERX,VIR,VIRT,VMD,VRTS,VSEE,VTEX,WILC,WSC,WT,WWR,XPER,XTND,ZTEK,AAAP,AACBR,AACIW,AACPW,ANSCW,ARQQW,ASPCR,BBCQU,BCARU,BCOR,BHAVR,BNL,BREW,BRRWW",
+            "exchange": "XNAS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 100,
+          "targets": [
             {
               "id": "XNAS:PCLN",
               "symbol": "PCLN",
@@ -22869,23 +22783,7 @@
                   "canonicalWritesApproved": false
                 }
               ]
-            }
-          ]
-        },
-        {
-          "id": "us-gap-extra-XNAS-300",
-          "label": "us-gap-latest-diagnostic",
-          "endpoint": "/eod/latest",
-          "params": {
-            "symbols": "BHAVR,BNL,BREW,BRRWW,CCCXW,CCSI,CDIOW,CLBR,CLUB,CMIIU,CMIIW,COOL,CSNR,CSRE,CTWO,DCOMP,DRMAW,EGHAR,EVAC,FEXDW,FGNXP,FITBI,FITBP,FTPA,GCLWW,GDEVW,GIPRW,HONDW,HUMAW,HWELW,IG,INM,IPCX,IPCXR,IPCXU,JAB,JABRR,JABRU,JABRW,KRAQW,KTTAW,KWMWW,LBRDP,LIDRW,MACIW,MNTSW,MOVE,NIOBW,NYNY,OPEN,PCTTW,PPHPR,PPTA,PTACW,RCKTW,REMC,RNWWW,ROSS,RREVW,SAIHW,SCOP,SVC,SVIVW,TFINP,TMCWW,VSEEW,XTERW,YICCW,ZAZZT",
-            "exchange": "XNAS",
-            "limit": 1000
-          },
-          "maxPages": 1,
-          "cacheTtlMs": 0,
-          "retries": 0,
-          "conservativeEstimatedCredits": 69,
-          "targets": [
+            },
             {
               "id": "XNAS:BHAVR",
               "symbol": "BHAVR",
@@ -22977,7 +22875,23 @@
                   "canonicalWritesApproved": false
                 }
               ]
-            },
+            }
+          ]
+        },
+        {
+          "id": "us-gap-extra-XNAS-300",
+          "label": "us-gap-latest-diagnostic",
+          "endpoint": "/eod/latest",
+          "params": {
+            "symbols": "CCCXW,CCSI,CDIOW,CLBR,CLUB,CMIIU,CMIIW,COOL,CSNR,CSRE,CTWO,DCOMP,DRMAW,EGHAR,EVAC,FEXDW,FGNXP,FITBI,FITBP,FTPA,GCLWW,GDEVW,GIPRW,HONDW,HUMAW,HWELW,IG,INM,IPCX,IPCXR,IPCXU,JAB,JABRR,JABRU,JABRW,KRAQW,KWMWW,LBRDP,LIDRW,MACIW,MNTSW,MOVE,NIOBW,NYNY,OPEN,PCTTW,PPHPR,PPTA,PTACW,RCKTW,REMC,RNWWW,ROSS,RREVW,SAIHW,SCOP,SVC,SVIVW,TFINP,VSEEW,XTERW,YICCW,ZAZZT",
+            "exchange": "XNAS",
+            "limit": 1000
+          },
+          "maxPages": 1,
+          "cacheTtlMs": 0,
+          "retries": 0,
+          "conservativeEstimatedCredits": 63,
+          "targets": [
             {
               "id": "XNAS:CCCXW",
               "symbol": "CCCXW",
@@ -23807,29 +23721,6 @@
               ]
             },
             {
-              "id": "XNAS:KTTAW",
-              "symbol": "KTTAW",
-              "mic": "XNAS",
-              "priority": 3,
-              "targets": [
-                {
-                  "securityId": "ref_KTTAW",
-                  "baselineSymbol": "KTTAW",
-                  "expectedMics": [
-                    "XNAS"
-                  ],
-                  "baselineInstrumentType": "WARRANT",
-                  "investigativeType": "WARRANT",
-                  "baselineActiveStatus": "ACTIVE",
-                  "expectedCurrency": "USD",
-                  "diagnosticReason": "ONE_BOUNDED_RECHECK_OF_REJECTED_LATEST",
-                  "candidateBasis": "ORIGINAL_EXACT_DIRECTORY_MATCH",
-                  "consumerUseApproved": false,
-                  "canonicalWritesApproved": false
-                }
-              ]
-            },
-            {
               "id": "XNAS:KWMWW",
               "symbol": "KWMWW",
               "mic": "XNAS",
@@ -24353,29 +24244,6 @@
                   "expectedCurrency": "USD",
                   "diagnosticReason": "UNMATCHED_LISTING_DIAGNOSTIC",
                   "candidateBasis": "OBSERVED_OTHER_VENUE_DIRECTORY",
-                  "consumerUseApproved": false,
-                  "canonicalWritesApproved": false
-                }
-              ]
-            },
-            {
-              "id": "XNAS:TMCWW",
-              "symbol": "TMCWW",
-              "mic": "XNAS",
-              "priority": 3,
-              "targets": [
-                {
-                  "securityId": "ref_TMCWW",
-                  "baselineSymbol": "TMCWW",
-                  "expectedMics": [
-                    "XNAS"
-                  ],
-                  "baselineInstrumentType": "WARRANT",
-                  "investigativeType": "WARRANT",
-                  "baselineActiveStatus": "ACTIVE",
-                  "expectedCurrency": "USD",
-                  "diagnosticReason": "ONE_BOUNDED_RECHECK_OF_REJECTED_LATEST",
-                  "candidateBasis": "ORIGINAL_EXACT_DIRECTORY_MATCH",
                   "consumerUseApproved": false,
                   "canonicalWritesApproved": false
                 }
@@ -32926,7 +32794,7 @@
                   "baselineActiveStatus": "ACTIVE",
                   "expectedCurrency": "USD",
                   "diagnosticReason": "UNMATCHED_LISTING_DIAGNOSTIC",
-                  "candidateBasis": "SEC_VENUE_CORROBORATED_EXACT_SYMBOL",
+                  "candidateBasis": "OBSERVED_OTHER_VENUE_DIRECTORY",
                   "consumerUseApproved": false,
                   "canonicalWritesApproved": false
                 }
@@ -34138,7 +34006,7 @@
                   "baselineActiveStatus": "ACTIVE",
                   "expectedCurrency": "USD",
                   "diagnosticReason": "UNMATCHED_LISTING_DIAGNOSTIC",
-                  "candidateBasis": "SEC_VENUE_CORROBORATED_EXACT_SYMBOL",
+                  "candidateBasis": "OBSERVED_OTHER_VENUE_DIRECTORY",
                   "consumerUseApproved": false,
                   "canonicalWritesApproved": false
                 }
@@ -36626,55 +36494,43 @@
           "region": "EUROPE"
         },
         {
-          "endpoint": "tickerinfo",
-          "params": {
-            "ticker": "7974.T"
-          },
+          "endpoint": "tickers/7974.T",
+          "params": {},
           "label": "listing-identity",
           "estimatedCredits": 1,
           "region": "ASIA"
         },
         {
-          "endpoint": "tickerinfo",
-          "params": {
-            "ticker": "6861.T"
-          },
+          "endpoint": "tickers/6861.T",
+          "params": {},
           "label": "listing-identity",
           "estimatedCredits": 1,
           "region": "ASIA"
         },
         {
-          "endpoint": "tickerinfo",
-          "params": {
-            "ticker": "8035.T"
-          },
+          "endpoint": "tickers/8035.T",
+          "params": {},
           "label": "listing-identity",
           "estimatedCredits": 1,
           "region": "ASIA"
         },
         {
-          "endpoint": "tickerinfo",
-          "params": {
-            "ticker": "ROG.SW"
-          },
+          "endpoint": "tickers/ROG.SW",
+          "params": {},
           "label": "listing-identity",
           "estimatedCredits": 1,
           "region": "EUROPE"
         },
         {
-          "endpoint": "tickerinfo",
-          "params": {
-            "ticker": "SHEL.L"
-          },
+          "endpoint": "tickers/SHEL.L",
+          "params": {},
           "label": "listing-identity",
           "estimatedCredits": 1,
           "region": "EUROPE"
         },
         {
-          "endpoint": "tickerinfo",
-          "params": {
-            "ticker": "AZN.L"
-          },
+          "endpoint": "tickers/AZN.L",
+          "params": {},
           "label": "listing-identity",
           "estimatedCredits": 1,
           "region": "EUROPE"
@@ -39008,7 +38864,8 @@
           "symbol": "VTI",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39020,7 +38877,8 @@
           "symbol": "VT",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39032,7 +38890,8 @@
           "symbol": "VXUS",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XNAS"
         },
         {
           "endpoint": "etfholdings",
@@ -39044,7 +38903,8 @@
           "symbol": "SCHD",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39056,7 +38916,8 @@
           "symbol": "VUG",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39068,7 +38929,8 @@
           "symbol": "VTV",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39080,7 +38942,8 @@
           "symbol": "BND",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XNAS"
         },
         {
           "endpoint": "etfholdings",
@@ -39092,7 +38955,8 @@
           "symbol": "BNDX",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XNAS"
         },
         {
           "endpoint": "etfholdings",
@@ -39104,7 +38968,8 @@
           "symbol": "IEMG",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39116,7 +38981,8 @@
           "symbol": "EFA",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39128,7 +38994,8 @@
           "symbol": "EEM",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39140,7 +39007,8 @@
           "symbol": "TLT",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XNAS"
         },
         {
           "endpoint": "etfholdings",
@@ -39152,7 +39020,8 @@
           "symbol": "AGG",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39164,7 +39033,8 @@
           "symbol": "IEF",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XNAS"
         },
         {
           "endpoint": "etfholdings",
@@ -39176,7 +39046,8 @@
           "symbol": "SHY",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XNAS"
         },
         {
           "endpoint": "etfholdings",
@@ -39188,7 +39059,8 @@
           "symbol": "TIP",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39200,7 +39072,8 @@
           "symbol": "LQD",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39212,7 +39085,8 @@
           "symbol": "HYG",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39224,7 +39098,8 @@
           "symbol": "GLD",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39236,7 +39111,8 @@
           "symbol": "IAU",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39248,7 +39124,8 @@
           "symbol": "SLV",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39260,7 +39137,8 @@
           "symbol": "USMV",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "BATS"
         },
         {
           "endpoint": "etfholdings",
@@ -39272,7 +39150,8 @@
           "symbol": "QUAL",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "BATS"
         },
         {
           "endpoint": "etfholdings",
@@ -39284,7 +39163,8 @@
           "symbol": "MTUM",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "BATS"
         },
         {
           "endpoint": "etfholdings",
@@ -39296,7 +39176,8 @@
           "symbol": "IJH",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39308,7 +39189,8 @@
           "symbol": "IJR",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39320,7 +39202,8 @@
           "symbol": "XLF",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39332,7 +39215,8 @@
           "symbol": "XLE",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39344,7 +39228,8 @@
           "symbol": "XLK",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39356,7 +39241,8 @@
           "symbol": "ARKK",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39368,7 +39254,8 @@
           "symbol": "FLIN",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39380,7 +39267,8 @@
           "symbol": "JEPI",
           "maxAttempts": 1,
           "region": "US",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "ARCX"
         },
         {
           "endpoint": "etfholdings",
@@ -39392,7 +39280,8 @@
           "symbol": "IUSN.DE",
           "maxAttempts": 1,
           "region": "DE",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XETR"
         },
         {
           "endpoint": "etfholdings",
@@ -39404,7 +39293,8 @@
           "symbol": "VWCE.DE",
           "maxAttempts": 1,
           "region": "DE",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XETR"
         },
         {
           "endpoint": "etfholdings",
@@ -39416,7 +39306,8 @@
           "symbol": "ZPRS.DE",
           "maxAttempts": 1,
           "region": "DE",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XETR"
         },
         {
           "endpoint": "etfholdings",
@@ -39428,7 +39319,8 @@
           "symbol": "IBTA.XLON",
           "maxAttempts": 1,
           "region": "GB",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XLON"
         },
         {
           "endpoint": "etfholdings",
@@ -39440,7 +39332,8 @@
           "symbol": "GLAD.XSWX",
           "maxAttempts": 1,
           "region": "CH",
-          "requiresAssetType": "ETF"
+          "requiresAssetType": "ETF",
+          "mic": "XSWX"
         }
       ]
     }

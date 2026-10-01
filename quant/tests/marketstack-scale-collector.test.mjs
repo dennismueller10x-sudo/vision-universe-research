@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtempSync,readFileSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
-import {createCollector,seedPages,requestKey} from '../../scripts/market/scale-marketstack.mjs';
+import {createCollector,seedPages,requestKey,verifiedTaskMetadata} from '../../scripts/market/scale-marketstack.mjs';
 const roots=[];const root=()=>{const p=mkdtempSync(join(tmpdir(),'vu-scale-'));roots.push(p);return p;};
 process.on('exit',()=>roots.forEach(p=>rmSync(p,{recursive:true,force:true})));
 const response=(offset,total,rows)=>({ok:true,data:{pagination:{limit:1000,offset,count:rows.length,total},data:{tickers:rows}}});
@@ -15,3 +15,7 @@ test('same run resume reserves opening credits and attempts against total ceilin
 test('corrupt request ledger fails before external fetch',()=>{const out=root();writeFileSync(join(out,'checkpoint.json'),JSON.stringify({tasks:{},runs:{old:{requestsAttempted:1,estimatedCreditsConsumed:-1}}}));assert.throws(()=>createCollector({output:out}),/INVALID_REQUEST_LEDGER/);});
 test('production dataset outputs are rejected',()=>{assert.throws(()=>createCollector({output:'/tmp/quant/data/scale'}),/PRIVATE_WORKING/);});
 test('cached provider failures are retained without automatic credit-wasting retries',async()=>{let attempts=0;const c=createCollector({output:root(),client:{request:async()=>{attempts++;return {ok:false,reason:'dataUnavailable'};},stats:()=>({requestsAttempted:attempts,estimatedCreditsConsumed:attempts})}});await c.query('tickers/NO');await c.query('tickers/NO');assert.equal(attempts,1);assert.equal(c.allEntries().length,1);assert.equal(c.finish().totalScaleCredits,1);});
+
+test('holdings require successful exact symbol ETF metadata at an explicit matching MIC',()=>{const task={endpoint:'etfholdings',params:{ticker:'FUND'},mic:'XETR',requiresAssetType:'ETF'};const e={ok:true,data:{symbol:'FUND',item_type:'etf',stock_exchange:{mic:'XETR'}}};assert.equal(verifiedTaskMetadata(e,task),true);assert.equal(verifiedTaskMetadata(e,{...task,mic:null}),false);assert.equal(verifiedTaskMetadata({...e,ok:false},task),false);assert.equal(verifiedTaskMetadata(e,{...task,mic:'XLON'}),false);assert.equal(verifiedTaskMetadata({...e,data:{...e.data,item_type:'equity'}},task),false);assert.equal(verifiedTaskMetadata({...e,data:{...e.data,symbol:'OTHER'}},task),false);});
+
+test('provider account quota and authentication failure stop further external attempts',async()=>{for(const reason of ['quotaExceeded','authError','accountingPersistenceFailed','rateLimited']){let attempts=0;const c=createCollector({output:root(),client:{request:async()=>{attempts++;return {ok:false,reason};},stats:()=>({requestsAttempted:attempts,estimatedCreditsConsumed:attempts})}});await c.query('tickers/A');const r=await c.query('tickers/B');assert.equal(attempts,1);assert.equal(r.reason,reason);assert.equal(c.finish().terminalReason,reason);}});
