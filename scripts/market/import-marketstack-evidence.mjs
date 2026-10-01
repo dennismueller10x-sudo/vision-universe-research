@@ -40,6 +40,7 @@ export function importEvidence(probe, references, existing=[]) {
   if(!meta||!venue?.mic||!venue.country_code){blocked('LISTING_IDENTITY_MISSING');continue;}
   const type=A.assetType(meta.item_type);
   if(!type){blocked('ASSET_TYPE_UNVERIFIED');continue;}
+  if(ref?.asset_type&&A.assetType(ref.asset_type)!==type){blocked('OFFICIAL_ASSET_TYPE_MISMATCH');continue;}
   // Missing price currency requires instrument-specific official evidence.
   const currencies=[...new Set(raw.map(r=>r.price_currency||r.currency).filter(Boolean).map(A.normalizeCurrency))];
   if(currencies.length>1){blocked('MIXED_CURRENCY');continue;}
