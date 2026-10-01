@@ -73,7 +73,8 @@
   function pp(v) { return typeof v === "number" && isFinite(v) ? (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v * 100).toLocaleString("de-DE", { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + " Pp" : "–"; }
   function baseLine(b) {
     if (typeof b.deltaPositiveShare !== "number") return null;
-    return share(b.positiveShare) + " im Plus nach 6 M. vs. " + share(b.basePositiveShare) + " Base Rate derselben Wochen → " + pp(b.deltaPositiveShare) +
+    /* Eine Nachkommastelle: sonst passt die gerundete Differenz nicht zu den Quoten. */
+    return share1(b.positiveShare) + " im Plus nach 6 M. vs. " + share1(b.basePositiveShare) + " Base Rate derselben Wochen → " + pp(b.deltaPositiveShare) +
       (b.deltaCi ? " (95 %: " + pp(b.deltaCi[0]) + " bis " + pp(b.deltaCi[1]) + ")" : "");
   }
   /* Hält der Abstand zur Base Rate im jüngsten Testzeitraum? Ohne diesen Satz
@@ -85,6 +86,7 @@
   }
   function reasonText(code) { return REASON[code] || "Eine Bedingung der Vertrauensregel ist nicht erfüllt."; }
   function pct(v, d, signed) { return typeof v === "number" && isFinite(v) ? VM.pct(v, d === undefined ? 1 : d, signed) : "–"; }
+  function share1(v) { return typeof v === "number" && isFinite(v) ? (v * 100).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " %" : "–"; }
   function share(v) { return typeof v === "number" && isFinite(v) ? Math.round(v * 100) + " %" : "–"; }
   function num(v, d) { return typeof v === "number" && isFinite(v) ? v.toLocaleString("de-DE", { maximumFractionDigits: d === undefined ? 2 : d }) : "–"; }
   function int(v) { return typeof v === "number" && isFinite(v) ? Math.round(v).toLocaleString("de-DE") : "–"; }
@@ -136,7 +138,7 @@
       ["Auslöser", tr.trigger || "–"],
       ["Ungültig unter", typeof tr.invalidation === "number" ? num(tr.invalidation) + " $" : "–"],
       ["Nächste Bedingung", tr.nextCondition ? "für „" + tr.nextCondition.label + "“ fehlen " + tr.nextCondition.open + " von " + tr.nextCondition.total : "–"],
-      ["Rückblick (dieselbe Aktie)", { BROAD: "breit", THIN: "dünn", WITHHELD: "zurückgehalten", UNAVAILABLE: "nicht verfügbar", NONE: "keine Vergleichsfälle" }[tr.evidenceState] + (tr.episodes ? " · " + tr.episodes + " Fälle" : "")],
+      ["Rückblick (dieselbe Aktie)", { BROAD: "breit", THIN: "dünn", WITHHELD: "zurückgehalten", UNAVAILABLE: "nicht verfügbar", NONE: "keine Vergleichsfälle" }[tr.evidenceState] + (tr.episodes ? " · " + tr.episodes + (tr.episodes === 1 ? " Fall" : " Fälle") : "")],
       ["Setup-Backtest", tr.backtest ? (tr.backtest.state === "AVAILABLE" ? TRUST_WORD[tr.backtest.trust] : (tr.backtest.certification ? STATUS_WORD[tr.backtest.certification.status] + " – " : "noch nicht freigegeben – ") + reasonText(tr.backtest.reason)) : "kein Setup"]
     ];
     var kids = [el("dl", { class: "qx-kv q-track" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { text: r[1] })]; })))];
