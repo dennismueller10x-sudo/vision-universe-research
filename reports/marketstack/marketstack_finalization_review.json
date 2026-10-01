@@ -502,7 +502,7 @@
     "budgetFile": "scripts/vu2/resource-budget.mjs",
     "budgetFileSHA256": "ea3692d38cd09919a839bcf8d6a15000c4015b8781fe04bcd4edc4070625b896",
     "scope": "Independent source, exact real Chromium1208 cold-context/used-font QA and protected-byte comparison. Final remote CI is separate.",
-    "status": "PASS_LOCAL_FULL_QA_AND_INDEPENDENT_SOURCE_REVIEW",
+    "status": "PASS_INDEPENDENT_SOURCE_CAUSAL_REPLAY_AND_LOCAL_HARNESS",
     "allFetchedSubresourcesCounted": true,
     "resourcePathFiltering": false,
     "addedResourceAbortRules": false,
@@ -679,12 +679,10 @@
       "Used-layout fonts and actual logo response complete before resource capture.",
       "The actual deferred photo is scrolled, loaded and decoded after functional assertions; no asset-path exclusion or budget increase."
     ],
-    "pendingValidation": [
-      "Final published-head remote CI"
-    ],
     "productionDeployment": false,
     "providerDecision": "DEFERRED",
     "reviewScope": "Independent current QA source, protected-byte manifests, exact prior-strategy causal replay and final local real Chromium1208 cold-context/font-settled verification. Final remote CI is reported by current PR checks.",
-    "historicalNativeOnlyReview": "https://github.com/dennismueller10x-sudo/vision-universe-research/blob/5eaf689d623c289504a87df33689f93271476f4a/reports/marketstack/marketstack_finalization_review.json"
+    "historicalNativeOnlyReview": "https://github.com/dennismueller10x-sudo/vision-universe-research/blob/5eaf689d623c289504a87df33689f93271476f4a/reports/marketstack/marketstack_finalization_review.json",
+    "remoteCIObservationScope": "Remote CI is outside this local review; current PR checks are authoritative for each published head."
   }
 }
