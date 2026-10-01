@@ -318,12 +318,34 @@
   function speak(text) {
     if (!canSpeak || !text || !(readAloud || spokenQuestion)) return;
     stopSpeaking();
-    var u = new SpeechSynthesisUtterance(text.replace(/ /g, ' ').replace(/\$/g, ' Dollar'));
-    u.lang = 'de-DE'; u.rate = 1.03;
-    var de = window.speechSynthesis.getVoices().filter(function (v) { return /^de/i.test(v.lang); })[0];
-    if (de) u.voice = de;
-    window.speechSynthesis.speak(u);
+    var voice = bestVoice();
+    /* In Saetzen sprechen: iOS bricht lange Aeusserungen gern ab, und kurze
+       Saetze klingen mit den Systemstimmen natuerlicher. */
+    var clean = text.replace(/\u00a0/g, ' ').replace(/\$/g, ' Dollar').replace(/\s+/g, ' ').trim();
+    (clean.match(/[^.!?]+[.!?]*/g) || [clean]).forEach(function (part) {
+      part = part.trim(); if (!part) return;
+      var u = new SpeechSynthesisUtterance(part);
+      u.lang = 'de-DE'; u.rate = 1; u.pitch = 1;
+      if (voice) try { u.voice = voice; } catch (e) {}
+      window.speechSynthesis.speak(u);
+    });
   }
+  /* Die beste deutsche Stimme, die das Geraet anbietet. Neuere neuronale
+     Stimmen tragen Namen wie "Premium", "Erweitert"/"Enhanced", "Natural"
+     oder "Online" (Edge), bei Chrome "Google Deutsch". Alte Kompaktstimmen
+     kommen zuletzt. */
+  var VOICE_RANK = [/premium/i, /natural|neural/i, /erweitert|enhanced|verbessert/i, /online/i, /google/i, /siri/i];
+  function bestVoice() {
+    var de = window.speechSynthesis.getVoices().filter(function (v) { return /^de([-_]|$)/i.test(v.lang); });
+    function score(v) {
+      var r = VOICE_RANK.length;
+      for (var i = 0; i < VOICE_RANK.length; i++) if (VOICE_RANK[i].test(v.name)) { r = i; break; }
+      return r - (/^de[-_]DE/i.test(v.lang) ? 0.5 : 0);
+    }
+    return de.length ? de.slice().sort(function (a, b) { return score(a) - score(b); })[0] : null;
+  }
+  /* Manche Browser laden die Stimmen erst nach; der erste Aufruf fordert sie an. */
+  if (canSpeak) try { window.speechSynthesis.getVoices(); } catch (e) {}
 
   /* ------------------------------------------------------------ Frage */
   function submit() {
@@ -566,9 +588,19 @@
       ])]));
       var desc = res.columns.map(function (c) { var f = Fields.field(c); return f && f.desc ? header(c) + ': ' + f.desc : null; }).filter(Boolean);
       if (desc.length) box.appendChild(h('ul', { class: 'ak-notes' }, desc.map(function (t) { return h('li', { text: t }); })));
-      box.appendChild(h('div', { class: 'ak-actions' }, found.map(function (s) {
-        return h('a', { class: 'ak-btn ak-btn-sm', href: '/discover/#/s/US_REAL/' + encodeURIComponent(s.symbol), text: s.symbol + ' vollständig öffnen' });
-      })));
+      /* Jede Aktie fuehrt in beide Produkte: Quant (Faktoren, Analyse) und
+         Discover (Ueberblick, Kurs, Einordnung). Was zuerst steht und
+         hervorgehoben ist, folgt der Frage: ging es um Quant-Faktoren,
+         ist es Quant, sonst Discover. Supertrader nur, wenn gefragt. */
+      var quantFirst = res.columns.some(function (c) { var f = Fields.field(c); return f && f.source === 'factor'; });
+      box.appendChild(h('div', { class: 'ak-actions' }, [].concat.apply([], found.map(function (s) {
+        var sym = encodeURIComponent(s.symbol);
+        var quant = { href: '/quant/#/aktie/' + sym, text: s.symbol + ' in Quant analysieren' };
+        var disc = { href: '/discover/#/s/US_REAL/' + sym, text: s.symbol + ' in Discover öffnen' };
+        var links = quantFirst ? [quant, disc] : [disc, quant];
+        if (res.strategy) links.push({ href: '/supertrader/', text: 'Zum Supertrader' });
+        return links.map(function (l) { return h('a', { class: 'ak-btn ak-btn-sm', href: l.href, text: l.text }); });
+      }))));
     }
     return box;
   }

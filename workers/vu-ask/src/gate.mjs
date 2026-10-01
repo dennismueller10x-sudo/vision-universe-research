@@ -26,6 +26,16 @@
 import { limitsFrom, admit, worstCase, costOf, dayKey, monthKey, nextResetIso, REASON_TEXT } from "./budget.mjs";
 import { interpret, promptChars } from "./claude.mjs";
 import { translate, statusOf } from "./translate.mjs";
+import { SYSTEM_PROMPT, OUTPUT_SCHEMA } from "./catalog.mjs";
+
+/* Kurzer, fester Fingerabdruck der Anweisungen (FNV-1a), Teil des
+   Cache-Schluessels. */
+export const PROMPT_FINGERPRINT = (() => {
+  const text = SYSTEM_PROMPT + JSON.stringify(OUTPUT_SCHEMA);
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16);
+})();
 
 const CACHE_DAYS = 30;
 const LOG_KEEP = 5000;
@@ -151,7 +161,9 @@ export class AskGate {
     /* 2 — Schon einmal uebersetzt? Dann kostet die Frage nichts und
            verbraucht kein Kontingent. */
     const prompt = followUpPrompt(question, body.previous);
-    const cacheKey = "c:" + (await sha(cacheText(prompt)));
+    /* Die Fassung der Anweisungen gehoert zum Schluessel: aendert sich der
+       Systemprompt oder das Modell, gelten alte Uebersetzungen nicht mehr. */
+    const cacheKey = "c:" + (await sha(PROMPT_FINGERPRINT + "|" + limits.model + "|" + cacheText(prompt)));
     const cached = await this.storage.get(cacheKey);
     if (cached && now - cached.at < CACHE_DAYS * 864e5) {
       await this.log({ question, source: "cache", result: cached.result, status: cached.status });
