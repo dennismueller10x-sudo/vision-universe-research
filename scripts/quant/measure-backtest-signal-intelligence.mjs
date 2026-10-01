@@ -51,7 +51,7 @@ const withheldRules = rules.filter((x) => !x.r.display.allowed);
 /* Alert-Vertrag: jedes Ereignis gueltig, Schluessel eindeutig, alle Felder. */
 const violations = radar.events.filter((e) => Radar.eventViolations(e).length);
 const dedupeUnique = new Set(radar.events.map((e) => e.dedupeKey)).size === radar.events.length;
-const alertReady = radar.dropped === 0 && violations.length === 0 && dedupeUnique && radar.alertContract && radar.alertContract.schema === "quant-alert-event-2.0.0"
+const alertReady = radar.dropped === 0 && violations.length === 0 && dedupeUnique && radar.alertContract && radar.alertContract.schema === Radar.ALERT_EVENT_SCHEMA
   && ["securityId", "ticker", "issuerId", "eventType", "occurredAt", "detectedAt", "previousState", "currentState", "trigger", "invalidation", "explanation", "evidence", "backtestEvidence", "trustState", "nextCondition", "dedupeKey"].every((f) => Radar.EVENT_FIELDS.includes(f));
 
 const pit = rules.every((x) => x.r.checks.pit.state === "PASS") && setup.parity.checked > 0 && setup.parity.mismatches === 0;

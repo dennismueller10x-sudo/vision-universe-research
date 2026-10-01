@@ -30,8 +30,8 @@
 
   var isNode = typeof module !== "undefined" && module.exports;
 
-  var VERSION = "signal-backtest-1.0.0";
-  var STUDY_SCHEMA = "signal-backtest-study-1.0.0";
+  var VERSION = "signal-backtest-2.0.0";
+  var STUDY_SCHEMA = "signal-backtest-study-2.0.0";
   var RETURN_TYPE = "SPLIT_ADJUSTED_PRICE";
   var REQUIRED_RETURN_TYPE = "TOTAL_RETURN";
 
@@ -45,6 +45,11 @@
   /* Reibung je Runde (Kauf + Verkauf), uebernommen aus pattern-research-v1
      frictions: 20 bps Kosten + 10 bps Slippage. */
   var FRICTIONS = { roundTripBps: 20, slippageBps: 10 };
+  /* Kostenszenarien je Runde (Kommission + Spread + Slippage), identisch mit
+     setup-backtest-contract-v1. BASE = FRICTIONS. Marktbasis und SPY sind
+     passive Vergleiche und tragen keine Kosten - die Kosten belasten nur das
+     Signal. */
+  var COST_SCENARIOS = { LOW: 10, BASE: 30, HIGH: 60 };
 
   var COOLDOWN_WEEKS = 13;
   var WARMUP_WEEKS = 53;
@@ -274,6 +279,7 @@
     { id: "slippage", label: "Ausführungsabschlag" },
     { id: "benchmark", label: "Vergleich mit Markt und Index" },
     { id: "regimeDiversity", label: "Verschiedene Marktphasen" },
+    { id: "independence", label: "Unabhängigkeit der Fälle" },
     { id: "parameterStability", label: "Parameter-Stabilität" },
     { id: "completeness", label: "Vollständigkeit" }
   ];
@@ -281,10 +287,29 @@
     version: "trust-rule-1.0.0",
     sample: { LIMITED: { n: 100, titles: 20 }, USABLE: { n: 1000, titles: 100 }, ROBUST: { n: 3000, titles: 300 } },
     NOT_READY: "pit oder lookahead nicht bestanden, oder Stichprobe unter dem Minimum für eingeschränkt",
-    USABLE: ["sample", "oos", "walkForward", "survivorship", "returnBasis", "costs", "slippage", "benchmark", "completeness"],
+    USABLE: ["sample", "oos", "walkForward", "survivorship", "returnBasis", "costs", "slippage", "benchmark", "completeness", "independence"],
     ROBUST: TRUST_CHECKS.map(function (c) { return c.id; }),
     plain: "Eine Stufe gilt nur, wenn jede für sie verlangte Prüfung bestanden ist. Ohne Überlebende-Kontrolle und ohne Gesamtrendite bleibt jede Auswertung eingeschränkt."
   };
+
+  /* Cluster-robuste Schaetzung eines Mittelwerts (z. B. Trefferquote minus
+     Base Rate derselben Woche). Faelle derselben Periode (Quartal) sind
+     nicht unabhaengig; die Streuung wird ueber Cluster-Summen geschaetzt. */
+  function clusterMean(values, clusters) {
+    var n = values.length, sums = {}, counts = {}, total = 0;
+    if (!n) return null;
+    for (var i = 0; i < n; i++) { var c = clusters[i]; sums[c] = (sums[c] || 0) + values[i]; counts[c] = (counts[c] || 0) + 1; total += values[i]; }
+    var mean = total / n, keys = Object.keys(sums), C = keys.length;
+    var vc = 0, viid = 0;
+    keys.forEach(function (k) { var d = sums[k] - counts[k] * mean; vc += d * d; });
+    vc = C > 1 ? (C / (C - 1)) * vc / (n * n) : null;
+    for (var j = 0; j < n; j++) viid += (values[j] - mean) * (values[j] - mean);
+    viid = n > 1 ? viid / (n - 1) / n : null;
+    var se = vc === null ? null : Math.sqrt(vc);
+    var maxShare = Math.max.apply(null, keys.map(function (k) { return counts[k]; })) / n;
+    return { mean: round(mean), se: round(se), ci: se === null ? null : [round(mean - 1.96 * se), round(mean + 1.96 * se)], clusters: C, maxClusterShare: round(maxShare, 3),
+      designEffect: vc && viid ? round(vc / viid, 2) : null, effectiveN: vc && viid ? Math.round(n / (vc / viid)) : null };
+  }
 
   function sampleLevel(n, titles) {
     var s = TRUST_RULE.sample;
@@ -346,6 +371,10 @@
       if (TRUST_STATES.indexOf(r.trust) < 0) errors.push(r.id + ": unknown trust state");
       if (r.checks && r.sample && r.trust !== trustState(r.checks, r.sample)) errors.push(r.id + ": trust does not follow TRUST_RULE");
       if (r.returnType !== REQUIRED_RETURN_TYPE && (r.trust === "USABLE" || r.trust === "ROBUST")) errors.push(r.id + ": high trust without TOTAL_RETURN");
+      /* Die Renditebasis wird nicht behauptet, sondern geprueft: TOTAL_RETURN
+         nur mit bestandenem returnBasis-Check, und umgekehrt. */
+      if (r.checks && r.checks.returnBasis && ((r.returnType === REQUIRED_RETURN_TYPE) !== (r.checks.returnBasis.state === "PASS"))) errors.push(r.id + ": returnType and returnBasis check disagree");
+      if (study.returnType && r.returnType !== study.returnType) errors.push(r.id + ": rule returnType differs from study returnType");
       if (r.checks && r.checks.survivorship && r.checks.survivorship.state !== "PASS" && (r.trust === "USABLE" || r.trust === "ROBUST")) errors.push(r.id + ": high trust without survivorship control");
       if (r.display && r.display.allowed !== displayAllowed(r.trust, study.certification)) errors.push(r.id + ": display gate does not follow trust and certification");
     });
@@ -354,7 +383,7 @@
 
   var api = {
     VERSION: VERSION, STUDY_SCHEMA: STUDY_SCHEMA, RETURN_TYPE: RETURN_TYPE, REQUIRED_RETURN_TYPE: REQUIRED_RETURN_TYPE,
-    HORIZONS: HORIZONS, FRICTIONS: FRICTIONS, COOLDOWN_WEEKS: COOLDOWN_WEEKS, WARMUP_WEEKS: WARMUP_WEEKS, TOUCH_THRESHOLD: TOUCH_THRESHOLD,
+    HORIZONS: HORIZONS, FRICTIONS: FRICTIONS, COST_SCENARIOS: COST_SCENARIOS, clusterMean: clusterMean, COOLDOWN_WEEKS: COOLDOWN_WEEKS, WARMUP_WEEKS: WARMUP_WEEKS, TOUCH_THRESHOLD: TOUCH_THRESHOLD,
     REGIME: REGIME, SEMANTICS: SEMANTICS, RULES: RULES, RULE_BY_ID: RULE_BY_ID, WITHOUT_HISTORY: WITHOUT_HISTORY,
     TRUST_STATES: TRUST_STATES, TRUST_LABEL: TRUST_LABEL, TRUST_CHECKS: TRUST_CHECKS, TRUST_RULE: TRUST_RULE, FORBIDDEN_KEYS: FORBIDDEN_KEYS,
     retOver: retOver, smaAt: smaAt, priorMax: priorMax, detectEvents: detectEvents, outcome: outcome, firstTouch: firstTouch, oppositeExit: oppositeExit,

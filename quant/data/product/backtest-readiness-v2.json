@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-01T11:21:01.979Z",
+ "generatedAt": "2026-10-01T13:23:31.992Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -15,9 +15,9 @@
    "to": "2026-09-30",
    "spanDays": 20,
    "replay": {
-    "titles": 37,
-    "observations": 33012,
-    "from": "1991-03-08"
+    "titles": 5,
+    "observations": 2760,
+    "from": "2016-03-11"
    }
   },
   {
@@ -194,7 +194,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "166 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "20 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -222,31 +222,31 @@
    "rules": [
     {
      "id": "SETUP_CONFIRMED",
-     "trust": "LIMITED",
-     "n": 267,
-     "titles": 30,
+     "trust": "NOT_READY",
+     "n": 55,
+     "titles": 5,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_NEW",
-     "trust": "LIMITED",
-     "n": 2249,
-     "titles": 34,
+     "trust": "NOT_READY",
+     "n": 234,
+     "titles": 5,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     },
     {
      "id": "SETUP_WEAKENED",
-     "trust": "LIMITED",
-     "n": 2508,
-     "titles": 34,
+     "trust": "NOT_READY",
+     "n": 286,
+     "titles": 5,
      "displayAllowed": false,
      "returnType": "TOTAL_RETURN"
     }
    ],
    "decision": "WITHHELD",
-   "trust": "LIMITED",
+   "trust": "NOT_READY",
    "reasons": [
     "DAILY_HISTORY_ONLY_IN_PRIVATE_STORE",
     "HAND_PICKED_SURVIVORS"

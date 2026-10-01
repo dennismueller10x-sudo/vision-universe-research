@@ -217,6 +217,12 @@ function main() {
       benchmark: { state: "PASS", value: "SPY-Kurs über dasselbe Fenster; Basis aller Beobachtungstage derselben Titel" },
       regimeDiversity: { state: Object.values(regimeOut).every((x) => x.n >= 30) ? "PASS" : "FAIL", reason: Object.values(regimeOut).every((x) => x.n >= 30) ? null : "REGIME_UNDERSAMPLED", value: Object.entries(regimeOut).map(([k, x]) => k + " " + x.n).join(", ") },
       parameterStability: { state: "FAIL", reason: "FIXED_MAPPING_NOT_SWEPT", value: "Die freigegebene Zuordnung hat keine Parameter, die hier variiert werden dürfen" },
+      independence: (() => {
+        const q = m6.map((x) => x.date.slice(0, 4) + "Q" + (Math.floor((Number(x.date.slice(5, 7)) - 1) / 3) + 1));
+        const cm = SB.clusterMean(m6.map((x) => x.ex6), q);
+        const pass = !!cm && cm.clusters >= 40 && cm.maxClusterShare <= 0.1;
+        return { state: pass ? "PASS" : "FAIL", reason: pass ? null : "CLUSTERED_SAMPLE", value: cm ? cm.clusters + " Quartale, größter Anteil " + Math.round(cm.maxClusterShare * 100) + " %" : "–" };
+      })(),
       completeness: { state: completeness >= 0.95 ? "PASS" : "FAIL", reason: completeness >= 0.95 ? null : "OUTCOMES_INCOMPLETE", value: SB.round(completeness, 3) + " der abgeschlossenen Fälle mit allen vier Zeiträumen" }
     };
     const trust = SB.trustState(checks, sample);

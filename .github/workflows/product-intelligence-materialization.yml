@@ -263,9 +263,22 @@ jobs:
         if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/quant/build-setup-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history"
 
-      - name: Signal backtest over the weekly universe
+      - name: Signal backtest over the weekly universe (weekly total return from the canonical history)
         if: steps.noetig.outputs.noop != 'true'
-        run: node --max-old-space-size=6144 scripts/quant/build-signal-backtest.mjs
+        run: node --max-old-space-size=6144 scripts/quant/build-signal-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+
+      # SETUP-ERGEBNISSE NUR AUS VEROEFFENTLICHTEN STAENDEN. Jeder Stand wird
+      # gegen seinen contentHash geprueft; Kurse nur zur Laufzeit.
+      - name: Setup outcomes from published states
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/build-setup-outcomes.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+
+      # Der maschinenlesbare Zertifizierungs-Check je Backtest-Art. Laeuft
+      # taeglich; eine Art wechselt ohne manuellen Schritt, sobald ihre
+      # Gates bestehen (ausser der Methodikvertrag verlangt eine Freigabe).
+      - name: Backtest certification check
+        if: steps.noetig.outputs.noop != 'true'
+        run: node scripts/quant/build-backtest-certification.mjs
 
       - name: Measure backtest readiness per kind (A-F)
         if: steps.noetig.outputs.noop != 'true'
@@ -274,7 +287,7 @@ jobs:
       # QUANT RADAR: "Was ist heute neu?" - aus den soeben geschriebenen
       # Staenden (Setup-Historie, Signale, Strategie-Index, Faktor-Historie,
       # 52-Wochen-Hoch). Kein Ereignis aus eigener Rechnung; jedes muss den
-      # Alert-Vertrag (quant-alert-event-2.0.0) bestehen, sonst bricht der
+      # Alert-Vertrag (quant-alert-event-3.0.0) bestehen, sonst bricht der
       # Lauf ab. Daneben der Setup-Lebenszyklus je Titel und der gemessene
       # Stand der vier Evidenzarten.
       - name: Materialize Quant Radar and setup lifecycle
@@ -288,6 +301,10 @@ jobs:
       - name: Measure QUANT_DECISION_INTELLIGENCE
         if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/quant/measure-decision-intelligence.mjs
+
+      - name: Measure QUANT_BACKTEST_CERTIFICATION
+        if: steps.noetig.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/quant/measure-backtest-certification.mjs
 
       - name: Measure QUANT_BACKTEST_SIGNAL_INTELLIGENCE
         if: steps.noetig.outputs.noop != 'true'
@@ -326,7 +343,7 @@ jobs:
       - name: Contract and regression tests
         if: steps.noetig.outputs.noop != 'true'
         run: |
-          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs quant/tests/technical-unavailability.test.mjs quant/tests/journey-coverage.test.mjs quant/tests/market-calendar.test.mjs quant/tests/assignment-change.test.mjs quant/tests/observation-extension.test.mjs quant/tests/analysis-lag.test.mjs quant/tests/regime-observation-immutability.test.mjs quant/tests/pattern-unavailability.test.mjs quant/tests/quant-radar.test.mjs quant/tests/signal-backtest.test.mjs
+          node --test quant/tests/product-intelligence-materialization.test.mjs quant/tests/market-signal-contract.test.mjs quant/tests/product-services.test.mjs quant/tests/factor-evidence.test.mjs quant/tests/setup-engine.test.mjs quant/tests/setup-state-contract.test.mjs quant/tests/pattern-research.test.mjs quant/tests/pit-fundamental-history.test.mjs quant/tests/product-language.test.mjs quant/tests/strategy-history.test.mjs quant/tests/refuted-adjustment-fallback.test.mjs quant/tests/stock-chart-basis.test.mjs quant/tests/technical-unavailability.test.mjs quant/tests/journey-coverage.test.mjs quant/tests/market-calendar.test.mjs quant/tests/assignment-change.test.mjs quant/tests/observation-extension.test.mjs quant/tests/analysis-lag.test.mjs quant/tests/regime-observation-immutability.test.mjs quant/tests/pattern-unavailability.test.mjs quant/tests/quant-radar.test.mjs quant/tests/signal-backtest.test.mjs quant/tests/backtest-certification.test.mjs
           node scripts/vu2/measure-consumer-breadth.mjs
 
       # CRITICAL_PRODUCT_GAPS = 0 ist ein Ziel. In einem Dokument behauptet
@@ -350,7 +367,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'

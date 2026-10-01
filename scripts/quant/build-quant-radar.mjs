@@ -49,7 +49,7 @@ const VM = require(join(ROOT, "quant/app/view-model.js"));
 const P = (...p) => join(ROOT, ...p);
 const gz = (file) => JSON.parse(gunzipSync(readFileSync(file)));
 const json = (file) => JSON.parse(readFileSync(file, "utf8"));
-const writeGz = (file, value) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, gzipSync(Buffer.from(JSON.stringify(value)))); };
+const writeGz = (file, value) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, gzipSync(Buffer.from(JSON.stringify(value)), { level: 9 })); };
 const shardKey = (t) => (t + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_");
 const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ""));
 const de = (d) => (isDate(d) ? d.slice(8, 10) + "." + d.slice(5, 7) + "." + d.slice(0, 4) : String(d));
@@ -117,7 +117,9 @@ function nextStep(t) {
 /* ------------------------------------------------- Alert-Vertrag 2.0.0 */
 const DETECTED_AT = new Date().toISOString();
 const readStudy = (f) => (existsSync(P("quant/data/product", f)) ? json(P("quant/data/product", f)) : null);
-const STUDIES = { "signal-backtest-v1": readStudy("signal-backtest-v1.json"), "setup-backtest-v1": readStudy("setup-backtest-v1.json") };
+const STUDIES = { "signal-backtest-v1": readStudy("signal-backtest-v1.json"), "setup-outcomes-v1": readStudy("setup-outcomes-v1.json") };
+const CERT = readStudy("backtest-certification-v1.json");
+const certKind = (id) => (CERT ? CERT.kinds.find((k) => k.id === id) : null);
 const FIRST_REASON = ["pit", "lookahead", "sample", "survivorship", "returnBasis", "oos", "walkForward"];
 const backtestCache = {};
 /* Historische Evidenz je Ereignistyp - aus der Studie, nie aus eigener
@@ -125,9 +127,17 @@ const backtestCache = {};
 function backtestEvidenceFor(type) {
   if (backtestCache[type]) return backtestCache[type];
   const src = Radar.BACKTEST_SOURCE[type] || { reason: "NO_STUDY" };
-  const study = src.study ? STUDIES[src.study] : null, rule = study ? study.rules.find((r) => r.id === src.ruleId) : null;
+  const study = src.study ? STUDIES[src.study] : null, rule = study && Array.isArray(study.rules) ? study.rules.find((r) => r.id === src.ruleId) : null;
   let out;
   if (!src.study) out = { state: "WITHHELD", reason: src.reason, trust: "NOT_READY" };
+  else if (src.study === "setup-outcomes-v1") {
+    /* Setup-Ergebnisse aus veroeffentlichten Staenden: Status und Fortschritt
+       aus dem Zertifizierungs-Check, Zahlen erst nach Zertifizierung. */
+    const k = certKind("SETUP_BACKTEST"), so = STUDIES["setup-outcomes-v1"];
+    out = { state: "WITHHELD", reason: k ? k.reason : "STUDY_NOT_PUBLISHED", trust: "NOT_READY", study: src.study, ruleId: src.ruleId,
+      certification: k ? { status: k.status, tier: k.tier, readiness: k.readiness } : null,
+      progress: so ? { historyDates: so.history.dates, transitions: so.transitions[src.ruleId] || 0, completedM6: so.study[src.ruleId] ? so.study[src.ruleId].variants.NEXT_CLOSE.m6.status.COMPLETED : 0 } : null };
+  }
   else if (!rule) out = { state: "WITHHELD", reason: "STUDY_NOT_PUBLISHED", trust: "NOT_READY", study: src.study };
   else if (!rule.display.allowed) {
     const failed = FIRST_REASON.find((id) => rule.checks[id] && rule.checks[id].state !== "PASS");
@@ -137,7 +147,10 @@ function backtestEvidenceFor(type) {
     const c = rule.card;
     out = { state: "AVAILABLE", study: src.study, ruleId: rule.id, studyAsOf: study.asOf, returnType: rule.returnType, grain: rule.grain, horizon: c.horizon,
       n: c.n, occurrences: rule.occurrences, positiveShare: c.positiveShare, median: c.median, typicalDrawdown: c.typicalDrawdown, chanceRisk: c.chanceRisk,
-      medianExcess: c.medianExcess, trust: rule.trust, sentence: rule.display.sentence, caveats: rule.display.caveats };
+      medianExcess: c.medianExcess, trust: rule.trust, sentence: rule.display.sentence, caveats: rule.display.caveats,
+      basePositiveShare: c.basePositiveShare, deltaPositiveShare: c.deltaPositiveShare, deltaCi: c.deltaCi, effectiveN: c.effectiveN,
+      edgeOutOfSample: !!rule.edgeOutOfSample,
+      certification: (() => { const k = certKind("SIGNAL_BACKTEST"), r = k && (k.rules || []).find((x) => x.id === rule.id); return r ? { status: r.status, tier: k.tier, readiness: r.readiness } : null; })() };
   }
   return (backtestCache[type] = out);
 }
@@ -145,6 +158,9 @@ const ISSUER = {};
 for (const f of readdirSync(P("quant/data/universe/instruments")).filter((x) => x.endsWith(".json"))) {
   for (const i of json(P("quant/data/universe/instruments", f)).instruments || []) if (i.issuerId && !ISSUER[i.symbol]) ISSUER[i.symbol] = i.issuerId;
 }
+const SB_round = (v) => Math.round(v * 10000) / 10000;
+/* Gueltigkeit eines Alerts: eine Woche nach Wirksamkeit (5 Handelstage). */
+const VALID_DAYS = 7;
 const defined = (text, extra) => Object.assign({ state: "DEFINED", text }, extra || {});
 const notDefined = (reason) => ({ state: "NOT_DEFINED", reason });
 
@@ -155,7 +171,12 @@ function push(e) {
   const be = backtestEvidenceFor(e.eventType);
   const ev = Object.assign({ id: e.eventType.toLowerCase() + "_" + e.ticker + "_" + e.occurredAt + (e.key ? "_" + e.key : ""),
     schemaVersion: Radar.ALERT_EVENT_SCHEMA, source: t.source, direction: e.direction || t.tone, delivery: "NOT_CONFIGURED",
-    issuerId: ISSUER[e.ticker] || null, detectedAt: DETECTED_AT, subject: e.key || null, backtestEvidence: be, trustState: be.trust }, e, { key: undefined });
+    issuerId: ISSUER[e.ticker] || null, detectedAt: DETECTED_AT, subject: e.key || null, backtestEvidence: be, trustState: be.trust,
+    baseRate: be.state === "AVAILABLE" && typeof be.deltaPositiveShare === "number"
+      ? { positiveShare: be.positiveShare, base: SB_round(be.positiveShare - be.deltaPositiveShare), delta: be.deltaPositiveShare, ci: be.deltaCi || null, horizon: be.horizon, effectiveN: be.effectiveN || null }
+      : null }, e, { key: undefined });
+  ev.effectiveAt = ev.occurredAt;
+  ev.validUntil = new Date(Date.parse(ev.occurredAt) + VALID_DAYS * 86400000).toISOString().slice(0, 10);
   ev.dedupeKey = Radar.dedupeKey(ev);
   events.push(ev);
 }
@@ -355,12 +376,42 @@ if (evidenceDates.length >= 2) {
   }
 }
 
+/* ------------------------------------------------------------ Ledger
+   Ein Alert nur fuer einen wirklich neuen Zustand: derselbe dedupeKey
+   (Titel, Typ, Gegenstand, Stichtag) alarmiert genau einmal. detectedAt ist
+   der Zeitpunkt der ersten Erkennung. Eintraege aelter als 60 Tage fallen
+   heraus - sie liegen weit hinter jeder Gueltigkeit. Der Eintrag merkt sich
+   den Radar-Stichtag der ersten Erkennung: ein wiederholter Lauf zum selben
+   Stichtag meldet denselben Zustand weiter als neu, statt ihn zu verschlucken. */
+const asOf = [latest.date, signalAsOf, he.to, fNow.asOf, marketAsOf].filter(isDate).sort().pop();
+const LEDGER = P("quant/data/product/radar-history/alert-ledger.json.gz");
+const ledger = existsSync(LEDGER) ? gz(LEDGER) : { schemaVersion: "alert-ledger-1.0.0", keys: {} };
+const cutoffLedger = new Date(Date.parse(DETECTED_AT) - 60 * 86400000).toISOString();
+for (const [k, v] of Object.entries(ledger.keys)) if (!Array.isArray(v) || v[0] < cutoffLedger) delete ledger.keys[k];
+Radar.markSeen(ledger.keys, events, asOf, DETECTED_AT);
+writeGz(LEDGER, { schemaVersion: "alert-ledger-1.1.0", entry: ["detectedAt", "radarAsOf"], updatedAt: DETECTED_AT, retentionDays: 60, keys: ledger.keys });
+
+/* Ereignis-Historie je Stichtag (Watchlist: was ist bei einer Aktie in den
+   letzten Wochen passiert). Nur abgeleitete Zustaende, keine Kurse. */
+const EVENT_HISTORY = P("quant/data/product/radar-history/events");
+writeGz(join(EVENT_HISTORY, latest.date + ".json.gz"), { schemaVersion: "radar-events-snapshot-1.0.0", asOf: latest.date,
+  columns: ["ticker", "eventType", "direction", "occurredAt"], rows: events.map((e) => [e.ticker, e.eventType, e.direction, e.occurredAt]) });
+const eventHistory = {};
+const historyCutoff = new Date(Date.parse(latest.date) - 90 * 86400000).toISOString().slice(0, 10);
+for (const f of readdirSync(EVENT_HISTORY).filter((x) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(x) && x.slice(0, 10) >= historyCutoff).sort()) {
+  for (const [t, type, dir, at] of gz(join(EVENT_HISTORY, f)).rows) {
+    const list = (eventHistory[t] = eventHistory[t] || []);
+    if (!list.some((x) => x[0] === type && x[2] === at)) list.push([type, dir, at]);
+  }
+}
+
 /* ------------------------------------------------------------ Karten */
 const byTicker = {};
 for (const e of events) (byTicker[e.ticker] = byTicker[e.ticker] || []).push(e);
 const compactBacktest = (be) => (be.state === "AVAILABLE"
-  ? { state: "AVAILABLE", n: be.n, positiveShare: be.positiveShare, median: be.median, typicalDrawdown: be.typicalDrawdown, chanceRisk: be.chanceRisk, medianExcess: be.medianExcess, trust: be.trust, returnType: be.returnType, horizon: be.horizon }
-  : { state: "WITHHELD", reason: be.reason, trust: be.trust });
+  ? { state: "AVAILABLE", n: be.n, positiveShare: be.positiveShare, median: be.median, typicalDrawdown: be.typicalDrawdown, chanceRisk: be.chanceRisk, medianExcess: be.medianExcess, trust: be.trust, returnType: be.returnType, horizon: be.horizon,
+      basePositiveShare: be.basePositiveShare, deltaPositiveShare: be.deltaPositiveShare, deltaCi: be.deltaCi, effectiveN: be.effectiveN, edgeOutOfSample: be.edgeOutOfSample === true, certification: be.certification || null }
+  : { state: "WITHHELD", reason: be.reason, trust: be.trust, certification: be.certification || null, progress: be.progress || null });
 
 let cards = Object.keys(byTicker).map((t) => {
   const s = setupNow[t], lc = lifecycle[t];
@@ -423,10 +474,9 @@ const CLOSED = {
   PATTERN_MATCH_NEW: patternOpen ? null : "PATTERN_HISTORY_STARTED",
   EVIDENCE_CHANGED: evidenceOpen ? null : "EVIDENCE_HISTORY_STARTED"
 };
-const asOf = [latest.date, signalAsOf, he.to, fNow.asOf, marketAsOf].filter(isDate).sort().pop();
 
 const radar = {
-  schemaVersion: "quant-radar-1.1.0", engineVersion: Radar.VERSION, alertEventSchema: Radar.ALERT_EVENT_SCHEMA,
+  schemaVersion: "quant-radar-1.2.0", engineVersion: Radar.VERSION, alertEventSchema: Radar.ALERT_EVENT_SCHEMA,
   generatedAt: new Date().toISOString(), asOf,
   sources: {
     setup: { from: before.date, to: latest.date, snapshots: setupDates, mappingVersion: "setup-mapping-1.0.0" },
@@ -438,7 +488,8 @@ const radar = {
     replayEvidence: { snapshots: evidenceDates },
     backtest: Object.fromEntries(Object.entries(STUDIES).map(([k, v]) => [k, v ? { asOf: v.asOf, engineVersion: v.engineVersion, returnType: v.returnType } : null]))
   },
-  alertContract: { schema: Radar.ALERT_EVENT_SCHEMA, fields: Radar.EVENT_FIELDS, delivery: "NOT_CONFIGURED", dedupe: "securityId|eventType|subject|occurredAt" },
+  alertContract: { schema: Radar.ALERT_EVENT_SCHEMA, fields: Radar.EVENT_FIELDS, delivery: "NOT_CONFIGURED", dedupe: "securityId|eventType|subject|occurredAt",
+    newOnly: "isNew = dedupeKey zum ersten Mal erkannt (radar-history/alert-ledger)", validity: VALID_DAYS + " Tage nach Wirksamkeit" },
   backtestEvidence: Object.fromEntries(Radar.EVENT_TYPES.map((t) => [t.id, backtestEvidenceFor(t.id)])),
   eventTypes: Radar.EVENT_TYPES.map((t) => ({ id: t.id, label: t.label, plain: t.plain, source: t.source, tone: t.tone,
     state: CLOSED[t.id] ? "CLOSED" : "OPEN", reason: CLOSED[t.id] || null })),
@@ -466,6 +517,8 @@ const radar = {
     EVENT_TYPES_WITH_BACKTEST: Radar.EVENT_TYPES.filter((t) => backtestEvidenceFor(t.id).state === "AVAILABLE").map((t) => t.id),
     EVENT_TYPES_BACKTEST_WITHHELD: Radar.EVENT_TYPES.filter((t) => backtestEvidenceFor(t.id).state !== "AVAILABLE").map((t) => ({ id: t.id, reason: backtestEvidenceFor(t.id).reason, trust: backtestEvidenceFor(t.id).trust })),
     DEDUPE_KEYS_UNIQUE: new Set(events.map((e) => e.dedupeKey)).size === events.length,
+    ALERTS_NEW: events.filter((e) => e.isNew).length, ALERTS_ALREADY_SEEN: events.filter((e) => !e.isNew).length,
+    EVENTS_WITH_BASE_RATE: events.filter((e) => e.baseRate).length,
     WATCHLIST_EVENTS_TRACKABLE: Object.keys(lifecycle).length
   },
   events, cards
@@ -497,7 +550,10 @@ function trackingOf(t) {
     invalidation: inv, close: s ? s.close : null,
     nextCondition: next ? { state: next.state, label: label(next.state), open: next.open.length, total: next.total } : null,
     evidenceState: evidenceLevel(r), episodes: r && r.episodes ? r.episodes : 0,
-    backtest: lc && (lc[0] === "CONFIRMED" || lc[0] === "SETUP_FORMING") ? compactBacktest(backtestEvidenceFor(lc[0] === "CONFIRMED" ? "SETUP_CONFIRMED" : "SETUP_NEW")) : null
+    backtest: lc && (lc[0] === "CONFIRMED" || lc[0] === "SETUP_FORMING") ? compactBacktest(backtestEvidenceFor(lc[0] === "CONFIRMED" ? "SETUP_CONFIRMED" : "SETUP_NEW")) : null,
+    /* Ereignisse der letzten 90 Tage, neueste zuerst (Zustandswechsel,
+       Evidenz-Aenderungen, Setup-Fortschritt). */
+    history: (eventHistory[t] || []).slice().sort((a, b) => (a[2] < b[2] ? 1 : a[2] > b[2] ? -1 : 0)).slice(0, 20)
   };
 }
 const TICKER_DIR = P("quant/data/product/radar-ticker-v1");
@@ -510,7 +566,7 @@ for (const t of Object.keys(lifecycle)) {
   (tShards[key] = tShards[key] || {})[t] = { lifecycle: lifecycle[t], card: cardBy[t] || null, tracking: trackingOf(t) };
 }
 for (const [key, rows] of Object.entries(tShards)) {
-  writeGz(join(TICKER_DIR, key + ".json.gz"), { schemaVersion: "radar-ticker-1.1.0", engineVersion: Radar.VERSION, shard: key, asOf: latest.date, radarAsOf: asOf,
+  writeGz(join(TICKER_DIR, key + ".json.gz"), { schemaVersion: "radar-ticker-1.2.0", engineVersion: Radar.VERSION, shard: key, asOf: latest.date, radarAsOf: asOf,
     snapshots: setupDates, columns: ["state", "since", "sinceIsLowerBound", "previousState", "previousAsOf"], rows });
 }
 for (const f of readdirSync(TICKER_DIR)) if (/\.json\.gz$/.test(f) && !tShards[f.slice(0, -8)]) { const { unlinkSync } = await import("node:fs"); unlinkSync(join(TICKER_DIR, f)); }

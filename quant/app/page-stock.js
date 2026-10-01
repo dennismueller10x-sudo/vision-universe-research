@@ -593,6 +593,7 @@
       adjusted: s.chart && s.chart.adjustmentStatus === "splitAdjusted", splitEvents: s.chart && s.chart.splitEvents,
       longPath: s.masterMemberId && /^[A-Za-z0-9_-]+$/.test(s.masterMemberId) ? "/quant/data/market/discover-series-long/" + s.masterMemberId + ".json" : null,
       loadJSON: global.QuantShell.loadJSON,
+      realtime: function () { return api.getRealtimeCapability(ticker); },
       onPrice: function (p) { if (typeof p.price === "number" && (p.live || !hasDailyPrice)) setQuote(p.price, p.delta, p.when + " · USD"); } });
     disposers.push(chart.dispose);
 
@@ -659,7 +660,7 @@
       { href: X.routes.backtest(), label: "Backtesting" }, "03 / Radar-Status", "radar-status"));
     (api.getSignalTracking ? api.getSignalTracking(ticker).catch(function () { return null; }) : Promise.resolve(null)).then(function (tr) {
       if (!trackHost.isConnected) return;
-      var kids = global.QXBacktest ? global.QXBacktest.trackingSection(tr, ctx) : null;
+      var kids = global.QXEvidence ? global.QXEvidence.trackingSection(tr, ctx) : null;
       trackHost.replaceChildren.apply(trackHost, kids || [el("p", { class: "qx-small", text: tr && tr.reason === "NOT_IN_SETUP_UNIVERSE" ? "Diese Aktie gehört nicht zum Setup-Universum; der Radar verfolgt sie nicht." : "Für diese Aktie liegt kein Radar-Status vor." })]);
     });
 

@@ -1,21 +1,21 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-01T11:21:32.564Z",
+ "generatedAt": "2026-10-01T13:42:39.828Z",
  "radarAsOf": "2026-09-30",
  "signalAsOf": "2026-09-25",
- "setupAsOf": "2026-09-30",
+ "setupAsOf": "2026-09-29",
  "measures": {
   "SETUP_BACKTEST_READY": {
    "ready": true,
    "decision": "WITHHELD",
-   "trust": "LIMITED",
+   "trust": "NOT_READY",
    "reasons": [
     "DAILY_HISTORY_ONLY_IN_PRIVATE_STORE",
     "HAND_PICKED_SURVIVORS",
     "SETUP_OUTCOMES_NOT_CERTIFIED"
    ],
-   "replayTitles": 37,
-   "parity": "166/166"
+   "replayTitles": 5,
+   "parity": "20/20"
   },
   "SIGNAL_BACKTEST_READY": {
    "ready": true,
@@ -49,9 +49,9 @@
     "NEW_52W_HIGH:LIMITED"
    ],
    "setup": [
-    "SETUP_CONFIRMED:LIMITED",
-    "SETUP_NEW:LIMITED",
-    "SETUP_WEAKENED:LIMITED"
+    "SETUP_CONFIRMED:NOT_READY",
+    "SETUP_NEW:NOT_READY",
+    "SETUP_WEAKENED:NOT_READY"
    ],
    "strategyProfilesWithheld": 8
   },
@@ -159,7 +159,7 @@
    "next": "Beobachten (1/1)",
    "evidence": "BROAD",
    "events": [
-    "SETUP_WEAKENED:WITHHELD HAND_PICKED_SURVIVORS"
+    "SETUP_WEAKENED:WITHHELD SETUP_HISTORY_TOO_SHORT"
    ]
   },
   {

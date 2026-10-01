@@ -1,4 +1,4 @@
-/* Quant Radar (quant-radar-1.1.0, Alert-Vertrag 2.0.0): taegliche Ereignisse, Setup-Lebenszyklus,
+/* Quant Radar (quant-radar-1.2.0, Alert-Vertrag 3.0.0): taegliche Ereignisse, Setup-Lebenszyklus,
    Alert-Vertrag und Evidenz-Status. Geprueft wird gegen die
    veroeffentlichten Artefakte, nicht gegen eingefrorene Zahlen. */
 import test from "node:test";
@@ -25,20 +25,20 @@ const lifecycle = gz("quant/data/product/setup-lifecycle-v1.json.gz");
 const evidence = JSON.parse(readFileSync(new URL("quant/data/product/evidence-status-v1.json", root), "utf8"));
 
 test("jedes veroeffentlichte Ereignis erfuellt den Alert-Vertrag", () => {
-  assert.equal(radar.schemaVersion, "quant-radar-1.1.0");
-  assert.equal(radar.alertContract.schema, "quant-alert-event-2.0.0");
+  assert.equal(radar.schemaVersion, "quant-radar-1.2.0");
+  assert.equal(radar.alertContract.schema, "quant-alert-event-3.0.0");
   assert.ok(radar.events.length > 0, "ein Radar ohne Ereignis waere ein Fehler im Build");
   for (const e of radar.events) {
     assert.deepEqual(Radar.eventViolations(e), [], e.id);
-    for (const f of ["securityId", "ticker", "issuerId", "eventType", "occurredAt", "detectedAt", "previousState", "currentState", "trigger", "invalidation",
-      "explanation", "evidence", "backtestEvidence", "trustState", "nextCondition", "dedupeKey"])
+    for (const f of ["securityId", "ticker", "issuerId", "eventType", "occurredAt", "effectiveAt", "detectedAt", "validUntil", "previousState", "currentState", "trigger", "invalidation",
+      "explanation", "evidence", "baseRate", "backtestEvidence", "trustState", "nextCondition", "dedupeKey", "isNew"])
       assert.ok(f in e, f + " fehlt in " + e.id);
     assert.equal(e.delivery, "NOT_CONFIGURED", "Zustellung gibt es noch keine - das Ereignis darf keine behaupten");
   }
   assert.equal(radar.measures.ALERT_READY_EVENTS, radar.events.length);
 });
 
-test("Alert-Vertrag 2.0.0: Ausloeser, Invalidierung, Backtest-Beleg, Vertrauen und dedupeKey werden geprueft", () => {
+test("Alert-Vertrag 3.0.0: Ausloeser, Invalidierung, Base Rate, Backtest-Beleg, Vertrauen, Gueltigkeit und dedupeKey werden geprueft", () => {
   const ok = radar.events.find((e) => e.backtestEvidence.state === "AVAILABLE");
   assert.ok(ok, "mindestens ein Ereignis traegt historische Evidenz");
   assert.deepEqual(Radar.eventViolations(ok), []);
@@ -47,7 +47,12 @@ test("Alert-Vertrag 2.0.0: Ausloeser, Invalidierung, Backtest-Beleg, Vertrauen u
   assert.ok(Radar.eventViolations({ ...ok, trustState: "ROBUST" }).includes("TRUST_STATE_MISMATCH"));
   assert.ok(Radar.eventViolations({ ...ok, dedupeKey: "x" }).includes("DEDUPE_KEY_MISMATCH"));
   assert.ok(Radar.eventViolations({ ...ok, detectedAt: "2020-01-01T00:00:00Z" }).includes("INVALID_DETECTED_AT"));
-  assert.ok(Radar.eventViolations({ ...ok, backtestEvidence: { state: "WITHHELD", trust: "NOT_READY" }, trustState: "NOT_READY" }).includes("BACKTEST_WITHHELD_WITHOUT_REASON"));
+  assert.ok(Radar.eventViolations({ ...ok, backtestEvidence: { state: "WITHHELD", trust: "NOT_READY" }, trustState: "NOT_READY", baseRate: null }).includes("BACKTEST_WITHHELD_WITHOUT_REASON"));
+  /* Eine Trefferquote ohne Base Rate, eine erfundene Base Rate und ein ungueltiger Zeitraum werden abgelehnt. */
+  assert.ok(Radar.eventViolations({ ...ok, baseRate: null }).includes("BASE_RATE_REQUIRED"));
+  assert.ok(Radar.eventViolations({ ...ok, baseRate: { ...ok.baseRate, delta: ok.baseRate.delta + 0.05 } }).includes("BASE_RATE_INCONSISTENT"));
+  assert.ok(Radar.eventViolations({ ...ok, validUntil: "2000-01-01" }).includes("INVALID_VALID_UNTIL"));
+  assert.ok(Radar.eventViolations({ ...ok, isNew: undefined }).includes("IS_NEW_REQUIRED"));
   assert.ok(Radar.eventViolations({ ...ok, backtestEvidence: { ...ok.backtestEvidence, trust: "NOT_READY" }, trustState: "NOT_READY" }).includes("BACKTEST_EVIDENCE_INCOMPLETE"),
     "freigegebene Evidenz braucht mindestens eingeschraenktes Vertrauen");
   assert.equal(new Set(radar.events.map((e) => e.dedupeKey)).size, radar.events.length, "dedupeKey ist je Ereignis eindeutig");
@@ -184,4 +189,22 @@ test("QUANT_DECISION_INTELLIGENCE ist gemessen und jedes Kriterium belegt", () =
   assert.equal(di.verdict, di.criteria.every((c) => c.pass) ? "PASS" : "FAIL");
   /* Die Stichprobe deckt die verlangten Faelle ab - auch die schwierigen. */
   for (const k of ["Bank", "REIT", "junge Aktie", "datenarme Aktie", "Small Cap"]) assert.ok(di.sample.some((r) => r.kind === k), k);
+});
+
+test("alert ledger: a key alarms once, a re-run of the same radar date keeps it new", () => {
+  const ev = () => [{ dedupeKey: "A" }, { dedupeKey: "B" }];
+  const keys = {};
+  const first = ev(); Radar.markSeen(keys, first, "2026-09-30", "2026-10-01T05:00:00Z");
+  assert.deepEqual(first.map((e) => e.isNew), [true, true]);
+  /* Wiederholter Lauf zum selben Stichtag: weiter neu, erste Erkennung bleibt. */
+  const rerun = ev(); Radar.markSeen(keys, rerun, "2026-09-30", "2026-10-01T13:00:00Z");
+  assert.deepEqual(rerun.map((e) => e.isNew), [true, true]);
+  assert.equal(rerun[0].detectedAt, "2026-10-01T05:00:00Z");
+  /* Naechster Stichtag: derselbe Zustand alarmiert nicht noch einmal, ein neuer schon. */
+  const next = [{ dedupeKey: "A" }, { dedupeKey: "C" }]; Radar.markSeen(keys, next, "2026-10-01", "2026-10-02T05:00:00Z");
+  assert.deepEqual(next.map((e) => e.isNew), [false, true]);
+  /* Sabotage: eine Ledger-Regel, die jeden bekannten Schluessel als alt meldet, faellt hier durch. */
+  const broken = (k, es) => es.forEach((e) => { e.isNew = !k[e.dedupeKey]; k[e.dedupeKey] = k[e.dedupeKey] || ["x", "2026-09-30"]; });
+  const k2 = {}; broken(k2, ev()); const again = ev(); broken(k2, again);
+  assert.notDeepEqual(again.map((e) => e.isNew), rerun.map((e) => e.isNew));
 });
