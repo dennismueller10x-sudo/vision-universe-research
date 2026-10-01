@@ -1,0 +1,3962 @@
+{
+  "schemaVersion": "marketstack-adjustment-compatibility-1.0.0",
+  "generatedAt": "2026-10-01T19:14:02.876Z",
+  "scope": "EXACT_LISTING_BOUNDED_CACHED_CONTROL_WINDOWS_NOT_UNIVERSAL_PROVIDER_CERTIFICATION",
+  "priceFieldSemantics": {
+    "close": "NO_UNIVERSAL_AS_TRADED_OR_SPLIT_ADJUSTED_BASIS_ASSERTED: see per-window observedCloseBasis and comparison.",
+    "adj_close": "PROVIDER_REPORTED_ADJUSTED_FIELD: presence and bounded signatures are measured per window; no full split/dividend adjustment certification.",
+    "split_factor": "PROVIDER_ACTION_OBSERVATION_NOT_AN_INSTRUCTION_TO_APPLY_A_SECOND_ADJUSTMENT.",
+    "volume": "NO_UNIVERSAL_AS_TRADED_VOLUME_BASIS_ASSERTED: per-window Tiingo raw/adjusted volume ratios are recorded separately from price basis.",
+    "dividend": "PROVIDER_CASH_DISTRIBUTION_OBSERVATION: independent amount/date and adjustment checks are required; no total-return certification."
+  },
+  "rows": [
+    {
+      "symbol": "NVDA",
+      "mic": "XNAS",
+      "from": "2024-06-03",
+      "to": "2024-06-14",
+      "role": "US_SPLIT_AND_CASH_DIVIDEND",
+      "tiingo": "ref_NVDA.json",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "NVDA",
+            "date_from": "2024-06-03",
+            "date_to": "2024-06-14",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T11:01:51.308Z",
+          "sourceRunId": "36852153799",
+          "sourceRunAttribution": "ORIGINAL_SINGLE_RUN_PROBE",
+          "providerResponseSha256": "9cd2e42b3a7ee42b9fb5ae5d3e507f1e3e8ebeb01820f7a96307f67423193aea",
+          "rowsInControl": 10,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 10,
+            "total": 10
+          }
+        }
+      ],
+      "officialEvent": {
+        "providerSymbol": "NVDA",
+        "exchange": "XNAS",
+        "type": "SPLIT",
+        "factor": 10,
+        "effectiveDate": "2024-06-07",
+        "marketDate": "2024-06-10",
+        "recordDate": "2024-06-06",
+        "sourceUrl": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2025",
+        "sourceSha256": "69e839709037ea87a74cdbca53b44b5057510076f837eeae901b5903b16d8ba1",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "from": "2024-06-03",
+        "to": "2024-06-14",
+        "retrievedAt": "2026-10-01T18:44:13.708143Z"
+      },
+      "officialDividendControls": [
+        {
+          "providerSymbol": "NVDA",
+          "exchange": "XNAS",
+          "type": "CASH_DIVIDEND",
+          "amount": 0.01,
+          "currency": "USD",
+          "marketDate": null,
+          "recordDate": "2024-06-11",
+          "paymentDate": "2024-06-28",
+          "sourceUrl": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2025",
+          "sourceSha256": "69e839709037ea87a74cdbca53b44b5057510076f837eeae901b5903b16d8ba1",
+          "verification": "VERIFIED_OFFICIAL_SOURCE",
+          "notes": "Post-split amount and record/payment dates explicit; do not turn record date into independent ex-date.",
+          "retrievedAt": "2026-10-01T18:44:13.708143Z"
+        }
+      ],
+      "analysis": {
+        "bars": 10,
+        "firstDate": "2024-06-03",
+        "lastDate": "2024-06-14",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2024-06-03",
+          "to": "2024-06-14"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 1,
+        "validRawCandles": 10,
+        "adjustedCloses": 10,
+        "identicalAdjustedCloses": 4,
+        "adjustedCloseToClose": {
+          "count": 10,
+          "min": 0.09999175106174453,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 10,
+          "min": 0.9808128169567991,
+          "max": 1.0000001419231352
+        },
+        "adjacentCloseRatios": {
+          "count": 9,
+          "min": 0.9509719046063376,
+          "max": 9.925938090155185
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 9,
+          "min": 0.9509719439450657,
+          "max": 1.0119168744694726
+        },
+        "dividendObservations": [
+          {
+            "date": "2024-06-11",
+            "amount": 0.01
+          }
+        ],
+        "splitObservations": [
+          {
+            "date": "2024-06-10",
+            "factor": 10
+          }
+        ],
+        "providerSplitDiagnostics": [
+          {
+            "date": "2024-06-10",
+            "factor": 10,
+            "beforeDate": "2024-06-07",
+            "closeRatioBeforeAfter": 9.925938090155185,
+            "adjustedCloseRatioBeforeAfter": 0.9925940220068977,
+            "volumeRatioBeforeAfter": 1.3126503934165472,
+            "basisSignature": "UNADJUSTED_SPLIT_GAP_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          }
+        ],
+        "splitGapCandidates": [
+          {
+            "beforeDate": "2024-06-07",
+            "date": "2024-06-10",
+            "closeRatioBeforeAfter": 9.925938090155185,
+            "adjustedCloseRatioBeforeAfter": 0.9925940220068977,
+            "expectedOfficialFactor": 10
+          }
+        ],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 10,
+        "exchangesObserved": [
+          "XNAS"
+        ],
+        "issues": [
+          {
+            "date": "2024-06-03",
+            "flags": [
+              "ADJUSTED_OHLC_IMPOSSIBLE"
+            ]
+          }
+        ],
+        "issueCount": 1,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_IMPOSSIBLE": 1
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [],
+        "eventObservation": {
+          "state": "OBSERVED_DIAGNOSTIC_ONLY",
+          "eventType": "SPLIT",
+          "marketDate": "2024-06-10",
+          "effectiveDate": "2024-06-07",
+          "beforeDate": "2024-06-07",
+          "afterDate": "2024-06-10",
+          "closeRatioBeforeAfter": 9.925938090155185,
+          "adjustedCloseRatioBeforeAfter": 0.9925940220068977,
+          "volumeRatioBeforeAfter": 1.3126503934165472,
+          "expectedSplitFactor": 10,
+          "basisSignature": "UNADJUSTED_SPLIT_GAP_SIGNATURE",
+          "providerSplitObservations": [
+            {
+              "date": "2024-06-10",
+              "factor": 10
+            }
+          ],
+          "sourceUrl": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2025"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "efb98edf624bfed6cbdda26a410cf73c56e109005fa7172c263b60d42c1adb90"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2024-06-11",
+          "priorDate": "2024-06-10",
+          "amount": 0.01,
+          "factorStep": 1.000082115289867,
+          "simpleBackwardCashDividendExpectedStep": 1.0000821152898671,
+          "differenceBps": -2.220446049250313e-12,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": {
+        "provider": "tiingo",
+        "currency": "USD",
+        "fetchedAt": "2026-09-30T02:11:42.853Z",
+        "sourceSha256": "17d881c3a89e026e235677b96e2238553700a06c899a641f957a462713ed7b31",
+        "sourceFile": "ref_NVDA.json",
+        "normalizedPriceBasis": "adjusted"
+      },
+      "comparison": {
+        "pairedDays": 10,
+        "pairDates": [
+          "2024-06-03",
+          "2024-06-04",
+          "2024-06-05",
+          "2024-06-06",
+          "2024-06-07",
+          "2024-06-10",
+          "2024-06-11",
+          "2024-06-12",
+          "2024-06-13",
+          "2024-06-14"
+        ],
+        "conflictingDates": [],
+        "missingProviderCurrencyDates": [
+          "2024-06-03",
+          "2024-06-04",
+          "2024-06-05",
+          "2024-06-06",
+          "2024-06-07",
+          "2024-06-10",
+          "2024-06-11",
+          "2024-06-12",
+          "2024-06-13",
+          "2024-06-14"
+        ],
+        "currencyValidation": "NUMERICAL_COMPARISON_ONLY_PROVIDER_HISTORICAL_CURRENCY_MISSING",
+        "missingMarketstackDates": [],
+        "rawOHLCMarketstackToTiingo": {
+          "count": 40,
+          "min": 0.9999999178251338,
+          "max": 1
+        },
+        "rawCloseRatiosByDate": [
+          {
+            "date": "2024-06-03",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-04",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-05",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-06",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-07",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-10",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-11",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-12",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-13",
+            "factor": 1
+          },
+          {
+            "date": "2024-06-14",
+            "factor": 1
+          }
+        ],
+        "reportedVolumeMarketstackToTiingoRaw": {
+          "count": 10,
+          "min": 0.999999858076885,
+          "max": 10.000000821183319
+        },
+        "reportedVolumeRatiosByDate": [
+          {
+            "date": "2024-06-03",
+            "factor": 10.000000821183319
+          },
+          {
+            "date": "2024-06-04",
+            "factor": 9.999999157005307
+          },
+          {
+            "date": "2024-06-05",
+            "factor": 10.000000283874895
+          },
+          {
+            "date": "2024-06-06",
+            "factor": 9.999999593799387
+          },
+          {
+            "date": "2024-06-07",
+            "factor": 9.999999418020698
+          },
+          {
+            "date": "2024-06-10",
+            "factor": 1.019562532943578
+          },
+          {
+            "date": "2024-06-11",
+            "factor": 1.0000002022007004
+          },
+          {
+            "date": "2024-06-12",
+            "factor": 0.9999999966621606
+          },
+          {
+            "date": "2024-06-13",
+            "factor": 0.999999858076885
+          },
+          {
+            "date": "2024-06-14",
+            "factor": 0.9999999967671059
+          }
+        ],
+        "reportedAdjVolumeMarketstackToTiingoAdjusted": {
+          "count": 10,
+          "min": 1,
+          "max": 1
+        },
+        "adjustedCloseMarketstackToTiingo": {
+          "count": 10,
+          "min": 1.0027647311318983,
+          "max": 1.0027656940410024
+        },
+        "adjustedScaleSpreadBps": 0.009602542592190844,
+        "adjustedDailyReturnErrorBps": {
+          "count": 9,
+          "min": 1.7830181775480014e-9,
+          "max": 0.007089467769505475
+        },
+        "adjustedReturnsConsistentWithinOneBasisPoint": true,
+        "actionPairs": [
+          {
+            "date": "2024-06-10",
+            "marketstackSplitFactor": 10,
+            "tiingoSplitFactor": 10,
+            "marketstackDividend": 0,
+            "tiingoDividend": 0
+          },
+          {
+            "date": "2024-06-11",
+            "marketstackSplitFactor": 1,
+            "tiingoSplitFactor": 1,
+            "marketstackDividend": 0.01,
+            "tiingoDividend": 0.01
+          }
+        ],
+        "dividendFactorDiagnostics": [
+          {
+            "date": "2024-06-11",
+            "reportedDividend": 0.01,
+            "adjustmentFactorStep": 1.000082115289867,
+            "simpleBackwardCashDividendExpectedStep": 1.0000821152898671,
+            "differenceBps": -2.220446049250313e-12,
+            "inferenceScope": "ADJ_CLOSE_LOCAL_FACTOR_STEP_ONLY_NOT_FULL_RETURN_OR_VOLUME_CERTIFICATION"
+          }
+        ],
+        "sourceRelation": "INDEPENDENT_PROVIDER_ACCESS_SAME_LISTING_DIFFERENT_RETRIEVAL_BASES",
+        "historicalSeriesCertified": false
+      },
+      "observedCloseBasis": "MATCHES_TIINGO_AS_TRADED_CLOSE_IN_TESTED_DATES",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "CONSISTENT_NUMERICALLY_QUOTE_UNIT_UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "AAPL",
+      "mic": "XNAS",
+      "from": "2020-08-24",
+      "to": "2020-09-04",
+      "role": "US_SPLIT",
+      "tiingo": "ref_AAPL.json",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "AAPL",
+            "date_from": "2020-08-24",
+            "date_to": "2020-09-04",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T11:01:52.052Z",
+          "sourceRunId": "36852153799",
+          "sourceRunAttribution": "ORIGINAL_SINGLE_RUN_PROBE",
+          "providerResponseSha256": "d65287cd786c81b6be2fd6cf7ac645901384540b70700b8fd51cc8f2942a2ce9",
+          "rowsInControl": 10,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 10,
+            "total": 10
+          }
+        }
+      ],
+      "officialEvent": {
+        "providerSymbol": "AAPL",
+        "exchange": "XNAS",
+        "type": "SPLIT",
+        "factor": 4,
+        "marketDate": "2020-08-31",
+        "recordDate": "2020-08-24",
+        "sourceUrl": "https://www.apple.com/newsroom/2020/07/apple-reports-third-quarter-results/",
+        "sourceSha256": "8e2ec99b45a48ba43109e412c32b0438bb41516fe1288f79bd02b2600ae23d3c",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "from": "2020-08-24",
+        "to": "2020-09-04",
+        "retrievedAt": "2026-10-01T18:44:14.744174Z"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 10,
+        "firstDate": "2020-08-24",
+        "lastDate": "2020-09-04",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2020-08-24",
+          "to": "2020-09-04"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 3,
+        "validRawCandles": 10,
+        "adjustedCloses": 10,
+        "identicalAdjustedCloses": 0,
+        "adjustedCloseToClose": {
+          "count": 10,
+          "min": 0.98493199527272,
+          "max": 0.9849325790452573
+        },
+        "adjustedVolumeToVolume": {
+          "count": 10,
+          "min": 0.9902661022663884,
+          "max": 1.0034356599391503
+        },
+        "adjacentCloseRatios": {
+          "count": 9,
+          "min": 0.9616932478759874,
+          "max": 1.0870284579748513
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 9,
+          "min": 0.9616936368685409,
+          "max": 1.087028572484474
+        },
+        "dividendObservations": [],
+        "splitObservations": [
+          {
+            "date": "2020-08-31",
+            "factor": 4
+          }
+        ],
+        "providerSplitDiagnostics": [
+          {
+            "date": "2020-08-31",
+            "factor": 4,
+            "beforeDate": "2020-08-28",
+            "closeRatioBeforeAfter": 0.9672000929944204,
+            "adjustedCloseRatioBeforeAfter": 0.9671995197319816,
+            "volumeRatioBeforeAfter": 0.8313148225519676,
+            "basisSignature": "CONTINUOUS_REPORTED_PRICE_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          }
+        ],
+        "splitGapCandidates": [],
+        "currenciesObserved": [
+          "USD"
+        ],
+        "missingCurrencyCandles": 0,
+        "exchangesObserved": [
+          "XNAS"
+        ],
+        "issues": [
+          {
+            "date": "2020-08-24",
+            "flags": [
+              "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC"
+            ]
+          },
+          {
+            "date": "2020-08-25",
+            "flags": [
+              "ADJUSTED_OHLC_IMPOSSIBLE"
+            ]
+          },
+          {
+            "date": "2020-08-26",
+            "flags": [
+              "ADJUSTED_OHLC_IMPOSSIBLE"
+            ]
+          },
+          {
+            "date": "2020-08-27",
+            "flags": [
+              "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC"
+            ]
+          },
+          {
+            "date": "2020-08-28",
+            "flags": [
+              "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC"
+            ]
+          },
+          {
+            "date": "2020-08-31",
+            "flags": [
+              "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC"
+            ]
+          },
+          {
+            "date": "2020-09-01",
+            "flags": [
+              "ADJUSTED_OHLC_IMPOSSIBLE"
+            ]
+          },
+          {
+            "date": "2020-09-02",
+            "flags": [
+              "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC"
+            ]
+          },
+          {
+            "date": "2020-09-03",
+            "flags": [
+              "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC"
+            ]
+          },
+          {
+            "date": "2020-09-04",
+            "flags": [
+              "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC"
+            ]
+          }
+        ],
+        "issueCount": 10,
+        "issueCountsByFlag": {
+          "ADJUSTMENT_FACTOR_INCONSISTENT_ACROSS_OHLC": 7,
+          "ADJUSTED_OHLC_IMPOSSIBLE": 3
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "DOUBLE_ADJUSTMENT_RISK_REVIEW"
+        ],
+        "eventObservation": {
+          "state": "OBSERVED_DIAGNOSTIC_ONLY",
+          "eventType": "SPLIT",
+          "marketDate": "2020-08-31",
+          "effectiveDate": null,
+          "beforeDate": "2020-08-28",
+          "afterDate": "2020-08-31",
+          "closeRatioBeforeAfter": 0.9672000929944204,
+          "adjustedCloseRatioBeforeAfter": 0.9671995197319816,
+          "volumeRatioBeforeAfter": 0.8313148225519676,
+          "expectedSplitFactor": 4,
+          "basisSignature": "CONTINUOUS_REPORTED_PRICE_SIGNATURE",
+          "providerSplitObservations": [
+            {
+              "date": "2020-08-31",
+              "factor": 4
+            }
+          ],
+          "sourceUrl": "https://www.apple.com/newsroom/2020/07/apple-reports-third-quarter-results/"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "af4890aa9e5becfb1aeef58270464b622ab40f13b3024566907e729e6014cc8b"
+      },
+      "dividendFactorSteps": [],
+      "tiingoSource": {
+        "provider": "tiingo",
+        "currency": "USD",
+        "fetchedAt": "2026-09-30T01:28:36.058Z",
+        "sourceSha256": "d5c89d97463207a84c77bb7c1c0d52f9b6309bff428271157416a46b6d4540a0",
+        "sourceFile": "ref_AAPL.json",
+        "normalizedPriceBasis": "adjusted"
+      },
+      "comparison": {
+        "pairedDays": 10,
+        "pairDates": [
+          "2020-08-24",
+          "2020-08-25",
+          "2020-08-26",
+          "2020-08-27",
+          "2020-08-28",
+          "2020-08-31",
+          "2020-09-01",
+          "2020-09-02",
+          "2020-09-03",
+          "2020-09-04"
+        ],
+        "conflictingDates": [],
+        "missingProviderCurrencyDates": [],
+        "currencyValidation": "EXPLICIT_MATCHING_CURRENCY",
+        "missingMarketstackDates": [],
+        "rawOHLCMarketstackToTiingo": {
+          "count": 40,
+          "min": 0.25,
+          "max": 1
+        },
+        "rawCloseRatiosByDate": [
+          {
+            "date": "2020-08-24",
+            "factor": 0.25
+          },
+          {
+            "date": "2020-08-25",
+            "factor": 0.25
+          },
+          {
+            "date": "2020-08-26",
+            "factor": 0.25
+          },
+          {
+            "date": "2020-08-27",
+            "factor": 0.25
+          },
+          {
+            "date": "2020-08-28",
+            "factor": 0.25
+          },
+          {
+            "date": "2020-08-31",
+            "factor": 1
+          },
+          {
+            "date": "2020-09-01",
+            "factor": 1
+          },
+          {
+            "date": "2020-09-02",
+            "factor": 1
+          },
+          {
+            "date": "2020-09-03",
+            "factor": 1
+          },
+          {
+            "date": "2020-09-04",
+            "factor": 1
+          }
+        ],
+        "reportedVolumeMarketstackToTiingoRaw": {
+          "count": 10,
+          "min": 0.9965761034052162,
+          "max": 4.000003238821337
+        },
+        "reportedVolumeRatiosByDate": [
+          {
+            "date": "2020-08-24",
+            "factor": 3.9999980574540794
+          },
+          {
+            "date": "2020-08-25",
+            "factor": 3.9999964443736347
+          },
+          {
+            "date": "2020-08-26",
+            "factor": 4.000003238821337
+          },
+          {
+            "date": "2020-08-27",
+            "factor": 4.00000041143696
+          },
+          {
+            "date": "2020-08-28",
+            "factor": 4.000001790759209
+          },
+          {
+            "date": "2020-08-31",
+            "factor": 1.0098295778390616
+          },
+          {
+            "date": "2020-09-01",
+            "factor": 0.9965761034052162
+          },
+          {
+            "date": "2020-09-02",
+            "factor": 1.000000044973243
+          },
+          {
+            "date": "2020-09-03",
+            "factor": 0.9999998447202799
+          },
+          {
+            "date": "2020-09-04",
+            "factor": 1.0000001112423427
+          }
+        ],
+        "reportedAdjVolumeMarketstackToTiingoAdjusted": {
+          "count": 10,
+          "min": 1,
+          "max": 1
+        },
+        "adjustedCloseMarketstackToTiingo": {
+          "count": 10,
+          "min": 1.0162183041384147,
+          "max": 1.0162189064546614
+        },
+        "adjustedScaleSpreadBps": 0.00592703599311406,
+        "adjustedDailyReturnErrorBps": {
+          "count": 9,
+          "min": 0.00045551523886189216,
+          "max": 0.00592703599311406
+        },
+        "adjustedReturnsConsistentWithinOneBasisPoint": true,
+        "actionPairs": [
+          {
+            "date": "2020-08-31",
+            "marketstackSplitFactor": 4,
+            "tiingoSplitFactor": 4,
+            "marketstackDividend": 0,
+            "tiingoDividend": 0
+          }
+        ],
+        "dividendFactorDiagnostics": [],
+        "sourceRelation": "INDEPENDENT_PROVIDER_ACCESS_SAME_LISTING_DIFFERENT_RETRIEVAL_BASES",
+        "historicalSeriesCertified": false
+      },
+      "observedCloseBasis": "REPORTED_CLOSE_ALREADY_SPLIT_SCALED_BEFORE_EVENT_IN_TESTED_DATES",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "PARTIAL_DISPLAY_ONLY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "CONSISTENT_IN_TESTED_WINDOW",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "NVO",
+      "mic": "XNYS",
+      "from": "2023-09-15",
+      "to": "2023-09-25",
+      "role": "US_ADR_SPLIT",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "NVO",
+            "exchange": "XNYS",
+            "date_from": "2023-09-15",
+            "date_to": "2023-09-25",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:40:46.093Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "6a29084161715c08ec682034534351e07c505753b5ee173a053f0acf6a4926fa",
+          "rowsInControl": 7,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 7,
+            "total": 7
+          }
+        }
+      ],
+      "officialEvent": {
+        "company": "Novo Nordisk ADR",
+        "providerSymbol": "NVO",
+        "exchange": "XNYS",
+        "type": "SPLIT",
+        "factor": 2,
+        "effectiveDate": "2023-09-20",
+        "marketDate": "2023-09-20",
+        "sourceUrl": "https://www.novonordisk.com/content/dam/nncorp/global/en/investors/irmaterial/annual_report/2024/novo-nordisk-annual-report-2023.pdf",
+        "from": "2023-09-15",
+        "to": "2023-09-25",
+        "sourceSha256": "7d1849cb6166f61e062da3a100414e75fd14cb7ff489d321f5b14d21d4f63a59",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "retrievedAt": "2026-10-01"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 7,
+        "firstDate": "2023-09-15",
+        "lastDate": "2023-09-25",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2023-09-15",
+          "to": "2023-09-25"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 0,
+        "validRawCandles": 7,
+        "adjustedCloses": 7,
+        "identicalAdjustedCloses": 4,
+        "adjustedCloseToClose": {
+          "count": 7,
+          "min": 0.5,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 7,
+          "min": 0.9136467465144346,
+          "max": 1
+        },
+        "adjacentCloseRatios": {
+          "count": 6,
+          "min": 0.997647687784015,
+          "max": 1.9745592737253246
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 6,
+          "min": 0.9872796368626623,
+          "max": 1.0376821119509256
+        },
+        "dividendObservations": [],
+        "splitObservations": [
+          {
+            "date": "2023-09-20",
+            "factor": 2
+          }
+        ],
+        "providerSplitDiagnostics": [
+          {
+            "date": "2023-09-20",
+            "factor": 2,
+            "beforeDate": "2023-09-19",
+            "closeRatioBeforeAfter": 1.9745592737253246,
+            "adjustedCloseRatioBeforeAfter": 0.9872796368626623,
+            "volumeRatioBeforeAfter": 0.5297406571794185,
+            "basisSignature": "UNADJUSTED_SPLIT_GAP_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          }
+        ],
+        "splitGapCandidates": [
+          {
+            "beforeDate": "2023-09-19",
+            "date": "2023-09-20",
+            "closeRatioBeforeAfter": 1.9745592737253246,
+            "adjustedCloseRatioBeforeAfter": 0.9872796368626623,
+            "expectedOfficialFactor": 2
+          }
+        ],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 7,
+        "exchangesObserved": [
+          "XNYS"
+        ],
+        "issues": [],
+        "issueCount": 0,
+        "issueCountsByFlag": {},
+        "issueDetailsTruncated": false,
+        "signatures": [],
+        "eventObservation": {
+          "state": "OBSERVED_DIAGNOSTIC_ONLY",
+          "eventType": "SPLIT",
+          "marketDate": "2023-09-20",
+          "effectiveDate": "2023-09-20",
+          "beforeDate": "2023-09-19",
+          "afterDate": "2023-09-20",
+          "closeRatioBeforeAfter": 1.9745592737253246,
+          "adjustedCloseRatioBeforeAfter": 0.9872796368626623,
+          "volumeRatioBeforeAfter": 0.5297406571794185,
+          "expectedSplitFactor": 2,
+          "basisSignature": "UNADJUSTED_SPLIT_GAP_SIGNATURE",
+          "providerSplitObservations": [
+            {
+              "date": "2023-09-20",
+              "factor": 2
+            }
+          ],
+          "sourceUrl": "https://www.novonordisk.com/content/dam/nncorp/global/en/investors/irmaterial/annual_report/2024/novo-nordisk-annual-report-2023.pdf"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "12b420dd128f843c395fba0d2258ef2285f3087b0a456c7de2912273315f31f4"
+      },
+      "dividendFactorSteps": [],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "BOUNDED_REPORTED_PRICE_OBSERVATION_BASIS_UNVERIFIED",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "IAU",
+      "mic": "ARCX",
+      "from": "2021-05-17",
+      "to": "2021-05-28",
+      "role": "US_TRUST_REVERSE_SPLIT",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "IAU",
+            "exchange": "ARCX",
+            "date_from": "2016-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "checkedAt": "2026-10-01T15:05:23.335Z",
+          "sourceRunId": "36880932701",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "d063dc1d9117810ecd62b9d3a8380a88c1b09941bdfccd02e5c1de38f48d9b7e",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 1000,
+            "offset": 0,
+            "count": 1000,
+            "total": 2692
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "IAU",
+            "exchange": "ARCX",
+            "date_from": "2016-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC",
+            "offset": 1000
+          },
+          "checkedAt": "2026-10-01T15:05:24.814Z",
+          "sourceRunId": "36880932701",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "f29c791ccfabcf327639e1417e3ba5c713ef80700cb6e82bb4b38298b604a428",
+          "rowsInControl": 10,
+          "pagination": {
+            "limit": 1000,
+            "offset": 1000,
+            "count": 1000,
+            "total": 2692
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "IAU",
+            "exchange": "ARCX",
+            "date_from": "2016-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC",
+            "offset": 2000
+          },
+          "checkedAt": "2026-10-01T15:05:25.941Z",
+          "sourceRunId": "36880932701",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "f1c240e28e1deca24a795bcf027437d2f1ae95a086a6ff51a1d643bba5ddbf7b",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 1000,
+            "offset": 2000,
+            "count": 692,
+            "total": 2692
+          }
+        }
+      ],
+      "officialEvent": {
+        "providerSymbol": "IAU",
+        "exchange": "ARCX",
+        "assetType": "GOLD_TRUST",
+        "type": "REVERSE_SPLIT",
+        "factor": 0.5,
+        "marketDate": "2021-05-24",
+        "effectiveDate": "2021-05-24",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1278680/000143774922004899/iau20211231_10k.htm",
+        "sourceSha256": "a6c4b6478a00b5b2ef0a39bcc0ce8d960525aac77d218a696125ae91013e7647",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "from": "2021-05-17",
+        "to": "2021-05-28",
+        "notes": "One-for-two reverse split explicitly effective at market open; gold trust, not common equity.",
+        "retrievedAt": "2026-10-01T18:35:28.756544Z"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 10,
+        "firstDate": "2021-05-17",
+        "lastDate": "2021-05-28",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2021-05-17",
+          "to": "2021-05-28"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 10,
+        "validRawCandles": 10,
+        "adjustedCloses": 10,
+        "identicalAdjustedCloses": 10,
+        "adjustedCloseToClose": {
+          "count": 10,
+          "min": 1,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 9,
+          "min": 0.49944258639910816,
+          "max": 1.0016602102933039
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 9,
+          "min": 0.49944258639910816,
+          "max": 1.0016602102933039
+        },
+        "dividendObservations": [],
+        "splitObservations": [
+          {
+            "date": "2021-05-24",
+            "factor": 0.5
+          }
+        ],
+        "providerSplitDiagnostics": [
+          {
+            "date": "2021-05-24",
+            "factor": 0.5,
+            "beforeDate": "2021-05-21",
+            "closeRatioBeforeAfter": 0.49944258639910816,
+            "adjustedCloseRatioBeforeAfter": 0.49944258639910816,
+            "volumeRatioBeforeAfter": 1.944530764141647,
+            "basisSignature": "UNADJUSTED_SPLIT_GAP_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          }
+        ],
+        "splitGapCandidates": [
+          {
+            "beforeDate": "2021-05-21",
+            "date": "2021-05-24",
+            "closeRatioBeforeAfter": 0.49944258639910816,
+            "adjustedCloseRatioBeforeAfter": 0.49944258639910816,
+            "expectedOfficialFactor": 0.5
+          }
+        ],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 10,
+        "exchangesObserved": [
+          "ARCX"
+        ],
+        "issues": [
+          {
+            "date": "2021-05-17",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-18",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-19",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-20",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-21",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-24",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-25",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-26",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-27",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-05-28",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 10,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 10
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE",
+          "REPORTED_ADJ_CLOSE_RETAINS_SPLIT_GAP"
+        ],
+        "eventObservation": {
+          "state": "OBSERVED_DIAGNOSTIC_ONLY",
+          "eventType": "REVERSE_SPLIT",
+          "marketDate": "2021-05-24",
+          "effectiveDate": "2021-05-24",
+          "beforeDate": "2021-05-21",
+          "afterDate": "2021-05-24",
+          "closeRatioBeforeAfter": 0.49944258639910816,
+          "adjustedCloseRatioBeforeAfter": 0.49944258639910816,
+          "volumeRatioBeforeAfter": 1.944530764141647,
+          "expectedSplitFactor": 0.5,
+          "basisSignature": "UNADJUSTED_SPLIT_GAP_SIGNATURE",
+          "providerSplitObservations": [
+            {
+              "date": "2021-05-24",
+              "factor": 0.5
+            }
+          ],
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1278680/000143774922004899/iau20211231_10k.htm"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "275e29068667e519c715619f57a3c8c2acf77775f0cabfc427addacaaba97161"
+      },
+      "dividendFactorSteps": [],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "RAW_AND_ADJUSTED_CLOSE_RETAIN_SPLIT_GAP",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "COST",
+      "mic": "XNAS",
+      "from": "2023-12-18",
+      "to": "2024-01-12",
+      "role": "US_SPECIAL_CASH_DIVIDEND",
+      "tiingoChart": "ref_COST.json",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "COST",
+            "exchange": "XNAS",
+            "date_from": "2023-12-18",
+            "date_to": "2024-01-12",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T18:42:19.633Z",
+          "sourceRunId": "36908664526",
+          "sourceRunAttribution": "EXPLICIT_RESPONSE_OR_TASK",
+          "providerResponseSha256": "7503dc2bb7df3700c77e642586adbb76f75482178751bd46fc84a06b5aa979cd",
+          "rowsInControl": 18,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 18,
+            "total": 18
+          }
+        }
+      ],
+      "officialEvent": null,
+      "officialDividendControls": [
+        {
+          "providerSymbol": "COST",
+          "exchange": "XNAS",
+          "type": "SPECIAL_CASH_DIVIDEND",
+          "amount": 15,
+          "currency": "USD",
+          "marketDate": null,
+          "recordDate": "2023-12-28",
+          "paymentDate": "2024-01-12",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/909832/000090983223000062/costex9918-k121423.htm",
+          "sourceSha256": "c1471cf0e133c243e9fd92a10ec271c1f7236d845d75939d27df8745ca300857",
+          "verification": "VERIFIED_OFFICIAL_SOURCE",
+          "notes": "Issuer Nasdaq:COST and dividend amount/record/payment dates verified; market ex-date not independently stated.",
+          "retrievedAt": "2026-10-01T18:41:03.303613Z"
+        }
+      ],
+      "analysis": {
+        "bars": 18,
+        "firstDate": "2023-12-18",
+        "lastDate": "2024-01-12",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2023-12-18",
+          "to": "2024-01-12"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 0,
+        "validRawCandles": 18,
+        "adjustedCloses": 18,
+        "identicalAdjustedCloses": 0,
+        "adjustedCloseToClose": {
+          "count": 18,
+          "min": 0.9763299546142209,
+          "max": 0.9985321870093444
+        },
+        "adjustedVolumeToVolume": {
+          "count": 18,
+          "min": 0.9851091427571055,
+          "max": 1
+        },
+        "adjacentCloseRatios": {
+          "count": 17,
+          "min": 0.9858614835197003,
+          "max": 1.0253252647503783
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 17,
+          "min": 0.9858615135412601,
+          "max": 1.0253253214010727
+        },
+        "dividendObservations": [
+          {
+            "date": "2023-12-27",
+            "amount": 15
+          }
+        ],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 18,
+        "exchangesObserved": [
+          "XNAS"
+        ],
+        "issues": [],
+        "issueCount": 0,
+        "issueCountsByFlag": {},
+        "issueDetailsTruncated": false,
+        "signatures": [],
+        "eventObservation": null,
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "ddfab5755d9e0aaa60030d017e3533a266a9ddaeb7e378b3228c366d33b55343"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2023-12-27",
+          "priorDate": "2023-12-26",
+          "amount": 15,
+          "factorStep": 1.0227402718277028,
+          "simpleBackwardCashDividendExpectedStep": 1.02274036566508,
+          "differenceBps": -0.0009175092752222724,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "BOUNDED_REPORTED_PRICE_OBSERVATION_BASIS_UNVERIFIED",
+      "chartComparison": {
+        "sourceRelation": "TIINGO_COMMITTED_SPLIT_ADJUSTED_WEEKLY_CHART: EXACT_DATE_CLOSE_ONLY",
+        "pairedObservations": 4,
+        "currencyValidation": "NUMERICAL_COMPARISON_ONLY_PROVIDER_HISTORICAL_CURRENCY_MISSING",
+        "pairs": [
+          {
+            "date": "2023-12-22",
+            "providerCurrencyDeclared": false,
+            "rawCloseDifferenceBps": 0,
+            "adjustedCloseDifferenceBps": -236.70041691483013
+          },
+          {
+            "date": "2023-12-29",
+            "providerCurrencyDeclared": false,
+            "rawCloseDifferenceBps": 0,
+            "adjustedCloseDifferenceBps": -14.678523815295774
+          },
+          {
+            "date": "2024-01-05",
+            "providerCurrencyDeclared": false,
+            "rawCloseDifferenceBps": 0,
+            "adjustedCloseDifferenceBps": -14.678129906555704
+          },
+          {
+            "date": "2024-01-12",
+            "providerCurrencyDeclared": false,
+            "rawCloseDifferenceBps": 0,
+            "adjustedCloseDifferenceBps": -14.67859024647189
+          }
+        ],
+        "rawCloseDifferenceBps": {
+          "count": 4,
+          "min": 0,
+          "max": 0
+        },
+        "dailyOHLCOrDividendMethodCertified": false,
+        "interpolatedOrReconstructedPrices": false
+      },
+      "tiingoChartSource": {
+        "sourceFile": "ref_COST.json",
+        "sourceSha256": "241aabbea638adf484c31be5678306e5596281810fe1964ec4dbf559f052838d",
+        "priceSeriesType": "SPLIT_ADJUSTED",
+        "grain": "weekly"
+      },
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "ASML.AS",
+      "mic": "XAMS",
+      "from": "2012-11-20",
+      "to": "2012-12-07",
+      "role": "EU_CAPITAL_REPAYMENT_AND_REVERSE_SPLIT",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ASML.AS",
+            "exchange": "XAMS",
+            "date_from": "1990-01-01",
+            "date_to": "2026-09-30",
+            "sort": "ASC",
+            "limit": 10
+          },
+          "checkedAt": "2026-10-01T15:55:55.937Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "a1b474c543eb45e82c4640d1abd7eb26031de99fbcac7d8543f7bb27dd862056",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "count": 10,
+            "total": 4274
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ASML.AS",
+            "exchange": "XAMS",
+            "date_from": "2012-11-20",
+            "date_to": "2012-12-07",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T15:56:11.898Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "feb2d1a33a5c23e8db101fdccab5726c8a46d70352c02c1a5dc862a316781cee",
+          "rowsInControl": 14,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 14,
+            "total": 14
+          }
+        }
+      ],
+      "officialEvent": {
+        "providerSymbol": "ASML.AS",
+        "exchange": "XAMS",
+        "type": "CAPITAL_RETURN_AND_REVERSE_SPLIT",
+        "factor": null,
+        "consolidationRatio": 0.77,
+        "capitalRepaymentPerOrdinaryShare": 9.18,
+        "currency": "EUR",
+        "marketDate": "2012-11-26",
+        "recordDate": "2012-11-28",
+        "paymentDate": "2012-12-03",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000119312512470856/d439738dex991.htm",
+        "sourceSha256": "cc92a5e16f2351687e85959ad5f0a6c6cb1f991dc7d6383258f0778800f29dfe",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "from": "2012-11-20",
+        "to": "2012-12-07",
+        "notes": "Compound capital repayment and reverse split. Do not evaluate as a scalar split or infer adjusted-price correctness. NY shares receive USD cash at independently determined FX; no blanket USD conversion."
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 14,
+        "firstDate": "2012-11-20",
+        "lastDate": "2012-12-07",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2012-11-20",
+          "to": "2012-12-07"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 14,
+        "validRawCandles": 14,
+        "adjustedCloses": 14,
+        "identicalAdjustedCloses": 0,
+        "adjustedCloseToClose": {
+          "count": 14,
+          "min": 0.9031974828589548,
+          "max": 0.903199417152373
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 13,
+          "min": 0.9684973438463039,
+          "max": 1.2626070844686648
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 13,
+          "min": 0.9684985788042075,
+          "max": 1.2626067354986945
+        },
+        "dividendObservations": [],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [
+          "EUR"
+        ],
+        "missingCurrencyCandles": 0,
+        "exchangesObserved": [
+          "XAMS"
+        ],
+        "issues": [
+          {
+            "date": "2012-11-20",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-21",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-22",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-23",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-26",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-27",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-28",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-29",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-11-30",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-12-03",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-12-04",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-12-05",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-12-06",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2012-12-07",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 14,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 14
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE"
+        ],
+        "eventObservation": {
+          "state": "OBSERVED_DIAGNOSTIC_ONLY",
+          "eventType": "CAPITAL_RETURN_AND_REVERSE_SPLIT",
+          "marketDate": "2012-11-26",
+          "effectiveDate": null,
+          "beforeDate": "2012-11-23",
+          "afterDate": "2012-11-26",
+          "closeRatioBeforeAfter": 1.2626070844686648,
+          "adjustedCloseRatioBeforeAfter": 1.2626067354986945,
+          "volumeRatioBeforeAfter": 1.1212430926944164,
+          "expectedSplitFactor": null,
+          "basisSignature": "UNRESOLVED",
+          "providerSplitObservations": [],
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/937966/000119312512470856/d439738dex991.htm"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "bf6daae5748ed5b643ffa3e8bbb658c2d40af603c51649e80b96ce4ac8bb7ab6"
+      },
+      "dividendFactorSteps": [],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "BOUNDED_REPORTED_PRICE_OBSERVATION_BASIS_UNVERIFIED",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "PARTIAL_DISPLAY_ONLY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "NOVO-B.CO",
+      "mic": "XCSE",
+      "from": "2023-09-08",
+      "to": "2023-09-19",
+      "role": "EU_ORDINARY_SPLIT",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "NOVO-B.CO",
+            "exchange": "XCSE",
+            "date_from": "2023-09-08",
+            "date_to": "2023-09-19",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:40:44.084Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "2e3973de1619dff858eac74d6803fab861fb13e0d1636f0720c8fddab13bc3aa",
+          "rowsInControl": 8,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 8,
+            "total": 8
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "NOVO-B.CO",
+            "exchange": "XCSE",
+            "date_from": "1990-01-01",
+            "date_to": "2026-09-30",
+            "sort": "ASC",
+            "limit": 10
+          },
+          "checkedAt": "2026-10-01T15:55:56.197Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "2a5ee08ad62377a8c9231cd53bf7829f07ef04d717a08661f1d40a54db7adc65",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "count": 10,
+            "total": 4132
+          }
+        }
+      ],
+      "officialEvent": {
+        "company": "Novo Nordisk",
+        "providerSymbol": "NOVO-B.CO",
+        "exchange": "XCSE",
+        "type": "SPLIT",
+        "factor": 2,
+        "effectiveDate": "2023-09-13",
+        "marketDate": "2023-09-13",
+        "sourceUrl": "https://www.novonordisk.com/content/dam/nncorp/global/en/investors/irmaterial/annual_report/2024/novo-nordisk-annual-report-2023.pdf",
+        "from": "2023-09-08",
+        "to": "2023-09-19",
+        "notes": "Note4.2 distinguishes localBshare13September fromADR20September.",
+        "sourceSha256": "7d1849cb6166f61e062da3a100414e75fd14cb7ff489d321f5b14d21d4f63a59",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "retrievedAt": "2026-10-01"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 8,
+        "firstDate": "2023-09-08",
+        "lastDate": "2023-09-19",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2023-09-08",
+          "to": "2023-09-19"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 8,
+        "validRawCandles": 8,
+        "adjustedCloses": 8,
+        "identicalAdjustedCloses": 8,
+        "adjustedCloseToClose": {
+          "count": 8,
+          "min": 1,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 7,
+          "min": 0.9865280421730854,
+          "max": 2.0070432868672046
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 7,
+          "min": 0.9865280421730854,
+          "max": 2.0070432868672046
+        },
+        "dividendObservations": [],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [
+          {
+            "beforeDate": "2023-09-11",
+            "date": "2023-09-12",
+            "closeRatioBeforeAfter": 2.0070432868672046,
+            "adjustedCloseRatioBeforeAfter": 2.0070432868672046,
+            "expectedOfficialFactor": 2
+          }
+        ],
+        "currenciesObserved": [
+          "DKK"
+        ],
+        "missingCurrencyCandles": 0,
+        "exchangesObserved": [
+          "XCSE"
+        ],
+        "issues": [
+          {
+            "date": "2023-09-08",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2023-09-11",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2023-09-12",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2023-09-13",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2023-09-14",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2023-09-15",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2023-09-18",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2023-09-19",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 8,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 8
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE",
+          "REPORTED_ADJ_CLOSE_RETAINS_SPLIT_GAP",
+          "SPLIT_PRICE_GAP_DATE_DIFFERS_FROM_OFFICIAL_MARKET_DATE"
+        ],
+        "eventObservation": {
+          "state": "OBSERVED_DIAGNOSTIC_ONLY",
+          "eventType": "SPLIT",
+          "marketDate": "2023-09-13",
+          "effectiveDate": "2023-09-13",
+          "beforeDate": "2023-09-12",
+          "afterDate": "2023-09-13",
+          "closeRatioBeforeAfter": 1.0115778536440552,
+          "adjustedCloseRatioBeforeAfter": 1.0115778536440552,
+          "volumeRatioBeforeAfter": 0.946186477761218,
+          "expectedSplitFactor": 2,
+          "basisSignature": "CONTINUOUS_REPORTED_PRICE_SIGNATURE",
+          "providerSplitObservations": [],
+          "sourceUrl": "https://www.novonordisk.com/content/dam/nncorp/global/en/investors/irmaterial/annual_report/2024/novo-nordisk-annual-report-2023.pdf"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "8d699908e4efd984535bdef26a87e5c30b4804efdab21a2360fe016a859a7c23"
+      },
+      "dividendFactorSteps": [],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "RAW_AND_ADJUSTED_CLOSE_RETAIN_SPLIT_GAP",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "PARTIAL_DISPLAY_ONLY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "ALV.DE",
+      "mic": "XETR",
+      "from": "2026-05-04",
+      "to": "2026-05-13",
+      "role": "EU_LARGE_CASH_DIVIDEND",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ALV.DE",
+            "exchange": "XETR",
+            "date_from": "2025-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000
+          },
+          "checkedAt": "2026-10-01T11:08:41.259Z",
+          "sourceRunId": "36853405425",
+          "sourceRunAttribution": "ORIGINAL_SINGLE_RUN_PROBE",
+          "providerResponseSha256": "8187da458cfd41711ef965b8ffd9deff1b64da0c67d229705242338e2e004d47",
+          "rowsInControl": 8,
+          "pagination": {
+            "limit": 1000,
+            "offset": 0,
+            "count": 439,
+            "total": 439
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ALV.DE",
+            "exchange": "XETR",
+            "date_from": "1990-01-01",
+            "date_to": "2026-09-30",
+            "sort": "ASC",
+            "limit": 10
+          },
+          "checkedAt": "2026-10-01T15:55:54.928Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "9ee068006c079e3e23b01d4757da84f1ff190b0f1a8094e39113d96e219a86eb",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "count": 10,
+            "total": 4232
+          }
+        }
+      ],
+      "officialEvent": null,
+      "officialDividendControls": [
+        {
+          "providerSymbol": "ALV.DE",
+          "exchange": "XETR",
+          "type": "CASH_DIVIDEND",
+          "amount": 17.1,
+          "currency": "EUR",
+          "marketDate": "2026-05-08",
+          "sourceUrl": "https://www.allianz.com/en/investor_relations/share/dividend.html",
+          "verification": "VERIFIED_OFFICIAL_SOURCE",
+          "sourceSha256": "172268274718bf60e6a3a5c6cae62d5957a140b062cc0bbf15278f0851a26f99",
+          "notes": "Official timetable explicitly states ex-dividend quotation date; cached EOD matches date and amount."
+        },
+        {
+          "providerSymbol": "ALV.DE",
+          "exchange": "XETR",
+          "type": "CASH_DIVIDEND",
+          "amount": 15.4,
+          "currency": "EUR",
+          "marketDate": null,
+          "fiscalYear": 2024,
+          "sourceUrl": "https://www.allianz.com/en/investor_relations/share/dividend.html",
+          "sourceSha256": "172268274718bf60e6a3a5c6cae62d5957a140b062cc0bbf15278f0851a26f99",
+          "verification": "VERIFIED_OFFICIAL_SOURCE",
+          "notes": "Official dividend page verifies previous-year amount 15.40. Provider reports on2025-05-09; source does not independently verify that historical ex-date."
+        }
+      ],
+      "analysis": {
+        "bars": 8,
+        "firstDate": "2026-05-04",
+        "lastDate": "2026-05-04",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2026-05-04",
+          "to": "2026-05-13"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 7,
+        "adjustedInvalid": 8,
+        "validRawCandles": 1,
+        "adjustedCloses": 1,
+        "identicalAdjustedCloses": 1,
+        "adjustedCloseToClose": {
+          "count": 1,
+          "min": 1,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "dividendObservations": [
+          {
+            "date": "2026-05-08",
+            "amount": 17.1
+          }
+        ],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 8,
+        "exchangesObserved": [
+          "XETR"
+        ],
+        "issues": [
+          {
+            "date": "2026-05-04",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2026-05-05",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID",
+              "RAW_OHLC_INVALID"
+            ]
+          },
+          {
+            "date": "2026-05-06",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID",
+              "RAW_OHLC_INVALID"
+            ]
+          },
+          {
+            "date": "2026-05-07",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID",
+              "RAW_OHLC_INVALID"
+            ]
+          },
+          {
+            "date": "2026-05-08",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID",
+              "RAW_OHLC_INVALID"
+            ]
+          },
+          {
+            "date": "2026-05-11",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID",
+              "RAW_OHLC_INVALID"
+            ]
+          },
+          {
+            "date": "2026-05-12",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID",
+              "RAW_OHLC_INVALID"
+            ]
+          },
+          {
+            "date": "2026-05-13",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID",
+              "RAW_OHLC_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 8,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 8,
+          "RAW_OHLC_INVALID": 7
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE"
+        ],
+        "eventObservation": null,
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "3aaf1c1c57424834bd8036fb7998d869658f266e62639f274a554d2b0c425f23"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2026-05-08",
+          "priorDate": "2026-05-07",
+          "amount": 17.1,
+          "factorStep": null,
+          "simpleBackwardCashDividendExpectedStep": null,
+          "differenceBps": null,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": false
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "BOUNDED_REPORTED_PRICE_OBSERVATION_BASIS_UNVERIFIED",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNSAFE_AS_COMPLETE_WINDOW",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "ALV.DE",
+      "mic": "XETR",
+      "from": "2025-05-06",
+      "to": "2025-05-14",
+      "role": "EU_LARGE_CASH_DIVIDEND_VALID_PRICE_CONTROL",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ALV.DE",
+            "exchange": "XETR",
+            "date_from": "2025-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000
+          },
+          "checkedAt": "2026-10-01T11:08:41.259Z",
+          "sourceRunId": "36853405425",
+          "sourceRunAttribution": "ORIGINAL_SINGLE_RUN_PROBE",
+          "providerResponseSha256": "8187da458cfd41711ef965b8ffd9deff1b64da0c67d229705242338e2e004d47",
+          "rowsInControl": 7,
+          "pagination": {
+            "limit": 1000,
+            "offset": 0,
+            "count": 439,
+            "total": 439
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ALV.DE",
+            "exchange": "XETR",
+            "date_from": "1990-01-01",
+            "date_to": "2026-09-30",
+            "sort": "ASC",
+            "limit": 10
+          },
+          "checkedAt": "2026-10-01T15:55:54.928Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "9ee068006c079e3e23b01d4757da84f1ff190b0f1a8094e39113d96e219a86eb",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "count": 10,
+            "total": 4232
+          }
+        }
+      ],
+      "officialEvent": null,
+      "officialDividendControls": [
+        {
+          "providerSymbol": "ALV.DE",
+          "exchange": "XETR",
+          "type": "CASH_DIVIDEND",
+          "amount": 17.1,
+          "currency": "EUR",
+          "marketDate": "2026-05-08",
+          "sourceUrl": "https://www.allianz.com/en/investor_relations/share/dividend.html",
+          "verification": "VERIFIED_OFFICIAL_SOURCE",
+          "sourceSha256": "172268274718bf60e6a3a5c6cae62d5957a140b062cc0bbf15278f0851a26f99",
+          "notes": "Official timetable explicitly states ex-dividend quotation date; cached EOD matches date and amount."
+        },
+        {
+          "providerSymbol": "ALV.DE",
+          "exchange": "XETR",
+          "type": "CASH_DIVIDEND",
+          "amount": 15.4,
+          "currency": "EUR",
+          "marketDate": null,
+          "fiscalYear": 2024,
+          "sourceUrl": "https://www.allianz.com/en/investor_relations/share/dividend.html",
+          "sourceSha256": "172268274718bf60e6a3a5c6cae62d5957a140b062cc0bbf15278f0851a26f99",
+          "verification": "VERIFIED_OFFICIAL_SOURCE",
+          "notes": "Official dividend page verifies previous-year amount 15.40. Provider reports on2025-05-09; source does not independently verify that historical ex-date."
+        }
+      ],
+      "analysis": {
+        "bars": 7,
+        "firstDate": "2025-05-06",
+        "lastDate": "2025-05-14",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2025-05-06",
+          "to": "2025-05-14"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 7,
+        "validRawCandles": 7,
+        "adjustedCloses": 7,
+        "identicalAdjustedCloses": 4,
+        "adjustedCloseToClose": {
+          "count": 7,
+          "min": 0.9586464891041162,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 6,
+          "min": 0.9981203007518797,
+          "max": 1.0304236565254479
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 6,
+          "min": 0.9850993377483445,
+          "max": 1.0304236565254479
+        },
+        "dividendObservations": [
+          {
+            "date": "2025-05-09",
+            "amount": 15.4
+          }
+        ],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 7,
+        "exchangesObserved": [
+          "XETR"
+        ],
+        "issues": [
+          {
+            "date": "2025-05-06",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-05-07",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-05-08",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-05-09",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-05-12",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-05-13",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-05-14",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 7,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 7
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE"
+        ],
+        "eventObservation": null,
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "2800501ff9b7186758551c801fce294977ee28044f72e7e8ee262b5150060353"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2025-05-09",
+          "priorDate": "2025-05-08",
+          "amount": 15.4,
+          "factorStep": 1.0431372549019609,
+          "simpleBackwardCashDividendExpectedStep": 1.0431372549019606,
+          "differenceBps": 2.220446049250313e-12,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "BOUNDED_REPORTED_PRICE_OBSERVATION_BASIS_UNVERIFIED",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "DTE.DE",
+      "mic": "XETR",
+      "from": "2025-04-07",
+      "to": "2025-04-16",
+      "role": "EU_CASH_DIVIDEND",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "DTE.DE",
+            "exchange": "XETR",
+            "date_from": "2025-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000
+          },
+          "checkedAt": "2026-10-01T11:08:41.746Z",
+          "sourceRunId": "36853405425",
+          "sourceRunAttribution": "ORIGINAL_SINGLE_RUN_PROBE",
+          "providerResponseSha256": "3e9f15d10fc76e77f7b962cda81b9497d462b73ac2994eb4835ad3d18cf7e798",
+          "rowsInControl": 8,
+          "pagination": {
+            "limit": 1000,
+            "offset": 0,
+            "count": 436,
+            "total": 436
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "DTE.DE",
+            "exchange": "XETR",
+            "date_from": "1990-01-01",
+            "date_to": "2026-09-30",
+            "sort": "ASC",
+            "limit": 10
+          },
+          "checkedAt": "2026-10-01T15:55:55.168Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "5a75e59b6ebb0f2676c830e7718149e53bca9e7161cfb7b9768a357ba491058b",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "count": 10,
+            "total": 4229
+          }
+        }
+      ],
+      "officialEvent": null,
+      "officialDividendControls": [
+        {
+          "providerSymbol": "DTE.DE",
+          "exchange": "XETR",
+          "type": "CASH_DIVIDEND",
+          "amount": 0.9,
+          "currency": "EUR",
+          "marketDate": null,
+          "paymentDate": "2025-04-14",
+          "sourceUrl": "https://delivery-p167603-e1796511.adobeaemcloud.com/adobe/assets/urn:aaid:aem:39336bee-f5df-45a3-b303-731e507ac2c8/original/as/DL_Dividendannouncement.data.pdf?attachment=true",
+          "verification": "VERIFIED_OFFICIAL_SOURCE",
+          "sourceSha256": "c318f828c74add7f0b526bfa2e40cec0d379d1535d18c8cfb2d730fba179862d",
+          "notes": "Official announcement verifies amount/payment date, not exchange ex-date; cached EOD has amount0.90 on2025-04-10."
+        }
+      ],
+      "analysis": {
+        "bars": 8,
+        "firstDate": "2025-04-07",
+        "lastDate": "2025-04-16",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2025-04-07",
+          "to": "2025-04-16"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 8,
+        "validRawCandles": 8,
+        "adjustedCloses": 8,
+        "identicalAdjustedCloses": 7,
+        "adjustedCloseToClose": {
+          "count": 8,
+          "min": 0.9715189873417721,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 7,
+          "min": 0.9752066115702479,
+          "max": 1.0332464146023468
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 7,
+          "min": 0.9684542586750788,
+          "max": 1.0423452768729642
+        },
+        "dividendObservations": [
+          {
+            "date": "2025-04-10",
+            "amount": 0.9
+          }
+        ],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 8,
+        "exchangesObserved": [
+          "XETR"
+        ],
+        "issues": [
+          {
+            "date": "2025-04-07",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-04-08",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-04-09",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-04-10",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-04-11",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-04-14",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-04-15",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-04-16",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 8,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 8
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE"
+        ],
+        "eventObservation": null,
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "0f8e14e278903995b0f7b2b182ca763e8acba679c8a942d1230d7ffa594c7e18"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2025-04-10",
+          "priorDate": "2025-04-09",
+          "amount": 0.9,
+          "factorStep": 1.0293159609120521,
+          "simpleBackwardCashDividendExpectedStep": 1.0293159609120521,
+          "differenceBps": 0,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "BOUNDED_REPORTED_PRICE_OBSERVATION_BASIS_UNVERIFIED",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "EXSA.DE",
+      "mic": "XETR",
+      "from": "2025-06-11",
+      "to": "2025-06-20",
+      "role": "EU_DISTRIBUTING_ETF",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "EXSA.DE",
+            "exchange": "XETR",
+            "date_from": "2025-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000
+          },
+          "checkedAt": "2026-10-01T11:09:02.686Z",
+          "sourceRunId": "36853405425",
+          "sourceRunAttribution": "ORIGINAL_SINGLE_RUN_PROBE",
+          "providerResponseSha256": "1c37df2806f88372c054355628ef4bb598e5de2a3da00bab544020ca488802c8",
+          "rowsInControl": 8,
+          "pagination": {
+            "limit": 1000,
+            "offset": 0,
+            "count": 439,
+            "total": 439
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "EXSA.DE",
+            "exchange": "XETR",
+            "date_from": "2025-06-11",
+            "date_to": "2025-06-20",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:41:08.012Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "64e31a01131a924997cbfa865bba05161a9ea95da45375e9ac1c3825d3ac7ba6",
+          "rowsInControl": 8,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 8,
+            "total": 8
+          }
+        }
+      ],
+      "officialEvent": null,
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 8,
+        "firstDate": "2025-06-11",
+        "lastDate": "2025-06-20",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2025-06-11",
+          "to": "2025-06-20"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 8,
+        "validRawCandles": 8,
+        "adjustedCloses": 8,
+        "identicalAdjustedCloses": 8,
+        "adjustedCloseToClose": {
+          "count": 8,
+          "min": 1,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 7,
+          "min": 0.997758266392677,
+          "max": 1.0094700418867237
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 7,
+          "min": 0.997758266392677,
+          "max": 1.0094700418867237
+        },
+        "dividendObservations": [
+          {
+            "date": "2025-06-16",
+            "amount": 0.604232
+          }
+        ],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 8,
+        "exchangesObserved": [
+          "XETR"
+        ],
+        "issues": [
+          {
+            "date": "2025-06-11",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-06-12",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-06-13",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-06-16",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-06-17",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-06-18",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-06-19",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-06-20",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 8,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 8
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE",
+          "NO_DIVIDEND_ADJUSTMENT_VISIBLE_IN_REPORTED_ADJ_CLOSE"
+        ],
+        "eventObservation": null,
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "05f76a45f4fd46c0646272a39421f3ab50040680a1b51c46fcc17815cfe49ed1"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2025-06-16",
+          "priorDate": "2025-06-13",
+          "amount": 0.604232,
+          "factorStep": 1,
+          "simpleBackwardCashDividendExpectedStep": 1.011126479235134,
+          "differenceBps": -110.04042979420925,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "REPORTED_ADJ_CLOSE_COPIES_RAW_CLOSE_THROUGH_DIVIDEND",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "ISPA.DE",
+      "mic": "XETR",
+      "from": "2025-07-10",
+      "to": "2025-07-18",
+      "role": "EU_DISTRIBUTING_ETF",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ISPA.DE",
+            "exchange": "XETR",
+            "date_from": "2025-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000
+          },
+          "checkedAt": "2026-10-01T11:09:04.433Z",
+          "sourceRunId": "36853405425",
+          "sourceRunAttribution": "ORIGINAL_SINGLE_RUN_PROBE",
+          "providerResponseSha256": "c9b62199f745ad2bc168baf298f268afd58d2a1145f0840be6a82d6e20ca5dc3",
+          "rowsInControl": 7,
+          "pagination": {
+            "limit": 1000,
+            "offset": 0,
+            "count": 437,
+            "total": 437
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ISPA.DE",
+            "exchange": "XETR",
+            "date_from": "2025-07-10",
+            "date_to": "2025-07-18",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:41:11.206Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "1aa116b67edcecc644a1515cf0c1f26baa2aba803230b30da93a12e084401969",
+          "rowsInControl": 7,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 7,
+            "total": 7
+          }
+        }
+      ],
+      "officialEvent": null,
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 7,
+        "firstDate": "2025-07-10",
+        "lastDate": "2025-07-18",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2025-07-10",
+          "to": "2025-07-18"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 7,
+        "validRawCandles": 7,
+        "adjustedCloses": 7,
+        "identicalAdjustedCloses": 7,
+        "adjustedCloseToClose": {
+          "count": 7,
+          "min": 1,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 6,
+          "min": 0.9867906066536203,
+          "max": 1.0227533147814698
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 6,
+          "min": 0.9867906066536203,
+          "max": 1.0227533147814698
+        },
+        "dividendObservations": [
+          {
+            "date": "2025-07-15",
+            "amount": 0.575119
+          }
+        ],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 7,
+        "exchangesObserved": [
+          "XETR"
+        ],
+        "issues": [
+          {
+            "date": "2025-07-10",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-07-11",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-07-14",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-07-15",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-07-16",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-07-17",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2025-07-18",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 7,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 7
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE",
+          "NO_DIVIDEND_ADJUSTMENT_VISIBLE_IN_REPORTED_ADJ_CLOSE"
+        ],
+        "eventObservation": null,
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "c7662521f9b1c8fdc925aac06e63a9cae05a97f51a5ba4c4e1f5dcf0ff8283c4"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2025-07-15",
+          "priorDate": "2025-07-14",
+          "amount": 0.575119,
+          "factorStep": 1,
+          "simpleBackwardCashDividendExpectedStep": 1.0187549725042142,
+          "differenceBps": -184.09699103713263,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "REPORTED_ADJ_CLOSE_COPIES_RAW_CLOSE_THROUGH_DIVIDEND",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "SAP.DE",
+      "mic": "XETR",
+      "from": "2006-12-18",
+      "to": "2007-01-05",
+      "role": "EU_PRE_2010_SPLIT",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "SAP.DE",
+            "exchange": "XETR",
+            "date_from": "2006-12-18",
+            "date_to": "2007-01-05",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:40:37.331Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "ce758aea8a441d5614c410268594870527f602e0e5058369f61167021f141128",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 0,
+            "total": 0
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "SAP.DE",
+            "exchange": "XETR",
+            "date_from": "1990-01-01",
+            "date_to": "2026-09-30",
+            "sort": "ASC",
+            "limit": 10
+          },
+          "checkedAt": "2026-10-01T15:55:54.154Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "5358245d5144d839f1b432abef60cd0c077c9c6ae9bacb181c3b023612dec21f",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "count": 10,
+            "total": 4230
+          }
+        }
+      ],
+      "officialEvent": {
+        "company": "SAP",
+        "providerSymbol": "SAP.DE",
+        "exchange": "XETR",
+        "type": "SPLIT",
+        "factor": 4,
+        "effectiveDate": "2006-12-15",
+        "marketDate": "2006-12-21",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1000184/000132693207000138/f01557e20vf.htm",
+        "from": "2006-12-18",
+        "to": "2007-01-05",
+        "notes": "Ordinary listing gains three shares per old share after2006-12-20close. USADS received no additional ADS;ratio changes4:1to1:1. Never apply localfactor toUSADS.",
+        "sourceSha256": "3fc599866c8acd4e1a41ff469372743a15873a751ec401735a63472e4ecfb21d",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "retrievedAt": "2026-10-01"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 0,
+        "firstDate": null,
+        "lastDate": null,
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2006-12-18",
+          "to": "2007-01-05"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 0,
+        "validRawCandles": 0,
+        "adjustedCloses": 0,
+        "identicalAdjustedCloses": 0,
+        "adjustedCloseToClose": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "dividendObservations": [],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 0,
+        "exchangesObserved": [],
+        "issues": [],
+        "issueCount": 0,
+        "issueCountsByFlag": {},
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE"
+        ],
+        "eventObservation": {
+          "state": "EVENT_WINDOW_INCOMPLETE",
+          "eventType": "SPLIT",
+          "marketDate": "2006-12-21",
+          "effectiveDate": "2006-12-15",
+          "beforeDate": null,
+          "afterDate": null,
+          "closeRatioBeforeAfter": null,
+          "adjustedCloseRatioBeforeAfter": null,
+          "volumeRatioBeforeAfter": null,
+          "expectedSplitFactor": 4,
+          "basisSignature": "UNRESOLVED",
+          "providerSplitObservations": [],
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1000184/000132693207000138/f01557e20vf.htm"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "dividendFactorSteps": [],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "NO_PRICE_OBSERVATION_FOR_TESTED_SCOPE",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNAVAILABLE",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "ADS.DE",
+      "mic": "XETR",
+      "from": "2006-05-30",
+      "to": "2006-06-12",
+      "role": "EU_PRE_2010_SPLIT",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ADS.DE",
+            "exchange": "XETR",
+            "date_from": "2006-05-30",
+            "date_to": "2006-06-12",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:40:39.935Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "ce758aea8a441d5614c410268594870527f602e0e5058369f61167021f141128",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 0,
+            "total": 0
+          }
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "ADS.DE",
+            "exchange": "XETR",
+            "date_from": "1990-01-01",
+            "date_to": "2026-09-30",
+            "sort": "ASC",
+            "limit": 10
+          },
+          "checkedAt": "2026-10-01T15:55:55.415Z",
+          "sourceRunId": "36887919408",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "c18e368e26d49b55761ff7405fe3e0c61db19e2733daf14aaa84c95cfc0da751",
+          "rowsInControl": 0,
+          "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "count": 10,
+            "total": 4230
+          }
+        }
+      ],
+      "officialEvent": {
+        "company": "Adidas",
+        "providerSymbol": "ADS.DE",
+        "exchange": "XETR",
+        "type": "SPLIT",
+        "factor": 4,
+        "effectiveDate": "2006-06-06",
+        "marketDate": "2006-06-06",
+        "sourceUrl": "https://res.cloudinary.com/confirmed-web/raw/upload/v1706002596/adidas-group/investors/financial-publications/2006/gb2006_en_nehkei.pdf",
+        "officialIndexUrl": "https://www.adidas-group.com/en/investors/financial-reports",
+        "from": "2006-05-30",
+        "to": "2006-06-12",
+        "sourceSha256": "9c5da7d6af2ddb73942e9ae74b1736d197699b71a370e1b65e412b8a9936c60d",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "retrievedAt": "2026-10-01"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 0,
+        "firstDate": null,
+        "lastDate": null,
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2006-05-30",
+          "to": "2006-06-12"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 0,
+        "validRawCandles": 0,
+        "adjustedCloses": 0,
+        "identicalAdjustedCloses": 0,
+        "adjustedCloseToClose": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "dividendObservations": [],
+        "splitObservations": [],
+        "providerSplitDiagnostics": [],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 0,
+        "exchangesObserved": [],
+        "issues": [],
+        "issueCount": 0,
+        "issueCountsByFlag": {},
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE"
+        ],
+        "eventObservation": {
+          "state": "EVENT_WINDOW_INCOMPLETE",
+          "eventType": "SPLIT",
+          "marketDate": "2006-06-06",
+          "effectiveDate": "2006-06-06",
+          "beforeDate": null,
+          "afterDate": null,
+          "closeRatioBeforeAfter": null,
+          "adjustedCloseRatioBeforeAfter": null,
+          "volumeRatioBeforeAfter": null,
+          "expectedSplitFactor": 4,
+          "basisSignature": "UNRESOLVED",
+          "providerSplitObservations": [],
+          "sourceUrl": "https://res.cloudinary.com/confirmed-web/raw/upload/v1706002596/adidas-group/investors/financial-publications/2006/gb2006_en_nehkei.pdf"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "dividendFactorSteps": [],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "NO_PRICE_OBSERVATION_FOR_TESTED_SCOPE",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNAVAILABLE",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "6758.T",
+      "mic": "XJPX",
+      "from": "2024-09-24",
+      "to": "2024-10-04",
+      "role": "ASIA_SPLIT_DATE_CONTROL",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "6758.T",
+            "exchange": "XJPX",
+            "date_from": "2024-09-24",
+            "date_to": "2024-10-04",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:40:49.794Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "374be39cd4862d3469ddb7659150460fe774fd456256304a3e3c706e6cd254f6",
+          "rowsInControl": 9,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 9,
+            "total": 9
+          }
+        }
+      ],
+      "officialEvent": {
+        "company": "Sony",
+        "providerSymbol": "6758.T",
+        "exchange": "XJPX",
+        "type": "SPLIT",
+        "factor": 5,
+        "recordDate": "2024-09-30",
+        "effectiveDate": "2024-10-01",
+        "marketDate": null,
+        "sourceUrl": "https://www.sony.com/en/SonyInfo/IR/news/20240514_E_02.pdf",
+        "from": "2024-09-24",
+        "to": "2024-10-04",
+        "notes": "Legal record/effective dates verified; local market ex-date remains unverified.",
+        "sourceSha256": "229813a76561837eba0ba7acdc75abc62c3143045ee2727a3a422fbc68d10a4b",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "retrievedAt": "2026-10-01"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 9,
+        "firstDate": "2024-09-24",
+        "lastDate": "2024-10-04",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2024-09-24",
+          "to": "2024-10-04"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 9,
+        "validRawCandles": 9,
+        "adjustedCloses": 9,
+        "identicalAdjustedCloses": 8,
+        "adjustedCloseToClose": {
+          "count": 9,
+          "min": 0.9824438202247191,
+          "max": 1
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 8,
+          "min": 0.9800635144671842,
+          "max": 4.836727528089888
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 8,
+          "min": 0.9779797273680532,
+          "max": 4.923159399571122
+        },
+        "dividendObservations": [
+          {
+            "date": "2024-09-27",
+            "amount": 50
+          }
+        ],
+        "splitObservations": [
+          {
+            "date": "2024-09-27",
+            "factor": 5
+          }
+        ],
+        "providerSplitDiagnostics": [
+          {
+            "date": "2024-09-27",
+            "factor": 5,
+            "beforeDate": "2024-09-26",
+            "closeRatioBeforeAfter": 0.9954561342188046,
+            "adjustedCloseRatioBeforeAfter": 0.9779797273680532,
+            "volumeRatioBeforeAfter": 1.427179457786439,
+            "basisSignature": "CONTINUOUS_REPORTED_PRICE_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          }
+        ],
+        "splitGapCandidates": [
+          {
+            "beforeDate": "2024-09-25",
+            "date": "2024-09-26",
+            "closeRatioBeforeAfter": 4.836727528089888,
+            "adjustedCloseRatioBeforeAfter": 4.923159399571122,
+            "expectedOfficialFactor": 5
+          }
+        ],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 9,
+        "exchangesObserved": [
+          "XJPX"
+        ],
+        "issues": [
+          {
+            "date": "2024-09-24",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-09-25",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-09-26",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-09-27",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-09-30",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-10-01",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-10-02",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-10-03",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2024-10-04",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 9,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 9
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE",
+          "DOUBLE_ADJUSTMENT_RISK_REVIEW",
+          "REPORTED_ADJ_CLOSE_RETAINS_SPLIT_GAP"
+        ],
+        "eventObservation": {
+          "state": "EVENT_MARKET_DATE_UNVERIFIED",
+          "effectiveDate": "2024-10-01"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "e2e10da6cb3845dbf38a525b0bf2e3eeba3a24ca7f64a284390b2992738d9e77"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2024-09-27",
+          "priorDate": "2024-09-26",
+          "amount": 50,
+          "factorStep": 1.0178699070764832,
+          "simpleBackwardCashDividendExpectedStep": 1.0178699070764832,
+          "differenceBps": 0,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "RAW_AND_ADJUSTED_CLOSE_RETAIN_SPLIT_GAP",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "7203.T",
+      "mic": "XJPX",
+      "from": "2021-09-24",
+      "to": "2021-10-06",
+      "role": "ASIA_REPEATED_SPLIT_FACTOR_CONTROL",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "7203.T",
+            "exchange": "XJPX",
+            "date_from": "2021-09-24",
+            "date_to": "2021-10-06",
+            "limit": 1000
+          },
+          "checkedAt": "2026-10-01T14:43:18.481Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "acadf9d8b84da444dd4c8ed5b625929220ce0d3aefd41f06ce79d4c614ed04d5",
+          "rowsInControl": 9,
+          "pagination": {
+            "limit": 1000,
+            "offset": 0,
+            "count": 9,
+            "total": 9
+          }
+        }
+      ],
+      "officialEvent": {
+        "providerSymbol": "7203.T",
+        "exchange": "XJPX",
+        "type": "SPLIT",
+        "factor": 5,
+        "recordDate": "2021-09-30",
+        "effectiveDate": "2021-10-01",
+        "marketDate": null,
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1094517/000119312522179197/d696693d20f.htm",
+        "sourceSha256": "f26874ba311efa085cf773ad4fa77a0550b0cfd22d3f6601ad4ed61abd1fa1ba",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "from": "2021-09-24",
+        "to": "2021-10-06",
+        "notes": "Official Toyota FY2022 SEC20-F confirms five-for-one local share split; legal effective date does not establish JP exchange ex-date. No TM ADR ratio/price inference."
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 9,
+        "firstDate": "2021-09-24",
+        "lastDate": "2021-10-06",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2021-09-24",
+          "to": "2021-10-06"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 9,
+        "validRawCandles": 9,
+        "adjustedCloses": 9,
+        "identicalAdjustedCloses": 0,
+        "adjustedCloseToClose": {
+          "count": 9,
+          "min": 0.9637110736639384,
+          "max": 0.974977076761304
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 8,
+          "min": 0.9777347531461762,
+          "max": 1.0365
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 8,
+          "min": 0.9777347581055025,
+          "max": 1.0364999873586769
+        },
+        "dividendObservations": [
+          {
+            "date": "2021-09-29",
+            "amount": 24
+          }
+        ],
+        "splitObservations": [
+          {
+            "date": "2021-09-29",
+            "factor": 5
+          },
+          {
+            "date": "2021-10-01",
+            "factor": 5
+          }
+        ],
+        "providerSplitDiagnostics": [
+          {
+            "date": "2021-09-29",
+            "factor": 5,
+            "beforeDate": "2021-09-28",
+            "closeRatioBeforeAfter": 1.0019295706705258,
+            "adjustedCloseRatioBeforeAfter": 0.9903521668154119,
+            "volumeRatioBeforeAfter": 5.419880586918449,
+            "basisSignature": "CONTINUOUS_REPORTED_PRICE_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          },
+          {
+            "date": "2021-10-01",
+            "factor": 5,
+            "beforeDate": "2021-09-30",
+            "closeRatioBeforeAfter": 1.0167768174885612,
+            "adjustedCloseRatioBeforeAfter": 1.0167767948762003,
+            "volumeRatioBeforeAfter": 1.1979076700695637,
+            "basisSignature": "CONTINUOUS_REPORTED_PRICE_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          }
+        ],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 9,
+        "exchangesObserved": [
+          "XJPX"
+        ],
+        "issues": [
+          {
+            "date": "2021-09-24",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-09-27",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-09-28",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-09-29",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-09-30",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-10-01",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-10-04",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-10-05",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2021-10-06",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 9,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 9
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE",
+          "DOUBLE_ADJUSTMENT_RISK_REVIEW",
+          "MULTIPLE_PROVIDER_SPLIT_DATES_FOR_ONE_OFFICIAL_EVENT_WINDOW"
+        ],
+        "eventObservation": {
+          "state": "EVENT_MARKET_DATE_UNVERIFIED",
+          "effectiveDate": "2021-10-01"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "412b172b35890fd3a18ebf3311cfd41d61624228ebdc64039826422c5746eec5"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2021-09-29",
+          "priorDate": "2021-09-28",
+          "amount": 24,
+          "factorStep": 1.011690188847006,
+          "simpleBackwardCashDividendExpectedStep": 1.0116902094495859,
+          "differenceBps": -0.00020364514408122147,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "CONTINUOUS_REPORTED_RAW_PRICE_DOUBLE_ADJUSTMENT_RISK",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    },
+    {
+      "symbol": "7974.T",
+      "mic": "XJPX",
+      "from": "2022-09-26",
+      "to": "2022-10-05",
+      "role": "ASIA_ALREADY_CONTINUOUS_PRICE_CONTROL",
+      "sourceObservations": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "7974.T",
+            "exchange": "XJPX",
+            "date_from": "2022-09-26",
+            "date_to": "2022-10-05",
+            "limit": 100
+          },
+          "checkedAt": "2026-10-01T14:40:48.687Z",
+          "sourceRunId": "36878024551",
+          "sourceRunAttribution": "CHECKPOINT_INTERVAL_ATTRIBUTION",
+          "providerResponseSha256": "097a55df062b2d5d41d5d4e36c8f949a1d4f2b7b8ca13d5a95b0b5fa51910523",
+          "rowsInControl": 8,
+          "pagination": {
+            "limit": 100,
+            "offset": 0,
+            "count": 8,
+            "total": 8
+          }
+        }
+      ],
+      "officialEvent": {
+        "company": "Nintendo",
+        "providerSymbol": "7974.T",
+        "exchange": "XJPX",
+        "type": "SPLIT",
+        "factor": 10,
+        "recordDate": "2022-09-30",
+        "effectiveDate": "2022-10-01",
+        "marketDate": null,
+        "sourceUrl": "https://www.nintendo.co.jp/ir/pdf/2022/220510_6e.pdf",
+        "from": "2022-09-26",
+        "to": "2022-10-05",
+        "notes": "Legal effective date is weekend; exchange ex-date not independently verified.",
+        "sourceSha256": "2779815b80b20d592dfcfda735980a8406cc743f544b7abc3d0663b0031079ee",
+        "verification": "VERIFIED_OFFICIAL_SOURCE",
+        "retrievedAt": "2026-10-01"
+      },
+      "officialDividendControls": [],
+      "analysis": {
+        "bars": 8,
+        "firstDate": "2022-09-26",
+        "lastDate": "2022-10-05",
+        "maximumHistoryDepthEstablished": false,
+        "requestedWindow": {
+          "from": "2022-09-26",
+          "to": "2022-10-05"
+        },
+        "outOfBoundsCandles": 0,
+        "identityMismatchCandles": 0,
+        "rawInvalid": 0,
+        "adjustedInvalid": 8,
+        "validRawCandles": 8,
+        "adjustedCloses": 8,
+        "identicalAdjustedCloses": 0,
+        "adjustedCloseToClose": {
+          "count": 8,
+          "min": 0.877892023731048,
+          "max": 0.9814636363636363
+        },
+        "adjustedVolumeToVolume": {
+          "count": 0,
+          "min": null,
+          "max": null
+        },
+        "adjacentCloseRatios": {
+          "count": 7,
+          "min": 0.9619834710743802,
+          "max": 1.0322856166723609
+        },
+        "adjacentAdjustedCloseRatios": {
+          "count": 7,
+          "min": 0.8836670688258764,
+          "max": 1.0322856137645964
+        },
+        "dividendObservations": [
+          {
+            "date": "2022-09-29",
+            "amount": 630
+          }
+        ],
+        "splitObservations": [
+          {
+            "date": "2022-09-29",
+            "factor": 10
+          }
+        ],
+        "providerSplitDiagnostics": [
+          {
+            "date": "2022-09-29",
+            "factor": 10,
+            "beforeDate": "2022-09-28",
+            "closeRatioBeforeAfter": 0.9879199073307959,
+            "adjustedCloseRatioBeforeAfter": 0.8836670688258764,
+            "volumeRatioBeforeAfter": 0.9863682772703442,
+            "basisSignature": "CONTINUOUS_REPORTED_PRICE_SIGNATURE",
+            "dateBasis": "PROVIDER_REPORTED_ONLY_NOT_OFFICIAL_EX_DATE_VERIFICATION"
+          }
+        ],
+        "splitGapCandidates": [],
+        "currenciesObserved": [],
+        "missingCurrencyCandles": 8,
+        "exchangesObserved": [
+          "XJPX"
+        ],
+        "issues": [
+          {
+            "date": "2022-09-26",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2022-09-27",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2022-09-28",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2022-09-29",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2022-09-30",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2022-10-03",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2022-10-04",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          },
+          {
+            "date": "2022-10-05",
+            "flags": [
+              "ADJUSTED_OHLC_MISSING_OR_INVALID"
+            ]
+          }
+        ],
+        "issueCount": 8,
+        "issueCountsByFlag": {
+          "ADJUSTED_OHLC_MISSING_OR_INVALID": 8
+        },
+        "issueDetailsTruncated": false,
+        "signatures": [
+          "ADJUSTED_VOLUME_UNAVAILABLE",
+          "DOUBLE_ADJUSTMENT_RISK_REVIEW"
+        ],
+        "eventObservation": {
+          "state": "EVENT_MARKET_DATE_UNVERIFIED",
+          "effectiveDate": "2022-10-01"
+        },
+        "adjustmentStatus": "UNVERIFIED",
+        "technicalAdmission": "BLOCKED_UNVERIFIED_PRICE_BASIS",
+        "evidenceSha256": "8b648479591b22bbb1fa3bae79c3d9ab9ac4919ea128c243660c0882bea0f6fd"
+      },
+      "dividendFactorSteps": [
+        {
+          "date": "2022-09-29",
+          "priorDate": "2022-09-28",
+          "amount": 630,
+          "factorStep": 1.1179775077999,
+          "simpleBackwardCashDividendExpectedStep": 1.1179775280898876,
+          "differenceBps": -0.0001814883321404892,
+          "adjustmentBasisCertified": false,
+          "rawOHLCValidAtBothDates": true
+        }
+      ],
+      "tiingoSource": null,
+      "comparison": null,
+      "observedCloseBasis": "CONTINUOUS_REPORTED_RAW_PRICE_DOUBLE_ADJUSTMENT_RISK",
+      "chartComparison": null,
+      "tiingoChartSource": null,
+      "compatibility": {
+        "rawCharts": "UNVERIFIED_CURRENCY",
+        "continuousAdjustedCharts": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "movingAverages": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "high52Week": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "momentum": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "quant": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "backtesting": "BLOCKED_UNVERIFIED_FULL_PRICE_BASIS",
+        "volumeDependentIndicators": "BLOCKED_UNVERIFIED_VOLUME_AND_PRICE_BASIS",
+        "boundedAdjustedReturnControl": "UNVERIFIED",
+        "admissionChanged": false,
+        "reason": "Raw display requires independent identity/currency/history gates. A bounded action test never certifies a full series."
+      }
+    }
+  ],
+  "summary": {
+    "controlWindows": 17,
+    "withReturnedPrices": 15,
+    "tiingoComparedWindows": 2,
+    "boundedAdjustedReturnConsistentWindows": 2,
+    "boundedAdjustedReturnCurrencyVerifiedWindows": 1,
+    "technicalSeriesCertified": 0,
+    "quantAdmissionChanged": 0
+  },
+  "limitations": [
+    "Special-dividend availability is evaluated from the exact COST control window; European ASML capital repayment is a compound action, not an ordinary special dividend.",
+    "IAU reverse-split control is a US gold trust, not common equity; no ETF/company type promotion is performed.",
+    "Tiingo comparison is limited to committed real golden-preview daily records; other R2-only daily histories were not downloaded.",
+    "Full-history action completeness, adjusted-volume basis and point-in-time revisions remain unverified.",
+    "Preserved accepted charts and protected Tiingo computations are not modified. No new adjustment is applied."
+  ],
+  "productionChanged": false,
+  "providerDecision": "DEFERRED",
+  "marketstackRequests": 0,
+  "requestAccountingScope": "THIS_OFFLINE_ANALYZER_ONLY; SOURCE_COLLECTION_ACCOUNTING_IN_MARKETSTACK_SCALE_SUMMARY",
+  "inputProvenance": [
+    {
+      "snapshotName": "marketstack-probe-1",
+      "sha256": "6e0c9f8eae3985941bf107814ac82092ab1292b6b0d8763ca6beb79921edc61b"
+    },
+    {
+      "snapshotName": "marketstack-probe-2",
+      "sha256": "719fd5ba8b83e53effb1bf75cf4318a1a854b1997b52ee5852f9e5468eb7786a"
+    },
+    {
+      "snapshotName": "marketstack-probe-3",
+      "sha256": "b2cfe9d589138acad54ff3202ee0db797c0089bb3fc950fef7ddd2b763e67c03"
+    },
+    {
+      "snapshotName": "marketstack-probe-4",
+      "sha256": "f93b2307b2d2c4c39b24caec767442a7703f25b506da97967759d35054bf18b3"
+    },
+    {
+      "snapshotName": "marketstack-probe-5",
+      "sha256": "c42c6a261134461defeaa9b8886e5fa50fa8e1a7dbcaa49604088800b444d67a"
+    },
+    {
+      "snapshotName": "marketstack-scale-36877329938",
+      "sha256": "4dfc9fcef7fc0c396fd09d09a3e6a82d16a0493b3a913cda1805645a80b25b8d"
+    },
+    {
+      "snapshotName": "marketstack-scale-36878024551",
+      "sha256": "8aefa26c1b1544fe402ae46b4e24f0e4fa4779f4e9f86e9ae5a2e6dacc1404b6"
+    },
+    {
+      "snapshotName": "marketstack-scale-36878826183",
+      "sha256": "4760b1767340b36ba8c4faaac74be1d1c543045c46cb47f6c2e8ca56dab4d905"
+    },
+    {
+      "snapshotName": "marketstack-scale-36880932701",
+      "sha256": "619bc8b27b44d80012b1c311d2b446552f0c3b3b07929e17c64703ab20e57df8"
+    },
+    {
+      "snapshotName": "marketstack-scale-36885254528",
+      "sha256": "a17cb5f18726b726f8f4c406df22653fec94778e5db43d4b80b5194d64a15d89"
+    },
+    {
+      "snapshotName": "marketstack-scale-36887919408",
+      "sha256": "2e963d28965799810ed9691e3a64a1d505eed536ec25fd8ac64f1425ed71ca8b"
+    },
+    {
+      "snapshotName": "marketstack-scale-36898149801",
+      "sha256": "7849e4fc11911a50b143cd1a4498afe9fa241b9522771eb2cf0e57a2b2b5e46e"
+    },
+    {
+      "snapshotName": "marketstack-scale-36912587006",
+      "sha256": "1fef933ea8ec83f49cde047bf980ef52c4bd1b400caf4efbea12cbf1e5ac8b6c"
+    }
+  ],
+  "officialControlsProvenance": {
+    "sourceFile": "marketstack_adjustment_controls.json",
+    "sha256": "4b774d110cfca8afbe3141d06e923b5e49d6e35c03e96451c356d583b871409f"
+  }
+}

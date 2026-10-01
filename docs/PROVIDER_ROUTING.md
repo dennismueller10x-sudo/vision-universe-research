@@ -1,5 +1,7 @@
 # Provider routing
 
+> This document records the accepted PR #330 baseline. Current scale measurements, expanded branch data and deferred provider decision are documented in [MARKETSTACK_SCALE_ENGINEERING_REPORT](MARKETSTACK_SCALE_ENGINEERING_REPORT.md). Production Tiingo/SEC/ESEF routing remains unchanged.
+
 ## Current source rules
 
 | Data/domain | Authoritative production source | Marketstack role |

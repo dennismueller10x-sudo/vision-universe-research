@@ -1,0 +1,301 @@
+{
+  "schemaVersion": "marketstack-finalization-independent-review-1.0.0",
+  "checkedAt": "2026-10-01T19:37:46.161226+00:00",
+  "reviewedCodeCommit": "1ff0ec3085ef10b58f7cc0bf936eab4da8c26889",
+  "reviewMode": "INDEPENDENT_READ_ONLY_SOURCE_DATA_AND_REGRESSION_REVIEW",
+  "result": "PASS",
+  "baselineCommits": {
+    "accepted330": "944b97c80d17c941c50d3e272f2070dfaed82490",
+    "accepted334": "3f7bf0b6a55d53fa671fa95ae2b08c844a5a70c8"
+  },
+  "sourceRepository": "https://github.com/dennismueller10x-sudo/vision-universe-research",
+  "protectedManifestEvidence": {
+    "baselineManifestSHA256": "4816be3094c181afe35c4449fe88e3ff29a21898019b2ff9b47dd3e38d0ed855",
+    "afterComparisonManifestSHA256": "3b7e2e358833fe3b60455516938f106e48b5a52838047bb532eb60a75b305bf4",
+    "accepted334ManifestSHA256": "414809a8fcc77c685acecb15b34f4a805d5dad36921e41db9426a6ec5ed0b9c0",
+    "measuredAt": "2026-10-01T19:35:42.222623+00:00",
+    "groups": {
+      "protected_provider_jobs": {
+        "checkedFiles": 154,
+        "changedFiles": 0,
+        "missingFiles": 0
+      },
+      "quant_products": {
+        "checkedFiles": 3315,
+        "changedFiles": 0,
+        "missingFiles": 0
+      },
+      "sec_fundamentals": {
+        "checkedFiles": 6130,
+        "changedFiles": 0,
+        "missingFiles": 0
+      },
+      "us_discover": {
+        "checkedFiles": 6078,
+        "changedFiles": 0,
+        "missingFiles": 0
+      },
+      "us_identity": {
+        "checkedFiles": 2864,
+        "changedFiles": 0,
+        "missingFiles": 0
+      },
+      "us_prices": {
+        "checkedFiles": 23538,
+        "changedFiles": 0,
+        "missingFiles": 0
+      }
+    },
+    "accepted334CanonicalAndDirectory": {
+      "checkedFiles": 2690,
+      "changedFiles": 0,
+      "missingFiles": 0
+    },
+    "accepted58RecordsAndChartsPreserved": true,
+    "productCodeBaselineNote": "The accepted PR334 Directory change is already in baseline; no new product code change."
+  },
+  "reviewedDataSHA256": {
+    "us_marketstack_unmatched_classification.json": "08e50b6ec29583e1df54e729f0d7281e72a7ea8224ab6180a741eaf4c976199b",
+    "us_marketstack_resolved_matches.json": "5886d65c337c386d46e6fbce5b35ddd4d815a74b58b88394d5aa62d6926ec223",
+    "us_marketstack_quality_flags.json": "5b361ee8768f72a4fc847a5de6fed94881c1dee5183d76e13507a204e006677e",
+    "germany_marketstack_universe.json": "63a1722472cd14e2ea38be2b8c61895239b541dfb16df924b1bd639ec2c79e8c",
+    "germany_full_equity_validation.json": "1bf95c2c342ebea83cc0003a81ce2520592ca2b4ac702e16c9521b6483befcc1",
+    "europe_exchange_coverage.json": "b178afc25c52e55c2076f815ee8bc4001a162c0bbb1352d9dcf6b8c5bac254ca",
+    "marketstack_etf_full_audit.json": "6d2ba735c3774c4c63efe9a5e7a5dc579f4572d5f2eea9aedc37cbc3565ab0c8",
+    "global_select_marketstack_coverage.json": "8fa3b1281ba31304eb6e4b2923ffd7e94e73640ea971444b5903fd9de241e908",
+    "marketstack_scale_adjustments.json": "f3b380f9b086ec49c197875e6218848e6cc4cf587ee5b9dce956f53a3149f7fd",
+    "europe_official_operator_candidates.json": "24669efa2bb681e6d308365a0f530e656c69be08003068b0f6d134a8f0c516dd",
+    "europe_official_operator_references.json": "a0835454c247f17021bebf6447e3131faa567b0e0e2ab087fa12a9ca85c44ccd",
+    "us_marketstack_consumer_final.json": "8ade4e0f4c271bb4beafa50423da7e3beaacca060dbdf03450745ecdb8ae405b",
+    "us_marketstack_quality_final.json": "71ef11bd3cbb7fc1d79bc3aff8136ba168cfa605f3b8814e66f4b7094ab8f9d9",
+    "germany_company_listing_finalization.json": "403a03003f8a5161dcb329066e01d7d8a8e0513022f5879e55c2c1a5b1a4361d",
+    "europe_company_listing_census.json": "2d957241f5ce308f0b367e0e74050e9bbbc25a21ec4d77c0cb18db7c71b9fee5",
+    "marketstack_etf_identity_reconciliation.json": "f6fa18974222d99d998f5086b2d1fb5d0e21692bb7a6b6bb086ebbe1a114529e",
+    "marketstack_adjustment_compatibility.json": "42f6b4fc6a36eabab26b1cddc4b617741f6b5fdec3ade55d3f7bfe32519c9904",
+    "germany_consumer_selection.json": "03df0484823a377542b42f7f47f7071212954fa9ba9d489e928c80dad535ee22",
+    "germany_company_issuer_reference.json": "de1b2c70024cea7b9244ab3e484cb426ba482d4c8b4966dfac80b1cc70585326",
+    "germany_security_type_reference.json": "7c77654fe5bf980dddb363162b330db4e275f0a7a332e09c345b985a56f0da7a",
+    "marketstack_etf_metadata_matrix.json": "58ad06e7298d84acd6e5b9af6b2e140e44bc9007e575cc2f32bb37328d93da6d",
+    "marketstack_canonical_regulatory_type_conflicts.json": "a9042a307c2f5a0082ba36dd35662f36418a30e12584b0572eca92a8971f05cf",
+    "us_marketstack_class_removal_crosscheck.json": "50ec735a95f4aad31a7698d72fd46657092a9e01dce6dd192bf3db4200d33509"
+  },
+  "quality": {
+    "originalFlags": 460,
+    "previouslyUnresolvedFlags": 454,
+    "independentlyExplained": 17,
+    "otherObservableDefects": 406,
+    "UNKNOWN": 37,
+    "unsafe": 460,
+    "newEODAdmissions": 0,
+    "newQuantAdmissions": 0,
+    "newChartAdmissions": 0,
+    "scope": "Rejected Marketstack observations only; protected Tiingo charts and histories preserved."
+  },
+  "usConsumer": {
+    "protectedTotal": 6419,
+    "identityCovered": 5423,
+    "validLatestCovered": 5018,
+    "knownCurrentCommonClassLowerBound": 4755,
+    "currentListingIdentityCovered": 4246,
+    "currentListingValidLatest": 3968,
+    "namedPriceGaps": 787,
+    "completeLegalActiveCommonTotal": null,
+    "genuinelyGloballyUnsupportedCommonTotal": null
+  },
+  "germany": {
+    "verifiedDomiciledOrdinaryPreferredCompanies": 432,
+    "referenceActiveOrdinaryPreferredSecurities": 441,
+    "selectedResearchProposals": 218,
+    "fullyCertifiedExistingPolicyEligibleCompanies": 0,
+    "completeConsumerEligibleCount": null,
+    "productionActivation": false,
+    "existingPolicyPreserved": "250 bars / USD 5 million average daily turnover; identity, primary listing and adjustment gates preserved."
+  },
+  "europe": {
+    "CFIEListingIdentities": 12977,
+    "CFIESecurityISINs": 11102,
+    "mappedCFIEIssuers": 10030,
+    "requestedDomicileMappedCFIEIssuers": 3471,
+    "completeCompanyTotals": null,
+    "issuerReportingProxyAndCrossSourceConflictsFailClosed": true
+  },
+  "etfs": {
+    "EuropeanListingCandidates": 6423,
+    "EuropeanSecurityShareClassISINs": 2933,
+    "uniqueLegalFundTotal": null,
+    "UCITSNameHintISINs": 2471,
+    "regulatoryUCITSAuthorizationsVerified": 0,
+    "holdingsObservations": 34,
+    "usablePartialReports": 18,
+    "verifiedCompleteCurrentPortfolios": 0,
+    "dividendHistory": "UNVERIFIED",
+    "sectorExposure": "NONE",
+    "companyFundamentalAdmission": false
+  },
+  "adjustments": {
+    "controls": 17,
+    "controlsWithPrices": 15,
+    "boundedTiingoNumericalComparisons": 2,
+    "currencyVerifiedTiingoComparisons": 1,
+    "fullTechnicalCertification": false,
+    "QuantAdmission": false,
+    "backtestAdmission": false
+  },
+  "testEvidence": {
+    "machineResultsArtifact": "reports/marketstack/marketstack_scale_tests.json",
+    "machineResultsSHA256": "fc3cdfd533a46a520932388dddc3ba73ba1008be83f95166420069c3b782ce96",
+    "scopes": {
+      "environment": {
+        "node": "24.19.0",
+        "python": "3.12",
+        "browser": "Chromium 1243 via pinned Playwright 1.58.2; GitHub uses its pinned browser build"
+      },
+      "quant": {
+        "command": "node --test quant/tests/*.test.mjs",
+        "tests": 2497,
+        "passed": 2497,
+        "failed": 0,
+        "skipped": 0,
+        "freshFinalizationRun": true,
+        "sourceCommit": "1ff0ec3085ef10b58f7cc0bf936eab4da8c26889",
+        "durationMilliseconds": 77892.846905
+      },
+      "products": {
+        "command": "node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs",
+        "tests": 460,
+        "passed": 455,
+        "failed": 0,
+        "skipped": 5,
+        "freshFinalizationRun": true
+      },
+      "sec": {
+        "command": "python3 -m unittest discover -s scripts/quant/tests",
+        "passed": 484,
+        "failed": 0,
+        "freshFinalizationRun": true
+      },
+      "esef": {
+        "command": "python3 -m unittest discover -s scripts/fundamentals/tests",
+        "passed": 7,
+        "failed": 0,
+        "freshFinalizationRun": true
+      },
+      "realLVMH": {
+        "canonicalFactsPreserved": 12,
+        "preExistingDiagnosticIssues": 543,
+        "pitAndProvenancePreserved": true
+      },
+      "discoverBrowser": {
+        "functionalChecksPassed": 201,
+        "accessibilityChecks": 16,
+        "failed": 0,
+        "freshFinalizationRun": true
+      },
+      "quantBrowser": {
+        "functionalChecksPassed": 88,
+        "resourceGatesPassed": 8,
+        "resourceGatesTotal": 8,
+        "accessibilityPages": 76,
+        "violations": 0,
+        "acceptedBaselineFunctionalChecksPassed": 88,
+        "stockDecodedByteDelta": null,
+        "uncontrolledBrowserVersionRunHadExtraLazyImageBytes": 416861,
+        "freshFinalizationRun": true,
+        "note": "Final release passed all budgets without relaxation; prior accepted/current comparison showed 2656-byte Directory delta."
+      },
+      "globalBrowser": {
+        "allPricedListingChecksPassed": 278,
+        "metadataOnlyChecksPassed": 12,
+        "newChartWatchlistChecksPassed": 8,
+        "legacyAndGlobalAppSmokePassed": 63,
+        "boundedSearchQueriesPassed": 6,
+        "freshFinalizationRun": true
+      },
+      "publicDataAndSecretGuards": "PASS",
+      "independentReview": "PASS_ALL_FINDINGS_RESOLVED",
+      "protectedOutputs": "NO_BYTE_CHANGES",
+      "servingRegression": {
+        "command": "python3 -m unittest scripts.vu2.test_fundamentals_serving scripts.vu2.test_product_data_api",
+        "passed": 32,
+        "failed": 0
+      },
+      "resourceBudgetUnit": {
+        "command": "node --test scripts/vu2/resource-budget.test.mjs",
+        "passed": 6,
+        "failed": 0
+      },
+      "operatorHardening": {
+        "command": "node --test quant/tests/marketstack-europe*.test.mjs",
+        "passed": 38,
+        "failed": 0,
+        "fullLocalSuiteBeforeAdditionalRegressionTest": 2392
+      },
+      "journeySurfaces": {
+        "command": "node scripts/vu2/verify-journey-surfaces.mjs --site <fresh-release>",
+        "passed": 12,
+        "failed": 0
+      },
+      "searchScalability": {
+        "queries": 6,
+        "requestCounts": [
+          3,
+          3,
+          3,
+          3,
+          2,
+          3
+        ],
+        "decodedByteRange": [
+          35676,
+          57011
+        ],
+        "resultLimit": 14,
+        "fullUniversePayload": false,
+        "failed": 0
+      },
+      "executionEnvironmentRecovered": true,
+      "checkedAt": "2026-10-01T19:36:38Z"
+    },
+    "independentSEC": {
+      "passed": 484,
+      "failed": 0
+    },
+    "independentESEF": {
+      "passed": 7,
+      "failed": 0
+    },
+    "independentServing": {
+      "passed": 32,
+      "failed": 0
+    },
+    "realCachedLVMH": {
+      "canonicalFacts": 12,
+      "existingDiagnosticMultiset": 543,
+      "PITAndProvenancePreserved": true
+    },
+    "exactPublicationFullQuantLog": {
+      "SHA256": "5219b4bb0300d8b88e380fc1b79e309304962da2a1553b29f8e1677fad465b27",
+      "passed": 2497,
+      "failed": 0,
+      "skipped": 0,
+      "durationMilliseconds": 77892.846905
+    },
+    "countingRule": "Targeted and full suites overlap; do not sum counts. Local browser version differs from pinned CI build as recorded in machine results."
+  },
+  "resolvedReviewFindings": [
+    "Conflicting listing status and equity/ETF aliases fail closed independent of order.",
+    "Complete company and legal-fund counts remain null where raw directories lack type/issuer proof.",
+    "FIRDS-only reporting-venue LEI proxies are quarantined using exact official ISO registration evidence.",
+    "Exact original-content provenance proofs are distinct from inferred checkpoint origins; replay containers do not invent retrieval IDs.",
+    "Observed WKN identifiers retain source format without invented normalization.",
+    "German research proposals do not bypass the accepted production universe policy.",
+    "ETF dividend and sector availability descriptions match the measured metadata matrix.",
+    "Observable defects, independently explained events and unknown classifications remain separate; no unsafe observation is repaired automatically."
+  ],
+  "productionRoutingChanged": false,
+  "TiingoRemoved": false,
+  "SECOrESEFChanged": false,
+  "reviewerPaidMarketstackRequests": 0,
+  "reviewerSourceEdits": 0,
+  "providerDecision": "DEFERRED"
+}

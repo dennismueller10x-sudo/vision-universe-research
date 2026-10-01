@@ -1,5 +1,7 @@
 # Marketstack global expansion — engineering report
 
+> This document records the accepted PR #330 baseline. Current scale measurements, expanded branch data and deferred provider decision are documented in [MARKETSTACK_SCALE_ENGINEERING_REPORT](MARKETSTACK_SCALE_ENGINEERING_REPORT.md). Production Tiingo/SEC/ESEF routing remains unchanged.
+
 Measured 2026-10-01. **Decision C: Marketstack and Tiingo remain complementary.** This branch prepares a bounded, real-data global equity/ETF foundation. It does not activate a production migration, replace Tiingo, or claim complete global coverage.
 
 The implementation is in [draft PR #330](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/330), stacked on the exact accepted PR #324 head, `d10d09eddeb0b6869550e38920d0e2f10818919e`. That baseline PR is still an open draft rather than merged main. The existing Company → Security → Listing model, US universe, Tiingo runtime, SEC/ESEF pipelines and production schedules remain protected.
