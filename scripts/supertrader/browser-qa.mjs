@@ -73,6 +73,13 @@ async function main() {
   const report = [];
   for (const [vpName, vp, isMobile] of viewports) {
     const ctx = await browser.newContext(vp);
+    // Research-Zugangsmaske (clientseitig, docs/RESEARCH_ACCESS_GATE.md): wie im
+    // vu2-Smoke wird der oeffentliche Pruefwert als Browserzustand gesetzt. Kein
+    // Passwort noetig oder geloggt.
+    if (args['access-gate']) {
+      const gate = JSON.parse(fs.readFileSync(args['access-gate'], 'utf8'));
+      await ctx.addInitScript((c) => { if (/^https?:$/.test(location.protocol)) localStorage.setItem(c.storageKey, JSON.stringify({ version: c.version, verifier: c.verifier, expiresAt: Date.now() + c.durationMs })); }, gate);
+    }
     for (const [name, url, selector] of routes) {
       const page = await ctx.newPage();
       const errors = [];

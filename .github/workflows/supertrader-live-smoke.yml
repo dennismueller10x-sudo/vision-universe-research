@@ -56,7 +56,9 @@ jobs:
           node /tmp/st-qa/node_modules/playwright/cli.js install --with-deps chromium
           mkdir -p /tmp/site/supertrader/data
           cp /tmp/signals.json /tmp/registry.json /tmp/site/supertrader/data/
-          node scripts/supertrader/browser-qa.mjs --base="$SITE" --site=/tmp/site --out=/tmp/supertrader-prod-evidence --playwright=/tmp/st-qa/node_modules/playwright
+          gate=""
+          if curl -sf "$SITE/__research/config.json" -o /tmp/research-gate.json && node -e 'const c=require("/tmp/research-gate.json"); if(!c.storageKey||!c.verifier) process.exit(1)'; then gate="--access-gate=/tmp/research-gate.json"; echo "Research-Zugangsmaske aktiv - oeffentlicher Pruefwert wird gesetzt"; fi
+          node scripts/supertrader/browser-qa.mjs --base="$SITE" --site=/tmp/site --out=/tmp/supertrader-prod-evidence --playwright=/tmp/st-qa/node_modules/playwright $gate
       - name: Preserve screenshots
         if: always()
         uses: actions/upload-artifact@v4
