@@ -6,11 +6,32 @@ import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url), A=require('../../providers/marketstack/adapter.js'), G=require('../../quant/engines/global-market.js'), Geo=require('../../quant/engines/global-equities.js');
 const hash=s=>createHash('sha256').update(s).digest('hex').slice(0,24);
+export function combineHistoryWindows(probe) {
+ const groups=new Map(),other=[];
+ for(const e of probe.endpoints||[]){
+  if(e.label!=='global-qualified-eod'){other.push(e);continue;}
+  const key=JSON.stringify([e.params?.symbols,e.params?.exchange||null]);
+  if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);
+ }
+ for(const windows of groups.values()) {
+  if(windows.length===1){other.push(windows[0]);continue;}
+  const successful=windows.filter(e=>e.ok&&Array.isArray(e.data?.data));
+  if(!successful.length){other.push(windows[0]);continue;}
+  const raw=[],seen=new Map(),signature=row=>JSON.stringify(['symbol','exchange','price_currency','currency','asset_type','open','high','low','close','volume','adj_open','adj_high','adj_low','adj_close','adj_volume','split_factor','dividend'].map(k=>row[k]??null));
+  for(const e of successful)for(const row of e.data.data){
+   const key=String(row.date||'').slice(0,10),sig=signature(row);
+   if(seen.get(key)===sig)continue;
+   seen.set(key,sig);raw.push({...row,_requestedFrom:e.params.date_from,_requestedTo:e.params.date_to,_retrievedAt:row._retrievedAt||e.retrievedAt||e.checkedAt});
+  }
+  const last=successful.at(-1);other.push({...last,params:{symbols:last.params.symbols,exchange:last.params.exchange},data:{data:raw},sourceWindows:windows.map(e=>({params:e.params,retrievedAt:e.retrievedAt||e.checkedAt,ok:e.ok,reason:e.reason||null}))});
+ }
+ return {...probe,endpoints:other};
+}
 export function importEvidence(probe, references, existing=[]) {
  const official=new Map(references.flatMap(r=>r.matches||[]).map(r=>[r.provider_symbol,r]));
  const identities=new Map((probe.endpoints||[]).filter(e=>e.label==='listing-identity'&&e.ok).map(e=>[e.data.symbol,e]));
  const listings=[],histories={},decisions=[],keys=new Set();
- for(const e of probe.endpoints||[]) {
+ for(const e of combineHistoryWindows(probe).endpoints||[]) {
   if(e.label!=='global-qualified-eod')continue;
   const symbol=e.params.symbols, identity=identities.get(symbol), ref=official.get(symbol), raw=e.data?.data;
   const blocked=reason=>decisions.push({providerSymbol:symbol,status:'BLOCKED',reason});
@@ -37,12 +58,14 @@ export function importEvidence(probe, references, existing=[]) {
   const issuer=meta.cik?existing.find(r=>String(r.cik||'').padStart(10,'0')===String(meta.cik).padStart(10,'0')):null;
   const prior=known[0];
   if(prior?.isin&&isin&&prior.isin!==isin){blocked('EXISTING_SECURITY_IDENTITY_MISMATCH');continue;}
+  if(prior?.tradingCurrency&&prior.tradingCurrency!==currency){blocked('EXISTING_LISTING_CURRENCY_MISMATCH');continue;}
+  if(prior?.assetType&&A.assetType(prior.assetType)!==type){blocked('EXISTING_ASSET_TYPE_MISMATCH');continue;}
   const listingId=prior?.listingId||prior?.instrumentId||'vu_'+hash(key), securityId=prior?.securityId||(isin?'sec_isin_'+isin:'sec_listing_'+hash(key));
   if(keys.has(key)){blocked('DUPLICATE_LISTING');continue;}
   const mapping={symbol,exchange:venue.mic,mic:venue.mic,currency,assetType:type,securityId,listingId};
   const bars=[], anomalies=[];
-  for(const row of raw){const n=A.normalizeBar(securityId,row,mapping,{retrievedAt:e.retrievedAt||e.checkedAt});
-   if(n.ok&&((e.params.date_from&&n.bar.date<e.params.date_from)||(e.params.date_to&&n.bar.date>e.params.date_to)||n.bar.date>probe.generatedAt.slice(0,10)))anomalies.push({date:row.date,reason:'outOfRequestedWindow'});
+  for(const row of raw){const n=A.normalizeBar(securityId,row,mapping,{retrievedAt:row._retrievedAt||e.retrievedAt||e.checkedAt});
+   if(n.ok&&(((row._requestedFrom||e.params.date_from)&&n.bar.date<(row._requestedFrom||e.params.date_from))||((row._requestedTo||e.params.date_to)&&n.bar.date>(row._requestedTo||e.params.date_to))||n.bar.date>probe.generatedAt.slice(0,10)))anomalies.push({date:row.date,reason:'outOfRequestedWindow'});
    else if(n.ok)bars.push(n.bar);else anomalies.push({date:row.date,reason:n.reason});}
   bars.sort((a,b)=>a.date.localeCompare(b.date));
   const issues=G.priceIssues(bars);
@@ -68,7 +91,7 @@ export function importEvidence(probe, references, existing=[]) {
     quality:{status:anomalies.length||observations.length?'PARTIAL':'VALID_OBSERVED_WINDOW',quarantinedCandles:anomalies.length,unexplainedJumps:observations.length,priceBasis:'PROVIDER_REPORTED_UNVERIFIED'},
     coverage:{price_eod:staleDays>7||anomalies.length?'PARTIAL':'FULL',price_history:'PARTIAL',intraday:'UNKNOWN',realtime:'UNKNOWN',corporate_actions:raw.some(r=>r.split_factor!=null||r.dividend!=null)?'PARTIAL':'UNKNOWN',fundamentals:'NONE',technical:'NONE',etf_holdings:type==='etf'?'UNKNOWN':'NONE'}};
   G.validateListing(row);keys.add(key);listings.push(row);
-  histories[listingId]={schemaVersion:'canonical-market-history-1.0.0',securityId,listingId,currency,assetType:type,adjustmentStatus:'unknown',quality:row.quality,quarantined:anomalies,retrievedAt:sourceUpdatedAt,provenance:{provider:'marketstack',providerSymbol:symbol,providerExchange:venue.mic,endpoint:'eod',currencySource:row.currencySource},bars};
+  histories[listingId]={schemaVersion:'canonical-market-history-1.0.0',securityId,listingId,currency,assetType:type,adjustmentStatus:'unknown',quality:row.quality,quarantined:anomalies,retrievedAt:sourceUpdatedAt,provenance:{provider:'marketstack',providerSymbol:symbol,providerExchange:venue.mic,endpoint:e.endpoint||'eod',...(e.originalRequestParams?{requestParams:e.originalRequestParams}:{}),...(e.sourceWindows?{windows:e.sourceWindows}:{}),currencySource:row.currencySource},bars};
   decisions.push({providerSymbol:symbol,status:'IMPORTED',listingId,bars:bars.length,quarantinedCandles:anomalies.length,anomalies,observations,from:bars[0].date,to:last.date,staleDays,assetType:row.assetType,currency});
  }
  const layer={schemaVersion:G.VERSION,generatedAt:probe.generatedAt,listings};G.validate(layer);
