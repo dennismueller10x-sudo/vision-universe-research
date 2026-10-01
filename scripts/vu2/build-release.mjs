@@ -26,7 +26,7 @@ export function projectQuarterly(source){
 }
 export function permitted(path){
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
- if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
+ if(/^(scripts|docs|providers|reports)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
  if(/^quant\/data\/(sec|fundamentals)\//.test(path))return false;
  return !/^(README\.md|VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER\.md)$/.test(path);
 }

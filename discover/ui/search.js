@@ -28,6 +28,9 @@
     var indexCache = Object.create(null);
     var aktiv = -1;
     var treffer = [];
+    var extension = options.extensionBase && global.VUInstrumentDirectory
+      ? global.VUInstrumentDirectory.create({ extensionBase: options.extensionBase }) : null;
+    var queryGeneration = 0;
 
     var input = el("input", { type: "search", placeholder: "Welche Aktie suchst du?",
                               "aria-label": "Aktien suchen", autocomplete: "off",
@@ -61,6 +64,7 @@
 
     function suchen() {
       var q = input.value.trim().toUpperCase();
+      var generation = ++queryGeneration;
       var geography = global.VUGlobalEquities ? global.VUGlobalEquities.geographyQuery(q) : null;
       aktiv = -1;
       if (!q) {
@@ -69,7 +73,14 @@
         hint.textContent = "Tippen zum Suchen · ↑ ↓ zum Auswählen · Enter zum Öffnen · Esc schließt";
         return;
       }
-      ladeIndex().then(function (index) {
+      var extraQuery = geography ? (geography.country || geography.region) : q;
+      var extraOptions = { limit: 14, extensionOnly: true };
+      if (geography && geography.country) extraOptions.listingCountry = geography.country;
+      if (geography && geography.region) extraOptions.listingRegion = geography.region;
+      var extra = extension ? extension.search(extraQuery, extraOptions).catch(function () { return { entries: [] }; }) : Promise.resolve({ entries: [] });
+      Promise.all([ladeIndex(), extra]).then(function (parts) {
+        if (generation !== queryGeneration) return;
+        var index = parts[0];
         // ISO country codes can also be existing US tickers (DE = Deere).
         // An exact ticker retains its established search behavior.
         if (index.entries.some(function (e) { return e.s === q; })) geography = null;
@@ -91,9 +102,19 @@
           else if (q.length >= 3 && sec.indexOf(q) !== -1) sektor.push(e);
         });
         /* Firma, Ticker, dann Sektor - und nie mehr als 14 Knoten im DOM. */
-        treffer = exakt.concat(beginnt, nameBeginnt, enthaelt, sektor).slice(0, 14);
+        var globalHits = (parts[1].entries || []).filter(function (hit) { return hit.universeId === "GLOBAL_MARKET"; }).map(function (hit) {
+          return Object.assign({}, hit, { globalMarket: true, m: true, a: [hit.x || hit.mic, hit.cc || hit.c, hit.u].filter(Boolean).join(" · ") });
+        });
+        var legacyHits = exakt.concat(beginnt, nameBeginnt, enthaelt, sektor);
+        // Keep established US result order while allowing geography queries
+        // to expose local listings and exact local tickers to remain visible.
+        treffer = geography && globalHits.length
+          ? legacyHits.slice(0, 7).concat(globalHits).slice(0, 14)
+          : exakt.concat(globalHits.filter(function (hit) { return hit.s === q; }), beginnt, nameBeginnt, enthaelt, sektor,
+            globalHits.filter(function (hit) { return hit.s !== q; })).slice(0, 14);
         zeichnen(index);
       }).catch(function () {
+        if (generation !== queryGeneration) return;
         S.clear(results);
         results.appendChild(el("div", { class: "dx-empty" }, [
           el("b", { text: "Suchindex nicht ladbar" }),
@@ -108,7 +129,8 @@
         hint.textContent = "Kein Titel in »" + index.universeLabel + "« passt zu „" + input.value + "“.";
         return;
       }
-      hint.textContent = treffer.length + " Treffer in »" + index.universeLabel + "«";
+      hint.textContent = treffer.length + " Treffer in »" + index.universeLabel + "«" +
+        (treffer.some(function (hit) { return hit.globalMarket; }) ? " und globalen Listings" : "");
       treffer.forEach(function (hit, i) {
         /* Ein Treffer traegt dieselbe Farbwelt wie die Reihe, in der er
            stuende - und dasselbe Gestaltungsmittel: das Kuerzel gross im
@@ -117,7 +139,7 @@
         var knopf = el("button", { class: "dx-result", type: "button", role: "option",
                                    "aria-selected": "false", "data-world": hit.w || null }, [
           el("span", { class: "dx-result-mark", "aria-hidden": "true", text: hit.s }),
-          D.Logos ? D.Logos.mark(hit.s, { name: hit.n, size: "sm" }) : el("span"),
+          D.Logos && !hit.globalMarket ? D.Logos.mark(hit.s, { name: hit.n, size: "sm" }) : el("span"),
           /* Zuerst die Firma, dann das Kuerzel - dieselbe Reihenfolge wie
              auf der Karte. Wer sucht, tippt "energ" und erwartet
              Firmennamen, keine Kuerzelliste. */
@@ -174,7 +196,9 @@
       var hit = treffer[i === undefined || i < 0 ? 0 : i];
       if (!hit) return;
       schliessen();
-      location.hash = "#/s/" + universum() + "/" + hit.s;
+      location.hash = hit.globalMarket
+        ? "#/s/GLOBAL_MARKET/" + encodeURIComponent(hit.s) + "/" + encodeURIComponent(hit.li || hit.i)
+        : "#/s/" + universum() + "/" + hit.s;
     }
 
     function oeffnenOverlay() {

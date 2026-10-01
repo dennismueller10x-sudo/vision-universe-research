@@ -4,6 +4,7 @@
   const V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
   const el = S.el, BASE = '/discover/data/';
   let generation = 0, meta, calendar, search, theme, previousFocus, homeDispose, marketDispose;
+  const GLOBAL_MARKET_BASE = '/quant/data/global-market/';
   const ctx = { universeId: 'US_REAL', openSearch: () => search.open() };
   function syncThemeChrome(state) {
     const color=state&&state.resolved==='light'?'#ffffff':'#08080a';
@@ -18,7 +19,7 @@
   function watchlist(){try{return Watch.load(localStorage);}catch(_){return [];}}
   function saveWatchlist(ref){try{return Watch.toggle(localStorage,ref);}catch(_){return false;}}
   function watchButton(root,symbol,detail){
-    const ref=Watch.reference(symbol,detail,ctx.universeId);
+    const ref=Watch.reference(symbol,detail,detail&&detail.universeId||ctx.universeId);
     const button=el('button',{type:'button',class:'v2-watch-button'});
     const paint=()=>{const saved=Watch.isSaved(watchlist(),ref);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));button.disabled=!ref.listingId&&!saved;};
     button.onclick=()=>{saveWatchlist(ref);paint();};paint();root.prepend(button);
@@ -75,7 +76,7 @@
     host.append(bar,main,footer(),dock); return main;
   }
   function setupSearch() {
-    search=D.Search.create({universeId:()=>ctx.universeId});document.body.append(search.node);
+    search=D.Search.create({universeId:()=>ctx.universeId,extensionBase:GLOBAL_MARKET_BASE});document.body.append(search.node);
     const open=search.open;
     search.open=()=>{previousFocus=document.activeElement;open();};
     document.addEventListener('keydown',event=>{if(event.key==='/'&&!search.node.classList.contains('on'))previousFocus=document.activeElement;},true);
@@ -99,8 +100,8 @@
     });
   }
   async function instrument(root,symbol,active,listingId) {
-    const dir=global.VUInstrumentDirectory.create({});
-    const result=await dir.getInstrument(symbol);
+    const dir=global.VUInstrumentDirectory.create({extensionBase:GLOBAL_MARKET_BASE});
+    const result=await dir.getInstrument(listingId?{symbol,listingId:decodeURIComponent(listingId)}:symbol);
     if(!active())return;
     if(result.status!=='OK'){message(root,'Aktie nicht gefunden','Prüfe das Kürzel oder suche nach dem Unternehmensnamen.');return;}
     Watch.assertListing(result.instrument,listingId);
@@ -110,6 +111,21 @@
     V.Detail.renderInstrument(root,{instrument:result.instrument,alternateListings:result.alternateListings,
       capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
     watchButton(root,symbol,result.instrument);
+  }
+  async function globalInstrument(root,symbol,listingId,active) {
+    if(!listingId||!/^vu_[a-f0-9]+$/.test(listingId)){message(root,'Listing nicht gefunden','Öffne das Listing über die Suche.');return;}
+    const dir=global.VUInstrumentDirectory.create({extensionBase:GLOBAL_MARKET_BASE});
+    const ref={symbol,listingId,universeId:'GLOBAL_MARKET'};
+    const result=await dir.getInstrument(ref);if(!active())return;
+    if(result.status!=='OK'||result.instrument.universeId!=='GLOBAL_MARKET'){message(root,'Listing nicht gefunden','Dieses Listing ist nicht verfügbar.');return;}
+    Watch.assertListing(result.instrument,listingId);
+    const [price,history]=await Promise.all([dir.getPrice(ref),dir.getPriceHistory(ref)]);if(!active())return;
+    const inst=result.instrument;
+    root.classList.add('dx-detail');
+    V.Detail.renderInstrument(root,{instrument:inst,alternateListings:result.alternateListings,
+      capabilities:{HAS_PROFILE:true,HAS_PRICE_SNAPSHOT:price.status==='OK',HAS_PRICE_HISTORY:history.status==='OK'},
+      price,history,masterVersion:'global-market-1.0.0',asOf:price.asOf||null},Object.assign({},ctx,{universeId:'GLOBAL_MARKET'}));
+    watchButton(root,symbol,inst);document.title=(inst.companyName||inst.name||symbol)+' — Discover';
   }
   async function route() {
     if(!meta)return;
@@ -127,6 +143,7 @@
       if(parts[0]==='s'&&parts[2]){
         const symbol=decodeURIComponent(parts[2]).toUpperCase();
         if(!/^[A-Z0-9.\-]{1,24}$/.test(symbol))throw Error('Ungültiges Aktienkürzel');
+        if(parts[1]==='GLOBAL_MARKET'){await globalInstrument(root,symbol,decodeURIComponent(parts[3]||''),active);return;}
         const index=await S.loadJSON(BASE+'stock-index/'+ctx.universeId+'.json');if(!active())return;
         if(index.symbols.includes(symbol)){
           const detail=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+symbol+'.json');if(!active())return;
