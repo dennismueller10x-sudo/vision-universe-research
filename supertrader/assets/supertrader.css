@@ -9,7 +9,7 @@
   --st-line: rgba(255,255,255,.08); --st-line-2: rgba(255,255,255,.14);
   --st-text: #f4f5f8; --st-text-2: #b9bdca; --st-muted: #8a8fa0;
   --st-accent: #c8f531; --st-good: #34d399; --st-warn: #fbbf24; --st-bad: #f87171; --st-info: #60a5fa;
-  --p-cand: #8a8fa0; --p-prep: #60a5fa; --p-conf: #fbbf24; --p-pos: #34d399; --p-warn: #fb923c; --p-exit: #f472b6; --p-closed: #c4b5fd; --p-inv: #6b7280; --p-partial: #f59e0b;
+  --p-cand: #8a8fa0; --p-prep: #60a5fa; --p-conf: #fbbf24; --p-pos: #34d399; --p-warn: #fb923c; --p-exit: #f472b6; --p-closed: #c4b5fd; --p-inv: #6b7280; --p-partial: #f59e0b; --p-watch: #94a3b8;
   --st-radius: 18px; --st-radius-s: 12px; --st-gutter: 16px; --st-max: 1120px; --st-bottom-nav: 64px;
   --world: #c8f531; --world-2: #3987e5;
   --ma10: #3987e5; --ma20: #d95926; --ma50: #199e70; --ma150: #c98500; --ma200: #d55181; --ma30w: #9085e9;
@@ -76,12 +76,12 @@ p { margin: 0; }
 .st-kpi strong { font-size: 26px; font-weight: 850; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .st-kpi span { font-size: 12.5px; color: var(--st-text-2); }
 .st-kpi em { font-size: 11.5px; color: var(--st-muted); font-style: normal; }
-.st-kpi[data-p="prep"] { --pc: var(--p-prep); } .st-kpi[data-p="conf"] { --pc: var(--p-conf); } .st-kpi[data-p="pos"] { --pc: var(--p-pos); } .st-kpi[data-p="closed"] { --pc: var(--p-closed); }
+.st-kpi[data-p="prep"] { --pc: var(--p-prep); } .st-kpi[data-p="watch"] { --pc: var(--p-watch); } .st-kpi[data-p="conf"] { --pc: var(--p-conf); } .st-kpi[data-p="pos"] { --pc: var(--p-pos); } .st-kpi[data-p="closed"] { --pc: var(--p-closed); }
 
 /* Phasen & Tags */
 .st-phase { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; color: var(--pc); background: color-mix(in srgb, var(--pc) 15%, transparent); border: 1px solid color-mix(in srgb, var(--pc) 40%, transparent); --pc: var(--p-cand); }
 .st-phase::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.st-phase[data-p="prep"] { --pc: var(--p-prep); } .st-phase[data-p="conf"] { --pc: var(--p-conf); } .st-phase[data-p="pos"] { --pc: var(--p-pos); }
+.st-phase[data-p="prep"] { --pc: var(--p-prep); } .st-phase[data-p="watch"] { --pc: var(--p-watch); } .st-phase[data-p="conf"] { --pc: var(--p-conf); } .st-phase[data-p="pos"] { --pc: var(--p-pos); }
 .st-phase[data-p="warn"] { --pc: var(--p-warn); } .st-phase[data-p="exit"] { --pc: var(--p-exit); } .st-phase[data-p="closed"] { --pc: var(--p-closed); }
 .st-phase[data-p="inv"] { --pc: var(--p-inv); } .st-phase[data-p="partial"] { --pc: var(--p-partial); }
 .st-tag, .st-note-tag, .st-q { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; white-space: nowrap; background: var(--st-surface-2); color: var(--st-text-2); }
@@ -318,3 +318,20 @@ p { margin: 0; }
 }
 .st-extra[hidden] { display: none; }
 .st-crit .v.mkt.ok { color: var(--st-good); } .st-crit .v.mkt.no { color: var(--st-bad); }
+
+/* Runde 5: Pruefbox, gemeinsame Bausteine, Beispiel-Zyklus */
+.st-audit { margin-top: 12px; padding: 12px 14px; border-radius: var(--st-radius-s); background: rgba(52,211,153,.06); border: 1px solid rgba(52,211,153,.22); }
+.st-audit strong { display: block; font-size: 13.5px; margin-bottom: 6px; }
+.st-audit ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13px; color: var(--st-text-2); }
+.st-need { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--st-text-2); }
+.st-need b { color: var(--st-text); }
+.st-demo-banner { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--st-radius-s); background: rgba(148,163,184,.10); border: 1px dashed rgba(148,163,184,.55); font-size: 13.5px; }
+.st-demo-banner strong { display: block; font-size: 14px; }
+.st-flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.st-flow li { display: grid; grid-template-columns: 72px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--st-line); }
+.st-flow li:last-child { border-bottom: 0; }
+.st-flow .dt { font-size: 12.5px; color: var(--st-text-2); padding-top: 2px; }
+.st-flow strong { display: block; font-size: 14px; } .st-flow span { font-size: 13px; color: var(--st-text-2); }
+.st-replay-t { display: block; text-decoration: none; color: inherit; padding: 14px; border-radius: var(--st-radius); background: var(--st-surface); border: 1px dashed rgba(148,163,184,.45); }
+.st-replay-t .r1 { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 6px; }
+.st-replay-t p { margin: 0; font-size: 13.5px; color: var(--st-text-2); }

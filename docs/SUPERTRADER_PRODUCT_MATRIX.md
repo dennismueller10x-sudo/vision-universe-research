@@ -19,7 +19,7 @@ Ausgangslage vor dieser Runde:
 | Weinstein Stages | ja (2 vorbereitet) | ja | nicht geprüft | ja | Wochenvolumen nur ~1 Jahr; Sektorindizes |
 | Darvas Boxes | ja (0 A, 157 B) | ja | nicht geprüft | ja | Pyramiding nicht simuliert; Backtest-Bausteine wie oben |
 | Minervini VCP | ja (heute 0 Setups) | ja (Ausstieg nur VU-Hilfsregel) | nicht geprüft | ja | Minervinis Verkaufsregeln nicht mechanisch belegt |
-| **Donchian / Turtle (neu)** | **ja (220 vorbereitet)** | **ja** | **explorativ (Wochen-Pilot)** | ja — reine Kursmethode | Unit-Sizing/Pyramiding nicht simuliert; Validierung braucht delistete Titel + damaliges Universum |
+| **Donchian / Turtle** | **ja (Beobachtungsliste 219, v1.1.0)** | **ja** | **explorativ (Wochen-Pilot v1.1.0, geprüft)** | ja — reine Kursmethode | Unit-Sizing/Pyramiding nicht simuliert; Validierung braucht delistete Titel + damaliges Universum |
 | **CAN SLIM (neu, Teilprüfung)** | **7 Teiltreffer** | nein | nicht geprüft | 5 von 7 Kriterien (C, A, N, L, M) | **I** fehlt (keine Fondsbestände je Aktie über Quartale); EPS-Historie split-inkonsistent → Nettogewinn als Ersatz; kein Basisausbruch gerechnet; Originalbuch nicht inhaltlich geprüft |
 | **Piotroski F-Score (neu, Teilprüfung)** | **4 Kandidaten** | nein | nicht geprüft | 8 von 9 Signalen | Umlaufvermögen + kurzfristige Verbindlichkeiten (Liquiditätssignal); Erstmeldungen statt Restatements |
 | Greenblatt Magic Formula | nein | nein | nicht geprüft | nein | Umlaufvermögen, kurzfristige Verbindlichkeiten, Sachanlagen (Return on Capital); PIT-Daten nur für 5 Titel |
@@ -52,3 +52,11 @@ Jede Methode zeigt drei getrennte Aussagen:
 - **Historie:** Nicht geprüft / Explorativ getestet. „Validiert“ gibt es derzeit nicht.
 
 Gate-Codes und Versionsnamen stehen nur in den Methodendetails.
+
+## Runde 5 (01.10.2026)
+
+- **Donchian:** Wartende Setups gelten als **Beobachtungsliste**, nicht als „vorbereitete Einstiege“. Grund: rund 8,5 % des Universums stehen nahe dem 20-Tage-Hoch.
+  - Auf der Startseite, in der Kennzahl und im Filter werden sie getrennt gezählt.
+  - v1.1.0 schließt festhängende Kurse aus (Kanalbreite ≥ 2 %).
+- **Historisches Replay** (`/supertrader/beispiel/`): ein echter Zyklus mit derselben Engine, eindeutig als Beispiel gekennzeichnet, nie im Ledger.
+- **Pilot geprüft:** siehe `docs/SUPERTRADER_PILOT_AUDIT.md`.

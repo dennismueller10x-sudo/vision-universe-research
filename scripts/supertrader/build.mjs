@@ -35,6 +35,7 @@ import donchian from './engine/strategies/donchian.mjs';
 import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
+import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
@@ -503,6 +504,8 @@ export function build() {
   signals.partialChecks = partial;
   for (const [id, pc] of Object.entries(partial)) for (const c of pc.candidates) (signals.bySymbol[c.symbol] ||= []).push({ strategyId: id, id: null, state: 'PARTIAL_CHECK' });
   const pilot = args['skip-pilot'] ? null : buildPilotArtifact(ROOT);
+  // Historisches Replay: Demonstration an echten vergangenen Balken, nie im Ledger.
+  const replay = buildReplayArtifact({ engine: donchian, instruments, ctxOf, planOf, asOf, generatedAt: barsGeneratedAt });
   const backtests = buildBacktests(registry, coverage, gbCoverage);
   // Historische Validierung je Regelkarte aus den gemessenen Gates, nicht behauptet.
   for (const s of registry.strategies) for (const card of s.rule_cards || []) {
@@ -518,6 +521,7 @@ export function build() {
   if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
   if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
+  writeJson(path.join(DATA, 'replay.json'), replay);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
   writeStockPages(signals);
   writeStrategyPages(registry);
@@ -713,7 +717,7 @@ export function planOf(s) {
   } else if (s.state === 'TRIGGERED') {
     text = 'Modelleinstieg zur nächsten Eröffnung (keine reale Order). Bei Eröffnung auf/unter dem Stop oder außerhalb der Gap-Regel kein Einstieg.'; ruleId = 'LC-MODEL-ENTRY';
   } else if (s.state === 'ACTIVE' || s.state === 'WARNING') {
-    text = `Modellposition halten, solange keine Ausstiegsregel greift. Stop ${fmtP(s.stop)} (${s.stopRuleId}). ${p.exitSummary}.`; ruleId = s.stopRuleId;
+    text = `Modellposition halten, solange keine Ausstiegsregel greift. Stop ${fmtP(s.stop)}. ${p.exitSummary}.`; ruleId = s.stopRuleId;
   } else if (s.state === 'EXIT') {
     text = 'Ausstieg ausgelöst — Modellausführung zur nächsten Eröffnung.'; ruleId = last.ruleId;
   } else if (s.state === 'CLOSED') {
@@ -770,8 +774,19 @@ function buildBacktests(registry, coverage, gbCoverage) {
     requiredMetrics: ['CAGR', 'Gesamtrendite', 'Benchmark-Rendite', 'Excess Return', 'Volatilität', 'Sharpe', 'Sortino', 'Max. Drawdown', 'Calmar', 'Trefferquote', 'Ø Gewinn', 'Ø Verlust', 'Expectancy', 'Profit Factor', 'Ø Haltedauer', 'Turnover', 'Exposure', 'Verlustserien', 'Tail Losses', 'Jahresergebnisse', 'Marktregime-Ergebnisse', 'Anzahl Trades', 'Datenabdeckung', 'Strategy Trust Score'],
     validationDesign: { inSampleShare: 0.6, outOfSample: 'letzte 40 % unverändert', walkForward: 'Kalenderjahre', sensitivity: 'alle vorab definierten Varianten als Fläche, nie als bester Punkt', benchmark: 'SPY (Kursindex) und gleichgewichtetes Universum inkl. Delistings' },
     runs: out,
+    // Datenstrecke zum ersten validierbaren Backtest - aus dem Probeabruf (nur Anzahlen).
+    dataPath: (() => { const f = rel('scripts/supertrader/probe/results-2026-10-01.json'); return exists(f) ? readJson(f) : null; })(),
+    nextSteps: NEXT_STEPS,
   };
 }
+// Kleinster belegter Schritt zuerst (docs/SUPERTRADER_VALIDATION_DATA_PATH.md).
+const NEXT_STEPS = [
+  ['Owner-Entscheidung: Rechte und Abrufumfang', 'Freigabe für interne Backtests mit delisteten Titeln (~5.200 Abrufe im bestehenden Abo, verteilt auf 1–2 Tage) und für die Veröffentlichung abgeleiteter Kennzahlen.'],
+  ['Delistete Titel ab 2016 abrufen', 'Tageskurse aller ab 2016 delisteten US-Aktien über den vorhandenen Zugang; der Probeabruf lieferte 20 von 21 bis zum letzten Handelstag.'],
+  ['Universum „handelbar am Tag X“ bauen', 'Aus Listing-Beginn und -Ende je Wertpapier; Kürzel-Neuvergaben trennen und Lücken zählen.'],
+  ['Gesamtrendite selbst rechnen', 'Aus Rohkurs, Dividende und Split statt der uneinheitlichen bereinigten Spalte.'],
+  ['Dann: Donchian-Tagesvariante 2016–2026', 'Erster validierbarer Test: reine Kursmethode, ≥ 10 Jahre, Bärenphasen 2018, 2020, 2022.'],
+];
 function mapVariant(v) {
   if (v.startsWith('KK_COMMON_BREAKOUT')) return 'KK_COMMON_BREAKOUT_DAILY';
   if (v.startsWith('WEINSTEIN_STAGE2')) return 'WEINSTEIN_STAGE2_WEEKLY';
@@ -828,6 +843,7 @@ function writeStaticPages() {
     ['strategies/index.html', 'strategies', 'Strategien — Supertrader — Vision Universe®', 'Alle Strategy Worlds von Supertrader mit Research-, Daten- und Backteststatus.', 2],
     ['backtests/index.html', 'backtests', 'Backtest Lab — Supertrader — Vision Universe®', 'Backtest Lab: Gates, Datenabdeckung, Ausführungsannahmen und Vergleich der Strategien.', 2],
     ['stock/index.html', 'stock', 'Strategy Lens — Supertrader — Vision Universe®', 'Welche Supertrader-Modelle einen Titel erkennen.', 2],
+    ['beispiel/index.html', 'replay', 'Beispiel eines Modell-Zyklus — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Einstieg, Stop und Ausstieg ablaufen. Kein aktuelles Signal.', 2],
     ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Source Ledger und Methodik der Supertrader-Strategien.', 2],
   ];
   for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth }));
