@@ -1,82 +1,85 @@
 {
   "schemaVersion": "freshness-health-1.0.0",
   "contractVersion": "freshness-contract-1.0.0",
-  "checkedAt": "2026-09-30T02:39:51.381Z",
+  "checkedAt": "2026-10-01T01:57:16.484Z",
   "target": "repository",
   "market": {
     "state": "CLOSED",
-    "localDate": "2026-09-29",
-    "localTime": "22:39:51",
-    "lastCompletedSession": "2026-09-29",
-    "currentSession": "2026-09-29",
-    "expectedIntradaySession": "2026-09-29"
+    "localDate": "2026-09-30",
+    "localTime": "21:57:16",
+    "lastCompletedSession": "2026-09-30",
+    "currentSession": "2026-09-30",
+    "expectedIntradaySession": "2026-09-30"
   },
   "intraday": {
-    "indexGeneratedAt": "2026-09-29T20:02:31.507Z",
+    "indexGeneratedAt": "2026-10-01T01:56:58.224Z",
     "indexSchema": "intraday-index-1.1.0",
     "displaySession": {
-      "sessionDate": "2026-09-29",
+      "sessionDate": "2026-09-30",
       "kind": "current",
-      "isRunning": true,
-      "isComplete": false
+      "isRunning": false,
+      "isComplete": true
     },
     "dataSession": {
-      "sessionDate": "2026-09-29",
-      "asOf": "2026-09-29T20:00:00.000Z",
-      "asOfLocal": "16:00",
+      "sessionDate": "2026-09-30",
+      "asOf": "2026-09-30T20:55:00.000Z",
+      "asOfLocal": "16:55",
       "regularComplete": false,
-      "snapshots": 1378,
-      "fetchedAfterClose": false,
-      "afterCloseSnapshots": 0,
-      "finalSlotSnapshots": 0,
-      "universe": false
+      "snapshots": 5287,
+      "fetchedAfterClose": true,
+      "afterCloseSnapshots": 5284,
+      "finalSlotSnapshots": 4640,
+      "universe": true
     },
-    "dataState": "STALE",
-    "dataReason": "closeMissing",
-    "dataLabel": "Heute · Stand 16:00 · nicht aktuell",
-    "entries": 1393,
+    "dataState": "LAST_SESSION",
+    "dataReason": "sessionCompleteNoLateTrades",
+    "dataLabel": "Heute · Schluss · letzter Kurs 16:55",
+    "entries": 1384,
     "byState": {
       "LIVE": 0,
-      "LAST_SESSION": 0,
-      "STALE": 1393,
+      "LAST_SESSION": 1358,
+      "STALE": 26,
       "UNAVAILABLE": 0
     },
     "byReason": {
-      "closeMissing": 1378,
-      "lastSessionMissing": 15
+      "lastCompletedSession": 1331,
+      "lastSessionMissing": 23,
+      "sessionCompleteNoLateTrades": 27,
+      "closeMissing": 3
     },
     "staleSample": [
-      "A",
-      "AAL",
-      "AAMI",
-      "AAON",
-      "AAPL",
-      "ABBV",
-      "ABCL",
-      "ABLV",
-      "ABNB",
-      "ABT",
-      "ABX",
-      "ACA",
-      "ACCO",
-      "ACEL",
-      "ACHR",
-      "ACHV",
-      "ACIC",
-      "ACM",
-      "ACMR",
-      "ACN",
-      "ACTG",
-      "ACU",
-      "ACVA",
-      "ADAML",
-      "ADBE"
+      "AFGD",
+      "AKA",
+      "AKO-B",
+      "AMZE",
+      "AUC",
+      "BOF",
+      "BTBD",
+      "CAAS",
+      "CDRO",
+      "CPHC",
+      "CRT",
+      "CRWS",
+      "CWBC",
+      "DBRG",
+      "FTRE",
+      "HFBL",
+      "HTLM",
+      "HUHU",
+      "KMPB",
+      "LITB",
+      "MHH",
+      "MSC",
+      "NXPL",
+      "PHOE",
+      "RYOJ"
     ],
     "universeSessions": [
-      "2026-09-28"
+      "2026-09-29",
+      "2026-09-30"
     ],
-    "universeCoversLastSession": false,
-    "state": "STALE"
+    "universeCoversLastSession": true,
+    "state": "OK"
   },
   "daily": {
     "universeAsOf": "2026-09-29",
@@ -84,11 +87,11 @@
     "state": "LAST_SESSION",
     "basis": "series",
     "summaryState": "LAST_SESSION",
-    "reason": "lastCompletedSession",
-    "label": "Schluss Heute",
+    "reason": "closePendingWithinGrace",
+    "label": "Schluss Di., 29.09. · Mittwoch folgt",
     "seriesState": "LAST_SESSION",
     "summaryContradictsSeries": false,
-    "expectedSession": "2026-09-29",
+    "expectedSession": "2026-09-30",
     "sample": {
       "sample": 40,
       "byState": {
@@ -98,16 +101,13 @@
         "UNAVAILABLE": 0
       },
       "byReason": {
-        "lastCompletedSession": 40
+        "closePendingWithinGrace": 40
       },
       "staleSample": [],
       "seriesIndexCount": 6490
     }
   },
-  "overall": "STALE",
-  "findings": [
-    "Intraday STALE: Datenstand 2026-09-29, erwartet 2026-09-29 (closeMissing)",
-    "Universumslauf fehlt: Sitzung 2026-09-29 liegt nur fuer den Discover-Umfang vor (6.7 h nach Schluss)"
-  ],
+  "overall": "OK",
+  "findings": [],
   "note": "Health-Check des Freshness-Vertrags (quant/engines/realtime/freshness.js). Keine Kurse - nur Zustaende, Zaehlungen, Gruende."
 }
