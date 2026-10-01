@@ -1,0 +1,184 @@
+{
+  "schema": "supertrader-validation-prereg-1.0.0",
+  "registeredAt": "2026-10-01",
+  "status": "FROZEN_BEFORE_FETCH",
+  "purpose": "Interner Datentest: historisch korrektes US-Aktienuniversum ab 2016 (inkl. delisteter Listings) und erster belastbarer Donchian-Backtest. Interne Auswertung; keine Veröffentlichung von Kennzahlen.",
+  "freeze": "Diese Datei wird vor dem ersten Kursabruf committet. Jede spätere Änderung an Universum, Zeitraum, Regeln, Kosten, Szenarien oder Akzeptanzkriterien ist eine neue Version mit neuem Lauf; Ergebnisse alter Versionen bleiben im Protokoll.",
+  "rightsAndLimits": {
+    "rightsBasis": "quant/config/provider-profiles.json tiingo.licensing: OWNER_DECLARED_LICENSED (2026-09-13); Owner-Freigabe 2026-10-01 für Abruf, private Speicherung und interne Auswertung im bestehenden Abo.",
+    "requestCeilings": "providers/tiingo/adapter.js COMMERCIAL_LIMITS (100/min, 5.000/h, 50.000/Tag; verified:false) - Sicherheitsgrenzen des Repos, keine Anbieterzusage.",
+    "plannedPace": "max. 50 Anfragen/min, max. 3.000/h, max. 15.000 je Lauf; kein Abruf zwischen 21:30 und 00:30 UTC (täglicher Marktlauf 22:30 UTC).",
+    "stopRules": [
+      "HTTP 429",
+      "HTTP 401/403",
+      "Antworttext mit Limit-/Quota-Hinweis",
+      "5 aufeinanderfolgende Netzwerk-/5xx-Fehler"
+    ],
+    "unknown": "Grenze für eindeutige Symbole pro Monat ist im Repo nicht dokumentiert. Der Lauf misst und stoppt bei der ersten Limit-Antwort; er umgeht sie nicht.",
+    "storage": "Rohreihen nur im privaten R2-Eimer (Provider-Namensraum tiingo-delisted, eigener Nutzungszähler, Zero-Cost-Guard mit Summe beider Nutzungen). Nichts im Repository, nichts in öffentlichen Logs oder Artefakten.",
+    "results": "Ergebnisse verlassen den Runner nur verschlüsselt (RSA-OAEP-4096 + AES-256-GCM, öffentlicher Schlüssel results-public-key.pem). Logs enthalten nur Fortschrittszahlen."
+  },
+  "listings": {
+    "source": "Tiingo supported_tickers.zip (ticker, exchange, assetType, priceCurrency, startDate, endDate)",
+    "listingId": "tiingo:EXCHANGE:TICKER:startDate",
+    "filter": {
+      "assetType": "Stock",
+      "priceCurrency": "USD",
+      "exchanges": [
+        "NYSE",
+        "NASDAQ",
+        "AMEX",
+        "NYSE MKT",
+        "NYSE ARCA",
+        "BATS"
+      ],
+      "overlapsWindow": "startDate <= 2026-09-30 AND (endDate leer oder >= 2015-01-01)"
+    },
+    "sources": {
+      "STORE_ACTIVE": "aktives Listing, Reihe im bestehenden Tiingo-Speicher (FULL_UNIVERSE) - kein neuer Abruf",
+      "FETCH": "beendetes Listing oder aktives Listing ohne Speicherreihe - neuer Abruf",
+      "UNFETCHABLE_REUSED": "älteres Listing eines später neu vergebenen Kürzels; Tiingo liefert per Kürzel nur das neueste Listing (Probe 0/7). Wird in der Teilmenge mit explizitem Datumsfenster erneut geprüft."
+    },
+    "identityChecks": [
+      "ID1 Metadaten (Name, Start, Ende) passen zur Listenzeile (Start ±7 Tage, Ende ±7 Tage)",
+      "ID2 alle verwendeten Balken liegen in [startDate, endDate] der Listenzeile; Balken außerhalb werden verworfen und gezählt",
+      "ID3 Kürzel mit mehreren Listenzeilen: eine Reihe gehört genau einem Listing; Balken eines anderen Listings führen zu MISMATCH",
+      "ID4 Doppelhistorie: identischer letzter Balken (Datum, Schluss, Volumen) wie eine andere Reihe -> TICKER_CHANGE_DUPLICATE, nur einmal im Universum"
+    ],
+    "fetchStatus": [
+      "OK",
+      "PARTIAL",
+      "EMPTY",
+      "MISMATCH",
+      "ERROR",
+      "UNFETCHABLE_REUSED",
+      "SKIPPED_CLASS"
+    ],
+    "okDefinition": "OK = Reihe vorhanden, letzter Balken höchstens 7 Kalendertage vor endDate (bzw. Fenster-Ende bei aktiven), erster Balken höchstens 7 Tage nach max(startDate, 2015-01-01). PARTIAL = Reihe vorhanden, aber Anfang oder Ende verfehlt.",
+    "fetchOrder": "Je Listing zuerst Metadaten (Name, Start, Ende), dann Gattung; Kurse nur für eingeschlossene Gattungen (EQUITY_COMMON, ADR, REIT). Ausgeschlossene Gattungen: Status SKIPPED_CLASS, keine Kursanfrage. Ältere Listings neu vergebener Kürzel: eine Kursanfrage mit explizitem Datumsfenster des alten Listings; liefert sie keine Balken im Fenster, bleibt UNFETCHABLE_REUSED (Gattung nach Tickerform, Konfidenz LOW)."
+  },
+  "classification": {
+    "engine": "quant/engines/us-security-master.js classifySecurity (Ticker + Name aus Metadaten)",
+    "included": [
+      "EQUITY_COMMON",
+      "ADR",
+      "REIT"
+    ],
+    "excluded": [
+      "SPAC",
+      "TRUST",
+      "PREFERRED",
+      "ETF",
+      "ETN",
+      "ETP",
+      "MUTUAL_FUND",
+      "CEF",
+      "INDEX",
+      "WARRANT",
+      "UNIT",
+      "RIGHT",
+      "TEST_SECURITY",
+      "OTHER",
+      "UNKNOWN"
+    ],
+    "activeListings": "Gattung aus quant/data/market/security-master/eligibility.json (decisions.instrument_type)",
+    "limit": "Gattung nach heutigem Namen; ein früherer SPAC mit heutigem Firmennamen gilt als Stammaktie.",
+    "nameLayer": "Zusätzlich die Namensebene des Live-Universums: weist der Name WARRANT, UNIT, RIGHT oder PREFERRED aus, gilt diese Gattung."
+  },
+  "universe": {
+    "id": "US_PIT_2016_A",
+    "membershipAtDate": "Listing gehört an Tag D zum Universum, wenn startDate <= D <= endDate, Gattung eingeschlossen, Status OK/PARTIAL und ein Balken an D vorliegt",
+    "window": {
+      "warmupFrom": "2015-01-01",
+      "from": "2016-01-04",
+      "to": "2026-09-30"
+    },
+    "survivorControl": "Dieselbe Rechnung nur über heute aktive Listings (Survivorship-Kontrolle)"
+  },
+  "prices": {
+    "rawFields": [
+      "date",
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "divCash",
+      "splitFactor"
+    ],
+    "splitAdjustment": "eigene Rückrechnung aus splitFactor: adj_t = raw_t / Produkt(splitFactor_s, s > t); Volumen mal Faktor. Kein dividendenbereinigter Kurs für Signale.",
+    "totalReturn": "r_t = (close_t + divCash_t) * splitFactor_t / close_(t-1) - 1",
+    "providerAdjCheck": "Abgleich eigene Split-Rückrechnung gegen Tiingo adjClose-Verhältnis an Split-Tagen (AT4)"
+  },
+  "strategy": {
+    "engine": "scripts/supertrader/engine/simulator.mjs (supertrader-simulator-2.0.0), unverändert",
+    "rules": "scripts/supertrader/engine/strategies/donchian.mjs v1.1.0, PARAMS unverändert",
+    "harnessAdapter": "rawPriceGate: Kursgrenze minPrice 10 USD wird auf dem ROHEN Schlusskurs geprüft (statt auf dem split-bereinigten); alle anderen Regeln unverändert auf split-bereinigten Balken. Begründung: vermeidet das Reverse-Split-Artefakt des Piloten (AT5).",
+    "execution": "DEFAULT_EXECUTION: Einstieg nächste Eröffnung + 10 bp, Stop 2N mit Gap zur Eröffnung, Ausstieg nächste Eröffnung - 10 bp, Kommission 1 bp je Seite",
+    "noOptimization": "Keine Parametersuche. Einziger Lauf je Szenario; Sensitivitäten sind vorab festgelegt."
+  },
+  "portfolio": {
+    "base": "scripts/supertrader/engine/backtest.mjs PORTFOLIO_DEFAULTS (100.000 USD, 0,5 % Risiko je Trade, max. 20 % je Position, max. 10 Positionen, max. 100 % investiert)",
+    "extension": "runPortfolioTR: wie runPortfolio, zusätzlich Kommission auf Ein- und Ausstieg, Dividenden (je bereinigter Aktie) als Barmittel, Delisting-Ausstieg nach Szenario. Kontrolle: ohne Dividenden/Kommission/Delistings identisch zu runPortfolio.",
+    "tieOrder": "gleichzeitige Einstiege alphabetisch nach Listing-ID (wie runPortfolio)",
+    "cash": "keine Verzinsung"
+  },
+  "delistingReturns": {
+    "principle": "Keine erfundenen Delisting-Renditen. Offene Positionen am Reihenende eines beendeten Listings werden nach vorab festgelegten Szenarien abgerechnet.",
+    "distressSignature": "letzter Rohschluss < 1 USD ODER Schluss <= -50 % gegenüber dem Schluss 60 Sitzungen vor Reihenende",
+    "scenarios": {
+      "S0_LAST_PRICE": "Erlös = letzter verfügbarer Schluss (minus Slippage) am letzten Handelstag",
+      "S1_MINUS_30": "Erlös = letzter Schluss x 0,70 für jedes Delisting",
+      "S2_DISTRESS_ZERO": "Erlös = 0 bei Distress-Signatur, sonst letzter Schluss x 0,70"
+    },
+    "activeAtWindowEnd": "offene Positionen aktiver Listings werden am 2026-09-30 zum Schluss bewertet (OPEN_AT_END), nicht als Delisting",
+    "rule": "Eine Schlussfolgerung, die zwischen S0, S1 und S2 das Vorzeichen der Überrendite wechselt, gilt nicht als validiert."
+  },
+  "benchmarks": {
+    "SPY_TR": "SPY Gesamtrendite aus Rohkurs + Dividenden + Splits (eigener Abruf, 1 Anfrage)",
+    "EW_UNIVERSE_TR": "gleichgewichtetes, täglich neu gewichtetes Portfolio aller Universumstitel mit Rohschluss >= 10 USD und 20-Tage-Dollarvolumen >= 20 Mio. am Vortag, ohne Kosten, Delistings nach demselben Szenario"
+  },
+  "dataAcceptance": {
+    "AT1": "Abdeckung: >= 95 % der abrufbaren eingeschlossenen beendeten Listings (2016-2025) mit Status OK",
+    "AT1b": "Delisting-Quote je Jahr 2016-2025 im Universum zwischen 3 % und 20 %, kein Jahr unter der Hälfte des Medians",
+    "AT2": "Kein Balken außerhalb [startDate, endDate] im Universum (Test mit Zukunftsbalken)",
+    "AT3": "Nicht abrufbare Alt-Listings (neu vergebene Kürzel) < 5 % der Universums-Listing-Tage 2016-2026",
+    "AT4": ">= 98 % der Split-Ereignisse stimmen mit dem Tiingo-adjClose-Verhältnis überein (Toleranz 1 %)",
+    "AT5": "Preisgrenze auf Rohkursen (rawPriceGate) aktiv; kein Trade mit Rohschluss < 10 USD am Bestätigungstag",
+    "AT6": "Delisting-Szenarien S0/S1/S2 gerechnet und ausgewiesen",
+    "AT7": "Rechte: Owner-Freigabe 2026-10-01 (intern)",
+    "AT8": "Reproduzierbarkeit: Hash der Listentabelle, Regelversion, Kosten, Commit im Ergebnis"
+  },
+  "strategyAcceptance": {
+    "primaryMetric": "Überrendite CAGR gegenüber SPY_TR, 2016-01-04 bis 2026-09-30",
+    "robustPositiveRequires": [
+      "R0 alle Datenakzeptanztests AT1-AT6 und AT8 bestanden",
+      "R1 Überrendite > 0 in S0, S1 und S2",
+      "R2 Überrendite > 0 in beiden Teilzeiträumen 2016-2020 und 2021-2026 (S1)",
+      "R3 Überrendite > 0 in >= 80 % von 20 Läufen mit zufälliger Reihenfolge gleichzeitiger Einstiege (Seeds 1-20, S1)",
+      "R4 Überrendite > 0 bei doppelten Kosten (Slippage 20 bp, Kommission 2 bp; S1)"
+    ],
+    "robustNegative": "Überrendite < 0 in S0 (günstigstes Szenario) und in beiden Teilzeiträumen",
+    "otherwise": "NICHT_BELASTBAR (explorativ)",
+    "alsoReported": [
+      "Max. Rückgang",
+      "Trades",
+      "Trefferquote",
+      "Exponierung",
+      "Survivorship-Kontrolle",
+      "EW_UNIVERSE_TR"
+    ],
+    "labels": {
+      "TECHNISCH_BERECHNET": "Rechnung lief fehlerfrei, Abstimmungen bestanden",
+      "EXPLORATIV": "Datenakzeptanz oder Robustheitstest nicht bestanden",
+      "HISTORISCH_BELASTBAR": "R0-R4 bestanden (positiv) bzw. robustNegative erfüllt (negativ)"
+    }
+  },
+  "controls": [
+    "C1 Abstimmung Endwert = Startkapital + Summe realisierter Trade-Ergebnisse + Dividenden - Kommissionen + offene Positionen (Differenz < 1e-6 relativ)",
+    "C2 runPortfolioTR ohne Dividenden/Kommission/Delistings == runPortfolio (identische Equity-Kurve)",
+    "C3 20 zufällig gezogene Trades unabhängig aus Rohbalken nachgerechnet (Signal-, Einstiegs-, Ausstiegsdatum und -kurs)",
+    "C4 Stichprobe Delisting-Fälle (Übernahme, Insolvenz, neu vergebenes Kürzel) mit Reihenende und Abrechnung",
+    "C5 extremste 10 Trade-Renditen gegen Rohbalken und Split-Ereignisse geprüft"
+  ]
+}
