@@ -2,7 +2,7 @@
   "environment": {
     "node": "24.19.0",
     "python": "3.12",
-    "browser": "Chromium 1243 via pinned Playwright 1.58.2; GitHub uses its pinned browser build"
+    "browser": "Chromium 145.0.7632.6 (Playwright build 1208), pinned Playwright 1.58.2; same browser build as GitHub"
   },
   "quant": {
     "command": "node --test quant/tests/*.test.mjs",
@@ -46,7 +46,7 @@
     "freshFinalizationRun": true
   },
   "quantBrowser": {
-    "functionalChecksPassed": 88,
+    "functionalChecksPassed": 90,
     "resourceGatesPassed": 8,
     "resourceGatesTotal": 8,
     "accessibilityPages": 76,
@@ -55,7 +55,93 @@
     "stockDecodedByteDelta": null,
     "uncontrolledBrowserVersionRunHadExtraLazyImageBytes": 416861,
     "freshFinalizationRun": true,
-    "note": "Final release passed all budgets without relaxation; prior accepted/current comparison showed 2656-byte Directory delta."
+    "note": "Initial viewport before interaction, native lazy-image prefetch distance zero only in QA; all fetched resources counted. Real below-fold image separately scrolled, loaded and decoded at both widths. No product network optimization claim or budget relaxation. Same browser build as GitHub.",
+    "measurement": {
+      "scope": "Initial viewport before interaction; all fetched subresources counted",
+      "browserVersion": "145.0.7632.6",
+      "browserArgs": [
+        "--no-sandbox",
+        "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
+      ],
+      "nativeLazyImagePrefetchDistancePx": 0,
+      "productNetworkImprovementClaim": false
+    },
+    "lazyImageEvidence": [
+      {
+        "width": 1440,
+        "initial": {
+          "scrollY": 0,
+          "viewportHeight": 1000,
+          "images": [
+            {
+              "path": "/discover/logos/files/NVDA.png",
+              "loading": "eager",
+              "top": 185.96875,
+              "height": 39.6875,
+              "complete": true,
+              "naturalWidth": 128
+            },
+            {
+              "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+              "loading": "lazy",
+              "top": 6249.734375,
+              "height": 96,
+              "complete": false,
+              "naturalWidth": 0
+            }
+          ]
+        },
+        "scrolled": {
+          "scrollY": 5722,
+          "top": 504.484375,
+          "complete": true,
+          "naturalWidth": 1254,
+          "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+          "resourceObserved": true
+        }
+      },
+      {
+        "width": 390,
+        "initial": {
+          "scrollY": 0,
+          "viewportHeight": 1000,
+          "images": [
+            {
+              "path": "/discover/logos/files/NVDA.png",
+              "loading": "eager",
+              "top": 152.15625,
+              "height": 39.6875,
+              "complete": true,
+              "naturalWidth": 128
+            },
+            {
+              "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+              "loading": "lazy",
+              "top": 9762.8125,
+              "height": 96,
+              "complete": false,
+              "naturalWidth": 0
+            }
+          ]
+        },
+        "scrolled": {
+          "scrollY": 9227,
+          "top": 494.5625,
+          "complete": true,
+          "naturalWidth": 1254,
+          "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+          "resourceObserved": true
+        }
+      }
+    ],
+    "qaSourceSHA256": "3687ed4648a382cd185b01b112e5cf92a73125b048e7f19bc726d5fb5183d7a6",
+    "stockDecodedBytes": 5509412,
+    "stockRequests": 38,
+    "evidenceSHA256": {
+      "results.json": "08fd8aae3f557f4cce7797f14f06af0911771c87ff7e0df362b245d89a2cf051",
+      "resource-budgets.json": "35753ad974d59fdb64cf12373688f412e3f50cdcb8c459ab5c14b2fa9ba12b60",
+      "accessibility.json": "5b63c100238db222773005735b2fe3edb2a86828f794f414307ca3d91ba9ffb8"
+    }
   },
   "globalBrowser": {
     "allPricedListingChecksPassed": 278,
@@ -108,5 +194,5 @@
     "failed": 0
   },
   "executionEnvironmentRecovered": true,
-  "checkedAt": "2026-10-01T19:36:38Z"
+  "checkedAt": "2026-10-01T20:10:58.539020+00:00"
 }

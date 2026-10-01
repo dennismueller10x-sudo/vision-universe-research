@@ -43,8 +43,16 @@ const server=createServer(async(req,res)=>{try{let pathname=decodeURIComponent(n
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 /* Lokal liegt Chromium an einem festen Pfad, auf dem Runner sucht
    Playwright selbst - dieselbe Regel wie im Produktions-Smoke. */
-const browser=await chromium.launch({headless:true,args:['--no-sandbox'],
+// The resource budget measures the initial viewport before interaction.
+// Chromium's connection-dependent lazy-image prefetch distance otherwise
+// includes pictures several screens below it on some runner versions.
+// Normalize that distance only in QA; count EVERY fetched resource and
+// separately verify that the real below-fold image loads when scrolled to.
+const browserArgs=['--no-sandbox','--blink-settings='+['Unknown','Offline','Slow2G','2G','3G','4G'].map(n=>'lazyImageLoadingDistanceThresholdPx'+n+'=0').join(',')];
+const browser=await chromium.launch({headless:true,args:browserArgs,
  ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
+const budgetMeasurement={scope:'Initial viewport before interaction; all fetched subresources counted',browserVersion:browser.version(),browserArgs,nativeLazyImagePrefetchDistancePx:0,productNetworkImprovementClaim:false};
+const lazyImageEvidence=[];
 const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[],resourceBudgets=[],findings=[];
 const Q=origin+'/quant/';
 /* Jede Route, die die App kennt - mit dem Budget-Schluessel, wo eines gilt.
@@ -120,11 +128,21 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  const leiste='nav.v2-dock.qx-nav';
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
+  // Finish the visible stock-page logo before measuring, so a slow image
+  // cannot be asserted later yet omitted from the initial byte snapshot.
+  if(view==='aktie-nvda')await page.waitForFunction(()=>performance.getEntriesByType('resource').some(r=>new URL(r.name).pathname==='/assets/vision-universe-logo.png'&&r.decodedBodySize>0),null,{timeout:10000});
   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
   if(budgetKey){const budget=assessResourceBudget(budgetKey,resources);if(budget){resourceBudgets.push({...budget,route:hash,width});
    /* Bei einer Verletzung die groessten Posten ausgeben - sonst ist ein
       roter Budget-Lauf in CI nicht ohne das Artefakt zu deuten. */
    if(!budget.pass)console.log('BUDGET '+view+'@'+width+': '+resources.slice().sort((a,b)=>b.bytes-a.bytes).slice(0,15).map(r=>r.bytes+' '+r.path).join(' | '));}}
+  if(view==='aktie-nvda'){
+   const initial=await page.evaluate(()=>({scrollY,viewportHeight:innerHeight,images:Array.from(document.images).map(i=>({path:new URL(i.src).pathname,loading:i.loading,top:i.getBoundingClientRect().top,height:i.getBoundingClientRect().height,complete:i.complete,naturalWidth:i.naturalWidth}))}));
+   lazyImageEvidence.push({width,initial});
+   if(initial.scrollY!==0)befund(view,width,'initial resource measurement did not start at scrollY=0');
+   const photo=initial.images.find(i=>i.loading==='lazy'&&i.path.includes('/discover-perspektiven/'));
+   if(!photo||photo.top<=initial.viewportHeight||photo.naturalWidth!==0)befund(view,width,'below-fold lazy image was not deferred in the initial-viewport scenario');
+  }
   if(view==='home'&&resources.some(r=>r.path.includes('/daily/ref_')||r.path.includes('/fixtures/')))befund(view,width,'Home loads raw history or fixtures');
   const h1=await page.locator('h1').count();
   if(h1!==1)befund(view,width,'H1='+h1);
@@ -394,6 +412,17 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByRole('heading',{name:'Diese Seite gibt es nicht',exact:true}).waitFor();
    danach=async()=>{await page.getByRole('link',{name:'Zur Startseite',exact:true}).click();await bereit(page,'home');};
   }
+  if(view==='aktie-nvda'){
+   const image=page.locator('#strategie img[loading="lazy"]').first();
+   await image.scrollIntoViewIfNeeded();
+   await page.waitForFunction(()=>{const i=document.querySelector('#strategie img[loading="lazy"]');return i&&i.complete&&i.naturalWidth>0;},null,{timeout:10000});
+   await image.evaluate(i=>i.decode());
+   const scrolled=await image.evaluate(i=>({scrollY,top:i.getBoundingClientRect().top,complete:i.complete,naturalWidth:i.naturalWidth,path:new URL(i.src).pathname,resourceObserved:performance.getEntriesByType('resource').some(r=>r.name===i.src)}));
+   lazyImageEvidence.find(e=>e.width===width).scrolled=scrolled;
+   if(!scrolled.complete||scrolled.naturalWidth===0||!scrolled.resourceObserved)befund(view,width,'real lazy strategy image failed to load after scrolling');
+   checks.push({view:'real-lazy-image-scroll',width,pass:scrolled.complete&&scrolled.naturalWidth>0&&scrolled.resourceObserved});
+   await page.evaluate(()=>scrollTo(0,0));
+  }
   await auditAccessibility(page,view,width);
   await page.screenshot({path:out+'/'+view+'-'+width+'.png',fullPage:true});if(width===390){await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:out+'/'+view+'-390-viewport.png'});}
   if(danach)await danach();
@@ -558,7 +587,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
  await tablet.close();
 
  await writeFile(out+'/results.json',JSON.stringify({checks,findings},null,2));await writeFile(out+'/performance.json',JSON.stringify({environment:'GitHub Actions local static server; not production performance',samples:performanceSamples},null,2));console.log(JSON.stringify({passed:checks.length,findings:findings.length,output:out}));
- await writeFile(out+'/resource-budgets.json',JSON.stringify({scope:'Decoded subresource bytes and request count; not production latency',results:resourceBudgets},null,2));
+ await writeFile(out+'/resource-budgets.json',JSON.stringify({scope:'Decoded subresource bytes and request count; not production latency',measurement:budgetMeasurement,lazyImageEvidence,results:resourceBudgets},null,2));
  console.log(JSON.stringify({resourceBudgetChecks:resourceBudgets.length,resourceBudgets:resourceBudgets.map(r=>({view:r.view,width:r.width,decodedBytes:r.decodedBytes,requests:r.requests,pass:r.pass}))}));
  const violations=accessibility.flatMap(r=>r.violations.map(v=>({view:r.view,width:r.width,id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))})));
  console.log(JSON.stringify({accessibilityPages:accessibility.length,violations}));

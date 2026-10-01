@@ -105,13 +105,13 @@ At venue-qualified 100-symbol batches: 278 priced listings cost 20 daily HTTP re
 | Fundamental/product serving Python | 32 | 0 | 0 |
 | Resource-budget unit suite | 6 | 0 | 0 |
 | Discover browser | 201 | 0 | — |
-| Quant release browser / resource gates | 88 / 8 | 0 | — |
+| Quant release browser / resource gates | 90 / 8 | 0 | — |
 | Six journey surfaces at two widths | 12 | 0 | — |
 | All priced + sampled metadata listing APIs | 290 | 0 | — |
 | New chart/watchlist journeys / global+legacy smoke | 8 / 63 | 0 | — |
 | Bounded published search queries | 6 | 0 | — |
 
-Quant accessibility: 76 pages, zero violations; Discover: 16 scans. Search uses 2–3 requests and 35,676–57,011 decoded bytes, with bounded results and no whole-universe browser payload. Build, release/resource gates, public-data hygiene and secret checks pass; thresholds were not relaxed. Real cached LVMH replay preserves 12 facts, PIT/provenance and the original 543 diagnostic multiset. Professional fundamental entitlement results are reused; no invented cross-validation.
+Quant browser was rerun with the same Chromium 145.0.7632.6 / Playwright build 1208 used in GitHub: 90 functional checks, all eight unchanged resource budgets, 76 accessibility pages and zero violations. The initial-viewport measurement fixes Chromium’s connection-dependent native lazy-image prefetch distance at zero **only in QA**, counts every fetched resource, and waits for the visible logo before capture. The real strategy photo is separately scrolled into view, loaded and decoded at both widths. Stock initial-view results: 5,509,412 decoded bytes / 38 requests at each width. This normalizes measurement; it is not a product network improvement or a full-scroll payload budget. Discover: 16 accessibility scans. Search uses 2–3 requests and 35,676–57,011 decoded bytes, with bounded results and no whole-universe browser payload. Build, release/resource gates, public-data hygiene and secret checks pass; thresholds were not relaxed. Real cached LVMH replay preserves 12 facts, PIT/provenance and the original 543 diagnostic multiset. Professional fundamental entitlement results are reused; no invented cross-validation.
 
 Identity/Search/Watchlists: WORKING for the accepted foundation. Charts: PARTIAL, 278 delivered / 6,644 metadata-only, explicit EOD dates/native currencies. Discover/Screener/Quant/SuperTrader/Markets: protected US functionality WORKING; new global eligibility PARTIAL/BLOCKED where required history, fundamentals, adjustments or market-regime evidence is missing. No global scores or fake zero fundamentals enabled. Exact commands and result scopes are in [machine test results](../reports/marketstack/marketstack_scale_tests.json) and [reproduction instructions](MARKETSTACK_SCALE_REPRODUCTION.md).
 

@@ -297,5 +297,164 @@
   "SECOrESEFChanged": false,
   "reviewerPaidMarketstackRequests": 0,
   "reviewerSourceEdits": 0,
-  "providerDecision": "DEFERRED"
+  "providerDecision": "DEFERRED",
+  "browserMeasurementReview": {
+    "checkedAt": "2026-10-01T20:10:48.321669+00:00",
+    "reviewedParentCommit": "be02683f298e81f905633d3889c6bf019eab027d",
+    "uncommittedQAFileSHA256": "3687ed4648a382cd185b01b112e5cf92a73125b048e7f19bc726d5fb5183d7a6",
+    "budgetFileSHA256": "ea3692d38cd09919a839bcf8d6a15000c4015b8781fe04bcd4edc4070625b896",
+    "QAFile": "scripts/vu2/browser-qa.mjs",
+    "budgetFile": "scripts/vu2/resource-budget.mjs",
+    "allFetchedResourcesStillCounted": true,
+    "resourceListFilteringIntroduced": false,
+    "resourceBudgetThresholdChanges": false,
+    "productCodeChanges": false,
+    "paidProviderCalls": 0,
+    "protectedGroups": {
+      "protected_provider_jobs": {
+        "checkedFiles": 154,
+        "changedFiles": [],
+        "missingFiles": []
+      },
+      "quant_products": {
+        "checkedFiles": 3315,
+        "changedFiles": [],
+        "missingFiles": []
+      },
+      "sec_fundamentals": {
+        "checkedFiles": 6130,
+        "changedFiles": [],
+        "missingFiles": []
+      },
+      "us_discover": {
+        "checkedFiles": 6078,
+        "changedFiles": [],
+        "missingFiles": []
+      },
+      "us_identity": {
+        "checkedFiles": 2864,
+        "changedFiles": [],
+        "missingFiles": []
+      },
+      "us_prices": {
+        "checkedFiles": 23538,
+        "changedFiles": [],
+        "missingFiles": []
+      }
+    },
+    "accepted334CanonicalFilesChecked": 2690,
+    "accepted334CanonicalChanged": [],
+    "resolvedReviewFindings": [
+      "Required logo ResourceTiming completion is awaited before resource snapshot.",
+      "Actual native lazy image must be deferred below viewport, then load/decode and appear in ResourceTiming after scrolling.",
+      "Native lazy-image prefetch0 is explicitly a QA measurement normalization, not a productnetwork optimization."
+    ],
+    "resourceBudgetFailureCaseTests": {
+      "command": "node --test scripts/vu2/resource-budget.test.mjs",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "durationMilliseconds": 71.489282
+    },
+    "actualPinnedChromiumLocalResult": {
+      "functionalPassed": 90,
+      "findings": 0,
+      "resourceGatesPassed": 8,
+      "resourceGatesFailed": 0,
+      "accessibilityPages": 76,
+      "violations": 0,
+      "browserVersion": "145.0.7632.6",
+      "stockDecodedBytes": 5509412,
+      "stockRequests": 38,
+      "widths": [
+        1440,
+        390
+      ],
+      "measurement": {
+        "scope": "Initial viewport before interaction; all fetched subresources counted",
+        "browserVersion": "145.0.7632.6",
+        "browserArgs": [
+          "--no-sandbox",
+          "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
+        ],
+        "nativeLazyImagePrefetchDistancePx": 0,
+        "productNetworkImprovementClaim": false
+      },
+      "lazyImageEvidence": [
+        {
+          "width": 1440,
+          "initial": {
+            "scrollY": 0,
+            "viewportHeight": 1000,
+            "images": [
+              {
+                "path": "/discover/logos/files/NVDA.png",
+                "loading": "eager",
+                "top": 185.96875,
+                "height": 39.6875,
+                "complete": true,
+                "naturalWidth": 128
+              },
+              {
+                "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+                "loading": "lazy",
+                "top": 6249.734375,
+                "height": 96,
+                "complete": false,
+                "naturalWidth": 0
+              }
+            ]
+          },
+          "scrolled": {
+            "scrollY": 5722,
+            "top": 504.484375,
+            "complete": true,
+            "naturalWidth": 1254,
+            "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+            "resourceObserved": true
+          }
+        },
+        {
+          "width": 390,
+          "initial": {
+            "scrollY": 0,
+            "viewportHeight": 1000,
+            "images": [
+              {
+                "path": "/discover/logos/files/NVDA.png",
+                "loading": "eager",
+                "top": 152.15625,
+                "height": 39.6875,
+                "complete": true,
+                "naturalWidth": 128
+              },
+              {
+                "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+                "loading": "lazy",
+                "top": 9762.8125,
+                "height": 96,
+                "complete": false,
+                "naturalWidth": 0
+              }
+            ]
+          },
+          "scrolled": {
+            "scrollY": 9227,
+            "top": 494.5625,
+            "complete": true,
+            "naturalWidth": 1254,
+            "path": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+            "resourceObserved": true
+          }
+        }
+      ],
+      "resultArtifactsSHA256": {
+        "results.json": "08fd8aae3f557f4cce7797f14f06af0911771c87ff7e0df362b245d89a2cf051",
+        "resource-budgets.json": "35753ad974d59fdb64cf12373688f412e3f50cdcb8c459ab5c14b2fa9ba12b60",
+        "accessibility.json": "5b63c100238db222773005735b2fe3edb2a86828f794f414307ca3d91ba9ffb8"
+      }
+    },
+    "status": "PASS_LOCAL_ACTUAL_CI_BROWSER_AND_INDEPENDENT_SOURCE_REVIEW",
+    "reviewScope": "Independent source, protected-byte manifest and local real Chromium1208 verification; final remote workflow results are authoritative PR checks"
+  }
 }
