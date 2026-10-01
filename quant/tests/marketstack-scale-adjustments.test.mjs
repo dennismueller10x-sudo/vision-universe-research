@@ -135,7 +135,9 @@ test('official dividend amount correspondence preserves the distinction between 
 test('cached seed observations preserve source run and timestamp without duplicate windows', () => {
   const e = { endpoint: 'eod', ok: true, params: { symbols: '7203.T', exchange: 'XJPX' }, checkedAt: '2026-10-01T11:00:00Z',
     data: { data: [bar('2025-01-02', 100, { symbol: '7203.T', exchange: 'XJPX' })] } };
-  const r = buildScaleAudit([{ run: { runId: 'original' }, endpoints: [e] }, { run: { runId: 'fresh' }, endpoints: [{ ...e, seeded: true }] }]);
+  const original = { schemaVersion: 'marketstack-probe-1.0.0', run: { source: 'github-actions', runId: 'original' },
+    accounting: { provider: 'marketstack', requestsAttempted: 1 }, endpoints: [e] };
+  const r = buildScaleAudit([original, { run: { runId: 'fresh' }, endpoints: [{ ...e, seeded: true }] }]);
   assert.equal(r.adjustments.windows.length, 1);
   assert.equal(r.adjustments.windows[0].runId, 'original');
   assert.equal(r.adjustments.windows[0].checkedAt, e.checkedAt);

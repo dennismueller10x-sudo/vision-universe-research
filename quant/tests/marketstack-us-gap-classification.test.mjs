@@ -253,3 +253,25 @@ test('actual provider-MIC quote availability stays separate from required listin
   assert.equal(out.resolved.baselineMembershipCoverage.exactPlusLatestValidatedResolvedConsumer, 0);
   assert.equal(gap.confirmedGloballyUnavailable, false); assert.ok(!JSON.stringify(out).includes('99887'));
 });
+
+test('cached US metadata and latest retain per-response source rather than enclosing replay run', () => {
+  const original = { sourceRunId: '111', sourceRunAttribution: 'CHECKPOINT_INTERVAL_ATTRIBUTION', checkedAt: '2026-10-01T11:00:00Z' };
+  const probe = { run: { runId: '999', role: 'REPLAY_CONTAINER' }, endpoints: [
+    { ...original, endpoint: 'tickers/A', ok: true, data: { symbol: 'A', stock_exchange: { mic: 'XNYS' } } },
+    { ...original, endpoint: 'eod/latest', label: 'us-current-common-gap-latest', params: { symbols: 'A', exchange: 'XNYS' }, ok: true, data: [] }
+  ] };
+  assert.equal(extractUSMetadata([probe])[0].source.runId, '111');
+  assert.equal(extractUSLatestDiagnostics([probe], 'A', 'XNYS', {}, '2026-10-01')[0].runId, '111');
+  delete probe.endpoints[0].sourceRunId; delete probe.endpoints[0].sourceRunAttribution;
+  assert.equal(extractUSMetadata([probe])[0].source.runId, null);
+});
+
+test('identityless array placeholders remain distinguishable from a genuinely empty provider data array', () => {
+  const make = data => [{ endpoints:[{ endpoint:'eod/latest',label:'us-current-common-gap-latest',params:{symbols:'A,B',exchange:'XNYS'},ok:true,data:{pagination:{total:data.length,count:data.length},data} }] }];
+  const placeholders=extractUSLatestDiagnostics(make([[],[]]),'A','XNYS',{},'2026-10-01')[0];
+  assert.equal(placeholders.status,'MISSING_LATEST');assert.equal(placeholders.rawBatchRowCount,2);assert.equal(placeholders.identityBearingObjectRows,0);
+  assert.equal(placeholders.emptyArrayPlaceholderRows,2);assert.equal(placeholders.responseShapeStatus,'EMPTY_ARRAY_PLACEHOLDERS_WITHOUT_IDENTIFIERS');
+  assert.equal(placeholders.missingObservationClassification,'MALFORMED_IDENTITYLESS_BATCH_RESPONSE');
+  const absent=extractUSLatestDiagnostics(make([]),'A','XNYS',{},'2026-10-01')[0];assert.equal(absent.rawBatchRowCount,0);
+  assert.equal(absent.responseShapeStatus,'EMPTY_PROVIDER_DATA_ARRAY');assert.equal(absent.missingObservationClassification,'NO_TARGET_OBSERVATION_IN_COMPLETE_RESPONSE');
+});

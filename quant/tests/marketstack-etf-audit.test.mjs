@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {buildETFAudit,buildMetadataMatrix,issuerFamilyHint,summarizeHoldings,normalizeSIXETFReference,normalizeEuronextETFReference,compactETFAudit,summarizeETFFollowUp,normalizeUSNasdaqETFReference} from '../../scripts/market/audit-marketstack-etfs.mjs';
+import {buildETFAudit,buildMetadataMatrix,buildETFIdentityCoverage,issuerFamilyHint,summarizeHoldings,normalizeSIXETFReference,normalizeEuronextETFReference,compactETFAudit,summarizeETFFollowUp,normalizeUSNasdaqETFReference} from '../../scripts/market/audit-marketstack-etfs.mjs';
 const require=createRequire(import.meta.url);
 const fixture=require('./fixtures/marketstack-voo-holdings.json');
 const identity={key:'VOO@ARCX',symbol:'VOO',mic:'ARCX',assetType:'ETF',tradingCurrency:'USD',isin:'US9229083632'};
 const classified={candidates:[{providerSymbol:'VOO',mic:'ARCX',assetType:'ETF',providerName:'Vanguard S&P 500 ETF',isin:identity.isin,tradingCurrency:'USD',listingCountry:'US',officialStatus:'ACTIVE',referenceSourceId:'TEST_OFFICIAL',officialInstrumentType:'ETF'}]};
 const plan={representatives:[],newHoldingsSymbols:[]};
 const bar=(changes={})=>({symbol:'VOO',exchange:'ARCX',asset_type:'ETF',price_currency:'USD',date:'2026-09-30T00:00:00+0000',open:10,high:11,low:9,close:10.5,volume:100,...changes});
-const entry=(endpoint,data,params={})=>({endpoint,ok:true,data,params,checkedAt:'2026-10-01T00:00:00Z',retrievedAt:'2026-10-01T00:00:00Z'});
+const entry=(endpoint,data,params={})=>({endpoint,ok:true,data,params,checkedAt:'2026-10-01T00:00:00Z',retrievedAt:'2026-10-01T00:00:00Z',sourceRunId:'test-run',sourceRunAttribution:'EXPLICIT_TEST_RESPONSE'});
 const probe=entries=>({run:{runId:'test-run'},endpoints:entries});
 const audit=(entries=[],options={})=>buildETFAudit({classification:classified,plan,probes:[probe(entries)],...options});
 
@@ -239,6 +239,109 @@ test('unflagged copied checkpoint observations also preserve one independent sam
   const report=buildETFAudit({classification:classified,plan,probes:[original,copy]});
   assert.equal(report.holdingsTests.length,1);assert.equal(report.reusedObservationsDeduplicated,1);
   assert.equal(report.providerDecision.status,'DEFERRED');assert.equal(report.providerDecision.selectedOption,null);
+});
+
+test('response origin survives snapshot replay and unknown seeded origin is never the latest run',()=>{
+  const old=entry('etfholdings',fixture.payload,{ticker:'VOO'});old.sourceRunId='original-paid-run';old.sourceRunAttribution='CHECKPOINT_INTERVAL_ATTRIBUTION';
+  const report=buildETFAudit({classification:classified,plan,probes:[{run:{snapshotRunId:'latest-container'},endpoints:[old]}]});
+  assert.equal(report.holdingsTests[0].sourceRunId,'original-paid-run');assert.equal(report.holdingsTests[0].sourceRun.attribution,'CHECKPOINT_INTERVAL_ATTRIBUTION');
+  assert.deepEqual(report.sourceRuns.map(r=>r.runId),['original-paid-run']);assert.equal(report.snapshotRuns[0].snapshotRunId,'latest-container');
+  const unknown={...old,seeded:true};delete unknown.sourceRunId;delete unknown.sourceRunAttribution;
+  const unresolved=buildETFAudit({classification:classified,plan,probes:[{run:{runId:'latest-container'},endpoints:[unknown]}]});
+  assert.equal(unresolved.holdingsTests[0].sourceRunId,null);assert.equal(unresolved.holdingsTests[0].sourceRun,null);
+  assert.equal(unresolved.holdingsTests[0].sourceRunAttribution,'UNKNOWN_SEEDED_ORIGINAL_RUN');assert.equal(unresolved.sourceRuns.length,0);
+  const single={...unknown,seeded:false};
+  const original=buildETFAudit({classification:classified,plan,probes:[{schemaVersion:'marketstack-probe-1.0.0',run:{source:'github-actions',runId:'original-single-run'},accounting:{provider:'marketstack',requestsAttempted:1},endpoints:[single]}]});
+  assert.equal(original.holdingsTests[0].sourceRunId,'original-single-run');assert.equal(original.holdingsTests[0].sourceRunAttribution,'ORIGINAL_SINGLE_RUN_PROBE');
+  const mixed=buildETFAudit({classification:classified,plan,probes:[{schemaVersion:'marketstack-probe-1.0.0',run:{source:'github-actions',runId:'latest-container'},accounting:{prior:{startedAt:'2026-09-01',finishedAt:'2026-09-02'}},endpoints:[single]}]});
+  assert.equal(mixed.holdingsTests[0].sourceRunId,null);assert.equal(mixed.sourceRuns.length,0);
+});
+
+test('response evidence includes an unchanged payload hash and original request parameters',()=>{
+  const response=entry('etfholdings',fixture.payload,{ticker:'VOO',exchange:'ARCX'}),first=audit([response]);
+  const replay=audit([{...structuredClone(response),seeded:true}]);
+  assert.match(first.holdingsTests[0].responseSHA256,/^[a-f0-9]{64}$/);
+  assert.equal(first.holdingsTests[0].responseSHA256,replay.holdingsTests[0].responseSHA256);
+  assert.deepEqual(first.holdingsTests[0].requestParameters,{ticker:'VOO',exchange:'ARCX'});
+  assert.equal(first.holdingsTests[0].retrievedAt,response.retrievedAt);
+  assert.equal(first.holdingsTests[0].sourceRunId,'test-run');
+  const contentProof={canonicalResponseSHA256:'a'.repeat(64),originalActionProbeSHA256s:['b'.repeat(64)]};
+  const corroborated=audit([{...response,sourceRunContentProof:contentProof}]);
+  assert.deepEqual(corroborated.holdingsTests[0].sourceRunContentProof,contentProof);
+});
+
+test('ETF reconciliation deduplicates securities by ISIN across venues and currencies without counting funds',()=>{
+  const candidates=[
+    {providerSymbol:'ONE.DE',mic:'XETR',isin:'IE0000000001',tradingCurrency:'EUR',listingCountry:'DE'},
+    {providerSymbol:'ONEU.DE',mic:'XETR',isin:'IE0000000001',tradingCurrency:'USD',listingCountry:'DE'},
+    {providerSymbol:'ONE.L',mic:'XLON',isin:'IE0000000001',tradingCurrency:'GBP',listingCountry:'GB'},
+    {providerSymbol:'TWO.DE',mic:'XETR',isin:'IE0000000002',tradingCurrency:'EUR',listingCountry:'DE'}
+  ].map(r=>({...r,assetType:'ETF',providerName:'Identical umbrella UCITS ETF',officialStatus:'ACTIVE',referenceSourceId:'TEST_OFFICIAL'}));
+  const report=buildETFAudit({classification:{candidates},plan}),result=buildETFIdentityCoverage(report,{sourceAuditSHA256:'artifact-hash'});
+  assert.equal(result.counts.EuropeanOfficialETFListingCandidates,4);
+  assert.equal(result.counts.EuropeanDistinctISINSecurityOrShareClassCandidates,2);
+  assert.equal(result.counts.EuropeanDistinctVenueISINCurrencyIdentities,4);
+  assert.equal(result.counts.EuropeanShareClassesOnMultipleVenues,1);
+  assert.equal(result.counts.EuropeanShareClassesWithAnyKnownActiveListing,2);
+  assert.equal(result.counts.verifiedUniqueETFFunds,null);
+  assert.equal(result.counts.verifiedGlobalETFShareClassCount,null);
+  assert.equal(result.counts.EuropeanUCITSNameLabelShareClassCandidates,2);
+  assert.equal(result.counts.regulatoryUCITSVerified,0);
+  assert.deepEqual(result.shareClasses[0].tradingCurrencies,['EUR','GBP','USD']);
+  assert.equal(result.sourceAuditSHA256,'artifact-hash');
+  assert.ok(result.listingRecords.every(r=>r.productionActivated===false&&r.companyFundamentals==='NOT_APPLICABLE'));
+  assert.equal(result.listingRecords[0].UCITSNameLabelEvidence.observedName,'Identical umbrella UCITS ETF');
+  assert.equal(result.listingRecords[0].UCITSNameLabelEvidence.regulatoryStatus,'UNVERIFIED');
+  assert.throws(()=>buildETFIdentityCoverage(compactETFAudit(report)),/Complete private ETF registry/);
+  assert.throws(()=>buildETFIdentityCoverage({...report,listings:report.listings.slice(0,1)}),/registry count mismatch/);
+});
+
+test('US ETF flags keep missing ISINs and legal fund identities unresolved in reconciliation',()=>{
+  const reference={source:{source_system:'NASDAQTRADER_OFFICIAL_CURRENT_LISTING_DIRECTORY'},rows:[
+    {symbol:'FLAG',mic:'XNAS',isin:null,assetType:'ETF',officialName:'Identical umbrella ETF',listingCountry:'US',active:null}]};
+  const directory=entry('exchanges/XNAS/tickers',{pagination:{total:1,offset:0,count:1},data:{tickers:[{symbol:'FLAG'}]}},{offset:0});
+  const report=audit([directory],{officialReferences:[reference]}),result=buildETFIdentityCoverage(report);
+  assert.equal(result.counts.USExactPrimaryMICFlagListingCandidates,1);
+  assert.equal(result.counts.USDistinctObservedNonconflictingISIN,0);
+  const us=result.listingRecords.find(r=>r.providerSymbol==='FLAG');
+  assert.equal(us.isin,null);assert.equal(us.legalFundIdentityVerified,false);assert.equal(us.active,null);
+  assert.equal(us.identityScope,'CURRENT_US_PRIMARY_MIC_ETF_FLAG_CANDIDATE');
+  assert.equal(result.counts.verifiedUniqueETFFunds,null);
+});
+
+test('requested ETF matrix distinguishes absent provider fields, reported supplements and uncertain UCITS',()=>{
+  const report=audit([entry('etfholdings',fixture.payload,{ticker:'VOO'})]),matrix=buildMetadataMatrix(report).coverageMatrix;
+  assert.equal(matrix.length,16);
+  assert.ok(matrix.every(r=>['AVAILABLE','PARTIAL','NONE','UNVERIFIED'].includes(r.status)&&r.productionEligibilityGranted===false));
+  const field=name=>matrix.find(r=>r.field===name);
+  assert.equal(field('holdings').status,'PARTIAL');assert.equal(field('holding_weights').status,'PARTIAL');
+  assert.equal(field('UCITS').status,'UNVERIFIED');assert.equal(field('UCITS').providerStatus,'NONE');
+  assert.equal(field('TER/OCF').status,'NONE');assert.equal(field('AUM').status,'NONE');
+  assert.equal(field('WKN').providerStatus,'NONE');assert.equal(field('WKN').status,'NONE');
+  assert.equal(field('dividends').status,'UNVERIFIED');
+  assert.match(field('holdings').reliability,/completeness/i);
+  const official=structuredClone(classified);official.candidates[0].wkn='A1JX53';
+  const withWKN=buildMetadataMatrix(audit([],{classification:official}));
+  assert.equal(withWKN.fields.find(r=>r.field==='WKN').officialObservedListings,1);
+  assert.equal(withWKN.coverageMatrix.find(r=>r.field==='WKN').status,'PARTIAL');
+});
+
+test('holdings position data returned is counted separately from usable partial reports',()=>{
+  const payload=structuredClone(fixture.payload);payload.output.attributes.date_report_period='2027-12-31';
+  const result=buildETFIdentityCoverage(audit([entry('etfholdings',payload,{ticker:'VOO'})]));
+  assert.equal(result.counts.holdingsEndpointsWithAnyReturnedPositionData,1);
+  assert.equal(result.counts.holdingsEndpointsWithAnyUsablePositionData,0);
+  assert.equal(result.counts.partialHoldingsReports,0);assert.equal(result.counts.verifiedCompleteCurrentHoldings,0);
+  assert.equal(result.holdingsByRegion.US.observations,1);assert.equal(result.holdingsByRegion.US.usablePartialReports,0);
+});
+
+test('ambiguous same-symbol holdings do not acquire a region from one preferred listing',()=>{
+  const candidates=[...classified.candidates,{...classified.candidates[0],mic:'XETR',listingCountry:'DE',tradingCurrency:'EUR'}];
+  const report=audit([entry('etfholdings',fixture.payload,{ticker:'VOO'})],{classification:{candidates}});
+  assert.equal(report.holdingsTests[0].state,'AMBIGUOUS_LISTING');
+  const result=buildETFIdentityCoverage(report);
+  assert.equal(result.holdingsByRegion.UNKNOWN_OR_AMBIGUOUS.observations,1);
+  assert.equal(result.holdingsByRegion.US,undefined);assert.equal(result.holdingsByRegion.EUROPEAN_LISTING,undefined);
 });
 
 test('public artifact keeps complete ETF census keys without duplicating provider directory metadata',()=>{

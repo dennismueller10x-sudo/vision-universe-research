@@ -5,6 +5,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { probeResponseProvenance } from './marketstack-evidence-provenance.mjs';
 import { evaluateLatestObservation } from './benchmark-marketstack-us-latest.mjs';
 const day = value => {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}(?:$|T)/.test(value)) return null;
@@ -24,9 +25,9 @@ const window = e => {
 };
 const inWindow = (value, e) => { const d = day(value), w = window(e); return d && w && d >= w.from && d <= w.to; };
 const finiteValue = value => ['number', 'string'].includes(typeof value) && value !== '' && Number.isFinite(Number(value));
-export function summarizeResolvedUSHistory(resolved, probes, today) {
+export function summarizeResolvedUSHistory(resolved, probes, today, options = {}) {
   if (!Array.isArray(resolved?.rows) || !Array.isArray(probes) || day(today) !== today) throw new Error('Resolved identities, probes and UTC date required');
-  const endpoints = probes.flatMap(p => (p.endpoints || []).map(e => ({ ...e, runId: p.run?.runId || null })));
+  const endpoints = probes.flatMap(p => (p.endpoints || []).map(e => ({ ...e, runId: probeResponseProvenance(e, p).sourceRunId, sourceRunId: probeResponseProvenance(e, p).sourceRunId, sourceRunAttribution: probeResponseProvenance(e, p).sourceRunAttribution })));
   const rows = resolved.rows.filter(r => r.acceptedIdentity).map(row => {
     const c = row.acceptedIdentity;
     const matching = endpoint => endpoints.filter(e => e.endpoint?.replace(/^\//, '') === endpoint &&
@@ -86,7 +87,7 @@ export function summarizeResolvedUSHistory(resolved, probes, today) {
         eodActionAmountsTrusted: false, currencyState: unknownCurrency ? 'PARTIAL_OR_UNKNOWN' : values.length ? 'USD_OBSERVED' : 'NO_EVENTS', unknownCurrencyObservations: unknownCurrency,
         sameDateBarOverlaps: overlaps, amountDisagreementCount: mismatches,
         firstDate: [...seen].filter(Boolean).sort().at(0) || null, lastDate: [...seen].filter(Boolean).sort().at(-1) || null,
-        sourceRunId: endpoint.runId || null, requestedFrom: endpoint.params?.date_from || null, requestedTo: endpoint.params?.date_to || null,
+        sourceRunId: endpoint.runId || null, sourceRunAttribution: endpoint.sourceRunAttribution, requestedFrom: endpoint.params?.date_from || null, requestedTo: endpoint.params?.date_to || null,
         valuesPublished: false, adjustmentApplied: false };
     };
     const validDates = [...barsByDay.keys()].filter(Boolean).sort();
@@ -98,11 +99,11 @@ export function summarizeResolvedUSHistory(resolved, probes, today) {
         requestedTo: history?.params?.date_to || null, returnedRows: history ? raws(history).filter(r => r.symbol === c.symbol).length : 0,
         acceptedDates: validDates.length, rejectedRows: rejected.length, rejectionsByStatus: countBy(rejected), duplicateDates, strictOHLCBoundaryViolations,
         firstAcceptedDate: validDates.at(0) || null, lastAcceptedDate: validDates.at(-1) || null,
-        sourceRunId: history?.runId || null, adjustmentBasis: 'UNVERIFIED', priceValuesPublished: false },
+        sourceRunId: history?.runId || null, sourceRunAttribution: history?.sourceRunAttribution || 'NOT_TESTED', adjustmentBasis: 'UNVERIFIED', priceValuesPublished: false },
       splits: action(splits, 'splits'), dividends: action(dividends, 'dividends'), fullHistoryDepthProven: false,
       tiingoEquivalentProven: false, canonicalWrites: 0 };
   });
-  return { schemaVersion: 1, generatedAt: new Date().toISOString(), scope: 'RESOLVED_US_ALIASES_BOUNDED_HISTORY_ACTION_METADATA',
+  return { schemaVersion: 1, generatedAt: options.generatedAt || new Date().toISOString(), scope: 'RESOLVED_US_ALIASES_BOUNDED_HISTORY_ACTION_METADATA',
     protectedBaselineSource: resolved.protectedBaselineSource, asOfDate: today,
     totals: { resolvedIdentities: rows.length, historyBoundedWindowValidated: rows.filter(r => r.history.status === 'VALIDATED_BOUNDED_WINDOW').length,
       historyRejectedRows: rows.reduce((n, r) => n + r.history.rejectedRows, 0),
@@ -118,7 +119,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   if (!args.probes) throw new Error('--probes=private-probe-paths required');
   const load = p => JSON.parse(readFileSync(resolve(p)));
   const result = summarizeResolvedUSHistory(load(args.resolved || 'reports/marketstack/us_marketstack_resolved_matches.json'),
-    args.probes.split(',').map(load), args.today || new Date().toISOString().slice(0, 10));
+    args.probes.split(',').map(load), args.today || new Date().toISOString().slice(0, 10), { generatedAt: args['generated-at'] });
   writeFileSync(resolve(args.out || 'reports/marketstack/us_marketstack_resolved_history_quality.json'), JSON.stringify(result, null, 2) + '\n');
   console.log(JSON.stringify(result.totals));
 }

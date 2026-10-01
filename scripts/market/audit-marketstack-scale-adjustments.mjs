@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { probeResponseProvenance } from './marketstack-evidence-provenance.mjs';
 
 export const GLOBAL_SELECT = Object.freeze([
   { company: 'Samsung Electronics', localSymbol: '005930.KS', mic: 'XKRX', preferredUS: null },
@@ -24,6 +25,14 @@ const finite = n => typeof n === 'number' && Number.isFinite(n);
 const ratio = (a, b) => finite(a) && finite(b) && b !== 0 ? a / b : null;
 const unique = values => [...new Set(values)].sort();
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+// Replayed JSON can reorder object keys without changing provider evidence.
+// Arrays retain order; different price values remain distinct observations.
+export function canonicalPriceEvidenceValue(value) {
+  if (Array.isArray(value)) return value.map(canonicalPriceEvidenceValue);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort()
+    .map(key => [key, canonicalPriceEvidenceValue(value[key])]));
+  return value;
+}
 function validDate(value) {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) &&
     Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
@@ -149,6 +158,7 @@ export function analyzeAdjustmentWindow(rows, options = {}) {
     adjacentCloseRatios: extrema(adjacentCloseRatios), adjacentAdjustedCloseRatios: extrema(adjacentAdjustedCloseRatios),
     dividendObservations: dividends, splitObservations: splits, providerSplitDiagnostics, splitGapCandidates,
     currenciesObserved: unique(sorted.map(row => row.price_currency).filter(Boolean)),
+    missingCurrencyCandles: sorted.filter(row => !row.price_currency).length,
     exchangesObserved: unique(sorted.map(row => row.exchange).filter(Boolean)),
     issues: details, issueCount: issues.length, issueCountsByFlag, issueDetailsTruncated: details.length < issues.length,
     signatures: unique(signature), eventObservation,
@@ -156,18 +166,24 @@ export function analyzeAdjustmentWindow(rows, options = {}) {
     evidenceSha256: hash(rows) };
 }
 
-export function buildScaleAudit(probes, options = {}) {
+export function collectPriceEvidence(probes) {
   // Scale probes include cached seed responses. Retain their original dated
   // provenance when the source probe is supplied; do not count them twice or
   // relabel an old observation as a fresh provider request.
   const byObservation = new Map();
   for (const probe of probes) for (const e of probe.endpoints || []) {
     const params = Object.fromEntries(Object.entries(e.params || {}).sort(([a], [b]) => a.localeCompare(b)));
-    const key = hash([e.endpoint, params, e.checkedAt || null, e.data || null]);
-    if (!byObservation.has(key)) byObservation.set(key, { ...e,
-      runId: e.sourceRunId || e.runId || (e.seeded ? null : probe.run?.runId) || null });
+    const key = hash(canonicalPriceEvidenceValue([e.endpoint, params, e.checkedAt || null, e.data || null]));
+    const provenance = probeResponseProvenance(e, probe);
+    const runId = provenance.sourceRunId;
+    const observed = { ...e, runId, sourceRunAttribution: provenance.sourceRunAttribution };
+    if (!byObservation.has(key) || (!byObservation.get(key).runId && runId)) byObservation.set(key, observed);
   }
-  const entries = [...byObservation.values()];
+  return [...byObservation.values()];
+}
+
+export function buildScaleAudit(probes, options = {}) {
+  const entries = collectPriceEvidence(probes);
   const windows = entries.filter(e => /^\/?eod(?:\/latest)?$/.test(e.endpoint) && e.ok && Array.isArray(e.data?.data)).flatMap(e => {
     // Multi-symbol pages contain repeated trading dates across instruments.
     // Partition by exact returned identity before candle/action diagnostics.
@@ -186,7 +202,8 @@ export function buildScaleAudit(probes, options = {}) {
       (!e.params.date_to || !event.from || e.params.date_to >= event.from) &&
       (!e.params.date_from || !event.marketDate || e.params.date_from <= event.marketDate) &&
       (!e.params.date_to || !event.marketDate || e.params.date_to >= event.marketDate));
-    return { runId: e.runId, endpoint: e.endpoint, params: e.params, label: e.label || null,
+    return { runId: e.runId, sourceRunAttribution: e.sourceRunAttribution,
+      endpoint: e.endpoint, params: e.params, label: e.label || null,
       providerSymbol: symbol, providerExchange: mic, checkedAt: e.checkedAt || null,
       analysis: analyzeAdjustmentWindow(rows, { event, requestedFrom: e.params?.date_from, requestedTo: e.params?.date_to,
         requestedSymbols: String(e.params?.symbols || '').split(',').filter(Boolean), requestedExchange: e.params?.exchange,
@@ -205,7 +222,8 @@ export function buildScaleAudit(probes, options = {}) {
     const dateSequence = rows.map(row => String(row.date || '').slice(0, 10));
     const ascendingPage = dateSequence.every((date, index) => validDate(date) && (!index || date >= dateSequence[index - 1]));
     return {
-    runId: e.runId, endpoint: e.endpoint, params: e.params, label: e.label || null,
+    runId: e.runId, sourceRunAttribution: e.sourceRunAttribution,
+    endpoint: e.endpoint, params: e.params, label: e.label || null,
     checkedAt: e.checkedAt || null, ok: !!e.ok, reason: e.reason || null,
     returnedBars: Array.isArray(e.data?.data) ? e.data.data.length : null,
     rawReturnedDateMin: returnedDates[0] || null, rawReturnedDateMax: returnedDates.at(-1) || null,
@@ -232,7 +250,8 @@ export function buildScaleAudit(probes, options = {}) {
       .filter(row => (!from || row.date >= from) && (!to || row.date <= to));
     const canonical = list => new Map(list.map(row => [row.date, row[key]]));
     const ep = canonical(observed), daily = canonical(observations);
-    return { runId: e.runId, endpoint: e.endpoint, params: e.params, type, providerSymbol: symbol,
+    return { runId: e.runId, sourceRunAttribution: e.sourceRunAttribution,
+      endpoint: e.endpoint, params: e.params, type, providerSymbol: symbol,
       returned: data.length, validDateAndValueRows: observed.length,
       paginationComplete: !e.data.pagination || !finite(e.data.pagination.total) ? null : e.data.pagination.total <= data.length,
       matchingEodWindows: matchingWindows.length,
@@ -341,10 +360,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const read = path => JSON.parse(readFileSync(path));
   const layer = values('listings')[0] ? read(values('listings')[0]) : { listings: [] };
   const baseline = values('baseline')[0] ? read(values('baseline')[0]) : { decisions: [] };
-  const events = values('events')[0] ? read(values('events')[0]) : [];
+  const controls = values('official-controls')[0] ? read(values('official-controls')[0]) : {};
+  const events = values('events')[0] ? read(values('events')[0]) : controls.events || [];
   const usLatest = values('us-latest')[0] ? read(values('us-latest')[0]) : null;
-  const dividendControls = values('dividend-controls')[0] ? read(values('dividend-controls')[0]) : [];
-  const result = buildScaleAudit(files.map(read), { listings: layer.listings, decisions: baseline.decisions, events, usLatestRows: usLatest?.rows, dividendControls });
+  const dividendControls = values('dividend-controls')[0] ? read(values('dividend-controls')[0]) : controls.dividendControls || [];
+  const probes = files.map(read);
+  const generatedAt = values('generated-at')[0] || unique(probes.map(p => p.generatedAt).filter(Boolean)).at(-1);
+  if (!generatedAt || !Number.isFinite(Date.parse(generatedAt))) throw Error('DETERMINISTIC_EVIDENCE_TIMESTAMP_REQUIRED');
+  const result = buildScaleAudit(probes, { generatedAt, listings: layer.listings, decisions: baseline.decisions, events, usLatestRows: usLatest?.rows, dividendControls });
   const out = resolve(values('out')[0] || 'reports/marketstack'); mkdirSync(out, { recursive: true });
   for (const [file, data] of [['marketstack_scale_adjustments.json', result.adjustments], ['global_select_marketstack_coverage.json', result.globalSelect]]) {
     writeFileSync(resolve(out, file), JSON.stringify(data, null, 2) + '\n');

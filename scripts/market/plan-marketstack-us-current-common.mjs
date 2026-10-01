@@ -5,6 +5,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { probeResponseProvenance } from './marketstack-evidence-provenance.mjs';
 import { extractUSLatestDiagnostics } from './classify-marketstack-us-gaps.mjs';
 const VENUES = new Set(['XNAS', 'XNYS', 'XASE', 'ARCX', 'BATS', 'IEXG']);
 export function inventoryCurrentUSCommonCache(unmatched, probes, options = {}) {
@@ -14,7 +15,7 @@ export function inventoryCurrentUSCommonCache(unmatched, probes, options = {}) {
   const input = unmatched.currentCommonEquityGaps;
   if (new Set(input.map(r => r.securityId)).size !== input.length) throw new Error('Duplicate current common security identity');
   const baseline = new Map(unmatched.rows.map(r => [r.securityId, r]));
-  const endpoints = probes.flatMap(p => (p.endpoints || []).map(e => ({ ...e, runId: p.run?.runId || null })));
+  const endpoints = probes.flatMap(p => (p.endpoints || []).map(e => ({ ...e, runId: probeResponseProvenance(e, p).sourceRunId, sourceRunId: probeResponseProvenance(e, p).sourceRunId, sourceRunAttribution: probeResponseProvenance(e, p).sourceRunAttribution })));
   const rows = input.map(r => {
     const original = baseline.get(r.securityId);
     if (!original || original.providerSymbol !== r.ticker || !original.consumer ||
@@ -82,7 +83,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const args = Object.fromEntries(process.argv.slice(2).map(s => { const i = s.indexOf('='); return [s.slice(2, i), s.slice(i + 1)]; }));
   if (!args.probes || !args['request-plan']) throw new Error('--probes=private-paths and --request-plan=private-plan required');
   const load = p => JSON.parse(readFileSync(resolve(p)));
-  const { inventory, plan } = inventoryCurrentUSCommonCache(load(args.unmatched || 'reports/marketstack/us_marketstack_unmatched_classification.json'), args.probes.split(',').map(load));
+  const { inventory, plan } = inventoryCurrentUSCommonCache(load(args.unmatched || 'reports/marketstack/us_marketstack_unmatched_classification.json'), args.probes.split(',').map(load), { generatedAt: args['generated-at'] });
   writeFileSync(resolve(args.out || 'reports/marketstack/us_marketstack_current_common_cache.json'), JSON.stringify(inventory, null, 2) + '\n');
   writeFileSync(resolve(args['request-plan']), JSON.stringify(plan, null, 2) + '\n');
   console.log(JSON.stringify({ inventory: inventory.totals, credits: plan.estimatedCredits, requests: plan.estimatedRequests }));

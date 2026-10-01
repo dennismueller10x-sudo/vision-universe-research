@@ -8,6 +8,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { symbolVariants } from './benchmark-marketstack-us.mjs';
 import { evaluateLatestObservation } from './benchmark-marketstack-us-latest.mjs';
+import { probeResponseProvenance } from './marketstack-evidence-provenance.mjs';
 
 const upper = x => typeof x === 'string' ? x.trim().toUpperCase() : null;
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -112,7 +113,7 @@ export function extractUSMetadata(probes) {
       endpoint.data?.symbol ? [endpoint.data] : endpoint.data?.data?.symbol ? [endpoint.data.data] : [];
     for (const raw of data) {
       const r = safeProviderMetadata(tickerList ? { ...raw, symbol: raw.symbol || raw.ticker } : raw, { kind: venue ? 'API_EXCHANGE_DIRECTORY' : tickerList ? 'API_TICKER_LIST_SEARCH' : 'API_TICKER_METADATA',
-        runId: probe.run?.runId || null, probeIndex: i, checkedAt: day(endpoint.checkedAt) }, venue?.[1]);
+        runId: probeResponseProvenance(endpoint, probe).sourceRunId, sourceRunAttribution: probeResponseProvenance(endpoint, probe).sourceRunAttribution, probeIndex: i, checkedAt: day(endpoint.checkedAt) }, venue?.[1]);
       if (r) records.push(r);
     }
   }
@@ -128,7 +129,7 @@ export function extractUSMetadataOutcomes(probes) {
       status: e.ok ? 'METADATA_RETURNED' : e.providerErrorType === 'the_requested_data_is_not_available' ?
         'PROVIDER_METADATA_ENDPOINT_DATA_UNAVAILABLE' : 'METADATA_REQUEST_FAILED',
       reason: e.ok ? null : ['networkError', 'timeout', 'providerError', 'rateLimited'].includes(e.reason) ? e.reason : 'requestFailed',
-      checkedAt: day(e.checkedAt), runId: probe.run?.runId || null });
+      checkedAt: day(e.checkedAt), runId: probeResponseProvenance(e, probe).sourceRunId, sourceRunAttribution: probeResponseProvenance(e, probe).sourceRunAttribution });
   }
   return records;
 }
@@ -142,7 +143,7 @@ export function extractUSLatestDiagnostics(probes, symbol, mic, target, today) {
     const label = String(e.label || '');
     const relevant = label.startsWith('us-gap-latest-diagnostic') || ['us-current-common-gap-latest',
       'us-common-venue-counterexample-latest', 'us-common-venue-counterexample-ticker-latest',
-      'us-common-venue-counterexample', 'us-common-venue-directory-counterexample', 'us-current-common-gap-coverage'].includes(label);
+      'us-common-venue-counterexample', 'us-common-venue-directory-counterexample', 'us-current-common-gap-coverage', 'us-current-common-refined-gap-coverage'].includes(label);
     const symbolRequested = tickerPath ? tickerPath[1] === symbol : String(e.params?.symbols || '').split(',').includes(symbol);
     const venueRequested = e.params?.exchange ? e.params.exchange === mic : Boolean(tickerPath);
     if (!relevant || endpoint !== 'eod/latest' && !tickerPath || !venueRequested || !symbolRequested) continue;
@@ -150,6 +151,11 @@ export function extractUSLatestDiagnostics(probes, symbol, mic, target, today) {
       e.data?.data?.symbol ? [e.data.data] : e.data?.symbol ? [e.data] : [];
     const pagination = e.data?.pagination || e.pagination;
     const entries = raw.filter(r => r?.symbol === symbol);
+    const identityBearingObjectRows = raw.filter(r => r && typeof r === 'object' && !Array.isArray(r) && typeof r.symbol === 'string' && typeof r.exchange === 'string').length;
+    const emptyArrayPlaceholderRows = raw.filter(r => Array.isArray(r) && r.length === 0).length;
+    const responseShapeStatus = e.ok !== true ? 'REQUEST_FAILED' : !raw.length ? 'EMPTY_PROVIDER_DATA_ARRAY' :
+      emptyArrayPlaceholderRows === raw.length ? 'EMPTY_ARRAY_PLACEHOLDERS_WITHOUT_IDENTIFIERS' : !identityBearingObjectRows ? 'NON_IDENTITY_ROWS_ONLY' :
+        emptyArrayPlaceholderRows ? 'PARTIAL_MALFORMED_RESPONSE' : 'OBJECT_ROWS_WITH_IDENTITY';
     let outcome;
     if (e.ok !== true) outcome = { status: e.providerErrorType === 'the_requested_data_is_not_available' ?
       'PROVIDER_ENDPOINT_DATA_UNAVAILABLE' : e.providerErrorType === 'no_valid_symbols_provided' ?
@@ -162,8 +168,13 @@ export function extractUSLatestDiagnostics(probes, symbol, mic, target, today) {
       status: outcome.status, validLatest: outcome.validLatest,
       reportedCurrency: typeof outcome.observation?.reportedCurrency === 'string' ? outcome.observation.reportedCurrency : null,
       reportedTradingDate: day(outcome.observation?.marketTimestamp), ageDays: outcome.ageDays ?? null,
+      responseBatchKey: hash(JSON.stringify([endpoint, e.params?.exchange || null, e.params?.symbols || null, e.checkedAt || null, probeResponseProvenance(e, probe).sourceRunId])),
+      rawBatchRowCount: raw.length, identityBearingObjectRows, emptyArrayPlaceholderRows, responseShapeStatus,
+      requestedSymbolCount: tickerPath ? 1 : String(e.params?.symbols || '').split(',').filter(Boolean).length,
+      providerReportedPaginationTotal: Number.isSafeInteger(pagination?.total) ? pagination.total : null,
+      missingObservationClassification: outcome.status === 'MISSING_LATEST' ? raw.length && !identityBearingObjectRows ? 'MALFORMED_IDENTITYLESS_BATCH_RESPONSE' : 'NO_TARGET_OBSERVATION_IN_COMPLETE_RESPONSE' : null,
       dataFrequency: 'EOD', delayState: 'EOD_ONLY', adjustmentBasis: 'UNVERIFIED',
-      checkedAt: day(e.checkedAt), runId: probe.run?.runId || null, historyValidated: false });
+      checkedAt: day(e.checkedAt), runId: probeResponseProvenance(e, probe).sourceRunId, sourceRunAttribution: probeResponseProvenance(e, probe).sourceRunAttribution, historyValidated: false });
   }
   return results;
 }
@@ -335,7 +346,7 @@ export function classifyUSGaps(input, options = {}) {
       const items = Array.isArray(e.data?.data) ? e.data.data : [];
       const p = e.data?.pagination;
       return { endpoint: 'tickerslist', requestedMic: e.params?.exchange || null, search: row.providerSymbol, successful: e.ok === true,
-        runId: probe.run?.runId || null, returnedRecords: items.length,
+        runId: probeResponseProvenance(e, probe).sourceRunId, sourceRunAttribution: probeResponseProvenance(e, probe).sourceRunAttribution, returnedRecords: items.length,
         completeResponse: Boolean(e.ok && p && p.offset === 0 && p.count === items.length && p.total === p.count),
         exactSymbolMatches: items.filter(r => (r.symbol || r.ticker) === row.providerSymbol).length,
         observedSymbols: items.map(r => ({ symbol: upper(r.symbol || r.ticker), mic: upper(r.stock_exchange?.mic || r.exchange) })).filter(r => r.symbol && r.mic),
@@ -385,7 +396,7 @@ export function classifyUSGaps(input, options = {}) {
       officialSECContext: publicSECContext(officialEvidence),
       independentCurrentListing: publicListingContext(independent),
       providerMetadataOutcomes: metadataOutcomes.filter(m => m.targetSecurityIds.includes(row.securityId)).map(m => ({ symbol: m.symbol,
-        status: m.status, successful: m.successful, reason: m.reason, runId: m.runId, checkedAt: m.checkedAt })),
+        status: m.status, successful: m.successful, reason: m.reason, runId: m.runId, sourceRunAttribution: m.sourceRunAttribution, checkedAt: m.checkedAt })),
       nextEvidenceRequired: accepted ? 'QUALIFIED_PRICE_AND_HISTORY_VALIDATION' : unresolvedVenue ? 'EXACT_VENUE_DISCOVERY' :
         'PROVIDER_SECURITY_IDENTIFIER_OR_EXACT_SYMBOL_MIC_ISSUER_PROOF_AND_QUALIFIED_PRICES' };
   };
@@ -600,7 +611,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const eligibility = load('quant/data/market/security-master/eligibility.json');
   const result = classifyUSGaps({ benchmark, names, instruments, secMap, providerMetadata, latest, histories, secEvidence, listingEvidence, resolvedHistory,
     supplementaryProbes: probes, metadataOutcomes }, {
-    sources, activeStatusAsOf: day(eligibility.today || eligibility.generatedAt) });
+    sources, generatedAt: args['generated-at'], activeStatusAsOf: day(eligibility.today || eligibility.generatedAt) });
   const out = resolve(args.out || root + '/reports/marketstack'); mkdirSync(out, { recursive: true });
   for (const [key, filename] of [['unmatched', 'us_marketstack_unmatched_classification.json'], ['resolved', 'us_marketstack_resolved_matches.json'], ['quality', 'us_marketstack_quality_flags.json']])
     writeFileSync(resolve(out, filename), JSON.stringify(result[key], null, 2) + '\n');
