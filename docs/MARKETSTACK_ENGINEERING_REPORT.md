@@ -2,7 +2,7 @@
 
 Measured 2026-10-01. **Decision C: Marketstack and Tiingo remain complementary.** This branch prepares a bounded, real-data global equity/ETF foundation. It does not activate a production migration, replace Tiingo, or claim complete global coverage.
 
-The branch is stacked on the exact accepted PR #324 head, `d10d09eddeb0b6869550e38920d0e2f10818919e`. That PR is still an open draft rather than merged main. The existing Company → Security → Listing model, US universe, Tiingo runtime, SEC/ESEF pipelines and production schedules remain protected.
+The implementation is in [draft PR #330](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/330), stacked on the exact accepted PR #324 head, `d10d09eddeb0b6869550e38920d0e2f10818919e`. That baseline PR is still an open draft rather than merged main. The existing Company → Security → Listing model, US universe, Tiingo runtime, SEC/ESEF pipelines and production schedules remain protected.
 
 ## 1. Result
 
@@ -132,14 +132,16 @@ The full-US currency/type contamination and invalid intraday fields are material
 | Exact suite/check | Result |
 | --- | --- |
 | `node --test quant/tests/*.test.mjs` | 2,185 passed; zero failed/skipped |
-| `node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs` | 451 passed, five skipped, zero failed (456 total) |
+| `node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs` | 455 passed, five skipped, zero failed (460 total) |
 | `python3 -m unittest discover -s scripts/quant/tests` | 484 passed |
 | `python3 -m unittest discover -s scripts/fundamentals/tests` | Seven passed with repository Arelle requirements installed |
 | `python3 -m unittest scripts.vu2.test_product_data_api scripts.vu2.test_fundamentals_serving` | 32 passed |
 | `node --test scripts/vu2/resource-budget.test.mjs` | Six passed |
 | Independent final targeted review suites | 81 passed |
+| Independent final route/CI correction review | 32 passed |
 | Actual canonical browser directory | 58/58 listings passed |
 | Expanded product browser, source and built release | 63/63 checks passed each; zero page/HTTP errors |
+| Final built-release Discover Chromium suite | 201/201 passed; 16 real accessibility audits; zero critical/serious violations |
 | Geographic/identity/quality browser checks | Six passed |
 | Secret/public data guards | Passed |
 | Protected baseline and generated Quant/technical/Discover verification | Passed; zero unexpected differences |
@@ -149,11 +151,15 @@ The old `scripts/universe/browser-qa.mjs` reports 14/19 passing. All five failur
 
 The actual release has 4,895,565 SEC projection bytes below the 8,388,608-byte budget, 109 projection files, and 5,399 Screener rows. Local browser checks used that built release as well as source data. GitHub's Node 22 regression results are available in the PR checks; local broad suites used Node 24/Python 3.12. No production deployment was performed.
 
+GitHub's built-release Quant browser suite passed 88 checks with zero findings, including desktop/mobile and named journey surfaces. Screener browser QA across four widths and both themes also passed with zero findings. Production Pages packaging passed and its deployment job was skipped for the draft PR. Vercel's preview build was intentionally ignored by its existing build rule; the built-release local preview was tested directly.
+
 ## 13. Regressions
 
 Protected US price and SEC files have **zero byte differences** against accepted PR #324. Baseline membership verification passes for 7,809 instrument members and 39 accepted enriched identities. Quant verification passes for 482 titles and 29 history references; technical verification matches 18 snapshots; Discover verification covers 5,992 details and 95,008 checks with zero differences. Existing US rankings, fundamentals, schedules, Tiingo configuration and URLs were not migrated.
 
 The only established browser shortcomings are the five reproduced legacy checks described above. No introduced regression remained after the independent review, broad suites and release preview.
+
+Final GitHub validation initially caught a Discover module-scope guard that did not recognize the additive global-market layer and an introduced incremental view-file size of 181,505 bytes against the unchanged 180,000-byte gate. The guard now applies the same full US baseline verification as the accepted global-equity expansion. Marketstack CI also runs its secret/public-data gates on data-, permission-config- and report-only changes. Listing-loading orchestration moved into the existing shared Detail module with explicit app rendering/watchlist/cancellation callbacks. The original view wrapper, fade activation and disposal remain intact. All six measured view-file resource rows are now 179,512 bytes, versus 179,896 on the accepted baseline. This is the existing incremental view-file budget, not a claim that total browser download bytes decreased.
 
 ## 14. Provider decision
 

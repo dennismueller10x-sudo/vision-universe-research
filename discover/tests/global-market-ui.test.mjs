@@ -108,3 +108,82 @@ test('limited history alone does not invent gaps; measured quarantines explicitl
   const quarantined = new Node('main'); ctx.VUDiscover.Detail.renderInstrument(quarantined, result({ ...listing, quality: { status: 'PARTIAL', quarantinedCandles: 3 } }));
   assert.match(text(quarantined), /Einzelne Tageskurse fehlen/);
 });
+
+test('global route loader uses exact listing scope and cancels stale routes before fetching prices', async () => {
+  const calls = [], watched = [], messages = [];
+  let active = true;
+  const ctx = context({ VUInstrumentDirectory: { create: options => {
+    assert.equal(options.extensionBase, '/quant/data/global-market/');
+    return {
+      getInstrument: async ref => { calls.push(['identity', ref]); return { status: 'OK', instrument: listing }; },
+      getPrice: async ref => { calls.push(['price', ref]); return result(listing).price; },
+      getPriceHistory: async ref => { calls.push(['history', ref]); return result(listing).history; }
+    };
+  } } });
+  vm.runInContext(readFileSync(new URL('../ui/detail.js', import.meta.url), 'utf8'), ctx);
+  const options = { active: () => active, context: { universeId: 'US_REAL' }, extensionBase: '/quant/data/global-market/',
+    renderInstrument: ctx.VUDiscover.Detail.renderInstrument, message: (...args) => messages.push(args), assertListing: (row, id) => assert.equal(row.listingId, id), watchButton: (...args) => watched.push(args) };
+  const root = new Node('main');
+  await ctx.VUDiscover.Detail.loadGlobalInstrument(root, 'SAP', listing.listingId, options);
+  assert.deepEqual(calls.map(([method]) => method), ['identity', 'price', 'history']);
+  assert(calls.every(([, ref]) => ref.universeId === 'GLOBAL_MARKET' && ref.listingId === listing.listingId));
+  assert.equal(watched.length, 1); assert.equal(watched[0][2].universeId, 'GLOBAL_MARKET'); assert.match(ctx.document.title, /SAP SE/);
+  assert.equal(messages.length, 0);
+  active = false; calls.length = 0; watched.length = 0;
+  await ctx.VUDiscover.Detail.loadGlobalInstrument(new Node('main'), 'SAP', listing.listingId, options);
+  assert.deepEqual(calls.map(([method]) => method), ['identity']); assert.equal(watched.length, 0);
+  active = true; calls.length = 0;
+  await ctx.VUDiscover.Detail.loadGlobalInstrument(new Node('main'), 'SAP', 'invalid', options);
+  assert.equal(calls.length, 0); assert.match(messages[0][2], /Suche/);
+});
+
+test('global route loader rejects a legacy colliding listing without prices or watchlist changes', async () => {
+  let priceRequests = 0, watchChanges = 0; const messages = [];
+  const ctx = context({ VUInstrumentDirectory: { create: () => ({
+    getInstrument: async () => ({ status: 'OK', instrument: { ...listing, universeId: 'US_REAL' } }),
+    getPrice: async () => { priceRequests++; }, getPriceHistory: async () => { priceRequests++; }
+  }) } });
+  vm.runInContext(readFileSync(new URL('../ui/detail.js', import.meta.url), 'utf8'), ctx);
+  await ctx.VUDiscover.Detail.loadGlobalInstrument(new Node('main'), 'SAP', listing.listingId, {
+    active: () => true, context: {}, extensionBase: '/quant/data/global-market/', message: (...args) => messages.push(args),
+    assertListing: () => assert.fail('Legacy listing must be rejected'), watchButton: () => { watchChanges++; }
+  });
+  assert.equal(priceRequests, 0); assert.equal(watchChanges, 0); assert.match(messages[0][2], /nicht verfügbar/);
+});
+
+test('moved legacy master route retains identity, metadata and capability behavior', async () => {
+  const row = { ...listing, universeId: 'US_REAL' }, calls = [], watched = [];
+  const ctx = context({ VUInstrumentDirectory: { create: () => ({
+    getInstrument: async ref => { calls.push(ref); return { status: 'OK', instrument: row }; },
+    manifest: async () => ({ version: 'accepted-master', asOf: '2026-09-30' }),
+    search: async (symbol, options) => { assert.equal(symbol, 'SAP'); assert.equal(options.limit, 1); return { entries: [{ i: row.listingId }] }; },
+    capabilities: entry => { assert.equal(entry.i, row.listingId); return { HAS_PROFILE: true }; }
+  }) } });
+  vm.runInContext(readFileSync(new URL('../ui/detail.js', import.meta.url), 'utf8'), ctx);
+  const root = new Node('main');
+  await ctx.VUDiscover.Detail.loadMasterInstrument(root, 'SAP', row.listingId, {
+    active: () => true, context: { universeId: 'US_REAL' }, extensionBase: '/quant/data/global-market/',
+    renderInstrument: ctx.VUDiscover.Detail.renderInstrument, message: () => assert.fail('Legacy listing should resolve'), assertListing: (instrument, id) => assert.equal(instrument.listingId, id),
+    watchButton: (...args) => watched.push(args)
+  });
+  assert.equal(calls[0].symbol, 'SAP'); assert.equal(calls[0].listingId, row.listingId); assert.equal(calls[0].universeId, undefined);
+  assert.equal(watched[0][2].universeId, 'US_REAL'); assert.match(text(root), /accepted-master/); assert.doesNotMatch(text(root), /historische Schlusskurse/);
+});
+
+test('listing route loaders preserve the passed detail wrapper for layout and visibility', async () => {
+  const wrapped = [], ctx = context({ VUInstrumentDirectory: { create: () => ({
+    getInstrument: async ref => ({ status: 'OK', instrument: { ...listing, universeId: ref.universeId || 'US_REAL' } }),
+    getPrice: async () => result(listing).price, getPriceHistory: async () => result(listing).history,
+    manifest: async () => null, search: async () => ({ entries: [] }), capabilities: () => ({})
+  }) } });
+  vm.runInContext(readFileSync(new URL('../ui/detail.js', import.meta.url), 'utf8'), ctx);
+  const options = { active: () => true, context: { universeId: 'US_REAL' }, extensionBase: '/quant/data/global-market/',
+    message: () => assert.fail('Listing should resolve'), assertListing() {}, watchButton() {},
+    renderInstrument: (root, value, context) => { wrapped.push({ value, context }); root.appendChild(new Node('article', { class: 'dv2-stock--identity' })); }
+  };
+  for (const method of ['loadGlobalInstrument', 'loadMasterInstrument']) {
+    const root = new Node('main'); await ctx.VUDiscover.Detail[method](root, 'SAP', listing.listingId, options);
+    assert.equal(root.children.length, 1); assert.equal(root.children[0].attrs.class, 'dv2-stock--identity');
+  }
+  assert.equal(wrapped[0].context.universeId, 'GLOBAL_MARKET'); assert.equal(wrapped[1].context.universeId, 'US_REAL');
+});

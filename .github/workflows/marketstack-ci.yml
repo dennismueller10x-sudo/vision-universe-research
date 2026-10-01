@@ -1,10 +1,10 @@
 name: Marketstack additive regression
 on:
   pull_request:
-    paths: ['providers/marketstack/**', 'quant/engines/global-market.js', 'quant/engines/instrument-directory.js', 'quant/tests/**', 'scripts/market/*marketstack*', 'scripts/universe/build-global-market.mjs', '.github/workflows/marketstack-*.yml']
+    paths: ['providers/marketstack/**', 'quant/engines/global-market.js', 'quant/engines/instrument-directory.js', 'quant/data/global-market/**', 'quant/config/marketstack*.json', 'reports/marketstack/**', 'quant/tests/**', 'scripts/market/*marketstack*', 'scripts/universe/build-global-market.mjs', '.github/workflows/marketstack-*.yml']
   push:
     branches: ['feat/marketstack-*']
-    paths: ['providers/marketstack/**', 'quant/engines/global-market.js', 'quant/engines/instrument-directory.js', 'quant/tests/**', 'scripts/market/*marketstack*', 'scripts/universe/build-global-market.mjs', '.github/workflows/marketstack-*.yml']
+    paths: ['providers/marketstack/**', 'quant/engines/global-market.js', 'quant/engines/instrument-directory.js', 'quant/data/global-market/**', 'quant/config/marketstack*.json', 'reports/marketstack/**', 'quant/tests/**', 'scripts/market/*marketstack*', 'scripts/universe/build-global-market.mjs', '.github/workflows/marketstack-*.yml']
 permissions:
   contents: read
 jobs:

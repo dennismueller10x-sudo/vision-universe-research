@@ -59,7 +59,9 @@ jobs:
         # Der Currency Core selbst (quant/engines/fx) bleibt geschuetzt.
         run: |
           git fetch origin ${{ github.base_ref }} --depth=1
-          if git diff --name-only origin/${{ github.base_ref }} HEAD -- quant/engines/global-equities.js quant/data/universe/global-equities.json | grep -q .; then
+          # The canonical global-market extension follows the same additive
+          # rollout boundary as global-equities; protect the full US baseline.
+          if git diff --name-only origin/${{ github.base_ref }} HEAD -- quant/engines/global-equities.js quant/data/universe/global-equities.json quant/engines/global-market.js quant/data/global-market/manifest.json | grep -q .; then
             node scripts/universe/verify-global-baseline.mjs --base=origin/${{ github.base_ref }}
             exit 0
           fi

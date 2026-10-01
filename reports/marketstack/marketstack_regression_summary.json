@@ -1,6 +1,6 @@
 {
   "schemaVersion": "marketstack-regression-summary-1.0.0",
-  "generatedAt": "2026-10-01T12:35:43.804747+00:00",
+  "generatedAt": "2026-10-01T12:54:08.171401+00:00",
   "baselineCommit": "d10d09eddeb0b6869550e38920d0e2f10818919e",
   "testedCodeCommit": "39f39e278c03ac4ff5093965c7f1463e462f3ea3",
   "suiteResults": [
@@ -15,10 +15,10 @@
     {
       "suite": "products",
       "command": "node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs",
-      "passed": 451,
+      "passed": 455,
       "skipped": 5,
       "failed": 0,
-      "localLogSHA256": "78acd74f44ba9cdd1577ca4485168eb55f00c35be0a478487df8b68bf594952b"
+      "localLogSHA256": "e63975df7a790f5ecf686f98d9981373485cef44c90eaeb307625acb1cdb5a3b"
     },
     {
       "suite": "sec",
@@ -84,17 +84,17 @@
     "quantArtifacts": {
       "status": "PASS",
       "localLogSHA256": "12435c05f2fa1cf603e8a1422f6a7e05f5936b24eabb2d936a90caf85b71f648",
-      "result": "Vision Universe Quant \u2014 Datenpruefung\n\n  Datenstand 2026-09-04, Snapshot snap_8774e164889c6790, Seed \"vision-universe-quant-v1\"\n  482 Titel neu berechnet, 0 Abweichungen, 29 historische Referenzzeilen\n  11 Factor-DNA-Shards geprueft\n\nAlle Pruefungen bestanden.\n"
+      "result": "Vision Universe Quant — Datenpruefung\n\n  Datenstand 2026-09-04, Snapshot snap_8774e164889c6790, Seed \"vision-universe-quant-v1\"\n  482 Titel neu berechnet, 0 Abweichungen, 29 historische Referenzzeilen\n  11 Factor-DNA-Shards geprueft\n\nAlle Pruefungen bestanden.\n"
     },
     "technicalArtifacts": {
       "status": "PASS",
       "localLogSHA256": "0e186a95736b0ea7bf7cd8e14a6b16b2fb03b117cad1e757c36b5ab128043670",
-      "result": "Vision Universe Technical Intelligence \u2014 Datenpruefung\n\n  Stand 2026-09-30T02:38:06.747Z, Methodik technical-v1.0.0 / elliott-v1.0.0-beta, 18 Instrumente, 18 Snapshots\n  18 Instrumente gegen die Engines nachgerechnet\n\nOK \u2014 Technical-Daten stimmen mit den Engines ueberein.\n"
+      "result": "Vision Universe Technical Intelligence — Datenpruefung\n\n  Stand 2026-09-30T02:38:06.747Z, Methodik technical-v1.0.0 / elliott-v1.0.0-beta, 18 Instrumente, 18 Snapshots\n  18 Instrumente gegen die Engines nachgerechnet\n\nOK — Technical-Daten stimmen mit den Engines ueberein.\n"
     },
     "discoverArtifacts": {
       "status": "PASS",
       "localLogSHA256": "91a491f6cf1088782d470ed705e40f6ff30ff9f0935c23411d10ff047c83e11c",
-      "result": "Vision Universe DISCOVER \u2014 Nachrechnung\n\n  Modul discover-4.0.0, Methodik discover-v4.0.0\n\n  US_REAL: 5992 Titel, 77 Zeilen, 5992 Detailseiten\n           0 Kursreihen im Series-Store geprueft\n           34 Surfaces der Startseite geprueft\n           5992 Detailseiten nachgerechnet\n\n  95008 Pruefungen ausgefuehrt.\n  Keine Abweichung. Daten und Engines stimmen ueberein.\n\n"
+      "result": "Vision Universe DISCOVER — Nachrechnung\n\n  Modul discover-4.0.0, Methodik discover-v4.0.0\n\n  US_REAL: 5992 Titel, 77 Zeilen, 5992 Detailseiten\n           0 Kursreihen im Series-Store geprueft\n           34 Surfaces der Startseite geprueft\n           5992 Detailseiten nachgerechnet\n\n  95008 Pruefungen ausgefuehrt.\n  Keine Abweichung. Daten und Engines stimmen ueberein.\n\n"
     },
     "releaseBuild": {
       "status": "PASS",
@@ -121,5 +121,73 @@
       "Obsolete PLTR no-chart expectation"
     ]
   },
-  "productionDeployed": false
+  "productionDeployed": false,
+  "githubNode22Regression": {
+    "runId": "36862973575",
+    "testedCommit": "4b33743665f745c71da588527735f8ea3e20591d",
+    "status": "PASS",
+    "quantPassed": 2185,
+    "productsPassed": 451,
+    "productsSkipped": 5,
+    "secPassed": 484,
+    "esefPassed": 7,
+    "protectedIdentityAndPublicDataGates": "PASS"
+  },
+  "githubBuiltReleaseQA": {
+    "releasePackageRun": "36862973444",
+    "releasePackage": "PASS",
+    "deployment": "SKIPPED_PULL_REQUEST",
+    "quantBrowserRun": "36862973663",
+    "quantBrowserChecksPassed": 88,
+    "quantBrowserFindings": 0,
+    "namedJourneySurfaces": "PASS",
+    "screenerBrowserRun": "36862973486",
+    "screenerBrowserFindings": 0,
+    "testedCommit": "4b33743665f745c71da588527735f8ea3e20591d"
+  },
+  "finalRouteRevision": {
+    "independentReview": "PASS",
+    "independentTestsPassed": 32,
+    "incrementalViewBudgetBytes": 180000,
+    "baselineViewBytes": 179896,
+    "finalViewBytes": 179512,
+    "measuredViewportThemeRows": 6,
+    "chartOpacity": 1,
+    "identityArticlePresent": true,
+    "staleRouteCancellation": "PRESERVED",
+    "existingRenderWrapper": "PRESERVED",
+    "codeFileSHA256": {
+      "discover/app.js": "86a415ddf0eb7c6262249fb88d806e3fe2285a9b9dc27db32edd5b0def4c4857",
+      "discover/ui/detail.js": "c2f6aed80c148f7c0d2adb1852b6f6f4b694291afdb4ebbbba43defc061a9321",
+      "discover/tests/global-market-ui.test.mjs": "599228472a30f350827191b914eab0a4cdd86f9cce06ada01a3689e280d29cb0"
+    },
+    "scopeGuard": "FULL_US_BASELINE_REQUIRED",
+    "dataOnlyCISecretPublicGuards": "ENABLED",
+    "budgetDoesNotRepresentTotalBrowserBytes": true
+  },
+  "finalDiscoverBuiltReleaseQA": {
+    "status": "PASS",
+    "source": "ACTUAL_BUILT_RELEASE",
+    "checksPassed": 201,
+    "checksFailed": 0,
+    "screenshots": 92,
+    "actualAccessibilityAudits": 16,
+    "criticalSeriousAccessibilityViolations": 0,
+    "localReportSHA256": "34b9f12e05e189b291539311a9f3fc019825c873dc14e913b7cca9871ff1b55e",
+    "incrementalViewBytes": 179512,
+    "incrementalViewBudgetBytes": 180000,
+    "codeFileSHA256": {
+      "discover/app.js": "86a415ddf0eb7c6262249fb88d806e3fe2285a9b9dc27db32edd5b0def4c4857",
+      "discover/ui/detail.js": "c2f6aed80c148f7c0d2adb1852b6f6f4b694291afdb4ebbbba43defc061a9321",
+      "discover/tests/global-market-ui.test.mjs": "599228472a30f350827191b914eab0a4cdd86f9cce06ada01a3689e280d29cb0"
+    }
+  },
+  "finalRouteProductSmoke": {
+    "passed": 63,
+    "failed": 0,
+    "pageErrors": 0,
+    "httpErrors": 0,
+    "directoryListingsPassed": 58,
+    "usesPreservedRenderWrapper": true
+  }
 }

@@ -2019,7 +2019,39 @@
     ]));
   }
 
+  async function loadMasterInstrument(root,symbol,listingId,options) {
+    const active=options.active, ctx=options.context;
+    const dir=global.VUInstrumentDirectory.create({extensionBase:options.extensionBase});
+    const result=await dir.getInstrument(listingId?{symbol,listingId:decodeURIComponent(listingId)}:symbol);
+    if(!active())return;
+    if(result.status!=='OK'){options.message(root,'Aktie nicht gefunden','Prüfe das Kürzel oder suche nach dem Unternehmensnamen.');return;}
+    options.assertListing(result.instrument,listingId);
+    const [manifest,hits]=await Promise.all([dir.manifest().catch(()=>null),dir.search(symbol,{limit:1}).catch(()=>null)]);
+    if(!active())return;
+    root.classList.add('dx-detail');
+    options.renderInstrument(root,{instrument:result.instrument,alternateListings:result.alternateListings,
+      capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
+    options.watchButton(root,symbol,result.instrument);
+  }
+  async function loadGlobalInstrument(root,symbol,listingId,options) {
+    if(!listingId||!/^vu_[a-f0-9]+$/.test(listingId)){options.message(root,'Listing nicht gefunden','Öffne das Listing über die Suche.');return;}
+    const active=options.active, ctx=options.context;
+    const dir=global.VUInstrumentDirectory.create({extensionBase:options.extensionBase});
+    const ref={symbol,listingId,universeId:'GLOBAL_MARKET'};
+    const result=await dir.getInstrument(ref);if(!active())return;
+    if(result.status!=='OK'||result.instrument.universeId!=='GLOBAL_MARKET'){options.message(root,'Listing nicht gefunden','Dieses Listing ist nicht verfügbar.');return;}
+    options.assertListing(result.instrument,listingId);
+    const [price,history]=await Promise.all([dir.getPrice(ref),dir.getPriceHistory(ref)]);if(!active())return;
+    const inst=result.instrument;
+    root.classList.add('dx-detail');
+    options.renderInstrument(root,{instrument:inst,alternateListings:result.alternateListings,
+      capabilities:{HAS_PROFILE:true,HAS_PRICE_SNAPSHOT:price.status==='OK',HAS_PRICE_HISTORY:history.status==='OK'},
+      price,history,masterVersion:'global-market-1.0.0',asOf:price.asOf||null},Object.assign({},ctx,{universeId:'GLOBAL_MARKET'}));
+    options.watchButton(root,symbol,inst);document.title=(inst.companyName||inst.name||symbol)+' — Discover';
+  }
+
   global.VUDiscover = global.VUDiscover || {};
   global.VUDiscover.Detail = { render: render, renderInstrument: renderInstrument,
+                               loadMasterInstrument: loadMasterInstrument, loadGlobalInstrument: loadGlobalInstrument,
                                OVERLAYS: OVERLAYS, PANES: PANES };
 })(window);
