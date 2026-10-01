@@ -1,0 +1,39 @@
+name: Global equities additive regression
+on:
+  pull_request:
+    paths: ['quant/**', 'providers/**', 'scripts/universe/**', 'scripts/fundamentals/**', 'scripts/market/**', 'scripts/discover/**', 'scripts/screener/**', 'discover/**', 'screener/**', 'server/product-identity.js', '.github/workflows/global-equities-ci.yml']
+  push:
+    branches: [main]
+    paths: ['quant/engines/global-equities.js', 'quant/data/universe/global-equities.json', 'scripts/universe/global_equities.py', 'scripts/fundamentals/**', 'providers/official-filings/**', '.github/workflows/global-equities-ci.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r scripts/fundamentals/requirements.txt
+      - name: Identity, canonical data and protected US engines
+        run: node --test quant/tests/*.test.mjs
+      - name: Protected product consumers
+        run: node --test discover/tests/*.test.mjs screener/tests/*.test.mjs supertrader/tests/*.test.mjs
+      - name: SEC and official filing parser
+        run: |
+          python3 -m unittest discover -s scripts/quant/tests
+          python3 -m unittest discover -s scripts/fundamentals/tests
+      - name: Read-only real artifact quality gates
+        run: node scripts/universe/validate-global-equities.mjs
+      - name: Protected US data baseline on expansion reviews
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          if git diff --name-only origin/${{ github.base_ref }} HEAD -- quant/engines/global-equities.js scripts/universe/materialize-global-equities.mjs | grep -q .; then
+            node scripts/universe/verify-global-baseline.mjs --base=origin/${{ github.base_ref }}
+          fi

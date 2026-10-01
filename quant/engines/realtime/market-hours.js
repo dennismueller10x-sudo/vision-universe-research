@@ -134,6 +134,11 @@
     opts = opts || {};
     var calendar = opts.calendar || BUILTIN;
     var exchangeId = opts.exchange || DEFAULT_EXCHANGE;
+    if (opts.exchange && !(calendar.exchanges && calendar.exchanges[exchangeId]) && exchangeId !== DEFAULT_EXCHANGE) {
+      return { phase: "CLOSED", isOpen: false, isTradingDay: false, closedReason: "unsupportedExchange",
+        exchange: exchangeId, timezone: null, localDate: null, localTime: null, earlyClose: null,
+        calendarCoverage: false, calendarId: calendar.calendarId || null };
+    }
     var ex = (calendar.exchanges && calendar.exchanges[exchangeId]) ||
              BUILTIN.exchanges[DEFAULT_EXCHANGE];
     var tz = ex.timezone || "America/New_York";

@@ -61,6 +61,7 @@
 
     function suchen() {
       var q = input.value.trim().toUpperCase();
+      var geography = global.VUGlobalEquities ? global.VUGlobalEquities.geographyQuery(q) : null;
       aktiv = -1;
       if (!q) {
         S.clear(results);
@@ -69,6 +70,9 @@
         return;
       }
       ladeIndex().then(function (index) {
+        // ISO country codes can also be existing US tickers (DE = Deere).
+        // An exact ticker retains its established search behavior.
+        if (index.entries.some(function (e) { return e.s === q; })) geography = null;
         /* Reihenfolge mit Absicht: ein exakter Ticker zuerst, dann Ticker,
            die so beginnen, dann Namenstreffer. Wer "NVDA" tippt, meint
            nicht "NVR". */
@@ -76,10 +80,14 @@
         index.entries.forEach(function (e) {
           var name = (e.n || "").toUpperCase();
           var sec = (e.sec || "").toUpperCase();
-          if (e.s === q) exakt.push(e);
+          if (geography) {
+            if ((geography.country && e.cc === geography.country) || (geography.region && e.rg === geography.region)) sektor.push(e);
+          }
+          else if (e.s === q) exakt.push(e);
           else if (e.s.indexOf(q) === 0) beginnt.push(e);
           else if (name.indexOf(q) === 0) nameBeginnt.push(e);
           else if (name.indexOf(q) !== -1 || e.s.indexOf(q) !== -1) enthaelt.push(e);
+          else if ([e.cc, e.rg, e.x].some(function (v) { return v && String(v).toUpperCase().indexOf(q) >= 0; })) sektor.push(e);
           else if (q.length >= 3 && sec.indexOf(q) !== -1) sektor.push(e);
         });
         /* Firma, Ticker, dann Sektor - und nie mehr als 14 Knoten im DOM. */

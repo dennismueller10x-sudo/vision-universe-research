@@ -19,6 +19,7 @@
    ========================================================================= */
 (function (global) {
   'use strict';
+  var Geography = typeof module !== 'undefined' && module.exports ? require('../../quant/engines/global-equities.js') : global.VUGlobalEquities;
 
   var GROUPS = [
     { id: 'company', label: 'Unternehmen', icon: 'building' },
@@ -42,10 +43,12 @@
 
   var FIELDS = [
     // ---------------- UNTERNEHMEN ----------------
-    n('country', { col: 'co', group: 'company', kind: 'enum', label: 'Börsenland', en: 'Country', source: 'master',
-      desc: 'Land der Primärbörse laut Wertpapierstamm. Das aktuelle Universum umfasst US-Börsen.', keywords: ['land', 'usa', 'country'] }),
+    n('country', { col: 'co', group: 'company', kind: 'enum', label: 'Unternehmensland', en: 'Country', source: 'master',
+      desc: 'Belegtes Unternehmensland; für internationale Emittenten aus der regulatorischen Geschäftsadresse. Ohne diesen Beleg gilt das bisherige Börsenland.', keywords: ['land', 'usa', 'country', 'deutschland', 'germany'] }),
+    n('listingCountry', { col: 'lc', group: 'company', kind: 'enum', label: 'Börsenland', en: 'Listing Country', source: 'master', desc: 'Land des Handelsplatzes, getrennt vom Unternehmensland.' }),
+    n('currency', { col: 'cu', group: 'company', kind: 'enum', label: 'Handelswährung', en: 'Currency', source: 'master', desc: 'Originalwährung des Listings.' }),
     n('region', { col: 'co', group: 'company', kind: 'enum', label: 'Region', en: 'Region', source: 'master', derive: 'region',
-      desc: 'Region der Primärbörse, abgeleitet aus dem Börsenland.', keywords: ['region', 'nordamerika'] }),
+      desc: 'Region, abgeleitet aus dem Unternehmensland.', keywords: ['region', 'nordamerika', 'europa', 'europe'] }),
     n('exchange', { col: 'ex', group: 'company', kind: 'enum', label: 'Börse', en: 'Exchange', source: 'master',
       desc: 'Primärbörse, an der die Aktie gehandelt wird.', keywords: ['nasdaq', 'nyse', 'exchange'] }),
     n('sector', { col: 'sec', group: 'company', kind: 'enum', label: 'Sektor', en: 'Sector', source: 'classification',
@@ -239,7 +242,7 @@
 
   // Leitfrage (Filter-Detail) und Kurzbeschreibung (Bibliothek) in Alltagssprache.
   var COPY = {
-    country: ['Wo ist die Aktie gelistet?', 'Land der Primärbörse'], region: ['In welcher Region wird gehandelt?', 'Region der Primärbörse'],
+    country: ['Welchem Land ist das Unternehmen zugeordnet?', 'Unternehmensland'], region: ['Welcher Region ist das Unternehmen zugeordnet?', 'Region des Unternehmens'],
     exchange: ['An welcher Börse wird gehandelt?', 'NASDAQ, NYSE, AMEX …'], sector: ['In welchem Sektor ist das Unternehmen tätig?', 'Technologie, Gesundheit, Finanzen …'],
     industry: ['In welcher Branche genau?', 'SIC-Hauptgruppe der SEC'], ipoYear: ['Seit wann ist die Aktie an der Börse?', 'Jahr des ersten Handelstags'],
     companyType: ['Um welche Wertpapierart handelt es sich?', 'Stammaktie, REIT, ADR …'], index: ['Ist die Aktie in einem großen Index?', 'S&P 500, Nasdaq-100, Dow Jones'],
@@ -291,12 +294,17 @@
 
   // ---------------------------------------------------------------- Enums
   var ENUM_LABELS = {
-    country: { US: 'USA' },
-    region: { NA: 'Nordamerika' },
+    country: { US: 'USA', DE: 'Deutschland', FR: 'Frankreich', NL: 'Niederlande', BE: 'Belgien', ES: 'Spanien', IT: 'Italien', AT: 'Österreich', CH: 'Schweiz', GB: 'Vereinigtes Königreich', DK: 'Dänemark', SE: 'Schweden', NO: 'Norwegen', FI: 'Finnland', JP: 'Japan', KR: 'Südkorea', TW: 'Taiwan', CN: 'China', HK: 'Hongkong', IN: 'Indien', BR: 'Brasilien', IE: 'Irland' },
+    region: { NA: 'Nordamerika', EU: 'Europa', APAC: 'Asien/Pazifik', LATAM: 'Lateinamerika', OTHER: 'Andere' },
     companyType: { EQUITY_COMMON: 'Stammaktie', REIT: 'REIT', SPAC: 'SPAC', TRUST: 'Trust', ADR: 'ADR' },
     index: { SP500: 'S&P 500', SPX: 'S&P 500', NDX: 'Nasdaq-100', DJIA: 'Dow Jones' }
   };
   var REGION_OF = { US: 'NA', CA: 'NA' };
+  function regionOf(country) {
+    if (!country) return null;
+    return Geography ? ({ NORTH_AMERICA: 'NA', EUROPE: 'EU', ASIA_PACIFIC: 'APAC', LATIN_AMERICA: 'LATAM' }[Geography.region(country)] || 'OTHER') : (REGION_OF[country] || 'OTHER');
+  }
+  if (Geography) Object.keys(ENUM_LABELS.country).concat(Geography.EUROPE).forEach(function(c) { REGION_OF[c] = regionOf(c); });
 
   // ------------------------------------------------------------ Operatoren
   var OPERATORS = {
@@ -460,7 +468,7 @@
 
   var API = {
     VERSION: 'vu-screener-fields-1.0.0',
-    GROUPS: GROUPS, FIELDS: FIELDS, OPERATORS: OPERATORS, ENUM_LABELS: ENUM_LABELS, REGION_OF: REGION_OF,
+    GROUPS: GROUPS, FIELDS: FIELDS, OPERATORS: OPERATORS, ENUM_LABELS: ENUM_LABELS, REGION_OF: REGION_OF, regionOf: regionOf,
     field: function (id) { return BY_ID[id] || null; },
     group: function (id) { return GROUPS.filter(function (g) { return g.id === id; })[0] || null; },
     list: list, groups: groups, search: search, operatorsFor: operatorsFor,

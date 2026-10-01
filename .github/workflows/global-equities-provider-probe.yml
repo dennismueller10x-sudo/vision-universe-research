@@ -1,0 +1,30 @@
+name: Global equities bounded Tiingo probe
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feat/global-equity-*']
+    paths: ['scripts/universe/probe-global-tiingo.mjs', '.github/workflows/global-equities-provider-probe.yml']
+permissions:
+  contents: read
+concurrency:
+  group: global-equities-tiingo-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[global-equity-probe]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only eight-symbol provider validation
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/universe/probe-global-tiingo.mjs --out="$RUNNER_TEMP/global-tiingo-probe.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: global-tiingo-probe
+          path: ${{ runner.temp }}/global-tiingo-probe.json
+          retention-days: 7

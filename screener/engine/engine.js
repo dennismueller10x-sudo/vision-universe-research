@@ -23,7 +23,7 @@
     var n = artifact.cols.s.length;
     var cols = artifact.cols;
     var derived = {};
-    derived.region = cols.co.map(function (c) { return c ? (Fields.REGION_OF[c] || 'OTHER') : null; });
+    derived.region = cols.co.map(function (c) { return Fields.regionOf(c); });
     derived.year = cols.ipo.map(function (d) { var y = d ? Number(String(d).slice(0, 4)) : NaN; return isFinite(y) ? y : null; });
     var bySymbol = Object.create(null);
     for (var i = 0; i < n; i++) bySymbol[cols.s[i]] = i;

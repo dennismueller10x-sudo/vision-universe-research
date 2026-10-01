@@ -517,6 +517,8 @@
     };
     if (extra && extra.aliases && extra.aliases.length) e.al = extra.aliases;
     if (extra && extra.capabilities && extra.capabilities.length) e.cap = extra.capabilities;
+    if (instrument.companyId) Object.assign(e, { cc: instrument.companyCountry, r: instrument.region,
+      u: instrument.tradingCurrency, ci: instrument.companyId, li: instrument.listingId });
     return e;
   }
 

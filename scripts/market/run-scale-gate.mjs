@@ -200,8 +200,8 @@ const benchmarkSpec = SCALE.benchmark
 const registry = SymbolMapping.createRegistry(
   allSymbols.concat(canarySymbols, benchmarkSpec ? [benchmarkSpec] : []).map((s) => ({
     securityId: s.securityId, providerId: Tiingo.PROVIDER_ID,
-    providerSymbol: s.ticker, ticker: s.ticker, exchange: s.exchange,
-    currency: "USD", country: "US", confidence: "inferred",
+    providerSymbol: s.providerSymbol || s.ticker, ticker: s.ticker, exchange: s.exchange,
+    currency: s.tradingCurrency || s.currency || "USD", country: s.listingCountry || s.country || "US", confidence: "inferred",
     note: "Aus dem Gate-Universum abgeleitet."
   }))
 );
@@ -384,7 +384,7 @@ async function fetchAndAssess(sec, opts) {
   if (bars.length) {
     merged = store.mergeBars(sec.securityId, bars, {
       ticker: sec.ticker, name: sec.company || null, exchange: sec.exchange || null,
-      currency: "USD", adjustmentStatus: res.data.adjustmentStatus,
+      currency: res.data.currency, adjustmentStatus: res.data.adjustmentStatus,
       provider: Tiingo.PROVIDER_ID, fetchedAt: new Date().toISOString()
     });
   }

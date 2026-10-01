@@ -14,18 +14,14 @@
     root.append(el('section', {class:'v2-message'}, [el('h1',{text:title}),el('p',{text:copy})]));
     if (retry) { const b=el('button',{class:'v2-button',type:'button',text:'Erneut versuchen'});b.onclick=route;root.firstChild.append(b); }
   }
-  const WATCH_KEY='vu-discover-watchlist-v1';
-  function watchlist(){try{const data=JSON.parse(localStorage.getItem(WATCH_KEY)||'[]');return Array.isArray(data)?data.filter(s=>/^[A-Z0-9.\-]{1,24}$/.test(s)).slice(0,100):[];}catch(_){return [];}}
-  function saveWatchlist(symbol){
-    const list=watchlist(),index=list.indexOf(symbol);
-    if(index<0)list.unshift(symbol);else list.splice(index,1);
-    try{localStorage.setItem(WATCH_KEY,JSON.stringify(list));}catch(_){}
-    return index<0;
-  }
-  function watchButton(root,symbol){
+  const Watch=global.VUWatchlistStore;
+  function watchlist(){try{return Watch.load(localStorage);}catch(_){return [];}}
+  function saveWatchlist(ref){try{return Watch.toggle(localStorage,ref);}catch(_){return false;}}
+  function watchButton(root,symbol,detail){
+    const ref=Watch.reference(symbol,detail,ctx.universeId);
     const button=el('button',{type:'button',class:'v2-watch-button'});
-    const paint=()=>{const saved=watchlist().includes(symbol);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));};
-    button.onclick=()=>{saveWatchlist(symbol);paint();};paint();root.prepend(button);
+    const paint=()=>{const saved=Watch.isSaved(watchlist(),ref);button.textContent=saved?'♥ Auf Watchlist':'♡ Zur Watchlist';button.setAttribute('aria-pressed',String(saved));button.setAttribute('aria-label',symbol+(saved?' aus Watchlist entfernen':' zur Watchlist hinzufügen'));button.disabled=!ref.listingId&&!saved;};
+    button.onclick=()=>{saveWatchlist(ref);paint();};paint();root.prepend(button);
   }
   function settings(root){
     document.title='Einstellungen — Discover — Vision Universe®';
@@ -102,17 +98,18 @@
       else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     });
   }
-  async function instrument(root,symbol,active) {
+  async function instrument(root,symbol,active,listingId) {
     const dir=global.VUInstrumentDirectory.create({});
     const result=await dir.getInstrument(symbol);
     if(!active())return;
     if(result.status!=='OK'){message(root,'Aktie nicht gefunden','Prüfe das Kürzel oder suche nach dem Unternehmensnamen.');return;}
+    Watch.assertListing(result.instrument,listingId);
     const [manifest,hits]=await Promise.all([dir.manifest().catch(()=>null),dir.search(symbol,{limit:1}).catch(()=>null)]);
     if(!active())return;
     root.classList.add('dx-detail');
     V.Detail.renderInstrument(root,{instrument:result.instrument,alternateListings:result.alternateListings,
       capabilities:dir.capabilities(hits&&hits.entries&&hits.entries[0]),masterVersion:manifest&&manifest.version,asOf:manifest&&manifest.asOf},ctx);
-    watchButton(root,symbol);
+    watchButton(root,symbol,result.instrument);
   }
   async function route() {
     if(!meta)return;
@@ -133,11 +130,12 @@
         const index=await S.loadJSON(BASE+'stock-index/'+ctx.universeId+'.json');if(!active())return;
         if(index.symbols.includes(symbol)){
           const detail=await S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+symbol+'.json');if(!active())return;
+          Watch.assertListing(detail,parts[3]);
           root.classList.add('dx-detail');V.Detail.render(root,detail,ctx);
-          watchButton(root,symbol);
+          watchButton(root,symbol,detail);
           document.title=(detail.companyName||symbol)+' — Discover';
           if(D.memory)D.memory.recordView(symbol,{universeId:ctx.universeId,companyName:detail.companyName,sector:detail.sector,world:detail.world});
-        }else await instrument(root,symbol,active);
+        }else await instrument(root,symbol,active,parts[3]);
       } else if(parts[0]==='settings'){
         settings(root);
       } else if(parts[0]==='suche'){
@@ -151,7 +149,7 @@
         if(!symbols.length){root.append(el('p',{class:'v2-lead',text:'Noch keine Aktien gespeichert. Öffne eine Aktie und tippe auf „Zur Watchlist“.'}),el('a',{class:'v2-pill v2-pill-dark',href:'#/',text:'Aktien entdecken →'}));}
         else{
           const list=el('div',{class:'v2-watch-list'});root.append(list);
-          symbols.forEach(symbol=>{const row=el('div',{class:'v2-watch-row'},[el('a',{href:'#/s/'+ctx.universeId+'/'+encodeURIComponent(symbol),text:symbol}),el('button',{type:'button',text:'Entfernen','aria-label':symbol+' aus Watchlist entfernen'})]);row.querySelector('button').onclick=()=>{saveWatchlist(symbol);row.remove();if(!list.children.length)route();};list.append(row);});
+          symbols.forEach(ref=>{const symbol=ref.ticker;const row=el('div',{class:'v2-watch-row'},[el('a',{href:'#/s/'+ref.universeId+'/'+encodeURIComponent(symbol)+(ref.listingId?'/'+encodeURIComponent(ref.listingId):''),text:symbol}),el('button',{type:'button',text:'Entfernen','aria-label':symbol+' aus Watchlist entfernen'})]);row.querySelector('button').onclick=()=>{saveWatchlist(ref);route();};list.append(row);});
         }
       } else if(parts[0]==='welten'){
         root.append(el('p',{class:'v2-eyebrow',text:'Dein nächster Blickwinkel'}),el('h1',{text:'Themenwelten'}),el('p',{class:'v2-lead',text:'Entdecke Megatrends und Branchen. Wähle eine Welt und entdecke die Aktien dahinter.'}));

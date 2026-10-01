@@ -2,7 +2,7 @@
 
 function symbol(value) {
   const result = String(value || "").trim().toUpperCase();
-  return /^[A-Z0-9.-]{1,12}$/.test(result) ? result : null;
+  return /^[A-Z0-9.-]{1,32}$/.test(result) ? result : null;
 }
 
 function shardKey(value) {
@@ -20,7 +20,7 @@ async function defaultLoader(path) {
 
 async function resolveIdentity(ref, { loadJSON = defaultLoader } = {}) {
   const requested = symbol(ref && (ref.ticker || ref.symbol));
-  const requestedId = ref && (ref.securityId || ref.instrumentId);
+  const requestedId = ref && (ref.securityId || ref.instrumentId || ref.listingId);
   if (!requested && !requestedId) return { state: "INVALID_IDENTITY", identity: null };
   if (!requested) return { state: "INVALID_IDENTITY", identity: null };
   let shard;
@@ -29,7 +29,13 @@ async function resolveIdentity(ref, { loadJSON = defaultLoader } = {}) {
   } catch {
     return { state: "SOURCE_MISSING", identity: null };
   }
-  const candidates = (shard.instruments || []).filter((row) => row.symbol === requested);
+  let candidates = (shard.instruments || []).filter((row) => row.symbol === requested);
+  if (ref && ref.mic) candidates = candidates.filter((row) => row.mic === ref.mic);
+  if (ref && ref.exchange) candidates = candidates.filter((row) => String(row.exchange).toUpperCase() === String(ref.exchange).toUpperCase());
+  const primaries = candidates.filter((item) => item.primaryListing);
+  if (!requestedId && candidates.length > 1 && primaries.length !== 1) {
+    return { state: "AMBIGUOUS_IDENTITY", identity: null };
+  }
   const row = requestedId
     ? candidates.find((item) => item.instrumentId === requestedId || (item.legacyIds || []).includes(requestedId))
     : candidates.find((item) => item.primaryListing) || candidates[0];
@@ -53,7 +59,11 @@ async function resolveIdentity(ref, { loadJSON = defaultLoader } = {}) {
       cik: row.cik || null,
       ticker: row.symbol,
       name: row.companyName || row.symbol,
-      productEligibility: row.productEligibility
+      productEligibility: row.productEligibility,
+      ...(row.companyId ? { companyId: row.companyId, listingId: row.listingId,
+        country: row.companyCountry, region: row.region, listingCountry: row.listingCountry,
+        tradingCurrency: row.tradingCurrency, reportingCurrency: row.reportingCurrency,
+        coverage: row.coverage } : {})
     }
   };
 }

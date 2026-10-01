@@ -30,6 +30,11 @@ const ChangeEngine = require(join(ROOT, "quant/engines/change-engine.js"));
 const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.js"));
 const PublishedClose = require(join(ROOT, "quant/engines/published-close.js"));
 const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
+const GlobalEquities = require(join(ROOT, "quant/engines/global-equities.js"));
+const globalFile = join(ROOT, "quant/data/universe/global-equities.json");
+const globalListings = existsSync(globalFile)
+  ? GlobalEquities.validate(JSON.parse(readFileSync(globalFile, "utf8"))).listings : [];
+const globalByTicker = new Map(globalListings.map((r) => [r.ticker, { ...r, companyCountry: r.country }]));
 
 const OUT_DIR = join(ROOT, "quant/data/product/factor-evidence-v1");
 /* Deliberately a sibling of OUT_DIR, not a child: the current artifact is
@@ -536,14 +541,17 @@ function main() {
          * zusammen. Das ist Arbeit in der SEC-Schicht, kein Anbieterkauf. */
         const zeilen = listingsByCik.get(peer.cik) || [];
         const zuordenbar = zeilen.length <= 1;
-        const marketCap = shares && quote && zuordenbar ? shares.value * quote.close : null;
+        const globalReason = GlobalEquities.valuationGate(globalByTicker.get(ticker),
+          doc.units?.revenue || doc.units?.net_income || doc.units?.total_assets);
+        const shareCount = shares && GlobalEquities.listingShares(shares.value, globalByTicker.get(ticker));
+        const marketCap = shareCount && quote && zuordenbar && !globalReason ? shareCount * quote.close : null;
         fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
         if (fundamentals) {
           fundamentals.marketCap = finite(marketCap) ? marketCap : null;
           fundamentals.priceAsOf = quote?.asOf || null;
           fundamentals.marketCapReason = finite(marketCap) ? null
             : (!zuordenbar ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
-              : !shares ? "NO_PIT_SHARE_COUNT" : "NO_PUBLISHED_CLOSE");
+              : globalReason || (!shares ? "NO_PIT_SHARE_COUNT" : "NO_PUBLISHED_CLOSE"));
           if (!zuordenbar) {
             fundamentals.issuerListings = zeilen.slice().sort();
             countGap("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING");
