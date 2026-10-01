@@ -318,7 +318,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!await karten.count())befund(view,width,'Radar ohne Karten');
    const erste=await karten.first().innerText();
    if(!/Stand \d{2}\.\d{2}\.\d{4}/.test(erste))befund(view,width,'Radar-Karte ohne Datum');
-   if(/Gesamtnote|Kaufen|Verkaufen|Kursziel/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Radar mit Noten- oder Handlungssprache');
+   /* "keine Gesamtnote" ist die Absage, nicht die Note. */
+   const radarText=await page.locator('#qx-main').innerText();
+   if(/(?<![Kk]eine )Gesamtnote|\b(Kaufen|Verkaufen|Kursziel)\b/i.test(radarText))befund(view,width,'Radar mit Noten- oder Handlungssprache');
    const regel=await page.locator('section.qx-section').filter({hasText:'Wie der Radar sortiert'}).innerText();
    if(!/radar-priority-1\.0\.0/.test(regel))befund(view,width,'Sortierregel nicht offen gelegt');
    await page.locator('button.q-chip[data-filter="setups"]').click();

@@ -118,7 +118,7 @@ const kinds = [
       check("FIRST_OUTCOME", "Erster abgeschlossener 1-Monats-Ausgang", "Ausgang liegt vor", firstOutcome ? "frühestens am " + firstOutcome : "kein Stichtag", false),
       check("EFFECTIVE_SAMPLE", "Effektive Stichprobe je Zustand", "mindestens " + ((technicalEvidence && technicalEvidence.minEffectiveSample) || 30), String((technicalEvidence && technicalEvidence.effectiveSampleSize) || 0), false),
       check("REVERSAL", "Stabilität der Zustände (Umkehranteil)", "unter 20 %", gate.checks && gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR") ? Math.round(gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR").measured.share * 100) + " %" : "?", gate.checks && gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR") ? gate.checks.find((c) => c.id === "REVERSAL_BEHAVIOUR").state === "PASS" : false),
-      check("CERTIFICATION", "Methodische Freigabe der Setup-Ausgänge", "zertifiziert", (setupMethod.requirements || {}).backtestCertification || "NOT_CERTIFIED", false)
+      check("CERTIFICATION", "Methodische Freigabe der Setup-Ausgänge", "zertifiziert", (setupMethod.requirements || {}).backtestCertification === "CERTIFIED" ? "zertifiziert" : "nicht zertifiziert", false)
     ] }
 ];
 

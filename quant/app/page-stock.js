@@ -420,8 +420,8 @@
       trigger ? el("p", { text: trigger }) : null, nx && nx.text ? el("p", { class: "qx-small", text: nx.text }) : null]));
     var better = nx && nx.conditions ? nx.conditions : [], worse = inv && inv.conditions ? inv.conditions : [];
     if (better.length || worse.length) kids.push(el("div", { class: "q-moves" }, [
-      el("div", { class: "is-up" }, [el("b", { text: "Fehlt noch – verbessert den Zustand" }), conditions(better, "Keine offene Bedingung für eine höhere Stufe.")]),
-      el("div", { class: "is-down" }, [el("b", { text: "Trägt den Zustand – fällt eine weg, verschlechtert er sich" }), conditions(worse, "Keine tragende Bedingung veröffentlicht.")])]));
+      el("div", { class: "is-up" }, [el("b", { text: "Was müsste als Nächstes passieren?" }), conditions(better, "Keine offene Bedingung für eine höhere Stufe.")]),
+      el("div", { class: "is-down" }, [el("b", { text: "Was würde das Setup ungültig machen?" }), conditions(worse, "Keine tragende Bedingung veröffentlicht.")])]));
     if (lifecycleNote) kids.push(lifecycleNote);
     kids.push(el("p", { class: "q-scenario-note", text: sc
       ? "Szenario der technischen Auswertung vom " + X.dateDe(ws.asOf) + " (" + sc.label + ", " + sc.status + "). Die Marken zeigen, wo das Szenario rechnerisch ansetzt, ungültig wird und auf Widerstand trifft – keine Empfehlung, keine Order."
