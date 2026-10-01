@@ -53,7 +53,12 @@ function createMarketstackClient(options = {}) {
     const lastEndpoint=endpointAttempts.get(ctx.endpoint),endpointGap=endpointIntervals[ctx.endpoint]||0;
     const wait = Math.max(lastAttempt === null ? 0 : Math.max(0,minIntervalMs - (now()-lastAttempt)),lastEndpoint===undefined ? 0 : Math.max(0,endpointGap-(now()-lastEndpoint)));
     if (wait) await sleep(wait);
-    stats.requestsAttempted++; stats.estimatedCreditsConsumed += cost; lastAttempt = now();endpointAttempts.set(ctx.endpoint,lastAttempt);
+    stats.requestsAttempted++; stats.estimatedCreditsConsumed += cost;
+    // Persist the conservative reservation before any external request.
+    if (options.onAttempt) {
+      try { options.onAttempt({requestsAttempted:stats.requestsAttempted,estimatedCreditsConsumed:stats.estimatedCreditsConsumed}); }
+      catch (_) { ctx.failure=error('accountingPersistenceFailed',null,'Request accounting could not be persisted','clientBudget');return {status:403,text:async()=> '{}'}; }
+    } lastAttempt = now();endpointAttempts.set(ctx.endpoint,lastAttempt);
     const requestedSymbols=ctx.params.symbols?String(ctx.params.symbols).split(',').filter(Boolean):ctx.params.ticker?[String(ctx.params.ticker)]:[];
     stats.symbolRequestUnits+=requestedSymbols.length;requestedSymbols.forEach(symbol=>seenSymbols.add(symbol));stats.symbolsProcessed=seenSymbols.size;
     const url = new URL(publicUrl); url.searchParams.set('access_key',apiKey);

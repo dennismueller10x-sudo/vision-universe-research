@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const {createMarketstackClient,estimateCredits}=require('../../providers/marketstack/client.js');
-const {createMarketstackProvider,normalizeBar,assetType}=require('../../providers/marketstack/adapter.js');
+const {createMarketstackProvider,normalizeBar,assetType,normalizeCurrency}=require('../../providers/marketstack/adapter.js');
 const response=(data,status=200,headers={})=>({status,headers:{get:k=>headers[k]??null},text:async()=>JSON.stringify(data)});
-const client=(extra={})=>createMarketstackClient({apiKey:'TEST_SECRET_NEVER_LOG',minIntervalMs:0,baseBackoffMs:0,sleep:async()=>{},...extra});
+const client=(extra={})=>createMarketstackClient({apiKey:'TESTKEY-MARKETSTACK-NEVER-LOG',minIntervalMs:0,baseBackoffMs:0,sleep:async()=>{},...extra});
 const mapping={symbol:'SAP.DE',exchange:'XETR',currency:'EUR',assetType:'equity',listingId:'listing_sap_xetr',securityId:'security_sap'};
 const row={symbol:'SAP.DE',exchange:'XETR',price_currency:'EUR',asset_type:'Stock',date:'2026-09-30T00:00:00+0000',open:200,high:210,low:199,close:208,volume:1000,adj_open:100,adj_high:105,adj_low:99.5,adj_close:104,adj_volume:2000,split_factor:2,dividend:1};
 const provider=(fetchImpl,extra={})=>createMarketstackProvider({client:client({fetchImpl}),mappings:{sap:mapping},...extra});
@@ -16,12 +16,12 @@ test('no credential means zero calls',async()=>{
  let calls=0;const c=client({apiKey:'',fetchImpl:async()=>{calls++;}});assert.equal((await c.request('/exchanges')).reason,'notConfigured');assert.equal(calls,0);
 });
 test('credentials injected only at fetch and absent from result/error/accounting',async()=>{
- const c=client({maxRetries:0,fetchImpl:async url=>{assert.match(url,/access_key=TEST_SECRET_NEVER_LOG/);throw new Error(url);}});
- const result=await c.request('/eod',{symbols:'AAPL'});assert.equal(result.reason,'networkError');assert.ok(!JSON.stringify({result,stats:c.stats(),health:c.health()}).includes('TEST_SECRET_NEVER_LOG'));
+ const c=client({maxRetries:0,fetchImpl:async url=>{assert.match(url,/access_key=TESTKEY-MARKETSTACK-NEVER-LOG/);throw new Error(url);}});
+ const result=await c.request('/eod',{symbols:'AAPL'});assert.equal(result.reason,'networkError');assert.ok(!JSON.stringify({result,stats:c.stats(),health:c.health()}).includes('TESTKEY-MARKETSTACK-NEVER-LOG'));
 });
 test('provider error text and nested credentials are sanitized',async()=>{
- const c=client({fetchImpl:async()=>response({data:[{safe:'x',access_key:'TEST_SECRET_NEVER_LOG',name:'TEST_SECRET_NEVER_LOG'}]})});
- const res=await c.request('/exchanges');assert.ok(!JSON.stringify(res).includes('TEST_SECRET_NEVER_LOG'));assert.equal(res.data.data[0].name,'[REDACTED]');
+ const c=client({fetchImpl:async()=>response({data:[{safe:'x',access_key:'TESTKEY-MARKETSTACK-NEVER-LOG',name:'TESTKEY-MARKETSTACK-NEVER-LOG'}]})});
+ const res=await c.request('/exchanges');assert.ok(!JSON.stringify(res).includes('TESTKEY-MARKETSTACK-NEVER-LOG'));assert.equal(res.data.data[0].name,'[REDACTED]');
 });
 test('ETF safety budget blocks before sending and retries reserve credits',async()=>{
  let calls=0;const c=client({maxCredits:21,fetchImpl:async()=>{calls++;return response({},503);}});
@@ -29,7 +29,7 @@ test('ETF safety budget blocks before sending and retries reserve credits',async
 });
 test('HTTP and HTTP200 monthly quotas never retry; entitlements remain explicit',async()=>{
  for(const status of [200,429]) {
-  let calls=0;const c=client({fetchImpl:async()=>{calls++;return response({error:{code:'too_many_requests',message:'TEST_SECRET_NEVER_LOG'}},status);}});
+  let calls=0;const c=client({fetchImpl:async()=>{calls++;return response({error:{code:'too_many_requests',message:'TESTKEY-MARKETSTACK-NEVER-LOG'}},status);}});
   assert.equal((await c.request('/eod')).reason,'quotaExceeded');assert.equal(calls,1);
  }
  const c=client({fetchImpl:async()=>response({error:{code:'function_access_restricted'}},403)});
@@ -105,7 +105,7 @@ test('HTTP200 internal errors retry without billing or secret claims',async()=>{
 
 test('official numeric code plus type errors classify entitlement and terminal quotas',async()=>{
  for(const type of ['usage_limit_reached','daily_limit_reached','fair_use_limit_reached','fairuse_limit_reached']) {
-  let calls=0;const c=client({fetchImpl:async()=>{calls++;return response({error:{code:104,type,info:'TEST_SECRET_NEVER_LOG'}},429);}});
+  let calls=0;const c=client({fetchImpl:async()=>{calls++;return response({error:{code:104,type,info:'TESTKEY-MARKETSTACK-NEVER-LOG'}},429);}});
   assert.equal((await c.request('/eod')).reason,'quotaExceeded');assert.equal(calls,1);
  }
  const c=client({fetchImpl:async()=>response({error:{code:105,type:'function_access_restricted'}},403)});
@@ -147,7 +147,34 @@ test('symbol accounting separates unique request symbols from retry/page units',
 });
 test('explicit IEX source mapping leaves canonical Nasdaq listing identity intact',async()=>{
  const us={...mapping,symbol:'NVDA',exchange:'XNAS',mic:'XNAS',currency:'USD',timezone:'America/New_York',intradayExchange:'IEXG'};
- let exchange=null;const p=provider(async url=>{exchange=new URL(url).searchParams.get('exchange');return response({data:[{...row,symbol:'NVDA',exchange:'IEXG',price_currency:'USD',date:'2026-09-30T00:00:00Z'}]});},{mappings:{nvda:us}});
+ let exchange=null;const p=provider(async url=>{exchange=new URL(url).searchParams.get('exchange');return response({data:[{...row,symbol:'NVDA',exchange:'IEXG',price_currency:'USD',date:'2026-09-30T00:00:00Z'}]});},{mappings:{nvda:us},intradayBarsVerified:true});
  const res=await p.getIntradayBars('nvda');assert.equal(res.available,true);assert.equal(exchange,'IEXG');assert.equal(res.data.bars[0].sourceVenue,'IEXG');assert.equal(res.data.bars[0].date,'2026-09-29');assert.equal(res.provenance.listing_exchange,'XNAS');assert.equal(res.provenance.provider_exchange,'IEXG');
  const unmapped=provider(async()=>{throw Error('must not request');},{mappings:{nvda:{...us,intradayExchange:null}}});assert.equal((await unmapped.getIntradayBars('nvda')).reason,'intradayVenueUnmapped');
+});
+
+test('measured session snapshots cannot enter technical interval bars by default',async()=>{
+ const us={...mapping,symbol:'NVDA',exchange:'XNAS',currency:'USD',timezone:'America/New_York',intradayExchange:'IEXG'};
+ const p=provider(async()=>{throw Error('must not request unverified candles');},{mappings:{nvda:us}});assert.equal((await p.getIntradayBars('nvda')).reason,'intradayBarSemanticsUnverified');
+ const q=provider(async()=>response({data:[{symbol:'NVDA',exchange:'IEXG',date:'2026-09-29T17:15:00+0000',open:231.07,high:232.815,low:229.05,close:228.86,volume:1428319,marketstack_last:229.275}]}),{mappings:{nvda:us}});
+ const quote=await q.getQuote('nvda',{frequency:'INTRADAY'});assert.equal(quote.data.last,229.275);assert.equal(quote.data.previousClose,228.86);assert.equal(quote.data.priceKind,'REFERENCE');
+ const unavailable=provider(async()=>response({data:[{symbol:'NVDA',exchange:'IEXG',date:'2026-09-29T21:30:00+0000',close:227.8,marketstack_last:null,last:null}]}),{mappings:{nvda:us}});assert.equal((await unavailable.getQuote('nvda',{frequency:'INTRADAY'})).reason,'invalidQuote');
+});
+test('attempt reservations persist before fetch and failed accounting blocks network',async()=>{let saved,calls=0;const c=client({onAttempt:r=>{saved=r;},fetchImpl:async()=>{assert.equal(saved.estimatedCreditsConsumed,20);calls++;return response({data:[]});}});await c.request('/etfholdings',{ticker:'VOO'});assert.equal(calls,1);const broken=client({onAttempt:()=>{throw Error('disk failed');},fetchImpl:async()=>{calls++;}});assert.equal((await broken.request('/exchanges')).reason,'accountingPersistenceFailed');assert.equal(calls,1);});
+
+test('currency case normalization preserves GBP versus GBp numerical units',async()=>{
+ assert.equal(normalizeCurrency('usd'),'USD');assert.equal(normalizeCurrency('gbp'),'GBP');assert.equal(normalizeCurrency('GBp'),'GBX');assert.equal(normalizeCurrency('GBX'),'GBX');assert.equal(normalizeCurrency('US Dollar'),null);
+ const us={...mapping,symbol:'AAPL',exchange:'XNAS',currency:'USD'};const usRow={...row,symbol:'AAPL',exchange:'XNAS',price_currency:'usd'};
+ assert.equal(normalizeBar('aapl',usRow,us).bar.currency,'USD');assert.equal(normalizeBar('aapl',usRow,{...us,currency:'usd'}).bar.currency,'USD');
+ const gb={...mapping,symbol:'SHEL.L',exchange:'XLON',currency:'GBP'};const penceRow={...row,symbol:'SHEL.L',exchange:'XLON',price_currency:'GBp',open:2500,high:2600,low:2400,close:2550};
+ assert.equal(normalizeBar('shell',penceRow,gb).reason,'currencyMismatch');const pence=normalizeBar('shell',penceRow,{...gb,currency:'GBX'});assert.equal(pence.bar.currency,'GBX');assert.equal(pence.bar.close,2550);
+ const p=provider(async()=>response({data:[usRow]}),{mappings:{aapl:{...us,currency:'usd'}}});assert.equal((await p.getDailyBars('aapl')).data.currency,'USD');
+});
+const holdingsPayload={basics:{fund_name:'Vanguard Index Funds',cik:'0000036405'},output:{attributes:{ticker:'VOO',isin:'US9229083632',date_report_period:'2024-12-31',end_report_period:'2024-12-31'},holdings:[{investment_security:{name:'Holding',isin:'US0000000001',percent_value:'50',value_usd:'1000'}}]}};
+test('ETF holdings provider method guards equities and canonical fund identity',async()=>{
+ let calls=0;const p=provider(async()=>{calls++;return response(holdingsPayload);});assert.equal((await p.getETFHoldings('sap')).reason,'assetTypeMismatch');assert.equal(calls,0);
+ const voo={...mapping,symbol:'VOO',exchange:'ARCX',currency:'USD',assetType:'etf',listingId:'listing_voo_arcx',securityId:'security_voo',isin:'US9229083632'};
+ const q=provider(async url=>{calls++;const u=new URL(url);assert.equal(u.pathname,'/v2/etfholdings');assert.equal(u.searchParams.get('ticker'),'VOO');return response(holdingsPayload);},{mappings:{voo}});
+ const result=await q.getETFHoldings('voo');assert.equal(result.available,true);assert.equal(result.data.securityId,'security_voo');assert.equal(result.data.listingId,'listing_voo_arcx');assert.equal(result.data.assetType,'etf');assert.equal(result.data.holdings[0].weightFraction,0.5);assert.equal(result.provenance.asOf,'2024-12-31');assert.equal(result.data.publicAvailableAt,null);assert.equal(q.stats().estimatedCreditsConsumed,20);
+ const wrong=provider(async()=>response({...holdingsPayload,output:{...holdingsPayload.output,attributes:{...holdingsPayload.output.attributes,isin:'WRONG'}}}),{mappings:{voo}});assert.equal((await wrong.getETFHoldings('voo')).reason,'isinMismatch');
+ const noListing=provider(async()=>{throw Error('must not request');},{mappings:{voo:{...voo,listingId:null}}});assert.equal((await noListing.getETFHoldings('voo')).reason,'etfIdentityRequired');
 });

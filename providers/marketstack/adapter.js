@@ -4,6 +4,7 @@
 const {createMarketstackClient}=require('./client.js');
 const Capabilities=require('../../quant/engines/capabilities.js');
 const Schema=require('../../quant/engines/schema.js');
+const {normalizeETFHoldings}=require('./etf.js');
 const PROVIDER_ID='marketstack', DATA_SOURCE_ID='ds_marketstack';
 function number(value) {
   if(value===null||value===undefined||value===''||typeof value==='boolean') return null;
@@ -15,6 +16,14 @@ function assetType(value) {
   if(['equity','stock','commonstock','commonequity'].includes(v))return 'equity';
   if(['etf','exchangetradedfund'].includes(v))return 'etf';
   return null;
+}
+function normalizeCurrency(value) {
+  if(typeof value!=='string')return null;
+  const code=value.trim();
+  // GBp is the established pence quote-unit spelling, unlike ISO GBP.
+  // Normalize spelling only; never change the numerical price scale.
+  if(code==='GBp')return 'GBX';
+  return /^[A-Za-z]{3}$/.test(code)?code.toUpperCase():null;
 }
 function validDate(value) {
   const date=String(value||'').slice(0,10);
@@ -30,17 +39,18 @@ function resolveMapping(id,options) {
   if(!entry||typeof entry!=='object')return {error:'symbolUnmapped'};
   const symbol=entry.symbol||entry.provider_symbol||entry.providerSymbol;
   const exchange=entry.provider_exchange||entry.providerExchange||entry.exchange||entry.mic;
-  const currency=entry.trading_currency||entry.tradingCurrency||entry.currency;
+  const suppliedCurrency=entry.trading_currency||entry.tradingCurrency||entry.currency;
+  const currency=normalizeCurrency(suppliedCurrency);
   const type=assetType(entry.asset_type||entry.assetType||entry.type);
-  if(!symbol||!exchange||!currency||!type)return {error:'incompleteListingIdentity'};
-  if(!/^[A-Z]{3}$/.test(currency))return {error:'invalidCurrency'};
+  if(!symbol||!exchange||!suppliedCurrency||!type)return {error:'incompleteListingIdentity'};
+  if(!currency)return {error:'invalidCurrency'};
   return {...entry,symbol,exchange,currency,assetType:type,securityId:entry.security_id||entry.securityId||id,listingId:entry.listing_id||entry.listingId||null};
 }
 function identityProblem(row,mapping,requestedSymbol,sourceExchange) {
   const symbol=row.symbol||row.ticker;
   if(symbol&&symbol!==requestedSymbol)return 'symbolMismatch';
-  if(row.price_currency&&row.price_currency!==mapping.currency)return 'currencyMismatch';
-  if(row.currency&&row.currency!==mapping.currency)return 'currencyMismatch';
+  if(row.price_currency&&normalizeCurrency(row.price_currency)!==normalizeCurrency(mapping.currency))return 'currencyMismatch';
+  if(row.currency&&normalizeCurrency(row.currency)!==normalizeCurrency(mapping.currency))return 'currencyMismatch';
   const accepted=sourceExchange?[sourceExchange,...(mapping.intradayExchangeAliases||[])]:[mapping.exchange,mapping.mic,...(mapping.exchangeAliases||[])].filter(Boolean);
   if(row.exchange&&!accepted.includes(row.exchange))return 'exchangeMismatch';
   const type=assetType(row.asset_type);
@@ -48,6 +58,8 @@ function identityProblem(row,mapping,requestedSymbol,sourceExchange) {
   return null;
 }
 function normalizeBar(id,row,mapping,options={}) {
+  const currency=normalizeCurrency(mapping.currency);
+  if(!currency)return {ok:false,reason:'invalidCurrency'};
   const intraday=options.frequency==='INTRADAY';
   const sourceExchange=intraday?(mapping.intradayExchange||mapping.intraday_exchange):null;
   if(intraday&&!sourceExchange)return {ok:false,reason:'intradayVenueUnmapped'};
@@ -73,7 +85,7 @@ function normalizeBar(id,row,mapping,options={}) {
   return {ok:true,bar:{securityId:mapping.securityId||id,listingId:mapping.listingId||null,date,open,high,low,close,volume,
     adjustedOpen:adjusted[0],adjustedHigh:adjusted[1],adjustedLow:adjusted[2],adjustedClose:options.adjustmentVerified?adjusted[3]:null,adjustedVolume,
     ...(!options.adjustmentVerified&&!intraday?{adjustmentObservation:{open:adjusted[0],high:adjusted[1],low:adjusted[2],close:adjusted[3],volume:adjustedVolume,verification:'UNVERIFIED'}}:{}),
-    splitFactor,dividend,adjustmentStatus:intraday?'raw':options.adjustmentVerified?'adjusted':'unknown',currency:mapping.currency,assetType:mapping.assetType,dataSourceId:DATA_SOURCE_ID,
+    splitFactor,dividend,adjustmentStatus:intraday?'raw':options.adjustmentVerified?'adjusted':'unknown',currency,assetType:mapping.assetType,dataSourceId:DATA_SOURCE_ID,
     ...(intraday?{timestamp:row.date}:{}),market_timestamp:row.date,provider_timestamp:row.date,retrieved_at:options.retrievedAt||null,
     sourceVenue:sourceExchange||row.exchange||mapping.exchange,data_frequency:intraday?'INTRADAY':'EOD',delay_state:intraday?'UNKNOWN':'EOD_ONLY'}};
 }
@@ -83,7 +95,7 @@ function createMarketstackProvider(options={}) {
   function unavailable(reason,message) {return {available:false,data:null,reason,message:message||reason};}
   function result(res,data,endpoint,mapping) {
     if(!res.ok)return {...unavailable(res.reason,res.message),status:res.status||null,source:res.source||null,complete:res.complete};
-    const asOf=data&&data.bars&&data.bars.length?data.bars[data.bars.length-1].date:(data&&data.timestamp)||res.retrievedAt;
+    const asOf=data&&data.bars&&data.bars.length?data.bars[data.bars.length-1].date:(data&&(data.timestamp||data.reportDate))||res.retrievedAt;
     return {available:true,data,fromCache:!!res.fromCache,stale:false,complete:res.complete!==false,
       provenance:{...Schema.makeProvenance({provider:PROVIDER_ID,source:'Marketstack',asOf:String(asOf).slice(0,10),ingestedAt:res.retrievedAt,dataSnapshotId:'ingestion_marketstack_'+res.retrievedAt,isMock:false,adjustmentStatus:options.adjustmentVerified?'adjusted':'unknown'}),
         provider_symbol:mapping.symbol,provider_exchange:endpoint.startsWith('/intraday')?(mapping.intradayExchange||mapping.intraday_exchange):mapping.exchange,listing_exchange:mapping.exchange,retrieved_at:res.retrievedAt,endpoint}};
@@ -92,6 +104,9 @@ function createMarketstackProvider(options={}) {
     const mapping=resolveMapping(id,options);if(mapping.error)return unavailable(mapping.error);
     if(intraday&&!(mapping.intradayExchange||mapping.intraday_exchange))return unavailable('intradayVenueUnmapped');
     if(intraday&&!(mapping.timezone||mapping.timeZone||mapping.exchangeTimezone))return unavailable('exchangeTimezoneMissing');
+    // Measured IEX-derived payloads contain session OHLC/cumulative volume and
+    // a prior close. They are not established interval candles.
+    if(intraday&&options.intradayBarsVerified!==true)return unavailable('intradayBarSemanticsUnverified');
     const endpoint=intraday?'/intraday':'/eod';
     const symbol=intraday?(mapping.intradaySymbol||mapping.symbol.replace(/\./g,'-')):mapping.symbol;
     const params={symbols:symbol,exchange:intraday?(mapping.intradayExchange||mapping.intraday_exchange):mapping.exchange,sort:'ASC',limit:1000};
@@ -134,9 +149,9 @@ function createMarketstackProvider(options={}) {
       const row=rows[0],problem=identityProblem(row,mapping,symbol,sourceExchange);if(problem)return unavailable(problem);
       if(frequency==='SNAPSHOT'&&row.exchange_code&&!([mapping.exchange,mapping.mic,...(mapping.exchangeAliases||[])].includes(row.exchange_code)))return unavailable('exchangeMismatch');
       const timestamp=frequency==='SNAPSHOT'?row.trade_last:row.date;
-      const last=frequency==='SNAPSHOT'?number(row.price):number(frequency==='INTRADAY'?row.marketstack_last??row.close:row.close);
+      const last=frequency==='SNAPSHOT'?number(row.price):number(frequency==='INTRADAY'?row.marketstack_last??row.last:row.close);
       if(last===null||last<=0||!timestamp||!Number.isFinite(Date.parse(timestamp)))return unavailable('invalidQuote');
-      return result(res,{securityId:mapping.securityId,listingId:mapping.listingId,providerSymbol:mapping.symbol,last,previousClose:null,
+      return result(res,{securityId:mapping.securityId,listingId:mapping.listingId,providerSymbol:mapping.symbol,last,previousClose:frequency==='INTRADAY'?number(row.close):null,...(frequency==='INTRADAY'?{referencePrice:number(row.marketstack_last),priceKind:row.marketstack_last!==null&&row.marketstack_last!==undefined?'REFERENCE':'LAST_TRADE'}:{}),
         open:number(row.open),high:number(row.high),low:number(row.low),volume:number(row.volume),timestamp,currency:mapping.currency,dataSourceId:DATA_SOURCE_ID,
         market_timestamp:timestamp,provider_timestamp:timestamp,retrieved_at:res.retrievedAt,data_frequency:frequency==='SNAPSHOT'?'SNAPSHOT':frequency,
         sourceVenue:sourceExchange||row.exchange||mapping.exchange,delay_state:frequency==='EOD'?'EOD_ONLY':'UNKNOWN'},endpoint,mapping);
@@ -155,6 +170,21 @@ function createMarketstackProvider(options={}) {
       return result(res,{securityId:mapping.securityId,listingId:mapping.listingId,name:row.name||null,isin:row.isin||null,providerSymbol:mapping.symbol,exchange:mapping.exchange,currency:mapping.currency,assetType:mapping.assetType,
         coverage:{price_eod:row.has_eod===true?'PARTIAL':row.has_eod===false?'NONE':'UNKNOWN',intraday:row.has_intraday===true?'PARTIAL':row.has_intraday===false?'NONE':'UNKNOWN',realtime:'UNKNOWN'}},endpoint,mapping);
     },
+    async getETFHoldings(id,opts={}) {
+      const mapping=resolveMapping(id,options);if(mapping.error)return unavailable(mapping.error);
+      if(mapping.assetType!=='etf')return unavailable('assetTypeMismatch');
+      if(!mapping.listingId)return unavailable('etfIdentityRequired');
+      const endpoint='/etfholdings';
+      const ticker=mapping.holdingsSymbol||mapping.symbol;
+      const params={ticker,limit:opts.limit||1000};
+      if(opts.from)params.date_from=opts.from;if(opts.to)params.date_to=opts.to;
+      const res=await client.request(endpoint,params);if(!res.ok)return result(res,null,endpoint,mapping);
+      const normalized=normalizeETFHoldings(res.data,{...mapping,symbol:ticker,provider_symbol:ticker,assetType:'ETF'},{retrievedAt:res.retrievedAt});
+      if(!normalized.ok)return unavailable(normalized.reason);
+      const envelope=result(res,normalized.data,endpoint,mapping);
+      envelope.provenance.provider_symbol=ticker;
+      return envelope;
+    },
     async getCorporateActions(id,opts={}) {
       const res=await api.getDailyBars(id,opts);if(!res.available)return res;
       const actions=[];
@@ -168,4 +198,4 @@ function createMarketstackProvider(options={}) {
     stats:()=>client.stats(),quota:()=>client.stats(),rawHealth:()=>client.health(),clearCache:()=>client.clearCache()};
   return api;
 }
-module.exports={createMarketstackProvider,normalizeBar,resolveMapping,assetType,number,PROVIDER_ID,DATA_SOURCE_ID};
+module.exports={createMarketstackProvider,normalizeBar,resolveMapping,assetType,normalizeCurrency,number,PROVIDER_ID,DATA_SOURCE_ID};
