@@ -49485,6 +49485,89 @@
           "label": "finalization-us-special-dividend-control",
           "estimatedCredits": 1,
           "region": "USA"
+        },
+        {
+          "endpoint": "eod/latest",
+          "params": {
+            "symbols": "ASM,AUST,BTG,CMCL,EQX,GLDG,HSLV,ISOU,MINE,MTA,NEWP,OBE,QNC,SACH,SLI,SLSR,SVM,TGB,TII,URG,USAS",
+            "exchange": "XASE",
+            "limit": 1000
+          },
+          "label": "us-current-common-refined-gap-coverage",
+          "estimatedCredits": 21,
+          "region": "USA",
+          "targetSecurityIds": [
+            "ref_ASM",
+            "ref_AUST",
+            "ref_BTG",
+            "ref_CMCL",
+            "ref_EQX",
+            "ref_GLDG",
+            "ref_HSLV",
+            "ref_ISOU",
+            "ref_MINE",
+            "ref_MTA",
+            "ref_NEWP",
+            "ref_OBE",
+            "ref_QNC",
+            "ref_SACH",
+            "ref_SLI",
+            "ref_SLSR",
+            "ref_SVM",
+            "ref_TGB",
+            "ref_TII",
+            "ref_URG",
+            "ref_USAS"
+          ]
+        },
+        {
+          "endpoint": "eod/latest",
+          "params": {
+            "symbols": "ACB,AEC,AUGO,AVX,AZ,BCTX,BMM,CGC,CMND,CULP,FRTT,HIVE,PBM,STKE,TRI",
+            "exchange": "XNAS",
+            "limit": 1000
+          },
+          "label": "us-current-common-refined-gap-coverage",
+          "estimatedCredits": 15,
+          "region": "USA",
+          "targetSecurityIds": [
+            "ref_ACB",
+            "ref_AEC",
+            "ref_AUGO",
+            "ref_AVX",
+            "ref_AZ",
+            "ref_BCTX",
+            "ref_BMM",
+            "ref_CGC",
+            "ref_CMND",
+            "ref_CULP",
+            "ref_FRTT",
+            "ref_HIVE",
+            "ref_PBM",
+            "ref_STKE",
+            "ref_TRI"
+          ]
+        },
+        {
+          "endpoint": "eod/latest",
+          "params": {
+            "symbols": "ADCT,ARIS,BWLP,ERO,GPOR,HAFN,SOBO,SPNT",
+            "exchange": "XNYS",
+            "limit": 1000
+          },
+          "label": "us-current-common-refined-gap-coverage",
+          "estimatedCredits": 8,
+          "region": "USA",
+          "targetSecurityIds": [
+            "ref_ADCT",
+            "ref_ARIS",
+            "ref_BWLP",
+            "ref_ERO",
+            "ref_GPOR",
+            "ref_HAFN",
+            "ref_SOBO",
+            "ref_SPNT"
+          ]
         }
       ],
       "retryTransientFailures": true,
