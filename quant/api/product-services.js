@@ -26,6 +26,7 @@ const IntelligenceBrief=typeof module!=='undefined'&&module.exports?require('../
 const Classification=typeof module!=='undefined'&&module.exports?require('../engines/instrument-classification.js'):g.VUInstrumentClassification;
 const ChangeEngine=typeof module!=='undefined'&&module.exports?require('../engines/change-engine.js'):g.VUChangeEngine;
 const HistoricalCases=typeof module!=='undefined'&&module.exports?require('../engines/historical-cases.js'):g.VUHistoricalCases;
+const QuantRadar=typeof module!=='undefined'&&module.exports?require('../engines/quant-radar.js'):g.VUQuantRadar;
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
@@ -453,6 +454,45 @@ function create(options){
     mappingVersion:index.mappingVersion,methodologyVersion:index.methodologyVersion,
     approval:index.approval,universe:index.universe,classified:index.classified,
     unclassified:index.unclassified,states};
+  }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+ }
+ /* QUANT RADAR (quant-radar-1.0.0): was ist heute neu? Gelesen wird nur das
+  * materialisierte Artefakt; jedes Ereignis wird gegen den Alert-Vertrag
+  * geprueft, ein verletztes faellt heraus statt angezeigt zu werden. */
+ let radarPromise=null;
+ async function getQuantRadar(){
+  if(!QuantRadar)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+  if(!radarPromise)radarPromise=(async()=>{
+   try{
+    const r=await compressedJSON('/quant/data/product/radar-v1.json.gz');
+    if(r?.schemaVersion!=='quant-radar-1.0.0'||r.engineVersion!==QuantRadar.VERSION||!validDate(r.asOf))return {state:'UNAVAILABLE',reason:'INVALID_RADAR_ARTIFACT'};
+    const events=(r.events||[]).filter(e=>QuantRadar.eventViolations(e).length===0);
+    const ok=new Set(events.map(e=>e.id));
+    const cards=(r.cards||[]).map(c=>({...c,events:(c.events||[]).filter(e=>ok.has(e.id))})).filter(c=>c.events.length);
+    return {state:'AVAILABLE',asOf:r.asOf,generatedAt:r.generatedAt,sources:r.sources,eventTypes:r.eventTypes,priorityRule:r.priorityRule,
+     summary:r.summary,caveats:r.caveats,measures:r.measures,events,cards,dropped:(r.events||[]).length-events.length};
+   }catch{radarPromise=null;return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
+  })();
+  return radarPromise;
+ }
+ /* Lebenszyklus eines Titels: aktueller Setup-Zustand, seit wann, vorher. */
+ let lifecyclePromise=null;
+ async function getSetupLifecycle(ticker){
+  ticker=String(ticker||'').toUpperCase();
+  if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
+  if(!lifecyclePromise)lifecyclePromise=compressedJSON('/quant/data/product/setup-lifecycle-v1.json.gz').catch(()=>{lifecyclePromise=null;return null;});
+  const l=await lifecyclePromise;
+  if(!l||l.schemaVersion!=='setup-lifecycle-1.0.0')return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+  const row=l.rows?.[ticker];
+  if(!row)return {state:'UNAVAILABLE',reason:'NOT_IN_SETUP_UNIVERSE',asOf:l.asOf};
+  return {state:'AVAILABLE',ticker,asOf:l.asOf,snapshots:l.snapshots,lifecycle:l.lifecycle,pathTier:l.pathTier,
+   current:row[0],since:row[1],sinceIsLowerBound:row[2]===1,previous:row[3],previousAsOf:row[4]};
+ }
+ /* Stand der vier Evidenzarten - veroeffentlicht oder mit gemessenen Gates. */
+ async function getEvidenceStatus(){
+  try{const s=await load('/quant/data/product/evidence-status-v1.json');
+   if(s?.schemaVersion!=='evidence-status-1.0.0'||!Array.isArray(s.kinds))return {state:'UNAVAILABLE',reason:'INVALID_EVIDENCE_STATUS'};
+   return {state:'AVAILABLE',...s};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
  /* VU Pattern Match. Welche der vorregistrierten Muster dieser Titel
@@ -1207,7 +1247,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getRecipes,getDiscover,screen,workspaces};
+ return {searchInstruments,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getSetupLifecycle,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

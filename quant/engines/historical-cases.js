@@ -55,14 +55,21 @@
   var isNode = typeof module !== "undefined" && module.exports;
   var PatternResearch = isNode ? require("./pattern-research.js") : global.VUPatternResearch;
 
-  var VERSION = "historical-cases-1.0.0";
-  /* Die Zeitfenster in Wochen. Sie folgen der Studie: 13/26/52 Wochen. */
+  var VERSION = "historical-cases-1.1.0";
+  /* Die Zeitfenster in Wochen. Sie folgen der Studie: 13/26/52 Wochen.
+     1.1.0 (01.10.2026): 4 Wochen ("1 Monat") kommen dazu - dieselbe
+     Rechnung (`outcomeAfter`), nur ein kuerzeres Fenster. */
   var HORIZONS = [
+    { id: "m1", weeks: 4, label: "1 Monat" },
     { id: "m3", weeks: 13, label: "3 Monate" },
     { id: "m6", weeks: 26, label: "6 Monate" },
     { id: "m12", weeks: 52, label: "12 Monate" }
   ];
   var MIN_EPISODES = 10;
+  /* Ab 30 abgeschlossenen Faellen heisst die Evidenz "breit", darunter
+     "duenn". Eine Stufe, keine Note: sie sagt nur, auf wie vielen Faellen
+     die Zahlen stehen (versioniert mit dieser Datei). */
+  var BROAD_EPISODES = 30;
   /* Vor Woche 52 kennt `featuresAt` kein Jahreshoch und keine Volatilität.
      Frueher zu beginnen hiesse, Bedingungen auf halben Fenstern zu pruefen. */
   var WARMUP_WEEKS = 52;
@@ -80,6 +87,35 @@
     var s = values.slice().sort(function (a, b) { return a - b; });
     var m = s.length >> 1;
     return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  }
+  function mean(values) {
+    if (!values.length) return null;
+    var sum = 0;
+    for (var i = 0; i < values.length; i++) sum += values[i];
+    return sum / values.length;
+  }
+  /* Quantil durch lineare Interpolation auf der sortierten Reihe. */
+  function quantile(values, q) {
+    if (!values.length) return null;
+    var s = values.slice().sort(function (a, b) { return a - b; });
+    var pos = (s.length - 1) * q, lo = Math.floor(pos), hi = Math.ceil(pos);
+    return s[lo] + (s[hi] - s[lo]) * (pos - lo);
+  }
+  /* Verteilung der Ausgaenge in festen Klassen (Prozentpunkte), damit die
+     Oberflaeche zeigen kann, wie breit die Faelle streuen - ohne eine
+     Kurve zu glaetten, die es nicht gibt. */
+  var BUCKETS = [-Infinity, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, Infinity];
+  function distribution(values) {
+    var counts = [];
+    for (var i = 0; i < BUCKETS.length - 1; i++) counts.push(0);
+    for (var v = 0; v < values.length; v++) {
+      for (var b = 0; b < BUCKETS.length - 1; b++) {
+        if (values[v] >= BUCKETS[b] && values[v] < BUCKETS[b + 1]) { counts[b] += 1; break; }
+      }
+    }
+    return counts.map(function (n, i) {
+      return { from: finite(BUCKETS[i]) ? BUCKETS[i] : null, to: finite(BUCKETS[i + 1]) ? BUCKETS[i + 1] : null, count: n };
+    });
   }
 
   /* ---------------------------------------------------------------------
@@ -168,12 +204,13 @@
 
     var horizons = {}, anyMeasured = false;
     for (var q = 0; q < HORIZONS.length; q++) {
-      var horizon = HORIZONS[q], returns = [], drawdowns = [], open = 0, lastIndex = null;
+      var horizon = HORIZONS[q], returns = [], drawdowns = [], gains = [], open = 0, lastIndex = null;
       for (var e = 0; e < episodes.length; e++) {
         var outcome = PatternResearch.outcomeAfter(closes, episodes[e], horizon.weeks);
         if (outcome.state !== "AVAILABLE") { open += 1; continue; }
         returns.push(outcome.forwardReturn);
         if (finite(outcome.maxDrawdownWithinHorizon)) drawdowns.push(outcome.maxDrawdownWithinHorizon);
+        if (finite(outcome.maxForwardReturn)) gains.push(outcome.maxForwardReturn);
         lastIndex = episodes[e];
       }
       var enough = returns.length >= MIN_EPISODES;
@@ -190,7 +227,21 @@
         medianReturn: enough ? median(returns) : null,
         positive: enough ? positive : null,
         medianDrawdown: enough && drawdowns.length ? median(drawdowns) : null,
-        lastCaseDate: enough && lastIndex !== null ? dates[lastIndex] : null
+        lastCaseDate: enough && lastIndex !== null ? dates[lastIndex] : null,
+        /* 1.1.0 - dieselben Faelle, weitere Lesarten. Alles hinter derselben
+           Schwelle; unter ihr steht nichts davon im Objekt. */
+        positiveShare: enough ? positive / returns.length : null,
+        meanReturn: enough ? mean(returns) : null,
+        worstReturn: enough ? Math.min.apply(null, returns) : null,
+        bestReturn: enough ? Math.max.apply(null, returns) : null,
+        quartiles: enough ? [quantile(returns, 0.25), quantile(returns, 0.5), quantile(returns, 0.75)] : null,
+        worstDrawdown: enough && drawdowns.length ? Math.min.apply(null, drawdowns) : null,
+        medianMaxGain: enough && gains.length ? median(gains) : null,
+        /* Chance/Risiko: typischer groesster Anstieg im Fenster geteilt durch
+           den typischen groessten Rueckgang (beides Mediane). Kein Kursziel. */
+        chanceRisk: enough && gains.length && drawdowns.length && median(drawdowns) < 0 ? median(gains) / Math.abs(median(drawdowns)) : null,
+        distribution: enough ? distribution(returns) : null,
+        evidence: enough ? (returns.length >= BROAD_EPISODES ? "BROAD" : "THIN") : "WITHHELD"
       };
     }
 
@@ -210,6 +261,7 @@
     VERSION: VERSION,
     HORIZONS: HORIZONS.map(function (h) { return { id: h.id, weeks: h.weeks, label: h.label }; }),
     MIN_EPISODES: MIN_EPISODES,
+    BROAD_EPISODES: BROAD_EPISODES,
     WARMUP_WEEKS: WARMUP_WEEKS,
     LIMITS: LIMITS.slice(),
     vocabulary: vocabulary,
