@@ -48,7 +48,7 @@ async function main() {
   const routes = [
     ['home', '/supertrader/', '.st-hero h1'],
     ['signals', '/supertrader/signals/', '.st-chips button'],
-    ['signals-canslim', '/supertrader/signals/?method=CANSLIM', '.st-card2.partial'],
+    ['signals-canslim', '/supertrader/signals/?method=CANSLIM', '.st-card2.partial, .st-emptybox'],
     ['strategies', '/supertrader/strategies/', '.st-cmp'],
     ['backtests', '/supertrader/backtests/', '.st-btrow'],
     ['sources', '/supertrader/sources/', '.st-det'],
@@ -61,6 +61,8 @@ async function main() {
   if (fs.existsSync(path.join(SITE, 'supertrader/data/replay.json'))) routes.push(['replay', '/supertrader/beispiel/', '.st-demo-banner']);
   const watchSym = (signals.strategies.DONCHIAN_TURTLE?.open || []).find((x) => !x.entry)?.symbol;
   if (watchSym) routes.push(['lens-watch', `/supertrader/stock/${watchSym}/`, '.st-lensblock']);
+  const posSym = Object.values(signals.strategies).flatMap((st) => st.open).find((x) => x.entry)?.symbol;
+  if (posSym) routes.push(['lens-position', `/supertrader/stock/${posSym}/`, '.st-lensblock .st-next']);
 
   const browser = await chromium.launch({ executablePath: args.chromium || undefined });
   const pw = loadPlaywright();
@@ -114,7 +116,7 @@ async function main() {
       if (m.partialAsSignal) errors.push('Teiltreffer als CAN-SLIM-Signal bezeichnet');
       if (m.watchAsPrepared) errors.push(`${m.watchAsPrepared} Donchian-Eintraege als „vorbereitet“ beschriftet (Beobachtungsliste)`);
       if (name === 'home' && signals.strategies.DONCHIAN_TURTLE?.open?.length && !m.watchTile) errors.push('Beobachtungsliste fehlt auf der Startseite');
-      if (['home', 'signals', 'lens', 'lens-watch', 'backtests', 'replay'].includes(name) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
+      if (['home', 'signals', 'lens', 'lens-watch', 'lens-position', 'backtests', 'replay'].includes(name) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
       if (name === 'replay' && !m.replayBanner) errors.push('Replay ohne Kennzeichnung „kein aktuelles Signal“');
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);

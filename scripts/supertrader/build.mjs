@@ -717,7 +717,7 @@ export function planOf(s) {
   } else if (s.state === 'TRIGGERED') {
     text = 'Modelleinstieg zur nächsten Eröffnung (keine reale Order). Bei Eröffnung auf/unter dem Stop oder außerhalb der Gap-Regel kein Einstieg.'; ruleId = 'LC-MODEL-ENTRY';
   } else if (s.state === 'ACTIVE' || s.state === 'WARNING') {
-    text = `Modellposition halten, solange keine Ausstiegsregel greift. Stop ${fmtP(s.stop)} (${s.stopRuleId}). ${p.exitSummary}.`; ruleId = s.stopRuleId;
+    text = `Modellposition halten, solange keine Ausstiegsregel greift. Stop ${fmtP(s.stop)}. ${p.exitSummary}.`; ruleId = s.stopRuleId;
   } else if (s.state === 'EXIT') {
     text = 'Ausstieg ausgelöst — Modellausführung zur nächsten Eröffnung.'; ruleId = last.ruleId;
   } else if (s.state === 'CLOSED') {

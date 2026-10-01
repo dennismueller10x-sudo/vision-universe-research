@@ -129,7 +129,7 @@
     var toTrig = trig / last - 1, toInv = inv / last - 1;
     return h('div', { class: 'st-bar2', role: 'img', 'aria-label': 'Kurs ' + num(last) + ', Trigger ' + num(trig) + ' (' + pct(toTrig, 1, true) + '), Ungültig unter ' + num(inv) }, [
       h('div', { class: 'track' }, [h('i', { class: 'fill', style: { width: at + '%' } }), h('i', { class: 'm now', style: { left: at + '%' } })]),
-      h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Ungültig ' + num(inv) }), h('span', { class: 'now', text: toTrig < 0.0005 ? 'am Trigger' : pct(toTrig, 1, true) + ' bis Trigger' }), h('span', { class: 'trig', text: 'Trigger ' + num(trig) })]),
+      h('div', { class: 'lbl' }, [h('span', { class: 'bad', text: 'Ungültig ' + num(inv) }), h('span', { class: 'now', text: s.state === 'TRIGGERED' ? 'Einstieg zur nächsten Eröffnung' : toTrig < 0.0005 ? 'am Trigger' : pct(toTrig, 1, true) + ' bis Trigger' }), h('span', { class: 'trig', text: 'Trigger ' + num(trig) })]),
     ]);
   }
 
@@ -279,7 +279,7 @@
     ];
     main.appendChild(h('div', { class: 'st-kpis' }, tiles.map(function (t) { return h('a', { class: 'st-kpi', 'data-p': t[2], href: BASE + 'signals/?phase=' + t[2] }, [h('strong', { text: t[0] }), h('span', { text: t[1] }), t[3] ? h('em', { text: t[3] }) : null]); })));
     if (!positions.length && !closed) main.appendChild(h('p', { class: 'st-hint', text: 'Noch keine Modellposition: Seit Beginn des Live-Protokolls (' + dateDe(firstLive(sig)) + ') wurde kein Einstieg per Schlusskurs bestätigt. Supertrader zeigt das so, statt Ergebnisse zu erfinden.' }));
-    if (!positions.length && !closed && D.replay) main.appendChild(replayTeaser(D.replay));
+    if (D.replay) main.appendChild(replayTeaser(D.replay));
 
     // Methoden
     main.appendChild(sec('Methoden', [
@@ -287,6 +287,15 @@
       pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung (keine Signale): ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null,
     ], { kicker: live.length + ' live · ' + partial.length + ' Teilprüfung', more: more(BASE + 'strategies/', 'Vergleichen') }));
 
+    // Laufende Modellpositionen (simuliert, keine Orders)
+    if (positions.length) {
+      var posSorted = positions.slice().sort(function (a, b) { return (b.entry.date || '').localeCompare(a.entry.date || '') || a.symbol.localeCompare(b.symbol); });
+      var pm = {}; positions.forEach(function (x) { pm[x.strategyId] = (pm[x.strategyId] || 0) + 1; });
+      main.appendChild(sec('Modellpositionen', [
+        h('p', { class: 'st-hint', text: Object.keys(pm).map(function (k) { return pm[k] + ' ' + (S[k] ? S[k].world_name : k); }).join(' · ') + '. Einstieg jeweils zur Eröffnung nach einem bestätigten Tagesschluss – Simulation, keine Orders.' }),
+        h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
+      ], { kicker: 'Live seit ' + dateDe(firstLive(sig)), more: more(BASE + 'signals/?phase=pos', 'Alle ' + positions.length) }));
+    }
     // Nahe am Trigger (Darvas nur A)
     var near = open.filter(function (s) { return (s.state === 'ENTRY_READY' || s.state === 'TRIGGERED') && !isB(s) && !isWatch(s); }).sort(sortSignals);
     var perMethod = {}, pick = [];
@@ -815,7 +824,7 @@
     if (!e) return null;
     return h('a', { class: 'st-replay-t', href: BASE + 'beispiel/' }, [
       h('div', { class: 'r1' }, [h('span', { class: 'st-tag', 'data-t': 'mute', text: 'Historisches Beispiel' }), h('span', { class: 'm', text: e.symbol + ' · ' + dateShort(e.result.entry.date) + e.result.entry.date.slice(0, 4) })]),
-      h('p', { text: 'Noch kein bestätigter Live-Einstieg? So läuft ein Zyklus ab: Vorbereitung → Bestätigung per Schlusskurs → Einstieg zur nächsten Eröffnung → Stop → Ausstieg. Echte Kurse, kein aktuelles Signal.' }),
+      h('p', { text: 'So läuft ein Zyklus ab: Vorbereitung → Bestätigung per Schlusskurs → Einstieg zur nächsten Eröffnung → Stop → Ausstieg. Echte Kurse, kein aktuelles Signal.' }),
     ]);
   }
   var KIND_LABEL = { CHANNEL_EXIT: 'Ausstieg über die Kanalregel', STOP: 'Ausstieg über den Stop' };
