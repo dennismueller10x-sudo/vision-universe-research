@@ -64,10 +64,10 @@ jobs:
           base = 'https://api.cloudflare.com/client/v4'
           prefix = f'/accounts/{account}/workers/scripts/{worker}'
 
-          def api(path, method='GET', body=None):
-              data = json.dumps(body).encode() if body is not None else None
+          def api(path, method='GET', body=None, content_type='application/json'):
+              data = body if isinstance(body, bytes) else json.dumps(body).encode() if body is not None else None
               request = urllib.request.Request(base + path, data=data, method=method,
-                  headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
+                  headers={'Authorization': 'Bearer ' + token, 'Content-Type': content_type})
               try:
                   with urllib.request.urlopen(request, timeout=60) as response:
                       result = json.load(response)
@@ -81,6 +81,7 @@ jobs:
 
           scripts = api(f'/accounts/{account}/workers/scripts')
           exists = any(item.get('id') == worker for item in scripts)
+          status['worker_previously_existed'] = exists
           previous_secrets = set()
           if exists:
               previous_secrets = {item['name'] for item in api(prefix + '/secrets')}
@@ -90,16 +91,39 @@ jobs:
               result = subprocess.run(['npx', '--yes', 'wrangler@4.145.0', *arguments, '--config', 'wrangler.toml'],
                   input='', text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
               if result.returncode:
-                  finish('Research-only Wrangler operation failed: ' + ' '.join(arguments[:2]), True)
+                  diagnostic = result.stdout + result.stderr
+                  codes = sorted(set(re.findall(r'\[code:\s*(\d+)\]', diagnostic)))
+                  categories = [label for label, pattern in [
+                      ('first-deploy-required', r"(?:deploy|deployed).{0,80}(?:first|before)|(?:not|never|hasn.t).{0,30}deployed"),
+                      ('authentication', r'authentication|authenticate|unauthorized'),
+                      ('permissions', r'permission|forbidden'),
+                      ('missing-worker', r'Worker.{0,30}(?:not found|does not exist)'),
+                      ('compatibility-date', r'compatibility.{0,30}(?:date|future)'),
+                  ] if re.search(pattern, diagnostic, re.I)]
+                  finish('Research-only Wrangler operation failed: ' + ' '.join(arguments[:2]) +
+                      '; exit=' + str(result.returncode) + '; codes=' + ','.join(codes) + '; categories=' + ','.join(categories), True)
               return result.stdout
 
           # Version commands deploy only this script and do not publish the route.
           # This lets us stop for a missing password without taking Research offline.
-          uploaded = wrangler('versions', 'upload', '--keep-vars', '--message', 'Deploy reviewed Research gate from PR 328')
-          match = re.search(r'Worker Version ID:\s*([0-9a-f-]{36})', uploaded, re.I)
-          if not match:
-              finish('Uploaded version could not be identified safely', True)
-          wrangler('versions', 'deploy', match[1] + '@100', '--yes')
+          if exists:
+              uploaded = wrangler('versions', 'upload', '--keep-vars', '--message', 'Deploy reviewed Research gate from PR 328')
+              match = re.search(r'Worker Version ID:\s*([0-9a-f-]{36})', uploaded, re.I)
+              if not match:
+                  finish('Uploaded version could not be identified safely', True)
+              wrangler('versions', 'deploy', match[1] + '@100', '--yes')
+          else:
+              # Wrangler serializes the exact reviewed config and bundle. Upload
+              # its multipart artifact to this script only; routes are a separate
+              # API operation and remain untouched until the password is ready.
+              wrangler('deploy', '--dry-run', '--outfile', '/tmp/research-worker-upload.multipart')
+              bundle = Path('/tmp/research-worker-upload.multipart').read_bytes()
+              boundary = bundle.split(b'\r\n', 1)[0][2:].decode('ascii')
+              if not re.fullmatch(r'[A-Za-z0-9_-]+', boundary):
+                  finish('Unexpected upload boundary', True)
+              api(prefix, 'PUT', bundle, 'multipart/form-data; boundary=' + boundary)
+              status['worker_deployed'] = True
+              api(prefix + '/subdomain', 'POST', {'enabled': False, 'previews_enabled': False})
           status['worker_deployed'] = True
           current_secrets = {item['name'] for item in api(prefix + '/secrets')}
           if not previous_secrets.issubset(current_secrets):
