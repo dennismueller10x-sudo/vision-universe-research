@@ -37,6 +37,7 @@ const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 const Master = require(join(root, "quant", "engines", "company-master.js"));
+const GlobalEquities = require(join(root, "quant", "engines", "global-equities.js"));
 
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
@@ -72,7 +73,8 @@ function loadMaster() {
   for (const f of readdirSync(INSTRUMENT_DIR).filter((f) => f.endsWith(".json")).sort()) {
     for (const r of readJSON(join(INSTRUMENT_DIR, f)).instruments || []) out.push(r);
   }
-  return out;
+  const globalFile = join(root, "quant/data/universe/global-equities.json");
+  return existsSync(globalFile) ? GlobalEquities.overlay(out, readJSON(globalFile)) : out;
 }
 
 /* --------------------------------------------------------------- Belege
@@ -440,6 +442,8 @@ function main() {
     const caps = capsByInstrument.get(inst.instrumentId);
     const flags = Master.CAPABILITIES.filter((c) => caps.levels[c] === "DELIVERED");
     const entry = Master.searchEntry(inst, { capabilities: flags });
+    if (inst.companyId) Object.assign(entry, { cc: inst.companyCountry, r: inst.region,
+      u: inst.tradingCurrency, ci: inst.companyId, li: inst.listingId });
     entries++;
 
     const sk = Master.shardKey(inst.symbol);

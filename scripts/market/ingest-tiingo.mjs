@@ -207,12 +207,12 @@ const registry = SymbolMapping.createRegistry(
   SECURITIES.map((s) => ({
     securityId: s.securityId,
     providerId: Tiingo.PROVIDER_ID,
-    providerSymbol: s.ticker,
+    providerSymbol: s.providerSymbol || s.ticker,
     ticker: s.ticker,
     exchange: s.exchange,
     mic: s.mic,
-    currency: "USD",
-    country: "US",
+    currency: s.tradingCurrency || s.currency || "USD",
+    country: s.listingCountry || s.country || "US",
     confidence: "inferred",
     note: "Aus der Testuniversum-Konfiguration abgeleitet."
   }))
@@ -606,7 +606,7 @@ for (const security of SECURITIES) {
     name: security.name,
     exchange: security.exchange,
     mic: security.mic,
-    currency: "USD",
+    currency: res.data.currency,
     adjustmentStatus: deklaration,
     /* Immer gesetzt, auch im Regelfall auf null: mergeBars uebernimmt
        vorhandene Felder des Bestands. Ohne das ausdrueckliche Zuruecksetzen

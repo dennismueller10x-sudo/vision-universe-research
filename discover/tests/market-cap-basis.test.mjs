@@ -10,7 +10,8 @@ import { join } from 'node:path';
 const dir = new URL('../data/stocks/US_REAL/', import.meta.url).pathname;
 const load = (s) => JSON.parse(readFileSync(join(dir, s + '.json'), 'utf8'));
 const has = (s) => existsSync(join(dir, s + '.json'));
-const REASONS = new Set(['NON_USD_REPORTING', 'FOREIGN_FILER', 'IMPLAUSIBLE_SHARE_BASIS', 'NO_CURRENT_SHARE_COUNT']);
+const REASONS = new Set(['NON_USD_REPORTING', 'FOREIGN_FILER', 'IMPLAUSIBLE_SHARE_BASIS', 'NO_CURRENT_SHARE_COUNT',
+  'SHARE_BASIS_UNVERIFIED', 'ADR_RATIO_UNVERIFIED', 'REPORTING_TRADING_CURRENCY_MISMATCH']);
 
 test('Marktkapitalisierung nur aus passender, aktueller Aktienbasis', () => {
   let checked = 0;

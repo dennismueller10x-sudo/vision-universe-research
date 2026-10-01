@@ -591,7 +591,11 @@ function main() {
               `${sync.counts.reactivated} reaktiviert  (${syncMs} ms)`);
 
   const rules = CONFIG.publish.rules;
-  const published = sync.instruments.filter((i) => publishable(i, rules));
+  const publishedBase = sync.instruments.filter((i) => publishable(i, rules));
+  const globalPath = join(root, "quant/data/universe/global-equities.json");
+  const published = existsSync(globalPath)
+    ? require(join(root, "quant/engines/global-equities.js")).overlay(publishedBase, JSON.parse(readFileSync(globalPath, "utf8")))
+    : publishedBase;
   const withheld = sync.instruments.length - published.length;
   console.log(`  Auslieferung: ${published.length} (${withheld} bleiben in der Arbeitsablage)`);
 

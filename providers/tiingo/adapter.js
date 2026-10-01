@@ -481,6 +481,14 @@ function createTiingoProvider(options) {
     return symbols.toProvider(PROVIDER_ID, securityId);
   }
 
+  function iexVenueUnsupported(mapping) {
+    const e = mapping.entry;
+    if (!e) return false; // preserve existing direct-symbol probes
+    if (e.currency && e.currency !== "USD") return true;
+    if (e.mic && !["XNYS", "XNAS", "ARCX", "XASE", "BATS", "IEXG"].includes(e.mic)) return true;
+    return e.country && e.country !== "US";
+  }
+
   function num(v) {
     if (v === null || v === undefined) return null;
     const n = typeof v === "number" ? v : parseFloat(v);
@@ -608,6 +616,7 @@ function createTiingoProvider(options) {
       }
 
       const status = seriesAdjustmentStatus();
+      const currency = (mapping.entry && mapping.entry.currency) || opts.currency || "USD";
       const params = { format: "json" };
       if (opts.from) params.startDate = opts.from;
       if (opts.to) params.endDate = opts.to;
@@ -624,13 +633,13 @@ function createTiingoProvider(options) {
            Oberflaeche. */
         maxWaitMs: opts.maxWaitMs || 65000,
         parse: function (body) {
-          const bars = body.map((r) => toPriceBar(securityId, r, opts.currency, status))
+          const bars = body.map((r) => toPriceBar(securityId, r, currency, status))
                            .filter(Boolean);
           bars.sort((a, b) => (a.date < b.date ? -1 : 1));
           return {
             securityId: securityId,
             providerSymbol: mapping.symbol,
-            currency: opts.currency || "USD",
+            currency: currency,
             adjustmentStatus: status,
             bars: bars
           };
@@ -692,6 +701,7 @@ function createTiingoProvider(options) {
                                  message: mapping.reason });
       }
       const params = { resampleFreq: opts.interval || "5min", format: "json" };
+      if (iexVenueUnsupported(mapping)) return Promise.resolve({ available: false, data: null, reason: "unsupportedExchange", message: "Tiingo IEX is a US listing endpoint; this listing requires separately verified intraday coverage." });
       if (opts.from) params.startDate = opts.from;
       if (opts.to) params.endDate = opts.to;
 
@@ -746,6 +756,7 @@ function createTiingoProvider(options) {
         return Promise.resolve({ available: false, data: null, reason: "symbolUnmapped",
                                  message: mapping.reason });
       }
+      if (iexVenueUnsupported(mapping)) return Promise.resolve({ available: false, data: null, reason: "unsupportedExchange", message: "Tiingo IEX is a US listing endpoint; no local quote is inferred." });
       return client.request({
         kind: "quote",
         url: url("/iex/" + encodeURIComponent(mapping.symbol)),

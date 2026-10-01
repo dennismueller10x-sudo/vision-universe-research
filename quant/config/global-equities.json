@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "global-equities-policy-1.0.0",
+  "tiers": ["GERMANY", "EUROPE", "GLOBAL_SELECT"],
+  "assetTypes": ["EQUITY"],
+  "minHistoryBars": 250,
+  "minDailyTurnoverUSD": 5000000,
+  "preferUSADR": true,
+  "allowOTCExpansion": false,
+  "maxRequestsPerRun": 60,
+  "discoveryCandidates": ["SAP", "DB", "BNTX", "ASML", "ING", "PHG", "TTE", "SNY", "BUD", "SAN", "BBVA", "E", "UBS", "NVS", "LOGI", "AZN", "SHEL", "UL", "BP", "HSBC", "ERIC", "NVO", "EQNR", "NOK", "TSM", "UMC", "BABA", "XPEV", "JD", "BIDU", "NTES", "PDD", "NIO", "SONY", "TM", "HMC", "INFY", "IBN", "HDB", "VALE", "PBR"],
+  "candidateNote": "Discovery inputs only. Production identity requires exact SEC ticker/exchange match and provider directory evidence. This list does not assert ADR status, ratios, liquidity or local listing coverage. Existing membership is preserved.",
+  "tiingoDirectoryURL": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
+  "sources": {
+    "SEC": "https://data.sec.gov/submissions/CIK{cik}.json",
+    "ESEF": "https://www.esma.europa.eu/issuer-disclosure/electronic-reporting",
+    "UK": "https://data.fca.org.uk/#/nsm/nationalstoragemechanism",
+    "CH": "https://www.ser-ag.com/en/topics/financial-reporting.html"
+  }
+}

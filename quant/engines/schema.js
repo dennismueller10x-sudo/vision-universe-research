@@ -40,7 +40,7 @@
 
   var CORPORATE_ACTION_TYPES = ["split", "dividend", "special_dividend", "delisting", "merger", "symbol_change", "spinoff"];
   var RESTATEMENT_STATUS = ["original", "restated", "preliminary"];
-  var FISCAL_PERIODS = ["Q1", "Q2", "Q3", "Q4", "FY"];
+  var FISCAL_PERIODS = ["Q1", "Q2", "Q3", "Q4", "FY", "H1", "H2", "9M"];
   var FACTOR_IDS = ["quality", "momentum", "value", "growth", "risk", "revisions"];
   var COVERAGE_CONFIDENCE = ["high", "medium", "low", "insufficient"];
   var EVENT_SEVERITY = ["info", "notable", "high"];
@@ -204,7 +204,7 @@
       currency:    { t: "string", r: false },
       reportedAt:  { t: "date", r: true },     // Veroeffentlichung durch Unternehmen
       filedAt:     { t: "date", r: true },     // Einreichung des Filings
-      availableAt: { t: "date", r: true },     // ab wann fuer VU nutzbar — DIE Entscheidungsgrenze
+      availableAt: { t: "availability", r: true }, // date or evidenced publication instant
       ingestedAt:  { t: "datetime", r: true }, // wann VU den Datensatz aufgenommen hat
       revisionId:  { t: "number", r: true },   // 0 = Original, 1..n = Revisionen
       restatementStatus: { t: "string", r: true, e: RESTATEMENT_STATUS },
@@ -390,6 +390,7 @@
       case "boolean":  return typeof value === "boolean";
       case "date":     return typeof value === "string" && DATE_RE.test(value);
       case "datetime": return typeof value === "string" && DATETIME_RE.test(value);
+      case "availability": return typeof value === "string" && (DATE_RE.test(value) || DATETIME_RE.test(value)) && Number.isFinite(Date.parse(value));
       case "array":    return Array.isArray(value);
       case "object":   return value !== null && typeof value === "object" && !Array.isArray(value);
       default:         return false;
@@ -455,19 +456,25 @@
    * @param {string} decisionDate  YYYY-MM-DD
    * @param {object} [opts]     {periodEnd} um eine bestimmte Periode zu erfragen
    */
+  function availabilityTime(value) {
+    // Date-only metadata has no intraday publication time. Daily queries
+    // retain their existing semantics; intraday cannot see it before EOD.
+    return Date.parse(DATE_RE.test(value) ? value + "T23:59:59.999Z" : value);
+  }
+
   function latestKnownFact(facts, metricId, decisionDate, opts) {
     var wantPeriodEnd = opts && opts.periodEnd;
     var best = null;
     for (var i = 0; i < facts.length; i++) {
       var f = facts[i];
       if (f.metricId !== metricId) continue;
-      if (f.availableAt > decisionDate) continue;             // Look-Ahead-Sperre
+      if (!(availabilityTime(f.availableAt) <= availabilityTime(decisionDate))) continue;
       if (wantPeriodEnd && f.periodEnd !== wantPeriodEnd) continue;
       if (!best) { best = f; continue; }
       if (f.periodEnd > best.periodEnd) { best = f; continue; }
       if (f.periodEnd < best.periodEnd) continue;
-      if (f.availableAt > best.availableAt) { best = f; continue; }
-      if (f.availableAt === best.availableAt && f.revisionId > best.revisionId) best = f;
+      if (availabilityTime(f.availableAt) > availabilityTime(best.availableAt)) { best = f; continue; }
+      if (availabilityTime(f.availableAt) === availabilityTime(best.availableAt) && f.revisionId > best.revisionId) best = f;
     }
     return best;
   }
@@ -478,10 +485,10 @@
     for (var i = 0; i < facts.length; i++) {
       var f = facts[i];
       if (f.metricId !== metricId) continue;
-      if (f.availableAt > decisionDate) continue;
+      if (!(availabilityTime(f.availableAt) <= availabilityTime(decisionDate))) continue;
       var cur = byPeriod[f.periodEnd];
-      if (!cur || f.availableAt > cur.availableAt ||
-         (f.availableAt === cur.availableAt && f.revisionId > cur.revisionId)) {
+      if (!cur || availabilityTime(f.availableAt) > availabilityTime(cur.availableAt) ||
+         (availabilityTime(f.availableAt) === availabilityTime(cur.availableAt) && f.revisionId > cur.revisionId)) {
         byPeriod[f.periodEnd] = f;
       }
     }
@@ -514,7 +521,9 @@
     revenue: "usd_m", grossProfit: "usd_m", operatingIncome: "usd_m", netIncome: "usd_m",
     ebitda: "usd_m", freeCashFlow: "usd_m", totalAssets: "usd_m", totalEquity: "usd_m",
     netDebt: "usd_m", investedCapital: "usd_m", capex: "usd_m", interestExpense: "usd_m",
-    sharesOutstanding: "count_m", dividendPerShare: "usd", accruals: "ratio"
+    sharesOutstanding: "count_m", dividendPerShare: "usd", accruals: "ratio",
+    operatingCashFlow: "usd_m", cash: "usd_m", totalDebt: "usd_m", totalLiabilities: "usd_m",
+    epsBasic: "usd", epsDiluted: "usd"
   };
 
   function expandPeriodToFacts(period, securityId, dataSourceId) {
@@ -549,10 +558,10 @@
     var byPeriod = Object.create(null);
     for (var i = 0; i < periods.length; i++) {
       var p = periods[i];
-      if (p.availableAt > decisionDate) continue;
+      if (!(availabilityTime(p.availableAt) <= availabilityTime(decisionDate))) continue;
       var cur = byPeriod[p.periodEnd];
-      if (!cur || p.availableAt > cur.availableAt ||
-         (p.availableAt === cur.availableAt && p.revisionId > cur.revisionId)) {
+      if (!cur || availabilityTime(p.availableAt) > availabilityTime(cur.availableAt) ||
+         (availabilityTime(p.availableAt) === availabilityTime(cur.availableAt) && p.revisionId > cur.revisionId)) {
         byPeriod[p.periodEnd] = p;
       }
     }

@@ -42,6 +42,7 @@ const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 const { resolveProductUniverse } = await import(join(root, "scripts", "market", "universe-source.mjs"));
+const GlobalEquities = require(join(root, "quant", "engines", "global-equities.js"));
 
 const Factors = require(join(root, "quant", "engines", "market-factors.js"));
 const DisplayPolicy = require(join(root, "quant", "engines", "display-policy.js"));
@@ -59,7 +60,8 @@ const Fundamentals = require(join(root, "discover", "engines", "fundamentals.js"
 const Relevance = require(join(root, "discover", "engines", "relevance.js"));
 const DiscoveryEligibility = require(join(root, "discover", "engines", "discovery-eligibility.js"));
 
-const OUT = join(root, "discover", "data");
+const outputArg = process.argv.find((a) => a.startsWith("--out="))?.slice(6);
+const OUT = outputArg ? (outputArg.startsWith("/") ? outputArg : join(root, outputArg)) : join(root, "discover", "data");
 const METHODOLOGY = readJSON(join(root, "discover", "methodology", "discover-v1.json"));
 const GATES_CONFIG = readJSON(join(root, "quant", "config", "feature-gates.json"));
 const PREVIEW_CONFIG = readJSON(join(root, "quant", "config", "development-preview.json"));
@@ -519,6 +521,10 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
       symbol: sec.ticker,
       instrumentId: (masterByTicker.get(sec.ticker) || {}).instrumentId || null,
       securityId: sec.securityId,
+      ...(ref.companyId ? { companyId: ref.companyId, listingId: ref.listingId,
+        country: ref.companyCountry, region: ref.region, listingCountry: ref.listingCountry,
+        currency: ref.tradingCurrency, reportingCurrency: ref.reportingCurrency,
+        listingType: ref.listingType, coverage: ref.coverage } : {}),
       /* Name: displayName der kanonischen Namensschicht, sonst ihr
          companyName, sonst die Repository-Namensquellen, sonst nichts -
          der Ticker wird nie als Name eingetragen. */
@@ -571,6 +577,12 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     stock.scoreDetail = scores;
     stock.rawValues = values;
     stock.seriesPath = seriesPath;
+    if (ref.companyId) stock.globalIdentity = {
+      listingType: ref.listingType, companyCountry: ref.companyCountry, listingCountry: ref.listingCountry,
+      tradingCurrency: ref.tradingCurrency, adrRatio: ref.adrRatio, adrRatioSource: ref.adrRatioSource,
+      shareCountBasis: ref.shareCountBasis, shareCountBasisSource: ref.shareCountBasisSource,
+      epsBasis: ref.epsBasis, epsBasisSource: ref.epsBasisSource
+    };
     /* Laenge der Kurshistorie beim Anbieter (Faktorzeile) - fuer die
        Qualifikation "staerkste Aktien" (>= 250 Handelstage). */
     stock.bars = isNum(sec.bars) ? sec.bars : null;
@@ -668,7 +680,7 @@ function attachFundamentals(stock, model) {
      Basis (TTM oder FY) steht dran; nichts wird gemischt. */
   const preis = Contract.valueOf(stock.price);
   const vol = stock.rawValues && isNum(stock.rawValues.avgVolume20d) ? stock.rawValues.avgVolume20d : null;
-  const bewertung = valuationOf(model, g, preis, isNum(vol) && isNum(preis) ? vol * preis : null);
+  const bewertung = valuationOf(model, g, preis, isNum(vol) && isNum(preis) ? vol * preis : null, stock.globalIdentity);
   m.f_pe = bewertung.pe ? bewertung.pe.value : null;
   m.f_ps = bewertung.ps ? bewertung.ps.value : null;
   m.f_fcfYield = bewertung.fcfYield ? bewertung.fcfYield.value : null;
@@ -723,11 +735,18 @@ function currentShares(model) {
   if (fyEnd && (Date.parse(fyEnd) - Date.parse(best.end)) / 864e5 > SHARE_BASIS.staleDays) return null;
   return best;
 }
-function shareBasis(model, preis, avgDollarVolume) {
+function shareBasis(model, preis, avgDollarVolume, listing) {
   const currency = model.units && (model.units.revenue || model.units.net_income || model.units.stockholders_equity || model.units.total_assets) || null;
+  const globalReason = GlobalEquities.valuationGate(listing, currency);
+  if (globalReason) return { ok: false, reason: globalReason, currency };
   if (currency && currency !== "USD") return { ok: false, reason: "NON_USD_REPORTING", currency };
-  const aktien = currentShares(model);
+  let aktien = currentShares(model);
   if (!aktien) return { ok: false, reason: "NO_CURRENT_SHARE_COUNT" };
+  if (listing && listing.listingType === "ADR") {
+    const count = GlobalEquities.listingShares(aktien.v, listing);
+    if (count === null) return { ok: false, reason: "SHARE_BASIS_UNVERIFIED" };
+    aktien = { ...aktien, reportedValue: aktien.v, v: count, adrRatio: listing.adrRatio, basisSource: listing.shareCountBasisSource };
+  }
   const mcap = preis * aktien.v;
   const turnover = isNum(avgDollarVolume) && mcap > 0 ? avgDollarVolume / mcap : null;
   const foreign = !(model.coverage && model.coverage.ttmThrough);
@@ -737,11 +756,11 @@ function shareBasis(model, preis, avgDollarVolume) {
   return { ok: true, aktien, currency: currency || "USD" };
 }
 
-function valuationOf(model, g, preis, avgDollarVolume) {
+function valuationOf(model, g, preis, avgDollarVolume, listing) {
   const out = { available: false, basis: g.basis || null };
   if (!isNum(preis) || preis <= 0) { out.reason = "NO_PRICE"; return out; }
   const M = 1e6;
-  const basis = shareBasis(model, preis, avgDollarVolume);
+  const basis = shareBasis(model, preis, avgDollarVolume, listing);
   if (!basis.ok) {
     out.marketCapReason = basis.reason;
     out.peReason = basis.reason === "NO_CURRENT_SHARE_COUNT" ? g.kgvStatus : basis.reason;
@@ -756,7 +775,11 @@ function valuationOf(model, g, preis, avgDollarVolume) {
   const fcf = (model.ttm.free_cash_flow && isNum(model.ttm.free_cash_flow.v)) ? { v: model.ttm.free_cash_flow.v, basis: "TTM", through: model.ttm.free_cash_flow.through }
             : (model.annual.free_cash_flow && model.annual.free_cash_flow.length) ? Object.assign({ basis: "FY" }, model.annual.free_cash_flow[model.annual.free_cash_flow.length - 1]) : null;
   if (fcf) out.fcfYield = { value: fcf.v / (preis * aktien.v), basis: fcf.basis, through: fcf.through || null, fy: fcf.fy || null, calculation: "Free Cashflow (" + fcf.basis + ") / (Kurs x Aktien)" };
-  if (g.kgvStatus === "CALCULATED" && isNum(g.kgv)) out.pe = { value: g.kgv, basis: g.basis, eps: g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" };
+  if (g.kgvStatus === "CALCULATED" && isNum(g.kgv)) {
+    const eps = GlobalEquities.listingEps(g.gewinnJeAktie, listing);
+    if (listing && listing.listingType === "ADR" && (eps === null || eps <= 0)) out.peReason = "ADR_EPS_BASIS_UNVERIFIED";
+    else out.pe = { value: listing && listing.listingType === "ADR" ? preis / eps : g.kgv, basis: g.basis, eps: listing && listing.listingType === "ADR" ? eps : g.gewinnJeAktie, period: g.zeitraum, calculation: "Kurs / Gewinn je Aktie (" + g.basis + ")" };
+  }
   else out.peReason = g.kgvStatus;
   out.available = !!(out.pe || out.ps || out.fcfYield);
   out.price = preis;
@@ -1921,6 +1944,10 @@ function buildDetail(universe, stock, instruments, barsByTicker, memberships) {
     nameSource: stock.nameSource || null,
     universeId: universe.universeId, universeLabel: universe.label, universeKind: universe.kind,
     dataMode: stock.dataMode, provider: stock.provider, exchange: stock.exchange,
+    ...(stock.companyId ? { companyId: stock.companyId, listingId: stock.listingId,
+      country: stock.country, region: stock.region, listingCountry: stock.listingCountry,
+      currency: stock.currency, reportingCurrency: stock.reportingCurrency,
+      listingType: stock.listingType, coverage: stock.coverage } : {}),
     sector: stock.sector, sectorStatus: stock.sectorStatus, industry: stock.industry,
     marketCap: stock.marketCap, capBucket: stock.capBucket,
     price: stock.price, changePercent: stock.changePercent,
@@ -2025,7 +2052,8 @@ function compactSeries(bars) {
 /* =================================================================== Lauf */
 console.log("Vision Universe DISCOVER — Präkomputation\n");
 const started = Date.now();
-if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
+// Isolated validation must never recursively delete an arbitrary --out path.
+if (!outputArg && existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 
 console.log("1/5  Reales Universum (Tiingo-Faktoren) …");
@@ -2206,6 +2234,7 @@ for (const universe of universes) {
     entries: universe.stocks.map((s) => ({
       i: s.instrumentId || null,
       s: s.symbol, n: s.companyName, sec: s.sector, m: s.dataMode === "real" ? 1 : 0,
+      ...(s.companyId ? { cc: s.country, rg: s.region, x: s.exchange, ci: s.companyId, li: s.listingId } : {}),
       a: s.was || null,
       l: isNum(s.metrics.leadershipScore) ? Math.round(s.metrics.leadershipScore) : null,
       d: isNum(s.metrics.distanceTo52wHigh) ? round(s.metrics.distanceTo52wHigh, 4) : null,

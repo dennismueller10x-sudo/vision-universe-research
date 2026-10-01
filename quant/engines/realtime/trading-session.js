@@ -156,6 +156,13 @@
     opts = opts || {};
     var ex = exchangeOf(opts.calendar, opts.exchange);
     var s = MarketHours.sessionAt(when, { calendar: opts.calendar, exchange: opts.exchange });
+    if (s.closedReason === "unsupportedExchange") {
+      return { engineVersion: ENGINE_VERSION, exchange: opts.exchange, timezone: null,
+        now: new Date(when).toISOString(), localDate: null, localTime: null, phase: "CLOSED",
+        closedReason: "unsupportedExchange", calendarCoverage: false, calendarId: s.calendarId,
+        marketState: "CLOSED", currentSession: null, lastCompletedSession: null,
+        displaySession: null, nextOpen: null, nextChangeAt: null };
+    }
     var nowMs = when instanceof Date ? when.getTime() : typeof when === "number" ? when : Date.parse(when);
     var base = {
       engineVersion: ENGINE_VERSION, exchange: ex.id, timezone: ex.timezone,

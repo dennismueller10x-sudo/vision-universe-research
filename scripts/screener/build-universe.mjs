@@ -19,6 +19,8 @@ import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+const GlobalEquities = createRequire(import.meta.url)('../../quant/engines/global-equities.js');
 import { MAJOR_GROUPS, DIVISIONS, SECTORS, SIC_SECTOR_VERSION, sectorFromSic } from './sic.mjs';
 
 export const SCHEMA = 'vu-screener-universe-1.0.0';
@@ -107,7 +109,7 @@ export function indicators(points) {
 // ---- Spalten --------------------------------------------------------------
 // Reihenfolge = Reihenfolge im Artefakt. Text- und Listen-Spalten stehen vorn.
 export const COLUMNS = [
-  's', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'div', 'ipo', 'idx', 'was',
+  's', 'n', 'ex', 'co', 'lc', 'cu', 'rc', 'ci', 'li', 'cls', 'sec', 'sic2', 'div', 'ipo', 'idx', 'was',
   'price', 'chg1d', 'mcap', 'ev', 'avgVol', 'dollarVol', 'beta', 'relVol',
   'revGrowth', 'revCagr3', 'revCagr10', 'epsGrowth', 'epsCagr3', 'niGrowthTtm', 'fcfGrowth', 'marginExp3y',
   'grossMargin', 'opMargin', 'netMargin', 'fcfMargin', 'roe', 'roa', 'roic', 'cashConversion',
@@ -118,7 +120,7 @@ export const COLUMNS = [
   'rsi14', 'macdHist', 'bollB', 'vol252', 'maxDd',
   'fQuality', 'fGrowth', 'fMomentum', 'fValue', 'fProfitability', 'fRevisions', 'fRisk', 'vq'
 ];
-const TEXT = new Set(['s', 'n', 'ex', 'co', 'cls', 'sec', 'sic2', 'div', 'ipo', 'was', 'vq']);
+const TEXT = new Set(['s', 'n', 'ex', 'co', 'lc', 'cu', 'rc', 'ci', 'li', 'cls', 'sec', 'sic2', 'div', 'ipo', 'was', 'vq']);
 
 // VALUATION_POLICY
 // Marktkapitalisierung und alle Kennzahlen, die den Kurs mit einer SEC-Aktienzahl
@@ -146,6 +148,10 @@ async function loadJson(path) { return JSON.parse(await readFile(path, 'utf8'));
 
 export async function buildUniverse({ root = process.cwd(), log = () => {} } = {}) {
   root = resolve(root);
+  let globalLayer = null;
+  try { globalLayer = GlobalEquities.validate(await loadJson(join(root, 'quant/data/universe/global-equities.json'))); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+  const globalByTicker = new Map((globalLayer?.listings || []).map((r) => [r.ticker, { ...r, companyCountry: r.country }]));
   const stocksDir = join(root, 'discover/data/stocks', UNIVERSE);
   const files = (await readdir(stocksDir)).filter((f) => f.endsWith('.json')).sort();
 
@@ -212,7 +218,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     // Quellen: dort standen u. a. 0 $ (Hinge Health) und veraltete Aktienzahlen.
     let mcap = num(f?.valuation?.marketCap?.value);
     const dollarVolRaw = num(d.qualification?.avgDollarVolume20d);
-    let vq = 'OK';
+    let vq = GlobalEquities.valuationGate(globalByTicker.get(d.symbol), currency) || 'OK';
     const turnover = mcap && dollarVolRaw !== null ? dollarVolRaw / mcap : null;
     if (!currencyOk) vq = 'NON_USD_REPORTING';
     else if (foreignFiler && (turnover === null || turnover < FOREIGN_MIN_TURNOVER)) vq = 'FOREIGN_FILER';
@@ -227,7 +233,8 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     const ebitda = ttm(f, 'ebitda') ?? annual(f, 'ebitda');
     const fcfTtm = ttm(f, 'free_cash_flow');
     const opInc = annual(f, 'operating_income'), pretax = annual(f, 'pretax_income'), tax = annual(f, 'income_tax_expense');
-    const taxRate = pretax && pretax > 0 && tax !== null ? Math.min(Math.max(tax / pretax, 0), 0.5) : 0.21;
+    const taxRate = pretax && pretax > 0 && tax !== null ? Math.min(Math.max(tax / pretax, 0), 0.5)
+      : globalByTicker.has(d.symbol) ? null : 0.21;
     const invested = equity !== null && totalDebt !== null && cash !== null ? equity + totalDebt - cash : null;
     const ni = annual(f, 'net_income'), ocf = annual(f, 'operating_cash_flow'), assets = annual(f, 'total_assets');
     const eps = track(f, 'eps_diluted'), fcf = track(f, 'free_cash_flow');
@@ -236,7 +243,13 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
     if (eps.length >= 4) { const a = eps.at(-4).v, b = eps.at(-1).v; if (a > 0 && b > 0) epsCagr3 = Math.pow(b / a, 1 / 3) - 1; }
     const pe = num(m.f_pe);
     const row = {
-      s: d.symbol, n: d.companyName || d.symbol, ex: d.exchange || inst.exchange || null, co: inst.country || null,
+      s: d.symbol, n: d.companyName || d.symbol, ex: d.exchange || inst.exchange || null,
+      co: globalByTicker.get(d.symbol)?.country || inst.country || null,
+      lc: globalByTicker.get(d.symbol)?.listingCountry || inst.country || null,
+      cu: globalByTicker.get(d.symbol)?.tradingCurrency || d.currency || inst.currency || null,
+      rc: globalByTicker.get(d.symbol)?.reportingCurrency || currency,
+      ci: globalByTicker.get(d.symbol)?.companyId || inst.issuerId || null,
+      li: globalByTicker.get(d.symbol)?.listingId || inst.instrumentId || null,
       cls: inst.securityClass || null, sec: sic4 ? sectorFromSic(sic4) : null, sic2: sic4 ? sic4.slice(0, 2) : null, div: sic?.div || null,
       ipo: inst.firstTradeDate || null,
       idx: Array.isArray(d.indexMemberships) && d.indexMemberships.length ? d.indexMemberships.map((x) => x.indexId).filter(Boolean) : null,
@@ -250,7 +263,7 @@ export async function buildUniverse({ root = process.cwd(), log = () => {} } = {
       grossMargin: plausibleGross(num(f?.latest?.derived?.grossMargin)), opMargin: num(f?.latest?.derived?.operatingMargin), netMargin: num(f?.latest?.derived?.netMargin),
       fcfMargin: num(f?.latest?.derived?.fcfMargin), roe: num(f?.latest?.derived?.roe),
       roa: assets && assets > 0 ? ratio(ni, assets) : null,
-      roic: invested && invested > 0 && opInc !== null ? (opInc * (1 - taxRate)) / invested : null,
+      roic: invested && invested > 0 && opInc !== null && taxRate !== null ? (opInc * (1 - taxRate)) / invested : null,
       cashConversion: ni && ni > 0 ? ratio(ocf, ni) : null,
       debtToEquity: equity && equity > 0 ? ratio(totalDebt, equity) : null,
       netDebtEbitda: ebitda && ebitda > 0 && totalDebt !== null && cash !== null ? (totalDebt - cash) / ebitda : null,

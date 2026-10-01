@@ -28,6 +28,15 @@
 import { readFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const globalEngine = () => require("../../quant/engines/global-equities.js");
+export const GLOBAL_EQUITIES_FILE = "quant/data/universe/global-equities.json";
+
+export function loadGlobalEquities(root) {
+  const file = join(root, GLOBAL_EQUITIES_FILE);
+  return existsSync(file) ? globalEngine().validate(readJSON(file)) : null;
+}
 
 export const PRODUCT_UNIVERSE = "PRODUCT_UNIVERSE";
 export const SECURITY_MASTER_FILE = "quant/data/market/security-master/eligibility.json";
@@ -108,9 +117,12 @@ function fromSecurityMaster(root, file) {
   securities.sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
   const kuratiert = overlayCuratedSectors(root, securities);
   const namen = overlayCompanyNames(root, securities);
+  const globalLayer = loadGlobalEquities(root);
+  const expanded = globalLayer ? globalEngine().overlay(securities, globalLayer) : securities;
   return {
     source: "SECURITY_MASTER", file: SECURITY_MASTER_FILE, version: quelle.version || null,
-    generatedAt: quelle.generatedAt || null, securities, counts,
+    generatedAt: quelle.generatedAt || null, securities: expanded, counts,
+    ...(globalLayer ? { globalEquities: { file: GLOBAL_EQUITIES_FILE, listings: globalLayer.listings.length } } : {}),
     sha256: createHash("sha256").update(roh).digest("hex"),
     curatedSectors: kuratiert,
     companyNames: namen,
