@@ -45,7 +45,7 @@ export function createCollector(options) {
  const save=(entry,seeded=false)=> {
   const key=requestKey(entry.endpoint,entry.params),h=digest(key),bucket=parseInt(h[0],16)%4,file=join('responses',String(bucket),h+'.json');
   mkdirSync(join(root,dirname(file)),{recursive:true});atomic(join(root,file),{...entry,seeded});
-  state.tasks[key]={file,ok:entry.ok===true,endpoint:entry.endpoint,params:entry.params,label:entry.label,checkedAt:entry.checkedAt,seeded};
+  state.tasks[key]={file,ok:entry.ok===true,endpoint:entry.endpoint,params:entry.params,label:entry.label,checkedAt:entry.checkedAt,sourceRunId:entry.sourceRunId||null,seeded};
   persist();return entry;
  };
  for(const seed of options.seeds||[])for(const e of seedPages(seed)){const k=requestKey(e.endpoint,e.params);if(!state.tasks[k])save(e,true);}
@@ -63,7 +63,7 @@ export function createCollector(options) {
   if(budgetBlocked)return {ok:false,reason:'budgetExceeded',endpoint,params,label};
   const started=Date.now(),r=await client.request('/'+endpoint,params,{cacheTtlMs:0});
   if(r.reason==='budgetExceeded'){budgetBlocked=true;return {...r,endpoint,params,label};}
-  const entry={endpoint,params,label,...extra,checkedAt:new Date().toISOString(),durationMs:Date.now()-started,...r};
+  const entry={endpoint,params,label,...extra,sourceRunId:runId,checkedAt:new Date().toISOString(),durationMs:Date.now()-started,...r};
   save(entry);updateStats(client.stats());persist();
   if(['quotaExceeded','authError','accountingPersistenceFailed','rateLimited'].includes(r.reason))terminalReason=r.reason;
   if(run.requestsAttempted%25===0)console.log(JSON.stringify({phase:options.phase,attempts:run.requestsAttempted,credits:run.estimatedCreditsConsumed,cachedTasks:Object.keys(state.tasks).length}));

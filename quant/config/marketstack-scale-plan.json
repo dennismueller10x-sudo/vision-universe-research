@@ -49446,6 +49446,45 @@
           "label": "scale-austria-official-prime-week",
           "estimatedCredits": 36,
           "region": "EUROPE"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "COST",
+            "exchange": "XNAS",
+            "date_from": "2023-12-18",
+            "date_to": "2024-01-12",
+            "limit": 100
+          },
+          "label": "finalization-us-special-dividend-control",
+          "estimatedCredits": 1,
+          "region": "USA"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "COST",
+            "exchange": "XNAS",
+            "date_from": "2023-12-18",
+            "date_to": "2024-01-12",
+            "limit": 100
+          },
+          "label": "finalization-us-special-dividend-control",
+          "estimatedCredits": 1,
+          "region": "USA"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "COST",
+            "exchange": "XNAS",
+            "date_from": "2023-12-18",
+            "date_to": "2024-01-12",
+            "limit": 100
+          },
+          "label": "finalization-us-special-dividend-control",
+          "estimatedCredits": 1,
+          "region": "USA"
         }
       ],
       "retryTransientFailures": true,
