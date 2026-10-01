@@ -61,7 +61,7 @@ const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/produ
    die Themen aus quant/app/page-method.js (TOPICS) und die Strategien aus
    quant/methodology/strategy-profiles-v1.json - und verlangt jede davon in
    dieser Liste. Was der Smoke nicht anschaut, verfaellt (M26, M28, M29). */
-const VIEWS=['/quant/#/',
+const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups',
  '/quant/#/screener',
  '/quant/#/screener?frage=qualitaet','/quant/#/screener?frage=momentum','/quant/#/screener?frage=wachstum-qualitaet',
  '/quant/#/screener?frage=guenstig','/quant/#/screener?frage=ruhig','/quant/#/screener?frage=setups','/quant/#/screener?frage=hoch',
@@ -378,7 +378,8 @@ for(const width of [1440,390]){
      if(/\b(kaufen|verkaufen|Kursziel|wird steigen|wird fallen)\b/i.test(ganz))bad.push('HANDLUNGSSPRACHE');
      /* Die Gruppen, in ihrer Reihenfolge. "Noch nicht bewertbar" steht als
         dritte Gruppe nur, wenn etwas offen ist. */
-     const gruppen=(await auskunft.locator('.qx-pc-col h3').allTextContents()).map(t=>t.trim());
+     /* Quant Daily Usefulness: Pro/Contra steht in einem eigenen Abschnitt. */
+     const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
      if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')bad.push('GRUPPEN:'+gruppen.join('|'));
      const oben=await auskunft.evaluate(n=>n.getBoundingClientRect().top+scrollY);
      if(width===390&&oben>1800)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));

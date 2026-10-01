@@ -87,6 +87,18 @@
       return el("a", { class: "q-rowlink", href: X.routes.method(t.id) }, [el("span", { class: "q-icon", "aria-hidden": "true" }, [X.icon(TOPIC_ICON[t.id] || "doc")]),
         el("span", {}, [el("strong", { text: t.title }), el("small", { text: t.text })])]);
     }))]));
+    /* Owner-Auftrag "Quant Daily Usefulness": die Begriffe bleiben intern
+       sauber getrennt - die Oberflaeche erklaert sie in Alltagssprache. */
+    main.append(X.section("Acht Begriffe, sauber getrennt", "Jede Aussage auf Quant gehört zu genau einer dieser Fragen.", [el("dl", { class: "q-terms" }, [].concat.apply([], [
+      ["Faktor", "Wie gut ist die Aktie in einer Eigenschaft – im Vergleich zu allen anderen?"],
+      ["Veränderung", "Was bewegt sich gerade – wird eine Eigenschaft besser oder schlechter?"],
+      ["Setup", "Entsteht im Kursbild eine konkrete Situation – und wie weit ist sie?"],
+      ["Anlagestil", "Zu welcher Strategie passt die Aktie heute?"],
+      ["Rückblick", "Was geschah bei dieser Aktie früher in derselben Kurslage?"],
+      ["Marktmuster", "Was geschah im ganzen Markt in ähnlichen Fällen?"],
+      ["Backtest", "Wie hätte eine fest definierte Regel historisch abgeschnitten? (noch nicht freigegeben)"],
+      ["Radar", "Was ist heute neu – welcher Zustand hat sich seit dem letzten Stand geändert?"]
+    ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; })))]));
     main.append(X.section("Unsere Prinzipien", null, [el("div", { class: "q-principles qx-principles" }, [
       el("span", { class: "q-shield", "aria-hidden": "true" }, [X.icon("shield")]),
       el("div", {}, [el("b", { text: "Datenbasiert. Nachvollziehbar. Unabhängig." })].concat(
@@ -265,6 +277,16 @@
 
   async function historie(main, ctx, t) {
     topicHead(main, t, "Was geschah früher in ähnlichen Situationen? Drei Blickwinkel – und klare Grenzen.");
+    /* Der gemessene Stand der vier Evidenzarten (evidence-status-v1). */
+    var ev = await ctx.api.getEvidenceStatus().catch(function () { return null; });
+    if (ev && ev.state === "AVAILABLE") {
+      main.append(X.section("Vier Arten historischer Evidenz", "Streng getrennt. Zahlen gibt es nur, wo die Methodik sie trägt – sonst steht da, was fehlt.", [el("div", { class: "q-evkinds" }, ev.kinds.map(function (k) {
+        var pub = k.state === "PUBLISHED";
+        return el("div", { class: "q-evkind " + (pub ? "is-on" : "is-off") }, [el("b", { text: k.label }), el("span", { class: "q-evkind-state", text: pub ? "veröffentlicht" : "zurückgehalten" }),
+          el("p", { text: k.question }),
+          pub ? el("p", { class: "qx-small", text: (k.gate && k.gate.rule) || "" }) : el("ul", {}, (k.checks || []).map(function (c) { return el("li", { class: c.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (c.state === "PASS" ? "✓ " : "✗ ") + c.label }), el("small", { text: " – nötig: " + c.required + " · heute: " + c.measured })]); }))]);
+      })), ev.measures && ev.measures.HISTORICAL_REPLAY_COVERAGE ? el("p", { class: "qx-small", text: "Rückblick heute: für " + ev.measures.HISTORICAL_REPLAY_COVERAGE.sufficient.m6.toLocaleString("de-DE") + " von " + ev.measures.HISTORICAL_REPLAY_COVERAGE.universe.toLocaleString("de-DE") + " Aktien reichen die Vergleichsfälle für Zahlen nach 6 Monaten (mindestens 10 abgeschlossene Fälle); bei " + ev.measures.HISTORICAL_REPLAY_COVERAGE.broad.m6.toLocaleString("de-DE") + " ist die Evidenz breit (ab 30)." }) : null]));
+    }
     main.append(el("div", { class: "qx-grid qx-grid-3" }, [
       X.card([el("h3", { class: "qx-h3", text: "1 · Dieselbe Aktie, dieselbe Kurslage" }), el("p", { class: "qx-small", text: "Wann stand die Aktie schon einmal in genau dieser Kurslage (etwa nahe am Jahreshoch, über der 40-Wochen-Linie)? Gezählt wird die erste Woche jeder zusammenhängenden Phase – eine zwölf Wochen lange Lage ist ein Fall, nicht zwölf." })]),
       X.card([el("h3", { class: "qx-h3", text: "2 · Was danach geschah" }), el("p", { class: "qx-small", text: "Für jeden Fall die Kursentwicklung nach 3, 6 und 12 Monaten: Median, Anteil der Fälle im Plus, typischer Rückgang. Erst ab 10 abgeschlossenen Fällen – darunter wäre ein Median Zufall, und es wird keiner gezeigt." })]),

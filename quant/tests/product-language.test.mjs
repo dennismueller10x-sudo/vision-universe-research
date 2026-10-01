@@ -224,8 +224,13 @@ test("the stock experience answers its questions in the order a person asks them
      danach Faktoren, Veraenderung, Setup, Anlagestil, fruehere Faelle
      (inkl. Marktmuster) und zuletzt Daten & Grenzen. */
   const render = slice(stockPage, "async function render(", "global.QXStock");
-  const order = ["verdictCard(vm", '"einordnung"))', '"veraenderung"))', '"setup"))',
-    '"strategie"))', '"historie"))', '"grenzen"))'];
+  /* Owner-Auftrag "Quant Daily Usefulness" (01.10.2026): 1 Kurs/Chart,
+     2 Was ist jetzt wichtig (verdictCard), 3 Setup & Trigger, 4 Historisch
+     getestet, 5 Pro/Contra, 6 Faktoren (mit Veraenderung), 7 Anlagestil,
+     8 Technik, 9 Daten & Grenzen. Faktorwerte sind nicht mehr die
+     Hauptgeschichte. Geprueft wird weiterhin die Reihenfolge der Fragen. */
+  const order = ["verdictCard(vm", '"setup"))', '"historie"))', '"dafuer"))', '"einordnung"))',
+    '"veraenderung"))', '"strategie"))', '"grenzen"))'];
   let cursor = -1;
   for (const marker of order) {
     const at = render.indexOf(marker, cursor + 1);
@@ -368,7 +373,9 @@ test("the entry page answers the two headline questions itself", async () => {
   assert.match(render.slice(chartAt), /^layout\.append\(chart\.node\);\s*layout\.append\(verdictCard\(vm/, "zwischen Chart und Einordnung steht etwas anderes");
   /* Chance gegen Risiko: die Marktmuster (Gewinn- UND Verlustseite) im
      Replay derselben Seite. */
-  assert.match(render, /replaySection\(vm, words\)/, "the entry page carries no opportunity-against-risk answer");
+  /* Quant Daily Usefulness: replaySection bekommt zusaetzlich den
+     Evidenz-Status (Stand der Backtests) - die Antwort bleibt dieselbe. */
+  assert.match(render, /replaySection\(vm, words[,)]/, "the entry page carries no opportunity-against-risk answer");
   /* M40: die Antworten stehen in der oberen Haelfte, VOR dem Chart. Gemessen
      bei 390 px stand dort vorher der Chart, und die Antworten lagen weiter
      unten. Die Einordnung muss im DOM vor dem Chart stehen (einspaltig auf

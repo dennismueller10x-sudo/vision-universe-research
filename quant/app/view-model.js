@@ -608,7 +608,7 @@
     var out = { levels: [] };
     /* Ebene 1 und 2: die eigene Historie des Titels. */
     if (cases && cases.state === "AVAILABLE") {
-      var hz = ["m3", "m6", "m12"].map(function (k) {
+      var hz = ["m1", "m3", "m6", "m12"].map(function (k) {
         var h = cases.horizons && cases.horizons[k];
         if (!h) return null;
         return { id: k, label: h.label, sufficient: !!h.sufficient, completed: h.completed, open: h.open,
@@ -617,7 +617,17 @@
           positive: h.sufficient && isNum(h.positive) ? h.positive : null,
           positiveText: h.sufficient && isNum(h.positive) ? h.positive + " von " + h.completed + " Fällen im Plus" : null,
           drawdown: h.sufficient && isNum(h.medianDrawdown) ? pct(h.medianDrawdown, 1) : null,
-          lastCase: h.lastCaseDate || null };
+          lastCase: h.lastCaseDate || null,
+          /* historical-cases-1.1.0: weitere Lesarten derselben Faelle -
+             alle nur, wenn die Schwelle erreicht ist. */
+          positiveShare: h.sufficient && isNum(h.positiveShare) ? h.positiveShare : null,
+          positivePct: h.sufficient && isNum(h.positiveShare) ? Math.round(h.positiveShare * 100) + " %" : null,
+          mean: h.sufficient && isNum(h.meanReturn) ? pct(h.meanReturn, 1, true) : null,
+          worstDrawdown: h.sufficient && isNum(h.worstDrawdown) ? pct(h.worstDrawdown, 1) : null,
+          chanceRisk: h.sufficient && isNum(h.chanceRisk) ? h.chanceRisk : null,
+          quartiles: h.sufficient && Array.isArray(h.quartiles) ? h.quartiles : null,
+          distribution: h.sufficient && Array.isArray(h.distribution) ? h.distribution : null,
+          evidence: h.evidence || (h.sufficient ? "THIN" : "WITHHELD") };
       }).filter(Boolean);
       var enough = hz.some(function (h) { return h.sufficient; });
       out.levels.push({

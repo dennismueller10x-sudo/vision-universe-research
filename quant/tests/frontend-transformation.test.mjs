@@ -167,7 +167,9 @@ test("Die Navigationsänderung hat keine Ansicht entfernt", () => {
 
 /* ---------------------------------------------------------------- 2 */
 test("Die Vergleichsfall-Engine rechnet mit der Studien-Engine, nicht mit einer zweiten", () => {
-  assert.equal(HistoricalCases.VERSION, "historical-cases-1.0.0");
+  /* 1.1.0 (01.10.2026): 1-Monats-Fenster und weitere Lesarten derselben
+     Faelle - die Rechnung bleibt die der Studien-Engine. */
+  assert.equal(HistoricalCases.VERSION, "historical-cases-1.1.0");
   const quelle = readFileSync(join(ROOT, "quant/engines/historical-cases.js"), "utf8");
   for (const fn of ["featuresAt", "outcomeAfter", "runningMaxOf"]) {
     assert.ok(quelle.includes("PatternResearch." + fn),
@@ -193,6 +195,10 @@ test("Unter zehn abgeschlossenen Fällen entsteht keine Kennzahl", () => {
     assert.equal(h.positive, null);
     assert.equal(h.medianDrawdown, null);
     assert.equal(h.lastCaseDate, null, "ohne Verteilung auch kein Einzelfall");
+    /* 1.1.0: auch die neuen Lesarten bleiben unter der Schwelle leer. */
+    for (const k of ["positiveShare", "meanReturn", "worstReturn", "bestReturn", "quartiles", "worstDrawdown", "medianMaxGain", "chanceRisk", "distribution"])
+      assert.equal(h[k], null, k + " darf unter der Schwelle nicht im Objekt stehen");
+    assert.equal(h.evidence, "WITHHELD");
   }
   assert.equal(nvda.measured, false);
 });
@@ -208,6 +214,13 @@ test("Über der Schwelle entsteht eine vollständige Verteilung", () => {
   assert.ok(Number.isInteger(m12.positive) && m12.positive <= m12.completed);
   assert.match(m12.lastCaseDate, /^\d{4}-\d{2}-\d{2}$/);
   assert.equal(aapl.measured, true);
+  /* 1.1.0: die weiteren Lesarten stehen auf denselben Faellen. */
+  assert.ok(Math.abs(m12.positiveShare - m12.positive / m12.completed) < 1e-12, "Anteil im Plus = positive / abgeschlossene Faelle");
+  assert.equal(m12.distribution.reduce((n, b) => n + b.count, 0), m12.completed, "die Verteilung zaehlt jeden Fall genau einmal");
+  assert.ok(m12.worstDrawdown <= m12.medianDrawdown && m12.worstReturn <= m12.quartiles[0] && m12.quartiles[2] <= m12.bestReturn);
+  assert.ok(m12.chanceRisk === null || m12.chanceRisk > 0);
+  assert.ok(["BROAD", "THIN"].includes(m12.evidence));
+  assert.equal(m12.evidence, m12.completed >= HistoricalCases.BROAD_EPISODES ? "BROAD" : "THIN");
 });
 
 test("Zusammenhängende Trefferwochen zählen als ein Fall", () => {
