@@ -774,8 +774,19 @@ function buildBacktests(registry, coverage, gbCoverage) {
     requiredMetrics: ['CAGR', 'Gesamtrendite', 'Benchmark-Rendite', 'Excess Return', 'Volatilität', 'Sharpe', 'Sortino', 'Max. Drawdown', 'Calmar', 'Trefferquote', 'Ø Gewinn', 'Ø Verlust', 'Expectancy', 'Profit Factor', 'Ø Haltedauer', 'Turnover', 'Exposure', 'Verlustserien', 'Tail Losses', 'Jahresergebnisse', 'Marktregime-Ergebnisse', 'Anzahl Trades', 'Datenabdeckung', 'Strategy Trust Score'],
     validationDesign: { inSampleShare: 0.6, outOfSample: 'letzte 40 % unverändert', walkForward: 'Kalenderjahre', sensitivity: 'alle vorab definierten Varianten als Fläche, nie als bester Punkt', benchmark: 'SPY (Kursindex) und gleichgewichtetes Universum inkl. Delistings' },
     runs: out,
+    // Datenstrecke zum ersten validierbaren Backtest - aus dem Probeabruf (nur Anzahlen).
+    dataPath: (() => { const f = rel('scripts/supertrader/probe/results-2026-10-01.json'); return exists(f) ? readJson(f) : null; })(),
+    nextSteps: NEXT_STEPS,
   };
 }
+// Kleinster belegter Schritt zuerst (docs/SUPERTRADER_VALIDATION_DATA_PATH.md).
+const NEXT_STEPS = [
+  ['Owner-Entscheidung: Rechte und Abrufumfang', 'Freigabe für interne Backtests mit delisteten Titeln (~5.200 Abrufe im bestehenden Abo, verteilt auf 1–2 Tage) und für die Veröffentlichung abgeleiteter Kennzahlen.'],
+  ['Delistete Titel ab 2016 abrufen', 'Tageskurse aller ab 2016 delisteten US-Aktien über den vorhandenen Zugang; der Probeabruf lieferte 20 von 21 bis zum letzten Handelstag.'],
+  ['Universum „handelbar am Tag X“ bauen', 'Aus Listing-Beginn und -Ende je Wertpapier; Kürzel-Neuvergaben trennen und Lücken zählen.'],
+  ['Gesamtrendite selbst rechnen', 'Aus Rohkurs, Dividende und Split statt der uneinheitlichen bereinigten Spalte.'],
+  ['Dann: Donchian-Tagesvariante 2016–2026', 'Erster validierbarer Test: reine Kursmethode, ≥ 10 Jahre, Bärenphasen 2018, 2020, 2022.'],
+];
 function mapVariant(v) {
   if (v.startsWith('KK_COMMON_BREAKOUT')) return 'KK_COMMON_BREAKOUT_DAILY';
   if (v.startsWith('WEINSTEIN_STAGE2')) return 'WEINSTEIN_STAGE2_WEEKLY';

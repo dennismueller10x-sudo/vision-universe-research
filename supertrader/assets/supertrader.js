@@ -775,6 +775,11 @@
         h('li', null, [h('b', { text: 'Dividenden einheitlich' }), ' für alle Titel']),
         h('li', null, [h('b', { text: 'Nutzungsrechte' }), ' für Backtests und deren Veröffentlichung']),
       ]),
+      bt.dataPath ? h('div', { class: 'st-audit' }, [h('strong', { text: 'Probeabruf vom ' + dateDe(bt.dataPath.measuredAt) }), h('ul', null, [
+        h('li', { text: bt.dataPath.delistedSample.lastBarWithin7DaysOfListingEnd + ' von ' + bt.dataPath.delistedSample.probed + ' zufällig gewählten delisteten Aktien liefern Kurse bis zum letzten Handelstag – mit Dividenden und Splits.' }),
+        h('li', { text: 'Bei neu vergebenen Kürzeln liefert die Quelle nur das neueste Listing (' + bt.dataPath.reusedTickers.oldHistoryReturned + ' von ' + bt.dataPath.reusedTickers.probed + ' alte Historien).' }),
+        h('li', { text: 'Vor 2015/16 fehlen Delistings in der Quelle weitgehend. Der erste validierbare Test beginnt deshalb 2016.' }),
+      ])]) : null,
     ], { kicker: 'Fehlende Bausteine' }));
     var core = D.registry.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; });
     main.appendChild(sec('Je Methode', [h('div', { class: 'st-list' }, core.map(function (s) {

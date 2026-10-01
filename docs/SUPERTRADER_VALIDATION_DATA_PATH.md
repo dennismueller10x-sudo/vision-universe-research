@@ -35,8 +35,9 @@ Feste Filter (VU, vorab):
 
 ## 3. Was genau fehlt
 
-1. **Kurshistorien der delisteten Listings 2010–2025**
-   - Laut Pool rund 3.500 Listings ohne Kürzel-Neuvergabe; die Zahl je Jahr folgt in Abschnitt 6.
+1. **Kurshistorien der delisteten Listings 2016–2025**
+   - Rund 5.200 Stammaktien-Listings (Abschnitt 6), davon rund 440 mit später neu vergebenem Kürzel.
+   - Bei einer Anfrage je Listing braucht der Abruf ein Tagesbudget des Marktlaufs (7.500) oder zwei.
    - Quelle: bestehender Tiingo-Zugang. Ein Abruf je Listing liegt unter einem Tagesbudget des Marktlaufs (7.500).
 2. **Alte Listings neu vergebener Kürzel**
    - Über das Kürzel nicht abrufbar.
@@ -53,6 +54,7 @@ Feste Filter (VU, vorab):
 | Test | Kriterium |
 |---|---|
 | AT1 Abdeckung | ≥ 95 % der delisteten Listings im Testzeitraum haben Kurse bis ≤ 7 Tage vor dem Listing-Ende (Probe: 20/21 = 95 %). |
+| AT1b Vollständigkeit | Delisting-Quote im Fenster in jedem Jahr ≥ 5 % und ohne Bruch (gemessen 2016–2025: 5,5–13,3 %). |
 | AT2 Universum zum Stichtag | Universum(D) enthält nur Listings mit Beginn ≤ D ≤ Ende. Ein Unit-Test mit „vergifteten“ Zukunftsbalken schlägt an, wenn ein Signal Daten nach D liest. Die Titelzahl je Jahr wird ausgewiesen. |
 | AT3 Kürzel-Neuvergabe | Jeder Kursbalken wird dem Listing zugeordnet, dessen Zeitraum ihn enthält. Nicht abrufbare Listings werden gezählt; ihr Anteil an den Universum-Tagen muss unter 5 % liegen, sonst gilt der Test als nicht validierbar. |
 | AT4 Kapitalmaßnahmen | Die selbst gerechnete Gesamtrendite stimmt bei ≥ 98 % der Dividenden- und Split-Ereignisse mit der Quelle überein; abweichende Titel werden mit Anzahl ausgeschlossen. |
@@ -64,15 +66,44 @@ Feste Filter (VU, vorab):
 ## 5. Erste validierbare Strategie
 
 - **Strategie:** Donchian/Turtle System 1, Tagesbalken (live v1.1.0: 20/10, Stop 2N, Bestätigung per Schluss, Einstieg zur nächsten Eröffnung). Reine Kursmethode, keine Fundamentaldaten nötig.
-- **Zeitraum:** 2010–2026.
-  - Das sind über 16 Jahre mit den Rückgängen 2011, 2015/16, Q4 2018, 2020 und 2022.
+- **Zeitraum:** 2016-01-01 bis 2026-09-30 (Abschnitt 6).
   - Prüfplan: ≥ 10 Jahre, ≥ 2 Bärenmärkte, ≥ 300 Trades.
-  - Vor 2009 ist die Delisting-Abdeckung der Quelle zu dünn.
+  - Vor 2015/16 ist die Delisting-Abdeckung der Quelle zu dünn.
 - **Vergleich:** gleich gewichtetes Universum A inklusive delisteter Titel, und SPY mit Dividenden.
 
-## 6. Abdeckung delisteter Listings je Jahr
+## 6. Abdeckung delisteter Listings je Jahr (gemessen)
 
-Folgt aus der Auswertung der Tickerliste (`--list-stats`, nur Liste, keine Kursanfragen); siehe unten.
+Quelle: Tiingo-Tickerliste, nur Stammaktien-Kürzel ohne Zusatz an NYSE, NASDAQ und AMEX (Lauf 36839204792, 1 Anfrage). Die Quote ist der Anteil der im Jahr beendeten Listings an den zu Jahresbeginn lebenden.
+
+| Jahr | lebend 1.1. | beendet | Quote |
+|---|---|---|---|
+| 2009 | 3.994 | 41 | 1,0 % |
+| 2010 | 4.066 | 45 | 1,1 % |
+| 2011 | 4.256 | 74 | 1,7 % |
+| 2012 | 4.399 | 55 | 1,3 % |
+| 2013 | 4.606 | 139 | 3,0 % |
+| 2014 | 4.802 | 147 | 3,1 % |
+| 2015 | 5.100 | 295 | 5,8 % |
+| 2016 | 5.199 | 356 | 6,8 % |
+| 2017 | 5.413 | 482 | 8,9 % |
+| 2018 | 5.401 | 503 | 9,3 % |
+| 2019 | 5.351 | 359 | 6,7 % |
+| 2020 | 5.412 | 406 | 7,5 % |
+| 2021 | 5.760 | 595 | 10,3 % |
+| 2022 | 7.098 | 780 | 11,0 % |
+| 2023 | 6.881 | 913 | 13,3 % |
+| 2024 | 6.346 | 474 | 7,5 % |
+| 2025 | 6.409 | 350 | 5,5 % |
+
+**Befund**
+- Bis 2014 liegt die Quote mit 1–3 % p. a. unplausibel niedrig. 2015 und 2016 folgt ein Bruch auf 5,8 % und 6,8 %.
+- Bis 2008 enthält die Liste insgesamt nur 8 beendete Listings; Lehman fehlt ganz.
+- Daraus folgt, dass die Quelle Delistings vor 2015/16 weitgehend nicht führt.
+
+**Festgelegtes Testfenster: 2016-01-01 bis 2026-09-30**
+- Das sind 10,75 Jahre mit den Rückgängen Q4 2018, 2020 und 2022.
+- Der Prüfplan (≥ 10 Jahre, ≥ 2 Bärenmärkte) ist damit gerade erfüllt.
+- AT1b verlangt, dass die Quote im Fenster in jedem Jahr ≥ 5 % beträgt, ohne Bruch.
 
 ## 7. Bleibende Unsicherheiten
 
@@ -80,3 +111,20 @@ Folgt aus der Auswertung der Tickerliste (`--list-stats`, nur Liste, keine Kursa
 - Die Gründe der Delistings (Übernahme oder Insolvenz) sind unbekannt, daher die Sensitivität in AT6.
 - OTC-Handel nach dem Delisting wird nicht abgebildet.
 - Eine Ausführung zur Eröffnung mit 0,10 % ist eine Annahme, keine gemessene Ausführungsqualität.
+
+## 8. Entscheidungsvorlage (Owner)
+
+Für alle Optionen außer D braucht es zwei Entscheidungen:
+- den Abruf von rund 5.200 delisteten Listings;
+- die Veröffentlichung abgeleiteter Kennzahlen (CAGR, Rückgang, Trefferquote; keine Kurse).
+
+| Option | Umfang | Kosten | Aufwand | Ergebnis |
+|---|---|---|---|---|
+| **A (empfohlen)** | Abruf 2016–2025 über den bestehenden Tiingo-Zugang, Backtest im Runner, Kurse nicht gespeichert oder veröffentlicht, nur Kennzahlen | keine zusätzlichen; etwa 5.200 Anfragen an 1–2 Tagen innerhalb des Abos | etwa 2 Entwicklungstage + 2 Läufe | erster Backtest, der die Gates Survivorship, Universum und Kapitalmaßnahmen bestehen kann |
+| B | wie A, Kennzahlen nur intern (nicht auf der Website) | wie A | wie A | validiert, aber nicht öffentlich |
+| C | zweite Quelle mit Point-in-Time-Universum und Delisting-Renditen (z. B. Sharadar/Norgate) | kostenpflichtiger Vertrag – nicht beauftragt | Anbieterprüfung | schließt die Lücke vor 2016 und bei neu vergebenen Kürzeln |
+| D | nichts tun | – | – | Backtests bleiben explorativ |
+
+**Anfrage an Tiingo (Rechte), wörtlich vorbereitet**
+
+> Our plan: [Planname]. Please confirm whether it permits (1) internal backtesting using end-of-day data of delisted US equities, (2) publishing aggregated, derived backtest statistics (e.g. annual return, maximum drawdown, hit rate – no prices) on our website, and (3) whether historical listings of re-used tickers are retrievable via a stable identifier (permaTicker) through the daily prices endpoint.
