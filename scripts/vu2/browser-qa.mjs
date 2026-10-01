@@ -52,6 +52,7 @@ const Q=origin+'/quant/';
    Unterseite ohne axe-Lauf ist eine ungepruefte Unterseite. */
 const ROUTES=[
  ['home','#/','home'],
+ ['radar','#/radar'],
  ['screener','#/screener','screener'],
  ['screener-hoch','#/screener?frage=hoch'],
  ['screener-setups','#/screener?frage=setups'],
@@ -268,8 +269,17 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
    if(ids.join('|')!==factorEvidence.FACTOR_ORDER.join('|'))befund(view,width,'factor order drifted: '+ids.join('|'));
    await page.getByText(/Eine Gesamtnote gibt es bewusst nicht/).first().waitFor();
-   const gruppen=(await page.locator('.qx-verdict-card .qx-pc-col h3').allTextContents()).map(t=>t.trim());
-   if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')befund(view,width,'Einordnung ohne dafuer/dagegen: '+gruppen.join('|'));
+   /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
+   const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
+   if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')befund(view,width,'Pro/Contra ohne dafuer/dagegen: '+gruppen.join('|'));
+   /* "Was ist jetzt wichtig?" steht neben dem Chart und traegt den Radar-Stand. */
+   const jetzt=await page.locator('.qx-verdict-card').innerText();
+   if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt neben dem Chart');
+   await page.locator('.qx-verdict-card .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor();
+   /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
+   const setupText=await page.locator('#setup').innerText();
+   for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
+   if(!/Backtests – noch keine Zahlen/.test(await page.locator('#historie').innerText()))befund(view,width,'Backtest-Stand fehlt im Rueckblick');
    /* Bedeutung ist zu, bis jemand fragt - und oeffnet dann bis zu den Rohdaten. */
    const first=page.locator('details.qx-factor').first();
    if(await first.evaluate(d=>d.open))befund(view,width,'factor evidence not progressively disclosed');
@@ -288,7 +298,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='1Y');
    /* Die Abschnitte der Analyse und die Vertiefungen. */
    const abschnitte=await page.locator('#qx-main section[id]').evaluateAll(ns=>ns.map(n=>n.id));
-   for(const id of ['einordnung','veraenderung','setup','strategie','historie','technik','zahlen','grenzen'])if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
+   /* Reihenfolge nach Owner-Auftrag "Quant Daily Usefulness" (01.10.2026). */
+   const soll=['setup','historie','dafuer','einordnung','veraenderung','strategie','technik','zahlen','grenzen'];
+   for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
+   const ist=abschnitte.filter(id=>soll.includes(id));
+   if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
    const grenzen=await page.locator('#grenzen').innerText();
    for(const q of ['Tiingo','SEC EDGAR'])if(!grenzen.includes(q))befund(view,width,'Daten und Grenzen ohne '+q);
    if(!/\d{2}\.\d{2}\.\d{4}/.test(await page.locator('.qx-quote').innerText()))befund(view,width,'Kurs ohne Datum');
@@ -296,6 +310,19 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('#technik').getByRole('link',{name:'Technische Analyse & Elliott öffnen',exact:true}).waitFor();
    await page.locator('#zahlen').getByRole('link',{name:'Entwicklung über die Jahre',exact:true}).waitFor();
    if((await page.locator('.qx-stock-hero h1').innerText()).trim()!==nvdaName)befund(view,width,'Name weicht vom Verzeichnis ab');
+  }
+  if(view==='radar'){
+   /* QUANT RADAR: Karten mit Ereignis, Datum und - wo vorhanden - Niveaus;
+      die Sortierregel und die geschlossenen Ereignistypen stehen offen da. */
+   const karten=page.locator('a.q-radar-card');
+   if(!await karten.count())befund(view,width,'Radar ohne Karten');
+   const erste=await karten.first().innerText();
+   if(!/Stand \d{2}\.\d{2}\.\d{4}/.test(erste))befund(view,width,'Radar-Karte ohne Datum');
+   if(/Gesamtnote|Kaufen|Verkaufen|Kursziel/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Radar mit Noten- oder Handlungssprache');
+   const regel=await page.locator('section.qx-section').filter({hasText:'Wie der Radar sortiert'}).innerText();
+   if(!/radar-priority-1\.0\.0/.test(regel))befund(view,width,'Sortierregel nicht offen gelegt');
+   await page.locator('button.q-chip[data-filter="setups"]').click();
+   if(await page.locator('button.q-chip[data-filter="setups"]').getAttribute('aria-pressed')!=='true')befund(view,width,'Filter nicht markiert');
   }
   if(view==='aktie-jpm'){
    /* A bank keeps its industry template instead of inventing factors. */

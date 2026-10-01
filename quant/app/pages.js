@@ -46,6 +46,102 @@
      Weltkugel und Suche, Chips, Quick Access, Heute interessant, dann die
      Wege Backtesting und Historische Faelle, zuletzt der Aufbau in vier
      Schritten. */
+  /* ============================================================ RADAR
+     Eine Radar-Karte beantwortet: welche Aktie, was ist neu, warum
+     relevant, seit wann, was ist der naechste Trigger, welche historische
+     Evidenz gibt es. Alles aus radar-v1 (quant-radar-1.0.0); fehlt ein
+     Teil, steht er nicht da - es wird nichts aufgefuellt. */
+  var RadarC = global.VUQuantRadar;
+  function usd(n) { return typeof n === "number" && isFinite(n) ? n.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + " $" : null; }
+  function zoneText(z) { return Array.isArray(z) && z.length === 2 ? (z[0] === z[1] ? usd(z[0]) : z[0].toLocaleString("de-DE", { maximumFractionDigits: 2 }) + "–" + usd(z[1])) : null; }
+  function lifecycleLabel(id) { var l = RadarC ? RadarC.LIFECYCLE.filter(function (x) { return x.id === id; })[0] : null; return l ? l.label : id; }
+  function radarCard(ctx, c, opts) {
+    opts = opts || {};
+    var T = RadarC ? RadarC.TYPE : {};
+    var first = c.events[0], t0 = T[first.eventType] || {};
+    var rows = [];
+    var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null;
+    if (tr && zoneText(tr.entry)) rows.push(["Interessant ab", zoneText(tr.entry)]);
+    var inv = tr && typeof tr.invalidation === "number" ? tr.invalidation : c.setup && typeof c.setup.invalidation === "number" ? c.setup.invalidation : null;
+    if (inv !== null && c.setup && c.setup.state !== "NO_SETUP") rows.push(["Ungültig unter", usd(inv)]);
+    if (tr && tr.targets && tr.targets[0]) rows.push(["Zielzone 1", zoneText(tr.targets[0])]);
+    var ev = c.replay && c.replay.sufficient
+      ? Math.round(c.replay.positiveShare * 100) + " % im Plus · Median " + VM.pct(c.replay.medianReturn, 1, true) + " nach 6 M. (" + c.replay.completed + " Fälle)"
+      : c.replay && c.replay.state === "AVAILABLE" ? "Zu wenige Vergleichsfälle (" + c.replay.episodes + ")" : null;
+    return el("a", { class: "q-radar-card tone-" + (first.direction || t0.tone || "info"), href: X.routes.stock(c.ticker), dataset: { symbol: c.ticker } }, [
+      el("div", { class: "q-rc-head" }, [X.logo(c.ticker, nameOf(ctx, c.ticker), "md", { initialOnly: !opts.logo }),
+        el("span", { class: "q-rc-id" }, [el("b", { text: nameOf(ctx, c.ticker) }), el("small", { text: c.ticker + (c.setup && c.setup.state !== "NO_SETUP" ? " · " + lifecycleLabel(c.setup.state) + " seit " + X.dateDe(c.setup.since) : "") })])]),
+      el("p", { class: "q-rc-what" }, [el("b", { text: t0.label || first.eventType }), el("span", { text: first.explanation })]),
+      c.events.length > 1 ? el("ul", { class: "q-rc-more" }, c.events.slice(1, 4).map(function (e) {
+        var t = T[e.eventType] || {};
+        return el("li", { class: "tone-" + (e.direction || t.tone || "info"), text: (t.label || e.eventType) + (e.direction === "up" && e.eventType === "FACTOR_CHANGED" ? " ↑" : e.direction === "down" && e.eventType === "FACTOR_CHANGED" ? " ↓" : "") });
+      })) : null,
+      rows.length ? el("dl", { class: "q-rc-levels" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; }))) : null,
+      tr && tr.trigger ? el("p", { class: "q-rc-next" }, [el("b", { text: "Bestätigt wenn: " }), el("span", { text: tr.trigger })])
+        : c.next && c.next.open && c.next.open.length ? el("p", { class: "q-rc-next" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "für „" + lifecycleLabel(c.next.state) + "“ fehlen " + c.next.open.length + " von " + c.next.total + " Bedingungen" })]) : null,
+      ev ? el("p", { class: "q-rc-evidence" }, [el("b", { text: "Früher: " }), el("span", { text: ev })]) : null,
+      el("small", { class: "q-rc-date", text: "Stand " + X.dateDe(first.occurredAt) })
+    ]);
+  }
+  function radarSummary(radar) {
+    var sm = radar.summary;
+    return [X.stat("Neue Setups", String(sm.newSetups), "Stand " + X.dateDe(radar.sources.setup.to)),
+      X.stat("Setups bestätigt", String(sm.confirmedSetups), "Stand " + X.dateDe(radar.sources.setup.to)),
+      X.stat("Aktien verbessern sich", sm.improvingTickers.toLocaleString("de-DE"), "mindestens ein positives Ereignis"),
+      X.stat("Risiko steigt", String(sm.riskRisingTickers), "Risiko-Faktor fällt eine Stufe"),
+      X.stat("Neues 52-Wochen-Hoch", String(sm.newHighs), "Stand " + X.dateDe(radar.sources.market.asOf)),
+      X.stat("Neu in einer Strategie", String(sm.newStrategyMatches), "Stand " + X.dateDe(radar.sources.strategy.to))];
+  }
+  var RADAR_FILTERS = [
+    { id: "alle", label: "Alle", types: null },
+    { id: "setups", label: "Setups", types: ["SETUP_CONFIRMED", "SETUP_NEW", "SETUP_WEAKENED", "SETUP_INVALIDATED"] },
+    { id: "strategien", label: "Strategien", types: ["STRATEGY_MATCH_NEW", "STRATEGY_MATCH_LOST"] },
+    { id: "momentum", label: "Momentum & Trend", types: ["MOMENTUM_IMPROVED", "MOMENTUM_DETERIORATED", "TREND_UP", "TREND_DOWN"] },
+    { id: "hoch", label: "52-Wochen-Hoch", types: ["NEW_52W_HIGH"] },
+    { id: "faktoren", label: "Faktoren & Risiko", types: ["FACTOR_CHANGED", "RISK_RISING"] },
+    { id: "beobachtet", label: "Beobachtet", watched: true }
+  ];
+  async function radar(main, ctx, params) {
+    main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Quant Radar" }),
+      el("h1", { class: "qx-h1", text: "Was ist heute neu?" }),
+      el("p", { class: "q-hero-lead v2-lead", text: "Jede Karte ist ein Wechsel zwischen zwei veröffentlichten Ständen der Quant-Engines – kein neues Signal, keine Empfehlung, keine Prognose." })]));
+    var r = await ctx.api.getQuantRadar();
+    if (!r || r.state !== "AVAILABLE") { main.append(X.notice("Radar derzeit nicht verfügbar", "Der aktuelle Radar-Stand konnte nicht geladen werden.")); return; }
+    var current = params && params.get("filter") || "alle";
+    var chips = el("nav", { class: "q-chips", "aria-label": "Ereignisse filtern" });
+    var list = el("div", { class: "q-radar-grid", "aria-live": "polite" });
+    var count = el("p", { class: "qx-count" });
+    var watched = X.watch.list();
+    function draw() {
+      var f = RADAR_FILTERS.filter(function (x) { return x.id === current; })[0] || RADAR_FILTERS[0];
+      chips.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.filter === f.id ? "true" : "false"); });
+      var cards = r.cards.filter(function (c) {
+        if (f.watched) return watched.indexOf(c.ticker) >= 0;
+        return !f.types || c.events.some(function (e) { return f.types.indexOf(e.eventType) >= 0; });
+      }).map(function (c) {
+        if (!f.types) return c;
+        var mine = c.events.filter(function (e) { return f.types.indexOf(e.eventType) >= 0; });
+        return Object.assign({}, c, { events: mine.concat(c.events.filter(function (e) { return f.types.indexOf(e.eventType) < 0; })) });
+      });
+      count.textContent = cards.length.toLocaleString("de-DE") + (cards.length === 1 ? " Aktie" : " Aktien") + " mit Ereignissen" + (f.id === "alle" ? "" : " · " + f.label);
+      list.replaceChildren.apply(list, cards.length ? cards.slice(0, 60).map(function (c, i) { return radarCard(ctx, c, { logo: i < 6 }); })
+        : [X.notice(f.watched ? "Keine beobachtete Aktie mit Ereignis" : "Keine Ereignisse dieser Art", f.watched ? "Tippe auf einer Aktienseite auf „Beobachten“ – dann erscheint sie hier, sobald sich etwas ändert." : "Zum aktuellen Stand gibt es keine Ereignisse dieser Art.")]);
+    }
+    RADAR_FILTERS.forEach(function (f) { chips.append(el("button", { type: "button", class: "q-chip", dataset: { filter: f.id }, text: f.label, onclick: function () { current = f.id; history.replaceState(null, "", X.routes.radar(f.id === "alle" ? "" : "filter=" + f.id)); draw(); } })); });
+    main.append(el("div", { class: "q-stats qx-stats q-radar-stats" }, radarSummary(r)), chips, count, list);
+    draw();
+    var rev = r.caveats && r.caveats.setupReversal;
+    main.append(X.section("Wie der Radar sortiert", null, [
+      el("ol", { class: "q-rule" }, r.priorityRule.keys.map(function (k) { return el("li", { text: k.plain }); })),
+      el("p", { class: "qx-small", text: "Regel " + r.priorityRule.version + ": Die Karten werden nach diesen Schlüsseln der Reihe nach geordnet – der erste Unterschied entscheidet. Es entsteht keine Gesamtnote." }),
+      rev ? el("p", { class: "qx-small", text: "Wichtig: Setup-Wechsel sind unruhig. Gemessen kehren sich " + Math.round(rev.share * 100) + " % der Wechsel beim nächsten Stand wieder um (" + rev.reversals + " von " + rev.candidates + "). Ein neues Setup ist ein Anlass zum Hinsehen, kein Beleg." }) : null,
+      el("p", { class: "qx-small", text: "Quellen: Setup " + X.dateDe(r.sources.setup.from) + " → " + X.dateDe(r.sources.setup.to) + " · Signale " + X.dateDe(r.sources.signals.asOf) + " · Strategien " + X.dateDe(r.sources.strategy.from) + " → " + X.dateDe(r.sources.strategy.to) + " · Faktoren " + X.dateDe(r.sources.factors.from) + " → " + X.dateDe(r.sources.factors.to) + " · 52-Wochen-Hoch " + X.dateDe(r.sources.market.asOf) + "." }),
+      el("ul", { class: "q-trust" }, r.eventTypes.filter(function (t) { return t.state === "CLOSED"; }).map(function (t) {
+        return el("li", { text: t.label + ": noch nicht ausgegeben – " + (t.reason === "PATH_DEPENDENT_STATES_NOT_ACTIVATED" ? "braucht eine längere Setup-Historie" : t.reason === "PATTERN_HISTORY_STARTED" ? "die Musterhistorie hat gerade begonnen" : t.reason) });
+      }))
+    ], { href: X.routes.method("grenzen"), label: "Grenzen" }, "Transparenz"));
+  }
+
   async function home(main, ctx) {
     var page = el("div", { class: "q-home" });
     main.append(page);
@@ -65,6 +161,14 @@
         el("a", { class: "q-chip", href: X.routes.strategies(), text: "Strategien" })])
     ]));
 
+    /* Owner-Auftrag "Quant Daily Usefulness" (01.10.2026): Home zeigt
+       zuerst, was heute neu ist - der Radar. Danach erst die Werkzeuge. */
+    var kpis = el("div", { class: "q-stats qx-kpis" }, [X.loading("Aktuelle Stände werden geladen …")]);
+    var radarHost = el("div", { class: "q-radar-grid q-radar-top" }, [X.loading("Radar wird geladen …")]);
+    page.append(X.world("Heute bei Quant", "Was sich seit dem letzten veröffentlichten Stand geändert hat – mit Datum. Kein neues Signal, keine Empfehlung.", [kpis, radarHost], { href: X.routes.radar(), label: "Alle Ereignisse" }, "v2-market-today"));
+    var watchHost = el("div");
+    page.append(watchHost);
+
     page.append(X.section("Quick Access", null, [doors([
       { kicker: "Aktie", icon: "bars", title: "Aktie analysieren", text: "Fundamentaldaten, Faktoren und Setups", href: X.routes.stocks() },
       { kicker: "Quant Screener", icon: "filter", title: "Quant Screener", text: "Aktien nach deinen Kriterien finden", href: X.routes.screener() },
@@ -72,22 +176,14 @@
       { kicker: "Kursbild", icon: "setups", title: "Aktuelle Setups", text: "Konkrete Chancen aus dem Kursbild", href: X.routes.screener("frage=setups") }
     ])], { href: X.routes.method(), label: "Alle Tools" }));
 
-    var cardsHost = el("div", {}, [X.loading("Aktien werden geladen …")]);
-    page.append(X.section("Heute interessant", null, [cardsHost], { href: X.routes.stocks(), label: "Alle ansehen" }));
-    page.append(el("div", { class: "q-tiles", style: "margin-top:14px;grid-template-columns:repeat(2,minmax(0,1fr))" }, [
-      X.tile({ icon: "bars", title: "Backtesting", text: "Noch nicht freigegeben – deshalb keine Trefferquote." }),
-      X.tile({ icon: "clock", title: "Historische Fälle", text: "Was in ähnlichen Situationen früher geschah", href: X.routes.method("historie") })]));
-
-    var kpis = el("div", { class: "q-stats qx-kpis" }, [X.loading("Aktuelle Stände werden geladen …")]);
-    page.append(X.world("Heute bei Quant", "Belegte Veränderungen aus den letzten veröffentlichten Ständen – mit Datum.", [kpis], null, "v2-market-today"));
     var rails = el("div", { class: "qx-rails" });
     page.append(rails);
 
     var recent = X.recent.list(), watched = X.watch.list();
     if (recent.length || watched.length) {
       var mine = ctx.commonFirst(watched.concat(recent.filter(function (t) { return watched.indexOf(t) < 0; }))).slice(0, 14);
-      page.append(X.world("Deine Aktien", watched.length ? "Gemerkt und zuletzt analysiert." : "Zuletzt analysiert.", [X.rail(mine.map(function (t) {
-        return X.poster({ ticker: t, name: nameOf(ctx, t), story: watched.indexOf(t) >= 0 ? "Gemerkt" : "Zuletzt analysiert", foot: "Analyse" });
+      page.append(X.world("Deine Aktien", watched.length ? "Beobachtet und zuletzt analysiert." : "Zuletzt analysiert.", [X.rail(mine.map(function (t) {
+        return X.poster({ ticker: t, name: nameOf(ctx, t), story: watched.indexOf(t) >= 0 ? "Beobachtet" : "Zuletzt analysiert", foot: "Analyse" });
       }), "Deine Aktien")], { href: X.routes.stocks(), label: "Alle ansehen" }));
     }
     page.append(X.world("Neuer Aufbau von Quant", "Von der Frage zur Entscheidung.", [el("div", { class: "q-rows" }, [
@@ -100,30 +196,29 @@
       el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." }));
 
     var r = await Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
-      /* Kein Radar auf Home: er laedt das ganze Faehigkeitsverzeichnis
-         (1,2 MB) plus Signale - fuer eine Karte. Home bleibt im Budget. */
+      /* Der alte Signal-Radar (getRadarIntelligence) laedt das ganze
+         Faehigkeitsverzeichnis; der Quant Radar ist ein eigenes, kleines
+         Artefakt (radar-v1, rund 90 KB). */
       null, ctx.api.getMarketRegime().catch(function () { return null; }),
-      ctx.api.getStrategyProfiles().catch(function () { return null; }), screeningRows(ctx)]);
-    var setupIdx = r[0], stratIdx = r[1], regime = r[3], profiles = r[4], rowBy = r[5];
-    var tiles = [], sections = [], today = [];
+      ctx.api.getStrategyProfiles().catch(function () { return null; }), screeningRows(ctx),
+      ctx.api.getQuantRadar().catch(function () { return null; })]);
+    var setupIdx = r[0], stratIdx = r[1], regime = r[3], profiles = r[4], rowBy = r[5], radarState = r[6];
+    var tiles = [], sections = [];
     var open = function (st) { return st && st.availability && st.availability.state === "AVAILABLE" && typeof st.count === "number"; };
     if (setupIdx && setupIdx.state === "AVAILABLE") {
       /* Nur offene Stufen tragen eine Zahl; eine geschlossene hat count null. */
       var conf = setupIdx.states.filter(function (st) { return st.state === "CONFIRMED" && open(st); })[0], form = setupIdx.states.filter(function (st) { return st.state === "SETUP_FORMING" && open(st); })[0];
-      tiles.push(X.stat("Bestätigte Setups", (conf ? conf.count : 0).toLocaleString("de-DE"), (form ? "bei weiteren " + form.count.toLocaleString("de-DE") + " entsteht eines · " : "") + "Stand " + X.dateDe(setupIdx.asOf)));
-      var confRows = conf ? [].concat.apply([], conf.rules.map(function (x) { return (x.tickers || []).map(function (t) { return { t: t, plain: x.plain }; }); })) : [];
-      ctx.commonFirst(confRows.map(function (x) { return x.t; })).slice(0, 4).forEach(function (t) { today.push(quantPoster(ctx, t, rowBy, { story: "Setup bestätigt" })); });
+      tiles.push(X.stat("Bestätigte Setups gesamt", (conf ? conf.count : 0).toLocaleString("de-DE"), (form ? "bei weiteren " + form.count.toLocaleString("de-DE") + " entsteht eines · " : "") + "Stand " + X.dateDe(setupIdx.asOf)));
     }
     if (stratIdx && stratIdx.state === "AVAILABLE" && stratIdx.historicalEvidence && stratIdx.historicalEvidence.transitions) {
       var labels = {}; ((profiles && profiles.contract && profiles.contract.profiles) || stratIdx.profiles || []).forEach(function (p) { labels[p.profileId] = p.label; });
       var he = stratIdx.historicalEvidence;
       var entered = he.transitions.filter(function (t) { return t.entered && t.entered.length; });
       var total = entered.reduce(function (n, t) { return n + t.entered.length; }, 0);
-      tiles.push(X.stat("Neu in einer Strategie", total.toLocaleString("de-DE"), "zwischen den Ständen " + X.dateDe(he.from) + " und " + X.dateDe(he.to) + " – kein Ereignis von heute"));
+
       entered.slice().sort(function (a, b) { return b.entered.length - a.entered.length; }).forEach(function (t, i) {
         var label = (labels[t.profileId] || t.profileId).split(" · ")[0];
         var list = ctx.commonFirst(t.entered);
-        if (i < 2) list.slice(0, 2).forEach(function (tk) { today.push(quantPoster(ctx, tk, rowBy, { story: "Neu in " + label })); });
         /* Eine Reihe je Strategie - das Datum steht EINMAL im Kopf. */
         if (i < 3) sections.push(X.world("Neu in „" + label + "“", t.entered.length + (t.entered.length === 1 ? " Aktie erfüllt" : " Aktien erfüllen") + " seit dem Stand vom " + X.dateDe(he.to) + " neu alle Bedingungen (vorher " + X.dateDe(he.from) + ")" +
           (t.exited && t.exited.length ? "; " + t.exited.length + (t.exited.length === 1 ? " ist" : " sind") + " herausgefallen" : "") + ".", [X.rail(list.slice(0, 14).map(function (tk) {
@@ -137,7 +232,18 @@
       var above = (regime.measures || []).filter(function (m) { return m.id === "above200"; })[0];
       tiles.push(X.stat("Marktlage", REGIME[regime.regime] || "Marktlage", (above ? Math.round(above.share * 100) + " % über der 200-Tage-Linie · " : "") + "Stand " + X.dateDe(regime.asOf)));
     }
-    cardsHost.replaceChildren(today.length ? X.rail(today, "Heute interessant") : X.notice("Gerade keine Veränderungen abrufbar", "Die aktuellen Stände konnten nicht geladen werden. Suche und Screener funktionieren weiterhin."));
+    if (radarState && radarState.state === "AVAILABLE") {
+      tiles = radarSummary(radarState).concat(tiles);
+      radarHost.replaceChildren.apply(radarHost, radarState.cards.slice(0, 6).map(function (c) { return radarCard(ctx, c, { logo: true }); }));
+      /* Beobachtete Aktien: was der Radar fuer sie meldet. Watchlist ist
+         keine Depotverwaltung - nur "zeig mir, wenn sich hier etwas tut". */
+      var watchedList = X.watch.list();
+      if (watchedList.length) {
+        var hits = radarState.cards.filter(function (c) { return watchedList.indexOf(c.ticker) >= 0; });
+        watchHost.replaceChildren(X.world("Deine beobachteten Aktien", hits.length ? hits.length + " von " + watchedList.length + " beobachteten Aktien melden eine Veränderung." : "Bei deinen " + watchedList.length + " beobachteten Aktien hat sich zum letzten Stand nichts geändert.",
+          hits.length ? [el("div", { class: "q-radar-grid" }, hits.slice(0, 6).map(function (c) { return radarCard(ctx, c); }))] : [], { href: X.routes.radar("filter=beobachtet"), label: "Alle beobachteten" }));
+      }
+    } else radarHost.replaceChildren(X.notice("Radar derzeit nicht verfügbar", "Der aktuelle Radar-Stand konnte nicht geladen werden. Suche und Screener funktionieren weiterhin."));;
     kpis.replaceChildren.apply(kpis, tiles.length ? tiles : [X.notice("Gerade keine Veränderungen abrufbar", "Die aktuellen Stände konnten nicht geladen werden. Suche und Screener funktionieren weiterhin.")]);
     rails.replaceChildren.apply(rails, sections);
   }
@@ -555,9 +661,9 @@
         : el("p", { class: "qx-small", text: "Keine passenden Aktien gefunden." }));
     });
     var recent = X.recent.list(), watched = X.watch.list();
-    if (watched.length) main.append(X.world("Gemerkt", watched.length + (watched.length === 1 ? " Aktie" : " Aktien") + " auf deiner Merkliste.", [X.rail(watched.slice(0, 24).map(function (t) { return X.poster({ ticker: t, name: nameOf(ctx, t), story: "Gemerkt" }); }), "Gemerkt"),
-      watched.length > 1 ? X.actions([X.btn("Gemerkte vergleichen", X.routes.compare(watched.slice(0, 4)), "secondary")]) : null]));
-    main.append(X.world("Zuletzt analysiert", recent.length ? null : "Aktien, die du analysierst oder merkst, erscheinen hier. Tippe auf einer Aktienseite auf „Merken“.",
+    if (watched.length) main.append(X.world("Beobachtet", watched.length + (watched.length === 1 ? " Aktie" : " Aktien") + " beobachtest du. Quant zeigt im Radar, wenn sich bei ihnen etwas ändert.", [X.rail(watched.slice(0, 24).map(function (t) { return X.poster({ ticker: t, name: nameOf(ctx, t), story: "Beobachtet" }); }), "Gemerkt"),
+      watched.length > 1 ? X.actions([X.btn("Beobachtete vergleichen", X.routes.compare(watched.slice(0, 4)), "secondary")]) : null]));
+    main.append(X.world("Zuletzt analysiert", recent.length ? null : "Aktien, die du analysierst oder beobachtest, erscheinen hier. Tippe auf einer Aktienseite auf „Beobachten“.",
       recent.length ? [X.rail(recent.slice(0, 12).map(function (t) { return X.poster({ ticker: t, name: nameOf(ctx, t), story: "Zuletzt analysiert" }); }), "Zuletzt analysiert")] : []));
     var interesting = el("div", {}, [X.loading()]);
     main.append(interesting);
@@ -584,5 +690,5 @@
     interesting.replaceChildren.apply(interesting, parts.length ? parts : [X.notice("Gerade nichts abrufbar", "Die aktuellen Stände konnten nicht geladen werden.")]);
   }
 
-  global.QXPages = { home: home, screener: screener, strategies: strategies, stocks: stocks, QUESTIONS: QUESTIONS, SIMPLE_THRESHOLD: SIMPLE_THRESHOLD };
+  global.QXPages = { home: home, radar: radar, radarCard: radarCard, screener: screener, strategies: strategies, stocks: stocks, QUESTIONS: QUESTIONS, SIMPLE_THRESHOLD: SIMPLE_THRESHOLD };
 })(window);

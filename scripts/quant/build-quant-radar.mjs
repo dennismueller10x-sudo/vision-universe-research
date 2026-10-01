@@ -45,6 +45,7 @@ const json = (file) => JSON.parse(readFileSync(file, "utf8"));
 const writeGz = (file, value) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, gzipSync(Buffer.from(JSON.stringify(value)))); };
 const shardKey = (t) => (t + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_");
 const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ""));
+const de = (d) => (isDate(d) ? d.slice(8, 10) + "." + d.slice(5, 7) + "." + d.slice(0, 4) : String(d));
 
 /* Wie viele Karten mit Einstieg, Trigger und Zielen aus der technischen
    Auswertung angereichert werden. Die uebrigen Karten tragen Invalidierung
@@ -132,7 +133,7 @@ for (const t of Object.keys(latest.rows)) {
     previousState: { setupState: a, label: label(a) }, currentState: { setupState: b, label: label(b) },
     explanation: type === "SETUP_WEAKENED"
       ? "Von „" + label(a) + "“ auf „" + label(b) + "“: eine Bedingung der bisherigen Stufe gilt am " + latest.date + " nicht mehr."
-      : "Von „" + label(a) + "“ auf „" + label(b) + "“ am " + latest.date + ".",
+      : "Von „" + label(a) + "“ auf „" + label(b) + "“ am " + de(latest.date) + ".",
     evidence: [{ source: "setup-observation-history", metricId: "setupState", previous: a, current: b, previousAsOf: before.date, asOf: latest.date }]
       .concat(cur[1] !== null && cur[1] !== undefined ? [{ source: "setup-observations-v1", metricId: "invalidationPrice", current: cur[1], unit: "USD" }] : []),
     nextCondition: next ? { state: next.state, label: label(next.state), open: next.open, total: next.total } : null });
@@ -210,7 +211,7 @@ for (const s of factorsFile.securities || []) {
   marketAsOf = marketAsOf && marketAsOf > s.asOf ? marketAsOf : s.asOf;
   push({ eventType: "NEW_52W_HIGH", ticker: s.ticker, securityId: securityOf(s.ticker) || s.securityId || null, occurredAt: s.asOf, previousAsOf: null,
     previousState: null, currentState: { newHigh52w: true, distanceTo52wHigh: s.values.distanceTo52wHigh ?? null },
-    explanation: "Das Tageshoch am " + s.asOf + " erreicht den höchsten Kurs der letzten 52 Wochen.",
+    explanation: "Das Tageshoch am " + de(s.asOf) + " erreicht den höchsten Kurs der letzten 52 Wochen.",
     evidence: [{ source: "market-factors", metricId: "newHigh52w", current: true, asOf: s.asOf }].concat(typeof s.values.distanceTo52wHigh === "number" ? [{ source: "market-factors", metricId: "distanceTo52wHigh", current: s.values.distanceTo52wHigh, unit: "ratio", asOf: s.asOf }] : []),
     nextCondition: null });
 }
