@@ -1,0 +1,1561 @@
+{
+  "schemaVersion": "marketstack-measured-coverage-1.0.0",
+  "generatedAt": "2026-10-01T12:07:01.550650+00:00",
+  "state": "MEASURED_PARTIAL",
+  "sourceRuns": [
+    {
+      "source": "github-actions",
+      "runId": "36852153799",
+      "commit": "757b22c089080f6fa36f8cddb6253b2cdb32098c"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36853405425",
+      "commit": "f3a4967a76838dc4e4c27fa1bd300b5b0b4cb34c"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36854621111",
+      "commit": "428ba5a1570e29b04e70ee6b90c0212695f44cc2"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36856401441",
+      "commit": "db7a59a5563ab678d7c36d8abde740ff8aebd6da"
+    },
+    {
+      "source": "github-actions",
+      "runId": "36858301835",
+      "commit": "bbbc4b36a6d211dec94379ebc451f791f453f1c1"
+    }
+  ],
+  "source": "AUTHENTICATED_GITHUB_ACTIONS",
+  "unmeasuredValuesAreNull": true,
+  "verifiedETFSymbolsWithEOD": [
+    "ARKK",
+    "EUNA.DE",
+    "EUNL.DE",
+    "EXS1.DE",
+    "EXSA.DE",
+    "IS3N.DE",
+    "ISPA.DE",
+    "IWM",
+    "QQQ",
+    "SPY",
+    "SXR8.DE",
+    "SXRV.DE",
+    "VOO",
+    "VTI",
+    "VWCE.DE"
+  ],
+  "verifiedETFPriceSampleCount": 15,
+  "totalActiveETFs": null,
+  "globalETFCount": null,
+  "etflist": {
+    "reportedTotal": 52421,
+    "sampleRows": 1000,
+    "classification": "UNTRUSTED_ASSET_TYPE",
+    "reason": "Response includes common-equity symbols 000001.SZ and 000660.KS; endpoint membership is not ETF evidence.",
+    "usedForProductionAssetType": false
+  },
+  "priceSamples": [
+    {
+      "requestedSymbol": "SPY",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T10:56:40.248Z",
+      "requestSucceeded": true,
+      "returnedBars": 8,
+      "dateFromRequested": "2026-09-21",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2026-09-21T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "SPDR S&P 500 ETF Trust",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": "etf",
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_9b526524b8cf52de20c5af44",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "QQQ",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T10:56:40.506Z",
+      "requestSucceeded": true,
+      "returnedBars": 8,
+      "dateFromRequested": "2026-09-21",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2026-09-21T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "Invesco QQQ Trust Series 1",
+      "mic": "XNAS",
+      "providerAssetType": "ETF",
+      "metadataAssetType": "etf",
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_c77bb77d037ce80129a45f44",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "VOO",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T10:56:40.743Z",
+      "requestSucceeded": true,
+      "returnedBars": 8,
+      "dateFromRequested": "2026-09-21",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2026-09-21T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "VANGUARD 500 INDEX FUND ETF SHARES",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": "etf",
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_00c9890713dbd09075a11b64",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "VTI",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T10:56:40.984Z",
+      "requestSucceeded": true,
+      "returnedBars": 8,
+      "dateFromRequested": "2026-09-21",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2026-09-21T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "Vanguard Morningstar Total Stock Market ETF",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": null,
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedSymbol": "IWM",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T10:56:41.236Z",
+      "requestSucceeded": true,
+      "returnedBars": 8,
+      "dateFromRequested": "2026-09-21",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2026-09-21T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "ISHARES RUSSELL 2000 ETF ",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": null,
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedSymbol": "ARKK",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T10:56:41.488Z",
+      "requestSucceeded": true,
+      "returnedBars": 8,
+      "dateFromRequested": "2026-09-21",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2026-09-21T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "ARK INNOVATION ETF ",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": null,
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": false,
+      "productionActivated": false
+    },
+    {
+      "requestedSymbol": "SPY",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:01:52.802Z",
+      "requestSucceeded": true,
+      "returnedBars": 21,
+      "dateFromRequested": "2026-09-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2026-09-01T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "SPDR S&P 500 ETF Trust",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": "etf",
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_9b526524b8cf52de20c5af44",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "EUNL.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:08:59.887Z",
+      "requestSucceeded": true,
+      "returnedBars": 438,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-28T00:00:00+0000",
+      "name": "iShares Core MSCI World UCITS ETF USD",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_fa85322d99172d04d94c347c",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "VWCE.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:00.431Z",
+      "requestSucceeded": true,
+      "returnedBars": 438,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-28T00:00:00+0000",
+      "name": "Vanguard FTSE All-World UCITS ETF USD Accumulation",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_4b9f6ea7c25e2c9d66d7bf3c",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "SXR8.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:00.972Z",
+      "requestSucceeded": true,
+      "returnedBars": 440,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-28T00:00:00+0000",
+      "name": "iShares Core S&amp;P 500 UCITS ETF USD",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_83833194ecb6f40fc3f3d7e1",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "SXRV.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:01.530Z",
+      "requestSucceeded": true,
+      "returnedBars": 441,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "iShares NASDAQ 100 UCITS ETF USD",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_7ba9bbc649ee8aeb9bb70848",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "IS3N.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:02.091Z",
+      "requestSucceeded": true,
+      "returnedBars": 440,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "iShares Core MSCI EM IMI UCITS ETF USD",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_58f0ad1c110314d4943a1db9",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "EXSA.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:02.686Z",
+      "requestSucceeded": true,
+      "returnedBars": 439,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "iShares STOXX Europe 600 UCITS ETF",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_aa863bcad697942af0750359",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "EXS1.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:03.240Z",
+      "requestSucceeded": true,
+      "returnedBars": 437,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "iShares Core DAX UCITS ETF",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_2b51e97effb3831d6f4d3284",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "EUNA.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:03.813Z",
+      "requestSucceeded": true,
+      "returnedBars": 441,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-29T00:00:00+0000",
+      "name": "iShares Core Global Aggregate Bond UCITS ETF EUR H",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_d8863076af3a9462278d7ee6",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "ISPA.DE",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:04.433Z",
+      "requestSucceeded": true,
+      "returnedBars": 437,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-28T00:00:00+0000",
+      "name": "iShares STOXX Global Select Dividend 100 UCITS ETF",
+      "mic": "XETR",
+      "providerAssetType": null,
+      "metadataAssetType": "etf",
+      "priceCurrency": null,
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "EUR",
+      "tradingCurrencySource": {
+        "source_system": "DEUTSCHE_BOERSE_XETRA_T7_REFERENCE",
+        "source_url": "https://www.cashmarket.deutsche-boerse.com/resource/blob/1528/f272786f34bb42ea0a50ab56a4a7684e/data/t7-xetr-allTradableInstruments.csv",
+        "discovery_url": "https://www.cashmarket.deutsche-boerse.com/cash-en/trading/Tradable-Instruments-Xetra/Downloads",
+        "source_last_update": "2026-10-01",
+        "retrieved_at": "2026-10-01T11:17:27.068930+00:00",
+        "sha256": "f88becaa615afd47a5b18b4b60a02c689190009343c39436eb5b13c5804637db",
+        "currency_column": "Currency",
+        "settlement_currency_column_is_separate": true
+      },
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_1cf865fada22b7303e742a0b",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "SPY",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:05.038Z",
+      "requestSucceeded": true,
+      "returnedBars": 437,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "SPDR S&P 500 ETF Trust",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": "etf",
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_9b526524b8cf52de20c5af44",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "QQQ",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:05.608Z",
+      "requestSucceeded": true,
+      "returnedBars": 437,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "Invesco QQQ Trust Series 1",
+      "mic": "XNAS",
+      "providerAssetType": "ETF",
+      "metadataAssetType": "etf",
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_c77bb77d037ce80129a45f44",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    },
+    {
+      "requestedSymbol": "VOO",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:09:06.300Z",
+      "requestSucceeded": true,
+      "returnedBars": 437,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-01-02T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "VANGUARD 500 INDEX FUND ETF SHARES",
+      "mic": "ARCX",
+      "providerAssetType": "ETF",
+      "metadataAssetType": "etf",
+      "priceCurrency": "USD",
+      "coverageClassification": "EOD_ONLY",
+      "note": "Only requested window measured; history depth and realtime not inferred.",
+      "validatedTradingCurrency": "USD",
+      "tradingCurrencySource": "MARKETSTACK_RESPONSE",
+      "branchPrepared": true,
+      "productionActivated": false,
+      "canonicalListingId": "vu_00c9890713dbd09075a11b64",
+      "canonicalHistoryCoverage": "PARTIAL",
+      "canonicalPriceBasis": "PROVIDER_REPORTED_UNVERIFIED"
+    }
+  ],
+  "holdingsTests": [
+    {
+      "symbol": "SPY",
+      "checkedAt": "2026-10-01T11:01:39.664Z",
+      "httpTransportSucceeded": true,
+      "holdingsSucceeded": false,
+      "providerErrorCode": 404,
+      "providerErrorMessage": "error",
+      "portfolioScope": null,
+      "reportDate": null,
+      "signatureDate": null,
+      "fund": null,
+      "seriesAttributes": null,
+      "holdingLines": 0,
+      "assetCategories": {},
+      "signedWeightTotalPercent": null,
+      "missingWeights": 0,
+      "weightStringMaxDecimals": 0,
+      "missingISIN": 0,
+      "duplicateNonNullISIN": [],
+      "negativeWeightLines": 0,
+      "cashCollateralLines": 0,
+      "completeness": "UNKNOWN",
+      "updateFrequency": "UNKNOWN",
+      "currentAsOfRetrieval": null,
+      "publicAvailableAt": null,
+      "note": "Signature date does not prove regulatory acceptance. Fund-series holdings are not ETF-share-class AUM."
+    },
+    {
+      "symbol": "QQQ",
+      "checkedAt": "2026-10-01T11:01:40.163Z",
+      "httpTransportSucceeded": true,
+      "holdingsSucceeded": false,
+      "providerErrorCode": 404,
+      "providerErrorMessage": "error",
+      "portfolioScope": null,
+      "reportDate": null,
+      "signatureDate": null,
+      "fund": null,
+      "seriesAttributes": null,
+      "holdingLines": 0,
+      "assetCategories": {},
+      "signedWeightTotalPercent": null,
+      "missingWeights": 0,
+      "weightStringMaxDecimals": 0,
+      "missingISIN": 0,
+      "duplicateNonNullISIN": [],
+      "negativeWeightLines": 0,
+      "cashCollateralLines": 0,
+      "completeness": "UNKNOWN",
+      "updateFrequency": "UNKNOWN",
+      "currentAsOfRetrieval": null,
+      "publicAvailableAt": null,
+      "note": "Signature date does not prove regulatory acceptance. Fund-series holdings are not ETF-share-class AUM."
+    },
+    {
+      "symbol": "VOO",
+      "checkedAt": "2026-10-01T11:01:49.270Z",
+      "httpTransportSucceeded": true,
+      "holdingsSucceeded": true,
+      "providerErrorCode": null,
+      "providerErrorMessage": null,
+      "portfolioScope": "REPORTED_FUND_SERIES",
+      "reportDate": "2024-12-31",
+      "signatureDate": "2025-02-27",
+      "fund": {
+        "fund_name": "VANGUARD INDEX FUNDS",
+        "file_number": "811-02652",
+        "cik": "0000036405",
+        "reg_lei": "549300G6KNDK44WUN559"
+      },
+      "seriesAttributes": {
+        "series_name": "VANGUARD 500 INDEX FUND",
+        "series_id": "S000002839",
+        "series_lei": "12WZ1W76P8QD4VJ6OB47",
+        "ticker": "VOO",
+        "isin": "US9229083632",
+        "date_report_period": "2024-12-31",
+        "end_report_period": "2024-12-31",
+        "final_filing": false
+      },
+      "holdingLines": 516,
+      "assetCategories": {
+        "EC": 504,
+        "DE": 10,
+        "STIV": 2
+      },
+      "signedWeightTotalPercent": 99.916916230713,
+      "missingWeights": 0,
+      "weightStringMaxDecimals": 12,
+      "missingISIN": 13,
+      "duplicateNonNullISIN": [],
+      "negativeWeightLines": 9,
+      "cashCollateralLines": 1,
+      "completeness": "UNKNOWN",
+      "updateFrequency": "UNKNOWN",
+      "currentAsOfRetrieval": false,
+      "publicAvailableAt": null,
+      "note": "Signature date does not prove regulatory acceptance. Fund-series holdings are not ETF-share-class AUM."
+    },
+    {
+      "symbol": "EUNL.DE",
+      "checkedAt": "2026-10-01T11:12:22.420Z",
+      "httpTransportSucceeded": false,
+      "holdingsSucceeded": false,
+      "providerErrorCode": null,
+      "providerErrorMessage": null,
+      "portfolioScope": null,
+      "reportDate": null,
+      "signatureDate": null,
+      "fund": null,
+      "seriesAttributes": null,
+      "holdingLines": 0,
+      "assetCategories": {},
+      "signedWeightTotalPercent": null,
+      "missingWeights": 0,
+      "weightStringMaxDecimals": 0,
+      "missingISIN": 0,
+      "duplicateNonNullISIN": [],
+      "negativeWeightLines": 0,
+      "cashCollateralLines": 0,
+      "completeness": "UNKNOWN",
+      "updateFrequency": "UNKNOWN",
+      "currentAsOfRetrieval": null,
+      "publicAvailableAt": null,
+      "note": "Signature date does not prove regulatory acceptance. Fund-series holdings are not ETF-share-class AUM.",
+      "testState": "TRANSPORT_TIMEOUT",
+      "coverage": "UNKNOWN"
+    }
+  ],
+  "metadataAvailability": [
+    {
+      "field": "ETF name",
+      "documented_evidence": "ETFHoldingsResponse.basics.fund_name / output.attributes.series_name; ETFListItem lacks name",
+      "empirical_status": "AVAILABLE_FOR_VOO_FUND_SERIES",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Ticker",
+      "documented_evidence": "ETFListItem.ticker and ETFAttributes.ticker",
+      "empirical_status": "AVAILABLE_FOR_VOO_FUND_SERIES",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Exchange",
+      "documented_evidence": "EOD catalog MIC and ticker/exchange schemas; ETFListItem lacks exchange despite endpoint prose",
+      "empirical_status": "AVAILABLE_FOR_OBSERVED_EOD_ETF_SAMPLES",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "ISIN",
+      "documented_evidence": "ETFAttributes.isin and holding.isin; not in list catalog",
+      "empirical_status": "VOO_FUND_SERIES_AND_NINE_XETRA_ETF_OFFICIAL_REFERENCE",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "WKN",
+      "documented_evidence": "Absent from inspected documented ETF schemas",
+      "empirical_status": "NINE_XETRA_ETF_WKN_FROM_OFFICIAL_REFERENCE",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Issuer",
+      "documented_evidence": "Holdings basics fund/trust name and CIK; no independent issuer/company metadata guarantee",
+      "empirical_status": "UNKNOWN",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Fund domicile",
+      "documented_evidence": "Absent from inspected documented ETF schemas",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Fund currency",
+      "documented_evidence": "Holding currency present; fund base currency absent",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Trading currency",
+      "documented_evidence": "EODBar.price_currency; listing-level quote unit requires authenticated verification, including GBX. Public XLSX lacks currency.",
+      "empirical_status": "SIX_US_RESPONSE_USD_AND_NINE_XETRA_ETF_OFFICIAL_REFERENCE_EUR",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "UCITS status",
+      "documented_evidence": "Absent from inspected documented ETF schemas",
+      "empirical_status": "NINE_PROVIDER_NAMES_EXPLICIT_UCITS; independent regulatoryverification notperformed",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Inception date",
+      "documented_evidence": "Absent; oldest price date does not prove inception",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Benchmark",
+      "documented_evidence": "Absent from inspected documented ETF schemas",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "TER",
+      "documented_evidence": "Absent from inspected documented ETF schemas",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "OCF",
+      "documented_evidence": "Absent from inspected documented ETF schemas",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Expense ratio",
+      "documented_evidence": "Absent from inspected documented ETF schemas",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "AUM",
+      "documented_evidence": "Absent; holdings value sum is not guaranteed AUM",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Accumulating vs distributing",
+      "documented_evidence": "Absent; cannot infer from names or dividend absence",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Replication method",
+      "documented_evidence": "Absent",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Physical vs synthetic",
+      "documented_evidence": "Absent; derivatives holdings do not imply synthetic fund",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Holdings",
+      "documented_evidence": "ETFHoldingsResponse.output.holdings[].investment_security",
+      "empirical_status": "AVAILABLE_FOR_VOO_FUND_SERIES",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Full holdings",
+      "documented_evidence": "Schema has array; completeness and pagination untested",
+      "empirical_status": "UNKNOWN",
+      "status": "UNKNOWN"
+    },
+    {
+      "field": "Holdings weights",
+      "documented_evidence": "ETFHoldingSecurity.percent_value numeric string percentage",
+      "empirical_status": "AVAILABLE_FOR_VOO_FUND_SERIES",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Sector allocation",
+      "documented_evidence": "No sector allocation schema or holding sectors",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Country allocation",
+      "documented_evidence": "Holding invested_country, country aggregates absent",
+      "empirical_status": "UNKNOWN",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Asset allocation",
+      "documented_evidence": "Holding asset_category, aggregate absent",
+      "empirical_status": "UNKNOWN",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Dividend history",
+      "documented_evidence": "Generic ticker dividend endpoints, specific ETF coverage untested",
+      "empirical_status": "SPY_DIVIDEND_RETURNED",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "Historical prices",
+      "documented_evidence": "Catalog candidates exist; authenticated EOD history untested",
+      "empirical_status": "SIX_US_AND_NINE_XETRA_ETF_EOD_SAMPLES",
+      "status": "PARTIAL"
+    },
+    {
+      "field": "NAV",
+      "documented_evidence": "Absent from ETF schemas; exchange price is not NAV",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Tracking difference",
+      "documented_evidence": "Absent",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    },
+    {
+      "field": "Tracking error",
+      "documented_evidence": "Absent",
+      "empirical_status": "UNKNOWN",
+      "status": "NOT AVAILABLE"
+    }
+  ],
+  "UCITSVerifiedCount": null,
+  "UCITSCandidatesFromPublicCatalogOnly": [
+    {
+      "requested_category": "US broad market",
+      "catalog_symbol": "SPY",
+      "catalog_matches": [
+        {
+          "ticker": "SPY",
+          "mic": "ARCX"
+        }
+      ],
+      "typed_csv_matches": [
+        {
+          "ticker": "SPY",
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "1993-01-29",
+          "endDate": "2025-03-12"
+        }
+      ],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "US broad market",
+      "catalog_symbol": "QQQ",
+      "catalog_matches": [
+        {
+          "ticker": "QQQ",
+          "mic": "XNAS"
+        }
+      ],
+      "typed_csv_matches": [
+        {
+          "ticker": "QQQ",
+          "exchange": "NASDAQ",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "1999-03-10",
+          "endDate": "2025-03-12"
+        }
+      ],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "US broad market",
+      "catalog_symbol": "VOO",
+      "catalog_matches": [
+        {
+          "ticker": "VOO",
+          "mic": "ARCX"
+        }
+      ],
+      "typed_csv_matches": [
+        {
+          "ticker": "VOO",
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2010-09-09",
+          "endDate": "2025-03-12"
+        }
+      ],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "US broad market",
+      "catalog_symbol": "VTI",
+      "catalog_matches": [
+        {
+          "ticker": "VTI",
+          "mic": "ARCX"
+        }
+      ],
+      "typed_csv_matches": [
+        {
+          "ticker": "VTI",
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2001-05-31",
+          "endDate": "2025-03-12"
+        },
+        {
+          "ticker": "VTI",
+          "exchange": "ASX",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "",
+          "endDate": ""
+        }
+      ],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "US broad market",
+      "catalog_symbol": "IWM",
+      "catalog_matches": [
+        {
+          "ticker": "IWM",
+          "mic": "ARCX"
+        }
+      ],
+      "typed_csv_matches": [
+        {
+          "ticker": "IWM",
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2000-05-26",
+          "endDate": "2025-03-12"
+        }
+      ],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "US broad market",
+      "catalog_symbol": "ARKK",
+      "catalog_matches": [
+        {
+          "ticker": "ARKK",
+          "mic": "ARCX"
+        }
+      ],
+      "typed_csv_matches": [
+        {
+          "ticker": "ARKK",
+          "exchange": "NYSE ARCA",
+          "assetType": "ETF",
+          "priceCurrency": "USD",
+          "startDate": "2014-10-31",
+          "endDate": "2025-03-12"
+        }
+      ],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "MSCI World",
+      "catalog_symbol": "IWDA.AS",
+      "catalog_matches": [
+        {
+          "ticker": "IWDA.AS",
+          "mic": "XAMS"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "MSCI World",
+      "catalog_symbol": "SWDA.L",
+      "catalog_matches": [
+        {
+          "ticker": "SWDA.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "MSCI World",
+      "catalog_symbol": "IWDA.L",
+      "catalog_matches": [
+        {
+          "ticker": "IWDA.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "FTSE All-World",
+      "catalog_symbol": "VWRL.AS",
+      "catalog_matches": [
+        {
+          "ticker": "VWRL.AS",
+          "mic": "XAMS"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "FTSE All-World",
+      "catalog_symbol": "VWRL.L",
+      "catalog_matches": [
+        {
+          "ticker": "VWRL.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "FTSE All-World",
+      "catalog_symbol": "VWRP.L",
+      "catalog_matches": [
+        {
+          "ticker": "VWRP.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "S&P 500 UCITS",
+      "catalog_symbol": "CSPX.L",
+      "catalog_matches": [
+        {
+          "ticker": "CSPX.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "S&P 500 UCITS",
+      "catalog_symbol": "VUSA.AS",
+      "catalog_matches": [
+        {
+          "ticker": "VUSA.AS",
+          "mic": "XAMS"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "S&P 500 UCITS",
+      "catalog_symbol": "VUSA.L",
+      "catalog_matches": [
+        {
+          "ticker": "VUSA.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Nasdaq 100 UCITS",
+      "catalog_symbol": "EQQQ.DE",
+      "catalog_matches": [
+        {
+          "ticker": "EQQQ.DE",
+          "mic": "XETR"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Nasdaq 100 UCITS",
+      "catalog_symbol": "EQQQ.L",
+      "catalog_matches": [
+        {
+          "ticker": "EQQQ.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Nasdaq 100 UCITS",
+      "catalog_symbol": "CNDX.L",
+      "catalog_matches": [
+        {
+          "ticker": "CNDX.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Emerging Markets",
+      "catalog_symbol": "EIMI.L",
+      "catalog_matches": [
+        {
+          "ticker": "EIMI.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Emerging Markets",
+      "catalog_symbol": "VFEM.L",
+      "catalog_matches": [
+        {
+          "ticker": "VFEM.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "STOXX Europe 600",
+      "catalog_symbol": "MEUD.PA",
+      "catalog_matches": [
+        {
+          "ticker": "MEUD.PA",
+          "mic": "XPAR"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "DAX",
+      "catalog_symbol": "DBXD.DE",
+      "catalog_matches": [
+        {
+          "ticker": "DBXD.DE",
+          "mic": "XETR"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Bond ETFs",
+      "catalog_symbol": "AGGH.L",
+      "catalog_matches": [
+        {
+          "ticker": "AGGH.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Bond ETFs",
+      "catalog_symbol": "VAGF.DE",
+      "catalog_matches": [
+        {
+          "ticker": "VAGF.DE",
+          "mic": "XETR"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Dividend ETFs",
+      "catalog_symbol": "VHYL.L",
+      "catalog_matches": [
+        {
+          "ticker": "VHYL.L",
+          "mic": "XLON"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    },
+    {
+      "requested_category": "Dividend ETFs",
+      "catalog_symbol": "VHYL.AS",
+      "catalog_matches": [
+        {
+          "ticker": "VHYL.AS",
+          "mic": "XAMS"
+        }
+      ],
+      "typed_csv_matches": [],
+      "name_category_ucits_verified": false,
+      "api_price_verified": false,
+      "holdings_verified": false,
+      "currency": null
+    }
+  ],
+  "limitations": [
+    "Six US ETF samples do not establish global ETF completeness.",
+    "Broad UCITS/FTSE All-World name searches returned zero; zero search results do not prove unavailable prices.",
+    "VOO fund-series report is dated 2024-12-31, well before retrieval; no current holdings claim.",
+    "SPY/QQQ returned HTTP200 semantic404; no holdings data.",
+    "No company-fundamentals metrics or equity ranking eligibility granted to ETF records.",
+    "NineEuropeanETF exactsymbol probes returnedmetadataEtf+EOD history; dedicated dividend/historydepth completeness unmeasured.",
+    "EUNL.DE holdings attempt timedout; it does not prove Europe holdings absent."
+  ],
+  "externalListingCurrencyEvidence": "marketstack_trading_currency_evidence.json",
+  "supplementaryNotes": [
+    "Authenticated direct ticker metadata supplies item_type/ISIN/MIC; European EOD rows omit asset_type/name/price_currency.",
+    "Official Xetra reference file updated2026-10-01 verifies23 German currency matches and9 ETF listings, supplying missingETFISINs.",
+    "Official Euronext verifiesEUR forASML/LVMH/Airbus/Ferrari; SIX verifiesCHF forNestlé; NovoNordiskissuer quote verifiesDKK.",
+    "HEN3 is preferred despite broad provider equity type and officialCS code; exclude from common-equity-only eligibility."
+  ],
+  "EuropeanETFSymbolsWithMetadataTypeAndEOD": [
+    "EUNA.DE",
+    "EUNL.DE",
+    "EXS1.DE",
+    "EXSA.DE",
+    "IS3N.DE",
+    "ISPA.DE",
+    "SXR8.DE",
+    "SXRV.DE",
+    "VWCE.DE"
+  ],
+  "EuropeanETFSamplesValidatedListingCurrency": 9,
+  "UCITSProviderNameEvidenceCount": 9,
+  "UCITSRegulatoryStatusIndependentlyVerified": false,
+  "preparedExtension": {
+    "branchPrepared": true,
+    "productionActivated": false,
+    "productionDeployed": false,
+    "canonicalManifest": "quant/data/global-market/manifest.json",
+    "canonicalImportReport": "reports/marketstack/marketstack_canonical_import.json",
+    "counts": {
+      "totalPreparedListings": 58,
+      "equityListings": 46,
+      "germanVenueEquityListings": 23,
+      "otherEuropeanVenueEquityListings": 16,
+      "asianVenueEquityListings": 7,
+      "etfListings": 12,
+      "germanVenueETFListings": 9,
+      "usVenueETFListings": 3,
+      "preferredEquityListings": 1,
+      "validCanonicalBars": 23016,
+      "quarantinedProviderBars": 1394,
+      "partialHistoryListings": 58,
+      "equityListingsMissingFundamentals": 46
+    },
+    "coverageRules": [
+      "Counts describe tested prepared extension, not total provider/venue universes or issuer domiciles.",
+      "Every history is PARTIAL with unverified corporate actions and price basis.",
+      "Only bounded close-chart/display support is prepared; no technical, Quant, Factor DNA or fundamentals eligibility.",
+      "Accepted US master, Tiingo, SEC and ESEF are unchanged. Unknown issuer identity/domicile remain null."
+    ]
+  },
+  "branchPrepared": true,
+  "productionActivated": false,
+  "preparedETFSymbols": [
+    "EUNA.DE",
+    "EUNL.DE",
+    "EXS1.DE",
+    "EXSA.DE",
+    "IS3N.DE",
+    "ISPA.DE",
+    "QQQ",
+    "SPY",
+    "SXR8.DE",
+    "SXRV.DE",
+    "VOO",
+    "VWCE.DE"
+  ],
+  "preparedETFCount": 12,
+  "productionETFActivationCount": 0,
+  "fullXetraClassifiedCandidateArtifact": "marketstack_xetra_classified_candidates.json",
+  "fullXetraClassifiedCandidateCounts": {
+    "providerDirectoryInstrumentRows": 8959,
+    "providerDirectoryUniqueSymbols": 8959,
+    "exactReferenceMatchedRows": 3245,
+    "activeClassifiedEquityListingCandidates": 680,
+    "preferredNameHintCandidates": 12,
+    "equityCandidatesWithoutPreferredNameHint": 668,
+    "activeClassifiedETFListingCandidates": 2374,
+    "uniqueETFISINCandidates": 2290,
+    "excludedNonEquityETFListingCandidates": 191,
+    "unresolvedInstrumentRows": 5714,
+    "historyUncheckedClassifiedCandidates": 3022,
+    "branchPreparedClassifiedCandidates": 32,
+    "productionActivatedCandidates": 0,
+    "potentialSameISINMICCurrencyAliasGroups": 0,
+    "partialPreparedSubsetCandidates": 32
+  },
+  "candidateHistoryValidation": "32_PARTIAL_PREPARED_SUBSET;3022_UNCHECKED",
+  "classifiedXetraETFListingCandidates": 2374,
+  "classifiedXetraDistinctETFISINCandidates": 2290,
+  "classifiedXetraETFQuoteCurrencyCounts": {
+    "EUR": 2240,
+    "USD": 109,
+    "CHF": 4,
+    "GBP": 18,
+    "SEK": 1,
+    "AUD": 1,
+    "JPY": 1
+  },
+  "candidateHistoriesValidatedCount": 0,
+  "candidateHistoriesValidationNote": "Nine previously prepared Xetra ETF histories remain PARTIAL; the other full-directory ETF candidate histories are unchecked.",
+  "UKETFCandidatePriceTests": [
+    {
+      "requestedSymbol": "IBTA.XLON",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:05.543Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 317,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-04-01T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "ISHARES IBONDS DEC 2021 TERM TREASURY ETF",
+      "mic": "XLON",
+      "metadataAssetType": null,
+      "metadataISIN": "US4510511060",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "USD": 229,
+        "GBP": 88
+      },
+      "validatedTradingCurrency": null,
+      "tradingCurrencySource": null,
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "BLOCKED_MIXED_CURRENCY_AND_METADATA_CONFLICT",
+      "branchPrepared": false,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime. UK UCITS candidates are blocked because provider identity/type conflicts and mixed price currencies cannot be reconciled."
+    },
+    {
+      "requestedSymbol": "VERX.XLON",
+      "endpoint": "eod",
+      "checkedAt": "2026-10-01T11:57:06.098Z",
+      "sourceRunId": "36858301835",
+      "requestSucceeded": true,
+      "returnedBars": 317,
+      "dateFromRequested": "2025-01-01",
+      "dateToRequested": "2026-09-30",
+      "firstObservedDate": "2025-04-01T00:00:00+0000",
+      "lastObservedDate": "2026-09-30T00:00:00+0000",
+      "name": "Vertex, Inc.",
+      "mic": "XLON",
+      "metadataAssetType": "equity",
+      "metadataISIN": "US92538J1060",
+      "priceCurrency": null,
+      "observedPriceCurrencyCounts": {
+        "GBP": 313,
+        "USD": 4
+      },
+      "validatedTradingCurrency": null,
+      "tradingCurrencySource": null,
+      "coverageClassification": "EOD_ONLY",
+      "dataQualityState": "BLOCKED_MIXED_CURRENCY_AND_METADATA_CONFLICT",
+      "branchPrepared": false,
+      "productionActivated": false,
+      "note": "Observed window only; no verified adjustment basis or realtime. UK UCITS candidates are blocked because provider identity/type conflicts and mixed price currencies cannot be reconciled."
+    }
+  ],
+  "UKETFCandidatesBlocked": 2,
+  "UKETFPriceCoverageValidated": 0,
+  "UKETFIdentityAnomalies": [
+    {
+      "providerSymbol": "IBTA.XLON",
+      "discoveredCandidateName": "iShares USD Treasury Bond 1-3yr UCITS ETF",
+      "returnedISIN": "US4510511060",
+      "returnedItemType": null,
+      "resolution": "BLOCKED_UNRESOLVED_IDENTITY_AND_MIXED_CURRENCY"
+    },
+    {
+      "providerSymbol": "VERX.XLON",
+      "discoveredCandidateName": "Vanguard FTSE Developed Europe ex UK UCITS ETF",
+      "returnedISIN": "US92538J1060",
+      "returnedItemType": "equity",
+      "resolution": "BLOCKED_CONTRADICTORY_ASSET_TYPE_IDENTITY_AND_MIXED_CURRENCY"
+    }
+  ]
+}

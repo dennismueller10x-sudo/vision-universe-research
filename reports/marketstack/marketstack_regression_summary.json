@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "marketstack-regression-summary-1.0.0",
+  "generatedAt": "2026-10-01T12:35:43.804747+00:00",
+  "baselineCommit": "d10d09eddeb0b6869550e38920d0e2f10818919e",
+  "testedCodeCommit": "39f39e278c03ac4ff5093965c7f1463e462f3ea3",
+  "suiteResults": [
+    {
+      "suite": "quant",
+      "command": "node --test quant/tests/*.test.mjs",
+      "passed": 2185,
+      "skipped": 0,
+      "failed": 0,
+      "localLogSHA256": "478f6ad22f3712dd59da2c84ebd0429daabae9511c4ccf90c9b41f1985afe4b1"
+    },
+    {
+      "suite": "products",
+      "command": "node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs",
+      "passed": 451,
+      "skipped": 5,
+      "failed": 0,
+      "localLogSHA256": "78acd74f44ba9cdd1577ca4485168eb55f00c35be0a478487df8b68bf594952b"
+    },
+    {
+      "suite": "sec",
+      "command": "python3 -m unittest discover -s scripts/quant/tests",
+      "passed": 484,
+      "skipped": 0,
+      "failed": 0,
+      "localLogSHA256": "450cda427109197a91d6d0488894a730033f261bebe08a95a084f5129d6e50cc"
+    },
+    {
+      "suite": "esef",
+      "command": "python3 -m unittest discover -s scripts/fundamentals/tests",
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "localLogSHA256": "8434bec522e1bbfc15e7e860e174b8f0871dcc5419e065a78bec5525f2f145e8"
+    },
+    {
+      "suite": "product-api-fundamentals",
+      "command": "python3 -m unittest scripts.vu2.test_product_data_api scripts.vu2.test_fundamentals_serving",
+      "passed": 32,
+      "skipped": 0,
+      "failed": 0,
+      "localLogSHA256": "26e34266620cca045413ffaa103db0adffde6a2e6b8f616f090cf0a2a18ca9ea"
+    },
+    {
+      "suite": "release-resource-budget",
+      "command": "node --test scripts/vu2/resource-budget.test.mjs",
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "localLogSHA256": "25085a8ff851020c0b392ad2420c7d8393a0572ebfdb8ea815984612469f1add"
+    }
+  ],
+  "independentTargetedReview": {
+    "passed": 81,
+    "failed": 0
+  },
+  "canonicalDirectoryBrowser": {
+    "passed": 58,
+    "failed": 0
+  },
+  "sourceProductBrowser": {
+    "passed": 63,
+    "failed": 0
+  },
+  "releaseProductBrowser": {
+    "passed": 63,
+    "failed": 0,
+    "pageErrors": 0,
+    "httpErrors": 0
+  },
+  "geographicIdentityQualityBrowser": {
+    "passed": 6,
+    "failed": 0
+  },
+  "checks": {
+    "baseline": {
+      "status": "PASS",
+      "localLogSHA256": "faf4209dc397f370bc91c379002662e0db2c3048a298576ba4fbf149f3943067",
+      "result": "{\"state\":\"PASS\",\"members\":7809,\"enriched\":39,\"protectedPriceAndSecArtifactsChanged\":0,\"nonEnrichedDetailsChanged\":0,\"source\":\"d10d09eddeb0b6869550e38920d0e2f10818919e\"}\n"
+    },
+    "quantArtifacts": {
+      "status": "PASS",
+      "localLogSHA256": "12435c05f2fa1cf603e8a1422f6a7e05f5936b24eabb2d936a90caf85b71f648",
+      "result": "Vision Universe Quant \u2014 Datenpruefung\n\n  Datenstand 2026-09-04, Snapshot snap_8774e164889c6790, Seed \"vision-universe-quant-v1\"\n  482 Titel neu berechnet, 0 Abweichungen, 29 historische Referenzzeilen\n  11 Factor-DNA-Shards geprueft\n\nAlle Pruefungen bestanden.\n"
+    },
+    "technicalArtifacts": {
+      "status": "PASS",
+      "localLogSHA256": "0e186a95736b0ea7bf7cd8e14a6b16b2fb03b117cad1e757c36b5ab128043670",
+      "result": "Vision Universe Technical Intelligence \u2014 Datenpruefung\n\n  Stand 2026-09-30T02:38:06.747Z, Methodik technical-v1.0.0 / elliott-v1.0.0-beta, 18 Instrumente, 18 Snapshots\n  18 Instrumente gegen die Engines nachgerechnet\n\nOK \u2014 Technical-Daten stimmen mit den Engines ueberein.\n"
+    },
+    "discoverArtifacts": {
+      "status": "PASS",
+      "localLogSHA256": "91a491f6cf1088782d470ed705e40f6ff30ff9f0935c23411d10ff047c83e11c",
+      "result": "Vision Universe DISCOVER \u2014 Nachrechnung\n\n  Modul discover-4.0.0, Methodik discover-v4.0.0\n\n  US_REAL: 5992 Titel, 77 Zeilen, 5992 Detailseiten\n           0 Kursreihen im Series-Store geprueft\n           34 Surfaces der Startseite geprueft\n           5992 Detailseiten nachgerechnet\n\n  95008 Pruefungen ausgefuehrt.\n  Keine Abweichung. Daten und Engines stimmen ueberein.\n\n"
+    },
+    "releaseBuild": {
+      "status": "PASS",
+      "localLogSHA256": "a01435ca93138faf86872ba6d81a2e55c0aa5bd5e327dfe15183b312c3b72984",
+      "result": "  {\n      \"path\": \"quant/data/sec/quarterly/49.json.gz\",\n      \"bytes\": 18672,\n      \"sha256\": \"314a982eb0dddfc645e32c339c5d7b7ee6ed3e83f683d09100417a2fa7b6141b\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/48.json.gz\",\n      \"bytes\": 20433,\n      \"sha256\": \"1fb1abd180319193b25cb39dfe78348f4e784f838a2b0d2a68e123157f400723\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/10.json.gz\",\n      \"bytes\": 21491,\n      \"sha256\": \"35104a80945c760530b981eaa3e53b6465b24b4151b3594694bfc9400b49c6cf\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/74.json.gz\",\n      \"bytes\": 16439,\n      \"sha256\": \"37a6f140d73b685a9c96842fdc988c348116074ee89830e1bf4a3345fc732180\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/21.json.gz\",\n      \"bytes\": 24557,\n      \"sha256\": \"a52deaeea511ffc2109f0af1fdbb73459538740b454e398a9461dfed29cd617c\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/38.json.gz\",\n      \"bytes\": 19996,\n      \"sha256\": \"afd0ca891a32ad8be642dc536cb8b9a54ff5767f6109afacf0c292824ca917f1\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/37.json.gz\",\n      \"bytes\": 17680,\n      \"sha256\": \"e1f969ee1c492cd276412a6c0c538e2332adde7aa995e863a70447eafe50c964\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/06.json.gz\",\n      \"bytes\": 21783,\n      \"sha256\": \"b9059aa364e1b78a3c9e8a3f33461e188c15a21c03424120f6eae779b0b6c039\"\n    },\n    {\n      \"path\": \"quant/data/sec/quarterly/83.json.gz\",\n      \"bytes\": 21739,\n      \"sha256\": \"ccc1014fba0bd63b56ead6927b9a6a20469b6a72e9c6d5994d99e7a96af4f4ee\"\n    }\n  ],\n  \"excluded\": [\n    \"quant/data/sec/consumer\",\n    \"quant/data/sec/canonical\",\n    \"quant/data/fundamentals\"\n  ],\n  \"screener\": {\n    \"count\": 5399,\n    \"bytes\": 3562471,\n    \"asOf\": \"2026-09-29\"\n  },\n  \"quantBundle\": \"3846cd0681b79261\",\n  \"status\": \"PASS\"\n}\n"
+    },
+    "releaseBrowser": {
+      "status": "PASS",
+      "localLogSHA256": "9d467d5021d12964d5e74291914c100225613063bb541eb703116bb7e5995cbc",
+      "result": "{\"passed\":63,\"failed\":0,\"pageErrors\":0,\"httpErrors\":[]}\n"
+    }
+  },
+  "protectedUSPriceAndSECChanges": 0,
+  "legacyBrowserQA": {
+    "passed": 14,
+    "failed": 5,
+    "allFailuresReproducedOnAcceptedBaseline": true,
+    "introducedFailures": 0,
+    "failures": [
+      "US search payload 836.1 KB exceeds existing 400 KB budget",
+      "Outdated ring-label assertion",
+      "Obsolete PLTR company-master fallback expectation",
+      "Obsolete PLTR missing-data row expectation",
+      "Obsolete PLTR no-chart expectation"
+    ]
+  },
+  "productionDeployed": false
+}

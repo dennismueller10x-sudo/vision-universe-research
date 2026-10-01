@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "marketstack-request-evidence-1.0.0",
+  "generatedAt": "2026-10-01T12:09:27.606Z",
+  "semantics": "CONSERVATIVE_ESTIMATE_NOT_PROVIDER_BILLING_OR_BALANCE",
+  "runs": [
+    {
+      "runId": "36852153799",
+      "commit": "757b22c089080f6fa36f8cddb6253b2cdb32098c",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36852153799",
+      "state": "MEASURED",
+      "requestsAttempted": 104,
+      "estimatedCreditsConsumed": 199
+    },
+    {
+      "runId": "36853405425",
+      "commit": "f3a4967a76838dc4e4c27fa1bd300b5b0b4cb34c",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36853405425",
+      "state": "MEASURED",
+      "requestsAttempted": 184,
+      "estimatedCreditsConsumed": 222
+    },
+    {
+      "runId": "36854621111",
+      "commit": "428ba5a1570e29b04e70ee6b90c0212695f44cc2",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36854621111",
+      "state": "RUNNING",
+      "requestsAttempted": 30,
+      "estimatedCreditsConsumed": 30
+    },
+    {
+      "runId": "36856401441",
+      "commit": "db7a59a5563ab678d7c36d8abde740ff8aebd6da",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36856401441",
+      "state": "MEASURED",
+      "requestsAttempted": 11,
+      "estimatedCreditsConsumed": 11
+    },
+    {
+      "runId": "36858301835",
+      "commit": "bbbc4b36a6d211dec94379ebc451f791f453f1c1",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36858301835",
+      "state": "MEASURED",
+      "requestsAttempted": 24,
+      "estimatedCreditsConsumed": 24
+    }
+  ],
+  "latestUS": {
+    "requestsAttempted": 69,
+    "estimatedCreditsConsumed": 6738,
+    "semantics": "CONSERVATIVE_ESTIMATE_NOT_BILLING",
+    "targets": 6738,
+    "remaining": 0,
+    "batches": 69
+  },
+  "totals": {
+    "requestsAttemptedKnown": 422,
+    "estimatedCreditsConsumedKnown": 7224,
+    "interruptedRunAdditionalAttemptUpperBound": 2,
+    "estimatedCreditUpperBound": 7226,
+    "providerAccountRemaining": null
+  },
+  "plan": {
+    "professionalCreditsPerMonth": 100000,
+    "businessCreditsPerMonth": 500000,
+    "source": "https://marketstack.com/product",
+    "checkedAt": "2026-10-01"
+  },
+  "recurring": {
+    "assumedTradingDays": 21,
+    "preparedScopeDailyCredits": 58,
+    "preparedScopeMonthlyCredits": 1218,
+    "existingProductDailyCredits": 6875,
+    "existingProductMonthlyCredits": 144375,
+    "existingProductPlusClassifiedXetraMonthlyCredits": 208509,
+    "configuredWorkflowMonthlySafetyCeiling": 5000
+  },
+  "limitations": [
+    "Failed requests may not be billed; estimates reserve every attempt conservatively.",
+    "One timed-out probe preserved directory completion but may have up to two unsaved in-flight attempts.",
+    "Probe budgets are separate from the opt-in ingestion ledger; neither observes usage by other clients sharing this API key.",
+    "Bulk symbols still consume per-symbol credits. No subscription upgrade or overage purchase was performed."
+  ]
+}
