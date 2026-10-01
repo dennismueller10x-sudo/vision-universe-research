@@ -33,7 +33,16 @@ name: Quant 2.0 Product Intelligence Materialization
 # sauberer No-Op statt einer doppelten Materialisierung.
 on:
   workflow_dispatch:
+  # `orchestrated` ist die einzige verlaessliche Kennung des Aufrufs aus der
+  # Kette. In einem aufgerufenen Workflow traegt `github.event_name` das
+  # Ereignis des AUFRUFERS (schedule / workflow_dispatch / push), nie
+  # 'workflow_call' - gemessen am 30.09.2026, Lauf 36655067686: Marktlauf
+  # gruen, Materialisierung "skipped", Produktstand blieb auf dem 28.09.
   workflow_call:
+    inputs:
+      orchestrated:
+        type: boolean
+        default: true
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
@@ -53,7 +62,7 @@ concurrency:
 jobs:
   materialize:
     if: >-
-      github.event_name == 'workflow_call' ||
+      inputs.orchestrated == true ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&

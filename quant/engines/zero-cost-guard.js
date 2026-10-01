@@ -283,8 +283,54 @@ function formatVerdict(v) {
   return lines.join("\n");
 }
 
+function previousMonthKey(month) {
+  const [y, m] = String(month).split("-").map(Number);
+  return m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, "0")}`;
+}
+
+/**
+ * Ist die Buchfuehrung des laufenden Monats belastbar?
+ *
+ *   CURRENT_MONTH            der Monatsstand ist gemessen geschrieben worden
+ *   MONTH_ROLLOVER_VERIFIED  neuer Monat ohne eigenen Stand - zulaessig nur,
+ *                            wenn der Vormonat belegt abgeschlossen ist UND
+ *                            in diesem Monat noch nichts in die Ablage
+ *                            geschrieben wurde (sonst fehlt ein Stand, der da
+ *                            sein muesste: UNKNOWN)
+ *   UNKNOWN / UNMEASURED     keine Freigabe
+ *
+ * Vorfall 01.10.2026 (Lauf 36801050774): ohne diese Uebergabe verlangte die
+ * Vorabrechnung einen Monatsstand, den nur ein freigegebener Lauf schreiben
+ * kann - ein Zirkel, der jeden Lauf des Monats blockiert haette.
+ */
+function accountingBasis(inp) {
+  const i = inp || {};
+  const validTs = (t) => typeof t === "string" && Number.isFinite(Date.parse(t));
+  if (!i.measured) return { known: false, basis: "UNMEASURED" };
+  const u = i.usage || {};
+  if (validTs(u.updatedAt)) return { known: true, basis: "CURRENT_MONTH", month: u.month };
+  const untouched = u.updatedAt == null && !u.classAOperations && !u.classBOperations &&
+    !(u.runs && u.runs.length);
+  if (!untouched || !u.month) return { known: false, basis: "UNKNOWN", month: u.month || null };
+  const prevMonth = previousMonthKey(u.month);
+  const p = i.previousUsage || {};
+  if (p.month !== prevMonth || !validTs(p.updatedAt)) {
+    return { known: false, basis: "UNKNOWN", month: u.month, previousMonth: prevMonth,
+             reason: "Vormonat ohne belegten Abschluss" };
+  }
+  const symbols = (i.index && i.index.symbols) || {};
+  const writtenThisMonth = Object.values(symbols)
+    .filter((e) => e && validTs(e.updatedAt) && e.updatedAt.slice(0, 7) === u.month).length;
+  if (writtenThisMonth > 0) {
+    return { known: false, basis: "UNKNOWN", month: u.month, previousMonth: prevMonth,
+             reason: `${writtenThisMonth} Reihen in ${u.month} geschrieben, aber kein Monatsstand` };
+  }
+  return { known: true, basis: "MONTH_ROLLOVER_VERIFIED", month: u.month,
+           previousMonth: prevMonth, previousUpdatedAt: p.updatedAt };
+}
+
 module.exports = {
   VERSION, FREE_TIER, SAFETY_CEILING, BOOKKEEPING_RESERVE, BLOCKED, ALLOWED,
-  monthKey, emptyUsage, applyUsage, estimateOperations, evaluate,
+  monthKey, previousMonthKey, accountingBasis, emptyUsage, applyUsage, estimateOperations, evaluate,
   createBudget, formatVerdict
 };

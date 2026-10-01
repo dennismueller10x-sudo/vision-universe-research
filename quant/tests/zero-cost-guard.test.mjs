@@ -272,3 +272,29 @@ test("ZC41 Loeschen geht nur unter einem Nachweis-Praefix - nie in die Produktio
   assert.throws(() => empty.assertZeroCostSafe("DELETE", {}, {}, "verify/v1/x"),
                 /ZERO_COST_GUARD_BLOCKED/);
 });
+
+/* ================================================= MONATSUEBERGABE */
+
+test("ZC-ROLL Monatsuebergabe nur mit belegtem Vormonat und ohne Schreibvorgang im neuen Monat", () => {
+  assert.equal(Guard.previousMonthKey("2026-10"), "2026-09");
+  assert.equal(Guard.previousMonthKey("2027-01"), "2026-12");
+  const oct = Guard.emptyUsage("2026-10");
+  const sep = { ...Guard.emptyUsage("2026-09"), classAOperations: 50, updatedAt: "2026-09-30T02:54:00Z" };
+  const idx = { symbols: { A: { updatedAt: "2026-09-30T02:50:00Z" } } };
+  assert.equal(Guard.accountingBasis({ measured: false, usage: oct, previousUsage: sep, index: idx }).known, false);
+  assert.equal(Guard.accountingBasis({ measured: true, usage: oct, previousUsage: null, index: idx }).known, false);
+  assert.equal(Guard.accountingBasis({ measured: true, usage: oct,
+    previousUsage: { ...sep, updatedAt: null }, index: idx }).known, false);
+  assert.equal(Guard.accountingBasis({ measured: true, usage: oct,
+    previousUsage: { ...sep, month: "2026-08" }, index: idx }).known, false);
+  const ok = Guard.accountingBasis({ measured: true, usage: oct, previousUsage: sep, index: idx });
+  assert.equal(ok.known, true); assert.equal(ok.basis, "MONTH_ROLLOVER_VERIFIED");
+  const lost = Guard.accountingBasis({ measured: true, usage: oct, previousUsage: sep,
+    index: { symbols: { A: { updatedAt: "2026-10-01T02:50:00Z" } } } });
+  assert.equal(lost.known, false, "geschrieben im Monat, aber kein Monatsstand: verloren, nicht neu");
+  assert.equal(Guard.accountingBasis({ measured: true,
+    usage: { ...oct, classBOperations: 3 }, previousUsage: sep, index: idx }).known, false);
+  const cur = Guard.accountingBasis({ measured: true,
+    usage: { ...oct, updatedAt: "2026-10-02T02:00:00Z" }, previousUsage: null, index: {} });
+  assert.equal(cur.basis, "CURRENT_MONTH");
+});
