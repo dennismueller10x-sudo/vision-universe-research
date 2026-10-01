@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-01T13:24:30.525Z",
+ "generatedAt": "2026-10-01T13:28:53.465Z",
  "radarAsOf": "2026-09-30",
  "signalAsOf": "2026-09-25",
  "setupAsOf": "2026-09-29",
@@ -66,7 +66,7 @@
   "SURVIVORSHIP_PASS": "PASS",
   "SURVIVORSHIP_CONTROLLED": false,
   "TRUST_PASS": "PASS",
-  "DISCOVER_CHANGED": true
+  "DISCOVER_CHANGED": false
  },
  "criteria": [
   {
@@ -115,10 +115,10 @@
   },
   {
    "criterion": "Discover unverändert",
-   "pass": false
+   "pass": true
   }
  ],
- "verdict": "FAIL",
+ "verdict": "PASS",
  "sample": [
   {
    "ticker": "NVDA",

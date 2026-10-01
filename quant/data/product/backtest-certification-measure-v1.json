@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-certification-measure-1.0.0",
- "generatedAt": "2026-10-01T13:24:30.981Z",
+ "generatedAt": "2026-10-01T13:28:53.828Z",
  "measures": {
   "CERTIFIED": [],
   "LIMITED": [
@@ -69,7 +69,7 @@
   "RADAR_EVENTS_WITH_BASE_RATE": 615,
   "ALERTS_NEW": 1215,
   "WATCHLIST_TRACKED": 5878,
-  "DISCOVER_CHANGED": true
+  "DISCOVER_CHANGED": false
  },
  "criteria": [
   {
@@ -142,8 +142,8 @@
   },
   {
    "criterion": "Discover unverändert",
-   "pass": false
+   "pass": true
   }
  ],
- "verdict": "FAIL"
+ "verdict": "PASS"
 }
