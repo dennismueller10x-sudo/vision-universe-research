@@ -32,8 +32,8 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-radar-1.1.0";
-  var ALERT_EVENT_SCHEMA = "quant-alert-event-2.0.0";
+  var VERSION = "quant-radar-1.2.0";
+  var ALERT_EVENT_SCHEMA = "quant-alert-event-3.0.0";
 
   /* Die Ereignistypen. `tone` ordnet ein (up = verbessert, down =
      verschlechtert, info = neutral), `rank` ist der erste Sortierschluessel
@@ -63,16 +63,19 @@
      (Daily Usefulness); 2.0.0: Backtest & Signal Intelligence - Emittent,
      Erkennungszeit, Ausloeser, Invalidierung, Backtest-Beleg, Vertrauen und
      ein stabiler Schluessel gegen doppelte Zustellung. */
-  var EVENT_FIELDS = ["id", "securityId", "ticker", "issuerId", "eventType", "occurredAt", "detectedAt", "previousState", "currentState",
-    "trigger", "invalidation", "explanation", "evidence", "backtestEvidence", "trustState", "nextCondition", "dedupeKey"];
+  /* 3.0.0: Wirksamkeit, Base Rate, Gueltigkeit und ob der Zustand wirklich
+     neu ist (Ledger: derselbe dedupeKey alarmiert nur einmal). */
+  var EVENT_FIELDS = ["id", "securityId", "ticker", "issuerId", "eventType", "occurredAt", "effectiveAt", "detectedAt", "validUntil", "previousState", "currentState",
+    "trigger", "invalidation", "explanation", "evidence", "baseRate", "backtestEvidence", "trustState", "nextCondition", "dedupeKey", "isNew"];
   var TRUST_STATES = ["NOT_READY", "LIMITED", "USABLE", "ROBUST"];
 
   /* Woher die historische Evidenz je Ereignistyp kommt. Ein Typ ohne
      Studie steht mit seinem Grund hier, nicht stillschweigend leer. */
   var BACKTEST_SOURCE = {
-    SETUP_CONFIRMED: { study: "setup-backtest-v1", ruleId: "SETUP_CONFIRMED" },
-    SETUP_NEW: { study: "setup-backtest-v1", ruleId: "SETUP_NEW" },
-    SETUP_WEAKENED: { study: "setup-backtest-v1", ruleId: "SETUP_WEAKENED" },
+    /* Nur veroeffentlichte Setup-Staende; die Rekonstruktion ist keine Ergebnisquelle. */
+    SETUP_CONFIRMED: { study: "setup-outcomes-v1", ruleId: "SETUP_CONFIRMED" },
+    SETUP_NEW: { study: "setup-outcomes-v1", ruleId: "SETUP_NEW" },
+    SETUP_WEAKENED: { study: "setup-outcomes-v1", ruleId: "SETUP_WEAKENED" },
     MOMENTUM_IMPROVED: { study: "signal-backtest-v1", ruleId: "MOMENTUM_IMPROVED" },
     MOMENTUM_DETERIORATED: { study: "signal-backtest-v1", ruleId: "MOMENTUM_DETERIORATED" },
     TREND_UP: { study: "signal-backtest-v1", ruleId: "TREND_UP" },
@@ -173,6 +176,16 @@
     else if (be.state === "WITHHELD" && !be.reason) errors.push("BACKTEST_WITHHELD_WITHOUT_REASON");
     if (TRUST_STATES.indexOf(event.trustState) < 0 || (be && event.trustState !== (be.trust || "NOT_READY"))) errors.push("TRUST_STATE_MISMATCH");
     if (event.dedupeKey !== dedupeKey(event)) errors.push("DEDUPE_KEY_MISMATCH");
+    var isDate = function (d) { return typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d); };
+    if (!isDate(event.effectiveAt) || event.effectiveAt !== event.occurredAt) errors.push("INVALID_EFFECTIVE_AT");
+    if (!isDate(event.validUntil) || event.validUntil < event.effectiveAt) errors.push("INVALID_VALID_UNTIL");
+    if (typeof event.isNew !== "boolean") errors.push("IS_NEW_REQUIRED");
+    /* Eine Trefferquote erscheint nie ohne ihre Base Rate. */
+    if (be && be.state === "AVAILABLE") {
+      var br = event.baseRate;
+      if (!br || typeof br.positiveShare !== "number" || typeof br.base !== "number" || typeof br.delta !== "number") errors.push("BASE_RATE_REQUIRED");
+      else if (Math.abs(br.positiveShare - br.base - br.delta) > 0.002) errors.push("BASE_RATE_INCONSISTENT");
+    } else if (event.baseRate !== null) errors.push("BASE_RATE_WITHOUT_EVIDENCE");
     /* Was hier nie stehen darf - dieselbe Liste wie bei Setup und Studie. */
     ["probability", "successRate", "expectedReturn", "targetPrice", "winRate", "hitRate", "recommendation", "forecast"].forEach(function (k) {
       if (Object.prototype.hasOwnProperty.call(event, k)) errors.push("FORBIDDEN_KEY_" + k);

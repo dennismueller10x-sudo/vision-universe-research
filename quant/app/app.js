@@ -94,9 +94,14 @@
   var ctx = {
     api: api, names: {}, types: {}, entries: {},
     /* Signal-Engine und Backtest-Ansichten (quant/engines/signal-backtest.js, quant/app/page-backtest.js). */
+    /* Nur die Ansicht (Evidenz auf Karten, Radar-Status) - ohne Engines. */
+    loadBacktestView: function () {
+      if (global.QXEvidence) return Promise.resolve(true);
+      return loadScript("/quant/app/page-evidence.js");
+    },
     loadBacktest: function () {
-      if (global.QXBacktest && global.VUSignalBacktest) return Promise.resolve(true);
-      return loadScript("/quant/engines/signal-backtest.js").then(function () { return loadScript("/quant/app/page-backtest.js"); });
+      if (global.QXBacktest && global.VUSignalBacktest && global.VUBacktestCertification) return Promise.resolve(true);
+      return loadScript("/quant/engines/signal-backtest.js").then(function () { return loadScript("/quant/engines/backtest-certification.js"); }).then(function () { return loadScript("/quant/app/page-evidence.js"); }).then(function () { return loadScript("/quant/app/page-backtest.js"); });
     },
     /* Stammaktien zuerst - Vorzugsaktien und Anleihen bleiben gezaehlt, stehen aber hinten. */
     commonFirst: function (list) { return (list || []).slice().sort(function (a, b) { return (ctx.types[a] === "COMMON_STOCK" ? 0 : 1) - (ctx.types[b] === "COMMON_STOCK" ? 0 : 1); }); },
@@ -267,13 +272,13 @@
       if (gen !== generation) return;
       if (/^(home|screener|strategien|aktien)$/.test(r.view)) await ctx.loadNames();
       switch (r.view) {
-        case "home": await ctx.loadBacktest(); await global.QXPages.home(main, ctx); break;
-        case "radar": await Promise.all([ctx.loadNames(), ctx.loadBacktest()]); await global.QXPages.radar(main, ctx, r.params); break;
+        case "home": await ctx.loadBacktestView(); await global.QXPages.home(main, ctx); break;
+        case "radar": await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]); await global.QXPages.radar(main, ctx, r.params); break;
         case "backtest": await ctx.loadBacktest(); await global.QXBacktest.render(main, ctx, r.id); break;
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;
-        case "aktie": await ctx.loadBacktest(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
+        case "aktie": await ctx.loadBacktestView(); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         case "technik": await global.QXTools.technical(main, ctx, r.ticker, r.params.get("elliott") === "1"); break;
         case "zahlen": await global.QXTools.fundamentals(main, ctx, r.ticker, r.params); break;
         case "vergleich": await global.QXTools.compare(main, ctx, r.list); break;

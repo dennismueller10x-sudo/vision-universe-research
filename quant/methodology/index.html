@@ -45,10 +45,16 @@
  <span class="eyebrow">Vision Universe® · Preview</span>
  <h1>Methodik im Detail</h1>
  <p class="lead">Jede Aussage im Produkt hängt an einem Vertrag: er legt fest, was gemessen wird, ab
-  wann es gilt und wann nichts gesagt wird. Hier stehen alle 18 Verträge, die diese
-  Vorschau veröffentlicht — mit ihrer Fassung und dem Weg zur vollständigen Datei. 13 von
-  18 nennen ihren Zweck in Worten; bei den übrigen steht er in den Feldern.</p>
+  wann es gilt und wann nichts gesagt wird. Hier stehen alle 21 Verträge, die diese
+  Vorschau veröffentlicht — mit ihrer Fassung und dem Weg zur vollständigen Datei. 16 von
+  21 nennen ihren Zweck in Worten; bei den übrigen steht er in den Feldern.</p>
 
+   <article class="contract">
+    <h2>Backtest certification</h2>
+    <p class="meta">Fassung backtest-certification-1.0.0 · Status DEFINED</p>
+    <p>Maschinenlesbarer Zertifizierungs-Check je Backtest-Art. Jede Art steht in genau einem Status, der aus gemessenen Gates folgt - nie aus Prosa.</p>
+    <p class="meta"><a href="./backtest-certification-v1.json">backtest-certification-v1.json ansehen</a></p>
+   </article>
    <article class="contract">
     <h2>Wie belastbar ist die historische Evidenz?</h2>
     <p class="meta">Fassung backtest-evidence-v1.0.0 · interner Name: VU Backtest Evidence Provider Requirements V1</p>
@@ -128,6 +134,12 @@
     <p class="meta"><a href="./return-semantics-v1.json">return-semantics-v1.json ansehen</a></p>
    </article>
    <article class="contract">
+    <h2>Setup backtest contract</h2>
+    <p class="meta">Fassung setup-backtest-contract-1.0.0 · Status DEFINED</p>
+    <p>Legt deterministisch fest, wie aus VERÖFFENTLICHTEN Setup-Zuständen (setup-observation-history) ein Ergebnis gemessen wird. Keine Rekonstruktion vergangener Zustände als Ersatz: gezählt wird nur, was am jeweiligen Stichtag tatsächlich veröffentlicht war.</p>
+    <p class="meta"><a href="./setup-backtest-contract-v1.json">setup-backtest-contract-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
     <h2>Wie weit ist die Aktie im Setup?</h2>
     <p class="meta">Fassung setup-state-v1.0.0 · Status ACTIVE_POINT_IN_TIME_ONLY</p>
     <p>Dieser Vertrag nennt keinen Zweck in Worten. Was er festlegt, steht in seinen Feldern.</p>
@@ -138,6 +150,12 @@
     <p class="meta">Fassung strategies-v1.0.0</p>
     <p>Die fuenf V1-Bibliotheksstrategien. Jede ist eine vollstaendige, validierbare StrategyDefinition und wird von genau derselben Engine verarbeitet wie eine im Builder oder per AI erzeugte Strategie (§62).</p>
     <p class="meta"><a href="./strategies-v1.json">strategies-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Strategy backtest contract</h2>
+    <p class="meta">Fassung strategy-backtest-contract-1.0.0 · Status DEFINED_GATED</p>
+    <p>Vollständiger Vertrag für den Backtest der Anlagestile (strategy-profiles-v1) und den Faktor-/Ranking-Backtest. Die Engine ist gebaut und getestet; sie läuft auf echten Daten erst, wenn die historische Index-Zugehörigkeit und die Faktor-Snapshots die Gates bestehen. Das heutige Universum wird nie eingesetzt.</p>
+    <p class="meta"><a href="./strategy-backtest-contract-v1.json">strategy-backtest-contract-v1.json ansehen</a></p>
    </article>
    <article class="contract">
     <h2>Welche Strategie passt?</h2>
@@ -157,7 +175,7 @@
     <p>Der Trust Score bewertet die methodische Qualitaet eines Backtests, nicht seine Rendite. Ein optisch starkes Ergebnis mit methodischen Maengeln darf keinen hohen Trust Score erhalten.</p>
     <p class="meta"><a href="./trust-score-v1.json">trust-score-v1.json ansehen</a></p>
    </article>
- <p class="meta">Erzeugt aus dem Verzeichnis <code>quant/methodology/</code> am 2026-09-29. Diese Seite
+ <p class="meta">Erzeugt aus dem Verzeichnis <code>quant/methodology/</code> am 2026-10-01. Diese Seite
   beschreibt nichts, was nicht in den Verträgen steht, und ist keine Anlageempfehlung.</p>
  <a class="back" href="/quant/#/methodik">Zurück zur Methodik</a>
 </main>

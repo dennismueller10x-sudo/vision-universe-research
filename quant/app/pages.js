@@ -80,7 +80,7 @@
       tr && tr.trigger ? el("p", { class: "q-rc-next" }, [el("b", { text: "Bestätigt wenn: " }), el("span", { text: tr.trigger })])
         : c.next && c.next.open && c.next.open.length ? el("p", { class: "q-rc-next" }, [el("b", { text: "Nächster Schritt: " }), el("span", { text: "für „" + lifecycleLabel(c.next.state) + "“ fehlen " + c.next.open.length + " von " + c.next.total + " Bedingungen" })]) : null,
       ev ? el("p", { class: "q-rc-evidence" }, [el("b", { text: "Früher bei dieser Aktie: " }), el("span", { text: ev })]) : null,
-      global.QXBacktest ? global.QXBacktest.evidenceBlock(c.events, { compact: !!opts.compact }) : null,
+      global.QXEvidence ? global.QXEvidence.evidenceBlock(c.events, { compact: !!opts.compact }) : null,
       el("small", { class: "q-rc-date", text: "Stand " + X.dateDe(first.occurredAt) })
     ]);
   }

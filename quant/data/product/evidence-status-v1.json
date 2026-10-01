@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-01T08:53:59.677Z",
+ "generatedAt": "2026-10-01T12:40:49.182Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -155,40 +155,90 @@
    "state": "WITHHELD",
    "reason": "SETUP_OUTCOMES_NOT_CERTIFIED",
    "trust": "NOT_READY",
+   "certification": "COLLECTING_HISTORY",
    "checks": [
     {
-     "id": "REPLAY_PIT",
-     "label": "Point-in-Time-Wiederholung, gegen veröffentlichte Stände geprüft",
-     "required": "alle nachgerechneten Stände gleich",
-     "measured": "20 Stände nachgerechnet, 0 Abweichungen",
+     "id": "PUBLISHEDONLY",
+     "label": "nur veröffentlichte Zustände",
+     "required": "bestanden",
+     "measured": "setup-observation-history",
      "state": "PASS"
     },
     {
-     "id": "REPLAY_TITLES",
-     "label": "Titel in der Wiederholung",
-     "required": "mindestens 20 Titel",
-     "measured": "5 Titel (AAPL, JPM, MSFT, NVDA, XOM)",
+     "id": "PIT",
+     "label": "Stände unverändert (contentHash)",
+     "required": "bestanden",
+     "measured": "4 von 4 geprüft",
+     "state": "PASS"
+    },
+    {
+     "id": "LOOKAHEAD",
+     "label": "Einstieg nach Veröffentlichung",
+     "required": "bestanden",
+     "measured": "Schluss des Folgetags (Standard), Signalschluss nur als Vergleich",
+     "state": "PASS"
+    },
+    {
+     "id": "HISTORYDATES",
+     "label": "veröffentlichte Stichtage",
+     "required": "120",
+     "measured": "4",
      "state": "FAIL"
     },
     {
-     "id": "EFFECTIVE_SAMPLE",
-     "label": "Bestätigte Setups mit 6-Monats-Ausgang",
-     "required": "mindestens 100 aus 20 Titeln",
-     "measured": "55 aus 5 Titeln",
+     "id": "HISTORYSPAN",
+     "label": "Spanne der Historie",
+     "required": "180 Tage",
+     "measured": "18 Tage",
      "state": "FAIL"
     },
     {
-     "id": "REVERSAL",
-     "label": "Stabilität: Anteil bestätigter Setups, die beim nächsten Wochenschluss wieder wechseln",
-     "required": "unter 20 %",
-     "measured": "78 %",
+     "id": "COMPLETEDOUTCOMES",
+     "label": "abgeschlossene 6-Monats-Ergebnisse",
+     "required": "100",
+     "measured": "0",
+     "state": "FAIL"
+    },
+    {
+     "id": "TITLES",
+     "label": "Titel mit abgeschlossenem Ergebnis",
+     "required": "20",
+     "measured": "0",
+     "state": "FAIL"
+    },
+    {
+     "id": "INDEPENDENCE",
+     "label": "verschiedene Monate mit Ereignissen",
+     "required": "20",
+     "measured": "1",
+     "state": "FAIL"
+    },
+    {
+     "id": "RETURNBASIS",
+     "label": "Gesamtrendite",
+     "required": "bestanden",
+     "measured": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
      "state": "FAIL"
     },
     {
      "id": "SURVIVORSHIP",
-     "label": "Überlebenden-Kontrolle",
-     "required": "Kontrolle aktiv",
-     "measured": "heute gelistete Titel",
+     "label": "Überlebende (vorwärts gesammelt, kein Fall weggelassen)",
+     "required": "bestanden",
+     "measured": "Universum des jeweiligen Tages; INCOMPLETE wird gezählt",
+     "state": "PASS"
+    },
+    {
+     "id": "ENTRYVARIANT",
+     "label": "Einstiegsvarianten stimmen überein",
+     "required": "Δ Median ≤ 1 Pp",
+     "measured": "noch nicht messbar",
+     "state": "FAIL"
+    },
+    {
+     "id": "OOS",
+     "label": "Lernen/Testen (zeitlich)",
+     "required": "bestanden",
+     "measured": "erst mit abgeschlossenen Ergebnissen messbar",
      "state": "FAIL"
     },
     {
@@ -206,7 +256,7 @@
    "question": "Was geschah marktweit, nachdem dasselbe Radar-Signal auftrat?",
    "state": "PUBLISHED",
    "reason": null,
-   "engine": "signal-backtest-1.0.0",
+   "engine": "signal-backtest-2.0.0",
    "returnType": "SPLIT_ADJUSTED_PRICE",
    "rules": [
     {
@@ -216,10 +266,9 @@
      "titles": 5453,
      "displayAllowed": true,
      "failed": [
-      "oos",
-      "walkForward",
       "survivorship",
-      "returnBasis"
+      "returnBasis",
+      "regimeDiversity"
      ]
     },
     {
@@ -230,9 +279,10 @@
      "displayAllowed": true,
      "failed": [
       "oos",
-      "walkForward",
       "survivorship",
-      "returnBasis"
+      "returnBasis",
+      "regimeDiversity",
+      "parameterStability"
      ]
     },
     {
@@ -242,10 +292,9 @@
      "titles": 5409,
      "displayAllowed": true,
      "failed": [
-      "oos",
-      "walkForward",
       "survivorship",
-      "returnBasis"
+      "returnBasis",
+      "regimeDiversity"
      ]
     },
     {
@@ -258,7 +307,9 @@
       "oos",
       "walkForward",
       "survivorship",
-      "returnBasis"
+      "returnBasis",
+      "regimeDiversity",
+      "parameterStability"
      ]
     },
     {
@@ -269,7 +320,8 @@
      "displayAllowed": true,
      "failed": [
       "survivorship",
-      "returnBasis"
+      "returnBasis",
+      "regimeDiversity"
      ]
     }
    ],

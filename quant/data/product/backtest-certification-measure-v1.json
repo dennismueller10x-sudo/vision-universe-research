@@ -1,0 +1,149 @@
+{
+ "schemaVersion": "backtest-certification-measure-1.0.0",
+ "generatedAt": "2026-10-01T12:56:20.189Z",
+ "measures": {
+  "CERTIFIED": [],
+  "LIMITED": [
+   "SAME_STOCK_REPLAY",
+   "PATTERN_EVIDENCE",
+   "SIGNAL_BACKTEST"
+  ],
+  "COLLECTING_HISTORY": [
+   "SETUP_BACKTEST",
+   "STRATEGY_BACKTEST",
+   "FACTOR_RANKING_BACKTEST"
+  ],
+  "WITHHELD": [],
+  "SIGNAL_RULES": {
+   "MOMENTUM_IMPROVED": "LIMITED Δ -0.0154",
+   "MOMENTUM_DETERIORATED": "LIMITED Δ -0.0027",
+   "TREND_UP": "LIMITED Δ -0.0133",
+   "TREND_DOWN": "LIMITED Δ -0.0016",
+   "NEW_52W_HIGH": "LIMITED Δ 0.0146"
+  },
+  "SETUP": {
+   "status": "COLLECTING_HISTORY",
+   "historyDates": 4,
+   "completedM6": 0,
+   "ownerApproval": true
+  },
+  "STRATEGY": {
+   "status": "COLLECTING_HISTORY",
+   "membershipMonths": 1,
+   "factorMonths": 1
+  },
+  "SURVIVORSHIP_GATE": "PASS",
+  "SURVIVORSHIP_CONTROL": "FAIL",
+  "DELISTED_IDENTIFIED": 191,
+  "DELISTED_WITH_HISTORY": 0,
+  "DELISTED_BACKTEST_ELIGIBLE": 0,
+  "SIGNAL_RETURN_TYPE": "SPLIT_ADJUSTED_PRICE",
+  "UNIQUE_TITLES": {
+   "MOMENTUM_IMPROVED": 5453,
+   "MOMENTUM_DETERIORATED": 5474,
+   "TREND_UP": 5409,
+   "TREND_DOWN": 5432,
+   "NEW_52W_HIGH": 5198
+  },
+  "UNIQUE_PERIODS": {
+   "MOMENTUM_IMPROVED": 1836,
+   "MOMENTUM_DETERIORATED": 1837,
+   "TREND_UP": 1836,
+   "TREND_DOWN": 1835,
+   "NEW_52W_HIGH": 1834
+  },
+  "INDEPENDENT_CLUSTERS": {
+   "MOMENTUM_IMPROVED": 141,
+   "MOMENTUM_DETERIORATED": 141,
+   "TREND_UP": 141,
+   "TREND_DOWN": 141,
+   "NEW_52W_HIGH": 141
+  },
+  "EFFECTIVE_N": {
+   "MOMENTUM_IMPROVED": 21179,
+   "MOMENTUM_DETERIORATED": 24125,
+   "TREND_UP": 25977,
+   "TREND_DOWN": 26649,
+   "NEW_52W_HIGH": 10460
+  },
+  "RADAR_EVENTS_WITH_BASE_RATE": 503,
+  "ALERTS_NEW": 0,
+  "WATCHLIST_TRACKED": 5872,
+  "DISCOVER_CHANGED": false
+ },
+ "criteria": [
+  {
+   "criterion": "jede Backtest-Art klassifiziert (6 Arten, ein Status je Art)",
+   "pass": true
+  },
+  {
+   "criterion": "kein falsch zertifizierter Backtest (Status folgt den Gates)",
+   "pass": true
+  },
+  {
+   "criterion": "Signal-Backtest: Base Rate, Unabhängigkeit, Kosten, Prüfzeiträume, Parameter je Regel",
+   "pass": true
+  },
+  {
+   "criterion": "Signal-Backtest: Renditebasis benannt, Pipeline mit Gesamtrendite",
+   "pass": true
+  },
+  {
+   "criterion": "Marktphasen nur mit zertifizierter Regime-Historie",
+   "pass": true
+  },
+  {
+   "criterion": "Setup-Backtest nur aus veröffentlichten Ständen, Hashes geprüft",
+   "pass": true
+  },
+  {
+   "criterion": "Setup-Backtest wächst automatisch (Pipeline + Check)",
+   "pass": true
+  },
+  {
+   "criterion": "Setup Ein-/Ausstieg deterministisch, Varianten gemessen",
+   "pass": true
+  },
+  {
+   "criterion": "Strategie-Backtest vorbereitet und korrekt gated",
+   "pass": true
+  },
+  {
+   "criterion": "Faktor-Backtest korrekt gated",
+   "pass": true
+  },
+  {
+   "criterion": "Survivorship ehrlich: Gate und Kontrolle getrennt",
+   "pass": true
+  },
+  {
+   "criterion": "Base Rate in jedem Radar-Ereignis mit Evidenz",
+   "pass": true
+  },
+  {
+   "criterion": "Trust-Engine: Studien regelkonform",
+   "pass": true
+  },
+  {
+   "criterion": "Alert-Vertrag 3.0.0 ohne Verstoß, nur neue Zustände",
+   "pass": true
+  },
+  {
+   "criterion": "Watchlist verfolgt Zustände mit Verlauf",
+   "pass": true
+  },
+  {
+   "criterion": "Frontend unterscheidet beobachtet / getestet / zertifiziert",
+   "pass": true
+  },
+  {
+   "criterion": "keine privaten Kursdaten in öffentlichen Artefakten",
+   "pass": true
+  },
+  {
+   "criterion": "Discover unverändert",
+   "pass": true
+  }
+ ],
+ "verdict": "PASS"
+}

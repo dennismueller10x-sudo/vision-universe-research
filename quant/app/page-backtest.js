@@ -17,107 +17,10 @@
   var X = global.QX, el = X.el, VM = global.VUQuantViewModel;
   var SVG = "http://www.w3.org/2000/svg";
 
-  var TRUST_WORD = { NOT_READY: "nicht bereit", LIMITED: "eingeschränkt", USABLE: "belastbar", ROBUST: "robust" };
-  var REASON = {
-    TOO_FEW_TITLES_OR_CASES: "Zu wenige Titel mit vollständiger Tageshistorie – die Stichprobe wächst mit jedem Pipeline-Lauf.",
-    FACTOR_HISTORY_TOO_SHORT: "Die Faktorhistorie ist noch zu kurz.",
-    MEMBERSHIP_AND_FACTOR_HISTORY_TOO_SHORT: "Historische Index-Zugehörigkeit und Faktorhistorie sind noch zu kurz.",
-    PATTERN_MATCH_HISTORY_TOO_SHORT: "Die Musterhistorie hat gerade erst begonnen.",
-    PATH_STATES_CLOSED: "Die Pfadzustände der Setup-Engine sind noch nicht freigeschaltet.",
-    NOT_A_TRADABLE_EVENT: "Beschreibt die Datenlage, kein Kursereignis.",
-    STUDY_NOT_PUBLISHED: "Die Studie ist nicht veröffentlicht.",
-    TRUST_NOT_READY: "Die Vertrauensstufe reicht nicht.",
-    HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING: "Die historische Index-Zugehörigkeit fehlt – das heutige Universum wird nie eingesetzt.",
-    TOTAL_RETURN_SERIES_NOT_PUBLISHED: "Es gibt keine Gesamtrendite-Reihen (Dividenden fehlen).",
-    TODAYS_UNIVERSE_ONLY: "Nur heute gelistete Aktien – später delistete fehlen.",
-    HAND_PICKED_SURVIVORS: "Nur ausgewählte, heute gelistete Titel.",
-    DAILY_HISTORY_ONLY_IN_PRIVATE_STORE: "Die volle Tageshistorie liegt nur in der Pipeline vor.",
-    STUDY_DECLARES_BACKTEST_NOT_CERTIFIED: "Die Studie ist als Häufigkeitsauswertung freigegeben, nicht als Backtest.",
-    PRESENT_AND_UNQUANTIFIED_IN_PART: "Der Überlebenden-Effekt ist nicht quantifiziert.",
-    NO_INDEX_LEVEL_SERIES_PUBLISHED: "Es gibt keine Indexreihe mit Gesamtrendite.",
-    OOS_DIRECTION_NOT_CONFIRMED: "Die Richtung bestätigt sich außerhalb des Lernzeitraums nicht.",
-    FOLDS_DISAGREE: "Die Walk-Forward-Abschnitte zeigen in verschiedene Richtungen.",
-    REGIME_UNDERSAMPLED: "Zu wenige Fälle in mindestens einer Marktphase.",
-    NEIGHBOURS_DISAGREE: "Benachbarte Parameter zeigen in eine andere Richtung.",
-    FIXED_MAPPING_NOT_SWEPT: "Die freigegebene Zuordnung wird nicht variiert.",
-    OUTCOMES_INCOMPLETE: "Zu viele Fälle ohne vollständigen Ausgang.",
-    PIT_NOT_PROVEN: "Point-in-Time ist nicht belegt.",
-    PIT_OR_PARITY_MISMATCH: "Die Nachrechnung weicht von veröffentlichten Ständen ab.",
-    PARITY_NOT_MEASURED: "Die Nachrechnung ist nicht gemessen.",
-    NO_REBALANCE_CONTRACT: "Es gibt keinen Rebalancing-Vertrag.",
-    PIT_FUNDAMENTALS_MISSING: "Zeitpunktgenaue Fundamentaldaten fehlen.",
-    SETUP_OUTCOMES_NOT_CERTIFIED: "Die Setup-Methodik gibt Ausgangszahlen erst nach ihrer Zertifizierung frei.",
-    NOT_CERTIFIED: "Die Setup-Methodik gibt Ausgangszahlen erst nach ihrer Zertifizierung frei.",
-    HISTORY_TOO_SHORT: "Die Historie ist zu kurz.",
-    NO_STUDY: "Es gibt keine Studie.",
-    TOTAL_RETURN_MISSING: "Die Gesamtrendite fehlt."
-  };
-  function reasonText(code) { return REASON[code] || "Eine Bedingung der Vertrauensregel ist nicht erfüllt."; }
-  function pct(v, d, signed) { return typeof v === "number" && isFinite(v) ? VM.pct(v, d === undefined ? 1 : d, signed) : "–"; }
-  function share(v) { return typeof v === "number" && isFinite(v) ? Math.round(v * 100) + " %" : "–"; }
-  function num(v, d) { return typeof v === "number" && isFinite(v) ? v.toLocaleString("de-DE", { maximumFractionDigits: d === undefined ? 2 : d }) : "–"; }
-  function int(v) { return typeof v === "number" && isFinite(v) ? Math.round(v).toLocaleString("de-DE") : "–"; }
-  function trustPill(trust) { return el("span", { class: "q-trust-badge trust-" + String(trust || "NOT_READY").toLowerCase(), text: "Vertrauen: " + (TRUST_WORD[trust] || "nicht bereit") }); }
-  function returnWord(t) { return t === "TOTAL_RETURN" ? "Gesamtrendite (mit Dividenden)" : "Kursrendite ohne Dividenden"; }
-
-  var RULE_LABEL = {
-    MOMENTUM_IMPROVED: "Momentum verbessert", MOMENTUM_DETERIORATED: "Momentum verschlechtert", TREND_UP: "Über der langfristigen Linie",
-    TREND_DOWN: "Unter die langfristige Linie", NEW_52W_HIGH: "Neues 52-Wochen-Hoch",
-    SETUP_CONFIRMED: "Setup bestätigt", SETUP_NEW: "Setup entsteht", SETUP_WEAKENED: "Setup schwächt sich ab"
-  };
-
-  /* ------------------------------------------------- Radar-Karte: Evidenz */
-  function evidenceBlock(events, opts) {
-    opts = opts || {};
-    var T = global.VUQuantRadar ? global.VUQuantRadar.TYPE : {};
-    var hit = (events || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
-    if (hit) {
-      var b = hit.backtest, label = (T[hit.eventType] || {}).label || hit.eventType;
-      return el("div", { class: "q-rc-hist" }, [
-        el("p", { class: "q-rc-hist-head" }, [el("b", { text: "Historische Evidenz" }), trustPill(b.trust)]),
-        el("p", { class: "q-rc-hist-what", text: "„" + label + "“ wurde " + int(b.n) + "-mal historisch beobachtet (marktweit, " + (b.horizon === "m6" ? "6 Monate" : b.horizon) + ")." }),
-        el("dl", { class: "q-rc-hist-kv" }, [
-          el("dt", { text: "im Plus" }), el("dd", { class: "num", text: share(b.positiveShare) }),
-          el("dt", { text: "Median 6 M." }), el("dd", { class: "num " + (b.median > 0 ? "up" : b.median < 0 ? "down" : ""), text: pct(b.median, 1, true) }),
-          el("dt", { text: "typ. Rückgang" }), el("dd", { class: "num down", text: pct(b.typicalDrawdown, 1) }),
-          el("dt", { text: "Chance/Risiko" }), el("dd", { class: "num", text: num(b.chanceRisk) })]),
-        opts.compact ? null : el("small", { class: "q-rc-hist-note", text: returnWord(b.returnType) + " · gegenüber dem Marktmedian derselben Woche " + pct(b.medianExcess, 1, true) + " · keine Prognose" })
-      ]);
-    }
-    var first = (events || [])[0], w = first && first.backtest;
-    if (!w) return null;
-    return el("div", { class: "q-rc-hist is-off" }, [el("b", { text: "Historischer Backtest noch nicht freigegeben" }), el("small", { text: reasonText(w.reason) })]);
-  }
-
-  /* --------------------------------------------- Aktienseite: Radar-Status */
-  function trackingSection(tr, ctx) {
-    if (!tr || tr.state !== "AVAILABLE") return null;
-    var R = global.VUQuantRadar, label = function (id) { var l = R ? R.LIFECYCLE.filter(function (x) { return x.id === id; })[0] : null; return l ? l.label : id || "–"; };
-    var rows = [
-      ["Zustand jetzt", label(tr.current)],
-      ["Davor", tr.previous ? label(tr.previous) : "–"],
-      ["Seit", tr.enteredAt ? (tr.enteredAtIsLowerBound ? "mindestens seit " : "") + X.dateDe(tr.enteredAt) : "–"],
-      ["Dauer", typeof tr.durationDays === "number" ? (tr.enteredAtIsLowerBound ? "≥ " : "") + tr.durationDays + (tr.durationDays === 1 ? " Tag" : " Tage") : "–"],
-      ["Auslöser", tr.trigger || "–"],
-      ["Ungültig unter", typeof tr.invalidation === "number" ? num(tr.invalidation) + " $" : "–"],
-      ["Nächste Bedingung", tr.nextCondition ? "für „" + tr.nextCondition.label + "“ fehlen " + tr.nextCondition.open + " von " + tr.nextCondition.total : "–"],
-      ["Rückblick (dieselbe Aktie)", { BROAD: "breit", THIN: "dünn", WITHHELD: "zurückgehalten", UNAVAILABLE: "nicht verfügbar", NONE: "keine Vergleichsfälle" }[tr.evidenceState] + (tr.episodes ? " · " + tr.episodes + " Fälle" : "")],
-      ["Setup-Backtest", tr.backtest ? (tr.backtest.state === "AVAILABLE" ? TRUST_WORD[tr.backtest.trust] : "noch nicht freigegeben – " + reasonText(tr.backtest.reason)) : "kein Setup"]
-    ];
-    var kids = [el("dl", { class: "qx-kv q-track" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { text: r[1] })]; })))];
-    if (tr.events && tr.events.length) {
-      var T = R ? R.TYPE : {};
-      kids.push(el("ul", { class: "q-track-events" }, tr.events.map(function (e) {
-        var t = T[e.eventType] || {};
-        return el("li", { class: "tone-" + (e.direction || t.tone || "info") }, [el("b", { text: (t.label || e.eventType) + " · " + X.dateDe(e.occurredAt) }), el("span", { text: e.explanation }),
-          e.backtest ? el("small", { text: e.backtest.state === "AVAILABLE" ? "Historisch: " + int(e.backtest.n) + "-mal beobachtet · " + share(e.backtest.positiveShare) + " im Plus nach 6 M. · Vertrauen " + TRUST_WORD[e.backtest.trust]
-            : "Historischer Backtest noch nicht freigegeben: " + reasonText(e.backtest.reason) }) : null]);
-      })));
-    } else kids.push(el("p", { class: "qx-small", text: "Zum letzten Stand kein neues Ereignis bei dieser Aktie." }));
-    kids.push(el("p", { class: "qx-small", text: "Stand " + X.dateDe(tr.asOf) + ". Beobachten ist kein Portfolio: keine Stückzahl, kein Einstand, keine Rendite." }));
-    return kids;
-  }
-
+  var E = global.QXEvidence;
+  var TRUST_WORD = E.TRUST_WORD, STATUS_WORD = E.STATUS_WORD, RULE_LABEL = E.RULE_LABEL, tierWord = E.tierWord, statusBadge = E.statusBadge, pp = E.pp, baseLine = E.baseLine,
+    reasonText = E.reasonText, pct = E.pct, share = E.share, num = E.num, int = E.int, trustPill = E.trustPill, returnWord = E.returnWord,
+    evidenceBlock = E.evidenceBlock, trackingSection = E.trackingSection;
   /* ------------------------------------------------------------- Grafiken */
   function svg(w, h, label) {
     var s = document.createElementNS(SVG, "svg");
@@ -175,13 +78,6 @@
   }
 
   /* ------------------------------------------------------------ Seite */
-  function selectorCard(r, kindLabel, href) {
-    var shown = r.display && r.display.allowed;
-    return el("a", { class: "q-bt-pick" + (shown ? " is-on" : " is-off"), href: href }, [
-      el("small", { text: kindLabel }), el("b", { text: RULE_LABEL[r.id] || r.label || r.id }),
-      el("span", { text: shown ? int(r.sample.n) + " Fälle · " + TRUST_WORD[r.trust] : "noch nicht freigegeben" })]);
-  }
-
   function ruleBody(r, study, kind) {
     var out = [], h = r.horizons, m6 = h.m6, unitDays = kind === "setup";
     var hz = ["m1", "m3", "m6", "m12"];
@@ -213,11 +109,13 @@
     } else {
       out.push(X.section("Ergebnis", "Was nach dem Signal geschah – alle Fälle zusammen, kein einzelner herausgegriffen.", [
         el("div", { class: "q-evidence" }, [
-          el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: int(m6.n) }), el("span", { text: "Fälle" }), el("small", { text: "mit Ausgang nach 6 Monaten" })]),
-          el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: share(m6.positiveShare) }), el("span", { text: "im Plus (Trefferquote)" }), el("small", { text: "Markt: " + share(m6.base.positiveShare) })]),
-          el("div", { class: "q-ev-tile" }, [el("b", { class: "num " + (m6.median > 0 ? "up" : "down"), text: pct(m6.median, 1, true) }), el("span", { text: "Median 6 M." }), el("small", { text: "Mittel " + pct(m6.mean, 1, true) + " = Ergebnis je Fall" })]),
+          el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: int(m6.n) }), el("span", { text: "Fälle" }), el("small", { text: "≈ " + int(r.independence ? r.independence.effectiveN : null) + " unabhängig (" + int(r.independence ? r.independence.independentClusters : null) + " Quartale)" })]),
+          el("div", { class: "q-ev-tile" }, [el("b", { class: "num " + (m6.baseRate && m6.baseRate.deltaPositiveShare > 0 ? "up" : m6.baseRate && m6.baseRate.deltaPositiveShare < 0 ? "down" : ""), text: m6.baseRate ? pp(m6.baseRate.deltaPositiveShare) : share(m6.positiveShare) }),
+            el("span", { text: "gegenüber Base Rate" }), el("small", { text: share(m6.positiveShare) + " im Plus vs. " + (m6.baseRate ? share(m6.baseRate.matchedPositiveShare) : "–") + " derselben Wochen" + (m6.baseRate && m6.baseRate.ci ? " · 95 %: " + pp(m6.baseRate.ci[0]) + " bis " + pp(m6.baseRate.ci[1]) : "") })]),
+          el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: pct(m6.median, 1, true) }), el("span", { text: "Median 6 M." }), el("small", { text: "Markt derselben Woche: Abstand " + pct(m6.vsMarket.medianExcess, 1, true) + " · Mittel " + pct(m6.mean, 1, true) })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num down", text: pct(m6.maxDrawdown.median, 1) }), el("span", { text: "typischer Rückgang" }), el("small", { text: "größter Rückgang im Zeitraum (Median)" })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: num(m6.chanceRisk) }), el("span", { text: "Chance / Risiko" }), el("small", { text: "Median größter Anstieg ÷ größter Rückgang" })])]),
+        el("p", { class: "qx-small", text: "Kosten je Runde: " + ["LOW", "BASE", "HIGH"].map(function (k) { var c = m6.costSensitivity && m6.costSensitivity[k]; return k + " " + (c ? c.bps + " bps → Median " + pct(c.median, 1, true) : "–"); }).join(" · ") + ". Base Rate und SPY tragen keine Kosten." }),
         el("h3", { class: "qx-sub", text: "Ergebnis nach Zeitraum" }),
         bars(hz.map(function (k) { return { label: h[k].label, value: h[k].median }; }), { label: "Median nach Zeitraum", fmt: function (v) { return pct(v, 1, true); }, signed: true }),
         el("h3", { class: "qx-sub", text: "Typischer Verlauf nach dem Signal (Equity-Kurve je Fall)" }),
@@ -267,14 +165,15 @@
         return el("li", { text: "Abschnitt " + f.fold + " ab " + X.dateDe(f.from) + ": Lernen " + int(f.trainN) + " Fälle (" + pct(f.trainMedianExcess, 1, true) + "), Test " + int(f.testN) + " Fälle (" + pct(f.testMedianExcess, 1, true) + ")" + (f.agree ? " – gleiche Richtung" : " – andere Richtung") });
       })));
       if (r.oos) kids.push(el("h3", { class: "qx-sub", text: "Lernen, Prüfen, Testen" }), el("ul", { class: "qx-small" }, ["train", "validation", "test"].map(function (k) {
-        var s = r.oos[k]; return el("li", { text: { train: "Lernen", validation: "Prüfen", test: "Testen" }[k] + ": " + int(s.n) + " Fälle, Median-Abstand " + pct(s.medianExcess, 1, true) });
-      })));
+        var s = r.oos[k]; return el("li", { text: { train: "Lernen", validation: "Prüfen", test: "Testen" }[k] + ": " + int(s.n) + " Fälle, Median-Abstand " + pct(s.medianExcess, 1, true) + (typeof s.deltaPositiveShare === "number" ? ", gegenüber Base Rate " + pp(s.deltaPositiveShare) + (s.ci ? " (95 %: " + pp(s.ci[0]) + " bis " + pp(s.ci[1]) + ")" : "") : "") });
+      })), el("p", { class: "qx-small", text: r.edgeOutOfSample ? "Der Abstand zur Base Rate hält im Testzeitraum (Intervall ohne Null, gleiche Richtung wie beim Lernen)." : "Ein Abstand zur Base Rate bestätigt sich im Testzeitraum nicht eindeutig – keine Zertifizierung." }));
       if (r.regimes) kids.push(el("h3", { class: "qx-sub", text: "Marktphasen (SPY über 26 Wochen)" }), el("ul", { class: "qx-small" }, Object.keys(r.regimes).map(function (k) {
         var g = r.regimes[k]; return el("li", { text: { UP: "steigend", DOWN: "fallend", SIDEWAYS: "seitwärts" }[k] + ": " + int(g.n) + " Fälle" + (r.display.allowed ? ", " + share(g.positiveShare) + " im Plus, Median " + pct(g.median, 1, true) : "") });
       })));
       if (r.parameterStability) kids.push(el("h3", { class: "qx-sub", text: "Parameter-Stabilität" }), el("ul", { class: "qx-small" }, [r.parameterStability.main].concat(r.parameterStability.neighbours).map(function (p, i) {
         return el("li", { text: (i ? "Nachbar " : "Regel ") + p.params.weeks + " Wochen: Median-Abstand " + pct(p.medianExcessM6, 1, true) });
-      })));
+      }).concat((r.parameterStability.entryDelay || []).map(function (d) { return el("li", { text: "Einstieg " + d.delayWeeks + " Woche(n) nach dem Signal: Median-Abstand " + pct(d.medianExcessM6, 1, true) }); }))));
+      if (r.independence) kids.push(el("h3", { class: "qx-sub", text: "Unabhängigkeit" }), el("p", { class: "qx-small", text: int(r.independence.uniqueTitles) + " Titel, " + int(r.independence.uniquePeriods) + " Wochen, " + int(r.independence.independentClusters) + " Quartale. Weil Fälle derselben Zeit zusammenhängen, entsprechen die Fälle etwa " + int(r.independence.effectiveN) + " unabhängigen (Design-Effekt " + num(r.independence.designEffect) + ")." }));
       if (r.display.allowed && r.oppositeExit && r.oppositeExit.n) kids.push(el("h3", { class: "qx-sub", text: "Ausstieg beim Gegensignal" }), el("p", { class: "qx-small", text: int(r.oppositeExit.n) + " Fälle, Median " + pct(r.oppositeExit.median, 1, true) + ", " + share(r.oppositeExit.positiveShare) + " im Plus, Haltedauer im Median " + r.oppositeExit.medianHoldingWeeks + " Wochen; " + share(r.oppositeExit.shareEndedByOpposite) + " endeten durch das Gegensignal, der Rest nach 12 Monaten." }));
       if (r.display.allowed && r.timeToOutcome) kids.push(el("h3", { class: "qx-sub", text: "Zeit bis zum Ausgang (±10 %)" }), el("p", { class: "qx-small", text: share(r.timeToOutcome.upFirstShare) + " erreichten zuerst +10 % (Median " + (r.timeToOutcome.medianWeeksUp || r.timeToOutcome.medianDaysUp) + (unitDays ? " Tage" : " Wochen") + "), " + share(r.timeToOutcome.downFirstShare) + " zuerst −10 % (Median " + (r.timeToOutcome.medianWeeksDown || r.timeToOutcome.medianDaysDown) + (unitDays ? " Tage" : " Wochen") + ")." }));
       if (r.display.allowed) kids.push(el("h3", { class: "qx-sub", text: "Alle Zeiträume" }), el("ul", { class: "qx-small" }, hz.map(function (k) {
@@ -285,40 +184,73 @@
     return out;
   }
 
+  /* Setup-Backtest aus veroeffentlichten Staenden: Fortschritt statt Zahlen. */
+  function setupProgress(kindCert, outcomes, ruleId) {
+    var out = [];
+    var st = outcomes && outcomes.study && outcomes.study[ruleId];
+    out.push(X.section("Setup-Backtest aus veröffentlichten Ständen", "Gezählt wird nur, was am jeweiligen Tag tatsächlich veröffentlicht war – keine nachträgliche Rekonstruktion.", [
+      el("p", {}, [statusBadge(kindCert.status, kindCert.tier)]),
+      el("ul", { class: "q-checks" }, kindCert.gates.map(function (g) { return el("li", { class: g.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (g.state === "PASS" ? "✓ " : "✗ ") + g.label }),
+        el("small", { text: (g.value !== null && g.value !== undefined ? String(g.value) : "") + (g.required !== null && g.required !== undefined ? " · nötig " + g.required : "") + (g.state !== "PASS" && g.reason ? " · " + reasonText(g.reason) : "") })]); })),
+      outcomes ? el("dl", { class: "qx-kv" }, [].concat.apply([], [
+        ["Veröffentlichte Stände", int(outcomes.history.dates) + " seit " + X.dateDe(outcomes.history.from)],
+        ["Wechsel dieser Art", int(st ? st.events : 0)],
+        ["Abgeschlossene 6-Monats-Ergebnisse", int(st ? st.variants.NEXT_CLOSE.m6.status.COMPLETED : 0) + " (offen: " + int(st ? st.variants.NEXT_CLOSE.m6.status.PENDING : 0) + ")"],
+        ["Erste 6-Monats-Ergebnisse", kindCert.eta && kindCert.eta.firstCompletedM6 ? "ab etwa " + X.dateDe(kindCert.eta.firstCompletedM6) : "–"],
+        ["Genug Stichtage", kindCert.eta && kindCert.eta.historyDates && kindCert.eta.historyDates.date ? "etwa " + X.dateDe(kindCert.eta.historyDates.date) : "–"],
+        ["Freigabe", kindCert.ownerApproval && kindCert.ownerApproval.required ? "Die Setup-Methodik verlangt nach bestandenen Gates eine ausdrückliche Owner-Freigabe." : "automatisch"]
+      ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; }))) : null,
+      el("p", { class: "qx-small", text: "Einstieg zum Schluss des Folgetags (Vergleich: Schluss des Stichtags); Ausstieg bei Schluss unter der Invalidierung, Schluss an der ersten Zielzone, veröffentlichtem Abstieg oder nach 126 Handelstagen. Kosten LOW/BASE/HIGH. Ergebniszahlen erscheinen erst nach der Zertifizierung." }),
+      kindCert.replay ? el("p", { class: "qx-small", text: "Nachweis der Engine: " + kindCert.replay.parity + " veröffentlichte Setup-Stände wurden aus Kursen bis zum jeweiligen Tag exakt nachgerechnet. Die Rekonstruktion ist kein Ersatz für veröffentlichte Stände und liefert keine Ergebnisse." }) : null
+    ]));
+    return out;
+  }
+
   async function render(main, ctx, ruleId) {
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
       el("h1", { class: "qx-h1", text: "Wähle eine Regel oder ein Setup" }),
-      el("p", { class: "q-hero-lead v2-lead", text: "Was geschah früher, nachdem dieselbe Regel galt? Gemessen über viele Aktien und Jahre, mit Vergleich, Vertrauensstufe und klaren Grenzen – keine Prognose, keine Empfehlung." })]));
-    var all = await Promise.all([ctx.api.getBacktest("signal"), ctx.api.getBacktest("setup"), ctx.api.getBacktest("readiness")]);
-    var signal = all[0], setup = all[1], ready = all[2];
-    if (signal.state !== "AVAILABLE" && setup.state !== "AVAILABLE") { main.append(X.notice("Backtests derzeit nicht verfügbar", "Die Studien konnten nicht geladen werden.")); return; }
+      el("p", { class: "q-hero-lead v2-lead", text: "Was geschah früher, nachdem dieselbe Regel galt – im Vergleich zur Base Rate derselben Wochen, mit Vertrauensstufe und klaren Grenzen. Keine Prognose, keine Empfehlung." })]));
+    var all = await Promise.all([ctx.api.getBacktest("signal"), ctx.api.getBacktest("certification"), ctx.api.getBacktest("outcomes")]);
+    var signal = all[0], cert = all[1], outcomes = all[2].state === "AVAILABLE" ? all[2] : null;
+    if (signal.state !== "AVAILABLE" || cert.state !== "AVAILABLE") { main.append(X.notice("Backtests derzeit nicht verfügbar", "Die Studien konnten nicht geladen werden.")); return; }
+    var kindOf = function (id) { return cert.kinds.filter(function (k) { return k.id === id; })[0]; };
+    var sigCert = kindOf("SIGNAL_BACKTEST"), setupCert = kindOf("SETUP_BACKTEST");
+    var ruleCert = function (id) { return (sigCert.rules || []).filter(function (r) { return r.id === id; })[0] || null; };
     var picks = [];
-    if (signal.state === "AVAILABLE") signal.rules.forEach(function (r) { picks.push(selectorCard(r, "Radar-Signal · marktweit", X.routes.backtest(r.id))); });
-    if (setup.state === "AVAILABLE") setup.rules.forEach(function (r) { picks.push(selectorCard(r, "Setup-Wechsel", X.routes.backtest(r.id))); });
-    if (ready.state === "AVAILABLE") ready.kinds.filter(function (k) { return k.id === "D" || k.id === "E"; }).forEach(function (k) {
-      picks.push(el("div", { class: "q-bt-pick is-off" }, [el("small", { text: k.id === "D" ? "Strategie" : "Faktor-Ranking" }), el("b", { text: k.label }), el("span", { text: "noch nicht freigegeben" })]));
+    signal.rules.forEach(function (r) { var rc = ruleCert(r.id);
+      picks.push(el("a", { class: "q-bt-pick" + (r.display.allowed ? " is-on" : " is-off"), href: X.routes.backtest(r.id) }, [el("small", { text: "Radar-Signal · marktweit" }), el("b", { text: RULE_LABEL[r.id] || r.id }),
+        el("span", { text: r.horizons.m6.baseRate ? pp(r.horizons.m6.baseRate.deltaPositiveShare) + " vs. Base Rate · " + (STATUS_WORD[rc ? rc.status : "LIMITED"]) : STATUS_WORD.LIMITED })])); });
+    ["SETUP_CONFIRMED", "SETUP_NEW"].forEach(function (id) {
+      picks.push(el("a", { class: "q-bt-pick is-off", href: X.routes.backtest(id) }, [el("small", { text: "Setup-Wechsel · veröffentlicht" }), el("b", { text: RULE_LABEL[id] }), el("span", { text: STATUS_WORD[setupCert.status] })]));
     });
+    ["STRATEGY_BACKTEST", "FACTOR_RANKING_BACKTEST"].forEach(function (id) { var k = kindOf(id);
+      picks.push(el("div", { class: "q-bt-pick is-off" }, [el("small", { text: id === "STRATEGY_BACKTEST" ? "Anlagestil" : "Faktor-Ranking" }), el("b", { text: k.label }), el("span", { text: STATUS_WORD[k.status] })])); });
     main.append(el("nav", { class: "q-bt-picks", "aria-label": "Regel oder Setup wählen" }, picks));
 
-    var rule = null, study = null, kind = null;
-    if (ruleId && signal.state === "AVAILABLE") { rule = signal.rules.filter(function (r) { return r.id === ruleId; })[0] || null; if (rule) { study = signal; kind = "signal"; } }
-    if (!rule && ruleId && setup.state === "AVAILABLE") { rule = setup.rules.filter(function (r) { return r.id === ruleId; })[0] || null; if (rule) { study = setup; kind = "setup"; } }
-    main.querySelectorAll(".q-bt-pick").forEach(function (a) { if (rule && a.getAttribute("href") === X.routes.backtest(rule.id)) a.setAttribute("aria-current", "page"); });
+    var rule = ruleId ? signal.rules.filter(function (r) { return r.id === ruleId; })[0] || null : null;
+    main.querySelectorAll(".q-bt-pick").forEach(function (a) { if (ruleId && a.getAttribute("href") === X.routes.backtest(ruleId)) a.setAttribute("aria-current", "page"); });
     if (rule) {
-      main.append(el("div", { class: "q-bt-head" }, [el("p", { class: "q-kicker", text: kind === "signal" ? "Radar-Signal · marktweit" : "Setup-Wechsel" }),
-        el("h2", { class: "qx-h2", text: RULE_LABEL[rule.id] || rule.id }), el("p", { class: "qx-muted", text: rule.display.sentence }), trustPill(rule.trust)]));
-      ruleBody(rule, study, kind).forEach(function (n) { if (n) main.append(n); });
+      var rc = ruleCert(rule.id);
+      main.append(el("div", { class: "q-bt-head" }, [el("p", { class: "q-kicker", text: "Radar-Signal · marktweit" }),
+        el("h2", { class: "qx-h2", text: RULE_LABEL[rule.id] || rule.id }), el("p", { class: "qx-muted", text: rule.display.sentence }),
+        el("p", {}, [statusBadge(rc ? rc.status : "LIMITED", sigCert.tier), el("span", { text: " " }), trustPill(rule.trust)])]));
+      ruleBody(rule, signal, "signal").forEach(function (n) { if (n) main.append(n); });
+    } else if (ruleId && /^SETUP_/.test(ruleId) && RULE_LABEL[ruleId]) {
+      main.append(el("div", { class: "q-bt-head" }, [el("p", { class: "q-kicker", text: "Setup-Wechsel" }), el("h2", { class: "qx-h2", text: RULE_LABEL[ruleId] })]));
+      setupProgress(setupCert, outcomes, ruleId).forEach(function (n) { main.append(n); });
     } else if (ruleId) main.append(X.notice("Regel nicht gefunden", "Diese Regel gibt es nicht. Wähle oben eine Regel oder ein Setup."));
 
-    if (ready.state === "AVAILABLE") {
-      main.append(X.section("Stand je Backtest-Art", "Gemessen, nicht behauptet: welche Art freigegeben ist und woran es bei den übrigen fehlt.", [el("div", { class: "q-evkinds" }, ready.kinds.map(function (k) {
-        var pub = k.decision === "PUBLISHED";
-        return el("div", { class: "q-evkind " + (pub ? "is-on" : "is-off") }, [el("b", { text: k.id + " · " + k.label }), el("span", { class: "q-evkind-state", text: pub ? "freigegeben" + (k.trust ? " · " + TRUST_WORD[k.trust] : "") : "noch nicht freigegeben" }),
-          el("ul", {}, k.gates.map(function (g) { return el("li", { class: g.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (g.state === "PASS" ? "✓ " : "✗ ") + g.label }), el("small", { text: " – " + g.value })]); })),
-          k.note ? el("p", { class: "qx-small", text: k.note }) : null]);
-      }))], { href: X.routes.method("historie"), label: "Methodik" }));
-    }
+    main.append(X.section("Stand der Zertifizierung", "Jede Art steht in genau einem Status, der aus gemessenen Gates folgt: zertifiziert, eingeschränkt, sammelt Historie oder zurückgehalten.", [el("div", { class: "q-evkinds" }, cert.kinds.map(function (k) {
+      var eta = k.eta && (k.eta.membership || k.eta.factor || k.eta.historyDates);
+      return el("div", { class: "q-evkind " + (k.status === "CERTIFIED" ? "is-on" : k.status === "LIMITED" ? "is-limited" : "is-off") }, [el("b", { text: k.label }), statusBadge(k.status, k.tier),
+        el("ul", {}, k.gates.map(function (g) { return el("li", { class: g.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (g.state === "PASS" ? "✓ " : "✗ ") + g.label }),
+          el("small", { text: (g.value !== null && g.value !== undefined ? " – " + g.value : "") + (g.required !== null && g.required !== undefined ? " (nötig " + g.required + ")" : "") })]); })),
+        k.reason ? el("p", { class: "qx-small", text: reasonText(k.reason) }) : null,
+        eta && eta.date ? el("p", { class: "qx-small", text: "Voraussichtlich genug Historie: " + X.dateDe(eta.date) + " (wird täglich neu geprüft)." }) : null,
+        k.ownerApproval && k.ownerApproval.required ? el("p", { class: "qx-small", text: "Nach bestandenen Gates ist eine Owner-Freigabe nötig." }) : null]);
+    })), el("p", { class: "qx-small", text: "Überlebende: Gate " + (cert.survivorship.gate === "PASS" ? "bestanden" : "nicht bestanden") + ", Kontrolle " + (cert.survivorship.control === "PASS" ? "aktiv" : "nicht vorhanden") + ". " +
+      int(cert.survivorship.DELISTED_IDENTIFIED) + " delistete Titel bekannt, davon " + int(cert.survivorship.DELISTED_WITH_HISTORY) + " mit sauberer Kurshistorie." })], { href: X.routes.method("historie"), label: "Methodik" }));
   }
 
-  global.QXBacktest = { TRUST_WORD: TRUST_WORD, reasonText: reasonText, evidenceBlock: evidenceBlock, trackingSection: trackingSection, render: render, pathChart: pathChart };
+  global.QXBacktest = { TRUST_WORD: TRUST_WORD, STATUS_WORD: STATUS_WORD, tierWord: tierWord, statusBadge: statusBadge, reasonText: reasonText, evidenceBlock: evidenceBlock, trackingSection: trackingSection, render: render, pathChart: pathChart };
 })(typeof window !== "undefined" ? window : globalThis);

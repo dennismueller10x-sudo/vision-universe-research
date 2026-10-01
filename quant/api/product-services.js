@@ -457,7 +457,7 @@ function create(options){
     unclassified:index.unclassified,states};
   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
  }
- /* QUANT RADAR (quant-radar-1.1.0, Alert-Vertrag 2.0.0): was ist heute neu? Gelesen wird nur das
+ /* QUANT RADAR (quant-radar-1.2.0, Alert-Vertrag 3.0.0): was ist heute neu? Gelesen wird nur das
   * materialisierte Artefakt; jedes Ereignis wird gegen den Alert-Vertrag
   * geprueft, ein verletztes faellt heraus statt angezeigt zu werden. */
  let radarPromise=null;
@@ -466,7 +466,7 @@ function create(options){
   if(!radarPromise)radarPromise=(async()=>{
    try{
     const r=await compressedJSON('/quant/data/product/radar-v1.json.gz');
-    if(r?.schemaVersion!=='quant-radar-1.1.0'||r.engineVersion!==QuantRadar.VERSION||!validDate(r.asOf))return {state:'UNAVAILABLE',reason:'INVALID_RADAR_ARTIFACT'};
+    if(r?.schemaVersion!=='quant-radar-1.2.0'||r.engineVersion!==QuantRadar.VERSION||!validDate(r.asOf))return {state:'UNAVAILABLE',reason:'INVALID_RADAR_ARTIFACT'};
     const events=(r.events||[]).filter(e=>QuantRadar.eventViolations(e).length===0);
     const ok=new Set(events.map(e=>e.id));
     const cards=(r.cards||[]).map(c=>({...c,events:(c.events||[]).filter(e=>ok.has(e.id))})).filter(c=>c.events.length);
@@ -482,7 +482,7 @@ function create(options){
   ticker=String(ticker||'').toUpperCase();
   if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
   try{const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/radar-ticker-v1/'+key+'.json.gz');
-   if(shard?.schemaVersion!=='radar-ticker-1.1.0'||shard.shard!==key||(QuantRadar&&shard.engineVersion!==QuantRadar.VERSION))return {state:'UNAVAILABLE',reason:'INVALID_RADAR_ARTIFACT'};
+   if(shard?.schemaVersion!=='radar-ticker-1.2.0'||shard.shard!==key||(QuantRadar&&shard.engineVersion!==QuantRadar.VERSION))return {state:'UNAVAILABLE',reason:'INVALID_RADAR_ARTIFACT'};
    const row=shard.rows?.[ticker];
    if(!row)return {state:'UNAVAILABLE',reason:'NOT_IN_SETUP_UNIVERSE',asOf:shard.asOf};
    return {state:'AVAILABLE',ticker,shard,row};
@@ -512,11 +512,15 @@ function create(options){
   * sie, wird sie nicht gezeigt. */
  const backtestCache={};
  async function getBacktest(kind){
-  const files={signal:'/quant/data/product/signal-backtest-v1.json',setup:'/quant/data/product/setup-backtest-v1.json',readiness:'/quant/data/product/backtest-readiness-v2.json'};
+  const files={signal:'/quant/data/product/signal-backtest-v1.json',setup:'/quant/data/product/setup-backtest-v1.json',readiness:'/quant/data/product/backtest-readiness-v2.json',
+   certification:'/quant/data/product/backtest-certification-v1.json',outcomes:'/quant/data/product/setup-outcomes-v1.json'};
   if(!files[kind])return {state:'UNAVAILABLE',reason:'UNKNOWN_BACKTEST_KIND'};
   if(!backtestCache[kind])backtestCache[kind]=(async()=>{
    try{const s=await load(files[kind]);
     if(kind==='readiness')return s?.schemaVersion==='backtest-readiness-2.0.0'?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
+    if(kind==='outcomes')return s?.schemaVersion==='setup-outcomes-1.0.0'&&s.source&&s.source.reconstructed===false?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
+    if(kind==='certification'){const Cx=g.VUBacktestCertification||(typeof module!=='undefined'&&module.exports?require('../engines/backtest-certification.js'):null);
+     if(!Cx)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};const e=Cx.certificationViolations(s);return e.length?{state:'UNAVAILABLE',reason:'CERTIFICATION_CONTRACT_VIOLATED',errors:e}:{state:'AVAILABLE',...s};}
     const SB=SignalBacktest||g.VUSignalBacktest;if(!SB)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
     const errors=SB.studyViolations(s);
     return errors.length?{state:'UNAVAILABLE',reason:'BACKTEST_CONTRACT_VIOLATED',errors}:{state:'AVAILABLE',...s};
