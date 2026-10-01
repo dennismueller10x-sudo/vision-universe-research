@@ -139,3 +139,21 @@ test('offline estimates and missing or corrupt monthly accounting never issue ex
  await f.durable.driver.put(f.durable.usageKey.replace('MONTH',Guard.monthKey()),Buffer.from('{invalid'));
  p=preflight(f);assert.equal(p.result.status,3);assert.equal(p.report.measured,false);assert.equal(p.report.budgetForRun,null);
 });
+/* Vorfall 01.10.2026, Lauf 36801050774: erster Lauf im neuen Monat. Die
+   Vorabrechnung verlangte einen Monatsstand, den nur ein freigegebener Lauf
+   schreibt - ein Zirkel, der den ganzen Oktober blockiert haette. Zulaessig
+   ist der Uebergang nur mit belegtem Vormonat und ohne Schreibvorgang im
+   neuen Monat; alles andere bleibt geschlossen. */
+test('month rollover is accepted only with a closed previous month and no writes this month',async t=>{
+ const f=fixture(t),month=Guard.monthKey(),prev=Guard.previousMonthKey(month);
+ await f.durable.putSeries(f.series([bar('2026-09-09')]));
+ const lastMonth=`${prev}-28T22:00:00.000Z`;
+ await f.durable.writeIndex({symbols:{TST:{securityId:'ref_TST',barCount:1,bytes:100,updatedAt:lastMonth}}});
+ let p=preflight(f);assert.equal(p.result.status,3,'ohne Vormonat bleibt es zu');assert.equal(p.report.accountingBasis,'UNKNOWN');
+ await f.durable.writeUsage({...Guard.emptyUsage(prev),classAOperations:12,classBOperations:40});
+ p=preflight(f);assert.equal(p.result.status,0,p.result.stdout+p.result.stderr);
+ assert.equal(p.report.accountingBasis,'MONTH_ROLLOVER_VERIFIED');assert.equal(p.report.executionAllowed,true);assert.ok(p.report.budgetForRun);
+ await f.durable.writeIndex({symbols:{TST:{securityId:'ref_TST',barCount:1,bytes:100,updatedAt:new Date().toISOString()}}});
+ p=preflight(f);assert.equal(p.result.status,3,'Schreibvorgang im Monat ohne Monatsstand = Stand verloren');
+ assert.equal(p.report.accountingBasis,'UNKNOWN');assert.equal(p.report.budgetForRun,null);
+});
