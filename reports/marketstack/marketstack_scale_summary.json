@@ -4893,15 +4893,17 @@
       "stockDecodedByteDelta": null,
       "uncontrolledBrowserVersionRunHadExtraLazyImageBytes": 416861,
       "freshFinalizationRun": true,
-      "note": "Initial viewport before interaction, native lazy-image prefetch distance zero only in QA; all fetched resources counted. Real below-fold image separately scrolled, loaded and decoded at both widths. No product network optimization claim or budget relaxation. Same browser build as GitHub.",
+      "note": "Cold isolated browser context for every budget route, native lazy-image prefetch distance zero only in QA; all fetched resources counted. about:blank alone retains image/request history and is not a cold measurement. Real below-fold image separately scrolled, loaded and decoded. No product network optimization claim or budget relaxation.",
       "measurement": {
-        "scope": "Initial viewport before interaction; all fetched subresources counted",
+        "scope": "Cold isolated browser context, initial viewport before interaction; all fetched subresources counted",
         "browserVersion": "145.0.7632.6",
         "browserArgs": [
           "--no-sandbox",
           "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
         ],
         "nativeLazyImagePrefetchDistancePx": 0,
+        "isolatedContextPerBudgetRoute": true,
+        "waitForUsedLayoutFonts": true,
         "productNetworkImprovementClaim": false
       },
       "lazyImageEvidence": [
@@ -4972,14 +4974,43 @@
           }
         }
       ],
-      "qaSourceSHA256": "3687ed4648a382cd185b01b112e5cf92a73125b048e7f19bc726d5fb5183d7a6",
-      "stockDecodedBytes": 5509412,
-      "stockRequests": 38,
+      "qaSourceSHA256": "2f998c7c20b3798717f8fb318dda1424ee5ed82c6311812893a6c67ae494c1a6",
       "evidenceSHA256": {
         "results.json": "08fd8aae3f557f4cce7797f14f06af0911771c87ff7e0df362b245d89a2cf051",
-        "resource-budgets.json": "35753ad974d59fdb64cf12373688f412e3f50cdcb8c459ab5c14b2fa9ba12b60",
+        "resource-budgets.json": "5c576204de5d9fa05ae8a28251351ee9e22e457b226b1c58e300269cf7f269bd",
         "accessibility.json": "5b63c100238db222773005735b2fe3edb2a86828f794f414307ca3d91ba9ffb8"
-      }
+      },
+      "stockObservations": [
+        {
+          "width": 1440,
+          "decodedBytes": 5461156,
+          "requests": 37,
+          "pass": true
+        },
+        {
+          "width": 390,
+          "decodedBytes": 5461156,
+          "requests": 37,
+          "pass": true
+        }
+      ],
+      "contextHistoryCauseEvidenceSHA256": "d4302c14ef6310603595baffedf0393c53ebfe2f14186f181c02c90dd1c77bd8",
+      "historicalSharedContextCI": [
+        {
+          "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
+          "runId": 36919867339,
+          "conclusion": "SUCCESS"
+        },
+        {
+          "sourceCommit": "5eaf689d623c289504a87df33689f93271476f4a",
+          "runId": 36921683328,
+          "conclusion": "FAILURE",
+          "stockMobileDecodedBytes": 5926273,
+          "extraLazyImageBytes": 416861,
+          "cause": "PRIOR_REAL_GARP_STRATEGY_IMAGE_LOAD_IN_REUSED_CONTEXT;REPRODUCED_INDEPENDENTLY_AT_BOTH_WIDTHS",
+          "codeAndProviderDataUnchanged": true
+        }
+      ]
     },
     "globalBrowser": {
       "allPricedListingChecksPassed": 278,
@@ -5032,7 +5063,7 @@
       "failed": 0
     },
     "executionEnvironmentRecovered": true,
-    "checkedAt": "2026-10-01T20:24:25.350628+00:00",
+    "checkedAt": "2026-10-01T20:47:59.777056+00:00",
     "exactHeadRelease": {
       "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
       "buildStatus": "PASS",
@@ -5100,7 +5131,16 @@
         "productionQueueChanged": false,
         "localExactHeadReleaseVerified": true
       },
-      "vercelPreview": "EXTERNAL_DEPLOYMENT_RATE_LIMIT"
+      "vercelPreview": "EXTERNAL_DEPLOYMENT_RATE_LIMIT",
+      "scope": "HISTORICAL_SOURCE_COMMIT_AS_SPECIFIED; DOES_NOT_CERTIFY_LATER_COLD_CONTEXT_QA"
+    },
+    "additionalRemotePackage": {
+      "sourceCommit": "5eaf689d623c289504a87df33689f93271476f4a",
+      "runId": 36921683074,
+      "conclusion": "SUCCESS",
+      "packageConclusion": "SUCCESS",
+      "deployConclusion": "SKIPPED",
+      "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36921683074"
     }
   },
   "sourceArtifactHashes": {

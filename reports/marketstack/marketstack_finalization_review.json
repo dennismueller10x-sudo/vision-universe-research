@@ -143,7 +143,7 @@
   },
   "testEvidence": {
     "machineResultsArtifact": "reports/marketstack/marketstack_scale_tests.json",
-    "machineResultsSHA256": "32c247b5741e14914e130b29fdcf8a8e33cea919ff6f6b5c6020eda3a955a2f7",
+    "machineResultsSHA256": "0359486adafdd26a41178f3966d57f3449cf1e481af85577d754155901ba9813",
     "scopes": {
       "environment": {
         "node": "24.19.0",
@@ -201,15 +201,17 @@
         "stockDecodedByteDelta": null,
         "uncontrolledBrowserVersionRunHadExtraLazyImageBytes": 416861,
         "freshFinalizationRun": true,
-        "note": "Initial viewport before interaction, native lazy-image prefetch distance zero only in QA; all fetched resources counted. Real below-fold image separately scrolled, loaded and decoded at both widths. No product network optimization claim or budget relaxation. Same browser build as GitHub.",
+        "note": "Cold isolated browser context for every budget route, native lazy-image prefetch distance zero only in QA; all fetched resources counted. about:blank alone retains image/request history and is not a cold measurement. Real below-fold image separately scrolled, loaded and decoded. No product network optimization claim or budget relaxation.",
         "measurement": {
-          "scope": "Initial viewport before interaction; all fetched subresources counted",
+          "scope": "Cold isolated browser context, initial viewport before interaction; all fetched subresources counted",
           "browserVersion": "145.0.7632.6",
           "browserArgs": [
             "--no-sandbox",
             "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
           ],
           "nativeLazyImagePrefetchDistancePx": 0,
+          "isolatedContextPerBudgetRoute": true,
+          "waitForUsedLayoutFonts": true,
           "productNetworkImprovementClaim": false
         },
         "lazyImageEvidence": [
@@ -280,14 +282,43 @@
             }
           }
         ],
-        "qaSourceSHA256": "3687ed4648a382cd185b01b112e5cf92a73125b048e7f19bc726d5fb5183d7a6",
-        "stockDecodedBytes": 5509412,
-        "stockRequests": 38,
+        "qaSourceSHA256": "2f998c7c20b3798717f8fb318dda1424ee5ed82c6311812893a6c67ae494c1a6",
         "evidenceSHA256": {
           "results.json": "08fd8aae3f557f4cce7797f14f06af0911771c87ff7e0df362b245d89a2cf051",
-          "resource-budgets.json": "35753ad974d59fdb64cf12373688f412e3f50cdcb8c459ab5c14b2fa9ba12b60",
+          "resource-budgets.json": "5c576204de5d9fa05ae8a28251351ee9e22e457b226b1c58e300269cf7f269bd",
           "accessibility.json": "5b63c100238db222773005735b2fe3edb2a86828f794f414307ca3d91ba9ffb8"
-        }
+        },
+        "stockObservations": [
+          {
+            "width": 1440,
+            "decodedBytes": 5461156,
+            "requests": 37,
+            "pass": true
+          },
+          {
+            "width": 390,
+            "decodedBytes": 5461156,
+            "requests": 37,
+            "pass": true
+          }
+        ],
+        "contextHistoryCauseEvidenceSHA256": "d4302c14ef6310603595baffedf0393c53ebfe2f14186f181c02c90dd1c77bd8",
+        "historicalSharedContextCI": [
+          {
+            "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
+            "runId": 36919867339,
+            "conclusion": "SUCCESS"
+          },
+          {
+            "sourceCommit": "5eaf689d623c289504a87df33689f93271476f4a",
+            "runId": 36921683328,
+            "conclusion": "FAILURE",
+            "stockMobileDecodedBytes": 5926273,
+            "extraLazyImageBytes": 416861,
+            "cause": "PRIOR_REAL_GARP_STRATEGY_IMAGE_LOAD_IN_REUSED_CONTEXT;REPRODUCED_INDEPENDENTLY_AT_BOTH_WIDTHS",
+            "codeAndProviderDataUnchanged": true
+          }
+        ]
       },
       "globalBrowser": {
         "allPricedListingChecksPassed": 278,
@@ -340,7 +371,7 @@
         "failed": 0
       },
       "executionEnvironmentRecovered": true,
-      "checkedAt": "2026-10-01T20:24:25.350628+00:00",
+      "checkedAt": "2026-10-01T20:47:59.777056+00:00",
       "exactHeadRelease": {
         "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
         "buildStatus": "PASS",
@@ -408,7 +439,16 @@
           "productionQueueChanged": false,
           "localExactHeadReleaseVerified": true
         },
-        "vercelPreview": "EXTERNAL_DEPLOYMENT_RATE_LIMIT"
+        "vercelPreview": "EXTERNAL_DEPLOYMENT_RATE_LIMIT",
+        "scope": "HISTORICAL_SOURCE_COMMIT_AS_SPECIFIED; DOES_NOT_CERTIFY_LATER_COLD_CONTEXT_QA"
+      },
+      "additionalRemotePackage": {
+        "sourceCommit": "5eaf689d623c289504a87df33689f93271476f4a",
+        "runId": 36921683074,
+        "conclusion": "SUCCESS",
+        "packageConclusion": "SUCCESS",
+        "deployConclusion": "SKIPPED",
+        "url": "https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/36921683074"
       }
     },
     "independentSEC": {
@@ -435,7 +475,7 @@
       "skipped": 0,
       "durationMilliseconds": 77892.846905
     },
-    "countingRule": "Targeted and full suites overlap; do not sum counts. Browser measurement uses the same pinned Chromium1208 build locally and in GitHub, with explicit initial-viewport native-prefetch0 scope; exact-head local release and remote CI scopes are recorded separately."
+    "countingRule": "Targeted and full suites overlap; do not sum counts. Final local browser measurement uses isolated cold contexts with native-prefetch0; historical shared-context CI and the separate exact release are explicitly scoped."
   },
   "resolvedReviewFindings": [
     "Conflicting listing status and equity/ETF aliases fail closed independent of order.",
@@ -454,87 +494,53 @@
   "reviewerSourceEdits": 0,
   "providerDecision": "DEFERRED",
   "browserMeasurementReview": {
-    "checkedAt": "2026-10-01T20:10:48.321669+00:00",
-    "reviewedParentCommit": "be02683f298e81f905633d3889c6bf019eab027d",
-    "uncommittedQAFileSHA256": "3687ed4648a382cd185b01b112e5cf92a73125b048e7f19bc726d5fb5183d7a6",
-    "budgetFileSHA256": "ea3692d38cd09919a839bcf8d6a15000c4015b8781fe04bcd4edc4070625b896",
+    "schemaVersion": "marketstack-cold-viewport-independent-review-1.0.0",
+    "checkedAt": "2026-10-01T20:46:35.225117+00:00",
+    "reviewedParentCommit": "5eaf689d623c289504a87df33689f93271476f4a",
     "QAFile": "scripts/vu2/browser-qa.mjs",
+    "QAFileSHA256": "2f998c7c20b3798717f8fb318dda1424ee5ed82c6311812893a6c67ae494c1a6",
     "budgetFile": "scripts/vu2/resource-budget.mjs",
-    "allFetchedResourcesStillCounted": true,
-    "resourceListFilteringIntroduced": false,
-    "resourceBudgetThresholdChanges": false,
+    "budgetFileSHA256": "ea3692d38cd09919a839bcf8d6a15000c4015b8781fe04bcd4edc4070625b896",
+    "scope": "Independent source, exact real Chromium1208 cold-context/used-font QA and protected-byte comparison. Final remote CI is separate.",
+    "status": "PASS_LOCAL_FULL_QA_AND_INDEPENDENT_SOURCE_REVIEW",
+    "allFetchedSubresourcesCounted": true,
+    "resourcePathFiltering": false,
+    "addedResourceAbortRules": false,
+    "numericBudgetChanges": false,
     "productCodeChanges": false,
-    "paidProviderCalls": 0,
-    "protectedGroups": {
-      "protected_provider_jobs": {
-        "checkedFiles": 154,
-        "changedFiles": [],
-        "missingFiles": []
-      },
-      "quant_products": {
-        "checkedFiles": 3315,
-        "changedFiles": [],
-        "missingFiles": []
-      },
-      "sec_fundamentals": {
-        "checkedFiles": 6130,
-        "changedFiles": [],
-        "missingFiles": []
-      },
-      "us_discover": {
-        "checkedFiles": 6078,
-        "changedFiles": [],
-        "missingFiles": []
-      },
-      "us_identity": {
-        "checkedFiles": 2864,
-        "changedFiles": [],
-        "missingFiles": []
-      },
-      "us_prices": {
-        "checkedFiles": 23538,
-        "changedFiles": [],
-        "missingFiles": []
-      }
+    "paidMarketstackCallsByReviewer": 0,
+    "measurement": {
+      "scope": "Cold isolated browser context, initial viewport before interaction; all fetched subresources counted",
+      "browserVersion": "145.0.7632.6",
+      "browserArgs": [
+        "--no-sandbox",
+        "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
+      ],
+      "nativeLazyImagePrefetchDistancePx": 0,
+      "isolatedContextPerBudgetRoute": true,
+      "waitForUsedLayoutFonts": true,
+      "productNetworkImprovementClaim": false
     },
-    "accepted334CanonicalFilesChecked": 2690,
-    "accepted334CanonicalChanged": [],
-    "resolvedReviewFindings": [
-      "Required logo ResourceTiming completion is awaited before resource snapshot.",
-      "Actual native lazy image must be deferred below viewport, then load/decode and appear in ResourceTiming after scrolling.",
-      "Native lazy-image prefetch0 is explicitly a QA measurement normalization, not a productnetwork optimization."
-    ],
-    "resourceBudgetFailureCaseTests": {
-      "command": "node --test scripts/vu2/resource-budget.test.mjs",
-      "passed": 6,
-      "failed": 0,
-      "skipped": 0,
-      "durationMilliseconds": 71.489282
-    },
-    "actualPinnedChromiumLocalResult": {
-      "functionalPassed": 90,
+    "currentFullHarness": {
+      "functionalChecksPassed": 90,
       "findings": 0,
       "resourceGatesPassed": 8,
-      "resourceGatesFailed": 0,
       "accessibilityPages": 76,
       "violations": 0,
-      "browserVersion": "145.0.7632.6",
-      "stockDecodedBytes": 5509412,
-      "stockRequests": 38,
-      "widths": [
-        1440,
-        390
+      "stock": [
+        {
+          "width": 1440,
+          "decodedBytes": 5461156,
+          "requests": 37,
+          "pass": true
+        },
+        {
+          "width": 390,
+          "decodedBytes": 5461156,
+          "requests": 37,
+          "pass": true
+        }
       ],
-      "measurement": {
-        "scope": "Initial viewport before interaction; all fetched subresources counted",
-        "browserVersion": "145.0.7632.6",
-        "browserArgs": [
-          "--no-sandbox",
-          "--blink-settings=lazyImageLoadingDistanceThresholdPxUnknown=0,lazyImageLoadingDistanceThresholdPxOffline=0,lazyImageLoadingDistanceThresholdPxSlow2G=0,lazyImageLoadingDistanceThresholdPx2G=0,lazyImageLoadingDistanceThresholdPx3G=0,lazyImageLoadingDistanceThresholdPx4G=0"
-        ],
-        "nativeLazyImagePrefetchDistancePx": 0,
-        "productNetworkImprovementClaim": false
-      },
       "lazyImageEvidence": [
         {
           "width": 1440,
@@ -603,22 +609,82 @@
           }
         }
       ],
-      "resultArtifactsSHA256": {
+      "evidenceSHA256": {
         "results.json": "08fd8aae3f557f4cce7797f14f06af0911771c87ff7e0df362b245d89a2cf051",
-        "resource-budgets.json": "35753ad974d59fdb64cf12373688f412e3f50cdcb8c459ab5c14b2fa9ba12b60",
+        "resource-budgets.json": "5c576204de5d9fa05ae8a28251351ee9e22e457b226b1c58e300269cf7f269bd",
         "accessibility.json": "5b63c100238db222773005735b2fe3edb2a86828f794f414307ca3d91ba9ffb8"
       }
     },
-    "status": "PASS_LOCAL_ACTUAL_CI_BROWSER_AND_INDEPENDENT_SOURCE_REVIEW",
-    "reviewScope": "Independent source, protected-byte manifest and local real Chromium1208 verification; final remote workflow results are authoritative PR checks",
-    "remoteWorkflowVerification": {
-      "sourceCommit": "a08adb58b9a858379d98e70683cee3a52077f23e",
-      "runId": 36919867339,
-      "conclusion": "SUCCESS",
-      "functionalChecksPassed": 90,
-      "resourceGatesPassed": 8,
-      "accessibilityPages": 76,
-      "violations": 0
-    }
+    "causalContrast": {
+      "diagnosticIsSeparateFromCurrentHarness": true,
+      "browserVersion": "145.0.7632.6",
+      "priorRoute": "#/strategien/garp",
+      "method": "Actual strategy hero decoded and full-page screenshot captured, then about:blank and stock reloaded within same context. Compared against a fresh isolated context, native lazy prefetch0 in both.",
+      "widths": [
+        1440,
+        390
+      ],
+      "warmDecodedBytes": 5926273,
+      "offscreenPhotoBytes": 416861,
+      "warmPhotoNaturalWidth": 1254,
+      "coldPhotoNaturalWidthBeforeScroll": 0,
+      "actualPhotoLoadsAfterScroll": true,
+      "simpleCachedByteReuseClaim": false,
+      "evidenceSHA256": "d4302c14ef6310603595baffedf0393c53ebfe2f14186f181c02c90dd1c77bd8"
+    },
+    "protectedByteComparison": {
+      "checkedAt": "2026-10-01T20:46:35.228911+00:00",
+      "baselineCommit": "944b97c80d17c941c50d3e272f2070dfaed82490",
+      "accepted334Commit": "3f7bf0b6a55d53fa671fa95ae2b08c844a5a70c8",
+      "groups": {
+        "protected_provider_jobs": {
+          "checkedFiles": 154,
+          "changedFiles": [],
+          "missingFiles": []
+        },
+        "quant_products": {
+          "checkedFiles": 3315,
+          "changedFiles": [],
+          "missingFiles": []
+        },
+        "sec_fundamentals": {
+          "checkedFiles": 6130,
+          "changedFiles": [],
+          "missingFiles": []
+        },
+        "us_discover": {
+          "checkedFiles": 6078,
+          "changedFiles": [],
+          "missingFiles": []
+        },
+        "us_identity": {
+          "checkedFiles": 2864,
+          "changedFiles": [],
+          "missingFiles": []
+        },
+        "us_prices": {
+          "checkedFiles": 23538,
+          "changedFiles": [],
+          "missingFiles": []
+        }
+      },
+      "accepted334CanonicalFilesChecked": 2690,
+      "accepted334CanonicalChanged": [],
+      "baselineManifestSHA256": "4816be3094c181afe35c4449fe88e3ff29a21898019b2ff9b47dd3e38d0ed855",
+      "accepted334ManifestSHA256": "414809a8fcc77c685acecb15b34f4a805d5dad36921e41db9426a6ec5ed0b9c0"
+    },
+    "reviewFindingsResolved": [
+      "Native image behavior depends on previous decoded strategy images; about:blank alone is not a cold context.",
+      "Every budget route uses a fresh isolated context with original clock/error handlers and real functional assertions.",
+      "Used-layout fonts and actual logo response complete before resource capture.",
+      "The actual deferred photo is scrolled, loaded and decoded after functional assertions; no asset-path exclusion or budget increase."
+    ],
+    "pendingValidation": [
+      "Final published-head remote CI"
+    ],
+    "productionDeployment": false,
+    "providerDecision": "DEFERRED",
+    "reviewScope": "Independent current QA source, protected-byte manifests, exact prior-strategy causal replay and final local real Chromium1208 cold-context/font-settled verification. Final remote CI is reported by current PR checks.",
+    "historicalNativeOnlyReview": "https://github.com/dennismueller10x-sudo/vision-universe-research/blob/5eaf689d623c289504a87df33689f93271476f4a/reports/marketstack/marketstack_finalization_review.json"
   }
 }

@@ -51,7 +51,7 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browserArgs=['--no-sandbox','--blink-settings='+['Unknown','Offline','Slow2G','2G','3G','4G'].map(n=>'lazyImageLoadingDistanceThresholdPx'+n+'=0').join(',')];
 const browser=await chromium.launch({headless:true,args:browserArgs,
  ...(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{})});
-const budgetMeasurement={scope:'Initial viewport before interaction; all fetched subresources counted',browserVersion:browser.version(),browserArgs,nativeLazyImagePrefetchDistancePx:0,productNetworkImprovementClaim:false};
+const budgetMeasurement={scope:'Cold isolated browser context, initial viewport before interaction; all fetched subresources counted',browserVersion:browser.version(),browserArgs,nativeLazyImagePrefetchDistancePx:0,isolatedContextPerBudgetRoute:true,waitForUsedLayoutFonts:true,productNetworkImprovementClaim:false};
 const lazyImageEvidence=[];
 const origin='http://127.0.0.1:'+server.address().port;const checks=[],performanceSamples=[],accessibility=[],resourceBudgets=[],findings=[];
 const Q=origin+'/quant/';
@@ -112,7 +112,7 @@ async function auditAccessibility(page,view,width){
 function befund(view,width,text){findings.push({view,width,finding:text});console.log('BEFUND '+view+'@'+width+': '+text);}
 async function versuch(view,width,fn){try{await fn();}catch(e){befund(view,width,'ABBRUCH: '+String(e.message||e).split('\n')[0].slice(0,220));}}
 
-try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.addInitScript(time=>{const NativeDate=Date,fixed=NativeDate.parse(time);globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}};},staleClock.toISOString());
+try{for(const width of [1440,390]){
  const errors=[];let fremd=false;
  /* Absichtlich abgebrochene Anfragen (Ausfallbilder) erzeugen je eine
     Konsolenzeile "net::ERR_FAILED". Sie werden gezaehlt und genau so oft
@@ -120,14 +120,27 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     ein zufaellig fehlschlagender Fremdabruf (Webfont) diese Zeilen lokal,
     und in CI, wo er gelingt, wurden sie zum Befund. */
  let absichtlich=0;
+ async function isolatedPage(){
+ const page=await browser.newPage({viewport:{width,height:1000},deviceScaleFactor:1});await page.addInitScript(time=>{const NativeDate=Date,fixed=NativeDate.parse(time);globalThis.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}};},staleClock.toISOString());
  page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremd=true;});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('404')||t.includes('favicon'))return;if(absichtlich>0&&/^Failed to load resource: net::ERR_FAILED/.test(t)){absichtlich--;return;}if(fremd&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
+ return page;
+ }
+ let page=await isolatedPage();
  /* Discover-Angleichung (30.09.2026): Kopf- und Tab-Leiste sind EINE
     Leiste wie Discovers v2-dock - am Desktop oben mittig, am Handy unten. */
  const leiste='nav.v2-dock.qx-nav';
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
+  // about:blank resets the document, not its context's image cache. Earlier
+  // full-page screenshots can warm a lazy image, making a later "initial"
+  // route load depend on journey order. Every budget route starts in its own
+  // cold context; functional/scroll assertions still run on the real page.
+  if(budgetKey){await page.close();page=await isolatedPage();}
   const started=performance.now();await frisch(page,hash);
+  // Include fonts used by the rendered viewport, even on a slower network;
+  // do not force unused fonts or omit any resource from accounting.
+  if(budgetKey)await page.waitForFunction(()=>document.fonts.status==='loaded',null,{timeout:10000});
   // Finish the visible stock-page logo before measuring, so a slow image
   // cannot be asserted later yet omitted from the initial byte snapshot.
   if(view==='aktie-nvda')await page.waitForFunction(()=>performance.getEntriesByType('resource').some(r=>new URL(r.name).pathname==='/assets/vision-universe-logo.png'&&r.decodedBodySize>0),null,{timeout:10000});
