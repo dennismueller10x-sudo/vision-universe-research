@@ -86,3 +86,49 @@ Fällt der Probeabruf negativ aus, ist die Alternative eine Quelle mit Delisting
 dort sind ebenfalls alle fünf Nachweise einzeln zu prüfen, Lizenz vor Preis.
 
 In diesem PR wurde weder ein Anbieter abgerufen noch die Pipeline verändert.
+
+## Explorativer Pilot (Runde 4)
+
+**Festgelegt vor dem ersten Lauf (2026-10-01)**, genau ein Lauf, keine Parametersuche
+(`scripts/supertrader/pilot/donchian-weekly.mjs`):
+
+- **Methode:** Donchian-/Turtle-Kanal 20/10, auf Wochenschlüsse übertragen (VU). Ausführung zum Schluss der Folgewoche.
+- **Portfolio:** max. 20 Positionen, gleich gewichtet.
+- **Kosten und Rendite:** 0,25 % je Seite; Kursrendite ohne Dividenden.
+- **Universum:** 6.333 öffentliche Wochenschlussreihen, also nur heute gelistete Titel. Zulässig je Woche: ≥ 52 Wochen Historie, Schluss ≥ 5 USD.
+- **Datenanomalien:** 1.076 Wochenwerte außerhalb von −75 % / +300 % ausgeschlossen.
+- **Zeitraum:** 07.01.2000 – 25.09.2026. In-Sample bis 2015, Out-of-Sample ab 2016.
+
+| | Regel (nach Kosten) | Gleichgew. gleiches Universum | SPY (Kurs) |
+|---|---|---|---|
+| CAGR | −2,5 % | +8,1 % | +6,4 % |
+| Max. Rückgang | −93 % | −57 % | −56 % |
+| Schwankung p. a. | 45 % | 19 % | 18 % |
+
+Kennzahlen der Regel:
+- Trades: 1.619
+- Trefferquote: 31 %
+- Ø Gewinn / Ø Verlust: +61 % / −26 %
+- Profit Factor: 1,06
+- In-Sample: −0,3 % p. a.; Out-of-Sample: −5,1 % p. a.
+
+**Einordnung:** Das ist explorativ, kein Nachweis. Survivorship Bias hebt Strategie *und*
+Vergleichsuniversum; der Abstand ist dadurch nicht bereinigt. Das Ergebnis liefert keinen Hinweis
+auf Überlegenheit dieser Übertragung. Es wird so veröffentlicht, wie es ausfiel.
+
+## Prüfpläne statt pauschaler 8 Jahre
+
+Die Prüfpläne sind je Methode vorab festgelegt (`engine/gates.mjs`, `TEST_PLANS`). Maßgeblich sind
+unabhängige Beobachtungen und Bärenmärkte (SPY ≥ −20 %), nicht eine einheitliche Jahreszahl:
+
+| Methode | Mindestjahre | Bärenmärkte | Beobachtungen | Begründung |
+|---|---|---|---|---|
+| Tagesmethoden (Momentum, Darvas, Donchian) | 10 | 2 | 300 Trades | kurze Haltedauer, viele Trades |
+| Minervini | 10 | 2 | 200 Trades | seltene Setups |
+| Weinstein (Woche) | 20 | 3 | 150 Trades | Stufenzyklen über Jahre |
+| Greenblatt, Piotroski (jährlich) | 20 | 3 | 20 Jahreskohorten | eine unabhängige Beobachtung je Jahr |
+| CAN SLIM (vollständig) | 10 | 2 | 200 Trades | plus Quartalsgewinne und Fondsbestände zum Stichtag |
+
+Neu als hartes Gate kommen hinzu:
+- **Nutzungsrechte.**
+- **Kapitalmaßnahmen** gelten nur als erfüllt, wenn neben Splits auch Dividenden einheitlich bereinigt sind und Delisting-Renditen vorliegen. Beides ist heute nicht der Fall.

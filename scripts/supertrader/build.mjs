@@ -31,11 +31,15 @@ import darvas from './engine/strategies/darvas.mjs';
 import minervini from './engine/strategies/minervini.mjs';
 import weinstein from './engine/strategies/weinstein.mjs';
 import greenblatt from './engine/strategies/greenblatt.mjs';
+import donchian from './engine/strategies/donchian.mjs';
+import * as canslim from './engine/partial/canslim.mjs';
+import * as piotroski from './engine/partial/piotroski.mjs';
+import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
 let CURRENT_REGIME = null;
-export const LIVE_ENGINES = [kkBreakout, weinstein, darvas, minervini];
+export const LIVE_ENGINES = [kkBreakout, weinstein, darvas, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const ROOT = path.resolve(args.root || '.');
@@ -197,6 +201,10 @@ function measureCoverage(instruments, weeklySpans) {
     survivorshipControls: pitGates.declared_capabilities?.survivorshipBiasControls === true,
     historicalMembershipDates: membershipDates,
     splitAdjusted: [...instruments.values()].every((i) => i.priceSeriesType === 'SPLIT_ADJUSTED'),
+    // Dividenden/Total Return: universumsweite Pruefung der Quant-Datenbasis (read-only).
+    totalReturnUniform: (() => { const f = rel('quant/data/providers/return-basis-universe-study.json'); return exists(f) ? readJson(f).totalReturnVerification?.verdict === 'TOTAL_RETURN_UNIFORM' : false; })(),
+    delistingReturns: false,
+    usageRightsConfirmed: false,
     totalReturnSeries: false,
     sources: {
       dailyOhlcv: 'quant/data/product/technical-signals-v1 (kanonische technische Materialisierung, split-adjustiert)',
@@ -469,6 +477,10 @@ export function build() {
     log(`${engine.id}: offen ${stillOpen.length}, neu abgeschlossen ${finishedNow.length}, Scanner ${snap.length}`);
   }
 
+  /* --- Teilpruefungen (CAN SLIM, Piotroski) auf SEC-Fundamentaldaten --- */
+  const partial = buildPartialChecks(instruments, cross, asOf);
+  log(`Teilpruefungen: CAN SLIM ${partial.CANSLIM.counts.partialMatch} Teiltreffer, Piotroski ${partial.PIOTROSKI_F.counts.candidates} Kandidaten`);
+
   /* --- Fundamentale Anzeige fuer Minervini-Signale (HYBRID) --- */
   const fundCache = new Map();
   const fundOf = (sym) => {
@@ -488,6 +500,9 @@ export function build() {
   const registry = buildRegistry(coverage, gbCoverage);
   const sources = buildSources();
   const signals = buildSignals(ledgers, scanner, fundOf, instruments, market);
+  signals.partialChecks = partial;
+  for (const [id, pc] of Object.entries(partial)) for (const c of pc.candidates) (signals.bySymbol[c.symbol] ||= []).push({ strategyId: id, id: null, state: 'PARTIAL_CHECK' });
+  const pilot = args['skip-pilot'] ? null : buildPilotArtifact(ROOT);
   const backtests = buildBacktests(registry, coverage, gbCoverage);
   // Historische Validierung je Regelkarte aus den gemessenen Gates, nicht behauptet.
   for (const s of registry.strategies) for (const card of s.rule_cards || []) {
@@ -500,7 +515,9 @@ export function build() {
   writeJson(path.join(DATA, 'market.json'), market);
   writeJson(path.join(DATA, 'coverage.json'), { schema: 'supertrader-coverage-1.0.0', asOf, coverage, greenblatt: gbCoverage, unavailableInstruments: unavailable, gateDefinitions: GATE_DEFS, minHistoryYears: MIN_HISTORY_YEARS });
   writeJson(path.join(DATA, 'signals.json'), signals);
+  if (pilot) backtests.pilot = { path: '/supertrader/data/pilot-backtest.json', status: pilot.status, id: pilot.spec.id };
   writeJson(path.join(DATA, 'backtests.json'), backtests);
+  if (pilot) writeJson(path.join(DATA, 'pilot-backtest.json'), pilot);
   for (const [id, l] of Object.entries(ledgers)) writeJson(ledgerPath(id), l);
   writeStockPages(signals);
   writeStrategyPages(registry);
@@ -508,6 +525,78 @@ export function build() {
   writeJson(path.join(DATA, 'build.json'), { buildVersion: BUILD_VERSION, registryVersion: REGISTRY_VERSION, asOf, inputsGeneratedAt: barsGeneratedAt });
   log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s, Stand ${asOf}`);
   return { asOf, signals, backtests, coverage };
+}
+
+// Fundamentaldaten aus den SEC-Konsumartefakten (zuletzt berichtete Werte,
+// keine Point-in-Time-Erstmeldungen). Nur die fuer die Teilpruefungen noetigen Reihen.
+function loadSecFundamentals(symbols) {
+  const dir = rel('quant/data/sec/consumer');
+  const out = new Map();
+  if (!exists(dir)) return out;
+  const keepA = ['net_income', 'total_assets', 'operating_cash_flow', 'long_term_debt', 'shares_outstanding', 'gross_profit', 'revenue', 'stockholders_equity'];
+  for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.json')).sort()) {
+    const j = readJson(path.join(dir, f));
+    const sym = (j.tickers || []).find((t) => symbols.has(t));
+    if (!sym || out.has(sym)) continue;
+    const annual = {}; for (const k of keepA) if (j.annual?.[k]) annual[k] = j.annual[k];
+    out.set(sym, { cik: j.cik, name: j.name, annual, quarterly: { net_income: j.quarterly?.net_income || [] }, asOf: j.asOf });
+  }
+  return out;
+}
+
+function lastOf(rows) { const r = (rows || []).filter((x) => x[1] === 'FY' && Number.isFinite(x[3])).sort((a, b) => String(a[2]).localeCompare(String(b[2]))); return r.length ? r[r.length - 1][3] : null; }
+
+export function buildPartialChecks(instruments, cross, asOf) {
+  const fund = loadSecFundamentals(new Set(instruments.keys()));
+  const spy = readJson(rel('quant/data/market/multi-asset/series/SPY.json')).points.filter(([d]) => String(d).slice(0, 10) <= asOf);
+  const market = canslim.evalM(spy);
+  const cs = [], pio = [];
+  const csCount = Object.fromEntries(canslim.CRITERIA.map((c) => [c.id, { PASS: 0, FAIL: 0, NO_DATA: 0 }]));
+  const pioCount = Object.fromEntries(piotroski.SIGNALS.map((c) => [c.id, { PASS: 0, FAIL: 0, NO_DATA: 0 }]));
+  const bm = [];
+  for (const inst of instruments.values()) {
+    const t = inst.bars.date.length - 1;
+    const close = inst.bars.close[t];
+    if (!(close >= 5) || !(inst.ind.dollarVol20[t] >= 5e6)) continue; // gleiche Handelbarkeitsgrenze wie die Live-Strategien
+    const f = fund.get(inst.symbol);
+    const vr = inst.ind.vol20[t] && inst.ind.vol50[t] ? inst.ind.vol20[t] / inst.ind.vol50[t] : null;
+    const shares = f ? lastOf(f.annual.shares_outstanding) : null;
+    const r = canslim.evaluate({ fund: f ? { ...f, sharesOutstanding: shares } : null, close, high252: inst.ind.high252[t], rsPercentile: cross.get(inst.symbol)?.rs?.[t], volumeRatio: vr, market, asOf });
+    for (const k of Object.keys(csCount)) { const st = r.criteria[k].status; if (st in csCount[k]) csCount[k][st]++; }
+    cs.push({ symbol: inst.symbol, name: f?.name || null, close: r4(close), ...r });
+    if (f) {
+      const p = piotroski.evaluate(f.annual, asOf);
+      for (const k of Object.keys(pioCount)) { const st = p.signals[k].status; if (st in pioCount[k]) pioCount[k][st]++; }
+      const eq = lastOf(f.annual.stockholders_equity);
+      const mcap = shares && shares > 0 ? shares * close : null;
+      const btm = eq && mcap ? eq / mcap : null;
+      pio.push({ symbol: inst.symbol, name: f.name, close: r4(close), bookToMarket: r4(btm), ...p });
+      if (btm !== null && btm > 0) bm.push(btm);
+    }
+  }
+  bm.sort((a, b) => a - b);
+  const q80 = bm.length ? bm[Math.floor(bm.length * piotroski.PARAMS.bookToMarketQuintile)] : null;
+  const slimCs = (x) => ({ symbol: x.symbol, name: x.name, close: x.close, passed: x.passed, failed: x.failed, noData: x.noData, criteria: Object.fromEntries(Object.entries(x.criteria).map(([k, v]) => [k, { status: v.status, value: v.value ?? null, periodEnd: v.periodEnd || null, note: v.note || null }])) });
+  const csMatches = cs.filter((x) => x.partialMatch).sort((a, b) => (b.criteria.C.value ?? 0) - (a.criteria.C.value ?? 0));
+  // Ohne bestaetigten Markt (M) bleiben die uebrigen Kriterien sichtbar: "4 von 5, nur M fehlt".
+  const csNear = cs.filter((x) => !x.partialMatch && x.passed.length === canslim.CHECKABLE.length - 1 && x.failed.length === 1).sort((a, b) => (b.criteria.C.value ?? 0) - (a.criteria.C.value ?? 0));
+  const pioCand = pio.filter((x) => x.bookToMarket !== null && q80 !== null && x.bookToMarket >= q80 && x.checked === piotroski.CHECKABLE.length && x.partialScore >= piotroski.PARAMS.minPartialScore)
+    .sort((a, b) => b.partialScore - a.partialScore || b.bookToMarket - a.bookToMarket);
+  const slimPio = (x) => ({ symbol: x.symbol, name: x.name, close: x.close, bookToMarket: x.bookToMarket, partialScore: x.partialScore, checked: x.checked, fiscalYearEnd: x.fiscalYearEnd, signals: x.signals });
+  return {
+    CANSLIM: {
+      mode: 'PARTIAL_CHECK', asOf, priceAsOf: asOf, fundamentalsBasis: 'SEC companyfacts, zuletzt berichtete Werte (keine Erstmeldungen)',
+      criteria: canslim.CRITERIA, checkable: canslim.CHECKABLE, market,
+      counts: { evaluated: cs.length, partialMatch: csMatches.length, near: csNear.length, byCriterion: csCount },
+      candidates: csMatches.slice(0, 60).map(slimCs), near: csNear.slice(0, 40).map(slimCs),
+    },
+    PIOTROSKI_F: {
+      mode: 'PARTIAL_CHECK', asOf, fundamentalsBasis: 'SEC companyfacts, Jahresabschlüsse, zuletzt berichtete Werte',
+      signals: piotroski.SIGNALS, checkable: piotroski.CHECKABLE, valueThreshold: r4(q80), minPartialScore: piotroski.PARAMS.minPartialScore,
+      counts: { evaluated: pio.length, fullyCheckable: pio.filter((x) => x.checked === piotroski.CHECKABLE.length).length, valueUniverse: pio.filter((x) => q80 !== null && x.bookToMarket >= q80).length, candidates: pioCand.length, bySignal: pioCount },
+      candidates: pioCand.slice(0, 60).map(slimPio),
+    },
+  };
 }
 
 function slimFacts(f) {
@@ -664,12 +753,12 @@ function buildBacktests(registry, coverage, gbCoverage) {
       const g = v.status === 'ADVANCED_RESEARCH'
         ? { status: 'ADVANCED_RESEARCH', metricsPublishable: false, gates: [], failedGates: ['ADVANCED_RESEARCH'] }
         : evaluateGates(gateId, coverage, {
-        timeframe, baselines: s.baselines, missingFields: s.strategy_id === 'GREENBLATT_VALUE' ? gbCoverage.missingFields : [],
+        timeframe, baselines: s.baselines, missingFields: s.strategy_id === 'GREENBLATT_VALUE' ? gbCoverage.missingFields : s.strategy_id === 'CANSLIM' ? ['institutional_holdings_history', 'eps_point_in_time'] : s.strategy_id === 'PIOTROSKI_F' ? ['current_assets', 'current_liabilities'] : [],
         });
       out.push({
         strategyId: s.strategy_id, variantId: v.variant_id, label: v.label, active: v.active, vuFormalization: v.vu_formalization,
         status: g.status, metricsPublishable: g.metricsPublishable, metrics: null,
-        gates: g.gates, failedGates: g.failedGates, baselines: s.baselines,
+        gates: g.gates, failedGates: g.failedGates, testPlan: g.testPlan || null, baselines: s.baselines,
         trustScore: { value: null, reason: g.metricsPublishable ? 'Lauf ausstehend' : 'Kein Trust Score ohne bestandene Datengates — eine Zahl würde Evidenz vortäuschen.' },
       });
     }
@@ -689,6 +778,9 @@ function mapVariant(v) {
   if (v === 'GREENBLATT_GLOBAL_VU') return v; // keine Gate-Definition -> NOT_COMPARABLE
   if (v.startsWith('DARVAS')) return 'DARVAS_BOX_N3_VU';
   if (v.startsWith('MINERVINI')) return 'MINERVINI_TT_VCP_A';
+  if (v.startsWith('DONCHIAN')) return 'DONCHIAN_TURTLE_S1_DAILY';
+  if (v.startsWith('CANSLIM')) return 'CANSLIM_FULL';
+  if (v.startsWith('PIOTROSKI')) return 'PIOTROSKI_F_FULL';
   if (v.startsWith('GREENBLATT')) return 'GREENBLATT_US_ORIGINAL';
   return v;
 }

@@ -47,15 +47,17 @@ async function main() {
   for (const st of Object.values(signals.strategies)) { if (st.open[0]) { lensSymbol = st.open[0].symbol; break; } }
   const routes = [
     ['home', '/supertrader/', '.st-hero h1'],
-    ['signals', '/supertrader/signals/', '.st-seg button'],
-    ['signals-retired', '/supertrader/signals/?status=RETIRED', '.st-table'],
-    ['strategies', '/supertrader/strategies/', '.st-world'],
-    ['backtests', '/supertrader/backtests/', '.st-cmp-row'],
-    ['sources', '/supertrader/sources/', '.st-table'],
+    ['signals', '/supertrader/signals/', '.st-chips button'],
+    ['signals-canslim', '/supertrader/signals/?method=CANSLIM', '.st-card2.partial'],
+    ['strategies', '/supertrader/strategies/', '.st-cmp'],
+    ['backtests', '/supertrader/backtests/', '.st-btrow'],
+    ['sources', '/supertrader/sources/', '.st-det'],
     ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-hero h1']),
   ];
-  if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-lens-plan .st-plan']);
-  routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-empty']);
+  if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-lensblock .st-next']);
+  const csSym = signals.partialChecks?.CANSLIM?.candidates?.[0]?.symbol;
+  if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist']);
+  routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-emptybox']);
 
   const browser = await chromium.launch({ executablePath: args.chromium || undefined });
   const pw = loadPlaywright();
@@ -80,15 +82,18 @@ async function main() {
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),
         bottomNav: (() => { const b = document.querySelector('.st-bottom'); return b ? getComputedStyle(b).display !== 'none' : false; })(),
-        homeB: location.pathname === '/supertrader/' ? document.querySelectorAll('.st-section:nth-of-type(2) .st-q-B, .st-rail .st-q-B').length : 0,
-        cardsWithoutTrust: [...document.querySelectorAll('.st-sig')].filter((c) => !c.querySelector('.st-trust')).length,
+        homeB: location.pathname === '/supertrader/' ? document.querySelectorAll('.st-q[data-q="B"]').length : 0,
+        cardsWithoutPhase: [...document.querySelectorAll('.st-card2')].filter((c) => !c.querySelector('.st-phase')).length,
         buyTone: /jetzt kaufen|buy now|kaufempfehlung(?! |,)|kaufen sie/i.test(document.body.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')),
         textLen: document.body.innerText.length,
         // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
-        preparedWithEntry: [...document.querySelectorAll('.st-plan[data-phase="PREPARED"]')].filter((p) => [...p.querySelectorAll('.st-plan-grid .c')].some((c) => c.querySelector('.k')?.textContent.replace(/\u00AD/g, '') === 'Modelleinstieg' && c.querySelector('.v')?.textContent !== 'keiner')).length,
-        plannedUnlabeled: [...document.querySelectorAll('.st-plan:not(.compact) .st-plan-grid .c')].filter((c) => ['Trigger', 'Ungültig'].includes(c.querySelector('.k')?.textContent) && !/geplant · .*Stand \d\d\.\d\d\.\d{4}/.test(c.querySelector('.d')?.textContent || '')).length,
-        lensPlanBottom: (() => { const n = document.querySelector('.st-lens-plan .st-plan-next'); return n ? n.getBoundingClientRect().bottom : null; })(),
-        ruleCard: !!document.querySelector('.st-rc .st-rc-row'),
+        // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
+        preparedWithEntry: [...document.querySelectorAll('.st-lensblock')].filter((b) => b.querySelector('.st-phase[data-p="prep"]') && [...b.querySelectorAll('.st-cells .c')].some((c) => c.querySelector('.k')?.textContent === 'Modelleinstieg' && c.querySelector('strong')?.textContent !== 'keiner')).length,
+        plannedUnlabeled: [...document.querySelectorAll('.st-cells .c')].filter((c) => ['Trigger', 'Ungültig'].includes(c.querySelector('.k')?.textContent) && !/geplant/.test(c.querySelector('.d')?.textContent || '')).length,
+        lensPlanBottom: (() => { const n = document.querySelector('.st-lensblock .st-next'); return n ? n.getBoundingClientRect().bottom : null; })(),
+        ruleCard: !!document.querySelector('.st-assess'),
+        freshness: !!document.querySelector('.st-fresh'),
+        partialAsSignal: /CAN-SLIM-Signal(?! )/.test(document.body.innerText.replace(/kein(em)? CAN-SLIM-Signal/gi, '')),
       }));
       if (m.overflow > 1) errors.push(`horizontaler Ueberlauf ${m.overflow}px`);
       if (m.failedLoad) errors.push('Ladefehler-Zustand sichtbar');
@@ -96,11 +101,13 @@ async function main() {
       if (!isMobile && m.bottomNav) errors.push('Bottom-Navigation auf Desktop sichtbar');
       if (m.buyTone) errors.push('Kaufaufforderungs-Ton gefunden');
       if (name === 'home' && m.homeB) errors.push(`${m.homeB} Darvas-B-Setups prominent auf der Startseite`);
-      if (m.cardsWithoutTrust) errors.push(`${m.cardsWithoutTrust} Signalkarten ohne Transparenz-Leiste`);
+      if (m.cardsWithoutPhase) errors.push(`${m.cardsWithoutPhase} Aktienkarten ohne Phasenabzeichen`);
+      if (m.partialAsSignal) errors.push('Teiltreffer als CAN-SLIM-Signal bezeichnet');
+      if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);
       if (m.plannedUnlabeled) errors.push(`${m.plannedUnlabeled} Schwellen ohne „geplant“/Datenstand`);
       if (name === 'lens' && isMobile && !(m.lensPlanBottom !== null && m.lensPlanBottom <= vp.viewport.height - 64)) errors.push(`Ein-/Ausstiegsblock nicht ohne Scrollen sichtbar (unten ${Math.round(m.lensPlanBottom)}px, sichtbar bis ${vp.viewport.height - 64}px)`);
-      if (/^strategy-(momentum|weinstein|darvas|minervini|greenblatt)/.test(name) && !m.ruleCard) errors.push('Regelkarte fehlt');
+      if (/^strategy-(momentum|weinstein|darvas|minervini|greenblatt|donchian|can-slim|piotroski)/.test(name) && !m.ruleCard) errors.push('Drei Aussagen (Regel/Quellen/Historie) fehlen');
       const shot = path.join(OUT, `${vpName}-${name}.png`);
       await page.screenshot({ path: shot, fullPage: name === 'home' || name === 'lens' });
       report.push({ viewport: vpName, route: url, ms: Date.now() - t0, errors });

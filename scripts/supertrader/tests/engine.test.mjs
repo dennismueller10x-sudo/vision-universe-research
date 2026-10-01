@@ -120,11 +120,14 @@ test('Greenblatt: kein Ranking, solange ROC-Pflichtfelder fehlen', () => {
 });
 
 test('Gates: ohne Survivorship-Kontrolle werden keine Kennzahlen freigegeben', () => {
-  const cov = { dailyOhlcvYears: 20, weeklyCloseYears: 30, delistedWithPriceHistory: 100, survivorshipControls: false, historicalMembershipDates: 300, pitFundamentalSymbols: 5000, intradaySessionsRetained: 2, intradayHasOhlc: false, splitAdjusted: true };
+  const cov = { dailyOhlcvYears: 20, weeklyCloseYears: 30, delistedWithPriceHistory: 100, survivorshipControls: false, historicalMembershipDates: 300, pitFundamentalSymbols: 5000, intradaySessionsRetained: 2, intradayHasOhlc: false, splitAdjusted: true, totalReturnUniform: true, delistingReturns: true };
   const g = evaluateGates('DARVAS_BOX_N3_VU', cov, { baselines: [{ id: 'x' }] });
   assert.equal(g.metricsPublishable, false);
   assert.ok(g.failedGates.includes('SURVIVORSHIP'));
-  const ok = evaluateGates('DARVAS_BOX_N3_VU', { ...cov, survivorshipControls: true }, { baselines: [{ id: 'x' }] });
+  const noRights = evaluateGates('DARVAS_BOX_N3_VU', { ...cov, survivorshipControls: true }, { baselines: [{ id: 'x' }] });
+  assert.equal(noRights.metricsPublishable, false, 'ohne geklaerte Nutzungsrechte keine veroeffentlichten Kennzahlen');
+  assert.ok(noRights.failedGates.includes('USAGE_RIGHTS'));
+  const ok = evaluateGates('DARVAS_BOX_N3_VU', { ...cov, survivorshipControls: true, usageRightsConfirmed: true }, { baselines: [{ id: 'x' }] });
   assert.equal(ok.metricsPublishable, true);
   assert.equal(ok.status, 'BACKTEST_READY');
 });
@@ -159,4 +162,15 @@ test('Gates: Variante ohne Gate-Definition wird nie freigegeben', () => {
   const g = evaluateGates('UNBEKANNT', { dailyOhlcvYears: 30 }, {});
   assert.equal(g.metricsPublishable, false);
   assert.equal(g.status, 'NOT_COMPARABLE');
+});
+
+test('Pruefplaene: methodenspezifische Mindestfenster statt pauschal 8 Jahre', () => {
+  const cov = { dailyOhlcvYears: 12, weeklyCloseYears: 12, delistedWithPriceHistory: 100, survivorshipControls: true, historicalMembershipDates: 300, pitFundamentalSymbols: 5000, intradaySessionsRetained: 0, intradayHasOhlc: false, splitAdjusted: true, totalReturnUniform: true, delistingReturns: true, usageRightsConfirmed: true };
+  const daily = evaluateGates('DONCHIAN_TURTLE_S1_DAILY', cov, { baselines: [{ id: 'x' }] });
+  assert.equal(daily.metricsPublishable, true, '12 Jahre genuegen der Tagesmethode (Plan: 10)');
+  const weekly = evaluateGates('WEINSTEIN_STAGE2_WEEKLY', cov, { timeframe: 'weekly', baselines: [{ id: 'x' }] });
+  assert.ok(weekly.failedGates.includes('HISTORY'), 'Wochenmethode braucht 20 Jahre');
+  assert.equal(weekly.testPlan.minYears, 20);
+  const gb = evaluateGates('GREENBLATT_US_ORIGINAL', cov, { baselines: [{ id: 'x' }] });
+  assert.equal(gb.testPlan.unit, 'Jahreskohorten');
 });

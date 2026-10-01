@@ -115,7 +115,7 @@ export function computeIndicators(bars) {
     sma10: sma(close, 10), sma20: sma(close, 20), sma50: sma(close, 50),
     sma150: sma(close, 150), sma200: sma(close, 200),
     vol20: sma(volume, 20), vol50: sma(volume, 50),
-    adr20: adrPct(high, low, 20), atr14: atr(high, low, close, 14),
+    adr20: adrPct(high, low, 20), atr14: atr(high, low, close, 14), atr20: atr(high, low, close, 20),
     high252: rollingMax(high, 252), low252: rollingMin(low, 252),
     ret21: pctReturn(close, 21), ret63: pctReturn(close, 63), ret126: pctReturn(close, 126),
     ret189: pctReturn(close, 189), ret252: pctReturn(close, 252),
