@@ -1,6 +1,6 @@
 {
   "schemaVersion": "marketstack-regression-summary-1.0.0",
-  "generatedAt": "2026-10-01T12:54:08.171401+00:00",
+  "generatedAt": "2026-10-01T13:04:00.620248+00:00",
   "baselineCommit": "d10d09eddeb0b6869550e38920d0e2f10818919e",
   "testedCodeCommit": "39f39e278c03ac4ff5093965c7f1463e462f3ea3",
   "suiteResults": [
@@ -84,17 +84,17 @@
     "quantArtifacts": {
       "status": "PASS",
       "localLogSHA256": "12435c05f2fa1cf603e8a1422f6a7e05f5936b24eabb2d936a90caf85b71f648",
-      "result": "Vision Universe Quant — Datenpruefung\n\n  Datenstand 2026-09-04, Snapshot snap_8774e164889c6790, Seed \"vision-universe-quant-v1\"\n  482 Titel neu berechnet, 0 Abweichungen, 29 historische Referenzzeilen\n  11 Factor-DNA-Shards geprueft\n\nAlle Pruefungen bestanden.\n"
+      "result": "Vision Universe Quant \u2014 Datenpruefung\n\n  Datenstand 2026-09-04, Snapshot snap_8774e164889c6790, Seed \"vision-universe-quant-v1\"\n  482 Titel neu berechnet, 0 Abweichungen, 29 historische Referenzzeilen\n  11 Factor-DNA-Shards geprueft\n\nAlle Pruefungen bestanden.\n"
     },
     "technicalArtifacts": {
       "status": "PASS",
       "localLogSHA256": "0e186a95736b0ea7bf7cd8e14a6b16b2fb03b117cad1e757c36b5ab128043670",
-      "result": "Vision Universe Technical Intelligence — Datenpruefung\n\n  Stand 2026-09-30T02:38:06.747Z, Methodik technical-v1.0.0 / elliott-v1.0.0-beta, 18 Instrumente, 18 Snapshots\n  18 Instrumente gegen die Engines nachgerechnet\n\nOK — Technical-Daten stimmen mit den Engines ueberein.\n"
+      "result": "Vision Universe Technical Intelligence \u2014 Datenpruefung\n\n  Stand 2026-09-30T02:38:06.747Z, Methodik technical-v1.0.0 / elliott-v1.0.0-beta, 18 Instrumente, 18 Snapshots\n  18 Instrumente gegen die Engines nachgerechnet\n\nOK \u2014 Technical-Daten stimmen mit den Engines ueberein.\n"
     },
     "discoverArtifacts": {
       "status": "PASS",
       "localLogSHA256": "91a491f6cf1088782d470ed705e40f6ff30ff9f0935c23411d10ff047c83e11c",
-      "result": "Vision Universe DISCOVER — Nachrechnung\n\n  Modul discover-4.0.0, Methodik discover-v4.0.0\n\n  US_REAL: 5992 Titel, 77 Zeilen, 5992 Detailseiten\n           0 Kursreihen im Series-Store geprueft\n           34 Surfaces der Startseite geprueft\n           5992 Detailseiten nachgerechnet\n\n  95008 Pruefungen ausgefuehrt.\n  Keine Abweichung. Daten und Engines stimmen ueberein.\n\n"
+      "result": "Vision Universe DISCOVER \u2014 Nachrechnung\n\n  Modul discover-4.0.0, Methodik discover-v4.0.0\n\n  US_REAL: 5992 Titel, 77 Zeilen, 5992 Detailseiten\n           0 Kursreihen im Series-Store geprueft\n           34 Surfaces der Startseite geprueft\n           5992 Detailseiten nachgerechnet\n\n  95008 Pruefungen ausgefuehrt.\n  Keine Abweichung. Daten und Engines stimmen ueberein.\n\n"
     },
     "releaseBuild": {
       "status": "PASS",
@@ -189,5 +189,109 @@
     "httpErrors": 0,
     "directoryListingsPassed": 58,
     "usesPreservedRenderWrapper": true
+  },
+  "githubFinalCodeRegression": {
+    "testedCommit": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+    "status": "PASS",
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 36865056111,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Currency & FX \u2014 Capability- und Datennachweis",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865056018,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Quant CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865056030,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Marketstack additive regression",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865055992,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Global equities additive regression",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865056099,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Quant 2.0 Production Pages",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865055952,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "SEC Fundamentals CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865055941,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Discover Frontend Quality Gates",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865056086,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Quant Browser QA",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865056019,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Discover CI",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865055972,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Screener Quality Gates",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865055913,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Company Master \u2014 Universum, Suchindex, CIK",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36865050589,
+        "headSha": "bb91d3a55e177cf7d7f186bfaaf6f07b777070f2",
+        "name": "Marketstack additive regression",
+        "status": "completed"
+      }
+    ],
+    "quantPassed": 2185,
+    "productsPassed": 455,
+    "productsSkipped": 5,
+    "secPassed": 484,
+    "esefPassed": 7,
+    "localLogSHA256": "7078f2a3e76e2cc2a229e66c470a006251eb362d9e4573ebac35bfaab1498c09"
+  },
+  "optionalHostedPreview": {
+    "provider": "vercel",
+    "status": "BLOCKED_EXTERNAL_ACCOUNT_LIMIT",
+    "reportedReason": "Deployment rate limited \u2014 retry in 24 hours.",
+    "purchasingOrLimitOverridePerformed": false,
+    "builtReleaseValidation": "PASS",
+    "productionDeploymentPerformed": false
   }
 }

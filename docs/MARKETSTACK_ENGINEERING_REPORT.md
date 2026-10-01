@@ -151,7 +151,7 @@ The old `scripts/universe/browser-qa.mjs` reports 14/19 passing. All five failur
 
 The actual release has 4,895,565 SEC projection bytes below the 8,388,608-byte budget, 109 projection files, and 5,399 Screener rows. Local browser checks used that built release as well as source data. GitHub's Node 22 regression results are available in the PR checks; local broad suites used Node 24/Python 3.12. No production deployment was performed.
 
-GitHub's built-release Quant browser suite passed 88 checks with zero findings, including desktop/mobile and named journey surfaces. Screener browser QA across four widths and both themes also passed with zero findings. Production Pages packaging passed and its deployment job was skipped for the draft PR. Vercel's preview build was intentionally ignored by its existing build rule; the built-release local preview was tested directly.
+GitHub's built-release Quant browser suite passed 88 checks with zero findings, including desktop/mobile and named journey surfaces. Screener browser QA across four widths and both themes also passed with zero findings. All GitHub engineering workflows passed on corrected code commit `bb91d3a55e177cf7d7f186bfaaf6f07b777070f2`, including full Node 22 suites and both Discover workflows. Production Pages packaging passed and its deployment job was skipped for the draft PR. Vercel's initial preview build was ignored by its existing build rule; the final automatic preview was blocked by its account deployment limit, reporting “Deployment rate limited — retry in 24 hours.” The built-release local preview was tested directly. No account upgrade, limit override or production deployment was performed.
 
 ## 13. Regressions
 
@@ -172,6 +172,8 @@ This decision follows incomplete exact US coverage, 460 rejected matched latest 
 Production provider replacement is blocked by measured identity/currency/quality gaps, unverified historical adjustment/corporate-action semantics and realtime capability. Shell/Japan samples need external instrument quote-unit evidence; the conflicting UK ETF aliases require provider identity correction. Official dated index memberships, issuer linkage, complete local fundamentals and exchange calendars require reliable source evidence before broader equity engines can admit these listings. Professional entitlement prevents real Company Facts/Concepts crosschecks; no automatic upgrade is authorized or required for the rest of the foundation.
 
 Full global universe and ETF holdings completeness cannot be asserted from partial directories or contaminated endpoint classification. The prepared data is not a complete German, European or global production universe. PR #324 must also resolve its existing main integration independently before this stacked expansion can land safely.
+
+The optional hosted Vercel preview remains blocked by the external account deployment rate limit described above. GitHub release packaging and direct built-release browser validation passed; this does not require a change to Vision Universe's production hosting.
 
 ## 16. Important follow-on engineering
 
