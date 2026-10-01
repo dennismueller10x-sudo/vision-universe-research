@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-01T12:30:39.409Z",
+ "generatedAt": "2026-10-01T13:23:31.992Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -10,10 +10,10 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 4,
+   "count": 5,
    "from": "2026-09-10",
-   "to": "2026-09-28",
-   "spanDays": 18,
+   "to": "2026-09-30",
+   "spanDays": 20,
    "replay": {
     "titles": 5,
     "observations": 2760,
@@ -23,18 +23,18 @@
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 4,
+   "count": 5,
    "from": "2026-09-23",
-   "to": "2026-09-28",
-   "spanDays": 5
+   "to": "2026-09-30",
+   "spanDays": 7
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 4,
-   "from": "2026-09-25",
-   "to": "2026-09-28",
-   "spanDays": 3
+   "count": 5,
+   "from": "2026-09-28",
+   "to": "2026-09-30",
+   "spanDays": 2
   },
   {
    "id": "membershipSnapshots",
@@ -58,7 +58,7 @@
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 6490
+    "titlesLastYear": 6495
    }
   },
   {
@@ -82,7 +82,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 4,
+   "count": 5,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -108,7 +108,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 4,
+   "publishedSnapshots": 5,
    "reconstructible": {
     "titles": 5
    }
@@ -360,7 +360,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "FAIL",
-     "value": "4 Faktor-Snapshots seit 2026-09-23",
+     "value": "5 Faktor-Snapshots seit 2026-09-23",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {
@@ -404,7 +404,7 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "FAIL",
-     "value": "4 Snapshots über 5 Tage",
+     "value": "5 Snapshots über 7 Tage",
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
     {

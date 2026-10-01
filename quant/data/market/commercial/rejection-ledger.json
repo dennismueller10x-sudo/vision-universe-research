@@ -1,7 +1,7 @@
 {
   "schemaVersion": "rejection-ledger-1.0.0",
   "auftrag": "Owner 18.09.2026 P0: Rejection-Checkpoint klassifizieren statt loeschen",
-  "checkedAt": "2026-09-30T01:28:33.745Z",
+  "checkedAt": "2026-10-01T08:34:29.613Z",
   "applied": true,
   "staleAfterDays": 7,
   "checkpointsFound": 1,
@@ -9,28 +9,129 @@
     {
       "file": ".market-cache/tiingo/checkpoints/incremental.json",
       "runId": "incremental",
-      "total": 346,
+      "total": 347,
       "byClass": {
         "PERMANENT_REJECT": 0,
-        "TEMPORARY_REJECT": 346,
+        "TEMPORARY_REJECT": 347,
         "STALE_REJECT": 0
       },
       "byCode": {
-        "adjustment_status_contradicted": 344,
+        "adjustment_status_contradicted": 345,
         "too_few_bars": 2
       },
-      "retryDue": 346,
-      "keptBlocked": 0,
-      "oldest": "2026-09-29T02:14:12.775Z",
-      "newest": "2026-09-29T03:22:19.895Z",
-      "keptExamples": [],
-      "removed": 346
+      "retryDue": 2,
+      "keptBlocked": 345,
+      "oldest": "2026-10-01T01:28:44.007Z",
+      "newest": "2026-10-01T02:36:52.349Z",
+      "keptExamples": [
+        {
+          "securityId": "ref_ABTC",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:28:44.007Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AEHL",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:29:44.561Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AEON",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:29:45.564Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AGPU",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:30:39.552Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AHI",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:30:40.506Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AIIO",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:30:42.910Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AIRE",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:30:44.373Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AIXI",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:30:46.067Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AKAN",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:30:46.802Z",
+          "confirmations": 1
+        },
+        {
+          "securityId": "ref_AKTX",
+          "codes": [
+            "adjustment_status_contradicted"
+          ],
+          "class": "TEMPORARY_REJECT",
+          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
+          "at": "2026-10-01T01:30:47.628Z",
+          "confirmations": 1
+        }
+      ],
+      "removed": 2
     }
   ],
   "totals": {
-    "before": 346,
-    "retryDue": 346,
-    "keptBlocked": 0,
-    "removed": 346
+    "before": 347,
+    "retryDue": 2,
+    "keptBlocked": 345,
+    "removed": 2
   }
 }

@@ -9,9 +9,14 @@ export function buildR4({ f, NONE, NV, rule, DNA_FIELDS }) {
   const fill = (o) => { for (const k of DNA_FIELDS) if (!(k in o)) o[k] = NV('Nicht Bestandteil der belegten Methode bzw. nicht spezifiziert.'); return o; };
 
   /* ============================ DONCHIAN / TURTLE ============================ */
-  const DT_V = '1.0.0';
+  const DT_V = '1.1.0';
   const donchian = fill({
     strategy_id: 'DONCHIAN_TURTLE', strategy_version: DT_V, slug: 'donchian-turtle', mode: 'LIVE',
+    // Turtle-Regeln kaufen JEDEN Ausbruch ueber das 20-Tage-Hoch. Was vor dem
+    // Ausbruch steht, ist deshalb eine breite Beobachtungsliste (heute ~8 % des
+    // Universums), kein selektiv vorbereiteter Einstieg - so wird es gezeigt
+    // und gezaehlt (getrennt von „vorbereitet“).
+    pending_semantics: 'WATCHLIST', watchlist_label: 'Beobachtung · nahe 20-Tage-Hoch',
     strategy_name: 'Donchian / Turtle Trend', world_name: 'Donchian Turtle', tagline: 'Kaufen, was ausbricht — verkaufen, wenn der Trend bricht.',
     strategy_family: 'Trendfolge (Kanal-Ausbruch)', originator: 'Richard Donchian / Richard Dennis (Turtle Traders)',
     theme: { accent: '#14b8a6', accent2: '#a7f3d0', name: 'Petrol / Mint' },
@@ -24,7 +29,7 @@ export function buildR4({ f, NONE, NV, rule, DNA_FIELDS }) {
     how_it_thinks: ['Ist die Aktie liquide und beweglich genug (≥ 10 USD, ≥ 20 Mio. USD Tagesumsatz, ≥ 1 % Tagesspanne)?', 'Steht der Kurs nahe am höchsten Hoch der letzten 20 Tage?', 'Schließt der Tag darüber, ist der Einstieg bestätigt — gekauft wird zur nächsten Eröffnung.', 'Stop 2 × ATR unter dem Einstieg; Ausstieg, sobald der Kurs unter dem 10-Tage-Tief schließt.'],
     universe: f('Liquide US-Aktien (VU); Original: Futures', 'VU_EXTENSION', ['DON-LIQ-VU']),
     market: f('USA', 'VU_EXTENSION'),
-    liquidity_rules: f('Kurs ≥ 10 USD, Tagesumsatz ≥ 20 Mio. USD, Tagesspanne ≥ 1 %', 'VU_FORMALIZATION', ['DON-LIQ-VU']),
+    liquidity_rules: f('Kurs ≥ 10 USD, Tagesumsatz ≥ 20 Mio. USD, Tagesspanne ≥ 1 %, Kanalbreite ≥ 2 %', 'VU_FORMALIZATION', ['DON-LIQ-VU']),
     market_regime: NONE('Kein Marktfilter im Original.'),
     momentum_filters: NONE('Kein Momentum-Ranking — jeder Ausbruch zählt.'),
     trend_filters: f('Der Ausbruch selbst ist der Trendfilter', 'PRIMARY_EXPLICIT', ['DON-ENTRY-01']),
@@ -55,8 +60,8 @@ export function buildR4({ f, NONE, NV, rule, DNA_FIELDS }) {
       rule(DT_V, 'DON-ENTRY-D1', 'Live: Einstieg bestätigt, wenn der Tagesschluss über dem 20-Tage-Hoch liegt; Modelleinstieg zur nächsten Eröffnung.', 'close(t) > max(high[t-20..t-1]) -> CONFIRMED; entry = open(t+1)', { bars: 20 }, ['SRC-BL-TURTLE', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
       rule(DT_V, 'DON-STOP-01', 'Stop 2N unter dem Einstieg; N ist die durchschnittliche Tagesspanne der letzten 20 Tage (ATR).', 'stop = entry - 2 * ATR20', { n: 20, multiple: 2 }, ['SRC-BL-TURTLE'], 'PRIMARY_EXPLICIT', false),
       rule(DT_V, 'DON-EXIT-01', 'Ausstieg, wenn der Kurs unter das Tief der letzten 10 Tage fällt (live: Tagesschluss, Ausführung zur nächsten Eröffnung).', 'close(t) < min(low[t-10..t-1]) -> sell open(t+1)', { bars: 10 }, ['SRC-BL-TURTLE'], 'PRIMARY_EXPLICIT', false),
-      rule(DT_V, 'DON-LIQ-VU', 'Nur liquide, bewegliche Aktien: Kurs ab 10 USD, mindestens 20 Mio. USD Tagesumsatz und mindestens 1 % durchschnittliche Tagesspanne (schließt z. B. Titel in laufender Übernahme aus).', 'close >= 10 && sma20(close*volume) >= 2e7 && ADR20 >= 0.01', { minPrice: 10, minDollarVolume: 2e7, minAdr: 0.01 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
-      rule(DT_V, 'DON-NEAR-VU', 'Einstieg vorbereitet, wenn der Kurs höchstens 3 % unter dem 20-Tage-Hoch steht (Beobachtung bis 6 %).', 'max(high[t-19..t]) / close(t) - 1 <= 0.03', { ready: 0.03, watch: 0.06 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+      rule(DT_V, 'DON-LIQ-VU', 'Nur liquide, bewegliche Aktien: Kurs ab 10 USD, mindestens 20 Mio. USD Tagesumsatz, mindestens 1 % durchschnittliche Tagesspanne und ein Kanal von mindestens 2 % Breite (schließt festhängende Kurse aus, z. B. während eines Übernahmeangebots).', 'close >= 10 && sma20(close*volume) >= 2e7 && ADR20 >= 0.01 && max(high,20)/min(low,10) - 1 >= 0.02', { minPrice: 10, minDollarVolume: 2e7, minAdr: 0.01, minChannelWidth: 0.02 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
+      rule(DT_V, 'DON-NEAR-VU', 'Beobachtungsliste, wenn der Kurs höchstens 3 % unter dem 20-Tage-Hoch steht (protokolliert); 3–6 % nur Momentaufnahme.', 'max(high[t-19..t]) / close(t) - 1 <= 0.03', { ready: 0.03, watch: 0.06 }, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
       rule(DT_V, 'DON-INV-01', 'Schluss unter dem 10-Tage-Tief vor dem Einstieg: Setup beendet.', 'close < min(low[t-9..t])', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
       rule(DT_V, 'DON-INV-02', 'Setup, das 10 Sitzungen nicht ausbricht, verfällt.', 'pendingSessions > 10', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),
       rule(DT_V, 'DON-WARN-01', 'Warnung, wenn die Position unter Einstand schließt.', 'close < entry', {}, ['SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true),

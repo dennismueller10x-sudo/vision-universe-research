@@ -73,6 +73,17 @@ test('Donchian: festgenagelter Titel (Tagesspanne < 1 %) wird nicht gescannt', (
   assert.equal(donchian.scan(ctxOf(rows), 59), null);
 });
 
+test('Donchian v1.1.0: festhaengender Kurs nach frueherem Sprung (ATR hoch, Kanal < 2 %) wird nicht gescannt', () => {
+  // Wie ACVA am 28.09.2026: Sprung auf den Angebotspreis, danach Kurs eng am Preis.
+  const rows = base(40);
+  for (let i = 0; i < 2; i++) rows.push([100, 125, 99, 124, 1e6]);
+  for (let i = 0; i < 18; i++) rows.push([124.4, 124.7, 124.1, 124.5, 1e6]);
+  const ctx = ctxOf(rows), t = rows.length - 1;
+  assert.ok(ctx.ind.adr20[t] >= donchian.PARAMS.minAdr, 'Tagesspanne-Filter allein laesst den Titel durch');
+  assert.equal(donchian.scan(ctx, t), null);
+  assert.ok(donchian.scan(ctx, t, { ...donchian.PARAMS, minChannelWidth: 0 }), 'ohne Kanalfilter waere er ein Setup');
+});
+
 test('CAN SLIM: C und A pruefen Gewinnwachstum, fehlende Daten sind NO_DATA, I nie pruefbar', () => {
   const q = [['2025', 'Q1', '2025-03-31', 10], ['2025', 'Q2', '2025-06-30', 11], ['2025', 'Q3', '2025-09-30', 12], ['2025', 'Q4', '2025-12-31', 13], ['2026', 'Q1', '2026-03-31', 14], ['2026', 'Q2', '2026-06-30', 15]];
   const c = cs.evalC(q, '2026-09-28');
@@ -121,7 +132,7 @@ test('Artefakte: Modus je Methode und keine Teilpruefung als Signal', () => {
   }
   for (const c of sig.partialChecks.PIOTROSKI_F.candidates) { assert.equal(c.checked, 8); assert.ok(c.partialScore >= 7); assert.equal(c.signals.DLIQUID.status, 'NOT_AVAILABLE'); }
   // Live-Methode Donchian: Ledger und Regelkarte
-  assert.ok(sig.strategies.DONCHIAN_TURTLE.open.every((s) => s.id.endsWith(':v1.0.0') && s.plan && s.plan.trigger.kind === 'PLANNED_THRESHOLD'));
+  assert.ok(sig.strategies.DONCHIAN_TURTLE.open.every((s) => s.id.endsWith(`:v${donchian.version}`) && s.plan && s.plan.trigger.kind === 'PLANNED_THRESHOLD'));
 });
 
 test('Artefakte: Pilot-Backtest ist explorativ und traegt Universum, Zeitraum, Kosten, Verzerrungen', () => {

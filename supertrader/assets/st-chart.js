@@ -180,15 +180,22 @@
         for (var m = from; m < n; m++) { var vv = O.values[m]; if (isFinite(vv) && vv !== null) dd += (dd ? 'L' : 'M') + x(m).toFixed(1) + ' ' + y(vv).toFixed(1); else if (dd && dd.slice(-1) !== 'M') dd += ''; }
         if (dd) el('path', { d: dd, fill: 'none', stroke: O.color, 'stroke-width': 2, 'stroke-linejoin': 'round', opacity: 0.95 }, svg);
       });
-      // Levels
+      // Levels: Linie an der echten Hoehe, Preisschild bei Kollision verschoben
+      // (Abstand >= 20 px), damit nahe Schwellen (z. B. Trigger und Stop) lesbar bleiben.
+      var tags = [];
       (cfg.levels || []).forEach(function (L) {
         if (!state.on[L.id] || !isFinite(L.value)) return;
         var ly = y(L.value);
         el('line', { x1: padL, x2: W - padR, y1: ly, y2: ly, stroke: L.color, 'stroke-width': 1.5, 'stroke-dasharray': L.dash || '6 4' }, svg);
+        tags.push({ L: L, y: ly });
+      });
+      tags.sort(function (a, b) { return a.y - b.y; });
+      for (var ti = 1; ti < tags.length; ti++) if (tags[ti].y - tags[ti - 1].y < 20) tags[ti].y = tags[ti - 1].y + 20;
+      tags.forEach(function (T) {
         var tagW = padR - 4;
-        el('rect', { x: W - padR + 2, y: ly - 9, width: tagW, height: 18, rx: 5, fill: L.color }, svg);
-        var tt = el('text', { x: W - padR + 2 + tagW / 2, y: ly + 4, fill: '#000', 'font-size': 10.5, 'font-weight': 700, 'text-anchor': 'middle' }, svg);
-        tt.textContent = fmt(L.value);
+        el('rect', { x: W - padR + 2, y: T.y - 9, width: tagW, height: 18, rx: 5, fill: T.L.color }, svg);
+        var tt = el('text', { x: W - padR + 2 + tagW / 2, y: T.y + 4, fill: '#000', 'font-size': 10.5, 'font-weight': 700, 'text-anchor': 'middle' }, svg);
+        tt.textContent = fmt(T.L.value);
       });
       // Marker
       if (state.on.__markers) (cfg.markers || []).forEach(function (M) {
