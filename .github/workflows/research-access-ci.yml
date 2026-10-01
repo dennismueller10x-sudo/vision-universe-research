@@ -1,0 +1,29 @@
+name: Research Development Access Gate
+on:
+  push:
+    paths: ['workers/research-access/**', 'scripts/vu2/build-release.mjs', '.github/workflows/research-access-ci.yml']
+  pull_request:
+    paths: ['workers/research-access/**', 'scripts/vu2/build-release.mjs', '.github/workflows/research-access-ci.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test workers/research-access/tests/*.test.mjs
+      - run: node --test scripts/vu2/resource-budget.test.mjs
+      - name: Browser dependencies
+        run: |
+          npm install --prefix /tmp/research-access-qa --no-audit --no-fund playwright@1.57.0
+          /tmp/research-access-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Desktop and iPhone Safari cookie lifecycle
+        env:
+          PLAYWRIGHT_PATH: /tmp/research-access-qa/node_modules/playwright
+        run: node workers/research-access/tests/browser-qa.mjs
+      - name: Validate Cloudflare worker bundle without secrets or deployment
+        working-directory: workers/research-access
+        run: npx --yes wrangler@4 deploy --dry-run --outdir /tmp/research-access-bundle

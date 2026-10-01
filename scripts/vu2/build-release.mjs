@@ -25,6 +25,7 @@ export function projectQuarterly(source){
   semantics:{quarterly:source.semantics?.quarterly},units:Object.fromEntries(Object.entries(source.units||{}).filter(([id])=>Object.hasOwn(quarterly,id))),quarterly,unavailableMetrics};
 }
 export function permitted(path){
+ if(path.startsWith('workers/research-access/'))return false;
  if(path.split('/').some(p=>p.startsWith('.'))&&path!=='.nojekyll')return false;
  if(/^(scripts|docs|providers)\//.test(path)||/\/(tests|fixtures)\//.test(path)||/\.test\.(m?js|py)$/.test(path))return false;
  if(/^quant\/data\/(sec|fundamentals)\//.test(path))return false;
