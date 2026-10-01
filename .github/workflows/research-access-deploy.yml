@@ -1,0 +1,127 @@
+name: Deploy only Research Access from PR 328
+on:
+  push:
+    branches: ['codex/research-access-deploy-20261001']
+    paths: ['.github/workflows/research-access-deploy.yml']
+permissions:
+  contents: read
+concurrency:
+  group: vu-research-access-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Exactly the reviewed implementation in PR 328; no other Worker source.
+          ref: 380968d55cd426163c9de35e2c3fd3fdc414608b
+          sparse-checkout: workers/research-access
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test workers/research-access/tests/access.test.mjs
+      - name: Verify configured access, deploy only reviewed Worker, then check password
+        working-directory: workers/research-access
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_VARIABLE: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          ACCOUNT_SECRET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess, sys, tomllib, urllib.request, urllib.error
+          from pathlib import Path
+
+          worker = 'vu-research-access'
+          config = tomllib.loads(Path('wrangler.toml').read_text())
+          assert config['name'] == worker
+          assert config['main'] == 'src/index.mjs'
+          assert config['workers_dev'] is False and config['preview_urls'] is False
+          assert config['routes'] == [{'pattern': 'research.visionuniverse.de/*', 'zone_name': 'visionuniverse.de'}]
+          token = os.environ.get('CLOUDFLARE_API_TOKEN', '')
+          account = os.environ.get('ACCOUNT_VARIABLE') or os.environ.get('ACCOUNT_SECRET')
+          account_source = 'CLOUDFLARE_ACCOUNT_ID variable/secret'
+          if not account:
+              match = re.fullmatch(r'https://([0-9a-f]{32})\.r2\.cloudflarestorage\.com/?', os.environ.get('VU_HISTORY_S3_ENDPOINT', ''), re.I)
+              account = match[1] if match else None
+              account_source = 'existing VU_HISTORY_S3_ENDPOINT'
+          status = {'worker_deployed': False, 'route_activated_by_this_run': False, 'password_set': False, 'manual_password_required': False}
+
+          def finish(blocker='', failed=False):
+              status['blocker'] = blocker
+              Path('/tmp/research-access-status.json').write_text(json.dumps(status))
+              print(json.dumps(status), flush=True)
+              sys.exit(1 if failed else 0)
+
+          if not token or not account or not re.fullmatch(r'[0-9a-f]{32}', account, re.I):
+              finish('Required Cloudflare GitHub credentials are not configured', True)
+          print('Cloudflare GitHub credentials are configured; account selected from ' + account_source, flush=True)
+          os.environ['CLOUDFLARE_ACCOUNT_ID'] = account
+          base = 'https://api.cloudflare.com/client/v4'
+          prefix = f'/accounts/{account}/workers/scripts/{worker}'
+
+          def api(path, method='GET', body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              request = urllib.request.Request(base + path, data=data, method=method,
+                  headers={'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'})
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      result = json.load(response)
+              except urllib.error.HTTPError as error:
+                  finish('Cloudflare API request rejected (HTTP ' + str(error.code) + ')', True)
+              except Exception:
+                  finish('Cloudflare API request could not complete', True)
+              if not result.get('success'):
+                  finish('Cloudflare API operation was unsuccessful', True)
+              return result['result']
+
+          scripts = api(f'/accounts/{account}/workers/scripts')
+          exists = any(item.get('id') == worker for item in scripts)
+          previous_secrets = set()
+          if exists:
+              previous_secrets = {item['name'] for item in api(prefix + '/secrets')}
+
+          def wrangler(*arguments):
+              # Capture everything; never publish Wrangler/API diagnostic output or secrets.
+              result = subprocess.run(['npx', '--yes', 'wrangler@4.145.0', *arguments, '--config', 'wrangler.toml'],
+                  input='', text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
+              if result.returncode:
+                  finish('Research-only Wrangler operation failed: ' + ' '.join(arguments[:2]), True)
+              return result.stdout
+
+          # Version commands deploy only this script and do not publish the route.
+          # This lets us stop for a missing password without taking Research offline.
+          uploaded = wrangler('versions', 'upload', '--keep-vars', '--message', 'Deploy reviewed Research gate from PR 328')
+          match = re.search(r'Worker Version ID:\s*([0-9a-f-]{36})', uploaded, re.I)
+          if not match:
+              finish('Uploaded version could not be identified safely', True)
+          wrangler('versions', 'deploy', match[1] + '@100', '--yes')
+          status['worker_deployed'] = True
+          current_secrets = {item['name'] for item in api(prefix + '/secrets')}
+          if not previous_secrets.issubset(current_secrets):
+              finish('Existing Research worker secret names did not survive deployment', True)
+          if 'RESEARCH_ACCESS_PASSWORD' in current_secrets:
+              status['password_set'] = True
+              finish('Password already present; route activation and live verification are next')
+          password = os.environ.get('RESEARCH_ACCESS_PASSWORD', '')
+          if not password:
+              status['manual_password_required'] = True
+              finish('Set RESEARCH_ACCESS_PASSWORD manually on vu-research-access')
+          # Create only the missing Research secret. Do not modify any existing secret.
+          api(prefix + '/secrets', 'PUT', {'name': 'RESEARCH_ACCESS_PASSWORD', 'text': password, 'type': 'secret_text'})
+          status['password_set'] = 'RESEARCH_ACCESS_PASSWORD' in {item['name'] for item in api(prefix + '/secrets')}
+          if not status['password_set']:
+              finish('Research password binding could not be confirmed', True)
+          finish('Password configured; route activation and live verification are next')
+          PY
+      - name: Retain only non-secret deployment status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-access-status
+          path: /tmp/research-access-status.json
+          if-no-files-found: ignore
