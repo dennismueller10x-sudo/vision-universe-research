@@ -295,6 +295,37 @@ async function main() {
   for (const [s, a] of Object.entries(ew)) { let v = 1; ewCurve[s] = calendar.map((d, i) => { if (i > 0 && a.cnt[i] > 0) v *= 1 + a.sum[i] / a.cnt[i]; return { date: d, value: v }; }); }
   const ewStats = Object.fromEntries(Object.entries(ewCurve).map(([s, c]) => [s, { cagr: cagrBetween(c, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(c, 'value') }]));
 
+  // Diagnose (explorativ, nicht praeregistriert): alle Engine-Trades gleich
+  // gewichtet - trennt die Regel von der Portfolioauswahl. Delisting: S0.
+  const slip0 = DEFAULT_EXECUTION.slippageBps / 10000, comm0 = DEFAULT_EXECUTION.commissionBps / 10000;
+  const tradeRet = (t) => {
+    let proceeds = 0, frac = 0;
+    for (const x of t.exits) { proceeds += x.fraction * x.price; frac += x.fraction; }
+    if (t.terminal?.kind === 'DELISTED') { const r = t.remainingAtTerminal ?? 1 - frac; proceeds += r * t.terminal.lastClose * (1 - slip0); frac += r; }
+    return frac > 0 ? (proceeds / frac) * (1 - comm0) / (t.entry.price * (1 + comm0)) - 1 : null;
+  };
+  const diag = (list) => {
+    const r = list.map(tradeRet).filter(Number.isFinite).sort((a, b) => a - b);
+    const mean = r.reduce((a, b) => a + b, 0) / (r.length || 1);
+    const byYear = {};
+    for (const t of list) { const v = tradeRet(t); if (!Number.isFinite(v)) continue; const y = t.entry.date.slice(0, 4); const b = byYear[y] ||= { n: 0, sum: 0, wins: 0 }; b.n++; b.sum += v; if (v > 0) b.wins++; }
+    const byExit = {};
+    for (const t of list) { const k = t.terminal ? t.terminal.kind : t.exits[t.exits.length - 1].ruleId; const v = tradeRet(t); const b = byExit[k] ||= { n: 0, sum: 0 }; b.n++; b.sum += v; }
+    const rawBand = {};
+    for (const t of list) { const c = t.rawCloseAtConfirm; const k = c < 20 ? '10-20' : c < 50 ? '20-50' : c < 100 ? '50-100' : '100+'; const v = tradeRet(t); const b = rawBand[k] ||= { n: 0, sum: 0 }; b.n++; b.sum += v; }
+    return { n: r.length, mean, median: r[Math.floor(r.length / 2)], hitRate: r.filter((x) => x > 0).length / (r.length || 1), p05: r[Math.floor(r.length * 0.05)], p95: r[Math.floor(r.length * 0.95)],
+      byYear: Object.fromEntries(Object.entries(byYear).map(([y, b]) => [y, { n: b.n, mean: b.sum / b.n, hit: b.wins / b.n }])),
+      byExit: Object.fromEntries(Object.entries(byExit).map(([k, b]) => [k, { n: b.n, mean: b.sum / b.n }])),
+      byRawPrice: Object.fromEntries(Object.entries(rawBand).map(([k, b]) => [k, { n: b.n, mean: b.sum / b.n }])) };
+  };
+  const diagnostics = { allTrades: diag(all), survivorTrades: diag(surv), delistedListingTrades: diag(all.filter((t) => !t.survivor)), takenS0: null };
+  {
+    const r = runPortfolioTR(all, cal, cfg, { scenario: 'S0_LAST_PRICE' });
+    diagnostics.takenS0 = diag(r.taken.map((p) => p.tr));
+    diagnostics.maxPositionsSkipped = r.skipped.filter((x) => x.reason === 'MAX_POSITIONS').length;
+    diagnostics.avgPositionPct = r.taken.reduce((a, p) => a + p.cost, 0) / r.taken.length / cfg.initialEquity;
+  }
+
   // C3: 20 Zufallstrades unabhaengig aus Rohbalken nachrechnen
   const pick = [...all].filter((t) => !t.terminal).sort((a, b) => L.sha256(a.id).localeCompare(L.sha256(b.id))).slice(0, 20);
   const c3 = [];
@@ -309,7 +340,7 @@ async function main() {
   }
   // C4: Ankerfaelle
   const anchors = ['TWX', 'CELG', 'MON', 'SHLD', 'JCP', 'HTZ', 'CHK', 'WFT', 'FTR', 'DO'];
-  const c4 = listings.filter((l) => anchors.includes(l.ticker)).map((l) => { const e = manifest[l.id] || {}; const q = out.quality.find((x) => x.id === l.id) || {}; const tt = all.filter((t) => t.listingId === l.id); return { id: l.id, source: l.source, status: e.status || (l.source === 'STORE_ACTIVE' ? 'STORE' : null), cls: e.cls || l.storeClass, listEnd: l.listEnd, last: q.last || null, lastVsListEndDays: q.lastVsListEndDays ?? null, distress: q.distress ?? null, pinned: q.pinned ?? null, trades: tt.length, openAtDelisting: tt.filter((t) => t.terminal?.kind === 'DELISTED').length }; });
+  const c4 = listings.filter((l) => anchors.includes(l.ticker)).map((l) => { const e = manifest[l.id] || {}; const q = out.quality.find((x) => x.id === l.id) || {}; const tt = all.filter((t) => t.listingId.split('#')[0] === l.id); return { id: l.id, source: l.source, status: e.status || (l.source === 'STORE_ACTIVE' ? 'STORE' : null), cls: e.cls || l.storeClass, listEnd: l.listEnd, last: q.last || null, lastVsListEndDays: q.lastVsListEndDays ?? null, distress: q.distress ?? null, pinned: q.pinned ?? null, trades: tt.length, openAtDelisting: tt.filter((t) => t.terminal?.kind === 'DELISTED').length }; });
   // C5: extremste Trades (S0) mit Split-Kontrolle
   const r0 = runPortfolioTR(all, cal, cfg, { scenario: 'S0_LAST_PRICE' });
   const ext = r0.taken.filter((p) => p.returnPct !== undefined).sort((a, b) => Math.abs(b.returnPct) - Math.abs(a.returnPct)).slice(0, 10).map((p) => ({ id: p.tr.id, returnPct: p.returnPct, entry: p.tr.entry, exits: p.tr.exits, terminal: p.tr.terminal ? { ...p.tr.terminal } : null, rawCloseAtConfirm: p.tr.rawCloseAtConfirm }));
@@ -337,6 +368,7 @@ async function main() {
     at5Violations,
     runs, ew: ewStats, spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') },
     controls: { C2maxRelDiff: c2max, C3: c3, C4: c4, C5: ext },
+    diagnostics,
     duplicatesSample: out.duplicates.slice(0, 30),
     seriesBreaks: { count: out.seriesBreaks.length, sample: out.seriesBreaks.slice(0, 40) },
     budget: budget.spent,
