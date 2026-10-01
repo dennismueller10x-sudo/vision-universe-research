@@ -1,4 +1,4 @@
-/* Quant Radar (quant-radar-1.0.0): taegliche Ereignisse, Setup-Lebenszyklus,
+/* Quant Radar (quant-radar-1.1.0, Alert-Vertrag 2.0.0): taegliche Ereignisse, Setup-Lebenszyklus,
    Alert-Vertrag und Evidenz-Status. Geprueft wird gegen die
    veroeffentlichten Artefakte, nicht gegen eingefrorene Zahlen. */
 import test from "node:test";
@@ -25,15 +25,37 @@ const lifecycle = gz("quant/data/product/setup-lifecycle-v1.json.gz");
 const evidence = JSON.parse(readFileSync(new URL("quant/data/product/evidence-status-v1.json", root), "utf8"));
 
 test("jedes veroeffentlichte Ereignis erfuellt den Alert-Vertrag", () => {
-  assert.equal(radar.schemaVersion, "quant-radar-1.0.0");
+  assert.equal(radar.schemaVersion, "quant-radar-1.1.0");
+  assert.equal(radar.alertContract.schema, "quant-alert-event-2.0.0");
   assert.ok(radar.events.length > 0, "ein Radar ohne Ereignis waere ein Fehler im Build");
   for (const e of radar.events) {
     assert.deepEqual(Radar.eventViolations(e), [], e.id);
-    for (const f of ["securityId", "ticker", "eventType", "occurredAt", "previousState", "currentState", "explanation", "evidence", "nextCondition"])
+    for (const f of ["securityId", "ticker", "issuerId", "eventType", "occurredAt", "detectedAt", "previousState", "currentState", "trigger", "invalidation",
+      "explanation", "evidence", "backtestEvidence", "trustState", "nextCondition", "dedupeKey"])
       assert.ok(f in e, f + " fehlt in " + e.id);
     assert.equal(e.delivery, "NOT_CONFIGURED", "Zustellung gibt es noch keine - das Ereignis darf keine behaupten");
   }
   assert.equal(radar.measures.ALERT_READY_EVENTS, radar.events.length);
+});
+
+test("Alert-Vertrag 2.0.0: Ausloeser, Invalidierung, Backtest-Beleg, Vertrauen und dedupeKey werden geprueft", () => {
+  const ok = radar.events.find((e) => e.backtestEvidence.state === "AVAILABLE");
+  assert.ok(ok, "mindestens ein Ereignis traegt historische Evidenz");
+  assert.deepEqual(Radar.eventViolations(ok), []);
+  assert.ok(Radar.eventViolations({ ...ok, trigger: null }).includes("TRIGGER_REQUIRED"));
+  assert.ok(Radar.eventViolations({ ...ok, invalidation: { state: "NOT_DEFINED" } }).includes("INVALIDATION_REQUIRED"));
+  assert.ok(Radar.eventViolations({ ...ok, trustState: "ROBUST" }).includes("TRUST_STATE_MISMATCH"));
+  assert.ok(Radar.eventViolations({ ...ok, dedupeKey: "x" }).includes("DEDUPE_KEY_MISMATCH"));
+  assert.ok(Radar.eventViolations({ ...ok, detectedAt: "2020-01-01T00:00:00Z" }).includes("INVALID_DETECTED_AT"));
+  assert.ok(Radar.eventViolations({ ...ok, backtestEvidence: { state: "WITHHELD", trust: "NOT_READY" }, trustState: "NOT_READY" }).includes("BACKTEST_WITHHELD_WITHOUT_REASON"));
+  assert.ok(Radar.eventViolations({ ...ok, backtestEvidence: { ...ok.backtestEvidence, trust: "NOT_READY" }, trustState: "NOT_READY" }).includes("BACKTEST_EVIDENCE_INCOMPLETE"),
+    "freigegebene Evidenz braucht mindestens eingeschraenktes Vertrauen");
+  assert.equal(new Set(radar.events.map((e) => e.dedupeKey)).size, radar.events.length, "dedupeKey ist je Ereignis eindeutig");
+  for (const e of radar.events) {
+    const be = e.backtestEvidence;
+    if (be.state === "AVAILABLE") assert.ok(["LIMITED", "USABLE", "ROBUST"].includes(be.trust) && be.returnType && be.n > 0, e.id);
+    else assert.ok(be.reason, e.id);
+  }
 });
 
 test("der Vertrag weist verbotene Felder und unbekannte Typen zurueck", () => {
@@ -130,8 +152,8 @@ test("Dienste liefern Radar, Lebenszyklus und Evidenz-Status", async () => {
   assert.equal(s.state, "AVAILABLE");
 });
 
-test("Evidenz-Status: vier Arten, getrennt; geschlossene Arten nennen gemessene Bedingungen", () => {
-  assert.deepEqual(evidence.kinds.map((k) => k.id), ["HISTORICAL_REPLAY", "PATTERN_EVIDENCE", "STRATEGY_BACKTEST", "SETUP_BACKTEST"]);
+test("Evidenz-Status: fünf Arten, getrennt; geschlossene Arten nennen gemessene Bedingungen", () => {
+  assert.deepEqual(evidence.kinds.map((k) => k.id), ["HISTORICAL_REPLAY", "PATTERN_EVIDENCE", "STRATEGY_BACKTEST", "SETUP_BACKTEST", "SIGNAL_BACKTEST"]);
   const byId = Object.fromEntries(evidence.kinds.map((k) => [k.id, k]));
   assert.equal(byId.STRATEGY_BACKTEST.state, "WITHHELD");
   assert.equal(byId.SETUP_BACKTEST.state, "WITHHELD");
@@ -143,6 +165,8 @@ test("Evidenz-Status: vier Arten, getrennt; geschlossene Arten nennen gemessene 
   /* Keine Zahl einer geschlossenen Art. */
   for (const k of [byId.STRATEGY_BACKTEST, byId.SETUP_BACKTEST]) for (const verboten of ["hitRate", "cagr", "sharpe", "medianReturn", "positiveShare"]) assert.ok(!JSON.stringify(k).includes(verboten));
   assert.ok(evidence.measures.HISTORICAL_REPLAY_COVERAGE.sufficient.m6 > 0);
+  /* Der Signal-Backtest nennt je Regel seine Stufe; veroeffentlicht nur mit mindestens eingeschraenktem Vertrauen. */
+  for (const r of byId.SIGNAL_BACKTEST.rules) assert.equal(r.displayAllowed, ["LIMITED", "USABLE", "ROBUST"].includes(r.trust), r.id);
 });
 
 test("eine Karten-Invalidierung liegt immer unter dem Kurs (Aufwaerts-Setup)", () => {

@@ -81,7 +81,7 @@ const out = {
     ["wo Trigger / Invalidation / Ziele liegen", rows.some((r) => r.levels && r.levels.entry), rows.filter((r) => r.levels && r.levels.entry).length + " von " + rows.length + " Stichprobentiteln mit Einstieg, Stop und Zielen"],
     ["wie sich der Zustand verändert", m.SETUP_TRANSITIONS > 0, m.SETUP_TRANSITIONS + " gemessene Setup-Wechsel, " + m.SETUP_TRANSITIONS_LATEST + " zum letzten Stand"],
     ["was historisch bei derselben Lage geschah", evidence.measures.HISTORICAL_REPLAY_COVERAGE.sufficient.m6 > 0, evidence.measures.HISTORICAL_REPLAY_COVERAGE.sufficient.m6 + " Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"],
-    ["wie belastbar diese Evidenz ist", evidence.kinds.length === 4, "Evidenzstufe je Fall, Backtest-Gates gemessen (" + evidence.kinds.filter((k) => k.state === "WITHHELD").length + " Arten zurückgehalten)"],
+    ["wie belastbar diese Evidenz ist", evidence.kinds.length >= 4 && evidence.kinds.every((k) => k.state === "PUBLISHED" || k.reason), "Evidenzstufe je Fall, Backtest-Gates gemessen (" + evidence.kinds.filter((k) => k.state === "WITHHELD").length + " Arten zurückgehalten)"],
     ["welche Aktie er beobachten möchte", m.WATCHLIST_TRACKABLE_TITLES > 0, "Beobachten auf jeder Aktienseite, Radar-Filter „Beobachtet“"]
   ].map(([q, pass, measured]) => ({ question: q, pass, measured })),
   sample: rows

@@ -204,7 +204,9 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
     strategies: ["strategien"], strategy: ["strategien", "quality"], stocks: ["aktien"], method: ["methodik", "faktoren"],
     technical: ["technik", "NVDA"], fundamentals: ["zahlen", "NVDA"], compare: ["vergleich", ["NVDA", "AAPL"]],
     /* Quant Radar (01.10.2026): taegliche Ereignisse, Bereich HOME. */
-    radar: ["radar", "filter=setups"]
+    radar: ["radar", "filter=setups"],
+    /* Backtest & Signal Intelligence (01.10.2026): Regel oder Setup waehlen. */
+    backtest: ["backtest", "NEW_52W_HIGH"]
   };
   assert.deepEqual(Object.keys(routes).sort(), Object.keys(erwartet).sort(),
     "X.routes hat sich geaendert - dieser Test muss die neue Route kennen");

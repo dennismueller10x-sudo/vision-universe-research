@@ -1,0 +1,501 @@
+{
+ "schemaVersion": "backtest-readiness-2.0.0",
+ "generatedAt": "2026-10-01T11:21:01.979Z",
+ "returnContract": {
+  "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
+  "backtestPortfolioBenchmark": "TOTAL_RETURN",
+  "source": "quant/methodology/return-semantics-v1.json"
+ },
+ "assets": [
+  {
+   "id": "setupObservations",
+   "label": "Setup-Beobachtungen und Wechsel",
+   "count": 5,
+   "from": "2026-09-10",
+   "to": "2026-09-30",
+   "spanDays": 20,
+   "replay": {
+    "titles": 37,
+    "observations": 33012,
+    "from": "1991-03-08"
+   }
+  },
+  {
+   "id": "factorSnapshots",
+   "label": "Faktor-Snapshots",
+   "count": 5,
+   "from": "2026-09-23",
+   "to": "2026-09-30",
+   "spanDays": 7
+  },
+  {
+   "id": "strategyAssignments",
+   "label": "Strategie-Zuordnungen und Wechsel",
+   "count": 5,
+   "from": "2026-09-28",
+   "to": "2026-09-30",
+   "spanDays": 2
+  },
+  {
+   "id": "membershipSnapshots",
+   "label": "Index-Zugehörigkeit (historisch)",
+   "count": 2,
+   "byIndex": {
+    "SP500": 2,
+    "NDX": 2,
+    "DJIA": 2
+   },
+   "from": "2026-09-15"
+  },
+  {
+   "id": "priceSplitAdjusted",
+   "label": "Kurshistorie splitbereinigt",
+   "weekly": {
+    "titles": 6333,
+    "from": "1990-01-05",
+    "grain": "WEEKLY",
+    "endedBeforeMarch2026": 0
+   },
+   "daily": {
+    "titlesFullHistory": 5,
+    "titlesLastYear": 6495
+   }
+  },
+  {
+   "id": "priceTotalReturn",
+   "label": "Kurshistorie Gesamtrendite",
+   "weekly": {
+    "titles": 0,
+    "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+   },
+   "daily": {
+    "titles": 5,
+    "tickers": [
+     "AAPL",
+     "JPM",
+     "MSFT",
+     "NVDA",
+     "XOM"
+    ]
+   }
+  },
+  {
+   "id": "regimeHistory",
+   "label": "Marktphasen-Historie",
+   "count": 5,
+   "from": "2026-09-10",
+   "derivable": {
+    "from": "1995-01-03",
+    "source": "SPY täglich (Kurs)"
+   }
+  },
+  {
+   "id": "patternObservations",
+   "label": "Muster-Beobachtungen",
+   "studyFindings": 114,
+   "robust": 69,
+   "matchSnapshots": 1
+  },
+  {
+   "id": "technicalStates",
+   "label": "Technische Zustände",
+   "publishedSnapshots": 1,
+   "reconstructible": {
+    "titles": 5,
+    "method": "PIT-Wiederholung der technischen Auswertung"
+   }
+  },
+  {
+   "id": "levels",
+   "label": "Einstieg, Invalidierung, Ziele",
+   "publishedSnapshots": 5,
+   "reconstructible": {
+    "titles": 5
+   }
+  },
+  {
+   "id": "corporateActions",
+   "label": "Corporate Actions",
+   "titles": 5,
+   "splits": 3,
+   "dividends": 235,
+   "universe": "nur im privaten Historienspeicher"
+  },
+  {
+   "id": "benchmark",
+   "label": "Vergleichsindex",
+   "series": "SPY",
+   "from": "1995-01-03",
+   "to": "2026-09-30",
+   "basis": "SPLIT_ADJUSTED_PRICE",
+   "totalReturn": false,
+   "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+  },
+  {
+   "id": "costs",
+   "label": "Kosten und Slippage",
+   "roundTripBps": 20,
+   "slippageBps": 10
+  },
+  {
+   "id": "pitFundamentals",
+   "label": "Fundamentaldaten point-in-time",
+   "ready": 5104,
+   "of": 6875
+  },
+  {
+   "id": "survivorship",
+   "label": "Überlebende-Kontrolle",
+   "delistedInUniverse": 0,
+   "membershipSnapshots": 2,
+   "state": "NOT_CONTROLLED"
+  }
+ ],
+ "kinds": [
+  {
+   "id": "A",
+   "key": "SAME_STOCK_REPLAY",
+   "label": "Rückblick derselben Aktie",
+   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "gates": [
+    {
+     "id": "history",
+     "label": "Wochenhistorie",
+     "state": "PASS",
+     "value": "6333 Titel seit 1990-01-05",
+     "reason": null
+    },
+    {
+     "id": "episodes",
+     "label": "abgeschlossene Fälle je Zeitraum",
+     "state": "PASS",
+     "value": "Zahlen ab 10 Fällen, breit ab 30",
+     "reason": null
+    },
+    {
+     "id": "pit",
+     "label": "nur Daten bis zum Fall",
+     "state": "PASS",
+     "value": "historical-cases liest nur bis zum Stichtag",
+     "reason": null
+    }
+   ],
+   "decision": "PUBLISHED",
+   "note": "Kein Backtest, sondern dieselbe Lage derselben Aktie in der Vergangenheit; Zahlen nur ab 10 abgeschlossenen Fällen.",
+   "reasons": []
+  },
+  {
+   "id": "B",
+   "key": "SETUP_BACKTEST",
+   "label": "Setup-Backtest",
+   "returnType": "TOTAL_RETURN",
+   "gates": [
+    {
+     "id": "pit",
+     "label": "Point-in-Time-Wiederholung",
+     "state": "PASS",
+     "value": "166 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "reason": null
+    },
+    {
+     "id": "history",
+     "label": "Titel mit voller Tageshistorie",
+     "state": "FAIL",
+     "value": "5 Titel im Repository (nötig 20)",
+     "reason": "DAILY_HISTORY_ONLY_IN_PRIVATE_STORE"
+    },
+    {
+     "id": "totalReturn",
+     "label": "Gesamtrendite",
+     "state": "PASS",
+     "value": "Gesamtrendite für 5 Titel",
+     "reason": null
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende-Kontrolle",
+     "state": "FAIL",
+     "value": "handverlesene, heute gelistete Titel",
+     "reason": "HAND_PICKED_SURVIVORS"
+    }
+   ],
+   "rules": [
+    {
+     "id": "SETUP_CONFIRMED",
+     "trust": "LIMITED",
+     "n": 267,
+     "titles": 30,
+     "displayAllowed": false,
+     "returnType": "TOTAL_RETURN"
+    },
+    {
+     "id": "SETUP_NEW",
+     "trust": "LIMITED",
+     "n": 2249,
+     "titles": 34,
+     "displayAllowed": false,
+     "returnType": "TOTAL_RETURN"
+    },
+    {
+     "id": "SETUP_WEAKENED",
+     "trust": "LIMITED",
+     "n": 2508,
+     "titles": 34,
+     "displayAllowed": false,
+     "returnType": "TOTAL_RETURN"
+    }
+   ],
+   "decision": "WITHHELD",
+   "trust": "LIMITED",
+   "reasons": [
+    "DAILY_HISTORY_ONLY_IN_PRIVATE_STORE",
+    "HAND_PICKED_SURVIVORS"
+   ]
+  },
+  {
+   "id": "C",
+   "key": "SIGNAL_BACKTEST",
+   "label": "Signal-Backtest",
+   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "gates": [
+    {
+     "id": "pit",
+     "label": "Point-in-Time",
+     "state": "PASS",
+     "value": "abgeschnittene und verfälschte Zukunft je Regel geprüft",
+     "reason": null
+    },
+    {
+     "id": "history",
+     "label": "Wochenhistorie",
+     "state": "PASS",
+     "value": "6333 Titel seit 1990-01-05",
+     "reason": null
+    },
+    {
+     "id": "totalReturn",
+     "label": "Gesamtrendite",
+     "state": "FAIL",
+     "value": "nur splitbereinigter Kurs",
+     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende-Kontrolle",
+     "state": "FAIL",
+     "value": "heute gelistetes Universum, 0 früh endende Reihen",
+     "reason": "TODAYS_UNIVERSE_ONLY"
+    }
+   ],
+   "rules": [
+    {
+     "id": "MOMENTUM_IMPROVED",
+     "trust": "LIMITED",
+     "n": 93597,
+     "titles": 5453,
+     "displayAllowed": true,
+     "returnType": "SPLIT_ADJUSTED_PRICE"
+    },
+    {
+     "id": "MOMENTUM_DETERIORATED",
+     "trust": "LIMITED",
+     "n": 93984,
+     "titles": 5474,
+     "displayAllowed": true,
+     "returnType": "SPLIT_ADJUSTED_PRICE"
+    },
+    {
+     "id": "TREND_UP",
+     "trust": "LIMITED",
+     "n": 90548,
+     "titles": 5409,
+     "displayAllowed": true,
+     "returnType": "SPLIT_ADJUSTED_PRICE"
+    },
+    {
+     "id": "TREND_DOWN",
+     "trust": "LIMITED",
+     "n": 90650,
+     "titles": 5432,
+     "displayAllowed": true,
+     "returnType": "SPLIT_ADJUSTED_PRICE"
+    },
+    {
+     "id": "NEW_52W_HIGH",
+     "trust": "LIMITED",
+     "n": 59110,
+     "titles": 5198,
+     "displayAllowed": true,
+     "returnType": "SPLIT_ADJUSTED_PRICE"
+    }
+   ],
+   "decision": "PUBLISHED",
+   "trust": "LIMITED",
+   "reasons": [
+    "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+    "TODAYS_UNIVERSE_ONLY"
+   ]
+  },
+  {
+   "id": "D",
+   "key": "STRATEGY_BACKTEST",
+   "label": "Strategie-Backtest",
+   "returnType": "TOTAL_RETURN",
+   "gates": [
+    {
+     "id": "membership",
+     "label": "historische Index-Zugehörigkeit",
+     "state": "FAIL",
+     "value": "2 Stichtage je Index (nötig 24 Monatsstände)",
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+    },
+    {
+     "id": "totalReturn",
+     "label": "Gesamtrendite des Universums",
+     "state": "FAIL",
+     "value": "nur 5 Titel mit Gesamtrendite",
+     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+    },
+    {
+     "id": "pitFactors",
+     "label": "Faktorhistorie point-in-time",
+     "state": "FAIL",
+     "value": "5 Faktor-Snapshots seit 2026-09-23",
+     "reason": "FACTOR_HISTORY_TOO_SHORT"
+    },
+    {
+     "id": "rebalance",
+     "label": "Rebalancing-Vertrag",
+     "state": "PASS",
+     "value": "Profile: quarterly, monthly",
+     "reason": null
+    },
+    {
+     "id": "costs",
+     "label": "Kosten",
+     "state": "PASS",
+     "value": "20 + 10 bps",
+     "reason": null
+    },
+    {
+     "id": "benchmark",
+     "label": "Vergleichsindex mit Gesamtrendite",
+     "state": "FAIL",
+     "value": "SPY nur als Kurs",
+     "reason": "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+    }
+   ],
+   "note": "Bleibt geschlossen, bis die Index-Zugehörigkeit historisch vorliegt. Das heutige Universum wird nie eingesetzt.",
+   "decision": "WITHHELD",
+   "reasons": [
+    "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+    "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
+    "FACTOR_HISTORY_TOO_SHORT",
+    "NO_INDEX_LEVEL_SERIES_PUBLISHED"
+   ]
+  },
+  {
+   "id": "E",
+   "key": "FACTOR_RANKING_BACKTEST",
+   "label": "Faktor-/Ranking-Backtest",
+   "returnType": "TOTAL_RETURN",
+   "gates": [
+    {
+     "id": "factorHistory",
+     "label": "Faktorhistorie",
+     "state": "FAIL",
+     "value": "5 Snapshots über 7 Tage",
+     "reason": "FACTOR_HISTORY_TOO_SHORT"
+    },
+    {
+     "id": "pitFundamentals",
+     "label": "Fundamentaldaten datierbar",
+     "state": "PASS",
+     "value": "5104 von 6875 Titeln",
+     "reason": null
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende-Kontrolle",
+     "state": "FAIL",
+     "value": "keine historische Zugehörigkeit",
+     "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+    }
+   ],
+   "note": "Ranking-Snapshots gibt es erst seit 2026-09-23. Eine Rückrechnung der Faktoren aus PIT-Fundamentaldaten wäre ein eigener Methodikschritt.",
+   "decision": "WITHHELD",
+   "reasons": [
+    "FACTOR_HISTORY_TOO_SHORT",
+    "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
+   ]
+  },
+  {
+   "id": "F",
+   "key": "MARKET_PATTERN_BACKTEST",
+   "label": "Marktweites Muster",
+   "returnType": "SPLIT_ADJUSTED_PRICE",
+   "gates": [
+    {
+     "id": "study",
+     "label": "Musterstudie mit Out-of-Sample",
+     "state": "PASS",
+     "value": "114 Befunde, davon 69 robust",
+     "reason": null
+    },
+    {
+     "id": "backtestGate",
+     "label": "Backtest-Freigabe der Studie",
+     "state": "FAIL",
+     "value": "als Häufigkeitsauswertung freigegeben, nicht als Backtest",
+     "reason": "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED"
+    },
+    {
+     "id": "survivorship",
+     "label": "Überlebende-Kontrolle",
+     "state": "FAIL",
+     "value": "Überlebenden-Effekt teilweise nicht quantifiziert",
+     "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART"
+    }
+   ],
+   "note": "Veröffentlicht als bedingte Häufigkeiten (Marktmuster), nicht als Backtest.",
+   "decision": "WITHHELD",
+   "reasons": [
+    "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED",
+    "PRESENT_AND_UNQUANTIFIED_IN_PART"
+   ]
+  }
+ ],
+ "levers": [
+  {
+   "id": "dailyHistoryInPipeline",
+   "plain": "Setup-Wiederholung im Pipeline-Lauf mit dem privaten Historienspeicher (--source .market-cache/tiingo/daily)",
+   "unlocks": [
+    "B"
+   ]
+  },
+  {
+   "id": "weeklyTotalReturn",
+   "plain": "Wöchentliche Gesamtrendite-Reihen neben den splitbereinigten veröffentlichen",
+   "unlocks": [
+    "C"
+   ]
+  },
+  {
+   "id": "delistedTitles",
+   "plain": "Delistete Titel mit Kurshistorie in das Studienuniversum aufnehmen",
+   "unlocks": [
+    "B",
+    "C",
+    "F"
+   ]
+  },
+  {
+   "id": "membershipHistory",
+   "plain": "Monatliche historische Index-Zugehörigkeit (≥ 24 Stände)",
+   "unlocks": [
+    "D",
+    "E"
+   ]
+  }
+ ]
+}

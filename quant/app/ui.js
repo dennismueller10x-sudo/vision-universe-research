@@ -59,6 +59,7 @@
     home: function () { return "#/"; },
     stock: function (t) { return "#/aktie/" + encodeURIComponent(String(t || "").toUpperCase()); },
     radar: function (q) { return "#/radar" + (q ? "?" + q : ""); },
+    backtest: function (id) { return "#/backtest" + (id ? "/" + encodeURIComponent(id) : ""); },
     screener: function (q) { return "#/screener" + (q ? "?" + q : ""); },
     screenerPro: function (q) { return "#/screener/profi" + (q ? "?" + q : ""); },
     strategies: function () { return "#/strategien"; },

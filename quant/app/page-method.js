@@ -277,10 +277,11 @@
 
   async function historie(main, ctx, t) {
     topicHead(main, t, "Was geschah früher in ähnlichen Situationen? Drei Blickwinkel – und klare Grenzen.");
-    /* Der gemessene Stand der vier Evidenzarten (evidence-status-v1). */
+    main.append(X.actions([X.btn("Zum Backtesting: Regel oder Setup wählen", X.routes.backtest(), "secondary")]));
+    /* Der gemessene Stand der Evidenzarten (evidence-status-v1). */
     var ev = await ctx.api.getEvidenceStatus().catch(function () { return null; });
     if (ev && ev.state === "AVAILABLE") {
-      main.append(X.section("Vier Arten historischer Evidenz", "Streng getrennt. Zahlen gibt es nur, wo die Methodik sie trägt – sonst steht da, was fehlt.", [el("div", { class: "q-evkinds" }, ev.kinds.map(function (k) {
+      main.append(X.section(["Null", "Eine", "Zwei", "Drei", "Vier", "Fünf", "Sechs"][ev.kinds.length] + " Arten historischer Evidenz", "Streng getrennt. Zahlen gibt es nur, wo die Methodik sie trägt – sonst steht da, was fehlt.", [el("div", { class: "q-evkinds" }, ev.kinds.map(function (k) {
         var pub = k.state === "PUBLISHED";
         return el("div", { class: "q-evkind " + (pub ? "is-on" : "is-off") }, [el("b", { text: k.label }), el("span", { class: "q-evkind-state", text: pub ? "veröffentlicht" : "zurückgehalten" }),
           el("p", { text: k.question }),
