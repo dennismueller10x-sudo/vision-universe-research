@@ -517,7 +517,7 @@ function create(options){
   if(!backtestCache[kind])backtestCache[kind]=(async()=>{
    try{const s=await load(files[kind]);
     if(kind==='readiness')return s?.schemaVersion==='backtest-readiness-2.0.0'?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
-    const SB=SignalBacktest;if(!SB)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
+    const SB=SignalBacktest||g.VUSignalBacktest;if(!SB)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};
     const errors=SB.studyViolations(s);
     return errors.length?{state:'UNAVAILABLE',reason:'BACKTEST_CONTRACT_VIOLATED',errors}:{state:'AVAILABLE',...s};
    }catch{backtestCache[kind]=null;return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
