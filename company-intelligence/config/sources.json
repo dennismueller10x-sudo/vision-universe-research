@@ -1,0 +1,24 @@
+[
+  {
+    "sourceId": "apple-newsroom-atom",
+    "companyId": "iss_cik_0000320193",
+    "type": "IR_FEED",
+    "url": "https://www.apple.com/newsroom/rss-feed.rss",
+    "allowedSites": ["https://apple.com/"],
+    "verified": true,
+    "verificationEvidence": "Official Apple newsroom advertises this Atom feed",
+    "provider": "FIRST_PARTY",
+    "active": true,
+    "intervalHours": 6
+  },
+  {
+    "sourceId": "wallstreet-online-global",
+    "type": "RSS",
+    "url": "https://www.wallstreet-online.de/rss/nachrichten-alle.xml",
+    "verified": false,
+    "provider": "PUBLIC_RSS",
+    "active": true,
+    "intervalHours": 6,
+    "metadata": {"reuse": "Existing dashboard source documents headline/excerpt/backlink permission; intelligence retains only headlines and links"}
+  }
+]
