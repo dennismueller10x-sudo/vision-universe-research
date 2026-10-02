@@ -165,13 +165,24 @@ async function webIcon(site, sharp, sym, companyName, iconOpts = {}) {
   return { reason: grund };
 }
 
-async function sparql(query) {
-  const res = await http("https://query.wikidata.org/sparql", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/sparql-results+json" },
-    body: "query=" + encodeURIComponent(query)
-  });
-  return (await res.json()).results.bindings;
+/* Wikidata bricht lange Abfragen bei Zeitueberschreitung mitten im Strom ab
+   und haengt die Fehlermeldung an (02.10.2026: "Bad control character in
+   string literal") - dann noch einmal, mit Pause. */
+async function sparql(query, versuche = 4) {
+  for (let v = 1; ; v++) {
+    try {
+      const res = await http("https://query.wikidata.org/sparql", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/sparql-results+json" },
+        body: "query=" + encodeURIComponent(query)
+      });
+      return JSON.parse(await res.text()).results.bindings;
+    } catch (e) {
+      if (v >= versuche) throw e;
+      console.log(`     Wikidata-Abfrage fehlgeschlagen (${String(e.message).slice(0, 80)}), Versuch ${v + 1} von ${versuche} …`);
+      await sleep(30000 * v);
+    }
+  }
 }
 
 async function imageinfo(titles) {
