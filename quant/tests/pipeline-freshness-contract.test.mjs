@@ -190,6 +190,13 @@ test("die Materialisierung ist aufrufbar und idempotent", () => {
   const refresh = readFileSync(REFRESH, "utf8");
   assert.match(refresh, /product-intelligence-materialization\.yml\s*\n\s+with:\s*\n\s+orchestrated: true/,
     "der Aufrufer setzt die Kennung nicht");
+  /* Die Idempotenz-Stufe muss den Stand lesen, den der Marktlauf gerade
+     gepusht hat - nicht den ausloesenden Commit (Lauf 36952507489). */
+  const job = yml.slice(yml.search(/^\s{2}materialize:/m));
+  const checkout = (job.match(/uses: actions\/checkout@v4\s*\n\s+with:\s*\n((?:\s{10}.*\n)+)/) || [])[1] || "";
+  assert.match(checkout, /ref: \$\{\{ github\.ref \}\}/,
+    "die Materialisierung checkt den ausloesenden Commit aus und sieht den frischen Ablagestand nicht");
+  assert.ok(job.indexOf("actions/checkout@v4") < job.indexOf("id: noetig"), "die Idempotenz-Stufe laeuft vor dem Checkout");
   assert.match(yml, /id: noetig/, "die Idempotenz-Stufe fehlt");
   assert.match(yml, /noop=true/,
     "es gibt keinen sauberen No-Op - ein Wiederholungslauf kostet dann eine Stunde umsonst");

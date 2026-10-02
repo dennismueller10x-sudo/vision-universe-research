@@ -71,8 +71,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
+      # DIE SPITZE DES BRANCHES, NICHT DER AUSLOESENDE COMMIT.
+      #
+      # Aus der Kette aufgerufen ist github.sha der Commit, der den
+      # Marktlauf gestartet hat - VOR dessen eigenem Push. Ohne ref las die
+      # Idempotenz-Stufe darum den alten Ablagestand, hielt ihn fuer gleich
+      # dem Produktstand und hoerte als No-Op auf. Gemessen am 02.10.2026,
+      # Lauf 36952507489: Marktlauf gruen, Ablage 2026-10-01, Materialisierung
+      # "nichts zu tun", Frische-Vertrag P0_DATA_PIPELINE_FROZEN (Produkt
+      # 2026-09-30). Der Frische-Vertrag checkt `ref: main` aus und sah es.
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.ref }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
