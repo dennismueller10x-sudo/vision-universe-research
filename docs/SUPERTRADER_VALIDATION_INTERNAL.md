@@ -169,7 +169,7 @@ Sie gilt nicht pauschal für andere Turtle-Varianten (Futures, Pyramiding, Syste
 | r8-smoke | PREREGISTRATION-R8.json | technische Probe, 400 Reihen | 37006147514 |
 | r8 | PREREGISTRATION-R8.json, -R8-TURTLE.json | Momentum 3.0.0, 3.0.0-P, Ablation 3.0.0-A, Referenz 2.0.0; Turtle 2.0.0, 2.0.0-P, Referenz 1.1.0; Beispielspur TSLA/NVDA | 37006651662 / `20261002T131609Z-analyze-r8.sealed.json` |
 | r8b | PREREGISTRATION-R8B.json | Darvas 3.0.0/-P, Weinstein 3.0.0/-P, Referenzen 2.0.0; Momentum 3.0.0-C und Turtle 2.0.0-C mit sicherem Gleichtags-Ausstieg | 37011923139 / `20261002T140356Z-analyze-r8b.sealed.json` |
-| r8c | PREREGISTRATION-R8C.json | Momentum 3.1.0/-P (Befund der TSLA-Beispielprüfung), Referenz 3.0.0-C | siehe unten |
+| r8c | PREREGISTRATION-R8C.json | Momentum 3.1.0/-P (Befund der TSLA-Beispielprüfung), Referenz 3.0.0-C | 37017417965 / `20261002T144351Z-analyze-r8c.sealed.json` |
 
 **Abbrüche in der Warteschlange.** Der erste r8b-Lauf und der erste r8c-Lauf wurden in der Warteschlange abgebrochen. Ursache: Pushes
 in dieselbe Concurrency-Gruppe, teils von anderen Zweigen. Beide wurden per workflow_dispatch neu gestartet. Die Engines waren
@@ -205,3 +205,9 @@ die neutrale Variante verbuchte diesen Fall zunächst nicht. Korrigiert in r8b, 
 **Beispielprüfung (Regelidentität, keine Evidenz).**
 - **NVDA:** Die 10-%-Gap-Regel ordnet alle drei Daten wie Kullamägi ein: 11.11.2016 EP, 10.02.2017 kein EP, 10.05.2017 EP.
 - **TSLA:** 3.0.0 erkannte das Setup am 27.05.2020, verwarf es aber am 28.05. wegen zweier VU-Zusätze. Daraus entstand Version 3.1.0 (r8c).
+- **Momentum 3.1.0 (r8c):**
+  - Fängt Kullamägis TSLA-Beispiel. Setup am 27.05.2020, am 28.05. gehalten. Kauf-Stop am 29.05. zu 55,70 (split-bereinigt), Stop am Tagestief 53,61. Ein Drittel am 04.06. verkauft, der Rest am 25.06. beim ersten Schluss unter der 10-Tage-Linie.
+  - Einschränkung: Der Einstieg liegt eine Sitzung vor dem von Kullamägi markierten Ausbruchstag (01.06.), weil der Trigger (5-Tage-Hoch) am 29.05. knapp erreicht wurde.
+  - Historisch weiter TESTED_NO_EDGE: geringfügig besser als 3.0.0, aber unter SPY; die vorsichtige Variante ist robust negativ.
+  - 3.0.0-C wurde exakt reproduziert.
+- **Live seit 02.10.2026:** Momentum 3.1.0, Turtle 2.0.0, Darvas 3.0.0, Weinstein 3.0.0, Minervini 2.0.0. Das ist Vorwärtsbeobachtung außerhalb der Stichprobe. Positionen älterer Versionen laufen nach ihren eigenen Regeln weiter.

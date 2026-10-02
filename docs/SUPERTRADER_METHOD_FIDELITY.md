@@ -47,9 +47,15 @@ Weitere Abweichungen je Methode (Details in `fidelity.mjs`, Methodenseite „Von
 | Darvas 2.0.0 | Stop knapp unter der Kauforder **mit** Kauf zur nächsten Eröffnung | Mischung aus Quelle und Konvention | sehr viele Sofort-Ausstiege |
 | Weinstein | Widerstand = höchster Wochenschluss; Volumen als Filter vor dem Kauf | Konvention | Einstieg bis eine Woche später; Volumenregel falsch verortet |
 
+## Ergebnis in einem Satz
+
+Die Übertragung ist korrigiert, die Kette Quelle → Regel → Code → Trade ist je Regel sichtbar. Keine quellennähere Version
+zeigt historisch einen Vorteil gegenüber SPY. Die Gegenproben tragen für Weinstein eine Teilursache (Einstieg/Volumen),
+für Kullamägi nicht; für Darvas sind sie mit Tagesbalken nicht entscheidbar.
+
 ## Neue Versionen (vor jedem Test festgelegt)
 
-- **Momentum 3.0.0** (`kk-breakout-v3.mjs`, PREREGISTRATION-R8.json)
+- **Momentum 3.0.0** (`kk-breakout-v3.mjs`, PREREGISTRATION-R8.json) und **3.1.0** (`kk-breakout-v31.mjs`, PREREGISTRATION-R8C.json). 3.1.0 entfernt zwei VU-Zusätze, an denen Kullamägis TSLA-Beispiel scheiterte: Kurs über beiden Linien, 5 Sitzungen Sperre. 3.1.0 läuft live.
 - **Donchian/Turtle 2.0.0** (`donchian-v2.mjs`, PREREGISTRATION-R8-TURTLE.json)
 - **Darvas 3.0.0, Weinstein 3.0.0** (`darvas-v3.mjs`, `weinstein-v3.mjs`, PREREGISTRATION-R8B.json)
 - **Minervini** bleibt 2.0.0: Ohne frei lesbare Primärquelle gibt es keinen belegten Grund für eine neue Version.

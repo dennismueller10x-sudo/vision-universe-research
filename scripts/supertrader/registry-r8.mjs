@@ -10,7 +10,7 @@
 //
 // Quelle der Regeln: PREREGISTRATION-R8*.json und engine/strategies/*-v3.mjs, donchian-v2.mjs.
 
-export const R8 = Object.freeze({ MOMENTUM_BREAKOUT: '3.0.0', DONCHIAN_TURTLE: '2.0.0', DARVAS_BOX: '3.0.0', WEINSTEIN_STAGE: '3.0.0' });
+export const R8 = Object.freeze({ MOMENTUM_BREAKOUT: '3.1.0', DONCHIAN_TURTLE: '2.0.0', DARVAS_BOX: '3.0.0', WEINSTEIN_STAGE: '3.0.0' });
 
 const BUYSTOP_LC = ['LC-BUY-STOP', 'Kauforder am Ausbruchspunkt (Runde 8): Der Trigger steht seit dem Vortagesschluss fest. Steigt das Tageshoch darüber, gilt das Modell als gekauft – zum Trigger oder, bei einer Eröffnung darüber, zur Eröffnung, jeweils plus 10 bp Slippage. So beschreiben es alle Quellen; Schlusskurs-Bestätigung war eine VU-Konvention bis Runde 7.', 'high(t) > trigger(t-1) -> entry = max(open(t), trigger) * (1 + slip)'];
 const SAMEDAY_LC = ['LC-SAME-DAY', 'Einstiegstag mit Tagesbalken: Schließt der Tag auf oder unter dem Stop, wurde der Stop nach dem Kauf sicher durchschritten – Ausstieg zum Stop am selben Tag. Ob ein Tagestief VOR oder NACH dem Kauf lag, zeigen Tagesbalken nicht; die vorsichtige Gegenprobe zählt jedes Tief unter dem Stop als Ausstieg.', 'close(t) <= stop -> exit at stop (t); pessimistic: low(t) <= stop -> exit'];
@@ -39,15 +39,23 @@ export function applyR8({ momentum, weinstein, darvas, minervini, donchian, rule
 
   /* ---------------------------------------------------------- Momentum 3.0.0 */
   bump(momentum, R8.MOMENTUM_BREAKOUT, ['KK-BO-ENTRY-D1', 'KK-BO-STOP-D1', 'KK-BO-GAP-01', 'LC-CONFIRM-CLOSE'], '2.0.0', ['SRC-KK-EP']);
+  // 3.0.0 lief nur in der historischen Prüfung (r8/r8b) und als Live-Stand vom 02.10.2026;
+  // 3.1.0 entfernt zwei VU-Zusätze, an denen Kullamägis TSLA-Beispiel scheiterte (r8c).
+  momentum.previous_versions.push({ version: '3.0.0', note: 'Kauf-Stop am Ausbruch, Stop am Tagestief; Setup endete bei einem Schluss unter der 10-Tage-Linie, danach 5 Sitzungen Sperre (VU). Ergebnis der vorab festgelegten Prüfung bleibt gültig.' });
+  for (const r of momentum.rules) if (r.rule_id === 'KK-BO-TREND-01') r.legacy_only = '3.0.0';
   add(momentum,
     ['KK-BO-ENTRY-ORH-D', 'Einstieg, sobald die Aktie im Tagesverlauf über das Hoch der letzten 5 Sitzungen steigt (Kauf-Stop). Kullamägi: „just look at the daily chart and enter when the stock is starting to break out“. Eröffnet sie darüber, Kauf zur Eröffnung.', 'high(t) > max(high[t-5..t-1]) -> entry = max(open(t), trigger)', { pivotBars: 5 }, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false],
     ['KK-BO-STOP-LOD', 'Stop am Tagestief des Einstiegstags („Stop is always lows of the day“).', 'stop = low(entryDay)', {}, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false],
     ['KK-BO-STOP-ADR', 'Liegt das Tagestief weiter als eine durchschnittliche Tagesspanne (ADR, 20 Tage) unter dem Einstieg, gilt der Stop 1 ADR unter dem Einstieg („should not be wider than the ATR or ADR“).', 'stop = max(low(entryDay), entry * (1 - ADR20(t-1)))', {}, ['SRC-KK-SETUPS', 'SRC-KK-FAQ'], 'PRIMARY_EXPLICIT', false],
+    ['KK-BO-TREND-02', 'Kurs schließt über mindestens einer der beiden steigenden Linien (10 oder 20 Tage); die 20-Tage-Linie steigt. Kullamägi: der Kurs „surft“ die steigende 10- und 20-Tage-Linie („sometimes 50“). Bis 3.0.0 musste er über beiden liegen – strenger als die Quelle.', 'close > min(sma10, sma20) && sma20(t) > sma20(t-5)', {}, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false],
+    ['KK-BO-COOLDOWN-00', 'Nach einem verlorenen Setup ohne Trade gibt es keine Sperre; die Suche läuft am nächsten Tag weiter. Die Sperre von 5 Sitzungen (LC-COOLDOWN-01) war eine VU-Regel.', 'setupLost -> cooldown 0', { sessions: 0 }, ['SRC-KK-SETUPS'], 'PRIMARY_EXPLICIT', false],
     ['KK-BO-PORT-02', 'Höchstens 25 % des Kontos je Position (FAQ: „generally 5%-25%“), 0,5 % Risiko je Trade, höchstens 10 Positionen (Zahl 10 ist VU).', 'positionValue <= 0.25 * equity; risk 0.5 %; maxPositions 10', { maxPositionPct: 0.25, risk: 0.005, maxPositions: 10 }, ['SRC-KK-FAQ', 'SRC-INTERNAL-VU'], 'PRIMARY_EXPLICIT', true]);
   plan(momentum, { confirmRuleId: 'KK-BO-ENTRY-ORH-D', exitSummary: 'Stop am Tagestief des Einstiegstags (≤ 1 ADR) · nach 3 Sitzungen 1/3 verkaufen, Rest-Stop auf Einstand · erst danach: Rest bei Schluss unter der 10-Tage-Linie' });
   section(momentum, 'confirmation', 'Kauf-Stop über dem Hoch der letzten 5 Sitzungen (Stand Vortagesschluss). Steigt der Kurs im Tagesverlauf darüber, gilt das Modell als gekauft.', ['KK-BO-ENTRY-ORH-D', 'KK-BO-ENTRY-ORH', 'LC-BUY-STOP']);
   section(momentum, 'execution', 'Ausführung zum Trigger oder zur Eröffnung, wenn diese darüber liegt, plus 10 bp Slippage. Tagesbalken; das Opening-Range-Hoch der ersten Minuten ist mangels Intraday-Historie durch das 5-Tage-Hoch ersetzt.', ['LC-BUY-STOP', 'LC-MODEL-ENTRY']);
   section(momentum, 'initialStop', 'Tagestief des Einstiegstags, höchstens 1 ADR unter dem Einstieg. Schließt der Einstiegstag unter dem Stop, Ausstieg am selben Tag.', ['KK-BO-STOP-LOD', 'KK-BO-STOP-ADR', 'LC-SAME-DAY']);
+  section(momentum, 'prepared', 'Enge Basis 10–40 Sitzungen (≤ 25 % tief, steigende Tiefs, engere Spanne), Kurs über mindestens einer der steigenden 10/20-Tage-Linien, handelbar. Trigger = Hoch der letzten 5 Sitzungen, Invalidation = Basistief.', ['KK-BO-BASE-01', 'KK-BO-TREND-02', 'KK-BO-LIQ-VU', 'LC-SETUP', 'LC-NEAR-TRIGGER']);
+  section(momentum, 'invalid', 'Schluss unter dem Basistief, 20 Sitzungen ohne Ausbruch oder Basisregel verletzt. Danach keine Sperre – die Suche läuft weiter.', ['KK-BO-INV-01', 'KK-BO-INV-02', 'LC-SETUP-LOST', 'KK-BO-COOLDOWN-00']);
   section(momentum, 'gap', 'Eröffnung über dem Trigger: Kauf zur Eröffnung. Keine Gap-Sperre mehr (stand nicht in der Quelle; bis 2.0.0 VU).', ['KK-BO-ENTRY-ORH-D', 'LC-BUY-STOP'], true);
   momentum.how_it_thinks = momentum.how_it_thinks.map((x) => (/Tagesschluss|Schlusskurs/.test(x) ? 'Kaufen, sobald die Aktie im Tagesverlauf aus der engen Basis ausbricht – Stop am Tagestief' : x));
 
