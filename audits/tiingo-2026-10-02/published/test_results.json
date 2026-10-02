@@ -67,6 +67,43 @@
       "command": "python3 -m unittest discover -s audits/tiingo-2026-10-02/runtime -p 'test_secure_evidence.py'",
       "passed": 3,
       "failed": 0
+    },
+    {
+      "name": "SEC/exporter/internal PIT Python guards",
+      "command": "python3 -m unittest discover -s scripts/vu2 -p 'test*.py'",
+      "passed": 32,
+      "failed": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "Recomputed Quant artifacts",
+      "command": "node scripts/quant/verify-quant-data.mjs",
+      "result": "PASS"
+    },
+    {
+      "name": "Recomputed technical artifacts",
+      "command": "node scripts/technical/verify-technical-data.mjs",
+      "result": "PASS"
+    },
+    {
+      "name": "Public-data boundary",
+      "command": "node scripts/market/assert-public-data-hygiene.mjs",
+      "result": "PASS"
+    },
+    {
+      "name": "Credential scan",
+      "command": "node scripts/market/assert-no-secrets.mjs",
+      "result": "PASS"
+    },
+    {
+      "name": "Cross-stack adjustment semantics",
+      "command": "node scripts/market/verify-semantics-parity.mjs",
+      "result": "PASS"
+    },
+    {
+      "name": "Dashboard adjustment positive/negative gate",
+      "command": "python3 scripts/dashboard/verify_adjustment_gate.py",
+      "result": "PASS"
     }
   ],
   "esefPresentOnBaseline": false,

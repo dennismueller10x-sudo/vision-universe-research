@@ -97,7 +97,7 @@ Per-symbol updates require6k/10k/20k calls at those scales, before history/metad
 
 ## 16. TESTS
 
-Combined suites: **2,586 passed, zero failed, five skipped**. SEC Python: **484 passed**. US focused:76; adjustment/provider/backtest focused:169; Europe:10; collector safety:3; authenticated encryption safety:3. Certified-source release build PASS; browser smoke CLEAN at1440/768/390. Currency/no-local-FX gates PASS; open-session freshness was not certified.
+Combined suites: **2,586 passed, zero failed, five skipped**. SEC Python: **484 passed**; SEC/exporter/PIT guards:32. US focused:76; adjustment/provider/backtest focused:169; Europe:10; collector safety:3; authenticated encryption safety:3. Certified-source release build PASS; browser smoke CLEAN at1440/768/390. Currency/no-local-FX, recomputed Quant/technical artifacts, credential/public-data and cross-stack/dashboard adjustment gates PASS; open-session freshness was not certified.
 
 The full packaged-input offline reproduction passes without provider requests. ESEF is absent from the protected main baseline; its unmerged prior branch was read only. [Exact test summary](published/test_results.json)
 
