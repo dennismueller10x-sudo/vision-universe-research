@@ -167,7 +167,7 @@ class Pipeline:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)
                         import re
-                        if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|date)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
+                        if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|to be|date|scheduled|upcoming|forthcoming|expected)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period
                             period = release_period(entry['headline']) or {}
                             quarter, year = period.get('fiscalQuarter'), period.get('fiscalYear')

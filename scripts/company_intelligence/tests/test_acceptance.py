@@ -20,6 +20,24 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_future_release_title_is_calendar_evidence_not_published_earnings(self):
+        from company_intelligence.pipeline import Pipeline
+        c = company()
+        text = b'''<rss><channel><item><title>Apple announces third quarter financial results to be released on October 27, 2026</title>
+        <link>https://apple.com/planned-release</link><pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate>
+        <description>Apple will release financial results on October 27, 2026.</description></item></channel></rss>'''
+        class HTTP:
+            def get(self, *args, **kwargs): return {'body': text, 'finalUrl': 'https://apple.com/feed'}
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                Pipeline(Path(tmp), {c['companyId']: c}, store, HTTP(), NOW).ingest_source(source(c))
+                payload = store.company_payload(c, NOW)
+                self.assertFalse(payload['earnings'])
+                self.assertEqual(payload['events'][0]['confirmationStatus'], 'CONFIRMED')
+                self.assertEqual(payload['events'][0]['date'], '2026-10-27')
+            finally: store.close()
+
     def test_parent_feed_cannot_confirm_child_or_partner_earnings_calendar(self):
         from company_intelligence.pipeline import Pipeline
         c = company()
