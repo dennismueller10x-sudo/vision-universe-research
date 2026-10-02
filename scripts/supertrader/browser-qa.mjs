@@ -43,6 +43,7 @@ async function main() {
   if (!base) { server = await serve(SITE); base = `http://127.0.0.1:${server.address().port}`; }
   const signals = JSON.parse(fs.readFileSync(path.join(SITE, 'supertrader/data/signals.json'), 'utf8'));
   const registry = JSON.parse(fs.readFileSync(path.join(SITE, 'supertrader/data/registry.json'), 'utf8'));
+  const hasPortfolio = fs.existsSync(path.join(SITE, 'supertrader/data/portfolio.json'));
   let lensSymbol = null;
   for (const st of Object.values(signals.strategies)) { if (st.open[0]) { lensSymbol = st.open[0].symbol; break; } }
   const routes = [
@@ -56,13 +57,16 @@ async function main() {
   ];
   if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-lensblock .st-next']);
   const csSym = signals.partialChecks?.CANSLIM?.candidates?.[0]?.symbol;
-  if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist']);
+  // Teilpruefung steht hinter vollstaendigen Modellen; sichtbar als eigener Tab.
+  if (csSym) routes.push(['lens-partial', `/supertrader/stock/${csSym}/`, '.st-critlist, .st-chips.lens button']);
   routes.push(['lens-empty', '/supertrader/stock/?s=ZZZZ', '.st-emptybox']);
   if (fs.existsSync(path.join(SITE, 'supertrader/data/replay.json'))) routes.push(['replay', '/supertrader/beispiel/', '.st-demo-banner']);
   const watchSym = (signals.strategies.DONCHIAN_TURTLE?.open || []).find((x) => !x.entry)?.symbol;
   if (watchSym) routes.push(['lens-watch', `/supertrader/stock/${watchSym}/`, '.st-lensblock']);
   const posSym = Object.values(signals.strategies).flatMap((st) => st.open).find((x) => x.entry)?.symbol;
   if (posSym) routes.push(['lens-position', `/supertrader/stock/${posSym}/`, '.st-lensblock .st-next']);
+  const reSym = (() => { for (const id of Object.keys(signals.strategies)) { try { const l = JSON.parse(fs.readFileSync(path.join(SITE, 'supertrader/data/ledger', id + '.json'), 'utf8')); const s = [...l.open, ...l.closed].find((x) => x.discovery?.kind === 'RULE_VERSION_REASSESSMENT'); if (s) return s.symbol; } catch { /* kein Ledger */ } } return null; })();
+  if (reSym) routes.push(['lens-reassessed', `/supertrader/stock/${reSym}/`, '.st-tl']);
 
   const browser = await chromium.launch({ executablePath: args.chromium || undefined });
   const pw = loadPlaywright();
@@ -119,6 +123,10 @@ async function main() {
         researchSection: !!document.querySelector('.st-research'),
         researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten am Einstieg/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
         evBanner: !!document.querySelector('.st-evbanner'),
+        fidBanner: !!document.querySelector('.st-fidban'),
+        portfolioSec: [...document.querySelectorAll('.st-sec h2')].some((x) => x.textContent === 'Modellportfolio'),
+        // Regelwechsel darf im Protokoll nicht wie ein zweites Marktereignis aussehen.
+        tlDuplicates: (() => { const seen = new Set(); let d = 0; for (const li of document.querySelectorAll('.st-tl li')) { if (li.dataset.kind === 'reassessed') continue; const k = li.textContent.trim(); if (seen.has(k)) d++; seen.add(k); } return d; })(),
         cardsWithoutPhase: [...document.querySelectorAll('.st-card2')].filter((c) => !c.querySelector('.st-phase')).length,
         buyTone: /jetzt kaufen|buy now|kaufempfehlung(?! |,)|kaufen sie/i.test(document.body.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')),
         textLen: document.body.innerText.length,
@@ -150,7 +158,10 @@ async function main() {
       if (name === 'home' && researchIds.some((id) => signals.strategies[id]?.open?.length) && !m.researchSection) errors.push('Forschung/Modellbeobachtung fehlt auf der Startseite');
       if (name === 'home' && m.researchInNear) errors.push('Forschungsmethode als Einstiegschance hervorgehoben');
       if (/^strategy-(momentum|weinstein|darvas|minervini|donchian|can-slim|piotroski|greenblatt)/.test(name) && !m.evBanner) errors.push('Evidenz-Einstufung fehlt auf der Methodenseite');
-      if (['home', 'signals', 'lens', 'lens-watch', 'lens-position', 'backtests', 'replay'].includes(name) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
+      if ((['home', 'signals', 'lens', 'lens-watch', 'lens-position', 'backtests', 'replay'].includes(name) || /^strategy-/.test(name)) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
+      if (/^strategy-(momentum|weinstein|darvas|minervini|donchian|can-slim|piotroski|greenblatt)/.test(name) && !m.fidBanner) errors.push('Methodentreue fehlt auf der Methodenseite');
+      if (hasPortfolio && /^strategy-(momentum|weinstein|darvas|minervini|donchian)/.test(name) && !m.portfolioSec) errors.push('Modellportfolio fehlt auf der Methodenseite');
+      if (m.tlDuplicates) errors.push(`${m.tlDuplicates} doppelte Einträge im Protokoll`);
       if (name === 'replay' && !m.replayBanner) errors.push('Replay ohne Kennzeichnung „kein aktuelles Signal“');
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);

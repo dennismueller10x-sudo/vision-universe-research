@@ -132,3 +132,20 @@ Sie gilt nicht pauschal für andere Turtle-Varianten (Futures, Pyramiding, Syste
   - Laufende Modellpositionen werden nach ihrer Regelversion weitergeführt.
   - Damit gibt es derzeit keine aktuelle Methode: Die Startseite zeigt den Beobachtungsmodus.
 - **Geltungsbereich:** Die Aussage gilt jeweils nur für diese Regelversion, das Universum `US_PIT_2016_A`, das Zehn-Positionen-Portfolio und den Zeitraum 2016–2026. Eine geänderte Variante ist eine neue Hypothese mit eigener Präregistrierung.
+
+## Runde 7 (02.10.2026): Ursachenanalyse und Regelversionen 2.0.0
+
+### Diagnose der getesteten Versionen
+- **Lauf:** Run 36985593528 (`diagnose-methods.mjs`), Ergebnisdatei `20261002T093425Z-diagnose-methods.sealed.json`.
+- **Art des Laufs:** Keine Hypothese und keine neue Version. Die Vergleichsszenarien (SPY mit gleicher Investitionsquote, Gleichgewichtung, 1 % Risiko) dienen nur der Diagnose.
+- **Ergebnis:** Alle fünf Versionen schneiden je Signal schlechter ab als SPY im selben Haltezeitraum. Die Ursachen im Detail stehen in `docs/SUPERTRADER_METHOD_FIDELITY.md`.
+
+### Regelversionen 2.0.0
+- **Festlegung:** `PREREGISTRATION-R7.json`, eingefroren vor dem Lauf.
+- **Lauf:** Run 36990677933 (workflow_dispatch, Commit 843d12bf63), Ergebnisdatei `20261002T102719Z-analyze-r7.sealed.json`.
+- **Abbruch und Neustart:** Ein erster Lauf (bbfab123c3) wurde in der Warteschlange abgebrochen, weil ein späterer Commit ohne Marke dieselbe Concurrency-Gruppe belegte. Seit dem Einfrieren haben sich die Engines nicht geändert.
+- **Reproduzierbarkeit:** Die Versionen 1.x wurden im selben Lauf exakt reproduziert (gleiche Trades, gleiche Überrendite).
+- **Ergebnis:** Alle vier Versionen 2.0.0 sind robust negativ. Intern sind sie als „geprüft, ohne überzeugenden Vorteil“ eingestuft, öffentlich als „In Prüfung“.
+- **Kontrollen:** C1, C2, C3m und AT5 bestanden.
+- **Ablage:** Kennzahlen nur in `evidence-internal.sealed.json`.
+- **Live:** Die Versionen 2.0.0 laufen ab dem 02.10.2026 live, als Vorwärtsbeobachtung außerhalb der Stichprobe. Positionen der Version 1.x laufen nach ihren eigenen Regeln weiter.

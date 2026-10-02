@@ -10,6 +10,7 @@
 // VU_EXTENSION, NOT_VERIFIABLE.
 
 import { buildR4 } from './registry-r4.mjs';
+import { applyR7 } from './registry-r7.mjs';
 export const REGISTRY_VERSION = 'supertrader-registry-1.0.0';
 
 export const EVIDENCE = ['PRIMARY_EXPLICIT', 'PRIMARY_INFERRED', 'MULTI_SOURCE_CONFIRMED', 'SECONDARY_ONLY', 'DISPUTED', 'VU_FORMALIZATION', 'VU_EXTENSION', 'NOT_VERIFIABLE'];
@@ -660,6 +661,7 @@ for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, c
   }
 }
 
+applyR7({ momentum, weinstein, darvas, minervini, donchian, rule });
 export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, canslim, piotroski, greenblatt, ...advancedList];
 // Produktmodus: LIVE (Ein-/Ausstiege werden gerechnet), PARTIAL_CHECK (nur
 // pruefbare Kriterien, keine Signale), DATA_PENDING (Regeln beschrieben, Daten

@@ -84,6 +84,9 @@ export function simulate(strategy, ctx, opts = {}) {
   for (let t = from; t <= to; t++) {
     const date = bars.date[t];
     const sig = state.signal;
+    // manageOnly (Runde 7): Fuehrung einer Modellposition nach ihrer alten
+    // Regelversion. Ohne offene Position wird nichts gesucht und nichts eroeffnet.
+    if (opts.manageOnly && !(sig && sig.entry)) break;
     // 0. Datenluecke: keine Entscheidung, nichts wird erfunden.
     if (!Number.isFinite(bars.open[t]) || !Number.isFinite(bars.close[t]) || !Number.isFinite(bars.high[t]) || !Number.isFinite(bars.low[t])) {
       if (sig) (sig.dataGaps ||= []).push({ date, reason: 'MISSING_BAR', ruleId: 'LC-DATA-GAP' });
