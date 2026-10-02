@@ -11,3 +11,9 @@ test('incremental signals retain unrelated events and calculate counts from actu
  const result=mergeTechnicalProjection({results:[a,old]},{results:[fresh]},['DNA']);assert.deepEqual(result.results,[a,fresh]);assert.equal(result.events.length,2);assert.deepEqual(result.counts,{requested:2,available:2,unavailable:0});
  assert.throws(()=>mergeTechnicalProjection({results:[a]},{results:[fresh]},['FIG']),/OUT_OF_SCOPE/);
 });
+test('unavailable incremental regression evidence cannot erase a protected delivered technical bundle or strategy signals',()=>{
+ const baseline={instruments:{AMC:{id:'protected'}},unavailable:{},results:[{ticker:'AMC',state:'AVAILABLE',events:[{ticker:'AMC',asOf:'2026-10-01'}]}]};
+ const result=mergeTechnicalProjection(baseline,{instruments:{},unavailable:{AMC:{reason:'SOURCE_MISSING'}},results:[{ticker:'AMC',state:'UNAVAILABLE',events:[]}]},['AMC']);
+ assert.deepEqual(result.instruments,baseline.instruments);assert.deepEqual(result.unavailable,{});assert.deepEqual(result.results,baseline.results);assert.equal(result.counts.available,1);
+ const partial=mergeTechnicalProjection(baseline,{results:[]},['AMC']);assert.deepEqual(partial.results,baseline.results);assert.equal(partial.counts.available,1);
+});

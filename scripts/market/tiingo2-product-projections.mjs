@@ -100,22 +100,41 @@ function preserveBaselineSearch(sourceRoot,shadowRoot,targetIds){
  write(manifestPath,manifest);
 }
 
-function recordActualMarketCapabilities(shadowRoot,readiness){
+function baselinePublishedChart(sourceRoot,row,capability){
+ const artifactPath='/'+SERIES_DIR+'/'+row.masterMemberId+'.json',path=join(sourceRoot,artifactPath.slice(1));
+ const longPath='/quant/data/market/discover-series-long/'+row.masterMemberId+'.json',longFile=join(sourceRoot,longPath.slice(1));
+ return {state:capability?'PRESERVED_BASELINE':'NO_PUBLISHED_CAPABILITY',
+  priceHistoryDeclared:capability?.ph===true,priceSnapshotDeclared:capability?.ps===true,
+  technicalState:capability?.t||null,factorReadyDeclared:capability?.fr===true,
+  dailyPath:existsSync(path)?artifactPath:null,dailyArtifactSha256:existsSync(path)?sha(readFileSync(path,'utf8')):null,
+  longPath:existsSync(longFile)?longPath:null,longArtifactSha256:existsSync(longFile)?sha(readFileSync(longFile,'utf8')):null,
+  source:'EXISTING_PUBLISHED_BASELINE',freshValidationIncluded:false};
+}
+
+function recordActualMarketCapabilities(sourceRoot,shadowRoot,readiness){
  const path=join(shadowRoot,'quant/data/universe/market-capability.json');if(!existsSync(path))return;
  const document=read(path),byId=new Map(readiness.map(row=>[row.securityId,row]));
- for(const member of document.members||[]){
-  const item=byId.get(member.m);if(!item)continue;
+ const baselinePath=join(sourceRoot,'quant/data/universe/market-capability.json');
+ const baselineById=new Map((existsSync(baselinePath)?read(baselinePath).members||[]:[]).map(member=>[member.m,member]));
+ let updated=0,preserved=0;
+ document.members=(document.members||[]).map(member=>{
+  const item=byId.get(member.m),baseline=baselineById.get(member.m);
+  // A failed refresh is diagnostic evidence about its fresh input. It cannot
+  // revoke a capability already published for the same canonical identity.
+  if(baseline&&(!item||item.chart.ready!==true)){preserved++;return baseline;}
+  if(!item)return member;
   // Old coverage reports enumerate exceptions only within their old measured
   // population. An absent new symbol is not proof of chart/technical readiness.
   member.ph=item.chart.ready;member.ps=item.chart.ready;member.b=item.chart.canonicalProof?.bars||0;
   member.fr=false;member.t=null;member.q=item.chart.ready?'PASS':'REVIEW';
   member.f=item.chart.canonicalProof?.firstDate||null;member.l=item.chart.canonicalProof?.lastDate||null;
   member.src='tiingo2:actual-canonical-chart-projection';
- }
+  updated++;return member;
+ });
  const members=document.members||[];
  document.totals={...document.totals,MEMBERS:members.length,WITH_PRICE_HISTORY:members.filter(row=>row.ph).length,WITH_PRICE_SNAPSHOT:members.filter(row=>row.ps).length,
   FACTOR_READY:members.filter(row=>row.fr).length,TECHNICAL_READY:members.filter(row=>row.t==='TECHNICAL_READY').length,TECHNICAL_INSUFFICIENT_HISTORY:members.filter(row=>row.t==='INSUFFICIENT_HISTORY').length};
- document.incrementalEvidence={source:'ACTUAL_CANONICAL_CHART_PROJECTION',technicalState:'REQUIRES_EXISTING_TECHNICAL_ENGINE_MATERIALIZATION',scopedSecurities:readiness.length};
+ document.incrementalEvidence={source:'ACTUAL_CANONICAL_CHART_PROJECTION',technicalState:'REQUIRES_EXISTING_TECHNICAL_ENGINE_MATERIALIZATION',scopedSecurities:readiness.length,updatedSecurities:updated,preservedBaselineSecurities:preserved};
  write(path,document);
 }
 
@@ -124,6 +143,8 @@ export async function materializeProductProjections({sourceRoot=codeRoot,shadowR
  if(shadowRoot===sourceRoot||!shadowRoot.startsWith(join(sourceRoot,'.market-cache')+'/'))throw Error('ISOLATED_PRIVATE_SHADOW_ROOT_REQUIRED');
  if(!isDate(asOf))throw Error('PRODUCT_PROJECTION_AS_OF_REQUIRED');
  const master=instruments(shadowRoot),baseline=instruments(sourceRoot),baselineById=new Map(baseline.map(row=>[row.instrumentId,row]));
+ const baselineCapabilityPath=join(sourceRoot,'quant/data/universe/market-capability.json');
+ const baselineCapabilities=new Map((existsSync(baselineCapabilityPath)?read(baselineCapabilityPath).members||[]:[]).map(row=>[row.m,row]));
  const byTicker=new Map();for(const row of master){const t=symbol(row);byTicker.set(t,[...(byTicker.get(t)||[]),row]);}
  const requested=[...new Set(securities.map(symbol))].sort(),targetRows=[],readiness=[];
  for(const ticker of requested){
@@ -141,8 +162,9 @@ export async function materializeProductProjections({sourceRoot=codeRoot,shadowR
    write(join(shadowRoot,SERIES_DIR,row.masterMemberId+'.json'),chart.daily);
    if(chart.longReady)write(join(shadowRoot,'quant/data/market/discover-series-long',row.masterMemberId+'.json'),chart.long);
   }
-  readiness.push({ticker,securityId:row.masterMemberId,instrumentId:row.instrumentId,issuerId:row.issuerId||null,
+  readiness.push({ticker,securityId:row.masterMemberId,instrumentId:row.instrumentId,issuerId:row.issuerId||null,isBaseline:!!old,
    search:{ready:false,reasonCodes:['SEARCH_NOT_CHECKED']},chart:{ready:chart.ready,reasonCodes:chart.reasonCodes,
+    freshValidationState:chart.ready?'VALIDATED':'BLOCKED',baselinePublished:old?baselinePublishedChart(sourceRoot,old,baselineCapabilities.get(old.masterMemberId)):null,
     dailyPath:chart.ready?'/'+SERIES_DIR+'/'+row.masterMemberId+'.json':null,longPath:chart.longReady?'/quant/data/market/discover-series-long/'+row.masterMemberId+'.json':null,
     longReady:chart.longReady===true,longReasonCodes:chart.longReasonCodes||[],canonicalProof:chart.canonicalProof||null},
    watchlist:{ready:false,reasonCodes:['WATCHLIST_NOT_CHECKED']},quant:{ready:false,reasonCodes:['SEPARATE_CANONICAL_FACTOR_AND_FUNDAMENTAL_REQUIREMENTS']}});
@@ -152,7 +174,7 @@ export async function materializeProductProjections({sourceRoot=codeRoot,shadowR
  if(runSearchBuilder){
   execFileSync(process.execPath,[join(codeRoot,'scripts/universe/build-universe-indexes.mjs'),'--root',shadowRoot],{cwd:shadowRoot,encoding:'utf8',maxBuffer:8*1024*1024});
   preserveBaselineSearch(sourceRoot,shadowRoot,new Set(targetRows.map(row=>row.instrumentId)));
-  recordActualMarketCapabilities(shadowRoot,readiness);
+  recordActualMarketCapabilities(sourceRoot,shadowRoot,readiness);
  }
  const loadJSON=loadFromRoot(shadowRoot),directory=Directory.create({loadJSON});
  for(const item of readiness){

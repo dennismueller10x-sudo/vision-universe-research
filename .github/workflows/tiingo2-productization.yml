@@ -73,6 +73,8 @@ jobs:
           node --max-old-space-size=6144 scripts/market/tiingo2-run-productization.mjs --run-id "gh-productize-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" --out .verification/tiingo2-productization --benchmark-preflight "$RUNNER_TEMP/tiingo2-read-only-preflight.json" --release-output "$RUNNER_TEMP/tiingo2-productized-release"
       - name: Protected production artifacts must remain unchanged
         run: git diff --exit-code -- quant/data discover/data discover/logos dashboard/config supertrader/data
+      - name: Independent protected identity, history, policy and payload comparison
+        run: node scripts/market/tiingo2-product-shadow-qa.mjs --root "$GITHUB_WORKSPACE" --shadow .market-cache/tiingo2-productization/shadow-root --readiness .verification/tiingo2-productization/tiingo2_product_readiness.json --baseline docs/tiingo2-productization/qa --out .verification/tiingo2-productization/tiingo2_product_shadow_qa.json
       - name: Existing release bundle encoding
         run: /tmp/tiingo2-qa/node_modules/.bin/esbuild "$RUNNER_TEMP/tiingo2-productized-release/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/tiingo2-productized-release/quant/release-bundle.js"
       - name: Release browser, mobile, accessibility and unchanged byte budgets
@@ -83,13 +85,14 @@ jobs:
           cd "$RUNNER_TEMP/tiingo2-productized-release"
           node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
           node "$GITHUB_WORKSPACE/scripts/vu2/production-smoke.mjs" "$RUNNER_TEMP/tiingo2-productized-release" --report "$GITHUB_WORKSPACE/.verification/tiingo2-productization/release-smoke.json"
-      - name: Require a concrete verified publication transaction
+      - name: All scoped titles in Chromium and mobile WebKit
+        env:
+          NODE_PATH: /tmp/tiingo2-qa/node_modules
         run: |
-          node --input-type=module <<'NODE'
-          import {readFileSync} from 'node:fs';
-          const report=JSON.parse(readFileSync('.verification/tiingo2-productization/tiingo2_productization_status.json'));
-          if(report.attachmentBlocker||report.removed!==0||report.productionWrites!==0)throw Error('PUBLICATION_PREPARATION_BLOCKED:'+report.attachmentBlocker);
-          NODE
+          node scripts/market/tiingo2-product-browser-qa.mjs --site "$RUNNER_TEMP/tiingo2-productized-release" --root "$GITHUB_WORKSPACE" --readiness .verification/tiingo2-productization/tiingo2_product_readiness.json --out .verification/tiingo2-productization/browser-products --engine chromium
+          node scripts/market/tiingo2-product-browser-qa.mjs --site "$RUNNER_TEMP/tiingo2-productized-release" --root "$GITHUB_WORKSPACE" --readiness .verification/tiingo2-productization/tiingo2_product_readiness.json --out .verification/tiingo2-productization/browser-products --engine webkit
+      - name: Bind complete QA to the exact canonical and private-history transaction
+        run: node scripts/market/tiingo2-finalize-preview.mjs --out .verification/tiingo2-productization --release-output "$RUNNER_TEMP/tiingo2-productized-release"
       - name: Export derived evidence only
         if: always()
         uses: actions/upload-artifact@v4
@@ -104,7 +107,7 @@ jobs:
         run: |
           mkdir -p .market-cache/prepared/tiingo2
           cp -R .market-cache/tiingo2-productization/canonical-stage .market-cache/prepared/tiingo2/
-          node scripts/market/tiingo2-cache.mjs seal --work-dir .market-cache/prepared/tiingo2 --file .market-cache/tiingo2-publication.enc --context "$GITHUB_REF_NAME"
+          node scripts/market/tiingo2-cache.mjs seal --work-dir .market-cache/prepared/tiingo2 --file .market-cache/tiingo2-publication.enc --context "${{ github.head_ref || github.ref_name }}"
       - name: Persist only authenticated ciphertext for publication preparation
         if: success()
         uses: actions/upload-artifact@v4

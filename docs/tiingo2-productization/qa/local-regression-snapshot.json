@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "tiingo2-productization-independent-regression-1",
+  "scope": "LOCAL_BASELINE_AND_SOURCE_SNAPSHOT_PENDING_ACTUAL_PRODUCTIZED_SHADOW_CI",
+  "acceptedBaseline": "1cf199eb54f13dcf96226c5c86c75431a9446c68",
+  "repositoryHead": "fe6622c760cd4d58a2e0cd55e58247847eccb2ff",
+  "workingSourceSha256": {
+    "scripts/market/tiingo2-product-browser-qa.mjs": "7fecba7f737ba6e1e67946ecc93ffd5f91b8c924c8312b601edc9a8d04793be1",
+    "scripts/market/tiingo2-product-shadow-qa.mjs": "20f0a3ad5cf2c8dfdbbf991fbad2b2ae00fc3d0f16fd0a95756a3abeda3859cf",
+    "scripts/market/tiingo2-product-surfaces.mjs": "e2b2e77afa2c06668e58725b40b857c99864d980c1f2ab51e4df92bf901aad3c",
+    "scripts/market/tiingo2-run-productization.mjs": "28f2a4cbffed07e171f6124f5431c961aa7cc3fa68747cc3f7af9d6a7bf1538c",
+    "scripts/market/tiingo2-productize.mjs": "53d1a30c8214fa8851d254f3b9b2c31666d915bb5eaa66f6a3e8a6db4b9a09e0"
+  },
+  "node": {
+    "main": {
+      "tests": 2631,
+      "passed": 2630,
+      "skipped": 1,
+      "failed": 0,
+      "command": "node --test quant/tests/*.test.* discover/tests/*.test.* screener/tests/*.test.*"
+    },
+    "supertrader": {
+      "tests": 100,
+      "passed": 100,
+      "failed": 0,
+      "command": "node --test scripts/supertrader/tests/*.test.mjs"
+    },
+    "worker": {
+      "tests": 41,
+      "passed": 41,
+      "failed": 0,
+      "command": "node --test worker/tests/*.test.mjs"
+    },
+    "executedCombined": {
+      "tests": 2772,
+      "passed": 2771,
+      "skipped": 1,
+      "failed": 0
+    },
+    "suiteSideEffect": {
+      "path": "quant/data/providers/total-return-verification.json",
+      "restoredExactAcceptedBaseline": true
+    }
+  },
+  "sec": {
+    "tests": 484,
+    "passed": 484,
+    "failed": 0
+  },
+  "browserHarnessValidation": {
+    "scope": "ACTUAL_EXISTING_DNA_DELIVERY_BASELINE_ONLY",
+    "engine": "chromium",
+    "checks": 23,
+    "findings": 0
+  },
+  "actualAddedTitleBrowserProof": "PENDING_CURRENT_GITHUB_SHADOW_RUN",
+  "webkit": {
+    "binaryDownloaded": true,
+    "localLaunch": "BLOCKED_BY_HOST_LIBRARIES_AND_NO_ROOT_INSTALL",
+    "ci": "WORKFLOW_INSTALLS_WITH_DEPS_PROOF_PENDING"
+  },
+  "compactDeliveryBaseline": {
+    "fullFunctionalChecks": 88,
+    "functionalFindings": 0,
+    "accessibilityPages": 76,
+    "accessibilityViolations": 0,
+    "resourceBudgets": 8,
+    "budgetsPassed": 8,
+    "screenerMaximumDecodedBytes": 22261508,
+    "budgetDecodedBytes": 30500000
+  },
+  "productionWrites": 0
+}

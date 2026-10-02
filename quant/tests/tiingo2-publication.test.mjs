@@ -10,8 +10,11 @@ import { hostname } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { stageCanonicalPublication, attachCanonicalProjections, applyCanonicalPublication, rollbackCanonicalPublication, REQUIRED_PUBLICATION_QA, CANONICAL_PUBLICATION_PATHS as paths, PRODUCTIZATION_QA_SCHEMA, REQUIRED_PRODUCTIZATION_QA, CONDITIONAL_PRODUCTIZATION_QA, isProductizationProjectionPath, verifyStagedCanonicalPublication } from '../../scripts/market/tiingo2-publication.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
+const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
 const today = '2026-10-02';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
+const partialFactors = () => Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
+  id === 'momentum' ? { state: 'AVAILABLE', score: 63.5 } : { state: 'UNAVAILABLE', reason: 'INPUT_NOT_MATERIALIZED', score: null }]));
 function candidate(ticker = 'ZNEW') {
   return { ticker, securityId: `ref_${ticker}`, instrument_type: 'EQUITY_COMMON', active: true, companyName: 'New Software Corporation',
     listing: { ticker, name: 'New Software Corporation', assetType: 'Stock', exchange: 'NASDAQ', currency: 'USD', startDate: '2026-09-01', endDate: '2026-10-01' },
@@ -229,7 +232,7 @@ test('materialized factor components do not claim full Quant readiness while its
 test('partial Factor DNA readiness keeps disabled composites and publishes only evidenced typed factors', () => fixture((context) => {
   const { staged, qaProof } = productizationFixture(context, (input) => {
     const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
-    input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, publicationViolations: [], securities: { ZNEW: { ticker: 'ZNEW', securityId: addition.securityId, factors: { momentum: { state: 'AVAILABLE', score: 63.5 }, quality: { state: 'UNAVAILABLE', score: null } }, composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' } } } })) });
+    input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, publicationViolations: [], securities: { ZNEW: { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' } } } })) });
     input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'TECHNICAL_ONLY', artifactPaths: [path] };
     return input;
   });
@@ -246,12 +249,33 @@ test('partial Factor DNA refuses numeric composites, fabricated factors and publ
   ]) fixture((context) => {
     assert.throws(() => productizationFixture(context, (input) => {
       const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
-      const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: { momentum: { state: 'AVAILABLE', score: 63 } }, composite: null };
+      const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: null };
       const doc = { publication: { compositeAllowed: false }, securities: { ZNEW: record } };change(record, doc);
       input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(doc)) });
       input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };
       return input;
     }), /PARTIAL_QUANT|QUANT_PUBLICATION_VIOLATIONS/);
+  });
+});
+
+test('partial publication recomputes canonical evidence violations despite a forged clean producer summary', () => {
+  for (const change of [
+    (record) => { record.quantScore = 77; },
+    (record) => { record.rank = 1; },
+    (record) => { delete record.factors.growth; },
+    (record) => { record.factors.invented = { state: 'AVAILABLE', score: 80 }; },
+    (record) => { record.factors.quality.score = 80; },
+    (record) => { record.factors.quality.reason = 'UNVERIFIED_REASON'; }
+  ]) fixture((context) => {
+    assert.throws(() => productizationFixture(context, (input) => {
+      const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
+      const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' }, publicationViolations: [] };
+      change(record);
+      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, publicationViolations: [], securities: { ZNEW: record } })) });
+      input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };
+      return input;
+    }), /QUANT_PUBLICATION_VIOLATIONS/);
+    assert.equal(JSON.parse(readFileSync(join(context.root, paths.raw))).securities.length, 1);
   });
 });
 

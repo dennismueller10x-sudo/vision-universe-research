@@ -10,25 +10,35 @@ const load=p=>JSON.parse(readFileSync(p,'utf8'));
 const digest=p=>existsSync(p)?createHash('sha256').update(readFileSync(p)).digest('hex'):null;
 export function mergeTechnicalProjection(baseline,increment,tickers){
  const scope=new Set(tickers),result={...baseline,...increment};
+ const preserved=new Set([...scope].filter(t=>baseline?.instruments?.[t]&&!increment?.instruments?.[t]));
  for(const key of ['instruments','unavailable'])if(baseline?.[key]||increment?.[key]){
-  result[key]={...baseline?.[key]};for(const ticker of scope)delete result[key][ticker];
+  result[key]={...baseline?.[key]};for(const ticker of scope)if(!preserved.has(ticker))delete result[key][ticker];
   for(const [ticker,row] of Object.entries(increment?.[key]||{})){
    if(!scope.has(ticker))throw Error('OUT_OF_SCOPE_TECHNICAL_WRITE:'+ticker);
-   result[key][ticker]=row;
+   if(!preserved.has(ticker))result[key][ticker]=row;
   }
  }
  if(baseline?.results||increment?.results){
   for(const row of increment?.results||[])if(!scope.has(row.ticker))throw Error('OUT_OF_SCOPE_SIGNAL_WRITE:'+row.ticker);
-  result.results=[...(baseline?.results||[]).filter(r=>!scope.has(r.ticker)),...(increment?.results||[])].sort((a,b)=>a.ticker.localeCompare(b.ticker));
+  const oldResults=new Map((baseline?.results||[]).map(r=>[r.ticker,r]));
+  for(const row of increment?.results||[])if(row.state==='AVAILABLE'||oldResults.get(row.ticker)?.state!=='AVAILABLE')oldResults.set(row.ticker,row);
+  result.results=[...oldResults.values()].sort((a,b)=>a.ticker.localeCompare(b.ticker));
   result.events=result.results.filter(r=>r.state==='AVAILABLE').flatMap(r=>r.events||[]).sort((a,b)=>b.asOf.localeCompare(a.asOf)||a.ticker.localeCompare(b.ticker));
   const available=result.results.filter(r=>r.state==='AVAILABLE').length;
   result.counts={requested:result.results.length,available,unavailable:result.results.length-available};
  }
  return result;
 }
-export async function materializeProductSurfaces({shadowRoot,marketStoreDir,tickers,privateDir,now=new Date().toISOString(),onProgress=()=>{}}){
+export async function materializeProductSurfaces({shadowRoot,marketStoreDir,tickers,freshPriceTickers=[],privateDir,now=new Date().toISOString(),onProgress=()=>{}}){
  shadowRoot=assertShadowRoot(shadowRoot);privateDir=resolve(privateDir);mkdirSync(privateDir,{recursive:true});
  const scope=[...new Set(tickers)].sort(),regime=join(shadowRoot,'quant/data/product/market-regime-v1.json'),regimeBefore=digest(regime);
+ // The new listing has no prior technical bundle. SOURCE_MISSING is the
+ // existing engine's recheckable state, unlike null, which vetoes analysis.
+ // Only independently price/action-validated private histories may be retried;
+ // the existing engine still checks bars, calendar and every output component.
+ const fresh=new Set(freshPriceTickers),capabilityPath=join(shadowRoot,'quant/data/universe/market-capability.json'),capability=load(capabilityPath);
+ for(const member of capability.members)if(fresh.has(member.s)&&scope.includes(member.s))member.t='SOURCE_MISSING';
+ writeFileSync(capabilityPath,JSON.stringify(capability));
  // Call the exported scoped API: its default CLI would enumerate every
  // existing stock while our incremental private history contains new listings.
  const technicalDir=join(privateDir,'technical-increment'),runner=join(privateDir,'technical-runner.mjs');
@@ -41,7 +51,14 @@ export async function materializeProductSurfaces({shadowRoot,marketStoreDir,tick
   const merged=mergeTechnicalProjection(baseline,increment,scope);
   writeFileSync(path,gzipSync(Buffer.from(JSON.stringify(merged)),{level:9,mtime:0}));
  }
- const summaryPath=join(target,'summary.json'),baselineSummary=existsSync(summaryPath)?load(summaryPath):{},summary={...baselineSummary,generatedAt:now,rows:{...baselineSummary.rows,...incrementSummary.rows},incremental:{scope,counts:incrementSummary.counts,source:incrementSummary.source}};
+ const summaryPath=join(target,'summary.json'),baselineSummary=existsSync(summaryPath)?load(summaryPath):{},mergedRows={...baselineSummary.rows};
+ const existingAvailablePreserved=[];
+ for(const [ticker,row]of Object.entries(incrementSummary.rows)){
+  const baseline=mergedRows[ticker];
+  if(baseline?.technical==='AVAILABLE'&&row.technical!=='AVAILABLE')existingAvailablePreserved.push(ticker);
+  else mergedRows[ticker]={...row,...(baseline?.signals==='AVAILABLE'&&row.signals!=='AVAILABLE'?{signals:baseline.signals,signalsAsOf:baseline.signalsAsOf||baseline.asOf,preservedSignalEvidence:true}: {})};
+ }
+ const summary={...baselineSummary,generatedAt:now,rows:mergedRows,incremental:{scope,counts:incrementSummary.counts,source:incrementSummary.source,existingAvailablePreserved}};
  summary.counts={...baselineSummary.counts,productUniverse:Object.keys(summary.rows).length,technicalFullBundles:Object.values(summary.rows).filter(r=>r.technical==='AVAILABLE').length,signalsCapable:Object.values(summary.rows).filter(r=>r.signals==='AVAILABLE').length};
  writeFileSync(summaryPath,JSON.stringify(summary));
  // Both builders reuse the full canonical shadow population, rather than
@@ -57,5 +74,5 @@ export async function materializeProductSurfaces({shadowRoot,marketStoreDir,tick
   return {ticker,discover:{ready:!!stock,eligible:stock?.discoveryEligible??null,artifact:stock?'discover/data/stocks/US_REAL/'+ticker+'.json':null},screener:{ready:!!row,missingValuesRemainNull:true},supertrader:{ready:technical.technical==='AVAILABLE'&&technical.signals==='AVAILABLE',status:technical.technical==='AVAILABLE'&&technical.signals==='AVAILABLE'?'SUPERTRADER_READY':technical.signals==='AVAILABLE'?'TECHNICAL_ONLY':'BLOCKED',technical:technical.technical||'SOURCE_MISSING',signals:technical.signals||'SOURCE_MISSING',bars:technical.bars??null},markets:{ready:!!stock&&!!row,exchange:row?.ex??null,sector:row?.sec??null,industry:stock?.industry??null}};
  });
  if(digest(regime)!==regimeBefore)throw Error('MARKET_REGIME_BASELINE_CHANGED');
- return {schemaVersion:'tiingo2-product-surfaces-1.0.0',rows,screener,technical:incrementSummary.counts,marketRegimeUnchanged:true,productionWrites:0};
+ return {schemaVersion:'tiingo2-product-surfaces-1.0.0',rows,screener,technical:incrementSummary.counts,existingAvailablePreserved,marketRegimeUnchanged:true,productionWrites:0};
 }

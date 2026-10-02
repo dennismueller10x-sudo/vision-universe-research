@@ -9,6 +9,7 @@ import { gunzipSync } from 'node:zlib';
 import { hostname } from 'node:os';
 import { classifyCandidate } from './tiingo2-policy.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
+const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
 export const REQUIRED_PUBLICATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'QUANT', 'DISCOVER', 'SCREENER', 'SUPERTRADER', 'SEC', 'RELEASE', 'BROWSER'];
 export const PRODUCTIZATION_QA_SCHEMA = 'tiingo2-productization-qa-1.0.0';
 export const REQUIRED_PRODUCTIZATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'RELEASE', 'BROWSER'];
@@ -435,6 +436,9 @@ function verifyProductizationReadiness({ root, output, manifest, readiness }) {
             const available = Object.entries(factorRecord.factors || {}).filter(([, factor]) => factor.state === 'AVAILABLE' && typeof factor.score === 'number' && Number.isFinite(factor.score) && factor.score >= 0 && factor.score <= 100);
             const composite = factorRecord.composite;
             if (document.publication?.compositeAllowed === true || typeof composite === 'number' || Number.isFinite(composite?.score) || Number.isFinite(composite?.value) || !available.length) throw Error('PARTIAL_QUANT_READINESS_NOT_MATERIALIZED');
+            // Re-run the canonical engine's contract rather than trusting a
+            // producer-supplied empty violations list in the staged document.
+            if (FactorEvidence.publicationViolations(factorRecord).length) throw Error('QUANT_PUBLICATION_VIOLATIONS');
             if (coverage === 'TECHNICAL_ONLY' && available.some(([factor]) => !['momentum', 'risk', 'liquidity'].includes(factor))) throw Error('TECHNICAL_ONLY_QUANT_COVERAGE_MISMATCH');
           }
         }

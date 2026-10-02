@@ -92,3 +92,59 @@ test('scoped projection cannot remint an existing security ID',async()=>{
   await assert.rejects(materializeProductProjections({sourceRoot,shadowRoot,securities:[changed],asOf}),/BASELINE_SECURITY_ID_CHANGED/);
  }finally{rmSync(sourceRoot,{recursive:true,force:true});}
 });
+
+test('blocked existing refreshes preserve published capability rows and chart bytes without certifying fresh readiness',async()=>{
+ const sourceRoot=mkdtempSync(join(tmpdir(),'vu-products-preservation-')),shadowRoot=join(sourceRoot,'.market-cache/shadow');
+ try{
+  const existing=['AMC','BIRD','AMWL','DNA','KEEP'].map(ticker=>row(ticker)),added=row('NEW'),blockedNew=row('IPO');
+  const baselineCaps=existing.map(security=>({m:security.masterMemberId,s:security.symbol,i:security.instrumentId,ph:true,ps:true,b:250,fr:true,q:'PASS',t:'TECHNICAL_READY',f:'2025-01-01',l:asOf,src:'protected-published-evidence',extra:{durable:true}}));
+  const baselineDoc={totals:{},members:baselineCaps};
+  put(sourceRoot,'quant/data/universe/market-capability.json',baselineDoc);
+  for(const security of [...existing,added,blockedNew]){
+   const shard=Master.shardKey(security.symbol),path='quant/data/universe/instruments/'+shard+'.json';
+   const prior=existsSync(join(shadowRoot,path))?read(join(shadowRoot,path)).instruments:[];
+   put(shadowRoot,path,{shard,instruments:[...prior,security]});
+   if(existing.includes(security)){
+    const old=existsSync(join(sourceRoot,path))?read(join(sourceRoot,path)).instruments:[];
+    put(sourceRoot,path,{shard,instruments:[...old,security]});
+   }
+  }
+  put(shadowRoot,'quant/data/universe/master-manifest.json',{asOf,shards:[...new Set([...existing,added,blockedNew].map(security=>Master.shardKey(security.symbol)))].map(shard=>({shard}))});
+  mkdirSync(join(shadowRoot,'quant/config'),{recursive:true});copyFileSync(resolve('quant/config/company-master.json'),join(shadowRoot,'quant/config/company-master.json'));
+  const oldCharts=new Map();
+  for(const security of existing){
+   const projected=projectChart(payload(security),security,{asOf}),chart=projected.daily,path='quant/data/market/discover-series/'+security.masterMemberId+'.json';
+   put(sourceRoot,path,chart);put(shadowRoot,path,chart);oldCharts.set(security.symbol,readFileSync(join(sourceRoot,path),'utf8'));
+   const longPath='quant/data/market/discover-series-long/'+security.masterMemberId+'.json';
+   put(sourceRoot,longPath,projected.long);put(shadowRoot,longPath,projected.long);
+  }
+  const bird=payload(existing.find(security=>security.symbol==='BIRD'));
+  for(let i=150;i<220;i++)Object.assign(bird.bars[i],{open:30,high:33,low:27,close:30,adjustedOpen:30,adjustedHigh:33,adjustedLow:27,adjustedClose:30});
+  const amwl=payload(existing.find(security=>security.symbol==='AMWL'));amwl.bars=amwl.bars.slice(0,-8);
+  const dna=existing.find(security=>security.symbol==='DNA');
+  const result=await materializeProductProjections({sourceRoot,shadowRoot,securities:[...existing.filter(security=>security.symbol!=='KEEP'),added,blockedNew],pricePayloads:new Map([['BIRD',bird],['AMWL',amwl],['DNA',payload(dna)],['NEW',payload(added)]]),asOf});
+  const caps=read(join(shadowRoot,'quant/data/universe/market-capability.json'));
+  for(const ticker of ['AMC','BIRD','AMWL','KEEP']){
+   assert.deepEqual(caps.members.find(member=>member.s===ticker),baselineCaps.find(member=>member.s===ticker));
+   assert.equal(readFileSync(join(shadowRoot,'quant/data/market/discover-series/ref_'+ticker+'.json'),'utf8'),oldCharts.get(ticker));
+  }
+  for(const ticker of ['AMC','BIRD','AMWL']){
+   const diagnostic=result.readiness.find(item=>item.ticker===ticker);
+   assert.equal(diagnostic.chart.ready,false);assert.equal(diagnostic.chart.freshValidationState,'BLOCKED');
+   assert.equal(diagnostic.chart.baselinePublished.state,'PRESERVED_BASELINE');
+   assert.equal(diagnostic.chart.baselinePublished.priceHistoryDeclared,true);
+   assert.equal(diagnostic.chart.baselinePublished.freshValidationIncluded,false);
+   assert.match(diagnostic.chart.baselinePublished.dailyArtifactSha256,/^[a-f0-9]{64}$/);
+   assert.equal(diagnostic.chart.baselinePublished.longPath,'/quant/data/market/discover-series-long/ref_'+ticker+'.json');
+   assert.match(diagnostic.chart.baselinePublished.longArtifactSha256,/^[a-f0-9]{64}$/);
+   assert.equal(readFileSync(join(sourceRoot,diagnostic.chart.baselinePublished.longPath.slice(1)),'utf8'),readFileSync(join(shadowRoot,diagnostic.chart.baselinePublished.longPath.slice(1)),'utf8'));
+  }
+  assert.equal(caps.members.find(member=>member.s==='DNA').src,'tiingo2:actual-canonical-chart-projection');
+  assert.equal(caps.members.find(member=>member.s==='NEW').ph,true);
+  assert.equal(caps.members.find(member=>member.s==='IPO').ph,false);
+  assert.equal(result.readiness.find(item=>item.ticker==='IPO').chart.baselinePublished,null);
+  assert.equal(caps.incrementalEvidence.updatedSecurities,3);
+  assert.equal(caps.incrementalEvidence.preservedBaselineSecurities,4);
+  assert.deepEqual(read(join(sourceRoot,'quant/data/universe/market-capability.json')),baselineDoc);
+ }finally{rmSync(sourceRoot,{recursive:true,force:true});}
+});
