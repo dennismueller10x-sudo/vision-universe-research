@@ -41,14 +41,14 @@ Trend Template ist mechanisch; ob eine Basis eine echte VCP ist, wo der Pivot li
 
 | Bereich | Quelle sagt | Belegstufe | Im Code | Einordnung |
 |---|---|---|---|---|
-| Auswahl | Trend Template: Kurs über 50/150/200-Tage-Linie, Linien geordnet, 200-Tage-Linie steigt ≥ 1 Monat | Übereinstimmende Sekundärquellen | MIN-TREND-01/02 (21 Sitzungen Steigung) | Vertretbare Umsetzung |
+| Auswahl | Trend Template: Kurs über 50/150/200-Tage-Linie, Linien geordnet, 200-Tage-Linie steigt ≥ 1 Monat | Übereinstimmende Sekundärquellen | Kurs über 50/150/200-Tage-Linie, Linien geordnet, 200-Tage-Linie höher als vor 21 Sitzungen | Vertretbare Umsetzung |
 | Auswahl | Mindestens 30 % (Buch 2013) bzw. 25 % (ältere Fassung) über dem 52-Wochen-Tief | Quellen widersprechen sich | 1.1.0: 25 % · 2.0.0: 30 % | Vertretbare Umsetzung |
-| Auswahl | Höchstens 25 % unter dem 52-Wochen-Hoch | Übereinstimmende Sekundärquellen | MIN-HIGH-01 | Originalregel |
+| Auswahl | Höchstens 25 % unter dem 52-Wochen-Hoch | Übereinstimmende Sekundärquellen | Kurs mindestens 75 % des 52-Wochen-Hochs | Originalregel |
 | Auswahl | IBD-RS-Rang ≥ 70 (lieber 80–90) | Übereinstimmende Sekundärquellen | VU-Perzentil der gewichteten 3–12-Monats-Rendite ≥ 70 | Vision-Universe-Erweiterung – IBD-RS ist proprietär. |
 | Basis | VCP: 2–6 Kontraktionen, jede enger, Volumen trocknet aus, Pivot am Hoch der letzten engen Zone | Übereinstimmende Sekundärquellen | Zickzack 4 %, ≥ 2 fallende Tiefen, erste ≤ 35 %, letzte ≤ 10 %, Volumen 10/50 < 0,8 | Vertretbare Umsetzung – Minervini beschreibt die VCP nur qualitativ (X, primär). |
 | Einstieg | Kauf beim Ausbruch über den Pivot; Volumen deutlich über Durchschnitt | Primärquelle, nur Auszug lesbar | 1.1.0: Schluss über Pivot ohne Volumenregel · 2.0.0: zusätzlich ≥ 1,4× 50-Tage-Volumen | Vertretbare Umsetzung – Zahl 40–50 % nur sekundär. |
 | Stop | Stop vor dem Einstieg festlegen; höchstens 10 % Verlust | Primärquelle, nur Auszug lesbar | Kontraktionstief, höchstens 10 % unter Einstieg | Vertretbare Umsetzung – 10 % aus Schwager-Interview, sekundär. |
-| Ausstieg | Gewinne nie zu Verlusten werden lassen; Stop auf Einstand | Primärquelle, nur Auszug lesbar | 1.1.0: fehlt · 2.0.0: Einstand ab 3R (MIN-BE-01) | Vertretbare Umsetzung – 3R nur sekundär. |
+| Ausstieg | Gewinne nie zu Verlusten werden lassen; Stop auf Einstand | Primärquelle, nur Auszug lesbar | 1.1.0: fehlt · 2.0.0: Stop auf Einstand ab 3 Anfangsrisiken Gewinn | Vertretbare Umsetzung – 3R nur sekundär. |
 | Ausstieg | In die Stärke verkaufen; Bruch der 50-Tage-Linie mit hohem Volumen | Übereinstimmende Sekundärquellen | 1.1.0: jeder Schluss unter der 50-Tage-Linie (VU) · 2.0.0: nur mit überdurchschnittlichem Volumen | Vertretbare Umsetzung – 1.1.0 war eine VU-Regel. |
 | Positionsgröße | Ø 1,25 % Risiko je Trade, höchstens 2,5 %; 25 % Position bei 5 % Stop | Primärquelle, nur Auszug lesbar | 1.1.0: 0,5 % (VU) · 2.0.0: 1,25 %, max. 25 % | Originalregel |
 | Portfolio | Schrittweise Exposition nach Ergebnis der letzten 4–5 Trades | Primärquelle, nur Auszug lesbar | 2.0.0: halbes Risiko nach netto negativen letzten 5 Trades | Vertretbare Umsetzung |
@@ -88,12 +88,12 @@ Kullamägi kauft im Tagesverlauf am Hoch der ersten Minuten (Opening Range); daf
 | Auswahl | Die 1–2 % stärksten Aktien über 1, 3, 6 Monate | Primärquelle, nur Auszug lesbar | Perzentil ≥ 98 über 1/3/6 Monate | Originalregel |
 | Basis | Vorlauf 30–100 % in 1–3 Monaten, 2 Wochen bis 2 Monate geordnete Konsolidierung an steigenden 10/20-Tage-Linien | Primärquelle, nur Auszug lesbar | Vorlauf ≥ 30 %, Basis 10–40 Sitzungen, Tiefe ≤ 25 %, höhere Tiefs, enger werdende Spanne | Vertretbare Umsetzung |
 | Einstieg | Kauf am Opening-Range-Hoch (1/5/60 Minuten) | Primärquelle, nur Auszug lesbar | Schluss über dem 5-Tage-Hoch, Kauf zur nächsten Eröffnung; Gap > 0,5 ADR ausgelassen | Vertretbare Umsetzung – Größte Abweichung: Tagesdaten statt Intraday. |
-| Stop | Tagestief, nicht weiter als ADR | Primärquelle, nur Auszug lesbar | Tief des Bestätigungstags, höchstens 1 ADR | Vertretbare Umsetzung |
+| Stop | Tagestief des Einstiegstags, nicht weiter als ADR | Primärquelle, nur Auszug lesbar | Tief des Bestätigungstags (Vortag des Einstiegs), höchstens 1 ADR | Vertretbare Umsetzung – Mit Tagesdaten ist das Tief des Einstiegstags beim Einstieg unbekannt; dieser Ersatz-Stop greift oft schon am Einstiegstag – Hauptursache der sehr kurzen Haltedauer. |
 | Ausstieg | 1/3–1/2 nach 3–5 Tagen verkaufen, Stop auf Einstand | Primärquelle, nur Auszug lesbar | 1/3 nach 3 Sitzungen, Rest auf Einstand | Originalregel |
-| Ausstieg | Rest an der 10/20-Tage-Linie nachziehen | Primärquelle, nur Auszug lesbar | 1.1.0: 10-Tage-Ausstieg ab Tag 1 für die ganze Position · 2.0.0: nur für den Rest | Vertretbare Umsetzung – Umsetzungsfehler in 1.1.0. |
+| Ausstieg | Rest an der 10/20-Tage-Linie nachziehen | Primärquelle, nur Auszug lesbar | 1.1.0: 10-Tage-Ausstieg ab Tag 1 für die ganze Position · 2.0.0: nur für den Rest | Vertretbare Umsetzung – Umsetzungsfehler in 1.1.0, in 2.0.0 korrigiert – im Test fast ohne Wirkung. |
 | Positionsgröße | Meist 0,3–0,5 % Risiko, Positionen 10–20 % | Primärquelle, nur Auszug lesbar | 0,5 % Risiko, max. 20 % | Originalregel |
-| Marktfilter | Index über 10/20-Tage-Linie (nur aus Streams/Tweets berichtet) | Keine Quelle | fehlt | Vision-Universe-Erweiterung |
-| Liquidität | — | Keine Quelle | Kurs ≥ 5 USD, 5 Mio. USD Tagesumsatz, ADR ≥ 2 % | Vision-Universe-Erweiterung |
+| Marktfilter | Index über 10/20-Tage-Linie (nur aus Streams/Tweets berichtet) | Keine Quelle | fehlt | Fehlt im Code |
+| Liquidität | keine Vorgabe der Methode | Keine Quelle | Kurs ≥ 5 USD, 5 Mio. USD Tagesumsatz, ADR ≥ 2 % | Vision-Universe-Erweiterung |
 
 **Fehlt:** Intraday-Einstieg am Opening-Range-Hoch; Episodic Pivots (eigenes Setup, Nachrichten); Parabolic Shorts; Marktfilter.  
 **Daten:** historisch Tageskurse ab 2016 (inkl. delisteter); live Tageskurse; Lücken: keine Intraday-Historie; keine Nachrichten-/Gap-Ursache.  
@@ -108,7 +108,7 @@ Was eine Box ist, beschreibt Darvas nicht als Formel; die verbreitete 3-Tage-Reg
 | Auswahl | Starke Aktien nahe neuer Hochs, Zukunftsbranchen, steigende Ertragskraft | Übereinstimmende Sekundärquellen | Nahe 52-Wochen-Hoch + 6-Monats-Perzentil ≥ 80; Ertragskraft fehlt | Vertretbare Umsetzung |
 | Basis | Box: Kurs pendelt zwischen Ober- und Unterkante | Übereinstimmende Sekundärquellen | Oberkante/Unterkante je 3 Sitzungen bestätigt, Höhe 3–25 % | Vision-Universe-Erweiterung – 3-Tage-Regel nur sekundär. |
 | Einstieg | Kauforder knapp über der Boxoberkante | Primärquelle, nur Auszug lesbar | Schluss über der Oberkante, Kauf zur nächsten Eröffnung | Vertretbare Umsetzung |
-| Stop | Stop-Loss knapp unter dem Kaufkurs (TIME, 1959) | Primärquelle, nur Auszug lesbar | 1.2.0: Boxunterkante · 2.0.0: 1 % unter der Oberkante | Vertretbare Umsetzung – 1.2.0 wich vom Primärbeleg ab. |
+| Stop | Stop-Loss knapp unter dem Kaufkurs (TIME, 1959) | Primärquelle, nur Auszug lesbar | 1.2.0: Boxunterkante · 2.0.0: 1 % unter der Oberkante | Vertretbare Umsetzung – 1.2.0 wich vom Primärbeleg ab; die quellennähere 2.0.0 erzeugt mit Schlusskurs-Einstieg sehr viele Fehlausbrüche. |
 | Ausstieg | Stop mit jeder höheren Box nachziehen | Übereinstimmende Sekundärquellen | Neue bestätigte Boxunterkante | Vertretbare Umsetzung |
 | Positionsgröße | Aufstocken in steigende Boxen | Übereinstimmende Sekundärquellen | fehlt (VU-Standard 0,5 %) | Vision-Universe-Erweiterung |
 
@@ -178,3 +178,93 @@ Die Rangformel ist mechanisch; es fehlen EBIT, Unternehmenswert und Bilanzposten
 **Daten:** historisch nicht vorhanden; live Pflichtfelder fehlen; Lücken: EBIT, Schulden, Barmittel, Sachanlagen je Stichtag.  
 **Benötigtes Originalmaterial:** The Little Book That Beats the Market (2005/2010), Anhang.
 
+
+## Ursachen der negativen Ergebnisse (Diagnose, Lauf 36985593528)
+
+Die Diagnose ist kein Test einer Hypothese und keine neue Regelversion. Sie nutzt dieselben Daten, Engines und
+Ausführungsannahmen wie die Prüfung. Zahlen stehen nur verschlüsselt in `scripts/supertrader/validation/evidence-internal.sealed.json`.
+
+### Nachweislich
+
+1. **Die Signale selbst sind im Mittel schlechter als SPY im selben Haltezeitraum.**
+   - Das gilt für alle fünf getesteten Versionen.
+   - Der Median liegt deutlich im Minus, und nur etwa ein Viertel bis ein Drittel der Trades schlägt SPY über denselben Zeitraum.
+   - Das ist der Hauptgrund. Er liegt in den Regeln und ihrer Umsetzung, nicht in der Portfoliohülle.
+2. **Cash erklärt nur einen Teil.**
+   - Momentum und Weinstein sind die meiste Zeit kaum investiert.
+   - Eine SPY-Anlage mit genau derselben täglichen Investitionsquote schneidet trotzdem bei jeder Version besser ab.
+   - Ein Vergleich mit geringerem Kapitaleinsatz verdeckt das schwache Ergebnis also nicht – er bestätigt es.
+3. **Positionsgröße und Reihenfolge sind nicht die Ursache.**
+   - Gleichgewichtung oder 1 % Risiko je Trade (reine Diagnoseszenarien) verbessern nur Minervini spürbar, und auch dort bleibt das Ergebnis unter SPY.
+   - Zufällige Reihenfolgen gleichzeitiger Einstiege streuen nur um wenige Prozentpunkte.
+   - Übersprungene Kandidaten waren im Schnitt nicht besser als übernommene (Ausnahme Minervini 1.1.0: dort waren sie schlechter).
+4. **Momentum 1.1.0:**
+   - Die mittlere Haltedauer beträgt zwei Sitzungen; rund 30 % der Trades enden am Einstiegstag.
+   - Ursache ist der Ersatz-Stop am Tief des Bestätigungstags, der bei Einstieg zur nächsten Eröffnung oft sofort greift. Das Original nutzt das Tief des Einstiegstags bei Intraday-Einstieg; dafür fehlen historische Intraday-Daten.
+   - Die zunächst vermutete Ursache, der 10-Tage-Ausstieg ab dem ersten Tag, war zwar eine Abweichung von der Quelle, ihre Korrektur in 2.0.0 änderte das Ergebnis aber kaum. Diese Hypothese ist widerlegt.
+5. **Weinstein 1.1.0 – drei Umsetzungsfolgen:**
+   - Vorbereitete Basen wurden verworfen, sobald die 30-Wochen-Linie vor dem Ausbruch drehte oder die 13-Wochen-RS fiel. Das betraf über tausend Basen.
+   - Viele Ausbrüche scheiterten an der 1,5×-Volumenregel.
+   - Der Einstieg erfolgt per Wochenschluss und erst zur Eröffnung der Folgewoche, im Median deutlich über dem Trigger. Der weite Stop führt zu kleinen Positionen.
+6. **Darvas 1.2.0 und Donchian 1.1.0:**
+   - Sehr viele Signale; die Portfolios sind voll investiert (Donchian) bzw. zur Hälfte (Darvas).
+   - Je Signal kein Vorteil gegenüber SPY.
+   - Bei Donchian fehlen wesentliche Turtle-Bausteine (Filter, Unit-Größe, Pyramiding); das System ist für Futures-Portfolios geschrieben.
+7. **Kosten:** Rund 0,2 % je Hin- und Rückweg (Gebühr und Slippage). Bei kleinen Durchschnittsergebnissen ist das spürbar, erklärt aber nicht das negative Ergebnis gegenüber SPY.
+8. **Live gegen Backtest:** Beide nutzen denselben Simulator (`engine/simulator.mjs`), dieselbe Ausführung und dieselben Engines. Bekannte Unterschiede:
+   - Das Live-Universum sind die heute gelisteten US-Aktien (Discovery-Daten), die Prüfung nutzt das damalige Universum.
+   - Live gibt es ein Jahr Tagesbalken, die lange Wochenreihe hat live kein Volumen außerhalb des Tagesfensters.
+   - Die Querschnittsränge werden live über das heutige Universum berechnet.
+
+### Noch Hypothese
+
+- Ob Einstiege im Tagesverlauf (Opening Range, Kauforder knapp über dem Widerstand) die Signalqualität von Momentum, Darvas und Weinstein deutlich verbessern, ist mit den vorhandenen Daten nicht prüfbar.
+- Ob Fundamentaldaten zum damaligen Stand (Minervini „Code 33“, Darvas, CAN SLIM) die Auswahl verbessern, ist ohne solche Daten nicht prüfbar.
+- Ob Gruppen- und Marktbreite (Weinstein) helfen, ist ohne historische Gruppenzuordnung nicht prüfbar.
+
+## Neue Regelversionen 2.0.0 (vorab registriert, Lauf 36990677933)
+
+Die Versionen sind in `PREREGISTRATION-R7.json` festgelegt; der Commit liegt vor jedem historischen Lauf der neuen Versionen.
+
+**Alte Ergebnisse bleiben unverändert:**
+- Die Versionen 1.x wurden im selben Lauf als Referenz erneut gerechnet und **exakt reproduziert** (gleiche Trades, gleiche Überrendite).
+- Ihre Einstufung „ohne überzeugenden Vorteil“ bleibt bestehen.
+
+| Version | Änderung (Quelle) | Ergebnis (intern) |
+|---|---|---|
+| Momentum 2.0.0 | 10-Tage-Ausstieg nur für den Rest nach dem Teilverkauf (Kullamägi) | robust negativ, praktisch wie 1.1.0 |
+| Weinstein 2.0.0 | Marktfilter, Mansfield-RS, 2× Volumen, Basis bleibt bestehen, Ausstieg nur per Wochenschluss (Sekundärquellen) | robust negativ; je Trade besser als 1.1.0, Investitionsquote weiter niedrig |
+| Darvas 2.0.0 | Stop knapp unter der Ausbruchsmarke (TIME 1959) | robust negativ, deutlich schlechter als 1.2.0 (sehr viele Fehlausbrüche) |
+| Minervini 2.0.0 | 30-%-Abstand, Ausbruchsvolumen, Einstand ab 3R, Ausstieg nur mit Volumen, 1,25 % Risiko, schrittweise Exposition | robust negativ; Signalqualität je Trade erstmals leicht positiv, Portfolio wegen niedriger Investitionsquote unter SPY |
+
+**Alle Kontrollen bestanden:** C1 (Abstimmung), C2 (Portfolio-Engines identisch), C3m (Stichproben gegen Rohbalken), AT5 (Rohkursgrenze).
+
+**Zeitliche Trennung:**
+- 2016–2020 und 2021–2026 sind getrennt ausgewertet; beide Teilzeiträume sind negativ.
+- Eine echte Prüfung außerhalb der Stichprobe gibt es nur vorwärts. Die Versionen 2.0.0 laufen deshalb ab dem 02.10.2026 live und werden protokolliert.
+
+**Produktentscheidung:**
+- Live läuft je Methode die neueste vorab registrierte Version.
+- Öffentlich steht überall „In Prüfung“, bis die Rechte geklärt sind.
+- Alle Versionen werden als Forschung gezeigt, nicht als Einstiegschance.
+- Positionen der Version 1.x werden nach ihren eigenen Regeln zu Ende geführt (`engine.legacy`).
+
+## Modellportfolio
+
+`portfolio.json` wendet je Methode dieselbe Portfoliologik wie die Prüfung auf das Live-Protokoll an:
+- 100.000 USD Startkapital;
+- Positionsgröße aus Risiko je Trade und Stopabstand, mit Höchstgrenzen;
+- gleichzeitige Einstiege alphabetisch.
+
+Gezeigt werden Cash, Gewichte, Stops, nicht übernommene Einstiege (mit Grund) und abgeschlossene Trades. Eine Gesamtrendite oder Kurve wird bis zur Rechteklärung nicht veröffentlicht.
+
+## Zugangsschutz
+
+`docs/RESEARCH_ACCESS_GATE.md` verspricht eine clientseitige Entwicklungs-/Marketing-Maske, keinen Zugriffsschutz, und die Maske selbst verspricht keinen Schutz. `/__research/content/` ist dokumentiert direkt abrufbar; schließen lässt sich das nur serverseitig (PR #328). Der Supertrader-Produktions-Smoke weist den tatsächlichen Direktzugriff aus und prüft `noindex` an der Maske.
+
+## Offene externe Entscheidungen
+
+1. Rechte zur Veröffentlichung aus Tiingo-Daten abgeleiteter Kennzahlen (Backtests und Gesamtrendite des Modellportfolios).
+2. Legaler Zugang zu den Originalwerken und Primärseiten, siehe „Benötigtes Originalmaterial“ je Methode; die Netzwerkfreigabe der Arbeitsumgebung für die Trader-Websites wäre kostenlos.
+3. Kostenpflichtige Daten, falls gewünscht: historische Intraday-Kurse (Momentum, Darvas, Weinstein) und Fundamentaldaten zum damaligen Stand (CAN SLIM, Piotroski, Greenblatt, Minervini „Code 33“).
+4. Serverseitige Sperre für `/__research/content/` (PR #328), falls echter Zugriffsschutz gewünscht ist.
