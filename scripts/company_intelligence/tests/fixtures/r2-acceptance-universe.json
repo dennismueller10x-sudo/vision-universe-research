@@ -1,0 +1,188 @@
+{
+  "runId": 37002931001,
+  "headSha": "475a3b8b931c3848fcdf4817ab130ea25a053879",
+  "scope": "ACTUAL_UNIVERSE_OFFLINE_AUTHENTICATED_R2",
+  "stages": {
+    "A": [
+      {
+        "status": "VERIFIED_NON_PUBLIC",
+        "reason": "MANAGED_DISABLED_NO_CUSTOM_DOMAINS",
+        "managedDomainEnabled": false,
+        "customDomainCount": 0
+      },
+      {
+        "status": "PASS",
+        "stage": "prepare",
+        "schema": "vu-intelligence-acceptance-1",
+        "tables": {
+          "items": {
+            "count": 1,
+            "sha256": "411f15dbe3c723444ff7f98a239d9b51b50ae5007bb94d774e50b1f95f1f1ca8",
+            "identitySha256": "22e59458681a547b557ea74b7eda2940545e1d3c8ec6a440d9271dc4aee4b553"
+          },
+          "events": {
+            "count": 208,
+            "sha256": "abcdb7d96af83fa10450de940ed23f5c0f342ecc1e5546d6e52cba81149731a5",
+            "identitySha256": "f758cd657470eb72f31fd42221bdc1f95a191984ab488155773d0774c042efb8"
+          },
+          "sources": {
+            "count": 1,
+            "sha256": "a611ea2cab2d9ab91bf4021300451464b696150011b32e1f77b84207055f069b",
+            "identitySha256": "f71231d651011e3e384bfc3311c65ffdf42d4abe1c16cc724c017fb0f2e98383"
+          },
+          "event_alias": {
+            "count": 1,
+            "sha256": "044861aab84dd3608545c282099ce6c0352dc58438618136a4a6fedb63882f78",
+            "identitySha256": "d1822467bb796323cf015e41898428a7c66c62aad9c6927d67767ef8ec5c1a65"
+          },
+          "state": {
+            "count": 11497,
+            "sha256": "041f3b95df2f150355ff8f77786bf248bf82bc6b2b178d44ea1ac9384ccc7a25",
+            "identitySha256": "534613e70533bda90d411ef82fc02da1acb983a1dd1b99bd35b6dc8680399111"
+          },
+          "audit": {
+            "count": 666,
+            "sha256": "abc31bb5dcd86824d232ff7fd5df7b9f63e4dd75a34b1b2d646a6e773ad0b1b2",
+            "identitySha256": "3e3f0603a15bfb716e5de1ae62926f2bdaaed33a2aa94ff222e851d6d84607ff"
+          }
+        },
+        "generation": "38e4c76d5b47a5a178a76da0",
+        "logicalHash": "4b3f3611fc92c25ed8ad8ad349ed0e904cbe5b525cf0a58561a3fe6b7469ec31"
+      },
+      {
+        "sha256": "0f2df2b589d099d7fe26a7cafd1a46bf797dcd64b36ca389a626ab6e145e5eea",
+        "bytes": 4047707,
+        "expandedBytes": 51865693
+      },
+      {
+        "status": "PRESERVED",
+        "sha256": "0f2df2b589d099d7fe26a7cafd1a46bf797dcd64b36ca389a626ab6e145e5eea",
+        "bytes": 4047707,
+        "operations": 5
+      }
+    ],
+    "B": [
+      {
+        "status": "VERIFIED_NON_PUBLIC",
+        "reason": "MANAGED_DISABLED_NO_CUSTOM_DOMAINS",
+        "managedDomainEnabled": false,
+        "customDomainCount": 0
+      },
+      {
+        "status": "RESTORED",
+        "sha256": "0f2df2b589d099d7fe26a7cafd1a46bf797dcd64b36ca389a626ab6e145e5eea",
+        "bytes": 4047707,
+        "operations": 3
+      },
+      {
+        "status": "RESTORED"
+      },
+      {
+        "status": "PASS",
+        "stage": "advance",
+        "schema": "vu-intelligence-acceptance-1",
+        "tables": {
+          "items": {
+            "count": 1,
+            "sha256": "411f15dbe3c723444ff7f98a239d9b51b50ae5007bb94d774e50b1f95f1f1ca8",
+            "identitySha256": "22e59458681a547b557ea74b7eda2940545e1d3c8ec6a440d9271dc4aee4b553"
+          },
+          "events": {
+            "count": 208,
+            "sha256": "85ae31997b23a1abab4c0610e949765242f66b42bc1cee418008d0a92a05a107",
+            "identitySha256": "f758cd657470eb72f31fd42221bdc1f95a191984ab488155773d0774c042efb8"
+          },
+          "sources": {
+            "count": 1,
+            "sha256": "a611ea2cab2d9ab91bf4021300451464b696150011b32e1f77b84207055f069b",
+            "identitySha256": "f71231d651011e3e384bfc3311c65ffdf42d4abe1c16cc724c017fb0f2e98383"
+          },
+          "event_alias": {
+            "count": 1,
+            "sha256": "044861aab84dd3608545c282099ce6c0352dc58438618136a4a6fedb63882f78",
+            "identitySha256": "d1822467bb796323cf015e41898428a7c66c62aad9c6927d67767ef8ec5c1a65"
+          },
+          "state": {
+            "count": 11498,
+            "sha256": "d337cf24a9d6530f90d2f3e2eaead99deb3b98fe67894756d23ec31d56c2eeef",
+            "identitySha256": "5f65963b456d7e9dcb0ace94c48aa5707f2edbd7953ae10d6a541135671c5378"
+          },
+          "audit": {
+            "count": 1332,
+            "sha256": "7d632c7732d7870e3df059bda0b43a794909094930808347263e969dab670b88",
+            "identitySha256": "39d490f20d7da69b2a1452a5b71be4bafdc7818657aa3881a795d02c020997c9"
+          }
+        },
+        "generation": "4f6ec2637dbe6ea07889c122",
+        "logicalHash": "84b5792f41566e0e1034d29da3920e33a796711842889d7a507d54c15401d7c9"
+      },
+      {
+        "sha256": "f4a599f3867ec1fe95bcd927c3379ef52b4a07fc1e40c2f4ff123c228627a42a",
+        "bytes": 4102610,
+        "expandedBytes": 51992674
+      },
+      {
+        "status": "PRESERVED",
+        "sha256": "f4a599f3867ec1fe95bcd927c3379ef52b4a07fc1e40c2f4ff123c228627a42a",
+        "bytes": 4102610,
+        "operations": 7
+      }
+    ],
+    "C": [
+      {
+        "status": "VERIFIED_NON_PUBLIC",
+        "reason": "MANAGED_DISABLED_NO_CUSTOM_DOMAINS",
+        "managedDomainEnabled": false,
+        "customDomainCount": 0
+      },
+      {
+        "status": "RESTORED",
+        "sha256": "f4a599f3867ec1fe95bcd927c3379ef52b4a07fc1e40c2f4ff123c228627a42a",
+        "bytes": 4102610,
+        "operations": 3
+      },
+      {
+        "status": "RESTORED"
+      },
+      {
+        "status": "PASS",
+        "stage": "verify",
+        "schema": "vu-intelligence-acceptance-1",
+        "tables": {
+          "items": {
+            "count": 1,
+            "sha256": "411f15dbe3c723444ff7f98a239d9b51b50ae5007bb94d774e50b1f95f1f1ca8",
+            "identitySha256": "22e59458681a547b557ea74b7eda2940545e1d3c8ec6a440d9271dc4aee4b553"
+          },
+          "events": {
+            "count": 208,
+            "sha256": "85ae31997b23a1abab4c0610e949765242f66b42bc1cee418008d0a92a05a107",
+            "identitySha256": "f758cd657470eb72f31fd42221bdc1f95a191984ab488155773d0774c042efb8"
+          },
+          "sources": {
+            "count": 1,
+            "sha256": "a611ea2cab2d9ab91bf4021300451464b696150011b32e1f77b84207055f069b",
+            "identitySha256": "f71231d651011e3e384bfc3311c65ffdf42d4abe1c16cc724c017fb0f2e98383"
+          },
+          "event_alias": {
+            "count": 1,
+            "sha256": "044861aab84dd3608545c282099ce6c0352dc58438618136a4a6fedb63882f78",
+            "identitySha256": "d1822467bb796323cf015e41898428a7c66c62aad9c6927d67767ef8ec5c1a65"
+          },
+          "state": {
+            "count": 11498,
+            "sha256": "d337cf24a9d6530f90d2f3e2eaead99deb3b98fe67894756d23ec31d56c2eeef",
+            "identitySha256": "5f65963b456d7e9dcb0ace94c48aa5707f2edbd7953ae10d6a541135671c5378"
+          },
+          "audit": {
+            "count": 1332,
+            "sha256": "7d632c7732d7870e3df059bda0b43a794909094930808347263e969dab670b88",
+            "identitySha256": "39d490f20d7da69b2a1452a5b71be4bafdc7818657aa3881a795d02c020997c9"
+          }
+        },
+        "generation": "4f6ec2637dbe6ea07889c122",
+        "logicalHash": "84b5792f41566e0e1034d29da3920e33a796711842889d7a507d54c15401d7c9"
+      }
+    ]
+  }
+}
