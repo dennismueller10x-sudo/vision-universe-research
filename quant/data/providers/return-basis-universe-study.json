@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-10-02T04:00:45.000Z",
+ "generatedAt": "2026-10-02T08:48:04.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -13,9 +13,10 @@
   "barsDir": "/home/runner/work/_temp/canonical-history/tiingo/daily",
   "benchmark": {
    "id": "SPY",
-   "state": "SOURCE_MISSING"
+   "bars": 8476,
+   "last": "2026-10-01"
   },
-  "calendarSource": "LONGEST_SERIES:ref_AAPL",
+  "calendarSource": "BENCHMARK",
   "cutoffOffsets": [
    0,
    252,
@@ -1579,9 +1580,9 @@
  "dataFreshnessFindings": [],
  "publishedBasis": {
   "artefact": "quant/data/product/factor-evidence-v1",
-  "entries": 6300,
+  "entries": 6308,
   "priceBasisCounts": {
-   "close": 6300
+   "close": 6308
   },
   "measuredQuantV2MomentumBasis": "MIXED_OR_UNCONFIRMED"
  },
@@ -2153,11 +2154,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1742,
+       "N": 1741,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 20,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3615982643283324,
-       "FACTOR_PERCENTILE_DELTA_P95": 1.8432471524136704
+       "FACTOR_PERCENTILE_DELTA_P95": 1.844151148074495
       },
       "I · Services": {
        "N": 806,
@@ -2195,11 +2196,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.816850479117699
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 14,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.25311878502982665,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.472428132344964
+       "FACTOR_PERCENTILE_DELTA_P95": 7.471524136684144
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -2267,11 +2268,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.4380762972337773
       },
       "Industrials": {
-       "N": 407,
+       "N": 406,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 21,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3796781775447471,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.2961489784849056
+       "FACTOR_PERCENTILE_DELTA_P95": 2.296148978484906
       },
       "Materials": {
        "N": 283,
@@ -2302,11 +2303,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 9.455794612185858
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 14,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.25311878502982665,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.472428132344964
+       "FACTOR_PERCENTILE_DELTA_P95": 7.471524136684144
       },
       "Real Estate": {
        "N": 56,
@@ -2556,11 +2557,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1742,
+       "N": 1741,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 24,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.43391791719399464,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.729162900018085
+       "FACTOR_PERCENTILE_DELTA_P95": 2.7300668956789096
       },
       "I · Services": {
        "N": 806,
@@ -2598,11 +2599,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.7118061833303253
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 7,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.12655939251491688,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.105405894051704
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.12655939251491644,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.096365937443505
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -2670,11 +2671,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.691195082263604
       },
       "Industrials": {
-       "N": 407,
+       "N": 406,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 26,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4700777436268311,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.5382390164527138
+       "FACTOR_PERCENTILE_DELTA_P95": 3.5391430121135343
       },
       "Materials": {
        "N": 283,
@@ -2705,11 +2706,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 8.877237389260518
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 7,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.12655939251491688,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.105405894051704
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.12655939251491644,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.096365937443505
       },
       "Real Estate": {
        "N": 56,
@@ -2959,11 +2960,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1742,
+       "N": 1741,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 25,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.45199783041040575,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.4867112637859243
+       "FACTOR_PERCENTILE_DELTA_P95": 3.4894232507683967
       },
       "I · Services": {
        "N": 806,
@@ -3001,11 +3002,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.429578738022051
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 5,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0903995660820831,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.718314952088228
+       "FACTOR_PERCENTILE_DELTA_P95": 7.715602965105768
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -3073,11 +3074,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.1431929126740226
       },
       "Industrials": {
-       "N": 407,
+       "N": 406,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 24,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.43391791719399464,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.9902368468631337
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4339179171939982,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.9911408425239543
       },
       "Materials": {
        "N": 283,
@@ -3108,11 +3109,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 9.933104321099263
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 5,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0903995660820831,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.718314952088228
+       "FACTOR_PERCENTILE_DELTA_P95": 7.715602965105768
       },
       "Real Estate": {
        "N": 56,
@@ -3362,11 +3363,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1742,
+       "N": 1741,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 17,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.30735852467908487,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.217320556861321
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2182245525221447
       },
       "I · Services": {
        "N": 806,
@@ -3404,11 +3405,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.397938889893323
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.03290544205387
+       "FACTOR_PERCENTILE_DELTA_P95": 8.03200144639305
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -3476,11 +3477,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.03634062556499
       },
       "Industrials": {
-       "N": 407,
-       "MOMENTUM_DELTA_MEDIAN": 0,
+       "N": 406,
+       "MOMENTUM_DELTA_MEDIAN": 1.1102230246251565e-16,
        "RANK_DELTA_MEDIAN": 15,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2711986982462449,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.089676369553429
+       "FACTOR_PERCENTILE_DELTA_P95": 4.0951003435183555
       },
       "Materials": {
        "N": 283,
@@ -3511,11 +3512,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 11.408425239558845
       },
       "(unclassified)": {
-       "N": 1015,
+       "N": 1016,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.03290544205387
+       "FACTOR_PERCENTILE_DELTA_P95": 8.03200144639305
       },
       "Real Estate": {
        "N": 56,
@@ -3716,76 +3717,474 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "state": "RANK_EQUIVALENT_TO_12M",
-     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
-     "rankStatisticsIdenticalTo": "12M",
-     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
-     "benchmark": "SPY"
+     "priceRanked": 5532,
+     "totalRanked": 5532,
+     "UNIVERSE_N": 5532,
+     "SPEARMAN_RANK_CORRELATION": 0.990527,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 44,
+     "P90_RANK_CHANGE": 225,
+     "P95_RANK_CHANGE": 265,
+     "MAX_RANK_CHANGE": 5055,
+     "TITLES_MOVING_1_PERCENTILE": 2322,
+     "TITLES_MOVING_5_PERCENTILES": 262,
+     "TITLES_MOVING_10_PERCENTILES": 52,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 554,
+      "TOP_DECILE_TOTAL": 554,
+      "LEAVING": 14,
+      "ENTERING": 14
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 696,
+       "MOMENTUM_DELTA_MEDIAN": -0.0006391846898277584,
+       "RANK_DELTA_MEDIAN": 37,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6689567890074102,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.9831856807087362
+      },
+      "MEDIUM_YIELD": {
+       "N": 598,
+       "MOMENTUM_DELTA_MEDIAN": 0.018155142673925304,
+       "RANK_DELTA_MEDIAN": -17,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.30735852467908664,
+       "FACTOR_PERCENTILE_DELTA_P95": 1.2836738383655728
+      },
+      "NO_DIVIDEND": {
+       "N": 3357,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669543,
+       "RANK_DELTA_MEDIAN": 30,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5423973964924897,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.176459952992225
+      },
+      "HIGH_YIELD": {
+       "N": 881,
+       "MOMENTUM_DELTA_MEDIAN": 0.05619570287294501,
+       "RANK_DELTA_MEDIAN": -164,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 2.965105767492318,
+       "FACTOR_PERCENTILE_DELTA_P95": 9.998192008678359
+      }
+     },
+     "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 1741,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.45199783041040575,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.4894232507683967
+      },
+      "I · Services": {
+       "N": 806,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 29,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5243174832760786,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.8284216235762045
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1016,
+       "MOMENTUM_DELTA_MEDIAN": 0.00924396789695734,
+       "RANK_DELTA_MEDIAN": 5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0903995660820911,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.938166696799858
+      },
+      "G · Retail Trade": {
+       "N": 201,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 29,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5243174832760786,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.1820647260893153
+      },
+      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
+       "N": 364,
+       "MOMENTUM_DELTA_MEDIAN": 0.006555469985973714,
+       "RANK_DELTA_MEDIAN": 8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14463930573133155,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.2478756101970605
+      },
+      "B · Mining": {
+       "N": 232,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 26.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.47911770023503664,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.429578738022051
+      },
+      "(unclassified)": {
+       "N": 1016,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0903995660820831,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.715602965105768
+      },
+      "A · Agriculture, Forestry, And Fishing": {
+       "N": 17,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 17,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.30735852467907954,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2363044657385713
+      },
+      "F · Wholesale Trade": {
+       "N": 82,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 26,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4700777436268311,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.709094196347862
+      },
+      "C · Construction": {
+       "N": 57,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 31,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5604773097089222,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.203760621949017
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
+      "Technology": {
+       "N": 667,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 27,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4881576568432493,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.863677454348212
+      },
+      "(other)": {
+       "N": 442,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.45199783041041464,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.90254926776351
+      },
+      "Financials": {
+       "N": 843,
+       "MOMENTUM_DELTA_MEDIAN": 0.0056341910303727705,
+       "RANK_DELTA_MEDIAN": 8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14463930573133155,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.630084975592114
+      },
+      "Health Care": {
+       "N": 823,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669543,
+       "RANK_DELTA_MEDIAN": 28,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.506237570059664,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.1621768215512556
+      },
+      "Consumer Staples": {
+       "N": 101,
+       "MOMENTUM_DELTA_MEDIAN": -0.002494553124827964,
+       "RANK_DELTA_MEDIAN": 10,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.18079913216416443,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.579822816850495
+      },
+      "Consumer Discretionary": {
+       "N": 384,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 28.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5152775266678713,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.1431929126740226
+      },
+      "Industrials": {
+       "N": 406,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669072,
+       "RANK_DELTA_MEDIAN": 24,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4339179171939982,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.9911408425239543
+      },
+      "Materials": {
+       "N": 283,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 26,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4700777436268311,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.5527029470258493
+      },
+      "Energy": {
+       "N": 141,
+       "MOMENTUM_DELTA_MEDIAN": 0.006016846263709574,
+       "RANK_DELTA_MEDIAN": 3,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.054239739649261764,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.6826975230518855
+      },
+      "Utilities": {
+       "N": 132,
+       "MOMENTUM_DELTA_MEDIAN": 0.019680663061420828,
+       "RANK_DELTA_MEDIAN": -3.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.06327969625745666,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.0806364129452115
+      },
+      "REITs": {
+       "N": 117,
+       "MOMENTUM_DELTA_MEDIAN": 0.04159676696436708,
+       "RANK_DELTA_MEDIAN": -134,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 2.422708370999814,
+       "FACTOR_PERCENTILE_DELTA_P95": 9.933104321099263
+      },
+      "(unclassified)": {
+       "N": 1016,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0903995660820831,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.715602965105768
+      },
+      "Real Estate": {
+       "N": 56,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 22.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4067980473693691,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.87723738926053
+      },
+      "Communication": {
+       "N": 121,
+       "MOMENTUM_DELTA_MEDIAN": -0.010714061522669516,
+       "RANK_DELTA_MEDIAN": 16,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2892786114626631,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.9956608208280606
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "IMMP",
+       "sector": "D · Manufacturing",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -2.179416,
+       "TOTAL_RETURN_VALUE": 0.805602,
+       "PRICE_RETURN_PERCENTILE": 5.57,
+       "TOTAL_RETURN_PERCENTILE": 96.96,
+       "RANK_DELTA": -5055,
+       "PERCENTILE_DELTA": 91.39
+      },
+      {
+       "ticker": "BTLN",
+       "sector": "I · Services",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -1.134218,
+       "TOTAL_RETURN_VALUE": 0.93451,
+       "PRICE_RETURN_PERCENTILE": 13.18,
+       "TOTAL_RETURN_PERCENTILE": 97.67,
+       "RANK_DELTA": -4673,
+       "PERCENTILE_DELTA": 84.49
+      },
+      {
+       "ticker": "MYPS",
+       "sector": "I · Services",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -0.849654,
+       "TOTAL_RETURN_VALUE": 1.442217,
+       "PRICE_RETURN_PERCENTILE": 18.3,
+       "TOTAL_RETURN_PERCENTILE": 99.13,
+       "RANK_DELTA": -4471,
+       "PERCENTILE_DELTA": 80.84
+      },
+      {
+       "ticker": "FBGL",
+       "sector": "C · Construction",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -0.847192,
+       "TOTAL_RETURN_VALUE": 1.444679,
+       "PRICE_RETURN_PERCENTILE": 18.39,
+       "TOTAL_RETURN_PERCENTILE": 99.15,
+       "RANK_DELTA": -4467,
+       "PERCENTILE_DELTA": 80.76
+      },
+      {
+       "ticker": "DLXY",
+       "sector": "F · Wholesale Trade",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -1.131486,
+       "TOTAL_RETURN_VALUE": 0.467238,
+       "PRICE_RETURN_PERCENTILE": 13.22,
+       "TOTAL_RETURN_PERCENTILE": 92.39,
+       "RANK_DELTA": -4379,
+       "PERCENTILE_DELTA": 79.17
+      },
+      {
+       "ticker": "MTNB",
+       "sector": "D · Manufacturing",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -2.597854,
+       "TOTAL_RETURN_VALUE": 0.099482,
+       "PRICE_RETURN_PERCENTILE": 4.23,
+       "TOTAL_RETURN_PERCENTILE": 77.11,
+       "RANK_DELTA": -4031,
+       "PERCENTILE_DELTA": 72.88
+      },
+      {
+       "ticker": "DD",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.3894,
+       "PRICE_RETURN_VALUE": -0.729671,
+       "TOTAL_RETURN_VALUE": 0.142282,
+       "PRICE_RETURN_PERCENTILE": 21.14,
+       "TOTAL_RETURN_PERCENTILE": 79.8,
+       "RANK_DELTA": -3245,
+       "PERCENTILE_DELTA": 58.67
+      },
+      {
+       "ticker": "VRME",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1843,
+       "PRICE_RETURN_VALUE": -0.147408,
+       "TOTAL_RETURN_VALUE": 2.144463,
+       "PRICE_RETURN_PERCENTILE": 54.13,
+       "TOTAL_RETURN_PERCENTILE": 99.69,
+       "RANK_DELTA": -2520,
+       "PERCENTILE_DELTA": 45.56
+      },
+      {
+       "ticker": "SACH",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.6195,
+       "PRICE_RETURN_VALUE": -0.335775,
+       "TOTAL_RETURN_VALUE": 0.171153,
+       "PRICE_RETURN_PERCENTILE": 36.94,
+       "TOTAL_RETURN_PERCENTILE": 81.65,
+       "RANK_DELTA": -2473,
+       "PERCENTILE_DELTA": 44.71
+      },
+      {
+       "ticker": "NLOP",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.2165,
+       "PRICE_RETURN_VALUE": -1.250553,
+       "TOTAL_RETURN_VALUE": -0.218537,
+       "PRICE_RETURN_PERCENTILE": 11.84,
+       "TOTAL_RETURN_PERCENTILE": 45.09,
+       "RANK_DELTA": -1839,
+       "PERCENTILE_DELTA": 33.25
+      },
+      {
+       "ticker": "AD",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.4881,
+       "PRICE_RETURN_VALUE": -0.51787,
+       "TOTAL_RETURN_VALUE": -0.092392,
+       "PRICE_RETURN_PERCENTILE": 27.93,
+       "TOTAL_RETURN_PERCENTILE": 60.46,
+       "RANK_DELTA": -1799,
+       "PERCENTILE_DELTA": 32.53
+      },
+      {
+       "ticker": "BGM",
+       "sector": "D · Manufacturing",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -3.807809,
+       "TOTAL_RETURN_VALUE": -0.417326,
+       "PRICE_RETURN_PERCENTILE": 2.19,
+       "TOTAL_RETURN_PERCENTILE": 32.02,
+       "RANK_DELTA": -1650,
+       "PERCENTILE_DELTA": 29.83
+      },
+      {
+       "ticker": "TLF",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3191,
+       "PRICE_RETURN_VALUE": -0.331348,
+       "TOTAL_RETURN_VALUE": -0.065076,
+       "PRICE_RETURN_PERCENTILE": 37.3,
+       "TOTAL_RETURN_PERCENTILE": 63.95,
+       "RANK_DELTA": -1474,
+       "PERCENTILE_DELTA": 26.65
+      },
+      {
+       "ticker": "BGSF",
+       "sector": "I · Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.4301,
+       "PRICE_RETURN_VALUE": -0.49166,
+       "TOTAL_RETURN_VALUE": -0.144624,
+       "PRICE_RETURN_PERCENTILE": 29.2,
+       "TOTAL_RETURN_PERCENTILE": 52.96,
+       "RANK_DELTA": -1314,
+       "PERCENTILE_DELTA": 23.76
+      },
+      {
+       "ticker": "IEP",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2647,
+       "PRICE_RETURN_VALUE": -0.355104,
+       "TOTAL_RETURN_VALUE": -0.109524,
+       "PRICE_RETURN_PERCENTILE": 35.58,
+       "TOTAL_RETURN_PERCENTILE": 57.75,
+       "RANK_DELTA": -1226,
+       "PERCENTILE_DELTA": 22.17
+      }
+     ]
     }
    },
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": true,
     "strategyBasis": "EVIDENCE_AT_OR_BEFORE_CUTOFF",
-    "publishedEvidenceAsOf": "2026-09-30",
-    "publishedEvidenceLagDays": -1,
+    "publishedEvidenceAsOf": "2026-10-01",
+    "publishedEvidenceLagDays": 0,
     "excludedForLateFundamentals": 0,
     "limitation": null,
-    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.933599,
-    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.946428,
-    "publishedScored": 5090,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.949389,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.960486,
+    "publishedScored": 5091,
     "simulatedScoredOnPrice": 5532,
     "simulatedScoredOnTotal": 5532,
     "momentumScoreShift": {
      "UNIVERSE_N": 5532,
-     "SPEARMAN_RANK_CORRELATION": 0.99117,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 52,
-     "P95_RANK_CHANGE": 348,
-     "MAX_RANK_CHANGE": 3343,
-     "TITLES_MOVING_5_PERCENTILES": 475,
-     "TITLES_MOVING_10_PERCENTILES": 118
+     "SPEARMAN_RANK_CORRELATION": 0.992211,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 49.3,
+     "P95_RANK_CHANGE": 353,
+     "MAX_RANK_CHANGE": 3102,
+     "TITLES_MOVING_5_PERCENTILES": 505,
+     "TITLES_MOVING_10_PERCENTILES": 126
     }
    },
    "STRATEGY_IMPACT": {
     "momentum-leader": {
      "label": "Momentum Leader",
-     "MEMBERS_ON_PRICE_RETURN": 313,
-     "MEMBERS_ON_TOTAL_RETURN": 301,
-     "LEAVING": 19,
-     "ENTERING": 7,
-     "MEMBERSHIP_CHURN_SHARE": 0.0831,
+     "MEMBERS_ON_PRICE_RETURN": 301,
+     "MEMBERS_ON_TOTAL_RETURN": 296,
+     "LEAVING": 17,
+     "ENTERING": 12,
+     "MEMBERSHIP_CHURN_SHARE": 0.0963,
      "leavingExamples": [
-      "MSFT",
-      "ETN",
-      "CNMD",
-      "FDS",
-      "SFST",
-      "VEEV",
-      "DNOW",
-      "MTUS",
-      "AUPH",
-      "ONC"
+      "CRM",
+      "TPC",
+      "KWR",
+      "TRNS",
+      "MMSI",
+      "CBZ",
+      "SNDA",
+      "MANH",
+      "HURN",
+      "GASS"
      ],
      "enteringExamples": [
+      "PM",
       "CTO",
+      "KOF",
+      "WHG",
       "ESEA",
       "NWG",
       "DKL",
       "WES",
-      "CDZIP",
-      "TXO"
+      "GCMG",
+      "KARO"
      ]
     },
     "quality-momentum": {
      "label": "Quality Momentum",
      "MEMBERS_ON_PRICE_RETURN": 36,
-     "MEMBERS_ON_TOTAL_RETURN": 34,
-     "LEAVING": 3,
+     "MEMBERS_ON_TOTAL_RETURN": 35,
+     "LEAVING": 2,
      "ENTERING": 1,
-     "MEMBERSHIP_CHURN_SHARE": 0.1111,
+     "MEMBERSHIP_CHURN_SHARE": 0.0833,
      "leavingExamples": [
-      "AGYS",
-      "SSB",
+      "CB",
       "ESQ"
      ],
      "enteringExamples": [
@@ -3794,34 +4193,25 @@
     },
     "future-leader": {
      "label": "Future Leader",
-     "MEMBERS_ON_PRICE_RETURN": 28,
-     "MEMBERS_ON_TOTAL_RETURN": 29,
+     "MEMBERS_ON_PRICE_RETURN": 27,
+     "MEMBERS_ON_TOTAL_RETURN": 27,
      "LEAVING": 0,
-     "ENTERING": 1,
-     "MEMBERSHIP_CHURN_SHARE": 0.0345,
+     "ENTERING": 0,
+     "MEMBERSHIP_CHURN_SHARE": 0,
      "leavingExamples": [],
-     "enteringExamples": [
-      "ATLCL"
-     ]
+     "enteringExamples": []
     },
     "value-momentum": {
      "label": "Value Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 152,
-     "MEMBERS_ON_TOTAL_RETURN": 155,
-     "LEAVING": 2,
-     "ENTERING": 5,
-     "MEMBERSHIP_CHURN_SHARE": 0.0452,
+     "MEMBERS_ON_PRICE_RETURN": 161,
+     "MEMBERS_ON_TOTAL_RETURN": 160,
+     "LEAVING": 1,
+     "ENTERING": 0,
+     "MEMBERSHIP_CHURN_SHARE": 0.0062,
      "leavingExamples": [
-      "TACT",
-      "NMIH"
+      "AMPH"
      ],
-     "enteringExamples": [
-      "CMC",
-      "UG",
-      "ETD",
-      "LEA",
-      "SD"
-     ]
+     "enteringExamples": []
     }
    }
   },
@@ -3888,11 +4278,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1717,
+       "N": 1716,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 8,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1432664756446993,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.707736389684812
+       "FACTOR_PERCENTILE_DELTA_P95": 2.7086318051575944
       },
       "I · Services": {
        "N": 757,
@@ -3930,11 +4320,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.105300859598851
       },
       "(unclassified)": {
-       "N": 1093,
+       "N": 1094,
        "MOMENTUM_DELTA_MEDIAN": 2.220446049250313e-16,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.867478510028649
+       "FACTOR_PERCENTILE_DELTA_P95": 4.865687679083091
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -4002,11 +4392,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.591332378223492
       },
       "Industrials": {
-       "N": 396,
-       "MOMENTUM_DELTA_MEDIAN": 3.1548375023504605e-11,
-       "RANK_DELTA_MEDIAN": 13.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.24176217765042907,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.780265042979945
+       "N": 395,
+       "MOMENTUM_DELTA_MEDIAN": 2.7564839299998312e-11,
+       "RANK_DELTA_MEDIAN": 14,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.250716332378218,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.7811604584527236
       },
       "Materials": {
        "N": 284,
@@ -4037,11 +4427,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.912607449856734
       },
       "(unclassified)": {
-       "N": 1093,
+       "N": 1094,
        "MOMENTUM_DELTA_MEDIAN": 2.220446049250313e-16,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.867478510028649
+       "FACTOR_PERCENTILE_DELTA_P95": 4.865687679083091
       },
       "Real Estate": {
        "N": 65,
@@ -4291,11 +4681,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1717,
+       "N": 1716,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 13,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23280802292262592,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.194126074498565
+       "FACTOR_PERCENTILE_DELTA_P95": 4.195021489971348
       },
       "I · Services": {
        "N": 757,
@@ -4333,11 +4723,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.838646131805158
       },
       "(unclassified)": {
-       "N": 1093,
-       "MOMENTUM_DELTA_MEDIAN": 5.159239702123841e-11,
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": 4.958827792833631e-11,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.464899713467034
+       "FACTOR_PERCENTILE_DELTA_P95": 6.460422636103141
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -4405,11 +4795,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.066977077363889
       },
       "Industrials": {
-       "N": 396,
-       "MOMENTUM_DELTA_MEDIAN": 0.0018596773290809887,
-       "RANK_DELTA_MEDIAN": 18.25,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.32682664756446655,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.162070200573064
+       "N": 395,
+       "MOMENTUM_DELTA_MEDIAN": 0.0019189590911189436,
+       "RANK_DELTA_MEDIAN": 18.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.331303724928361,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.166547277936956
       },
       "Materials": {
        "N": 284,
@@ -4440,11 +4830,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 9.291726361031511
       },
       "(unclassified)": {
-       "N": 1093,
-       "MOMENTUM_DELTA_MEDIAN": 5.159239702123841e-11,
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": 4.958827792833631e-11,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.464899713467034
+       "FACTOR_PERCENTILE_DELTA_P95": 6.460422636103141
       },
       "Real Estate": {
        "N": 65,
@@ -4694,11 +5084,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1717,
+       "N": 1716,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 21,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3760744985673359,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.358166189111746
+       "FACTOR_PERCENTILE_DELTA_P95": 5.359061604584529
       },
       "I · Services": {
        "N": 757,
@@ -4736,11 +5126,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.895594555873921
       },
       "(unclassified)": {
-       "N": 1093,
-       "MOMENTUM_DELTA_MEDIAN": 1.4678902537923477e-10,
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": 1.3977485835425796e-10,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 9.964183381088807
+       "FACTOR_PERCENTILE_DELTA_P95": 9.958810888252135
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -4808,11 +5198,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.061962750716326
       },
       "Industrials": {
-       "N": 396,
-       "MOMENTUM_DELTA_MEDIAN": 0.0042238473408166555,
+       "N": 395,
+       "MOMENTUM_DELTA_MEDIAN": 0.004567081589031741,
        "RANK_DELTA_MEDIAN": 21,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3760744985673421,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.603689111747846
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3760744985673483,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.606375358166181
       },
       "Materials": {
        "N": 284,
@@ -4843,11 +5233,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 12.829512893982802
       },
       "(unclassified)": {
-       "N": 1093,
-       "MOMENTUM_DELTA_MEDIAN": 1.4678902537923477e-10,
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": 1.3977485835425796e-10,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 9.964183381088807
+       "FACTOR_PERCENTILE_DELTA_P95": 9.958810888252135
       },
       "Real Estate": {
        "N": 65,
@@ -5097,7 +5487,7 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1717,
+       "N": 1716,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 23,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.41189111747851115,
@@ -5139,11 +5529,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.329691977077364
       },
       "(unclassified)": {
-       "N": 1093,
-       "MOMENTUM_DELTA_MEDIAN": 1.0702316810551338e-10,
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": 9.714112847447609e-11,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 9.487822349570195
+       "FACTOR_PERCENTILE_DELTA_P95": 9.486031518624637
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -5211,10 +5601,10 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.612464183381073
       },
       "Industrials": {
-       "N": 396,
-       "MOMENTUM_DELTA_MEDIAN": 0.0034987074031613274,
-       "RANK_DELTA_MEDIAN": 23.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4208452722063072,
+       "N": 395,
+       "MOMENTUM_DELTA_MEDIAN": 0.003523616846554334,
+       "RANK_DELTA_MEDIAN": 24,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4297994269340961,
        "FACTOR_PERCENTILE_DELTA_P95": 6.267908309455587
       },
       "Materials": {
@@ -5246,11 +5636,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 12.57252865329512
       },
       "(unclassified)": {
-       "N": 1093,
-       "MOMENTUM_DELTA_MEDIAN": 1.0702316810551338e-10,
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": 9.714112847447609e-11,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 9.487822349570195
+       "FACTOR_PERCENTILE_DELTA_P95": 9.486031518624637
       },
       "Real Estate": {
        "N": 65,
@@ -5451,19 +5841,415 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "state": "RANK_EQUIVALENT_TO_12M",
-     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
-     "rankStatisticsIdenticalTo": "12M",
-     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
-     "benchmark": "SPY"
+     "priceRanked": 5585,
+     "totalRanked": 5585,
+     "UNIVERSE_N": 5585,
+     "SPEARMAN_RANK_CORRELATION": 0.991036,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 59,
+     "P90_RANK_CHANGE": 327,
+     "P95_RANK_CHANGE": 385,
+     "MAX_RANK_CHANGE": 3672,
+     "TITLES_MOVING_1_PERCENTILE": 2830,
+     "TITLES_MOVING_5_PERCENTILES": 760,
+     "TITLES_MOVING_10_PERCENTILES": 99,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 559,
+      "TOP_DECILE_TOTAL": 559,
+      "LEAVING": 13,
+      "ENTERING": 13
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 696,
+       "MOMENTUM_DELTA_MEDIAN": -0.0010701690483375104,
+       "RANK_DELTA_MEDIAN": 39.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7073782234957076,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.157593123209168
+      },
+      "MEDIUM_YIELD": {
+       "N": 599,
+       "MOMENTUM_DELTA_MEDIAN": 0.016940325351221225,
+       "RANK_DELTA_MEDIAN": -8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.14326647564470107,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.474928366762178
+      },
+      "NO_DIVIDEND": {
+       "N": 3038,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682924,
+       "RANK_DELTA_MEDIAN": 33,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5909742120343964,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.339541547277939
+      },
+      "HIGH_YIELD": {
+       "N": 1252,
+       "MOMENTUM_DELTA_MEDIAN": 0.05702390178477419,
+       "RANK_DELTA_MEDIAN": -184.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 3.3040830945558737,
+       "FACTOR_PERCENTILE_DELTA_P95": 11.79620343839542
+      }
+     },
+     "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 1716,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682924,
+       "RANK_DELTA_MEDIAN": 21,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3760744985673359,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.359061604584529
+      },
+      "I · Services": {
+       "N": 757,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682924,
+       "RANK_DELTA_MEDIAN": 42,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7521489971346682,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.59383954154728
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1059,
+       "MOMENTUM_DELTA_MEDIAN": 0.01765447696027639,
+       "RANK_DELTA_MEDIAN": -2,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.03581661891116994,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.809813753581662
+      },
+      "G · Retail Trade": {
+       "N": 203,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682897,
+       "RANK_DELTA_MEDIAN": 22,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3939828080229226,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.737822349570202
+      },
+      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
+       "N": 378,
+       "MOMENTUM_DELTA_MEDIAN": 0.01074725658741639,
+       "RANK_DELTA_MEDIAN": 2,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.03581661891116994,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.879477077363898
+      },
+      "B · Mining": {
+       "N": 232,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682897,
+       "RANK_DELTA_MEDIAN": 8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1432664756447002,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.895594555873921
+      },
+      "(unclassified)": {
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035505433683036,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 9.958810888252135
+      },
+      "A · Agriculture, Forestry, And Fishing": {
+       "N": 17,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682897,
+       "RANK_DELTA_MEDIAN": 7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1253581661891161,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.419770773638965
+      },
+      "F · Wholesale Trade": {
+       "N": 79,
+       "MOMENTUM_DELTA_MEDIAN": -0.003842912460061909,
+       "RANK_DELTA_MEDIAN": 21,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3760744985673341,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.082378223495705
+      },
+      "C · Construction": {
+       "N": 50,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682897,
+       "RANK_DELTA_MEDIAN": 21.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.38502865329513014,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.8862822349570205
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
+      "Technology": {
+       "N": 645,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682924,
+       "RANK_DELTA_MEDIAN": 38,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6805157593123212,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.479226361031516
+      },
+      "(other)": {
+       "N": 427,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682897,
+       "RANK_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.44770773638968464,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.318767908309454
+      },
+      "Financials": {
+       "N": 792,
+       "MOMENTUM_DELTA_MEDIAN": 0.012285346979630823,
+       "RANK_DELTA_MEDIAN": 3,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.053724928366762015,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.12911891117478
+      },
+      "Health Care": {
+       "N": 782,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682924,
+       "RANK_DELTA_MEDIAN": 22.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4029369627507151,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.316977077363893
+      },
+      "Consumer Staples": {
+       "N": 105,
+       "MOMENTUM_DELTA_MEDIAN": -0.0009679783676976028,
+       "RANK_DELTA_MEDIAN": 14,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2507163323782322,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.157593123209173
+      },
+      "Consumer Discretionary": {
+       "N": 384,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035506433682897,
+       "RANK_DELTA_MEDIAN": 27.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.49247851002865417,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.061962750716326
+      },
+      "Industrials": {
+       "N": 395,
+       "MOMENTUM_DELTA_MEDIAN": -0.007373397347033017,
+       "RANK_DELTA_MEDIAN": 21,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3760744985673483,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.606375358166181
+      },
+      "Materials": {
+       "N": 284,
+       "MOMENTUM_DELTA_MEDIAN": -0.01203550642444165,
+       "RANK_DELTA_MEDIAN": 8.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.152220630372498,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.356375358166191
+      },
+      "Energy": {
+       "N": 145,
+       "MOMENTUM_DELTA_MEDIAN": 0.015253613805727345,
+       "RANK_DELTA_MEDIAN": 2,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.03581661891117438,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.714899713467049
+      },
+      "Utilities": {
+       "N": 150,
+       "MOMENTUM_DELTA_MEDIAN": 0.020601219165811008,
+       "RANK_DELTA_MEDIAN": -21,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.3760744985673323,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.240866762177648
+      },
+      "REITs": {
+       "N": 202,
+       "MOMENTUM_DELTA_MEDIAN": 0.052326776036582465,
+       "RANK_DELTA_MEDIAN": -149.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 2.6772922636103154,
+       "FACTOR_PERCENTILE_DELTA_P95": 12.829512893982802
+      },
+      "(unclassified)": {
+       "N": 1094,
+       "MOMENTUM_DELTA_MEDIAN": -0.012035505433683036,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 9.958810888252135
+      },
+      "Real Estate": {
+       "N": 65,
+       "MOMENTUM_DELTA_MEDIAN": -0.009784516566887974,
+       "RANK_DELTA_MEDIAN": 21,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3760744985673323,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.323782234957024
+      },
+      "Communication": {
+       "N": 115,
+       "MOMENTUM_DELTA_MEDIAN": -0.005620969800684078,
+       "RANK_DELTA_MEDIAN": 10,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1790830945558728,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.882879656160453
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "DOYU",
+       "sector": "I · Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.3806,
+       "PRICE_RETURN_VALUE": -0.397135,
+       "TOTAL_RETURN_VALUE": 0.458164,
+       "PRICE_RETURN_PERCENTILE": 25.2,
+       "TOTAL_RETURN_PERCENTILE": 90.96,
+       "RANK_DELTA": -3672,
+       "PERCENTILE_DELTA": 65.76
+      },
+      {
+       "ticker": "HUYA",
+       "sector": "I · Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.8726,
+       "PRICE_RETURN_VALUE": -0.515455,
+       "TOTAL_RETURN_VALUE": 0.177563,
+       "PRICE_RETURN_PERCENTILE": 19.59,
+       "TOTAL_RETURN_PERCENTILE": 81.36,
+       "RANK_DELTA": -3449,
+       "PERCENTILE_DELTA": 61.77
+      },
+      {
+       "ticker": "SITC",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.773,
+       "PRICE_RETURN_VALUE": -0.400638,
+       "TOTAL_RETURN_VALUE": 0.266439,
+       "PRICE_RETURN_PERCENTILE": 24.93,
+       "TOTAL_RETURN_PERCENTILE": 85.15,
+       "RANK_DELTA": -3363,
+       "PERCENTILE_DELTA": 60.23
+      },
+      {
+       "ticker": "EQC",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 12.6667,
+       "PRICE_RETURN_VALUE": -2.679143,
+       "TOTAL_RETURN_VALUE": -0.076219,
+       "PRICE_RETURN_PERCENTILE": 1.86,
+       "TOTAL_RETURN_PERCENTILE": 59.65,
+       "RANK_DELTA": -3227,
+       "PERCENTILE_DELTA": 57.79
+      },
+      {
+       "ticker": "AD",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.4286,
+       "PRICE_RETURN_VALUE": -0.280969,
+       "TOTAL_RETURN_VALUE": 0.063708,
+       "PRICE_RETURN_PERCENTILE": 34.47,
+       "TOTAL_RETURN_PERCENTILE": 73.96,
+       "RANK_DELTA": -2205,
+       "PERCENTILE_DELTA": 39.49
+      },
+      {
+       "ticker": "PPSI",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3497,
+       "PRICE_RETURN_VALUE": -0.242566,
+       "TOTAL_RETURN_VALUE": 0.045244,
+       "PRICE_RETURN_PERCENTILE": 39.52,
+       "TOTAL_RETURN_PERCENTILE": 72.37,
+       "RANK_DELTA": -1834,
+       "PERCENTILE_DELTA": 32.84
+      },
+      {
+       "ticker": "TK",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2872,
+       "PRICE_RETURN_VALUE": -0.28985,
+       "TOTAL_RETURN_VALUE": -0.033575,
+       "PRICE_RETURN_PERCENTILE": 33.36,
+       "TOTAL_RETURN_PERCENTILE": 64.99,
+       "RANK_DELTA": -1766,
+       "PERCENTILE_DELTA": 31.63
+      },
+      {
+       "ticker": "RAND",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2645,
+       "PRICE_RETURN_VALUE": -0.297041,
+       "TOTAL_RETURN_VALUE": -0.065338,
+       "PRICE_RETURN_PERCENTILE": 32.65,
+       "TOTAL_RETURN_PERCENTILE": 61.32,
+       "RANK_DELTA": -1601,
+       "PERCENTILE_DELTA": 28.67
+      },
+      {
+       "ticker": "BCAT",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2232,
+       "PRICE_RETURN_VALUE": -0.247268,
+       "TOTAL_RETURN_VALUE": -0.038203,
+       "PRICE_RETURN_PERCENTILE": 38.83,
+       "TOTAL_RETURN_PERCENTILE": 64.36,
+       "RANK_DELTA": -1426,
+       "PERCENTILE_DELTA": 25.54
+      },
+      {
+       "ticker": "ECAT",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2204,
+       "PRICE_RETURN_VALUE": -0.211085,
+       "TOTAL_RETURN_VALUE": -0.004687,
+       "PRICE_RETURN_PERCENTILE": 43.27,
+       "TOTAL_RETURN_PERCENTILE": 68.12,
+       "RANK_DELTA": -1388,
+       "PERCENTILE_DELTA": 24.86
+      },
+      {
+       "ticker": "CRCT",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2238,
+       "PRICE_RETURN_VALUE": -0.248795,
+       "TOTAL_RETURN_VALUE": -0.049225,
+       "PRICE_RETURN_PERCENTILE": 38.7,
+       "TOTAL_RETURN_PERCENTILE": 63.29,
+       "RANK_DELTA": -1373,
+       "PERCENTILE_DELTA": 24.59
+      },
+      {
+       "ticker": "GHSI",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.7634,
+       "PRICE_RETURN_VALUE": -0.800154,
+       "TOTAL_RETURN_VALUE": -0.244969,
+       "PRICE_RETURN_PERCENTILE": 11.6,
+       "TOTAL_RETURN_PERCENTILE": 36.01,
+       "RANK_DELTA": -1363,
+       "PERCENTILE_DELTA": 24.41
+      },
+      {
+       "ticker": "TLF",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3788,
+       "PRICE_RETURN_VALUE": -0.483596,
+       "TOTAL_RETURN_VALUE": -0.174426,
+       "PRICE_RETURN_PERCENTILE": 20.79,
+       "TOTAL_RETURN_PERCENTILE": 44.41,
+       "RANK_DELTA": -1319,
+       "PERCENTILE_DELTA": 23.62
+      },
+      {
+       "ticker": "ICMB",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2074,
+       "PRICE_RETURN_VALUE": -0.27526,
+       "TOTAL_RETURN_VALUE": -0.084124,
+       "PRICE_RETURN_PERCENTILE": 35.17,
+       "TOTAL_RETURN_PERCENTILE": 58.2,
+       "RANK_DELTA": -1286,
+       "PERCENTILE_DELTA": 23.03
+      },
+      {
+       "ticker": "ORC",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2085,
+       "PRICE_RETURN_VALUE": -0.306251,
+       "TOTAL_RETURN_VALUE": -0.111478,
+       "PRICE_RETURN_PERCENTILE": 31.81,
+       "TOTAL_RETURN_PERCENTILE": 53.28,
+       "RANK_DELTA": -1199,
+       "PERCENTILE_DELTA": 21.47
+      }
+     ]
     }
    },
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-09-30",
-    "publishedEvidenceLagDays": 365,
+    "publishedEvidenceAsOf": "2026-10-01",
+    "publishedEvidenceLagDays": 366,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -5473,18 +6259,18 @@
     "simulatedScoredOnTotal": 5585,
     "momentumScoreShift": {
      "UNIVERSE_N": 5585,
-     "SPEARMAN_RANK_CORRELATION": 0.989722,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 63,
-     "P95_RANK_CHANGE": 472,
-     "MAX_RANK_CHANGE": 3822,
-     "TITLES_MOVING_5_PERCENTILES": 812,
-     "TITLES_MOVING_10_PERCENTILES": 163
+     "SPEARMAN_RANK_CORRELATION": 0.989046,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 64,
+     "P95_RANK_CHANGE": 488,
+     "MAX_RANK_CHANGE": 3564,
+     "TITLES_MOVING_5_PERCENTILES": 853,
+     "TITLES_MOVING_10_PERCENTILES": 181
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-30 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-01 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -5546,7 +6332,7 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1653,
+       "N": 1652,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 20,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.37467216185837415,
@@ -5588,11 +6374,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.6433121019108246
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 4.724443058989891e-12,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 4.0951686486323524e-12,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.327463469464217
+       "FACTOR_PERCENTILE_DELTA_P95": 4.322780067440991
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -5660,11 +6446,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.416635443986511
       },
       "Industrials": {
-       "N": 372,
-       "MOMENTUM_DELTA_MEDIAN": 0.000526257745004366,
+       "N": 371,
+       "MOMENTUM_DELTA_MEDIAN": 0.0006491626953650798,
        "RANK_DELTA_MEDIAN": 28,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5245410266017227,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.8287748220307227
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5245410266017245,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.8287748220307236
       },
       "Materials": {
        "N": 278,
@@ -5695,11 +6481,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.968902210565756
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 4.724443058989891e-12,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 4.0951686486323524e-12,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.327463469464217
+       "FACTOR_PERCENTILE_DELTA_P95": 4.322780067440991
       },
       "Real Estate": {
        "N": 62,
@@ -5949,7 +6735,7 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1653,
+       "N": 1652,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 19,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3559385537654549,
@@ -5991,11 +6777,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.222929936305732
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 3.2446045850065275e-11,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 2.7429059024086655e-11,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.609216935181711
+       "FACTOR_PERCENTILE_DELTA_P95": 6.60547021356313
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -6063,11 +6849,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.22442862495317
       },
       "Industrials": {
-       "N": 372,
-       "MOMENTUM_DELTA_MEDIAN": 0.0020778281350310457,
+       "N": 371,
+       "MOMENTUM_DELTA_MEDIAN": 0.0020885828595077482,
        "RANK_DELTA_MEDIAN": 29,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5432746346946402,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.792993630573241
+       "FACTOR_PERCENTILE_DELTA_P95": 4.805170475833641
       },
       "Materials": {
        "N": 278,
@@ -6098,11 +6884,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 7.785687523417001
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 3.2446045850065275e-11,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 2.7429059024086655e-11,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.609216935181711
+       "FACTOR_PERCENTILE_DELTA_P95": 6.60547021356313
       },
       "Real Estate": {
        "N": 62,
@@ -6352,11 +7138,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1653,
+       "N": 1652,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 25,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4683402023229668,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.3390783064818335
+       "FACTOR_PERCENTILE_DELTA_P95": 5.339078306481834
       },
       "I · Services": {
        "N": 714,
@@ -6394,11 +7180,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.565754964406148
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 3.092249789560242e-10,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 3.0852537191705665e-10,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.56875234170101
+       "FACTOR_PERCENTILE_DELTA_P95": 8.56687898089172
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -6466,11 +7252,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.451479955039339
       },
       "Industrials": {
-       "N": 372,
-       "MOMENTUM_DELTA_MEDIAN": 0.0067995095334488775,
-       "RANK_DELTA_MEDIAN": 29.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5526414387411016,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.684713375796175
+       "N": 371,
+       "MOMENTUM_DELTA_MEDIAN": 0.006930531106502658,
+       "RANK_DELTA_MEDIAN": 30,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.562008242787563,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.685650056200821
       },
       "Materials": {
        "N": 278,
@@ -6501,11 +7287,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 12.645185462720121
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 3.092249789560242e-10,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 3.0852537191705665e-10,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.56875234170101
+       "FACTOR_PERCENTILE_DELTA_P95": 8.56687898089172
       },
       "Real Estate": {
        "N": 62,
@@ -6755,7 +7541,7 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1653,
+       "N": 1652,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 26,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.48707381041588604,
@@ -6797,11 +7583,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.882352941176471
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 1.54305457300552e-10,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 1.3890533168137154e-10,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.437617085050572
+       "FACTOR_PERCENTILE_DELTA_P95": 8.431060322218057
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -6869,11 +7655,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.395279130760581
       },
       "Industrials": {
-       "N": 372,
-       "MOMENTUM_DELTA_MEDIAN": 0.0058919558667431815,
-       "RANK_DELTA_MEDIAN": 31.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5901086549269401,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.778381416260771
+       "N": 371,
+       "MOMENTUM_DELTA_MEDIAN": 0.0061083049638617215,
+       "RANK_DELTA_MEDIAN": 32,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5994754589734015,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.779318096665417
       },
       "Materials": {
        "N": 278,
@@ -6904,11 +7690,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 12.330460846759088
       },
       "(unclassified)": {
-       "N": 1037,
-       "MOMENTUM_DELTA_MEDIAN": 1.54305457300552e-10,
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": 1.3890533168137154e-10,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.437617085050572
+       "FACTOR_PERCENTILE_DELTA_P95": 8.431060322218057
       },
       "Real Estate": {
        "N": 62,
@@ -7109,19 +7895,415 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "state": "RANK_EQUIVALENT_TO_12M",
-     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
-     "rankStatisticsIdenticalTo": "12M",
-     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
-     "benchmark": "SPY"
+     "priceRanked": 5339,
+     "totalRanked": 5339,
+     "UNIVERSE_N": 5339,
+     "SPEARMAN_RANK_CORRELATION": 0.991735,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 55,
+     "P90_RANK_CHANGE": 285,
+     "P95_RANK_CHANGE": 316.1,
+     "MAX_RANK_CHANGE": 3444,
+     "TITLES_MOVING_1_PERCENTILE": 2698,
+     "TITLES_MOVING_5_PERCENTILES": 637,
+     "TITLES_MOVING_10_PERCENTILES": 72,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 534,
+      "TOP_DECILE_TOTAL": 534,
+      "LEAVING": 22,
+      "ENTERING": 22
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 662,
+       "MOMENTUM_DELTA_MEDIAN": -0.0019513997530800492,
+       "RANK_DELTA_MEDIAN": 62,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.1614837017609645,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.531659797677027
+      },
+      "MEDIUM_YIELD": {
+       "N": 579,
+       "MOMENTUM_DELTA_MEDIAN": 0.01573202167165272,
+       "RANK_DELTA_MEDIAN": -7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.13113525665043113,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.455976020981644
+      },
+      "NO_DIVIDEND": {
+       "N": 2863,
+       "MOMENTUM_DELTA_MEDIAN": -0.0134688487155597,
+       "RANK_DELTA_MEDIAN": 38,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7118771075309063,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.5058074185088035
+      },
+      "HIGH_YIELD": {
+       "N": 1235,
+       "MOMENTUM_DELTA_MEDIAN": 0.055481504535258075,
+       "RANK_DELTA_MEDIAN": -177,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 3.3158486324466168,
+       "FACTOR_PERCENTILE_DELTA_P95": 10.786811539902587
+      }
+     },
+     "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 1652,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848715559645,
+       "RANK_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4683402023229668,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.339078306481834
+      },
+      "I · Services": {
+       "N": 714,
+       "MOMENTUM_DELTA_MEDIAN": -0.0134688487155597,
+       "RANK_DELTA_MEDIAN": 47,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.8804795803671652,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.601348819782693
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 1005,
+       "MOMENTUM_DELTA_MEDIAN": 0.019787203722568814,
+       "RANK_DELTA_MEDIAN": -15,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.28100412139377795,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.95016860247283
+      },
+      "G · Retail Trade": {
+       "N": 196,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848715559645,
+       "RANK_DELTA_MEDIAN": 27,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5058074185088053,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.343761708505054
+      },
+      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
+       "N": 365,
+       "MOMENTUM_DELTA_MEDIAN": 0.009389386334295202,
+       "RANK_DELTA_MEDIAN": 7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.13113525665043113,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.122143124765832
+      },
+      "B · Mining": {
+       "N": 227,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848706782832,
+       "RANK_DELTA_MEDIAN": 15,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2810041213937815,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.565754964406148
+      },
+      "(unclassified)": {
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468847715559562,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.56687898089172
+      },
+      "A · Agriculture, Forestry, And Fishing": {
+       "N": 17,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848715559645,
+       "RANK_DELTA_MEDIAN": 16,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2997377294866972,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.687148744848258
+      },
+      "F · Wholesale Trade": {
+       "N": 78,
+       "MOMENTUM_DELTA_MEDIAN": -0.005100227974591753,
+       "RANK_DELTA_MEDIAN": 30,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5620082427875595,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.414012738853501
+      },
+      "C · Construction": {
+       "N": 47,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848715559645,
+       "RANK_DELTA_MEDIAN": 21,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3934057699512863,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.39865118021731
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
+      "Technology": {
+       "N": 615,
+       "MOMENTUM_DELTA_MEDIAN": -0.0134688487155597,
+       "RANK_DELTA_MEDIAN": 40,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7493443237167519,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.475833645560136
+      },
+      "(other)": {
+       "N": 412,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848715559645,
+       "RANK_DELTA_MEDIAN": 38,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7118771075309169,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.470213563132262
+      },
+      "Financials": {
+       "N": 754,
+       "MOMENTUM_DELTA_MEDIAN": 0.014775337325613369,
+       "RANK_DELTA_MEDIAN": -2.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.046834020232296325,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.558261521168976
+      },
+      "Health Care": {
+       "N": 748,
+       "MOMENTUM_DELTA_MEDIAN": -0.0134688487155597,
+       "RANK_DELTA_MEDIAN": 29,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5432746346946402,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.438366429374297
+      },
+      "Consumer Staples": {
+       "N": 100,
+       "MOMENTUM_DELTA_MEDIAN": 0.0021485444634253004,
+       "RANK_DELTA_MEDIAN": 4.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0843012364181348,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.4355563881603475
+      },
+      "Consumer Discretionary": {
+       "N": 371,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848715559645,
+       "RANK_DELTA_MEDIAN": 33,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6182090670663314,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.451479955039339
+      },
+      "Industrials": {
+       "N": 371,
+       "MOMENTUM_DELTA_MEDIAN": -0.007763708137558112,
+       "RANK_DELTA_MEDIAN": 30,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.562008242787563,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.685650056200821
+      },
+      "Materials": {
+       "N": 278,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468848708366371,
+       "RANK_DELTA_MEDIAN": 20.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3840389659048302,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.414949419258153
+      },
+      "Energy": {
+       "N": 142,
+       "MOMENTUM_DELTA_MEDIAN": 0.012534856224857824,
+       "RANK_DELTA_MEDIAN": -14,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.26227051330086226,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.022292993630567
+      },
+      "Utilities": {
+       "N": 145,
+       "MOMENTUM_DELTA_MEDIAN": 0.024113673342889996,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.018733608092915688,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.889846384413637
+      },
+      "REITs": {
+       "N": 189,
+       "MOMENTUM_DELTA_MEDIAN": 0.04740480997194074,
+       "RANK_DELTA_MEDIAN": -126,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 2.360434619707755,
+       "FACTOR_PERCENTILE_DELTA_P95": 12.645185462720121
+      },
+      "(unclassified)": {
+       "N": 1038,
+       "MOMENTUM_DELTA_MEDIAN": -0.013468847715559562,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.56687898089172
+      },
+      "Real Estate": {
+       "N": 62,
+       "MOMENTUM_DELTA_MEDIAN": -0.009185222657617426,
+       "RANK_DELTA_MEDIAN": 15,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2810041213937824,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.696140876732859
+      },
+      "Communication": {
+       "N": 114,
+       "MOMENTUM_DELTA_MEDIAN": -0.012126938011974314,
+       "RANK_DELTA_MEDIAN": 13,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.24353690520794302,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.654739602847509
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "DOYU",
+       "sector": "I · Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.5382,
+       "PRICE_RETURN_VALUE": -0.321086,
+       "TOTAL_RETURN_VALUE": 0.782572,
+       "PRICE_RETURN_PERCENTILE": 33.51,
+       "TOTAL_RETURN_PERCENTILE": 98.03,
+       "RANK_DELTA": -3444,
+       "PERCENTILE_DELTA": 64.52
+      },
+      {
+       "ticker": "LU",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.2282,
+       "PRICE_RETURN_VALUE": -0.724174,
+       "TOTAL_RETURN_VALUE": 0.0827,
+       "PRICE_RETURN_PERCENTILE": 16.19,
+       "TOTAL_RETURN_PERCENTILE": 78.96,
+       "RANK_DELTA": -3351,
+       "PERCENTILE_DELTA": 62.78
+      },
+      {
+       "ticker": "ORKA",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.6452,
+       "PRICE_RETURN_VALUE": -0.308409,
+       "TOTAL_RETURN_VALUE": 0.175984,
+       "PRICE_RETURN_PERCENTILE": 34.51,
+       "TOTAL_RETURN_PERCENTILE": 85.31,
+       "RANK_DELTA": -2712,
+       "PERCENTILE_DELTA": 50.81
+      },
+      {
+       "ticker": "GHSI",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.7634,
+       "PRICE_RETURN_VALUE": -0.560111,
+       "TOTAL_RETURN_VALUE": -0.006359,
+       "PRICE_RETURN_PERCENTILE": 21.24,
+       "TOTAL_RETURN_PERCENTILE": 70.04,
+       "RANK_DELTA": -2605,
+       "PERCENTILE_DELTA": 48.8
+      },
+      {
+       "ticker": "SCNX",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.943,
+       "PRICE_RETURN_VALUE": -0.220346,
+       "TOTAL_RETURN_VALUE": 0.473526,
+       "PRICE_RETURN_PERCENTILE": 46.46,
+       "TOTAL_RETURN_PERCENTILE": 94.98,
+       "RANK_DELTA": -2590,
+       "PERCENTILE_DELTA": 48.52
+      },
+      {
+       "ticker": "NGL-P-B",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3993,
+       "PRICE_RETURN_VALUE": -0.333277,
+       "TOTAL_RETURN_VALUE": 0.03058,
+       "PRICE_RETURN_PERCENTILE": 32.62,
+       "TOTAL_RETURN_PERCENTILE": 74.15,
+       "RANK_DELTA": -2217,
+       "PERCENTILE_DELTA": 41.53
+      },
+      {
+       "ticker": "NGL-P-C",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3649,
+       "PRICE_RETURN_VALUE": -0.291775,
+       "TOTAL_RETURN_VALUE": 0.041244,
+       "PRICE_RETURN_PERCENTILE": 36.29,
+       "TOTAL_RETURN_PERCENTILE": 75.01,
+       "RANK_DELTA": -2067,
+       "PERCENTILE_DELTA": 38.72
+      },
+      {
+       "ticker": "FF",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.4791,
+       "PRICE_RETURN_VALUE": -0.516177,
+       "TOTAL_RETURN_VALUE": -0.124518,
+       "PRICE_RETURN_PERCENTILE": 22.93,
+       "TOTAL_RETURN_PERCENTILE": 55.53,
+       "RANK_DELTA": -1740,
+       "PERCENTILE_DELTA": 32.6
+      },
+      {
+       "ticker": "BWLP",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3542,
+       "PRICE_RETURN_VALUE": -0.183424,
+       "TOTAL_RETURN_VALUE": 0.14665,
+       "PRICE_RETURN_PERCENTILE": 51.35,
+       "TOTAL_RETURN_PERCENTILE": 83.7,
+       "RANK_DELTA": -1727,
+       "PERCENTILE_DELTA": 32.35
+      },
+      {
+       "ticker": "MBI",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.1994,
+       "PRICE_RETURN_VALUE": -1.013346,
+       "TOTAL_RETURN_VALUE": -0.23863,
+       "PRICE_RETURN_PERCENTILE": 10.62,
+       "TOTAL_RETURN_PERCENTILE": 40.56,
+       "RANK_DELTA": -1598,
+       "PERCENTILE_DELTA": 29.94
+      },
+      {
+       "ticker": "CLRO",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.4762,
+       "PRICE_RETURN_VALUE": -0.540186,
+       "TOTAL_RETURN_VALUE": -0.16419,
+       "PRICE_RETURN_PERCENTILE": 21.92,
+       "TOTAL_RETURN_PERCENTILE": 50.02,
+       "RANK_DELTA": -1500,
+       "PERCENTILE_DELTA": 28.1
+      },
+      {
+       "ticker": "NOAH",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2707,
+       "PRICE_RETURN_VALUE": -0.355186,
+       "TOTAL_RETURN_VALUE": -0.129094,
+       "PRICE_RETURN_PERCENTILE": 31.14,
+       "TOTAL_RETURN_PERCENTILE": 54.96,
+       "RANK_DELTA": -1272,
+       "PERCENTILE_DELTA": 23.83
+      },
+      {
+       "ticker": "LENZ",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.372,
+       "PRICE_RETURN_VALUE": -0.047332,
+       "TOTAL_RETURN_VALUE": 0.269632,
+       "PRICE_RETURN_PERCENTILE": 67.95,
+       "TOTAL_RETURN_PERCENTILE": 89.43,
+       "RANK_DELTA": -1147,
+       "PERCENTILE_DELTA": 21.49
+      },
+      {
+       "ticker": "CAAS",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1961,
+       "PRICE_RETURN_VALUE": -0.239416,
+       "TOTAL_RETURN_VALUE": -0.073837,
+       "PRICE_RETURN_PERCENTILE": 43.31,
+       "TOTAL_RETURN_PERCENTILE": 62.27,
+       "RANK_DELTA": -1012,
+       "PERCENTILE_DELTA": 18.96
+      },
+      {
+       "ticker": "WOR",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.6179,
+       "PRICE_RETURN_VALUE": -0.830251,
+       "TOTAL_RETURN_VALUE": -0.357191,
+       "PRICE_RETURN_PERCENTILE": 13.56,
+       "TOTAL_RETURN_PERCENTILE": 30.46,
+       "RANK_DELTA": -902,
+       "PERCENTILE_DELTA": 16.9
+      }
+     ]
     }
    },
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-09-30",
-    "publishedEvidenceLagDays": 734,
+    "publishedEvidenceAsOf": "2026-10-01",
+    "publishedEvidenceLagDays": 735,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -7131,18 +8313,18 @@
     "simulatedScoredOnTotal": 5339,
     "momentumScoreShift": {
      "UNIVERSE_N": 5339,
-     "SPEARMAN_RANK_CORRELATION": 0.992356,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 60.5,
-     "P95_RANK_CHANGE": 363.5,
-     "MAX_RANK_CHANGE": 3356.5,
-     "TITLES_MOVING_5_PERCENTILES": 561,
-     "TITLES_MOVING_10_PERCENTILES": 93
+     "SPEARMAN_RANK_CORRELATION": 0.991998,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 60,
+     "P95_RANK_CHANGE": 374.2,
+     "MAX_RANK_CHANGE": 3181,
+     "TITLES_MOVING_5_PERCENTILES": 610,
+     "TITLES_MOVING_10_PERCENTILES": 96
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-30 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-01 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -7204,7 +8386,7 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1603,
+       "N": 1602,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 13,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2526233968130569,
@@ -7246,11 +8428,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.9304314030314877
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 5.8897331456364554e-12,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 5.731415342324908e-12,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.819277108433736
+       "FACTOR_PERCENTILE_DELTA_P95": 4.819277108433735
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -7318,10 +8500,10 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.671006607073453
       },
       "Industrials": {
-       "N": 358,
-       "MOMENTUM_DELTA_MEDIAN": 0.0005165953033496318,
+       "N": 357,
+       "MOMENTUM_DELTA_MEDIAN": 0.0006464848028807646,
        "RANK_DELTA_MEDIAN": 18,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3497862417411657,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.34978624174116035,
        "FACTOR_PERCENTILE_DELTA_P95": 2.81772250291489
       },
       "Materials": {
@@ -7353,11 +8535,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.544889234356775
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 5.8897331456364554e-12,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 5.731415342324908e-12,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.819277108433736
+       "FACTOR_PERCENTILE_DELTA_P95": 4.819277108433735
       },
       "Real Estate": {
        "N": 58,
@@ -7607,11 +8789,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1603,
+       "N": 1602,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 24,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4663816556548852,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.08958414302371
+       "FACTOR_PERCENTILE_DELTA_P95": 4.09006995724835
       },
       "I · Services": {
        "N": 693,
@@ -7649,11 +8831,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.14496696463272
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 0.0013245592022040897,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 0.0005903410852092783,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.908278274387877
+       "FACTOR_PERCENTILE_DELTA_P95": 6.902448503692184
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -7721,11 +8903,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.790322580645151
       },
       "Industrials": {
-       "N": 358,
-       "MOMENTUM_DELTA_MEDIAN": 0.00270887004147502,
+       "N": 357,
+       "MOMENTUM_DELTA_MEDIAN": 0.0027378412115386386,
        "RANK_DELTA_MEDIAN": 31,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6024096385542208,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.3558103381267035
+       "FACTOR_PERCENTILE_DELTA_P95": 4.356781966575985
       },
       "Materials": {
        "N": 269,
@@ -7756,11 +8938,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 10.633501748931208
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 0.0013245592022040897,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 0.0005903410852092783,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.908278274387877
+       "FACTOR_PERCENTILE_DELTA_P95": 6.902448503692184
       },
       "Real Estate": {
        "N": 58,
@@ -8010,11 +9192,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1603,
+       "N": 1602,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 34,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6607073455110708,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.260396424407294
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6607073455110744,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.263311309755134
       },
       "I · Services": {
        "N": 693,
@@ -8052,11 +9234,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.093082005441117
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 0.00930991767456768,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 0.00895268829570206,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.535755926933541
+       "FACTOR_PERCENTILE_DELTA_P95": 8.534784298484258
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -8124,11 +9306,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.974737660318695
       },
       "Industrials": {
-       "N": 358,
-       "MOMENTUM_DELTA_MEDIAN": 0.00683778233552268,
+       "N": 357,
+       "MOMENTUM_DELTA_MEDIAN": 0.00690308344185353,
        "RANK_DELTA_MEDIAN": 29,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.563544500582978,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.203847648659139
+       "FACTOR_PERCENTILE_DELTA_P95": 6.218422075398357
       },
       "Materials": {
        "N": 269,
@@ -8159,11 +9341,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 13.202487368830143
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 0.00930991767456768,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 0.00895268829570206,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.535755926933541
+       "FACTOR_PERCENTILE_DELTA_P95": 8.534784298484258
       },
       "Real Estate": {
        "N": 58,
@@ -8413,11 +9595,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1603,
+       "N": 1602,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 31,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6024096385542066,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.770695685969672
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6024096385542101,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.775553828216072
       },
       "I · Services": {
        "N": 693,
@@ -8455,11 +9637,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.009521958802956
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 0.00702110151092733,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 0.004788010601308734,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.613486202876016
+       "FACTOR_PERCENTILE_DELTA_P95": 8.612514574426735
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 17,
@@ -8527,11 +9709,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.791099883404576
       },
       "Industrials": {
-       "N": 358,
-       "MOMENTUM_DELTA_MEDIAN": 0.006004192190043001,
+       "N": 357,
+       "MOMENTUM_DELTA_MEDIAN": 0.0060857318746763145,
        "RANK_DELTA_MEDIAN": 23,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4469490866692638,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.638359891177621
+       "FACTOR_PERCENTILE_DELTA_P95": 5.639331519626901
       },
       "Materials": {
        "N": 269,
@@ -8562,11 +9744,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 13.350174893120858
       },
       "(unclassified)": {
-       "N": 976,
-       "MOMENTUM_DELTA_MEDIAN": 0.00702110151092733,
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": 0.004788010601308734,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 8.613486202876016
+       "FACTOR_PERCENTILE_DELTA_P95": 8.612514574426735
       },
       "Real Estate": {
        "N": 58,
@@ -8767,19 +9949,415 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "state": "RANK_EQUIVALENT_TO_12M",
-     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
-     "rankStatisticsIdenticalTo": "12M",
-     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
-     "benchmark": "SPY"
+     "priceRanked": 5147,
+     "totalRanked": 5147,
+     "UNIVERSE_N": 5147,
+     "SPEARMAN_RANK_CORRELATION": 0.989472,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 65,
+     "P90_RANK_CHANGE": 266.4,
+     "P95_RANK_CHANGE": 333.7,
+     "MAX_RANK_CHANGE": 5073,
+     "TITLES_MOVING_1_PERCENTILE": 2872,
+     "TITLES_MOVING_5_PERCENTILES": 543,
+     "TITLES_MOVING_10_PERCENTILES": 72,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 515,
+      "TOP_DECILE_TOTAL": 515,
+      "LEAVING": 23,
+      "ENTERING": 23
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 628,
+       "MOMENTUM_DELTA_MEDIAN": -0.004563618571678099,
+       "RANK_DELTA_MEDIAN": 55,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0687912942090954,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.079867858530902
+      },
+      "MEDIUM_YIELD": {
+       "N": 580,
+       "MOMENTUM_DELTA_MEDIAN": 0.012931889517594067,
+       "RANK_DELTA_MEDIAN": -5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.09716284492810345,
+       "FACTOR_PERCENTILE_DELTA_P95": 1.9821220365332266
+      },
+      "NO_DIVIDEND": {
+       "N": 2757,
+       "MOMENTUM_DELTA_MEDIAN": -0.015777458853796916,
+       "RANK_DELTA_MEDIAN": 54,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0493587252234704,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.421686746987952
+      },
+      "HIGH_YIELD": {
+       "N": 1182,
+       "MOMENTUM_DELTA_MEDIAN": 0.05036574720896293,
+       "RANK_DELTA_MEDIAN": -173,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 3.361834434512245,
+       "FACTOR_PERCENTILE_DELTA_P95": 11.122230858919554
+      }
+     },
+     "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 1602,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 34,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6607073455110744,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.263311309755134
+      },
+      "I · Services": {
+       "N": 693,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 59,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.1465215701515774,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.355616012436839
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 976,
+       "MOMENTUM_DELTA_MEDIAN": 0.016028610124011404,
+       "RANK_DELTA_MEDIAN": -13,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.25262339681306045,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.57384376214536
+      },
+      "G · Retail Trade": {
+       "N": 190,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 39,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7578701904391778,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.376020209871744
+      },
+      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
+       "N": 355,
+       "MOMENTUM_DELTA_MEDIAN": 0.005054804727043116,
+       "RANK_DELTA_MEDIAN": 8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.155460551884957,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.105713175281782
+      },
+      "B · Mining": {
+       "N": 215,
+       "MOMENTUM_DELTA_MEDIAN": -0.01243749417173401,
+       "RANK_DELTA_MEDIAN": 24,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4663816556548852,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.093082005441117
+      },
+      "(unclassified)": {
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": -0.009687395205920879,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.534784298484258
+      },
+      "A · Agriculture, Forestry, And Fishing": {
+       "N": 17,
+       "MOMENTUM_DELTA_MEDIAN": -0.015777458553797086,
+       "RANK_DELTA_MEDIAN": 9,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1748931208705784,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.020209871745044
+      },
+      "F · Wholesale Trade": {
+       "N": 77,
+       "MOMENTUM_DELTA_MEDIAN": -0.00566773525348474,
+       "RANK_DELTA_MEDIAN": 34,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6607073455110708,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.546055188495919
+      },
+      "C · Construction": {
+       "N": 45,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 12,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2331908278274426,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.071900505246788
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
+      "Technology": {
+       "N": 595,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 52,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0104935872522276,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.2331908278274355
+      },
+      "(other)": {
+       "N": 403,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 39,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7578701904391778,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.419743490089382
+      },
+      "Financials": {
+       "N": 733,
+       "MOMENTUM_DELTA_MEDIAN": 0.012673962372517833,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.0194325689856214,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.740380878352118
+      },
+      "Health Care": {
+       "N": 726,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 42.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.8258841818888492,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.237077341624559
+      },
+      "Consumer Staples": {
+       "N": 96,
+       "MOMENTUM_DELTA_MEDIAN": -0.0032914062998510712,
+       "RANK_DELTA_MEDIAN": 29,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5635445005829771,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.601438010104928
+      },
+      "Consumer Discretionary": {
+       "N": 358,
+       "MOMENTUM_DELTA_MEDIAN": -0.01577745885379689,
+       "RANK_DELTA_MEDIAN": 47,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.9133307423241348,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.974737660318695
+      },
+      "Industrials": {
+       "N": 357,
+       "MOMENTUM_DELTA_MEDIAN": -0.010623890009918785,
+       "RANK_DELTA_MEDIAN": 29,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.563544500582978,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.218422075398357
+      },
+      "Materials": {
+       "N": 269,
+       "MOMENTUM_DELTA_MEDIAN": -0.011963624518592314,
+       "RANK_DELTA_MEDIAN": 31,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6024096385542066,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.394481150408081
+      },
+      "Energy": {
+       "N": 135,
+       "MOMENTUM_DELTA_MEDIAN": 0.007991563634509063,
+       "RANK_DELTA_MEDIAN": -4,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.0777302759424856,
+       "FACTOR_PERCENTILE_DELTA_P95": 9.30237077341625
+      },
+      "Utilities": {
+       "N": 142,
+       "MOMENTUM_DELTA_MEDIAN": 0.017059539511336166,
+       "RANK_DELTA_MEDIAN": -12.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.2429071123202462,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.391566265060236
+      },
+      "REITs": {
+       "N": 185,
+       "MOMENTUM_DELTA_MEDIAN": 0.036966923620333575,
+       "RANK_DELTA_MEDIAN": -91,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 1.768363777691409,
+       "FACTOR_PERCENTILE_DELTA_P95": 13.202487368830143
+      },
+      "(unclassified)": {
+       "N": 977,
+       "MOMENTUM_DELTA_MEDIAN": -0.009687395205920879,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.534784298484258
+      },
+      "Real Estate": {
+       "N": 58,
+       "MOMENTUM_DELTA_MEDIAN": -0.00805075338726019,
+       "RANK_DELTA_MEDIAN": 18,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.349786241741155,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.525456665371159
+      },
+      "Communication": {
+       "N": 113,
+       "MOMENTUM_DELTA_MEDIAN": -0.0157774588506481,
+       "RANK_DELTA_MEDIAN": 21,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.408083948698021,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.285658764088612
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "GOSS",
+       "sector": "D · Manufacturing",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -2.884278,
+       "TOTAL_RETURN_VALUE": 1.481971,
+       "PRICE_RETURN_PERCENTILE": 1.07,
+       "TOTAL_RETURN_PERCENTILE": 99.65,
+       "RANK_DELTA": -5073,
+       "PERCENTILE_DELTA": 98.58
+      },
+      {
+       "ticker": "NRSN",
+       "sector": "D · Manufacturing",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -0.886579,
+       "TOTAL_RETURN_VALUE": 2.093376,
+       "PRICE_RETURN_PERCENTILE": 11.33,
+       "TOTAL_RETURN_PERCENTILE": 99.83,
+       "RANK_DELTA": -4554,
+       "PERCENTILE_DELTA": 88.5
+      },
+      {
+       "ticker": "OPTT",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "NO_DIVIDEND",
+       "trailingYield": 0,
+       "PRICE_RETURN_VALUE": -0.814402,
+       "TOTAL_RETURN_VALUE": 2.571018,
+       "PRICE_RETURN_PERCENTILE": 12.79,
+       "TOTAL_RETURN_PERCENTILE": 99.9,
+       "RANK_DELTA": -4483,
+       "PERCENTILE_DELTA": 87.12
+      },
+      {
+       "ticker": "CXT",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.8429,
+       "PRICE_RETURN_VALUE": -0.591341,
+       "TOTAL_RETURN_VALUE": 0.44637,
+       "PRICE_RETURN_PERCENTILE": 18.62,
+       "TOTAL_RETURN_PERCENTILE": 94.95,
+       "RANK_DELTA": -3928,
+       "PERCENTILE_DELTA": 76.33
+      },
+      {
+       "ticker": "UHAL",
+       "sector": "I · Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 8.8825,
+       "PRICE_RETURN_VALUE": -2.35317,
+       "TOTAL_RETURN_VALUE": -0.078179,
+       "PRICE_RETURN_PERCENTILE": 1.98,
+       "TOTAL_RETURN_PERCENTILE": 61.19,
+       "RANK_DELTA": -3047,
+       "PERCENTILE_DELTA": 59.21
+      },
+      {
+       "ticker": "GYRE",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.9143,
+       "PRICE_RETURN_VALUE": -0.118403,
+       "TOTAL_RETURN_VALUE": 0.515164,
+       "PRICE_RETURN_PERCENTILE": 57.95,
+       "TOTAL_RETURN_PERCENTILE": 96.02,
+       "RANK_DELTA": -1959,
+       "PERCENTILE_DELTA": 38.07
+      },
+      {
+       "ticker": "ACI",
+       "sector": "G · Retail Trade",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3478,
+       "PRICE_RETURN_VALUE": -0.221465,
+       "TOTAL_RETURN_VALUE": 0.066928,
+       "PRICE_RETURN_PERCENTILE": 43.04,
+       "TOTAL_RETURN_PERCENTILE": 76.39,
+       "RANK_DELTA": -1716,
+       "PERCENTILE_DELTA": 33.35
+      },
+      {
+       "ticker": "CIM",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1578,
+       "PRICE_RETURN_VALUE": -0.295546,
+       "TOTAL_RETURN_VALUE": -0.029208,
+       "PRICE_RETURN_PERCENTILE": 35.29,
+       "TOTAL_RETURN_PERCENTILE": 66.85,
+       "RANK_DELTA": -1624,
+       "PERCENTILE_DELTA": 31.56
+      },
+      {
+       "ticker": "PMT",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1358,
+       "PRICE_RETURN_VALUE": -0.274971,
+       "TOTAL_RETURN_VALUE": -0.048274,
+       "PRICE_RETURN_PERCENTILE": 37.29,
+       "TOTAL_RETURN_PERCENTILE": 65.12,
+       "RANK_DELTA": -1432,
+       "PERCENTILE_DELTA": 27.83
+      },
+      {
+       "ticker": "SID",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2083,
+       "PRICE_RETURN_VALUE": -0.195603,
+       "TOTAL_RETURN_VALUE": -0.010732,
+       "PRICE_RETURN_PERCENTILE": 45.9,
+       "TOTAL_RETURN_PERCENTILE": 69.06,
+       "RANK_DELTA": -1192,
+       "PERCENTILE_DELTA": 23.16
+      },
+      {
+       "ticker": "UAN",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2919,
+       "PRICE_RETURN_VALUE": -0.413419,
+       "TOTAL_RETURN_VALUE": -0.150663,
+       "PRICE_RETURN_PERCENTILE": 26.7,
+       "TOTAL_RETURN_PERCENTILE": 49.26,
+       "RANK_DELTA": -1161,
+       "PERCENTILE_DELTA": 22.56
+      },
+      {
+       "ticker": "NMAI",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1857,
+       "PRICE_RETURN_VALUE": -0.199709,
+       "TOTAL_RETURN_VALUE": -0.042309,
+       "PRICE_RETURN_PERCENTILE": 45.36,
+       "TOTAL_RETURN_PERCENTILE": 65.57,
+       "RANK_DELTA": -1040,
+       "PERCENTILE_DELTA": 20.21
+      },
+      {
+       "ticker": "PBR-A",
+       "sector": "B · Mining",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3557,
+       "PRICE_RETURN_VALUE": 0.017933,
+       "TOTAL_RETURN_VALUE": 0.338535,
+       "PRICE_RETURN_PERCENTILE": 73.01,
+       "TOTAL_RETURN_PERCENTILE": 92.03,
+       "RANK_DELTA": -979,
+       "PERCENTILE_DELTA": 19.02
+      },
+      {
+       "ticker": "CANG",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.6135,
+       "PRICE_RETURN_VALUE": -0.781435,
+       "TOTAL_RETURN_VALUE": -0.318809,
+       "PRICE_RETURN_PERCENTILE": 13.39,
+       "TOTAL_RETURN_PERCENTILE": 32.36,
+       "RANK_DELTA": -976,
+       "PERCENTILE_DELTA": 18.97
+      },
+      {
+       "ticker": "OCCI",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2528,
+       "PRICE_RETURN_VALUE": -0.368184,
+       "TOTAL_RETURN_VALUE": -0.159634,
+       "PRICE_RETURN_PERCENTILE": 29.56,
+       "TOTAL_RETURN_PERCENTILE": 48.04,
+       "RANK_DELTA": -951,
+       "PERCENTILE_DELTA": 18.48
+      }
+     ]
     }
    },
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-09-30",
-    "publishedEvidenceLagDays": 1100,
+    "publishedEvidenceAsOf": "2026-10-01",
+    "publishedEvidenceLagDays": 1101,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -8789,18 +10367,18 @@
     "simulatedScoredOnTotal": 5147,
     "momentumScoreShift": {
      "UNIVERSE_N": 5147,
-     "SPEARMAN_RANK_CORRELATION": 0.991965,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 69,
-     "P95_RANK_CHANGE": 352,
-     "MAX_RANK_CHANGE": 4100,
-     "TITLES_MOVING_5_PERCENTILES": 557,
-     "TITLES_MOVING_10_PERCENTILES": 84
+     "SPEARMAN_RANK_CORRELATION": 0.990948,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 68,
+     "P95_RANK_CHANGE": 372.7,
+     "MAX_RANK_CHANGE": 4153,
+     "TITLES_MOVING_5_PERCENTILES": 619,
+     "TITLES_MOVING_10_PERCENTILES": 97
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-30 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-01 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -8862,11 +10440,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1524,
+       "N": 1523,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 17,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3557229545930092,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.582653274743664
+       "FACTOR_PERCENTILE_DELTA_P95": 2.5831763967357113
       },
       "I · Services": {
        "N": 648,
@@ -8904,11 +10482,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.80456162377066
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.0051291128486467,
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.0050431240067954075,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.645323289391099
+       "FACTOR_PERCENTILE_DELTA_P95": 4.645323289391098
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 16,
@@ -8976,11 +10554,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.490060682151083
       },
       "Industrials": {
-       "N": 344,
-       "MOMENTUM_DELTA_MEDIAN": 3.656519531602953e-12,
-       "RANK_DELTA_MEDIAN": 22.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.47080979284369207,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.6961707470182015
+       "N": 343,
+       "MOMENTUM_DELTA_MEDIAN": 3.667066650336892e-12,
+       "RANK_DELTA_MEDIAN": 23,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4812722326846597,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.697216991002298
       },
       "Materials": {
        "N": 258,
@@ -9011,11 +10589,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.580874659970709
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.0051291128486467,
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.0050431240067954075,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.645323289391099
+       "FACTOR_PERCENTILE_DELTA_P95": 4.645323289391098
       },
       "Real Estate": {
        "N": 56,
@@ -9265,10 +10843,10 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1524,
+       "N": 1523,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 18.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.38711027411592625,
+       "RANK_DELTA_MEDIAN": 19,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3975727139568903,
        "FACTOR_PERCENTILE_DELTA_P95": 2.8248587570621453
       },
       "I · Services": {
@@ -9307,11 +10885,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.8169073027830045
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.01060620894568165,
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.01043766487226061,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.809583594894326
+       "FACTOR_PERCENTILE_DELTA_P95": 4.80853735091023
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 16,
@@ -9379,11 +10957,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.7024482109227943
       },
       "Industrials": {
-       "N": 344,
-       "MOMENTUM_DELTA_MEDIAN": 0.0014971459069084703,
+       "N": 343,
+       "MOMENTUM_DELTA_MEDIAN": 0.001582608920361328,
        "RANK_DELTA_MEDIAN": 28,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5858966310943625,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.0069052102950424
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5858966310943678,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.008997698263237
       },
       "Materials": {
        "N": 258,
@@ -9414,11 +10992,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.936597614563716
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.01060620894568165,
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.01043766487226061,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.809583594894326
+       "FACTOR_PERCENTILE_DELTA_P95": 4.80853735091023
       },
       "Real Estate": {
        "N": 56,
@@ -9668,7 +11246,7 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1524,
+       "N": 1523,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 16,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.33479807491106683,
@@ -9710,11 +11288,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.933877380205062
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.02139003595011174,
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.021346697943487314,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.148775894538601
+       "FACTOR_PERCENTILE_DELTA_P95": 6.147729650554506
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 16,
@@ -9782,11 +11360,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.3511194810629843
       },
       "Industrials": {
-       "N": 344,
-       "MOMENTUM_DELTA_MEDIAN": 0.004027868032211668,
-       "RANK_DELTA_MEDIAN": 30.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6382088302992344,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.359489432935764
+       "N": 343,
+       "MOMENTUM_DELTA_MEDIAN": 0.004096567948865815,
+       "RANK_DELTA_MEDIAN": 31,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6486712701401984,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.3626281648880556
       },
       "Materials": {
        "N": 258,
@@ -9817,11 +11395,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.9575224942456515
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.02139003595011174,
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.021346697943487314,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.148775894538601
+       "FACTOR_PERCENTILE_DELTA_P95": 6.147729650554506
       },
       "Real Estate": {
        "N": 56,
@@ -10071,11 +11649,11 @@
      },
      "SECTOR_BIAS": {
       "D · Manufacturing": {
-       "N": 1524,
+       "N": 1523,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 12,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2510985561832957,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.6137267210713415
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2510985561832939,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.6158192090395334
       },
       "I · Services": {
        "N": 648,
@@ -10113,11 +11691,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.8208830299225793
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.022823970950822503,
-       "RANK_DELTA_MEDIAN": -0.25,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.005231219920485586,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.215944758317645
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.02223907994734109,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.214898514333549
       },
       "A · Agriculture, Forestry, And Fishing": {
        "N": 16,
@@ -10185,8 +11763,8 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.6838250680058597
       },
       "Industrials": {
-       "N": 344,
-       "MOMENTUM_DELTA_MEDIAN": 0.0029453478748707185,
+       "N": 343,
+       "MOMENTUM_DELTA_MEDIAN": 0.00315828471762003,
        "RANK_DELTA_MEDIAN": 30,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6277463904582561,
        "FACTOR_PERCENTILE_DELTA_P95": 3.871102741159241
@@ -10220,11 +11798,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 8.485038711027414
       },
       "(unclassified)": {
-       "N": 824,
-       "MOMENTUM_DELTA_MEDIAN": 0.022823970950822503,
-       "RANK_DELTA_MEDIAN": -0.25,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.005231219920485586,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.215944758317645
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.02223907994734109,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.214898514333549
       },
       "Real Estate": {
        "N": 56,
@@ -10425,19 +12003,415 @@
      ]
     },
     "RELATIVE_STRENGTH": {
-     "state": "RANK_EQUIVALENT_TO_12M",
-     "reason": "BENCHMARK_NOT_IN_CANONICAL_STORE",
-     "rankStatisticsIdenticalTo": "12M",
-     "note": "Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.",
-     "benchmark": "SPY"
+     "priceRanked": 4780,
+     "totalRanked": 4780,
+     "UNIVERSE_N": 4780,
+     "SPEARMAN_RANK_CORRELATION": 0.995962,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 36,
+     "P90_RANK_CHANGE": 164,
+     "P95_RANK_CHANGE": 213,
+     "MAX_RANK_CHANGE": 2464,
+     "TITLES_MOVING_1_PERCENTILE": 2142,
+     "TITLES_MOVING_5_PERCENTILES": 185,
+     "TITLES_MOVING_10_PERCENTILES": 30,
+     "topDecile": {
+      "TOP_DECILE_PRICE": 478,
+      "TOP_DECILE_TOTAL": 478,
+      "LEAVING": 23,
+      "ENTERING": 23
+     },
+     "DIVIDEND_BIAS": {
+      "LOW_YIELD": {
+       "N": 693,
+       "MOMENTUM_DELTA_MEDIAN": -0.002809463709830956,
+       "RANK_DELTA_MEDIAN": 59,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.2345679012345698,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.896003347980746
+      },
+      "MEDIUM_YIELD": {
+       "N": 644,
+       "MOMENTUM_DELTA_MEDIAN": 0.014203875434623717,
+       "RANK_DELTA_MEDIAN": -7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.14647415777358574,
+       "FACTOR_PERCENTILE_DELTA_P95": 1.4197530864197458
+      },
+      "NO_DIVIDEND": {
+       "N": 2534,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129244411573,
+       "RANK_DELTA_MEDIAN": 17,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3557229545930092,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.4180790960451897
+      },
+      "HIGH_YIELD": {
+       "N": 909,
+       "MOMENTUM_DELTA_MEDIAN": 0.0470014079889252,
+       "RANK_DELTA_MEDIAN": -132,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 2.7620841180163254,
+       "FACTOR_PERCENTILE_DELTA_P95": 8.482946223059182
+      }
+     },
+     "SECTOR_BIAS": {
+      "D · Manufacturing": {
+       "N": 1523,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129244411545,
+       "RANK_DELTA_MEDIAN": 16,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.33479807491106683,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.368905628792639
+      },
+      "I · Services": {
+       "N": 648,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129244411573,
+       "RANK_DELTA_MEDIAN": 18,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.37664783427494974,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.4452814396317284
+      },
+      "H · Finance, Insurance, And Real Estate": {
+       "N": 925,
+       "MOMENTUM_DELTA_MEDIAN": 0.011602523002978066,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.13915044988491
+      },
+      "G · Retail Trade": {
+       "N": 179,
+       "MOMENTUM_DELTA_MEDIAN": -0.01505312924441149,
+       "RANK_DELTA_MEDIAN": 17,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.35572295459301273,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.3291483573969423
+      },
+      "E · Transportation, Communications, Electric, Gas, And Sanitary Services": {
+       "N": 340,
+       "MOMENTUM_DELTA_MEDIAN": 0.001426240160303835,
+       "RANK_DELTA_MEDIAN": 4,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.08369951872776049,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.813768570830714
+      },
+      "B · Mining": {
+       "N": 205,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129236089091,
+       "RANK_DELTA_MEDIAN": 14,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2929483155471786,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.933877380205062
+      },
+      "(unclassified)": {
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.013267573477814626,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.147729650554506
+      },
+      "A · Agriculture, Forestry, And Fishing": {
+       "N": 16,
+       "MOMENTUM_DELTA_MEDIAN": -0.009707311763294785,
+       "RANK_DELTA_MEDIAN": 11,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23017367650135867,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.5938480853735104
+      },
+      "F · Wholesale Trade": {
+       "N": 77,
+       "MOMENTUM_DELTA_MEDIAN": -0.003993028608924892,
+       "RANK_DELTA_MEDIAN": 31,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6486712701401913,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.1012764176606
+      },
+      "C · Construction": {
+       "N": 42,
+       "MOMENTUM_DELTA_MEDIAN": -0.01505312924441149,
+       "RANK_DELTA_MEDIAN": 46.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.9730069052103012,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2182464950826537
+      }
+     },
+     "NAMED_SECTOR_BIAS": {
+      "Technology": {
+       "N": 552,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129244411573,
+       "RANK_DELTA_MEDIAN": 18,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.37664783427494797,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.431680267838462
+      },
+      "(other)": {
+       "N": 392,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129244411462,
+       "RANK_DELTA_MEDIAN": 25.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5335844318895173,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.6806863360535726
+      },
+      "Financials": {
+       "N": 698,
+       "MOMENTUM_DELTA_MEDIAN": 0.009514325011895988,
+       "RANK_DELTA_MEDIAN": 1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.020924879681942343,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.9160912324754156
+      },
+      "Health Care": {
+       "N": 678,
+       "MOMENTUM_DELTA_MEDIAN": -0.0150531292444116,
+       "RANK_DELTA_MEDIAN": 11,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23017367650135867,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2914835739694435
+      },
+      "Consumer Staples": {
+       "N": 92,
+       "MOMENTUM_DELTA_MEDIAN": 0.0012142497508032188,
+       "RANK_DELTA_MEDIAN": 9.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.19878635697844516,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.447583176396739
+      },
+      "Consumer Discretionary": {
+       "N": 338,
+       "MOMENTUM_DELTA_MEDIAN": -0.01505312924441149,
+       "RANK_DELTA_MEDIAN": 26.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5545093115714597,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.3511194810629843
+      },
+      "Industrials": {
+       "N": 343,
+       "MOMENTUM_DELTA_MEDIAN": -0.010461014934861998,
+       "RANK_DELTA_MEDIAN": 31,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6486712701401984,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.3626281648880556
+      },
+      "Materials": {
+       "N": 258,
+       "MOMENTUM_DELTA_MEDIAN": -0.0101655039088734,
+       "RANK_DELTA_MEDIAN": 20,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4184975936388362,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.865871521238752
+      },
+      "Energy": {
+       "N": 131,
+       "MOMENTUM_DELTA_MEDIAN": -0.002417794440773946,
+       "RANK_DELTA_MEDIAN": 5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1046243984096975,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.048964218455751
+      },
+      "Utilities": {
+       "N": 137,
+       "MOMENTUM_DELTA_MEDIAN": 0.014709573732625603,
+       "RANK_DELTA_MEDIAN": -12,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.2510985561833081,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.820883029922573
+      },
+      "REITs": {
+       "N": 171,
+       "MOMENTUM_DELTA_MEDIAN": 0.027528171103229554,
+       "RANK_DELTA_MEDIAN": -55,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 1.1508683825068005,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.9575224942456515
+      },
+      "(unclassified)": {
+       "N": 825,
+       "MOMENTUM_DELTA_MEDIAN": 0.013267573477814626,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.147729650554506
+      },
+      "Real Estate": {
+       "N": 56,
+       "MOMENTUM_DELTA_MEDIAN": -0.013852546323070716,
+       "RANK_DELTA_MEDIAN": 13.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2824858757062181,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.236451140405935
+      },
+      "Communication": {
+       "N": 109,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129228408735,
+       "RANK_DELTA_MEDIAN": 11,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23017367650135867,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.021761874869218
+      }
+     },
+     "largestPercentileMoves": [
+      {
+       "ticker": "LAUR",
+       "sector": "I · Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.7513,
+       "PRICE_RETURN_VALUE": -0.255424,
+       "TOTAL_RETURN_VALUE": 0.312274,
+       "PRICE_RETURN_PERCENTILE": 38.33,
+       "TOTAL_RETURN_PERCENTILE": 89.89,
+       "RANK_DELTA": -2464,
+       "PERCENTILE_DELTA": 51.56
+      },
+      {
+       "ticker": "CANG",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.6529,
+       "PRICE_RETURN_VALUE": -0.481565,
+       "TOTAL_RETURN_VALUE": 0.068373,
+       "PRICE_RETURN_PERCENTILE": 28.02,
+       "TOTAL_RETURN_PERCENTILE": 66.6,
+       "RANK_DELTA": -1844,
+       "PERCENTILE_DELTA": 38.59
+      },
+      {
+       "ticker": "ZWS",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 1.0237,
+       "PRICE_RETURN_VALUE": -0.007506,
+       "TOTAL_RETURN_VALUE": 0.684922,
+       "PRICE_RETURN_PERCENTILE": 61.02,
+       "TOTAL_RETURN_PERCENTILE": 97.93,
+       "RANK_DELTA": -1764,
+       "PERCENTILE_DELTA": 36.91
+      },
+      {
+       "ticker": "SKM",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.7305,
+       "PRICE_RETURN_VALUE": -0.661706,
+       "TOTAL_RETURN_VALUE": -0.102235,
+       "PRICE_RETURN_PERCENTILE": 22.14,
+       "TOTAL_RETURN_PERCENTILE": 49.76,
+       "RANK_DELTA": -1320,
+       "PERCENTILE_DELTA": 27.62
+      },
+      {
+       "ticker": "HR",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2775,
+       "PRICE_RETURN_VALUE": -0.162305,
+       "TOTAL_RETURN_VALUE": 0.082606,
+       "PRICE_RETURN_PERCENTILE": 45.26,
+       "TOTAL_RETURN_PERCENTILE": 68.36,
+       "RANK_DELTA": -1104,
+       "PERCENTILE_DELTA": 23.1
+      },
+      {
+       "ticker": "SBLK",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2548,
+       "PRICE_RETURN_VALUE": 0.060002,
+       "TOTAL_RETURN_VALUE": 0.291859,
+       "PRICE_RETURN_PERCENTILE": 68.24,
+       "TOTAL_RETURN_PERCENTILE": 88.97,
+       "RANK_DELTA": -991,
+       "PERCENTILE_DELTA": 20.74
+      },
+      {
+       "ticker": "LOMA",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2135,
+       "PRICE_RETURN_VALUE": 0.039649,
+       "TOTAL_RETURN_VALUE": 0.226166,
+       "PRICE_RETURN_PERCENTILE": 65.62,
+       "TOTAL_RETURN_PERCENTILE": 84.1,
+       "RANK_DELTA": -883,
+       "PERCENTILE_DELTA": 18.48
+      },
+      {
+       "ticker": "AHT-P-D",
+       "sector": "(unclassified)",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.188,
+       "PRICE_RETURN_VALUE": 0.042171,
+       "TOTAL_RETURN_VALUE": 0.207622,
+       "PRICE_RETURN_PERCENTILE": 65.98,
+       "TOTAL_RETURN_PERCENTILE": 82.72,
+       "RANK_DELTA": -800,
+       "PERCENTILE_DELTA": 16.74
+      },
+      {
+       "ticker": "EHC",
+       "sector": "I · Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.2621,
+       "PRICE_RETURN_VALUE": -0.283948,
+       "TOTAL_RETURN_VALUE": -0.062696,
+       "PRICE_RETURN_PERCENTILE": 36.68,
+       "TOTAL_RETURN_PERCENTILE": 53.36,
+       "RANK_DELTA": -797,
+       "PERCENTILE_DELTA": 16.68
+      },
+      {
+       "ticker": "GYRE",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 2.8571,
+       "PRICE_RETURN_VALUE": -2.113691,
+       "TOTAL_RETURN_VALUE": -0.778818,
+       "PRICE_RETURN_PERCENTILE": 2.28,
+       "TOTAL_RETURN_PERCENTILE": 18.81,
+       "RANK_DELTA": -790,
+       "PERCENTILE_DELTA": 16.53
+      },
+      {
+       "ticker": "GASS",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.3906,
+       "PRICE_RETURN_VALUE": 0.166226,
+       "TOTAL_RETURN_VALUE": 0.480926,
+       "PRICE_RETURN_PERCENTILE": 79.05,
+       "TOTAL_RETURN_PERCENTILE": 95.19,
+       "RANK_DELTA": -771,
+       "PERCENTILE_DELTA": 16.13
+      },
+      {
+       "ticker": "KEN",
+       "sector": "E · Transportation, Communications, Electric, Gas, And Sanitary Services",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1895,
+       "PRICE_RETURN_VALUE": -0.028316,
+       "TOTAL_RETURN_VALUE": 0.137154,
+       "PRICE_RETURN_PERCENTILE": 59.03,
+       "TOTAL_RETURN_PERCENTILE": 74.83,
+       "RANK_DELTA": -755,
+       "PERCENTILE_DELTA": 15.8
+      },
+      {
+       "ticker": "AKO-A",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1933,
+       "PRICE_RETURN_VALUE": -0.105478,
+       "TOTAL_RETURN_VALUE": 0.064027,
+       "PRICE_RETURN_PERCENTILE": 50.74,
+       "TOTAL_RETURN_PERCENTILE": 66.16,
+       "RANK_DELTA": -737,
+       "PERCENTILE_DELTA": 15.42
+      },
+      {
+       "ticker": "MSB",
+       "sector": "H · Finance, Insurance, And Real Estate",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1924,
+       "PRICE_RETURN_VALUE": -0.193052,
+       "TOTAL_RETURN_VALUE": -0.020428,
+       "PRICE_RETURN_PERCENTILE": 43.02,
+       "TOTAL_RETURN_PERCENTILE": 58.21,
+       "RANK_DELTA": -726,
+       "PERCENTILE_DELTA": 15.19
+      },
+      {
+       "ticker": "AKO-B",
+       "sector": "D · Manufacturing",
+       "segment": "HIGH_YIELD",
+       "trailingYield": 0.1808,
+       "PRICE_RETURN_VALUE": -0.02828,
+       "TOTAL_RETURN_VALUE": 0.129836,
+       "PRICE_RETURN_PERCENTILE": 59.07,
+       "TOTAL_RETURN_PERCENTILE": 73.76,
+       "RANK_DELTA": -702,
+       "PERCENTILE_DELTA": 14.69
+      }
+     ]
     }
    },
    "simulation": {
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-09-30",
-    "publishedEvidenceLagDays": 1468,
+    "publishedEvidenceAsOf": "2026-10-01",
+    "publishedEvidenceLagDays": 1469,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -10447,18 +12421,18 @@
     "simulatedScoredOnTotal": 4780,
     "momentumScoreShift": {
      "UNIVERSE_N": 4780,
-     "SPEARMAN_RANK_CORRELATION": 0.995483,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 45,
-     "P95_RANK_CHANGE": 229.1,
-     "MAX_RANK_CHANGE": 2335,
-     "TITLES_MOVING_5_PERCENTILES": 224,
-     "TITLES_MOVING_10_PERCENTILES": 40
+     "SPEARMAN_RANK_CORRELATION": 0.995429,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 43,
+     "P95_RANK_CHANGE": 231,
+     "MAX_RANK_CHANGE": 2383,
+     "TITLES_MOVING_5_PERCENTILES": 226,
+     "TITLES_MOVING_10_PERCENTILES": 39
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-09-30 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-10-01 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   }
  ],
@@ -10470,7 +12444,7 @@
    "6M": 0.990107,
    "12M": 0.990527,
    "12M-1M": 0.994832,
-   "RELATIVE_STRENGTH": "RANK_EQUIVALENT_TO_12M"
+   "RELATIVE_STRENGTH": 0.990527
   },
   "DIVIDEND_BIAS": "MEASURED",
   "SECTOR_BIAS": "MEASURED",
@@ -10481,5 +12455,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 45055
+ "runtimeMs": 44770
 }

@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-10-02T04:00:45.000Z |
+| Stand der Messung | 2026-10-02T08:48:04.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -95,8 +95,8 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 6.300 |
-| Preisbasis | `close` 6.300 |
+| Einträge | 6.308 |
+| Preisbasis | `close` 6.308 |
 | gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
@@ -140,9 +140,7 @@ Ein Faktorwert ist im Produkt kein Prozentwert, sondern ein Perzentil. Deshalb i
 | `6M` | 5.532 | 0,9901 | 39 | 167,9 | 223 | 5.250 | 2.230 | 203 | 62 | 15 / 15 |
 | `12M` | 5.532 | 0,9905 | 44 | 225 | 265 | 5.055 | 2.322 | 262 | 52 | 14 / 14 |
 | `12M-1M` | 5.532 | 0,9948 | 37 | 235 | 283 | 3.336 | 2.322 | 307 | 47 | 12 / 12 |
-| `RELATIVE_STRENGTH` | — | — | — | — | — | — | — | — | — | — |
-
-> **`RELATIVE_STRENGTH` · `RANK_EQUIVALENT_TO_12M`** (`BENCHMARK_NOT_IN_CANONICAL_STORE`). Bei festem Stichtag ist der Benchmarkterm fuer alle Titel gleich. Relative Staerke ist dann die Zwoelfmonatsrendite minus einer Konstante, und eine Konstante aendert keinen Rang. Die Rangstatistik steht deshalb vollstaendig in der Zeile 12M; sie hier zu wiederholen waere dieselbe Messung unter zwei Namen.
+| `RELATIVE_STRENGTH` | 5.532 | 0,9905 | 44 | 225 | 265 | 5.055 | 2.322 | 262 | 52 | 14 / 14 |
 
 `ρ` ist die Spearman-Rangkorrelation zwischen beiden Basen, `Pz` Perzentilpunkte, `Dezil ab/zu` der Wechsel im obersten Zehntel. Aus einem Median allein folgt nichts: ein Median von null Rängen und ein P95 von mehreren hundert sind gleichzeitig wahr, und nur der zweite Wert entscheidet, ob ein Titel aus dem obersten Dezil fällt.
 
@@ -198,12 +196,12 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 |---|---:|---:|---:|---:|---:|
 | REITs | 117 | 5,42 % | -117 | 2,12 | 11,41 |
 | Utilities | 132 | 3,13 % | -19 | 0,34 | 4,62 |
-| (unclassified) | 1.015 | 0,00 % | 0 | 0,00 | 8,03 |
+| (unclassified) | 1.016 | 0,00 % | 0 | 0,00 | 8,03 |
 | Energy | 141 | 2,13 % | 2 | -0,04 | 5,75 |
 | Financials | 843 | 1,71 % | 3 | -0,05 | 5,17 |
 | Consumer Staples | 101 | 0,96 % | 6 | -0,11 | 3,42 |
 | Communication | 121 | 0,00 % | 7 | -0,13 | 4,86 |
-| Industrials | 407 | 0,00 % | 15 | -0,27 | 4,09 |
+| Industrials | 406 | 0,00 % | 15 | -0,27 | 4,10 |
 | Real Estate | 56 | 0,00 % | 17 | -0,30 | 10,11 |
 | (other) | 442 | 0,00 % | 18 | -0,33 | 3,92 |
 | Health Care | 823 | 0,00 % | 19 | -0,34 | 2,89 |
@@ -217,11 +215,11 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
-| (unclassified) | 1.015 | 0,00 % | 0 | 0,00 | 8,03 |
+| (unclassified) | 1.016 | 0,00 % | 0 | 0,00 | 8,03 |
 | H · Finance, Insurance, And Real Estate | 1.016 | 1,96 % | 2 | -0,04 | 6,57 |
 | E · Transportation, Communications, Electric, Gas, And Sanitary Services | 364 | 1,69 % | 2 | -0,04 | 4,42 |
 | B · Mining | 232 | 0,00 % | 17 | -0,31 | 4,40 |
-| D · Manufacturing | 1.742 | 0,00 % | 17 | -0,31 | 3,22 |
+| D · Manufacturing | 1.741 | 0,00 % | 17 | -0,31 | 3,22 |
 | A · Agriculture, Forestry, And Fishing | 17 | 0,00 % | 17 | -0,31 | 2,68 |
 | F · Wholesale Trade | 82 | 0,00 % | 18 | -0,32 | 3,53 |
 | I · Services | 806 | 0,00 % | 19 | -0,34 | 4,01 |
@@ -237,20 +235,20 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-09-30 (-1 Tage nach dem Stichtag) |
+| veröffentlichtes Evidence vom | 2026-10-01 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9336 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9464 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.090 / 5.532 / 5.532 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9494 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9605 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.091 / 5.532 / 5.532 |
 
-**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9912 · Median 52 Ränge · P95 348 · Maximum 3.343 · 475 Titel bewegen sich um mindestens 5 Perzentilpunkte, 118 um mindestens 10.
+**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9922 · Median 49,3 Ränge · P95 353 · Maximum 3.102 · 505 Titel bewegen sich um mindestens 5 Perzentilpunkte, 126 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 313 | 301 | 19 | 7 | 8,3 % |
-| Quality Momentum (`quality-momentum`) | 36 | 34 | 3 | 1 | 11,1 % |
-| Future Leader (`future-leader`) | 28 | 29 | 0 | 1 | 3,5 % |
-| Value Momentum (`value-momentum`) | 152 | 155 | 2 | 5 | 4,5 % |
+| Momentum Leader (`momentum-leader`) | 301 | 296 | 17 | 12 | 9,6 % |
+| Quality Momentum (`quality-momentum`) | 36 | 35 | 2 | 1 | 8,3 % |
+| Future Leader (`future-leader`) | 27 | 27 | 0 | 0 | 0,0 % |
+| Value Momentum (`value-momentum`) | 161 | 160 | 1 | 0 | 0,6 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 
@@ -274,7 +272,7 @@ An den historischen Stichtagen gibt es **keine** Strategiewirkung: die nicht-mom
 |---|---|
 | `FULL_UNIVERSE_RETURN_AUDIT` | `PASS` |
 | `DUAL_RETURN_SERIES_CAPABLE_UNIVERSE` | `6874` |
-| `PRICE_VS_TOTAL_RANK_CORRELATION` | `3M` 0,9877 · `6M` 0,9901 · `12M` 0,9905 · `12M-1M` 0,9948 · `RELATIVE_STRENGTH` RANK_EQUIVALENT_TO_12M |
+| `PRICE_VS_TOTAL_RANK_CORRELATION` | `3M` 0,9877 · `6M` 0,9901 · `12M` 0,9905 · `12M-1M` 0,9948 · `RELATIVE_STRENGTH` 0,9905 |
 | `DIVIDEND_BIAS` | `MEASURED` |
 | `SECTOR_BIAS` | `MEASURED` |
 | `STRATEGY_IMPACT` | `MEASURED` |

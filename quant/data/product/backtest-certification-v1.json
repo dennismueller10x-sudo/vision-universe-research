@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-02T04:45:33.729Z",
+ "generatedAt": "2026-10-02T09:33:10.321Z",
  "asOf": "2026-10-02",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
@@ -185,10 +185,10 @@
      "id": "returnBasis",
      "label": "Gesamtrendite",
      "category": "STRUCTURAL",
-     "state": "FAIL",
-     "value": "Kursrendite (Pipeline rechnet mit Gesamtrendite)",
+     "state": "PASS",
+     "value": "Gesamtrendite",
      "required": null,
-     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+     "reason": null
     },
     {
      "id": "ruleCertified",
@@ -216,13 +216,6 @@
      "category": "STRUCTURAL",
      "reason": "TODAYS_UNIVERSE_ONLY",
      "value": "nicht vorhanden",
-     "required": null
-    },
-    {
-     "id": "returnBasis",
-     "category": "STRUCTURAL",
-     "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-     "value": "Kursrendite (Pipeline rechnet mit Gesamtrendite)",
      "required": null
     },
     {
@@ -260,7 +253,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "93597 Fälle mit 6-Monats-Ergebnis aus 5453 Titeln",
+       "value": "93575 Fälle mit 6-Monats-Ergebnis aus 5452 Titeln",
        "required": null,
        "reason": null
       },
@@ -295,10 +288,10 @@
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "FAIL",
-       "value": "Kursrendite ohne Dividenden",
+       "state": "PASS",
+       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
        "required": null,
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+       "reason": null
       },
       {
        "id": "costs",
@@ -341,7 +334,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 21179 unabhängige Fälle",
+       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 20825 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -368,7 +361,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "Δ -0.0154",
+       "value": "Δ -0.0125",
        "required": null,
        "reason": null
       }
@@ -392,13 +385,6 @@
        "required": null
       },
       {
-       "id": "returnBasis",
-       "category": "STRUCTURAL",
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-       "value": "Kursrendite ohne Dividenden",
-       "required": null
-      },
-      {
        "id": "regimeDiversity",
        "category": "QUALITY",
        "reason": "REGIME_HISTORY_NOT_CERTIFIED",
@@ -407,25 +393,25 @@
       }
      ],
      "sample": {
-      "n": 93597,
-      "titles": 5453
+      "n": 93575,
+      "titles": 5452
      },
      "independence": {
-      "uniqueTitles": 5453,
+      "uniqueTitles": 5452,
       "uniquePeriods": 1836,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 21179,
-      "designEffect": 4.42
+      "effectiveN": 20825,
+      "designEffect": 4.49
      },
-     "returnType": "SPLIT_ADJUSTED_PRICE",
+     "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5226,
-      "base": 0.538,
-      "delta": -0.0154,
+      "positiveShare": 0.5542,
+      "base": 0.5667,
+      "delta": -0.0125,
       "ci": [
-       -0.0217,
-       -0.0092
+       -0.0188,
+       -0.0062
       ]
      }
     },
@@ -455,7 +441,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "93984 Fälle mit 6-Monats-Ergebnis aus 5474 Titeln",
+       "value": "93958 Fälle mit 6-Monats-Ergebnis aus 5473 Titeln",
        "required": null,
        "reason": null
       },
@@ -490,10 +476,10 @@
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "FAIL",
-       "value": "Kursrendite ohne Dividenden",
+       "state": "PASS",
+       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
        "required": null,
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+       "reason": null
       },
       {
        "id": "costs",
@@ -536,7 +522,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 24125 unabhängige Fälle",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 24938 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -563,7 +549,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.0027",
+       "value": "Δ -0.0013",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -584,13 +570,6 @@
        "category": "STRUCTURAL",
        "reason": "TODAYS_UNIVERSE_ONLY",
        "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
-       "required": null
-      },
-      {
-       "id": "returnBasis",
-       "category": "STRUCTURAL",
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-       "value": "Kursrendite ohne Dividenden",
        "required": null
       },
       {
@@ -618,30 +597,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.0027",
+       "value": "Δ -0.0013",
        "required": null
       }
      ],
      "sample": {
-      "n": 93984,
-      "titles": 5474
+      "n": 93958,
+      "titles": 5473
      },
      "independence": {
-      "uniqueTitles": 5474,
+      "uniqueTitles": 5473,
       "uniquePeriods": 1837,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 24125,
-      "designEffect": 3.9
+      "effectiveN": 24938,
+      "designEffect": 3.77
      },
-     "returnType": "SPLIT_ADJUSTED_PRICE",
+     "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5369,
-      "base": 0.5396,
-      "delta": -0.0027,
+      "positiveShare": 0.5671,
+      "base": 0.5684,
+      "delta": -0.0013,
       "ci": [
-       -0.0086,
-       0.0032
+       -0.0071,
+       0.0045
       ]
      }
     },
@@ -671,7 +650,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "90548 Fälle mit 6-Monats-Ergebnis aus 5409 Titeln",
+       "value": "90526 Fälle mit 6-Monats-Ergebnis aus 5408 Titeln",
        "required": null,
        "reason": null
       },
@@ -706,10 +685,10 @@
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "FAIL",
-       "value": "Kursrendite ohne Dividenden",
+       "state": "PASS",
+       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
        "required": null,
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+       "reason": null
       },
       {
        "id": "costs",
@@ -752,7 +731,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 25977 unabhängige Fälle",
+       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 26926 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -778,10 +757,10 @@
        "id": "edgeOutOfSample",
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
-       "state": "PASS",
-       "value": "Δ -0.0133",
+       "state": "FAIL",
+       "value": "Δ -0.0104",
        "required": null,
-       "reason": null
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
      ],
      "trust": "LIMITED",
@@ -803,40 +782,40 @@
        "required": null
       },
       {
-       "id": "returnBasis",
-       "category": "STRUCTURAL",
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-       "value": "Kursrendite ohne Dividenden",
-       "required": null
-      },
-      {
        "id": "regimeDiversity",
        "category": "QUALITY",
        "reason": "REGIME_HISTORY_NOT_CERTIFIED",
        "value": "Die Regime-Historie der Market-Regime-Engine ist nicht zertifiziert; keine eigene Ersatz-Einteilung",
        "required": null
+      },
+      {
+       "id": "edgeOutOfSample",
+       "category": "QUALITY",
+       "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
+       "value": "Δ -0.0104",
+       "required": null
       }
      ],
      "sample": {
-      "n": 90548,
-      "titles": 5409
+      "n": 90526,
+      "titles": 5408
      },
      "independence": {
-      "uniqueTitles": 5409,
+      "uniqueTitles": 5408,
       "uniquePeriods": 1836,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 25977,
-      "designEffect": 3.49
+      "effectiveN": 26926,
+      "designEffect": 3.36
      },
-     "returnType": "SPLIT_ADJUSTED_PRICE",
+     "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5262,
-      "base": 0.5395,
-      "delta": -0.0133,
+      "positiveShare": 0.5579,
+      "base": 0.5683,
+      "delta": -0.0104,
       "ci": [
-       -0.019,
-       -0.0077
+       -0.016,
+       -0.0049
       ]
      }
     },
@@ -866,7 +845,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "90650 Fälle mit 6-Monats-Ergebnis aus 5432 Titeln",
+       "value": "90630 Fälle mit 6-Monats-Ergebnis aus 5431 Titeln",
        "required": null,
        "reason": null
       },
@@ -901,10 +880,10 @@
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "FAIL",
-       "value": "Kursrendite ohne Dividenden",
+       "state": "PASS",
+       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
        "required": null,
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+       "reason": null
       },
       {
        "id": "costs",
@@ -947,7 +926,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1835 Wochen, 141 Quartale, effektiv ≈ 26649 unabhängige Fälle",
+       "value": "1835 Wochen, 141 Quartale, effektiv ≈ 25546 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -974,7 +953,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.0016",
+       "value": "Δ 0.0001",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -995,13 +974,6 @@
        "category": "STRUCTURAL",
        "reason": "TODAYS_UNIVERSE_ONLY",
        "value": "Nur heute gelistete Titel; 1 Reihen enden früher. Delistete Titel mit sauberer Identität und Historie: 0",
-       "required": null
-      },
-      {
-       "id": "returnBasis",
-       "category": "STRUCTURAL",
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-       "value": "Kursrendite ohne Dividenden",
        "required": null
       },
       {
@@ -1036,30 +1008,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.0016",
+       "value": "Δ 0.0001",
        "required": null
       }
      ],
      "sample": {
-      "n": 90650,
-      "titles": 5432
+      "n": 90630,
+      "titles": 5431
      },
      "independence": {
-      "uniqueTitles": 5432,
+      "uniqueTitles": 5431,
       "uniquePeriods": 1835,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 26649,
-      "designEffect": 3.4
+      "effectiveN": 25546,
+      "designEffect": 3.55
      },
-     "returnType": "SPLIT_ADJUSTED_PRICE",
+     "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5361,
-      "base": 0.5377,
-      "delta": -0.0016,
+      "positiveShare": 0.5663,
+      "base": 0.5662,
+      "delta": 0.0001,
       "ci": [
-       -0.0071,
-       0.004
+       -0.0056,
+       0.0058
       ]
      }
     },
@@ -1071,7 +1043,7 @@
        "label": "Point-in-Time",
        "category": "HARD",
        "state": "PASS",
-       "value": "301 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
+       "value": "302 Fälle mit abgeschnittener und verfälschter Zukunft geprüft, 0 Abweichungen",
        "required": null,
        "reason": null
       },
@@ -1089,7 +1061,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "59110 Fälle mit 6-Monats-Ergebnis aus 5198 Titeln",
+       "value": "59087 Fälle mit 6-Monats-Ergebnis aus 5197 Titeln",
        "required": null,
        "reason": null
       },
@@ -1097,19 +1069,19 @@
        "id": "oos",
        "label": "Prüfung außerhalb des Lernzeitraums",
        "category": "QUALITY",
-       "state": "PASS",
+       "state": "FAIL",
        "value": null,
        "required": null,
-       "reason": null
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED"
       },
       {
        "id": "walkForward",
        "label": "Walk-Forward",
        "category": "QUALITY",
-       "state": "PASS",
-       "value": "3 von 4 Folds in derselben Richtung",
+       "state": "FAIL",
+       "value": "1 von 4 Folds in derselben Richtung",
        "required": null,
-       "reason": null
+       "reason": "FOLDS_DISAGREE"
       },
       {
        "id": "survivorship",
@@ -1124,10 +1096,10 @@
        "id": "returnBasis",
        "label": "Gesamtrendite (inkl. Dividenden)",
        "category": "STRUCTURAL",
-       "state": "FAIL",
-       "value": "Kursrendite ohne Dividenden",
+       "state": "PASS",
+       "value": "Gesamtrendite (weekly-total-return-1.0.0)",
        "required": null,
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED"
+       "reason": null
       },
       {
        "id": "costs",
@@ -1170,7 +1142,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1834 Wochen, 141 Quartale, effektiv ≈ 10460 unabhängige Fälle",
+       "value": "1834 Wochen, 141 Quartale, effektiv ≈ 10683 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1197,7 +1169,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ 0.0146",
+       "value": "Δ 0.0153",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -1221,10 +1193,17 @@
        "required": null
       },
       {
-       "id": "returnBasis",
-       "category": "STRUCTURAL",
-       "reason": "TOTAL_RETURN_SERIES_NOT_PUBLISHED",
-       "value": "Kursrendite ohne Dividenden",
+       "id": "oos",
+       "category": "QUALITY",
+       "reason": "OOS_DIRECTION_NOT_CONFIRMED",
+       "value": null,
+       "required": null
+      },
+      {
+       "id": "walkForward",
+       "category": "QUALITY",
+       "reason": "FOLDS_DISAGREE",
+       "value": "1 von 4 Folds in derselben Richtung",
        "required": null
       },
       {
@@ -1238,30 +1217,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ 0.0146",
+       "value": "Δ 0.0153",
        "required": null
       }
      ],
      "sample": {
-      "n": 59110,
-      "titles": 5198
+      "n": 59087,
+      "titles": 5197
      },
      "independence": {
-      "uniqueTitles": 5198,
+      "uniqueTitles": 5197,
       "uniquePeriods": 1834,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 10460,
-      "designEffect": 5.65
+      "effectiveN": 10683,
+      "designEffect": 5.53
      },
-     "returnType": "SPLIT_ADJUSTED_PRICE",
+     "returnType": "TOTAL_RETURN",
      "baseRate": {
-      "positiveShare": 0.5523,
-      "base": 0.5377,
-      "delta": 0.0146,
+      "positiveShare": 0.582,
+      "base": 0.5667,
+      "delta": 0.0153,
       "ci": [
-       0.0056,
-       0.0236
+       0.0065,
+       0.0241
       ]
      }
     }
@@ -1497,7 +1476,7 @@
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "364/364",
+    "parity": "617/617",
     "mismatches": 0
    }
   },
