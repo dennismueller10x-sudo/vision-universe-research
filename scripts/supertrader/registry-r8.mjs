@@ -18,6 +18,8 @@ const SAMEDAY_LC = ['LC-SAME-DAY', 'Einstiegstag mit Tagesbalken: Schließt der 
 export function applyR8({ momentum, weinstein, darvas, minervini, donchian, rule }) {
   const bump = (s, v, legacyIds, prev, srcAdd = []) => {
     s.previous_versions = [...(s.previous_versions || []), { version: prev, note: 'Ergebnis der vorab festgelegten Prüfung bleibt gültig; offene Positionen laufen nach ihrer Version weiter.' }];
+    // Plan der Vorversion aufbewahren: offene Positionen zeigen Ein-/Ausstieg nach ihrer eigenen Version.
+    for (const c of s.rule_cards || []) c.plans_by_version = { ...(c.plans_by_version || {}), [prev]: { ...c.plan } };
     s.strategy_version = v;
     for (const r of s.rules) { r.strategy_version = v; if (legacyIds.includes(r.rule_id)) r.legacy_only = prev; }
     for (const c of s.rule_cards || []) c.rule_version = v;

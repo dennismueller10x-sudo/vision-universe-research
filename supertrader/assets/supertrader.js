@@ -782,7 +782,7 @@
     kids.push(setupBar(s));
     if (p) {
       var cells = [
-        ['Trigger', num(p.trigger.value), p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'Kauf-Stop · Kurs darüber = Kauf' : 'geplant · ' + ({ DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || '') + ' darüber'],
+        ['Trigger', num(p.trigger.value), p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'geplant · Kauf-Stop darüber' : 'geplant · ' + ({ DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || '') + ' darüber'],
         p.stop ? ['Stop', num(p.stop.value), 'aktueller Stop'] : ['Ungültig', num(p.invalidation.value), 'geplant · ' + (p.invalidation.basis === 'LOW' ? 'Tagestief' : 'Schluss') + ' darunter'],
         p.entry ? ['Modelleinstieg', num(p.entry.price), dateShort(p.entry.date) + (p.entry.basis === 'BUY_STOP' ? (p.entry.gappedAboveTrigger ? ' · Eröffnung über Trigger' : ' · Kauf-Stop') : ' zur Eröffnung')] : ['Modelleinstieg', 'keiner', p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'sobald der Kurs den Trigger übersteigt' : p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung'],
       ];

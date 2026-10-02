@@ -678,9 +678,21 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
 // tatsaechliche Modellausfuehrung (nur wenn vorhanden) und die naechste Handlung.
 const CARD_BY_STRATEGY = new Map(STRATEGIES.filter((x) => x.rule_cards).map((x) => [x.strategy_id, x.rule_cards[0]]));
 const fmtP = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('.', ',') : '—');
+// Plan der Regelversion des Signals: exakt, sonst die naechstaeltere gespeicherte,
+// sonst die aelteste gespeicherte (z. B. 1.0.0 bei gleicher Regel wie 1.1.0).
+const vnum = (v) => String(v || '').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
+export function planForVersion(card, version) {
+  if (!card) return null;
+  if (!version || version === card.rule_version || !card.plans_by_version) return card.plan;
+  const vs = Object.keys(card.plans_by_version).sort((a, b) => vnum(a) - vnum(b));
+  if (card.plans_by_version[version]) return card.plans_by_version[version];
+  if (vnum(version) > vnum(card.rule_version)) return card.plan;
+  const older = vs.filter((x) => vnum(x) <= vnum(version)).pop();
+  return card.plans_by_version[older || vs[0]] || card.plan;
+}
 export function planOf(s) {
   const card = CARD_BY_STRATEGY.get(s.strategyId);
-  const p = card?.plan;
+  const p = planForVersion(card, s.version);
   if (!p) return null;
   const last = s.transitions[s.transitions.length - 1] || {};
   const levelsAsOf = s.levelHistory?.[s.levelHistory.length - 1]?.date || s.createdAt;
@@ -703,7 +715,7 @@ export function planOf(s) {
   } else if (PENDING.has(s.state)) {
     const inv = `${p.invalidationText} ${fmtP(s.levels?.invalidation)} → ungültig`;
     text = p.confirmBasis === 'INTRADAY_BUY_STOP'
-      ? `Kauf-Stop über ${fmtP(s.levels?.trigger)} für den nächsten Handelstag: Steigt der Kurs darüber, gilt das Modell als gekauft – zum Trigger oder zur Eröffnung, wenn diese höher liegt. Stop: ${s.levels?.stopPlan || p.exitSummary}. ${inv}.`
+      ? `Kauf-Stop über ${fmtP(s.levels?.trigger)} für den nächsten Handelstag. ${inv}.`
       : `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
     ruleId = p.confirmRuleId;
   } else if (s.state === 'TRIGGERED') {
