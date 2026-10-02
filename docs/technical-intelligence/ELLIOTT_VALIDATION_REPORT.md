@@ -123,6 +123,28 @@ Anwendbarkeit: hoch 46,6 % (Überschuss +1,2), mittel 44,3 % (+0,9), keine verl�
 
 **Inkrementeller Wert von Elliott: keiner messbar.** Die Regime-Hypothese aus der ersten Studie (Vorteil bei hoher Volatilität) ist für Elliott-Fortsetzungen nicht nur nicht bestätigt, sondern umgekehrt.
 
+### 12a. Vorher/Nachher: Engine 2.1 (Legacy) vs. 2.2 auf derselben explorativen Stichprobe
+
+Gleiche Ereignisse (168.773 Rückläufe, 3.122 Emittenten), gleiche Auswertung; Unterschied nur die Engine (`--legacy`: eine Skala, kein verschachtelter höherer Grad, kein Signal-Rausch-Gate, keine Persistenz). Bericht: `report-exploratory-v21-legacy.json`.
+
+| Kennzahl | 2.1 Legacy | 2.2 (Persistenz) |
+|---|---|---|
+| Enthaltung (Wochen ohne verlässliche Zählung) | 31,2 % | 12,1 % |
+| Status OK / AMBIGUOUS | 39,6 % / 60,3 % | 52,9 % / 47,1 % |
+| Ereignisse mit Fortsetzungs- / Umkehr-Label | 27.045 / 6.675 | 54.780 / 20.091 |
+| Relabel-Quote je Woche | 6,1 % | 6,4 % |
+| Skalenwechsel je 100 Wochen | 0,07 | 5,5 |
+| Median-Lebensdauer einer Zählung | 5 Wochen | 5 Wochen |
+| Erkennungsverzug (Median, Engine / frühestens) | 3 / 2 Wochen | 3 / 2 Wochen |
+| H1 ΔLogLoss | +0,0001 (0 … +0,0002) | +0,0001 (0 … +0,0001) |
+| H2 CONT vs. ohne | −0,04 Pp. (−1,9 … +1,8) | +0,3 Pp. (−0,3 … +0,8) |
+| H3 beste 20 % Count Quality | −0,9 Pp. (−4,9 … +2,5) | −1,5 Pp. (−3,0 … −0,2) |
+| H4 höherer Grad | +0,2 Pp. (−2,6 … +3,5) | −0,6 Pp. (−2,2 … +1,2) |
+| H5 hohe vs. niedrige Volatilität | −6,7 Pp. (−10,0 … −2,7) | −2,8 Pp. (−3,9 … −1,4) |
+| H6 entwickelnd vs. bestätigt | +5,8 Pp. (+4,3 … +7,1) | +3,1 Pp. (+2,3 … +4,0) |
+
+**Lesart.** Engine 2.2 ist als *Methode* näher an Elliott (Grad-Auswahl, verschachtelter höherer Grad, Rausch-Erkennung; Referenzset und synthetischer Benchmark in §3a/§4) und enthält sich seltener — aber der Prognosewert ist in beiden Versionen null. Die Verbesserung der Methodentreue hat **keinen** Ergebnisvorteil erzeugt. Kehrseite der Mehrskalen-Auswahl: deutlich mehr Skalenwechsel (5,5 je 100 Wochen); die Relabel-Quote bleibt dank Persistenz auf Legacy-Niveau. Das Produkt zeigt Skalenwechsel als Relabeling-Risiko an.
+
 ## 13–15. Unterschiede nach Regime, Muster und Grad (explorativ, BH-korrigiert)
 
 Überschuss der Fortsetzungs-Fälle über das Basismodell, Bestätigungsstichprobe: nach Muster/Welle (z. B. Impuls W2 −1,2, W4 +0,4, Flat-B −3,3, Zigzag-B +0,2 Pp.) und nach Grad (scale-2 −0,7, scale-3 +1,6 Pp.) keine signifikanten Unterschiede; einzig signifikant nach Benjamini-Hochberg: obere Volatilitätsdrittel (−2,0 Pp.) und Börsenalter < 6 Jahre (−1,9 Pp.) — beide **negativ**. Höherer Grad konsistent: +1,1 vs. Konflikt −1,2 Pp. (Kontrast = H4, nicht bestätigt).
