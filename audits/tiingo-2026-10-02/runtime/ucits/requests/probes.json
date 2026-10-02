@@ -1,0 +1,82 @@
+{
+  "probes": [
+    {
+      "id": "ucits-otc-SSSPF-meta",
+      "path": "/tiingo/daily/SSSPF",
+      "params": {},
+      "purpose": "Real US OTC UCITS ETF identity; never European local listing",
+      "group": "etf"
+    },
+    {
+      "id": "ucits-otc-SSSPF-history",
+      "path": "/tiingo/daily/SSSPF/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "UCITS OTC price/adjustment/liquidity quality versus European local ETF product needs",
+      "group": "etf"
+    },
+    {
+      "id": "ucits-otc-IIREF-meta",
+      "path": "/tiingo/daily/IIREF",
+      "params": {},
+      "purpose": "Real US OTC UCITS ETF identity; never European local listing",
+      "group": "etf"
+    },
+    {
+      "id": "ucits-otc-IIREF-history",
+      "path": "/tiingo/daily/IIREF/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "UCITS OTC price/adjustment/liquidity quality versus European local ETF product needs",
+      "group": "etf"
+    },
+    {
+      "id": "ucits-otc-DAXXF-meta",
+      "path": "/tiingo/daily/DAXXF",
+      "params": {},
+      "purpose": "Real US OTC UCITS ETF identity; never European local listing",
+      "group": "etf"
+    },
+    {
+      "id": "ucits-otc-DAXXF-history",
+      "path": "/tiingo/daily/DAXXF/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "UCITS OTC price/adjustment/liquidity quality versus European local ETF product needs",
+      "group": "etf"
+    },
+    {
+      "id": "ucits-otc-VFAWF-meta",
+      "path": "/tiingo/daily/VFAWF",
+      "params": {},
+      "purpose": "Real US OTC UCITS ETF identity; never European local listing",
+      "group": "etf"
+    },
+    {
+      "id": "ucits-otc-VFAWF-history",
+      "path": "/tiingo/daily/VFAWF/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "UCITS OTC price/adjustment/liquidity quality versus European local ETF product needs",
+      "group": "etf"
+    },
+    {
+      "id": "quality-china-byd-split",
+      "path": "/tiingo/daily/002594/prices",
+      "params": {
+        "startDate": "2025-05-20",
+        "endDate": "2025-06-30"
+      },
+      "purpose": "Verify mainland-China known BYD June2025 capital/split adjustment geometry",
+      "group": "quality"
+    }
+  ]
+}
