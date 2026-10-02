@@ -375,7 +375,7 @@ const PRODUCT_ARTIFACT_PATTERNS = {
   DISCOVER: /^discover\/data\/stocks\/US_REAL\/[A-Z0-9_.-]+\.json$/,
   SCREENER: /^screener\/data\/universe-US_REAL\.json$/,
   SUPERTRADER: /^quant\/data\/product\/technical-signals-v1\/[A-Z0-9_]{2}\.json\.gz$/,
-  SEC: /^quant\/data\/sec\/(?:consumer\/CIK\d{10}|canonical\/[A-Z0-9_.-]+)\.json$/
+  SEC: /^quant\/data\/sec\/(?:consumer\/CIK\d{10}|canonical\/[A-Z0-9_.-]+|canonical_index)\.json$/
 };
 const hasIdentity = (document, row) => {
   if (!document || typeof document !== 'object') return false;
@@ -403,6 +403,7 @@ function verifyShortListingPrice({ manifest, row, instrument, proof, parse }) {
       document.historyCoverage !== 'SHORT_HISTORY' || document.corporateActionStatus !== 'PASS' || document.publishCheckedAt !== manifest.asOf ||
       !Array.isArray(points) || points.length < 2 || points.length > 4 || document.barCount !== points.length || document.sourceBarCount !== points.length ||
       points.some((point, i) => !Array.isArray(point) || point.length !== 2 || !validDate(point[0]) || typeof point[1] !== 'number' || !Number.isFinite(point[1]) || point[1] <= 0 || (i && point[0] <= points[i - 1][0])) ||
+      !validDate(instrument.firstTradeDate) || points[0][0] < instrument.firstTradeDate ||
       document.from !== points[0][0] || document.to !== last || document.asOf !== last || !Number.isFinite(age) || age < 0 || age > 7) throw Error('SHORT_LISTING_PRICE_NOT_MATERIALIZED');
   const capability = parse('quant/data/universe/market-capability.json').document;
   const members = (capability.members || []).filter((member) => member.s === row.ticker && member.m === row.securityId && member.i === row.instrumentId);
@@ -466,8 +467,11 @@ function verifyProductizationReadiness({ root, output, manifest, readiness }) {
           const violations = [document.publicationViolations, document.evidence?.publicationViolations, factorRecord.publicationViolations, factorRecord.evidence?.publicationViolations].filter(Boolean);
           if (violations.some((value) => Array.isArray(value) ? value.length > 0 : value !== 0)) throw Error('QUANT_PUBLICATION_VIOLATIONS');
           if (coverage === 'FULL') {
+            const methodologyPath = join(root, 'quant/methodology/quant-v2.json');
+            if (!existsSync(methodologyPath) || JSON.parse(readFileSync(methodologyPath)).publication?.allowed !== true) throw Error('FULL_QUANT_READINESS_NOT_MATERIALIZED');
             if (document.publication?.compositeAllowed !== true) throw Error('FULL_QUANT_READINESS_NOT_MATERIALIZED');
           } else {
+            if (!FactorEvidence.validShard(document, Company.shardKey(row.ticker))) throw Error('PARTIAL_QUANT_SHARD_CONTRACT_INVALID');
             const available = Object.entries(factorRecord.factors || {}).filter(([, factor]) => factor.state === 'AVAILABLE' && typeof factor.score === 'number' && Number.isFinite(factor.score) && factor.score >= 0 && factor.score <= 100);
             const composite = factorRecord.composite;
             if (document.publication?.compositeAllowed === true || typeof composite === 'number' || Number.isFinite(composite?.score) || Number.isFinite(composite?.value) || !available.length) throw Error('PARTIAL_QUANT_READINESS_NOT_MATERIALIZED');
@@ -485,7 +489,13 @@ function verifyProductizationReadiness({ root, output, manifest, readiness }) {
           } else if (!hasIdentity(document, row)) throw Error('PRODUCT_READINESS_IDENTITY_MISSING:SCREENER');
         }
         else if (product === 'SEC') {
-          if (String(document.cik).padStart(10, '0') !== instrument.cik || document.dataSource?.isMock === true) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+          if (document.dataSource?.isMock === true || !/^\d{10}$/.test(instrument.cik || '')) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+          if (path.startsWith('quant/data/sec/canonical/') || path === 'quant/data/sec/canonical_index.json') {
+            const index = parse('quant/data/sec/canonical_index.json').document;
+            const bindings = (index.companies || []).filter((entry) => entry.ticker === row.ticker);
+            if (bindings.length !== 1 || String(bindings[0].cik).padStart(10, '0') !== instrument.cik || bindings[0].file !== 'canonical/' + row.ticker + '.json' || bindings[0].securityId !== 'sec_' + row.ticker) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+            if (path !== 'quant/data/sec/canonical_index.json' && (document.schema !== 'vu-canonical-v1' || document.security?.securityId !== bindings[0].securityId || document.security?.ticker !== row.ticker || document.security?.isMock === true)) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+          } else if (String(document.cik).padStart(10, '0') !== instrument.cik) throw Error('SEC_READINESS_ISSUER_MISMATCH');
         } else if (!['SEARCH', 'WATCHLIST', 'CHARTS', 'QUANT', 'SUPERTRADER'].includes(product) && !hasIdentity(document, row)) throw Error('PRODUCT_READINESS_IDENTITY_MISSING:' + product);
       }
       row.products[product] = { state: 'PASS', reasonCodes, artifactPaths, artifactHashes, ...(product === 'QUANT' ? { coverage: proof.coverage || 'FULL' } : {}) };

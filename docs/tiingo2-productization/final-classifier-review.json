@@ -1,0 +1,274 @@
+{
+  "schemaVersion": "tiingo2-classifier-final-review-1",
+  "reviewedSourceCommit": "ebe48a7b",
+  "actualRun": "gh-productize-37023385164-1",
+  "actualRunSourceCommit": "a0d4a7371fdd8746c4fb75603312f979ab545531",
+  "inputSha256": {
+    "tiingo2_review_resolution": "3873459ba28d1e55cab1ad0755f3a09342555471a9d9ba41e0618eb55928082d",
+    "tiingo2_productization_status": "8e2c1333a4b7f1dd99ad25fe836811caaccf43394077d0045abb3a3fe516aa85",
+    "tiingo2_publication_diff": "92cf37eda518f5be2a308a601b45aa89fc8790d3493871367b501ea81c566b36",
+    "tiingo2_final_consumer_universe": "cef992d8794d4be58f2024b82a29a5a5294c9cf0f2285c7a59efaa494695bbde",
+    "tiingo2_product_shadow_qa": "835c8f35dc8376820838aab63425b0eb6dee835c368cd9ea99da2f61b079a4b7"
+  },
+  "scope": "Candidate membership and independent derived evidence; no production publication or full Quant readiness assertion",
+  "counts": {
+    "reviewed": 148,
+    "autoResolved": 11,
+    "rejected": 9,
+    "manualReview": 128,
+    "acceptedBaseline": 102,
+    "totalAdded": 113,
+    "removed": 0,
+    "currentConsumer": 6419,
+    "proposedConsumer": 6532
+  },
+  "additionalAccepted": [
+    "BRBI",
+    "CATL",
+    "EMIS",
+    "FTW",
+    "GLAS",
+    "GORO",
+    "HOST",
+    "KTWO",
+    "NVA",
+    "TRLV",
+    "WSTN"
+  ],
+  "acceptedTickers": [
+    "AAC",
+    "ACCL",
+    "ACCV",
+    "ADRX",
+    "AERO",
+    "AESP",
+    "AIBZ",
+    "AIRO",
+    "APAC",
+    "APC",
+    "APMC",
+    "ASBH",
+    "AXIN",
+    "AZUL",
+    "BACC",
+    "BID",
+    "BRBI",
+    "BRKH",
+    "CAE",
+    "CAI",
+    "CAPN",
+    "CART",
+    "CATL",
+    "CBAT",
+    "CCAQ",
+    "CHA",
+    "CLBK",
+    "CLMT",
+    "CNTB",
+    "CRAN",
+    "CRTO",
+    "CUB",
+    "DPC",
+    "EMIS",
+    "EROC",
+    "ETRA",
+    "FIG",
+    "FIGR",
+    "FJDI",
+    "FLY",
+    "FOIL",
+    "FTW",
+    "GLAS",
+    "GLXY",
+    "GOLD",
+    "GORO",
+    "GTES",
+    "HAWK",
+    "HLP",
+    "HOS",
+    "HOST",
+    "IGAC",
+    "IMSR",
+    "INR",
+    "ITG",
+    "JCAP",
+    "KTWO",
+    "LFAC",
+    "LGCY",
+    "LIME",
+    "LION",
+    "LSBK",
+    "MBGL",
+    "MOB",
+    "MOBI",
+    "MRX",
+    "MTAK",
+    "NP",
+    "NVA",
+    "NVRI",
+    "NWCL",
+    "OCLT",
+    "OIG",
+    "ONEN",
+    "OSPR",
+    "OTAI",
+    "PAAC",
+    "PAL",
+    "PASW",
+    "PNAQ",
+    "PNFP",
+    "Q",
+    "RBKB",
+    "RNA",
+    "RNAQ",
+    "ROC",
+    "RZAI",
+    "SAIL",
+    "SEG",
+    "SHOT",
+    "SIMA",
+    "SIND",
+    "SKHY",
+    "SMA",
+    "SNDK",
+    "SOLS",
+    "STRZ",
+    "SZZL",
+    "TACO",
+    "TDTH",
+    "TLAC",
+    "TMTS",
+    "TRLV",
+    "TTGT",
+    "TWLV",
+    "UROY",
+    "VIA",
+    "VII",
+    "VLTO",
+    "WLTH",
+    "WSTN",
+    "XIII",
+    "XPRO"
+  ],
+  "rejectedTickers": [
+    {
+      "ticker": "ABXL",
+      "reasonCodes": [
+        "EXCLUDED_DEBT_SECURITY"
+      ]
+    },
+    {
+      "ticker": "ADAMG",
+      "reasonCodes": [
+        "EXCLUDED_DEBT_SECURITY"
+      ]
+    },
+    {
+      "ticker": "ADAMI",
+      "reasonCodes": [
+        "EXCLUDED_DEBT_SECURITY"
+      ]
+    },
+    {
+      "ticker": "CICC",
+      "reasonCodes": [
+        "EXCLUDED_DEBT_SECURITY"
+      ]
+    },
+    {
+      "ticker": "DTK",
+      "reasonCodes": [
+        "EXCLUDED_DEBT_SECURITY"
+      ]
+    },
+    {
+      "ticker": "METCI",
+      "reasonCodes": [
+        "EXCLUDED_DEBT_SECURITY"
+      ]
+    },
+    {
+      "ticker": "NSLRL",
+      "reasonCodes": [
+        "EXCLUDED_DEBT_SECURITY"
+      ]
+    },
+    {
+      "ticker": "PPLC",
+      "reasonCodes": [
+        "EXCLUDED_NON_EQUITY_SECURITY"
+      ]
+    },
+    {
+      "ticker": "RVI",
+      "reasonCodes": [
+        "EXCLUDED_FUND"
+      ]
+    }
+  ],
+  "checks": {
+    "exact148Scope": true,
+    "uniqueListingProofs": true,
+    "all11AuditedPrivateResponsesReplayed": true,
+    "corporateActionGateWaived": false,
+    "baseline102ExactSetRetained": true,
+    "falseInclusionsMNSBPWAFDPIVAIAbsent": true,
+    "unique113CanonicalIds": true,
+    "searchReady": 113,
+    "chartReady": 110,
+    "watchlistReady": 113,
+    "all11AdditionalSearchChartWatchlistReady": true,
+    "protectedShadowQAChecksPassed": 18,
+    "sourceBaselineFilesPreserved": 47991,
+    "productionWrites": 0,
+    "quantFullReady": 0
+  },
+  "conditionalCharts": [
+    {
+      "ticker": "ACCV",
+      "reasonCodes": [
+        "INSUFFICIENT_CHART_HISTORY"
+      ],
+      "bars": 2
+    },
+    {
+      "ticker": "ONEN",
+      "reasonCodes": [
+        "INSUFFICIENT_CHART_HISTORY"
+      ],
+      "bars": 4
+    },
+    {
+      "ticker": "RZAI",
+      "reasonCodes": [
+        "INSUFFICIENT_CHART_HISTORY"
+      ],
+      "bars": 2
+    }
+  ],
+  "targetedPrimaryVerification": {
+    "ticker": "GORO",
+    "cik": "0001515964",
+    "url": "https://data.sec.gov/submissions/CIK0001515964.json",
+    "issuerName": "Goldgroup Mining Inc.",
+    "tickers": [
+      "GORO"
+    ],
+    "responseSha256": "20d6e25e3d6f215d0fea60817f667b818008baa63b87a82a15a64b759ff2dab5"
+  },
+  "classifierBlockingFindings": [],
+  "publicationBlockers": [
+    "SEC_READINESS_ISSUER_MISMATCH"
+  ],
+  "publicationState": "BLOCKED",
+  "tests": {
+    "suite": "Resolver, private-review, productize",
+    "passed": 26,
+    "failed": 0
+  },
+  "limitations": [
+    "Raw private bars and metadata were authenticated and rechecked in CI; this independent local review validates sanitized response hashes and existing gate results",
+    "Current run is blocked by SEC readiness issuer binding; no approval of production publication",
+    "QUANT_FULL remains0; partial and technical products remain separate states"
+  ]
+}

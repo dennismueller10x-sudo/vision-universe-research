@@ -12,6 +12,7 @@ import { stageCanonicalPublication, attachCanonicalProjections, applyCanonicalPu
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
 const today = '2026-10-02';
+const factorShard = (record) => ({ schemaVersion: FactorEvidence.SHARD_SCHEMA, methodologyVersion: FactorEvidence.METHODOLOGY_VERSION, derivedFrom: FactorEvidence.DERIVED_FROM, shard: 'ZN', publication: { compositeAllowed: false, rankingAllowed: false }, publicationViolations: [], securities: { ZNEW: record } });
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const partialFactors = () => Object.fromEntries(FactorEvidence.FACTOR_ORDER.map((id) => [id,
   id === 'momentum' ? { state: 'AVAILABLE', score: 63.5 } : { state: 'UNAVAILABLE', reason: 'INPUT_NOT_MATERIALIZED', score: null }]));
@@ -210,6 +211,17 @@ test('two-to-four-session listings retain actual latest quote, Search and Watchl
   });
 });
 
+test('price-only IPO history cannot predate its exact canonical listing generation', () => {
+  for (const date of [null, '2026-10-02', '2026-02-30']) fixture((context) => {
+    assert.throws(() => shortListingFixture(context, 2, (input) => {
+      const file = input.staged.files.find((entry) => entry.path.startsWith(paths.instruments + '/'));
+      const document = JSON.parse(readFileSync(join(dirname(input.staged.manifestPath), file.stagedPath)));
+      document.instruments.find((row) => row.symbol === 'ZNEW').firstTradeDate = date;
+      input.preparedFiles.push({ path: file.path, bytes: Buffer.from(JSON.stringify(document)) });return input;
+    }), /SHORT_LISTING_PRICE_NOT_MATERIALIZED/);
+  });
+});
+
 test('short-listing exception rejects invented reasons, missing/invalid prices, wrong IDs, sufficient chart history and stale evidence', () => {
   const mutatePrice = (change) => (input) => { const document = JSON.parse(input.preparedFiles[0].bytes);change(document);input.preparedFiles[0].bytes = Buffer.from(JSON.stringify(document));return input; };
   for (const mutate of [
@@ -278,13 +290,23 @@ test('materialized factor components do not claim full Quant readiness while its
 test('partial Factor DNA readiness keeps disabled composites and publishes only evidenced typed factors', () => fixture((context) => {
   const { staged, qaProof } = productizationFixture(context, (input) => {
     const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
-    input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, publicationViolations: [], securities: { ZNEW: { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' } } } })) });
+    input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(factorShard({ ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' } }))) });
     input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'TECHNICAL_ONLY', artifactPaths: [path] };
     return input;
   });
   assert.equal(staged.productizationReadiness[0].products.QUANT.coverage, 'TECHNICAL_ONLY');
   assert.equal(applyCanonicalPublication({ root: context.root, staged, qaProof }).status, 'APPLIED');
   rollbackCanonicalPublication({ root: context.root, staged });
+}));
+
+test('an invented full-composite publication flag cannot override the repository Quant methodology', () => fixture((context) => {
+  context.write('quant/methodology/quant-v2.json', { publication: { allowed: false } });
+  assert.throws(() => productizationFixture(context, (input) => {
+    const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
+    const document = factorShard({ ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: null });document.publication.compositeAllowed = true;
+    input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(document)) });
+    input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'FULL', artifactPaths: [path] };return input;
+  }), /FULL_QUANT_READINESS_NOT_MATERIALIZED/);
 }));
 
 test('partial Factor DNA refuses numeric composites, fabricated factors and publication violations', () => {
@@ -296,11 +318,22 @@ test('partial Factor DNA refuses numeric composites, fabricated factors and publ
     assert.throws(() => productizationFixture(context, (input) => {
       const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
       const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: null };
-      const doc = { publication: { compositeAllowed: false }, securities: { ZNEW: record } };change(record, doc);
+      const doc = factorShard(record);change(record, doc);
       input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(doc)) });
       input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };
       return input;
     }), /PARTIAL_QUANT|QUANT_PUBLICATION_VIOLATIONS/);
+  });
+});
+
+test('partial Factor DNA publication requires the existing canonical shard schema and methodology', () => {
+  for (const change of [d => { d.schemaVersion = 'invented'; }, d => { d.methodologyVersion = 'invented'; }, d => { d.derivedFrom = 'invented'; }, d => { d.shard = 'DI'; }, d => { d.publication.rankingAllowed = true; }]) fixture((context) => {
+    assert.throws(() => productizationFixture(context, (input) => {
+      const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
+      const doc = factorShard({ ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: null });change(doc);
+      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(doc)) });
+      input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };return input;
+    }), /PARTIAL_QUANT_SHARD_CONTRACT_INVALID/);
   });
 });
 
@@ -317,7 +350,7 @@ test('partial publication recomputes canonical evidence violations despite a for
       const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
       const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' }, publicationViolations: [] };
       change(record);
-      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, publicationViolations: [], securities: { ZNEW: record } })) });
+      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(factorShard(record))) });
       input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };
       return input;
     }), /QUANT_PUBLICATION_VIOLATIONS/);
@@ -330,7 +363,7 @@ test('factor readiness is bound to exact canonical listing identity inside the a
     assert.throws(() => productizationFixture(context, (input) => {
       const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
       const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' }, ...changed };
-      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, securities: { ZNEW: record } })) });
+      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(factorShard(record))) });
       input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };
       return input;
     }), /QUANT_READINESS_IDENTITY_MISMATCH/);
@@ -347,6 +380,21 @@ test('columnar Screener membership and short IPO chart use actual listing-bound 
   assert.equal(staged.productizationReadiness[0].products.SCREENER.state, 'PASS');
   assert.equal(staged.productizationReadiness[0].products.CHARTS.state, 'PASS');
 }));
+
+test('canonical SEC bundles use their existing index for issuer binding without inventing a top-level CIK', () => {
+ const attachSec = (context, change=()=>{}) => productizationFixture(context, input => {
+  const addition=input.staged.additions[0],file=input.staged.files.find(entry=>entry.path.startsWith(paths.instruments+'/'));
+  const instruments=JSON.parse(readFileSync(join(dirname(input.staged.manifestPath),file.stagedPath)));
+  const instrument=instruments.instruments.find(row=>row.symbol==='ZNEW');instrument.cik='0001234567';instrument.issuerId='iss_cik_0001234567';
+  const canonical={schema:'vu-canonical-v1',security:{securityId:'sec_ZNEW',ticker:'ZNEW'},dataSource:{isMock:false}},index={companies:[{ticker:'ZNEW',securityId:'sec_ZNEW',cik:'0001234567',file:'canonical/ZNEW.json'}]};
+  change(canonical,index);
+  const canonicalPath='quant/data/sec/canonical/ZNEW.json',indexPath='quant/data/sec/canonical_index.json';
+  input.preparedFiles.push({path:file.path,bytes:Buffer.from(JSON.stringify(instruments))},{path:canonicalPath,bytes:Buffer.from(JSON.stringify(canonical))},{path:indexPath,bytes:Buffer.from(JSON.stringify(index))});
+  input.productizationReadiness[0].products.SEC={state:'PASS',artifactPaths:[canonicalPath,indexPath]};return input;
+ });
+ fixture(context=>{const {staged,qaProof}=attachSec(context);assert.equal(staged.productizationReadiness[0].products.SEC.state,'PASS');assert.equal(applyCanonicalPublication({root:context.root,staged,qaProof}).status,'APPLIED');});
+ for(const change of [(d,i)=>{i.companies[0].cik='0007654321';},(d,i)=>{i.companies[0].securityId='sec_OTHER';},(d,i)=>{i.companies[0].file='canonical/OTHER.json';},(d,i)=>{i.companies.push(i.companies[0]);},d=>{d.security.securityId='sec_OTHER';},d=>{d.security.ticker='OTHER';},d=>{d.security.isMock=true;},d=>{d.schema='invented';},d=>{d.dataSource.isMock=true;}])fixture(context=>{assert.throws(()=>attachSec(context,change),/SEC_READINESS_ISSUER_MISMATCH/);});
+});
 
 test('published factor history snapshots cannot be overwritten during product projection attachment', () => fixture((context) => {
   const path = 'quant/data/product/factor-evidence-history/vu-factor-evidence-2.0.0/2026-10-01.json.gz';

@@ -9,6 +9,22 @@ import {readDerivedFactorPopulationComparison} from './tiingo2-factor-population
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const load=p=>{const b=readFileSync(p);return JSON.parse(p.endsWith('.gz')?gunzipSync(b):b);};
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+export function compareBaselineLogos({shadow,baseline,records}){
+ const current=load(join(shadow,'discover/logos/index.json'));
+ const assets=records.filter(f=>f.path.startsWith('discover/logos/files/')),changedAssetBytes=[];
+ for(const f of assets){
+  const path=join(shadow,f.path);
+  if(!existsSync(path)){changedAssetBytes.push(f.path);continue;}
+  const bytes=readFileSync(path),oid=createHash('sha1').update(Buffer.from(`blob ${bytes.length}\0`)).update(bytes).digest('hex');
+  if(oid!==f.gitBlobOid)changedAssetBytes.push(f.path);
+ }
+ const changedExplicitWide=Object.entries(baseline.wideFiles??{}).filter(([t,p])=>current.wideFiles?.[t]!==p).map(([t])=>t);
+ return ['files','wide','dark'].map(kind=>{
+  const old=baseline[kind]??{},missing=Array.isArray(old)?old.filter(t=>!Array.isArray(current[kind])||!current[kind].includes(t)):Object.entries(old).filter(([t,p])=>current[kind]?.[t]!==p).map(([t])=>t);
+  return {name:'BASELINE_LOGO_MAPPING_'+kind.toUpperCase(),ok:!missing.length&&(kind!=='files'||!changedAssetBytes.length)&&(kind!=='wide'||!changedExplicitWide.length),
+   details:{changed:missing,...(kind==='files'?{baselineAssets:assets.length,changedAssetBytes}:{}),...(kind==='wide'?{changedExplicitWide}:{})}};
+ });
+}
 export function runShadowQa({root,shadow,readiness,baseline,out}){
  root=resolve(root);shadow=resolve(shadow);baseline=resolve(baseline);out=resolve(out);
  if(root===shadow)throw Error('ISOLATED_SHADOW_REQUIRED');
@@ -41,7 +57,7 @@ export function runShadowQa({root,shadow,readiness,baseline,out}){
   let lost=0;for(const [path,entries]of Object.entries(identities.searchIdentities[kind])){if(!existsSync(join(shadow,path))){lost+=entries.length;continue;}const current=new Set((load(join(shadow,path)).entries??[]).map(r=>r.i+'|'+r.s));lost+=entries.filter(r=>!current.has(r.i+'|'+r.s)).length;}check('BASELINE_SEARCH_ENTRIES_'+kind.toUpperCase(),lost===0,{lost});
  }
  const dna=load(join(shadow,'quant/data/product/factor-evidence-v1/screening.json.gz')),dnaSymbols=new Set(Object.keys(dna.rows??{}));check('BASELINE_FACTOR_DNA_COVERAGE',identities.factorDnaSymbols.every(t=>dnaSymbols.has(t)),{before:identities.factorDnaSymbols.length,after:dnaSymbols.size,missing:identities.factorDnaSymbols.filter(t=>!dnaSymbols.has(t))});
- const logos=load(join(shadow,'discover/logos/index.json'));for(const kind of ['files','wide','dark']){const old=identities.logos[kind]??{},missing=Array.isArray(old)?old.filter(t=>!Array.isArray(logos[kind])||!logos[kind].includes(t)):Object.entries(old).filter(([t,p])=>logos[kind]?.[t]!==p).map(([t])=>t);check('BASELINE_LOGO_MAPPING_'+kind.toUpperCase(),!missing.length,{changed:missing});}
+ for(const row of compareBaselineLogos({shadow,baseline:identities.logos,records}))check(row.name,row.ok,row.details);
  const screenBefore=load(join(baseline,'generated-screener-baseline.json')),screenAfter=load(join(shadow,'screener/data/universe-US_REAL.json')),screenSet=new Set(screenAfter.cols?.s??[]),symbols=screenBefore.symbols??[];check('BASELINE_SCREENER_MEMBERSHIP',symbols.every(t=>screenSet.has(t)),{before:symbols.length,after:screenSet.size,missing:symbols.filter(t=>!screenSet.has(t))});
  const ranked=load(join(baseline,'baseline-rank-populations.json')).rows;
  for(const [path,previous]of Object.entries(ranked)){const p=join(shadow,path);if(!existsSync(p)){findings.push({name:'BASELINE_DISCOVER_RANK_FILE_MISSING',path});continue;}const d=load(p),current=previous.surfaces?{surfaces:(d.surfaces??[]).map(s=>({id:s.id,symbols:(s.cards??[]).map(c=>c.symbol)}))}:{sort:d.sort,direction:d.direction,symbols:(d.cards??[]).map(c=>c.symbol)};if(!eq(previous,current))changes.push({path,category:'DISCOVER_POPULATION_OR_RANK_CHANGED',before:previous,after:current});}

@@ -15,9 +15,11 @@ const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const read = (file) => JSON.parse(readFileSync(file));
 const write = (file, data) => { mkdirSync(resolve(file, '..'), { recursive: true }); writeFileSync(file, JSON.stringify(data, null, 2) + '\n'); };
 
-export function classifyMaterializedFactorRecord(record, { publicationAllowed = false, refreshedPrice = true } = {}) {
+export function classifyMaterializedFactorRecord(record, { publicationAllowed = false, refreshedPrice = true, expectedSecurityId, expectedTicker, expectedAsOf } = {}) {
   if (!record?.factors || Evidence.publicationViolations(record).length || !refreshedPrice) return { quantStatus: 'BLOCKED', factorDnaStatus: 'NONE', availableFactors: [], fullQuantScoreReady: false };
+  if ((expectedSecurityId && record.securityId !== expectedSecurityId) || (expectedTicker && record.ticker !== expectedTicker) || (expectedAsOf && record.asOf !== expectedAsOf)) return { quantStatus: 'BLOCKED', factorDnaStatus: 'NONE', availableFactors: [], fullQuantScoreReady: false, reason: 'CANONICAL_FACTOR_BINDING_MISMATCH' };
   const availableFactors = Evidence.FACTOR_ORDER.filter((id) => record.factors[id]?.state === 'AVAILABLE');
+  if (availableFactors.some((id) => record.factors[id].score < 0 || record.factors[id].score > 100)) return { quantStatus: 'BLOCKED', factorDnaStatus: 'NONE', availableFactors: [], fullQuantScoreReady: false, reason: 'CANONICAL_FACTOR_SCORE_OUT_OF_RANGE' };
   const factorDnaStatus = availableFactors.length === Evidence.FACTOR_ORDER.length ? 'FULL' : availableFactors.length ? 'PARTIAL' : 'NONE';
   const technicalOnly = availableFactors.length && availableFactors.every((id) => ['momentum', 'risk'].includes(id));
   return { quantStatus: publicationAllowed && factorDnaStatus === 'FULL' ? 'QUANT_FULL' : technicalOnly ? 'TECHNICAL_ONLY' : availableFactors.length ? 'PARTIAL' : 'BLOCKED', factorDnaStatus, availableFactors, fullQuantScoreReady: publicationAllowed && factorDnaStatus === 'FULL' };
@@ -62,8 +64,8 @@ export async function materializeFactors({ root, tickers, marketStoreDir, privat
       if (!Evidence.validShard(artifact, Company.shardKey(ticker))) throw new Error('INVALID_CANONICAL_FACTOR_EVIDENCE_SHARD');
       record = artifact.securities?.[ticker] ?? null;
     }
-    const readiness = classifyMaterializedFactorRecord(record, { publicationAllowed: contract.publication.allowed === true, refreshedPrice: refreshed.has(ticker) });
     const market = marketRows.get(ticker);
+    const readiness = classifyMaterializedFactorRecord(record, { publicationAllowed: contract.publication.allowed === true, refreshedPrice: refreshed.has(ticker), expectedSecurityId: byTicker.get(ticker).securityId, expectedTicker: ticker, expectedAsOf: market?.asOf });
     const proof = record && readiness.availableFactors.length ? { state: 'MATERIALIZED', verified: true, artifactPath, artifactSha256: sha(bytes), schemaVersion: artifact.schemaVersion, methodologyVersion: artifact.methodologyVersion, ticker, securityId: record.securityId, asOf: record.asOf } : { state: 'NOT_MATERIALIZED', verified: false, artifactSha256: null };
     result.rows.push({ ticker, securityId: byTicker.get(ticker).securityId, ...readiness, refreshedPrice: refreshed.has(ticker), bars: record?.bars ?? market?.bars ?? null, canonicalEvidence: proof, factorStates: Object.fromEntries(Evidence.FACTOR_ORDER.map((id) => [id, record?.factors?.[id] ? { state: record.factors[id].state, reason: record.factors[id].reason ?? null, componentStates: (record.factors[id].components ?? []).map((component) => ({ id: component.id, state: component.state, reason: component.reason ?? null })) } : { state: 'UNAVAILABLE', reason: 'INPUT_NOT_MATERIALIZED' }])), marketFieldStatus: market?.fieldStatus ?? null, benchmark: scoped.benchmark, productQuantReady: proof.verified === true, fullQuantScoreState: contract.publication.allowed ? 'METHODOLOGY_ALLOWED' : 'BLOCKED_BY_EXISTING_METHODOLOGY' });
   }

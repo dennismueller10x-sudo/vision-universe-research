@@ -18,7 +18,7 @@ export function assertShadowRoot(root) {
     if(stat.isFile()&&stat.nlink>1)throw new Error('SHADOW_DATA_HARDLINK_UNSAFE');
     if(stat.isDirectory())for(const entry of readdirSync(path))check(join(path,entry));
   };
-  for (const path of ['quant','discover','screener']) {
+  for (const path of ['quant','discover','screener','supertrader']) {
     const parent=join(full,path);let stat;try{stat=lstatSync(parent);}catch(error){if(error.code==='ENOENT')continue;throw error;}
     if(stat.isSymbolicLink())throw new Error('SHADOW_DATA_SYMLINK_ESCAPES_ROOT');
     check(join(parent,'data'));
@@ -104,7 +104,7 @@ try:
    security_ids=list(dict.fromkeys(previous.get('securityIds',[])+[e['securityId'] for e in entries]))
    bundle=build_consumer_bundle(cik,payload,registry,as_of=config['asOf'],tickers=tickers,security_ids=security_ids,name=document['profile']['name'],fiscal_year_end_hint=document['profile'].get('fiscal_year_end'),provider=provider) if payload else None
    issuers['iss_cik_'+cik]=universe_coverage.issuer_fundamentals(document,registry)
-   if not bundle:
+   if not bundle or not any(series for scope in ['annual','quarterly'] for series in bundle[scope].values()):
     for entry in entries: report['rows'].append(failure(entry,'NO_PERIODIC_PIT_FACTS'))
     continue
    consumer_artifact=write(root/'quant/data/sec/consumer'/('CIK'+cik+'.json'),bundle)

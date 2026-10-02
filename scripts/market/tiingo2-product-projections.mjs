@@ -34,6 +34,15 @@ function loadFromRoot(root){return async path=>{
  return read(resolved);
 };}
 function memoryStorage(){const entries=new Map();return {getItem:key=>entries.get(key)??null,setItem:(key,value)=>entries.set(key,String(value)),snapshot:()=>JSON.stringify([...entries])};}
+function browserWatchlistIdentity(result,expected){
+ const row=result?.instrument;
+ return result?.status==='OK'&&row&&Master.inProductUniverse(row)&&
+  ['COMMON_STOCK','ADR','REIT','TRUST','SPAC'].includes(row.securityType)&&
+  ['EQUITY_COMMON','ADR','REIT','TRUST','SPAC'].includes(row.securityClass)&&
+  row.symbol===expected.symbol&&row.instrumentId===expected.instrumentId&&/^vu_[a-f0-9]+$/.test(row.instrumentId)&&
+  row.masterMemberId===expected.masterMemberId&&(row.legacyIds||[]).includes(row.masterMemberId)&&
+  (!row.cik||/^\d{10}$/.test(row.cik)&&row.issuerId==='iss_cik_'+row.cik);
+}
 
 /** Build the existing chart formats after canonical action/series validation. */
 export function projectChart(payload,security,{asOf}={}){
@@ -188,13 +197,19 @@ export async function materializeProductProjections({sourceRoot=codeRoot,shadowR
   const searchChecks=[];
   for(const query of [...new Set(queries)]){const result=await directory.search(query,{limit:500});searchChecks.push({query,found:result.entries.some(entry=>entry.i===row.instrumentId)});}
   item.search={ready:searchChecks.every(check=>check.found),reasonCodes:searchChecks.every(check=>check.found)?[]:['CANONICAL_SEARCH_PROJECTION_MISSING'],checks:searchChecks};
-  const identity=await ProductIdentity.resolveIdentity({ticker:row.symbol,securityId:row.instrumentId},{loadJSON});
-  const legacy=await ProductIdentity.resolveIdentity({ticker:row.symbol,securityId:row.masterMemberId},{loadJSON});
+  // Quant's actual consumer and Watchlist APIs resolve through this canonical
+  // browser directory. Its existing product scope includes preserved REVIEW
+  // rows such as DNA. The stricter server policy is a separate diagnostic.
+  const identity=await directory.getInstrument({symbol:row.symbol,instrumentId:row.instrumentId});
+  const legacy=await directory.getInstrument(row.masterMemberId);
+  const serverIdentity=await ProductIdentity.resolveIdentity({ticker:row.symbol,securityId:row.instrumentId},{loadJSON});
   const storage=memoryStorage();storage.setItem('vu.quant.watchlist.v1','protected-existing-user-selection');
   const legacyBefore=storage.getItem('vu.quant.watchlist.v1');Watchlist.save(storage,[row.symbol]);
   const loaded=Watchlist.load(storage),model=Watchlist.build(loaded,{state:'AVAILABLE',stocks:[{ticker:row.symbol,securityId:row.instrumentId,masterMemberId:row.masterMemberId,name:row.companyName,state:'AVAILABLE'}]});
-  const stable=identity.state==='AVAILABLE'&&legacy.state==='AVAILABLE'&&identity.identity.instrumentId===row.instrumentId&&legacy.identity.instrumentId===row.instrumentId&&model.members[0].securityId===row.instrumentId&&storage.getItem('vu.quant.watchlist.v1')===legacyBefore;
-  item.watchlist={ready:stable,reasonCodes:stable?[]:['CANONICAL_WATCHLIST_IDENTITY_NOT_RESOLVED'],persistentSelectionRoundtrip:loaded[0]===row.symbol,canonicalIdPreserved:stable,legacyIdResolved:legacy.state==='AVAILABLE',existingUserStorageTouched:false};
+  const primaryResolved=browserWatchlistIdentity(identity,row),legacyResolved=browserWatchlistIdentity(legacy,row);
+  const stable=primaryResolved&&legacyResolved&&model.members[0].securityId===row.instrumentId&&storage.getItem('vu.quant.watchlist.v1')===legacyBefore;
+  item.watchlist={ready:stable,reasonCodes:stable?[]:['CANONICAL_WATCHLIST_IDENTITY_NOT_RESOLVED'],persistentSelectionRoundtrip:loaded[0]===row.symbol,canonicalIdPreserved:stable,legacyIdResolved:legacyResolved,
+   identitySource:'EXISTING_CANONICAL_BROWSER_DIRECTORY',serverEligibilityState:serverIdentity.state,existingUserStorageTouched:false};
  }
  const dailyDir=join(shadowRoot,SERIES_DIR),longDir=join(shadowRoot,'quant/data/market/discover-series-long');
  for(const [dir,schema] of [[dailyDir,'discover-series-index-1.0.0'],[longDir,'discover-series-long-index-1.0.0']]){

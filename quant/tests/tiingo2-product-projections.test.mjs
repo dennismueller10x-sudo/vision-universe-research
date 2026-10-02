@@ -93,6 +93,36 @@ test('scoped projection cannot remint an existing security ID',async()=>{
  }finally{rmSync(sourceRoot,{recursive:true,force:true});}
 });
 
+test('DNA historical REVIEW policy resolves through the actual canonical browser directory without changing IDs or classifier metadata',async()=>{
+ const actual=read(resolve('quant/data/universe/instruments/DN.json')).instruments.find(instrument=>instrument.symbol==='DNA');
+ assert.equal(actual.productEligibility,'REVIEW');assert.equal(actual.securityType,'COMMON_STOCK');
+ for(const variant of ['valid','issuer-mismatch','preferred','missing-alias','ambiguous-legacy']){
+  const sourceRoot=mkdtempSync(join(tmpdir(),'vu-products-dna-')),shadowRoot=join(sourceRoot,'.market-cache/shadow');
+  try{
+   const canonical=structuredClone(actual);
+   if(variant==='issuer-mismatch')canonical.issuerId='iss_cik_0000000001';
+   if(variant==='preferred'){canonical.securityType='PREFERRED';canonical.securityClass='PREFERRED';}
+   if(variant==='missing-alias')canonical.legacyIds=[];
+   const alternate=variant==='ambiguous-legacy'?{...canonical,instrumentId:'vu_abcdef12345678',masterMemberId:'ref_OTHER',legacyIds:['ref_DNA','ref_OTHER']}:null;
+   const baseline={shard:'DN',instruments:[actual]},shadow={shard:'DN',instruments:[...(alternate?[alternate]:[]),canonical]};
+   put(sourceRoot,'quant/data/universe/instruments/DN.json',baseline);put(shadowRoot,'quant/data/universe/instruments/DN.json',shadow);
+   put(shadowRoot,'quant/data/universe/master-manifest.json',{asOf,shards:[{shard:'DN'}]});
+   mkdirSync(join(shadowRoot,'quant/config'),{recursive:true});copyFileSync(resolve('quant/config/company-master.json'),join(shadowRoot,'quant/config/company-master.json'));
+   const before=readFileSync(join(shadowRoot,'quant/data/universe/instruments/DN.json'),'utf8');
+   const result=await materializeProductProjections({sourceRoot,shadowRoot,securities:[{...canonical,ticker:'DNA'}],pricePayloads:new Map(),asOf});
+   const proof=result.readiness[0].watchlist;
+   assert.equal(readFileSync(join(shadowRoot,'quant/data/universe/instruments/DN.json'),'utf8'),before);
+   assert.deepEqual(read(join(sourceRoot,'quant/data/universe/instruments/DN.json')),baseline);
+   if(variant==='valid'){
+    assert.equal(proof.ready,true);assert.equal(proof.canonicalIdPreserved,true);assert.equal(proof.legacyIdResolved,true);
+    assert.equal(proof.persistentSelectionRoundtrip,true);assert.equal(proof.serverEligibilityState,'NOT_ELIGIBLE');
+    assert.equal(proof.identitySource,'EXISTING_CANONICAL_BROWSER_DIRECTORY');
+    assert.equal(result.readiness[0].instrumentId,actual.instrumentId);assert.equal(result.readiness[0].securityId,actual.masterMemberId);
+   }else assert.equal(proof.ready,false,variant);
+  }finally{rmSync(sourceRoot,{recursive:true,force:true});}
+ }
+});
+
 test('a canonical new listing with twenty-one actual sessions gains chart capability without technical or full Quant claims',async()=>{
  const sourceRoot=mkdtempSync(join(tmpdir(),'vu-products-short-')),shadowRoot=join(sourceRoot,'.market-cache/shadow');
  try{

@@ -43,7 +43,7 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { replayCommittedClassification } from './company-master-snapshot-replay.mjs';
+import { replayCommittedClassification, unchangedSnapshotShardBytes } from './company-master-snapshot-replay.mjs';
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -350,6 +350,7 @@ function loadCommittedGateUniverses() {
         name: s.company || s.name || null,
         active: typeof s.active === "boolean" ? s.active : undefined,
         securityId: s.securityId || null,
+        selection: s.selection || null,
         provider: s.provider || "tiingo"
       });
     }
@@ -572,7 +573,7 @@ function main() {
       inst.screenerEligible = inst.screenerEligible && row.active !== false;
     }
 
-    const replay=replayCommittedClassification(previousByListing.get(inst.symbol+'@'+String(inst.exchange||'').toUpperCase()),inst,{sourceKind:source.kind});
+    const replay=replayCommittedClassification(previousByListing.get(inst.symbol+'@'+String(inst.exchange||'').toUpperCase()),inst,{sourceKind:source.kind,sourceRow:row});
     inst=replay.instrument;
     if(replay.proposal)classificationReview.push(replay.proposal);
 
@@ -644,8 +645,8 @@ function main() {
        gelesen wird ohnehin mit einem Werkzeug. Die Berichte daneben
        (Manifest, Sync-Log, Qualitaet) bleiben eingerueckt - die liest
        jemand. */
-    const json = JSON.stringify(payload) + "\n";
     const before = existsSync(file) ? readFileSync(file, "utf8") : null;
+    const json = unchangedSnapshotShardBytes(before,payload,{sourceKind:source.kind}) ?? JSON.stringify(payload) + "\n";
     if (before !== json) { writeFileSync(file, json); written++; } else unchangedShards++;
     bytes += Buffer.byteLength(json);
     shardIndex.push({ shard: key, count: rows.length });

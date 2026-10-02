@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
+import {gunzipSync} from 'node:zlib';
 import { materializeFundamentals, assertShadowRoot } from '../../scripts/market/tiingo2-fundamentals.mjs';
 import { classifyMaterializedFactorRecord } from '../../scripts/market/tiingo2-factors.mjs';
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -48,9 +49,11 @@ test('actual SEC bulk pipeline produces PIT consumer/canonical/derived artifacts
     assert.deepEqual(report.scope, ['NOSEC', 'SCOP']);
     const canonical = JSON.parse(readFileSync(join(fixture.shadow, row.artifacts[1].path))); assert.equal(canonical.security.securityId, 'sec_SCOP', 'existing SEC-specific identity contract is unchanged');
     assert.ok(canonical.facts.length);
+    assert.equal(canonical.cik,undefined,'canonical SEC schema keeps issuer mapping in its separate canonical index');
     bundle.tickers.unshift('SCOP.B'); bundle.securityIds.unshift('ref_SCOP_B');
     writeFileSync(join(fixture.shadow,row.artifacts[0].path),JSON.stringify(bundle));
     const indexPath=join(fixture.shadow,'quant/data/sec/canonical_index.json'), index=JSON.parse(readFileSync(indexPath));
+    const mapped=index.companies.find(row=>row.ticker==='SCOP');assert.equal(mapped.cik,row.cik);assert.equal(mapped.securityId,canonical.security.securityId);assert.equal('quant/data/sec/'+mapped.file,row.artifacts[1].path,'index binds the actual SEC-specific document identity and file to the confirmed issuer');
     const retained={ticker:'OTHER',securityId:'sec_OTHER',cik:'4100000099',file:'canonical/OTHER.json'};index.companies.push(retained);writeFileSync(indexPath,JSON.stringify(index));
     const second = await materializeFundamentals({ root: fixture.shadow, tickers: ['SCOP'], privateDir: fixture.privateDir, asOf: '2024-09-30', archive: fixture.archive, allowNetwork: false });
     assert.equal(second.network.requests, 0);
@@ -76,7 +79,16 @@ test('nested directory, dangling file and hardlink destinations cannot redirect 
     symlinkSync(join(outside,'not-yet-written.json'),file);assert.throws(()=>assertShadowRoot(shadow),/SYMLINK/);rmSync(file);
     writeFileSync(join(outside,'baseline.json'),'protected baseline');linkSync(join(outside,'baseline.json'),file);assert.throws(()=>assertShadowRoot(shadow),/HARDLINK/);
     assert.equal(readFileSync(join(outside,'baseline.json'),'utf8'),'protected baseline');
+    rmSync(file);mkdirSync(join(shadow,'supertrader'),{recursive:true});symlinkSync(outside,join(shadow,'supertrader/data'));assert.throws(()=>assertShadowRoot(shadow),/SYMLINK/);
   }finally{rmSync(base,{recursive:true,force:true});}
+});
+test('actual canonical factor artifact readiness is bound to ticker, security identity, market date and score domain',()=>{
+ const artifact=JSON.parse(gunzipSync(readFileSync(join(root,'quant/data/product/factor-evidence-v1/AA.json.gz')))),record=artifact.securities.AA;
+ const expected={expectedSecurityId:record.securityId,expectedTicker:record.ticker,expectedAsOf:record.asOf};
+ assert.equal(classifyMaterializedFactorRecord(record,expected).quantStatus,'PARTIAL');
+ for(const spoof of [{expectedSecurityId:'ref_OTHER'},{expectedTicker:'OTHER'},{expectedAsOf:'2000-01-01'}])assert.equal(classifyMaterializedFactorRecord(record,{...expected,...spoof}).reason,'CANONICAL_FACTOR_BINDING_MISMATCH');
+ const corrupt=structuredClone(record),factor=Object.values(corrupt.factors).find(f=>f.state==='AVAILABLE');factor.score=101;
+ assert.equal(classifyMaterializedFactorRecord(corrupt,expected).reason,'CANONICAL_FACTOR_SCORE_OUT_OF_RANGE');
 });
 test('unavailable SEC identity source fails the whole scoped request once without fabricated fundamentals', async()=>{
   const fixture=setup();
@@ -85,6 +97,13 @@ test('unavailable SEC identity source fails the whole scoped request once withou
     assert.equal(report.counts.NONE,2);assert.equal(report.pipeline,null);assert.equal(report.network.requests,1,'one unavailable shared ticker map must not be requested once per security');
     assert.ok(report.rows.every(row=>row.reason==='SEC_IDENTITY_ACCESS_FAILURE'&&row.pitValid===false&&row.artifacts.length===0));
   }finally{rmSync(fixture.base,{recursive:true,force:true});}
+});
+test('a cutoff before every real filing cannot certify an empty PIT consumer bundle',async()=>{
+ const fixture=setup();
+ try{
+  const report=await materializeFundamentals({root:fixture.shadow,tickers:['SCOP'],privateDir:fixture.privateDir,asOf:'1900-01-01',archive:fixture.archive,allowNetwork:false});
+  assert.equal(report.rows[0].fundamentalsStatus,'NONE');assert.equal(report.rows[0].pitValid,false);assert.equal(report.rows[0].reason,'NO_PERIODIC_PIT_FACTS');assert.deepEqual(report.rows[0].artifacts,[]);
+ }finally{rmSync(fixture.base,{recursive:true,force:true});}
 });
 test('actual materialized factor states expose technical-only/partial/blockage and never activate disabled full7F', () => {
   const record = (available) => ({ factors: Object.fromEntries(Evidence.FACTOR_ORDER.map((id) => [id, available.includes(id) ? { state: 'AVAILABLE', score: 50 } : { state: 'UNAVAILABLE', score: null, reason: id === 'revisions' ? 'BLOCKED_EXTERNAL' : 'INPUT_NOT_MATERIALIZED' }])) });

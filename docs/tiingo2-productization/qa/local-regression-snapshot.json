@@ -2,13 +2,14 @@
   "schemaVersion": "tiingo2-productization-independent-regression-1",
   "scope": "LOCAL_BASELINE_AND_SOURCE_SNAPSHOT_PENDING_ACTUAL_PRODUCTIZED_SHADOW_CI",
   "acceptedBaseline": "1cf199eb54f13dcf96226c5c86c75431a9446c68",
-  "repositoryHead": "fe6622c760cd4d58a2e0cd55e58247847eccb2ff",
+  "repositoryHead": "ebe48a7b0c7c07f0acc161d17de1f4af90873793",
   "workingSourceSha256": {
-    "scripts/market/tiingo2-product-browser-qa.mjs": "fe90e90afa594ae8cfcea153dee43216ce72f2ce170f77179081a9d96d7c5871",
-    "scripts/market/tiingo2-product-shadow-qa.mjs": "1e0d3894c8d9bc5a7100686c8459fda4b2fa7331544de9d793f808f68140eee2",
+    "scripts/market/tiingo2-product-browser-qa.mjs": "8d81718c759709f0cbf71cb3cacc3bfa5729d76123e4e902d2943bfef1c3df35",
+    "scripts/market/tiingo2-product-shadow-qa.mjs": "f6238867052da76213f4545072d85137c1e8ba3f096b08bcf6a2b3ac389232d3",
     "scripts/market/tiingo2-product-surfaces.mjs": "e2b2e77afa2c06668e58725b40b857c99864d980c1f2ab51e4df92bf901aad3c",
-    "scripts/market/tiingo2-run-productization.mjs": "f16e63c856973011ba3de2ee8a7b1da0fc14019eb95177a90c3ea53f0e829acc",
-    "scripts/market/tiingo2-productize.mjs": "3f13b6a9891ce0848afbb76dbcd90834ccbfa009d090b1cd8b330f30600bdbac"
+    "scripts/market/tiingo2-run-productization.mjs": "eaff37172da0e18831b55b1990c807362df0e76146418d4b8601ffa20866d73d",
+    "scripts/market/tiingo2-productize.mjs": "3f13b6a9891ce0848afbb76dbcd90834ccbfa009d090b1cd8b330f30600bdbac",
+    "scripts/market/tiingo2-factor-population-qa.mjs": "073be5b9c6a870365e14ef5146593c182a8b33736c22c7a7c6b83226d75dee8a"
   },
   "node": {
     "main": {
@@ -60,6 +61,29 @@
       "passed": 70,
       "failed": 0,
       "scope": "Current logos, image visibility, finalizer, shadow-preservation guards"
+    },
+    "currentProductizationAndNoOpSlice": {
+      "tests": 63,
+      "passed": 63,
+      "failed": 0,
+      "scope": "Current productizer, offline no-op and existing Company Master contracts"
+    },
+    "companyMasterSnapshotReplay": {
+      "tests": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "factorPopulationAndShadowSlice": {
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "scope": "Derived score, average-tie rank, percentile, population, null semantics and existing shadow preservation guards"
+    },
+    "canonicalWatchlistSlice": {
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "scope": "Canonical ADR/class admission and actual visible hero identity bindings"
     }
   },
   "sec": {
@@ -118,5 +142,39 @@
     "unsupportedBrowserFallbackPreserved": true,
     "tests": 2,
     "passed": 2
+  },
+  "factorPopulationComparison": {
+    "scope": "ACTUAL_ACCEPTED_BASELINE_SELF_COMPARISON_ONLY_PENDING_PREPARED_SHADOW_DELTA",
+    "records": 6308,
+    "scoreChanges": 0,
+    "ordinalRankChanges": 0,
+    "availableByFactor": {
+      "quality": 3626,
+      "growth": 3211,
+      "momentum": 5573,
+      "value": 2518,
+      "profitability": 1960,
+      "revisions": 0,
+      "risk": 5573
+    },
+    "nullSemantics": "NULL_UNAVAILABLE_NONFINITE_NEVER_ZERO_OR_RANKED",
+    "rawProviderValuesExported": false,
+    "newHelperTests": 4,
+    "passed": 4
+  },
+  "primaryHeroWatchlistBrowserProof": {
+    "scope": "ACTUAL_EXISTING_DNA_DATA_AND_CURRENT_RELEASE_BUNDLE_ONLY",
+    "engine": "chromium",
+    "checks": 31,
+    "findings": 0,
+    "widths": [
+      1440,
+      390
+    ],
+    "canonicalAuxiliaryIdsVerified": true,
+    "legacyTickerArrayRetained": true,
+    "bindingReloadVerified": true,
+    "bindingRemovalVerified": true,
+    "actualAddedScopeProof": "PENDING_FINAL_GITHUB_SHADOW_RUN"
   }
 }
