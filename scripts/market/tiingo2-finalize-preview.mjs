@@ -37,6 +37,7 @@ export function finalizeProductizationPreview({root=process.cwd(),workDir=join(r
  if(verified.manifestSha256!==summary.manifestSha256||!verified.productReadinessSha256)throw Error('PUBLICATION_QA_MANIFEST_BINDING_FAILED');
  const historyPath=join(preparedRoot,'history-publication-plan.json'),history=read(historyPath);
  const manifest=read(run.stage);
+ if(!['canonicalMaterialized','currentProduction','proposedConsumer'].every(k=>Number.isSafeInteger(summary[k])&&summary[k]>=0)||summary.canonicalMaterialized!==manifest.additions.length||summary.proposedConsumer-summary.currentProduction!==manifest.additions.length)throw Error('PUBLICATION_SUMMARY_COUNT_BINDING_FAILED');
  validatePreparedHistoryPlan({history,additions:manifest.additions,publicationManifestSha256:verified.manifestSha256});
  const scope=new Map(JSON.parse(readinessBytes).rows.map(r=>[r.ticker,r]));if(manifest.additions.some(r=>scope.get(r.ticker)?.securityId!==r.securityId))throw Error('PUBLICATION_QA_SCOPE_BINDING_FAILED');
  for(const row of history.rows){const path=resolve(preparedRoot,row.path);if(!path.startsWith(preparedRoot+'/private-histories/')||!existsSync(path)||sha(readFileSync(path))!==row.sha256||row.existingObjectOverwriteAllowed!==false)throw Error('PRIVATE_HISTORY_PREPARATION_INVALID');}

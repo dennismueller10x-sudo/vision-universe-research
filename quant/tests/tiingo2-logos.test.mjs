@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, symlinkSync, linkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
@@ -113,7 +113,44 @@ test('a shadow-directory symlink cannot bypass the production asset guard', asyn
   const base = mkdtempSync(join(tmpdir(), 'logos-guard-seed-')), output = mkdtempSync(join(tmpdir(), 'logos-guard-shadow-'));
   mkdirSync(join(base, 'discover/logos'), { recursive: true }); mkdirSync(join(output, 'discover'), { recursive: true });
   symlinkSync(join(base, 'discover/logos'), join(output, 'discover/logos'), 'dir');
-  await assert.rejects(materializeLogos({ outputRoot: output, seedRoot: base, candidates: [row('AAA')] }), /PRODUCTION_LOGO_OUTPUT_FORBIDDEN/);
+  await assert.rejects(materializeLogos({ outputRoot: output, seedRoot: base, candidates: [row('AAA')] }), /PRODUCTION_LOGO_OUTPUT_FORBIDDEN|UNSAFE_LOGO_OUTPUT_LINK/);
+});
+
+test('nested logo/input/report links and hardlinks are rejected before any write or builder call', async t => {
+  const destinations = ['discover/logos/index.json', 'discover/logos/credits.json', 'discover/logos/files/AAA.png',
+    '.logo-input/discover/data/search/US_REAL.json', '.logo-input/verified-sites.json', 'tiingo2_logo_report.json'];
+  for (const destination of destinations) for (const type of ['symlink', 'hardlink', 'dangling']) await t.test(destination + ':' + type, async () => {
+    const base = mkdtempSync(join(tmpdir(), 'logos-protected-')), output = mkdtempSync(join(tmpdir(), 'logos-linked-'));
+    const protectedFile = join(base, type === 'dangling' ? 'absent.json' : 'protected.json');
+    if (type !== 'dangling') writeFileSync(protectedFile, 'outside bytes unchanged');
+    const target = join(output, destination); mkdirSync(join(target, '..'), { recursive: true });
+    if (type === 'hardlink') linkSync(protectedFile, target); else symlinkSync(protectedFile, target);
+    let invoked = false;
+    await assert.rejects(materializeLogos({ outputRoot: output, seedRoot: base, candidates: [row('AAA')],
+      runBuilder: async () => { invoked = true; } }), /UNSAFE_LOGO_OUTPUT_(LINK|HARDLINK)/);
+    assert.equal(invoked, false);
+    if (type === 'dangling') assert.equal(existsSync(protectedFile), false);
+    else assert.equal(readFileSync(protectedFile, 'utf8'), 'outside bytes unchanged');
+    assert.equal(existsSync(join(output, '.logo-input/quant/data/market/security-master/company-names.json')), false);
+  });
+});
+
+test('linked ancestors, source descendants and linked seed trees cannot import writable aliases', async () => {
+  const base = mkdtempSync(join(tmpdir(), 'logos-subtree-seed-')), shadow = mkdtempSync(join(tmpdir(), 'logos-subtree-shadow-'));
+  mkdirSync(join(base, 'discover/logos'), { recursive: true });
+  const protectedFile = join(base, 'protected.json'); writeFileSync(protectedFile, 'keep outside bytes');
+  let invoked = false;
+  const options = { seedRoot: base, candidates: [row('AAA')], runBuilder: async () => { invoked = true; } };
+  await assert.rejects(materializeLogos({ ...options, outputRoot: join(base, 'discover/logos/nested-shadow') }), /PRODUCTION_LOGO_OUTPUT_FORBIDDEN/);
+  assert.equal(existsSync(join(base, 'discover/logos/nested-shadow')), false);
+  const ancestor = join(shadow, 'alias'); symlinkSync(base, ancestor, 'dir');
+  await assert.rejects(materializeLogos({ ...options, outputRoot: join(ancestor, 'new-shadow') }), /UNSAFE_LOGO_OUTPUT_LINK/);
+  assert.equal(existsSync(join(base, 'new-shadow')), false);
+  symlinkSync(protectedFile, join(base, 'discover/logos/credits.json'));
+  await assert.rejects(materializeLogos({ ...options, outputRoot: shadow }), /UNSAFE_LOGO_OUTPUT_LINK/);
+  assert.equal(existsSync(join(shadow, '.logo-input')), false);
+  assert.equal(readFileSync(protectedFile, 'utf8'), 'keep outside bytes');
+  assert.equal(invoked, false);
 });
 
 test('existing central renderer follows shared wide asset paths, retains legacy URLs and image-error fallback', async () => {

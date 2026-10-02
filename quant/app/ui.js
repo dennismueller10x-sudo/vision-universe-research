@@ -14,6 +14,22 @@
   "use strict";
   var S = global.QuantShell, el = S.el;
 
+  // Native loading="lazy" may still download images several screens away.
+  // Keep decorative stock-section artwork dormant until its viewport is reached.
+  function visibleImage(src, attrs) {
+    var image = el("img", Object.assign({}, attrs, { "data-src": src }));
+    function load() { image.src = src; image.removeAttribute("data-src"); }
+    if (global.IntersectionObserver) {
+      var observer = new global.IntersectionObserver(function (entries) {
+        if (entries.some(function (entry) { return entry.target === image && entry.isIntersecting; })) {
+          observer.disconnect(); load();
+        }
+      });
+      observer.observe(image);
+    } else load();
+    return image;
+  }
+
   /* DIE FUENF BEREICHE VON QUANT - Owner-Entscheid 29.09.2026.
      "Quant Screener", nicht "Screener": so heisst das eigenstaendige
      Produkt unter /screener/, das NICHT zu Quant gehoert. */
@@ -245,6 +261,6 @@
     pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName, logo: logo,
     stockRow: stockRow, poster: poster, rail: rail, tickerChips: tickerChips, stat: stat, stats: stats, toneClass: toneClass,
     tile: tile, scoreBox: scoreBox, globe: globe,
-    watch: watch, recent: recent, el: el
+    watch: watch, recent: recent, el: el, visibleImage: visibleImage
   };
 })(window);

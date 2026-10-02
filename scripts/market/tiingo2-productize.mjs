@@ -101,6 +101,28 @@ function verifyReviewAddition({ticker,securityId,listing,evidence,proof,sourceCa
 }
 function sourceHashes(root){const paths=[CANONICAL_PUBLICATION_PATHS.raw,CANONICAL_PUBLICATION_PATHS.eligibility,CANONICAL_PUBLICATION_PATHS.names,'quant/data/universe/master-manifest.json'];for(const file of readdirSync(join(root,CANONICAL_PUBLICATION_PATHS.instruments)).filter(n=>n.endsWith('.json')))paths.push(CANONICAL_PUBLICATION_PATHS.instruments+'/'+file);return Object.fromEntries(paths.map(path=>[path,hash(readFileSync(join(root,path)))]));}
 
+/** Validate a cached accepted stage against the current canonical membership
+ * before any replay builder runs. A prior accepted scope is never a new diff. */
+export function assessProductizationReplay({root=process.cwd(),sourceRun,sourceCache,discoveryFile,asOf,expectedAdditions}={}){
+ const preview=read(join(sourceRun,'tiingo2_publication_preview.json'));
+ const inputs=loadProductizationInputs({sourceRun,sourceCache,discoveryFile,asOf,expectedAdditions:expectedAdditions??preview.ADDED.length});
+ const universe=resolveProductUniverse(root),raw=read(join(root,CANONICAL_PUBLICATION_PATHS.raw)).securities,master=instruments(root);
+ const present=[],missing=[];
+ for(const candidate of inputs.candidates){
+  const listing=raw.find(row=>row.securityId===candidate.securityId||symbol(row)===candidate.ticker);
+  if(!listing){missing.push(candidate.ticker);continue;}
+  const rows=master.filter(row=>row.masterMemberId===candidate.securityId&&row.symbol===candidate.ticker&&String(row.exchange).toUpperCase()===candidate.exchange);
+  const expectedInstrumentId=inputs.existingStage?.additions.find(row=>symbol(row)===candidate.ticker)?.instrumentId||Company.mintInstrumentId({...candidate,provider:'tiingo'},0);
+  const member=universe.securities.find(row=>row.securityId===candidate.securityId&&row.consumer);
+  if(listing.securityId!==candidate.securityId||symbol(listing)!==candidate.ticker||String(listing.exchange).toUpperCase()!==candidate.exchange||listing.startDate!==candidate.startDate||listing.active!==true||rows.length!==1||rows[0].instrumentId!==expectedInstrumentId||rows[0].firstTradeDate!==candidate.startDate||rows[0].active!==true||!member)throw Error('CACHED_STAGE_CANONICAL_IDENTITY_CONFLICT:'+candidate.ticker);
+  const expectedType=candidate.instrument_type==='EQUITY_COMMON'?'COMMON_STOCK':candidate.instrument_type;
+  if(rows[0].securityType!==expectedType)throw Error('CACHED_STAGE_CANONICAL_CLASSIFICATION_CONFLICT:'+candidate.ticker);
+  present.push({ticker:candidate.ticker,securityId:candidate.securityId,instrumentId:rows[0].instrumentId,exchange:candidate.exchange,startDate:candidate.startDate});
+ }
+ const state=missing.length?(present.length?'BLOCKED_REQUIRES_FRESH_DIFF':'NEW_ADDITIONS'):'NO_CHANGES';
+ return {state,asOf,acceptedScope:inputs.candidates.length,alreadyPresent:present.length,pending:missing.length,currentConsumer:universe.securities.filter(row=>row.consumer).length,ADDED:state==='NEW_ADDITIONS'?missing:[],REMOVED:[],unchanged:present,productionWrites:0,baselineHashes:sourceHashes(root)};
+}
+
 /** Reuse build-company-master and merge its verified additions into the exact
  * delivered master. Generic sync changes to any pre-existing row are ignored. */
 export function materializeShadowCompanyMaster({root,shadowRoot,candidates,workDir,today}){

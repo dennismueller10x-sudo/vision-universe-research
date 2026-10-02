@@ -28,11 +28,12 @@ export async function runProductBrowserQa({site,readiness,out,engine='chromium',
   check('PROTECTED_SHARE_CLASS_DISTINCT_IDS',!!protectedClasses.GOOG&&!!protectedClasses['BRK-A']&&protectedClasses.GOOG!==protectedClasses.GOOGL&&protectedClasses['BRK-A']!==protectedClasses['BRK-B']);
   for(const r of rows){
    const proof=await page.evaluate(async r=>{
-    const api=window.__tiingo2QaApi,search=await api.searchInstruments(r.ticker,{limit:30}),named=await api.searchInstruments(r.companyName,{limit:30});
+    const api=window.__tiingo2QaApi,search=await api.searchInstruments(r.ticker,{limit:30}),canonicalName=search.entries?.find(e=>e.ticker===r.ticker)?.name,named=await api.searchInstruments(canonicalName||r.companyName,{limit:30});
     const exact=list=>list.entries?.some(e=>e.ticker===r.ticker&&e.instrumentId===r.instrumentId&&e.masterMemberId===r.securityId);
-    const stock=await api.getStockIntelligence(r.ticker),chart=stock.chart,validBars=chart?.state==='AVAILABLE'&&chart.bars?.length>0&&chart.bars.every(b=>/^\d{4}-\d{2}-\d{2}$/.test(b.date)&&Number.isFinite(b.close)&&b.close>0);
+    const stock=await api.getStockIntelligence(r.ticker),chart=stock.chart,validBars=chart?.state==='AVAILABLE'&&chart.bars?.length>0&&chart.bars.every((b,i,list)=>/^\d{4}-\d{2}-\d{2}$/.test(b.date)&&Number.isFinite(b.close)&&b.close>0&&(!i||b.date>list[i-1].date));
+    const long=await api.getHistoricalPriceHistory(r.ticker,{range:'MAX'}),validLong=long.state==='AVAILABLE'&&long.bars?.length>0&&long.bars.every((b,i,list)=>Number.isFinite(b.close)&&b.close>0&&(!i||b.date>list[i-1].date));
     const factor=await api.getFactorEvidence(r.ticker),technical=await api.getTechnicalIntelligence(r.ticker),signals=await window.__tiingo2QaSignals;
-    return {symbolSearch:exact(search),nameSearch:exact(named),identity:stock.instrumentId===r.instrumentId&&stock.masterMemberId===r.securityId,chart:!!validBars,chartState:chart?.state??null,factorState:factor.state,availableFactorIds:(factor.factors||[]).filter(f=>f.state==='AVAILABLE').map(f=>f.id),compositeState:factor.composite?.state??null,compositeAllowed:factor.publication?.compositeAllowed===true,technicalState:technical.state,signalState:signals.results?.find(s=>s.ticker===r.ticker)?.state??'UNAVAILABLE'};
+    return {symbolSearch:exact(search),nameSearch:exact(named),identity:stock.instrumentId===r.instrumentId&&stock.masterMemberId===r.securityId,chart:!!validBars,chartState:chart?.state??null,validPrice:stock.price?.state==='AVAILABLE'&&Number.isFinite(stock.price.value)&&stock.price.value>0,long:!!validLong,longState:long.state,factorState:factor.state,availableFactorIds:(factor.factors||[]).filter(f=>f.state==='AVAILABLE').map(f=>f.id),compositeState:factor.composite?.state??null,compositeAllowed:factor.publication?.compositeAllowed===true,technicalState:technical.state,signalState:signals.results?.find(s=>s.ticker===r.ticker)?.state??'UNAVAILABLE'};
    },r);
    check('CANONICAL_SYMBOL_SEARCH',proof.symbolSearch,{ticker:r.ticker});check('CANONICAL_ISSUER_SEARCH',proof.nameSearch,{ticker:r.ticker});check('CANONICAL_DETAIL_IDENTITY',proof.identity,{ticker:r.ticker});
    let preservedBaseline=false;const existing=r.chart?.baselinePublished;
@@ -41,6 +42,14 @@ export async function runProductBrowserQa({site,readiness,out,engine='chromium',
     const source=JSON.parse(original);preservedBaseline=source.securityId===r.securityId&&createHash('sha256').update(original).digest('hex')===existing.dailyArtifactSha256&&JSON.stringify(source)===JSON.stringify(JSON.parse(delivered));
    }
    check('DECLARED_CHART_READINESS',r.chart?.ready?proof.chart:!proof.chart||preservedBaseline,{ticker:r.ticker,state:proof.chartState,freshReady:r.chart?.ready===true,preservedBaseline,freshValidationState:r.chart?.freshValidationState??null});
+   if(r.chart?.ready)check('VALID_DELIVERED_PRICE',proof.validPrice,{ticker:r.ticker});
+   if(r.chart?.longReady)check('DECLARED_MAX_HISTORY_READINESS',proof.long,{ticker:r.ticker,state:proof.longState});
+   if(!r.chart?.longReady&&existing?.longPath){
+    let valid=false;if(existing.state==='PRESERVED_BASELINE'&&existing.freshValidationIncluded===false&&existing.longPath==='/quant/data/market/discover-series-long/'+r.securityId+'.json'){
+     const source=await readFile(resolve(root,'.'+existing.longPath)),delivered=await readFile(resolve(site,'.'+existing.longPath));
+     valid=proof.long&&JSON.parse(source).securityId===r.securityId&&createHash('sha256').update(source).digest('hex')===existing.longArtifactSha256&&JSON.stringify(JSON.parse(source))===JSON.stringify(JSON.parse(delivered));
+    }check('PRESERVED_BASELINE_MAX_HISTORY',valid,{ticker:r.ticker,state:proof.longState,freshCertified:false});
+   }
    if(r.quant?.canonicalEvidence?.verified)check('CANONICAL_FACTOR_EVIDENCE',proof.factorState==='AVAILABLE',{ticker:r.ticker,state:proof.factorState});
    if(r.quant?.availableFactors?.length)check('DECLARED_FACTOR_AVAILABILITY',r.quant.availableFactors.every(id=>proof.availableFactorIds.includes(id)),{ticker:r.ticker});
    if(r.quant?.fullQuantScoreState==='BLOCKED_BY_EXISTING_METHODOLOGY')check('FULL_QUANT_METHODOLOGY_GATE',!proof.compositeAllowed&&proof.compositeState!=='AVAILABLE',{ticker:r.ticker,state:proof.compositeState});

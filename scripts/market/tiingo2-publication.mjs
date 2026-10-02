@@ -428,6 +428,7 @@ function verifyProductizationReadiness({ root, output, manifest, readiness }) {
         else if (product === 'QUANT') {
           const coverage = proof.coverage || 'FULL', factorRecord = document.securities?.[row.ticker];
           if (!['FULL', 'PARTIAL', 'TECHNICAL_ONLY'].includes(coverage) || !factorRecord) throw Error('QUANT_COVERAGE_NOT_MATERIALIZED');
+          if (factorRecord.securityId !== row.securityId || symbol(factorRecord) !== row.ticker) throw Error('QUANT_READINESS_IDENTITY_MISMATCH');
           const violations = [document.publicationViolations, document.evidence?.publicationViolations, factorRecord.publicationViolations, factorRecord.evidence?.publicationViolations].filter(Boolean);
           if (violations.some((value) => Array.isArray(value) ? value.length > 0 : value !== 0)) throw Error('QUANT_PUBLICATION_VIOLATIONS');
           if (coverage === 'FULL') {

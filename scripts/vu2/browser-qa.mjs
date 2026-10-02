@@ -267,6 +267,18 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    for(const satz of ['Welche Bedingungen gelten?','Wer passt heute?'])if(!text.includes(satz))befund(view,width,'fehlt: '+satz);
   }
   if(view==='aktie-nvda'){
+   // Artwork is fetched when its section is viewed, preserving the existing
+   // image and its URL while avoiding native lazy-loading mobile overfetch.
+   const art=page.locator('#strategie img.v2-collection-image').first();
+   if(await art.count()){
+    const deferred=await art.getAttribute('data-src'),initialSource=await art.getAttribute('src');
+    const offscreen=await art.evaluate(image=>image.getBoundingClientRect().top>innerHeight);
+    if(offscreen&&initialSource)befund(view,width,'offscreen strategy artwork fetched eagerly');
+    const expected=deferred||initialSource;
+    await art.scrollIntoViewIfNeeded();
+    await page.waitForFunction(src=>{const image=document.querySelector('#strategie img.v2-collection-image');return image&&image.getAttribute('src')===src&&image.complete&&image.naturalWidth>0;},expected);
+    await page.evaluate(()=>scrollTo(0,0));
+   }
    /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES KANONS - gelesen aus
       der Engine. Eine Gesamtnote gibt es bewusst nicht. */
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));

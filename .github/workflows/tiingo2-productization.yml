@@ -16,7 +16,7 @@ on:
         required: true
         default: main
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: tiingo2-productization-${{ github.ref }}
   cancel-in-progress: false
@@ -93,6 +93,19 @@ jobs:
           node scripts/market/tiingo2-product-browser-qa.mjs --site "$RUNNER_TEMP/tiingo2-productized-release" --root "$GITHUB_WORKSPACE" --readiness .verification/tiingo2-productization/tiingo2_product_readiness.json --out .verification/tiingo2-productization/browser-products --engine webkit
       - name: Bind complete QA to the exact canonical and private-history transaction
         run: node scripts/market/tiingo2-finalize-preview.mjs --out .verification/tiingo2-productization --release-output "$RUNNER_TEMP/tiingo2-productized-release"
+      # Branch-only materialization makes the accepted canonical outputs reviewable
+      # in this internal draft PR. workflow_run never writes production or main.
+      - name: Materialize verified canonical bytes in the internal review branch
+        if: github.event_name == 'pull_request' && github.head_ref == 'codex/tiingo2-productization' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          node scripts/market/tiingo2-apply-reviewed-preview.mjs
+          git add -f --pathspec-from-file=.market-cache/tiingo2-productization/preview-paths.nul --pathspec-file-nul
+          git config user.name vision-universe-bot
+          git config user.email bot@visionuniverse.de
+          if ! git diff --cached --quiet; then
+            git commit -m "Tiingo 2.0: canonical productization review preview"
+            git push origin HEAD:refs/heads/codex/tiingo2-productization
+          fi
       - name: Export derived evidence only
         if: always()
         uses: actions/upload-artifact@v4

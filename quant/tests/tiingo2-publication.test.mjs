@@ -279,6 +279,18 @@ test('partial publication recomputes canonical evidence violations despite a for
   });
 });
 
+test('factor readiness is bound to exact canonical listing identity inside the actual shard', () => {
+  for (const changed of [{ securityId: 'ref_DIFFERENT' }, { ticker: 'DIFFERENT' }]) fixture((context) => {
+    assert.throws(() => productizationFixture(context, (input) => {
+      const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
+      const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: partialFactors(), composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' }, ...changed };
+      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, securities: { ZNEW: record } })) });
+      input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };
+      return input;
+    }), /QUANT_READINESS_IDENTITY_MISMATCH/);
+  });
+});
+
 test('columnar Screener membership and short IPO chart use actual listing-bound public projections', () => fixture((context) => {
   const { staged } = productizationFixture(context, (input) => {
     const chart = JSON.parse(input.preparedFiles[0].bytes);chart.points = chart.points.slice(-21);chart.historyCoverage = 'SHORT_HISTORY';chart.sourceBarCount = 21;chart.from = chart.points[0][0];chart.to = chart.points.at(-1)[0];

@@ -1,6 +1,6 @@
 /** Shadow adapter for the existing central Discover company-logo builder. */
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync, existsSync, cpSync, rmSync, realpathSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, cpSync, rmSync, realpathSync, lstatSync, readdirSync } from 'node:fs';
 import { join, resolve, dirname, basename } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
@@ -14,6 +14,32 @@ const identityOK = row => row.identityVerified === true || row.identity?.resolve
 const cikOf = row => row.cik || row.sec?.cik || row.evidence?.sec?.cik || null;
 const companyKey = row => row.companyId || row.company_id || (cikOf(row) ? 'cik:' + String(Number(cikOf(row))) : 'security:' + (row.securityId || row.ticker));
 const physicalPath = file => existsSync(file) ? realpathSync(file) : join(physicalPath(dirname(file)), basename(file));
+const inside = (file, directory) => file === directory || file.startsWith(directory + '/');
+const statIfPresent = file => {
+  try { return lstatSync(file); }
+  catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+};
+
+// Check lstat rather than existsSync: dangling links are also unsafe write targets.
+// Inspect ancestors and complete existing writable trees before creating any input,
+// copying the baseline or invoking the central builder.
+function assertUnlinkedTree(file) {
+  file = resolve(file);
+  for (let ancestor = file; ; ancestor = dirname(ancestor)) {
+    const stat = statIfPresent(ancestor);
+    if (stat?.isSymbolicLink()) throw Error('UNSAFE_LOGO_OUTPUT_LINK:' + ancestor);
+    if (stat?.isFile() && stat.nlink > 1) throw Error('UNSAFE_LOGO_OUTPUT_HARDLINK:' + ancestor);
+    if (ancestor === dirname(ancestor)) break;
+  }
+  const visit = entry => {
+    const stat = statIfPresent(entry);
+    if (!stat) return;
+    if (stat.isSymbolicLink()) throw Error('UNSAFE_LOGO_OUTPUT_LINK:' + entry);
+    if (stat.isFile() && stat.nlink > 1) throw Error('UNSAFE_LOGO_OUTPUT_HARDLINK:' + entry);
+    if (stat.isDirectory()) for (const name of readdirSync(entry)) visit(join(entry, name));
+  };
+  visit(file);
+}
 
 export async function validateLogoAsset(file, { sharpImpl } = {}) {
   let sharp = sharpImpl;
@@ -57,19 +83,29 @@ export async function materializeLogos({ root = repositoryRoot, outputRoot, tick
   if (!outputRoot) throw Error('SHADOW_LOGO_OUTPUT_REQUIRED');
   root = resolve(root); outputRoot = resolve(outputRoot); seedRoot = resolve(seedRoot);
   const out = join(outputRoot, 'discover/logos');
-  if (physicalPath(out) === physicalPath(join(repositoryRoot, 'discover/logos')) ||
-    physicalPath(out) === physicalPath(join(seedRoot, 'discover/logos'))) throw Error('PRODUCTION_LOGO_OUTPUT_FORBIDDEN');
+  const inputRoot = join(outputRoot, '.logo-input'), reportFile = join(outputRoot, 'tiingo2_logo_report.json');
+  const sourceDirectories = [join(repositoryRoot, 'discover/logos'), join(seedRoot, 'discover/logos')];
+  // Both lexical descendants and physical aliases must be forbidden. Check links
+  // before resolving paths so dangling aliases cannot disappear during validation.
+  for (const destination of [out, inputRoot, reportFile]) {
+    if (sourceDirectories.some(source => inside(destination, source))) throw Error('PRODUCTION_LOGO_OUTPUT_FORBIDDEN');
+    assertUnlinkedTree(destination);
+    if (sourceDirectories.some(source => inside(physicalPath(destination), physicalPath(source)))) throw Error('PRODUCTION_LOGO_OUTPUT_FORBIDDEN');
+  }
+  const seedDirectory = join(seedRoot, 'discover/logos');
+  const shouldSeed = !existsSync(join(out, 'index.json')) && existsSync(seedDirectory);
+  // cpSync preserves source symlinks by default; refuse unsafe imported trees too.
+  if (shouldSeed) assertUnlinkedTree(seedDirectory);
   const requested = [...new Set(tickers || candidates.map(r => r.ticker))].sort();
   if (!requested.length || requested.some(t => !safeSymbol(t))) throw Error('INVALID_LOGO_TARGETS');
   const byTicker = new Map(candidates.map(r => [r.ticker, r]));
-  const previousRows = new Map((read(join(outputRoot, 'tiingo2_logo_report.json'), { rows: [] }).rows || []).map(r => [r.ticker, r]));
+  const previousRows = new Map((read(reportFile, { rows: [] }).rows || []).map(r => [r.ticker, r]));
   const targetRows = requested.map(t => byTicker.get(t) || { ticker: t, companyName: t, identityVerified: false });
   const safeRows = targetRows.filter(identityOK);
-  const inputRoot = join(outputRoot, '.logo-input');
   write(join(inputRoot, 'discover/data/search/US_REAL.json'), { entries: safeRows.map(r => ({ s: r.ticker, n: r.companyName })) });
   write(join(inputRoot, 'quant/data/market/security-master/company-names.json'), { rows: safeRows.map(r => ({ ticker: r.ticker, cik: cikOf(r) })) });
   mkdirSync(out, { recursive: true });
-  if (!existsSync(join(out, 'index.json')) && existsSync(join(seedRoot, 'discover/logos'))) cpSync(join(seedRoot, 'discover/logos'), out, { recursive: true });
+  if (shouldSeed) cpSync(seedDirectory, out, { recursive: true });
   const verifiedPath = join(inputRoot, 'verified-sites.json');
   write(verifiedPath, { sites: verifiedOfficialSites(safeRows, officialSites) });
   const args = [join(root, 'scripts/discover/build-company-logos.mjs'), '--root=' + inputRoot, '--output=' + out,
@@ -87,6 +123,7 @@ export async function materializeLogos({ root = repositoryRoot, outputRoot, tick
       child.once('error', rej); child.once('exit', code => code === 0 ? res() : rej(Error('CENTRAL_LOGO_BUILDER_FAILED:' + code)));
     });
   } catch (error) { builderFailure = error.message; onProgress('Central logo resolution unavailable; canonical fallback retained.\n'); }
+  for (const destination of [out, inputRoot, reportFile]) assertUnlinkedTree(destination);
   const index = read(join(out, 'index.json'), { version: 'company-logos-1.0.0', files: {}, dark: [], wide: {} });
   index.wideFiles ||= {};
   const credits = read(join(out, 'credits.json'), { version: index.version, credits: {} });
@@ -157,7 +194,7 @@ export async function materializeLogos({ root = repositoryRoot, outputRoot, tick
   const report = { schemaVersion: 1, pipeline: 'scripts/discover/build-company-logos.mjs',
     fallbackRenderer: '/discover/ui/logos.js', productionAssetsModified: false, requested: requested.length,
     canonicalCompanyAssets: canonicalAssets.size, builderFailure, counts, rows };
-  write(join(outputRoot, 'tiingo2_logo_report.json'), report);
+  write(reportFile, report);
   return report;
 }
 

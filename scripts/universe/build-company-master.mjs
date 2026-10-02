@@ -43,6 +43,7 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { replayCommittedClassification } from './company-master-snapshot-replay.mjs';
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -524,12 +525,19 @@ function main() {
 
   /* Aufnehmen: alles, was die ingest-Regeln erlauben. */
   const ingest = CONFIG.ingest;
+  const previous = loadPreviousMaster();
+  const previousByListing = new Map();
+  for(const instrument of previous.instruments){
+    const key=instrument.symbol+'@'+String(instrument.exchange||'').toUpperCase();
+    previousByListing.set(key,previousByListing.has(key)?null:instrument);
+  }
+  const classificationReview=[];
   const t0 = Date.now();
   const incoming = [];
   let droppedByIngest = 0;
   for (const row of source.rows) {
     const named = names.get(String(row.ticker || "").toUpperCase());
-    const inst = Master.toInstrument(
+    let inst = Master.toInstrument(
       Object.assign({}, row, { name: row.name || (named ? named.name : null) }),
       { today: TODAY, provider: row.provider || "tiingo" });
     if (named && inst.companyName) inst.companyNameStatus = "RESOLVED:" + named.source;
@@ -564,6 +572,10 @@ function main() {
       inst.screenerEligible = inst.screenerEligible && row.active !== false;
     }
 
+    const replay=replayCommittedClassification(previousByListing.get(inst.symbol+'@'+String(inst.exchange||'').toUpperCase()),inst,{sourceKind:source.kind});
+    inst=replay.instrument;
+    if(replay.proposal)classificationReview.push(replay.proposal);
+
     if (ingest.securityTypes && ingest.securityTypes.indexOf(inst.securityType) === -1) {
       droppedByIngest++; continue;
     }
@@ -577,7 +589,6 @@ function main() {
   const normalizeMs = Date.now() - t0;
   console.log(`  Aufgenommen: ${incoming.length} (${droppedByIngest} durch ingest-Regeln aussen vor)`);
 
-  const previous = loadPreviousMaster();
   console.log(`  Bestand:  ${previous.instruments.length} Instrumente (${previous.from})`);
 
   const t1 = Date.now();
@@ -700,6 +711,7 @@ function main() {
     },
     quality: { blocking: quality.blocking, findings: quality.findings }
   };
+  manifest.classificationReview={count:classificationReview.length,rows:classificationReview};
   writeJSON(join(OUT_ROOT, "master-manifest.json"), manifest);
 
   writeJSON(join(OUT_ROOT, "sync-log.json"), {

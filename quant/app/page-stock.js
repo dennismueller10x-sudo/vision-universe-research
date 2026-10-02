@@ -215,7 +215,7 @@
     var b = s.best, art = strategyArt(b.id);
     var kids = [el("p", { class: "dx-bewertung-satz qx-strategy-sentence" }, [el("b", { text: s.sentence })])];
     kids.push(el("a", { class: "v2-collection-link qx-strategy-link", href: X.routes.strategy(b.id) }, [
-      el("span", { class: "v2-collection-art" + (art ? " has-image" : ""), "aria-hidden": "true" }, [art ? el("img", { class: "v2-collection-image", src: art, alt: "", width: "1254", height: "1254", loading: "lazy", decoding: "async" }) : el("span", { class: "v2-collection-glyph", text: "↗" }),
+      el("span", { class: "v2-collection-art" + (art ? " has-image" : ""), "aria-hidden": "true" }, [art ? X.visibleImage(art, { class: "v2-collection-image", alt: "", width: "1254", height: "1254", loading: "lazy", decoding: "async" }) : el("span", { class: "v2-collection-glyph", text: "↗" }),
         el("span", { class: "v2-collection-art-label", text: b.label.split(" · ")[0] })]),
       el("span", { class: "v2-collection-copy" }, [el("strong", { text: b.label }), el("span", { text: b.countText + ". " + b.plain })]),
       el("span", { class: "v2-collection-arrow", text: "→" })]));

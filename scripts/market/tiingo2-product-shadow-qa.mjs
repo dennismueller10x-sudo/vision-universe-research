@@ -15,7 +15,7 @@ export function runShadowQa({root,shadow,readiness,baseline,out}){
  const check=(name,ok,details={})=>{const row={name,status:ok?'PASS':'FAIL',...details};checks.push(row);if(!ok)findings.push(row);};
  const records=Array.isArray(files)?files:files.files;let checkedProductionFiles=0;
  for(const f of records){
-  if(!/^(quant\/data|discover\/data|discover\/logos|supertrader\/data|screener\/data|dashboard\/config|quant\/config)\//.test(f.path))continue;
+  if(f.path!=='scripts/vu2/resource-budget.mjs'&&!/^(quant\/data|discover\/data|discover\/logos|supertrader\/data|screener\/data|dashboard\/config|quant\/config)\//.test(f.path))continue;
   checkedProductionFiles++;
   if(!existsSync(join(root,f.path))){findings.push({name:'PROTECTED_PRODUCTION_MISSING',path:f.path});continue;}
   const b=readFileSync(join(root,f.path)),oid=createHash('sha1').update(Buffer.from(`blob ${b.length}\0`)).update(b).digest('hex');

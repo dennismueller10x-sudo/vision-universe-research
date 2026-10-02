@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { assessEvidence } from '../../scripts/market/tiingo2-evidence.mjs';
-import { loadCandidatePriceInputs, prepareProductizationShadow, reconcileShadowIssuerMappings } from '../../scripts/market/tiingo2-productize.mjs';
+import { assessProductizationReplay, loadCandidatePriceInputs, prepareProductizationShadow, reconcileShadowIssuerMappings } from '../../scripts/market/tiingo2-productize.mjs';
 import { parseExchangeDirectory } from '../../scripts/market/tiingo2-refresh.mjs';
 const source=join(dirname(fileURLToPath(import.meta.url)),'../..'),Company=createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const digest=x=>createHash('sha256').update(x).digest('hex'),today='2026-10-02';
@@ -15,7 +15,7 @@ function save(root,path,doc){const file=join(root,path);mkdirSync(dirname(file),
 function fixture(fn,{baselineTicker='BASE'}={}){const root=mkdtempSync(join(tmpdir(),'vu-productize-'));try{
  cpSync(join(source,'quant/engines'),join(root,'quant/engines'),{recursive:true});
  cpSync(join(source,'quant/config/company-master.json'),join(root,'quant/config/company-master.json'),{recursive:true});
- mkdirSync(join(root,'scripts/universe'),{recursive:true});cpSync(join(source,'scripts/universe/build-company-master.mjs'),join(root,'scripts/universe/build-company-master.mjs'));
+ mkdirSync(join(root,'scripts/universe'),{recursive:true});for(const name of ['build-company-master.mjs','company-master-snapshot-replay.mjs'])cpSync(join(source,'scripts/universe',name),join(root,'scripts/universe',name));
  const raw={ticker:baselineTicker,securityId:'ref_'+baselineTicker,exchange:'NASDAQ',assetType:'Stock',currency:'USD',company:'Baseline Inc.',active:true,startDate:'2000-01-01'};
  const baseline=Company.toInstrument({...raw,name:raw.company},{today:'2026-09-01',provider:'tiingo'});Company.applyEligibility(baseline,{securityId:raw.securityId,product_eligibility:'ELIGIBLE',instrument_type:'EQUITY_COMMON'});
  baseline.firstSeen='2026-09-01';
@@ -119,4 +119,38 @@ test('SEC issuer mapping attaches only appended securities and refuses CIK reass
  assert.equal(mapped.rows[0].state,'MAPPED');assert.equal(result.securities[0].issuerId,'iss_cik_0001234567');
  assert.deepEqual(JSON.parse(readFileSync(join(result.shadowRoot,'quant/data/universe/instruments/BA.json'))).instruments[0],before);
  assert.equal(reconcileShadowIssuerMappings({shadowRoot:result.shadowRoot,securities:result.securities,byTicker:{IPO:{cik:'0007654321'}}}).rows[0].reason,'CIK_CONFLICT');
+}));
+
+test('repeated accepted stage is a verified no-op preserving later unrelated consumer additions',()=>fixture(options=>{
+ assert.equal(assessProductizationReplay({...options,asOf:today,expectedAdditions:1}).state,'NEW_ADDITIONS');
+ const prepared=prepareProductizationShadow({...options,today,runId:'repeat',expectedAdditions:1});
+ cpSync(join(options.workDir,'canonical-stage'),join(options.sourceRun,'canonical'),{recursive:true});
+ for(const path of ['quant/data/market/scale/universe-FULL_UNIVERSE.json','quant/data/market/security-master/eligibility.json','quant/data/market/security-master/company-names.json','quant/data/universe'])cpSync(join(prepared.shadowRoot,path),join(options.root,path),{recursive:true});
+ const rawPath=join(options.root,'quant/data/market/scale/universe-FULL_UNIVERSE.json'),raw=JSON.parse(readFileSync(rawPath));raw.securities.push({...raw.securities[1],ticker:'OTHER',securityId:'ref_OTHER'});writeFileSync(rawPath,JSON.stringify(raw));
+ const eligibilityPath=join(options.root,'quant/data/market/security-master/eligibility.json'),eligibility=JSON.parse(readFileSync(eligibilityPath));eligibility.decisions.push({...eligibility.decisions[1],ticker:'OTHER',securityId:'ref_OTHER'});eligibility.counts.universeMembers++;eligibility.counts.productUniverse++;eligibility.counts.ELIGIBLE++;writeFileSync(eligibilityPath,JSON.stringify(eligibility));
+ const before=readFileSync(rawPath),replayed=assessProductizationReplay({...options,asOf:'2026-10-03',expectedAdditions:1});
+ assert.equal(replayed.state,'NO_CHANGES');assert.equal(replayed.alreadyPresent,1);assert.equal(replayed.currentConsumer,3);assert.deepEqual(replayed.ADDED,[]);assert.deepEqual(replayed.REMOVED,[]);assert.equal(replayed.unchanged[0].instrumentId,prepared.securities[0].instrumentId);assert.deepEqual(readFileSync(rawPath),before);
+ const shardPath=join(options.root,'quant/data/universe/instruments/IP.json'),shard=JSON.parse(readFileSync(shardPath));shard.instruments[0].instrumentId='vu_changed';shard.instruments[0].masterMemberId='ref_OTHER';writeFileSync(shardPath,JSON.stringify(shard));
+ assert.throws(()=>assessProductizationReplay({...options,asOf:today,expectedAdditions:1}),/CACHED_STAGE_CANONICAL_IDENTITY_CONFLICT/);
+}));
+
+test('zero fresh accepted additions are NO_CHANGES after source integrity checks and partial cached scope requires a fresh diff',()=>fixture(options=>{
+ const prepared=prepareProductizationShadow({...options,today,runId:'partial',expectedAdditions:1});
+ cpSync(join(options.workDir,'canonical-stage'),join(options.sourceRun,'canonical'),{recursive:true});
+ for(const path of ['quant/data/market/scale/universe-FULL_UNIVERSE.json','quant/data/market/security-master/eligibility.json','quant/data/market/security-master/company-names.json','quant/data/universe'])cpSync(join(prepared.shadowRoot,path),join(options.root,path),{recursive:true});
+ const previewPath=join(options.sourceRun,'tiingo2_publication_preview.json'),policyPath=join(options.sourceRun,'tiingo2_consumer_policy_report.json'),discoveryPath=join(options.sourceRun,'tiingo2_fresh_discovery.json');
+ const preview=JSON.parse(readFileSync(previewPath)),policy=JSON.parse(readFileSync(policyPath)),discovery=JSON.parse(readFileSync(discoveryPath));
+ // A fixture without review extras remains a valid accepted snapshot; do not
+ // treat an already-present prefix as permission to publish its missing suffix.
+ rmSync(join(options.sourceRun,'canonical'),{recursive:true});preview.ADDED.push({ticker:'TWIN',securityId:'ref_TWIN'});policy.rows.push({...policy.rows[0],ticker:'TWIN',securityId:'ref_TWIN'});discovery.records.push({...discovery.records[0],ticker:'TWIN'});
+ writeFileSync(previewPath,JSON.stringify(preview));writeFileSync(policyPath,JSON.stringify(policy));writeFileSync(discoveryPath,JSON.stringify(discovery));
+ assert.equal(assessProductizationReplay({...options,asOf:today,expectedAdditions:2}).state,'BLOCKED_REQUIRES_FRESH_DIFF');
+ preview.ADDED=[];writeFileSync(previewPath,JSON.stringify(preview));
+ assert.equal(assessProductizationReplay({...options,asOf:today,expectedAdditions:0}).state,'NO_CHANGES');
+}));
+
+test('cached no-op preflight still refuses changed original stage bytes',()=>fixture(options=>{
+ prepareProductizationShadow({...options,today,runId:'tampered-preflight',expectedAdditions:1});cpSync(join(options.workDir,'canonical-stage'),join(options.sourceRun,'canonical'),{recursive:true});
+ const manifest=JSON.parse(readFileSync(join(options.sourceRun,'canonical/manifest.json')));writeFileSync(join(options.sourceRun,'canonical',manifest.files[0].stagedPath),'{}');
+ assert.throws(()=>assessProductizationReplay({...options,asOf:today,expectedAdditions:1}),/ACCEPTED_CANONICAL_STAGE_INTEGRITY_FAILED/);
 }));
