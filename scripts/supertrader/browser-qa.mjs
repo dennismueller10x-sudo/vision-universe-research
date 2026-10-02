@@ -73,29 +73,12 @@ async function main() {
   const report = [];
   for (const [vpName, vp, isMobile] of viewports) {
     const ctx = await browser.newContext(vp);
-    // Research-Zugangsmaske: der Smoke geht den echten geschuetzten Weg. Zuerst
-    // wird geprueft, dass die Maske ohne Login schuetzt - auch gegen einen aus
-    // dem oeffentlichen Pruefwert gebauten Browserzustand -, dann wird ueber das
-    // Formular mit dem Passwort aus RESEARCH_ACCESS_PASSWORD eingeloggt (nie geloggt).
-    if (args['access-login']) {
-      const pass = process.env.RESEARCH_ACCESS_PASSWORD || '';
-      const p = await ctx.newPage();
-      await p.goto(base + '/supertrader/', { waitUntil: 'domcontentloaded' });
-      await p.locator('#research-access-gate').waitFor({ timeout: 30000 });
-      await p.waitForTimeout(1500);
-      if (await p.locator('.st-hero').count()) failures.push(`${vpName} Zugangsmaske: Produkt ohne Login sichtbar`);
-      const cfg = JSON.parse(await p.locator('#research-access-settings').textContent());
-      await p.evaluate((c) => localStorage.setItem(c.storageKey, JSON.stringify({ version: c.version, verifier: c.verifier, key: c.verifier, expiresAt: Date.now() + c.durationMs })), cfg);
-      await p.reload({ waitUntil: 'domcontentloaded' });
-      await p.waitForTimeout(2500);
-      if (await p.locator('.st-hero').count()) failures.push(`${vpName} Zugangsmaske: oeffentlicher Pruefwert oeffnet das Produkt`);
-      if (!pass) failures.push(`${vpName} Zugangsmaske aktiv, aber kein Testpasswort (Secret RESEARCH_ACCESS_PASSWORD) verfuegbar`);
-      else {
-        await p.locator('#research-password').fill(pass);
-        await p.locator('#research-access-form button').click();
-        try { await p.locator('.st-hero').waitFor({ timeout: 60000 }); } catch { failures.push(`${vpName} Login ueber die Zugangsmaske fehlgeschlagen`); }
-      }
-      await p.close();
+    // Research-Zugangsmaske (clientseitig, docs/RESEARCH_ACCESS_GATE.md): wie im
+    // vu2-Smoke wird der oeffentliche Pruefwert als Browserzustand gesetzt. Kein
+    // Passwort noetig oder geloggt.
+    if (args['access-gate']) {
+      const gate = JSON.parse(fs.readFileSync(args['access-gate'], 'utf8'));
+      await ctx.addInitScript((c) => { if (/^https?:$/.test(location.protocol)) localStorage.setItem(c.storageKey, JSON.stringify({ version: c.version, verifier: c.verifier, expiresAt: Date.now() + c.durationMs })); }, gate);
     }
     for (const [name, url, selector] of routes) {
       const page = await ctx.newPage();

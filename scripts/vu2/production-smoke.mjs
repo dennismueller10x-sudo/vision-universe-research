@@ -33,11 +33,11 @@ const argv=process.argv.slice(2);
 const root=resolve(argv.find((a,i)=>!a.startsWith('--')&&!['--report','--only'].includes(argv[i-1])));
 // Test-only browser state of a successful login. Since gate version 2 the public
 // verifier no longer opens pages, so the state is derived from the build password
-// (RESEARCH_ACCESS_PASSWORD or the file RESEARCH_ACCESS_PASSWORD_FILE, never logged)
+// (RESEARCH_ACCESS_PASSWORD or the file RESEARCH_ACCESS_LOGIN_FILE, never logged)
 // and checked against the release's own config.
 const ACCESS_GATE=argv.includes('--access-gate')?await (async()=>{
  const config=JSON.parse(await readFile(resolve(root,'__research/config.json'),'utf8'));
- const password=process.env.RESEARCH_ACCESS_PASSWORD||(process.env.RESEARCH_ACCESS_PASSWORD_FILE?(await readFile(process.env.RESEARCH_ACCESS_PASSWORD_FILE,'utf8')).trim():'');
+ const password=process.env.RESEARCH_ACCESS_PASSWORD||(process.env.RESEARCH_ACCESS_LOGIN_FILE?(await readFile(process.env.RESEARCH_ACCESS_LOGIN_FILE,'utf8')).trim():'');
  const {accessStateFor,verifierForKey}=await import(new URL('../access-gate/build.mjs',import.meta.url));
  const state=accessStateFor(password);
  if(verifierForKey(state.key)!==config.verifier)throw new Error('--access-gate: Passwort passt nicht zum Release (kein Wert ausgegeben).');

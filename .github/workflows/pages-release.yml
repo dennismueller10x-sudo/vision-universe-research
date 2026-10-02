@@ -177,12 +177,12 @@ jobs:
         env:
           NODE_PATH: /tmp/vu2-smoke/node_modules
           SITE_ROOT: ${{ runner.temp }}/site
-          RESEARCH_ACCESS_PASSWORD_FILE: ${{ runner.temp }}/research-access.pass
+          RESEARCH_ACCESS_LOGIN_FILE: ${{ runner.temp }}/research-access.pass
         run: |
           set +e
           node scripts/vu2/production-smoke.mjs "$SITE_ROOT" --access-gate
           rc=$?
-          rm -f "$RESEARCH_ACCESS_PASSWORD_FILE"
+          rm -f "$RESEARCH_ACCESS_LOGIN_FILE"
           exit $rc
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
