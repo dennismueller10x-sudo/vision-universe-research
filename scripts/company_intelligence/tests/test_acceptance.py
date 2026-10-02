@@ -20,6 +20,14 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_valueless_html_attributes_do_not_break_source_discovery(self):
+        from company_intelligence.feeds import parse_links
+        links = parse_links(b'<a href="/investors" title aria-label type rel>Investors</a><link href="/rss" type rel>', 'https://example.com/')
+        self.assertEqual(links[0]['text'], 'Investors')
+        self.assertEqual(links[0]['url'], 'https://example.com/investors')
+        self.assertEqual(links[0]['type'], '')
+        self.assertEqual(links[1]['rel'], '')
+
     def test_operating_and_phase_results_are_not_financial_earnings_releases(self):
         from company_intelligence.pipeline import Pipeline
         from company_intelligence.model import classify

@@ -20,7 +20,7 @@ class Links(HTMLParser):
         if tag in ('script', 'style'):
             self.ignore += 1
         if tag in ('a', 'link') and attrs.get('href'):
-            link = {'href': attrs['href'], 'text': attrs.get('title') or attrs.get('aria-label', ''), 'type': attrs.get('type', ''), 'rel': attrs.get('rel', '')}
+            link = {'href': attrs['href'], 'text': attrs.get('title') or attrs.get('aria-label') or '', 'type': attrs.get('type') or '', 'rel': attrs.get('rel') or ''}
             self.links.append(link)
             if tag == 'a':
                 self.current = link
