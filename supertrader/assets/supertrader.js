@@ -784,10 +784,12 @@
       var cells = [
         ['Trigger', num(p.trigger.value), p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'geplant · Kauf-Stop darüber' : 'geplant · ' + ({ DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || '') + ' darüber'],
         p.stop ? ['Stop', num(p.stop.value), 'aktueller Stop'] : ['Ungültig', num(p.invalidation.value), 'geplant · ' + (p.invalidation.basis === 'LOW' ? 'Tagestief' : 'Schluss') + ' darunter'],
-        p.entry ? ['Modelleinstieg', num(p.entry.price), dateShort(p.entry.date) + (p.entry.basis === 'BUY_STOP' ? (p.entry.gappedAboveTrigger ? ' · Eröffnung über Trigger' : ' · Kauf-Stop') : ' zur Eröffnung')] : ['Modelleinstieg', 'keiner', p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'sobald der Kurs den Trigger übersteigt' : p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung'],
+        p.entry ? ['Modelleinstieg', num(p.entry.price), dateShort(p.entry.date) + (p.entry.basis === 'BUY_STOP' ? (p.entry.gappedAboveTrigger ? ' · Eröffnung über Trigger' : ' · Kauf-Stop') + (p.entry.evidence === 'INTRADAY_1MIN' ? '' : ' · angenommen') : ' zur Eröffnung')] : ['Modelleinstieg', 'keiner', p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'sobald der Kurs den Trigger übersteigt' : p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung'],
       ];
       var pc = D && portfolioCell(D, s); if (pc) cells.push(pc);
       kids.push(h('div', { class: 'st-cells' + (cells.length > 3 ? ' four' : '') }, cells.map(function (c, i) { return h('div', { class: 'c' + (i === 1 ? ' bad' : '') }, [h('span', { class: 'k', text: c[0] }), h('strong', { text: c[1] }), h('span', { class: 'd', text: c[2] })]); })));
+      var en = evidenceNote(p);
+      if (en) kids.push(en);
       var nxt = p.phase === 'PREPARED' && p.trigger.basis !== 'INTRADAY_BUY_STOP' ? 'Wartet auf ' + ({ DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || 'Schluss') + ' über ' + num(p.trigger.value) + ' — dann Modelleinstieg zur nächsten Eröffnung.' : p.nextAction.text;
       kids.push(h('div', { class: 'st-next', title: p.nextAction.text }, [h('span', { class: 'k', text: 'Nächster Schritt des Modells' }), h('p', { text: nxt }), h('span', { class: 'r', title: p.nextAction.ruleId, text: 'Kursdaten vom ' + dateDe(p.nextAction.dataAsOf) })]));
     } else {
@@ -796,6 +798,18 @@
     kids.push(h('div', { class: 'why2' }, [h('span', { class: 'k', text: 'Warum diese Aktie?' }), h('p', { text: shortWhy(s) })]));
     if (s.quality) kids.push(qualityRow(s, strat));
     return h('div', { class: 'st-lensblock', style: worldVars(strat) }, kids);
+  }
+  // Runde 9: Belegart einer Kauf-Stop-Ausfuehrung. Tagesbalken zeigen, DASS der Trigger
+  // erreicht wurde, nicht WANN; die Reihenfolge von Kauf und Tagestief kann offen sein.
+  function evidenceNote(p) {
+    if (!p.entry || p.entry.basis !== 'BUY_STOP') return null;
+    var sameDay = (p.exits || []).filter(function (x) { return x.date === p.entry.date; })[0];
+    var txt;
+    if (sameDay && sameDay.basis === 'SAME_DAY_CERTAIN') txt = 'Ausstieg am Kauftag sicher: Der Tag schloss unter dem Stop – nach dem Kauf muss der Kurs den Stop durchschritten haben.';
+    else if (p.entry.sameDayOrder === 'AMBIGUOUS') txt = 'Reihenfolge am Kauftag offen: Das Tagestief lag unter dem Einstieg. Ob es vor oder nach dem Kauf entstand, zeigen Tageskurse nicht. Das Modell nimmt an: vorher – die Position läuft weiter. Liegt es danach, wäre sie am selben Tag zum Stop verkauft worden.';
+    else if (p.entry.evidence === 'INTRADAY_1MIN') return null;
+    else txt = p.entry.gappedAboveTrigger ? 'Ausführung angenommen: Der Kurs eröffnete über dem Trigger, das Modell kauft zur Eröffnung.' : 'Ausführung angenommen: Das Tageshoch erreichte den Trigger. Zu welcher Uhrzeit gekauft worden wäre, zeigen Tageskurse nicht.';
+    return h('p', { class: 'st-evid', 'data-k': p.entry.sameDayOrder === 'AMBIGUOUS' ? 'open' : 'assumed', text: txt });
   }
   function qualityRow(s, strat) {
     var q = s.quality, labels = (strat.quality_tiers && strat.quality_tiers.labels) || {};

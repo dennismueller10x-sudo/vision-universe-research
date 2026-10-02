@@ -704,7 +704,7 @@ export function planOf(s) {
     trigger: { value: r4(s.levels?.trigger), kind: 'PLANNED_THRESHOLD', label: 'geplanter Schwellenwert', basis: p.confirmBasis, dataAsOf: levelsAsOf, ruleId: p.confirmRuleId },
     invalidation: { value: r4(s.levels?.invalidation), kind: 'PLANNED_THRESHOLD', label: 'geplante Invalidation', basis: p.invalidationBasis, dataAsOf: levelsAsOf, ruleId: p.invalidationRuleId },
     confirmation: s.confirmation ? { date: s.confirmation.date, close: s.confirmation.close, basis: s.confirmation.basis, ruleId: s.transitions.find((x) => x.state === 'TRIGGERED')?.ruleId || p.confirmRuleId } : null,
-    entry: s.entry ? { date: s.entry.date, price: r4(s.entry.price), rawOpen: s.entry.rawOpen, basis: s.entry.priceBasis, gappedAboveTrigger: !!s.entry.gappedAboveTrigger, kind: 'MODEL_EXECUTION' } : null,
+    entry: s.entry ? { date: s.entry.date, price: r4(s.entry.price), rawOpen: s.entry.rawOpen, basis: s.entry.priceBasis, gappedAboveTrigger: !!s.entry.gappedAboveTrigger, kind: 'MODEL_EXECUTION', evidence: s.entry.evidence || (s.entry.priceBasis === 'BUY_STOP' ? 'DAILY_BAR_HIGH_REACHED_TRIGGER' : 'DAILY_BAR_OPEN'), sameDayOrder: s.entry.sameDayOrder || null } : null,
     stop: Number.isFinite(s.stop) ? { value: r4(s.stop), ruleId: s.stopRuleId, dataAsOf: s.stopHistory?.[s.stopHistory.length - 1]?.date || null } : null,
     exits: (s.exits || []).map((x) => ({ date: x.date, price: r4(x.price), fraction: x.fraction, ruleId: x.ruleId, basis: x.priceBasis, kind: 'MODEL_EXECUTION' })),
     exitSummary: p.exitSummary,
