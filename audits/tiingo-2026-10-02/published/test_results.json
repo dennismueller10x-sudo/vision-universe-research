@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-10-02",
+  "evidenceRequests": 507,
+  "rawEvidencePublication": false,
+  "testedImplementationCommit": "bba98cd83ca5314e8b30ca59069ec45eab88836a",
+  "suites": [
+    {
+      "name": "Combined Quant/Product/Discover/Screener/SuperTrader/Worker",
+      "command": "node --test 'quant/tests/*.test.mjs' 'discover/tests/*.test.mjs' 'screener/tests/*.test.mjs' 'scripts/supertrader/tests/*.test.mjs' worker/tests/*.test.mjs",
+      "passed": 2586,
+      "failed": 0,
+      "skipped": 5,
+      "total": 2591
+    },
+    {
+      "name": "SEC Python",
+      "command": "python3 scripts/quant/cli.py test",
+      "passed": 484,
+      "failed": 0
+    },
+    {
+      "name": "US classifier/listing/cache/master focused",
+      "command": "node --test quant/tests/preferred-bank-classification.test.mjs quant/tests/us-eligibility-listing-period.test.mjs quant/tests/us-security-master.test.mjs quant/tests/us-security-master-artefacts.test.mjs quant/tests/universe-source.test.mjs",
+      "passed": 76,
+      "failed": 0
+    },
+    {
+      "name": "Adjustment/provider/backtest focused",
+      "passed": 169,
+      "failed": 0
+    },
+    {
+      "name": "Europe identity/reference/archive",
+      "command": "python3 -m unittest discover -s audits/tiingo-2026-10-02/europe -p 'test*.py'",
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "name": "Read-only collector safety",
+      "command": "python3 -m unittest discover -s audits/tiingo-2026-10-02/runtime -p 'test*.py'",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "name": "Certified-source release build",
+      "command": "node scripts/vu2/build-release.mjs --output=/workspace/scratch/tiingo-release-certified",
+      "result": "PASS"
+    },
+    {
+      "name": "Certified-source built-site browser smoke",
+      "command": "NODE_PATH=/workspace/scratch/tiingo-browser/node_modules CHROMIUM_PATH=/usr/bin/chromium node scripts/vu2/production-smoke.mjs /workspace/scratch/tiingo-release-certified",
+      "result": "PRODUCTION_SMOKE_CLEAN"
+    },
+    {
+      "name": "No local FX arithmetic",
+      "command": "node scripts/quality/assert-no-local-fx.mjs",
+      "result": "PASS"
+    },
+    {
+      "name": "Currency layer proof",
+      "command": "node scripts/quality/verify-currency-layer.mjs",
+      "result": "PASS"
+    },
+    {
+      "name": "Authenticated encrypted evidence envelope",
+      "command": "python3 -m unittest discover -s audits/tiingo-2026-10-02/runtime -p 'test_secure_evidence.py'",
+      "passed": 3,
+      "failed": 0
+    }
+  ],
+  "esefPresentOnBaseline": false,
+  "fullPrivatePackageOfflineReproduction": "PASS"
+}

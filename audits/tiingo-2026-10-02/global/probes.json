@@ -532,23 +532,25 @@
     {
       "id": "china-900901-metadata",
       "group": "china_local",
-      "company": "Shanghai Yatong B",
+      "company": "INESA Electron B",
       "symbol": "900901",
       "path": "/tiingo/daily/900901",
       "params": {},
-      "purpose": "Test dated ZIP-discovered SHGB local candidate; measure fields, latest date, currency and adjustment availability."
+      "purpose": "Test dated ZIP-discovered SHGB local candidate; measure fields, latest date, currency and adjustment availability.",
+      "identityCorrection": "Original planned label Shanghai Yatong was incorrect; actual provider metadata identifies INESA Electron."
     },
     {
       "id": "china-900901-history",
       "group": "china_local",
-      "company": "Shanghai Yatong B",
+      "company": "INESA Electron B",
       "symbol": "900901",
       "path": "/tiingo/daily/900901/prices",
       "params": {
         "startDate": "2025-09-01",
         "endDate": "2026-10-02"
       },
-      "purpose": "Test dated ZIP-discovered SHGB local candidate; measure fields, latest date, currency and adjustment availability."
+      "purpose": "Test dated ZIP-discovered SHGB local candidate; measure fields, latest date, currency and adjustment availability.",
+      "identityCorrection": "Original planned label Shanghai Yatong was incorrect; actual provider metadata identifies INESA Electron."
     },
     {
       "id": "hongkong-0700-metadata",
@@ -618,7 +620,7 @@
       "symbol": "510040",
       "path": "/tiingo/daily/510040",
       "params": {},
-      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: SSE180 Value ETF; provider labels ETF in ZIP"
+      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: Penghua SSE180 ETF; provider labels ETF in ZIP"
     },
     {
       "id": "china-etf-510040-history",
@@ -629,7 +631,7 @@
         "startDate": "2025-09-01",
         "endDate": "2026-10-02"
       },
-      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: SSE180 Value ETF; provider labels ETF in ZIP"
+      "purpose": "Audit mainland ETF data access and provider assetType discrepancy: Penghua SSE180 ETF; provider labels ETF in ZIP"
     }
   ]
 }

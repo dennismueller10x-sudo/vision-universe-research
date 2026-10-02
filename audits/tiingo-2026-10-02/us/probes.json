@@ -1,6 +1,6 @@
 {
   "schemaVersion": "tiingo-audit-probes-1.0.0",
-  "maxRequests": 40,
+  "maxRequests": 44,
   "probes": [
     {
       "id": "us-dna-metadata",
@@ -360,6 +360,42 @@
         "format": "json"
       },
       "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-doo-metadata",
+      "path": "/tiingo/daily/DOO",
+      "params": {},
+      "purpose": "Validate recycled symbol whose old ETF listing causes common-stock false exclusion",
+      "group": "us"
+    },
+    {
+      "id": "us-doo-history",
+      "path": "/tiingo/daily/DOO/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate current account price support for exclusion after period selection",
+      "group": "us"
+    },
+    {
+      "id": "us-chai-metadata",
+      "path": "/tiingo/daily/CHAI",
+      "params": {},
+      "purpose": "Validate recycled symbol whose old ETF listing causes common-stock false exclusion",
+      "group": "us"
+    },
+    {
+      "id": "us-chai-history",
+      "path": "/tiingo/daily/CHAI/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate current account price support for exclusion after period selection",
       "group": "us"
     }
   ]
