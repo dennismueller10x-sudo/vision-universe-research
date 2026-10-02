@@ -24,6 +24,12 @@ const read=p=>JSON.parse(readFileSync(p,'utf8')),sha=b=>createHash('sha256').upd
 const Company=createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const write=(p,d)=>{mkdirSync(dirname(p),{recursive:true});writeFileSync(p,JSON.stringify(d,null,2)+'\n');};
 const byTicker=rows=>new Map((rows||[]).map(r=>[r.ticker,r]));
+export function assertScopedSecIdentities({securities,report}){
+ const scope=new Set(securities.map(row=>row.ticker));
+ const contradictions=new Set(['SEC_IDENTITY_CIK_COLLISION','SEC_SUBMISSIONS_CIK_COLLISION','SEC_LISTING_IDENTITY_NOT_CONFIRMED']);
+ const blocked=(report.rows||[]).filter(row=>scope.has(row.ticker)&&contradictions.has(row.reason));
+ if(blocked.length)throw Error('NEW_SECURITY_SEC_IDENTITY_CONTRADICTION: '+blocked.map(row=>row.ticker+':'+row.reason).join(','));
+}
 export function assembleLogoCandidates({prepared,projection,fundamentals}){
  const securities=byTicker(prepared.priceSecurities||prepared.securities),projected=byTicker(projection.report?.rows||projection.rows),secRows=byTicker(fundamentals.rows);
  const cik=value=>/^\d{1,10}$/.test(String(value??''))?String(value).padStart(10,'0'):null;
@@ -33,7 +39,7 @@ export function assembleLogoCandidates({prepared,projection,fundamentals}){
   // Accepted discovery candidates retain their audited identity evidence.
   // Existing regression members need fresh canonical/SEC proof; old raw rows
   // contain no decision identity and a preserved chart alone proves nothing.
-  if(candidate.regressionCase!==true)return {...candidate,companyId};
+  if(candidate.regressionCase!==true)return {...candidate,companyId,cik:cik(security?.cik)||candidate.cik};
   const product=projected.get(candidate.ticker),sec=secRows.get(candidate.ticker),canonicalCik=cik(security?.cik);
   const resolved=!!(security&&prepared.pricePayloads?.has(candidate.ticker)&&product?.watchlist?.ready===true&&
    product.securityId===security.securityId&&product.instrumentId===security.instrumentId&&
@@ -128,7 +134,9 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  onProgress('Canonical company/security/listing and private histories materialized\n');
  if(benchmarkPreflight)try{onProgress(JSON.stringify(await restoreBenchmarkReference({marketStoreDir,preflightFile:benchmarkPreflight}))+'\n');}catch(error){onProgress('Benchmark reference unavailable: '+error.message+'\n');}
  const fundamentals=await materializeFundamentals({root:shadowRoot,tickers:scope,privateDir:join(workDir,'sec-private'),asOf,allowNetwork,onProgress});
- reconcileShadowIssuerMappings({shadowRoot,securities:prepared.securities,byTicker:fundamentals.byTicker});
+ assertScopedSecIdentities({securities:prepared.securities,report:fundamentals});
+ const issuerMappings=reconcileShadowIssuerMappings({shadowRoot,securities:prepared.securities,byTicker:fundamentals.byTicker});
+ if(issuerMappings.rows.some(row=>row.state==='BLOCKED'))throw Error('NEW_SECURITY_CANONICAL_CIK_CONFLICT');
  const projection=await materializeProductProjections({sourceRoot:root,shadowRoot,securities:prepared.priceSecurities||prepared.securities,pricePayloads:prepared.pricePayloads,asOf});
  const factors=await materializeFactors({root:shadowRoot,tickers:scope,marketStoreDir,privateDir:join(workDir,'factor-private'),asOf,onProgress});
  const surfaces=await materializeProductSurfaces({shadowRoot,marketStoreDir,tickers:scope,freshPriceTickers:[...prepared.pricePayloads.keys()],privateDir:join(workDir,'surface-private'),onProgress});

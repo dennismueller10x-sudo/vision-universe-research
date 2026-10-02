@@ -1,6 +1,6 @@
 {
   "shard": "955",
-  "count": 11,
+  "count": 10,
   "issuers": [
     {
       "cik": "0000006955",
@@ -1526,7 +1526,7 @@
       "rawFacts": 687,
       "mappedFacts": 262,
       "unmappedFacts": 408,
-      "calendarYears": 1,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -1659,12 +1659,11 @@
         "accession": "0001213900-26-090191",
         "filing_date": "2026-08-14",
         "form": "10-Q",
-        "periodic_filings": 9,
-        "acceptance_datetime": "2026-08-14T20:36:58.000Z"
+        "periodic_filings": 9
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.9.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
         "quality_rules": "1.0.0",
@@ -1675,162 +1674,6 @@
       },
       "sourceDigest": "f5b0af7af84d444c0ec934100ef8710dafde41f7c7c31a7ff6723e978be9468c",
       "issuerId": "iss_cik_0002015955"
-    },
-    {
-      "cik": "0002123955",
-      "name": "Pinnacle Acquisition Corp",
-      "sic": "6770",
-      "rawFacts": 28,
-      "mappedFacts": 9,
-      "unmappedFacts": 13,
-      "calendarYears": 1,
-      "industry": null,
-      "industryMetrics": {},
-      "fiscalYearEnd": "1231",
-      "tickers": [
-        "PNAQ",
-        "PNAQ-UN"
-      ],
-      "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 2,
-      "firstPeriodEnd": "2026-03-31",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
-      "metrics": {
-        "capital_expenditures": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "eps_diluted": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "free_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0,
-          "derivedFrom": [
-            [
-              "operating_cash_flow",
-              "capital_expenditures"
-            ]
-          ]
-        },
-        "long_term_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "net_income": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 1,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "operating_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "revenue": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "short_term_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 2,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 1,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "total_debt": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0,
-          "derivedFrom": [
-            [
-              "total_debt"
-            ],
-            [
-              "long_term_debt",
-              "short_term_debt"
-            ]
-          ]
-        }
-      },
-      "quality": {
-        "HIGH": 4
-      },
-      "pit": {
-        "state": "PIT_READY",
-        "datableValues": 4,
-        "resolvedValues": 4
-      },
-      "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 18,
-        "by_severity": {
-          "INFO": 13,
-          "WARNING": 5
-        },
-        "by_code": {
-          "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 13
-        }
-      },
-      "latestFiling": {
-        "accession": "0001213900-26-101046",
-        "filing_date": "2026-09-18",
-        "form": "10-Q",
-        "periodic_filings": 1,
-        "acceptance_datetime": "2026-09-17T21:40:37.000Z"
-      },
-      "versions": {
-        "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
-        "formula": "1.2.0",
-        "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
-        "metric_registry": {
-          "schema_version": 1,
-          "mapping_version": "1.5.0"
-        }
-      },
-      "sourceDigest": "bca8683d27fc7b1e8ee21752e803eb70fcd4a5db7a93f8ea163a14a075207d78",
-      "issuerId": "iss_cik_0002123955"
     }
   ]
 }

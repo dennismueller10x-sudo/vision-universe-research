@@ -58,7 +58,7 @@ report={'schemaVersion':'tiingo2-fundamentals-materialization-1.0.0','asOf':conf
 def write(path,data):
  path.parent.mkdir(parents=True,exist_ok=True); body=(json.dumps(data,separators=(',',':'))+'\n').encode(); path.write_bytes(body)
  return {'path':str(path.relative_to(root)),'sha256':hashlib.sha256(body).hexdigest(),'bytes':len(body)}
-def failure(entry,code,error=None): return {'ticker':entry['ticker'],'securityId':entry.get('securityId'),'cik':entry.get('cik'),'fundamentalsStatus':'NONE','reason':code,'error':error,'pitValid':False,'artifacts':[]}
+def failure(entry,code,error=None): return {'ticker':entry['ticker'],'securityId':entry.get('securityId'),'cik':entry.get('cik'),'issuerId':entry.get('issuerId'),'identityVerified':entry.get('identityVerified',False),'identityReason':entry.get('identityReason'),'identityEvidence':entry.get('identityEvidence'),'fundamentalsStatus':'NONE','reason':code,'error':error,'pitValid':False,'artifacts':[]}
 resolved=[]
 map_error=None
 try:
@@ -73,8 +73,13 @@ for entry in config['entries']:
   cik=current or hint
   if not cik: report['rows'].append(failure(entry,'NO_SEC_CIK')); continue
   submissions=provider.get_submissions(cik); actual=[str(t).upper() for t in submissions.get('tickers',[])]
+  if normalize_cik(submissions.get('cik'))!=cik: report['rows'].append(failure(entry,'SEC_SUBMISSIONS_CIK_COLLISION')); continue
   if entry['ticker'] not in actual and current is None: report['rows'].append(failure(entry,'SEC_LISTING_IDENTITY_NOT_CONFIRMED')); continue
-  resolved.append(dict(entry,cik=cik))
+  verified=dict(entry,cik=cik,issuerId='iss_cik_'+cik,identityVerified=True,identityReason='SEC_TICKER_SUBMISSIONS_VERIFIED',identityEvidence={'provider':'sec_edgar','tickerMapMatched':current==cik,'submissionsTickerMatched':entry['ticker'] in actual,'submissionsCikMatched':True})
+  resolved.append(verified)
+  # Issuer identity exists independently of periodic financial statements.
+  # A newly listed issuer may have a confirmed CIK and no usable PIT facts.
+  report['byTicker'][entry['ticker']]=failure(verified,'FUNDAMENTALS_NOT_MATERIALIZED')
  except Exception as exc: report['rows'].append(failure(entry,'SEC_IDENTITY_ACCESS_FAILURE',str(exc)))
 groups={}
 for entry in resolved: groups.setdefault(entry['cik'],[]).append(entry)
@@ -116,7 +121,7 @@ try:
     canonical=build_company_bundle(document,registry,entry['ticker']); artifact=write(root/'quant/data/sec/canonical'/(entry['ticker']+'.json'),canonical)
     canonical_rows[entry['ticker']]={'ticker':entry['ticker'],'securityId':canonical['security']['securityId'],'cik':cik,'name':canonical['security']['name'],'file':'canonical/'+entry['ticker']+'.json',**{key:canonical['coverage'][key] for key in ['factCount','metricIds','suppressedCells','annualYearsExamined','quarterlyYears']}}
     consumer_index.setdefault('byTicker',{})[entry['ticker']]={'cik':cik,'file':'consumer/CIK'+cik+'.json','annualYears':summary['annualYears'],'quarterly':summary['quarterly'],'ttm':summary['ttm'],'h3':summary['h3'],'h5':summary['h5'],'h10':summary['h10']}
-    row={'ticker':entry['ticker'],'securityId':entry['securityId'],'cik':cik,'issuerId':'iss_cik_'+cik,'sic':document['profile'].get('sic'),'fundamentalsStatus':status,'reason':None,'pitValid':bool(pit),'annualYears':summary['annualYears'],'quarterly':summary['quarterly'],'ttm':summary['ttm'],'metrics':summary['metrics'],'metricAvailability':{m:('AVAILABLE' if m in present else 'NOT_REPORTED') for m in core},'artifacts':[consumer_artifact,artifact]}
+    row={'ticker':entry['ticker'],'securityId':entry['securityId'],'cik':cik,'issuerId':'iss_cik_'+cik,'identityVerified':True,'identityReason':entry['identityReason'],'identityEvidence':entry['identityEvidence'],'sic':document['profile'].get('sic'),'fundamentalsStatus':status,'reason':None,'pitValid':bool(pit),'annualYears':summary['annualYears'],'quarterly':summary['quarterly'],'ttm':summary['ttm'],'metrics':summary['metrics'],'metricAvailability':{m:('AVAILABLE' if m in present else 'NOT_REPORTED') for m in core},'artifacts':[consumer_artifact,artifact]}
     report['rows'].append(row); report['byTicker'][entry['ticker']]=row
     print(entry['ticker']+': '+status+' '+str(summary['annualYears'])+' years',flush=True)
   universe_coverage.write_issuer_shards(root,issuers)
@@ -126,6 +131,8 @@ except Exception as exc:
  done={r['ticker'] for r in report['rows']}
  for entry in resolved:
   if entry['ticker'] not in done: report['rows'].append(failure(entry,'SEC_BULK_ACCESS_OR_MATERIALIZATION_FAILURE',str(exc)))
+for row in report['rows']:
+ if row.get('identityVerified'): report['byTicker'][row['ticker']]=row
 report['rows'].sort(key=lambda r:r['ticker']); report['counts']={state:sum(r['fundamentalsStatus']==state for r in report['rows']) for state in ['FULL','PARTIAL','NONE']}; report['network']=dict(client.stats)
 report['canonicalProductionWrites']=0
 Path(config['resultFile']).write_text(json.dumps(report,indent=2)+'\n')

@@ -40,6 +40,7 @@ test('actual SEC bulk pipeline produces PIT consumer/canonical/derived artifacts
     const report = await materializeFundamentals({ root: fixture.shadow, tickers: ['SCOP', 'NOSEC'], privateDir: fixture.privateDir, asOf: '2024-09-30', archive: fixture.archive, allowNetwork: false });
     assert.equal(report.pipeline.facts_source, 'bulk_companyfacts_zip'); assert.equal(report.network.requests, 0, 'cached submissions and bulk facts must not fetch per-company XBRL');
     assert.equal(report.rows.find((row) => row.ticker === 'NOSEC').fundamentalsStatus, 'NONE');
+    assert.equal(report.byTicker.NOSEC,undefined,'unresolved ticker cannot create a canonical issuer mapping');
     const row = report.rows.find((row) => row.ticker === 'SCOP'); assert.equal(row.pitValid, true); assert.equal(row.fundamentalsStatus, 'FULL'); assert.equal(row.artifacts.length, 2);
     const bundle = JSON.parse(readFileSync(join(fixture.shadow, row.artifacts[0].path)));
     assert.equal(bundle.dataSource.isMock, false, 'existing producer provenance is preserved for fixture SEC inputs');
@@ -103,6 +104,16 @@ test('a cutoff before every real filing cannot certify an empty PIT consumer bun
  try{
   const report=await materializeFundamentals({root:fixture.shadow,tickers:['SCOP'],privateDir:fixture.privateDir,asOf:'1900-01-01',archive:fixture.archive,allowNetwork:false});
   assert.equal(report.rows[0].fundamentalsStatus,'NONE');assert.equal(report.rows[0].pitValid,false);assert.equal(report.rows[0].reason,'NO_PERIODIC_PIT_FACTS');assert.deepEqual(report.rows[0].artifacts,[]);
+  const identity=report.byTicker.SCOP;assert.equal(identity.cik,'4100000001');assert.equal(identity.issuerId,'iss_cik_4100000001');assert.equal(identity.securityId,'ref_SCOP');assert.equal(identity.identityVerified,true);assert.equal(identity.identityReason,'SEC_TICKER_SUBMISSIONS_VERIFIED');assert.equal(identity.identityEvidence.submissionsCikMatched,true);
+  assert.equal(identity.fundamentalsStatus,'NONE');assert.equal(identity.pitValid,false);assert.deepEqual(identity.artifacts,[],'known company identity never certifies unavailable financial statements');
+ }finally{rmSync(fixture.base,{recursive:true,force:true});}
+});
+test('an official SEC ticker-map CIK collision cannot produce a verified issuer mapping',async()=>{
+ const fixture=setup();
+ try{
+  const names=join(fixture.shadow,'quant/data/market/security-master/company-names.json'),doc=JSON.parse(readFileSync(names));doc.rows.find(row=>row.ticker==='SCOP').cik='4100000002';writeFileSync(names,JSON.stringify(doc));
+  const report=await materializeFundamentals({root:fixture.shadow,tickers:['SCOP'],privateDir:fixture.privateDir,asOf:'2024-09-30',archive:fixture.archive,allowNetwork:false});
+  assert.equal(report.rows[0].reason,'SEC_IDENTITY_CIK_COLLISION');assert.equal(report.rows[0].identityVerified,false);assert.equal(report.byTicker.SCOP,undefined);assert.equal(report.pipeline,null);assert.deepEqual(report.rows[0].artifacts,[]);
  }finally{rmSync(fixture.base,{recursive:true,force:true});}
 });
 test('actual materialized factor states expose technical-only/partial/blockage and never activate disabled full7F', () => {
