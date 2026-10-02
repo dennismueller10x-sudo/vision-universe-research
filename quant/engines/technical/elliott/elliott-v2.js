@@ -41,7 +41,7 @@
   var Hash = isNode ? require("../../hash.js") : global.VUHash;
   var P = isNode ? require("./patterns.js") : global.VUTechnical.ElliottPatterns;
 
-  var ENGINE_VERSION = "elliott-2.0.0";
+  var ENGINE_VERSION = "elliott-2.2.0";
   var REPAINTING_POLICY = "CONFIRMS_WITH_DELAY";
   var MAX_PATTERN_LEGS = 7;
 
@@ -56,7 +56,16 @@
     clarity: { high: 0.12, moderate: 0.05 },
     structural: { high: 0.68, moderate: 0.55 },
     clusterToleranceAtr: 0.6, minZoneHalfWidthAtr: 0.35,
-    alternativeMinInvalidationGapAtr: 0.5
+    alternativeMinInvalidationGapAtr: 0.5,
+    /* V2.1 — A-PRIORI festgelegt (vor jeder Ergebnisbetrachtung, siehe ELLIOTT_VALIDATION_REPORT §5):
+       Count Quality = fachliche Guete der Zaehlung, KEINE Trefferwahrscheinlichkeit. */
+    countQuality: { weights: { guidelines: 0.25, subdivision: 0.15, higherDegree: 0.2, proportion: 0.15, personality: 0.1, clarity: 0.15 },
+                    high: 0.7, moderate: 0.55, clarityFull: 0.15 },
+    applicability: { high: 0.62, moderate: 0.48, minSignalToNoise: 1.6 },
+    coarserScalePreference: 0.03,
+    /* "MULTI" (V2.2) oder "LEGACY" (V2.1: zweitgroebste Skala mit genug Legs) — fuer Vorher/Nachher-Vergleiche */
+    scaleSelection: "MULTI", nestedHigherDegree: true,
+    stickiness: 0.03
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -234,7 +243,28 @@
   /** Uebergeordneter Trend, den das Muster impliziert. */
   function impliedTrend(e) { return e.family === "MOTIVE" ? e.sign : -e.sign; }
 
+  /**
+   * V2.2 — Eltern-Kind-Konsistenz (EWP Kap. 1 "Degree"; NEoWave "Similarity"): Die Lesart der Analyseskala muss
+   * IN die Welle des hoeheren Grades passen, die ihren Zeitraum enthaelt — Richtung gleich, Musterfamilie passend
+   * zur erwarteten Unterteilung dieser Welle (M = Motiv, K = Korrektur). Ein Muster, das ueber mehrere Wellen des
+   * hoeheren Grades reicht, ist schlecht verschachtelt.
+   */
+  function nestedFit(e, higher) {
+    if (!higher || !higher.waveSpecs || !higher.waveSpecs.length) return null;
+    var a = e.waves[0].fromIndex, b = e.waves[e.waves.length - 1].toIndex, span = Math.max(1, b - a);
+    var best = null, bestOv = 0;
+    higher.waveSpecs.forEach(function (w) { var ov = Math.min(b, w.toIndex) - Math.max(a, w.fromIndex); if (ov > bestOv) { bestOv = ov; best = w; } });
+    if (!best) return 0.3;
+    var r = Math.min(1, bestOv / span);
+    var dirOk = e.sign === best.dir, fam = e.family;
+    var match = best.expected === "M" ? (fam === "MOTIVE" && dirOk ? 1 : dirOk ? 0.45 : 0.1)
+              : best.expected === "K" ? (fam === "CORRECTIVE" && dirOk ? 1 : dirOk ? 0.5 : fam === "CORRECTIVE" ? 0.35 : 0.15)
+              : (dirOk ? 0.9 : 0.25);
+    return r * match + (1 - r) * 0.3;
+  }
   function higherDegreeFit(e, dw, complete, higher) {
+    var nf = higher && higher.nested === false ? null : nestedFit(e, higher);
+    if (isNum(nf)) return nf;
     if (!higher || !higher.current) return 0.5;
     var H = higher.current.direction, role = higher.current.role;
     var moveDir = complete ? -waveDirection(e.sign, e.waves.length) : waveDirection(e.sign, dw);
@@ -348,6 +378,9 @@
     TRIANGLE: "Dreieck", WXY: "Doppelte Korrektur (W-X-Y)", DOUBLE_ZIGZAG: "Doppel-Zigzag"
   };
 
+  /** Identitaet einer Lesart ueber die Zeit: Muster, Startpivot, Richtung (unabhaengig von der laufenden Welle). */
+  function candidateKey(e) { return e.type + "|" + e.waves[0].fromIndex + "|" + e.sign; }
+  function buildCountId(e) { return "ev2_" + Hash.hashValue({ t: e.type, s: e.startLeg, dw: e.developingWave, c: e.complete, p: e.waves.map(function (l) { return [l.fromIndex, l.toIndex]; }) }).slice(0, 12); }
   function buildCount(e, ctx, atr) {
     var spec = P.PATTERNS[e.type], dw = e.developingWave;
     var inv = e.complete ? { hard: null, revision: null } : P.invalidation(e.type, e.waves, dw);
@@ -364,7 +397,7 @@
     var nextDir = e.complete ? curDir : (dw === spec.waves ? -curDir : -curDir);
     var labels = spec.displayLabels || spec.labels;
     var count = {
-      countId: "ev2_" + Hash.hashValue({ t: e.type, s: e.startLeg, dw: dw, c: e.complete, p: e.waves.map(function (l) { return [l.fromIndex, l.toIndex]; }) }).slice(0, 12),
+      countId: buildCountId(e),
       pattern: e.type, patternName: PATTERN_NAMES_DE[e.type], family: e.family, variant: e.variant, direction: e.sign > 0 ? "UP" : "DOWN",
       impliedTrend: impliedTrend(e) > 0 ? "UP" : "DOWN",
       complete: !!e.complete,
@@ -448,6 +481,104 @@
   }
 
   // =================================================================
+  //  V2.1: COUNT QUALITY, ERKENNUNGSVERZUG, ANWENDBARKEIT, KANDIDATENBAUM
+  // =================================================================
+  /** Zeitproportion: aufeinanderfolgende Wellen desselben Grades haben vergleichbare Dauer (EWP Kap. 2 "Proportion"). */
+  function proportionScore(legs) {
+    var sc = [];
+    for (var k = 1; k < legs.length; k++) {
+      if (legs[k].status === "DEVELOPING") continue;
+      sc.push(P.band(legs[k].duration / Math.max(1, legs[k - 1].duration), [0.382, 2.618], [0.2, 5]));
+    }
+    return sc.length ? mean(sc) : null;
+  }
+  /** Wellencharakter: W5-Momentum-Divergenz gegenueber W3 (EWP Kap. 2 "Wave Personality") — nur Impuls/Diagonale. */
+  function personalityScore(e, features) {
+    if (!features || !features.columns.rsi14 || !(e.family === "MOTIVE") || e.waves.length < 5) return null;
+    var r3 = features.columns.rsi14[e.waves[2].toIndex], r5 = features.columns.rsi14[e.waves[4].toIndex];
+    if (!isNum(r3) || !isNum(r5)) return null;
+    return e.sign * (r3 - r5) > 0 ? 1 : 0.4;
+  }
+  function countQuality(e, count, clarity, features, cfg) {
+    var q = cfg.countQuality, comp = {
+      guidelines: isNum(e.guidelineFit) ? e.guidelineFit : null,
+      subdivision: isNum(e.subdivisionFit) ? e.subdivisionFit : null,
+      higherDegree: e.components ? e.components.higherDegree : null,
+      proportion: proportionScore(e.waves),
+      personality: personalityScore(e, features),
+      clarity: isNum(clarity) ? Math.max(0, Math.min(1, clarity / q.clarityFull)) : null
+    };
+    var num = 0, den = 0;
+    Object.keys(q.weights).forEach(function (k) { if (isNum(comp[k])) { num += q.weights[k] * comp[k]; den += q.weights[k]; } });
+    var score = den ? num / den : null;
+    return { score: isNum(score) ? round(score, 3) : null, level: !isNum(score) ? "UNKNOWN" : score >= q.high ? "HIGH" : score >= q.moderate ? "MODERATE" : "LOW",
+             components: roundMap(comp), note: "Fachliche Guete der Zaehlung (Regeln, Richtlinien, Unterteilung, Grad, Proportion, Charakter, Eindeutigkeit) — keine Trefferwahrscheinlichkeit." };
+  }
+  /**
+   * Erkennungsverzug der juengsten bestaetigten Welle: Wellenende (Pivot-Bar), fruehestmoegliche Bestaetigung
+   * (feinste Skala, gleiches Extrem ±1 Bar) und Bestaetigung auf der Analyseskala (= wann die Engine die Welle als
+   * abgeschlossen fuehrt).
+   */
+  function detectionLatency(count, pivots, series) {
+    var conf = count.waves.filter(function (w) { return w.status === "CONFIRMED"; });
+    if (!conf.length) return null;
+    var w = conf[conf.length - 1], finest = pivots.scales[pivots.scaleIds[0]];
+    var earliest = null;
+    if (finest) finest.pivots.forEach(function (p) { if (Math.abs(p.pivotIndex - w.toIndex) <= 1 && Math.abs(p.pivotPrice - w.toPrice) <= Math.abs(w.toPrice) * 0.005 && (earliest === null || p.confirmedIndex < earliest)) earliest = p.confirmedIndex; });
+    var ci = w.confirmedIndex, dir = w.toPrice < w.fromPrice ? 1 : -1;   // Folgebewegung nach dem Wellenende
+    var px = isNum(ci) ? series.close[ci] : null;
+    return { wave: w.label, waveEndIndex: w.toIndex, waveEndTime: w.toTime, earliestConfirmIndex: earliest, engineConfirmIndex: ci,
+             barsToEarliest: isNum(earliest) ? earliest - w.toIndex : null, barsToEngine: isNum(ci) ? ci - w.toIndex : null,
+             avoidableDelayBars: isNum(earliest) && isNum(ci) ? Math.max(0, ci - earliest) : null,
+             moveAtEngineConfirmPct: isNum(px) ? round(dir * (px / w.toPrice - 1), 4) : null };
+  }
+  /**
+   * Signal/Rauschen der Analyseskala: Median von |Leg| / Umkehrschwelle der Skala (max(minPct·Kurs, kAtr·ATR)) ueber
+   * die letzten 8 bestaetigten Legs. Legs, die die Schwelle kaum ueberschreiten, sind von Rauschen nicht zu
+   * unterscheiden (a priori: ≤ 1,3 → 0, ≥ 3 → 1).
+   */
+  function signalToNoise(series, features, pivots, scaleId, asOf) {
+    var sc = pivots.scales[scaleId]; if (!sc || !sc.params) return null;
+    var pv = sc.pivots.filter(function (p) { return p.confirmedIndex <= asOf; }).slice(-9), r = [];
+    for (var k = 1; k < pv.length; k++) {
+      var atr = features && features.columns.atr ? features.columns.atr[pv[k].pivotIndex] : null;
+      var thr = Math.max(sc.params.minPct * pv[k].pivotPrice, isNum(atr) ? sc.params.kAtr * atr : 0);
+      if (thr > 0) r.push(Math.abs(pv[k].pivotPrice - pv[k - 1].pivotPrice) / thr);
+    }
+    if (r.length < 3) return null;
+    r.sort(function (a, b) { return a - b; });
+    var med = r[Math.floor(r.length / 2)];
+    return { ratio: round(med, 3), score: round(Math.max(0, Math.min(1, (med - 1.3) / 1.7)), 3) };
+  }
+  function applicability(quality, clarity, hmap, cfg, snr) {
+    var parts = { countQuality: quality && isNum(quality.score) ? quality.score : null, clarity: isNum(clarity) ? Math.max(0, Math.min(1, clarity / cfg.countQuality.clarityFull)) : null,
+                  historyCoverage: hmap && isNum(hmap.coverage) ? hmap.coverage : null, signalToNoise: snr ? snr.score : null };
+    var v = Object.keys(parts).map(function (k) { return parts[k]; }).filter(isNum);
+    var score = v.length ? mean(v) : null, a = cfg.applicability;
+    var level = !isNum(score) ? "LOW" : score >= a.high ? "HIGH" : score >= a.moderate ? "MODERATE" : "LOW";
+    /* Harte Enthaltung: Schwuenge kaum ueber der Umkehrschwelle (a priori < 1,6) sind von Rauschen nicht zu trennen. */
+    if (snr && snr.ratio < a.minSignalToNoise) level = "LOW";
+    var reasons = [];
+    if (isNum(parts.clarity) && parts.clarity < 0.34) reasons.push("Mehrere Lesarten liegen fast gleichauf");
+    if (isNum(parts.historyCoverage) && parts.historyCoverage < 0.5) reasons.push("Die Kurshistorie lässt sich nur zum Teil als Elliott-Struktur lesen");
+    if (quality && quality.level === "LOW") reasons.push("Die beste Zählung erfüllt die Richtlinien nur schwach");
+    if (snr && (snr.ratio < a.minSignalToNoise || snr.score < 0.34)) reasons.push("Die Schwünge sind kaum größer als die normale Schwankung");
+    return { score: isNum(score) ? round(score, 3) : null, level: level, abstain: level === "LOW", components: roundMap(parts), signalToNoise: snr ? snr.ratio : null, reasons: reasons };
+  }
+  /** Kandidatenbaum: was sich aus dem aktuellen Zustand entwickeln kann (Hauptlesart, Ausdehnung der laufenden Welle, Alternativen). */
+  function candidateTree(primary, alternatives) {
+    var tree = [];
+    if (primary) {
+      var z = primary.projection.zones.filter(function (x) { return x.phase === "CURRENT"; })[0] || null;
+      tree.push({ branch: "PRIMARY", countId: primary.countId, text: primary.complete ? primary.patternName + " abgeschlossen – Gegenbewegung beginnt" : "Welle " + primary.currentWave.label + " endet" + (z ? " im Zielbereich" : "") + ", danach " + (primary.nextMove === "UP" ? "aufwärts" : "abwärts"),
+                 zone: z ? { low: z.zoneLow, high: z.zoneHigh } : null, invalidation: primary.invalidation ? primary.invalidation.price : null });
+      if (!primary.complete && primary.invalidation) tree.push({ branch: "EXTENSION", countId: primary.countId, text: "Welle " + primary.currentWave.label + " dehnt sich aus – gültig bis zur Grenze", zone: null, invalidation: primary.invalidation.price });
+    }
+    (alternatives || []).forEach(function (a, k) { tree.push({ branch: "ALTERNATIVE_" + (k + 1), countId: a.countId, text: a.patternName + ", aktuell " + (a.complete ? "abgeschlossen" : "Welle " + a.currentWave.label), zone: null, invalidation: a.invalidation ? a.invalidation.price : null }); });
+    return tree;
+  }
+
+  // =================================================================
   //  HAUPTFUNKTION
   // =================================================================
   /**
@@ -462,26 +593,61 @@
     var asOf = isNum(input.asOfIndex) ? Math.min(input.asOfIndex, series.length - 1) : series.length - 1;
     var atr = features && isNum(features.columns.atr[asOf]) ? features.columns.atr[asOf] : series.close[asOf] * 0.02;
     var ctx = { cfg: cfg, trendDir: trendDirection(series, asOf, input.barsPerYear) };
-    var scales = chooseScales(pivots, asOf, cfg);
-    var base = { engineVersion: ENGINE_VERSION, ruleSetVersion: P.RULE_SET_VERSION, repaintingPolicy: REPAINTING_POLICY, isProbability: false,
-                 parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: cfg }), asOfIndex: asOf, asOf: series.timestamps[asOf], degrees: scales };
-
-    /* Hoeherer Grad zuerst (ohne eigenen Kontext). */
-    var higher = null;
-    if (scales.higher) {
-      var H = analyzeScale(series, pivots, scales.higher, scales.analysis, asOf, ctx, null);
+    /* V2.2 — Gradwahl ueber ALLE Skalen mit genug Legs: jede wird mit ihrem hoeheren Grad (Verschachtelung)
+       gezaehlt; gewaehlt wird die Skala, deren beste Lesart den hoechsten Rang hat (kleiner, fester Vorzug fuer
+       groebere Skalen, damit die dominante Struktur gezaehlt wird und nicht ihre Unterwellen).
+       cfg.analysisScale erzwingt eine Skala (Tests, Studien). */
+    var ids = pivots.scaleIds;
+    function legsAt(id) { var n = 0; pivots.scales[id].pivots.forEach(function (p) { if (p.confirmedIndex <= asOf) n++; }); return n - 1; }
+    var higherCache = {};
+    function higherOf(k) {
+      if (k >= ids.length - 1 || legsAt(ids[k + 1]) < 3) return null;
+      if (higherCache[k] !== undefined) return higherCache[k];
+      var H = analyzeScale(series, pivots, ids[k + 1], ids[k], asOf, ctx, null), hh = null;
       if (H && H.candidates.length && H.legs.length >= 3) {
         var hc = H.candidates[0], hdw = hc.developingWave;
-        higher = { scaleId: scales.higher, pattern: hc.type, patternName: PATTERN_NAMES_DE[hc.type], rank: hc.rank,
-                   current: { label: hc.complete ? "nach " + P.PATTERNS[hc.type].labels[P.PATTERNS[hc.type].waves - 1] : P.PATTERNS[hc.type].labels[hdw - 1],
-                              notation: hc.complete ? notate(P.PATTERNS[hc.type].labels[P.PATTERNS[hc.type].waves - 1], "HIGHER") + " abgeschlossen" : notate(P.PATTERNS[hc.type].labels[hdw - 1], "HIGHER"),
-                              role: hc.complete ? "CORRECTIVE" : currentRole(hc.type, hdw),
-                              direction: hc.complete ? -waveDirection(hc.sign, P.PATTERNS[hc.type].waves) : waveDirection(hc.sign, hdw) },
-                   waves: labelWaves(hc, "HIGHER"), historicalPatterns: H.history.patterns.length };
+        hh = { scaleId: ids[k + 1], pattern: hc.type, patternName: PATTERN_NAMES_DE[hc.type], rank: hc.rank,
+               current: { label: hc.complete ? "nach " + P.PATTERNS[hc.type].labels[P.PATTERNS[hc.type].waves - 1] : P.PATTERNS[hc.type].labels[hdw - 1],
+                          notation: hc.complete ? notate(P.PATTERNS[hc.type].labels[P.PATTERNS[hc.type].waves - 1], "HIGHER") + " abgeschlossen" : notate(P.PATTERNS[hc.type].labels[hdw - 1], "HIGHER"),
+                          role: hc.complete ? "CORRECTIVE" : currentRole(hc.type, hdw),
+                          direction: hc.complete ? -waveDirection(hc.sign, P.PATTERNS[hc.type].waves) : waveDirection(hc.sign, hdw) },
+               waves: labelWaves(hc, "HIGHER"), historicalPatterns: H.history.patterns.length, nested: cfg.nestedHigherDegree,
+               waveSpecs: hc.waves.map(function (l, q) { return { fromIndex: l.fromIndex, toIndex: l.toIndex, dir: l.toPrice >= l.fromPrice ? 1 : -1, expected: P.PATTERNS[hc.type].subdivision[q] }; }) };
+        /* abgeschlossenes Muster des hoeheren Grades: die laufende Folgewelle (unbekannte Klasse) mitfuehren */
+        if (hc.complete && H.developing) hh.waveSpecs.push({ fromIndex: H.developing.fromIndex, toIndex: H.developing.toIndex, dir: H.developing.toPrice >= H.developing.fromPrice ? 1 : -1, expected: "MK" });
       }
+      higherCache[k] = hh;
+      return hh;
     }
-
-    var A = analyzeScale(series, pivots, scales.analysis, scales.lower, asOf, ctx, higher);
+    var options = [];
+    var forced = cfg.analysisScale ? ids.indexOf(cfg.analysisScale) : cfg.scaleSelection === "LEGACY" ? ids.indexOf(chooseScales(pivots, asOf, cfg).analysis) : -1;
+    for (var k = 0; k < ids.length; k++) {
+      if (forced >= 0 && k !== forced) continue;
+      if (forced < 0 && legsAt(ids[k]) < cfg.minLegs) continue;
+      var hgh = higherOf(k);
+      var AA = analyzeScale(series, pivots, ids[k], k > 0 ? ids[k - 1] : null, asOf, ctx, hgh);
+      if (!AA) continue;
+      var top = AA.candidates[0];
+      /* Skalen, deren Schwuenge kaum ueber der Umkehrschwelle liegen, sind rauschgetrieben → Rang abwerten (a priori). */
+      var sn = signalToNoise(series, features, pivots, ids[k], asOf), snf = sn ? 0.7 + 0.3 * sn.score : 0.85;
+      options.push({ k: k, A: AA, higher: hgh, snr: sn, score: top ? top.rank * snf + cfg.coarserScalePreference * k : -1 });
+    }
+    options.sort(function (x, y) { return y.score - x.score || y.k - x.k; });
+    var pick = options[0] || null;
+    /* V2.2 Persistenz (optional, input.previous aus dem Vortag — kausal): eine weiterhin regelkonforme Lesart
+       wird nur verdraengt, wenn eine andere um mehr als cfg.stickiness besser ist (Hysterese gegen Flackern). */
+    var prevState = input.previous || null;
+    if (prevState && pick) {
+      var same = options.filter(function (o) { return ids[o.k] === prevState.scaleId; })[0];
+      if (same && same !== pick && same.score >= pick.score - cfg.stickiness) pick = same;
+    }
+    var scales = pick ? { analysis: ids[pick.k], lower: pick.k > 0 ? ids[pick.k - 1] : null, higher: pick.higher ? pick.higher.scaleId : null,
+                          considered: options.map(function (o) { return { scaleId: ids[o.k], score: round(o.score, 4) }; }) }
+                      : { analysis: ids[0], lower: null, higher: null, considered: [] };
+    var base = { engineVersion: ENGINE_VERSION, ruleSetVersion: P.RULE_SET_VERSION, repaintingPolicy: REPAINTING_POLICY, isProbability: false,
+                 parametersHash: Hash.hashValue({ v: ENGINE_VERSION, cfg: cfg }), asOfIndex: asOf, asOf: series.timestamps[asOf], degrees: scales };
+    var higher = pick ? pick.higher : null;
+    var A = pick ? pick.A : null;
     if (!A || A.legs.length < cfg.minLegs) {
       return Object.assign(base, { status: "UNAVAILABLE", reason: "TOO_FEW_SWINGS", detail: "Zu wenige bestätigte Swings für eine Wellenzählung (" + (A ? A.legs.length : 0) + " < " + cfg.minLegs + ")",
                                    primary: null, alternatives: [], higherDegree: higher, historicalMap: null });
@@ -490,7 +656,12 @@
       return Object.assign(base, { status: "UNAVAILABLE", reason: "NO_VALID_COUNT", detail: "Keine regelkonforme Lesart der jüngsten Swings", primary: null, alternatives: [], higherDegree: higher,
                                    historicalMap: historicalMap(A) });
     }
+    if (prevState && prevState.key) {
+      var keep = A.candidates.filter(function (c) { return candidateKey(c) === prevState.key; })[0];
+      if (keep && keep !== A.candidates[0] && keep.rank >= A.candidates[0].rank - cfg.stickiness) { A.candidates.splice(A.candidates.indexOf(keep), 1); A.candidates.unshift(keep); }
+    }
     var primary = buildCount(A.candidates[0], ctx, atr);
+    primary.persistenceKey = candidateKey(A.candidates[0]);
     var alternatives = [];
     for (var k = 1; k < A.candidates.length && alternatives.length < cfg.maxAlternatives; k++) {
       var c = buildCount(A.candidates[k], ctx, atr);
@@ -499,6 +670,11 @@
       alternatives.push(c);
     }
     var clarity = alternatives.length ? round(primary.rank - alternatives[0].rank, 4) : round(primary.rank, 4);
+    var hmap = historicalMap(A);
+    primary.countQuality = countQuality(A.candidates[0], primary, clarity, features, cfg);
+    alternatives.forEach(function (a) { var src = A.candidates.filter(function (x) { return buildCountId(x) === a.countId; })[0]; a.countQuality = src ? countQuality(src, a, null, features, cfg) : null; });
+    primary.detection = detectionLatency(primary, pivots, series);
+    var appl = applicability(primary.countQuality, alternatives.length ? clarity : null, hmap, cfg, signalToNoise(series, features, pivots, A.scaleId, asOf));
     var structuralLevel = primary.rank >= cfg.structural.high ? "HIGH" : primary.rank >= cfg.structural.moderate ? "MODERATE" : "LOW";
     var clarityLevel = clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";
     var status = primary.currentWave.wave === 1 && !primary.complete ? "EARLY" : clarityLevel === "LOW" ? "AMBIGUOUS" : "OK";
@@ -509,7 +685,8 @@
       confidenceType: "structural_fit", confidenceNote: "Rangwert der Regel- und Richtlinienpassung, keine Wahrscheinlichkeit.",
       higherDegree: higher, trendContext: ctx.trendDir,
       candidateCount: A.candidates.length,
-      historicalMap: historicalMap(A),
+      applicability: appl, candidateTree: candidateTree(primary, alternatives),
+      historicalMap: hmap,
       atr: round(atr, 4)
     });
   }
@@ -530,7 +707,7 @@
   }
 
   var api = { ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, pivotView: pivotView, legsOf: legsOf, subdivide: subdivide, subdivisionFit: subdivisionFit,
-              parseHistory: parseHistory, trendDirection: trendDirection, chooseScales: chooseScales, analyzeElliottV2: analyzeElliottV2, PATTERN_NAMES_DE: PATTERN_NAMES_DE, notate: notate };
+              parseHistory: parseHistory, nestedFit: nestedFit, countQuality: countQuality, applicability: applicability, signalToNoise: signalToNoise, detectionLatency: detectionLatency, trendDirection: trendDirection, chooseScales: chooseScales, analyzeElliottV2: analyzeElliottV2, PATTERN_NAMES_DE: PATTERN_NAMES_DE, notate: notate };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottV2 = api; }
 })(typeof window !== "undefined" ? window : globalThis);

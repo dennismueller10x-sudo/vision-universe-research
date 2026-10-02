@@ -1,0 +1,2327 @@
+{
+ "schemaVersion": "vu-elliott-synthetic-1.0.0",
+ "generatedAt": "2026-10-02T18:32:01.032Z",
+ "note": "rank = Position des erwarteten (abgeschlossenen) Musters unter Haupt- und bis zu 2 Alternativzaehlungen; -1 = nicht gefunden.",
+ "summary": {
+  "V2.1_LEGACY|low": {
+   "n": 36,
+   "primary": 14,
+   "top3": 21,
+   "abstain": 4
+  },
+  "V2.1_LEGACY|medium": {
+   "n": 36,
+   "primary": 10,
+   "top3": 13,
+   "abstain": 12
+  },
+  "V2.1_LEGACY|high": {
+   "n": 36,
+   "primary": 8,
+   "top3": 11,
+   "abstain": 32
+  },
+  "V2.2_MULTI|low": {
+   "n": 36,
+   "primary": 20,
+   "top3": 23,
+   "abstain": 3
+  },
+  "V2.2_MULTI|medium": {
+   "n": 36,
+   "primary": 14,
+   "top3": 15,
+   "abstain": 4
+  },
+  "V2.2_MULTI|high": {
+   "n": 36,
+   "primary": 2,
+   "top3": 6,
+   "abstain": 20
+  }
+ },
+ "byPattern": {
+  "V2.1_LEGACY|IMPULSE": {
+   "n": 9,
+   "top3": 6,
+   "primary": 6
+  },
+  "V2.1_LEGACY|IMPULSE_EXT3": {
+   "n": 9,
+   "top3": 8,
+   "primary": 8
+  },
+  "V2.1_LEGACY|IMPULSE_EXT5": {
+   "n": 9,
+   "top3": 5,
+   "primary": 5
+  },
+  "V2.1_LEGACY|IMPULSE_TRUNCATED": {
+   "n": 9,
+   "top3": 3,
+   "primary": 3
+  },
+  "V2.1_LEGACY|LEADING_DIAGONAL": {
+   "n": 9,
+   "top3": 3,
+   "primary": 0
+  },
+  "V2.1_LEGACY|ENDING_DIAGONAL": {
+   "n": 9,
+   "top3": 4,
+   "primary": 0
+  },
+  "V2.1_LEGACY|ZIGZAG": {
+   "n": 9,
+   "top3": 0,
+   "primary": 0
+  },
+  "V2.1_LEGACY|FLAT_REGULAR": {
+   "n": 9,
+   "top3": 3,
+   "primary": 1
+  },
+  "V2.1_LEGACY|FLAT_EXPANDED": {
+   "n": 9,
+   "top3": 0,
+   "primary": 0
+  },
+  "V2.1_LEGACY|FLAT_RUNNING": {
+   "n": 9,
+   "top3": 0,
+   "primary": 0
+  },
+  "V2.1_LEGACY|TRIANGLE": {
+   "n": 9,
+   "top3": 6,
+   "primary": 6
+  },
+  "V2.1_LEGACY|DOUBLE_ZIGZAG": {
+   "n": 9,
+   "top3": 7,
+   "primary": 3
+  },
+  "V2.2_MULTI|IMPULSE": {
+   "n": 9,
+   "top3": 6,
+   "primary": 6
+  },
+  "V2.2_MULTI|IMPULSE_EXT3": {
+   "n": 9,
+   "top3": 6,
+   "primary": 6
+  },
+  "V2.2_MULTI|IMPULSE_EXT5": {
+   "n": 9,
+   "top3": 6,
+   "primary": 6
+  },
+  "V2.2_MULTI|IMPULSE_TRUNCATED": {
+   "n": 9,
+   "top3": 1,
+   "primary": 1
+  },
+  "V2.2_MULTI|LEADING_DIAGONAL": {
+   "n": 9,
+   "top3": 3,
+   "primary": 3
+  },
+  "V2.2_MULTI|ENDING_DIAGONAL": {
+   "n": 9,
+   "top3": 4,
+   "primary": 4
+  },
+  "V2.2_MULTI|ZIGZAG": {
+   "n": 9,
+   "top3": 3,
+   "primary": 3
+  },
+  "V2.2_MULTI|FLAT_REGULAR": {
+   "n": 9,
+   "top3": 0,
+   "primary": 0
+  },
+  "V2.2_MULTI|FLAT_EXPANDED": {
+   "n": 9,
+   "top3": 1,
+   "primary": 0
+  },
+  "V2.2_MULTI|FLAT_RUNNING": {
+   "n": 9,
+   "top3": 2,
+   "primary": 1
+  },
+  "V2.2_MULTI|TRIANGLE": {
+   "n": 9,
+   "top3": 6,
+   "primary": 6
+  },
+  "V2.2_MULTI|DOUBLE_ZIGZAG": {
+   "n": 9,
+   "top3": 6,
+   "primary": 0
+  }
+ },
+ "rows": [
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "DOUBLE_ZIGZAG(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE/3",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG/X",
+   "rank": 2,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": 1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": 1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG/X",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": 2,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": 2,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": 2,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": 2,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "FLAT(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL/4",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "ZIGZAG",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE/2",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE/2",
+   "rank": 2,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": 2,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_REGULAR",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "FLAT(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/D",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/D",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/D",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/D",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/D",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE/4",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/B",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "FLAT_RUNNING",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "FLAT(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "TRIANGLE",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL(C)",
+   "rank": 1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE/4",
+   "rank": 1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "DOUBLE_ZIGZAG(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "ENDING_DIAGONAL(C)",
+   "rank": 1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.1_LEGACY",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-1",
+   "primary": "DOUBLE_ZIGZAG/Y·c",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "ENDING_DIAGONAL(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT3",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-1",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/E",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_EXT5",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "ZIGZAG(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "WXY/Y",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL/4",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE/3",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "IMPULSE_TRUNCATED",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-1",
+   "primary": "IMPULSE/5",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-1",
+   "primary": "ZIGZAG(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-1",
+   "primary": "IMPULSE/5",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "LEADING_DIAGONAL",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-1",
+   "primary": "IMPULSE/5",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "ENDING_DIAGONAL(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "ENDING_DIAGONAL(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "ENDING_DIAGONAL(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "ENDING_DIAGONAL(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-1",
+   "primary": "DOUBLE_ZIGZAG/Y·a",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-1",
+   "primary": "IMPULSE/5",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-1",
+   "primary": "IMPULSE/3",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ENDING_DIAGONAL",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "WXY(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE/4",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "ZIGZAG(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "ZIGZAG(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL(C)",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE/4",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "LEADING_DIAGONAL/4",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "ZIGZAG(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "ZIGZAG",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-1",
+   "primary": "DOUBLE_ZIGZAG/Y·a",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-1",
+   "primary": "ZIGZAG/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_REGULAR",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "FLAT/C",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "FLAT/C",
+   "rank": 2,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_EXPANDED",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-1",
+   "primary": "IMPULSE/3",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-1",
+   "primary": "IMPULSE/5",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "FLAT(C)",
+   "rank": 0,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-1",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-1",
+   "primary": "ENDING_DIAGONAL/5",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "FLAT_RUNNING",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE/C",
+   "rank": 2,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-4",
+   "primary": "TRIANGLE/D",
+   "rank": -1,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-4",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "ZIGZAG(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-1",
+   "primary": "IMPULSE/5",
+   "rank": -1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "TRIANGLE",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "TRIANGLE(C)",
+   "rank": 0,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "low",
+   "seed": 0,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 2,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "low",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": 2,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "low",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE/4",
+   "rank": 1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "medium",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "medium",
+   "seed": 1,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "medium",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE/4",
+   "rank": 1,
+   "applicability": "HIGH"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "high",
+   "seed": 0,
+   "scale": "scale-2",
+   "primary": "IMPULSE(C)",
+   "rank": 2,
+   "applicability": "LOW"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "high",
+   "seed": 1,
+   "scale": "scale-3",
+   "primary": "ENDING_DIAGONAL(C)",
+   "rank": 1,
+   "applicability": "MODERATE"
+  },
+  {
+   "cfg": "V2.2_MULTI",
+   "pattern": "DOUBLE_ZIGZAG",
+   "noise": "high",
+   "seed": 2,
+   "scale": "scale-3",
+   "primary": "IMPULSE(C)",
+   "rank": -1,
+   "applicability": "LOW"
+  }
+ ]
+}

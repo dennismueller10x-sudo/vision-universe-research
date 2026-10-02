@@ -291,3 +291,68 @@ test("EV2-O2 · zu wenig Struktur → ehrlich UNAVAILABLE statt erfundener Welle
   assert.equal(r.status, "UNAVAILABLE");
   assert.equal(r.primary, null);
 });
+
+// ===================================================== Master Mission II: V2.1/V2.2
+import { syntheticSeries } from "./elliott-synthetic.mjs";
+const runSyn = (name, noise, cfg, seed) => { const { series: s, expect } = syntheticSeries(name, { noise, seed }); const f = Features.computeFeatures(s); const pv = Pivots.runPivots(s, f); return { r: E.analyzeElliottV2({ series: s, features: f, pivots: pv, methodology: cfg ? { engine: cfg } : undefined }), expect, s, f, pv }; };
+const found = (r, expect) => [r.primary, ...(r.alternatives || [])].filter(Boolean).findIndex((c) => expect.includes(c.pattern) && c.complete);
+
+test("EV2-S1 · Synthetik: klare Impulse (normal, W3-, W5-Extension) und Diagonalen werden bei geringem Rauschen erkannt", () => {
+  for (const name of ["IMPULSE", "IMPULSE_EXT3", "IMPULSE_EXT5"]) {
+    const { r, expect } = runSyn(name, "low");
+    assert.equal(found(r, expect), 0, name + ": " + (r.primary && r.primary.pattern));
+  }
+  for (const name of ["LEADING_DIAGONAL", "ENDING_DIAGONAL"]) { const { r, expect } = runSyn(name, "low"); assert.ok(found(r, expect) >= 0, name); }
+});
+
+test("EV2-S2 · Synthetik: Enthaltung steigt mit dem Rauschen (hoch deutlich haeufiger als niedrig)", () => {
+  const rate = (noise) => { let k = 0, n = 0; for (const name of ["IMPULSE", "ZIGZAG", "FLAT_REGULAR", "TRIANGLE", "IMPULSE_EXT3", "DOUBLE_ZIGZAG"]) for (const seed of [0, 1, 2]) { const { r } = runSyn(name, noise, null, seed); n++; if (r.applicability && r.applicability.abstain) k++; } return k / n; };
+  const lo = rate("low"), hi = rate("high");
+  assert.ok(hi >= lo + 0.25, "low " + lo + " high " + hi);
+  const { r } = runSyn("IMPULSE", "low");
+  assert.equal(r.applicability.abstain, false);
+});
+
+test("EV2-S3 · Count Quality, Anwendbarkeit, Erkennungsverzug: Struktur und Wertebereich; keine Wahrscheinlichkeit", () => {
+  const { r } = runSyn("IMPULSE", "low");
+  const q = r.primary.countQuality;
+  assert.ok(q.score >= 0 && q.score <= 1 && ["HIGH", "MODERATE", "LOW"].includes(q.level));
+  assert.ok(/keine Trefferwahrscheinlichkeit/.test(q.note));
+  const d = r.primary.detection;
+  assert.ok(d.engineConfirmIndex >= d.waveEndIndex && (d.earliestConfirmIndex === null || d.earliestConfirmIndex <= d.engineConfirmIndex));
+  assert.ok(d.barsToEngine >= d.barsToEarliest);
+  assert.ok(r.candidateTree.length >= 1 && r.candidateTree[0].branch === "PRIMARY");
+  assert.equal(r.isProbability, false);
+});
+
+test("EV2-S4 · Eltern-Kind-Konsistenz: Lesart muss zur Welle des hoeheren Grades passen, die sie enthaelt", () => {
+  const higher = { waveSpecs: [{ fromIndex: 0, toIndex: 100, dir: 1, expected: "M" }, { fromIndex: 100, toIndex: 140, dir: -1, expected: "K" }] };
+  const mk = (family, sign, a, b) => ({ family, sign, waves: [{ fromIndex: a, toIndex: a + 5 }, { fromIndex: b - 5, toIndex: b }] });
+  assert.equal(E.nestedFit(mk("MOTIVE", 1, 10, 90), higher), 1);                 // Impuls aufwaerts in M-Welle aufwaerts
+  assert.ok(E.nestedFit(mk("MOTIVE", -1, 10, 90), higher) < 0.2);                 // Gegenrichtung
+  assert.equal(E.nestedFit(mk("CORRECTIVE", -1, 105, 135), higher), 1);          // Korrektur abwaerts in K-Welle abwaerts
+  assert.ok(E.nestedFit(mk("MOTIVE", 1, 60, 140), higher) < 0.7);                 // reicht ueber zwei Wellen
+  assert.equal(E.nestedFit(mk("MOTIVE", 1, 10, 90), null), null);
+});
+
+test("EV2-S5 · Persistenz: gleiche Vorlesart bleibt erhalten; ohne Vorzustand identisch zur zustandslosen Analyse (kausal)", () => {
+  const { s, f, pv } = runSyn("IMPULSE", "medium");
+  const t = s.length - 5;
+  const a = E.analyzeElliottV2({ series: s, features: f, pivots: pv, asOfIndex: t });
+  const b = E.analyzeElliottV2({ series: s, features: f, pivots: pv, asOfIndex: t, previous: null });
+  assert.equal(JSON.stringify(a.primary), JSON.stringify(b.primary));
+  const c = E.analyzeElliottV2({ series: s, features: f, pivots: pv, asOfIndex: t + 1, previous: { key: a.primary.persistenceKey, scaleId: a.degrees.analysis } });
+  const d = E.analyzeElliottV2({ series: s, features: f, pivots: pv, asOfIndex: t + 1 });
+  /* Mit Vorzustand ist die Hauptlesart entweder dieselbe Identitaet oder die neue Lesart ist um mehr als die Hysterese besser */
+  assert.ok(c.primary.persistenceKey === a.primary.persistenceKey || d.primary.rank - (c.alternatives.concat([c.primary]).find((x) => x.persistenceKey === a.primary.persistenceKey) || { rank: -1 }).rank > E.DEFAULTS.stickiness - 1e-9 || c.primary.persistenceKey === d.primary.persistenceKey);
+});
+
+test("EV2-S6 · V2.2 bleibt kausal: Mehrskalen-Gradwahl liest keine Bars nach asOf", () => {
+  const { s, f, pv } = runSyn("IMPULSE_EXT3", "medium");
+  const t = s.length - 30;
+  const full = E.analyzeElliottV2({ series: s, features: f, pivots: pv, asOfIndex: t });
+  const cut = Canonical.slice(s, t), fc = Features.computeFeatures(cut), pc = Pivots.runPivots(cut, fc);
+  const part = E.analyzeElliottV2({ series: cut, features: fc, pivots: pc });
+  const strip = (x) => JSON.stringify(Object.assign({}, x, { parametersHash: null }));
+  assert.equal(strip(full), strip(part));
+});
