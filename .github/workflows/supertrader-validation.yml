@@ -12,6 +12,7 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:diagnose-smoke]  Technischer Probelauf dazu (400 Reihen)
 #   [supertrader-validation:r7]  Vorab registrierte Runde-7-Versionen (PREREGISTRATION-R7.json)
 #   [supertrader-validation:r7-smoke]  Technischer Probelauf dazu (400 Reihen)
+#   [supertrader-validation:sources]  Frei zugaengliche Originalseiten lesen (verschluesselt, sources-r8.json)
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
 # nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
 # kann sie lesen) auf den Zweig claude/supertrader-validation-results gelegt.
@@ -20,7 +21,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze, methods, diagnose, r7]
+        options: [subset, full, analyze, methods, diagnose, r7, sources, r8]
         default: subset
   push:
     branches:
@@ -47,7 +48,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:sources]"*) m=sources;; *"[supertrader-validation:r8-smoke]"*) m=r8-smoke;; *"[supertrader-validation:r8]"*) m=r8;; *"[supertrader-validation:r7-smoke]"*) m=r7-smoke;; *"[supertrader-validation:r7]"*) m=r7;; *"[supertrader-validation:diagnose-smoke]"*) m=diagnose-smoke;; *"[supertrader-validation:diagnose]"*) m=diagnose;; *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
         if: steps.mode.outputs.mode == 'subset'
@@ -110,6 +111,9 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
+      - name: Originalquellen lesen (verschluesselt)
+        if: steps.mode.outputs.mode == 'sources'
+        run: node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --crawl
       - name: Verschluesseltes Ergebnis ablegen
         if: always()
         env:
