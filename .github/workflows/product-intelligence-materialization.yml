@@ -33,6 +33,16 @@ name: Quant 2.0 Product Intelligence Materialization
 # sauberer No-Op statt einer doppelten Materialisierung.
 on:
   workflow_dispatch:
+    inputs:
+      # Ein Methodik-Wechsel (z. B. SPY als Benchmark-Referenz, 02.10.2026)
+      # aendert das Ergebnis bei gleichem Stichtag. Die Idempotenz-Stufe sieht
+      # nur den Stichtag und hielte den Lauf fuer erledigt. `force` gibt es
+      # nur beim manuellen Start; die Kette und der Zeitplan bleiben
+      # idempotent.
+      force:
+        description: 'Trotz gleichem Stichtag neu materialisieren (nach Methodik-Wechsel)'
+        type: boolean
+        default: false
   # `orchestrated` ist die einzige verlaessliche Kennung des Aufrufs aus der
   # Kette. In einem aufgerufenen Workflow traegt `github.event_name` das
   # Ereignis des AUFRUFERS (schedule / workflow_dispatch / push), nie
@@ -107,7 +117,10 @@ jobs:
           STORE=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_DURABLE_STORE_ASOF||"")')
           PRODUCT=$(node -e 'const j=require(process.env.RUNNER_TEMP+"/freshness-vorher.json");console.log(j.LATEST_PRODUCT_ASOF||"")')
           echo "Ablage: ${STORE:-unbekannt} · Produkt: ${PRODUCT:-unbekannt}"
-          if [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.force == true }}" = "true" ]; then
+            echo "noop=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Manuell erzwungen (force) - Stichtag $STORE wird neu materialisiert."
+          elif [ -n "$STORE" ] && [ "$STORE" = "$PRODUCT" ]; then
             echo "noop=true" >> "$GITHUB_OUTPUT"
             echo "::notice::Produktstand entspricht der Ablage ($STORE) - nichts zu materialisieren."
           else
