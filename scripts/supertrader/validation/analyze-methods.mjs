@@ -30,7 +30,7 @@ import kk from '../engine/strategies/kk-breakout.mjs';
 import weinstein from '../engine/strategies/weinstein.mjs';
 import darvas from '../engine/strategies/darvas.mjs';
 import minervini from '../engine/strategies/minervini.mjs';
-import { buildWeekly } from '../build.mjs';
+import { buildWeekly } from '../engine/weekly.mjs';
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
