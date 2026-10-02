@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* VU Technical Intelligence — Drift-Pruefung der veroeffentlichten API v2.
+/* VU Technical Intelligence — Drift-Pruefung der veroeffentlichten API v3.
 
    Rechnet die Referenztitel (Tagesdaten) und eine feste Stichprobe der
    Wochenreihen mit der aktuellen Engine neu und vergleicht Ausblick,
@@ -11,10 +11,11 @@ import { gunzipSync } from "node:zlib";
 import { join } from "node:path";
 import { createRequire } from "node:module";
 import { ROOT, readJson, weeklySeriesFromPoints, dailySeriesFromPayload } from "./lib/ti-data.mjs";
+import { analyzeProduct } from "./lib/ti-product.mjs";
 
 const require = createRequire(import.meta.url);
 const TI = require(join(ROOT, "quant/engines/technical/ti/engine.js"));
-const V2 = join(ROOT, "quant/data/technical-intelligence/v2");
+const V2 = join(ROOT, "quant/data/technical-intelligence/v3");
 const EVID = join(ROOT, "quant/data/technical-intelligence/evidence");
 if (!existsSync(join(V2, "meta.json"))) { console.log("Keine TI-Daten veroeffentlicht — nichts zu pruefen."); process.exit(0); }
 const meta = readJson(join(V2, "meta.json"));
@@ -29,7 +30,7 @@ const gdir = join(ROOT, "quant/data/market/golden-preview/daily");
 for (const f of readdirSync(gdir).filter((x) => x.endsWith(".json"))) {
   const j = readJson(join(gdir, f)), s = dailySeriesFromPayload(j, j.ticker), pub = get(j.ticker);
   if (!pub) { drift.push(j.ticker + ": fehlt"); continue; }
-  const res = TI.analyzeAt(TI.prepare(s), s.length - 1, { evidenceTable: ev1D, weeklyEvidenceTable: ev1W, calibration: ev1D && ev1D.calibration, symbol: j.ticker });
+  const res = analyzeProduct(s, { evidenceTable: ev1D, weeklyEvidenceTable: ev1W, calibration: ev1D && ev1D.calibration, symbol: j.ticker }).res;
   if (key(res) !== key(pub)) drift.push(j.ticker + " (Tag)"); checked++;
 }
 const wdir = join(ROOT, "quant/data/market/discover-series-long");
@@ -38,7 +39,7 @@ for (const f of sample) {
   const j = readJson(join(wdir, f)), pub = get(j.ticker);
   if (!pub || pub.timeframe !== "1W") continue;
   const s = weeklySeriesFromPoints(j.points || [], j.ticker);
-  const res = TI.analyzeAt(TI.prepare(s), s.length - 1, { evidenceTable: ev1W, calibration: ev1W && ev1W.calibration, symbol: j.ticker });
+  const res = analyzeProduct(s, { evidenceTable: ev1W, calibration: ev1W && ev1W.calibration, symbol: j.ticker }).res;
   if (key(res) !== key(pub)) drift.push(j.ticker + " (Woche)"); checked++;
 }
 if (drift.length) { console.error("DRIFT bei " + drift.length + " von " + checked + " Titeln: " + drift.join(", ") + "\nDaten neu bauen: node scripts/technical/build-technical-intelligence.mjs"); process.exit(1); }

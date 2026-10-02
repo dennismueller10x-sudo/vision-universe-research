@@ -23,7 +23,7 @@ MARKET DATA (splitbereinigt, Tages-OHLCV oder Wochenschluss)
   ↓  Evidence-Lookup          Trefferquote vergleichbarer historischer Setups (Backtest-Tabellen)
   ↓  ti/engine.js             TechnicalAnalysisResult (Schema vu-technical-analysis-2.0.0)
   ↓  ti/explain.js            deutsche Sätze NUR aus Fakten; ti/ai-tools.js für VU Ask
-  ↓  build-technical-intelligence.mjs → API v2 (statische JSON/gz)
+  ↓  build-technical-intelligence.mjs → API v3 (statische JSON/gz; Persistenz-Replay über lib/ti-product.mjs)
   ↓  quant/app/page-chartbild.js + quant/ui/ti-chart.js (Oberfläche, rechnet nicht)
 ```
 
@@ -48,7 +48,7 @@ MARKET DATA (splitbereinigt, Tages-OHLCV oder Wochenschluss)
 | Datei | Verantwortung |
 |---|---|
 | `quant/engines/technical/elliott/patterns.js` | Regelbibliothek `elliott-rules-2.0.1`: 8 Musterklassen, Regeln HARD/DEFINITION, Richtlinien, Invalidation (hart + Revision), Fibonacci-Projektionen mit Klartext-Relation |
-| `quant/engines/technical/elliott/elliott-v2.js` | Grade, Unterteilung, historische Karte, Trailing-Kandidaten, Ranking, Alternativen, Klarheit |
+| `quant/engines/technical/elliott/elliott-v2.js` (2.2) | Grade (Mehrskalenwahl), Verschachtelung, Unterteilung, historische Karte, Trailing-Kandidaten, Ranking, Alternativen, Klarheit, Count Quality, Anwendbarkeit/Enthaltung, Erkennungsverzug, Kandidatenbaum, Persistenz |
 | `quant/engines/technical/ti/context.js` | Zeitrahmen-Profile (1D/1W), kausaler Kontext |
 | `quant/engines/technical/ti/dow-trend.js` | Dow-Theorie, MA-Trend, Weinstein |
 | `quant/engines/technical/ti/momentum-volatility.js` | Momentum-Bestätigung, Divergenz, Volatilitätsregime |
@@ -63,7 +63,10 @@ MARKET DATA (splitbereinigt, Tages-OHLCV oder Wochenschluss)
 | `quant/engines/technical/ti/alerts.js` | Alert-Ereignisse aus zwei Zuständen |
 | `quant/engines/technical/ti/ai-tools.js` | VU-Ask-Werkzeuge (nur Fakten) |
 | `scripts/technical/ti-evidence.mjs` | Backtest / Event-Studie |
-| `scripts/technical/build-technical-intelligence.mjs` | API v2 bauen |
+| `scripts/technical/build-technical-intelligence.mjs` | API v3 bauen |
+| `scripts/technical/lib/ti-product.mjs` | Produktschicht: Elliott-Persistenz-Replay, Datenvertrag `overlays`, Strukturklarheit, Evidenz-Status, Elliott-Transparenz, Replay-Schnappschüsse |
+| `scripts/technical/elliott-validation.mjs` + `lib/validation-stats.cjs` | Elliott-Validierungsstudie (Benchmarks, Walk-forward, Cluster-Bootstrap, vorab registrierte Hypothesen) |
+| `scripts/technical/elliott-synthetic-benchmark.mjs` | Erkennungsrate bekannter Strukturen (Synthetik) |
 | `scripts/technical/verify-technical-intelligence.mjs` | Drift-Prüfung (CI) |
 | `quant/api/technical-intelligence-workspace.js` | Lesezugriff mit Pfad-Whitelist |
 | `quant/ui/ti-chart.js` | SVG-Szenario-Chart |
@@ -94,17 +97,18 @@ alerts { scenarioId, outlook, confidence, direction, levels{…}, flags{…} }
 diagnostics { engineVersions, repaintingPolicy, isProbability, computeMs }
 ```
 
-## 5. API v2 (statisch, versioniert)
+## 5. API v3 (statisch, versioniert; Migration: API_V3_MIGRATION.md)
 
 | Pfad | Inhalt |
 |---|---|
-| `/quant/data/technical-intelligence/v2/meta.json` | Versionen, Zähler, Evidenzstand, Pfade |
-| `…/v2/index.json.gz` | eine Zeile je Titel (Screener, Listen, Alerts): Ausblick, Status, Zonen, Distanz zur Zone in ATR, Elliott, Formationen, Indexmitgliedschaft |
-| `…/v2/shards/<XX>.json.gz` | Ergebnis je Titel (Konsument + Profi + Chart + frühere Fälle + Erklärtexte) |
-| `…/v2/discover-rows.json` | fertige Reihen für Discover/Startseite mit offengelegter Regel |
-| `…/v2/alerts.json` | Ereignisse seit dem letzten Lauf |
-| `…/v2/rules-catalog.json` | Regeltext + Quelle je Elliott-Regel |
-| `…/v2/evidence-summary.json` | Kennzahlen der Evidenzstudie (Methodikseite) |
+| `/quant/data/technical-intelligence/v3/meta.json` | Versionen, Zähler, Evidenzstand, Pfade |
+| `…/v3/index.json.gz` | eine Zeile je Titel (Screener, Listen, Alerts): Ausblick, Status, Zonen, Distanz zur Zone in ATR, Elliott, Formationen, Indexmitgliedschaft |
+| `…/v3/shards/<XX>.json.gz` | Ergebnis je Titel (Konsument + Profi + Chart + frühere Fälle + Erklärtexte) |
+| `…/v3/discover-rows.json` | fertige Reihen für Discover/Startseite mit offengelegter Regel |
+| `…/v3/alerts.json` | Ereignisse seit dem letzten Lauf |
+| `…/v3/rules-catalog.json` | Regeltext + Quelle je Elliott-Regel |
+| `…/v3/evidence-summary.json` | Kennzahlen der Evidenzstudie (Methodikseite) |
+| `…/v3/method-evidence.json` | Evidenz-Status je Methode (Validierungsstudie) |
 | `/quant/data/technical-intelligence/evidence/*.json` | vollständige Evidenzberichte |
 
 Versionierung: neuer Pfad `v3/` bei inkompatiblem Schema; `schemaVersion` in jeder Datei. Konsumenten: Aktienseite (Teaser), Chartbild, Übersicht, Discover (Reihen), Screener (Index), Alerts, VU Ask (ai-tools), spätere Mobile-App (gleiche JSON).

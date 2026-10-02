@@ -113,3 +113,46 @@ Typen: **HARD** = Regel (Verletzung → Kandidat ungültig), **DEF** = Klassengr
 | Directional-Change-Rahmen (kausale Swings mit Bestätigungslatenz) | angenommen (entspricht pivot-engine) | pivotView | EV2-C1 | — |
 | Multiple Testing / Overfitting (Harvey-Liu, López de Prado) | angenommen: TRAIN/VALIDATION/TEST, Einfrieren, ein Test-Lauf | ti-evidence --dev | — | Protokoll |
 | Kalibrierung nur bei bestandenem Gate | angenommen | calibration() Gate | TI-I2 | nicht bestanden |
+
+---
+
+## 5. Elliott neu rekonstruiert (Master Mission II, §4–§5)
+
+### 5.1 Was ein professioneller Elliott-Analyst tatsächlich tut
+
+Quellen in Rangfolge: R. N. Elliott, *The Wave Principle* (1938) und *Nature's Law* (1946); Frost & Prechter, *Elliott Wave Principle* (10. Aufl., 2005); EWI-Lehrmaterial (Gorman & Kennedy 2013); Neely, *Mastering Elliott Wave* (1990, NEoWave); akademische Arbeiten (Abschnitt 5.4).
+
+| Praktik | Quelle | Klasse | in der Engine |
+|---|---|---|---|
+| Drei unverletzliche Regeln (W2 < 100 %, W3 nie kürzeste, W4 kein Überlappen) | EWP S. 31 | Regel | ja (HARD) |
+| Musterdefinitionen (Diagonale, Zigzag/Flat-Grenze, Dreieck, Kombinationen) | EWP Kap. 2 | Definition | ja; Triple Three/Triple Zigzag fehlen |
+| Richtlinien (Alternation, Kanal, Extension, Gleichheit, Fibonacci-Verhältnisse, Tiefe von Korrekturen) | EWP Kap. 2–4 | Richtlinie | ja (Rang), Kanal nur W5 |
+| Wellencharakter („Personality": W3 kräftig, W5 mit Divergenz, B trügerisch) | EWP Kap. 2 | Richtlinie, qualitativ | teilweise (W3-Tempo, W5-RSI-Divergenz in Count Quality) |
+| Grad aus dem Gesamtbild wählen; Zählung muss auf allen Graden konsistent sein | EWP Kap. 1 „Degree" | Methode | 2.2: Mehrskalenwahl + Verschachtelung |
+| Mit Alternativzählungen arbeiten, „preferred count" nur, bis der Markt widerspricht | EWP Kap. 8; EWI | Methode | ja (Alternativen, Kandidatenbaum); 2.2 Persistenz |
+| Unklare Charts nicht zählen | Praktiker (Prechter: „when in doubt, stay out") | Haltung | 2.1/2.2: Anwendbarkeit + Enthaltung |
+| Zeitrelationen (Fibonacci-Zeit) | EWP Kap. 4 (ausdrücklich unzuverlässig) | Richtlinie, schwach | nicht umgesetzt (bewusst) |
+
+### 5.2 Schulen — nicht vermischt
+
+| | klassisch (Frost & Prechter, EWI) | NEoWave (Neely) |
+|---|---|---|
+| Grundeinheit | Welle beliebigen Grades | „Monowave" mit festen Konstruktionsregeln |
+| Gleicher Grad | nach Augenmaß und Proportion | **Rule of Similarity & Balance**: benachbarte Wellen gleichen Grades mindestens ⅓ in Preis *oder* Zeit |
+| Zeit | Richtlinie | harte Grenzen (z. B. C ≤ A+B in der Zeit; E ≤ B+C+D) |
+| Bestätigung | Bruch der 2-4-Linie usw. | „Post-pattern confirmation" als Pflicht |
+| Mehrdeutigkeit | Alternativen | weniger Alternativen durch strengere Regeln |
+
+Entscheidung: Die Engine bleibt **klassisch**. NEoWave-Regeln sind kein Konsens der Literatur und würden die Methode verändern statt sie abzubilden. Übernommen wird nur der Gedanke der Proportion als *Richtlinie* (Count Quality, Zeitproportion). Die fehlende Preis-Ähnlichkeit ist im Audit als Lücke dokumentiert.
+
+### 5.3 Praktiker-Behauptung vs. Regel vs. Empirie (§108)
+
+Praktiker berichten Erfolg mit Elliott. Das kann aus Risikomanagement (enge, regelbasierte Grenzen), Ermessen, Kontext und Kombination mehrerer Methoden entstehen, ohne dass einzelne Lehrbuchregeln isoliert einen statistischen Vorteil tragen. VU prüft deshalb nur die algorithmisch definierbaren Teile und benennt den Rest als nicht geprüft.
+
+### 5.4 Akademische Arbeiten
+
+Veröffentlichte Arbeiten zur automatischen Elliott-Erkennung (z. B. Vantuch, Zelinka & Vasant 2018; Studien zu Mustererkennung mit Klassifikatoren) berichten Richtungstreffer um 68–70 %. Sie vergleichen meist **nicht** mit einer Basis gleicher Geometrie und gleichen Marktkontexts; hohe Treffer entstehen schon durch Trendfortsetzung und Geometrie (VU-Befund: 59 % der Fälle sind bei Bestätigung schon überwiegend gelaufen). Ergebnisse dieser Art gelten hier als **nicht belastbar**, bis sie gegen eine strukturelle Kontrolle bestehen.
+
+### 5.5 Ist die Engine „ZigZag + Pattern-Matcher"? (§5)
+
+Teilweise ja — vor Mission II: Grad = feste Skala, keine Eltern-Kind-Prüfung, keine Enthaltung, zustandslos. Mit 2.2 kommen Mehrskalenwahl, Verschachtelung, Rauschgrenze, Anwendbarkeit, Count Quality und Persistenz dazu. Was weiterhin fehlt: Start an markanten Extremen, Preis-Proportion gleicher Grade, Triple-Kombinationen, Kanalziele, qualitative Wellencharakter-Merkmale (Breite, Stimmung). Details: ELLIOTT_AUDIT.md.

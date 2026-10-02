@@ -198,6 +198,16 @@ function evidenceSummary() {
       fibonacci: e.fibonacci && { n: e.fibonacci.n, levels: e.fibonacci.levels }
     };
   }
+  /* Elliott-Validierung (Master Mission II): vorab registrierte Hypothesen der Bestaetigungsstichprobe */
+  const EVAL = join(ROOT, "quant/data/technical-intelligence/elliott-validation");
+  for (const [key, file] of [["confirmatory", "report-confirmatory-v22-sticky.json"], ["exploratory", "report-exploratory-v22-sticky.json"]]) {
+    const f = join(EVAL, file); if (!existsSync(f)) continue;
+    const v = readJson(f);
+    out.elliottValidation = out.elliottValidation || {};
+    out.elliottValidation[key] = { file, engine: v.meta.engine, generatedAt: v.generatedAt, events: v.funnel.genericEvents, issuers: v.funnel.symbolsWithEvents,
+      hypotheses: Object.fromEntries(Object.entries(v.preregisteredHypotheses).map(([k, h]) => [k, { name: h.name, est: h.est, lo: h.lo, hi: h.hi, confirmed: h.confirmed }])),
+      latency: v.latency.all, stability: { relabelRate: v.stability.relabelRate, medianCountLifetimeBars: v.stability.medianCountLifetimeBars } };
+  }
   return out;
 }
 

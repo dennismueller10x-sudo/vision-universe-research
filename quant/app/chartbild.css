@@ -258,3 +258,7 @@
 .qd .cb-filter-toggles{display:flex;flex-wrap:wrap;gap:8px}
 .qd .cb-filter-toggles .cb-chip-btn[aria-pressed=true]{background:var(--q-lime);color:var(--q-lime-ink);border-color:var(--q-lime)}
 @media (max-width:760px){.qd .cb-filter{flex:1 1 45%}.qd .cb-select{width:100%}}
+.qd .cb-layout-d .cb-scenario{margin:2px 0 10px}
+.qd .cb-sc-after .cb-sc-text{margin:0 2px 18px}
+.qd .cb-replay-flag{margin:0 4px 6px;padding:6px 12px;border-radius:99px;display:inline-block;font-size:12px;font-weight:800;background:rgba(179,166,255,.14);color:var(--cb-alt)}
+.qd .cb-chart-card.is-replay .cb-lead-m,.qd .cb-chart-card.is-replay .cb-unclear{display:none}

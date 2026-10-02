@@ -252,7 +252,7 @@
 
   async function chartbild(main, ctx, ticker, params) {
     var view = params && params.get("ansicht") === "profi" ? "pro" : readView();
-    var layout = params && /^[abc]$/.test(params.get("layout") || "") ? params.get("layout") : "c";
+    var layout = params && /^[abcd]$/.test(params.get("layout") || "") ? params.get("layout") : "d";
     main.append(el("a", { class: "v2-back qx-back", href: X.routes.stock(ticker), text: "← Zur Aktienanalyse " + ticker }));
     var host = el("div", { class: "cb cb-layout-" + layout }, [X.loading("Chartbild wird geladen …")]);
     main.append(host);
@@ -340,6 +340,8 @@
         cutoff: replayStep ? replayStep.d : null, showPath: !replayStep, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
         waves: wavesOn ? waveMarks() : null, onWave: replayStep ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 360 : 430, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
+      if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
+      chartCard.classList.toggle("is-replay", !!replayStep);
     }
     var controls = el("div", { class: "cb-controls" }, [
       segmented("Zeitraum", ranges.map(function (x) { return [x[0], x[1]]; }), range, function (v) { range = v; draw(); }),
@@ -423,8 +425,10 @@
     proOpen.addEventListener("click", function () { setView("pro"); proHost.scrollIntoView({ behavior: "smooth", block: "start" }); });
 
     /* Reihenfolge je Layout-Variante (§63, Design-Review): a = minimal, b = Zonen zuerst, c = Szenario zuerst (gewählt). */
-    var scenarioBlock = el("section", { class: "cb-scenario", "aria-label": "Szenario" }, [tabs, scText]);
-    var order = { a: [hero, chartCard, levels, scenarioBlock], b: [hero, levels, chartCard, scenarioBlock], c: [hero, scenarioBlock, levels, chartCard] }[layout];
+    /* Design-Review (UI_UX_SPEC §8): Variante „d" gewählt — Szenario-Tabs direkt über dem Chart, damit der Chart mit
+       beschrifteten Zonen schon im ersten Bildschirm steht; Kacheln und Szenario-Satz darunter. a/b/c bleiben zum Vergleich. */
+    var tabsBlock = el("section", { class: "cb-scenario", "aria-label": "Szenario" }, [tabs]), textBlock = el("div", { class: "cb-sc-after" }, [scText]);
+    var order = { a: [hero, chartCard, levels, tabsBlock, textBlock], b: [hero, levels, chartCard, tabsBlock, textBlock], c: [hero, tabsBlock, textBlock, levels, chartCard], d: [hero, tabsBlock, chartCard, levels, textBlock] }[layout];
     host.append(el("div", { class: "cb-viewswitch" }, [viewSeg]));
     order.forEach(function (n) { host.append(n); });
     [why, evidence, replay, tfs].forEach(function (n) { if (n) host.append(n); });
@@ -570,10 +574,22 @@
           var e = st.elliott.bySetup[k], name = { IMPULSE_W3_AFTER_W2: "Nach Welle 2: Welle 3 überschreitet Welle 1", IMPULSE_W5_AFTER_W4: "Nach Welle 4: Welle 5 überschreitet Welle 3", ZIGZAG_C_AFTER_B: "Zigzag nach B: Welle C überschreitet A", FLAT_C_AFTER_B: "Flat nach B: Welle C überschreitet A" }[k] || k;
           return el("li", { text: name + ": " + pct(e.confirmRate) + " (Zufall gleicher Abstände " + pct(e.baselineRate) + ", n = " + e.n.toLocaleString("de-DE") + ")" });
         })), para("Hohe Quoten entstehen aus der Geometrie (Ziel nah, Grenze fern). Gegen den Zufall gemessen trafen die Lehrbuch-Erwartungen " + (Object.keys(st.elliott.bySetup).every(function (k) { return !(st.elliott.bySetup[k].lift > 0); }) ? "in keinem Setup häufiger ein – Elliott-Zählungen sind hier Beschreibung, keine Vorhersage." : "nur teilweise häufiger ein.")) ]) : null,
+        ev.elliottValidation && ev.elliottValidation.confirmatory ? elliottValidationCard(ev.elliottValidation.confirmatory) : null,
         st.fibonacci ? X.card([el("h3", { class: "qx-h3", text: "Fibonacci-Niveaus" }), para("In " + st.fibonacci.n.toLocaleString("de-DE") + " bestätigten Gegenbewegungen endeten Rückläufe an 38,2 %, 50 % und 61,8 % nicht häufiger als knapp daneben (Verhältnis zum Nachbarbereich: " + Object.keys(st.fibonacci.levels).map(function (k) { return (k * 100).toFixed(1).replace(".", ",") + " % → " + String(st.fibonacci.levels[k].ratio).replace(".", ","); }).join(" · ") + "). Fibonacci zählt deshalb nur, wo mehrere Anker zusammenfallen.")]) : null
       ], null, null, "evidenz"));
     }
     host.append(el("div", { class: "qx-actions" }, [X.btn("Technische Lagen ansehen", X.routes.chartlagen(), "secondary"), X.btn("Alle Methodikdateien", "/quant/methodology/", "secondary")]));
+  }
+
+  /** Ergebnis der vorab registrierten Elliott-Validierung (Bestaetigungsstichprobe) — rein aus den Daten. */
+  function elliottValidationCard(v) {
+    var H = v.hypotheses || {}, ks = Object.keys(H).sort();
+    var any = ks.some(function (k) { return H[k].confirmed; });
+    var pp = function (x) { return isNum(x) ? (x * 100 >= 0 ? "+" : "") + (x * 100).toFixed(1).replace(".", ",") : "–"; };
+    return X.card([el("h3", { class: "qx-h3", text: "Elliott-Validierung (vorab registriert)" }),
+      el("p", { class: "qx-small", text: (any ? "Mindestens eine vorab festgelegte Hypothese wurde auf unabhängigen Titeln bestätigt." : "Keine der vorab festgelegten Hypothesen wurde auf unabhängigen Titeln bestätigt.") + " Prüfung auf " + (v.issuers || 0).toLocaleString("de-DE") + " Emittenten, die bei der Entwicklung nicht angesehen wurden; " + (v.events || 0).toLocaleString("de-DE") + " Rückläufe." }),
+      el("ul", { class: "cb-list" }, ks.map(function (k) { var h = H[k]; return el("li", { text: k + " · " + h.name + ": " + (h.confirmed ? "bestätigt" : "nicht bestätigt") + " (Schätzer " + (k === "H1" ? String(h.est).replace(".", ",") : pp(h.est) + " Pp.") + ", 95 %-Intervall " + (k === "H1" ? String(h.lo).replace(".", ",") + " bis " + String(h.hi).replace(".", ",") : pp(h.lo) + " bis " + pp(h.hi)) + ")" }); })),
+      el("p", { class: "cb-small cb-dim", text: "Elliott bleibt im Chartbild eine Sprache für Struktur und Szenarien. Ein Prognosevorteil wird nur behauptet, wenn er hier bestätigt ist." })]);
   }
 
   global.QXChartbild = { chartbild: chartbild, overview: overview, method: method };

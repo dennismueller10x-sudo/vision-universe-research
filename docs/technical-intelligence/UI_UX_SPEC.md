@@ -70,3 +70,56 @@ Screenshots Desktop 1280 px und Mobil 390 px für NVDA (Tag), AAPL (Profi), AMZN
 ## 9. Marketing-Tauglichkeit
 
 Der Hero (Ausblick in 80–90 px Schrift, vier Zonen-Kacheln, Chart mit Bändern) ist als Screenshot ohne Kontext lesbar. Teilbare Fassung: `?ansicht=profi` für Fachpublikum. Keine Marketingzahlen ohne Methodik (alle Quoten verlinkt auf `#/methodik/chartbild`).
+
+---
+
+# v3 (Master Mission II) — Ergänzungen
+
+## 10. Zwei Ebenen, nie vermischt (§38–§41, §60)
+
+| Ebene | Frage | Anzeige | Werte |
+|---|---|---|---|
+| **Was der Chart zeigt** | Wie eindeutig ist die Struktur? | „Struktur: Klar / Mittel / Unklar" | aus Einigkeit der Verfahren und Mischlage; ausdrücklich keine Wahrscheinlichkeit |
+| **Was die Historie nahelegt** | Hat diese Lage früher besser als Zufall funktioniert? | „Kein Vorteil belegt" / „Experimentell" / „Zu wenig Vergleichsfälle" | aus der Evidenzstudie; „Bestätigt" nur nach bestandenem vorab registriertem Test (derzeit für keine Lage) |
+
+„Hohe Konfidenz" kommt in der Konsumenten-Ansicht nicht mehr vor (die Labels unterschieden die Trefferquote nicht).
+
+## 11. Aufbau der Einzelseite (Layout „d")
+
+1. Hero: Ausblick in einem Wort, Struktur in einem Satz, die zwei Ebenen als Kacheln
+2. Szenario-Tabs (Haupt / Alternative / Rand) — Tastatur (←/→) und Wischen auf dem Chart
+3. Chart: Schlüsselzone, Zielbereich 1/2, Ungültig-Linie (gestrichelt), weicher Szenario-Pfad mit Korridor, der nach rechts breiter wird; bei unklarer Struktur blasser und breiter; Wellenmarken antippbar
+4. Drei Kacheln: Schlüsselzone · Zielbereich · Ungültig unter
+5. Szenario-Satz (Bedingung in Alltagssprache) und Zusammenfassung
+6. Warum dieses Bild? (✓ ✕ ○, Familie fett, Alltagssprache)
+7. Was die Historie nahelegt (Evidenzkarte nach §53: ähnliche Lagen, erreicht, Zufall, Unterschied in Pp.)
+8. Zeitreise (Indexmitglieder, Tagesreferenz): Schieberegler über 26 Schritte, Chart zeigt nur damals verfügbare Bars, „Lesart neu" bei Neuzuordnung
+9. Zeitebenen (eingeklappt) · „Details anzeigen (Profi-Ansicht)"
+
+**Wellen-Inspektor** (Bottom Sheet, mobil von unten, Desktop als Dialog, Escape/Schließen, Fokus zurück): Was die Welle bedeutet · Warum Vision Universe sie so sieht · Wichtige Regeln (✓/✕/○) · Rücklauf bzw. Länge · Historisches Verhalten (ehrlich: kein Vorteil belegt) · Was sie ungültig macht.
+
+**Enthaltung:** Ist Elliott nicht anwendbar (Anwendbarkeit LOW), zeigt die Konsumenten-Ansicht keine Wellen, sondern „Wellenstruktur unklar. Mehrere Lesarten sind möglich – Vision Universe zeigt hier bewusst keine Wellenzählung." — keine Fehlermeldung.
+
+**Profi-Panel „So wurde gerechnet – Elliott"** (§54/§123): Hauptzählung, Alternative, Grad, Status (entwickelnd/abgeschlossen), Count Quality, Anwendbarkeit mit Gründen, Regelverletzungen, Richtlinienpassung, höherer Grad, Erkennungsverzug, Neuzuordnungs-Risiko, historische Evidenz, Kandidatenbaum.
+
+## 12. Übersicht `/chartlagen`
+
+Reihen mit Evidenz-Etikett („Beschreibend" / „Experimentell") und offen gelegter Regel: Nahe einer Schlüsselzone · Rücksetzer im Aufwärtstrend · Klarste Strukturen · Ausbrüche beobachten · Klare Elliott-Strukturen (experimentell) · Großes und kleines Bild gleichgerichtet · Mögliche Trendwenden.
+**Eigene Auswahl** (§57): Trend, Struktur, Universum (Indexmitglieder ≥ 5 $ / alle), Schalter „Nahe der Schlüsselzone", „Klare Struktur", „Klare Elliott-Zählung (experimentell)" — Alltagssprache statt Indikatorwerten.
+
+## 13. Aktienseite (§55)
+
+Kompakte Karte: „Technischer Ausblick" · Struktur in einem Satz · Schlüsselzone · Ungültig unter · Struktur klar/mittel/unklar · „Technische Analyse öffnen →".
+
+## 14. Design-Review v3 (Screenshots Mobil 390 px, Tablet 820 px, Desktop 1280 px; Chromium)
+
+| Runde | Befund | Änderung |
+|---|---|---|
+| 1 | Mobil: erster Bildschirm nur Hero, Chart erst nach 2 Scrolls | Ausblick kleiner, Ebenen als 2 kompakte Kacheln, Zusammenfassung unter den Chart, Ansicht-Schalter mobil ausgeblendet (Profi über „Details anzeigen") |
+| 1 | Wellenmarken als weiße Kreise ohne Text (CSS-Spezifität) | Abzeichen dunkel mit Rand, Text weiß, laufende Welle lime |
+| 2 | Profi-Panel „Count Quality –" | Count Quality und Erkennungsverzug in den Datenvertrag aufgenommen |
+| 2 | Inspektor: doppelte Regeln bei zusammengesetzten Mustern | nach Aussage dedupliziert |
+| 2 | Teaser-Punkt grau (Farb-Token außerhalb der Seite) | Token auch für den Teaser |
+| 3 | Varianten a (Chart zuerst), b (Zonen zuerst), c (Szenario zuerst) verglichen | a: Chart mit beschrifteten Zonen ist sofort verständlich, aber Szenario-Wahl zu weit unten; c: Chart unter der Falz. **Gewählt „d"**: Tabs direkt über dem Chart, Kacheln darunter. a–c bleiben über `?layout=` zum Vergleich abrufbar |
+
+Ergebnis: kein horizontaler Überlauf, keine JS-Fehler auf allen geprüften Seiten (Einzelseite einfach/profi, Inspektor, Übersicht, Aktienseite).
