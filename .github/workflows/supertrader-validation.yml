@@ -6,6 +6,8 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:full]     alle offenen Listings abrufen (fortsetzbar)
 #   [supertrader-validation:analyze]  Qualitaet, Universum, Backtest (keine Tiingo-Kursanfragen)
 #   [supertrader-validation:analyze-smoke]  Technischer Probelauf der Auswertung (400 Reihen)
+#   [supertrader-validation:methods]  Momentum, Weinstein, Darvas, Minervini (PREREGISTRATION-METHODS.json)
+#   [supertrader-validation:methods-smoke]  Technischer Probelauf dazu (400 Reihen)
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
 # nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
 # kann sie lesen) auf den Zweig claude/supertrader-validation-results gelegt.
@@ -14,7 +16,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [subset, full, analyze]
+        options: [subset, full, analyze, methods]
         default: subset
   push:
     branches:
@@ -22,7 +24,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: supertrader-validation-${{ contains(github.event.head_commit.message, ':analyze-smoke]') && 'smoke' || 'main' }}
+  group: supertrader-validation-${{ (contains(github.event.head_commit.message, ':analyze-smoke]') || contains(github.event.head_commit.message, ':methods-smoke]')) && 'smoke' || 'main' }}
   cancel-in-progress: false
 jobs:
   run:
@@ -41,7 +43,7 @@ jobs:
           INPUT: ${{ inputs.mode }}
         run: |
           m="$INPUT"
-          case "$MSG" in *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
+          case "$MSG" in *"[supertrader-validation:methods-smoke]"*) m=methods-smoke;; *"[supertrader-validation:methods]"*) m=methods;; *"[supertrader-validation:analyze-smoke]"*) m=analyze-smoke;; *"[supertrader-validation:subset]"*) m=subset;; *"[supertrader-validation:full]"*) m=full;; *"[supertrader-validation:analyze]"*) m=analyze;; esac
           echo "mode=${m:-subset}" >> "$GITHUB_OUTPUT"
       - name: Oeffentliche Anbieterangaben zu Abrufgrenzen (Beleg, best effort)
         if: steps.mode.outputs.mode == 'subset'
@@ -71,6 +73,17 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=12000
         run: node scripts/supertrader/validation/analyze.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'analyze-smoke' && '--limit 400' || '' }}
+      - name: Auswertung weiterer Methoden (verschluesselt)
+        if: steps.mode.outputs.mode == 'methods' || steps.mode.outputs.mode == 'methods-smoke'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/analyze-methods.mjs --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'methods-smoke' && '--limit 400' || '' }}
       - name: Verschluesseltes Ergebnis ablegen
         if: always()
         env:

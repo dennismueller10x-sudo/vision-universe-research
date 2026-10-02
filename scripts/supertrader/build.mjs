@@ -104,7 +104,7 @@ function loadBenchmarkWeekly() {
 // danach. Volumen nur, wo Tagesbalken existieren. weekAt[t] ist nur an
 // VOLLSTAENDIGEN Wochenenden gesetzt (naechster Balken in neuer Woche, oder
 // letzter Balken an einem Freitag).
-function buildWeekly(inst, longPoints, bench) {
+export function buildWeekly(inst, longPoints, bench) {
   const { bars } = inst;
   const weeks = new Map();
   for (const [d, c] of longPoints || []) weeks.set(isoWeekKey(String(d).slice(0, 10)), { date: String(d).slice(0, 10), close: c, volume: null });
