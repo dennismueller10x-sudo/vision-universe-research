@@ -50,11 +50,24 @@ class Pipeline:
             s.setdefault('active', True)
             self.store.source(s)
 
+    def ingest_due_sources(self, selected_ids, all_sources=False, force=False):
+        for source in self.store.sources(None if force else self.now):
+            if source['type'] != 'GDELT' and (all_sources or source.get('companyId') is None or source['companyId'] in selected_ids):
+                self.ingest_source(source)
+
     def ingest_source(self, source):
+        from .feeds import is_event_feed, is_material_feed
+        if source.get('verified') and source['type'] == 'IR_FEED':
+            if is_material_feed(source['url']):
+                source = {**source, 'type': 'IR_MATERIALS', 'format': 'RSS_MATERIALS', 'intervalHours': 24}
+            elif is_event_feed(source['url']):
+                source = {**source, 'type': 'IR_EVENTS', 'format': 'RSS_EVENTS', 'intervalHours': 24}
+            self.store.source(source)
         sid = source['sourceId']
-        if sid in self._processed_sources:
+        signature = (sid, source['type'], source.get('format'))
+        if signature in self._processed_sources:
             return
-        self._processed_sources.add(sid)
+        self._processed_sources.add(signature)
         try:
             accepted = 0
             rejected = 0
@@ -90,17 +103,41 @@ class Pipeline:
                     self.store.audit(self.now, sid, 'STALE_ITEM', url=entry['url'])
                     continue
                 # Verified feed content from outside linked/authorized domains is not first-party evidence.
-                effective = source
+                from .platforms import shared_publisher
+                effective = {**source, 'verified': False} if shared_publisher(entry['url']) else source
                 if source.get('verified') and not any(within_domain(entry['url'], s) for s in source.get('allowedSites', [])):
                     effective = {**source, 'verified': False}
                 matches = self.resolver.resolve(entry, effective)
+                if source['type'] == 'IR_MATERIALS' and source.get('verified') and not shared_publisher(entry['url']):
+                    # An official document feed explicitly delegates its linked materials,
+                    # including CDN files. This rule never authorizes publisher news.
+                    matches = [{'companyId': source['companyId'], 'confidence': .95, 'evidence': ['DOCUMENT_LINK_IN_VERIFIED_ISSUER_PRESENTATION_FEED']}]
+                    effective = source
                 if not matches:
                     self.run['unmatched'] += 1
                     rejected += 1
                     self.store.audit(self.now, sid, 'UNMATCHED_TITLE', headline=entry['headline'], url=entry['url'], reason='NO_HIGH_CONFIDENCE_TITLE_ENTITY')
                 for match in matches:
+                    item = make_item(entry, effective, match, self.now)
+                    if source['type'] == 'IR_MATERIALS':
+                        if not effective.get('verified') or match['companyId'] != source['companyId']:
+                            rejected += 1
+                            continue
+                        accepted += 1
+                        self.store.event({'eventId': stable_id(match['companyId'], entry['url'], 'presentation'), 'companyId': match['companyId'],
+                                          'eventType': 'PRESENTATION_PUBLISHED', 'headline': entry['headline'], 'date': entry_time[:10],
+                                          'publishedAt': entry.get('publishedAt'), 'observedAt': entry.get('updatedAt') if not entry.get('publishedAt') else None,
+                                          'sourceId': sid, 'sourceUrl': entry['url'], 'sourceDocuments': [{'type': 'PRESENTATION', 'url': entry['url']}],
+                                          'detectionEvidence': ['VERIFIED_OFFICIAL_PRESENTATION_FEED'], 'confidence': 1, 'discoveredAt': self.now}, self.now)
+                        # Reclassify older feed output, retaining its representation in the event.
+                        for row in self.store.db.execute('SELECT id,payload FROM items WHERE company=? AND json_extract(payload,\'$.canonicalUrl\')=?', (match['companyId'], entry['url'])).fetchall():
+                            old = json.loads(row['payload'])
+                            if old.get('provenance') and all(p.get('sourceId') == sid for p in old['provenance']):
+                                with self.store.db:
+                                    self.store.db.execute('DELETE FROM items WHERE id=?', (row['id'],))
+                                self.store.audit(self.now, sid, 'NEWS_RECLASSIFIED_AS_PRESENTATION', newsId=row['id'], url=entry['url'])
+                        continue
                     accepted += 1
-                    item = make_item(entry, source, match, self.now)
                     if source['type'] == 'GDELT':
                         # seendate is observation, not publication. Never claim it as publisher time.
                         item['observedAt'] = entry['publishedAt']
@@ -113,7 +150,7 @@ class Pipeline:
                         for e in from_announcement(entry, effective, self.now):
                             self.store.event(e, self.now)
                         import re
-                        if entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'will|to announce|to report|date', entry['headline'], re.I):
+                        if entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|date)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period
                             period = release_period(entry['headline']) or {}
                             quarter, year = period.get('fiscalQuarter'), period.get('fiscalYear')
@@ -134,14 +171,18 @@ class Pipeline:
                             item['guidanceEvidence'] = guidance
                     outcome = self.store.ingest(item)
                     self.run['duplicate' if outcome == 'DUPLICATE' else 'new'] += 1
-            source.update(lastItemCount=len(entries), lastAcceptedMatches=accepted, lastRejectedItems=rejected, lastSuccess=self.now, lastChecked=self.now, failureCount=0, lastError=None, nextCheck=advance(self.now, source.get('intervalHours', 6)))
+            content_dates = [i.get('publishedAt') or i.get('updatedAt') for i in entries if (i.get('publishedAt') or i.get('updatedAt')) and (i.get('publishedAt') or i.get('updatedAt')) <= self.now]
+            if source['type'] == 'IR_EVENTS':
+                content_dates += [e.get('date') for e in events if e.get('date')]
+            source.update(latestContentAt=max(content_dates) if content_dates else None, lastItemCount=len(entries) if source['type'] != 'IR_EVENTS' else len(events), lastAcceptedMatches=accepted, lastRejectedItems=rejected, lastSuccess=self.now, lastChecked=self.now, failureCount=0, lastError=None, nextCheck=advance(self.now, source.get('intervalHours', 6)))
             self.store.source(source)
-            log('SOURCE_SUCCESS', sourceId=sid, items=len(entries))
+            log('SOURCE_SUCCESS', sourceId=sid, items=source['lastItemCount'])
         except BudgetExhausted:
             raise
         except Exception as exc:
             failure = source.get('failureCount', 0) + 1
-            source.update(lastFailure=self.now, lastChecked=self.now, failureCount=failure, lastError=(type(exc).__name__ + ':' + str(exc))[:250], nextCheck=advance(self.now, min(72, 2 ** min(failure, 6))))
+            delay = 7 * 24 if any(code in str(exc) for code in ('403', '404', 'ROBOTS')) else min(72, 2 ** min(failure, 6))
+            source.update(lastFailure=self.now, lastChecked=self.now, failureCount=failure, lastError=(type(exc).__name__ + ':' + str(exc))[:250], nextCheck=advance(self.now, delay))
             self.store.source(source)
             self.store.audit(self.now, sid, 'SOURCE_FAILURE', errorType=type(exc).__name__, reason=str(exc)[:250])
             self.run['sourceFailures'] += 1
@@ -153,6 +194,7 @@ class Pipeline:
         try:
             if not cik:
                 self.store.audit(self.now, cid, 'SEC_UNAVAILABLE', reason='NO_VERIFIED_CIK')
+                self.store.set_state('financials:' + cid, {'state': 'UNAVAILABLE', 'reason': 'NO_VERIFIED_CIK'})
                 return
             from quant.sec.store import JsonRawStore
             submissions = JsonRawStore(self.root / 'quant/data/sec/raw').get_latest(cik, 'submissions')
@@ -181,9 +223,19 @@ class Pipeline:
                         self.run['documentFailures'] += 1
                         self.store.audit(self.now, cid, 'SEC_DOCUMENT_FAILURE', filingId=accession, reason=evidence.get('reason') or evidence.get('exhibitFailure'), retryAfter=evidence.get('retryAfter'))
             if submissions:
-                from .sec_documents import PARSER_VERSION
+                from .sec_documents import PARSER_VERSION, CLASSIFICATION_COMPATIBLE
                 evidence = {acc: self.store.state('sec-document:' + cid + ':' + acc) for acc in submissions.get('filings', {}).get('recent', {}).get('accessionNumber', [])}
-                submissions['_intelligenceDocumentEvidence'] = {acc: value for acc, value in evidence.items() if value and value.get('parserVersion') == PARSER_VERSION}
+                from .sec_documents import inspect_html
+                validated = {}
+                for acc, value in evidence.items():
+                    if not value or value.get('parserVersion') not in CLASSIFICATION_COMPATIBLE:
+                        continue
+                    if value.get('outcome') == 'EARNINGS_RELEASE' and value.get('parserVersion') != PARSER_VERSION:
+                        proof = inspect_html((value.get('evidence') or '').encode(), value.get('sourceUrl') or '')
+                        if proof['outcome'] != 'EARNINGS_RELEASE':
+                            value = {**value, 'outcome': proof['outcome']}
+                    validated[acc] = value
+                submissions['_intelligenceDocumentEvidence'] = validated
             canonical = None
             for listing in company['listings']:
                 candidate = read_optional(self.root / 'quant/data/sec/canonical' / (listing['symbol'] + '.json'))
@@ -191,6 +243,11 @@ class Pipeline:
                     canonical = candidate
                     break
             consumer = read_optional(self.root / 'quant/data/sec/consumer' / ('CIK' + cik + '.json'))
+            financials = summary(consumer, cik, self.now)
+            ends = [m['current']['periodEnd'] for m in financials.get('metrics', {}).values() if (m.get('current') or {}).get('periodEnd')] if financials.get('state') == 'AVAILABLE' else []
+            financials['reportingPeriod'] = max(ends) if ends else None
+            financials['stale'] = not ends or max(ends) < advance(self.now, -180 * 24)[:10]
+            self.store.set_state('financials:' + cid, financials)
             canonical_cik = None
             if canonical:
                 index = read_optional(self.root / 'quant/data/sec/inspector_index.json') or {}
@@ -208,7 +265,13 @@ class Pipeline:
                             self.store.db.execute('DELETE FROM events WHERE id=? AND id NOT IN (SELECT target FROM event_alias)', (result_id,))
                 self.store.event(e, self.now)
             self.refresh_estimates(company)
-            self.store.set_state('sec:' + cid, {'lastSuccess': self.now, 'events': len(events), 'hasSubmissions': bool(submissions), 'hasCanonical': bool(canonical), 'hasConsumer': bool(consumer)})
+            sec_state = {**self.store.state('sec:' + cid, {}), 'projectedAt': self.now, 'events': len(events),
+                         'hasCanonical': bool(canonical), 'hasConsumer': bool(consumer)}
+            if submissions:
+                sec_state['hasSubmissions'] = True
+            if fetch_sec and submissions:
+                sec_state.update(lastSuccess=self.now, retryAfter=None, reason=None)
+            self.store.set_state('sec:' + cid, sec_state)
         except BudgetExhausted:
             self.store.audit(self.now, cid, 'SEC_DEFERRED', reason='REQUEST_OR_TIME_BUDGET')
             raise
@@ -225,6 +288,19 @@ class Pipeline:
         cid = company['companyId']
         all_events = [json.loads(r[0]) for r in self.store.db.execute('SELECT payload FROM events WHERE company=?', (cid,))]
         estimates = estimate_calendar(company, all_events, self.now)
+        # Preserve estimate -> confirmation evidence before retiring an estimate.
+        for prior in [e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED']:
+            confirmations = [e for e in all_events if e['eventType'] in ('EARNINGS_SCHEDULED', 'EARNINGS_CALL') and e.get('confirmationStatus') == 'CONFIRMED'
+                             and prior['dateStart'] <= e.get('date', '') <= prior['dateEnd']]
+            if len(confirmations) == 1:
+                official = confirmations[0]
+                transition = {'previousEventId': prior['eventId'], 'previousStatus': 'ESTIMATED', 'previousDateStart': prior['dateStart'],
+                              'previousDateEnd': prior['dateEnd'], 'confirmationStatus': 'CONFIRMED', 'date': official['date'], 'sourceUrl': official['sourceUrl'], 'changedAt': self.now}
+                history = official.get('confirmationHistory', [])
+                if not any(h.get('previousEventId') == prior['eventId'] for h in history):
+                    official['confirmationHistory'] = history + [transition]
+                    self.store.event(official, self.now)
+                    self.store.audit(self.now, company['companyId'], 'ESTIMATE_CONFIRMED', **transition)
         with self.store.db:
             self.store.db.execute("DELETE FROM events WHERE company=? AND kind='EARNINGS_ESTIMATED'", (cid,))
         for e in estimates:

@@ -19,6 +19,21 @@ def timeline_entry(value):
     return {key: value[key] for key in keys if key in value}
 
 
+def material_documents(events, cid):
+    """References only; no document downloading or republishing."""
+    documents = {}
+    for e in events:
+        for doc in e.get('sourceDocuments', []) + [{'url': e.get(k), 'type': kind} for k, kind in
+                [('presentationUrl', 'PRESENTATION'), ('transcriptUrl', 'COMPANY_TRANSCRIPT'), ('quarterlyReportUrl', 'FINANCIAL_REPORT'), ('earningsReleaseUrl', 'EARNINGS_RELEASE')]]:
+            url = doc.get('url')
+            if not url:
+                continue
+            key = (url, doc.get('type') or 'SOURCE_DOCUMENT')
+            documents[key] = {**doc, 'type': key[1], 'documentId': stable_id(cid, *key), 'companyId': cid, 'eventId': e['eventId'],
+                              'reportingPeriod': e.get('reportingPeriod'), 'fiscalYear': e.get('fiscalYear'), 'fiscalQuarter': e.get('fiscalQuarter'), 'date': e.get('date')}
+    return list(documents.values())
+
+
 PRIORITY = {'IR_FEED': 0, 'IR_EVENTS': 0, 'SEC': 1, 'RSS': 2, 'GDELT': 3}
 
 
@@ -62,6 +77,7 @@ def duplicate_reason(a, b):
 
 class Store:
     def __init__(self, path):
+        self.path = Path(path)
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(path, timeout=30)
         self.db.row_factory = sqlite3.Row
@@ -140,6 +156,8 @@ class Store:
                 merged['provenanceTruncated'] = old.get('provenanceTruncated', False) or len(refs) > 32
                 merged['provenance'] = sorted(refs.values(), key=lambda p: (PRIORITY.get(p['discoverySource'], 9), p['sourceId'], p['originalUrl']))[:32]
                 merged['deduplicationEvidence'] = sorted(set(old.get('deduplicationEvidence', []) + [reason]))
+                from .model import classify
+                merged.update(classify(merged['headline']))
                 self.db.execute('INSERT OR REPLACE INTO items VALUES(?,?,?,?)',
                                 (merged['newsId'], merged['companyId'], item_time(merged), dumps(merged)))
                 return 'DUPLICATE'
@@ -161,8 +179,10 @@ class Store:
                 "SELECT payload FROM events WHERE company=? AND kind='EARNINGS_PUBLISHED' AND date=? AND json_extract(payload,'$.reportingPeriod')=? AND json_extract(payload,'$.fiscalQuarter')=? AND json_extract(payload,'$.fiscalYear')=?",
                 (event['companyId'], event['date'], event.get('reportingPeriod'), event.get('fiscalQuarter'), event.get('fiscalYear')))] if earnings_group else [json.loads(r[0]) for r in self.db.execute("SELECT payload FROM events WHERE company=? AND kind='EARNINGS_CALL' AND json_extract(payload,'$.startsAt')=? AND json_extract(payload,'$.confirmationStatus')='CONFIRMED'", (event['companyId'], event['startsAt']))]
             peers = [p for p in peers if not p.get('isAmendment') and not re.search(r'correct(?:ion|ed)|restated|revised', p.get('headline', ''), re.I)]
+            if call_group:
+                peers = [p for p in peers if all(not event.get(k) or not p.get(k) or event[k] == p[k] for k in ('fiscalQuarter', 'fiscalYear'))]
             if peers:
-                preferred = min(peers + [event], key=lambda e: (not bool(e.get('sourceId')), e.get('sourceUrl', '')))
+                preferred = min([event] + peers, key=lambda e: (not bool(e.get('sourceId')), e.get('sourceUrl', '')))
                 combined = {**preferred, 'eventId': peers[0]['eventId'], 'discoveredAt': min(e.get('discoveredAt', now) for e in peers + [event])}
                 documents, provenance = {}, {}
                 for e in peers + [event]:
@@ -173,7 +193,12 @@ class Store:
                         provenance[(ref.get('sourceUrl'), ref.get('filingId'))] = ref
                 combined.update(sourceDocuments=list(documents.values()), eventProvenance=list(provenance.values()),
                                 groupingEvidence='EXACT_ISSUER_FISCAL_PERIOD_REPORT_END_AND_PUBLICATION_DATE' if earnings_group else 'EXACT_ISSUER_CONFIRMED_CALL_START_TIME')
-                summaries = [e['summary'] for e in peers + [event] if e.get('summary', {}).get('state') == 'AVAILABLE']
+                # Prefer the newly parsed evidence on a rerun of the same source.
+                for key in ('documentEvidence', 'guidance', 'companyKPIs', 'webcastUrl', 'replayUrl', 'presentationUrl', 'transcriptUrl', 'materialEvidence'):
+                    enriched = [e[key] for e in [event] + peers if e.get(key)]
+                    if enriched:
+                        combined[key] = enriched[0]
+                summaries = [e['summary'] for e in [event] + peers if e.get('summary', {}).get('state') == 'AVAILABLE']
                 if summaries:
                     combined['summary'] = max(summaries, key=lambda s: s.get('sourceAsOf', ''))
                 with self.db:
@@ -191,6 +216,10 @@ class Store:
         if old:
             prior = json.loads(old[0])
             event['discoveredAt'] = prior.get('discoveredAt', now)
+            event.setdefault('confirmationHistory', prior.get('confirmationHistory', []))
+            for key in ('webcastUrl', 'replayUrl', 'presentationUrl', 'transcriptUrl', 'materialEvidence'):
+                if not event.get(key) and prior.get(key) and prior.get('date') == event.get('date'):
+                    event[key] = prior[key]
             prior_date, new_date = prior.get('date'), event.get('date')
             if prior_date != new_date or prior.get('startsAt') != event.get('startsAt'):
                 event['dateHistory'] = prior.get('dateHistory', []) + [{'previous': prior_date, 'current': new_date, 'changedAt': now, 'previousStartsAt': prior.get('startsAt'), 'currentStartsAt': event.get('startsAt')}]
@@ -204,6 +233,18 @@ class Store:
     def prune(self, now):
         cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=365)).isoformat().replace('+00:00', 'Z')
         audit_cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=30)).isoformat().replace('+00:00', 'Z')
+        # Copy and commit before hot-ledger deletion. Interrupted pruning may
+        # duplicate rows across stores, but cannot erase useful history.
+        event_cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=5 * 366)).date().isoformat()
+        archive = sqlite3.connect(self.path.with_name('archive.sqlite'))
+        try:
+            archive.execute('CREATE TABLE IF NOT EXISTS history(kind TEXT,id TEXT,company TEXT,date TEXT,payload TEXT,PRIMARY KEY(kind,id))')
+            with archive:
+                for table, clock, threshold in [('items', 'published', cutoff), ('events', 'date', event_cutoff)]:
+                    rows = self.db.execute(f'SELECT id,company,{clock},payload FROM {table} WHERE {clock}<? OR id IN (SELECT id FROM (SELECT id,ROW_NUMBER() OVER (PARTITION BY company ORDER BY {clock} DESC,id) AS n FROM {table}) WHERE n>500)', (threshold,))
+                    archive.executemany('INSERT OR REPLACE INTO history VALUES(?,?,?,?,?)', ((table, *tuple(r)) for r in rows))
+        finally:
+            archive.close()
         with self.db:
             self.db.execute('DELETE FROM items WHERE published<?', (cutoff,))
             self.db.execute('DELETE FROM audit WHERE created<?', (audit_cutoff,))
@@ -218,7 +259,17 @@ class Store:
     def company_payload(self, company, now):
         cid = company['companyId']
         items = [json.loads(r[0]) for r in self.db.execute('SELECT payload FROM items WHERE company=? ORDER BY published DESC,id LIMIT 100', (cid,))]
+        from .model import classify
+        for item in items:
+            item.update(classify(item['headline']))
         events = [json.loads(r[0]) for r in self.db.execute('SELECT payload FROM events WHERE company=? ORDER BY date DESC,id LIMIT 200', (cid,))]
+        # Attach calls only with one same-issuer release on the same source date.
+        for call in [e for e in events if e['eventType'] == 'EARNINGS_CALL']:
+            releases = [e for e in events if e['eventType'] == 'EARNINGS_PUBLISHED' and e.get('date') == call.get('date') and e.get('fiscalQuarter') and e.get('fiscalYear') and all(not call.get(k) or call[k] == e[k] for k in ('fiscalQuarter', 'fiscalYear'))]
+            periods = {(e['fiscalYear'], e['fiscalQuarter'], e.get('reportingPeriod')) for e in releases}
+            if len(periods) == 1:
+                release = releases[0]
+                call.update(earningsEventId=release['eventId'], fiscalYear=release['fiscalYear'], fiscalQuarter=release['fiscalQuarter'], reportingPeriod=release.get('reportingPeriod'), linkageEvidence='UNIQUE_ISSUER_RELEASE_PERIOD_ON_SAME_SOURCE_DATE')
         release_urls = {doc['url']: e for e in events if e['eventType'] == 'EARNINGS_PUBLISHED' for doc in e.get('sourceDocuments', []) if doc.get('url')}
         # An official release can be both news and a richer earnings event; show one timeline entry.
         related = {}
@@ -229,10 +280,27 @@ class Store:
                 related.setdefault(release['eventId'], []).append(item['newsId'])
             else:
                 timeline_items.append(item)
-        timeline = [timeline_entry(e) for e in sorted(timeline_items + events, key=lambda e: e.get('publishedAt') or e.get('observedAt') or e.get('date') or '', reverse=True)[:100]]
+        result_filings = {e.get('filingId') for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED') and e.get('filingId')}
+        timeline_events = [e for e in events if e['eventType'] != 'SEC_FILING' or e.get('filingId') not in result_filings]
+        timeline = [timeline_entry(e) for e in sorted(timeline_items + timeline_events, key=lambda e: e.get('publishedAt') or e.get('observedAt') or e.get('date') or '', reverse=True)[:100]]
         for entry in timeline:
             if entry.get('eventId') in related:
                 entry['relatedNewsIds'] = related[entry['eventId']]
+        configuration_documents = [d for cfg in self.state('ir:' + cid, {}).get('configurations', []) for d in cfg.get('documents', [])]
+        financials = self.state('financials:' + cid, {'state': 'UNAVAILABLE', 'reason': 'NOT_PROJECTED'})
+        references = {}
+        if company.get('cik'):
+            from .earnings import filing_url
+            for metric in financials.get('metrics', {}).values():
+                for key in ('current', 'previousQuarter', 'yearAgoQuarter', 'previousYear'):
+                    fact = metric.get(key)
+                    if fact and fact.get('filingId'):
+                        url = filing_url(company['cik'], fact['filingId'])
+                        if url:
+                            references[url] = {'documentId': stable_id(cid, url, 'fact-reference'), 'companyId': cid, 'type': 'SEC_FACT_FILING_REFERENCE',
+                                               'url': url, 'filingId': fact['filingId'], 'filedAt': fact.get('filedAt'), 'date': None, 'eventId': None,
+                                               'evidence': 'EXISTING_VALIDATED_CONSUMER_FACT_ACCESSION', 'label': 'Fact source filing; form and publication time unavailable'}
+        materials = list({(d['url'], d['type']): d for d in configuration_documents + material_documents(events, cid) + list(references.values())}.values())
         return {'schema': SCHEMA, 'companyId': cid, 'listings': company['listings'], 'companyName': company['names'][0] if company['names'] else None,
                 'generatedAt': now, 'state': 'AVAILABLE' if items or events else 'NO_DATA',
                 'news': [i for i in items if i['eventType'] == 'NEWS'],
@@ -241,6 +309,9 @@ class Store:
                 'events': [e for e in events if e['eventType'] in ('EARNINGS_SCHEDULED', 'EARNINGS_ESTIMATED', 'EARNINGS_CALL', 'IR_EVENT') and (e.get('dateEnd') or e.get('date', '')) >= now[:10]][:30],
                 'calls': [e for e in events if e['eventType'] == 'EARNINGS_CALL'][:20],
                 'timeline': timeline,
+                'latestFinancials': financials,
+                'materials': materials[:50],
+                'presentations': [d for d in materials if d.get('type') == 'PRESENTATION'][:50],
                 'coverage': {'sources': [json.loads(r[0]) for r in self.db.execute('SELECT payload FROM sources WHERE company=?', (cid,))], 'sec': self.state('sec:' + cid, {'state': 'NOT_CHECKED'}), 'ir': self.state('ir:' + cid, {'state': 'NOT_CHECKED'}), 'newsGuarantee': False}}
 
     def export(self, companies, output, now):
@@ -253,18 +324,29 @@ class Store:
         for table in ('items', 'events', 'sources'):
             for row in self.db.execute('SELECT payload FROM ' + table + ' ORDER BY id'):
                 digest.update(row[0].encode())
-        for row in self.db.execute("SELECT key,payload FROM state WHERE key LIKE 'sec:%' OR key LIKE 'ir:%' ORDER BY key"):
+        for row in self.db.execute("SELECT key,payload FROM state WHERE key LIKE 'sec:%' OR key LIKE 'ir:%' OR key LIKE 'financials:%' ORDER BY key"):
             digest.update(row[0].encode())
             digest.update(row[1].encode())
         generation = digest.hexdigest()[:24]
         paths, tickers = {}, {}
         for cid, company in sorted(companies.items()):
             payload = self.company_payload(company, now)
-            if payload['state'] == 'NO_DATA':
+            if payload['state'] == 'NO_DATA' and payload['latestFinancials'].get('state') != 'AVAILABLE':
                 continue
+            if payload['latestFinancials'].get('state') == 'AVAILABLE':
+                payload['state'] = 'AVAILABLE'
             path = 'snapshots/' + generation + '/' + cid + '.json'
-            if len(dumps(payload).encode()) > 1024 * 1024:
-                raise ValueError('COMPANY_PAYLOAD_BUDGET_EXCEEDED:' + cid)
+            # A noisy issuer cannot prevent publishing all other companies.
+            # Trim only the disposable consumer view; ledger/history remain intact.
+            while len(dumps(payload).encode()) > 1024 * 1024:
+                arrays = [key for key in ('news', 'earnings', 'filings', 'events', 'calls', 'timeline', 'materials', 'presentations') if payload[key]]
+                if not arrays:
+                    payload = {k: payload[k] for k in ('schema', 'companyId', 'listings', 'companyName', 'generatedAt')}
+                    payload.update(state='NO_DATA', reason='COMPANY_PAYLOAD_BUDGET_EXCEEDED', news=[], earnings=[], filings=[], events=[], calls=[], timeline=[], materials=[], presentations=[])
+                    break
+                largest = max(arrays, key=lambda key: len(dumps(payload[key]).encode()))
+                payload[largest].pop()
+                payload['truncated'] = True
             atomic_json(output / path, payload)
             paths[cid] = path
         for cid, company in sorted(companies.items()):
@@ -285,13 +367,14 @@ class Store:
         return {'exportedCompanies': len(paths), 'generation': generation}
 
     def quality(self, now, companies):
+        from company_intelligence.coverage import ir_configuration, source_status
         sources = self.sources()
         counts = dict(self.db.execute('SELECT kind,COUNT(*) FROM events GROUP BY kind').fetchall())
-        return {'generatedAt': now, 'universeCompanies': len(companies), 'activeSources': len(sources),
+        return {'generatedAt': now, 'universeCompanies': len(companies), 'configuredSources': self.db.execute('SELECT COUNT(*) FROM sources').fetchone()[0], 'enabledSources': len(sources), 'activeSources': sum(source_status(s, now) == 'ACTIVE' for s in sources),
                 'companiesWithNewsSource': len({s['companyId'] for s in sources if s.get('companyId') and s['type'] in ('IR_FEED', 'RSS')}),
-                'companiesWithIRPage': self.db.execute("SELECT COUNT(*) FROM state WHERE key LIKE 'ir:%' AND json_extract(payload,'$.lastSuccess') IS NOT NULL").fetchone()[0],
+                'companiesWithIRPage': sum(any(ir_configuration(cfg) for cfg in json.loads(row[0]).get('configurations', [])) for row in self.db.execute("SELECT payload FROM state WHERE key LIKE 'ir:%'")),
                 'companiesWithEventSource': len({s['companyId'] for s in sources if s.get('companyId') and s['type'] == 'IR_EVENTS'}),
                 'sourceFailures': sum(bool(s.get('failureCount')) for s in sources),
-                'staleSources': sum(not s.get('lastSuccess') or s['lastSuccess'] < (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=2)).isoformat().replace('+00:00', 'Z') for s in sources),
+                'staleSources': sum(source_status(s, now) == 'STALE' for s in sources),
                 'newsItems': self.db.execute('SELECT COUNT(*) FROM items').fetchone()[0], 'eventsByType': counts,
                 'auditCodes': dict(self.db.execute("SELECT json_extract(payload,'$.code'),COUNT(*) FROM audit GROUP BY json_extract(payload,'$.code')").fetchall())}

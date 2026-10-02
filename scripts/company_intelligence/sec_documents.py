@@ -5,7 +5,9 @@ from urllib.parse import urljoin
 from .model import clean, canonical_url
 from .earnings import filing_url
 
-PARSER_VERSION = 'sec-documents-1.2.0'
+PARSER_VERSION = 'sec-documents-1.3.1'
+# 1.3 adds enrichment/period grammar; 1.2 classification proof remains valid.
+CLASSIFICATION_COMPATIBLE = {PARSER_VERSION, 'sec-documents-1.3.0', 'sec-documents-1.2.0'}
 
 class Document(HTMLParser):
     def __init__(self):
@@ -39,7 +41,9 @@ class Document(HTMLParser):
 
 def release_period(text):
     # Explicit company fiscal labels only. Never derive quarters from calendar months.
-    after = re.search(r'\b(first|second|third|fourth|Q[1-4])\s+(?:quarter\s+)?(?:(?:of|fiscal)\s+){0,2}(20\d{2})\b', text, re.I)
+    text = re.sub(r'(?<=\w)[-–](?=\w)', ' ', text)
+    text = re.sub(r'\b([1-4])Q\b', lambda m: 'Q' + m[1], text, flags=re.I)
+    after = re.search(r'\b(first|second|third|fourth|Q[1-4])\s+(?:fiscal\s+)?(?:quarter\s+)?(?:(?:of|fiscal|FY)\s*){0,2}(20\d{2})\b', text, re.I)
     before = re.search(r'\b(?:fiscal\s+)?(20\d{2})\s+(first|second|third|fourth|Q[1-4])(?:\s+quarter)?\b', text, re.I)
     match = after or before
     if not match:
@@ -57,8 +61,9 @@ def inspect_html(payload, url):
     text = clean(''.join(doc.parts), 200000)
     # Ignore generic form template headings such as "Results of Operations and Financial Condition".
     matches = list(re.finditer(r'(?:announced|reported|released|reports|announces|announcing|reporting)[^.]{0,160}(?:financial\s+results|earnings|quarter[^.]{0,35}results)', text, re.I))
-    evidence = next((m for m in matches if not re.search(r'\b(will|plans to|expects to|scheduled to|meeting|considering|approving)\b', text[max(0, m.start() - 50):m.end()], re.I)), None)
-    operating = re.search(r'\b(production and deliver(?:y|ies)|vehicle deliveries|monthly deliveries)\b', text, re.I)
+    evidence = next((m for m in matches if not re.search(r'\b(will|plans to|expects to|scheduled to|meeting|considering|approving)\b', text[max(0, m.start() - 50):m.end()], re.I)
+                     and not (re.search(r'\b(production|deliveries|clinical|trial|study)\b', m[0], re.I) and not re.search(r'financial results|earnings', m[0], re.I))), None)
+    operating = re.search(r'\b(production and deliver(?:y|ies)|vehicle deliveries|monthly deliveries|production results|delivery results)\b', text, re.I)
     outcome = 'EARNINGS_RELEASE' if evidence else 'OPERATING_RESULTS' if operating else 'UNVERIFIED'
     snippet = text[max(0, evidence.start() - 80):evidence.end() + 100] if evidence else None
     period = release_period(snippet or '')
@@ -73,7 +78,7 @@ def inspect_html(payload, url):
             if candidate not in exhibits:
                 exhibits.append(candidate)
     period_end = None
-    ended = re.search(r'(?:quarter|year)\s+ended\s+([A-Z][a-z]+)\s+(\d{1,2}),?\s+(20\d{2})', snippet or '', re.I)
+    ended = re.search(r'(?:quarter|year|three months|six months|nine months)\s+ended\s+([A-Z][a-z]+)\s+(\d{1,2}),?\s+(20\d{2})', snippet or '', re.I)
     if ended:
         from .ir_events import MONTHS
         from datetime import date
@@ -81,7 +86,10 @@ def inspect_html(payload, url):
             period_end = date(int(ended[3]), MONTHS[ended[1].lower()], int(ended[2])).isoformat()
         except (ValueError, KeyError):
             pass
-    return {'periodEnd': period_end, 'parserVersion': PARSER_VERSION, 'outcome': outcome, 'period': period, 'evidence': snippet[:500] if snippet else None, 'sourceUrl': url, 'exhibits': exhibits[:2]}
+    from .enrichment import kpis, guidance
+    return {'periodEnd': period_end, 'parserVersion': PARSER_VERSION, 'outcome': outcome, 'period': period, 'evidence': snippet[:500] if snippet else None, 'sourceUrl': url, 'exhibits': exhibits[:2],
+            'companyKPIs': kpis(text, url, period) if outcome in ('EARNINGS_RELEASE', 'OPERATING_RESULTS') else [],
+            'guidance': guidance(text, url) if outcome == 'EARNINGS_RELEASE' else []}
 
 
 def enrich_submissions(submissions, cik, client, now, budget=60, max_filings=2, previous=None):
@@ -120,7 +128,7 @@ def enrich_submissions(submissions, cik, client, now, budget=60, max_filings=2, 
                     extra = inspect_html(client.get_bytes(exhibit), exhibit)
                     result['sourceDocuments'].append({'type': 'SEC_EARNINGS_EXHIBIT', 'url': exhibit, 'filingId': acc})
                     if extra['outcome'] == 'EARNINGS_RELEASE' or (result['outcome'] != 'EARNINGS_RELEASE' and extra['outcome'] == 'OPERATING_RESULTS'):
-                        result.update(outcome=extra['outcome'], period=extra['period'] or result['period'], periodEnd=extra.get('periodEnd') or result.get('periodEnd'), evidence=extra['evidence'], sourceUrl=exhibit)
+                        result.update(outcome=extra['outcome'], period=extra['period'] or result['period'], periodEnd=extra.get('periodEnd') or result.get('periodEnd'), evidence=extra['evidence'], sourceUrl=exhibit, companyKPIs=extra.get('companyKPIs', []), guidance=extra.get('guidance', []))
                 except Exception as exc:
                     from .transport import BudgetExhausted
                     if isinstance(exc, BudgetExhausted):

@@ -12,7 +12,7 @@ from company_intelligence.model import load_universe, SCHEMA
 from company_intelligence.store import Store, atomic_json
 from company_intelligence.transport import PublicHTTP, BudgetExhausted, SourceError
 from company_intelligence.pipeline import Pipeline, utcnow, log
-from company_intelligence.discovery import wikidata_sites, validate_candidate
+from company_intelligence.discovery import wikidata_sites, wikidata_catalogue, validate_candidate
 
 
 def select(companies, tickers=None, limit=25, cursor=None):
@@ -30,13 +30,36 @@ def select(companies, tickers=None, limit=25, cursor=None):
     return [c for cid, c in sorted(companies.items()) if not cursor or cid > cursor][:limit]
 
 
+def manifest_batch(document, companies, store, now, limit, tickers=None):
+    from company_intelligence.model import ACCESSION
+    from company_intelligence.earnings import valid_date
+    if document.get('STATUS') != 'SUCCESS' or not valid_date(document.get('RUN_DATE')) or document['RUN_DATE'] > now[:10] or not isinstance(document.get('UPDATED_ISSUERS'), list):
+        raise ValueError('INVALID_UPDATED_ISSUER_MANIFEST')
+    seen = store.state('updatedIssuerCheckpoints', {})
+    pending = store.state('updatedIssuerPending', {})
+    prior_date = store.state('updatedManifestDate', '')
+    for row in document['UPDATED_ISSUERS'] if document['RUN_DATE'] >= prior_date else []:
+        cid, accn = row.get('issuerId'), row.get('latestAccession')
+        if cid not in companies:
+            continue
+        if row.get('cik') != companies[cid].get('cik') or not isinstance(accn, str) or not ACCESSION.fullmatch(accn):
+            raise ValueError('UPDATED_ISSUER_IDENTITY_MISMATCH')
+        if seen.get(cid) != accn:
+            pending[cid] = accn
+    store.set_state('updatedIssuerPending', pending)
+    store.set_state('updatedManifestDate', max(prior_date, document['RUN_DATE']))
+    eligible = {cid: companies[cid] for cid in pending if cid in companies and (store.state('sec:' + cid, {}).get('retryAfter') or '') <= now}
+    return select(eligible, tickers, limit) if tickers else select(eligible, limit=limit), pending
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill'])
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--state', type=Path)
     p.add_argument('--out', type=Path)
     p.add_argument('--tickers')
+    p.add_argument('--all-offline', action='store_true', help='Project existing facts for the entire master, without external requests')
     p.add_argument('--updated-issuers', type=Path, help='Consume the existing SEC daily updated-issuer manifest without fetching a universe')
     p.add_argument('--limit', type=int, default=25)
     p.add_argument('--request-budget', type=int, default=60)
@@ -46,14 +69,21 @@ def main(argv=None):
     p.add_argument('--sec-documents', action='store_true', help='Inspect up to two recent SEC candidate primary documents/exhibits per selected issuer')
     p.add_argument('--sec-fetch', action='store_true', help='Refresh selected issuer submissions through existing SEC client')
     p.add_argument('--discover-ir', action='store_true')
+    p.add_argument('--materials', action='store_true', help='Inspect one official call/event material page per selected issuer')
     p.add_argument('--discover-sites', action='store_true', help='Exact CIK Wikidata candidates, automatically used only if unique')
     p.add_argument('--gdelt', action='store_true', help='Optional, unreliable discovery metadata')
     args = p.parse_args(argv)
     if not 1 <= args.limit <= 100 or not 1 <= args.request_budget <= 200 or not 30 <= args.max_seconds <= 1800:
         p.error('limit must be 1..100; request budget 1..200; max seconds 30..1800')
+    if args.all_offline and (args.network or args.tickers):
+        p.error('--all-offline requires offline full-universe mode')
+    if args.command == 'discover-catalogue' and not args.network:
+        p.error('discover-catalogue requires --network')
+    if args.command == 'discover-backfill' and not (args.network and args.discover_sites and args.discover_ir):
+        p.error('discover-backfill requires --network --discover-sites --discover-ir')
     if args.sec_documents and not args.sec_fetch:
         p.error('--sec-documents requires --sec-fetch')
-    if (args.sec_fetch or args.discover_ir or args.discover_sites or args.gdelt or args.force_sources) and not args.network:
+    if (args.sec_fetch or args.discover_ir or args.discover_sites or args.gdelt or args.force_sources or args.materials) and not args.network:
         p.error('network flags require --network')
     if args.sec_fetch and args.limit > args.request_budget:
         p.error('SEC metadata issuer limit exceeds request budget')
@@ -74,26 +104,26 @@ def main(argv=None):
         lock.close()
         raise ValueError('ANOTHER_INTELLIGENCE_RUN_IS_ACTIVE')
     store = Store(state_dir / 'state.sqlite')
+    import time
+    started = time.monotonic()
     now = utcnow()
     try:
         if args.command == 'quality':
             print(json.dumps(store.quality(now, companies), sort_keys=True))
             return 0
         cursor = store.state('backfillCursor') if args.command == 'backfill' and not args.tickers else None
-        selected = select(companies, args.tickers, args.limit, cursor)
+        selected = list(companies.values()) if args.all_offline else select(companies, args.tickers, args.limit, cursor)
         if not selected and cursor:
             store.set_state('backfillCursor', None)
             selected = select(companies, args.tickers, args.limit)
+        manifest_pending = None
         if args.updated_issuers:
             document = json.loads(args.updated_issuers.read_text())
-            wanted = {r['issuerId'] for r in document.get('UPDATED_ISSUERS', [])}
-            if document.get('STATUS') != 'SUCCESS' or not document.get('RUN_DATE') or document['RUN_DATE'] > now[:10]:
-                p.error('invalid updated-issuer manifest')
-            selected = [c for c in selected if c['companyId'] in wanted] if args.tickers else [c for cid, c in sorted(companies.items()) if cid in wanted][:args.limit]
-        if args.command == 'backfill' and not args.tickers:
+            selected, manifest_pending = manifest_batch(document, companies, store, now, args.limit, args.tickers)
+        if args.command == 'backfill' and not args.tickers and manifest_pending is None:
             retries = [c for c in companies.values() if min(store.state('sec:' + c['companyId'], {}).get('retryAfter') or '9999', store.state('ir:' + c['companyId'], {}).get('retryAfter') or '9999') <= now]
             selected = sorted({c['companyId']: c for c in retries + selected}.values(), key=lambda c: (c not in retries, c['companyId']))[:args.limit]
-        if args.command == 'backfill' and not args.tickers:
+        if args.command == 'backfill' and not args.tickers and manifest_pending is None:
             pending_ids = store.state('irPending', []) + store.state('secPending', [])
             pending = [companies[cid] for cid in pending_ids if cid in companies]
             selected = list({c['companyId']: c for c in pending + selected}.values())[:args.limit]
@@ -112,11 +142,58 @@ def main(argv=None):
                 verified = store.state('officialSite:' + company['companyId'], {})
                 if verified.get('status') == 'VALIDATED':
                     company['officialSites'] = [verified['url']]
+        if args.command == 'discover-backfill' and not args.tickers:
+            # Per-candidate attempt state is a checkpoint separate from SEC/master.
+            eligible = []
+            for company in companies.values():
+                cid = company['companyId']
+                site = store.state('officialSite:' + cid, {})
+                ir = store.state('ir:' + cid, {})
+                candidate = store.state('siteCandidates:' + cid, {})
+                if not company['officialSites']:
+                    if candidate.get('status') == 'CANDIDATE' and site.get('retryAfter', '') <= now:
+                        eligible.append(company)
+                elif (ir.get('retryAfter') or ir.get('nextVerify') or '') <= now:
+                    eligible.append(company)
+            selected = sorted(eligible, key=lambda c: c['companyId'])[:args.limit]
+            selected_ids = {c['companyId'] for c in selected}
         for source in store.sources():
             if source['type'] == 'GDELT':
                 store.source({**source, 'active': False})
+        if args.command == 'coverage':
+            from company_intelligence.coverage import report as coverage_report
+            result = coverage_report(store, companies, now)
+            atomic_json(state_dir / 'coverage.json', result)
+            print(json.dumps({k: v for k, v in result.items() if k != 'companies'}, sort_keys=True))
+            return 0
+        if args.command == 'discover-catalogue':
+            prior = store.state('catalogueDiscovery', {})
+            from company_intelligence.pipeline import advance
+            if prior.get('retryAfter', '') > now or (prior.get('lastSuccess') or prior.get('checkedAt') or '') > advance(now, -7 * 24):
+                print(json.dumps({'status': 'NOT_DUE', 'publicRequests': 0}))
+                return 0
+            try:
+                result = wikidata_catalogue(companies, http)
+            except (SourceError, ValueError, KeyError, TypeError) as exc:
+                store.set_state('catalogueDiscovery', {**prior, 'lastFailure': now, 'reason': str(exc)[:250], 'retryAfter': advance(now, 24)})
+                store.audit(now, 'wikidata', 'CATALOGUE_DISCOVERY_FAILURE', reason=str(exc)[:250])
+                print(json.dumps({'status': 'DEGRADED', 'publicRequests': http.requests, 'reason': str(exc)[:250]}))
+                return 0  # Optional discovery cannot block known sources or SEC projection.
+            for cid, evidence in result.items():
+                store.set_state('siteCandidates:' + cid, {**evidence, 'checkedAt': now})
+            store.set_state('catalogueDiscovery', {'lastSuccess': now, 'checkedAt': now, 'issuersChecked': len(result), 'requests': http.requests})
+            print(json.dumps({'issuersChecked': len(result), 'candidateIssuers': sum(bool(r['candidates']) for r in result.values()), 'publicRequests': http.requests}))
+            return 0
         if args.command != 'export':
+            if args.network:
+                pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
+                try:
+                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill'), force=args.force_sources)
+                except BudgetExhausted:
+                    deferred = True
+                    store.audit(now, 'runner', 'FEED_BUDGET_DEFERRED', requestBudget=args.request_budget)
             for index, company in enumerate(selected):
+                failures_before = pipeline.run['secFailures']
                 try:
                     pipeline.project_company(company, fetch_sec=args.sec_fetch, sec_documents=args.sec_documents, sec_budget=sec_budget)
                 except BudgetExhausted:
@@ -125,16 +202,24 @@ def main(argv=None):
                     break
                 pending = store.state('secPending', [])
                 store.set_state('secPending', [cid for cid in pending if cid != company['companyId']])
-                if args.command == 'backfill' and not args.tickers:
+                if manifest_pending is not None and args.sec_fetch and failures_before == pipeline.run['secFailures']:
+                    cid = company['companyId']
+                    seen = store.state('updatedIssuerCheckpoints', {})
+                    seen[cid] = manifest_pending.pop(cid)
+                    store.set_state('updatedIssuerCheckpoints', seen)
+                    store.set_state('updatedIssuerPending', manifest_pending)
+                if args.command == 'backfill' and not args.tickers and manifest_pending is None:
                     store.set_state('backfillCursor', max(company['companyId'], store.state('backfillCursor') or ''))
             if args.network:
                 pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
                 if args.discover_ir:
                     store.set_state('irPending', list(dict.fromkeys(store.state('irPending', []) + [c['companyId'] for c in selected if c['officialSites']])))
                 try:
+                    # Existing feeds first; discovery is lower priority and cannot exhaust their request budget.
+                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill'), force=args.force_sources)
                     if args.discover_sites:
                         try:
-                            candidates = wikidata_sites(selected[:25], http)
+                            candidates = {} if all(store.state('siteCandidates:' + c['companyId']) is not None for c in selected[:25]) else wikidata_sites(selected[:25], http)
                         except BudgetExhausted:
                             raise
                         except (SourceError, ValueError, KeyError, TypeError) as exc:
@@ -143,20 +228,24 @@ def main(argv=None):
                             log('OFFICIAL_SITE_DISCOVERY_FAILURE', reason=str(exc)[:250])
                         store.set_state('officialSiteCandidates', candidates)
                         for company in selected:
-                            candidate = candidates.get(company['cik'])
+                            candidate = candidates.get(company['cik']) or store.state('siteCandidates:' + company['companyId'], {})
+                            prior_site = store.state('officialSite:' + company['companyId'], {})
+                            if not args.force_sources and prior_site.get('retryAfter', '') > now:
+                                continue
                             if not company['officialSites'] and candidate and candidate['status'] == 'CANDIDATE':
                                 try:
                                     verified = validate_candidate(company, candidate['candidates'][0], http, now)
                                     company['officialSites'] = [verified['url']]
                                     store.set_state('officialSite:' + company['companyId'], verified)
+                                    if args.discover_ir:
+                                        store.set_state('irPending', list(dict.fromkeys(store.state('irPending', []) + [company['companyId']])))
+                                        pipeline.discover_company(company, verified['url'])
                                 except BudgetExhausted:
                                     raise
                                 except SourceError as exc:
+                                    from company_intelligence.pipeline import advance
+                                    store.set_state('officialSite:' + company['companyId'], {'status': 'REJECTED', 'url': candidate['candidates'][0]['url'], 'lastChecked': now, 'reason': str(exc)[:250], 'retryAfter': advance(now, 7 * 24)})
                                     store.audit(now, company['companyId'], 'OFFICIAL_SITE_CANDIDATE_REJECTED', reason=str(exc)[:250])
-                    # Existing feeds first; discovery is lower priority and cannot exhaust their request budget.
-                    for source in store.sources(None if args.force_sources else now):
-                        if source['type'] != 'GDELT' and ((args.command == 'run' and not args.tickers) or source.get('companyId') is None or source['companyId'] in selected_ids):
-                            pipeline.ingest_source(source)
                     if args.discover_ir:
                         for company in selected:
                             ir_state = store.state('ir:' + company['companyId'], {})
@@ -171,6 +260,22 @@ def main(argv=None):
                                 pipeline.ingest_source(source)
                     if args.gdelt:
                         pipeline.gdelt_batch(selected[:10], timespan='7d' if args.command == 'probe' else '1d')
+                    if args.materials:
+                        from company_intelligence.materials import discover_links
+                        sources = {s['sourceId']: s for s in store.sources()}
+                        for company in selected:
+                            rows = store.db.execute("SELECT payload FROM events WHERE company=? AND kind='EARNINGS_CALL' ORDER BY date DESC LIMIT 1", (company['companyId'],)).fetchall()
+                            for row in rows:
+                                event = json.loads(row[0])
+                                owner = sources.get(event.get('sourceId'))
+                                if not owner:
+                                    continue
+                                try:
+                                    store.event(discover_links(event, owner, http), now)
+                                except BudgetExhausted:
+                                    raise
+                                except (SourceError, ValueError) as exc:
+                                    store.audit(now, company['companyId'], 'MATERIAL_DISCOVERY_FAILURE', reason=str(exc)[:250])
                 except BudgetExhausted:
                     deferred = True
                     store.audit(now, 'runner', 'BUDGET_DEFERRED', requestBudget=args.request_budget)
@@ -181,10 +286,14 @@ def main(argv=None):
         store.prune(now)
         http.prune()
         exported = store.export(companies, output, now)
-        report = {'schema': SCHEMA, 'generatedAt': now, 'status': 'DEFERRED' if deferred else 'DEGRADED' if any(pipeline.run[k] for k in ('sourceFailures', 'secFailures', 'discoveryFailures', 'documentFailures')) else 'PASS',
+        report = {'runtimeSeconds': round(time.monotonic() - started, 3), 'httpStats': http.stats, 'databaseBytes': (state_dir / 'state.sqlite').stat().st_size, 'schema': SCHEMA, 'generatedAt': now, 'status': 'DEFERRED' if deferred else 'DEGRADED' if any(pipeline.run[k] for k in ('sourceFailures', 'secFailures', 'discoveryFailures', 'documentFailures')) else 'PASS',
                   'selected': [{'companyId': c['companyId'], 'symbols': [l['symbol'] for l in c['listings']]} for c in selected],
                   'run': pipeline.run, 'publicRequests': http.requests, 'secRequests': getattr(getattr(pipeline, '_sec_client', None), 'stats', {}).get('requests', 0),
                   'quality': store.quality(now, companies), 'export': exported}
+        from company_intelligence.coverage import report as coverage_report
+        coverage = coverage_report(store, companies, now)
+        atomic_json(state_dir / 'coverage.json', coverage)
+        report['coverage'] = {k: v for k, v in coverage.items() if k != 'companies'}
         atomic_json(state_dir / 'latest-run.json', report)
         store.set_state('latestRun', report)
         print(json.dumps(report, sort_keys=True))
@@ -199,6 +308,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(message)s', stream=sys.stderr)
     try:
         sys.exit(main())
-    except (ValueError, OSError) as exc:
+    except (ValueError, OSError, SourceError) as exc:
         log('RUN_FAILED', reason=str(exc)[:250])
         sys.exit(1)

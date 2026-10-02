@@ -1,5 +1,7 @@
 name: Company Intelligence (isolated preview)
 on:
+  schedule:
+    - cron: '17 */6 * * *'
   pull_request:
     paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   push:
@@ -15,17 +17,28 @@ on:
         description: 'Opt in to public feeds, SEC metadata and IR discovery'
         type: boolean
         default: false
+      durable_state:
+        description: 'Use isolated state in the existing R2 bucket (strict restore; no cache fallback)'
+        type: boolean
+        default: false
+      initialize_state:
+        description: 'Explicitly initialize a missing R2 namespace on its first run'
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
-  group: company-intelligence-${{ github.ref }}
+  group: company-intelligence-state
   cancel-in-progress: false
 jobs:
   validate:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -47,11 +60,11 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: |
-          git fetch origin "$BASE_REF" --depth=1
-          changed=$(git diff --name-only "origin/$BASE_REF" HEAD -- quant discover supertrader screener dashboard providers scripts/quant scripts/universe scripts/market scripts/vu2 api server vercel.json)
+          git fetch origin "$BASE_REF"
+          changed=$(git diff --name-only "origin/$BASE_REF...HEAD" -- quant discover supertrader screener dashboard providers scripts/quant scripts/universe scripts/market scripts/vu2 api server vercel.json)
           if [ -n "$changed" ]; then echo "$changed"; exit 1; fi
   preview:
-    if: github.event_name == 'workflow_dispatch'
+    if: always() && ((github.event_name == 'workflow_dispatch' && needs.validate.result == 'success') || (github.event_name == 'schedule' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -60,7 +73,36 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate isolated engine before a scheduled batch
+        if: github.event_name == 'schedule'
+        run: |
+          python3 -m unittest discover -s scripts/company_intelligence/tests
+          node --test scripts/company_intelligence/tests/*.test.mjs
+      - name: Strict durable-state restore (dedicated namespace)
+        if: inputs.durable_state || github.event_name == 'schedule'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          INITIALIZE: ${{ inputs.initialize_state }}
+          BRANCH: ${{ github.ref_name }}
+          STATE_READY: ${{ vars.COMPANY_INTELLIGENCE_STATE_READY }}
+        run: |
+          if [ "$STATE_READY" != true ]; then echo 'Durable state requires verified non-public bucket access and namespace readiness.'; exit 1; fi
+          namespace=$(python3 -c 'import hashlib, os; print("branch-" + hashlib.sha256(os.environ["BRANCH"].encode()).hexdigest()[:24])')
+          args=(pull --namespace "$namespace" --file "$RUNNER_TEMP/intelligence-state.tar.gz")
+          if [ "$INITIALIZE" = true ]; then args+=(--initialize); fi
+          node scripts/company_intelligence/sync-state.mjs "${args[@]}"
+          if [ -f "$RUNNER_TEMP/intelligence-state.tar.gz" ]; then
+            python3 scripts/company_intelligence/checkpoint.py restore --state .company-intelligence --snapshot "$RUNNER_TEMP/intelligence-state.tar.gz"
+          fi
       - uses: actions/cache/restore@v4
+        if: '!inputs.durable_state && github.event_name != ''schedule'''
         id: state
         with:
           path: .company-intelligence
@@ -69,19 +111,46 @@ jobs:
       - name: Bounded resumable preview batch
         env:
           TICKERS: ${{ inputs.tickers }}
-          LIVE_SOURCES: ${{ inputs.live_sources }}
+          LIVE_SOURCES: ${{ inputs.live_sources || github.event_name == 'schedule' }}
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
         run: |
-          if [ "${{ steps.state.outputs.cache-hit }}" != 'true' ]; then echo 'No exact cache hit: restoring latest available state; a cache miss initializes a new working store.'; fi
+          if [ '${{ inputs.durable_state }}' != true ] && [ "${{ steps.state.outputs.cache-hit }}" != 'true' ]; then echo 'Preview cache only; a miss initializes a new working store.'; fi
           args=(backfill --limit 25 --request-budget 160 --max-seconds 480)
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
-          if [ "$LIVE_SOURCES" = 'true' ]; then args+=(--network --sec-fetch --discover-ir); fi
+          if [ "$LIVE_SOURCES" = 'true' ]; then args+=(--network --sec-fetch --sec-documents --discover-ir); fi
+          if [ '${{ github.event_name }}' = schedule ]; then
+            args=(run --updated-issuers quant/data/fundamentals/daily/updated-issuers.json --limit 25 --request-budget 160 --max-seconds 480 --network --sec-fetch --sec-documents)
+          fi
+          python3 scripts/company_intelligence/cli.py run --all-offline
+          if [ "$LIVE_SOURCES" = true ]; then
+            python3 scripts/company_intelligence/cli.py discover-catalogue --network --request-budget 6 --max-seconds 120
+            args+=(--discover-sites --materials)
+          fi
           python3 scripts/company_intelligence/cli.py "${args[@]}"
+          if [ "$LIVE_SOURCES" = true ] && [ -z "$TICKERS" ]; then
+            python3 scripts/company_intelligence/cli.py discover-backfill --network --discover-sites --discover-ir --limit 5 --request-budget 30 --max-seconds 120
+          fi
       - uses: actions/cache/save@v4
-        if: always()
+        if: always() && !inputs.durable_state && github.event_name != 'schedule'
         with:
           path: .company-intelligence
           key: company-intelligence-v1-${{ github.ref_name }}-${{ github.run_id }}
+      - name: Preserve and verify durable state (also after isolated source failures)
+        if: success() && (inputs.durable_state || github.event_name == 'schedule')
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          INITIALIZE: ${{ inputs.initialize_state }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          python3 scripts/company_intelligence/checkpoint.py pack --state .company-intelligence --snapshot "$RUNNER_TEMP/intelligence-state.tar.gz"
+          namespace=$(python3 -c 'import hashlib, os; print("branch-" + hashlib.sha256(os.environ["BRANCH"].encode()).hexdigest()[:24])')
+          args=(push --namespace "$namespace" --file "$RUNNER_TEMP/intelligence-state.tar.gz")
+          if [ "$INITIALIZE" = true ]; then args+=(--initialize); fi
+          node scripts/company_intelligence/sync-state.mjs "${args[@]}"
       - name: Reviewable snapshots and health (no deployment)
         uses: actions/upload-artifact@v4
         if: always()
@@ -90,5 +159,6 @@ jobs:
           path: |
             .company-intelligence/public/
             .company-intelligence/latest-run.json
+            .company-intelligence/coverage.json
             .company-intelligence/state.sqlite
           retention-days: 14

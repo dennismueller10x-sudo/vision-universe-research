@@ -54,6 +54,7 @@ class PublicHTTP:
         self.opener = opener or urllib.request.build_opener(NoRedirect()).open
         self.sleep, self.clock, self.validator = sleep, clock, validator
         self.requests = 0
+        self.stats = {'memoHits': 0, 'cacheHits': 0, 'notModified': 0, 'retries': 0, 'bytesDownloaded': 0}
         self.deadline = clock() + max_seconds
         self.host_delay = {}
         self.last_request = 0
@@ -127,11 +128,13 @@ class PublicHTTP:
         url = self.validator(url)
         key = (url, robots)
         if key in self.memo:
+            self.stats['memoHits'] += 1
             return self.memo[key]
         if robots:
             self.robots_allowed(url)
         cached, body = self._cached(url)
         if body is not None and self.clock() - cached.get('checked', 0) < ttl:
+            self.stats['cacheHits'] += 1
             result = {**cached, 'body': body, 'cached': True}
             self.memo[key] = result
             return result
@@ -150,6 +153,7 @@ class PublicHTTP:
                     try:
                         with self.opener(urllib.request.Request(current, headers=headers), timeout=min(self.timeout, self.deadline - self.clock())) as response:
                             payload = response.read(self.MAX_BYTES + 1)
+                            self.stats['bytesDownloaded'] += len(payload)
                             if len(payload) > self.MAX_BYTES:
                                 raise SourceError('SOURCE_TOO_LARGE')
                             encoding = response.headers.get('Content-Encoding', '').lower()
@@ -189,6 +193,7 @@ class PublicHTTP:
                 raise SourceError('TOO_MANY_REDIRECTS')
             except urllib.error.HTTPError as exc:
                 if exc.code == 304 and body is not None:
+                    self.stats['notModified'] += 1
                     cached['checked'] = self.clock()
                     atomic_json(self._paths(url)[0], cached)
                     result = {**cached, 'body': body, 'cached': True}
@@ -196,6 +201,7 @@ class PublicHTTP:
                     return result
                 if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
                     raise SourceError('HTTP_' + str(exc.code)) from exc
+                self.stats['retries'] += 1
                 retry = exc.headers.get('Retry-After')
                 delay = 2 ** attempt
                 if retry:
@@ -212,6 +218,7 @@ class PublicHTTP:
             except (urllib.error.URLError, TimeoutError, OSError) as exc:
                 if attempt == 2:
                     raise SourceError('NETWORK_UNAVAILABLE') from exc
+                self.stats['retries'] += 1
                 self.sleep(2 ** attempt)
         raise SourceError('RETRY_EXHAUSTED')
 

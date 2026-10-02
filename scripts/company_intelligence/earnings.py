@@ -8,7 +8,7 @@ from pathlib import Path
 from .model import ACCESSION, stable_id, timestamp, clean, canonical_url
 
 FORMS = {'8-K', '8-K/A', '10-Q', '10-Q/A', '10-K', '10-K/A', '6-K', '6-K/A', '20-F', '20-F/A', 'DEF 14A'}
-METRICS = ['revenue', 'eps_diluted', 'net_income', 'gross_profit', 'operating_income', 'free_cash_flow',
+METRICS = ['revenue', 'eps_diluted', 'net_income', 'gross_profit', 'operating_income', 'free_cash_flow', 'operating_cash_flow',
            'cash_and_equivalents', 'total_debt', 'capital_expenditures', 'shares_outstanding']
 INSTANT = {'cash_and_equivalents', 'total_debt', 'shares_outstanding'}
 COLUMNS = ['fy', 'fp', 'end', 'v', 'filed', 'accn', 'derived']
@@ -24,6 +24,13 @@ def valid_date(value):
         return bool(re.fullmatch(r'\d{4}-\d{2}-\d{2}', value)) and date.fromisoformat(value) is not None
     except (ValueError, TypeError):
         return False
+
+
+def comparable(current, prior, kind):
+    if not current or not prior or current['unit'] != prior['unit']:
+        return False
+    gap = (date.fromisoformat(current['periodEnd']) - date.fromisoformat(prior['periodEnd'])).days
+    return 300 <= gap <= 430 if kind == 'yoy' else 60 <= gap <= 120
 
 
 def summary(consumer, cik, now, period=None, fiscal_year=None):
@@ -77,15 +84,19 @@ def summary(consumer, cik, now, period=None, fiscal_year=None):
         data = {'state': 'AVAILABLE' if current else 'UNAVAILABLE', 'reason': None if current else 'MISSING_PERIOD_FACT', 'current': current,
                 'previousQuarter': rows.get(prev), 'yearAgoQuarter': rows.get(year_ago)}
         for label, comparison in [('yoy', rows.get(year_ago)), ('qoq', rows.get(prev))]:
-            if current and comparison and current['unit'] == comparison['unit']:
+            if comparable(current, comparison, label):
                 delta = current['value'] - comparison['value']
                 data[label] = {'absolute': delta, 'percent': delta / comparison['value'] * 100 if comparison['value'] > 0 else None,
                                'percentReason': None if comparison['value'] > 0 else 'NONPOSITIVE_BASE'}
                 if label == 'yoy' and metric in ('revenue', 'net_income', 'free_cash_flow', 'total_debt', 'cash_and_equivalents'):
-                    direction = 'NEUTRAL' if delta == 0 else 'POSITIVE' if (delta > 0) != (metric == 'total_debt') else 'NEGATIVE'
-                    changes.append({'metric': metric, 'comparison': 'YEAR_AGO_QUARTER', 'direction': direction, 'absolute': delta, 'unit': current['unit']})
+                    direction = 'NEUTRAL' if delta == 0 or metric in ('total_debt', 'cash_and_equivalents') else 'POSITIVE' if delta > 0 else 'NEGATIVE'
+                    changes.append({'metric': metric, 'comparison': 'YEAR_AGO_QUARTER', 'direction': direction,
+                                    'classification': 'UNCHANGED' if delta == 0 else 'NOT_COMPARABLE' if metric in ('total_debt', 'cash_and_equivalents') else 'IMPROVED' if delta > 0 else 'DETERIORATED',
+                                    'previous': comparison['value'], 'current': current['value'], 'absolute': delta, 'unit': current['unit'],
+                                    'filingIds': sorted({current['filingId'], comparison['filingId']}), 'interpretation': 'BALANCE_CHANGE_HAS_NO_UNIVERSAL_GOOD_DIRECTION' if metric in ('total_debt', 'cash_and_equivalents') else 'REPORTED_METRIC_DIRECTION'})
             else:
                 data[label] = None
+                data[label + 'Reason'] = 'MISSING_OR_NONCOMPARABLE_PERIOD_OR_UNIT'
         ttm_keys = []
         tfy, tq = fy, q
         for _ in range(4):
@@ -95,7 +106,7 @@ def summary(consumer, cik, now, period=None, fiscal_year=None):
                 tfy, tq = tfy - 1, 4
         if metric in INSTANT:
             data['ttm'] = None  # Never sum balance-sheet values or outstanding shares.
-        elif all(k in rows for k in ttm_keys):
+        elif metric != 'eps_diluted' and all(k in rows for k in ttm_keys) and len({rows[k]['unit'] for k in ttm_keys}) == 1 and all(comparable(rows[a], rows[b], 'qoq') for a, b in zip(ttm_keys, ttm_keys[1:])):
             ttm_rows = [rows[k] for k in ttm_keys]
             data['ttm'] = {'value': sum(r['value'] for r in ttm_rows), 'unit': ttm_rows[0]['unit'], 'filingIds': sorted({r['filingId'] for r in ttm_rows})}
         else:
@@ -108,11 +119,23 @@ def summary(consumer, cik, now, period=None, fiscal_year=None):
                 return {'value': n['value'] / d['value'] * 100, 'unit': 'percent', 'filingIds': sorted({n['filingId'], d['filingId']})}
             return None
         current, previous = margin(selected), margin(year_ago)
+        if not comparable(tracks.get(numerator, {}).get(selected), tracks.get(numerator, {}).get(year_ago), 'yoy'):
+            previous = None
         metrics[name] = {'state': 'AVAILABLE' if current else 'UNAVAILABLE', 'current': current, 'yearAgoQuarter': previous,
                          'changePercentagePoints': current['value'] - previous['value'] if current and previous else None}
-        if current and previous:
+        if current and previous and comparable(tracks.get(numerator, {}).get(selected), tracks.get(numerator, {}).get(year_ago), 'yoy'):
             delta = current['value'] - previous['value']
-            changes.append({'metric': name, 'comparison': 'YEAR_AGO_QUARTER', 'direction': 'NEUTRAL' if delta == 0 else 'POSITIVE' if delta > 0 else 'NEGATIVE', 'absolute': delta, 'unit': 'percentage_points'})
+            changes.append({'metric': name, 'comparison': 'YEAR_AGO_QUARTER', 'direction': 'NEUTRAL' if delta == 0 else 'POSITIVE' if delta > 0 else 'NEGATIVE', 'classification': 'UNCHANGED' if delta == 0 else 'IMPROVED' if delta > 0 else 'DETERIORATED', 'previous': previous['value'], 'current': current['value'], 'absolute': delta, 'unit': 'percentage_points', 'filingIds': sorted(set(current['filingIds'] + previous['filingIds']))})
+    revenue = tracks.get('revenue', {})
+    prev_year = (prev[0] - 1, prev[1])
+    if all(k in revenue for k in (selected, year_ago, prev, prev_year)):
+        a, b, c, d = (revenue[k] for k in (selected, year_ago, prev, prev_year))
+        if b['value'] > 0 and d['value'] > 0 and comparable(a, b, 'yoy') and comparable(c, d, 'yoy') and comparable(a, c, 'qoq'):
+            current_growth, previous_growth = (a['value'] / b['value'] - 1) * 100, (c['value'] / d['value'] - 1) * 100
+            delta = current_growth - previous_growth
+            changes.append({'metric': 'revenue_growth', 'comparison': 'PREVIOUS_QUARTER_YOY_GROWTH', 'previous': previous_growth, 'current': current_growth,
+                            'absolute': delta, 'unit': 'percentage_points', 'direction': 'NEUTRAL' if abs(delta) < 1e-9 else 'POSITIVE' if delta > 0 else 'NEGATIVE',
+                            'classification': 'UNCHANGED' if abs(delta) < 1e-9 else 'IMPROVED' if delta > 0 else 'DETERIORATED', 'filingIds': sorted({r['filingId'] for r in (a, b, c, d)})})
     return {'state': 'AVAILABLE' if any(m['state'] == 'AVAILABLE' for m in metrics.values()) else 'UNAVAILABLE',
             'fiscalYear': fy, 'fiscalQuarter': fp, 'metrics': metrics, 'whatChanged': changes,
             'policy': 'LATEST_KNOWN_RETROSPECTIVE', 'pitEligibility': 'NOT_CERTIFIED', 'sourceAsOf': consumer['asOf'],
@@ -147,10 +170,10 @@ def annual_summary(consumer, cik, now, fiscal_year):
         rows = tracks.get(metric, {})
         current, prior = rows.get(fiscal_year), rows.get((fiscal_year or 0) - 1)
         metrics[metric] = {'state': 'AVAILABLE' if current else 'UNAVAILABLE', 'current': current, 'previousYear': prior,
-                           'yoyPercent': (current['value'] / prior['value'] - 1) * 100 if current and prior and prior['value'] > 0 and current['unit'] == prior['unit'] else None}
-        if current and prior and metric in ('revenue', 'net_income', 'free_cash_flow', 'total_debt', 'cash_and_equivalents'):
+                           'yoyPercent': (current['value'] / prior['value'] - 1) * 100 if comparable(current, prior, 'yoy') and prior['value'] > 0 else None}
+        if comparable(current, prior, 'yoy') and metric in ('revenue', 'net_income', 'free_cash_flow', 'total_debt', 'cash_and_equivalents'):
             delta = current['value'] - prior['value']
-            changes.append({'metric': metric, 'comparison': 'PREVIOUS_YEAR', 'direction': 'NEUTRAL' if delta == 0 else 'POSITIVE' if (delta > 0) != (metric == 'total_debt') else 'NEGATIVE', 'absolute': delta, 'unit': current['unit']})
+            changes.append({'metric': metric, 'comparison': 'PREVIOUS_YEAR', 'direction': 'NEUTRAL' if delta == 0 or metric in ('total_debt', 'cash_and_equivalents') else 'POSITIVE' if delta > 0 else 'NEGATIVE', 'classification': 'UNCHANGED' if delta == 0 else 'NOT_COMPARABLE' if metric in ('total_debt', 'cash_and_equivalents') else 'IMPROVED' if delta > 0 else 'DETERIORATED', 'previous': prior['value'], 'current': current['value'], 'absolute': delta, 'unit': current['unit'], 'filingIds': sorted({current['filingId'], prior['filingId']})})
     for name, numerator in [('gross_margin', 'gross_profit'), ('operating_margin', 'operating_income')]:
         def margin(year):
             n, d = tracks.get(numerator, {}).get(year), tracks.get('revenue', {}).get(year)
@@ -158,6 +181,8 @@ def annual_summary(consumer, cik, now, fiscal_year):
                 return {'value': n['value'] / d['value'] * 100, 'unit': 'percent', 'filingIds': sorted({n['filingId'], d['filingId']})}
             return None
         current, prior = margin(fiscal_year), margin((fiscal_year or 0) - 1)
+        if not comparable(tracks.get(numerator, {}).get(fiscal_year), tracks.get(numerator, {}).get((fiscal_year or 0) - 1), 'yoy'):
+            prior = None
         delta = current['value'] - prior['value'] if current and prior else None
         metrics[name] = {'state': 'AVAILABLE' if current else 'UNAVAILABLE', 'current': current, 'previousYear': prior, 'changePercentagePoints': delta}
         if delta is not None:
@@ -271,7 +296,8 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
                        'summary': info, 'earningsReleaseUrl': document_evidence.get('sourceUrl') or url if kind == 'EARNINGS_PUBLISHED' else None,
                        'documentEvidence': {k: v for k, v in document_evidence.items() if k != 'exhibits'},
                        'eventStatus': 'UNVERIFIED' if kind == 'EARNINGS_CANDIDATE' else 'PUBLISHED',
-                       'quarterlyReportUrl': url if periodic else None, 'guidance': {'state': 'UNAVAILABLE', 'reason': 'NO_VALIDATED_GUIDANCE_DOCUMENT'},
+                       'quarterlyReportUrl': url if periodic else None, 'guidance': {'state': 'EVIDENCE_AVAILABLE' if document_evidence.get('guidance') else 'UNAVAILABLE', 'ranges': document_evidence.get('guidance', []), 'reason': None if document_evidence.get('guidance') else 'NO_VALIDATED_GUIDANCE_DOCUMENT'},
+                       'companyKPIs': document_evidence.get('companyKPIs', []),
                        'transcriptUrl': None})
     return events
 
@@ -302,7 +328,7 @@ def estimate_calendar(company, events, now):
             start, end = center - timedelta(days=spread), center + timedelta(days=spread)
             if end < today or start > today + timedelta(days=120):
                 continue
-            if any(e['eventType'] == 'EARNINGS_SCHEDULED' and e.get('confirmationStatus') == 'CONFIRMED'
+            if any(e['eventType'] in ('EARNINGS_SCHEDULED', 'EARNINGS_CALL') and e.get('confirmationStatus') == 'CONFIRMED'
                    and e.get('date') and abs((date.fromisoformat(e['date']) - center).days) <= 30 for e in events):
                 continue
             proxy = any(e['eventType'] != 'EARNINGS_PUBLISHED' for e in samples)

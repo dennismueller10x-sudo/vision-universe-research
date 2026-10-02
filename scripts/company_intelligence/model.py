@@ -8,7 +8,8 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 SCHEMA = 'vu-company-intelligence-1.0.0'
 AMBIGUOUS = set('apple meta unity toast root affirm block oracle target gap on all life square way car go sun march open shift match snap'.split())
-FINANCIAL = re.compile(r'\b(earnings|revenue|guidance|shares|stock|investors|quarter|dividend|buyback|acquisition|CEO|NYSE|NASDAQ)\b', re.I)
+AMBIGUOUS_ALIASES = {'the gap', 'match group', 'life time', 'open door', 'on holding'}
+FINANCIAL = re.compile(r'\b(earnings|revenue|guidance|shares|stock|investors|quarter|dividend|buyback|acquisition|CEO|NYSE|NASDAQ|Aktie|Aktien|Umsatz|Gewinn|Dividende|Umsatzprognose|Quartalszahlen)\b', re.I)
 SUFFIX = re.compile(r'\b(incorporated|inc|corporation|corp|limited|ltd|plc|holdings)\b\.?', re.I)
 ACCESSION = re.compile(r'^\d{10}-\d{2}-\d{6}$')
 
@@ -39,6 +40,8 @@ def timestamp(value):
 
 
 def canonical_url(value):
+    if not isinstance(value, str) or len(value) > 8192:
+        return None
     try:
         u = urlsplit(str(value))
         if u.scheme not in ('https', 'http') or not u.hostname or u.username or u.password:
@@ -86,7 +89,7 @@ def load_universe(root):
                                                          'names': [], 'listings': [], 'officialSites': []})
             if row.get('companyName') and row['companyName'] not in company['names']:
                 company['names'].append(row['companyName'])
-            company['listings'].append({k: row.get(k) for k in ('instrumentId', 'symbol', 'exchange', 'mic', 'shareClass', 'masterMemberId')})
+            company['listings'].append({k: row.get(k) for k in ('instrumentId', 'symbol', 'exchange', 'mic', 'shareClass', 'masterMemberId', 'country', 'securityType')})
     if not companies:
         raise ValueError('AUTHORITATIVE_UNIVERSE_MISSING')
     for c in companies.values():
@@ -133,6 +136,8 @@ class Resolver:
             if len(ids) != 1 or not re.search(r'(?<!\w)' + re.escape(name) + r'(?!\w)', title):
                 continue
             words = name.split()
+            if name in AMBIGUOUS_ALIASES:
+                continue
             if len(words) == 1 and (name in AMBIGUOUS or len(name) <= 3):
                 continue
             if len(words) == 1 and not FINANCIAL.search(item.get('headline', '')):
@@ -146,13 +151,13 @@ class Resolver:
 RULES = [
     ('Bankruptcy', 'CRITICAL', r'\b(bankruptcy|chapter 11|insolvency)\b'),
     ('Cybersecurity', 'HIGH', r'\b(data breach|ransomware|cyberattack)\b'),
-    ('M&A', 'HIGH', r'\b(acquire[sd]?|acquisition|merger|takeover)\b'),
+    ('M&A', 'HIGH', r'\b(acquire[sd]?|acquisition|merger|takeover)\b|\bbuys?\b.{0,35}\b(franchise|franchisee|territory|business|company|assets|stake)\b'),
     ('Earnings', 'HIGH', r'\b(earnings|(?:quarter|quarterly|fiscal|financial|full.year).{0,45}results)\b'),
     ('Guidance', 'HIGH', r'\b(guidance|outlook|forecast)\b'),
     ('Management', 'HIGH', r'\b(CEO|chief executive|CFO|chief financial|resigns)\b'),
     ('Regulation', 'HIGH', r'\b(FDA|antitrust|regulatory|regulator)\b'),
     ('Litigation', 'HIGH', r'\b(lawsuit|litigation|settlement)\b'),
-    ('Financing', 'HIGH', r'\b(capital raise|debt offering|public offering)\b'),
+    ('Financing', 'HIGH', r'\b(capital raise|debt offering|public offering|stock offering|equity offering|secondary offering)\b'),
     ('Buyback', 'MEDIUM', r'\b(buyback|repurchase)\b'),
     ('Dividend', 'MEDIUM', r'\b(dividend)\b'),
     ('Investor Day', 'MEDIUM', r'\b(investor day|capital markets day|analyst day)\b'),
@@ -167,10 +172,12 @@ RULES = [
 
 def classify(headline):
     hits = [(cat, imp, pattern) for cat, imp, pattern in RULES if re.search(pattern, headline, re.I)]
+    if re.search(r'\b(production|deliveries|clinical|trial|study)\b', headline, re.I) and not re.search(r'financial results|earnings', headline, re.I):
+        hits = [h for h in hits if h[0] != 'Earnings']
     rank = {'LOW': 0, 'MEDIUM': 1, 'HIGH': 2, 'CRITICAL': 3}
     importance = max((h[1] for h in hits), key=lambda x: rank[x], default='LOW')
     return {'categories': [h[0] for h in hits] or ['Other'], 'importance': importance,
-            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.0.0'}
+            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.1.0'}
 
 
 def make_item(raw, source, match, discovered):
@@ -188,7 +195,7 @@ def make_item(raw, source, match, discovered):
     item = {'newsId': stable_id(match['companyId'], url, headline, published),
             'companyId': match['companyId'], 'headline': headline, 'canonicalUrl': url,
             'publishedAt': published, 'discoveredAt': discovered, 'language': raw.get('language'),
-            'summary': None, 'confidence': match['confidence'], 'eventType': 'NEWS',
+            'summary': None, 'confidence': match['confidence'], 'sourceConfidence': 1.0 if source.get('verified') else .7, 'eventType': 'NEWS',
             'provenance': [evidence], **classify(headline)}
     if not published:
         item.update(observedAt=updated, timestampPrecision='SOURCE_UPDATED_TIME')

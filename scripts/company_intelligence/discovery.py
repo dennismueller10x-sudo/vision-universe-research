@@ -5,6 +5,33 @@ from .model import canonical_url, domain
 from .transport import SourceError
 
 
+def wikidata_catalogue(companies, http):
+    """One bounded CC0 catalogue request; intersect exact CIKs with the master.
+
+    This is candidate coverage only, never authority to ingest a corporate site.
+    Query-service caching avoids thousands of per-company discovery requests.
+    """
+    query = 'SELECT ?cik ?entity ?site WHERE { ?entity wdt:P5531 ?cik; wdt:P856 ?site . } LIMIT 10000'
+    response = http.get('https://query.wikidata.org/sparql?' + urlencode({'query': query, 'format': 'json'}), robots=False, ttl=7 * 86400)
+    rows = json.loads(response['body'])['results']['bindings']
+    if not isinstance(rows, list) or len(rows) >= 10000:
+        raise SourceError('WIKIDATA_CATALOGUE_TRUNCATED_OR_INVALID')
+    wanted = {c['cik'] for c in companies.values() if c.get('cik')}
+    found = {}
+    for row in rows:
+        if not isinstance(row, dict) or any(not isinstance(row.get(k, {}), dict) for k in ('cik', 'site', 'entity')):
+            raise SourceError('INVALID_WIKIDATA_BINDING')
+        raw = row.get('cik', {}).get('value', '')
+        cik = raw.zfill(10) if isinstance(raw, str) and raw.isdigit() and len(raw) <= 10 else None
+        site = canonical_url(row.get('site', {}).get('value'))
+        if cik not in wanted or not site or urlsplit(site).scheme != 'https' or urlsplit(site).path != '/' or urlsplit(site).query:
+            continue
+        found.setdefault(cik, {})[domain(site)] = {'url': site, 'entity': row.get('entity', {}).get('value'),
+            'evidence': 'WIKIDATA_P5531_EXACT_CIK_AND_P856_OFFICIAL_SITE', 'confidence': .95}
+    return {c['companyId']: {'status': 'NO_CANDIDATE' if not found.get(c.get('cik')) else 'CANDIDATE' if len(found[c['cik']]) == 1 else 'AMBIGUOUS',
+                'candidates': list(found.get(c.get('cik'), {}).values())} for c in companies.values() if c.get('cik')}
+
+
 def wikidata_sites(companies, http):
     ciks = sorted({c['cik'] for c in companies if c.get('cik')})
     if not ciks:
@@ -21,6 +48,8 @@ def wikidata_sites(companies, http):
         raise SourceError('INVALID_WIKIDATA_RESPONSE') from exc
     by_cik = {}
     for row in rows:
+        if not isinstance(row, dict) or any(not isinstance(row.get(k, {}), dict) for k in ('cik', 'site', 'entity')):
+            raise SourceError('INVALID_WIKIDATA_BINDING')
         cik = row.get('cik', {}).get('value')
         site = canonical_url(row.get('site', {}).get('value'))
         if cik not in ciks or not site or urlsplit(site).scheme != 'https' or urlsplit(site).path != '/' or urlsplit(site).query:

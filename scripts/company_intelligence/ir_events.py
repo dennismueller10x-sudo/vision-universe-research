@@ -14,7 +14,8 @@ TIME = re.compile(r'\b(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)\s*(ET|EST|EDT
 
 
 def event_type(name):
-    if EARNINGS.search(name):
+    operating = re.search(r'\b(production|deliveries|clinical|trial|study)\b', name, re.I) and not re.search(r'financial results|earnings', name, re.I)
+    if EARNINGS.search(name) and not operating:
         return 'EARNINGS_CALL' if re.search(r'call|webcast', name, re.I) else 'EARNINGS_SCHEDULED'
     if re.search(r'investor day|capital markets day|conference|analyst day|shareholder|annual meeting|presentation', name, re.I):
         return 'IR_EVENT'
@@ -29,7 +30,10 @@ def event(source, name, url, day, now, start=None, evidence=None, clock=None, zo
         date.fromisoformat(day)
     except (ValueError, TypeError):
         return None
+    from .sec_documents import release_period
+    fiscal = release_period(name) if kind in ('EARNINGS_CALL', 'EARNINGS_SCHEDULED') else None
     return {'eventId': stable_id(source['companyId'], source['sourceId'], url, kind, clean(name)), 'companyId': source['companyId'],
+            **(fiscal or {}), 'periodEvidence': 'EXPLICIT_OFFICIAL_EVENT_TITLE' if fiscal else None,
             'sourceId': source['sourceId'], 'eventType': kind, 'headline': clean(name), 'date': day, 'time': clock, 'timezone': zone,
             'startsAt': start, 'confirmationStatus': 'CONFIRMED', 'confidence': 1.0,
             'sourceUrl': url, 'sourceDocuments': [{'type': 'OFFICIAL_COMPANY_EVENT', 'url': url}],
@@ -48,6 +52,8 @@ def from_announcement(item, source, now):
     dates = list(DATE.finditer(text))
     parsed = set()
     for match in dates:
+        if re.search(r'\b(?:quarter|year|period|months?)\s+ended\s*$', text[max(0, match.start() - 70):match.start()], re.I):
+            continue  # A reporting-period end is not the announced event date.
         # Ignore a syndicated press-release dateline; it is publication evidence, not an event date.
         if re.search(r'GLOBE NEWSWIRE|Business Wire|PRNewswire', text[match.end():match.end() + 45], re.I):
             continue
@@ -73,11 +79,21 @@ def from_announcement(item, source, now):
         label = time_match[4].upper()
         zone = 'America/New_York' if label in ('ET', 'EST', 'EDT') or label.startswith('EASTERN') else 'America/Los_Angeles' if label in ('PT', 'PST', 'PDT') or label.startswith('PACIFIC') else 'UTC'
         dt = datetime.fromisoformat(day + 'T' + clock).replace(tzinfo=ZoneInfo(zone))
+        if dt.replace(fold=0).utcoffset() != dt.replace(fold=1).utcoffset():
+            return []  # Ambiguous/nonexistent wall times need explicit offset evidence.
         # Explicit daylight/standard abbreviations must agree with the date.
         if label in ('EST', 'EDT', 'PST', 'PDT') and dt.tzname() != label:
             return []
         start = dt.astimezone(timezone.utc).isoformat().replace('+00:00', 'Z')
-    result = event(source, item['headline'], item['url'], day, now, start=start,
+    name = item['headline']
+    if not structured and re.search(r'[,;]\s*related\s+(?:conference|earnings)\s+call', name, re.I):
+        # Composite headlines can name a call whose date lacks a year. Keep only
+        # the release clause supported by the one explicit full date in the body.
+        release_clause = re.split(r'[,;]\s*related\s+(?:conference|earnings)\s+call', name, flags=re.I)[0]
+        release_date = any(f'{match[3]}-{MONTHS[match[1].lower()]:02d}-{int(match[2]):02d}' == day and re.search(r'will\s+(?:release|report|announce)\s+(?:financial\s+results|earnings)(?:(?!\b(?:call|webcast)\b).){0,240}$', text[max(0, match.start() - 300):match.start()], re.I) for match in dates)
+        if release_date:
+            name = release_clause
+    result = event(source, name, item['url'], day, now, start=start,
                    evidence={'method': 'EXPLICIT_OFFICIAL_ANNOUNCEMENT', 'excerpt': text[:300]}, clock=clock, zone=zone)
     if result:
         for material in item.get('materialLinks', []):
@@ -139,6 +155,11 @@ def parse_jsonld(body, source, now):
                         if isinstance(location, dict) and location.get('@type') == 'VirtualLocation':
                             result['webcastUrl'] = canonical_url(location.get('url'))
                         result['eventStatus'] = clean(data.get('eventStatus')) or 'SCHEDULED'
+                        if stamp:
+                            original = datetime.fromisoformat(raw.replace('Z', '+00:00'))
+                            result['time'] = original.strftime('%H:%M')
+                            offset = original.strftime('%z')
+                            result['timezone'] = 'UTC' if offset == '+0000' else 'UTC' + offset[:3] + ':' + offset[3:]
                         if 'Cancelled' in result['eventStatus']:
                             result['confirmationStatus'] = 'CANCELLED'
                         out.append(result)
@@ -178,7 +199,10 @@ def parse_ics(body, source, now):
                 if not zone:
                     continue  # Floating times cannot be safely represented as confirmed instants.
                 day, clock = dt.date().isoformat(), dt.strftime('%H:%M')
-                stamp = dt.replace(tzinfo=ZoneInfo(zone)).astimezone(timezone.utc).isoformat().replace('+00:00', 'Z')
+                local = dt.replace(tzinfo=ZoneInfo(zone))
+                if local.replace(fold=0).utcoffset() != local.replace(fold=1).utcoffset():
+                    continue
+                stamp = local.astimezone(timezone.utc).isoformat().replace('+00:00', 'Z')
             result = event(source, fields.get('SUMMARY', '').replace('\\,', ','), fields.get('URL') or source['url'], day, now,
                            start=stamp, clock=clock, zone=zone, evidence={'method': 'OFFICIAL_ICALENDAR', 'uid': clean(fields.get('UID'))})
             if result:

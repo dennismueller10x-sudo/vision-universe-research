@@ -326,7 +326,8 @@ class EarningsTests(unittest.TestCase):
         self.assertEqual(50, s['metrics']['gross_margin']['current']['value'])
         changes = {r['metric']: r for r in s['whatChanged']}
         self.assertEqual('NEGATIVE', changes['free_cash_flow']['direction'])
-        self.assertEqual('POSITIVE', changes['total_debt']['direction'])
+        self.assertEqual('NEUTRAL', changes['total_debt']['direction'])
+        self.assertEqual('NOT_COMPARABLE', changes['total_debt']['classification'])
         self.assertEqual('UNAVAILABLE', s['metrics']['eps_diluted']['state'])
 
     def test_missing_zero_negative_and_bad_currency(self):
@@ -614,7 +615,10 @@ class IntegrationTests(unittest.TestCase):
         self.assertIn('contents: read', workflow)
         self.assertIn('--request-budget 160 --max-seconds 480', workflow)
         self.assertIn('Reject changes to protected production paths', workflow)
-        self.assertNotRegex(workflow, r'(?m)^\s*(cron:|contents: write)')
+        self.assertNotRegex(workflow, r'(?m)^\s*contents: write')
+        self.assertIn("vars.COMPANY_INTELLIGENCE_ENABLED == 'true'", workflow)
+        self.assertIn("vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'", workflow)
+        self.assertIn("if: github.event_name != 'schedule'", workflow)
         self.assertNotIn('git push', workflow)
 
     def test_real_master_share_classes_generic_and_renamed(self):
