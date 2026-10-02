@@ -133,7 +133,9 @@ export function tradesFor(engine, seg, ctx, exec, sink = null, simOpts = {}) {
     return {
       id: s.id, listingId: seg.id, entry: { date: s.entry.date, price: s.entry.price, rawOpen: s.entry.rawOpen }, initialStop: s.initialStop,
       exits: s.exits.map((x) => ({ date: x.date, price: x.price, fraction: x.fraction, ruleId: x.ruleId, basis: x.priceBasis })),
-      confirmDate: s.confirmation?.date || null, rawCloseAtConfirm: ci != null ? ctx.raw.close[ci] : null, qualityFailed: s.quality?.failed || null,
+      confirmDate: s.confirmation?.date || null,
+      // Kauf-Stop: die Rohkursgrenze gilt am Scan-Tag (Vortag des Einstiegs), nicht am Einstiegstag.
+      rawCloseAtConfirm: ci != null ? ctx.raw.close[s.confirmation?.basis === 'INTRADAY_BUY_STOP' ? ci - 1 : ci] : null, qualityFailed: s.quality?.failed || null,
       trigger: s.levels?.trigger ?? null, confirmClose: s.confirmation?.close ?? null, rawOpenEntry: s.entry.rawOpen ?? null,
       terminal, marks, divs, heldSessions: lastIdx - ei, survivor: seg.survivor,
     };
@@ -439,7 +441,9 @@ async function main() {
     const plain = all.filter((t) => !t.terminal || t.terminal.kind === 'OPEN_AT_END');
     const bySym = new Map(); for (const t of plain) (bySym.get(t.listingId) || bySym.set(t.listingId, []).get(t.listingId)).push(t);
     const priceOf = (sym, date) => { for (const t of bySym.get(sym) || []) { const v = t.marks.get(date); if (v !== undefined) return v; } return undefined; };
-    const cfgC2 = { ...cfg, progressive: null };
+    // C2 vergleicht die Portfolio-Mechanik mit engine/backtest.mjs; Zusaetze, die nur die
+    // Validierung kennt (schrittweise Exposition, notionelles Turtle-Konto), sind dafuer aus.
+    const cfgC2 = { ...cfg, progressive: null, turtleNotional: null };
     const eng = runPortfolio(plain.map((t) => ({ symbol: t.listingId, signal: { id: t.id, entry: { ...t.entry }, initialStop: t.initialStop, exits: t.exits.map((x) => ({ ...x })) } })), priceOf, cal, cfgC2);
     const mine2 = runPortfolioTR(plain, cal, cfgC2, { commissionBps: 0, dividends: false, sizingSameDay: true, engineCompat: true });
     let c2 = 0; for (let i = 0; i < cal.length; i++) c2 = Math.max(c2, Math.abs(eng.equity[i].equity / mine2.equity[i].equity - 1));
