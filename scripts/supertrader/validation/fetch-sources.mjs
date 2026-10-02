@@ -44,6 +44,7 @@ async function main() {
   const argv = process.argv.slice(2);
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const OUT = arg('--out', '/tmp/sources');
+  const NAME = arg('--name', 'sources-r8');
   fs.mkdirSync(OUT, { recursive: true });
   const list = JSON.parse(fs.readFileSync(arg('--list', SOURCE_LIST), 'utf8'));
   const crawl = argv.includes('--crawl');
@@ -58,7 +59,8 @@ async function main() {
     try {
       const r = await get(url);
       let text = null, links = [];
-      if (/pdf/i.test(r.type) || /\.pdf$/i.test(url)) text = `[PDF ${r.buf.length} Byte, base64]\n` + r.buf.toString('base64');
+      if (/pdf|image\//i.test(r.type) || /\.(pdf|png|jpe?g|gif)$/i.test(url)) text = `[BINARY ${r.type} ${r.buf.length} Byte, base64]\n` + r.buf.toString('base64');
+      else if (/json/i.test(r.type)) text = r.buf.toString('utf8');
       else { const html = r.buf.toString('utf8'); text = /xml/.test(r.type) && /<urlset|<sitemapindex/.test(html) ? html : htmlToText(html); links = linksOf(html, r.finalUrl); if (/<loc>/.test(html)) links.push(...[...html.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim())); }
       pages.push({ url, finalUrl: r.finalUrl, status: r.status, type: r.type, length: r.buf.length, text, links: links.slice(0, 400) });
       console.log(`${r.status} ${r.buf.length} ${url}`);
@@ -71,7 +73,7 @@ async function main() {
   }
   const result = { schema: 'supertrader-sources-r8-1.0.0', at: new Date().toISOString(), commit: process.env.GITHUB_SHA || null, pages };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
-  fs.writeFileSync(path.join(OUT, 'sources-r8.sealed.json'), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
+  fs.writeFileSync(path.join(OUT, `${NAME}.sealed.json`), L.encryptForOwner(pem, Buffer.from(JSON.stringify(result))));
   console.log(`Seiten ${pages.length}, verschluesselt abgelegt`);
 }
 

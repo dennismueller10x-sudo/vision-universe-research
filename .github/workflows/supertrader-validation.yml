@@ -113,7 +113,9 @@ jobs:
         run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
       - name: Originalquellen lesen (verschluesselt)
         if: steps.mode.outputs.mode == 'sources'
-        run: node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --crawl
+        run: |
+          node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --crawl
+          node scripts/supertrader/validation/fetch-sources.mjs --out "$RUNNER_TEMP/val" --list scripts/supertrader/validation/sources-r8b.json --name sources-r8b
       - name: Verschluesseltes Ergebnis ablegen
         if: always()
         env:
