@@ -389,10 +389,36 @@ if (!args["no-web"] && !DRY) {
   let sharp = null;
   try { sharp = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Website-Icons entfallen."); }
   if (sharp) {
+    /* Von Hand gewaehlte Bildadressen (discover/config/logo-urls.json) fuer
+       Titel, bei denen keine Quelle automatisch etwas findet - gewaehlt aus
+       den Kandidaten (scripts/discover/logo-candidates.mjs). Sie gehen jeder
+       anderen Quelle vor und durchlaufen die Freigabe wie alle anderen. */
+    const gewaehlt = readJson(join(root, "discover", "config", "logo-urls.json"), { symbols: {} }).symbols || {};
+    const imUniv = new Set(universe.map((r) => r.symbol));
+    for (const [sym, url] of Object.entries(gewaehlt)) {
+      if (!imUniv.has(sym) || gesperrt(url) || !/^https:\/\//.test(url)) continue;
+      try {
+        const host = new URL(url).hostname;
+        const istSec = /(^|\.)sec\.gov$/.test(host);
+        const { buf } = istSec ? await secHolen(url, 3 * 1024 * 1024, process.env.SEC_USER_AGENT || WEB_USER_AGENT) : await holen(url, 3 * 1024 * 1024);
+        const res = await toPng(buf, sharp, { logo: true });
+        if (!res.png) { dbg(sym, "gewaehlt", url, res.reason); continue; }
+        const path = "files/" + sym + ".png";
+        for (const f of readdirSync(FILES)) if (f.startsWith(sym + ".") && f !== sym + ".png") rmSync(join(FILES, f));
+        writeFileSync(join(OUT, path), res.png);
+        files[sym] = path;
+        const basis = { path, wide: breitSchreiben(sym, res.wide), iconUrl: url, sha1: createHash("sha1").update(res.png).digest("hex"),
+                        via: "KURATIERT", licenseName: "Marke des Inhabers", fmt: FORMAT, ratio: Math.round((res.ratio || 1) * 100) / 100 };
+        credits[sym] = istSec ? { source: "SEC_FILING", page: url, form: "kuratiert", rule: "kuratiert", ...basis }
+                              : { source: "WEBSITE", page: "https://" + host + "/", host: host.replace(/^www\./, ""), ...basis };
+        reasons.delete(sym);
+        dbg(sym, "gewaehlt", url, "OK");
+      } catch (e) { dbg(sym, "gewaehlt", url, "Fehler", e.message); }
+    }
     console.log("4/5  Website-Icons fuer Titel ohne Commons-Logo oder mit breitem Schriftzug …");
     /* Ein breiter Schriftzug (NVIDIA 5:1) wird im Quadrat winzig. Hat die
        Website ein quadratisches Symbol, geht das vor. */
-    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2).map(([s]) => s));
+    const breit = new Set(Object.entries(credits).filter(([, c]) => c.ratio && c.ratio > 2.2 && c.via !== "KURATIERT").map(([s]) => s));
     const ohne = universe.filter((r) => !files[r.symbol] || breit.has(r.symbol)).slice(0, LIMIT);
     console.log(`     ${ohne.filter((r) => !files[r.symbol]).length} ohne Logo, ${breit.size} mit breitem Schriftzug`);
 
