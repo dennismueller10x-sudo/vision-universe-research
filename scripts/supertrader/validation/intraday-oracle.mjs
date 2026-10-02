@@ -61,6 +61,20 @@ export const fetchMinutes = (t, d, key) => getJson(`https://api.tiingo.com/iex/$
 
 const tickerOf = (id) => String(id).split(':')[2];
 
+// Kompaktes Cache-Format (Runde 9b): je Tag Startzeit und Spalten statt Objekten - der
+// erste r9b-Lauf scheiterte, weil ~20 000 Tage als Objekte nicht in einen String passten.
+const r4 = (x) => Math.round(x * 1e4) / 1e4;
+export function compactBars(bars) {
+  if (!Array.isArray(bars) || !bars.length) return { t0: null, m: [], o: [], h: [], l: [] };
+  const t0 = Date.parse(bars[0].date);
+  return { t0, m: bars.map((b) => Math.round((Date.parse(b.date) - t0) / 60000)), o: bars.map((b) => r4(b.open)), h: bars.map((b) => r4(b.high)), l: bars.map((b) => r4(b.low)) };
+}
+export function expandBars(c) {
+  if (Array.isArray(c)) return c; // altes Format (Studie)
+  if (!c || !c.m || !c.m.length) return [];
+  return c.m.map((mm, i) => ({ date: new Date(c.t0 + mm * 60000).toISOString(), open: c.o[i], high: c.h[i], low: c.l[i] }));
+}
+
 // Simulator-Quelle: cache[ticker|datum] = Minutenbalken (roh). Fehlt ein Tag ab `from`,
 // wird er in `misses` vermerkt (fuer den naechsten Abrufdurchgang) und die Tagesbalken-
 // Annahme gilt.
@@ -73,7 +87,7 @@ export function createOracle(cache, { from = '2017-01-01' } = {}) {
     if (!(k in cache)) { misses.add(k); return { status: 'NOT_FETCHED' }; }
     const rec = { trigger: sig.levels.trigger, fill: e.price, stop: e.stop, open: ctx.bars.open[t], high: ctx.bars.high[t], low: ctx.bars.low[t], close: ctx.bars.close[t],
       rawFactor: ctx.raw.close[t] / ctx.bars.close[t], adr: ctx.ind.adr20[t - 1] };
-    const r = resolve(rec, cache[k], sig.strategyId);
+    const r = resolve(rec, expandBars(cache[k]), sig.strategyId);
     if (r.status !== 'RESOLVED') return r;
     return { status: 'RESOLVED', fill: e.price, stop: r.stopAdj, exitSameDay: r.exitSameDay, exitPrice: r.stopAdj, entryMinute: r.entryMinute };
   };

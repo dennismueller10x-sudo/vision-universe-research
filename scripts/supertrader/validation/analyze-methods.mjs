@@ -41,7 +41,7 @@ import don1 from '../engine/strategies/donchian.mjs';
 import don2 from '../engine/strategies/donchian-v2.mjs';
 import darvas3 from '../engine/strategies/darvas-v3.mjs';
 import kk31 from '../engine/strategies/kk-breakout-v31.mjs';
-import { createOracle, fetchMinutes } from './intraday-oracle.mjs';
+import { createOracle, fetchMinutes, compactBars } from './intraday-oracle.mjs';
 import weinstein3 from '../engine/strategies/weinstein-v3.mjs';
 
 const require = createRequire(import.meta.url);
@@ -414,6 +414,8 @@ async function main() {
     budget.consumeClassB(1, 'GET intraday cache');
     const buf = await driver.get(cacheKey);
     const cache = buf ? JSON.parse(zlib.gunzipSync(buf).toString('utf8')) : {};
+    for (const kk of Object.keys(cache)) if (Array.isArray(cache[kk])) cache[kk] = compactBars(cache[kk]);
+    const saveCache = async () => { if (LIMIT) return; budget.consumeClassA(1, 'PUT intraday cache'); await driver.put(cacheKey, zlib.gzipSync(Buffer.from(JSON.stringify(cache))), { contentType: 'application/gzip' }); };
     const startSize = Object.keys(cache).length;
     const { oracle, misses } = createOracle(cache);
     RUN.splice(0, RUN.length, ...enginesR9B(oracle));
@@ -426,11 +428,11 @@ async function main() {
       log(`Durchgang ${pass}: fehlende Minutentage ${misses.size}`);
       if (!misses.size) break;
       const todo = [...misses]; let i = 0;
-      const worker = async () => { while (i < todo.length) { const kk = todo[i++]; const [tk, d] = kk.split('|'); const r = await fetchMinutes(tk, d, KEY); cache[kk] = Array.isArray(r.body) ? r.body.map((b) => ({ date: b.date, open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume })) : []; if (i % 1000 === 0) log(`abgerufen ${i}/${todo.length}`); await new Promise((res) => setTimeout(res, 100)); } };
+      const worker = async () => { while (i < todo.length) { const kk = todo[i++]; const [tk, d] = kk.split('|'); const r = await fetchMinutes(tk, d, KEY); cache[kk] = compactBars(Array.isArray(r.body) ? r.body : []); if (i % 1000 === 0) log(`abgerufen ${i}/${todo.length}`); await new Promise((res) => setTimeout(res, 100)); } };
       await Promise.all([worker(), worker(), worker(), worker()]);
+      await saveCache(); log(`Cache gesichert (${Object.keys(cache).length} Tage)`);
     }
-    if (!LIMIT) { budget.consumeClassA(1, 'PUT intraday cache'); await driver.put(cacheKey, zlib.gzipSync(Buffer.from(JSON.stringify(cache))), { contentType: 'application/gzip' }); }
-    intradayStats = { cacheStart: startSize, cacheEnd: Object.keys(cache).length, passes, emptyDays: Object.values(cache).filter((v) => !v.length).length };
+    intradayStats = { cacheStart: startSize, cacheEnd: Object.keys(cache).length, passes, emptyDays: Object.values(cache).filter((v) => !(v.m ? v.m.length : v.length)).length };
     log(`Minuten-Cache ${startSize} -> ${intradayStats.cacheEnd} Tage`);
   }
   // 3. Simulation je Methode.

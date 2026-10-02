@@ -84,3 +84,14 @@ test('R9-I6 Simulator: Minutenquelle bestimmt Einstieg, Stop und Gleichtags-Auss
   const c = simulate(stub, ctx, { from: 0, to: 1, intradayOracle: () => ({ status: 'NO_INTRADAY' }) });
   assert.equal(c.state.signal.entry.evidence, 'DAILY_BAR_HIGH_REACHED_TRIGGER');
 });
+
+test('R9-I7 Kompaktes Minuten-Cache-Format: verlustfrei für Reihenfolge und Hoch/Tief, altes Format lesbar', async () => {
+  const { compactBars, expandBars } = await import('../validation/intraday-oracle.mjs');
+  const bars = [m(0, 98, 99, 95, 98.5), m(5, 98.5, 100.5, 98, 100), m(30, 100, 105, 99, 104)];
+  const c = compactBars(bars);
+  assert.deepEqual(c.m, [0, 5, 30]);
+  const back = expandBars(JSON.parse(JSON.stringify(c)));
+  assert.deepEqual(back.map((b) => [b.date, b.open, b.high, b.low]), bars.map((b) => [new Date(b.date).toISOString(), b.open, b.high, b.low]));
+  assert.equal(resolve(rec, back, 'MOMENTUM_BREAKOUT').entryMinute, resolve(rec, bars, 'MOMENTUM_BREAKOUT').entryMinute);
+  assert.equal(expandBars(bars), bars); assert.deepEqual(expandBars(compactBars([])), []);
+});
