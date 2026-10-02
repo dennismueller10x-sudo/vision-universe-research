@@ -207,6 +207,13 @@ const gesperrtTitel = (t) => Boolean(t && (REJECTS.titles || {})[t]);
    erfahrungsgemaess weitere Fehlgriffe (Unterschriften, Stimmzettel). */
 const SEC_GESPERRT = new Set(Object.entries(REJECTS.urls || {})
   .filter(([url]) => /^https:\/\/www\.sec\.gov\//.test(url)).map(([, why]) => String(why).split(":")[0].trim()));
+/* Firmen, deren Website schon zweimal ein falsches Bild lieferte (fremde
+   Logos, Produktmarken, Baukasten-Icons): die Website ist dafuer keine
+   Quelle mehr - sonst kaeme nach jeder Sperre das naechste falsche Bild. */
+const WEB_GESPERRT = new Set(Object.entries(Object.entries(REJECTS.urls || {})
+  .filter(([url]) => !/^https:\/\/www\.sec\.gov\//.test(url))
+  .reduce((a, [, why]) => { const s = String(why).split(":")[0].trim(); a[s] = (a[s] || 0) + 1; return a; }, {}))
+  .filter(([, n]) => n >= 2).map(([s]) => s));
 const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r.cik || null]));
 const universe = search.entries
   .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
@@ -443,6 +450,7 @@ if (!args["no-web"] && !DRY) {
       }
       console.log(`     SEC: ${JSON.stringify(stat)}`);
     } else console.log("     SEC_USER_AGENT fehlt - keine SEC-Adressen.");
+    for (const sym of WEB_GESPERRT) if (siteOf.has(sym) && siteOf.get(sym).via !== "KURATIERT") siteOf.delete(sym);
     console.log(`     ${siteOf.size} von ${ohne.length} Titeln mit offizieller Website`);
 
     const icons = new Map();
