@@ -157,8 +157,14 @@ test("a missing display permission stays a missing permission", async () => {
 test("the measured cohort gained a price, and the rest says why not", async () => {
   const universe = await api.getUniverse();
   const tickers = universe.stocks.map((s) => s.ticker).sort();
-  const step = Math.max(1, Math.floor(tickers.length / 500));
-  const sample = tickers.filter((_, i) => i % step === 0).slice(0, 500);
+  /* Das ganze Produktuniversum, keine Stichprobe nach Listenposition: die
+     Stichprobe (jeder 13. Titel) verschob sich, als 22 Schuldverschreibungen
+     das Universum verliessen, und fiel von 481 auf 468 - bei unveraenderter
+     Quote ueber alle Titel (94,57 % vorher wie nachher). Gemessen wird jetzt
+     alles; die Schwellen bleiben dieselben Quoten wie zuvor (470/500,
+     25/500, 30/500). Gemessen am 02.10.2026 ueber 6.853 Titel: 6.481 mit
+     Kurs (94,6 %), 500 aus der gezeichneten Reihe, 372 ohne Kurs. */
+  const sample = tickers;
   let mitKurs = 0, ausReihe = 0, ohne = 0, fremdeGruende = 0;
   for (let i = 0; i < sample.length; i += 25) {
     const batch = await Promise.all(sample.slice(i, i + 25)
@@ -178,10 +184,11 @@ test("the measured cohort gained a price, and the rest says why not", async () =
   /* Gemessen vor der Aenderung: 448. Danach 481, und die 33 kommen aus der
      gezeichneten Reihe. Die Schwelle steht bewusst unter dem gemessenen Wert -
      sie soll einen Rueckschritt fangen, nicht den Kursstand einfrieren. */
-  assert.ok(mitKurs >= 470, "nur " + mitKurs + " von 500 Titeln nennen einen letzten Kurs (gemessen: 481)");
-  assert.ok(ausReihe >= 25, "nur " + ausReihe + " Kurse kommen aus der gezeichneten Reihe (gemessen: 33)");
+  const n = sample.length;
+  assert.ok(mitKurs >= 0.94 * n, "nur " + mitKurs + " von " + n + " Titeln nennen einen letzten Kurs");
+  assert.ok(ausReihe >= 0.05 * n, "nur " + ausReihe + " von " + n + " Kursen kommen aus der gezeichneten Reihe");
   assert.equal(fremdeGruende, 0, "ein Titel ohne Kurs nennt einen unbenannten Grund");
-  assert.ok(ohne <= 30, ohne + " Titel ohne Kurs - das ist mehr als gemessen (19)");
+  assert.ok(ohne <= 0.06 * n, ohne + " von " + n + " Titeln ohne Kurs");
 });
 
 /* ------------------------------------------------------------------------
