@@ -283,3 +283,11 @@ Gap-Tag das Tief der ersten Minute als „Tief bis zum Kauf" (Blick nach vorn). 
 Begründung: `PREREGISTRATION-R9-INTRADAY-AMENDMENT.json` → `A4_officialOpen`. Keine Schwelle
 geändert. Studie und r9b laufen mit A4 erneut; die Ergebnisse vor A4 bleiben archiviert und
 werden daneben berichtet.
+
+**Studie nach A4** (Run 37051824868, `20261002T194226Z-intraday-study.sealed.json`; dieselben 1 821 Fälle):
+- Strittige Tage, tatsächlicher Ausstieg am Kauftag: Momentum 63 % (vorher 64 %), Darvas 29 % (unverändert),
+  Turtle 66 % (vorher 63 %). Kontrollfälle weiter 99–100 % in Übereinstimmung.
+- Momentum: Tagestief nach dem Kauf in 48 % (vorher 46 %); Stop zum Kaufzeitpunkt im Median 0,35 % über dem
+  Tagestief (vorher 0,5 %). Aufgelöst 891 statt 882 Fälle.
+- 52 von 1 821 Einzelentscheidungen änderten sich; die Befunde je Methode (MOSTLY_EXIT / MOSTLY_HOLD) bleiben.
+- Beispiele (AXON, MNKD, TSLA) unverändert.
