@@ -2,7 +2,8 @@
 # Explicit, isolated pilot. Credentials come from the workflow environment only.
 set -euo pipefail
 state_root="${RUNNER_TEMP:?}/intelligence-pilot"
-namespace="pilot-$(python3 -c 'import hashlib,os;print(hashlib.sha256(os.environ["PILOT_BRANCH"].encode()).hexdigest()[:24])')"
+namespace="${PILOT_NAMESPACE:-pilot-$(python3 -c 'import hashlib,os;print(hashlib.sha256(os.environ["PILOT_BRANCH"].encode()).hexdigest()[:24])')}"
+if [[ ! "$namespace" =~ ^pilot-[a-zA-Z0-9_-]{1,64}$ ]]; then echo "INVALID_PILOT_NAMESPACE" >&2; exit 1; fi
 export PILOT_NAMESPACE="$namespace"
 cohort='AAPL,NVDA,TSLA,MSFT,XPEV,PLTR,SOFI,ROOT,U,XYZ,TOST,TGT,AFRM,META,GOOG,GOOGL,ACU,CHE,AOS,RARE,PYXS,VEON'
 node scripts/company_intelligence/privacy.mjs

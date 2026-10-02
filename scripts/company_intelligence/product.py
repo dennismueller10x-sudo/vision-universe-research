@@ -34,7 +34,7 @@ def bundles(payload):
                     'date': max(e.get('date') or e.get('publishedAt', '')[:10] for e in records),
                     'verificationState': 'VERIFIED_EARNINGS_RELEASE' if any(e['eventType'] == 'EARNINGS_PUBLISHED' for e in records) else 'PERIODIC_REPORT',
                     'eventIds': sorted(ids), 'callIds': [c['eventId'] for c in calls],
-                    'materials': list({(d['url'], d.get('type')): d for d in docs if canonical_url(d.get('url'))}.values())[:20],
+                    'materials': list({canonical_url(d['url']): d for d in docs if canonical_url(d.get('url'))}.values())[:20],
                     'financials': financials if exact else {'state': 'UNAVAILABLE', 'reason': 'NO_EXACT_PERIOD_SUMMARY'},
                     'linkageEvidence': 'EXACT_ISSUER_REPORT_END_AND_FISCAL_LABELS'})
     return sorted(out, key=lambda b: b['date'], reverse=True)[:6]
@@ -65,5 +65,8 @@ def project(payload):
     value['coverage'] = {'newsGuarantee': False, 'operationalDetailsPublic': False}
     # Neutral numeric directions are observable even when investment interpretation is unavailable.
     for change in value.get('latestFinancials', {}).get('whatChanged', []):
+        if change.get('classification') == 'UNCHANGED' or change.get('absolute') == 0:
+            change['displayClassification'] = 'UNCHANGED'
+            continue
         change['displayClassification'] = ('ACCELERATED' if change.get('absolute', 0) > 0 else 'DECELERATED') if change['metric'] == 'revenue_growth' and change.get('absolute') else ('EXPANDED' if change.get('absolute', 0) > 0 else 'CONTRACTED') if change['metric'].endswith('_margin') and change.get('absolute') else ('INCREASED' if change.get('absolute', 0) > 0 else 'DECREASED') if change.get('classification') == 'NOT_COMPARABLE' and change.get('absolute') is not None else change.get('classification', 'NOT_COMPARABLE')
     return value

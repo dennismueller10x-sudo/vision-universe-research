@@ -384,9 +384,23 @@ class Pipeline:
                     official['confirmationHistory'] = history + [transition]
                     self.store.event(official, self.now)
                     self.store.audit(self.now, company['companyId'], 'ESTIMATE_CONFIRMED', **transition)
+        retained = {e['eventId'] for e in estimates}
         with self.store.db:
-            self.store.db.execute("DELETE FROM events WHERE company=? AND kind='EARNINGS_ESTIMATED'", (cid,))
+            for prior in [e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED' and e['eventId'] not in retained]:
+                self.store.db.execute('DELETE FROM events WHERE id=?', (prior['eventId'],))
+        previous = {e['eventId']: e for e in all_events if e['eventType'] == 'EARNINGS_ESTIMATED'}
+        volatile = {'discoveredAt', 'updatedAt', 'dateHistory', 'confirmationHistory', 'estimationHistory'}
         for e in estimates:
+            prior = previous.get(e['eventId'])
+            if prior:
+                if {k: v for k, v in prior.items() if k not in volatile} == {k: v for k, v in e.items() if k not in volatile}:
+                    e['updatedAt'] = prior.get('updatedAt', prior.get('discoveredAt', self.now))
+                if (prior.get('dateStart'), prior.get('dateEnd')) != (e.get('dateStart'), e.get('dateEnd')):
+                    change = {'previousDateStart': prior.get('dateStart'), 'previousDateEnd': prior.get('dateEnd'), 'dateStart': e.get('dateStart'), 'dateEnd': e.get('dateEnd'), 'changedAt': self.now}
+                    e['estimationHistory'] = prior.get('estimationHistory', []) + [change]
+                    self.store.audit(self.now, cid, 'ESTIMATE_WINDOW_CHANGED', eventId=e['eventId'], **change)
+                elif prior.get('estimationHistory'):
+                    e['estimationHistory'] = prior['estimationHistory']
             self.store.event(e, self.now)
 
     def discover_company(self, company, official_site):

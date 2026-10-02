@@ -91,3 +91,41 @@ class LazyAliasTests(unittest.TestCase):
             item['distributionMetadata']['contributor']='Wrong Bank Corp';self.assertEqual(p.resolver.resolve(item,source),[])
             file.write_text(json.dumps({'cik':'0000000001','name':'Fake Corp','dataSource':{'provider':'sec_edgar','isMock':True}}))
             p=Pipeline(temp,c,None,object());p.ensure_aliases(['issuer']);self.assertEqual(p.companies['issuer']['names'],['Hawaii Bank'])
+
+class ProductReviewRegressionTests(unittest.TestCase):
+    payload = ProductTests.payload
+    release = ProductTests.release
+    def test_materials_merge_the_same_source_url_even_when_labels_differ(self):
+        p=self.payload();p['earnings']=[self.release()];p['materials']=[{'companyId':p['companyId'],'eventId':'release','url':'https://www.sec.gov/report','type':'SEC_PRIMARY_DOCUMENT'},{'companyId':p['companyId'],'eventId':'release','url':'https://www.sec.gov/report','type':'FINANCIAL_REPORT'}]
+        self.assertEqual(len(project(p)['earningsBundles'][0]['materials']),1)
+    def test_unchanged_margin_does_not_become_expanded_from_rounding_noise(self):
+        p=self.payload();p['latestFinancials']['whatChanged']=[dict(metric='gross_margin',absolute=.0000001,classification='UNCHANGED')];self.assertEqual(project(p)['latestFinancials']['whatChanged'][0]['displayClassification'],'UNCHANGED')
+
+class PilotNamespaceTests(unittest.TestCase):
+    def test_unsafe_or_nonpilot_override_fails_before_credential_access(self):
+        import os,subprocess,tempfile
+        from pathlib import Path
+        script=Path(__file__).parents[1]/'pilot.sh'
+        with tempfile.TemporaryDirectory() as temp:
+            for namespace in ('../main','branch-production','pilot-../escape','pilot-'):
+                r=subprocess.run(['bash',str(script)],env={**os.environ,'RUNNER_TEMP':temp,'PILOT_BRANCH':'feature/test','PILOT_NAMESPACE':namespace},capture_output=True,text=True)
+                self.assertNotEqual(r.returncode,0);self.assertIn('INVALID_PILOT_NAMESPACE',r.stderr)
+
+class CalendarRerunIntegrityTests(unittest.TestCase):
+    def test_refresh_preserves_first_discovery_and_unchanged_timestamp_and_audits_end_change(self):
+        import json,tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from company_intelligence.pipeline import Pipeline
+        from company_intelligence.store import Store
+        cid='iss_cik_0000000001';c={'companyId':cid,'cik':None,'names':['Test Company'],'listings':[]}
+        estimate={'companyId':cid,'eventId':'estimate','eventType':'EARNINGS_ESTIMATED','date':'2026-11-10','dateStart':'2026-11-10','dateEnd':'2026-11-20','confirmationStatus':'ESTIMATED','discoveredAt':'2026-10-01T12:00:00Z','updatedAt':'2026-10-01T12:00:00Z'}
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/'state.sqlite');store.event(estimate,estimate['discoveredAt']);pipe=Pipeline(tmp,{cid:c},store,object(),'2026-10-02T12:00:00Z')
+            def value():return json.loads(store.db.execute("select payload from events where id='estimate'").fetchone()[0])
+            with patch('company_intelligence.pipeline.estimate_calendar',return_value=[{**estimate,'discoveredAt':pipe.now,'updatedAt':pipe.now}]):pipe.refresh_estimates(c)
+            self.assertEqual(value()['discoveredAt'],estimate['discoveredAt']);self.assertEqual(value()['updatedAt'],estimate['updatedAt'])
+            with patch('company_intelligence.pipeline.estimate_calendar',return_value=[{**estimate,'dateEnd':'2026-11-22','discoveredAt':pipe.now,'updatedAt':pipe.now}]):pipe.refresh_estimates(c)
+            self.assertEqual(value()['discoveredAt'],estimate['discoveredAt']);self.assertEqual(value()['estimationHistory'][0]['previousDateEnd'],'2026-11-20');self.assertEqual(value()['updatedAt'],pipe.now)
+            self.assertEqual(store.db.execute("select count(*) from audit where json_extract(payload,'$.code')='ESTIMATE_WINDOW_CHANGED'").fetchone()[0],1)
+            store.close()

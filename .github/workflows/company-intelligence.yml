@@ -349,6 +349,7 @@ jobs:
         env:
           RUNNER_TEMP: ${{ runner.temp }}
           PILOT_BRANCH: ${{ github.ref_name }}
+          PILOT_NAMESPACE: ${{ vars.COMPANY_INTELLIGENCE_CONSUMER_NAMESPACE }}
           PILOT_INITIALIZE: ${{ inputs.pilot_initialize }}
           PILOT_NETWORK: ${{ inputs.pilot_network || github.event_name == 'schedule' }}
           PILOT_LANE: ${{ github.event_name == 'schedule' && 'sec' || 'feeds' }}
