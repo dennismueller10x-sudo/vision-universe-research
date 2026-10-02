@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
-from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement
+from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement, financial_release_evidence
 from .transport import BudgetExhausted, SourceError
 from .feeds import parse_feed, parse_gdelt, discover_ir
 from .ir_events import from_announcement, parse_jsonld, parse_ics, guidance_evidence, event
@@ -167,7 +167,8 @@ class Pipeline:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)
                         import re
-                        if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and re.search(r'financial(?: and operating)? results|earnings', entry['headline'], re.I) and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|to be|date|scheduled|upcoming|forthcoming|expected|board meeting|board approval|to consider|to approve|to review)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
+                        financial_proof = financial_release_evidence(entry['headline'], entry.get('evidenceText', ''))
+                        if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and financial_proof and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|to be|date|scheduled|upcoming|forthcoming|expected|board meeting|board approval|to consider|to approve|to review)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period
                             period = release_period(entry['headline']) or {}
                             quarter, year = period.get('fiscalQuarter'), period.get('fiscalYear')
@@ -179,6 +180,9 @@ class Pipeline:
                                         'eventStatus': 'PUBLISHED', 'discoveredAt': self.now, 'fiscalQuarter': quarter, 'fiscalYear': year, 'reportingPeriod': None,
                                         'detectionEvidence': ['ISSUER_AUTHORED_RESULTS_RELEASE_TITLE_AND_DISTRIBUTOR_METADATA'] if distributed_author else ['OFFICIAL_RESULTS_RELEASE_TITLE'], 'earningsReleaseUrl': entry['url'], 'transcriptUrl': None,
                                         'summary': summary(consumer, company['cik'], self.now, quarter, year) if quarter and year else {'state': 'UNAVAILABLE', 'reason': 'RELEASE_REPORTING_PERIOD_NOT_VERIFIED'}}
+                            earnings['detectionEvidence'].extend(financial_proof)
+                            if 'REPORTED_FINANCIAL_METRICS_IN_SOURCE_SNIPPET' in financial_proof:
+                                earnings['financialEvidence'] = {'method': 'OFFICIAL_SOURCE_PROVIDED_SNIPPET', 'sourceUrl': entry['url'], 'excerpt': entry.get('evidenceText', '')[:400], 'confidence': .99}
                             reported = earnings['summary'].get('metrics', {}).get('revenue', {}).get('current')
                             if reported:
                                 earnings['reportingPeriod'] = reported.get('periodEnd')

@@ -20,6 +20,28 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_generic_quarter_title_needs_two_reported_financial_metric_families(self):
+        from company_intelligence.model import financial_release_evidence
+        from company_intelligence.pipeline import Pipeline
+        headline = 'Apple reports third quarter 2026 results'
+        self.assertFalse(financial_release_evidence(headline, 'Sales of $1 billion'))
+        self.assertFalse(financial_release_evidence(headline, 'Expected sales of $1 billion and EPS of $0.91'))
+        snippet = 'Sales of $1 billion; net earnings of $125 million and diluted EPS of $0.91.'
+        self.assertIn('REPORTED_FINANCIAL_METRICS_IN_SOURCE_SNIPPET', financial_release_evidence(headline, snippet))
+        c = company()
+        body = f'<rss><channel><item><title>{headline}</title><link>https://apple.com/results</link><pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate><description>{snippet}</description></item></channel></rss>'.encode()
+        class HTTP:
+            def get(self, *args, **kwargs): return {'body': body, 'finalUrl': 'https://apple.com/feed'}
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                Pipeline(Path(tmp), {c['companyId']: c}, store, HTTP(), NOW).ingest_source(source(c))
+                released = store.company_payload(c, NOW)['earnings']
+                self.assertEqual(len(released), 1)
+                self.assertEqual(released[0]['eventType'], 'EARNINGS_PUBLISHED')
+                self.assertEqual(released[0]['financialEvidence']['excerpt'], snippet)
+            finally: store.close()
+
     def test_valueless_html_attributes_do_not_break_source_discovery(self):
         from company_intelligence.feeds import parse_links
         links = parse_links(b'<a href="/investors" title aria-label type rel>Investors</a><link href="/rss" type rel>', 'https://example.com/')

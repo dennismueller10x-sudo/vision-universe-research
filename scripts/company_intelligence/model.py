@@ -171,6 +171,22 @@ def issuer_results_actor(headline, company):
     return any(name and re.match(re.escape(name) + r'\s+(?:reports?|announces?)\b', title) for name in aliases)
 
 
+def financial_release_evidence(headline, snippet):
+    if re.search(r'financial(?: and operating)? results|earnings', headline, re.I):
+        return ['EXPLICIT_FINANCIAL_RELEASE_TITLE']
+    # An official quarter-results title may omit "financial". Require two
+    # distinct reported metric families, rather than generic results text.
+    evidence = clean(snippet, 2000)
+    if re.search(r'\b(will|expects?|expected|forecast|guidance|outlook|projected)\b', evidence, re.I):
+        return []
+    families = [label for label, pattern in (
+        ('REVENUE', r'\b(?:revenue|sales)\b.{0,35}\d'),
+        ('NET_INCOME', r'\bnet (?:income|earnings|loss)\b.{0,35}\d'),
+        ('EPS', r'\b(?:earnings per share|eps)\b.{0,35}\d'),
+    ) if re.search(pattern, evidence, re.I)]
+    return ['REPORTED_FINANCIAL_METRICS_IN_SOURCE_SNIPPET', *families] if len(families) >= 2 else []
+
+
 def issuer_earnings_announcement(headline, company):
     """An issuer-owned page can announce another entity's reporting date."""
     title = normalize(headline)
