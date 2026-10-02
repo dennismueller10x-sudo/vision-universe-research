@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "tiingo2-productization-compact-delivery-1",
+  "sourceCommit": "1cf199eb54f13dcf96226c5c86c75431a9446c68",
+  "scope": "EXISTING_BASELINE_DELIVERY_ENCODING_ONLY",
+  "productionPublicationPerformed": false,
+  "files": [
+    {
+      "path": "quant/data/market/factors/factors-FULL_UNIVERSE.json",
+      "baselineBytes": 27553624,
+      "deliveredBytes": 19283286,
+      "bytesSaved": 8270338,
+      "allParsedFieldsEqual": true,
+      "deliveredSha256": "070bbbed97238eeef8da0f8ef095d9befb72d0da4dae3e3470822fe3ed85ff9b"
+    },
+    {
+      "path": "quant/data/universe/market-capability.json",
+      "baselineBytes": 1242180,
+      "deliveredBytes": 1242179,
+      "bytesSaved": 1,
+      "allParsedFieldsEqual": true,
+      "deliveredSha256": "e2200fcb4362f35b88f95eb639f396fb1747b3b581327e06e7fe763048abb202"
+    },
+    {
+      "path": "quant/data/universe/search/manifest.json",
+      "baselineBytes": 62706,
+      "deliveredBytes": 31258,
+      "bytesSaved": 31448,
+      "allParsedFieldsEqual": true,
+      "deliveredSha256": "5827d04de2d4139c73c0e8fe2bd16b5de9c6fc57c3af91d660cced1fe9f0ba5e"
+    }
+  ],
+  "status": "PASS"
+}

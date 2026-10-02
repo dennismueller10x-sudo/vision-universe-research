@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "tiingo2-productization-builder-review-1",
+  "sourceCommit": "1cf199eb54f13dcf96226c5c86c75431a9446c68",
+  "productionPublicationPerformed": false,
+  "reviewScope": "BASELINE_READ_ONLY_BEFORE_PRODUCTIZATION_IMPLEMENTATION",
+  "shadowRequirements": [
+    "Use real copied builder scripts so import.meta.url resolves shadow root",
+    "Copy writable public artifacts without hardlinks; exclude working caches, credentials and browser user storage",
+    "Bind publication QA to exact shadow artifact hashes and protected source baseline hashes",
+    "Preserve all canonical security/instrument IDs, legacy IDs, search shard references and logo paths",
+    "Report changed ranking populations and row positions separately from identity preservation",
+    "Do not certify Quant/Factor DNA or volume-dependent SuperTrader signals from partial price arithmetic"
+  ],
+  "builders": [
+    {
+      "path": "scripts/quant/build-factor-evidence.mjs",
+      "rootResolution": "SCRIPT_LOCATION",
+      "writes": [
+        "quant/data/product/factor-evidence-v1",
+        "quant/data/product/factor-evidence-history"
+      ],
+      "destructiveRebuild": true,
+      "shadowExecution": "COPIED_SCRIPT_AND_PUBLIC_INPUT_TREE_ONLY"
+    },
+    {
+      "path": "scripts/discover/build-discover-data.mjs",
+      "rootResolution": "SCRIPT_LOCATION",
+      "writes": [
+        "discover/data"
+      ],
+      "destructiveRebuild": true,
+      "shadowExecution": "COPIED_SCRIPT_AND_PUBLIC_INPUT_TREE_ONLY"
+    },
+    {
+      "path": "scripts/market/publish-discover-series.mjs",
+      "rootResolution": "EXPLICIT_ROOT_SUPPORTED",
+      "writes": [
+        "quant/data/market/discover-series"
+      ],
+      "prunesOutsideResolvedScope": true,
+      "shadowExecution": "EXPLICIT_SHADOW_ROOT; VERIFY_BASELINE_SERIES_SURVIVE"
+    },
+    {
+      "path": "scripts/market/build-market-factors.mjs",
+      "rootResolution": "SCRIPT_LOCATION_WITH_SCALE_OUT_WORK_OVERRIDES",
+      "writes": [
+        "quant/data/market/factors"
+      ],
+      "shadowExecution": "COPY_SCRIPT_TREE_OR_EXPLICIT_VERIFIED_INPUT_AND_OUT_DIRS"
+    },
+    {
+      "path": "scripts/supertrader/build.mjs",
+      "rootResolution": "EXPLICIT_ROOT_AND_OUT_SUPPORTED",
+      "writes": [
+        "supertrader/data"
+      ],
+      "shadowExecution": "EXPLICIT_SHADOW_ROOT; NO_SIGNAL_FABRICATION_FOR_INELIGIBLE_SERIES"
+    }
+  ],
+  "publisherBaseline": {
+    "path": "scripts/market/tiingo2-publication.mjs",
+    "requiresAllProductsQa": true,
+    "requiredCanonicalProjections": [
+      "quant/data/universe/master-manifest.json",
+      "quant/data/universe/search/manifest.json",
+      "quant/data/universe/market-capability.json",
+      "quant/data/product/universe-list-v1.json.gz",
+      "discover/data/meta.json"
+    ],
+    "missingTransactionalProductScopes": [
+      "Published price series",
+      "Factor DNA shards and screening",
+      "Discover home/row/detail artifacts",
+      "Company logo additions",
+      "Markets projection"
+    ],
+    "finding": "PRODUCT_SPECIFIC_ELIGIBILITY_AND_EXACT_SCOPED_CAS_REQUIRED"
+  },
+  "browserBloat": {
+    "fetchPath": "/quant/data/market/factors/factors-FULL_UNIVERSE.json",
+    "callsite": "quant/api/product-services.js:101",
+    "factorArtifactBytes": 27553624,
+    "factorMembers": 6453,
+    "otherMajorResourceBytes": {
+      "/quant/data/universe/market-capability.json": 1242180,
+      "/quant/release-bundle.js": 814223
+    },
+    "compactEncodedFieldContributions": {
+      "fieldStatus": 8632163,
+      "values": 5841223,
+      "investorReturn": 2269915
+    },
+    "budget": {
+      "decodedBytes": 30500000,
+      "requests": 30
+    },
+    "baselineScreenerDecodedBytes": 30537298,
+    "baselineScreenerProDecodedBytes": 30505842,
+    "scope": "MEASURED_PREVIOUS_ACCEPTED_PR349_CHROMIUM_CI",
+    "rule": "FIX_BROWSER_PROJECTION_OR_LOADING; KEEP_EXISTING_BUDGET"
+  }
+}

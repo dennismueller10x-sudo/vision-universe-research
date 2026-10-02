@@ -10,6 +10,9 @@ import { hostname } from 'node:os';
 import { classifyCandidate } from './tiingo2-policy.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 export const REQUIRED_PUBLICATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'QUANT', 'DISCOVER', 'SCREENER', 'SUPERTRADER', 'SEC', 'RELEASE', 'BROWSER'];
+export const PRODUCTIZATION_QA_SCHEMA = 'tiingo2-productization-qa-1.0.0';
+export const REQUIRED_PRODUCTIZATION_QA = ['IDENTITY', 'BASELINE', 'PROJECTIONS', 'SEARCH', 'CHARTS', 'WATCHLIST', 'RELEASE', 'BROWSER'];
+export const CONDITIONAL_PRODUCTIZATION_QA = ['QUANT', 'DISCOVER', 'SCREENER', 'SUPERTRADER', 'SEC'];
 export const REQUIRED_CANONICAL_PROJECTIONS = ['quant/data/universe/master-manifest.json', 'quant/data/universe/search/manifest.json', 'quant/data/universe/market-capability.json', 'quant/data/product/universe-list-v1.json.gz', 'discover/data/meta.json'];
 export const CANONICAL_PUBLICATION_PATHS = {
   raw: 'quant/data/market/scale/universe-FULL_UNIVERSE.json',
@@ -36,7 +39,37 @@ function guardedPath(root, path) {
 function canonicalPath(path) {
   return Object.values(CANONICAL_PUBLICATION_PATHS).slice(0, 3).includes(path) || /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/.test(path) || projectionPath(path);
 }
-function projectionPath(path) { return REQUIRED_CANONICAL_PROJECTIONS.includes(path) || /^quant\/data\/universe\/search\/(sym|name)\/[A-Za-z0-9_-]+\.json$/.test(path); }
+/** Only actual public product projections, never provider history, raw SEC,
+ * executable code, configuration, methodology or routing. */
+export function isProductizationProjectionPath(path) {
+  if (typeof path !== 'string' || path.includes('..') || path.includes('\\')) return false;
+  if (REQUIRED_CANONICAL_PROJECTIONS.includes(path)) return true;
+  if (path === CANONICAL_PUBLICATION_PATHS.names) return true;
+  return [
+    /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/,
+    /^quant\/data\/universe\/search\/(sym|name)\/[A-Za-z0-9_-]+\.json$/,
+    /^quant\/data\/universe\/(cik-map|capability-summary|coverage-report|tiingo2-product-projections)\.json$/,
+    /^quant\/data\/market\/discover-series(?:-long)?\/(?:ref_[A-Z0-9_.-]+|index)\.json$/,
+    /^quant\/data\/market\/factors\/(?:factors|screener)-FULL_UNIVERSE(?:-summary)?\.json$/,
+    /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:[A-Z0-9_]{2}|screening|signals-(?:5|20|60))\.json\.gz$/,
+    /^quant\/data\/product\/(?:factor-evidence-v1|technical-signals-v1)\/(?:summary|index|manifest)\.json$/,
+    /^quant\/data\/product\/factor-evidence-history\/(?:index\.json|vu-factor-evidence-\d+\.\d+\.\d+\/\d{4}-\d{2}-\d{2}\.json\.gz)$/,
+    /^quant\/data\/sec\/consumer\/CIK\d{10}\.json$/,
+    /^quant\/data\/sec\/canonical\/[A-Z0-9_.-]+\.json$/,
+    /^quant\/data\/sec\/(?:canonical_index|consumer_coverage|quant-factor-inputs|pit_gates|sic-peer-taxonomy)\.json$/,
+    /^quant\/data\/fundamentals\/issuers\/\d{3}\.json$/,
+    /^quant\/data\/fundamentals\/(?:manifest|coverage-report|canonical-index)\.json$/,
+    /^screener\/data\/universe-US_REAL\.json$/,
+    /^discover\/data\/(?:home|featured|stock-index|search|feed|live-scope)\/(?:US_REAL|US_MODEL)(?:\.\d+)?\.json$/,
+    /^discover\/data\/(?:rows|stocks|series)\/(?:US_REAL|US_MODEL)\/[A-Za-z0-9_.-]+\.json$/,
+    /^discover\/data\/(?:logos|logo-index|logo-credits|credits)\.json$/,
+    /^discover\/logos\/(?:index|credits|sites|missing|name-search|summary)\.json$/,
+    /^discover\/logos\/files\/(?:wide\/)?[A-Za-z0-9_.-]+\.(?:svg|png|webp)$/,
+    /^assets\/logos\/(?:[A-Z0-9_.-]+\.(?:svg|png|webp)|index\.json|credits\.json)$/
+  ].some((pattern) => pattern.test(path));
+}
+function projectionPath(path) { return isProductizationProjectionPath(path); }
+export function productizationReadinessHash(readiness) { return sha(jsonBytes(readiness)); }
 function readDocument(root, path) { return JSON.parse(readFileSync(guardedPath(root, path), 'utf8')); }
 function assertPrefix(before, after, field) {
   if (after[field].length < before[field].length) throw new Error('BASELINE_REMOVAL');
@@ -212,7 +245,7 @@ function publicationLock(root) {
   return () => { closeSync(fd); unlinkSync(file); };
 }
 
-function verifyCanonicalProjections({ root, output, manifest }) {
+export function verifyCanonicalProjections({ root, output, manifest }) {
   const entries = new Map(manifest.files.map((file) => [file.path, file]));
   const bytesFor = (path) => {
     const entry = entries.get(path);
@@ -284,9 +317,149 @@ function verifyCanonicalProjections({ root, output, manifest }) {
   return true;
 }
 
+function verifyReconciledCanonicalRows({ root, output, manifest }) {
+  for (const entry of manifest.files) {
+    const path = entry.path;
+    const field = path === CANONICAL_PUBLICATION_PATHS.names ? 'rows'
+      : /^quant\/data\/universe\/instruments\//.test(path) ? 'instruments' : null;
+    if (!field || !existsSync(guardedPath(root, path))) continue;
+    const before = readDocument(root, path);
+    const after = JSON.parse(readFileSync(guardedPath(output, entry.stagedPath)));
+    if (!Array.isArray(before[field]) || !Array.isArray(after[field])) throw Error('INVALID_RECONCILED_CANONICAL_ROWS');
+    assertPrefix(before, after, field);
+  }
+  const cikEntry = manifest.files.find((entry) => entry.path === 'quant/data/universe/cik-map.json');
+  if (cikEntry && existsSync(guardedPath(root, cikEntry.path))) {
+    const before = readDocument(root, cikEntry.path), after = JSON.parse(readFileSync(guardedPath(output, cikEntry.stagedPath)));
+    for (const [ticker, row] of Object.entries(before.byTicker || {})) {
+      if (JSON.stringify(after.byTicker?.[ticker]) !== JSON.stringify(row)) throw Error('BASELINE_CIK_MAPPING_CHANGED:' + ticker);
+    }
+  }
+  for (const entry of manifest.files) {
+    if (/^quant\/data\/product\/factor-evidence-history\/[^/]+\/\d{4}-\d{2}-\d{2}\.json\.gz$/.test(entry.path) &&
+        entry.baselineSha256 !== null && entry.stagedSha256 !== entry.baselineSha256) throw Error('IMMUTABLE_FACTOR_SNAPSHOT_CHANGED');
+  }
+  const historyIndex = manifest.files.find((entry) => entry.path === 'quant/data/product/factor-evidence-history/index.json');
+  if (historyIndex && existsSync(guardedPath(root, historyIndex.path))) {
+    const before = readDocument(root, historyIndex.path), after = JSON.parse(readFileSync(guardedPath(output, historyIndex.stagedPath)));
+    for (const [method, dates] of Object.entries(before.series || {})) if (dates.some((date) => !after.series?.[method]?.includes(date))) throw Error('BASELINE_FACTOR_HISTORY_REFERENCE_DROPPED');
+  }
+}
+
+function verifyScopedPublicProjections({ root, output, manifest }) {
+  const rawEntry = manifest.files.find((entry) => entry.path === CANONICAL_PUBLICATION_PATHS.raw);
+  const raw = rawEntry ? JSON.parse(readFileSync(guardedPath(output, rawEntry.stagedPath))) : readDocument(root, CANONICAL_PUBLICATION_PATHS.raw);
+  const tickers = new Set((raw.securities || []).map(symbol)), ids = new Set((raw.securities || []).map((row) => row.securityId));
+  for (const entry of manifest.files) {
+    // Unchanged historical artifacts may remain addressable even if their
+    // securities are no longer current members. No new orphan is admitted.
+    if (entry.baselineSha256 !== null && entry.stagedSha256 === entry.baselineSha256) continue;
+    const chart = /^quant\/data\/market\/discover-series(?:-long)?\/(ref_[A-Z0-9_.-]+)\.json$/.exec(entry.path);
+    const stock = /^discover\/data\/(?:stocks|series)\/(?:US_REAL|US_MODEL)\/([A-Z0-9_.-]+)\.json$/.exec(entry.path);
+    const canonicalSEC = /^quant\/data\/sec\/canonical\/([A-Z0-9_.-]+)\.json$/.exec(entry.path);
+    if ((chart && !ids.has(chart[1])) || (stock && !tickers.has(stock[1])) || (canonicalSEC && !tickers.has(canonicalSEC[1]))) throw Error('UNSCOPED_PUBLIC_PRODUCT_PROJECTION:' + entry.path);
+  }
+}
+
+const PRODUCT_ARTIFACT_PATTERNS = {
+  SEARCH: /^quant\/data\/universe\/search\/sym\/[A-Z0-9_-]+\.json$/,
+  CHARTS: /^quant\/data\/market\/discover-series\/ref_[A-Z0-9_.-]+\.json$/,
+  WATCHLIST: /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/,
+  QUANT: /^quant\/data\/product\/factor-evidence-v1\/[A-Z0-9_]{2}\.json\.gz$/,
+  DISCOVER: /^discover\/data\/stocks\/US_REAL\/[A-Z0-9_.-]+\.json$/,
+  SCREENER: /^screener\/data\/universe-US_REAL\.json$/,
+  SUPERTRADER: /^quant\/data\/product\/technical-signals-v1\/[A-Z0-9_]{2}\.json\.gz$/,
+  SEC: /^quant\/data\/sec\/(?:consumer\/CIK\d{10}|canonical\/[A-Z0-9_.-]+)\.json$/
+};
+const hasIdentity = (document, row) => {
+  if (!document || typeof document !== 'object') return false;
+  if (symbol(document) === row.ticker || document.s === row.ticker ||
+      document.securityId === row.securityId || document.masterMemberId === row.securityId || document.i === row.instrumentId) return true;
+  for (const [key, value] of Object.entries(document)) {
+    if ([row.ticker, row.securityId, row.instrumentId].includes(key) && value && typeof value === 'object') return true;
+    if (value && typeof value === 'object' && hasIdentity(value, row)) return true;
+  }
+  return false;
+};
+
+function verifyProductizationReadiness({ root, output, manifest, readiness }) {
+  if (!Array.isArray(readiness)) throw Error('INVALID_PRODUCTIZATION_READINESS');
+  const entries = new Map(manifest.files.map((entry) => [entry.path, entry])), seen = new Set();
+  const parse = (path) => {
+    const entry = entries.get(path);
+    if (!entry) throw Error('PRODUCT_READINESS_ARTIFACT_NOT_STAGED:' + path);
+    const bytes = readFileSync(guardedPath(output, entry.stagedPath));
+    if (sha(bytes) !== entry.stagedSha256) throw Error('PRODUCT_READINESS_ARTIFACT_INTEGRITY_FAILED');
+    return { entry, document: JSON.parse(path.endsWith('.gz') ? gunzipSync(bytes) : bytes) };
+  };
+  const normalized = [];
+  for (const input of readiness) {
+    const row = { ticker: symbol(input), securityId: input.securityId, instrumentId: input.instrumentId, products: {} };
+    if (!row.ticker || seen.has(row.ticker)) throw Error('DUPLICATE_PRODUCT_READINESS_IDENTITY');
+    seen.add(row.ticker);
+    const addition = manifest.additions.find((item) => item.ticker === row.ticker);
+    const instrumentPath = CANONICAL_PUBLICATION_PATHS.instruments + '/' + Company.shardKey(row.ticker) + '.json';
+    const instrumentEntry = entries.get(instrumentPath);
+    const instrumentDocument = instrumentEntry ? parse(instrumentPath).document : readDocument(root, instrumentPath);
+    const instrument = instrumentDocument.instruments?.find((item) => item.symbol === row.ticker && item.instrumentId === row.instrumentId);
+    if (!instrument || instrument.masterMemberId !== row.securityId || !(instrument.legacyIds || []).includes(row.securityId) ||
+        (addition && (addition.securityId !== row.securityId || addition.instrumentId !== row.instrumentId))) throw Error('PRODUCT_READINESS_IDENTITY_MISMATCH');
+    for (const product of ['SEARCH', 'CHARTS', 'WATCHLIST', ...CONDITIONAL_PRODUCTIZATION_QA]) {
+      const proof = input.products?.[product];
+      if (!proof || !['PASS', 'UNAVAILABLE'].includes(proof.state)) throw Error('PRODUCT_READINESS_STATE_REQUIRED:' + product);
+      const reasonCodes = [...new Set(proof.reasonCodes || [])].sort();
+      const artifactPaths = [...new Set(proof.artifactPaths || [])].sort();
+      if (proof.state === 'UNAVAILABLE') {
+        if (!reasonCodes.length || reasonCodes.some((reason) => typeof reason !== 'string' || !reason.trim()) || artifactPaths.length) throw Error('UNAVAILABLE_PRODUCT_REQUIRES_EXPLICIT_REASON:' + product);
+        if (addition && ['SEARCH', 'CHARTS', 'WATCHLIST'].includes(product)) throw Error('CRITICAL_ADDITION_PRODUCT_UNAVAILABLE:' + product);
+        row.products[product] = { state: 'UNAVAILABLE', reasonCodes, artifactPaths: [], artifactHashes: {} };
+        continue;
+      }
+      if (!artifactPaths.length || !artifactPaths.some((path) => PRODUCT_ARTIFACT_PATTERNS[product].test(path))) throw Error('AVAILABLE_PRODUCT_REQUIRES_ACTUAL_ARTIFACT:' + product);
+      const artifactHashes = {};
+      for (const path of artifactPaths) {
+        if (!projectionPath(path)) throw Error('UNSAFE_PRODUCT_READINESS_ARTIFACT');
+        const { entry, document } = parse(path); artifactHashes[path] = entry.stagedSha256;
+        if (!PRODUCT_ARTIFACT_PATTERNS[product].test(path)) continue;
+        if (product === 'SEARCH' && !document.entries?.some((entry) => entry.s === row.ticker && entry.i === row.instrumentId)) throw Error('SEARCH_READINESS_IDENTITY_MISSING');
+        else if (product === 'WATCHLIST' && !document.instruments?.some((entry) => entry.symbol === row.ticker && entry.instrumentId === row.instrumentId && entry.masterMemberId === row.securityId)) throw Error('WATCHLIST_READINESS_IDENTITY_MISSING');
+        else if (product === 'CHARTS' && (document.ticker !== row.ticker || document.securityId !== row.securityId || document.status !== 'CALCULATED' || document.priceSeriesType !== 'SPLIT_ADJUSTED' || !document.currency || !Array.isArray(document.points) || document.points.length < (document.historyCoverage === 'SHORT_HISTORY' ? 5 : 30) || document.points.some((point) => !(point[1] > 0)) || (document.historyCoverage === 'SHORT_HISTORY' && (document.sourceBarCount < document.points.length || document.from !== document.points[0][0] || document.to !== document.points.at(-1)[0])))) throw Error('CHART_READINESS_NOT_MATERIALIZED');
+        else if (product === 'QUANT') {
+          const coverage = proof.coverage || 'FULL', factorRecord = document.securities?.[row.ticker];
+          if (!['FULL', 'PARTIAL', 'TECHNICAL_ONLY'].includes(coverage) || !factorRecord) throw Error('QUANT_COVERAGE_NOT_MATERIALIZED');
+          const violations = [document.publicationViolations, document.evidence?.publicationViolations, factorRecord.publicationViolations, factorRecord.evidence?.publicationViolations].filter(Boolean);
+          if (violations.some((value) => Array.isArray(value) ? value.length > 0 : value !== 0)) throw Error('QUANT_PUBLICATION_VIOLATIONS');
+          if (coverage === 'FULL') {
+            if (document.publication?.compositeAllowed !== true) throw Error('FULL_QUANT_READINESS_NOT_MATERIALIZED');
+          } else {
+            const available = Object.entries(factorRecord.factors || {}).filter(([, factor]) => factor.state === 'AVAILABLE' && typeof factor.score === 'number' && Number.isFinite(factor.score) && factor.score >= 0 && factor.score <= 100);
+            const composite = factorRecord.composite;
+            if (document.publication?.compositeAllowed === true || typeof composite === 'number' || Number.isFinite(composite?.score) || Number.isFinite(composite?.value) || !available.length) throw Error('PARTIAL_QUANT_READINESS_NOT_MATERIALIZED');
+            if (coverage === 'TECHNICAL_ONLY' && available.some(([factor]) => !['momentum', 'risk', 'liquidity'].includes(factor))) throw Error('TECHNICAL_ONLY_QUANT_COVERAGE_MISMATCH');
+          }
+        }
+        else if (product === 'SUPERTRADER' && !document.instruments?.[row.ticker]) throw Error('SUPERTRADER_READINESS_NOT_MATERIALIZED');
+        else if (product === 'SCREENER') {
+          const columns = document.columns, values = document.cols;
+          if (Array.isArray(columns) && values && Array.isArray(values.s)) {
+            if (!values.s.includes(row.ticker) || columns.some((column) => !Array.isArray(values[column]) || values[column].length !== values.s.length)) throw Error('SCREENER_READINESS_NOT_MATERIALIZED');
+          } else if (!hasIdentity(document, row)) throw Error('PRODUCT_READINESS_IDENTITY_MISSING:SCREENER');
+        }
+        else if (product === 'SEC') {
+          if (String(document.cik).padStart(10, '0') !== instrument.cik || document.dataSource?.isMock === true) throw Error('SEC_READINESS_ISSUER_MISMATCH');
+        } else if (!['SEARCH', 'WATCHLIST', 'CHARTS', 'QUANT', 'SUPERTRADER'].includes(product) && !hasIdentity(document, row)) throw Error('PRODUCT_READINESS_IDENTITY_MISSING:' + product);
+      }
+      row.products[product] = { state: 'PASS', reasonCodes, artifactPaths, artifactHashes, ...(product === 'QUANT' ? { coverage: proof.coverage || 'FULL' } : {}) };
+    }
+    normalized.push(row);
+  }
+  if (manifest.additions.some((addition) => !seen.has(addition.ticker))) throw Error('ADDITION_PRODUCT_READINESS_MISSING');
+  return normalized.sort((a, b) => a.ticker.localeCompare(b.ticker));
+}
+
 /** Attach actual outputs from existing canonical builders. Missing price or
  * projection outputs stay blockers; arbitrary QA PASS cannot bypass them. */
-export function attachCanonicalProjections({ root, staged, preparedFiles }) {
+export function attachCanonicalProjections({ root, staged, preparedFiles, productizationReadiness }) {
   root = resolve(root);
   const { manifest, output } = loadStage(staged);
   if (existsSync(join(output, 'applied.json'))) throw new Error('CANNOT_CHANGE_APPLIED_TRANSACTION');
@@ -313,11 +486,44 @@ export function attachCanonicalProjections({ root, staged, preparedFiles }) {
   // Immutable content blobs leave any prior valid stage intact even if a
   // new attachment fails. Advance the manifest only after real reader checks.
   for (const [path, bytes] of contents) atomicWrite(guardedPath(output, path), bytes);
+  verifyReconciledCanonicalRows({ root, output, manifest: proposed });
+  verifyScopedPublicProjections({ root, output, manifest: proposed });
   verifyCanonicalProjections({ root, output, manifest: proposed });
+  if (productizationReadiness !== undefined) {
+    proposed.productizationReadiness = verifyProductizationReadiness({ root, output, manifest: proposed, readiness: productizationReadiness });
+    proposed.productizationReadinessSha256 = productizationReadinessHash(proposed.productizationReadiness);
+    proposed.productizationQASchema = PRODUCTIZATION_QA_SCHEMA;
+  } else if (proposed.productizationReadiness) {
+    proposed.productizationReadiness = verifyProductizationReadiness({ root, output, manifest: proposed, readiness: proposed.productizationReadiness });
+    proposed.productizationReadinessSha256 = productizationReadinessHash(proposed.productizationReadiness);
+  }
   proposed.projectionStatus = 'MATERIALIZED_AND_VERIFIED';
   proposed.files.sort((a, b) => a.path.localeCompare(b.path));
   const bytes = jsonBytes(proposed), manifestPath = join(output, 'manifest.json'); atomicWrite(manifestPath, bytes);
   return { ...proposed, manifestPath, manifestSha256: sha(bytes) };
+}
+
+/** Finalizers can recheck the exact staged bytes and listing-bound readiness
+ * without acquiring a publication lock, writing receipts, or applying files. */
+export function verifyStagedCanonicalPublication({ root, staged }) {
+  root = resolve(root);
+  const { manifest, manifestSha256, output } = loadStage(staged);
+  if (manifest.projectionStatus !== 'MATERIALIZED_AND_VERIFIED') throw Error('CANONICAL_PROJECTIONS_NOT_MATERIALIZED');
+  for (const [path, expected] of Object.entries(manifest.baselineHashes)) if (currentHash(guardedPath(root, path)) !== expected) throw Error('PUBLICATION_BASELINE_CAS_FAILED:' + path);
+  for (const entry of manifest.files) {
+    if (!canonicalPath(entry.path)) throw Error('UNSUPPORTED_CANONICAL_PUBLICATION_PATH');
+    const bytes = readFileSync(guardedPath(output, entry.stagedPath));
+    if (sha(bytes) !== entry.stagedSha256 || manifest.baselineHashes[entry.path] !== entry.baselineSha256) throw Error('STAGED_CONTENT_INTEGRITY_FAILED');
+  }
+  verifyReconciledCanonicalRows({ root, output, manifest });
+  verifyScopedPublicProjections({ root, output, manifest });
+  verifyCanonicalProjections({ root, output, manifest });
+  if (manifest.productizationQASchema === PRODUCTIZATION_QA_SCHEMA) {
+    const normalized = verifyProductizationReadiness({ root, output, manifest, readiness: manifest.productizationReadiness });
+    if (productizationReadinessHash(normalized) !== manifest.productizationReadinessSha256) throw Error('PRODUCT_READINESS_DIGEST_MISMATCH');
+  }
+  return { status: 'VERIFIED_READ_ONLY', manifestSha256, productReadinessSha256: manifest.productizationReadinessSha256 || null,
+    files: manifest.files.length, additions: manifest.additions.length, productionMutations: 0 };
 }
 
 /** Explicit QA proof must be {manifestSha256,checks:{IDENTITY:'PASS',...}}.
@@ -325,7 +531,16 @@ export function attachCanonicalProjections({ root, staged, preparedFiles }) {
 export function applyCanonicalPublication({ root, staged, qaProof }) {
   root = resolve(root);
   const { manifest, manifestSha256, output } = loadStage(staged);
-  if (qaProof?.manifestSha256 !== manifestSha256 || REQUIRED_PUBLICATION_QA.some((check) => qaProof.checks?.[check] !== 'PASS')) throw new Error('PUBLICATION_QA_NOT_GREEN');
+  if (qaProof?.manifestSha256 !== manifestSha256) throw new Error('PUBLICATION_QA_NOT_GREEN');
+  if (qaProof.schemaVersion === PRODUCTIZATION_QA_SCHEMA) {
+    if (REQUIRED_PRODUCTIZATION_QA.some((check) => qaProof.checks?.[check] !== 'PASS') ||
+        CONDITIONAL_PRODUCTIZATION_QA.some((check) => qaProof.checks?.[check] !== undefined && !['PASS', 'UNAVAILABLE'].includes(qaProof.checks[check])) ||
+        manifest.productizationQASchema !== PRODUCTIZATION_QA_SCHEMA ||
+        qaProof.productReadinessSha256 !== manifest.productizationReadinessSha256 ||
+        manifest.productizationReadinessSha256 !== productizationReadinessHash(manifest.productizationReadiness)) throw new Error('PUBLICATION_QA_NOT_GREEN');
+    verifyProductizationReadiness({ root, output, manifest, readiness: manifest.productizationReadiness });
+    for (const product of CONDITIONAL_PRODUCTIZATION_QA) if (qaProof.checks?.[product] === 'UNAVAILABLE' && manifest.productizationReadiness.some((row) => row.products[product].state !== 'UNAVAILABLE')) throw new Error('PUBLICATION_QA_NOT_GREEN');
+  } else if (REQUIRED_PUBLICATION_QA.some((check) => qaProof.checks?.[check] !== 'PASS')) throw new Error('PUBLICATION_QA_NOT_GREEN');
   if (manifest.projectionStatus !== 'MATERIALIZED_AND_VERIFIED') throw new Error('CANONICAL_PROJECTIONS_NOT_MATERIALIZED');
   const unlock = publicationLock(root), receiptPath = join(output, 'applied.json');
   try {

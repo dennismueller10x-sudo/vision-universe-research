@@ -24,7 +24,7 @@
  * dort landet, was ein Rechteinhaber entfernt haben moechte.
  */
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync, mkdtempSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
@@ -38,15 +38,21 @@ import {
   collectItems, matchUniverse, checkLicense, safeSymbol, entityToItem, matchByName, searchName
 } from "./company-logos-lib.mjs";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const REAL_OUT = join(root, "discover", "logos");
+const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = Object.fromEntries(process.argv.slice(2).map((a) => {
   const [k, v] = a.replace(/^--/, "").split("=");
   return [k, v === undefined ? true : v];
 }));
+/* Explicit roots allow the same central builder to materialize a shadow
+   release. The default invocation and --only diagnostic retain their paths. */
+const root = args.root ? resolve(String(args.root)) : repositoryRoot;
+const REAL_OUT = args.output ? resolve(String(args.output)) : join(root, "discover", "logos");
+const CONFIG_ROOT = args["config-root"] ? resolve(String(args["config-root"])) : root;
 const LIMIT = args.limit ? Number(args.limit) : Infinity;
 const DRY = Boolean(args["dry-run"]);
 const ONLY = args.only ? new Set(String(args.only).toUpperCase().split(",").map((x) => x.trim()).filter(Boolean)) : null;
+const TICKERS = args.tickers ? new Set(String(args.tickers).toUpperCase().split(",").map((x) => x.trim()).filter(Boolean)) : null;
+if (TICKERS && [...TICKERS].some(s => !safeSymbol(s))) throw Error("INVALID_LOGO_TICKER_FILTER");
 const DEBUG = Boolean(args.debug) || Boolean(ONLY);
 const dbg = (...a) => { if (DEBUG) console.log("  [diag]", ...a); };
 /* Diagnose schreibt in einen Wegwerf-Ordner, nie ins Repository. */
@@ -197,10 +203,10 @@ async function imageinfo(titles) {
 /* ------------------------------------------------------------ Universum */
 const search = readJson(join(root, "discover", "data", "search", "US_REAL.json"));
 const names = readJson(join(root, "quant", "data", "market", "security-master", "company-names.json"), { rows: [] });
-const exclusions = readJson(join(root, "discover", "config", "logo-exclusions.json"), { symbols: {} }).symbols || {};
+const exclusions = readJson(join(CONFIG_ROOT, "discover", "config", "logo-exclusions.json"), { symbols: {} }).symbols || {};
 /* Gesperrte BILDER (Unterschriften, Dokumentseiten, Fotos): die Firma
    bleibt im Spiel, nur dieses Bild nicht (discover/config/logo-rejects.json). */
-const REJECTS = readJson(join(root, "discover", "config", "logo-rejects.json"), { urls: {}, titles: {} });
+const REJECTS = readJson(join(CONFIG_ROOT, "discover", "config", "logo-rejects.json"), { urls: {}, titles: {} });
 const gesperrt = (url) => Boolean(url && (REJECTS.urls || {})[url]);
 const gesperrtTitel = (t) => Boolean(t && (REJECTS.titles || {})[t]);
 /* Firmen mit einem gesperrten SEC-Bild: dort liefert die SEC-Quelle
@@ -209,7 +215,7 @@ const SEC_GESPERRT = new Set(Object.entries(REJECTS.urls || {})
   .filter(([url]) => /^https:\/\/www\.sec\.gov\//.test(url)).map(([, why]) => String(why).split(":")[0].trim()));
 const cikOf = new Map(names.rows.filter((r) => r.ticker).map((r) => [r.ticker, r.cik || null]));
 const universe = search.entries
-  .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)))
+  .filter((e) => safeSymbol(e.s) && !exclusions[e.s] && (!ONLY || ONLY.has(e.s)) && (!TICKERS || TICKERS.has(e.s)))
   .map((e) => ({ symbol: e.s, name: e.n || e.s, cik: cikOf.get(e.s) || null }));
 console.log(`Discover-Universum: ${universe.length} Titel (${Object.keys(exclusions).length} ausgeschlossen)`);
 
@@ -231,7 +237,7 @@ const INDEX_MITGLIEDER = { SP500: new Set(), NDX: new Set(), DJIA: new Set(), MS
       } catch (e) { /* weiter */ }
     }
   }
-  try {
+  if (!TICKERS && !args["no-index-fetch"]) try {
     /* Wie scripts/market/build-index-membership.mjs: iShares liefert die
        Bestandsdatei nur mit Browser-Kennung, teils als UTF-16. */
     const { buf: roh } = await holen("https://www.ishares.com/us/products/239696/ishares-msci-world-etf/1467271812596.ajax?fileType=csv&fileName=URTH_holdings&dataType=fund",
@@ -250,14 +256,19 @@ const PRIORITAET = new Set(Object.values(INDEX_MITGLIEDER).flatMap((v) => [...v]
 
 /* ------------------------------------------------------------- Wikidata */
 console.log("1/3  Wikidata: Logos ueber CIK und Ticker …");
-const items = collectItems(await sparql(SPARQL_BY_CIK));
-collectItems(await sparql(SPARQL_BY_TICKER), items);
+const items = new Map();
+if (!args["no-wikidata"]) {
+  try {
+    collectItems(await sparql(SPARQL_BY_CIK), items);
+    collectItems(await sparql(SPARQL_BY_TICKER), items);
+  } catch (e) { if (!args["tolerate-source-failures"]) throw e; console.log("     Wikidata unavailable:", e.message); }
+}
 const { matches, reasons } = matchUniverse(universe, items);
 console.log(`     ${items.size} Items mit Logo, ${matches.size} Titel ueber CIK/Ticker zugeordnet`);
 
 /* Namens-Weg: nur fuer Titel, zu denen Wikidata bisher gar nichts kennt -
    ein Titel mit widersprechendem Treffer bleibt ohne Logo. */
-if (!args["no-name-search"]) {
+if (!args["no-name-search"] && !args["no-wikidata"]) {
   const offen = universe.filter((r) => reasons.get(r.symbol) === "KEIN_WIKIDATA_LOGO" && r.name && r.name !== r.symbol).slice(0, LIMIT);
   console.log(`     Namenssuche fuer ${offen.length} Titel …`);
   /* Suchergebnisse bleiben im Zwischenspeicher (name-search.json): Wikidata
@@ -329,7 +340,10 @@ function breitSchreiben(sym, buf) {
 let SHARP = null;
 try { SHARP = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Logos werden nicht einheitlich aufbereitet."); }
 const vorher = ONLY ? {} : (readJson(join(REAL_OUT, "credits.json"), { credits: {} }).credits || {});
-const files = {}, credits = {};
+// A scoped shadow refresh preserves unrelated central assets and metadata.
+const files = TICKERS ? { ...(readJson(join(OUT, "index.json"), { files: {} }).files || {}) } : {};
+const credits = TICKERS ? { ...vorher } : {};
+if (TICKERS) for (const sym of TICKERS) { delete files[sym]; delete credits[sym]; }
 if (!DRY) mkdirSync(FILES, { recursive: true });
 let geladen = 0, behalten = 0, frei = 0;
 for (const [sym, m0] of kandidaten) {
@@ -390,11 +404,26 @@ if (!args["no-web"] && !DRY) {
     console.log(`     ${ohne.filter((r) => !files[r.symbol]).length} ohne Logo, ${breit.size} mit breitem Schriftzug`);
 
     /* Website: Wikidata (CIK, Ticker, Name), sonst SEC-Stammdaten. */
-    const siteItems = collectItems(await sparql(SPARQL_SITE_BY_CIK));
-    collectItems(await sparql(SPARQL_SITE_BY_TICKER), siteItems);
+    const siteItems = new Map();
+    if (!args["no-wikidata"]) {
+      try {
+        collectItems(await sparql(SPARQL_SITE_BY_CIK), siteItems);
+        collectItems(await sparql(SPARQL_SITE_BY_TICKER), siteItems);
+      } catch (e) { if (!args["tolerate-source-failures"]) throw e; console.log("     Wikidata sites unavailable:", e.message); }
+    }
     const siteMatches = matchUniverse(ohne, siteItems).matches;
     const siteOf = new Map();
+    // Overrides come from identity-validated primary evidence, never a
+    // symbol-derived guessed domain or a logo vendor.
+    const verifiedSites = args["verified-sites"] ? readJson(resolve(String(args["verified-sites"])), { sites: {} }).sites || {} : {};
     for (const r of ohne) {
+      const verified = verifiedSites[r.symbol];
+      if (verified && verified.identityVerified === true && verified.evidenceUrl &&
+          String(verified.cik || "").replace(/^0+/, "") === String(r.cik || "").replace(/^0+/, "") &&
+          verified.companyName === r.name) {
+        const site = normalizeSite(verified.url);
+        if (site) { siteOf.set(r.symbol, { ...site, via: verified.via || "PRIMARY_IDENTITY_VERIFIED" }); continue; }
+      }
       const quelle = siteMatches.get(r.symbol) || matches.get(r.symbol);
       const site = quelle && (quelle.sites || []).map(normalizeSite).find(Boolean);
       if (site) siteOf.set(r.symbol, { ...site, via: "WIKIDATA_" + quelle.via });
@@ -469,7 +498,7 @@ if (!args["no-web"] && !DRY) {
     }
     console.log(`     Website-Icons: ${webNeu} neu, ${webBehalten} unveraendert, ${generisch.size} generisch verworfen`);
     for (const r of ohne) if (!siteOf.has(r.symbol) && reasons.get(r.symbol) === "KEIN_WIKIDATA_LOGO") reasons.set(r.symbol, "KEINE_WEBSITE_BEKANNT");
-    webSites = Object.fromEntries([...siteOf].map(([sym, st]) => [sym, { url: st.url, via: st.via }]));
+    webSites = { ...(TICKERS ? cache : {}), ...Object.fromEntries([...siteOf].map(([sym, st]) => [sym, { url: st.url, via: st.via }])) };
 
     /* ------------------------------ Dritte Quelle: Logo aus SEC-Einreichung */
     if (secUa && !args["no-sec-logo"]) {
@@ -559,10 +588,10 @@ if (ONLY) {
 }
 if (Number.isFinite(LIMIT)) { console.log("Begrenzter Lauf (--limit): nichts geschrieben."); process.exit(0); }
 const behaltenePfade = new Set(Object.values(files).map((p) => p.slice("files/".length)));
-for (const f of readdirSync(FILES)) if (!f.startsWith(".") && f !== "wide" && !behaltenePfade.has(f)) rmSync(join(FILES, f));
+if (!TICKERS) for (const f of readdirSync(FILES)) if (!f.startsWith(".") && f !== "wide" && !behaltenePfade.has(f)) rmSync(join(FILES, f));
 /* Breite Fassungen nur zu Titeln, deren Logo sie auch hat. */
 const breitePfade = new Set(Object.entries(credits).filter(([s, c]) => c.wide && files[s]).map(([, c]) => c.wide.slice("files/wide/".length)));
-if (existsSync(join(FILES, "wide"))) for (const f of readdirSync(join(FILES, "wide"))) if (!breitePfade.has(f)) rmSync(join(FILES, "wide", f));
+if (!TICKERS && existsSync(join(FILES, "wide"))) for (const f of readdirSync(join(FILES, "wide"))) if (!breitePfade.has(f)) rmSync(join(FILES, "wide", f));
 for (const c of Object.values(credits)) if (!c.wide) delete c.wide;
 
 /* Helle Logos auf transparentem Grund bekommen in der Oberflaeche eine dunkle Flaeche. */
@@ -598,6 +627,7 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify({
   files: sortiert(files),
   /* Seitenverhaeltnis der breiten Fassung (files/wide/<Titel>.png). */
   wide: sortiert(Object.fromEntries(Object.entries(credits).filter(([s, c]) => c.wide && files[s]).map(([s, c]) => [s, c.ratio]))),
+  wideFiles: sortiert(Object.fromEntries(Object.entries(credits).filter(([s, c]) => c.wide && files[s]).map(([s, c]) => [s, c.wide]))),
   dark: dunkel.sort()
 }) + "\n");
 writeFileSync(join(OUT, "credits.json"), JSON.stringify({
@@ -607,16 +637,21 @@ if (webSites) writeFileSync(join(OUT, "sites.json"), JSON.stringify({
   generatedAt, note: "Offizielle Websites (Wikidata P856 oder SEC: Stammdaten bzw. 'our website' im juengsten Bericht). Zwischenspeicher fuer die Website-Icons.",
   sites: sortiert(webSites)
 }, null, 1) + "\n");
+const missingReasons = TICKERS ? { ...(readJson(join(OUT, "missing.json"), { reasons: {} }).reasons || {}) } : {};
+if (TICKERS) for (const sym of TICKERS) delete missingReasons[sym];
+Object.assign(missingReasons, Object.fromEntries([...reasons].filter(([sym]) => !files[sym])));
 writeFileSync(join(OUT, "missing.json"), JSON.stringify({
   generatedAt,
   note: "Titel ohne Logo und der Grund. KEIN_WIKIDATA_LOGO: Wikidata kennt fuer die Firma kein Logo (oder die Firma nicht). NAME_ODER_CIK_WIDERSPRICHT / MEHRERE_ITEMS: Zuordnung unklar, deshalb bewusst ohne Logo. LIZENZ_NICHT_FREI / EINSCHRAENKUNG / URHEBER_FEHLT: kein Logo der Firma mit freier Lizenz. WEB_*: die Website brachte kein brauchbares Icon (keins, zu klein, generisch).",
-  reasons: sortiert(Object.fromEntries([...reasons].filter(([sym]) => !files[sym])))
+  reasons: sortiert(missingReasons)
 }, null, 1) + "\n");
+const scopeWithLogo = universe.filter(r => files[r.symbol]).length;
 writeFileSync(join(OUT, "summary.json"), JSON.stringify({
   generatedAt,
   universe: universe.length,
-  withLogo: Object.keys(files).length,
-  pct: Math.round((Object.keys(files).length / Math.max(1, universe.length)) * 1000) / 10,
+  withLogo: TICKERS ? scopeWithLogo : Object.keys(files).length,
+  pct: Math.round(((TICKERS ? scopeWithLogo : Object.keys(files).length) / Math.max(1, universe.length)) * 1000) / 10,
+  ...(TICKERS ? { scope: [...TICKERS].sort(), totalCanonicalAssets: Object.keys(files).length } : {}),
   downloaded: geladen + webNeu, unchanged: behalten + webBehalten,
   bySource: Object.values(credits).reduce((a, c) => ((a[c.source] = (a[c.source] || 0) + 1), a), {}),
   byVia: Object.values(credits).reduce((a, c) => ((a[c.via] = (a[c.via] || 0) + 1), a), {}),

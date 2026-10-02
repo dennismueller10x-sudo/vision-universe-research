@@ -8,7 +8,7 @@ import { createRequire } from 'node:module';
 import { gzipSync } from 'node:zlib';
 import { hostname } from 'node:os';
 import { spawnSync } from 'node:child_process';
-import { stageCanonicalPublication, attachCanonicalProjections, applyCanonicalPublication, rollbackCanonicalPublication, REQUIRED_PUBLICATION_QA, CANONICAL_PUBLICATION_PATHS as paths } from '../../scripts/market/tiingo2-publication.mjs';
+import { stageCanonicalPublication, attachCanonicalProjections, applyCanonicalPublication, rollbackCanonicalPublication, REQUIRED_PUBLICATION_QA, CANONICAL_PUBLICATION_PATHS as paths, PRODUCTIZATION_QA_SCHEMA, REQUIRED_PRODUCTIZATION_QA, CONDITIONAL_PRODUCTIZATION_QA, isProductizationProjectionPath, verifyStagedCanonicalPublication } from '../../scripts/market/tiingo2-publication.mjs';
 const Company = createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const today = '2026-10-02';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -162,4 +162,141 @@ test('a dead process lock is recovered and an interrupted transaction can roll b
   assert.equal(rollbackCanonicalPublication({ root, staged }).status, 'ROLLED_BACK');
   for (const [path, expected] of Object.entries(baselineHashes)) assert.equal(sha(readFileSync(join(root, path))), expected);
   assert.equal(existsSync(join(root, '.market-cache/tiingo2-publication.lock')), false);
+}));
+
+function productizationFixture(context, mutate = (input) => input) {
+  const staged = context.attach(context.stage()), addition = staged.additions[0], shard = Company.shardKey(addition.ticker);
+  const chartPath = 'quant/data/market/discover-series/' + addition.securityId + '.json';
+  const products = Object.fromEntries(CONDITIONAL_PRODUCTIZATION_QA.map((name) => [name, { state: 'UNAVAILABLE', reasonCodes: ['REQUIRED_PRODUCT_EVIDENCE_NOT_AVAILABLE'], artifactPaths: [] }]));
+  products.SEARCH = { state: 'PASS', artifactPaths: ['quant/data/universe/search/sym/' + shard + '.json'] };
+  products.CHARTS = { state: 'PASS', artifactPaths: [chartPath] };
+  products.WATCHLIST = { state: 'PASS', artifactPaths: [paths.instruments + '/' + shard + '.json'] };
+  const readiness = [{ ticker: addition.ticker, securityId: addition.securityId, instrumentId: addition.instrumentId, products }];
+  const chart = { ticker: addition.ticker, securityId: addition.securityId, source: 'tiingo', status: 'CALCULATED', currency: 'USD', priceSeriesType: 'SPLIT_ADJUSTED', points: Array.from({ length: 30 }, (_, i) => ['2026-09-' + String(i + 1).padStart(2, '0'), 10]) };
+  const prepared = [{ path: chartPath, bytes: Buffer.from(JSON.stringify(chart)) }];
+  const input = mutate({ root: context.root, staged, preparedFiles: prepared, productizationReadiness: readiness });
+  const productized = attachCanonicalProjections(input);
+  const qaProof = { schemaVersion: PRODUCTIZATION_QA_SCHEMA, manifestSha256: productized.manifestSha256,
+    productReadinessSha256: productized.productizationReadinessSha256, checks: Object.fromEntries(REQUIRED_PRODUCTIZATION_QA.map((name) => [name, 'PASS'])) };
+  return { staged: productized, qaProof };
+}
+
+test('productization QA permits verified search/chart/watchlist when conditional products are honestly unavailable', () => fixture((context) => {
+  const { staged, qaProof } = productizationFixture(context);
+  assert.equal(staged.productizationReadiness[0].products.QUANT.state, 'UNAVAILABLE');
+  assert.ok(staged.productizationReadiness[0].products.CHARTS.artifactHashes);
+  assert.equal(applyCanonicalPublication({ root: context.root, staged, qaProof }).status, 'APPLIED');
+  assert.equal(rollbackCanonicalPublication({ root: context.root, staged }).status, 'ROLLED_BACK');
+  for (const [path, hash] of Object.entries(context.baselineHashes)) assert.equal(sha(readFileSync(join(context.root, path))), hash);
+}));
+
+test('conditional product evidence cannot replace missing critical QA or use a stale readiness digest', () => fixture((context) => {
+  const { staged, qaProof } = productizationFixture(context);
+  for (const name of REQUIRED_PRODUCTIZATION_QA) {
+    const bad = structuredClone(qaProof); delete bad.checks[name];
+    assert.throws(() => applyCanonicalPublication({ root: context.root, staged, qaProof: bad }), /QA_NOT_GREEN/);
+  }
+  assert.throws(() => applyCanonicalPublication({ root: context.root, staged, qaProof: { ...qaProof, productReadinessSha256: 'forged' } }), /QA_NOT_GREEN/);
+  assert.throws(() => applyCanonicalPublication({ root: context.root, staged, qaProof: { ...qaProof, checks: { ...qaProof.checks, SEC: 'FAIL' } } }), /QA_NOT_GREEN/);
+  const legacy = { ...qaProof }; delete legacy.schemaVersion;
+  assert.throws(() => applyCanonicalPublication({ root: context.root, staged, qaProof: legacy }), /QA_NOT_GREEN/, 'legacy proofs still require all 13 checks');
+}));
+
+test('productization requires listing-bound readiness, explicit unavailable reasons and actual critical artifacts', () => {
+  const invalid = [
+    (input) => { input.productizationReadiness[0].securityId = 'ref_DIFFERENT'; },
+    (input) => { delete input.productizationReadiness[0].products.SEC; },
+    (input) => { input.productizationReadiness[0].products.QUANT.reasonCodes = []; },
+    (input) => { input.productizationReadiness[0].products.CHARTS = { state: 'UNAVAILABLE', reasonCodes: ['NOT_MATERIALIZED'] }; },
+    (input) => { input.productizationReadiness = []; },
+    (input) => { input.preparedFiles = []; }
+  ];
+  for (const mutate of invalid) fixture((context) => {
+    assert.throws(() => productizationFixture(context, (input) => { mutate(input); return input; }), /PRODUCT_READINESS|UNAVAILABLE_PRODUCT|CRITICAL_ADDITION/);
+    assert.equal(JSON.parse(readFileSync(join(context.root, paths.raw))).securities.length, 1);
+  });
+});
+
+test('materialized factor components do not claim full Quant readiness while its canonical contract is inactive', () => fixture((context) => {
+  assert.throws(() => productizationFixture(context, (input) => {
+    const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
+    input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, securities: { ZNEW: { ticker: 'ZNEW', securityId: addition.securityId, factors: { momentum: { state: 'AVAILABLE' } } } } })) });
+    input.productizationReadiness[0].products.QUANT = { state: 'PASS', artifactPaths: [path] };
+    return input;
+  }), /FULL_QUANT_READINESS_NOT_MATERIALIZED/);
+}));
+
+test('partial Factor DNA readiness keeps disabled composites and publishes only evidenced typed factors', () => fixture((context) => {
+  const { staged, qaProof } = productizationFixture(context, (input) => {
+    const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
+    input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify({ publication: { compositeAllowed: false }, publicationViolations: [], securities: { ZNEW: { ticker: 'ZNEW', securityId: addition.securityId, factors: { momentum: { state: 'AVAILABLE', score: 63.5 }, quality: { state: 'UNAVAILABLE', score: null } }, composite: { state: 'WITHHELD', reason: 'QUANT_V2_NOT_ACTIVE' } } } })) });
+    input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'TECHNICAL_ONLY', artifactPaths: [path] };
+    return input;
+  });
+  assert.equal(staged.productizationReadiness[0].products.QUANT.coverage, 'TECHNICAL_ONLY');
+  assert.equal(applyCanonicalPublication({ root: context.root, staged, qaProof }).status, 'APPLIED');
+  rollbackCanonicalPublication({ root: context.root, staged });
+}));
+
+test('partial Factor DNA refuses numeric composites, fabricated factors and publication violations', () => {
+  for (const change of [
+    (record, doc) => { record.composite = { score: 65 }; },
+    (record, doc) => { record.factors.momentum.score = '63'; },
+    (record, doc) => { doc.publicationViolations = ['MISSING_PIT']; }
+  ]) fixture((context) => {
+    assert.throws(() => productizationFixture(context, (input) => {
+      const addition = input.staged.additions[0], path = 'quant/data/product/factor-evidence-v1/ZN.json.gz';
+      const record = { ticker: 'ZNEW', securityId: addition.securityId, factors: { momentum: { state: 'AVAILABLE', score: 63 } }, composite: null };
+      const doc = { publication: { compositeAllowed: false }, securities: { ZNEW: record } };change(record, doc);
+      input.preparedFiles.push({ path, bytes: gzipSync(JSON.stringify(doc)) });
+      input.productizationReadiness[0].products.QUANT = { state: 'PASS', coverage: 'PARTIAL', artifactPaths: [path] };
+      return input;
+    }), /PARTIAL_QUANT|QUANT_PUBLICATION_VIOLATIONS/);
+  });
+});
+
+test('columnar Screener membership and short IPO chart use actual listing-bound public projections', () => fixture((context) => {
+  const { staged } = productizationFixture(context, (input) => {
+    const chart = JSON.parse(input.preparedFiles[0].bytes);chart.points = chart.points.slice(-21);chart.historyCoverage = 'SHORT_HISTORY';chart.sourceBarCount = 21;chart.from = chart.points[0][0];chart.to = chart.points.at(-1)[0];
+    input.preparedFiles[0].bytes = Buffer.from(JSON.stringify(chart));
+    const path = 'screener/data/universe-US_REAL.json';input.preparedFiles.push({ path, bytes: Buffer.from(JSON.stringify({ columns: ['s', 'n'], cols: { s: ['ZNEW'], n: ['New Software Corporation'] } })) });
+    input.productizationReadiness[0].products.SCREENER = { state: 'PASS', artifactPaths: [path] };return input;
+  });
+  assert.equal(staged.productizationReadiness[0].products.SCREENER.state, 'PASS');
+  assert.equal(staged.productizationReadiness[0].products.CHARTS.state, 'PASS');
+}));
+
+test('published factor history snapshots cannot be overwritten during product projection attachment', () => fixture((context) => {
+  const path = 'quant/data/product/factor-evidence-history/vu-factor-evidence-2.0.0/2026-10-01.json.gz';
+  mkdirSync(dirname(join(context.root, path)), { recursive: true });writeFileSync(join(context.root, path), gzipSync('{"immutable":true}'));
+  const staged = context.attach(context.stage());
+  assert.throws(() => attachCanonicalProjections({ root: context.root, staged, preparedFiles: [{ path, bytes: gzipSync('{"immutable":false}') }] }), /IMMUTABLE_FACTOR_SNAPSHOT_CHANGED/);
+}));
+
+test('product projection paths admit existing public formats and reject private history, raw SEC, code and routing', () => {
+  for (const path of ['quant/data/market/discover-series/ref_CART.json', 'quant/data/market/discover-series-long/ref_CART.json', 'screener/data/universe-US_REAL.json', 'quant/data/product/technical-signals-v1/signals-60.json.gz', 'quant/data/sec/consumer/CIK0001234567.json', 'quant/data/fundamentals/issuers/567.json', 'discover/data/stocks/US_REAL/CART.json', 'assets/logos/CART.svg']) assert.equal(isProductizationProjectionPath(path), true, path);
+  for (const path of ['.market-cache/tiingo/daily/ref_CART.json', 'quant/data/market/daily/ref_CART.json', 'quant/data/sec/raw/CIK0001234567.json', 'scripts/market/tiingo2-publication.mjs', 'quant/config/feature-gates.json', 'quant/methodology/quant-v2.json', 'worker/src/routing.js', 'quant/data/technical/instruments/CART.json', 'assets/logos/../../worker.js']) assert.equal(isProductizationProjectionPath(path), false, path);
+});
+
+test('attachment may reconcile new instrument SEC IDs but cannot rewrite baseline rows', () => fixture((context) => {
+  const staged = context.attach(context.stage()), path = paths.instruments + '/KE.json';
+  const baseline = JSON.parse(readFileSync(join(context.root, path))); baseline.instruments[0].companyName = 'Other issuer';
+  assert.throws(() => attachCanonicalProjections({ root: context.root, staged, preparedFiles: [{ path, bytes: Buffer.from(JSON.stringify(baseline)) }] }), /BASELINE_ROW_CHANGED/);
+}));
+
+test('public per-security projections cannot introduce orphan securities outside the canonical stage', () => fixture((context) => {
+  const staged = context.attach(context.stage());
+  assert.throws(() => attachCanonicalProjections({ root: context.root, staged, preparedFiles: [{ path: 'quant/data/market/discover-series/ref_UNKNOWN.json', bytes: Buffer.from('{"ticker":"UNKNOWN"}') }] }), /UNSCOPED_PUBLIC_PRODUCT_PROJECTION/);
+  assert.throws(() => attachCanonicalProjections({ root: context.root, staged, preparedFiles: [{ path: 'discover/data/stocks/US_REAL/UNKNOWN.json', bytes: Buffer.from('{"ticker":"UNKNOWN"}') }] }), /UNSCOPED_PUBLIC_PRODUCT_PROJECTION/);
+}));
+
+test('finalizer verification reads exact staged bytes and readiness without publication writes', () => fixture((context) => {
+  const { staged } = productizationFixture(context), verified = verifyStagedCanonicalPublication({ root: context.root, staged });
+  assert.equal(verified.status, 'VERIFIED_READ_ONLY');assert.equal(verified.manifestSha256, staged.manifestSha256);
+  assert.equal(verified.productReadinessSha256, staged.productizationReadinessSha256);assert.equal(verified.productionMutations, 0);
+  assert.equal(existsSync(join(context.output, 'applied.json')), false);
+  for (const [path, hash] of Object.entries(context.baselineHashes)) assert.equal(sha(readFileSync(join(context.root, path))), hash);
+  const chart = staged.files.find((entry) => entry.path.startsWith('quant/data/market/discover-series/'));
+  writeFileSync(join(context.output, chart.stagedPath), '{}');
+  assert.throws(() => verifyStagedCanonicalPublication({ root: context.root, staged }), /STAGED_CONTENT_INTEGRITY_FAILED/);
 }));

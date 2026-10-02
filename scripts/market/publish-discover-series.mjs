@@ -71,9 +71,11 @@ export function splitAdjustedCloses(bars) {
 export function compactSeries(payload, security, permission, opts) {
   opts = opts || {};
   const maxPoints = opts.maxPoints || DEFAULT_POINTS;
+  const minPoints = opts.minPoints === undefined ? 30 : opts.minPoints;
+  if (!Number.isInteger(minPoints) || minPoints < 2) throw new Error("INVALID_COMPACT_SERIES_MIN_POINTS");
   const bars = (payload && payload.bars) || [];
   const dated = splitAdjustedCloses(bars).filter((b) => isNum(b.close));
-  if (dated.length < 30) return null;
+  if (dated.length < minPoints) return null;
   const fenster = dated.slice(-maxPoints);
   return {
     schemaVersion: SERIES_SCHEMA,
@@ -96,6 +98,7 @@ export function compactSeries(payload, security, permission, opts) {
     points: fenster.map((b) => [b.date, round2(b.close)]),
     barCount: fenster.length,
     sourceBarCount: bars.length,
+    ...(dated.length < 30 ? { historyCoverage: "SHORT_HISTORY", historyCoverageReason: "NEW_LISTING_AVAILABLE_SESSIONS_ONLY" } : {}),
     /* Der Stand der Quelle, nicht die Wanduhr: derselbe Bestand ergibt
        dieselbe Datei. */
     sourceUpdatedAt: payload.updatedAt || payload.fetchedAt || null,

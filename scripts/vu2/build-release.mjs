@@ -8,6 +8,14 @@ import {gzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js');
 export const SEC_BUDGET=8*1024*1024;
+// JSON whitespace is a delivery cost, never market or fundamental evidence.
+// Keep source files, field values and public URLs intact; compact the existing
+// market payloads only in the disposable release directory.
+export function compactDeliveryJSON(path,source){
+ if(!/^quant\/data\/(market|universe)\/.*\.json$/.test(path))return null;
+ const bytes=Buffer.from(JSON.stringify(JSON.parse(source)));
+ return {bytes,sourceBytes:Buffer.byteLength(source)};
+}
 const fields=(x,keys)=>Object.fromEntries(keys.filter(k=>Object.hasOwn(x||{},k)).map(k=>[k,x[k]]));
 export function projectInspector(source){
  if(!source?.cik||!Array.isArray(source.rows)||source.policy!=='latest_known')throw Error('INVALID_INSPECTOR_SOURCE');
@@ -67,8 +75,11 @@ export async function buildRelease({root,output}){
   }
  }
  // Delivery-only compaction: preserve canonical shard contents and URLs.
- for(const p of paths.filter(p=>/^quant\/data\/universe\/instruments\/[^/]+\.json$/.test(p))){
-  await writeFile(resolve(output,p),JSON.stringify(await load(p)));
+ const deliveryCompaction=[];
+ for(const p of paths.filter(p=>/^quant\/data\/(market|universe)\/.*\.json$/.test(p))){
+  const result=compactDeliveryJSON(p,await readFile(resolve(root,p),'utf8'));
+  await writeFile(resolve(output,p),result.bytes);
+  if(result.bytes.length!==result.sourceBytes)deliveryCompaction.push({path:p,sourceBytes:result.sourceBytes,deliveryBytes:result.bytes.length});
  }
  // Concatenate classic scripts in their existing document order. Original
  // modules remain available to every other workspace, including Discover.
@@ -107,7 +118,7 @@ export async function buildRelease({root,output}){
  catch(e){screener={state:'UNAVAILABLE',reason:String(e&&e.message||e).slice(0,200)};await mkdir(resolve(output,'screener/data'),{recursive:true});await writeFile(resolve(output,'screener/data/status.json'),JSON.stringify(screener));}
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
- const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};
+ const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,deliveryCompaction,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};
  await writeFile(resolve(output,'release-delivery.json'),JSON.stringify(report,null,2));return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){

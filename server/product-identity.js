@@ -9,6 +9,19 @@ function shardKey(value) {
   return String(value).replace(/[^A-Z0-9]/g, "_").slice(0, 2).padEnd(2, "_");
 }
 
+function consumerEligible(row) {
+  const securityClass = String(row.securityClass || "").toUpperCase();
+  const securityType = String(row.securityType || "").toUpperCase();
+  const excluded = ["PREFERRED", "WARRANT", "ETF", "ETN", "ETP", "FUND", "MUTUAL_FUND", "MUTUALFUND", "CEF", "UNIT", "RIGHT", "INDEX", "TEST_SECURITY"];
+  if (excluded.includes(securityClass) || excluded.includes(securityType)) return false;
+  if (row.productEligibility === "ELIGIBLE") return true;
+  // The canonical consumer policy keeps these common-equity categories
+  // separate for reporting. Separate preferred securities remain excluded.
+  return row.productEligibility === "SEPARATE_CLASS" &&
+    ["ADR", "REIT", "TRUST", "SPAC"].includes(securityClass) &&
+    ["COMMON_STOCK", "ADR", "REIT", "TRUST", "SPAC"].includes(securityType);
+}
+
 async function defaultLoader(path) {
   if (typeof globalThis.__VU_IDENTITY_TEST_LOADER === "function") return globalThis.__VU_IDENTITY_TEST_LOADER(path);
   const origin = String(process.env.VU_PUBLIC_DATA_ORIGIN || "https://research.visionuniverse.de").replace(/\/+$/, "");
@@ -34,7 +47,7 @@ async function resolveIdentity(ref, { loadJSON = defaultLoader } = {}) {
     ? candidates.find((item) => item.instrumentId === requestedId || (item.legacyIds || []).includes(requestedId))
     : candidates.find((item) => item.primaryListing) || candidates[0];
   if (!row) return { state: "SYMBOL_NOT_SUPPORTED", identity: null };
-  if (row.productEligibility !== "ELIGIBLE" || !row.masterMemberId) {
+  if (!consumerEligible(row) || !row.masterMemberId) {
     return { state: "NOT_ELIGIBLE", identity: null };
   }
   if (!/^vu_[a-f0-9]+$/.test(row.instrumentId) || !(row.legacyIds || []).includes(row.masterMemberId)) {
@@ -58,4 +71,4 @@ async function resolveIdentity(ref, { loadJSON = defaultLoader } = {}) {
   };
 }
 
-module.exports = { resolveIdentity, shardKey, symbol };
+module.exports = { resolveIdentity, shardKey, symbol, consumerEligible };
