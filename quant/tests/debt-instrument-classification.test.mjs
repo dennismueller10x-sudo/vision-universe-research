@@ -104,3 +104,26 @@ test("DEBT6 · Ausgeliefert: keine DEBT-Zeile im Produkt, PRHIZ als Instrument a
   const common = json("quant/data/universe/instruments/PR.json").instruments.find((i) => i.symbol === "PRHI");
   if (common) assert.notEqual(common.securityClass, "DEBT", "die Stammaktie des Emittenten bleibt Aktie");
 });
+
+test("DEBT7 · Faktorevidenz: Grundgesamtheit ist das Produktuniversum, Anleihen nehmen der Stammaktie nicht den Boersenwert", { skip: !existsSync(join(root, "quant/data/product/factor-evidence-v1/summary.json")) }, async () => {
+  const { gunzipSync } = await import("node:zlib");
+  const dir = join(root, "quant/data/product/factor-evidence-v1");
+  const debt = new Set(json(ELIG).decisions.filter((d) => d.instrument_type === "DEBT").map((d) => d.ticker));
+  const zeilen = new Map();
+  for (const f of readdirSync(dir)) {
+    if (!f.endsWith(".json.gz") || f === "screening.json.gz") continue;
+    const shard = JSON.parse(gunzipSync(readFileSync(join(dir, f))).toString("utf8"));
+    for (const [t, row] of Object.entries(shard.securities || {})) zeilen.set(t, row);
+  }
+  for (const t of debt) assert.equal(zeilen.has(t), false, t + " hat eine Faktorzeile");
+  for (const row of zeilen.values()) {
+    for (const g of row.issuerListings || []) assert.equal(debt.has(g), false, g + " als Geschwisterzeile einer Aktie");
+  }
+  /* T-Mobile: die drei Senior Notes standen als Geschwister und nahmen der
+     Stammaktie den Boersenwert. */
+  const tmus = zeilen.get("TMUS");
+  if (tmus && tmus.fundamentalsAsOf) assert.ok(Number.isFinite(tmus.marketCap), "TMUS ohne Boersenwert");
+  const summary = json("quant/data/product/factor-evidence-v1/summary.json");
+  const cov = summary.coverage || summary.counts || {};
+  assert.equal(cov.productUniverse, json("quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json").actualSize);
+});
