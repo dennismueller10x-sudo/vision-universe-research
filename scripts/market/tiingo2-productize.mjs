@@ -139,6 +139,10 @@ export function materializeExistingDnaEligibilityCorrection({root,shadowRoot,sou
  if(decisionIndex<0||![JSON.stringify(beforeDecision),JSON.stringify(afterDecision)].includes(JSON.stringify(eligibility.decisions[decisionIndex])))throw Error('DNA_SHADOW_DECISION_CHANGED');
  if(eligibility.decisions[decisionIndex].product_eligibility==='REVIEW'){eligibility.counts.REVIEW--;eligibility.counts.ELIGIBLE++;}
  eligibility.decisions[decisionIndex]=afterDecision;shard.instruments[index]=afterInstrument;write(shardPath,shard);write(eligibilityPath,eligibility);
+ // The names layer identifies the exact current master bytes, rather than
+ // the initial stage provenance. Its rows remain unchanged by this correction.
+ const namesPath=join(shadowRoot,CANONICAL_PUBLICATION_PATHS.names),names=read(namesPath);
+ names.master={...names.master,sha256:hash(readFileSync(eligibilityPath))};write(namesPath,names);
  const security=securities.find(row=>row.instrumentId===sourceInstrument.instrumentId);if(security)Object.assign(security,afterInstrument);
  artifact.corrections.push(correction);write(join(shadowRoot,path),artifact);if(workDir)write(join(workDir,'tiingo2_existing_dna_eligibility.json'),artifact);
  return {state:'CORRECTED_VERIFIED_CURRENT_LISTING',path,corrections:artifact.corrections,proof:artifact};
