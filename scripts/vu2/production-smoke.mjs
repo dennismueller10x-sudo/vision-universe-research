@@ -31,9 +31,18 @@ const require=createRequire(import.meta.url);
 const {chromium}=require('playwright');
 const argv=process.argv.slice(2);
 const root=resolve(argv.find((a,i)=>!a.startsWith('--')&&!['--report','--only'].includes(argv[i-1])));
-// Test-only local state: the static gate is intentionally client-side and its
-// verifier is public. No real production password is needed or logged here.
-const ACCESS_GATE=argv.includes('--access-gate')?JSON.parse(await readFile(resolve(root,'__research/config.json'),'utf8')):null;
+// Test-only browser state of a successful login. Since gate version 2 the public
+// verifier no longer opens pages, so the state is derived from the build password
+// (RESEARCH_ACCESS_PASSWORD or the file RESEARCH_ACCESS_PASSWORD_FILE, never logged)
+// and checked against the release's own config.
+const ACCESS_GATE=argv.includes('--access-gate')?await (async()=>{
+ const config=JSON.parse(await readFile(resolve(root,'__research/config.json'),'utf8'));
+ const password=process.env.RESEARCH_ACCESS_PASSWORD||(process.env.RESEARCH_ACCESS_PASSWORD_FILE?(await readFile(process.env.RESEARCH_ACCESS_PASSWORD_FILE,'utf8')).trim():'');
+ const {accessStateFor,verifierForKey}=await import(new URL('../access-gate/build.mjs',import.meta.url));
+ const state=accessStateFor(password);
+ if(verifierForKey(state.key)!==config.verifier)throw new Error('--access-gate: Passwort passt nicht zum Release (kein Wert ausgegeben).');
+ return {storageKey:config.storageKey,state};
+})():null;
 /* Die Launch-Gates 7 bis 10 sind nur im Browser messbar. Damit die
    Launch-Messung sie nicht erfinden muss, schreibt der Smoke sein
    Ergebnis auf Wunsch als Bericht - mit dem Commit, gegen den er lief.
@@ -157,7 +166,7 @@ for(const width of [1440,390]){
  const page=await browser.newPage({viewport:{width,height:900}});
  if(ACCESS_GATE)await page.addInitScript(config=>{
   if(!/^https?:$/.test(location.protocol))return;
-  localStorage.setItem(config.storageKey,JSON.stringify({version:config.version,verifier:config.verifier,expiresAt:Date.now()+config.durationMs}));
+  localStorage.setItem(config.storageKey,JSON.stringify(config.state));
  },ACCESS_GATE);
  const errors=[];let fremdFehlgeschlagen=false;
  page.on('pageerror',e=>errors.push('pageerror: '+e.message));

@@ -1,5 +1,8 @@
-/* Simple client-side development/marketing barrier. Public verification data
-   and browser state can be analyzed or bypassed; this is not server-side auth. */
+/* Simple client-side development/marketing barrier; this is not server-side auth.
+   Since version 2 the public verifier alone no longer opens pages (the browser
+   must hold the password-derived key). The original documents under
+   /__research/content/ remain directly retrievable - only a server-side gate
+   closes that (see docs/RESEARCH_ACCESS_GATE.md). */
 (function () {
   'use strict';
   var settings = document.getElementById('research-access-settings');
@@ -17,13 +20,20 @@
   function clearAccess() {
     try { localStorage.removeItem(config.storageKey); } catch (_) { /* storage may be unavailable */ }
   }
-  function granted() {
+  function hex(buffer) { return Array.from(new Uint8Array(buffer), function (byte) { return byte.toString(16).padStart(2, '0'); }).join(''); }
+  async function verifierFor(key) {
+    return hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(config.keyContext + key)));
+  }
+  // Only the password-derived key opens pages. The published verifier is its
+  // SHA-256; writing the verifier itself into storage no longer grants access.
+  async function granted() {
     try {
       var state = JSON.parse(localStorage.getItem(config.storageKey) || 'null');
       var now = Date.now();
-      if (state && state.version === config.version && state.verifier === config.verifier &&
-          Number.isFinite(state.expiresAt) && state.expiresAt > now && state.expiresAt <= now + config.durationMs) return true;
-    } catch (_) { /* absent, expired or unavailable storage remains gated */ }
+      if (state && state.version === config.version && typeof state.key === 'string' && /^[0-9a-f]{64}$/.test(state.key) &&
+          Number.isFinite(state.expiresAt) && state.expiresAt > now && state.expiresAt <= now + config.durationMs &&
+          await verifierFor(state.key) === config.verifier) return true;
+    } catch (_) { /* absent, expired, forged or unavailable storage remains gated */ }
     clearAccess();
     return false;
   }
@@ -60,9 +70,8 @@
     location.replace('/__research/login/');
     return;
   }
-  if (granted()) { openPage(); return; }
 
-  form.addEventListener('submit', async function (event) {
+  async function login(event) {
     event.preventDefault();
     if (busy) return;
     busy = true;
@@ -72,15 +81,14 @@
       if (!window.crypto || !crypto.subtle) throw Error('Browser unavailable');
       var salt = Uint8Array.from(atob(config.salt), function (character) { return character.charCodeAt(0); });
       var material = await crypto.subtle.importKey('raw', new TextEncoder().encode(field.value), 'PBKDF2', false, ['deriveBits']);
-      var bits = await crypto.subtle.deriveBits({name: 'PBKDF2', salt: salt, iterations: config.iterations, hash: 'SHA-256'}, material, 256);
-      var verified = Array.from(new Uint8Array(bits), function (byte) { return byte.toString(16).padStart(2, '0'); }).join('');
-      if (verified !== config.verifier) {
+      var key = hex(await crypto.subtle.deriveBits({name: 'PBKDF2', salt: salt, iterations: config.iterations, hash: 'SHA-256'}, material, 256));
+      if (await verifierFor(key) !== config.verifier) {
         message('Passwort nicht korrekt.');
         field.select();
         return;
       }
       try {
-        localStorage.setItem(config.storageKey, JSON.stringify({version: config.version, verifier: config.verifier,
+        localStorage.setItem(config.storageKey, JSON.stringify({version: config.version, key: key,
           expiresAt: Date.now() + config.durationMs}));
       } catch (_) {
         message('Bitte Website-Daten im Browser erlauben, damit der Zugang gespeichert werden kann.');
@@ -94,5 +102,7 @@
       busy = false;
       button.disabled = false;
     }
-  });
+  }
+  form.addEventListener('submit', login);
+  granted().then(function (ok) { if (ok) openPage(); });
 }());
