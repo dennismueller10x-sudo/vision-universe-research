@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-01T13:24:28.524Z",
+ "generatedAt": "2026-10-02T04:46:04.902Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,9 +35,9 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5878,
-    "covered": 5553,
-    "available": 5335,
+    "universe": 5882,
+    "covered": 5554,
+    "available": 5336,
     "sufficient": {
      "m1": 2242,
      "m3": 2155,
@@ -48,7 +48,7 @@
      "m6": 627
     },
     "reasons": {
-     "NOT_COVERED": 325,
+     "NOT_COVERED": 328,
      "NO_PRICE_CONDITION_TODAY": 123,
      "NO_COMPARABLE_CASE": 95
     }
@@ -168,7 +168,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "5 von 5 geprüft",
+     "measured": "6 von 6 geprüft",
      "state": "PASS"
     },
     {
@@ -182,14 +182,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "5",
+     "measured": "6",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "20 Tage",
+     "measured": "21 Tage",
      "state": "FAIL"
     },
     {
@@ -210,15 +210,15 @@
      "id": "INDEPENDENCE",
      "label": "verschiedene Monate mit Ereignissen",
      "required": "20",
-     "measured": "1",
+     "measured": "2",
      "state": "FAIL"
     },
     {
      "id": "RETURNBASIS",
      "label": "Gesamtrendite",
      "required": "bestanden",
-     "measured": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
-     "state": "FAIL"
+     "measured": "Gesamtrendite",
+     "state": "PASS"
     },
     {
      "id": "SURVIVORSHIP",
@@ -339,9 +339,9 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5878,
-   "covered": 5553,
-   "available": 5335,
+   "universe": 5882,
+   "covered": 5554,
+   "available": 5336,
    "sufficient": {
     "m1": 2242,
     "m3": 2155,
@@ -352,7 +352,7 @@
     "m6": 627
    },
    "reasons": {
-    "NOT_COVERED": 325,
+    "NOT_COVERED": 328,
     "NO_PRICE_CONDITION_TODAY": 123,
     "NO_COMPARABLE_CASE": 95
    }

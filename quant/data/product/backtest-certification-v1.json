@@ -1,7 +1,7 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-01T13:23:30.468Z",
- "asOf": "2026-10-01",
+ "generatedAt": "2026-10-02T04:45:33.729Z",
+ "asOf": "2026-10-02",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
   {
@@ -1320,7 +1320,7 @@
      "label": "Stände unverändert (contentHash)",
      "category": "HARD",
      "state": "PASS",
-     "value": "5 von 5 geprüft",
+     "value": "6 von 6 geprüft",
      "required": null,
      "reason": null
     },
@@ -1338,7 +1338,7 @@
      "label": "veröffentlichte Stichtage",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 5,
+     "value": 6,
      "required": 120,
      "reason": "SETUP_HISTORY_TOO_SHORT"
     },
@@ -1347,7 +1347,7 @@
      "label": "Spanne der Historie",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "20 Tage",
+     "value": "21 Tage",
      "required": "180 Tage",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT"
     },
@@ -1374,7 +1374,7 @@
      "label": "verschiedene Monate mit Ereignissen",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 1,
+     "value": 2,
      "required": 20,
      "reason": "EVENTS_CLUSTERED_IN_TIME"
     },
@@ -1382,10 +1382,10 @@
      "id": "returnBasis",
      "label": "Gesamtrendite",
      "category": "STRUCTURAL",
-     "state": "FAIL",
-     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
+     "state": "PASS",
+     "value": "Gesamtrendite",
      "required": null,
-     "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN"
+     "reason": null
     },
     {
      "id": "survivorship",
@@ -1431,14 +1431,14 @@
      "id": "historyDates",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_TOO_SHORT",
-     "value": 5,
+     "value": 6,
      "required": 120
     },
     {
      "id": "historySpan",
      "category": "HISTORY",
      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
-     "value": "20 Tage",
+     "value": "21 Tage",
      "required": "180 Tage"
     },
     {
@@ -1459,15 +1459,8 @@
      "id": "independence",
      "category": "HISTORY",
      "reason": "EVENTS_CLUSTERED_IN_TIME",
-     "value": 1,
+     "value": 2,
      "required": 20
-    },
-    {
-     "id": "returnBasis",
-     "category": "STRUCTURAL",
-     "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN",
-     "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite",
-     "required": null
     },
     {
      "id": "entryVariant",
@@ -1486,25 +1479,25 @@
    ],
    "eta": {
     "historyDates": {
-     "remaining": 115,
+     "remaining": 114,
      "date": "2027-03-10"
     },
     "firstCompletedM6": "2027-03-26"
    },
    "progress": {
-    "historyDates": 5,
-    "spanDays": 20,
+    "historyDates": 6,
+    "spanDays": 21,
     "transitions": {
-     "SETUP_CONFIRMED": 52,
-     "SETUP_NEW": 439,
-     "SETUP_WEAKENED": 778
+     "SETUP_CONFIRMED": 60,
+     "SETUP_NEW": 541,
+     "SETUP_WEAKENED": 859
     },
     "completedM6": 0,
-    "contractTradesCompleted": 59
+    "contractTradesCompleted": 147
    },
    "replay": {
     "role": "PIT-Nachweis der Engine (rekonstruiert, keine Ergebnisquelle)",
-    "parity": "20/20",
+    "parity": "364/364",
     "mismatches": 0
    }
   },
@@ -1545,7 +1538,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": "1 (5 Stände seit 2026-09-23)",
+     "value": "2 (6 Stände seit 2026-09-23)",
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1599,7 +1592,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": "1 (5 Stände seit 2026-09-23)",
+     "value": "2 (6 Stände seit 2026-09-23)",
      "required": 24
     }
    ],
@@ -1611,7 +1604,7 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 5
+     "staleDays": 6
     },
     "NDX": {
      "snapshots": 2,
@@ -1620,7 +1613,7 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 5
+     "staleDays": 6
     },
     "DJIA": {
      "snapshots": 2,
@@ -1629,17 +1622,17 @@
      "latest": "2026-09-26",
      "maxGapDays": 11,
      "medianGapDays": 11,
-     "staleDays": 5
+     "staleDays": 6
     }
    },
    "factor": {
     "version": "vu-factor-evidence-2.0.0",
-    "snapshots": 5,
-    "months": 1,
+    "snapshots": 6,
+    "months": 2,
     "earliest": "2026-09-23",
-    "latest": "2026-09-30",
+    "latest": "2026-10-01",
     "maxGapDays": 3,
-    "medianGapDays": 2,
+    "medianGapDays": 1,
     "staleDays": 1
    },
    "eta": {
@@ -1648,8 +1641,8 @@
      "date": "2028-08-26"
     },
     "factor": {
-     "remaining": 23,
-     "date": "2028-08-30"
+     "remaining": 22,
+     "date": "2028-07-31"
     }
    }
   },
@@ -1681,7 +1674,7 @@
      "label": "Monate mit Faktor-Snapshots",
      "category": "HISTORY",
      "state": "FAIL",
-     "value": 1,
+     "value": 2,
      "required": 24,
      "reason": "FACTOR_HISTORY_TOO_SHORT"
     },
@@ -1728,7 +1721,7 @@
      "id": "factorHistory",
      "category": "HISTORY",
      "reason": "FACTOR_HISTORY_TOO_SHORT",
-     "value": 1,
+     "value": 2,
      "required": 24
     },
     {
@@ -1748,8 +1741,8 @@
    ],
    "eta": {
     "factor": {
-     "remaining": 23,
-     "date": "2028-08-30"
+     "remaining": 22,
+     "date": "2028-07-31"
     }
    }
   }
