@@ -22,7 +22,7 @@ export async function runProductBrowserQa({site,readiness,out,engine='chromium',
   browser=await playwright[engine].launch({headless:true,...(engine==='chromium'&&process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH,args:['--no-sandbox']}: {})});
   const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));page.setDefaultTimeout(45000);
   await page.goto(origin+'/quant/#/aktien',{waitUntil:'domcontentloaded'});await page.locator('main#qx-main[data-ready="true"]').waitFor();
-  await page.evaluate(()=>{window.__tiingo2QaApi=window.VUProductServices.create({loadJSON:window.QuantShell.loadJSON,displayPolicy:window.VUDisplayPolicy,queryEngine:window.VUQuery});window.__tiingo2QaSignals=window.__tiingo2QaApi.getSignals({lookback:20});});
+  await page.evaluate(()=>{window.__tiingo2QaApi=window.VUProductServices.create({loadJSON:window.QuantShell.loadJSON,displayPolicy:window.VUDisplayPolicy,queryEngine:window.VUQuery});window.__tiingo2QaSignals=window.__tiingo2QaApi.getSignals({lookback:20});window.__tiingo2QaScreener=fetch('/screener/data/universe-US_REAL.json').then(r=>{if(!r.ok)throw Error('SCREENER_DELIVERY_MISSING');return r.json();});});
   const protectedClasses=await page.evaluate(async()=>{const found={};for(const ticker of ['GOOG','GOOGL','BRK-A','BRK-B']){const result=await window.__tiingo2QaApi.searchInstruments(ticker,{limit:30});found[ticker]=result.entries.find(e=>e.ticker===ticker)?.instrumentId??null;}return found;});
   for(const [ticker,id]of Object.entries(protectedClasses))check('PROTECTED_SHARE_CLASS_SEARCH',!!id,{ticker});
   check('PROTECTED_SHARE_CLASS_DISTINCT_IDS',!!protectedClasses.GOOG&&!!protectedClasses['BRK-A']&&protectedClasses.GOOG!==protectedClasses.GOOGL&&protectedClasses['BRK-A']!==protectedClasses['BRK-B']);
@@ -33,7 +33,8 @@ export async function runProductBrowserQa({site,readiness,out,engine='chromium',
     const stock=await api.getStockIntelligence(r.ticker),chart=stock.chart,validBars=chart?.state==='AVAILABLE'&&chart.bars?.length>0&&chart.bars.every((b,i,list)=>/^\d{4}-\d{2}-\d{2}$/.test(b.date)&&Number.isFinite(b.close)&&b.close>0&&(!i||b.date>list[i-1].date));
     const long=await api.getHistoricalPriceHistory(r.ticker,{range:'MAX'}),validLong=long.state==='AVAILABLE'&&long.bars?.length>0&&long.bars.every((b,i,list)=>Number.isFinite(b.close)&&b.close>0&&(!i||b.date>list[i-1].date));
     const factor=await api.getFactorEvidence(r.ticker),technical=await api.getTechnicalIntelligence(r.ticker),signals=await window.__tiingo2QaSignals;
-    return {symbolSearch:exact(search),nameSearch:exact(named),identity:stock.instrumentId===r.instrumentId&&stock.masterMemberId===r.securityId,chart:!!validBars,chartState:chart?.state??null,validPrice:stock.price?.state==='AVAILABLE'&&Number.isFinite(stock.price.value)&&stock.price.value>0,long:!!validLong,longState:long.state,factorState:factor.state,availableFactorIds:(factor.factors||[]).filter(f=>f.state==='AVAILABLE').map(f=>f.id),compositeState:factor.composite?.state??null,compositeAllowed:factor.publication?.compositeAllowed===true,technicalState:technical.state,signalState:signals.results?.find(s=>s.ticker===r.ticker)?.state??'UNAVAILABLE'};
+    const screener=await window.__tiingo2QaScreener;let discoverIdentity=null;if(r.discover?.ready){const response=await fetch('/discover/data/stocks/US_REAL/'+r.ticker+'.json');if(response.ok){const d=await response.json();discoverIdentity=d.symbol===r.ticker&&d.securityId===r.securityId&&d.instrumentId===r.instrumentId&&d.dataMode==='real'&&d.provider==='tiingo';}else discoverIdentity=false;}
+    return {symbolSearch:exact(search),nameSearch:exact(named),identity:stock.instrumentId===r.instrumentId&&stock.masterMemberId===r.securityId,chart:!!validBars,chartState:chart?.state??null,validPrice:stock.price?.state==='AVAILABLE'&&Number.isFinite(stock.price.value)&&stock.price.value>0,long:!!validLong,longState:long.state,factorState:factor.state,availableFactorIds:(factor.factors||[]).filter(f=>f.state==='AVAILABLE').map(f=>f.id),compositeState:factor.composite?.state??null,compositeAllowed:factor.publication?.compositeAllowed===true,technicalState:technical.state,signalState:signals.results?.find(s=>s.ticker===r.ticker)?.state??'UNAVAILABLE',screenerMember:screener.cols?.s?.includes(r.ticker)===true,discoverIdentity};
    },r);
    check('CANONICAL_SYMBOL_SEARCH',proof.symbolSearch,{ticker:r.ticker});check('CANONICAL_ISSUER_SEARCH',proof.nameSearch,{ticker:r.ticker});check('CANONICAL_DETAIL_IDENTITY',proof.identity,{ticker:r.ticker});
    let preservedBaseline=false;const existing=r.chart?.baselinePublished;
@@ -42,7 +43,7 @@ export async function runProductBrowserQa({site,readiness,out,engine='chromium',
     const source=JSON.parse(original);preservedBaseline=source.securityId===r.securityId&&createHash('sha256').update(original).digest('hex')===existing.dailyArtifactSha256&&JSON.stringify(source)===JSON.stringify(JSON.parse(delivered));
    }
    check('DECLARED_CHART_READINESS',r.chart?.ready?proof.chart:!proof.chart||preservedBaseline,{ticker:r.ticker,state:proof.chartState,freshReady:r.chart?.ready===true,preservedBaseline,freshValidationState:r.chart?.freshValidationState??null});
-   if(r.chart?.ready)check('VALID_DELIVERED_PRICE',proof.validPrice,{ticker:r.ticker});
+   if(r.chart?.ready||r.chart?.priceReady)check('VALID_DELIVERED_PRICE',proof.validPrice,{ticker:r.ticker,chartReady:r.chart?.ready===true});
    if(r.chart?.longReady)check('DECLARED_MAX_HISTORY_READINESS',proof.long,{ticker:r.ticker,state:proof.longState});
    if(!r.chart?.longReady&&existing?.longPath){
     let valid=false;if(existing.state==='PRESERVED_BASELINE'&&existing.freshValidationIncluded===false&&existing.longPath==='/quant/data/market/discover-series-long/'+r.securityId+'.json'){
@@ -54,6 +55,8 @@ export async function runProductBrowserQa({site,readiness,out,engine='chromium',
    if(r.quant?.availableFactors?.length)check('DECLARED_FACTOR_AVAILABILITY',r.quant.availableFactors.every(id=>proof.availableFactorIds.includes(id)),{ticker:r.ticker});
    if(r.quant?.fullQuantScoreState==='BLOCKED_BY_EXISTING_METHODOLOGY')check('FULL_QUANT_METHODOLOGY_GATE',!proof.compositeAllowed&&proof.compositeState!=='AVAILABLE',{ticker:r.ticker,state:proof.compositeState});
    if(r.supertrader?.ready){check('CONDITIONAL_TECHNICAL_WORKSPACE',proof.technicalState==='AVAILABLE',{ticker:r.ticker,state:proof.technicalState});check('CONDITIONAL_SIGNAL_EVIDENCE',proof.signalState==='AVAILABLE',{ticker:r.ticker,state:proof.signalState});}
+   if(r.screener?.ready)check('DELIVERED_SCREENER_MEMBERSHIP',proof.screenerMember,{ticker:r.ticker});
+   if(r.discover?.ready)check('DELIVERED_DISCOVER_IDENTITY',proof.discoverIdentity===true,{ticker:r.ticker});
    if(r.logo?.status==='LOGO_VALID'){
     const path=r.logo.canonicalPath;if(typeof path!=='string')check('LOGO_VALID_ASSET',false,{ticker:r.ticker});else{const valid=await page.evaluate(async path=>{const img=new Image();return new Promise(resolve=>{img.onload=()=>resolve(img.naturalWidth>0&&img.naturalHeight>0);img.onerror=()=>resolve(false);img.src=path.startsWith('/')?path:'/'+path;});},path);check('LOGO_VALID_ASSET',valid,{ticker:r.ticker});}
    }

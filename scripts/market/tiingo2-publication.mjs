@@ -309,7 +309,12 @@ export function verifyCanonicalProjections({ root, output, manifest }) {
     const search = docFor('quant/data/universe/search/sym/' + shard + '.json');
     if (!searchManifest.sym?.some((row) => row.shard === shard && row.count === search.entries?.length)) throw new Error('SEARCH_PROJECTION_MANIFEST_MISMATCH');
     if (!search.entries?.some((row) => row.s === addition.ticker && row.i === addition.instrumentId)) throw new Error('SEARCH_ADDITION_NOT_INDEXED');
-    if (!capability.members?.some((row) => row.s === addition.ticker && row.m === addition.securityId && row.i === addition.instrumentId && row.ph === true)) throw new Error('CHART_ADDITION_NOT_MATERIALIZED');
+    if (!capability.members?.some((row) => row.s === addition.ticker && row.m === addition.securityId && row.i === addition.instrumentId && row.ph === true)) {
+      const proof = manifest.productizationReadiness?.find((row) => row.ticker === addition.ticker)?.products?.CHARTS;
+      if (manifest.productizationQASchema !== PRODUCTIZATION_QA_SCHEMA || proof?.state !== 'UNAVAILABLE') throw new Error('CHART_ADDITION_NOT_MATERIALIZED');
+      verifyShortListingPrice({ manifest, row: addition, instrument: docFor(instrumentPath).instruments?.find((row) => row.instrumentId === addition.instrumentId), proof,
+        parse: (path) => ({ entry: entries.get(path), document: JSON.parse(path.endsWith('.gz') ? gunzipSync(bytesFor(path)) : bytesFor(path)) }) });
+    }
     if (!universe.entries?.some((row) => row.s === addition.ticker && Number.isFinite(row.c) && row.c > 0 && typeof row.d === 'string')) throw new Error('UNIVERSE_LIST_ADDITION_NOT_MATERIALIZED');
     const instrument = docFor(instrumentPath).instruments?.find((row) => row.instrumentId === addition.instrumentId);
     if (!instrument) throw new Error('CANONICAL_ADDITION_NOT_MATERIALIZED');
@@ -383,6 +388,33 @@ const hasIdentity = (document, row) => {
   return false;
 };
 
+/** A two-to-four-session IPO can supply an actual latest quote while the
+ * unchanged chart reader remains unavailable. This is a listing-bound price
+ * exception, never a blanket waiver of the ordinary chart publication gate. */
+function verifyShortListingPrice({ manifest, row, instrument, proof, parse }) {
+  const reasons = proof.reasonCodes || [], path = proof.eligibilityEvidence?.priceArtifactPath;
+  if (reasons.length !== 1 || reasons[0] !== 'INSUFFICIENT_CHART_HISTORY' ||
+      path !== 'quant/data/market/discover-series/' + row.securityId + '.json') throw Error('SHORT_LISTING_PRICE_EVIDENCE_REQUIRED');
+  const { entry, document } = parse(path), points = document.points;
+  const validDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value || '') && Number.isFinite(Date.parse(value)) && new Date(Date.parse(value)).toISOString().slice(0, 10) === value;
+  const last = Array.isArray(points) ? points.at(-1)?.[0] : null, age = (Date.parse(manifest.asOf) - Date.parse(last)) / 86400000;
+  if (!instrument || document.ticker !== row.ticker || document.securityId !== row.securityId || document.provider !== 'tiingo' || document.source !== 'tiingo' ||
+      document.status !== 'CALCULATED' || document.priceSeriesType !== 'SPLIT_ADJUSTED' || !document.currency || document.currency !== instrument.currency ||
+      document.historyCoverage !== 'SHORT_HISTORY' || document.corporateActionStatus !== 'PASS' || document.publishCheckedAt !== manifest.asOf ||
+      !Array.isArray(points) || points.length < 2 || points.length > 4 || document.barCount !== points.length || document.sourceBarCount !== points.length ||
+      points.some((point, i) => !Array.isArray(point) || point.length !== 2 || !validDate(point[0]) || typeof point[1] !== 'number' || !Number.isFinite(point[1]) || point[1] <= 0 || (i && point[0] <= points[i - 1][0])) ||
+      document.from !== points[0][0] || document.to !== last || document.asOf !== last || !Number.isFinite(age) || age < 0 || age > 7) throw Error('SHORT_LISTING_PRICE_NOT_MATERIALIZED');
+  const capability = parse('quant/data/universe/market-capability.json').document;
+  const members = (capability.members || []).filter((member) => member.s === row.ticker && member.m === row.securityId && member.i === row.instrumentId);
+  if (members.length !== 1 || members[0].ph !== false || members[0].ps !== true || members[0].b !== points.length ||
+      members[0].f !== points[0][0] || members[0].l !== last) throw Error('SHORT_LISTING_PRICE_CAPABILITY_MISMATCH');
+  const universe = parse('quant/data/product/universe-list-v1.json.gz').document;
+  const quotes = (universe.entries || []).filter((quote) => quote.s === row.ticker);
+  if (quotes.length !== 1 || quotes[0].c !== points.at(-1)[1] || quotes[0].d !== last) throw Error('SHORT_LISTING_PUBLISHED_QUOTE_MISMATCH');
+  if (proof.eligibilityEvidence.priceArtifactSha256 && proof.eligibilityEvidence.priceArtifactSha256 !== entry.stagedSha256) throw Error('SHORT_LISTING_PRICE_EVIDENCE_INTEGRITY_FAILED');
+  return { priceArtifactPath: path, priceArtifactSha256: entry.stagedSha256 };
+}
+
 function verifyProductizationReadiness({ root, output, manifest, readiness }) {
   if (!Array.isArray(readiness)) throw Error('INVALID_PRODUCTIZATION_READINESS');
   const entries = new Map(manifest.files.map((entry) => [entry.path, entry])), seen = new Set();
@@ -412,8 +444,10 @@ function verifyProductizationReadiness({ root, output, manifest, readiness }) {
       const artifactPaths = [...new Set(proof.artifactPaths || [])].sort();
       if (proof.state === 'UNAVAILABLE') {
         if (!reasonCodes.length || reasonCodes.some((reason) => typeof reason !== 'string' || !reason.trim()) || artifactPaths.length) throw Error('UNAVAILABLE_PRODUCT_REQUIRES_EXPLICIT_REASON:' + product);
-        if (addition && ['SEARCH', 'CHARTS', 'WATCHLIST'].includes(product)) throw Error('CRITICAL_ADDITION_PRODUCT_UNAVAILABLE:' + product);
-        row.products[product] = { state: 'UNAVAILABLE', reasonCodes, artifactPaths: [], artifactHashes: {} };
+        let eligibilityEvidence;
+        if (addition && product === 'CHARTS') eligibilityEvidence = verifyShortListingPrice({ manifest, row, instrument, proof: { ...proof, reasonCodes }, parse });
+        else if (addition && ['SEARCH', 'WATCHLIST'].includes(product)) throw Error('CRITICAL_ADDITION_PRODUCT_UNAVAILABLE:' + product);
+        row.products[product] = { state: 'UNAVAILABLE', reasonCodes, artifactPaths: [], artifactHashes: {}, ...(eligibilityEvidence ? { eligibilityEvidence } : {}) };
         continue;
       }
       if (!artifactPaths.length || !artifactPaths.some((path) => PRODUCT_ARTIFACT_PATTERNS[product].test(path))) throw Error('AVAILABLE_PRODUCT_REQUIRES_ACTUAL_ARTIFACT:' + product);
@@ -493,7 +527,6 @@ export function attachCanonicalProjections({ root, staged, preparedFiles, produc
   for (const [path, bytes] of contents) atomicWrite(guardedPath(output, path), bytes);
   verifyReconciledCanonicalRows({ root, output, manifest: proposed });
   verifyScopedPublicProjections({ root, output, manifest: proposed });
-  verifyCanonicalProjections({ root, output, manifest: proposed });
   if (productizationReadiness !== undefined) {
     proposed.productizationReadiness = verifyProductizationReadiness({ root, output, manifest: proposed, readiness: productizationReadiness });
     proposed.productizationReadinessSha256 = productizationReadinessHash(proposed.productizationReadiness);
@@ -502,6 +535,7 @@ export function attachCanonicalProjections({ root, staged, preparedFiles, produc
     proposed.productizationReadiness = verifyProductizationReadiness({ root, output, manifest: proposed, readiness: proposed.productizationReadiness });
     proposed.productizationReadinessSha256 = productizationReadinessHash(proposed.productizationReadiness);
   }
+  verifyCanonicalProjections({ root, output, manifest: proposed });
   proposed.projectionStatus = 'MATERIALIZED_AND_VERIFIED';
   proposed.files.sort((a, b) => a.path.localeCompare(b.path));
   const bytes = jsonBytes(proposed), manifestPath = join(output, 'manifest.json'); atomicWrite(manifestPath, bytes);

@@ -4,11 +4,11 @@
   "acceptedBaseline": "1cf199eb54f13dcf96226c5c86c75431a9446c68",
   "repositoryHead": "fe6622c760cd4d58a2e0cd55e58247847eccb2ff",
   "workingSourceSha256": {
-    "scripts/market/tiingo2-product-browser-qa.mjs": "7fecba7f737ba6e1e67946ecc93ffd5f91b8c924c8312b601edc9a8d04793be1",
-    "scripts/market/tiingo2-product-shadow-qa.mjs": "20f0a3ad5cf2c8dfdbbf991fbad2b2ae00fc3d0f16fd0a95756a3abeda3859cf",
+    "scripts/market/tiingo2-product-browser-qa.mjs": "fe90e90afa594ae8cfcea153dee43216ce72f2ce170f77179081a9d96d7c5871",
+    "scripts/market/tiingo2-product-shadow-qa.mjs": "1e0d3894c8d9bc5a7100686c8459fda4b2fa7331544de9d793f808f68140eee2",
     "scripts/market/tiingo2-product-surfaces.mjs": "e2b2e77afa2c06668e58725b40b857c99864d980c1f2ab51e4df92bf901aad3c",
-    "scripts/market/tiingo2-run-productization.mjs": "28f2a4cbffed07e171f6124f5431c961aa7cc3fa68747cc3f7af9d6a7bf1538c",
-    "scripts/market/tiingo2-productize.mjs": "53d1a30c8214fa8851d254f3b9b2c31666d915bb5eaa66f6a3e8a6db4b9a09e0"
+    "scripts/market/tiingo2-run-productization.mjs": "f16e63c856973011ba3de2ee8a7b1da0fc14019eb95177a90c3ea53f0e829acc",
+    "scripts/market/tiingo2-productize.mjs": "3f13b6a9891ce0848afbb76dbcd90834ccbfa009d090b1cd8b330f30600bdbac"
   },
   "node": {
     "main": {
@@ -39,6 +39,27 @@
     "suiteSideEffect": {
       "path": "quant/data/providers/total-return-verification.json",
       "restoredExactAcceptedBaseline": true
+    },
+    "latestBroadSnapshot": {
+      "tests": 2806,
+      "passed": 2804,
+      "skipped": 1,
+      "failed": 1,
+      "failure": "Fixture traversal race: deliberate dangling symlink under in-repository TMPDIR",
+      "assertionRegressions": 0
+    },
+    "infrastructureRerun": {
+      "command": "TMPDIR=/tmp node --test quant/tests/benchmark-reference.test.mjs quant/tests/secrets.test.mjs",
+      "tests": 19,
+      "passed": 19,
+      "failed": 0
+    },
+    "finalEffectiveFailures": 0,
+    "currentAdditionalSafetySlice": {
+      "tests": 70,
+      "passed": 70,
+      "failed": 0,
+      "scope": "Current logos, image visibility, finalizer, shadow-preservation guards"
     }
   },
   "sec": {
@@ -68,5 +89,34 @@
     "screenerMaximumDecodedBytes": 22261508,
     "budgetDecodedBytes": 30500000
   },
-  "productionWrites": 0
+  "productionWrites": 0,
+  "baselineChartPreservationHarness": {
+    "AAPL": {
+      "checks": 23,
+      "findings": 0,
+      "freshReady": false,
+      "preservedBaseline": true,
+      "freshValidationState": "BLOCKED"
+    },
+    "AMC": {
+      "checks": 24,
+      "findings": 0,
+      "dailyFreshReady": false,
+      "weeklyMaxPreserved": true,
+      "freshCertified": false
+    }
+  },
+  "independentFinalizerTests": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "stockArtworkReview": {
+    "scope": "DECORATIVE_STOCK_STRATEGY_IMAGE_ONLY",
+    "urlAndDimensionsPreserved": true,
+    "intersectionDefersOffscreenFetch": true,
+    "unsupportedBrowserFallbackPreserved": true,
+    "tests": 2,
+    "passed": 2
+  }
 }

@@ -25,7 +25,7 @@ export function validatePreparedHistoryPlan({history,additions,publicationManife
  const expected=new Set(additions.map(r=>r.ticker+'|'+r.securityId));
  if(history.publicationManifestSha256!==publicationManifestSha256||history.productionWrites!==0||!Array.isArray(history.rows)||history.rows.length!==additions.length||expected.size!==additions.length)throw Error('PRIVATE_HISTORY_PUBLICATION_BINDING_FAILED');
  const observed=new Set();
- for(const row of history.rows){const key=row.ticker+'|'+row.securityId;if(!expected.has(key)||observed.has(key)||row.path!=='private-histories/tiingo/daily/'+row.securityId+'.json'||row.existingObjectOverwriteAllowed!==false||!Number.isInteger(row.bars)||row.bars<5)throw Error('PRIVATE_HISTORY_IDENTITY_BINDING_FAILED');observed.add(key);}
+ for(const row of history.rows){const key=row.ticker+'|'+row.securityId;if(!expected.has(key)||observed.has(key)||row.path!=='private-histories/tiingo/daily/'+row.securityId+'.json'||row.existingObjectOverwriteAllowed!==false||!Number.isInteger(row.bars)||row.bars<2)throw Error('PRIVATE_HISTORY_IDENTITY_BINDING_FAILED');observed.add(key);}
  return true;
 }
 export function finalizeProductizationPreview({root=process.cwd(),workDir=join(root,'.market-cache/tiingo2-productization'),out=join(root,'.verification/tiingo2-productization'),releaseOutput,preparedRoot=join(root,'.market-cache/prepared/tiingo2')}={}){

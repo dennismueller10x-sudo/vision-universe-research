@@ -24,7 +24,7 @@ Production deployment/merge and private history-store writes remain separate fro
 
 The existing full seven-factor Quant composite methodology has `publication.allowed:false`. Productization does not override it. Actual available Factor DNA evidence is published as partial or technical-only evidence; missing factors are typed unavailable and never zero-filled. A title can support Search/Chart/Watchlist while a technical strategy, Discover rule or full Quant score remains unavailable.
 
-Short IPO histories use the existing compact-series renderer with an explicit `SHORT_HISTORY` gate of at least five actual bars; the default thirty-bar gate is unchanged elsewhere. MAX/weekly and full technical readiness keep their existing longer-history requirements. Blocked fresh revalidation of existing AMC/BIRD/AMWL does not revoke their published capabilities or historical chart artifacts.
+Short IPO histories use the existing compact-series renderer with an explicit `SHORT_HISTORY` gate of at least five actual bars; the default thirty-bar gate is unchanged elsewhere. Two-to-four-session IPOs retain an independently checked canonical price/quote projection and Search/Watchlist availability, while Charts explicitly remain unavailable. This narrow exception is bound to actual staged price bytes, action checks, current quotes and matching canonical IDs; no missing chart history is fabricated. MAX/weekly and full technical readiness keep their existing longer-history requirements. Blocked fresh revalidation of existing AMC/BIRD/AMWL does not revoke their published capabilities or historical chart artifacts.
 
 ## Outputs
 

@@ -5,7 +5,7 @@ import {join,resolve,dirname,relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {prepareProductizationShadow,reconcileShadowIssuerMappings,initializeShadowGit,loadCandidatePriceInputs} from './tiingo2-productize.mjs';
+import {prepareProductizationShadow,reconcileShadowIssuerMappings,initializeShadowGit,loadCandidatePriceInputs,assessProductizationReplay} from './tiingo2-productize.mjs';
 import {materializeFundamentals,runExistingProcess} from './tiingo2-fundamentals.mjs';
 import {materializeFactors} from './tiingo2-factors.mjs';
 import {materializeProductProjections} from './tiingo2-product-projections.mjs';
@@ -89,6 +89,16 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  root=resolve(root);sourceCache=resolve(sourceCache);workDir=resolve(workDir);out=resolve(out);
  if(!sourceRun){const runs=join(sourceCache,'runs');sourceRun=readdirSync(runs).filter(n=>existsSync(join(runs,n,'canonical/manifest.json'))).sort().map(n=>join(runs,n)).at(-1);}
  if(!sourceRun)throw Error('ACCEPTED_SOURCE_RUN_REQUIRED');
+ const replay=assessProductizationReplay({root,sourceRun,sourceCache,asOf});
+ if(replay.state==='BLOCKED_REQUIRES_FRESH_DIFF')throw Error('PARTIAL_CANONICAL_PUBLICATION_REQUIRES_FRESH_DIFF');
+ if(replay.state==='NO_CHANGES'){
+  const summary={schemaVersion:'tiingo2-productization-status-1.0.0',runId,asOf,currentProduction:replay.currentConsumer,proposedConsumer:replay.currentConsumer,acceptedBaseline:0,additionalAccepted:0,canonicalMaterialized:0,removed:0,quant:{QUANT_FULL:0,PARTIAL:0,TECHNICAL_ONLY:0,BLOCKED:0},productionWrites:0,publicationState:'NO_CHANGES',attachmentBlocker:null,rows:[],replay};
+  write(join(out,'tiingo2_productization_status.json'),summary);
+  for(const name of ['accepted_materialization','review_resolution','quant_readiness','product_readiness','logo_status','chart_status'])write(join(out,'tiingo2_'+name+'.json'),{runId,state:'NO_CHANGES',scope:'NO_INCREMENTAL_SECURITIES_REBUILT',rows:[],productionWrites:0});
+  write(join(out,'tiingo2_publication_diff.json'),{runId,state:'NO_CHANGES',ADDED:[],REVIEW:[],REJECTED:[],REMOVED:[],productionWrites:0});
+  write(join(out,'tiingo2_final_consumer_universe.json'),{runId,current:replay.currentConsumer,proposed:replay.currentConsumer,ADDED:[],REMOVED:[],publicationState:'NO_CHANGES',productionWrites:0});
+  return summary;
+ }
  onProgress('Resolving listing-bound review evidence\n');
  const review=resolvePrivateReview({root,sourceCache,sourceRun,asOf,workDir});
  const currentProduction=resolveProductUniverse(root).securities.filter(r=>r.consumer).length;
@@ -106,7 +116,16 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  const logos=await materializeLogos({root,outputRoot:shadowRoot,tickers:scope,candidates:logoCandidates,seedRoot:root,assetReviews:existsSync(logoReviews)?read(logoReviews):{},noWikidata:true,secLogos:true,fetchAssets:allowNetwork,onProgress});
  const universeBuild=await runExistingProcess(process.execPath,[join(shadowRoot,'scripts/quant/build-universe-list.mjs')],{cwd:shadowRoot,onProgress});if(universeBuild.code!==0)throw Error('UNIVERSE_LIST_BUILDER_FAILED');
  const capabilityFile=join(shadowRoot,'quant/data/universe/market-capability.json'),capability=read(capabilityFile),technical=byTicker(surfaces.rows);
- for(const member of capability.members){const row=technical.get(member.s);if(row&&(tickers.includes(member.s)||row.supertrader.technical==='AVAILABLE'))member.t=row.supertrader.technical==='AVAILABLE'?'TECHNICAL_READY':row.supertrader.technical;}
+ const factorReadiness=byTicker(factors.rows);
+ for(const member of capability.members){
+  const row=technical.get(member.s),factor=factorReadiness.get(member.s);
+  if(row&&(tickers.includes(member.s)||row.supertrader.technical==='AVAILABLE'))member.t=row.supertrader.technical==='AVAILABLE'?'TECHNICAL_READY':row.supertrader.technical;
+  if(factor&&(tickers.includes(member.s)||factor.canonicalEvidence?.verified)){
+   if(factor.securityId!==member.m)throw Error('FACTOR_CAPABILITY_CANONICAL_IDENTITY_MISMATCH:'+member.s);
+   member.fr=factor.productQuantReady===true&&factor.canonicalEvidence?.verified===true;
+  }
+ }
+ capability.totals={...capability.totals,FACTOR_READY:capability.members.filter(m=>m.fr).length,TECHNICAL_READY:capability.members.filter(m=>m.t==='TECHNICAL_READY').length};
  write(capabilityFile,capability);
  const projectionRows=projection.report.rows;
  const maps=[projection.report,factors,surfaces,logos,fundamentals].map(r=>byTicker(r.rows));
@@ -124,8 +143,8 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  const productizationReadiness=rows.filter(r=>tickers.includes(r.ticker)).map(row=>({ticker:row.ticker,securityId:row.securityId,instrumentId:row.instrumentId,products:Object.fromEntries([
   ['SEARCH',row.search?.ready,['quant/data/universe/search/sym/'+Company.shardKey(row.ticker)+'.json']],['CHARTS',row.chart?.ready,[row.chart?.dailyPath?.replace(/^\//,'')]],['WATCHLIST',row.watchlist?.ready,['quant/data/universe/instruments/'+Company.shardKey(row.ticker)+'.json']],
   ['QUANT',row.quant.productQuantReady,[row.quant.canonicalEvidence?.artifactPath]],['DISCOVER',row.discover?.ready,[row.discover?.artifact]],['SCREENER',row.screener?.ready,['screener/data/universe-US_REAL.json']],['SUPERTRADER',row.supertrader?.ready,['quant/data/product/technical-signals-v1/'+Company.shardKey(row.ticker)+'.json.gz']],['SEC',row.fundamentals?.pitValid,row.fundamentals?.artifacts?.map(a=>a.path)]
- ].map(([name,ready,paths])=>[name,{state:ready?'PASS':'UNAVAILABLE',coverage:name==='QUANT'?(row.quant.quantStatus==='QUANT_FULL'?'FULL':row.quant.quantStatus):undefined,reasonCodes:ready?[]:[row[name.toLowerCase()]?.reasonCodes?.[0]||row.supertrader?.technical||'CONDITIONAL_DATA_REQUIREMENTS_NOT_MET'],artifactPaths:ready?(paths||[]).filter(Boolean):[]}]))}));
- const readinessArtifacts=productizationReadiness.flatMap(r=>Object.values(r.products).flatMap(p=>p.artifactPaths));
+ ].map(([name,ready,paths])=>[name,{state:ready?'PASS':'UNAVAILABLE',coverage:name==='QUANT'?(row.quant.quantStatus==='QUANT_FULL'?'FULL':row.quant.quantStatus):undefined,reasonCodes:ready?[]:[({CHARTS:row.chart,SEC:row.fundamentals})[name]?.reasonCodes?.[0]||row[name.toLowerCase()]?.reasonCodes?.[0]||'CONDITIONAL_DATA_REQUIREMENTS_NOT_MET'],artifactPaths:ready?(paths||[]).filter(Boolean):[],...(name==='CHARTS'&&!ready&&row.chart?.eligibilityEvidence?{eligibilityEvidence:row.chart.eligibilityEvidence}:{})}]))}));
+ const readinessArtifacts=productizationReadiness.flatMap(r=>Object.values(r.products).flatMap(p=>[...p.artifactPaths,...(p.eligibilityEvidence?.priceArtifactPath?[p.eligibilityEvidence.priceArtifactPath]:[])]));
  const publicationFiles=[...new Set([...changed,...readinessArtifacts])];
  try{stage=attachCanonicalProjections({root,staged:prepared.stage,preparedFiles:publicationFiles.map(path=>({path,bytes:readFileSync(join(shadowRoot,path))})),productizationReadiness});}
  catch(error){attachmentBlocker=error.message;stage=prepared.stage;onProgress('Publication attachment blocked: '+error.message+'\n');}

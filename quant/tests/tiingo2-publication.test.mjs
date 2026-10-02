@@ -184,6 +184,52 @@ function productizationFixture(context, mutate = (input) => input) {
   return { staged: productized, qaProof };
 }
 
+function shortListingFixture(context, count = 2, mutate = (input) => input) {
+  return productizationFixture(context, (input) => {
+    const addition = input.staged.additions[0], price = JSON.parse(input.preparedFiles[0].bytes);
+    const points = Array.from({ length: count }, (_, i) => [new Date(Date.parse(today) - (count - i) * 86400000).toISOString().slice(0, 10), 10]);
+    Object.assign(price, { provider: 'tiingo', historyCoverage: 'SHORT_HISTORY', corporateActionStatus: 'PASS', publishCheckedAt: today, barCount: count, sourceBarCount: count, from: points[0][0], to: points.at(-1)[0], asOf: points.at(-1)[0], points });
+    input.preparedFiles[0].bytes = Buffer.from(JSON.stringify(price));
+    input.preparedFiles.push({ path: 'quant/data/universe/market-capability.json', bytes: Buffer.from(JSON.stringify({ members: [{ s: addition.ticker, m: addition.securityId, i: addition.instrumentId, ph: false, ps: true, b: count, f: price.from, l: price.to, fr: false, t: 'INSUFFICIENT_HISTORY' }] })) });
+    input.preparedFiles.push({ path: 'quant/data/product/universe-list-v1.json.gz', bytes: gzipSync(JSON.stringify({ entries: [{ s: addition.ticker, c: 10, d: price.to }] })) });
+    input.productizationReadiness[0].products.CHARTS = { state: 'UNAVAILABLE', reasonCodes: ['INSUFFICIENT_CHART_HISTORY'], artifactPaths: [], eligibilityEvidence: { priceArtifactPath: input.preparedFiles[0].path } };
+    return mutate(input);
+  });
+}
+
+test('two-to-four-session listings retain actual latest quote, Search and Watchlist while Charts stay explicitly unavailable', () => {
+  for (const count of [2, 4]) fixture((context) => {
+    const { staged, qaProof } = shortListingFixture(context, count);
+    const products = staged.productizationReadiness[0].products;
+    assert.equal(products.SEARCH.state, 'PASS');assert.equal(products.WATCHLIST.state, 'PASS');assert.equal(products.CHARTS.state, 'UNAVAILABLE');
+    assert.deepEqual(products.CHARTS.reasonCodes, ['INSUFFICIENT_CHART_HISTORY']);assert.deepEqual(products.CHARTS.artifactPaths, []);
+    assert.match(products.CHARTS.eligibilityEvidence.priceArtifactSha256, /^[a-f0-9]{64}$/);
+    assert.equal(verifyStagedCanonicalPublication({ root: context.root, staged }).status, 'VERIFIED_READ_ONLY');
+    assert.equal(applyCanonicalPublication({ root: context.root, staged, qaProof }).status, 'APPLIED');
+    assert.equal(rollbackCanonicalPublication({ root: context.root, staged }).status, 'ROLLED_BACK');
+  });
+});
+
+test('short-listing exception rejects invented reasons, missing/invalid prices, wrong IDs, sufficient chart history and stale evidence', () => {
+  const mutatePrice = (change) => (input) => { const document = JSON.parse(input.preparedFiles[0].bytes);change(document);input.preparedFiles[0].bytes = Buffer.from(JSON.stringify(document));return input; };
+  for (const mutate of [
+    (input) => { input.productizationReadiness[0].products.CHARTS.reasonCodes = ['NO_DATA'];return input; },
+    (input) => { input.productizationReadiness[0].products.CHARTS.reasonCodes.push('BAD_SERIES');return input; },
+    (input) => { delete input.productizationReadiness[0].products.CHARTS.eligibilityEvidence;return input; },
+    (input) => { input.preparedFiles.shift();return input; },
+    (input) => { input.productizationReadiness[0].products.CHARTS.eligibilityEvidence.priceArtifactPath = 'quant/data/market/discover-series/ref_OTHER.json';return input; },
+    mutatePrice((p) => { p.securityId = 'ref_OTHER'; }),mutatePrice((p) => { p.ticker = 'OTHER'; }),
+    mutatePrice((p) => { p.currency = 'EUR'; }),mutatePrice((p) => { p.corporateActionStatus = 'SUSPICIOUS_PRICE_BREAK'; }),
+    mutatePrice((p) => { p.sourceBarCount = 20; }),mutatePrice((p) => { p.points[1][1] = -1; }),
+    mutatePrice((p) => { p.points.reverse(); }),mutatePrice((p) => { p.points[1][0] = '2026-09-15'; }),
+    mutatePrice((p) => { p.publishCheckedAt = '2026-09-01'; }),
+    (input) => { const file = input.preparedFiles.find((p) => p.path.endsWith('market-capability.json'));const doc = JSON.parse(file.bytes);doc.members[0].ph = true;file.bytes = Buffer.from(JSON.stringify(doc));return input; },
+    (input) => { const file = input.preparedFiles.find((p) => p.path.endsWith('universe-list-v1.json.gz'));file.bytes = gzipSync(JSON.stringify({ entries: [{ s: 'ZNEW', c: 50, d: today }] }));return input; }
+  ]) fixture((context) => { assert.throws(() => shortListingFixture(context, 2, mutate), /SHORT_LISTING|PRODUCT_READINESS/); });
+  fixture((context) => { assert.throws(() => shortListingFixture(context, 5), /SHORT_LISTING_PRICE_NOT_MATERIALIZED/); });
+  fixture((context) => { assert.throws(() => shortListingFixture(context, 2, (input) => { delete input.productizationReadiness;return input; }), /CHART_ADDITION_NOT_MATERIALIZED/, 'legacy publication still requires materialized chart capability'); });
+});
+
 test('productization QA permits verified search/chart/watchlist when conditional products are honestly unavailable', () => fixture((context) => {
   const { staged, qaProof } = productizationFixture(context);
   assert.equal(staged.productizationReadiness[0].products.QUANT.state, 'UNAVAILABLE');
@@ -215,7 +261,7 @@ test('productization requires listing-bound readiness, explicit unavailable reas
     (input) => { input.preparedFiles = []; }
   ];
   for (const mutate of invalid) fixture((context) => {
-    assert.throws(() => productizationFixture(context, (input) => { mutate(input); return input; }), /PRODUCT_READINESS|UNAVAILABLE_PRODUCT|CRITICAL_ADDITION/);
+    assert.throws(() => productizationFixture(context, (input) => { mutate(input); return input; }), /PRODUCT_READINESS|UNAVAILABLE_PRODUCT|CRITICAL_ADDITION|SHORT_LISTING/);
     assert.equal(JSON.parse(readFileSync(join(context.root, paths.raw))).securities.length, 1);
   });
 });

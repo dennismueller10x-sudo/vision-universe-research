@@ -341,9 +341,11 @@ let SHARP = null;
 try { SHARP = (await import("sharp")).default; } catch (e) { console.log("     sharp fehlt - Logos werden nicht einheitlich aufbereitet."); }
 const vorher = ONLY ? {} : (readJson(join(REAL_OUT, "credits.json"), { credits: {} }).credits || {});
 // A scoped shadow refresh preserves unrelated central assets and metadata.
-const files = TICKERS ? { ...(readJson(join(OUT, "index.json"), { files: {} }).files || {}) } : {};
+const previousIndex = TICKERS ? readJson(join(OUT, "index.json"), { files: {} }) : {};
+const files = TICKERS ? { ...(previousIndex.files || {}) } : {};
+const wideFiles = { ...(previousIndex.wideFiles || {}) };
 const credits = TICKERS ? { ...vorher } : {};
-if (TICKERS) for (const sym of TICKERS) { delete files[sym]; delete credits[sym]; }
+if (TICKERS) for (const sym of TICKERS) { delete files[sym]; delete credits[sym]; delete wideFiles[sym]; }
 if (!DRY) mkdirSync(FILES, { recursive: true });
 let geladen = 0, behalten = 0, frei = 0;
 for (const [sym, m0] of kandidaten) {
@@ -617,6 +619,10 @@ const sortiert = (o) => Object.fromEntries(Object.keys(o).sort().map((k) => [k, 
 const generatedAt = new Date().toISOString();
 const grundZaehler = {};
 for (const r of reasons.values()) { const k = r.split(":")[0]; grundZaehler[k] = (grundZaehler[k] || 0) + 1; }
+// Baseline wide logos already use files/wide/<symbol>.png in the renderer.
+// Explicit paths are needed for refreshed/shared assets; a scoped refresh must
+// not duplicate thousands of unrelated baseline paths in this eagerly read index.
+for (const sym of TICKERS || Object.keys(credits)) if (files[sym] && credits[sym]?.wide) wideFiles[sym] = credits[sym].wide;
 
 writeFileSync(join(OUT, "index.json"), JSON.stringify({
   version: "company-logos-1.0.0",
@@ -627,7 +633,7 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify({
   files: sortiert(files),
   /* Seitenverhaeltnis der breiten Fassung (files/wide/<Titel>.png). */
   wide: sortiert(Object.fromEntries(Object.entries(credits).filter(([s, c]) => c.wide && files[s]).map(([s, c]) => [s, c.ratio]))),
-  wideFiles: sortiert(Object.fromEntries(Object.entries(credits).filter(([s, c]) => c.wide && files[s]).map(([s, c]) => [s, c.wide]))),
+  wideFiles: sortiert(wideFiles),
   dark: dunkel.sort()
 }) + "\n");
 writeFileSync(join(OUT, "credits.json"), JSON.stringify({

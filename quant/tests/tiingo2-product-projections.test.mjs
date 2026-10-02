@@ -93,6 +93,58 @@ test('scoped projection cannot remint an existing security ID',async()=>{
  }finally{rmSync(sourceRoot,{recursive:true,force:true});}
 });
 
+test('a canonical new listing with twenty-one actual sessions gains chart capability without technical or full Quant claims',async()=>{
+ const sourceRoot=mkdtempSync(join(tmpdir(),'vu-products-short-')),shadowRoot=join(sourceRoot,'.market-cache/shadow');
+ try{
+  const security=row('HOS');
+  put(shadowRoot,'quant/data/universe/instruments/HO.json',{shard:'HO',instruments:[security]});
+  put(shadowRoot,'quant/data/universe/master-manifest.json',{asOf,shards:[{shard:'HO'}]});
+  mkdirSync(join(shadowRoot,'quant/config'),{recursive:true});copyFileSync(resolve('quant/config/company-master.json'),join(shadowRoot,'quant/config/company-master.json'));
+  const result=await materializeProductProjections({sourceRoot,shadowRoot,securities:[security],pricePayloads:new Map([['HOS',payload(security,21)]]),asOf});
+  const capability=read(join(shadowRoot,'quant/data/universe/market-capability.json')).members.find(member=>member.m==='ref_HOS');
+  assert.equal(capability.i,security.instrumentId);assert.equal(capability.s,'HOS');
+  assert.equal(capability.ph,true);assert.equal(capability.ps,true);assert.equal(capability.b,21);
+  assert.equal(capability.fr,false);assert.equal(capability.t,null);
+  const diagnostic=result.readiness[0];assert.equal(diagnostic.isBaseline,false);
+  assert.equal(diagnostic.chart.ready,true);assert.equal(diagnostic.chart.canonicalProof.historyCoverage,'SHORT_HISTORY');
+  assert.equal(diagnostic.chart.baselinePublished,null);assert.equal(diagnostic.chart.longReady,false);
+  assert.equal(diagnostic.watchlist.ready,true);assert.equal(diagnostic.quant.ready,false);
+  assert.equal(existsSync(join(sourceRoot,'quant/data/market/discover-series/ref_HOS.json')),false);
+ }finally{rmSync(sourceRoot,{recursive:true,force:true});}
+});
+
+test('two to four actual listing sessions publish latest-price evidence while existing chart reader stays unavailable',async()=>{
+ for(const count of [2,4]){
+  const sourceRoot=mkdtempSync(join(tmpdir(),'vu-products-quote-')),shadowRoot=join(sourceRoot,'.market-cache/shadow');
+  try{
+   const security=row('IPO');
+   put(shadowRoot,'quant/data/universe/instruments/IP.json',{shard:'IP',instruments:[security]});
+   put(shadowRoot,'quant/data/universe/master-manifest.json',{asOf,shards:[{shard:'IP'}]});
+   mkdirSync(join(shadowRoot,'quant/config'),{recursive:true});copyFileSync(resolve('quant/config/company-master.json'),join(shadowRoot,'quant/config/company-master.json'));
+   const result=await materializeProductProjections({sourceRoot,shadowRoot,securities:[security],pricePayloads:new Map([['IPO',payload(security,count)]]),asOf});
+   const diagnostic=result.readiness[0],capability=read(join(shadowRoot,'quant/data/universe/market-capability.json')).members[0];
+   assert.equal(diagnostic.chart.ready,false);assert.equal(diagnostic.chart.priceReady,true);
+   assert.deepEqual(diagnostic.chart.reasonCodes,['INSUFFICIENT_CHART_HISTORY']);assert.equal(diagnostic.chart.dailyPath,null);
+   assert.equal(diagnostic.chart.canonicalProof.bars,count);assert.equal(diagnostic.chart.longReady,false);
+   assert.deepEqual(diagnostic.chart.eligibilityEvidence,{priceArtifactPath:'quant/data/market/discover-series/ref_IPO.json'});
+   assert.equal(diagnostic.search.ready,true);assert.equal(diagnostic.watchlist.ready,true);assert.equal(diagnostic.quant.ready,false);
+   assert.equal(capability.ph,false);assert.equal(capability.ps,true);assert.equal(capability.b,count);
+   const compact=read(join(shadowRoot,diagnostic.chart.priceProjectionPath.slice(1)));
+   assert.equal(compact.points.length,count);assert.equal(compact.corporateActionStatus,'PASS');
+   const window={QuantShell:{loadJSON:async()=>compact}},context={window};
+   runInNewContext(readFileSync(resolve('discover/ui/series-loader.js'),'utf8'),context);
+   runInNewContext(readFileSync(resolve('discover/ui/microchart.js'),'utf8'),context);
+   await assert.rejects(window.VUDiscover.SeriesLoader.get(diagnostic.chart.priceProjectionPath),/Reihe ohne Punkte/);
+   assert.equal(window.VUDiscover.MicroChart.hasSeries(compact),false);
+  }finally{rmSync(sourceRoot,{recursive:true,force:true});}
+ }
+ const security=row('IPO');
+ for(const mutate of [p=>{p.securityId='ref_WRONG';},p=>{delete p.bars[0].splitFactor;},p=>{p.bars[1].date='2026-09-20';},p=>{p.currency='EUR';},p=>{p.bars[1].close=-1;},p=>{p.bars.reverse();}]){
+  const p=payload(security,2);mutate(p);const projected=projectChart(p,security,{asOf});
+  assert.equal(projected.ready,false);assert.notEqual(projected.priceReady,true);
+ }
+});
+
 test('blocked existing refreshes preserve published capability rows and chart bytes without certifying fresh readiness',async()=>{
  const sourceRoot=mkdtempSync(join(tmpdir(),'vu-products-preservation-')),shadowRoot=join(sourceRoot,'.market-cache/shadow');
  try{

@@ -187,8 +187,17 @@ export async function materializeLogos({ root = repositoryRoot, outputRoot, tick
       visualReview: assetReviews[ticker] || null });
   }
   index.count = Object.keys(index.files).length;
-  for (const [ticker, credit] of Object.entries(credits.credits)) if (index.files[ticker] && credit.wide) index.wideFiles[ticker] = credit.wide;
-  write(join(out, 'index.json'), index); write(join(out, 'credits.json'), credits);
+  // Preserve existing explicit aliases without expanding unrelated legacy wide
+  // logos: their renderer continues to derive files/wide/<ticker>.png.
+  for (const ticker of requested) {
+    const credit = credits.credits[ticker];
+    if (index.files[ticker] && credit?.wide) index.wideFiles[ticker] = credit.wide;
+    else delete index.wideFiles[ticker];
+  }
+  // The eagerly read central index uses the builder's compact JSON format.
+  // Reports and attribution remain human-readable; whitespace must not add a
+  // second baseline-sized delivery cost on every product page.
+  writeFileSync(join(out, 'index.json'), JSON.stringify(index) + '\n'); write(join(out, 'credits.json'), credits);
   const counts = { LOGO_VALID: 0, LOGO_FALLBACK: 0, LOGO_MISSING: 0, LOGO_SUSPECT: 0 };
   rows.forEach(r => counts[r.status]++);
   const report = { schemaVersion: 1, pipeline: 'scripts/discover/build-company-logos.mjs',

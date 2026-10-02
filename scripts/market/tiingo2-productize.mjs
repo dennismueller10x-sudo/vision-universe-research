@@ -103,7 +103,7 @@ function sourceHashes(root){const paths=[CANONICAL_PUBLICATION_PATHS.raw,CANONIC
 
 /** Validate a cached accepted stage against the current canonical membership
  * before any replay builder runs. A prior accepted scope is never a new diff. */
-export function assessProductizationReplay({root=process.cwd(),sourceRun,sourceCache,discoveryFile,asOf,expectedAdditions}={}){
+export function assessProductizationReplay({root=process.cwd(),sourceRun,sourceCache=join(root,'.market-cache/tiingo2'),discoveryFile,asOf=new Date().toISOString().slice(0,10),expectedAdditions}={}){
  const preview=read(join(sourceRun,'tiingo2_publication_preview.json'));
  const inputs=loadProductizationInputs({sourceRun,sourceCache,discoveryFile,asOf,expectedAdditions:expectedAdditions??preview.ADDED.length});
  const universe=resolveProductUniverse(root),raw=read(join(root,CANONICAL_PUBLICATION_PATHS.raw)).securities,master=instruments(root);
@@ -244,6 +244,17 @@ export function prepareProductizationShadow({root=process.cwd(),workDir=join(roo
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const args=process.argv.slice(2),arg=name=>{const i=args.indexOf(name);return i<0?undefined:args[i+1];};
- const result=prepareProductizationShadow({root:arg('--root'),workDir:arg('--work-dir'),sourceRun:arg('--source-run'),sourceCache:arg('--source-cache'),discoveryFile:arg('--discovery-file'),runId:arg('--run-id'),today:arg('--today'),requirePrices:args.includes('--require-prices')});
- console.log(JSON.stringify(result.status));
+ if(args.includes('--assess-replay')){
+  const root=resolve(arg('--root')||process.cwd()),sourceCache=resolve(arg('--source-cache')||join(root,'.market-cache/tiingo2'));
+  let sourceRun=arg('--source-run');
+  if(!sourceRun){const runs=join(sourceCache,'runs');sourceRun=existsSync(runs)?readdirSync(runs).sort().map(name=>join(runs,name)).filter(path=>existsSync(join(path,'canonical/manifest.json'))).at(-1):null;}
+  if(!sourceRun)throw Error('ACCEPTED_SOURCE_RUN_REQUIRED');
+  const result=assessProductizationReplay({root,sourceRun,sourceCache,discoveryFile:arg('--discovery-file'),asOf:arg('--today')});
+  if(arg('--replay-report'))write(resolve(arg('--replay-report')),result);
+  console.log(JSON.stringify(result));
+  if(result.state==='BLOCKED_REQUIRES_FRESH_DIFF')process.exitCode=1;
+ }else{
+  const result=prepareProductizationShadow({root:arg('--root'),workDir:arg('--work-dir'),sourceRun:arg('--source-run'),sourceCache:arg('--source-cache'),discoveryFile:arg('--discovery-file'),runId:arg('--run-id'),today:arg('--today'),requirePrices:args.includes('--require-prices')});
+  console.log(JSON.stringify(result.status));
+ }
 }

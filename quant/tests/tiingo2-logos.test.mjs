@@ -4,6 +4,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, symlin
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import vm from 'node:vm';
+import { execFileSync } from 'node:child_process';
 import { materializeLogos, validateLogoAsset, verifiedOfficialSites } from '../../scripts/market/tiingo2-logos.mjs';
 let sharp = null;
 try { sharp = (await import('sharp')).default; } catch { /* central pipeline supports metadata/fallback without sharp */ }
@@ -48,8 +49,15 @@ test('shadow wrapper uses central pipeline and one company asset while preservin
   const base = mkdtempSync(join(tmpdir(), 'logos-seed-')), output = mkdtempSync(join(tmpdir(), 'logos-shadow-'));
   const keep = 'baseline unchanged'; mkdirSync(join(base, 'discover/logos/files'), { recursive: true });
   writeFileSync(join(base, 'discover/logos/files/KEEP.png'), keep);
-  json(join(base, 'discover/logos/index.json'), { files: { KEEP: 'files/KEEP.png' }, wide: {}, dark: [] });
-  json(join(base, 'discover/logos/credits.json'), { credits: { KEEP: { source: 'WEBSITE', path: 'files/KEEP.png' } } });
+  const baselineFiles = { KEEP: 'files/KEEP.png' }, baselineWide = {}, baselineCredits = { KEEP: { source: 'WEBSITE', path: 'files/KEEP.png' } };
+  for (let i = 0; i < 3993; i++) {
+    const ticker = 'LEGACY' + i; baselineFiles[ticker] = 'files/' + ticker + '.png'; baselineWide[ticker] = 3;
+    baselineCredits[ticker] = { source: 'WEBSITE', path: baselineFiles[ticker], wide: 'files/wide/' + ticker + '.png', ratio: 3 };
+  }
+  const explicit = { LEGACY0: 'files/wide/SHARED.png' };
+  const baselineIndex = { files: baselineFiles, wide: baselineWide, wideFiles: explicit, dark: [] };
+  json(join(base, 'discover/logos/index.json'), baselineIndex);
+  json(join(base, 'discover/logos/credits.json'), { credits: baselineCredits });
   let invoked = false;
   const report = await materializeLogos({ outputRoot: output, seedRoot: base, candidates: [row('AAA'), row('AAB')], noWikidata: true,
     runBuilder: async ({ args, output: out }) => {
@@ -76,6 +84,32 @@ test('shadow wrapper uses central pipeline and one company asset while preservin
   assert.equal(existsSync(join(output, 'discover/logos/files/wide/AAB.png')), false);
   const index = JSON.parse(readFileSync(join(output, 'discover/logos/index.json')));
   assert.equal(index.wideFiles.AAA, index.wideFiles.AAB);
+  assert.equal(index.wideFiles.LEGACY0, explicit.LEGACY0);
+  assert.deepEqual(Object.keys(index.wideFiles).sort(), ['AAA', 'AAB', 'LEGACY0']);
+  assert.ok(Buffer.byteLength(JSON.stringify(index.wideFiles)) < 256, 'explicit alias overhead scales with scope, not3993baseline logos');
+  assert.ok(readFileSync(join(output, 'discover/logos/index.json')).length < Buffer.byteLength(JSON.stringify(baselineIndex)) + 1024,
+    'entire central index growth must remain bounded to requested scope, including JSON whitespace');
+  for (const [ticker, path] of Object.entries(baselineFiles)) assert.equal(index.files[ticker], path);
+  for (const [ticker, ratio] of Object.entries(baselineWide)) assert.equal(index.wide[ticker], ratio);
+});
+
+test('the existing scoped central builder preserves explicit paths without expanding legacy wide mappings', () => {
+  const input = mkdtempSync(join(tmpdir(), 'logos-scoped-input-')), output = mkdtempSync(join(tmpdir(), 'logos-scoped-output-'));
+  json(join(input, 'discover/data/search/US_REAL.json'), { entries: [{ s: 'NEW', n: 'New Corporation' }] });
+  json(join(input, 'quant/data/market/security-master/company-names.json'), { rows: [] });
+  const files = {}, wide = {}, credits = {};
+  for (let i = 0; i < 3993; i++) {
+    const ticker = 'LEGACY' + i; files[ticker] = 'files/' + ticker + '.png'; wide[ticker] = 3;
+    credits[ticker] = { source: 'WEBSITE', path: files[ticker], wide: 'files/wide/' + ticker + '.png', ratio: 3 };
+  }
+  const wideFiles = { LEGACY0: 'files/wide/SHARED.png' };
+  json(join(output, 'index.json'), { files, wide, wideFiles, dark: [] });
+  json(join(output, 'credits.json'), { credits });
+  execFileSync(process.execPath, ['scripts/discover/build-company-logos.mjs', '--root=' + input, '--output=' + output,
+    '--tickers=NEW', '--no-wikidata', '--no-web', '--no-sec-logo', '--no-name-search', '--no-index-fetch'], { cwd: process.cwd(), stdio: 'pipe' });
+  const index = JSON.parse(readFileSync(join(output, 'index.json')));
+  assert.deepEqual(index.files, files); assert.deepEqual(index.wide, wide); assert.deepEqual(index.wideFiles, wideFiles);
+  assert.ok(Buffer.byteLength(JSON.stringify(index.wideFiles)) < 128, 'unrelated legacy paths must not add103KB');
 });
 
 test('missing, failed or suspect logos use central fallback and never block a security', async () => {

@@ -41,16 +41,17 @@ export function projectChart(payload,security,{asOf}={}){
  const reasons=[];
  // Existing SeriesLoader/MicroChart accepts five actual points. Keep the
  // ordinary publisher's 30-session default and opt in only for new listings.
- if(!payload||!Array.isArray(payload.bars)||payload.bars.length<5)reasons.push('INSUFFICIENT_CHART_HISTORY');
+ if(!payload||!Array.isArray(payload.bars)||payload.bars.length<2)reasons.push('INSUFFICIENT_CHART_HISTORY');
  if(payload&&(payload.provider!=='tiingo'||symbol(payload)!==ticker||payload.securityId!==securityId))reasons.push('PRICE_IDENTITY_MISMATCH');
  const currency=payload?.currency||security.currency;
  if(!currency)reasons.push('PRICE_CURRENCY_UNRESOLVED');
+ if(payload?.currency&&security.currency&&payload.currency!==security.currency)reasons.push('PRICE_CURRENCY_MISMATCH');
  if(reasons.length)return {ready:false,reasonCodes:reasons};
  const bars=payload.bars;
  const latest=String(bars.at(-1)?.date||'').slice(0,10),age=(Date.parse(asOf)-Date.parse(latest))/86400000;
  if(!isDate(latest)||!Number.isFinite(age)||age<0||age>7)reasons.push('LATEST_CHART_BAR_STALE_OR_FUTURE');
  const structural=Quality.validateBars(bars,{today:asOf,adjustmentStatus:payload.adjustmentStatus||'adjusted'});
- if(!structural.ok||structural.bars.length!==bars.length)reasons.push('INVALID_CHART_SERIES');
+ if(!structural.ok||structural.bars.length!==bars.length||structural.bars.some((bar,i)=>bar.date!==bars[i].date))reasons.push('INVALID_CHART_SERIES');
  const actionGate=Quality.classifyCorporateActions(bars);
  if(!actionGate.ok)reasons.push(actionGate.status||'CORPORATE_ACTION_NOT_VERIFIED');
  if(reasons.length)return {ready:false,reasonCodes:[...new Set(reasons)],corporateActionStatus:actionGate.status};
@@ -61,7 +62,7 @@ export function projectChart(payload,security,{asOf}={}){
  }
  const canonical=Canonical.fromPriceBars(bars,actions,{instrumentId:security.instrumentId,source:'tiingo',sourceRevision:payload.updatedAt||payload.fetchedAt,currency,exchange:security.exchange});
  if(!Canonical.validateSeries(canonical.SPLIT_ADJUSTED).valid)return {ready:false,reasonCodes:['INVALID_CANONICAL_CHART_SERIES']};
- const daily=compactSeries({...payload,currency},{ticker,securityId},{basis:'ISOLATED_TIINGO2_CANONICAL_PROJECTION',checkedAt:asOf},{minPoints:5});
+ const daily=compactSeries({...payload,currency},{ticker,securityId},{basis:'ISOLATED_TIINGO2_CANONICAL_PROJECTION',checkedAt:asOf},{minPoints:2});
  if(!daily)return {ready:false,reasonCodes:['INSUFFICIENT_CHART_HISTORY']};
  const canonicalByDate=new Map(canonical.SPLIT_ADJUSTED.timestamps.map((day,i)=>[day,canonical.SPLIT_ADJUSTED.close[i]]));
  if(daily.points.some(([day,close])=>!(close>0)||Math.abs(close-canonicalByDate.get(day))>0.00501))return {ready:false,reasonCodes:['CHART_CANONICAL_ADJUSTMENT_MISMATCH']};
@@ -72,7 +73,9 @@ export function projectChart(payload,security,{asOf}={}){
   barCount:weekly.length,sourceBarCount:bars.length,sourceFirst:bars[0].date,sourceLast:bars.at(-1).date,
   publishBasis:'ISOLATED_TIINGO2_CANONICAL_PROJECTION',publishCheckedAt:asOf};
  const longReady=long.points.length>=30&&long.points.every(([,close])=>close>0);
- return {ready:true,reasonCodes:[],daily,long:longReady?long:null,longReady,longReasonCodes:longReady?[]:[long.points.length<30?'INSUFFICIENT_LONG_CHART_HISTORY':'LONG_CHART_PRECISION_LIMIT'],canonicalProof:{dataHash:canonical.SPLIT_ADJUSTED.dataHash,sourceRevision:canonical.SPLIT_ADJUSTED.sourceRevision,
+ const chartReady=daily.points.length>=5;
+ daily.corporateActionStatus=actionGate.status;
+ return {ready:chartReady,priceReady:true,reasonCodes:chartReady?[]:['INSUFFICIENT_CHART_HISTORY'],daily,long:longReady?long:null,longReady,longReasonCodes:longReady?[]:[long.points.length<30?'INSUFFICIENT_LONG_CHART_HISTORY':'LONG_CHART_PRECISION_LIMIT'],canonicalProof:{dataHash:canonical.SPLIT_ADJUSTED.dataHash,sourceRevision:canonical.SPLIT_ADJUSTED.sourceRevision,
   bars:canonical.SPLIT_ADJUSTED.length,currency,priceSeriesType:'SPLIT_ADJUSTED',corporateActionStatus:actionGate.status,
   firstDate:canonical.SPLIT_ADJUSTED.timestamps[0],lastDate:canonical.SPLIT_ADJUSTED.timestamps.at(-1),historyCoverage:bars.length<30?'SHORT_HISTORY':'STANDARD_HISTORY',
   totalReturnAvailable:!!canonical.TOTAL_RETURN,splitActions:actions.filter(a=>a.type==='split').length,dividendActions:actions.filter(a=>a.type==='dividend').length}};
@@ -125,8 +128,8 @@ function recordActualMarketCapabilities(sourceRoot,shadowRoot,readiness){
   if(!item)return member;
   // Old coverage reports enumerate exceptions only within their old measured
   // population. An absent new symbol is not proof of chart/technical readiness.
-  member.ph=item.chart.ready;member.ps=item.chart.ready;member.b=item.chart.canonicalProof?.bars||0;
-  member.fr=false;member.t=null;member.q=item.chart.ready?'PASS':'REVIEW';
+  member.ph=item.chart.ready;member.ps=item.chart.priceReady===true;member.b=item.chart.canonicalProof?.bars||0;
+  member.fr=false;member.t=null;member.q=item.chart.priceReady?'PASS':'REVIEW';
   member.f=item.chart.canonicalProof?.firstDate||null;member.l=item.chart.canonicalProof?.lastDate||null;
   member.src='tiingo2:actual-canonical-chart-projection';
   updated++;return member;
@@ -158,13 +161,15 @@ export async function materializeProductProjections({sourceRoot=codeRoot,shadowR
   targetRows.push(row);
   const payload=pricePayloads instanceof Map?pricePayloads.get(ticker):pricePayloads[ticker];
   const chart=projectChart(payload,row,{asOf});
-  if(chart.ready){
+  if(chart.priceReady){
    write(join(shadowRoot,SERIES_DIR,row.masterMemberId+'.json'),chart.daily);
    if(chart.longReady)write(join(shadowRoot,'quant/data/market/discover-series-long',row.masterMemberId+'.json'),chart.long);
   }
   readiness.push({ticker,securityId:row.masterMemberId,instrumentId:row.instrumentId,issuerId:row.issuerId||null,isBaseline:!!old,
-   search:{ready:false,reasonCodes:['SEARCH_NOT_CHECKED']},chart:{ready:chart.ready,reasonCodes:chart.reasonCodes,
-    freshValidationState:chart.ready?'VALIDATED':'BLOCKED',baselinePublished:old?baselinePublishedChart(sourceRoot,old,baselineCapabilities.get(old.masterMemberId)):null,
+   search:{ready:false,reasonCodes:['SEARCH_NOT_CHECKED']},chart:{ready:chart.ready,priceReady:chart.priceReady===true,reasonCodes:chart.reasonCodes,
+    priceProjectionPath:chart.priceReady?'/'+SERIES_DIR+'/'+row.masterMemberId+'.json':null,
+    eligibilityEvidence:chart.priceReady&&!chart.ready?{priceArtifactPath:SERIES_DIR+'/'+row.masterMemberId+'.json'}:null,
+    freshValidationState:chart.priceReady?'VALIDATED':'BLOCKED',baselinePublished:old?baselinePublishedChart(sourceRoot,old,baselineCapabilities.get(old.masterMemberId)):null,
     dailyPath:chart.ready?'/'+SERIES_DIR+'/'+row.masterMemberId+'.json':null,longPath:chart.longReady?'/quant/data/market/discover-series-long/'+row.masterMemberId+'.json':null,
     longReady:chart.longReady===true,longReasonCodes:chart.longReasonCodes||[],canonicalProof:chart.canonicalProof||null},
    watchlist:{ready:false,reasonCodes:['WATCHLIST_NOT_CHECKED']},quant:{ready:false,reasonCodes:['SEPARATE_CANONICAL_FACTOR_AND_FUNDAMENTAL_REQUIREMENTS']}});
@@ -198,7 +203,7 @@ export async function materializeProductProjections({sourceRoot=codeRoot,shadowR
  }
  const report={schemaVersion:'tiingo2-product-projections-1',asOf,source:'CANONICAL_COMPANY_MASTER',productionMutations:0,requested:requested.length,
   counts:{search:readiness.filter(row=>row.search.ready).length,chart:readiness.filter(row=>row.chart.ready).length,watchlist:readiness.filter(row=>row.watchlist.ready).length},
-  rows:readiness,artifactHashes:Object.fromEntries(readiness.filter(row=>row.chart.ready).flatMap(row=>[row.chart.dailyPath,row.chart.longPath].filter(Boolean).map(path=>[path,sha(readFileSync(join(shadowRoot,path.slice(1)),'utf8'))])))};
+  rows:readiness,artifactHashes:Object.fromEntries(readiness.filter(row=>row.chart.priceReady).flatMap(row=>[row.chart.priceProjectionPath,row.chart.longPath].filter(Boolean).map(path=>[path,sha(readFileSync(join(shadowRoot,path.slice(1)),'utf8'))])))};
  write(join(shadowRoot,'quant/data/universe/tiingo2-product-projections.json'),report);
  return {shadowRoot,report,readiness,paths:{search:'/quant/data/universe/search/manifest.json',charts:'/'+SERIES_DIR+'/',longCharts:'/quant/data/market/discover-series-long/',report:'/quant/data/universe/tiingo2-product-projections.json'}};
 }
