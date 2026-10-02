@@ -58,7 +58,7 @@ export function manage(ctx, t, pos, p = PARAMS) {
   return out;
 }
 
-export const PORTFOLIO = Object.freeze({ initialEquity: 100000, riskPerTrade: 0.0125, maxPositionPct: 0.25, maxPositions: 10, maxExposure: 1.0, riskFreeRate: 0.02, progressive: { lookback: 5, factor: 0.5 }, source: 'Minervini (X): Ø 1,25 % Risiko, 25 % Position bei 5 % Stop, schrittweise Exposition; Höchstzahl 10 und Halbierungsregel sind VU' });
+export const PORTFOLIO = Object.freeze({ initialEquity: 100000, riskPerTrade: 0.0125, maxPositionPct: 0.25, maxPositions: 10, maxExposure: 1.0, riskFreeRate: 0.02, progressive: { lookback: 5, factor: 0.5 }, source: 'Minervini (eigene Beiträge auf X): Ø 1,25 % Risiko, 25 % Position bei 5 % Stop, schrittweise Exposition; Höchstzahl 10 und Halbierungsregel sind VU.' });
 
 export default {
   id: 'MINERVINI_VCP', variant: 'MINERVINI_TT_VCP_R7', version: '2.0.0', timeframe: 'daily',

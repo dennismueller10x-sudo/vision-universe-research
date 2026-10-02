@@ -8,7 +8,7 @@
 
 export const R7_VERSION = '2.0.0';
 
-export function applyR7({ momentum, weinstein, darvas, minervini, rule }) {
+export function applyR7({ momentum, weinstein, darvas, minervini, donchian, rule }) {
   const bump = (s, legacyIds, prev) => {
     s.previous_versions = [...(s.previous_versions || []), { version: prev, note: 'Ergebnis der vorab festgelegten Prüfung bleibt gültig; offene Positionen laufen nach dieser Version weiter.' }];
     s.strategy_version = R7_VERSION;
@@ -65,6 +65,13 @@ export function applyR7({ momentum, weinstein, darvas, minervini, rule }) {
     ['MIN-SIZE-01', 'Modellportfolio: 1,25 % Risiko je Trade, höchstens 25 % je Position; nach netto negativen letzten fünf Trades halbes Risiko.', 'shares = equity * 0.0125 / (entry - stop), cap 25 %; progressive(5, 0.5)', { risk: 0.0125, maxPosition: 0.25 }, ['SRC-MM-X-RISK', 'SRC-INTERNAL-VU'], 'VU_FORMALIZATION', true]);
   minervini.rule_cards[0].plan.exitSummary = 'Stop am Kontraktionstief (≤ 10 %) · Einstand ab 3 Anfangsrisiken Gewinn · Ausstieg bei Schluss unter der 50-Tage-Linie mit erhöhtem Volumen';
   section(minervini, 'exit', 'Stop (ruhende Stop-Order-Annahme) oder Schluss unter der 50-Tage-Linie bei überdurchschnittlichem Volumen → Verkauf zur nächsten Eröffnung. Ab 3 Anfangsrisiken Gewinn liegt der Stop mindestens auf Einstand.', ['MIN-EXIT-02', 'MIN-BE-01', 'MIN-STOP-01']);
+  darvas.rule_cards[0].executable.gaps = ['Pyramiding in steigende Boxen nicht simuliert', 'Fundamentalfilter fehlt'];
+  minervini.rule_cards[0].source_basis.note = 'Trend Template ist mehrfach belegt; die VCP-Erkennung ist eine VU-Umsetzung. Ausstieg ab 2.0.0: Schluss unter der 50-Tage-Linie mit erhöhtem Volumen und Einstand ab 3 Anfangsrisiken – nur sekundär bzw. sinngemäß belegt. Bis 1.1.0 war der Ausstieg eine reine VU-Hilfsregel.';
+  // Quellenpruefung Runde 7: je Regel eingeordnet (fidelity.mjs), Primaerseiten nur als Suchauszug lesbar.
+  for (const s of [momentum, weinstein, darvas, minervini, donchian]) for (const c of s.rule_cards || []) {
+    c.source_basis.fidelityReview = 'PERFORMED_R7_SNIPPETS';
+    c.source_basis.fidelityNote = 'Quellenprüfung Runde 7: jede Regel ist als Originalregel, vertretbare Umsetzung, VU-Erweiterung, unbelegt oder fehlend eingeordnet (Methodenseite „Was stammt vom Trader“). Primärseiten waren nur als Suchauszug lesbar; Wortlaute sind am Original zu prüfen.';
+  }
   for (const s of [momentum, weinstein, darvas, minervini]) {
     const c = s.rule_cards[0];
     c.historical_validation = { status: 'PREREGISTERED_R7', note: 'Version 2.0.0 ist vorab registriert (PREREGISTRATION-R7.json) und wird intern geprüft; das Ergebnis wird erst nach Klärung der Veröffentlichungsrechte gezeigt.' };

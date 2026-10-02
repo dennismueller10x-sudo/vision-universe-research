@@ -32,7 +32,7 @@ export function manage(ctx, t, pos, p = PARAMS) {
 }
 
 // Portfolio (KK-FAQ): Risiko meist 0,3-0,5 % je Trade, Positionen meist 10-20 %.
-export const PORTFOLIO = Object.freeze({ initialEquity: 100000, riskPerTrade: 0.005, maxPositionPct: 0.20, maxPositions: 10, maxExposure: 1.0, riskFreeRate: 0.02, source: 'KK-FAQ (Risiko 0,3-0,5 %, Positionen 10-20 %); Höchstzahl 10 ist VU' });
+export const PORTFOLIO = Object.freeze({ initialEquity: 100000, riskPerTrade: 0.005, maxPositionPct: 0.20, maxPositions: 10, maxExposure: 1.0, riskFreeRate: 0.02, source: 'Kullamägi-FAQ: Risiko meist 0,3–0,5 %, Positionen meist 10–20 %; Höchstzahl 10 ist VU.' });
 
 export default {
   id: 'MOMENTUM_BREAKOUT', variant: 'KK_COMMON_BREAKOUT_DAILY_R7', version: '2.0.0', timeframe: 'daily',

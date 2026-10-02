@@ -661,7 +661,7 @@ for (const s of [momentum, weinstein, darvas, minervini, greenblatt, donchian, c
   }
 }
 
-applyR7({ momentum, weinstein, darvas, minervini, rule });
+applyR7({ momentum, weinstein, darvas, minervini, donchian, rule });
 export const STRATEGIES = [momentum, weinstein, darvas, minervini, donchian, canslim, piotroski, greenblatt, ...advancedList];
 // Produktmodus: LIVE (Ein-/Ausstiege werden gerechnet), PARTIAL_CHECK (nur
 // pruefbare Kriterien, keine Signale), DATA_PENDING (Regeln beschrieben, Daten

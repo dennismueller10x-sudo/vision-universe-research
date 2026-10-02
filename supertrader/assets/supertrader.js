@@ -733,7 +733,9 @@
     entries.forEach(function (e) { e.s.strategyId = e.s.strategyId || e.id; });
     var ph = function (e) { return e.kind === 'partial' ? 'partial' : phaseKey(e.s); };
     // Aktuelle Methoden vor Forschung, dann Phase und Abstand zum Trigger.
-    entries.sort(function (a, b) { return (isResearchId(a.id) ? 1 : 0) - (isResearchId(b.id) ? 1 : 0) || PHASE_ORDER.indexOf(ph(a)) - PHASE_ORDER.indexOf(ph(b)) || dist(a.s) - dist(b.s); });
+    // Teilpruefungen (kein Signal) stehen hinter vollstaendigen Modellen, auch hinter Forschung.
+    var rank = function (e) { return e.kind === 'partial' ? 2 : isResearchId(e.id) ? 1 : 0; };
+    entries.sort(function (a, b) { return rank(a) - rank(b) || PHASE_ORDER.indexOf(ph(a)) - PHASE_ORDER.indexOf(ph(b)) || dist(a.s) - dist(b.s); });
     var name = (entries[0] && (entries[0].s.companyName || entries[0].s.name)) || (history[0] && history[0].s.companyName) || '';
     main.appendChild(h('header', { class: 'st-lens-h' }, [h('div', null, [h('h1', { text: sym || '–' }), h('div', { class: 'co', text: name })]), h('div', { class: 'st-price', id: 'st-live' })]));
     if (!sym || (!entries.length && !history.length)) {
@@ -771,7 +773,7 @@
     var re = s.discovery && s.discovery.kind === 'RULE_VERSION_REASSESSMENT' ? s.discovery.reassessment : null;
     var kids = [h('div', { class: 'r1' }, [badgeFor(s), p && p.since ? h('span', { class: 'since', text: 'seit ' + dateShort(p.since) }) : null])];
     if (isResearchS(strat)) kids[0].appendChild(h('span', { class: 'st-note-tag research', title: 'Forschung · Modellbeobachtung (' + ev(strat).levelLabel + '). ' + (s.entry ? 'Ausstieg nach Regelversion ' + (s.version || '') + '.' : 'Keine Einstiegschance.'), text: 'Forschung · ' + ev(strat).levelLabel }));
-    if (re) kids.push(h('div', { class: 'st-note-tag wide', title: 'Vorgänger ' + re.previousSignalId, text: 'Neubewertung nach Regelwechsel (v' + re.previousVersion + ' → v' + s.version + ') auf Kursstand ' + dateShort(re.priceDataAsOf) + ' — kein neues Marktereignis.' }));
+    if (re) kids[0].appendChild(h('span', { class: 'st-note-tag', title: 'Neubewertung nach Regelwechsel v' + re.previousVersion + ' → v' + s.version + ' auf Kursstand ' + dateShort(re.priceDataAsOf) + ' — kein neues Marktereignis. Vorgänger ' + re.previousSignalId, text: 'Regelwechsel v' + re.previousVersion + ' → v' + s.version }));
     kids.push(setupBar(s));
     if (p) {
       var cells = [
@@ -819,8 +821,8 @@
     // Regelwechsel ist kein Marktereignis: Das abgeloeste Setup und seine
     // Neubewertung erscheinen als EIN Eintrag "Regelwechsel", nicht als zweites
     // "Vorbereitet" am selben Kurstag.
-    var hasSuccessor = {};
-    items.forEach(function (it) { if (it.s.retiredBy && it.s.retiredBy.successorId) hasSuccessor[it.s.id] = true; });
+    var hasSuccessor = {}, predecessorOf = {};
+    items.forEach(function (it) { if (it.s.retiredBy && it.s.retiredBy.successorId) { hasSuccessor[it.s.id] = true; predecessorOf[it.s.retiredBy.successorId] = it.s; } });
     items.forEach(function (it) {
       (it.s.transitions || []).forEach(function (t, i) {
         if (t.ruleId === 'LC-VERSION-RETIRED' && hasSuccessor[it.s.id]) return;
@@ -829,7 +831,8 @@
     });
     ev.sort(function (a, b) { return (b.t.date || '').localeCompare(a.t.date || '') || (a.s === b.s ? b.i - a.i : 0); });
     return h('ol', { class: 'st-tl' }, ev.map(function (e) {
-      var re = e.t.origin === 'RULE_VERSION_REASSESSMENT' && e.s.discovery && e.s.discovery.reassessment;
+      // Aeltere Protokolle tragen nur origin; Vorgaengerversion dann aus dem abgeloesten Signal.
+      var re = e.t.origin === 'RULE_VERSION_REASSESSMENT' ? ((e.s.discovery && e.s.discovery.reassessment) || { previousVersion: predecessorOf[e.s.id] ? (predecessorOf[e.s.id].version || '1.0.0') : '?', priceDataAsOf: e.t.date }) : null;
       var st = re ? 'REASSESSED' : e.t.state === 'INVALIDATED' && e.t.ruleId === 'LC-VERSION-RETIRED' ? 'RETIRED' : e.t.state;
       var txt = re ? 'Regel v' + re.previousVersion + ' → v' + e.s.version + ' · Setup auf Kursstand ' + dateShort(re.priceDataAsOf) + ' neu bewertet (' + (PHASE[e.t.state] || [0, e.t.state])[1] + ') — kein neues Marktereignis'
         : ruleText(e.t.ruleId) + (isFinite(e.t.price) ? ' · Kurs ' + num(e.t.price) : '');
