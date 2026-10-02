@@ -24,6 +24,27 @@ const read=p=>JSON.parse(readFileSync(p,'utf8')),sha=b=>createHash('sha256').upd
 const Company=createRequire(import.meta.url)('../../quant/engines/company-master.js');
 const write=(p,d)=>{mkdirSync(dirname(p),{recursive:true});writeFileSync(p,JSON.stringify(d,null,2)+'\n');};
 const byTicker=rows=>new Map((rows||[]).map(r=>[r.ticker,r]));
+export function assembleLogoCandidates({prepared,projection,fundamentals}){
+ const securities=byTicker(prepared.priceSecurities||prepared.securities),projected=byTicker(projection.report?.rows||projection.rows),secRows=byTicker(fundamentals.rows);
+ const cik=value=>/^\d{1,10}$/.test(String(value??''))?String(value).padStart(10,'0'):null;
+ return (prepared.priceCandidates||prepared.candidates).map(candidate=>{
+  const security=securities.get(candidate.ticker),companyId=security?.companyId||security?.issuerId||candidate.companyId||candidate.company_id||
+   (cik(security?.cik)?'iss_cik_'+cik(security.cik):null);
+  // Accepted discovery candidates retain their audited identity evidence.
+  // Existing regression members need fresh canonical/SEC proof; old raw rows
+  // contain no decision identity and a preserved chart alone proves nothing.
+  if(candidate.regressionCase!==true)return {...candidate,companyId};
+  const product=projected.get(candidate.ticker),sec=secRows.get(candidate.ticker),canonicalCik=cik(security?.cik);
+  const resolved=!!(security&&prepared.pricePayloads?.has(candidate.ticker)&&product?.watchlist?.ready===true&&
+   product.securityId===security.securityId&&product.instrumentId===security.instrumentId&&
+   product.chart?.freshValidationState==='VALIDATED'&&product.chart?.canonicalProof?.corporateActionStatus==='PASS'&&
+   sec?.pitValid===true&&sec.securityId===security.securityId&&canonicalCik&&canonicalCik===cik(sec.cik));
+  const identity={resolved,source:'FRESH_CANONICAL_PRICE_SEC_IDENTITY',securityId:security?.securityId||null,
+   instrumentId:security?.instrumentId||null,cik:resolved?canonicalCik:null,corporateActionGateWaived:false};
+  return {...candidate,companyId,cik:resolved?canonicalCik:candidate.cik,identityVerified:resolved,identity,
+   evidence:{...candidate.evidence,identity}};
+ });
+}
 export function resolvePrivateReview({root,sourceCache,sourceRun,asOf,workDir}){
  const policy=read(join(sourceRun,'tiingo2_consumer_policy_report.json')),staged=read(join(sourceRun,'tiingo2_staged_candidates.json'));
  const discovery=read(join(sourceRun,'tiingo2_fresh_discovery.json')),listings=byTicker(selectCurrentListings(discovery.records,asOf).selected),cacheEntries=[];
@@ -112,7 +133,7 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  const factors=await materializeFactors({root:shadowRoot,tickers:scope,marketStoreDir,privateDir:join(workDir,'factor-private'),asOf,onProgress});
  const surfaces=await materializeProductSurfaces({shadowRoot,marketStoreDir,tickers:scope,freshPriceTickers:[...prepared.pricePayloads.keys()],privateDir:join(workDir,'surface-private'),onProgress});
  const logoReviews=join(root,'docs/tiingo2-productization/logo-asset-reviews.json');
- const logoCandidates=(prepared.priceCandidates||prepared.candidates).map(candidate=>({...candidate,companyId:(prepared.priceSecurities||prepared.securities).find(s=>s.ticker===candidate.ticker)?.companyId}));
+ const logoCandidates=assembleLogoCandidates({prepared,projection,fundamentals});
  const logos=await materializeLogos({root,outputRoot:shadowRoot,tickers:scope,candidates:logoCandidates,seedRoot:root,assetReviews:existsSync(logoReviews)?read(logoReviews):{},noWikidata:true,secLogos:true,fetchAssets:allowNetwork,onProgress});
  const universeBuild=await runExistingProcess(process.execPath,[join(shadowRoot,'scripts/quant/build-universe-list.mjs')],{cwd:shadowRoot,onProgress});if(universeBuild.code!==0)throw Error('UNIVERSE_LIST_BUILDER_FAILED');
  const capabilityFile=join(shadowRoot,'quant/data/universe/market-capability.json'),capability=read(capabilityFile),technical=byTicker(surfaces.rows);
