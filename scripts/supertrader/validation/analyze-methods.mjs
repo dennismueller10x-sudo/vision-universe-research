@@ -31,6 +31,10 @@ import weinstein from '../engine/strategies/weinstein.mjs';
 import darvas from '../engine/strategies/darvas.mjs';
 import minervini from '../engine/strategies/minervini.mjs';
 import { buildWeekly } from '../engine/weekly.mjs';
+import kk2 from '../engine/strategies/kk-breakout-v2.mjs';
+import weinstein2 from '../engine/strategies/weinstein-v2.mjs';
+import darvas2 from '../engine/strategies/darvas-v2.mjs';
+import minervini2 from '../engine/strategies/minervini-v2.mjs';
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
@@ -40,6 +44,12 @@ const Master = require(path.join(root, 'quant/engines/us-security-master.js'));
 
 export const PREREG_METHODS = 'supertrader-validation-prereg-methods-1.0.0';
 export const ENGINES = [kk, weinstein, darvas, minervini];
+// Runde 7: vorab registrierte neue Versionen (PREREGISTRATION-R7.json) plus die
+// getesteten Vorgaenger als Reproduzierbarkeitsreferenz auf demselben Lauf.
+export const PREREG_R7 = 'supertrader-validation-prereg-r7-1.0.0';
+export const ENGINES_R7 = [kk2, weinstein2, darvas2, minervini2];
+export const REFERENCE_R7 = [kk, weinstein, darvas, minervini];
+export const portfolioOf = (e) => (e.portfolio ? { ...PORTFOLIO_DEFAULTS, ...e.portfolio } : PORTFOLIO_DEFAULTS);
 const W = L.WINDOW;
 const EXEC2 = { ...DEFAULT_EXECUTION, slippageBps: 20, commissionBps: 2 };
 const SPLIT_PERIODS = [['2016-01-04', '2020-12-31'], ['2021-01-01', W.to]];
@@ -306,6 +316,9 @@ async function main() {
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
   const LIMIT = Number(arg('--limit', '0'));
+  const SET = arg('--set', 'methods');
+  const RUN = SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
+  const keyOf = (e) => (SET === 'r7' ? `${e.id}@${e.version}` : e.id);
   const t0 = Date.now();
   const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -313,23 +326,23 @@ async function main() {
   const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, bench, budget, mine } = await loadPitData({ LIMIT, log });
   let k = 0;
   // 3. Simulation je Methode.
-  const R = Object.fromEntries(ENGINES.map((e) => [e.id, { base: [], cost2: [], c3: [] }]));
+  const R = Object.fromEntries(RUN.map((e) => [keyOf(e), { base: [], cost2: [], c3: [] }]));
   const pickC3 = new Set(segs.map((s) => s.id).sort((a, b) => L.sha256(a).localeCompare(L.sha256(b))).slice(0, 400));
   k = 0;
   for (const seg of segs) {
     const ctx = segCtx(seg, bench);
-    for (const e of ENGINES) {
+    for (const e of RUN) {
       const base = tradesFor(e, seg, ctx, DEFAULT_EXECUTION);
-      R[e.id].base.push(...base);
-      R[e.id].cost2.push(...tradesFor(e, seg, ctx, EXEC2));
-      if (pickC3.has(seg.id) && R[e.id].c3.length < 20) { const t = base.find((x) => !x.terminal); if (t) R[e.id].c3.push(verifyGeneric(t, ctx, e)); }
+      R[keyOf(e)].base.push(...base);
+      R[keyOf(e)].cost2.push(...tradesFor(e, seg, ctx, EXEC2));
+      if (pickC3.has(seg.id) && R[keyOf(e)].c3.length < 20) { const t = base.find((x) => !x.terminal); if (t) R[keyOf(e)].c3.push(verifyGeneric(t, ctx, e)); }
     }
     if (++k % 1000 === 0) log(`simuliert ${k}/${segs.length}`);
   }
-  log('Simulation fertig: ' + ENGINES.map((e) => `${e.id} ${R[e.id].base.length}`).join(', '));
+  log('Simulation fertig: ' + RUN.map((e) => `${keyOf(e)} ${R[keyOf(e)].base.length}`).join(', '));
 
   // 4. Portfolio und Kennzahlen.
-  const cfg = PORTFOLIO_DEFAULTS;
+  let cfg = PORTFOLIO_DEFAULTS;
   const metricsOf = (run, label, cal) => {
     const eq = run.equity;
     const tr = run.taken.filter((p) => p.returnPct !== undefined).map((p) => ({ result: { returnPct: p.returnPct, sessionsHeld: p.tr.heldSessions } }));
@@ -341,8 +354,9 @@ async function main() {
     return { label, cagr: m.cagr, spyCagr: m.benchmarkCagr, excessCagr: m.excessCagr, totalReturn: m.totalReturn, maxDrawdown: m.maxDrawdown, volatility: m.volatility, sharpe: m.sharpe, trades: m.trades, hitRate: m.hitRate, expectancy: m.expectancy, profitFactor: m.profitFactor, exposure: m.exposure, avgHoldingSessions: m.avgHoldingSessions, annualReturns: m.annualReturns, subperiods: sub, phases, skipped: run.skipped.length, taken: run.taken.length, terminalCount: run.book.terminalCount, reconciliation: reconcile(run, cfg) };
   };
   const results = {};
-  for (const e of ENGINES) {
-    const all = R[e.id].base, all2 = R[e.id].cost2, surv = all.filter((t) => t.survivor);
+  for (const e of RUN) {
+    cfg = portfolioOf(e);
+    const all = R[keyOf(e)].base, all2 = R[keyOf(e)].cost2, surv = all.filter((t) => t.survivor);
     const cal = [...new Set([...calendar, ...all.flatMap((t) => [t.entry.date, ...t.exits.map((x) => x.date)]).filter((d) => d >= W.from && d <= W.to)])].sort();
     const runs = {};
     for (const sc of ['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO']) runs[sc] = metricsOf(runPortfolioTR(all, cal, cfg, { scenario: sc }), sc, cal);
@@ -359,32 +373,39 @@ async function main() {
     const plain = all.filter((t) => !t.terminal || t.terminal.kind === 'OPEN_AT_END');
     const bySym = new Map(); for (const t of plain) (bySym.get(t.listingId) || bySym.set(t.listingId, []).get(t.listingId)).push(t);
     const priceOf = (sym, date) => { for (const t of bySym.get(sym) || []) { const v = t.marks.get(date); if (v !== undefined) return v; } return undefined; };
-    const eng = runPortfolio(plain.map((t) => ({ symbol: t.listingId, signal: { id: t.id, entry: { ...t.entry }, initialStop: t.initialStop, exits: t.exits.map((x) => ({ ...x })) } })), priceOf, cal, cfg);
-    const mine2 = runPortfolioTR(plain, cal, cfg, { commissionBps: 0, dividends: false, sizingSameDay: true, engineCompat: true });
+    const cfgC2 = { ...cfg, progressive: null };
+    const eng = runPortfolio(plain.map((t) => ({ symbol: t.listingId, signal: { id: t.id, entry: { ...t.entry }, initialStop: t.initialStop, exits: t.exits.map((x) => ({ ...x })) } })), priceOf, cal, cfgC2);
+    const mine2 = runPortfolioTR(plain, cal, cfgC2, { commissionBps: 0, dividends: false, sizingSameDay: true, engineCompat: true });
     let c2 = 0; for (let i = 0; i < cal.length; i++) c2 = Math.max(c2, Math.abs(eng.equity[i].equity / mine2.equity[i].equity - 1));
     const r0 = runPortfolioTR(all, cal, cfg, { scenario: 'S0_LAST_PRICE' });
     const c5 = r0.taken.filter((p) => p.returnPct !== undefined).sort((a, b) => Math.abs(b.returnPct) - Math.abs(a.returnPct)).slice(0, 10).map((p) => ({ id: p.tr.id, returnPct: p.returnPct, entry: p.tr.entry, lastExit: p.tr.exits[p.tr.exits.length - 1] || null, terminal: p.tr.terminal ? { ...p.tr.terminal } : null, rawCloseAtConfirm: p.tr.rawCloseAtConfirm }));
     const at5 = all.filter((t) => !(t.rawCloseAtConfirm >= e.PARAMS.minPrice)).length;
-    results[e.id] = {
-      variant: e.variant, version: e.version, params: e.PARAMS, engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
+    results[keyOf(e)] = {
+      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
       runs, judgement: judge(runs), at5Violations: at5,
-      controls: { C1max: Math.max(...['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO', 'COST2_S1', 'SURVIVORS_ONLY'].map((x) => runs[x].reconciliation.relDiff)), C2maxRelDiff: c2, C3m: R[e.id].c3, C5: c5 },
+      controls: { C1max: Math.max(...['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO', 'COST2_S1', 'SURVIVORS_ONLY'].map((x) => runs[x].reconciliation.relDiff)), C2maxRelDiff: c2, C3m: R[keyOf(e)].c3, C5: c5 },
       diagnostics: { allTrades: diag(all), survivorTrades: diag(surv), delistedTrades: diag(all.filter((t) => !t.survivor)), takenS0: diag(r0.taken.map((p) => p.tr)), maxPositionsSkipped: r0.skipped.filter((x) => x.reason === 'MAX_POSITIONS').length },
     };
-    R[e.id] = null;
-    log(`${e.id}: Portfolio fertig`);
+    if (SET === 'r7') {
+      const { signalQuality, exposureScenarios, theoreticalMaxExposure } = await import('./diagnose-methods.mjs');
+      const spyIdx = new Map(spyTR.map((p, i) => [p.date, i]));
+      results[keyOf(e)].signalQuality = signalQuality(all, spyIdx, spyTR);
+      results[keyOf(e)].capital = { ...exposureScenarios(r0.equity, spyIdx, spyTR), ...theoreticalMaxExposure(all, cfg) };
+    }
+    R[keyOf(e)] = null;
+    log(`${keyOf(e)}: Portfolio fertig`);
   }
 
   if (!LIMIT) {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE_METHODS', classB: sp.classB } }));
   }
-  const result = { schema: 'supertrader-validation-methods-result-1.0.0', at: new Date().toISOString(), prereg: PREREG_METHODS, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r7' ? PREREG_R7 : PREREG_METHODS, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
     counts: { listings: listings.length, members: members.length, segments: segs.length, duplicates: dup.size, offCalendar }, execution: DEFAULT_EXECUTION, portfolio: cfg,
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, results, budget: budget.spent };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');
   const sealed = L.encryptForOwner(pem, Buffer.from(JSON.stringify(result)));
-  fs.writeFileSync(path.join(OUT_DIR, LIMIT ? 'analyze-methods-smoke.sealed.json' : 'analyze-methods.sealed.json'), sealed);
+  fs.writeFileSync(path.join(OUT_DIR, `analyze-${SET}${LIMIT ? '-smoke' : ''}.sealed.json`), sealed);
   log(`Verschlüsseltes Ergebnis geschrieben (${sealed.length} Byte)`);
 }
 

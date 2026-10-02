@@ -38,6 +38,18 @@ export function buildWeekly(inst, longPoints, bench) {
   }
   w.ma30 = sma(w.close, 30);
   w.rs = w.close.map((c, i) => { const b = bench.byWeek.get(w.key[i]); return Number.isFinite(b) && b > 0 ? c / b : null; });
+  // Runde 7 (Weinstein 2.0.0): Marktstufe (SPY gegen seine 30-Wochen-Linie),
+  // Mansfield-RS (Verhaeltnis zum Markt gegen dessen 52-Wochen-Schnitt) und
+  // Volumenschnitt der vier Vorwochen. Fuer Version 1.x ohne Wirkung.
+  w.mkt = w.key.map((k) => { const b = bench.byWeek.get(k); return Number.isFinite(b) && b > 0 ? b : null; });
+  w.mktMa30 = sma(w.mkt, 30);
+  const rsMa52 = sma(w.rs, 52);
+  w.mansfield = w.rs.map((r, i) => (Number.isFinite(r) && Number.isFinite(rsMa52[i]) && rsMa52[i] > 0 ? r / rsMa52[i] - 1 : null));
+  w.volAvg4 = w.volume.map((_, i) => {
+    let s = 0, c = 0;
+    for (let j = i - 4; j < i; j++) if (j >= 0 && Number.isFinite(w.volume[j])) { s += w.volume[j]; c++; }
+    return c === 4 ? s / c : null;
+  });
   w.volAvg = w.volume.map((_, i) => {
     let s = 0, c = 0;
     for (let j = i - 10; j < i; j++) if (j >= 0 && Number.isFinite(w.volume[j])) { s += w.volume[j]; c++; }
