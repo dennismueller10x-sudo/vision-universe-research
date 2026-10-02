@@ -119,7 +119,7 @@ Eine CIK wird keinem früheren Listing zugeordnet: die CIK-Karte gilt dem heutig
 
 - **Regel:** Eine Reihe gilt nur dann als Gesamtrendite, wenn jede Ausschüttung und jeder Split in der bereinigten Spalte angekommen ist. Ein Ex-Tag ohne Faktorsprung, ein Faktorsprung außerhalb 0,6–1,4 × der gemeldeten Ausschüttung oder ein nicht bereinigter Split ist eine Ablehnung, keine Warnung.
 - **Ein Vertrag:** `quant/engines/market-quality.js totalReturnVerdict` – dieselbe Funktion für SPY (`refresh-benchmark-history.mjs`), Signal- und Setup-Studie (`scripts/quant/lib/daily-prices.mjs`) und die Reparatur.
-- **Ursache der Ablehnungen:** Der tägliche Anhang behält die adjustedClose-Skala des Abruftags; jede spätere Ausschüttung fehlt in der Spalte. `scripts/market/repair-total-return-history.mjs` holt für abgelehnte Reihen die ganze Historie in einer Anfrage (wie SPY), höchstens 600 je Lauf, jüngste Lücke zuerst. Übernommen wird nur, was den Vertrag besteht und die Rohschlüsse bestätigt.
+- **Ursache der Ablehnungen:** Der tägliche Anhang behält die adjustedClose-Skala des Abruftags; jede spätere Ausschüttung fehlt in der Spalte. `scripts/market/repair-total-return-history.mjs` holt für abgelehnte Reihen die ganze Historie in einer Anfrage (wie SPY), höchstens 1.500 je Lauf, jüngste Lücke zuerst. Übernommen wird nur, was den Vertrag besteht und die Rohschlüsse bestätigt.
 - **Kein Mischen:** Unter 95 % bestätigter Titel rechnet die Signal-Studie ganz in Kursrendite, die Setup-Studie ebenso. Darüber fallen abgelehnte Titel heraus und werden gezählt (`quant/data/product/total-return-quality-v1.json`).
 
 ## Methodikwechsel bei gleichem Stichtag

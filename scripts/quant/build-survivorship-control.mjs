@@ -156,7 +156,7 @@ async function delistedInventory(survivorLastKeys) {
     if (!c) { activeFetched++; continue; }
     classes[c.cls]++;
     const y = (e.last || e.metaEnd || "").slice(0, 4);
-    if (y && (c.cls === "A" || c.cls === "B")) byEndYear[y] = (byEndYear[y] || 0) + 1;
+    if (y) { const b = byEndYear[y] || (byEndYear[y] = { ended: 0, usable: 0 }); b.ended++; if (c.cls === "A" || c.cls === "B") b.usable++; }
   }
   const usable = bundle.listings.filter((l) => !dup.has(l.id));
   for (const l of usable) trCount[l.tr] = (trCount[l.tr] || 0) + 1;
@@ -196,7 +196,12 @@ async function main() {
 
   const probe = json("scripts/supertrader/probe/results-2026-10-01.json");
   const endedByYear = probe.delistedListingsByEndYear || {};
-  const coverageByYear = fetched.available ? Object.fromEntries(Object.entries(endedByYear).filter(([y]) => y >= "2016").map(([y, n]) => [y, { listedEnded: n, usable: fetched.byEndYear[y] || 0, share: n ? Math.round(((fetched.byEndYear[y] || 0) / n) * 1000) / 1000 : null }])) : null;
+  /* Nenner: beendete Listings eingeschlossener Gattungen im Abruf (ohne ETFs,
+     SPACs usw.). Die Zahl der Tickerliste (alle Wertpapierarten) steht nur
+     daneben; sie ist kein Nenner. Alt-Listings neu vergebener Kuerzel (D)
+     tragen kein Enddatum im Abruf und stehen gesamt in den Klassen. */
+  const coverageByYear = fetched.available ? Object.fromEntries(Object.keys(fetched.byEndYear).filter((y) => y >= "2015").sort().map((y) => { const b = fetched.byEndYear[y];
+    return [y, { endedIncluded: b.ended, usable: b.usable, share: b.ended ? Math.round((b.usable / b.ended) * 1000) / 1000 : null, tickerListEndedAllTypes: endedByYear[y] ?? null }]; })) : null;
   const D = fetched.available ? fetched.classes.D : null;
   const delistedTotal = fetched.available ? Object.values(fetched.classes).reduce((a, b) => a + b, 0) : null;
 

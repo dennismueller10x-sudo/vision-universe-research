@@ -143,6 +143,9 @@ test("sensitivity: survivors only vs historical eligible subset, same basis, cen
     /* zensiert, nicht mit einer Annahme gewertet: die Last-Price-Variante wertet mehr Faelle */
     assert.ok(r.LAST_PRICE_ASSUMPTION.cases >= r.HISTORICAL_ELIGIBLE_SUBSET.cases);
     censored += r.HISTORICAL_ELIGIBLE_SUBSET.censored;
+    /* Ein delisteter Titel gehoert nach seinem Ende nicht mehr zur Base Rate:
+       die Annahme "letzter Kurs" darf die Base Rate nicht mit 0-%-Wochen fuellen. */
+    assert.ok(Math.abs(r.LAST_PRICE_ASSUMPTION.baseRate - r.HISTORICAL_ELIGIBLE_SUBSET.baseRate) < 0.02, r.id + " Base Rate der Annahme verzerrt");
     for (const k of ["positiveShare", "baseRate", "delta", "median", "maxDrawdownMedian"]) assert.ok(k in r.historicalMinusSurvivors);
   }
   assert.ok(censored > 0, "Faelle ueber das Delisting hinaus werden gezaehlt und nicht gewertet");

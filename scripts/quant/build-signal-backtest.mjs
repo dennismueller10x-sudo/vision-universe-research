@@ -463,6 +463,10 @@ function sensitivity() {
       for (const T of list) {
         if (T.c[w] > 0) members[w]++;
         if (w - T.first < SB.WARMUP_WEEKS) continue;
+        /* Mitglied ist nur, wer in der Einstiegswoche gehandelt wurde: ein
+           delisteter Titel gehoert nach seinem Ende nicht mehr zur Base Rate
+           (sonst zaehlte die Annahme "letzter Kurs" ihn mit 0 % weiter). */
+        if (!(T.c[w + 1] > 0)) continue;
         const a = T.out[w + 1], b = T.out[w + 1 + h];
         if (a > 0 && b > 0) vals.push(b / a - 1);
       }
@@ -480,7 +484,7 @@ function sensitivity() {
       let raw = 0, censored = 0, delistedCases = 0;
       for (const T of list) {
         for (const w of eventsOf(T.c, rule)) {
-          if (w < w0 || w - T.first < SB.WARMUP_WEEKS || w + 1 >= W) continue;
+          if (w < w0 || w - T.first < SB.WARMUP_WEEKS || w + 1 >= W || !(T.c[w + 1] > 0)) continue;
           raw++;
           const o = SB.outcome(T.out, w + 1, h);
           if (!o) { if (T.delisted && w + 1 + h > T.last && w + 1 + h < W) censored++; continue; }

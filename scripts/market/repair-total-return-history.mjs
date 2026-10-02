@@ -33,7 +33,7 @@
 
    Ausfuehren:
      TIINGO_API_KEY=... node scripts/market/repair-total-return-history.mjs \
-       [--work-dir .market-cache] [--report <pfad>] [--max 600] [--dry-run]
+       [--work-dir .market-cache] [--report <pfad>] [--max 1500] [--dry-run]
    ========================================================================= */
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -59,7 +59,7 @@ function arg(name, fallback) {
 const DRY_RUN = argv.includes("--dry-run");
 const WORK_DIR = arg("--work-dir", null);
 const REPORT = arg("--report", null);
-const MAX = Number(arg("--max", "600"));
+const MAX = Number(arg("--max", "1500"));
 const apiKey = process.env.TIINGO_API_KEY || null;
 const today = new Date().toISOString().slice(0, 10);
 export const REPAIRABLE = ["DIVIDEND_GAP", "SPLIT_GAP", "CONTRADICTED"];

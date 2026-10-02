@@ -74,7 +74,7 @@ test("repair: counts by reason and accepts a refetch only when raw closes agree"
   assert.equal(rawCloseAgreement(stored, series()).ok, true);
   const other = series().map((b) => ({ ...b, close: b.close * 1.3 }));
   assert.equal(rawCloseAgreement(stored, other).ok, false, "Gegenprobe: eine andere Firma unter demselben Kuerzel wird nicht uebernommen");
-  assert.match(read(".github/workflows/market-data-refresh.yml"), /repair-total-return-history\.mjs --max 600/);
+  assert.match(read(".github/workflows/market-data-refresh.yml"), /repair-total-return-history\.mjs --max 1500/);
 });
 
 /* Signal-Studie ueber 60 echte Wochenreihen mit synthetischer Gesamtrendite;
