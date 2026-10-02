@@ -1,0 +1,66 @@
+name: Tiingo 2.0 incremental universe staging
+
+on:
+  schedule:
+    - cron: '20 8 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      max_symbols:
+        description: Maximum changed/rejected listings to validate (0-1000)
+        default: '750'
+        required: true
+  push:
+    branches: ['codex/tiingo2-universe-hardening']
+
+permissions:
+  contents: read
+concurrency:
+  group: tiingo2-universe-staging-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[tiingo2-stage]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/cache/restore@v4
+        with:
+          path: .market-cache/tiingo2
+          key: tiingo2-private-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: tiingo2-private-${{ github.ref_name }}-
+      - name: Focused staging regressions
+        run: node --test --test-reporter=dot quant/tests/tiingo2-*.test.mjs
+      - name: Incremental discovery, classification, evidence and preview
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          TIINGO2_BUDGET: ${{ inputs.max_symbols || '750' }}
+        run: |
+          node scripts/market/tiingo2-refresh.mjs --run-id "gh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" --probe --max-symbols "$TIINGO2_BUDGET"
+      - name: Protected outputs must remain unchanged
+        run: git diff --exit-code -- quant/data discover/data dashboard/config supertrader/data
+      - name: Credential boundary
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs --all
+      - name: Export only derived findings (never provider bars or factor price levels)
+        run: |
+          mkdir -p .verification/tiingo2
+          node scripts/market/tiingo2-export.mjs --run-dir ".market-cache/tiingo2/runs/gh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" --out .verification/tiingo2
+          cat .verification/tiingo2/tiingo2_final_universe_summary.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tiingo2-derived-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .verification/tiingo2
+          retention-days: 14
+      # Private authenticated provider bodies stay in a scoped CI cache. No
+      # artifact/repository publication of the cache and no deploy/write token.
+      - uses: actions/cache/save@v4
+        if: success()
+        with:
+          path: .market-cache/tiingo2
+          key: tiingo2-private-${{ github.ref_name }}-${{ github.run_id }}

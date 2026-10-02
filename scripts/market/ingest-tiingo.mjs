@@ -52,7 +52,10 @@ const Series = require(join(engines, "return-series.js"));
    r2 (2026-09-25): eine widerlegte Gesamtrendite-Spalte sperrt nur noch
    die Gesamtrendite. Ist die Reihe aus RAW_CLOSE + SPLIT_FACTOR
    rekonstruierbar, geht sie splitbereinigt in den Bestand. */
-const REJECTION_RULE = "ingest-rejection-r2-2026-09-25";
+/* r3: declared split factors are reconciled with raw/adjusted factors;
+   real split-day returns no longer invalidate legitimate histories.
+   Old r2 rejections must be retried under this corrected decision rule. */
+const REJECTION_RULE = "ingest-rejection-r3-2026-10-02";
 const Semantics = require(join(engines, "price-semantics.js"));
 const EodGate = require(join(engines, "market-eod-gate.js"));
 const RejectionLifecycle = require(join(engines, "rejection-lifecycle.js"));

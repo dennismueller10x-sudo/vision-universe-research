@@ -35,7 +35,7 @@
 
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var VERSION = "instrument-classification-1.0.0";
+  var VERSION = "instrument-classification-1.1.0";
 
   /* Die Klassen aus §7. OTHER ist die Sammelklasse fuer Gattungen, die
      erkannt, aber nicht einzeln gefuehrt werden (Units, Bezugsrechte);
@@ -173,7 +173,9 @@
     { type: "ADR",       re: /\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPT)/i },
     /* Dann der Inhalt. Eine Hinterlegung auf Vorzugsaktien landet hier - und
        das ist richtig: sie ist ein Vorzugspapier, kein ADR. */
-    { type: "PREFERRED", re: /\b(PREFERRED|PFD|PREF\.)/i },
+    /* Preferred Bank is an issuer name; a separately named preferred
+       stock or an explicit symbol marker still identifies the security. */
+    { type: "PREFERRED", re: /\b(PREFERRED(?!\s+BANK\b)|PFD|PREF\.)/i },
     { type: "WARRANT",   re: /\bWARRANTS?\b/i },
     { type: "FUND",      re: /\b(FUND|TRUST FUND|CLOSED[- ]END)\b/i },
     /* Eine Hinterlegung, deren Name weder ADR noch eine Gattung nennt, bleibt
@@ -248,7 +250,7 @@
         type = "ETN"; typeBasis = "SECURITY_NAME";
         reasons.push("Name weist das Papier als Exchange Traded Note aus.");
       }
-    } else if (at === "MUTUAL FUND" || at === "FUND") {
+    } else if (at === "MUTUAL FUND" || at === "MUTUALFUND" || at === "FUND") {
       type = "FUND"; confidence = "HIGH"; typeBasis = "PROVIDER_ASSET_TYPE";
       reasons.push("Anbieter meldet assetType=" + assetType + ".");
     } else if (at === "STOCK") {

@@ -33,7 +33,10 @@
        deklarierten Datenbestand finden, nicht Rundungsrauschen melden. */
     adjustmentRatioTolerance: 0.001,  // ab wann gilt der Faktor als veraendert
     splitJumpPct: 30,                 // ab wann gilt ein Rohsprung als Split
-    splitResidualPct: 15              // so viel darf die bereinigte Reihe dabei bewegen
+    splitResidualPct: 15,             // legacy diagnostic; never proof of split validity
+    minSplitRatio: 0.001,
+    maxSplitRatio: 1000,
+    corporateActionTolerance: 0.002   // ratio coherence, independent of market return
   };
 
   function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
@@ -343,6 +346,93 @@
     return out;
   }
 
+  /* Tiingo's splitFactor is new shares / old shares. Therefore
+     (adjClose/close)_today / (adjClose/close)_previous = splitFactor.
+     Genuine market returns cancel from this equation, including on
+     reverse-split days. Cash dividends additionally multiply the step
+     by 1/(1-divCash/(previousClose/splitFactor)); cash is in ex-day shares.
+     This gate diagnoses provider actions, it never invents an action. */
+  function classifyCorporateActions(bars, options) {
+    options = options || {};
+    var cfg = Object.assign({}, DEFAULTS, options.config || {});
+    var events = [], findings = [], counts = {};
+    function event(status, b, reason, evidence) {
+      counts[status] = (counts[status] || 0) + 1;
+      var e = { date: b && b.date || null, status: status, reason: reason,
+                evidence: evidence || null };
+      events.push(e);
+      if (status === "BAD_SERIES" || status === "MISSING_PROVIDER_ACTION") {
+        findings.push(finding("error", status, reason, { date: e.date }));
+      } else if (status === "UNKNOWN" || status === "SUSPICIOUS_PRICE_BREAK") {
+        findings.push(finding("warning", status, reason, { date: e.date }));
+      }
+    }
+    if (!Array.isArray(bars) || bars.length < 2) {
+      event("UNKNOWN", null, "INSUFFICIENT_HISTORY");
+    } else for (var i = 0; i < bars.length; i++) {
+      var b = bars[i], p = i ? bars[i - 1] : null;
+      if (!b || !/^\d{4}-\d{2}-\d{2}$/.test(String(b.date)) ||
+          !isNum(b.close) || b.close <= 0 ||
+          (p && (!p || b.date <= p.date)) ||
+          (b.adjustedClose !== null && b.adjustedClose !== undefined &&
+           (!isNum(b.adjustedClose) || b.adjustedClose <= 0))) {
+        event("BAD_SERIES", b, "INVALID_PRICE_OR_DATE");
+        continue;
+      }
+      if (!isNum(b.splitFactor) || !isNum(b.dividend)) {
+        event("UNKNOWN", b, "MISSING_PROVIDER_ACTION_COLUMNS");
+        continue;
+      }
+      if (b.splitFactor < cfg.minSplitRatio || b.splitFactor > cfg.maxSplitRatio || b.dividend < 0) {
+        event("BAD_SERIES", b, "INVALID_PROVIDER_ACTION");
+        continue;
+      }
+      var split = Math.abs(b.splitFactor - 1) > 1e-9;
+      var dividend = b.dividend > 0;
+      if (!p || !isNum(p.close) || p.close <= 0) {
+        if (split || dividend) event("UNKNOWN", b, "FIRST_BAR_ACTION_UNRECONCILED");
+        continue;
+      }
+      if (!isNum(b.adjustedClose) || !isNum(p.adjustedClose) || p.adjustedClose <= 0) {
+        event("UNKNOWN", b, "MISSING_ADJUSTED_ACTION_EVIDENCE");
+        continue;
+      }
+      var step = (b.adjustedClose / b.close) / (p.adjustedClose / p.close);
+      var previousInExDayShares = p.close / b.splitFactor;
+      var cashMultiplier = 1 - b.dividend / previousInExDayShares;
+      if (!(cashMultiplier > 0)) {
+        event("BAD_SERIES", b, "DIVIDEND_EXCEEDS_REFERENCE_PRICE");
+        continue;
+      }
+      var expected = b.splitFactor / cashMultiplier;
+      var error = Math.abs(step / expected - 1);
+      if (!isNum(step) || step <= 0 || !isNum(expected) || expected <= 0 || !isNum(error)) {
+        event("BAD_SERIES", b, "INVALID_FACTOR_EVIDENCE");
+        continue;
+      }
+      var evidence = { splitFactor: b.splitFactor, hasDividend: dividend,
+        expectedFactorStep: expected, observedFactorStep: step, factorRelativeError: error };
+      if (error > cfg.corporateActionTolerance) {
+        event(split || dividend ? "BAD_SERIES" : "MISSING_PROVIDER_ACTION", b,
+          split || dividend ? "ACTION_FACTOR_MISMATCH" : "UNEXPLAINED_ADJUSTMENT_STEP", evidence);
+      } else if (split) {
+        var ratio = b.splitFactor > 1 ? b.splitFactor : 1 / b.splitFactor;
+        var knownSplitRatio = cfg.splitRatios.some(function (r) { return Math.abs(ratio / r - 1) < 1e-8; });
+        var fractional = Math.abs(ratio - Math.round(ratio)) > 1e-8 && !knownSplitRatio;
+        event(fractional ? "VALID_SHARE_ACTION" : b.splitFactor > 1 ? "VALID_SPLIT" : "VALID_REVERSE_SPLIT",
+          b, "PROVIDER_FACTOR_RECONCILED", evidence);
+      } else if (dividend) {
+        event("VALID_SHARE_ACTION", b, "PROVIDER_CASH_DIVIDEND_RECONCILED", evidence);
+      } else if (Math.abs(b.adjustedClose / p.adjustedClose - 1) * 100 > cfg.maxDailyMovePct) {
+        event("SUSPICIOUS_PRICE_BREAK", b, "LARGE_MARKET_MOVE_WITH_STABLE_ADJUSTMENT_FACTOR", evidence);
+      }
+    }
+    var status = counts.BAD_SERIES ? "BAD_SERIES" : counts.MISSING_PROVIDER_ACTION ? "MISSING_PROVIDER_ACTION"
+      : counts.UNKNOWN ? "UNKNOWN" : counts.SUSPICIOUS_PRICE_BREAK ? "SUSPICIOUS_PRICE_BREAK" : "PASS";
+    return { ok: status === "PASS", status: status, events: events, counts: counts, findings: findings,
+      reviewRequired: status === "UNKNOWN" || status === "SUSPICIOUS_PRICE_BREAK" };
+  }
+
   /**
    * Prueft die bereinigte Spalte gegen die rohe.
    *
@@ -363,6 +453,10 @@
 
     var factors = adjustmentFactors(bars || []);
     var withFactor = factors.filter(function (f) { return f.factor !== null; });
+    withFactor.forEach(function (f) {
+      if (!isNum(f.factor) || f.factor <= 0) findings.push(finding("error", "invalid_adjustment_factor",
+        "Raw/adjusted prices do not yield finite positive adjustment evidence.", { date: f.date }));
+    });
 
     var observed = {
       bars: factors.length,
@@ -376,7 +470,7 @@
       findings.push(finding("info", "no_adjusted_column",
         "Keine bereinigte Spalte vorhanden. Ohne sie ist die Bereinigungsstufe aus den " +
         "Daten nicht ableitbar - das ist kein Fehler, nur eine Grenze der Pruefung."));
-      return { ok: true, inferredStatus: "UNKNOWN", claimedStatus: claimed,
+      return { ok: !findings.some(function (f) { return f.severity === "error"; }), inferredStatus: "UNKNOWN", claimedStatus: claimed,
                findings: findings, observed: observed };
     }
 
@@ -395,26 +489,40 @@
 
       var faktorAenderung = Math.abs(cur.factor / prev.factor - 1);
       if (faktorAenderung > config.adjustmentRatioTolerance) observed.factorChanges++;
+      if (!istSplittag && !istDividendentag && isNum(faktorAenderung) &&
+          faktorAenderung > config.corporateActionTolerance) {
+        findings.push(finding("error", "unexplained_adjustment_step",
+          "Adjustment factor changed without a reported split or cash dividend.", { date: cur.date }));
+      }
 
-      /* Split: die rohe Reihe springt, die bereinigte nicht. Die Richtung
-         der Konvention ist dabei gleichgueltig - geprueft wird der
-         Unterschied zwischen den Spalten, nicht ihr Vorzeichen. */
+      /* Test the reported split against the adjustment-factor step.
+         A real market return, including DNA's -17.6% reverse-split-day
+         return, must not be interpreted as failed split adjustment. */
       if (istSplittag && isNum(prev.close) && prev.close > 0) {
         var rohSprung = Math.abs(cur.close / prev.close - 1) * 100;
         var bereinigtSprung = Math.abs(cur.adjustedClose / prev.adjustedClose - 1) * 100;
-        if (rohSprung >= config.splitJumpPct && bereinigtSprung <= config.splitResidualPct) {
+        var cashBase = prev.close / cur.splitFactor;
+        var cashStep = istDividendentag ? 1 - cur.dividend / cashBase : 1;
+        var expectedStep = cur.splitFactor / cashStep;
+        var splitStep = cur.factor / prev.factor;
+        var splitFactorError = Math.abs(splitStep / expectedStep - 1);
+        if (cur.splitFactor > 0 && cashStep > 0 && isNum(expectedStep) && expectedStep > 0 &&
+            isNum(splitStep) && splitStep > 0 && isNum(splitFactorError) &&
+            splitFactorError <= config.corporateActionTolerance) {
           observed.splitEvidence.push({ date: cur.date, rawMovePct: round(rohSprung, 2),
-                                        adjustedMovePct: round(bereinigtSprung, 2) });
-        } else if (rohSprung >= config.splitJumpPct && bereinigtSprung > config.splitResidualPct) {
+            adjustedMovePct: round(bereinigtSprung, 2), expectedFactorStep: expectedStep,
+            observedFactorStep: splitStep, factorRelativeError: splitFactorError });
+        } else {
           /* Eine Beobachtung, kein Fehler. Dass die bereinigte Spalte den
              Split nicht mitmacht, ist bei einer ehrlich als RAW
              deklarierten Reihe genau das Erwartete. Zum Fehler wird es
              erst, wenn die Reihe etwas anderes von sich behauptet - und
              das entscheidet weiter unten der Widerspruch. */
           findings.push(finding("warning", "split_not_adjusted",
-            "Am " + cur.date + " springen beide Spalten (roh " + round(rohSprung, 1) +
-            " %, bereinigt " + round(bereinigtSprung, 1) + " %). Die bereinigte Spalte ist an " +
-            "diesem Splittag nicht bereinigt.", { date: cur.date }));
+            "Am " + cur.date + " passt der Bereinigungsfaktor " + splitStep +
+            " nicht zum gemeldeten Split-/Dividendenfaktor " + expectedStep +
+            " (relative Abweichung " + round(splitFactorError * 100, 4) + " %).",
+            { date: cur.date }));
         }
       }
 
@@ -725,7 +833,8 @@
   var api = { DEFAULTS: DEFAULTS, ASSESS_DEFAULTS: ASSESS_DEFAULTS,
               validateBars: validateBars, validateBatch: validateBatch,
               looksLikeSplit: looksLikeSplit, adjustmentFactors: adjustmentFactors,
-              validateAdjustmentConsistency: validateAdjustmentConsistency,
+      validateAdjustmentConsistency: validateAdjustmentConsistency,
+      classifyCorporateActions: classifyCorporateActions,
               weekdaysBetween: weekdaysBetween,
               assessSeries: assessSeries, assessBatch: assessBatch };
 
