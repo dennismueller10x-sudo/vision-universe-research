@@ -198,6 +198,10 @@ test("die Materialisierung ist aufrufbar und idempotent", () => {
     "die Materialisierung checkt den ausloesenden Commit aus und sieht den frischen Ablagestand nicht");
   assert.ok(job.indexOf("actions/checkout@v4") < job.indexOf("id: noetig"), "die Idempotenz-Stufe laeuft vor dem Checkout");
   assert.match(yml, /id: noetig/, "die Idempotenz-Stufe fehlt");
+  /* Erzwingen nur beim manuellen Start - nie aus der Kette oder dem Zeitplan. */
+  assert.match(yml, /workflow_dispatch:\s*\n\s+inputs:\s*\n(?:\s+#.*\n)*\s+force:\s*\n/, "kein manuelles Erzwingen nach einem Methodik-Wechsel");
+  assert.match(yml, /github\.event_name == 'workflow_dispatch' && inputs\.force == true/,
+    "force muss an den manuellen Start gebunden sein, sonst ist die Kette nicht mehr idempotent");
   assert.match(yml, /noop=true/,
     "es gibt keinen sauberen No-Op - ein Wiederholungslauf kostet dann eine Stunde umsonst");
   /* Die schweren Schritte muessen wirklich an der Bedingung haengen. */
