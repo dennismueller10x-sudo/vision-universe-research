@@ -33,7 +33,7 @@ Nach der vorab registrierten Elliott-Entscheidung (`PREREGISTRATION.md`, `protoc
 | VALIDATION (2013–18) | 20.025 | 37,1 % | 38,3 % | −1,2 pp (−2,0 … −0,5) | +0,5 % |
 | **TEST (≥ 2019)** | **46.544** | **35,6 %** | **35,9 %** | **−0,4 pp (−0,9 … +0,2)** | **−2,3 %** |
 
-Richtungs-Ablation im Holdout (Richtung korrekt, 52 Wochen): Trend 52,0 % (51,6 … 52,3), Momentum 50,5 %, Struktur 50,9 %, Muster 50,1 %, Konfluenz 51,9 % — gegen 50,3 % „immer long" mit +8,4 % mittlerer Rendite; die vorzeichenbehafteten Renditen aller Methoden liegen darunter. Kalibrierung weiterhin nicht bestanden. **Der Elliott-Wegfall ändert das Gesamtbild nicht: kein messbarer Szenario-Vorteil.**
+Richtungs-Ablation im Holdout (Richtung nach 13 Wochen korrekt): Trend 52,0 % (51,6 … 52,3), Momentum 50,5 %, Struktur 50,9 %, Muster 50,1 %, Konfluenz 51,9 % — gegen 50,3 % „immer long" mit +8,4 % mittlerer Rendite; die vorzeichenbehafteten Renditen aller Methoden liegen darunter. Kalibrierung weiterhin nicht bestanden. **Der Elliott-Wegfall ändert das Gesamtbild nicht: kein messbarer Szenario-Vorteil.**
 
 ## 1. Datenbasis
 
