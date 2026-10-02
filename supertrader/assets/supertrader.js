@@ -788,7 +788,7 @@
       ];
       var pc = D && portfolioCell(D, s); if (pc) cells.push(pc);
       kids.push(h('div', { class: 'st-cells' + (cells.length > 3 ? ' four' : '') }, cells.map(function (c, i) { return h('div', { class: 'c' + (i === 1 ? ' bad' : '') }, [h('span', { class: 'k', text: c[0] }), h('strong', { text: c[1] }), h('span', { class: 'd', text: c[2] })]); })));
-      var en = evidenceNote(p);
+      var en = evidenceNote(p, strat);
       if (en) kids.push(en);
       var nxt = p.phase === 'PREPARED' && p.trigger.basis !== 'INTRADAY_BUY_STOP' ? 'Wartet auf ' + ({ DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || 'Schluss') + ' über ' + num(p.trigger.value) + ' — dann Modelleinstieg zur nächsten Eröffnung.' : p.nextAction.text;
       kids.push(h('div', { class: 'st-next', title: p.nextAction.text }, [h('span', { class: 'k', text: 'Nächster Schritt des Modells' }), h('p', { text: nxt }), h('span', { class: 'r', title: p.nextAction.ruleId, text: 'Kursdaten vom ' + dateDe(p.nextAction.dataAsOf) })]));
@@ -801,12 +801,16 @@
   }
   // Runde 9: Belegart einer Kauf-Stop-Ausfuehrung. Tagesbalken zeigen, DASS der Trigger
   // erreicht wurde, nicht WANN; die Reihenfolge von Kauf und Tagestief kann offen sein.
-  function evidenceNote(p) {
+  function evidenceNote(p, strat) {
     if (!p.entry || p.entry.basis !== 'BUY_STOP') return null;
     var sameDay = (p.exits || []).filter(function (x) { return x.date === p.entry.date; })[0];
     var txt;
     if (sameDay && sameDay.basis === 'SAME_DAY_CERTAIN') txt = 'Ausstieg am Kauftag sicher: Der Tag schloss unter dem Stop – nach dem Kauf muss der Kurs den Stop durchschritten haben.';
-    else if (p.entry.sameDayOrder === 'AMBIGUOUS') txt = 'Reihenfolge am Kauftag offen: Das Tagestief lag unter dem Einstieg. Ob es vor oder nach dem Kauf entstand, zeigen Tageskurse nicht. Das Modell nimmt an: vorher – die Position läuft weiter. Liegt es danach, wäre sie am selben Tag zum Stop verkauft worden.';
+    else if (p.entry.sameDayOrder === 'AMBIGUOUS') {
+      var fnd = strat && strat.fidelity && strat.fidelity.sameDayFinding;
+      txt = 'Reihenfolge am Kauftag offen: Das Tagestief lag unter dem Einstieg. Ob es vor oder nach dem Kauf entstand, zeigen Tageskurse nicht. Das Modell nimmt an: vorher – die Position läuft weiter. Liegt es danach, wäre sie am selben Tag zum Stop verkauft worden.'
+        + (fnd === 'MOSTLY_EXIT' ? ' Eine interne Prüfung mit Minutenkursen zeigt: Bei dieser Methode endeten solche Tage häufiger mit Verkauf am selben Tag – die Annahme des Modells ist hier eher zu günstig.' : fnd === 'MOSTLY_HOLD' ? ' Eine interne Prüfung mit Minutenkursen zeigt: Bei dieser Methode lief die Position an solchen Tagen häufiger weiter, ein Teil endete aber am selben Tag.' : '');
+    }
     else if (p.entry.evidence === 'INTRADAY_1MIN') return null;
     else txt = p.entry.gappedAboveTrigger ? 'Ausführung angenommen: Der Kurs eröffnete über dem Trigger, das Modell kauft zur Eröffnung.' : 'Ausführung angenommen: Das Tageshoch erreichte den Trigger. Zu welcher Uhrzeit gekauft worden wäre, zeigen Tageskurse nicht.';
     return h('p', { class: 'st-evid', 'data-k': p.entry.sameDayOrder === 'AMBIGUOUS' ? 'open' : 'assumed', text: txt });

@@ -96,7 +96,8 @@ export const FIDELITY = Object.freeze({
     neededMaterial: ['Secrets for Profiting in Bull and Bear Markets (1988): Kapitel Kaufzeitpunkt, Verkauf, Langfristindikatoren', 'Stocks & Commodities Interview V.39:11 (2021)'],
   },
   MOMENTUM_BREAKOUT: {
-    status: 'VU_VARIANT', mechanizable: 'PARTLY',
+    status: 'VU_VARIANT',
+    sameDayFinding: 'MOSTLY_EXIT', // Runde 9: interne Minutenprüfung strittiger Kauf-Stop-Tage mechanizable: 'PARTLY',
     mechanizableNote: 'Kullamägi kauft am Hoch der ersten Minuten (Opening Range). Er erlaubt ausdrücklich den Einstieg nach Tageschart („just look at the daily chart and enter when the stock is starting to break out“) – das bildet 3.x ab. Sein Stop am Tagestief hängt davon ab, wann im Tagesverlauf gekauft wird; das ist nur mit Minutenkursen prüfbar (intern ab 2017 vorhanden). Die Basisqualität beurteilt er nach Augenmaß.',
     chain: [
       { step: 'Deep Research', text: 'Gab Auswahl, Basis, Einstieg am Opening-Range-Hoch, Stop am Tagestief (≤ ADR), Teilverkauf und Trailing korrekt wieder.' },
@@ -123,7 +124,8 @@ export const FIDELITY = Object.freeze({
     sourcesRead: ['qullamaggie.com: „3 TIMELESS setups“ (08.01.2021) mit allen Beispielcharts', 'qullamaggie.com: FAQ', 'qullamaggie.com: „How to master a setup: Episodic Pivots“'],
   },
   DARVAS_BOX: {
-    status: 'VU_VARIANT', mechanizable: 'PARTLY',
+    status: 'VU_VARIANT',
+    sameDayFinding: 'MOSTLY_HOLD', // Runde 9: interne Minutenprüfung strittiger Kauf-Stop-Tage mechanizable: 'PARTLY',
     mechanizableNote: 'Was eine Box ist, beschreibt Darvas nicht als Formel; die verbreitete 3-Tage-Regel ist eine spätere Rekonstruktion. Sein Buch (1960) ist nicht frei zugänglich.',
     chain: [
       { step: 'Deep Research', text: 'Nannte Box, Kauf über der Oberkante und Stop-Loss; die Zeitungsquelle war in Runde 7 nur als Auszug lesbar.' },
@@ -146,7 +148,8 @@ export const FIDELITY = Object.freeze({
     sourcesRead: ['TIME, 25.05.1959, „Business: Pas de Dough“', 'TIME, 01.08.1960, „The Darvas Effect“'],
   },
   DONCHIAN_TURTLE: {
-    status: 'VU_VARIANT', mechanizable: 'YES',
+    status: 'VU_VARIANT',
+    sameDayFinding: 'MOSTLY_EXIT', // Runde 9: interne Minutenprüfung strittiger Kauf-Stop-Tage mechanizable: 'YES',
     mechanizableNote: 'Die Turtle-Regeln sind vollständig mechanisch und liegen im Volltext vor – geschrieben für ein gestreutes Futures-Portfolio, nicht für Einzelaktien.',
     chain: [
       { step: 'Deep Research', text: 'System 1/2, 2N-Stop, 10-Tage-Ausstieg, Unit-Größe und Filter korrekt genannt (Sekundärquellen).' },
@@ -216,7 +219,7 @@ export function fidelityFor(id) {
   const f = FIDELITY[id];
   if (!f) return { schema: FIDELITY_VERSION, status: 'RESEARCH', statusLabel: PRODUCT_STATUS.RESEARCH.label, statusPlain: PRODUCT_STATUS.RESEARCH.plain, rules: [], missing: [], counts: {} };
   return {
-    schema: FIDELITY_VERSION, chain: f.chain || [], sourcesRead: f.sourcesRead || [], failedAttempts: f.failedAttempts || [],
+    schema: FIDELITY_VERSION, chain: f.chain || [], sameDayFinding: f.sameDayFinding || null, sourcesRead: f.sourcesRead || [], failedAttempts: f.failedAttempts || [],
     status: f.status, statusLabel: PRODUCT_STATUS[f.status].label, statusPlain: PRODUCT_STATUS[f.status].plain,
     mechanizable: f.mechanizable, mechanizableNote: f.mechanizableNote,
     rules: f.rules.map((x) => ({ ...x, clsLabel: RULE_CLASS[x.cls].label, accessLabel: SOURCE_ACCESS[x.access] })),

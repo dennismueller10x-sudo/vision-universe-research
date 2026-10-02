@@ -95,3 +95,18 @@ test('R9-I7 Kompaktes Minuten-Cache-Format: verlustfrei für Reihenfolge und Hoc
   assert.equal(resolve(rec, back, 'MOMENTUM_BREAKOUT').entryMinute, resolve(rec, bars, 'MOMENTUM_BREAKOUT').entryMinute);
   assert.equal(expandBars(bars), bars); assert.deepEqual(expandBars(compactBars([])), []);
 });
+
+test('R9-I8 Produkt: Belegart je Kauf-Stop-Ausführung und methodenbezogener Hinweis, ohne Kennzahlen', async () => {
+  const { fidelityFor } = await import('../fidelity.mjs');
+  assert.equal(fidelityFor('MOMENTUM_BREAKOUT').sameDayFinding, 'MOSTLY_EXIT');
+  assert.equal(fidelityFor('DONCHIAN_TURTLE').sameDayFinding, 'MOSTLY_EXIT');
+  assert.equal(fidelityFor('DARVAS_BOX').sameDayFinding, 'MOSTLY_HOLD');
+  const { planOf } = await import('../build.mjs');
+  const sig = { strategyId: 'MOMENTUM_BREAKOUT', version: '3.1.0', state: 'ACTIVE', createdAt: '2026-10-01', transitions: [{ state: 'ACTIVE', date: '2026-10-02', ruleId: 'LC-MODEL-ENTRY' }], levels: { trigger: 10, invalidation: 9 },
+    entry: { date: '2026-10-02', price: 10.01, priceBasis: 'BUY_STOP', evidence: 'DAILY_BAR_HIGH_REACHED_TRIGGER', sameDayOrder: 'AMBIGUOUS' }, stop: 9.5, stopRuleId: 'KK-BO-STOP-LOD', exits: [] };
+  const p = planOf(sig);
+  assert.equal(p.entry.evidence, 'DAILY_BAR_HIGH_REACHED_TRIGGER'); assert.equal(p.entry.sameDayOrder, 'AMBIGUOUS');
+  const js = (await import('node:fs')).readFileSync(new URL('../../../supertrader/assets/supertrader.js', import.meta.url), 'utf8');
+  assert.match(js, /Reihenfolge am Kauftag offen/); assert.match(js, /Ausführung angenommen/);
+  assert.doesNotMatch(js.slice(js.indexOf('function evidenceNote'), js.indexOf('function qualityRow')), /\d+\s?%/, 'keine Kennzahlen aus Tiingo-Daten im Hinweis');
+});
