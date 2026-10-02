@@ -494,6 +494,7 @@
       h('ul', { class: 'st-fidlist' }, rows),
       f.missing && f.missing.length ? h('div', { class: 'st-fidmiss' }, [h('span', { class: 'k', text: 'Fehlt im laufenden Modell' }), h('ul', { class: 'st-ul' }, f.missing.map(function (m) { return h('li', { text: m }); }))]) : null,
       f.data ? h('p', { class: 'st-hint', text: 'Daten · historisch: ' + f.data.historical + ' · live: ' + f.data.live + (f.data.gaps ? ' · Lücken: ' + f.data.gaps : '') + '.' }) : null,
+      f.examples && f.examples.length ? h('div', { class: 'st-chainbox' }, [h('span', { class: 'k', text: 'Prüfung an den Beispielen des Traders' }), h('ul', { class: 'st-exlist' }, f.examples.map(function (x) { return h('li', null, [h('strong', { text: x.case }), h('span', { class: 'r', text: x.role }), h('p', { text: x.result })]); }))]) : null,
       f.sourcesRead && f.sourcesRead.length ? details('Im Volltext gelesen (' + f.sourcesRead.length + ')', [h('ul', { class: 'st-ul' }, f.sourcesRead.map(function (m) { return h('li', { text: m }); }))]) : null,
       f.failedAttempts && f.failedAttempts.length ? details('Erfolglose Quellenversuche', [h('ul', { class: 'st-ul' }, f.failedAttempts.map(function (m) { return h('li', { text: m }); }))]) : null,
       f.neededMaterial && f.neededMaterial.length ? details('Benötigtes Originalmaterial', [h('ul', { class: 'st-ul' }, f.neededMaterial.map(function (m) { return h('li', { text: m }); }))]) : null,

@@ -121,6 +121,12 @@ export const FIDELITY = Object.freeze({
     missing: ['Einstieg am Opening-Range-Hoch der ersten Minuten (Intraday-Historie fehlt)', 'Episodic Pivots als eigenes Modell (Gap-Ursache und Analystenschätzungen fehlen)', 'Parabolic Shorts'],
     data: { historical: 'Tageskurse ab 2016 (inkl. delisteter)', live: 'Tageskurse', gaps: 'keine Intraday-Historie; keine Nachrichten-/Schätzungsdaten' },
     neededMaterial: ['Historische 1-/5-Minuten-Kurse (kostenpflichtig) für den Opening-Range-Einstieg'],
+    examples: [
+      { case: 'AXON (AAXN), Ausbruch 09.01.2004', role: 'Unabhängig – für keine Regel verwendet', result: 'Version 3.1.0 kauft genau am markierten Tag; 3.0.0 verfehlte ihn (Setup endete am Vortag wegen eines Schlusses unter der 10-Tage-Linie).' },
+      { case: 'MNKD, Ausbruch 10.05.2013', role: 'Unabhängig – für keine Regel verwendet', result: 'Verfehlt (3.0.0 und 3.1.0): Nach einem Monat Seitwärtsbewegung stieg die 20-Tage-Linie nicht mehr; die Trendregel war nicht erfüllt. Keine Regeländerung, um das Beispiel nicht nachträglich passend zu machen.' },
+      { case: 'TSLA, Ausbruch 01.06.2020', role: 'Entwicklungsbeispiel – zählt nicht als Bestätigung', result: 'Version 3.1.0 kauft einen Handelstag früher: Am 29.05. wurde der Trigger erst kurz vor Handelsschluss knapp überschritten. Der eigentliche Ausbruch mit Kurslücke kam am 01.06.' },
+      { case: 'NVDA, Episodic Pivots 2016/2017', role: 'Regelidentität (kein laufendes Modell)', result: 'Die 10-%-Gap-Regel ordnet alle drei Tage so ein wie Kullamägi.' },
+    ],
     sourcesRead: ['qullamaggie.com: „3 TIMELESS setups“ (08.01.2021) mit allen Beispielcharts', 'qullamaggie.com: FAQ', 'qullamaggie.com: „How to master a setup: Episodic Pivots“'],
   },
   DARVAS_BOX: {
@@ -219,7 +225,7 @@ export function fidelityFor(id) {
   const f = FIDELITY[id];
   if (!f) return { schema: FIDELITY_VERSION, status: 'RESEARCH', statusLabel: PRODUCT_STATUS.RESEARCH.label, statusPlain: PRODUCT_STATUS.RESEARCH.plain, rules: [], missing: [], counts: {} };
   return {
-    schema: FIDELITY_VERSION, chain: f.chain || [], sameDayFinding: f.sameDayFinding || null, sourcesRead: f.sourcesRead || [], failedAttempts: f.failedAttempts || [],
+    schema: FIDELITY_VERSION, chain: f.chain || [], sameDayFinding: f.sameDayFinding || null, examples: f.examples || [], sourcesRead: f.sourcesRead || [], failedAttempts: f.failedAttempts || [],
     status: f.status, statusLabel: PRODUCT_STATUS[f.status].label, statusPlain: PRODUCT_STATUS[f.status].plain,
     mechanizable: f.mechanizable, mechanizableNote: f.mechanizableNote,
     rules: f.rules.map((x) => ({ ...x, clsLabel: RULE_CLASS[x.cls].label, accessLabel: SOURCE_ACCESS[x.access] })),
