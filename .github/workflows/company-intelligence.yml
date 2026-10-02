@@ -83,7 +83,21 @@ jobs:
         run: |
           git fetch origin "$BASE_REF"
           changed=$(git diff --name-only "origin/$BASE_REF...HEAD" -- quant discover supertrader screener dashboard providers scripts/quant scripts/universe scripts/market scripts/vu2 api server vercel.json)
-          unexpected=$(printf '%s\n' "$changed" | sed '/^quant\/index.html$/d; /^quant\/app\/page-stock.js$/d; /^discover\/index.html$/d; /^discover\/ui\/detail.js$/d;  /^$/d')
+          # Stock-page hooks shift audit line references; findings must remain identical.
+          python3 - <<'PY_AUDIT'
+          import json, os, subprocess
+          from pathlib import Path
+          path = 'quant/data/market/fx/currency-debt-register.json'
+          old = json.loads(subprocess.check_output(['git', 'show', 'origin/' + os.environ['BASE_REF'] + ':' + path]))
+          new = json.loads(Path(path).read_text())
+          assert len(old['entries']) == len(new['entries'])
+          for a, b in zip(old['entries'], new['entries']):
+              if a != b:
+                  assert a['file'] == b['file'] == 'discover/ui/detail.js'
+                  a.pop('line'); b.pop('line')
+          assert old == new, 'Currency audit findings changed beyond source-line references'
+          PY_AUDIT
+          unexpected=$(printf '%s\n' "$changed" | sed '/^quant\/index.html$/d; /^quant\/app\/page-stock.js$/d; /^quant\/data\/market\/fx\/currency-debt-register.json$/d; /^discover\/index.html$/d; /^discover\/ui\/detail.js$/d;  /^$/d')
           if [ -n "$unexpected" ]; then echo "$unexpected"; exit 1; fi
   preview:
     if: always() && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && !inputs.pilot && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '17 */6 * * *' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
