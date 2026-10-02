@@ -407,6 +407,19 @@ class HardeningTests(unittest.TestCase):
         self.assertEqual(run['run']['new'], 1)
         self.assertEqual(self.store.db.execute('SELECT COUNT(*) FROM items').fetchone()[0], 1)
 
+    def test_delisted_issuer_source_is_retired_without_fetch_or_history_loss(self):
+        self.store.source(source())
+        self.store.ingest(item())
+        class HTTP:
+            def get(self, *args, **kwargs):
+                raise AssertionError('Delisted issuer must not be fetched')
+        pipe = Pipeline(self.base, {}, self.store, HTTP(), NOW)
+        pipe.ingest_due_sources(set(), all_sources=True)
+        self.assertFalse(self.store.sources())
+        value = json.loads(self.store.db.execute('SELECT payload FROM sources').fetchone()[0])
+        self.assertEqual(value['disabledReason'], 'ISSUER_NOT_IN_CURRENT_SUPPORTED_MASTER')
+        self.assertEqual(self.store.db.execute('SELECT COUNT(*) FROM items').fetchone()[0], 1)
+
 
 if __name__ == '__main__':
     unittest.main()

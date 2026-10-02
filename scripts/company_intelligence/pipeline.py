@@ -52,6 +52,10 @@ class Pipeline:
 
     def ingest_due_sources(self, selected_ids, all_sources=False, force=False):
         for source in self.store.sources(None if force else self.now):
+            if source.get('companyId') and source['companyId'] not in self.companies:
+                self.store.source({**source, 'active': False, 'disabledReason': 'ISSUER_NOT_IN_CURRENT_SUPPORTED_MASTER'})
+                self.store.audit(self.now, source['sourceId'], 'SOURCE_RETIRED_OUTSIDE_UNIVERSE', companyId=source['companyId'])
+                continue
             if source['type'] != 'GDELT' and (all_sources or source.get('companyId') is None or source['companyId'] in selected_ids):
                 self.ingest_source(source)
 

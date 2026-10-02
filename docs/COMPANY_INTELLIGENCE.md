@@ -173,7 +173,7 @@ Final cycles: full-master offline **12.001s**, due-source incremental **3.631s**
 
 Earlier forced validation reruns each made seven public requests with five HTTP 304s, six cache hits, 69,109 downloaded bytes, 68 duplicate sightings and zero new stories; another ordinary rerun made zero requests. Repeated force is a probe option, not unattended behavior.
 
-The real daily manifest processed AVD/BSET/CALM, then CAG/PRGS/GURE, in two successful runs with 15 and 11 SEC requests. Six issuer/accession checkpoints persist; five unfinished manifest entries remain queued. A newer or empty producer manifest cannot discard that queue. Retry cooldowns prevent a failed issuer from starving the rest.
+The real daily manifest processed AVD/BSET/CALM, then CAG/PRGS/GURE, in two successful runs with 15 and 11 SEC requests. Six issuer/accession checkpoints persist; five unfinished manifest entries remain queued. A newer or empty producer manifest cannot discard that queue. Retry cooldowns prevent a failed issuer from starving the rest. Sources for issuers no longer in the supported master are retired before fetching; historical records remain intact. Ticker changes retain CIK identity.
 
 ## 16. Failure recovery and adversarial reviews
 
@@ -223,7 +223,7 @@ GDELT retry remained HTTP 503 on three controlled requests/two retries in 40.68s
 
 ## 20. Tests and browser validation
 
-**93 Python + 14 Node feature tests pass** (previous phase: 58 + nine). New tests exercise fresh recovery/archives, signed driver compatibility, corruption/failed writes/403, manifest continuation, source-health reporting, real provider/feed metadata, materials ownership, common-name resolution, fiscal comparability, OCF/EPS rules, guidance/currency/KPI evidence, call-period conflicts, confirmed release/call dates and DST. Existing four-source dedup/security/API tests remain intact.
+**94 Python + 14 Node feature tests pass** (previous phase: 58 + nine). New tests exercise fresh recovery/archives, signed driver compatibility, corruption/failed writes/403, manifest continuation, source-health reporting, real provider/feed metadata, materials ownership, common-name resolution, fiscal comparability, OCF/EPS rules, guidance/currency/KPI evidence, call-period conflicts, confirmed release/call dates and DST. Existing four-source dedup/security/API tests remain intact.
 
 Final mobile/browser: nine issuers (AAPL, NVDA, MSFT, ROOT, AFRM, KLAC, XPEV, CHE, BA) at 390/430/768/1,440px: **36 cases, zero horizontal overflow, zero JavaScript errors, zero default-disabled data requests**. Real consumer output was inspected, including Chemed's two distinct upcoming dates and foreign missing/stale facts.
 
@@ -237,7 +237,7 @@ Workflow YAML and every run block pass parsing/Bash syntax checks; `git diff --c
 | Existing SEC/Quant Python suite | 484 passed (22.65s). |
 | Access gate, VU2 budget, Ask, Academy, Worker Node | 63 passed. |
 | Existing VU2 Python serving/materialization | 32 passed. |
-| Feature Python / Node | 93 / 14 passed. |
+| Feature Python / Node | 94 / 14 passed. |
 
 Protected-path diff is empty against both the phase-start commit and original architecture baseline. Production master/universe, SEC fundamentals, market/intraday/EOD data, Discover, Quant, Supertrader, Screener, Markets, deployment and existing public APIs remain unchanged. The Node suite's generated `quant/data/providers/total-return-verification.json` artifact was restored after testing. No pre-existing failure was hidden or unrelated code changed to make CI green.
 
