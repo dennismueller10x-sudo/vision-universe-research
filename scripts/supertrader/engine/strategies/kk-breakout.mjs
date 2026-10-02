@@ -78,8 +78,11 @@ export function scan(ctx, t, p = PARAMS, opts = {}) {
     && depth !== null && depth <= p.baseMaxDepth
     && lowFirst && lowSecond && lowSecond.value >= lowFirst.value
     && recentRange !== null && earlyRange !== null && recentRange < earlyRange;
+  // p.trendMode 'SURF_10_OR_20' (Momentum 3.1.0, KK-BO-TREND-02): Kurs ueber
+  // mindestens einer der beiden Linien bei steigender 20-Tage-Linie. Ohne
+  // trendMode bleibt die Regel der Versionen 1.x-3.0.0 (ueber beiden) unveraendert.
   rules['KK-BO-TREND-01'] = [s10, s20, s20prev].every(Number.isFinite)
-    && bars.close[t] > s10 && bars.close[t] > s20 && s20 > s20prev;
+    && (p.trendMode === 'SURF_10_OR_20' ? bars.close[t] > Math.min(s10, s20) : bars.close[t] > s10 && bars.close[t] > s20) && s20 > s20prev;
   if (!rules['KK-BO-BASE-01'] || !rules['KK-BO-TREND-01']) return { stage: 'WATCH', rules, facts, levels: {} };
 
   const pivot = maxIn(bars.high, t - p.pivotBars + 1, t).value;

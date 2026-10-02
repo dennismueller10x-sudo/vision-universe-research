@@ -149,3 +149,65 @@ Sie gilt nicht pauschal für andere Turtle-Varianten (Futures, Pyramiding, Syste
 - **Kontrollen:** C1, C2, C3m und AT5 bestanden.
 - **Ablage:** Kennzahlen nur in `evidence-internal.sealed.json`.
 - **Live:** Die Versionen 2.0.0 laufen ab dem 02.10.2026 live, als Vorwärtsbeobachtung außerhalb der Stichprobe. Positionen der Version 1.x laufen nach ihren eigenen Regeln weiter.
+
+## Runde 8 (02.10.2026): Volltext der Originalquellen, Kauf per Order am Ausbruch
+
+### Quellenabruf
+- **Weg:** Workflow-Modus `sources`, `fetch-sources.mjs`; Ergebnisdateien `*-sources-r8*.sealed.json`.
+- **Gelesen:**
+  - Kullamägi: Setups, FAQ, Episodic Pivots, Beispielcharts
+  - Turtle-Regeln (PDF, 27 Seiten)
+  - TIME 1959/1960 zu Darvas
+  - Bulkowski und stageanalysis.net zu Weinstein
+- **Ablage:** Texte nur verschlüsselt.
+- **Befund der Kette:** steht in `docs/SUPERTRADER_METHOD_FIDELITY.md`.
+
+### Läufe (je einmal, Protokoll vor dem Lauf eingefroren)
+
+| Lauf | Protokoll | Inhalt | Run / Ergebnisdatei |
+|---|---|---|---|
+| r8-smoke | PREREGISTRATION-R8.json | technische Probe, 400 Reihen | 37006147514 |
+| r8 | PREREGISTRATION-R8.json, -R8-TURTLE.json | Momentum 3.0.0, 3.0.0-P, Ablation 3.0.0-A, Referenz 2.0.0; Turtle 2.0.0, 2.0.0-P, Referenz 1.1.0; Beispielspur TSLA/NVDA | 37006651662 / `20261002T131609Z-analyze-r8.sealed.json` |
+| r8b | PREREGISTRATION-R8B.json | Darvas 3.0.0/-P, Weinstein 3.0.0/-P, Referenzen 2.0.0; Momentum 3.0.0-C und Turtle 2.0.0-C mit sicherem Gleichtags-Ausstieg | 37011923139 / `20261002T140356Z-analyze-r8b.sealed.json` |
+| r8c | PREREGISTRATION-R8C.json | Momentum 3.1.0/-P (Befund der TSLA-Beispielprüfung), Referenz 3.0.0-C | 37017417965 / `20261002T144351Z-analyze-r8c.sealed.json` |
+
+**Abbrüche in der Warteschlange.** Der erste r8b-Lauf und der erste r8c-Lauf wurden in der Warteschlange abgebrochen. Ursache: Pushes
+in dieselbe Concurrency-Gruppe, teils von anderen Zweigen. Beide wurden per workflow_dispatch neu gestartet. Die Engines waren
+zwischen Einfrieren und Lauf unverändert; geändert hatten sich nur Produktdateien und Variantennamen.
+
+**Nachtrag vor der Auswertung von r8.** Schließt der Einstiegstag auf oder unter dem Stop, wurde der Stop sicher durchschritten;
+die neutrale Variante verbuchte diesen Fall zunächst nicht. Korrigiert in r8b, die Varianten -C.
+
+### Ergebnis (qualitativ; Kennzahlen nur in `evidence-internal.sealed.json`)
+
+**Reproduktion.**
+- Momentum 2.0.0 in r8 ist identisch mit R7: gleiche Trades, gleiche Überrendite.
+- Darvas 2.0.0 und Weinstein 2.0.0 in r8b reproduzieren R7.
+
+**Keine neue Version erfüllt die Kriterien.** Alle sind intern als TESTED_NO_EDGE eingestuft, öffentlich als „In Prüfung“.
+
+- **Momentum 3.0.0:**
+  - Nicht robust: in 2016–2020 über SPY, in 2021–2026 deutlich darunter.
+  - Die vorsichtige Variante ist robust negativ.
+  - Die Gegenprobe 3.0.0-A (gleiche Regeln, alter Einstieg) trägt die Ursachenbehauptung **nicht**. 2021–2026 schnitt der Kauf-Stop je Trade schlechter ab als der alte Einstieg. Der Einstiegszeitpunkt erklärt die schwachen Ergebnisse also nicht.
+- **Turtle 2.0.0:**
+  - Robust negativ und deutlich schlechter als 1.1.0, obwohl die Signale je Trade fast gleich abschneiden.
+  - Hinweis, keine bewiesene Ursache: Mit 1 % je N ist das Aktienportfolio fast immer voll investiert, in gleichgerichteten Ausbrüchen. Für gestreute Futures geschrieben, passt diese Größenregel nicht zu Einzelaktien.
+  - Die Kontrolle C2 wich ab, weil sie das notionelle Konto nicht kannte. Sie ist für künftige Läufe angepasst. AT5 prüfte bei Kauf-Stop den falschen Tag; ebenfalls angepasst.
+- **Darvas 3.0.0:**
+  - Robust negativ.
+  - Je Trade besser als 2.0.0. Die vorsichtige Variante verliert aber fast alles: Ein Stop 1 % unter der Kauforder liegt meist innerhalb der Tagesspanne, mit Tagesbalken ist das Ergebnis nicht bestimmbar.
+  - Die Ursachenregel (neutral **und** vorsichtig besser) ist nicht erfüllt.
+- **Weinstein 3.0.0:**
+  - Robust negativ im Portfolio (geringe Investitionsquote).
+  - Die Ursachenregel ist **erfüllt**: Neutral und vorsichtig schneidet 3.0.0 je Trade in beiden Teilzeiträumen besser ab als 2.0.0. Kauf-Stop und die Volumenregel nach dem Kauf erklären also einen Teil der Schwäche je Signal. Der Abstand zu SPY bleibt.
+
+**Beispielprüfung (Regelidentität, keine Evidenz).**
+- **NVDA:** Die 10-%-Gap-Regel ordnet alle drei Daten wie Kullamägi ein: 11.11.2016 EP, 10.02.2017 kein EP, 10.05.2017 EP.
+- **TSLA:** 3.0.0 erkannte das Setup am 27.05.2020, verwarf es aber am 28.05. wegen zweier VU-Zusätze. Daraus entstand Version 3.1.0 (r8c).
+- **Momentum 3.1.0 (r8c):**
+  - Fängt Kullamägis TSLA-Beispiel. Setup am 27.05.2020, am 28.05. gehalten. Kauf-Stop am 29.05. zu 55,70 (split-bereinigt), Stop am Tagestief 53,61. Ein Drittel am 04.06. verkauft, der Rest am 25.06. beim ersten Schluss unter der 10-Tage-Linie.
+  - Einschränkung: Der Einstieg liegt eine Sitzung vor dem von Kullamägi markierten Ausbruchstag (01.06.), weil der Trigger (5-Tage-Hoch) am 29.05. knapp erreicht wurde.
+  - Historisch weiter TESTED_NO_EDGE: geringfügig besser als 3.0.0, aber unter SPY; die vorsichtige Variante ist robust negativ.
+  - 3.0.0-C wurde exakt reproduziert.
+- **Live seit 02.10.2026:** Momentum 3.1.0, Turtle 2.0.0, Darvas 3.0.0, Weinstein 3.0.0, Minervini 2.0.0. Das ist Vorwärtsbeobachtung außerhalb der Stichprobe. Positionen älterer Versionen laufen nach ihren eigenen Regeln weiter.

@@ -35,6 +35,13 @@ import kk2 from '../engine/strategies/kk-breakout-v2.mjs';
 import weinstein2 from '../engine/strategies/weinstein-v2.mjs';
 import darvas2 from '../engine/strategies/darvas-v2.mjs';
 import minervini2 from '../engine/strategies/minervini-v2.mjs';
+import kk3 from '../engine/strategies/kk-breakout-v3.mjs';
+import kkAblation from '../engine/strategies/kk-breakout-ablation-r8.mjs';
+import don1 from '../engine/strategies/donchian.mjs';
+import don2 from '../engine/strategies/donchian-v2.mjs';
+import darvas3 from '../engine/strategies/darvas-v3.mjs';
+import kk31 from '../engine/strategies/kk-breakout-v31.mjs';
+import weinstein3 from '../engine/strategies/weinstein-v3.mjs';
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
@@ -49,6 +56,22 @@ export const ENGINES = [kk, weinstein, darvas, minervini];
 export const PREREG_R7 = 'supertrader-validation-prereg-r7-1.0.0';
 export const ENGINES_R7 = [kk2, weinstein2, darvas2, minervini2];
 export const REFERENCE_R7 = [kk, weinstein, darvas, minervini];
+// Runde 8 (PREREGISTRATION-R8.json): Momentum 3.0.0 neutral, vorsichtige
+// Tagesbalken-Gegenprobe, Ablation des Einstiegszeitpunkts, 2.0.0 als Referenz.
+export const PREREG_R8 = 'supertrader-validation-prereg-r8-1.0.0';
+export const KK3_PESSIMISTIC = { ...kk3, version: '3.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } };
+export const TURTLE_PESSIMISTIC = { ...don2, version: '2.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } };
+// Eingefrorener r8-Lauf (Commit 53a564c) lief ohne sicheren Gleichtags-Ausstieg; zur Reproduktion abgeschaltet.
+const FROZEN_R8 = { sameDayCertain: false };
+export const ENGINES_R8 = [{ ...kk3, simOpts: FROZEN_R8 }, KK3_PESSIMISTIC, kkAblation, kk2, { ...don2, simOpts: FROZEN_R8 }, TURTLE_PESSIMISTIC, don1];
+const ROLE_R8 = { 'MOMENTUM_BREAKOUT@3.0.0': 'R8_HYPOTHESIS', 'MOMENTUM_BREAKOUT@3.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'MOMENTUM_BREAKOUT@3.0.0-A': 'ABLATION_ENTRY_TIMING', 'MOMENTUM_BREAKOUT@2.0.0': 'REFERENCE_REPRODUCTION',
+  'DONCHIAN_TURTLE@2.0.0': 'R8_TURTLE_HYPOTHESIS', 'DONCHIAN_TURTLE@2.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'DONCHIAN_TURTLE@1.1.0': 'REFERENCE_SAME_HARNESS' };
+export const PREREG_R8B = 'supertrader-validation-prereg-r8b-1.0.0';
+export const ENGINES_R8B = [{ ...kk3, version: '3.0.0-C' }, { ...don2, version: '2.0.0-C' }, darvas3, { ...darvas3, version: '3.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } }, darvas2, weinstein3, { ...weinstein3, version: '3.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } }, weinstein2];
+const ROLE_R8B = { 'MOMENTUM_BREAKOUT@3.0.0-C': 'R8_CORRECTED_SAME_DAY_CERTAIN', 'DONCHIAN_TURTLE@2.0.0-C': 'R8_CORRECTED_SAME_DAY_CERTAIN', 'DARVAS_BOX@3.0.0': 'R8B_HYPOTHESIS', 'DARVAS_BOX@3.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'DARVAS_BOX@2.0.0': 'REFERENCE_REPRODUCTION', 'WEINSTEIN_STAGE@3.0.0': 'R8B_HYPOTHESIS', 'WEINSTEIN_STAGE@3.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'WEINSTEIN_STAGE@2.0.0': 'REFERENCE_REPRODUCTION' };
+export const PREREG_R8C = 'supertrader-validation-prereg-r8c-1.0.0';
+export const ENGINES_R8C = [kk31, { ...kk31, version: '3.1.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } }, { ...kk3, version: '3.0.0-C' }];
+const ROLE_R8C = { 'MOMENTUM_BREAKOUT@3.1.0': 'R8C_HYPOTHESIS', 'MOMENTUM_BREAKOUT@3.1.0-P': 'SENSITIVITY_PESSIMISTIC', 'MOMENTUM_BREAKOUT@3.0.0-C': 'REFERENCE_R8B' };
 export const portfolioOf = (e) => (e.portfolio ? { ...PORTFOLIO_DEFAULTS, ...e.portfolio } : PORTFOLIO_DEFAULTS);
 const W = L.WINDOW;
 const EXEC2 = { ...DEFAULT_EXECUTION, slippageBps: 20, commissionBps: 2 };
@@ -96,11 +119,11 @@ export function segCtx(seg, bench) {
 }
 
 // Trades einer Reihe fuer eine Methode (Engine unveraendert) + Abschluss offener Positionen.
-export function tradesFor(engine, seg, ctx, exec, sink = null) {
+export function tradesFor(engine, seg, ctx, exec, sink = null, simOpts = {}) {
   const d = ctx.bars.date;
   const from = d.findIndex((x) => x >= W.from);
   if (from < 0) return [];
-  const res = simulate(rawGate(engine), ctx, { from, exec, params: { ...engine.PARAMS, minPrice: 0 } });
+  const res = simulate(rawGate(engine), ctx, { from, exec, params: { ...engine.PARAMS, minPrice: 0 }, ...(engine.simOpts || {}), ...simOpts });
   const out = [];
   const mk = (s, terminal) => {
     const ei = s.entry.index, lastIdx = terminal ? d.length - 1 : s.exits[s.exits.length - 1].index;
@@ -110,7 +133,9 @@ export function tradesFor(engine, seg, ctx, exec, sink = null) {
     return {
       id: s.id, listingId: seg.id, entry: { date: s.entry.date, price: s.entry.price, rawOpen: s.entry.rawOpen }, initialStop: s.initialStop,
       exits: s.exits.map((x) => ({ date: x.date, price: x.price, fraction: x.fraction, ruleId: x.ruleId, basis: x.priceBasis })),
-      confirmDate: s.confirmation?.date || null, rawCloseAtConfirm: ci != null ? ctx.raw.close[ci] : null, qualityFailed: s.quality?.failed || null,
+      confirmDate: s.confirmation?.date || null,
+      // Kauf-Stop: die Rohkursgrenze gilt am Scan-Tag (Vortag des Einstiegs), nicht am Einstiegstag.
+      rawCloseAtConfirm: ci != null ? ctx.raw.close[s.confirmation?.basis === 'INTRADAY_BUY_STOP' ? ci - 1 : ci] : null, qualityFailed: s.quality?.failed || null,
       trigger: s.levels?.trigger ?? null, confirmClose: s.confirmation?.close ?? null, rawOpenEntry: s.entry.rawOpen ?? null,
       terminal, marks, divs, heldSessions: lastIdx - ei, survivor: seg.survivor,
     };
@@ -133,16 +158,23 @@ export function tradesFor(engine, seg, ctx, exec, sink = null) {
 export function verifyGeneric(t, ctx, engine, exec = DEFAULT_EXECUTION) {
   const d = ctx.bars.date, slip = exec.slippageBps / 10000, eps = 1e-6;
   const i = d.indexOf(t.entry.date), c = t.confirmDate ? d.indexOf(t.confirmDate) : -1;
-  const checks = {
+  const intraday = engine.entryMode === 'BUY_STOP_INTRADAY';
+  const checks = intraday ? {
+    // Kauf-Stop: Einstieg am Ausloesetag zu max(Eroeffnung, Trigger) + Slippage, innerhalb der Tagesspanne.
+    entryAfterConfirm: c >= 0 && i === c,
+    entryPrice: i >= 0 && Number.isFinite(t.trigger) && Math.abs(Math.max(ctx.bars.open[i], t.trigger) * (1 + slip) / t.entry.price - 1) < eps && ctx.bars.high[i] >= t.trigger * (1 - eps),
+  } : {
     entryAfterConfirm: c >= 0 && i === c + 1,
     entryPrice: i >= 0 && Math.abs(ctx.bars.open[i] * (1 + slip) / t.entry.price - 1) < eps,
     rawGate: c >= 0 && ctx.raw.close[c] >= engine.PARAMS.minPrice,
     stopBelowEntry: t.initialStop < t.entry.price,
   };
+  if (intraday) checks.stopWithinDay = t.initialStop >= ctx.bars.low[i] * (1 - eps) || t.initialStop < t.entry.price;
   checks.exits = t.exits.filter((x) => x.ruleId !== 'OPEN_AT_END_MARK').every((x) => {
     const k = d.indexOf(x.date);
     if (k < 0) return false;
     if (x.basis === 'NEXT_OPEN' || x.basis === 'OPEN_BELOW_STOP') return Math.abs(ctx.bars.open[k] * (1 - slip) / x.price - 1) < eps;
+    if (x.basis === 'SAME_DAY_PESSIMISTIC' || x.basis === 'SAME_DAY_CERTAIN') return x.price <= ctx.bars.high[k] * (1 + eps) && x.price >= ctx.bars.low[k] * (1 - slip) * (1 - eps);
     return x.price <= ctx.bars.high[k] * (1 - slip) * (1 + eps) && x.price >= ctx.bars.low[k] * (1 - slip) * (1 - eps);
   });
   return { id: t.id, ok: Object.values(checks).every(Boolean), checks };
@@ -311,14 +343,49 @@ export async function loadPitData({ LIMIT = 0, log = () => {} } = {}) {
   return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine };
 }
 
+// Beispielspur R8: Kullamaegis eigene Beispiele gegen die Engine (TSLA-Breakout
+// Juni 2020, NVDA-EP-Gaps). Nur Tagesdaten der genannten Fenster, keine Optimierung.
+export const EXAMPLES_R8 = { TSLA: ['2020-03-15', '2020-07-15'], NVDA_EP: ['2016-11-11', '2017-02-10', '2017-05-10'] };
+const tickerOf = (id) => String(id).split(':')[2];
+export function exampleTrace(seg, ctx, engine = kk3) {
+  const d = ctx.bars.date, out = {};
+  const tk = tickerOf(seg.id);
+  if (tk === 'TSLA' && d[0] <= EXAMPLES_R8.TSLA[0] && d[d.length - 1] >= EXAMPLES_R8.TSLA[1]) {
+    const days = [];
+    for (let t = 0; t < d.length; t++) {
+      if (d[t] < EXAMPLES_R8.TSLA[0] || d[t] > EXAMPLES_R8.TSLA[1]) continue;
+      const r = engine.scan(ctx, t, { ...engine.PARAMS, minPrice: 0 });
+      days.push({ date: d[t], open: ctx.bars.open[t], high: ctx.bars.high[t], low: ctx.bars.low[t], close: ctx.bars.close[t], stage: r ? r.stage : null, rules: r ? r.rules : null,
+        facts: r ? { momentumPercentile: r.facts.momentumPercentile, priorRun: r.facts.priorRun, baseLength: r.facts.baseLength ?? null, baseDepth: r.facts.baseDepth ?? null } : null, trigger: r?.levels?.trigger ?? null, adr20: ctx.ind.adr20[t] });
+    }
+    const signals = [];
+    const trades = tradesFor(engine, seg, ctx, DEFAULT_EXECUTION, (s) => signals.push({ id: s.id, state: s.state, history: (s.transitions || []).map((h) => ({ date: h.date, state: h.state, ruleId: h.ruleId, price: h.price ?? null })) }))
+      .filter((x) => x.entry.date >= EXAMPLES_R8.TSLA[0] && x.entry.date <= '2020-12-31')
+      .map((x) => ({ id: x.id, entry: x.entry, initialStop: x.initialStop, trigger: x.trigger, exits: x.exits.map((e) => ({ date: e.date, price: e.price, fraction: e.fraction, ruleId: e.ruleId })) }));
+    out.TSLA = { segment: seg.id, days, trades, unenteredSignals: signals.filter((s) => (s.history[0]?.date || '') >= '2020-01-01' && (s.history[0]?.date || '') <= '2020-12-31') };
+  }
+  if (tk === 'NVDA') {
+    const ev = [];
+    for (const date of EXAMPLES_R8.NVDA_EP) {
+      const t = d.indexOf(date); if (t < 1) continue;
+      const v50 = ctx.ind.vol50[t - 1];
+      ev.push({ date, gap: ctx.bars.open[t] / ctx.bars.close[t - 1] - 1, closeVsPrev: ctx.bars.close[t] / ctx.bars.close[t - 1] - 1, closeVsOpen: ctx.bars.close[t] / ctx.bars.open[t] - 1,
+        volumeRatio50: v50 > 0 ? ctx.bars.volume[t] / v50 : null, ret63Before: ctx.ind.ret63[t - 1] ?? null, ret126Before: ctx.ind.ret126[t - 1] ?? null, gapRule10: ctx.bars.open[t] / ctx.bars.close[t - 1] - 1 >= 0.10 });
+    }
+    if (ev.length) out.NVDA = { segment: seg.id, events: ev };
+  }
+  return out;
+}
+
 async function main() {
   const argv = process.argv.slice(2);
   const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
   const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
   const LIMIT = Number(arg('--limit', '0'));
   const SET = arg('--set', 'methods');
-  const RUN = SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
-  const keyOf = (e) => (SET === 'r7' ? `${e.id}@${e.version}` : e.id);
+  const RUN = SET === 'r8c' ? ENGINES_R8C : SET === 'r8b' ? ENGINES_R8B : SET === 'r8' ? ENGINES_R8 : SET === 'r7' ? [...ENGINES_R7, ...REFERENCE_R7] : ENGINES;
+  const keyOf = (e) => (SET === 'r7' || SET.startsWith('r8') ? `${e.id}@${e.version}` : e.id);
+  const examples = {};
   const t0 = Date.now();
   const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -331,6 +398,7 @@ async function main() {
   k = 0;
   for (const seg of segs) {
     const ctx = segCtx(seg, bench);
+    if ((SET === 'r8' || SET === 'r8c') && /:(TSLA|NVDA):/.test(seg.id)) Object.assign(examples, exampleTrace(seg, ctx, SET === 'r8c' ? kk31 : kk3));
     for (const e of RUN) {
       const base = tradesFor(e, seg, ctx, DEFAULT_EXECUTION);
       R[keyOf(e)].base.push(...base);
@@ -373,7 +441,9 @@ async function main() {
     const plain = all.filter((t) => !t.terminal || t.terminal.kind === 'OPEN_AT_END');
     const bySym = new Map(); for (const t of plain) (bySym.get(t.listingId) || bySym.set(t.listingId, []).get(t.listingId)).push(t);
     const priceOf = (sym, date) => { for (const t of bySym.get(sym) || []) { const v = t.marks.get(date); if (v !== undefined) return v; } return undefined; };
-    const cfgC2 = { ...cfg, progressive: null };
+    // C2 vergleicht die Portfolio-Mechanik mit engine/backtest.mjs; Zusaetze, die nur die
+    // Validierung kennt (schrittweise Exposition, notionelles Turtle-Konto), sind dafuer aus.
+    const cfgC2 = { ...cfg, progressive: null, turtleNotional: null };
     const eng = runPortfolio(plain.map((t) => ({ symbol: t.listingId, signal: { id: t.id, entry: { ...t.entry }, initialStop: t.initialStop, exits: t.exits.map((x) => ({ ...x })) } })), priceOf, cal, cfgC2);
     const mine2 = runPortfolioTR(plain, cal, cfgC2, { commissionBps: 0, dividends: false, sizingSameDay: true, engineCompat: true });
     let c2 = 0; for (let i = 0; i < cal.length; i++) c2 = Math.max(c2, Math.abs(eng.equity[i].equity / mine2.equity[i].equity - 1));
@@ -381,16 +451,17 @@ async function main() {
     const c5 = r0.taken.filter((p) => p.returnPct !== undefined).sort((a, b) => Math.abs(b.returnPct) - Math.abs(a.returnPct)).slice(0, 10).map((p) => ({ id: p.tr.id, returnPct: p.returnPct, entry: p.tr.entry, lastExit: p.tr.exits[p.tr.exits.length - 1] || null, terminal: p.tr.terminal ? { ...p.tr.terminal } : null, rawCloseAtConfirm: p.tr.rawCloseAtConfirm }));
     const at5 = all.filter((t) => !(t.rawCloseAtConfirm >= e.PARAMS.minPrice)).length;
     results[keyOf(e)] = {
-      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
+      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r8c' ? ROLE_R8C[keyOf(e)] : SET === 'r8b' ? ROLE_R8B[keyOf(e)] : SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
       runs, judgement: judge(runs), at5Violations: at5,
       controls: { C1max: Math.max(...['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO', 'COST2_S1', 'SURVIVORS_ONLY'].map((x) => runs[x].reconciliation.relDiff)), C2maxRelDiff: c2, C3m: R[keyOf(e)].c3, C5: c5 },
       diagnostics: { allTrades: diag(all), survivorTrades: diag(surv), delistedTrades: diag(all.filter((t) => !t.survivor)), takenS0: diag(r0.taken.map((p) => p.tr)), maxPositionsSkipped: r0.skipped.filter((x) => x.reason === 'MAX_POSITIONS').length },
     };
-    if (SET === 'r7') {
+    if (SET === 'r7' || SET.startsWith('r8')) {
       const { signalQuality, exposureScenarios, theoreticalMaxExposure } = await import('./diagnose-methods.mjs');
       const spyIdx = new Map(spyTR.map((p, i) => [p.date, i]));
       results[keyOf(e)].signalQuality = signalQuality(all, spyIdx, spyTR);
       results[keyOf(e)].capital = { ...exposureScenarios(r0.equity, spyIdx, spyTR), ...theoreticalMaxExposure(all, cfg) };
+      if (SET.startsWith('r8')) results[keyOf(e)].signalQualityBySubperiod = SPLIT_PERIODS.map(([a, b]) => ({ from: a, to: b, ...signalQuality(all.filter((t) => t.entry.date >= a && t.entry.date <= b), spyIdx, spyTR) }));
     }
     R[keyOf(e)] = null;
     log(`${keyOf(e)}: Portfolio fertig`);
@@ -400,7 +471,7 @@ async function main() {
     const sp = budget.spent, u = await mine.readUsage();
     await mine.writeUsage(Guard.applyUsage(u, { classAOperations: sp.classA + 1, classBOperations: sp.classB, bytesDownloaded: sp.bytesDownloaded, run: { at: new Date().toISOString(), kind: 'VALIDATION_ANALYZE_METHODS', classB: sp.classB } }));
   }
-  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r7' ? PREREG_R7 : PREREG_METHODS, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
+  const result = { schema: 'supertrader-validation-methods-result-1.0.0', set: SET, at: new Date().toISOString(), prereg: SET === 'r8c' ? PREREG_R8C : SET === 'r8b' ? PREREG_R8B : SET === 'r8' ? PREREG_R8 : SET === 'r7' ? PREREG_R7 : PREREG_METHODS, examples: SET === 'r8' || SET === 'r8c' ? examples : undefined, tableHash: hash, commit: process.env.GITHUB_SHA || null, limit: LIMIT || null,
     counts: { listings: listings.length, members: members.length, segments: segs.length, duplicates: dup.size, offCalendar }, execution: DEFAULT_EXECUTION, portfolio: cfg,
     spy: { cagr: cagrBetween(spyTR, W.from, W.to, 'value'), maxDrawdown: maxDrawdown(spyTR, 'value') }, results, budget: budget.spent };
   const pem = fs.readFileSync(path.join(root, 'scripts/supertrader/validation/results-public-key.pem'), 'utf8');

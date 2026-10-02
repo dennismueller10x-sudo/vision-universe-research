@@ -44,6 +44,21 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
   const book = { realized: 0, dividends: 0, commissions: 0, terminal: 0, terminalCount: 0 };
   let lastMark = new Map();
   const finishedPnl = [];
+  // Runde 8 (cfg.turtleNotional, Turtle Rules Kap. 3 "Adjusting Trading Size"):
+  // Groessenbasis = notionelles Konto = Kapital zum Jahresbeginn; je 10 % Verlust
+  // (gegenueber dem jeweils verkleinerten Konto) -20 %, bis der Jahresstart wieder erreicht ist.
+  const tn = cfg.turtleNotional || null;
+  let tnYear = null, tnStart = cfg.initialEquity, tnCuts = 0;
+  const tnBase = (eqNow, date) => {
+    if (date.slice(0, 4) !== tnYear) { tnYear = date.slice(0, 4); tnStart = eqNow; tnCuts = 0; }
+    if (eqNow >= tnStart) tnCuts = 0;
+    for (;;) {
+      let lossTh = 0, acct = tnStart;
+      for (let j = 0; j <= tnCuts; j++) { lossTh += tn.stepLoss * acct; acct *= 1 - tn.cut; }
+      if (tnStart - eqNow >= lossTh - 1e-9) tnCuts++; else break;
+    }
+    return tnStart * Math.pow(1 - tn.cut, tnCuts);
+  };
   const markOf = (p, date) => { const v = p.tr.marks.get(date); if (Number.isFinite(v)) { p.last = v; return v; } return opts.engineCompat ? p.tr.entry.price : p.last; };
   const close = (p, q, price, date, kind) => {
     const gross = q * price, c = gross * comm;
@@ -80,7 +95,7 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
         const lastN = finishedPnl.slice(-cfg.progressive.lookback).reduce((a, b) => a + b, 0);
         if (lastN < 0) riskPct *= cfg.progressive.factor;
       }
-      let shares = (eq * riskPct) / risk;
+      let shares = ((tn ? tnBase(equity.length ? equity[equity.length - 1].equity : cfg.initialEquity, date) : eq) * riskPct) / risk;
       const unit = tr.entry.price * (1 + comm);
       shares = Math.min(shares, (eq * cfg.maxPositionPct) / tr.entry.price, cash / unit);
       shares = Math.min(shares, Math.max(0, eq * cfg.maxExposure - (eq - cash)) / tr.entry.price);

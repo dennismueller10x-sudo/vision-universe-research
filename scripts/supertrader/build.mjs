@@ -34,6 +34,11 @@ import weinstein from './engine/strategies/weinstein.mjs';
 import greenblatt from './engine/strategies/greenblatt.mjs';
 import donchian from './engine/strategies/donchian.mjs';
 import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
+import kkBreakout3 from './engine/strategies/kk-breakout-v3.mjs';
+import kkBreakout31 from './engine/strategies/kk-breakout-v31.mjs';
+import donchian2 from './engine/strategies/donchian-v2.mjs';
+import darvas3 from './engine/strategies/darvas-v3.mjs';
+import weinstein3 from './engine/strategies/weinstein-v3.mjs';
 import darvas2 from './engine/strategies/darvas-v2.mjs';
 import minervini2 from './engine/strategies/minervini-v2.mjs';
 import weinstein2 from './engine/strategies/weinstein-v2.mjs';
@@ -51,8 +56,8 @@ let CURRENT_REGIME = null;
 // Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
 // (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
-export const LIVE_ENGINES = [kkBreakout2, weinstein2, darvas2, minervini2, donchian];
-export const PREVIOUS_ENGINES = [kkBreakout, weinstein, darvas, minervini];
+export const LIVE_ENGINES = [kkBreakout31, weinstein3, darvas3, minervini2, donchian2];
+export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, kkBreakout3, weinstein, weinstein2, darvas, darvas2, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const ROOT = path.resolve(args.root || '.');
@@ -674,9 +679,21 @@ function buildSignals(ledgers, scanner, fundOf, instruments, market) {
 // tatsaechliche Modellausfuehrung (nur wenn vorhanden) und die naechste Handlung.
 const CARD_BY_STRATEGY = new Map(STRATEGIES.filter((x) => x.rule_cards).map((x) => [x.strategy_id, x.rule_cards[0]]));
 const fmtP = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('.', ',') : '—');
+// Plan der Regelversion des Signals: exakt, sonst die naechstaeltere gespeicherte,
+// sonst die aelteste gespeicherte (z. B. 1.0.0 bei gleicher Regel wie 1.1.0).
+const vnum = (v) => String(v || '').split('.').map(Number).reduce((a, x) => a * 1000 + (x || 0), 0);
+export function planForVersion(card, version) {
+  if (!card) return null;
+  if (!version || version === card.rule_version || !card.plans_by_version) return card.plan;
+  const vs = Object.keys(card.plans_by_version).sort((a, b) => vnum(a) - vnum(b));
+  if (card.plans_by_version[version]) return card.plans_by_version[version];
+  if (vnum(version) > vnum(card.rule_version)) return card.plan;
+  const older = vs.filter((x) => vnum(x) <= vnum(version)).pop();
+  return card.plans_by_version[older || vs[0]] || card.plan;
+}
 export function planOf(s) {
   const card = CARD_BY_STRATEGY.get(s.strategyId);
-  const p = card?.plan;
+  const p = planForVersion(card, s.version);
   if (!p) return null;
   const last = s.transitions[s.transitions.length - 1] || {};
   const levelsAsOf = s.levelHistory?.[s.levelHistory.length - 1]?.date || s.createdAt;
@@ -698,7 +715,9 @@ export function planOf(s) {
     text = 'Keine Entscheidung: im aktuellen Datenstand fehlen Kursdaten für diesen Titel.'; ruleId = 'LC-DATA-GAP';
   } else if (PENDING.has(s.state)) {
     const inv = `${p.invalidationText} ${fmtP(s.levels?.invalidation)} → ungültig`;
-    text = `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
+    text = p.confirmBasis === 'INTRADAY_BUY_STOP'
+      ? `Kauf-Stop über ${fmtP(s.levels?.trigger)} für den nächsten Handelstag. ${inv}.`
+      : `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
     ruleId = p.confirmRuleId;
   } else if (s.state === 'TRIGGERED') {
     text = 'Modelleinstieg zur nächsten Eröffnung (keine reale Order). Bei Eröffnung auf/unter dem Stop oder außerhalb der Gap-Regel kein Einstieg.'; ruleId = 'LC-MODEL-ENTRY';

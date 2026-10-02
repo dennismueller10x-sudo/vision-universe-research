@@ -172,6 +172,47 @@ export function simulate(strategy, ctx, opts = {}) {
 
     if (sig && PENDING.has(sig.state)) {
       sig.sessions++;
+      // 4·. Kauf-Stop im Tagesverlauf (Runde 8, strategy.entryMode = 'BUY_STOP_INTRADAY'):
+      // Der Trigger ist seit dem Vortagesschluss bekannt; ueberschreitet das
+      // Tageshoch ihn, gilt der Kauf-Stop als ausgefuehrt - zu max(Eroeffnung,
+      // Trigger) plus Slippage. Der Stop ergibt sich aus dem Tagesbalken
+      // (strategy.intradayEntry). Gleichtags-Ausstieg nur in der vorsichtigen
+      // Variante (opts.sameDayPolicy = 'PESSIMISTIC'), weil Tagesbalken die
+      // Reihenfolge von Hoch und Tief nicht zeigen.
+      if (strategy.entryMode === 'BUY_STOP_INTRADAY') {
+        const e = strategy.intradayEntry(ctx, t, sig, params);
+        if (e && e.notTaken) {
+          transition(sig, 'INVALIDATED', date, e.ruleId, { price: round(bars.close[t]), priceBasis: 'CLOSE', note: e.note });
+          finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS; continue;
+        }
+        if (e) {
+          const fill = e.price * (1 + slip);
+          sig.confirmation = { date, index: t, basis: 'INTRADAY_BUY_STOP', close: round(bars.close[t]), high: round(bars.high[t]), low: round(bars.low[t]), volume: bars.volume[t] ?? null, volumeRatio: e.volumeRatio ?? null };
+          transition(sig, 'TRIGGERED', date, e.ruleId, { price: round(e.price), priceBasis: 'INTRADAY_BUY_STOP', trigger: round(sig.levels.trigger), note: 'Kauf-Stop über dem Trigger im Tagesverlauf ausgelöst' });
+          sig.entry = { date, index: t, price: fill, priceBasis: 'BUY_STOP', rawOpen: round(bars.open[t]), gappedAboveTrigger: bars.open[t] > sig.levels.trigger, slippageBps: exec.slippageBps };
+          sig.stop = e.stop; sig.initialStop = e.stop; sig.stopRuleId = e.stopRuleId;
+          sig.stopHistory = [{ date, stop: round(e.stop), ruleId: e.stopRuleId, ruleVersion: meta.ruleVersion }];
+          sig.remaining = 1; sig.exits = [];
+          transition(sig, 'ACTIVE', date, 'LC-MODEL-ENTRY', { price: round(fill), priceBasis: 'BUY_STOP', stop: round(e.stop), note: 'Modelleinstieg per Kauf-Stop (keine reale Order).' });
+          // Sicherer Gleichtags-Ausstieg (Nachtrag Runde 8, vor der Auswertung):
+          // schliesst der Einstiegstag auf oder unter dem Stop, wurde der Stop nach
+          // dem Kauf sicher durchschritten (Kurs lief vom Trigger ueber dem Stop
+          // zum Schluss darunter) - unabhaengig von der Reihenfolge-Annahme.
+          // opts.sameDayCertain === false bildet den eingefrorenen r8-Lauf nach.
+          const certain = opts.sameDayCertain !== false && bars.close[t] <= e.stop;
+          if (certain || (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit)) {
+            const basis = certain ? 'SAME_DAY_CERTAIN' : 'SAME_DAY_PESSIMISTIC';
+            const px = X.stopSellFill(e.stop, bars.open[t], exec);
+            const sp = Math.min(px.price, e.stop * (1 - slip));
+            sig.exits.push({ date, index: t, price: sp, fraction: 1, ruleId: sig.stopRuleId, priceBasis: basis });
+            sig.remaining = 0;
+            transition(sig, 'EXIT', date, sig.stopRuleId, { price: round(sp), priceBasis: basis });
+            transition(sig, 'CLOSED', date, sig.stopRuleId, { price: round(sp), priceBasis: basis });
+            closeTrade(sig); finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS;
+          }
+          continue;
+        }
+      }
       // 4a. Invalidation zuerst (LC-CONFLICT-01): bricht ein Balken die
       // Invalidation, zaehlt eine gleichzeitige Bestaetigung nicht.
       const inv = strategy.invalidate(ctx, t, sig, params);
@@ -196,7 +237,9 @@ export function simulate(strategy, ctx, opts = {}) {
       lastScan = r;
       if (!r || !PENDING.has(r.stage)) {
         transition(sig, 'INVALIDATED', date, 'LC-SETUP-LOST', { price: round(bars.close[t]), priceBasis: 'CLOSE', failed: r ? Object.keys(r.rules).filter((k) => !r.rules[k]) : [] });
-        finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS; continue;
+        // strategy.cooldownAfterSetupLost (Momentum 3.1.0): Sperre nach einem verlorenen
+        // Setup ohne Trade; Standard bleibt LC-COOLDOWN-01 (VU, 5 Sitzungen).
+        finish(sig); state.cooldownUntil = t + (strategy.cooldownAfterSetupLost ?? COOLDOWN_SESSIONS); continue;
       }
       const prevTrigger = sig.levels.trigger, prevInv = sig.levels.invalidation;
       sig.levels = r.levels; sig.facts = r.facts; sig.rules = r.rules;

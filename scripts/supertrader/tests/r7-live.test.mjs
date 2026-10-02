@@ -37,7 +37,8 @@ test('R7-L2 Versionswechsel: wartende Setups werden abgelöst, Positionen der Vo
   assert.deepEqual(open.map((x) => x.id), ['q']);
   assert.equal(retired[0].transitions.at(-1).ruleId, 'LC-VERSION-RETIRED');
   assert.throws(() => applyVersionPolicy({ ...kk2, legacy: {} }, [{ ...pos, transitions: [] }], '2026-10-01', null), /keine kompatible Positionsführung/);
-  for (const e of LIVE_ENGINES.filter((x) => x.version === '2.0.0')) assert.ok(PREVIOUS_ENGINES.some((p) => p.id === e.id && e.legacy[p.version] === p), e.id + ': Vorversion als Legacy registriert');
+  // Runde 8: jede Vorversion jeder Live-Methode ist entweder positionskompatibel oder als Legacy-Engine registriert.
+  for (const p of PREVIOUS_ENGINES) { const e = LIVE_ENGINES.find((x) => x.id === p.id); assert.ok((e.manageCompatible || []).includes(p.version) || e.legacy?.[p.version] === p || Object.values(e.legacy || {}).includes(p), `${p.id} ${p.version}: Vorversion weder kompatibel noch Legacy`); }
   assert.ok(kk1.version === '1.1.0');
 });
 
@@ -72,7 +73,7 @@ test('R7-L4 Methodentreue: keine Methode gilt als quellentreu; Kernbefunde stehe
   for (const f of Object.values(FIDELITY)) for (const r of f.rules) assert.ok(r.source && r.code && r.access && r.cls, JSON.stringify(r));
 });
 
-test('R7-L5 Live-Versionen und Registry stimmen überein; Evidenz der Version 2.0.0 öffentlich nur „In Prüfung“', async () => {
+test('R7-L5 Live-Versionen und Registry stimmen überein; Evidenz der Live-Version öffentlich nur „In Prüfung“', async () => {
   const { evidenceFor } = await import('../evidence.mjs');
   for (const e of LIVE_ENGINES) {
     const s = STRATEGIES.find((x) => x.strategy_id === e.id);

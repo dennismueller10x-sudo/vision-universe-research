@@ -313,7 +313,7 @@
     if (positions.length) {
       var posSorted = positions.slice().sort(function (a, b) { return (b.entry.date || '').localeCompare(a.entry.date || '') || a.symbol.localeCompare(b.symbol); });
       main.appendChild(sec('Modellpositionen', [
-        h('p', { class: 'st-hint', text: 'Einstieg jeweils zur Eröffnung nach einem bestätigten Tagesschluss – Simulation, keine Orders.' }),
+        h('p', { class: 'st-hint', text: 'Modelleinstieg nach der Regel der jeweiligen Version – seit Runde 8 per Kauforder am Ausbruchspunkt, wie in den Originalquellen beschrieben. Simulation, keine Orders.' }),
         h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
       ], { kicker: 'Live seit ' + dateDe(firstLive(sig)), more: more(BASE + 'signals/?phase=pos', 'Alle ' + positions.length) }));
     }
@@ -488,10 +488,14 @@
         h('span', { class: 'acc', text: r.accessLabel + (r.note ? ' · ' + r.note : '') }),
       ]);
     });
+    var chain = f.chain && f.chain.length ? h('ol', { class: 'st-chain' }, f.chain.map(function (c) { return h('li', null, [h('span', { class: 'k', text: c.step }), h('p', { text: c.text })]); })) : null;
     return h('div', null, [
+      chain ? h('div', { class: 'st-chainbox' }, [h('span', { class: 'k', text: 'Von der Quelle zum Modell' }), chain]) : null,
       h('ul', { class: 'st-fidlist' }, rows),
       f.missing && f.missing.length ? h('div', { class: 'st-fidmiss' }, [h('span', { class: 'k', text: 'Fehlt im laufenden Modell' }), h('ul', { class: 'st-ul' }, f.missing.map(function (m) { return h('li', { text: m }); }))]) : null,
       f.data ? h('p', { class: 'st-hint', text: 'Daten · historisch: ' + f.data.historical + ' · live: ' + f.data.live + (f.data.gaps ? ' · Lücken: ' + f.data.gaps : '') + '.' }) : null,
+      f.sourcesRead && f.sourcesRead.length ? details('Im Volltext gelesen (' + f.sourcesRead.length + ')', [h('ul', { class: 'st-ul' }, f.sourcesRead.map(function (m) { return h('li', { text: m }); }))]) : null,
+      f.failedAttempts && f.failedAttempts.length ? details('Erfolglose Quellenversuche', [h('ul', { class: 'st-ul' }, f.failedAttempts.map(function (m) { return h('li', { text: m }); }))]) : null,
       f.neededMaterial && f.neededMaterial.length ? details('Benötigtes Originalmaterial', [h('ul', { class: 'st-ul' }, f.neededMaterial.map(function (m) { return h('li', { text: m }); }))]) : null,
       scale.accessNote ? h('p', { class: 'st-hint', text: scale.accessNote }) : null,
     ]);
@@ -580,7 +584,7 @@
     ]));
     kids.push(main1.length ? h('div', { class: 'st-list' }, main1.slice(0, 12).map(function (x) { return stockCard(x, s); })) : emptyBox(hasQ ? 'Heute kein A-Setup' : 'Heute kein Setup', hasQ ? 'Alle ' + bList.length + ' gültigen Boxen verfehlen mindestens ein Qualitätskriterium.' : 'Die Regeln sind heute für keinen Titel erfüllt. Supertrader erfindet kein Signal.'));
     if (main1.length > 12 || bList.length) kids.push(more(BASE + 'signals/?method=' + s.strategy_id, 'Alle ' + open.length + ' Setups' + (bList.length ? ' (inkl. ' + bList.length + ' B)' : '')));
-    if (WATCH[s.strategy_id] && !isResearchS(s)) kids.unshift(h('p', { class: 'st-hint', text: 'Turtle-Regeln kaufen jeden Ausbruch über das 20-Tage-Hoch. Diese Liste zeigt liquide Aktien bis 3 % darunter – eine Beobachtungsliste, kein vorbereiteter Einstieg. Erst ein Tagesschluss über dem Hoch bestätigt.' }));
+    if (WATCH[s.strategy_id] && !isResearchS(s)) kids.unshift(h('p', { class: 'st-hint', text: 'Turtle-Regeln kaufen jeden Ausbruch über das 20-Tage-Hoch. Diese Liste zeigt liquide Aktien bis 3 % darunter – eine Beobachtungsliste, kein vorbereiteter Einstieg. Steigt der Kurs im Tagesverlauf über den Ausbruchspunkt, kauft das Modell (Kauf-Stop); nach einem Gewinner-Ausbruch gilt das 55-Tage-Hoch.' }));
     if (isResearchS(s)) {
       kids.unshift(h('p', { class: 'st-hint', text: 'Modellbeobachtung: Die Regeln laufen unverändert weiter, damit die Beobachtung nicht rückwirkend geschönt wird. Die Liste ist keine Auswahl von Einstiegschancen.' }));
       var pos = open.filter(function (x) { return x.entry; });
@@ -778,13 +782,13 @@
     kids.push(setupBar(s));
     if (p) {
       var cells = [
-        ['Trigger', num(p.trigger.value), 'geplant · ' + ({ DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || '') + ' darüber'],
+        ['Trigger', num(p.trigger.value), p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'geplant · Kauf-Stop darüber' : 'geplant · ' + ({ DAILY_CLOSE: 'Schluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || '') + ' darüber'],
         p.stop ? ['Stop', num(p.stop.value), 'aktueller Stop'] : ['Ungültig', num(p.invalidation.value), 'geplant · ' + (p.invalidation.basis === 'LOW' ? 'Tagestief' : 'Schluss') + ' darunter'],
-        p.entry ? ['Modelleinstieg', num(p.entry.price), dateShort(p.entry.date) + ' zur Eröffnung'] : ['Modelleinstieg', 'keiner', p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung'],
+        p.entry ? ['Modelleinstieg', num(p.entry.price), dateShort(p.entry.date) + (p.entry.basis === 'BUY_STOP' ? (p.entry.gappedAboveTrigger ? ' · Eröffnung über Trigger' : ' · Kauf-Stop') : ' zur Eröffnung')] : ['Modelleinstieg', 'keiner', p.trigger.basis === 'INTRADAY_BUY_STOP' ? 'sobald der Kurs den Trigger übersteigt' : p.phase === 'CONFIRMED' ? 'folgt zur Eröffnung' : 'erst nach Bestätigung'],
       ];
       var pc = D && portfolioCell(D, s); if (pc) cells.push(pc);
       kids.push(h('div', { class: 'st-cells' + (cells.length > 3 ? ' four' : '') }, cells.map(function (c, i) { return h('div', { class: 'c' + (i === 1 ? ' bad' : '') }, [h('span', { class: 'k', text: c[0] }), h('strong', { text: c[1] }), h('span', { class: 'd', text: c[2] })]); })));
-      var nxt = p.phase === 'PREPARED' ? 'Wartet auf ' + ({ DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || 'Schluss') + ' über ' + num(p.trigger.value) + ' — dann Modelleinstieg zur nächsten Eröffnung.' : p.nextAction.text;
+      var nxt = p.phase === 'PREPARED' && p.trigger.basis !== 'INTRADAY_BUY_STOP' ? 'Wartet auf ' + ({ DAILY_CLOSE: 'Tagesschluss', WEEKLY_CLOSE: 'Wochenschluss' }[p.trigger.basis] || 'Schluss') + ' über ' + num(p.trigger.value) + ' — dann Modelleinstieg zur nächsten Eröffnung.' : p.nextAction.text;
       kids.push(h('div', { class: 'st-next', title: p.nextAction.text }, [h('span', { class: 'k', text: 'Nächster Schritt des Modells' }), h('p', { text: nxt }), h('span', { class: 'r', title: p.nextAction.ruleId, text: 'Kursdaten vom ' + dateDe(p.nextAction.dataAsOf) })]));
     } else {
       kids.push(h('p', { class: 'st-hint', text: 'Kandidat: Die Grundbedingungen sind erfüllt, ein Setup mit Trigger gibt es noch nicht. Kandidaten werden nicht protokolliert.' }));

@@ -1,3 +1,81 @@
+# Supertrader — Methodentreue (Runde 8, 02.10.2026: Volltext der Originalquellen)
+
+Runde 8 ersetzt die Suchauszüge aus Runde 7 durch tatsächlich gelesene Originalseiten. Die Arbeitsumgebung sperrt die
+Websites der Trader weiterhin; abgerufen wurden sie deshalb vom GitHub-Actions-Runner
+(`scripts/supertrader/validation/fetch-sources.mjs`, Workflow-Modus `sources`). Die Texte sind urheberrechtlich
+geschützt und liegen nur verschlüsselt beim Eigentümer, nicht im Repository.
+
+## Gelesen
+
+| Methode | Im Volltext gelesen | Nicht zugänglich (Versuche) |
+|---|---|---|
+| Kullamägi | „3 TIMELESS setups“ (08.01.2021) mit allen Beispielcharts, FAQ, „Episodic Pivots“ | – (Bilder über das Internet Archive, die Website sperrt Bots) |
+| Turtle | „The Original Turtle Trading Rules“, PDF, 27 Seiten | – |
+| Darvas | TIME 25.05.1959 „Pas de Dough“, TIME 01.08.1960 „The Darvas Effect“ | Buch (1960): keine freie Fassung |
+| Weinstein | Bulkowski (thepatternsite.com) mit wörtlichen Buchzitaten; stageanalysis.net | Buch (1988): keine freie Fassung |
+| Minervini | – | minervini.com (Bezahlangebot, keine freien Regeln), /blog liefert 404; Bücher 2013/2017 nicht frei |
+
+## Wo die Kette Deep Research → Regel → Code → Trade riss
+
+**Befund:** Die Deep Research hatte die Einstiegsregeln richtig wiedergegeben. Jede Quelle beschreibt einen Kauf
+**per Order am Ausbruchspunkt im Tagesverlauf**:
+
+- **Kullamägi:** „just look at the daily chart and enter when the stock is starting to break out“; Stop „always lows of
+  the day“.
+- **Turtle Rules:** „Turtles always traded at the breakout when it was exceeded during the day, and did not wait until
+  the daily close or the open of the following day.“
+- **Darvas:** „places buy orders at breakout points“, Stop „just below his buy order“ (TIME 1959).
+- **Weinstein** (zitiert bei Bulkowski): „If you have purchased it with a buy-stop order …“
+
+Der Code verwendete bis Runde 7 für **alle** Methoden dieselbe VU-Konvention `LC-CONFIRM-CLOSE`: Bestätigung erst am
+Tagesschluss (Weinstein: Wochenschluss), Kauf zur nächsten Eröffnung. Begründet wurde das mit „Intraday nicht
+belegbar“ – Tageshoch und Eröffnung zeigen aber, ob und zu welchem Preis eine Kauforder ausgeführt worden wäre. Das war
+ein **Übertragungsfehler in den Code**, kein Lesefehler der Recherche.
+
+Weitere Abweichungen je Methode (Details in `fidelity.mjs`, Methodenseite „Von der Quelle zum Modell“):
+
+| Methode | Abweichung bis Runde 7 | Art | Wirkung |
+|---|---|---|---|
+| Kullamägi | Stop am Tief des Bestätigungstags statt Tagestief des Einstiegstags | Folge des Schlusskurs-Einstiegs | anderer Stop-Bezug |
+| Kullamägi | Gap-Sperre 0,5 ADR | unbelegte VU-Annahme | Ausbrüche mit großem Gap fehlten |
+| Kullamägi | Höchstgewicht 20 % | zu eng gelesen (FAQ: 5–25 %) | kleinere Positionen |
+| Turtle | N als einfaches 20-Tage-Mittel statt EMA 19/20 | ausgelassen | anderer Stop/Größe |
+| Turtle | kein System-1-Filter, kein 55-Tage-Failsafe | ausgelassen | andere Einstiegsauswahl |
+| Turtle | 0,5 % Risiko statt 1 % je N, kein notionelles Konto | VU-Standard statt Quelle | andere Größe und Verlustphasen |
+| Turtle | Ausstieg nach Schluss unter dem 10-Tage-Tief zur nächsten Eröffnung | Schlusskurs-Konvention | ein Tag zu spät |
+| Darvas | 10 Positionen statt fünf bis sechs | VU-Standard statt Quelle | Streuung |
+| Darvas 2.0.0 | Stop knapp unter der Kauforder **mit** Kauf zur nächsten Eröffnung | Mischung aus Quelle und Konvention | sehr viele Sofort-Ausstiege |
+| Weinstein | Widerstand = höchster Wochenschluss; Volumen als Filter vor dem Kauf | Konvention | Einstieg bis eine Woche später; Volumenregel falsch verortet |
+
+## Ergebnis in einem Satz
+
+Die Übertragung ist korrigiert, die Kette Quelle → Regel → Code → Trade ist je Regel sichtbar. Keine quellennähere Version
+zeigt historisch einen Vorteil gegenüber SPY. Die Gegenproben tragen für Weinstein eine Teilursache (Einstieg/Volumen),
+für Kullamägi nicht; für Darvas sind sie mit Tagesbalken nicht entscheidbar.
+
+## Neue Versionen (vor jedem Test festgelegt)
+
+- **Momentum 3.0.0** (`kk-breakout-v3.mjs`, PREREGISTRATION-R8.json) und **3.1.0** (`kk-breakout-v31.mjs`, PREREGISTRATION-R8C.json). 3.1.0 entfernt zwei VU-Zusätze, an denen Kullamägis TSLA-Beispiel scheiterte: Kurs über beiden Linien, 5 Sitzungen Sperre. 3.1.0 läuft live.
+- **Donchian/Turtle 2.0.0** (`donchian-v2.mjs`, PREREGISTRATION-R8-TURTLE.json)
+- **Darvas 3.0.0, Weinstein 3.0.0** (`darvas-v3.mjs`, `weinstein-v3.mjs`, PREREGISTRATION-R8B.json)
+- **Minervini** bleibt 2.0.0: Ohne frei lesbare Primärquelle gibt es keinen belegten Grund für eine neue Version.
+
+Die Simulator-Erweiterung `BUY_STOP_INTRADAY` arbeitet so:
+
+- **Ausführung:** zu max(Eröffnung, Trigger) plus Slippage.
+- **Gleichtags-Ausstieg:** sicher bei Schluss ≤ Stop (Nachtrag vor der Auswertung, siehe PREREGISTRATION-R8B.json).
+- **Vorsichtige Gegenprobe:** zählt jedes Tagestief unter dem Stop als Ausstieg, weil Tagesbalken die Reihenfolge von
+  Hoch und Tief nicht zeigen.
+
+Weiterhin VU, gekennzeichnet:
+
+- Trigger als 5-Tage-Hoch (statt des Opening-Range-Hochs der ersten Minuten)
+- Basis-Algorithmus, Darvas-3-Tage-Box, Stop 1 % unter der Kauforder
+- Turtle auf Aktien statt Futures, eine Unit je Titel ohne Nachkaufen
+- Liquiditätsgrenzen
+
+---
+
 # Supertrader — Methodentreue, Ursachen, neue Versionen (Runde 7, 02.10.2026)
 
 Dieses Dokument trennt für jede Methode, **was eine Quelle tatsächlich sagt**, **welche Regel im Code steht**
