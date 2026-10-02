@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-10-02T21:05:48.000Z",
+ "generatedAt": "2026-10-02T21:56:02.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -1580,9 +1580,9 @@
  "dataFreshnessFindings": [],
  "publishedBasis": {
   "artefact": "quant/data/product/factor-evidence-v1",
-  "entries": 6308,
+  "entries": 6287,
   "priceBasisCounts": {
-   "close": 6308
+   "close": 6287
   },
   "measuredQuantV2MomentumBasis": "MIXED_OR_UNCONFIRMED"
  },
@@ -4128,8 +4128,8 @@
     "publishedEvidenceLagDays": 0,
     "excludedForLateFundamentals": 0,
     "limitation": null,
-    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.949533,
-    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.960559,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.949481,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.960489,
     "publishedScored": 5079,
     "simulatedScoredOnPrice": 5520,
     "simulatedScoredOnTotal": 5520,
@@ -4146,11 +4146,11 @@
    "STRATEGY_IMPACT": {
     "momentum-leader": {
      "label": "Momentum Leader",
-     "MEMBERS_ON_PRICE_RETURN": 299,
-     "MEMBERS_ON_TOTAL_RETURN": 296,
+     "MEMBERS_ON_PRICE_RETURN": 298,
+     "MEMBERS_ON_TOTAL_RETURN": 295,
      "LEAVING": 16,
      "ENTERING": 13,
-     "MEMBERSHIP_CHURN_SHARE": 0.097,
+     "MEMBERSHIP_CHURN_SHARE": 0.0973,
      "leavingExamples": [
       "CRM",
       "TPC",
@@ -12455,5 +12455,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 45391
+ "runtimeMs": 28317
 }
