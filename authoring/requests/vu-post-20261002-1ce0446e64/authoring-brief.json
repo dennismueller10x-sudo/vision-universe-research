@@ -1,0 +1,755 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "request_type": "FULL_CREATIVE",
+  "creative_format": "CAROUSEL",
+  "visual": {
+    "mode": "GENERATE_NEW_ASSET",
+    "regeneration_allowed": true
+  },
+  "test_fixture": false,
+  "brief_id": "brief_96605b1903ff9dbf",
+  "content_id": "vu-post-20261002-1ce0446e64",
+  "attempt": 1,
+  "supersedes_attempt": null,
+  "attempt_reason": null,
+  "created_at": "2026-10-02T15:22:11.201Z",
+  "trigger": "MANUAL",
+  "brand": "Vision Universe",
+  "language": "de",
+  "channel": "instagram",
+  "format": "carousel",
+  "role": "Du bist Social Editor, Creative Director und Visual Designer von Vision Universe.",
+  "objective": "Recherchiere die aktuell relevantesten Boersen-, Aktien-, Unternehmens-, Makro-, Technologie- und Finanznachrichten und finde daraus selbststaendig die beste Story fuer einen Vision-Universe-Post. Das Recherchepaket unten ist Startmaterial: pruefe die Storys an der Originalquelle, suche ergaenzend selbst und nimm eine bessere Story, wenn du eine findest. Kannst du in diesem Lauf keine Webseiten oeffnen, arbeite ausschliesslich mit dem Paket (Originalartikel-Auszuege sind enthalten) und melde das ehrlich in research.web_access. Verstehe zuerst, was fuer Anleger daran wirklich interessant ist. Entwickle daraus eine starke deutsche Social Story. Erwaege mehrere unterschiedliche Hook-Richtungen und waehle die staerkste. Schreibe eine hochwertige deutsche Caption und bis zu 5 Hashtags. Plane ein zusammenhaengendes Carousel (Standard: 3 Slides) in der Designsprache der Referenzbilder. Erzeuge in diesem Auftrag das Cover (Slide 1) als vollendetes, finales 4:5-Creative und beschreibe Slide 2 und 3 so vollstaendig, dass sie ohne neue Redaktion umgesetzt werden koennen. Ziel: ein Vision-Universe-Post, den ein deutscher Anleger im Feed anhaelt und den der Owner freiwillig posten wuerde.",
+  "audience": "Deutschsprachige Anleger, die aktuelle Markt-, Unternehmens- und Technologieentwicklungen verfolgen",
+  "research": {
+    "mode": "WORK_WEB_RESEARCH",
+    "instruction": "Nicht die erste News nehmen. Pruefe mehrere aktuelle Storys und bewerte sie redaktionell: Aktualitaet, Anlegerrelevanz, Ueberraschung, Verstaendlichkeit, Neuigkeitswert, Diskussions-, Share- und Save-Potenzial, visuelles Potenzial, Staerke der Belege. Keine Story nehmen, nur weil sie leicht zu verarbeiten ist. Moegliche Felder (nicht abschliessend): Aktien, Unternehmen, Earnings, Maerkte, Makro, Zinsen, Inflation, Rohstoffe, KI, Halbleiter, Cloud, Rechenzentren, Cybersecurity, Robotik, Mobilitaet, Energie, Zukunftstechnologien, ETFs, aussergewoehnliche Unternehmensentwicklungen.",
+    "honesty": "Gib in `research.web_access` ehrlich an, ob du in diesem Lauf wirklich Webseiten geoeffnet hast, und je Quelle `opened_by_agent`. Keine Behauptung von Recherche, die nicht stattgefunden hat.",
+    "no_material_rule": null,
+    "do_not_repeat": "Die URLs in `package.already_covered_urls` wurden bereits behandelt - keine davon erneut als Hauptstory.",
+    "owner_topic": null,
+    "package": {
+      "generated_at": "2026-10-02T15:22:11.201Z",
+      "note": "Startmaterial, keine Vorauswahl. Die Reihenfolge sortiert nur nach Frische und Belegdichte - welche Story erzaehlt wird, entscheidet der Creative Agent.",
+      "feeds_checked": [
+        {
+          "source": "MarketWatch Top Stories",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "CNBC Top News",
+          "ok": true,
+          "items": 30
+        },
+        {
+          "source": "Yahoo Finance",
+          "ok": true,
+          "items": 49
+        },
+        {
+          "source": "Investing.com News",
+          "ok": true,
+          "items": 10
+        },
+        {
+          "source": "Seeking Alpha Market Currents",
+          "ok": true,
+          "items": 7
+        },
+        {
+          "source": "Nasdaq Markets",
+          "ok": false,
+          "items": 0
+        },
+        {
+          "source": "tagesschau Wirtschaft",
+          "ok": true,
+          "items": 32
+        },
+        {
+          "source": "Handelsblatt Finanzen",
+          "ok": true,
+          "items": 20
+        }
+      ],
+      "stories": [
+        {
+          "id": "s1",
+          "title": "Dax aktuell: Dax erobert 25.000-Punkte-Marke zurück – Ölpreis sinkt",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dax-aktuell-dax-erobert-25.000-punkte-marke-zurueck-oelpreis-sinkt/100259189.html",
+          "published_at": "2026-10-02T14:53:38.000Z",
+          "age_hours": 0.5,
+          "description": "Zum Wochenschluss gewinnen Anleger am deutschen Aktienmarkt neuen Mut. Dazu tragen Daten aus den USA bei. Unterdessen verliert eine Bank besonders.",
+          "extracted_numbers": [
+            {
+              "value": "25.000",
+              "unit": null,
+              "sentence": "Dax aktuell: Dax erobert 25.000-Punkte-Marke zurück – Ölpreis sinkt."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Fallende Energiepreise machen den Dax-Anlegern zum Wochenschluss Mut. Die Kurstafel in Frankfurt zeigt am Nachmittag ein Plus von 1,5 Prozent bei 25.287 Punkten an. Am Donnerstag hatte der deutsche Leitindex ein Prozent tiefer bei 24.939 Punkten geschlossen. Damit hatte der Dax die Marke erstmalig seit Juli unterschritten.\n\nNun stimmen besonders die fallenden Rohölpreise Anleger versöhnlich. Dabei drückt eine Freigabe von Dieselreserven der EU-Staaten den Ölpreis weiter ins Minus. Das Nordseeöl Brent (zur Lieferung im Dezember) und das US-Öl WTI (mit Lieferung im November) verbilligen sich in der Spitze um 2,7 und 3,9 Prozent auf 99,51 beziehungsweise 89,29 Dollar je Fass.\n\nSo haben sich die G7-Staaten auf die Freigabe von bis zu 100 Millionen Barrel Diesel und Rohöl geeinigt, um die angespannten Energiemärkte zu entlasten. Die koordinierte Freigabe über die Internationale Energieagentur (IEA) soll unverzüglich anlaufen und über einen Zeitraum von vier Monaten erfolgen, wie die G7 in einer gemeinsamen Erklärung am Freitag mitteilten. Zudem ist eine vorgezogene, erhebliche Freigabe von Diesel innerhalb der ersten 20 Tage durch die G7-Mitglieder und ihre Partner geplant.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Zum Wochenschluss gewinnen Anleger am deutschen Aktienmarkt neuen Mut. Dazu tragen Daten aus den USA bei. Unterdessen verliert eine Bank besonders.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1275,
+            "note": null
+          }
+        },
+        {
+          "id": "s2",
+          "title": "iShares iBonds 1-5 Year Treasury Ladder ETF declares monthly distribution of $0.0749",
+          "source": "Seeking Alpha Market Currents",
+          "url": "https://seekingalpha.com/news/4649873-ishares-ibonds-1-5-year-treasury-ladder-etf-declares-monthly-distribution-of-00749?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+          "published_at": "2026-10-02T14:54:17.000Z",
+          "age_hours": 0.5,
+          "description": "",
+          "extracted_numbers": [
+            {
+              "value": "1",
+              "unit": null,
+              "sentence": "iShares iBonds 1-5 Year Treasury Ladder ETF declares monthly distribution of $0.0749."
+            },
+            {
+              "value": "5",
+              "unit": null,
+              "sentence": "iShares iBonds 1-5 Year Treasury Ladder ETF declares monthly distribution of $0.0749."
+            },
+            {
+              "value": "0.074",
+              "unit": null,
+              "sentence": "iShares iBonds 1-5 Year Treasury Ladder ETF declares monthly distribution of $0.0749."
+            },
+            {
+              "value": "9",
+              "unit": null,
+              "sentence": "iShares iBonds 1-5 Year Treasury Ladder ETF declares monthly distribution of $0.0749."
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": "iShares iBonds 1-5 Year Treasury Ladder ETF (LDRT) - $0.0749. 30-Day SEC Yield of 3.88% as of Sept. 30. Payable Oct 07; for shareholders of record Oct 02; ex-di",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s3",
+          "title": "‘I don’t want to die on the sales floor’: I’m 67 and earn $19.50 an hour at a big-box store. When can I finally retire?",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/i-dont-want-to-die-on-the-sales-floor-im-67-and-earn-19-50-an-hour-at-a-big-box-store-when-can-i-finally-retire-369abcf9?mod=mw_rss_topstories",
+          "published_at": "2026-10-02T14:00:00.000Z",
+          "age_hours": 1.4,
+          "description": "“I started taking Social Security at 66 and receive $2,410 a month. I have $214,000 in my 401(k).”",
+          "extracted_numbers": [
+            {
+              "value": "67",
+              "unit": null,
+              "sentence": "‘I don’t want to die on the sales floor’: I’m 67 and earn $19.50 an hour at a big-box store."
+            },
+            {
+              "value": "19.50",
+              "unit": null,
+              "sentence": "‘I don’t want to die on the sales floor’: I’m 67 and earn $19.50 an hour at a big-box store."
+            },
+            {
+              "value": "66",
+              "unit": null,
+              "sentence": "“I started taking Social Security at 66 and receive $2,410 a month."
+            },
+            {
+              "value": "2,410",
+              "unit": null,
+              "sentence": "“I started taking Social Security at 66 and receive $2,410 a month."
+            },
+            {
+              "value": "214,000",
+              "unit": null,
+              "sentence": "I have $214,000 in my 401(k).”"
+            },
+            {
+              "value": "401",
+              "unit": null,
+              "sentence": "I have $214,000 in my 401(k).”"
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s4",
+          "title": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt kaum verändert – Ölpreis steigt",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-wall-street-schliesst-kaum-veraendert-oelpreis-steigt/100259034.html",
+          "published_at": "2026-10-01T19:10:01.000Z",
+          "age_hours": 20.2,
+          "description": "Die Ölpreise steigen, auch US-Anleiherenditen erreichen den höchsten Stand seit 2002. Die Hoffnung auf einen Zinsschritt weniger in diesem Jahr stimmt Anleger dennoch zuversichtlich.",
+          "extracted_numbers": [
+            {
+              "value": "500",
+              "unit": null,
+              "sentence": "Dow Jones, S&P 500, Nasdaq: Wall Street schließt kaum verändert – Ölpreis steigt."
+            },
+            {
+              "value": "2002",
+              "unit": null,
+              "sentence": "Die Ölpreise steigen, auch US-Anleiherenditen erreichen den höchsten Stand seit 2002."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Die US-Börsen haben am Donnerstag anfängliche leichte Verluste größtenteils wettgemacht. Für etwas Erleichterung sorgte, dass die Renditen am Anleihenmarkt zuletzt wieder sanken. Deren Anstieg hatte jüngst Befürchtungen mit Blick auf die Tragfähigkeit der exorbitant hohen Staatsschulden geweckt. Insgesamt hielten sich die Bewegungen an der Wall Street am ersten Tag des neuen Quartals in engen Grenzen.\n\nAm gestrigen Mittwoch veröffentlichte das US-Handelsministerium für die US-Notenbank Federal Reserve ( Fed ) wichtige Inflationsdaten. So verharrt der Preisindex für die persönlichen Konsumausgaben (PCE) im August bei 3,4 Prozent. Das war ein niedrigerer Wert als von Analysten erwartet – das Niveau verbleibt aber hoch. Die Daten nähren die Hoffnung, dass die Fed auf eine weitere Zinserhöhung im Oktober verzichten könnte.\n\nUnterdessen ignoriert die Wall Street die jüngsten Impulse von Micron . Der US-Speicherchiphersteller hatte am Mittwoch nach dem Börsenschluss in New York überraschend hohe Ziele für das laufende Geschäftsquartal ausgegeben. Die Papiere notieren nach Handelsstart am Donnerstag gut drei Prozent im Minus.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Die Ölpreise steigen, auch US-Anleiherenditen erreichen den höchsten Stand seit 2002. Die Hoffnung auf einen Zinsschritt weniger in diesem Jahr stimmt Anleger dennoch zuversichtlich.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1224,
+            "note": null
+          }
+        },
+        {
+          "id": "s5",
+          "title": "I’m 71 and still working. I earn $108,000 a year. Am I doing the right thing?",
+          "source": "MarketWatch Top Stories",
+          "url": "https://www.marketwatch.com/story/im-71-and-still-working-i-earn-108-000-a-year-am-i-doing-the-right-thing-aaedcaa4?mod=mw_rss_topstories",
+          "published_at": "2026-10-02T13:00:00.000Z",
+          "age_hours": 2.4,
+          "description": "“I have $152,000 in my IRA and Roth accounts.”",
+          "extracted_numbers": [
+            {
+              "value": "71",
+              "unit": null,
+              "sentence": "I’m 71 and still working."
+            },
+            {
+              "value": "108,000",
+              "unit": null,
+              "sentence": "I earn $108,000 a year."
+            },
+            {
+              "value": "152,000",
+              "unit": null,
+              "sentence": "“I have $152,000 in my IRA and Roth accounts.”"
+            }
+          ],
+          "article_excerpt": null,
+          "article_meta_description": null,
+          "article_fetch": {
+            "ok": false,
+            "status": 401,
+            "excerpt_chars": 0,
+            "note": "Kein Artikeltext lesbar (Paywall, Bot-Sperre oder Skriptseite) - nur Titel/Teaser."
+          }
+        },
+        {
+          "id": "s6",
+          "title": "Rivian tops Q3 delivery expectations, reconfirms 2026 guidance",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/q3-vehicle-deliveries.html",
+          "published_at": "2026-10-02T14:58:42.000Z",
+          "age_hours": 0.4,
+          "description": "Rivian reported a year-over-year increase in vehicle deliveries of 46% during the third quarter.",
+          "extracted_numbers": [
+            {
+              "value": "3",
+              "unit": null,
+              "sentence": "Rivian tops Q3 delivery expectations, reconfirms 2026 guidance."
+            },
+            {
+              "value": "2026",
+              "unit": null,
+              "sentence": "Rivian tops Q3 delivery expectations, reconfirms 2026 guidance."
+            },
+            {
+              "value": "46",
+              "unit": "%",
+              "sentence": "Rivian reported a year-over-year increase in vehicle deliveries of 46% during the third quarter."
+            }
+          ],
+          "article_excerpt": "Rivian Automotive on Friday reconfirmed its 2026 vehicle delivery guidance after reporting a year-over-year increase of 46% during the third quarter, topping Wall Street's expectations.\n\nThe electric vehicle company reported delivery of 19,248 units from July through September, up from 13,201 a year earlier. Wall Street was expecting 18,000 units, according to average estimates compiled by FactSet.\n\nRivian's 2026 guidance for vehicle deliveries, which it raised earlier this year, is between 65,000 and 70,000 vehicles. To achieve that target, the company would need to increase deliveries from the third to fourth quarters by at least 20.5%, to 23,193 vehicles.\n\nThe growth in deliveries comes as the company continues a ramp-up in production of its entry-level Rivian R2 SUV that launched earlier this year as a smaller, less expensive sibling to its flagship R1 SUV.",
+          "article_meta_description": "Rivian reported a year-over-year increase in vehicle deliveries of 46% during the third quarter.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 873,
+            "note": null
+          }
+        },
+        {
+          "id": "s7",
+          "title": "Can Google's new model really catch up to OpenAI and Anthropic at the frontier?",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/tech-download-google-argon-frontier-openai-anthropic.html",
+          "published_at": "2026-10-02T15:16:24.000Z",
+          "age_hours": 0.1,
+          "description": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation.",
+          "extracted_numbers": [
+            {
+              "value": "2026",
+              "unit": null,
+              "sentence": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation."
+            },
+            {
+              "value": "4",
+              "unit": null,
+              "sentence": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation."
+            }
+          ],
+          "article_excerpt": "2026 has been a turbulent year for Google's AI hopes and dreams.\n\nThings started well. Gemini 3, which launched towards the end of 2025, put Google very much in the frontier AI conversation.\n\nBut for much of the rest of this year, it's Anthropic and OpenAI that have been at the forefront of AI advances.\n\nGoogle will undoubtedly be hoping the release of a new flagship model, Gemini 4 Argon, changes that.\n\nWhen Demis Hassabis stepped down as CEO of DeepMind, Google's AI lab, in August, I wrote that new boss Koray Kavukcuoglu was inheriting a race to catch-up with Sam Altman and Dario Amodei's companies.\n\nNow Google has touted the model as performing better than top OpenAI and Anthropic offerings in some benchmarks.\n\nArtificial Analysis Intelligence Index, a composite benchmark score, places Gemini 4 as lagging behind only Claude Opus 5.5 and Claude Sonnet 5.5 on its leaderboard.\n\n\"Google Gemini 4 Argon shows advanced reasoning on critical tasks, according to benchmarks, particularly legal reasoning, finance and other aspects of enterprise knowledge work, including long-running tasks,\" Tim Law, director of research for AI at IDC , told me.\n\nLian Jye Su, chief analyst at Omdia, said that while Google was \"late to the cybersecurity and coding game,\" Gemini 4 took the company to the frontier in AI, particularly in cybersecurity.\n\nThe company plans to launch the new model in phases, starting with trusted cybersecurity partners while working with the U.S. government on pre-release safety evaluations.\n\n\"Starting this rollout in this way gives us more confidence, but also enables us to put a model that is trained and strong in cyber defense in the hands of defenders as soon as possible,\" Tulsee Doshi, Google's Gemini model product lead, told CNBC.\n\nThe numerous security incidents caused by rogue AI systems made by OpenAI and Anthropic have created an opportunity for Google to \"stake its claims as the trusted model provider for safe and secure AI operations,\" Su said.\n\nBut while Argon has made Google competitive again in AI, said Nick Patience, AI lead at the Futurum Group, the model doesn't make it the \"leader.\"\n\n\"At a minimum, though, Gemini 4 Argon opens up another competitive front for enterprise knowledge work with other leading frontier models,\" said Law.\n\nGoogle said in its release that its new model is already being used internally to optimize memory at Google's data centers, freeing up hundreds of terabytes of memory without buying additional hardware. Quantum computing researchers have also utilized the model.\n\nBut the real test, as it always is with new models, is when it sees the cold light of day and is launched more widely. The company has given no indication when that could be.\n\n\"While Google touts the success of internal use cases, the final proof will be in enterprise production environments once the model is fully released,\" said Law.\n\nOpenAI abandoned the release of an upcoming model after determining that it did not adequately meet the company's safety standards.\n\nSpaceX launched Google AI chips into orbit in a push toward space-based data centers .\n\nOpenAI has been sued by a non-profit organization over its models' cyberattack against startup Hugging Face in July.\n\nCalifornia Gov. Gavin Newsom is banning AI 'robo bosses' in landmark state law , reversing his earlier veto.\n\nFormer LinkedIn chief Roslansky is set to leave Microsoft , following other exec departures.",
+          "article_meta_description": "Google has been trailing OpenAI and Anthropic for much of 2026, analysts say Gemini 4 puts it back in the frontier AI conversation.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3436,
+            "note": null
+          }
+        },
+        {
+          "id": "s8",
+          "title": "Dow Jones, S&P 500, Nasdaq: Rally nach US-Jobdaten treibt Nvidia und Nasdaq auf Rekordhoch",
+          "source": "Handelsblatt Finanzen",
+          "url": "https://www.handelsblatt.com/finanzen/maerkte/marktberichte/dow-jones-sp-500-nasdaq-wall-street-notiert-nach-us-arbeitsmarktdaten-im-plus/100259355.html",
+          "published_at": "2026-10-02T15:00:30.000Z",
+          "age_hours": 0.4,
+          "description": "Die Anleger verdrängen am Freitag die zuletzt aufgekommenen Zins- und Inflationssorgen. Stattdessen befinden sich einige US-Indizes in Rekordnähe.",
+          "extracted_numbers": [
+            {
+              "value": "500",
+              "unit": null,
+              "sentence": "Dow Jones, S&P 500, Nasdaq: Rally nach US-Jobdaten treibt Nvidia und Nasdaq auf Rekordhoch."
+            }
+          ],
+          "article_excerpt": "Düsseldorf. Der US-Arbeitsmarktbericht für September sorgt für gute Stimmung an den Märkten. Die großen US-Indizes liegen am Freitagnachmittag im Plus und erreichen teilweise Bestmarken.\n\nSo dürften sich die Anleger besonders die jüngsten Beschäftigungszahlen betrachten. Außerhalb der Landwirtschaft entstanden im September nur 29.000 neue Stellen, wie die US-Regierung am Freitag mitteilte. Von Reuters befragte Ökonomen hatten mit einem Plus von 90.000 Jobs gerechnet. Die Arbeitslosenquote kletterte zugleich auf 4,2 Prozent. Im August hatte sich der Arbeitsmarkt noch unerwartet robust gezeigt. Allerdings wurde Beschäftigungsaufbau in den beiden Vormonaten um insgesamt 60.000 Stellen nach unten revidiert.\n\n„Die heutigen Daten sprechen für Geduld, nicht für Panik“, sagte Seema Shah, Chefstrategin bei Principal Asset Management, gegenüber CNBC. Dabei meint die Strategin Geduld mit Blick auf die US-Zinspolitik.\n\nDenn enttäuschende Daten vom Arbeitsmarkt dämpfen an den Finanzmärkten die Spekulation auf eine weitere Zinserhöhung durch die US-Notenbank Federal Reserve ( Fed ). Die Notenbank hat ein duales Mandat, dieses verpflichtet sie zu Vollbeschäftigung und stabilen Preisen.\n\nIntuitiv, schnell und immer aktuell - jetzt Handelsblatt App installieren.",
+          "article_meta_description": "Die Anleger verdrängen am Freitag die zuletzt aufgekommenen Zins- und Inflationssorgen. Stattdessen befinden sich einige US-Indizes in Rekordnähe.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 1265,
+            "note": null
+          }
+        },
+        {
+          "id": "s9",
+          "title": "Ford fends off Hyundai to retain No. 3 U.S. sales position in third quarter",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/ford-q3-sales.html",
+          "published_at": "2026-10-02T15:19:40.000Z",
+          "age_hours": 0,
+          "description": "Ford on Friday reported a year-over-year sales decline of 6.6% during the third quarter to 507,395 light-duty vehicles.",
+          "extracted_numbers": [
+            {
+              "value": "3",
+              "unit": null,
+              "sentence": "3 U.S. sales position in third quarter."
+            },
+            {
+              "value": "6.6",
+              "unit": "%",
+              "sentence": "Ford on Friday reported a year-over-year sales decline of 6.6% during the third quarter to 507,395 light-duty vehicles."
+            },
+            {
+              "value": "507,395",
+              "unit": null,
+              "sentence": "Ford on Friday reported a year-over-year sales decline of 6.6% during the third quarter to 507,395 light-duty vehicles."
+            }
+          ],
+          "article_excerpt": "DETROIT — Ford Motor retained its No. 3 U.S. sales position during the third quarter by a narrow margin over Hyundai Motor, which had been forecast to overtake the Detroit automaker.\n\nFord on Friday reported a year-over-year sales decline of 6.6% during the third quarter to 507,395 light-duty vehicles. That figure excludes its largest heavy-duty trucks, which are classified differently.\n\nThat compares to the South Korean automaker, including Hyundai, Kia and Genesis brands, reporting a 5.4% increase to 506,200 vehicles during the quarter.\n\nBoth companies performed better than expected. A forecast last week by Cox Automotive had called for Hyundai to overtake Ford in quarterly sales for the first time.\n\nHyundai, including its luxury Genesis brand and corporate sibling Kia, has been making major inroads in the U.S. this year. Ford, meanwhile, has struggled with production of its crucial F-Series pickup trucks after two supplier fires last year that disrupted production and sales.\n\nFord retains a roughly 89,700-unit sales lead for the year over Hyundai through the third quarter, according to data reported this week by the companies.\n\nFord on Friday downplayed Hyundai's proximity in sales, citing Kia and Hyundai brands operating separately in the U.S. despite having a corporate parent.\n\nIn addition to the F-Series production problems, Ford's year-over-year sales comparisons have been tough due to the discontinuation of vehicles such as the Ford Escape.\n\nRob Kaffl, Ford's head of U.S. sales, said Friday that sales and inventories of F-Series pickups, including its F-150, continued to improve during the quarter.\n\n\"Some of the headwinds we had early in the year are kind of behind us, and it's really setting us up for a really strong Q4 as we move in,\" Kaffl said during a media call.\n\nF-Series sales were only off 1.9% during the third quarter, including a 97.1% decline of the discontinued F-150 Lightning electric pickup truck.\n\nThe Detroit automaker's Ford brand was off roughly 6% during the quarter, while its luxury Lincoln brand was down 18%.\n\nFord's year-over-year EV sales were off 67.5% through September, including a roughly 80% decline during the third quarter. The automaker is also facing tough comparisons in that category, as it reported record EV sales during the same period last year as demand spiked ahead of the Trump administration ending up to $7,500 in federal incentives for consumers to purchase an electric vehicle.",
+          "article_meta_description": "Ford on Friday reported a year-over-year sales decline of 6.6% during the third quarter to 507,395 light-duty vehicles.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 2465,
+            "note": null
+          }
+        },
+        {
+          "id": "s10",
+          "title": "Labor market faltered in September as jobs increased by just 29,000, unemployment rate rose to 4.2%",
+          "source": "CNBC Top News",
+          "url": "https://www.cnbc.com/2026/10/02/jobs-report-september-2026.html",
+          "published_at": "2026-10-02T13:45:58.000Z",
+          "age_hours": 1.6,
+          "description": "Nonfarm payrolls rose by just 29,000 in September, well below the 84,000 forecast, and the unemployment rate rose to 4.2%, the Bureau of Labor Statistics said.",
+          "extracted_numbers": [
+            {
+              "value": "29,000",
+              "unit": null,
+              "sentence": "Labor market faltered in September as jobs increased by just 29,000, unemployment rate rose to 4.2%."
+            },
+            {
+              "value": "4.2",
+              "unit": "%",
+              "sentence": "Labor market faltered in September as jobs increased by just 29,000, unemployment rate rose to 4.2%."
+            },
+            {
+              "value": "84,000",
+              "unit": null,
+              "sentence": "Nonfarm payrolls rose by just 29,000 in September, well below the 84,000 forecast, and the unemployment rate rose to 4.2%, the Bureau of Labor Statistics said."
+            }
+          ],
+          "article_excerpt": "The U.S. economy created far fewer jobs than expected in September, pointing to a surprising soft spot in the labor market and broader economy.\n\nNonfarm payrolls rose a seasonally adjusted 29,000 for the month while the unemployment rate increased to 4.2%, the Bureau of Labor Statistics reported Friday. Economists surveyed by Dow Jones had been looking for job growth of 84,000 and an unemployment rate of 4.1%.\n\nIn addition to the weakness in September, the August jobs count was revised lower to reflect a gain of 133,000 while July switched from a gain to a loss as payrolls fell by 10,000. The revisions in total showed 60,000 fewer jobs than previously reported.\n\nMarket reaction was swift to the report, with traders interpreting the soft jobs numbers as good news as they likely further cemented the Federal Reserve staying put at its October meeting.\n\nStock futures rose sharply after the release while Treasury yields slumped after recently rising to levels not seen since the early part of the century. Market-implied odds that the Fed will hold rates steady at its Oct. 27-28 meeting jumped to 82.8%, according to the CME Group's FedWatch tool.\n\n\"For the Fed, this number should be the nail in the coffin for an October hike,\" Thomas Simons, chief U.S. economist at Jefferies, said in a note.\n\n\"The payroll data surged in August, and we had expected the momentum to continue this month, given the historically low prints on jobless claims in recent weeks,\" he added. \"However, it now appears that the August number was nothing more than a rebound from very weak hiring in June and July.\"\n\nFed officials more closely watch the unemployment rate than the headline payrolls numbers.\n\nThe household survey, which is used to calculate the jobless level, was considerably better than the establishment survey, which is used to derive the payrolls count.\n\nHousehold employment rose by 406,000 for the month, while the labor force swelled by 485,000 and the participation rate, which counts those working or actively searching for a job as a share of the total labor force, increased 0.2 percentage point to 61.8%, its highest since May.\n\nAn alternative measure of unemployment, which includes discouraged workers and those holding part-time jobs for economic reasons, edged down to 7.6%, its lowest since January 2025.\n\nThe report comes with Federal Reserve officials weighing the state of the economy and how it should affect their next interest rate move.\n\nFollowing statements in recent days from central bank policymakers, markets have recalibrated expectations and now expect the rate-setting Federal Open Market Committee to hold off until December for its next hike. The FOMC raised benchmark rates a quarter percentage point in September.\n\nPolicymakers largely see inflation as a larger threat to the economy than the labor market, which had shown resilience in recent months. The data has painted a picture of a low-hire, low-fire economy, with weekly jobless claims low and one indicator showing layoffs at their lowest rate in four years.\n\nInflation, though, has held well above the Fed's 2% target. The most recent indicator of the central bank's preferred gauge showed core inflation at a 3% annual rate.\n\nWages, though, continued to show signs of disinflation.",
+          "article_meta_description": "Nonfarm payrolls rose by just 29,000 in September, well below the 84,000 forecast, and the unemployment rate rose to 4.2%, the Bureau of Labor Statistics said.",
+          "article_fetch": {
+            "ok": true,
+            "status": 200,
+            "excerpt_chars": 3280,
+            "note": null
+          }
+        }
+      ],
+      "already_covered_urls": [
+        "https://seekingalpha.com/news/4646208-us10y-tops-5_1-percent-marking-its-highest-level-since-2007?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news",
+        "https://www.marketwatch.com/story/my-husband-and-i-are-in-our-50s-and-have-no-kids-we-have-2-million-do-we-need-a-will-62fb422f?mod=mw_rss_topstories",
+        "https://www.reuters.com/business/bonds-teeter-after-us-treasuries-worst-quarter-since-1994-2026-10-01/",
+        "https://www.reuters.com/world/10-year-us-treasury-yield-hits-highest-since-2002-2026-10-01/",
+        "https://www.cnbc.com/2026/10/01/us-treasury-bond-yield.html",
+        "https://www.handelsblatt.com/finanzen/maerkte/anleihen/anleihen-us-staatsbonds-erleben-ein-fatales-quartal/100258428.html",
+        "https://news.synopsys.com/2026-09-30-OpenAI-and-Synopsys-Announce-GPT-Synopsys-Frontier-Intelligence-to-Revolutionize-Chip-Design?tags=SocialMedia",
+        "https://investor.synopsys.com/news/news-details/2026/Synopsys-and-Amazon-Announce-Strategic-Multi-year-IP-Agreement-for-Custom-Silicon-Collaboration-Also-Extends-to-Cloud-and-AI-Powered-Engineering/default.aspx",
+        "https://www.reuters.com/business/synopsys-shares-jump-robust-growth-outlook-openai-aws-deals-2026-10-01/",
+        "https://www.bls.gov/news.release/empsit.nr0.htm",
+        "https://www.reuters.com/business/fed-seen-skipping-october-rate-hike-job-market-cools-2026-10-02/",
+        "https://www.marketwatch.com/story/from-6-eggs-to-50-000-cars-these-charts-show-how-inflation-has-defined-the-past-5-years-3c7b9ab9?mod=mw_rss_topstories",
+        "https://www.cnbc.com/2026/09/25/treasury-yield-buy-bonds.html"
+      ]
+    }
+  },
+  "social_learnings": {
+    "status": "AVAILABLE",
+    "items": [
+      {
+        "id": "format:VIDEO",
+        "n": 10,
+        "statement": "Reels/Videos (n=10 gemessene Posts): Median-Reichweite 25.5, Likes 5, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:CAROUSEL_ALBUM",
+        "n": 12,
+        "statement": "Carousels (n=12 gemessene Posts): Median-Reichweite 9, Likes 4, Saves 0, Shares 0."
+      },
+      {
+        "id": "format:IMAGE",
+        "n": 3,
+        "statement": "Einzelbilder (n=3 gemessene Posts): Median-Reichweite 10, Likes 3, Saves 0, Shares 0."
+      },
+      {
+        "id": "saves-shares",
+        "n": 25,
+        "statement": "Ueber alle 25 gemessenen Posts zusammen: 0 Saves und 0 Shares - weniger als eine solche Interaktion pro Post; Inhalte, die man speichern oder weiterschicken will, sind bisher die groesste Luecke."
+      },
+      {
+        "id": "not-yet-measured",
+        "n": 0,
+        "statement": "Thema, Hook-Art und Carousel-Struktur der frueheren Posts sind noch nicht erfasst - dazu gibt es noch keine belastbaren Learnings."
+      }
+    ],
+    "note": "Feedback aus der Performance frueherer Vision-Universe-Posts, keine Vorgabe. Weiche ab, wenn die aktuelle Story eine bessere redaktionelle Loesung verlangt."
+  },
+  "editorial_process": [
+    "1. Story recherchieren und verstehen: Was ist tatsaechlich passiert? Was ist neu?",
+    "2. Relevanz bestimmen: Warum interessiert das einen Anleger? Was ist ueberraschend?",
+    "3. Social Angle entwickeln: Welche Konsequenz oder Spannung traegt den Post?",
+    "4. Mehrere Hook-Ideen intern erwaegen.",
+    "5. Die staerkste deutsche Hook auswaehlen.",
+    "6. Caption schreiben.",
+    "7. Carousel-Dramaturgie entwickeln.",
+    "8. Erst danach Bilder erzeugen."
+  ],
+  "hook_strategy": {
+    "strategy_id": "vu-carousel-editorial-v1",
+    "hook_type": "carousel_cover_hook_de",
+    "instruction": "Die Hook entsteht aus der Story, nicht mechanisch aus einer Zahl oder Headline. Erwaege intern mehrere wirklich unterschiedliche Richtungen (ueberraschende Erkenntnis, Konsequenz, starke Zahl, Widerspruch, historische Einordnung, Konflikt, belegte provokante Aussage, Frage, Vergleich) - nicht fuenf Varianten desselben Satzes - und waehle selbst die staerkste. Liefere GENAU EINE finale Hook: Deutsch, kurz, sofort verstaendlich, anlegerrelevant, social-first, mobile-first, faktisch korrekt. Die verworfenen Richtungen gehoeren in `hook_exploration`.",
+    "negative_fixtures": [
+      "BÖRSENGANG MIT EXISTENZWARNUNG",
+      "50.000 DOLLAR FÜR EIN AUTO?",
+      "493,78 USD SCHLUSSKURS – MSFT",
+      "420 VON 5954 GEPRÜFTEN TITELN",
+      "10-year U.S. Treasury yield tops ..."
+    ],
+    "negative_fixture_note": "Diese Hooks gelten ausdruecklich NICHT als gelungene Social Hooks: Headline-Verdichtung, isolierte Zahl, Systemsprache, englischer Quelltitel."
+  },
+  "editorial_gate": {
+    "rule": "Bevor du ein Bild erzeugst: waere Hook + Caption auch OHNE Bild bereits ein guter Vision-Universe-Post? Wenn nein, KEIN Bild erzeugen - Story, Angle, Hook und Caption zuerst verbessern. Ein schoenes Bild kaschiert keine schwache Redaktion.",
+    "required": [
+      "story_quality",
+      "hook_standalone_quality",
+      "caption_standalone_quality",
+      "fact_grounding"
+    ]
+  },
+  "caption_guidance": "Eine deutsche Caption fuer den ganzen Beitrag: verstaendlich, informativ, social-tauglich, kompakt, redaktionell hochwertig. Erklaert, was passiert ist, warum es interessant ist, welche belegten Fakten zaehlen und was das fuer Anleger bedeutet. Sie muss auch allein zum Cover funktionieren - keine Wisch-Aufforderung. Keine internen Scores, keine Quant-, Screener- oder Systemsprache, keine erfundenen Fakten, keine Anlageberatung vortaeuschen. Endet mit dem Hinweis, dass es keine Anlageberatung ist.",
+  "hashtag_guidance": "Bis zu 5 relevante Hashtags, dynamisch aus der Story, ohne #-Zeichen im Array. Keine Standardliste, keine internen Systembegriffe.",
+  "art_direction": {
+    "design_mode": "PREMIUM_CAMPAIGN_EDITORIAL",
+    "target": "PREMIUM GLOBAL BRAND CAMPAIGN x HIGH-END EDITORIAL x MODERN FINANCIAL MEDIA",
+    "not_this": [
+      "AI Art",
+      "Fintech-Sci-Fi",
+      "Finfluencer-Thumbnail",
+      "Canva-Infografik",
+      "Generative-AI-Showcase"
+    ],
+    "principle": "Das Bild wirkt zuerst wie hochwertige Kampagnenfotografie bzw. Premium Editorial Photography - als waere es fuer eine internationale Werbekampagne fotografiert worden. Die KI soll moeglichst unsichtbar sein. Frage nicht 'Wie mache ich daraus ein spektakulaeres KI-Bild?', sondern 'Wie wuerde eine hochwertige globale Marke diese Story als Social Campaign visualisieren?'",
+    "image_quality": [
+      "glaubwuerdige, hochwertige Fotografie",
+      "natuerliche Materialien und reale Lichtstimmung",
+      "hochwertige Architektur, Produkte, Orte und Details",
+      "glaubwuerdige Menschen nur, wenn die Story sie braucht",
+      "kontrollierte Tiefenschaerfe, ruhige Komposition, viel visueller Raum",
+      "premium Color Grading - dunkle, hochwertige Markenwelt; Weiss als Schriftfarbe, wenige gezielte Akzente (bevorzugt Vision-Universe-Blau, Rot nur wenn es inhaltlich traegt)"
+    ],
+    "forbidden_visuals": [
+      "humanoide Roboter",
+      "Hologramme",
+      "Neon-Trading-Charts",
+      "futuristische Kontrollraeume",
+      "Cyberpunk",
+      "generische Serverhallen",
+      "schwebende Interfaces",
+      "kuenstliche 3D-Metaphern",
+      "uebertriebene KI-Lichteffekte",
+      "offensichtlich generierte Fantasy-Szenen",
+      "billige Flat-Vector-Grafiken",
+      "Comic-Poster",
+      "klassische Infografik",
+      "ueberladene Collagen",
+      "zehn kleine Zahlen gleichzeitig",
+      "zahlreiche Pfeile, Kaesten und Icons",
+      "generische Stockbilder",
+      "Text nachtraeglich irgendwo auf ein beliebiges Bild geklebt"
+    ],
+    "subtlety": "Das Motiv muss nicht jeden Begriff der Hook illustrieren. Subtilitaet ist ausdruecklich erlaubt: eine starke reale Szene plus hervorragende Typografie ist besser als eine komplizierte visuelle Metapher.",
+    "brand_anchor": "Das originale VISION UNIVERSE(R)-Logo (brand_assets.logo) erscheint auf JEDEM Slide, fest OBEN LINKS. Innerhalb eines Carousels sind Position, Groesse und Sicherheitsabstand identisch - keine freie Neuplatzierung pro Slide. Das Logo ist die konstante visuelle Signatur.",
+    "no_atlas": "Atlas wird NICHT mehr verwendet. Kein Atlas, kein Ersatzroboter, keine humanoide Markenfigur - auch nicht, wenn eine Referenz eine zeigt.",
+    "hook": "Jeder Cover-Slide braucht eine starke, deutlich sichtbare DEUTSCHE Hook als eines der dominanten Gestaltungselemente: kurz, dick, klar, hoechstens etwa 2-3 Zeilen, mobile-first, sofort verstaendlich. Gross, aber im Einklang mit dem Bild. Plane Bildkomposition und Textposition GEMEINSAM - das Motiv besitzt bereits den Raum fuer die Typografie.",
+    "supporting_copy": "Optional unter der Hook EINE kurze Supporting Line (kurze Einordnung oder die zentrale Zahl). Nicht mehr: keine Textwaende, keine zehn Kennzahlen, keine Mini-Infografik.",
+    "typography": "Keine Worttrennung ueber Bildkanten, Falze oder Motive, keine drei konkurrierenden Headlines. Auf dem Smartphone ist innerhalb einer Sekunde klar: WAS IST DIE AUSSAGE?",
+    "coherence": "Alle Slides teilen Art Direction, Typografie, Farbgrading, Qualitaetsniveau, Logo-System und Spacing-System - aber nicht dreimal dasselbe Bild. Wie bei einer professionellen Produktkampagne erzaehlen verschiedene Motive und Ausschnitte dieselbe Geschichte.",
+    "story_decides_motif": "Die Story bestimmt das Motiv, du entscheidest kreativ. Denkprinzip, keine Tabelle: Unternehmensstory -> reales Produkt, Umfeld, Branche, Detail; Makro -> glaubwuerdige reale Wirtschafts-, Arbeits- oder Stadtszene; Rohstoffe -> hochwertiges Material-, Industrie- oder Anwendungsbild; Technologie -> hochwertiges reales Produkt-, Komponenten- oder Anwendungsvisual. Nicht mechanisch (nicht: KI = Server, Boerse = Trading Floor, Risiko = rote Kurve). Erst die Story verstehen.",
+    "references": "Zwei Referenzgruppen, nur ihre STAERKEN kombinieren, keine Inhalte kopieren. (1) Eine internationale Automobil-Produktkampagne (vom Owner gezeigt, nicht im Checkout): ruhige, bilddominante Kampagnenfotografie in realen Orten mit natuerlichem Licht, klare Headline oben links mit EINER kurzen Unterzeile, die zentrale Zahl farbig hervorgehoben, Markenzeichen an fester Stelle, vier verschiedene Motive derselben Produktwelt als eine Serie. Keine Logos, Fahrzeuge, Texte oder Layouts daraus uebernehmen. (2) Die Vision-Universe-Beispiele unter style_references: dunkle Markenwelt, starke Hooks, Finanz-/Tech-Editorialitaet, Typografie, Akzentfarben - deren Roboter (Atlas) ist ueberholt.",
+    "creative_director": "Ein Art-Direction-Rahmen, KEIN starres Template. Du bleibst Creative Director und entscheidest Motiv, Perspektive, fotografische Situation, Layout, Typografie-Hierarchie, Supporting Line und visuelle Dramaturgie - innerhalb dieser Premiumwelt.",
+    "success": "Nicht: ein Bild wurde technisch erzeugt. Sondern: das sieht aus wie eine professionelle Vision-Universe-Kampagne, die der Owner freiwillig posten wuerde."
+  },
+  "ai_cliche_gate": {
+    "question": "Sieht das Bild auf den ersten Blick offensichtlich KI-generiert aus?",
+    "criteria": [
+      "kuenstliche Hochglanzoptik",
+      "unrealistische Beleuchtung",
+      "generische Sci-Fi-Szene",
+      "Hologramme",
+      "Roboter",
+      "uebertriebene Symmetrie",
+      "sinnlose visuelle Metaphern",
+      "zu viele Effekte"
+    ],
+    "on_fail": "Wenn JA: intern verwerfen und neu gestalten. Ausgeliefert wird nur ein Bild mit ai_cliche_check.result = 'PASS'."
+  },
+  "style_references": {
+    "files": [
+      {
+        "path": "social/brand/style-references/vu-style-ref-01.png",
+        "sha256": "899023720e2ec0446e2cf401dee72ae8aa9c91ae36a94626efe08ce80e9b4890",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover: dominante Hook, Motiv aus der Story (der Roboter darin ist ueberholt - kein Atlas mehr)"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-02.png",
+        "sha256": "71210b60cc575e9c8e53f45704c6bda7d08fd5d1060f2712a83b756d792653ad",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Cover: eine grosse Aussage ueber einem Story-Motiv, Logo oben links"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-03.png",
+        "sha256": "500ffc334a1cfd5baf3fd5d60b59fa6eb49f7bf48d011dd113ecbe74fa1c7679",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Key Insight: eine dominante Zahl, ruhiges Technologie-Motiv, knappe Einordnung"
+      },
+      {
+        "path": "social/brand/style-references/vu-style-ref-04.png",
+        "sha256": "b7b8235ce3b847ec005a1d74713b435c901a48036281f1c62fb79cb78bdc1d53",
+        "width": 1122,
+        "height": 1402,
+        "shows": "Einordnung: Chance/Risiko als Split-Layout, klare Leitfrage"
+      }
+    ],
+    "instruction": "Oeffne und betrachte diese Bilddateien selbst, BEVOR du gestaltest - sie liegen unveraendert im selben Checkout wie dieser Brief. Sie sind die visuelle Qualitaetsreferenz (dunkle Markenwelt, Hook-Staerke, Typografie, Hierarchie, Akzentfarben, Logo-Integration). Nicht pixelgenau kopieren. Der Roboter (Atlas) und die Hologramm-/Neon-Effekte darin sind UEBERHOLT - nicht uebernehmen (siehe art_direction).",
+    "not_facts": "Inhalte, Unternehmen, Aktien, Zahlen und Aussagen dieser Bilder sind KEINE Faktenquelle und KEIN Themenvorschlag. Die Story kommt ausschliesslich aus der Recherche.",
+    "check_required": "Gib in `style_references_check` je Referenzdatei { path, dominant_text } an: alle gut lesbaren Textzeilen des Bildes wortwoertlich (Headline und Zeilen darunter). Kannst du eine Datei nicht oeffnen, schreibe dominant_text: null - nichts erfinden.",
+    "delivered_in_checkout": true,
+    "delivery_measurement": "4 Referenzbilder liegen unveraendert im Checkout des Briefs."
+  },
+  "carousel": {
+    "slide_count": "Standard: 3 Slides. Einen vierten nur, wenn die Story ihn wirklich braucht - keine Fuellfolie.",
+    "plan_first": "Plane ZUERST das ganze Carousel als eine Geschichte (`carousel_plan`), dann erst das Bild. Die Slides sind eine Serie, keine unabhaengigen Einzelbilder.",
+    "slides": [
+      {
+        "slide_index": 1,
+        "role": "HERO / HOOK",
+        "task": "Scroll Stop.",
+        "contains": "staerkstes Kampagnenmotiv, starke deutsche Hook, Logo oben links, optional EINE kurze Supporting Line."
+      },
+      {
+        "slide_index": 2,
+        "role": "DETAIL / KEY INSIGHT",
+        "task": "Ein anderes hochwertiges Motiv oder Detail derselben Storywelt mit EINER zentralen Erkenntnis oder Zahl.",
+        "contains": "Logo exakt gleich positioniert, keine Informationsueberladung."
+      },
+      {
+        "slide_index": 3,
+        "role": "CONTEXT / INVESTOR RELEVANCE",
+        "task": "Eine dritte hochwertige visuelle Perspektive mit kurzer Einordnung, Konsequenz oder Frage fuer Anleger.",
+        "contains": "Logo exakt gleich positioniert."
+      }
+    ],
+    "atlas_contract": "KEIN Atlas auf keinem Slide. Kein Ersatzroboter, keine humanoide Markenfigur.",
+    "logo_contract": "Das echte Vision-Universe-Logo (brand_assets.logo) auf ALLEN Slides, fest OBEN LINKS, in identischer Position, Groesse und Safe Area. Kein approximiertes Logo, kein neu generierter Schriftzug.",
+    "text_on_image": "Text im Bild ist Pflicht, vor allem die Hook auf Slide 1. Keine Worttrennung ueber Bildfalze, harte Kanten, Gesichter, Objekte oder Kompositionsbrueche (Negativbeispiel: BÖRSE|NGANG, EXISTENZ|WARNUNG ueber einen Buchfalz)."
+  },
+  "delivery": {
+    "mode": "COVER_FIRST",
+    "deliver_now": "Slide 1 (Cover) als EIN finales Bild. Slide 2 und 3 NICHT zeichnen - keine Mini-Slides auf einer Leinwand, kein Bogen.",
+    "plan_all": "carousel_plan beschreibt ALLE Slides vollstaendig (headline_de, key_content, visual_concept), damit sie spaeter ohne neue Redaktion entstehen koennen.",
+    "why": "Der aktive Work-Vertrag erlaubt ein Asset je Auftrag (PR #300); ein Mehr-Paneel-Bogen haelt die exakten Masse nicht (PR #303). Qualitaet vor Carousel-Mechanik: zuerst EIN perfektes Cover."
+  },
+  "visual_strategy": {
+    "strategy_id": "PREMIUM_CAMPAIGN_EDITORIAL",
+    "instruction": "Premium Global Brand Campaign x High-End Editorial x Modern Financial Media: hochwertige Kampagnenfotografie aus der Storywelt, die KI unsichtbar, eine starke deutsche Hook in einem Raum, den die Komposition dafuer laesst (art_direction).",
+    "creative_freedom": "Komposition, Bildidee, Perspektive, Motiv, Typografie-Hierarchie und Layout entscheidest du aus der Story heraus.",
+    "restrictions": [
+      "Kein Template, keine pixelgenaue Kopie der Referenzen",
+      "Kein Atlas, keine Roboter; Logo auf allen Slides fest oben links",
+      "Keine Worttrennung ueber Kanten, Falze oder Motive",
+      "Keine erfundenen Zahlen im Bild",
+      "Nichts aus der Liste art_direction.forbidden_visuals"
+    ]
+  },
+  "quality_references": {
+    "positive": [],
+    "positive_note": "Die Owner-Referenzbilder stehen unter style_references - sie sind der Massstab. Nicht kopieren, nicht als Template.",
+    "negative": [
+      {
+        "content_id": "vu-web-4e4d3aaef2a999a2-20260926",
+        "hook": "50.000 DOLLAR FÜR EIN AUTO?",
+        "why": [
+          "isolierte Zahl statt Story",
+          "generisches Auto auf Preisschild",
+          "billige Flat-/Vektor-Anmutung",
+          "Atlas wirkt aufgeklebt",
+          "Logo fast unsichtbar"
+        ]
+      },
+      {
+        "content_id": "vu-web-15e2974b16c8dc4c-20260929",
+        "hook": "BÖRSENGANG MIT EXISTENZWARNUNG",
+        "why": [
+          "Hook ist eine Verdichtung der englischen Headline, keine redaktionelle Aussage",
+          "Worttrennung ueber den Buchfalz (BÖRSE|NGANG, EXISTENZ|WARNUNG)",
+          "Risiko-Story -> Abgrund ist eine naheliegende, keine eigene Metapher"
+        ]
+      }
+    ]
+  },
+  "brand_assets": {
+    "logo": "assets/vision-universe-logo.png",
+    "instruction": "Die Logo-Datei liegt unveraendert im selben Checkout wie dieser Brief. Als echte Bildreferenz verwenden und nur skaliert einsetzen - keine Neuzeichnung, keine Farb- oder Stiltransformation. Atlas wird nicht verwendet."
+  },
+  "asset_requirements": {
+    "count": 1,
+    "preferred_mime_type": "image/png",
+    "preferred_width": 1080,
+    "preferred_height": 1350,
+    "deterministic_path": "authoring/requests/vu-post-20261002-1ce0446e64/assets/visual-01.png",
+    "format_note": "Hochformat 4:5 (Ziel 1080x1350). Das Bildwerkzeug liefert eigene Pixelmasse - waehle das Hochformat, skaliere oder beschneide nicht nachtraeglich, und halte Hook und Logo mit Sicherheitsabstand vom Rand, damit ein 4:5-Ausschnitt nichts Wichtiges verliert. Melde die tatsaechlichen Masse ehrlich.",
+    "announced_fields_required": [
+      "slide_index",
+      "asset_path",
+      "mime_type",
+      "width",
+      "height",
+      "asset_byte_size",
+      "asset_sha256",
+      "brand_elements"
+    ],
+    "announcement_note": "asset_byte_size ist die Groesse der geschriebenen Datei in Bytes, asset_sha256 ihr SHA-256 ueber den gesamten Inhalt. Beides wird nach dem finalen Commit frisch zurueckgelesen und verglichen. brand_elements: { includes_logo, includes_atlas (muss false sein), includes_hook_text_de } als Booleans."
+  },
+  "authoring_requirements": {
+    "hook_variant_count": 1,
+    "internal_hook_exploration": true,
+    "stable_hook_variant_ids": true,
+    "hook_ids_bound_to_brief_blob_sha": true,
+    "visual_variant_ids_bound_to_brief_blob_sha": true,
+    "recommended_hook_allowed": true,
+    "canonical_selected_hook_allowed": false,
+    "actual_image_asset_required": true,
+    "brand_elements_announcement_required": true,
+    "sources_required": true,
+    "editorial_gate_required": true,
+    "ai_cliche_check_required": true,
+    "style_references_check_required": true,
+    "publishing_allowed": false
+  },
+  "output_contract": {
+    "path": "authoring/requests/vu-post-20261002-1ce0446e64/authoring-result.json",
+    "fields": {
+      "schema_version": "1.0",
+      "brief_id": "wie in diesem Brief",
+      "content_id": "wie in diesem Brief",
+      "request_type": "FULL_CREATIVE",
+      "creative_format": "CAROUSEL",
+      "delivery_mode": "COVER_FIRST",
+      "research": "{ web_access: bool, mode_used, stories_considered: [{ title, url, decision, reason }] }",
+      "story": "{ title_de, what_happened, why_interesting }",
+      "sources": "[{ source, url, published_at, facts_used: [..], opened_by_agent: bool }] - mindestens eine",
+      "hook_exploration": "[{ direction, text, rejected_because }] - die intern verworfenen Richtungen",
+      "hook_variants": "[GENAU EINE: { hook_variant_id, hook_type: 'carousel_cover_hook_de', text, language: 'de', brief_revision, evidence_refs }]",
+      "recommended_hook": "{ recommended_hook_variant_id, recommendation_reason, is_canonical_selection: false }",
+      "caption": "deutsche Caption fuer den ganzen Beitrag",
+      "hashtags": "[bis zu 5 Strings ohne #]",
+      "carousel_plan": "[je Slide: { slide_index, role, headline_de, supporting_line_de, key_content, visual_concept }] - alle Slides, auch die noch nicht gezeichneten",
+      "slide_count": "Zahl der geplanten Slides (Standard 3)",
+      "editorial_gate": "{ story_quality, hook_standalone_quality, caption_standalone_quality, fact_grounding } - je 'PASS'",
+      "visual_variants": "[GENAU EINE: { visual_variant_id, visual_strategy, slide_index: 1, slide_role: 'cover', brief_revision, asset_path, mime_type, width, height, asset_byte_size, asset_sha256, brand_elements }]",
+      "carousel_checks": "{ no_atlas, logo_on_all_slides, logo_position_consistent } - je true (bei COVER_FIRST: so geplant)",
+      "design_mode": "'PREMIUM_CAMPAIGN_EDITORIAL'",
+      "visual_concept": "ein Satz: welche reale Szene, warum sie die Story traegt",
+      "ai_cliche_check": "{ result: 'PASS', checked: [die Kriterien aus ai_cliche_gate], redesigned: bool, note }",
+      "style_references_check": "[je Referenzdatei: { path, dominant_text }]",
+      "processing": "{ status: 'completed', ... }",
+      "publishing_allowed": false
+    }
+  },
+  "constraints": [
+    "Keine erfundenen Zahlen, Fakten oder Quellen. Jede Zahl im Text stammt aus einer genannten Quelle.",
+    "Keine Fakten aus den Referenzbildern.",
+    "Kein Atlas, keine Roboter, keine humanoide Markenfigur.",
+    "Keine Prognose, keine Kauf- oder Verkaufsempfehlung.",
+    "Alle sichtbaren Woerter Deutsch - Ausnahmen nur fuer Eigennamen, Ticker und Markennamen.",
+    "Kein `selected_hook` - nur `recommended_hook`.",
+    "Keine Placeholder- oder programmatisch erzeugte Ersatzgrafik.",
+    "Die Bilder sind FINALE Social Creatives, keine Rohbilder.",
+    "Keine Veroeffentlichung."
+  ],
+  "must_not_claim": [
+    {
+      "id": "forecast",
+      "text": "Keine Prognose ueber Kurse oder Geschaeftsentwicklung."
+    },
+    {
+      "id": "recommendation",
+      "text": "Keine Empfehlung, keine Handlungsaufforderung zum Kaufen oder Verkaufen."
+    }
+  ],
+  "publishing_allowed": false
+}
