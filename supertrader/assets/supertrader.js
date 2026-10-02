@@ -48,16 +48,20 @@
     EXIT: ['exit', 'Ausstieg ausgelöst'], CLOSED: ['closed', 'Geschlossen'], INVALIDATED: ['inv', 'Ungültig'],
     PARTIAL: ['partial', 'Teiltreffer'], RETIRED: ['inv', 'Regelwechsel'],
   };
-  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Vorbereitet'], ['watch', 'Beobachtung'], ['conf', 'Bestätigt'], ['pos', 'Position'], ['exit', 'Ausstieg'], ['cand', 'Kandidaten'], ['partial', 'Teiltreffer'], ['closed', 'Geschlossen'], ['inv', 'Ungültig']];
-  var PHASE_ORDER = ['conf', 'pos', 'warn', 'exit', 'prep', 'partial', 'watch', 'cand', 'closed', 'inv'];
+  var PHASE_FILTERS = [['', 'Alle aktuellen'], ['prep', 'Vorbereitet'], ['watch', 'Beobachtung'], ['conf', 'Bestätigt'], ['pos', 'Position'], ['exit', 'Ausstieg'], ['obs', 'Forschung'], ['cand', 'Kandidaten'], ['partial', 'Teiltreffer'], ['closed', 'Geschlossen'], ['inv', 'Ungültig']];
+  var PHASE_ORDER = ['conf', 'pos', 'warn', 'exit', 'prep', 'partial', 'watch', 'obs', 'cand', 'closed', 'inv'];
   function phaseOfState(st) { return (PHASE[st] || ['cand'])[0]; }
   function phaseBadge(st) { var p = PHASE[st] || [st, st]; return h('span', { class: 'st-phase', 'data-p': p[0], text: p[1] }); }
   // Methoden, deren wartende Setups eine breite Beobachtungsliste sind (Registry:
   // pending_semantics = WATCHLIST) - nie als „vorbereiteter Einstieg“ gezaehlt.
   var WATCH = {};
   function isWatch(s) { return !!(s && WATCH[s.strategyId] && !s.entry && (s.state === 'SETUP' || s.state === 'ENTRY_READY')); }
-  function phaseKey(s) { return isWatch(s) ? 'watch' : phaseOfState(s.state || s.stage); }
-  function badgeFor(s) { return isWatch(s) ? h('span', { class: 'st-phase', 'data-p': 'watch', text: WATCH[s.strategyId] }) : phaseBadge(s.state || s.stage); }
+  function isObs(s) { return !!(s && isResearchId(s.strategyId) && !s.entry && s.state !== 'TRIGGERED' && (s.state === 'SETUP' || s.state === 'ENTRY_READY')); }
+  function phaseKey(s) { return isObs(s) ? 'obs' : isWatch(s) ? 'watch' : phaseOfState(s.state || s.stage); }
+  function badgeFor(s) {
+    if (isObs(s)) return h('span', { class: 'st-phase', 'data-p': 'obs', text: 'Modellbeobachtung' });
+    return isWatch(s) ? h('span', { class: 'st-phase', 'data-p': 'watch', text: WATCH[s.strategyId] }) : phaseBadge(s.state || s.stage);
+  }
   // Regelcodes bleiben im Protokoll (title), sichtbar ist Kundensprache.
   function ruleText(id) {
     if (!id) return '';
@@ -79,15 +83,19 @@
   };
   function card0(s) { return (s.rule_cards || [])[0] || null; }
   function modeOf(s) { return MODE[s.mode] || MODE.RESEARCH; }
-  function sourceOf(s) { var c = card0(s); return c && SOURCE_SHORT[c.source_basis.status] || ['Noch nicht erfasst', 'mute']; }
-  function historyOf(s, D) {
-    if (D.pilot && D.pilot.method && D.pilot.method.strategyId === s.strategy_id) return ['Explorativ getestet', 'warn'];
-    var c = card0(s);
-    if (c && c.historical_validation && c.historical_validation.status === 'GATES_PASSED_RUN_PENDING') return ['Prüfung möglich', 'warn'];
-    return ['Nicht geprüft', 'mute'];
-  }
+  // Evidenz je Strategieversion (registry.evidence): Stufe, Quellen- und
+  // Datenqualitaet getrennt; presentation entscheidet ueber Hervorhebung.
+  function ev(s) { return (s && s.evidence) || { level: 'NOT_TESTED', levelLabel: 'Noch nicht geprüft', levelTone: 'mute', presentation: 'CURRENT', source: { label: 'Noch nicht erfasst', tone: 'mute' }, data: { label: '–', tone: 'mute' } }; }
+  function isResearchS(s) { return ev(s).presentation === 'RESEARCH'; }
+  var RESEARCH = {};
+  function isResearchId(id) { return !!RESEARCH[id]; }
+  function historyOf(s) { var e = ev(s); return [e.levelLabel, e.levelTone]; }
+  function sourceOf(s) { var e = ev(s); return [e.source.label, e.source.tone]; }
+  function dataOf(s) { var e = ev(s); return [e.data.label, e.data.tone]; }
   function pill(label, val) { return h('span', { class: 'st-pill', 'data-t': val[1] }, [h('span', { class: 'k', text: label }), h('span', { class: 'v', text: val[0] })]); }
-  function threeStatus(s, D) { return h('div', { class: 'st-three' }, [pill('Regel', modeOf(s)), pill('Quellen', sourceOf(s)), pill('Historie', historyOf(s, D))]); }
+  function threeStatus(s) { return h('div', { class: 'st-three' }, [pill('Regel', modeOf(s)), pill('Quellen', sourceOf(s)), pill('Daten', dataOf(s)), pill('Evidenz', historyOf(s))]); }
+  function evidenceTag(s) { var e = ev(s); return h('span', { class: 'st-tag', 'data-t': e.levelTone, text: e.levelLabel }); }
+  function researchTag() { return h('span', { class: 'st-note-tag research', text: 'Forschung' }); }
 
   /* -------------------------------------------------- Datenstand */
   function tradingDaysBetween(a, b) {
@@ -96,6 +104,7 @@
     while (d < end) { d.setUTCDate(d.getUTCDate() + 1); var w = d.getUTCDay(); if (w !== 0 && w !== 6) n++; }
     return n;
   }
+  function staleness(D) { return tradingDaysBetween(D.signals.asOf, D.market.session && D.market.session.lastCompletedSession); }
   function freshness(D, full) {
     var asOf = D.signals.asOf, last = D.market.session && D.market.session.lastCompletedSession;
     var lag = tradingDaysBetween(asOf, last);
@@ -153,7 +162,7 @@
     var res = st === 'CLOSED' && s.result ? h('div', { class: 'st-res' + (s.result.returnPct >= 0 ? ' up' : ' down') }, [h('strong', { text: pct(s.result.returnPct, 1, true) }), ' Modellergebnis · ' + (s.result.sessionsHeld || 0) + ' Sitzungen']) : null;
     return h('a', { class: 'st-card2', href: stockUrl(s.symbol), style: worldVars(strat) }, [
       h('div', { class: 'r1' }, [h('span', { class: 'sym', text: s.symbol }), badgeFor(s)]),
-      h('div', { class: 'r2' }, [h('span', { class: 'meth', text: strat.world_name }), q, re, h('span', { class: 'nm', text: s.companyName && s.companyName !== s.symbol ? s.companyName : '' })]),
+      h('div', { class: 'r2' }, [h('span', { class: 'meth', text: strat.world_name }), isResearchS(strat) ? researchTag() : null, q, re, h('span', { class: 'nm', text: s.companyName && s.companyName !== s.symbol ? s.companyName : '' })]),
       res || setupBar(s),
       h('div', { class: 'why', text: shortWhy(s) }),
     ]);
@@ -251,58 +260,70 @@
   function renderHome(D) {
     var reg = D.registry, sig = D.signals, S = stratMap(reg);
     var live = reg.strategies.filter(function (s) { return s.mode === 'LIVE'; });
+    var current = live.filter(function (s) { return !isResearchS(s); });
+    var research = live.filter(isResearchS);
     var partial = reg.strategies.filter(function (s) { return s.mode === 'PARTIAL_CHECK'; });
     var pending = reg.strategies.filter(function (s) { return s.mode === 'DATA_PENDING' || s.mode === 'RESEARCH'; });
-    var open = openSignals(sig);
+    var all = openSignals(sig);
+    var open = all.filter(function (s) { return !isResearchId(s.strategyId); });
+    var resOpen = all.filter(function (s) { return isResearchId(s.strategyId); });
     var positions = open.filter(function (s) { return s.entry; });
     var confirmed = open.filter(function (s) { return s.state === 'TRIGGERED'; });
-    var closed = 0; Object.keys(sig.strategies).forEach(function (k) { closed += sig.strategies[k].closed.length; });
+    var closed = 0; Object.keys(sig.strategies).forEach(function (k) { if (!isResearchId(k)) closed += sig.strategies[k].closed.length; });
+    var stale = staleness(D) >= 2;
 
     main.appendChild(h('header', { class: 'st-hero' }, [
       h('h1', { text: 'Methoden. Setups. Klare Regeln.' }),
-      h('p', { class: 'st-lead', text: 'Welche Aktien bekannte Trading-Methoden heute finden — und was davon geprüft ist.' }),
+      h('p', { class: 'st-lead', text: 'Welche Aktien regelbasierte Methoden heute beobachten, was als Nächstes passieren müsste – und wie belastbar jede Methode ist.' }),
     ]));
     main.appendChild(freshness(D, true));
 
-    // Status auf einen Blick
+    // Status auf einen Blick (nur Methoden mit aktuellen Setups)
     var prepList = open.filter(function (s) { return !s.entry && s.state !== 'TRIGGERED' && !isB(s) && !isWatch(s); });
-    var watchList = open.filter(isWatch);
     var byM = {}; prepList.forEach(function (s) { byM[s.strategyId] = (byM[s.strategyId] || 0) + 1; });
     var prepSub = Object.keys(byM).sort(function (a, b) { return byM[b] - byM[a]; }).map(function (k) { return byM[k] + ' ' + (S[k] ? S[k].world_name : k); }).join(' · ');
-    var wM = {}; watchList.forEach(function (s) { wM[s.strategyId] = (wM[s.strategyId] || 0) + 1; });
-    var watchSub = Object.keys(wM).map(function (k) { return (S[k] ? S[k].world_name : k) + ': nahe Ausbruch, noch kein Setup-Filter'; }).join(' · ');
     var tiles = [
-      [String(prepList.length), 'Vorbereitete Einstiege', 'prep', prepSub || 'keine'],
-      [String(watchList.length), 'Beobachtungsliste', 'watch', watchSub],
+      [String(prepList.length), 'Vorbereitete Einstiege', 'prep', stale ? 'Kurse veraltet – nicht hervorgehoben' : (prepSub || 'keine')],
       [String(confirmed.length) + ' / ' + String(positions.length), 'Bestätigt / Positionen', 'conf', 'Einstiege per Schlusskurs'],
       [String(closed), 'Geschlossene Trades', 'closed'],
     ];
-    main.appendChild(h('div', { class: 'st-kpis' }, tiles.map(function (t) { return h('a', { class: 'st-kpi', 'data-p': t[2], href: BASE + 'signals/?phase=' + t[2] }, [h('strong', { text: t[0] }), h('span', { text: t[1] }), t[3] ? h('em', { text: t[3] }) : null]); })));
-    if (!positions.length && !closed) main.appendChild(h('p', { class: 'st-hint', text: 'Noch keine Modellposition: Seit Beginn des Live-Protokolls (' + dateDe(firstLive(sig)) + ') wurde kein Einstieg per Schlusskurs bestätigt. Supertrader zeigt das so, statt Ergebnisse zu erfinden.' }));
+    if (research.length) tiles.push([String(resOpen.filter(function (s) { return s.entry; }).length), 'Forschung · Modellpositionen', 'obs', research.map(function (s) { return s.world_name; }).join(' · ') + ' – weiter protokolliert']);
+    main.appendChild(h('div', { class: 'st-kpis' }, tiles.map(function (t) { return h('a', { class: 'st-kpi', 'data-p': t[2], href: t[2] === 'obs' ? stratUrl(research[0]) : BASE + 'signals/?phase=' + t[2] }, [h('strong', { text: t[0] }), h('span', { text: t[1] }), t[3] ? h('em', { text: t[3] }) : null]); })));
     if (D.replay) main.appendChild(replayTeaser(D.replay));
 
-    // Methoden
+    // Methoden mit aktuellen Setups
     main.appendChild(sec('Methoden', [
-      h('div', { class: 'st-rail' }, live.concat(partial).map(function (s) { return methodTile(s, D); })),
+      h('div', { class: 'st-rail' }, current.concat(partial).map(function (s) { return methodTile(s, D); })),
       pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung (keine Signale): ' + pending.map(function (s) { return s.world_name; }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null,
-    ], { kicker: live.length + ' live · ' + partial.length + ' Teilprüfung', more: more(BASE + 'strategies/', 'Vergleichen') }));
+    ], { kicker: current.length + ' mit aktuellen Setups · ' + partial.length + ' Teilprüfung', more: more(BASE + 'strategies/', 'Vergleichen') }));
 
-    // Laufende Modellpositionen (simuliert, keine Orders)
-    if (positions.length) {
-      var posSorted = positions.slice().sort(function (a, b) { return (b.entry.date || '').localeCompare(a.entry.date || '') || a.symbol.localeCompare(b.symbol); });
-      var pm = {}; positions.forEach(function (x) { pm[x.strategyId] = (pm[x.strategyId] || 0) + 1; });
-      main.appendChild(sec('Modellpositionen', [
-        h('p', { class: 'st-hint', text: Object.keys(pm).map(function (k) { return pm[k] + ' ' + (S[k] ? S[k].world_name : k); }).join(' · ') + '. Einstieg jeweils zur Eröffnung nach einem bestätigten Tagesschluss – Simulation, keine Orders.' }),
-        h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
-      ], { kicker: 'Live seit ' + dateDe(firstLive(sig)), more: more(BASE + 'signals/?phase=pos', 'Alle ' + positions.length) }));
-    }
-    // Nahe am Trigger (Darvas nur A)
+    // Nahe am Einstieg - nur Methoden mit aktuellen Setups, nie auf veralteten Kursen
     var near = open.filter(function (s) { return (s.state === 'ENTRY_READY' || s.state === 'TRIGGERED') && !isB(s) && !isWatch(s); }).sort(sortSignals);
     var perMethod = {}, pick = [];
     near.forEach(function (s) { perMethod[s.strategyId] = (perMethod[s.strategyId] || 0) + 1; if (perMethod[s.strategyId] <= 2) pick.push(s); });
     main.appendChild(sec('Am nächsten am Einstieg', [
-      pick.length ? h('div', { class: 'st-list' }, pick.slice(0, 8).map(function (s) { return stockCard(s, S[s.strategyId]); })) : emptyBox('Kein Setup nahe am Trigger', 'Keine Methode sieht heute ein Setup innerhalb von 3 % vor dem Trigger.'),
+      stale ? emptyBox('Kurse noch nicht aktuell', 'Die Tageskurse sind älter als ein Handelstag. Supertrader hebt auf veralteten Kursen keine Einstiege hervor; die Setups bleiben unter Signale einsehbar.')
+        : pick.length ? h('div', { class: 'st-list' }, pick.slice(0, 8).map(function (s) { return stockCard(s, S[s.strategyId]); })) : emptyBox('Kein Setup nahe am Trigger', 'Keine Methode mit aktuellen Setups sieht heute ein Setup innerhalb von 3 % vor dem Trigger.'),
     ], { kicker: 'Vorbereitet heißt: noch kein Einstieg', more: more(BASE + 'signals/?phase=prep', 'Alle') }));
+
+    // Laufende Modellpositionen (simuliert, keine Orders)
+    if (positions.length) {
+      var posSorted = positions.slice().sort(function (a, b) { return (b.entry.date || '').localeCompare(a.entry.date || '') || a.symbol.localeCompare(b.symbol); });
+      main.appendChild(sec('Modellpositionen', [
+        h('p', { class: 'st-hint', text: 'Einstieg jeweils zur Eröffnung nach einem bestätigten Tagesschluss – Simulation, keine Orders.' }),
+        h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
+      ], { kicker: 'Live seit ' + dateDe(firstLive(sig)), more: more(BASE + 'signals/?phase=pos', 'Alle ' + positions.length) }));
+    }
+
+    // Forschung: auffindbar, nicht hervorgehoben
+    if (research.length) main.appendChild(sec('Forschung · Modellbeobachtung', research.map(function (s) {
+      var st = sig.strategies[s.strategy_id] || { open: [], closed: [] };
+      var pos = st.open.filter(function (x) { return x.entry; }).length, obs = st.open.filter(function (x) { return !x.entry; }).length;
+      return h('a', { class: 'st-research', href: stratUrl(s), style: worldVars(s) }, [
+        h('div', { class: 'r1' }, [h('strong', { text: s.world_name }), evidenceTag(s)]),
+        h('p', { text: 'Neue Setups sind Modellbeobachtungen, keine Einstiegschancen. ' + pos + ' laufende Modellpositionen werden nach Regelversion ' + (ev(s).version || s.strategy_version) + ' weiter geführt; ' + obs + ' Setups in Beobachtung.' }),
+      ]);
+    }), { kicker: 'Weiter protokolliert, nicht hervorgehoben' }));
 
     // Teiltreffer CAN SLIM
     var cs = sig.partialChecks && sig.partialChecks.CANSLIM;
@@ -311,10 +332,14 @@
       h('div', { class: 'st-list' }, cs.candidates.slice(0, 3).map(function (r) { return partialCard(r, S.CANSLIM, 'CANSLIM'); })),
     ], { kicker: 'Teilprüfung', more: more(stratUrl(S.CANSLIM), 'Alle ' + cs.counts.partialMatch) }));
 
-    // Historie
-    var pl = D.pilot;
-    main.appendChild(sec('Was ist historisch geprüft?', [pl ? pilotTeaser(pl) : emptyBox('Noch kein historischer Test', 'Die Daten tragen noch keinen belastbaren Backtest.')], { kicker: 'Backtest Lab', more: more(BASE + 'backtests/', 'Details') }));
+    // Evidenz je Methode
+    main.appendChild(sec('Wie belastbar ist welche Methode?', [evidenceList(reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; })), h('p', { class: 'st-hint', text: (reg.evidenceScale && reg.evidenceScale.noPromise) || '' })], { kicker: 'Evidenz je Regelversion', more: more(BASE + 'backtests/', 'Details') }));
     main.appendChild(disclaimer(sig));
+  }
+  function evidenceList(list) {
+    return h('div', { class: 'st-evlist' }, list.map(function (s) {
+      return h('a', { class: 'st-evrow', href: stratUrl(s), style: worldVars(s) }, [h('span', { class: 'n', text: s.world_name + ' v' + (ev(s).version || s.strategy_version) }), evidenceTag(s)]);
+    }));
   }
   function firstLive(sig) { var d = null; Object.keys(sig.strategies).forEach(function (k) { var l = sig.strategies[k].liveSince; if (l && (!d || l < d)) d = l; }); return d; }
 
@@ -323,6 +348,7 @@
     if (s.mode === 'PARTIAL_CHECK') { var pc = sig.partialChecks && sig.partialChecks[s.strategy_id]; return pc ? [pc.counts.partialMatch != null ? pc.counts.partialMatch : pc.counts.candidates, 'Teiltreffer'] : [0, 'Teiltreffer']; }
     var st = sig.strategies[s.strategy_id];
     if (!st) return [null, ''];
+    if (isResearchS(s)) return [st.open.filter(function (x) { return x.entry; }).length, 'Modellpositionen'];
     if (WATCH[s.strategy_id]) return [st.open.filter(isWatch).length, 'in Beobachtung'];
     var prep = st.open.filter(function (x) { return !x.entry && x.state !== 'TRIGGERED' && !isB(x); }).length;
     return [prep, 'vorbereitet'];
@@ -333,6 +359,7 @@
       h('div', { class: 'top' }, [h('span', { class: 'mode', 'data-t': m[1], text: m[0] }), c[0] !== null ? h('span', { class: 'cnt' }, [h('strong', { text: String(c[0]) }), ' ' + c[1]]) : null]),
       h('h3', { text: s.world_name }),
       h('p', { text: s.tagline }),
+      h('div', { class: 'ev' }, [evidenceTag(s)]),
     ]);
   }
 
@@ -340,9 +367,9 @@
   function renderStrategies(D) {
     var reg = D.registry;
     main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Methoden vergleichen' }), h('h1', { text: 'Was sucht welche Methode?' }), h('p', { class: 'st-lead', text: 'Jede Methode zeigt drei getrennte Aussagen: ob ihre Regeln laufen, wie gut ihre Quellen sind und ob sie historisch geprüft ist.' })]));
-    var groups = [['LIVE', 'Live — mit Ein- und Ausstiegen'], ['PARTIAL_CHECK', 'Teilprüfung — Kandidaten ohne Signale'], ['DATA_PENDING', 'Regeln beschrieben — Daten fehlen'], ['RESEARCH', 'In Vorbereitung']];
+    var groups = [['LIVE', 'Aktuelle Setups — mit Ein- und Ausstiegen'], ['LIVE_RESEARCH', 'Forschung · Modellbeobachtung — weiter protokolliert, nicht hervorgehoben'], ['PARTIAL_CHECK', 'Teilprüfung — Kandidaten ohne Signale'], ['DATA_PENDING', 'Regeln beschrieben — Daten fehlen'], ['RESEARCH', 'In Vorbereitung']];
     groups.forEach(function (g) {
-      var list = reg.strategies.filter(function (s) { return s.mode === g[0]; });
+      var list = reg.strategies.filter(function (s) { return g[0] === 'LIVE' ? s.mode === 'LIVE' && !isResearchS(s) : g[0] === 'LIVE_RESEARCH' ? s.mode === 'LIVE' && isResearchS(s) : s.mode === g[0]; });
       if (!list.length) return;
       main.appendChild(sec(g[1], [h('div', { class: 'st-list' }, list.map(function (s) { return g[0] === 'RESEARCH' ? researchRow(s) : compareCard(s, D); }))], { id: g[0] === 'RESEARCH' || g[0] === 'DATA_PENDING' ? 'vorbereitung' : null }));
     });
@@ -354,12 +381,13 @@
     var rows = [
       ['Sucht', s.how_it_thinks && s.how_it_thinks[0] ? s.how_it_thinks.slice(0, 2).join(' ') : s.tagline],
       ['Daten', c && c.required_data ? c.required_data.map(function (d) { return d.item; }).join(' · ') : '–'],
+      ['Evidenz', ev(s).levelLabel + (ev(s).note ? ' – ' + ev(s).note : '')],
       ['Einstieg vorbereitet', s.mode === 'LIVE' ? sectionText(c, 'prepared') : (s.mode === 'PARTIAL_CHECK' ? 'Keine Ein- und Ausstiege — nur Teilprüfung der Kriterien.' : 'Erst wenn die Daten vorliegen.')],
       ['Setup endet', s.mode === 'LIVE' ? (sectionText(c, 'invalid') + ' Ausstieg: ' + (c.plan ? c.plan.exitSummary : '')) : (c && c.executable && c.executable.gaps ? 'Offen: ' + c.executable.gaps.join(' · ') : '–')],
     ];
     return h('a', { class: 'st-cmp', href: stratUrl(s), style: worldVars(s) }, [
       h('div', { class: 'top' }, [h('div', null, [h('h3', { text: s.world_name }), h('div', { class: 'who', text: s.originator })]), cnt[0] !== null ? h('div', { class: 'cnt' }, [h('strong', { text: String(cnt[0]) }), h('span', { text: cnt[1] })]) : null]),
-      threeStatus(s, D),
+      threeStatus(s),
       h('dl', null, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] || '–' })]; }))),
     ]);
   }
@@ -378,8 +406,9 @@
       h('div', { class: 'st-kick', text: s.originator }),
       h('h1', { text: s.world_name }),
       h('p', { class: 'st-lead', text: s.tagline }),
-      threeStatus(s, D),
+      threeStatus(s),
     ]));
+    if (s.mode !== 'RESEARCH') main.appendChild(evidenceBanner(s, D));
 
     if (s.mode === 'RESEARCH') {
       main.appendChild(sec('Noch keine Strategie — nur eine Namenskarte', [h('p', { class: 'st-p', text: s.story }), h('p', { class: 'st-hint', text: 'Es gibt keine Regeln, keine Kandidaten und keine Signale. Supertrader stellt diese Methode nicht als fertige Strategiewelt dar.' })]));
@@ -394,7 +423,7 @@
     else main.appendChild(sec('Warum heute keine Kandidaten?', [emptyBox('Pflichtdaten fehlen', (c && c.activationCondition) || 'Die Methode braucht Daten, die noch nicht vorliegen.'), c ? gapList(c) : null]));
 
     // Drei Aussagen im Detail
-    if (c) main.appendChild(sec('Was ist belegt?', [assessments(s, c, D)], { kicker: 'Regel · Quellen · Historie' }));
+    if (c) main.appendChild(sec('Was ist belegt?', [assessments(s, c, D)], { kicker: 'Regel · Quellen · Daten · Evidenz' }));
     // Details
     main.appendChild(sec('Methodendetails', [
       c ? details('Regelkarte (' + c.sections.length + ' Abschnitte, v' + c.rule_version + ')', [ruleCardList(c)]) : null,
@@ -406,6 +435,14 @@
     ]));
     main.appendChild(disclaimer(sig));
   }
+  function evidenceBanner(s, D) {
+    var e = ev(s);
+    var kids = [h('div', { class: 'h' }, [h('span', { class: 'k', text: 'Evidenz · Version ' + (e.version || s.strategy_version) }), evidenceTag(s)]), h('p', { text: e.levelPlain || '' })];
+    if (e.presentation === 'RESEARCH') kids.push(h('p', { class: 'res', text: 'Diese Methode läuft als Forschung und Modellbeobachtung weiter. Neue Setups sind keine Einstiegschancen. Laufende Modellpositionen werden unverändert nach Regelversion ' + (e.version || s.strategy_version) + ' geführt und bis zum Ausstieg protokolliert. Die Einstufung ist eine Produktentscheidung, kein Marktsignal.' }));
+    if (e.note) kids.push(h('p', { class: 'note', text: e.note }));
+    kids.push(h('p', { class: 'np', text: e.noPromise || '' }));
+    return h('div', { class: 'st-evbanner', 'data-t': e.levelTone }, kids);
+  }
   function steps(s, c) {
     if (!c) return null;
     var ids = s.mode === 'LIVE' ? [['candidate', 'Kandidat'], ['prepared', 'Vorbereitet'], ['confirmation', 'Bestätigt'], ['exit', 'Ausstieg']] : (c.sections || []).slice(0, 4).map(function (x) { return [x.id, x.title]; });
@@ -416,12 +453,13 @@
   }
   function assessments(s, c, D) {
     var hv = c.historical_validation || {}, sb = c.source_basis || {}, ex = c.executable || {};
-    var hist = historyOf(s, D);
+    var hist = historyOf(s);
     var row = function (title, val, text) { return h('div', { class: 'st-assess', 'data-t': val[1] }, [h('div', { class: 'h' }, [h('span', { class: 'k', text: title }), h('strong', { text: val[0] })]), h('p', { text: text })]); };
     return h('div', { class: 'st-assessments' }, [
       row('Regel', modeOf(s), (ex.note || '') + (ex.gaps && ex.gaps.length ? ' Offen: ' + ex.gaps.join('; ') + '.' : '')),
       row('Quellen', sourceOf(s), (sb.note || '') + (sb.ruleCounts ? ' Regeln: ' + sb.ruleCounts.original + ' Original, ' + sb.ruleCounts.vu + ' VU.' : '') + ' Originaltreue noch nicht inhaltlich geprüft.'),
-      row('Historie', hist, hist[0] === 'Explorativ getestet' ? 'Ein Pilot auf heute gelisteten Titeln liegt vor — wegen Survivorship Bias kein Nachweis. ' + (hv.note || '') : (hv.note || 'Kein Backtest.') + (hv.failedGates && hv.failedGates.length ? ' Offene Prüfbedingungen: ' + hv.failedGates.length + '.' : '')),
+      row('Daten', dataOf(s), ev(s).data.plain || ''),
+      row('Evidenz', hist, (ev(s).levelPlain || '') + (ev(s).note ? ' ' + ev(s).note : '')),
     ]);
   }
   function ruleCardList(c) {
@@ -439,7 +477,7 @@
     if (!st) return;
     var open = st.open.slice().sort(sortSignals);
     var hasQ = !!s.quality_tiers;
-    var main1 = hasQ ? open.filter(function (x) { return !isB(x); }) : open;
+    var main1 = hasQ ? open.filter(function (x) { return !isB(x); }) : isResearchS(s) ? open.filter(function (x) { return !x.entry; }) : open;
     var bList = hasQ ? open.filter(isB) : [];
     var kids = [];
     if (hasQ && st.quality) kids.push(h('div', { class: 'st-qsplit' }, [
@@ -448,11 +486,16 @@
     ]));
     kids.push(main1.length ? h('div', { class: 'st-list' }, main1.slice(0, 12).map(function (x) { return stockCard(x, s); })) : emptyBox(hasQ ? 'Heute kein A-Setup' : 'Heute kein Setup', hasQ ? 'Alle ' + bList.length + ' gültigen Boxen verfehlen mindestens ein Qualitätskriterium.' : 'Die Regeln sind heute für keinen Titel erfüllt. Supertrader erfindet kein Signal.'));
     if (main1.length > 12 || bList.length) kids.push(more(BASE + 'signals/?method=' + s.strategy_id, 'Alle ' + open.length + ' Setups' + (bList.length ? ' (inkl. ' + bList.length + ' B)' : '')));
-    if (WATCH[s.strategy_id]) kids.unshift(h('p', { class: 'st-hint', text: 'Turtle-Regeln kaufen jeden Ausbruch über das 20-Tage-Hoch. Diese Liste zeigt liquide Aktien bis 3 % darunter – eine Beobachtungsliste, kein vorbereiteter Einstieg. Erst ein Tagesschluss über dem Hoch bestätigt.' }));
-    main.appendChild(sec(WATCH[s.strategy_id] ? 'Beobachtungsliste: nahe dem 20-Tage-Hoch' : 'Aktien, die die Regeln heute erfüllen', kids, { kicker: 'Live seit ' + dateDe(st.liveSince) }));
+    if (WATCH[s.strategy_id] && !isResearchS(s)) kids.unshift(h('p', { class: 'st-hint', text: 'Turtle-Regeln kaufen jeden Ausbruch über das 20-Tage-Hoch. Diese Liste zeigt liquide Aktien bis 3 % darunter – eine Beobachtungsliste, kein vorbereiteter Einstieg. Erst ein Tagesschluss über dem Hoch bestätigt.' }));
+    if (isResearchS(s)) {
+      kids.unshift(h('p', { class: 'st-hint', text: 'Modellbeobachtung: Die Regeln laufen unverändert weiter, damit die Beobachtung nicht rückwirkend geschönt wird. Die Liste ist keine Auswahl von Einstiegschancen.' }));
+      var pos = open.filter(function (x) { return x.entry; });
+      if (pos.length) main.appendChild(sec('Laufende Modellpositionen (' + pos.length + ')', [h('p', { class: 'st-hint', text: 'Ausstieg und Stop gelten nach der Regelversion, unter der die Position eröffnet wurde.' }), h('div', { class: 'st-list' }, pos.slice(0, 12).map(function (x) { return stockCard(x, s); })), pos.length > 12 ? more(BASE + 'signals/?method=' + s.strategy_id + '&phase=pos', 'Alle ' + pos.length) : null], { kicker: 'Forschung · weiter geführt' }));
+    }
+    main.appendChild(sec(isResearchS(s) ? 'Modellbeobachtung: aktuelle Setups' : WATCH[s.strategy_id] ? 'Beobachtungsliste: nahe dem 20-Tage-Hoch' : 'Aktien, die die Regeln heute erfüllen', kids, { kicker: 'Live seit ' + dateDe(st.liveSince) }));
     // Chart des besten Setups
     var pickS = main1[0] || open[0];
-    if (pickS) { var host = h('div'); main.appendChild(sec(pickS.symbol + ' im Chart', [host], { kicker: 'Bestes Setup', more: more(stockUrl(pickS.symbol), 'Lens') })); mountSignalChart(host, pickS, s); }
+    if (pickS) { var host = h('div'); main.appendChild(sec(pickS.symbol + ' im Chart', [host], { kicker: isResearchS(s) ? 'Beispiel aus der Beobachtung' : 'Bestes Setup', more: more(stockUrl(pickS.symbol), 'Lens') })); mountSignalChart(host, pickS, s); }
     // Protokoll
     main.appendChild(sec('Protokoll', [h('div', { class: 'st-kpis small' }, [
       h('div', { class: 'st-kpi' }, [h('strong', { text: String(st.closed.length) }), h('span', { text: 'geschlossen' })]),
@@ -534,6 +577,8 @@
     function filtered(ignore) {
       return rows.filter(function (r) {
         if (ignore !== 'method' && f.method && r.id !== f.method) return false;
+        // Forschung: nur bei gewaehlter Methode oder im Filter „Forschung“ sichtbar.
+        if (isResearchId(r.id) && f.method !== r.id && f.phase !== 'obs') return false;
         if (f.q && r.s.symbol.indexOf(f.q) !== 0) return false;
         if (f.division && r.s.sicDivision !== f.division) return false;
         if (ignore !== 'phase') {
@@ -550,8 +595,8 @@
       methodRow.innerHTML = '';
       var base = filtered('method');
       [{ strategy_id: '', world_name: 'Alle Methoden' }].concat(methods).forEach(function (m) {
-        var n = m.strategy_id ? base.filter(function (r) { return r.id === m.strategy_id; }).length : base.length;
-        methodRow.appendChild(h('button', { type: 'button', 'aria-pressed': String(f.method === m.strategy_id), onclick: function () { f.method = m.strategy_id; update(); } }, [m.world_name, h('span', { class: 'n', text: String(n) })]));
+        var n = m.strategy_id ? (isResearchId(m.strategy_id) ? rows.filter(function (r) { return r.id === m.strategy_id && ['closed', 'inv', 'cand'].indexOf(r.phase) < 0; }).length : base.filter(function (r) { return r.id === m.strategy_id; }).length) : base.length;
+        methodRow.appendChild(h('button', { type: 'button', 'data-research': isResearchId(m.strategy_id) ? 'true' : null, 'aria-pressed': String(f.method === m.strategy_id), onclick: function () { f.method = m.strategy_id; update(); } }, [m.world_name + (isResearchId(m.strategy_id) ? ' · Forschung' : ''), h('span', { class: 'n', text: String(n) })]));
       });
       phaseRow.innerHTML = '';
       var pbase = filtered('phase');
@@ -563,6 +608,8 @@
       limit = 30;
       var hiddenB = rows.filter(function (r) { return r.kind === 'sig' && isB(r.s); }).length;
       countLine.textContent = shown.length + ' Einträge' + (f.quality !== 'B' && f.method !== 'DARVAS_BOX' && hiddenB ? ' · ' + hiddenB + ' Darvas-B-Setups ausgeblendet' : '');
+      var resIds = Object.keys(RESEARCH).filter(function (id) { return f.method !== id && f.phase !== 'obs'; });
+      if (resIds.length) countLine.appendChild(h('span', null, [' · Forschung ausgeblendet (' + resIds.map(function (id) { return S[id] ? S[id].world_name : id; }).join(', ') + ') ', h('button', { type: 'button', class: 'st-linkbtn', onclick: function () { f.method = resIds[0]; f.phase = ''; update(); }, text: 'anzeigen' })]));
       render();
       var q = new URLSearchParams(); Object.keys(f).forEach(function (k) { if (f[k]) q.set(k, f[k]); });
       history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : ''));
@@ -628,6 +675,7 @@
     var st = s.state || s.stage;
     var re = s.discovery && s.discovery.kind === 'RULE_VERSION_REASSESSMENT' ? s.discovery.reassessment : null;
     var kids = [h('div', { class: 'r1' }, [badgeFor(s), p && p.since ? h('span', { class: 'since', text: 'seit ' + dateShort(p.since) }) : null])];
+    if (isResearchS(strat)) kids.push(h('div', { class: 'st-note-tag wide research', text: 'Forschung · Modellbeobachtung (' + ev(strat).levelLabel + '): ' + (s.entry ? 'laufende Modellposition, Ausstieg nach Regelversion ' + (s.version || '') + '.' : 'kein hervorgehobener Einstieg.') }));
     if (re) kids.push(h('div', { class: 'st-note-tag wide', title: 'Vorgänger ' + re.previousSignalId, text: 'Neubewertung nach Regelwechsel (v' + re.previousVersion + ' → v' + s.version + ') auf Kursstand ' + dateShort(re.priceDataAsOf) + ' — kein neues Marktereignis.' }));
     kids.push(setupBar(s));
     if (p) {
@@ -741,11 +789,31 @@
   // Bausteine, die heute fuer JEDE Methode fehlen - einmal genannt statt je Methode wiederholt.
   var COMMON_GATES = ['SURVIVORSHIP', 'UNIVERSE_PIT', 'CORPORATE_ACTIONS', 'USAGE_RIGHTS'];
   function renderBacktests(D) {
-    var bt = D.backtests, pl = D.pilot, S = stratMap(D.registry);
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Backtest Lab' }), h('h1', { text: 'Was ist historisch geprüft?' }), h('p', { class: 'st-lead', text: 'Kurz: Validiert ist noch keine Methode. Ein explorativer Test liegt vor – mit negativem Ergebnis und klaren Grenzen.' })]));
+    var bt = D.backtests, pl = D.pilot, reg = D.registry;
+    var sc = reg.evidenceScale || {};
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Backtest Lab' }), h('h1', { text: 'Wie belastbar ist welche Methode?' }), h('p', { class: 'st-lead', text: 'Jede Regelversion trägt eine eigene Evidenzstufe – getrennt von der Qualität ihrer Quellen und ihrer Daten. ' + (sc.noPromise || '') })]));
+    // Skala
+    if (sc.levels) main.appendChild(sec('Die vier Stufen', [h('div', { class: 'st-scale' }, Object.keys(sc.levels).map(function (k) { var l = sc.levels[k]; return h('div', { class: 'lv', 'data-t': l.tone }, [h('strong', { text: l.label }), h('span', { text: l.plain })]); })), sc.publicationNote ? h('p', { class: 'st-hint', text: sc.publicationNote }) : null], { kicker: 'Evidenz' }));
+    // Je Strategieversion
+    var core = reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; });
+    main.appendChild(sec('Je Strategieversion', [h('div', { class: 'st-list' }, core.map(function (s) {
+      var e = ev(s);
+      return h('div', { class: 'st-btrow', style: worldVars(s) }, [
+        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: s.world_name + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
+        h('div', { class: 'st-three' }, [pill('Quellen', sourceOf(s)), pill('Daten', dataOf(s)), pill('Darstellung', [e.presentationLabel || '–', e.presentation === 'RESEARCH' ? 'warn' : 'mute'])]),
+        e.note ? h('p', { class: 'st-hint', text: e.note }) : null,
+      ]);
+    }))], { kicker: 'Stufe · Quellen · Daten' }));
+    main.appendChild(sec('Wie geprüft wird', [h('ul', { class: 'st-need' }, [
+      h('li', null, [h('b', { text: 'Vorab festgelegt' }), ' – Universum, Zeitraum, Regeln, Kosten, Vergleich und Erfolgskriterien werden vor dem Test eingefroren.']),
+      h('li', null, [h('b', { text: 'Damaliges Universum' }), ' – alle an jedem Tag gelisteten US-Aktien, einschließlich später delisteter Titel; neu vergebene Kürzel werden getrennt.']),
+      h('li', null, [h('b', { text: 'Delistings ohne Schönrechnen' }), ' – drei vorab festgelegte Annahmen für den letzten Kurs; ein Ergebnis, das an dieser Annahme hängt, gilt nicht als belegt.']),
+      h('li', null, [h('b', { text: 'Gleiche Regeln wie live' }), ' – derselbe Rechenkern erzeugt Live-Signale und historische Trades.']),
+      h('li', null, [h('b', { text: 'Keine Nachoptimierung' }), ' – eine neue Parametervariante ist eine neue Hypothese und braucht eine spätere, unabhängige Prüfung.']),
+    ])], { kicker: 'Methode' }));
     if (pl) {
       var sm = pl.strategy.metrics, cmp = pl.comparison, au = pl.audit || {}, prev = (pl.history || [])[0];
-      main.appendChild(sec(pl.method.label, [
+      main.appendChild(sec('Älterer explorativer Pilot', [details(pl.method.label + ' – nur heute gelistete Aktien, Wochenbasis', [
         h('div', { class: 'st-trio big' }, [trio(pct(sm.full.cagr, 1, true), 'Regel p. a.'), trio(pct(cmp.equalWeightUniverse.full.cagr, 1, true), 'Gleiche Aktien, gleich gewichtet'), trio(pct(cmp.spy.full.cagr, 1, true), 'SPY')]),
         h('p', { class: 'st-hint', text: 'Explorativ, nicht validiert: Getestet wurde nur auf heute noch gelisteten Aktien (' + pl.period.from.slice(0, 4) + '–' + pl.period.to.slice(0, 4) + ').' }),
         lineChart([{ label: 'Regel (nach Kosten)', color: '#14b8a6', width: 2.4, points: pl.curves.strategy }, { label: 'Gleich gewichtet', color: '#94a3b8', points: pl.curves.equalWeightUniverse }, { label: 'SPY', color: '#fbbf24', dash: '4 3', points: pl.curves.spy }], { label: 'Wertentwicklung, logarithmisch' }),
@@ -773,46 +841,9 @@
             fact('Kosten', '0,25 % je Seite; Kursrendite ohne Dividenden'),
             fact('Festlegung', au.runHistory || ''),
           ])]),
-      ], { kicker: 'Explorativer Test · Version ' + (pl.spec.version || '1.0.0') }));
+      ])], { kicker: 'Abgelöst durch die interne Prüfung · Version ' + (pl.spec.version || '1.0.0') }));
     }
-    // Gemeinsam fehlende Bausteine einmal nennen
-    main.appendChild(sec('Warum noch keine Methode validiert ist', [
-      h('p', { class: 'st-p', text: 'Für alle Methoden fehlen dieselben vier Bausteine:' }),
-      h('ul', { class: 'st-need' }, [
-        h('li', null, [h('b', { text: 'Pleite- und Übernahmetitel' }), ' samt letzter Rendite (heute fehlen sie in den Kursreihen)']),
-        h('li', null, [h('b', { text: 'Damaliges Universum' }), ' – welche Aktien an jedem Tag handelbar waren']),
-        h('li', null, [h('b', { text: 'Dividenden einheitlich' }), ' für alle Titel']),
-        h('li', null, [h('b', { text: 'Nutzungsrechte' }), ' für Backtests und deren Veröffentlichung']),
-      ]),
-      bt.dataPath ? h('div', { class: 'st-audit' }, [h('strong', { text: 'Probeabruf vom ' + dateDe(bt.dataPath.measuredAt) }), h('ul', null, [
-        h('li', { text: bt.dataPath.delistedSample.lastBarWithin7DaysOfListingEnd + ' von ' + bt.dataPath.delistedSample.probed + ' zufällig gewählten delisteten Aktien liefern Kurse bis zum letzten Handelstag – mit Dividenden und Splits.' }),
-        h('li', { text: 'Bei neu vergebenen Kürzeln liefert die Quelle nur das neueste Listing (' + bt.dataPath.reusedTickers.oldHistoryReturned + ' von ' + bt.dataPath.reusedTickers.probed + ' alte Historien).' }),
-        h('li', { text: 'Vor 2015/16 fehlen Delistings in der Quelle weitgehend. Der erste validierbare Test beginnt deshalb 2016.' }),
-      ])]) : null,
-    ], { kicker: 'Fehlende Bausteine' }));
-    var core = D.registry.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; });
-    main.appendChild(sec('Je Methode', [h('div', { class: 'st-list' }, core.map(function (s) {
-      var run = bt.runs.filter(function (r) { return r.strategyId === s.strategy_id && r.active; })[0] || bt.runs.filter(function (r) { return r.strategyId === s.strategy_id; })[0];
-      if (!run) return null;
-      var plan = run.testPlan || (run.gates && run.gates.testPlan);
-      var gates = byId(run.gates || [], 'id');
-      var hist = historyOf(s, D);
-      var extra = BLOCKS.filter(function (b) { return gates[b[0]] && !gates[b[0]].pass && COMMON_GATES.indexOf(b[0]) < 0; }).map(function (b) {
-        if (b[0] !== 'HISTORY') return b[1];
-        var m = /([\d,]+) Jahre (Tages-OHLCV|Wochenschlusskurse)/.exec(gates.HISTORY.measured || '');
-        return m ? 'längere Kurshistorie (heute ' + m[1] + ' Jahre ' + (m[2] === 'Tages-OHLCV' ? 'Tageskurse' : 'Wochenkurse') + ')' : 'längere Kurshistorie';
-      });
-      return h('div', { class: 'st-btrow', style: worldVars(s) }, [
-        h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: s.world_name }), h('span', { class: 'st-tag', 'data-t': hist[1], text: hist[0] })]),
-        h('p', { class: 'st-hint', text: (plan ? 'Prüfplan: ≥ ' + plan.minYears + ' Jahre, ≥ ' + plan.minBearMarkets + ' Bärenmärkte, ≥ ' + plan.minTrades + ' ' + plan.unit + '. ' : '') + (extra.length ? 'Zusätzlich fehlt: ' + extra.join(', ') + '.' : 'Sonst keine weiteren Lücken.') }),
-      ]);
-    }))]));
-    main.appendChild(sec('Nächster Datenschritt', [h('ol', { class: 'st-plan2' }, (bt.nextSteps || [
-      ['Probeabruf delisteter Titel (Machbarkeit)', 'Kleine Stichprobe tatsächlich delisteter US-Aktien über die vorhandene Datenquelle prüfen.'],
-      ['Nutzungsrechte klären', 'Delisting-Daten, interne Backtests, Veröffentlichung abgeleiteter Kennzahlen.'],
-      ['Damaliges Universum rekonstruieren', 'Aus Start- und Enddaten der Listings ein „handelbar am Tag X“-Universum.'],
-      ['Dann: Donchian-Tagesvariante als erster validierbarer Test', 'Reine Kursmethode – braucht keine Fundamentaldaten.'],
-    ]).map(function (x) { return h('li', null, [h('strong', { text: x[0] }), h('span', { text: x[1] })]); }))], { kicker: 'Kleinster prüfbarer Schritt zuerst' }));
+    main.appendChild(sec('Nächste Schritte', [h('ol', { class: 'st-plan2' }, (bt.nextSteps || []).map(function (x) { return h('li', null, [h('strong', { text: x[0] }), h('span', { text: x[1] })]); }))], { kicker: 'Was als Nächstes kommt' }));
     main.appendChild(disclaimer(D.signals));
   }
   function mcell(k, v, d) { return h('div', { class: 'mc' }, [h('span', { class: 'k', text: k }), h('strong', { text: v }), h('span', { class: 'd', text: d })]); }
@@ -895,7 +926,7 @@
   Promise.all(need.map(function (k) { return getJSON(FILE[k]).catch(function (e) { if (k === 'pilot' || k === 'replay') return null; throw e; }); })).then(function (res) {
     var D = {}; need.forEach(function (k, i) { D[k] = res[i]; });
     D.srcMap = D.sources ? byId(D.sources.sources, 'source_id') : {};
-    if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST') WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; });
+    if (D.registry) D.registry.strategies.forEach(function (x) { if (x.pending_semantics === 'WATCHLIST' && !isResearchS(x)) WATCH[x.strategy_id] = x.watchlist_label || 'Beobachtung'; if (isResearchS(x)) RESEARCH[x.strategy_id] = true; });
     main.innerHTML = '';
     chrome(D.signals.asOf);
     ({ home: renderHome, strategies: renderStrategies, strategy: renderStrategy, signals: renderSignals, stock: renderStock, backtests: renderBacktests, replay: renderReplay, sources: renderSources }[page] || renderHome)(D);

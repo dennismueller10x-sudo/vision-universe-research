@@ -94,7 +94,10 @@ async function main() {
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),
         bottomNav: (() => { const b = document.querySelector('.st-bottom'); return b ? getComputedStyle(b).display !== 'none' : false; })(),
-        homeB: location.pathname === '/supertrader/' ? document.querySelectorAll('.st-q[data-q="B"]').length : 0,
+        homeB: location.pathname === '/supertrader/' ? [...document.querySelectorAll('.st-q[data-q="B"]')].filter((e) => e.textContent.trim() === 'B-Setup').length : 0,
+        researchSection: !!document.querySelector('.st-research'),
+        researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten am Einstieg/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
+        evBanner: !!document.querySelector('.st-evbanner'),
         cardsWithoutPhase: [...document.querySelectorAll('.st-card2')].filter((c) => !c.querySelector('.st-phase')).length,
         buyTone: /jetzt kaufen|buy now|kaufempfehlung(?! |,)|kaufen sie/i.test(document.body.innerText.replace(/keine kauf- oder verkaufsempfehlung/ig, '')),
         textLen: document.body.innerText.length,
@@ -122,7 +125,10 @@ async function main() {
       if (m.cardsWithoutPhase) errors.push(`${m.cardsWithoutPhase} Aktienkarten ohne Phasenabzeichen`);
       if (m.partialAsSignal) errors.push('Teiltreffer als CAN-SLIM-Signal bezeichnet');
       if (m.watchAsPrepared) errors.push(`${m.watchAsPrepared} Donchian-Eintraege als „vorbereitet“ beschriftet (Beobachtungsliste)`);
-      if (name === 'home' && signals.strategies.DONCHIAN_TURTLE?.open?.length && !m.watchTile) errors.push('Beobachtungsliste fehlt auf der Startseite');
+      const researchIds = registry.strategies.filter((x) => x.evidence?.presentation === 'RESEARCH').map((x) => x.strategy_id);
+      if (name === 'home' && researchIds.some((id) => signals.strategies[id]?.open?.length) && !m.researchSection) errors.push('Forschung/Modellbeobachtung fehlt auf der Startseite');
+      if (name === 'home' && m.researchInNear) errors.push('Forschungsmethode als Einstiegschance hervorgehoben');
+      if (/^strategy-(momentum|weinstein|darvas|minervini|donchian|can-slim|piotroski|greenblatt)/.test(name) && !m.evBanner) errors.push('Evidenz-Einstufung fehlt auf der Methodenseite');
       if (['home', 'signals', 'lens', 'lens-watch', 'lens-position', 'backtests', 'replay'].includes(name) && m.codes.length) errors.push('interne Codes sichtbar: ' + m.codes.join(', '));
       if (name === 'replay' && !m.replayBanner) errors.push('Replay ohne Kennzeichnung „kein aktuelles Signal“');
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');

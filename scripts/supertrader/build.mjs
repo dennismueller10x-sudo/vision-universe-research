@@ -38,6 +38,7 @@ import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
 import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
+import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
 let CURRENT_REGIME = null;
@@ -585,7 +586,9 @@ function buildRegistry(coverage, gbCoverage) {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
     lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null })),
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s) })),
+    evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,
+      publicationNote: 'Intern geprüfte Versionen erscheinen bis zur Klärung der Rechte an abgeleiteten Kennzahlen als „In Prüfung“. Eine Änderung der Einstufung ist kein Marktsignal und ändert kein protokolliertes Signal.' },
     dataRealityNote: `Tages-OHLCV öffentlich ${String(coverage.dailyOhlcvYears).replace('.', ',')} Jahre; Greenblatt-Pflichtfelder fehlend: ${gbCoverage.missingFields.join(', ') || 'keine'}.`,
   };
 }
@@ -737,11 +740,9 @@ function buildBacktests(registry, coverage, gbCoverage) {
 }
 // Kleinster belegter Schritt zuerst (docs/SUPERTRADER_VALIDATION_DATA_PATH.md).
 const NEXT_STEPS = [
-  ['Owner-Entscheidung: Rechte und Abrufumfang', 'Freigabe für interne Backtests mit delisteten Titeln (~5.200 Abrufe im bestehenden Abo, verteilt auf 1–2 Tage) und für die Veröffentlichung abgeleiteter Kennzahlen.'],
-  ['Delistete Titel ab 2016 abrufen', 'Tageskurse aller ab 2016 delisteten US-Aktien über den vorhandenen Zugang; der Probeabruf lieferte 20 von 21 bis zum letzten Handelstag.'],
-  ['Universum „handelbar am Tag X“ bauen', 'Aus Listing-Beginn und -Ende je Wertpapier; Kürzel-Neuvergaben trennen und Lücken zählen.'],
-  ['Gesamtrendite selbst rechnen', 'Aus Rohkurs, Dividende und Split statt der uneinheitlichen bereinigten Spalte.'],
-  ['Dann: Donchian-Tagesvariante 2016–2026', 'Erster validierbarer Test: reine Kursmethode, ≥ 10 Jahre, Bärenphasen 2018, 2020, 2022.'],
+  ['Rechte an abgeleiteten Kennzahlen klären', 'Ob aus den Kursdaten berechnete Backtest-Ergebnisse veröffentlicht werden dürfen. Bis dahin erscheinen geprüfte Versionen als „In Prüfung“.'],
+  ['Fundamentaldaten zum damaligen Stichtag', 'Erstmeldungen aus den SEC-Abschlüssen statt zuletzt berichteter Werte – Voraussetzung für historische Tests von CAN SLIM, Piotroski und Greenblatt.'],
+  ['Neue Regelversionen nur als neue Hypothese', 'Eine Variante nach Kenntnis eines Ergebnisses wird vorab festgelegt und erst mit späteren Daten unabhängig geprüft.'],
 ];
 function mapVariant(v) {
   if (v.startsWith('KK_COMMON_BREAKOUT')) return 'KK_COMMON_BREAKOUT_DAILY';
