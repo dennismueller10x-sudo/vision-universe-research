@@ -14,7 +14,7 @@ import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { fromBars } from "../../scripts/quant/lib/daily-prices.mjs";
-import { tally, rawCloseAgreement } from "../../scripts/market/repair-total-return-history.mjs";
+import { tally, rawCloseAgreement, adjustedOnly, replacedWholesale, REPAIR_MODE } from "../../scripts/market/repair-total-return-history.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -77,6 +77,28 @@ test("repair: counts by reason and accepts a refetch only when raw closes agree"
   assert.match(read(".github/workflows/market-data-refresh.yml"), /repair-total-return-history\.mjs --max 1500/);
 });
 
+
+test("repair touches only the total-return column: raw price, volume, actions and the set of days stay bit-identical", () => {
+  const stored = series({ adjusted: false }).slice(5);          /* gespeichert: ab Tag 5, Ex-Tag nicht eingerechnet */
+  const fetched = series();                                     /* Abruf: volle Reihe, eine Bereinigung, mehr Tage */
+  fetched[10].volume = 999;                                     /* der Abruf korrigiert Volumen - darf nicht durchschlagen */
+  const r = adjustedOnly(stored, fetched);
+  assert.equal(r.ok, true);
+  assert.equal(r.bars.length, stored.length, "keine neuen Tage");
+  const strip = (b) => { const { adjustedClose, ...rest } = b; return rest; };
+  assert.deepEqual(r.bars.map(strip), stored.map(strip), "alles ausser der Gesamtrendite-Spalte unveraendert");
+  assert.equal(MQ.totalReturnVerdict(stored).confirmed, false);
+  assert.equal(MQ.totalReturnVerdict(r.bars).confirmed, true, "danach besteht die Reihe den Vertrag");
+  /* Gegenproben: ein fehlender Tag oder ein anderer Rohschluss bricht ab. */
+  assert.equal(adjustedOnly(stored, fetched.filter((b) => b.date !== stored[3].date)).reason, "STORED_DATE_MISSING_IN_FETCH");
+  assert.equal(adjustedOnly(stored, fetched.map((b) => ({ ...b, close: b.close * 1.2 }))).reason, "RAW_CLOSE_DISAGREES");
+  assert.equal(replacedWholesale({ totalReturnRepair: { previous: "DIVIDEND_GAP" } }), true, "die erste Fassung wird erkannt und zurueckgeholt");
+  assert.equal(replacedWholesale({ totalReturnRepair: { mode: REPAIR_MODE } }), false);
+  assert.equal(replacedWholesale({}), false);
+  const src = read("scripts/market/repair-total-return-history.mjs");
+  assert.doesNotMatch(src, /store\.mergeBars\(id, fresh/, "nie die ganze Abrufreihe in die Ablage");
+});
+
 /* Signal-Studie ueber 60 echte Wochenreihen mit synthetischer Gesamtrendite;
    `gapped` Titel bekommen eine nicht eingerechnete Ausschuettung. */
 function signalFixture(t, gapped) {
@@ -135,4 +157,50 @@ test("fail closed: below 95 % confirmed total return the whole study stays on pr
   assert.match(study.returnTypeNote, /nur für 93\.3 % der Titel bestätigt/);
   assert.ok(study.rules.every((r) => r.returnType === "SPLIT_ADJUSTED_PRICE" && r.baseRateReturnType === "SPLIT_ADJUSTED_PRICE" && r.checks.returnBasis.state === "FAIL"));
   assert.equal(study.returnBasisComparison.compared, false);
+});
+
+/* Ende-zu-Ende gegen eine Tiingo-Attrappe: abgelehnte Reihe -> voller Abruf
+   -> nur die Gesamtrendite-Spalte wird uebernommen. */
+test("repair end to end: one full fetch, only the adjusted column changes, the series then passes the contract", async (t) => {
+  const { createServer } = await import("node:http");
+  const { execFile } = await import("node:child_process");
+  const days = [];
+  for (let c = new Date(Date.UTC(2023, 0, 2)); days.length < 600; c.setUTCDate(c.getUTCDate() + 1)) if (c.getUTCDay() % 6) days.push(c.toISOString().slice(0, 10));
+  let p = 150;
+  const raw = days.map((d, i) => { p *= 1 + Math.sin(i / 11) * 0.006 + 0.0004; return { d, close: +p.toFixed(4), div: i % 63 === 30 ? +(p * 0.006).toFixed(4) : 0 }; });
+  const adj = new Array(raw.length).fill(1);
+  for (let i = raw.length - 2; i >= 0; i--) adj[i] = adj[i + 1] * (raw[i + 1].div > 0 ? 1 - raw[i + 1].div / raw[i].close : 1);
+  const rows = raw.map((r, i) => ({ date: r.d + "T00:00:00.000Z", open: r.close, high: r.close, low: r.close, close: r.close, volume: 1e6 + i,
+    adjOpen: r.close * adj[i], adjHigh: r.close * adj[i], adjLow: r.close * adj[i], adjClose: r.close * adj[i], adjVolume: 1e6 + i, divCash: r.div, splitFactor: 1 }));
+  let hits = 0;
+  const server = createServer((req, res) => {
+    const u = new URL(req.url, "http://localhost");
+    if (!/^\/tiingo\/daily\/AAPL\/prices$/i.test(u.pathname)) { res.writeHead(404).end("{}"); return; }
+    hits++; res.writeHead(200, { "Content-Type": "application/json", Connection: "close" }).end(JSON.stringify(rows));
+  });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  t.after(() => { server.closeAllConnections(); server.close(); });
+  const dir = mkdtempSync(join(tmpdir(), "vu-tr-repair-"));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const daily = join(dir, "work", "tiingo", "daily");
+  mkdirSync(daily, { recursive: true });
+  /* gespeichert: ab Tag 100, Skala des Abruftags (Ausschuettungen nicht eingerechnet) */
+  const stored = raw.slice(100).map((r, i) => ({ securityId: "ref_AAPL", date: r.d, open: r.close, high: r.close, low: r.close, close: r.close, volume: 1e6 + 100 + i,
+    adjustedClose: r.close, dividend: r.div, splitFactor: 1 }));
+  writeFileSync(join(daily, "ref_AAPL.json"), JSON.stringify({ securityId: "ref_AAPL", ticker: "AAPL", provider: "tiingo", adjustmentStatus: "adjusted", bars: stored }));
+  assert.equal(MQ.totalReturnVerdict(stored).reason, "DIVIDEND_GAP");
+  const report = join(dir, "report.json");
+  await new Promise((resolve, reject) => execFile(process.execPath, [join(ROOT, "scripts/market/repair-total-return-history.mjs"), "--work-dir", join(dir, "work"), "--report", report, "--max", "5"],
+    { encoding: "utf8", timeout: 300000, env: { PATH: process.env.PATH, TIINGO_API_KEY: "test", TIINGO_BASE_URL: `http://127.0.0.1:${server.address().port}` } },
+    (err, stdout, stderr) => (err ? reject(new Error(String(err.message) + stderr)) : resolve())));
+  const rep = JSON.parse(readFileSync(report, "utf8"));
+  const after = JSON.parse(readFileSync(join(daily, "ref_AAPL.json"), "utf8"));
+  assert.equal(hits, 1, "ein voller Abruf");
+  assert.equal(rep.mode, "ADJUSTED_ONLY");
+  assert.equal(rep.repairedCount, 1, JSON.stringify(rep));
+  assert.equal(after.bars.length, stored.length, "keine zusaetzlichen Tage aus dem Abruf");
+  assert.deepEqual(after.bars.map(({ adjustedClose, adjOpen, adjHigh, adjLow, adjVolume, ...rest }) => rest), stored.map(({ adjustedClose, ...rest }) => rest), "Rohkurs, Volumen, Ausschuettung unveraendert");
+  assert.equal(MQ.totalReturnVerdict(after.bars).confirmed, true);
+  assert.equal(after.totalReturnRepair.mode, "ADJUSTED_ONLY");
+  assert.ok(!/"close"/.test(JSON.stringify(rep)), "der Bericht traegt keine Kurse");
 });

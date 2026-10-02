@@ -122,19 +122,28 @@ jobs:
       # Dieselbe Pruefung wie fuer SPY (market-quality.js totalReturnVerdict)
       # findet diese Reihen; fuer sie gibt es denselben vollen Abruf wie fuer
       # SPY, juengste Luecke zuerst, hoechstens 1500 je Lauf (Commercial: 5.000/h). Uebernommen wird
-      # nur eine Reihe, die den Vertrag besteht und die Rohschluesse
+      # NUR die Gesamtrendite-Spalte auf den gespeicherten Tagen (Rohkurse,
+      # Volumen und Tagesmenge bleiben bitgleich), wenn die Reihe den Vertrag
+      # besteht und die Rohschluesse
       # bestaetigt. Faellt etwas durch, bleibt die Reihe abgelehnt und rechnet
       # in keinem Backtest als Gesamtrendite. Der Lauf wird davon nicht rot.
       - name: Gesamtrendite-Reparatur (Aktien, voller Abruf nur bei Vertragsbruch)
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          # Nur lesend: Rueckholung von Reihen, die die erste Fassung der
+          # Reparatur im Runner-Cache als Ganzes ersetzt hat.
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           node scripts/market/repair-total-return-history.mjs --max 1500 --report "$RUNNER_TEMP/total-return-repair.json"
           node -e '
             const r = require(process.env.RUNNER_TEMP + "/total-return-repair.json");
             const l = ["### Gesamtrendite-Vertrag (Aktien)", "", "Zustand: " + r.state + (r.reason ? " (" + r.reason + ")" : ""),
               "Vorher: " + JSON.stringify(r.before), "Nachher: " + JSON.stringify(r.after),
-              "Repariert: " + (r.repairedCount ?? 0) + " · fehlgeschlagen: " + (r.failedCount ?? 0) + " " + JSON.stringify(r.failReasons || {}) + " · offen: " + (r.remainingRepairable ?? r.repairable)];
+              "Zurueckgeholt (erste Fassung): " + JSON.stringify(r.restoredFromDurable || {}), "Repariert: " + (r.repairedCount ?? 0) + " · fehlgeschlagen: " + (r.failedCount ?? 0) + " " + JSON.stringify(r.failReasons || {}) + " · offen: " + (r.remainingRepairable ?? r.repairable)];
             require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, l.join("\n") + "\n");
           ' || true
 
