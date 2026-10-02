@@ -20,6 +20,29 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_cache_budget_evicts_whole_old_pairs_and_checkpoint_stays_bounded(self):
+        import os
+        import tarfile
+        from company_intelligence.transport import PublicHTTP
+        with tempfile.TemporaryDirectory() as tmp:
+            state = Path(tmp) / 'state'
+            store = Store(state / 'state.sqlite'); store.close()
+            http = PublicHTTP(state / 'http', budget=1)
+            for i in (1, 2):
+                meta = state / 'http' / (str(i) * 64 + '.json')
+                meta.write_text('{}'); meta.with_suffix('.body').write_bytes(b'x' * 200)
+                for p in (meta, meta.with_suffix('.body')): os.utime(p, (http.clock() - 3 + i, http.clock() - 3 + i))
+            with patch('company_intelligence.checkpoint.MAX_HTTP_CACHE', 250):
+                pack(state, Path(tmp) / 'snapshot')
+            with tarfile.open(Path(tmp) / 'snapshot') as archive:
+                names = archive.getnames()
+                self.assertIn('http/' + '2' * 64 + '.body', names)
+                self.assertNotIn('http/' + '1' * 64 + '.json', names)
+            http.prune(byte_budget=250)
+            self.assertFalse((state / 'http' / ('1' * 64 + '.json')).exists())
+            self.assertFalse((state / 'http' / ('1' * 64 + '.body')).exists())
+            self.assertTrue((state / 'http' / ('2' * 64 + '.body')).exists())
+
     def test_regulatory_application_is_material_without_inventing_approval(self):
         from company_intelligence.model import classify
         title = 'Ultragenyx Announces Marketing Authorisation Application Submission to the European Medicines Agency'

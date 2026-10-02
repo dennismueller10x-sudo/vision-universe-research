@@ -222,9 +222,14 @@ class PublicHTTP:
                 self.sleep(2 ** attempt)
         raise SourceError('RETRY_EXHAUSTED')
 
-    def prune(self, age_days=7):
+    def prune(self, age_days=7, byte_budget=64 * 1024 * 1024):
         cutoff = self.clock() - age_days * 86400
-        for path in self.cache.glob('*.json'):
-            if path.stat().st_mtime < cutoff:
+        retained = 0
+        for path in sorted(self.cache.glob('*.json'), key=lambda p: p.stat().st_mtime, reverse=True):
+            body = path.with_suffix('.body')
+            size = path.stat().st_size + (body.stat().st_size if body.is_file() else 0)
+            if path.stat().st_mtime < cutoff or retained + size > byte_budget:
                 path.unlink(missing_ok=True)
-                path.with_suffix('.body').unlink(missing_ok=True)
+                body.unlink(missing_ok=True)
+            else:
+                retained += size

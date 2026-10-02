@@ -15,6 +15,7 @@ from pathlib import Path, PurePosixPath
 
 MAX_COMPRESSED = 128 * 1024 * 1024
 MAX_EXPANDED = 1024 * 1024 * 1024
+MAX_HTTP_CACHE = 64 * 1024 * 1024
 
 
 def allowed(name):
@@ -41,7 +42,16 @@ def _pack(state, destination):
                     # SQLite high-water/free pages must not inflate each upload.
                     target.execute('VACUUM')
                 check_db(stage / name)
-        for path in [state / 'latest-run.json', *sorted((state / 'http').glob('*'))]:
+        cache_paths, cache_bytes = [], 0
+        for meta in sorted((state / 'http').glob('*.json'), key=lambda p: p.stat().st_mtime, reverse=True):
+            body = meta.with_suffix('.body')
+            pair = [p for p in (meta, body) if p.is_file()]
+            size = sum(p.stat().st_size for p in pair)
+            if any(p.is_symlink() or not allowed(p.relative_to(state).as_posix()) for p in pair) or cache_bytes + size > MAX_HTTP_CACHE:
+                continue
+            cache_paths += pair
+            cache_bytes += size
+        for path in [state / 'latest-run.json', *cache_paths]:
             if path.is_file() and allowed(path.relative_to(state).as_posix()) and not path.is_symlink():
                 target = stage / path.relative_to(state)
                 target.parent.mkdir(parents=True, exist_ok=True)
