@@ -171,6 +171,24 @@ def issuer_results_actor(headline, company):
     return any(name and re.match(re.escape(name) + r'\s+(?:reports?|announces?)\b', title) for name in aliases)
 
 
+def issuer_earnings_announcement(headline, company):
+    """An issuer-owned page can announce another entity's reporting date."""
+    title = normalize(headline)
+    if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner)\b', title):
+        return False
+    if re.match(r'^(?:q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|full year|earnings|financial results)\b', title):
+        return True  # Generic title on a validated issuer-authored announcement.
+    aliases = {normalize(n) for n in company['names']} | {normalize(SUFFIX.sub('', n)) for n in company['names']}
+    action = r'(?:reports?|announces?|releases?|will|to|sets?|schedules?|holds?|hosts?|confirms?|q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|earnings|financial)\b'
+    for name in aliases:
+        if not name:
+            continue
+        match = re.match(re.escape(name) + r'\s+(?:s\s+)?' + action, title)
+        if match:
+            return True
+    return False
+
+
 RULES = [
     ('Bankruptcy', 'CRITICAL', r'\b(bankruptcy|chapter 11|insolvency)\b'),
     ('Cybersecurity', 'HIGH', r'\b(data breach|ransomware|cyberattack)\b'),

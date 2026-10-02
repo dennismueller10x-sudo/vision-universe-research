@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
-from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor
+from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement
 from .transport import BudgetExhausted, SourceError
 from .feeds import parse_feed, parse_gdelt, discover_ir
 from .ir_events import from_announcement, parse_jsonld, parse_ics, guidance_evidence, event
@@ -161,7 +161,8 @@ class Pipeline:
                     distributed_author = source.get('provider') == 'GLOBENEWSWIRE_RSS' and any(signal.startswith('EXACT_MASTER_CONTRIBUTOR:') for signal in match.get('evidence', []))
                     if (effective.get('verified') and match['companyId'] == effective.get('companyId')) or distributed_author:
                         announcer = {**effective, 'verified': True, 'type': 'IR_FEED', 'companyId': match['companyId']} if distributed_author else effective
-                        for e in from_announcement(entry, announcer, self.now):
+                        announcements = from_announcement(entry, announcer, self.now) if issuer_earnings_announcement(entry['headline'], self.companies[match['companyId']]) else []
+                        for e in announcements:
                             if distributed_author:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)

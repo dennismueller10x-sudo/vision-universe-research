@@ -81,7 +81,7 @@ def report(store, companies, now):
             'recentMaterialSEC': any(e['eventType'] == 'MATERIAL_SEC_EVENT' and material_cutoff <= e.get('date', '') <= now[:10] for e in all_events[cid]),
             'calls': cid in calls,
             'webcasts': any(e.get('webcastUrl') or e.get('replayUrl') for e in all_events[cid]),
-            'presentations': any(d.get('type') == 'PRESENTATION' for d in docs),
+            'presentations': any(d.get('type') == 'PRESENTATION' for d in docs) or any(e.get('presentationUrl') for e in all_events[cid]),
             'transcriptLinks': any(d.get('type') == 'COMPANY_TRANSCRIPT' for d in docs) or any(e.get('transcriptUrl') for e in all_events[cid]),
             'consumerPayloadAvailable': bool(news_items[cid] or all_events[cid] or state.get('financials:' + cid, {}).get('state') == 'AVAILABLE'),
             'eventSourceFound': any(s['type'] == 'IR_EVENTS' for s in registry),

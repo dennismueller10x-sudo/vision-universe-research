@@ -71,7 +71,7 @@ jobs:
     if: always() && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && needs.validate.result == 'success') || (github.event_name == 'schedule' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -110,20 +110,13 @@ jobs:
           if [ -f "$RUNNER_TEMP/intelligence-state.tar.gz" ]; then
             python3 scripts/company_intelligence/checkpoint.py restore --state .company-intelligence --snapshot "$RUNNER_TEMP/intelligence-state.tar.gz"
           fi
-      - uses: actions/cache/restore@v4
-        if: '!inputs.durable_state && github.event_name != ''schedule'''
-        id: state
-        with:
-          path: .company-intelligence
-          key: company-intelligence-v1-${{ github.ref_name }}-${{ github.run_id }}
-          restore-keys: company-intelligence-v1-${{ github.ref_name }}-
       - name: Bounded resumable preview batch
         env:
           TICKERS: ${{ inputs.tickers }}
           LIVE_SOURCES: ${{ inputs.live_sources || github.event_name == 'schedule' }}
           SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
         run: |
-          if [ '${{ inputs.durable_state }}' != true ] && [ "${{ steps.state.outputs.cache-hit }}" != 'true' ]; then echo 'Preview cache only; a miss initializes a new working store.'; fi
+          if [ '${{ inputs.durable_state }}' != true ] && [ '${{ github.event_name }}' != schedule ]; then echo 'Ephemeral preview only; private state is not retained in GitHub caches or artifacts.'; fi
           args=(backfill --limit 25 --request-budget 160 --max-seconds 480)
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
           if [ "$LIVE_SOURCES" = 'true' ]; then args+=(--network --sec-fetch --sec-documents --discover-ir); fi
@@ -139,11 +132,6 @@ jobs:
           if [ "$LIVE_SOURCES" = true ] && [ -z "$TICKERS" ]; then
             python3 scripts/company_intelligence/cli.py discover-backfill --network --discover-sites --discover-ir --limit 5 --request-budget 30 --max-seconds 120
           fi
-      - uses: actions/cache/save@v4
-        if: always() && !inputs.durable_state && github.event_name != 'schedule'
-        with:
-          path: .company-intelligence
-          key: company-intelligence-v1-${{ github.ref_name }}-${{ github.run_id }}
       - name: Preserve and verify durable state (also after isolated source failures)
         if: success() && (inputs.durable_state || github.event_name == 'schedule')
         env:
@@ -174,7 +162,6 @@ jobs:
             .company-intelligence/public/
             .company-intelligence/latest-run.json
             .company-intelligence/coverage.json
-            .company-intelligence/state.sqlite
           retention-days: 14
   acceptance-a:
     if: github.event_name == 'workflow_dispatch' && inputs.acceptance

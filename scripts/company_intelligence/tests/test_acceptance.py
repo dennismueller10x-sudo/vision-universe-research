@@ -20,6 +20,50 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_parent_feed_cannot_confirm_child_or_partner_earnings_calendar(self):
+        from company_intelligence.pipeline import Pipeline
+        c = company()
+        for title in ['Apple subsidiary will report quarterly financial results on October 27, 2026',
+                      'Microsoft Corporation will report quarterly financial results on October 27, 2026',
+                      "Apple's Beeline will report quarterly financial results on October 27, 2026"]:
+            text = f'''<rss><channel><item><title>{title}</title><link>https://apple.com/owned-story</link>
+            <pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate><description>Financial results will be released on October 27, 2026.</description></item></channel></rss>'''.encode()
+            class HTTP:
+                def get(self, *args, **kwargs): return {'body': text, 'finalUrl': 'https://apple.com/feed'}
+            with tempfile.TemporaryDirectory() as tmp:
+                store = Store(Path(tmp) / 'state.sqlite')
+                try:
+                    Pipeline(Path(tmp), {c['companyId']: c}, store, HTTP(), NOW).ingest_source(source(c))
+                    payload = store.company_payload(c, NOW)
+                    self.assertEqual(len(payload['news']), 1)  # Owned company announcement remains discoverable.
+                    self.assertFalse(payload['events'])
+                    self.assertFalse(payload['earnings'])
+                finally: store.close()
+        from company_intelligence.model import issuer_earnings_announcement
+        self.assertTrue(issuer_earnings_announcement('Apple will report third quarter financial results', c))
+        self.assertTrue(issuer_earnings_announcement("Apple's third quarter earnings call", c))
+
+    def test_direct_call_presentation_is_in_consumer_and_coverage(self):
+        c = company()
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                store.event({'eventId': 'official-call', 'companyId': c['companyId'], 'eventType': 'EARNINGS_CALL',
+                    'date': NOW[:10], 'headline': 'Official call', 'presentationUrl': 'https://apple.com/presentation.pdf'}, NOW)
+                self.assertTrue(any(d['type'] == 'PRESENTATION' for d in store.company_payload(c, NOW)['materials']))
+                self.assertEqual(report(store, {c['companyId']: c}, NOW)['counts']['presentations']['companies'], 1)
+            finally: store.close()
+
+    def test_workflow_never_publishes_private_ledger_or_cache(self):
+        workflow = (ROOT / '.github/workflows/company-intelligence.yml').read_text()
+        self.assertNotIn('actions/cache/', workflow)
+        artifacts = workflow.split('Reviewable snapshots and health')[1].split('  acceptance-a:')[0]
+        self.assertNotIn('state.sqlite', artifacts)
+        self.assertNotIn('archive.sqlite', artifacts)
+        self.assertNotIn('.company-intelligence/http', artifacts)
+        self.assertIn('node scripts/company_intelligence/privacy.mjs', workflow)
+        self.assertIn('contents: read', workflow)
+
     def test_changed_producer_cannot_overwrite_prior_immutable_generation(self):
         c = company()
         with tempfile.TemporaryDirectory() as tmp:
