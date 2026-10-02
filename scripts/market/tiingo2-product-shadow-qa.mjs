@@ -5,6 +5,7 @@ import {resolve,join,dirname} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {readDerivedFactorPopulationComparison} from './tiingo2-factor-population-qa.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const load=p=>{const b=readFileSync(p);return JSON.parse(p.endsWith('.gz')?gunzipSync(b):b);};
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
@@ -45,6 +46,7 @@ export function runShadowQa({root,shadow,readiness,baseline,out}){
  const ranked=load(join(baseline,'baseline-rank-populations.json')).rows;
  for(const [path,previous]of Object.entries(ranked)){const p=join(shadow,path);if(!existsSync(p)){findings.push({name:'BASELINE_DISCOVER_RANK_FILE_MISSING',path});continue;}const d=load(p),current=previous.surfaces?{surfaces:(d.surfaces??[]).map(s=>({id:s.id,symbols:(s.cards??[]).map(c=>c.symbol)}))}:{sort:d.sort,direction:d.direction,symbols:(d.cards??[]).map(c=>c.symbol)};if(!eq(previous,current))changes.push({path,category:'DISCOVER_POPULATION_OR_RANK_CHANGED',before:previous,after:current});}
  for(const f of records.filter(f=>f.path.startsWith('quant/data/product/factor-evidence-v1/'))){const p=join(shadow,f.path);if(existsSync(p)&&f.sha256&&sha(readFileSync(p))!==f.sha256)changes.push({path:f.path,category:'FACTOR_DNA_REBUILT_WITH_CANONICAL_POPULATION',baselineSha256:f.sha256,shadowSha256:sha(readFileSync(p))});}
- const result={schemaVersion:'tiingo2-product-shadow-qa-1',runId:report.runId??null,sourceCommit:identities.sourceCommit,sourceReadinessSha256:sha(readFileSync(readiness)),scope:[...scope].sort(),checks,findings,explicitPopulationChanges:changes,productionWrites:0};mkdirSync(dirname(out),{recursive:true});writeFileSync(out,JSON.stringify(result,null,2)+'\n');return result;
+ const derivedFactorChanges=readDerivedFactorPopulationComparison({root,shadow,scope});
+ const result={schemaVersion:'tiingo2-product-shadow-qa-1',runId:report.runId??null,sourceCommit:identities.sourceCommit,sourceReadinessSha256:sha(readFileSync(readiness)),scope:[...scope].sort(),checks,findings,explicitPopulationChanges:changes,derivedFactorChanges,productionWrites:0};mkdirSync(dirname(out),{recursive:true});writeFileSync(out,JSON.stringify(result,null,2)+'\n');return result;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){const args=Object.fromEntries(process.argv.slice(2).reduce((a,v,i,all)=>{if(v.startsWith('--'))a.push([v.slice(2),all[i+1]]);return a;},[]));try{const r=runShadowQa(args);console.log(JSON.stringify({checks:r.checks.length,findings:r.findings.length,populationChanges:r.explicitPopulationChanges.length}));if(r.findings.length)process.exitCode=1;}catch(e){console.error(e.message);process.exitCode=1;}}

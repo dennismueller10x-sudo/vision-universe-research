@@ -528,7 +528,7 @@
     function watchText(on) { return on ? "★ Beobachtet" : "☆ Beobachten"; }
     var watchBtn = el("button", { type: "button", class: "v2-watch-button qx-watch", "aria-pressed": X.watch.has(ticker) ? "true" : "false",
       text: watchText(X.watch.has(ticker)) });
-    watchBtn.addEventListener("click", function () { var on = X.watch.toggle(ticker); watchBtn.setAttribute("aria-pressed", on ? "true" : "false"); watchBtn.textContent = watchText(on); });
+    watchBtn.addEventListener("click", function () { var on = X.watch.toggle(ticker, s); watchBtn.setAttribute("aria-pressed", on ? "true" : "false"); watchBtn.textContent = watchText(on); });
     var eodBars = s.chart && s.chart.state === "AVAILABLE" ? (s.chart.bars || []) : [];
     var eod = eodBars.map(function (b) { return [b.date, b.close]; });
     var last = eod.length ? eod[eod.length - 1] : null, prev = eod.length > 1 ? eod[eod.length - 2] : null;
