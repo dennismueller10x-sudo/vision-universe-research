@@ -12,6 +12,15 @@ import donchian from '../engine/strategies/donchian.mjs';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../..');
 const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'supertrader/data', f), 'utf8'));
 
+test('R6-0 Alle intern geprüften Kursmethoden: öffentlich „In Prüfung“, Darstellung Forschung', () => {
+  for (const id of ['MOMENTUM_BREAKOUT', 'WEINSTEIN_STAGE', 'DARVAS_BOX', 'MINERVINI_VCP', 'DONCHIAN_TURTLE']) {
+    const e = evidenceFor(STRATEGIES.find((x) => x.strategy_id === id));
+    assert.equal(e.level, 'IN_REVIEW', id);
+    assert.equal(e.presentation, 'RESEARCH', id);
+    assert.equal(e.version, LIVE_ENGINES.find((x) => x.id === id).version, id + ': Evidenz gilt der live laufenden Version');
+  }
+});
+
 test('R6-1 Donchian v1.1.0: öffentlich „In Prüfung“, Darstellung Forschung; Engine läuft unverändert weiter', () => {
   const s = STRATEGIES.find((x) => x.strategy_id === 'DONCHIAN_TURTLE');
   const e = evidenceFor(s);

@@ -226,7 +226,7 @@ p { margin: 0; }
 .st-price { text-align: right; display: flex; flex-direction: column; } .st-price strong { font-size: 17px; } .st-price span { font-size: 11px; color: var(--st-muted); }
 .st-chips.lens { margin-top: 10px; margin-bottom: 8px; }
 .st-lensblock { display: flex; flex-direction: column; gap: 9px; padding: 12px; border-radius: var(--st-radius); background: var(--st-surface); border: 1px solid var(--st-line); border-top: 3px solid var(--w); }
-.st-lensblock .r1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.st-lensblock .r1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .st-lensblock .since { font-size: 12px; color: var(--st-muted); }
 .st-cells { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .st-cells .c { display: flex; flex-direction: column; padding: 8px; border-radius: 10px; background: var(--st-bg-2); min-width: 0; }
@@ -360,3 +360,7 @@ p { margin: 0; }
 .st-btrow .st-three { margin: 8px 0 2px; }
 .st-linkbtn { background: none; border: 0; padding: 0; color: var(--st-info); font: inherit; text-decoration: underline; cursor: pointer; }
 .st-chips button[data-research] { opacity: .8; }
+.st-obsnums { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; margin-top: 10px; }
+@media (min-width: 720px) { .st-obsnums { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.st-obsnums span { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; font-size: 12px; color: var(--st-muted); line-height: 1.25; }
+.st-obsnums strong { font-size: 18px; color: var(--st-text); font-variant-numeric: tabular-nums; }
