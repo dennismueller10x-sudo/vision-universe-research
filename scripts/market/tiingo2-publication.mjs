@@ -93,7 +93,7 @@ export function stageCanonicalPublication({ root, output, candidates, preview, b
     if (!candidate || stagedSymbols.has(t)) throw new Error('MISSING_OR_DUPLICATE_STAGE_CANDIDATE:' + t);
     const listing = { ...(candidate.listing ?? candidate), ticker: t, securityId: candidate.securityId, provider: 'tiingo' };
     if (!listing.name && !listing.companyName && candidate.companyName) listing.name = candidate.companyName;
-    const verified = classifyCandidate({ ...candidate, ticker: t }, { today: stageDate, peers: candidates });
+    const verified = classifyCandidate({ ...candidate, ticker: t }, { today: stageDate, peers: candidates, root });
     if (!verified.publicationReady || !candidate.securityId || candidate.securityId !== added.securityId) throw new Error('CANDIDATE_NOT_PUBLICATION_READY:' + t);
     if (!listing.exchange || existingSymbols.has(t) || historicalSymbols.has(t) || existingIds.has(candidate.securityId) || historicalIds.has(candidate.securityId)) throw new Error('EXISTING_OR_HISTORICAL_IDENTITY_REQUIRES_RECONCILIATION:' + t);
     const baseInstrument = Company.toInstrument(listing, { today: stageDate, provider: 'tiingo' });

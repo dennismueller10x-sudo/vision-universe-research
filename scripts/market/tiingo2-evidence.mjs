@@ -6,7 +6,7 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const Quality=require('../../quant/engines/market-quality.js');
 const Factors=require('../../quant/engines/market-factors.js');
-export const EVIDENCE_RULE='tiingo2-evidence-5';
+export const EVIDENCE_RULE='tiingo2-evidence-6';
 const sha=x=>createHash('sha256').update(x).digest('hex');
 function atomic(file,value){mkdirSync(dirname(file),{recursive:true});writeFileSync(file+'.tmp',JSON.stringify(value));renameSync(file+'.tmp',file);}
 const priceColumns=['adjOpen','adjHigh','adjLow','adjClose'];
@@ -67,13 +67,17 @@ export function assessEvidence(rows,{ticker,today,currency,metadata={}}){
  const legacyFalseSplitDates=(adjustment.observed?.splitEvidence||[]).filter(e=>e.rawMovePct>=Quality.DEFAULTS.splitJumpPct&&e.adjustedMovePct>Quality.DEFAULTS.splitResidualPct).map(e=>e.date);
  let factors=null;
  if(valid&&latestValid&&caValid)factors=Factors.computeFactors(payload,{module:'quantV2Momentum'});
- // Actual calculations remain private: public reports carry field status, never prices.
+ // Private calculations do not certify delivered Quant/Factor DNA products.
+ const flattenStatuses=(value,prefix='')=>Object.entries(value||{}).flatMap(([key,status])=>typeof status==='string'?[[prefix+key,status]]:flattenStatuses(status,prefix+key+'.'));
+ const metricStatuses=Object.fromEntries(flattenStatuses(factors?.fieldStatus)),calculatedFieldCount=Object.values(metricStatuses).filter(x=>x==='CALCULATED').length;
+ const calculation={state:!factors?'UNAVAILABLE':Object.values(metricStatuses).some(x=>!['CALCULATED','NOT_APPLICABLE'].includes(x))?'PARTIAL':'COMPLETE_PRICE_METRICS',bars:bars.length,calculatedFieldCount,fieldStatus:metricStatuses,benchmarkState:factors?.benchmarkAsOf?'AVAILABLE':'SOURCE_MISSING'};
+ // Public reports carry status, never prices or absolute factor values.
  const factorSummary=factors?{status:factors.status,bars:factors.bars,basis:factors.basis,fieldStatus:factors.fieldStatus}:null;
  return {metadata:{ticker:metadata.ticker||ticker,name:metadata.name||null,securityDescription:metadata.description||null,exchange:metadata.exchangeCode||metadata.exchange||null,startDate:metadata.startDate||null,endDate:metadata.endDate||null},
   price:{historyValid:valid,latestValid,corporateActionFixed:caValid&&legacyFalseSplitDates.length>0,legacySplitGateFalseRejectionCorrected:adjustment.ok&&legacyFalseSplitDates.length>0,legacyFalseSplitDates,latestDate:last?.date||null,bars:bars.length,firstDate:bars[0]?.date||null,currency:currency||null,corporateActionValid:caValid,quality:quality.status,
    findingCodes:[...new Set([...validation.findings,...adjustment.findings,...quality.findings].map(x=>x.code))]},
   corporateActions:{ok:actions.ok,status:actions.status,counts:actions.counts,events:(actions.events||[]).map(e=>({date:e.date,status:e.status||e.classification,classification:e.classification||e.status,reason:e.reason,evidence:e.evidence}))},
-  marketFactors:{materialized:!!factors&&factors.status!=='UNAVAILABLE',basisValid:caValid,summary:factorSummary},
+  marketFactors:{materialized:!!factors&&factors.status!=='UNAVAILABLE',basisValid:caValid,summary:factorSummary,calculation,canonicalEvidence:{state:'NOT_MATERIALIZED',verified:false,artifactSha256:null},fullQuantScore:{state:'BLOCKED_BY_METHODOLOGY',reason:'FULL_7F_PUBLICATION_DISABLED'}},
   source:{provider:'tiingo',rule:EVIDENCE_RULE,observedAt:today,responseSha256:sha(JSON.stringify(rows))}};
 }
 export async function collectEvidence(candidates,{workDir,today,apiKey=process.env.TIINGO_API_KEY,fetchImpl=fetch,maxSymbols=600,onProgress=()=>{}}){
@@ -94,7 +98,7 @@ export async function collectEvidence(candidates,{workDir,today,apiKey=process.e
   if(!/^[A-Z0-9._-]+$/.test(ticker))throw Error('INVALID_PROVIDER_SYMBOL');
   const key=sha(JSON.stringify({ticker,today,start:candidate.startDate||candidate.start_date||null,rule:EVIDENCE_RULE})),file=join(workDir,'evidence',key+'.json');
   // Gate changes revalidate cached raw inputs; they do not refetch full histories.
-  if(!existsSync(file))for(const rule of ['tiingo2-evidence-4','tiingo2-evidence-3','tiingo2-evidence-2','tiingo2-evidence-1']){
+  if(!existsSync(file))for(const rule of ['tiingo2-evidence-5','tiingo2-evidence-4','tiingo2-evidence-3','tiingo2-evidence-2','tiingo2-evidence-1']){
    const oldKey=sha(JSON.stringify({ticker,today,start:candidate.startDate||candidate.start_date||null,rule})),oldFile=join(workDir,'evidence',oldKey+'.json');
    if(!existsSync(oldFile))continue;
    const old=JSON.parse(readFileSync(oldFile,'utf8'));

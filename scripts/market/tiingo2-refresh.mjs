@@ -110,7 +110,7 @@ export async function runRefresh({root=process.cwd(),workDir=join(root,'.market-
  }
  // Every historical audit candidate is accounted for, including unresolved active collisions.
  for(const r of auditCandidates)if(!candidateRows.some(c=>c.ticker===r.ticker))candidateRows.push({ticker:r.ticker,exchange:r.exchange,startDate:r.start_date,securityId:null,instrument_type:r.instrument_type,active_status:r.active_status,evidence:{identity:{resolved:false,symbolCollision:true}},reason:'SYMBOL_COLLISION'});
- const policy=buildPolicyReport(candidateRows,{today,baselineConsumerRows:consumer,peers:raw});
+ const policy=buildPolicyReport(candidateRows,{today,root,baselineConsumerRows:consumer,peers:raw});
  policy.baseline={scope:'CURRENT_CANONICAL_PROTECTED',counts:{raw:raw.length,product:product.length,consumer:consumer.length},rows:decisions.map(r=>({ticker:r.ticker,securityId:r.securityId,status:consumerSet.has(r.ticker)?'INCLUDED':'EXCLUDED',
   reasonCodes:evaluateConsumerPolicy(r,{baselineConsumer:consumerSet.has(r.ticker)}).reasonCodes,instrumentType:r.instrument_type,productEligibility:r.product_eligibility,priorReason:r.product_eligibility_reason,refreshAction:'RETAIN_EXISTING_IDENTITY'}))};
  const inputByTicker=new Map(candidateRows.map(r=>[r.ticker,r]));
@@ -127,7 +127,7 @@ export async function runRefresh({root=process.cwd(),workDir=join(root,'.market-
  const unchanged=baselineFiles.every(p=>sha(readFileSync(join(root,p)))===baselineHashes[p]);
  if(!unchanged)throw Error('PROTECTED_BASELINE_CHANGED');
  const summary={schemaVersion:1,runId:discovery.runId,asOf:today,discovery:discovery.counts,current:{raw:raw.length,product:product.length,consumer:consumer.length},auditCandidateRecords:auditCandidates.length,auditCandidateSymbols:gapTickers.size,
-  staged:policy.counts,proposedConsumer:preview.counts.after,added:preview.ADDED.map(r=>r.ticker),removed:[],quantReadyAdded:preview.ADDED.filter(r=>r.quantReady).map(r=>r.ticker),
+  staged:policy.counts,proposedConsumer:preview.counts.after,added:preview.ADDED.map(r=>r.ticker),removed:[],quantReadyAdded:preview.ADDED.filter(r=>r.quantReady).map(r=>r.ticker),quantCandidateEligibleAdded:policy.rows.filter(r=>preview.ADDED.some(a=>a.ticker===r.ticker)&&r.checks.quantCandidateEligible).map(r=>r.ticker),
   evidence:{requests:collected.requests,completed:collected.completed,pending:collected.pending,stopped:collected.stopped},protectedBaseline:{unchanged,hashes:baselineHashes},productionMutations:0,
   publication:{state:'BLOCKED',reasons:['CANONICAL_PROJECTION_AND_RELEASE_QA_REQUIRED','PRODUCT_CAPABILITY_CHECKS_PENDING',...(stageBlocker?[stageBlocker]:[])],automaticProductionPublication:false,
    canonicalStage:canonicalStage?{manifestSha256:canonicalStage.manifestSha256,additions:canonicalStage.additions.length,files:canonicalStage.files.length,projectionStatus:canonicalStage.projectionStatus}:null,

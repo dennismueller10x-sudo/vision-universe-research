@@ -1,7 +1,15 @@
-/* Tiingo 2.0 staging policy. Pure, evidence-based decisions; never writes a
+/* Tiingo 2.0 staging policy. Read-only, evidence-based decisions; never writes a
  * canonical file or changes an existing member. Company equality is not
  * security equality: common share classes and ADR/local pairs remain separate. */
 import { CONSUMER_INSTRUMENT_TYPES } from './universe-source.mjs';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { gunzipSync } from 'node:zlib';
+const FactorEvidence = createRequire(import.meta.url)('../../quant/engines/factor-evidence.js');
+const PROJECT_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 export const POLICY_VERSION = 'tiingo2-consumer-policy-1.0.0';
 const upper = (value) => String(value ?? '').trim().toUpperCase();
@@ -16,6 +24,31 @@ const dateOnly = (value) => {
   return Number.isFinite(parsed) && new Date(parsed).toISOString().slice(0, 10) === date ? date : null;
 };
 const dayMs = 86400000;
+
+/** A private market calculation is not a published Factor DNA record. The
+ * proof binds real canonical gzip bytes, schema/methodology, listing/CIK and
+ * observation date. Available factor states remain partial; this never
+ * enables the inactive full-seven-factor Quant score. */
+export function verifyCanonicalFactorEvidenceProof(row, { root = PROJECT_ROOT, today } = {}) {
+  const proof = row.evidence?.factors?.canonicalEvidence;
+  const missing = (reason) => ({ verified: false, state: 'NOT_MATERIALIZED', reason, availableFactors: [] });
+  if (proof?.state !== 'MATERIALIZED' || proof.verified !== true) return missing('CANONICAL_FACTOR_EVIDENCE_REQUIRED');
+  if (!/^quant\/data\/product\/factor-evidence-v1\/[A-Z0-9_-]+\.json\.gz$/.test(proof.artifactPath ?? '') || !/^[a-f0-9]{64}$/.test(proof.artifactSha256 ?? '')) return missing('INVALID_CANONICAL_FACTOR_ARTIFACT_PROOF');
+  if (proof.schemaVersion !== FactorEvidence.SHARD_SCHEMA || proof.methodologyVersion !== FactorEvidence.METHODOLOGY_VERSION || proof.securityId !== (row.securityId ?? row.security_id) || proof.ticker !== ticker(row)) return missing('CANONICAL_FACTOR_PROOF_IDENTITY_OR_VERSION_MISMATCH');
+  try {
+    const bytes = readFileSync(join(root, proof.artifactPath));
+    if (createHash('sha256').update(bytes).digest('hex') !== proof.artifactSha256) return missing('CANONICAL_FACTOR_ARTIFACT_SHA_MISMATCH');
+    const artifact = JSON.parse(gunzipSync(bytes));
+    const shard = proof.artifactPath.split('/').at(-1).slice(0, -8);
+    if (!FactorEvidence.validShard(artifact, shard)) return missing('INVALID_CANONICAL_FACTOR_ARTIFACT');
+    const record = artifact.securities?.[ticker(row)];
+    if (!record?.factors || record.ticker !== ticker(row) || record.securityId !== proof.securityId || record.cik !== (row.evidence?.sec?.cik ?? row.cik) || FactorEvidence.publicationViolations(record).length) return missing('CANONICAL_FACTOR_RECORD_MISMATCH');
+    if (!dateOnly(proof.asOf) || proof.asOf !== record.asOf || proof.asOf !== dateOnly(row.evidence?.price?.latestDate) || (today && proof.asOf > today)) return missing('CANONICAL_FACTOR_OBSERVATION_MISMATCH');
+    const availableFactors = FactorEvidence.FACTOR_ORDER.filter((id) => record.factors[id]?.state === 'AVAILABLE');
+    if (!availableFactors.length) return missing('CANONICAL_FACTOR_RECORD_HAS_NO_AVAILABLE_FACTORS');
+    return { verified: true, state: availableFactors.length === FactorEvidence.FACTOR_ORDER.length ? 'MATERIALIZED_READY' : 'MATERIALIZED_PARTIAL', reason: null, availableFactors, artifactPath: proof.artifactPath, artifactSha256: proof.artifactSha256, methodologyVersion: proof.methodologyVersion, asOf: proof.asOf };
+  } catch { return missing('CANONICAL_FACTOR_ARTIFACT_UNAVAILABLE'); }
+}
 
 /** Preserve the instrument-only consumer policy in universe-source.mjs.
  * Banks/REITs are included there. A stricter existing explicit decision can
@@ -98,15 +131,29 @@ export function classifyCandidate(row, options = {}) {
   const priceReady = historyValid && latestValid && actionValid;
   const identityReady = identity.passed;
   const membershipReady = active && policy.included && identityReady && priceReady;
-  const quantReady = membershipReady && fundamentalReady && factors.materialized === true && factors.basisValid === true;
   const products = evidence.products ?? {};
+  const quantCandidateEligible = membershipReady && fundamentalReady && factors.materialized === true && factors.basisValid === true;
+  const canonicalFactorEvidence = verifyCanonicalFactorEvidenceProof(row, { root: options.root ?? PROJECT_ROOT, today });
+  const quantReady = quantCandidateEligible && canonicalFactorEvidence.verified && products.quantReady === true;
+  const dataReadiness = {
+    quantCandidateEligible,
+    marketCalculationState: factors.calculation?.state ?? factors.computation?.state ?? (factors.materialized === true ? 'CALCULATED_WITHOUT_CANONICAL_PRODUCT_PROOF' : 'UNAVAILABLE'),
+    privateMarketFactorsCalculated: factors.materialized === true,
+    canonicalFactorEvidenceState: canonicalFactorEvidence.state,
+    canonicalFactorEvidenceVerified: canonicalFactorEvidence.verified,
+    canonicalFactorEvidenceReason: canonicalFactorEvidence.reason,
+    availableCanonicalFactors: canonicalFactorEvidence.availableFactors,
+    fullQuantScoreState: 'BLOCKED_BY_EXISTING_METHODOLOGY', fullQuantScoreReady: false
+  };
   const productReadiness = {
     canonical: membershipReady, search: membershipReady, chart: membershipReady,
     watchlist: membershipReady, fundamentals: fundamentalReady,
     quant: quantReady, discover: quantReady && products.discoverReady === true,
     screener: membershipReady && products.screenerReady === true,
     superTrader: membershipReady && products.superTraderReady === true,
-    secMapped, factorsMaterialized: factors.materialized === true
+    secMapped, factorsMaterialized: canonicalFactorEvidence.verified,
+    quantCandidateEligible, canonicalFactorsMaterialized: canonicalFactorEvidence.verified,
+    fullQuantScoreReady: false
   };
   const reasons = [...policy.reasonCodes, ...identity.reasonCodes];
   if (inactive) reasons.push('EXCLUDED_INACTIVE');
@@ -117,6 +164,7 @@ export function classifyCandidate(row, options = {}) {
   if (!actionValid) reasons.push(price.corporateActionValid === false ? 'CORPORATE_ACTION_GATE_FAILED' : 'CORPORATE_ACTION_NOT_CHECKED');
   if (!secMapped) reasons.push('SEC_MAPPING_UNAVAILABLE');
   if (!fundamentalReady) reasons.push('FUNDAMENTALS_NOT_READY');
+  if (!canonicalFactorEvidence.verified) reasons.push('CANONICAL_FACTOR_EVIDENCE_REQUIRED');
   if (!quantReady) reasons.push('FACTORS_NOT_READY');
   let decision;
   if (policy.status === 'EXCLUDED' || inactive || identity.duplicateOf) decision = 'REJECT_WITH_REASON';
@@ -126,8 +174,8 @@ export function classifyCandidate(row, options = {}) {
   return { ticker: ticker(row), securityId: row.securityId ?? row.security_id ?? null,
     companyId: row.companyId ?? row.company_id ?? null, companyName: row.companyName ?? row.name ?? null,
     decision, publicationReady: membershipReady, policy, identity,
-    reasonCodes: unique(reasons), productReadiness,
-    checks: { active, historyValid, latestValid, latestDate, priceAgeDays, corporateActionValid: actionValid, secMapped, fundamentalReady, quantReady },
+    reasonCodes: unique(reasons), productReadiness, dataReadiness,
+    checks: { active, historyValid, latestValid, latestDate, priceAgeDays, corporateActionValid: actionValid, secMapped, fundamentalReady, quantCandidateEligible, quantReady },
     evidence };
 }
 
@@ -135,11 +183,12 @@ export function buildPolicyReport(rows, options = {}) {
   const baselineKeys = new Set((options.baselineConsumerRows ?? []).map(key));
   const peers = [...rows, ...(options.peers ?? [])];
   const evaluated = rows.map((row) => classifyCandidate(row, { ...options, baselineConsumer: baselineKeys.has(key(row)), peers })).sort((a, b) => a.ticker.localeCompare(b.ticker));
-  const counts = { total: evaluated.length, AUTO_ACCEPT: 0, ACCEPT_AFTER_FIX: 0, MANUAL_REVIEW: 0, REJECT_WITH_REASON: 0, publicationReady: 0, quantReady: 0 };
+  const counts = { total: evaluated.length, AUTO_ACCEPT: 0, ACCEPT_AFTER_FIX: 0, MANUAL_REVIEW: 0, REJECT_WITH_REASON: 0, publicationReady: 0, quantCandidateEligible: 0, quantReady: 0 };
   const reasons = {};
   for (const row of evaluated) {
     counts[row.decision]++;
     if (row.publicationReady) counts.publicationReady++;
+    if (row.productReadiness.quantCandidateEligible) counts.quantCandidateEligible++;
     if (row.productReadiness.quant) counts.quantReady++;
     for (const code of row.reasonCodes) reasons[code] = (reasons[code] ?? 0) + 1;
   }
