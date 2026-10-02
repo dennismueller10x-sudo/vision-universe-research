@@ -354,6 +354,7 @@
       return h('a', { class: 'st-research', href: stratUrl(s), style: worldVars(s) }, [
         h('div', { class: 'r1' }, [h('strong', { text: s.world_name }), evidenceTag(s)]),
         h('p', { text: s.tagline }),
+        h('span', { class: 'st-obsmeta', text: (s.fidelity ? s.fidelity.statusLabel + ' · ' : '') + 'Regel v' + s.strategy_version }),
         h('div', { class: 'st-obsnums' }, [obsNum(prep, 'in Vorbereitung'), obsNum(conf, 'Einstieg bestätigt'), obsNum(pos, 'Modellpositionen'), obsNum(st.closed.length, 'geschlossen')]),
       ]);
     }), { kicker: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · Kurse vom ' + dateDe(sig.asOf), more: more(BASE + 'signals/', 'Alle Signale') }));
@@ -912,7 +913,7 @@
       var e = ev(s);
       return h('div', { class: 'st-btrow', style: worldVars(s) }, [
         h('div', { class: 'h' }, [h('a', { href: stratUrl(s), text: s.world_name + ' v' + (e.version || s.strategy_version) }), evidenceTag(s)]),
-        h('div', { class: 'st-three' }, [pill('Quellen', sourceOf(s)), pill('Daten', dataOf(s)), pill('Darstellung', [e.presentationLabel || '–', e.presentation === 'RESEARCH' ? 'warn' : 'mute'])]),
+        h('div', { class: 'st-three' }, [pill('Methodentreue', fidelityOf(s)), pill('Daten', dataOf(s)), pill('Darstellung', [e.presentationLabel || '–', e.presentation === 'RESEARCH' ? 'warn' : 'mute'])]),
         e.note ? h('p', { class: 'st-hint', text: e.note }) : null,
       ]);
     }))], { kicker: 'Stufe · Quellen · Daten' }));

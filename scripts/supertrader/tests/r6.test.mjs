@@ -52,7 +52,8 @@ test('R6-3 Jede Strategie trägt Evidenz, Quellen- und Datenqualität getrennt; 
     if (s.mode === 'PARTIAL_CHECK') assert.equal(e.presentation, 'PARTIAL');
     if (s.mode === 'RESEARCH') assert.equal(e.presentation, 'NAME_ONLY');
   }
-  assert.equal(evidenceFor(STRATEGIES.find((x) => x.strategy_id === 'MINERVINI_VCP')).source.id, 'PARTLY_UNBACKED', 'Minervini-Ausstieg nicht als Original');
+  // Ab 2.0.0 ist der Ausstieg sekundaer belegt (Runde 7); nie als Originalregel.
+  assert.ok(['PARTLY_UNBACKED', 'SECONDARY_VU'].includes(evidenceFor(STRATEGIES.find((x) => x.strategy_id === 'MINERVINI_VCP')).source.id), 'Minervini-Ausstieg nicht als Original');
   assert.equal(evidenceFor(STRATEGIES.find((x) => x.strategy_id === 'CANSLIM')).data.id, 'PRICES_NO_PIT_FUNDAMENTALS');
 });
 
