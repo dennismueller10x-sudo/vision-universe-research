@@ -88,7 +88,7 @@ export const FIDELITY = Object.freeze({
       { step: 'Deep Research', text: 'Stufen, 30-Wochen-Linie, Volumen und relative Stärke genannt; Buch nicht zugänglich.' },
       { step: 'Code bis 2.0.0', text: 'Wochenschluss-Bestätigung und Kauf zur nächsten Woche; der Widerstand war der höchste Wochenschluss.' },
       { step: 'Fehlerart', text: 'Übertragungsfehler: das Buch spricht vom Kauf per Buy-Stop (wörtlich bei Bulkowski zitiert).' },
-      { step: 'Wirkung', text: 'Einstieg bis zu einer Woche später und höher; die Volumenregel wirkte als Filter vor dem Kauf statt als Ausstiegsgrund danach.' },
+      { step: 'Wirkung', text: 'Einstieg bis zu einer Woche später und höher; die Volumenregel wirkte als Filter vor dem Kauf statt als Ausstiegsgrund danach. Die Gegenprobe trägt diese Teilursache: Mit Kauf-Stop und Volumenregel nach dem Kauf schneidet jedes Signal in beiden Teilzeiträumen besser ab. Einen Vorteil gegenüber dem Gesamtmarkt belegt das nicht.' },
     ],
     sourcesRead: ['Bulkowski, thepatternsite.com: Trading Weinstein, Weinstein Stops (mit Buchzitaten)', 'stageanalysis.net: Breakout Quality Checklist (mit Buchzitaten)'],
     missing: ['Gruppen-/Sektorstufe', 'Langfristige Marktindikatoren (A/D-Linie, Momentum-Index)', 'Halbposition + Rücksetzer-Kauf', 'Rundungsregel für Stops', 'Leerverkauf in Stufe 4'],
@@ -102,7 +102,7 @@ export const FIDELITY = Object.freeze({
       { step: 'Deep Research', text: 'Gab Auswahl, Basis, Einstieg am Opening-Range-Hoch, Stop am Tagestief (≤ ADR), Teilverkauf und Trailing korrekt wieder.' },
       { step: 'Code bis 2.0.0', text: 'Einstieg erst nach Tagesschluss über dem Trigger, Kauf zur nächsten Eröffnung; Stop am Tief des Vortags; Gap-Sperre 0,5 ADR (nicht in der Quelle); Höchstgewicht 20 % statt bis 25 %.' },
       { step: 'Fehlerart', text: 'Übertragungsfehler in den Code: eine allgemeine VU-Konvention (Schlusskurs-Bestätigung) ersetzte den belegten Einstieg. Kein Lesefehler der Recherche.' },
-      { step: 'Wirkung', text: 'Späterer, höherer Einstieg; Stop bezieht sich auf einen anderen Tag; Ausbrüche mit großem Gap fehlten. Ob das die schwachen Ergebnisse erklärt, prüft die Gegenprobe 3.0.0-A.' },
+      { step: 'Wirkung', text: 'Späterer, höherer Einstieg; Stop bezieht sich auf einen anderen Tag; Ausbrüche mit großem Gap fehlten. Die vorab festgelegte Gegenprobe (gleiche Regeln, alter Einstieg) zeigt aber: Der Einstiegszeitpunkt erklärt die schwachen historischen Ergebnisse nicht. Auch quellennah bleibt die Methode ohne nachgewiesenen Vorteil.' },
     ],
     rules: [
       r('Auswahl', 'Die 1–2 % stärksten Aktien über 1, 3, 6 Monate', 'PRIMARY_FULL', 'Perzentil ≥ 98 über 1/3/6 Monate', 'ORIGINAL'),
@@ -129,7 +129,7 @@ export const FIDELITY = Object.freeze({
       { step: 'Deep Research', text: 'Nannte Box, Kauf über der Oberkante und Stop-Loss; die Zeitungsquelle war in Runde 7 nur als Auszug lesbar.' },
       { step: 'Code bis 2.0.0', text: 'Kauf erst nach Tagesschluss über der Oberkante zur nächsten Eröffnung; Stop bis 1.2.0 an der Unterkante, 2.0.0 knapp unter der Oberkante – mit Schlusskurs-Einstieg liegt dieser Stop oft schon unter dem Kaufkurs des Vortags.' },
       { step: 'Fehlerart', text: 'Übertragungsfehler: Darvas „places buy orders at breakout points“ (TIME 1959) – eine Kauforder, keine Schlusskurs-Bestätigung.' },
-      { step: 'Wirkung', text: '2.0.0 kombinierte einen engen Stop (an der Kauforder) mit einem späten Einstieg (nächste Eröffnung): viele sofortige Ausstiege. 3.0.0 setzt Order und Stop wie beschrieben zusammen.' },
+      { step: 'Wirkung', text: '2.0.0 kombinierte einen engen Stop (an der Kauforder) mit einem späten Einstieg (nächste Eröffnung). 3.0.0 setzt Order und Stop wie beschrieben zusammen und schneidet je Signal besser ab – doch ein Stop 1 % unter der Kauforder liegt meist innerhalb der Tagesspanne: Ob er am Kauftag hielt, zeigen Tageskurse nicht. Die Ursache ist damit nicht belegbar.' },
     ],
     rules: [
       r('Auswahl', 'Aktien, die mit starkem Volumen gut steigen; Wachstumsunternehmen, deren Gewinne sich verdoppeln oder verdreifachen könnten', 'PRIMARY_FULL', 'Nahe 52-Wochen-Hoch + 6-Monats-Perzentil ≥ 80; Gewinnfilter fehlt', 'OPERATIONALIZATION'),
@@ -152,7 +152,7 @@ export const FIDELITY = Object.freeze({
       { step: 'Deep Research', text: 'System 1/2, 2N-Stop, 10-Tage-Ausstieg, Unit-Größe und Filter korrekt genannt (Sekundärquellen).' },
       { step: 'Code bis 1.1.0', text: 'Schlusskurs-Bestätigung + Kauf zur nächsten Eröffnung, Ausstieg nach Schluss unter dem 10-Tage-Tief zur nächsten Eröffnung, N als einfaches Mittel, kein Filter, 0,5 % Risiko statt 1 % je N, 10 Positionen.' },
       { step: 'Fehlerart', text: 'Übertragungsfehler und ausgelassene Bausteine. Das Original sagt wörtlich: „did not wait until the daily close or the open of the following day“.' },
-      { step: 'Wirkung', text: 'Einstieg und Ausstieg je einen Tag zu spät, andere Positionsgröße, Gewinner-Filter fehlte. 2.0.0 bildet System 1 vollständig ab – bis auf das Nachkaufen.' },
+      { step: 'Wirkung', text: 'Einstieg und Ausstieg je einen Tag zu spät, andere Positionsgröße, Gewinner-Filter fehlte. 2.0.0 bildet System 1 ab (ohne Nachkaufen). Die Signale schneiden je Trade fast gleich ab wie 1.1.0; die Original-Größe (1 % je N) hält das Aktienportfolio aber fast immer voll investiert in gleichgerichteten Ausbrüchen – für gestreute Futures geschrieben, auf Einzelaktien deutlich verlustreicher (Hinweis, keine bewiesene Ursache).' },
     ],
     rules: [
       r('Einstieg', 'System 1: Kurs überschreitet das 20-Tage-Hoch um einen Tick; im Tagesverlauf, bei Gap zur Eröffnung', 'PRIMARY_FULL', 'bis 1.1.0: Schluss über dem 20-Tage-Hoch, Kauf zur nächsten Eröffnung · 2.0.0: Kauf-Stop im Tagesverlauf', 'ORIGINAL', 'Bis 1.1.0 Umsetzungsfehler.'),
