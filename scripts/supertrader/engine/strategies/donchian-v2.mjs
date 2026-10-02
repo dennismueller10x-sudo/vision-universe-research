@@ -137,7 +137,7 @@ export const PORTFOLIO = Object.freeze({ initialEquity: 100000, riskPerTrade: 0.
   source: 'Turtle Rules: Unit = 1 % des Kontos je N, Stop 2N (= 2 % Risiko), höchstens 12 Units je Richtung, notionelles Konto −20 % je 10 % Verlust. VU: eine Unit je Aktie, ohne Hebel.' });
 
 export default {
-  id: 'DONCHIAN_TURTLE', variant: 'TURTLE_S1_BUYSTOP_DAILY_R8', version: '2.0.0', timeframe: 'daily',
+  id: 'DONCHIAN_TURTLE', variant: 'DONCHIAN_TURTLE_S1_BUYSTOP_R8', version: '2.0.0', timeframe: 'daily',
   entryMode: 'BUY_STOP_INTRADAY',
   manageCompatible: ['2.0.0'],
   legacy: { '1.0.0': v1, '1.1.0': v1 },

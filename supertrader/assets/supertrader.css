@@ -395,3 +395,12 @@ p { margin: 0; }
 .st-mplist .r2 { font-size: 12.5px; color: var(--st-muted); margin-top: 2px; line-height: 1.35; }
 .st-tl li[data-kind="reassessed"] .rule { color: var(--st-muted); font-style: italic; }
 .st-obsmeta { display: block; font-size: 12px; color: var(--st-muted); margin: -4px 0 8px; }
+
+/* Runde 8: Kette Quelle -> Modell auf der Methodenseite */
+.st-chainbox{margin:0 0 14px;padding:12px 14px;border:1px solid var(--st-line-2);border-radius:12px;background:var(--st-surface)}
+.st-chainbox>.k{display:block;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;opacity:.7;margin-bottom:6px}
+.st-chain{list-style:none;margin:0;padding:0;counter-reset:c}
+.st-chain li{position:relative;padding:0 0 10px 26px;counter-increment:c}
+.st-chain li::before{content:counter(c);position:absolute;left:0;top:1px;width:18px;height:18px;border-radius:50%;font-size:.7rem;line-height:18px;text-align:center;background:var(--st-accent);color:#000}
+.st-chain li .k{font-weight:600;font-size:.85rem}
+.st-chain li p{margin:2px 0 0;font-size:.88rem;line-height:1.4}

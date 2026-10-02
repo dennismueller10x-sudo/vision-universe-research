@@ -34,6 +34,10 @@ import weinstein from './engine/strategies/weinstein.mjs';
 import greenblatt from './engine/strategies/greenblatt.mjs';
 import donchian from './engine/strategies/donchian.mjs';
 import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
+import kkBreakout3 from './engine/strategies/kk-breakout-v3.mjs';
+import donchian2 from './engine/strategies/donchian-v2.mjs';
+import darvas3 from './engine/strategies/darvas-v3.mjs';
+import weinstein3 from './engine/strategies/weinstein-v3.mjs';
 import darvas2 from './engine/strategies/darvas-v2.mjs';
 import minervini2 from './engine/strategies/minervini-v2.mjs';
 import weinstein2 from './engine/strategies/weinstein-v2.mjs';
@@ -51,8 +55,8 @@ let CURRENT_REGIME = null;
 // Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
 // (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
 // Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
-export const LIVE_ENGINES = [kkBreakout2, weinstein2, darvas2, minervini2, donchian];
-export const PREVIOUS_ENGINES = [kkBreakout, weinstein, darvas, minervini];
+export const LIVE_ENGINES = [kkBreakout3, weinstein3, darvas3, minervini2, donchian2];
+export const PREVIOUS_ENGINES = [kkBreakout, kkBreakout2, weinstein, weinstein2, darvas, darvas2, minervini, donchian];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const ROOT = path.resolve(args.root || '.');
@@ -698,7 +702,9 @@ export function planOf(s) {
     text = 'Keine Entscheidung: im aktuellen Datenstand fehlen Kursdaten für diesen Titel.'; ruleId = 'LC-DATA-GAP';
   } else if (PENDING.has(s.state)) {
     const inv = `${p.invalidationText} ${fmtP(s.levels?.invalidation)} → ungültig`;
-    text = `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
+    text = p.confirmBasis === 'INTRADAY_BUY_STOP'
+      ? `Kauf-Stop über ${fmtP(s.levels?.trigger)} für den nächsten Handelstag: Steigt der Kurs darüber, gilt das Modell als gekauft – zum Trigger oder zur Eröffnung, wenn diese höher liegt. Stop: ${s.levels?.stopPlan || p.exitSummary}. ${inv}.`
+      : `Warten auf ${p.confirmText} ${fmtP(s.levels?.trigger)}. Erst dann gilt der Einstieg als bestätigt; Modelleinstieg zur folgenden Eröffnung. ${inv}.`;
     ruleId = p.confirmRuleId;
   } else if (s.state === 'TRIGGERED') {
     text = 'Modelleinstieg zur nächsten Eröffnung (keine reale Order). Bei Eröffnung auf/unter dem Stop oder außerhalb der Gap-Regel kein Einstieg.'; ruleId = 'LC-MODEL-ENTRY';

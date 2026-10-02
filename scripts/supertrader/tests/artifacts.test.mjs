@@ -117,8 +117,10 @@ test('Regelkarten: jede Live-Variante hat eine vollstaendige Karte mit existiere
     // Drei getrennte Aussagen: ausfuehrbar, Quellenlage, historische Validierung.
     assert.equal(card.executable.status, 'EXECUTABLE', id);
     // Runde 7: Quellenpruefung nur auf Suchauszuegen - nie als vollstaendige Originalpruefung ausgegeben.
-    assert.ok(card.source_basis.status && ['NOT_PERFORMED', 'PERFORMED_R7_SNIPPETS'].includes(card.source_basis.fidelityReview), `${id}: Originaltreue als geprueft ausgegeben`);
-    if (card.source_basis.fidelityReview === 'PERFORMED_R7_SNIPPETS') assert.match(card.source_basis.fidelityNote, /Suchauszug/, id);
+    assert.ok(card.source_basis.status && ['NOT_PERFORMED', 'PERFORMED_R7_SNIPPETS', 'PERFORMED_R8_FULLTEXT', 'PERFORMED_R8_SECONDARY_QUOTES'].includes(card.source_basis.fidelityReview), `${id}: Originaltreue als geprueft ausgegeben`);
+    if (card.source_basis.fidelityReview === 'PERFORMED_R7_SNIPPETS') assert.match(card.source_basis.fidelityNote, /Suchauszüg|Suchauszug/, id);
+    // Runde 8: Volltext nur behaupten, wenn die Quelle im Ledger mit Abrufnachweis steht.
+    if (card.source_basis.fidelityReview === 'PERFORMED_R8_FULLTEXT') assert.match(card.source_basis.fidelityNote, /Volltext gelesen/, id);
     assert.ok(card.source_basis.ruleCounts.original + card.source_basis.ruleCounts.vu > 0);
     assert.equal(card.historical_validation.status, 'NOT_VALIDATED', `${id}: ohne bestandene Gates keine Validierung`);
     assert.ok(card.historical_validation.failedGates.length > 0);

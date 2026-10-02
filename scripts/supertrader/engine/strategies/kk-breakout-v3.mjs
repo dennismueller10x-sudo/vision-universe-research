@@ -68,7 +68,7 @@ export function intradayEntry(ctx, t, pending, p = PARAMS) {
 export const PORTFOLIO = Object.freeze({ initialEquity: 100000, riskPerTrade: 0.005, maxPositionPct: 0.25, maxPositions: 10, maxExposure: 1.0, riskFreeRate: 0.02, source: 'Kullamägi: Risiko meist 0,3–0,5 %, Positionen meist 10–20 % (FAQ 5–25 %), nie über 30 % über Nacht; Höchstzahl 10 ist VU.' });
 
 export default {
-  id: 'MOMENTUM_BREAKOUT', variant: 'KK_BREAKOUT_BUYSTOP_DAILY_R8', version: '3.0.0', timeframe: 'daily',
+  id: 'MOMENTUM_BREAKOUT', variant: 'KK_COMMON_BREAKOUT_BUYSTOP_R8', version: '3.0.0', timeframe: 'daily',
   entryMode: 'BUY_STOP_INTRADAY',
   manageCompatible: ['2.0.0', '3.0.0'],
   legacy: { '1.0.0': v1, '1.1.0': v1 },

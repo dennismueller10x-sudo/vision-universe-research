@@ -7,10 +7,10 @@
     "url": "https://qullamaggie.com/faq/",
     "source_type": "OWN_WEBSITE",
     "level": 1,
-    "access": "NOT_RETRIEVED",
-    "retrieved_at": "2026-09-29",
-    "url_verification": "SEARCH_RESULT_MATCH",
-    "content_retrieved_by_vu": false,
+    "access": "PUBLIC_FULL",
+    "retrieved_at": "2026-10-02",
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
     "used_for": [
       "KK-BREAKOUT",
       "KK-EP",
@@ -18,7 +18,13 @@
     ],
     "claims_supported": "Author's own FAQ: ADR-based stop sizing (stop not wider than ~1 ADR), usually risks ~0.3-0.5% of account per trade and rarely over 1%, positions typically ~10-15% of account (range ~5-25%) depending on liquidity/conviction; names his core setups.",
     "evidence_status_ceiling": "PRIMARY_EXPLICIT",
-    "notes": "Direct fetch blocked by egress proxy (WebFetch EGRESS_BLOCKED / curl no connection); verified via exact URL+title in web search results only. Claim details come from search-engine snippets, re-check wording on page before quoting."
+    "notes": "Runde 8: Volltext gelesen (ADR-Definition, Positionsgrößen 5–25 %, Risiko 0,3–0,5 %).",
+    "retrieval": {
+      "date": "2026-10-02",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    }
   },
   {
     "source_id": "SRC-KK-SETUPS",
@@ -28,10 +34,10 @@
     "url": "https://qullamaggie.com/my-3-timeless-setups-that-have-made-me-tens-of-millions/",
     "source_type": "OWN_ARTICLE",
     "level": 1,
-    "access": "NOT_RETRIEVED",
-    "retrieved_at": "2026-09-29",
-    "url_verification": "SEARCH_RESULT_MATCH",
-    "content_retrieved_by_vu": false,
+    "access": "PUBLIC_FULL",
+    "retrieved_at": "2026-10-02",
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
     "used_for": [
       "KK-BREAKOUT",
       "KK-EP",
@@ -39,7 +45,13 @@
     ],
     "claims_supported": "Describes three setups (breakout, episodic pivot, parabolic short); entry at opening-range high, stop at low of day; sell 1/3-1/2 after 3-5 days and move stop to breakeven; trail remainder on 10- or 20-day MA.",
     "evidence_status_ceiling": "PRIMARY_EXPLICIT",
-    "notes": "Direct fetch blocked by egress proxy (WebFetch EGRESS_BLOCKED / curl no connection); verified via exact URL+title in web search results only. Published ~Jan 2021 (author's X post https://x.com/Qullamaggie/status/1347583146401869824 announces it). ORH/LOD details from secondary snippets; confirm on page. Scribd copies exist - do not use as source."
+    "notes": "Runde 8: Volltext und alle Beispielcharts gelesen (Bilder über das Internet Archive, da die Website Bilder hinter einer Bot-Sperre ausliefert). Wortlaut nur verschlüsselt beim Eigentümer abgelegt.",
+    "retrieval": {
+      "date": "2026-10-02",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    }
   },
   {
     "source_id": "SRC-KK-140K",
@@ -802,16 +814,22 @@
     "url": "https://time.com/archive/6803538/business-pas-de-dough/",
     "source_type": "PRESS_CONTEMPORARY",
     "level": 1,
-    "access": "NOT_RETRIEVED",
+    "access": "PUBLIC_FULL",
     "retrieved_at": "2026-10-02",
-    "url_verification": "SEARCH_RESULT_MATCH",
-    "content_retrieved_by_vu": false,
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
     "used_for": [
       "DARVAS"
     ],
     "claims_supported": "Contemporary report (May 1959): Darvas placed a buy order just above the box top and at the same time a stop-loss sell order just below his buy order; raised the stop as boxes rose.",
     "evidence_status_ceiling": "PRIMARY_EXPLICIT",
-    "notes": "Runde 7: Direktabruf durch die Netzwerkrichtlinie gesperrt; Inhalt nur aus Suchauszügen. Wortlaut vor einem Zitat auf der Seite prüfen."
+    "notes": "Runde 8: Volltext gelesen. Bestätigt: Kauforder an Ausbruchspunkten, Stop knapp unter der Kauforder, fünf bis sechs Aktien gleichzeitig, Wachstumsunternehmen.",
+    "retrieval": {
+      "date": "2026-10-02",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    }
   },
   {
     "source_id": "SRC-MM-X-RISK",
@@ -840,15 +858,96 @@
     "url": "https://thepatternsite.com/TradingWeinstein.html",
     "source_type": "SECONDARY_SUMMARY",
     "level": 3,
-    "access": "NOT_RETRIEVED",
+    "access": "PUBLIC_FULL",
     "retrieved_at": "2026-10-02",
-    "url_verification": "SEARCH_RESULT_MATCH",
-    "content_retrieved_by_vu": false,
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
     "used_for": [
       "WEINSTEIN"
     ],
     "claims_supported": "Secondary summary of Weinstein (1988): breakout volume at least twice the average of the prior weeks, never buy with negative relative strength, market/group top-down, stop below significant support and not on round numbers.",
     "evidence_status_ceiling": "MULTI_SOURCE_CONFIRMED",
-    "notes": "Runde 7: Sekundärquelle, Direktabruf gesperrt; Übereinstimmung mit stageanalysis.net, the7circles.uk und TraderLion laut Suchauszügen."
+    "notes": "Runde 8: Volltext gelesen (Trading Weinstein, Weinstein Stops). Enthält wörtliche Zitate aus Weinsteins Buch, u. a. zum Kauf per Buy-Stop; Bulkowskis eigene Auslegung ist davon getrennt.",
+    "retrieval": {
+      "date": "2026-10-02",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    }
+  },
+  {
+    "author": "Kristjan Kullamägi",
+    "publisher_or_site": "qullamaggie.com",
+    "level": 1,
+    "used_for": [
+      "KK-EP"
+    ],
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "source_id": "SRC-KK-EP",
+    "title": "How to master a setup: Episodic Pivots",
+    "url": "https://qullamaggie.com/how-to-master-a-setup-episodic-pivots/",
+    "source_type": "OWN_WEBSITE",
+    "access": "PUBLIC_FULL",
+    "retrieved_at": "2026-10-02",
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
+    "retrieval": {
+      "date": "2026-10-02",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    },
+    "claims_supported": "Episodic Pivot: Gap ≥ 10 % mit großem Volumen, bei Gewinnmeldungen starkes Wachstum und deutliche Überraschung; am besten ohne Anstieg in den 3–6 Monaten davor; Einstieg am Opening-Range-Hoch, Stop am Tagestief. Beispiele NVDA 2016/17, FSLR 2007, BB 2004.",
+    "notes": "Runde 8: Volltext gelesen."
+  },
+  {
+    "author": "Curtis Faith u. a. (OriginalTurtles.org)",
+    "publisher_or_site": "tradingblox.com",
+    "level": 1,
+    "used_for": [
+      "DONCHIAN_TURTLE"
+    ],
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "source_id": "SRC-TURTLE-PDF",
+    "title": "The Original Turtle Trading Rules (PDF)",
+    "url": "https://www.tradingblox.com/originalturtles/originalturtlerules.pdf",
+    "source_type": "ORIGINAL_INTERVIEW",
+    "access": "PUBLIC_FULL",
+    "retrieved_at": "2026-10-02",
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
+    "retrieval": {
+      "date": "2026-10-02",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    },
+    "claims_supported": "Vollständige Regeln: N als 20-Tage-EMA der True Range, Unit 1 % je N, Grenzen 4/6/10/12 Units, notionelles Konto, System 1 (20/10 mit Filter und 55-Tage-Failsafe), System 2 (55/20), Kauf im Tagesverlauf am Ausbruch, Stop 2N, Nachkaufen in ½-N-Schritten.",
+    "notes": "Runde 8: 27 Seiten (gescannt) gelesen. Regeln für Futures; Anwendung auf Aktien ist eine VU-Übertragung."
+  },
+  {
+    "author": "TIME (staff)",
+    "publisher_or_site": "time.com (archive)",
+    "level": 1,
+    "used_for": [
+      "DARVAS"
+    ],
+    "evidence_status_ceiling": "PRIMARY_EXPLICIT",
+    "source_id": "SRC-ND-TIME-1960B",
+    "title": "WALL STREET: The Darvas Effect",
+    "url": "https://time.com/archive/6807310/wall-street-the-darvas-effect/",
+    "source_type": "PRESS_CONTEMPORARY",
+    "access": "PUBLIC_FULL",
+    "retrieved_at": "2026-10-02",
+    "url_verification": "FETCHED_HTTP_200",
+    "content_retrieved_by_vu": true,
+    "retrieval": {
+      "date": "2026-10-02",
+      "via": "GitHub-Actions-Runner (Workflow supertrader-validation, Modus sources), da die Arbeitsumgebung die Seiten sperrt",
+      "storage": "SEALED_OWNER_KEY",
+      "inRepo": false
+    },
+    "claims_supported": "August 1960: Stop-Loss-Order als Kernbaustein von Darvas’ System (Beispiel 40 → 38); bei dünnem Markt wird deutlich unter dem Stop verkauft.",
+    "notes": "Runde 8: Volltext gelesen."
   }
 ]
