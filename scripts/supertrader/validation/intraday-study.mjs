@@ -81,7 +81,12 @@ export function resolve(rec, bars, engineId) {
   const gap = bars[0].open >= trig;
   let e = gap ? 0 : bars.findIndex((b) => b.high >= trig);
   if (e < 0) return { status: 'IEX_HIGH_BELOW_TRIGGER', shortfall: iexH / trig - 1 };
-  const fill = gap ? bars[0].open : Math.max(bars[e].open, trig);
+  // Nachtrag A1 (vor dem Hauptlauf): IEX druckt bei weniger liquiden Titeln nicht jede
+  // Minute; der erste IEX-Druck ueber dem Trigger liegt dann nach einem Sprung. Die
+  // Minuten bestimmen deshalb nur die REIHENFOLGE; der Preis bleibt beim Tagesbalken-
+  // Modell (max(Eroeffnung, Trigger)). Der Sprung wird als Diagnose berichtet.
+  const printJump = gap ? null : bars[e].open > trig ? bars[e].open / trig - 1 : 0;
+  const fill = rec.fill * f;
   let stop;
   if (engineId === 'MOMENTUM_BREAKOUT') {
     let pre = Infinity; for (let i = 0; i <= e; i++) pre = Math.min(pre, bars[i].low);
@@ -95,7 +100,7 @@ export function resolve(rec, bars, engineId) {
   const minOf = (i) => etClock(bars[i].date);
   return {
     status: 'RESOLVED', gap, entryMinute: minOf(e), entryIndex: e,
-    fillRaw: fill, fillAdj: fill / f, modelFillAdj: rec.fill, fillDiff: (fill / f) / rec.fill - 1,
+    fillRaw: fill, fillAdj: fill / f, modelFillAdj: rec.fill, fillDiff: printJump ?? 0, printJump, iexGapAgrees: gap === (rec.open >= rec.trigger),
     stopAdj: stop / f, engineStopAdj: rec.stop, stopDiff: stop / f / rec.stop - 1,
     exitSameDay: exitIdx >= 0 || minuteAmbiguous, minuteAmbiguous, exitMinute: exitIdx >= 0 ? minOf(exitIdx) : null,
     dayLowAfterEntry: (() => { let lo = Infinity, at = -1; for (let i = 0; i < bars.length; i++) if (bars[i].low < lo) { lo = bars[i].low; at = i; } return at > e; })(),
@@ -146,6 +151,10 @@ export const fetchMinutes = (t, d, key) => getJson(`https://api.tiingo.com/iex/$
 
 // Beispielpruefung mit Tiingo-Tageskursen (vor dem Universumszeitraum, Rang nicht pruefbar).
 async function exampleCheck(ticker, from, to, marked, key) {
+  // Nachtrag A2: Kullamaegis Charts sind bis zum Veroeffentlichungstag split-bereinigt
+  // (marked.chartDate). Der Chartwert wird deshalb mit allen Splits bis dahin verglichen.
+  const full = await getJson(`https://api.tiingo.com/tiingo/daily/${ticker}/prices?startDate=${from}&endDate=${marked.chartDate}`, key);
+  const splitsAfter = (d) => (Array.isArray(full.body) ? full.body : []).filter((b) => b.date.slice(0, 10) > d && (b.splitFactor || 1) !== 1).reduce((a, b) => a * b.splitFactor, 1);
   const r = await getJson(`https://api.tiingo.com/tiingo/daily/${ticker}/prices?startDate=${from}&endDate=${to}`, key);
   if (!Array.isArray(r.body) || !r.body.length) return { ticker, status: 'NO_DATA', http: r.status };
   const raw = r.body.map((b) => ({ date: b.date.slice(0, 10), open: b.open, high: b.high, low: b.low, close: b.close, volume: b.volume, adjClose: b.adjClose, dividend: b.divCash || 0, splitFactor: b.splitFactor || 1 }));
@@ -155,7 +164,8 @@ async function exampleCheck(ticker, from, to, marked, key) {
   const ctx = { symbol: ticker, bars, ind: computeIndicators(bars), raw: { close: a.rawClose, volume: a.rawVolume }, divAdj: a.divAdj, cross: { mom21: ninety9, mom63: ninety9, mom126: ninety9 } };
   // Markierter Tag laut Protokoll: Tagesgewinn > 5 %, bereinigter Schluss am naechsten am Chartwert.
   const cand = []; for (let i = 1; i < n; i++) if (bars.date[i] >= marked.from && bars.date[i] <= marked.to && bars.close[i] / bars.close[i - 1] - 1 > 0.05) cand.push(i);
-  cand.sort((x, y) => Math.abs(bars.close[x] - marked.close) - Math.abs(bars.close[y] - marked.close));
+  const chartScale = (i) => a.rawClose[i] / splitsAfter(bars.date[i]);
+  cand.sort((x, y) => Math.abs(chartScale(x) - marked.close) - Math.abs(chartScale(y) - marked.close));
   const mi = cand[0];
   const res = {};
   for (const eng of [kk3, kk31]) {
@@ -167,7 +177,7 @@ async function exampleCheck(ticker, from, to, marked, key) {
     const scanAt = mi != null ? [-3, -2, -1, 0].map((k) => { const t = mi + k; const sc = eng.scan(ctx, t, { ...eng.PARAMS, minPrice: 0 }); return { date: bars.date[t], stage: sc?.stage ?? null, failed: sc ? Object.entries(sc.rules).filter(([, v]) => !v).map(([r]) => r) : null, trigger: sc?.levels?.trigger ?? null, facts: sc ? { priorRun: sc.facts.priorRun, baseLength: sc.facts.baseLength ?? null, baseDepth: sc.facts.baseDepth ?? null } : null }; }) : [];
     res[keyOf(eng)] = { verdict: near.some((x) => x.date === bars.date[mi]) ? 'ENTRY_ON_MARKED_DAY' : near.length ? 'ENTRY_NEAR' : 'MISSED', near, setups, scanAt };
   }
-  return { ticker, status: 'OK', markedDay: mi != null ? { date: bars.date[mi], close: bars.close[mi], gain: bars.close[mi] / bars.close[mi - 1] - 1, candidates: cand.slice(0, 3).map((i) => bars.date[i]) } : null, rankRule: 'NOT_CHECKABLE_SET_TRUE', engines: res };
+  return { ticker, status: 'OK', markedDay: mi != null ? { date: bars.date[mi], close: bars.close[mi], chartScaleClose: chartScale(mi), chartClose: marked.close, gain: bars.close[mi] / bars.close[mi - 1] - 1, candidates: cand.slice(0, 3).map((i) => [bars.date[i], chartScale(i)]) } : null, rankRule: 'NOT_CHECKABLE_SET_TRUE', engines: res };
 }
 
 async function main() {
@@ -181,8 +191,8 @@ async function main() {
   fs.mkdirSync(OUT, { recursive: true });
 
   const examples = {
-    MNKD: await exampleCheck('MNKD', '2012-06-01', '2013-07-31', { from: '2013-05-01', to: '2013-05-31', close: 22.15 }, KEY),
-    AXON: await exampleCheck('AXON', '2003-01-02', '2004-03-31', { from: '2004-01-02', to: '2004-01-15', close: 7.85 }, KEY),
+    MNKD: await exampleCheck('MNKD', '2012-06-01', '2013-07-31', { from: '2013-05-01', to: '2013-05-31', close: 22.15, chartDate: '2020-01-15' }, KEY),
+    AXON: await exampleCheck('AXON', '2003-01-02', '2004-03-31', { from: '2004-01-02', to: '2004-01-15', close: 7.85, chartDate: '2021-01-05' }, KEY),
   };
   log('Beispielpruefung: ' + Object.entries(examples).map(([k, v]) => `${k} ${v.status}`).join(', '));
 

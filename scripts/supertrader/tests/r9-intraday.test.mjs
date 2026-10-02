@@ -26,8 +26,10 @@ test('R9-I2 Fester Stop (Darvas/Turtle): Ausstieg nur, wenn das Tief NACH dem Ka
 });
 
 test('R9-I3 Gap: Einstieg zur Eröffnung; Kontrollen: kein Trigger auf IEX, Identität, keine Daten', () => {
-  const g = resolve({ ...rec, open: 102, low: 95.5 }, [m(0, 102, 103, 101.5, 102.5), m(1, 102.5, 105, 95.5, 101)], 'DARVAS_BOX');
-  assert.equal(g.gap, true); assert.equal(g.fillAdj, 102); assert.equal(g.entryMinute, '09:30');
+  const g = resolve({ ...rec, open: 102, fill: 102, low: 95.5 }, [m(0, 102, 103, 101.5, 102.5), m(1, 102.5, 105, 95.5, 101)], 'DARVAS_BOX');
+  assert.equal(g.gap, true); assert.equal(g.fillAdj, 102); assert.equal(g.entryMinute, '09:30'); assert.equal(g.iexGapAgrees, true);
+  const j = resolve(rec, [m(0, 98, 99, 95, 98.5), m(2, 100.8, 105, 100.5, 101)], 'DARVAS_BOX');
+  assert.equal(j.fillAdj, 100, 'Preis bleibt beim Modell'); assert.ok(Math.abs(j.printJump - 0.008) < 1e-9, 'IEX-Drucksprung als Diagnose');
   assert.equal(resolve({ ...rec, trigger: 104.95 }, [m(0, 98, 99.9, 95.1, 99), m(1, 99, 104.9, 95, 101)], 'DARVAS_BOX').status, 'IEX_HIGH_BELOW_TRIGGER', 'IEX-Hoch 104,9 innerhalb 1 % des Tageshochs, Trigger 104,95 aber nicht erreicht');
   const amb = resolve({ ...rec, stop: 99, low: 98.5 }, [m(0, 98, 99, 98.8, 98.9), m(1, 98.9, 100.5, 98.5, 100.2), m(2, 100.2, 105, 100, 101)], 'DARVAS_BOX');
   assert.equal(amb.minuteAmbiguous, true, 'Tief im Einstiegsbalken unter dem Stop: Minutenauflösung reicht nicht, vorsichtig gezählt');
