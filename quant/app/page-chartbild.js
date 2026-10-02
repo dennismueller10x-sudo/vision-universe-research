@@ -360,7 +360,7 @@
       X.card([el("h3", { class: "qx-h3", text: "Konfidenz ist keine Wahrscheinlichkeit" }),
         para("‚Einigkeit der Verfahren‘ beschreibt, wie gleichgerichtet die Verfahren sind. Eine Wahrscheinlichkeit wird nur gezeigt, wenn eine Kalibrierung auf ungesehenen Jahren besteht. Das ist derzeit nicht der Fall – deshalb erscheinen keine Prozentwerte für die Zukunft, sondern historische Häufigkeiten mit Vergleich zum Zufall.")]),
       X.card([el("h3", { class: "qx-h3", text: "Wie geprüft wird" }),
-        para("Jede historische Lage wird so berechnet, wie sie am damaligen Tag sichtbar war (keine Zukunftsdaten, Test mit ‚vergifteter‘ Zukunft). Einstieg frühestens am Folgetag, Ungültigkeit per Schlusskurs, Kosten 0,1 % je Seite, nur nicht überlappende Signale je Aktie. Vergleich: dieselben Abstände zu Ziel und Grenze an zufälligen Tagen. Zeiträume: Entwicklung bis 2018, Prüfung ab 2019 – einmalig, nach dem Einfrieren der Regeln.")])
+        para("Jede historische Lage wird so berechnet, wie sie am damaligen Tag sichtbar war (keine Zukunftsdaten, Test mit ‚vergifteter‘ Zukunft). Einstieg frühestens am Folgetag, Ungültigkeit per Schlusskurs, Kosten 0,1 % je Seite, nur nicht überlappende Signale je Aktie. Vergleich: dieselben Abstände zu Ziel und Grenze an zufälligen Tagen. Zeiträume: Entwicklung bis 2018, Prüfung ab 2019 nach dem Einfrieren der Regeln. Nach der Korrektur von Messfehlern wurde der Prüfzeitraum ein zweites Mal gerechnet – ohne jede Regeländerung.")])
     ]));
     var st = ev && ev.studies && ev.studies.weekly;
     if (st) {
@@ -371,12 +371,14 @@
         ["Vorteil gegenüber Zufall (ab 2019)", isNum(test.lift) ? (test.lift * 100).toFixed(1).replace(".", ",") + " Prozentpunkte (95 %-Intervall " + (test.liftCiLow * 100).toFixed(1).replace(".", ",") + " bis " + (test.liftCiHigh * 100).toFixed(1).replace(".", ",") + ")" : "–"],
         ["Durchschnittliches Ergebnis je Lage nach Kosten", isNum(st.overall.meanReturn) ? (st.overall.meanReturn * 100).toFixed(1).replace(".", ",") + " %" : "–"],
         ["Kalibrierung bestanden", st.calibration.passed ? "ja" : "nein – deshalb keine Wahrscheinlichkeiten"]];
-      host.append(X.section("Was die eigene Prüfung zeigt", "Ehrlich: Der Vorteil gegenüber dem Zufall ist klein. Das Chartbild ordnet ein – es ist kein Signalgeber.", [
+      var edgeText = isNum(test.liftCiLow) && test.liftCiLow > 0 ? "Ehrlich: Der Vorteil gegenüber dem Zufall ist klein. Das Chartbild ordnet ein – es ist kein Signalgeber."
+        : "Ehrlich: Im Prüfzeitraum treffen die Szenarien ihre Zielzone nicht messbar häufiger als zufällig gewählte Tage mit denselben Abständen. Das Chartbild ordnet ein – es ist kein Signalgeber.";
+      host.append(X.section("Was die eigene Prüfung zeigt", edgeText, [
         X.card([el("dl", { class: "qx-kv" }, [].concat.apply([], rows.map(function (x) { return [el("dt", { text: x[0] }), el("dd", { class: "num", text: x[1] })]; })))]),
         st.elliott ? X.card([el("h3", { class: "qx-h3", text: "Empirisches Elliott" }), el("ul", { class: "cb-list" }, Object.keys(st.elliott.bySetup).map(function (k) {
           var e = st.elliott.bySetup[k], name = { IMPULSE_W3_AFTER_W2: "Nach Welle 2: Welle 3 überschreitet Welle 1", IMPULSE_W5_AFTER_W4: "Nach Welle 4: Welle 5 überschreitet Welle 3", ZIGZAG_C_AFTER_B: "Zigzag nach B: Welle C überschreitet A", FLAT_C_AFTER_B: "Flat nach B: Welle C überschreitet A" }[k] || k;
           return el("li", { text: name + ": " + pct(e.confirmRate) + " (Zufall gleicher Abstände " + pct(e.baselineRate) + ", n = " + e.n.toLocaleString("de-DE") + ")" });
-        })), para("Hohe Quoten entstehen oft aus der Geometrie (Ziel nah, Grenze fern) – der Vergleich mit dem Zufall zeigt, was die Zählung wirklich beiträgt.")]) : null,
+        })), para("Hohe Quoten entstehen aus der Geometrie (Ziel nah, Grenze fern). Gegen den Zufall gemessen trafen die Lehrbuch-Erwartungen " + (Object.keys(st.elliott.bySetup).every(function (k) { return !(st.elliott.bySetup[k].lift > 0); }) ? "in keinem Setup häufiger ein – Elliott-Zählungen sind hier Beschreibung, keine Vorhersage." : "nur teilweise häufiger ein.")) ]) : null,
         st.fibonacci ? X.card([el("h3", { class: "qx-h3", text: "Fibonacci-Niveaus" }), para("In " + st.fibonacci.n.toLocaleString("de-DE") + " bestätigten Gegenbewegungen endeten Rückläufe an 38,2 %, 50 % und 61,8 % nicht häufiger als knapp daneben (Verhältnis zum Nachbarbereich: " + Object.keys(st.fibonacci.levels).map(function (k) { return (k * 100).toFixed(1).replace(".", ",") + " % → " + String(st.fibonacci.levels[k].ratio).replace(".", ","); }).join(" · ") + "). Fibonacci zählt deshalb nur, wo mehrere Anker zusammenfallen.")]) : null
       ], null, null, "evidenz"));
     }

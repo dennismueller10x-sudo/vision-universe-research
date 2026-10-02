@@ -49,7 +49,7 @@ Verifikation der Quellen: **[V]** online bestätigt (Recherche 02.10.2026), **[M
 | Volumen | B | nur Tagesstudie | Gewicht 0,10 |
 | Chartformationen | C | 51,1 %; Formation stützt Szenario: Ziel-1-Quote 43,0 % vs. 40,6 % bei Widerspruch | Gewicht 0,08 |
 | Elliott (Richtung) | D | 50,6 % gesamt, **50,0 % TEST** — kein Richtungswert | Gewicht 0,08; Geometrie-Lieferant |
-| Elliott (Lehrbuch-Erwartungen) | D | Zigzag-C: +8,8 pp über Zufall (robust, alle Perioden); W3 nach W2: +2,1 pp; W5 nach W4: 0 | Profi-Ansicht, Evidenz |
+| Elliott (Lehrbuch-Erwartungen) | D | korrigiert: alle Lehrbuch-Erwartungen **unter** Zufall (W3 −12 pp, W5 −12,7, Zigzag-C −2,3, Flat-C −5,4); erster Lauf (+8,8 pp Zigzag-C) war Artefakt | Profi-Ansicht, Evidenz |
 | Fibonacci-Niveaus | C | **keine** Häufung an 38,2/50/61,8 % (Verhältnis 0,97–1,05; n = 319.843) | nur Konfluenz |
 | Wyckoff | D | Richtung < 50 % in Entwicklungsdaten | beschreibend, Gewicht 0 |
 | Kerzenmuster | D (negativ) | nicht geprüft | **abgelehnt** |
@@ -78,7 +78,7 @@ Typen: **HARD** = Regel (Verletzung → Kandidat ungültig), **DEF** = Klassengr
 | Dreieck | Grenzen kontrahierend/expandierend; E innerhalb C | F&P S. 50–55 | DEF/HARD | TRIANGLE_BOUNDARIES, TRIANGLE_E_INSIDE | EV2-R7 | — | Profi |
 | Dreieck | Position nie W2 | F&P | HARD (Grammatik) | `positions` je Musterklasse (dokumentiert); Rang über Grammatik | — | — | — |
 | W-X-Y / Double Zigzag | X < 100 % von W; Y über W-Ende | F&P S. 56–58 | HARD/DEF | wxyRules (verlangt aufgelöste 3er-Unterteilung), doubleZigzagRules | EV2-R8 | — | Profi |
-| Elliott Grade | höherer Grad konsistent | F&P (Degrees) | HEUR (Rang) | `higherDegreeFit()` | EV2-E3 | **stärkster Einzelbefund**: konsistent +11,5 pp (Zigzag-C), Konflikt −22 pp (W3) | Profi „Höherer Grad" |
+| Elliott Grade | höherer Grad konsistent | F&P (Degrees) | HEUR (Rang) | `higherDegreeFit()` | EV2-E3 | relativ stärkster Baustein: Konflikt mit höherem Grad 9–12 pp schlechter als Konsistenz (W3, W5) | Profi „Höherer Grad" |
 | Elliott Kausalität | bestätigte Labels nie umschreiben | VU Repainting-Policy | HARD (System) | lokaler Parser, Unterteilung eingefroren | EV2-C3 | — | Hinweis Profi |
 | Fibonacci | Retracement/Extension nur von bestätigten Ankern | F&P Kap. 4 | HEUR | `levels.fibonacci()` | TI-E8 | **keine Häufung an Fib-Niveaus** | Konfluenz-Quelle, Hinweis Profi |
 | S/R | Zonen aus geclusterten Swings + Lücken + 52W | Osler 2000/2003 | HEUR | `levels.supportResistance()` | TI-I1 | Ziele/Entry | Zonen im Chart |

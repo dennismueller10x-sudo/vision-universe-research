@@ -1,7 +1,7 @@
 # Bekannte Grenzen (ehrlich)
 
 ## Evidenz
-1. **Kleiner Vorteil.** Hauptszenarien erreichen Zielzone 1 im Test 1,8 Prozentpunkte häufiger als Zufall mit gleicher Geometrie; nach Kosten im Mittel kein Ertrag. Das Chartbild ist Einordnung, kein Signalgeber.
+1. **Kein messbarer Vorteil.** Hauptszenarien erreichen Zielzone 1 im Test so oft wie Zufall mit gleicher Geometrie (−0,2 pp, KI −0,7 … +0,3); nach Kosten im Mittel kein Ertrag. Ein früher berichteter Vorteil von +1,8 pp war ein Messartefakt. Das Chartbild ist Einordnung, kein Signalgeber.
 2. **Survivorship.** Wochen- und Tagesstudie enthalten nur heute gelistete Titel. Absolute Quoten können überhöht sein. Das Delisting-Bündel (CI) ist noch nicht angebunden.
 3. **Konfidenz-Label ohne Trennschärfe.** Hoch/Mittel/Niedrig unterscheiden die Trefferquote nicht; deshalb „Einigkeit der Verfahren" und keine Prozentwerte. Kalibrierung nicht bestanden.
 4. **Tagesstudie nur 5 Titel lokal.** Tageszahlen (n = 213) sind nicht belastbar; Universum-Tagesstudie erst nach Start von `technical-intelligence-evidence.yml`.
@@ -12,7 +12,7 @@
 6c. **Baseline über alle Zeiträume.** Die Zufallsbars der Baseline stammen aus der gesamten Historie des Titels, nicht nur aus dem Zeitraum des Signals.
 
 ## Methodik
-7. **Elliott bleibt mehrdeutig.** Viele Zählungen haben niedrige Klarheit; Alternativen werden immer gezeigt. Elliott hat empirisch keinen Richtungswert.
+7. **Elliott bleibt mehrdeutig und ohne Prognosewert.** Viele Zählungen haben niedrige Klarheit; Alternativen werden immer gezeigt. Elliott hat empirisch keinen Richtungswert, und Lehrbuch-Erwartungen (W3 > W1, C > A) treffen seltener ein als Zufall mit gleichen Abständen (ob Konditionierungseffekt, ist offen).
 8. **Unterteilungsprüfung** hängt von der Auflösung der feineren Pivot-Skala ab und brachte keinen messbaren Mehrwert; ihr Ranggewicht ist (noch) 0,22 — Anpassung erst mit neuem Testzeitraum (V2.1), um Testdaten nicht zu „verbrauchen".
 9. **Grammatik vereinfacht:** keine Triple-Kombinationen; Positionsregeln (z. B. Dreieck nie Welle 2) nur über Rang/Grammatik, nicht als Gate zwischen Graden.
 10. **Wyckoff** ist heuristisch quantifiziert, ohne externe Validierung; Gewicht 0.

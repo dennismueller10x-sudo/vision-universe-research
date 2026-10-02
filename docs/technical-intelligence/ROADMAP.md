@@ -3,7 +3,10 @@
 ## Als Nächstes (geringer Aufwand, hoher Nutzen)
 1. **Tages-Evidenz für das Universum** — Workflow `technical-intelligence-evidence.yml` starten (manuell, liest nur R2). Danach zeigt jede Tagesanalyse belastbare Tages-Evidenz.
 2. **Survivorship-Kontrolle** — das private Delisting-Bündel (`build-survivorship-control.mjs`) in `ti-evidence.mjs` einlesen; Ergebnis unter beiden Delisting-Annahmen ausweisen.
-3. **V2.1 Elliott-Ranking** — höheren Grad stärker, Unterteilung schwächer gewichten (Befund TECHNICAL_EVIDENCE §6); Bewertung auf einem **neuen** Holdout (Daten ab Freeze-Datum oder Sektor-Holdout), nicht auf dem verbrauchten TEST.
+3. **Elliott-Konditionierung klären** — Baseline „beliebiger bestätigter Swing gleicher Skala" statt unbedingter Zufallsbar; trennt Elliott-Effekt von „nach bestätigtem Rücklauf".
+3a. **V2.1 Elliott-Ranking** — höheren Grad stärker, Unterteilung schwächer gewichten (TECHNICAL_EVIDENCE §6); Bewertung nur auf einem **neuen** Holdout (Daten ab Freeze-Datum oder Sektor-Holdout) — TEST ist zweimal angesehen.
+3b. **Cluster-Bootstrap** (Titel × Monat) für alle Lift-Intervalle.
+3c. **Regime-Hypothese prüfen** — Risk-off/extreme Volatilität (+2,4 … +3,1 pp) auf neuem Holdout, vorab registriert.
 4. **Konflikt-Warnung höherer Grad** in der Einfach-Ansicht („Die große Wellenstruktur spricht dagegen"), da empirisch stärkster Elliott-Effekt.
 5. **Earnings-Hinweis** — Termine aus der Fundamentaldaten-Pipeline anbinden; Hinweis „Bericht in X Tagen – erhöhtes Ereignisrisiko", nicht Teil der Konfluenz.
 

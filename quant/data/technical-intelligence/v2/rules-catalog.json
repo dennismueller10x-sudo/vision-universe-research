@@ -1,6 +1,6 @@
 {
  "schemaVersion": "vu-ti-api-2.0.0",
- "ruleSet": "elliott-rules-2.0.0",
+ "ruleSet": "elliott-rules-2.0.1",
  "rules": {
   "ALTERNATING_DIRECTION": {
    "class": "HARD",
@@ -77,6 +77,11 @@
    "statement": "In einer Diagonale überlappt Welle 4 das Gebiet von Welle 1",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), S. 37 (\"almost always\"); als Klassengrenze zum Impuls verwendet"
   },
+  "DIAGONAL_W4_VS_W2": {
+   "class": "DEFINITION",
+   "statement": "kontrahierend: W4 kürzer als W2",
+   "source": "Frost & Prechter, Elliott Wave Principle (2005), S. 36–40 (Keilform)"
+  },
   "TRIANGLE_BOUNDARIES": {
    "class": "DEFINITION",
    "statement": "kontrahierend: Extreme laufen zusammen",
@@ -86,11 +91,6 @@
    "class": "HARD",
    "statement": "Welle 4 betritt nie das Preisgebiet von Welle 1",
    "source": "Frost & Prechter, Elliott Wave Principle (2005), S. 31, Regel 3"
-  },
-  "DIAGONAL_W4_VS_W2": {
-   "class": "DEFINITION",
-   "statement": "kontrahierend: W4 kürzer als W2",
-   "source": "Frost & Prechter, Elliott Wave Principle (2005), S. 36–40 (Keilform)"
   },
   "DIAGONAL_W5_VS_W3": {
    "class": "DEFINITION",

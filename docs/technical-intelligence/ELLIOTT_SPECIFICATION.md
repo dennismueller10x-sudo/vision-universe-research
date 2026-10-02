@@ -53,7 +53,7 @@ Fit je erwarteter Klasse M/K: Treffer 1,0 (regelkonform) bzw. 0,8; Widerspruch 0
 
 ## 5. Höherer Grad (Multi-Degree nach oben)
 
-Die nächstgröbere Skala wird ohne eigenen Kontext gezählt. Ihre aktuelle Welle (Rolle Motiv/Korrektur, Richtung) bewertet die Lesart der Analyseskala (`higherDegreeFit`): Motiv in Richtung des übergeordneten Motivs 1,0; Gegenkorrektur 0,8; gegenläufiges Motiv 0,25 usw. **Empirisch der stärkste Elliott-Befund** (Zigzag-C mit konsistentem höherem Grad +11,5 pp über Zufall; W3 mit Konflikt −22 pp).
+Die nächstgröbere Skala wird ohne eigenen Kontext gezählt. Ihre aktuelle Welle (Rolle Motiv/Korrektur, Richtung) bewertet die Lesart der Analyseskala (`higherDegreeFit`): Motiv in Richtung des übergeordneten Motivs 1,0; Gegenkorrektur 0,8; gegenläufiges Motiv 0,25 usw. **Empirisch der relativ aussagekräftigste Elliott-Baustein**: W3 nach W2 bei Konflikt mit dem höheren Grad −23,6 pp gegen Zufall, bei Konsistenz −11,0 pp (TECHNICAL_EVIDENCE §6). Absolut liegt keine Elliott-Lehrbuch-Erwartung über dem Zufall.
 
 Skalenwahl: Analysegrad = zweitgröbste Skala mit ≥ 8 bestätigten Legs (damit ein höherer Grad existiert); Tagesserien typischerweise scale-3 (≥ 8 % bzw. 5 ATR), Wochenserien eigene Schwellen (`ti/context.js`).
 

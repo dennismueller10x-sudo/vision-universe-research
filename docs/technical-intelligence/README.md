@@ -13,4 +13,4 @@
 | [ROADMAP.md](ROADMAP.md) | echte Folgeschritte |
 | [QUALITY_GATES.md](QUALITY_GATES.md) | Gates und ihr Status |
 
-Kurzfassung der Evidenz: Hauptszenarien erreichen Zielzone 1 im Test (2019–2026, 42.802 Fälle) in **41,9 %** der Fälle gegenüber **40,1 %** bei zufälligem Timing mit gleicher Geometrie. Kalibrierung nicht bestanden → keine Wahrscheinlichkeiten. Fibonacci-Niveaus ohne Häufung. Stärkster Elliott-Befund: Konsistenz mit dem höheren Grad.
+Kurzfassung der Evidenz (korrigierter Lauf, siehe TECHNICAL_EVIDENCE §0): Hauptszenarien erreichen Zielzone 1 im Test (2019–2026, 45.328 Fälle) in **35,4 %** der Fälle gegenüber **35,5 %** bei zufälligem Timing mit gleicher Geometrie — **kein messbarer Vorteil**. Kalibrierung nicht bestanden → keine Wahrscheinlichkeiten. Fibonacci-Niveaus ohne Häufung. Elliott-Lehrbuch-Erwartungen treffen seltener ein als Zufall mit gleichen Abständen; relativ aussagekräftig ist nur die Konsistenz mit dem höheren Grad. Das Chartbild ist Einordnung, kein Signalgeber.
