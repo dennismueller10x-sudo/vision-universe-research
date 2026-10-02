@@ -386,6 +386,147 @@
         "status": "PASS"
       },
       "runId": 37026887351
+    },
+    "D": {
+      "afterLogicalHash": "252cabeb8c85bd7d280cf40943ce329c783c275f10e90449f7cc51b7e21e9c44",
+      "afterTables": {
+        "audit": {
+          "count": 18,
+          "identitySha256": "05019deab8e5cbee0d9d281d2d686c59d5baf7e1201d06e4a94e179171f6a715",
+          "sha256": "7cab3ebacf2b5233011c103d3d2cd9587b7d42db6bdcac40423bac22089186ac"
+        },
+        "event_alias": {
+          "count": 0,
+          "identitySha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "count": 130,
+          "identitySha256": "25b4f6c0c92521210b31bc36203dfb3dc4753a70b6cede80ee1a21ec04fc1648",
+          "sha256": "69e7893d2492eb88448300ee2d91298940b889efc35c80ac4e0630707f9d0909"
+        },
+        "items": {
+          "count": 157,
+          "identitySha256": "74cfe32d9f1de574d6502a5488059074106b7b3db6941c9b6244539afad6c95f",
+          "sha256": "40c774db109d93bf38d485166d5a1bacad9a90d7bb8efe70980909d36f1063dc"
+        },
+        "sources": {
+          "count": 34,
+          "identitySha256": "76fdc1eb1e068695577a96de619251dc0189a0678849e20494f94a36b8667195",
+          "sha256": "793afcf64d18ba8be395375dd6871f06644affecbcbdbcbe099b35ad82be5bcc"
+        },
+        "state": {
+          "count": 44,
+          "identitySha256": "d7d0f33cf274b7e9a81e6b788f7c09c499a7cbdbb128af37dbf381e1d963f164",
+          "sha256": "270fcbfc3469e2f0b0bc4d7805c88b18e8f97736b5694ce167b262e38927206b"
+        }
+      },
+      "beforeLogicalHash": "2ef7eeb96a6e724a9bd06eeb73f6783ac155cc5b93e3985315ddc0510425d9f3",
+      "beforeTables": {
+        "audit": {
+          "count": 18,
+          "identitySha256": "05019deab8e5cbee0d9d281d2d686c59d5baf7e1201d06e4a94e179171f6a715",
+          "sha256": "7cab3ebacf2b5233011c103d3d2cd9587b7d42db6bdcac40423bac22089186ac"
+        },
+        "event_alias": {
+          "count": 0,
+          "identitySha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "events": {
+          "count": 130,
+          "identitySha256": "25b4f6c0c92521210b31bc36203dfb3dc4753a70b6cede80ee1a21ec04fc1648",
+          "sha256": "69e7893d2492eb88448300ee2d91298940b889efc35c80ac4e0630707f9d0909"
+        },
+        "items": {
+          "count": 157,
+          "identitySha256": "74cfe32d9f1de574d6502a5488059074106b7b3db6941c9b6244539afad6c95f",
+          "sha256": "40c774db109d93bf38d485166d5a1bacad9a90d7bb8efe70980909d36f1063dc"
+        },
+        "sources": {
+          "count": 34,
+          "identitySha256": "76fdc1eb1e068695577a96de619251dc0189a0678849e20494f94a36b8667195",
+          "sha256": "793afcf64d18ba8be395375dd6871f06644affecbcbdbcbe099b35ad82be5bcc"
+        },
+        "state": {
+          "count": 44,
+          "identitySha256": "d7d0f33cf274b7e9a81e6b788f7c09c499a7cbdbb128af37dbf381e1d963f164",
+          "sha256": "c775cc5daceae99d7cd17f0a73776ffd214f17e917b0da03b9f8611878d2558a"
+        }
+      },
+      "consumer": {
+        "assets": 42,
+        "bytes": 674684,
+        "companies": 20,
+        "generation": "efbccf1495b2f0f32ea7a757",
+        "maxPayloadBytes": 181235
+      },
+      "delivery": {
+        "availableTickers": 21,
+        "privatePathsRejected": 3,
+        "status": "PASS",
+        "transport": "AUTHENTICATED_R2_TO_LOOPBACK_API_TO_BROWSER_CONTRACT",
+        "unavailableTickers": 1
+      },
+      "pages": {
+        "bytes": 1349038,
+        "files": 83,
+        "generation": "efbccf1495b2f0f32ea7a757",
+        "privateObjectsRead": 0,
+        "retainedGenerations": 2,
+        "status": "PASS"
+      },
+      "preserve": {
+        "bytes": 291329,
+        "operations": 7,
+        "sha256": "5f3b1b721e0b9040d700c326d14cbe02e8440eb58f18345bdb857d77f5673d57",
+        "status": "PRESERVED"
+      },
+      "producerCommit": "85c9a12ebeef105066c0a2c8acc114dc93a58da7",
+      "publication": {
+        "generation": "efbccf1495b2f0f32ea7a757",
+        "retainedGenerations": 2,
+        "status": "PUBLISHED",
+        "unchangedObjects": 0,
+        "uploadedBytes": 674684,
+        "uploadedObjects": 42
+      },
+      "restore": {
+        "bytes": 289807,
+        "operations": 3,
+        "sha256": "5361b77959ecc2e3c053f1644a7e2610f6daa066708fb437512c5e6dbe82bae8",
+        "status": "RESTORED"
+      },
+      "run": {
+        "databaseBytes": 3231744,
+        "export": {
+          "exportedCompanies": 32,
+          "generation": "02c8667cb19ec8747ae00d15"
+        },
+        "httpStats": {
+          "bytesDownloaded": 0,
+          "cacheHits": 0,
+          "memoHits": 0,
+          "notModified": 0,
+          "retries": 0
+        },
+        "publicRequests": 0,
+        "run": {
+          "discoveryFailures": 0,
+          "documentFailures": 0,
+          "duplicate": 0,
+          "invalid": 0,
+          "new": 0,
+          "processedCompanies": 21,
+          "secFailures": 0,
+          "sourceFailures": 0,
+          "unmatched": 0
+        },
+        "runtimeSeconds": 1.201,
+        "secRequests": 0,
+        "status": "PASS"
+      },
+      "runId": 37032355229
     }
   },
   "browser": {
@@ -401,13 +542,589 @@
       1440
     ]
   },
+  "browserCi": {
+    "accessibility": {
+      "accessibilityPages": 76,
+      "violations": []
+    },
+    "checks": {
+      "findings": 0,
+      "output": "/tmp/vu2-screenshots",
+      "passed": 88
+    },
+    "initialFailure": {
+      "decodedBytes": 5967969,
+      "extraAsset": "/assets/discover-perspektiven/qualitaet-zum-preis.jpeg",
+      "extraAssetBytes": 416861,
+      "requests": 41,
+      "view": "stock",
+      "width": 390
+    },
+    "initialJobId": 110921951442,
+    "rerun": {
+      "resourceBudgetChecks": 8,
+      "resourceBudgets": [
+        {
+          "decodedBytes": 1807615,
+          "pass": true,
+          "requests": 23,
+          "view": "home",
+          "width": 1440
+        },
+        {
+          "decodedBytes": 22287192,
+          "pass": true,
+          "requests": 30,
+          "view": "screener",
+          "width": 1440
+        },
+        {
+          "decodedBytes": 22255734,
+          "pass": true,
+          "requests": 20,
+          "view": "screenerPro",
+          "width": 1440
+        },
+        {
+          "decodedBytes": 5551108,
+          "pass": true,
+          "requests": 40,
+          "view": "stock",
+          "width": 1440
+        },
+        {
+          "decodedBytes": 1807615,
+          "pass": true,
+          "requests": 23,
+          "view": "home",
+          "width": 390
+        },
+        {
+          "decodedBytes": 22287192,
+          "pass": true,
+          "requests": 30,
+          "view": "screener",
+          "width": 390
+        },
+        {
+          "decodedBytes": 22255734,
+          "pass": true,
+          "requests": 20,
+          "view": "screenerPro",
+          "width": 390
+        },
+        {
+          "decodedBytes": 5551108,
+          "pass": true,
+          "requests": 40,
+          "view": "stock",
+          "width": 390
+        }
+      ]
+    },
+    "rerunJobId": 110926085652,
+    "runId": 37032323232,
+    "sameCodeBeforeRerun": true
+  },
   "discovery": {
     "BLOCKED": 10,
     "DEGRADED": 4,
     "NOT_CHECKED": 5987,
     "VALIDATED": 77
   },
+  "exportDeterminism": {
+    "export": {
+      "exportedCompanies": 4973,
+      "generation": "08ead2348ff27829bb50e098"
+    },
+    "files": 11223,
+    "identicalFileDigests": true,
+    "runtimeSeconds": 20.581,
+    "status": "PASS"
+  },
   "foundationMerge": "3a13a31dd41efd65ce34f3b975030d3f715f7d51",
+  "fullUniverseCoverage": {
+    "byExchange": {
+      "AMEX": {
+        "anyMaterialIntelligence": 47,
+        "consumerPayloadAvailable": 60,
+        "discoveryAttempted": 217,
+        "financialSummaryAvailable": 3,
+        "financialSummaryCurrent": 3,
+        "noCompanySource": 163,
+        "noConsumerPayload": 163,
+        "noNews": 223,
+        "noNewsOrSubmissionSource": 166,
+        "noRecentMaterialIntelligence": 176,
+        "officialDomainCandidate": 4,
+        "officialDomainFound": 1,
+        "recentMaterialSEC": 28,
+        "secIdentity": 217,
+        "secOnlyEvents": 57,
+        "secSubmissions": 57,
+        "total": 223
+      },
+      "BATS": {
+        "anyMaterialIntelligence": 3,
+        "consumerPayloadAvailable": 4,
+        "discoveryAttempted": 4,
+        "estimatedUpcomingEarnings": 1,
+        "financialSummaryAvailable": 4,
+        "financialSummaryCurrent": 3,
+        "noCompanySource": 154,
+        "noConsumerPayload": 154,
+        "noNews": 158,
+        "noNewsOrSubmissionSource": 157,
+        "noRecentMaterialIntelligence": 155,
+        "officialDomainCandidate": 1,
+        "recentMaterialSEC": 1,
+        "secIdentity": 4,
+        "secOnlyEvents": 1,
+        "secSubmissions": 1,
+        "total": 158
+      },
+      "NASDAQ": {
+        "activeExternalNews": 41,
+        "activeFirstPartyNews": 14,
+        "anyMaterialIntelligence": 2521,
+        "anyNews": 54,
+        "callSourceFound": 8,
+        "calls": 7,
+        "confirmedUpcomingEarnings": 1,
+        "consumerPayloadAvailable": 3100,
+        "discoveryAttempted": 3248,
+        "earningsPageFound": 12,
+        "estimatedUpcomingEarnings": 134,
+        "eventSourceActive": 6,
+        "eventSourceFound": 7,
+        "financialSummaryAvailable": 3071,
+        "financialSummaryCurrent": 2367,
+        "irPageFound": 16,
+        "newsSourceActive": 15,
+        "newsSourceDiscovered": 15,
+        "newsSourceValidated": 15,
+        "noCompanySource": 492,
+        "noConsumerPayload": 488,
+        "noNews": 3534,
+        "noNewsOrSubmissionSource": 2892,
+        "noRecentMaterialIntelligence": 1067,
+        "officialDomainCandidate": 413,
+        "officialDomainFound": 30,
+        "presentationSourceFound": 10,
+        "presentations": 8,
+        "recentMaterialNews": 20,
+        "recentMaterialSEC": 388,
+        "secIdentity": 3248,
+        "secOnlyEvents": 661,
+        "secSubmissions": 687,
+        "total": 3588,
+        "transcriptLinks": 4,
+        "webcasts": 5
+      },
+      "NYSE": {
+        "activeExternalNews": 12,
+        "activeFirstPartyNews": 21,
+        "anyMaterialIntelligence": 1409,
+        "anyNews": 33,
+        "callSourceFound": 8,
+        "calls": 7,
+        "confirmedUpcomingEarnings": 3,
+        "consumerPayloadAvailable": 1805,
+        "discoveryAttempted": 1930,
+        "earningsPageFound": 29,
+        "estimatedUpcomingEarnings": 51,
+        "eventSourceActive": 5,
+        "eventSourceFound": 6,
+        "financialSummaryAvailable": 1794,
+        "financialSummaryCurrent": 1352,
+        "irPageFound": 34,
+        "newsSourceActive": 21,
+        "newsSourceDiscovered": 21,
+        "newsSourceValidated": 21,
+        "noCompanySource": 279,
+        "noConsumerPayload": 278,
+        "noNews": 2050,
+        "noNewsOrSubmissionSource": 1738,
+        "noRecentMaterialIntelligence": 674,
+        "officialDomainCandidate": 475,
+        "officialDomainFound": 60,
+        "presentationSourceFound": 28,
+        "presentations": 17,
+        "recentMaterialNews": 19,
+        "recentMaterialSEC": 172,
+        "secIdentity": 1930,
+        "secOnlyEvents": 317,
+        "secSubmissions": 328,
+        "total": 2083,
+        "transcriptLinks": 6,
+        "webcasts": 3
+      },
+      "NYSE ARCA": {
+        "consumerPayloadAvailable": 1,
+        "discoveryAttempted": 2,
+        "financialSummaryAvailable": 1,
+        "noCompanySource": 11,
+        "noConsumerPayload": 11,
+        "noNews": 12,
+        "noNewsOrSubmissionSource": 12,
+        "noRecentMaterialIntelligence": 12,
+        "secIdentity": 2,
+        "total": 12
+      },
+      "NYSE MKT": {
+        "anyMaterialIntelligence": 8,
+        "consumerPayloadAvailable": 9,
+        "discoveryAttempted": 18,
+        "financialSummaryAvailable": 2,
+        "financialSummaryCurrent": 1,
+        "noCompanySource": 12,
+        "noConsumerPayload": 12,
+        "noNews": 21,
+        "noNewsOrSubmissionSource": 13,
+        "noRecentMaterialIntelligence": 13,
+        "recentMaterialSEC": 5,
+        "secIdentity": 18,
+        "secOnlyEvents": 8,
+        "secSubmissions": 8,
+        "total": 21
+      }
+    },
+    "byMasterListingCountry": {
+      "US": {
+        "activeExternalNews": 53,
+        "activeFirstPartyNews": 35,
+        "anyMaterialIntelligence": 3984,
+        "anyNews": 87,
+        "callSourceFound": 16,
+        "calls": 14,
+        "confirmedUpcomingEarnings": 4,
+        "consumerPayloadAvailable": 4973,
+        "discoveryAttempted": 5412,
+        "earningsPageFound": 41,
+        "estimatedUpcomingEarnings": 186,
+        "eventSourceActive": 11,
+        "eventSourceFound": 13,
+        "financialSummaryAvailable": 4869,
+        "financialSummaryCurrent": 3722,
+        "irPageFound": 50,
+        "newsSourceActive": 36,
+        "newsSourceDiscovered": 36,
+        "newsSourceValidated": 36,
+        "noCompanySource": 1110,
+        "noConsumerPayload": 1105,
+        "noNews": 5991,
+        "noNewsOrSubmissionSource": 4971,
+        "noRecentMaterialIntelligence": 2094,
+        "officialDomainCandidate": 891,
+        "officialDomainFound": 91,
+        "presentationSourceFound": 38,
+        "presentations": 25,
+        "recentMaterialNews": 39,
+        "recentMaterialSEC": 594,
+        "secIdentity": 5412,
+        "secOnlyEvents": 1044,
+        "secSubmissions": 1081,
+        "total": 6078,
+        "transcriptLinks": 10,
+        "webcasts": 8
+      }
+    },
+    "counts": {
+      "activeExternalNews": {
+        "companies": 53,
+        "percent": 0.87
+      },
+      "activeFirstPartyNews": {
+        "companies": 35,
+        "percent": 0.58
+      },
+      "anyMaterialIntelligence": {
+        "companies": 3984,
+        "percent": 65.55
+      },
+      "anyNews": {
+        "companies": 87,
+        "percent": 1.43
+      },
+      "callSourceFound": {
+        "companies": 16,
+        "percent": 0.26
+      },
+      "calls": {
+        "companies": 14,
+        "percent": 0.23
+      },
+      "confirmedUpcomingEarnings": {
+        "companies": 4,
+        "percent": 0.07
+      },
+      "consumerPayloadAvailable": {
+        "companies": 4973,
+        "percent": 81.82
+      },
+      "discoveryAttempted": {
+        "companies": 5412,
+        "percent": 89.04
+      },
+      "earningsPageFound": {
+        "companies": 41,
+        "percent": 0.67
+      },
+      "estimatedUpcomingEarnings": {
+        "companies": 186,
+        "percent": 3.06
+      },
+      "eventSourceActive": {
+        "companies": 11,
+        "percent": 0.18
+      },
+      "eventSourceFound": {
+        "companies": 13,
+        "percent": 0.21
+      },
+      "financialSummaryAvailable": {
+        "companies": 4869,
+        "percent": 80.11
+      },
+      "financialSummaryCurrent": {
+        "companies": 3722,
+        "percent": 61.24
+      },
+      "irPageFound": {
+        "companies": 50,
+        "percent": 0.82
+      },
+      "newsSourceActive": {
+        "companies": 36,
+        "percent": 0.59
+      },
+      "newsSourceDiscovered": {
+        "companies": 36,
+        "percent": 0.59
+      },
+      "newsSourceValidated": {
+        "companies": 36,
+        "percent": 0.59
+      },
+      "noCompanySource": {
+        "companies": 1110,
+        "percent": 18.26
+      },
+      "noConsumerPayload": {
+        "companies": 1105,
+        "percent": 18.18
+      },
+      "noNews": {
+        "companies": 5991,
+        "percent": 98.57
+      },
+      "noNewsOrSubmissionSource": {
+        "companies": 4971,
+        "percent": 81.79
+      },
+      "noRecentMaterialIntelligence": {
+        "companies": 2094,
+        "percent": 34.45
+      },
+      "officialDomainCandidate": {
+        "companies": 891,
+        "percent": 14.66
+      },
+      "officialDomainFound": {
+        "companies": 91,
+        "percent": 1.5
+      },
+      "presentationSourceFound": {
+        "companies": 38,
+        "percent": 0.63
+      },
+      "presentations": {
+        "companies": 25,
+        "percent": 0.41
+      },
+      "recentMaterialNews": {
+        "companies": 39,
+        "percent": 0.64
+      },
+      "recentMaterialSEC": {
+        "companies": 594,
+        "percent": 9.77
+      },
+      "secIdentity": {
+        "companies": 5412,
+        "percent": 89.04
+      },
+      "secOnlyEvents": {
+        "companies": 1044,
+        "percent": 17.18
+      },
+      "secSubmissions": {
+        "companies": 1081,
+        "percent": 17.79
+      },
+      "transcriptLinks": {
+        "companies": 10,
+        "percent": 0.16
+      },
+      "webcasts": {
+        "companies": 8,
+        "percent": 0.13
+      }
+    },
+    "discoveryStatuses": {
+      "BLOCKED": 10,
+      "DEGRADED": 4,
+      "NOT_CHECKED": 5987,
+      "VALIDATED": 77
+    },
+    "freshnessWindowsDays": {
+      "financials": 180,
+      "materialSEC": 90,
+      "news": 180
+    },
+    "generatedAt": "2026-10-02T16:08:00Z",
+    "interpretation": "Material intelligence includes current financials, verified recent reports/material events, current HIGH/CRITICAL accepted news or confirmed upcoming earnings. CIK identity alone is not coverage. External news requires accepted issuer matches from a healthy global source; feeds and domain candidates are not issuer coverage. Document/call references may be historical. noConsumerPayload is unsupported intelligence, not an unsupported master listing.",
+    "parserFailures": 0,
+    "platformCompanies": {
+      "GCS": 15,
+      "GENERIC": 15,
+      "INVESTIS": 1,
+      "Q4": 9,
+      "STOCKPR": 9,
+      "WEB_DRIVER": 5,
+      "WORDPRESS": 1
+    },
+    "schema": "vu-intelligence-coverage-1.0.0",
+    "sourceStatuses": {
+      "ACTIVE": 59,
+      "EMPTY": 2,
+      "INACTIVE": 1
+    },
+    "totalCompanies": 6078
+  },
+  "mainBrowserBaseline": {
+    "accessibilityPages": 76,
+    "checks": 88,
+    "commit": "3a13a31dd41efd65ce34f3b975030d3f715f7d51",
+    "findings": 0,
+    "resourceBudgets": {
+      "results": [
+        {
+          "budget": {
+            "decodedBytes": 1820000,
+            "history": false,
+            "requests": 45
+          },
+          "decodedBytes": 1786921,
+          "failures": [],
+          "pass": true,
+          "requests": 22,
+          "route": "#/",
+          "view": "home",
+          "width": 1440
+        },
+        {
+          "budget": {
+            "decodedBytes": 30500000,
+            "history": false,
+            "requests": 30
+          },
+          "decodedBytes": 22266498,
+          "failures": [],
+          "pass": true,
+          "requests": 29,
+          "route": "#/screener",
+          "view": "screener",
+          "width": 1440
+        },
+        {
+          "budget": {
+            "decodedBytes": 30500000,
+            "history": false,
+            "requests": 30
+          },
+          "decodedBytes": 22235040,
+          "failures": [],
+          "pass": true,
+          "requests": 19,
+          "route": "#/screener/profi",
+          "view": "screenerPro",
+          "width": 1440
+        },
+        {
+          "budget": {
+            "decodedBytes": 5700000,
+            "history": true,
+            "requests": 45
+          },
+          "decodedBytes": 5530392,
+          "failures": [],
+          "pass": true,
+          "requests": 39,
+          "route": "#/aktie/NVDA",
+          "view": "stock",
+          "width": 1440
+        },
+        {
+          "budget": {
+            "decodedBytes": 1820000,
+            "history": false,
+            "requests": 45
+          },
+          "decodedBytes": 1786921,
+          "failures": [],
+          "pass": true,
+          "requests": 22,
+          "route": "#/",
+          "view": "home",
+          "width": 390
+        },
+        {
+          "budget": {
+            "decodedBytes": 30500000,
+            "history": false,
+            "requests": 30
+          },
+          "decodedBytes": 22266498,
+          "failures": [],
+          "pass": true,
+          "requests": 29,
+          "route": "#/screener",
+          "view": "screener",
+          "width": 390
+        },
+        {
+          "budget": {
+            "decodedBytes": 30500000,
+            "history": false,
+            "requests": 30
+          },
+          "decodedBytes": 22235040,
+          "failures": [],
+          "pass": true,
+          "requests": 19,
+          "route": "#/screener/profi",
+          "view": "screenerPro",
+          "width": 390
+        },
+        {
+          "budget": {
+            "decodedBytes": 5700000,
+            "history": true,
+            "requests": 45
+          },
+          "decodedBytes": 5530392,
+          "failures": [],
+          "pass": true,
+          "requests": 39,
+          "route": "#/aktie/NVDA",
+          "view": "stock",
+          "width": 390
+        }
+      ],
+      "scope": "Decoded subresource bytes and request count; not production latency"
+    }
+  },
   "registeredSources": {
     "ACTIVE": 59,
     "BLOCKED": 0,
