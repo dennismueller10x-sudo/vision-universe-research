@@ -375,9 +375,16 @@
          nur mit bestandenem returnBasis-Check, und umgekehrt. */
       if (r.checks && r.checks.returnBasis && ((r.returnType === REQUIRED_RETURN_TYPE) !== (r.checks.returnBasis.state === "PASS"))) errors.push(r.id + ": returnType and returnBasis check disagree");
       if (study.returnType && r.returnType !== study.returnType) errors.push(r.id + ": rule returnType differs from study returnType");
+      /* Base Rate und Signal auf derselben Basis - keine Mischbasis
+         (Owner-Programm 02.10.2026, §14). Die Signal-Studie muss die Basis
+         ihrer Base Rate ausweisen. */
+      if (study.basisContract && !r.baseRateReturnType) errors.push(r.id + ": base rate return basis not recorded");
+      if (r.baseRateReturnType && r.baseRateReturnType !== r.returnType) errors.push(r.id + ": base rate return basis differs from signal return basis");
       if (r.checks && r.checks.survivorship && r.checks.survivorship.state !== "PASS" && (r.trust === "USABLE" || r.trust === "ROBUST")) errors.push(r.id + ": high trust without survivorship control");
       if (r.display && r.display.allowed !== displayAllowed(r.trust, study.certification)) errors.push(r.id + ": display gate does not follow trust and certification");
     });
+    var z = study.survivorshipSensitivity;
+    if (z && z.computed && z.returnType !== study.returnType) errors.push("survivorship sensitivity uses a different return basis than the study");
     return errors;
   }
 

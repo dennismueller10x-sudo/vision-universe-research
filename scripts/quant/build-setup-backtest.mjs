@@ -26,11 +26,12 @@ import { gunzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { fromBars } from "./lib/daily-prices.mjs";
 
 const require = createRequire(import.meta.url);
-const Canonical = require(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "quant/engines/technical/canonical-bars.js"));
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SB = require(join(ROOT, "quant/engines/signal-backtest.js"));
+const MarketQualityVersion = () => require(join(ROOT, "quant/engines/market-quality.js")).TR_CONTRACT_VERSION;
 const REPLAY = join(ROOT, "quant/data/product/setup-replay-v1");
 const OUT = join(ROOT, "quant/data/product/setup-backtest-v1.json");
 const HIST = join(ROOT, "quant/data/product/setup-observation-history/setup-mapping-1.0.0");
@@ -66,20 +67,17 @@ export function contractExit(obs, j, dayIndexOf, sa, e, maxHold) {
 }
 
 /* Tageskurse eines Replays: splitbereinigt (Marken, Ausloeser) und
-   Gesamtrendite (Ergebnis). Nur zur Laufzeit, nie im Artefakt. */
+   Gesamtrendite (Ergebnis). Nur zur Laufzeit, nie im Artefakt. Derselbe
+   Lader und derselbe Gesamtrendite-Vertrag wie die Signal-Studie
+   (scripts/quant/lib/daily-prices.mjs fromBars -> market-quality.js
+   totalReturnVerdict): eine Reihe mit nicht eingerechneter Ausschuettung
+   traegt keine Gesamtrendite. */
 function dailyOf(securityId, workDir) {
   const candidates = [workDir ? join(workDir, "tiingo", "daily", securityId + ".json") : null, join(ROOT, "quant/data/market/golden-preview/daily", securityId + ".json")].filter(Boolean);
   const file = candidates.find((f) => existsSync(f));
   if (!file) return null;
-  const payload = JSON.parse(readFileSync(file, "utf8")), bars = payload.bars || [];
-  const actions = [];
-  for (const b of bars) {
-    if (b.splitFactor !== 1) actions.push({ type: "split", exDate: b.date, ratio: b.splitFactor });
-    if (Number.isFinite(b.dividend) && b.dividend > 0) actions.push({ type: "dividend", exDate: b.date, amount: b.dividend });
-  }
-  const w = Canonical.fromPriceBars(bars, actions, { instrumentId: payload.ticker, source: "tiingo", sourceRevision: payload.updatedAt, currency: payload.currency || "USD", exchange: payload.exchange || "US" });
-  const SA = w.SPLIT_ADJUSTED, TR = w.TOTAL_RETURN || null;
-  return { rows: bars.map((b, i) => [b.date, SA.close[i], SA.high[i], TR && Number.isFinite(TR.close[i]) ? TR.close[i] : null]), totalReturn: !!TR && bars.every((_, i) => TR.close[i] > 0) };
+  const d = fromBars(JSON.parse(readFileSync(file, "utf8")));
+  return { rows: d.dates.map((date, i) => [date, d.close[i], d.high[i], d.tr ? d.tr[i] : null]), totalReturn: d.totalReturn, legacyTotalReturn: d.legacyTotalReturn, trVerdict: d.trVerdict };
 }
 
 function main() {
@@ -113,7 +111,20 @@ function main() {
     }
   }
   const pitViolations = replays.reduce((s, r) => s + r.pitViolations, 0);
-  const allTR = replays.every((r) => r.totalReturn === "AVAILABLE");
+  /* Gesamtrendite-Vertrag: Replays ohne bestaetigte Gesamtrendite fallen
+     heraus (gezaehlt), solange >= 95 % bestaetigt sind - dann rechnet die
+     Studie rein in Gesamtrendite. Darunter rechnet sie rein in Kursrendite.
+     Nie gemischt. */
+  const trReasons = {};
+  for (const r of replays) { const k = r.daily.trVerdict.confirmed ? "TOTAL_RETURN_CONFIRMED" : "TOTAL_RETURN_REJECTED_" + r.daily.trVerdict.reason; trReasons[k] = (trReasons[k] || 0) + 1; }
+  const trConfirmed = replays.filter((r) => r.totalReturn === "AVAILABLE");
+  const trQuality = { contract: MarketQualityVersion(), replays: replays.length, confirmed: trConfirmed.length, legacyConfirmed: replays.filter((r) => r.daily.legacyTotalReturn).length,
+    share: replays.length ? SB.round(trConfirmed.length / replays.length, 3) : null, reasons: trReasons, excluded: [] };
+  const allTR = replays.length > 0 && trConfirmed.length / replays.length >= 0.95;
+  if (allTR && trConfirmed.length < replays.length) {
+    trQuality.excluded = replays.filter((r) => r.totalReturn !== "AVAILABLE").map((r) => ({ ticker: r.ticker, reason: r.daily.trVerdict.reason }));
+    replays.splice(0, replays.length, ...trConfirmed);
+  }
 
   const studies = TYPES.map((type) => {
     const per = DAY_HORIZONS.map(() => ({ rets: [], exSpy: [], dd: [], mae: [], mfe: [] }));
@@ -211,7 +222,7 @@ function main() {
       oos: { state: oosPass ? "PASS" : "FAIL", reason: oosPass ? null : "OOS_DIRECTION_NOT_CONFIRMED", value: oos },
       walkForward: { state: agreeShare >= 0.75 ? "PASS" : "FAIL", reason: agreeShare >= 0.75 ? null : "FOLDS_DISAGREE", value: Math.round(agreeShare * folds.length) + " von " + folds.length + " Folds in derselben Richtung" },
       survivorship: { state: "FAIL", reason: "HAND_PICKED_SURVIVORS", value: "Nur Titel mit vollständiger Tageshistorie im Repository (" + replays.map((r) => r.ticker).join(", ") + "); alle heute gelistet" },
-      returnBasis: allTR ? { state: "PASS", value: "Gesamtrendite mit Dividenden" } : { state: "FAIL", reason: "TOTAL_RETURN_MISSING", value: "Kursrendite ohne Dividenden" },
+      returnBasis: allTR ? { state: "PASS", value: "Gesamtrendite mit Dividenden" } : { state: "FAIL", reason: "TOTAL_RETURN_COVERAGE_SHORT", value: "Kursrendite ohne Dividenden (Gesamtrendite nur für " + trQuality.confirmed + " von " + trQuality.replays + " Titeln bestätigt)" },
       costs: { state: "PASS", value: SB.FRICTIONS.roundTripBps + " bps je Runde" },
       slippage: { state: "PASS", value: SB.FRICTIONS.slippageBps + " bps je Runde" },
       benchmark: { state: "PASS", value: "SPY-Kurs über dasselbe Fenster; Basis aller Beobachtungstage derselben Titel" },
@@ -249,7 +260,7 @@ function main() {
   const out = {
     schemaVersion: SB.STUDY_SCHEMA, kind: "SETUP_BACKTEST", setupSchema: SETUP_BACKTEST_SCHEMA, engineVersion: SB.VERSION, generatedAt: new Date().toISOString(),
     asOf: replays.length ? replays.map((r) => r.to).sort().at(-1) : null,
-    source: { replay: "quant/data/product/setup-replay-v1", replaysWithoutPriceSource: withoutPrices, prices: workDir ? "runner-private canonical history + golden preview" : "golden preview", titles: replays.map((r) => ({ ticker: r.ticker, from: r.rows[0]?.[0] || null, to: r.to, observations: r.rows.length, cadence: r.cadence })),
+    source: { replay: "quant/data/product/setup-replay-v1", replaysWithoutPriceSource: withoutPrices, totalReturnQuality: trQuality, prices: workDir ? "runner-private canonical history + golden preview" : "golden preview", titles: replays.map((r) => ({ ticker: r.ticker, from: r.rows[0]?.[0] || null, to: r.to, observations: r.rows.length, cadence: r.cadence })),
       setupEngine: replays[0]?.engine || null },
     returnType: allTR ? "TOTAL_RETURN" : SB.RETURN_TYPE, semantics: SB.SEMANTICS.setup, frictions: SB.FRICTIONS, horizons: DAY_HORIZONS, maxHoldDays: MAX_HOLD,
     parity: { checked: parityChecked, mismatches: parityMismatch, rows: parityRows },

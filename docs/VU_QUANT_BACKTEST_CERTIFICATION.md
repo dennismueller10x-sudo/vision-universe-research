@@ -85,22 +85,51 @@ Gemessen heute: 4 Stände über 18 Tage, 1.009 Wechsel und noch kein abgeschloss
 - **Engine:** `quant/engines/profile-backtest.js` liest Stände nur strikt vor dem Termin. Ohne frische Zugehörigkeit bricht sie ab (`MEMBERSHIP_STALE`) und greift nie auf das heutige Universum zurück.
 - **Belege:** Sabotage-Tests zeigen das. Ein Snapshot aus der Zukunft ändert nichts, ein veralteter Stand bricht den Lauf ab.
 
-## Überlebende
+## Überlebende (survivorship-control-1.0.0, 02.10.2026)
 
-| Kennzahl | Wert |
-|---|---|
-| SURVIVORSHIP_GATE | PASS |
-| SURVIVORSHIP_CONTROL | FAIL |
-| DELISTED_IDENTIFIED | 191 |
-| DELISTED_WITH_HISTORY | 0 |
-| DELISTED_BACKTEST_ELIGIBLE | 0 |
+Zwei Begriffe, zwei Zustände (`quant/engines/survivorship-control.js`):
 
-186 Kürzel inaktiver Titel haben eine Kursreihe, die weiterläuft. Das Kürzel wurde neu vergeben; die Reihe ist keine Historie des delisteten Titels. Vorwärts gesammelte Stände (Setup-Historie, Index-Zugehörigkeit) sind überlebensfrei, solange kein Fall weggelassen wird.
+| Begriff | Bedeutung | Stand |
+|---|---|---|
+| SURVIVORSHIP_GATE | Schutz: keine Auswertung ohne Kontrolle steht über „eingeschränkt“. Löst das Problem nicht (`solvesSurvivorship: false`). | PASS |
+| SURVIVORSHIP_CONTROL | Historische Nicht-Überlebende sind in einer Studie tatsächlich enthalten. | `PARTIAL`, sobald die Sensitivität delistete Titel enthält; sonst `NOT_AVAILABLE`. Nie PASS, solange die Hauptstudie nur heutige Titel enthält. |
+
+**Identität:** Eine Kursreihe gehört einem Listing nur, wenn ihr Zeitraum im Listing-Fenster liegt (Kennung `tiingo:BÖRSE:KÜRZEL:Start`). Es gibt keinen Join über das Kürzel. Die 191 inaktiven Stammaktien des Security Masters werden so klassifiziert (`quant/data/product/survivorship-control-v1.json`):
+
+| Klasse | Bedeutung | Anzahl |
+|---|---|---|
+| A | delistet, Historie bis zum Listing-Ende | 0 |
+| B | delistet, Historie unvollständig | 0 |
+| C | delistet, keine Historie | 1 |
+| D | Kürzel neu vergeben, die Reihe gehört dem späteren Listing | 183 |
+| E | Übernahme/Fusion belegt | 0 (lokal kein Beleg) |
+| F | Identität unsicher (Reihe läuft über das Listing-Ende hinaus, z. B. COHR) | 7 |
+
+Eine CIK wird keinem früheren Listing zugeordnet: die CIK-Karte gilt dem heutigen Emittenten eines Kürzels.
+
+**Delistete Titel ab 2015:** Der interne Delisting-Abruf (privater Speicher `tiingo-delisted`, Owner-Freigabe 01.10.2026 für interne Auswertung) liefert Kursreihen beendeter Listings ab 2015. `scripts/quant/build-survivorship-control.mjs` liest sein Manifest, klassifiziert jedes Listing (A–F), erkennt Kürzelwechsel (letzte Kerze = Kerze eines heutigen Titels → kein Delisting) und baut ein runner-privates Wochenbündel. Öffentlich erscheinen nur Zähler.
+
+**Ausgang eines Delistings:** lokal unbelegt (Insolvenz, Barabfindung, Aktientausch, Rückzug). Reicht ein Horizont über das Reihenende, wird der Fall **zensiert** und gezählt, nie pauschal mit 0 % oder −100 % gewertet. Die Variante „letzter Kurs“ ist eine ausgewiesene Annahme, kein Ergebnis.
+
+**Sensitivität (Signal-Studie, ab 2016):** dieselben Regeln, dieselbe Renditebasis, dieselbe Wochenachse in zwei Universen – `CURRENT_SURVIVORS_ONLY` und `HISTORICAL_ELIGIBLE_SUBSET` (jedes delistete Listing in den Wochen, in denen es gehandelt wurde). Die Base Rate wird je Variante über genau deren Universum gerechnet. Ausgewiesen werden Fälle, unabhängige Fälle, Anteil im Plus, Base Rate, Abstand, Median, Rückgang und Zensierungen. Die Hauptstudie bleibt unverändert, und aus der Sensitivität folgt keine Zertifizierung.
+
+**Grenzen:** Vor 2016 gibt es keine delisteten Reihen. Alt-Listings später neu vergebener Kürzel sind nicht abrufbar (Klasse D).
+
+## Gesamtrendite-Vertrag (total-return-contract-1.0.0)
+
+- **Regel:** Eine Reihe gilt nur dann als Gesamtrendite, wenn jede Ausschüttung und jeder Split in der bereinigten Spalte angekommen ist. Ein Ex-Tag ohne Faktorsprung, ein Faktorsprung außerhalb 0,6–1,4 × der gemeldeten Ausschüttung oder ein nicht bereinigter Split ist eine Ablehnung, keine Warnung.
+- **Ein Vertrag:** `quant/engines/market-quality.js totalReturnVerdict` – dieselbe Funktion für SPY (`refresh-benchmark-history.mjs`), Signal- und Setup-Studie (`scripts/quant/lib/daily-prices.mjs`) und die Reparatur.
+- **Ursache der Ablehnungen:** Der tägliche Anhang behält die adjustedClose-Skala des Abruftags; jede spätere Ausschüttung fehlt in der Spalte. `scripts/market/repair-total-return-history.mjs` holt für abgelehnte Reihen die ganze Historie in einer Anfrage (wie SPY), höchstens 600 je Lauf, jüngste Lücke zuerst. Übernommen wird nur, was den Vertrag besteht und die Rohschlüsse bestätigt.
+- **Kein Mischen:** Unter 95 % bestätigter Titel rechnet die Signal-Studie ganz in Kursrendite, die Setup-Studie ebenso. Darüber fallen abgelehnte Titel heraus und werden gezählt (`quant/data/product/total-return-quality-v1.json`).
+
+## Methodikwechsel bei gleichem Stichtag
+
+`scripts/quant/methodology-fingerprint.mjs` fasst Methodik, Evidenz-Engines, Benchmark-Vertrag und Gesamtrendite-Vertrag in einen Fingerabdruck. Die Idempotenz-Stufe der Materialisierung rechnet neu, sobald er vom zuletzt materialisierten (`quant/data/product/methodology-fingerprint-v1.json`) abweicht – ohne `force`. Festgeschrieben wird er erst nach einem vollständigen Lauf.
 
 ## Produkt
 
 - **Radar-Karten und Aktienseite:** Sie zeigen „Historisch beobachtet / getestet / zertifiziert“ mit Status. Jede Trefferquote steht zusammen mit Base Rate, Differenz, Intervall, Fällen, effektiver Fallzahl, Median und typischem Rückgang. Hält der Abstand im jüngsten Testzeitraum nicht (`edgeOutOfSample = false`), steht dort ausdrücklich „Im jüngsten Testzeitraum nicht robust genug bestätigt.“
-- **`#/backtest`:** Die Übersicht nennt offen „Zertifiziert: 0 von 6 Backtest-Arten“. Die Überlebenden-Kontrolle heißt dort „nicht vorhanden – delistete Titel fehlen in den Ergebnissen“; ein PASS erscheint nur für das Gate.
+- **`#/backtest`:** Die Übersicht nennt offen „Zertifiziert: 0 von 6 Backtest-Arten“. Gate und Kontrolle stehen dort getrennt. Die Kontrolle heißt „teilweise“ oder „nicht vorhanden“; ein PASS erscheint nur für das Gate. Jede Regel zeigt die acht Vertrauensbausteine einzeln (Gesamtrendite, Point-in-Time, kein Blick in die Zukunft, Überlebende, Test außerhalb des Lernzeitraums, Walk-Forward, Stichprobe, unabhängige Fälle), dazu die Hinweise „Historisch getestet“, „Evidenz eingeschränkt“ und „Überlebenden-Effekt nicht vollständig kontrolliert“ sowie den Vergleich mit und ohne delistete Titel.
 - **Alert-Vertrag 3.0.0:**
   - `effectiveAt`, `validUntil` (7 Tage), `baseRate` und `isNew`.
   - Das Ledger sorgt dafür, dass derselbe `dedupeKey` nur einmal alarmiert. Ein Eintrag merkt sich den Radar-Stichtag der ersten Erkennung; ein wiederholter Lauf zum selben Stichtag meldet seine Alerts weiter als neu (`Radar.markSeen`, Regressionstest mit Sabotage).

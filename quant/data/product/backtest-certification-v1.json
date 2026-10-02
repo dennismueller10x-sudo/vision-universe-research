@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-02T09:33:10.321Z",
+ "generatedAt": "2026-10-02T12:12:49.171Z",
  "asOf": "2026-10-02",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
@@ -1727,13 +1727,36 @@
   }
  ],
  "survivorship": {
+  "version": "survivorship-control-1.0.0",
   "gate": "PASS",
-  "control": "FAIL",
+  "control": "NOT_AVAILABLE",
+  "SURVIVORSHIP_GATE": {
+   "state": "PASS",
+   "meaning": "Schutz: keine Auswertung ohne Überlebenden-Kontrolle steht über „eingeschränkt“. Das Gate löst das Problem nicht.",
+   "solvesSurvivorship": false
+  },
+  "SURVIVORSHIP_CONTROL": {
+   "state": "NOT_AVAILABLE",
+   "reasons": [
+    "NO_DELISTED_HISTORY_IN_STUDY"
+   ],
+   "inMainStudy": false,
+   "meaning": "Kontrolle: historische Nicht-Überlebende sind in der Studie enthalten. Nur dann ist der Überlebenden-Effekt kontrolliert."
+  },
   "DELISTED_IDENTIFIED": 191,
   "DELISTED_WITH_HISTORY": 0,
   "DELISTED_BACKTEST_ELIGIBLE": 0,
-  "tickerReuseAmbiguous": 187,
-  "plain": "Gate: keine Auswertung ohne Kontrolle steht über „eingeschränkt“, der Strategie-Backtest bleibt ohne historische Zugehörigkeit geschlossen. Kontrolle: im Repository gibt es keine Kursreihe eines delisteten Titels mit sauberer Identität - die Reihen inaktiver Kürzel laufen weiter, das Kürzel ist neu vergeben.",
+  "tickerReuseAmbiguous": 190,
+  "securityMasterClasses": {
+   "A": 0,
+   "B": 0,
+   "C": 1,
+   "D": 183,
+   "E": 0,
+   "F": 7
+  },
+  "delistedStoreClasses": null,
+  "plain": "Gate: keine Auswertung ohne Kontrolle steht über „eingeschränkt“; das Gate löst den Überlebenden-Effekt nicht. Kontrolle: keine delistete Kursreihe mit sauberer Identität in einer Studie.",
   "forwardCollected": "Vorwärts gesammelte Stände (Setup-Historie, Index-Zugehörigkeit) enthalten das Universum des jeweiligen Tages und sind damit überlebensfrei, solange kein Fall weggelassen wird."
  },
  "measures": {
