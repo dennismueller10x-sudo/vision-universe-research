@@ -33,6 +33,12 @@ import minervini from './engine/strategies/minervini.mjs';
 import weinstein from './engine/strategies/weinstein.mjs';
 import greenblatt from './engine/strategies/greenblatt.mjs';
 import donchian from './engine/strategies/donchian.mjs';
+import kkBreakout2 from './engine/strategies/kk-breakout-v2.mjs';
+import darvas2 from './engine/strategies/darvas-v2.mjs';
+import minervini2 from './engine/strategies/minervini-v2.mjs';
+import weinstein2 from './engine/strategies/weinstein-v2.mjs';
+import { fidelityFor, FIDELITY_VERSION, RULE_CLASS, SOURCE_ACCESS, PRODUCT_STATUS as FIDELITY_STATUS } from './fidelity.mjs';
+import { buildModelPortfolio, portfolioConfig, MODEL_PORTFOLIO_VERSION } from './model-portfolio.mjs';
 import * as canslim from './engine/partial/canslim.mjs';
 import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
@@ -42,7 +48,11 @@ import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE,
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
 let CURRENT_REGIME = null;
-export const LIVE_ENGINES = [kkBreakout, weinstein, darvas, minervini, donchian];
+// Runde 7: Momentum, Weinstein, Darvas und Minervini laufen in Version 2.0.0
+// (vorab registriert, PREREGISTRATION-R7.json). Offene Positionen der
+// Vorversionen werden mit deren Engine weitergefuehrt (engine.legacy).
+export const LIVE_ENGINES = [kkBreakout2, weinstein2, darvas2, minervini2, donchian];
+export const PREVIOUS_ENGINES = [kkBreakout, weinstein, darvas, minervini];
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const ROOT = path.resolve(args.root || '.');
@@ -266,7 +276,9 @@ export function applyVersionPolicy(engine, open, lastProcessed, recordedAt) {
     }
     // Modellpositionen laufen nur weiter, wenn die neue Version ihre Positionsfuehrung
     // ausdruecklich uebernimmt - sonst bricht der Build ab, statt still umzudeuten.
-    if (!(engine.manageCompatible || []).includes(v)) throw new Error(`${s.id}: Position unter Version ${v}, ${engine.id} ${engine.version} erklärt keine kompatible Positionsführung`);
+    // Runde 7: Eine neue Version mit anderer Positionsfuehrung fuehrt Positionen
+    // aelterer Versionen mit deren eigener Engine weiter (engine.legacy[v]).
+    if (!(engine.manageCompatible || []).includes(v) && !engine.legacy?.[v]) throw new Error(`${s.id}: Position unter Version ${v}, ${engine.id} ${engine.version} erklärt keine kompatible Positionsführung`);
     kept.push(s);
   }
   return { open: kept, retired };
@@ -385,7 +397,12 @@ export function build() {
       }
       const state = { signal: open, cooldownUntil: -1 };
       let res = { state, finished: [], lastScan: null };
-      if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt });
+      // Altposition: nach der Regelversion fuehren, unter der sie eroeffnet wurde.
+      // Neue Setups fuer diesen Titel sucht die neue Version erst nach dem
+      // Abschluss (naechster Lauf) - ein Titel hat je Methode ein Signal.
+      const legacyEngine = open && open.version !== engine.version && !(engine.manageCompatible || []).includes(open.version) ? engine.legacy?.[open.version] : null;
+      if (from < n && legacyEngine) res = simulate(legacyEngine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt, manageOnly: true });
+      else if (from < n) res = simulate(engine, ctx, { state, from, to: n - 1, recordedAt: barsGeneratedAt });
       for (const s of res.finished) finishedNow.push(s);
       if (state.signal) {
         const last = n - 1;
@@ -470,6 +487,14 @@ export function build() {
     card.historical_validation = { ...card.historical_validation, status: run?.metricsPublishable ? 'GATES_PASSED_RUN_PENDING' : 'NOT_VALIDATED', gateStatus: run?.status || null, failedGates: run?.failedGates || [] };
   }
 
+  // Laufendes Modellportfolio je Methode aus dem Live-Protokoll (alle Versionen).
+  const portfolios = { schema: MODEL_PORTFOLIO_VERSION, asOf, strategies: {} };
+  for (const engine of LIVE_ENGINES) {
+    const L = ledgers[engine.id];
+    const barsOf = (sym) => instruments.get(sym)?.bars || null;
+    portfolios.strategies[engine.id] = buildModelPortfolio({ engine, signals: [...L.open, ...L.closed], barsOf, calendar, asOf });
+  }
+  writeJson(path.join(DATA, 'portfolio.json'), portfolios);
   writeJson(path.join(DATA, 'registry.json'), registry);
   writeJson(path.join(DATA, 'sources.json'), sources);
   writeJson(path.join(DATA, 'market.json'), market);
@@ -581,12 +606,14 @@ function buildMarket(asOf, barsGeneratedAt) {
 }
 
 function buildRegistry(coverage, gbCoverage) {
-  const engineParams = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, { variant: e.variant, version: e.version, params: e.PARAMS, timeframe: e.timeframe }]));
+  const engineParams = Object.fromEntries(LIVE_ENGINES.map((e) => [e.id, { variant: e.variant, version: e.version, params: e.PARAMS, timeframe: e.timeframe, portfolio: portfolioConfig(e), legacyVersions: Object.keys(e.legacy || {}) }]));
   return {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
     lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s) })),
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s), fidelity: fidelityFor(s.strategy_id) })),
+    fidelityScale: { schema: FIDELITY_VERSION, ruleClass: RULE_CLASS, sourceAccess: SOURCE_ACCESS, status: FIDELITY_STATUS,
+      accessNote: 'Runde 7: Fast alle Primärseiten (Trader-Websites, Bücher, Interviews) waren aus der Arbeitsumgebung nicht abrufbar. Belegt ist, was mehrere unabhängige Suchauszüge übereinstimmend wiedergeben; Wortlaute sind vor einem Zitat am Original zu prüfen.' },
     evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,
       publicationNote: 'Intern geprüfte Versionen erscheinen bis zur Klärung der Rechte an abgeleiteten Kennzahlen als „In Prüfung“. Eine Änderung der Einstufung ist kein Marktsignal und ändert kein protokolliertes Signal.' },
     dataRealityNote: `Tages-OHLCV öffentlich ${String(coverage.dailyOhlcvYears).replace('.', ',')} Jahre; Greenblatt-Pflichtfelder fehlend: ${gbCoverage.missingFields.join(', ') || 'keine'}.`,

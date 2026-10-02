@@ -20,6 +20,7 @@ export const RULE_CLASS = Object.freeze({
   OPERATIONALIZATION: { label: 'Vertretbare Umsetzung', plain: 'Belegte Regel, für Tageskurse mechanisch übersetzt (z. B. Schlusskurs statt Kauforder im Tagesverlauf).' },
   VU_EXTENSION: { label: 'Vision-Universe-Erweiterung', plain: 'Eigene Ergänzung; nicht Teil der Originalmethode.' },
   UNBACKED: { label: 'Unbelegte Annahme', plain: 'Weder in Primär- noch in übereinstimmenden Sekundärquellen gefunden.' },
+  MISSING: { label: 'Fehlt im Code', plain: 'Belegter Baustein der Methode, der im laufenden Modell nicht umgesetzt ist.' },
 });
 
 // Belegstufe der Quelle (was in Runde 7 tatsaechlich einsehbar war).
@@ -57,7 +58,7 @@ export const FIDELITY = Object.freeze({
       r('Ausstieg', 'In die Stärke verkaufen; Bruch der 50-Tage-Linie mit hohem Volumen', 'SECONDARY', '1.1.0: jeder Schluss unter der 50-Tage-Linie (VU) · 2.0.0: nur mit überdurchschnittlichem Volumen', 'OPERATIONALIZATION', '1.1.0 war eine VU-Regel.'),
       r('Positionsgröße', 'Ø 1,25 % Risiko je Trade, höchstens 2,5 %; 25 % Position bei 5 % Stop', 'PRIMARY_SNIPPET', '1.1.0: 0,5 % (VU) · 2.0.0: 1,25 %, max. 25 %', 'ORIGINAL'),
       r('Portfolio', 'Schrittweise Exposition nach Ergebnis der letzten 4–5 Trades', 'PRIMARY_SNIPPET', '2.0.0: halbes Risiko nach netto negativen letzten 5 Trades', 'OPERATIONALIZATION'),
-      r('Fundamentaldaten', 'Beschleunigung von Gewinn, Umsatz, Marge über drei Quartale („Code 33“)', 'SECONDARY', 'fehlt', 'UNBACKED', 'Keine Gewinndaten zum damaligen Stichtag.'),
+      r('Fundamentaldaten', 'Beschleunigung von Gewinn, Umsatz, Marge über drei Quartale („Code 33“)', 'SECONDARY', 'fehlt', 'MISSING', 'Keine Gewinndaten zum damaligen Stichtag.'),
     ],
     missing: ['Fundamentaldaten (Code 33)', 'Cheat-/Low-Cheat-Einstiege vor dem Pivot', 'Verkauf in die Stärke / Klimax-Signale', 'Diskretionäre Basisbeurteilung', 'Proprietäres Marktmodell'],
     data: { historical: 'Tageskurse aller damals gelisteten US-Aktien ab 2016 (inkl. delisteter)', live: 'Tageskurse ~6.000 US-Aktien, ein Jahr Tageshistorie', gaps: 'keine Gewinne/Umsätze zum Stichtag; kein IBD-RS' },
@@ -120,7 +121,7 @@ export const FIDELITY = Object.freeze({
     mechanizableNote: 'Die Turtle-Regeln sind vollständig mechanisch – aber für ein gestreutes Futures-Portfolio geschrieben, nicht für Einzelaktien.',
     rules: [
       r('Einstieg', 'System 1: Ausbruch über das 20-Tage-Hoch (Stop-Order im Tagesverlauf)', 'SECONDARY', 'Schluss über dem 20-Tage-Hoch, Kauf zur nächsten Eröffnung', 'OPERATIONALIZATION'),
-      r('Einstieg', 'Signal auslassen, wenn der letzte Ausbruch ein Gewinner war', 'SECONDARY', 'fehlt', 'UNBACKED', 'Fehlender Originalbaustein.'),
+      r('Einstieg', 'Signal auslassen, wenn der letzte Ausbruch ein Gewinner war', 'SECONDARY', 'fehlt', 'MISSING', 'Fehlender Originalbaustein.'),
       r('Stop', '2N (N = 20-Tage-ATR)', 'SECONDARY', '2N unter der Eröffnung', 'ORIGINAL'),
       r('Ausstieg', 'Bruch des 10-Tage-Tiefs', 'SECONDARY', 'Schluss unter dem 10-Tage-Tief, Verkauf zur nächsten Eröffnung', 'OPERATIONALIZATION'),
       r('Positionsgröße', '1 Unit = 1 % Konto je N; bis 4 Units im Abstand ½ N', 'SECONDARY', '0,5 % Risiko je Trade, kein Aufstocken', 'VU_EXTENSION'),
@@ -138,8 +139,8 @@ export const FIDELITY = Object.freeze({
       r('C', 'Quartals-EPS ≥ 25 % ggü. Vorjahr, Umsatz ≥ 25 % oder beschleunigt', 'SECONDARY', 'Teilprüfung mit zuletzt berichteten Werten', 'OPERATIONALIZATION'),
       r('A', 'Jahres-EPS ≥ 25 % in drei Jahren, Eigenkapitalrendite ≥ 17 %', 'SECONDARY', 'Teilprüfung', 'OPERATIONALIZATION'),
       r('L', 'RS-Rang ≥ 80', 'SECONDARY', 'VU-Perzentil', 'VU_EXTENSION'),
-      r('M', 'Follow-Through-Tag, Distributionstage', 'SECONDARY', 'fehlt', 'UNBACKED'),
-      r('Kauf/Verkauf', 'Pivot + ≥ 40–50 % Volumen, nicht > 5 % darüber; Verlust bei 7–8 % begrenzen', 'SECONDARY', 'fehlt', 'UNBACKED'),
+      r('M', 'Follow-Through-Tag, Distributionstage', 'SECONDARY', 'fehlt', 'MISSING'),
+      r('Kauf/Verkauf', 'Pivot + ≥ 40–50 % Volumen, nicht > 5 % darüber; Verlust bei 7–8 % begrenzen', 'SECONDARY', 'fehlt', 'MISSING'),
     ],
     missing: ['Gewinne zum Veröffentlichungszeitpunkt', 'Institutionelle Halter (13F)', 'Basismuster', 'Marktrichtung M', 'Ein- und Ausstieg'],
     data: { historical: 'nicht vorhanden (keine Fundamentaldaten zum Stichtag)', live: 'zuletzt berichtete Quartalszahlen (SEC)', gaps: 'Point-in-Time-Fundamentaldaten, 13F' },
@@ -149,9 +150,9 @@ export const FIDELITY = Object.freeze({
     status: 'PARTIAL_CHECK', mechanizable: 'YES',
     mechanizableNote: 'Neun eindeutige Kennzahlen aus zwei Jahresabschlüssen – vollständig mechanisch, aber nur mit Abschlüssen zum damaligen Stand testbar.',
     rules: [
-      r('Auswahl', 'Nur das Fünftel mit dem höchsten Buchwert-Kurs-Verhältnis', 'SECONDARY', 'fehlt', 'UNBACKED'),
+      r('Auswahl', 'Nur das Fünftel mit dem höchsten Buchwert-Kurs-Verhältnis', 'SECONDARY', 'fehlt', 'MISSING'),
       r('Score', 'Neun binäre Signale (ROA, CFO, ΔROA, Accrual, ΔVerschuldung, ΔLiquidität, keine Emission, ΔMarge, ΔUmschlag)', 'SECONDARY', 'Teilprüfung mit zuletzt berichteten Werten', 'OPERATIONALIZATION'),
-      r('Zeitpunkt', 'Start im 5. Monat nach Geschäftsjahresende, Haltedauer 1 Jahr', 'SECONDARY', 'fehlt', 'UNBACKED'),
+      r('Zeitpunkt', 'Start im 5. Monat nach Geschäftsjahresende, Haltedauer 1 Jahr', 'SECONDARY', 'fehlt', 'MISSING'),
     ],
     missing: ['Buchwert-Kurs-Filter', 'Zeitlogik (Meldedatum)', 'Haltedauer'],
     data: { historical: 'nicht vorhanden', live: 'Jahresabschlüsse (SEC), zuletzt berichtet', gaps: 'Abschlüsse zum damaligen Stand' },
@@ -161,9 +162,9 @@ export const FIDELITY = Object.freeze({
     status: 'RESEARCH', mechanizable: 'YES',
     mechanizableNote: 'Die Rangformel ist mechanisch; es fehlen EBIT, Unternehmenswert und Bilanzposten je Stichtag.',
     rules: [
-      r('Rang', 'Ertragsrendite EBIT/EV und Kapitalrendite EBIT/(Nettoumlaufvermögen + Sachanlagen), Rangsumme', 'SECONDARY', 'nicht umgesetzt', 'UNBACKED'),
-      r('Universum', '≥ 50 Mio. USD, ohne Finanzwerte, Versorger, ausländische Titel', 'SECONDARY', 'nicht umgesetzt', 'UNBACKED'),
-      r('Portfolio', '20–30 Aktien, gestaffelt gekauft, rund 1 Jahr gehalten', 'SECONDARY', 'nicht umgesetzt', 'UNBACKED'),
+      r('Rang', 'Ertragsrendite EBIT/EV und Kapitalrendite EBIT/(Nettoumlaufvermögen + Sachanlagen), Rangsumme', 'SECONDARY', 'nicht umgesetzt', 'MISSING'),
+      r('Universum', '≥ 50 Mio. USD, ohne Finanzwerte, Versorger, ausländische Titel', 'SECONDARY', 'nicht umgesetzt', 'MISSING'),
+      r('Portfolio', '20–30 Aktien, gestaffelt gekauft, rund 1 Jahr gehalten', 'SECONDARY', 'nicht umgesetzt', 'MISSING'),
     ],
     missing: ['Alle Rechengrößen je Stichtag', 'Portfolio-Staffelung'],
     data: { historical: 'nicht vorhanden', live: 'Pflichtfelder fehlen', gaps: 'EBIT, Schulden, Barmittel, Sachanlagen je Stichtag' },

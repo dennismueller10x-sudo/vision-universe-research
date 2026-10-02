@@ -87,7 +87,7 @@ export function runPortfolioTR(trades, calendar, cfg, opts = {}) {
       if (!(shares > 0)) { skipped.push({ id: tr.id, reason: 'NO_CASH' }); continue; }
       const gross = shares * tr.entry.price, c = gross * comm;
       cash -= gross + c; book.commissions += c;
-      const p = { tr, shares, entryShares: shares, cost: gross + c, proceeds: 0, dividends: 0, remainingFraction: 1, done: new Set(), entryDate: date, last: tr.entry.price, prevMark: null };
+      const p = { tr, shares, entryShares: shares, eqAtEntry: eq, cost: gross + c, proceeds: 0, dividends: 0, remainingFraction: 1, done: new Set(), entryDate: date, last: tr.entry.price, prevMark: null };
       open.push(p); taken.push(p);
       for (const x of tr.exits) if (x.date === date && !p.done.has(x)) {
         const q = p.shares * x.fraction / p.remainingFraction;
