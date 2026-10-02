@@ -128,7 +128,7 @@ jobs:
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
           if [ "$LIVE_SOURCES" = 'true' ]; then args+=(--network --sec-fetch --sec-documents --discover-ir); fi
           if [ '${{ github.event_name }}' = schedule ]; then
-            args=(sec-stream --stream-days 3 --limit 25 --request-budget 160 --max-seconds 480 --network --sec-fetch --sec-documents)
+            args=(sec-stream --stream-days 3 --limit 75 --request-budget 160 --max-seconds 480 --network --sec-fetch --sec-documents --sec-document-issuers 4)
           fi
           python3 scripts/company_intelligence/cli.py run --all-offline
           if [ "$LIVE_SOURCES" = true ]; then

@@ -56,6 +56,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'sec-stream'])
     p.add_argument('--stream-days', type=int, default=3, help='Bounded completed EDGAR index days per material stream run (1..5)')
+    p.add_argument('--stream-history-days', type=int, default=180, help='Initial submission import horizon for the incremental stream (30..366); retained history is preserved')
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--state', type=Path)
     p.add_argument('--out', type=Path)
@@ -68,6 +69,7 @@ def main(argv=None):
     p.add_argument('--force-sources', action='store_true', help='Recheck selected sources without changing their normal scheduling interval')
     p.add_argument('--network', action='store_true', help='Explicitly enable configured public feeds')
     p.add_argument('--sec-documents', action='store_true', help='Inspect up to two recent SEC candidate primary documents/exhibits per selected issuer')
+    p.add_argument('--sec-document-issuers', type=int, default=2, help='Maximum issuers receiving optional document inspection in a run (0..10)')
     p.add_argument('--sec-fetch', action='store_true', help='Refresh selected issuer submissions through existing SEC client')
     p.add_argument('--discover-ir', action='store_true')
     p.add_argument('--materials', action='store_true', help='Inspect one official call/event material page per selected issuer')
@@ -84,12 +86,16 @@ def main(argv=None):
         p.error('discover-backfill requires --network --discover-sites --discover-ir')
     if args.sec_documents and not args.sec_fetch:
         p.error('--sec-documents requires --sec-fetch')
+    if not 0 <= args.sec_document_issuers <= 10:
+        p.error('sec-document-issuers must be 0..10')
     if (args.sec_fetch or args.discover_ir or args.discover_sites or args.gdelt or args.force_sources or args.materials) and not args.network:
         p.error('network flags require --network')
     if args.sec_fetch and args.limit > args.request_budget:
         p.error('SEC metadata issuer limit exceeds request budget')
     if not 1 <= args.stream_days <= 5 or (args.command == 'sec-stream' and (not args.network or not args.sec_fetch or args.tickers or args.updated_issuers or args.all_offline)):
         p.error('sec-stream requires --network --sec-fetch, no ticker/manifest filters, and stream-days 1..5')
+    if not 30 <= args.stream_history_days <= 366:
+        p.error('stream-history-days must be 30..366')
     root = args.root.resolve()
     state_dir = (args.state or root / '.company-intelligence').resolve()
     output = (args.out or state_dir / 'public/company-intelligence/data').resolve()
@@ -132,7 +138,7 @@ def main(argv=None):
             selected = list({c['companyId']: c for c in pending + selected}.values())[:args.limit]
         sec_budget = min(args.request_budget // 2 if args.sec_documents else args.request_budget - 1, len(selected) * (10 if args.sec_documents else 2)) if args.sec_fetch else 0
         if args.command == 'sec-stream':
-            sec_budget = args.request_budget // 2 if args.sec_documents else args.request_budget - 8
+            sec_budget = min(args.request_budget - 8, args.limit + args.stream_days + 4 * args.sec_document_issuers + 1) if args.sec_documents else args.request_budget - 8
             if sec_budget < args.limit + args.stream_days:
                 p.error('sec-stream request budget must cover issuer batch, index days and eight feed requests')
         http = PublicHTTP(state_dir / 'http', budget=max(1, args.request_budget - sec_budget), max_seconds=args.max_seconds)
@@ -219,7 +225,9 @@ def main(argv=None):
             for index, company in enumerate(selected):
                 failures_before = pipeline.run['secFailures']
                 try:
-                    pipeline.project_company(company, fetch_sec=args.sec_fetch, sec_documents=args.sec_documents, sec_budget=sec_budget)
+                    from company_intelligence.pipeline import advance
+                    pipeline.project_company(company, fetch_sec=args.sec_fetch, sec_documents=args.sec_documents and index < args.sec_document_issuers, sec_budget=sec_budget,
+                                             filing_since=advance(now, -args.stream_history_days * 24)[:10] if args.command == 'sec-stream' else None)
                 except BudgetExhausted:
                     store.set_state('secPending', [c['companyId'] for c in selected[index:]])
                     deferred = True

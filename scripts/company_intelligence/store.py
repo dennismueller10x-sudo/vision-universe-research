@@ -93,6 +93,7 @@ class Store:
         CREATE INDEX IF NOT EXISTS company_sources ON sources(company);
         CREATE TABLE IF NOT EXISTS events(id TEXT PRIMARY KEY,company TEXT NOT NULL,kind TEXT NOT NULL,date TEXT,payload TEXT NOT NULL);
         CREATE INDEX IF NOT EXISTS company_events ON events(company,date DESC);
+        CREATE INDEX IF NOT EXISTS company_filing ON events(company,json_extract(payload,'$.filingId'));
         CREATE TABLE IF NOT EXISTS event_alias(alias TEXT PRIMARY KEY,target TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY,created TEXT NOT NULL,source TEXT,payload TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS state(key TEXT PRIMARY KEY,payload TEXT NOT NULL);
@@ -171,6 +172,17 @@ class Store:
         alias = self.db.execute('SELECT target FROM event_alias WHERE alias=?', (incoming_id,)).fetchone()
         if alias and self.db.execute('SELECT 1 FROM events WHERE id=?', (alias[0],)).fetchone():
             event['eventId'] = alias[0]
+        prior_row = self.db.execute('SELECT payload FROM events WHERE id=?', (event['eventId'],)).fetchone()
+        prior_event = json.loads(prior_row[0]) if prior_row else {}
+        independent = [p for p in (prior_event.get('eventProvenance') or []) if p.get('sourceId') and any(signal in ('OFFICIAL_RESULTS_RELEASE_TITLE', 'ISSUER_AUTHORED_RESULTS_RELEASE_TITLE_AND_DISTRIBUTOR_METADATA') for signal in (p.get('detectionEvidence') or []))] if event['eventType'] == 'EARNINGS_CANDIDATE' and prior_event.get('eventType') == 'EARNINGS_PUBLISHED' else []
+        if event['eventType'] == 'EARNINGS_CANDIDATE' and prior_event.get('eventType') == 'EARNINGS_PUBLISHED' and independent:
+            # A weaker SEC representation cannot revoke an independently proven
+            # company release. Retain its candidate status in source provenance.
+            ref = {k: event.get(k) for k in ('sourceId', 'sourceUrl', 'filingId', 'publishedAt', 'date', 'detectionEvidence')}
+            ref['verificationState'] = 'CANDIDATE'
+            refs = [p for p in prior_event['eventProvenance'] if (p.get('sourceUrl'), p.get('filingId')) != (ref.get('sourceUrl'), ref.get('filingId'))] + [ref]
+            event = {**prior_event, 'eventProvenance': refs, 'documentEvidence': event.get('documentEvidence', {}),
+                     'detectionEvidence': independent[0]['detectionEvidence']}
         # First-party release and verified SEC earnings are one event only with exact period AND date evidence.
         correction = bool(re.search(r'correct(?:ion|ed)|restated|revised', event.get('headline', '') + ' ' + (event.get('documentEvidence', {}).get('evidence') or ''), re.I))
         earnings_group = (not correction and event['eventType'] == 'EARNINGS_PUBLISHED' and event.get('reportingPeriod') and event.get('fiscalQuarter') and event.get('fiscalYear') and not event.get('isAmendment'))
@@ -228,8 +240,11 @@ class Store:
             else:
                 event['dateHistory'] = prior.get('dateHistory', [])
         with self.db:
+            encoded = dumps(event)
+            if old and old[0] == encoded:
+                return
             self.db.execute('INSERT OR REPLACE INTO events VALUES(?,?,?,?,?)',
-                            (event['eventId'], event['companyId'], event['eventType'], event.get('date') or event.get('publishedAt'), dumps(event)))
+                            (event['eventId'], event['companyId'], event['eventType'], event.get('date') or event.get('publishedAt'), encoded))
 
     def prune(self, now):
         cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=365)).isoformat().replace('+00:00', 'Z')
@@ -254,6 +269,8 @@ class Store:
             event_cutoff = (datetime.fromisoformat(now.replace('Z', '+00:00')) - timedelta(days=5 * 366)).date().isoformat()
             self.db.execute('DELETE FROM events WHERE date<?', (event_cutoff,))
             self.db.execute('DELETE FROM events WHERE id IN (SELECT id FROM (SELECT id,ROW_NUMBER() OVER (PARTITION BY company ORDER BY date DESC,id) AS n FROM events) WHERE n>500)')
+            # Retired targets must not leave aliases dangling until the next run.
+            self.db.execute('DELETE FROM event_alias WHERE target NOT IN (SELECT id FROM events)')
             # A burst cannot produce an unbounded company feed; preserve regulatory history separately.
             self.db.execute('DELETE FROM items WHERE id IN (SELECT id FROM (SELECT id,ROW_NUMBER() OVER (PARTITION BY company ORDER BY published DESC,id) AS n FROM items) WHERE n>500)')
 

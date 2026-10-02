@@ -37,6 +37,9 @@ def _pack(state, destination):
             if (state / name).is_file():
                 with sqlite3.connect(state / name) as source, sqlite3.connect(stage / name) as target:
                     source.backup(target)
+                    # Compact only the staged backup, never the live ledger.
+                    # SQLite high-water/free pages must not inflate each upload.
+                    target.execute('VACUUM')
                 check_db(stage / name)
         for path in [state / 'latest-run.json', *sorted((state / 'http').glob('*'))]:
             if path.is_file() and allowed(path.relative_to(state).as_posix()) and not path.is_symlink():

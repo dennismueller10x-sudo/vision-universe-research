@@ -75,7 +75,7 @@ def report(store, companies, now):
             'newsSourceDiscovered': bool(news),
             'newsSourceValidated': any(s.get('verified') and (s.get('lastVerified') or s.get('lastSuccess')) for s in news),
             'newsSourceActive': any(source_status(s, now) == 'ACTIVE' for s in news),
-            'activeFirstPartyNews': any(s['type'] == 'IR_FEED' and s.get('verified') and source_status(s, now) == 'ACTIVE' and s.get('lastAcceptedMatches', 0) > 0 for s in news),
+            'activeFirstPartyNews': any(s['type'] == 'IR_FEED' and s.get('verified') and source_status(s, now) == 'ACTIVE' and any(p.get('sourceId') == s['sourceId'] for i in fresh_news for p in i.get('provenance', [])) for s in news),
             'activeExternalNews': bool(fresh_external),
             'anyNews': bool(fresh_news),
             'recentMaterialSEC': any(e['eventType'] == 'MATERIAL_SEC_EVENT' and material_cutoff <= e.get('date', '') <= now[:10] for e in all_events[cid]),
@@ -98,7 +98,8 @@ def report(store, companies, now):
             'noNewsOrSubmissionSource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions'),
             'noCompanySource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions') and not c.get('officialSites') and state.get('financials:' + cid, {}).get('state') != 'AVAILABLE',
         }
-        flags['anyMaterialIntelligence'] = bool(flags['financialSummaryCurrent'] or flags['anyNews'] or flags['confirmedUpcomingEarnings'] or flags['recentMaterialSEC'] or any(e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED', 'OPERATING_RESULTS_PUBLISHED', 'PRESENTATION_PUBLISHED') and recent[:10] <= e.get('date', '') <= now[:10] for e in all_events[cid]))
+        flags['recentMaterialNews'] = any(i.get('importance') in ('HIGH', 'CRITICAL') for i in fresh_news)
+        flags['anyMaterialIntelligence'] = bool(flags['financialSummaryCurrent'] or flags['recentMaterialNews'] or flags['confirmedUpcomingEarnings'] or flags['recentMaterialSEC'] or any(e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED', 'OPERATING_RESULTS_PUBLISHED', 'PRESENTATION_PUBLISHED') and recent[:10] <= e.get('date', '') <= now[:10] for e in all_events[cid]))
         flags['noRecentMaterialIntelligence'] = not flags['anyMaterialIntelligence']
         flags['noNews'] = not flags['anyNews']
         flags['noConsumerPayload'] = not flags['consumerPayloadAvailable']
@@ -121,4 +122,4 @@ def report(store, companies, now):
             'sourceStatuses': dict(statuses), 'parserFailures': sum(any(code in (s.get('lastError') or '') for code in ('MALFORMED', 'INVALID_JSON', 'NOT_FEED', 'UNSAFE_OR_OVERSIZED_XML')) for s in sources), 'discoveryStatuses': dict(discovery_statuses), 'platformCompanies': dict(platforms),
             'byExchange': dict(exchanges), 'byMasterListingCountry': dict(countries), 'companies': rows,
             'freshnessWindowsDays': {'news': 180, 'materialSEC': 90, 'financials': 180},
-            'interpretation': 'Material intelligence includes current financials, verified recent reports/material events, current accepted news or confirmed upcoming earnings. CIK identity alone is not coverage. External news requires accepted issuer matches from a healthy global source; feeds and domain candidates are not issuer coverage. Document/call references may be historical. noConsumerPayload is unsupported intelligence, not an unsupported master listing.'}
+            'interpretation': 'Material intelligence includes current financials, verified recent reports/material events, current HIGH/CRITICAL accepted news or confirmed upcoming earnings. CIK identity alone is not coverage. External news requires accepted issuer matches from a healthy global source; feeds and domain candidates are not issuer coverage. Document/call references may be historical. noConsumerPayload is unsupported intelligence, not an unsupported master listing.'}

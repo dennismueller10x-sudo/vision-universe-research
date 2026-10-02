@@ -162,6 +162,15 @@ class Resolver:
         return [dict(companyId=cid, **v) for cid, v in sorted(matches.items())]
 
 
+def issuer_results_actor(headline, company):
+    """Ownership of a release does not prove whose earnings it describes."""
+    title = normalize(headline)
+    if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner)\b', title):
+        return False
+    aliases = {normalize(n) for n in company['names']} | {normalize(SUFFIX.sub('', n)) for n in company['names']}
+    return any(name and re.match(re.escape(name) + r'\s+(?:reports?|announces?)\b', title) for name in aliases)
+
+
 RULES = [
     ('Bankruptcy', 'CRITICAL', r'\b(bankruptcy|chapter 11|insolvency)\b'),
     ('Cybersecurity', 'HIGH', r'\b(data breach|ransomware|cyberattack)\b'),

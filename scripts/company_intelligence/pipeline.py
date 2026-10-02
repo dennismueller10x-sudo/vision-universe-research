@@ -4,7 +4,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
-from .model import Resolver, canonical_url, make_item, stable_id, within_domain
+from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor
 from .transport import BudgetExhausted, SourceError
 from .feeds import parse_feed, parse_gdelt, discover_ir
 from .ir_events import from_announcement, parse_jsonld, parse_ics, guidance_evidence, event
@@ -75,6 +75,7 @@ class Pipeline:
         try:
             accepted = 0
             rejected = 0
+            accepted_dates = []
             response = self.http.get(source['url'], robots=source['type'] != 'GDELT')
             if source.get('provider') == 'GLOBENEWSWIRE_RSS':
                 from .model import domain
@@ -116,6 +117,8 @@ class Pipeline:
                 if source.get('verified') and not any(within_domain(entry['url'], s) for s in source.get('allowedSites', [])):
                     effective = {**source, 'verified': False}
                 matches = self.resolver.resolve(entry, effective)
+                if source.get('companyId') and source['type'] in ('IR_FEED', 'IR_MATERIALS'):
+                    matches = [m for m in matches if m['companyId'] == source['companyId']]
                 if source['type'] == 'IR_MATERIALS' and source.get('verified') and not shared_publisher(entry['url']):
                     # An official document feed explicitly delegates its linked materials,
                     # including CDN files. This rule never authorizes publisher news.
@@ -146,6 +149,7 @@ class Pipeline:
                                 self.store.audit(self.now, sid, 'NEWS_RECLASSIFIED_AS_PRESENTATION', newsId=row['id'], url=entry['url'])
                         continue
                     accepted += 1
+                    accepted_dates.append(entry_time)
                     if source['type'] == 'GDELT':
                         # seendate is observation, not publication. Never claim it as publisher time.
                         item['observedAt'] = entry['publishedAt']
@@ -154,11 +158,15 @@ class Pipeline:
                         item['provenance'][0]['timestampPrecision'] = 'DISCOVERY_TIME'
                         item['provenance'][0]['observedAt'] = entry['publishedAt']
                         item['provenance'][0]['publishedAt'] = None
-                    if effective.get('verified') and match['companyId'] == effective.get('companyId'):
-                        for e in from_announcement(entry, effective, self.now):
+                    distributed_author = source.get('provider') == 'GLOBENEWSWIRE_RSS' and any(signal.startswith('EXACT_MASTER_CONTRIBUTOR:') for signal in match.get('evidence', []))
+                    if (effective.get('verified') and match['companyId'] == effective.get('companyId')) or distributed_author:
+                        announcer = {**effective, 'verified': True, 'type': 'IR_FEED', 'companyId': match['companyId']} if distributed_author else effective
+                        for e in from_announcement(entry, announcer, self.now):
+                            if distributed_author:
+                                e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)
                         import re
-                        if entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|date)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
+                        if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|date)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period
                             period = release_period(entry['headline']) or {}
                             quarter, year = period.get('fiscalQuarter'), period.get('fiscalYear')
@@ -168,13 +176,13 @@ class Pipeline:
                                         'eventType': 'EARNINGS_PUBLISHED', 'headline': entry['headline'], 'date': entry['publishedAt'][:10], 'publishedAt': entry['publishedAt'],
                                         'sourceId': source['sourceId'], 'sourceUrl': entry['url'], 'sourceDocuments': [{'type': 'OFFICIAL_EARNINGS_RELEASE', 'url': entry['url']}],
                                         'eventStatus': 'PUBLISHED', 'discoveredAt': self.now, 'fiscalQuarter': quarter, 'fiscalYear': year, 'reportingPeriod': None,
-                                        'detectionEvidence': ['OFFICIAL_RESULTS_RELEASE_TITLE'], 'earningsReleaseUrl': entry['url'], 'transcriptUrl': None,
+                                        'detectionEvidence': ['ISSUER_AUTHORED_RESULTS_RELEASE_TITLE_AND_DISTRIBUTOR_METADATA'] if distributed_author else ['OFFICIAL_RESULTS_RELEASE_TITLE'], 'earningsReleaseUrl': entry['url'], 'transcriptUrl': None,
                                         'summary': summary(consumer, company['cik'], self.now, quarter, year) if quarter and year else {'state': 'UNAVAILABLE', 'reason': 'RELEASE_REPORTING_PERIOD_NOT_VERIFIED'}}
                             reported = earnings['summary'].get('metrics', {}).get('revenue', {}).get('current')
                             if reported:
                                 earnings['reportingPeriod'] = reported.get('periodEnd')
                             self.store.event(earnings, self.now)
-                        guidance = guidance_evidence(entry, effective)
+                        guidance = guidance_evidence(entry, announcer)
                         if guidance:
                             item['guidanceEvidence'] = guidance
                     outcome = self.store.ingest(item)
@@ -182,6 +190,8 @@ class Pipeline:
             content_dates = [i.get('publishedAt') or i.get('updatedAt') for i in entries if (i.get('publishedAt') or i.get('updatedAt')) and (i.get('publishedAt') or i.get('updatedAt')) <= self.now]
             if source['type'] == 'IR_EVENTS':
                 content_dates += [e.get('date') for e in events if e.get('date')]
+            elif source.get('companyId') and source['type'] == 'IR_FEED':
+                content_dates = accepted_dates
             source.update(latestContentAt=max(content_dates) if content_dates else None, lastItemCount=len(entries) if source['type'] != 'IR_EVENTS' else len(events), lastAcceptedMatches=accepted, lastRejectedItems=rejected, lastSuccess=self.now, lastChecked=self.now, failureCount=0, lastError=None, nextCheck=advance(self.now, source.get('intervalHours', 6)))
             self.store.source(source)
             log('SOURCE_SUCCESS', sourceId=sid, items=source['lastItemCount'])
@@ -209,7 +219,7 @@ class Pipeline:
         client._opener = bounded_sec_open
         return client
 
-    def project_company(self, company, fetch_sec=False, sec_documents=False, sec_budget=60):
+    def project_company(self, company, fetch_sec=False, sec_documents=False, sec_budget=60, filing_since=None):
         """Reuse canonical/consumer/raw outputs; optional metadata refresh uses existing SEC client."""
         cid, cik = company['companyId'], company.get('cik')
         try:
@@ -230,9 +240,12 @@ class Pipeline:
                 # Persist bounded metadata, not downloaded filings, so a new
                 # runner can reproject item rules without refetching SEC.
                 columns = submissions.get('filings', {}).get('recent', {})
-                eligible = [i for i, form in enumerate(columns.get('form', [])) if form in ('8-K','8-K/A','6-K','6-K/A','10-Q','10-Q/A','10-K','10-K/A','20-F','20-F/A','DEF 14A')][:100]
+                dates = columns.get('filingDate', [])
+                eligible = [i for i, form in enumerate(columns.get('form', [])) if form in ('8-K','8-K/A','6-K','6-K/A','10-Q','10-Q/A','10-K','10-K/A','20-F','20-F/A','DEF 14A') and (not filing_since or (i < len(dates) and isinstance(dates[i], str) and dates[i] >= filing_since))][:100]
                 compact = {'cik': cik, 'filings': {'recent': {k: [v[i] if i < len(v) else None for i in eligible] for k, v in columns.items() if isinstance(v, list)}}}
                 self.store.set_state('sec-submissions:' + cid, compact)
+                if filing_since:
+                    submissions = compact
                 if sec_documents:
                     from .sec_documents import enrich_submissions
                     previous = {row[0].rsplit(':', 1)[1]: json.loads(row[1]) for row in self.store.db.execute('SELECT key,payload FROM state WHERE key LIKE ?', ('sec-document:' + cid + ':%',))}
@@ -274,6 +287,14 @@ class Pipeline:
                 index = read_optional(self.root / 'quant/data/sec/inspector_index.json') or {}
                 canonical_cik = next((c.get('cik') for c in index.get('companies', []) if c.get('ticker') == canonical.get('security', {}).get('ticker')), None)
             events = project_sec(company, canonical, submissions, consumer, self.now, canonical_cik=canonical_cik)
+            # Old imported descriptions outside the bounded metadata cache must
+            # not retain a publication claim after the verifier is tightened.
+            for row in self.store.db.execute("SELECT payload FROM events WHERE company=? AND kind='EARNINGS_PUBLISHED'", (cid,)).fetchall():
+                legacy = json.loads(row[0])
+                if legacy.get('detectionEvidence') == ['6-K_EXPLICIT_RESULTS_DESCRIPTION'] and not legacy.get('eventProvenance') and (legacy.get('documentEvidence') or {}).get('outcome') != 'EARNINGS_RELEASE':
+                    legacy.update(eventType='EARNINGS_CANDIDATE', headline='Possible earnings release', eventStatus='UNVERIFIED', detectionEvidence=['6-K_RESULTS_DESCRIPTION_CANDIDATE'])
+                    self.store.event(legacy, self.now)
+                    self.store.audit(self.now, cid, 'LEGACY_DESCRIPTION_ONLY_EARNINGS_RECLASSIFIED', eventId=legacy['eventId'])
             result_ids = {e['eventId'] for e in events if e['eventType'] != 'SEC_FILING'}
             # Replace derived classifications for the same SEC accession; never retain a disproved candidate as published.
             for e in events:

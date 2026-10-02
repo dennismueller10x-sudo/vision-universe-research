@@ -88,12 +88,13 @@ def summary(consumer, cik, now, period=None, fiscal_year=None):
                 delta = current['value'] - comparison['value']
                 data[label] = {'absolute': delta, 'percent': delta / comparison['value'] * 100 if comparison['value'] > 0 else None,
                                'percentReason': None if comparison['value'] > 0 else 'NONPOSITIVE_BASE'}
-                if label == 'yoy' and metric in ('revenue', 'net_income', 'free_cash_flow', 'total_debt', 'cash_and_equivalents'):
-                    direction = 'NEUTRAL' if delta == 0 or metric in ('total_debt', 'cash_and_equivalents') else 'POSITIVE' if delta > 0 else 'NEGATIVE'
+                if label == 'yoy' and metric in ('revenue', 'net_income', 'free_cash_flow', 'total_debt', 'cash_and_equivalents', 'shares_outstanding'):
+                    contextual = metric in ('total_debt', 'cash_and_equivalents', 'shares_outstanding')
+                    direction = 'NEUTRAL' if delta == 0 or contextual else 'POSITIVE' if delta > 0 else 'NEGATIVE'
                     changes.append({'metric': metric, 'comparison': 'YEAR_AGO_QUARTER', 'direction': direction,
-                                    'classification': 'UNCHANGED' if delta == 0 else 'NOT_COMPARABLE' if metric in ('total_debt', 'cash_and_equivalents') else 'IMPROVED' if delta > 0 else 'DETERIORATED',
+                                    'classification': 'UNCHANGED' if delta == 0 else 'NOT_COMPARABLE' if contextual else 'IMPROVED' if delta > 0 else 'DETERIORATED',
                                     'previous': comparison['value'], 'current': current['value'], 'absolute': delta, 'unit': current['unit'],
-                                    'filingIds': sorted({current['filingId'], comparison['filingId']}), 'interpretation': 'BALANCE_CHANGE_HAS_NO_UNIVERSAL_GOOD_DIRECTION' if metric in ('total_debt', 'cash_and_equivalents') else 'REPORTED_METRIC_DIRECTION'})
+                                    'filingIds': sorted({current['filingId'], comparison['filingId']}), 'interpretation': 'SHARE_COUNT_CHANGE_REQUIRES_SPLIT_ISSUANCE_BUYBACK_CONTEXT' if metric == 'shares_outstanding' else 'BALANCE_CHANGE_HAS_NO_UNIVERSAL_GOOD_DIRECTION' if contextual else 'REPORTED_METRIC_DIRECTION'})
             else:
                 data[label] = None
                 data[label + 'Reason'] = 'MISSING_OR_NONCOMPARABLE_PERIOD_OR_UNIT'
@@ -207,6 +208,12 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
     if not cik:
         return []
     rows, fiscal = {}, {}
+    summaries = {}
+    def metric_summary(period=None, fiscal_year=None):
+        key = (period, fiscal_year)
+        if key not in summaries:
+            summaries[key] = summary(consumer, cik, now, period, fiscal_year)
+        return summaries[key]
     if canonical:
         security = canonical.get('security', {})
         # Canonical stores CIK in providerIdentity or profile? Exact authoritative bundle proof through accession+security ticker below.
@@ -239,7 +246,7 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
         if acc not in fiscal and consumer and consumer.get('cik') == cik:
             block = 'annual' if form in ('10-K', '10-K/A', '20-F', '20-F/A') else 'quarterly'
             years = [r[0] for rows in consumer.get(block, {}).values() for r in rows if isinstance(r, list) and len(r) == 7 and type(r[0]) is int]
-            validated = summary(consumer, cik, now, 'FY' if block == 'annual' else None, max(years) if years else None)
+            validated = metric_summary('FY' if block == 'annual' else None, max(years) if years else None)
             if validated.get('state') == 'AVAILABLE':
                 candidates = []
                 report_end = f.get('periodEnd')
@@ -291,7 +298,7 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
                 base.update(fiscalYear=year, fiscalQuarter=quarter, reportingPeriod=document_evidence['periodEnd'])
         if document_evidence.get('sourceDocuments'):
             base['sourceDocuments'] += document_evidence['sourceDocuments']
-        info = summary(consumer, cik, now, base['fiscalQuarter'], base['fiscalYear']) if base['fiscalQuarter'] and base['fiscalYear'] else {'state': 'UNAVAILABLE', 'reason': 'RELEASE_REPORTING_PERIOD_NOT_VERIFIED'}
+        info = metric_summary(base['fiscalQuarter'], base['fiscalYear']) if base['fiscalQuarter'] and base['fiscalYear'] else {'state': 'UNAVAILABLE', 'reason': 'RELEASE_REPORTING_PERIOD_NOT_VERIFIED'}
         if not base['reportingPeriod'] and info.get('state') == 'AVAILABLE':
             current = info.get('metrics', {}).get('revenue', {}).get('current')
             if current:

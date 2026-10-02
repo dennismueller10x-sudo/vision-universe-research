@@ -20,6 +20,116 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_share_count_change_needs_split_and_issuance_context(self):
+        from test_engine import consumer
+        from company_intelligence.earnings import summary
+        facts = consumer()
+        facts['units']['shares_outstanding'] = 'shares'
+        facts['quarterly']['shares_outstanding'] = [r[:3] + [100 if r[0] == 2025 else 110] + r[4:] for r in facts['quarterly']['revenue']]
+        change = next(x for x in summary(facts, facts['cik'], NOW)['whatChanged'] if x['metric'] == 'shares_outstanding')
+        self.assertEqual(change['direction'], 'NEUTRAL')
+        self.assertEqual(change['classification'], 'NOT_COMPARABLE')
+        self.assertIn('SPLIT_ISSUANCE_BUYBACK', change['interpretation'])
+
+    def test_scoped_ir_feed_cannot_leak_partner_results_into_another_issuer(self):
+        from company_intelligence.pipeline import Pipeline
+        a = company()
+        b = company('Microsoft Corporation', 'MSFT', '0000789019')
+        text = b'''<rss><channel><item><title>Microsoft Corporation reports quarterly financial results</title>
+        <link>https://publisher.example/msft-results</link><pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate></item></channel></rss>'''
+        class HTTP:
+            def get(self, *args, **kwargs): return {'body': text, 'finalUrl': 'https://apple.com/feed'}
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                p = Pipeline(Path(tmp), {a['companyId']: a, b['companyId']: b}, store, HTTP(), NOW)
+                p.ingest_source(source(a))
+                self.assertEqual(store.db.execute('SELECT COUNT(*) FROM items').fetchone()[0], 0)
+                self.assertIsNone(store.sources()[0]['latestContentAt'])
+            finally: store.close()
+
+    def test_incremental_import_horizon_preserves_existing_history(self):
+        from company_intelligence.pipeline import Pipeline
+        c = company()
+        submissions = {'cik': c['cik'], 'filings': {'recent': {'accessionNumber': ['0000320193-26-000001', '0000320193-23-000001'],
+            'form': ['8-K', '8-K'], 'filingDate': ['2026-10-01', '2023-01-01'], 'items': ['1.01', '1.02']}}}
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            p = Pipeline(Path(tmp), {c['companyId']: c}, store, object(), NOW)
+            p.sec_client = lambda budget: object()
+            try:
+                old = {'eventId': 'retained', 'companyId': c['companyId'], 'eventType': 'SEC_FILING', 'date': '2023-01-01', 'headline': 'Retained history'}
+                store.event(old, NOW)
+                with patch('quant.sec.provider.SECProvider.get_submissions', return_value=submissions):
+                    p.project_company(c, fetch_sec=True, filing_since='2026-04-01')
+                cached = store.state('sec-submissions:' + c['companyId'])
+                self.assertEqual(cached['filings']['recent']['accessionNumber'], ['0000320193-26-000001'])
+                self.assertTrue(store.db.execute("SELECT 1 FROM events WHERE id='retained'").fetchone())
+                self.assertFalse(store.db.execute("SELECT 1 FROM events WHERE json_extract(payload,'$.filingId')='0000320193-23-000001'").fetchone())
+                self.assertEqual(p.run['secFailures'], 0)
+            finally: store.close()
+
+    def test_candidate_rerun_cannot_revoke_independently_verified_official_release(self):
+        c = company()
+        base = {'companyId': c['companyId'], 'eventType': 'EARNINGS_PUBLISHED', 'date': NOW[:10], 'fiscalYear': 2026,
+                'fiscalQuarter': 'Q3', 'reportingPeriod': '2026-06-30', 'headline': 'Earnings published', 'sourceDocuments': []}
+        sec = {**base, 'eventId': 'sec', 'filingId': '0000320193-26-000001', 'sourceUrl': 'https://sec.gov/release', 'detectionEvidence': ['SEC_DOCUMENT_EXPLICIT_EARNINGS_RELEASE']}
+        ir = {**base, 'eventId': 'official', 'sourceId': 'apple-feed', 'sourceUrl': 'https://apple.com/release', 'detectionEvidence': ['OFFICIAL_RESULTS_RELEASE_TITLE']}
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                store.event(sec, NOW); store.event(ir, NOW)
+                store.event({**sec, 'eventType': 'EARNINGS_CANDIDATE', 'detectionEvidence': ['8-K_ITEM_2.02_CANDIDATE'], 'documentEvidence': {}}, NOW)
+                result = store.company_payload(c, NOW)['earnings']
+                self.assertEqual(len(result), 1)
+                self.assertEqual(result[0]['eventType'], 'EARNINGS_PUBLISHED')
+                self.assertTrue(any(p.get('verificationState') == 'CANDIDATE' for p in result[0]['eventProvenance']))
+                self.assertEqual(result[0]['eventId'], 'sec')
+            finally: store.close()
+
+    def test_parent_release_does_not_certify_subsidiary_or_partner_earnings(self):
+        from company_intelligence.model import issuer_results_actor
+        c = company('VEON Ltd.', 'VEON', '0001468091')
+        self.assertTrue(issuer_results_actor('VEON reports second quarter financial results', c))
+        for title in ["VEON's Beeline Kazakhstan reports second quarter financial results", 'VEON announces subsidiary second quarter financial results', 'VEON announces partner quarterly results']:
+            self.assertFalse(issuer_results_actor(title, c))
+
+    def test_distributor_authored_announcement_can_confirm_calendar_without_trusting_global_feed(self):
+        from company_intelligence.pipeline import Pipeline
+        c = company()
+        text = b'''<rss><channel><item><title>Apple Inc. announces date for third quarter financial results</title>
+        <link>https://www.globenewswire.com/news-release/official-test</link><pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate>
+        <category domain="https://www.globenewswire.com/rss/stock">Nasdaq:AAPL</category>
+        <dc:contributor xmlns:dc="http://dublincore.org/documents/dcmi-namespace/">Apple Inc.</dc:contributor>
+        <description>Apple will release financial results on October 27, 2026.</description></item></channel></rss>'''
+        class HTTP:
+            def get(self, *args, **kwargs): return {'body': text, 'finalUrl': GN['url']}
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                p = Pipeline(Path(tmp), {c['companyId']: c}, store, HTTP(), NOW)
+                p.ingest_source(GN)
+                payload = store.company_payload(c, NOW)
+                self.assertEqual(len(payload['news']), 1)
+                self.assertEqual(payload['events'][0]['confirmationStatus'], 'CONFIRMED')
+                self.assertEqual(payload['events'][0]['date'], '2026-10-27')
+                self.assertEqual(payload['events'][0]['confirmationEvidence'], 'ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT')
+                self.assertFalse(payload['earnings'])
+                self.assertFalse(store.sources()[0]['verified'])
+            finally: store.close()
+
+    def test_pruning_event_removes_alias_in_same_transaction(self):
+        c = company()
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                store.event({'eventId': 'old', 'companyId': c['companyId'], 'eventType': 'IR_EVENT', 'date': '2010-01-01', 'headline': 'Historical event'}, NOW)
+                with store.db: store.db.execute('INSERT INTO event_alias VALUES (?,?)', ('alias', 'old'))
+                store.prune(NOW)
+                self.assertEqual(store.db.execute('SELECT COUNT(*) FROM event_alias').fetchone()[0], 0)
+                self.assertTrue((Path(tmp) / 'archive.sqlite').exists())
+            finally: store.close()
+
     def test_next_day_call_links_only_with_unique_explicit_fiscal_period(self):
         c = company()
         with tempfile.TemporaryDirectory() as tmp:
