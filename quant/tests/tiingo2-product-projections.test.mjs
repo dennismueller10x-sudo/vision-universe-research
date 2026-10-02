@@ -16,6 +16,7 @@ function put(root,path,value){const file=join(root,path);mkdirSync(dirname(file)
 
 test('existing chart projection is independent of fundamentals and uses split semantics and actual source currency',()=>{
  const security=row('DNA',{currency:'USD'}),prices=payload(security);
+ prices.provenance={sourceResponseSha256:'9c'.repeat(32)};
  // Reverse split is an action on the ex-date, not a cumulative provider factor.
  for(let i=0;i<100;i++)Object.assign(prices.bars[i],{open:.5,high:.55,low:.45,close:.5,volume:20000,adjustedClose:10,adjustedOpen:10,adjustedHigh:11,adjustedLow:9,adjustedVolume:1000});
  prices.bars[100].splitFactor=.05;
@@ -23,8 +24,13 @@ test('existing chart projection is independent of fundamentals and uses split se
  assert.equal(chart.ready,true);assert.equal(chart.longReady,true);
  assert.equal(chart.daily.priceSeriesType,'SPLIT_ADJUSTED');assert.equal(chart.daily.currency,'USD');
  assert.equal(chart.daily.securityId,'ref_DNA');assert.equal(chart.canonicalProof.splitActions,1);
+ assert.equal(chart.daily.sourceResponseSha256,prices.provenance.sourceResponseSha256);
  assert.ok(chart.daily.points.every(([,close])=>close===10));assert.equal(chart.canonicalProof.totalReturnAvailable,true);
  assert.equal(chart.canonicalProof.bars,220);
+ for(const value of [undefined,'unverified',123]){
+  const input=payload(security);input.provenance={sourceResponseSha256:value};
+  assert.equal(Object.hasOwn(projectChart(input,security,{asOf}).daily,'sourceResponseSha256'),false);
+ }
 });
 
 test('new IPO can have a daily chart before MAX history and Quant readiness',()=>{
@@ -94,7 +100,9 @@ test('scoped projection cannot remint an existing security ID',async()=>{
 });
 
 test('DNA historical REVIEW policy resolves through the actual canonical browser directory without changing IDs or classifier metadata',async()=>{
- const actual=read(resolve('quant/data/universe/instruments/DN.json')).instruments.find(instrument=>instrument.symbol==='DNA');
+ const actual={...read(resolve('quant/data/universe/instruments/DN.json')).instruments.find(instrument=>instrument.symbol==='DNA'),
+  productEligibility:'REVIEW',productEligibilityReason:'UNCONFIRMED:LISTING_INACTIVE',screenerEligible:false,
+  screenerReason:'Produktentscheidung des Wertpapierstamms: REVIEW (UNCONFIRMED:LISTING_INACTIVE)'};
  assert.equal(actual.productEligibility,'REVIEW');assert.equal(actual.securityType,'COMMON_STOCK');
  for(const variant of ['valid','issuer-mismatch','preferred','missing-alias','ambiguous-legacy']){
   const sourceRoot=mkdtempSync(join(tmpdir(),'vu-products-dna-')),shadowRoot=join(sourceRoot,'.market-cache/shadow');

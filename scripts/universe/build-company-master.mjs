@@ -43,7 +43,7 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { replayCommittedClassification, unchangedSnapshotShardBytes } from './company-master-snapshot-replay.mjs';
+import { replayCommittedClassification, unchangedSnapshotShardBytes, verifiedExistingDnaSnapshot } from './company-master-snapshot-replay.mjs';
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -533,6 +533,7 @@ function main() {
     previousByListing.set(key,previousByListing.has(key)?null:instrument);
   }
   const classificationReview=[];
+  const existingProofFile=join(root,'quant/data/universe/tiingo2-existing-eligibility-corrections.json'),existingProof=existsSync(existingProofFile)?readJSON(existingProofFile):null;
   const t0 = Date.now();
   const incoming = [];
   let droppedByIngest = 0;
@@ -573,7 +574,8 @@ function main() {
       inst.screenerEligible = inst.screenerEligible && row.active !== false;
     }
 
-    const replay=replayCommittedClassification(previousByListing.get(inst.symbol+'@'+String(inst.exchange||'').toUpperCase()),inst,{sourceKind:source.kind,sourceRow:row});
+    const prior=previousByListing.get(inst.symbol+'@'+String(inst.exchange||'').toUpperCase());
+    const replay=replayCommittedClassification(prior,inst,{sourceKind:source.kind,sourceRow:{...row,existingEligibilityVerified:verifiedExistingDnaSnapshot(prior,decision,existingProof)}});
     inst=replay.instrument;
     if(replay.proposal)classificationReview.push(replay.proposal);
 

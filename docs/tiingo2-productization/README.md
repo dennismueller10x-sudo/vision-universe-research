@@ -1,7 +1,7 @@
 # Tiingo 2.0 canonical productization
 
 Accepted baseline: draft PR #349 (`1cf199eb54f13dcf96226c5c86c75431a9446c68`).
-Implementation and verified output review: [draft PR #353](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/353), stacked on #349.
+Implementation and verified output review: [PR #353](https://github.com/dennismueller10x-sudo/vision-universe-research/pull/353), stacked on #349. The [final report](FINAL_REPORT.md) records the verified counts and exact proposed additions.
 
 The productizer consumes the existing authenticated discovery cache and listing-bound staging manifest. It does not replace discovery, SEC, Factor DNA, price producers or the central company-logo builder. All builders run in an isolated copy. New canonical IDs use the existing company/security/listing conventions. Existing instrument records, aliases, published capabilities and unscoped histories are preserved.
 
@@ -14,7 +14,7 @@ The productizer consumes the existing authenticated discovery cache and listing-
 3. Generate Search, Charts and Watchlist projections. Generate Discover, Screener, Markets and technical/signals projections using their existing product requirements. Missing evidence remains unavailable; SEC or a logo is not a universal title gate.
 4. Resolve official company domains and run the central logo builder. Suspect assets use the existing fallback. Every company has a single canonical asset, reused by products.
 5. Prepare an exact-byte canonical transaction with baseline CAS, per-listing product readiness and rollback before images. Private full histories are copied into an additive publication intent; raw provider histories and SEC cache are never public artifacts.
-6. Compare protected baseline bytes/identities, memberships, aliases, unscoped factor values and historical prices. Document logical Factor DNA population and Discover rank changes.
+6. Capture the exact current canonical baseline privately before producers, then compare protected bytes/identities, memberships, aliases, unscoped factor values and historical prices. The immutable #349 audit remains available for review; later legitimate additions do not invalidate the next refresh. Document logical Factor DNA population and Discover rank changes.
 7. Run release, unchanged resource budgets, the existing browser/accessibility/smoke suites, and every scoped title in Chromium and WebKit. Final QA binds the exact staged manifest, exact addition identities and prepared history hashes.
 8. Only for the internal `codex/tiingo2-productization` PR, apply the verified canonical transaction to that review branch. This step cannot write main or production history storage. Regular scheduled runs prepare encrypted reviewable transactions.
 
@@ -23,6 +23,10 @@ Production deployment/merge and private history-store writes remain separate fro
 ## Product-specific availability
 
 The existing full seven-factor Quant composite methodology has `publication.allowed:false`. Productization does not override it. Actual available Factor DNA evidence is published as partial or technical-only evidence; missing factors are typed unavailable and never zero-filled. A title can support Search/Chart/Watchlist while a technical strategy, Discover rule or full Quant score remains unavailable.
+
+Verified SEC company identity is retained independently of financial coverage. A newly listed issuer can have a confirmed CIK and company ID while periodic fundamentals and PIT remain unavailable. Contradictory SEC identity blocks a new candidate; missing financial statements do not fabricate scores or block otherwise validated basic products.
+
+DNA's old `UNCONFIRMED:LISTING_INACTIVE` decision has a specific correction path through the existing canonical eligibility function. Current official listing, matched SEC issuer/PIT, exact provider history, valid corporate actions and staged chart provenance must all agree. Publication rederives the exact permitted before/after decision and instrument fields from proof bound to the staged manifest; other baseline instrument fields and all other instruments remain protected.
 
 Short IPO histories use the existing compact-series renderer with an explicit `SHORT_HISTORY` gate of at least five actual bars; the default thirty-bar gate is unchanged elsewhere. Two-to-four-session IPOs retain an independently checked canonical price/quote projection and Search/Watchlist availability, while Charts explicitly remain unavailable. This narrow exception is bound to actual staged price bytes, action checks, current quotes and matching canonical IDs; no missing chart history is fabricated. MAX/weekly and full technical readiness keep their existing longer-history requirements. Blocked fresh revalidation of existing AMC/BIRD/AMWL does not revoke their published capabilities or historical chart artifacts.
 

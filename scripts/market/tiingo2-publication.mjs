@@ -21,6 +21,7 @@ export const CANONICAL_PUBLICATION_PATHS = {
   names: 'quant/data/market/security-master/company-names.json',
   instruments: 'quant/data/universe/instruments'
 };
+export const EXISTING_ELIGIBILITY_CORRECTIONS_PATH = 'quant/data/universe/tiingo2-existing-eligibility-corrections.json';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const jsonBytes = (data) => Buffer.from(JSON.stringify(data, null, 2) + '\n');
 const symbol = (row) => String(row.ticker ?? row.symbol ?? row.listing?.ticker ?? '').toUpperCase().trim();
@@ -46,6 +47,7 @@ export function isProductizationProjectionPath(path) {
   if (typeof path !== 'string' || path.includes('..') || path.includes('\\')) return false;
   if (REQUIRED_CANONICAL_PROJECTIONS.includes(path)) return true;
   if (path === CANONICAL_PUBLICATION_PATHS.names) return true;
+  if (path === CANONICAL_PUBLICATION_PATHS.eligibility || path === EXISTING_ELIGIBILITY_CORRECTIONS_PATH) return true;
   return [
     /^quant\/data\/universe\/instruments\/[A-Z0-9_-]+\.json$/,
     /^quant\/data\/universe\/search\/(sym|name)\/[A-Za-z0-9_-]+\.json$/,
@@ -323,16 +325,77 @@ export function verifyCanonicalProjections({ root, output, manifest }) {
   return true;
 }
 
-function verifyReconciledCanonicalRows({ root, output, manifest }) {
+/** A single accepted legacy false-inactive correction, bound to exact public
+ * evidence bytes and exact before/after rows. This cannot admit another symbol,
+ * change identity fields or waive a corporate-action/SEC gate. */
+export function verifyExistingEligibilityCorrections({root,output,manifest}) {
+  const entries=new Map(manifest.files.map(entry=>[entry.path,entry]));
+  const proofEntry=entries.get(EXISTING_ELIGIBILITY_CORRECTIONS_PATH),allowed=new Map();
+  if(!proofEntry){if(manifest.existingEligibilityCorrectionsSha256)throw Error('EXISTING_ELIGIBILITY_PROOF_MISSING');return allowed;}
+  const parse=path=>{
+    const entry=entries.get(path);if(!entry)throw Error('EXISTING_ELIGIBILITY_EVIDENCE_MISSING:'+path);
+    const bytes=readFileSync(guardedPath(output,entry.stagedPath));if(sha(bytes)!==entry.stagedSha256)throw Error('EXISTING_ELIGIBILITY_EVIDENCE_HASH_MISMATCH');
+    return JSON.parse(bytes);
+  };
+  if(manifest.existingEligibilityCorrectionsSha256!==proofEntry.stagedSha256)throw Error('EXISTING_ELIGIBILITY_PROOF_BINDING_FAILED');
+  const proof=parse(EXISTING_ELIGIBILITY_CORRECTIONS_PATH);
+  if(proof.schemaVersion!=='tiingo2-existing-eligibility-correction-1'||proof.asOf!==manifest.asOf||!/^\d{4}-\d{2}-\d{2}$/.test(proof.asOf||'')||!Number.isFinite(Date.parse(proof.asOf))||!Array.isArray(proof.corrections)||proof.corrections.length>1)throw Error('INVALID_EXISTING_ELIGIBILITY_PROOF');
+  for(const correction of proof.corrections){
+    const e=correction.evidence||{},fields=['productEligibility','productEligibilityReason','screenerEligible','screenerReason'];
+    if(correction.ticker!=='DNA'||correction.securityId!=='ref_DNA'||correction.listingKey!=='DNA|NYSE|2021-04-19'||correction.corporateActionGateWaived!==false||
+      manifest.additions.some(r=>r.ticker==='DNA'||r.securityId==='ref_DNA')||manifest.removals?.length||
+      JSON.stringify([...(correction.allowedInstrumentFields||[])].sort())!==JSON.stringify(fields.sort())||
+      ['listingActive','identityMatched','commonEquity','priceHistoryValid','latestPriceValid','corporateActionsValid','secIdentityVerified'].some(k=>e[k]!==true)||
+      ['providerMetadataSha256','providerResponseSha256','officialEvidenceSha256','secIdentitySha256'].some(k=>!/^[a-f0-9]{64}$/.test(e[k]||''))||
+      e.cik!=='0001830214'||e.asOf!==proof.asOf||!Number.isSafeInteger(e.bars)||e.bars<1371||
+      !/^\d{4}-\d{2}-\d{2}$/.test(e.latestDate||'')||!Number.isFinite(Date.parse(e.latestDate))||Date.parse(e.latestDate)>Date.parse(proof.asOf)||Date.parse(proof.asOf)-Date.parse(e.latestDate)>7*86400000)throw Error('UNVERIFIED_EXISTING_ELIGIBILITY_CORRECTION');
+    const instrumentPath=CANONICAL_PUBLICATION_PATHS.instruments+'/DN.json',beforeInstruments=readDocument(root,instrumentPath).instruments,
+      beforeDecisions=readDocument(root,CANONICAL_PUBLICATION_PATHS.eligibility).decisions;
+    const instruments=beforeInstruments.filter(r=>r.symbol==='DNA'),decisions=beforeDecisions.filter(r=>r.ticker==='DNA');
+    if(instruments.length!==1||decisions.length!==1)throw Error('EXISTING_ELIGIBILITY_IDENTITY_AMBIGUOUS');
+    const before=instruments[0],decision=decisions[0];
+    if(before.instrumentId!==correction.instrumentId||before.masterMemberId!=='ref_DNA'||before.exchange!=='NYSE'||before.firstTradeDate!=='2021-04-19'||
+      before.cik!==e.cik||before.issuerId!=='iss_cik_'+e.cik||before.securityType!=='COMMON_STOCK'||before.active!==true||
+      before.productEligibility!=='REVIEW'||before.productEligibilityReason!=='UNCONFIRMED:LISTING_INACTIVE'||
+      decision.securityId!=='ref_DNA'||decision.exchange!=='NYSE'||decision.start_date!=='2021-04-19'||decision.instrument_type!=='EQUITY_COMMON'||
+      decision.active_status!=='INACTIVE'||decision.product_eligibility!=='REVIEW'||decision.product_eligibility_reason!=='UNCONFIRMED:LISTING_INACTIVE'||
+      sha(JSON.stringify(before))!==correction.beforeInstrumentSha256||sha(JSON.stringify(decision))!==correction.beforeDecisionSha256)throw Error('EXISTING_ELIGIBILITY_BASELINE_MISMATCH');
+    const expectedDecision={...decision,active_status:'ACTIVE',product_eligibility:'ELIGIBLE',product_eligibility_reason:'TIINGO2_VERIFIED_CURRENT_LISTING',evidence_source:'TIINGO2_EXISTING_LISTING_REVERIFIED'};
+    const expectedInstrument=Company.applyEligibility(structuredClone(before),expectedDecision);
+    const after=parse(instrumentPath).instruments.filter(r=>r.instrumentId===before.instrumentId),afterDecision=parse(CANONICAL_PUBLICATION_PATHS.eligibility).decisions.filter(r=>r.securityId==='ref_DNA');
+    if(after.length!==1||afterDecision.length!==1||JSON.stringify(after[0])!==JSON.stringify(expectedInstrument)||JSON.stringify(afterDecision[0])!==JSON.stringify(expectedDecision)||
+      sha(JSON.stringify(after[0]))!==correction.afterInstrumentSha256||sha(JSON.stringify(afterDecision[0]))!==correction.afterDecisionSha256)throw Error('EXISTING_ELIGIBILITY_ROW_CHANGE_NOT_PROVED');
+    const chart=parse('quant/data/market/discover-series/ref_DNA.json');
+    if(chart.securityId!=='ref_DNA'||chart.ticker!=='DNA'||chart.source!=='tiingo'||chart.dataMode!=='real'||chart.priceSeriesType!=='SPLIT_ADJUSTED'||chart.corporateActionStatus!=='PASS'||
+      chart.sourceBarCount!==e.bars||chart.sourceResponseSha256!==e.providerResponseSha256||chart.asOf!==e.latestDate||chart.publishCheckedAt!==proof.asOf||chart.publishBasis!=='ISOLATED_TIINGO2_CANONICAL_PROJECTION'||chart.currency!==before.currency||
+      !Array.isArray(chart.points)||chart.points.length<5||chart.barCount!==chart.points.length||chart.points.at(-1)?.[0]!==e.latestDate||
+      chart.points.some((r,i)=>!Array.isArray(r)||!/^\d{4}-\d{2}-\d{2}$/.test(r[0]||'')||!Number.isFinite(Date.parse(r[0]))||r[0]>proof.asOf||!Number.isFinite(r[1])||r[1]<=0||(i&&r[0]<=chart.points[i-1][0])))throw Error('EXISTING_ELIGIBILITY_FRESH_CHART_NOT_PROVED');
+    const sec=parse('quant/data/sec/canonical_index.json').companies?.filter(r=>r.ticker==='DNA')||[],consumer=parse('quant/data/sec/consumer/CIK0001830214.json');
+    const pitRows=['annual','quarterly'].flatMap(scope=>Object.values(consumer[scope]||{}).flat());
+    if(sec.length!==1||sec[0].cik!==e.cik||sec[0].securityId!=='sec_DNA'||sec[0].file!=='canonical/DNA.json'||
+      consumer.cik!==e.cik||consumer.dataSource?.isMock!==false||consumer.dataSource?.provider!=='sec_edgar'||!consumer.securityIds?.includes('ref_DNA')||!consumer.tickers?.includes('DNA')||!pitRows.length||
+      pitRows.some(r=>!Array.isArray(r)||!/^\d{4}-\d{2}-\d{2}$/.test(r[4]||'')||r[4]>proof.asOf||!r[5]))throw Error('EXISTING_ELIGIBILITY_SEC_PIT_NOT_PROVED');
+    allowed.set(instrumentPath,new Map([[before.instrumentId,{before,after:expectedInstrument}]]));
+    allowed.set(CANONICAL_PUBLICATION_PATHS.eligibility,new Map([['ref_DNA',{before:decision,after:expectedDecision}]]));
+  }
+  return allowed;
+}
+export function verifyReconciledCanonicalRows({ root, output, manifest }) {
+  const corrections=verifyExistingEligibilityCorrections({root,output,manifest});
   for (const entry of manifest.files) {
     const path = entry.path;
-    const field = path === CANONICAL_PUBLICATION_PATHS.names ? 'rows'
+    const field = path === CANONICAL_PUBLICATION_PATHS.names ? 'rows' : path === CANONICAL_PUBLICATION_PATHS.eligibility ? 'decisions'
       : /^quant\/data\/universe\/instruments\//.test(path) ? 'instruments' : null;
     if (!field || !existsSync(guardedPath(root, path))) continue;
     const before = readDocument(root, path);
     const after = JSON.parse(readFileSync(guardedPath(output, entry.stagedPath)));
     if (!Array.isArray(before[field]) || !Array.isArray(after[field])) throw Error('INVALID_RECONCILED_CANONICAL_ROWS');
-    assertPrefix(before, after, field);
+    if(after[field].length<before[field].length)throw Error('BASELINE_REMOVAL');
+    for(let i=0;i<before[field].length;i++){
+      if(JSON.stringify(before[field][i])===JSON.stringify(after[field][i]))continue;
+      const row=before[field][i],exception=corrections.get(path)?.get(field==='instruments'?row.instrumentId:row.securityId);
+      if(!exception||JSON.stringify(exception.before)!==JSON.stringify(row)||JSON.stringify(exception.after)!==JSON.stringify(after[field][i]))throw Error('BASELINE_ROW_CHANGED');
+    }
   }
   const cikEntry = manifest.files.find((entry) => entry.path === 'quant/data/universe/cik-map.json');
   if (cikEntry && existsSync(guardedPath(root, cikEntry.path))) {
@@ -535,6 +598,8 @@ export function attachCanonicalProjections({ root, staged, preparedFiles, produc
   // Immutable content blobs leave any prior valid stage intact even if a
   // new attachment fails. Advance the manifest only after real reader checks.
   for (const [path, bytes] of contents) atomicWrite(guardedPath(output, path), bytes);
+  const correctionsEntry=proposed.files.find(entry=>entry.path===EXISTING_ELIGIBILITY_CORRECTIONS_PATH);
+  if(correctionsEntry)proposed.existingEligibilityCorrectionsSha256=correctionsEntry.stagedSha256;
   verifyReconciledCanonicalRows({ root, output, manifest: proposed });
   verifyScopedPublicProjections({ root, output, manifest: proposed });
   if (productizationReadiness !== undefined) {

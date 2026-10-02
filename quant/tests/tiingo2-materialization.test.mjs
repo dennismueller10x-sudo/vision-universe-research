@@ -116,6 +116,25 @@ test('an official SEC ticker-map CIK collision cannot produce a verified issuer 
   assert.equal(report.rows[0].reason,'SEC_IDENTITY_CIK_COLLISION');assert.equal(report.rows[0].identityVerified,false);assert.equal(report.byTicker.SCOP,undefined);assert.equal(report.pipeline,null);assert.deepEqual(report.rows[0].artifacts,[]);
  }finally{rmSync(fixture.base,{recursive:true,force:true});}
 });
+test('a cached SEC submissions response for another numeric CIK cannot verify issuer identity',async()=>{
+ const fixture=setup();
+ try{
+  const corrupt=String.raw`
+import sys,json
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+from quant.sec.http_client import DiskCache
+cache=DiskCache(Path(sys.argv[2])/'http-cache',ttl_seconds=None)
+url='https://data.sec.gov/submissions/CIK4100000001.json'
+payload=json.loads(cache.get(url)); payload['cik']=4100000002
+cache.put(url,json.dumps(payload).encode())
+`;
+  const patched=spawnSync('python3',['-c',corrupt,join(root,'scripts'),fixture.privateDir],{encoding:'utf8'});assert.equal(patched.status,0,patched.stderr);
+  const report=await materializeFundamentals({root:fixture.shadow,tickers:['SCOP'],privateDir:fixture.privateDir,asOf:'2024-09-30',archive:fixture.archive,allowNetwork:false});
+  assert.equal(report.network.requests,0,'the actual provider reads the corrupted cached response without any network replacement');
+  assert.equal(report.rows[0].reason,'SEC_SUBMISSIONS_CIK_COLLISION');assert.equal(report.rows[0].identityVerified,false);assert.equal(report.byTicker.SCOP,undefined);assert.equal(report.pipeline,null);assert.equal(report.rows[0].fundamentalsStatus,'NONE');assert.equal(report.rows[0].pitValid,false);assert.deepEqual(report.rows[0].artifacts,[]);
+ }finally{rmSync(fixture.base,{recursive:true,force:true});}
+});
 test('actual materialized factor states expose technical-only/partial/blockage and never activate disabled full7F', () => {
   const record = (available) => ({ factors: Object.fromEntries(Evidence.FACTOR_ORDER.map((id) => [id, available.includes(id) ? { state: 'AVAILABLE', score: 50 } : { state: 'UNAVAILABLE', score: null, reason: id === 'revisions' ? 'BLOCKED_EXTERNAL' : 'INPUT_NOT_MATERIALIZED' }])) });
   assert.equal(classifyMaterializedFactorRecord(record(['momentum', 'risk'])).quantStatus, 'TECHNICAL_ONLY');

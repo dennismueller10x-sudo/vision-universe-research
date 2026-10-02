@@ -5,7 +5,7 @@ import {join,resolve,dirname,relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {prepareProductizationShadow,reconcileShadowIssuerMappings,initializeShadowGit,loadCandidatePriceInputs,assessProductizationReplay} from './tiingo2-productize.mjs';
+import {prepareProductizationShadow,reconcileShadowIssuerMappings,materializeExistingDnaEligibilityCorrection,initializeShadowGit,loadCandidatePriceInputs,assessProductizationReplay} from './tiingo2-productize.mjs';
 import {materializeFundamentals,runExistingProcess} from './tiingo2-fundamentals.mjs';
 import {materializeFactors} from './tiingo2-factors.mjs';
 import {materializeProductProjections} from './tiingo2-product-projections.mjs';
@@ -137,6 +137,8 @@ export async function runProductization({root=process.cwd(),sourceCache=join(roo
  assertScopedSecIdentities({securities:prepared.securities,report:fundamentals});
  const issuerMappings=reconcileShadowIssuerMappings({shadowRoot,securities:prepared.securities,byTicker:fundamentals.byTicker});
  if(issuerMappings.rows.some(row=>row.state==='BLOCKED'))throw Error('NEW_SECURITY_CANONICAL_CIK_CONFLICT');
+ const existingCorrection=materializeExistingDnaEligibilityCorrection({root,shadowRoot,sourceCache,candidates:prepared.priceCandidates,securities:prepared.priceSecurities,byTicker:fundamentals.byTicker,asOf,workDir});
+ onProgress('Existing DNA canonical eligibility correction: '+existingCorrection.state+'\n');
  const projection=await materializeProductProjections({sourceRoot:root,shadowRoot,securities:prepared.priceSecurities||prepared.securities,pricePayloads:prepared.pricePayloads,asOf});
  const factors=await materializeFactors({root:shadowRoot,tickers:scope,marketStoreDir,privateDir:join(workDir,'factor-private'),asOf,onProgress});
  const surfaces=await materializeProductSurfaces({shadowRoot,marketStoreDir,tickers:scope,freshPriceTickers:[...prepared.pricePayloads.keys()],privateDir:join(workDir,'surface-private'),onProgress});

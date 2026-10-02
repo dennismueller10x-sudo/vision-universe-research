@@ -84,6 +84,7 @@ export function projectChart(payload,security,{asOf}={}){
  const longReady=long.points.length>=30&&long.points.every(([,close])=>close>0);
  const chartReady=daily.points.length>=5;
  daily.corporateActionStatus=actionGate.status;
+ if(/^[a-f0-9]{64}$/.test(payload.provenance?.sourceResponseSha256||''))daily.sourceResponseSha256=payload.provenance.sourceResponseSha256;
  return {ready:chartReady,priceReady:true,reasonCodes:chartReady?[]:['INSUFFICIENT_CHART_HISTORY'],daily,long:longReady?long:null,longReady,longReasonCodes:longReady?[]:[long.points.length<30?'INSUFFICIENT_LONG_CHART_HISTORY':'LONG_CHART_PRECISION_LIMIT'],canonicalProof:{dataHash:canonical.SPLIT_ADJUSTED.dataHash,sourceRevision:canonical.SPLIT_ADJUSTED.sourceRevision,
   bars:canonical.SPLIT_ADJUSTED.length,currency,priceSeriesType:'SPLIT_ADJUSTED',corporateActionStatus:actionGate.status,
   firstDate:canonical.SPLIT_ADJUSTED.timestamps[0],lastDate:canonical.SPLIT_ADJUSTED.timestamps.at(-1),historyCoverage:bars.length<30?'SHORT_HISTORY':'STANDARD_HISTORY',

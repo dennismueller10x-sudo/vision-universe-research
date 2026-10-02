@@ -9,7 +9,8 @@ import { createRequire } from 'node:module';
 import { stageCanonicalPublication, CANONICAL_PUBLICATION_PATHS } from './tiingo2-publication.mjs';
 import { assessEvidence, normalizeBars } from './tiingo2-evidence.mjs';
 import { resolveProductUniverse } from './universe-source.mjs';
-import { parseExchangeDirectory } from './tiingo2-refresh.mjs';
+import { parseExchangeDirectory, issuerNameKey } from './tiingo2-refresh.mjs';
+import { resolveListingIdentities } from './tiingo2-identity.mjs';
 import { REVIEW_RESOLUTION_VERSION } from './tiingo2-review-resolution.mjs';
 const require=createRequire(import.meta.url),Company=require('../../quant/engines/company-master.js'),Store=require('../../quant/engines/market-store.js');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),read=file=>JSON.parse(readFileSync(file,'utf8'));
@@ -100,6 +101,48 @@ function verifyReviewAddition({ticker,securityId,listing,evidence,proof,sourceCa
  if(!officialMatched)throw Error('ADDITIONAL_REVIEW_OFFICIAL_INPUT_PROOF_MISMATCH:'+ticker);
 }
 function sourceHashes(root){const paths=[CANONICAL_PUBLICATION_PATHS.raw,CANONICAL_PUBLICATION_PATHS.eligibility,CANONICAL_PUBLICATION_PATHS.names,'quant/data/universe/master-manifest.json'];for(const file of readdirSync(join(root,CANONICAL_PUBLICATION_PATHS.instruments)).filter(n=>n.endsWith('.json')))paths.push(CANONICAL_PUBLICATION_PATHS.instruments+'/'+file);return Object.fromEntries(paths.map(path=>[path,hash(readFileSync(join(root,path)))]));}
+
+export const DNA_CORRECTION_PATH='quant/data/universe/tiingo2-existing-eligibility-corrections.json';
+const dnaInstrumentFields=['productEligibility','productEligibilityReason','screenerEligible','screenerReason'];
+/** Independent exact-field proof check shared by protected shadow QA. */
+export function verifyExistingDnaEligibilityCorrection({beforeInstrument,afterInstrument,beforeDecision,afterDecision,proof,asOf}){
+ const before=beforeInstrument,expectedDecision={...beforeDecision,active_status:'ACTIVE',product_eligibility:'ELIGIBLE',product_eligibility_reason:'TIINGO2_VERIFIED_CURRENT_LISTING',evidence_source:'TIINGO2_EXISTING_LISTING_REVERIFIED'};
+ if(!before||before.symbol!=='DNA'||before.instrumentId!=='vu_f4c48467a5f4ef'||before.masterMemberId!=='ref_DNA'||before.exchange!=='NYSE'||before.firstTradeDate!=='2021-04-19'||before.cik!=='0001830214'||before.issuerId!=='iss_cik_0001830214'||before.securityType!=='COMMON_STOCK'||before.securityClass!=='EQUITY_COMMON'||before.active!==true||before.productEligibility!=='REVIEW'||before.productEligibilityReason!=='UNCONFIRMED:LISTING_INACTIVE'||beforeDecision?.ticker!=='DNA'||beforeDecision.securityId!=='ref_DNA'||beforeDecision.exchange!=='NYSE'||beforeDecision.start_date!=='2021-04-19'||beforeDecision.instrument_type!=='EQUITY_COMMON'||beforeDecision.active_status!=='INACTIVE'||beforeDecision.product_eligibility!=='REVIEW'||beforeDecision.product_eligibility_reason!=='UNCONFIRMED:LISTING_INACTIVE')throw Error('DNA_CORRECTION_BASELINE_NOT_EXACT');
+ const expected=Company.applyEligibility(structuredClone(before),expectedDecision),evidence=proof?.evidence;
+ if(JSON.stringify(afterDecision)!==JSON.stringify(expectedDecision)||JSON.stringify(afterInstrument)!==JSON.stringify(expected)||proof?.ticker!=='DNA'||proof.securityId!=='ref_DNA'||proof.instrumentId!==before.instrumentId||proof.listingKey!=='DNA|NYSE|2021-04-19'||proof.corporateActionGateWaived!==false||JSON.stringify(proof.allowedInstrumentFields)!==JSON.stringify(dnaInstrumentFields)||proof.beforeInstrumentSha256!==hash(JSON.stringify(before))||proof.afterInstrumentSha256!==hash(JSON.stringify(expected))||proof.beforeDecisionSha256!==hash(JSON.stringify(beforeDecision))||proof.afterDecisionSha256!==hash(JSON.stringify(expectedDecision)))throw Error('DNA_CORRECTION_ROW_BINDING_FAILED');
+ const validDate=value=>/^\d{4}-\d{2}-\d{2}$/.test(value||'')&&Number.isFinite(Date.parse(value))&&new Date(Date.parse(value)).toISOString().slice(0,10)===value;
+ if(!evidence||evidence.asOf!==asOf||!validDate(asOf)||evidence.cik!=='0001830214'||['listingActive','identityMatched','commonEquity','priceHistoryValid','latestPriceValid','corporateActionsValid','secIdentityVerified'].some(field=>evidence[field]!==true)||['providerMetadataSha256','providerResponseSha256','officialEvidenceSha256','secIdentitySha256'].some(field=>!(/^[a-f0-9]{64}$/.test(evidence[field]||'')))||!Number.isInteger(evidence.bars)||evidence.bars<1371||!validDate(evidence.latestDate)||(Date.parse(asOf)-Date.parse(evidence.latestDate))/86400000<0||(Date.parse(asOf)-Date.parse(evidence.latestDate))/86400000>7)throw Error('DNA_CORRECTION_EVIDENCE_NOT_GREEN');
+ return true;
+}
+
+/** Correct only the audited stale DNA decision after current provider prices,
+ * primary listing and SEC submissions all independently confirm its identity. */
+export function materializeExistingDnaEligibilityCorrection({root,shadowRoot,sourceCache,candidates=[],securities=[],byTicker,asOf,workDir}){
+ root=resolve(root);shadowRoot=resolve(shadowRoot);if(!shadowRoot.startsWith(join(root,'.market-cache')+sep))throw Error('ISOLATED_DNA_CORRECTION_REQUIRED');
+ const path=DNA_CORRECTION_PATH,artifact={schemaVersion:'tiingo2-existing-eligibility-correction-1',asOf,corrections:[]};
+ const sourceInstrument=instruments(root).find(row=>row.symbol==='DNA'&&row.masterMemberId==='ref_DNA'),sourceEligibility=read(join(root,CANONICAL_PUBLICATION_PATHS.eligibility)),beforeDecision=sourceEligibility.decisions.find(row=>row.ticker==='DNA'&&row.securityId==='ref_DNA');
+ if(!sourceInstrument||sourceInstrument.productEligibility==='ELIGIBLE'&&sourceInstrument.screenerEligible===true){write(join(shadowRoot,path),artifact);return {state:sourceInstrument?'ALREADY_CORRECT':'NOT_APPLICABLE',path,corrections:[],proof:artifact};}
+ const candidate=candidates.find(row=>row.ticker==='DNA'&&row.securityId==='ref_DNA'),input=candidate&&loadCandidatePriceInputs({sourceCache,candidates:[candidate],today:asOf}).get('DNA'),sec=byTicker instanceof Map?byTicker.get('DNA'):byTicker?.DNA;
+ if(!input||input.state!=='READY'||sec?.cik!=='0001830214'||sec.identityVerified!==true||sec.pitValid!==true||sec.identityEvidence?.provider!=='sec_edgar'||sec.identityEvidence?.tickerMapMatched!==true||sec.identityEvidence?.submissionsTickerMatched!==true||sec.identityEvidence?.submissionsCikMatched!==true)throw Error('DNA_CURRENT_PRICE_SEC_PROOF_NOT_GREEN');
+ const metadata=input.entry.metadata,provider={...metadata,ticker:'DNA',exchange:String(metadata.exchangeCode||metadata.exchange).toUpperCase(),assetType:'Stock',active:true,cik:sec.cik};
+ const identity=resolveListingIdentities({fresh:[provider],current:instruments(root),asOf}).decisions;
+ if(identity.length!==1||identity[0].state!=='EXISTING'||identity[0].identity?.instrumentId!==sourceInstrument.instrumentId)throw Error('DNA_CURRENT_PROVIDER_IDENTITY_NOT_EXACT');
+ const officialRows=[];for(const source of ['nasdaqlisted','otherlisted']){const file=join(sourceCache,'directories',asOf+'-'+source+'.txt');if(existsSync(file))officialRows.push(...parseExchangeDirectory(readFileSync(file,'utf8'),source).filter(row=>row.ticker==='DNA'));}
+ const official=officialRows.length===1?officialRows[0]:null;
+ if(!official||official.exchange!=='NYSE'||official.etf!=='N'||official.test!=='N'||issuerNameKey(official.name)!==issuerNameKey(sourceInstrument.companyName)||issuerNameKey(metadata.name)!==issuerNameKey(sourceInstrument.companyName)||/\b(?:PREFERRED|WARRANTS?|UNITS?|RIGHTS?|NOTES?|FUNDS?|ETF|DEPOSITARY)\b/i.test(official.name)||Company.toInstrument({...provider,name:official.name},{today:asOf,provider:'tiingo'}).securityType!=='COMMON_STOCK')throw Error('DNA_CURRENT_PRIMARY_COMMON_LISTING_NOT_VERIFIED');
+ const afterDecision={...beforeDecision,active_status:'ACTIVE',product_eligibility:'ELIGIBLE',product_eligibility_reason:'TIINGO2_VERIFIED_CURRENT_LISTING',evidence_source:'TIINGO2_EXISTING_LISTING_REVERIFIED'},afterInstrument=Company.applyEligibility(structuredClone(sourceInstrument),afterDecision);
+ const correction={ticker:'DNA',securityId:'ref_DNA',instrumentId:sourceInstrument.instrumentId,listingKey:'DNA|NYSE|2021-04-19',beforeInstrumentSha256:hash(JSON.stringify(sourceInstrument)),afterInstrumentSha256:hash(JSON.stringify(afterInstrument)),beforeDecisionSha256:hash(JSON.stringify(beforeDecision)),afterDecisionSha256:hash(JSON.stringify(afterDecision)),allowedInstrumentFields:dnaInstrumentFields,corporateActionGateWaived:false,evidence:{providerMetadataSha256:hash(JSON.stringify(metadata)),providerResponseSha256:input.responseHash,officialEvidenceSha256:hash(JSON.stringify(official)),secIdentitySha256:hash(JSON.stringify(sec.identityEvidence)),listingActive:true,identityMatched:true,commonEquity:true,priceHistoryValid:true,latestPriceValid:true,corporateActionsValid:true,secIdentityVerified:true,cik:sec.cik,bars:input.entry.rows.length,latestDate:input.assessed.price.latestDate,asOf}};
+ verifyExistingDnaEligibilityCorrection({beforeInstrument:sourceInstrument,afterInstrument,beforeDecision,afterDecision,proof:correction,asOf});
+ const shardPath=join(shadowRoot,CANONICAL_PUBLICATION_PATHS.instruments,Company.shardKey('DNA')+'.json'),shard=read(shardPath),index=shard.instruments.findIndex(row=>row.instrumentId===sourceInstrument.instrumentId);
+ if(index<0||![JSON.stringify(sourceInstrument),JSON.stringify(afterInstrument)].includes(JSON.stringify(shard.instruments[index])))throw Error('DNA_SHADOW_BASELINE_CHANGED');
+ const eligibilityPath=join(shadowRoot,CANONICAL_PUBLICATION_PATHS.eligibility),eligibility=read(eligibilityPath),decisionIndex=eligibility.decisions.findIndex(row=>row.securityId==='ref_DNA');
+ if(decisionIndex<0||![JSON.stringify(beforeDecision),JSON.stringify(afterDecision)].includes(JSON.stringify(eligibility.decisions[decisionIndex])))throw Error('DNA_SHADOW_DECISION_CHANGED');
+ if(eligibility.decisions[decisionIndex].product_eligibility==='REVIEW'){eligibility.counts.REVIEW--;eligibility.counts.ELIGIBLE++;}
+ eligibility.decisions[decisionIndex]=afterDecision;shard.instruments[index]=afterInstrument;write(shardPath,shard);write(eligibilityPath,eligibility);
+ const security=securities.find(row=>row.instrumentId===sourceInstrument.instrumentId);if(security)Object.assign(security,afterInstrument);
+ artifact.corrections.push(correction);write(join(shadowRoot,path),artifact);if(workDir)write(join(workDir,'tiingo2_existing_dna_eligibility.json'),artifact);
+ return {state:'CORRECTED_VERIFIED_CURRENT_LISTING',path,corrections:artifact.corrections,proof:artifact};
+}
 
 /** Validate a cached accepted stage against the current canonical membership
  * before any replay builder runs. A prior accepted scope is never a new diff. */
@@ -200,6 +243,8 @@ export function reconcileShadowIssuerMappings({shadowRoot,securities,byTicker}){
   }if(changed)write(path,doc);
  }
  const namesPath=join(shadowRoot,CANONICAL_PUBLICATION_PATHS.names),names=read(namesPath);for(const row of names.rows){const security=scope.get(row.ticker);if(security?.cik&&!row.cik)row.cik=security.cik;}write(namesPath,names);
+ const manifestPath=join(shadowRoot,'quant/data/universe/master-manifest.json');
+ if(rows.some(row=>row.state==='MAPPED')&&existsSync(manifestPath)){const manifest=read(manifestPath),all=instruments(shadowRoot);manifest.identifiers={...manifest.identifiers,withIssuerId:all.filter(row=>row.issuerId).length,distinctIssuers:new Set(all.filter(row=>row.issuerId).map(row=>row.issuerId)).size,withCik:all.filter(row=>row.cik).length};write(manifestPath,manifest);}
  return {rows,securities};
 }
 export function materializeShadowPrices({shadowRoot,sourceCache,candidates,securities,today,workDir}){

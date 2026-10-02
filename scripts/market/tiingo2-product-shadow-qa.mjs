@@ -6,6 +6,7 @@ import {gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {readDerivedFactorPopulationComparison} from './tiingo2-factor-population-qa.mjs';
+import {DNA_CORRECTION_PATH,verifyExistingDnaEligibilityCorrection} from './tiingo2-productize.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const load=p=>{const b=readFileSync(p);return JSON.parse(p.endsWith('.gz')?gunzipSync(b):b);};
 const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
@@ -49,7 +50,23 @@ export function runShadowQa({root,shadow,readiness,baseline,out}){
  check('UNSCOPED_HISTORICAL_PRICE_BYTES',!historyChanges.length,{changed:historyChanges});
  const emap=new Map(elig.map(r=>[r.securityId,r]));const altered=identities.eligibility.filter(r=>!scope.has(r.ticker)&&(!emap.has(r.securityId)||['ticker','product_eligibility','instrument_type'].some(k=>emap.get(r.securityId)[k]!==r[k])));check('UNSCOPED_CONSUMER_POLICY',!altered.length,{changed:altered.map(r=>r.ticker)});
  const instrumentDir=join(shadow,'quant/data/universe/instruments'),instruments=readdirSync(instrumentDir).filter(n=>n.endsWith('.json')).flatMap(n=>load(join(instrumentDir,n)).instruments??[]),imap=new Map(instruments.map(r=>[r.instrumentId,r]));
- const badIdentities=identities.instruments.filter(r=>!imap.has(r.instrumentId)||Object.entries(r).some(([k,v])=>!eq(imap.get(r.instrumentId)[k],v)));check('BASELINE_INSTRUMENT_IDS_URL_ALIASES',!badIdentities.length,{before:identities.instruments.length,after:instruments.length,changed:badIdentities.map(r=>r.symbol)});
+ let verifiedDnaCorrection=null;
+ const correctionPath=join(shadow,DNA_CORRECTION_PATH);
+ if(existsSync(correctionPath)){
+  const doc=load(correctionPath);let valid=true,error=null;
+  try{if(doc.schemaVersion!=='tiingo2-existing-eligibility-correction-1'||!Array.isArray(doc.corrections)||doc.corrections.length>1)throw Error('INVALID_DNA_CORRECTION_DOCUMENT');
+   if(doc.corrections.length){const proof=doc.corrections[0],before=load(join(root,'quant/data/universe/instruments/DN.json')).instruments.find(row=>row.instrumentId===proof.instrumentId),beforeDecision=load(join(root,'quant/data/market/security-master/eligibility.json')).decisions.find(row=>row.securityId==='ref_DNA');
+    verifyExistingDnaEligibilityCorrection({beforeInstrument:before,afterInstrument:imap.get(proof.instrumentId),beforeDecision,afterDecision:emap.get('ref_DNA'),proof,asOf:doc.asOf});verifiedDnaCorrection=proof;
+   }
+  }catch(e){valid=false;error=e.message;}
+  check('VERIFIED_DNA_EXISTING_LISTING_CORRECTION',valid,{corrections:verifiedDnaCorrection?1:0,error});
+  if(verifiedDnaCorrection)changes.push({ticker:'DNA',category:'VERIFIED_STALE_INACTIVE_ELIGIBILITY_CORRECTION',instrumentId:verifiedDnaCorrection.instrumentId,securityId:'ref_DNA',identityFieldsChanged:0,allowedInstrumentFields:verifiedDnaCorrection.allowedInstrumentFields,proofSha256:sha(readFileSync(correctionPath))});
+ }
+ const badIdentities=identities.instruments.filter(r=>r.instrumentId!==verifiedDnaCorrection?.instrumentId&&(!imap.has(r.instrumentId)||Object.entries(r).some(([k,v])=>!eq(imap.get(r.instrumentId)[k],v))));check('BASELINE_INSTRUMENT_IDS_URL_ALIASES',!badIdentities.length,{before:identities.instruments.length,after:instruments.length,changed:badIdentities.map(r=>r.symbol),verifiedExistingCorrections:verifiedDnaCorrection?1:0});
+ const sourceInstrumentDir=join(root,'quant/data/universe/instruments'),sourceInstruments=readdirSync(sourceInstrumentDir).filter(n=>n.endsWith('.json')).flatMap(n=>load(join(sourceInstrumentDir,n)).instruments??[]),changedExisting=sourceInstruments.filter(row=>row.instrumentId!==verifiedDnaCorrection?.instrumentId&&!eq(row,imap.get(row.instrumentId)));
+ check('BASELINE_CANONICAL_ROWS_EXACT',!changedExisting.length,{before:sourceInstruments.length,verifiedCorrections:verifiedDnaCorrection?1:0,unchanged:sourceInstruments.length-(verifiedDnaCorrection?1:0)-changedExisting.length,changed:changedExisting.map(row=>row.symbol)});
+ const sourceDecisions=load(join(root,'quant/data/market/security-master/eligibility.json')).decisions,changedDecisions=sourceDecisions.filter(row=>!(verifiedDnaCorrection&&row.securityId==='ref_DNA')&&!eq(row,emap.get(row.securityId)));
+ check('BASELINE_EXISTING_POLICY_ROWS_EXACT',!changedDecisions.length,{before:sourceDecisions.length,verifiedCorrections:verifiedDnaCorrection?1:0,changed:changedDecisions.map(row=>row.ticker)});
  check('UNIQUE_CANONICAL_INSTRUMENT_IDS',imap.size===instruments.length);
  const manifest=load(join(shadow,'quant/data/universe/search/manifest.json'));
  for(const kind of ['sym','name']){

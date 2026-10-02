@@ -1,0 +1,53 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {cpSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+import {join,dirname} from 'node:path';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {productizationFixture} from './fixtures/tiingo2-productize-fixture.mjs';
+import {assessEvidence} from '../../scripts/market/tiingo2-evidence.mjs';
+import {prepareProductizationShadow,materializeExistingDnaEligibilityCorrection,verifyExistingDnaEligibilityCorrection,DNA_CORRECTION_PATH} from '../../scripts/market/tiingo2-productize.mjs';
+const today='2026-10-02',read=p=>JSON.parse(readFileSync(p)),save=(p,d)=>writeFileSync(p,JSON.stringify(d)),hash=v=>createHash('sha256').update(v).digest('hex');
+const Company=createRequire(import.meta.url)('../engines/company-master.js');
+function dnaFixture(fn){return productizationFixture(options=>{
+ const decision={ticker:'DNA',securityId:'ref_DNA',exchange:'NYSE',instrument_type:'EQUITY_COMMON',classification_status:'CLASSIFIED',classification_confidence:'HIGH',active_status:'INACTIVE',product_eligibility:'REVIEW',product_eligibility_reason:'UNCONFIRMED:LISTING_INACTIVE',evidence_source:'SECURITY_MASTER_REJUDGED',review_flags:['NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED','MASTER_REJUDGED:EQUITY_COMMON'],start_date:'2021-04-19'};
+ const source=Company.toInstrument({ticker:'DNA',name:'Ginkgo Bioworks Holdings, Inc.',exchange:'NYSE',assetType:'Stock',currency:'USD',startDate:'2021-04-19',cik:'0001830214',cikSource:'sec:company_tickers_exchange'},{today:'2026-09-12',provider:'tiingo'});Company.applyEligibility(source,decision);Object.assign(source,{instrumentId:'vu_f4c48467a5f4ef',companyNameStatus:'RESOLVED:sec:company_tickers',active:true,activeBasis:'Quellenangabe (COMMITTED_GATE_UNIVERSES), kein Enddatum vom Anbieter',issuerId:'iss_cik_0001830214',issuerIdSource:'sec:company_tickers_exchange',firstSeen:'2026-09-12'});
+ const rawPath=join(options.root,'quant/data/market/scale/universe-FULL_UNIVERSE.json'),raw=read(rawPath);raw.securities[0]={...raw.securities[0],company:null,startDate:source.firstTradeDate,exchange:'NYSE'};save(rawPath,raw);
+ const eligibilityPath=join(options.root,'quant/data/market/security-master/eligibility.json'),eligibility=read(eligibilityPath);eligibility.decisions[0]=decision;eligibility.counts.ELIGIBLE=0;eligibility.counts.REVIEW=1;save(eligibilityPath,eligibility);
+ save(join(options.root,'quant/data/universe/instruments/DN.json'),{shard:'DN',engine:'company-master-1.0.0',count:1,instruments:[source]});
+ const namesPath=join(options.root,'quant/data/market/security-master/company-names.json'),names=read(namesPath);names.rows[0].companyName=source.companyName;names.rows[0].cik=source.cik;save(namesPath,names);
+ const metadata={ticker:'DNA',name:source.companyName,exchangeCode:'NYSE',startDate:'2021-04-19'},bars=Array.from({length:1371},(_,i)=>({date:new Date(Date.parse(today)-(1371-i)*86400000).toISOString().slice(0,10),open:10,high:10,low:10,close:10,volume:100,adjOpen:10,adjHigh:10,adjLow:10,adjClose:10,adjVolume:100,splitFactor:1,divCash:0}));
+ const key=hash('DNA-current-listing'),summary=assessEvidence(bars,{ticker:'DNA',today,currency:'USD',metadata}),cachePath=join(options.sourceCache,'evidence',key+'.json');save(cachePath,{key,metadata,rows:bars,summary});
+ const directoryPath=join(options.sourceCache,'directories',today+'-otherlisted.txt');mkdirSync(dirname(directoryPath),{recursive:true});writeFileSync(directoryPath,'ACT Symbol|Security Name|Exchange|ETF|Test Issue\nDNA|Ginkgo Bioworks Holdings Inc Class A|N|N|N\n');
+ const policyPath=join(options.sourceRun,'tiingo2_consumer_policy_report.json'),policy=read(policyPath);policy.rows.push({ticker:'DNA',companyName:source.companyName});save(policyPath,policy);
+ const prepared=prepareProductizationShadow({...options,today,runId:'dna-existing',expectedAdditions:1,requirePrices:true});
+ const byTicker={DNA:{cik:'0001830214',identityVerified:true,pitValid:true,identityEvidence:{provider:'sec_edgar',tickerMapMatched:true,submissionsTickerMatched:true,submissionsCikMatched:true}}};
+ const input={root:options.root,shadowRoot:prepared.shadowRoot,sourceCache:options.sourceCache,candidates:prepared.priceCandidates,securities:prepared.priceSecurities,byTicker,asOf:today,workDir:options.workDir};
+ return fn({options,input,prepared,source,decision,cachePath,directoryPath});
+},{baselineTicker:'DNA'});}
+test('verified current DNA listing corrects only the stale eligibility fields via existing canonical decision engine and survives offline master replay',()=>dnaFixture(({options,input,prepared,source,decision})=>{
+ const original=readFileSync(join(options.root,'quant/data/universe/instruments/DN.json')),result=materializeExistingDnaEligibilityCorrection(input);
+ const after=read(join(prepared.shadowRoot,'quant/data/universe/instruments/DN.json')).instruments[0],eligibility=read(join(prepared.shadowRoot,'quant/data/market/security-master/eligibility.json')),afterDecision=eligibility.decisions.find(r=>r.ticker==='DNA');
+ assert.deepEqual(Object.keys(source).filter(k=>JSON.stringify(source[k])!==JSON.stringify(after[k])).sort(),['productEligibility','productEligibilityReason','screenerEligible','screenerReason'].sort());assert.equal(after.screenerEligible,true);assert.equal(after.instrumentId,source.instrumentId);assert.equal(after.masterMemberId,'ref_DNA');assert.equal(after.cik,'0001830214');assert.equal(after.companyName,source.companyName);assert.equal(eligibility.counts.REVIEW,0);assert.equal(eligibility.counts.ELIGIBLE,2);assert.equal(eligibility.counts.productUniverse,2);
+ assert.equal(verifyExistingDnaEligibilityCorrection({beforeInstrument:source,afterInstrument:after,beforeDecision:decision,afterDecision,proof:result.corrections[0],asOf:today}),true);assert.equal(result.corrections[0].evidence.bars,1371);assert.deepEqual(readFileSync(join(options.root,'quant/data/universe/instruments/DN.json')),original);
+ assert.equal(materializeExistingDnaEligibilityCorrection(input).corrections[0].afterInstrumentSha256,result.corrections[0].afterInstrumentSha256);assert.equal(read(join(prepared.shadowRoot,'quant/data/market/security-master/eligibility.json')).counts.ELIGIBLE,2);
+ // Existing master preparation may reset the instrument while the decision
+ // persists; replay must recompute from the exact immutable source row.
+ const shardPath=join(prepared.shadowRoot,'quant/data/universe/instruments/DN.json'),shard=read(shardPath);shard.instruments[0]=source;save(shardPath,shard);materializeExistingDnaEligibilityCorrection(input);assert.equal(read(shardPath).instruments[0].screenerEligible,true);
+ for(const path of ['quant/data/market/scale/universe-FULL_UNIVERSE.json','quant/data/market/security-master/eligibility.json','quant/data/market/security-master/company-names.json','quant/data/universe'])cpSync(join(prepared.shadowRoot,path),join(options.root,path),{recursive:true});
+ const output=join(options.workDir,'dna-offline-replay');cpSync(join(options.root,'quant/data/universe'),output,{recursive:true});execFileSync(process.execPath,[join(options.root,'scripts/universe/build-company-master.mjs'),'--out',output,'--work-dir',join(options.workDir,'dna-offline-working'),'--today',today],{encoding:'utf8'});
+ assert.deepEqual(read(join(output,'instruments/DN.json')).instruments[0],after);assert.deepEqual(readFileSync(join(output,'instruments/DN.json')),readFileSync(shardPath));assert.equal(materializeExistingDnaEligibilityCorrection(input).state,'ALREADY_CORRECT');
+}));
+test('DNA correction refuses missing SEC identity/PIT, contradictory primary listing and wrong provider generation without changing canonical fields',()=>dnaFixture(({input,prepared,directoryPath,cachePath})=>{
+ const before=readFileSync(join(prepared.shadowRoot,'quant/data/universe/instruments/DN.json'));
+ for(const change of [s=>{s.identityVerified=false;},s=>{s.pitValid=false;},s=>{s.cik='0001234567';},s=>{s.identityEvidence.submissionsTickerMatched=false;}]){const byTicker=structuredClone(input.byTicker);change(byTicker.DNA);assert.throws(()=>materializeExistingDnaEligibilityCorrection({...input,byTicker}),/DNA_CURRENT_PRICE_SEC_PROOF_NOT_GREEN/);}
+ writeFileSync(directoryPath,'ACT Symbol|Security Name|Exchange|ETF|Test Issue\nDNA|Unrelated Company Preferred Stock|N|N|N\n');assert.throws(()=>materializeExistingDnaEligibilityCorrection(input),/DNA_CURRENT_PRIMARY_COMMON_LISTING_NOT_VERIFIED/);
+ const cache=read(cachePath);cache.metadata.startDate='2000-01-01';save(cachePath,cache);assert.throws(()=>materializeExistingDnaEligibilityCorrection(input),/DNA_CURRENT_PRICE_SEC_PROOF_NOT_GREEN/);assert.deepEqual(readFileSync(join(prepared.shadowRoot,'quant/data/universe/instruments/DN.json')),before);
+}));
+test('public DNA correction proof cannot authorize altered names, CIK, IDs, other eligibility fields or waived corporate-action checks',()=>dnaFixture(({input,prepared,source,decision})=>{
+ const result=materializeExistingDnaEligibilityCorrection(input),afterInstrument=read(join(prepared.shadowRoot,'quant/data/universe/instruments/DN.json')).instruments[0],afterDecision=read(join(prepared.shadowRoot,'quant/data/market/security-master/eligibility.json')).decisions.find(r=>r.ticker==='DNA'),proof=result.corrections[0];
+ for(const field of ['instrumentId','masterMemberId','companyName','cik','firstTradeDate','securityType'])assert.throws(()=>verifyExistingDnaEligibilityCorrection({beforeInstrument:source,afterInstrument:{...afterInstrument,[field]:'changed'},beforeDecision:decision,afterDecision,proof,asOf:today}),/DNA_CORRECTION_ROW_BINDING_FAILED/);
+ assert.throws(()=>verifyExistingDnaEligibilityCorrection({beforeInstrument:source,afterInstrument,beforeDecision:decision,afterDecision:{...afterDecision,review_flags:[]},proof,asOf:today}),/DNA_CORRECTION_ROW_BINDING_FAILED/);
+ assert.throws(()=>verifyExistingDnaEligibilityCorrection({beforeInstrument:source,afterInstrument,beforeDecision:decision,afterDecision,proof:{...proof,corporateActionGateWaived:true},asOf:today}),/DNA_CORRECTION_ROW_BINDING_FAILED/);assert.equal(read(join(prepared.shadowRoot,DNA_CORRECTION_PATH)).schemaVersion,'tiingo2-existing-eligibility-correction-1');
+}));

@@ -1,10 +1,16 @@
 /** An offline replay of unchanged committed listing inputs is not a new
  * classification publication. New provider discovery uses the live classifier;
  * offline classifier differences stay explicit staged review proposals. */
+import {createHash} from 'node:crypto';
+export function verifiedExistingDnaSnapshot(previous,decision,document){
+ const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+ const proof=document?.corrections?.length===1?document.corrections[0]:null;
+ return document?.schemaVersion==='tiingo2-existing-eligibility-correction-1'&&proof?.ticker==='DNA'&&proof.securityId==='ref_DNA'&&proof.instrumentId===previous?.instrumentId&&previous?.instrumentId==='vu_f4c48467a5f4ef'&&previous.cik==='0001830214'&&previous.masterMemberId==='ref_DNA'&&previous.productEligibility==='ELIGIBLE'&&previous.productEligibilityReason==='TIINGO2_VERIFIED_CURRENT_LISTING'&&decision?.product_eligibility==='ELIGIBLE'&&decision.product_eligibility_reason==='TIINGO2_VERIFIED_CURRENT_LISTING'&&decision.active_status==='ACTIVE'&&proof.corporateActionGateWaived===false&&proof.afterInstrumentSha256===digest(previous)&&proof.afterDecisionSha256===digest(decision);
+}
 export function replayCommittedClassification(previous,incoming,{sourceKind,sourceRow}={}){
  const fields=['securityType','securityTypeConfidence','securityTypeBasis','shareClass','subtype','adrEvidence','classificationAgrees'];
  const inputs=['symbol','exchange','companyName','currency','assetTypeRaw','firstTradeDate','lastTradeDate','active','productEligibility','productEligibilityReason','securityClass','masterMemberId'];
- const incremental=sourceRow?.selection?.startsWith('tiingo2:')&&previous?.productEligibilityReason==='TIINGO2_VERIFIED_INCREMENTAL_ADDITION'&&sourceRow.active===true;
+ const incremental=sourceRow?.active===true&&(sourceRow.selection?.startsWith('tiingo2:')&&previous?.productEligibilityReason==='TIINGO2_VERIFIED_INCREMENTAL_ADDITION'||sourceRow.existingEligibilityVerified===true&&previous?.symbol==='DNA'&&previous.productEligibilityReason==='TIINGO2_VERIFIED_CURRENT_LISTING');
  const sameInputs=previous&&inputs.every(field=>incremental&&field==='lastTradeDate'&&!sourceRow.endDate||((previous[field]??null)===(incoming[field]??null)));
  if(sourceKind!=='COMMITTED_GATE_UNIVERSES'||!sameInputs)return {instrument:incoming,proposal:null};
  // The appended raw membership row is a projection, not another provider

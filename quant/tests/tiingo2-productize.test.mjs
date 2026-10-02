@@ -93,6 +93,7 @@ test('SEC issuer mapping attaches only appended securities and refuses CIK reass
  const before=JSON.parse(readFileSync(join(result.shadowRoot,'quant/data/universe/instruments/BA.json'))).instruments[0];
  const mapped=reconcileShadowIssuerMappings({shadowRoot:result.shadowRoot,securities:result.securities,byTicker:{IPO:{cik:'0001234567'},BASE:{cik:'0000000001'}}});
  assert.equal(mapped.rows[0].state,'MAPPED');assert.equal(result.securities[0].issuerId,'iss_cik_0001234567');
+ const manifest=JSON.parse(readFileSync(join(result.shadowRoot,'quant/data/universe/master-manifest.json')));assert.equal(manifest.identifiers.withIssuerId,1);assert.equal(manifest.identifiers.distinctIssuers,1);assert.equal(manifest.identifiers.withCik,1);
  assert.deepEqual(JSON.parse(readFileSync(join(result.shadowRoot,'quant/data/universe/instruments/BA.json'))).instruments[0],before);
  assert.equal(reconcileShadowIssuerMappings({shadowRoot:result.shadowRoot,securities:result.securities,byTicker:{IPO:{cik:'0007654321'}}}).rows[0].reason,'CIK_CONFLICT');
 }));
