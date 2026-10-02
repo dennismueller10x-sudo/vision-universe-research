@@ -551,7 +551,7 @@
     });
     ['CANSLIM', 'PIOTROSKI_F'].forEach(function (id) { var pc = sig.partialChecks && sig.partialChecks[id]; if (pc) pc.candidates.forEach(function (r) { rows.push({ kind: 'partial', s: r, id: id, phase: 'partial' }); }); });
 
-    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Signale' }), h('h1', { text: 'Setups finden' }), h('p', { class: 'st-lead', text: 'Nach Methode, Phase und Qualität filtern. Vorbereitet heißt: noch kein Einstieg. Beobachtung heißt: breite Liste nahe einem Ausbruch.' })]));
+    main.appendChild(h('header', { class: 'st-hero sm' }, [h('div', { class: 'st-kick', text: 'Signale' }), h('h1', { text: 'Setups finden' }), h('p', { class: 'st-lead', text: 'Nach Methode und Phase filtern. Vorbereitet heißt: noch kein Einstieg. Forschung heißt: Modellbeobachtung einer Methode in Prüfung – keine Einstiegschance.' })]));
     main.appendChild(freshness(D));
 
     var methods = reg.strategies.filter(function (s) { return s.mode === 'LIVE' || s.mode === 'PARTIAL_CHECK'; });
@@ -601,7 +601,8 @@
       phaseRow.innerHTML = '';
       var pbase = filtered('phase');
       PHASE_FILTERS.forEach(function (p) {
-        var n = p[0] ? pbase.filter(function (r) { return r.phase === p[0] || (p[0] === 'pos' && r.phase === 'warn'); }).length : pbase.filter(function (r) { return ['closed', 'inv', 'cand'].indexOf(r.phase) < 0; }).length;
+        var n = p[0] === 'obs' ? rows.filter(function (r) { return r.phase === 'obs' && (!f.method || r.id === f.method); }).length : p[0] ? pbase.filter(function (r) { return r.phase === p[0] || (p[0] === 'pos' && r.phase === 'warn'); }).length : pbase.filter(function (r) { return ['closed', 'inv', 'cand'].indexOf(r.phase) < 0; }).length;
+        if (!n && p[0] && f.phase !== p[0] && ['closed', 'inv', 'cand'].indexOf(p[0]) < 0) return; // leere Phasen nicht anbieten
         phaseRow.appendChild(h('button', { type: 'button', 'data-p': p[0] || 'all', 'aria-pressed': String(f.phase === p[0]), onclick: function () { f.phase = p[0]; update(); } }, [p[1], h('span', { class: 'n', text: String(n) })]));
       });
       shown = filtered().sort(function (a, b) { return sortSignals(a.s, b.s); });
@@ -638,7 +639,8 @@
     ['CANSLIM', 'PIOTROSKI_F'].forEach(function (id) { var pc = sig.partialChecks && sig.partialChecks[id]; if (!pc) return; (pc.candidates.concat(pc.near || [])).forEach(function (r) { if (r.symbol === sym) entries.push({ kind: 'partial', s: r, id: id }); }); });
     entries.forEach(function (e) { e.s.strategyId = e.s.strategyId || e.id; });
     var ph = function (e) { return e.kind === 'partial' ? 'partial' : phaseKey(e.s); };
-    entries.sort(function (a, b) { return PHASE_ORDER.indexOf(ph(a)) - PHASE_ORDER.indexOf(ph(b)) || dist(a.s) - dist(b.s); });
+    // Aktuelle Methoden vor Forschung, dann Phase und Abstand zum Trigger.
+    entries.sort(function (a, b) { return (isResearchId(a.id) ? 1 : 0) - (isResearchId(b.id) ? 1 : 0) || PHASE_ORDER.indexOf(ph(a)) - PHASE_ORDER.indexOf(ph(b)) || dist(a.s) - dist(b.s); });
     var name = (entries[0] && (entries[0].s.companyName || entries[0].s.name)) || (history[0] && history[0].s.companyName) || '';
     main.appendChild(h('header', { class: 'st-lens-h' }, [h('div', null, [h('h1', { text: sym || '–' }), h('div', { class: 'co', text: name })]), h('div', { class: 'st-price', id: 'st-live' })]));
     if (!sym || (!entries.length && !history.length)) {
