@@ -13,11 +13,26 @@ const ITERATIONS = 210000;
 const hash = value => createHash('sha256').update(value).digest('hex');
 const escape = value => value.replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
 
-export function verificationFor(password) {
+// Version 2: The browser keeps the PBKDF2-derived access key; the release only
+// publishes SHA-256(KEY_CONTEXT + key). Version 1 stored and compared the public
+// verifier itself, so anyone could write it into localStorage and skip the mask.
+// Knowing the published verifier no longer opens a page; deriving the key still
+// requires the password (210,000 PBKDF2 iterations per guess).
+export const ACCESS_VERSION = 2;
+export const KEY_CONTEXT = 'vu-research-access-key-v2:';
+export function accessKeyFor(password) {
   if (typeof password !== 'string' || !password.length) throw Error('RESEARCH_ACCESS_PASSWORD als GitHub Actions Secret setzen.');
-  return {version: 1, algorithm: 'PBKDF2-SHA-256', salt: SALT, iterations: ITERATIONS,
-    verifier: pbkdf2Sync(password, Buffer.from(SALT, 'base64'), ITERATIONS, 32, 'sha256').toString('hex'),
-    durationMs: DURATION_MS, storageKey: STORAGE_KEY};
+  return pbkdf2Sync(password, Buffer.from(SALT, 'base64'), ITERATIONS, 32, 'sha256').toString('hex');
+}
+export function verifierForKey(key) { return hash(KEY_CONTEXT + key); }
+export function verificationFor(password) {
+  const key = accessKeyFor(password);
+  return {version: ACCESS_VERSION, algorithm: 'PBKDF2-SHA-256+SHA-256', salt: SALT, iterations: ITERATIONS,
+    keyContext: KEY_CONTEXT, verifier: verifierForKey(key), durationMs: DURATION_MS, storageKey: STORAGE_KEY};
+}
+// Browser state a successful login writes (used by tests that already know the password).
+export function accessStateFor(password, now = Date.now()) {
+  return {version: ACCESS_VERSION, key: accessKeyFor(password), expiresAt: now + DURATION_MS};
 }
 
 // Reuses the minimal Vision Universe password-mask design from the retired Worker.
@@ -79,7 +94,7 @@ export async function protectRelease({output, password = process.env.RESEARCH_AC
     await mkdir(join(internal, route), {recursive: true});
     await writeFile(join(internal, route, 'index.html'), gatePage(config, '', runtimeVersion));
   }
-  const report = {version: 1, kind: 'CLIENT_SIDE_DEVELOPMENT_MARKETING_GATE', pages: pages.length,
+  const report = {version: ACCESS_VERSION, kind: 'CLIENT_SIDE_DEVELOPMENT_MARKETING_GATE', pages: pages.length,
     durationDays: 30, plaintextPasswordEmitted: false, cloudflareRequired: false};
   await writeFile(join(internal, 'build-report.json'), JSON.stringify(report));
   return report;
