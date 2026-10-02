@@ -44,7 +44,7 @@ def event(source, name, url, day, now, start=None, evidence=None, clock=None, zo
 def from_announcement(item, source, now):
     if not source.get('verified') or source.get('type') not in ('IR_FEED', 'IR_EVENTS'):
         return []
-    structured = source.get('type') == 'IR_EVENTS' and source.get('format') == 'RSS_EVENTS'
+    structured = source.get('type') == 'IR_EVENTS' and source.get('format') in ('RSS_EVENTS', 'GCS_EVENTS')
     text = clean(item.get('headline', '') + ' ' + item.get('evidenceText', ''), 3000)
     if re.search(r'\bboard\b.{0,80}\b(meet|meeting|consider|review|approve)\b', text, re.I) and not re.search(r'\b(?:will|to)\s+(?:release|report|announce|host)\s+(?:its?\s+)?(?:financial results|earnings|conference call|webcast)', text, re.I):
         return []  # Approval/review dates do not establish publication or call dates.
@@ -117,7 +117,7 @@ class JsonLD(HTMLParser):
         self.active, self.parts, self.blocks = False, [], []
 
     def handle_starttag(self, tag, attrs):
-        if tag == 'script' and dict(attrs).get('type', '').lower() == 'application/ld+json':
+        if tag == 'script' and (dict(attrs).get('type') or '').lower() == 'application/ld+json':
             self.active, self.parts = True, []
 
     def handle_data(self, data):

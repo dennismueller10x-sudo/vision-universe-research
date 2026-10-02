@@ -6,7 +6,7 @@
   function unavailable(reason, extra = {}) { return { schema: SCHEMA, state: 'UNAVAILABLE', reason, ...extra }; }
   function validDay(value) { const parsed = Date.parse(value); return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(parsed) && new Date(parsed).toISOString().slice(0, 10) === value; }
   function safeLink(value) {
-    try { const url = new URL(value); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password ? url.href : null; }
+    try { const url = new URL(value); const host = url.hostname.toLowerCase(); const privateHost = /^(?:localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|\[|metadata\.)/.test(host) || /\.(?:local|internal)$/.test(host); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password && !privateHost && (!url.port || ['80','443'].includes(url.port)) ? url.href : null; }
     catch { return null; }
   }
   async function load(ticker, options = {}) {
@@ -47,12 +47,14 @@
           !payload.listings?.some(l => l.symbol === symbol && listings.some(m => m.instrumentId === l.instrumentId && m.companyId === companyId))) return unavailable('IDENTITY_MISMATCH');
       for (const key of ['news', 'events', 'earnings', 'filings', 'calls', 'timeline']) if (!Array.isArray(payload[key]) || payload[key].length > 200) return unavailable('INVALID_SECTIONS');
       if (['news', 'events', 'earnings', 'filings', 'calls', 'timeline'].some(key => payload[key].some(item => !item || item.companyId !== companyId))) return unavailable('SECTION_IDENTITY_MISMATCH');
-      for (const key of ['materials', 'presentations', 'materialEvents']) if (payload[key] !== undefined && (!Array.isArray(payload[key]) || payload[key].length > 200 || payload[key].some(item => !item || item.companyId !== companyId))) return unavailable('INVALID_MATERIALS');
+      for (const key of ['materials', 'presentations', 'materialEvents', 'earningsBundles']) if (payload[key] !== undefined && (!Array.isArray(payload[key]) || payload[key].length > 200 || payload[key].some(item => !item || item.companyId !== companyId))) return unavailable('INVALID_MATERIALS');
       if (payload.latestFinancials !== undefined && (!payload.latestFinancials || !['AVAILABLE', 'UNAVAILABLE'].includes(payload.latestFinancials.state))) return unavailable('INVALID_FINANCIAL_SUMMARY');
       const generated = Date.parse(payload.generatedAt), now = options.now === undefined ? Date.now() : Date.parse(options.now);
       if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(payload.generatedAt) || !Number.isFinite(generated) || !Number.isFinite(now) || generated > now + 300000 || new Date(generated).toISOString().replace('.000Z', 'Z') !== payload.generatedAt) return unavailable('INVALID_TIMESTAMP');
       // Estimated dates must never cross the data boundary as confirmed.
       if (payload.events.some(e => e.eventType === 'EARNINGS_ESTIMATED' && (e.confirmationStatus !== 'ESTIMATED' || !validDay(e.dateStart) || !validDay(e.dateEnd) || e.dateStart > e.dateEnd))) return unavailable('INVALID_CALENDAR_CONFIDENCE');
+      if (payload.events.some(e => e.eventType !== 'EARNINGS_ESTIMATED' && (!validDay(e.date) || e.confirmationStatus !== 'CONFIRMED' || (e.startsAt && (!Number.isFinite(Date.parse(e.startsAt)) || !/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(e.startsAt)))))) return unavailable('INVALID_CONFIRMED_EVENT');
+      if (payload.earningsBundles?.some(b => !Array.isArray(b.eventIds) || !Array.isArray(b.materials) || b.materials.length > 20 || b.materials.some(d => d.companyId !== companyId))) return unavailable('INVALID_EARNINGS_BUNDLE');
       return { ...payload, ticker: symbol, preview: index.state === 'PREVIEW', stale: now - generated > 48 * 3600000 };
     } catch (error) { return unavailable(error?.name === 'AbortError' ? 'REQUEST_ABORTED' : 'FETCH_FAILED'); }
   }

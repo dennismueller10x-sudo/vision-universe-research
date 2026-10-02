@@ -2,6 +2,7 @@ name: Company Intelligence (isolated preview)
 on:
   schedule:
     - cron: '17 */6 * * *'
+    - cron: '43 * * * *'
   pull_request:
     paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   push:
@@ -9,6 +10,18 @@ on:
     paths: ['company-intelligence/**', 'scripts/company_intelligence/**', 'docs/COMPANY_INTELLIGENCE.md', '.github/workflows/company-intelligence.yml']
   workflow_dispatch:
     inputs:
+      pilot:
+        description: 'Controlled cohort: fresh-runner private restore, incremental update, verified consumer publication; no public gate change'
+        type: boolean
+        default: false
+      pilot_initialize:
+        description: 'Explicit first-run initialization of the dedicated pilot namespace'
+        type: boolean
+        default: false
+      pilot_network:
+        description: 'Bounded public feed polling during the controlled pilot'
+        type: boolean
+        default: false
       acceptance:
         description: 'Isolated authenticated R2 acceptance across three fresh runners; no deployment'
         type: boolean
@@ -70,9 +83,10 @@ jobs:
         run: |
           git fetch origin "$BASE_REF"
           changed=$(git diff --name-only "origin/$BASE_REF...HEAD" -- quant discover supertrader screener dashboard providers scripts/quant scripts/universe scripts/market scripts/vu2 api server vercel.json)
-          if [ -n "$changed" ]; then echo "$changed"; exit 1; fi
+          unexpected=$(printf '%s\n' "$changed" | sed '/^quant\/index.html$/d; /^quant\/app\/page-stock.js$/d; /^discover\/index.html$/d; /^discover\/ui\/detail.js$/d;  /^$/d')
+          if [ -n "$unexpected" ]; then echo "$unexpected"; exit 1; fi
   preview:
-    if: always() && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && needs.validate.result == 'success') || (github.event_name == 'schedule' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
+    if: always() && ((github.event_name == 'workflow_dispatch' && !inputs.acceptance && !inputs.pilot && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '17 */6 * * *' && vars.COMPANY_INTELLIGENCE_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -317,3 +331,40 @@ jobs:
           name: intelligence-acceptance-c-${{ github.run_id }}
           path: .verification/acceptance/evidence.json
           retention-days: 14
+
+  pilot:
+    if: always() && ((github.event_name == 'workflow_dispatch' && inputs.pilot && !inputs.acceptance && needs.validate.result == 'success') || (github.event_name == 'schedule' && github.event.schedule == '43 * * * *' && vars.COMPANY_INTELLIGENCE_PILOT_ENABLED == 'true' && vars.COMPANY_INTELLIGENCE_STATE_READY == 'true'))
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Private state and consumer-only pilot publication
+        env:
+          RUNNER_TEMP: ${{ runner.temp }}
+          PILOT_BRANCH: ${{ github.ref_name }}
+          PILOT_INITIALIZE: ${{ inputs.pilot_initialize }}
+          PILOT_NETWORK: ${{ inputs.pilot_network || github.event_name == 'schedule' }}
+          PILOT_LANE: ${{ github.event_name == 'schedule' && 'sec' || 'feeds' }}
+          SEC_USER_AGENT: "VisionUniverseResearch info@visionuniverse.de"
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+        run: bash scripts/company_intelligence/pilot.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intelligence-pilot-report-${{ github.run_id }}
+          path: ${{ runner.temp }}/pilot-report.json
+          retention-days: 7

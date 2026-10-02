@@ -1,12 +1,14 @@
 """One-company failure isolation, bounded source scheduling, resumable operations."""
 import json
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from .model import Resolver, canonical_url, make_item, stable_id, within_domain, issuer_results_actor, issuer_earnings_announcement, financial_release_evidence
 from .transport import BudgetExhausted, SourceError
 from .feeds import parse_feed, parse_gdelt, discover_ir
+from .structured_sources import news_index, gcs_events
 from .ir_events import from_announcement, parse_jsonld, parse_ics, guidance_evidence, event
 from .earnings import project_sec, estimate_calendar, summary
 from .store import atomic_json
@@ -37,9 +39,29 @@ class Pipeline:
         import time
         self.clock = getattr(http, 'clock', time.time)
         self.deadline = getattr(http, 'deadline', self.clock() + 600)
-        self.resolver = Resolver(companies)
+        # Read legal-name aliases only for candidate issuers, never the whole universe.
+        # Exact-CIK SEC consumers enrich this resolver without changing the master.
+        self.companies = {cid: {**c, 'names': list(c['names'])} for cid, c in companies.items()}
+        self.resolver = Resolver(self.companies)
+        self._alias_loaded = set()
         self._processed_sources = set()
         self.run = {'new': 0, 'duplicate': 0, 'unmatched': 0, 'invalid': 0, 'sourceFailures': 0, 'secFailures': 0, 'documentFailures': 0, 'processedCompanies': 0, 'discoveryFailures': 0}
+
+    def ensure_aliases(self, company_ids):
+        for cid in company_ids:
+            if cid in self._alias_loaded or cid not in self.companies:
+                continue
+            self._alias_loaded.add(cid)
+            company = self.companies[cid]
+            if not company.get('cik'):
+                continue
+            try:
+                data = read_optional(self.root / 'quant/data/sec/consumer' / ('CIK' + str(company['cik']) + '.json')) or {}
+                legal = data.get('name')
+                if data.get('cik') == company['cik'] and data.get('dataSource', {}).get('provider') == 'sec_edgar' and data.get('dataSource', {}).get('isMock') is False and isinstance(legal, str) and 3 <= len(legal) <= 200:
+                    self.resolver.add_alias(cid, legal)
+            except (OSError, ValueError, TypeError, AttributeError):
+                pass
 
     def seed_sources(self, config):
         for configured in config:
@@ -51,7 +73,11 @@ class Pipeline:
             self.store.source(s)
 
     def ingest_due_sources(self, selected_ids, all_sources=False, force=False):
-        for source in self.store.sources(None if force else self.now):
+        from .cadence import due
+        near = {r[0] for r in self.store.db.execute("SELECT DISTINCT company FROM events WHERE kind IN ('EARNINGS_SCHEDULED','EARNINGS_CALL') AND date>=? AND date<=? AND json_extract(payload,'$.confirmationStatus')='CONFIRMED'", (self.now[:10], advance(self.now, 72)[:10]))}
+        for source in self.store.sources():
+            if not force and not due(source, self.now, source.get('companyId') in near):
+                continue
             if source.get('companyId') and source['companyId'] not in self.companies:
                 self.store.source({**source, 'active': False, 'disabledReason': 'ISSUER_NOT_IN_CURRENT_SUPPORTED_MASTER'})
                 self.store.audit(self.now, source['sourceId'], 'SOURCE_RETIRED_OUTSIDE_UNIVERSE', companyId=source['companyId'])
@@ -61,6 +87,7 @@ class Pipeline:
 
     def ingest_source(self, source):
         from .feeds import is_event_feed, is_material_feed
+        self.ensure_aliases([source.get('companyId')])
         if source.get('verified') and source['type'] == 'IR_FEED':
             if is_material_feed(source['url']):
                 source = {**source, 'type': 'IR_MATERIALS', 'format': 'RSS_MATERIALS', 'intervalHours': 24}
@@ -95,12 +122,16 @@ class Pipeline:
                                 value['eventId'] = stable_id(source['companyId'], source['sourceId'], entry['eventUid'])
                             events.append(value)
                 else:
-                    events = parse_ics(response['body'], source, self.now) if response['body'].lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(response['body'], source, self.now)
+                    events = parse_ics(response['body'], source, self.now) if response['body'].lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(response['body'], source, self.now) + gcs_events(response['body'], source, self.now)
                 for e in events:
+                    if e['eventType'] in ('EARNINGS_CALL', 'EARNINGS_SCHEDULED') and not issuer_earnings_announcement(e['headline'], self.companies[source['companyId']]):
+                        rejected += 1
+                        self.store.audit(self.now, sid, 'EVENT_REJECTED_WRONG_EARNINGS_ACTOR', headline=e['headline'], url=e.get('sourceUrl'))
+                        continue
                     self.store.event(e, self.now)
                 entries = []
             else:
-                entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else parse_feed(response['body'], response['finalUrl'])
+                entries = parse_gdelt(response['body']) if source['type'] == 'GDELT' else news_index(response['body'], source, response['finalUrl']) if source.get('format') == 'JSONLD_NEWS' else parse_feed(response['body'], response['finalUrl'])
             for entry in entries:
                 entry_time = entry.get('publishedAt') or entry.get('updatedAt')
                 if not entry.get('headline') or not entry.get('url') or not entry_time or entry_time > self.now:
@@ -116,6 +147,12 @@ class Pipeline:
                 effective = {**source, 'verified': False} if shared_publisher(entry['url']) else source
                 if source.get('verified') and not any(within_domain(entry['url'], s) for s in source.get('allowedSites', [])):
                     effective = {**source, 'verified': False}
+                candidates = set()
+                for stock in (entry.get('distributionMetadata') or {}).get('stocks', [])[:20]:
+                    ticker = re.fullmatch(r'(?:Nasdaq|NYSE|NYSE American|AMEX):\s*([A-Z][A-Z0-9.-]{0,14})', stock, re.I)
+                    if ticker:
+                        candidates.update(self.resolver.tickers.get(ticker.group(1).upper(), set()))
+                self.ensure_aliases(candidates)
                 matches = self.resolver.resolve(entry, effective)
                 if source.get('companyId') and source['type'] in ('IR_FEED', 'IR_MATERIALS'):
                     matches = [m for m in matches if m['companyId'] == source['companyId']]
@@ -166,7 +203,6 @@ class Pipeline:
                             if distributed_author:
                                 e.update(confidence=.99, confirmationEvidence='ISSUER_AUTHORED_DISTRIBUTOR_ANNOUNCEMENT', issuerMatchEvidence=match['evidence'])
                             self.store.event(e, self.now)
-                        import re
                         financial_proof = financial_release_evidence(entry['headline'], entry.get('evidenceText', ''))
                         if issuer_results_actor(entry['headline'], self.companies[match['companyId']]) and financial_proof and entry.get('publishedAt') and re.search(r'\b(reports?|announces?)\b.{0,80}(?:quarter|fiscal|financial|full.year).{0,35}results', entry['headline'], re.I) and not re.search(r'\b(will|to announce|to report|to be|date|scheduled|upcoming|forthcoming|expected|board meeting|board approval|to consider|to approve|to review)\b', entry['headline'], re.I) and not (re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', entry['headline'], re.I) and not re.search(r'financial results|earnings', entry['headline'], re.I)):
                             from .sec_documents import release_period

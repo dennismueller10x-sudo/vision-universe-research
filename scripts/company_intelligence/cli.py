@@ -54,7 +54,7 @@ def manifest_batch(document, companies, store, now, limit, tickers=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'sec-stream'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'sec-stream', 'poll'])
     p.add_argument('--stream-days', type=int, default=3, help='Bounded completed EDGAR index days per material stream run (1..5)')
     p.add_argument('--stream-history-days', type=int, default=180, help='Initial submission import horizon for the incremental stream (30..366); retained history is preserved')
     p.add_argument('--root', type=Path, default=ROOT)
@@ -121,7 +121,7 @@ def main(argv=None):
             print(json.dumps(store.quality(now, companies), sort_keys=True))
             return 0
         cursor = store.state('backfillCursor') if args.command == 'backfill' and not args.tickers else None
-        selected = list(companies.values()) if args.all_offline else select(companies, args.tickers, args.limit, cursor)
+        selected = [] if args.command == 'poll' else list(companies.values()) if args.all_offline else select(companies, args.tickers, args.limit, cursor)
         if not selected and cursor:
             store.set_state('backfillCursor', None)
             selected = select(companies, args.tickers, args.limit)
@@ -218,7 +218,7 @@ def main(argv=None):
             if args.network:
                 pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
                 try:
-                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream'), force=args.force_sources)
+                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream', 'poll'), force=args.force_sources)
                 except BudgetExhausted:
                     deferred = True
                     store.audit(now, 'runner', 'FEED_BUDGET_DEFERRED', requestBudget=args.request_budget)
@@ -262,7 +262,7 @@ def main(argv=None):
                     store.set_state('irPending', list(dict.fromkeys(store.state('irPending', []) + [c['companyId'] for c in selected if c['officialSites']])))
                 try:
                     # Existing feeds first; discovery is lower priority and cannot exhaust their request budget.
-                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream'), force=args.force_sources)
+                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream', 'poll'), force=args.force_sources)
                     if args.discover_sites:
                         try:
                             candidates = {} if all(store.state('siteCandidates:' + c['companyId']) is not None for c in selected[:25]) else wikidata_sites(selected[:25], http)

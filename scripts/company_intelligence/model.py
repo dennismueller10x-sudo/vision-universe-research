@@ -122,6 +122,21 @@ class Resolver:
         for name in self.names:
             self.by_token.setdefault(name.split()[0], set()).add(name)
 
+    def add_alias(self, cid, name):
+        """Add a provenance-validated alias without rebuilding the universe index."""
+        from .distribution import issuer_name
+        c = self.companies[cid]
+        if name in c['names']:
+            return
+        c['names'].append(name)
+        aliases = {normalize(name), normalize(SUFFIX.sub('', re.sub(r'\bclass\s+[a-z]\b.*', '', name, flags=re.I)))}
+        for alias in aliases:
+            if alias:
+                self.names.setdefault(alias, set()).add(cid)
+                self.by_token.setdefault(alias.split()[0], set()).add(alias)
+        for listing in c['listings']:
+            self.distribution_index.setdefault((issuer_name(name), listing['symbol'], listing.get('exchange')), set()).add(cid)
+
     def resolve(self, item, source):
         """Query context alone never authorizes a match. Only verified first-party sources do."""
         from .distribution import resolve as distribution_resolve
@@ -189,19 +204,26 @@ def financial_release_evidence(headline, snippet):
 
 def issuer_earnings_announcement(headline, company):
     """An issuer-owned page can announce another entity's reporting date."""
-    title = normalize(headline)
+    def legal_normalize(value):
+        value = normalize(value)
+        for word, short in [('corporation', 'corp'), ('incorporated', 'inc'), ('limited', 'ltd')]:
+            value = re.sub(r'\b' + word + r'\b', short, value)
+        return value
+    title = legal_normalize(headline)
     if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner|board meeting|board approval|to consider|to approve|to review)\b', title):
         return False
-    if re.match(r'^(?:q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|full year|earnings|financial results)\b', title):
-        return True  # Generic title on a validated issuer-authored announcement.
-    aliases = {normalize(n) for n in company['names']} | {normalize(SUFFIX.sub('', n)) for n in company['names']}
+    lead = r'^(?:q[1-4]|[1-4]q(?:20\d{2}|\d{2})|first|second|third|fourth|quarterly|fiscal|annual|full year)(?:\s+(?:quarter|fiscal|year|fy|fy20\d{2}|20\d{2}|\d{2})){0,6}\s+'
+    titles = {title, re.sub(lead, '', title)}
+    aliases = {legal_normalize(n) for n in company['names']} | {legal_normalize(SUFFIX.sub('', n)) for n in company['names']}
     action = r'(?:reports?|announces?|releases?|will|to|sets?|schedules?|holds?|hosts?|confirms?|q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|earnings|financial)\b'
-    for name in aliases:
-        if not name:
-            continue
-        match = re.match(re.escape(name) + r'\s+(?:s\s+)?' + action, title)
-        if match:
+    for candidate in titles:
+        # Pure financial/event titles are safe on a validated issuer source.
+        # A fiscal prefix followed by another named company is not generic.
+        if re.fullmatch(r'(?:earnings|financial results)(?:\s+(?:conference|call|webcast|release|results|announcement|presentation|date|for|q[1-4]|fy|fy20\d{2}|20\d{2}|first|second|third|fourth|quarter|fiscal|year))*', candidate):
             return True
+        for name in aliases:
+            if name and re.match(re.escape(name) + r'\s+(?:s\s+)?' + action, candidate):
+                return True
     return False
 
 

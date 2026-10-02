@@ -170,6 +170,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
         from .platforms import fingerprint, endpoints
         provider = fingerprint(response['body'], provider_type(response['finalUrl'], links))
         feed_links = [l for l in links if any(m in l['type'] for m in ('rss', 'atom', 'feed+json')) or re.search(r'rss(?:handler|\.aspx|/)|\b(rss|atom)\b|\.rss(?:\?|$)', l['url'] + ' ' + l['text'], re.I)]
+        extra = None
         # Follow one linked newsroom/event page if no structured feed is advertised.
         if not feed_links and len(trusted_pages) < max_pages + 1:
             candidate = next((l for l in links if re.search(r'press releases|news releases|events', l['text'], re.I) and not re.search(r'/static-files/|\.(?:pdf|zip|xml)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)), None)
@@ -180,6 +181,12 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                 trusted_pages.add(candidate['url'])
                 more = parse_links(extra['body'], extra['finalUrl']) if extra else []
                 feed_links += [l for l in more if 'rss' in l['type'] or 'atom' in l['type'] or re.search(r'rss(?:handler|\.aspx|/)|\brss\b', l['url'] + ' ' + l['text'], re.I)]
+        from .structured_sources import news_index, gcs_events
+        structured_source = {'companyId': company['companyId'], 'verified': True, 'allowedSites': [official_site, page], 'provider': provider, 'url': response['finalUrl']}
+        for news_page in [response] + ([extra] if extra else []):
+            structured_source.update(url=news_page['finalUrl'], sourceId=stable_id(company['companyId'], news_page['finalUrl'], 'schema-news'))
+            if news_index(news_page['body'], structured_source, news_page['finalUrl']):
+                sources[structured_source['sourceId']] = {**structured_source, 'type': 'IR_FEED', 'format': 'JSONLD_NEWS', 'active': True, 'intervalHours': 6, 'lastVerified': now, 'verificationEvidence': 'OFFICIAL_SCHEMA_ORG_NEWS_INDEX'}
         event_links = [l for l in links if re.search(r'events|calendar', l['text'], re.I) and not re.search(r'news[-_/]?releases|/static-files/|\.(?:pdf|zip)(?:\?|$)', l['url'], re.I) and within_domain(l['url'], page)]
         from .ir_events import parse_jsonld, parse_ics
         for link in event_links[:1]:
@@ -192,7 +199,7 @@ def discover_ir(company, official_site, http, now, max_pages=3):
                                 'verified': True, 'allowedSites': [official_site, page, link['url']], 'provider': provider,
                                 'active': True, 'intervalHours': 24, 'lastVerified': now, 'verificationEvidence': 'LINKED_BY_VERIFIED_IR_PAGE'}
                 content = structured['body']
-                events = parse_ics(content, event_source, now) if content.lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(content, event_source, now)
+                events = parse_ics(content, event_source, now) if content.lstrip().startswith(b'BEGIN:VCALENDAR') else parse_jsonld(content, event_source, now) + gcs_events(content, event_source, now)
                 if events:
                     sources[sid] = event_source
             except (SourceError, ValueError):

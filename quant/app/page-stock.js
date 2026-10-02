@@ -629,6 +629,7 @@
     layout.append(chart.node);
     layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten und Grenzen“.", nowHost));
     bodyHost.append(layout);
+    if (global.VUCompanyIntelligenceStock) disposers.push(global.VUCompanyIntelligenceStock.mount(bodyHost, ticker));
     var lifecycleBox = el("div", { class: "q-lifecycle-host" });
     Promise.all([api.getRadarCard ? api.getRadarCard(ticker).catch(function () { return null; }) : null,
       api.getSetupLifecycle ? api.getSetupLifecycle(ticker).catch(function () { return null; }) : null]).then(function (rl) {
