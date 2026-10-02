@@ -172,6 +172,40 @@ export function simulate(strategy, ctx, opts = {}) {
 
     if (sig && PENDING.has(sig.state)) {
       sig.sessions++;
+      // 4·. Kauf-Stop im Tagesverlauf (Runde 8, strategy.entryMode = 'BUY_STOP_INTRADAY'):
+      // Der Trigger ist seit dem Vortagesschluss bekannt; ueberschreitet das
+      // Tageshoch ihn, gilt der Kauf-Stop als ausgefuehrt - zu max(Eroeffnung,
+      // Trigger) plus Slippage. Der Stop ergibt sich aus dem Tagesbalken
+      // (strategy.intradayEntry). Gleichtags-Ausstieg nur in der vorsichtigen
+      // Variante (opts.sameDayPolicy = 'PESSIMISTIC'), weil Tagesbalken die
+      // Reihenfolge von Hoch und Tief nicht zeigen.
+      if (strategy.entryMode === 'BUY_STOP_INTRADAY') {
+        const e = strategy.intradayEntry(ctx, t, sig, params);
+        if (e && e.notTaken) {
+          transition(sig, 'INVALIDATED', date, e.ruleId, { price: round(bars.close[t]), priceBasis: 'CLOSE', note: e.note });
+          finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS; continue;
+        }
+        if (e) {
+          const fill = e.price * (1 + slip);
+          sig.confirmation = { date, index: t, basis: 'INTRADAY_BUY_STOP', close: round(bars.close[t]), high: round(bars.high[t]), low: round(bars.low[t]), volume: bars.volume[t] ?? null, volumeRatio: e.volumeRatio ?? null };
+          transition(sig, 'TRIGGERED', date, e.ruleId, { price: round(e.price), priceBasis: 'INTRADAY_BUY_STOP', trigger: round(sig.levels.trigger), note: 'Kauf-Stop über dem Trigger im Tagesverlauf ausgelöst' });
+          sig.entry = { date, index: t, price: fill, priceBasis: 'BUY_STOP', rawOpen: round(bars.open[t]), gappedAboveTrigger: bars.open[t] > sig.levels.trigger, slippageBps: exec.slippageBps };
+          sig.stop = e.stop; sig.initialStop = e.stop; sig.stopRuleId = e.stopRuleId;
+          sig.stopHistory = [{ date, stop: round(e.stop), ruleId: e.stopRuleId, ruleVersion: meta.ruleVersion }];
+          sig.remaining = 1; sig.exits = [];
+          transition(sig, 'ACTIVE', date, 'LC-MODEL-ENTRY', { price: round(fill), priceBasis: 'BUY_STOP', stop: round(e.stop), note: 'Modelleinstieg per Kauf-Stop (keine reale Order).' });
+          if (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit) {
+            const px = X.stopSellFill(e.stop, bars.open[t], exec);
+            const sp = Math.min(px.price, e.stop * (1 - slip));
+            sig.exits.push({ date, index: t, price: sp, fraction: 1, ruleId: sig.stopRuleId, priceBasis: 'SAME_DAY_PESSIMISTIC' });
+            sig.remaining = 0;
+            transition(sig, 'EXIT', date, sig.stopRuleId, { price: round(sp), priceBasis: 'SAME_DAY_PESSIMISTIC' });
+            transition(sig, 'CLOSED', date, sig.stopRuleId, { price: round(sp), priceBasis: 'SAME_DAY_PESSIMISTIC' });
+            closeTrade(sig); finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS;
+          }
+          continue;
+        }
+      }
       // 4a. Invalidation zuerst (LC-CONFLICT-01): bricht ein Balken die
       // Invalidation, zaehlt eine gleichzeitige Bestaetigung nicht.
       const inv = strategy.invalidate(ctx, t, sig, params);

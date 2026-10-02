@@ -12,6 +12,8 @@ name: Supertrader interner Datentest (Validierung)
 #   [supertrader-validation:diagnose-smoke]  Technischer Probelauf dazu (400 Reihen)
 #   [supertrader-validation:r7]  Vorab registrierte Runde-7-Versionen (PREREGISTRATION-R7.json)
 #   [supertrader-validation:r7-smoke]  Technischer Probelauf dazu (400 Reihen)
+#   [supertrader-validation:r8]  Momentum 3.0.0 + Gegenproben (PREREGISTRATION-R8.json)
+#   [supertrader-validation:r8-smoke]  Technischer Probelauf dazu (400 Reihen)
 #   [supertrader-validation:sources]  Frei zugaengliche Originalseiten lesen (verschluesselt, sources-r8.json)
 # Rohreihen nur im privaten Eimer. Das Repository ist oeffentlich: Logs zeigen
 # nur Fortschrittszahlen; Ergebnisse werden verschluesselt (nur der Eigentuemer
@@ -111,6 +113,17 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           NODE_OPTIONS: --max-old-space-size=14000
         run: node scripts/supertrader/validation/analyze-methods.mjs --set r7 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r7-smoke' && '--limit 400' || '' }}
+      - name: Runde-8 Momentum 3.0.0 und Gegenproben (verschluesselt)
+        if: steps.mode.outputs.mode == 'r8' || steps.mode.outputs.mode == 'r8-smoke'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          NODE_OPTIONS: --max-old-space-size=14000
+        run: node scripts/supertrader/validation/analyze-methods.mjs --set r8 --out "$RUNNER_TEMP/val" ${{ steps.mode.outputs.mode == 'r8-smoke' && '--limit 400' || '' }}
       - name: Originalquellen lesen (verschluesselt)
         if: steps.mode.outputs.mode == 'sources'
         run: |
