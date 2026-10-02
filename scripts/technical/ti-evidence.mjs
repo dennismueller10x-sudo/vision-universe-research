@@ -267,7 +267,11 @@ function calibration(recs, evalPeriod) {
            table: Object.fromEntries(Object.entries(table).map(([k, v]) => [k, { n: v.n, rate: Math.round((v.k + 20 * baseRate) / (v.n + 20) * 1e4) / 1e4 }])) };
 }
 
-function elliottStudy(rows) {
+function elliottStudy(allRows) {
+  /* Zeilen, deren Kurs bei Erkennung bereits jenseits des Bestaetigungsniveaus lag, sind trivial "bestaetigt"
+     und wuerden die Quote aufblaehen (Review-Befund 3) — ausgeschlossen, Anzahl separat ausgewiesen. */
+  const rows = allRows.filter((r) => !r.alreadyBeyondConfirm);
+  const excludedAlreadyBeyondConfirm = allRows.length - rows.length;
   /* Pro Setup-Typ: Bestaetigung der Lehrbuch-Erwartung vor Regelbruch, Extensionen, Dauer — gegen Baseline gleicher Abstaende. */
   const group = (arr) => {
     const n = arr.length, k = arr.filter((r) => r.confirmed).length, inv = arr.filter((r) => r.invalidated).length;
@@ -282,7 +286,8 @@ function elliottStudy(rows) {
   };
   const by = (keyFn) => { const g = {}; rows.forEach((r) => { const k = keyFn(r); (g[k] = g[k] || []).push(r); }); return Object.fromEntries(Object.entries(g).map(([k, v]) => [k, group(v)])); };
   return {
-    note: "Erste Erkennung je Zaehlung; Bestaetigung = Kurs erreicht das Lehrbuch-Bestaetigungsniveau (z. B. W1-Ende fuer W3) vor einem Schluss jenseits der harten Invalidation.",
+    excludedAlreadyBeyondConfirm,
+    note: "Erste Erkennung je Zaehlung; ohne Faelle, deren Kurs bei Erkennung schon jenseits des Bestaetigungsniveaus lag; Bestaetigung = Kurs erreicht das Lehrbuch-Bestaetigungsniveau (z. B. W1-Ende fuer W3) vor einem Schluss jenseits der harten Invalidation.",
     bySetup: by((r) => r.setup), bySetupDirection: by((r) => r.setup + "|" + r.direction), bySetupClarity: by((r) => r.setup + "|" + r.clarity),
     bySubdivision: by((r) => r.setup + "|" + (r.subdivision >= 0.75 ? "SUBDIVISION_CONSISTENT" : r.subdivision <= 0.35 ? "SUBDIVISION_CONFLICT" : "SUBDIVISION_UNRESOLVED")),
     byHigherDegree: by((r) => r.setup + "|" + (r.higherDegree >= 0.8 ? "HIGHER_CONSISTENT" : r.higherDegree <= 0.4 ? "HIGHER_CONFLICT" : "HIGHER_NEUTRAL")),

@@ -163,7 +163,29 @@ test("EV2-R9 · Invalidation folgt der harten Regel der laufenden Welle (bullish
   const ib = P.invalidation("IMPULSE", wb, 4).hard;
   assert.deepEqual([ib.price, ib.direction], [280, "above"]);
   const zz = legs([[0, 100], [10, 80], [15, 92], [20, 85]], true);
-  assert.deepEqual([P.invalidation("ZIGZAG", zz, 3).hard.price, P.invalidation("ZIGZAG", zz, 3).hard.direction], [92, "above"]);
+  /* C laeuft: harte Grenze = Ursprung (B darf ihn nie erreichen); B-Ende ist nur Neuzuordnung (Review-Befund 7). */
+  assert.deepEqual([P.invalidation("ZIGZAG", zz, 3).hard.price, P.invalidation("ZIGZAG", zz, 3).hard.direction], [100, "above"]);
+  assert.deepEqual([P.invalidation("ZIGZAG", zz, 3).revision.price, P.invalidation("ZIGZAG", zz, 3).revision.ruleId], [92, "C_START"]);
+  const fl = legs([[0, 100], [10, 80], [15, 98], [20, 85]], true);
+  assert.equal(P.invalidation("FLAT", fl, 3).hard.price, 120);   // B hoechstens 200 % von A
+});
+
+test("EV2-R10 · Review-Fixes: Welle 1 laeuft, kontrahierende Diagonale, Dreiecke", () => {
+  const w1 = legs([[0, 100], [10, 115]], true);
+  assert.deepEqual([P.invalidation("IMPULSE", w1, 1).hard.price, P.invalidation("IMPULSE", w1, 1).hard.direction], [100, "below"]);
+  /* kontrahierende Diagonale: W1 30, W2 15, W3 20, W4 laeuft → harte Grenze p3 - L2 = 120 (vor dem W3-Ursprung 115). */
+  const dg = legs([[0, 100], [10, 130], [15, 115], [25, 135], [28, 128]], true);
+  assert.equal(P.invalidation("LEADING_DIAGONAL", dg, 4).hard.price, 120);
+  /* laufende W4 bereits laenger als W2 → kontrahierende Lesart sofort verletzt, auch waehrend W4 laeuft */
+  const dg2 = legs([[0, 100], [10, 130], [15, 115], [25, 135], [28, 118]], true);
+  const r = P.evaluate("LEADING_DIAGONAL", dg2).rules.find((x) => x.ruleId === "DIAGONAL_W4_VS_W2");
+  assert.equal(r && r.passed, false);
+  /* expandierendes Dreieck: keine harte Grenze, aber Revisionsgrenze; kontrahierend: Barrier-Toleranz fuer D */
+  const ex = legs([[0, 100], [10, 95], [15, 102], [20, 92], [24, 99]], true);
+  assert.equal(P.invalidation("TRIANGLE", ex, 4).hard, null);
+  assert.equal(P.invalidation("TRIANGLE", ex, 4).revision.price, 92);
+  const ct = legs([[0, 100], [10, 90], [15, 98], [20, 92], [24, 96]], true);
+  assert.equal(P.invalidation("TRIANGLE", ct, 4).hard.price, 98.5);
 });
 
 // ===================================================== Engine-Ebene

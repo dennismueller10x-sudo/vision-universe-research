@@ -200,11 +200,24 @@ test("TI-O1 · Outcome beginnt nach t; Ziel und Invalidation in derselben Bar za
   assert.equal(Out.simulate(s2, 1, g, { entryWindow: 5, horizon: 10 }).outcome, "INVALIDATED");
 });
 
-test("TI-O2 · Kein Einstieg, wenn der Kurs vor Erreichen der Zone die Invalidation bricht", () => {
+test("TI-O2 · Beruehrung der Zone ist ein Fill — Schluss unter der Invalidation in derselben Bar ist ein Verlust, kein 'kein Einstieg'", () => {
+  /* Regressionstest Review-Befund 1 (02.10.2026): vorher als NO_ENTRY verworfen → Trefferquote ueberhoeht. */
   const s = bars([100, 100, 100, 90, 85]);
   const g = { dir: 1, entryLow: 92, entryHigh: 94, invalidation: 91, t1Low: 110, t1High: 112 };
-  // Bar 3 schliesst 90 < 91 — aber Bar 3 beruehrt auch die Zone (Low 89.5); Invalidation per Schluss geht vor
-  assert.equal(Out.simulate(s, 2, g, { entryWindow: 5 }).outcome, "NO_ENTRY");
+  const r = Out.simulate(s, 2, g, { entryWindow: 5 });
+  assert.equal(r.outcome, "INVALIDATED");
+  assert.equal(r.entryIndex, 3);
+  assert.ok(r.returnPct < 0);
+  const s2 = Canonical.fromRows([[103,103,103,103],[102,102,93,94]].map((b, i) => ({ date: "2020-01-0" + (i + 1), open: b[0], high: b[1], low: b[2], close: b[3] })), { priceSeriesType: "SPLIT_ADJUSTED" });
+  assert.equal(Out.simulate(s2, 0, { dir: 1, entryLow: 99, entryHigh: 100, invalidation: 95, t1Low: 110, t1High: 111 }, { entryWindow: 3 }).outcome, "INVALIDATED");
+  assert.equal(Out.simulate(bars([100, 100, 100, 100]), 0, { dir: 1, entryLow: 80, entryHigh: 81, invalidation: 70, t1Low: 120, t1High: 121 }, { entryWindow: 2 }).outcome, "NO_ENTRY", "Zone nie erreicht");
+});
+
+test("TI-O4 · Baseline-Einstieg zum Schluss: Hoch/Tief der Einstiegsbar zaehlen nicht", () => {
+  /* Regressionstest Review-Befund 2: high[u] lag vor dem Fill zum Schluss. */
+  const s = Canonical.fromRows([[100,100,100,100],[100,106,99,100],[100,101,99,100],[100,101,99,100]].map((b, i) => ({ date: "2020-01-0" + (i + 1), open: b[0], high: b[1], low: b[2], close: b[3] })), { priceSeriesType: "SPLIT_ADJUSTED" });
+  const r = Out.baseline(s, 1, { dir: 1, stopPct: 0.05, targetPct: 0.05 }, { horizon: 2 });
+  assert.notEqual(r.outcome, "TARGET1");
 });
 
 test("TI-O3 · Statistik: Wilson-Intervall und Aggregation mit Baseline", () => {
@@ -212,4 +225,52 @@ test("TI-O3 · Statistik: Wilson-Intervall und Aggregation mit Baseline", () => 
   assert.ok(Math.abs(lo - 0.3094) < 0.001 && Math.abs(hi - 0.4980) < 0.001);
   const a = Out.aggregate([{ outcome: "TARGET1", symbol: "A", baselineHits: 1, baselineDraws: 3 }, { outcome: "INVALIDATED", symbol: "B", baselineHits: 0, baselineDraws: 3 }, { outcome: "NO_ENTRY", symbol: "C" }]);
   assert.equal(a.n, 2); assert.equal(a.t1HitRate, 0.5); assert.equal(a.baselineN, 6); assert.equal(a.baselineRate, 0.1667); assert.equal(a.fillRate, 0.6667);
+});
+
+// ------------------------------------------------- Review-Regressionen
+test("TI-R1 · Laufender Pivot von pivotView == Pivot-Engine auf der abgeschnittenen Serie (Gleichstand-Regel)", () => {
+  const Pivots = require("../engines/technical/pivot-engine.js");
+  const EV2 = require("../engines/technical/elliott/elliott-v2.js");
+  const P = TI.prepare(NVDA);
+  for (const t of [700, 1111, 1600, 2222]) {
+    const cut = Canonical.slice(NVDA, t);
+    const prep = Ctx.prepare(cut);
+    for (const id of prep.pivots.scaleIds) {
+      const live = prep.pivots.scales[id].developing;
+      const v = EV2.pivotView(NVDA, P.main.pivots, id, t);
+      if (!live || !v.developing) continue;
+      assert.equal(v.developing.pivotIndex, live.pivotIndex, id + " t=" + t);
+    }
+  }
+});
+
+test("TI-R2 · Datenlage je Stand-Bar kausal; leere Serie wird abgelehnt", () => {
+  const P = TI.prepare(NVDA);
+  const cut = Ctx.prepare(Canonical.slice(NVDA, 900));
+  const a = Ctx.at(P.main, 900), b = Ctx.at(cut, 900);
+  assert.deepEqual([a.hasVolume, a.closeOnly], [b.hasVolume, b.closeOnly]);
+  assert.throws(() => TI.prepare(Object.assign({}, NVDA, { length: 0, close: [] })), /leere Kursreihe/);
+});
+
+test("TI-R3 · Szenario-ID ohne Zeitstempel; Tail-Zone liegt jenseits der Invalidation", () => {
+  const P = TI.prepare(NVDA);
+  let tails = 0;
+  for (let t = 1200; t < NVDA.length; t += 97) {
+    const sc = TI.analyzeAt(P, t).scenarios;
+    const pr = sc.find((x) => x.kind === "PRIMARY"), tail = sc.find((x) => x.kind === "TAIL");
+    if (pr && tail && tail.template === "DEEPER_CORRECTION" && pr.invalidation) {
+      tails++;
+      if (pr.direction === "BULLISH") assert.ok(tail.entryZone.zoneHigh <= pr.invalidation.price + 1e-9, "t=" + t);
+      else assert.ok(tail.entryZone.zoneLow >= pr.invalidation.price - 1e-9, "t=" + t);
+    }
+  }
+  assert.ok(tails > 0, "kein Tail-Szenario geprueft");
+  /* gleiche Lesart an aufeinanderfolgenden Bars → gleiche ID (sonst feuert SCENARIO_CHANGED jeden Tag) */
+  const key = (p) => JSON.stringify([p.kind, p.direction, p.template, p.entryZone && [p.entryZone.zoneLow, p.entryZone.zoneHigh], p.invalidation && p.invalidation.price]);
+  let same = 0;
+  for (let t = 1500; t < 1700; t++) {
+    const a = TI.analyzeAt(P, t).scenarios[0], b = TI.analyzeAt(P, t + 1).scenarios[0];
+    if (a && b && key(a) === key(b)) { same++; assert.equal(a.scenarioId, b.scenarioId, "t=" + t); }
+  }
+  assert.ok(same > 0, "keine unveraenderte Lesart gefunden");
 });

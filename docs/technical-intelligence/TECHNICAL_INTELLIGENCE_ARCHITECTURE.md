@@ -47,7 +47,7 @@ MARKET DATA (splitbereinigt, Tages-OHLCV oder Wochenschluss)
 
 | Datei | Verantwortung |
 |---|---|
-| `quant/engines/technical/elliott/patterns.js` | Regelbibliothek `elliott-rules-2.0.0`: 8 Musterklassen, Regeln HARD/DEFINITION, Richtlinien, Invalidation (hart + Revision), Fibonacci-Projektionen mit Klartext-Relation |
+| `quant/engines/technical/elliott/patterns.js` | Regelbibliothek `elliott-rules-2.0.1`: 8 Musterklassen, Regeln HARD/DEFINITION, Richtlinien, Invalidation (hart + Revision), Fibonacci-Projektionen mit Klartext-Relation |
 | `quant/engines/technical/elliott/elliott-v2.js` | Grade, Unterteilung, historische Karte, Trailing-Kandidaten, Ranking, Alternativen, Klarheit |
 | `quant/engines/technical/ti/context.js` | Zeitrahmen-Profile (1D/1W), kausaler Kontext |
 | `quant/engines/technical/ti/dow-trend.js` | Dow-Theorie, MA-Trend, Weinstein |

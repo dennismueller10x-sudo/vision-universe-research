@@ -6,7 +6,10 @@
 3. **Konfidenz-Label ohne Trennschärfe.** Hoch/Mittel/Niedrig unterscheiden die Trefferquote nicht; deshalb „Einigkeit der Verfahren" und keine Prozentwerte. Kalibrierung nicht bestanden.
 4. **Tagesstudie nur 5 Titel lokal.** Tageszahlen (n = 213) sind nicht belastbar; Universum-Tagesstudie erst nach Start von `technical-intelligence-evidence.yml`.
 5. **Bearische Szenarien** zeigen negative Ø-Renditen (Aufwärtsdrift, Survivorship). Sie bleiben als Lesart sichtbar, aber die Evidenz wird mitgezeigt.
-6. **Segment-Mehrfachvergleiche.** Segmenttabellen sind beschreibend; einzelne auffällige Segmente (z. B. Risk-off +4,1 pp) sind nicht für Mehrfachtests korrigiert.
+6. **Segment-Mehrfachvergleiche.** Segmenttabellen sind beschreibend; einzelne auffällige Segmente sind nicht für Mehrfachtests korrigiert.
+6a. **Konfidenzintervalle zu eng.** Lift-KIs behandeln Signale als unabhängig; Signale desselben Titels und derselben Marktphase sind korreliert. Ein Cluster-Bootstrap (nach Titel und Monat) fehlt noch.
+6b. **TEST zweimal angesehen.** Nach Messfehler-Korrekturen aus dem Review wurde der TEST-Zeitraum ein zweites Mal gerechnet (ohne Parameteränderung). Für V2.1-Änderungen ist ein neuer Holdout nötig.
+6c. **Baseline über alle Zeiträume.** Die Zufallsbars der Baseline stammen aus der gesamten Historie des Titels, nicht nur aus dem Zeitraum des Signals.
 
 ## Methodik
 7. **Elliott bleibt mehrdeutig.** Viele Zählungen haben niedrige Klarheit; Alternativen werden immer gezeigt. Elliott hat empirisch keinen Richtungswert.
@@ -15,6 +18,9 @@
 10. **Wyckoff** ist heuristisch quantifiziert, ohne externe Validierung; Gewicht 0.
 11. **AVWAP und Volumenprofil** sind tagesbasierte Näherungen (keine Intraday-/Tickdaten).
 12. **Chartformationen** sind regelbasiert auf Swing-Ebene (scale-2); kleinere Formationen werden nicht erkannt; Erkennung bewusst konservativ.
+12a. **Wochenkontext im Tagesmodus** nutzt nur abgeschlossene Wochen (bis zu 4 Handelstage Verzögerung) — bewusst konservativ.
+12b. **Kalibrierter Pfad ungenutzt.** Der Code für kalibrierte Wahrscheinlichkeiten existiert, wird aber nie aktiv, solange das Gate nicht besteht (derzeit nicht).
+12c. **Expandierende Dreiecke** haben keine harte Preisgrenze; ihre Invalidation ist die Revisionsgrenze (Start der laufenden Welle).
 13. **Gewichte** der Konfluenz stammen aus Evidenzgraden der Literatur, nicht aus einer Optimierung (bewusst, gegen Overfitting) — empirisch gelernte Gewichte erst nach Bestätigung auf neuem Holdout.
 
 ## Daten

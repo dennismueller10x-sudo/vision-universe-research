@@ -167,7 +167,7 @@
       return [el("div", { class: "cb-table-wrap" }, [el("table", { class: "cb-table" }, [el("thead", {}, [el("tr", {}, [el("th", { text: "Verfahren" }), el("th", { text: "Richtung" }), el("th", { text: "Gewicht" })])]),
         el("tbody", {}, cf.families.map(function (f) { return el("tr", {}, [el("td", { text: (Ex && Ex.FAMILY[f.family]) || f.family }), el("td", { class: "num", text: (f.direction > 0 ? "+" : "") + f.direction.toFixed(2).replace(".", ",") }), el("td", { class: "num", text: f.weight.toFixed(2).replace(".", ",") })]); }))])]),
         el("p", { class: "cb-small", text: "Einigkeit (gewichtete Richtung): " + (cf.agreement > 0 ? "+" : "") + String(cf.agreement).replace(".", ",") + " · Abdeckung " + pct(cf.coverage) + ". Gewichte aus Evidenzgraden der Literatur; Wyckoff ohne Stimmgewicht." }),
-        el("p", { class: "cb-small cb-dim", text: "Alle Werte aus Daten bis " + X.dateDe(a.asOf) + "; nur bestätigte Swings; dieselbe Rechnung wie im Backtest. Methodik: quant/methodology/technical-intelligence-v2.json · Regelwerk elliott-rules-2.0.0." }),
+        el("p", { class: "cb-small cb-dim", text: "Alle Werte aus Daten bis " + X.dateDe(a.asOf) + "; nur bestätigte Swings; dieselbe Rechnung wie im Backtest. Methodik: quant/methodology/technical-intelligence-v2.json · Regelwerk elliott-rules-2.0.1." }),
         el("p", {}, [X.link("Methodik und Quellen →", X.routes.method("chartbild"))])];
     }));
     return out;

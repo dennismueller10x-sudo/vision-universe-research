@@ -43,6 +43,7 @@
    */
   function prepare(series, opts) {
     opts = opts || {};
+    if (!series || !series.length || !series.close || !series.close.length) throw new Error("Technical Intelligence: leere Kursreihe");
     if (series.priceSeriesType !== "SPLIT_ADJUSTED") throw new Error("Technical Intelligence rechnet ausschliesslich auf SPLIT_ADJUSTED (erhalten: " + series.priceSeriesType + ")");
     var daily = Ctx.prepare(series, opts);
     var weekly = null;

@@ -11,9 +11,9 @@
 
    Ausfuehrungsregeln (vorab festgelegt, nicht optimiert):
      • Einstieg: Limit an der nahen Kante der Einstiegszone, gueltig
-       `entryWindow` Bars ab t+1. Liegt der Kurs an t bereits IN der Zone,
-       Einstieg zum Schluss von t+1 (nicht t — kein Same-Bar-Fill).
-       Eroeffnet eine Bar jenseits der Kante, Fill zur Eroeffnung.
+       `entryWindow` Bars ab t+1. Eroeffnet eine Bar jenseits der Kante,
+       Fill zur Eroeffnung. Jede Beruehrung ist ein Fill — schliesst die
+       Fill-Bar jenseits der Invalidation, ist das ein Verlust (INVALIDATED).
      • Ziel 1 erreicht: High (bullish) >= Zielzonen-Untergrenze.
      • Invalidation: SCHLUSS jenseits der Invalidation (close basis, wie
        im Produkt kommuniziert). Ziel und Invalidation in derselben Bar →
@@ -47,33 +47,33 @@
     o = Object.assign({}, DEFAULTS, o || {});
     var n = s.length, d = g.dir;
     var near = d > 0 ? g.entryHigh : g.entryLow;
-    var entryIdx = -1, entryPx = NaN;
+    var entryIdx = -1, entryPx = NaN, atClose = false;
     if (o.immediate) {
+      /* Baseline: Einstieg zum Schluss der Bar t+1; diese Bar zaehlt danach nicht mehr mit. */
       if (t + 1 >= n) return { outcome: "NO_DATA" };
-      entryIdx = t + 1; entryPx = s.close[t + 1];
+      entryIdx = t + 1; entryPx = s.close[t + 1]; atClose = true;
     } else {
-      var inZoneAtT = s.close[t] >= g.entryLow && s.close[t] <= g.entryHigh;
+      /* Einheitliche Regel (Review-Fix 02.10.2026): Limit an der nahen Zonenkante ab t+1.
+         Wer die Zone beruehrt, ist gefuellt — auch wenn dieselbe Bar unter der
+         Invalidation schliesst (das ist ein Verlust, kein "kein Einstieg"). */
       for (var k = t + 1; k < Math.min(n, t + 1 + o.entryWindow); k++) {
-        if (inZoneAtT && k === t + 1) { entryIdx = k; entryPx = s.close[k]; break; }
-        /* Kurs laeuft vor Erreichen der Zone ueber die Invalidation hinaus → kein Einstieg. */
-        if (d > 0 ? s.close[k] < g.invalidation : s.close[k] > g.invalidation) return { outcome: "NO_ENTRY", reason: "INVALIDATED_BEFORE_ENTRY" };
         var touched = d > 0 ? s.low[k] <= near : s.high[k] >= near;
         if (touched) { entryIdx = k; entryPx = d > 0 ? Math.min(s.open[k], near) : Math.max(s.open[k], near); break; }
       }
       if (entryIdx < 0) return { outcome: t + o.entryWindow >= n ? "NO_DATA" : "NO_ENTRY", reason: "ZONE_NOT_REACHED" };
     }
     var risk = Math.abs(entryPx - g.invalidation);
-    if (!(risk > 0) || (d > 0 ? entryPx <= g.invalidation : entryPx >= g.invalidation)) return { outcome: "NO_ENTRY", reason: "ENTRY_BEYOND_INVALIDATION" };
+    if (!(risk > 0)) risk = Math.abs(entryPx) * 1e-4;
     var mfe = 0, mae = 0, outcome = null, exitIdx = -1, exitPx = NaN, t2 = false, t1Idx = -1;
     var last = Math.min(n - 1, entryIdx + o.horizon);
     /* Die Einstiegsbar selbst zaehlt nur ab dem Fill: Ziel in derselben Bar nur, wenn Einstieg zur Eroeffnung. */
-    for (var j = entryIdx; j <= last; j++) {
+    for (var j = atClose ? entryIdx + 1 : entryIdx; j <= last; j++) {
       var hi = s.high[j], lo = s.low[j], c = s.close[j];
       var fav = d > 0 ? hi - entryPx : entryPx - lo, adv = d > 0 ? entryPx - lo : hi - entryPx;
-      if (j === entryIdx && !o.immediate) { fav = d > 0 ? Math.max(0, c - entryPx) : Math.max(0, entryPx - c); adv = d > 0 ? Math.max(0, entryPx - c) : Math.max(0, c - entryPx); }
+      if (j === entryIdx) { fav = d > 0 ? Math.max(0, c - entryPx) : Math.max(0, entryPx - c); adv = d > 0 ? Math.max(0, entryPx - c) : Math.max(0, c - entryPx); }
       if (fav > mfe) mfe = fav; if (adv > mae) mae = adv;
       var invHit = d > 0 ? c < g.invalidation : c > g.invalidation;
-      var t1Hit = j > entryIdx || o.immediate ? (d > 0 ? hi >= g.t1Low : lo <= g.t1High) : false;
+      var t1Hit = j > entryIdx ? (d > 0 ? hi >= g.t1Low : lo <= g.t1High) : false;
       if (invHit) { outcome = "INVALIDATED"; exitIdx = j; exitPx = c; break; }
       if (t1Hit && t1Idx < 0) { t1Idx = j; }
       /* Standardregel: Ausstieg an Ziel 1 (Limit an der Zonen-Untergrenze bzw. Eroeffnung, falls darueber). */

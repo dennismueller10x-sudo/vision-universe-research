@@ -14,7 +14,19 @@
       "WYCKOFF-Familiengewicht 0: Literatur Grad D und Richtungstrefferquote < 50 % in TRAIN/VALIDATION",
       "Wyckoff-Spannenerkennung verschaerft (flache Raender, keine Drift): vorher feuerte sie in Trends",
       "Zonen auf Anzeigeschritte gerundet (nach aussen)"
-    ]
+    ],
+    "postFreezeMeasurementFixes": {
+      "note": "Nach dem ersten TEST-Lauf fand ein adversarialer Review Messfehler. Korrigiert und TEST EINMAL erneut gerechnet; KEIN Parameter, Gewicht oder Schwellwert wurde veraendert. Beide Laeufe sind dokumentiert (TECHNICAL_EVIDENCE.md §0).",
+      "changes": [
+        "Outcome: Zonenberuehrung mit Schluss jenseits der Invalidation in derselben Bar zaehlte als 'kein Einstieg' statt als Verlust (Ergebnis zu guenstig)",
+        "Baseline: Hoch/Tief der Einstiegsbar zaehlten, obwohl der Einstieg zum Schluss erfolgt",
+        "Elliott-Studie: Faelle, deren Kurs bei Erkennung bereits jenseits des Bestaetigungsniveaus lag, ausgeschlossen (trivial bestaetigt)",
+        "Elliott-Invalidation (elliott-rules-2.0.1): Welle 1/A laufend → Ursprung; C laufend → Ursprung (Zigzag) bzw. 200 % von A (Flat), B-Ende nur Revision; kontrahierende Diagonale p3 - L2; Dreieck nur kontrahierend mit Barrier-Toleranz",
+        "pivotView: laufender Pivot spiegelt die Gleichstand-Regel der Pivot-Engine",
+        "Datenlage (Volumen/Schlusskurs-only) je Stand-Bar aus den letzten 252 Bars statt aus der Gesamtserie (Look-ahead)",
+        "Szenario-ID ohne Zeitstempel (Alerts konnten nie demselben Szenario zugeordnet werden); Tail-Zone muss jenseits der Invalidation liegen"
+      ]
+    }
   },
   "familyWeights": {
     "values": { "TREND": 0.30, "MOMENTUM": 0.20, "STRUCTURE": 0.15, "HIGHER_TIMEFRAME": 0.15, "VOLUME": 0.10, "PATTERN": 0.08, "ELLIOTT": 0.08, "WYCKOFF": 0 },
@@ -36,7 +48,7 @@
       "clarity": { "high": 0.12, "moderate": 0.05 },
       "structural": { "high": 0.68, "moderate": 0.55 }
     },
-    "ruleSet": "elliott-rules-2.0.0 (quant/engines/technical/elliott/patterns.js)",
+    "ruleSet": "elliott-rules-2.0.1 (quant/engines/technical/elliott/patterns.js)",
     "confidenceType": "structural_fit — Rangwert, keine Wahrscheinlichkeit"
   },
   "outcomes": {

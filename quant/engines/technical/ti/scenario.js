@@ -329,7 +329,9 @@
     var p = scenarios[0];
     if (p && p.direction !== "NEUTRAL" && p.targets && p.targets.length) {
       var dd = p.direction === "BULLISH" ? 1 : -1, zs = dd > 0 ? x.levels.sr.supports : x.levels.sr.resistances;
-      var deeper = zs.filter(function (z) { return dd > 0 ? z.zoneHigh < p.entryZone.zoneLow - 0.5 * x.ctx.atr && z.zoneLow > p.invalidation.price - 4 * x.ctx.atr : z.zoneLow > p.entryZone.zoneHigh + 0.5 * x.ctx.atr && z.zoneHigh < p.invalidation.price + 4 * x.ctx.atr; })[0];
+      /* Die tiefere Zone muss vollstaendig JENSEITS der Invalidation liegen (sonst waere sie keine Tail-Lesart). */
+      var inv = p.invalidation && isNum(p.invalidation.price) ? p.invalidation.price : null;
+      var deeper = inv === null ? null : zs.filter(function (z) { return dd > 0 ? z.zoneHigh < inv && z.zoneLow > inv - 4 * x.ctx.atr : z.zoneLow > inv && z.zoneHigh < inv + 4 * x.ctx.atr; })[0];
       if (deeper) scenarios.push({ kind: "TAIL", direction: p.direction, template: "DEEPER_CORRECTION", status: "WATCH", entryZone: toZone({ lo: deeper.zoneLow, hi: deeper.zoneHigh, center: deeper.center, weight: deeper.strength, sources: [{ type: dd > 0 ? "SUPPORT" : "RESISTANCE", relation: "nächste stärkere Zone jenseits der Invalidation" }] }, x.ctx.atr, cfg, "Tiefere Zone"),
                                    invalidation: null, targets: p.targets.slice(0, 1), note: "Bruch der Invalidation, aber Halt an der nächsten größeren Zone" });
       else if (p.targets.length >= 2) scenarios.push({ kind: "TAIL", direction: p.direction, template: "EXTENDED_MOVE", status: "WATCH", entryZone: null, invalidation: p.invalidation,
@@ -343,7 +345,7 @@
     var calibrated = null;
     if (empirical && empirical.status === "OK" && x.calibration && x.calibration.passed && isNum(empirical.calibratedProbability)) calibrated = { probability: empirical.calibratedProbability, method: x.calibration.method, brier: x.calibration.brier };
     var overall = overallConfidence(conf, structuralLevel, empirical);
-    scenarios.forEach(function (s) { s.scenarioId = "tis_" + Hash.hashValue({ k: s.kind, d: s.direction, t: s.template, e: s.entryZone && [s.entryZone.zoneLow, s.entryZone.zoneHigh], i: s.invalidation && s.invalidation.price, at: x.ctx.time }).slice(0, 12); });
+    scenarios.forEach(function (s) { s.scenarioId = "tis_" + Hash.hashValue({ k: s.kind, d: s.direction, t: s.template, e: s.entryZone && [s.entryZone.zoneLow, s.entryZone.zoneHigh], i: s.invalidation && s.invalidation.price }).slice(0, 12); });   // ohne Zeitstempel: gleiche Lesart → gleiche ID (Alerts)
     return {
       engineVersion: ENGINE_VERSION, isProbability: !!calibrated,
       outlook: conf.outlook, confluence: conf, scenarios: scenarios,

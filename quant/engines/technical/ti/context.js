@@ -52,10 +52,28 @@
     var fcfg = Object.assign({}, profile.features, opts.features || {});
     var features = Features.computeFeatures(series, fcfg);
     var pivots = Pivots.runPivots(series, features, { scales: opts.pivotScales || profile.pivotScales || undefined });
-    var vol = 0, rng = 0;
-    for (var i = 0; i < series.length; i++) { if (isNum(series.volume[i]) && series.volume[i] > 0) vol++; if (series.high[i] > series.low[i]) rng++; }
-    return { version: CONTEXT_VERSION, series: series, features: features, pivots: pivots, profile: profile,
-             hasVolume: vol >= series.length * 0.8, hasRange: rng >= series.length * 0.5, closeOnly: !!(series.meta && series.meta.closeOnly) || rng < series.length * 0.5 };
+    /* Kumulierte Zaehler, damit die Datenlage je Stand-Bar t kausal bestimmt wird (Review-Befund 11):
+       ob Volumen/Spannweiten vorhanden sind, darf nicht von Bars nach t abhaengen. */
+    var n = series.length, volCum = new Array(n + 1), rngCum = new Array(n + 1);
+    volCum[0] = 0; rngCum[0] = 0;
+    for (var i = 0; i < n; i++) {
+      volCum[i + 1] = volCum[i] + (series.volume && isNum(series.volume[i]) && series.volume[i] > 0 ? 1 : 0);
+      rngCum[i + 1] = rngCum[i] + (series.high[i] > series.low[i] ? 1 : 0);
+    }
+    var prep = { version: CONTEXT_VERSION, series: series, features: features, pivots: pivots, profile: profile, volCum: volCum, rngCum: rngCum };
+    var whole = availability(prep, n - 1);
+    prep.hasVolume = whole.hasVolume; prep.hasRange = whole.hasRange; prep.closeOnly = whole.closeOnly;
+    return prep;
+  }
+
+  var AVAIL_WINDOW = 252;
+  /** Datenlage aus den letzten AVAIL_WINDOW Bars bis einschliesslich t. */
+  function availability(prep, t) {
+    if (t < 0) return { hasVolume: false, hasRange: false, closeOnly: true };
+    var a = Math.max(0, t + 1 - AVAIL_WINDOW), w = t + 1 - a;
+    var vol = prep.volCum[t + 1] - prep.volCum[a], rng = prep.rngCum[t + 1] - prep.rngCum[a];
+    var meta = prep.series.meta && prep.series.meta.closeOnly;
+    return { hasVolume: vol >= w * 0.8, hasRange: rng >= w * 0.5, closeOnly: !!meta || rng < w * 0.5 };
   }
 
   /** Billiger Stand-Bar-t-Zugriff. */
@@ -65,15 +83,15 @@
     var views = {};
     function view(scaleId) { if (!views[scaleId]) views[scaleId] = ElliottV2.pivotView(s, prep.pivots, scaleId, t); return views[scaleId]; }
     function col(name, k) { var c = f[name]; if (!c) return null; var v = c[k === undefined ? t : k]; return isNum(v) ? v : null; }
-    var atr = col("atr");
+    var atr = col("atr"), av = availability(prep, t);
     return {
       prep: prep, series: s, t: t, time: s.timestamps[t], close: s.close[t], atr: atr !== null ? atr : s.close[t] * 0.02,
-      profile: prep.profile, hasVolume: prep.hasVolume, closeOnly: prep.closeOnly,
+      profile: prep.profile, hasVolume: av.hasVolume, closeOnly: av.closeOnly,
       col: col, view: view, scaleIds: prep.pivots.scaleIds
     };
   }
 
-  var api = { CONTEXT_VERSION: CONTEXT_VERSION, PROFILES: PROFILES, profileOf: profileOf, prepare: prepare, at: at };
+  var api = { CONTEXT_VERSION: CONTEXT_VERSION, PROFILES: PROFILES, profileOf: profileOf, prepare: prepare, at: at, availability: availability };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.TIContext = api; }
 })(typeof window !== "undefined" ? window : globalThis);

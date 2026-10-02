@@ -1,6 +1,6 @@
 # Elliott V2 — Spezifikation
 
-**Module:** `quant/engines/technical/elliott/patterns.js` (Regelwerk `elliott-rules-2.0.0`), `quant/engines/technical/elliott/elliott-v2.js` (`elliott-2.0.0`)
+**Module:** `quant/engines/technical/elliott/patterns.js` (Regelwerk `elliott-rules-2.0.1`), `quant/engines/technical/elliott/elliott-v2.js` (`elliott-2.0.0`)
 **Primärquelle:** Frost & Prechter, *Elliott Wave Principle* (10. Aufl. 2005), ergänzt um EWI-Präzisierungen (Gorman & Kennedy 2013).
 **Status:** BETA. Elliott ist im Produkt ein **Struktur-Prüfer und Geometrie-Lieferant**, kein Prognosemodell (Richtungstrefferquote im Test 50,0 %).
 
@@ -78,15 +78,21 @@ Trendkontext: Vorzeichen der 1-Jahres-Rendite, nur wenn der Kurs auf derselben S
 
 | Laufende Welle | Harte Grenze (Muster tot) | Revision (Zuordnung ändert sich) |
 |---|---|---|
+| W1 / A (jedes Muster) | Ursprung des Musters | — |
 | Impuls W2 | W1-Ursprung | — |
 | Impuls W3 | W1-Ursprung | W2-Ende |
 | Impuls W4 | W1-Ende | — |
 | Impuls W5 | W1-Ende | W4-Ende |
-| Diagonale W4/W5 | W3-Ursprung | W4-Ende |
-| Zigzag/Flat B | A-Ursprung (Flat: B > 200 % von A) | — |
-| Zigzag/Flat C | B-Ende (C ist Motiv) | — |
-| Dreieck C/D/E | Extrem zwei Wellen zuvor | — |
+| Diagonale W4, kontrahierend | W3-Ende − Länge W2 (W4 muss kürzer als W2 bleiben), sonst W3-Ursprung — je nachdem, was näher liegt | — |
+| Diagonale W4, expandierend | W3-Ursprung | — |
+| Diagonale W5 | W3-Ursprung | W4-Ende |
+| Zigzag B / C | A-Ursprung | C läuft: B-Ende |
+| Flat B / C | B jenseits 200 % von A | C läuft: B-Ende |
+| Dreieck C/D/E, kontrahierend | Extrem zwei Wellen zuvor (D: + 5 % von A, Barrier-Toleranz wie in der Regelprüfung) | Start der laufenden Welle |
+| Dreieck, expandierend | keine (expandierende Dreiecke haben keine Preisgrenze) | Start der laufenden Welle — dient im Produkt als Invalidation (`kind: "REVISION"`) |
 | abgeschlossenes Muster | — | Musterende |
+
+Regelentscheidbarkeit auf einer laufenden Welle: „nicht jenseits"-Regeln (z. B. kontrahierende Diagonale „W4 kürzer als W2", kontrahierendes Dreieck) sind sofort verletzbar; „jenseits"-Regeln (expandierend) bleiben offen (`null`), solange die Welle sie noch erfüllen kann. Regelwerk `elliott-rules-2.0.1` (2.0.0 → 2.0.1: Review-Korrekturen dieser Tabelle).
 
 ## 9. Projektionen
 

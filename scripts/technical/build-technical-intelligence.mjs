@@ -217,7 +217,7 @@ async function main() {
   mkdirSync(join(OUT, "shards"), { recursive: true });
   Object.entries(shards).forEach(([k, inst]) => gz(join(OUT, "shards", k + ".json.gz"), { schemaVersion: API_VERSION, shard: k, instruments: inst }));
   gz(idxPath, { schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), rows });
-  writeFileSync(join(OUT, "rules-catalog.json"), JSON.stringify({ schemaVersion: API_VERSION, ruleSet: "elliott-rules-2.0.0", rules: RULES }, null, 1));
+  writeFileSync(join(OUT, "rules-catalog.json"), JSON.stringify({ schemaVersion: API_VERSION, ruleSet: "elliott-rules-2.0.1", rules: RULES }, null, 1));
   writeFileSync(join(OUT, "discover-rows.json"), JSON.stringify(discoverRows(rows), null, 1));
   writeFileSync(join(OUT, "alerts.json"), JSON.stringify({ schemaVersion: API_VERSION, generatedAt: new Date().toISOString(), previousIndex: Object.keys(prev).length > 0, events: alerts.slice(0, 2000) }, null, 1));
   const meta = {

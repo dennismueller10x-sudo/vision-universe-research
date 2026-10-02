@@ -1,6 +1,6 @@
 /* =========================================================================
    VISION UNIVERSE TECHNICAL — elliott/patterns.js
-   ELLIOTT V2 PATTERN LIBRARY (rule set elliott-rules-2.0.0)
+   ELLIOTT V2 PATTERN LIBRARY (rule set elliott-rules-2.0.1)
 
    Eine Musterklasse = Wellenzahl + erwartete Unterteilung + Regeln +
    Richtlinien + Invalidation + Projektion. Quelle der Regeln:
@@ -32,7 +32,8 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
 
-  var RULE_SET_VERSION = "elliott-rules-2.0.0";
+  var RULE_SET_VERSION = "elliott-rules-2.0.1";
+  var TRIANGLE_BARRIER_TOL = 0.05;   // Barrier-Dreieck: D darf B um 5 % der A-Laenge ueberschreiten
   var EWP = "Frost & Prechter, Elliott Wave Principle (2005), ";
   var EWI = "Gorman & Kennedy (EWI), Visual Guide to Elliott Wave Trading (2013), ";
 
@@ -151,7 +152,12 @@
     /* Form: kontrahierend (1>3>5, 2>4) oder expandierend (1<3<5, 2<4). */
     if (c.n >= 3 && !dev(legs[2])) {
       var contracting = c.L(3) < c.L(1);
-      if (c.n >= 4 && !dev(legs[3])) R(out, "DIAGONAL_W4_VS_W2", "DEFINITION", contracting ? c.L(4) < c.L(2) : c.L(4) > c.L(2), (contracting ? "kontrahierend: W4 kürzer als W2" : "expandierend: W4 länger als W2"), EWP + "S. 36–40 (Keilform)");
+      if (c.n >= 4) {
+        /* Eine laufende W4 kann nur laenger werden: "kuerzer als W2" ist sofort entscheidbar, sobald verletzt;
+           "laenger als W2" bleibt offen, bis erfuellt (Review-Befund 6). */
+        var ok4 = contracting ? c.L(4) < c.L(2) : c.L(4) > c.L(2);
+        R(out, "DIAGONAL_W4_VS_W2", "DEFINITION", ok4 ? (dev(legs[3]) && contracting ? null : true) : (dev(legs[3]) && !contracting ? null : false), (contracting ? "kontrahierend: W4 kürzer als W2" : "expandierend: W4 länger als W2"), EWP + "S. 36–40 (Keilform)");
+      }
       if (c.n >= 5) {
         var l5 = c.L(5);
         if (contracting) {
@@ -229,10 +235,12 @@
     var c = Ctx(legs), out = [];
     alternation(c, out);
     /* Kontrahierend (inkl. Barrier, Running): C nicht jenseits A-Ende, D nicht jenseits B-Ende, E nicht jenseits C-Ende. */
-    var tol = 0.05 * c.L(1);
+    var tol = TRIANGLE_BARRIER_TOL * c.L(1);
+    /* "Nicht jenseits" (kontrahierend) ist sofort entscheidbar; "jenseits" (expandierend) bleibt auf einer
+       laufenden Welle offen, solange sie es noch erreichen kann (Review-Befund 5). */
     var contracting = true, expanding = true;
-    if (c.n >= 3) { contracting = contracting && c.o(3) < c.o(1); expanding = expanding && c.o(3) > c.o(1); }
-    if (c.n >= 4) { contracting = contracting && c.o(4) > c.o(2) - tol; expanding = expanding && c.o(4) < c.o(2); }
+    if (c.n >= 3) { contracting = contracting && c.o(3) < c.o(1); expanding = expanding && (c.o(3) > c.o(1) || dev(legs[2])); }
+    if (c.n >= 4) { contracting = contracting && c.o(4) > c.o(2) - tol; expanding = expanding && (c.o(4) < c.o(2) || dev(legs[3])); }
     if (c.n >= 5) { contracting = contracting && c.o(5) < c.o(3); expanding = expanding && (c.o(5) > c.o(3) || dev(legs[4])); }
     if (c.n >= 3) R(out, "TRIANGLE_BOUNDARIES", "DEFINITION", contracting || expanding, contracting ? "kontrahierend: Extreme laufen zusammen" : expanding ? "expandierend: Extreme laufen auseinander" : "weder kontrahierend noch expandierend", EWP + "S. 50–55");
     if (c.n >= 5 && contracting && !dev(legs[4])) R(out, "TRIANGLE_E_INSIDE", "HARD", c.L(5) < c.L(3), "kontrahierend: E kürzer als C", EWP + "S. 50–55");
@@ -308,25 +316,37 @@
   function invalidation(type, legs, dw) {
     var c = Ctx(legs), s = c.s, p = c.p;
     var out = { hard: null, revision: null };
+    /* Welle 1 / A laeuft: das Muster begann am Ursprung — jenseits davon gibt es diese Lesart nicht (Review-Befund 8). */
+    if (dw === 1) { out.hard = level(p[0], s, "PATTERN_ORIGIN", "Ursprung der ersten Welle"); return out; }
     if (type === "IMPULSE") {
       if (dw === 2) out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Welle 2 darf den Ursprung von Welle 1 nicht unterschreiten");
       if (dw === 3) { out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Ursprung von Welle 1"); out.revision = level(p[2], s, "W3_START", "unter dem Ende von Welle 2 wäre Welle 2 noch nicht beendet"); }
       if (dw === 4) out.hard = level(p[1], s, "W4_NO_OVERLAP_W1", "Welle 4 darf das Gebiet von Welle 1 nicht betreten");
       if (dw === 5) { out.hard = level(p[1], s, "W4_NO_OVERLAP_W1", "Ende von Welle 1"); out.revision = level(p[4], s, "W5_START", "unter dem Ende von Welle 4 wäre Welle 4 noch nicht beendet"); }
     } else if (type === "LEADING_DIAGONAL" || type === "ENDING_DIAGONAL") {
+      var contracting = legs.length >= 3 && c.L(3) < c.L(1);
       if (dw === 2) out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Ursprung von Welle 1");
       if (dw === 3) { out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Ursprung von Welle 1"); out.revision = level(p[2], s, "W3_START", "Ende von Welle 2"); }
-      if (dw === 4) out.hard = level(p[2], s, "W4_NOT_BEYOND_W3_ORIGIN", "Welle 4 darf den Ursprung von Welle 3 nicht erreichen");
+      if (dw === 4) {
+        /* kontrahierend bindet "W4 kuerzer als W2" frueher als der W3-Ursprung (Review-Befund 6). */
+        if (contracting) { var lim = p[3] - s * c.L(2); out.hard = s * lim > s * p[2] ? level(lim, s, "DIAGONAL_W4_VS_W2", "kontrahierend: Welle 4 muss kürzer als Welle 2 bleiben") : level(p[2], s, "W4_NOT_BEYOND_W3_ORIGIN", "Ursprung von Welle 3"); }
+        else out.hard = level(p[2], s, "W4_NOT_BEYOND_W3_ORIGIN", "Welle 4 darf den Ursprung von Welle 3 nicht erreichen");
+      }
       if (dw === 5) { out.hard = level(p[2], s, "W4_NOT_BEYOND_W3_ORIGIN", "Ursprung von Welle 3"); out.revision = level(p[4], s, "W5_START", "Ende von Welle 4"); }
     } else if (type === "ZIGZAG" || type === "FLAT" || type === "WXY") {
-      if (dw === 2) out.hard = level(p[0], s, type === "WXY" ? "X_NOT_BEYOND_W_ORIGIN" : "B_NOT_BEYOND_A_ORIGIN", "Ursprung der Korrektur");
-      if (type === "FLAT" && dw === 2) out.hard = level(p[1] - s * 2.0 * c.L(1), s, "FLAT_B_NOT_EXCESSIVE", "B läuft über 200 % von A hinaus");
-      if (dw === 3) out.hard = level(p[2], s, "C_IS_MOTIVE", "die laufende C-Welle darf ihren Ursprung (Ende von B) nicht wieder erreichen");
+      /* B (bzw. X) darf den Ursprung nicht erreichen; Flat: B hoechstens 200 % von A. Laeuft C, ist ein
+         Ruecklauf ueber das B-Ende eine NEUZUORDNUNG (B laeuft weiter), keine Regelverletzung (Review-Befund 7). */
+      var hardB = type === "FLAT" ? level(p[1] - s * 2.0 * c.L(1), s, "FLAT_B_NOT_EXCESSIVE", "B läuft über 200 % von A hinaus")
+                                  : level(p[0], s, type === "WXY" ? "X_NOT_BEYOND_W_ORIGIN" : "B_NOT_BEYOND_A_ORIGIN", "Ursprung der Korrektur");
+      if (dw === 2) out.hard = hardB;
+      if (dw === 3) { out.hard = hardB; out.revision = level(p[2], s, "C_START", "jenseits des B-Endes wäre Welle B noch nicht beendet"); }
     } else if (type === "TRIANGLE") {
-      /* Laufende Triangle-Welle darf das vorletzte Extrem nicht ueberschreiten (kontrahierend). */
-      if (dw >= 3 && dw <= 5) {
-        var ref = p[dw - 2];
-        out.hard = { price: ref, direction: (dw % 2 === 1) === (s > 0) ? "above" : "below", ruleId: "TRIANGLE_BOUNDARIES", statement: "Dreieck ungültig, wenn die laufende Welle das Extrem von zwei Wellen zuvor überschreitet" };
+      /* Nur kontrahierend gibt es eine Grenze: die laufende Welle darf das Extrem zwei Wellen zuvor nicht
+         ueberschreiten (D mit Barrier-Toleranz). Expandierend: keine harte Grenze (Review-Befund 5). */
+      if (dw >= 2 && dw <= 5) out.revision = level(p[dw - 1], dw % 2 === 1 ? s : -s, "TRIANGLE_LEG_START", "jenseits des Starts der laufenden Welle wäre die vorige Welle nicht beendet");
+      if (dw >= 3 && dw <= 5 && triangleShape(legs) === "CONTRACTING") {
+        var dirSign = dw % 2 === 1 ? s : -s, ref = p[dw - 2] + (dw === 4 ? dirSign * TRIANGLE_BARRIER_TOL * c.L(1) : 0);
+        out.hard = { price: ref, direction: dirSign > 0 ? "above" : "below", ruleId: "TRIANGLE_BOUNDARIES", statement: "Dreieck ungültig, wenn die laufende Welle das Extrem von zwei Wellen zuvor überschreitet" };
       }
     } else if (type === "DOUBLE_ZIGZAG") {
       if (dw <= 3) return invalidation("ZIGZAG", legs.slice(0, 3), dw);

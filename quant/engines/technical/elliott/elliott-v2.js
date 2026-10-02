@@ -79,16 +79,15 @@
     for (var k = 0; k < sc.pivots.length; k++) if (sc.pivots[k].confirmedIndex <= asOf) conf.push(sc.pivots[k]);
     var developing = null;
     if (conf.length) {
-      var last = conf[conf.length - 1];
-      if (last.side === "LOW") {
-        var hi = -Infinity, hiIdx = -1;
-        for (var i = last.pivotIndex + 1; i <= asOf; i++) if (series.high[i] > hi) { hi = series.high[i]; hiIdx = i; }
-        if (hiIdx >= 0) developing = { side: "HIGH", pivotIndex: hiIdx, pivotPrice: hi, pivotTime: series.timestamps[hiIdx], pivotId: "dev_" + scaleId + "_" + hiIdx, status: "DEVELOPING" };
-      } else {
-        var lo = Infinity, loIdx = -1;
-        for (var j = last.pivotIndex + 1; j <= asOf; j++) if (series.low[j] < lo) { lo = series.low[j]; loIdx = j; }
-        if (loIdx >= 0) developing = { side: "LOW", pivotIndex: loIdx, pivotPrice: lo, pivotTime: series.timestamps[loIdx], pivotId: "dev_" + scaleId + "_" + loIdx, status: "DEVELOPING" };
-      }
+      /* Spiegelt die Pivot-Zustandsmaschine exakt (Review-Befund 9): Start am Bestaetigungsbar, davor nur
+         strikt bessere Werte, danach nur strikt bessere — so stimmt der laufende Pivot mit pivotEngine ueberein. */
+      var last = conf[conf.length - 1], ci = last.confirmedIndex, up = last.side === "LOW";
+      var col = up ? series.high : series.low;
+      var better = function (a, b) { return up ? a > b : a < b; };
+      var idx = ci, px = col[ci];
+      for (var i = last.pivotIndex + 1; i < ci; i++) if (better(col[i], px)) { px = col[i]; idx = i; }
+      for (var j = ci + 1; j <= asOf; j++) if (better(col[j], px)) { px = col[j]; idx = j; }
+      if (idx > last.pivotIndex) developing = { side: up ? "HIGH" : "LOW", pivotIndex: idx, pivotPrice: px, pivotTime: series.timestamps[idx], pivotId: "dev_" + scaleId + "_" + idx, status: "DEVELOPING" };
     }
     return { scaleId: scaleId, confirmed: conf, developing: developing };
   }
@@ -374,7 +373,9 @@
       nextMove: nextDir > 0 ? "UP" : "DOWN",
       waves: labelWaves(e, "ANALYSIS"),
       rules: e.rules, openRules: e.openRules, guidelines: roundMap(e.guidelines), subdivision: e.subdivisionDetail,
-      invalidation: inv.hard ? Object.assign({}, inv.hard, { price: round(inv.hard.price, 4), kind: "HARD_RULE" }) : null,
+      /* Ohne harte Grenze (expandierendes Dreieck) ist die Revisionsgrenze die einzige pruefbare Grenze der Lesart. */
+      invalidation: inv.hard ? Object.assign({}, inv.hard, { price: round(inv.hard.price, 4), kind: "HARD_RULE" })
+        : (!e.complete && inv.revision ? Object.assign({}, inv.revision, { price: round(inv.revision.price, 4), kind: "REVISION" }) : null),
       revision: inv.revision ? Object.assign({}, inv.revision, { price: round(inv.revision.price, 4), kind: "REVISION" }) : null,
       caps: caps.map(function (c) { return { price: round(c.price, 4), relation: c.relation }; }),
       projection: { candidates: proj.filter(function (x) { return x.kind !== "CAP"; }).map(function (x) { return { phase: x.phase, kind: x.kind, price: round(x.price, 4), ratio: x.ratio, relation: x.relation, weight: x.weight }; }), zones: clusterZones(proj, atr, ctx.cfg) },
