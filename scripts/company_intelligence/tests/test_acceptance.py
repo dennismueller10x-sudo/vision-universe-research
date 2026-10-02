@@ -20,6 +20,15 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_regulatory_application_is_material_without_inventing_approval(self):
+        from company_intelligence.model import classify
+        title = 'Ultragenyx Announces Marketing Authorisation Application Submission to the European Medicines Agency'
+        result = classify(title)
+        self.assertEqual(result['importance'], 'HIGH')
+        self.assertEqual(result['categories'], ['Regulation'])
+        self.assertNotIn('Earnings', classify('European Medicines Agency clinical trial third quarter results')['categories'])
+        self.assertEqual(classify('Company celebrates employee named Ema')['importance'], 'LOW')
+
     def test_share_count_change_needs_split_and_issuance_context(self):
         from test_engine import consumer
         from company_intelligence.earnings import summary

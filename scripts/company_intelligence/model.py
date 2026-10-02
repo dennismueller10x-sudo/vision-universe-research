@@ -178,7 +178,7 @@ RULES = [
     ('Earnings', 'HIGH', r'\b(earnings|(?:quarter|quarterly|fiscal|financial|full.year).{0,45}results)\b'),
     ('Guidance', 'HIGH', r'\b(guidance|outlook|forecast)\b'),
     ('Management', 'HIGH', r'\b(CEO|chief executive|CFO|chief financial|resigns)\b'),
-    ('Regulation', 'HIGH', r'\b(FDA|antitrust|regulatory|regulator)\b'),
+    ('Regulation', 'HIGH', r'\b(FDA|antitrust|regulatory|regulator|European Medicines Agency|marketing authori[sz]ation (?:application|approval)|new drug application|biologics licen[cs]e application)\b'),
     ('Litigation', 'HIGH', r'\b(lawsuit|litigation|settlement)\b'),
     ('Financing', 'HIGH', r'\b(capital raise|debt offering|public offering|stock offering|equity offering|secondary offering)\b'),
     ('Buyback', 'MEDIUM', r'\b(buyback|repurchase)\b'),
@@ -200,7 +200,7 @@ def classify(headline):
     rank = {'LOW': 0, 'MEDIUM': 1, 'HIGH': 2, 'CRITICAL': 3}
     importance = max((h[1] for h in hits), key=lambda x: rank[x], default='LOW')
     return {'categories': [h[0] for h in hits] or ['Other'], 'importance': importance,
-            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.1.0'}
+            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.2.0'}
 
 
 def make_item(raw, source, match, discovered):
