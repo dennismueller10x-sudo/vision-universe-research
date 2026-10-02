@@ -119,6 +119,8 @@ Anwendbarkeit: hoch 46,6 % (Überschuss +1,2), mittel 44,3 % (+0,9), keine verl�
 | H6 entwickelnder vs. bestätigter Einstieg | **+3,9 Pp. (+2,6 … +5,2)** | **bestätigt** (Zeitpunkt-Effekt) |
 | H7 Fibonacci-Konfluenz | −0,6 Pp. (−1,9 … +0,7) | nicht bestätigt |
 
+**Replikation auf der explorativen Stichprobe** (3.122 Emittenten, 168.773 Rückläufe, gleiche Engine): H1 +0,0001 (0 … +0,0001), H2 +0,3 Pp. (−0,3 … +0,8), H3 **−1,5 Pp. (−3,0 … −0,2)**, H4 −0,6 Pp. (−2,2 … +1,2), H5 **−2,8 Pp. (−3,9 … −1,4)**, H6 **+3,1 Pp. (+2,3 … +4,0)**, H7 −0,5 Pp. — dasselbe Bild; der H4-Hinweis der Bestätigungsstichprobe wiederholt sich **nicht**.
+
 **Inkrementeller Wert von Elliott: keiner messbar.** Die Regime-Hypothese aus der ersten Studie (Vorteil bei hoher Volatilität) ist für Elliott-Fortsetzungen nicht nur nicht bestätigt, sondern umgekehrt.
 
 ## 13–15. Unterschiede nach Regime, Muster und Grad (explorativ, BH-korrigiert)
@@ -140,6 +142,6 @@ Anwendbarkeit: hoch 46,6 % (Überschuss +1,2), mittel 44,3 % (+0,9), keine verl�
 | Elliott-Zählung (Richtung) | **KEEP – CONTEXT ONLY**, Konfluenzgewicht 0 | H1/H2 nicht bestätigt (vorab festgelegte Regel) |
 | Elliott-Invalidation, Zonen, Szenarien | KEEP – CONTEXT | regelbasierte, prüfbare Grenzen; Sprache für Struktur |
 | Count Quality | KEEP – nur als methodische Güte | nicht kalibriert; keine Trefferaussage |
-| Höherer-Grad-Konsistenz | KEEP – EXPERIMENTAL (nur Profi, als „experimentell") | H4 knapp verfehlt (p = 0,06); neuer Holdout nötig |
+| Höherer-Grad-Konsistenz | KEEP – CONTEXT (Profi-Anzeige, ohne Prognoseanspruch) | H4 verfehlt (Bestätigung p = 0,06, explorativ −0,6 Pp.) |
 | Früher Einstieg im Rücklauf | KEEP – CONTEXT (Zeitpunkt-Wissen, kein Elliott-Merkmal) | H6 bestätigt |
 | Fibonacci | KEEP – CONTEXT | H7 nicht bestätigt, keine Häufung |
