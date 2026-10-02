@@ -13,3 +13,10 @@
 | G9 Regression | gesamte Quant-Testsuite grün; bestehende Technical-V1-Tests unverändert | `node --test quant/tests/*.test.mjs` | ✅ |
 | G10 Dokumentation | 9 geforderte Dokumente + Gates | dieses Verzeichnis | ✅ |
 | G11 Adversarialer Review | Quant-/Methoden-Review der Messung; Befunde behoben oder dokumentiert; Neuberechnung ohne Parameteränderung | TECHNICAL_EVIDENCE §0, `protocol.postFreezeMeasurementFixes`, EV2-R9/R10, TI-R3 | ✅ (Ergebnis: kein Vorteil gegenüber Zufall — offen berichtet) |
+| G12 Elliott-Forensik | Fehlerklassen A–H getrennt, Regelkarte Quelle → Spezifikation → Code → Test | ELLIOTT_AUDIT.md | ✅ |
+| G13 Quellengebundene Qualität | jede Regel/Guideline mit Quelle, Qualität A/B/V, Klasse; harte Regeln nicht kompensierbar (INVALID); VU-Empirie nie als Elliott-Regel | ELLIOTT_RULE_MATRIX.md, `sources.js`, EV2-Q1/Q2/Q3 | ✅ |
+| G14 Referenzset | Lehrbuchstrukturen (synthetisch) mit Erwartung, Engine-Ergebnis, Abweichung, Grund | `reference-set.json`: 8/15 primär, 1 alternativ, 6 verfehlt (Flats, Truncation, expand. Dreieck) | ⚠️ dokumentiert, nicht bestanden für Flats |
+| G15 Vorab registrierte Validierung | H1–H7 auf Bestätigungsstichprobe, CI und Holm; Replikation exploratorisch | ELLIOTT_VALIDATION_REPORT.md | ✅ (Ergebnis: nur H6 bestätigt → Kontext) |
+| G16 Qualitätskalibrierung | Count Quality und Ergebnis getrennt; Enthaltungsquote; selektive Anwendung | `quality-calibration.json` | ✅ (kein Gefälle → Qualität bleibt methodische Aussage) |
+| G17 Audit-Stichprobe | 80 geschichtete Fälle mit Chart bis Erkennung, Regel-Audit, späterem Ergebnis | `quant/research/elliott-audit/` | ✅ (menschliche Bewertung offen) |
+| G18 Produkt v3 | Overlay-Vertrag, Strukturklarheit statt Konfidenz, Evidenzbadges, Wave Inspector, Zeitreise, Relabeling-Risiko | API_V3_MIGRATION.md, `ti-product.test.mjs`, Screenshots | ✅ |

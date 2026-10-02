@@ -1,8 +1,8 @@
-# VU Technical Intelligence V2 („Chartbild")
+# VU Technical Intelligence („Chartbild", API v3)
 
 | Dokument | Inhalt |
 |---|---|
-| [TECHNICAL_INTELLIGENCE_ARCHITECTURE.md](TECHNICAL_INTELLIGENCE_ARCHITECTURE.md) | Datenfluss, Module, Kausalität, Schema, API v2, Performance |
+| [TECHNICAL_INTELLIGENCE_ARCHITECTURE.md](TECHNICAL_INTELLIGENCE_ARCHITECTURE.md) | Datenfluss, Module, Kausalität, Schema, API v3, Performance |
 | [METHOD_RESEARCH.md](METHOD_RESEARCH.md) | Quellen, Evidenzgrade, **Method Traceability Matrix**, Research → Entscheidung |
 | [ELLIOTT_SPECIFICATION.md](ELLIOTT_SPECIFICATION.md) | Regelklassen, Musterklassen, Grade, Ranking, Invalidation, Projektion |
 | [BACKTEST_METHODOLOGY.md](BACKTEST_METHODOLOGY.md) | Erkennungszeitpunkt, Ausführungsregeln, Baselines, Splits, Kalibrierungs-Gate |
@@ -12,5 +12,13 @@
 | [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) | ehrliche Grenzen |
 | [ROADMAP.md](ROADMAP.md) | echte Folgeschritte |
 | [QUALITY_GATES.md](QUALITY_GATES.md) | Gates und ihr Status |
+| [ELLIOTT_AUDIT.md](ELLIOTT_AUDIT.md) | forensisches Audit der Elliott-Engine (Fehlerklassen A–H, Regelkarte) |
+| [ELLIOTT_RULE_MATRIX.md](ELLIOTT_RULE_MATRIX.md) | quellengebundene Regelmatrix: Regel, Guideline, VU-Merkmal; Quelle, Klasse, Test (generiert) |
+| [PREREGISTRATION.md](PREREGISTRATION.md) | vorab registrierte Elliott-Hypothesen H1–H7, Entscheidungsregel, Amendment 1 |
+| [ELLIOTT_VALIDATION_REPORT.md](ELLIOTT_VALIDATION_REPORT.md) | Bestätigungs-/Replikationsstudie, Referenzset, Audit-Stichprobe, Qualitätskalibrierung |
+| [TECHNICAL_EDGE_RESEARCH.md](TECHNICAL_EDGE_RESEARCH.md) | Ergebnis-Matrix aller Methoden, KEEP/DOWNWEIGHT/REMOVE, Produkttrennung |
+| [API_V3_MIGRATION.md](API_V3_MIGRATION.md) | v2 → v3: Overlays, Klarheit, Evidenzbadges, Replay |
 
 Kurzfassung der Evidenz (korrigierter Lauf, siehe TECHNICAL_EVIDENCE §0): Hauptszenarien erreichen Zielzone 1 im Test (2019–2026, 45.328 Fälle) in **35,4 %** der Fälle gegenüber **35,5 %** bei zufälligem Timing mit gleicher Geometrie — **kein messbarer Vorteil**. Kalibrierung nicht bestanden → keine Wahrscheinlichkeiten. Fibonacci-Niveaus ohne Häufung. Elliott-Lehrbuch-Erwartungen treffen seltener ein als Zufall mit gleichen Abständen; relativ aussagekräftig ist nur die Konsistenz mit dem höheren Grad. Das Chartbild ist Einordnung, kein Signalgeber.
+
+**Elliott (Mission II):** Die vorab registrierte Studie (1.784 Reihen, 69.791 Ereignisse, Walk-forward, Cluster-Bootstrap, Holm) bestätigt **keinen** Prognosebeitrag des Elliott-Labels (H1–H5, H7); bestätigt ist nur ein Timing-Effekt (H6), der ebenso ohne Elliott-Fortsetzungslabel auftritt. Count Quality steigt nicht mit dem späteren Ergebnis (HIGH − LOW +1,4 pp, n. s.). Entscheidung: **Elliott = Kontext**, Konfluenzgewicht 0; im Produkt als Strukturbeschreibung mit Regel-Audit, Quelle je Regel und Anwendbarkeit (inkl. „keine verlässliche Zählung").
