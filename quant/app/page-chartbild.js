@@ -457,7 +457,7 @@
       ["Grad (Skala)", T.degree.analysis + (T.degree.higher ? " · höherer Grad " + T.degree.higher : "")],
       ["Status", T.status === "DEVELOPING" ? "entwickelnd (laufende Welle)" : "abgeschlossen"],
       ["Count Quality", c.countQuality ? lvl[c.countQuality.level] + " (" + String(c.countQuality.score).replace(".", ",") + ")" : "–"],
-      ["Elliott anwendbar", E.applicability ? lvl[E.applicability.level] + (E.applicability.reasons.length ? " · " + E.applicability.reasons.join("; ") : "") : "–"],
+      ["Elliott anwendbar", E.applicability ? (E.applicability.abstain ? "keine verlässliche Zählung" : lvl[E.applicability.level]) + (E.applicability.reasons.length ? " · " + E.applicability.reasons.join("; ") : "") : "–"],
       ["Regelverletzungen", String(T.ruleViolations) + (T.openRules ? " · " + T.openRules + " offen" : "")],
       ["Richtlinienpassung", isNum(T.guidelineFit) ? String(T.guidelineFit).replace(".", ",") : "–"],
       ["Höherer Grad", isNum(T.higherDegreeAgreement) ? (T.higherDegreeAgreement >= 0.8 ? "passt" : T.higherDegreeAgreement >= 0.5 ? "neutral" : "widerspricht") + " (" + String(T.higherDegreeAgreement).replace(".", ",") + ")" : "–"],
@@ -465,9 +465,26 @@
       ["Neuzuordnungs-Risiko", T.relabeling ? ({ LOW: "gering", MEDIUM: "mittel", HIGH: "hoch" }[T.relabeling.risk]) + " (" + T.relabeling.relabelsLast26 + " Wechsel in 26 Schritten)" : "–"],
       ["Historische Evidenz", ev ? ev.label + " – " + ev.pro : "nicht belegt"]
     ];
+    var RA = c.ruleAudit;
+    if (RA) {
+      var dm = RA.dimensions || {}, v3 = function (x) { return x && isNum(x.value) ? String(x.value).replace(".", ",") : "–"; };
+      rows.splice(6, 1, ["Regel-Audit", RA.validity === "VALID" ? "gültig" : "UNGÜLTIG"],
+        ["Harte Regeln", RA.hardRules.satisfied + "/" + RA.hardRules.total + " erfüllt" + (RA.hardRules.open ? " · " + RA.hardRules.open + " offen" : "") + (RA.hardRules.violated ? " · " + RA.hardRules.violated + " verletzt" : "")],
+        ["Definitionen", RA.definitions.satisfied + "/" + RA.definitions.total + " erfüllt" + (RA.definitions.open ? " · " + RA.definitions.open + " offen" : "") + (RA.vuOperational && RA.vuOperational.total ? " · VU-Grenzen " + RA.vuOperational.satisfied + "/" + RA.vuOperational.total : "")],
+        ["Richtlinien", RA.guidelines.matched + "/" + RA.guidelines.total + " erfüllt (Wert ≥ 0,7)"],
+        ["Fibonacci-Passung", v3(dm.fibonacci)], ["Proportion Zeit / Preis", v3(dm.timeProportion) + " / " + v3(dm.priceProportion)],
+        ["Alternation · Kanal · Extension", v3(dm.alternation) + " · " + v3(dm.channel) + " · " + v3(dm.extension)],
+        ["Unterteilung", v3(dm.subdivision)], ["Momentum · Volumen", v3(dm.momentum) + " · " + (dm.volume && dm.volume.note ? "nicht verfügbar" : v3(dm.volume))]);
+    }
     var dl = el("dl", { class: "qx-kv cb-ew-kv" }, [].concat.apply([], rows.map(function (r) { return [el("dt", { text: r[0] }), el("dd", { class: "num", text: r[1] })]; })));
+    var srcBox = RA ? X.more("Quellen je Regel und Richtlinie (" + (RA.rules.length + RA.guidelines.items.length) + ")", function () {
+      var cls = { HARD_RULE: "harte Regel", DEFINITION: "Definition", GUIDELINE: "Richtlinie", VU_OPERATIONAL: "VU-Grenzwert" };
+      var li = function (x, res) { return el("li", { text: res + " " + (x.statement || x.id) + " — " + (cls[x.class] || x.class) + " · " + (x.source || "–") + " " + (x.locator || "") }); };
+      return [el("ul", { class: "cb-list" }, RA.rules.map(function (x) { return li(x, x.passed === true ? "✓" : x.passed === false ? "✕" : "○"); }).concat(RA.guidelines.items.map(function (x) { return li(x, (x.matched ? "✓ " : "○ ") + String(x.value).replace(".", ",")); }))),
+        el("p", { class: "cb-small cb-dim", text: "Fundstellen: " + (RA.verification || "") + ". Quellen: EWP = Frost & Prechter, Elliott Wave Principle; EWI = Gorman & Kennedy, Visual Guide; VU = Vision-Universe-Festlegung (keine Elliott-Regel)." })];
+    }) : null;
     var tree = (E.candidateTree || T.candidateTree || []).map(function (b) { return el("li", { text: ({ PRIMARY: "Hauptweg", EXTENSION: "Ausdehnung", ALTERNATIVE_1: "Alternative 1", ALTERNATIVE_2: "Alternative 2" }[b.branch] || b.branch) + ": " + b.text + (isNum(b.invalidation) ? " · ungültig bei " + fmt(b.invalidation) : "") }); });
-    return X.card([el("h3", { class: "qx-h3", text: "So wurde gerechnet – Elliott" }), dl,
+    return X.card([el("h3", { class: "qx-h3", text: "So wurde gerechnet – Elliott" }), dl, srcBox,
       tree.length ? el("h4", { text: "Mögliche Entwicklungen aus dem aktuellen Stand" }) : null, tree.length ? el("ul", { class: "cb-list" }, tree) : null,
       el("p", { class: "cb-small cb-dim", text: "Count Quality beschreibt, wie sauber der Chart den Elliott-Regeln entspricht – keine Trefferwahrscheinlichkeit." })], "cb-ew-panel");
   }

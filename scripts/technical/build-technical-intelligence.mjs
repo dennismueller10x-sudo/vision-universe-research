@@ -67,14 +67,14 @@ export function slim(res) {
     /* Regeltext und Quelle stehen einmal im Regelkatalog (rules-catalog.json), hier nur Ergebnis. */
     rules: c.rules.map((x) => { catalogRule(x); return { id: x.ruleId, cls: x.class, passed: x.passed }; }), guidelines: c.guidelines, subdivision: c.subdivision,
     invalidation: c.invalidation, revision: c.revision, caps: c.caps, zones: c.projection.zones.slice(0, 6), rank: c.rank, rankComponents: c.rankComponents, source: c.source,
-    countQuality: c.countQuality || null, detection: c.detection || null, persistenceKey: c.persistenceKey || null };
+    countQuality: c.countQuality || null, detection: c.detection || null, persistenceKey: c.persistenceKey || null, ruleAudit: c.ruleAudit || null };
   return {
     schemaVersion: res.schemaVersion, symbol: res.symbol, timeframe: res.timeframe, asOf: res.asOf, price: res.price, dataQuality: res.dataQuality,
     outlook: res.outlook, regime: res.regime, scenarios: res.scenarios, confidence: res.confidence, confluence: res.confluence, signature: res.signature,
     evidence: res.evidence, timeframes: res.timeframes, alerts: res.alerts,
     pro: {
       elliott: E && E.primary ? { status: E.status, degrees: E.degrees, structuralScore: E.structuralScore, structuralLevel: E.structuralLevel, clarity: E.clarity, clarityLevel: E.clarityLevel, applicability: E.applicability,
-                                  primary: count(E.primary), alternatives: E.alternatives.map((a) => { const c = count(a); delete c.rules; delete c.guidelines; delete c.subdivision; c.zones = c.zones.slice(0, 3); return c; }), higherDegree: E.higherDegree && { pattern: E.higherDegree.pattern, patternName: E.higherDegree.patternName, current: E.higherDegree.current, waves: E.higherDegree.waves },
+                                  primary: count(E.primary), alternatives: E.alternatives.map((a) => { const c = count(a); delete c.rules; delete c.guidelines; delete c.subdivision; if (c.ruleAudit) c.ruleAudit = { validity: c.ruleAudit.validity, hardRules: c.ruleAudit.hardRules, definitions: c.ruleAudit.definitions, guidelines: { matched: c.ruleAudit.guidelines.matched, total: c.ruleAudit.guidelines.total } }; c.zones = c.zones.slice(0, 3); return c; }), higherDegree: E.higherDegree && { pattern: E.higherDegree.pattern, patternName: E.higherDegree.patternName, current: E.higherDegree.current, waves: E.higherDegree.waves },
                                   historicalMap: E.historicalMap && { coverage: E.historicalMap.coverage, unlabeledLegs: E.historicalMap.unlabeledLegs, patterns: E.historicalMap.patterns.slice(-6) }, ruleSetVersion: E.ruleSetVersion }
                               : { status: E ? E.status : "UNAVAILABLE", reason: E ? E.reason : null, detail: E ? E.detail : null },
       trend: { phase: m.trend.phase, primary: m.trend.primary, secondary: m.trend.secondary, shortTerm: m.trend.shortTerm, stage: m.trend.stage, source: m.trend.source },

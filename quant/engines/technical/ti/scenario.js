@@ -41,7 +41,7 @@
   var DEFAULTS = {
     /* Prior aus Evidenzgraden (METHOD_RESEARCH.md). WYCKOFF = 0: keine Literatur-Evidenz (Grad D) UND in der
        VU-Entwicklungsstudie (TRAIN/VALIDATION) Richtungstrefferquote unter 50 % → nur beschreibend, nicht stimmberechtigt. */
-    familyWeights: { TREND: 0.30, MOMENTUM: 0.20, STRUCTURE: 0.15, HIGHER_TIMEFRAME: 0.15, VOLUME: 0.10, PATTERN: 0.08, ELLIOTT: 0.08, WYCKOFF: 0 },
+    familyWeights: { TREND: 0.30, MOMENTUM: 0.20, STRUCTURE: 0.15, HIGHER_TIMEFRAME: 0.15, VOLUME: 0.10, PATTERN: 0.08, ELLIOTT: 0, WYCKOFF: 0 },   // ELLIOTT 0: vorab registrierte Entscheidung (PREREGISTRATION §4, Bestaetigungsstichprobe: kein Prognosebeitrag)
     biasThreshold: 0.15, mixedConflictShare: 0.35,
     agreementLevels: { high: 0.5, moderate: 0.25 },
     zone: { minWidthAtr: 0.6, maxWidthAtr: 2.0, clusterTolAtr: 0.75 },

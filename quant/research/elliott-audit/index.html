@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elliott-Audit · Vision Universe</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#0b0d10;--panel:#14171b;--line:rgba(255,255,255,.1);--text:#f4f5f1;--muted:#a6abb3;--dim:#7d828a;--lime:#c8f531;--blue:#8cc8ff;--red:#ff6b5e;--violet:#b3a6ff;--amber:#f2c14e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:20px 16px;border-bottom:1px solid var(--line)}h1{margin:0;font-size:22px}header p{margin:6px 0 0;color:var(--muted);max-width:900px}
+main{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 90px)}
+nav{border-right:1px solid var(--line);overflow:auto;max-height:calc(100vh - 90px)}
+nav button{display:block;width:100%;text-align:left;padding:10px 14px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);font:inherit;cursor:pointer}
+nav button[aria-current=true]{background:var(--panel);box-shadow:inset 3px 0 var(--lime)}
+nav small{display:block;color:var(--dim)}
+section{padding:16px;max-width:1100px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h3{margin:0 0 8px;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}dt{color:var(--muted)}dd{margin:0;font-variant-numeric:tabular-nums}
+.ok{color:var(--lime)}.bad{color:var(--red)}.open{color:var(--amber)}
+ul{margin:4px 0;padding-left:18px}li{margin:2px 0}
+svg{width:100%;height:auto;background:#0f1215;border-radius:12px;border:1px solid var(--line)}
+.btn{min-height:40px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:inherit;cursor:pointer}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;background:rgba(255,255,255,.08);font-size:12px;margin-right:6px}
+.note{color:var(--muted);font-size:13px}
+@media (max-width:760px){main{grid-template-columns:1fr}nav{max-height:220px;border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Elliott-Audit: 80 Zählungen zur menschlichen Prüfung</h1>
+  <p>Jeder Fall zeigt den Chart nur bis zum Erkennungszeitpunkt, die Haupt- und Alternativzählung der Engine mit vollständigem Regel-Audit und Quellen sowie – erst auf Klick – das spätere Ergebnis. Ein Audit-Set, kein Optimierungsdatensatz. Methodische Güte der Zählung und späteres Ergebnis sind getrennt.</p>
+</header>
+<main><nav id="list" aria-label="Fälle"></nav><section id="detail" aria-live="polite"><p class="note">Lade …</p></section></main>
+<script>
+(function () {
+  "use strict";
+  var D = null, cur = null, showFuture = false;
+  function h(tag, attrs, kids) { var e = document.createElement(tag); Object.keys(attrs || {}).forEach(function (k) { if (k === "text") e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); }); (kids || []).forEach(function (c) { if (c) e.append(c); }); return e; }
+  function f(v) { return typeof v === "number" ? v.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : v === null || v === undefined ? "–" : String(v); }
+  var NS = "http://www.w3.org/2000/svg";
+  function s(tag, a) { var e = document.createElementNS(NS, tag); Object.keys(a || {}).forEach(function (k) { e.setAttribute(k, a[k]); }); return e; }
+  function chart(c) {
+    var dates = c.chart.dates.concat(showFuture ? c.future.dates : []), cl = c.chart.close.concat(showFuture ? c.future.close : []);
+    var W = 900, H = 320, pl = 8, pr = 60, pt = 10, pb = 22, n = dates.length;
+    var lo = Math.min.apply(null, cl), hi = Math.max.apply(null, cl), pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    var x = function (i) { return pl + (W - pl - pr) * (i + 0.5) / n; }, y = function (v) { return pt + (hi - v) / (hi - lo) * (H - pt - pb); };
+    var g = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "Kursverlauf bis zum Erkennungszeitpunkt" });
+    for (var k = 0; k <= 4; k++) { var v = lo + (hi - lo) * k / 4; g.append(s("line", { x1: pl, x2: W - pr, y1: y(v), y2: y(v), stroke: "rgba(255,255,255,.06)" })); var t = s("text", { x: W - pr + 6, y: y(v) + 4, fill: "#7d828a", "font-size": 11 }); t.textContent = f(v); g.append(t); }
+    var nb = c.chart.dates.length, d = "";
+    for (var i = 0; i < nb; i++) d += (i ? "L" : "M") + x(i) + " " + y(cl[i]);
+    g.append(s("path", { d: d, fill: "none", stroke: "#f4f5f1", "stroke-width": 1.8 }));
+    if (showFuture && c.future.dates.length) { var df = "M" + x(nb - 1) + " " + y(cl[nb - 1]); for (var j = nb; j < n; j++) df += "L" + x(j) + " " + y(cl[j]); g.append(s("path", { d: df, fill: "none", stroke: "#b3a6ff", "stroke-width": 1.6, "stroke-dasharray": "4 3" })); }
+    g.append(s("line", { x1: x(nb - 1), x2: x(nb - 1), y1: pt, y2: H - pb, stroke: "rgba(200,245,49,.6)", "stroke-dasharray": "3 4" }));
+    var tt = s("text", { x: x(nb - 1) + 4, y: H - 8, fill: "#c8f531", "font-size": 11 }); tt.textContent = "Erkennung " + c.date; g.append(tt);
+    var idx = {}; dates.forEach(function (dd, q) { idx[dd] = q; });
+    [["primary", "#c8f531"], ["alternative", "#b3a6ff"]].forEach(function (p) {
+      var cnt = c.engine[p[0]]; if (!cnt) return;
+      cnt.waves.forEach(function (w) {
+        var q = idx[w.to]; if (q === undefined) return;
+        var up = w.toPrice >= w.fromPrice, yy = y(w.toPrice) + (up ? -10 : 16) + (p[0] === "alternative" ? (up ? -14 : 14) : 0);
+        g.append(s("circle", { cx: x(q), cy: y(w.toPrice), r: 3, fill: p[1] }));
+        var lab = s("text", { x: x(q), y: yy, fill: p[1], "font-size": 12, "font-weight": 800, "text-anchor": "middle" }); lab.textContent = w.label + (w.status === "DEVELOPING" ? "?" : ""); g.append(lab);
+      });
+    });
+    if (c.engine.primary && c.engine.primary.invalidation) { var iv = c.engine.primary.invalidation.price; if (iv > lo && iv < hi) { g.append(s("line", { x1: pl, x2: W - pr, y1: y(iv), y2: y(iv), stroke: "#ff6b5e", "stroke-dasharray": "6 5" })); } }
+    return g;
+  }
+  function countCard(title, cnt) {
+    if (!cnt) return h("div", { class: "card" }, [h("h3", { text: title }), h("p", { class: "note", text: "keine" })]);
+    var a = cnt.ruleAudit || {}, q = cnt.countQuality || {};
+    var mark = function (p) { return p === true ? "✓" : p === false ? "✕" : "○"; };
+    return h("div", { class: "card" }, [h("h3", { text: title }),
+      h("p", {}, [h("b", { text: cnt.pattern }), h("span", { text: cnt.complete ? " · abgeschlossen" : " · laufende Welle " + cnt.wave })]),
+      h("dl", {}, [h("dt", { text: "Regel-Audit" }), h("dd", { class: a.validity === "VALID" ? "ok" : "bad", text: a.validity || "–" }),
+        h("dt", { text: "Harte Regeln" }), h("dd", { text: a.hardRules ? a.hardRules.satisfied + "/" + a.hardRules.total + (a.hardRules.open ? " · " + a.hardRules.open + " offen" : "") : "–" }),
+        h("dt", { text: "Definitionen" }), h("dd", { text: a.definitions ? a.definitions.satisfied + "/" + a.definitions.total : "–" }),
+        h("dt", { text: "Richtlinien" }), h("dd", { text: a.guidelines ? a.guidelines.matched + "/" + a.guidelines.total + " (≥ 0,7)" : "–" }),
+        h("dt", { text: "Count Quality" }), h("dd", { text: (q.level || "–") + (q.score !== null && q.score !== undefined ? " (" + f(q.score) + ")" : "") }),
+        h("dt", { text: "Invalidation" }), h("dd", { text: cnt.invalidation ? (cnt.invalidation.direction === "below" ? "unter " : "über ") + f(cnt.invalidation.price) + " · " + cnt.invalidation.rule : "–" })]),
+      h("p", { class: "note", text: "Count-Quality-Bestandteile: " + Object.entries(q.components || {}).map(function (e) { return e[0] + " " + f(e[1]); }).join(" · ") }),
+      h("p", { class: "note", text: "Dimensionen: " + Object.entries(a.dimensions || {}).filter(function (e) { return typeof e[1] === "number"; }).map(function (e) { return e[0] + " " + f(e[1]); }).join(" · ") }),
+      h("details", {}, [h("summary", { text: "Regeln und Richtlinien mit Quelle" }), h("ul", {}, (a.rules || []).map(function (r) { return h("li", { text: mark(r.passed) + " " + (r.statement || r.id) + " — " + r.class + " · " + (r.source || "") + " " + (r.locator || "") }); })
+        .concat(((a.guidelines || {}).items || []).map(function (g) { return h("li", { text: (g.matched ? "✓ " : "○ ") + f(g.value) + " " + (g.statement || g.id) + " — " + (g.source || "") + " " + (g.locator || "") }); })))])]);
+  }
+  function show(c) {
+    cur = c; showFuture = false;
+    document.querySelectorAll("nav button").forEach(function (b) { b.setAttribute("aria-current", b.dataset.id === c.id ? "true" : "false"); });
+    render();
+  }
+  function render() {
+    var c = cur, el = document.getElementById("detail"), ap = c.engine.applicability || {};
+    var fut = h("button", { class: "btn", type: "button", text: showFuture ? "Ergebnis ausblenden" : "Späteres Ergebnis zeigen" });
+    fut.addEventListener("click", function () { showFuture = !showFuture; render(); });
+    el.replaceChildren(
+      h("h2", { text: c.id + " · " + c.symbol + " · " + c.date }),
+      h("p", {}, [h("span", { class: "tag", text: c.fold }), h("span", { class: "tag", text: "Ereignis-Skala " + c.scaleEvent }), h("span", { class: "tag", text: "Engine-Skala " + c.engine.scale }), h("span", { class: "tag", text: "Label " + c.event.label }), h("span", { class: "tag", text: c.event.role || "–" })]),
+      chart(c), h("p", {}, [fut]),
+      h("div", { class: "grid" }, [countCard("Hauptzählung", c.engine.primary), countCard("Alternative", c.engine.alternative),
+        h("div", { class: "card" }, [h("h3", { text: "Anwendbarkeit · Ereignis · Evidenz" }), h("dl", {}, [
+          h("dt", { text: "Anwendbarkeit" }), h("dd", { text: (ap.abstain ? "keine verlässliche Zählung" : ap.level || "–") + (ap.signalToNoise ? " · S/R " + f(ap.signalToNoise) : "") }),
+          h("dt", { text: "Gründe" }), h("dd", { text: (ap.reasons || []).join("; ") || "–" }),
+          h("dt", { text: "Ereignis" }), h("dd", { text: c.event.direction + "-Leg, Rücklauf " + f(c.event.retracement * 100) + " %" }),
+          h("dt", { text: "Evidenz" }), h("dd", { text: c.evidence })]), h("p", { class: "note", text: c.event.note })]),
+        h("div", { class: "card" }, [h("h3", { text: "Späteres Ergebnis (getrennt von der Güte)" }), showFuture ? h("dl", {}, [
+          h("dt", { text: "Erfolg" }), h("dd", { class: c.outcome.success ? "ok" : "bad", text: c.outcome.success ? "ja" : "nein" }),
+          h("dt", { text: "nach" }), h("dd", { text: f(c.outcome.barsToOutcome) + " Wochen" }),
+          h("dt", { text: "MFE / MAE" }), h("dd", { text: f(c.outcome.mfeLegs) + " / " + f(c.outcome.maeLegs) + " Leglängen" }),
+          h("dt", { text: "Zufall gleiche Abstände" }), h("dd", { text: f(c.outcome.randomSameGeometry) })]) : h("p", { class: "note", text: "Erst die Zählung prüfen, dann das Ergebnis aufdecken." })])]));
+  }
+  fetch("data.json").then(function (r) { return r.json(); }).then(function (d) {
+    D = d;
+    var nav = document.getElementById("list");
+    d.cases.forEach(function (c) {
+      var b = h("button", { type: "button", "data-id": c.id }, [h("span", { text: c.id + " · " + c.symbol }), h("small", { text: c.date + " · " + c.event.label + " · " + (c.engine.primary ? c.engine.primary.pattern : "–") })]);
+      b.addEventListener("click", function () { show(c); }); nav.append(b);
+    });
+    show(d.cases[0]);
+  }).catch(function () { document.getElementById("detail").textContent = "Daten konnten nicht geladen werden."; });
+})();
+</script>
+</body>
+</html>

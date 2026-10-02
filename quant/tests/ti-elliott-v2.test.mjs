@@ -79,7 +79,7 @@ test("EV2-R4 · Guidelines ranken, legitimieren aber nie eine Regelverletzung", 
   for (const t of P.TYPES) {
     const ev = P.evaluate(t, legs(IMP).slice(0, P.PATTERNS[t].waves));
     if (!ev) continue;
-    ev.rules.forEach((r) => assert.ok(["HARD", "DEFINITION"].includes(r.class), t + " " + r.ruleId));
+    ev.rules.forEach((r) => assert.ok(["HARD", "DEFINITION", "VU_OPERATIONAL"].includes(r.class), t + " " + r.ruleId));
     Object.values(ev.guidelines).forEach((v) => assert.ok(v === null || (v >= 0 && v <= 1)));
   }
 });
@@ -355,4 +355,45 @@ test("EV2-S6 · V2.2 bleibt kausal: Mehrskalen-Gradwahl liest keine Bars nach as
   const part = E.analyzeElliottV2({ series: cut, features: fc, pivots: pc });
   const strip = (x) => JSON.stringify(Object.assign({}, x, { parametersHash: null }));
   assert.equal(strip(full), strip(part));
+});
+
+// ===================================================== Addendum: Regelmatrix
+test("EV2-Q1 · Regelmatrix vollstaendig: jede Regel/Richtlinie der Engine hat Klasse, Quelle und Einfluss; Klassen stimmen ueberein", () => {
+  const S = require("../engines/technical/elliott/sources.js");
+  const map = { HARD: "HARD_RULE", DEFINITION: "DEFINITION", VU_OPERATIONAL: "VU_OPERATIONAL" };
+  const seenR = new Set(), seenG = new Set();
+  const cases = [IMP, mirror(IMP), [[0, 100], [10, 130], [15, 112], [30, 137.5], [38, 120], [48, 136]], [[0, 100], [10, 80], [15, 92], [20, 70]], [[0, 100], [10, 80], [15, 99], [20, 78]],
+                 [[0, 100], [10, 90], [15, 98], [20, 92], [24, 96], [28, 93]], [[0, 100], [10, 90], [15, 98], [20, 85], [24, 95], [28, 84], [32, 91], [36, 80]]];
+  for (const pts of cases) for (const t of P.TYPES) for (let k = 1; k <= P.PATTERNS[t].waves && k < pts.length; k++) {
+    const ev = P.evaluate(t, legs(pts.slice(0, k + 1)));
+    if (!ev) continue;
+    ev.rules.forEach((r) => { const m = S.ruleMeta(r.ruleId); assert.ok(m, "Regel ohne Matrix-Eintrag: " + r.ruleId); assert.equal(m.class, map[r.class], r.ruleId); assert.ok(S.SOURCES[m.source] && m.locator); seenR.add(S.RULES[r.ruleId] ? r.ruleId : S.baseId(r.ruleId)); });
+    Object.keys(ev.guidelines).forEach((g) => { const m = S.guidelineMeta(g); assert.ok(m, "Richtlinie ohne Matrix-Eintrag: " + g); assert.equal(m.class, "GUIDELINE"); seenG.add(S.GUIDELINES[g] ? g : S.baseId(g)); });
+  }
+  assert.ok(seenR.size >= 12 && seenG.size >= 10, seenR.size + "/" + seenG.size);
+  /* Keine VU-Festlegung als klassische Quelle getarnt */
+  Object.values(S.RULES).concat(Object.values(S.GUIDELINES), Object.values(S.CRITERIA)).forEach((m) => { if (/^VU_/.test(m.class)) assert.equal(m.source, "VU"); else assert.notEqual(m.source, "VU"); });
+});
+
+test("EV2-Q2 · Keine Kompensation: Regelverletzung → INVALID ohne Score, egal wie gut die Richtlinien passen", () => {
+  const pts = [[0, 100], [10, 120], [15, 107.64], [30, 140], [38, 119.5], [48, 140.5]];   // perfekte Proportionen, W4 ueberlappt W1
+  const e = P.evaluate("IMPULSE", legs(pts));
+  e.waves = legs(pts); e.components = { higherDegree: 1 };
+  const q = E.countQuality(e, null, 0.5, null, E.DEFAULTS);
+  assert.equal(q.level, "INVALID"); assert.equal(q.score, null);
+  const a = E.ruleAudit(e, null);
+  assert.equal(a.validity, "INVALID"); assert.ok(a.hardRules.violated >= 1);
+  assert.ok(a.guidelines.items.some((x) => x.id === "W2_RETRACEMENT" && x.value === 1), "gute Richtlinie bleibt sichtbar, aendert aber nichts");
+});
+
+test("EV2-Q3 · Regel-Audit je Zaehlung: zerlegbar, mit Quelle je Regel und Richtlinie", () => {
+  const { r } = runSyn("IMPULSE", "low");
+  const a = r.primary.ruleAudit;
+  assert.equal(a.validity, "VALID");
+  assert.equal(a.hardRules.violated + a.definitions.violated, 0);
+  assert.ok(a.hardRules.total >= 4);
+  a.rules.forEach((x) => assert.ok(x.source && x.locator && x.class, x.id));
+  a.guidelines.items.forEach((x) => assert.ok(x.source && x.class === "GUIDELINE" && typeof x.matched === "boolean", x.id));
+  for (const k of ["subdivision", "degreeConsistency", "timeProportion", "priceProportion", "fibonacci", "alternation", "channel", "extension", "overlap", "momentum", "volume"]) assert.ok(k in a.dimensions, k);
+  assert.ok(/nicht gegen den Volltext/.test(a.verification));
 });

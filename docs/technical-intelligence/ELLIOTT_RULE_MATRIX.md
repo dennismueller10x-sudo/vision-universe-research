@@ -1,0 +1,101 @@
+# Elliott-Regelmatrix (quellengebunden)
+
+> Automatisch erzeugt aus `quant/engines/technical/elliott/sources.js` von `scripts/technical/elliott-rule-matrix.mjs`. Nicht von Hand bearbeiten.
+
+**Grundsatz:** „Hohe Count Quality" heißt bei Vision Universe: Die Zählung erfüllt die unten dokumentierten Regeln und Richtlinien, ist auf Quellen zurückführbar, algorithmisch reproduzierbar und unabhängig prüfbar — nicht, dass ein Mensch oder ein Sprachmodell den Chart „gut findet".
+
+## Quellen
+
+| Kürzel | Werk | Qualität | Rolle |
+|---|---|---|---|
+| EWP | A. J. Frost & R. R. Prechter, Elliott Wave Principle: Key to Market Behavior (10. Aufl., 2005) | A | Standardwerk der klassischen Schule |
+| RNE | R. N. Elliott, The Wave Principle (1938); Nature's Law (1946) | A | Original |
+| EWI | W. Gorman & J. Kennedy, Visual Guide to Elliott Wave Trading (EWI, 2013) | B | Lehrwerk des Instituts (Zahlenwerte für Musterdefinitionen) |
+| VU | Vision Universe — eigene Festlegung bzw. Messung | V | keine Elliott-Quelle |
+
+**Verifikation:** Kapitel-/Abschnittsebene; nicht gegen den Volltext geprüft. Der Volltext liegt nicht im Repository, und die Domain des Verlags ist in der Arbeitsumgebung gesperrt. Seitenzahlen werden deshalb nicht angegeben. Zahlenwerte für Musterdefinitionen, die das Standardwerk nur qualitativ beschreibt, stammen aus dem Lehrwerk desselben Instituts (Qualität B) und sind so gekennzeichnet.
+
+## Klassen
+
+| Klasse | Bedeutung | Wirkung |
+|---|---|---|
+| HARD_RULE | unverletzliche Regel der Literatur | Verletzung → Zählung ungültig; **nie** durch Richtlinien oder Scores ausgleichbar |
+| DEFINITION | Bestandteil der Musterdefinition | Verletzung → anderes Muster bzw. ungültig |
+| GUIDELINE | Richtlinie der Literatur | ändert nur die Plausibilität (Rang, Count Quality), nie die Gültigkeit |
+| VU_OPERATIONAL | VU-Grenzwert, wo die Literatur keinen nennt | wirkt wie eine Definition, ist aber **keine** klassische Regel |
+| VU_HEURISTIC | VU-Ingenieurskriterium | Anwendbarkeit/Eindeutigkeit; keine Elliott-Regel |
+| VU_MEASUREMENT | gemessene Eigenschaft | Audit und Anzeige; keine Elliott-Regel |
+
+Eine **eigene empirische Beobachtung** von Vision Universe (z. B. aus der Validierungsstudie) wird nie als Elliott-Regel bezeichnet; sie steht ausschließlich in TECHNICAL_EVIDENCE / ELLIOTT_VALIDATION_REPORT.
+
+## Regeln und Definitionen
+
+| ID | Beschreibung | Quelle — Fundstelle | Qualität | Klasse | Umsetzung | Test | Einfluss auf Count Quality |
+|---|---|---|---|---|---|---|---|
+| `ALTERNATING_DIRECTION` | Aufeinanderfolgende Wellen wechseln die Richtung | A. J. Frost & R. R. Prechter — Kap. 1, Grundmuster (5 Wellen in Trendrichtung, 3 dagegen) | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `W2_NOT_BEYOND_W1_ORIGIN` | Welle 2 retraced nie mehr als 100 % von Welle 1 | A. J. Frost & R. R. Prechter — Kap. 1, Impulse — Regel 1 | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-R2, EV2-R3 | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `W3_BEYOND_W1_END` | Welle 3 läuft über das Ende von Welle 1 hinaus | A. J. Frost & R. R. Prechter — Kap. 1, Impulse (Konstruktion der Motivwelle) | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-R2, EV2-R3 | Verletzung → Zählung ungültig (Muster wird verworfen); auf laufender Welle offen, solange noch erfüllbar |
+| `W3_NOT_SHORTEST` | Welle 3 ist nie die kürzeste der Wellen 1, 3 und 5 | A. J. Frost & R. R. Prechter — Kap. 1, Impulse — Regel 2 | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-R2, EV2-R3 | Verletzung → Zählung ungültig (Muster wird verworfen); auf laufender Welle offen, solange noch erfüllbar |
+| `W4_NO_OVERLAP_W1` | Welle 4 betritt nie das Preisgebiet von Welle 1 (Impuls) | A. J. Frost & R. R. Prechter — Kap. 1, Impulse — Regel 3 | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-R2 | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `DIAGONAL_W4_OVERLAPS_W1` | Diagonale: Welle 4 überlappt das Gebiet von Welle 1 | A. J. Frost & R. R. Prechter — Kap. 1, Diagonal Triangles (Leading/Ending) | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-R5 | Definitionsmerkmal: ohne Überlappung keine Diagonale (Impuls-Lesart) |
+| `DIAGONAL_W4_VS_W2` | Keilform: kontrahierend W4 < W2, expandierend W4 > W2 | A. J. Frost & R. R. Prechter — Kap. 1, Diagonal Triangles (Keilform der Begrenzungslinien) | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-R10 | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `DIAGONAL_W5_VS_W3` | Keilform: kontrahierend W5 < W3, expandierend W5 > W3 | A. J. Frost & R. R. Prechter — Kap. 1, Diagonal Triangles | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `W4_NOT_BEYOND_W3_ORIGIN` | Diagonale: Welle 4 retraced Welle 3 nicht vollständig | A. J. Frost & R. R. Prechter — Kap. 1, Diagonal Triangles (Motivwelle schreitet voran) | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `B_NOT_BEYOND_A_ORIGIN` | Zigzag: Welle B retraced nie mehr als 100 % von Welle A | A. J. Frost & R. R. Prechter — Kap. 1, Zigzags | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `ZIGZAG_B_BELOW_90PCT` | Zigzag: B retraced weniger als 90 % von A (sonst Flat) | W. Gorman & J. Kennedy — Musterdefinition Flat/Zigzag (Grenzwert 90 %) | B | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Klassengrenze Zigzag ↔ Flat · EWP beschreibt die Grenze qualitativ („fast vollständig“); der Zahlenwert stammt aus dem EWI-Lehrwerk. |
+| `FLAT_B_AT_LEAST_90PCT` | Flat: B retraced mindestens 90 % von A | W. Gorman & J. Kennedy — Musterdefinition Flat (Grenzwert 90 %) | B | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Klassengrenze Flat ↔ Zigzag · Zahlenwert aus dem EWI-Lehrwerk; EWP qualitativ. |
+| `FLAT_B_NOT_EXCESSIVE` | Flat: B höchstens 200 % von A | Vision Universe — eigene Festlegung bzw. Messung — VU-Betriebsgrenze; EWP Kap. 1 (Flats) nennt für expandierte Flats typische B von 123,6–138,2 %, aber keine Obergrenze | V | VU_OPERATIONAL | patterns.js · Regelfunktion (VU-Grenzwert) | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) · Keine klassische Regel. Verhindert, dass ein neuer Trend als B-Welle gezählt wird. |
+| `TRIANGLE_BOUNDARIES` | Dreieck: Extreme laufen zusammen (kontrahierend) oder auseinander (expandierend) | A. J. Frost & R. R. Prechter — Kap. 1, Triangles | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) · Barrier-Toleranz von 5 % der A-Länge für D ist eine VU-Festlegung (Barrier-Dreieck). |
+| `TRIANGLE_E_INSIDE` | Dreieck: Welle E endet innerhalb der Begrenzung | A. J. Frost & R. R. Prechter — Kap. 1, Triangles | A | HARD_RULE | patterns.js · Regelfunktion des Musters (`notBeyondAgainst` / `beyond` / Wert) | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `WXY_W_IS_THREE` | Kombination: W unterteilt sich in drei Wellen | A. J. Frost & R. R. Prechter — Kap. 1, Combinations (Double Three) | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `WXY_Y_IS_THREE` | Kombination: Y unterteilt sich in drei Wellen | A. J. Frost & R. R. Prechter — Kap. 1, Combinations (Double Three) | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) |
+| `X_NOT_BEYOND_W_ORIGIN` | Kombination: X retraced nie mehr als 100 % von W | A. J. Frost & R. R. Prechter — Kap. 1, Combinations / Double Zigzags | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen) · Operationalisierung: über den W-Ursprung hinaus wäre die Korrektur beendet. |
+| `Y_BEYOND_W_END` | Doppel-Zigzag: Y läuft über das Ende von W hinaus | A. J. Frost & R. R. Prechter — Kap. 1, Double Zigzags (zweiter Zigzag schreitet voran) | A | DEFINITION | patterns.js · Regelfunktion des Musters | EV2-Q1 (Matrix-Konsistenz) | Verletzung → Zählung ungültig (Muster wird verworfen); auf laufender Welle offen, solange noch erfüllbar |
+
+## Richtlinien
+
+| ID | Beschreibung | Quelle — Fundstelle | Qualität | Klasse | Umsetzung | Test | Einfluss auf Count Quality |
+|---|---|---|---|---|---|---|---|
+| `W2_RETRACEMENT` | Welle 2 retraced typisch 50–61,8 % von Welle 1 | A. J. Frost & R. R. Prechter — Kap. 4, Ratio Analysis (Retracements) | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-R4, EV2-Q2 | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `W3_EXTENSION` | Welle 3 häufig 1,618–2,618 × Welle 1 | A. J. Frost & R. R. Prechter — Kap. 4, Ratio Analysis (Multiples) | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `W4_RETRACEMENT` | Welle 4 retraced typisch 23,6–38,2 % von Welle 3 | A. J. Frost & R. R. Prechter — Kap. 2, Depth of Corrective Waves; Kap. 4 | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `ALTERNATION` | Wellen 2 und 4 alternieren (Tiefe, Dauer, Form) | A. J. Frost & R. R. Prechter — Kap. 2, Alternation | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit · Umgesetzt: Tiefe und Dauer; Form (scharf/seitwärts) nicht. |
+| `W5_PROPORTION` | Bei verlängerter Welle 3 tendieren Wellen 1 und 5 zur Gleichheit | A. J. Frost & R. R. Prechter — Kap. 2, Wave Equality | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `EXTENSION_IN_ONE` | Meist ist genau eine der Wellen 1, 3, 5 verlängert | A. J. Frost & R. R. Prechter — Kap. 1, Extension | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `NO_TRUNCATION` | Welle 5 endet meist jenseits von Welle 3 (Truncation zulässig, aber selten) | A. J. Frost & R. R. Prechter — Kap. 1, Truncation | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `CHANNEL` | Welle 5 endet nahe der Parallelen zur 2-4-Linie durch Welle 3 | A. J. Frost & R. R. Prechter — Kap. 2, Channeling | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `W3_MOMENTUM` | Welle 3 ist meist die dynamischste | A. J. Frost & R. R. Prechter — Kap. 2, Wave Personality | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `W3_VOLUME` | Volumen in Welle 3 meist höher als in Welle 1 | A. J. Frost & R. R. Prechter — Kap. 2, Volume | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit · Nur mit Volumendaten (Wochenschluss-Reihen: entfällt). |
+| `W2_DEEP` | Diagonale: Welle 2 retraced tief (typ. 66–81 %) | A. J. Frost & R. R. Prechter — Kap. 1, Diagonal Triangles; Kap. 4 | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `W4_DEEP` | Diagonale: Welle 4 retraced tief (typ. 66–81 %) | A. J. Frost & R. R. Prechter — Kap. 1, Diagonal Triangles; Kap. 4 | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `THROW_OVER` | Diagonale: Welle 5 endet meist jenseits Welle 3 (Throw-over) | A. J. Frost & R. R. Prechter — Kap. 2, Throw-over | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `B_RETRACEMENT` | Zigzag: B retraced typisch 38,2–78,6 % von A | A. J. Frost & R. R. Prechter — Kap. 4, Ratio Analysis (Corrective Waves) | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `C_BEYOND_A_END` | C endet (fast immer) jenseits des A-Endes | A. J. Frost & R. R. Prechter — Kap. 1, Zigzags/Flats | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-R6 | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit · Literatur: „fast immer“ — deshalb Richtlinie, nicht Regel. |
+| `C_PROPORTION` | C ≈ A (oder 1,618 bzw. 0,618 × A) | A. J. Frost & R. R. Prechter — Kap. 4, Ratio Analysis (Zigzags/Flats) | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `B_PROPORTION` | Flat: B 90–138,2 % von A | A. J. Frost & R. R. Prechter — Kap. 1, Flats; Kap. 4 | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `LEG_RATIOS` | Dreieck: Folgewellen ≈ 0,618 der Vorwelle | A. J. Frost & R. R. Prechter — Kap. 4, Triangles | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `EXPANDING_RARE` | Expandierende Dreiecke sind selten | A. J. Frost & R. R. Prechter — Kap. 1, Triangles | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `X_PROPORTION` | Verbindungswelle X typisch 38,2–78,6 % | A. J. Frost & R. R. Prechter — Kap. 1, Combinations | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+| `Y_PROPORTION` | Y ≈ W (0,618–1,618) | A. J. Frost & R. R. Prechter — Kap. 4, Ratio Analysis | A | GUIDELINE | patterns.js · `*Guidelines()` (band/near, 0–1) | EV2-Q1 (Matrix-Konsistenz) | erhöht/senkt nur die Richtlinienpassung (Rang, Count Quality); nie Gültigkeit |
+
+## Count-Quality-Bestandteile und weitere Audit-Dimensionen
+
+| ID | Beschreibung | Quelle — Fundstelle | Qualität | Klasse | Umsetzung | Test | Einfluss auf Count Quality |
+|---|---|---|---|---|---|---|---|
+| `guidelines` | Richtlinienpassung (Mittel der Richtlinien oben) | A. J. Frost & R. R. Prechter — Kap. 2 und 4 | A | GUIDELINE | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-R4, EV2-R6, EV2-Q1, EV2-Q2, EV2-Q3 | Gewicht 0,25: Hauptinhalt der Lehrbuch-Plausibilität |
+| `subdivision` | Unterteilung 5-3 auf dem nächstfeineren Grad | A. J. Frost & R. R. Prechter — Kap. 1, Essential Design / Degree | A | DEFINITION | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-E1, EV2-Q3 | Gewicht 0,15: Definition, aber nur so gut wie die Auflösung der feineren Skala (oft „nicht aufgelöst“ = 0,5) · Messung über VU-Pivotskalen. |
+| `higherDegree` | Verschachtelung: passt in die enthaltende Welle des höheren Grades | A. J. Frost & R. R. Prechter — Kap. 1, Degree | A | DEFINITION | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-C1, EV2-Q2 | Gewicht 0,20: Grad-Konsistenz ist für Praktiker zentral · Formalisierung `nestedFit` ist VU-Umsetzung. |
+| `proportion` | Zeitproportion benachbarter Wellen | A. J. Frost & R. R. Prechter — Kap. 2, „Right Look“/Proportion | A | GUIDELINE | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-Q1 (Matrix-Konsistenz) | Gewicht 0,15 · Formalisierung (Dauer-Verhältnis 0,382–2,618) ist VU-Festlegung. |
+| `personality` | Wellencharakter: Welle 5 mit nachlassendem Momentum | A. J. Frost & R. R. Prechter — Kap. 2, Wave Personality | A | GUIDELINE | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-Q1 (Matrix-Konsistenz) | Gewicht 0,10: qualitative Literatur, schwache Formalisierung (RSI-Divergenz) |
+| `clarity` | Eindeutigkeit: Rangabstand zur besten materiell anderen Lesart | Vision Universe — eigene Festlegung bzw. Messung — — | V | VU_HEURISTIC | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-O1 | Gewicht 0,15: Praktiker arbeiten mit Alternativen; eine knapp führende Lesart ist schwächer |
+| `priceSimilarity` | Preisproportion gleicher Grade (benachbarte Wellen nicht kleiner als 1/3) | A. J. Frost & R. R. Prechter — Kap. 2, „Right Look“ | A | GUIDELINE | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-Q1 (Matrix-Konsistenz) | nur Audit (kein Gewicht): nach dem Einfrieren der Count Quality ergänzt · NEoWave (Neely) macht daraus eine Regel; VU nutzt sie nicht als Regel (andere Schule). |
+| `signalToNoise` | Schwünge deutlich größer als die Umkehrschwelle (≥ 1,6) | Vision Universe — eigene Festlegung bzw. Messung — — | V | VU_HEURISTIC | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-Q1 (Matrix-Konsistenz) | Anwendbarkeit; unter 1,6 Enthaltung |
+| `historyCoverage` | Anteil der Kurshistorie, die sich als Elliott-Struktur lesen lässt | Vision Universe — eigene Festlegung bzw. Messung — — | V | VU_HEURISTIC | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-Q1 (Matrix-Konsistenz) | Anwendbarkeit |
+| `stability` | Neuzuordnungen in den letzten 26 Schritten | Vision Universe — eigene Festlegung bzw. Messung — — | V | VU_MEASUREMENT | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-Q1 (Matrix-Konsistenz) | nur Audit/Anzeige (Neuzuordnungs-Risiko) |
+| `latency` | Erkennungsverzug der jüngsten Welle | Vision Universe — eigene Festlegung bzw. Messung — — | V | VU_MEASUREMENT | elliott-v2.js · countQuality/ruleAudit/applicability | EV2-Q1 (Matrix-Konsistenz) | nur Audit/Anzeige |
+
+## Gewichtung der Count Quality (a priori, vor jeder Ergebnisbetrachtung festgelegt)
+
+Count Quality = gewichtetes Mittel der verfügbaren Bestandteile: Richtlinien 0,25 · höherer Grad 0,20 · Unterteilung 0,15 · Zeitproportion 0,15 · Eindeutigkeit 0,15 · Wellencharakter 0,10. Stufen: hoch ≥ 0,70, mittel ≥ 0,55, sonst niedrig. **Ungültig**, sobald eine Regel oder Definition verletzt ist (kein Score).
+Begründung: Richtlinien bündeln den Hauptinhalt der Lehrbuch-Plausibilität; Grad-Konsistenz ist für Praktiker zentral; Unterteilung ist Definition, aber durch die Auflösung der feineren Pivotskala oft nicht entscheidbar (0,5); Wellencharakter ist in der Literatur qualitativ und nur grob formalisierbar (RSI-Divergenz) → geringstes Gewicht.
+Ob eine höhere Count Quality mit besseren späteren Ergebnissen einhergeht, ist eine **empirische** Frage — beantwortet in ELLIOTT_VALIDATION_REPORT (Qualitäts-Kalibrierung), nicht durch die Definition.

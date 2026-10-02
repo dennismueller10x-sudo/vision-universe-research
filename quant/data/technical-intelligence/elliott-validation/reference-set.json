@@ -1,0 +1,457 @@
+{
+ "schemaVersion": "vu-elliott-reference-1.0.0",
+ "generatedAt": "2026-10-02T19:34:15.528Z",
+ "engine": "elliott-2.2.0",
+ "note": "Lehrbuchstrukturen synthetisch rekonstruiert (generische Proportionen); keine Abbildungen kopiert.",
+ "summary": {
+  "none": {
+   "n": 15,
+   "primary": 8,
+   "alternative": 1,
+   "missed": 6
+  },
+  "low": {
+   "n": 15,
+   "primary": 8,
+   "alternative": 1,
+   "missed": 6
+  }
+ },
+ "rows": [
+  {
+   "id": "R01",
+   "gen": "IMPULSE",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Grundmuster (Essential Design)",
+   "structure": "5-3-5-3-5 Impuls, W2 ≈ 61,8 %, W3 ≈ 1,618 × W1, W4 ≈ 38,2 %, W5 ≈ W1",
+   "expected": "Impuls, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 9/10"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 9/10"
+    }
+   ]
+  },
+  {
+   "id": "R02",
+   "gen": "IMPULSE_EXT1",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Extension (in Welle 1)",
+   "structure": "Welle 1 verlängert",
+   "expected": "Impuls, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Zigzag, abgeschlossen",
+     "scale": "scale-3",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "LOW",
+     "countQuality": "MODERATE",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-3 „Zigzag, abgeschlossen“ und enthält sich (Anwendbarkeit niedrig)"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 5/10"
+    }
+   ]
+  },
+  {
+   "id": "R03",
+   "gen": "IMPULSE_EXT3",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Extension (in Welle 3)",
+   "structure": "Welle 3 ≈ 2,618 × W1",
+   "expected": "Impuls, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 9/10"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 8/10"
+    }
+   ]
+  },
+  {
+   "id": "R04",
+   "gen": "IMPULSE_EXT5",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Extension (in Welle 5)",
+   "structure": "Welle 5 ≈ 2 × W1",
+   "expected": "Impuls, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "LOW",
+     "countQuality": "MODERATE",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 5/10"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "MODERATE",
+     "countQuality": "MODERATE",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 6/10"
+    }
+   ]
+  },
+  {
+   "id": "R05",
+   "gen": "IMPULSE_TRUNCATED",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Truncation",
+   "structure": "Welle 5 endet unter dem Ende von Welle 3",
+   "expected": "Impuls (trunkiert), abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Zigzag, aktuell Welle C",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "MODERATE",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Zigzag, aktuell Welle C“"
+    },
+    {
+     "noise": "low",
+     "engine": "Zigzag, aktuell Welle C",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "MODERATE",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Zigzag, aktuell Welle C“"
+    }
+   ]
+  },
+  {
+   "id": "R06",
+   "gen": "LEADING_DIAGONAL",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Diagonal Triangles (Leading)",
+   "structure": "5-3-5-3-5 Keil, W4 überlappt W1",
+   "expected": "Leading oder Ending Diagonal, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Leading Diagonal, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 3/3"
+    },
+    {
+     "noise": "low",
+     "engine": "Leading Diagonal, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "MODERATE",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 2/3"
+    }
+   ]
+  },
+  {
+   "id": "R07",
+   "gen": "ENDING_DIAGONAL",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Diagonal Triangles (Ending)",
+   "structure": "3-3-3-3-3 Keil, W4 überlappt W1",
+   "expected": "Ending oder Leading Diagonal, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Ending Diagonal, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "LOW",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 3/3"
+    },
+    {
+     "noise": "low",
+     "engine": "Ending Diagonal, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "LOW",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 5/5 harte Regeln, Richtlinien 3/3"
+    }
+   ]
+  },
+  {
+   "id": "R08",
+   "gen": "ZIGZAG",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Zigzags",
+   "structure": "5-3-5, B ≈ 50 %, C ≈ A",
+   "expected": "Zigzag, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Zigzag, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 2/2 harte Regeln, Richtlinien 3/3"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, aktuell Welle 4",
+     "scale": "scale-3",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "HIGH",
+     "countQuality": "MODERATE",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-3 „Impuls, aktuell Welle 4“"
+    }
+   ]
+  },
+  {
+   "id": "R09",
+   "gen": "DOUBLE_ZIGZAG",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Double Zigzags",
+   "structure": "Zigzag – X – Zigzag, zweiter schreitet voran",
+   "expected": "Doppel-Zigzag (oder W-X-Y), abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "ALTERNATIVE",
+     "rank": 2,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "als Alternative 2 erkannt; Hauptzählung „Impuls, abgeschlossen“ hat höheren Rang (Richtlinien 0.591 vs. 0.928, höherer Grad 0.686 vs. 0.399, Skala scale-3)"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-3",
+     "match": "ALTERNATIVE",
+     "rank": 2,
+     "applicability": "HIGH",
+     "countQuality": "MODERATE",
+     "reason": "als Alternative 2 erkannt; Hauptzählung „Impuls, abgeschlossen“ hat höheren Rang (Richtlinien 0.661 vs. 0.924, höherer Grad 0.688 vs. 0.399, Skala scale-3)"
+    }
+   ]
+  },
+  {
+   "id": "R10",
+   "gen": "FLAT_REGULAR",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Flats (regular)",
+   "structure": "3-3-5, B ≈ 95 %, C ≈ A",
+   "expected": "Flat, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Impuls, abgeschlossen“"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Impuls, abgeschlossen“"
+    }
+   ]
+  },
+  {
+   "id": "R11",
+   "gen": "FLAT_EXPANDED",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Flats (expanded)",
+   "structure": "B ≈ 120 % von A, C ≈ 1,618 × A",
+   "expected": "Flat (expandiert), abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "HIGH",
+     "countQuality": "MODERATE",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Impuls, abgeschlossen“"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Impuls, abgeschlossen“"
+    }
+   ]
+  },
+  {
+   "id": "R12",
+   "gen": "FLAT_RUNNING",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Flats (running)",
+   "structure": "B jenseits A-Ursprung, C endet vor A-Ende",
+   "expected": "Flat (running), abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Impuls, abgeschlossen“"
+    },
+    {
+     "noise": "low",
+     "engine": "Impuls, abgeschlossen",
+     "scale": "scale-2",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-2 „Impuls, abgeschlossen“"
+    }
+   ]
+  },
+  {
+   "id": "R13",
+   "gen": "TRIANGLE",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Triangles (contracting)",
+   "structure": "3-3-3-3-3, jede Welle ≈ 0,8 × Vorwelle",
+   "expected": "Dreieck (kontrahierend), abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Dreieck, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 2/2 harte Regeln, Richtlinien 1/1"
+    },
+    {
+     "noise": "low",
+     "engine": "Dreieck, abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 2/2 harte Regeln, Richtlinien 1/1"
+    }
+   ]
+  },
+  {
+   "id": "R14",
+   "gen": "TRIANGLE_EXPANDING",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Triangles (expanding)",
+   "structure": "3-3-3-3-3, jede Welle ≈ 1,25 × Vorwelle",
+   "expected": "Dreieck (expandierend), abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Flat, aktuell Welle C",
+     "scale": "scale-3",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "MODERATE",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-3 „Flat, aktuell Welle C“"
+    },
+    {
+     "noise": "low",
+     "engine": "Flat, aktuell Welle C",
+     "scale": "scale-3",
+     "match": "NEIN",
+     "rank": -1,
+     "applicability": "MODERATE",
+     "countQuality": "HIGH",
+     "reason": "nicht unter Haupt- und Alternativzählungen; Engine zählt auf scale-3 „Flat, aktuell Welle C“"
+    }
+   ]
+  },
+  {
+   "id": "R15",
+   "gen": "DOUBLE_THREE",
+   "source": "Frost & Prechter, Elliott Wave Principle, Kap. 1 — Combinations (Double Three)",
+   "structure": "3-3-3: Korrektur – X – Korrektur",
+   "expected": "W-X-Y, abgeschlossen",
+   "results": [
+    {
+     "noise": "none",
+     "engine": "Doppelte Korrektur (W-X-Y), abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 1/1 harte Regeln, Richtlinien 2/2"
+    },
+    {
+     "noise": "low",
+     "engine": "Doppelte Korrektur (W-X-Y), abgeschlossen",
+     "scale": "scale-3",
+     "match": "JA",
+     "rank": 0,
+     "applicability": "HIGH",
+     "countQuality": "HIGH",
+     "reason": "Hauptzählung stimmt; Regel-Audit 1/1 harte Regeln, Richtlinien 2/2"
+    }
+   ]
+  }
+ ]
+}

@@ -125,9 +125,9 @@
     add("VOLATILITY", E.volatility.evidence, true);
     var ep = E.elliott;
     if (ep && ep.primary) {
-      var ed = Sc.votes({ elliott: ep, patterns: {} }).ELLIOTT;
-      items.push({ family: "ELLIOTT", status: dir === 0 ? "NEUTRAL" : ed && ed.d * dir > 0.1 ? "SUPPORTS" : ed && ed.d * dir < -0.1 ? "CONTRADICTS" : "NEUTRAL",
-                   statement: ep.primary.patternName + ", aktuell Welle " + ep.primary.currentWave.label + (ep.clarityLevel === "LOW" ? " (mehrdeutig)" : "") });
+      /* Elliott = Kontext (vorab registrierte Entscheidung): beschreibt die Struktur, stimmt nicht ueber die Richtung ab. */
+      items.push({ family: "ELLIOTT", status: "NEUTRAL", context: true,
+                   statement: ep.applicability && ep.applicability.abstain ? "Wellenstruktur unklar – keine verlässliche Zählung" : ep.primary.patternName + ", aktuell Welle " + ep.primary.currentWave.label + " (Strukturbeschreibung, kein Prognosebeitrag)" });
     } else items.push({ family: "ELLIOTT", status: "UNAVAILABLE", statement: "Keine regelkonforme Wellenzählung" });
     return items;
   }

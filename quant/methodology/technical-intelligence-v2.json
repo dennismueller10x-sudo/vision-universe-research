@@ -6,7 +6,11 @@
   "frozenAtCommit": "ce9be420a",
   "purpose": "Alle Parameter der TI-Schicht (quant/engines/technical/ti/*, elliott/elliott-v2.js). Zahlen sind Designparameter oder aus Literatur-Evidenzgraden abgeleitet; keine wurde auf dem TEST-Zeitraum optimiert. Keine Zahl ist eine Wahrscheinlichkeit.",
   "protocol": {
-    "splits": { "train": "< 2013-01-01", "validation": "2013-01-01 .. 2018-12-31", "test": ">= 2019-01-01" },
+    "splits": {
+      "train": "< 2013-01-01",
+      "validation": "2013-01-01 .. 2018-12-31",
+      "test": ">= 2019-01-01"
+    },
     "rule": "Methodik-Iterationen ausschliesslich mit --dev (TEST wird vor jeder Kennzahl verworfen). Nach dem Einfrieren genau EIN Lauf mit TEST. Aenderungen nach dem TEST-Lauf erfordern eine neue methodologyVersion und einen neuen, spaeteren Test-Zeitraum.",
     "devChangesLogged": [
       "Volatilitaets-Perzentil: Skala 0-100 → 0-1 (Bug, alle Bars waren EXTREME)",
@@ -26,40 +30,138 @@
         "Datenlage (Volumen/Schlusskurs-only) je Stand-Bar aus den letzten 252 Bars statt aus der Gesamtserie (Look-ahead)",
         "Szenario-ID ohne Zeitstempel (Alerts konnten nie demselben Szenario zugeordnet werden); Tail-Zone muss jenseits der Invalidation liegen"
       ]
+    },
+    "elliottDecision": {
+      "date": "2026-10-02",
+      "rule": "docs/technical-intelligence/PREREGISTRATION.md §4 (vorab festgelegt)",
+      "result": "Bestaetigungsstichprobe: H1–H5 und H7 nicht bestaetigt, H5 in Gegenrichtung signifikant, H6 bestaetigt (Einstieg in der laufenden Gegenbewegung schlaegt Einstieg nach Engine-Bestaetigung).",
+      "decision": "Elliott = KEEP – CONTEXT ONLY: Struktursprache und Szenario-Rahmen, Richtungsgewicht in der Konfluenz 0 (vorher 0,08). Fibonacci bleibt Konfluenz-Beschreibung.",
+      "report": "docs/technical-intelligence/ELLIOTT_VALIDATION_REPORT.md"
     }
   },
   "familyWeights": {
-    "values": { "TREND": 0.30, "MOMENTUM": 0.20, "STRUCTURE": 0.15, "HIGHER_TIMEFRAME": 0.15, "VOLUME": 0.10, "PATTERN": 0.08, "ELLIOTT": 0.08, "WYCKOFF": 0 },
+    "values": {
+      "TREND": 0.3,
+      "MOMENTUM": 0.2,
+      "STRUCTURE": 0.15,
+      "HIGHER_TIMEFRAME": 0.15,
+      "VOLUME": 0.1,
+      "PATTERN": 0.08,
+      "ELLIOTT": 0,
+      "WYCKOFF": 0
+    },
     "basis": "Evidenzgrad-Prior: A (Trend/Momentum) hoch, B (Struktur/Volumen) mittel, C (Formationen) niedrig, D (Elliott) niedrig, Wyckoff 0 (Grad D und negative Richtungstrefferquote). Empirisch ersetzt nur, wenn eine Ablation auf TRAIN gelernte Gewichte auf VALIDATION und TEST bestaetigt.",
-    "thresholds": { "bias": 0.15, "mixedConflictShare": 0.35, "agreementHigh": 0.5, "agreementModerate": 0.25 }
+    "thresholds": {
+      "bias": 0.15,
+      "mixedConflictShare": 0.35,
+      "agreementHigh": 0.5,
+      "agreementModerate": 0.25
+    }
   },
   "scenario": {
-    "zone": { "minWidthAtr": 0.6, "maxWidthAtr": 2.0, "clusterTolAtr": 0.75 },
-    "entry": { "maxDistanceAtr": 4.0, "retracementBand": [0.382, 0.618] },
-    "invalidation": { "minGapAtr": 0.3, "maxRiskAtr": 4.5, "bufferAtr": 0.25, "basis": "Schlusskurs" },
-    "targets": { "minDistanceAtr": 1.5, "separationAtr": 1.5, "max": 3 },
+    "zone": {
+      "minWidthAtr": 0.6,
+      "maxWidthAtr": 2.0,
+      "clusterTolAtr": 0.75
+    },
+    "entry": {
+      "maxDistanceAtr": 4.0,
+      "retracementBand": [
+        0.382,
+        0.618
+      ]
+    },
+    "invalidation": {
+      "minGapAtr": 0.3,
+      "maxRiskAtr": 4.5,
+      "bufferAtr": 0.25,
+      "basis": "Schlusskurs"
+    },
+    "targets": {
+      "minDistanceAtr": 1.5,
+      "separationAtr": 1.5,
+      "max": 3
+    },
     "empiricalMinSample": 30,
     "overallConfidenceRule": "HIGH: Agreement HIGH und Struktur nicht LOW und (keine Empirie oder unterer KI-Rand des Uplifts > 0). LOW: Agreement LOW oder MIXED oder Empirie ohne Vorteil (Uplift <= 2 pp und unterer KI-Rand <= 0). Sonst MODERATE."
   },
   "elliottV2": {
     "engine": {
-      "rankWeights": { "guidelines": 0.22, "subdivision": 0.22, "coverage": 0.14, "higherDegree": 0.16, "trendContext": 0.12, "grammar": 0.09, "prior": 0.05 },
-      "typePrior": { "IMPULSE": 1, "ZIGZAG": 1, "FLAT": 0.8, "TRIANGLE": 0.6, "LEADING_DIAGONAL": 0.5, "ENDING_DIAGONAL": 0.55, "WXY": 0.6, "DOUBLE_ZIGZAG": 0.6 },
-      "clarity": { "high": 0.12, "moderate": 0.05 },
-      "structural": { "high": 0.68, "moderate": 0.55 }
+      "rankWeights": {
+        "guidelines": 0.22,
+        "subdivision": 0.22,
+        "coverage": 0.14,
+        "higherDegree": 0.16,
+        "trendContext": 0.12,
+        "grammar": 0.09,
+        "prior": 0.05
+      },
+      "typePrior": {
+        "IMPULSE": 1,
+        "ZIGZAG": 1,
+        "FLAT": 0.8,
+        "TRIANGLE": 0.6,
+        "LEADING_DIAGONAL": 0.5,
+        "ENDING_DIAGONAL": 0.55,
+        "WXY": 0.6,
+        "DOUBLE_ZIGZAG": 0.6
+      },
+      "clarity": {
+        "high": 0.12,
+        "moderate": 0.05
+      },
+      "structural": {
+        "high": 0.68,
+        "moderate": 0.55
+      }
     },
     "ruleSet": "elliott-rules-2.0.1 (quant/engines/technical/elliott/patterns.js)",
     "confidenceType": "structural_fit — Rangwert, keine Wahrscheinlichkeit"
   },
   "outcomes": {
-    "weekly": { "entryWindowBars": 8, "horizonBars": 26, "forwardBars": 13 },
-    "daily": { "entryWindowBars": 20, "horizonBars": 126, "forwardBars": 63 },
+    "weekly": {
+      "entryWindowBars": 8,
+      "horizonBars": 26,
+      "forwardBars": 13
+    },
+    "daily": {
+      "entryWindowBars": 20,
+      "horizonBars": 126,
+      "forwardBars": 63
+    },
     "costBpsPerSide": 10,
     "rules": "Limit an der nahen Zonenkante; Ziel 1 = Zonenkante; Invalidation per Schluss; gleiche Bar → Invalidation; nicht ueberlappende Signale je Titel; Baseline = gleiche Geometrie an 3 Zufallsbars."
   },
   "timeframes": {
-    "1D": { "fastMa": "sma50", "slowMa": "sma200", "stageMa": "sma150", "pivotScales": "pivot-engine.js DEFAULT_SCALES" },
-    "1W": { "fastMa": "sma10", "slowMa": "sma40", "stageMa": "sma30", "pivotScales": [[1.0, 0.04], [2.0, 0.08], [3.5, 0.15], [6.0, 0.28]] },
+    "1D": {
+      "fastMa": "sma50",
+      "slowMa": "sma200",
+      "stageMa": "sma150",
+      "pivotScales": "pivot-engine.js DEFAULT_SCALES"
+    },
+    "1W": {
+      "fastMa": "sma10",
+      "slowMa": "sma40",
+      "stageMa": "sma30",
+      "pivotScales": [
+        [
+          1.0,
+          0.04
+        ],
+        [
+          2.0,
+          0.08
+        ],
+        [
+          3.5,
+          0.15
+        ],
+        [
+          6.0,
+          0.28
+        ]
+      ]
+    },
     "intraday": "nicht verfuegbar (keine Intraday-Historie im Bestand)"
   },
   "sources": "docs/technical-intelligence/METHOD_RESEARCH.md"

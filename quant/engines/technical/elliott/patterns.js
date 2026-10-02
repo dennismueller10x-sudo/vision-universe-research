@@ -95,15 +95,15 @@
   function impulseRules(legs) {
     var c = Ctx(legs), out = [];
     alternation(c, out);
-    notBeyondAgainst(c, out, "W2_NOT_BEYOND_W1_ORIGIN", 2, 0, "HARD", "Welle 2 retraced nie mehr als 100 % von Welle 1", EWP + "S. 31, Regel 1");
-    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 läuft über das Ende von Welle 1 hinaus", EWP + "S. 31");
-    notBeyondAgainst(c, out, "W4_NO_OVERLAP_W1", 4, 1, "HARD", "Welle 4 betritt nie das Preisgebiet von Welle 1", EWP + "S. 31, Regel 3");
+    notBeyondAgainst(c, out, "W2_NOT_BEYOND_W1_ORIGIN", 2, 0, "HARD", "Welle 2 retraced nie mehr als 100 % von Welle 1", EWP + "Kap. 1, Impulse — Regel 1");
+    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 läuft über das Ende von Welle 1 hinaus", EWP + "Kap. 1, Impulse");
+    notBeyondAgainst(c, out, "W4_NO_OVERLAP_W1", 4, 1, "HARD", "Welle 4 betritt nie das Preisgebiet von Welle 1", EWP + "Kap. 1, Impulse — Regel 3");
     if (c.n >= 5) {
       var l1 = c.L(1), l3 = c.L(3), l5 = c.L(5);
-      if (!dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", l3 >= Math.min(l1, l5), "Welle 3 ist nie die kürzeste der Wellen 1, 3, 5", EWP + "S. 31, Regel 2");
-      else if (l3 < l1 && l5 > l3) R(out, "W3_NOT_SHORTEST", "HARD", false, "Welle 5 ist bereits länger als die kürzere Welle 3 (W3 < W1)", EWP + "S. 31, Regel 2");
-      else R(out, "W3_NOT_SHORTEST", "HARD", null, "offen, solange Welle 5 läuft", EWP + "S. 31, Regel 2");
-    } else if (c.n >= 3) R(out, "W3_NOT_SHORTEST", "HARD", null, "erst mit Welle 5 prüfbar", EWP + "S. 31, Regel 2");
+      if (!dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", l3 >= Math.min(l1, l5), "Welle 3 ist nie die kürzeste der Wellen 1, 3, 5", EWP + "Kap. 1, Impulse — Regel 2");
+      else if (l3 < l1 && l5 > l3) R(out, "W3_NOT_SHORTEST", "HARD", false, "Welle 5 ist bereits länger als die kürzere Welle 3 (W3 < W1)", EWP + "Kap. 1, Impulse — Regel 2");
+      else R(out, "W3_NOT_SHORTEST", "HARD", null, "offen, solange Welle 5 läuft", EWP + "Kap. 1, Impulse — Regel 2");
+    } else if (c.n >= 3) R(out, "W3_NOT_SHORTEST", "HARD", null, "erst mit Welle 5 prüfbar", EWP + "Kap. 1, Impulse — Regel 2");
     return out;
   }
   function impulseGuidelines(legs) {
@@ -142,12 +142,12 @@
   function diagonalRules(legs, kind) {
     var c = Ctx(legs), out = [];
     alternation(c, out);
-    notBeyondAgainst(c, out, "W2_NOT_BEYOND_W1_ORIGIN", 2, 0, "HARD", "Welle 2 retraced nie mehr als 100 % von Welle 1", EWP + "S. 36–40");
-    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 läuft über das Ende von Welle 1 hinaus", EWP + "S. 36–40");
-    notBeyondAgainst(c, out, "W4_NOT_BEYOND_W3_ORIGIN", 4, 2, "HARD", "Welle 4 retraced Welle 3 nicht vollständig", EWP + "S. 36–40");
+    notBeyondAgainst(c, out, "W2_NOT_BEYOND_W1_ORIGIN", 2, 0, "HARD", "Welle 2 retraced nie mehr als 100 % von Welle 1", EWP + "Kap. 1, Diagonal Triangles");
+    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 läuft über das Ende von Welle 1 hinaus", EWP + "Kap. 1, Diagonal Triangles");
+    notBeyondAgainst(c, out, "W4_NOT_BEYOND_W3_ORIGIN", 4, 2, "HARD", "Welle 4 retraced Welle 3 nicht vollständig", EWP + "Kap. 1, Diagonal Triangles");
     if (c.n >= 4) {
       /* Klassengrenze Impuls/Diagonale: W4 betritt das Gebiet von W1. */
-      R(out, "DIAGONAL_W4_OVERLAPS_W1", "DEFINITION", c.o(4) <= c.o(1), "In einer Diagonale überlappt Welle 4 das Gebiet von Welle 1", EWP + "S. 37 (\"almost always\"); als Klassengrenze zum Impuls verwendet");
+      R(out, "DIAGONAL_W4_OVERLAPS_W1", "DEFINITION", c.o(4) <= c.o(1), "In einer Diagonale überlappt Welle 4 das Gebiet von Welle 1", EWP + "Kap. 1, Diagonal Triangles (\"almost always\"); als Klassengrenze zum Impuls verwendet");
     }
     /* Form: kontrahierend (1>3>5, 2>4) oder expandierend (1<3<5, 2<4). */
     if (c.n >= 3 && !dev(legs[2])) {
@@ -156,20 +156,20 @@
         /* Eine laufende W4 kann nur laenger werden: "kuerzer als W2" ist sofort entscheidbar, sobald verletzt;
            "laenger als W2" bleibt offen, bis erfuellt (Review-Befund 6). */
         var ok4 = contracting ? c.L(4) < c.L(2) : c.L(4) > c.L(2);
-        R(out, "DIAGONAL_W4_VS_W2", "DEFINITION", ok4 ? (dev(legs[3]) && contracting ? null : true) : (dev(legs[3]) && !contracting ? null : false), (contracting ? "kontrahierend: W4 kürzer als W2" : "expandierend: W4 länger als W2"), EWP + "S. 36–40 (Keilform)");
+        R(out, "DIAGONAL_W4_VS_W2", "DEFINITION", ok4 ? (dev(legs[3]) && contracting ? null : true) : (dev(legs[3]) && !contracting ? null : false), (contracting ? "kontrahierend: W4 kürzer als W2" : "expandierend: W4 länger als W2"), EWP + "Kap. 1, Diagonal Triangles (Keilform)");
       }
       if (c.n >= 5) {
         var l5 = c.L(5);
         if (contracting) {
-          if (l5 >= c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", false, "kontrahierend: W5 muss kürzer als W3 sein", EWP + "S. 36–40");
-          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : true, "kontrahierend: W5 kürzer als W3", EWP + "S. 36–40");
+          if (l5 >= c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", false, "kontrahierend: W5 muss kürzer als W3 sein", EWP + "Kap. 1, Diagonal Triangles");
+          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : true, "kontrahierend: W5 kürzer als W3", EWP + "Kap. 1, Diagonal Triangles");
         } else {
-          if (l5 > c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", true, "expandierend: W5 länger als W3", EWP + "S. 36–40");
-          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : false, "expandierend: W5 muss länger als W3 sein", EWP + "S. 36–40");
+          if (l5 > c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", true, "expandierend: W5 länger als W3", EWP + "Kap. 1, Diagonal Triangles");
+          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : false, "expandierend: W5 muss länger als W3 sein", EWP + "Kap. 1, Diagonal Triangles");
         }
       }
     }
-    if (c.n >= 5 && !dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", c.L(3) >= Math.min(c.L(1), c.L(5)), "Welle 3 ist nie die kürzeste", EWP + "S. 36–40");
+    if (c.n >= 5 && !dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", c.L(3) >= Math.min(c.L(1), c.L(5)), "Welle 3 ist nie die kürzeste", EWP + "Kap. 1, Diagonal Triangles");
     void kind;
     return out;
   }
@@ -185,7 +185,7 @@
   function zigzagRules(legs) {
     var c = Ctx(legs), out = [];
     alternation(c, out);
-    notBeyondAgainst(c, out, "B_NOT_BEYOND_A_ORIGIN", 2, 0, "HARD", "Welle B retraced nie mehr als 100 % von Welle A", EWP + "S. 41");
+    notBeyondAgainst(c, out, "B_NOT_BEYOND_A_ORIGIN", 2, 0, "HARD", "Welle B retraced nie mehr als 100 % von Welle A", EWP + "Kap. 1, Zigzags");
     if (c.n >= 2 && !dev(legs[1])) R(out, "ZIGZAG_B_BELOW_90PCT", "DEFINITION", c.L(2) / c.L(1) < 0.9, "Zigzag: B retraced weniger als 90 % von A (sonst Flat)", EWI + "Flat-Definition B >= 90 %");
     else if (c.n >= 2 && c.L(2) / c.L(1) >= 0.9) R(out, "ZIGZAG_B_BELOW_90PCT", "DEFINITION", false, "B hat bereits 90 % von A retraced", EWI + "Flat-Definition B >= 90 %");
     return out;
@@ -194,7 +194,7 @@
     var c = Ctx(legs), g = {};
     if (c.n >= 2 && !dev(legs[1])) g.B_RETRACEMENT = band(c.L(2) / c.L(1), [0.382, 0.786], [0.236, 0.9]);
     if (c.n >= 3 && !dev(legs[2])) {
-      g.C_BEYOND_A_END = c.o(3) > c.o(1) ? 1 : 0.15;   // EWP S. 41: "almost always" — Guideline, nicht Regel
+      g.C_BEYOND_A_END = c.o(3) > c.o(1) ? 1 : 0.15;   // EWP Kap. 1, Zigzags: "almost always" — Guideline, nicht Regel
       g.C_PROPORTION = Math.max(near(c.L(3) / c.L(1), 1.0, 0.25) || 0, 0.8 * (near(c.L(3) / c.L(1), 1.618, 0.2) || 0), 0.7 * (near(c.L(3) / c.L(1), 0.618, 0.2) || 0));
     }
     return g;
@@ -208,7 +208,7 @@
       var b = c.L(2) / c.L(1);
       if (dev(legs[1]) && b < 0.9) R(out, "FLAT_B_AT_LEAST_90PCT", "DEFINITION", null, "B läuft noch (" + Math.round(b * 100) + " % von A)", EWI + "Flat: B >= 90 % von A");
       else R(out, "FLAT_B_AT_LEAST_90PCT", "DEFINITION", b >= 0.9, "Flat: B retraced mindestens 90 % von A", EWI + "Flat: B >= 90 % von A");
-      R(out, "FLAT_B_NOT_EXCESSIVE", "DEFINITION", b <= 2.0, "B überschreitet A hoechstens um 100 % (sonst neuer Trend, keine Korrektur)", "VU-Klassengrenze (EWP S. 44–47: expandierte B typ. 123,6–138,2 %)");
+      R(out, "FLAT_B_NOT_EXCESSIVE", "VU_OPERATIONAL", b <= 2.0, "B überschreitet A hoechstens um 100 % (sonst neuer Trend, keine Korrektur)", "VU-Klassengrenze (EWP Kap. 1, Flats: expandierte B typ. 123,6–138,2 %)");
     }
     return out;
   }
@@ -224,7 +224,7 @@
     if (c.n >= 2 && !dev(legs[1])) g.B_PROPORTION = band(c.L(2) / c.L(1), [0.9, 1.382], [0.9, 1.618]);
     if (c.n >= 3 && !dev(legs[2])) {
       var v = flatVariant(legs), r = c.L(3) / c.L(1);
-      g.C_PROPORTION = v === "REGULAR" ? band(r, [1.0, 1.236], [0.8, 1.618]) : v === "EXPANDED" ? band(r, [1.382, 1.618], [1.0, 2.618]) : 0.35;   // Running Flats sind selten (EWP S. 47)
+      g.C_PROPORTION = v === "REGULAR" ? band(r, [1.0, 1.236], [0.8, 1.618]) : v === "EXPANDED" ? band(r, [1.382, 1.618], [1.0, 2.618]) : 0.35;   // Running Flats sind selten (EWP Kap. 1, Flats)
       g.C_BEYOND_A_END = c.o(3) > c.o(1) ? 1 : 0.4;
     }
     return g;
@@ -242,8 +242,8 @@
     if (c.n >= 3) { contracting = contracting && c.o(3) < c.o(1); expanding = expanding && (c.o(3) > c.o(1) || dev(legs[2])); }
     if (c.n >= 4) { contracting = contracting && c.o(4) > c.o(2) - tol; expanding = expanding && (c.o(4) < c.o(2) || dev(legs[3])); }
     if (c.n >= 5) { contracting = contracting && c.o(5) < c.o(3); expanding = expanding && (c.o(5) > c.o(3) || dev(legs[4])); }
-    if (c.n >= 3) R(out, "TRIANGLE_BOUNDARIES", "DEFINITION", contracting || expanding, contracting ? "kontrahierend: Extreme laufen zusammen" : expanding ? "expandierend: Extreme laufen auseinander" : "weder kontrahierend noch expandierend", EWP + "S. 50–55");
-    if (c.n >= 5 && contracting && !dev(legs[4])) R(out, "TRIANGLE_E_INSIDE", "HARD", c.L(5) < c.L(3), "kontrahierend: E kürzer als C", EWP + "S. 50–55");
+    if (c.n >= 3) R(out, "TRIANGLE_BOUNDARIES", "DEFINITION", contracting || expanding, contracting ? "kontrahierend: Extreme laufen zusammen" : expanding ? "expandierend: Extreme laufen auseinander" : "weder kontrahierend noch expandierend", EWP + "Kap. 1, Triangles");
+    if (c.n >= 5 && contracting && !dev(legs[4])) R(out, "TRIANGLE_E_INSIDE", "HARD", c.L(5) < c.L(3), "kontrahierend: E kürzer als C", EWP + "Kap. 1, Triangles");
     return out;
   }
   function triangleShape(legs) {
@@ -267,12 +267,12 @@
   function wxyRules(legs) {
     var c = Ctx(legs), out = [];
     alternation(c, out);
-    notBeyondAgainst(c, out, "X_NOT_BEYOND_W_ORIGIN", 2, 0, "HARD", "X retraced nie mehr als 100 % von W", EWP + "S. 56–58");
+    notBeyondAgainst(c, out, "X_NOT_BEYOND_W_ORIGIN", 2, 0, "DEFINITION", "X retraced nie mehr als 100 % von W", EWP + "Kap. 1, Combinations");
     /* Ohne aufgeloeste Unterteilung ist W-X-Y nicht von Zigzag/Flat zu
        unterscheiden → die Klassengrenze gilt dann als NICHT erfuellt. */
     var subW = legs[0].sub, subY = legs[2] ? legs[2].sub : null;
-    R(out, "WXY_W_IS_THREE", "DEFINITION", !!(subW && subW.cls === "K"), "W unterteilt sich sichtbar in drei Wellen (Korrektur)", EWP + "S. 56 (Combinations)");
-    if (legs[2] && !dev(legs[2])) R(out, "WXY_Y_IS_THREE", "DEFINITION", !!(subY && subY.cls === "K"), "Y unterteilt sich sichtbar in drei Wellen", EWP + "S. 56");
+    R(out, "WXY_W_IS_THREE", "DEFINITION", !!(subW && subW.cls === "K"), "W unterteilt sich sichtbar in drei Wellen (Korrektur)", EWP + "Kap. 1, Combinations");
+    if (legs[2] && !dev(legs[2])) R(out, "WXY_Y_IS_THREE", "DEFINITION", !!(subY && subY.cls === "K"), "Y unterteilt sich sichtbar in drei Wellen", EWP + "Kap. 1, Combinations");
     return out;
   }
   function wxyGuidelines(legs) {
@@ -287,9 +287,9 @@
     alternation(c, out);
     var W = legs.slice(0, 3), Y = legs.slice(4, 7);
     zigzagRules(W).forEach(function (r) { r.ruleId = "W_" + r.ruleId; out.push(r); });
-    if (legs.length >= 4) notBeyondAgainst(c, out, "X_NOT_BEYOND_W_ORIGIN", 4, 0, "HARD", "X retraced nie mehr als 100 % von W", EWP + "S. 56–58");
+    if (legs.length >= 4) notBeyondAgainst(c, out, "X_NOT_BEYOND_W_ORIGIN", 4, 0, "DEFINITION", "X retraced nie mehr als 100 % von W", EWP + "Kap. 1, Combinations");
     if (Y.length) zigzagRules(Y).forEach(function (r) { r.ruleId = "Y_" + r.ruleId; out.push(r); });
-    if (legs.length >= 7) beyond(c, out, "Y_BEYOND_W_END", 7, 3, "DEFINITION", "Double Zigzag: Y läuft über das Ende von W hinaus", EWP + "S. 56 (\"each zigzag makes progress\")");
+    if (legs.length >= 7) beyond(c, out, "Y_BEYOND_W_END", 7, 3, "DEFINITION", "Double Zigzag: Y läuft über das Ende von W hinaus", EWP + "Kap. 1, Double Zigzags (\"each zigzag makes progress\")");
     return out;
   }
   function doubleZigzagGuidelines(legs) {
@@ -428,7 +428,7 @@
     }
     if (type === "TRIANGLE") {
       if (complete) {
-        /* Thrust nach dem Dreieck ≈ breiteste Stelle (Welle A) ab Ende E, gegen die Richtung von E (EWP S. 55). */
+        /* Thrust nach dem Dreieck ≈ breiteste Stelle (Welle A) ab Ende E, gegen die Richtung von E (EWP Kap. 1, Triangles). */
         var thrustDir = -Ctx([legs[4]]).s;
         add("THRUST", "TARGET", p[5] + thrustDir * L1, 1, "Ausbruch nach dem Dreieck ≈ Breite von Welle A", 1);
         add("THRUST", "TARGET", p[5] + thrustDir * L1 * 0.618, 0.618, "0,618 × Breite des Dreiecks", 0.6);
@@ -445,19 +445,19 @@
     IMPULSE:          { type: "IMPULSE", family: "MOTIVE", waves: 5, labels: ["1", "2", "3", "4", "5"], subdivision: ["M", "K", "M", "K", "M"], rules: impulseRules, guidelines: impulseGuidelines,
                         positions: ["1", "3", "5", "A", "C", "ROOT"], source: EWP + "Kap. 1" },
     LEADING_DIAGONAL: { type: "LEADING_DIAGONAL", family: "MOTIVE", waves: 5, labels: ["1", "2", "3", "4", "5"], subdivision: ["MK", "K", "MK", "K", "MK"], rules: function (l) { return diagonalRules(l, "LEADING"); }, guidelines: diagonalGuidelines,
-                        positions: ["1", "A"], source: EWP + "S. 39–40 (Leading Diagonal)" },
+                        positions: ["1", "A"], source: EWP + "Kap. 1, Diagonal Triangles (Leading Diagonal)" },
     ENDING_DIAGONAL:  { type: "ENDING_DIAGONAL", family: "MOTIVE", waves: 5, labels: ["1", "2", "3", "4", "5"], subdivision: ["K", "K", "K", "K", "K"], rules: function (l) { return diagonalRules(l, "ENDING"); }, guidelines: diagonalGuidelines,
-                        positions: ["5", "C"], source: EWP + "S. 36–39 (Ending Diagonal)" },
+                        positions: ["5", "C"], source: EWP + "Kap. 1, Diagonal Triangles (Ending Diagonal)" },
     ZIGZAG:           { type: "ZIGZAG", family: "CORRECTIVE", waves: 3, labels: ["A", "B", "C"], subdivision: ["M", "K", "M"], rules: zigzagRules, guidelines: zigzagGuidelines,
-                        positions: ["2", "4", "B", "W", "Y", "X"], source: EWP + "S. 41–44 (Zigzag)" },
+                        positions: ["2", "4", "B", "W", "Y", "X"], source: EWP + "Kap. 1, Zigzags–44 (Zigzag)" },
     FLAT:             { type: "FLAT", family: "CORRECTIVE", waves: 3, labels: ["A", "B", "C"], subdivision: ["K", "K", "M"], rules: flatRules, guidelines: flatGuidelines,
-                        positions: ["2", "4", "B", "W", "Y", "X"], source: EWP + "S. 44–48 (Flat)" },
+                        positions: ["2", "4", "B", "W", "Y", "X"], source: EWP + "Kap. 1, Flats" },
     TRIANGLE:         { type: "TRIANGLE", family: "CORRECTIVE", waves: 5, labels: ["A", "B", "C", "D", "E"], subdivision: ["K", "K", "K", "K", "K"], rules: triangleRules, guidelines: triangleGuidelines,
-                        positions: ["4", "B", "X", "Y"], source: EWP + "S. 50–55 (Triangle)" },
+                        positions: ["4", "B", "X", "Y"], source: EWP + "Kap. 1, Triangles (Triangle)" },
     WXY:              { type: "WXY", family: "CORRECTIVE", waves: 3, labels: ["W", "X", "Y"], subdivision: ["K", "K", "K"], rules: wxyRules, guidelines: wxyGuidelines,
-                        positions: ["2", "4", "B"], source: EWP + "S. 56–58 (Double Three)" },
+                        positions: ["2", "4", "B"], source: EWP + "Kap. 1, Combinations (Double Three)" },
     DOUBLE_ZIGZAG:    { type: "DOUBLE_ZIGZAG", family: "CORRECTIVE", waves: 7, labels: ["A", "B", "C", "X", "A", "B", "C"], displayLabels: ["W·a", "W·b", "W·c", "X", "Y·a", "Y·b", "Y·c"], subdivision: ["M", "K", "M", "K", "M", "K", "M"], rules: doubleZigzagRules, guidelines: doubleZigzagGuidelines,
-                        positions: ["2", "4", "B"], source: EWP + "S. 56 (Double Zigzag)" }
+                        positions: ["2", "4", "B"], source: EWP + "Kap. 1, Double Zigzags (Double Zigzag)" }
   };
   var TYPES = Object.keys(PATTERNS);
 

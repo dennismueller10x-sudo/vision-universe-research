@@ -21,6 +21,7 @@ export const PATTERNS = {
   IMPULSE:            { family: "MOTIVE", legs: [[0.30, 5], [-0.62, 3], [1.618, 5], [-0.382, 3], [1.0, 5]], rel: true },
   IMPULSE_EXT3:       { family: "MOTIVE", legs: [[0.25, 5], [-0.5, 3], [2.618, 5], [-0.236, 3], [1.0, 5]], rel: true },
   IMPULSE_EXT5:       { family: "MOTIVE", legs: [[0.25, 5], [-0.5, 3], [1.2, 5], [-0.382, 3], [2.0, 5]], rel: true },
+  IMPULSE_EXT1:       { family: "MOTIVE", legs: [[0.45, 5], [-0.4, 3], [0.75, 5], [-0.3, 3], [0.4, 5]], rel: true, expect: ["IMPULSE"] },
   IMPULSE_TRUNCATED:  { family: "MOTIVE", legs: [[0.25, 5], [-0.5, 3], [1.8, 5], [-0.3, 3], [0.4, 5]], rel: true, truncated: true },
   LEADING_DIAGONAL:   { family: "MOTIVE", legs: [[0.30, 5], [-0.6, 3], [0.85, 5], [-0.65, 3], [0.6, 5]], rel: true, expect: ["LEADING_DIAGONAL", "ENDING_DIAGONAL"] },
   ENDING_DIAGONAL:    { family: "MOTIVE", legs: [[0.30, 3], [-0.6, 3], [0.85, 3], [-0.65, 3], [0.6, 3]], rel: true, expect: ["ENDING_DIAGONAL", "LEADING_DIAGONAL"] },
@@ -29,6 +30,8 @@ export const PATTERNS = {
   FLAT_EXPANDED:      { family: "CORRECTIVE", legs: [[-0.25, 3], [-1.2, 3], [1.618, 5]], rel: true, expect: ["FLAT"] },
   FLAT_RUNNING:       { family: "CORRECTIVE", legs: [[-0.25, 3], [-1.15, 3], [0.8, 5]], rel: true, expect: ["FLAT"] },
   TRIANGLE:           { family: "CORRECTIVE", legs: [[-0.25, 3], [-0.8, 3], [0.8, 3], [-0.8, 3], [0.8, 3]], rel: "prev", expect: ["TRIANGLE"] },
+  TRIANGLE_EXPANDING: { family: "CORRECTIVE", legs: [[-0.12, 3], [-1.25, 3], [1.25, 3], [-1.25, 3], [1.25, 3]], rel: "prev", expect: ["TRIANGLE"] },
+  DOUBLE_THREE:       { family: "CORRECTIVE", legs: [[-0.25, 3], [-0.5, 3], [1.0, 3]], rel: true, expect: ["WXY"] },
   DOUBLE_ZIGZAG:      { family: "CORRECTIVE", legs: [[-0.2, 5], [-0.5, 3], [1.0, 5], [-0.4, 3], [1.0, 5], [-0.5, 3], [1.0, 5]], rel: "dz", expect: ["DOUBLE_ZIGZAG", "WXY"] }
 };
 

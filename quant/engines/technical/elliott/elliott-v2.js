@@ -40,6 +40,7 @@
   var isNode = (typeof module !== "undefined" && module.exports);
   var Hash = isNode ? require("../../hash.js") : global.VUHash;
   var P = isNode ? require("./patterns.js") : global.VUTechnical.ElliottPatterns;
+  var S = isNode ? require("./sources.js") : (global.VUTechnical && global.VUTechnical.ElliottSources) || null;
 
   var ENGINE_VERSION = "elliott-2.2.0";
   var REPAINTING_POLICY = "CONFIRMS_WITH_DELAY";
@@ -500,6 +501,8 @@
     return e.sign * (r3 - r5) > 0 ? 1 : 0.4;
   }
   function countQuality(e, count, clarity, features, cfg) {
+    /* Harte Regeln und Definitionen sind nie kompensierbar: jede Verletzung → UNGUELTIG, kein Score. */
+    if ((e.rules || []).some(function (r) { return r.passed === false; })) return { score: null, level: "INVALID", components: {}, note: "Mindestens eine Regel oder Definition ist verletzt — die Zählung ist ungültig." };
     var q = cfg.countQuality, comp = {
       guidelines: isNum(e.guidelineFit) ? e.guidelineFit : null,
       subdivision: isNum(e.subdivisionFit) ? e.subdivisionFit : null,
@@ -551,6 +554,52 @@
     var med = r[Math.floor(r.length / 2)];
     return { ratio: round(med, 3), score: round(Math.max(0, Math.min(1, (med - 1.3) / 1.7)), 3) };
   }
+  /** Preisproportion gleicher Grade: Anteil benachbarter bestaetigter Wellenpaare, deren kleinere >= 1/3 der groesseren ist. */
+  function priceSimilarity(legs) {
+    var ok = 0, n = 0;
+    for (var k = 1; k < legs.length; k++) {
+      if (legs[k].status === "DEVELOPING") continue;
+      var a = Math.abs(legs[k].toPrice - legs[k].fromPrice), b = Math.abs(legs[k - 1].toPrice - legs[k - 1].fromPrice);
+      n++; if (Math.min(a, b) >= Math.max(a, b) / 3) ok++;
+    }
+    return n ? ok / n : null;
+  }
+  var FIB_GUIDES = ["W2_RETRACEMENT", "W3_EXTENSION", "W4_RETRACEMENT", "W5_PROPORTION", "B_RETRACEMENT", "C_PROPORTION", "B_PROPORTION", "LEG_RATIOS", "X_PROPORTION", "Y_PROPORTION", "W2_DEEP", "W4_DEEP"];
+  /**
+   * Regel-Audit einer Zaehlung (Addendum §2/§5): jede Dimension einzeln, mit Klasse und Quelle — kein Black-Box-Score.
+   * Richtlinie "erfuellt" = Wert >= 0,7 (a priori). Zeitreihen-Dimensionen (Stabilitaet, Verzug) ergaenzt die Produktschicht.
+   */
+  function ruleAudit(e, count) {
+    var rules = e.rules || [], g = e.guidelines || {};
+    function meta(id, kind) { var m = S ? (kind === "R" ? S.ruleMeta(id) : S.guidelineMeta(id)) : null; return m ? { statement: m.statement, class: m.class, source: m.source, locator: m.locator } : null; }
+    function tally(filter) { var a = rules.filter(filter); return { satisfied: a.filter(function (r) { return r.passed === true; }).length, violated: a.filter(function (r) { return r.passed === false; }).length, open: a.filter(function (r) { return r.passed === null; }).length, total: a.length }; }
+    var gl = Object.keys(g).filter(function (k) { return isNum(g[k]); }).map(function (k) { return Object.assign({ id: k, value: round(g[k], 3), matched: g[k] >= 0.7 }, meta(k, "G")); });
+    var fib = gl.filter(function (x) { return FIB_GUIDES.indexOf(S ? S.baseId(x.id) : x.id) >= 0 || FIB_GUIDES.indexOf(x.id) >= 0; });
+    var pick = function (id) { var x = gl.filter(function (y) { return y.id === id; })[0]; return x ? x.value : null; };
+    var hd = e.components ? e.components.higherDegree : null;
+    var violated = rules.some(function (r) { return r.passed === false; });
+    return {
+      validity: violated ? "INVALID" : "VALID",
+      hardRules: tally(function (r) { return r.class === "HARD"; }),
+      definitions: tally(function (r) { return r.class === "DEFINITION"; }),
+      vuOperational: tally(function (r) { return r.class === "VU_OPERATIONAL"; }),
+      guidelines: { matched: gl.filter(function (x) { return x.matched; }).length, total: gl.length, items: gl },
+      dimensions: {
+        subdivision: { value: isNum(e.subdivisionFit) ? round(e.subdivisionFit, 3) : null, detail: e.subdivisionDetail || null },
+        degreeConsistency: { value: isNum(hd) ? round(hd, 3) : null, label: !isNum(hd) ? "unbekannt" : hd >= 0.8 ? "passt" : hd >= 0.5 ? "neutral" : "widerspricht" },
+        timeProportion: { value: isNum(proportionScore(e.waves)) ? round(proportionScore(e.waves), 3) : null },
+        priceProportion: { value: isNum(priceSimilarity(e.waves)) ? round(priceSimilarity(e.waves), 3) : null, note: "nur Audit" },
+        fibonacci: { value: fib.length ? round(mean(fib.map(function (x) { return x.value; })), 3) : null, items: fib.map(function (x) { return x.id; }) },
+        alternation: { value: pick("ALTERNATION") }, channel: { value: pick("CHANNEL") }, extension: { value: pick("EXTENSION_IN_ONE") !== null ? pick("EXTENSION_IN_ONE") : pick("W3_EXTENSION") },
+        overlap: { value: rules.filter(function (r) { return /OVERLAP/.test(r.ruleId); }).map(function (r) { return r.ruleId + ":" + (r.passed === true ? "ok" : r.passed === false ? "verletzt" : "offen"); }) },
+        correctiveStructure: { value: e.family === "CORRECTIVE" ? (violated ? 0 : 1) : null },
+        momentum: { value: pick("W3_MOMENTUM") }, volume: { value: pick("W3_VOLUME"), note: pick("W3_VOLUME") === null ? "keine Volumendaten oder nicht anwendbar" : null }
+      },
+      rules: rules.map(function (r) { return Object.assign({ id: r.ruleId, passed: r.passed }, meta(r.ruleId, "R") || { class: r.class, source: null, locator: r.source }); }),
+      verification: S ? S.VERIFICATION : null
+    };
+  }
+
   function applicability(quality, clarity, hmap, cfg, snr) {
     var parts = { countQuality: quality && isNum(quality.score) ? quality.score : null, clarity: isNum(clarity) ? Math.max(0, Math.min(1, clarity / cfg.countQuality.clarityFull)) : null,
                   historyCoverage: hmap && isNum(hmap.coverage) ? hmap.coverage : null, signalToNoise: snr ? snr.score : null };
@@ -675,6 +724,8 @@
     primary.countQuality = countQuality(A.candidates[0], primary, clarity, features, cfg);
     alternatives.forEach(function (a) { var src = A.candidates.filter(function (x) { return buildCountId(x) === a.countId; })[0]; a.countQuality = src ? countQuality(src, a, null, features, cfg) : null; });
     primary.detection = detectionLatency(primary, pivots, series, asOf);
+    primary.ruleAudit = ruleAudit(A.candidates[0], primary);
+    alternatives.forEach(function (a) { var src = A.candidates.filter(function (x) { return buildCountId(x) === a.countId; })[0]; a.ruleAudit = src ? ruleAudit(src, a) : null; });
     var appl = applicability(primary.countQuality, alternatives.length ? clarity : null, hmap, cfg, signalToNoise(series, features, pivots, A.scaleId, asOf));
     var structuralLevel = primary.rank >= cfg.structural.high ? "HIGH" : primary.rank >= cfg.structural.moderate ? "MODERATE" : "LOW";
     var clarityLevel = clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";
@@ -708,7 +759,7 @@
   }
 
   var api = { ENGINE_VERSION: ENGINE_VERSION, DEFAULTS: DEFAULTS, pivotView: pivotView, legsOf: legsOf, subdivide: subdivide, subdivisionFit: subdivisionFit,
-              parseHistory: parseHistory, nestedFit: nestedFit, countQuality: countQuality, applicability: applicability, signalToNoise: signalToNoise, detectionLatency: detectionLatency, trendDirection: trendDirection, chooseScales: chooseScales, analyzeElliottV2: analyzeElliottV2, PATTERN_NAMES_DE: PATTERN_NAMES_DE, notate: notate };
+              parseHistory: parseHistory, nestedFit: nestedFit, ruleAudit: ruleAudit, priceSimilarity: priceSimilarity, countQuality: countQuality, applicability: applicability, signalToNoise: signalToNoise, detectionLatency: detectionLatency, trendDirection: trendDirection, chooseScales: chooseScales, analyzeElliottV2: analyzeElliottV2, PATTERN_NAMES_DE: PATTERN_NAMES_DE, notate: notate };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.ElliottV2 = api; }
 })(typeof window !== "undefined" ? window : globalThis);
