@@ -1,6 +1,6 @@
 {
   "shard": "768",
-  "count": 3,
+  "count": 4,
   "issuers": [
     {
       "cik": "0000823768",
@@ -476,6 +476,165 @@
       },
       "sourceDigest": "2a8dfed91cf954b2ab22436239d86982b2bf118cd8362913aed4d3593a0d0c19",
       "issuerId": "iss_cik_0001802768"
+    },
+    {
+      "cik": "0001998768",
+      "name": "Proficient Auto Logistics, Inc",
+      "sic": "4700",
+      "rawFacts": 1634,
+      "mappedFacts": 462,
+      "unmappedFacts": 1172,
+      "calendarYears": 4,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "PAL"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 3,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2023-09-30",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 2.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "net_income": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 11,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 5,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "total_assets": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 7,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "total_debt": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "HIGH": 75,
+        "MEDIUM": 3
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 78,
+        "resolvedValues": 78
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 1261,
+        "by_severity": {
+          "INFO": 1172,
+          "WARNING": 89
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 35,
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 35,
+          "UNEXPECTED_DURATION": 17,
+          "UNKNOWN_CONCEPT": 1172
+        }
+      },
+      "latestFiling": {
+        "accession": "0001213900-26-090194",
+        "filing_date": "2026-08-14",
+        "form": "10-Q",
+        "periodic_filings": 10,
+        "acceptance_datetime": "2026-08-14T20:37:40.000Z"
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.10.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "fcb11eb2e8bec0477e0099f64ff24bd3d7bab7791f924516a918934859f05059",
+      "issuerId": "iss_cik_0001998768"
     }
   ]
 }

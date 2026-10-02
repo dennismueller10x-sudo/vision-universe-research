@@ -1,6 +1,6 @@
 {
   "shard": "125",
-  "count": 6,
+  "count": 7,
   "issuers": [
     {
       "cik": "0000723125",
@@ -884,6 +884,162 @@
       },
       "sourceDigest": "d4b392acf4ef696733b2605ab18f6e3402bf003707dcf1d6d1914d04d0297b5b",
       "issuerId": "iss_cik_0002081125"
+    },
+    {
+      "cik": "0002083125",
+      "name": "PRESIDIO PRODUCTION Co",
+      "sic": "1311",
+      "rawFacts": 66,
+      "mappedFacts": 4,
+      "unmappedFacts": 57,
+      "calendarYears": 2,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "FTW",
+        "FTW-WT"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 0,
+      "quarterlyPeriods": 2,
+      "firstPeriodEnd": "2025-07-02",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 0.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 1,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "revenue": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_assets": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "HIGH": 2
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 2,
+        "resolvedValues": 2
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 62,
+        "by_severity": {
+          "INFO": 57,
+          "WARNING": 5
+        },
+        "by_code": {
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 57
+        }
+      },
+      "latestFiling": {
+        "accession": "0001213900-26-088500",
+        "filing_date": "2026-08-13",
+        "form": "10-Q",
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-08-13T01:34:55.000Z"
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.10.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "5ee24c83a650f3e625a631bf2d0dd41c7cd07e43e6618e8b6f18d8ecc218fc4d",
+      "issuerId": "iss_cik_0002083125"
     },
     {
       "cik": "0002100125",
