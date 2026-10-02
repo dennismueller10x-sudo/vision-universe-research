@@ -6,7 +6,7 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const Quality=require('../../quant/engines/market-quality.js');
 const Factors=require('../../quant/engines/market-factors.js');
-export const EVIDENCE_RULE='tiingo2-evidence-3';
+export const EVIDENCE_RULE='tiingo2-evidence-5';
 const sha=x=>createHash('sha256').update(x).digest('hex');
 function atomic(file,value){mkdirSync(dirname(file),{recursive:true});writeFileSync(file+'.tmp',JSON.stringify(value));renameSync(file+'.tmp',file);}
 const priceColumns=['adjOpen','adjHigh','adjLow','adjClose'];
@@ -58,18 +58,19 @@ export function normalizeBars(rows){
 }
 export function assessEvidence(rows,{ticker,today,currency,metadata={}}){
  const bars=normalizeBars(rows),payload={ticker,bars,adjustmentStatus:'adjusted',provenance:{provider:'tiingo',fetchedAt:today}},
-  validation=Quality.validateBars(bars,{today,adjustmentStatus:'adjusted'}),adjustment=Quality.validateAdjustmentConsistency(bars,{claimedStatus:'TOTAL_RETURN'}),
-  actions=Quality.classifyCorporateActions?Quality.classifyCorporateActions(bars):{ok:false,status:'UNKNOWN',events:[],counts:{}},
-  quality=Quality.assessSeries(payload,{today});
+  validation=Quality.validateBars(bars,{today,adjustmentStatus:'adjusted'}),adjustment=Quality.validateAdjustmentConsistency(bars,{claimedStatus:'TOTAL_RETURN',dividendConvention:'TIINGO_REINVESTMENT_CLOSE'}),
+  actions=Quality.classifyCorporateActions?Quality.classifyCorporateActions(bars,{dividendConvention:'TIINGO_REINVESTMENT_CLOSE'}):{ok:false,status:'UNKNOWN',events:[],counts:{}},
+  quality=Quality.assessSeries(payload,{today,dividendConvention:'TIINGO_REINVESTMENT_CLOSE'});
  const last=bars.at(-1), valid=validation.ok&&bars.length>0&&validation.bars.length===bars.length,
   latestValid=!!last&&[last.open,last.high,last.low,last.close].every(x=>typeof x==='number'&&x>0)&&last.high>=Math.max(last.open,last.close,last.low)&&last.low<=Math.min(last.open,last.close),
   caValid=adjustment.ok&&actions.ok===true;
+ const legacyFalseSplitDates=(adjustment.observed?.splitEvidence||[]).filter(e=>e.rawMovePct>=Quality.DEFAULTS.splitJumpPct&&e.adjustedMovePct>Quality.DEFAULTS.splitResidualPct).map(e=>e.date);
  let factors=null;
  if(valid&&latestValid&&caValid)factors=Factors.computeFactors(payload,{module:'quantV2Momentum'});
  // Actual calculations remain private: public reports carry field status, never prices.
  const factorSummary=factors?{status:factors.status,bars:factors.bars,basis:factors.basis,fieldStatus:factors.fieldStatus}:null;
  return {metadata:{ticker:metadata.ticker||ticker,name:metadata.name||null,securityDescription:metadata.description||null,exchange:metadata.exchangeCode||metadata.exchange||null,startDate:metadata.startDate||null,endDate:metadata.endDate||null},
-  price:{historyValid:valid,latestValid,latestDate:last?.date||null,bars:bars.length,firstDate:bars[0]?.date||null,currency:currency||null,corporateActionValid:caValid,quality:quality.status,
+  price:{historyValid:valid,latestValid,corporateActionFixed:caValid&&legacyFalseSplitDates.length>0,legacySplitGateFalseRejectionCorrected:adjustment.ok&&legacyFalseSplitDates.length>0,legacyFalseSplitDates,latestDate:last?.date||null,bars:bars.length,firstDate:bars[0]?.date||null,currency:currency||null,corporateActionValid:caValid,quality:quality.status,
    findingCodes:[...new Set([...validation.findings,...adjustment.findings,...quality.findings].map(x=>x.code))]},
   corporateActions:{ok:actions.ok,status:actions.status,counts:actions.counts,events:(actions.events||[]).map(e=>({date:e.date,status:e.status||e.classification,classification:e.classification||e.status,reason:e.reason,evidence:e.evidence}))},
   marketFactors:{materialized:!!factors&&factors.status!=='UNAVAILABLE',basisValid:caValid,summary:factorSummary},
@@ -93,7 +94,7 @@ export async function collectEvidence(candidates,{workDir,today,apiKey=process.e
   if(!/^[A-Z0-9._-]+$/.test(ticker))throw Error('INVALID_PROVIDER_SYMBOL');
   const key=sha(JSON.stringify({ticker,today,start:candidate.startDate||candidate.start_date||null,rule:EVIDENCE_RULE})),file=join(workDir,'evidence',key+'.json');
   // Gate changes revalidate cached raw inputs; they do not refetch full histories.
-  if(!existsSync(file))for(const rule of ['tiingo2-evidence-2','tiingo2-evidence-1']){
+  if(!existsSync(file))for(const rule of ['tiingo2-evidence-4','tiingo2-evidence-3','tiingo2-evidence-2','tiingo2-evidence-1']){
    const oldKey=sha(JSON.stringify({ticker,today,start:candidate.startDate||candidate.start_date||null,rule})),oldFile=join(workDir,'evidence',oldKey+'.json');
    if(!existsSync(oldFile))continue;
    const old=JSON.parse(readFileSync(oldFile,'utf8'));

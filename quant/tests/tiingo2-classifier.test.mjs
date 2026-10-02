@@ -119,6 +119,17 @@ test('explicit provider investment-company form overrides Common Stock but fund-
     description: 'BlackRock provides asset management services to institutional clients and manages closed-end funds.'
   });
   assert.equal(Master.classifySecurity(manager, opts).instrumentType, 'EQUITY_COMMON');
+  for (const description of [
+    'BlackRock provides asset management services. Its subsidiary XYZ is a closed-end fund.',
+    'Its subsidiary XYZ is a closed-end fund.',
+    'BlackRock manages XYZ, which is a closed-end fund.',
+    'A closed-end fund specialist offering asset management services.',
+    'The company provides services. A managed fund is a closed-end investment company.'
+  ]) {
+    const r = { ...manager, description };
+    assert.equal(Base.classify(r, opts).instrumentType, 'COMMON_STOCK', description);
+    assert.equal(Master.classifySecurity(r, opts).instrumentType, 'EQUITY_COMMON', description);
+  }
   const issued = Master.classifySecurity(row('SNDK', 'Sandisk Corporation - Common Stock When-Issued'), opts);
   assert.equal(issued.instrumentType, 'EQUITY_COMMON');
   assert.ok(issued.flags.includes('WHEN_ISSUED_LISTING_METADATA_REVIEW'));

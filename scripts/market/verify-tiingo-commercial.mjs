@@ -178,7 +178,8 @@ async function main() {
     let adjustmentCheck = null;
     if (adjustedPresent && bars.length > 1) {
       adjustmentCheck = MarketQuality.validateAdjustmentConsistency(bars, {
-        claimedStatus: eod.data.adjustmentStatus
+        claimedStatus: eod.data.adjustmentStatus,
+        dividendConvention: 'TIINGO_REINVESTMENT_CLOSE'
       });
     }
     record(symbol, "adjustedEod", adjustedPresent ? "PASSED" : "ABSENT", {

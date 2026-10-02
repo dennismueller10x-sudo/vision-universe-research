@@ -11,7 +11,7 @@ test('collector rotates never-probed listings across days and terminal errors ca
  const candidates=['AAA','BBB','CCC'].map(ticker=>({ticker,startDate:'2026-08-01',currency:'USD'}));
  const fetchImpl=async(url)=>{calls.push(url);const ticker=/daily\/([^/?]+)/.exec(url)[1];return {ok:ticker!=='AAA',status:ticker==='AAA'?404:200,json:async()=>url.includes('/prices?')?history():{ticker,startDate:'2026-08-01',exchangeCode:'NASDAQ',name:'Verified Issuer Inc'}};};
  try{
-  const opts={workDir,apiKey:'SYNTHETIC_TEST_CREDENTIAL',fetchImpl,maxSymbols:1};
+  const opts={workDir,apiKey:'test',fetchImpl,maxSymbols:1};
   const a=await collectEvidence(candidates,{...opts,today:'2026-09-11'});assert.equal(a.results.get('AAA').reason,'PROVIDER_HTTP_404');
   const b=await collectEvidence(candidates,{...opts,today:'2026-09-12'});assert.ok(b.results.get('BBB').price.historyValid);assert.ok(!b.results.has('CCC'));
   const c=await collectEvidence(candidates,{...opts,today:'2026-09-12'});assert.ok(c.results.get('CCC').price.historyValid);

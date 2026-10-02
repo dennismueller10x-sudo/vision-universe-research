@@ -17,8 +17,8 @@ export function normalizeCorporateActionBars(bars) {
 export function scanCorporateActionSeries(series) {
   const results = series.map(payload => {
     const bars = normalizeCorporateActionBars(payload.bars || []);
-    const adjustment = Quality.validateAdjustmentConsistency(bars, { claimedStatus: 'TOTAL_RETURN' });
-    const actions = Quality.classifyCorporateActions(bars);
+    const adjustment = Quality.validateAdjustmentConsistency(bars, { claimedStatus: 'TOTAL_RETURN', dividendConvention: 'TIINGO_REINVESTMENT_CLOSE' });
+    const actions = Quality.classifyCorporateActions(bars, { dividendConvention: 'TIINGO_REINVESTMENT_CLOSE' });
     // This reproduces the old decision's trigger, without inferring whether
     // an action exists from the size of the market return.
     const oldFalseRejectDates = adjustment.observed.splitEvidence.filter(e =>

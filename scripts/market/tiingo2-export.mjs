@@ -3,8 +3,8 @@ import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {resolve,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const pick=(x,keys)=>Object.fromEntries(keys.filter(k=>x?.[k]!==undefined).map(k=>[k,x[k]]));
-const priceProjection=x=>{const result=pick(x,['historyValid','latestValid','latestDate','firstDate','currency','corporateActionValid','quality','findingCodes']);if(Number.isSafeInteger(x?.bars)&&x.bars>=0)result.bars=x.bars;return result;};
-export function projectCandidate(r){return {...pick(r,['ticker','companyName','securityId','decision','publicationReady','reasonCodes','exclusionCategory','previousExclusionReason','previousInstrumentType']),
+const priceProjection=x=>{const result=pick(x,['historyValid','latestValid','latestDate','firstDate','currency','corporateActionValid','corporateActionFixed','legacySplitGateFalseRejectionCorrected','legacyFalseSplitDates','quality','findingCodes']);if(Number.isSafeInteger(x?.bars)&&x.bars>=0)result.bars=x.bars;return result;};
+export function projectCandidate(r){return {readinessScope:'CANDIDATE_DATA_PRECONDITIONS_NOT_DELIVERED_PRODUCT_PROOF',...pick(r,['ticker','companyName','securityId','decision','publicationReady','reasonCodes','exclusionCategory','previousExclusionReason','previousInstrumentType']),
  policy:pick(r.policy,['policyVersion','status','included','instrumentType','reasonCodes','source']),
  productReadiness:pick(r.productReadiness,['canonical','search','chart','watchlist','fundamentals','quant','discover','screener','superTrader','secMapped','factorsMaterialized']),
  checks:pick(r.checks,['active','historyValid','latestValid','latestDate','priceAgeDays','corporateActionValid','secMapped','fundamentalReady','quantReady']),

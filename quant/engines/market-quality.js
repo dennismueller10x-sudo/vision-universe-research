@@ -349,12 +349,18 @@
   /* Tiingo's splitFactor is new shares / old shares. Therefore
      (adjClose/close)_today / (adjClose/close)_previous = splitFactor.
      Genuine market returns cancel from this equation, including on
-     reverse-split days. Cash dividends additionally multiply the step
-     by 1/(1-divCash/(previousClose/splitFactor)); cash is in ex-day shares.
+     reverse-split days. Tiingo reinvests cash at the ex-day close:
+     step = splitFactor * (1 + divCash / close_today). This gives the
+     economic gross return (close_today+divCash)*splitFactor/close_previous.
+     Explicit PREVIOUS_CLOSE preserves providers using prior-close deduction.
      This gate diagnoses provider actions, it never invents an action. */
   function classifyCorporateActions(bars, options) {
     options = options || {};
     var cfg = Object.assign({}, DEFAULTS, options.config || {});
+    var dividendConvention = options.dividendConvention || "TIINGO_REINVESTMENT_CLOSE";
+    if (dividendConvention !== "TIINGO_REINVESTMENT_CLOSE" && dividendConvention !== "PREVIOUS_CLOSE") {
+      throw new Error("INVALID_DIVIDEND_CONVENTION");
+    }
     var events = [], findings = [], counts = {};
     function event(status, b, reason, evidence) {
       counts[status] = (counts[status] || 0) + 1;
@@ -390,7 +396,13 @@
       var split = Math.abs(b.splitFactor - 1) > 1e-9;
       var dividend = b.dividend > 0;
       if (!p || !isNum(p.close) || p.close <= 0) {
-        if (split || dividend) event("UNKNOWN", b, "FIRST_BAR_ACTION_UNRECONCILED");
+        // An action on the first observed bar transforms shares/prices
+        // before the supplied interval. No return in this interval crosses
+        // that boundary, so it cannot refute in-window adjustment. Preserve
+        // the scope limitation without claiming a reconciliation proof.
+        if (!p && (split || dividend)) findings.push(finding("info", "BOUNDARY_ACTION_OUTSIDE_RETURN_WINDOW",
+          "First-bar action has no observed predecessor; all in-window steps remain checked.",
+          { date: b.date, reportedSplit: split, reportedDividend: dividend }));
         continue;
       }
       if (!isNum(b.adjustedClose) || !isNum(p.adjustedClose) || p.adjustedClose <= 0) {
@@ -400,11 +412,12 @@
       var step = (b.adjustedClose / b.close) / (p.adjustedClose / p.close);
       var previousInExDayShares = p.close / b.splitFactor;
       var cashMultiplier = 1 - b.dividend / previousInExDayShares;
-      if (!(cashMultiplier > 0)) {
+      if (dividendConvention === "PREVIOUS_CLOSE" && !(cashMultiplier > 0)) {
         event("BAD_SERIES", b, "DIVIDEND_EXCEEDS_REFERENCE_PRICE");
         continue;
       }
-      var expected = b.splitFactor / cashMultiplier;
+      var expected = dividendConvention === "TIINGO_REINVESTMENT_CLOSE"
+        ? b.splitFactor * (1 + b.dividend / b.close) : b.splitFactor / cashMultiplier;
       var error = Math.abs(step / expected - 1);
       if (!isNum(step) || step <= 0 || !isNum(expected) || expected <= 0 || !isNum(error)) {
         event("BAD_SERIES", b, "INVALID_FACTOR_EVIDENCE");
@@ -422,7 +435,8 @@
           b.high >= Math.max(b.open, b.close, b.low) && b.low <= Math.min(b.open, b.close),
         adjustmentStepIsStable: Math.abs(step - 1) <= cfg.corporateActionTolerance,
         splitOnlyFactorMatches: Math.abs(step / b.splitFactor - 1) <= cfg.corporateActionTolerance,
-        previousCloseDividendFactorMatches: error <= cfg.corporateActionTolerance,
+        previousCloseDividendFactorMatches: cashMultiplier > 0 &&
+          Math.abs(step / (b.splitFactor / cashMultiplier) - 1) <= cfg.corporateActionTolerance,
         exDayCloseDividendFactorMatches: Math.abs(step / (b.splitFactor * (1 + b.dividend / b.close)) - 1) <= cfg.corporateActionTolerance };
       if (error > cfg.corporateActionTolerance) {
         event(split || dividend ? "BAD_SERIES" : "MISSING_PROVIDER_ACTION", b,
@@ -461,6 +475,12 @@
     options = options || {};
     var config = Object.assign({}, DEFAULTS, options.config || {});
     var claimed = options.claimedStatus || null;
+    // Generic callers retain their historic prior-close convention. Tiingo
+    // ingestion supplies its reinvestment-close convention explicitly.
+    var dividendConvention = options.dividendConvention || "PREVIOUS_CLOSE";
+    if (dividendConvention !== "TIINGO_REINVESTMENT_CLOSE" && dividendConvention !== "PREVIOUS_CLOSE") {
+      throw new Error("INVALID_DIVIDEND_CONVENTION");
+    }
     var findings = [];
 
     var factors = adjustmentFactors(bars || []);
@@ -515,10 +535,12 @@
         var bereinigtSprung = Math.abs(cur.adjustedClose / prev.adjustedClose - 1) * 100;
         var cashBase = prev.close / cur.splitFactor;
         var cashStep = istDividendentag ? 1 - cur.dividend / cashBase : 1;
-        var expectedStep = cur.splitFactor / cashStep;
+        var expectedStep = dividendConvention === "TIINGO_REINVESTMENT_CLOSE"
+          ? cur.splitFactor * (1 + (cur.dividend || 0) / cur.close) : cur.splitFactor / cashStep;
         var splitStep = cur.factor / prev.factor;
         var splitFactorError = Math.abs(splitStep / expectedStep - 1);
-        if (cur.splitFactor > 0 && cashStep > 0 && isNum(expectedStep) && expectedStep > 0 &&
+        if (cur.splitFactor > 0 && (dividendConvention === "TIINGO_REINVESTMENT_CLOSE" || cashStep > 0) &&
+            isNum(expectedStep) && expectedStep > 0 &&
             isNum(splitStep) && splitStep > 0 && isNum(splitFactorError) &&
             splitFactorError <= config.corporateActionTolerance) {
           observed.splitEvidence.push({ date: cur.date, rawMovePct: round(rohSprung, 2),
@@ -542,7 +564,8 @@
          die Dividende nicht eingerechnet - die Spalte ist dann hoechstens
          splitbereinigt, egal wie sie heisst. */
       if (istDividendentag && isNum(prev.close) && prev.close > 0) {
-        var erwartet = cur.dividend / prev.close;
+        var erwartet = dividendConvention === "TIINGO_REINVESTMENT_CLOSE"
+          ? cur.dividend / cur.close : cur.dividend / prev.close;
         if (faktorAenderung > config.adjustmentRatioTolerance) {
           observed.dividendEvidence.push({
             date: cur.date, amount: cur.dividend,
@@ -784,8 +807,12 @@
     /* --- Bereinigungssemantik -------------------------------------- */
     var adjustment = null;
     if (options.checkAdjustment !== false && base.bars.length > 1) {
+      var adjustmentProvider = String(payload.provider || (prov && (prov.provider || prov.source)) || "").toLowerCase();
+      var convention = options.dividendConvention || (adjustmentProvider === "tiingo"
+        ? "TIINGO_REINVESTMENT_CLOSE" : "PREVIOUS_CLOSE");
       adjustment = validateAdjustmentConsistency(base.bars, {
-        claimedStatus: payload.adjustmentStatus
+        claimedStatus: payload.adjustmentStatus,
+        dividendConvention: convention
       });
       findings = findings.concat(adjustment.findings);
     }

@@ -332,7 +332,7 @@
     var marker = tickerMarker(ticker);
     var fifth = nasdaqFifthLetter(ticker, opts.listedRoots);
     var byName = nameRule(name);
-    var byDescription = Base.securityDescriptionRule(row.providerDescription || row.description);
+    var byDescription = Base.securityDescriptionRule(row.providerDescription || row.description, row.name);
     var bareDepositary = /\bDEPOSIT[AO]RY SHARES?\b/i.test(name) &&
       !/\b(ADR|ADS|AMERICAN DEPOSITAR(Y|IES)|DEPOSITARY RECEIPTS?)\b/i.test(name);
 

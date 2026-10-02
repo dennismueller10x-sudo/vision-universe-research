@@ -10,11 +10,12 @@ const Canonical = require('../engines/technical/canonical-bars.js');
 
 // Constructed prices, no licensed provider bars. The action/return geometry
 // reproduces PR346's failure: legitimate split-day returns exceed 15%.
-function actionWindow(splitFactor, marketReturn, dividend = 0) {
+function actionWindow(splitFactor, marketReturn, dividend = 0, convention = 'TIINGO_REINVESTMENT_CLOSE') {
   const previousClose = 100;
   const cashMultiplier = 1 - dividend / (previousClose / splitFactor);
-  const expectedStep = splitFactor / cashMultiplier;
   const nextClose = previousClose / splitFactor * (1 + marketReturn);
+  const expectedStep = convention === 'TIINGO_REINVESTMENT_CLOSE'
+    ? splitFactor * (1 + dividend / nextClose) : splitFactor / cashMultiplier;
   const bar = (date, close, adjustedClose, factor, cash) => ({
     date, close, adjustedClose, splitFactor: factor, dividend: cash,
     open: close, high: close * 1.01, low: close * .99, volume: 1000,
@@ -67,8 +68,65 @@ test('same-day split and cash dividend use cash in ex-day shares', () => {
   for (const factor of [4, .025]) {
     const bars = actionWindow(factor, -.23, 1);
     assert.equal(Quality.classifyCorporateActions(bars).ok, true);
-    assert.equal(Quality.validateAdjustmentConsistency(bars, { claimedStatus: 'TOTAL_RETURN' }).ok, true);
+    assert.equal(Quality.validateAdjustmentConsistency(bars, {
+      claimedStatus: 'TOTAL_RETURN', dividendConvention: 'TIINGO_REINVESTMENT_CLOSE',
+    }).ok, true);
   }
+});
+
+test('Tiingo reinvestment-close dividends reproduce observed AMC/BIRD action geometry', () => {
+  // Normalized synthetic prices matching the sanitized observation ratios;
+  // these are not provider price bars or dividend amounts.
+  for (const [label, move, normalizedCash] of [
+    ['AMC special dividend', -.0444964871194381, 7.259953161592506],
+    ['BIRD June dividend', -.048828125, 26.171875],
+    ['BIRD August dividend', -.008097165991902799, 12.550607287449392],
+  ]) {
+    const bars = actionWindow(1, move, normalizedCash);
+    const gate = Quality.classifyCorporateActions(bars);
+    assert.equal(gate.ok, true, label);
+    assert.equal(gate.events[0].status, 'VALID_SHARE_ACTION');
+    assert.equal(gate.events[0].evidence.exDayCloseDividendFactorMatches, true);
+    assert.equal(gate.events[0].evidence.previousCloseDividendFactorMatches, false);
+    const consistency = Quality.validateAdjustmentConsistency(bars, {
+      claimedStatus: 'TOTAL_RETURN', dividendConvention: 'TIINGO_REINVESTMENT_CLOSE',
+    });
+    assert.ok(Math.abs(consistency.observed.dividendEvidence[0].expectedFactorStep -
+      consistency.observed.dividendEvidence[0].observedFactorStep) <= 1e-6);
+    assert.equal(Quality.classifyCorporateActions(bars, { dividendConvention: 'PREVIOUS_CLOSE' }).status, 'BAD_SERIES');
+    bars[1].adjustedClose *= 1.01;
+    assert.equal(Quality.classifyCorporateActions(bars).status, 'BAD_SERIES');
+  }
+});
+
+test('prior-close convention remains explicit and simultaneous split/dividend corruption is blocked', () => {
+  const prior = actionWindow(4, -.23, 1, 'PREVIOUS_CLOSE');
+  assert.equal(Quality.classifyCorporateActions(prior, { dividendConvention: 'PREVIOUS_CLOSE' }).ok, true);
+  assert.equal(Quality.validateAdjustmentConsistency(prior, { claimedStatus: 'TOTAL_RETURN' }).ok, true);
+  const tiingo = actionWindow(4, -.23, 1);
+  tiingo[1].splitFactor = 3;
+  assert.equal(Quality.classifyCorporateActions(tiingo).status, 'BAD_SERIES');
+  assert.equal(Quality.validateAdjustmentConsistency(tiingo, {
+    claimedStatus: 'TOTAL_RETURN', dividendConvention: 'TIINGO_REINVESTMENT_CLOSE',
+  }).ok, false);
+  assert.throws(() => Quality.classifyCorporateActions(prior, { dividendConvention: 'TYPO' }), /INVALID_DIVIDEND_CONVENTION/);
+});
+
+test('series assessment respects explicit convention and Tiingo provenance without changing generic callers', () => {
+  const bars = actionWindow(4, -.23, 1);
+  const settings = { today: bars.at(-1).date, config: { minBarsUsable: 2, minBarsForFactors: 2 } };
+  const generic = { bars, provider: 'other', adjustmentStatus: 'TOTAL_RETURN' };
+  assert.equal(Quality.assessSeries(generic, settings).status, 'FAIL');
+  assert.equal(Quality.assessSeries(generic, {
+    ...settings, dividendConvention: 'TIINGO_REINVESTMENT_CLOSE',
+  }).status, 'PASS');
+  for (const provenance of [{ provider: 'tiingo' }, { source: 'tiingo' }]) {
+    assert.equal(Quality.assessSeries({ bars, provenance, adjustmentStatus: 'TOTAL_RETURN' }, settings).status, 'PASS');
+  }
+  assert.equal(Quality.assessSeries({ ...generic, provider: 'tiingo' }, settings).status, 'PASS');
+  assert.equal(Quality.assessSeries({ ...generic, provider: 'tiingo' }, {
+    ...settings, dividendConvention: 'PREVIOUS_CLOSE',
+  }).status, 'FAIL');
 });
 
 test('unadjusted, inverted and slightly wrong split factors remain rejected', () => {
@@ -125,6 +183,21 @@ test('rounding tolerance admits float noise and rejects unexplained drift', () =
   assert.equal(Quality.classifyCorporateActions(bars).ok, true);
   bars[1].adjustedClose *= 1.01;
   assert.equal(Quality.classifyCorporateActions(bars).ok, false);
+});
+
+test('valid first-bar actions stay outside the return interval while later missing evidence still blocks', () => {
+  for (const initial of [{ splitFactor: .025 }, { dividend: 1 }]) {
+    const bars = actionWindow(1, .01);
+    Object.assign(bars[0], initial);
+    const gate = Quality.classifyCorporateActions(bars);
+    assert.equal(gate.ok, true);
+    assert.equal(gate.events.length, 0, 'boundary action is not falsely certified as reconciled');
+    assert.ok(gate.findings.some(f => f.code === 'BOUNDARY_ACTION_OUTSIDE_RETURN_WINDOW' && f.severity === 'info'));
+    delete bars[1].splitFactor;
+    assert.equal(Quality.classifyCorporateActions(bars).status, 'UNKNOWN');
+  }
+  const invalid = actionWindow(1, .01); invalid[0].splitFactor = 0;
+  assert.equal(Quality.classifyCorporateActions(invalid).status, 'BAD_SERIES');
 });
 
 test('factor underflow, overflow and NaN fail closed despite finite input prices', () => {

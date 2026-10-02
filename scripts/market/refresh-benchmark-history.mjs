@@ -117,7 +117,7 @@ async function main() {
      ankommt, widerlegt die Gesamtrendite. Fuer den Vergleichsmassstab ist
      das ein Abbruch, keine Warnung - eine Kursrendite, die als
      Gesamtrendite auftritt, waere die gefaehrlichste Mischung. */
-  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN" }) : null;
+  const semantics = validation.ok ? MarketQuality.validateAdjustmentConsistency(validation.bars, { claimedStatus: "TOTAL_RETURN", dividendConvention: "TIINGO_REINVESTMENT_CLOSE" }) : null;
   const refuted = semantics && (!semantics.ok || semantics.inferredStatus !== "TOTAL_RETURN" ||
     semantics.findings.some((f) => f.code === "dividend_not_in_adjusted" || f.code === "split_not_adjusted"));
   if (refuted) {

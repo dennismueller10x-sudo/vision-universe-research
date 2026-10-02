@@ -206,10 +206,21 @@
      even when an exchange directory calls its issued shares Common
      Stock. Require an explicit issuer-form statement, not a mention
      of funds managed, held or served by an operating business. */
-  function securityDescriptionRule(description) {
+  function securityDescriptionRule(description, issuerName) {
     var d = norm(description);
-    if (/\b(?:is|operates as|is organized as|is registered as)\s+(?:an?\s+)?(?:listed\s+|publicly listed\s+|non[- ]diversified[,\s]+|registered\s+)*closed[- ]end\s+(?:management\s+)?(?:investment\s+)?(?:fund|company)\b/i.test(d) ||
-        /^\s*(?:A |The )?(?:non[- ]diversified[,\s]+)?closed[- ]end\s+(?:management\s+)?(?:investment\s+)?(?:fund|company)\b/i.test(d)) {
+    function issuerKey(value) {
+      return upper(value).split(/\s+-\s+|\bCLASS\s+[A-Z0-9]\b|\bCOMMON\s+(?:STOCK|SHARES?)\b|\bORDINARY\s+SHARES?\b/)[0]
+        .replace(/\b(?:INCORPORATED|INC|CORPORATION|CORP|LIMITED|LTD|PLC|LLC)\b/g, "")
+        .replace(/[^A-Z0-9]/g, "");
+    }
+    var statement = /\b(?:is|operates as|is organized as|is registered as)\s+(?:an?\s+)?(?:listed\s+|publicly listed\s+|non[- ]diversified[,\s]+|registered\s+)*closed[- ]end\s+(?:management\s+)?(?:investment\s+)?(?:fund|company)\b/i.exec(d);
+    var subject = statement ? d.slice(0, statement.index).trim() : "";
+    /* Match the opening issuer statement only. A later sentence about
+       a subsidiary/client/holding is not the operating issuer's form. */
+    var issuerSubject = /^(?:the )?(?:company|fund)$/i.test(subject) ||
+      !!issuerKey(issuerName) && issuerKey(subject) === issuerKey(issuerName);
+    if (statement && issuerSubject ||
+        /^\s*(?:A |The )?(?:non[- ]diversified[,\s]+)?closed[- ]end\s+(?:management\s+)?(?:investment\s+)?(?:fund|company)\s*(?:[.;]|$)/i.test(d)) {
       return { type: "FUND", subtype: "CLOSED_END", basis: "PROVIDER_SECURITY_DESCRIPTION" };
     }
     return null;
@@ -250,7 +261,7 @@
 
     var pattern = tickerPattern(ticker);
     var byName = nameRule(row.name);
-    var byDescription = securityDescriptionRule(row.providerDescription || row.description);
+    var byDescription = securityDescriptionRule(row.providerDescription || row.description, row.name);
     var at = upper(assetType);
 
     var type = null, confidence = null, typeBasis = null;

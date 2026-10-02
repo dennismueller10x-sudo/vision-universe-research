@@ -52,10 +52,10 @@ const Series = require(join(engines, "return-series.js"));
    r2 (2026-09-25): eine widerlegte Gesamtrendite-Spalte sperrt nur noch
    die Gesamtrendite. Ist die Reihe aus RAW_CLOSE + SPLIT_FACTOR
    rekonstruierbar, geht sie splitbereinigt in den Bestand. */
-/* r3: declared split factors are reconciled with raw/adjusted factors;
-   real split-day returns no longer invalidate legitimate histories.
-   Old r2 rejections must be retried under this corrected decision rule. */
-const REJECTION_RULE = "ingest-rejection-r3-2026-10-02";
+/* r4: declared splits reconcile raw/adjusted factors, including Tiingo
+   cash reinvestment at the ex-day close. Genuine market moves survive.
+   Old r2/r3 rejections must be retried under the corrected action model. */
+const REJECTION_RULE = "ingest-rejection-r4-2026-10-02";
 const Semantics = require(join(engines, "price-semantics.js"));
 const EodGate = require(join(engines, "market-eod-gate.js"));
 const RejectionLifecycle = require(join(engines, "rejection-lifecycle.js"));
@@ -491,7 +491,8 @@ for (const security of SECURITIES) {
      ausgezeichnete Reihe im Bestand ist schlimmer als eine fehlende, weil
      alles Nachgelagerte sie fuer bare Muenze nimmt. */
   const semantik = MarketQuality.validateAdjustmentConsistency(validation.bars, {
-    claimedStatus: Semantics.normalize(res.data.adjustmentStatus)
+    claimedStatus: Semantics.normalize(res.data.adjustmentStatus),
+    dividendConvention: 'TIINGO_REINVESTMENT_CLOSE'
   });
   /* WAS DER BEFUND SPERRT - UND WAS NICHT   (Owner-Frage vom 2026-09-25)
 
