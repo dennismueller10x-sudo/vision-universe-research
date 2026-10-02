@@ -161,6 +161,13 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
   const credits = JSON.parse(readFileSync(join(dir, "credits.json"), "utf8")).credits;
   const exclusions = JSON.parse(readFileSync(join(root, "discover", "config", "logo-exclusions.json"), "utf8")).symbols;
   const rejects = JSON.parse(readFileSync(join(root, "discover", "config", "logo-rejects.json"), "utf8"));
+  const freigabe = JSON.parse(readFileSync(join(root, "discover", "config", "logo-reviewed.json"), "utf8")).symbols;
+  /* Wartende Logos: Datei vorhanden, nicht in der Oberflaeche, Bild nicht gesperrt. */
+  for (const [sym, c] of Object.entries(credits).filter(([, c]) => c.pending)) {
+    assert.ok(!index.files[sym], sym);
+    assert.ok(existsSync(join(dir, c.path)), c.path);
+    assert.ok(!(rejects.urls || {})[c.iconUrl] && !(rejects.titles || {})[c.title], "Gesperrtes Bild wartet: " + sym);
+  }
   assert.equal(index.count, Object.keys(index.files).length);
   for (const [sym, path] of Object.entries(index.files)) {
     assert.ok(safeSymbol(sym), sym);
@@ -168,6 +175,9 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
     assert.ok(existsSync(join(dir, path)), path);
     const c = credits[sym];
     assert.ok(c, "Nachweis fehlt: " + sym);
+    /* Live nur, was genau so gesichtet ist. */
+    assert.ok(!c.pending, "Wartendes Logo ausgeliefert: " + sym);
+    assert.equal(freigabe[sym], c.sha1, "Nicht gesichtet: " + sym);
     if (c.source === "WEBSITE" || c.source === "SEC_FILING") {
       /* Website- oder SEC-Logo: immer PNG (nie eine fremde SVG), Quelle genannt, keine Lizenz behauptet. */
       assert.match(path, /\.png$/, sym);
@@ -186,14 +196,15 @@ test("Ausgelieferte Logos: jede Datei belegt, Commons nur mit freier Lizenz", ()
   /* Breite Fassung: nur zu einem ausgelieferten Logo, immer PNG, wirklich breit. */
   for (const [sym, r] of Object.entries(index.wide || {})) {
     assert.ok(index.files[sym], "Breite Fassung ohne Logo: " + sym);
+    assert.ok(!credits[sym].pending, sym);
     assert.equal(credits[sym].wide, "files/wide/" + sym + ".png", sym);
     assert.ok(existsSync(join(dir, credits[sym].wide)), sym);
     assert.ok(r >= 1.6, sym);
   }
   const breiteDateien = existsSync(join(dir, "files", "wide")) ? readdirSync(join(dir, "files", "wide")).filter((f) => !f.startsWith(".")) : [];
-  for (const f of breiteDateien) assert.ok((index.wide || {})[f.replace(/\.png$/, "")], "Breite Datei ohne Eintrag: " + f);
+  for (const f of breiteDateien) assert.ok(Object.values(credits).some((c) => c.wide === "files/wide/" + f), "Breite Datei ohne Eintrag: " + f);
   const imOrdner = existsSync(join(dir, "files")) ? readdirSync(join(dir, "files")).filter((f) => !f.startsWith(".") && f !== "wide") : [];
-  const belegt = new Set(Object.values(index.files).map((p) => p.slice(6)));
+  const belegt = new Set(Object.values(credits).map((c) => c.path.slice(6)));
   for (const f of imOrdner) assert.ok(belegt.has(f), "Datei ohne Eintrag: " + f);
 });
 
@@ -436,4 +447,12 @@ test("Urheberangabe aus Commons: lesbar, kein Name faellt weg", () => {
   const info = (artist) => ({ extmetadata: { LicenseShortName: { value: "CC BY-SA 4.0" }, License: { value: "cc-by-sa-4.0" }, Artist: { value: artist } } });
   assert.equal(checkLicense(info("Tesla (logo), Fry1989 eh? (vectorization)")).author, "Tesla, Fry1989");
   assert.equal(checkLicense(info("null")).reason, "URHEBER_FEHLT");
+});
+
+test("Kuratierte Websites: gueltige Adressen, nur Titel des Universums", () => {
+  const sites = JSON.parse(readFileSync(join(root, "discover", "config", "logo-sites.json"), "utf8")).symbols;
+  for (const [sym, url] of Object.entries(sites)) {
+    assert.ok(safeSymbol(sym), sym);
+    assert.ok(normalizeSite(url), sym + ": " + url);
+  }
 });
