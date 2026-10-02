@@ -1,17 +1,8 @@
 {
- "schemaVersion": "discover-series-long-index-1.0.0",
- "generatedAt": "2026-09-27T12:45:37.576Z",
- "note": "Lange Discover-Kursreihen (Wochenschluss, split-bereinigt) aus der Historienablage. Erzeugt von scripts/market/publish-long-series.mjs; geprueft von assert-public-data-hygiene.mjs.",
- "grain": "weekly",
- "range": "MAX",
- "count": 6333,
- "pathPattern": "/quant/data/market/discover-series-long/<securityId>.json",
- "summary": {
-  "requested": 6876,
-  "written": 0,
-  "unchanged": 6333,
-  "missing": 2,
-  "tooShort": 541,
-  "failed": 0
- }
+  "schemaVersion": "discover-series-long-index-1.0.0",
+  "generatedAt": "2026-10-02",
+  "count": 6387,
+  "pathPattern": "/quant/data/market/discover-series-long/<securityId>.json",
+  "source": "CANONICAL_COMPANY_MASTER",
+  "scope": "EXISTING_BASELINE_AND_INCREMENTAL_CANONICAL_ADDITIONS"
 }

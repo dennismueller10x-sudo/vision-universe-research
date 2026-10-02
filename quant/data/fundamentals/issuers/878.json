@@ -1,6 +1,6 @@
 {
   "shard": "878",
-  "count": 6,
+  "count": 7,
   "issuers": [
     {
       "cik": "0000896878",
@@ -314,6 +314,162 @@
       },
       "sourceDigest": "31d69818b72b0e0123220394f1bd370516449df9769dbbb9885f5fea15c0b019",
       "issuerId": "iss_cik_0001069878"
+    },
+    {
+      "cik": "0001579878",
+      "name": "Figma, Inc.",
+      "sic": "7372",
+      "rawFacts": 1947,
+      "mappedFacts": 530,
+      "unmappedFacts": 1443,
+      "calendarYears": 3,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "FIG"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 4,
+      "quarterlyPeriods": 12,
+      "firstPeriodEnd": "2022-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 3.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "net_income": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "revenue": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 12,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "total_assets": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
+        "total_debt": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 0,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "HIGH": 79,
+        "MEDIUM": 3
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 82,
+        "resolvedValues": 82
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 1490,
+        "by_severity": {
+          "INFO": 1443,
+          "WARNING": 47
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 47,
+          "UNKNOWN_CONCEPT": 1443
+        }
+      },
+      "latestFiling": {
+        "accession": "0001628280-26-053348",
+        "filing_date": "2026-08-05",
+        "form": "10-Q",
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-08-05T20:10:02.000Z"
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.10.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "2905cf35a0fd1eab06b8f3a59dc1cc53d0c26a6412f2e145cb89b6e8aea86dee",
+      "issuerId": "iss_cik_0001579878"
     },
     {
       "cik": "0001626878",

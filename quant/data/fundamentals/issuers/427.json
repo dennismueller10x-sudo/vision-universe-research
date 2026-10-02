@@ -1,6 +1,6 @@
 {
   "shard": "427",
-  "count": 7,
+  "count": 8,
   "issuers": [
     {
       "cik": "0000876427",
@@ -574,6 +574,163 @@
       },
       "sourceDigest": "53c10d49dcfbf8c21a91213320a0ebc690806994096a93ea9ba045fbd8cb6df8",
       "issuerId": "iss_cik_0000931427"
+    },
+    {
+      "cik": "0001576427",
+      "name": "Criteo S.A.",
+      "sic": "7311",
+      "rawFacts": 16736,
+      "mappedFacts": 4674,
+      "unmappedFacts": 12035,
+      "calendarYears": 12,
+      "industry": null,
+      "industryMetrics": {},
+      "fiscalYearEnd": "1231",
+      "tickers": [
+        "CRTO"
+      ],
+      "status": "INGESTED",
+      "annualPeriods": 13,
+      "quarterlyPeriods": 47,
+      "firstPeriodEnd": "2013-12-31",
+      "lastPeriodEnd": "2026-06-30",
+      "historyYears": 12.0,
+      "metrics": {
+        "capital_expenditures": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
+        "eps_diluted": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "free_cash_flow": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 6,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0,
+          "derivedFrom": [
+            [
+              "operating_cash_flow",
+              "capital_expenditures"
+            ]
+          ]
+        },
+        "long_term_debt": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 16,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2020-12-31",
+          "historyYears": 6.0
+        },
+        "net_income": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "operating_cash_flow": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "revenue": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 11.0
+        },
+        "short_term_debt": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 3.0
+        },
+        "stockholders_equity": {
+          "annualPeriods": 13,
+          "quarterlyPeriods": 44,
+          "firstAvailablePeriod": "2013-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 12.0
+        },
+        "total_assets": {
+          "annualPeriods": 11,
+          "quarterlyPeriods": 42,
+          "firstAvailablePeriod": "2015-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 10.0
+        },
+        "total_debt": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2014-12-31",
+          "lastAvailablePeriod": "2017-12-31",
+          "historyYears": 3.0,
+          "derivedFrom": [
+            [
+              "total_debt"
+            ],
+            [
+              "long_term_debt",
+              "short_term_debt"
+            ]
+          ]
+        }
+      },
+      "quality": {
+        "HIGH": 321,
+        "MEDIUM": 63
+      },
+      "pit": {
+        "state": "PIT_READY",
+        "datableValues": 384,
+        "resolvedValues": 384
+      },
+      "qualitySummary": {
+        "rules_version": "1.0.0",
+        "total": 12647,
+        "by_severity": {
+          "INFO": 12035,
+          "WARNING": 612
+        },
+        "by_code": {
+          "CONCEPT_DISAGREEMENT": 594,
+          "RESTATEMENT_CONFLICT": 18,
+          "UNKNOWN_CONCEPT": 12035
+        }
+      },
+      "latestFiling": {
+        "accession": "0001576427-26-000092",
+        "filing_date": "2026-08-05",
+        "form": "10-Q",
+        "periodic_filings": 48,
+        "acceptance_datetime": "2026-08-05T20:02:50.000Z"
+      },
+      "versions": {
+        "normalization_schema": "1.0.0",
+        "normalization_logic": "1.10.0",
+        "formula": "1.2.0",
+        "provider_adapter": "sec-edgar-1.0.0",
+        "quality_rules": "1.0.0",
+        "metric_registry": {
+          "schema_version": 1,
+          "mapping_version": "1.5.0"
+        }
+      },
+      "sourceDigest": "e0b13b68a3a24a98725cea35e96948c0788fed7a5a630663ceeb0ecd0aac4724",
+      "issuerId": "iss_cik_0001576427"
     },
     {
       "cik": "0001692427",
