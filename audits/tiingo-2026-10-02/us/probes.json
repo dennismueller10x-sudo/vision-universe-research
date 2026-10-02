@@ -1,0 +1,366 @@
+{
+  "schemaVersion": "tiingo-audit-probes-1.0.0",
+  "maxRequests": 40,
+  "probes": [
+    {
+      "id": "us-dna-metadata",
+      "path": "/tiingo/daily/DNA",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-dna-history",
+      "path": "/tiingo/daily/DNA/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-cart-metadata",
+      "path": "/tiingo/daily/CART",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-cart-history",
+      "path": "/tiingo/daily/CART/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-crcl-metadata",
+      "path": "/tiingo/daily/CRCL",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-crcl-history",
+      "path": "/tiingo/daily/CRCL/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-fig-metadata",
+      "path": "/tiingo/daily/FIG",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-fig-history",
+      "path": "/tiingo/daily/FIG/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-fly-metadata",
+      "path": "/tiingo/daily/FLY",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-fly-history",
+      "path": "/tiingo/daily/FLY/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-bepc-metadata",
+      "path": "/tiingo/daily/BEPC",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-bepc-history",
+      "path": "/tiingo/daily/BEPC/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-bipc-metadata",
+      "path": "/tiingo/daily/BIPC",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-bipc-history",
+      "path": "/tiingo/daily/BIPC/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-bioa-metadata",
+      "path": "/tiingo/daily/BIOA",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-bioa-history",
+      "path": "/tiingo/daily/BIOA/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-airo-metadata",
+      "path": "/tiingo/daily/AIRO",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-airo-history",
+      "path": "/tiingo/daily/AIRO/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-arx-metadata",
+      "path": "/tiingo/daily/ARX",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-arx-history",
+      "path": "/tiingo/daily/ARX/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-cai-metadata",
+      "path": "/tiingo/daily/CAI",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-cai-history",
+      "path": "/tiingo/daily/CAI/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-sndk-metadata",
+      "path": "/tiingo/daily/SNDK",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-sndk-history",
+      "path": "/tiingo/daily/SNDK/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-os-metadata",
+      "path": "/tiingo/daily/OS",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-os-history",
+      "path": "/tiingo/daily/OS/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-crto-metadata",
+      "path": "/tiingo/daily/CRTO",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-crto-history",
+      "path": "/tiingo/daily/CRTO/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-cenn-metadata",
+      "path": "/tiingo/daily/CENN",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-cenn-history",
+      "path": "/tiingo/daily/CENN/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-clmt-metadata",
+      "path": "/tiingo/daily/CLMT",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-clmt-history",
+      "path": "/tiingo/daily/CLMT/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-dec-metadata",
+      "path": "/tiingo/daily/DEC",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-dec-history",
+      "path": "/tiingo/daily/DEC/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-crwv-metadata",
+      "path": "/tiingo/daily/CRWV",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-crwv-history",
+      "path": "/tiingo/daily/CRWV/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-klar-metadata",
+      "path": "/tiingo/daily/KLAR",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-klar-history",
+      "path": "/tiingo/daily/KLAR/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    },
+    {
+      "id": "us-bull-metadata",
+      "path": "/tiingo/daily/BULL",
+      "params": {},
+      "purpose": "Validate missing or reused listing identity through current-account metadata",
+      "group": "us"
+    },
+    {
+      "id": "us-bull-history",
+      "path": "/tiingo/daily/BULL/prices",
+      "params": {
+        "startDate": "2025-10-01",
+        "endDate": "2026-10-02",
+        "format": "json"
+      },
+      "purpose": "Validate history, adjustments, freshness and account access; no production ingestion",
+      "group": "us"
+    }
+  ]
+}

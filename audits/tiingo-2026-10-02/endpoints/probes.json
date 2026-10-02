@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "source": "Current Tiingo public documentation SPA bundle 2026-10-02",
+  "probes": [
+    {
+      "id": "auth-test",
+      "path": "/api/test",
+      "params": {},
+      "purpose": "Validate account token without printing it",
+      "group": "endpoints"
+    },
+    {
+      "id": "fundamental-definitions",
+      "path": "/tiingo/fundamentals/definitions",
+      "params": {},
+      "purpose": "Discover documented financial definitions entitlement and fields",
+      "group": "endpoints"
+    },
+    {
+      "id": "fundamental-meta-small",
+      "path": "/tiingo/fundamentals/meta",
+      "params": {
+        "tickers": "AAPL,DNA,SPY"
+      },
+      "purpose": "Check metadata/permaTicker and fund vs equity behavior",
+      "group": "endpoints"
+    },
+    {
+      "id": "fundamental-statement-aapl",
+      "path": "/tiingo/fundamentals/aapl/statements",
+      "params": {
+        "startDate": "2026-01-01"
+      },
+      "purpose": "Check historical statements entitlement",
+      "group": "endpoints"
+    },
+    {
+      "id": "fundamental-daily-aapl",
+      "path": "/tiingo/fundamentals/aapl/daily",
+      "params": {
+        "startDate": "2026-09-25"
+      },
+      "purpose": "Check daily fundamentals entitlement",
+      "group": "endpoints"
+    },
+    {
+      "id": "fees-meta-vfinx",
+      "path": "/tiingo/funds/vfinx",
+      "params": {},
+      "purpose": "Documented fund metadata example: description/shareClass/netExpense",
+      "group": "endpoints"
+    },
+    {
+      "id": "fees-metrics-vfinx",
+      "path": "/tiingo/funds/vfinx/metrics",
+      "params": {},
+      "purpose": "Documented fees metrics example: entitlement and prospectus dates",
+      "group": "endpoints"
+    },
+    {
+      "id": "fees-meta-berix",
+      "path": "/tiingo/funds/berix",
+      "params": {},
+      "purpose": "Documented fund metadata example: description/shareClass/netExpense",
+      "group": "endpoints"
+    },
+    {
+      "id": "fees-metrics-berix",
+      "path": "/tiingo/funds/berix/metrics",
+      "params": {},
+      "purpose": "Documented fees metrics example: entitlement and prospectus dates",
+      "group": "endpoints"
+    },
+    {
+      "id": "search-exact-dna",
+      "path": "/tiingo/utilities/search",
+      "params": {
+        "query": "DNA",
+        "exactTickerMatch": "true",
+        "includeDelisted": "true",
+        "limit": 100
+      },
+      "purpose": "Ticker recycling Ginkgo vs Genentech and search entitlement",
+      "group": "endpoints"
+    },
+    {
+      "id": "search-europe-name",
+      "path": "/tiingo/utilities/search",
+      "params": {
+        "query": "Siemens",
+        "includeDelisted": "false",
+        "limit": 100
+      },
+      "purpose": "US ADR vs local Europe discovery via documented name search",
+      "group": "endpoints"
+    },
+    {
+      "id": "search-ucits",
+      "path": "/tiingo/utilities/search",
+      "params": {
+        "query": "UCITS",
+        "includeDelisted": "false",
+        "limit": 100
+      },
+      "purpose": "Documented UCITS name discovery without guessed endpoint",
+      "group": "endpoints"
+    },
+    {
+      "id": "dividends-aapl",
+      "path": "/tiingo/corporate-actions/aapl/distributions",
+      "params": {
+        "startExDate": "2025-01-01"
+      },
+      "purpose": "Dividend corporate-action endpoint entitlement and fields",
+      "group": "endpoints"
+    },
+    {
+      "id": "distribution-yield-spy",
+      "path": "/tiingo/corporate-actions/spy/distribution-yield",
+      "params": {
+        "startDate": "2026-09-25"
+      },
+      "purpose": "Historical distribution yield endpoint",
+      "group": "endpoints"
+    },
+    {
+      "id": "splits-aapl",
+      "path": "/tiingo/corporate-actions/aapl/splits",
+      "params": {
+        "startExDate": "2020-08-01",
+        "endExDate": "2020-09-10"
+      },
+      "purpose": "Documented split endpoint and known AAPL 4-for-1 split",
+      "group": "endpoints"
+    },
+    {
+      "id": "batch-splits",
+      "path": "/tiingo/corporate-actions/splits",
+      "params": {
+        "exDate": "2020-08-31"
+      },
+      "purpose": "Batch splits endpoint entitlement",
+      "group": "endpoints"
+    },
+    {
+      "id": "batch-distributions",
+      "path": "/tiingo/corporate-actions/distributions",
+      "params": {
+        "exDate": "2026-10-01"
+      },
+      "purpose": "Batch distributions endpoint entitlement",
+      "group": "endpoints"
+    },
+    {
+      "id": "iex-batch",
+      "path": "/iex/",
+      "params": {
+        "tickers": "AAPL,SPY"
+      },
+      "purpose": "Batch realtime fields and US ETF live support",
+      "group": "endpoints"
+    },
+    {
+      "id": "iex-history",
+      "path": "/iex/aapl/prices",
+      "params": {
+        "startDate": "2026-10-01",
+        "endDate": "2026-10-01",
+        "resampleFreq": "5min"
+      },
+      "purpose": "Historical intraday entitlement",
+      "group": "endpoints"
+    },
+    {
+      "id": "boats-batch",
+      "path": "/boats/",
+      "params": {
+        "tickers": "AAPL"
+      },
+      "purpose": "Documented overnight BOATS endpoint needs separate entitlement",
+      "group": "endpoints"
+    },
+    {
+      "id": "china-000001-meta",
+      "path": "/tiingo/daily/000001",
+      "params": {},
+      "purpose": "Chinese numeric symbol metadata via normal EOD route",
+      "group": "endpoints"
+    },
+    {
+      "id": "china-000001-prices",
+      "path": "/tiingo/daily/000001/prices",
+      "params": {
+        "startDate": "2026-09-21"
+      },
+      "purpose": "Chinese numeric symbol recent EOD entitlement",
+      "group": "endpoints"
+    }
+  ]
+}
