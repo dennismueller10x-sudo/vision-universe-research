@@ -335,7 +335,7 @@
       })));
     }
     rows.rows.forEach(function (r) { var b = el("button", { type: "button", role: "tab", class: "cb-chip-btn", dataset: { id: r.id }, text: r.title + " (" + r.tickers.length + ")" }); b.addEventListener("click", function () { show(r.id); }); chips.append(b); });
-    host.append(chips, list, el("p", { class: "cb-small cb-dim", text: "Stand " + X.dateDe(rows.generatedAt) + ". " + rows.note }));
+    host.append(chips, list, el("p", { class: "cb-small cb-dim", text: "Stand " + X.dateDe(rows.generatedAt) + ". Auswahl: " + (rows.universe || "alle Titel") + ". " + rows.note }));
     show(active);
   }
 

@@ -1,0 +1,83 @@
+name: Chartbild-Evidenz (Technical Intelligence V2, manuell)
+
+# WOZU DIESER WORKFLOW EXISTIERT
+#
+# Die Evidenzstudie des Chartbilds (scripts/technical/ti-evidence.mjs) rechnet
+# lokal auf Wochenschluessen (6.348 Reihen) und fuenf Tagesreihen. Die volle
+# Tageshistorie des Universums liegt nur in der dauerhaften Ablage (R2). Dieser
+# Workflow holt sie runner-privat, rechnet die Tages-Studie fuer das ganze
+# Universum und committet NUR die aggregierten Kennzahlen (keine Kurse).
+#
+#   KEINE Provider-Anfrage. Gelesen wird nur die Ablage.
+#   Methodik eingefroren (quant/methodology/technical-intelligence-v2.json):
+#   dieser Lauf misst, er optimiert nichts.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Nur N Titel (0 = alle)'
+        default: '0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: technical-intelligence-evidence
+  cancel-in-progress: false
+
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Measured read-only recovery preflight
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate FULL_UNIVERSE
+          --out "$RUNNER_TEMP/ti-preflight.json"
+
+      - name: Restore canonical history to runner-private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate FULL_UNIVERSE --concurrency 24
+          --preflight "$RUNNER_TEMP/ti-preflight.json"
+          --work-dir "$RUNNER_TEMP/canonical-history"
+          --report "$RUNNER_TEMP/ti-sync.json"
+
+      - name: Daily evidence study over the full universe
+        run: >-
+          node --max-old-space-size=7168 scripts/technical/ti-evidence.mjs --mode daily --workers 4
+          --work-dir "$RUNNER_TEMP/canonical-history" --limit "${{ inputs.limit }}"
+
+      - name: Rebuild Chartbild data with the new evidence tables
+        run: node --max-old-space-size=6144 scripts/technical/build-technical-intelligence.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+
+      - name: Public data hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit aggregated evidence (no prices)
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/technical-intelligence
+          if git diff --cached --quiet; then echo "Evidenz unveraendert."; exit 0; fi
+          git commit -m "Chartbild-Evidenz: Tagesstudie ueber das Universum"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

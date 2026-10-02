@@ -135,7 +135,7 @@
 .qd .cb-chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scroll-snap-type:x mandatory}
 .qd .cb-chip-btn{flex:none;scroll-snap-align:start;min-height:40px;padding:8px 16px;border-radius:99px;border:1px solid var(--q-line2);background:var(--q-panel);color:var(--q-muted);font-weight:700;font-size:13px}
 .qd .cb-chip-btn[aria-selected=true]{background:var(--q-lime);color:var(--q-lime-ink);border-color:var(--q-lime)}
-.qd .cb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.qd .cb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .qd .cb-tile{display:flex;flex-direction:column;gap:3px;padding:14px;border-radius:var(--q-radius-sm);background:var(--q-panel);border:1px solid var(--q-line);text-decoration:none}
 .qd .cb-tile-t{font-size:18px;font-weight:850} .qd .cb-tile-o{font-size:13px} .qd .cb-tile-z{font-size:13px;color:var(--q-lime)} .qd .cb-tile-m{font-size:12px;color:var(--q-dim)}
 .qd .cb-tile.cb-tone-down .cb-tile-z{color:var(--cb-down)}

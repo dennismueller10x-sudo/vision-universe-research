@@ -131,3 +131,16 @@ test("EX-1 · Erklaertexte stammen nur aus Fakten; Facts sind abschliessend", ()
   nums.forEach((n) => assert.ok([95, 97, 92, 104, 106].includes(n), "Zahl " + n + " stammt nicht aus den Fakten"));
   assert.ok(Explain.facts(res, "$").rules.includes("Keine Zahl"));
 });
+
+test("AI-1 · KI-Werkzeuge liefern nur praekomputierte Fakten mit Regel, keine Berechnung", async () => {
+  const AiTools = require("../engines/ai-tools.js");
+  const TIAI = require("../engines/technical/ti/ai-tools.js");
+  const reg = AiTools.createToolRegistry({});
+  const a = { asOf: "2026-10-01", timeframe: "1D", explain: { facts: { close: 1 }, summary: "x", evidence: null }, scenarios: [{ kind: "PRIMARY" }, { kind: "ALTERNATIVE", direction: "BEARISH", template: "PULLBACK", entryZone: { zoneLow: 1, zoneHigh: 2 }, invalidation: { price: 3 }, targets: [] }], pro: { elliott: null } };
+  TIAI.register(reg, { getAnalysis: (s) => (s === "OK" ? { state: "AVAILABLE", analysis: a } : { state: "NOT_AVAILABLE", reason: "NOT_COVERED" }) });
+  const r = await reg.call("getChartbild", { symbol: "OK" });
+  const out = r.data;
+  assert.equal(out.found, true); assert.equal(out.isProbability, false); assert.match(out.rule, /Keine Zahl/);
+  const miss = await reg.call("getChartbild", { symbol: "NO" });
+  assert.equal(miss.data.found, false);
+});

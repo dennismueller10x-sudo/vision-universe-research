@@ -295,6 +295,18 @@ jobs:
         if: steps.noetig.outputs.noop != 'true'
         run: node --max-old-space-size=6144 scripts/quant/build-setup-backtest.mjs --work-dir "$RUNNER_TEMP/canonical-history"
 
+      # CHARTBILD (Technical Intelligence V2). Tagesanalyse fuer das ganze
+      # Universum aus der kanonischen Historie, die nur hier vorliegt; Titel
+      # ohne Tageshistorie bleiben auf Wochenbasis. Die Evidenz-Tabellen
+      # (quant/data/technical-intelligence/evidence) baut der eigene,
+      # manuell gestartete Workflow technical-intelligence-evidence.yml.
+      # Ein Fehler hier haelt die uebrige Materialisierung nicht auf.
+      - name: Chartbild (Technical Intelligence V2) for the full universe
+        if: steps.noetig.outputs.noop != 'true'
+        continue-on-error: true
+        timeout-minutes: 60
+        run: node --max-old-space-size=6144 scripts/technical/build-technical-intelligence.mjs --work-dir "$RUNNER_TEMP/canonical-history"
+
       # UEBERLEBENDEN-KONTROLLE (Owner-Programm 02.10.2026). Inventar der
       # delisteten Titel ueber die Listing-Kennung (nie das Kuerzel) und das
       # private Wochenbuendel aus dem internen Delisting-Abruf (R2,
@@ -423,7 +435,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           # The snapshot history is append-only; the materializer refuses to
           # rewrite a published date, so this only ever adds a new file.
-          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/product/total-return-quality-v1.json quant/data/product/survivorship-control-v1.json quant/data/product/methodology-fingerprint-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/methodology/index.html
+          git add quant/data/product/technical-signals-v1 quant/data/product/factor-evidence-v1 quant/data/product/factor-evidence-history quant/data/product/setup-observations-v1 quant/data/product/setup-observation-history quant/data/product/pattern-research-v1 quant/data/product/pattern-research-fundamentals-v1 quant/data/product/pattern-match-v1 quant/data/product/strategy-index-v1.json.gz quant/data/product/market-regime-v1.json quant/data/product/market-regime-history quant/data/product/radar-v1.json.gz quant/data/product/setup-lifecycle-v1.json.gz quant/data/product/radar-ticker-v1 quant/data/product/radar-history quant/data/product/evidence-status-v1.json quant/data/product/decision-intelligence-v1.json quant/data/product/setup-replay-v1 quant/data/product/setup-backtest-v1.json quant/data/product/signal-backtest-v1.json quant/data/product/backtest-readiness-v2.json quant/data/product/backtest-signal-intelligence-v1.json quant/data/product/setup-outcomes-v1.json quant/data/product/backtest-certification-v1.json quant/data/product/backtest-certification-measure-v1.json quant/data/product/total-return-quality-v1.json quant/data/product/survivorship-control-v1.json quant/data/product/methodology-fingerprint-v1.json quant/data/providers/return-basis-input-audit.json quant/data/providers/return-basis-universe-study.json docs/VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md quant/data/product/methodology-change-v1.json quant/data/product/journey-coverage-v1.json quant/data/product/universe-list-v1.json.gz quant/data/technical-intelligence/v2 quant/methodology/index.html
           if git diff --cached --quiet; then echo "Product Data unveraendert."; exit 0; fi
           node -e 'const s=require("./quant/data/product/technical-signals-v1/summary.json"); console.log(s.counts)'
           node -e 'const s=require("./quant/data/product/factor-evidence-v1/summary.json"); console.log(s.counts); console.log(s.factorStates); console.log(s.snapshotHistory)'

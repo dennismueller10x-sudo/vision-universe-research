@@ -117,8 +117,22 @@ function indexRow(p) {
   };
 }
 
-/** Consumer-Reihen (Discover/Startseite). Regeln offen, Reihenfolge nach Klarheit. */
-export function discoverRows(rows) {
+/** Indexmitglieder (S&P 500, Nasdaq-100, Dow) als Relevanz- und Liquiditaetsfilter fuer Consumer-Reihen. */
+function indexMembers() {
+  const out = {};
+  for (const id of ["SP500", "NDX", "DJIA"]) {
+    const f = join(ROOT, "quant/data/market/index-membership", id + ".json");
+    if (!existsSync(f)) continue;
+    (readJson(f).members || []).forEach((m) => { (out[m.symbol] = out[m.symbol] || []).push(id); });
+  }
+  return out;
+}
+
+/** Consumer-Reihen (Discover/Startseite). Regeln offen, Reihenfolge nach Klarheit.
+    Nur Indexmitglieder mit Kurs >= 5 $: liquide, bekannte Titel — technische Analyse
+    auf illiquiden Werten ist wenig aussagekraeftig (Spreads, Luecken). */
+export function discoverRows(allRows) {
+  const rows = allRows.filter((x) => x.indexes && x.indexes.length && x.close >= 5);
   const bull = rows.filter((x) => x.direction === "BULLISH");
   const by = (arr, fn) => arr.slice().sort(fn).slice(0, 24).map((x) => x.t);
   return {
@@ -131,6 +145,7 @@ export function discoverRows(rows) {
       { id: "elliott-wave3", title: "Wellenstruktur: Welle 3 möglich", rule: "Elliott-Hauptzählung Impuls, Welle 2 abgeschlossen bzw. Welle 3 läuft, Klarheit mindestens mittel", tickers: by(rows.filter((x) => /^IMPULSE:(2|3)$/.test(x.elliott || "") && x.elliottClarity !== "LOW"), (a, b) => b.agreement - a.agreement) },
       { id: "high-confluence", title: "Hohe Einigkeit der Verfahren", rule: "Betrag des Agreements >= 0,6, kein gemischtes Bild", tickers: by(rows.filter((x) => Math.abs(x.agreement || 0) >= 0.6 && x.outlook !== "MIXED"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) }
     ],
+    universe: "Mitglieder von S&P 500, Nasdaq-100 oder Dow Jones mit Kurs ab 5 $",
     note: "Reihen beschreiben technische Lagen, keine Empfehlungen. Historische Trefferquoten je Lage im Evidenzbericht."
   };
 }
@@ -161,7 +176,8 @@ async function main() {
   const ev1W = evidenceTable(join(EVID, "evidence-1W.json"));
   const ev1D = evidenceTable(join(EVID, workDir ? "evidence-1D-universe.json" : "evidence-1D-golden.json")) || evidenceTable(join(EVID, "evidence-1D-golden.json"));
   const shards = {}, rows = [], t0 = Date.now(), dailyDone = new Set();
-  const add = (p) => { const k = shardKey(p.symbol); (shards[k] = shards[k] || {})[p.symbol] = p; rows.push(indexRow(p)); };
+  const members = indexMembers();
+  const add = (p) => { const k = shardKey(p.symbol); (shards[k] = shards[k] || {})[p.symbol] = p; const row = indexRow(p); row.indexes = members[p.symbol] || []; rows.push(row); };
   // ---- Tagesanalyse
   const dailyDir = workDir ? join(workDir, "tiingo", "daily") : join(ROOT, "quant/data/market/golden-preview/daily");
   let dailyFiles = existsSync(dailyDir) ? readdirSync(dailyDir).filter((f) => f.endsWith(".json") && !f.startsWith("_")).sort() : [];
