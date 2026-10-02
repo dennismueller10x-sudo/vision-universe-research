@@ -6,7 +6,14 @@ on:
       - '.github/workflows/tiingo-deep-audit.yml'
       - 'audits/tiingo-2026-10-02/runtime/probe.py'
       - 'audits/tiingo-2026-10-02/*/probes.json'
+      - 'audits/tiingo-2026-10-02/runtime/*/requests/probes.json'
   workflow_dispatch:
+    inputs:
+      phase:
+        description: 'Reviewed request manifest; primary and follow-up batches have separate provenance'
+        type: choice
+        options: [primary, supplemental, ucits, final, review, legacy]
+        default: primary
 permissions:
   contents: read
 concurrency:
@@ -14,14 +21,39 @@ concurrency:
   cancel-in-progress: false
 jobs:
   evidence:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.head_commit.message, '[tiingo-audit]') ||
+      contains(github.event.head_commit.message, '[tiingo-legacy-audit]')
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      AUDIT_PHASE: ${{ inputs.phase || (contains(github.event.head_commit.message, '[tiingo-legacy-audit]') && 'legacy') || 'primary' }}
     steps:
       - uses: actions/checkout@v4
       - name: Bounded account evidence (no production writes)
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-        run: python audits/tiingo-2026-10-02/runtime/probe.py --out "$RUNNER_TEMP/tiingo-audit"
+        run: |
+          python - <<'PY'
+          import importlib.util, json, os
+          from pathlib import Path
+          path = Path('audits/tiingo-2026-10-02/runtime/probe.py')
+          spec = importlib.util.spec_from_file_location('tiingo_audit', path)
+          probe = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(probe)
+          phase = os.environ['AUDIT_PHASE']
+          if phase not in {'primary', 'supplemental', 'ucits', 'final', 'review', 'legacy'}:
+              raise ValueError('Unreviewed manifest phase')
+          if phase != 'primary':
+              probe.AUDIT = path.parent / phase
+          out = Path(os.environ['RUNNER_TEMP']) / 'tiingo-audit'
+          probe.collect(out, max_requests=600 if phase == 'primary' else 100)
+          evidence = out / 'account_evidence.json'
+          report = json.loads(evidence.read_text())
+          report['phase'] = phase
+          evidence.write_text(json.dumps(report, indent=2)+'\n')
+          PY
       - name: Ensure tracked production baseline remains untouched
         run: git diff --exit-code
       - uses: actions/upload-artifact@v4
