@@ -1,0 +1,84 @@
+{
+  "schema": "supertrader-validation-prereg-methods-1.0.0",
+  "registeredAt": "2026-10-02",
+  "status": "FROZEN_BEFORE_RUN",
+  "basedOn": "PREREGISTRATION.json (supertrader-validation-prereg-1.0.0 inkl. A1/A2): gleiches Universum US_PIT_2016_A, gleiche Listing-Identität, gleiche Daten im privaten Eimer, gleiche Delisting-Szenarien, gleiche Vergleichsreihen, gleiche Kontrollen.",
+  "freeze": "Diese Datei wird committet, bevor eine der vier Methoden auf historischen Daten gerechnet wird. Parameter sind die der aktuell live laufenden Versionen; keine Parametersuche. Jede spätere Variante ist eine neue Hypothese mit neuer Version und eigener späterer Prüfung.",
+  "methods": [
+    {
+      "strategyId": "MOMENTUM_BREAKOUT",
+      "variant": "KK_COMMON_BREAKOUT_DAILY",
+      "version": "1.1.0",
+      "engine": "scripts/supertrader/engine/strategies/kk-breakout.mjs (PARAMS unverändert)",
+      "hypothesis": "Ausbrüche aus engen Basen bei Aktien im obersten Momentum-Perzentil, Teilverkauf nach 3 Sitzungen und Nachziehen an der 10-Tage-Linie, schlagen nach Kosten SPY inkl. Dividenden.",
+      "provenance": "Setup, Einstieg, Stop, Teilverkauf und Trailing laut Kullamägi öffentlich beschrieben (PRIMARY_EXPLICIT); Basiserkennung, Liquiditätsgrenzen und Gap-Regel VU-Formalisierung. Getestet wird die VU-Formalisierung, nicht der diskretionäre Händler.",
+      "crossSection": "Momentum-Perzentile (1/3/6 Monate) je Handelstag über alle Universumstitel mit 20-Tage-Dollarvolumen >= 1 Mio. USD am Tag - Point-in-Time, inklusive später delisteter Titel."
+    },
+    {
+      "strategyId": "WEINSTEIN_STAGE",
+      "variant": "WEINSTEIN_STAGE2_WEEKLY",
+      "version": "1.1.0",
+      "engine": "scripts/supertrader/engine/strategies/weinstein.mjs (PARAMS unverändert)",
+      "hypothesis": "Wochenschluss über dem Widerstand einer Stage-1-Basis mit steigender relativer Stärke und >= 1,5-fachem Wochenvolumen, Ausstieg bei Wochenschluss unter der 30-Wochen-Linie, schlägt nach Kosten SPY inkl. Dividenden.",
+      "provenance": "Vier-Phasen-Kern mehrfach belegt (MULTI_SOURCE_CONFIRMED); Klassifikationsschwellen, Stop-Puffer und Basisdefinition VU-Formalisierung.",
+      "weekly": "Wochenreihe aus den Point-in-Time-Tagesbalken (Wochenschluss, Wochenvolumen); relative Stärke gegen SPY-Wochenschluss."
+    },
+    {
+      "strategyId": "DARVAS_BOX",
+      "variant": "DARVAS_BOX_N3_VU",
+      "version": "1.2.0",
+      "engine": "scripts/supertrader/engine/strategies/darvas.mjs (PARAMS unverändert)",
+      "hypothesis": "Schluss über der Oberkante einer bestätigten Box nahe dem Jahreshoch bei momentumstarken Aktien, Stop an der Boxunterkante und Nachziehen an neue Boxen, schlägt nach Kosten SPY inkl. Dividenden.",
+      "provenance": "Grundgerüst mehrfach belegt; Boxalgorithmus VU-Formalisierung (nicht die Originalbox).",
+      "scope": "Primär: alle Setups der Engine (A und B). Die A/B-Qualitätsstufe ist eine Darstellungsstufe; ihr Regime-Kriterium beruht auf einem Marktregime, das nicht Point-in-Time vorliegt. Sekundär (explorativ): nur A ohne Regime-Kriterium."
+    },
+    {
+      "strategyId": "MINERVINI_VCP",
+      "variant": "MINERVINI_TT_VCP_A",
+      "version": "1.1.0",
+      "engine": "scripts/supertrader/engine/strategies/minervini.mjs (PARAMS unverändert)",
+      "hypothesis": "Trend-Template-Aktien mit automatisch erkannter Volatilitätskontraktion, Einstieg per Schluss über dem Pivot, schlagen nach Kosten SPY inkl. Dividenden.",
+      "provenance": "Trend Template mehrfach belegt; VCP-Erkennung, 10-%-Risikokappung und Ausstieg (Schluss unter der 50-Tage-Linie, MIN-EXIT-VU-01) sind VU-Formalisierung. Der Ausstieg ist keine geprüfte Minervini-Originalregel; getestet wird ausschließlich diese VU-Version."
+    }
+  ],
+  "commonSpec": {
+    "universe": "US_PIT_2016_A (Stammaktien, ADR, REIT an NYSE/NASDAQ/AMEX/NYSE MKT/NYSE ARCA/BATS; Mitgliedschaft an Tag D = Listing aktiv und Balken vorhanden; Reihenbruch > 30 Tage)",
+    "window": { "warmupFrom": "2015-01-01", "from": "2016-01-04", "to": "2026-09-30" },
+    "signals": "split-bereinigte Tagesbalken aus Rohkursen; Kursgrenze der jeweiligen Engine (5 USD) auf dem Rohschluss (rawPriceGate), sonst Engine-Regeln unverändert über scripts/supertrader/engine/simulator.mjs",
+    "execution": "DEFAULT_EXECUTION (Einstieg nächste Eröffnung + 10 bp, Stop mit Gap zur Eröffnung, Ausstiege nächste Eröffnung - 10 bp, 1 bp Kommission je Seite)",
+    "portfolio": "PORTFOLIO_DEFAULTS (100.000 USD, 0,5 % Risiko je Trade, max. 20 % je Position, max. 10 Positionen, max. 100 % investiert), Größe zum Vortagesschluss, Dividenden als Barmittel, gleichzeitige Einstiege alphabetisch nach Listing-ID",
+    "delisting": "S0_LAST_PRICE, S1_MINUS_30, S2_DISTRESS_ZERO wie PREREGISTRATION.json",
+    "benchmarks": ["SPY_TR (primär)", "EW_UNIVERSE_TR (gleich gewichtet, Delistings nach Szenario)"],
+    "riskAndExposure": ["Max. Rückgang", "Volatilität", "Sharpe", "mittlere Investitionsquote", "Trades", "Trefferquote", "Ø Haltedauer"],
+    "marketPhases": [
+      { "id": "Q4_2018", "from": "2018-09-20", "to": "2018-12-24" },
+      { "id": "COVID_2020", "from": "2020-02-19", "to": "2020-03-23" },
+      { "id": "BEAR_2022", "from": "2022-01-03", "to": "2022-10-12" },
+      { "id": "BULL_2023_2024", "from": "2023-01-03", "to": "2024-12-31" }
+    ]
+  },
+  "acceptance": {
+    "dataGate": "R0: Datenakzeptanz aus dem Donchian-Lauf (AT1-AT6, AT8) gilt für dieselben Daten; zusätzlich AT5 je Methode (kein Trade mit Rohschluss unter der Kursgrenze der Engine am Bestätigungstag) und Abstimmung C1 je Lauf.",
+    "robustPositiveRequires": [
+      "R1 Überrendite (CAGR) gegenüber SPY_TR > 0 in S0, S1 und S2",
+      "R2 Überrendite > 0 in 2016-2020 und in 2021-2026 (S1)",
+      "R3 Überrendite > 0 in >= 80 % von 20 Zufallsreihenfolgen gleichzeitiger Einstiege (Seeds 1-20, S1)",
+      "R4 Überrendite > 0 bei doppelten Kosten (Slippage 20 bp, Kommission 2 bp; S1)"
+    ],
+    "robustNegative": "Überrendite < 0 im günstigsten Szenario S0 und in beiden Teilzeiträumen (S0)",
+    "otherwise": "NICHT_BELASTBAR",
+    "evidenceMapping": {
+      "CRITERIA_MET": "R0 und R1-R4 erfüllt",
+      "TESTED_NO_EDGE": "R0 erfüllt und robustNegative, oder R0 erfüllt und R1-R4 nicht erfüllt ohne robustNegative (kein überzeugender Vorteil)",
+      "IN_REVIEW": "Prüfung läuft oder Ergebnis darf noch nicht veröffentlicht werden"
+    },
+    "publication": "Öffentlich erscheint bis zur Klärung der Rechte an abgeleiteten Kennzahlen nur die Stufe „In Prüfung“. Ergebnisse bleiben verschlüsselt intern."
+  },
+  "controls": [
+    "C1 Abstimmung Endwert je Portfoliolauf (< 1e-6 relativ)",
+    "C2 runPortfolioTR ohne Dividenden/Kommission/Delistings == runPortfolio",
+    "C3m 20 zufällige Trades je Methode: Einstieg = Eröffnung des Folgetags nach der Bestätigung x (1 + Slippage); Ausstiege zur Eröffnung bzw. Stop-Füllung innerhalb der Tagesspanne; Rohkursgrenze am Bestätigungstag",
+    "C4 Reproduzierbarkeit: identischer Listen-Hash und identische Ergebnisse bei Wiederholung",
+    "C5 extremste 10 Trades je Methode gegen Rohbalken"
+  ]
+}

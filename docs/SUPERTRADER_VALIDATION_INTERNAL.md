@@ -69,3 +69,66 @@ Stand: 01.10.2026. Dieses Dokument beschreibt nur das Verfahren. **Ergebnisse un
 
 - Unverändert. Es werden keine neuen Rendite-, Trefferquoten- oder Trust-Score-Aussagen veröffentlicht.
 - Discovery, Quant 2.0 und der Screener lesen nichts aus diesem Namensraum.
+
+## Runde 6 (02.10.2026): Produktentscheidung, Evidenzstufen, weitere Methoden
+
+### Präzisierung zum Donchian-Lauf
+
+Zwei Zählungen werden getrennt:
+
+- **Engine-Trades:** Jede Aktie wird einzeln und ohne Kapitalgrenze simuliert. Diese Zählung dient nur der Diagnose: Hat die Regel je Trade überhaupt einen Vorteil?
+- **Portfolio-Trades:** Das sind die Trades, die im Zehn-Positionen-Portfolio tatsächlich ausgeführt wurden. Alle Rendite-, Rückgangs- und Vergleichskennzahlen beziehen sich nur hierauf.
+
+Die Zahlen liegen verschlüsselt in `scripts/supertrader/validation/evidence-internal.sealed.json`.
+
+**Geltungsbereich:** Die negative Beurteilung gilt nur für genau diese Kombination:
+
+- Regelversion Donchian v1.1.0 auf Tagesbalken;
+- Universum: US-Aktien einschließlich Delistings;
+- Portfolio mit 10 Positionen und 0,5 % Risiko je Trade;
+- Zeitraum 2016–2026.
+
+Sie gilt nicht pauschal für andere Turtle-Varianten (Futures, Pyramiding, System 2), andere Zeiträume oder andere Strategien.
+
+### Produktentscheidung
+
+- **Donchian v1.1.0** erscheint öffentlich als „In Prüfung“ und wird als Forschung bzw. Modellbeobachtung geführt:
+  - Neue Setups werden nicht als Einstiegschance hervorgehoben.
+  - Protokoll und Modellpositionen laufen unverändert nach der gültigen Regelversion weiter.
+- **Einstufung:** Die Änderung der Einstufung ist kein Marktsignal; sie erzeugt keinen Zustandswechsel im Ledger.
+- **Öffentlicher Stand:** `scripts/supertrader/evidence.mjs` (`EVIDENCE_LEDGER`).
+- **Begründung und Zahlen:** nur verschlüsselt.
+
+### Evidenzstufen je Strategieversion
+
+| Stufe | Bedeutung |
+|---|---|
+| Noch nicht geprüft | kein historischer Test der Version |
+| In Prüfung | Test läuft oder Ergebnis nicht zur Veröffentlichung freigegeben |
+| Geprüft, ohne überzeugenden Vorteil | vorab festgelegte Kriterien nicht erfüllt |
+| Vorab festgelegte Kriterien erfüllt | R0–R4 erfüllt; kein Versprechen für künftige Ergebnisse |
+
+- **Getrennte Angaben:** Quellenqualität (Originalregeln, Original + VU-Umsetzung, Sekundärquellen + VU, Teile nicht belegt) und Datenqualität (Kurse zum damaligen Stand; Fundamentaldaten nicht zum Stichtag; Pflichtdaten fehlen) stehen getrennt neben der Stufe.
+- **Darstellung:**
+  - „Aktuelle Setups“: Hervorhebung auf Startseite und in den Signalen.
+  - „Forschung · Modellbeobachtung“: auffindbar, aber nicht hervorgehoben.
+- **Veröffentlichungsregel:** Bis zur Klärung der Rechte an abgeleiteten Kennzahlen erscheint jede intern geprüfte Version öffentlich nur als „In Prüfung“. Der Test `r6.test.mjs` erzwingt das.
+
+### Weitere Methoden
+
+- **Präregistrierung:** `PREREGISTRATION-METHODS.json`, eingefroren vor jeder Rechnung dieser Methoden.
+- **Geprüfte Versionen:** Momentum Breakout v1.1.0, Weinstein v1.1.0, Darvas v1.2.0 (primär alle Setups) und Minervini v1.1.0, jeweils als VU-Formalisierung.
+- **Minervini:** Der Ausstieg (Schluss unter der 50-Tage-Linie) ist eine VU-Regel, keine geprüfte Originalregel.
+- **Gleiche Grundlage wie Donchian:** Daten, Delisting-Szenarien, Kriterien R1–R4 und Kontrollen.
+- **Ergebnisse:** nur verschlüsselt.
+- **Lauf:** Run 36968858290, `20261002T063136Z-analyze-methods.sealed.json` auf `claude/supertrader-validation-results`. Kontrollen C1, C2, C3m und AT5 bestanden.
+- **Interne Einstufung:** Alle vier Versionen: „historisch geprüft ohne überzeugenden Vorteil“. Momentum, Weinstein und Darvas sind robust negativ. Minervini ist nicht belastbar: R1–R4 sind nicht erfüllt, und die Teilzeiträume widersprechen sich.
+- **Einordnung:**
+  - Momentum und Weinstein handeln regelgemäß selten; ihre Investitionsquote ist niedrig.
+  - Bei Darvas zeigt die Kontrolle nur mit überlebenden Titeln einen deutlichen Survivorship-Effekt.
+  - Kennzahlen stehen nur in der verschlüsselten Datei `evidence-internal.sealed.json`.
+- **Produktentscheidung (02.10.2026):**
+  - Alle Versionen sind öffentlich „In Prüfung“ und erscheinen als Forschung bzw. Modellbeobachtung.
+  - Laufende Modellpositionen werden nach ihrer Regelversion weitergeführt.
+  - Damit gibt es derzeit keine aktuelle Methode: Die Startseite zeigt den Beobachtungsmodus.
+- **Geltungsbereich:** Die Aussage gilt jeweils nur für diese Regelversion, das Universum `US_PIT_2016_A`, das Zehn-Positionen-Portfolio und den Zeitraum 2016–2026. Eine geänderte Variante ist eine neue Hypothese mit eigener Präregistrierung.

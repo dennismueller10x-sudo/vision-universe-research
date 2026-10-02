@@ -21,6 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
+import { buildWeekly } from './engine/weekly.mjs';
 import { simulate, rescaleSignal } from './engine/simulator.mjs';
 import { STATES, STATE_LABELS, TERMINAL, PENDING, PHASES, phaseOf } from './engine/lifecycle.mjs';
 import { describeExecution } from './engine/execution.mjs';
@@ -37,6 +38,7 @@ import * as piotroski from './engine/partial/piotroski.mjs';
 import { buildPilotArtifact } from './pilot/donchian-weekly.mjs';
 import { buildReplayArtifact } from './replay.mjs';
 import { STRATEGIES, REGISTRY_VERSION, DNA_FIELDS, INTERNAL_SOURCES } from './registry.mjs';
+import { evidenceFor, EVIDENCE_LEVELS, SOURCE_QUALITY, DATA_QUALITY, NO_PROMISE, EVIDENCE_VERSION } from './evidence.mjs';
 
 export const BUILD_VERSION = 'supertrader-build-1.0.0';
 let CURRENT_REGIME = null;
@@ -98,51 +100,6 @@ function loadBenchmarkWeekly() {
   const byWeek = new Map();
   for (const [d, v] of j.points) byWeek.set(isoWeekKey(String(d).slice(0, 10)), v);
   return { byWeek, to: j.to, from: j.from };
-}
-
-// Wochenreihe: lange Wochenschlusskurse + aus Tagesbalken abgeleitete Wochen
-// danach. Volumen nur, wo Tagesbalken existieren. weekAt[t] ist nur an
-// VOLLSTAENDIGEN Wochenenden gesetzt (naechster Balken in neuer Woche, oder
-// letzter Balken an einem Freitag).
-function buildWeekly(inst, longPoints, bench) {
-  const { bars } = inst;
-  const weeks = new Map();
-  for (const [d, c] of longPoints || []) weeks.set(isoWeekKey(String(d).slice(0, 10)), { date: String(d).slice(0, 10), close: c, volume: null });
-  const n = bars.date.length;
-  const weekAt = new Array(n).fill(null);
-  const dailyWeekEnd = new Map();
-  for (let t = 0; t < n; t++) {
-    const wk = isoWeekKey(bars.date[t]);
-    const w = weeks.get(wk) || { date: bars.date[t], close: bars.close[t], volume: 0 };
-    if (w.volume === null) w.volume = 0;
-    w._daily = (w._daily || 0) + 1;
-    w.volume += Number.isFinite(bars.volume[t]) ? bars.volume[t] : 0;
-    w.close = bars.close[t]; w.date = bars.date[t];
-    weeks.set(wk, w);
-    const nextWk = t + 1 < n ? isoWeekKey(bars.date[t + 1]) : null;
-    const complete = nextWk ? nextWk !== wk : new Date(bars.date[t] + 'T12:00:00Z').getUTCDay() === 5;
-    if (complete) dailyWeekEnd.set(t, wk);
-  }
-  const keys = [...weeks.keys()].sort();
-  // Die erste Woche im Tagesfenster ist moeglicherweise unvollstaendig
-  // (Fenster beginnt mitten in der Woche): Volumen dort nicht verwenden.
-  const firstDailyWeek = isoWeekKey(bars.date[0]);
-  const w = { date: [], close: [], volume: [], key: [] };
-  for (const k of keys) {
-    const x = weeks.get(k);
-    w.key.push(k); w.date.push(x.date); w.close.push(x.close);
-    w.volume.push(x._daily && k !== firstDailyWeek ? x.volume : null);
-  }
-  w.ma30 = sma(w.close, 30);
-  w.rs = w.close.map((c, i) => { const b = bench.byWeek.get(w.key[i]); return Number.isFinite(b) && b > 0 ? c / b : null; });
-  w.volAvg = w.volume.map((_, i) => {
-    let s = 0, c = 0;
-    for (let j = i - 10; j < i; j++) if (j >= 0 && Number.isFinite(w.volume[j])) { s += w.volume[j]; c++; }
-    return c >= 8 ? s / c : null;
-  });
-  const keyIndex = new Map(w.key.map((k, i) => [k, i]));
-  for (const [t, wk] of dailyWeekEnd) weekAt[t] = keyIndex.get(wk);
-  return { weekly: w, weekAt };
 }
 
 /* ----------------------------------------------- Querschnittsraenge */
@@ -629,7 +586,9 @@ function buildRegistry(coverage, gbCoverage) {
     schema: 'supertrader-registry-1.0.0', registryVersion: REGISTRY_VERSION, dnaFields: DNA_FIELDS,
     lifecycle: { states: STATES, labels: STATE_LABELS, phases: PHASES, persistedFrom: 'SETUP', scannerOnly: ['DISCOVERED', 'WATCH'] },
     execution: describeExecution(), portfolioDefaults: PORTFOLIO_DEFAULTS,
-    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null })),
+    strategies: STRATEGIES.map((s) => ({ ...s, engine: engineParams[s.strategy_id] || null, evidence: evidenceFor(s) })),
+    evidenceScale: { schema: EVIDENCE_VERSION, levels: EVIDENCE_LEVELS, source: SOURCE_QUALITY, data: DATA_QUALITY, noPromise: NO_PROMISE,
+      publicationNote: 'Intern geprüfte Versionen erscheinen bis zur Klärung der Rechte an abgeleiteten Kennzahlen als „In Prüfung“. Eine Änderung der Einstufung ist kein Marktsignal und ändert kein protokolliertes Signal.' },
     dataRealityNote: `Tages-OHLCV öffentlich ${String(coverage.dailyOhlcvYears).replace('.', ',')} Jahre; Greenblatt-Pflichtfelder fehlend: ${gbCoverage.missingFields.join(', ') || 'keine'}.`,
   };
 }
@@ -781,11 +740,9 @@ function buildBacktests(registry, coverage, gbCoverage) {
 }
 // Kleinster belegter Schritt zuerst (docs/SUPERTRADER_VALIDATION_DATA_PATH.md).
 const NEXT_STEPS = [
-  ['Owner-Entscheidung: Rechte und Abrufumfang', 'Freigabe für interne Backtests mit delisteten Titeln (~5.200 Abrufe im bestehenden Abo, verteilt auf 1–2 Tage) und für die Veröffentlichung abgeleiteter Kennzahlen.'],
-  ['Delistete Titel ab 2016 abrufen', 'Tageskurse aller ab 2016 delisteten US-Aktien über den vorhandenen Zugang; der Probeabruf lieferte 20 von 21 bis zum letzten Handelstag.'],
-  ['Universum „handelbar am Tag X“ bauen', 'Aus Listing-Beginn und -Ende je Wertpapier; Kürzel-Neuvergaben trennen und Lücken zählen.'],
-  ['Gesamtrendite selbst rechnen', 'Aus Rohkurs, Dividende und Split statt der uneinheitlichen bereinigten Spalte.'],
-  ['Dann: Donchian-Tagesvariante 2016–2026', 'Erster validierbarer Test: reine Kursmethode, ≥ 10 Jahre, Bärenphasen 2018, 2020, 2022.'],
+  ['Rechte an abgeleiteten Kennzahlen klären', 'Ob aus den Kursdaten berechnete Backtest-Ergebnisse veröffentlicht werden dürfen. Bis dahin erscheinen geprüfte Versionen als „In Prüfung“.'],
+  ['Fundamentaldaten zum damaligen Stichtag', 'Erstmeldungen aus den SEC-Abschlüssen statt zuletzt berichteter Werte – Voraussetzung für historische Tests von CAN SLIM, Piotroski und Greenblatt.'],
+  ['Neue Regelversionen nur als neue Hypothese', 'Eine Variante nach Kenntnis eines Ergebnisses wird vorab festgelegt und erst mit späteren Daten unabhängig geprüft.'],
 ];
 function mapVariant(v) {
   if (v.startsWith('KK_COMMON_BREAKOUT')) return 'KK_COMMON_BREAKOUT_DAILY';
