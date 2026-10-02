@@ -291,3 +291,10 @@ werden daneben berichtet.
   Tagestief (vorher 0,5 %). Aufgelöst 891 statt 882 Fälle.
 - 52 von 1 821 Einzelentscheidungen änderten sich; die Befunde je Methode (MOSTLY_EXIT / MOSTLY_HOLD) bleiben.
 - Beispiele (AXON, MNKD, TSLA) unverändert.
+
+**r9b nach A4** (Run 37051901456, `20261002T220429Z-analyze-r9b.sealed.json`; Vergleich mit Run 37041293109):
+- Aus Minuten entschieden: Momentum 898 Trades (vorher 889), Darvas leicht mehr. Referenzen unverändert reproduziert.
+- Momentum 3.1.0: beide Schranken weiter ROBUST_NEGATIVE; 2016–2020 bleibt in beiden Schranken unter SPY.
+  Die R8-Korrektur („2016–2020 über SPY“ beruhte auf der Tagesbalken-Annahme) gilt unverändert.
+- Darvas 3.0.0: beide Schranken weiter robust negativ; Ursachenregel weiter unerfüllt.
+- Ergebnisse vor A4 bleiben als `#r9b`, nach A4 als `#r9b-a4` in `evidence-internal.sealed.json`.
