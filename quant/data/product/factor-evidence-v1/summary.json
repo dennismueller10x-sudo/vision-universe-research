@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.2.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-10-02T12:39:01.000Z",
+ "generatedAt": "2026-10-02T21:19:49.000Z",
  "asOf": "2026-10-01",
  "publication": {
   "compositeAllowed": false,
@@ -724,7 +724,14 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": false,
-  "recomputationDrift": null
+  "recomputationDrift": {
+   "asOf": "2026-10-01",
+   "publishedHash": "5b576b4c105faf3e",
+   "recomputedHash": "0130755678f4175f",
+   "rowsDiffering": 457,
+   "rowsTotal": 6308,
+   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+  }
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
@@ -758,7 +765,7 @@
   },
   "quotes": {
    "source": "technical-product-artifact-1.0.0",
-   "tickers": 6824
+   "tickers": 6803
   }
  },
  "notAnEquityListing": {
@@ -926,9 +933,9 @@
   "notAnEquityListing": 145,
   "published": 6308,
   "withFundamentals": 5032,
-  "withMarketCap": 3757,
-  "quotesFromPublishedSeries": 942,
-  "withMarketCapFromPublishedSeries": 121
+  "withMarketCap": 3756,
+  "quotesFromPublishedSeries": 929,
+  "withMarketCapFromPublishedSeries": 120
  },
  "factorStates": {
   "quality": {
@@ -947,8 +954,8 @@
    "NOT_APPLICABLE": 0
   },
   "value": {
-   "AVAILABLE": 2518,
-   "UNAVAILABLE": 3790,
+   "AVAILABLE": 2517,
+   "UNAVAILABLE": 3791,
    "NOT_APPLICABLE": 0
   },
   "profitability": {
@@ -971,7 +978,7 @@
   "INSUFFICIENT_WEIGHTED_COVERAGE": 2023,
   "BLOCKED_EXTERNAL": 6308,
   "INSUFFICIENT_COMPONENTS": 4219,
-  "INPUT_NOT_MATERIALIZED": 8646,
+  "INPUT_NOT_MATERIALIZED": 8647,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 474,
   "MANDATORY_COMPONENT_MISSING": 25
  },
@@ -1008,16 +1015,16 @@
   "INDUSTRY:quality:roaStability5y": 863,
   "INDUSTRY:quality:positiveEarningsYears": 871,
   "INDUSTRY:quality:dividendCoverageByOcf": 508,
-  "INDUSTRY:value:bookToMarket": 614,
-  "INDUSTRY:value:earningsYield": 545,
+  "INDUSTRY:value:bookToMarket": 613,
+  "INDUSTRY:value:earningsYield": 544,
   "INDUSTRY:value:pretaxEarningsYield": 377,
-  "INDUSTRY:value:dividendYield": 415,
+  "INDUSTRY:value:dividendYield": 414,
   "INDUSTRY:profitability:roaTtm": 769,
   "INDUSTRY:profitability:roeTtm": 559,
   "INDUSTRY:profitability:netMarginTtm": 117,
   "INDUSTRY:profitability:roaMedian3y": 878,
   "profitability:grossProfitabilityTtm": 1362,
-  "INDUSTRY:value:cashFlowYield": 141,
+  "INDUSTRY:value:cashFlowYield": 140,
   "INDUSTRY:profitability:cashReturnOnAssets": 202,
   "INDUSTRY:profitability:ocfMarginTtm": 136,
   "INDUSTRY:profitability:pretaxRoaTtm": 414,
@@ -1051,10 +1058,10 @@
     "INDUSTRY:profitability:pretaxRoaTtm (414)",
     "INDUSTRY:profitability:roeTtm (559)",
     "INDUSTRY:quality:dividendCoverageByOcf (508)",
-    "INDUSTRY:value:bookToMarket (614)",
-    "INDUSTRY:value:cashFlowYield (141)",
-    "INDUSTRY:value:dividendYield (415)",
-    "INDUSTRY:value:earningsYield (545)",
+    "INDUSTRY:value:bookToMarket (613)",
+    "INDUSTRY:value:cashFlowYield (140)",
+    "INDUSTRY:value:dividendYield (414)",
+    "INDUSTRY:value:earningsYield (544)",
     "INDUSTRY:value:pretaxEarningsYield (377)",
     "profitability:roicMedian3y (542)",
     "profitability:roicTtm (58)",
@@ -1096,6 +1103,6 @@
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 474,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 9
  },
- "runtimeMs": 14682,
- "contentHash": "970640ae2a6105c0"
+ "runtimeMs": 18214,
+ "contentHash": "9bbc2c3981abab25"
 }

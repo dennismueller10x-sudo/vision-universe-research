@@ -1,8 +1,8 @@
 {
  "schemaVersion": "backtest-signal-intelligence-1.0.0",
- "generatedAt": "2026-10-02T13:17:01.366Z",
+ "generatedAt": "2026-10-02T21:35:53.109Z",
  "radarAsOf": "2026-10-01",
- "signalAsOf": "2026-09-25",
+ "signalAsOf": "2026-10-02",
  "setupAsOf": "2026-10-01",
  "measures": {
   "SETUP_BACKTEST_READY": {
@@ -57,8 +57,8 @@
   },
   "SIGNALS_WITH_HISTORICAL_EVIDENCE": 5,
   "SIGNAL_TYPES_TOTAL": 15,
-  "RADAR_EVENTS_WITH_BACKTEST": 580,
-  "RADAR_EVENTS_TOTAL": 969,
+  "RADAR_EVENTS_WITH_BACKTEST": 577,
+  "RADAR_EVENTS_TOTAL": 1636,
   "WATCHLIST_EVENTS_TRACKABLE": 5882,
   "ALERT_CONTRACT_READY": "PASS",
   "PIT_PASS": "PASS",
@@ -66,7 +66,7 @@
   "SURVIVORSHIP_PASS": "PASS",
   "SURVIVORSHIP_CONTROLLED": false,
   "TRUST_PASS": "PASS",
-  "DISCOVER_CHANGED": false
+  "DISCOVER_CHANGED": true
  },
  "criteria": [
   {
@@ -115,10 +115,10 @@
   },
   {
    "criterion": "Discover unverändert",
-   "pass": true
+   "pass": false
   }
  ],
- "verdict": "PASS",
+ "verdict": "FAIL",
  "sample": [
   {
    "ticker": "NVDA",
@@ -169,7 +169,7 @@
    "next": "Beobachten (1/1)",
    "evidence": "BROAD",
    "events": [
-    "TREND_DOWN:LIMITED n=90650"
+    "TREND_DOWN:LIMITED n=90716"
    ]
   },
   {
@@ -189,8 +189,10 @@
    "durationDays": 7,
    "invalidation": 524,
    "next": "Setup bestätigt (3/5)",
-   "evidence": "UNAVAILABLE",
-   "events": []
+   "evidence": "THIN",
+   "events": [
+    "PATTERN_MATCH_NEW:WITHHELD PATTERN_MATCH_HISTORY_TOO_SHORT"
+   ]
   },
   {
    "ticker": "DXPE",
@@ -199,7 +201,7 @@
    "durationDays": 3,
    "invalidation": 174,
    "next": null,
-   "evidence": "THIN",
+   "evidence": "BROAD",
    "events": []
   },
   {

@@ -3,7 +3,7 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-10-02T12:39:15.000Z",
+ "generatedAt": "2026-10-02T21:20:05.000Z",
  "asOf": "2026-10-01",
  "approval": {
   "state": "APPROVED",
@@ -323,12 +323,12 @@
    "predicateHash": null
   }
  ],
- "universe": 5882,
- "observed": 5882,
+ "universe": 5874,
+ "observed": 5874,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4508,
-  "WATCH": 813,
+  "NO_SETUP": 4502,
+  "WATCH": 811,
   "SETUP_FORMING": 537,
   "CONFIRMED": 24,
   "ACTIVE": 0,
@@ -338,9 +338,9 @@
  },
  "ruleCounts": {
   "setup.forming.complete-setup-awaiting-trigger": 537,
-  "setup.none.fallback": 4508,
+  "setup.none.fallback": 4502,
   "setup.watch.bullish-trend": 506,
-  "setup.watch.confirmed-structure-near-high": 307,
+  "setup.watch.confirmed-structure-near-high": 305,
   "setup.confirmed.structure-trend-volume": 24
  },
  "pathTier": {
@@ -372,7 +372,7 @@
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5882
+   "instruments": 5874
   }
  },
  "shards": [
@@ -1013,5 +1013,16 @@
   "ZZ",
   "Z_"
  ],
- "observationDrift": null
+ "observationDrift": {
+  "asOf": "2026-10-01",
+  "publishedHash": "740788e63ad316791925b64d5563c460",
+  "recomputedHash": "c637ad98528f7f30f511a7ef0ed9c454",
+  "rowsPublished": 5882,
+  "rowsToday": 5874,
+  "rowsAdded": 0,
+  "rowsChanged": 8,
+  "addedOnly": false,
+  "columnsDiffer": false,
+  "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt - auch nicht durch eine, die nur Zeilen hinzufuegen wuerde."
+ }
 }

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-10-02T13:17:00.092Z",
+ "generatedAt": "2026-10-02T21:35:51.387Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5882,
-    "covered": 5554,
-    "available": 5336,
+    "universe": 5874,
+    "covered": 5556,
+    "available": 5365,
     "sufficient": {
-     "m1": 2242,
-     "m3": 2155,
-     "m6": 2068,
-     "m12": 1967
+     "m1": 2245,
+     "m3": 2162,
+     "m6": 2083,
+     "m12": 1983
     },
     "broad": {
-     "m6": 627
+     "m6": 622
     },
     "reasons": {
-     "NOT_COVERED": 328,
-     "NO_PRICE_CONDITION_TODAY": 123,
-     "NO_COMPARABLE_CASE": 95
+     "NOT_COVERED": 318,
+     "NO_COMPARABLE_CASE": 71,
+     "NO_PRICE_CONDITION_TODAY": 120
     }
    }
   },
@@ -77,10 +77,10 @@
     }
    },
    "trust": {
-    "sample": 967194,
+    "sample": 972024,
     "period": [
      "1992-01-31",
-     "2026-09-25"
+     "2026-10-01"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -262,8 +262,8 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 93597,
-     "titles": 5453,
+     "n": 93652,
+     "titles": 5448,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -274,8 +274,8 @@
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 93984,
-     "titles": 5474,
+     "n": 94040,
+     "titles": 5470,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -288,8 +288,8 @@
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 90548,
-     "titles": 5409,
+     "n": 90595,
+     "titles": 5406,
      "displayAllowed": true,
      "failed": [
       "survivorship",
@@ -300,8 +300,8 @@
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 90650,
-     "titles": 5432,
+     "n": 90716,
+     "titles": 5429,
      "displayAllowed": true,
      "failed": [
       "oos",
@@ -315,10 +315,11 @@
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 59110,
-     "titles": 5198,
+     "n": 59122,
+     "titles": 5194,
      "displayAllowed": true,
      "failed": [
+      "walkForward",
       "survivorship",
       "returnBasis",
       "regimeDiversity"
@@ -339,22 +340,22 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5882,
-   "covered": 5554,
-   "available": 5336,
+   "universe": 5874,
+   "covered": 5556,
+   "available": 5365,
    "sufficient": {
-    "m1": 2242,
-    "m3": 2155,
-    "m6": 2068,
-    "m12": 1967
+    "m1": 2245,
+    "m3": 2162,
+    "m6": 2083,
+    "m12": 1983
    },
    "broad": {
-    "m6": 627
+    "m6": 622
    },
    "reasons": {
-    "NOT_COVERED": 328,
-    "NO_PRICE_CONDITION_TODAY": 123,
-    "NO_COMPARABLE_CASE": 95
+    "NOT_COVERED": 318,
+    "NO_COMPARABLE_CASE": 71,
+    "NO_PRICE_CONDITION_TODAY": 120
    }
   }
  }

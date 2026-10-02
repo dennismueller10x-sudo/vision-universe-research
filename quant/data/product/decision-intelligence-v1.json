@@ -1,9 +1,9 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-10-02T13:17:00.927Z",
+ "generatedAt": "2026-10-02T21:35:52.429Z",
  "asOf": "2026-10-01",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 969,
+  "RADAR_EVENTS_TOTAL": 1636,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 8,
    "SETUP_NEW": 102,
@@ -11,13 +11,13 @@
    "NEW_52W_HIGH": 109,
    "MOMENTUM_IMPROVED": 97,
    "TREND_UP": 99,
-   "PATTERN_MATCH_NEW": 0,
+   "PATTERN_MATCH_NEW": 670,
    "FACTOR_CHANGED": 152,
    "RISK_RISING": 5,
    "SETUP_WEAKENED": 81,
    "SETUP_INVALIDATED": 0,
    "STRATEGY_MATCH_LOST": 13,
-   "MOMENTUM_DETERIORATED": 158,
+   "MOMENTUM_DETERIORATED": 155,
    "TREND_DOWN": 117,
    "EVIDENCE_CHANGED": 0
   },
@@ -27,32 +27,32 @@
   "BACKTEST_ELIGIBLE_RULES": 69,
   "BACKTEST_WITHHELD_RULES": 62,
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5882,
-   "covered": 5554,
-   "available": 5336,
+   "universe": 5874,
+   "covered": 5556,
+   "available": 5365,
    "sufficient": {
-    "m1": 2242,
-    "m3": 2155,
-    "m6": 2068,
-    "m12": 1967
+    "m1": 2245,
+    "m3": 2162,
+    "m6": 2083,
+    "m12": 1983
    },
    "broad": {
-    "m6": 627
+    "m6": 622
    },
    "reasons": {
-    "NOT_COVERED": 328,
-    "NO_PRICE_CONDITION_TODAY": 123,
-    "NO_COMPARABLE_CASE": 95
+    "NOT_COVERED": 318,
+    "NO_COMPARABLE_CASE": 71,
+    "NO_PRICE_CONDITION_TODAY": 120
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5882,
-  "ALERT_READY_EVENTS": 969
+  "ALERT_READY_EVENTS": 1636
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "870 Karten aus 969 Ereignissen"
+   "measured": "1382 Karten aus 1636 Ereignissen"
   },
   {
    "question": "warum",
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2068 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "2083 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -218,7 +218,7 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 6,
+    "episodes": 7,
     "horizon": null,
     "evidence": "WITHHELD",
     "positiveShare": null,
@@ -293,11 +293,11 @@
     "direction": "NEUTRAL"
    },
    "replay": {
-    "episodes": 38,
+    "episodes": 33,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.7777777777777778,
-    "medianReturn": 0.08415097856053533
+    "positiveShare": 0.7878787878787878,
+    "medianReturn": 0.09653770000535133
    },
    "factors": 4
   },
@@ -349,7 +349,9 @@
   {
    "ticker": "META",
    "kind": "Großwert",
-   "radarEvents": [],
+   "radarEvents": [
+    "PATTERN_MATCH_NEW"
+   ],
    "setup": {
     "state": "SETUP_FORMING",
     "since": "2026-09-24",
@@ -383,7 +385,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "reason": "NO_COMPARABLE_CASE"
+    "episodes": 22,
+    "horizon": "m6",
+    "evidence": "THIN",
+    "positiveShare": 0.7272727272727273,
+    "medianReturn": 0.10094691551545132
    },
    "factors": 4
   },
@@ -424,11 +430,11 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 22,
+    "episodes": 38,
     "horizon": "m6",
-    "evidence": "THIN",
-    "positiveShare": 0.8333333333333334,
-    "medianReturn": 0.22417145428029994
+    "evidence": "BROAD",
+    "positiveShare": 0.4864864864864865,
+    "medianReturn": -0.006908462867012188
    },
    "factors": 6
   },

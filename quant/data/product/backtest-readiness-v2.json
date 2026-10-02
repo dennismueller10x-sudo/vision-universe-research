@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-10-02T13:16:36.266Z",
+ "generatedAt": "2026-10-02T21:35:19.667Z",
  "returnContract": {
   "technicalSetupMomentum": "SPLIT_ADJUSTED_PRICE",
   "backtestPortfolioBenchmark": "TOTAL_RETURN",
@@ -51,14 +51,14 @@
    "id": "priceSplitAdjusted",
    "label": "Kurshistorie splitbereinigt",
    "weekly": {
-    "titles": 6333,
+    "titles": 6334,
     "from": "1990-01-05",
     "grain": "WEEKLY",
     "endedBeforeMarch2026": 0
    },
    "daily": {
     "titlesFullHistory": 5,
-    "titlesLastYear": 6504
+    "titlesLastYear": 6483
    }
   },
   {
@@ -162,7 +162,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6333 Titel seit 1990-01-05",
+     "value": "6334 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -269,7 +269,7 @@
      "id": "history",
      "label": "Wochenhistorie",
      "state": "PASS",
-     "value": "6333 Titel seit 1990-01-05",
+     "value": "6334 Titel seit 1990-01-05",
      "reason": null
     },
     {
@@ -291,40 +291,40 @@
     {
      "id": "MOMENTUM_IMPROVED",
      "trust": "LIMITED",
-     "n": 93597,
-     "titles": 5453,
+     "n": 93652,
+     "titles": 5448,
      "displayAllowed": true,
      "returnType": "SPLIT_ADJUSTED_PRICE"
     },
     {
      "id": "MOMENTUM_DETERIORATED",
      "trust": "LIMITED",
-     "n": 93984,
-     "titles": 5474,
+     "n": 94040,
+     "titles": 5470,
      "displayAllowed": true,
      "returnType": "SPLIT_ADJUSTED_PRICE"
     },
     {
      "id": "TREND_UP",
      "trust": "LIMITED",
-     "n": 90548,
-     "titles": 5409,
+     "n": 90595,
+     "titles": 5406,
      "displayAllowed": true,
      "returnType": "SPLIT_ADJUSTED_PRICE"
     },
     {
      "id": "TREND_DOWN",
      "trust": "LIMITED",
-     "n": 90650,
-     "titles": 5432,
+     "n": 90716,
+     "titles": 5429,
      "displayAllowed": true,
      "returnType": "SPLIT_ADJUSTED_PRICE"
     },
     {
      "id": "NEW_52W_HIGH",
      "trust": "LIMITED",
-     "n": 59110,
-     "titles": 5198,
+     "n": 59122,
+     "titles": 5194,
      "displayAllowed": true,
      "returnType": "SPLIT_ADJUSTED_PRICE"
     }

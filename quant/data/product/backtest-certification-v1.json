@@ -1,6 +1,6 @@
 {
  "schemaVersion": "backtest-certification-1.0.0",
- "generatedAt": "2026-10-02T13:16:35.495Z",
+ "generatedAt": "2026-10-02T21:35:18.633Z",
  "asOf": "2026-10-02",
  "methodology": "backtest-certification-1.0.0",
  "kinds": [
@@ -260,7 +260,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "93597 Fälle mit 6-Monats-Ergebnis aus 5453 Titeln",
+       "value": "93652 Fälle mit 6-Monats-Ergebnis aus 5448 Titeln",
        "required": null,
        "reason": null
       },
@@ -341,7 +341,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 21179 unabhängige Fälle",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 21303 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -368,7 +368,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "Δ -0.0154",
+       "value": "Δ -0.0153",
        "required": null,
        "reason": null
       }
@@ -407,25 +407,25 @@
       }
      ],
      "sample": {
-      "n": 93597,
-      "titles": 5453
+      "n": 93652,
+      "titles": 5448
      },
      "independence": {
-      "uniqueTitles": 5453,
-      "uniquePeriods": 1836,
+      "uniqueTitles": 5448,
+      "uniquePeriods": 1837,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 21179,
-      "designEffect": 4.42
+      "effectiveN": 21303,
+      "designEffect": 4.4
      },
      "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
       "positiveShare": 0.5226,
-      "base": 0.538,
-      "delta": -0.0154,
+      "base": 0.5379,
+      "delta": -0.0153,
       "ci": [
-       -0.0217,
-       -0.0092
+       -0.0216,
+       -0.0091
       ]
      }
     },
@@ -455,7 +455,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "93984 Fälle mit 6-Monats-Ergebnis aus 5474 Titeln",
+       "value": "94040 Fälle mit 6-Monats-Ergebnis aus 5470 Titeln",
        "required": null,
        "reason": null
       },
@@ -536,7 +536,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 24125 unabhängige Fälle",
+       "value": "1838 Wochen, 141 Quartale, effektiv ≈ 24113 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -554,7 +554,7 @@
        "label": "Vollständigkeit",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "0.997 der abgeschlossenen Fälle mit allen vier Zeiträumen",
+       "value": "0.996 der abgeschlossenen Fälle mit allen vier Zeiträumen",
        "required": null,
        "reason": null
       },
@@ -563,7 +563,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.0027",
+       "value": "Δ -0.0026",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -618,30 +618,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.0027",
+       "value": "Δ -0.0026",
        "required": null
       }
      ],
      "sample": {
-      "n": 93984,
-      "titles": 5474
+      "n": 94040,
+      "titles": 5470
      },
      "independence": {
-      "uniqueTitles": 5474,
-      "uniquePeriods": 1837,
+      "uniqueTitles": 5470,
+      "uniquePeriods": 1838,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 24125,
+      "effectiveN": 24113,
       "designEffect": 3.9
      },
      "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5369,
+      "positiveShare": 0.537,
       "base": 0.5396,
-      "delta": -0.0027,
+      "delta": -0.0026,
       "ci": [
-       -0.0086,
-       0.0032
+       -0.0085,
+       0.0033
       ]
      }
     },
@@ -671,7 +671,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "90548 Fälle mit 6-Monats-Ergebnis aus 5409 Titeln",
+       "value": "90595 Fälle mit 6-Monats-Ergebnis aus 5406 Titeln",
        "required": null,
        "reason": null
       },
@@ -752,7 +752,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 25977 unabhängige Fälle",
+       "value": "1837 Wochen, 141 Quartale, effektiv ≈ 26166 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -779,7 +779,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "Δ -0.0133",
+       "value": "Δ -0.0132",
        "required": null,
        "reason": null
       }
@@ -818,25 +818,25 @@
       }
      ],
      "sample": {
-      "n": 90548,
-      "titles": 5409
+      "n": 90595,
+      "titles": 5406
      },
      "independence": {
-      "uniqueTitles": 5409,
-      "uniquePeriods": 1836,
+      "uniqueTitles": 5406,
+      "uniquePeriods": 1837,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 25977,
-      "designEffect": 3.49
+      "effectiveN": 26166,
+      "designEffect": 3.46
      },
      "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5262,
+      "positiveShare": 0.5263,
       "base": 0.5395,
-      "delta": -0.0133,
+      "delta": -0.0132,
       "ci": [
-       -0.019,
-       -0.0077
+       -0.0189,
+       -0.0076
       ]
      }
     },
@@ -866,7 +866,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "90650 Fälle mit 6-Monats-Ergebnis aus 5432 Titeln",
+       "value": "90716 Fälle mit 6-Monats-Ergebnis aus 5429 Titeln",
        "required": null,
        "reason": null
       },
@@ -947,7 +947,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1835 Wochen, 141 Quartale, effektiv ≈ 26649 unabhängige Fälle",
+       "value": "1836 Wochen, 141 Quartale, effektiv ≈ 26822 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -974,7 +974,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ -0.0016",
+       "value": "Δ -0.0015",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -1036,30 +1036,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ -0.0016",
+       "value": "Δ -0.0015",
        "required": null
       }
      ],
      "sample": {
-      "n": 90650,
-      "titles": 5432
+      "n": 90716,
+      "titles": 5429
      },
      "independence": {
-      "uniqueTitles": 5432,
-      "uniquePeriods": 1835,
+      "uniqueTitles": 5429,
+      "uniquePeriods": 1836,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 26649,
-      "designEffect": 3.4
+      "effectiveN": 26822,
+      "designEffect": 3.38
      },
      "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5361,
-      "base": 0.5377,
-      "delta": -0.0016,
+      "positiveShare": 0.536,
+      "base": 0.5375,
+      "delta": -0.0015,
       "ci": [
        -0.0071,
-       0.004
+       0.0041
       ]
      }
     },
@@ -1089,7 +1089,7 @@
        "label": "Stichprobe",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "59110 Fälle mit 6-Monats-Ergebnis aus 5198 Titeln",
+       "value": "59122 Fälle mit 6-Monats-Ergebnis aus 5194 Titeln",
        "required": null,
        "reason": null
       },
@@ -1106,10 +1106,10 @@
        "id": "walkForward",
        "label": "Walk-Forward",
        "category": "QUALITY",
-       "state": "PASS",
-       "value": "3 von 4 Folds in derselben Richtung",
+       "state": "FAIL",
+       "value": "2 von 4 Folds in derselben Richtung",
        "required": null,
-       "reason": null
+       "reason": "FOLDS_DISAGREE"
       },
       {
        "id": "survivorship",
@@ -1170,7 +1170,7 @@
        "label": "Unabhängigkeit der Fälle",
        "category": "QUALITY",
        "state": "PASS",
-       "value": "1834 Wochen, 141 Quartale, effektiv ≈ 10460 unabhängige Fälle",
+       "value": "1835 Wochen, 141 Quartale, effektiv ≈ 10516 unabhängige Fälle",
        "required": null,
        "reason": null
       },
@@ -1197,7 +1197,7 @@
        "label": "Vorteil gegenüber der Base Rate im Testzeitraum",
        "category": "QUALITY",
        "state": "FAIL",
-       "value": "Δ 0.0146",
+       "value": "Δ 0.0145",
        "required": null,
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE"
       }
@@ -1228,6 +1228,13 @@
        "required": null
       },
       {
+       "id": "walkForward",
+       "category": "QUALITY",
+       "reason": "FOLDS_DISAGREE",
+       "value": "2 von 4 Folds in derselben Richtung",
+       "required": null
+      },
+      {
        "id": "regimeDiversity",
        "category": "QUALITY",
        "reason": "REGIME_HISTORY_NOT_CERTIFIED",
@@ -1238,30 +1245,30 @@
        "id": "edgeOutOfSample",
        "category": "QUALITY",
        "reason": "EDGE_NOT_CONFIRMED_OUT_OF_SAMPLE",
-       "value": "Δ 0.0146",
+       "value": "Δ 0.0145",
        "required": null
       }
      ],
      "sample": {
-      "n": 59110,
-      "titles": 5198
+      "n": 59122,
+      "titles": 5194
      },
      "independence": {
-      "uniqueTitles": 5198,
-      "uniquePeriods": 1834,
+      "uniqueTitles": 5194,
+      "uniquePeriods": 1835,
       "independentClusters": 141,
       "clusterUnit": "Quartal",
-      "effectiveN": 10460,
-      "designEffect": 5.65
+      "effectiveN": 10516,
+      "designEffect": 5.62
      },
      "returnType": "SPLIT_ADJUSTED_PRICE",
      "baseRate": {
-      "positiveShare": 0.5523,
+      "positiveShare": 0.5522,
       "base": 0.5377,
-      "delta": 0.0146,
+      "delta": 0.0145,
       "ci": [
-       0.0056,
-       0.0236
+       0.0055,
+       0.0234
       ]
      }
     }
