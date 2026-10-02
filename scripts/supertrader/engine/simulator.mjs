@@ -194,13 +194,20 @@ export function simulate(strategy, ctx, opts = {}) {
           sig.stopHistory = [{ date, stop: round(e.stop), ruleId: e.stopRuleId, ruleVersion: meta.ruleVersion }];
           sig.remaining = 1; sig.exits = [];
           transition(sig, 'ACTIVE', date, 'LC-MODEL-ENTRY', { price: round(fill), priceBasis: 'BUY_STOP', stop: round(e.stop), note: 'Modelleinstieg per Kauf-Stop (keine reale Order).' });
-          if (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit) {
+          // Sicherer Gleichtags-Ausstieg (Nachtrag Runde 8, vor der Auswertung):
+          // schliesst der Einstiegstag auf oder unter dem Stop, wurde der Stop nach
+          // dem Kauf sicher durchschritten (Kurs lief vom Trigger ueber dem Stop
+          // zum Schluss darunter) - unabhaengig von der Reihenfolge-Annahme.
+          // opts.sameDayCertain === false bildet den eingefrorenen r8-Lauf nach.
+          const certain = opts.sameDayCertain !== false && bars.close[t] <= e.stop;
+          if (certain || (opts.sameDayPolicy === 'PESSIMISTIC' && e.pessimisticSameDayExit)) {
+            const basis = certain ? 'SAME_DAY_CERTAIN' : 'SAME_DAY_PESSIMISTIC';
             const px = X.stopSellFill(e.stop, bars.open[t], exec);
             const sp = Math.min(px.price, e.stop * (1 - slip));
-            sig.exits.push({ date, index: t, price: sp, fraction: 1, ruleId: sig.stopRuleId, priceBasis: 'SAME_DAY_PESSIMISTIC' });
+            sig.exits.push({ date, index: t, price: sp, fraction: 1, ruleId: sig.stopRuleId, priceBasis: basis });
             sig.remaining = 0;
-            transition(sig, 'EXIT', date, sig.stopRuleId, { price: round(sp), priceBasis: 'SAME_DAY_PESSIMISTIC' });
-            transition(sig, 'CLOSED', date, sig.stopRuleId, { price: round(sp), priceBasis: 'SAME_DAY_PESSIMISTIC' });
+            transition(sig, 'EXIT', date, sig.stopRuleId, { price: round(sp), priceBasis: basis });
+            transition(sig, 'CLOSED', date, sig.stopRuleId, { price: round(sp), priceBasis: basis });
             closeTrade(sig); finish(sig); state.cooldownUntil = t + COOLDOWN_SESSIONS;
           }
           continue;
