@@ -135,13 +135,15 @@ Gleiche Ereignisse (168.773 Rückläufe, 3.122 Emittenten), gleiche Auswertung; 
 | Relabel-Quote je Woche | 6,1 % | 6,4 % |
 | Skalenwechsel je 100 Wochen | 0,07 | 5,5 |
 | Median-Lebensdauer einer Zählung | 5 Wochen | 5 Wochen |
-| Erkennungsverzug (Median, Engine / frühestens) | 3 / 2 Wochen | 3 / 2 Wochen |
+| Erkennungsverzug (Median, Pivot-Bestätigung / frühestens)¹ | 3 / 2 Wochen | 3 / 2 Wochen |
 | H1 ΔLogLoss | +0,0001 (0 … +0,0002) | +0,0001 (0 … +0,0001) |
 | H2 CONT vs. ohne | −0,04 Pp. (−1,9 … +1,8) | +0,3 Pp. (−0,3 … +0,8) |
 | H3 beste 20 % Count Quality | −0,9 Pp. (−4,9 … +2,5) | −1,5 Pp. (−3,0 … −0,2) |
 | H4 höherer Grad | +0,2 Pp. (−2,6 … +3,5) | −0,6 Pp. (−2,2 … +1,2) |
 | H5 hohe vs. niedrige Volatilität | −6,7 Pp. (−10,0 … −2,7) | −2,8 Pp. (−3,9 … −1,4) |
 | H6 entwickelnd vs. bestätigt | +5,8 Pp. (+4,3 … +7,1) | +3,1 Pp. (+2,3 … +4,0) |
+
+¹ Der Verzug wird an der Bestätigung der Gegenbewegung auf der Skala des Ereignisses gemessen (gemeinsame Pivot-Erkennung) und ist für beide Versionen per Konstruktion gleich; die Versionen unterscheiden sich in H6 nur über die Auswahl der gepaarten Fortsetzungsfälle.
 
 **Lesart.** Engine 2.2 setzt mehr der Elliott-Methode um (Grad-Auswahl, verschachtelter höherer Grad, Rausch-Erkennung) und enthält sich auf echten Daten seltener. Im synthetischen Benchmark ist das Bild **gemischt**: Hauptzählung richtig 36/108 (2.2) vs. 32/108 (2.1); bei geringem Rauschen 20/36 vs. 14/36, bei hohem Rauschen aber nur 2/36 vs. 8/36 (Enthaltungen bei hohem Rauschen 20/36 vs. 32/36; Enthaltung und Rang der erwarteten Zählung werden getrennt gemessen). Je Muster: Diagonalen 7/18 vs. 0/18, Zigzag 3/9 vs. 0/9, doppelter Zigzag 0/9 vs. 3/9 als Hauptzählung (6/9 vs. 7/9 unter den ersten drei), trunkierter Impuls 1/9 vs. 3/9, Flats 1/27 vs. 1/27 — aber der Prognosewert ist in beiden Versionen null. Die Verbesserung der Methodentreue hat **keinen** Ergebnisvorteil erzeugt. Kehrseite der Mehrskalen-Auswahl: deutlich mehr Skalenwechsel (5,5 je 100 Wochen); die Relabel-Quote bleibt dank Persistenz auf Legacy-Niveau. Das Produkt zeigt Skalenwechsel als Relabeling-Risiko an.
 
