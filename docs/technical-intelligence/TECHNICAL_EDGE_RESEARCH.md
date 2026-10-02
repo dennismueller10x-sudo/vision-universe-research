@@ -2,7 +2,7 @@
 
 Stand 02.10.2026. Quellen: `quant/data/technical-intelligence/evidence/evidence-1W.json` (Szenario-Studie, Engine 2.2, Elliott-Gewicht 0, Abschnitt 0b in `TECHNICAL_EVIDENCE.md`), `quant/data/technical-intelligence/elliott-validation/*` (vorab registrierte Elliott-Studie, `ELLIOTT_VALIDATION_REPORT.md`), `quant/methodology/technical-method-evidence.json` (abgeleitet von `scripts/technical/derive-method-evidence.mjs`).
 
-**Kernergebnis:** Keine der geprüften technischen Methoden liefert im Holdout einen wirtschaftlich nutzbaren Vorteil. Einzelne Methoden sind statistisch von null verschieden (Trend, Konfluenz), aber klein und nach Vorzeichen-Rendite schlechter als „immer long". Vision Universe trennt deshalb **Technical Intelligence** (Einordnung: Struktur, Zonen, Grenzen, Szenarien, Klarheit) von **Technical Edge** (Prognosevorteil) — Letzteres wird nicht behauptet.
+**Kernergebnis:** Keine der geprüften technischen Methoden liefert im Holdout einen wirtschaftlich nutzbaren Vorteil. Nur Trend und Konfluenz treffen die Richtung im Holdout statistisch besser als 50 % **und** als „immer long" — um 1,2–1,7 Pp., bei vorzeichenbereinigter Rendite deutlich unter „immer long". Vision Universe trennt deshalb **Technical Intelligence** (Einordnung: Struktur, Zonen, Grenzen, Szenarien, Klarheit) von **Technical Edge** (Prognosevorteil) — Letzteres wird nicht behauptet.
 
 ## 1. Fragestellung und Tests
 
@@ -22,18 +22,20 @@ Richtung nach 13 Wochen, Holdout ab 2019. „immer long": 50,3 % (50,0 … 50,7)
 | Methode | Treffer Richtung (95 %-KI) | Ø vorzeichenber. Rendite | Ablation: Konfluenz ohne Methode | Bedingter Lift (stützt / widerspricht) | Evidenzstufe |
 |---|---|---|---|---|---|
 | Trend | 52,0 % (51,6 … 52,3) | −4,8 % | 50,9 % (−1,0 pp) — einziger spürbarer Beitrag | +0,2 / −11,1 pp (n = 54) | SUPPORTED, schwach |
-| Momentum | 50,5 % (50,2 … 50,9) | −3,7 % | 51,9 % (±0) | +0,7 (+0,3 … +1,1) / −0,9 (−1,6 … −0,1) | SUPPORTED, schwach |
-| Struktur (Swings) | 50,9 % (50,5 … 51,2) | +1,6 % | 51,8 % (−0,1) | −0,1 / +0,9 (+0,2 … +1,6) — umgekehrt | SUPPORTED, schwach |
+| Momentum | 50,5 % (50,2 … 50,9) | −3,7 % | 51,9 % (±0) | +0,7 (+0,3 … +1,1) / −0,9 (−1,6 … −0,1) | NOT_ESTABLISHED (KI überlappt „immer long") |
+| Struktur (Swings) | 50,9 % (50,5 … 51,2) | +1,6 % | 51,8 % (−0,1) | −0,1 / +0,9 (+0,2 … +1,6) — umgekehrt | NOT_ESTABLISHED (KI überlappt „immer long") |
 | Muster (Pattern) | 50,1 % (49,6 … 50,6) | +0,8 % | 51,9 % (±0) | +0,4 / −0,7 | NOT_ESTABLISHED |
 | Konfluenz | 51,9 % (51,5 … 52,2) | −4,9 % | — | — | SUPPORTED, schwach |
 | Konfluenz stark | 51,9 % (51,5 … 52,3) | −1,5 % | — | — | wie Konfluenz |
 | Elliott | Gewicht 0 | — | identisch (kein Beitrag) | — | NOT_ESTABLISHED (H1–H5, H7 nicht bestätigt; H5 widerlegt) |
-| Elliott Timing (H6) | — | — | — | +3,9 pp (2,6 … 5,2) früherer Einstieg, auch für NOT_CONT | VALIDATED, nur als Timing-/Latenzaussage |
+| Elliott Timing (H6) | — | — | — | — (H6: entwickelnder vs. bestätigter Einstieg +3,9 pp, 2,6 … 5,2; ohne Fortsetzungs-Lesart gleiche Richtung, +2,2 pp, nicht separat getestet) | VALIDATED, nur als Zeitpunkt-Aussage |
 | Fibonacci | Häufung 0,97 / 1,05 / 0,99 / 0,97 bei 38,2 / 50 / 61,8 / 78,6 % | — | — | — | NOT_ESTABLISHED (keine Häufung) |
 | Higher Timeframe, Volumen | im Wochenmodus nicht verfügbar (n = 0) | — | — | — | DESCRIPTIVE_ONLY |
 | Wyckoff | Gewicht 0 | — | — | — | DESCRIPTIVE_ONLY |
 
 Szenario-Ebene (TEST): Ziel 1 35,6 % vs. Zufall 35,9 % (Lift −0,4 pp, −0,9 … +0,2); Ø Rendite je Signal −2,3 %. Kalibrierung nicht bestanden (Brier-Skill −0,003).
+
+**Stufenkriterium.** SUPPORTED verlangt seit dem unabhängigen Review, dass die KI-Untergrenze über 50 % **und** über der KI-Obergrenze von „immer long" liegt (vorher nur > 50 %). Die Verschärfung ist konservativ: Momentum und Struktur fallen dadurch auf NOT_ESTABLISHED; keine Methode wurde hochgestuft.
 
 **Hinweis zur Lesart.** Die Richtungs-KIs sind einfache Binomial-Intervalle über überlappende Fenster; sie sind zu eng. Der Trend-Vorsprung von 1,7 pp vor „immer long" entsteht über Short-Richtungen in fallenden Phasen und kostet in Summe Rendite — er ist eine Beschreibung, kein Vorteil.
 
@@ -44,19 +46,19 @@ Szenario-Ebene (TEST): Ziel 1 35,6 % vs. Zufall 35,9 % (Lift −0,4 pp, −0,9 �
 - **Struktur widerspricht → besser.** Wenn die Swing-Struktur gegen das Szenario spricht, liegt der Lift bei +0,9 pp — ein Hinweis auf Mean-Reversion in Rücksetzer-Szenarien, nicht auf ein Strukturmerkmal mit Prognosewert. Nicht vorab registriert; nicht verwenden.
 - **Strukturklarheit (vormals „Konfidenz").** HIGH 36,6 % / MODERATE 36,3 % / LOW 34,9 % gegen Zufall 36,2 / 36,1 / 35,7 — Klarheit beschreibt, wie eindeutig das Bild ist, nicht wie wahrscheinlich das Ziel erreicht wird.
 - **Elliott-Klarheit** im Szenario: HIGH +0,5 pp (−0,3 … +1,3), MODERATE −0,1, LOW +0,1 — kein Gefälle.
-- **Segmente** (Risk-off, extreme Volatilität, bearishe Fortsetzung) zeigen positive Lifts von +1,3 … +3,1 pp; sie sind beschreibend, nicht für Mehrfachtests korrigiert und nicht vorab registriert. Sie sind Kandidaten für eine künftige Präregistrierung, keine Produktaussage.
+- **Segmente** (Risk-off, extreme Volatilität, bearishe Fortsetzung) zeigen positive Lifts von +1,3 … +2,8 pp; sie sind beschreibend, nicht für Mehrfachtests korrigiert und nicht vorab registriert. Sie sind Kandidaten für eine künftige Präregistrierung, keine Produktaussage.
 
 ## 4. Entscheidung je Methode (§86)
 
 | Methode | Entscheidung | Rolle im Produkt | Begründung |
 |---|---|---|---|
 | Trend | **KEEP** | CORE, Gewicht 0,30 | trägt die Konfluenz allein; beste Lagebeschreibung |
-| Momentum | **KEEP (DOWNWEIGHT-Kandidat)** | CORE, 0,20 | redundant zu Trend; bedingter Lift klein positiv |
+| Momentum | **KEEP (DOWNWEIGHT-Kandidat)** | CORE, 0,20 | redundant zu Trend; Richtung nicht besser als „immer long"; bedingter Lift klein positiv |
 | Struktur | **KEEP** | CORE, 0,15 | liefert Zonen, Invalidation und Ziele — Produktgerüst, unabhängig vom Prognosewert |
 | Higher Timeframe | **KEEP** | CORE, 0,15 | Wochenmodus ohne Messung; Tagesmodus offen |
 | Volumen | **KEEP, DESCRIPTIVE** | 0,10 | im Wochenmodus nicht gemessen |
 | Muster | **DOWNWEIGHT** (bereits 0,08) | CONTEXT | kein Effekt |
-| Elliott | **REMOVE aus Konfluenz** (Gewicht 0, umgesetzt) | CONTEXT: Strukturbeschreibung, Wave Inspector, Regel-Audit | vorab registriert, nicht bestätigt |
+| Elliott | **KEEP – CONTEXT ONLY** (aus der Konfluenz entfernt: Gewicht 0, umgesetzt) | CONTEXT: Strukturbeschreibung, Wave Inspector, Regel-Audit | vorab registriert, nicht bestätigt |
 | Fibonacci | **REMOVE als Prognose**, KEEP als Zonenhilfe | CONTEXT | keine Häufung an Niveaus |
 | Wyckoff | **REMOVE aus Konfluenz** (0) | DESCRIPTIVE_ONLY | nicht geprüft |
 

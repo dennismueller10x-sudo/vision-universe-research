@@ -104,8 +104,8 @@ Der Hero (Ausblick in 80–90 px Schrift, vier Zonen-Kacheln, Chart mit Bändern
 
 ## 12. Übersicht `/chartlagen`
 
-Reihen mit Evidenz-Etikett („Beschreibend" / „Experimentell") und offen gelegter Regel: Nahe einer Schlüsselzone · Rücksetzer im Aufwärtstrend · Klarste Strukturen · Ausbrüche beobachten · Klare Elliott-Strukturen (experimentell) · Großes und kleines Bild gleichgerichtet · Mögliche Trendwenden.
-**Eigene Auswahl** (§57): Trend, Struktur, Universum (Indexmitglieder ≥ 5 $ / alle), Schalter „Nahe der Schlüsselzone", „Klare Struktur", „Klare Elliott-Zählung (experimentell)" — Alltagssprache statt Indikatorwerten.
+Reihen mit Evidenz-Etikett („Beschreibend"; „Experimentell" nur für Reihen mit nicht vorab geprüfter Wirkung — derzeit keine) und offen gelegter Regel: Nahe einer Schlüsselzone · Rücksetzer im Aufwärtstrend · Klarste Strukturen · Ausbrüche beobachten · Klare Elliott-Strukturen (beschreibend) · Großes und kleines Bild gleichgerichtet · Mögliche Trendwenden.
+**Eigene Auswahl** (§57): Trend, Struktur, Universum (Indexmitglieder ≥ 5 $ / alle), Schalter „Nahe der Schlüsselzone", „Klare Struktur", „Klare Elliott-Zählung (beschreibend)" — Alltagssprache statt Indikatorwerten.
 
 ## 13. Aktienseite (§55)
 

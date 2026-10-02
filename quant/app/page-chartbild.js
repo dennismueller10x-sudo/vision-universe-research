@@ -544,7 +544,7 @@
       el("label", { class: "cb-filter" }, [el("span", { text: "Trend" }), sel([["ALL", "alle"], ["BULLISH", "aufwärts"], ["BEARISH", "abwärts"], ["NEUTRAL", "seitwärts"], ["MIXED", "gemischt"]], function (v) { F.trend = v; apply(); })]),
       el("label", { class: "cb-filter" }, [el("span", { text: "Struktur" }), sel([["ALL", "alle"], ["UPTREND_ADVANCING", "Aufwärtstrend läuft"], ["CORRECTION_IN_UPTREND", "Rücksetzer im Aufwärtstrend"], ["RALLY_IN_DOWNTREND", "Erholung im Abwärtstrend"], ["DOWNTREND_ADVANCING", "Abwärtstrend läuft"], ["SIDEWAYS_RANGE", "Seitwärtsspanne"], ["NO_CLEAR_TREND", "kein klarer Trend"]], function (v) { F.structure = v; apply(); })]),
       el("label", { class: "cb-filter" }, [el("span", { text: "Universum" }), sel([["INDEX", "S&P 500, Nasdaq-100, Dow"], ["ALL", "alle Aktien"]], function (v) { F.universe = v; apply(); })]),
-      el("div", { class: "cb-filter-toggles" }, [toggle("Nahe der Schlüsselzone", "near"), toggle("Klare Struktur", "clear"), toggle("Klare Elliott-Zählung (experimentell)", "elliott")])
+      el("div", { class: "cb-filter-toggles" }, [toggle("Nahe der Schlüsselzone", "near"), toggle("Klare Struktur", "clear"), toggle("Klare Elliott-Zählung (beschreibend)", "elliott")])
     ]);
     function sel(opts, on) { var s0 = el("select", { class: "cb-select" }, opts.map(function (o) { return el("option", { value: o[0], text: o[1] }); })); s0.addEventListener("change", function () { on(s0.value); }); return s0; }
     host.append(X.section("Eigene Auswahl", "Filter in Alltagssprache statt Indikatorwerten. Kein Filter ist ein Kaufsignal; für keine Lage ist ein Prognosevorteil belegt.", [filters, count, out], null, null, "auswahl"));

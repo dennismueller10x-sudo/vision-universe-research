@@ -1,7 +1,7 @@
 # Elliott Validation Report (Master Mission II)
 
 **Frage:** Was genau kann Elliott in Vision Universe leisten, wenn es professionell, algorithmisch sauber, prospektiv, fair gebenchmarkt und empirisch überprüft wird?
-**Antwort in einem Satz:** Die Engine bildet die klassischen Elliott-Regeln korrekt und nachprüfbar ab und erkennt klare Lehrbuch-Impulse, Diagonalen und Dreiecke; auf unabhängigen Aktien liefert das Elliott-Label aber **keine zusätzliche Prognoseinformation** über die gleiche Kursstruktur hinaus. Elliott bleibt im Produkt **Struktursprache und Szenario-Rahmen (KEEP – CONTEXT ONLY)**, ohne Richtungsstimme.
+**Antwort in einem Satz:** Die Engine prüft die harten Elliott-Regeln nachprüfbar (jede Regel mit Quelle und Test) und erkennt klare Lehrbuch-Impulse, Diagonalen und Dreiecke; bei Flats, trunkierten Impulsen und der Gradwahl bleibt sie deutlich hinter einem Experten zurück (§2, §3a, §4); auf unabhängigen Aktien liefert das Elliott-Label aber **keine zusätzliche Prognoseinformation** über die gleiche Kursstruktur hinaus. Elliott bleibt im Produkt **Struktursprache und Szenario-Rahmen (KEEP – CONTEXT ONLY)**, ohne Richtungsstimme.
 
 Datengrundlage: Wochenschlusskurse (split-bereinigt) aller heute gelisteten US-Stammaktien mit ≥ 5 Jahren Historie. Engine `elliott-2.2.0` mit Persistenz, Regelwerk `elliott-rules-2.0.1`. Vorab-Registrierung: PREREGISTRATION.md (inkl. Änderung 1 nach unabhängigem Review, vor dem Öffnen der Bestätigungsstichprobe). Rohberichte: `quant/data/technical-intelligence/elliott-validation/`.
 
@@ -96,7 +96,7 @@ Count Quality ist ein gewichtetes Mittel dokumentierter Bestandteile (ELLIOTT_RU
 
 Hoch − niedrig: +1,4 Pp. (−1,6 … +4,0) — **nicht signifikant**; gegen das strukturelle Basismodell verschwindet der Unterschied ganz (H3: −0,9 Pp.). **Folgerung:** „Count Quality hoch" bedeutet bei Vision Universe ausschließlich *bessere methodische Übereinstimmung mit Elliott*, **keine** höhere Trefferwahrscheinlichkeit. Das Produkt sagt das so.
 
-Anwendbarkeit: hoch 46,6 % (Überschuss +1,2), mittel 44,3 % (+0,9), keine verlässliche Zählung 43,7 % (+1,6) — keine Trennung. Selektive Anwendung (nur anwendbare Fälle): +1,7 statt +1,7 Pp. → **Enthaltung verbessert die Prognose nicht**; sie bleibt dennoch richtig, weil sie verhindert, dass auf verrauschten Charts eine Zählung vorgespiegelt wird.
+Anwendbarkeit (Fortsetzungsfälle): hoch 45,9 % (Überschuss +1,8, KI +0,6 … +3,2, n = 15.481), mittel 44,0 % (+1,4, −0,6 … +3,1), keine verlässliche Zählung 44,9 % (+3,8, −0,7 … +8,0, n = 590) — keine Trennung (über alle Labels ebenso: 46,6 / 44,3 / 43,7 %). Selektive Anwendung (nur anwendbare Fälle): +1,7 statt +1,7 Pp. → **Enthaltung verbessert die Prognose nicht**; sie bleibt dennoch richtig, weil sie verhindert, dass auf verrauschten Charts eine Zählung vorgespiegelt wird.
 
 ## 9–12. Benchmarks und inkrementeller Wert (vorab registriert, Bestätigungsstichprobe)
 
@@ -143,7 +143,7 @@ Gleiche Ereignisse (168.773 Rückläufe, 3.122 Emittenten), gleiche Auswertung; 
 | H5 hohe vs. niedrige Volatilität | −6,7 Pp. (−10,0 … −2,7) | −2,8 Pp. (−3,9 … −1,4) |
 | H6 entwickelnd vs. bestätigt | +5,8 Pp. (+4,3 … +7,1) | +3,1 Pp. (+2,3 … +4,0) |
 
-**Lesart.** Engine 2.2 ist als *Methode* näher an Elliott (Grad-Auswahl, verschachtelter höherer Grad, Rausch-Erkennung; Referenzset und synthetischer Benchmark in §3a/§4) und enthält sich seltener — aber der Prognosewert ist in beiden Versionen null. Die Verbesserung der Methodentreue hat **keinen** Ergebnisvorteil erzeugt. Kehrseite der Mehrskalen-Auswahl: deutlich mehr Skalenwechsel (5,5 je 100 Wochen); die Relabel-Quote bleibt dank Persistenz auf Legacy-Niveau. Das Produkt zeigt Skalenwechsel als Relabeling-Risiko an.
+**Lesart.** Engine 2.2 setzt mehr der Elliott-Methode um (Grad-Auswahl, verschachtelter höherer Grad, Rausch-Erkennung) und enthält sich auf echten Daten seltener. Im synthetischen Benchmark ist das Bild **gemischt**: Hauptzählung richtig 36/108 (2.2) vs. 32/108 (2.1); bei geringem Rauschen 20/36 vs. 14/36, bei hohem Rauschen aber nur 2/36 vs. 8/36 (Enthaltungen bei hohem Rauschen 20/36 vs. 32/36; Enthaltung und Rang der erwarteten Zählung werden getrennt gemessen). Je Muster: Diagonalen 7/18 vs. 0/18, Zigzag 3/9 vs. 0/9, doppelter Zigzag 0/9 vs. 3/9 als Hauptzählung (6/9 vs. 7/9 unter den ersten drei), trunkierter Impuls 1/9 vs. 3/9, Flats 1/27 vs. 1/27 — aber der Prognosewert ist in beiden Versionen null. Die Verbesserung der Methodentreue hat **keinen** Ergebnisvorteil erzeugt. Kehrseite der Mehrskalen-Auswahl: deutlich mehr Skalenwechsel (5,5 je 100 Wochen); die Relabel-Quote bleibt dank Persistenz auf Legacy-Niveau. Das Produkt zeigt Skalenwechsel als Relabeling-Risiko an.
 
 ## 13–15. Unterschiede nach Regime, Muster und Grad (explorativ, BH-korrigiert)
 
@@ -165,5 +165,5 @@ Gleiche Ereignisse (168.773 Rückläufe, 3.122 Emittenten), gleiche Auswertung; 
 | Elliott-Invalidation, Zonen, Szenarien | KEEP – CONTEXT | regelbasierte, prüfbare Grenzen; Sprache für Struktur |
 | Count Quality | KEEP – nur als methodische Güte | nicht kalibriert; keine Trefferaussage |
 | Höherer-Grad-Konsistenz | KEEP – CONTEXT (Profi-Anzeige, ohne Prognoseanspruch) | H4 verfehlt (Bestätigung p = 0,06, explorativ −0,6 Pp.) |
-| Früher Einstieg im Rücklauf | KEEP – CONTEXT (Zeitpunkt-Wissen, kein Elliott-Merkmal) | H6 bestätigt |
+| Früher Einstieg im Rücklauf | KEEP – CONTEXT (Zeitpunkt-Wissen) | H6 bestätigt; **Abweichung von der vorab festgelegten Produktfolge** (PREREGISTRATION §6, Abweichung 1): entwickelnde Zählungen werden nicht zusätzlich hervorgehoben |
 | Fibonacci | KEEP – CONTEXT | H7 nicht bestätigt, keine Häufung |

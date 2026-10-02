@@ -1,10 +1,10 @@
 {
  "schemaVersion": "vu-technical-method-evidence-1.0.0",
  "purpose": "Evidenzstufe und Produktrolle je technischer Methode, abgeleitet aus den Holdout-Studien (Szenario-Evidenz, vorab registrierte Elliott-Validierung). Keine Zahl ist eine Wahrscheinlichkeit; Stufen werden nur aus Studienergebnissen abgeleitet, nie von Hand gesetzt.",
- "generatedAt": "2026-10-02T21:29:33.767Z",
+ "generatedAt": "2026-10-02T21:35:07.583Z",
  "definitions": {
   "VALIDATED": "vorab registrierte Hypothese auf unabhängiger Stichprobe bestätigt",
-  "SUPPORTED": "Holdout-Effekt statistisch von null verschieden, aber nicht vorab registriert bestätigt; wirtschaftlich gering",
+  "SUPPORTED": "Holdout-Richtung statistisch besser als 50 % und als „immer long“, aber nicht vorab registriert bestätigt; wirtschaftlich gering (vorzeichenbereinigte Rendite unter „immer long“)",
   "NOT_ESTABLISHED": "geprüft, kein belastbarer Effekt",
   "DESCRIPTIVE_ONLY": "ohne Prognoseanspruch"
  },
@@ -18,16 +18,16 @@
    "pro": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 52,0 % (95 %-KI 51,6 %–52,3 %, n = 78.823); vorzeichenbereinigte Ø-Rendite -4,8 % gegenüber „immer long“ 8,4 %"
   },
   "MOMENTUM": {
-   "level": "SUPPORTED",
-   "label": "Gestützt (schwach)",
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
    "role": "CORE",
    "stat": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,5 % (95 %-KI 50,2 %–50,9 %, n = 68.593); vorzeichenbereinigte Ø-Rendite -3,7 % gegenüber „immer long“ 8,4 %",
-   "consumer": "Bewegungsstärke beschreibt den Schwung; Prognosewert klein.",
+   "consumer": "Bewegungsstärke beschreibt den Schwung; ein Prognosevorteil gegenüber „immer long“ ist nicht belegt.",
    "pro": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,5 % (95 %-KI 50,2 %–50,9 %, n = 68.593); vorzeichenbereinigte Ø-Rendite -3,7 % gegenüber „immer long“ 8,4 %"
   },
   "STRUCTURE": {
-   "level": "SUPPORTED",
-   "label": "Gestützt (schwach)",
+   "level": "NOT_ESTABLISHED",
+   "label": "Kein Vorteil belegt",
    "role": "CORE",
    "stat": "Richtung nach 13 Wochen im Prüfzeitraum ab 2019: 50,9 % (95 %-KI 50,5 %–51,2 %, n = 77.772); vorzeichenbereinigte Ø-Rendite 1,6 % gegenüber „immer long“ 8,4 %",
    "consumer": "Hochs und Tiefs beschreiben die Struktur.",
@@ -70,8 +70,8 @@
    "label": "Bestätigt",
    "role": "CONTEXT",
    "stat": "H6 bestätigt (Schätzer +3,9 Pp., 95 %-KI +2,6 Pp. bis +5,2 Pp.)",
-   "consumer": "Wer früh in der laufenden Gegenbewegung einsteigt, lag historisch besser als beim Einstieg nach der späten Bestätigung – das gilt auch ohne Elliott-Zählung.",
-   "pro": "H6 bestätigt (Schätzer +3,9 Pp., 95 %-KI +2,6 Pp. bis +5,2 Pp.) — Effekt des Zeitpunkts, nicht des Elliott-Labels (gleicher Effekt bei Rückläufen ohne Fortsetzungs-Lesart)"
+   "consumer": "Wer früh in der laufenden Gegenbewegung einsteigt, lag historisch besser als beim Einstieg nach der späten Bestätigung durch die Engine. Das ist eine Aussage über den Zeitpunkt, kein Prognosevorteil der Zählung.",
+   "pro": "H6 bestätigt (Schätzer +3,9 Pp., 95 %-KI +2,6 Pp. bis +5,2 Pp.) — Effekt des Zeitpunkts; bei Rückläufen ohne Fortsetzungs-Lesart zeigt sich dieselbe Richtung (Differenz +2,2 Pp., nicht separat getestet)"
   },
   "WYCKOFF": {
    "level": "DESCRIPTIVE_ONLY",

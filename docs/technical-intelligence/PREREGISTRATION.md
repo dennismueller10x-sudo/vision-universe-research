@@ -8,7 +8,7 @@ Commit-Datum: 02.10.2026. Der Git-Verlauf belegt die Reihenfolge: Dieses Dokumen
 
 Der Zeitraum ab 2019 wurde in der ersten Studie zweimal angesehen (TECHNICAL_EVIDENCE §0) und ist als Holdout verbraucht. Einen unberührten neuen **Zeitraum** gibt es nicht (Daten enden 2026-09). Deshalb:
 
-* **Titel-Holdout:** Titel mit `fnv1a(ticker) mod 10 < 3` bilden die **Bestätigungsstichprobe** (≈ 30 %, 1.885 Reihen), alle anderen die **explorative Stichprobe**. Die Partition ist deterministisch und unabhängig von Daten oder Ergebnissen (`partitionOf()` in `scripts/technical/elliott-validation.mjs`).
+* **Titel-Holdout:** Titel mit `fnv1a(ticker) mod 10 < 3` bilden die **Bestätigungsstichprobe** (≈ 30 %, 1.885 Reihen; nach Änderung 1 #5 — nur Stammaktien — 1.784 Reihen ausgewertet), alle anderen die **explorative Stichprobe**. Die Partition ist deterministisch und unabhängig von Daten oder Ergebnissen (`partitionOf()` in `scripts/technical/elliott-validation.mjs`).
 * **Zeitliche Trennung zusätzlich:** Walk-forward über fünf Zeitblöcke (F1 < 2005, F2 2005–10, F3 2011–16, F4 2017–21, F5 ≥ 2022). Jeder Block wird nur mit Modellen bewertet, die auf früheren Blöcken trainiert wurden.
 * **Ehrliche Einschränkung:** Die Bestätigungstitel waren Teil der aggregierten Wochenstudie (ti-evidence, 2026-10). Diese hatte eine andere Frage (Szenario-Trefferquote) und andere Ereignisse; die hier geprüften Ereignisse, Merkmale und Hypothesen wurden auf diesen Titeln nie ausgewertet. Eine teilweise Kontamination (gleiche Kursreihen) ist nicht auszuschließen.
 
@@ -72,3 +72,7 @@ Ein unabhängiger Methodenreview der Studie fand **Messfehler**. Sie wurden beho
 | E | `detectionLatency` las feinste Pivots ohne Bestätigungsfilter (Engine) | nur Pivots mit `confirmedIndex ≤ asOf` |
 
 Nicht geändert (bewusst, konservativ): Zufallsziehungen dürfen den Ereigniszeitraum überlappen (zieht Unterschiede Richtung 0); Volatilitätsdrittel relativ zur eigenen Historie (in H5 so benannt).
+
+## 6. Abweichungen nach Vorliegen der Ergebnisse
+
+**Abweichung 1 — Produktfolge von H6 (offen gelegt, konservativer als registriert).** Registriert war: „H6 bestanden → entwickelnde Zählungen werden als Schlüsselzone hervorgehoben". H6 ist bestanden (+3,9 Pp., 95 %-KI +2,6 … +5,2). Umgesetzt wurde stattdessen nur eine Zeitpunkt-Aussage auf der Methodikseite (`TIMING_EARLY`, Rolle CONTEXT); entwickelnde Zählungen erhalten keine zusätzliche Hervorhebung. Gründe: (a) Die Einstiegszone des Chartbilds liegt bereits im laufenden Rücklauf (Retracement-Band 38,2–61,8 %), eine Hervorhebung würde nichts Neues zeigen; (b) H6 misst einen Zeitpunkt-Effekt — bei Rückläufen ohne Fortsetzungs-Lesart zeigt sich dieselbe Richtung (Differenz +2,2 Pp., nicht separat getestet), der Effekt ist also nicht als Elliott-spezifisch belegt; (c) H1–H5 sind nicht bestätigt, eine visuelle Aufwertung von Elliott-Zählungen widerspräche der Einstufung CONTEXT ONLY. Diese Abweichung ändert keine Zahl und keine Hypothese.

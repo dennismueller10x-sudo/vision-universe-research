@@ -167,9 +167,9 @@ export function discoverRows(allRows) {
         tickers: by(rows.filter((x) => x.clarity === "CLEAR" && x.outlook !== "MIXED"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) },
       { id: "breakouts", title: "Ausbrüche beobachten", rule: "Chartformation mit bestätigtem Ausbruch oder gehaltenem Rücktest, Aufwärtsszenario", evidence: "DESCRIPTIVE",
         tickers: by(rows.filter((x) => x.patterns.some((p) => /BREAKOUT/.test(p)) && x.direction === "BULLISH"), (a, b) => b.agreement - a.agreement) },
-      { id: "clear-elliott", title: "Klare Elliott-Strukturen", rule: "Elliott anwendbar (hoch), Count Quality hoch, geringes Neuzuordnungs-Risiko — experimentell, kein belegter Prognosevorteil", evidence: "EXPERIMENTAL",
+      { id: "clear-elliott", title: "Klare Elliott-Strukturen", rule: "Elliott anwendbar (hoch), Count Quality hoch, geringes Neuzuordnungs-Risiko — beschreibt die Struktur; vorab registriert geprüft, kein Prognosevorteil", evidence: "DESCRIPTIVE",
         tickers: by(rows.filter((x) => x.elliottApplicable === "HIGH" && x.countQuality === "HIGH" && x.relabelRisk === "LOW"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) },
-      { id: "higher-degree", title: "Großes und kleines Bild gleichgerichtet", rule: "Elliott-Zählung passt zum höheren Grad; Wochen- und Tagesbild nicht gegenläufig", evidence: "EXPERIMENTAL",
+      { id: "higher-degree", title: "Großes und kleines Bild gleichgerichtet", rule: "Elliott-Zählung passt zum höheren Grad; Wochen- und Tagesbild nicht gegenläufig — beschreibend; der höhere Grad brachte vorab registriert geprüft keinen Vorteil (H4)", evidence: "DESCRIPTIVE",
         tickers: by(rows.filter((x) => x.higherAligned && x.alignment !== "COUNTER_TREND" && x.elliottApplicable !== "LOW" && x.outlook !== "MIXED"), (a, b) => Math.abs(b.agreement) - Math.abs(a.agreement)) },
       { id: "reversal", title: "Mögliche Trendwenden", rule: "Abwärtstrend, aber bullische Formation in Bildung oder Ausbruch bzw. Wyckoff-Akkumulation ab Phase C", evidence: "DESCRIPTIVE",
         tickers: by(rows.filter((x) => (x.structure === "DOWNTREND_ADVANCING" || x.structure === "RALLY_IN_DOWNTREND") && (x.patterns.some((p) => /DOUBLE_BOTTOM|INVERSE_HEAD|CUP/.test(p)) || /ACCUMULATION:(C|D)/.test(x.wyckoff || ""))), (a, b) => b.agreement - a.agreement) }
