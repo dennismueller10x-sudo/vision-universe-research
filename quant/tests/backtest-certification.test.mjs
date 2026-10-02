@@ -110,12 +110,19 @@ test("Historienabdeckung misst Monate, Luecken und Alter", () => {
 });
 
 /* ---------- Signal-Studie: Sabotage der Renditebasis und des PIT ---------- */
-test("Sabotage Renditebasis: TOTAL_RETURN behaupten ohne bestandenen Check faellt durch", () => {
+test("Sabotage Renditebasis: eine Basis behaupten, die der Check nicht traegt, faellt durch", () => {
   const s = json("quant/data/product/signal-backtest-v1.json");
   assert.deepEqual(SB.studyViolations(s), []);
+  /* Basisunabhaengig: die jeweils andere Basis behaupten - Kursrendite als
+     Gesamtrendite ausgeben oder umgekehrt -, ohne den Check anzupassen. */
+  const other = s.returnType === "TOTAL_RETURN" ? "SPLIT_ADJUSTED_PRICE" : "TOTAL_RETURN";
   const forged = JSON.parse(JSON.stringify(s));
-  forged.rules[0].returnType = "TOTAL_RETURN";
+  forged.rules[0].returnType = other;
   assert.ok(SB.studyViolations(forged).some((e) => /returnType/.test(e)));
+  /* Und der Check allein gekippt: Basis und Check widersprechen sich. */
+  const flipped = JSON.parse(JSON.stringify(s));
+  flipped.rules[0].checks.returnBasis.state = flipped.rules[0].checks.returnBasis.state === "PASS" ? "FAIL" : "PASS";
+  assert.ok(SB.studyViolations(flipped).some((e) => /returnBasis/.test(e)));
 });
 
 test("Sabotage Look-ahead: eine Regel, die in die Zukunft schaut, wird vom PIT-Nachweis erkannt", () => {

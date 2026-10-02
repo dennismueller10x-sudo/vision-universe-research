@@ -63,11 +63,26 @@ test("Vertrauensregel: PIT oder Look-ahead fallen -> NOT_READY; ohne Gesamtrendi
 test("Signal-Studie ist veröffentlichbar und trägt Renditebasis, Prüfungen und Stufe je Regel", () => {
   assert.deepEqual(SB.studyViolations(signal), []);
   assert.equal(signal.rules.length, SB.RULES.length);
+  /* Die Basis ist eine Messung der Pipeline, kein fester Wert: Gesamtrendite
+     nur, wenn Titel (>= 95 %) und SPY-Benchmark sie auf derselben Wochenachse
+     tragen - dann mit Vorher/Nachher gegen Kursrendite. Sonst Kursrendite
+     und ein nicht bestandener Basis-Check. Nie gemischt. */
+  const tr = signal.returnType === "TOTAL_RETURN";
+  assert.ok(["TOTAL_RETURN", "SPLIT_ADJUSTED_PRICE"].includes(signal.returnType));
+  if (tr) {
+    assert.equal(signal.source.spyTotalReturn.state, "PASS", "Gesamtrendite ohne bestaetigten SPY-Vergleich");
+    assert.ok(signal.source.totalReturnCoverage.share >= 0.95);
+    assert.match(signal.source.benchmark, /BENCHMARK_REFERENCE/);
+    assert.equal(signal.returnBasisComparison.compared, true);
+    assert.deepEqual(signal.returnBasisComparison.rules.map((c) => c.id), signal.rules.map((r) => r.id));
+  } else if (signal.source.spyTotalReturn) {
+    assert.equal(signal.returnBasisComparison.compared, false);
+  }
   for (const r of signal.rules) {
-    assert.equal(r.returnType, "SPLIT_ADJUSTED_PRICE");
+    assert.equal(r.returnType, signal.returnType, r.id);
     assert.equal(r.checks.pit.state, "PASS", r.id);
     assert.equal(r.checks.lookahead.state, "PASS", r.id);
-    assert.equal(r.checks.returnBasis.state, "FAIL", "weekly series carry no dividends");
+    assert.equal(r.checks.returnBasis.state, tr ? "PASS" : "FAIL", r.id + ": Basis-Check folgt der Basis");
     assert.equal(r.checks.survivorship.state, "FAIL", "today's universe only");
     assert.ok(!["USABLE", "ROBUST"].includes(r.trust), r.id + " may not exceed LIMITED");
     assert.equal(r.trust, SB.trustState(r.checks, r.sample));
