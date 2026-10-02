@@ -11,6 +11,16 @@ def item_time(item):
     return item.get('publishedAt') or item.get('observedAt')
 
 
+def export_revision():
+    """A producer change cannot reuse an immutable generation from older code."""
+    import hashlib
+    digest = hashlib.sha256()
+    for path in sorted(Path(__file__).parent.glob('*.py')):
+        digest.update(path.name.encode())
+        digest.update(path.read_bytes())
+    return digest.digest()
+
+
 def timeline_entry(value):
     # Timeline links to the richer section instead of repeating every financial metric/exhibit.
     keys = ('companyId', 'newsId', 'eventId', 'eventType', 'headline', 'publishedAt', 'publishedDate', 'observedAt',
@@ -352,6 +362,7 @@ class Store:
         # Content hash includes all rows: two exports in the same second cannot overwrite each other.
         import hashlib
         digest = hashlib.sha256(now.encode())
+        digest.update(export_revision())
         digest.update(dumps(companies).encode())
         for table in ('items', 'events', 'sources'):
             for row in self.db.execute('SELECT payload FROM ' + table + ' ORDER BY id'):

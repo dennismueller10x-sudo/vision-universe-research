@@ -20,6 +20,22 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_changed_producer_cannot_overwrite_prior_immutable_generation(self):
+        c = company()
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                store.ingest(item())
+                output = Path(tmp) / 'public'
+                with patch('company_intelligence.store.export_revision', return_value=b'producer-one'):
+                    first = store.export({c['companyId']: c}, output, NOW)
+                    self.assertEqual(store.export({c['companyId']: c}, output, NOW), first)
+                with patch('company_intelligence.store.export_revision', return_value=b'producer-two'):
+                    changed = store.export({c['companyId']: c}, output, NOW)
+                self.assertNotEqual(first['generation'], changed['generation'])
+                self.assertTrue((output / 'snapshots' / first['generation']).exists())
+            finally: store.close()
+
     def test_cache_budget_evicts_whole_old_pairs_and_checkpoint_stays_bounded(self):
         import os
         import tarfile
