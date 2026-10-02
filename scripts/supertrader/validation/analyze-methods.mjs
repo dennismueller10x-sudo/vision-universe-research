@@ -86,7 +86,7 @@ export function segCtx(seg, bench) {
 }
 
 // Trades einer Reihe fuer eine Methode (Engine unveraendert) + Abschluss offener Positionen.
-export function tradesFor(engine, seg, ctx, exec) {
+export function tradesFor(engine, seg, ctx, exec, sink = null) {
   const d = ctx.bars.date;
   const from = d.findIndex((x) => x >= W.from);
   if (from < 0) return [];
@@ -101,9 +101,11 @@ export function tradesFor(engine, seg, ctx, exec) {
       id: s.id, listingId: seg.id, entry: { date: s.entry.date, price: s.entry.price, rawOpen: s.entry.rawOpen }, initialStop: s.initialStop,
       exits: s.exits.map((x) => ({ date: x.date, price: x.price, fraction: x.fraction, ruleId: x.ruleId, basis: x.priceBasis })),
       confirmDate: s.confirmation?.date || null, rawCloseAtConfirm: ci != null ? ctx.raw.close[ci] : null, qualityFailed: s.quality?.failed || null,
+      trigger: s.levels?.trigger ?? null, confirmClose: s.confirmation?.close ?? null, rawOpenEntry: s.entry.rawOpen ?? null,
       terminal, marks, divs, heldSessions: lastIdx - ei, survivor: seg.survivor,
     };
   };
+  if (sink) for (const s of res.finished) if (!s.entry) sink(s);
   for (const s of res.finished) if (s.entry && s.exits.length && s.entry.date <= W.to) out.push(mk(s, null));
   const s = res.state.signal;
   if (s && s.entry && (s.remaining ?? 1) > 1e-9) {
@@ -177,15 +179,9 @@ function rawFromStoreBars(bars) {
     .filter((b) => b.close != null && b.date >= W.warmupFrom && b.date <= W.to).sort((a, b) => a.date.localeCompare(b.date));
 }
 
-async function main() {
-  const argv = process.argv.slice(2);
-  const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
-  const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
-  const LIMIT = Number(arg('--limit', '0'));
-  const t0 = Date.now();
-  const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
-  fs.mkdirSync(OUT_DIR, { recursive: true });
-
+// Laedt Listentabelle, Reihen (privater Eimer), Segmente (A2) und den
+// Point-in-Time-Querschnitt. Gemeinsam fuer analyze-methods und diagnose-methods.
+export async function loadPitData({ LIMIT = 0, log = () => {} } = {}) {
   const KEY = process.env.TIINGO_API_KEY || '';
   const zip = Buffer.from(await (await fetch(L.LIST_URL, { headers: KEY ? { Authorization: 'Token ' + KEY } : {} })).arrayBuffer());
   const rows = L.parseTickerCsv(L.unzipCsv(zip));
@@ -302,6 +298,20 @@ async function main() {
   }
   for (const seg of segs) delete seg.vals;
 
+  return { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, spyAdj, bench, budget, mine };
+}
+
+async function main() {
+  const argv = process.argv.slice(2);
+  const arg = (k, d = null) => { const i = argv.indexOf(k); return i >= 0 && argv[i + 1] ? argv[i + 1] : d; };
+  const OUT_DIR = arg('--out', path.join(os.tmpdir(), 'supertrader-validation'));
+  const LIMIT = Number(arg('--limit', '0'));
+  const t0 = Date.now();
+  const log = (m) => console.log(`[validation-methods +${Math.round((Date.now() - t0) / 1000)}s] ${m}`);
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+
+  const { listings, members, hash, segs, dup, offCalendar, calendar, spyTR, bench, budget, mine } = await loadPitData({ LIMIT, log });
+  let k = 0;
   // 3. Simulation je Methode.
   const R = Object.fromEntries(ENGINES.map((e) => [e.id, { base: [], cost2: [], c3: [] }]));
   const pickC3 = new Set(segs.map((s) => s.id).sort((a, b) => L.sha256(a).localeCompare(L.sha256(b))).slice(0, 400));
