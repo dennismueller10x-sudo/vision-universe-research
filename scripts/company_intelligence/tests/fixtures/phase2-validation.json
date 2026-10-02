@@ -1,0 +1,623 @@
+{
+  "date": "2026-10-02",
+  "baselineHead": "cb9c8a3e828f93e87990b90bfe9179fa92adc110",
+  "productionProtectedDiff": [],
+  "coverage": {
+    "byExchange": {
+      "AMEX": {
+        "discoveryAttempted": 217,
+        "financialSummaryAvailable": 3,
+        "financialSummaryCurrent": 3,
+        "noCompanySource": 219,
+        "noNewsOrSubmissionSource": 222,
+        "officialDomainCandidate": 4,
+        "officialDomainFound": 1,
+        "secIdentity": 217,
+        "secSubmissions": 1,
+        "total": 223
+      },
+      "BATS": {
+        "discoveryAttempted": 4,
+        "financialSummaryAvailable": 4,
+        "financialSummaryCurrent": 3,
+        "noCompanySource": 154,
+        "noNewsOrSubmissionSource": 158,
+        "officialDomainCandidate": 1,
+        "secIdentity": 4,
+        "total": 158
+      },
+      "NASDAQ": {
+        "callSourceFound": 2,
+        "discoveryAttempted": 3248,
+        "earningsPageFound": 9,
+        "estimatedUpcomingEarnings": 9,
+        "eventSourceActive": 1,
+        "eventSourceFound": 2,
+        "financialSummaryAvailable": 3071,
+        "financialSummaryCurrent": 2367,
+        "irPageFound": 11,
+        "newsSourceActive": 11,
+        "newsSourceDiscovered": 11,
+        "newsSourceValidated": 11,
+        "noCompanySource": 517,
+        "noNewsOrSubmissionSource": 3568,
+        "officialDomainCandidate": 413,
+        "officialDomainFound": 21,
+        "presentationSourceFound": 7,
+        "secIdentity": 3248,
+        "secSubmissions": 14,
+        "total": 3588
+      },
+      "NYSE": {
+        "callSourceFound": 2,
+        "confirmedUpcomingEarnings": 1,
+        "discoveryAttempted": 1930,
+        "earningsPageFound": 12,
+        "estimatedUpcomingEarnings": 2,
+        "eventSourceActive": 2,
+        "eventSourceFound": 3,
+        "financialSummaryAvailable": 1794,
+        "financialSummaryCurrent": 1352,
+        "irPageFound": 11,
+        "newsSourceActive": 8,
+        "newsSourceDiscovered": 8,
+        "newsSourceValidated": 8,
+        "noCompanySource": 288,
+        "noNewsOrSubmissionSource": 2066,
+        "officialDomainCandidate": 475,
+        "officialDomainFound": 24,
+        "presentationSourceFound": 11,
+        "secIdentity": 1930,
+        "secSubmissions": 9,
+        "total": 2083
+      },
+      "NYSE ARCA": {
+        "discoveryAttempted": 2,
+        "financialSummaryAvailable": 1,
+        "noCompanySource": 11,
+        "noNewsOrSubmissionSource": 12,
+        "secIdentity": 2,
+        "total": 12
+      },
+      "NYSE MKT": {
+        "discoveryAttempted": 18,
+        "financialSummaryAvailable": 2,
+        "financialSummaryCurrent": 1,
+        "noCompanySource": 19,
+        "noNewsOrSubmissionSource": 21,
+        "secIdentity": 18,
+        "total": 21
+      }
+    },
+    "byMasterListingCountry": {
+      "US": {
+        "callSourceFound": 4,
+        "confirmedUpcomingEarnings": 1,
+        "discoveryAttempted": 5412,
+        "earningsPageFound": 21,
+        "estimatedUpcomingEarnings": 11,
+        "eventSourceActive": 3,
+        "eventSourceFound": 5,
+        "financialSummaryAvailable": 4869,
+        "financialSummaryCurrent": 3722,
+        "irPageFound": 22,
+        "newsSourceActive": 19,
+        "newsSourceDiscovered": 19,
+        "newsSourceValidated": 19,
+        "noCompanySource": 1207,
+        "noNewsOrSubmissionSource": 6040,
+        "officialDomainCandidate": 891,
+        "officialDomainFound": 46,
+        "presentationSourceFound": 18,
+        "secIdentity": 5412,
+        "secSubmissions": 24,
+        "total": 6078
+      }
+    },
+    "counts": {
+      "callSourceFound": {
+        "companies": 4,
+        "percent": 0.07
+      },
+      "confirmedUpcomingEarnings": {
+        "companies": 1,
+        "percent": 0.02
+      },
+      "discoveryAttempted": {
+        "companies": 5412,
+        "percent": 89.04
+      },
+      "earningsPageFound": {
+        "companies": 21,
+        "percent": 0.35
+      },
+      "estimatedUpcomingEarnings": {
+        "companies": 11,
+        "percent": 0.18
+      },
+      "eventSourceActive": {
+        "companies": 3,
+        "percent": 0.05
+      },
+      "eventSourceFound": {
+        "companies": 5,
+        "percent": 0.08
+      },
+      "financialSummaryAvailable": {
+        "companies": 4869,
+        "percent": 80.11
+      },
+      "financialSummaryCurrent": {
+        "companies": 3722,
+        "percent": 61.24
+      },
+      "irPageFound": {
+        "companies": 22,
+        "percent": 0.36
+      },
+      "newsSourceActive": {
+        "companies": 19,
+        "percent": 0.31
+      },
+      "newsSourceDiscovered": {
+        "companies": 19,
+        "percent": 0.31
+      },
+      "newsSourceValidated": {
+        "companies": 19,
+        "percent": 0.31
+      },
+      "noCompanySource": {
+        "companies": 1207,
+        "percent": 19.86
+      },
+      "noNewsOrSubmissionSource": {
+        "companies": 6040,
+        "percent": 99.37
+      },
+      "officialDomainCandidate": {
+        "companies": 891,
+        "percent": 14.66
+      },
+      "officialDomainFound": {
+        "companies": 46,
+        "percent": 0.76
+      },
+      "presentationSourceFound": {
+        "companies": 18,
+        "percent": 0.3
+      },
+      "secIdentity": {
+        "companies": 5412,
+        "percent": 89.04
+      },
+      "secSubmissions": {
+        "companies": 24,
+        "percent": 0.39
+      }
+    },
+    "discoveryStatuses": {
+      "BLOCKED": 10,
+      "DEGRADED": 1,
+      "NOT_CHECKED": 6032,
+      "VALIDATED": 35
+    },
+    "generatedAt": "2026-10-02T07:24:25Z",
+    "interpretation": "CIK identity and local financial facts are not active news/filing-feed coverage. Unattempted discovery is explicit. Sparse first-party news is stale, never counted as active.",
+    "parserFailures": 0,
+    "platformCompanies": {
+      "GCS": 7,
+      "GENERIC": 5,
+      "Q4": 5,
+      "STOCKPR": 6,
+      "WEB_DRIVER": 1
+    },
+    "schema": "vu-intelligence-coverage-1.0.0",
+    "sourceStatuses": {
+      "ACTIVE": 28,
+      "EMPTY": 2,
+      "INACTIVE": 1
+    },
+    "totalCompanies": 6078
+  },
+  "universe": {
+    "status": "PASS",
+    "runtimeSeconds": 11.49,
+    "databaseBytes": 60514304,
+    "publicRequests": 0,
+    "secRequests": 0,
+    "run": {
+      "discoveryFailures": 0,
+      "documentFailures": 0,
+      "duplicate": 0,
+      "invalid": 0,
+      "new": 0,
+      "processedCompanies": 6078,
+      "secFailures": 0,
+      "sourceFailures": 0,
+      "unmatched": 0
+    },
+    "export": {
+      "exportedCompanies": 4873,
+      "generation": "d82679f18196f0620c143ce8"
+    }
+  },
+  "newsItems": 219,
+  "eventsByType": {
+    "EARNINGS_CALL": 12,
+    "EARNINGS_CANDIDATE": 424,
+    "EARNINGS_ESTIMATED": 14,
+    "EARNINGS_PUBLISHED": 60,
+    "EARNINGS_SCHEDULED": 6,
+    "IR_EVENT": 19,
+    "OPERATING_RESULTS_PUBLISHED": 1,
+    "PERIODIC_REPORT_PUBLISHED": 503,
+    "PRESENTATION_PUBLISHED": 4,
+    "SEC_FILING": 2014
+  },
+  "runs": {
+    "expanded-probe1": {
+      "status": "DEGRADED",
+      "runtimeSeconds": 295.884,
+      "publicRequests": 72,
+      "secRequests": 0,
+      "run": {
+        "discoveryFailures": 11,
+        "documentFailures": 0,
+        "duplicate": 33,
+        "invalid": 1,
+        "new": 23,
+        "processedCompanies": 34,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 93
+      },
+      "httpStats": {
+        "bytesDownloaded": 7026739,
+        "cacheHits": 23,
+        "memoHits": 13,
+        "notModified": 2,
+        "retries": 4
+      },
+      "selectedIssuers": 34
+    },
+    "expanded-probe2": {
+      "status": "DEGRADED",
+      "runtimeSeconds": 423.218,
+      "publicRequests": 103,
+      "secRequests": 0,
+      "run": {
+        "discoveryFailures": 2,
+        "documentFailures": 0,
+        "duplicate": 20,
+        "invalid": 0,
+        "new": 45,
+        "processedCompanies": 25,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "httpStats": {
+        "bytesDownloaded": 11882667,
+        "cacheHits": 0,
+        "memoHits": 28,
+        "notModified": 0,
+        "retries": 0
+      },
+      "selectedIssuers": 25
+    },
+    "earnings-probe": {
+      "status": "PASS",
+      "runtimeSeconds": 38.761,
+      "publicRequests": 0,
+      "secRequests": 37,
+      "run": {
+        "discoveryFailures": 0,
+        "documentFailures": 0,
+        "duplicate": 0,
+        "invalid": 0,
+        "new": 0,
+        "processedCompanies": 8,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "httpStats": {
+        "bytesDownloaded": 0,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 0
+      },
+      "selectedIssuers": 8
+    },
+    "candidate-backfill2": {
+      "status": "DEGRADED",
+      "runtimeSeconds": 310.691,
+      "publicRequests": 75,
+      "secRequests": 0,
+      "run": {
+        "discoveryFailures": 1,
+        "documentFailures": 0,
+        "duplicate": 30,
+        "invalid": 0,
+        "new": 105,
+        "processedCompanies": 15,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "httpStats": {
+        "bytesDownloaded": 5484742,
+        "cacheHits": 10,
+        "memoHits": 11,
+        "notModified": 9,
+        "retries": 0
+      },
+      "selectedIssuers": 15
+    },
+    "daily-manifest-real1": {
+      "status": "PASS",
+      "runtimeSeconds": 18.111,
+      "publicRequests": 0,
+      "secRequests": 15,
+      "run": {
+        "discoveryFailures": 0,
+        "documentFailures": 0,
+        "duplicate": 0,
+        "invalid": 0,
+        "new": 0,
+        "processedCompanies": 3,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "httpStats": {
+        "bytesDownloaded": 0,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 0
+      },
+      "selectedIssuers": 3
+    },
+    "daily-manifest-real2": {
+      "status": "PASS",
+      "runtimeSeconds": 13.785,
+      "publicRequests": 0,
+      "secRequests": 11,
+      "run": {
+        "discoveryFailures": 0,
+        "documentFailures": 0,
+        "duplicate": 0,
+        "invalid": 0,
+        "new": 0,
+        "processedCompanies": 3,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "httpStats": {
+        "bytesDownloaded": 0,
+        "cacheHits": 0,
+        "memoHits": 0,
+        "notModified": 0,
+        "retries": 0
+      },
+      "selectedIssuers": 3
+    }
+  },
+  "repeated": [
+    {
+      "cycle": 1,
+      "status": "PASS",
+      "runtimeSeconds": 12.001,
+      "publicRequests": 0,
+      "secRequests": 0,
+      "databaseBytes": 60301312,
+      "run": {
+        "discoveryFailures": 0,
+        "documentFailures": 0,
+        "duplicate": 0,
+        "invalid": 0,
+        "new": 0,
+        "processedCompanies": 6078,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "export": {
+        "exportedCompanies": 4873,
+        "generation": "ee588c5a80a649976f3170af"
+      },
+      "identityDigests": {
+        "items": "7b9e8b3c8d208748640fd23bd1c6e4eeb4bf12de1da108cdb4a028c0423a5106",
+        "events": "e1987f9be73ebee708e375b3009792d427f6a25c826a23d4b22ec37dc005ef2c",
+        "sources": "c5b49a738fc233925c8928743c070e6edcbadd4c50eb7a5f6d1ecf9d77884d1e"
+      }
+    },
+    {
+      "cycle": 2,
+      "status": "PASS",
+      "runtimeSeconds": 3.631,
+      "publicRequests": 0,
+      "secRequests": 0,
+      "databaseBytes": 60301312,
+      "run": {
+        "discoveryFailures": 0,
+        "documentFailures": 0,
+        "duplicate": 0,
+        "invalid": 0,
+        "new": 0,
+        "processedCompanies": 1,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "export": {
+        "exportedCompanies": 4873,
+        "generation": "7e5aab82a9d08f5bb1900aa1"
+      },
+      "identityDigests": {
+        "items": "7b9e8b3c8d208748640fd23bd1c6e4eeb4bf12de1da108cdb4a028c0423a5106",
+        "events": "e1987f9be73ebee708e375b3009792d427f6a25c826a23d4b22ec37dc005ef2c",
+        "sources": "c5b49a738fc233925c8928743c070e6edcbadd4c50eb7a5f6d1ecf9d77884d1e"
+      }
+    },
+    {
+      "cycle": 3,
+      "status": "PASS",
+      "runtimeSeconds": 12.163,
+      "publicRequests": 0,
+      "secRequests": 0,
+      "databaseBytes": 60301312,
+      "run": {
+        "discoveryFailures": 0,
+        "documentFailures": 0,
+        "duplicate": 0,
+        "invalid": 0,
+        "new": 0,
+        "processedCompanies": 6078,
+        "secFailures": 0,
+        "sourceFailures": 0,
+        "unmatched": 0
+      },
+      "export": {
+        "exportedCompanies": 4873,
+        "generation": "13fead4f938c9b554da1d5dc"
+      },
+      "identityDigests": {
+        "items": "7b9e8b3c8d208748640fd23bd1c6e4eeb4bf12de1da108cdb4a028c0423a5106",
+        "events": "e1987f9be73ebee708e375b3009792d427f6a25c826a23d4b22ec37dc005ef2c",
+        "sources": "c5b49a738fc233925c8928743c070e6edcbadd4c50eb7a5f6d1ecf9d77884d1e"
+      }
+    }
+  ],
+  "freshRunnerRecovery": {
+    "items": {
+      "count": 219,
+      "identicalIds": true
+    },
+    "events": {
+      "count": 3057,
+      "identicalIds": true
+    },
+    "sources": {
+      "count": 31,
+      "identicalIds": true
+    },
+    "sourceHealthUnchanged": true,
+    "sqliteIntegrity": [
+      "ok",
+      "ok"
+    ]
+  },
+  "checkpoint": {
+    "sha256": "ea9f79546d25b8ddcdd4ef92a174a353c03c41aa182eacb83cbcc761f2837c6a",
+    "bytes": 14382373,
+    "expandedBytes": 111705026
+  },
+  "exportBytes": 55682913,
+  "largestCompanyBytes": 219359,
+  "materials": {
+    "SEC_FACT_FILING_REFERENCE": 12505,
+    "SEC_FILING": 856,
+    "FINANCIAL_REPORT": 275,
+    "SEC_PRIMARY_DOCUMENT": 45,
+    "SEC_EARNINGS_EXHIBIT": 42,
+    "EARNINGS_RELEASE": 73,
+    "OFFICIAL_EARNINGS_RELEASE": 22,
+    "PRESENTATION": 34,
+    "SHAREHOLDER_LETTER": 5,
+    "OFFICIAL_COMPANY_EVENT": 37,
+    "COMPANY_TRANSCRIPT": 12
+  },
+  "materialIssuers": {
+    "SEC_FACT_FILING_REFERENCE": 4848,
+    "SEC_FILING": 26,
+    "FINANCIAL_REPORT": 35,
+    "SEC_PRIMARY_DOCUMENT": 23,
+    "SEC_EARNINGS_EXHIBIT": 22,
+    "EARNINGS_RELEASE": 34,
+    "OFFICIAL_EARNINGS_RELEASE": 13,
+    "PRESENTATION": 13,
+    "SHAREHOLDER_LETTER": 3,
+    "OFFICIAL_COMPANY_EVENT": 6,
+    "COMPANY_TRANSCRIPT": 5
+  },
+  "browser": {
+    "cases": 36,
+    "overflow": 0,
+    "javascriptErrors": 0,
+    "defaultDataRequests": 0
+  },
+  "sourceLinks": {
+    "requests": 7,
+    "links": [
+      {
+        "ticker": "AAPL",
+        "url": "https://www.apple.com/newsroom/2026/09/final-cut-camera-now-supports-variable-aperture-on-iphone-18-pro/",
+        "status": 200,
+        "finalUrl": "https://www.apple.com/newsroom/2026/09/final-cut-camera-now-supports-variable-aperture-on-iphone-18-pro/"
+      },
+      {
+        "ticker": "ROOT",
+        "url": "https://ir.joinroot.com/events/event-details/root-inc-2q-2026-earnings-conference-call",
+        "status": 200,
+        "finalUrl": "https://ir.joinroot.com/events/event-details/root-inc-2q-2026-earnings-conference-call"
+      },
+      {
+        "ticker": "CHE",
+        "url": "https://www.chemed.com/events/event-details/chemed-corporation-third-quarter-2026-earnings-conference-call",
+        "status": 200,
+        "finalUrl": "https://www.chemed.com/events/event-details/chemed-corporation-third-quarter-2026-earnings-conference-call"
+      },
+      {
+        "ticker": "BA",
+        "url": "http://investors.boeing.com/investors/news/press-release-details/2026/Ethiopian-Airlines-Orders-Boeing-777-and-777-8-Freighters-to-Expand-Cargo-Fleet/default.aspx",
+        "status": 200,
+        "finalUrl": "https://investors.boeing.com/investors/news/press-release-details/2026/Ethiopian-Airlines-Orders-Boeing-777-and-777-8-Freighters-to-Expand-Cargo-Fleet/default.aspx"
+      },
+      {
+        "ticker": "KO",
+        "url": "https://investors.coca-colacompany.com/_assets/_13065c743477868af33298f12a236e35/cocacolacompany/db/880/11126/webcast_transcript/CORRECTED+TRANSCRIPT++The+Coca-Cola+Co.%28KO-US%29%2C+Q2+2026+Earnings+Call%2C+28-July-2026+8+30+AM+ET.pdf",
+        "status": 200,
+        "finalUrl": "https://investors.coca-colacompany.com/_assets/_13065c743477868af33298f12a236e35/cocacolacompany/db/880/11126/webcast_transcript/CORRECTED+TRANSCRIPT++The+Coca-Cola+Co.%28KO-US%29%2C+Q2+2026+Earnings+Call%2C+28-July-2026+8+30+AM+ET.pdf"
+      },
+      {
+        "ticker": "AMAT",
+        "url": "https://ir.appliedmaterials.com/static-files/9d5d182d-f060-4b22-a32c-4582257fdc9b",
+        "status": 200,
+        "finalUrl": "https://ir.appliedmaterials.com/static-files/9d5d182d-f060-4b22-a32c-4582257fdc9b"
+      }
+    ]
+  },
+  "gdelt": {
+    "status": "SourceError",
+    "reason": "HTTP_503",
+    "requests": 3,
+    "stats": {
+      "memoHits": 0,
+      "cacheHits": 0,
+      "notModified": 0,
+      "retries": 2,
+      "bytesDownloaded": 0
+    },
+    "runtimeSeconds": 40.68
+  },
+  "tests": {
+    "intelligencePython": 94,
+    "intelligenceNode": 14,
+    "existingNodePassed": 2507,
+    "existingNodeSkipped": 5,
+    "existingSEC": 484,
+    "existingServingNode": 63,
+    "existingServingPython": 32
+  },
+  "limits": {
+    "liveAuthenticatedR2Tested": false,
+    "actionsConfigurationAccessible": false,
+    "providerCost": 0,
+    "firstCandidateBatch": "180-request cap reached; reporting failed on null lastError; ledger preserved. Fixed and regression-tested; next batch resumed."
+  }
+}
