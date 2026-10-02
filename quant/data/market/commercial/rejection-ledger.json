@@ -1,7 +1,7 @@
 {
   "schemaVersion": "rejection-ledger-1.0.0",
   "auftrag": "Owner 18.09.2026 P0: Rejection-Checkpoint klassifizieren statt loeschen",
-  "checkedAt": "2026-10-01T08:34:29.613Z",
+  "checkedAt": "2026-10-02T01:48:43.606Z",
   "applied": true,
   "staleAfterDays": 7,
   "checkpointsFound": 1,
@@ -19,119 +19,18 @@
         "adjustment_status_contradicted": 345,
         "too_few_bars": 2
       },
-      "retryDue": 2,
-      "keptBlocked": 345,
+      "retryDue": 347,
+      "keptBlocked": 0,
       "oldest": "2026-10-01T01:28:44.007Z",
-      "newest": "2026-10-01T02:36:52.349Z",
-      "keptExamples": [
-        {
-          "securityId": "ref_ABTC",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:28:44.007Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AEHL",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:29:44.561Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AEON",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:29:45.564Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AGPU",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:30:39.552Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AHI",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:30:40.506Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AIIO",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:30:42.910Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AIRE",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:30:44.373Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AIXI",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:30:46.067Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AKAN",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:30:46.802Z",
-          "confirmations": 1
-        },
-        {
-          "securityId": "ref_AKTX",
-          "codes": [
-            "adjustment_status_contradicted"
-          ],
-          "class": "TEMPORARY_REJECT",
-          "reason": "Anbieter-, Daten- oder Qualitaetszustand, 1-mal gesehen (Frist 20 h)",
-          "at": "2026-10-01T01:30:47.628Z",
-          "confirmations": 1
-        }
-      ],
-      "removed": 2
+      "newest": "2026-10-01T09:05:33.047Z",
+      "keptExamples": [],
+      "removed": 347
     }
   ],
   "totals": {
     "before": 347,
-    "retryDue": 2,
-    "keptBlocked": 345,
-    "removed": 2
+    "retryDue": 347,
+    "keptBlocked": 0,
+    "removed": 347
   }
 }
