@@ -61,17 +61,17 @@
       if (hist[z] < hist[z - 1] && hist[z] <= hist[z + 1] && hist[z] < 0.6 * mean) lvn.push(r4(lo + (z + 0.5) * w));
     }
     return { bars: ctx.t - from + 1, poc: r4(lo + (poc + 0.5) * w), valueAreaLow: r4(lo + L * w), valueAreaHigh: r4(lo + (R + 1) * w), highVolumeNodes: hvn, lowVolumeNodes: lvn,
-             method: "DAILY_RANGE_UNIFORM", note: "Tagesvolumen gleichmaessig ueber die Tagesspanne verteilt (Naeherung, keine Tickdaten)" };
+             method: "DAILY_RANGE_UNIFORM", note: "Tagesvolumen gleichmäßig über die Tagesspanne verteilt (Näherung, keine Tickdaten)" };
   }
 
   function analyze(ctx, anchorScale) {
-    if (!ctx.hasVolume) return { engineVersion: ENGINE_VERSION, family: "VOLUME", status: "UNAVAILABLE", reason: "NO_VOLUME_DATA", detail: "Die Kursreihe enthaelt kein Volumen.", evidence: [], direction: 0 };
+    if (!ctx.hasVolume) return { engineVersion: ENGINE_VERSION, family: "VOLUME", status: "UNAVAILABLE", reason: "NO_VOLUME_DATA", detail: "Die Kursreihe enthält kein Volumen.", evidence: [], direction: 0 };
     var s = ctx.series, t = ctx.t, w = Math.round(ctx.profile.barsPerYear / 5);
     var upV = 0, dnV = 0;
     for (var k = Math.max(1, t - w + 1); k <= t; k++) { var v = s.volume[k]; if (!isNum(v)) continue; if (s.close[k] > s.close[k - 1]) upV += v; else if (s.close[k] < s.close[k - 1]) dnV += v; }
     var udRatio = dnV > 0 ? upV / dnV : null;
     var rvol = ctx.col("relativeVolume"), volTrend = ctx.col("volumeTrend");
-    /* Anker: letztes bestaetigtes grosses Tief und Hoch der Anker-Skala. */
+    /* Anker: letztes bestaetigtes großes Tief und Hoch der Anker-Skala. */
     var view = ctx.view(anchorScale || "scale-3"), anchors = [];
     if (view) {
       var lastLow = null, lastHigh = null;
@@ -84,7 +84,7 @@
     if (accDist === "ACCUMULATION") ev.push({ key: "up_down_volume", polarity: 1, statement: "An steigenden Tagen wird deutlich mehr gehandelt als an fallenden" });
     if (accDist === "DISTRIBUTION") ev.push({ key: "up_down_volume", polarity: -1, statement: "An fallenden Tagen wird deutlich mehr gehandelt als an steigenden" });
     var lowAnchor = anchors.filter(function (a) { return a.anchor === "MAJOR_LOW"; })[0];
-    if (lowAnchor) ev.push({ key: "avwap_low", polarity: lowAnchor.priceAbove ? 1 : -1, statement: lowAnchor.priceAbove ? "Kurs ueber dem volumengewichteten Durchschnitt seit dem letzten grossen Tief" : "Kurs unter dem volumengewichteten Durchschnitt seit dem letzten grossen Tief" });
+    if (lowAnchor) ev.push({ key: "avwap_low", polarity: lowAnchor.priceAbove ? 1 : -1, statement: lowAnchor.priceAbove ? "Kurs über dem volumengewichteten Durchschnitt seit dem letzten großen Tief" : "Kurs unter dem volumengewichteten Durchschnitt seit dem letzten großen Tief" });
     return {
       engineVersion: ENGINE_VERSION, family: "VOLUME", evidenceGrade: "B", status: "OK",
       relativeVolume: r4(rvol), volumeTrend: r4(volTrend), upDownVolumeRatio: r4(udRatio), accumulation: accDist,

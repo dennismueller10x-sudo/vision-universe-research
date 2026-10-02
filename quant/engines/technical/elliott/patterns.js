@@ -25,7 +25,7 @@
    Welle k). s = Richtung der ersten Welle (+1 auf, −1 ab). o(k) = s·pk ist
    der orientierte Preis — groesser heisst "weiter in Musterrichtung".
    Ein DEVELOPING-Leg ist das laufende Extrem; es kann nur weiter laufen,
-   deshalb sind "ueberschreitet"-Regeln darauf `null` (offen), "nicht-
+   deshalb sind "überschreitet"-Regeln darauf `null` (offen), "nicht-
    ueber"-Regeln sofort entscheidbar.
    ========================================================================= */
 (function (global) {
@@ -77,7 +77,7 @@
   function beyond(c, out, id, k, j, cls, detail, source) {
     if (c.n < k) return;
     var ok = c.o(k) > c.o(j);
-    if (!ok && dev(c.legs[k - 1])) R(out, id, cls, null, detail + " (Welle laeuft noch)", source);
+    if (!ok && dev(c.legs[k - 1])) R(out, id, cls, null, detail + " (Welle läuft noch)", source);
     else R(out, id, cls, ok, detail, source);
   }
   /** Regel "Welle k endet NICHT jenseits von Punkt j (in Gegenrichtung)": sofort entscheidbar. */
@@ -95,14 +95,14 @@
     var c = Ctx(legs), out = [];
     alternation(c, out);
     notBeyondAgainst(c, out, "W2_NOT_BEYOND_W1_ORIGIN", 2, 0, "HARD", "Welle 2 retraced nie mehr als 100 % von Welle 1", EWP + "S. 31, Regel 1");
-    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 laeuft ueber das Ende von Welle 1 hinaus", EWP + "S. 31");
+    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 läuft über das Ende von Welle 1 hinaus", EWP + "S. 31");
     notBeyondAgainst(c, out, "W4_NO_OVERLAP_W1", 4, 1, "HARD", "Welle 4 betritt nie das Preisgebiet von Welle 1", EWP + "S. 31, Regel 3");
     if (c.n >= 5) {
       var l1 = c.L(1), l3 = c.L(3), l5 = c.L(5);
-      if (!dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", l3 >= Math.min(l1, l5), "Welle 3 ist nie die kuerzeste der Wellen 1, 3, 5", EWP + "S. 31, Regel 2");
-      else if (l3 < l1 && l5 > l3) R(out, "W3_NOT_SHORTEST", "HARD", false, "Welle 5 ist bereits laenger als die kuerzere Welle 3 (W3 < W1)", EWP + "S. 31, Regel 2");
-      else R(out, "W3_NOT_SHORTEST", "HARD", null, "offen, solange Welle 5 laeuft", EWP + "S. 31, Regel 2");
-    } else if (c.n >= 3) R(out, "W3_NOT_SHORTEST", "HARD", null, "erst mit Welle 5 pruefbar", EWP + "S. 31, Regel 2");
+      if (!dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", l3 >= Math.min(l1, l5), "Welle 3 ist nie die kürzeste der Wellen 1, 3, 5", EWP + "S. 31, Regel 2");
+      else if (l3 < l1 && l5 > l3) R(out, "W3_NOT_SHORTEST", "HARD", false, "Welle 5 ist bereits länger als die kürzere Welle 3 (W3 < W1)", EWP + "S. 31, Regel 2");
+      else R(out, "W3_NOT_SHORTEST", "HARD", null, "offen, solange Welle 5 läuft", EWP + "S. 31, Regel 2");
+    } else if (c.n >= 3) R(out, "W3_NOT_SHORTEST", "HARD", null, "erst mit Welle 5 prüfbar", EWP + "S. 31, Regel 2");
     return out;
   }
   function impulseGuidelines(legs) {
@@ -142,28 +142,28 @@
     var c = Ctx(legs), out = [];
     alternation(c, out);
     notBeyondAgainst(c, out, "W2_NOT_BEYOND_W1_ORIGIN", 2, 0, "HARD", "Welle 2 retraced nie mehr als 100 % von Welle 1", EWP + "S. 36–40");
-    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 laeuft ueber das Ende von Welle 1 hinaus", EWP + "S. 36–40");
-    notBeyondAgainst(c, out, "W4_NOT_BEYOND_W3_ORIGIN", 4, 2, "HARD", "Welle 4 retraced Welle 3 nicht vollstaendig", EWP + "S. 36–40");
+    beyond(c, out, "W3_BEYOND_W1_END", 3, 1, "HARD", "Welle 3 läuft über das Ende von Welle 1 hinaus", EWP + "S. 36–40");
+    notBeyondAgainst(c, out, "W4_NOT_BEYOND_W3_ORIGIN", 4, 2, "HARD", "Welle 4 retraced Welle 3 nicht vollständig", EWP + "S. 36–40");
     if (c.n >= 4) {
       /* Klassengrenze Impuls/Diagonale: W4 betritt das Gebiet von W1. */
-      R(out, "DIAGONAL_W4_OVERLAPS_W1", "DEFINITION", c.o(4) <= c.o(1), "In einer Diagonale ueberlappt Welle 4 das Gebiet von Welle 1", EWP + "S. 37 (\"almost always\"); als Klassengrenze zum Impuls verwendet");
+      R(out, "DIAGONAL_W4_OVERLAPS_W1", "DEFINITION", c.o(4) <= c.o(1), "In einer Diagonale überlappt Welle 4 das Gebiet von Welle 1", EWP + "S. 37 (\"almost always\"); als Klassengrenze zum Impuls verwendet");
     }
     /* Form: kontrahierend (1>3>5, 2>4) oder expandierend (1<3<5, 2<4). */
     if (c.n >= 3 && !dev(legs[2])) {
       var contracting = c.L(3) < c.L(1);
-      if (c.n >= 4 && !dev(legs[3])) R(out, "DIAGONAL_W4_VS_W2", "DEFINITION", contracting ? c.L(4) < c.L(2) : c.L(4) > c.L(2), (contracting ? "kontrahierend: W4 kuerzer als W2" : "expandierend: W4 laenger als W2"), EWP + "S. 36–40 (Keilform)");
+      if (c.n >= 4 && !dev(legs[3])) R(out, "DIAGONAL_W4_VS_W2", "DEFINITION", contracting ? c.L(4) < c.L(2) : c.L(4) > c.L(2), (contracting ? "kontrahierend: W4 kürzer als W2" : "expandierend: W4 länger als W2"), EWP + "S. 36–40 (Keilform)");
       if (c.n >= 5) {
         var l5 = c.L(5);
         if (contracting) {
-          if (l5 >= c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", false, "kontrahierend: W5 muss kuerzer als W3 sein", EWP + "S. 36–40");
-          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : true, "kontrahierend: W5 kuerzer als W3", EWP + "S. 36–40");
+          if (l5 >= c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", false, "kontrahierend: W5 muss kürzer als W3 sein", EWP + "S. 36–40");
+          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : true, "kontrahierend: W5 kürzer als W3", EWP + "S. 36–40");
         } else {
-          if (l5 > c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", true, "expandierend: W5 laenger als W3", EWP + "S. 36–40");
-          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : false, "expandierend: W5 muss laenger als W3 sein", EWP + "S. 36–40");
+          if (l5 > c.L(3)) R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", true, "expandierend: W5 länger als W3", EWP + "S. 36–40");
+          else R(out, "DIAGONAL_W5_VS_W3", "DEFINITION", dev(legs[4]) ? null : false, "expandierend: W5 muss länger als W3 sein", EWP + "S. 36–40");
         }
       }
     }
-    if (c.n >= 5 && !dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", c.L(3) >= Math.min(c.L(1), c.L(5)), "Welle 3 ist nie die kuerzeste", EWP + "S. 36–40");
+    if (c.n >= 5 && !dev(legs[4])) R(out, "W3_NOT_SHORTEST", "HARD", c.L(3) >= Math.min(c.L(1), c.L(5)), "Welle 3 ist nie die kürzeste", EWP + "S. 36–40");
     void kind;
     return out;
   }
@@ -200,9 +200,9 @@
     alternation(c, out);
     if (c.n >= 2) {
       var b = c.L(2) / c.L(1);
-      if (dev(legs[1]) && b < 0.9) R(out, "FLAT_B_AT_LEAST_90PCT", "DEFINITION", null, "B laeuft noch (" + Math.round(b * 100) + " % von A)", EWI + "Flat: B >= 90 % von A");
+      if (dev(legs[1]) && b < 0.9) R(out, "FLAT_B_AT_LEAST_90PCT", "DEFINITION", null, "B läuft noch (" + Math.round(b * 100) + " % von A)", EWI + "Flat: B >= 90 % von A");
       else R(out, "FLAT_B_AT_LEAST_90PCT", "DEFINITION", b >= 0.9, "Flat: B retraced mindestens 90 % von A", EWI + "Flat: B >= 90 % von A");
-      R(out, "FLAT_B_NOT_EXCESSIVE", "DEFINITION", b <= 2.0, "B ueberschreitet A hoechstens um 100 % (sonst neuer Trend, keine Korrektur)", "VU-Klassengrenze (EWP S. 44–47: expandierte B typ. 123,6–138,2 %)");
+      R(out, "FLAT_B_NOT_EXCESSIVE", "DEFINITION", b <= 2.0, "B überschreitet A hoechstens um 100 % (sonst neuer Trend, keine Korrektur)", "VU-Klassengrenze (EWP S. 44–47: expandierte B typ. 123,6–138,2 %)");
     }
     return out;
   }
@@ -235,7 +235,7 @@
     if (c.n >= 4) { contracting = contracting && c.o(4) > c.o(2) - tol; expanding = expanding && c.o(4) < c.o(2); }
     if (c.n >= 5) { contracting = contracting && c.o(5) < c.o(3); expanding = expanding && (c.o(5) > c.o(3) || dev(legs[4])); }
     if (c.n >= 3) R(out, "TRIANGLE_BOUNDARIES", "DEFINITION", contracting || expanding, contracting ? "kontrahierend: Extreme laufen zusammen" : expanding ? "expandierend: Extreme laufen auseinander" : "weder kontrahierend noch expandierend", EWP + "S. 50–55");
-    if (c.n >= 5 && contracting && !dev(legs[4])) R(out, "TRIANGLE_E_INSIDE", "HARD", c.L(5) < c.L(3), "kontrahierend: E kuerzer als C", EWP + "S. 50–55");
+    if (c.n >= 5 && contracting && !dev(legs[4])) R(out, "TRIANGLE_E_INSIDE", "HARD", c.L(5) < c.L(3), "kontrahierend: E kürzer als C", EWP + "S. 50–55");
     return out;
   }
   function triangleShape(legs) {
@@ -281,7 +281,7 @@
     zigzagRules(W).forEach(function (r) { r.ruleId = "W_" + r.ruleId; out.push(r); });
     if (legs.length >= 4) notBeyondAgainst(c, out, "X_NOT_BEYOND_W_ORIGIN", 4, 0, "HARD", "X retraced nie mehr als 100 % von W", EWP + "S. 56–58");
     if (Y.length) zigzagRules(Y).forEach(function (r) { r.ruleId = "Y_" + r.ruleId; out.push(r); });
-    if (legs.length >= 7) beyond(c, out, "Y_BEYOND_W_END", 7, 3, "DEFINITION", "Double Zigzag: Y laeuft ueber das Ende von W hinaus", EWP + "S. 56 (\"each zigzag makes progress\")");
+    if (legs.length >= 7) beyond(c, out, "Y_BEYOND_W_END", 7, 3, "DEFINITION", "Double Zigzag: Y läuft über das Ende von W hinaus", EWP + "S. 56 (\"each zigzag makes progress\")");
     return out;
   }
   function doubleZigzagGuidelines(legs) {
@@ -310,9 +310,9 @@
     var out = { hard: null, revision: null };
     if (type === "IMPULSE") {
       if (dw === 2) out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Welle 2 darf den Ursprung von Welle 1 nicht unterschreiten");
-      if (dw === 3) { out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Ursprung von Welle 1"); out.revision = level(p[2], s, "W3_START", "unter dem Ende von Welle 2 waere Welle 2 noch nicht beendet"); }
+      if (dw === 3) { out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Ursprung von Welle 1"); out.revision = level(p[2], s, "W3_START", "unter dem Ende von Welle 2 wäre Welle 2 noch nicht beendet"); }
       if (dw === 4) out.hard = level(p[1], s, "W4_NO_OVERLAP_W1", "Welle 4 darf das Gebiet von Welle 1 nicht betreten");
-      if (dw === 5) { out.hard = level(p[1], s, "W4_NO_OVERLAP_W1", "Ende von Welle 1"); out.revision = level(p[4], s, "W5_START", "unter dem Ende von Welle 4 waere Welle 4 noch nicht beendet"); }
+      if (dw === 5) { out.hard = level(p[1], s, "W4_NO_OVERLAP_W1", "Ende von Welle 1"); out.revision = level(p[4], s, "W5_START", "unter dem Ende von Welle 4 wäre Welle 4 noch nicht beendet"); }
     } else if (type === "LEADING_DIAGONAL" || type === "ENDING_DIAGONAL") {
       if (dw === 2) out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Ursprung von Welle 1");
       if (dw === 3) { out.hard = level(p[0], s, "W2_NOT_BEYOND_W1_ORIGIN", "Ursprung von Welle 1"); out.revision = level(p[2], s, "W3_START", "Ende von Welle 2"); }
@@ -320,13 +320,13 @@
       if (dw === 5) { out.hard = level(p[2], s, "W4_NOT_BEYOND_W3_ORIGIN", "Ursprung von Welle 3"); out.revision = level(p[4], s, "W5_START", "Ende von Welle 4"); }
     } else if (type === "ZIGZAG" || type === "FLAT" || type === "WXY") {
       if (dw === 2) out.hard = level(p[0], s, type === "WXY" ? "X_NOT_BEYOND_W_ORIGIN" : "B_NOT_BEYOND_A_ORIGIN", "Ursprung der Korrektur");
-      if (type === "FLAT" && dw === 2) out.hard = level(p[1] - s * 2.0 * c.L(1), s, "FLAT_B_NOT_EXCESSIVE", "B laeuft ueber 200 % von A hinaus");
+      if (type === "FLAT" && dw === 2) out.hard = level(p[1] - s * 2.0 * c.L(1), s, "FLAT_B_NOT_EXCESSIVE", "B läuft über 200 % von A hinaus");
       if (dw === 3) out.hard = level(p[2], s, "C_IS_MOTIVE", "die laufende C-Welle darf ihren Ursprung (Ende von B) nicht wieder erreichen");
     } else if (type === "TRIANGLE") {
       /* Laufende Triangle-Welle darf das vorletzte Extrem nicht ueberschreiten (kontrahierend). */
       if (dw >= 3 && dw <= 5) {
         var ref = p[dw - 2];
-        out.hard = { price: ref, direction: (dw % 2 === 1) === (s > 0) ? "above" : "below", ruleId: "TRIANGLE_BOUNDARIES", statement: "Dreieck ungueltig, wenn die laufende Welle das Extrem von zwei Wellen zuvor ueberschreitet" };
+        out.hard = { price: ref, direction: (dw % 2 === 1) === (s > 0) ? "above" : "below", ruleId: "TRIANGLE_BOUNDARIES", statement: "Dreieck ungültig, wenn die laufende Welle das Extrem von zwei Wellen zuvor überschreitet" };
       }
     } else if (type === "DOUBLE_ZIGZAG") {
       if (dw <= 3) return invalidation("ZIGZAG", legs.slice(0, 3), dw);
@@ -361,7 +361,7 @@
         [1.0, 1.618, 2.618].forEach(function (r, k) { add("3", "TARGET", w2mid + s * L1 * r, r, "Welle 3 = " + r + " × Welle 1 (ab erwarteter Welle-2-Zone)", [0.7, 1, 0.6][k]); });
       }
       if (dw === 3) {
-        add("3", "TARGET", p[1], 1, "Ende von Welle 1 (Bestaetigung der Lesart)", 0.6);
+        add("3", "TARGET", p[1], 1, "Ende von Welle 1 (Bestätigung der Lesart)", 0.6);
         (diag ? [0.618, 1.0] : [1.0, 1.618, 2.618]).forEach(function (r, k) { add("3", "TARGET", p[2] + s * L1 * r, r, "Welle 3 = " + r + " × Welle 1", diag ? 1 : [0.6, 1, 0.6][k]); });
       }
       if (dw === 4) {
@@ -376,21 +376,21 @@
     function w5Targets(base, diag) {
       var L3 = c.L(3), net13 = Math.abs(p[3] - p[0]);
       var cap = L3 < L1 ? L3 : (diag && L3 < L1 ? L3 : null);
-      if (diag) { var L5c = L3 < L1 ? L3 * 0.8 : L3 * 1.2; add("5", "TARGET", base + s * L5c, null, (L3 < L1 ? "kontrahierend: Welle 5 kuerzer als Welle 3" : "expandierend: Welle 5 laenger als Welle 3"), 1); }
+      if (diag) { var L5c = L3 < L1 ? L3 * 0.8 : L3 * 1.2; add("5", "TARGET", base + s * L5c, null, (L3 < L1 ? "kontrahierend: Welle 5 kürzer als Welle 3" : "expandierend: Welle 5 länger als Welle 3"), 1); }
       else {
         var ext3 = L3 > 1.618 * L1;
-        add("5", "TARGET", base + s * L1 * (ext3 ? 1.0 : 0.618), ext3 ? 1.0 : 0.618, ext3 ? "Welle 5 = Welle 1 (Welle 3 verlaengert)" : "Welle 5 = 0,618 × Welle 1", 1);
+        add("5", "TARGET", base + s * L1 * (ext3 ? 1.0 : 0.618), ext3 ? 1.0 : 0.618, ext3 ? "Welle 5 = Welle 1 (Welle 3 verlängert)" : "Welle 5 = 0,618 × Welle 1", 1);
         add("5", "TARGET", base + s * net13 * 0.618, 0.618, "Welle 5 = 0,618 × Strecke Welle 1–3", 0.8);
         if (!ext3) add("5", "TARGET", base + s * L1 * 1.0, 1.0, "Welle 5 = Welle 1", 0.7);
       }
-      if (cap !== null) out.push({ phase: "5", kind: "CAP", price: base + s * cap, ratio: 1, relation: "Welle 5 darf nicht laenger als Welle 3 werden (W3 nie die kuerzeste)", weight: 0 });
+      if (cap !== null) out.push({ phase: "5", kind: "CAP", price: base + s * cap, ratio: 1, relation: "Welle 5 darf nicht länger als Welle 3 werden (W3 nie die kürzeste)", weight: 0 });
     }
     if (type === "ZIGZAG" || type === "FLAT" || type === "WXY" || type === "DOUBLE_ZIGZAG") {
       var A = type === "DOUBLE_ZIGZAG" ? null : L1;
       if (complete) {
         var span2 = Math.abs(p[p.length - 1] - p[0]);
         add("AFTER_CORRECTION", "TARGET", p[0], 1, "Ursprung der Korrektur (Trend setzt sich fort)", 1);
-        add("AFTER_CORRECTION", "TARGET", p[p.length - 1] - s * span2 * 1.618, 1.618, "1,618 × Korrekturlaenge vom Korrekturende", 0.6);
+        add("AFTER_CORRECTION", "TARGET", p[p.length - 1] - s * span2 * 1.618, 1.618, "1,618 × Korrekturlänge vom Korrekturende", 0.6);
         return out;
       }
       if (type === "DOUBLE_ZIGZAG") return out;
@@ -401,7 +401,7 @@
         (type === "FLAT" ? [1.0, 1.618] : [1.0, 1.618, 0.618]).forEach(function (r, k) { add("C", "TARGET", bmid + s * A * r, r, "C = " + r + " × A (ab erwarteter B-Zone)", [1, 0.7, 0.5][k]); });
       }
       if (dw === 3) {
-        if (type === "FLAT") { var v = flatVariant(legs); (v === "REGULAR" ? [1.0, 1.236] : [1.382, 1.618]).forEach(function (r) { add("C", "TARGET", p[2] + s * A * r, r, "C = " + r + " × A (" + (v === "REGULAR" ? "regulaere" : "expandierte") + " Flat)", 1); }); }
+        if (type === "FLAT") { var v = flatVariant(legs); (v === "REGULAR" ? [1.0, 1.236] : [1.382, 1.618]).forEach(function (r) { add("C", "TARGET", p[2] + s * A * r, r, "C = " + r + " × A (" + (v === "REGULAR" ? "reguläre" : "expandierte") + " Flat)", 1); }); }
         else [0.618, 1.0, 1.618].forEach(function (r, k) { add("C", "TARGET", p[2] + s * A * r, r, "C = " + r + " × A", [0.6, 1, 0.7][k]); });
       }
       return out;

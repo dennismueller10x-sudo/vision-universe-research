@@ -117,7 +117,7 @@
       });
     }
     add("TREND", E.dow.evidence, true);
-    add("MOMENTUM", E.momentum.evidence, E.momentum.state !== "UNDETERMINED", "Zu kurze Historie fuer Momentum");
+    add("MOMENTUM", E.momentum.evidence, E.momentum.state !== "UNDETERMINED", "Zu kurze Historie für Momentum");
     add("VOLUME", E.volume.evidence, E.volume.status === "OK", "Kein Volumen in dieser Kursreihe");
     add("PATTERN", E.patterns.evidence, true);
     add("WYCKOFF", E.wyckoff.evidence, true);
@@ -126,8 +126,8 @@
     if (ep && ep.primary) {
       var ed = Sc.votes({ elliott: ep, patterns: {} }).ELLIOTT;
       items.push({ family: "ELLIOTT", status: dir === 0 ? "NEUTRAL" : ed && ed.d * dir > 0.1 ? "SUPPORTS" : ed && ed.d * dir < -0.1 ? "CONTRADICTS" : "NEUTRAL",
-                   statement: "Wellenstruktur: " + ep.primary.patternName + ", aktuell Welle " + ep.primary.currentWave.label + (ep.clarityLevel === "LOW" ? " (mehrdeutig)" : "") });
-    } else items.push({ family: "ELLIOTT", status: "UNAVAILABLE", statement: "Keine regelkonforme Wellenzaehlung" });
+                   statement: ep.primary.patternName + ", aktuell Welle " + ep.primary.currentWave.label + (ep.clarityLevel === "LOW" ? " (mehrdeutig)" : "") });
+    } else items.push({ family: "ELLIOTT", status: "UNAVAILABLE", statement: "Keine regelkonforme Wellenzählung" });
     return items;
   }
 
@@ -181,7 +181,7 @@
       methods: { trend: E.dow, momentum: E.momentum, volatility: E.volatility, volume: E.volume, supportResistance: E.levels.sr, fibonacci: E.levels.fib, patterns: E.patterns, wyckoff: E.wyckoff, elliott: E.elliott },
       alerts: alertState(ctx, scenario),
       diagnostics: { engineVersions: { scenario: Sc.ENGINE_VERSION, elliott: E.elliott.engineVersion, dow: E.dow.engineVersion, momentum: E.momentum.engineVersion, volume: E.volume.engineVersion, levels: E.levels.sr.engineVersion, patterns: E.patterns.engineVersion, wyckoff: E.wyckoff.engineVersion },
-                     repaintingPolicy: "Alle TI-Engines lesen nur Bars <= asOf und nur bestaetigte Pivots; Szenarien gelten je Snapshot.", isProbability: scenario.isProbability }
+                     repaintingPolicy: "Alle TI-Engines lesen nur Bars <= asOf und nur bestätigte Pivots; Szenarien gelten je Snapshot.", isProbability: scenario.isProbability }
     };
   }
 

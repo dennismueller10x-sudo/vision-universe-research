@@ -138,16 +138,16 @@
       else if (!has("ST_DIST")) phase = "A";
     }
     var direction = schematic === "UNDETERMINED" ? 0 : (acc ? 1 : -1) * (phase === "C" || phase === "D" || phase === "E" ? 1 : 0.5);
-    var names = { SC: "Ausverkaufs-Hoehepunkt (Selling Climax)", AR: "Automatische Gegenbewegung", ST: "Test des Tiefs", SPRING: "Spring (Fehlausbruch nach unten)", SOS: "Zeichen von Staerke (Ausbruch)", LPS: "Letzter Unterstuetzungspunkt",
-                  BC: "Kaufhoehepunkt (Buying Climax)", ST_DIST: "Test des Hochs", UTAD: "Upthrust (Fehlausbruch nach oben)", SOW: "Zeichen von Schwaeche (Bruch)", LPSY: "Letzter Angebotspunkt" };
+    var names = { SC: "Ausverkaufs-Höhepunkt (Selling Climax)", AR: "Automatische Gegenbewegung", ST: "Test des Tiefs", SPRING: "Spring (Fehlausbruch nach unten)", SOS: "Zeichen von Stärke (Ausbruch)", LPS: "Letzter Unterstützungspunkt",
+                  BC: "Kaufhöhepunkt (Buying Climax)", ST_DIST: "Test des Hochs", UTAD: "Upthrust (Fehlausbruch nach oben)", SOW: "Zeichen von Schwäche (Bruch)", LPSY: "Letzter Angebotspunkt" };
     events.forEach(function (e) { e.name = names[e.event] || e.event; });
     var evidence = [];
     if (schematic !== "UNDETERMINED") evidence.push({ key: "wyckoff_phase", polarity: direction,
-      statement: acc ? "Seitwaertsphase mit Merkmalen einer Akkumulation (Phase " + phase + ")" : "Seitwaertsphase mit Merkmalen einer Distribution (Phase " + phase + ")" });
+      statement: acc ? "Seitwärtsphase mit Merkmalen einer Akkumulation (Phase " + phase + ")" : "Seitwärtsphase mit Merkmalen einer Distribution (Phase " + phase + ")" });
     return Object.assign(base, {
       status: "TRADING_RANGE", schematic: schematic, phase: phase, range: { support: r4(support), resistance: r4(resistance), height: r4(height), startTime: s.timestamps[tr.startIndex], durationBars: tr.duration },
       priorMovePct: r4(prior), events: events, volumeAvailable: volOk, evidence: evidence, direction: direction,
-      note: volOk ? null : "Ohne Volumendaten sind Climax- und Test-Ereignisse nur preislich bestimmt und nicht bestaetigt."
+      note: volOk ? null : "Ohne Volumendaten sind Climax- und Test-Ereignisse nur preislich bestimmt und nicht bestätigt."
     });
   }
 

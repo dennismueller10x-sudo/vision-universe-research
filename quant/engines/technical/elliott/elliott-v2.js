@@ -386,6 +386,10 @@
 
   /** Zwei Counts sind materiell verschieden, wenn Muster/Welle/naechste Bewegung oder Invalidation abweichen. */
   function materiallyDifferent(a, b, atr, cfg) {
+    /* Leading/Ending Diagonal mit identischen Wellen sind dieselbe Geometrie — nur die Lage im hoeheren Grad unterscheidet sie. */
+    var fam = function (x) { return x.pattern.indexOf("DIAGONAL") >= 0 ? "DIAGONAL" : x.pattern; };
+    var sameWaves = a.waves.length === b.waves.length && a.waves.every(function (w, k) { return w.toIndex === b.waves[k].toIndex && w.fromIndex === b.waves[k].fromIndex; });
+    if (fam(a) === "DIAGONAL" && fam(b) === "DIAGONAL" && sameWaves) return false;
     if (a.pattern !== b.pattern || a.currentWave.label !== b.currentWave.label || a.nextMove !== b.nextMove || a.complete !== b.complete) return true;
     var ia = a.invalidation ? a.invalidation.price : null, ib = b.invalidation ? b.invalidation.price : null;
     if ((ia === null) !== (ib === null)) return true;
@@ -467,9 +471,9 @@
       var H = analyzeScale(series, pivots, scales.higher, scales.analysis, asOf, ctx, null);
       if (H && H.candidates.length && H.legs.length >= 3) {
         var hc = H.candidates[0], hdw = hc.developingWave;
-        higher = { scaleId: scales.higher, pattern: hc.type, rank: hc.rank,
+        higher = { scaleId: scales.higher, pattern: hc.type, patternName: PATTERN_NAMES_DE[hc.type], rank: hc.rank,
                    current: { label: hc.complete ? "nach " + P.PATTERNS[hc.type].labels[P.PATTERNS[hc.type].waves - 1] : P.PATTERNS[hc.type].labels[hdw - 1],
-                              notation: notate(hc.complete ? "?" : P.PATTERNS[hc.type].labels[hdw - 1], "HIGHER"),
+                              notation: hc.complete ? notate(P.PATTERNS[hc.type].labels[P.PATTERNS[hc.type].waves - 1], "HIGHER") + " abgeschlossen" : notate(P.PATTERNS[hc.type].labels[hdw - 1], "HIGHER"),
                               role: hc.complete ? "CORRECTIVE" : currentRole(hc.type, hdw),
                               direction: hc.complete ? -waveDirection(hc.sign, P.PATTERNS[hc.type].waves) : waveDirection(hc.sign, hdw) },
                    waves: labelWaves(hc, "HIGHER"), historicalPatterns: H.history.patterns.length };
@@ -478,11 +482,11 @@
 
     var A = analyzeScale(series, pivots, scales.analysis, scales.lower, asOf, ctx, higher);
     if (!A || A.legs.length < cfg.minLegs) {
-      return Object.assign(base, { status: "UNAVAILABLE", reason: "TOO_FEW_SWINGS", detail: "Zu wenige bestaetigte Swings fuer eine Wellenzaehlung (" + (A ? A.legs.length : 0) + " < " + cfg.minLegs + ")",
+      return Object.assign(base, { status: "UNAVAILABLE", reason: "TOO_FEW_SWINGS", detail: "Zu wenige bestätigte Swings für eine Wellenzählung (" + (A ? A.legs.length : 0) + " < " + cfg.minLegs + ")",
                                    primary: null, alternatives: [], higherDegree: higher, historicalMap: null });
     }
     if (!A.candidates.length) {
-      return Object.assign(base, { status: "UNAVAILABLE", reason: "NO_VALID_COUNT", detail: "Keine regelkonforme Lesart der juengsten Swings", primary: null, alternatives: [], higherDegree: higher,
+      return Object.assign(base, { status: "UNAVAILABLE", reason: "NO_VALID_COUNT", detail: "Keine regelkonforme Lesart der jüngsten Swings", primary: null, alternatives: [], higherDegree: higher,
                                    historicalMap: historicalMap(A) });
     }
     var primary = buildCount(A.candidates[0], ctx, atr);

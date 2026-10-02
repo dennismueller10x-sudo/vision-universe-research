@@ -33,7 +33,7 @@
   var NAMES_DE = {
     DOUBLE_TOP: "Doppeltop", DOUBLE_BOTTOM: "Doppelboden", HEAD_AND_SHOULDERS: "Schulter-Kopf-Schulter", INVERSE_HEAD_AND_SHOULDERS: "Umgekehrte Schulter-Kopf-Schulter",
     ASCENDING_TRIANGLE: "Aufsteigendes Dreieck", DESCENDING_TRIANGLE: "Absteigendes Dreieck", SYMMETRICAL_TRIANGLE: "Symmetrisches Dreieck",
-    RECTANGLE: "Seitwaertsrange (Rechteck)", BULL_FLAG: "Bullische Flagge", BEAR_FLAG: "Baerische Flagge", CUP_WITH_HANDLE: "Tasse mit Henkel"
+    RECTANGLE: "Seitwärtsrange (Rechteck)", BULL_FLAG: "Bullische Flagge", BEAR_FLAG: "Bärische Flagge", CUP_WITH_HANDLE: "Tasse mit Henkel"
   };
 
   /** Erster Schlusskurs jenseits einer (ggf. schraegen) Linie zwischen from+1 und t. */
@@ -73,7 +73,7 @@
       type: type, name: NAMES_DE[type], direction: dir > 0 ? "BULLISH" : "BEARISH", status: res.status,
       points: pts.map(function (p) { return { side: p.side, time: p.pivotTime, price: r4(p.pivotPrice), confirmedAt: p.confirmedAt }; }),
       startTime: pts[0].pivotTime, endTime: pts[pts.length - 1].pivotTime, breakoutLevel: r4(breakLevel), height: r4(height),
-      target: { zoneLow: r4(Math.min(tgt - 0.5 * atr, tgt + 0.5 * atr)), zoneHigh: r4(Math.max(tgt - 0.5 * atr, tgt + 0.5 * atr)), method: "MEASURED_MOVE", relation: "Hoehe der Formation ab Ausbruchslinie" },
+      target: { zoneLow: r4(Math.min(tgt - 0.5 * atr, tgt + 0.5 * atr)), zoneHigh: r4(Math.max(tgt - 0.5 * atr, tgt + 0.5 * atr)), method: "MEASURED_MOVE", relation: "Höhe der Formation ab Ausbruchslinie" },
       invalidation: { price: r4(invalidation), direction: dir > 0 ? "below" : "above" },
       detectionIndex: res.detectionIndex === undefined ? null : res.detectionIndex,
       detectionTime: isNum(res.detectionIndex) ? ctx.series.timestamps[res.detectionIndex] : null,
@@ -111,7 +111,7 @@
       var s1 = last(5), n1 = last(4), hd = last(3), n2 = last(2), s2 = last(1);
       if (s1.side === hd.side && hd.side === s2.side) {
         var d2 = s1.side === "HIGH" ? -1 : 1;   // H&S-Top → bearish
-        var ext = function (p) { return -d2 * p.pivotPrice; };          // "hoeher" im Musterrichtungssinn
+        var ext = function (p) { return -d2 * p.pivotPrice; };          // "höher" im Musterrichtungssinn
         var headDominant = ext(hd) > Math.max(ext(s1), ext(s2)) + 0.5 * tol;
         var shouldersMatch = Math.abs(s1.pivotPrice - s2.pivotPrice) <= 1.5 * tol;
         var neck = lineThrough(n1, n2);
@@ -189,7 +189,7 @@
     var ev = active.map(function (p) {
       var bull = p.direction === "BULLISH";
       return { key: "pattern_" + p.type, polarity: p.status === "FORMING" ? (bull ? 0.5 : -0.5) : (bull ? 1 : -1),
-               statement: p.name + (p.status === "FORMING" ? " in Bildung" : p.status === "BREAKOUT_RETEST" ? ": Ausbruch bestaetigt, Ruecktest gehalten" : ": Ausbruch bestaetigt") };
+               statement: p.name + (p.status === "FORMING" ? " in Bildung" : p.status === "BREAKOUT_RETEST" ? ": Ausbruch bestätigt, Rücktest gehalten" : ": Ausbruch bestätigt") };
     });
     var dirSum = ev.reduce(function (a, e) { return a + e.polarity; }, 0);
     return { engineVersion: ENGINE_VERSION, family: "PATTERN", evidenceGrade: "C", scaleId: scaleId, patterns: relevant, active: active, evidence: ev,

@@ -1,0 +1,38 @@
+{
+ "schemaVersion": "vu-ti-api-2.0.0",
+ "resultSchema": "vu-technical-analysis-2.0.0",
+ "bundle": "ti-bundle-2.0.0",
+ "generatedAt": "2026-10-02T17:27:38.426Z",
+ "methodology": "quant/methodology/technical-intelligence-v2.json",
+ "counts": {
+  "daily": 5,
+  "weekly": 5287,
+  "skipped": 1056,
+  "shards": 623
+ },
+ "sources": {
+  "daily": "golden-preview (5 Titel)",
+  "weekly": "discover-series-long (Wochenschluss, ohne Volumen)"
+ },
+ "evidence": {
+  "weekly": {
+   "file": "evidence-1W.json",
+   "generatedAt": "2026-10-02T17:19:07.234Z",
+   "calibrationPassed": false
+  },
+  "daily": {
+   "file": "evidence-1D-golden.json",
+   "generatedAt": "2026-10-02T17:19:36.838Z",
+   "calibrationPassed": false
+  }
+ },
+ "paths": {
+  "evidenceSummary": "/quant/data/technical-intelligence/v2/evidence-summary.json",
+  "rulesCatalog": "/quant/data/technical-intelligence/v2/rules-catalog.json",
+  "index": "/quant/data/technical-intelligence/v2/index.json.gz",
+  "shard": "/quant/data/technical-intelligence/v2/shards/<XX>.json.gz",
+  "discoverRows": "/quant/data/technical-intelligence/v2/discover-rows.json",
+  "alerts": "/quant/data/technical-intelligence/v2/alerts.json"
+ },
+ "runtimeSec": 64
+}

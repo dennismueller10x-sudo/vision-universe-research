@@ -62,8 +62,8 @@
     if (state !== "UNDETERMINED") ev.push({ key: "momentum_state", polarity: state === "POSITIVE" ? 1 : state === "NEGATIVE" ? -1 : 0,
       statement: state === "POSITIVE" ? "Mittelfristiges Momentum positiv" : state === "NEGATIVE" ? "Mittelfristiges Momentum negativ" : "Momentum neutral" });
     if (dynamics === "ACCELERATING" || dynamics === "DECELERATING") ev.push({ key: "momentum_dynamics", polarity: dynamics === "ACCELERATING" ? 1 : -1,
-      statement: dynamics === "ACCELERATING" ? "Bewegungsstaerke nimmt zu" : "Bewegungsstaerke laesst nach" });
-    if (div.bearish) ev.push({ key: "bearish_divergence", polarity: -1, statement: "Neues Hoch, aber schwaechere Bewegungsstaerke (Divergenz)" });
+      statement: dynamics === "ACCELERATING" ? "Bewegungsstärke nimmt zu" : "Bewegungsstärke lässt nach" });
+    if (div.bearish) ev.push({ key: "bearish_divergence", polarity: -1, statement: "Neues Hoch, aber schwächere Bewegungsstärke (Divergenz)" });
     if (div.bullish) ev.push({ key: "bullish_divergence", polarity: 1, statement: "Neues Tief, aber nachlassender Verkaufsdruck (Divergenz)" });
     return { engineVersion: ENGINE_VERSION, family: "MOMENTUM", evidenceGrade: "A", state: state, composite: r4(composite), acceleration: r4(accel), dynamics: dynamics,
              persistence: r4(persistence), rsi14: r4(ctx.col("rsi14")), divergence: div, evidence: ev,
@@ -80,7 +80,7 @@
     var expanding = isNum(rv) && isNum(rvl) && rvl > 0 ? rv / rvl > 1.25 : null;
     return { engineVersion: ENGINE_VERSION, family: "VOLATILITY", evidenceGrade: "A", regime: regime, atr: r4(ctx.atr), atrPct: r4(atrPct), atrPercentile: r4(pct),
              squeeze: squeeze, expanding: expanding, realizedVol: r4(rv),
-             evidence: regime === "UNDETERMINED" ? [] : [{ key: "vol_regime", polarity: 0, statement: regime === "COMPRESSED" ? "Ungewoehnlich ruhige Schwankungen — oft vor einer groesseren Bewegung" : regime === "NORMAL" ? "Normale Schwankungsbreite" : regime === "ELEVATED" ? "Erhoehte Schwankungen" : "Extreme Schwankungen — Zonen sind entsprechend breit" }],
+             evidence: regime === "UNDETERMINED" ? [] : [{ key: "vol_regime", polarity: 0, statement: regime === "COMPRESSED" ? "Ungewöhnlich ruhige Schwankungen — oft vor einer größeren Bewegung" : regime === "NORMAL" ? "Normale Schwankungsbreite" : regime === "ELEVATED" ? "Erhöhte Schwankungen" : "Extreme Schwankungen — Zonen sind entsprechend breit" }],
              source: "Wilder (1978); Engle (1982); Bollerslev (1986); Bollinger (2001)" };
   }
 

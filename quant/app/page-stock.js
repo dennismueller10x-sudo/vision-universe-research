@@ -645,6 +645,19 @@
     if (technical && technical.state === "AVAILABLE" && technical.fullWorkspace && api.getTechnicalWorkspace) {
       api.getTechnicalWorkspace(ticker).then(function (ws) { if (setupCard.isConnected) renderSetupCard(setupCard, vm, ws, technical, ticker, lifecycleBox); }).catch(function () { return null; });
     }
+    /* Chartbild-Teaser: Ausblick in einem Satz, Weg zur ganzen Seite. Laedt unabhaengig. */
+    if (global.VUTechnicalIntelligence) {
+      var cbHost = el("div", { class: "cb-teaser-host" });
+      bodyHost.append(cbHost);
+      global.VUTechnicalIntelligence.getAnalysis(ticker).then(function (r) {
+        if (!cbHost.isConnected || r.state !== "AVAILABLE") return;
+        var a = r.analysis, Ex = global.VUTechnical && global.VUTechnical.TIExplain, p = a.scenarios[0];
+        cbHost.append(el("a", { class: "cb-teaser", href: X.routes.chartbild(ticker) }, [
+          el("b", { text: "Chartbild: " + ((Ex && Ex.OUTLOOK[a.outlook.label]) || a.outlook.label) }),
+          el("span", { text: ((Ex && Ex.STRUCTURE[a.outlook.structure]) || "") + (p && p.entryZone ? " · Zone " + Ex.fmt(p.entryZone.zoneLow) + "–" + Ex.fmt(p.entryZone.zoneHigh) : "") + (p && p.invalidation ? " · ungültig " + (p.invalidation.direction === "below" ? "unter " : "über ") + Ex.fmt(p.invalidation.price) : "") }),
+          el("span", { text: "Szenarien, Zonen und Wellen ansehen →" })]));
+      }).catch(function () { return null; });
+    }
     bodyHost.append(X.section("Wie weit ist die Aktie im Setup?", "Wo ein Einstieg im Szenario ansetzt, was ihn bestätigt und wo es ungültig wird – keine Empfehlung.",
       [setupCard].concat(vm.setup.state !== "UNAVAILABLE" ? [X.more("Die Setup-Stufen im Detail", function () { return setupSection(vm); })] : []), null, "01 / Setup & Trigger", "setup"));
 

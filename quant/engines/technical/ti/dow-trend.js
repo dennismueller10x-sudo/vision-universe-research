@@ -104,9 +104,9 @@
     var strength = primaryDir === 0 ? 0 : (maAgrees ? 2 : 1) + (secDir === primaryDir ? 1 : 0);
     var evidence = [];
     if (prim.state !== "UNDETERMINED") evidence.push({ key: "primary_structure", polarity: prim.state === "UP" ? 1 : prim.state === "DOWN" ? -1 : 0,
-      statement: prim.state === "UP" ? "Uebergeordnet steigende Hochs und Tiefs" : prim.state === "DOWN" ? "Uebergeordnet fallende Hochs und Tiefs" : "Uebergeordnete Struktur gemischt" });
+      statement: prim.state === "UP" ? "Übergeordnet steigende Hochs und Tiefs" : prim.state === "DOWN" ? "Übergeordnet fallende Hochs und Tiefs" : "Übergeordnete Struktur gemischt" });
     if (ma.state !== "UNDETERMINED") evidence.push({ key: "slow_ma", polarity: ma.state === "UP" ? 1 : ma.state === "DOWN" ? -1 : 0,
-      statement: ma.state === "UP" ? "Kurs ueber steigender langer Durchschnittslinie" : ma.state === "DOWN" ? "Kurs unter fallender langer Durchschnittslinie" : "Lange Durchschnittslinie ohne klare Richtung" });
+      statement: ma.state === "UP" ? "Kurs über steigender langer Durchschnittslinie" : ma.state === "DOWN" ? "Kurs unter fallender langer Durchschnittslinie" : "Lange Durchschnittslinie ohne klare Richtung" });
     return {
       engineVersion: ENGINE_VERSION, family: "TREND", evidenceGrade: "A", repaintingPolicy: "CONFIRMS_WITH_DELAY",
       primary: Object.assign({ direction: primaryDir > 0 ? "UP" : primaryDir < 0 ? "DOWN" : "NONE" }, prim, { maTrend: ma, maAgrees: maAgrees }),

@@ -57,7 +57,7 @@
 
   // ================================================================ Familien
   function elliottDirection(E) {
-    if (!E || !E.primary || E.status === "UNAVAILABLE") return { d: 0, note: "keine Zaehlung" };
+    if (!E || !E.primary || E.status === "UNAVAILABLE") return { d: 0, note: "keine Zählung" };
     var p = E.primary, cur = p.currentWave.direction === "UP" ? 1 : -1, next = p.nextMove === "UP" ? 1 : -1;
     /* Handelbare naechste Bewegung: in einer Korrekturwelle die Folgebewegung, in einer Motivwelle die laufende. */
     var d = p.complete ? next : p.currentWave.role === "CORRECTIVE" ? next : cur;
@@ -154,8 +154,8 @@
     var A = ref.from.pivotPrice, B = ref.to.pivotPrice, L = Math.abs(B - A);
     // ------------------------------------------------ Entry-Kandidaten
     var ent = [];
-    cfg.entry.retracementBand.concat([0.5]).forEach(function (r) { ent.push({ price: B - d * L * r, weight: r === 0.5 ? 0.8 : 0.6, type: "FIB_RETRACEMENT", relation: Math.round(r * 1000) / 10 + " % Ruecklauf des letzten Swings" }); });
-    (d > 0 ? x.levels.sr.supports : x.levels.sr.resistances).forEach(function (z) { ent.push({ price: z.center, weight: 0.5 + 0.25 * Math.min(4, z.strength), type: d > 0 ? "SUPPORT" : "RESISTANCE", relation: (d > 0 ? "Unterstuetzungszone" : "Widerstandszone") + " (" + z.touches + " Beruehrungen)" }); });
+    cfg.entry.retracementBand.concat([0.5]).forEach(function (r) { ent.push({ price: B - d * L * r, weight: r === 0.5 ? 0.8 : 0.6, type: "FIB_RETRACEMENT", relation: Math.round(r * 1000) / 10 + " % Rücklauf des letzten Swings" }); });
+    (d > 0 ? x.levels.sr.supports : x.levels.sr.resistances).forEach(function (z) { ent.push({ price: z.center, weight: 0.5 + 0.25 * Math.min(4, z.strength), type: d > 0 ? "SUPPORT" : "RESISTANCE", relation: (d > 0 ? "Unterstützungszone" : "Widerstandszone") + " (" + z.touches + " Berührungen)" }); });
     var elliottUsed = false;
     if (E && E.primary && !E.primary.complete && E.primary.currentWave.role === "CORRECTIVE" && (E.primary.nextMove === "UP") === (d > 0)) {
       E.primary.projection.zones.filter(function (z) { return z.kind === "COMPLETION"; }).forEach(function (z) { ent.push({ price: z.center, weight: 1.0, type: "ELLIOTT_COMPLETION", relation: z.relations[0] }); });
@@ -183,10 +183,10 @@
     if (E && E.primary && E.primary.revision && ((E.primary.revision.direction === "below") === (d > 0))) inv.push({ price: E.primary.revision.price, basis: "ELLIOTT_REVISION", rule: E.primary.revision.statement });
     [x.dow.secondary, x.dow.shortTerm, x.dow.primary].forEach(function (lv) {
       if (!lv || !lv.lastLow) return;
-      inv.push({ price: d > 0 ? lv.lastLow.price : lv.lastHigh.price, basis: "SWING_" + (d > 0 ? "LOW" : "HIGH"), rule: "letztes bestaetigtes " + (d > 0 ? "Swing-Tief" : "Swing-Hoch") + " (" + lv.scaleId + ")" });
+      inv.push({ price: d > 0 ? lv.lastLow.price : lv.lastHigh.price, basis: "SWING_" + (d > 0 ? "LOW" : "HIGH"), rule: "letztes bestätigtes " + (d > 0 ? "Swing-Tief" : "Swing-Hoch") + " (" + lv.scaleId + ")" });
     });
-    (d > 0 ? x.levels.sr.supports : x.levels.sr.resistances).forEach(function (z) { inv.push({ price: d > 0 ? z.zoneLow - cfg.invalidation.bufferAtr * atr : z.zoneHigh + cfg.invalidation.bufferAtr * atr, basis: "ZONE_EDGE", rule: "Rand der " + (d > 0 ? "Unterstuetzungszone" : "Widerstandszone") }); });
-    if (activePattern) inv.push({ price: activePattern.invalidation.price, basis: "PATTERN", rule: activePattern.name + " ungueltig" });
+    (d > 0 ? x.levels.sr.supports : x.levels.sr.resistances).forEach(function (z) { inv.push({ price: d > 0 ? z.zoneLow - cfg.invalidation.bufferAtr * atr : z.zoneHigh + cfg.invalidation.bufferAtr * atr, basis: "ZONE_EDGE", rule: "Rand der " + (d > 0 ? "Unterstützungszone" : "Widerstandszone") }); });
+    if (activePattern) inv.push({ price: activePattern.invalidation.price, basis: "PATTERN", rule: activePattern.name + " ungültig" });
     var valid = inv.filter(function (c) { return isNum(c.price) && (d > 0 ? c.price <= entryEdgeFar - cfg.invalidation.minGapAtr * atr : c.price >= entryEdgeFar + cfg.invalidation.minGapAtr * atr) && Math.abs(entryEdgeFar - c.price) <= cfg.invalidation.maxRiskAtr * atr; })
       .sort(function (a, b) { return d > 0 ? b.price - a.price : a.price - b.price; });
     /* Regelbasierte Grenzen (Elliott/Swing) haben Vorrang vor Zonenraendern, wenn sie nicht mehr als 1,5 ATR weiter liegen. */
@@ -205,10 +205,10 @@
         if (zDir === d) tg.push({ price: z.center, weight: 0.9 * Math.min(1.5, z.weight), type: "ELLIOTT_TARGET", relation: z.relations[0] });
       });
     }
-    (d > 0 ? x.levels.sr.resistances : x.levels.sr.supports).forEach(function (z) { tg.push({ price: z.center, weight: 0.5 + 0.25 * Math.min(4, z.strength), type: d > 0 ? "RESISTANCE" : "SUPPORT", relation: (d > 0 ? "Widerstandszone" : "Unterstuetzungszone") + " (" + z.touches + " Beruehrungen)" }); });
-    [1.0, 1.618].forEach(function (r) { tg.push({ price: entryEdgeNear + d * L * r, weight: r === 1 ? 0.8 : 0.6, type: "MEASURED_MOVE", relation: r + " × Laenge des letzten Swings ab Einstiegszone" }); });
+    (d > 0 ? x.levels.sr.resistances : x.levels.sr.supports).forEach(function (z) { tg.push({ price: z.center, weight: 0.5 + 0.25 * Math.min(4, z.strength), type: d > 0 ? "RESISTANCE" : "SUPPORT", relation: (d > 0 ? "Widerstandszone" : "Unterstützungszone") + " (" + z.touches + " Berührungen)" }); });
+    [1.0, 1.618].forEach(function (r) { tg.push({ price: entryEdgeNear + d * L * r, weight: r === 1 ? 0.8 : 0.6, type: "MEASURED_MOVE", relation: r + " × Länge des letzten Swings ab Einstiegszone" }); });
     (x.levels.fib.levels || []).filter(function (f) { return f.kind === "EXTENSION" && (f.ratio === 1.272 || f.ratio === 1.618); }).forEach(function (f) { tg.push({ price: f.price, weight: 0.35, type: "FIB_EXTENSION", relation: "Fibonacci-Extension " + f.ratio }); });
-    if (activePattern) tg.push({ price: (activePattern.target.zoneLow + activePattern.target.zoneHigh) / 2, weight: 0.7, type: "PATTERN_TARGET", relation: activePattern.name + ": Hoehe der Formation" });
+    if (activePattern) tg.push({ price: (activePattern.target.zoneLow + activePattern.target.zoneHigh) / 2, weight: 0.7, type: "PATTERN_TARGET", relation: activePattern.name + ": Höhe der Formation" });
     var minT = entryEdgeNear + d * cfg.targets.minDistanceAtr * atr;
     var cands = cluster(tg.filter(function (c) { return d > 0 ? c.price >= minT : c.price <= minT; }), atr, cfg.zone.clusterTolAtr)
       .sort(function (a, b) { return d > 0 ? a.center - b.center : b.center - a.center; });
@@ -227,7 +227,7 @@
     var status = beyondInv ? "INVALIDATED" : inEntry ? "IN_ENTRY_ZONE" : distAtr > 0 ? (distAtr <= 2 ? "APPROACHING" : "EXTENDED") : "BEYOND_ENTRY";
     var confirmation = null;
     var sh = x.dow.shortTerm;
-    if (sh && sh.lastHigh) confirmation = { price: d > 0 ? sh.lastHigh.price : sh.lastLow.price, rule: "Schluss " + (d > 0 ? "ueber dem letzten kurzfristigen Hoch" : "unter dem letzten kurzfristigen Tief") };
+    if (sh && sh.lastHigh) confirmation = { price: d > 0 ? sh.lastHigh.price : sh.lastLow.price, rule: "Schluss " + (d > 0 ? "über dem letzten kurzfristigen Hoch" : "unter dem letzten kurzfristigen Tief") };
     var riskAtr = Math.abs((entry.zoneLow + entry.zoneHigh) / 2 - invalidation.price) / atr;
     var t1 = targets[0];
     var rr = t1 ? Math.abs(t1.center - (entry.zoneLow + entry.zoneHigh) / 2) / Math.max(1e-9, Math.abs((entry.zoneLow + entry.zoneHigh) / 2 - invalidation.price)) : null;
@@ -242,10 +242,10 @@
   }
 
   function expectedStructure(p, d) {
-    if (p.complete) return "Nach abgeschlossenem " + p.patternName + " beginnt eine neue Bewegung " + (p.nextMove === "UP" ? "aufwaerts" : "abwaerts");
+    if (p.complete) return "Nach abgeschlossenem " + p.patternName + " beginnt eine neue Bewegung " + (p.nextMove === "UP" ? "aufwärts" : "abwärts");
     var nextLabel = { "1": "2", "2": "3", "3": "4", "4": "5", A: "B", B: "C", W: "X", X: "Y" }[p.currentWave.label] || null;
-    if (p.currentWave.role === "CORRECTIVE" && nextLabel) return "Korrektur (Welle " + p.currentWave.label + ") vor einer Bewegung " + (d > 0 ? "aufwaerts" : "abwaerts") + " (Welle " + nextLabel + ")";
-    return "Laufende Welle " + p.currentWave.label + " " + (p.currentWave.direction === "UP" ? "aufwaerts" : "abwaerts");
+    if (p.currentWave.role === "CORRECTIVE" && nextLabel) return "Korrektur (Welle " + p.currentWave.label + ") vor einer Bewegung " + (d > 0 ? "aufwärts" : "abwärts") + " (Welle " + nextLabel + ")";
+    return "Laufende Welle " + p.currentWave.label + " " + (p.currentWave.direction === "UP" ? "aufwärts" : "abwärts");
   }
 
   function rangeScenario(x, cfg) {
@@ -253,8 +253,8 @@
     var sup = sr.nearestSupport, res = sr.nearestResistance;
     if (!sup || !res) return null;
     return { kind: "PRIMARY", direction: "NEUTRAL", template: "RANGE", status: close > res.zoneHigh || close < sup.zoneLow ? "BREAKING" : "IN_RANGE",
-             entryZone: null, confirmation: { up: r4(res.zoneHigh), down: r4(sup.zoneLow), rule: "Schluss ausserhalb der Spanne entscheidet die Richtung" },
-             invalidation: null, targets: [], range: { support: { zoneLow: sup.zoneLow, zoneHigh: sup.zoneHigh }, resistance: { zoneLow: res.zoneLow, zoneHigh: res.zoneHigh } },
+             entryZone: null, confirmation: { up: up(res.zoneHigh, priceStep(res.zoneHigh)), down: down(sup.zoneLow, priceStep(sup.zoneLow)), rule: "Schluss außerhalb der Spanne entscheidet die Richtung" },
+             invalidation: null, targets: [], range: { support: { zoneLow: down(sup.zoneLow, priceStep(sup.zoneLow)), zoneHigh: up(sup.zoneHigh, priceStep(sup.zoneHigh)) }, resistance: { zoneLow: down(res.zoneLow, priceStep(res.zoneLow)), zoneHigh: up(res.zoneHigh, priceStep(res.zoneHigh)) } },
              riskAtr: null, rewardRiskT1: null, widthAtr: r4((res.center - sup.center) / atr) };
   }
 
@@ -320,7 +320,7 @@
     var alt = directional(x, altDir, cfg, "ALTERNATIVE");
     if (alt) {
       var p0 = scenarios[0];
-      if (p0 && p0.invalidation) alt.trigger = { price: p0.invalidation.price, rule: "Wird " + p0.invalidation.price + " per Schlusskurs " + (p0.invalidation.direction === "below" ? "unterschritten" : "ueberschritten") + ", tritt diese Lesart in den Vordergrund" };
+      if (p0 && p0.invalidation) alt.trigger = { price: p0.invalidation.price, rule: "Wird " + p0.invalidation.price + " per Schlusskurs " + (p0.invalidation.direction === "below" ? "unterschritten" : "überschritten") + ", tritt diese Lesart in den Vordergrund" };
       var ealt = x.elliott && x.elliott.alternatives ? x.elliott.alternatives.filter(function (a) { return (a.nextMove === "UP") === (altDir > 0) || (a.currentWave.direction === "UP") === (altDir > 0); })[0] : null;
       if (ealt) alt.elliottAlternative = { pattern: ealt.patternName, wave: ealt.currentWave.label, invalidation: ealt.invalidation ? ealt.invalidation.price : null };
       scenarios.push(alt);
@@ -330,10 +330,10 @@
     if (p && p.direction !== "NEUTRAL" && p.targets && p.targets.length) {
       var dd = p.direction === "BULLISH" ? 1 : -1, zs = dd > 0 ? x.levels.sr.supports : x.levels.sr.resistances;
       var deeper = zs.filter(function (z) { return dd > 0 ? z.zoneHigh < p.entryZone.zoneLow - 0.5 * x.ctx.atr && z.zoneLow > p.invalidation.price - 4 * x.ctx.atr : z.zoneLow > p.entryZone.zoneHigh + 0.5 * x.ctx.atr && z.zoneHigh < p.invalidation.price + 4 * x.ctx.atr; })[0];
-      if (deeper) scenarios.push({ kind: "TAIL", direction: p.direction, template: "DEEPER_CORRECTION", status: "WATCH", entryZone: toZone({ lo: deeper.zoneLow, hi: deeper.zoneHigh, center: deeper.center, weight: deeper.strength, sources: [{ type: dd > 0 ? "SUPPORT" : "RESISTANCE", relation: "naechste staerkere Zone jenseits der Invalidation" }] }, x.ctx.atr, cfg, "Tiefere Zone"),
-                                   invalidation: null, targets: p.targets.slice(0, 1), note: "Bruch der Invalidation, aber Halt an der naechsten groesseren Zone" });
+      if (deeper) scenarios.push({ kind: "TAIL", direction: p.direction, template: "DEEPER_CORRECTION", status: "WATCH", entryZone: toZone({ lo: deeper.zoneLow, hi: deeper.zoneHigh, center: deeper.center, weight: deeper.strength, sources: [{ type: dd > 0 ? "SUPPORT" : "RESISTANCE", relation: "nächste stärkere Zone jenseits der Invalidation" }] }, x.ctx.atr, cfg, "Tiefere Zone"),
+                                   invalidation: null, targets: p.targets.slice(0, 1), note: "Bruch der Invalidation, aber Halt an der nächsten größeren Zone" });
       else if (p.targets.length >= 2) scenarios.push({ kind: "TAIL", direction: p.direction, template: "EXTENDED_MOVE", status: "WATCH", entryZone: null, invalidation: p.invalidation,
-                                   targets: [p.targets[p.targets.length - 1]], note: "Ausgedehnte Bewegung bis in die aeusserste Zielzone" });
+                                   targets: [p.targets[p.targets.length - 1]], note: "Ausgedehnte Bewegung bis in die äußerste Zielzone" });
     }
     var empirical = null, sig = null;
     if (p && p.direction !== "NEUTRAL") {

@@ -98,11 +98,11 @@ const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant
  '/quant/#/aktie/GOOG','/quant/#/aktie/GOOGL','/quant/#/aktie/T','/quant/#/aktie/SO','/quant/#/aktie/AAAC',
  '/quant/#/aktie/AACI','/quant/#/aktie/ACGL','/quant/#/aktie/ABCB','/quant/#/aktie/WSBCO',
  '/quant/#/aktie/ZZZZZ',
- '/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
+ '/quant/#/aktie/NVDA/technik','/quant/#/aktie/NVDA/technik?elliott=1','/quant/#/aktie/NVDA/chartbild','/quant/#/aktie/AAPL/chartbild?ansicht=profi','/quant/#/chartlagen','/quant/#/aktie/NVDA/zahlen','/quant/#/aktie/JPM/zahlen',
  '/quant/#/vergleich/NVDA,MSFT','/quant/#/vergleich/AAPL,MSFT,GOOGL',
  '/quant/#/methodik',
  '/quant/#/methodik/daten','/quant/#/methodik/faktoren','/quant/#/methodik/gewichtung','/quant/#/methodik/branchen',
- '/quant/#/methodik/setups','/quant/#/methodik/strategien','/quant/#/methodik/historie','/quant/#/methodik/grenzen','/quant/#/methodik/versionen',
+ '/quant/#/methodik/setups','/quant/#/methodik/strategien','/quant/#/methodik/chartbild','/quant/#/methodik/historie','/quant/#/methodik/grenzen','/quant/#/methodik/versionen',
  '/quant/#/gibtsnicht',
  /* Die Seite hinter dem Knopf "Methodik im Detail" - die letzte Station der
     Reise. Sie war ein 404, und der Smoke hat nie eine Ansicht ausserhalb

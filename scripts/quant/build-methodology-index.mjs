@@ -59,7 +59,8 @@ const BEGRIFF = {
   "backtest-evidence-v1.json": "backtestTrustScore",
   "trust-score-v1.json": "backtestTrustScore",
   "technical-v1.json": "technicalIntelligence",
-  "elliott-v1.json": "technicalIntelligence"
+  "elliott-v1.json": "technicalIntelligence",
+  "technical-intelligence-v2.json": "technicalIntelligence"
 };
 
 const escape = (value) => String(value == null ? "" : value)

@@ -376,6 +376,16 @@ async function main() {
   mkdirSync(outDir, { recursive: true });
   const file = join(outDir, (dev ? "dev-" : "") + "evidence-" + tf + (workDir ? "-universe" : mode === "daily" ? "-golden" : "") + ".json");
   writeFileSync(file, JSON.stringify(report, null, 1));
+  /* Fruehere Faelle je Titel (Historical Replay im Produkt): die letzten 12 Signale mit Ausgang. */
+  if (!dev) {
+    const bySym = {};
+    for (const r of allRecs) {
+      if (!r.scenario) continue;
+      (bySym[r.symbol] = bySym[r.symbol] || []).push({ date: r.date, template: r.scenario.template, direction: r.scenario.direction, key: r.scenario.key, outcome: r.outcome, barsToT1: r.barsToT1 });
+    }
+    for (const k of Object.keys(bySym)) bySym[k] = bySym[k].slice(-12);
+    writeFileSync(join(outDir, "cases-" + tf + (workDir ? "-universe" : mode === "daily" ? "-golden" : "") + ".json.gz"), gzipSync(Buffer.from(JSON.stringify({ schemaVersion: "vu-ti-cases-1.0.0", generatedAt: report.generatedAt, timeframe: tf, symbols: bySym })), { level: 9, mtime: 0 }));
+  }
   const scratch = arg("records", null);
   if (scratch) writeFileSync(scratch, gzipSync(Buffer.from(JSON.stringify(recs))));
   console.log(JSON.stringify({ file, events: recs.length, withScenario: withScenario.length, overall: report.overall, calibration: { passed: report.calibration.passed, skill: report.calibration.brierSkill }, runtimeSec: report.runtimeSec }, null, 1));

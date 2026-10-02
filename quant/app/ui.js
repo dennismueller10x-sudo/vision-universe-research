@@ -67,6 +67,8 @@
     stocks: function () { return "#/aktien"; },
     method: function (topic) { return "#/methodik" + (topic ? "/" + topic : ""); },
     technical: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/technik"; },
+    chartbild: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/chartbild"; },
+    chartlagen: function (q) { return "#/chartlagen" + (q ? "?" + q : ""); },
     fundamentals: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/zahlen"; },
     compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); }
   };
