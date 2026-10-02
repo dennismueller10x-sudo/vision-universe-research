@@ -1,0 +1,50 @@
+{
+  "schema": "supertrader-validation-prereg-r9-intraday-1.0.0",
+  "registeredAt": "2026-10-02",
+  "status": "FROZEN_BEFORE_DATA",
+  "freeze": "Commit vor jedem Abruf von Minutenkursen für die Studie. Grundlage ist nur die Zugangsprobe (intraday-probe, 16 Fälle): IEX-Minuten über den bestehenden Tiingo-Commercial-Zugang ab 2017, delistete Titel teils verfügbar, Tageshoch/-tief der IEX-Minuten im Mittel innerhalb von 0,1 % des konsolidierten Tagesbalkens. Keine Regeländerung, keine Schwellensuche.",
+  "question": "Bei einem Kauf-Stop im Tagesverlauf zeigen Tagesbalken nicht, ob das Tagestief vor oder nach dem Kauf lag. Wie oft trifft die neutrale Annahme (Tief vor dem Kauf) bzw. die vorsichtige (Tief nach dem Kauf) zu, und wie verändert die tatsächliche Reihenfolge Stop, Ausstieg und Ausführungspreis?",
+  "data": {
+    "intraday": "Tiingo /iex/{ticker}/prices, resampleFreq=1min, regulärer Handel 09:30-16:00 ET, Rohkurse (nicht bereinigt). IEX ist ein Handelsplatz: verwendet wird die zeitliche Reihenfolge; Schwellen werden mit dem Faktor Rohkurs/bereinigter Kurs des Tages umgerechnet.",
+    "identityCheck": "Ein Fall zählt nur, wenn IEX-Tageshoch und -tief jeweils höchstens 1 % vom Roh-Tagesbalken abweichen (sonst IDENTITY_MISMATCH, z. B. wiederverwendeter Ticker).",
+    "availability": "Ohne Minutenbalken: NO_INTRADAY. Erreicht das IEX-Hoch den Trigger nicht, obwohl der Tagesbalken es tut: IEX_HIGH_BELOW_TRIGGER (nicht auflösbar).",
+    "storage": "Minutenbalken nur im privaten Eimer (ein komprimiertes Objekt), Ergebnis nur verschlüsselt, Log nur Zählwerte."
+  },
+  "population": {
+    "window": ["2017-01-01", "2026-09-30"],
+    "engines": "Momentum 3.1.0, Darvas 3.0.0, Turtle 2.0.0, Weinstein 3.0.0 (neutrale Läufe wie r8b/r8c, unveränderter Code)",
+    "strata": {
+      "AMBIGUOUS": "vorsichtige Annahme ergibt Ausstieg am Einstiegstag, neutrale nicht (Kullamägi: Schluss unter dem Einstieg; sonst: Tagestief <= Stop < Schluss)",
+      "CERTAIN": "Schluss <= Stop (Ausstieg in beiden Annahmen; Kontrollfall)",
+      "CLEAR": "Tagestief über dem Stop bzw. Schluss >= Einstieg (kein Ausstieg in beiden Annahmen; Kontrollfall)",
+      "GAP": "Eröffnung >= Trigger (Merkmal, quer zu den Schichten)",
+      "SPLIT_NEAR": "Split innerhalb von 3 Sitzungen um den Einstiegstag (Merkmal; bis zu 50 Zusatzfälle)"
+    },
+    "selection": "Momentum 3.1.0: alle Einstiege im Fenster (Vollerhebung). Übrige Engines: Auswahl je Schicht nach SHA-256 von 'engine|listing|datum', aufsteigend: Darvas AMBIGUOUS 300 / CERTAIN 50 / CLEAR 100; Turtle 100 / 25 / 50; Weinstein alle AMBIGUOUS (höchstens 100) / 25 / 50; dazu bis zu 50 SPLIT_NEAR-Fälle aller Engines."
+  },
+  "truth": {
+    "entryMinute": "erster Minutenbalken mit Hoch >= Trigger; eröffnet der erste Balken darüber: Gap, Einstieg zur Eröffnung",
+    "fill": "max(Eröffnung des Einstiegsbalkens, Trigger)",
+    "stopMomentum": "max(tiefstes Tief bis einschließlich Einstiegsminute, Einstieg × (1 − ADR20 des Vortags)) - 'lows of the day' zum Kaufzeitpunkt",
+    "stopOthers": "Stop der Engine (fest)",
+    "sameDayExit": "ein Minutenbalken nach der Einstiegsminute erreicht den Stop; liegt das Tief des Einstiegsbalkens selbst unter dem Stop: MINUTE_AMBIGUOUS (vorsichtig gezählt, gesondert ausgewiesen)"
+  },
+  "outcomes": {
+    "O1": "Je Engine: Anteil AMBIGUOUS-Fälle mit tatsächlichem Ausstieg am Einstiegstag (mit 95-%-Intervall nach Wilson)",
+    "O2": "Übereinstimmung neutrale / vorsichtige Annahme mit der Minutenreihenfolge, je Schicht; Kontrollfälle CERTAIN/CLEAR müssen zu nahezu 100 % übereinstimmen, sonst ist die Methode fehlerhaft",
+    "O3": "Momentum: Stop laut Minuten vs. Stop der Engine (Tagestief); Anteil, in dem das Tagestief erst nach dem Kauf entstand",
+    "O4": "Ausführung: Einstiegspreis laut Minuten vs. Modell (max(Eröffnung, Trigger)); Gap-Tage: IEX-Eröffnung vs. Roh-Eröffnung; Split-Tage: Umrechnung stimmt (Identitätsprüfung bestanden)",
+    "O5": "Anteile NO_INTRADAY, IDENTITY_MISMATCH, IEX_HIGH_BELOW_TRIGGER"
+  },
+  "decisionRules": [
+    "Liegt O1 einer Engine deutlich zwischen 0 % (neutral) und 100 % (vorsichtig), sind beide Tagesbalken-Annahmen als Ergebnisaussage unzureichend: Folgearbeit ist ein intraday-aufgelöster Simulator (Einstiegstag aus Minuten, wo vorhanden) und ein vollständiger Lauf für diese Engine, soweit die Abrufmenge im bestehenden Zugang liegt.",
+    "Bestehen die Kontrollfälle O2 nicht, wird zuerst die Methode korrigiert, bevor irgendeine Aussage folgt.",
+    "Keine Regel- oder Schwellenänderung aus diesen Befunden; Produkttexte kennzeichnen historische Kauf-Stop-Ausführungen nach Belegart."
+  ],
+  "exampleChecks": {
+    "note": "Kullamägis Beispiele aus dem Beitrag '3 TIMELESS setups'. TSLA 2020 diente der Entwicklung von 3.1.0 und zählt nicht als Bestätigung. MNKD 2013 und AAXN/AXON 2004 wurden für keine Regel verwendet und sind die einzigen unabhängigen Beispielprüfungen. Sie liegen vor dem Universumszeitraum: Der Momentum-Rang (Top 2 % des Querschnitts) ist dort nicht prüfbar und wird als erfüllt gesetzt (gekennzeichnet).",
+    "markedDay": "Letzte Kerze des 'before'-Charts. MNKD: Sitzung im Mai 2013 mit Tagesgewinn > 5 %, deren bereinigter Schluss 22,15 (TradingView-Skala) am nächsten liegt. AXON: Sitzung 02.-15.01.2004 mit Tagesgewinn > 5 %, Schluss am nächsten an 7,85. Bestimmt aus Tiingo-Tageskursen, gleiche Split-Bereinigung.",
+    "pass": "Momentum 3.0.0 und 3.1.0 (unverändert) erzeugen am markierten Tag einen Kauf-Stop-Einstieg; ein Einstieg innerhalb von 2 Sitzungen davor oder danach wird als 'nahe' berichtet, keiner als 'verfehlt' mit Grund.",
+    "tsla": "TSLA 29.05. und 01.06.2020 mit Minuten: wann und wie weit der Trigger überschritten wurde (nur Beschreibung, keine Bestätigung)."
+  }
+}

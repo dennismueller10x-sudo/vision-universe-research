@@ -404,3 +404,12 @@ p { margin: 0; }
 .st-chain li::before{content:counter(c);position:absolute;left:0;top:1px;width:18px;height:18px;border-radius:50%;font-size:.7rem;line-height:18px;text-align:center;background:var(--st-accent);color:#000}
 .st-chain li .k{font-weight:600;font-size:.85rem}
 .st-chain li p{margin:2px 0 0;font-size:.88rem;line-height:1.4}
+
+/* Runde 9: Belegart der Kauf-Stop-Ausfuehrung */
+.st-evid{margin:10px 0 0;padding:9px 12px;border-radius:var(--st-radius-s);border:1px solid var(--st-line-2);font-size:.86rem;line-height:1.45;color:var(--st-text-2)}
+.st-evid[data-k=open]{border-color:color-mix(in srgb,var(--st-warn) 55%,transparent);color:var(--st-text)}
+.st-exlist{list-style:none;margin:0;padding:0}
+.st-exlist li{padding:8px 0;border-top:1px solid var(--st-line)}
+.st-exlist li:first-child{border-top:0}
+.st-exlist .r{display:block;font-size:.75rem;color:var(--st-muted);margin-top:2px}
+.st-exlist p{margin:4px 0 0;font-size:.88rem;line-height:1.4}
