@@ -147,6 +147,22 @@ Gleiche Ereignisse (168.773 Rückläufe, 3.122 Emittenten), gleiche Auswertung; 
 
 **Lesart.** Engine 2.2 setzt mehr der Elliott-Methode um (Grad-Auswahl, verschachtelter höherer Grad, Rausch-Erkennung) und enthält sich auf echten Daten seltener. Im synthetischen Benchmark ist das Bild **gemischt**: Hauptzählung richtig 36/108 (2.2) vs. 32/108 (2.1); bei geringem Rauschen 20/36 vs. 14/36, bei hohem Rauschen aber nur 2/36 vs. 8/36 (Enthaltungen bei hohem Rauschen 20/36 vs. 32/36; Enthaltung und Rang der erwarteten Zählung werden getrennt gemessen). Je Muster: Diagonalen 7/18 vs. 0/18, Zigzag 3/9 vs. 0/9, doppelter Zigzag 0/9 vs. 3/9 als Hauptzählung (6/9 vs. 7/9 unter den ersten drei), trunkierter Impuls 1/9 vs. 3/9, Flats 1/27 vs. 1/27 — aber der Prognosewert ist in beiden Versionen null. Die Verbesserung der Methodentreue hat **keinen** Ergebnisvorteil erzeugt. Kehrseite der Mehrskalen-Auswahl: deutlich mehr Skalenwechsel (5,5 je 100 Wochen); die Relabel-Quote bleibt dank Persistenz auf Legacy-Niveau. Das Produkt zeigt Skalenwechsel als Relabeling-Risiko an.
 
+### 12b. Parameter-Robustheit (Skalen-Multiplikator der Swing-Erkennung)
+
+Explorative Stichprobe, 800 gleichmäßig verteilte Reihen, Engine 2.2 mit Persistenz. Der Multiplikator skaliert alle Swing-Schwellen (feinere bzw. gröbere Wellen); damit ändern sich auch die engine-unabhängigen Ereignisse. Berichte: `report-exploratory-v22-sticky-{x0.8-,x1.25-,}n800.json`.
+
+| Multiplikator | Ereignisse | Enthaltung | Relabel/Woche | Skalenwechsel/100 W. | H2 | H3 | H4 | H5 | H6 |
+|---|---|---|---|---|---|---|---|---|---|
+| × 0,8 | 39.809 | 8,2 % | 7,2 % | 6,6 | −0,3 (−1,3 … +1,0) | −1,1 | +2,2 (−0,7 … +4,9) | −1,3 | **+3,5 (+2,0 … +5,1)** |
+| × 1,0 | 31.751 | 11,6 % | 6,5 % | 5,6 | +0,8 (−0,3 … +2,1) | −0,3 | +0,3 | −3,0 (−5,6 … −0,4) | **+2,6 (+1,1 … +4,3)** |
+| × 1,25 | 24.692 | 16,4 % | 5,7 % | 4,6 | +1,6 (+0,2 … +2,8) | −1,0 | +1,6 | −3,6 | **+4,0 (+2,1 … +5,8)** |
+
+H1 in allen Varianten ≈ 0 (ΔLogLoss ≤ 0,0003), H7 nie von null verschieden. **Lesart:** Das Gesamtbild ist robust gegenüber der Parameterwahl — nur H6 (Zeitpunkt) ist durchgehend positiv. Bei gröberen Wellen (× 1,25) liegt H2 einmal knapp über null; das ist eine von drei explorativen Varianten ohne Mehrfachtest-Korrektur und widerspricht der Bestätigungsstichprobe (+0,15, n. s.) nicht genug, um als Befund zu gelten. Notiert als Kandidat für eine künftige Präregistrierung (gröbere Grade).
+
+### 12c. Cross-Market (explorativ, unterbesetzt)
+
+13 auswertbare Reihen außerhalb des Aktienuniversums (Index-ETFs, Rohstoffe, Edelmetalle, Kryptowährungen; Wochenschluss), 872 Ereignisse. Keine Hypothese von null verschieden; Konfidenzintervalle ±5–40 Pp. — **nicht aussagekräftig**. Struktur-Kennzahlen ähnlich wie bei Aktien: Enthaltung 13,5 %, Relabel 5,0 % je Woche, Lebensdauer einer Zählung 5 Wochen. Bericht: `report-multi-v22-sticky.json`.
+
 ## 13–15. Unterschiede nach Regime, Muster und Grad (explorativ, BH-korrigiert)
 
 Überschuss der Fortsetzungs-Fälle über das Basismodell, Bestätigungsstichprobe: nach Muster/Welle (z. B. Impuls W2 −1,2, W4 +0,4, Flat-B −3,3, Zigzag-B +0,2 Pp.) und nach Grad (scale-2 −0,7, scale-3 +1,6 Pp.) keine signifikanten Unterschiede; einzig signifikant nach Benjamini-Hochberg: obere Volatilitätsdrittel (−2,0 Pp.) und Börsenalter < 6 Jahre (−1,9 Pp.) — beide **negativ**. Höherer Grad konsistent: +1,1 vs. Konflikt −1,2 Pp. (Kontrast = H4, nicht bestätigt).

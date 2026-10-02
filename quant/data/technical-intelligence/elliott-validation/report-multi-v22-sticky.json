@@ -1,0 +1,821 @@
+{
+ "schemaVersion": "vu-elliott-validation-1.0.0",
+ "generatedAt": "2026-10-02T21:05:15.140Z",
+ "meta": {
+  "files": 15,
+  "sample": "exploratory",
+  "market": "multi",
+  "scaleMult": 1,
+  "engine": "elliott-2.2.0 + persistence",
+  "folds": [
+   [
+    "F1",
+    "0000",
+    "2005-01-01"
+   ],
+   [
+    "F2",
+    "2005-01-01",
+    "2011-01-01"
+   ],
+   [
+    "F3",
+    "2011-01-01",
+    "2017-01-01"
+   ],
+   [
+    "F4",
+    "2017-01-01",
+    "2022-01-01"
+   ],
+   [
+    "F5",
+    "2022-01-01",
+    "9999"
+   ]
+  ],
+  "horizon": 52,
+  "runtimeSec": 33
+ },
+ "definitions": {
+  "event": "Erste Bar nach Bestaetigung des Legs L=(a→b) auf der Analyseskala der Engine, an der der Schluss L um 38,2–88,6 % zurueckgelaufen ist.",
+  "success": "Kurs ueberschreitet b vor einem Schluss jenseits a, Horizont 52 Bars (gleiche Bar = Misserfolg).",
+  "labels": "CONT: Engine erwartet nach der laufenden Gegenbewegung Fortsetzung in Richtung L (L = W1/W3/A/W…); REV: L ist letzte Welle bzw. Gegenrichtung erwartet; NONE: L nicht unmittelbar gezaehlt.",
+  "ci": "95 %-Intervalle: Cluster-Bootstrap nach Titel und nach Kalenderjahr, das breitere wird berichtet."
+ },
+ "preregisteredHypotheses": {
+  "H1": {
+   "name": "Elliott-Merkmale verbessern das Nicht-Elliott-Modell out-of-sample (Delta-LogLoss < 0)",
+   "est": 0.0015,
+   "lo": -0.0052,
+   "hi": 0.0076,
+   "pass": false,
+   "pOneSided": 0.677,
+   "passHolm": false,
+   "confirmed": false
+  },
+  "H2": {
+   "name": "Gleicher Ruecklauf: Fortsetzungs-Lesart (CONT) erreicht das Leg-Ende haeufiger als ohne diese Lesart (REV oder keine Zaehlung), geschichtet",
+   "est": 0.0224,
+   "lo": -0.0734,
+   "hi": 0.1171,
+   "coverage": 0.8049,
+   "pass": false,
+   "pOneSided": 0.3224,
+   "passHolm": false,
+   "confirmed": false
+  },
+  "H3": {
+   "name": "Beste 20 % nach Count Quality uebertreffen das Basismodell",
+   "n": 9,
+   "shareSelected": 0.1216,
+   "est": -0.2128,
+   "lo": -0.4908,
+   "hi": 0.1489,
+   "pass": false,
+   "pOneSided": 0.9039,
+   "passHolm": false,
+   "confirmed": false
+  },
+  "H4": {
+   "name": "Hoeherer Grad konsistent > im Konflikt (Ueberschuss ueber Basismodell)",
+   "est": -0.2261,
+   "lo": -0.6043,
+   "hi": 0.0782,
+   "pass": false,
+   "pOneSided": 0.903,
+   "passHolm": false,
+   "confirmed": false
+  },
+  "H5": {
+   "name": "Elliott-Fortsetzung bei hoher Volatilitaet (oberes Drittel relativ zur eigenen 52-Wochen-Historie) besser als bei niedriger (unteres Drittel)",
+   "est": -0.2527,
+   "lo": -0.6892,
+   "hi": 0.0754,
+   "pass": false,
+   "pOneSided": 0.9024,
+   "passHolm": false,
+   "confirmed": false
+  },
+  "H6": {
+   "name": "Einstieg in der laufenden Gegenbewegung schlaegt den Einstieg nach Engine-Bestaetigung (je gegen Zufall)",
+   "n": 158,
+   "est": -0.038,
+   "lo": -0.1105,
+   "hi": 0.0291,
+   "pass": false,
+   "pOneSided": 0.857,
+   "passHolm": false,
+   "confirmed": false
+  },
+  "H7": {
+   "name": "Fibonacci-Konfluenz (>= 2 Niveaus) am Einstieg besser als keine (Ueberschuss ueber Basismodell)",
+   "est": -0.0584,
+   "lo": -0.1604,
+   "hi": 0.0079,
+   "pass": false,
+   "pOneSided": 0.9131,
+   "passHolm": false,
+   "confirmed": false
+  }
+ },
+ "funnel": {
+  "seriesRequested": 15,
+  "seriesTooShort": 2,
+  "seriesAnalysed": 13,
+  "errors": 0,
+  "barsAnalysed": 18187,
+  "barsWithCount": 18187,
+  "barsAbstain": 2449,
+  "statusShare": {
+   "OK": 0.4802,
+   "AMBIGUOUS": 0.5198,
+   "EARLY": 0,
+   "UNAVAILABLE": 0
+  },
+  "genericEvents": 872,
+  "eventsCont": 256,
+  "eventsRev": 95,
+  "eventsNone": 521,
+  "resolved": 826,
+  "timeouts": 46,
+  "symbolsWithEvents": 13
+ },
+ "stability": {
+  "transitions": {
+   "SAME": 16123,
+   "PROGRESS": 492,
+   "RELABEL": 914,
+   "RESET": 645,
+   "LOST": 0,
+   "FOUND": 13
+  },
+  "relabelRate": 0.0503,
+  "resetRate": 0.0355,
+  "medianCountLifetimeBars": 5,
+  "p25Lifetime": 2,
+  "p75Lifetime": 12,
+  "scaleSwitchesPer100Bars": 3.8324,
+  "countQuality": {
+   "median": 0.6525,
+   "p25": 0.6407,
+   "p75": 0.6736
+  },
+  "note": "RELABEL = andere Lesart, obwohl die vorige weder abgeschlossen noch an ihrer harten Grenze gebrochen war. Je Bar (Woche) ausgewertet."
+ },
+ "latency": {
+  "all": {
+   "n": 871,
+   "medianBarsEngine": 4,
+   "medianBarsEarliest": 2,
+   "medianAvoidableBars": 2,
+   "medianProgressAtEngine": 0.527,
+   "shareBeyondTargetAtEngine": 0.1091,
+   "shareEventBeforeCounterEnd": 0.9989
+  },
+  "cont": {
+   "n": 255,
+   "medianBarsEngine": 4,
+   "medianBarsEarliest": 2,
+   "medianAvoidableBars": 2,
+   "medianProgressAtEngine": 0.5071,
+   "shareBeyondTargetAtEngine": 0.1059,
+   "shareEventBeforeCounterEnd": 1
+  },
+  "rev": {
+   "n": 95,
+   "medianBarsEngine": 3,
+   "medianBarsEarliest": 1,
+   "medianAvoidableBars": 1,
+   "medianProgressAtEngine": 0.5537,
+   "shareBeyondTargetAtEngine": 0.0947,
+   "shareEventBeforeCounterEnd": 1
+  },
+  "note": "engine = Bars vom Ende der Gegenbewegung bis zur Bestaetigung auf der Analyseskala; earliest = Bestaetigung desselben Extrems auf der feinsten Skala; progress = Anteil des Weges zurueck zum Leg-Ende, der bei Engine-Bestaetigung schon zurueckgelegt war."
+ },
+ "developingVsConfirmed": {
+  "CONT": {
+   "developing": {
+    "n": 246,
+    "rate": 0.4187,
+    "randomSameGeometry": 0.4715,
+    "excessOverRandom": {
+     "est": -0.0528,
+     "lo": -0.1273,
+     "hi": 0.0205,
+     "ciBy": "YEAR",
+     "symbolCi": [
+      -0.1201,
+      -0.0015
+     ],
+     "yearCi": [
+      -0.1273,
+      0.0205
+     ],
+     "clusters": 13
+    }
+   },
+   "confirmed": {
+    "n": 162,
+    "rate": 0.6543,
+    "randomSameGeometry": 0.6091,
+    "excessOverRandom": {
+     "est": 0.0453,
+     "lo": -0.0465,
+     "hi": 0.1474,
+     "ciBy": "SYMBOL",
+     "symbolCi": [
+      -0.0465,
+      0.1474
+     ],
+     "yearCi": [
+      -0.0338,
+      0.1153
+     ],
+     "clusters": 13
+    },
+    "excludedAlreadyBeyond": 27
+   }
+  },
+  "NOT_CONT": {
+   "developing": {
+    "n": 580,
+    "rate": 0.4328,
+    "randomSameGeometry": 0.4477,
+    "excessOverRandom": {
+     "est": -0.0149,
+     "lo": -0.0632,
+     "hi": 0.0322,
+     "ciBy": "YEAR",
+     "symbolCi": [
+      -0.0511,
+      0.0106
+     ],
+     "yearCi": [
+      -0.0632,
+      0.0322
+     ],
+     "clusters": 13
+    }
+   },
+   "confirmed": {
+    "n": 382,
+    "rate": 0.6387,
+    "randomSameGeometry": 0.6128,
+    "excessOverRandom": {
+     "est": 0.0253,
+     "lo": -0.0225,
+     "hi": 0.0717,
+     "ciBy": "YEAR",
+     "symbolCi": [
+      -0.0119,
+      0.058
+     ],
+     "yearCi": [
+      -0.0225,
+      0.0717
+     ],
+     "clusters": 13
+    },
+    "excludedAlreadyBeyond": 68
+   }
+  }
+ },
+ "ladder": {
+  "contRate": {
+   "est": 0.4187,
+   "lo": 0.3643,
+   "hi": 0.4749,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    0.358,
+    0.4593
+   ],
+   "yearCi": [
+    0.3643,
+    0.4749
+   ],
+   "clusters": 13
+  },
+  "contRateTimeoutAsFailure": 0.4023,
+  "genericRateTimeoutAsFailure": 0.406,
+  "randomTimestampExcessCont": {
+   "est": -0.0528,
+   "lo": -0.1192,
+   "hi": 0.0228,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    -0.1239,
+    -0.0016
+   ],
+   "yearCi": [
+    -0.1192,
+    0.0228
+   ],
+   "clusters": 13
+  },
+  "A_randomTimestamp": 0.4715,
+  "AT_randomTimestampSameTrend": 0.4671,
+  "martingale": 0.411,
+  "B_allGenericSwings": {
+   "est": 0.4286,
+   "lo": 0.394,
+   "hi": 0.4648,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    0.4056,
+    0.4456
+   ],
+   "yearCi": [
+    0.394,
+    0.4648
+   ],
+   "clusters": 13
+  },
+  "B_genericWithoutContLabel": {
+   "est": 0.4328,
+   "lo": 0.3898,
+   "hi": 0.4747,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    0.4101,
+    0.4483
+   ],
+   "yearCi": [
+    0.3898,
+    0.4747
+   ],
+   "clusters": 13
+  },
+  "C_trendPullbackGeneric": {
+   "est": 0.5051,
+   "lo": 0.4387,
+   "hi": 0.5688,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    0.441,
+    0.545
+   ],
+   "yearCi": [
+    0.4387,
+    0.5688
+   ],
+   "clusters": 13
+  },
+  "C_contInTrend": {
+   "est": 0.4625,
+   "lo": 0.3467,
+   "hi": 0.587,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    0.3437,
+    0.5455
+   ],
+   "yearCi": [
+    0.3467,
+    0.587
+   ],
+   "clusters": 13
+  },
+  "C_diffInTrend": {
+   "est": -0.0584,
+   "lo": -0.1943,
+   "hi": 0.0692,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    -0.1745,
+    0.0608
+   ],
+   "yearCi": [
+    -0.1943,
+    0.0692
+   ],
+   "clusters": 13
+  },
+  "D_matchedControl": {
+   "diff": -0.0198,
+   "lo": -0.2138,
+   "hi": 0.226,
+   "ciBy": "SYMBOL",
+   "strata": 637,
+   "treated": 246,
+   "treatedMatched": 84
+  },
+  "D_matchedContVsRev": {
+   "diff": -0.0667,
+   "lo": -0.375,
+   "hi": 0.3333,
+   "ciBy": "SYMBOL",
+   "strata": 298,
+   "treated": 246,
+   "treatedMatched": 15
+  },
+  "rawDiffContVsNotCont": {
+   "est": -0.0141,
+   "lo": -0.0853,
+   "hi": 0.0501,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    -0.0803,
+    0.0317
+   ],
+   "yearCi": [
+    -0.0853,
+    0.0501
+   ],
+   "clusters": 13
+  },
+  "rawDiffContVsRev": {
+   "est": 0.0165,
+   "lo": -0.1332,
+   "hi": 0.1578,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    -0.1091,
+    0.1462
+   ],
+   "yearCi": [
+    -0.1332,
+    0.1578
+   ],
+   "clusters": 13
+  }
+ },
+ "models": {
+  "oosN": 284,
+  "metrics": {
+   "BASE": {
+    "n": 284,
+    "logLoss": 0.6764,
+    "brier": 0.2416,
+    "auc": 0.5954
+   },
+   "BASE_FIB": {
+    "n": 284,
+    "logLoss": 0.6766,
+    "brier": 0.2416,
+    "auc": 0.5973
+   },
+   "BASE_ELLIOTT": {
+    "n": 284,
+    "logLoss": 0.6779,
+    "brier": 0.2418,
+    "auc": 0.5962
+   },
+   "FULL": {
+    "n": 284,
+    "logLoss": 0.678,
+    "brier": 0.2417,
+    "auc": 0.5994
+   },
+   "GEOMETRY_ONLY": {
+    "n": 284,
+    "logLoss": 0.6485,
+    "brier": 0.2283,
+    "auc": 0.6267
+   }
+  },
+  "elliottIncrement": {
+   "deltaLogLoss": {
+    "est": 0.0015,
+    "lo": -0.0052,
+    "hi": 0.0076,
+    "ciBy": "SYMBOL",
+    "symbolCi": [
+     -0.0052,
+     0.0076
+    ],
+    "yearCi": [
+     -0.0027,
+     0.0078
+    ],
+    "clusters": 13
+   },
+   "deltaBrier": {
+    "est": 0.0002,
+    "lo": -0.0028,
+    "hi": 0.0028,
+    "ciBy": "SYMBOL",
+    "symbolCi": [
+     -0.0028,
+     0.0028
+    ],
+    "yearCi": [
+     -0.0012,
+     0.0023
+    ],
+    "clusters": 13
+   },
+   "deltaAuc": {
+    "est": 0.0008,
+    "lo": -0.0107,
+    "hi": 0.013,
+    "ciBy": "SYMBOL"
+   },
+   "note": "Negative Delta-LogLoss/Brier und positive Delta-AUC = BASE_ELLIOTT besser als BASE (out-of-sample)."
+  },
+  "fibIncrement": {
+   "deltaLogLoss": {
+    "est": 0.0002,
+    "lo": -0.0023,
+    "hi": 0.0027,
+    "ciBy": "SYMBOL",
+    "symbolCi": [
+     -0.0023,
+     0.0027
+    ],
+    "yearCi": [
+     -0.0016,
+     0.0021
+    ],
+    "clusters": 13
+   },
+   "deltaBrier": {
+    "est": -0.0001,
+    "lo": -0.001,
+    "hi": 0.001,
+    "ciBy": "SYMBOL",
+    "symbolCi": [
+     -0.001,
+     0.001
+    ],
+    "yearCi": [
+     -0.0008,
+     0.0008
+    ],
+    "clusters": 13
+   },
+   "deltaAuc": {
+    "est": 0.0019,
+    "lo": -0.0048,
+    "hi": 0.0092,
+    "ciBy": "SYMBOL"
+   },
+   "note": "Negative Delta-LogLoss/Brier und positive Delta-AUC = BASE_FIB besser als BASE (out-of-sample)."
+  },
+  "elliottOverBaseFib": {
+   "deltaLogLoss": {
+    "est": 0.0014,
+    "lo": -0.0053,
+    "hi": 0.0075,
+    "ciBy": "SYMBOL",
+    "symbolCi": [
+     -0.0053,
+     0.0075
+    ],
+    "yearCi": [
+     -0.0024,
+     0.0077
+    ],
+    "clusters": 13
+   },
+   "deltaBrier": {
+    "est": 0.0001,
+    "lo": -0.0029,
+    "hi": 0.0028,
+    "ciBy": "SYMBOL",
+    "symbolCi": [
+     -0.0029,
+     0.0028
+    ],
+    "yearCi": [
+     -0.0011,
+     0.0023
+    ],
+    "clusters": 13
+   },
+   "deltaAuc": {
+    "est": 0.0021,
+    "lo": -0.0096,
+    "hi": 0.0139,
+    "ciBy": "SYMBOL"
+   },
+   "note": "Negative Delta-LogLoss/Brier und positive Delta-AUC = FULL besser als BASE_FIB (out-of-sample)."
+  },
+  "baseOverGeometry": {
+   "deltaLogLoss": {
+    "est": 0.0279,
+    "lo": -0.01,
+    "hi": 0.0643,
+    "ciBy": "YEAR",
+    "symbolCi": [
+     -0.0002,
+     0.0597
+    ],
+    "yearCi": [
+     -0.01,
+     0.0643
+    ],
+    "clusters": 13
+   },
+   "deltaBrier": {
+    "est": 0.0133,
+    "lo": -0.0057,
+    "hi": 0.0318,
+    "ciBy": "YEAR",
+    "symbolCi": [
+     0.0009,
+     0.0281
+    ],
+    "yearCi": [
+     -0.0057,
+     0.0318
+    ],
+    "clusters": 13
+   },
+   "deltaAuc": {
+    "est": -0.0313,
+    "lo": -0.0977,
+    "hi": 0.0221,
+    "ciBy": "SYMBOL"
+   },
+   "note": "Negative Delta-LogLoss/Brier und positive Delta-AUC = BASE besser als GEOMETRY_ONLY (out-of-sample)."
+  },
+  "coefficientsLastFold": {
+   "BASE": {
+    "(intercept)": -1.1682,
+    "dir=1": 0.862,
+    "trend=0": 0.6965,
+    "trend=1": 0.5723,
+    "mom=0": -0.4384,
+    "mom=1": -0.0191,
+    "momZ": -0.0399,
+    "volP": -0.0746,
+    "regime=RISK_OFF": -0.1074,
+    "regime=RISK_ON": 0.1751,
+    "regime=UNKNOWN": 0.0155,
+    "depth": -0.2611,
+    "logLegAtr": -0.1233,
+    "logLegBars": 0.0014,
+    "geometry": 0.2363
+   },
+   "BASE_FIB": {
+    "(intercept)": -1.2087,
+    "dir=1": 0.8601,
+    "trend=0": 0.7035,
+    "trend=1": 0.565,
+    "mom=0": -0.4392,
+    "mom=1": -0.0179,
+    "momZ": -0.0337,
+    "volP": -0.0772,
+    "regime=RISK_OFF": -0.1214,
+    "regime=RISK_ON": 0.1672,
+    "regime=UNKNOWN": 0.0281,
+    "depth": -0.2601,
+    "logLegAtr": -0.1284,
+    "logLegBars": 0.0048,
+    "geometry": 0.2348,
+    "fibConf": -0.049,
+    "support=1": 0.0762
+   },
+   "BASE_ELLIOTT": {
+    "(intercept)": -1.1862,
+    "dir=1": 0.8744,
+    "trend=0": 0.6713,
+    "trend=1": 0.6395,
+    "mom=0": -0.5008,
+    "mom=1": -0.0052,
+    "momZ": -0.0569,
+    "volP": -0.0801,
+    "regime=RISK_OFF": -0.116,
+    "regime=RISK_ON": 0.1734,
+    "regime=UNKNOWN": 0.0316,
+    "depth": -0.2613,
+    "logLegAtr": -0.1299,
+    "logLegBars": -0.0117,
+    "geometry": 0.2367,
+    "elliottLabel=NONE": 0.0284,
+    "elliottLabel=REV": -0.1056,
+    "countQuality": -0.1547,
+    "countQuality?missing": -0.0772,
+    "higherDegree": 0.0677,
+    "higherDegree?missing": 0.0284,
+    "clarity": -0.1249,
+    "clarity?missing": 0.0284
+   },
+   "FULL": {
+    "(intercept)": -1.223,
+    "dir=1": 0.8714,
+    "trend=0": 0.6775,
+    "trend=1": 0.6312,
+    "mom=0": -0.4975,
+    "mom=1": -0.0034,
+    "momZ": -0.0513,
+    "volP": -0.0819,
+    "regime=RISK_OFF": -0.1308,
+    "regime=RISK_ON": 0.1665,
+    "regime=UNKNOWN": 0.0418,
+    "depth": -0.2604,
+    "logLegAtr": -0.1346,
+    "logLegBars": -0.0095,
+    "geometry": 0.2353,
+    "fibConf": -0.0477,
+    "support=1": 0.0666,
+    "elliottLabel=NONE": 0.0269,
+    "elliottLabel=REV": -0.0973,
+    "countQuality": -0.1531,
+    "countQuality?missing": -0.0704,
+    "higherDegree": 0.0572,
+    "higherDegree?missing": 0.0269,
+    "clarity": -0.1272,
+    "clarity?missing": 0.0269
+   },
+   "GEOMETRY_ONLY": {
+    "(intercept)": -0.7605,
+    "dir=1": 0.8216,
+    "geometry": 0.4874
+   }
+  },
+  "note": "Walk-forward: Block k wird nur mit Bloecken < k trainiert (F1, F2, F3, F4, F5). Gepoolte Out-of-Sample-Vorhersagen."
+ },
+ "excess": {
+  "byLabel": {
+   "NONE": {
+    "n": 184,
+    "observed": 0.4076,
+    "expectedBase": 0.4363,
+    "excess": -0.0287,
+    "lo": -0.1303,
+    "hi": 0.0486,
+    "ciBy": "YEAR"
+   }
+  },
+  "contByRole": {},
+  "revByRole": {},
+  "contByScale": {},
+  "contByCountQuality": {},
+  "contByApplicability": {},
+  "contByHigherDegree": {},
+  "contByStability": {},
+  "fibConf": {},
+  "support": {}
+ },
+ "abstention": {
+  "top100": {
+   "n": 74,
+   "rate": 0.4324,
+   "excessOverBase": 0.0144,
+   "lo": -0.1189,
+   "hi": 0.1563
+  },
+  "top30": {
+   "n": 18,
+   "rate": 0.2778,
+   "excessOverBase": -0.1358,
+   "lo": -0.3858,
+   "hi": 0.0988
+  },
+  "top20": {
+   "n": 9,
+   "rate": 0.2222,
+   "excessOverBase": -0.2128,
+   "lo": -0.498,
+   "hi": 0.169
+  },
+  "top10": {
+   "n": 4,
+   "rate": 0,
+   "excessOverBase": -0.4592,
+   "lo": -0.6531,
+   "hi": -0.2732
+  }
+ },
+ "segments": {
+  "index": {},
+  "exchange": {},
+  "volatility": {},
+  "regime": {},
+  "trend": {},
+  "sector": {},
+  "listingAge": {},
+  "direction": {},
+  "fold": {}
+ },
+ "extension": {
+  "contRate": {
+   "est": 0.2477,
+   "lo": 0.1907,
+   "hi": 0.301,
+   "ciBy": "YEAR",
+   "symbolCi": [
+    0.2087,
+    0.285
+   ],
+   "yearCi": [
+    0.1907,
+    0.301
+   ],
+   "clusters": 13
+  },
+  "matched": {
+   "diff": -0.0021,
+   "lo": -0.1602,
+   "hi": 0.2196,
+   "ciBy": "SYMBOL",
+   "strata": 558,
+   "treated": 218,
+   "treatedMatched": 81
+  }
+ },
+ "errorsSample": []
+}
