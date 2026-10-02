@@ -1,0 +1,225 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "production_authoring_request",
+  "brief_id": "brief_dcba5a8352739dbc",
+  "content_id": "vu-post-20261002-f5bab93d15",
+  "request_type": "FULL_CREATIVE",
+  "creative_format": "CAROUSEL",
+  "delivery_mode": "COVER_FIRST",
+  "author": {
+    "type": "chatgpt_work",
+    "role": "creative_agent",
+    "api_mode": "no_classic_openai_api"
+  },
+  "research": {
+    "web_access": true,
+    "mode_used": "WORK_WEB_RESEARCH",
+    "stories_considered": [
+      {
+        "title": "US-Arbeitsmarkt schafft im September nur 29.000 Stellen",
+        "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+        "decision": "selected",
+        "reason": "Die Kombination aus deutlicher Erwartungsenttaeuschung, auf 4,2 Prozent gestiegener Arbeitslosenquote und unmittelbarer Neubewertung der Fed-Erwartungen ist aktuell, breit anlegerrelevant und traegt einen klaren Social-Widerspruch."
+      },
+      {
+        "title": "Inflation im Euroraum steigt auf 3,8 Prozent",
+        "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Inflation_in_the_euro_area",
+        "decision": "rejected",
+        "reason": "Sehr relevant, aber thematisch zu nah an der bereits behandelten deutschen Inflationsstory; der US-Arbeitsmarkt bietet heute den neueren Marktimpuls."
+      },
+      {
+        "title": "Rivian erreicht Rekordauslieferungen im dritten Quartal",
+        "url": "https://www.reuters.com/business/autos-transportation/rivian-deliveries-hit-record-high-r2-rollout-gains-momentum-2026-10-02/",
+        "decision": "rejected",
+        "reason": "Starke Unternehmensnachricht, aber engeres Anlegerinteresse und weniger makrooekonomische Tragweite als der US-Arbeitsmarktbericht."
+      },
+      {
+        "title": "Google stellt neues Frontier-KI-Modell vor",
+        "url": "https://www.cnbc.com/2026/10/02/tech-download-google-argon-frontier-openai-anthropic.html",
+        "decision": "rejected",
+        "reason": "Hohes Technologieinteresse, aber fuer diesen Lauf weniger belastbare Primaerquellenlage und geringerer unmittelbarer Marktimpuls als bei den amtlichen Arbeitsmarktdaten."
+      }
+    ]
+  },
+  "story": {
+    "title_de": "Schwacher US-Arbeitsmarkt verändert die Fed-Wetten",
+    "what_happened": "Die US-Wirtschaft schuf im September 2026 außerhalb der Landwirtschaft 29.000 Stellen. Die Arbeitslosenquote lag bei 4,2 Prozent; die Beschäftigungswerte für Juli und August wurden zusammen um 60.000 Stellen nach unten revidiert.",
+    "why_interesting": "Die schwachen Daten stellen Anleger vor ein Paradox: Sie signalisieren konjunkturelle Abkühlung, reduzieren zugleich aber die kurzfristige Erwartung einer weiteren Fed-Zinserhöhung."
+  },
+  "sources": [
+    {
+      "source_id": "source-bls-september-2026",
+      "source": "U.S. Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "published_at": "2026-10-02T12:30:00Z",
+      "facts_used": [
+        "Im September kamen 29.000 Stellen ausserhalb der Landwirtschaft hinzu.",
+        "Die Arbeitslosenquote lag bei 4,2 Prozent.",
+        "Die Werte fuer Juli und August wurden zusammen um 60.000 Stellen nach unten revidiert.",
+        "Die durchschnittlichen Stundenloehne stiegen im Jahresvergleich um 3,0 Prozent."
+      ],
+      "opened_by_agent": true
+    },
+    {
+      "source_id": "source-reuters-fed-october-2026",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/business/fed-seen-skipping-october-rate-hike-job-market-cools-2026-10-02/",
+      "published_at": "2026-10-02T12:58:00Z",
+      "facts_used": [
+        "Oekonomen hatten 90.000 neue Stellen erwartet.",
+        "Nach dem Bericht preisten Zinsfutures eine Wahrscheinlichkeit von weniger als 20 Prozent fuer eine Fed-Zinserhoehung im Oktober ein."
+      ],
+      "opened_by_agent": true
+    }
+  ],
+  "hook_exploration": [
+    {
+      "direction": "konjunkturelle_warnung",
+      "text": "DER US-JOBMOTOR STOTTERT.",
+      "rejected_because": "Verstaendlich, aber zu einseitig negativ und ohne den fuer Anleger entscheidenden Markt-Widerspruch."
+    },
+    {
+      "direction": "fed_folge",
+      "text": "DIE FED BEKOMMT PLÖTZLICH SPIELRAUM.",
+      "rejected_because": "Starke Konsequenz, aber die Formulierung blendet das gleichzeitig steigende Konjunkturrisiko zu stark aus."
+    },
+    {
+      "direction": "zahl_und_ueberraschung",
+      "text": "NUR 29.000 NEUE JOBS.",
+      "rejected_because": "Die Zahl ist belegt, als alleinige Hook aber zu nah an einer verdichteten Schlagzeile."
+    }
+  ],
+  "hook_variants": [
+    {
+      "hook_variant_id": "vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:carousel_cover_hook_de:01",
+      "hook_type": "carousel_cover_hook_de",
+      "text": "SCHLECHTE JOBZAHLEN. GUTE BÖRSEN?",
+      "language": "de",
+      "brief_revision": "12ed53bd1daa1f24060909014d78736158ee4d8a",
+      "evidence_refs": [
+        "source-bls-september-2026",
+        "source-reuters-fed-october-2026"
+      ]
+    }
+  ],
+  "recommended_hook": {
+    "recommended_hook_variant_id": "vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:carousel_cover_hook_de:01",
+    "recommendation_reason": "Der belegte Widerspruch zwischen schwachen Arbeitsmarktdaten und sinkenden kurzfristigen Zinserhoehungswetten ist sofort verstaendlich, anlegerrelevant und erzeugt Neugier ohne eine Kursreaktion zu versprechen.",
+    "recommendation_scope": "creative_agent_editorial_only",
+    "is_canonical_selection": false
+  },
+  "caption": "Der US-Arbeitsmarkt hat im September kaum neue Dynamik aufgebaut: Außerhalb der Landwirtschaft kamen 29.000 Stellen hinzu, die Arbeitslosenquote lag bei 4,2 Prozent. Gleichzeitig wurden Juli und August zusammen um 60.000 Jobs nach unten revidiert.\n\nFür die Börse ist das zunächst ein widersprüchliches Signal. Zinsfutures preisten nach dem Bericht eine Chance von weniger als 20 Prozent für eine Fed-Erhöhung im Oktober ein. Schwächere Beschäftigung kann den Zinsdruck dämpfen – erhöht aber zugleich das Risiko, dass die Konjunktur stärker nachlässt.\n\nFür Anleger zählt jetzt nicht nur, ob die Fed wartet, sondern ob die Abkühlung kontrolliert bleibt. Keine Anlageberatung.",
+  "hashtags": [
+    "USWirtschaft",
+    "Arbeitsmarkt",
+    "FederalReserve",
+    "Börse",
+    "Zinsen"
+  ],
+  "visual_brief": {
+    "visual_strategy": "VU_EDITORIAL_PREMIUM",
+    "format": "portrait_4_5",
+    "motif": "Ein hochwertiges transparentes Markt-Interface stellt einen schwachen roten Beschaeftigungsimpuls einem steigenden blauen Kapitalmarktimpuls gegenueber.",
+    "composition": "Vision-Universe-Logo oben links, dominante zweizeilige Hook im oberen Bilddrittel, Atlas als nachdenklicher Host unten links, die zweigeteilte Glasflaeche im Vordergrund. Die Hierarchie bleibt auf Mobilgeraeten innerhalb einer Sekunde erfassbar.",
+    "aesthetics": "Tiefschwarz, Silber, Weiss und Vision-Universe-Blau; kontrollierter roter Akzent fuer die schwache Jobseite; fotorealistische Materialien, praezises Studiolicht und grosszuegiger Negativraum.",
+    "visible_text": [
+      "VISION UNIVERSE®",
+      "SCHLECHTE JOBZAHLEN. GUTE BÖRSEN?"
+    ],
+    "restrictions": [
+      "Keine weiteren Woerter oder Zahlen im Bild",
+      "Keine Firmenlogos, Ticker, Fed-Siegel oder Wasserzeichen",
+      "Atlas nur einmal und nur auf Slide 1",
+      "Keine Worttrennung oder Textueberlagerung"
+    ]
+  },
+  "carousel_plan": [
+    {
+      "slide_index": 1,
+      "role": "HOOK / COVER",
+      "headline_de": "SCHLECHTE JOBZAHLEN. GUTE BÖRSEN?",
+      "key_content": "Der Widerspruch zwischen abkühlendem US-Arbeitsmarkt und sinkenden kurzfristigen Zinserhöhungswetten.",
+      "visual_concept": "Atlas betrachtet ein hochwertiges Glas-Interface: links ein schwacher roter Beschaeftigungsimpuls, rechts ein aufwaerts gerichteter blauer Kapitalmarktimpuls.",
+      "atlas": true
+    },
+    {
+      "slide_index": 2,
+      "role": "KEY INSIGHT",
+      "headline_de": "29.000 STELLEN.",
+      "key_content": "Tatsächlich 29.000 statt erwarteter 90.000; Arbeitslosenquote 4,2 Prozent; Juli und August zusammen um 60.000 Stellen nach unten revidiert.",
+      "visual_concept": "Eine dominante 29.000 in weißer Metalltypografie über einer ruhigen, abfallenden Beschäftigungspuls-Linie. Die Erwartung von 90.000 und die Revision erscheinen nur als knappe Sekundärinformation. Vision-Universe-Logo oben links, kein Atlas.",
+      "atlas": false
+    },
+    {
+      "slide_index": 3,
+      "role": "EINORDNUNG",
+      "headline_de": "ZINSHOFFNUNG VS. KONJUNKTURRISIKO.",
+      "key_content": "Chance: weniger unmittelbarer Druck für eine weitere Fed-Erhöhung. Risiko: Die Abkühlung des Arbeitsmarkts könnte breiter werden. Entscheidend ist, ob die Schwäche kontrolliert bleibt.",
+      "visual_concept": "Premium-Split-Layout in Blau und Rot mit einer zentralen Balanceachse; links Fed-Zinserwartungen, rechts Konjunkturrisiko. Vision-Universe-Logo oben links, kein Atlas.",
+      "atlas": false
+    }
+  ],
+  "slide_count": 3,
+  "editorial_gate": {
+    "story_quality": "PASS",
+    "hook_standalone_quality": "PASS",
+    "caption_standalone_quality": "PASS",
+    "fact_grounding": "PASS"
+  },
+  "visual_variants": [
+    {
+      "visual_variant_id": "vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:visual:VU_EDITORIAL_PREMIUM:01",
+      "visual_strategy": "VU_EDITORIAL_PREMIUM",
+      "slide_index": 1,
+      "slide_role": "cover",
+      "brief_revision": "12ed53bd1daa1f24060909014d78736158ee4d8a",
+      "asset_path": "authoring/requests/vu-post-20261002-f5bab93d15/assets/visual-01.png",
+      "asset_sha256": "3173207a060ccdd2effb4ee7985611377db73e2d428aef537e7a50631af53650",
+      "asset_byte_size": 1888149,
+      "mime_type": "image/png",
+      "width": 1122,
+      "height": 1402,
+      "brand_elements": {
+        "includes_logo": true,
+        "includes_atlas": true,
+        "includes_hook_text_de": true
+      }
+    }
+  ],
+  "carousel_checks": {
+    "atlas_only_on_slide_1": true,
+    "logo_on_all_slides": true,
+    "logo_position_consistent": true
+  },
+  "style_references_check": [
+    {
+      "path": "social/brand/style-references/vu-style-ref-01.png",
+      "dominant_text": "VISION UNIVERSE®\n4,1×\nWENIGER CRASHES.\nTESLAS NEUE FSD-ZAHL.\nATLAS CHECK"
+    },
+    {
+      "path": "social/brand/style-references/vu-style-ref-02.png",
+      "dominant_text": "VISION UNIVERSE®\nEUROPA KÖNNTE\nTESLAS NÄCHSTER\nFSD-HEBEL WERDEN."
+    },
+    {
+      "path": "social/brand/style-references/vu-style-ref-03.png",
+      "dominant_text": "VISION UNIVERSE®\n100 MIO. KM\n4,1×\nWENIGER KOLLISIONEN*\nALS MANUELLES FAHREN\n5 EU-LÄNDER\n70.000+ NUTZER\n1 MIO. KM TÄGLICH\n*LAUT TESLA – FSD SUPERVISED SICHERHEITSDATEN IN EUROPA."
+    },
+    {
+      "path": "social/brand/style-references/vu-style-ref-04.png",
+      "dominant_text": "VISION UNIVERSE®\nVISION UNIVERSE EINORDNUNG\nCHANCE\nEU-WEITE FSD-FREIGABE ALS GAME CHANGER.\nRISIKO\nTESLA-DATEN NOCH UMSTRITTEN. VERGLEICHBARKEIT FRAGLICH.\n$TSLA | AUTONOMIE VOR DEM DURCHBRUCH?\nCHANCE NUTZEN ODER ZU FRÜH?"
+    }
+  ],
+  "processing": {
+    "status": "completed",
+    "brief_blob_sha": "12ed53bd1daa1f24060909014d78736158ee4d8a",
+    "brief_revision": "12ed53bd1daa1f24060909014d78736158ee4d8a",
+    "processing_key": "brief_dcba5a8352739dbc:vu-post-20261002-f5bab93d15:12ed53bd1daa1f24060909014d78736158ee4d8a:1.0",
+    "variant_identity_version": "2",
+    "idempotency_mode": "reuse_completed_result",
+    "immutable_variant_mapping": true,
+    "canonical_hook_selected": false,
+    "request_type": "FULL_CREATIVE",
+    "image_generation_mode": "built_in_chatgpt_work"
+  },
+  "publishing_allowed": false
+}
