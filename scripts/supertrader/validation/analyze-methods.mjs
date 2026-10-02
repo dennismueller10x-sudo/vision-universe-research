@@ -37,6 +37,8 @@ import darvas2 from '../engine/strategies/darvas-v2.mjs';
 import minervini2 from '../engine/strategies/minervini-v2.mjs';
 import kk3 from '../engine/strategies/kk-breakout-v3.mjs';
 import kkAblation from '../engine/strategies/kk-breakout-ablation-r8.mjs';
+import don1 from '../engine/strategies/donchian.mjs';
+import don2 from '../engine/strategies/donchian-v2.mjs';
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
@@ -55,8 +57,10 @@ export const REFERENCE_R7 = [kk, weinstein, darvas, minervini];
 // Tagesbalken-Gegenprobe, Ablation des Einstiegszeitpunkts, 2.0.0 als Referenz.
 export const PREREG_R8 = 'supertrader-validation-prereg-r8-1.0.0';
 export const KK3_PESSIMISTIC = { ...kk3, version: '3.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } };
-export const ENGINES_R8 = [kk3, KK3_PESSIMISTIC, kkAblation, kk2];
-const ROLE_R8 = { '3.0.0': 'R8_HYPOTHESIS', '3.0.0-P': 'SENSITIVITY_PESSIMISTIC', '3.0.0-A': 'ABLATION_ENTRY_TIMING', '2.0.0': 'REFERENCE_REPRODUCTION' };
+export const TURTLE_PESSIMISTIC = { ...don2, version: '2.0.0-P', simOpts: { sameDayPolicy: 'PESSIMISTIC' } };
+export const ENGINES_R8 = [kk3, KK3_PESSIMISTIC, kkAblation, kk2, don2, TURTLE_PESSIMISTIC, don1];
+const ROLE_R8 = { 'MOMENTUM_BREAKOUT@3.0.0': 'R8_HYPOTHESIS', 'MOMENTUM_BREAKOUT@3.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'MOMENTUM_BREAKOUT@3.0.0-A': 'ABLATION_ENTRY_TIMING', 'MOMENTUM_BREAKOUT@2.0.0': 'REFERENCE_REPRODUCTION',
+  'DONCHIAN_TURTLE@2.0.0': 'R8_TURTLE_HYPOTHESIS', 'DONCHIAN_TURTLE@2.0.0-P': 'SENSITIVITY_PESSIMISTIC', 'DONCHIAN_TURTLE@1.1.0': 'REFERENCE_SAME_HARNESS' };
 export const portfolioOf = (e) => (e.portfolio ? { ...PORTFOLIO_DEFAULTS, ...e.portfolio } : PORTFOLIO_DEFAULTS);
 const W = L.WINDOW;
 const EXEC2 = { ...DEFAULT_EXECUTION, slippageBps: 20, commissionBps: 2 };
@@ -432,7 +436,7 @@ async function main() {
     const c5 = r0.taken.filter((p) => p.returnPct !== undefined).sort((a, b) => Math.abs(b.returnPct) - Math.abs(a.returnPct)).slice(0, 10).map((p) => ({ id: p.tr.id, returnPct: p.returnPct, entry: p.tr.entry, lastExit: p.tr.exits[p.tr.exits.length - 1] || null, terminal: p.tr.terminal ? { ...p.tr.terminal } : null, rawCloseAtConfirm: p.tr.rawCloseAtConfirm }));
     const at5 = all.filter((t) => !(t.rawCloseAtConfirm >= e.PARAMS.minPrice)).length;
     results[keyOf(e)] = {
-      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r8' ? ROLE_R8[e.version] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
+      variant: e.variant, version: e.version, params: e.PARAMS, portfolio: cfg, role: SET === 'r8' ? ROLE_R8[keyOf(e)] : SET === 'r7' ? (ENGINES_R7.includes(e) ? 'R7_HYPOTHESIS' : 'REFERENCE_REPRODUCTION') : 'PREREGISTERED', engineTrades: all.length, portfolioTrades: runs.S0_LAST_PRICE.taken,
       runs, judgement: judge(runs), at5Violations: at5,
       controls: { C1max: Math.max(...['S0_LAST_PRICE', 'S1_MINUS_30', 'S2_DISTRESS_ZERO', 'COST2_S1', 'SURVIVORS_ONLY'].map((x) => runs[x].reconciliation.relDiff)), C2maxRelDiff: c2, C3m: R[keyOf(e)].c3, C5: c5 },
       diagnostics: { allTrades: diag(all), survivorTrades: diag(surv), delistedTrades: diag(all.filter((t) => !t.survivor)), takenS0: diag(r0.taken.map((p) => p.tr)), maxPositionsSkipped: r0.skipped.filter((x) => x.reason === 'MAX_POSITIONS').length },
