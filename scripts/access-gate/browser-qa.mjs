@@ -6,7 +6,7 @@ import {mkdtemp, mkdir, writeFile, readFile, stat, rm} from 'node:fs/promises';
 import {join, resolve, extname, sep} from 'node:path';
 import {tmpdir} from 'node:os';
 import {randomBytes} from 'node:crypto';
-import {protectRelease, verificationFor, STORAGE_KEY, DURATION_MS} from './build.mjs';
+import {protectRelease, verificationFor, accessKeyFor, STORAGE_KEY, DURATION_MS} from './build.mjs';
 const require = createRequire(import.meta.url);
 const {chromium, webkit, devices} = require(process.env.PLAYWRIGHT_PATH || 'playwright');
 const temp = await mkdtemp(join(tmpdir(), 'research-static-gate-'));
@@ -93,7 +93,8 @@ try {
       assert.equal(await page.locator('body').evaluate(body => getComputedStyle(body).color), 'rgb(1, 2, 3)');
       assert.equal(await page.locator('img').evaluate(image => image.complete && image.naturalWidth > 0), true);
       const state = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), STORAGE_KEY);
-      assert.equal(state.verifier, config.verifier);
+      assert.equal(state.key, accessKeyFor(password));
+      assert.equal(state.verifier, undefined, 'the public verifier is never the stored grant');
       assert.ok(state.expiresAt > Date.now() + 29 * 86400000);
       assert.ok(state.expiresAt <= Date.now() + DURATION_MS);
       for (const route of routes) {
@@ -123,8 +124,13 @@ try {
       await page.goto(origin + '/stocks/AAPL');
       await page.locator('#research-access-gate').waitFor();
       // Expired, malformed and password-rotated browser state cannot open pages.
+      // Forged state built only from public data (version 1 scheme and the
+      // published verifier as "key") must not open pages either.
       for (const stale of [JSON.stringify({...state, expiresAt:Date.now()-1}), '{invalid',
-        JSON.stringify({...state, verifier:'changed-password-verifier'})]) {
+        JSON.stringify({...state, key:'0'.repeat(64)}),
+        JSON.stringify({version:1, verifier:config.verifier, expiresAt:Date.now()+DURATION_MS}),
+        JSON.stringify({version:config.version, verifier:config.verifier, expiresAt:Date.now()+DURATION_MS}),
+        JSON.stringify({version:config.version, key:config.verifier, expiresAt:Date.now()+DURATION_MS})]) {
         await page.evaluate(({key,value}) => localStorage.setItem(key,value), {key:STORAGE_KEY,value:stale});
         await page.goto(origin + '/quant');
         await page.locator('#research-access-gate').waitFor();

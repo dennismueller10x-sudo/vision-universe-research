@@ -46,6 +46,23 @@ Was dahinter gemessen wird:
 - **Marktphasen:** werden nicht aufgeteilt. Die Regime-Historie ist nicht zertifiziert (`MARKET_REGIME_TRANSITIONS_GATE = PENDING_HISTORY`), und eine eigene Ersatzeinteilung gibt es nicht.
 - **Gesamtrendite:** `weekly-total-return-1.0.0` nimmt den letzten Handelstag jeder Woche aus der bestätigten Tages-Gesamtrendite. Die Pipeline rechnet so (`--work-dir`); lokal entsteht Kursrendite. Die Studie mischt nie zwei Renditebasen.
 
+## SPY als Benchmark-Referenz (Owner-Entscheid 02.10.2026)
+
+SPY liegt als `BENCHMARK_REFERENCE` in der kanonischen Historie und dient nur dem Vergleich in Backtests. SPY gehört nicht zum Produktuniversum: Er erscheint nicht im Screener, bekommt keine Strategie-Treffer, wird nicht gerankt und steht in keiner Aktienliste. Das sichert `quant/tests/benchmark-reference.test.mjs`.
+
+- **Abruf:** `scripts/market/refresh-benchmark-history.mjs` holt die ganze Reihe ab 1990 in einer Anfrage. Es nutzt denselben Adapter, dieselbe Qualitätsprüfung, dieselbe Prüfung der Bereinigungssemantik und dieselbe Arbeitsablage wie der Gate-Lauf.
+  - Ein voller Abruf statt Anhängen ist nötig, weil gespeicherte Bars die adjustedClose-Skala ihres Abruftags behalten. Jede spätere Ausschüttung wäre sonst verloren.
+  - Kommt eine Ausschüttung in der bereinigten Spalte nicht an, bricht der Abruf ab und der Cache bleibt unverändert.
+- **Ablage:** `sync-history-store` und `preflight-zero-cost` führen SPY für `FULL_UNIVERSE` mit (`scripts/market/benchmark-reference.mjs`). Das Gate-Universum und das Produktuniversum bleiben unverändert.
+- **Kein Leck in die Titelreihen:** `publish-long-series` schreibt SPY nie nach `discover-series-long`. Die Signal-Studie schließt SPY zusätzlich selbst aus.
+- **Signal-Studie:** Gesamtrendite gilt nur, wenn alle drei Bedingungen erfüllt sind:
+  - Mindestens 95 % der Titel haben Gesamtrendite.
+  - Die SPY-Gesamtrendite trägt auf derselben Wochenachse jede Woche, in der SPY als Kurs vorliegt, ohne Lücke und bis zum Stichtag (`source.spyTotalReturn`).
+  - Es wird nie gemischt; fehlt eine Seite, bleibt die ganze Studie bei Kursrendite.
+- **Vorher/Nachher:** Im Gesamtrendite-Modus stehen dieselben Regeln über dieselben Titel auch mit Kursrendite im Artefakt (`returnBasisComparison`).
+- **Vertrauen:** Eine bestandene Renditebasis hebt keine Regel über „eingeschränkt“, solange die Überlebenden-Kontrolle fehlt.
+- **Relative Stärke in den Technik-Bundles:** Sie bleibt in diesem Schritt unverändert. Sie einzuschalten würde die Technik- und Setup-Zustände ändern und braucht eine eigene Entscheidung.
+
 ## Setup-Backtest
 
 Quelle sind nur die veröffentlichten Stände in `setup-observation-history`. Jeder Stand wird gegen seinen `contentHash` geprüft, ein veränderter Stand bricht den Lauf ab.

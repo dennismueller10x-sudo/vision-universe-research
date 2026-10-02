@@ -21,8 +21,21 @@ Den gewünschten gemeinsamen Passwortwert dort eingeben, niemals im Chat,
 Repository oder Workflow-Code. Ein Secret im Cloudflare-Worker reicht hier nicht.
 Ohne dieses GitHub-Secret stoppt der Produktionsbuild vor dem Upload. Nach dem
 Anlegen den Pages-Release erneut ausführen. Der Wert wird nur beim Gate-Build
-verwendet; ausgeliefert wird ausschließlich ein PBKDF2-SHA-256-Prüfwert mit
-210.000 Iterationen und einem öffentlichen, anwendungsspezifischen Salt.
+verwendet; ausgeliefert wird ausschließlich ein Prüfwert: SHA-256 über den
+PBKDF2-SHA-256-Schlüssel (210.000 Iterationen, öffentlicher, anwendungsspezifischer
+Salt).
+
+### Version 2 (02.10.2026): öffentlicher Prüfwert öffnet nichts mehr
+
+In Version 1 speicherte der Browser nach dem Login den öffentlichen Prüfwert selbst,
+und die Maske verglich nur diesen. Wer den Wert aus einer beliebigen Seite oder aus
+`/__research/config.json` las, konnte ihn in den LocalStorage schreiben und die
+Maske überspringen. Seit Version 2 speichert der Browser den aus dem Passwort
+abgeleiteten Schlüssel; veröffentlicht wird nur `SHA-256("vu-research-access-key-v2:" + Schlüssel)`.
+Bestehende Freigaben der Version 1 verfallen einmalig (erneute Passworteingabe).
+
+Bleibt offen (nur serverseitig lösbar, vgl. PR #328): Die Originaldokumente unter
+`/__research/content/` und alle Daten-/Asset-Dateien sind weiterhin direkt abrufbar.
 
 ## Zentrale Integration
 
@@ -61,5 +74,9 @@ PLAYWRIGHT_PATH=/path/to/playwright node scripts/access-gate/browser-qa.mjs
 Die Browser-QA baut mit einem zufälligen Testpasswort und prüft Chromium und
 iPhone/WebKit. Produktions-Secrets werden dabei weder benötigt noch ausgegeben.
 Der bestehende Produktions-Smoke wird nach der Verpackung zusätzlich mit
-`--access-gate` ausgeführt. Diese Testoption setzt ausschließlich im Testbrowser
-den dokumentierten Client-State und benötigt kein echtes Passwort.
+`--access-gate` ausgeführt. Er leitet den Login-Zustand aus dem Build-Passwort ab
+(Datei im Runner-Temp-Verzeichnis, nach dem Smoke gelöscht, nie geloggt) und prüft
+ihn gegen den Prüfwert des Releases. Der Supertrader-Produktions-Smoke loggt sich
+mit `--access-login` über das echte Formular ein (Secret `RESEARCH_ACCESS_PASSWORD`)
+und prüft vorher, dass die Maske ohne Login und mit einem aus öffentlichen Daten
+gebauten Zustand geschlossen bleibt.

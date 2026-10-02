@@ -35,6 +35,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-scope.mjs";
 import { splitAdjustedCloses } from "./publish-discover-series.mjs";
+import { benchmarkSpec } from "./benchmark-reference.mjs";
 
 const require = createRequire(import.meta.url);
 const DEFAULT_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -71,7 +72,12 @@ const gates = DisplayPolicy.gatesFromConfig(GATE_CONFIG);
 const permission = DisplayPolicy.check({ providerId: "tiingo", dataClass: "marketData", audience: "public", form: "raw", gates });
 if (!permission.allowed) { console.error("  ABBRUCH: " + permission.message); process.exit(1); }
 console.log(`  Grundlage: ${permission.basis}`);
-const securities = scope.securities.filter((s) => !ONLY || ONLY.has(s.ticker));
+/* Die Benchmark (SPY) liegt als BENCHMARK_REFERENCE in der Historienablage,
+   ist aber kein Titel: discover-series-long ist die Titelliste der Studien
+   (Signal-Backtest, Muster, Radar). Sie kommt hier nie hinein. */
+const BENCHMARK = benchmarkSpec(SCALE);
+const securities = scope.securities.filter((s) => (!ONLY || ONLY.has(s.ticker)) &&
+  !(BENCHMARK && (s.securityId === BENCHMARK.securityId || s.ticker === BENCHMARK.ticker)));
 console.log(`  Umfang: ${securities.length} Titel`);
 
 /* --------------------------------------------------- Ablage */

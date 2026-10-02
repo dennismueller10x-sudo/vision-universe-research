@@ -4,15 +4,25 @@ import {mkdtemp, mkdir, writeFile, readFile, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {randomBytes, pbkdf2Sync} from 'node:crypto';
-import {protectRelease, verificationFor, DURATION_MS} from './build.mjs';
+import {protectRelease, verificationFor, accessKeyFor, verifierForKey, accessStateFor, KEY_CONTEXT, DURATION_MS} from './build.mjs';
+import {createHash} from 'node:crypto';
 
-test('only a salted PBKDF2 verifier is emitted; updates keep 30-day grants and password rotation invalidates them', () => {
+test('only a hash of the salted PBKDF2 key is emitted; updates keep 30-day grants and password rotation invalidates them', () => {
   const password = randomBytes(32).toString('hex');
   const first = verificationFor(password);
   assert.deepEqual(verificationFor(password), first);
   assert.equal(first.durationMs, 30 * 86400000);
   assert.equal(first.durationMs, DURATION_MS);
-  assert.equal(first.verifier, pbkdf2Sync(password, Buffer.from(first.salt, 'base64'), first.iterations, 32, 'sha256').toString('hex'));
+  const key = pbkdf2Sync(password, Buffer.from(first.salt, 'base64'), first.iterations, 32, 'sha256').toString('hex');
+  assert.equal(accessKeyFor(password), key);
+  // Version 2: the published verifier is a hash of the key, never the key itself.
+  assert.equal(first.version, 2);
+  assert.equal(first.verifier, createHash('sha256').update(KEY_CONTEXT + key).digest('hex'));
+  assert.equal(verifierForKey(key), first.verifier);
+  assert.notEqual(first.verifier, key);
+  assert.ok(!JSON.stringify(first).includes(key));
+  const state = accessStateFor(password, 1000);
+  assert.deepEqual(state, {version: 2, key, expiresAt: 1000 + DURATION_MS});
   assert.notEqual(verificationFor(randomBytes(32).toString('hex')).verifier, first.verifier);
   assert.ok(!JSON.stringify(first).includes(password));
   assert.throws(() => verificationFor(''), /RESEARCH_ACCESS_PASSWORD/);
