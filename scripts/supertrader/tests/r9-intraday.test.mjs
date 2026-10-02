@@ -58,3 +58,27 @@ test('R9-I5 Schichten und Auswahl nach Protokoll (Hash, Quoten, Vollerhebung Mom
   const ev = evaluate([{ engine: 'X', stratum: 'AMBIGUOUS', neutralExit: false, pessExit: true, truth: { status: 'RESOLVED', exitSameDay: true, fillDiff: 0, stopDiff: 0, gap: false } }]);
   assert.equal(ev.X.strata.AMBIGUOUS.truthExitShare.p, 1); assert.equal(ev.X.strata.AMBIGUOUS.pessAgreeShare, 1);
 });
+
+test('R9-I6 Simulator: Minutenquelle bestimmt Einstieg, Stop und Gleichtags-Ausstieg; ohne Minuten bleibt die Tagesbalken-Annahme', async () => {
+  const { simulate } = await import('../engine/simulator.mjs');
+  const kk3 = (await import('../engine/strategies/kk-breakout-v3.mjs')).default;
+  const stub = { ...kk3, id: 'MOMENTUM_BREAKOUT', version: '9', PARAMS: {},
+    scan: () => ({ stage: 'ENTRY_READY', rules: {}, facts: {}, levels: { trigger: 100, invalidation: 80, adr20: 0.05 } }),
+    invalidate: () => null, manage: () => ({}) };
+  const bars = { date: ['2026-01-05', '2026-01-06', '2026-01-07'], open: [95, 98, 103], high: [97, 104, 106], low: [94, 97, 101], close: [96, 99, 105], volume: [1e6, 2e6, 1e6] };
+  const ctx = { symbol: 'X', bars, ind: { adr20: [0.05, 0.05, 0.05], vol50: [1e6, 1e6, 1e6] }, cross: {} };
+  // Ohne Minuten: neutral, Stop = Tagestief 97, kein Ausstieg am Einstiegstag.
+  const a = simulate(stub, ctx, { from: 0, to: 1 });
+  assert.equal(a.state.signal.entry.evidence, 'DAILY_BAR_HIGH_REACHED_TRIGGER');
+  assert.equal(a.state.signal.entry.sameDayOrder, 'AMBIGUOUS', 'Schluss 99 unter dem Einstieg 100: Reihenfolge aus Tagesbalken offen');
+  // Mit Minuten: Tief erst nach dem Kauf -> Stop 98,5 (Tief bis zum Kauf), Ausstieg am selben Tag.
+  const oracle = () => ({ status: 'RESOLVED', fill: 100, stop: 98.5, exitSameDay: true, exitPrice: 98.5, entryMinute: '10:12' });
+  const b = simulate(stub, ctx, { from: 0, to: 1, intradayOracle: oracle });
+  const s = b.finished[0];
+  assert.equal(s.entry.evidence, 'INTRADAY_1MIN'); assert.equal(s.entry.entryMinute, '10:12');
+  assert.equal(s.initialStop, 98.5); assert.equal(s.exits[0].priceBasis, 'SAME_DAY_INTRADAY');
+  assert.ok(Math.abs(s.exits[0].price - 98.5 * 0.999) < 1e-9);
+  // Unaufgeloeste Minuten: Rueckfall auf die Annahme.
+  const c = simulate(stub, ctx, { from: 0, to: 1, intradayOracle: () => ({ status: 'NO_INTRADAY' }) });
+  assert.equal(c.state.signal.entry.evidence, 'DAILY_BAR_HIGH_REACHED_TRIGGER');
+});
