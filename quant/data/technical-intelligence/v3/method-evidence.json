@@ -1,6 +1,7 @@
 {
- "schemaVersion": "vu-ti-api-3.0.0",
- "generatedAt": "2026-10-02T20:56:03.419Z",
+ "schemaVersion": "vu-technical-method-evidence-1.0.0",
+ "purpose": "Evidenzstufe und Produktrolle je technischer Methode, abgeleitet aus den Holdout-Studien (Szenario-Evidenz, vorab registrierte Elliott-Validierung). Keine Zahl ist eine Wahrscheinlichkeit; Stufen werden nur aus Studienergebnissen abgeleitet, nie von Hand gesetzt.",
+ "generatedAt": "2026-10-02T21:29:33.767Z",
  "definitions": {
   "VALIDATED": "vorab registrierte Hypothese auf unabhängiger Stichprobe bestätigt",
   "SUPPORTED": "Holdout-Effekt statistisch von null verschieden, aber nicht vorab registriert bestätigt; wirtschaftlich gering",
@@ -52,25 +53,25 @@
    "level": "NOT_ESTABLISHED",
    "label": "Kein Vorteil belegt",
    "role": "CONTEXT",
-   "stat": "Vorab registrierter Test auf unabhängigen Titeln: H1 nicht bestätigt (0, KI -0.0001 bis 0.0001); H2 nicht bestätigt (0.0015, KI -0.0065 bis 0.0097); H3 nicht bestätigt (-0.0089, KI -0.0317 bis 0.0133); H4 nicht bestätigt (0.023, KI -0.0053 bis 0.0537); H5 nicht bestätigt (-0.0323, KI -0.0523 bis -0.0092)",
+   "stat": "Vorab registrierter Test auf unabhängigen Titeln: H1 nicht bestätigt (Schätzer 0, 95 %-KI -0,0001 bis 0,0001); H2 nicht bestätigt (Schätzer +0,1 Pp., 95 %-KI −0,7 Pp. bis +1,0 Pp.); H3 nicht bestätigt (Schätzer −0,9 Pp., 95 %-KI −3,2 Pp. bis +1,3 Pp.); H4 nicht bestätigt (Schätzer +2,3 Pp., 95 %-KI −0,5 Pp. bis +5,4 Pp.); H5 nicht bestätigt (Schätzer −3,2 Pp., 95 %-KI −5,2 Pp. bis −0,9 Pp.)",
    "consumer": "In der vorab festgelegten Prüfung auf unabhängigen Aktien brachte die Elliott-Zählung keinen Prognosevorteil gegenüber derselben Kursstruktur ohne Zählung. Sie dient hier als Sprache für Struktur und Szenarien.",
-   "pro": "Kontext, kein Prognosebeitrag (H1 nicht bestätigt (0, KI -0.0001 bis 0.0001); H2 nicht bestätigt (0.0015, KI -0.0065 bis 0.0097); H3 nicht bestätigt (-0.0089, KI -0.0317 bis 0.0133))"
+   "pro": "Kontext, kein Prognosebeitrag (H1 nicht bestätigt (Schätzer 0, 95 %-KI -0,0001 bis 0,0001); H2 nicht bestätigt (Schätzer +0,1 Pp., 95 %-KI −0,7 Pp. bis +1,0 Pp.); H3 nicht bestätigt (Schätzer −0,9 Pp., 95 %-KI −3,2 Pp. bis +1,3 Pp.))"
   },
   "FIBONACCI": {
    "level": "NOT_ESTABLISHED",
    "label": "Kein Vorteil belegt",
    "role": "CONTEXT",
-   "stat": "Häufung an Fibonacci-Niveaus: keine (Verhältnis ≈ 1); H7 nicht bestätigt (-0.0059, KI -0.019 bis 0.0072)",
+   "stat": "Häufung an Fibonacci-Niveaus: keine (Verhältnis ≈ 1); H7 nicht bestätigt (Schätzer −0,6 Pp., 95 %-KI −1,9 Pp. bis +0,7 Pp.)",
    "consumer": "Wendepunkte häufen sich nicht an Fibonacci-Niveaus; Fibonacci zählt nur, wo mehrere Anker zusammenfallen.",
-   "pro": "H7 nicht bestätigt (-0.0059, KI -0.019 bis 0.0072)"
+   "pro": "H7 nicht bestätigt (Schätzer −0,6 Pp., 95 %-KI −1,9 Pp. bis +0,7 Pp.)"
   },
   "TIMING_EARLY": {
    "level": "VALIDATED",
    "label": "Bestätigt",
    "role": "CONTEXT",
-   "stat": "H6 bestätigt (0.039, KI 0.0257 bis 0.0521)",
+   "stat": "H6 bestätigt (Schätzer +3,9 Pp., 95 %-KI +2,6 Pp. bis +5,2 Pp.)",
    "consumer": "Wer früh in der laufenden Gegenbewegung einsteigt, lag historisch besser als beim Einstieg nach der späten Bestätigung – das gilt auch ohne Elliott-Zählung.",
-   "pro": "H6 bestätigt (0.039, KI 0.0257 bis 0.0521) — Effekt des Zeitpunkts, nicht des Elliott-Labels (gleicher Effekt bei Rückläufen ohne Fortsetzungs-Lesart)"
+   "pro": "H6 bestätigt (Schätzer +3,9 Pp., 95 %-KI +2,6 Pp. bis +5,2 Pp.) — Effekt des Zeitpunkts, nicht des Elliott-Labels (gleicher Effekt bei Rückläufen ohne Fortsetzungs-Lesart)"
   },
   "WYCKOFF": {
    "level": "DESCRIPTIVE_ONLY",

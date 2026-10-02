@@ -39,7 +39,8 @@ add("MOMENTUM", dMom.level, "CORE", dMom.stat, "Bewegungsstärke beschreibt den 
 add("STRUCTURE", dStr.level, "CORE", dStr.stat, "Hochs und Tiefs beschreiben die Struktur.", dStr.stat);
 add("PATTERN", dPat.level, "CONTEXT", dPat.stat, "Chartformationen beschreiben Lagen; ein Vorteil ist nicht belegt.", dPat.stat);
 add("CONFLUENCE", dConf.level, "CORE", dConf.stat, "Die Einigkeit der Verfahren beschreibt, wie eindeutig das Bild ist – keine Trefferwahrscheinlichkeit.", dConf.stat);
-const h = (k) => (H[k] ? k + " " + (H[k].confirmed ? "bestätigt" : "nicht bestätigt") + " (" + H[k].est + ", KI " + H[k].lo + " bis " + H[k].hi + ")" : k + " nicht geprüft");
+const fx = (k, x) => (k === "H1" ? (x === 0 ? "0" : String(x).replace(".", ",")) : (x >= 0 ? "+" : "−") + Math.abs(x * 100).toFixed(1).replace(".", ",") + " Pp.");
+const h = (k) => (H[k] ? k + " " + (H[k].confirmed ? "bestätigt" : "nicht bestätigt") + " (Schätzer " + fx(k, H[k].est) + ", 95 %-KI " + fx(k, H[k].lo) + " bis " + fx(k, H[k].hi) + ")" : k + " nicht geprüft");
 const elliottValidated = H.H1 && H.H1.confirmed && H.H2 && H.H2.confirmed;
 add("ELLIOTT", elliottValidated ? "VALIDATED" : "NOT_ESTABLISHED", elliottValidated ? "CORE" : "CONTEXT",
   "Vorab registrierter Test auf unabhängigen Titeln: " + ["H1", "H2", "H3", "H4", "H5"].map(h).join("; "),

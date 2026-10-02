@@ -570,10 +570,10 @@
       X.card([el("h3", { class: "qx-h3", text: "Elliott-Wellen: Regeln, nicht Bilder" }),
         para("Grundlage: Frost & Prechter, Elliott Wave Principle. Harte Regeln (z. B. Welle 2 nie unter den Ursprung von Welle 1, Welle 3 nie die kürzeste, Welle 4 nie im Gebiet von Welle 1) verwerfen eine Zählung. Definitionen trennen Musterklassen (Flat: B mindestens 90 % von A). Richtlinien (Fibonacci-Verhältnisse, Alternation, Kanal) ordnen nur die Rangfolge."),
         para("Muster: Impuls, Leading/Ending Diagonal, Zigzag, Flat, Dreieck, doppelte Korrekturen. Jede Welle wird auf der nächstfeineren Ebene geprüft (5 oder 3 Unterwellen) und mit dem höheren Grad abgeglichen. Alternativen werden immer gezeigt.")]),
-      X.card([el("h3", { class: "qx-h3", text: "Konfidenz ist keine Wahrscheinlichkeit" }),
-        para("‚Einigkeit der Verfahren‘ beschreibt, wie gleichgerichtet die Verfahren sind. Eine Wahrscheinlichkeit wird nur gezeigt, wenn eine Kalibrierung auf ungesehenen Jahren besteht. Das ist derzeit nicht der Fall – deshalb erscheinen keine Prozentwerte für die Zukunft, sondern historische Häufigkeiten mit Vergleich zum Zufall.")]),
+      X.card([el("h3", { class: "qx-h3", text: "Strukturklarheit ist keine Wahrscheinlichkeit" }),
+        para("‚Strukturklarheit‘ beschreibt, wie eindeutig und gleichgerichtet das Bild der Verfahren ist – nicht, wie wahrscheinlich ein Ziel erreicht wird. Eine Wahrscheinlichkeit wird nur gezeigt, wenn eine Kalibrierung auf ungesehenen Jahren besteht. Das ist derzeit nicht der Fall – deshalb erscheinen keine Prozentwerte für die Zukunft, sondern historische Häufigkeiten mit Vergleich zum Zufall.")]),
       X.card([el("h3", { class: "qx-h3", text: "Wie geprüft wird" }),
-        para("Jede historische Lage wird so berechnet, wie sie am damaligen Tag sichtbar war (keine Zukunftsdaten, Test mit ‚vergifteter‘ Zukunft). Einstieg frühestens am Folgetag, Ungültigkeit per Schlusskurs, Kosten 0,1 % je Seite, nur nicht überlappende Signale je Aktie. Vergleich: dieselben Abstände zu Ziel und Grenze an zufälligen Tagen. Zeiträume: Entwicklung bis 2018, Prüfung ab 2019 nach dem Einfrieren der Regeln. Nach der Korrektur von Messfehlern wurde der Prüfzeitraum ein zweites Mal gerechnet – ohne jede Regeländerung.")])
+        para("Jede historische Lage wird so berechnet, wie sie am damaligen Tag sichtbar war (keine Zukunftsdaten, Test mit ‚vergifteter‘ Zukunft). Einstieg frühestens am Folgetag, Ungültigkeit per Schlusskurs, Kosten 0,1 % je Seite, nur nicht überlappende Signale je Aktie. Vergleich: dieselben Abstände zu Ziel und Grenze an zufälligen Tagen. Zeiträume: Entwicklung bis 2018, Prüfung ab 2019 nach dem Einfrieren der Regeln. Nach der Korrektur von Messfehlern wurde der Prüfzeitraum ein zweites Mal gerechnet, nach der vorab registrierten Elliott-Entscheidung (Gewicht 0) ein drittes Mal – jeweils ohne sonstige Regeländerung.")])
     ]));
     var st = ev && ev.studies && ev.studies.weekly;
     if (st) {
@@ -611,13 +611,23 @@
   }
 
   /** Ergebnis der vorab registrierten Elliott-Validierung (Bestaetigungsstichprobe) — rein aus den Daten. */
+  /* Anzeigenamen der vorab registrierten Hypothesen (PREREGISTRATION.md §3); der Bericht fuehrt sie in ASCII. */
+  var HYP = {
+    H1: "Elliott-Merkmale verbessern ein Modell ohne Elliott (Log-Loss, außerhalb der Stichprobe)",
+    H2: "Gleicher Rücklauf: Mit Fortsetzungs-Lesart wird das Leg-Ende häufiger überschritten als ohne",
+    H3: "Die besten 20 % nach Count Quality übertreffen das Basismodell",
+    H4: "Mit dem höheren Grad konsistente Zählungen schlagen widersprüchliche",
+    H5: "Elliott-Fortsetzungen bei hoher Volatilität schlagen die bei niedriger",
+    H6: "Einstieg in der laufenden Gegenbewegung schlägt den Einstieg nach Bestätigung durch die Engine",
+    H7: "Fibonacci-Konfluenz (mindestens zwei Niveaus) am Einstieg verbessert das Ergebnis"
+  };
   function elliottValidationCard(v) {
     var H = v.hypotheses || {}, ks = Object.keys(H).sort();
     var any = ks.some(function (k) { return H[k].confirmed; });
     var pp = function (x) { return isNum(x) ? (x * 100 >= 0 ? "+" : "") + (x * 100).toFixed(1).replace(".", ",") : "–"; };
     return X.card([el("h3", { class: "qx-h3", text: "Elliott-Validierung (vorab registriert)" }),
       el("p", { class: "qx-small", text: (any ? "Mindestens eine vorab festgelegte Hypothese wurde auf unabhängigen Titeln bestätigt." : "Keine der vorab festgelegten Hypothesen wurde auf unabhängigen Titeln bestätigt.") + " Prüfung auf " + (v.issuers || 0).toLocaleString("de-DE") + " Emittenten, die bei der Entwicklung nicht angesehen wurden; " + (v.events || 0).toLocaleString("de-DE") + " Rückläufe." }),
-      el("ul", { class: "cb-list" }, ks.map(function (k) { var h = H[k]; return el("li", { text: k + " · " + h.name + ": " + (h.confirmed ? "bestätigt" : "nicht bestätigt") + " (Schätzer " + (k === "H1" ? String(h.est).replace(".", ",") : pp(h.est) + " Pp.") + ", 95 %-Intervall " + (k === "H1" ? String(h.lo).replace(".", ",") + " bis " + String(h.hi).replace(".", ",") : pp(h.lo) + " bis " + pp(h.hi)) + ")" }); })),
+      el("ul", { class: "cb-list" }, ks.map(function (k) { var h = H[k]; return el("li", { text: k + " · " + (HYP[k] || h.name) + ": " + (h.confirmed ? "bestätigt" : "nicht bestätigt") + " (Schätzer " + (k === "H1" ? String(h.est).replace(".", ",") : pp(h.est) + " Pp.") + ", 95 %-Intervall " + (k === "H1" ? String(h.lo).replace(".", ",") + " bis " + String(h.hi).replace(".", ",") : pp(h.lo) + " bis " + pp(h.hi)) + ")" }); })),
       el("p", { class: "cb-small cb-dim", text: "Elliott bleibt im Chartbild eine Sprache für Struktur und Szenarien. Ein Prognosevorteil wird nur behauptet, wenn er hier bestätigt ist." })]);
   }
 
