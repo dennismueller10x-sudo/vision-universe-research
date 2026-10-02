@@ -98,7 +98,8 @@ def report(store, companies, now):
             'noNewsOrSubmissionSource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions'),
             'noCompanySource': not registry and not state.get('sec:' + cid, {}).get('hasSubmissions') and not c.get('officialSites') and state.get('financials:' + cid, {}).get('state') != 'AVAILABLE',
         }
-        flags['recentMaterialNews'] = any(i.get('importance') in ('HIGH', 'CRITICAL') for i in fresh_news)
+        from .model import classify
+        flags['recentMaterialNews'] = any(classify(i['headline'])['importance'] in ('HIGH', 'CRITICAL') for i in fresh_news)
         flags['anyMaterialIntelligence'] = bool(flags['financialSummaryCurrent'] or flags['recentMaterialNews'] or flags['confirmedUpcomingEarnings'] or flags['recentMaterialSEC'] or any(e['eventType'] in ('EARNINGS_PUBLISHED', 'PERIODIC_REPORT_PUBLISHED', 'OPERATING_RESULTS_PUBLISHED', 'PRESENTATION_PUBLISHED') and recent[:10] <= e.get('date', '') <= now[:10] for e in all_events[cid]))
         flags['noRecentMaterialIntelligence'] = not flags['anyMaterialIntelligence']
         flags['noNews'] = not flags['anyNews']

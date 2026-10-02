@@ -29,6 +29,19 @@ class AcceptanceTests(unittest.TestCase):
         self.assertNotIn('Earnings', classify('European Medicines Agency clinical trial third quarter results')['categories'])
         self.assertEqual(classify('Company celebrates employee named Ema')['importance'], 'LOW')
 
+    def test_coverage_uses_current_classification_without_changing_story_identity(self):
+        c = company()
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                story = item('Apple Inc. announces marketing authorization application submission')
+                story.update(importance='LOW', classificationVersion='rules-1.1.0')
+                store.ingest(story)
+                coverage = report(store, {c['companyId']: c}, NOW)
+                self.assertEqual(coverage['counts']['recentMaterialNews']['companies'], 1)
+                self.assertEqual(store.company_payload(c, NOW)['news'][0]['newsId'], story['newsId'])
+            finally: store.close()
+
     def test_share_count_change_needs_split_and_issuance_context(self):
         from test_engine import consumer
         from company_intelligence.earnings import summary
