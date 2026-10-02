@@ -485,6 +485,98 @@
       },
       "purpose": "Verify current account Preferred Bank price history",
       "group": "us"
+    },
+    {
+      "id": "us-bny-metadata",
+      "path": "/tiingo/daily/BNY",
+      "params": {},
+      "purpose": "Major index missing member or ordinary-share classifier review; identity must match",
+      "group": "us"
+    },
+    {
+      "id": "us-bny-history",
+      "path": "/tiingo/daily/BNY/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Major index missing member actual EOD history",
+      "group": "us"
+    },
+    {
+      "id": "us-q-metadata",
+      "path": "/tiingo/daily/Q",
+      "params": {},
+      "purpose": "Major index missing member or ordinary-share classifier review; identity must match",
+      "group": "us"
+    },
+    {
+      "id": "us-q-history",
+      "path": "/tiingo/daily/Q/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Major index missing member actual EOD history",
+      "group": "us"
+    },
+    {
+      "id": "us-vlto-metadata",
+      "path": "/tiingo/daily/VLTO",
+      "params": {},
+      "purpose": "Major index missing member or ordinary-share classifier review; identity must match",
+      "group": "us"
+    },
+    {
+      "id": "us-vlto-history",
+      "path": "/tiingo/daily/VLTO/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Major index missing member actual EOD history",
+      "group": "us"
+    },
+    {
+      "id": "us-nrg-metadata",
+      "path": "/tiingo/daily/NRG",
+      "params": {},
+      "purpose": "Major index missing member or ordinary-share classifier review; identity must match",
+      "group": "us"
+    },
+    {
+      "id": "us-nrg-history",
+      "path": "/tiingo/daily/NRG/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Major index missing member actual EOD history",
+      "group": "us"
+    },
+    {
+      "id": "us-bns-metadata",
+      "path": "/tiingo/daily/BNS",
+      "params": {},
+      "purpose": "Major index missing member or ordinary-share classifier review; identity must match",
+      "group": "us"
+    },
+    {
+      "id": "us-bns-history",
+      "path": "/tiingo/daily/BNS/prices",
+      "params": {
+        "startDate": "2025-09-01",
+        "endDate": "2026-10-02"
+      },
+      "purpose": "Major index missing member actual EOD history",
+      "group": "us"
+    },
+    {
+      "id": "fundamental-meta-full",
+      "path": "/tiingo/fundamentals/meta",
+      "params": {},
+      "purpose": "Documented bulk fundamental metadata enumeration; separate product not exhaustive EOD universe",
+      "group": "endpoints"
     }
   ]
 }
