@@ -271,6 +271,14 @@ class Store:
             if len(periods) == 1:
                 release = releases[0]
                 call.update(earningsEventId=release['eventId'], fiscalYear=release['fiscalYear'], fiscalQuarter=release['fiscalQuarter'], reportingPeriod=release.get('reportingPeriod'), linkageEvidence='UNIQUE_ISSUER_RELEASE_PERIOD_ON_SAME_SOURCE_DATE')
+            elif call.get('fiscalYear') and call.get('fiscalQuarter') and call.get('confirmationStatus') == 'CONFIRMED' and call.get('date'):
+                # Explicit issuer fiscal labels plus a bounded release/call gap;
+                # never derive a fiscal period from the call's calendar date.
+                linked = [e for e in events if e['eventType'] in ('EARNINGS_PUBLISHED', 'EARNINGS_SCHEDULED') and e.get('fiscalYear') == call['fiscalYear'] and e.get('fiscalQuarter') == call['fiscalQuarter'] and e.get('date') and 0 <= (datetime.fromisoformat(call['date']) - datetime.fromisoformat(e['date'])).days <= 7 and (e['eventType'] == 'EARNINGS_PUBLISHED' or e.get('confirmationStatus') == 'CONFIRMED') and not e.get('isAmendment')]
+                if len(linked) == 1:
+                    release = linked[0]
+                    key = 'earningsEventId' if release['eventType'] == 'EARNINGS_PUBLISHED' else 'scheduledEarningsEventId'
+                    call.update({key: release['eventId'], 'linkageEvidence': 'UNIQUE_ISSUER_EXPLICIT_FISCAL_PERIOD_RELEASE_AND_CALL_WITHIN_SEVEN_DAYS'})
         release_urls = {doc['url']: e for e in events if e['eventType'] == 'EARNINGS_PUBLISHED' for doc in e.get('sourceDocuments', []) if doc.get('url')}
         # An official release can be both news and a richer earnings event; show one timeline entry.
         related = {}
@@ -287,6 +295,11 @@ class Store:
         for entry in timeline:
             if entry.get('eventId') in related:
                 entry['relatedNewsIds'] = related[entry['eventId']]
+            if entry.get('eventId'):
+                original = next((e for e in events if e['eventId'] == entry['eventId']), {})
+                if original.get('filingId'):
+                    entry['filingGroupId'] = stable_id(cid, original['filingId'], 'SEC_DISCLOSURE_GROUP')
+                    entry['relatedEventIds'] = [e['eventId'] for e in events if e.get('filingId') == original['filingId'] and e['eventId'] != original['eventId']]
         configuration_documents = [d for cfg in self.state('ir:' + cid, {}).get('configurations', []) for d in cfg.get('documents', [])]
         financials = self.state('financials:' + cid, {'state': 'UNAVAILABLE', 'reason': 'NOT_PROJECTED'})
         references = {}

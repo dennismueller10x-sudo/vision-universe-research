@@ -255,7 +255,7 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
                         year, period = next(iter(keys))
                         fiscal[acc] = {'fiscalYear': year, 'fiscalPeriod': period, 'periodEnd': end}
         url = filing_url(cik, acc, f.get('document'))
-        base = {'companyId': cid, 'filingId': acc, 'form': form, 'publishedAt': timestamp(f.get('accepted')), 'publishedDate': filed,
+        base = {'companyId': cid, 'cik': cik, 'filingId': acc, 'form': form, 'publishedAt': timestamp(f.get('accepted')), 'publishedDate': filed,
                 'timestampPrecision': 'ACCEPTANCE_TIME' if timestamp(f.get('accepted')) else 'FILING_DATE', 'date': filed,
                 'sourceDocuments': [{'type': 'SEC_FILING', 'url': url, 'filingId': acc}], 'sourceUrl': url,
                 'discoveredAt': now, 'reportingPeriod': fiscal.get(acc, {}).get('periodEnd') or f.get('periodEnd'), 'fiscalQuarter': fiscal.get(acc, {}).get('fiscalPeriod'),
@@ -269,7 +269,7 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
         release = form.startswith('8-K') and '2.02' in items
         # 6-K is not itself proof of earnings. Require explicit primary-document metadata.
         foreign_release = form.startswith('6-K') and bool(re.search(r'earnings|(?:quarter|financial|annual).{0,25}results', f.get('description') or '', re.I))
-        if form.startswith('6-K') and (f.get('documentEvidence') or {}).get('outcome') == 'EARNINGS_RELEASE':
+        if form.startswith('6-K') and (f.get('documentEvidence') or {}).get('outcome') in ('EARNINGS_RELEASE', 'OPERATING_RESULTS'):
             foreign_release = True
         periodic = form.rstrip('/A') in ('10-Q', '10-K', '20-F')
         if not (release or foreign_release or periodic):
@@ -278,7 +278,9 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
         outcome = document_evidence.get('outcome')
         if form.startswith('6-K') and outcome == 'EARNINGS_RELEASE':
             foreign_release = True
-        kind = ('OPERATING_RESULTS_PUBLISHED' if outcome == 'OPERATING_RESULTS' else 'EARNINGS_PUBLISHED' if outcome == 'EARNINGS_RELEASE' or foreign_release else 'EARNINGS_CANDIDATE') if release or foreign_release else 'PERIODIC_REPORT_PUBLISHED'
+        # Primary-description words identify candidates, not verified releases.
+        # In particular, contradictory inspected future/operating evidence wins.
+        kind = ('OPERATING_RESULTS_PUBLISHED' if outcome == 'OPERATING_RESULTS' else 'EARNINGS_PUBLISHED' if outcome == 'EARNINGS_RELEASE' else 'EARNINGS_CANDIDATE') if release or foreign_release else 'PERIODIC_REPORT_PUBLISHED'
         if document_evidence.get('period') and not base['fiscalQuarter']:
             base.update(document_evidence['period'])
         if document_evidence.get('periodEnd') and not base['fiscalQuarter']:
@@ -296,7 +298,7 @@ def project_sec(company, canonical, submissions, consumer, now, canonical_cik=No
                 base['reportingPeriod'] = current.get('periodEnd')
         events.append({**base, 'eventId': stable_id(cid, acc, 'RESULTS_EVENT'), 'eventType': kind,
                        'headline': 'Earnings published' if kind == 'EARNINGS_PUBLISHED' else 'Possible earnings release' if kind == 'EARNINGS_CANDIDATE' else 'Operating results published' if kind == 'OPERATING_RESULTS_PUBLISHED' else 'Periodic financial report published',
-                       'detectionEvidence': (['SEC_DOCUMENT_EXPLICIT_EARNINGS_RELEASE'] if outcome == 'EARNINGS_RELEASE' else ['SEC_DOCUMENT_OPERATING_RESULTS'] if outcome == 'OPERATING_RESULTS' else ['8-K_ITEM_2.02_CANDIDATE']) if release else ['6-K_EXPLICIT_RESULTS_DESCRIPTION'] if foreign_release else ['PERIODIC_REPORT_FORM'],
+                       'detectionEvidence': ['SEC_DOCUMENT_EXPLICIT_EARNINGS_RELEASE'] if outcome == 'EARNINGS_RELEASE' else ['SEC_DOCUMENT_OPERATING_RESULTS'] if outcome == 'OPERATING_RESULTS' else ['8-K_ITEM_2.02_CANDIDATE'] if release else ['6-K_RESULTS_DESCRIPTION_CANDIDATE'] if foreign_release else ['PERIODIC_REPORT_FORM'],
                        'summary': info, 'earningsReleaseUrl': document_evidence.get('sourceUrl') or url if kind == 'EARNINGS_PUBLISHED' else None,
                        'documentEvidence': {k: v for k, v in document_evidence.items() if k != 'exhibits'},
                        'eventStatus': 'UNVERIFIED' if kind == 'EARNINGS_CANDIDATE' else 'PUBLISHED',

@@ -54,7 +54,8 @@ def manifest_batch(document, companies, store, now, limit, tickers=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill'])
+    p.add_argument('command', choices=['run', 'backfill', 'export', 'quality', 'probe', 'coverage', 'discover-catalogue', 'discover-backfill', 'sec-stream'])
+    p.add_argument('--stream-days', type=int, default=3, help='Bounded completed EDGAR index days per material stream run (1..5)')
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--state', type=Path)
     p.add_argument('--out', type=Path)
@@ -87,6 +88,8 @@ def main(argv=None):
         p.error('network flags require --network')
     if args.sec_fetch and args.limit > args.request_budget:
         p.error('SEC metadata issuer limit exceeds request budget')
+    if not 1 <= args.stream_days <= 5 or (args.command == 'sec-stream' and (not args.network or not args.sec_fetch or args.tickers or args.updated_issuers or args.all_offline)):
+        p.error('sec-stream requires --network --sec-fetch, no ticker/manifest filters, and stream-days 1..5')
     root = args.root.resolve()
     state_dir = (args.state or root / '.company-intelligence').resolve()
     output = (args.out or state_dir / 'public/company-intelligence/data').resolve()
@@ -128,6 +131,10 @@ def main(argv=None):
             pending = [companies[cid] for cid in pending_ids if cid in companies]
             selected = list({c['companyId']: c for c in pending + selected}.values())[:args.limit]
         sec_budget = min(args.request_budget // 2 if args.sec_documents else args.request_budget - 1, len(selected) * (10 if args.sec_documents else 2)) if args.sec_fetch else 0
+        if args.command == 'sec-stream':
+            sec_budget = args.request_budget // 2 if args.sec_documents else args.request_budget - 8
+            if sec_budget < args.limit + args.stream_days:
+                p.error('sec-stream request budget must cover issuer batch, index days and eight feed requests')
         http = PublicHTTP(state_dir / 'http', budget=max(1, args.request_budget - sec_budget), max_seconds=args.max_seconds)
         pipeline = Pipeline(root, companies, store, http, now)
         deferred = False
@@ -185,10 +192,27 @@ def main(argv=None):
             print(json.dumps({'issuersChecked': len(result), 'candidateIssuers': sum(bool(r['candidates']) for r in result.values()), 'publicRequests': http.requests}))
             return 0
         if args.command != 'export':
+            if args.command == 'sec-stream':
+                from company_intelligence.sec_stream import scan
+                try:
+                    stream = scan(store, companies, pipeline.sec_client(sec_budget), now, args.stream_days)
+                    store.set_state('secStreamHealth', {'lastSuccess': now, **stream})
+                    if stream['unresolvedIndexDays']:
+                        pipeline.run['secFailures'] += 1
+                except BudgetExhausted:
+                    deferred = True
+                except Exception as exc:
+                    pipeline.run['secFailures'] += 1
+                    store.set_state('secStreamHealth', {**store.state('secStreamHealth', {}), 'lastFailure': now, 'reason': str(exc)[:250]})
+                    store.audit(now, 'sec-stream', 'SEC_STREAM_SCAN_FAILURE', reason=str(exc)[:250])
+                pending_stream = store.state('secStreamPending', {})
+                # Oldest work first; failed issuers respect the existing cooldown.
+                selected = [companies[cid] for cid in sorted(pending_stream, key=lambda cid: (pending_stream[cid]['filedAt'], cid)) if cid in companies and (store.state('sec:' + cid, {}).get('retryAfter') or '') <= now and pending_stream[cid].get('nextAttempt', '') <= now][:args.limit]
+                selected_ids = {c['companyId'] for c in selected}
             if args.network:
                 pipeline.seed_sources(json.loads((config_dir / 'sources.json').read_text()))
                 try:
-                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill'), force=args.force_sources)
+                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream'), force=args.force_sources)
                 except BudgetExhausted:
                     deferred = True
                     store.audit(now, 'runner', 'FEED_BUDGET_DEFERRED', requestBudget=args.request_budget)
@@ -208,6 +232,20 @@ def main(argv=None):
                     seen[cid] = manifest_pending.pop(cid)
                     store.set_state('updatedIssuerCheckpoints', seen)
                     store.set_state('updatedIssuerPending', manifest_pending)
+                if args.command == 'sec-stream' and failures_before == pipeline.run['secFailures']:
+                    cid = company['companyId']
+                    queued = store.state('secStreamPending', {})
+                    columns = store.state('sec-submissions:' + cid, {}).get('filings', {}).get('recent', {})
+                    if queued[cid]['latestAccession'] in columns.get('accessionNumber', []):
+                        completed = store.state('secStreamCheckpoints', {})
+                        completed[cid] = queued.pop(cid)
+                        store.set_state('secStreamCheckpoints', completed)
+                        store.set_state('secStreamPending', queued)
+                    else:
+                        from company_intelligence.pipeline import advance
+                        queued[cid]['nextAttempt'] = advance(now, 6)
+                        store.set_state('secStreamPending', queued)
+                        store.audit(now, cid, 'SEC_STREAM_INDEX_ACCESSION_NOT_IN_SUBMISSIONS', filingId=queued[cid]['latestAccession'])
                 if args.command == 'backfill' and not args.tickers and manifest_pending is None:
                     store.set_state('backfillCursor', max(company['companyId'], store.state('backfillCursor') or ''))
             if args.network:
@@ -216,7 +254,7 @@ def main(argv=None):
                     store.set_state('irPending', list(dict.fromkeys(store.state('irPending', []) + [c['companyId'] for c in selected if c['officialSites']])))
                 try:
                     # Existing feeds first; discovery is lower priority and cannot exhaust their request budget.
-                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill'), force=args.force_sources)
+                    pipeline.ingest_due_sources(selected_ids, all_sources=not args.tickers and args.command in ('run', 'backfill', 'discover-backfill', 'sec-stream'), force=args.force_sources)
                     if args.discover_sites:
                         try:
                             candidates = {} if all(store.state('siteCandidates:' + c['companyId']) is not None for c in selected[:25]) else wikidata_sites(selected[:25], http)

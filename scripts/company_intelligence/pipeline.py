@@ -196,6 +196,19 @@ class Pipeline:
             self.run['sourceFailures'] += 1
             log('SOURCE_FAILURE', sourceId=sid, reason=str(exc)[:250])
 
+    def sec_client(self, sec_budget=60):
+        from quant.sec.http_client import SECHttpClient, DiskCache, RateLimiter
+        client = getattr(self, '_sec_client', None)
+        if client is None:
+            client = self._sec_client = SECHttpClient(cache=DiskCache(self.root / '.sec-cache', ttl_seconds=2 * 3600), rate_limiter=RateLimiter(rate_per_second=1, burst=1), timeout=15, max_retries=1)
+        def bounded_sec_open(url, headers, timeout):
+            remaining = self.deadline - self.clock()
+            if remaining <= 0 or client.stats['requests'] > sec_budget:
+                raise BudgetExhausted('SEC_REQUEST_OR_TIME_BUDGET_DEFERRED')
+            return client._urlopen(url, headers, min(timeout, remaining))
+        client._opener = bounded_sec_open
+        return client
+
     def project_company(self, company, fetch_sec=False, sec_documents=False, sec_budget=60):
         """Reuse canonical/consumer/raw outputs; optional metadata refresh uses existing SEC client."""
         cid, cik = company['companyId'], company.get('cik')
@@ -208,19 +221,12 @@ class Pipeline:
             submissions = JsonRawStore(self.root / 'quant/data/sec/raw').get_latest(cik, 'submissions')
             submissions = submissions or self.store.state('sec-submissions:' + cid)
             if fetch_sec:
-                from quant.sec.http_client import SECHttpClient, DiskCache, RateLimiter
                 from quant.sec.provider import SECProvider
-                client = getattr(self, '_sec_client', None)
-                if client is None:
-                    client = self._sec_client = SECHttpClient(cache=DiskCache(self.root / '.sec-cache', ttl_seconds=2 * 3600), rate_limiter=RateLimiter(rate_per_second=1, burst=1), timeout=15, max_retries=1)
-                def bounded_sec_open(url, headers, timeout):
-                    remaining = self.deadline - self.clock()
-                    if remaining <= 0 or client.stats['requests'] > sec_budget:
-                        raise BudgetExhausted('SEC_REQUEST_OR_TIME_BUDGET_DEFERRED')
-                    return client._urlopen(url, headers, min(timeout, remaining))
-                client._opener = bounded_sec_open
+                client = self.sec_client(sec_budget)
                 # No companyfacts downloads. Optional document inspection also uses this same client.
                 submissions = SECProvider(client).get_submissions(cik, include_history=False)
+                if str(submissions.get('cik', '')).zfill(10) != cik:
+                    raise ValueError('SUBMISSIONS_COMPANY_MISMATCH')
                 # Persist bounded metadata, not downloaded filings, so a new
                 # runner can reproject item rules without refetching SEC.
                 columns = submissions.get('filings', {}).get('recent', {})

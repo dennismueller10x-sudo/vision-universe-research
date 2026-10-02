@@ -50,5 +50,33 @@
       "access": "Public RSS distribution; headlines/links only; robots checked. Stock category + contributor/master identity required.",
       "coverage": "20-item rolling window; not complete market news or guaranteed outage backfill."
     }
+  },
+  {
+    "sourceId": "globenewswire-legacy-topic-27",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/subjectcode/27-Company%20Announcement/feedTitle/GlobeNewswire%20-%20Company%20Announcements",
+    "provider": "GLOBENEWSWIRE_RSS",
+    "verified": false,
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS, robots checked, headline/URL metadata only.",
+      "coverage": "Legacy subject filter semantics are not certified; classify actual titles, never trust the URL topic label. 20-item rolling window.",
+      "identity": "Master exchange+ticker and exact legal contributor; no title fallback on conflicts."
+    }
+  },
+  {
+    "sourceId": "globenewswire-legacy-topic-14",
+    "type": "RSS",
+    "url": "https://www.globenewswire.com/RssFeed/subjectcode/14-Mergers%20and%20Acquisitions/feedTitle/GlobeNewswire%20-%20Mergers%20and%20Acquisitions",
+    "provider": "GLOBENEWSWIRE_RSS",
+    "verified": false,
+    "active": true,
+    "intervalHours": 1,
+    "metadata": {
+      "access": "Public RSS, robots checked, headline/URL metadata only.",
+      "coverage": "Legacy subject filter semantics are not certified; classify actual titles, never trust the URL topic label. 20-item rolling window.",
+      "identity": "Master exchange+ticker and exact legal contributor; no title fallback on conflicts."
+    }
   }
 ]

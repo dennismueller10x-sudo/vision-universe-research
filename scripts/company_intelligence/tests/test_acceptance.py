@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 import sys
+from unittest.mock import patch
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from company_intelligence.acceptance import fingerprint, prepare, advance, verify
@@ -19,6 +20,120 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_next_day_call_links_only_with_unique_explicit_fiscal_period(self):
+        c = company()
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                release = {'eventId': 'planned', 'companyId': c['companyId'], 'headline': 'Official planned earnings',
+                           'eventType': 'EARNINGS_SCHEDULED', 'date': '2026-10-27', 'fiscalYear': 2026, 'fiscalQuarter': 'Q3', 'confirmationStatus': 'CONFIRMED'}
+                call = {**release, 'eventId': 'call', 'eventType': 'EARNINGS_CALL', 'date': '2026-10-28'}
+                store.event(release, NOW); store.event(call, NOW)
+                self.assertEqual(store.company_payload(c, NOW)['calls'][0]['scheduledEarningsEventId'], 'planned')
+                store.event({**call, 'fiscalQuarter': 'Q4'}, NOW)
+                self.assertNotIn('scheduledEarningsEventId', store.company_payload(c, NOW)['calls'][0])
+                store.event({**call, 'fiscalQuarter': None}, NOW)
+                self.assertNotIn('scheduledEarningsEventId', store.company_payload(c, NOW)['calls'][0])
+            finally: store.close()
+
+    def test_foreign_results_description_cannot_override_contradictory_document(self):
+        c = company()
+        acc = '0000320193-26-000001'
+        sub = {'cik': c['cik'], 'filings': {'recent': {'accessionNumber': [acc], 'form': ['6-K'],
+               'filingDate': [NOW[:10]], 'primaryDocDescription': ['Third quarter financial results']}}}
+        for outcome in [None, 'UNVERIFIED', 'FUTURE_BOARD_MEETING']:
+            sub['_intelligenceDocumentEvidence'] = {acc: {'outcome': outcome}} if outcome else {}
+            events = project_sec(c, None, sub, None, NOW)
+            self.assertFalse(any(e['eventType'] == 'EARNINGS_PUBLISHED' for e in events))
+            self.assertTrue(any(e['eventType'] == 'EARNINGS_CANDIDATE' for e in events))
+        sub['_intelligenceDocumentEvidence'] = {acc: {'outcome': 'EARNINGS_RELEASE'}}
+        e = next(e for e in project_sec(c, None, sub, None, NOW) if e['eventType'] == 'EARNINGS_PUBLISHED')
+        self.assertEqual(e['detectionEvidence'], ['SEC_DOCUMENT_EXPLICIT_EARNINGS_RELEASE'])
+
+    def test_403_index_gap_is_retained_while_later_indexes_continue(self):
+        from company_intelligence.sec_stream import scan
+        from quant.sec.http_client import SECHTTPError
+        class Client:
+            def get_bytes(self, url, **kwargs):
+                if '20260930' in url: raise SECHTTPError(url, 403, 'denied or holiday', 1)
+                return b'CIK|Company Name|Form Type|Date Filed|File Name\n-----\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                store.set_state('secStreamNextDay', '2026-09-30')
+                r = scan(store, {}, Client(), '2026-10-02T00:00:00Z')
+                self.assertEqual(r['checkedDays'], ['2026-10-01'])
+                self.assertEqual(r['unresolvedIndexDays'], ['2026-09-30'])
+                self.assertEqual(store.state('secStreamIndexGaps')['2026-09-30']['httpStatus'], 403)
+                self.assertEqual(store.state('secStreamNextDay'), '2026-10-02')
+                self.assertEqual(scan(store, {}, Client(), '2026-10-02T12:00:00Z')['attemptedDays'], 0)
+            finally: store.close()
+
+    def test_backslash_links_from_malformed_html_are_rejected(self):
+        from company_intelligence.model import canonical_url
+        self.assertIsNone(canonical_url('https://issuer.com/\\"/news\\"'))
+
+    def test_wrong_sec_response_cannot_poison_durable_issuer_metadata(self):
+        from company_intelligence.pipeline import Pipeline
+        c = company()
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            pipeline = Pipeline(Path(tmp), {c['companyId']: c}, store, object(), NOW)
+            pipeline.sec_client = lambda budget: object()
+            try:
+                with patch('quant.sec.provider.SECProvider.get_submissions', return_value={'cik': '123', 'filings': {'recent': {}}}):
+                    pipeline.project_company(c, fetch_sec=True)
+                self.assertEqual(pipeline.run['secFailures'], 1)
+                self.assertIsNone(store.state('sec-submissions:' + c['companyId']))
+                self.assertEqual(store.db.execute('SELECT COUNT(*) FROM events').fetchone()[0], 0)
+            finally: store.close()
+
+    def test_material_stream_exact_cik_join_checkpoint_and_denial_recovery(self):
+        from company_intelligence.sec_stream import scan
+        now = '2026-10-02T00:00:00Z'
+        c = company()
+        header = 'CIK|Company Name|Form Type|Date Filed|File Name\n-----\n'
+        text = header + '320193|Apple Inc|8-K|20261001|edgar/data/320193/0000320193-26-000001.txt\n' + '123|Other|8-K|2026-10-01|edgar/data/123/0000000123-26-000001.txt\n' + '320193|Wrong path|8-K|2026-10-01|edgar/data/123/0000320193-26-000002.txt\n'
+        class Client:
+            calls = 0
+            fail = False
+            def get_bytes(self, *args, **kwargs):
+                self.calls += 1
+                if self.fail: raise RuntimeError('HTTP_403')
+                return text.encode()
+        client = Client()
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                store.set_state('secStreamNextDay', '2026-10-01')
+                client.fail = True
+                with self.assertRaisesRegex(RuntimeError, '403'): scan(store, {c['companyId']: c}, client, now)
+                self.assertEqual(store.state('secStreamNextDay'), '2026-10-01')
+                self.assertIsNone(store.state('secStreamPending'))
+                client.fail = False
+                result = scan(store, {c['companyId']: c}, client, now)
+                self.assertEqual(result['matchedFilings'], 1)
+                self.assertEqual(store.state('secStreamNextDay'), '2026-10-02')
+                self.assertEqual(store.state('secStreamPending')[c['companyId']]['latestAccession'], '0000320193-26-000001')
+                before = client.calls
+                self.assertEqual(scan(store, {c['companyId']: c}, client, now)['checkedDays'], [])
+                self.assertEqual(client.calls, before)
+                # No input change cannot grow the pending queue.
+                self.assertEqual(len(store.state('secStreamPending')), 1)
+            finally: store.close()
+
+    def test_material_stream_invalid_index_does_not_advance(self):
+        from company_intelligence.sec_stream import scan
+        class Client:
+            def get_bytes(self, *args, **kwargs): return b'<html>Access denied</html>'
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'state.sqlite')
+            try:
+                store.set_state('secStreamNextDay', '2026-10-01')
+                with self.assertRaisesRegex(ValueError, 'INVALID_HEADER'): scan(store, {}, Client(), '2026-10-02T00:00:00Z')
+                self.assertEqual(store.state('secStreamNextDay'), '2026-10-01')
+            finally: store.close()
+
     def test_three_fresh_states_preserve_exact_ledger_and_generation(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)

@@ -36,4 +36,5 @@ def material_event(base, items):
             'importance': importance, 'categories': sorted({ITEMS[c][0] for c in relevant}),
             'secItems': relevant, 'detectionEvidence': evidence, 'verificationState': 'VERIFIED_SEC_ITEM_CATEGORY',
             'interpretation': 'DISCLOSURE_CATEGORY_ONLY; specific people, transaction terms and direction require document evidence',
-            'classificationVersion': 'sec-items-1.0.0', 'confidence': 1.0}
+            'classificationVersion': 'sec-items-1.0.0', 'confidence': 1.0,
+            'fiscalQuarter': None, 'fiscalYear': None, 'reportingPeriod': None, 'dateMeaning': 'SEC_FILING_PUBLICATION_NOT_EVENT_OCCURRENCE'}

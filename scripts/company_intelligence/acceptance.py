@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from company_intelligence.model import load_universe, stable_id
+from company_intelligence.model import load_universe, stable_id, make_item
 from company_intelligence.store import Store, dumps, atomic_json
 from company_intelligence.pipeline import utcnow
 
@@ -61,6 +61,12 @@ def prepare(state):
         with_store.source({'sourceId': 'private-acceptance-health-canary', 'companyId': cid, 'type': 'RSS',
                            'url': 'https://example.com/private-acceptance', 'active': False, 'failureCount': 2,
                            'lastError': 'ACCEPTANCE_SIMULATED_HTTP_503', 'nextCheck': '2099-01-01T00:00:00Z'})
+        from company_intelligence.feeds import parse_feed
+        recorded = parse_feed((ROOT / 'scripts/company_intelligence/tests/fixtures/root-news-metadata.xml').read_bytes(), 'https://ir.joinroot.com/')
+        raw = next(e for e in recorded if e.get('publishedAt') and e['publishedAt'] <= now)
+        with_store.ingest(make_item(raw, {'type': 'RSS', 'sourceId': 'private-acceptance-recorded-fixture',
+                                        'url': 'https://ir.joinroot.com/'},
+                                   {'companyId': cid, 'confidence': .99, 'evidence': ['PRIVATE_ACCEPTANCE_RECORDED_FIXTURE']}, now))
         with_store.set_state('acceptanceLedgerIdentity', stable_id(cid, now, 'fresh-ledger'))
         with_store.set_state('backfillCursor', cid)
         with_store.set_state('updatedIssuerPending', {cid: '0001788882-26-000001'})

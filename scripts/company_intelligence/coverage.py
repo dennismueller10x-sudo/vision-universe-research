@@ -54,6 +54,7 @@ def report(store, companies, now):
     counts, platforms, exchanges, rows = Counter(), Counter(), defaultdict(Counter), []
     statuses = Counter(source_status(s, now) for s in sources)
     discovery_statuses = Counter()
+    active_ids = {s['sourceId'] for s in sources if source_status(s, now) == 'ACTIVE'}
     for cid, c in sorted(companies.items()):
         registry = grouped[cid]
         ir = state.get('ir:' + cid, {})
@@ -64,7 +65,6 @@ def report(store, companies, now):
         endpoints = {k: [cfg[k] for cfg in configs if cfg.get(k)] for k in ('newsroom', 'pressReleaseUrl', 'eventsUrl', 'earningsUrl', 'presentationsUrl', 'reportsUrl', 'callsUrl')}
         news = [s for s in registry if s['type'] in ('IR_FEED', 'RSS')]
         fresh_news = [i for i in news_items[cid] if recent <= (i.get('publishedAt') or '') <= now]
-        active_ids = {s['sourceId'] for s in sources if source_status(s, now) == 'ACTIVE'}
         fresh_external = [i for i in fresh_news if any(p.get('sourceId') in active_ids and p.get('discoverySource') in ('RSS', 'GDELT') for p in i.get('provenance', []))]
         docs = [d for cfg in configs for d in cfg.get('documents', [])] + [d for e in all_events[cid] for d in e.get('sourceDocuments', [])]
         flags = {

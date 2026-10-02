@@ -96,7 +96,12 @@ jobs:
           INITIALIZE: ${{ inputs.initialize_state }}
           BRANCH: ${{ github.ref_name }}
           STATE_READY: ${{ vars.COMPANY_INTELLIGENCE_STATE_READY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
         run: |
+          node scripts/company_intelligence/privacy.mjs
           if [ "$STATE_READY" != true ]; then echo 'Durable state requires verified non-public bucket access and namespace readiness.'; exit 1; fi
           namespace=$(python3 -c 'import hashlib, os; print("branch-" + hashlib.sha256(os.environ["BRANCH"].encode()).hexdigest()[:24])')
           args=(pull --namespace "$namespace" --file "$RUNNER_TEMP/intelligence-state.tar.gz")
@@ -123,7 +128,7 @@ jobs:
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
           if [ "$LIVE_SOURCES" = 'true' ]; then args+=(--network --sec-fetch --sec-documents --discover-ir); fi
           if [ '${{ github.event_name }}' = schedule ]; then
-            args=(run --updated-issuers quant/data/fundamentals/daily/updated-issuers.json --limit 25 --request-budget 160 --max-seconds 480 --network --sec-fetch --sec-documents)
+            args=(sec-stream --stream-days 3 --limit 25 --request-budget 160 --max-seconds 480 --network --sec-fetch --sec-documents)
           fi
           python3 scripts/company_intelligence/cli.py run --all-offline
           if [ "$LIVE_SOURCES" = true ]; then
@@ -149,7 +154,12 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
           INITIALIZE: ${{ inputs.initialize_state }}
           BRANCH: ${{ github.ref_name }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
         run: |
+          node scripts/company_intelligence/privacy.mjs
           python3 scripts/company_intelligence/checkpoint.py pack --state .company-intelligence --snapshot "$RUNNER_TEMP/intelligence-state.tar.gz"
           namespace=$(python3 -c 'import hashlib, os; print("branch-" + hashlib.sha256(os.environ["BRANCH"].encode()).hexdigest()[:24])')
           args=(push --namespace "$namespace" --file "$RUNNER_TEMP/intelligence-state.tar.gz")
@@ -227,6 +237,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Recheck non-public bucket before restoring private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+        run: node scripts/company_intelligence/privacy.mjs
       - uses: actions/download-artifact@v4
         with:
           name: intelligence-acceptance-a-${{ github.run_id }}
@@ -267,6 +288,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Recheck non-public bucket before restoring private state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API: ${{ secrets.CLOUDFLARE_API }}
+        run: node scripts/company_intelligence/privacy.mjs
       - uses: actions/download-artifact@v4
         with:
           name: intelligence-acceptance-b-${{ github.run_id }}

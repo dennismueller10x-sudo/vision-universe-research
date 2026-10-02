@@ -40,6 +40,8 @@ def timestamp(value):
 
 
 def canonical_url(value):
+    if isinstance(value, str) and '\\' in value:
+        return None
     if not isinstance(value, str) or len(value) > 8192:
         return None
     try:
