@@ -1,0 +1,1257 @@
+{
+  "schemaVersion": "marketstack-fundamental-price-fusion-1.0.0",
+  "generatedAt": "2026-10-02T04:30:00.000Z",
+  "asOfDate": "2026-09-30",
+  "experiment": "ISOLATED_READ_ONLY_COMPANY_LEVEL_JOIN",
+  "sourceSystems": [
+    "MARKETSTACK_PRICES",
+    "EXISTING_SEC_EDGAR",
+    "EXISTING_OFFICIAL_ESEF"
+  ],
+  "requestsMade": 0,
+  "estimatedAdditionalMarketstackCredits": 0,
+  "canonicalWrites": 0,
+  "productionRoutingChanged": false,
+  "sources": [
+    {
+      "path": "quant/data/universe/global-equities.json",
+      "sha256": "d0f648cd237f425748ce35f28f8ceef5195011bcf4d463e8ed07050aa422f82f",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/global-market/listings.json",
+      "sha256": "181a910c9f247b79ce3964184c6d7f1e334bfa57ff8642874ce4847c048cf070",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/product/sic-peer-taxonomy-v1.json",
+      "sha256": "d84316089aabf2955b5b4cf069b61d75709a2df338bc59eece4d25bf996e62f9",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/market/security-master/us-security-master.json",
+      "sha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+      "privateArtifact": false
+    },
+    {
+      "path": "PRIVATE_RETAINED_US_LATEST",
+      "sha256": "ba3c471a84c1b1cba95911afbc94c4065652dccbba10b811e8febe351b123a6e",
+      "privateArtifact": true
+    },
+    {
+      "path": "reports/marketstack/marketstack_fundamental_crosscheck.json",
+      "sha256": "90f81e85fc374b03883b02b796f2fd3cd660663a1aa67a8e91e3194bad86018d",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/fundamentals/official/e445f306efaefa02af884472a00f9aa23548b05e46ed72b23579e1f2a9c8591c.json",
+      "sha256": "e3d74de20f8d29f8f7ab05ee8b15c8408d08ecdcf0cd80a428dd1be4873d4d7c",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/sec/consumer/CIK0000320193.json",
+      "sha256": "7449bc26be2e76f89139c35fb8f80abd44b905e075e11fca7080afe8ad02bb32",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/sec/consumer/CIK0001045810.json",
+      "sha256": "3ae1409a98ef730217acba98508b6412bafcd2e6d9db8e1643665a19ba0d2bbf",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/sec/consumer/CIK0001046179.json",
+      "sha256": "3484c98dae42c073983d776719d85d2241dcfb341cccbc95dd4ce00263b791cf",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/global-market/history/vu_cfa3ed50fc188ed8c18affdf.json",
+      "sha256": "d422f2b9af65a003c1f171417e40e7b84dcf72c32e1e0eacacb9d91e3768f3cb",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/global-market/history/vu_993c96c4b38f6f5410a7aa77.json",
+      "sha256": "294521f6a918dda6fded3dd7b18e1ae3dedc5996d134f486a0c675c9c015d81f",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/global-market/history/vu_f016312b2f21d9c141432804.json",
+      "sha256": "9492172174bd1ad97623561727c8cae498057f7409a14ce429b3565ea33a2422",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/global-market/history/vu_2190530e5aadb651044d45b8.json",
+      "sha256": "80420eaff5958ef90ee88aa4fbd243dd7ccd3f3167b66db6c121ad9f47922d84",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/global-market/history/vu_801dc74ea4161255d5543cc7.json",
+      "sha256": "35c3a8606606fe40e61f50bfd3378599fed234ca6359e96fd4f6d7e5605a9e25",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/global-market/history/vu_095a659992e820415d7cf19b.json",
+      "sha256": "450b348688d320d6f6bcd9f149e60d637326c47ed270889ea10e29b5d5d9b29f",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/sec/consumer/CIK0001000184.json",
+      "sha256": "aed9e4cad0e352292a42fac64d67e83dfd784d102ce9620752b5b95a06f076f1",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/sec/consumer/CIK0000937966.json",
+      "sha256": "84fde1e23c9c41310ce33c683fc3a2ca74215fdd56a71efe6105ee06f2558128",
+      "privateArtifact": false
+    },
+    {
+      "path": "quant/data/sec/consumer/CIK0000353278.json",
+      "sha256": "175f3bdb9ce82a8003ed0e4fbd599dc6547ad918c0d9870c8497e9c6f3885e6a",
+      "privateArtifact": false
+    },
+    {
+      "path": "PRIVATE_PRODUCT_FITNESS_RETEST",
+      "sha256": "912c79a4e0eb2630013d3bbed09fc9b4fd911c766d34f2f732a6b742ca79a49e",
+      "privateArtifact": true
+    }
+  ],
+  "engines": [
+    {
+      "path": "quant/engines/fundamental-inputs.js",
+      "sha256": "c87004d96c95bb327107e2c8c7b0f9e36feea2da8955f2cf6f4d1fafd90380fb",
+      "version": "fundamental-inputs-1.0.0"
+    },
+    {
+      "path": "quant/engines/global-equities.js",
+      "sha256": "47949ab2c29da7147f3a75f5e7c4212f245b370e53d7fdf06d872057d56ade5e",
+      "version": "global-equities-1.0.0"
+    }
+  ],
+  "protectedSourceBytesUnchanged": true,
+  "sourceOwnership": "ONE_CANONICAL_FUNDAMENTALS_DOCUMENT_PER_COMPANY_NOT_PER_LISTING",
+  "companies": [
+    {
+      "name": "Apple Inc",
+      "companyId": "iss_cik_0000320193",
+      "cik": "0000320193",
+      "listingIds": [],
+      "securityIds": [
+        "ref_AAPL"
+      ],
+      "sampleRole": "US_CONTROL",
+      "exactCompanyJoin": true,
+      "fundamentalsStatus": "EXISTING_SEC_CANONICAL",
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+        "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED"
+      ],
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 24,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2026-06-27",
+        "availableAt": "2026-07-31",
+        "sharesFiledAt": "2026-07-31",
+        "reportingCurrency": "USD",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      }
+    },
+    {
+      "name": "NVIDIA Corp",
+      "companyId": "iss_cik_0001045810",
+      "cik": "0001045810",
+      "listingIds": [],
+      "securityIds": [
+        "ref_NVDA"
+      ],
+      "sampleRole": "US_CONTROL",
+      "exactCompanyJoin": true,
+      "fundamentalsStatus": "EXISTING_SEC_CANONICAL",
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+        "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED"
+      ],
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 24,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2026-07-26",
+        "availableAt": "2026-08-26",
+        "sharesFiledAt": "2026-08-26",
+        "reportingCurrency": "USD",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      }
+    },
+    {
+      "name": "Taiwan Semiconductor Manufacturing",
+      "companyId": "iss_cik_0001046179",
+      "cik": "0001046179",
+      "listingIds": [
+        "vu_752cca769d2d0a"
+      ],
+      "securityIds": [
+        "ref_TSM"
+      ],
+      "sampleRole": "US_CONTROL",
+      "exactCompanyJoin": true,
+      "fundamentalsStatus": "EXISTING_SEC_CANONICAL",
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+        "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+        "NON_USD_REPORTING",
+        "SHARE_CLASS_BASIS_UNVERIFIED"
+      ],
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+          "NON_USD_REPORTING",
+          "SHARE_CLASS_BASIS_UNVERIFIED"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 11,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2024-12-31",
+        "availableAt": "2025-04-17",
+        "sharesFiledAt": "2026-04-16",
+        "reportingCurrency": "TWD",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      }
+    },
+    {
+      "name": "SAP SE",
+      "companyId": null,
+      "issuerLEI": "529900D6BF99LW9R2E68",
+      "isin": "DE0007164600",
+      "listingIds": [
+        "vu_cfa3ed50fc188ed8c18affdf"
+      ],
+      "securityIds": [
+        "sec_isin_DE0007164600"
+      ],
+      "providerSymbol": "SAP.DE",
+      "tradingCurrency": "EUR",
+      "sampleRole": "LOCAL_EUROPEAN_LISTING",
+      "exactCompanyJoin": false,
+      "fundamentalsStatus": "NO_EXACT_LINKED_CANONICAL_FUNDAMENTALS",
+      "priceHistory": {
+        "bars": 394,
+        "firstDate": "2025-01-02",
+        "lastDate": "2026-09-29",
+        "displayOnly": true,
+        "adjustmentStatus": "unknown"
+      },
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "EXACT_COMPANY_FUNDAMENTALS_JOIN_MISSING",
+        "PRICE_ADJUSTMENTS_UNVERIFIED"
+      ],
+      "evaluation": null
+    },
+    {
+      "name": "Siemens Aktiengesellschaft",
+      "companyId": null,
+      "issuerLEI": "W38RGI023J3WT1HWRP32",
+      "isin": "DE0007236101",
+      "listingIds": [
+        "vu_993c96c4b38f6f5410a7aa77"
+      ],
+      "securityIds": [
+        "sec_isin_DE0007236101"
+      ],
+      "providerSymbol": "SIE.DE",
+      "tradingCurrency": "EUR",
+      "sampleRole": "LOCAL_EUROPEAN_LISTING",
+      "exactCompanyJoin": false,
+      "fundamentalsStatus": "NO_EXACT_LINKED_CANONICAL_FUNDAMENTALS",
+      "priceHistory": {
+        "bars": 393,
+        "firstDate": "2025-01-02",
+        "lastDate": "2026-09-29",
+        "displayOnly": true,
+        "adjustmentStatus": "unknown"
+      },
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "EXACT_COMPANY_FUNDAMENTALS_JOIN_MISSING",
+        "PRICE_ADJUSTMENTS_UNVERIFIED"
+      ],
+      "evaluation": null
+    },
+    {
+      "name": "Rheinmetall AG",
+      "companyId": null,
+      "issuerLEI": "5299001OU9CSE29O6S05",
+      "isin": "DE0007030009",
+      "listingIds": [
+        "vu_f016312b2f21d9c141432804"
+      ],
+      "securityIds": [
+        "sec_isin_DE0007030009"
+      ],
+      "providerSymbol": "RHM.DE",
+      "tradingCurrency": "EUR",
+      "sampleRole": "LOCAL_EUROPEAN_LISTING",
+      "exactCompanyJoin": false,
+      "fundamentalsStatus": "NO_EXACT_LINKED_CANONICAL_FUNDAMENTALS",
+      "priceHistory": {
+        "bars": 396,
+        "firstDate": "2025-01-02",
+        "lastDate": "2026-09-29",
+        "displayOnly": true,
+        "adjustmentStatus": "unknown"
+      },
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "EXACT_COMPANY_FUNDAMENTALS_JOIN_MISSING",
+        "PRICE_ADJUSTMENTS_UNVERIFIED"
+      ],
+      "evaluation": null
+    },
+    {
+      "name": "ASML Holding N.V.",
+      "companyId": null,
+      "issuerLEI": "724500Y6DUVHQD6OXN27",
+      "isin": "NL0010273215",
+      "listingIds": [
+        "vu_2190530e5aadb651044d45b8"
+      ],
+      "securityIds": [
+        "sec_isin_NL0010273215"
+      ],
+      "providerSymbol": "ASML.AS",
+      "tradingCurrency": "EUR",
+      "sampleRole": "LOCAL_EUROPEAN_LISTING",
+      "exactCompanyJoin": false,
+      "fundamentalsStatus": "NO_EXACT_LINKED_CANONICAL_FUNDAMENTALS",
+      "priceHistory": {
+        "bars": 438,
+        "firstDate": "2025-01-02",
+        "lastDate": "2026-09-29",
+        "displayOnly": true,
+        "adjustmentStatus": "unknown"
+      },
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "EXACT_COMPANY_FUNDAMENTALS_JOIN_MISSING",
+        "PRICE_ADJUSTMENTS_UNVERIFIED"
+      ],
+      "evaluation": null
+    },
+    {
+      "name": "LVMH Moët Hennessy - Louis Vuitton, Société Européenne",
+      "companyId": "vu_lei_IOG4E947OATN0KJYSD45",
+      "issuerLEI": "IOG4E947OATN0KJYSD45",
+      "isin": "FR0000121014",
+      "listingIds": [
+        "vu_801dc74ea4161255d5543cc7"
+      ],
+      "securityIds": [
+        "sec_isin_FR0000121014"
+      ],
+      "providerSymbol": "MC.PA",
+      "tradingCurrency": "EUR",
+      "sampleRole": "LOCAL_EUROPEAN_LISTING",
+      "exactCompanyJoin": true,
+      "fundamentalsStatus": "OFFICIAL_ANNUAL_PARTIAL",
+      "priceHistory": {
+        "bars": 443,
+        "firstDate": "2025-01-02",
+        "lastDate": "2026-09-29",
+        "displayOnly": true,
+        "adjustmentStatus": "unknown"
+      },
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "NO_COMPLETE_STANDALONE_QUARTER_TTM_EXPORT",
+        "NO_VERIFIED_LISTING_SHARE_BASIS",
+        "PRICE_ADJUSTMENTS_UNVERIFIED"
+      ],
+      "evaluation": {
+        "companyId": "vu_lei_IOG4E947OATN0KJYSD45",
+        "exactCompanyJoin": true,
+        "eligibleFacts": 12,
+        "annualMetrics": [
+          "cash",
+          "epsBasic",
+          "epsDiluted",
+          "operatingCashFlow",
+          "revenue",
+          "totalAssets"
+        ],
+        "periods": [
+          "2023-12-31",
+          "2024-12-31"
+        ],
+        "annualOnly": true,
+        "fullQuantEligibility": "BLOCKED",
+        "safeValuation": false,
+        "blockers": [
+          "NO_COMPLETE_STANDALONE_QUARTER_TTM_EXPORT",
+          "NO_VERIFIED_LISTING_SHARE_BASIS",
+          "PRICE_ADJUSTMENTS_UNVERIFIED"
+        ],
+        "availableAt": "2025-03-25T23:59:59.999999+00:00",
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      }
+    },
+    {
+      "name": "Novo Nordisk A/S",
+      "companyId": null,
+      "issuerLEI": "549300DAQ1CVT6CXN342",
+      "isin": "DK0060534915",
+      "listingIds": [
+        "vu_095a659992e820415d7cf19b"
+      ],
+      "securityIds": [
+        "sec_isin_DK0060534915"
+      ],
+      "providerSymbol": "NOVO-B.CO",
+      "tradingCurrency": "DKK",
+      "sampleRole": "LOCAL_EUROPEAN_LISTING",
+      "exactCompanyJoin": false,
+      "fundamentalsStatus": "NO_EXACT_LINKED_CANONICAL_FUNDAMENTALS",
+      "priceHistory": {
+        "bars": 393,
+        "firstDate": "2025-01-02",
+        "lastDate": "2026-09-29",
+        "displayOnly": true,
+        "adjustmentStatus": "unknown"
+      },
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "EXACT_COMPANY_FUNDAMENTALS_JOIN_MISSING",
+        "PRICE_ADJUSTMENTS_UNVERIFIED"
+      ],
+      "evaluation": null
+    },
+    {
+      "name": "Sap SE",
+      "companyId": "iss_cik_0001000184",
+      "cik": "0001000184",
+      "listingIds": [
+        "vu_1557d0b2de1b2e"
+      ],
+      "securityIds": [
+        "ref_SAP"
+      ],
+      "sampleRole": "EXISTING_US_REGISTRANT_REFERENCE_ONLY_NOT_LOCAL_JOIN",
+      "exactCompanyJoin": true,
+      "fundamentalsStatus": "EXISTING_SEC_CANONICAL",
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+        "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+        "NON_USD_REPORTING",
+        "SHARE_CLASS_BASIS_UNVERIFIED"
+      ],
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+          "NON_USD_REPORTING",
+          "SHARE_CLASS_BASIS_UNVERIFIED"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 12,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2025-12-31",
+        "availableAt": "2026-02-26",
+        "sharesFiledAt": "2026-02-26",
+        "reportingCurrency": "EUR",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      }
+    },
+    {
+      "name": "ASML Holding NV",
+      "companyId": "iss_cik_0000937966",
+      "cik": "0000937966",
+      "listingIds": [
+        "vu_32ccd6123bc3a1"
+      ],
+      "securityIds": [
+        "ref_ASML"
+      ],
+      "sampleRole": "EXISTING_US_REGISTRANT_REFERENCE_ONLY_NOT_LOCAL_JOIN",
+      "exactCompanyJoin": true,
+      "fundamentalsStatus": "EXISTING_SEC_CANONICAL",
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+        "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+        "LATEST_PRICE_NOT_VALIDATED_AT_CUTOFF",
+        "TRADING_CURRENCY_UNVERIFIED_OR_MISMATCH",
+        "NON_USD_REPORTING",
+        "SHARE_CLASS_BASIS_UNVERIFIED",
+        "PROVIDER_REPORTED_CURRENCY_UNVERIFIED_OR_MISMATCH"
+      ],
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+          "LATEST_PRICE_NOT_VALIDATED_AT_CUTOFF",
+          "TRADING_CURRENCY_UNVERIFIED_OR_MISMATCH",
+          "NON_USD_REPORTING",
+          "SHARE_CLASS_BASIS_UNVERIFIED",
+          "PROVIDER_REPORTED_CURRENCY_UNVERIFIED_OR_MISMATCH"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 12,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2025-12-31",
+        "availableAt": "2026-02-25",
+        "sharesFiledAt": "2026-02-25",
+        "reportingCurrency": "EUR",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      }
+    },
+    {
+      "name": "Novo Nordisk",
+      "companyId": "iss_cik_0000353278",
+      "cik": "0000353278",
+      "listingIds": [
+        "vu_94a880bb942e57"
+      ],
+      "securityIds": [
+        "ref_NVO"
+      ],
+      "sampleRole": "EXISTING_US_REGISTRANT_REFERENCE_ONLY_NOT_LOCAL_JOIN",
+      "exactCompanyJoin": true,
+      "fundamentalsStatus": "EXISTING_SEC_CANONICAL",
+      "fullQuantEligibility": "BLOCKED",
+      "valuationStatus": "BLOCKED",
+      "blockers": [
+        "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+        "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+        "NON_USD_REPORTING",
+        "SHARE_CLASS_BASIS_UNVERIFIED",
+        "NO_SAFE_PIT_INSTANT_SHARES"
+      ],
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED",
+          "NON_USD_REPORTING",
+          "SHARE_CLASS_BASIS_UNVERIFIED",
+          "NO_SAFE_PIT_INSTANT_SHARES"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 13,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2025-12-31",
+        "availableAt": "2026-02-04",
+        "sharesFiledAt": null,
+        "reportingCurrency": "DKK",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      }
+    }
+  ],
+  "companyDocuments": [
+    {
+      "companyId": "iss_cik_0000320193",
+      "sourceSystem": "SEC_EDGAR",
+      "sourcePath": "quant/data/sec/consumer/CIK0000320193.json",
+      "sourceSHA256": "7449bc26be2e76f89139c35fb8f80abd44b905e075e11fca7080afe8ad02bb32",
+      "canonicalDocuments": 1,
+      "factOwnership": "COMPANY",
+      "securityIds": [
+        "ref_AAPL"
+      ],
+      "ttmMetrics": [
+        "capital_expenditures",
+        "cash_and_equivalents",
+        "depreciation_and_amortization",
+        "ebitda",
+        "eps_diluted",
+        "free_cash_flow",
+        "gross_profit",
+        "income_tax_expense",
+        "net_income",
+        "operating_cash_flow",
+        "operating_income",
+        "pretax_income",
+        "revenue",
+        "shares_outstanding"
+      ],
+      "annualMetricCount": 23
+    },
+    {
+      "companyId": "iss_cik_0000353278",
+      "sourceSystem": "SEC_EDGAR",
+      "sourcePath": "quant/data/sec/consumer/CIK0000353278.json",
+      "sourceSHA256": "175f3bdb9ce82a8003ed0e4fbd599dc6547ad918c0d9870c8497e9c6f3885e6a",
+      "canonicalDocuments": 1,
+      "factOwnership": "COMPANY",
+      "securityIds": [
+        "ref_NVO"
+      ],
+      "ttmMetrics": [
+        "cash_and_equivalents",
+        "net_debt",
+        "total_debt"
+      ],
+      "annualMetricCount": 16
+    },
+    {
+      "companyId": "iss_cik_0000937966",
+      "sourceSystem": "SEC_EDGAR",
+      "sourcePath": "quant/data/sec/consumer/CIK0000937966.json",
+      "sourceSHA256": "84fde1e23c9c41310ce33c683fc3a2ca74215fdd56a71efe6105ee06f2558128",
+      "canonicalDocuments": 1,
+      "factOwnership": "COMPANY",
+      "securityIds": [
+        "ref_ASML"
+      ],
+      "ttmMetrics": [
+        "cash_and_equivalents",
+        "shares_outstanding"
+      ],
+      "annualMetricCount": 23
+    },
+    {
+      "companyId": "iss_cik_0001000184",
+      "sourceSystem": "SEC_EDGAR",
+      "sourcePath": "quant/data/sec/consumer/CIK0001000184.json",
+      "sourceSHA256": "aed9e4cad0e352292a42fac64d67e83dfd784d102ce9620752b5b95a06f076f1",
+      "canonicalDocuments": 1,
+      "factOwnership": "COMPANY",
+      "securityIds": [
+        "ref_SAP"
+      ],
+      "ttmMetrics": [
+        "cash_and_equivalents",
+        "net_debt",
+        "shares_outstanding",
+        "total_debt"
+      ],
+      "annualMetricCount": 15
+    },
+    {
+      "companyId": "iss_cik_0001045810",
+      "sourceSystem": "SEC_EDGAR",
+      "sourcePath": "quant/data/sec/consumer/CIK0001045810.json",
+      "sourceSHA256": "3ae1409a98ef730217acba98508b6412bafcd2e6d9db8e1643665a19ba0d2bbf",
+      "canonicalDocuments": 1,
+      "factOwnership": "COMPANY",
+      "securityIds": [
+        "ref_NVDA"
+      ],
+      "ttmMetrics": [
+        "capital_expenditures",
+        "cash_and_equivalents",
+        "depreciation_and_amortization",
+        "ebitda",
+        "eps_diluted",
+        "free_cash_flow",
+        "gross_profit",
+        "income_tax_expense",
+        "net_income",
+        "operating_cash_flow",
+        "operating_income",
+        "pretax_income",
+        "revenue",
+        "shares_outstanding"
+      ],
+      "annualMetricCount": 23
+    },
+    {
+      "companyId": "iss_cik_0001046179",
+      "sourceSystem": "SEC_EDGAR",
+      "sourcePath": "quant/data/sec/consumer/CIK0001046179.json",
+      "sourceSHA256": "3484c98dae42c073983d776719d85d2241dcfb341cccbc95dd4ce00263b791cf",
+      "canonicalDocuments": 1,
+      "factOwnership": "COMPANY",
+      "securityIds": [
+        "ref_TSM"
+      ],
+      "ttmMetrics": [
+        "cash_and_equivalents",
+        "shares_outstanding"
+      ],
+      "annualMetricCount": 15
+    },
+    {
+      "companyId": "vu_lei_IOG4E947OATN0KJYSD45",
+      "sourceSystem": "ESEF",
+      "canonicalDocuments": 1,
+      "factOwnership": "COMPANY",
+      "canonicalFactCount": 12,
+      "documentSHA256": "72f36f9a80dad1ca16f4f9627dc79d88d358a30264b78c74e8bcd2ccf3adc41d",
+      "manifestSHA256": "e9915ce30b8aaa29ed77540368847276764ebe9a3162e0b40d13f5fceeb14f0e",
+      "annualOnly": true
+    }
+  ],
+  "summary": {
+    "sampledCases": 12,
+    "exactCanonicalInternalJoins": 7,
+    "sampledLocalListings": 6,
+    "localExactOfficialJoins": 1,
+    "fullQuantReady": 0,
+    "safeValuationReady": 0,
+    "conditionalUSValuationExperiments": 2
+  },
+  "counterfactualChecks": [
+    {
+      "ticker": "AAPL",
+      "performed": true,
+      "counterfactualOnly": true,
+      "assumedMissingEvidence": [
+        "INDEPENDENT_MARKETSTACK_ISSUER_IDENTITY_VERIFICATION",
+        "SHARE_COUNT_PRICE_BASIS_WITH_NO_UNMODELED_INTERVENING_CORPORATE_ACTION"
+      ],
+      "conditionalValuationFields": [
+        "marketCap",
+        "pe",
+        "ps",
+        "pb",
+        "fcfYield"
+      ],
+      "conditionalFundamentalRawCount": 30,
+      "actualProductionAdmission": false
+    },
+    {
+      "ticker": "NVDA",
+      "performed": true,
+      "counterfactualOnly": true,
+      "assumedMissingEvidence": [
+        "INDEPENDENT_MARKETSTACK_ISSUER_IDENTITY_VERIFICATION",
+        "SHARE_COUNT_PRICE_BASIS_WITH_NO_UNMODELED_INTERVENING_CORPORATE_ACTION"
+      ],
+      "conditionalValuationFields": [
+        "marketCap",
+        "pe",
+        "ps",
+        "pb",
+        "fcfYield"
+      ],
+      "conditionalFundamentalRawCount": 30,
+      "actualProductionAdmission": false
+    }
+  ],
+  "freshUSClosingPriceRetest": [
+    {
+      "ticker": "AAPL",
+      "performed": true,
+      "sourceRunId": "36964230530",
+      "checkedAt": "2026-10-02T04:22:50.235Z",
+      "historicalBars": 689,
+      "historicalExplicitExpectedCurrencyBars": 689,
+      "requestedMIC": "XNAS",
+      "observedMIC": "XNAS",
+      "observedSymbol": "AAPL",
+      "observedTradingDate": "2026-09-30",
+      "observedCurrency": "USD",
+      "priceSnapshotRevisions": {
+        "comparablePreviousClosingDate": true,
+        "closeRelativeDeltaRatio": 0,
+        "historicalRestatementCertification": false
+      },
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 24,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2026-06-27",
+        "availableAt": "2026-07-31",
+        "sharesFiledAt": "2026-07-31",
+        "reportingCurrency": "USD",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      },
+      "actualProductionAdmission": false,
+      "acceptedBaselineCoverageDenominatorsChanged": false
+    },
+    {
+      "ticker": "NVDA",
+      "performed": true,
+      "sourceRunId": "36964230530",
+      "checkedAt": "2026-10-02T04:22:49.317Z",
+      "historicalBars": 689,
+      "historicalExplicitExpectedCurrencyBars": 396,
+      "requestedMIC": "XNAS",
+      "observedMIC": "XNAS",
+      "observedSymbol": "NVDA",
+      "observedTradingDate": "2026-09-30",
+      "observedCurrency": "USD",
+      "priceSnapshotRevisions": {
+        "comparablePreviousClosingDate": true,
+        "closeRelativeDeltaRatio": 0,
+        "historicalRestatementCertification": false
+      },
+      "evaluation": {
+        "internalJoin": true,
+        "providerIdentityVerified": false,
+        "shareCountPriceBasisVerified": false,
+        "safeValuation": false,
+        "blockers": [
+          "PROVIDER_ISSUER_IDENTITY_UNVERIFIED",
+          "SHARE_COUNT_PRICE_CORPORATE_ACTION_BASIS_UNVERIFIED"
+        ],
+        "fields": {
+          "marketCap": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pe": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "ps": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "pb": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evSales": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "evEbitda": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          },
+          "fcfYield": {
+            "status": "BLOCKED",
+            "reason": "UNSAFE_IDENTITY_PRICE_OR_SHARE_BASIS"
+          }
+        },
+        "fundamentalRawCount": 24,
+        "pricedFundamentalRawCount": 0,
+        "fundamentalsAsOf": "2026-07-26",
+        "availableAt": "2026-08-26",
+        "sharesFiledAt": "2026-08-26",
+        "reportingCurrency": "USD",
+        "fullQuantEligibility": "BLOCKED",
+        "sourceAvailability": "EXISTING_SEC_FILING_DATE_CONSERVATIVE_EOD",
+        "balanceSheetAlignmentPolicy": {
+          "maxAgeDays": 400,
+          "equityAnnualFallback": true,
+          "enterpriseValueAnnualDebtFallback": false
+        },
+        "isolatedOnly": true,
+        "valuationValues": {
+          "marketCap": null,
+          "pe": null,
+          "ps": null,
+          "pb": null,
+          "evSales": null,
+          "evEbitda": null,
+          "fcfYield": null
+        },
+        "valuationValuesPublished": false
+      },
+      "actualProductionAdmission": false,
+      "acceptedBaselineCoverageDenominatorsChanged": false
+    }
+  ],
+  "esefReplay": {
+    "performed": true,
+    "networkRequests": 0,
+    "canonicalFacts": 12,
+    "issues": 543,
+    "semanticFieldsIdentical": true,
+    "diagnosticMultisetIdentical": true,
+    "retainedSourceSHA256": "e3d74de20f8d29f8f7ab05ee8b15c8408d08ecdcf0cd80a428dd1be4873d4d7c",
+    "replaySourceSHA256": "90ea86096c02cd88c9f14b1f089685979e6f188461beff4b00ffe8df5820cc22"
+  },
+  "professionalFundamentals": {
+    "sourcePath": "reports/marketstack/marketstack_fundamental_crosscheck.json",
+    "state": "BLOCKED_ENTITLEMENT_FOR_FACTS",
+    "sameRegulatorySource": "SAME_REGULATORY_SOURCE",
+    "newEntitlementRequests": 0,
+    "accessibleCanonicalFactComparison": false
+  },
+  "limitations": [
+    "Internal CIK/security joins are proven in existing canonical data; independent Marketstack issuer identity is not established by ticker/MIC alone.",
+    "Local SAP/ASML/Novo do not inherit US SEC documents without a verified local security-to-company bridge.",
+    "LVMH exact LEI+ISIN permits an isolated company projection, but FY 2023/2024 facts do not supply a complete current quarterly/TTM Quant contract.",
+    "Date-only SEC filing availability uses the existing conservative EOD contract; this experiment does not certify intraday historical acceptance times.",
+    "No fabricated FX, ADR ratio, class-specific shares, fundamentals, period or derived TTM is introduced.",
+    "Conditional US calculations demonstrate existing-engine feasibility only; they do not supply missing independent identity evidence or admit production scores."
+  ]
+}

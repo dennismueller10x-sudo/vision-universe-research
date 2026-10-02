@@ -1,0 +1,489 @@
+{
+  "schemaVersion": "marketstack-product-fitness-independent-review-1.0.0",
+  "generatedAt": "2026-10-02T05:18:58.015Z",
+  "reviewerRole": "INDEPENDENT_SUBAGENT_WITH_PROTECTED_MANIFEST_AND_BROAD_REGRESSION_OWNERSHIP",
+  "reviewResult": "APPROVED_FOR_ISOLATED_RESEARCH_ONLY",
+  "productionAdmissionApproved": false,
+  "commercialProviderDecisionMade": false,
+  "acceptedBaselineCommit": "bf84b7ae99b1d291de6b61d1f7ba42ef262c6eb1",
+  "protectedComparison": {
+    "result": "PASS",
+    "acceptedBaselineCommit": "bf84b7ae99b1d291de6b61d1f7ba42ef262c6eb1",
+    "manifestSHA256": {
+      "before": "cda658c5a1744d2dcd7516ee79ed2e0c94e38de92f53b7e39e9aaf8431cb0475",
+      "after": "95bc0850eb7c6be9b3ab7477bd7c7c6a1fd4b70ac9f901ce974d2f61dc26f888"
+    },
+    "groups": {
+      "accepted_global_foundation": {
+        "files": 2688,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "all_quant_data": {
+        "files": 38543,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "discover": {
+        "files": 12065,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "global_market": {
+        "files": 2687,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "identity_universe": {
+        "files": 2875,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "official_fundamentals": {
+        "files": 6,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "production_code_and_workflows": {
+        "files": 8076,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "quant_products": {
+        "files": 41,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "sec_fundamentals": {
+        "files": 6221,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      },
+      "us_market": {
+        "files": 23538,
+        "changed": [],
+        "missing": [],
+        "added": [],
+        "identical": true
+      }
+    }
+  },
+  "regressionSuites": {
+    "scope": "FINAL_FROZEN_INPUT_BROAD_SUITES",
+    "generatedAt": "2026-10-02T05:18:58.015529+00:00",
+    "scopes": {
+      "quant": {
+        "tests": 2675,
+        "pass": 2675,
+        "fail": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMilliseconds": 76300.226263,
+        "command": "node --test quant/tests/*.test.mjs",
+        "result": "PASS",
+        "logFile": "/workspace/scratch/marketstack-product-fitness-quant-verified-final.log",
+        "logSHA256": "d5b9ce0a86ead6c3d7d1b97e475caf8df268d7461b95f884f170c889ed5ecff7"
+      },
+      "product": {
+        "tests": 460,
+        "pass": 455,
+        "fail": 0,
+        "skipped": 5,
+        "cancelled": 0,
+        "todo": 0,
+        "durationMilliseconds": 15891.70719,
+        "command": "node --test discover/tests/*.test.mjs screener/tests/*.test.mjs scripts/supertrader/tests/*.test.mjs worker/tests/*.test.mjs",
+        "result": "PASS",
+        "logFile": "/workspace/scratch/marketstack-product-fitness-product-final.log",
+        "logSHA256": "f3678cf0ed71e67f565ea47b803f2896fea25284a04b0aa6e42d20aaf3cdeabe"
+      },
+      "sec": {
+        "tests": 484,
+        "pass": 484,
+        "fail": 0,
+        "skipped": 0,
+        "durationSeconds": 29.268,
+        "command": "python3 -m unittest discover -s scripts/quant/tests",
+        "result": "PASS",
+        "logFile": "/workspace/scratch/marketstack-product-fitness-sec-final.log",
+        "logSHA256": "e44de8d8ac596c8ece9b331b209188d0941fdd7bca914c0da085b62aa6dfa926"
+      },
+      "esef": {
+        "tests": 7,
+        "pass": 7,
+        "fail": 0,
+        "skipped": 0,
+        "durationSeconds": 1.2,
+        "command": "python3 -m unittest discover -s scripts/fundamentals/tests",
+        "result": "PASS",
+        "logFile": "/workspace/scratch/marketstack-product-fitness-esef-final.log",
+        "logSHA256": "750e7854e5aed917dbab249f501b54769851fdf51d9bc52418c4ce7018836079"
+      }
+    },
+    "priorIntroducedFailure": {
+      "scope": "Earlier expanded Quant attempt",
+      "test": "fresh75response action/history audit source origin",
+      "cause": "Replay-container identifier was incorrectly used instead of explicit original endpoint sourceRunId",
+      "resolved": true,
+      "finalSuiteFailureCount": 0
+    },
+    "esefSampleComparison": {
+      "path": "/workspace/scratch/marketstack-product-fitness-esef-comparison.json",
+      "sha256": "e2c890b020a45e88622de3b3b0f7dc99f959ea169178d13aa39d41df5571304d",
+      "result": {
+        "facts": 12,
+        "diagnostics": 543,
+        "factsAndProvenanceIdenticalExceptRetrievalTimes": true,
+        "issuesIdenticalAsMultiset": true,
+        "documentSha256": "72f36f9a80dad1ca16f4f9627dc79d88d358a30264b78c74e8bcd2ccf3adc41d",
+        "availableAt": "2025-03-25T23:59:59.999999+00:00"
+      }
+    },
+    "finalConservativeMatrixTargetedRecheck": {
+      "command": "node --test quant/tests/marketstack-product-economics.test.mjs",
+      "pass": 5,
+      "fail": 0,
+      "logSHA256": "be0146106a6c78178aa621d64108b126bff870c23aa2e6e96ebfbdee35f6542e"
+    }
+  },
+  "publicTestReport": {
+    "path": "reports/marketstack/marketstack_product_fitness_tests.json",
+    "sha256": "fc3825e5e3056185584853063ace384b1e684c2330274e0e7ce460ebb960c597"
+  },
+  "isolatedMaterializerNegativeTests": {
+    "scope": "INDEPENDENT_ISOLATED_EVIDENCE_PARSER_NEGATIVE_TESTS_NOT_QUANT_TEST_COUNT",
+    "pass": 7,
+    "fail": 0,
+    "cases": [
+      {
+        "case": "missingReleaseBudget",
+        "expectedFailure": "INVALID_RELEASE_RESOURCE_EVIDENCE",
+        "rejectedAsExpected": true
+      },
+      {
+        "case": "missingServingCounters",
+        "expectedFailure": "INVALID_COUNTER_serving_tests",
+        "rejectedAsExpected": true
+      },
+      {
+        "case": "missingResourceCounters",
+        "expectedFailure": "INVALID_COUNTER_resourceUnit_tests",
+        "rejectedAsExpected": true
+      },
+      {
+        "case": "unrecognizedHygiene",
+        "expectedFailure": "FAILED_EVIDENCE_publicDataHygiene",
+        "rejectedAsExpected": true
+      },
+      {
+        "case": "emptyAxes",
+        "expectedFailure": "EMPTY_BROWSER_EVIDENCE",
+        "rejectedAsExpected": true
+      },
+      {
+        "case": "tamperedSourceLogHash",
+        "expectedFailure": "SUITE_LOG_HASH_MISMATCH_quant",
+        "rejectedAsExpected": true
+      },
+      {
+        "case": "invalidClock",
+        "expectedFailure": "INVALID_EVIDENCE_CLOCK",
+        "rejectedAsExpected": true
+      }
+    ],
+    "materializerSHA256": "e6f6073e719b92c9ff4851c6f113b37cb1fddca828f27b1aa257fe57e76cc9f5"
+  },
+  "fixedFindings": [
+    {
+      "id": "ISSUER_ROLE",
+      "severity": "HIGH",
+      "finding": "Three German-company references linked foreign quoted shares to a German subsidiary or unrelated German issuer.",
+      "resolution": "Exact ISIN/LEI role contradictions independently corroborated by official issuer documents are quarantined. Accepted432/441 reference counts remain visible; supported429/438 counts exclude them. All affected capabilities remain blocked."
+    },
+    {
+      "id": "BACKTEST_GATES",
+      "severity": "HIGH",
+      "finding": "A split-adjusted diagnostic alone could not justify future backtest publication.",
+      "resolution": "Eligibility additionally requires total-return basis/dividend rules/PIT/survivorship/delisting/rights and recomputed existing nonempty publication gates bound to exact engine/report hashes."
+    },
+    {
+      "id": "ETF_TYPE_CONFLICT",
+      "severity": "HIGH",
+      "finding": "Price fitness could ignore a conflicting ETF identity/type.",
+      "resolution": "Identity conflicts force UNSAFE even with sufficient history; ETF company-factor exclusion remains explicit."
+    },
+    {
+      "id": "FUNDAMENTAL_CONTEXT",
+      "severity": "HIGH",
+      "finding": "An instant metric could be selected without requiring INSTANT context.",
+      "resolution": "INSTANT kind, asset type, exact company owner/provenance, currency, finite capitalization, filing/PIT and share-price action basis now fail closed."
+    },
+    {
+      "id": "DIAGNOSTIC_OHLC",
+      "severity": "MEDIUM",
+      "finding": "Invalid provider OHLC prevented actual paired-engine diagnostics; silently repairing or filtering dates would distort results.",
+      "resolution": "All four OHLC fields become null on invalid bars, dates are preserved, missing volume stays null, existing mark-to-market fallback is disclosed and results remain NOT_BACKTEST_SAFE."
+    },
+    {
+      "id": "COMPARISON_BASIS",
+      "severity": "MEDIUM",
+      "finding": "Split action dates filtered before adjustment, ETF/untyped peers, rank definition differences and foreign native turnover could confound controls.",
+      "resolution": "Tiingo split stream is applied before matching dates; company engines use equities only; existing weighted RS is reproduced; fixed Tiingo peers use one-security substitution; non-USD turnover is never labeled USD liquidity."
+    },
+    {
+      "id": "REPLAY_PROVENANCE",
+      "severity": "MEDIUM",
+      "finding": "An initial expanded suite failed because sourceRunId was borrowed from a replay container.",
+      "resolution": "Explicit original endpoint origins now determine provenance; regression added; final full2675 suite passes."
+    },
+    {
+      "id": "REPORT_CLOCK_SCOPE",
+      "severity": "MEDIUM",
+      "finding": "Default report midnight preceded fresh responses and wrong field aliases omitted expanded evidence.",
+      "resolution": "CLI source-clock maximum is used; summary includes actual us.totals and usFullWindowStudy; shared75 requests are accounted once."
+    },
+    {
+      "id": "EVIDENCE_FAIL_CLOSED",
+      "severity": "MEDIUM",
+      "finding": "Missing numeric release/test counters or unrecognized hygiene text could evade error checks in the new report materializer.",
+      "resolution": "Required positive integer counters, exact totals and source log hashes, finite clocks, nonempty accessibility/browser evidence and explicit failed status/hygiene rejection now fail closed."
+    },
+    {
+      "id": "SCREENER_DOMICILE",
+      "severity": "MEDIUM",
+      "finding": "Shadow metadata could retain contradicted or unverified issuer domicile.",
+      "resolution": "Unverified/conflicting/quarantined domicile becomes null, seven source listing rows excluded from the DE shadow count; missing fundamentals remain null."
+    }
+  ],
+  "reviewChecks": [
+    {
+      "area": "Protected production baseline",
+      "result": "PASS",
+      "evidence": "Exact before/after per-file SHA256 comparison; all ten protected groups unchanged."
+    },
+    {
+      "area": "Provider/product isolation",
+      "result": "PASS",
+      "evidence": "New validators import existing engines in research scripts; production engines/products do not import new provider validators/prototype."
+    },
+    {
+      "area": "Price adjustment admission",
+      "result": "PASS_WITH_EXTERNAL_DATA_BLOCKERS",
+      "evidence": "Bounded split arithmetic and return improvements do not promote currency/OHLC/action/calendar-incomplete histories; zero new technical/Quant/SuperTrader/backtest admissions."
+    },
+    {
+      "area": "Germany/Europe counts",
+      "result": "PASS_WITH_REFERENCE_SCOPE",
+      "evidence": "Issuer-LEI/security-ISIN/listing deduplication, three known role quarantines, legal address scope and accepted/reference-vs-supported counts explicit. Remaining associations are not universally independently reverified."
+    },
+    {
+      "area": "ETF portfolios",
+      "result": "PASS_WITH_COVERAGE_BLOCKERS",
+      "evidence": "34 observations:16 unavailable/16 partial stale/2 partial current under120-day research threshold; zero verified complete-current share-class portfolios. UCITS labels and legal fund totals unverified."
+    },
+    {
+      "area": "SEC/ESEF and valuation",
+      "result": "PASS_WITH_COVERAGE_BLOCKERS",
+      "evidence": "Exact internal US joins and LVMH annual official join demonstrated; conditional valuations not published; ADR ratio, shares, currencies, PIT context and complete factor coverage fail closed."
+    },
+    {
+      "area": "Secret/request safety",
+      "result": "PASS",
+      "evidence": "No key in public reports/docs; Actions secret only; bounded75-credit isolated read-only job; no runtime secret/routing change; request accounting is estimate not reconciled bill."
+    },
+    {
+      "area": "Broad tests and browser/resource evidence",
+      "result": "PASS_WITH_KNOWN_SKIPS",
+      "evidence": "2675 Quant+455 Product+484 SEC+7 ESEF passes; five accepted Product skips. Browser smoke tests verify accepted delivery, not freshness or technical certification."
+    }
+  ],
+  "unresolvedImplementationBlockers": [],
+  "remainingEvidenceBlockers": [
+    "Independent full-window issuer/currency/quote-unit proof is incomplete.",
+    "Provider OHLC and action endpoint inconsistencies and unverified per-field adjustment basis.",
+    "Exchange session completeness and historical universe/delisting evidence insufficient for published backtests.",
+    "European canonical PIT TTM fundamentals and aligned share/FX/ADR valuation basis incomplete.",
+    "No verified full-current ETF portfolios or authoritative fee/UCITS/benchmark/exposure metadata."
+  ],
+  "scopeLimitations": [
+    "No claim of universally verified issuer domicile or complete German/European market coverage.",
+    "No new Marketstack history certified for full Quant, SuperTrader or published backtesting.",
+    "Historical diagnosis is not a current live quote freshness measurement.",
+    "ETF partial portfolio lines cannot support true full overlap/exposure/concentration.",
+    "Automated browser/resource/accessibility checks preserve their documented measurement scopes; axe zero violations is not manual accessibility certification.",
+    "Provider account actual remaining balance and entitlements outside the measured endpoints remain unknown."
+  ],
+  "inputProvenance": [
+    {
+      "path": ".github/workflows/marketstack-product-fitness-evidence.yml",
+      "sha256": "6f5c9dacca5f2c8d2e6494f29d95eed113ffd998097415b4432cc168a0e18e89"
+    },
+    {
+      "path": "quant/config/marketstack-product-fitness-plan.json",
+      "sha256": "d856cccd14b80828f5b9197da070eed3ab9c6bfd89e1d3d09f900b856d6dfff4"
+    },
+    {
+      "path": "quant/tests/marketstack-company-product-masters.test.mjs",
+      "sha256": "d70950273bc3bbd86b8cd5223445d1886d14dc17b6539b5d91b55c1764c80337"
+    },
+    {
+      "path": "quant/tests/marketstack-fundamental-price-fusion.test.mjs",
+      "sha256": "2029c456b1e571c6874ae5795aa0a391ba7188cb54b7c96962488eb350683f91"
+    },
+    {
+      "path": "quant/tests/marketstack-global-etf-fitness.test.mjs",
+      "sha256": "12d990199b3294cf1a49210f8b2dadb87e6224a120e3e53b2e5afb64a1f819c3"
+    },
+    {
+      "path": "quant/tests/marketstack-product-adjustments.test.mjs",
+      "sha256": "bdf3ab059a18c2992f3764de07313626d6d516eefb3c063159bcde0560fe6d20"
+    },
+    {
+      "path": "quant/tests/marketstack-product-economics.test.mjs",
+      "sha256": "2f5fbda7048f4569d4f5863975c7b680aef61f81e204b0f8bcb3927905884454"
+    },
+    {
+      "path": "quant/tests/marketstack-product-engines.test.mjs",
+      "sha256": "775a9472b6293ffd50e75243eb250dfd03b104b843b0637a65fdcb93b192719b"
+    },
+    {
+      "path": "quant/tests/marketstack-screener-fitness.test.mjs",
+      "sha256": "9e6d2386349f7e7988cc7a94cd764a8bc8ee7d385eaa359e3d18499267c5bd9e"
+    },
+    {
+      "path": "quant/tests/marketstack-us-relevance.test.mjs",
+      "sha256": "02c056417cd8b51cc4bbc16827884139f572cd2ddfd98677778a8b54ee077e40"
+    },
+    {
+      "path": "reports/marketstack/backtest_marketstack_fitness.json",
+      "sha256": "f84d21c0198c943645fb63bcad46cae78efc8fe8e5e1839fbcce33b01a24b845"
+    },
+    {
+      "path": "reports/marketstack/etf_holdings_quality.json",
+      "sha256": "292e34a31914db560e032995efe7fd48ac6f77f4221d266b722e2fac076247ee"
+    },
+    {
+      "path": "reports/marketstack/etf_metadata_matrix.json",
+      "sha256": "41a80e5afc630103725b68067fdb422e42c9e4cf98dd0cb757442d1852a9a5bd"
+    },
+    {
+      "path": "reports/marketstack/europe_company_coverage.json",
+      "sha256": "927f4c4f5dcbdf7ff766e452beae03d76fb822d6a9159d8cec241f331481907c"
+    },
+    {
+      "path": "reports/marketstack/fundamental_price_fusion_validation.json",
+      "sha256": "a1194a9f30c074a1d8d332e3a5b3c3f4f8a45c9365229faa18489412368dd8c0"
+    },
+    {
+      "path": "reports/marketstack/germany_company_master.json",
+      "sha256": "998c9a631f3db69f88ec8c851c86dd57dd64467ed453cc68e5a8f5144e1c3b80"
+    },
+    {
+      "path": "reports/marketstack/germany_product_eligibility.json",
+      "sha256": "0f093e0842694486e2a12dc0e701b5ea117baac719edeba17aeb1412b02b9bd5"
+    },
+    {
+      "path": "reports/marketstack/global_etf_coverage.json",
+      "sha256": "ceaef68b316d2470dcb6e84f3e4f8126ca20750d6abe427537236812ae27b82f"
+    },
+    {
+      "path": "reports/marketstack/marketstack_adjustment_validation.json",
+      "sha256": "034dd3aa229c860225f7163eb5a4af2ea6624a3098a542a2a4b85792d9f2efd4"
+    },
+    {
+      "path": "reports/marketstack/marketstack_issuer_role_controls.json",
+      "sha256": "e3d9656872304e266e261fd48274510ce4951e5ecba5f396d463af66e570db5d"
+    },
+    {
+      "path": "reports/marketstack/marketstack_product_fitness_tests.json",
+      "sha256": "fc3825e5e3056185584853063ace384b1e684c2330274e0e7ce460ebb960c597"
+    },
+    {
+      "path": "reports/marketstack/provider_product_fitness_summary.json",
+      "sha256": "7966d6ae0c780369ff0ab69e48f8950505d1d4fc9337de63948e5d8b99873731"
+    },
+    {
+      "path": "reports/marketstack/quant_marketstack_fitness.json",
+      "sha256": "69dd041f68b9d83b47a40acb593d82db6fe8da0cc8797a14702502a11c1ac728"
+    },
+    {
+      "path": "reports/marketstack/screener_marketstack_fitness.json",
+      "sha256": "618a9e18d4167e55ad28ace40e09f74e12bac64830a2840689049e5bc7a2e475"
+    },
+    {
+      "path": "reports/marketstack/supertrader_marketstack_fitness.json",
+      "sha256": "d22837207eee336df036d042af535e6118712bb0b078e96de7bf4dd1a3d251ec"
+    },
+    {
+      "path": "reports/marketstack/technical_indicator_crosscheck.json",
+      "sha256": "ac122ad796d0a74b0f0d3a9d3580496a7c58bb632841bc61e03cc6c6e49fd27b"
+    },
+    {
+      "path": "reports/marketstack/us_gap_relevance.json",
+      "sha256": "c2801803d566da1bcbeeadd6037da77603bdfd2acb3e9a1f816aed7cbf6cee95"
+    },
+    {
+      "path": "reports/marketstack/us_marketstack_quality_final.json",
+      "sha256": "71ef11bd3cbb7fc1d79bc3aff8136ba168cfa605f3b8814e66f4b7094ab8f9d9"
+    },
+    {
+      "path": "scripts/market/build-marketstack-company-product-masters.mjs",
+      "sha256": "f4ffa9b47bda5f7470e188d008b92c7b1438add4fdc4686a1f7e7cac577db608"
+    },
+    {
+      "path": "scripts/market/marketstack-canonical-adjustment-prototype.mjs",
+      "sha256": "852eee4c155fc95408aedb3b261beb17a8375c8d7fafc4ba70b8442d192dc467"
+    },
+    {
+      "path": "scripts/market/materialize-marketstack-product-test-evidence.mjs",
+      "sha256": "e6f6073e719b92c9ff4851c6f113b37cb1fddca828f27b1aa257fe57e76cc9f5"
+    },
+    {
+      "path": "scripts/market/summarize-marketstack-product-fitness.mjs",
+      "sha256": "3797be3f732ffb21af27be84ef930a451e349b11c33ea73f0318e59aa7c20707"
+    },
+    {
+      "path": "scripts/market/validate-marketstack-fundamental-price-fusion.mjs",
+      "sha256": "b197a0a7be18dbeb82f1ab664bd8689659e790e62195f893f5931fa732cfb110"
+    },
+    {
+      "path": "scripts/market/validate-marketstack-global-etf-fitness.mjs",
+      "sha256": "359569bb058eded0aa46d78c349e6260175b94146512cc5a8a3e6ad655bc685a"
+    },
+    {
+      "path": "scripts/market/validate-marketstack-product-adjustments.mjs",
+      "sha256": "689010888396b7d6d8be0dbf91860e759c0ffa4fe1f3a3ea12b867f9345514e7"
+    },
+    {
+      "path": "scripts/market/validate-marketstack-product-engines.mjs",
+      "sha256": "35bc3c26735629c4e13b3f20ece7c4c9f03df6a1111ca183d8f213823cb55f48"
+    },
+    {
+      "path": "scripts/market/validate-marketstack-screener-fitness.mjs",
+      "sha256": "e549899d7a78e48dfe821c13747bef36683c5caaa5d52dc5c7ec4b5b73c89e88"
+    },
+    {
+      "path": "scripts/market/validate-marketstack-us-relevance.mjs",
+      "sha256": "6e5917448d43b3951de8fb3f3df27c6cfa90238c992899ea7912493916cef010"
+    }
+  ]
+}

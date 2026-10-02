@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "marketstack-issuer-role-controls-1.0.0",
+  "generatedAt": "2026-10-02T04:53:55.667917+00:00",
+  "scope": "EXACT_CACHED_ISIN_AND_OFFICIAL_INSTRUMENT_NAME_WITH_PUBLIC_ISSUER_ROLE_COUNTEREVIDENCE",
+  "controls": [
+    {
+      "isin": "AU000000EVT1",
+      "referenceIssuerLEI": "529900GRCBLM95S5L112",
+      "referenceLegalName": "Greater Union Filmpalast GmbH",
+      "referenceDomicile": "DE",
+      "referenceStatus": "EXACT_ESMA_ISIN_LEI_REFERENCE",
+      "referenceSourceEvidence": {
+        "sourceSystem": "ESMA_FIRDS_EXACT_ISIN_ISSUER_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE",
+        "regulatoryResponseSHA256": "29733b2760b77b2b2e59a59f91b808a96471a17a33de9140746e9df4c86f2972",
+        "regulatoryRetrievedAt": "2026-10-01T18:42:42.114901+00:00",
+        "leiBatchResponseSHA256": "88d569c1b58f83b3c022bea9b7f637a3730811c610f205662f3156d5dbc4e6e4",
+        "leiRecordURL": "https://api.gleif.org/api/v1/lei-records/529900GRCBLM95S5L112",
+        "retrievedAt": "2026-10-01T18:48:25.432998+00:00"
+      },
+      "officialInstrumentNames": [
+        "EVT LTD."
+      ],
+      "providerSymbols": [
+        "AQHE.F"
+      ],
+      "classification": "CONTRADICTED_QUOTED_ISSUER_ASSOCIATION",
+      "quotedIssuerName": "EVT Limited",
+      "quotedIssuerPublicReferenceCountry": "AU",
+      "decision": "QUARANTINE_ASSOCIATION_FROM_GERMAN_AND_EUROPEAN_PRODUCT_FITNESS_NOT_CANONICAL_REWRITE",
+      "evidence": "EVT official annual report lists Greater Union Filmpalast GmbH separately among controlled entities; EVT is the Australian listed parent, not the German subsidiary whose LEI appears in FIRDS.",
+      "sources": [
+        {
+          "url": "https://cdn.evt.com/wp-content/uploads/2026/09/21173126/Annual-Report-to-shareholders.pdf",
+          "finalURL": "https://cdn.evt.com/wp-content/uploads/2026/09/21173126/Annual-Report-to-shareholders.pdf",
+          "status": 200,
+          "sha256": "6a7840f39116147171dc460e5372e66fd118a56c3cbbcba770aec66a740d21f6",
+          "retrievedAt": "2026-10-02T04:51:33.431763+00:00",
+          "bytes": 12416704
+        },
+        {
+          "url": "https://www.evt.com/investors/",
+          "finalURL": "https://www.evt.com/investors/",
+          "status": 200,
+          "sha256": "718b5f99f4305a3835691e7460ebb388e6c8c24b59f84ac41d1d1eb191f4fe58",
+          "retrievedAt": "2026-10-02T04:49:35.763897+00:00",
+          "bytes": 119699
+        }
+      ],
+      "canonicalAdmission": false,
+      "productionChanged": false
+    },
+    {
+      "isin": "JP3690400001",
+      "referenceIssuerLEI": "391200OQBXV6GL2ATD24",
+      "referenceLegalName": "Kornmeyer Carbon-Group GmbH",
+      "referenceDomicile": "DE",
+      "referenceStatus": "EXACT_ESMA_ISIN_LEI_REFERENCE",
+      "referenceSourceEvidence": {
+        "sourceSystem": "ESMA_FIRDS_EXACT_ISIN_ISSUER_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE",
+        "regulatoryResponseSHA256": "3fe98c5e98b1f05aabd33359d1f445612087550aad4e2d50ce18e3420231d742",
+        "regulatoryRetrievedAt": "2026-10-01T18:43:03.200167+00:00",
+        "leiBatchResponseSHA256": "3a6a8fac4b714a295a48872d9f00f2aafe2c2eed94b95a7845fdcba72776614a",
+        "leiRecordURL": "https://api.gleif.org/api/v1/lei-records/391200OQBXV6GL2ATD24",
+        "retrievedAt": "2026-10-01T18:48:24.639035+00:00"
+      },
+      "officialInstrumentNames": [
+        "NIPPON CARBON"
+      ],
+      "providerSymbols": [
+        "NPV.F"
+      ],
+      "classification": "CONTRADICTED_QUOTED_ISSUER_ASSOCIATION",
+      "quotedIssuerName": "Nippon Carbon Co., Ltd.",
+      "quotedIssuerPublicReferenceCountry": "JP",
+      "decision": "QUARANTINE_ASSOCIATION_FROM_GERMAN_AND_EUROPEAN_PRODUCT_FITNESS_NOT_CANONICAL_REWRITE",
+      "evidence": "Official German instrument name is NIPPON CARBON. Nippon Carbon official profile and stock information identify the Tokyo issuer; Kornmeyer Carbon-Group GmbH is a distinct German legal entity and is not accepted as issuer of these ordinary shares.",
+      "sources": [
+        {
+          "url": "https://www.carbon.co.jp/english/info/profile.html",
+          "finalURL": "https://www.carbon.co.jp/english/info/profile.html",
+          "status": 200,
+          "sha256": "9c640a4b416c40abdcd277f79710f62c82d09b1d285471b5395cbdbcc57960d5",
+          "retrievedAt": "2026-10-02T04:51:34.241427+00:00",
+          "bytes": 15852
+        },
+        {
+          "url": "https://www.carbon.co.jp/english/ir/memo.html",
+          "finalURL": "https://www.carbon.co.jp/english/ir/memo.html",
+          "status": 200,
+          "sha256": "2a1e0a5ced30700de4c3f9f986ebdfff8d99fec98294f283101b4e957a2a64b4",
+          "retrievedAt": "2026-10-02T04:53:55.667917+00:00",
+          "bytes": 12593
+        }
+      ],
+      "canonicalAdmission": false,
+      "productionChanged": false
+    },
+    {
+      "isin": "CA83013J1093",
+      "referenceIssuerLEI": "391200LB6JA3HAQWTS32",
+      "referenceLegalName": "Northern Data AG",
+      "referenceDomicile": "DE",
+      "referenceStatus": "EXACT_ESMA_ISIN_LEI_REFERENCE",
+      "referenceSourceEvidence": {
+        "sourceSystem": "ESMA_FIRDS_EXACT_ISIN_ISSUER_LEI_AND_GLEIF_LEGAL_ENTITY_REFERENCE",
+        "regulatoryResponseSHA256": "f2f39f55db84fb1fa9903164f3d0ed50a73ed8fb7fb99a48b92e4e5a082f9b15",
+        "regulatoryRetrievedAt": "2026-10-01T18:42:52.229700+00:00",
+        "leiBatchResponseSHA256": "3a6a8fac4b714a295a48872d9f00f2aafe2c2eed94b95a7845fdcba72776614a",
+        "leiRecordURL": "https://api.gleif.org/api/v1/lei-records/391200LB6JA3HAQWTS32",
+        "retrievedAt": "2026-10-01T18:48:24.639035+00:00"
+      },
+      "officialInstrumentNames": [
+        "SIXTY SIX CAPITAL INC."
+      ],
+      "providerSymbols": [
+        "5CR0.F"
+      ],
+      "classification": "CONTRADICTED_QUOTED_ISSUER_ASSOCIATION",
+      "quotedIssuerName": "Sixty Six Capital Inc.",
+      "quotedIssuerPublicReferenceCountry": "CA",
+      "decision": "QUARANTINE_ASSOCIATION_FROM_GERMAN_AND_EUROPEAN_PRODUCT_FITNESS_NOT_CANONICAL_REWRITE",
+      "evidence": "Official German instrument name is SIXTY SIX CAPITAL INC. CSE issuer directory identifies that quoted company and Canadian registered address. Northern Data own stock page identifies its stock as DE000A0SMU87; the Canadian ISIN association remains quarantined.",
+      "sources": [
+        {
+          "url": "https://thecse.com/listings/sixty-six-capital-inc/",
+          "finalURL": "https://thecse.com/listings/sixty-six-capital-inc/",
+          "status": 200,
+          "sha256": "9e05cc70c591c0ec91f66a1377f03efb5aa69dab6c613dd201a84cda8e86a83f",
+          "retrievedAt": "2026-10-02T04:51:33.356779+00:00",
+          "bytes": 200155
+        },
+        {
+          "url": "https://northerndata.de/investor-relations/stock",
+          "finalURL": "https://northerndata.de/investor-relations/stock",
+          "status": 200,
+          "sha256": "575965ea1eef69e4362a4782db17a63a52e9e0761daf06a446004b9ce89d0275",
+          "retrievedAt": "2026-10-02T04:51:33.553762+00:00",
+          "bytes": 104007
+        }
+      ],
+      "canonicalAdmission": false,
+      "productionChanged": false
+    }
+  ],
+  "requestAccounting": {
+    "publicHTTPRequests": 12,
+    "publicHTTPSuccess": 10,
+    "publicHTTPFailure": 2,
+    "MarketstackRequests": 0,
+    "MarketstackCredits": 0
+  },
+  "limitations": [
+    "These controls quarantine three exact issuer/security associations; they do not automatically replace company IDs, infer an underlying parent for ADRs, or alter the accepted PR334 census.",
+    "German GmbH & Co. KGaA and Kommanditgesellschaft auf Aktien forms can issue listed equity; plain substring-based GmbH exclusion is prohibited.",
+    "Foreign ISIN prefixes do not by themselves prove foreign domicile. Five Dutch-ISIN German legal-address candidates are preserved unless exact role counterevidence exists.",
+    "Remaining reference associations are not claimed to have been independently reverified against every issuer annual report."
+  ]
+}

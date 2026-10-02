@@ -1,0 +1,921 @@
+{
+  "schemaVersion": "marketstack-product-fitness-bounded-plan-1.0.0",
+  "acceptedBaseline": "bf84b7ae99b1d291de6b61d1f7ba42ef262c6eb1",
+  "estimatedNewCredits": 75,
+  "priorTrackedCumulativeRange": [
+    13065,
+    13067
+  ],
+  "purpose": "25 US control histories and corporate actions only; diagnostic isolated validation, no production admission",
+  "totalAdditionalCreditCeiling": 14000,
+  "phases": {
+    "validation": {
+      "maxCredits": 75,
+      "maxRequests": 75,
+      "retryTransientFailures": false,
+      "timeoutMs": 45000,
+      "tasks": [
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "NVDA",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "NVDA",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "NVDA",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "AAPL",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "AAPL",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "AAPL",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "MSFT",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "MSFT",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "MSFT",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "XOM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "XOM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "XOM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "JPM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "JPM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "JPM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "TSLA",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "TSLA",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "TSLA",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "PLTR",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "PLTR",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "PLTR",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "GOOGL",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "GOOGL",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "GOOGL",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "GOOG",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "GOOG",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "GOOG",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "BRK.B",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "BRK.B",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "BRK.B",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "TSM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "TSM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "TSM",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "BABA",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "BABA",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "BABA",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "XPEV",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "XPEV",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "XPEV",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "META",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "META",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "META",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "AMD",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "AMD",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "AMD",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "WMT",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "WMT",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "WMT",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "COST",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "COST",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "COST",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "CAT",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "CAT",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "CAT",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "BAC",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "BAC",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "BAC",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "PANW",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "PANW",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "PANW",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "CRWD",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "CRWD",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "CRWD",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "BA",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "BA",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "BA",
+            "exchange": "XNYS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "RIVN",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "RIVN",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "RIVN",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "SOUN",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "SOUN",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "SOUN",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        },
+        {
+          "endpoint": "eod",
+          "params": {
+            "symbols": "VAI",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-eod"
+        },
+        {
+          "endpoint": "splits",
+          "params": {
+            "symbols": "VAI",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-splits"
+        },
+        {
+          "endpoint": "dividends",
+          "params": {
+            "symbols": "VAI",
+            "exchange": "XNAS",
+            "date_from": "2024-01-01",
+            "date_to": "2026-09-30",
+            "limit": 1000,
+            "sort": "ASC"
+          },
+          "label": "product-fitness-us-dividends"
+        }
+      ]
+    }
+  }
+}

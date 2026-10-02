@@ -1,0 +1,404 @@
+{
+  "generatedAt": "2026-10-02",
+  "sourceObservationDate": "2026-10-01",
+  "evidenceInputs": [
+    {
+      "file": "marketstack_etf_full_audit.json",
+      "role": "ACCEPTED_PR334_AUDIT",
+      "sha256": "6d2ba735c3774c4c63efe9a5e7a5dc579f4572d5f2eea9aedc37cbc3565ab0c8"
+    },
+    {
+      "file": "marketstack_etf_identity_reconciliation.json",
+      "role": "ACCEPTED_PR334_IDENTITY",
+      "sha256": "f6fa18974222d99d998f5086b2d1fb5d0e21692bb7a6b6bb086ebbe1a114529e"
+    },
+    {
+      "file": "marketstack_etf_metadata_matrix.json",
+      "role": "ACCEPTED_PR334_METADATA",
+      "sha256": "58ad06e7298d84acd6e5b9af6b2e140e44bc9007e575cc2f32bb37328d93da6d"
+    },
+    {
+      "file": "probe-provenance.json",
+      "role": "HASH_MATCHED_PRIVATE_PROVIDER_RESPONSE_CACHE",
+      "sha256": "1fef933ea8ec83f49cde047bf980ef52c4bd1b400caf4efbea12cbf1e5ac8b6c"
+    },
+    {
+      "file": "marketstack-etf-full-private-finalization.json",
+      "role": "PRIVATE_FULL_ACCEPTED_CENSUS",
+      "sha256": "8dcd07e5f968d7959ba62fb27627300e110873468881f9f082e0f869b3123370"
+    }
+  ],
+  "newPaidCalls": 0,
+  "productionActivated": false,
+  "providerDecision": "DEFERRED",
+  "scope": "27_REQUESTED_FIELDS_PLUS_HOLDING_WEIGHTS",
+  "schemaVersion": "marketstack-etf-product-metadata-1.0.0",
+  "fields": [
+    {
+      "field": "fund_name",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "ETF_NAME",
+      "providerEvidence": [
+        {
+          "schemaPath": "Ticker.name / EODBar.name / ETFAttributes.series_name",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [
+        "OFFICIAL_EXCHANGE_INSTRUMENT_NAME"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "ticker",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "TICKER",
+      "providerEvidence": [
+        {
+          "schemaPath": "ETFListItem.ticker / Ticker.symbol",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [
+        "OFFICIAL_EXCHANGE_MNEMONIC"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "exchange",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "EXCHANGE",
+      "providerEvidence": [
+        {
+          "schemaPath": "Ticker.stock_exchange / EODBar.exchange",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [
+        "OFFICIAL_EXCHANGE_MIC"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "ISIN",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "ISIN",
+      "providerEvidence": [
+        {
+          "schemaPath": "Ticker.isin / ETFAttributes.isin",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [
+        "OFFICIAL_EXCHANGE_ISIN"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "WKN",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "UNVERIFIED",
+      "sourceField": "WKN",
+      "providerEvidence": [],
+      "supplementEvidence": [
+        "OFFICIAL_XETRA_WKN"
+      ],
+      "limitation": "Official raw identifiers are nine characters, not independently verified standard six-character WKN. Never silently trim."
+    },
+    {
+      "field": "issuer",
+      "marketstack": "UNVERIFIED",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "ISSUER",
+      "providerEvidence": [
+        {
+          "schemaPath": "ETFHoldings.basics.fund_name is an umbrella trust name, not verified asset-manager identity",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [
+        "SIX_OFFICIAL_ETF_EXPLORER_EXACT_IDENTITY_JOIN"
+      ],
+      "limitation": "Official manager/fund-name labels and issuer family name hints do not prove legal issuer identity."
+    },
+    {
+      "field": "domicile",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "FUND_DOMICILE",
+      "providerEvidence": [],
+      "supplementEvidence": [
+        "SIX_OFFICIAL_ETF_EXPLORER_EXACT_IDENTITY_JOIN"
+      ],
+      "limitation": "Official SIX legal-structure country on exact identities only; ISIN prefix and listing country are not domicile."
+    },
+    {
+      "field": "UCITS",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "UCITS_STATUS",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Name labels are not independently verified UCITS authorization."
+    },
+    {
+      "field": "fund_currency",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "FUND_CURRENCY",
+      "providerEvidence": [],
+      "supplementEvidence": [
+        "SIX_OFFICIAL_ETF_EXPLORER_EXACT_IDENTITY_JOIN"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "trading_currency",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "TRADING_CURRENCY",
+      "providerEvidence": [
+        {
+          "schemaPath": "EODBar.price_currency",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [
+        "OFFICIAL_EXCHANGE_TRADING_CURRENCY"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "inception_date",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "INCEPTION_DATE",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "benchmark",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "BENCHMARK",
+      "providerEvidence": [],
+      "supplementEvidence": [
+        "SIX_OFFICIAL_ETF_EXPLORER_EXACT_IDENTITY_JOIN"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "TER",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "TER",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "SIX ManagementFee is not TER/OCF/expense ratio; no semantic substitution."
+    },
+    {
+      "field": "OCF",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "OCF",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "SIX ManagementFee is not TER/OCF/expense ratio; no semantic substitution."
+    },
+    {
+      "field": "expense_ratio",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "EXPENSE_RATIO",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "SIX ManagementFee is not TER/OCF/expense ratio; no semantic substitution."
+    },
+    {
+      "field": "AUM",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "AUM",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "distribution_policy",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "ACCUMULATING_OR_DISTRIBUTING",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "replication",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "REPLICATION_METHOD",
+      "providerEvidence": [],
+      "supplementEvidence": [
+        "SIX_OFFICIAL_ETF_EXPLORER_EXACT_IDENTITY_JOIN"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "physical_synthetic",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "PARTIAL",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "PHYSICAL_OR_SYNTHETIC",
+      "providerEvidence": [],
+      "supplementEvidence": [
+        "SIX_OFFICIAL_ETF_EXPLORER_EXACT_IDENTITY_JOIN"
+      ],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "NAV",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "NAV",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "historical_price",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "HISTORICAL_PRICES",
+      "providerEvidence": [
+        {
+          "schemaPath": "EODBar; oldest price does not prove inception",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "dividends",
+      "marketstack": "UNVERIFIED",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNVERIFIED",
+      "sourceField": "DIVIDEND_HISTORY",
+      "providerEvidence": [
+        {
+          "schemaPath": "EODBar.dividend / generic dividends endpoint; coverage measured per ETF",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [],
+      "limitation": "Positive dividends exist in quarantined histories; zero clean identity/currency/OHLC-verified ETF dividend series."
+    },
+    {
+      "field": "tracking_difference",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "TRACKING_DIFFERENCE",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "tracking_error",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "TRACKING_ERROR",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "sectors",
+      "marketstack": "UNAVAILABLE",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "UNAVAILABLE",
+      "sourceField": "SECTOR_ALLOCATION",
+      "providerEvidence": [],
+      "supplementEvidence": [],
+      "limitation": "Availability is scoped to inspected schemas and sample responses; never extrapolated to all funds."
+    },
+    {
+      "field": "countries",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "COUNTRY_ALLOCATION",
+      "providerEvidence": [
+        {
+          "schemaPath": "Holding invested_country; aggregate portfolio allocation absent",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [],
+      "limitation": "Partial reported position country codes; no complete current fund exposure, issuer revenue exposure or derivative look-through."
+    },
+    {
+      "field": "holdings",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "HOLDINGS",
+      "providerEvidence": [
+        {
+          "schemaPath": "ETFHoldings.output.holdings",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [],
+      "limitation": "Partial regulatory fund-series reports only, signed reported weights, duplicates and cash/derivatives retained; no full-current portfolio."
+    },
+    {
+      "field": "holding_weights",
+      "marketstack": "PARTIAL",
+      "officialSupplement": "UNVERIFIED",
+      "combinedObservedSupport": "PARTIAL",
+      "sourceField": "HOLDINGS_WEIGHTS",
+      "providerEvidence": [
+        {
+          "schemaPath": "ETFHoldingSecurity.percent_value",
+          "source": "https://api.swaggerhub.com/apis/apilayer-863/MarketstackAPIv2/2.0.0/swagger.json"
+        }
+      ],
+      "supplementEvidence": [],
+      "limitation": "Partial regulatory fund-series reports only, signed reported weights, duplicates and cash/derivatives retained; no full-current portfolio."
+    }
+  ],
+  "fieldCount": 28,
+  "statusCounts": {
+    "PARTIAL": 15,
+    "UNVERIFIED": 2,
+    "UNAVAILABLE": 11
+  },
+  "missingValuesRemainNull": true
+}

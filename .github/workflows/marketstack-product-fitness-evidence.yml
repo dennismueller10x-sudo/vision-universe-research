@@ -1,0 +1,44 @@
+name: Marketstack isolated product fitness evidence
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feat/marketstack-product-fitness-*']
+    paths: ['quant/config/marketstack-product-fitness-plan.json', '.github/workflows/marketstack-product-fitness-evidence.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: marketstack-scale-evidence
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[product-fitness-evidence]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/marketstack-product-fitness
+          key: marketstack-product-fitness-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: marketstack-product-fitness-${{ github.ref_name }}-
+      - name: Bounded isolated evidence (at most 75 symbol credits)
+        env:
+          MARKETSTACK_API_KEY: ${{ secrets.MARKETSTACK_API_KEY }}
+        run: node scripts/market/scale-marketstack.mjs --phase=validation --plan=quant/config/marketstack-product-fitness-plan.json --out="$RUNNER_TEMP/marketstack-product-fitness" --seeds="$RUNNER_TEMP/nonexistent-seeds"
+      - name: Verify protected datasets unchanged
+        run: git diff --exit-code -- quant/data discover/data dashboard/data providers
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: marketstack-product-fitness-${{ github.run_id }}
+          path: ${{ runner.temp }}/marketstack-product-fitness
+          retention-days: 7
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ${{ runner.temp }}/marketstack-product-fitness
+          key: marketstack-product-fitness-${{ github.ref_name }}-${{ github.run_id }}
