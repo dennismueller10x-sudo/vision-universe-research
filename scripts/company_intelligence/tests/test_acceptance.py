@@ -20,6 +20,52 @@ GN = {'sourceId': 'gn-fixture', 'type': 'RSS', 'provider': 'GLOBENEWSWIRE_RSS', 
 
 
 class AcceptanceTests(unittest.TestCase):
+    def test_operating_and_phase_results_are_not_financial_earnings_releases(self):
+        from company_intelligence.pipeline import Pipeline
+        from company_intelligence.model import classify
+        c = company()
+        for headline in ['Apple reports third quarter operating results', 'Apple reports third quarter phase-3 results']:
+            self.assertNotIn('Earnings', classify(headline)['categories'])
+            text = f'''<rss><channel><item><title>{headline}</title><link>https://apple.com/update</link>
+            <pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate></item></channel></rss>'''.encode()
+            class HTTP:
+                def get(self, *args, **kwargs): return {'body': text, 'finalUrl': 'https://apple.com/feed'}
+            with tempfile.TemporaryDirectory() as tmp:
+                store = Store(Path(tmp) / 'state.sqlite')
+                try:
+                    Pipeline(Path(tmp), {c['companyId']: c}, store, HTTP(), NOW).ingest_source(source(c))
+                    self.assertFalse(store.company_payload(c, NOW)['earnings'])
+                finally: store.close()
+
+    def test_quarter_results_and_board_approval_need_actual_financial_publication_proof(self):
+        from company_intelligence.pipeline import Pipeline
+        c = company()
+        for headline in ['Apple reports third quarter delivery results', 'Apple announces third quarter community results',
+                         'Apple announces board meeting to consider second quarter financial results']:
+            text = f'''<rss><channel><item><title>{headline}</title><link>https://apple.com/update</link>
+            <pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate>
+            <description>The board will meet on October 27, 2026 to review financial results.</description></item></channel></rss>'''.encode()
+            class HTTP:
+                def get(self, *args, **kwargs): return {'body': text, 'finalUrl': 'https://apple.com/feed'}
+            with tempfile.TemporaryDirectory() as tmp:
+                store = Store(Path(tmp) / 'state.sqlite')
+                try:
+                    Pipeline(Path(tmp), {c['companyId']: c}, store, HTTP(), NOW).ingest_source(source(c))
+                    self.assertFalse(store.company_payload(c, NOW)['earnings'])
+                    self.assertFalse(store.company_payload(c, NOW)['events'])
+                finally: store.close()
+
+    def test_universe_acceptance_uses_real_master_offline_not_per_issuer_network(self):
+        from company_intelligence.acceptance import project
+        with patch('company_intelligence.acceptance.subprocess.run') as run:
+            project(Path('/tmp/acceptance'), scope='universe')
+            args = run.call_args.args[0]
+            self.assertIn('--all-offline', args)
+            self.assertNotIn('--network', args)
+            self.assertNotIn('--tickers', args)
+        with self.assertRaisesRegex(ValueError, 'INVALID_SCOPE'):
+            project(Path('/tmp/acceptance'), scope='unvalidated')
+
     def test_future_release_title_is_calendar_evidence_not_published_earnings(self):
         from company_intelligence.pipeline import Pipeline
         c = company()

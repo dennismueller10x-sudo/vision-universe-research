@@ -33,17 +33,20 @@ def fingerprint(state):
             'logicalHash': hashlib.sha256(dumps(tables).encode()).hexdigest()}
 
 
-def project(state, command='run'):
+def project(state, command='run', scope='cohort'):
+    if scope not in ('cohort', 'universe'):
+        raise ValueError('ACCEPTANCE_INVALID_SCOPE')
+    selection = ['--all-offline'] if scope == 'universe' else ['--tickers', 'AAPL,ROOT', '--limit', '2']
     subprocess.run([sys.executable, str(ROOT / 'scripts/company_intelligence/cli.py'), command,
-                    '--state', str(state), '--tickers', 'AAPL,ROOT', '--limit', '2'], check=True,
+                    '--state', str(state), *selection], check=True,
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-def prepare(state):
+def prepare(state, scope='cohort'):
     state = Path(state)
     if state.exists():
         raise ValueError('ACCEPTANCE_REQUIRES_FRESH_RUNNER')
-    project(state)
+    project(state, scope=scope)
     universe = load_universe(ROOT)
     cid = next(cid for cid, c in universe.items() if any(l['symbol'] == 'ROOT' for l in c['listings']))
     now = utcnow()
@@ -68,12 +71,13 @@ def prepare(state):
                                         'url': 'https://ir.joinroot.com/'},
                                    {'companyId': cid, 'confidence': .99, 'evidence': ['PRIVATE_ACCEPTANCE_RECORDED_FIXTURE']}, now))
         with_store.set_state('acceptanceLedgerIdentity', stable_id(cid, now, 'fresh-ledger'))
+        with_store.set_state('acceptanceScope', scope)
         with_store.set_state('backfillCursor', cid)
         with_store.set_state('updatedIssuerPending', {cid: '0001788882-26-000001'})
         with_store.set_state('acceptanceCanaries', {'privateTestData': True, 'eventId': event_id})
     finally:
         with_store.close()
-    project(state, 'export')
+    project(state, 'export', scope)
     return fingerprint(state)
 
 
@@ -106,7 +110,10 @@ def advance(state, expected):
     before = fingerprint(state)
     # Perform a real incremental offline projection on existing master/facts.
     # Keep canaries and aliases; no force or network traffic.
-    project(state)
+    with sqlite3.connect(Path(state) / 'state.sqlite') as db:
+        row = db.execute("SELECT payload FROM state WHERE key='acceptanceScope'").fetchone()
+        scope = json.loads(row[0]) if row else 'cohort'
+    project(state, scope=scope)
     after = fingerprint(state)
     for table in ('items', 'events', 'sources', 'event_alias'):
         if after['tables'][table]['identitySha256'] != before['tables'][table]['identitySha256'] or after['tables'][table]['count'] != before['tables'][table]['count']:
@@ -130,9 +137,10 @@ def main():
     p.add_argument('stage', choices=['prepare', 'verify', 'advance'])
     p.add_argument('--state', required=True, type=Path)
     p.add_argument('--evidence', required=True, type=Path)
+    p.add_argument('--scope', choices=['cohort', 'universe'], default='cohort', help='Offline actual master/facts scope; advance recovers scope from R2 state')
     args = p.parse_args()
     expected = json.loads(args.evidence.read_text()) if args.stage != 'prepare' else None
-    result = prepare(args.state) if args.stage == 'prepare' else advance(args.state, expected) if args.stage == 'advance' else verify(args.state, expected)
+    result = prepare(args.state, args.scope) if args.stage == 'prepare' else advance(args.state, expected) if args.stage == 'advance' else verify(args.state, expected)
     atomic_json(args.evidence, result)
     print(json.dumps({'status': 'PASS', 'stage': args.stage, **result}))
 

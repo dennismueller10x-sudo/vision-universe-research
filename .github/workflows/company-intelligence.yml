@@ -13,6 +13,10 @@ on:
         description: 'Isolated authenticated R2 acceptance across three fresh runners; no deployment'
         type: boolean
         default: false
+      acceptance_universe:
+        description: 'Use the actual entire master and existing facts in private acceptance; zero external-source polling'
+        type: boolean
+        default: false
       tickers:
         description: 'Comma-separated master tickers (blank = resumable batch)'
         type: string
@@ -203,7 +207,9 @@ jobs:
           evidence=.verification/acceptance/evidence.json
           node scripts/company_intelligence/sync-state.mjs pull --namespace "$NAMESPACE" --file "$snapshot" --initialize
           if [ -f "$snapshot" ]; then echo 'Acceptance namespace already exists; refuse replacement.'; exit 1; fi
-          python3 scripts/company_intelligence/acceptance.py prepare --state "$state" --evidence "$evidence"
+          scope=cohort
+          if [ '${{ inputs.acceptance_universe }}' = true ]; then scope=universe; fi
+          python3 scripts/company_intelligence/acceptance.py prepare --state "$state" --evidence "$evidence" --scope "$scope"
           python3 scripts/company_intelligence/checkpoint.py pack --state "$state" --snapshot "$snapshot"
           node scripts/company_intelligence/sync-state.mjs push --namespace "$NAMESPACE" --file "$snapshot" --initialize
       - uses: actions/upload-artifact@v4

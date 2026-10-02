@@ -165,7 +165,7 @@ class Resolver:
 def issuer_results_actor(headline, company):
     """Ownership of a release does not prove whose earnings it describes."""
     title = normalize(headline)
-    if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner)\b', title):
+    if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner|board meeting|board approval|to consider|to approve|to review)\b', title):
         return False
     aliases = {normalize(n) for n in company['names']} | {normalize(SUFFIX.sub('', n)) for n in company['names']}
     return any(name and re.match(re.escape(name) + r'\s+(?:reports?|announces?)\b', title) for name in aliases)
@@ -174,7 +174,7 @@ def issuer_results_actor(headline, company):
 def issuer_earnings_announcement(headline, company):
     """An issuer-owned page can announce another entity's reporting date."""
     title = normalize(headline)
-    if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner)\b', title):
+    if re.search(r'\b(subsidiar(?:y|ies)|division|joint venture|partner|board meeting|board approval|to consider|to approve|to review)\b', title):
         return False
     if re.match(r'^(?:q[1-4]|first|second|third|fourth|quarterly|fiscal|annual|full year|earnings|financial results)\b', title):
         return True  # Generic title on a validated issuer-authored announcement.
@@ -206,19 +206,19 @@ RULES = [
     ('Partnership', 'MEDIUM', r'\b(partner(?:ship|s)?|collaborat(?:ion|es))\b'),
     ('Contract', 'MEDIUM', r'\b(contract|orders|bookings)\b'),
     ('Product', 'MEDIUM', r'\b(launch|introduces|unveils)\b'),
-    ('Operations', 'MEDIUM', r'\b(manufacturing|production|deliveries|restructuring)\b'),
+    ('Operations', 'MEDIUM', r'\b(manufacturing|production|deliveries|operating results|operational results|phase[ -]?[123]|restructuring)\b'),
     ('Analyst', 'LOW', r'\b(price target|upgrade|downgrade|analyst rating)\b'),
 ]
 
 
 def classify(headline):
     hits = [(cat, imp, pattern) for cat, imp, pattern in RULES if re.search(pattern, headline, re.I)]
-    if re.search(r'\b(production|deliveries|clinical|trial|study)\b', headline, re.I) and not re.search(r'financial results|earnings', headline, re.I):
+    if re.search(r'\b(production|deliveries|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', headline, re.I) and not re.search(r'financial results|earnings', headline, re.I):
         hits = [h for h in hits if h[0] != 'Earnings']
     rank = {'LOW': 0, 'MEDIUM': 1, 'HIGH': 2, 'CRITICAL': 3}
     importance = max((h[1] for h in hits), key=lambda x: rank[x], default='LOW')
     return {'categories': [h[0] for h in hits] or ['Other'], 'importance': importance,
-            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.2.0'}
+            'classificationEvidence': [h[0] for h in hits], 'classificationVersion': 'rules-1.3.0'}
 
 
 def make_item(raw, source, match, discovered):

@@ -14,7 +14,7 @@ TIME = re.compile(r'\b(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)\s*(ET|EST|EDT
 
 
 def event_type(name):
-    operating = re.search(r'\b(production|deliveries|clinical|trial|study)\b', name, re.I) and not re.search(r'financial results|earnings', name, re.I)
+    operating = re.search(r'\b(production|deliveries|delivery|operating results|operational results|phase[ -]?[123]|clinical|trial|study)\b', name, re.I) and not re.search(r'financial results|earnings', name, re.I)
     if EARNINGS.search(name) and not operating:
         return 'EARNINGS_CALL' if re.search(r'call|webcast', name, re.I) else 'EARNINGS_SCHEDULED'
     if re.search(r'investor day|capital markets day|conference|analyst day|shareholder|annual meeting|presentation', name, re.I):
@@ -46,6 +46,8 @@ def from_announcement(item, source, now):
         return []
     structured = source.get('type') == 'IR_EVENTS' and source.get('format') == 'RSS_EVENTS'
     text = clean(item.get('headline', '') + ' ' + item.get('evidenceText', ''), 3000)
+    if re.search(r'\bboard\b.{0,80}\b(meet|meeting|consider|review|approve)\b', text, re.I) and not re.search(r'\b(?:will|to)\s+(?:release|report|announce|host)\s+(?:its?\s+)?(?:financial results|earnings|conference call|webcast)', text, re.I):
+        return []  # Approval/review dates do not establish publication or call dates.
     if not (EARNINGS.search(text) or event_type(text) == 'IR_EVENT') or (not structured and not ANNOUNCEMENT.search(text)):
         return []
     # Multiple dates require structured evidence: avoid choosing one at random.
