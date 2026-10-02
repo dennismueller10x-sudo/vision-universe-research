@@ -519,12 +519,13 @@
    * (feinste Skala, gleiches Extrem ±1 Bar) und Bestaetigung auf der Analyseskala (= wann die Engine die Welle als
    * abgeschlossen fuehrt).
    */
-  function detectionLatency(count, pivots, series) {
+  function detectionLatency(count, pivots, series, asOf) {
     var conf = count.waves.filter(function (w) { return w.status === "CONFIRMED"; });
     if (!conf.length) return null;
     var w = conf[conf.length - 1], finest = pivots.scales[pivots.scaleIds[0]];
     var earliest = null;
-    if (finest) finest.pivots.forEach(function (p) { if (Math.abs(p.pivotIndex - w.toIndex) <= 1 && Math.abs(p.pivotPrice - w.toPrice) <= Math.abs(w.toPrice) * 0.005 && (earliest === null || p.confirmedIndex < earliest)) earliest = p.confirmedIndex; });
+    /* Review-Fix: nur Pivots, die bis asOf bestaetigt waren (sonst Blick in die Zukunft). */
+    if (finest) finest.pivots.forEach(function (p) { if (p.confirmedIndex <= asOf && Math.abs(p.pivotIndex - w.toIndex) <= 1 && Math.abs(p.pivotPrice - w.toPrice) <= Math.abs(w.toPrice) * 0.005 && (earliest === null || p.confirmedIndex < earliest)) earliest = p.confirmedIndex; });
     var ci = w.confirmedIndex, dir = w.toPrice < w.fromPrice ? 1 : -1;   // Folgebewegung nach dem Wellenende
     var px = isNum(ci) ? series.close[ci] : null;
     return { wave: w.label, waveEndIndex: w.toIndex, waveEndTime: w.toTime, earliestConfirmIndex: earliest, engineConfirmIndex: ci,
@@ -673,7 +674,7 @@
     var hmap = historicalMap(A);
     primary.countQuality = countQuality(A.candidates[0], primary, clarity, features, cfg);
     alternatives.forEach(function (a) { var src = A.candidates.filter(function (x) { return buildCountId(x) === a.countId; })[0]; a.countQuality = src ? countQuality(src, a, null, features, cfg) : null; });
-    primary.detection = detectionLatency(primary, pivots, series);
+    primary.detection = detectionLatency(primary, pivots, series, asOf);
     var appl = applicability(primary.countQuality, alternatives.length ? clarity : null, hmap, cfg, signalToNoise(series, features, pivots, A.scaleId, asOf));
     var structuralLevel = primary.rank >= cfg.structural.high ? "HIGH" : primary.rank >= cfg.structural.moderate ? "MODERATE" : "LOW";
     var clarityLevel = clarity >= cfg.clarity.high ? "HIGH" : clarity >= cfg.clarity.moderate ? "MODERATE" : "LOW";

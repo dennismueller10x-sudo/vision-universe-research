@@ -51,3 +51,24 @@ H6 entscheidet über die Produktdarstellung: bestanden → entwickelnde Zählung
 ## 5. Was nach dem Öffnen nicht mehr geändert wird
 
 Ereignisdefinition, Ergebnisdefinition, Merkmale, Modelle, Schwellen, Engine-Parameter, Partition. Jede spätere Änderung wäre eine neue explorative Runde und bräuchte einen neuen Holdout. Fehler in der **Messung** (wie in der ersten Studie) würden offen berichtet, korrigiert und beide Läufe dokumentiert.
+
+## Änderung 1 (vor dem Öffnen der Bestätigungsstichprobe, 02.10.2026)
+
+Ein unabhängiger Methodenreview der Studie fand **Messfehler**. Sie wurden behoben, bevor ein einziger Lauf auf der Bestätigungsstichprobe stattfand (Git-Verlauf). Die Hypothesen H1–H7 und die Entscheidungsregeln bleiben inhaltlich gleich; geändert wurde die Messung:
+
+| # | Befund (Review) | Änderung |
+|---|---|---|
+| 1 | H6: Bestätigte Einstiege jenseits des Ursprungs a wurden als „sofort gestoppt" gezählt, jenseits b dagegen verworfen → Vorzeichen von H6 verfälscht | Bestätigter Einstieg nur, wenn der Kurs dann noch **zwischen a und b** liegt; H6 nur über diese gepaarten Fälle |
+| 2 | Label: NONE kam praktisch nie vor; CONT/REV = „Muster unvollständig/abgeschlossen" | Ereignisse jetzt unabhängig von der Engine (Punkt 3) → NONE = Rücklauf, den die Hauptzählung nicht als jüngste Welle führt; H2 vergleicht CONT gegen REV+NONE |
+| 3 | Ereignisse hingen von der Skalenwahl der Engine ab | Ereignisse auf **allen** Skalen 2–4, je Preisextrem nur eines (Skala, auf der es zuerst feuert); Label der Engine an derselben Bar |
+| 4 | Kursniveau (splitbereinigt) ist Zukunftswissen | `logPrice` aus dem Basismodell entfernt; Kurs-Segmente entfallen |
+| 5 | Indexmitgliedschaft und Sektor von heute; Vorzugsaktien/Optionsscheine im Universum | `index`, `sector` aus dem Basismodell entfernt; nur Stammaktien (`EQUITY_COMMON`, ohne Ticker mit „_") |
+| 6 | Partition trennte Emittenten (ABR / ABR_P_D) | Partition und Cluster-Bootstrap nach **Emittenten-Wurzel** (`issuerRoot`): `fnv1a(root) mod 10 < 3` |
+| 7 | Offene Ergebnisse am Datenende selektiv | Ereignisse und Zufallsziehungen nur mit vollen 52 Bars Zukunft |
+| S1 | H2-Strata zu fein (Abdeckung 57 %) | H2-Strata: Richtung, Trendkontext, Volatilitätsdrittel, Zeitblock, Geometrie-Klasse; H2 gilt nur bei ≥ 80 % Abdeckung |
+| S2 | Holm und KI-Regel uneinheitlich | „bestätigt" = KI-Kriterium **und** Holm |
+| S3 | kein Purge im Walk-forward | Trainingsereignisse innerhalb eines Jahres vor Testbeginn entfallen |
+| S5 | H3: Bindungen bei Count Quality | Anteil der tatsächlich ausgewählten Fälle wird berichtet |
+| E | `detectionLatency` las feinste Pivots ohne Bestätigungsfilter (Engine) | nur Pivots mit `confirmedIndex ≤ asOf` |
+
+Nicht geändert (bewusst, konservativ): Zufallsziehungen dürfen den Ereigniszeitraum überlappen (zieht Unterschiede Richtung 0); Volatilitätsdrittel relativ zur eigenen Historie (in H5 so benannt).

@@ -111,6 +111,7 @@ function designer(spec, train) {
   }
   return { names: ["(intercept)"].concat(cols.map((c) => c.name)), row: (r) => [1].concat(cols.map((c) => c.fn(r))) };
 }
+function shiftYears(iso, y) { const d = new Date(iso + "T00:00:00Z"); d.setUTCFullYear(d.getUTCFullYear() + y); return d.toISOString().slice(0, 10); }
 function auc(pairs) {   // pairs: [p, y]
   const s = pairs.slice().sort((a, b) => a[0] - b[0]);
   let rankSum = 0, n1 = 0, i = 0;
@@ -126,7 +127,9 @@ function walkForward(rows, folds, specs, lambda) {
   const ids = folds.map((f) => f[0]), oos = [];
   const coef = {};
   for (let k = 1; k < ids.length; k++) {
-    const train = rows.filter((r) => ids.indexOf(r.fold) < k), test = rows.filter((r) => r.fold === ids[k]);
+    /* Review-Fix: Purge — Trainingsereignisse, deren 52-Wochen-Ergebnisfenster in den Testblock reicht, entfallen. */
+    const purgeBefore = shiftYears(folds[k][1], -1);
+    const train = rows.filter((r) => ids.indexOf(r.fold) < k && r.date < purgeBefore), test = rows.filter((r) => r.fold === ids[k]);
     if (train.length < 500 || test.length < 100) continue;
     const preds = test.map(() => ({}));
     for (const [name, spec] of Object.entries(specs)) {
@@ -206,7 +209,9 @@ function stratified(rows, isTreat, keyFn, seed) {
 
 // ------------------------------------------------------------ Hauptanalyse
 function analyze(R, meta) {
-  const ev = R.events, done = ev.filter((r) => r.y === 0 || r.y === 1);
+  const ev = R.events;
+  ev.forEach((r) => { r.symbol = r.symbol || r.sym; r.sym = r.issuer || r.sym; });   // Cluster = Emittent (Review-Fix 6)
+  const done = ev.filter((r) => r.y === 0 || r.y === 1);
   const legT = terciles(ev.map((r) => r.legAtr)), volT = [1 / 3, 2 / 3];
   const terc = (v, t) => (!isNum(v) ? "NA" : v < t[0] ? "T1" : v < t[1] ? "T2" : "T3");
   const geom = (r) => r.dn / Math.max(1e-9, r.up + r.dn);                      // Martingal-Erwartung b/(a+b)
@@ -282,13 +287,14 @@ function analyze(R, meta) {
     { name: "dir", type: "cat", get: (r) => r.d }, { name: "trend", type: "cat", get: (r) => r.trend }, { name: "mom", type: "cat", get: (r) => r.mom },
     { name: "momZ", type: "num", get: (r) => (isNum(r.momZ) ? Math.max(-4, Math.min(4, r.momZ)) : null) }, { name: "volP", type: "num", get: (r) => r.volP },
     { name: "regime", type: "cat", get: (r) => r.regime }, { name: "depth", type: "num", get: (r) => r.r }, { name: "logLegAtr", type: "num", get: (r) => Math.log(Math.max(0.1, r.legAtr)) },
-    { name: "logLegBars", type: "num", get: (r) => Math.log(Math.max(1, r.legBars)) }, { name: "logPrice", type: "num", get: (r) => Math.log(Math.max(0.01, r.price)) },
-    { name: "geometry", type: "num", get: (r) => r.geom }, { name: "index", type: "cat", get: (r) => r.index }, { name: "sector", type: "cat", get: (r) => r.sector || "NA" }
+    { name: "logLegBars", type: "num", get: (r) => Math.log(Math.max(1, r.legBars)) },
+    { name: "geometry", type: "num", get: (r) => r.geom }
+    /* Review-Fix 4/5: kein Kursniveau (splitbereinigt = Zukunftswissen), keine heutige Indexmitgliedschaft, kein heutiger Sektor */
   ];
   const fib = [{ name: "fibConf", type: "num", get: (r) => Math.min(4, r.fibConf) }, { name: "support", type: "cat", get: (r) => r.support }];
   const ell = [{ name: "elliottLabel", type: "cat", get: (r) => r.lab }, { name: "countQuality", type: "num", get: (r) => (r.lab === "CONT" ? r.cq : null) },
                { name: "higherDegree", type: "num", get: (r) => (r.lab !== "NONE" ? r.hd : null) }, { name: "clarity", type: "num", get: (r) => (r.lab !== "NONE" ? Math.min(0.3, r.clarity) : null) }];
-  const specs = { BASE: base, BASE_FIB: base.concat(fib), BASE_ELLIOTT: base.concat(ell), FULL: base.concat(fib, ell), GEOMETRY_ONLY: [base[0], base[10]] };
+  const specs = { BASE: base, BASE_FIB: base.concat(fib), BASE_ELLIOTT: base.concat(ell), FULL: base.concat(fib, ell), GEOMETRY_ONLY: [base[0], base[9]] };
   const WF = walkForward(done, meta.folds, specs, 1.0);
   const models = {
     oosN: WF.oos.length, metrics: modelMetrics(WF.oos, Object.keys(specs)),
@@ -328,7 +334,6 @@ function analyze(R, meta) {
   const contO = WF.oos.filter((o) => o.r.lab === "CONT");
   const seg = {
     index: excessBy(contO, "BASE", (r) => r.index, 150), exchange: excessBy(contO, "BASE", (r) => r.exchange, 150),
-    priceBucket: excessBy(contO, "BASE", (r) => (r.price < 5 ? "<5" : r.price < 20 ? "5-20" : r.price < 100 ? "20-100" : "100+"), 150),
     volatility: excessBy(contO, "BASE", (r) => r.volT, 150), regime: excessBy(contO, "BASE", (r) => r.regime, 150),
     trend: excessBy(contO, "BASE", (r) => r.trend, 150), sector: excessBy(contO, "BASE", (r) => r.sector || "NA", 150),
     listingAge: excessBy(contO, "BASE", (r) => (r.ageY < 6 ? "<6J" : r.ageY < 12 ? "6-12J" : "12J+"), 150),
@@ -371,8 +376,10 @@ function hypotheses(done, WF, ev, ids) {
   const H = {};
   const inc = modelDelta(WF.oos, "BASE", "BASE_ELLIOTT").deltaLogLoss;
   H.H1 = { name: "Elliott-Merkmale verbessern das Nicht-Elliott-Modell out-of-sample (Delta-LogLoss < 0)", est: inc.est, lo: inc.lo, hi: inc.hi, pass: isNum(inc.hi) && inc.hi < 0 };
-  const m = stratified(done, isCont, (r) => [r.d, r.trend, r.mom, r.volT, r.regime, r.fold, r.legT, r.depthB, r.geomB].join("|"), 101);
-  H.H2 = { name: "Gleiche Struktur mit Fortsetzungs-Label (CONT) erreicht das Leg-Ende haeufiger als ohne (geschichtet)", est: m.diff, lo: m.lo, hi: m.hi, pass: isNum(m.lo) && m.lo > 0 };
+  /* Review-Fix: grobe, vorab festgelegte Strata (Richtung, Trendkontext, Volatilitaetsdrittel, Zeitblock, Geometrie-Klasse); Abdeckung >= 80 % noetig */
+  const m = stratified(done, isCont, (r) => [r.d, r.trend, r.volT, r.fold, r.geomB].join("|"), 101);
+  const cov = m.treated ? m.treatedMatched / m.treated : 0;
+  H.H2 = { name: "Gleicher Ruecklauf: Fortsetzungs-Lesart (CONT) erreicht das Leg-Ende haeufiger als ohne diese Lesart (REV oder keine Zaehlung), geschichtet", est: m.diff, lo: m.lo, hi: m.hi, coverage: r4(cov), pass: isNum(m.lo) && m.lo > 0 && cov >= 0.8 };
   /* H3: Top 20 % Count Quality (Schwelle aus frueheren Bloecken) — Ueberschuss ueber BASE > 0 */
   const sel = [];
   for (let k = 1; k < ids.length; k++) {
@@ -380,11 +387,12 @@ function hypotheses(done, WF, ev, ids) {
     WF.oos.forEach((o) => { if (o.r.fold === ids[k] && isCont(o.r) && isNum(o.r.cq) && isNum(thr) && o.r.cq >= thr) sel.push({ sym: o.r.sym, date: o.r.date, e: o.r.y - o.p.BASE }); });
   }
   const h3 = bothBoot(sel, (x) => [x.e, 1], (s) => s[0] / s[1], 103);
-  H.H3 = { name: "Beste 20 % nach Count Quality uebertreffen das Basismodell", n: sel.length, est: h3.est, lo: h3.lo, hi: h3.hi, pass: isNum(h3.lo) && h3.lo > 0 };
+  const nCont = WF.oos.filter((o) => isCont(o.r) && ids.indexOf(o.r.fold) >= 1).length;
+  H.H3 = { name: "Beste 20 % nach Count Quality uebertreffen das Basismodell", n: sel.length, shareSelected: r4(sel.length / Math.max(1, nCont)), est: h3.est, lo: h3.lo, hi: h3.hi, pass: isNum(h3.lo) && h3.lo > 0 };
   const h4 = excessContrast(WF.oos, (r) => isCont(r) && r.hd >= 0.8, (r) => isCont(r) && r.hd < 0.5, 104);
   H.H4 = { name: "Hoeherer Grad konsistent > im Konflikt (Ueberschuss ueber Basismodell)", est: h4.est, lo: h4.lo, hi: h4.hi, pass: isNum(h4.lo) && h4.lo > 0 };
   const h5 = excessContrast(WF.oos, (r) => isCont(r) && r.volT === "T3", (r) => isCont(r) && r.volT === "T1", 105);
-  H.H5 = { name: "Elliott-Fortsetzung bei hoher Volatilitaet (oberes Drittel) besser als bei niedriger (unteres Drittel)", est: h5.est, lo: h5.lo, hi: h5.hi, pass: isNum(h5.lo) && h5.lo > 0 };
+  H.H5 = { name: "Elliott-Fortsetzung bei hoher Volatilitaet (oberes Drittel relativ zur eigenen 52-Wochen-Historie) besser als bei niedriger (unteres Drittel)", est: h5.est, lo: h5.lo, hi: h5.hi, pass: isNum(h5.lo) && h5.lo > 0 };
   /* H6: Entwicklungs-Einstieg schlaegt den Einstieg erst bei Engine-Bestaetigung (je gegen Zufall gleicher Geometrie) */
   const rowsD = done.filter((r) => isCont(r) && r.bA && r.bA.length && r.lat && r.lat.cbA && r.lat.cbA.length && (r.lat.confirmedEntryRes === 0 || r.lat.confirmedEntryRes === 1));
   const h6 = bothBoot(rowsD, (r) => [(r.y - mean(r.bA)) - (r.lat.confirmedEntryRes - mean(r.lat.cbA)), 1], (s) => s[0] / s[1], 106);
@@ -395,6 +403,8 @@ function hypotheses(done, WF, ev, ids) {
   const keys = Object.keys(H), ps = keys.map((k) => { const h = H[k], se = (h.hi - h.lo) / 3.92, z = se > 0 ? (k === "H1" ? -h.est : h.est) / se : 0; return { k, p: 1 - normCdf(z) }; }).sort((a, b) => a.p - b.p);
   let stop = false;
   ps.forEach((x, i) => { const thr = 0.05 / (ps.length - i); H[x.k].pOneSided = r4(x.p); H[x.k].passHolm = !stop && x.p <= thr; if (H[x.k].passHolm === false) stop = true; });
+  /* Review-Fix: "bestanden" verlangt KI-Kriterium UND Holm */
+  keys.forEach((k) => { H[k].confirmed = !!(H[k].pass && H[k].passHolm); });
   return H;
 }
 

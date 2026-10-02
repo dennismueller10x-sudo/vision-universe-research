@@ -62,11 +62,13 @@ const EV2 = require(join(ROOT, "quant/engines/technical/elliott/elliott-v2.js"))
 const Hash = require(join(ROOT, "quant/engines/hash.js"));
 const Stats = require(join(ROOT, "scripts/technical/lib/validation-stats.cjs"));
 
-const H = 52, START = 156, MIN_BARS = 260;
+const H = 52, START = 156, MIN_BARS = 260, EV_SCALES = ["scale-2", "scale-3", "scale-4"];
 const FOLDS = [["F1", "0000", "2005-01-01"], ["F2", "2005-01-01", "2011-01-01"], ["F3", "2011-01-01", "2017-01-01"], ["F4", "2017-01-01", "2022-01-01"], ["F5", "2022-01-01", "9999"]];
 function arg(name, def) { const i = process.argv.indexOf("--" + name); return i >= 0 ? process.argv[i + 1] : def; }
 export function fnv1a(str) { let h = 0x811c9dc5; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h >>> 0; }
-export function partitionOf(ticker) { return fnv1a(String(ticker)) % 10 < 3 ? "CONFIRMATORY" : "EXPLORATORY"; }
+/** Emittenten-Wurzel (Review-Fix 6): Vorzugs-/Unterklassen desselben Emittenten landen in derselben Partition. */
+export function issuerRoot(ticker) { return String(ticker).split(/[_.-]/)[0]; }
+export function partitionOf(ticker) { return fnv1a(issuerRoot(ticker)) % 10 < 3 ? "CONFIRMATORY" : "EXPLORATORY"; }
 function foldOf(date) { for (const [id, a, b] of FOLDS) if (date >= a && date < b) return id; return "F5"; }
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const r4 = (v) => (isNum(v) ? Math.round(v * 1e4) / 1e4 : null);
@@ -113,7 +115,7 @@ function processSymbol(series, meta, opt, spy) {
   const P = Ctx.prepare(series, { pivotScales: scales });
   const cols = P.features.columns, rand = Hash.mulberry32(Hash.seedFromString("ev-val|" + meta.symbol));
   const firstDate = series.timestamps[0];
-  const seen = new Set(), events = [], latency = [];
+  const seen = new Set(), seenExtreme = new Set(), events = [], latency = [];
   const st = { bars: 0, available: 0, statusCount: {}, scaleSwitches: 0, trans: { SAME: 0, PROGRESS: 0, RELABEL: 0, RESET: 0, LOST: 0, FOUND: 0 }, runLengths: [], abstain: 0, cq: [] };
   let prev = null, prevScale = null, run = 0, stableBars = 0, prevState = null;
   const engineCfg = opt.legacy ? { scaleSelection: "LEGACY", nestedHigherDegree: false } : {};
@@ -142,7 +144,11 @@ function processSymbol(series, meta, opt, spy) {
     else if (!prev && cur) { st.trans.FOUND++; run = 1; stableBars = 0; }
     prev = cur;
 
-    /* ---- Generisches Ereignis auf der Analyseskala */
+    /* ---- Generische Ereignisse — UNABHAENGIG von der Engine (Review-Fix 3): auf jeder Skala 2–4 das juengste
+       bestaetigte Leg L=(a→b); Ereignis an der ersten Bar mit Ruecklauf ≥ 38,2 %. Ein Ereignis je Preisextrem b
+       (die Skala, auf der es zuerst feuert); volle 52 Bars Zukunft erforderlich (Review-Fix 7). */
+    for (const scale of EV_SCALES) {
+    if (t + H > n - 1) break;
     const view = EV2.pivotView(series, P.pivots, scale, t);
     if (!view || view.confirmed.length < 3) continue;
     const c = view.confirmed, a = c[c.length - 2], b = c[c.length - 1];
@@ -153,9 +159,10 @@ function processSymbol(series, meta, opt, spy) {
     if (!(r >= 0.382)) continue;
     seen.add(id);
     if (r >= 0.886) continue;                            // zu tief: kein Ruecklauf-Ereignis mehr (aber Leg verbraucht)
-    if (t + 2 >= n) continue;
+    if (seenExtreme.has(b.side + "@" + b.pivotIndex)) continue;
+    seenExtreme.add(b.side + "@" + b.pivotIndex);
     const atr = isNum(cols.atr[t]) && cols.atr[t] > 0 ? cols.atr[t] : px * 0.03;
-    /* Elliott-Label */
+    /* Elliott-Label der Engine an Bar t: zaehlt die Hauptzaehlung genau dieses Leg als juengste Welle? */
     let lab = "NONE", role = null;
     const p = E.primary;
     if (p) {
@@ -171,13 +178,13 @@ function processSymbol(series, meta, opt, spy) {
     const support = supportNear(P.pivots, t, a, px, atr);
     const out1 = race(series, t, d, b.pivotPrice, a.pivotPrice, H);
     const out2 = race(series, t, d, a.pivotPrice + d * 1.618 * L, a.pivotPrice, H);
-    if (out1.res === undefined) continue;                 // Ergebnis noch offen (Datenende)
+    if (out1.res === undefined) continue;                 // (durch t + H <= n − 1 ausgeschlossen)
     /* Benchmark A (Zufallszeitpunkt ±3 Jahre, gleiche %-Abstaende) und A-T (zusaetzlich gleicher Trendkontext) */
     const up = d * (b.pivotPrice - px) / px, dn = d * (px - a.pivotPrice) / px;
     const bA = [], bAT = [];
     for (let q = 0; q < 6 && (bA.length < 3 || bAT.length < 3); q++) {
       for (let tries = 0; tries < 8; tries++) {
-        const lo = Math.max(START, t - 156), hi = Math.min(n - 2, t + 156);
+        const lo = Math.max(START, t - 156), hi = Math.min(n - 1 - H, t + 156);
         const u = lo + Math.floor(rand() * Math.max(1, hi - lo));
         const bp = series.close[u];
         const o = race(series, u, d, bp * (1 + d * up), bp * (1 - d * dn), H);
@@ -197,16 +204,18 @@ function processSymbol(series, meta, opt, spy) {
       const cpx = series.close[nxt.confirmedIndex];
       lat = { endIdx: nxt.pivotIndex, engine: nxt.confirmedIndex - nxt.pivotIndex, earliest: isNum(earliest) ? earliest - nxt.pivotIndex : null,
               progress: r4(d * (cpx - nxt.pivotPrice) / Math.max(1e-9, d * (b.pivotPrice - nxt.pivotPrice))), beyondAtEngine: d * (cpx - b.pivotPrice) > 0,
+              beyondOriginAtEngine: d * (cpx - a.pivotPrice) <= 0,
               eventBeforeEnd: t <= nxt.pivotIndex };
       /* Bestaetigte Variante (Einstieg erst bei Engine-Bestaetigung der Gegenbewegung): gleiche Zielmarke b */
-      if (nxt.confirmedIndex < n - 2 && !lat.beyondAtEngine) {
+      /* Review-Fix 1: bestaetigter Einstieg nur, wenn der Kurs dann noch ZWISCHEN a und b liegt (sonst kein Trade) */
+      if (nxt.confirmedIndex + H <= n - 1 && !lat.beyondAtEngine && !lat.beyondOriginAtEngine) {
         const oc = race(series, nxt.confirmedIndex, d, b.pivotPrice, a.pivotPrice, H);
         lat.confirmedEntryRes = oc.res === undefined ? null : oc.res;
         lat.confirmedEntryRisk = r4(d * (cpx - a.pivotPrice) / cpx); lat.confirmedEntryReward = r4(d * (b.pivotPrice - cpx) / cpx);
         /* Zufallszeitpunkt-Benchmark fuer die bestaetigte Variante (gleiche %-Abstaende, ±3 Jahre) */
         const cbA = [];
         for (let tries = 0; tries < 12 && cbA.length < 3; tries++) {
-          const lo = Math.max(START, t - 156), hi = Math.min(n - 2, t + 156), u = lo + Math.floor(rand() * Math.max(1, hi - lo)), bp = series.close[u];
+          const lo = Math.max(START, t - 156), hi = Math.min(n - 1 - H, t + 156), u = lo + Math.floor(rand() * Math.max(1, hi - lo)), bp = series.close[u];
           const o = race(series, u, d, bp * (1 + d * lat.confirmedEntryReward), bp * (1 - d * lat.confirmedEntryRisk), H);
           if (o.res === 0 || o.res === 1) cbA.push(o.res);
         }
@@ -215,7 +224,7 @@ function processSymbol(series, meta, opt, spy) {
     }
     const date = series.timestamps[t];
     events.push({
-      sym: meta.symbol, date, fold: foldOf(date), d, scale, r: r4(r), legAtr: r4(L / atr), legBars: b.pivotIndex - a.pivotIndex, legPct: r4(L / a.pivotPrice),
+      sym: meta.symbol, issuer: issuerRoot(meta.symbol), date, fold: foldOf(date), d, scale, r: r4(r), legAtr: r4(L / atr), legBars: b.pivotIndex - a.pivotIndex, legPct: r4(L / a.pivotPrice),
       trend, mom, momZ: r4(isNum(cols.momentum3MZ[t]) ? cols.momentum3MZ[t] * d : null), volP: r4(volP), regime: spyRegime(spy, date),
       sector: meta.sector, index: meta.index, price: r4(px), ageY: r4((t) / 52), exchange: meta.exchange,
       fibConf, support, lab, role, cq: p && p.countQuality ? p.countQuality.score : null, cqLevel: p && p.countQuality ? p.countQuality.level : null,
@@ -226,6 +235,7 @@ function processSymbol(series, meta, opt, spy) {
       bA, bAT, up: r4(up), dn: r4(dn), lat
     });
     if (lat) latency.push({ lab, ...lat });
+    }
   }
   if (run) st.runLengths.push(run);
   return { events, stats: st, latency, firstDate };
@@ -283,11 +293,12 @@ function loadUniverse(sample) {
     (j.members || j.constituents || []).forEach((m) => { const tk = typeof m === "string" ? m : (m.ticker || m.symbol); if (tk) (members[tk] = members[tk] || []).push(ix); });
   }
   const master = readJson(join(ROOT, "quant/data/market/security-master/us-security-master.json"));
-  const exch = {}; master.rows.forEach((r) => { if (r.instrument_type === "EQUITY_COMMON" && !exch[r.ticker]) exch[r.ticker] = r.exchange; });
+  const exch = {}, common = new Set(); master.rows.forEach((r) => { if (r.instrument_type === "EQUITY_COMMON") { common.add(r.ticker); if (!exch[r.ticker]) exch[r.ticker] = r.exchange; } });
   return readdirSync(dir).filter((f) => f.startsWith("ref_") && f.endsWith(".json")).sort().map((f) => {
     const sid = f.replace(".json", ""), ticker = sid.replace(/^ref_/, "");
     return { path: join(dir, f), symbol: ticker, ticker, sector: sectorBy[sid] || null, index: members[ticker] ? (members[ticker].includes("SP500") ? "SP500" : members[ticker][0]) : "NONE", exchange: exch[ticker] || "UNKNOWN", partition: partitionOf(ticker) };
-  }).filter((f) => sample === "all" || f.partition === sample.toUpperCase());
+  }).filter((f) => !/[_]/.test(f.ticker) && common.has(f.ticker))          // Review-Fix 5: nur Stammaktien
+    .filter((f) => sample === "all" || f.partition === sample.toUpperCase());
 }
 function loadMulti() {
   const dir = join(ROOT, "quant/data/market/multi-asset/series");
