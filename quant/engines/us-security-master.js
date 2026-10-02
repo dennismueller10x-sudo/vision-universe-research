@@ -51,13 +51,13 @@
     ? require("./instrument-classification.js")
     : global.VUInstrumentClassification;
 
-  var VERSION = "us-security-master-1.2.0";
+  var VERSION = "us-security-master-1.3.0";
 
   /* Die Gattungen. Reihenfolge ist die Berichtsreihenfolge. */
   var CLASSES = [
     "EQUITY_COMMON", "ADR", "REIT", "SPAC", "PREFERRED", "TRUST",
     "ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-    "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY", "OTHER", "UNKNOWN"
+    "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY", "OTHER", "UNKNOWN"
   ];
 
   /* Die Politik aus der Aufgabenstellung, als Daten und nicht als
@@ -70,7 +70,7 @@
     SEPARATE: ["ADR", "REIT", "SPAC", "TRUST", "PREFERRED"],
     /* Keine Aktien. Bleiben im Stamm, zaehlen aber nirgends mit. */
     EXCLUDE: ["ETF", "ETN", "ETP", "MUTUAL_FUND", "CEF", "INDEX",
-              "WARRANT", "UNIT", "RIGHT", "TEST_SECURITY"]
+              "WARRANT", "UNIT", "RIGHT", "DEBT", "TEST_SECURITY"]
   };
 
   function policyBucket(cls) {
@@ -254,6 +254,16 @@
     { type: "ETN",         re: /\b(ETN|EXCHANGE[- ]TRADED NOTES?)\b/i },
     { type: "ETP",         re: /\b(ETP|EXCHANGE[- ]TRADED (PRODUCT|COMMODIT(Y|IES))S?)\b/i },
     { type: "CEF",         re: /\b(CLOSED[- ]END|CEF)\b/i },
+    /* Schuldverschreibungen ("Baby Bonds"), die der Anbieter als "Stock"
+       fuehrt (02.10.2026): "T-Mobile US Inc 5.500 Senior Notes due 2070",
+       "Presurance Holdings Inc Sr Nt", "Maiden Holdings ... 775 Nts 12012043".
+       Eine Forderung gegen den Emittenten, kein Anteil - Eigenkapital-
+       Kennzahlen gelten fuer sie nicht. Nur ausdrueckliche Formen: ein Rang
+       (Senior/Sr/Subordinated/Junior) vor Notes/Nt/Debentures/Bonds, "Notes
+       due", "Debentures", der Kupon vor "Notes" oder die Abkuerzung "Nts".
+       Absichtlich NICHT "Bond" allein: "Columbia Core Bond ETF" ist ein
+       Fonds (die ETF-Regel greift), "Our Bond, Inc." eine Firma. */
+    { type: "DEBT",        re: /\b(?:(?:SENIOR|SR|SUBORDINATED|SUB|JUNIOR|JR)\.?\s+(?:SECURED\s+|UNSECURED\s+)?(?:NOTES?|NTS?|DEBENTURES?|BONDS?)|NOTES?\s+DUE|DEBENTURES?|BABY\s+BONDS?|NTS|\d+(?:\.\d+)?\s?%?\s+(?:FIXED[- ]RATE\s+)?(?:SENIOR\s+|SUBORDINATED\s+)?NOTES?)\b/i },
     /* Die Form des Papiers vor der Art des Emittenten: "Centurion
        Acquisition Corp - Units" ist eine Unit (eines SPAC), "US Bancorp
        Depositary Shares ... Pfd" ein Vorzugspapier (kein ADR). */
@@ -282,7 +292,7 @@
      Stammaktie trennen lassen. Ihre Zahlen sind Untergrenzen, solange
      der Anbieter keinen Namen liefert - das steht als Feld im Befund und
      nicht nur in dieser Bemerkung. */
-  var NAME_ONLY_CLASSES = ["ADR", "REIT", "SPAC", "TRUST", "ETN", "ETP", "CEF"];
+  var NAME_ONLY_CLASSES = ["ADR", "REIT", "SPAC", "TRUST", "ETN", "ETP", "CEF", "DEBT"];
 
   /**
    * Klassifiziert eine Anbieterzeile in die feine Gattungsliste.

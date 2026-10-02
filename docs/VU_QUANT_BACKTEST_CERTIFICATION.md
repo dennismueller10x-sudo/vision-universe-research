@@ -142,3 +142,24 @@ Eine CIK wird keinem früheren Listing zugeordnet: die CIK-Karte gilt dem heutig
 
 - Setup-Backtest: Freigabe der Setup-Methodik (`backtestCertification`), sobald die Historien-Gates bestehen.
 - Setup-Einstiegsvariante, falls die Abweichung 1 Pp übersteigt.
+
+## Schuldverschreibungen sind keine Aktien (DEBT, 02.10.2026)
+
+**Fall PRHIZ.** Der Wertpapierstamm fuehrte PRHIZ als `EQUITY_COMMON`/`ELIGIBLE`, aber nur aus dem Restfall: Tiingo meldet `assetType=Stock`, und das Tickermuster ist unauffaellig. Die Namensschicht (`company-names.json`, Quelle `TIINGO_METADATA`, Stand 14.09.2026) nennt das Papier „Presurance Holdings Inc Sr Nt“. Die SEC fuehrt unter CIK 0001502292 die Symbole PRHI (Stammaktie, seit 2015) und PRHIZ. PRHIZ ist also ein Senior Note des Emittenten, kein Stammkapital.
+
+**Korrektur, provenance-basiert.**
+- `us-security-master` 1.3.0 fuehrt die Klasse `DEBT` (Policy `EXCLUDE`, nur ueber den Namen belegbar).
+- Die Namensregel erkennt Senior/Subordinated Notes, Debentures, „Notes due“, „Nts“ und Kupon-Notes.
+- `scripts/market/apply-name-layer-class.mjs --classes DEBT` wendet die Regel auf die bestehende Eignung an. Jede Aenderung steht mit Name und Namensquelle in `eligibility-reconciliation.json`.
+- Die Tickerform (Preferred, Warrant, Unit, Right) hat Vorrang vor dem Namen, wie beim vollen Eignungslauf.
+
+**Ergebnis.**
+- Die Regel stuft 22 Papiere um, darunter PRHIZ, TMUSI, TMUSL, TMUSZ, TRINI, TRINZ, SAX, SSSSL und MFICL.
+- Das Produktuniversum sinkt von 6.875 auf 6.853 Titel.
+- Die Papiere bleiben als Instrumente im Stamm und in der Suche. Sie fallen aus Screener, Strategie-Match, Bewertung, Faktoren und Discover heraus, weil diese aus dem Produktuniversum lesen.
+- Der Discover-Code ist unveraendert.
+
+**Gegenprobe.**
+- „Our Bond, Inc.“, „Sticky Notes Holdings Inc“ und „Columbia Core Bond ETF“ bleiben, was sie sind.
+- Derselbe Ticker mit dem Emittentennamen bleibt Stammaktie. Es gibt also keine Ticker-Heuristik.
+- Tests: `quant/tests/debt-instrument-classification.test.mjs`. Mit abgeschalteter Regel schlagen 3 von 6 fehl.

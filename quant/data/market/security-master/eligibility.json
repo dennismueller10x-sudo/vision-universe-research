@@ -1,6 +1,6 @@
 {
  "generatedAt": "2026-09-15T05:31:39.019Z",
- "version": "us-security-master-1.2.0",
+ "version": "us-security-master-1.3.0",
  "coverageEngine": "coverage-metrics-1.0.0",
  "today": "2026-09-15",
  "phase": "POST_BACKFILL_CLEANUP_NO_PRICE_REQUESTS",
@@ -11,8 +11,9 @@
  "securityMasterRejudged": {
   "file": "quant/data/market/security-master/us-security-master.json",
   "found": "us-security-master-1.1.0",
-  "expected": "us-security-master-1.2.0",
-  "rows": 8021
+  "expected": "us-security-master-1.3.0",
+  "rows": 8021,
+  "via": "NAME_LAYER_CLASSES:DEBT"
  },
  "listedRootCount": 6260,
  "nameLayer": {
@@ -50,15 +51,16 @@
  },
  "counts": {
   "universeMembers": 7803,
-  "ELIGIBLE": 5940,
-  "SEPARATE_CLASS": 782,
-  "EXCLUDED": 928,
-  "REVIEW": 153,
-  "productUniverse": 6875
+  "ELIGIBLE": 5922,
+  "SEPARATE_CLASS": 779,
+  "EXCLUDED": 950,
+  "REVIEW": 152,
+  "productUniverse": 6853
  },
  "excludedByClass": {
   "ETF": 4,
   "TEST_SECURITY": 44,
+  "DEBT": 22,
   "WARRANT": 465,
   "RIGHT": 122,
   "UNIT": 288,
@@ -66,7 +68,7 @@
   "CEF": 1
  },
  "separateByClass": {
-  "TRUST": 120,
+  "TRUST": 117,
   "REIT": 19,
   "ADR": 10,
   "SPAC": 232,
@@ -45016,16 +45018,16 @@
    "ticker": "MHNC",
    "securityId": "ref_MHNC",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2013-11-27"
   },
@@ -61271,16 +61273,16 @@
    "ticker": "UNMA",
    "securityId": "ref_UNMA",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2018-06-19"
   },
@@ -93085,16 +93087,16 @@
    "ticker": "BNH",
    "securityId": "ref_BNH",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "INACTIVE",
-   "product_eligibility": "REVIEW",
-   "product_eligibility_reason": "UNCONFIRMED:LISTING_INACTIVE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2022-12-12"
   },
@@ -96923,15 +96925,16 @@
    "ticker": "ADAMH",
    "securityId": "ref_ADAMH",
    "exchange": "NASDAQ",
-   "instrument_type": "TRUST",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "SEPARATE_CLASS",
-   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:TRUST",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER+NAME_LAYER",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:TRUST"
    ],
    "start_date": "2025-09-03"
   },
@@ -103423,16 +103426,16 @@
    "ticker": "CICB",
    "securityId": "ref_CICB",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2024-10-09"
   },
@@ -103474,16 +103477,16 @@
    "ticker": "CIMN",
    "securityId": "ref_CIMN",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2024-05-28"
   },
@@ -104592,16 +104595,16 @@
    "ticker": "CTGG",
    "securityId": "ref_CTGG",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-06-17"
   },
@@ -104609,16 +104612,16 @@
    "ticker": "CTHH",
    "securityId": "ref_CTHH",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-06-17"
   },
@@ -105116,16 +105119,16 @@
    "ticker": "DCOMG",
    "securityId": "ref_DCOMG",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2024-07-02"
   },
@@ -116502,16 +116505,16 @@
    "ticker": "MFAN",
    "securityId": "ref_MFAN",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2024-01-24"
   },
@@ -116536,16 +116539,16 @@
    "ticker": "MFICL",
    "securityId": "ref_MFICL",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2023-12-19"
   },
@@ -121644,16 +121647,16 @@
    "ticker": "PRHIZ",
    "securityId": "ref_PRHIZ",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2025-09-30"
   },
@@ -123802,15 +123805,16 @@
    "ticker": "RWTN",
    "securityId": "ref_RWTN",
    "exchange": "NYSE",
-   "instrument_type": "TRUST",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "SEPARATE_CLASS",
-   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:TRUST",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER+NAME_LAYER",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:TRUST"
    ],
    "start_date": "2024-02-02"
   },
@@ -124202,16 +124206,16 @@
    "ticker": "SAX",
    "securityId": "ref_SAX",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-08-27"
   },
@@ -125864,16 +125868,16 @@
    "ticker": "SRJN",
    "securityId": "ref_SRJN",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-01-16"
   },
@@ -126100,16 +126104,16 @@
    "ticker": "SSSSL",
    "securityId": "ref_SSSSL",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-07-01"
   },
@@ -127520,16 +127524,16 @@
    "ticker": "TMUSI",
    "securityId": "ref_TMUSI",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2025-08-06"
   },
@@ -127537,16 +127541,16 @@
    "ticker": "TMUSL",
    "securityId": "ref_TMUSL",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2025-08-06"
   },
@@ -127554,16 +127558,16 @@
    "ticker": "TMUSZ",
    "securityId": "ref_TMUSZ",
    "exchange": "NASDAQ",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2025-08-06"
   },
@@ -127826,15 +127830,16 @@
    "ticker": "TPTS",
    "securityId": "ref_TPTS",
    "exchange": "NYSE",
-   "instrument_type": "TRUST",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "SEPARATE_CLASS",
-   "product_eligibility_reason": "CONFIRMED_SEPARATE_CLASS:TRUST",
-   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER+NAME_LAYER",
    "review_flags": [
-    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:TRUST"
    ],
    "start_date": "2026-06-24"
   },
@@ -127961,16 +127966,16 @@
    "ticker": "TRINI",
    "securityId": "ref_TRINI",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-07-27"
   },
@@ -127978,16 +127983,16 @@
    "ticker": "TRINZ",
    "securityId": "ref_TRINZ",
    "exchange": "NYSE",
-   "instrument_type": "EQUITY_COMMON",
+   "instrument_type": "DEBT",
    "classification_status": "CLASSIFIED",
    "classification_confidence": "HIGH",
    "active_status": "ACTIVE",
-   "product_eligibility": "ELIGIBLE",
-   "product_eligibility_reason": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
-   "evidence_source": "SECURITY_MASTER_REJUDGED",
+   "product_eligibility": "EXCLUDED",
+   "product_eligibility_reason": "CONFIRMED_NON_EQUITY:DEBT",
+   "evidence_source": "SECURITY_MASTER_REJUDGED+NAME_LAYER",
    "review_flags": [
-    "NAME_MISSING_ADR_REIT_SPAC_UNVERIFIED",
-    "MASTER_REJUDGED:EQUITY_COMMON"
+    "MASTER_REJUDGED:EQUITY_COMMON",
+    "NAME_LAYER_RECLASSIFIED:EQUITY_COMMON"
    ],
    "start_date": "2026-07-27"
   },
@@ -132021,5 +132026,13 @@
    ],
    "start_date": "2025-01-07"
   }
- ]
+ ],
+ "nameLayerClassApplied": {
+  "at": "2026-10-02T18:55:12.987Z",
+  "classes": [
+   "DEBT"
+  ],
+  "changed": 22,
+  "script": "scripts/market/apply-name-layer-class.mjs"
+ }
 }
