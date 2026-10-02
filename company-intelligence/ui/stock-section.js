@@ -22,7 +22,7 @@ function render(host,payload){
  const latest=[...payload.news.filter(n=>['HIGH','CRITICAL'].includes(n.importance)),...(payload.materialEvents||[]).filter(e=>['HIGH','CRITICAL'].includes(e.importance)),...payload.earnings.filter(e=>!e.isAmendment&&['EARNINGS_PUBLISHED','PERIODIC_REPORT_PUBLISHED'].includes(e.eventType)&&(e.date||'')>=recentCutoff)].sort((a,b)=>(b.publishedAt||b.date||'').localeCompare(a.publishedAt||a.date||''))[0];
  if(latest)block(host,'Aktuell wichtig').append(story(latest));
  const today = new Date().toISOString().slice(0,10);
- const liveEvents = payload.events.filter(e => (e.dateEnd || e.date || '') >= today);
+ const liveEvents = payload.events.filter(e => e.startsAt ? Date.parse(e.startsAt) >= Date.now() : (e.dateEnd || e.date || '') >= today);
  const next=liveEvents.filter(e=>['EARNINGS_SCHEDULED','EARNINGS_ESTIMATED'].includes(e.eventType)).sort((a,b)=>(a.date||a.dateStart||'').localeCompare(b.date||b.dateStart||''));
  const confirmed=next.find(e=>e.confirmationStatus==='CONFIRMED')||liveEvents.find(e=>e.eventType==='EARNINGS_CALL'&&e.confirmationStatus==='CONFIRMED'), estimate=next.find(e=>e.confirmationStatus==='ESTIMATED');
  const upcoming=block(host,'Nächste Quartalszahlen');
