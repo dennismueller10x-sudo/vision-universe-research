@@ -274,3 +274,12 @@ die neutrale Variante verbuchte diesen Fall zunächst nicht. Korrigiert in r8b, 
   - Ins öffentliche Protokoll gehen nur Belegart und Entscheidung, keine Minutenwerte und keine Uhrzeit.
   - Ohne Minuten gilt die Tagesbalken-Annahme. Die Seite kennzeichnet sie als „angenommen“ bzw. „Reihenfolge offen“.
 - **iPhone:** Jede Kauf-Stop-Ausführung trägt ihre Belegart. Bei offener Reihenfolge nennt der Hinweis den Befund der Minutenprüfung je Methode, qualitativ und ohne Kennzahlen.
+
+### Nachtrag A4 (nach dem Hauptlauf): offizielle Eröffnung entscheidet den Gap
+
+Bei der Durchsicht von Berichtsbeispielen (CBAY 19.01.2024) fiel auf: Die Minutenauflösung
+entschied den Gap nach dem ersten IEX-Druck statt nach der offiziellen Eröffnung und nahm am
+Gap-Tag das Tief der ersten Minute als „Tief bis zum Kauf" (Blick nach vorn). Korrektur und
+Begründung: `PREREGISTRATION-R9-INTRADAY-AMENDMENT.json` → `A4_officialOpen`. Keine Schwelle
+geändert. Studie und r9b laufen mit A4 erneut; die Ergebnisse vor A4 bleiben archiviert und
+werden daneben berichtet.
